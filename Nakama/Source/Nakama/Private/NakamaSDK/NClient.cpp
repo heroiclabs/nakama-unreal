@@ -130,7 +130,7 @@ namespace Nakama {
 			}
 		},
 			[errback](int32 e) {
-			if (errback != NULL) errback(NError("Error: " + e));
+			if (errback != NULL) errback(NError("Error: " + std::to_string(e)));
 		}
 		);
 	}

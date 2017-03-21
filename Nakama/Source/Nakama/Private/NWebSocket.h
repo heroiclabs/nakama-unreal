@@ -68,7 +68,7 @@ namespace Nakama {
 		static NLogger* logger;
 
 	private:
-		static void NWebSocket::lwsLogger(int level, const char *line);
+		static void lwsLogger(int level, const char *line);
 
 		bool isConnecting;
 
