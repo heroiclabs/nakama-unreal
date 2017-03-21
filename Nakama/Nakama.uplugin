@@ -1,0 +1,21 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "0.1.0",
+	"FriendlyName": "Nakama client",
+	"Description": "A UE4 client for the Nakama server.",
+	"Category": "HeroicLabs.Nakama",
+	"CreatedBy": "Heroic Labs",
+	"CreatedByURL": "http://heroiclabs.com/",
+	"DocsURL": "https://heroiclabs.com/docs/",
+	"EnabledByDefault" : true,
+	"CanContainContent": true,
+	"Modules": [
+		{
+			"Name": "Nakama",
+			"Type" : "Runtime",
+			"WhitelistPlatforms" : [ "Win32", "Win64", "Mac", "Linux" ],
+			"LoadingPhase" : "PreDefault"
+		}
+	]
+}

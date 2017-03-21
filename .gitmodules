@@ -1,0 +1,3 @@
+[submodule "Nakama/Source/server"]
+	path = Nakama/Source/server
+	url = https://github.com/heroiclabs/nakama.git
