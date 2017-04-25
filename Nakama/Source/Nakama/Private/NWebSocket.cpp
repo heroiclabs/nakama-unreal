@@ -22,18 +22,12 @@
 
 namespace Nakama {
 
-	NLogger* NWebSocket::logger = nullptr;
-
-	NWebSocket::NWebSocket(const std::string& host, const unsigned port, const std::string& path, const bool ssl, NLogger* log) :
+	NWebSocket::NWebSocket(const std::string& host, const unsigned port, const std::string& path, const bool ssl) :
 		Host(host),
 		Port(port),
 		Path(path),
 		UseSSL(ssl)
 	{
-		// Feels ugly. :(  Doing because of static logger.  See field decl.
-		if (NWebSocket::logger) delete NWebSocket::logger;
-		NWebSocket::logger = log;
-
 		isConnecting = false;
 
 		SetLWSLogLevel();
@@ -79,21 +73,19 @@ namespace Nakama {
 
 	void NWebSocket::lwsLogger(int level, const char *line)
 	{
-		if (!logger) return;
-
 		switch (level) {
 		case LLL_ERR:
-			logger->Format(Error, "websocket: %s", line);
+			NLogger::Format(Error, "websocket: %s", line);
 			break;
 		case LLL_WARN:
-			logger->Format(Warn, "websocket: %s", line);
+			NLogger::Format(Warn, "websocket: %s", line);
 			break;
 		case LLL_NOTICE:
 		case LLL_INFO:
-			logger->Format(Info, "websocket: %s", line);
+			NLogger::Format(Info, "websocket: %s", line);
 			break;
 		case LLL_DEBUG:
-			logger->Format(Debug, "websocket: %s", line);
+			NLogger::Format(Debug, "websocket: %s", line);
 			break;
 		}
 	}
@@ -106,11 +98,11 @@ namespace Nakama {
 	{
 		isConnecting = true;
 		if (Context == nullptr) {
-			logger->Error("Could not connect: Context was null.");
+			NLogger::Error("Could not connect: Context was null.");
 			return;
 		}
 		if (LwsConnection != nullptr) {
-			logger->Error("Could not connect: Already connected!");
+			NLogger::Error("Could not connect: Already connected!");
 			return;
 		}
 
@@ -131,7 +123,7 @@ namespace Nakama {
 		ConnectInfo.host = fullhost.c_str();
 
 		if (lws_client_connect_via_info(&ConnectInfo) == nullptr) {
-			logger->Error("Unable to initialize connection!");
+			NLogger::Error("Unable to initialize connection!");
 			return;
 		}
 
@@ -177,7 +169,7 @@ namespace Nakama {
 			HandlePacket();
 			if (PendingMesssages >= OutgoingBuffer.Num())
 			{
-				logger->Warn("Unable to flush all of OutgoingBuffer in FWebSocket.");
+				NLogger::Warn("Unable to flush all of OutgoingBuffer in FWebSocket.");
 				break;
 			}
 		};
@@ -227,7 +219,7 @@ namespace Nakama {
 			}
 			if ((uint32)Sent < DataToSend)
 			{
-				logger->Format(Warn, "Could not write all '%d' bytes to socket", DataToSend);
+				NLogger::Format(Warn, "Could not write all '%d' bytes to socket", DataToSend);
 			}
 			DataToSend -= Sent;
 		}
@@ -275,7 +267,7 @@ namespace Nakama {
 		}
 		case LWS_CALLBACK_CLIENT_ESTABLISHED:
 		{
-			logger->Trace("WebSocket->Connection Established.");
+			NLogger::Trace("WebSocket->Connection Established.");
 			Self->isConnecting = false;
 			Self->LwsConnection = Instance;
 			if (Self->OutgoingBuffer.Num() != 0)
@@ -288,14 +280,14 @@ namespace Nakama {
 		case LWS_CALLBACK_CLIENT_CONNECTION_ERROR:
 		{
 			std::string msg = In && Len > 0 ? std::string((char *)In, Len) : "";
-			logger->Format(Error, "WebSocket->Client Connection Error: %s", msg.c_str());
+			NLogger::Format(Error, "WebSocket->Client Connection Error: %s", msg.c_str());
 			if (Self->ErrorCallBack) Self->ErrorCallBack(msg);
 			return -1;
 		}
 		break;
 		case LWS_CALLBACK_CLIENT_RECEIVE:
 		{
-			logger->Trace("WebSocket->Connection Receive.");
+			NLogger::Trace("WebSocket->Connection Receive.");
 			auto bytesLeft = lws_remaining_packet_payload(Instance);
 			Self->OnRawReceive(In, (uint32)Len, (uint32)bytesLeft);
 		}
@@ -307,12 +299,12 @@ namespace Nakama {
 		}
 		case LWS_CALLBACK_CLOSED:
 		{
-			logger->Trace("WebSocket->Connection Closed.");
+			NLogger::Trace("WebSocket->Connection Closed.");
 			if (Self->ClosedCallBack) Self->ClosedCallBack();
 			return -1;
 		}
 		default:
-			logger->Format(Warn, "WebSocket->Connection Received unhandled message: %d", (int)Reason);
+			NLogger::Format(Warn, "WebSocket->Connection Received unhandled message: %d", (int)Reason);
 			break;
 		}
 

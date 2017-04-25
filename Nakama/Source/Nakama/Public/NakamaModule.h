@@ -17,7 +17,6 @@
 #pragma once
 
 #include "INakama.h"
-#include "Runtime/Engine/Public/Tickable.h"
 
 class NAKAMA_API UNakamaModule : public INakama {
 
@@ -27,9 +26,4 @@ public:
 	virtual void ShutdownModule();
 
 	static UNakamaModule* GetModulePtr();
-
-	bool IsInitialized() const { return isInitialised; }
-
-private:
-	bool isInitialised = false;
 };

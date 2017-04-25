@@ -35,27 +35,38 @@ namespace Nakama {
 	{
 
 	public:
+		static NLogger& getInstance()
+		{
+			static NLogger    instance; // Guaranteed to be destroyed.
+										// Instantiated on first use.
+			return instance;
+		}
+		NLogger(NLogger const&) = delete;
+		void operator=(NLogger const&) = delete;
+
+		static INLogSink* GetSink() { return getInstance().sink; }
+		static void SetSink(INLogSink* s) { getInstance().sink = s; }
+
+		static void SetLevel(NLogLevel level) { getInstance().sink->SetLevel(level); }
+
+		static void Trace(const std::string message);
+
+		static void Debug(const std::string message);
+
+		static void Info(const std::string message);
+
+		static void Warn(const std::string message);
+
+		static void Error(const std::string message);
+
+		static void Fatal(const std::string message);
+
+		static void Format(NLogLevel level, const char* format, ...);
+
+	private:
 		NLogger();
 		~NLogger();
 
-		INLogSink* GetSink() { return sink; }
-		void SetSink(INLogSink* s) { this->sink = s; }
-
-		void Trace(const std::string message);
-
-		void Debug(const std::string message);
-
-		void Info(const std::string message);
-
-		void Warn(const std::string message);
-
-		void Error(const std::string message);
-
-		void Fatal(const std::string message);
-
-		void Format(NLogLevel level, const char* format, ...);
-
-	private:
 		INLogSink* sink;
 
 	};

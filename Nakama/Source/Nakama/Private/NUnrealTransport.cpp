@@ -21,21 +21,17 @@
 #include "App.h"
 
 namespace Nakama {
-	NUnrealTransport::NUnrealTransport(NLogger* logger)
-	{
-		this->logger = logger;
-	}
-
 	NUnrealTransport::~NUnrealTransport()
 	{
-		if (socket) delete socket;
+		delete socket;
+		socket = nullptr;
 	}
 
 	void NUnrealTransport::Post(std::string uri, AuthenticateRequest* payload, std::string authHeader, std::string langHeader, unsigned timeout, unsigned connectTimeout,
 		const std::function<void(const std::vector<uint8_t> &)> &successAction,
 		const std::function<void(const int32 &)> &errorAction)
 	{
-		logger->Format(Info, "Nakama::NTransport->Post() - '%s'", uri.c_str());
+		NLogger::Format(Info, "Nakama::NTransport->Post() - '%s'", uri.c_str());
 		HttpRequest->SetURL(uri.c_str());
 		HttpRequest->SetVerb(TEXT("POST"));
 		HttpRequest->SetHeader(TEXT("Content-Type"), TEXT("application/octet-stream;"));
@@ -86,7 +82,7 @@ namespace Nakama {
 
 	void NUnrealTransport::CreateWebSocket(const std::string host, const unsigned port, const std::string& path, const bool ssl)
 	{
-		socket = new NWebSocket(host, port, path, ssl, logger);
+		socket = new NWebSocket(host, port, path, ssl);
 
 		// OnConnect callback
 		socket->SetConnectedCallBack([=]() { 
@@ -96,11 +92,10 @@ namespace Nakama {
 		// OnClosed callback + cleanup
 		socket->SetClosedCallBack([=]() { 
 			// Release socket handle
-			if (socket) {
 				delete socket;
 				socket = nullptr;
-			}
-			logger->Trace("Socket Closed.");
+
+			NLogger::Trace("Socket Closed.");
 			if (CloseCallback) CloseCallback(); 
 		});
 

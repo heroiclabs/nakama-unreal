@@ -25,7 +25,7 @@ namespace Nakama {
 	class NAKAMA_API NUnrealTransport : public INTransport
 	{
 	public:
-		NUnrealTransport(NLogger* logger);
+		NUnrealTransport() {}
 		~NUnrealTransport();
 
 		// Inherited via INTransport

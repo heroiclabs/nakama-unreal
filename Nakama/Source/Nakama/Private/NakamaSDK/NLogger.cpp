@@ -16,6 +16,9 @@
 
 #ifdef __UNREAL__
 #include "Nakama/Private/NakamaPrivatePCH.h"
+#include "NUnrealLogSink.h"
+#else
+#include "NConsoleLogSink.h"
 #endif
 
 #include "NLogger.h"
@@ -24,52 +27,60 @@
 namespace Nakama {
 	NLogger::NLogger()
 	{
+
+#ifdef __UNREAL__
+		sink = new NUnrealLogSink();
+#else
+		sink = new NConsoleLogSink();
+#endif
+
 	}
 
 	NLogger::~NLogger()
 	{
-		if (sink) delete sink;
+		delete sink;
+		sink = nullptr;
 	}
 
 	void NLogger::Trace(const std::string message)
 	{
-		if (!sink->ShouldLog(NLogLevel::Trace)) return;
-		sink->Log(NLogMessage(message, NLogLevel::Trace));
+		if (!GetSink()->ShouldLog(NLogLevel::Trace)) return;
+		GetSink()->Log(NLogMessage(message, NLogLevel::Trace));
 	}
 
 	void NLogger::Debug(const std::string message)
 	{
-		if (!sink->ShouldLog(NLogLevel::Debug)) return;
-		sink->Log(NLogMessage(message, NLogLevel::Debug));
+		if (!GetSink()->ShouldLog(NLogLevel::Debug)) return;
+		GetSink()->Log(NLogMessage(message, NLogLevel::Debug));
 	}
 
 	void NLogger::Info(const std::string message)
 	{
-		if (!sink->ShouldLog(NLogLevel::Info)) return;
-		sink->Log(NLogMessage(message, NLogLevel::Info));
+		if (!GetSink()->ShouldLog(NLogLevel::Info)) return;
+		GetSink()->Log(NLogMessage(message, NLogLevel::Info));
 	}
 
 	void NLogger::Warn(const std::string message)
 	{
-		if (!sink->ShouldLog(NLogLevel::Warn)) return;
-		sink->Log(NLogMessage(message, NLogLevel::Warn));
+		if (!GetSink()->ShouldLog(NLogLevel::Warn)) return;
+		GetSink()->Log(NLogMessage(message, NLogLevel::Warn));
 	}
 
 	void NLogger::Error(const std::string message)
 	{
-		if (!sink->ShouldLog(NLogLevel::Error)) return;
-		sink->Log(NLogMessage(message, NLogLevel::Error));
+		if (!GetSink()->ShouldLog(NLogLevel::Error)) return;
+		GetSink()->Log(NLogMessage(message, NLogLevel::Error));
 	}
 
 	void NLogger::Fatal(const std::string message)
 	{
-		if (!sink->ShouldLog(NLogLevel::Fatal)) return;
-		sink->Log(NLogMessage(message, NLogLevel::Fatal));
+		if (!GetSink()->ShouldLog(NLogLevel::Fatal)) return;
+		GetSink()->Log(NLogMessage(message, NLogLevel::Fatal));
 	}
 
 	void NLogger::Format(NLogLevel level, const char * format, ...)
 	{
-		if (!sink->ShouldLog(level)) return;
+		if (!GetSink()->ShouldLog(level)) return;
 		va_list args, argsCpy;
 		
 		va_start(args, format);
@@ -82,7 +93,7 @@ namespace Nakama {
 		std::vsnprintf(&vec[0], len + 1, format, args);
 		va_end(args);
 
-		sink->Log(NLogMessage(&vec[0], level));
+		GetSink()->Log(NLogMessage(&vec[0], level));
 	}
 
 }

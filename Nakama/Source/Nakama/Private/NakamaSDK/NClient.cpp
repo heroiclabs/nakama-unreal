@@ -18,9 +18,6 @@
 // NB: needs to be first for unreal to be happy
 #include "Nakama/Private/NakamaPrivatePCH.h"
 #include "Nakama/Private/NUnrealTransport.h"
-#include "NUnrealLogSink.h"
-#else
-#include "NConsoleLogSink.h"
 #endif
 
 #include "NClient.h"
@@ -42,16 +39,11 @@ namespace Nakama {
 		this->timeout = 5000;
 		this->lang = "en";
 
-		logger = new NLogger();
-
 #ifdef __UNREAL__
-		logger->SetSink(new NUnrealLogSink());
-
-		transport = new NUnrealTransport(logger);
+		transport = new NUnrealTransport();
 #else
 		// TODO: Could use another transport here?
 		//transport = new SomeGenericTransport()?
-		logger->SetSink(new NConsoleLogSink());
 #endif
 
 		transport->SetOnConnectCallBack([=]() {
@@ -66,15 +58,15 @@ namespace Nakama {
 		transport->SetOnMessageCallBack([=](const std::vector<uint8> data) {
 			Envelope message;
 			message.ParseFromArray(data.data(), data.size());
-			logger->Format(Trace, "NClient->RcvdMessage: %d", (int)message.payload_case());
+			NLogger::Format(Trace, "NClient->RcvdMessage: %d", (int)message.payload_case());
 			onMessage(message);
 		});
 	}
 
 	NClient::~NClient()
 	{
-		if (transport) delete transport;
-		if (logger) delete logger;
+		delete transport;
+		transport = nullptr;
 	}
 
 	NClient& NClient::Default(std::string serverKey)
@@ -125,7 +117,7 @@ namespace Nakama {
 				if (errback) errback(NError(authResponse.error()));
 				break;
 			default:
-				logger->Error("Received invalid response from server");
+				NLogger::Error("Received invalid response from server");
 				break;
 			}
 		},
@@ -168,7 +160,7 @@ namespace Nakama {
 
 	void NClient::Connect(NSession* session, std::function<void(const bool)> callback)
 	{
-		logger->Info("Nakama::Client->Connect() - Connecting to API");
+		NLogger::Info("Nakama::Client->Connect() - Connecting to API");
 		OnConnected = callback;
 		transport->Connect(host, port, GetWebsocketPath(session), ssl);
 	}
@@ -183,7 +175,7 @@ namespace Nakama {
 
 	void NClient::Disconnect()
 	{
-		logger->Info("Nakama::Client->Disconnect()");
+		NLogger::Info("Nakama::Client->Disconnect()");
 		transport->Close();
 		transport = nullptr;
 	}
@@ -382,7 +374,7 @@ namespace Nakama {
 		}
 
 		default:
-			logger->Format(Trace, "Unrecognized message: %d", (int)message.payload_case());
+			NLogger::Format(Trace, "Unrecognized message: %d", (int)message.payload_case());
 			break;
 		}
 
@@ -416,18 +408,6 @@ namespace Nakama {
 		return *this;
 	}
 
-	NClient::Builder& NClient::Builder::LogSink(INLogSink* sink)
-	{
-		client->logger->SetSink(sink);
-		return *this;
-	}
-
-	NClient::Builder& NClient::Builder::LogLevel(NLogLevel level)
-	{
-		client->logger->GetSink()->SetLevel(level);
-		return *this;
-	}
-
 	NClient::Builder& NClient::Builder::Port(unsigned port)
 	{
 		client->port = port;
@@ -455,8 +435,6 @@ namespace Nakama {
 		client->connectTimeout = original->connectTimeout;
 		client->host = original->host;
 		client->lang = original->lang;
-		// FIXME: This will cause issues if we dispose of the original...
-		client->logger = original->logger;
 		client->port = original->port;
 		client->ssl = original->ssl;
 		client->timeout = original->timeout;

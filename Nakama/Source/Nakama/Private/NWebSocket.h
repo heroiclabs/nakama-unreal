@@ -35,7 +35,7 @@ namespace Nakama {
 
 	public:
 		// Initialize with given url
-		NWebSocket(const std::string& host, const unsigned port, const std::string& path, const bool ssl, NLogger* logger);
+		NWebSocket(const std::string& host, const unsigned port, const std::string& path, const bool ssl);
 
 		// clean up.
 		~NWebSocket();
@@ -62,10 +62,6 @@ namespace Nakama {
 
 		/** Close the websocket                */
 		void Close();
-
-		// Fugly! But we are using a static pointer to the logger to get around needing a static method
-		// to pass into lws_set_log_level.  I'm guessing a better C++ programmer could do something clever instead.
-		static NLogger* logger;
 
 	private:
 		static void lwsLogger(int level, const char *line);

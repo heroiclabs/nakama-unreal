@@ -54,7 +54,6 @@ namespace Nakama {
 		unsigned GetConnectTimeout() { return connectTimeout; }
 		std::string GetHost() { return host; }
 		std::string GetLang() { return lang; }
-		NLogger* GetLogger() { return logger; }
 		unsigned GetPort() { return port; }
 		std::string GetServerKey() { return serverKey; }
 		bool IsSSL() { return ssl; }
@@ -96,7 +95,6 @@ namespace Nakama {
 		unsigned connectTimeout;
 		std::string host;
 		std::string lang;
-		NLogger* logger;
 		unsigned port;
 		std::string serverKey;
 		bool ssl;
@@ -129,8 +127,6 @@ namespace Nakama {
 		Builder& ConnectTimeout(unsigned connectTimeout);
 		Builder& Host(std::string host);
 		Builder& Lang(std::string lang);
-		Builder& LogSink(INLogSink* logSink);
-		Builder& LogLevel(NLogLevel level);
 		Builder& Port(unsigned port);
 		Builder& SSL(bool enable);
 		Builder& Timeout(unsigned timeout);

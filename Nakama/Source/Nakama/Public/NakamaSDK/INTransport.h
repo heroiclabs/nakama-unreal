@@ -51,9 +51,9 @@ namespace Nakama {
 		virtual void Close() = 0;
 		virtual void Send(std::string data) = 0;
 		virtual void Tick(float DeltaTime) = 0;
+
 	
 	protected:
-		NLogger* logger;
 
 		/************************************************************************/
 		/*	Various callbacks													*/
