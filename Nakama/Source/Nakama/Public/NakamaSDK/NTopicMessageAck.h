@@ -25,6 +25,7 @@ namespace Nakama {
 	class NAKAMA_API NTopicMessageAck {
 
 	public:
+		NTopicMessageAck() {}
 		NTopicMessageAck(TTopicMessageAck message)
 		{
 			messageId = message.message_id();

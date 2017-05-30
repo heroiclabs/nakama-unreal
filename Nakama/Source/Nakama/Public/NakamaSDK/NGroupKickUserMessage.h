@@ -24,6 +24,7 @@ using namespace server;
 
 namespace Nakama {
 
+	// OnSuccess returns: nothing (nullptr)
 	class NAKAMA_API NGroupKickUserMessage : public INMessage
 	{
 	private:

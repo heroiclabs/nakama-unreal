@@ -24,6 +24,7 @@ using namespace server;
 
 namespace Nakama {
 
+	// OnSuccess returns: NSelf*
 	class NAKAMA_API NSelfFetchMessage : public INMessage
 	{
 

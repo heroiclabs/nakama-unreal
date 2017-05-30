@@ -27,6 +27,7 @@ namespace Nakama {
 	class NAKAMA_API NTopicPresence {
 
 	public:
+		NTopicPresence() {}
 		NTopicPresence(TopicPresence message) : topic(NTopicId(message.topic())) {
 			for (size_t i = 0; i < message.joins_size(); i++) {
 				join.push_back(NUserPresence(message.joins(i)));

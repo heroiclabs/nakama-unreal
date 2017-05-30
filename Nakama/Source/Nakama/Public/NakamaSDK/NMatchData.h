@@ -26,6 +26,7 @@ namespace Nakama {
 	class NAKAMA_API NMatchData {
 
 	public:
+		NMatchData() {}
 		NMatchData(MatchData message) : 
 			presence(NUserPresence(message.presence()))
 		{

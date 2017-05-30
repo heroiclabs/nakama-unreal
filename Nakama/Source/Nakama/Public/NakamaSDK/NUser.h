@@ -23,6 +23,7 @@ namespace Nakama {
 	class NAKAMA_API NUser {
 
 	public:
+		NUser() {}
 		NUser(server::User user) {
 			avatarUrl = user.avatar_url();
 			createdAt = user.created_at();

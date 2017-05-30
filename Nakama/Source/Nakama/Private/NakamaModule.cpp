@@ -14,16 +14,16 @@
 * limitations under the License.
 */
 
-#include "NakamaPrivatePCH.h"
+#include "NakamaModule.h"
 
-#include "Engine.h"
+#include "Engine/Engine.h"
 #include "Engine/EngineTypes.h"
 
-#include "NakamaModule.h"
 #include "ModuleManager.h"
 
 IMPLEMENT_MODULE(UNakamaModule, Nakama)
 
+DECLARE_LOG_CATEGORY_EXTERN(LogNakama, Log, All);
 DEFINE_LOG_CATEGORY(LogNakama);
 
 void UNakamaModule::StartupModule()

@@ -24,6 +24,7 @@ using namespace server;
 
 namespace Nakama {
 
+	// OnSuccess returns: NMatch*
 	class NAKAMA_API NMatchCreateMessage : public INMessage
 	{
 

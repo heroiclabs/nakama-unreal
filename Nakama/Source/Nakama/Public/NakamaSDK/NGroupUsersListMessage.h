@@ -24,6 +24,7 @@ using namespace server;
 
 namespace Nakama {
 
+	// OnSuccess returns: NResultSet<NGroupUser>*
 	class NAKAMA_API NGroupUsersListMessage : public INMessage
 	{
 	private:

@@ -24,6 +24,7 @@ namespace Nakama {
 	class NAKAMA_API NMatch {
 
 	public:
+		NMatch() {}
 		NMatch(server::TMatch message) : 
 			self(NUserPresence(message.self()))
 		{

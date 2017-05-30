@@ -24,6 +24,7 @@ using namespace server;
 
 namespace Nakama {
 
+	// OnSuccess returns: NResultSet<NUser>*
 	class NAKAMA_API NUsersFetchMessage : public INMessage
 	{
 	private:

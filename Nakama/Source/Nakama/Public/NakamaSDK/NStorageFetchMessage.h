@@ -24,6 +24,7 @@ using namespace server;
 
 namespace Nakama {
 
+	// OnSuccess returns: NResultSet<NStorageData>*
 	class NAKAMA_API NStorageFetchMessage : public INMessage
 	{
 	private:

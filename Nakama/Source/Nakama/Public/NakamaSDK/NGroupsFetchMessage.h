@@ -24,6 +24,7 @@ using namespace server;
 
 namespace Nakama {
 
+	// OnSuccess returns: NResultSet<NGroup>*
 	class NAKAMA_API NGroupsFetchMessage : public INMessage
 	{
 	private:

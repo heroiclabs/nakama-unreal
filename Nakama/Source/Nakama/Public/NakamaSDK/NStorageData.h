@@ -26,6 +26,7 @@ namespace Nakama {
 	class NAKAMA_API NStorageData {
 
 	public:
+		NStorageData() {}
 		NStorageData(TStorageData::StorageData &message) {
 			bucket = message.bucket();
 			collection = message.collection();

@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
+#include "NClient.h"
+
 #ifdef __UNREAL__
-// NB: needs to be first for unreal to be happy
-#include "Nakama/Private/NakamaPrivatePCH.h"
 #include "Nakama/Private/NUnrealTransport.h"
 #endif
-
-#include "NClient.h"
 
 #include "NibbleAndAHalf/base64.h"
 

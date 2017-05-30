@@ -25,6 +25,7 @@ using namespace server;
 
 namespace Nakama {
 
+	// OnSuccess returns: NResultSet<NFriend>*
 	class NAKAMA_API NFriendsListMessage : public INMessage
 	{
 

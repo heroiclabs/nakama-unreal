@@ -20,13 +20,31 @@
 
 #pragma once
 
-#include "NakamaPrivatePCH.h"
-
 #include "Defines.h"
 #include "NLogger.h"
 
 #include <functional>
 #include <string>
+
+#if PLATFORM_WINDOWS
+#include "AllowWindowsPlatformTypes.h"
+#endif
+
+#define UI UI_ST
+#ifndef LWS_INCLUDED
+#include "libwebsockets.h"
+#define LWS_INCLUDED
+#endif
+#undef UI
+
+#if PLATFORM_WINDOWS
+#include "HideWindowsPlatformTypes.h"
+#endif
+
+typedef struct lws_context				WebSocketInternalContext;
+typedef struct lws						WebSocketInternal;
+typedef struct lws_protocols			WebSocketInternalProtocol;
+typedef enum lws_callback_reasons		WebSocketInternalCallback;
 
 namespace Nakama {
 

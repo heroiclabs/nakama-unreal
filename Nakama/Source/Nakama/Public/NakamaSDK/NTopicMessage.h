@@ -28,6 +28,7 @@ namespace Nakama {
 	class NAKAMA_API NTopicMessage {
 
 	public:
+		NTopicMessage() {}
 		NTopicMessage(TopicMessage message) : 
 			topic(NTopicId(message.topic()))
 		{

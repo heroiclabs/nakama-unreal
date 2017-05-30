@@ -23,6 +23,7 @@ namespace Nakama {
 	class NAKAMA_API NGroup {
 
 	public:
+		NGroup() {}
 		NGroup(server::Group message)
 		{
 			id = message.id();

@@ -26,6 +26,7 @@ namespace Nakama {
 	class NAKAMA_API NGroupUser {
 
 	public:
+		NGroupUser() {}
 		NGroupUser(server::GroupUser message) : 
 			userInfo(message.user()) {
 

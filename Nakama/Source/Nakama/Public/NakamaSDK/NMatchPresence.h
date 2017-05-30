@@ -26,6 +26,7 @@ namespace Nakama {
 	class NAKAMA_API NMatchPresence {
 
 	public:
+		NMatchPresence() {}
 		NMatchPresence(MatchPresence message)
 		{
 			id = message.match_id();

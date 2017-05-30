@@ -24,6 +24,7 @@ using namespace server;
 
 namespace Nakama {
 
+	// OnSuccess returns: NTopic*
 	class NAKAMA_API NTopicJoinMessage : public INMessage
 	{
 	private:

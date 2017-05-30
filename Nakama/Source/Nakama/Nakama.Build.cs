@@ -6,8 +6,9 @@ using UnrealBuildTool;
 
 public class Nakama : ModuleRules
 {
-	public Nakama(TargetInfo Target)
+	public Nakama(ReadOnlyTargetRules Target) : base(Target)
 	{
+        PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
         PublicDependencyModuleNames.AddRange(
             new string[] {
@@ -20,8 +21,7 @@ public class Nakama : ModuleRules
         PrivateDependencyModuleNames.AddRange(
             new string[] {
                 "HTTP",
-                "libWebSockets",
-                "SSL"
+                "libWebSockets"
             }
         );
 
@@ -38,13 +38,11 @@ public class Nakama : ModuleRules
         switch (Target.Platform)
         {
             case UnrealTargetPlatform.Win32:
-                break;
+            case UnrealTargetPlatform.Linux:
             case UnrealTargetPlatform.Win64:
+                PrivateDependencyModuleNames.Add("SSL");
                 break;
             case UnrealTargetPlatform.Mac:
-                bUseRTTI = true; // turn on RTTI
-                break;
-            case UnrealTargetPlatform.Linux:
                 break;
             case UnrealTargetPlatform.Android:
             case UnrealTargetPlatform.IOS:
@@ -59,8 +57,17 @@ public class Nakama : ModuleRules
         LoadProtobufLib(Target);
     }
 
-    private bool LoadProtobufLib(TargetInfo Target)
+    private bool LoadProtobufLib(ReadOnlyTargetRules Target)
     {
+        Definitions.AddRange(
+                new string[]
+                {
+                    "GOOGLE_PROTOBUF_NO_RTTI",
+                    "NDEBUG",
+                    "GOOGLE_PROTOBUF_CMAKE_BUILD",
+                    "PROTOBUF_INLINE_NOT_IN_HEADERS=0"
+                });
+
         bool isLibrarySupported = false;
 
         if ((Target.Platform == UnrealTargetPlatform.Win32) || (Target.Platform == UnrealTargetPlatform.Win64))
@@ -76,14 +83,28 @@ public class Nakama : ModuleRules
 
             PublicAdditionalLibraries.Add("libprotobuf.lib");
 
+            Definitions.Add("_WINDOWS");
+            if (Target.Platform == UnrealTargetPlatform.Win64)
+                Definitions.Add("__x86_64__");
+
+        }
+        else if (Target.Platform == UnrealTargetPlatform.Mac)
+        {
+            isLibrarySupported = true;
+
+            string bin_path = "osxx64";
+            string protobuf_lib_directory_full_path = System.IO.Path.Combine(ThirdPartyPath, "lib", bin_path);
+
+            PublicLibraryPaths.Add(protobuf_lib_directory_full_path);
+
+            // XXX: For some reason, we have to add the full path to the .a file here or it is not found :(
+            PublicAdditionalLibraries.Add(protobuf_lib_directory_full_path + "/libprotobuf.a");
+
             Definitions.AddRange(
                 new string[]
                 {
-                    ((Target.Platform == UnrealTargetPlatform.Win64) ? "WIN64" : "WIN32"),
-                    "_WINDOWS",
-                    "NDEBUG",
-                    "GOOGLE_PROTOBUF_CMAKE_BUILD",
-                    "PROTOBUF_INLINE_NOT_IN_HEADERS=0"
+                    "_MAC",
+                    "__x86_64__",
                 });
 
         }

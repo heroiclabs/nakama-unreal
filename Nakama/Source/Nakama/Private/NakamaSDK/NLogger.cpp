@@ -14,14 +14,14 @@
 * limitations under the License.
 */
 
+#include "NLogger.h"
+
 #ifdef __UNREAL__
-#include "Nakama/Private/NakamaPrivatePCH.h"
 #include "NUnrealLogSink.h"
 #else
 #include "NConsoleLogSink.h"
 #endif
 
-#include "NLogger.h"
 #include <string>
 
 namespace Nakama {

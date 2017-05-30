@@ -17,8 +17,8 @@
 #pragma once
 
 #include "INTransport.h"
+#include "Http.h"
 #include "NWebSocket.h"
-#include "NakamaPrivatePCH.h"
 
 namespace Nakama {
 

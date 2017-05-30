@@ -25,6 +25,7 @@ namespace Nakama {
 	class NAKAMA_API NUserPresence {
 
 	public:
+		NUserPresence() {}
 		NUserPresence(server::UserPresence message)
 		{
 			userId = message.user_id();

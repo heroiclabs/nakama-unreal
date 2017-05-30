@@ -27,6 +27,7 @@ namespace Nakama {
 	class NAKAMA_API NTopicId {
 
 	public:
+		NTopicId() {}
 		NTopicId(TopicId message)
 		{
 			switch (message.id_case())

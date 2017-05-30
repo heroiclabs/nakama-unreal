@@ -24,6 +24,7 @@ namespace Nakama {
 	class NAKAMA_API NSelf {
 
 	public:
+		NSelf() {}
 		NSelf(server::Self message) :
 			userInfo(message.user()) {
 

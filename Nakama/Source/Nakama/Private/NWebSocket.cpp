@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-#include "NakamaPrivatePCH.h"
 #include "NWebSocket.h"
+
+#ifndef PLATFORM_MAC
 #include "Ssl.h"
+#endif
 
 #include <string>
 
@@ -148,9 +150,10 @@ namespace Nakama {
 
 	void NWebSocket::HandlePacket()
 	{
-		lws_service(Context, 0);
-		lws_callback_on_writable_all_protocol(Context, &Protocols[0]);
-
+		if (Context) {
+			lws_service(Context, 0);
+			lws_callback_on_writable_all_protocol(Context, &Protocols[0]);
+		}
 	}
 
 	void NWebSocket::Flush()
@@ -261,8 +264,12 @@ namespace Nakama {
 		case LWS_CALLBACK_OPENSSL_LOAD_EXTRA_CLIENT_VERIFY_CERTS:
 		case LWS_CALLBACK_OPENSSL_LOAD_EXTRA_SERVER_VERIFY_CERTS:
 		{
+			// XXX: SSL not currently supported on Mac - HTTP and SSL modules collide with each other.
+			// XXX: Could maybe support this by direct use of OpenSSL?
+#ifndef PLATFORM_MAC
 			SSL_CTX* SslContext = reinterpret_cast<SSL_CTX*>(User);
 			FSslModule::Get().GetCertificateManager().AddCertificatesToSslContext(SslContext);
+#endif
 			break;
 		}
 		case LWS_CALLBACK_CLIENT_ESTABLISHED:

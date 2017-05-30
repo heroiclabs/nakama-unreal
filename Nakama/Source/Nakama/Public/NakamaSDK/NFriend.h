@@ -26,6 +26,7 @@ namespace Nakama {
 	class NAKAMA_API NFriend {
 
 	public:
+		NFriend() {}
 		NFriend(server::Friend message) :
 			userInfo(message.user()) {
 
