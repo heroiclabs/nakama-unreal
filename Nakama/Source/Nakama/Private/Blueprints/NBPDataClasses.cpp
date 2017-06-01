@@ -273,3 +273,43 @@ UNBPTopicPresence* UNBPTopicPresence::From(NTopicPresence data)
 	bpItem->Wrapped = data;
 	return bpItem;
 }
+
+// ------------------------- NLeaderboard -------------------------
+
+UNBPLeaderboard* UNBPLeaderboard::From(NLeaderboard data)
+{
+	auto bpItem = NewObject<UNBPLeaderboard>();
+	bpItem->Wrapped = data;
+	return bpItem;
+}
+
+TArray<UNBPLeaderboard*> UNBPLeaderboard::FromResultSet(NResultSet<NLeaderboard>* resultSet)
+{
+	TArray<UNBPLeaderboard*> rVal;
+	auto results = resultSet->GetResults();
+	for (int i = 0, maxI = results.size(); i < maxI; i++)
+	{
+		rVal.Add(UNBPLeaderboard::From(results[i]));
+	}
+	return rVal;
+}
+
+// ------------------------- NLeaderboardRecord -------------------------
+
+UNBPLeaderboardRecord* UNBPLeaderboardRecord::From(NLeaderboardRecord data)
+{
+	auto bpItem = NewObject<UNBPLeaderboardRecord>();
+	bpItem->Wrapped = data;
+	return bpItem;
+}
+
+TArray<UNBPLeaderboardRecord*> UNBPLeaderboardRecord::FromResultSet(NResultSet<NLeaderboardRecord>* resultSet)
+{
+	TArray<UNBPLeaderboardRecord*> rVal;
+	auto results = resultSet->GetResults();
+	for (int i = 0, maxI = results.size(); i < maxI; i++)
+	{
+		rVal.Add(UNBPLeaderboardRecord::From(results[i]));
+	}
+	return rVal;
+}

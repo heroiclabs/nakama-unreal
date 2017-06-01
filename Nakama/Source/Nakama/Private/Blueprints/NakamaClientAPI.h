@@ -23,11 +23,11 @@
 
 DECLARE_DYNAMIC_DELEGATE(FDelegateOnSuccess);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FDelegateOnFail, UNBPError*, error);
-DECLARE_DYNAMIC_DELEGATE_TwoParams(FDelegateOnSuccess_FriendsList, TArray<UNBPFriend*>, friends, UNBPCursor*, cursor);
+DECLARE_DYNAMIC_DELEGATE_TwoParams(FDelegateOnSuccess_FriendList, TArray<UNBPFriend*>, friends, UNBPCursor*, cursor);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FDelegateOnSuccess_Self, UNBPSelf*, playerSelf);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FDelegateOnSuccess_Group, UNBPGroup*, group);
-DECLARE_DYNAMIC_DELEGATE_TwoParams(FDelegateOnSuccess_GroupsList, TArray<UNBPGroup*>, groups, UNBPCursor*, cursor);
-DECLARE_DYNAMIC_DELEGATE_TwoParams(FDelegateOnSuccess_GroupUsersList, TArray<UNBPGroupUser*>, users, UNBPCursor*, cursor);
+DECLARE_DYNAMIC_DELEGATE_TwoParams(FDelegateOnSuccess_GroupList, TArray<UNBPGroup*>, groups, UNBPCursor*, cursor);
+DECLARE_DYNAMIC_DELEGATE_TwoParams(FDelegateOnSuccess_GroupUserList, TArray<UNBPGroupUser*>, users, UNBPCursor*, cursor);
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FDelegateOnSuccess_UsersList, TArray<UNBPUser*>, users, UNBPCursor*, cursor);
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FDelegateOnSuccess_StorageKeyList, TArray<UNBPStorageKey*>, keys, UNBPCursor*, cursor);
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FDelegateOnSuccess_StorageDataList, TArray<UNBPStorageData*>, data, UNBPCursor*, cursor);
@@ -35,6 +35,9 @@ DECLARE_DYNAMIC_DELEGATE_OneParam(FDelegateOnSuccess_Match, UNBPMatch*, match);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FDelegateOnSuccess_Topic, UNBPTopic*, topic);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FDelegateOnSuccess_TopicMessageAck, UNBPTopicMessageAck*, ack);
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FDelegateOnSuccess_TopicMessageList, TArray<UNBPTopicMessage*>, messages, UNBPCursor*, cursor);
+DECLARE_DYNAMIC_DELEGATE_TwoParams(FDelegateOnSuccess_LeaderboardList, TArray<UNBPLeaderboard*>, leaderboards, UNBPCursor*, cursor);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FDelegateOnSuccess_LeaderboardRecord, UNBPLeaderboardRecord*, leaderboardRecord);
+DECLARE_DYNAMIC_DELEGATE_TwoParams(FDelegateOnSuccess_LeaderboardRecordList, TArray<UNBPLeaderboardRecord*>, leaderboardRecords, UNBPCursor*, cursor);
 
 /**
  * Handling for Authentication
@@ -129,7 +132,7 @@ public:
 		static UNBPManageFriendRequest* RemoveFriendByUserId(UNakamaComponent* nakama, FString userId, FDelegateOnSuccess onSuccess, FDelegateOnFail onFail);
 
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true"), Category = "Nakama|Friends")
-		static UNBPManageFriendRequest* ListFriends(UNakamaComponent* nakama, FDelegateOnSuccess_FriendsList onSuccess, FDelegateOnFail onFail);
+		static UNBPManageFriendRequest* ListFriends(UNakamaComponent* nakama, FDelegateOnSuccess_FriendList onSuccess, FDelegateOnFail onFail);
 
 private:
 	enum Mode { Add, Block, Remove, List };
@@ -138,7 +141,7 @@ private:
 	UPROPERTY() FString Id;
 	UPROPERTY() UNakamaComponent* NakamaRef;
 	UPROPERTY() FDelegateOnSuccess OnManageSuccess;
-	UPROPERTY() FDelegateOnSuccess_FriendsList OnListSuccess;
+	UPROPERTY() FDelegateOnSuccess_FriendList OnListSuccess;
 	UPROPERTY() FDelegateOnFail OnFail;
 };
 
@@ -303,13 +306,13 @@ public:
 	virtual void Activate() override;
 
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true"), Category = "Nakama|Group")
-		static UNBPListGroupsRequest* FetchGroups(UNakamaComponent* nakama, TArray<FString> groupIds, FDelegateOnSuccess_GroupsList onSuccess, FDelegateOnFail onFail);
+		static UNBPListGroupsRequest* FetchGroups(UNakamaComponent* nakama, TArray<FString> groupIds, FDelegateOnSuccess_GroupList onSuccess, FDelegateOnFail onFail);
 
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true"), Category = "Nakama|Group")
-		static UNBPListGroupsRequest* ListGroups(UNakamaComponent* nakama, int32 pageLimit, bool ascending, UNBPCursor* cursor, FString filterByLang, FDateTime filterByCreatedAt, int32 filterByCount, FDelegateOnSuccess_GroupsList onSuccess, FDelegateOnFail onFail);
+		static UNBPListGroupsRequest* ListGroups(UNakamaComponent* nakama, int32 pageLimit, bool ascending, UNBPCursor* cursor, FString filterByLang, FDateTime filterByCreatedAt, int32 filterByCount, FDelegateOnSuccess_GroupList onSuccess, FDelegateOnFail onFail);
 
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true"), Category = "Nakama|Group")
-		static UNBPListGroupsRequest* ListSelfGroups(UNakamaComponent* nakama, FDelegateOnSuccess_GroupsList onSuccess, FDelegateOnFail onFail);
+		static UNBPListGroupsRequest* ListSelfGroups(UNakamaComponent* nakama, FDelegateOnSuccess_GroupList onSuccess, FDelegateOnFail onFail);
 
 private:
 	enum Mode { Fetch, List, SelfList };
@@ -323,7 +326,7 @@ private:
 	UPROPERTY() FDateTime FilterByCreatedAt;
 	UPROPERTY() int32 FilterByCount;
 	UPROPERTY() UNakamaComponent* NakamaRef;
-	UPROPERTY() FDelegateOnSuccess_GroupsList OnSuccess;
+	UPROPERTY() FDelegateOnSuccess_GroupList OnSuccess;
 	UPROPERTY() FDelegateOnFail OnFail;
 };
 
@@ -375,7 +378,7 @@ public:
 		static UNBPManageGroupUsersRequest* PromoteGroupUser(UNakamaComponent* nakama, FString groupId, FString userId, FDelegateOnSuccess onSuccess, FDelegateOnFail onFail);
 
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true"), Category = "Nakama|Group Users")
-		static UNBPManageGroupUsersRequest* ListGroupUsers(UNakamaComponent* nakama, FString groupId, FDelegateOnSuccess_GroupUsersList onSuccess, FDelegateOnFail onFail);
+		static UNBPManageGroupUsersRequest* ListGroupUsers(UNakamaComponent* nakama, FString groupId, FDelegateOnSuccess_GroupUserList onSuccess, FDelegateOnFail onFail);
 
 private:
 	enum Mode { Add, Kick, Promote, List };
@@ -385,7 +388,7 @@ private:
 	UPROPERTY() FString UserId;
 	UPROPERTY() UNakamaComponent* NakamaRef;
 	UPROPERTY() FDelegateOnSuccess OnManageSuccess;
-	UPROPERTY() FDelegateOnSuccess_GroupUsersList OnListSuccess;
+	UPROPERTY() FDelegateOnSuccess_GroupUserList OnListSuccess;
 	UPROPERTY() FDelegateOnFail OnFail;
 };
 
@@ -554,5 +557,74 @@ private:
 	UPROPERTY() FDelegateOnSuccess OnLeaveSuccess;
 	UPROPERTY() FDelegateOnSuccess_TopicMessageAck OnSendSuccess;
 	UPROPERTY() FDelegateOnSuccess_TopicMessageList OnListSuccess;
+	UPROPERTY() FDelegateOnFail OnFail;
+};
+
+
+/**
+* Handling for Leaderboards
+*/
+
+UCLASS()
+class UNBPListLeaderboardsRequest : public UOnlineBlueprintCallProxyBase
+{
+	GENERATED_BODY()
+
+public:
+	virtual void Activate() override;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true"), Category = "Nakama|Leaderboard")
+		static UNBPListLeaderboardsRequest* ListLeaderboards(UNakamaComponent* nakama, UNBPCursor* cursor, int32 limit, FDelegateOnSuccess_LeaderboardList onSuccess, FDelegateOnFail onFail);
+
+private:
+	UPROPERTY() UNBPCursor* Cursor = nullptr;
+	UPROPERTY() int32 Limit;
+	UPROPERTY() UNakamaComponent* NakamaRef;
+	UPROPERTY() FDelegateOnSuccess_LeaderboardList OnSuccess;
+	UPROPERTY() FDelegateOnFail OnFail;
+};
+
+
+/**
+* Handling for LeaderboardRecords
+*/
+
+UCLASS()
+class UNBPLeaderboardRecordsRequest : public UOnlineBlueprintCallProxyBase
+{
+	GENERATED_BODY()
+
+public:
+	virtual void Activate() override;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true"), Category = "Nakama|Leaderboard Record")
+		static UNBPLeaderboardRecordsRequest* FetchRecords(UNakamaComponent* nakama, FString leaderboardId, UNBPCursor* cursor, int32 limit, FDelegateOnSuccess_LeaderboardRecordList onSuccess, FDelegateOnFail onFail);
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true"), Category = "Nakama|Leaderboard Record")
+		static UNBPLeaderboardRecordsRequest* ListRecords(UNakamaComponent* nakama, FString leaderboardId, TArray<FString> ownerIdsFilter, FString langFilter, FString locationFilter, FString timezoneFilter, UNBPCursor* cursor, int32 limit, FDelegateOnSuccess_LeaderboardRecordList onSuccess, FDelegateOnFail onFail);
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true"), Category = "Nakama|Leaderboard Record")
+		static UNBPLeaderboardRecordsRequest* WriteRecord(UNakamaComponent* nakama, FString leaderboardId, FString location, FString timezone, FString metadata, int32 setValue, int32 bestValue, int32 incr, int32 decr, FDelegateOnSuccess_LeaderboardRecord onSuccess, FDelegateOnFail onFail);
+
+private:
+	enum Mode { Fetch, List, Write };
+
+	Mode mode;
+
+	UPROPERTY() FString LeaderboardId;
+	UPROPERTY() TArray<FString> OwnerIds;
+	UPROPERTY() FString Location;
+	UPROPERTY() FString Timezone;
+	UPROPERTY() FString Metadata;
+	UPROPERTY() FString Lang;
+	UPROPERTY() int32 Set;
+	UPROPERTY() int32 Best;
+	UPROPERTY() int32 Incr;
+	UPROPERTY() int32 Decr;
+	UPROPERTY() UNBPCursor* Cursor = nullptr;
+	UPROPERTY() int32 Limit;
+	UPROPERTY() UNakamaComponent* NakamaRef;
+	UPROPERTY() FDelegateOnSuccess_LeaderboardRecordList OnListFetchSuccess;
+	UPROPERTY() FDelegateOnSuccess_LeaderboardRecord OnWriteSuccess;
 	UPROPERTY() FDelegateOnFail OnFail;
 };

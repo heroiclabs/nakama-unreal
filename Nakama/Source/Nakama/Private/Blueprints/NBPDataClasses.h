@@ -37,6 +37,8 @@
 #include "NakamaSDK/NTopicMessage.h"
 #include "NakamaSDK/NTopicMessageAck.h"
 #include "NakamaSDK/NTopicPresence.h"
+#include "NakamaSDK/NLeaderboard.h"
+#include "NakamaSDK/NLeaderboardRecord.h"
 #include "NBPDataClasses.generated.h"
 
 #define FROM_NAKAMA_DATE(date) FDateTime::FromUnixTimestamp(date/1000)
@@ -680,4 +682,99 @@ public:
 
 private:
 	NTopicPresence Wrapped;
+};
+
+// ------------------------- NLeaderboard -------------------------
+
+UCLASS(BlueprintType)
+class UNBPLeaderboard : public UObject
+{
+	GENERATED_BODY()
+
+public:
+	static UNBPLeaderboard* From(NLeaderboard data);
+
+	static TArray<UNBPLeaderboard*> FromResultSet(NResultSet<NLeaderboard>* resultSet);
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Leaderboard")
+		FString GetId() { return UTF8_TO_TCHAR(Wrapped.GetId().c_str()); }
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Leaderboard")
+		bool IsAuthoritative() { return Wrapped.IsAuthoritative(); }
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Leaderboard")
+		int32 GetSort() { return Wrapped.GetSort(); }
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Leaderboard")
+		int32 GetCount() { return Wrapped.GetCount(); }
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Leaderboard")
+		FString GetResetSchedule() { return UTF8_TO_TCHAR(Wrapped.GetResetSchedule().c_str()); }
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Leaderboard")
+		FString GetMetadata() { return UTF8_TO_TCHAR(Wrapped.GetMetadata().c_str()); }
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Leaderboard")
+		FString GetNextId() { return UTF8_TO_TCHAR(Wrapped.GetNextId().c_str()); }
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Leaderboard")
+		FString GetPrevId() { return UTF8_TO_TCHAR(Wrapped.GetPrevId().c_str()); }
+
+private:
+	NLeaderboard Wrapped;
+};
+
+// ------------------------- NLeaderboardRecord -------------------------
+
+UCLASS(BlueprintType)
+class UNBPLeaderboardRecord : public UObject
+{
+	GENERATED_BODY()
+
+public:
+	static UNBPLeaderboardRecord* From(NLeaderboardRecord data);
+
+	static TArray<UNBPLeaderboardRecord*> FromResultSet(NResultSet<NLeaderboardRecord>* resultSet);
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Leaderboard Record")
+		FString GetLeaderboardId() { return UTF8_TO_TCHAR(Wrapped.GetLeaderboardId().c_str()); }
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Leaderboard Record")
+		FString GetOwnerId() { return UTF8_TO_TCHAR(Wrapped.GetOwnerId().c_str()); }
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Leaderboard Record")
+		FString GetHandle() { return UTF8_TO_TCHAR(Wrapped.GetHandle().c_str()); }
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Leaderboard Record")
+		FString GetLang() { return UTF8_TO_TCHAR(Wrapped.GetLang().c_str()); }
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Leaderboard Record")
+		FString GetLocation() { return UTF8_TO_TCHAR(Wrapped.GetLocation().c_str()); }
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Leaderboard Record")
+		FString GetTimezone() { return UTF8_TO_TCHAR(Wrapped.GetTimezone().c_str()); }
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Leaderboard Record")
+		int32 GetRank() { return Wrapped.GetRank(); }
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Leaderboard Record")
+		int32 GetScore() { return Wrapped.GetScore(); }
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Leaderboard Record")
+		int32 GetNumScore() { return Wrapped.GetNumScore(); }
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Leaderboard Record")
+		FString GetMetadata() { return UTF8_TO_TCHAR(Wrapped.GetMetadata().c_str()); }
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Leaderboard Record")
+		int32 GetRankedAt() { return Wrapped.GetRankedAt(); }
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Leaderboard Record")
+		int32 GetUpdatedAt() { return Wrapped.GetUpdatedAt(); }
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Leaderboard Record")
+		int32 GetExpiresAt() { return Wrapped.GetExpiresAt(); }
+
+private:
+	NLeaderboardRecord Wrapped;
 };

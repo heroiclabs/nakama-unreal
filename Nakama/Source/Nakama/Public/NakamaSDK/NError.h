@@ -21,22 +21,49 @@
 using namespace server;
 
 namespace Nakama {
+	
+	enum NAKAMA_API ErrorCode {
+		Unknown = 0,
+		RuntimeException,
+		UnrecognizedPayload,
+		MissingPayload,
+		BadInput,
+		AuthError,
+		UserLinkInuse,
+		UserLinkProviderUnavailable,
+		UserLinkDisallowed,
+		UserHandleInuse,
+		GroupNameInuse,
+		StorageFetchDisallowed,
+		MatchNotFound
+	};
 
 	class NAKAMA_API NError {
 
 	public:
 		NError(std::string message = std::string()) : 
-			message(message) {}
+			message(message), code(ErrorCode::Unknown) {}
 		NError(const AuthenticateResponse_Error error) : 
-			message(error.reason()) {}
+			message(error.message()) {
+			auto c = error.code();
+			if (c >= Unknown && c <= MatchNotFound) code = (ErrorCode)c;
+			else code = ErrorCode::Unknown;
+		}
+		NError(server::Error error) :
+			message(error.message()) {
+			auto c = error.code();
+			if (c >= Unknown && c <= MatchNotFound) code = (ErrorCode)c;
+			else code = ErrorCode::Unknown;
+		}
 
 		~NError() {}
 
 		std::string GetErrorMessage() { return message; }
+		ErrorCode GetErrorCode() { return code; }
 
 	private:
 		std::string message;
-
+		ErrorCode code;
 	};
 
 }

@@ -48,6 +48,10 @@
 #include "NakamaSDK/NTopicLeaveMessage.h"
 #include "NakamaSDK/NTopicMessageSendMessage.h"
 #include "NakamaSDK/NTopicMessagesListMessage.h"
+#include "NakamaSDK/NLeaderboardRecordsFetchMessage.h"
+#include "NakamaSDK/NLeaderboardRecordsListMessage.h"
+#include "NakamaSDK/NLeaderboardRecordWriteMessage.h"
+#include "NakamaSDK/NLeaderboardsListMessage.h"
 #include "NakamaComponent.h"
 
 using namespace Nakama;
@@ -374,7 +378,7 @@ UNBPManageFriendRequest* UNBPManageFriendRequest::RemoveFriendByUserId(UNakamaCo
 	return proxy;
 }
 
-UNBPManageFriendRequest* UNBPManageFriendRequest::ListFriends(UNakamaComponent* nakama, FDelegateOnSuccess_FriendsList onSuccess, FDelegateOnFail onFail)
+UNBPManageFriendRequest* UNBPManageFriendRequest::ListFriends(UNakamaComponent* nakama, FDelegateOnSuccess_FriendList onSuccess, FDelegateOnFail onFail)
 {
 	auto proxy = NewObject<UNBPManageFriendRequest>();
 	proxy->mode = Mode::List;
@@ -944,7 +948,7 @@ void UNBPManageGroupsRequest::Activate()
 
 // ------------------------- UNBPListGroupsRequest -------------------------
 
-UNBPListGroupsRequest* UNBPListGroupsRequest::FetchGroups(UNakamaComponent* nakama, TArray<FString> groupIds, FDelegateOnSuccess_GroupsList onSuccess, FDelegateOnFail onFail)
+UNBPListGroupsRequest* UNBPListGroupsRequest::FetchGroups(UNakamaComponent* nakama, TArray<FString> groupIds, FDelegateOnSuccess_GroupList onSuccess, FDelegateOnFail onFail)
 {
 	auto proxy = NewObject<UNBPListGroupsRequest>();
 	proxy->mode = Mode::Fetch;
@@ -955,7 +959,7 @@ UNBPListGroupsRequest* UNBPListGroupsRequest::FetchGroups(UNakamaComponent* naka
 	return proxy;
 }
 
-UNBPListGroupsRequest* UNBPListGroupsRequest::ListGroups(UNakamaComponent* nakama, int32 pageLimit, bool ascending, UNBPCursor* cursor, FString filterByLang, FDateTime filterByCreatedAt, int32 filterByCount, FDelegateOnSuccess_GroupsList onSuccess, FDelegateOnFail onFail)
+UNBPListGroupsRequest* UNBPListGroupsRequest::ListGroups(UNakamaComponent* nakama, int32 pageLimit, bool ascending, UNBPCursor* cursor, FString filterByLang, FDateTime filterByCreatedAt, int32 filterByCount, FDelegateOnSuccess_GroupList onSuccess, FDelegateOnFail onFail)
 {
 	auto proxy = NewObject<UNBPListGroupsRequest>();
 	proxy->mode = Mode::List;
@@ -971,7 +975,7 @@ UNBPListGroupsRequest* UNBPListGroupsRequest::ListGroups(UNakamaComponent* nakam
 	return proxy;
 }
 
-UNBPListGroupsRequest* UNBPListGroupsRequest::ListSelfGroups(UNakamaComponent* nakama, FDelegateOnSuccess_GroupsList onSuccess, FDelegateOnFail onFail)
+UNBPListGroupsRequest* UNBPListGroupsRequest::ListSelfGroups(UNakamaComponent* nakama, FDelegateOnSuccess_GroupList onSuccess, FDelegateOnFail onFail)
 {
 	auto proxy = NewObject<UNBPListGroupsRequest>();
 	proxy->mode = Mode::SelfList;
@@ -1132,7 +1136,7 @@ UNBPManageGroupUsersRequest* UNBPManageGroupUsersRequest::PromoteGroupUser(UNaka
 	return proxy;
 }
 
-UNBPManageGroupUsersRequest* UNBPManageGroupUsersRequest::ListGroupUsers(UNakamaComponent* nakama, FString groupId, FDelegateOnSuccess_GroupUsersList onSuccess, FDelegateOnFail onFail)
+UNBPManageGroupUsersRequest* UNBPManageGroupUsersRequest::ListGroupUsers(UNakamaComponent* nakama, FString groupId, FDelegateOnSuccess_GroupUserList onSuccess, FDelegateOnFail onFail)
 {
 	auto proxy = NewObject<UNBPManageGroupUsersRequest>();
 	proxy->mode = Mode::List;
@@ -1676,9 +1680,9 @@ void UNBPTopicRequest::Activate()
 		};
 
 		auto builder = NTopicMessagesListMessage::Builder();
-		builder.Cursor(Cursor->GetNCursor());
+		if (Cursor != nullptr) builder.Cursor(Cursor->GetNCursor());
+		if (Limit != 0) builder.Limit(Limit);
 		builder.Forward(Forward);
-		builder.Limit(Limit);
 		switch (TType) {
 		case TopicType::DirectMessage:
 			builder.TopicDirectMessage(TCHAR_TO_UTF8(*Id));
@@ -1690,6 +1694,185 @@ void UNBPTopicRequest::Activate()
 			builder.TopicGroup(TCHAR_TO_UTF8(*Id));
 			break;
 		}
+
+		auto message = builder.Build();
+		client->Send(message, success, fail);
+		break;
+	}
+	}
+}
+
+
+/**
+* Handling for Leaderboards
+*/
+
+// ------------------------- UNBPListLeaderboardsRequest -------------------------
+
+UNBPListLeaderboardsRequest* UNBPListLeaderboardsRequest::ListLeaderboards(UNakamaComponent* nakama, UNBPCursor* cursor, int32 limit, FDelegateOnSuccess_LeaderboardList onSuccess, FDelegateOnFail onFail)
+{
+	auto proxy = NewObject<UNBPListLeaderboardsRequest>();
+	proxy->Cursor = cursor;
+	proxy->Limit = limit;
+	proxy->NakamaRef = nakama;
+	proxy->OnSuccess = onSuccess;
+	proxy->OnFail = onFail;
+	return proxy;
+}
+
+void UNBPListLeaderboardsRequest::Activate()
+{
+	auto req = this;
+	auto client = NakamaRef != nullptr ? NakamaRef->GetClient() : nullptr;
+	if (client == nullptr) return;
+
+	auto fail = [req](NError error) {
+		if (req->OnFail.IsBound())
+			req->OnFail.Execute(UNBPError::From(error));
+	};
+
+	auto success = [req](void* obj) {
+		if (req->OnSuccess.IsBound()) {
+			auto rs = (NResultSet<NLeaderboard>*)obj;
+			req->OnSuccess.Execute(UNBPLeaderboard::FromResultSet(rs), UNBPCursor::From(rs->GetCursor()));
+		}
+	};
+
+	auto builder = NLeaderboardsListMessage::Builder();
+	if (Cursor != nullptr) builder.Cursor(Cursor->GetNCursor());
+	if (Limit != 0) builder.Limit(Limit);
+
+	auto message = builder.Build();
+	client->Send(message, success, fail);
+}
+
+
+/**
+* Handling for LeaderboardRecords
+*/
+
+// ------------------------- UNBPLeaderboardRecordsRequest -------------------------
+
+UNBPLeaderboardRecordsRequest* UNBPLeaderboardRecordsRequest::FetchRecords(UNakamaComponent* nakama, FString leaderboardId, UNBPCursor* cursor, int32 limit, FDelegateOnSuccess_LeaderboardRecordList onSuccess, FDelegateOnFail onFail)
+{
+	auto proxy = NewObject<UNBPLeaderboardRecordsRequest>();
+	proxy->mode = Mode::Fetch;
+	proxy->LeaderboardId = leaderboardId;
+	proxy->Cursor = cursor;
+	proxy->Limit = limit;
+	proxy->NakamaRef = nakama;
+	proxy->OnListFetchSuccess = onSuccess;
+	proxy->OnFail = onFail;
+	return proxy;
+}
+
+UNBPLeaderboardRecordsRequest* UNBPLeaderboardRecordsRequest::ListRecords(UNakamaComponent* nakama, FString leaderboardId, TArray<FString> ownerIdsFilter, FString langFilter, FString locationFilter, FString timezoneFilter, UNBPCursor* cursor, int32 limit, FDelegateOnSuccess_LeaderboardRecordList onSuccess, FDelegateOnFail onFail)
+{
+	auto proxy = NewObject<UNBPLeaderboardRecordsRequest>();
+	proxy->mode = Mode::List;
+	proxy->LeaderboardId = leaderboardId;
+	proxy->OwnerIds = ownerIdsFilter;
+	proxy->Lang = langFilter;
+	proxy->Location = locationFilter;
+	proxy->Timezone = timezoneFilter;
+	proxy->Cursor = cursor;
+	proxy->Limit = limit;
+	proxy->NakamaRef = nakama;
+	proxy->OnListFetchSuccess = onSuccess;
+	proxy->OnFail = onFail;
+	return proxy;
+}
+
+UNBPLeaderboardRecordsRequest* UNBPLeaderboardRecordsRequest::WriteRecord(UNakamaComponent* nakama, FString leaderboardId, FString location, FString timezone, FString metadata, int32 setValue, int32 bestValue, int32 incr, int32 decr, FDelegateOnSuccess_LeaderboardRecord onSuccess, FDelegateOnFail onFail)
+{
+	auto proxy = NewObject<UNBPLeaderboardRecordsRequest>();
+	proxy->mode = Mode::Write;
+	proxy->LeaderboardId = leaderboardId;
+	proxy->Location = location;
+	proxy->Timezone = timezone;
+	proxy->Metadata = metadata;
+	proxy->Set = setValue;
+	proxy->Best = bestValue;
+	proxy->Incr = incr;
+	proxy->Decr = decr;
+	proxy->NakamaRef = nakama;
+	proxy->OnWriteSuccess = onSuccess;
+	proxy->OnFail = onFail;
+	return proxy;
+}
+
+void UNBPLeaderboardRecordsRequest::Activate()
+{
+	auto req = this;
+	auto client = NakamaRef != nullptr ? NakamaRef->GetClient() : nullptr;
+	if (client == nullptr) return;
+
+	auto fail = [req](NError error) {
+		if (req->OnFail.IsBound())
+			req->OnFail.Execute(UNBPError::From(error));
+	};
+
+	switch (mode) {
+	case Mode::Fetch: {
+		auto success = [req](void* obj) {
+			if (req->OnListFetchSuccess.IsBound()) {
+				auto rs = (NResultSet<NLeaderboardRecord>*)obj;
+				req->OnListFetchSuccess.Execute(UNBPLeaderboardRecord::FromResultSet(rs), UNBPCursor::From(rs->GetCursor()));
+			}
+		};
+
+		auto builder = NLeaderboardRecordsFetchMessage::Builder(TCHAR_TO_UTF8(*LeaderboardId));
+		if (Cursor != nullptr) builder.Cursor(Cursor->GetNCursor());
+		if (Limit != 0) builder.Limit(Limit);
+
+		auto message = builder.Build();
+		client->Send(message, success, fail);
+		break;
+	}
+	case Mode::List: {
+		auto success = [req](void* obj) {
+			if (req->OnListFetchSuccess.IsBound()) {
+				auto rs = (NResultSet<NLeaderboardRecord>*)obj;
+				req->OnListFetchSuccess.Execute(UNBPLeaderboardRecord::FromResultSet(rs), UNBPCursor::From(rs->GetCursor()));
+			}
+		};
+
+		auto builder = NLeaderboardRecordsListMessage::Builder(TCHAR_TO_UTF8(*LeaderboardId));
+		if (OwnerIds.Num() > 0) {
+			std::vector<std::string> ids;
+			for (int i = 0; i < OwnerIds.Num(); i++) {
+				ids.push_back(TCHAR_TO_UTF8(*OwnerIds[i]));
+			}
+			builder.FilterByOwnerIds(ids);
+		}
+		if (!Lang.IsEmpty()) builder.FilterByLang(TCHAR_TO_UTF8(*Lang));
+		if (!Location.IsEmpty()) builder.FilterByLocation(TCHAR_TO_UTF8(*Location));
+		if (!Timezone.IsEmpty()) builder.FilterByTimezone(TCHAR_TO_UTF8(*Timezone));
+		if (Cursor != nullptr) builder.Cursor(Cursor->GetNCursor());
+		if (Limit != 0) builder.Limit(Limit);
+
+		auto message = builder.Build();
+		client->Send(message, success, fail);
+		break;
+	}
+	case Mode::Write: {
+		auto success = [req](void* obj) {
+			if (req->OnWriteSuccess.IsBound()) {
+				auto data = (NLeaderboardRecord*)obj;
+				req->OnWriteSuccess.Execute(UNBPLeaderboardRecord::From(*data));
+			}
+		};
+
+		auto builder = NLeaderboardRecordWriteMessage::Builder(TCHAR_TO_UTF8(*LeaderboardId));
+		if (!Location.IsEmpty()) builder.Location(TCHAR_TO_UTF8(*Location));
+		if (!Timezone.IsEmpty()) builder.Timezone(TCHAR_TO_UTF8(*Timezone));
+		if (!Metadata.IsEmpty()) builder.Metadata(TCHAR_TO_UTF8(*Metadata));
+
+		// XXX: We may need to switch these to some nullable type since 0 is likely valid here.  For now, supply all values.
+		builder.Set(Set);
+		builder.Best(Best);
+		builder.Increment(Incr);
+		builder.Decrement(Decr);
 
 		auto message = builder.Build();
 		client->Send(message, success, fail);

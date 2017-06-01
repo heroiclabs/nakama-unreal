@@ -250,7 +250,7 @@ namespace Nakama {
 		}
 
 		case Envelope::PayloadCase::kError: {
-			NError error = NError(message.error().reason());
+			NError error = NError(message.error());
 			if (callbacks) {
 				callbacks->OnError(error);
 			}
@@ -367,6 +367,37 @@ namespace Nakama {
 					users.push_back(NUser(msgUsers[i]));
 				}
 				callbacks->OnSuccess(new NResultSet<NUser>(users, NCursor()));
+			}
+			break;
+		}
+
+		case Envelope::PayloadCase::kLeaderboards: {
+			if (callbacks) {
+				auto msgLeaderboards = message.leaderboards().leaderboards();
+				auto leaderboards = std::vector<NLeaderboard>();
+				for (size_t i = 0, maxI = msgLeaderboards.size(); i < maxI; i++) {
+					leaderboards.push_back(NLeaderboard(msgLeaderboards[i]));
+				}
+				NCursor cursor = NCursor(message.leaderboards().cursor());
+				callbacks->OnSuccess(new NResultSet<NLeaderboard>(leaderboards, cursor));
+			}
+			break;
+		}
+
+		case Envelope::PayloadCase::kLeaderboardRecord: {
+			if (callbacks) callbacks->OnSuccess(new NLeaderboardRecord(message.leaderboard_record().record()));
+			break;
+		}
+
+		case Envelope::PayloadCase::kLeaderboardRecords: {
+			if (callbacks) {
+				auto msgRecords = message.leaderboard_records().records();
+				auto records = std::vector<NLeaderboardRecord>();
+				for (size_t i = 0, maxI = msgRecords.size(); i < maxI; i++) {
+					records.push_back(NLeaderboardRecord(msgRecords[i]));
+				}
+				NCursor cursor = NCursor(message.leaderboard_records().cursor());
+				callbacks->OnSuccess(new NResultSet<NLeaderboardRecord>(records, cursor));
 			}
 			break;
 		}

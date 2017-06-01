@@ -26,6 +26,7 @@
 #include <google/protobuf/message.h>
 #include <google/protobuf/repeated_field.h>
 #include <google/protobuf/extension_set.h>
+#include <google/protobuf/generated_enum_reflection.h>
 #include <google/protobuf/unknown_field_set.h>
 // @@protoc_insertion_point(includes)
 
@@ -49,6 +50,8 @@ class Friend;
 class Group;
 class GroupUser;
 class Heartbeat;
+class Leaderboard;
+class LeaderboardRecord;
 class Logout;
 class MatchData;
 class MatchPresence;
@@ -73,6 +76,14 @@ class TGroups;
 class TGroupsFetch;
 class TGroupsList;
 class TGroupsSelfList;
+class TLeaderboardRecord;
+class TLeaderboardRecordWrite;
+class TLeaderboardRecords;
+class TLeaderboardRecordsFetch;
+class TLeaderboardRecordsList;
+class TLeaderboardRecordsList_Owners;
+class TLeaderboards;
+class TLeaderboardsList;
 class TLink;
 class TMatch;
 class TMatchCreate;
@@ -108,6 +119,37 @@ class TopicPresence;
 class User;
 class UserPresence;
 
+enum Error_Code {
+  Error_Code_RUNTIME_EXCEPTION = 0,
+  Error_Code_UNRECOGNIZED_PAYLOAD = 1,
+  Error_Code_MISSING_PAYLOAD = 2,
+  Error_Code_BAD_INPUT = 3,
+  Error_Code_AUTH_ERROR = 4,
+  Error_Code_USER_LINK_INUSE = 5,
+  Error_Code_USER_LINK_PROVIDER_UNAVAILABLE = 6,
+  Error_Code_USER_UNLINK_DISALLOWED = 7,
+  Error_Code_USER_HANDLE_INUSE = 8,
+  Error_Code_GROUP_NAME_INUSE = 9,
+  Error_Code_STORAGE_FETCH_DISALLOWED = 10,
+  Error_Code_MATCH_NOT_FOUND = 11,
+  Error_Code_Error_Code_INT_MIN_SENTINEL_DO_NOT_USE_ = ::google::protobuf::kint32min,
+  Error_Code_Error_Code_INT_MAX_SENTINEL_DO_NOT_USE_ = ::google::protobuf::kint32max
+};
+bool Error_Code_IsValid(int value);
+const Error_Code Error_Code_Code_MIN = Error_Code_RUNTIME_EXCEPTION;
+const Error_Code Error_Code_Code_MAX = Error_Code_MATCH_NOT_FOUND;
+const int Error_Code_Code_ARRAYSIZE = Error_Code_Code_MAX + 1;
+
+const ::google::protobuf::EnumDescriptor* Error_Code_descriptor();
+inline const ::std::string& Error_Code_Name(Error_Code value) {
+  return ::google::protobuf::internal::NameOfEnum(
+    Error_Code_descriptor(), value);
+}
+inline bool Error_Code_Parse(
+    const ::std::string& name, Error_Code* value) {
+  return ::google::protobuf::internal::ParseNamedEnum<Error_Code>(
+    Error_Code_descriptor(), name, value);
+}
 // ===================================================================
 
 class Heartbeat : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.Heartbeat) */ {
@@ -257,24 +299,77 @@ class Error : public ::google::protobuf::Message /* @@protoc_insertion_point(cla
 
   // nested types ----------------------------------------------------
 
+  typedef Error_Code Code;
+  static const Code RUNTIME_EXCEPTION =
+    Error_Code_RUNTIME_EXCEPTION;
+  static const Code UNRECOGNIZED_PAYLOAD =
+    Error_Code_UNRECOGNIZED_PAYLOAD;
+  static const Code MISSING_PAYLOAD =
+    Error_Code_MISSING_PAYLOAD;
+  static const Code BAD_INPUT =
+    Error_Code_BAD_INPUT;
+  static const Code AUTH_ERROR =
+    Error_Code_AUTH_ERROR;
+  static const Code USER_LINK_INUSE =
+    Error_Code_USER_LINK_INUSE;
+  static const Code USER_LINK_PROVIDER_UNAVAILABLE =
+    Error_Code_USER_LINK_PROVIDER_UNAVAILABLE;
+  static const Code USER_UNLINK_DISALLOWED =
+    Error_Code_USER_UNLINK_DISALLOWED;
+  static const Code USER_HANDLE_INUSE =
+    Error_Code_USER_HANDLE_INUSE;
+  static const Code GROUP_NAME_INUSE =
+    Error_Code_GROUP_NAME_INUSE;
+  static const Code STORAGE_FETCH_DISALLOWED =
+    Error_Code_STORAGE_FETCH_DISALLOWED;
+  static const Code MATCH_NOT_FOUND =
+    Error_Code_MATCH_NOT_FOUND;
+  static inline bool Code_IsValid(int value) {
+    return Error_Code_IsValid(value);
+  }
+  static const Code Code_MIN =
+    Error_Code_Code_MIN;
+  static const Code Code_MAX =
+    Error_Code_Code_MAX;
+  static const int Code_ARRAYSIZE =
+    Error_Code_Code_ARRAYSIZE;
+  static inline const ::google::protobuf::EnumDescriptor*
+  Code_descriptor() {
+    return Error_Code_descriptor();
+  }
+  static inline const ::std::string& Code_Name(Code value) {
+    return Error_Code_Name(value);
+  }
+  static inline bool Code_Parse(const ::std::string& name,
+      Code* value) {
+    return Error_Code_Parse(name, value);
+  }
+
   // accessors -------------------------------------------------------
 
-  // optional string reason = 1;
-  void clear_reason();
-  static const int kReasonFieldNumber = 1;
-  const ::std::string& reason() const;
-  void set_reason(const ::std::string& value);
-  void set_reason(const char* value);
-  void set_reason(const char* value, size_t size);
-  ::std::string* mutable_reason();
-  ::std::string* release_reason();
-  void set_allocated_reason(::std::string* reason);
+  // optional int32 code = 1;
+  void clear_code();
+  static const int kCodeFieldNumber = 1;
+  ::google::protobuf::int32 code() const;
+  void set_code(::google::protobuf::int32 value);
+
+  // optional string message = 2;
+  void clear_message();
+  static const int kMessageFieldNumber = 2;
+  const ::std::string& message() const;
+  void set_message(const ::std::string& value);
+  void set_message(const char* value);
+  void set_message(const char* value, size_t size);
+  ::std::string* mutable_message();
+  ::std::string* release_message();
+  void set_allocated_message(::std::string* message);
 
   // @@protoc_insertion_point(class_scope:server.Error)
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
-  ::google::protobuf::internal::ArenaStringPtr reason_;
+  ::google::protobuf::internal::ArenaStringPtr message_;
+  ::google::protobuf::int32 code_;
   mutable int _cached_size_;
   friend void  protobuf_InitDefaults_api_2eproto_impl();
   friend void  protobuf_AddDesc_api_2eproto_impl();
@@ -907,21 +1002,27 @@ class AuthenticateResponse_Error : public ::google::protobuf::Message /* @@proto
 
   // accessors -------------------------------------------------------
 
-  // optional string reason = 1;
-  void clear_reason();
-  static const int kReasonFieldNumber = 1;
-  const ::std::string& reason() const;
-  void set_reason(const ::std::string& value);
-  void set_reason(const char* value);
-  void set_reason(const char* value, size_t size);
-  ::std::string* mutable_reason();
-  ::std::string* release_reason();
-  void set_allocated_reason(::std::string* reason);
+  // optional int32 code = 1;
+  void clear_code();
+  static const int kCodeFieldNumber = 1;
+  ::google::protobuf::int32 code() const;
+  void set_code(::google::protobuf::int32 value);
 
-  // optional .server.AuthenticateRequest request = 2;
+  // optional string message = 2;
+  void clear_message();
+  static const int kMessageFieldNumber = 2;
+  const ::std::string& message() const;
+  void set_message(const ::std::string& value);
+  void set_message(const char* value);
+  void set_message(const char* value, size_t size);
+  ::std::string* mutable_message();
+  ::std::string* release_message();
+  void set_allocated_message(::std::string* message);
+
+  // optional .server.AuthenticateRequest request = 3;
   bool has_request() const;
   void clear_request();
-  static const int kRequestFieldNumber = 2;
+  static const int kRequestFieldNumber = 3;
   const ::server::AuthenticateRequest& request() const;
   ::server::AuthenticateRequest* mutable_request();
   ::server::AuthenticateRequest* release_request();
@@ -931,8 +1032,9 @@ class AuthenticateResponse_Error : public ::google::protobuf::Message /* @@proto
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
-  ::google::protobuf::internal::ArenaStringPtr reason_;
+  ::google::protobuf::internal::ArenaStringPtr message_;
   ::server::AuthenticateRequest* request_;
+  ::google::protobuf::int32 code_;
   mutable int _cached_size_;
   friend void  protobuf_InitDefaults_api_2eproto_impl();
   friend void  protobuf_AddDesc_api_2eproto_impl();
@@ -1144,6 +1246,13 @@ class Envelope : public ::google::protobuf::Message /* @@protoc_insertion_point(
     kStorageRemove = 50,
     kStorageData = 51,
     kStorageKey = 52,
+    kLeaderboardsList = 53,
+    kLeaderboardRecordWrite = 54,
+    kLeaderboardRecordsFetch = 55,
+    kLeaderboardRecordsList = 56,
+    kLeaderboards = 57,
+    kLeaderboardRecord = 58,
+    kLeaderboardRecords = 59,
     PAYLOAD_NOT_SET = 0,
   };
 
@@ -1665,6 +1774,69 @@ class Envelope : public ::google::protobuf::Message /* @@protoc_insertion_point(
   ::server::TStorageKey* release_storage_key();
   void set_allocated_storage_key(::server::TStorageKey* storage_key);
 
+  // optional .server.TLeaderboardsList leaderboards_list = 53;
+  bool has_leaderboards_list() const;
+  void clear_leaderboards_list();
+  static const int kLeaderboardsListFieldNumber = 53;
+  const ::server::TLeaderboardsList& leaderboards_list() const;
+  ::server::TLeaderboardsList* mutable_leaderboards_list();
+  ::server::TLeaderboardsList* release_leaderboards_list();
+  void set_allocated_leaderboards_list(::server::TLeaderboardsList* leaderboards_list);
+
+  // optional .server.TLeaderboardRecordWrite leaderboard_record_write = 54;
+  bool has_leaderboard_record_write() const;
+  void clear_leaderboard_record_write();
+  static const int kLeaderboardRecordWriteFieldNumber = 54;
+  const ::server::TLeaderboardRecordWrite& leaderboard_record_write() const;
+  ::server::TLeaderboardRecordWrite* mutable_leaderboard_record_write();
+  ::server::TLeaderboardRecordWrite* release_leaderboard_record_write();
+  void set_allocated_leaderboard_record_write(::server::TLeaderboardRecordWrite* leaderboard_record_write);
+
+  // optional .server.TLeaderboardRecordsFetch leaderboard_records_fetch = 55;
+  bool has_leaderboard_records_fetch() const;
+  void clear_leaderboard_records_fetch();
+  static const int kLeaderboardRecordsFetchFieldNumber = 55;
+  const ::server::TLeaderboardRecordsFetch& leaderboard_records_fetch() const;
+  ::server::TLeaderboardRecordsFetch* mutable_leaderboard_records_fetch();
+  ::server::TLeaderboardRecordsFetch* release_leaderboard_records_fetch();
+  void set_allocated_leaderboard_records_fetch(::server::TLeaderboardRecordsFetch* leaderboard_records_fetch);
+
+  // optional .server.TLeaderboardRecordsList leaderboard_records_list = 56;
+  bool has_leaderboard_records_list() const;
+  void clear_leaderboard_records_list();
+  static const int kLeaderboardRecordsListFieldNumber = 56;
+  const ::server::TLeaderboardRecordsList& leaderboard_records_list() const;
+  ::server::TLeaderboardRecordsList* mutable_leaderboard_records_list();
+  ::server::TLeaderboardRecordsList* release_leaderboard_records_list();
+  void set_allocated_leaderboard_records_list(::server::TLeaderboardRecordsList* leaderboard_records_list);
+
+  // optional .server.TLeaderboards leaderboards = 57;
+  bool has_leaderboards() const;
+  void clear_leaderboards();
+  static const int kLeaderboardsFieldNumber = 57;
+  const ::server::TLeaderboards& leaderboards() const;
+  ::server::TLeaderboards* mutable_leaderboards();
+  ::server::TLeaderboards* release_leaderboards();
+  void set_allocated_leaderboards(::server::TLeaderboards* leaderboards);
+
+  // optional .server.TLeaderboardRecord leaderboard_record = 58;
+  bool has_leaderboard_record() const;
+  void clear_leaderboard_record();
+  static const int kLeaderboardRecordFieldNumber = 58;
+  const ::server::TLeaderboardRecord& leaderboard_record() const;
+  ::server::TLeaderboardRecord* mutable_leaderboard_record();
+  ::server::TLeaderboardRecord* release_leaderboard_record();
+  void set_allocated_leaderboard_record(::server::TLeaderboardRecord* leaderboard_record);
+
+  // optional .server.TLeaderboardRecords leaderboard_records = 59;
+  bool has_leaderboard_records() const;
+  void clear_leaderboard_records();
+  static const int kLeaderboardRecordsFieldNumber = 59;
+  const ::server::TLeaderboardRecords& leaderboard_records() const;
+  ::server::TLeaderboardRecords* mutable_leaderboard_records();
+  ::server::TLeaderboardRecords* release_leaderboard_records();
+  void set_allocated_leaderboard_records(::server::TLeaderboardRecords* leaderboard_records);
+
   PayloadCase payload_case() const;
   // @@protoc_insertion_point(class_scope:server.Envelope)
  private:
@@ -1719,6 +1891,13 @@ class Envelope : public ::google::protobuf::Message /* @@protoc_insertion_point(
   inline void set_has_storage_remove();
   inline void set_has_storage_data();
   inline void set_has_storage_key();
+  inline void set_has_leaderboards_list();
+  inline void set_has_leaderboard_record_write();
+  inline void set_has_leaderboard_records_fetch();
+  inline void set_has_leaderboard_records_list();
+  inline void set_has_leaderboards();
+  inline void set_has_leaderboard_record();
+  inline void set_has_leaderboard_records();
 
   inline bool has_payload() const;
   void clear_payload();
@@ -1779,6 +1958,13 @@ class Envelope : public ::google::protobuf::Message /* @@protoc_insertion_point(
     ::server::TStorageRemove* storage_remove_;
     ::server::TStorageData* storage_data_;
     ::server::TStorageKey* storage_key_;
+    ::server::TLeaderboardsList* leaderboards_list_;
+    ::server::TLeaderboardRecordWrite* leaderboard_record_write_;
+    ::server::TLeaderboardRecordsFetch* leaderboard_records_fetch_;
+    ::server::TLeaderboardRecordsList* leaderboard_records_list_;
+    ::server::TLeaderboards* leaderboards_;
+    ::server::TLeaderboardRecord* leaderboard_record_;
+    ::server::TLeaderboardRecords* leaderboard_records_;
   } payload_;
   mutable int _cached_size_;
   ::google::protobuf::uint32 _oneof_case_[1];
@@ -5847,12 +6033,24 @@ class UserPresence : public ::google::protobuf::Message /* @@protoc_insertion_po
   ::std::string* release_session_id();
   void set_allocated_session_id(::std::string* session_id);
 
+  // optional string handle = 3;
+  void clear_handle();
+  static const int kHandleFieldNumber = 3;
+  const ::std::string& handle() const;
+  void set_handle(const ::std::string& value);
+  void set_handle(const char* value);
+  void set_handle(const char* value, size_t size);
+  ::std::string* mutable_handle();
+  ::std::string* release_handle();
+  void set_allocated_handle(::std::string* handle);
+
   // @@protoc_insertion_point(class_scope:server.UserPresence)
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
   ::google::protobuf::internal::ArenaStringPtr user_id_;
   ::google::protobuf::internal::ArenaStringPtr session_id_;
+  ::google::protobuf::internal::ArenaStringPtr handle_;
   mutable int _cached_size_;
   friend void  protobuf_InitDefaults_api_2eproto_impl();
   friend void  protobuf_AddDesc_api_2eproto_impl();
@@ -8871,6 +9069,1372 @@ class TStorageRemove : public ::google::protobuf::Message /* @@protoc_insertion_
 };
 extern ::google::protobuf::internal::ExplicitlyConstructed<TStorageRemove> TStorageRemove_default_instance_;
 
+// -------------------------------------------------------------------
+
+class Leaderboard : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.Leaderboard) */ {
+ public:
+  Leaderboard();
+  virtual ~Leaderboard();
+
+  Leaderboard(const Leaderboard& from);
+
+  inline Leaderboard& operator=(const Leaderboard& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const Leaderboard& default_instance();
+
+  static const Leaderboard* internal_default_instance();
+
+  void Swap(Leaderboard* other);
+
+  // implements Message ----------------------------------------------
+
+  inline Leaderboard* New() const { return New(NULL); }
+
+  Leaderboard* New(::google::protobuf::Arena* arena) const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const Leaderboard& from);
+  void MergeFrom(const Leaderboard& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  size_t ByteSizeLong() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const {
+    return InternalSerializeWithCachedSizesToArray(false, output);
+  }
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  void InternalSwap(Leaderboard* other);
+  void UnsafeMergeFrom(const Leaderboard& from);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return _internal_metadata_.arena();
+  }
+  inline void* MaybeArenaPtr() const {
+    return _internal_metadata_.raw_arena_ptr();
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // optional bytes id = 1;
+  void clear_id();
+  static const int kIdFieldNumber = 1;
+  const ::std::string& id() const;
+  void set_id(const ::std::string& value);
+  void set_id(const char* value);
+  void set_id(const void* value, size_t size);
+  ::std::string* mutable_id();
+  ::std::string* release_id();
+  void set_allocated_id(::std::string* id);
+
+  // optional bool authoritative = 2;
+  void clear_authoritative();
+  static const int kAuthoritativeFieldNumber = 2;
+  bool authoritative() const;
+  void set_authoritative(bool value);
+
+  // optional int64 sort = 3;
+  void clear_sort();
+  static const int kSortFieldNumber = 3;
+  ::google::protobuf::int64 sort() const;
+  void set_sort(::google::protobuf::int64 value);
+
+  // optional int64 count = 4;
+  void clear_count();
+  static const int kCountFieldNumber = 4;
+  ::google::protobuf::int64 count() const;
+  void set_count(::google::protobuf::int64 value);
+
+  // optional string reset_schedule = 5;
+  void clear_reset_schedule();
+  static const int kResetScheduleFieldNumber = 5;
+  const ::std::string& reset_schedule() const;
+  void set_reset_schedule(const ::std::string& value);
+  void set_reset_schedule(const char* value);
+  void set_reset_schedule(const char* value, size_t size);
+  ::std::string* mutable_reset_schedule();
+  ::std::string* release_reset_schedule();
+  void set_allocated_reset_schedule(::std::string* reset_schedule);
+
+  // optional bytes metadata = 6;
+  void clear_metadata();
+  static const int kMetadataFieldNumber = 6;
+  const ::std::string& metadata() const;
+  void set_metadata(const ::std::string& value);
+  void set_metadata(const char* value);
+  void set_metadata(const void* value, size_t size);
+  ::std::string* mutable_metadata();
+  ::std::string* release_metadata();
+  void set_allocated_metadata(::std::string* metadata);
+
+  // optional bytes next_id = 7;
+  void clear_next_id();
+  static const int kNextIdFieldNumber = 7;
+  const ::std::string& next_id() const;
+  void set_next_id(const ::std::string& value);
+  void set_next_id(const char* value);
+  void set_next_id(const void* value, size_t size);
+  ::std::string* mutable_next_id();
+  ::std::string* release_next_id();
+  void set_allocated_next_id(::std::string* next_id);
+
+  // optional bytes prev_id = 8;
+  void clear_prev_id();
+  static const int kPrevIdFieldNumber = 8;
+  const ::std::string& prev_id() const;
+  void set_prev_id(const ::std::string& value);
+  void set_prev_id(const char* value);
+  void set_prev_id(const void* value, size_t size);
+  ::std::string* mutable_prev_id();
+  ::std::string* release_prev_id();
+  void set_allocated_prev_id(::std::string* prev_id);
+
+  // @@protoc_insertion_point(class_scope:server.Leaderboard)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::internal::ArenaStringPtr id_;
+  ::google::protobuf::internal::ArenaStringPtr reset_schedule_;
+  ::google::protobuf::internal::ArenaStringPtr metadata_;
+  ::google::protobuf::internal::ArenaStringPtr next_id_;
+  ::google::protobuf::internal::ArenaStringPtr prev_id_;
+  ::google::protobuf::int64 sort_;
+  ::google::protobuf::int64 count_;
+  bool authoritative_;
+  mutable int _cached_size_;
+  friend void  protobuf_InitDefaults_api_2eproto_impl();
+  friend void  protobuf_AddDesc_api_2eproto_impl();
+  friend void protobuf_AssignDesc_api_2eproto();
+  friend void protobuf_ShutdownFile_api_2eproto();
+
+  void InitAsDefaultInstance();
+};
+extern ::google::protobuf::internal::ExplicitlyConstructed<Leaderboard> Leaderboard_default_instance_;
+
+// -------------------------------------------------------------------
+
+class LeaderboardRecord : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.LeaderboardRecord) */ {
+ public:
+  LeaderboardRecord();
+  virtual ~LeaderboardRecord();
+
+  LeaderboardRecord(const LeaderboardRecord& from);
+
+  inline LeaderboardRecord& operator=(const LeaderboardRecord& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const LeaderboardRecord& default_instance();
+
+  static const LeaderboardRecord* internal_default_instance();
+
+  void Swap(LeaderboardRecord* other);
+
+  // implements Message ----------------------------------------------
+
+  inline LeaderboardRecord* New() const { return New(NULL); }
+
+  LeaderboardRecord* New(::google::protobuf::Arena* arena) const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const LeaderboardRecord& from);
+  void MergeFrom(const LeaderboardRecord& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  size_t ByteSizeLong() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const {
+    return InternalSerializeWithCachedSizesToArray(false, output);
+  }
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  void InternalSwap(LeaderboardRecord* other);
+  void UnsafeMergeFrom(const LeaderboardRecord& from);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return _internal_metadata_.arena();
+  }
+  inline void* MaybeArenaPtr() const {
+    return _internal_metadata_.raw_arena_ptr();
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // optional bytes leaderboard_id = 1;
+  void clear_leaderboard_id();
+  static const int kLeaderboardIdFieldNumber = 1;
+  const ::std::string& leaderboard_id() const;
+  void set_leaderboard_id(const ::std::string& value);
+  void set_leaderboard_id(const char* value);
+  void set_leaderboard_id(const void* value, size_t size);
+  ::std::string* mutable_leaderboard_id();
+  ::std::string* release_leaderboard_id();
+  void set_allocated_leaderboard_id(::std::string* leaderboard_id);
+
+  // optional bytes owner_id = 2;
+  void clear_owner_id();
+  static const int kOwnerIdFieldNumber = 2;
+  const ::std::string& owner_id() const;
+  void set_owner_id(const ::std::string& value);
+  void set_owner_id(const char* value);
+  void set_owner_id(const void* value, size_t size);
+  ::std::string* mutable_owner_id();
+  ::std::string* release_owner_id();
+  void set_allocated_owner_id(::std::string* owner_id);
+
+  // optional string handle = 3;
+  void clear_handle();
+  static const int kHandleFieldNumber = 3;
+  const ::std::string& handle() const;
+  void set_handle(const ::std::string& value);
+  void set_handle(const char* value);
+  void set_handle(const char* value, size_t size);
+  ::std::string* mutable_handle();
+  ::std::string* release_handle();
+  void set_allocated_handle(::std::string* handle);
+
+  // optional string lang = 4;
+  void clear_lang();
+  static const int kLangFieldNumber = 4;
+  const ::std::string& lang() const;
+  void set_lang(const ::std::string& value);
+  void set_lang(const char* value);
+  void set_lang(const char* value, size_t size);
+  ::std::string* mutable_lang();
+  ::std::string* release_lang();
+  void set_allocated_lang(::std::string* lang);
+
+  // optional string location = 5;
+  void clear_location();
+  static const int kLocationFieldNumber = 5;
+  const ::std::string& location() const;
+  void set_location(const ::std::string& value);
+  void set_location(const char* value);
+  void set_location(const char* value, size_t size);
+  ::std::string* mutable_location();
+  ::std::string* release_location();
+  void set_allocated_location(::std::string* location);
+
+  // optional string timezone = 6;
+  void clear_timezone();
+  static const int kTimezoneFieldNumber = 6;
+  const ::std::string& timezone() const;
+  void set_timezone(const ::std::string& value);
+  void set_timezone(const char* value);
+  void set_timezone(const char* value, size_t size);
+  ::std::string* mutable_timezone();
+  ::std::string* release_timezone();
+  void set_allocated_timezone(::std::string* timezone);
+
+  // optional int64 rank = 7;
+  void clear_rank();
+  static const int kRankFieldNumber = 7;
+  ::google::protobuf::int64 rank() const;
+  void set_rank(::google::protobuf::int64 value);
+
+  // optional int64 score = 8;
+  void clear_score();
+  static const int kScoreFieldNumber = 8;
+  ::google::protobuf::int64 score() const;
+  void set_score(::google::protobuf::int64 value);
+
+  // optional int64 num_score = 9;
+  void clear_num_score();
+  static const int kNumScoreFieldNumber = 9;
+  ::google::protobuf::int64 num_score() const;
+  void set_num_score(::google::protobuf::int64 value);
+
+  // optional bytes metadata = 10;
+  void clear_metadata();
+  static const int kMetadataFieldNumber = 10;
+  const ::std::string& metadata() const;
+  void set_metadata(const ::std::string& value);
+  void set_metadata(const char* value);
+  void set_metadata(const void* value, size_t size);
+  ::std::string* mutable_metadata();
+  ::std::string* release_metadata();
+  void set_allocated_metadata(::std::string* metadata);
+
+  // optional int64 ranked_at = 11;
+  void clear_ranked_at();
+  static const int kRankedAtFieldNumber = 11;
+  ::google::protobuf::int64 ranked_at() const;
+  void set_ranked_at(::google::protobuf::int64 value);
+
+  // optional int64 updated_at = 12;
+  void clear_updated_at();
+  static const int kUpdatedAtFieldNumber = 12;
+  ::google::protobuf::int64 updated_at() const;
+  void set_updated_at(::google::protobuf::int64 value);
+
+  // optional int64 expires_at = 13;
+  void clear_expires_at();
+  static const int kExpiresAtFieldNumber = 13;
+  ::google::protobuf::int64 expires_at() const;
+  void set_expires_at(::google::protobuf::int64 value);
+
+  // @@protoc_insertion_point(class_scope:server.LeaderboardRecord)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::internal::ArenaStringPtr leaderboard_id_;
+  ::google::protobuf::internal::ArenaStringPtr owner_id_;
+  ::google::protobuf::internal::ArenaStringPtr handle_;
+  ::google::protobuf::internal::ArenaStringPtr lang_;
+  ::google::protobuf::internal::ArenaStringPtr location_;
+  ::google::protobuf::internal::ArenaStringPtr timezone_;
+  ::google::protobuf::internal::ArenaStringPtr metadata_;
+  ::google::protobuf::int64 rank_;
+  ::google::protobuf::int64 score_;
+  ::google::protobuf::int64 num_score_;
+  ::google::protobuf::int64 ranked_at_;
+  ::google::protobuf::int64 updated_at_;
+  ::google::protobuf::int64 expires_at_;
+  mutable int _cached_size_;
+  friend void  protobuf_InitDefaults_api_2eproto_impl();
+  friend void  protobuf_AddDesc_api_2eproto_impl();
+  friend void protobuf_AssignDesc_api_2eproto();
+  friend void protobuf_ShutdownFile_api_2eproto();
+
+  void InitAsDefaultInstance();
+};
+extern ::google::protobuf::internal::ExplicitlyConstructed<LeaderboardRecord> LeaderboardRecord_default_instance_;
+
+// -------------------------------------------------------------------
+
+class TLeaderboardsList : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.TLeaderboardsList) */ {
+ public:
+  TLeaderboardsList();
+  virtual ~TLeaderboardsList();
+
+  TLeaderboardsList(const TLeaderboardsList& from);
+
+  inline TLeaderboardsList& operator=(const TLeaderboardsList& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const TLeaderboardsList& default_instance();
+
+  static const TLeaderboardsList* internal_default_instance();
+
+  void Swap(TLeaderboardsList* other);
+
+  // implements Message ----------------------------------------------
+
+  inline TLeaderboardsList* New() const { return New(NULL); }
+
+  TLeaderboardsList* New(::google::protobuf::Arena* arena) const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const TLeaderboardsList& from);
+  void MergeFrom(const TLeaderboardsList& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  size_t ByteSizeLong() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const {
+    return InternalSerializeWithCachedSizesToArray(false, output);
+  }
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  void InternalSwap(TLeaderboardsList* other);
+  void UnsafeMergeFrom(const TLeaderboardsList& from);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return _internal_metadata_.arena();
+  }
+  inline void* MaybeArenaPtr() const {
+    return _internal_metadata_.raw_arena_ptr();
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // optional int64 limit = 1;
+  void clear_limit();
+  static const int kLimitFieldNumber = 1;
+  ::google::protobuf::int64 limit() const;
+  void set_limit(::google::protobuf::int64 value);
+
+  // optional bytes cursor = 2;
+  void clear_cursor();
+  static const int kCursorFieldNumber = 2;
+  const ::std::string& cursor() const;
+  void set_cursor(const ::std::string& value);
+  void set_cursor(const char* value);
+  void set_cursor(const void* value, size_t size);
+  ::std::string* mutable_cursor();
+  ::std::string* release_cursor();
+  void set_allocated_cursor(::std::string* cursor);
+
+  // @@protoc_insertion_point(class_scope:server.TLeaderboardsList)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::internal::ArenaStringPtr cursor_;
+  ::google::protobuf::int64 limit_;
+  mutable int _cached_size_;
+  friend void  protobuf_InitDefaults_api_2eproto_impl();
+  friend void  protobuf_AddDesc_api_2eproto_impl();
+  friend void protobuf_AssignDesc_api_2eproto();
+  friend void protobuf_ShutdownFile_api_2eproto();
+
+  void InitAsDefaultInstance();
+};
+extern ::google::protobuf::internal::ExplicitlyConstructed<TLeaderboardsList> TLeaderboardsList_default_instance_;
+
+// -------------------------------------------------------------------
+
+class TLeaderboards : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.TLeaderboards) */ {
+ public:
+  TLeaderboards();
+  virtual ~TLeaderboards();
+
+  TLeaderboards(const TLeaderboards& from);
+
+  inline TLeaderboards& operator=(const TLeaderboards& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const TLeaderboards& default_instance();
+
+  static const TLeaderboards* internal_default_instance();
+
+  void Swap(TLeaderboards* other);
+
+  // implements Message ----------------------------------------------
+
+  inline TLeaderboards* New() const { return New(NULL); }
+
+  TLeaderboards* New(::google::protobuf::Arena* arena) const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const TLeaderboards& from);
+  void MergeFrom(const TLeaderboards& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  size_t ByteSizeLong() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const {
+    return InternalSerializeWithCachedSizesToArray(false, output);
+  }
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  void InternalSwap(TLeaderboards* other);
+  void UnsafeMergeFrom(const TLeaderboards& from);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return _internal_metadata_.arena();
+  }
+  inline void* MaybeArenaPtr() const {
+    return _internal_metadata_.raw_arena_ptr();
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // repeated .server.Leaderboard leaderboards = 1;
+  int leaderboards_size() const;
+  void clear_leaderboards();
+  static const int kLeaderboardsFieldNumber = 1;
+  const ::server::Leaderboard& leaderboards(int index) const;
+  ::server::Leaderboard* mutable_leaderboards(int index);
+  ::server::Leaderboard* add_leaderboards();
+  ::google::protobuf::RepeatedPtrField< ::server::Leaderboard >*
+      mutable_leaderboards();
+  const ::google::protobuf::RepeatedPtrField< ::server::Leaderboard >&
+      leaderboards() const;
+
+  // optional bytes cursor = 2;
+  void clear_cursor();
+  static const int kCursorFieldNumber = 2;
+  const ::std::string& cursor() const;
+  void set_cursor(const ::std::string& value);
+  void set_cursor(const char* value);
+  void set_cursor(const void* value, size_t size);
+  ::std::string* mutable_cursor();
+  ::std::string* release_cursor();
+  void set_allocated_cursor(::std::string* cursor);
+
+  // @@protoc_insertion_point(class_scope:server.TLeaderboards)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::RepeatedPtrField< ::server::Leaderboard > leaderboards_;
+  ::google::protobuf::internal::ArenaStringPtr cursor_;
+  mutable int _cached_size_;
+  friend void  protobuf_InitDefaults_api_2eproto_impl();
+  friend void  protobuf_AddDesc_api_2eproto_impl();
+  friend void protobuf_AssignDesc_api_2eproto();
+  friend void protobuf_ShutdownFile_api_2eproto();
+
+  void InitAsDefaultInstance();
+};
+extern ::google::protobuf::internal::ExplicitlyConstructed<TLeaderboards> TLeaderboards_default_instance_;
+
+// -------------------------------------------------------------------
+
+class TLeaderboardRecordWrite : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.TLeaderboardRecordWrite) */ {
+ public:
+  TLeaderboardRecordWrite();
+  virtual ~TLeaderboardRecordWrite();
+
+  TLeaderboardRecordWrite(const TLeaderboardRecordWrite& from);
+
+  inline TLeaderboardRecordWrite& operator=(const TLeaderboardRecordWrite& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const TLeaderboardRecordWrite& default_instance();
+
+  enum OpCase {
+    kIncr = 2,
+    kDecr = 3,
+    kSet = 4,
+    kBest = 5,
+    OP_NOT_SET = 0,
+  };
+
+  static const TLeaderboardRecordWrite* internal_default_instance();
+
+  void Swap(TLeaderboardRecordWrite* other);
+
+  // implements Message ----------------------------------------------
+
+  inline TLeaderboardRecordWrite* New() const { return New(NULL); }
+
+  TLeaderboardRecordWrite* New(::google::protobuf::Arena* arena) const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const TLeaderboardRecordWrite& from);
+  void MergeFrom(const TLeaderboardRecordWrite& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  size_t ByteSizeLong() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const {
+    return InternalSerializeWithCachedSizesToArray(false, output);
+  }
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  void InternalSwap(TLeaderboardRecordWrite* other);
+  void UnsafeMergeFrom(const TLeaderboardRecordWrite& from);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return _internal_metadata_.arena();
+  }
+  inline void* MaybeArenaPtr() const {
+    return _internal_metadata_.raw_arena_ptr();
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // optional bytes leaderboard_id = 1;
+  void clear_leaderboard_id();
+  static const int kLeaderboardIdFieldNumber = 1;
+  const ::std::string& leaderboard_id() const;
+  void set_leaderboard_id(const ::std::string& value);
+  void set_leaderboard_id(const char* value);
+  void set_leaderboard_id(const void* value, size_t size);
+  ::std::string* mutable_leaderboard_id();
+  ::std::string* release_leaderboard_id();
+  void set_allocated_leaderboard_id(::std::string* leaderboard_id);
+
+  // optional int64 incr = 2;
+  private:
+  bool has_incr() const;
+  public:
+  void clear_incr();
+  static const int kIncrFieldNumber = 2;
+  ::google::protobuf::int64 incr() const;
+  void set_incr(::google::protobuf::int64 value);
+
+  // optional int64 decr = 3;
+  private:
+  bool has_decr() const;
+  public:
+  void clear_decr();
+  static const int kDecrFieldNumber = 3;
+  ::google::protobuf::int64 decr() const;
+  void set_decr(::google::protobuf::int64 value);
+
+  // optional int64 set = 4;
+  private:
+  bool has_set() const;
+  public:
+  void clear_set();
+  static const int kSetFieldNumber = 4;
+  ::google::protobuf::int64 set() const;
+  void set_set(::google::protobuf::int64 value);
+
+  // optional int64 best = 5;
+  private:
+  bool has_best() const;
+  public:
+  void clear_best();
+  static const int kBestFieldNumber = 5;
+  ::google::protobuf::int64 best() const;
+  void set_best(::google::protobuf::int64 value);
+
+  // optional string location = 6;
+  void clear_location();
+  static const int kLocationFieldNumber = 6;
+  const ::std::string& location() const;
+  void set_location(const ::std::string& value);
+  void set_location(const char* value);
+  void set_location(const char* value, size_t size);
+  ::std::string* mutable_location();
+  ::std::string* release_location();
+  void set_allocated_location(::std::string* location);
+
+  // optional string timezone = 7;
+  void clear_timezone();
+  static const int kTimezoneFieldNumber = 7;
+  const ::std::string& timezone() const;
+  void set_timezone(const ::std::string& value);
+  void set_timezone(const char* value);
+  void set_timezone(const char* value, size_t size);
+  ::std::string* mutable_timezone();
+  ::std::string* release_timezone();
+  void set_allocated_timezone(::std::string* timezone);
+
+  // optional bytes metadata = 8;
+  void clear_metadata();
+  static const int kMetadataFieldNumber = 8;
+  const ::std::string& metadata() const;
+  void set_metadata(const ::std::string& value);
+  void set_metadata(const char* value);
+  void set_metadata(const void* value, size_t size);
+  ::std::string* mutable_metadata();
+  ::std::string* release_metadata();
+  void set_allocated_metadata(::std::string* metadata);
+
+  OpCase op_case() const;
+  // @@protoc_insertion_point(class_scope:server.TLeaderboardRecordWrite)
+ private:
+  inline void set_has_incr();
+  inline void set_has_decr();
+  inline void set_has_set();
+  inline void set_has_best();
+
+  inline bool has_op() const;
+  void clear_op();
+  inline void clear_has_op();
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::internal::ArenaStringPtr leaderboard_id_;
+  ::google::protobuf::internal::ArenaStringPtr location_;
+  ::google::protobuf::internal::ArenaStringPtr timezone_;
+  ::google::protobuf::internal::ArenaStringPtr metadata_;
+  union OpUnion {
+    OpUnion() {}
+    ::google::protobuf::int64 incr_;
+    ::google::protobuf::int64 decr_;
+    ::google::protobuf::int64 set_;
+    ::google::protobuf::int64 best_;
+  } op_;
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _oneof_case_[1];
+
+  friend void  protobuf_InitDefaults_api_2eproto_impl();
+  friend void  protobuf_AddDesc_api_2eproto_impl();
+  friend void protobuf_AssignDesc_api_2eproto();
+  friend void protobuf_ShutdownFile_api_2eproto();
+
+  void InitAsDefaultInstance();
+};
+extern ::google::protobuf::internal::ExplicitlyConstructed<TLeaderboardRecordWrite> TLeaderboardRecordWrite_default_instance_;
+
+// -------------------------------------------------------------------
+
+class TLeaderboardRecord : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.TLeaderboardRecord) */ {
+ public:
+  TLeaderboardRecord();
+  virtual ~TLeaderboardRecord();
+
+  TLeaderboardRecord(const TLeaderboardRecord& from);
+
+  inline TLeaderboardRecord& operator=(const TLeaderboardRecord& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const TLeaderboardRecord& default_instance();
+
+  static const TLeaderboardRecord* internal_default_instance();
+
+  void Swap(TLeaderboardRecord* other);
+
+  // implements Message ----------------------------------------------
+
+  inline TLeaderboardRecord* New() const { return New(NULL); }
+
+  TLeaderboardRecord* New(::google::protobuf::Arena* arena) const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const TLeaderboardRecord& from);
+  void MergeFrom(const TLeaderboardRecord& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  size_t ByteSizeLong() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const {
+    return InternalSerializeWithCachedSizesToArray(false, output);
+  }
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  void InternalSwap(TLeaderboardRecord* other);
+  void UnsafeMergeFrom(const TLeaderboardRecord& from);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return _internal_metadata_.arena();
+  }
+  inline void* MaybeArenaPtr() const {
+    return _internal_metadata_.raw_arena_ptr();
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // optional .server.LeaderboardRecord record = 1;
+  bool has_record() const;
+  void clear_record();
+  static const int kRecordFieldNumber = 1;
+  const ::server::LeaderboardRecord& record() const;
+  ::server::LeaderboardRecord* mutable_record();
+  ::server::LeaderboardRecord* release_record();
+  void set_allocated_record(::server::LeaderboardRecord* record);
+
+  // @@protoc_insertion_point(class_scope:server.TLeaderboardRecord)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::server::LeaderboardRecord* record_;
+  mutable int _cached_size_;
+  friend void  protobuf_InitDefaults_api_2eproto_impl();
+  friend void  protobuf_AddDesc_api_2eproto_impl();
+  friend void protobuf_AssignDesc_api_2eproto();
+  friend void protobuf_ShutdownFile_api_2eproto();
+
+  void InitAsDefaultInstance();
+};
+extern ::google::protobuf::internal::ExplicitlyConstructed<TLeaderboardRecord> TLeaderboardRecord_default_instance_;
+
+// -------------------------------------------------------------------
+
+class TLeaderboardRecordsFetch : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.TLeaderboardRecordsFetch) */ {
+ public:
+  TLeaderboardRecordsFetch();
+  virtual ~TLeaderboardRecordsFetch();
+
+  TLeaderboardRecordsFetch(const TLeaderboardRecordsFetch& from);
+
+  inline TLeaderboardRecordsFetch& operator=(const TLeaderboardRecordsFetch& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const TLeaderboardRecordsFetch& default_instance();
+
+  static const TLeaderboardRecordsFetch* internal_default_instance();
+
+  void Swap(TLeaderboardRecordsFetch* other);
+
+  // implements Message ----------------------------------------------
+
+  inline TLeaderboardRecordsFetch* New() const { return New(NULL); }
+
+  TLeaderboardRecordsFetch* New(::google::protobuf::Arena* arena) const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const TLeaderboardRecordsFetch& from);
+  void MergeFrom(const TLeaderboardRecordsFetch& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  size_t ByteSizeLong() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const {
+    return InternalSerializeWithCachedSizesToArray(false, output);
+  }
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  void InternalSwap(TLeaderboardRecordsFetch* other);
+  void UnsafeMergeFrom(const TLeaderboardRecordsFetch& from);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return _internal_metadata_.arena();
+  }
+  inline void* MaybeArenaPtr() const {
+    return _internal_metadata_.raw_arena_ptr();
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // repeated bytes leaderboard_ids = 1;
+  int leaderboard_ids_size() const;
+  void clear_leaderboard_ids();
+  static const int kLeaderboardIdsFieldNumber = 1;
+  const ::std::string& leaderboard_ids(int index) const;
+  ::std::string* mutable_leaderboard_ids(int index);
+  void set_leaderboard_ids(int index, const ::std::string& value);
+  void set_leaderboard_ids(int index, const char* value);
+  void set_leaderboard_ids(int index, const void* value, size_t size);
+  ::std::string* add_leaderboard_ids();
+  void add_leaderboard_ids(const ::std::string& value);
+  void add_leaderboard_ids(const char* value);
+  void add_leaderboard_ids(const void* value, size_t size);
+  const ::google::protobuf::RepeatedPtrField< ::std::string>& leaderboard_ids() const;
+  ::google::protobuf::RepeatedPtrField< ::std::string>* mutable_leaderboard_ids();
+
+  // optional int64 limit = 2;
+  void clear_limit();
+  static const int kLimitFieldNumber = 2;
+  ::google::protobuf::int64 limit() const;
+  void set_limit(::google::protobuf::int64 value);
+
+  // optional bytes cursor = 3;
+  void clear_cursor();
+  static const int kCursorFieldNumber = 3;
+  const ::std::string& cursor() const;
+  void set_cursor(const ::std::string& value);
+  void set_cursor(const char* value);
+  void set_cursor(const void* value, size_t size);
+  ::std::string* mutable_cursor();
+  ::std::string* release_cursor();
+  void set_allocated_cursor(::std::string* cursor);
+
+  // @@protoc_insertion_point(class_scope:server.TLeaderboardRecordsFetch)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::RepeatedPtrField< ::std::string> leaderboard_ids_;
+  ::google::protobuf::internal::ArenaStringPtr cursor_;
+  ::google::protobuf::int64 limit_;
+  mutable int _cached_size_;
+  friend void  protobuf_InitDefaults_api_2eproto_impl();
+  friend void  protobuf_AddDesc_api_2eproto_impl();
+  friend void protobuf_AssignDesc_api_2eproto();
+  friend void protobuf_ShutdownFile_api_2eproto();
+
+  void InitAsDefaultInstance();
+};
+extern ::google::protobuf::internal::ExplicitlyConstructed<TLeaderboardRecordsFetch> TLeaderboardRecordsFetch_default_instance_;
+
+// -------------------------------------------------------------------
+
+class TLeaderboardRecordsList_Owners : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.TLeaderboardRecordsList.Owners) */ {
+ public:
+  TLeaderboardRecordsList_Owners();
+  virtual ~TLeaderboardRecordsList_Owners();
+
+  TLeaderboardRecordsList_Owners(const TLeaderboardRecordsList_Owners& from);
+
+  inline TLeaderboardRecordsList_Owners& operator=(const TLeaderboardRecordsList_Owners& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const TLeaderboardRecordsList_Owners& default_instance();
+
+  static const TLeaderboardRecordsList_Owners* internal_default_instance();
+
+  void Swap(TLeaderboardRecordsList_Owners* other);
+
+  // implements Message ----------------------------------------------
+
+  inline TLeaderboardRecordsList_Owners* New() const { return New(NULL); }
+
+  TLeaderboardRecordsList_Owners* New(::google::protobuf::Arena* arena) const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const TLeaderboardRecordsList_Owners& from);
+  void MergeFrom(const TLeaderboardRecordsList_Owners& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  size_t ByteSizeLong() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const {
+    return InternalSerializeWithCachedSizesToArray(false, output);
+  }
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  void InternalSwap(TLeaderboardRecordsList_Owners* other);
+  void UnsafeMergeFrom(const TLeaderboardRecordsList_Owners& from);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return _internal_metadata_.arena();
+  }
+  inline void* MaybeArenaPtr() const {
+    return _internal_metadata_.raw_arena_ptr();
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // repeated bytes owner_ids = 1;
+  int owner_ids_size() const;
+  void clear_owner_ids();
+  static const int kOwnerIdsFieldNumber = 1;
+  const ::std::string& owner_ids(int index) const;
+  ::std::string* mutable_owner_ids(int index);
+  void set_owner_ids(int index, const ::std::string& value);
+  void set_owner_ids(int index, const char* value);
+  void set_owner_ids(int index, const void* value, size_t size);
+  ::std::string* add_owner_ids();
+  void add_owner_ids(const ::std::string& value);
+  void add_owner_ids(const char* value);
+  void add_owner_ids(const void* value, size_t size);
+  const ::google::protobuf::RepeatedPtrField< ::std::string>& owner_ids() const;
+  ::google::protobuf::RepeatedPtrField< ::std::string>* mutable_owner_ids();
+
+  // @@protoc_insertion_point(class_scope:server.TLeaderboardRecordsList.Owners)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::RepeatedPtrField< ::std::string> owner_ids_;
+  mutable int _cached_size_;
+  friend void  protobuf_InitDefaults_api_2eproto_impl();
+  friend void  protobuf_AddDesc_api_2eproto_impl();
+  friend void protobuf_AssignDesc_api_2eproto();
+  friend void protobuf_ShutdownFile_api_2eproto();
+
+  void InitAsDefaultInstance();
+};
+extern ::google::protobuf::internal::ExplicitlyConstructed<TLeaderboardRecordsList_Owners> TLeaderboardRecordsList_Owners_default_instance_;
+
+// -------------------------------------------------------------------
+
+class TLeaderboardRecordsList : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.TLeaderboardRecordsList) */ {
+ public:
+  TLeaderboardRecordsList();
+  virtual ~TLeaderboardRecordsList();
+
+  TLeaderboardRecordsList(const TLeaderboardRecordsList& from);
+
+  inline TLeaderboardRecordsList& operator=(const TLeaderboardRecordsList& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const TLeaderboardRecordsList& default_instance();
+
+  enum FilterCase {
+    kOwnerId = 2,
+    kOwnerIds = 3,
+    kLang = 4,
+    kLocation = 5,
+    kTimezone = 6,
+    FILTER_NOT_SET = 0,
+  };
+
+  static const TLeaderboardRecordsList* internal_default_instance();
+
+  void Swap(TLeaderboardRecordsList* other);
+
+  // implements Message ----------------------------------------------
+
+  inline TLeaderboardRecordsList* New() const { return New(NULL); }
+
+  TLeaderboardRecordsList* New(::google::protobuf::Arena* arena) const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const TLeaderboardRecordsList& from);
+  void MergeFrom(const TLeaderboardRecordsList& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  size_t ByteSizeLong() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const {
+    return InternalSerializeWithCachedSizesToArray(false, output);
+  }
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  void InternalSwap(TLeaderboardRecordsList* other);
+  void UnsafeMergeFrom(const TLeaderboardRecordsList& from);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return _internal_metadata_.arena();
+  }
+  inline void* MaybeArenaPtr() const {
+    return _internal_metadata_.raw_arena_ptr();
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  typedef TLeaderboardRecordsList_Owners Owners;
+
+  // accessors -------------------------------------------------------
+
+  // optional bytes leaderboard_id = 1;
+  void clear_leaderboard_id();
+  static const int kLeaderboardIdFieldNumber = 1;
+  const ::std::string& leaderboard_id() const;
+  void set_leaderboard_id(const ::std::string& value);
+  void set_leaderboard_id(const char* value);
+  void set_leaderboard_id(const void* value, size_t size);
+  ::std::string* mutable_leaderboard_id();
+  ::std::string* release_leaderboard_id();
+  void set_allocated_leaderboard_id(::std::string* leaderboard_id);
+
+  // optional bytes owner_id = 2;
+  private:
+  bool has_owner_id() const;
+  public:
+  void clear_owner_id();
+  static const int kOwnerIdFieldNumber = 2;
+  const ::std::string& owner_id() const;
+  void set_owner_id(const ::std::string& value);
+  void set_owner_id(const char* value);
+  void set_owner_id(const void* value, size_t size);
+  ::std::string* mutable_owner_id();
+  ::std::string* release_owner_id();
+  void set_allocated_owner_id(::std::string* owner_id);
+
+  // optional .server.TLeaderboardRecordsList.Owners owner_ids = 3;
+  bool has_owner_ids() const;
+  void clear_owner_ids();
+  static const int kOwnerIdsFieldNumber = 3;
+  const ::server::TLeaderboardRecordsList_Owners& owner_ids() const;
+  ::server::TLeaderboardRecordsList_Owners* mutable_owner_ids();
+  ::server::TLeaderboardRecordsList_Owners* release_owner_ids();
+  void set_allocated_owner_ids(::server::TLeaderboardRecordsList_Owners* owner_ids);
+
+  // optional string lang = 4;
+  private:
+  bool has_lang() const;
+  public:
+  void clear_lang();
+  static const int kLangFieldNumber = 4;
+  const ::std::string& lang() const;
+  void set_lang(const ::std::string& value);
+  void set_lang(const char* value);
+  void set_lang(const char* value, size_t size);
+  ::std::string* mutable_lang();
+  ::std::string* release_lang();
+  void set_allocated_lang(::std::string* lang);
+
+  // optional string location = 5;
+  private:
+  bool has_location() const;
+  public:
+  void clear_location();
+  static const int kLocationFieldNumber = 5;
+  const ::std::string& location() const;
+  void set_location(const ::std::string& value);
+  void set_location(const char* value);
+  void set_location(const char* value, size_t size);
+  ::std::string* mutable_location();
+  ::std::string* release_location();
+  void set_allocated_location(::std::string* location);
+
+  // optional string timezone = 6;
+  private:
+  bool has_timezone() const;
+  public:
+  void clear_timezone();
+  static const int kTimezoneFieldNumber = 6;
+  const ::std::string& timezone() const;
+  void set_timezone(const ::std::string& value);
+  void set_timezone(const char* value);
+  void set_timezone(const char* value, size_t size);
+  ::std::string* mutable_timezone();
+  ::std::string* release_timezone();
+  void set_allocated_timezone(::std::string* timezone);
+
+  // optional int64 limit = 7;
+  void clear_limit();
+  static const int kLimitFieldNumber = 7;
+  ::google::protobuf::int64 limit() const;
+  void set_limit(::google::protobuf::int64 value);
+
+  // optional bytes cursor = 8;
+  void clear_cursor();
+  static const int kCursorFieldNumber = 8;
+  const ::std::string& cursor() const;
+  void set_cursor(const ::std::string& value);
+  void set_cursor(const char* value);
+  void set_cursor(const void* value, size_t size);
+  ::std::string* mutable_cursor();
+  ::std::string* release_cursor();
+  void set_allocated_cursor(::std::string* cursor);
+
+  FilterCase filter_case() const;
+  // @@protoc_insertion_point(class_scope:server.TLeaderboardRecordsList)
+ private:
+  inline void set_has_owner_id();
+  inline void set_has_owner_ids();
+  inline void set_has_lang();
+  inline void set_has_location();
+  inline void set_has_timezone();
+
+  inline bool has_filter() const;
+  void clear_filter();
+  inline void clear_has_filter();
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::internal::ArenaStringPtr leaderboard_id_;
+  ::google::protobuf::internal::ArenaStringPtr cursor_;
+  ::google::protobuf::int64 limit_;
+  union FilterUnion {
+    FilterUnion() {}
+    ::google::protobuf::internal::ArenaStringPtr owner_id_;
+    ::server::TLeaderboardRecordsList_Owners* owner_ids_;
+    ::google::protobuf::internal::ArenaStringPtr lang_;
+    ::google::protobuf::internal::ArenaStringPtr location_;
+    ::google::protobuf::internal::ArenaStringPtr timezone_;
+  } filter_;
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _oneof_case_[1];
+
+  friend void  protobuf_InitDefaults_api_2eproto_impl();
+  friend void  protobuf_AddDesc_api_2eproto_impl();
+  friend void protobuf_AssignDesc_api_2eproto();
+  friend void protobuf_ShutdownFile_api_2eproto();
+
+  void InitAsDefaultInstance();
+};
+extern ::google::protobuf::internal::ExplicitlyConstructed<TLeaderboardRecordsList> TLeaderboardRecordsList_default_instance_;
+
+// -------------------------------------------------------------------
+
+class TLeaderboardRecords : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.TLeaderboardRecords) */ {
+ public:
+  TLeaderboardRecords();
+  virtual ~TLeaderboardRecords();
+
+  TLeaderboardRecords(const TLeaderboardRecords& from);
+
+  inline TLeaderboardRecords& operator=(const TLeaderboardRecords& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const TLeaderboardRecords& default_instance();
+
+  static const TLeaderboardRecords* internal_default_instance();
+
+  void Swap(TLeaderboardRecords* other);
+
+  // implements Message ----------------------------------------------
+
+  inline TLeaderboardRecords* New() const { return New(NULL); }
+
+  TLeaderboardRecords* New(::google::protobuf::Arena* arena) const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const TLeaderboardRecords& from);
+  void MergeFrom(const TLeaderboardRecords& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  size_t ByteSizeLong() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const {
+    return InternalSerializeWithCachedSizesToArray(false, output);
+  }
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  void InternalSwap(TLeaderboardRecords* other);
+  void UnsafeMergeFrom(const TLeaderboardRecords& from);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return _internal_metadata_.arena();
+  }
+  inline void* MaybeArenaPtr() const {
+    return _internal_metadata_.raw_arena_ptr();
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // repeated .server.LeaderboardRecord records = 1;
+  int records_size() const;
+  void clear_records();
+  static const int kRecordsFieldNumber = 1;
+  const ::server::LeaderboardRecord& records(int index) const;
+  ::server::LeaderboardRecord* mutable_records(int index);
+  ::server::LeaderboardRecord* add_records();
+  ::google::protobuf::RepeatedPtrField< ::server::LeaderboardRecord >*
+      mutable_records();
+  const ::google::protobuf::RepeatedPtrField< ::server::LeaderboardRecord >&
+      records() const;
+
+  // optional bytes cursor = 2;
+  void clear_cursor();
+  static const int kCursorFieldNumber = 2;
+  const ::std::string& cursor() const;
+  void set_cursor(const ::std::string& value);
+  void set_cursor(const char* value);
+  void set_cursor(const void* value, size_t size);
+  ::std::string* mutable_cursor();
+  ::std::string* release_cursor();
+  void set_allocated_cursor(::std::string* cursor);
+
+  // @@protoc_insertion_point(class_scope:server.TLeaderboardRecords)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::RepeatedPtrField< ::server::LeaderboardRecord > records_;
+  ::google::protobuf::internal::ArenaStringPtr cursor_;
+  mutable int _cached_size_;
+  friend void  protobuf_InitDefaults_api_2eproto_impl();
+  friend void  protobuf_AddDesc_api_2eproto_impl();
+  friend void protobuf_AssignDesc_api_2eproto();
+  friend void protobuf_ShutdownFile_api_2eproto();
+
+  void InitAsDefaultInstance();
+};
+extern ::google::protobuf::internal::ExplicitlyConstructed<TLeaderboardRecords> TLeaderboardRecords_default_instance_;
+
 // ===================================================================
 
 
@@ -8900,48 +10464,62 @@ inline const Heartbeat* Heartbeat::internal_default_instance() {
 
 // Error
 
-// optional string reason = 1;
-inline void Error::clear_reason() {
-  reason_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+// optional int32 code = 1;
+inline void Error::clear_code() {
+  code_ = 0;
 }
-inline const ::std::string& Error::reason() const {
-  // @@protoc_insertion_point(field_get:server.Error.reason)
-  return reason_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+inline ::google::protobuf::int32 Error::code() const {
+  // @@protoc_insertion_point(field_get:server.Error.code)
+  return code_;
 }
-inline void Error::set_reason(const ::std::string& value) {
+inline void Error::set_code(::google::protobuf::int32 value) {
   
-  reason_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:server.Error.reason)
+  code_ = value;
+  // @@protoc_insertion_point(field_set:server.Error.code)
 }
-inline void Error::set_reason(const char* value) {
-  
-  reason_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:server.Error.reason)
+
+// optional string message = 2;
+inline void Error::clear_message() {
+  message_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline void Error::set_reason(const char* value, size_t size) {
+inline const ::std::string& Error::message() const {
+  // @@protoc_insertion_point(field_get:server.Error.message)
+  return message_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void Error::set_message(const ::std::string& value) {
   
-  reason_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+  message_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:server.Error.message)
+}
+inline void Error::set_message(const char* value) {
+  
+  message_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:server.Error.message)
+}
+inline void Error::set_message(const char* value, size_t size) {
+  
+  message_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:server.Error.reason)
+  // @@protoc_insertion_point(field_set_pointer:server.Error.message)
 }
-inline ::std::string* Error::mutable_reason() {
+inline ::std::string* Error::mutable_message() {
   
-  // @@protoc_insertion_point(field_mutable:server.Error.reason)
-  return reason_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  // @@protoc_insertion_point(field_mutable:server.Error.message)
+  return message_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline ::std::string* Error::release_reason() {
-  // @@protoc_insertion_point(field_release:server.Error.reason)
+inline ::std::string* Error::release_message() {
+  // @@protoc_insertion_point(field_release:server.Error.message)
   
-  return reason_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  return message_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline void Error::set_allocated_reason(::std::string* reason) {
-  if (reason != NULL) {
+inline void Error::set_allocated_message(::std::string* message) {
+  if (message != NULL) {
     
   } else {
     
   }
-  reason_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), reason);
-  // @@protoc_insertion_point(field_set_allocated:server.Error.reason)
+  message_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), message);
+  // @@protoc_insertion_point(field_set_allocated:server.Error.message)
 }
 
 inline const Error* Error::internal_default_instance() {
@@ -9899,51 +11477,65 @@ inline const AuthenticateResponse_Session* AuthenticateResponse_Session::interna
 
 // AuthenticateResponse_Error
 
-// optional string reason = 1;
-inline void AuthenticateResponse_Error::clear_reason() {
-  reason_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+// optional int32 code = 1;
+inline void AuthenticateResponse_Error::clear_code() {
+  code_ = 0;
 }
-inline const ::std::string& AuthenticateResponse_Error::reason() const {
-  // @@protoc_insertion_point(field_get:server.AuthenticateResponse.Error.reason)
-  return reason_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+inline ::google::protobuf::int32 AuthenticateResponse_Error::code() const {
+  // @@protoc_insertion_point(field_get:server.AuthenticateResponse.Error.code)
+  return code_;
 }
-inline void AuthenticateResponse_Error::set_reason(const ::std::string& value) {
+inline void AuthenticateResponse_Error::set_code(::google::protobuf::int32 value) {
   
-  reason_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:server.AuthenticateResponse.Error.reason)
+  code_ = value;
+  // @@protoc_insertion_point(field_set:server.AuthenticateResponse.Error.code)
 }
-inline void AuthenticateResponse_Error::set_reason(const char* value) {
-  
-  reason_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:server.AuthenticateResponse.Error.reason)
+
+// optional string message = 2;
+inline void AuthenticateResponse_Error::clear_message() {
+  message_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline void AuthenticateResponse_Error::set_reason(const char* value, size_t size) {
+inline const ::std::string& AuthenticateResponse_Error::message() const {
+  // @@protoc_insertion_point(field_get:server.AuthenticateResponse.Error.message)
+  return message_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void AuthenticateResponse_Error::set_message(const ::std::string& value) {
   
-  reason_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+  message_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:server.AuthenticateResponse.Error.message)
+}
+inline void AuthenticateResponse_Error::set_message(const char* value) {
+  
+  message_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:server.AuthenticateResponse.Error.message)
+}
+inline void AuthenticateResponse_Error::set_message(const char* value, size_t size) {
+  
+  message_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:server.AuthenticateResponse.Error.reason)
+  // @@protoc_insertion_point(field_set_pointer:server.AuthenticateResponse.Error.message)
 }
-inline ::std::string* AuthenticateResponse_Error::mutable_reason() {
+inline ::std::string* AuthenticateResponse_Error::mutable_message() {
   
-  // @@protoc_insertion_point(field_mutable:server.AuthenticateResponse.Error.reason)
-  return reason_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  // @@protoc_insertion_point(field_mutable:server.AuthenticateResponse.Error.message)
+  return message_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline ::std::string* AuthenticateResponse_Error::release_reason() {
-  // @@protoc_insertion_point(field_release:server.AuthenticateResponse.Error.reason)
+inline ::std::string* AuthenticateResponse_Error::release_message() {
+  // @@protoc_insertion_point(field_release:server.AuthenticateResponse.Error.message)
   
-  return reason_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  return message_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline void AuthenticateResponse_Error::set_allocated_reason(::std::string* reason) {
-  if (reason != NULL) {
+inline void AuthenticateResponse_Error::set_allocated_message(::std::string* message) {
+  if (message != NULL) {
     
   } else {
     
   }
-  reason_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), reason);
-  // @@protoc_insertion_point(field_set_allocated:server.AuthenticateResponse.Error.reason)
+  message_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), message);
+  // @@protoc_insertion_point(field_set_allocated:server.AuthenticateResponse.Error.message)
 }
 
-// optional .server.AuthenticateRequest request = 2;
+// optional .server.AuthenticateRequest request = 3;
 inline bool AuthenticateResponse_Error::has_request() const {
   return this != internal_default_instance() && request_ != NULL;
 }
@@ -12635,6 +14227,342 @@ inline void Envelope::set_allocated_storage_key(::server::TStorageKey* storage_k
     payload_.storage_key_ = storage_key;
   }
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.storage_key)
+}
+
+// optional .server.TLeaderboardsList leaderboards_list = 53;
+inline bool Envelope::has_leaderboards_list() const {
+  return payload_case() == kLeaderboardsList;
+}
+inline void Envelope::set_has_leaderboards_list() {
+  _oneof_case_[0] = kLeaderboardsList;
+}
+inline void Envelope::clear_leaderboards_list() {
+  if (has_leaderboards_list()) {
+    delete payload_.leaderboards_list_;
+    clear_has_payload();
+  }
+}
+inline  const ::server::TLeaderboardsList& Envelope::leaderboards_list() const {
+  // @@protoc_insertion_point(field_get:server.Envelope.leaderboards_list)
+  return has_leaderboards_list()
+      ? *payload_.leaderboards_list_
+      : ::server::TLeaderboardsList::default_instance();
+}
+inline ::server::TLeaderboardsList* Envelope::mutable_leaderboards_list() {
+  if (!has_leaderboards_list()) {
+    clear_payload();
+    set_has_leaderboards_list();
+    payload_.leaderboards_list_ = new ::server::TLeaderboardsList;
+  }
+  // @@protoc_insertion_point(field_mutable:server.Envelope.leaderboards_list)
+  return payload_.leaderboards_list_;
+}
+inline ::server::TLeaderboardsList* Envelope::release_leaderboards_list() {
+  // @@protoc_insertion_point(field_release:server.Envelope.leaderboards_list)
+  if (has_leaderboards_list()) {
+    clear_has_payload();
+    ::server::TLeaderboardsList* temp = payload_.leaderboards_list_;
+    payload_.leaderboards_list_ = NULL;
+    return temp;
+  } else {
+    return NULL;
+  }
+}
+inline void Envelope::set_allocated_leaderboards_list(::server::TLeaderboardsList* leaderboards_list) {
+  clear_payload();
+  if (leaderboards_list) {
+    set_has_leaderboards_list();
+    payload_.leaderboards_list_ = leaderboards_list;
+  }
+  // @@protoc_insertion_point(field_set_allocated:server.Envelope.leaderboards_list)
+}
+
+// optional .server.TLeaderboardRecordWrite leaderboard_record_write = 54;
+inline bool Envelope::has_leaderboard_record_write() const {
+  return payload_case() == kLeaderboardRecordWrite;
+}
+inline void Envelope::set_has_leaderboard_record_write() {
+  _oneof_case_[0] = kLeaderboardRecordWrite;
+}
+inline void Envelope::clear_leaderboard_record_write() {
+  if (has_leaderboard_record_write()) {
+    delete payload_.leaderboard_record_write_;
+    clear_has_payload();
+  }
+}
+inline  const ::server::TLeaderboardRecordWrite& Envelope::leaderboard_record_write() const {
+  // @@protoc_insertion_point(field_get:server.Envelope.leaderboard_record_write)
+  return has_leaderboard_record_write()
+      ? *payload_.leaderboard_record_write_
+      : ::server::TLeaderboardRecordWrite::default_instance();
+}
+inline ::server::TLeaderboardRecordWrite* Envelope::mutable_leaderboard_record_write() {
+  if (!has_leaderboard_record_write()) {
+    clear_payload();
+    set_has_leaderboard_record_write();
+    payload_.leaderboard_record_write_ = new ::server::TLeaderboardRecordWrite;
+  }
+  // @@protoc_insertion_point(field_mutable:server.Envelope.leaderboard_record_write)
+  return payload_.leaderboard_record_write_;
+}
+inline ::server::TLeaderboardRecordWrite* Envelope::release_leaderboard_record_write() {
+  // @@protoc_insertion_point(field_release:server.Envelope.leaderboard_record_write)
+  if (has_leaderboard_record_write()) {
+    clear_has_payload();
+    ::server::TLeaderboardRecordWrite* temp = payload_.leaderboard_record_write_;
+    payload_.leaderboard_record_write_ = NULL;
+    return temp;
+  } else {
+    return NULL;
+  }
+}
+inline void Envelope::set_allocated_leaderboard_record_write(::server::TLeaderboardRecordWrite* leaderboard_record_write) {
+  clear_payload();
+  if (leaderboard_record_write) {
+    set_has_leaderboard_record_write();
+    payload_.leaderboard_record_write_ = leaderboard_record_write;
+  }
+  // @@protoc_insertion_point(field_set_allocated:server.Envelope.leaderboard_record_write)
+}
+
+// optional .server.TLeaderboardRecordsFetch leaderboard_records_fetch = 55;
+inline bool Envelope::has_leaderboard_records_fetch() const {
+  return payload_case() == kLeaderboardRecordsFetch;
+}
+inline void Envelope::set_has_leaderboard_records_fetch() {
+  _oneof_case_[0] = kLeaderboardRecordsFetch;
+}
+inline void Envelope::clear_leaderboard_records_fetch() {
+  if (has_leaderboard_records_fetch()) {
+    delete payload_.leaderboard_records_fetch_;
+    clear_has_payload();
+  }
+}
+inline  const ::server::TLeaderboardRecordsFetch& Envelope::leaderboard_records_fetch() const {
+  // @@protoc_insertion_point(field_get:server.Envelope.leaderboard_records_fetch)
+  return has_leaderboard_records_fetch()
+      ? *payload_.leaderboard_records_fetch_
+      : ::server::TLeaderboardRecordsFetch::default_instance();
+}
+inline ::server::TLeaderboardRecordsFetch* Envelope::mutable_leaderboard_records_fetch() {
+  if (!has_leaderboard_records_fetch()) {
+    clear_payload();
+    set_has_leaderboard_records_fetch();
+    payload_.leaderboard_records_fetch_ = new ::server::TLeaderboardRecordsFetch;
+  }
+  // @@protoc_insertion_point(field_mutable:server.Envelope.leaderboard_records_fetch)
+  return payload_.leaderboard_records_fetch_;
+}
+inline ::server::TLeaderboardRecordsFetch* Envelope::release_leaderboard_records_fetch() {
+  // @@protoc_insertion_point(field_release:server.Envelope.leaderboard_records_fetch)
+  if (has_leaderboard_records_fetch()) {
+    clear_has_payload();
+    ::server::TLeaderboardRecordsFetch* temp = payload_.leaderboard_records_fetch_;
+    payload_.leaderboard_records_fetch_ = NULL;
+    return temp;
+  } else {
+    return NULL;
+  }
+}
+inline void Envelope::set_allocated_leaderboard_records_fetch(::server::TLeaderboardRecordsFetch* leaderboard_records_fetch) {
+  clear_payload();
+  if (leaderboard_records_fetch) {
+    set_has_leaderboard_records_fetch();
+    payload_.leaderboard_records_fetch_ = leaderboard_records_fetch;
+  }
+  // @@protoc_insertion_point(field_set_allocated:server.Envelope.leaderboard_records_fetch)
+}
+
+// optional .server.TLeaderboardRecordsList leaderboard_records_list = 56;
+inline bool Envelope::has_leaderboard_records_list() const {
+  return payload_case() == kLeaderboardRecordsList;
+}
+inline void Envelope::set_has_leaderboard_records_list() {
+  _oneof_case_[0] = kLeaderboardRecordsList;
+}
+inline void Envelope::clear_leaderboard_records_list() {
+  if (has_leaderboard_records_list()) {
+    delete payload_.leaderboard_records_list_;
+    clear_has_payload();
+  }
+}
+inline  const ::server::TLeaderboardRecordsList& Envelope::leaderboard_records_list() const {
+  // @@protoc_insertion_point(field_get:server.Envelope.leaderboard_records_list)
+  return has_leaderboard_records_list()
+      ? *payload_.leaderboard_records_list_
+      : ::server::TLeaderboardRecordsList::default_instance();
+}
+inline ::server::TLeaderboardRecordsList* Envelope::mutable_leaderboard_records_list() {
+  if (!has_leaderboard_records_list()) {
+    clear_payload();
+    set_has_leaderboard_records_list();
+    payload_.leaderboard_records_list_ = new ::server::TLeaderboardRecordsList;
+  }
+  // @@protoc_insertion_point(field_mutable:server.Envelope.leaderboard_records_list)
+  return payload_.leaderboard_records_list_;
+}
+inline ::server::TLeaderboardRecordsList* Envelope::release_leaderboard_records_list() {
+  // @@protoc_insertion_point(field_release:server.Envelope.leaderboard_records_list)
+  if (has_leaderboard_records_list()) {
+    clear_has_payload();
+    ::server::TLeaderboardRecordsList* temp = payload_.leaderboard_records_list_;
+    payload_.leaderboard_records_list_ = NULL;
+    return temp;
+  } else {
+    return NULL;
+  }
+}
+inline void Envelope::set_allocated_leaderboard_records_list(::server::TLeaderboardRecordsList* leaderboard_records_list) {
+  clear_payload();
+  if (leaderboard_records_list) {
+    set_has_leaderboard_records_list();
+    payload_.leaderboard_records_list_ = leaderboard_records_list;
+  }
+  // @@protoc_insertion_point(field_set_allocated:server.Envelope.leaderboard_records_list)
+}
+
+// optional .server.TLeaderboards leaderboards = 57;
+inline bool Envelope::has_leaderboards() const {
+  return payload_case() == kLeaderboards;
+}
+inline void Envelope::set_has_leaderboards() {
+  _oneof_case_[0] = kLeaderboards;
+}
+inline void Envelope::clear_leaderboards() {
+  if (has_leaderboards()) {
+    delete payload_.leaderboards_;
+    clear_has_payload();
+  }
+}
+inline  const ::server::TLeaderboards& Envelope::leaderboards() const {
+  // @@protoc_insertion_point(field_get:server.Envelope.leaderboards)
+  return has_leaderboards()
+      ? *payload_.leaderboards_
+      : ::server::TLeaderboards::default_instance();
+}
+inline ::server::TLeaderboards* Envelope::mutable_leaderboards() {
+  if (!has_leaderboards()) {
+    clear_payload();
+    set_has_leaderboards();
+    payload_.leaderboards_ = new ::server::TLeaderboards;
+  }
+  // @@protoc_insertion_point(field_mutable:server.Envelope.leaderboards)
+  return payload_.leaderboards_;
+}
+inline ::server::TLeaderboards* Envelope::release_leaderboards() {
+  // @@protoc_insertion_point(field_release:server.Envelope.leaderboards)
+  if (has_leaderboards()) {
+    clear_has_payload();
+    ::server::TLeaderboards* temp = payload_.leaderboards_;
+    payload_.leaderboards_ = NULL;
+    return temp;
+  } else {
+    return NULL;
+  }
+}
+inline void Envelope::set_allocated_leaderboards(::server::TLeaderboards* leaderboards) {
+  clear_payload();
+  if (leaderboards) {
+    set_has_leaderboards();
+    payload_.leaderboards_ = leaderboards;
+  }
+  // @@protoc_insertion_point(field_set_allocated:server.Envelope.leaderboards)
+}
+
+// optional .server.TLeaderboardRecord leaderboard_record = 58;
+inline bool Envelope::has_leaderboard_record() const {
+  return payload_case() == kLeaderboardRecord;
+}
+inline void Envelope::set_has_leaderboard_record() {
+  _oneof_case_[0] = kLeaderboardRecord;
+}
+inline void Envelope::clear_leaderboard_record() {
+  if (has_leaderboard_record()) {
+    delete payload_.leaderboard_record_;
+    clear_has_payload();
+  }
+}
+inline  const ::server::TLeaderboardRecord& Envelope::leaderboard_record() const {
+  // @@protoc_insertion_point(field_get:server.Envelope.leaderboard_record)
+  return has_leaderboard_record()
+      ? *payload_.leaderboard_record_
+      : ::server::TLeaderboardRecord::default_instance();
+}
+inline ::server::TLeaderboardRecord* Envelope::mutable_leaderboard_record() {
+  if (!has_leaderboard_record()) {
+    clear_payload();
+    set_has_leaderboard_record();
+    payload_.leaderboard_record_ = new ::server::TLeaderboardRecord;
+  }
+  // @@protoc_insertion_point(field_mutable:server.Envelope.leaderboard_record)
+  return payload_.leaderboard_record_;
+}
+inline ::server::TLeaderboardRecord* Envelope::release_leaderboard_record() {
+  // @@protoc_insertion_point(field_release:server.Envelope.leaderboard_record)
+  if (has_leaderboard_record()) {
+    clear_has_payload();
+    ::server::TLeaderboardRecord* temp = payload_.leaderboard_record_;
+    payload_.leaderboard_record_ = NULL;
+    return temp;
+  } else {
+    return NULL;
+  }
+}
+inline void Envelope::set_allocated_leaderboard_record(::server::TLeaderboardRecord* leaderboard_record) {
+  clear_payload();
+  if (leaderboard_record) {
+    set_has_leaderboard_record();
+    payload_.leaderboard_record_ = leaderboard_record;
+  }
+  // @@protoc_insertion_point(field_set_allocated:server.Envelope.leaderboard_record)
+}
+
+// optional .server.TLeaderboardRecords leaderboard_records = 59;
+inline bool Envelope::has_leaderboard_records() const {
+  return payload_case() == kLeaderboardRecords;
+}
+inline void Envelope::set_has_leaderboard_records() {
+  _oneof_case_[0] = kLeaderboardRecords;
+}
+inline void Envelope::clear_leaderboard_records() {
+  if (has_leaderboard_records()) {
+    delete payload_.leaderboard_records_;
+    clear_has_payload();
+  }
+}
+inline  const ::server::TLeaderboardRecords& Envelope::leaderboard_records() const {
+  // @@protoc_insertion_point(field_get:server.Envelope.leaderboard_records)
+  return has_leaderboard_records()
+      ? *payload_.leaderboard_records_
+      : ::server::TLeaderboardRecords::default_instance();
+}
+inline ::server::TLeaderboardRecords* Envelope::mutable_leaderboard_records() {
+  if (!has_leaderboard_records()) {
+    clear_payload();
+    set_has_leaderboard_records();
+    payload_.leaderboard_records_ = new ::server::TLeaderboardRecords;
+  }
+  // @@protoc_insertion_point(field_mutable:server.Envelope.leaderboard_records)
+  return payload_.leaderboard_records_;
+}
+inline ::server::TLeaderboardRecords* Envelope::release_leaderboard_records() {
+  // @@protoc_insertion_point(field_release:server.Envelope.leaderboard_records)
+  if (has_leaderboard_records()) {
+    clear_has_payload();
+    ::server::TLeaderboardRecords* temp = payload_.leaderboard_records_;
+    payload_.leaderboard_records_ = NULL;
+    return temp;
+  } else {
+    return NULL;
+  }
+}
+inline void Envelope::set_allocated_leaderboard_records(::server::TLeaderboardRecords* leaderboard_records) {
+  clear_payload();
+  if (leaderboard_records) {
+    set_has_leaderboard_records();
+    payload_.leaderboard_records_ = leaderboard_records;
+  }
+  // @@protoc_insertion_point(field_set_allocated:server.Envelope.leaderboard_records)
 }
 
 inline bool Envelope::has_payload() const {
@@ -17531,6 +19459,50 @@ inline void UserPresence::set_allocated_session_id(::std::string* session_id) {
   // @@protoc_insertion_point(field_set_allocated:server.UserPresence.session_id)
 }
 
+// optional string handle = 3;
+inline void UserPresence::clear_handle() {
+  handle_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& UserPresence::handle() const {
+  // @@protoc_insertion_point(field_get:server.UserPresence.handle)
+  return handle_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void UserPresence::set_handle(const ::std::string& value) {
+  
+  handle_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:server.UserPresence.handle)
+}
+inline void UserPresence::set_handle(const char* value) {
+  
+  handle_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:server.UserPresence.handle)
+}
+inline void UserPresence::set_handle(const char* value, size_t size) {
+  
+  handle_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:server.UserPresence.handle)
+}
+inline ::std::string* UserPresence::mutable_handle() {
+  
+  // @@protoc_insertion_point(field_mutable:server.UserPresence.handle)
+  return handle_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* UserPresence::release_handle() {
+  // @@protoc_insertion_point(field_release:server.UserPresence.handle)
+  
+  return handle_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void UserPresence::set_allocated_handle(::std::string* handle) {
+  if (handle != NULL) {
+    
+  } else {
+    
+  }
+  handle_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), handle);
+  // @@protoc_insertion_point(field_set_allocated:server.UserPresence.handle)
+}
+
 inline const UserPresence* UserPresence::internal_default_instance() {
   return &UserPresence_default_instance_.get();
 }
@@ -20848,7 +22820,1948 @@ TStorageRemove::keys() const {
 inline const TStorageRemove* TStorageRemove::internal_default_instance() {
   return &TStorageRemove_default_instance_.get();
 }
+// -------------------------------------------------------------------
+
+// Leaderboard
+
+// optional bytes id = 1;
+inline void Leaderboard::clear_id() {
+  id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& Leaderboard::id() const {
+  // @@protoc_insertion_point(field_get:server.Leaderboard.id)
+  return id_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void Leaderboard::set_id(const ::std::string& value) {
+  
+  id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:server.Leaderboard.id)
+}
+inline void Leaderboard::set_id(const char* value) {
+  
+  id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:server.Leaderboard.id)
+}
+inline void Leaderboard::set_id(const void* value, size_t size) {
+  
+  id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:server.Leaderboard.id)
+}
+inline ::std::string* Leaderboard::mutable_id() {
+  
+  // @@protoc_insertion_point(field_mutable:server.Leaderboard.id)
+  return id_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* Leaderboard::release_id() {
+  // @@protoc_insertion_point(field_release:server.Leaderboard.id)
+  
+  return id_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void Leaderboard::set_allocated_id(::std::string* id) {
+  if (id != NULL) {
+    
+  } else {
+    
+  }
+  id_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), id);
+  // @@protoc_insertion_point(field_set_allocated:server.Leaderboard.id)
+}
+
+// optional bool authoritative = 2;
+inline void Leaderboard::clear_authoritative() {
+  authoritative_ = false;
+}
+inline bool Leaderboard::authoritative() const {
+  // @@protoc_insertion_point(field_get:server.Leaderboard.authoritative)
+  return authoritative_;
+}
+inline void Leaderboard::set_authoritative(bool value) {
+  
+  authoritative_ = value;
+  // @@protoc_insertion_point(field_set:server.Leaderboard.authoritative)
+}
+
+// optional int64 sort = 3;
+inline void Leaderboard::clear_sort() {
+  sort_ = GOOGLE_LONGLONG(0);
+}
+inline ::google::protobuf::int64 Leaderboard::sort() const {
+  // @@protoc_insertion_point(field_get:server.Leaderboard.sort)
+  return sort_;
+}
+inline void Leaderboard::set_sort(::google::protobuf::int64 value) {
+  
+  sort_ = value;
+  // @@protoc_insertion_point(field_set:server.Leaderboard.sort)
+}
+
+// optional int64 count = 4;
+inline void Leaderboard::clear_count() {
+  count_ = GOOGLE_LONGLONG(0);
+}
+inline ::google::protobuf::int64 Leaderboard::count() const {
+  // @@protoc_insertion_point(field_get:server.Leaderboard.count)
+  return count_;
+}
+inline void Leaderboard::set_count(::google::protobuf::int64 value) {
+  
+  count_ = value;
+  // @@protoc_insertion_point(field_set:server.Leaderboard.count)
+}
+
+// optional string reset_schedule = 5;
+inline void Leaderboard::clear_reset_schedule() {
+  reset_schedule_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& Leaderboard::reset_schedule() const {
+  // @@protoc_insertion_point(field_get:server.Leaderboard.reset_schedule)
+  return reset_schedule_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void Leaderboard::set_reset_schedule(const ::std::string& value) {
+  
+  reset_schedule_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:server.Leaderboard.reset_schedule)
+}
+inline void Leaderboard::set_reset_schedule(const char* value) {
+  
+  reset_schedule_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:server.Leaderboard.reset_schedule)
+}
+inline void Leaderboard::set_reset_schedule(const char* value, size_t size) {
+  
+  reset_schedule_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:server.Leaderboard.reset_schedule)
+}
+inline ::std::string* Leaderboard::mutable_reset_schedule() {
+  
+  // @@protoc_insertion_point(field_mutable:server.Leaderboard.reset_schedule)
+  return reset_schedule_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* Leaderboard::release_reset_schedule() {
+  // @@protoc_insertion_point(field_release:server.Leaderboard.reset_schedule)
+  
+  return reset_schedule_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void Leaderboard::set_allocated_reset_schedule(::std::string* reset_schedule) {
+  if (reset_schedule != NULL) {
+    
+  } else {
+    
+  }
+  reset_schedule_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), reset_schedule);
+  // @@protoc_insertion_point(field_set_allocated:server.Leaderboard.reset_schedule)
+}
+
+// optional bytes metadata = 6;
+inline void Leaderboard::clear_metadata() {
+  metadata_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& Leaderboard::metadata() const {
+  // @@protoc_insertion_point(field_get:server.Leaderboard.metadata)
+  return metadata_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void Leaderboard::set_metadata(const ::std::string& value) {
+  
+  metadata_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:server.Leaderboard.metadata)
+}
+inline void Leaderboard::set_metadata(const char* value) {
+  
+  metadata_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:server.Leaderboard.metadata)
+}
+inline void Leaderboard::set_metadata(const void* value, size_t size) {
+  
+  metadata_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:server.Leaderboard.metadata)
+}
+inline ::std::string* Leaderboard::mutable_metadata() {
+  
+  // @@protoc_insertion_point(field_mutable:server.Leaderboard.metadata)
+  return metadata_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* Leaderboard::release_metadata() {
+  // @@protoc_insertion_point(field_release:server.Leaderboard.metadata)
+  
+  return metadata_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void Leaderboard::set_allocated_metadata(::std::string* metadata) {
+  if (metadata != NULL) {
+    
+  } else {
+    
+  }
+  metadata_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), metadata);
+  // @@protoc_insertion_point(field_set_allocated:server.Leaderboard.metadata)
+}
+
+// optional bytes next_id = 7;
+inline void Leaderboard::clear_next_id() {
+  next_id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& Leaderboard::next_id() const {
+  // @@protoc_insertion_point(field_get:server.Leaderboard.next_id)
+  return next_id_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void Leaderboard::set_next_id(const ::std::string& value) {
+  
+  next_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:server.Leaderboard.next_id)
+}
+inline void Leaderboard::set_next_id(const char* value) {
+  
+  next_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:server.Leaderboard.next_id)
+}
+inline void Leaderboard::set_next_id(const void* value, size_t size) {
+  
+  next_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:server.Leaderboard.next_id)
+}
+inline ::std::string* Leaderboard::mutable_next_id() {
+  
+  // @@protoc_insertion_point(field_mutable:server.Leaderboard.next_id)
+  return next_id_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* Leaderboard::release_next_id() {
+  // @@protoc_insertion_point(field_release:server.Leaderboard.next_id)
+  
+  return next_id_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void Leaderboard::set_allocated_next_id(::std::string* next_id) {
+  if (next_id != NULL) {
+    
+  } else {
+    
+  }
+  next_id_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), next_id);
+  // @@protoc_insertion_point(field_set_allocated:server.Leaderboard.next_id)
+}
+
+// optional bytes prev_id = 8;
+inline void Leaderboard::clear_prev_id() {
+  prev_id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& Leaderboard::prev_id() const {
+  // @@protoc_insertion_point(field_get:server.Leaderboard.prev_id)
+  return prev_id_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void Leaderboard::set_prev_id(const ::std::string& value) {
+  
+  prev_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:server.Leaderboard.prev_id)
+}
+inline void Leaderboard::set_prev_id(const char* value) {
+  
+  prev_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:server.Leaderboard.prev_id)
+}
+inline void Leaderboard::set_prev_id(const void* value, size_t size) {
+  
+  prev_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:server.Leaderboard.prev_id)
+}
+inline ::std::string* Leaderboard::mutable_prev_id() {
+  
+  // @@protoc_insertion_point(field_mutable:server.Leaderboard.prev_id)
+  return prev_id_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* Leaderboard::release_prev_id() {
+  // @@protoc_insertion_point(field_release:server.Leaderboard.prev_id)
+  
+  return prev_id_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void Leaderboard::set_allocated_prev_id(::std::string* prev_id) {
+  if (prev_id != NULL) {
+    
+  } else {
+    
+  }
+  prev_id_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), prev_id);
+  // @@protoc_insertion_point(field_set_allocated:server.Leaderboard.prev_id)
+}
+
+inline const Leaderboard* Leaderboard::internal_default_instance() {
+  return &Leaderboard_default_instance_.get();
+}
+// -------------------------------------------------------------------
+
+// LeaderboardRecord
+
+// optional bytes leaderboard_id = 1;
+inline void LeaderboardRecord::clear_leaderboard_id() {
+  leaderboard_id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& LeaderboardRecord::leaderboard_id() const {
+  // @@protoc_insertion_point(field_get:server.LeaderboardRecord.leaderboard_id)
+  return leaderboard_id_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void LeaderboardRecord::set_leaderboard_id(const ::std::string& value) {
+  
+  leaderboard_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:server.LeaderboardRecord.leaderboard_id)
+}
+inline void LeaderboardRecord::set_leaderboard_id(const char* value) {
+  
+  leaderboard_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:server.LeaderboardRecord.leaderboard_id)
+}
+inline void LeaderboardRecord::set_leaderboard_id(const void* value, size_t size) {
+  
+  leaderboard_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:server.LeaderboardRecord.leaderboard_id)
+}
+inline ::std::string* LeaderboardRecord::mutable_leaderboard_id() {
+  
+  // @@protoc_insertion_point(field_mutable:server.LeaderboardRecord.leaderboard_id)
+  return leaderboard_id_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* LeaderboardRecord::release_leaderboard_id() {
+  // @@protoc_insertion_point(field_release:server.LeaderboardRecord.leaderboard_id)
+  
+  return leaderboard_id_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void LeaderboardRecord::set_allocated_leaderboard_id(::std::string* leaderboard_id) {
+  if (leaderboard_id != NULL) {
+    
+  } else {
+    
+  }
+  leaderboard_id_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), leaderboard_id);
+  // @@protoc_insertion_point(field_set_allocated:server.LeaderboardRecord.leaderboard_id)
+}
+
+// optional bytes owner_id = 2;
+inline void LeaderboardRecord::clear_owner_id() {
+  owner_id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& LeaderboardRecord::owner_id() const {
+  // @@protoc_insertion_point(field_get:server.LeaderboardRecord.owner_id)
+  return owner_id_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void LeaderboardRecord::set_owner_id(const ::std::string& value) {
+  
+  owner_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:server.LeaderboardRecord.owner_id)
+}
+inline void LeaderboardRecord::set_owner_id(const char* value) {
+  
+  owner_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:server.LeaderboardRecord.owner_id)
+}
+inline void LeaderboardRecord::set_owner_id(const void* value, size_t size) {
+  
+  owner_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:server.LeaderboardRecord.owner_id)
+}
+inline ::std::string* LeaderboardRecord::mutable_owner_id() {
+  
+  // @@protoc_insertion_point(field_mutable:server.LeaderboardRecord.owner_id)
+  return owner_id_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* LeaderboardRecord::release_owner_id() {
+  // @@protoc_insertion_point(field_release:server.LeaderboardRecord.owner_id)
+  
+  return owner_id_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void LeaderboardRecord::set_allocated_owner_id(::std::string* owner_id) {
+  if (owner_id != NULL) {
+    
+  } else {
+    
+  }
+  owner_id_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), owner_id);
+  // @@protoc_insertion_point(field_set_allocated:server.LeaderboardRecord.owner_id)
+}
+
+// optional string handle = 3;
+inline void LeaderboardRecord::clear_handle() {
+  handle_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& LeaderboardRecord::handle() const {
+  // @@protoc_insertion_point(field_get:server.LeaderboardRecord.handle)
+  return handle_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void LeaderboardRecord::set_handle(const ::std::string& value) {
+  
+  handle_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:server.LeaderboardRecord.handle)
+}
+inline void LeaderboardRecord::set_handle(const char* value) {
+  
+  handle_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:server.LeaderboardRecord.handle)
+}
+inline void LeaderboardRecord::set_handle(const char* value, size_t size) {
+  
+  handle_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:server.LeaderboardRecord.handle)
+}
+inline ::std::string* LeaderboardRecord::mutable_handle() {
+  
+  // @@protoc_insertion_point(field_mutable:server.LeaderboardRecord.handle)
+  return handle_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* LeaderboardRecord::release_handle() {
+  // @@protoc_insertion_point(field_release:server.LeaderboardRecord.handle)
+  
+  return handle_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void LeaderboardRecord::set_allocated_handle(::std::string* handle) {
+  if (handle != NULL) {
+    
+  } else {
+    
+  }
+  handle_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), handle);
+  // @@protoc_insertion_point(field_set_allocated:server.LeaderboardRecord.handle)
+}
+
+// optional string lang = 4;
+inline void LeaderboardRecord::clear_lang() {
+  lang_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& LeaderboardRecord::lang() const {
+  // @@protoc_insertion_point(field_get:server.LeaderboardRecord.lang)
+  return lang_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void LeaderboardRecord::set_lang(const ::std::string& value) {
+  
+  lang_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:server.LeaderboardRecord.lang)
+}
+inline void LeaderboardRecord::set_lang(const char* value) {
+  
+  lang_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:server.LeaderboardRecord.lang)
+}
+inline void LeaderboardRecord::set_lang(const char* value, size_t size) {
+  
+  lang_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:server.LeaderboardRecord.lang)
+}
+inline ::std::string* LeaderboardRecord::mutable_lang() {
+  
+  // @@protoc_insertion_point(field_mutable:server.LeaderboardRecord.lang)
+  return lang_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* LeaderboardRecord::release_lang() {
+  // @@protoc_insertion_point(field_release:server.LeaderboardRecord.lang)
+  
+  return lang_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void LeaderboardRecord::set_allocated_lang(::std::string* lang) {
+  if (lang != NULL) {
+    
+  } else {
+    
+  }
+  lang_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), lang);
+  // @@protoc_insertion_point(field_set_allocated:server.LeaderboardRecord.lang)
+}
+
+// optional string location = 5;
+inline void LeaderboardRecord::clear_location() {
+  location_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& LeaderboardRecord::location() const {
+  // @@protoc_insertion_point(field_get:server.LeaderboardRecord.location)
+  return location_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void LeaderboardRecord::set_location(const ::std::string& value) {
+  
+  location_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:server.LeaderboardRecord.location)
+}
+inline void LeaderboardRecord::set_location(const char* value) {
+  
+  location_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:server.LeaderboardRecord.location)
+}
+inline void LeaderboardRecord::set_location(const char* value, size_t size) {
+  
+  location_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:server.LeaderboardRecord.location)
+}
+inline ::std::string* LeaderboardRecord::mutable_location() {
+  
+  // @@protoc_insertion_point(field_mutable:server.LeaderboardRecord.location)
+  return location_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* LeaderboardRecord::release_location() {
+  // @@protoc_insertion_point(field_release:server.LeaderboardRecord.location)
+  
+  return location_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void LeaderboardRecord::set_allocated_location(::std::string* location) {
+  if (location != NULL) {
+    
+  } else {
+    
+  }
+  location_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), location);
+  // @@protoc_insertion_point(field_set_allocated:server.LeaderboardRecord.location)
+}
+
+// optional string timezone = 6;
+inline void LeaderboardRecord::clear_timezone() {
+  timezone_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& LeaderboardRecord::timezone() const {
+  // @@protoc_insertion_point(field_get:server.LeaderboardRecord.timezone)
+  return timezone_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void LeaderboardRecord::set_timezone(const ::std::string& value) {
+  
+  timezone_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:server.LeaderboardRecord.timezone)
+}
+inline void LeaderboardRecord::set_timezone(const char* value) {
+  
+  timezone_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:server.LeaderboardRecord.timezone)
+}
+inline void LeaderboardRecord::set_timezone(const char* value, size_t size) {
+  
+  timezone_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:server.LeaderboardRecord.timezone)
+}
+inline ::std::string* LeaderboardRecord::mutable_timezone() {
+  
+  // @@protoc_insertion_point(field_mutable:server.LeaderboardRecord.timezone)
+  return timezone_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* LeaderboardRecord::release_timezone() {
+  // @@protoc_insertion_point(field_release:server.LeaderboardRecord.timezone)
+  
+  return timezone_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void LeaderboardRecord::set_allocated_timezone(::std::string* timezone) {
+  if (timezone != NULL) {
+    
+  } else {
+    
+  }
+  timezone_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), timezone);
+  // @@protoc_insertion_point(field_set_allocated:server.LeaderboardRecord.timezone)
+}
+
+// optional int64 rank = 7;
+inline void LeaderboardRecord::clear_rank() {
+  rank_ = GOOGLE_LONGLONG(0);
+}
+inline ::google::protobuf::int64 LeaderboardRecord::rank() const {
+  // @@protoc_insertion_point(field_get:server.LeaderboardRecord.rank)
+  return rank_;
+}
+inline void LeaderboardRecord::set_rank(::google::protobuf::int64 value) {
+  
+  rank_ = value;
+  // @@protoc_insertion_point(field_set:server.LeaderboardRecord.rank)
+}
+
+// optional int64 score = 8;
+inline void LeaderboardRecord::clear_score() {
+  score_ = GOOGLE_LONGLONG(0);
+}
+inline ::google::protobuf::int64 LeaderboardRecord::score() const {
+  // @@protoc_insertion_point(field_get:server.LeaderboardRecord.score)
+  return score_;
+}
+inline void LeaderboardRecord::set_score(::google::protobuf::int64 value) {
+  
+  score_ = value;
+  // @@protoc_insertion_point(field_set:server.LeaderboardRecord.score)
+}
+
+// optional int64 num_score = 9;
+inline void LeaderboardRecord::clear_num_score() {
+  num_score_ = GOOGLE_LONGLONG(0);
+}
+inline ::google::protobuf::int64 LeaderboardRecord::num_score() const {
+  // @@protoc_insertion_point(field_get:server.LeaderboardRecord.num_score)
+  return num_score_;
+}
+inline void LeaderboardRecord::set_num_score(::google::protobuf::int64 value) {
+  
+  num_score_ = value;
+  // @@protoc_insertion_point(field_set:server.LeaderboardRecord.num_score)
+}
+
+// optional bytes metadata = 10;
+inline void LeaderboardRecord::clear_metadata() {
+  metadata_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& LeaderboardRecord::metadata() const {
+  // @@protoc_insertion_point(field_get:server.LeaderboardRecord.metadata)
+  return metadata_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void LeaderboardRecord::set_metadata(const ::std::string& value) {
+  
+  metadata_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:server.LeaderboardRecord.metadata)
+}
+inline void LeaderboardRecord::set_metadata(const char* value) {
+  
+  metadata_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:server.LeaderboardRecord.metadata)
+}
+inline void LeaderboardRecord::set_metadata(const void* value, size_t size) {
+  
+  metadata_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:server.LeaderboardRecord.metadata)
+}
+inline ::std::string* LeaderboardRecord::mutable_metadata() {
+  
+  // @@protoc_insertion_point(field_mutable:server.LeaderboardRecord.metadata)
+  return metadata_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* LeaderboardRecord::release_metadata() {
+  // @@protoc_insertion_point(field_release:server.LeaderboardRecord.metadata)
+  
+  return metadata_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void LeaderboardRecord::set_allocated_metadata(::std::string* metadata) {
+  if (metadata != NULL) {
+    
+  } else {
+    
+  }
+  metadata_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), metadata);
+  // @@protoc_insertion_point(field_set_allocated:server.LeaderboardRecord.metadata)
+}
+
+// optional int64 ranked_at = 11;
+inline void LeaderboardRecord::clear_ranked_at() {
+  ranked_at_ = GOOGLE_LONGLONG(0);
+}
+inline ::google::protobuf::int64 LeaderboardRecord::ranked_at() const {
+  // @@protoc_insertion_point(field_get:server.LeaderboardRecord.ranked_at)
+  return ranked_at_;
+}
+inline void LeaderboardRecord::set_ranked_at(::google::protobuf::int64 value) {
+  
+  ranked_at_ = value;
+  // @@protoc_insertion_point(field_set:server.LeaderboardRecord.ranked_at)
+}
+
+// optional int64 updated_at = 12;
+inline void LeaderboardRecord::clear_updated_at() {
+  updated_at_ = GOOGLE_LONGLONG(0);
+}
+inline ::google::protobuf::int64 LeaderboardRecord::updated_at() const {
+  // @@protoc_insertion_point(field_get:server.LeaderboardRecord.updated_at)
+  return updated_at_;
+}
+inline void LeaderboardRecord::set_updated_at(::google::protobuf::int64 value) {
+  
+  updated_at_ = value;
+  // @@protoc_insertion_point(field_set:server.LeaderboardRecord.updated_at)
+}
+
+// optional int64 expires_at = 13;
+inline void LeaderboardRecord::clear_expires_at() {
+  expires_at_ = GOOGLE_LONGLONG(0);
+}
+inline ::google::protobuf::int64 LeaderboardRecord::expires_at() const {
+  // @@protoc_insertion_point(field_get:server.LeaderboardRecord.expires_at)
+  return expires_at_;
+}
+inline void LeaderboardRecord::set_expires_at(::google::protobuf::int64 value) {
+  
+  expires_at_ = value;
+  // @@protoc_insertion_point(field_set:server.LeaderboardRecord.expires_at)
+}
+
+inline const LeaderboardRecord* LeaderboardRecord::internal_default_instance() {
+  return &LeaderboardRecord_default_instance_.get();
+}
+// -------------------------------------------------------------------
+
+// TLeaderboardsList
+
+// optional int64 limit = 1;
+inline void TLeaderboardsList::clear_limit() {
+  limit_ = GOOGLE_LONGLONG(0);
+}
+inline ::google::protobuf::int64 TLeaderboardsList::limit() const {
+  // @@protoc_insertion_point(field_get:server.TLeaderboardsList.limit)
+  return limit_;
+}
+inline void TLeaderboardsList::set_limit(::google::protobuf::int64 value) {
+  
+  limit_ = value;
+  // @@protoc_insertion_point(field_set:server.TLeaderboardsList.limit)
+}
+
+// optional bytes cursor = 2;
+inline void TLeaderboardsList::clear_cursor() {
+  cursor_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& TLeaderboardsList::cursor() const {
+  // @@protoc_insertion_point(field_get:server.TLeaderboardsList.cursor)
+  return cursor_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void TLeaderboardsList::set_cursor(const ::std::string& value) {
+  
+  cursor_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:server.TLeaderboardsList.cursor)
+}
+inline void TLeaderboardsList::set_cursor(const char* value) {
+  
+  cursor_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:server.TLeaderboardsList.cursor)
+}
+inline void TLeaderboardsList::set_cursor(const void* value, size_t size) {
+  
+  cursor_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:server.TLeaderboardsList.cursor)
+}
+inline ::std::string* TLeaderboardsList::mutable_cursor() {
+  
+  // @@protoc_insertion_point(field_mutable:server.TLeaderboardsList.cursor)
+  return cursor_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* TLeaderboardsList::release_cursor() {
+  // @@protoc_insertion_point(field_release:server.TLeaderboardsList.cursor)
+  
+  return cursor_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void TLeaderboardsList::set_allocated_cursor(::std::string* cursor) {
+  if (cursor != NULL) {
+    
+  } else {
+    
+  }
+  cursor_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), cursor);
+  // @@protoc_insertion_point(field_set_allocated:server.TLeaderboardsList.cursor)
+}
+
+inline const TLeaderboardsList* TLeaderboardsList::internal_default_instance() {
+  return &TLeaderboardsList_default_instance_.get();
+}
+// -------------------------------------------------------------------
+
+// TLeaderboards
+
+// repeated .server.Leaderboard leaderboards = 1;
+inline int TLeaderboards::leaderboards_size() const {
+  return leaderboards_.size();
+}
+inline void TLeaderboards::clear_leaderboards() {
+  leaderboards_.Clear();
+}
+inline const ::server::Leaderboard& TLeaderboards::leaderboards(int index) const {
+  // @@protoc_insertion_point(field_get:server.TLeaderboards.leaderboards)
+  return leaderboards_.Get(index);
+}
+inline ::server::Leaderboard* TLeaderboards::mutable_leaderboards(int index) {
+  // @@protoc_insertion_point(field_mutable:server.TLeaderboards.leaderboards)
+  return leaderboards_.Mutable(index);
+}
+inline ::server::Leaderboard* TLeaderboards::add_leaderboards() {
+  // @@protoc_insertion_point(field_add:server.TLeaderboards.leaderboards)
+  return leaderboards_.Add();
+}
+inline ::google::protobuf::RepeatedPtrField< ::server::Leaderboard >*
+TLeaderboards::mutable_leaderboards() {
+  // @@protoc_insertion_point(field_mutable_list:server.TLeaderboards.leaderboards)
+  return &leaderboards_;
+}
+inline const ::google::protobuf::RepeatedPtrField< ::server::Leaderboard >&
+TLeaderboards::leaderboards() const {
+  // @@protoc_insertion_point(field_list:server.TLeaderboards.leaderboards)
+  return leaderboards_;
+}
+
+// optional bytes cursor = 2;
+inline void TLeaderboards::clear_cursor() {
+  cursor_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& TLeaderboards::cursor() const {
+  // @@protoc_insertion_point(field_get:server.TLeaderboards.cursor)
+  return cursor_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void TLeaderboards::set_cursor(const ::std::string& value) {
+  
+  cursor_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:server.TLeaderboards.cursor)
+}
+inline void TLeaderboards::set_cursor(const char* value) {
+  
+  cursor_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:server.TLeaderboards.cursor)
+}
+inline void TLeaderboards::set_cursor(const void* value, size_t size) {
+  
+  cursor_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:server.TLeaderboards.cursor)
+}
+inline ::std::string* TLeaderboards::mutable_cursor() {
+  
+  // @@protoc_insertion_point(field_mutable:server.TLeaderboards.cursor)
+  return cursor_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* TLeaderboards::release_cursor() {
+  // @@protoc_insertion_point(field_release:server.TLeaderboards.cursor)
+  
+  return cursor_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void TLeaderboards::set_allocated_cursor(::std::string* cursor) {
+  if (cursor != NULL) {
+    
+  } else {
+    
+  }
+  cursor_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), cursor);
+  // @@protoc_insertion_point(field_set_allocated:server.TLeaderboards.cursor)
+}
+
+inline const TLeaderboards* TLeaderboards::internal_default_instance() {
+  return &TLeaderboards_default_instance_.get();
+}
+// -------------------------------------------------------------------
+
+// TLeaderboardRecordWrite
+
+// optional bytes leaderboard_id = 1;
+inline void TLeaderboardRecordWrite::clear_leaderboard_id() {
+  leaderboard_id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& TLeaderboardRecordWrite::leaderboard_id() const {
+  // @@protoc_insertion_point(field_get:server.TLeaderboardRecordWrite.leaderboard_id)
+  return leaderboard_id_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void TLeaderboardRecordWrite::set_leaderboard_id(const ::std::string& value) {
+  
+  leaderboard_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:server.TLeaderboardRecordWrite.leaderboard_id)
+}
+inline void TLeaderboardRecordWrite::set_leaderboard_id(const char* value) {
+  
+  leaderboard_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:server.TLeaderboardRecordWrite.leaderboard_id)
+}
+inline void TLeaderboardRecordWrite::set_leaderboard_id(const void* value, size_t size) {
+  
+  leaderboard_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:server.TLeaderboardRecordWrite.leaderboard_id)
+}
+inline ::std::string* TLeaderboardRecordWrite::mutable_leaderboard_id() {
+  
+  // @@protoc_insertion_point(field_mutable:server.TLeaderboardRecordWrite.leaderboard_id)
+  return leaderboard_id_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* TLeaderboardRecordWrite::release_leaderboard_id() {
+  // @@protoc_insertion_point(field_release:server.TLeaderboardRecordWrite.leaderboard_id)
+  
+  return leaderboard_id_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void TLeaderboardRecordWrite::set_allocated_leaderboard_id(::std::string* leaderboard_id) {
+  if (leaderboard_id != NULL) {
+    
+  } else {
+    
+  }
+  leaderboard_id_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), leaderboard_id);
+  // @@protoc_insertion_point(field_set_allocated:server.TLeaderboardRecordWrite.leaderboard_id)
+}
+
+// optional int64 incr = 2;
+inline bool TLeaderboardRecordWrite::has_incr() const {
+  return op_case() == kIncr;
+}
+inline void TLeaderboardRecordWrite::set_has_incr() {
+  _oneof_case_[0] = kIncr;
+}
+inline void TLeaderboardRecordWrite::clear_incr() {
+  if (has_incr()) {
+    op_.incr_ = GOOGLE_LONGLONG(0);
+    clear_has_op();
+  }
+}
+inline ::google::protobuf::int64 TLeaderboardRecordWrite::incr() const {
+  // @@protoc_insertion_point(field_get:server.TLeaderboardRecordWrite.incr)
+  if (has_incr()) {
+    return op_.incr_;
+  }
+  return GOOGLE_LONGLONG(0);
+}
+inline void TLeaderboardRecordWrite::set_incr(::google::protobuf::int64 value) {
+  if (!has_incr()) {
+    clear_op();
+    set_has_incr();
+  }
+  op_.incr_ = value;
+  // @@protoc_insertion_point(field_set:server.TLeaderboardRecordWrite.incr)
+}
+
+// optional int64 decr = 3;
+inline bool TLeaderboardRecordWrite::has_decr() const {
+  return op_case() == kDecr;
+}
+inline void TLeaderboardRecordWrite::set_has_decr() {
+  _oneof_case_[0] = kDecr;
+}
+inline void TLeaderboardRecordWrite::clear_decr() {
+  if (has_decr()) {
+    op_.decr_ = GOOGLE_LONGLONG(0);
+    clear_has_op();
+  }
+}
+inline ::google::protobuf::int64 TLeaderboardRecordWrite::decr() const {
+  // @@protoc_insertion_point(field_get:server.TLeaderboardRecordWrite.decr)
+  if (has_decr()) {
+    return op_.decr_;
+  }
+  return GOOGLE_LONGLONG(0);
+}
+inline void TLeaderboardRecordWrite::set_decr(::google::protobuf::int64 value) {
+  if (!has_decr()) {
+    clear_op();
+    set_has_decr();
+  }
+  op_.decr_ = value;
+  // @@protoc_insertion_point(field_set:server.TLeaderboardRecordWrite.decr)
+}
+
+// optional int64 set = 4;
+inline bool TLeaderboardRecordWrite::has_set() const {
+  return op_case() == kSet;
+}
+inline void TLeaderboardRecordWrite::set_has_set() {
+  _oneof_case_[0] = kSet;
+}
+inline void TLeaderboardRecordWrite::clear_set() {
+  if (has_set()) {
+    op_.set_ = GOOGLE_LONGLONG(0);
+    clear_has_op();
+  }
+}
+inline ::google::protobuf::int64 TLeaderboardRecordWrite::set() const {
+  // @@protoc_insertion_point(field_get:server.TLeaderboardRecordWrite.set)
+  if (has_set()) {
+    return op_.set_;
+  }
+  return GOOGLE_LONGLONG(0);
+}
+inline void TLeaderboardRecordWrite::set_set(::google::protobuf::int64 value) {
+  if (!has_set()) {
+    clear_op();
+    set_has_set();
+  }
+  op_.set_ = value;
+  // @@protoc_insertion_point(field_set:server.TLeaderboardRecordWrite.set)
+}
+
+// optional int64 best = 5;
+inline bool TLeaderboardRecordWrite::has_best() const {
+  return op_case() == kBest;
+}
+inline void TLeaderboardRecordWrite::set_has_best() {
+  _oneof_case_[0] = kBest;
+}
+inline void TLeaderboardRecordWrite::clear_best() {
+  if (has_best()) {
+    op_.best_ = GOOGLE_LONGLONG(0);
+    clear_has_op();
+  }
+}
+inline ::google::protobuf::int64 TLeaderboardRecordWrite::best() const {
+  // @@protoc_insertion_point(field_get:server.TLeaderboardRecordWrite.best)
+  if (has_best()) {
+    return op_.best_;
+  }
+  return GOOGLE_LONGLONG(0);
+}
+inline void TLeaderboardRecordWrite::set_best(::google::protobuf::int64 value) {
+  if (!has_best()) {
+    clear_op();
+    set_has_best();
+  }
+  op_.best_ = value;
+  // @@protoc_insertion_point(field_set:server.TLeaderboardRecordWrite.best)
+}
+
+// optional string location = 6;
+inline void TLeaderboardRecordWrite::clear_location() {
+  location_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& TLeaderboardRecordWrite::location() const {
+  // @@protoc_insertion_point(field_get:server.TLeaderboardRecordWrite.location)
+  return location_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void TLeaderboardRecordWrite::set_location(const ::std::string& value) {
+  
+  location_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:server.TLeaderboardRecordWrite.location)
+}
+inline void TLeaderboardRecordWrite::set_location(const char* value) {
+  
+  location_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:server.TLeaderboardRecordWrite.location)
+}
+inline void TLeaderboardRecordWrite::set_location(const char* value, size_t size) {
+  
+  location_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:server.TLeaderboardRecordWrite.location)
+}
+inline ::std::string* TLeaderboardRecordWrite::mutable_location() {
+  
+  // @@protoc_insertion_point(field_mutable:server.TLeaderboardRecordWrite.location)
+  return location_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* TLeaderboardRecordWrite::release_location() {
+  // @@protoc_insertion_point(field_release:server.TLeaderboardRecordWrite.location)
+  
+  return location_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void TLeaderboardRecordWrite::set_allocated_location(::std::string* location) {
+  if (location != NULL) {
+    
+  } else {
+    
+  }
+  location_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), location);
+  // @@protoc_insertion_point(field_set_allocated:server.TLeaderboardRecordWrite.location)
+}
+
+// optional string timezone = 7;
+inline void TLeaderboardRecordWrite::clear_timezone() {
+  timezone_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& TLeaderboardRecordWrite::timezone() const {
+  // @@protoc_insertion_point(field_get:server.TLeaderboardRecordWrite.timezone)
+  return timezone_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void TLeaderboardRecordWrite::set_timezone(const ::std::string& value) {
+  
+  timezone_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:server.TLeaderboardRecordWrite.timezone)
+}
+inline void TLeaderboardRecordWrite::set_timezone(const char* value) {
+  
+  timezone_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:server.TLeaderboardRecordWrite.timezone)
+}
+inline void TLeaderboardRecordWrite::set_timezone(const char* value, size_t size) {
+  
+  timezone_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:server.TLeaderboardRecordWrite.timezone)
+}
+inline ::std::string* TLeaderboardRecordWrite::mutable_timezone() {
+  
+  // @@protoc_insertion_point(field_mutable:server.TLeaderboardRecordWrite.timezone)
+  return timezone_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* TLeaderboardRecordWrite::release_timezone() {
+  // @@protoc_insertion_point(field_release:server.TLeaderboardRecordWrite.timezone)
+  
+  return timezone_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void TLeaderboardRecordWrite::set_allocated_timezone(::std::string* timezone) {
+  if (timezone != NULL) {
+    
+  } else {
+    
+  }
+  timezone_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), timezone);
+  // @@protoc_insertion_point(field_set_allocated:server.TLeaderboardRecordWrite.timezone)
+}
+
+// optional bytes metadata = 8;
+inline void TLeaderboardRecordWrite::clear_metadata() {
+  metadata_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& TLeaderboardRecordWrite::metadata() const {
+  // @@protoc_insertion_point(field_get:server.TLeaderboardRecordWrite.metadata)
+  return metadata_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void TLeaderboardRecordWrite::set_metadata(const ::std::string& value) {
+  
+  metadata_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:server.TLeaderboardRecordWrite.metadata)
+}
+inline void TLeaderboardRecordWrite::set_metadata(const char* value) {
+  
+  metadata_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:server.TLeaderboardRecordWrite.metadata)
+}
+inline void TLeaderboardRecordWrite::set_metadata(const void* value, size_t size) {
+  
+  metadata_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:server.TLeaderboardRecordWrite.metadata)
+}
+inline ::std::string* TLeaderboardRecordWrite::mutable_metadata() {
+  
+  // @@protoc_insertion_point(field_mutable:server.TLeaderboardRecordWrite.metadata)
+  return metadata_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* TLeaderboardRecordWrite::release_metadata() {
+  // @@protoc_insertion_point(field_release:server.TLeaderboardRecordWrite.metadata)
+  
+  return metadata_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void TLeaderboardRecordWrite::set_allocated_metadata(::std::string* metadata) {
+  if (metadata != NULL) {
+    
+  } else {
+    
+  }
+  metadata_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), metadata);
+  // @@protoc_insertion_point(field_set_allocated:server.TLeaderboardRecordWrite.metadata)
+}
+
+inline bool TLeaderboardRecordWrite::has_op() const {
+  return op_case() != OP_NOT_SET;
+}
+inline void TLeaderboardRecordWrite::clear_has_op() {
+  _oneof_case_[0] = OP_NOT_SET;
+}
+inline TLeaderboardRecordWrite::OpCase TLeaderboardRecordWrite::op_case() const {
+  return TLeaderboardRecordWrite::OpCase(_oneof_case_[0]);
+}
+inline const TLeaderboardRecordWrite* TLeaderboardRecordWrite::internal_default_instance() {
+  return &TLeaderboardRecordWrite_default_instance_.get();
+}
+// -------------------------------------------------------------------
+
+// TLeaderboardRecord
+
+// optional .server.LeaderboardRecord record = 1;
+inline bool TLeaderboardRecord::has_record() const {
+  return this != internal_default_instance() && record_ != NULL;
+}
+inline void TLeaderboardRecord::clear_record() {
+  if (GetArenaNoVirtual() == NULL && record_ != NULL) delete record_;
+  record_ = NULL;
+}
+inline const ::server::LeaderboardRecord& TLeaderboardRecord::record() const {
+  // @@protoc_insertion_point(field_get:server.TLeaderboardRecord.record)
+  return record_ != NULL ? *record_
+                         : *::server::LeaderboardRecord::internal_default_instance();
+}
+inline ::server::LeaderboardRecord* TLeaderboardRecord::mutable_record() {
+  
+  if (record_ == NULL) {
+    record_ = new ::server::LeaderboardRecord;
+  }
+  // @@protoc_insertion_point(field_mutable:server.TLeaderboardRecord.record)
+  return record_;
+}
+inline ::server::LeaderboardRecord* TLeaderboardRecord::release_record() {
+  // @@protoc_insertion_point(field_release:server.TLeaderboardRecord.record)
+  
+  ::server::LeaderboardRecord* temp = record_;
+  record_ = NULL;
+  return temp;
+}
+inline void TLeaderboardRecord::set_allocated_record(::server::LeaderboardRecord* record) {
+  delete record_;
+  record_ = record;
+  if (record) {
+    
+  } else {
+    
+  }
+  // @@protoc_insertion_point(field_set_allocated:server.TLeaderboardRecord.record)
+}
+
+inline const TLeaderboardRecord* TLeaderboardRecord::internal_default_instance() {
+  return &TLeaderboardRecord_default_instance_.get();
+}
+// -------------------------------------------------------------------
+
+// TLeaderboardRecordsFetch
+
+// repeated bytes leaderboard_ids = 1;
+inline int TLeaderboardRecordsFetch::leaderboard_ids_size() const {
+  return leaderboard_ids_.size();
+}
+inline void TLeaderboardRecordsFetch::clear_leaderboard_ids() {
+  leaderboard_ids_.Clear();
+}
+inline const ::std::string& TLeaderboardRecordsFetch::leaderboard_ids(int index) const {
+  // @@protoc_insertion_point(field_get:server.TLeaderboardRecordsFetch.leaderboard_ids)
+  return leaderboard_ids_.Get(index);
+}
+inline ::std::string* TLeaderboardRecordsFetch::mutable_leaderboard_ids(int index) {
+  // @@protoc_insertion_point(field_mutable:server.TLeaderboardRecordsFetch.leaderboard_ids)
+  return leaderboard_ids_.Mutable(index);
+}
+inline void TLeaderboardRecordsFetch::set_leaderboard_ids(int index, const ::std::string& value) {
+  // @@protoc_insertion_point(field_set:server.TLeaderboardRecordsFetch.leaderboard_ids)
+  leaderboard_ids_.Mutable(index)->assign(value);
+}
+inline void TLeaderboardRecordsFetch::set_leaderboard_ids(int index, const char* value) {
+  leaderboard_ids_.Mutable(index)->assign(value);
+  // @@protoc_insertion_point(field_set_char:server.TLeaderboardRecordsFetch.leaderboard_ids)
+}
+inline void TLeaderboardRecordsFetch::set_leaderboard_ids(int index, const void* value, size_t size) {
+  leaderboard_ids_.Mutable(index)->assign(
+    reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_set_pointer:server.TLeaderboardRecordsFetch.leaderboard_ids)
+}
+inline ::std::string* TLeaderboardRecordsFetch::add_leaderboard_ids() {
+  // @@protoc_insertion_point(field_add_mutable:server.TLeaderboardRecordsFetch.leaderboard_ids)
+  return leaderboard_ids_.Add();
+}
+inline void TLeaderboardRecordsFetch::add_leaderboard_ids(const ::std::string& value) {
+  leaderboard_ids_.Add()->assign(value);
+  // @@protoc_insertion_point(field_add:server.TLeaderboardRecordsFetch.leaderboard_ids)
+}
+inline void TLeaderboardRecordsFetch::add_leaderboard_ids(const char* value) {
+  leaderboard_ids_.Add()->assign(value);
+  // @@protoc_insertion_point(field_add_char:server.TLeaderboardRecordsFetch.leaderboard_ids)
+}
+inline void TLeaderboardRecordsFetch::add_leaderboard_ids(const void* value, size_t size) {
+  leaderboard_ids_.Add()->assign(reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_add_pointer:server.TLeaderboardRecordsFetch.leaderboard_ids)
+}
+inline const ::google::protobuf::RepeatedPtrField< ::std::string>&
+TLeaderboardRecordsFetch::leaderboard_ids() const {
+  // @@protoc_insertion_point(field_list:server.TLeaderboardRecordsFetch.leaderboard_ids)
+  return leaderboard_ids_;
+}
+inline ::google::protobuf::RepeatedPtrField< ::std::string>*
+TLeaderboardRecordsFetch::mutable_leaderboard_ids() {
+  // @@protoc_insertion_point(field_mutable_list:server.TLeaderboardRecordsFetch.leaderboard_ids)
+  return &leaderboard_ids_;
+}
+
+// optional int64 limit = 2;
+inline void TLeaderboardRecordsFetch::clear_limit() {
+  limit_ = GOOGLE_LONGLONG(0);
+}
+inline ::google::protobuf::int64 TLeaderboardRecordsFetch::limit() const {
+  // @@protoc_insertion_point(field_get:server.TLeaderboardRecordsFetch.limit)
+  return limit_;
+}
+inline void TLeaderboardRecordsFetch::set_limit(::google::protobuf::int64 value) {
+  
+  limit_ = value;
+  // @@protoc_insertion_point(field_set:server.TLeaderboardRecordsFetch.limit)
+}
+
+// optional bytes cursor = 3;
+inline void TLeaderboardRecordsFetch::clear_cursor() {
+  cursor_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& TLeaderboardRecordsFetch::cursor() const {
+  // @@protoc_insertion_point(field_get:server.TLeaderboardRecordsFetch.cursor)
+  return cursor_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void TLeaderboardRecordsFetch::set_cursor(const ::std::string& value) {
+  
+  cursor_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:server.TLeaderboardRecordsFetch.cursor)
+}
+inline void TLeaderboardRecordsFetch::set_cursor(const char* value) {
+  
+  cursor_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:server.TLeaderboardRecordsFetch.cursor)
+}
+inline void TLeaderboardRecordsFetch::set_cursor(const void* value, size_t size) {
+  
+  cursor_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:server.TLeaderboardRecordsFetch.cursor)
+}
+inline ::std::string* TLeaderboardRecordsFetch::mutable_cursor() {
+  
+  // @@protoc_insertion_point(field_mutable:server.TLeaderboardRecordsFetch.cursor)
+  return cursor_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* TLeaderboardRecordsFetch::release_cursor() {
+  // @@protoc_insertion_point(field_release:server.TLeaderboardRecordsFetch.cursor)
+  
+  return cursor_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void TLeaderboardRecordsFetch::set_allocated_cursor(::std::string* cursor) {
+  if (cursor != NULL) {
+    
+  } else {
+    
+  }
+  cursor_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), cursor);
+  // @@protoc_insertion_point(field_set_allocated:server.TLeaderboardRecordsFetch.cursor)
+}
+
+inline const TLeaderboardRecordsFetch* TLeaderboardRecordsFetch::internal_default_instance() {
+  return &TLeaderboardRecordsFetch_default_instance_.get();
+}
+// -------------------------------------------------------------------
+
+// TLeaderboardRecordsList_Owners
+
+// repeated bytes owner_ids = 1;
+inline int TLeaderboardRecordsList_Owners::owner_ids_size() const {
+  return owner_ids_.size();
+}
+inline void TLeaderboardRecordsList_Owners::clear_owner_ids() {
+  owner_ids_.Clear();
+}
+inline const ::std::string& TLeaderboardRecordsList_Owners::owner_ids(int index) const {
+  // @@protoc_insertion_point(field_get:server.TLeaderboardRecordsList.Owners.owner_ids)
+  return owner_ids_.Get(index);
+}
+inline ::std::string* TLeaderboardRecordsList_Owners::mutable_owner_ids(int index) {
+  // @@protoc_insertion_point(field_mutable:server.TLeaderboardRecordsList.Owners.owner_ids)
+  return owner_ids_.Mutable(index);
+}
+inline void TLeaderboardRecordsList_Owners::set_owner_ids(int index, const ::std::string& value) {
+  // @@protoc_insertion_point(field_set:server.TLeaderboardRecordsList.Owners.owner_ids)
+  owner_ids_.Mutable(index)->assign(value);
+}
+inline void TLeaderboardRecordsList_Owners::set_owner_ids(int index, const char* value) {
+  owner_ids_.Mutable(index)->assign(value);
+  // @@protoc_insertion_point(field_set_char:server.TLeaderboardRecordsList.Owners.owner_ids)
+}
+inline void TLeaderboardRecordsList_Owners::set_owner_ids(int index, const void* value, size_t size) {
+  owner_ids_.Mutable(index)->assign(
+    reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_set_pointer:server.TLeaderboardRecordsList.Owners.owner_ids)
+}
+inline ::std::string* TLeaderboardRecordsList_Owners::add_owner_ids() {
+  // @@protoc_insertion_point(field_add_mutable:server.TLeaderboardRecordsList.Owners.owner_ids)
+  return owner_ids_.Add();
+}
+inline void TLeaderboardRecordsList_Owners::add_owner_ids(const ::std::string& value) {
+  owner_ids_.Add()->assign(value);
+  // @@protoc_insertion_point(field_add:server.TLeaderboardRecordsList.Owners.owner_ids)
+}
+inline void TLeaderboardRecordsList_Owners::add_owner_ids(const char* value) {
+  owner_ids_.Add()->assign(value);
+  // @@protoc_insertion_point(field_add_char:server.TLeaderboardRecordsList.Owners.owner_ids)
+}
+inline void TLeaderboardRecordsList_Owners::add_owner_ids(const void* value, size_t size) {
+  owner_ids_.Add()->assign(reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_add_pointer:server.TLeaderboardRecordsList.Owners.owner_ids)
+}
+inline const ::google::protobuf::RepeatedPtrField< ::std::string>&
+TLeaderboardRecordsList_Owners::owner_ids() const {
+  // @@protoc_insertion_point(field_list:server.TLeaderboardRecordsList.Owners.owner_ids)
+  return owner_ids_;
+}
+inline ::google::protobuf::RepeatedPtrField< ::std::string>*
+TLeaderboardRecordsList_Owners::mutable_owner_ids() {
+  // @@protoc_insertion_point(field_mutable_list:server.TLeaderboardRecordsList.Owners.owner_ids)
+  return &owner_ids_;
+}
+
+inline const TLeaderboardRecordsList_Owners* TLeaderboardRecordsList_Owners::internal_default_instance() {
+  return &TLeaderboardRecordsList_Owners_default_instance_.get();
+}
+// -------------------------------------------------------------------
+
+// TLeaderboardRecordsList
+
+// optional bytes leaderboard_id = 1;
+inline void TLeaderboardRecordsList::clear_leaderboard_id() {
+  leaderboard_id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& TLeaderboardRecordsList::leaderboard_id() const {
+  // @@protoc_insertion_point(field_get:server.TLeaderboardRecordsList.leaderboard_id)
+  return leaderboard_id_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void TLeaderboardRecordsList::set_leaderboard_id(const ::std::string& value) {
+  
+  leaderboard_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:server.TLeaderboardRecordsList.leaderboard_id)
+}
+inline void TLeaderboardRecordsList::set_leaderboard_id(const char* value) {
+  
+  leaderboard_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:server.TLeaderboardRecordsList.leaderboard_id)
+}
+inline void TLeaderboardRecordsList::set_leaderboard_id(const void* value, size_t size) {
+  
+  leaderboard_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:server.TLeaderboardRecordsList.leaderboard_id)
+}
+inline ::std::string* TLeaderboardRecordsList::mutable_leaderboard_id() {
+  
+  // @@protoc_insertion_point(field_mutable:server.TLeaderboardRecordsList.leaderboard_id)
+  return leaderboard_id_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* TLeaderboardRecordsList::release_leaderboard_id() {
+  // @@protoc_insertion_point(field_release:server.TLeaderboardRecordsList.leaderboard_id)
+  
+  return leaderboard_id_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void TLeaderboardRecordsList::set_allocated_leaderboard_id(::std::string* leaderboard_id) {
+  if (leaderboard_id != NULL) {
+    
+  } else {
+    
+  }
+  leaderboard_id_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), leaderboard_id);
+  // @@protoc_insertion_point(field_set_allocated:server.TLeaderboardRecordsList.leaderboard_id)
+}
+
+// optional bytes owner_id = 2;
+inline bool TLeaderboardRecordsList::has_owner_id() const {
+  return filter_case() == kOwnerId;
+}
+inline void TLeaderboardRecordsList::set_has_owner_id() {
+  _oneof_case_[0] = kOwnerId;
+}
+inline void TLeaderboardRecordsList::clear_owner_id() {
+  if (has_owner_id()) {
+    filter_.owner_id_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    clear_has_filter();
+  }
+}
+inline const ::std::string& TLeaderboardRecordsList::owner_id() const {
+  // @@protoc_insertion_point(field_get:server.TLeaderboardRecordsList.owner_id)
+  if (has_owner_id()) {
+    return filter_.owner_id_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  return *&::google::protobuf::internal::GetEmptyStringAlreadyInited();
+}
+inline void TLeaderboardRecordsList::set_owner_id(const ::std::string& value) {
+  // @@protoc_insertion_point(field_set:server.TLeaderboardRecordsList.owner_id)
+  if (!has_owner_id()) {
+    clear_filter();
+    set_has_owner_id();
+    filter_.owner_id_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  filter_.owner_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:server.TLeaderboardRecordsList.owner_id)
+}
+inline void TLeaderboardRecordsList::set_owner_id(const char* value) {
+  if (!has_owner_id()) {
+    clear_filter();
+    set_has_owner_id();
+    filter_.owner_id_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  filter_.owner_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:server.TLeaderboardRecordsList.owner_id)
+}
+inline void TLeaderboardRecordsList::set_owner_id(const void* value, size_t size) {
+  if (!has_owner_id()) {
+    clear_filter();
+    set_has_owner_id();
+    filter_.owner_id_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  filter_.owner_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(
+      reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:server.TLeaderboardRecordsList.owner_id)
+}
+inline ::std::string* TLeaderboardRecordsList::mutable_owner_id() {
+  if (!has_owner_id()) {
+    clear_filter();
+    set_has_owner_id();
+    filter_.owner_id_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  // @@protoc_insertion_point(field_mutable:server.TLeaderboardRecordsList.owner_id)
+  return filter_.owner_id_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* TLeaderboardRecordsList::release_owner_id() {
+  // @@protoc_insertion_point(field_release:server.TLeaderboardRecordsList.owner_id)
+  if (has_owner_id()) {
+    clear_has_filter();
+    return filter_.owner_id_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  } else {
+    return NULL;
+  }
+}
+inline void TLeaderboardRecordsList::set_allocated_owner_id(::std::string* owner_id) {
+  if (!has_owner_id()) {
+    filter_.owner_id_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  clear_filter();
+  if (owner_id != NULL) {
+    set_has_owner_id();
+    filter_.owner_id_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+        owner_id);
+  }
+  // @@protoc_insertion_point(field_set_allocated:server.TLeaderboardRecordsList.owner_id)
+}
+
+// optional .server.TLeaderboardRecordsList.Owners owner_ids = 3;
+inline bool TLeaderboardRecordsList::has_owner_ids() const {
+  return filter_case() == kOwnerIds;
+}
+inline void TLeaderboardRecordsList::set_has_owner_ids() {
+  _oneof_case_[0] = kOwnerIds;
+}
+inline void TLeaderboardRecordsList::clear_owner_ids() {
+  if (has_owner_ids()) {
+    delete filter_.owner_ids_;
+    clear_has_filter();
+  }
+}
+inline  const ::server::TLeaderboardRecordsList_Owners& TLeaderboardRecordsList::owner_ids() const {
+  // @@protoc_insertion_point(field_get:server.TLeaderboardRecordsList.owner_ids)
+  return has_owner_ids()
+      ? *filter_.owner_ids_
+      : ::server::TLeaderboardRecordsList_Owners::default_instance();
+}
+inline ::server::TLeaderboardRecordsList_Owners* TLeaderboardRecordsList::mutable_owner_ids() {
+  if (!has_owner_ids()) {
+    clear_filter();
+    set_has_owner_ids();
+    filter_.owner_ids_ = new ::server::TLeaderboardRecordsList_Owners;
+  }
+  // @@protoc_insertion_point(field_mutable:server.TLeaderboardRecordsList.owner_ids)
+  return filter_.owner_ids_;
+}
+inline ::server::TLeaderboardRecordsList_Owners* TLeaderboardRecordsList::release_owner_ids() {
+  // @@protoc_insertion_point(field_release:server.TLeaderboardRecordsList.owner_ids)
+  if (has_owner_ids()) {
+    clear_has_filter();
+    ::server::TLeaderboardRecordsList_Owners* temp = filter_.owner_ids_;
+    filter_.owner_ids_ = NULL;
+    return temp;
+  } else {
+    return NULL;
+  }
+}
+inline void TLeaderboardRecordsList::set_allocated_owner_ids(::server::TLeaderboardRecordsList_Owners* owner_ids) {
+  clear_filter();
+  if (owner_ids) {
+    set_has_owner_ids();
+    filter_.owner_ids_ = owner_ids;
+  }
+  // @@protoc_insertion_point(field_set_allocated:server.TLeaderboardRecordsList.owner_ids)
+}
+
+// optional string lang = 4;
+inline bool TLeaderboardRecordsList::has_lang() const {
+  return filter_case() == kLang;
+}
+inline void TLeaderboardRecordsList::set_has_lang() {
+  _oneof_case_[0] = kLang;
+}
+inline void TLeaderboardRecordsList::clear_lang() {
+  if (has_lang()) {
+    filter_.lang_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    clear_has_filter();
+  }
+}
+inline const ::std::string& TLeaderboardRecordsList::lang() const {
+  // @@protoc_insertion_point(field_get:server.TLeaderboardRecordsList.lang)
+  if (has_lang()) {
+    return filter_.lang_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  return *&::google::protobuf::internal::GetEmptyStringAlreadyInited();
+}
+inline void TLeaderboardRecordsList::set_lang(const ::std::string& value) {
+  // @@protoc_insertion_point(field_set:server.TLeaderboardRecordsList.lang)
+  if (!has_lang()) {
+    clear_filter();
+    set_has_lang();
+    filter_.lang_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  filter_.lang_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:server.TLeaderboardRecordsList.lang)
+}
+inline void TLeaderboardRecordsList::set_lang(const char* value) {
+  if (!has_lang()) {
+    clear_filter();
+    set_has_lang();
+    filter_.lang_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  filter_.lang_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:server.TLeaderboardRecordsList.lang)
+}
+inline void TLeaderboardRecordsList::set_lang(const char* value, size_t size) {
+  if (!has_lang()) {
+    clear_filter();
+    set_has_lang();
+    filter_.lang_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  filter_.lang_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(
+      reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:server.TLeaderboardRecordsList.lang)
+}
+inline ::std::string* TLeaderboardRecordsList::mutable_lang() {
+  if (!has_lang()) {
+    clear_filter();
+    set_has_lang();
+    filter_.lang_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  // @@protoc_insertion_point(field_mutable:server.TLeaderboardRecordsList.lang)
+  return filter_.lang_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* TLeaderboardRecordsList::release_lang() {
+  // @@protoc_insertion_point(field_release:server.TLeaderboardRecordsList.lang)
+  if (has_lang()) {
+    clear_has_filter();
+    return filter_.lang_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  } else {
+    return NULL;
+  }
+}
+inline void TLeaderboardRecordsList::set_allocated_lang(::std::string* lang) {
+  if (!has_lang()) {
+    filter_.lang_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  clear_filter();
+  if (lang != NULL) {
+    set_has_lang();
+    filter_.lang_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+        lang);
+  }
+  // @@protoc_insertion_point(field_set_allocated:server.TLeaderboardRecordsList.lang)
+}
+
+// optional string location = 5;
+inline bool TLeaderboardRecordsList::has_location() const {
+  return filter_case() == kLocation;
+}
+inline void TLeaderboardRecordsList::set_has_location() {
+  _oneof_case_[0] = kLocation;
+}
+inline void TLeaderboardRecordsList::clear_location() {
+  if (has_location()) {
+    filter_.location_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    clear_has_filter();
+  }
+}
+inline const ::std::string& TLeaderboardRecordsList::location() const {
+  // @@protoc_insertion_point(field_get:server.TLeaderboardRecordsList.location)
+  if (has_location()) {
+    return filter_.location_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  return *&::google::protobuf::internal::GetEmptyStringAlreadyInited();
+}
+inline void TLeaderboardRecordsList::set_location(const ::std::string& value) {
+  // @@protoc_insertion_point(field_set:server.TLeaderboardRecordsList.location)
+  if (!has_location()) {
+    clear_filter();
+    set_has_location();
+    filter_.location_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  filter_.location_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:server.TLeaderboardRecordsList.location)
+}
+inline void TLeaderboardRecordsList::set_location(const char* value) {
+  if (!has_location()) {
+    clear_filter();
+    set_has_location();
+    filter_.location_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  filter_.location_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:server.TLeaderboardRecordsList.location)
+}
+inline void TLeaderboardRecordsList::set_location(const char* value, size_t size) {
+  if (!has_location()) {
+    clear_filter();
+    set_has_location();
+    filter_.location_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  filter_.location_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(
+      reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:server.TLeaderboardRecordsList.location)
+}
+inline ::std::string* TLeaderboardRecordsList::mutable_location() {
+  if (!has_location()) {
+    clear_filter();
+    set_has_location();
+    filter_.location_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  // @@protoc_insertion_point(field_mutable:server.TLeaderboardRecordsList.location)
+  return filter_.location_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* TLeaderboardRecordsList::release_location() {
+  // @@protoc_insertion_point(field_release:server.TLeaderboardRecordsList.location)
+  if (has_location()) {
+    clear_has_filter();
+    return filter_.location_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  } else {
+    return NULL;
+  }
+}
+inline void TLeaderboardRecordsList::set_allocated_location(::std::string* location) {
+  if (!has_location()) {
+    filter_.location_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  clear_filter();
+  if (location != NULL) {
+    set_has_location();
+    filter_.location_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+        location);
+  }
+  // @@protoc_insertion_point(field_set_allocated:server.TLeaderboardRecordsList.location)
+}
+
+// optional string timezone = 6;
+inline bool TLeaderboardRecordsList::has_timezone() const {
+  return filter_case() == kTimezone;
+}
+inline void TLeaderboardRecordsList::set_has_timezone() {
+  _oneof_case_[0] = kTimezone;
+}
+inline void TLeaderboardRecordsList::clear_timezone() {
+  if (has_timezone()) {
+    filter_.timezone_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    clear_has_filter();
+  }
+}
+inline const ::std::string& TLeaderboardRecordsList::timezone() const {
+  // @@protoc_insertion_point(field_get:server.TLeaderboardRecordsList.timezone)
+  if (has_timezone()) {
+    return filter_.timezone_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  return *&::google::protobuf::internal::GetEmptyStringAlreadyInited();
+}
+inline void TLeaderboardRecordsList::set_timezone(const ::std::string& value) {
+  // @@protoc_insertion_point(field_set:server.TLeaderboardRecordsList.timezone)
+  if (!has_timezone()) {
+    clear_filter();
+    set_has_timezone();
+    filter_.timezone_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  filter_.timezone_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:server.TLeaderboardRecordsList.timezone)
+}
+inline void TLeaderboardRecordsList::set_timezone(const char* value) {
+  if (!has_timezone()) {
+    clear_filter();
+    set_has_timezone();
+    filter_.timezone_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  filter_.timezone_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:server.TLeaderboardRecordsList.timezone)
+}
+inline void TLeaderboardRecordsList::set_timezone(const char* value, size_t size) {
+  if (!has_timezone()) {
+    clear_filter();
+    set_has_timezone();
+    filter_.timezone_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  filter_.timezone_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(
+      reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:server.TLeaderboardRecordsList.timezone)
+}
+inline ::std::string* TLeaderboardRecordsList::mutable_timezone() {
+  if (!has_timezone()) {
+    clear_filter();
+    set_has_timezone();
+    filter_.timezone_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  // @@protoc_insertion_point(field_mutable:server.TLeaderboardRecordsList.timezone)
+  return filter_.timezone_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* TLeaderboardRecordsList::release_timezone() {
+  // @@protoc_insertion_point(field_release:server.TLeaderboardRecordsList.timezone)
+  if (has_timezone()) {
+    clear_has_filter();
+    return filter_.timezone_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  } else {
+    return NULL;
+  }
+}
+inline void TLeaderboardRecordsList::set_allocated_timezone(::std::string* timezone) {
+  if (!has_timezone()) {
+    filter_.timezone_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  clear_filter();
+  if (timezone != NULL) {
+    set_has_timezone();
+    filter_.timezone_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+        timezone);
+  }
+  // @@protoc_insertion_point(field_set_allocated:server.TLeaderboardRecordsList.timezone)
+}
+
+// optional int64 limit = 7;
+inline void TLeaderboardRecordsList::clear_limit() {
+  limit_ = GOOGLE_LONGLONG(0);
+}
+inline ::google::protobuf::int64 TLeaderboardRecordsList::limit() const {
+  // @@protoc_insertion_point(field_get:server.TLeaderboardRecordsList.limit)
+  return limit_;
+}
+inline void TLeaderboardRecordsList::set_limit(::google::protobuf::int64 value) {
+  
+  limit_ = value;
+  // @@protoc_insertion_point(field_set:server.TLeaderboardRecordsList.limit)
+}
+
+// optional bytes cursor = 8;
+inline void TLeaderboardRecordsList::clear_cursor() {
+  cursor_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& TLeaderboardRecordsList::cursor() const {
+  // @@protoc_insertion_point(field_get:server.TLeaderboardRecordsList.cursor)
+  return cursor_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void TLeaderboardRecordsList::set_cursor(const ::std::string& value) {
+  
+  cursor_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:server.TLeaderboardRecordsList.cursor)
+}
+inline void TLeaderboardRecordsList::set_cursor(const char* value) {
+  
+  cursor_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:server.TLeaderboardRecordsList.cursor)
+}
+inline void TLeaderboardRecordsList::set_cursor(const void* value, size_t size) {
+  
+  cursor_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:server.TLeaderboardRecordsList.cursor)
+}
+inline ::std::string* TLeaderboardRecordsList::mutable_cursor() {
+  
+  // @@protoc_insertion_point(field_mutable:server.TLeaderboardRecordsList.cursor)
+  return cursor_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* TLeaderboardRecordsList::release_cursor() {
+  // @@protoc_insertion_point(field_release:server.TLeaderboardRecordsList.cursor)
+  
+  return cursor_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void TLeaderboardRecordsList::set_allocated_cursor(::std::string* cursor) {
+  if (cursor != NULL) {
+    
+  } else {
+    
+  }
+  cursor_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), cursor);
+  // @@protoc_insertion_point(field_set_allocated:server.TLeaderboardRecordsList.cursor)
+}
+
+inline bool TLeaderboardRecordsList::has_filter() const {
+  return filter_case() != FILTER_NOT_SET;
+}
+inline void TLeaderboardRecordsList::clear_has_filter() {
+  _oneof_case_[0] = FILTER_NOT_SET;
+}
+inline TLeaderboardRecordsList::FilterCase TLeaderboardRecordsList::filter_case() const {
+  return TLeaderboardRecordsList::FilterCase(_oneof_case_[0]);
+}
+inline const TLeaderboardRecordsList* TLeaderboardRecordsList::internal_default_instance() {
+  return &TLeaderboardRecordsList_default_instance_.get();
+}
+// -------------------------------------------------------------------
+
+// TLeaderboardRecords
+
+// repeated .server.LeaderboardRecord records = 1;
+inline int TLeaderboardRecords::records_size() const {
+  return records_.size();
+}
+inline void TLeaderboardRecords::clear_records() {
+  records_.Clear();
+}
+inline const ::server::LeaderboardRecord& TLeaderboardRecords::records(int index) const {
+  // @@protoc_insertion_point(field_get:server.TLeaderboardRecords.records)
+  return records_.Get(index);
+}
+inline ::server::LeaderboardRecord* TLeaderboardRecords::mutable_records(int index) {
+  // @@protoc_insertion_point(field_mutable:server.TLeaderboardRecords.records)
+  return records_.Mutable(index);
+}
+inline ::server::LeaderboardRecord* TLeaderboardRecords::add_records() {
+  // @@protoc_insertion_point(field_add:server.TLeaderboardRecords.records)
+  return records_.Add();
+}
+inline ::google::protobuf::RepeatedPtrField< ::server::LeaderboardRecord >*
+TLeaderboardRecords::mutable_records() {
+  // @@protoc_insertion_point(field_mutable_list:server.TLeaderboardRecords.records)
+  return &records_;
+}
+inline const ::google::protobuf::RepeatedPtrField< ::server::LeaderboardRecord >&
+TLeaderboardRecords::records() const {
+  // @@protoc_insertion_point(field_list:server.TLeaderboardRecords.records)
+  return records_;
+}
+
+// optional bytes cursor = 2;
+inline void TLeaderboardRecords::clear_cursor() {
+  cursor_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& TLeaderboardRecords::cursor() const {
+  // @@protoc_insertion_point(field_get:server.TLeaderboardRecords.cursor)
+  return cursor_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void TLeaderboardRecords::set_cursor(const ::std::string& value) {
+  
+  cursor_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:server.TLeaderboardRecords.cursor)
+}
+inline void TLeaderboardRecords::set_cursor(const char* value) {
+  
+  cursor_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:server.TLeaderboardRecords.cursor)
+}
+inline void TLeaderboardRecords::set_cursor(const void* value, size_t size) {
+  
+  cursor_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:server.TLeaderboardRecords.cursor)
+}
+inline ::std::string* TLeaderboardRecords::mutable_cursor() {
+  
+  // @@protoc_insertion_point(field_mutable:server.TLeaderboardRecords.cursor)
+  return cursor_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* TLeaderboardRecords::release_cursor() {
+  // @@protoc_insertion_point(field_release:server.TLeaderboardRecords.cursor)
+  
+  return cursor_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void TLeaderboardRecords::set_allocated_cursor(::std::string* cursor) {
+  if (cursor != NULL) {
+    
+  } else {
+    
+  }
+  cursor_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), cursor);
+  // @@protoc_insertion_point(field_set_allocated:server.TLeaderboardRecords.cursor)
+}
+
+inline const TLeaderboardRecords* TLeaderboardRecords::internal_default_instance() {
+  return &TLeaderboardRecords_default_instance_.get();
+}
 #endif  // !PROTOBUF_INLINE_NOT_IN_HEADERS
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
 // -------------------------------------------------------------------
 
 // -------------------------------------------------------------------
@@ -20991,6 +24904,20 @@ inline const TStorageRemove* TStorageRemove::internal_default_instance() {
 // @@protoc_insertion_point(namespace_scope)
 
 }  // namespace server
+
+#ifndef SWIG
+namespace google {
+namespace protobuf {
+
+template <> struct is_proto_enum< ::server::Error_Code> : ::google::protobuf::internal::true_type {};
+template <>
+inline const EnumDescriptor* GetEnumDescriptor< ::server::Error_Code>() {
+  return ::server::Error_Code_descriptor();
+}
+
+}  // namespace protobuf
+}  // namespace google
+#endif  // SWIG
 
 // @@protoc_insertion_point(global_scope)
 

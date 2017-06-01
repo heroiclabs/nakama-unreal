@@ -42,6 +42,8 @@
 #include "NStorageKey.h"
 #include "NTopic.h"
 #include "NTopicMessageAck.h"
+#include "NLeaderboard.h"
+#include "NLeaderboardRecord.h"
 
 using namespace server;
 
@@ -146,4 +148,6 @@ template NAKAMA_API class Nakama::NResultSet<Nakama::NStorageData>;
 template NAKAMA_API class Nakama::NResultSet<Nakama::NStorageKey>;
 template NAKAMA_API class Nakama::NResultSet<Nakama::NTopicMessage>;
 template NAKAMA_API class Nakama::NResultSet<Nakama::NUser>;
+template NAKAMA_API class Nakama::NResultSet<Nakama::NLeaderboard>;
+template NAKAMA_API class Nakama::NResultSet<Nakama::NLeaderboardRecord>;
 

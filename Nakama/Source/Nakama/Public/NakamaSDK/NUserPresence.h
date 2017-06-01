@@ -30,16 +30,19 @@ namespace Nakama {
 		{
 			userId = message.user_id();
 			sessionId = message.session_id();
+			handle = message.handle();
 		}
 
 		~NUserPresence() {}
 
 		std::string GetUserId() { return userId; }
 		std::string GetSessionId() { return sessionId; }
+		std::string GetHandle() { return handle; }
 
 	private:
 		std::string userId;
 		std::string sessionId;
+		std::string handle;
 
 	};
 
