@@ -74,6 +74,8 @@ class TGroupUsers;
 class TGroupUsersList;
 class TGroups;
 class TGroupsFetch;
+class TGroupsFetch_GroupIds;
+class TGroupsFetch_Names;
 class TGroupsList;
 class TGroupsSelfList;
 class TLeaderboardRecord;
@@ -4674,6 +4676,198 @@ extern ::google::protobuf::internal::ExplicitlyConstructed<TGroupsSelfList> TGro
 
 // -------------------------------------------------------------------
 
+class TGroupsFetch_GroupIds : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.TGroupsFetch.GroupIds) */ {
+ public:
+  TGroupsFetch_GroupIds();
+  virtual ~TGroupsFetch_GroupIds();
+
+  TGroupsFetch_GroupIds(const TGroupsFetch_GroupIds& from);
+
+  inline TGroupsFetch_GroupIds& operator=(const TGroupsFetch_GroupIds& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const TGroupsFetch_GroupIds& default_instance();
+
+  static const TGroupsFetch_GroupIds* internal_default_instance();
+
+  void Swap(TGroupsFetch_GroupIds* other);
+
+  // implements Message ----------------------------------------------
+
+  inline TGroupsFetch_GroupIds* New() const { return New(NULL); }
+
+  TGroupsFetch_GroupIds* New(::google::protobuf::Arena* arena) const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const TGroupsFetch_GroupIds& from);
+  void MergeFrom(const TGroupsFetch_GroupIds& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  size_t ByteSizeLong() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const {
+    return InternalSerializeWithCachedSizesToArray(false, output);
+  }
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  void InternalSwap(TGroupsFetch_GroupIds* other);
+  void UnsafeMergeFrom(const TGroupsFetch_GroupIds& from);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return _internal_metadata_.arena();
+  }
+  inline void* MaybeArenaPtr() const {
+    return _internal_metadata_.raw_arena_ptr();
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // repeated bytes group_ids = 1;
+  int group_ids_size() const;
+  void clear_group_ids();
+  static const int kGroupIdsFieldNumber = 1;
+  const ::std::string& group_ids(int index) const;
+  ::std::string* mutable_group_ids(int index);
+  void set_group_ids(int index, const ::std::string& value);
+  void set_group_ids(int index, const char* value);
+  void set_group_ids(int index, const void* value, size_t size);
+  ::std::string* add_group_ids();
+  void add_group_ids(const ::std::string& value);
+  void add_group_ids(const char* value);
+  void add_group_ids(const void* value, size_t size);
+  const ::google::protobuf::RepeatedPtrField< ::std::string>& group_ids() const;
+  ::google::protobuf::RepeatedPtrField< ::std::string>* mutable_group_ids();
+
+  // @@protoc_insertion_point(class_scope:server.TGroupsFetch.GroupIds)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::RepeatedPtrField< ::std::string> group_ids_;
+  mutable int _cached_size_;
+  friend void  protobuf_InitDefaults_api_2eproto_impl();
+  friend void  protobuf_AddDesc_api_2eproto_impl();
+  friend void protobuf_AssignDesc_api_2eproto();
+  friend void protobuf_ShutdownFile_api_2eproto();
+
+  void InitAsDefaultInstance();
+};
+extern ::google::protobuf::internal::ExplicitlyConstructed<TGroupsFetch_GroupIds> TGroupsFetch_GroupIds_default_instance_;
+
+// -------------------------------------------------------------------
+
+class TGroupsFetch_Names : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.TGroupsFetch.Names) */ {
+ public:
+  TGroupsFetch_Names();
+  virtual ~TGroupsFetch_Names();
+
+  TGroupsFetch_Names(const TGroupsFetch_Names& from);
+
+  inline TGroupsFetch_Names& operator=(const TGroupsFetch_Names& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const TGroupsFetch_Names& default_instance();
+
+  static const TGroupsFetch_Names* internal_default_instance();
+
+  void Swap(TGroupsFetch_Names* other);
+
+  // implements Message ----------------------------------------------
+
+  inline TGroupsFetch_Names* New() const { return New(NULL); }
+
+  TGroupsFetch_Names* New(::google::protobuf::Arena* arena) const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const TGroupsFetch_Names& from);
+  void MergeFrom(const TGroupsFetch_Names& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  size_t ByteSizeLong() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const {
+    return InternalSerializeWithCachedSizesToArray(false, output);
+  }
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  void InternalSwap(TGroupsFetch_Names* other);
+  void UnsafeMergeFrom(const TGroupsFetch_Names& from);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return _internal_metadata_.arena();
+  }
+  inline void* MaybeArenaPtr() const {
+    return _internal_metadata_.raw_arena_ptr();
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // repeated string names = 1;
+  int names_size() const;
+  void clear_names();
+  static const int kNamesFieldNumber = 1;
+  const ::std::string& names(int index) const;
+  ::std::string* mutable_names(int index);
+  void set_names(int index, const ::std::string& value);
+  void set_names(int index, const char* value);
+  void set_names(int index, const char* value, size_t size);
+  ::std::string* add_names();
+  void add_names(const ::std::string& value);
+  void add_names(const char* value);
+  void add_names(const char* value, size_t size);
+  const ::google::protobuf::RepeatedPtrField< ::std::string>& names() const;
+  ::google::protobuf::RepeatedPtrField< ::std::string>* mutable_names();
+
+  // @@protoc_insertion_point(class_scope:server.TGroupsFetch.Names)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::RepeatedPtrField< ::std::string> names_;
+  mutable int _cached_size_;
+  friend void  protobuf_InitDefaults_api_2eproto_impl();
+  friend void  protobuf_AddDesc_api_2eproto_impl();
+  friend void protobuf_AssignDesc_api_2eproto();
+  friend void protobuf_ShutdownFile_api_2eproto();
+
+  void InitAsDefaultInstance();
+};
+extern ::google::protobuf::internal::ExplicitlyConstructed<TGroupsFetch_Names> TGroupsFetch_Names_default_instance_;
+
+// -------------------------------------------------------------------
+
 class TGroupsFetch : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.TGroupsFetch) */ {
  public:
   TGroupsFetch();
@@ -4688,6 +4882,12 @@ class TGroupsFetch : public ::google::protobuf::Message /* @@protoc_insertion_po
 
   static const ::google::protobuf::Descriptor* descriptor();
   static const TGroupsFetch& default_instance();
+
+  enum SetCase {
+    kGroupIds = 1,
+    kNames = 2,
+    SET_NOT_SET = 0,
+  };
 
   static const TGroupsFetch* internal_default_instance();
 
@@ -4735,30 +4935,48 @@ class TGroupsFetch : public ::google::protobuf::Message /* @@protoc_insertion_po
 
   // nested types ----------------------------------------------------
 
+  typedef TGroupsFetch_GroupIds GroupIds;
+  typedef TGroupsFetch_Names Names;
+
   // accessors -------------------------------------------------------
 
-  // repeated bytes group_ids = 1;
-  int group_ids_size() const;
+  // optional .server.TGroupsFetch.GroupIds group_ids = 1;
+  bool has_group_ids() const;
   void clear_group_ids();
   static const int kGroupIdsFieldNumber = 1;
-  const ::std::string& group_ids(int index) const;
-  ::std::string* mutable_group_ids(int index);
-  void set_group_ids(int index, const ::std::string& value);
-  void set_group_ids(int index, const char* value);
-  void set_group_ids(int index, const void* value, size_t size);
-  ::std::string* add_group_ids();
-  void add_group_ids(const ::std::string& value);
-  void add_group_ids(const char* value);
-  void add_group_ids(const void* value, size_t size);
-  const ::google::protobuf::RepeatedPtrField< ::std::string>& group_ids() const;
-  ::google::protobuf::RepeatedPtrField< ::std::string>* mutable_group_ids();
+  const ::server::TGroupsFetch_GroupIds& group_ids() const;
+  ::server::TGroupsFetch_GroupIds* mutable_group_ids();
+  ::server::TGroupsFetch_GroupIds* release_group_ids();
+  void set_allocated_group_ids(::server::TGroupsFetch_GroupIds* group_ids);
 
+  // optional .server.TGroupsFetch.Names names = 2;
+  bool has_names() const;
+  void clear_names();
+  static const int kNamesFieldNumber = 2;
+  const ::server::TGroupsFetch_Names& names() const;
+  ::server::TGroupsFetch_Names* mutable_names();
+  ::server::TGroupsFetch_Names* release_names();
+  void set_allocated_names(::server::TGroupsFetch_Names* names);
+
+  SetCase set_case() const;
   // @@protoc_insertion_point(class_scope:server.TGroupsFetch)
  private:
+  inline void set_has_group_ids();
+  inline void set_has_names();
+
+  inline bool has_set() const;
+  void clear_set();
+  inline void clear_has_set();
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
-  ::google::protobuf::RepeatedPtrField< ::std::string> group_ids_;
+  union SetUnion {
+    SetUnion() {}
+    ::server::TGroupsFetch_GroupIds* group_ids_;
+    ::server::TGroupsFetch_Names* names_;
+  } set_;
   mutable int _cached_size_;
+  ::google::protobuf::uint32 _oneof_case_[1];
+
   friend void  protobuf_InitDefaults_api_2eproto_impl();
   friend void  protobuf_AddDesc_api_2eproto_impl();
   friend void protobuf_AssignDesc_api_2eproto();
@@ -18205,63 +18423,237 @@ inline const TGroupsSelfList* TGroupsSelfList::internal_default_instance() {
 }
 // -------------------------------------------------------------------
 
-// TGroupsFetch
+// TGroupsFetch_GroupIds
 
 // repeated bytes group_ids = 1;
-inline int TGroupsFetch::group_ids_size() const {
+inline int TGroupsFetch_GroupIds::group_ids_size() const {
   return group_ids_.size();
 }
-inline void TGroupsFetch::clear_group_ids() {
+inline void TGroupsFetch_GroupIds::clear_group_ids() {
   group_ids_.Clear();
 }
-inline const ::std::string& TGroupsFetch::group_ids(int index) const {
-  // @@protoc_insertion_point(field_get:server.TGroupsFetch.group_ids)
+inline const ::std::string& TGroupsFetch_GroupIds::group_ids(int index) const {
+  // @@protoc_insertion_point(field_get:server.TGroupsFetch.GroupIds.group_ids)
   return group_ids_.Get(index);
 }
-inline ::std::string* TGroupsFetch::mutable_group_ids(int index) {
-  // @@protoc_insertion_point(field_mutable:server.TGroupsFetch.group_ids)
+inline ::std::string* TGroupsFetch_GroupIds::mutable_group_ids(int index) {
+  // @@protoc_insertion_point(field_mutable:server.TGroupsFetch.GroupIds.group_ids)
   return group_ids_.Mutable(index);
 }
-inline void TGroupsFetch::set_group_ids(int index, const ::std::string& value) {
-  // @@protoc_insertion_point(field_set:server.TGroupsFetch.group_ids)
+inline void TGroupsFetch_GroupIds::set_group_ids(int index, const ::std::string& value) {
+  // @@protoc_insertion_point(field_set:server.TGroupsFetch.GroupIds.group_ids)
   group_ids_.Mutable(index)->assign(value);
 }
-inline void TGroupsFetch::set_group_ids(int index, const char* value) {
+inline void TGroupsFetch_GroupIds::set_group_ids(int index, const char* value) {
   group_ids_.Mutable(index)->assign(value);
-  // @@protoc_insertion_point(field_set_char:server.TGroupsFetch.group_ids)
+  // @@protoc_insertion_point(field_set_char:server.TGroupsFetch.GroupIds.group_ids)
 }
-inline void TGroupsFetch::set_group_ids(int index, const void* value, size_t size) {
+inline void TGroupsFetch_GroupIds::set_group_ids(int index, const void* value, size_t size) {
   group_ids_.Mutable(index)->assign(
     reinterpret_cast<const char*>(value), size);
-  // @@protoc_insertion_point(field_set_pointer:server.TGroupsFetch.group_ids)
+  // @@protoc_insertion_point(field_set_pointer:server.TGroupsFetch.GroupIds.group_ids)
 }
-inline ::std::string* TGroupsFetch::add_group_ids() {
-  // @@protoc_insertion_point(field_add_mutable:server.TGroupsFetch.group_ids)
+inline ::std::string* TGroupsFetch_GroupIds::add_group_ids() {
+  // @@protoc_insertion_point(field_add_mutable:server.TGroupsFetch.GroupIds.group_ids)
   return group_ids_.Add();
 }
-inline void TGroupsFetch::add_group_ids(const ::std::string& value) {
+inline void TGroupsFetch_GroupIds::add_group_ids(const ::std::string& value) {
   group_ids_.Add()->assign(value);
-  // @@protoc_insertion_point(field_add:server.TGroupsFetch.group_ids)
+  // @@protoc_insertion_point(field_add:server.TGroupsFetch.GroupIds.group_ids)
 }
-inline void TGroupsFetch::add_group_ids(const char* value) {
+inline void TGroupsFetch_GroupIds::add_group_ids(const char* value) {
   group_ids_.Add()->assign(value);
-  // @@protoc_insertion_point(field_add_char:server.TGroupsFetch.group_ids)
+  // @@protoc_insertion_point(field_add_char:server.TGroupsFetch.GroupIds.group_ids)
 }
-inline void TGroupsFetch::add_group_ids(const void* value, size_t size) {
+inline void TGroupsFetch_GroupIds::add_group_ids(const void* value, size_t size) {
   group_ids_.Add()->assign(reinterpret_cast<const char*>(value), size);
-  // @@protoc_insertion_point(field_add_pointer:server.TGroupsFetch.group_ids)
+  // @@protoc_insertion_point(field_add_pointer:server.TGroupsFetch.GroupIds.group_ids)
 }
 inline const ::google::protobuf::RepeatedPtrField< ::std::string>&
-TGroupsFetch::group_ids() const {
-  // @@protoc_insertion_point(field_list:server.TGroupsFetch.group_ids)
+TGroupsFetch_GroupIds::group_ids() const {
+  // @@protoc_insertion_point(field_list:server.TGroupsFetch.GroupIds.group_ids)
   return group_ids_;
 }
 inline ::google::protobuf::RepeatedPtrField< ::std::string>*
-TGroupsFetch::mutable_group_ids() {
-  // @@protoc_insertion_point(field_mutable_list:server.TGroupsFetch.group_ids)
+TGroupsFetch_GroupIds::mutable_group_ids() {
+  // @@protoc_insertion_point(field_mutable_list:server.TGroupsFetch.GroupIds.group_ids)
   return &group_ids_;
 }
 
+inline const TGroupsFetch_GroupIds* TGroupsFetch_GroupIds::internal_default_instance() {
+  return &TGroupsFetch_GroupIds_default_instance_.get();
+}
+// -------------------------------------------------------------------
+
+// TGroupsFetch_Names
+
+// repeated string names = 1;
+inline int TGroupsFetch_Names::names_size() const {
+  return names_.size();
+}
+inline void TGroupsFetch_Names::clear_names() {
+  names_.Clear();
+}
+inline const ::std::string& TGroupsFetch_Names::names(int index) const {
+  // @@protoc_insertion_point(field_get:server.TGroupsFetch.Names.names)
+  return names_.Get(index);
+}
+inline ::std::string* TGroupsFetch_Names::mutable_names(int index) {
+  // @@protoc_insertion_point(field_mutable:server.TGroupsFetch.Names.names)
+  return names_.Mutable(index);
+}
+inline void TGroupsFetch_Names::set_names(int index, const ::std::string& value) {
+  // @@protoc_insertion_point(field_set:server.TGroupsFetch.Names.names)
+  names_.Mutable(index)->assign(value);
+}
+inline void TGroupsFetch_Names::set_names(int index, const char* value) {
+  names_.Mutable(index)->assign(value);
+  // @@protoc_insertion_point(field_set_char:server.TGroupsFetch.Names.names)
+}
+inline void TGroupsFetch_Names::set_names(int index, const char* value, size_t size) {
+  names_.Mutable(index)->assign(
+    reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_set_pointer:server.TGroupsFetch.Names.names)
+}
+inline ::std::string* TGroupsFetch_Names::add_names() {
+  // @@protoc_insertion_point(field_add_mutable:server.TGroupsFetch.Names.names)
+  return names_.Add();
+}
+inline void TGroupsFetch_Names::add_names(const ::std::string& value) {
+  names_.Add()->assign(value);
+  // @@protoc_insertion_point(field_add:server.TGroupsFetch.Names.names)
+}
+inline void TGroupsFetch_Names::add_names(const char* value) {
+  names_.Add()->assign(value);
+  // @@protoc_insertion_point(field_add_char:server.TGroupsFetch.Names.names)
+}
+inline void TGroupsFetch_Names::add_names(const char* value, size_t size) {
+  names_.Add()->assign(reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_add_pointer:server.TGroupsFetch.Names.names)
+}
+inline const ::google::protobuf::RepeatedPtrField< ::std::string>&
+TGroupsFetch_Names::names() const {
+  // @@protoc_insertion_point(field_list:server.TGroupsFetch.Names.names)
+  return names_;
+}
+inline ::google::protobuf::RepeatedPtrField< ::std::string>*
+TGroupsFetch_Names::mutable_names() {
+  // @@protoc_insertion_point(field_mutable_list:server.TGroupsFetch.Names.names)
+  return &names_;
+}
+
+inline const TGroupsFetch_Names* TGroupsFetch_Names::internal_default_instance() {
+  return &TGroupsFetch_Names_default_instance_.get();
+}
+// -------------------------------------------------------------------
+
+// TGroupsFetch
+
+// optional .server.TGroupsFetch.GroupIds group_ids = 1;
+inline bool TGroupsFetch::has_group_ids() const {
+  return set_case() == kGroupIds;
+}
+inline void TGroupsFetch::set_has_group_ids() {
+  _oneof_case_[0] = kGroupIds;
+}
+inline void TGroupsFetch::clear_group_ids() {
+  if (has_group_ids()) {
+    delete set_.group_ids_;
+    clear_has_set();
+  }
+}
+inline  const ::server::TGroupsFetch_GroupIds& TGroupsFetch::group_ids() const {
+  // @@protoc_insertion_point(field_get:server.TGroupsFetch.group_ids)
+  return has_group_ids()
+      ? *set_.group_ids_
+      : ::server::TGroupsFetch_GroupIds::default_instance();
+}
+inline ::server::TGroupsFetch_GroupIds* TGroupsFetch::mutable_group_ids() {
+  if (!has_group_ids()) {
+    clear_set();
+    set_has_group_ids();
+    set_.group_ids_ = new ::server::TGroupsFetch_GroupIds;
+  }
+  // @@protoc_insertion_point(field_mutable:server.TGroupsFetch.group_ids)
+  return set_.group_ids_;
+}
+inline ::server::TGroupsFetch_GroupIds* TGroupsFetch::release_group_ids() {
+  // @@protoc_insertion_point(field_release:server.TGroupsFetch.group_ids)
+  if (has_group_ids()) {
+    clear_has_set();
+    ::server::TGroupsFetch_GroupIds* temp = set_.group_ids_;
+    set_.group_ids_ = NULL;
+    return temp;
+  } else {
+    return NULL;
+  }
+}
+inline void TGroupsFetch::set_allocated_group_ids(::server::TGroupsFetch_GroupIds* group_ids) {
+  clear_set();
+  if (group_ids) {
+    set_has_group_ids();
+    set_.group_ids_ = group_ids;
+  }
+  // @@protoc_insertion_point(field_set_allocated:server.TGroupsFetch.group_ids)
+}
+
+// optional .server.TGroupsFetch.Names names = 2;
+inline bool TGroupsFetch::has_names() const {
+  return set_case() == kNames;
+}
+inline void TGroupsFetch::set_has_names() {
+  _oneof_case_[0] = kNames;
+}
+inline void TGroupsFetch::clear_names() {
+  if (has_names()) {
+    delete set_.names_;
+    clear_has_set();
+  }
+}
+inline  const ::server::TGroupsFetch_Names& TGroupsFetch::names() const {
+  // @@protoc_insertion_point(field_get:server.TGroupsFetch.names)
+  return has_names()
+      ? *set_.names_
+      : ::server::TGroupsFetch_Names::default_instance();
+}
+inline ::server::TGroupsFetch_Names* TGroupsFetch::mutable_names() {
+  if (!has_names()) {
+    clear_set();
+    set_has_names();
+    set_.names_ = new ::server::TGroupsFetch_Names;
+  }
+  // @@protoc_insertion_point(field_mutable:server.TGroupsFetch.names)
+  return set_.names_;
+}
+inline ::server::TGroupsFetch_Names* TGroupsFetch::release_names() {
+  // @@protoc_insertion_point(field_release:server.TGroupsFetch.names)
+  if (has_names()) {
+    clear_has_set();
+    ::server::TGroupsFetch_Names* temp = set_.names_;
+    set_.names_ = NULL;
+    return temp;
+  } else {
+    return NULL;
+  }
+}
+inline void TGroupsFetch::set_allocated_names(::server::TGroupsFetch_Names* names) {
+  clear_set();
+  if (names) {
+    set_has_names();
+    set_.names_ = names;
+  }
+  // @@protoc_insertion_point(field_set_allocated:server.TGroupsFetch.names)
+}
+
+inline bool TGroupsFetch::has_set() const {
+  return set_case() != SET_NOT_SET;
+}
+inline void TGroupsFetch::clear_has_set() {
+  _oneof_case_[0] = SET_NOT_SET;
+}
+inline TGroupsFetch::SetCase TGroupsFetch::set_case() const {
+  return TGroupsFetch::SetCase(_oneof_case_[0]);
+}
 inline const TGroupsFetch* TGroupsFetch::internal_default_instance() {
   return &TGroupsFetch_default_instance_.get();
 }
@@ -24742,6 +25134,10 @@ inline const TLeaderboardRecords* TLeaderboardRecords::internal_default_instance
   return &TLeaderboardRecords_default_instance_.get();
 }
 #endif  // !PROTOBUF_INLINE_NOT_IN_HEADERS
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
 // -------------------------------------------------------------------
 
 // -------------------------------------------------------------------

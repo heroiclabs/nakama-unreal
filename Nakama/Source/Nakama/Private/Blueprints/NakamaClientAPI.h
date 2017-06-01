@@ -306,7 +306,7 @@ public:
 	virtual void Activate() override;
 
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true"), Category = "Nakama|Group")
-		static UNBPListGroupsRequest* FetchGroups(UNakamaComponent* nakama, TArray<FString> groupIds, FDelegateOnSuccess_GroupList onSuccess, FDelegateOnFail onFail);
+		static UNBPListGroupsRequest* FetchGroups(UNakamaComponent* nakama, TArray<FString> groupIds, TArray<FString> names, FDelegateOnSuccess_GroupList onSuccess, FDelegateOnFail onFail);
 
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true"), Category = "Nakama|Group")
 		static UNBPListGroupsRequest* ListGroups(UNakamaComponent* nakama, int32 pageLimit, bool ascending, UNBPCursor* cursor, FString filterByLang, FDateTime filterByCreatedAt, int32 filterByCount, FDelegateOnSuccess_GroupList onSuccess, FDelegateOnFail onFail);
@@ -319,6 +319,7 @@ private:
 
 	Mode mode;
 	UPROPERTY() TArray<FString> GroupIds;
+	UPROPERTY() TArray<FString> Names;
 	UPROPERTY() int32 PageLimit;
 	UPROPERTY() bool Ascending;
 	UPROPERTY() UNBPCursor* Cursor = nullptr;

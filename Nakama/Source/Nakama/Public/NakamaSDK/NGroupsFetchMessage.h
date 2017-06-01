@@ -37,6 +37,7 @@ namespace Nakama {
 		virtual Envelope* GetPayload() override { return &envelope; }
 		virtual void SetCollationId(std::string id) override { envelope.set_collation_id(id); }
 
+		static NGroupsFetchMessage Default(std::vector<std::string> ids);
 		class Builder;
 	};
 
@@ -46,10 +47,10 @@ namespace Nakama {
 		NGroupsFetchMessage message;
 
 	public:
-		Builder(std::string groupId);
+		Builder() {}
 
-		Builder Add(std::string groupId);
-		Builder Add(std::vector<std::string> groupIds);
+		Builder SetGroupIds(std::vector<std::string> groupIds);
+		Builder SetNames(std::vector<std::string> names);
 
 		NGroupsFetchMessage Build();
 	};

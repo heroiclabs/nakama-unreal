@@ -24,25 +24,34 @@ namespace Nakama {
 		envelope.mutable_groups_fetch();
 	}
 
-	/* Factory Methods */
-	NGroupsFetchMessage::Builder::Builder(std::string groupId)
+	NGroupsFetchMessage NGroupsFetchMessage::Default(std::vector<std::string> groupIds)
 	{
-		Add(groupId);
+		return NGroupsFetchMessage::Builder().SetGroupIds(groupIds).Build();
 	}
 
-	NGroupsFetchMessage::Builder NGroupsFetchMessage::Builder::Add(std::string groupId)
+	/* Factory Methods */
+
+	NGroupsFetchMessage::Builder NGroupsFetchMessage::Builder::SetGroupIds(std::vector<std::string> groupIds)
 	{
-		message.envelope.mutable_groups_fetch()->mutable_group_ids()->Add()->assign(groupId);
+		auto container = new TGroupsFetch_GroupIds();
+		for (size_t i = 0; i < groupIds.size(); i++)
+		{
+			container->mutable_group_ids()->Add()->assign(groupIds[i]);
+		}
+
+		message.envelope.mutable_groups_fetch()->set_allocated_group_ids(container);
 		return *this;
 	}
 
-	NGroupsFetchMessage::Builder NGroupsFetchMessage::Builder::Add(std::vector<std::string> groupIds)
+	NGroupsFetchMessage::Builder NGroupsFetchMessage::Builder::SetNames(std::vector<std::string> names)
 	{
-		auto container = message.envelope.mutable_groups_fetch()->mutable_group_ids();
-		for (size_t i = 0; i < groupIds.size(); i++)
+		auto container = new TGroupsFetch_Names();
+		for (size_t i = 0; i < names.size(); i++)
 		{
-			container->Add()->assign(groupIds[i]);
+			container->mutable_names()->Add()->assign(names[i]);
 		}
+
+		message.envelope.mutable_groups_fetch()->set_allocated_names(container);
 		return *this;
 	}
 

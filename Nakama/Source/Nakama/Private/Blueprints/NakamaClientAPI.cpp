@@ -948,11 +948,12 @@ void UNBPManageGroupsRequest::Activate()
 
 // ------------------------- UNBPListGroupsRequest -------------------------
 
-UNBPListGroupsRequest* UNBPListGroupsRequest::FetchGroups(UNakamaComponent* nakama, TArray<FString> groupIds, FDelegateOnSuccess_GroupList onSuccess, FDelegateOnFail onFail)
+UNBPListGroupsRequest* UNBPListGroupsRequest::FetchGroups(UNakamaComponent* nakama, TArray<FString> groupIds, TArray<FString> names, FDelegateOnSuccess_GroupList onSuccess, FDelegateOnFail onFail)
 {
 	auto proxy = NewObject<UNBPListGroupsRequest>();
 	proxy->mode = Mode::Fetch;
 	proxy->GroupIds = groupIds;
+	proxy->Names = names;
 	proxy->NakamaRef = nakama;
 	proxy->OnSuccess = onSuccess;
 	proxy->OnFail = onFail;
@@ -1010,9 +1011,21 @@ void UNBPListGroupsRequest::Activate()
 			return;
 		}
 
-		auto builder = NGroupsFetchMessage::Builder(TCHAR_TO_UTF8(*GroupIds[0]));
-		for (int i = 1; i < GroupIds.Num(); i++) {
-			builder.Add(TCHAR_TO_UTF8(*GroupIds[i]));
+		auto builder = NGroupsFetchMessage::Builder();
+		if (GroupIds.Num() > 0) {
+			std::vector<std::string> ids;
+			for (int i = 0; i < GroupIds.Num(); i++) {
+				ids.push_back(TCHAR_TO_UTF8(*GroupIds[i]));
+			}
+			builder.SetGroupIds(ids);
+		}
+
+		if (Names.Num() > 0) {
+			std::vector<std::string> names;
+			for (int i = 0; i < Names.Num(); i++) {
+				names.push_back(TCHAR_TO_UTF8(*Names[i]));
+			}
+			builder.SetNames(names);
 		}
 
 		auto message = builder.Build();

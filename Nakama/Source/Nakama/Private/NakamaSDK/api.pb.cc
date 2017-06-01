@@ -212,6 +212,16 @@ const ::google::protobuf::internal::GeneratedMessageReflection*
 const ::google::protobuf::Descriptor* TGroupsFetch_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   TGroupsFetch_reflection_ = NULL;
+struct TGroupsFetchOneofInstance {
+  const ::server::TGroupsFetch_GroupIds* group_ids_;
+  const ::server::TGroupsFetch_Names* names_;
+}* TGroupsFetch_default_oneof_instance_ = NULL;
+const ::google::protobuf::Descriptor* TGroupsFetch_GroupIds_descriptor_ = NULL;
+const ::google::protobuf::internal::GeneratedMessageReflection*
+  TGroupsFetch_GroupIds_reflection_ = NULL;
+const ::google::protobuf::Descriptor* TGroupsFetch_Names_descriptor_ = NULL;
+const ::google::protobuf::internal::GeneratedMessageReflection*
+  TGroupsFetch_Names_reflection_ = NULL;
 const ::google::protobuf::Descriptor* TGroupsList_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   TGroupsList_reflection_ = NULL;
@@ -982,8 +992,10 @@ void protobuf_AssignDesc_api_2eproto() {
       sizeof(TGroupsSelfList),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TGroupsSelfList, _internal_metadata_));
   TGroupsFetch_descriptor_ = file->message_type(27);
-  static const int TGroupsFetch_offsets_[1] = {
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TGroupsFetch, group_ids_),
+  static const int TGroupsFetch_offsets_[3] = {
+    PROTO2_GENERATED_DEFAULT_ONEOF_FIELD_OFFSET(TGroupsFetch_default_oneof_instance_, group_ids_),
+    PROTO2_GENERATED_DEFAULT_ONEOF_FIELD_OFFSET(TGroupsFetch_default_oneof_instance_, names_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TGroupsFetch, set_),
   };
   TGroupsFetch_reflection_ =
     ::google::protobuf::internal::GeneratedMessageReflection::NewGeneratedMessageReflection(
@@ -993,8 +1005,38 @@ void protobuf_AssignDesc_api_2eproto() {
       -1,
       -1,
       -1,
+      TGroupsFetch_default_oneof_instance_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TGroupsFetch, _oneof_case_[0]),
       sizeof(TGroupsFetch),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TGroupsFetch, _internal_metadata_));
+  TGroupsFetch_GroupIds_descriptor_ = TGroupsFetch_descriptor_->nested_type(0);
+  static const int TGroupsFetch_GroupIds_offsets_[1] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TGroupsFetch_GroupIds, group_ids_),
+  };
+  TGroupsFetch_GroupIds_reflection_ =
+    ::google::protobuf::internal::GeneratedMessageReflection::NewGeneratedMessageReflection(
+      TGroupsFetch_GroupIds_descriptor_,
+      TGroupsFetch_GroupIds::internal_default_instance(),
+      TGroupsFetch_GroupIds_offsets_,
+      -1,
+      -1,
+      -1,
+      sizeof(TGroupsFetch_GroupIds),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TGroupsFetch_GroupIds, _internal_metadata_));
+  TGroupsFetch_Names_descriptor_ = TGroupsFetch_descriptor_->nested_type(1);
+  static const int TGroupsFetch_Names_offsets_[1] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TGroupsFetch_Names, names_),
+  };
+  TGroupsFetch_Names_reflection_ =
+    ::google::protobuf::internal::GeneratedMessageReflection::NewGeneratedMessageReflection(
+      TGroupsFetch_Names_descriptor_,
+      TGroupsFetch_Names::internal_default_instance(),
+      TGroupsFetch_Names_offsets_,
+      -1,
+      -1,
+      -1,
+      sizeof(TGroupsFetch_Names),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TGroupsFetch_Names, _internal_metadata_));
   TGroupsList_descriptor_ = file->message_type(28);
   static const int TGroupsList_offsets_[7] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TGroupsList, page_limit_),
@@ -1869,6 +1911,10 @@ void protobuf_RegisterTypes(const ::std::string&) {
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
       TGroupsFetch_descriptor_, TGroupsFetch::internal_default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+      TGroupsFetch_GroupIds_descriptor_, TGroupsFetch_GroupIds::internal_default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+      TGroupsFetch_Names_descriptor_, TGroupsFetch_Names::internal_default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
       TGroupsList_descriptor_, TGroupsList::internal_default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
       TGroups_descriptor_, TGroups::internal_default_instance());
@@ -2037,7 +2083,12 @@ void protobuf_ShutdownFile_api_2eproto() {
   TGroupsSelfList_default_instance_.Shutdown();
   delete TGroupsSelfList_reflection_;
   TGroupsFetch_default_instance_.Shutdown();
+  delete TGroupsFetch_default_oneof_instance_;
   delete TGroupsFetch_reflection_;
+  TGroupsFetch_GroupIds_default_instance_.Shutdown();
+  delete TGroupsFetch_GroupIds_reflection_;
+  TGroupsFetch_Names_default_instance_.Shutdown();
+  delete TGroupsFetch_Names_reflection_;
   TGroupsList_default_instance_.Shutdown();
   delete TGroupsList_default_oneof_instance_;
   delete TGroupsList_reflection_;
@@ -2202,8 +2253,12 @@ void protobuf_InitDefaults_api_2eproto_impl() {
   ::google::protobuf::internal::GetEmptyString();
   TGroupRemove_default_instance_.DefaultConstruct();
   TGroupsSelfList_default_instance_.DefaultConstruct();
-  ::google::protobuf::internal::GetEmptyString();
   TGroupsFetch_default_instance_.DefaultConstruct();
+  TGroupsFetch_default_oneof_instance_ = new TGroupsFetchOneofInstance();
+  ::google::protobuf::internal::GetEmptyString();
+  TGroupsFetch_GroupIds_default_instance_.DefaultConstruct();
+  ::google::protobuf::internal::GetEmptyString();
+  TGroupsFetch_Names_default_instance_.DefaultConstruct();
   ::google::protobuf::internal::GetEmptyString();
   TGroupsList_default_instance_.DefaultConstruct();
   TGroupsList_default_oneof_instance_ = new TGroupsListOneofInstance();
@@ -2326,6 +2381,8 @@ void protobuf_InitDefaults_api_2eproto_impl() {
   TGroupRemove_default_instance_.get_mutable()->InitAsDefaultInstance();
   TGroupsSelfList_default_instance_.get_mutable()->InitAsDefaultInstance();
   TGroupsFetch_default_instance_.get_mutable()->InitAsDefaultInstance();
+  TGroupsFetch_GroupIds_default_instance_.get_mutable()->InitAsDefaultInstance();
+  TGroupsFetch_Names_default_instance_.get_mutable()->InitAsDefaultInstance();
   TGroupsList_default_instance_.get_mutable()->InitAsDefaultInstance();
   TGroups_default_instance_.get_mutable()->InitAsDefaultInstance();
   GroupUser_default_instance_.get_mutable()->InitAsDefaultInstance();
@@ -2527,113 +2584,116 @@ void protobuf_AddDesc_api_2eproto_impl() {
     "\n\004name\030\003 \001(\t\022\023\n\013description\030\004 \001(\t\022\022\n\nava"
     "tar_url\030\005 \001(\t\022\014\n\004lang\030\006 \001(\t\022\020\n\010metadata\030"
     "\007 \001(\014\" \n\014TGroupRemove\022\020\n\010group_id\030\001 \001(\014\""
-    "\021\n\017TGroupsSelfList\"!\n\014TGroupsFetch\022\021\n\tgr"
-    "oup_ids\030\001 \003(\014\"\210\001\n\013TGroupsList\022\022\n\npage_li"
-    "mit\030\001 \001(\003\022\024\n\014order_by_asc\030\002 \001(\010\022\016\n\004lang\030"
-    "\003 \001(\tH\000\022\024\n\ncreated_at\030\004 \001(\003H\000\022\017\n\005count\030\005"
-    " \001(\003H\000\022\016\n\006cursor\030\007 \001(\014B\010\n\006filter\"8\n\007TGro"
-    "ups\022\035\n\006groups\030\001 \003(\0132\r.server.Group\022\016\n\006cu"
-    "rsor\030\002 \001(\014\"5\n\tGroupUser\022\032\n\004user\030\001 \001(\0132\014."
-    "server.User\022\014\n\004type\030\002 \001(\003\"#\n\017TGroupUsers"
-    "List\022\020\n\010group_id\030\001 \001(\014\"/\n\013TGroupUsers\022 \n"
-    "\005users\030\001 \003(\0132\021.server.GroupUser\"\036\n\nTGrou"
-    "pJoin\022\020\n\010group_id\030\001 \001(\014\"\037\n\013TGroupLeave\022\020"
-    "\n\010group_id\030\001 \001(\014\"2\n\rTGroupUserAdd\022\020\n\010gro"
-    "up_id\030\001 \001(\014\022\017\n\007user_id\030\002 \001(\014\"3\n\016TGroupUs"
-    "erKick\022\020\n\010group_id\030\001 \001(\014\022\017\n\007user_id\030\002 \001("
-    "\014\"6\n\021TGroupUserPromote\022\020\n\010group_id\030\001 \001(\014"
-    "\022\017\n\007user_id\030\002 \001(\014\"A\n\007TopicId\022\014\n\002dm\030\001 \001(\014"
-    "H\000\022\016\n\004room\030\002 \001(\014H\000\022\022\n\010group_id\030\003 \001(\014H\000B\004"
-    "\n\002id\"C\n\014UserPresence\022\017\n\007user_id\030\001 \001(\014\022\022\n"
-    "\nsession_id\030\002 \001(\014\022\016\n\006handle\030\003 \001(\t\"I\n\nTTo"
-    "picJoin\022\021\n\007user_id\030\001 \001(\014H\000\022\016\n\004room\030\002 \001(\014"
-    "H\000\022\022\n\010group_id\030\003 \001(\014H\000B\004\n\002id\"u\n\006TTopic\022\036"
-    "\n\005topic\030\001 \001(\0132\017.server.TopicId\022\'\n\tpresen"
-    "ces\030\002 \003(\0132\024.server.UserPresence\022\"\n\004self\030"
-    "\003 \001(\0132\024.server.UserPresence\"-\n\013TTopicLea"
-    "ve\022\036\n\005topic\030\001 \001(\0132\017.server.TopicId\"A\n\021TT"
-    "opicMessageSend\022\036\n\005topic\030\001 \001(\0132\017.server."
-    "TopicId\022\014\n\004data\030\002 \001(\014\"^\n\020TTopicMessageAc"
-    "k\022\022\n\nmessage_id\030\001 \001(\014\022\022\n\ncreated_at\030\002 \001("
-    "\003\022\022\n\nexpires_at\030\003 \001(\003\022\016\n\006handle\030\004 \001(\t\"\247\001"
-    "\n\014TopicMessage\022\036\n\005topic\030\001 \001(\0132\017.server.T"
-    "opicId\022\017\n\007user_id\030\002 \001(\014\022\022\n\nmessage_id\030\003 "
-    "\001(\014\022\022\n\ncreated_at\030\004 \001(\003\022\022\n\nexpires_at\030\005 "
-    "\001(\003\022\016\n\006handle\030\006 \001(\t\022\014\n\004type\030\007 \001(\003\022\014\n\004dat"
-    "a\030\010 \001(\014\"\201\001\n\022TTopicMessagesList\022\021\n\007user_i"
-    "d\030\001 \001(\014H\000\022\016\n\004room\030\002 \001(\014H\000\022\022\n\010group_id\030\003 "
-    "\001(\014H\000\022\016\n\006cursor\030\004 \001(\014\022\017\n\007forward\030\005 \001(\010\022\r"
-    "\n\005limit\030\006 \001(\003B\004\n\002id\"H\n\016TTopicMessages\022&\n"
-    "\010messages\030\001 \003(\0132\024.server.TopicMessage\022\016\n"
-    "\006cursor\030\002 \001(\014\"z\n\rTopicPresence\022\036\n\005topic\030"
-    "\001 \001(\0132\017.server.TopicId\022#\n\005joins\030\002 \003(\0132\024."
-    "server.UserPresence\022$\n\006leaves\030\003 \003(\0132\024.se"
-    "rver.UserPresence\"\016\n\014TMatchCreate\"\036\n\nTMa"
-    "tchJoin\022\020\n\010match_id\030\001 \001(\014\"g\n\006TMatch\022\020\n\010m"
-    "atch_id\030\001 \001(\014\022\'\n\tpresences\030\002 \003(\0132\024.serve"
-    "r.UserPresence\022\"\n\004self\030\003 \001(\0132\024.server.Us"
-    "erPresence\"A\n\016TMatchDataSend\022\020\n\010match_id"
-    "\030\001 \001(\014\022\017\n\007op_code\030\002 \001(\003\022\014\n\004data\030\003 \001(\014\"d\n"
-    "\tMatchData\022\020\n\010match_id\030\001 \001(\014\022&\n\010presence"
-    "\030\002 \001(\0132\024.server.UserPresence\022\017\n\007op_code\030"
-    "\003 \001(\003\022\014\n\004data\030\004 \001(\014\"\037\n\013TMatchLeave\022\020\n\010ma"
-    "tch_id\030\001 \001(\014\"l\n\rMatchPresence\022\020\n\010match_i"
-    "d\030\001 \001(\014\022#\n\005joins\030\002 \003(\0132\024.server.UserPres"
-    "ence\022$\n\006leaves\030\003 \003(\0132\024.server.UserPresen"
-    "ce\"\222\001\n\rTStorageFetch\022.\n\004keys\030\001 \003(\0132 .ser"
-    "ver.TStorageFetch.StorageKey\032Q\n\nStorageK"
-    "ey\022\016\n\006bucket\030\001 \001(\t\022\022\n\ncollection\030\002 \001(\t\022\016"
-    "\n\006record\030\003 \001(\t\022\017\n\007user_id\030\004 \001(\014\"\242\002\n\014TSto"
-    "rageData\022.\n\004data\030\001 \003(\0132 .server.TStorage"
-    "Data.StorageData\032\341\001\n\013StorageData\022\016\n\006buck"
-    "et\030\001 \001(\t\022\022\n\ncollection\030\002 \001(\t\022\016\n\006record\030\003"
-    " \001(\t\022\017\n\007user_id\030\004 \001(\014\022\r\n\005value\030\005 \001(\014\022\017\n\007"
-    "version\030\006 \001(\014\022\027\n\017permission_read\030\007 \001(\003\022\030"
-    "\n\020permission_write\030\010 \001(\003\022\022\n\ncreated_at\030\t"
-    " \001(\003\022\022\n\nupdated_at\030\n \001(\003\022\022\n\nexpires_at\030\013"
-    " \001(\003\"\243\001\n\rTStorageWrite\022/\n\004data\030\003 \003(\0132!.s"
-    "erver.TStorageWrite.StorageData\032a\n\013Stora"
-    "geData\022\016\n\006bucket\030\001 \001(\t\022\022\n\ncollection\030\002 \001"
-    "(\t\022\016\n\006record\030\003 \001(\t\022\r\n\005value\030\004 \001(\014\022\017\n\007ver"
-    "sion\030\005 \001(\014\"\216\001\n\013TStorageKey\022,\n\004keys\030\001 \003(\013"
-    "2\036.server.TStorageKey.StorageKey\032Q\n\nStor"
-    "ageKey\022\016\n\006bucket\030\001 \001(\t\022\022\n\ncollection\030\002 \001"
-    "(\t\022\016\n\006record\030\003 \001(\t\022\017\n\007version\030\004 \001(\014\"\224\001\n\016"
-    "TStorageRemove\022/\n\004keys\030\001 \003(\0132!.server.TS"
-    "torageRemove.StorageKey\032Q\n\nStorageKey\022\016\n"
-    "\006bucket\030\001 \001(\t\022\022\n\ncollection\030\002 \001(\t\022\016\n\006rec"
-    "ord\030\003 \001(\t\022\017\n\007version\030\004 \001(\014\"\231\001\n\013Leaderboa"
-    "rd\022\n\n\002id\030\001 \001(\014\022\025\n\rauthoritative\030\002 \001(\010\022\014\n"
-    "\004sort\030\003 \001(\003\022\r\n\005count\030\004 \001(\003\022\026\n\016reset_sche"
-    "dule\030\005 \001(\t\022\020\n\010metadata\030\006 \001(\014\022\017\n\007next_id\030"
-    "\007 \001(\014\022\017\n\007prev_id\030\010 \001(\014\"\374\001\n\021LeaderboardRe"
-    "cord\022\026\n\016leaderboard_id\030\001 \001(\014\022\020\n\010owner_id"
-    "\030\002 \001(\014\022\016\n\006handle\030\003 \001(\t\022\014\n\004lang\030\004 \001(\t\022\020\n\010"
-    "location\030\005 \001(\t\022\020\n\010timezone\030\006 \001(\t\022\014\n\004rank"
-    "\030\007 \001(\003\022\r\n\005score\030\010 \001(\003\022\021\n\tnum_score\030\t \001(\003"
-    "\022\020\n\010metadata\030\n \001(\014\022\021\n\tranked_at\030\013 \001(\003\022\022\n"
-    "\nupdated_at\030\014 \001(\003\022\022\n\nexpires_at\030\r \001(\003\"2\n"
-    "\021TLeaderboardsList\022\r\n\005limit\030\001 \001(\003\022\016\n\006cur"
-    "sor\030\002 \001(\014\"J\n\rTLeaderboards\022)\n\014leaderboar"
-    "ds\030\001 \003(\0132\023.server.Leaderboard\022\016\n\006cursor\030"
-    "\002 \001(\014\"\254\001\n\027TLeaderboardRecordWrite\022\026\n\016lea"
-    "derboard_id\030\001 \001(\014\022\016\n\004incr\030\002 \001(\003H\000\022\016\n\004dec"
-    "r\030\003 \001(\003H\000\022\r\n\003set\030\004 \001(\003H\000\022\016\n\004best\030\005 \001(\003H\000"
-    "\022\020\n\010location\030\006 \001(\t\022\020\n\010timezone\030\007 \001(\t\022\020\n\010"
-    "metadata\030\010 \001(\014B\004\n\002op\"\?\n\022TLeaderboardReco"
-    "rd\022)\n\006record\030\001 \001(\0132\031.server.LeaderboardR"
-    "ecord\"R\n\030TLeaderboardRecordsFetch\022\027\n\017lea"
-    "derboard_ids\030\001 \003(\014\022\r\n\005limit\030\002 \001(\003\022\016\n\006cur"
-    "sor\030\003 \001(\014\"\200\002\n\027TLeaderboardRecordsList\022\026\n"
-    "\016leaderboard_id\030\001 \001(\014\022\022\n\010owner_id\030\002 \001(\014H"
-    "\000\022;\n\towner_ids\030\003 \001(\0132&.server.TLeaderboa"
-    "rdRecordsList.OwnersH\000\022\016\n\004lang\030\004 \001(\tH\000\022\022"
-    "\n\010location\030\005 \001(\tH\000\022\022\n\010timezone\030\006 \001(\tH\000\022\r"
-    "\n\005limit\030\007 \001(\003\022\016\n\006cursor\030\010 \001(\014\032\033\n\006Owners\022"
-    "\021\n\towner_ids\030\001 \003(\014B\010\n\006filter\"Q\n\023TLeaderb"
-    "oardRecords\022*\n\007records\030\001 \003(\0132\031.server.Le"
-    "aderboardRecord\022\016\n\006cursor\030\002 \001(\014B\t\252\002\006Naka"
-    "mab\006proto3", 9890);
+    "\021\n\017TGroupsSelfList\"\255\001\n\014TGroupsFetch\0222\n\tg"
+    "roup_ids\030\001 \001(\0132\035.server.TGroupsFetch.Gro"
+    "upIdsH\000\022+\n\005names\030\002 \001(\0132\032.server.TGroupsF"
+    "etch.NamesH\000\032\035\n\010GroupIds\022\021\n\tgroup_ids\030\001 "
+    "\003(\014\032\026\n\005Names\022\r\n\005names\030\001 \003(\tB\005\n\003set\"\210\001\n\013T"
+    "GroupsList\022\022\n\npage_limit\030\001 \001(\003\022\024\n\014order_"
+    "by_asc\030\002 \001(\010\022\016\n\004lang\030\003 \001(\tH\000\022\024\n\ncreated_"
+    "at\030\004 \001(\003H\000\022\017\n\005count\030\005 \001(\003H\000\022\016\n\006cursor\030\007 "
+    "\001(\014B\010\n\006filter\"8\n\007TGroups\022\035\n\006groups\030\001 \003(\013"
+    "2\r.server.Group\022\016\n\006cursor\030\002 \001(\014\"5\n\tGroup"
+    "User\022\032\n\004user\030\001 \001(\0132\014.server.User\022\014\n\004type"
+    "\030\002 \001(\003\"#\n\017TGroupUsersList\022\020\n\010group_id\030\001 "
+    "\001(\014\"/\n\013TGroupUsers\022 \n\005users\030\001 \003(\0132\021.serv"
+    "er.GroupUser\"\036\n\nTGroupJoin\022\020\n\010group_id\030\001"
+    " \001(\014\"\037\n\013TGroupLeave\022\020\n\010group_id\030\001 \001(\014\"2\n"
+    "\rTGroupUserAdd\022\020\n\010group_id\030\001 \001(\014\022\017\n\007user"
+    "_id\030\002 \001(\014\"3\n\016TGroupUserKick\022\020\n\010group_id\030"
+    "\001 \001(\014\022\017\n\007user_id\030\002 \001(\014\"6\n\021TGroupUserProm"
+    "ote\022\020\n\010group_id\030\001 \001(\014\022\017\n\007user_id\030\002 \001(\014\"A"
+    "\n\007TopicId\022\014\n\002dm\030\001 \001(\014H\000\022\016\n\004room\030\002 \001(\014H\000\022"
+    "\022\n\010group_id\030\003 \001(\014H\000B\004\n\002id\"C\n\014UserPresenc"
+    "e\022\017\n\007user_id\030\001 \001(\014\022\022\n\nsession_id\030\002 \001(\014\022\016"
+    "\n\006handle\030\003 \001(\t\"I\n\nTTopicJoin\022\021\n\007user_id\030"
+    "\001 \001(\014H\000\022\016\n\004room\030\002 \001(\014H\000\022\022\n\010group_id\030\003 \001("
+    "\014H\000B\004\n\002id\"u\n\006TTopic\022\036\n\005topic\030\001 \001(\0132\017.ser"
+    "ver.TopicId\022\'\n\tpresences\030\002 \003(\0132\024.server."
+    "UserPresence\022\"\n\004self\030\003 \001(\0132\024.server.User"
+    "Presence\"-\n\013TTopicLeave\022\036\n\005topic\030\001 \001(\0132\017"
+    ".server.TopicId\"A\n\021TTopicMessageSend\022\036\n\005"
+    "topic\030\001 \001(\0132\017.server.TopicId\022\014\n\004data\030\002 \001"
+    "(\014\"^\n\020TTopicMessageAck\022\022\n\nmessage_id\030\001 \001"
+    "(\014\022\022\n\ncreated_at\030\002 \001(\003\022\022\n\nexpires_at\030\003 \001"
+    "(\003\022\016\n\006handle\030\004 \001(\t\"\247\001\n\014TopicMessage\022\036\n\005t"
+    "opic\030\001 \001(\0132\017.server.TopicId\022\017\n\007user_id\030\002"
+    " \001(\014\022\022\n\nmessage_id\030\003 \001(\014\022\022\n\ncreated_at\030\004"
+    " \001(\003\022\022\n\nexpires_at\030\005 \001(\003\022\016\n\006handle\030\006 \001(\t"
+    "\022\014\n\004type\030\007 \001(\003\022\014\n\004data\030\010 \001(\014\"\201\001\n\022TTopicM"
+    "essagesList\022\021\n\007user_id\030\001 \001(\014H\000\022\016\n\004room\030\002"
+    " \001(\014H\000\022\022\n\010group_id\030\003 \001(\014H\000\022\016\n\006cursor\030\004 \001"
+    "(\014\022\017\n\007forward\030\005 \001(\010\022\r\n\005limit\030\006 \001(\003B\004\n\002id"
+    "\"H\n\016TTopicMessages\022&\n\010messages\030\001 \003(\0132\024.s"
+    "erver.TopicMessage\022\016\n\006cursor\030\002 \001(\014\"z\n\rTo"
+    "picPresence\022\036\n\005topic\030\001 \001(\0132\017.server.Topi"
+    "cId\022#\n\005joins\030\002 \003(\0132\024.server.UserPresence"
+    "\022$\n\006leaves\030\003 \003(\0132\024.server.UserPresence\"\016"
+    "\n\014TMatchCreate\"\036\n\nTMatchJoin\022\020\n\010match_id"
+    "\030\001 \001(\014\"g\n\006TMatch\022\020\n\010match_id\030\001 \001(\014\022\'\n\tpr"
+    "esences\030\002 \003(\0132\024.server.UserPresence\022\"\n\004s"
+    "elf\030\003 \001(\0132\024.server.UserPresence\"A\n\016TMatc"
+    "hDataSend\022\020\n\010match_id\030\001 \001(\014\022\017\n\007op_code\030\002"
+    " \001(\003\022\014\n\004data\030\003 \001(\014\"d\n\tMatchData\022\020\n\010match"
+    "_id\030\001 \001(\014\022&\n\010presence\030\002 \001(\0132\024.server.Use"
+    "rPresence\022\017\n\007op_code\030\003 \001(\003\022\014\n\004data\030\004 \001(\014"
+    "\"\037\n\013TMatchLeave\022\020\n\010match_id\030\001 \001(\014\"l\n\rMat"
+    "chPresence\022\020\n\010match_id\030\001 \001(\014\022#\n\005joins\030\002 "
+    "\003(\0132\024.server.UserPresence\022$\n\006leaves\030\003 \003("
+    "\0132\024.server.UserPresence\"\222\001\n\rTStorageFetc"
+    "h\022.\n\004keys\030\001 \003(\0132 .server.TStorageFetch.S"
+    "torageKey\032Q\n\nStorageKey\022\016\n\006bucket\030\001 \001(\t\022"
+    "\022\n\ncollection\030\002 \001(\t\022\016\n\006record\030\003 \001(\t\022\017\n\007u"
+    "ser_id\030\004 \001(\014\"\242\002\n\014TStorageData\022.\n\004data\030\001 "
+    "\003(\0132 .server.TStorageData.StorageData\032\341\001"
+    "\n\013StorageData\022\016\n\006bucket\030\001 \001(\t\022\022\n\ncollect"
+    "ion\030\002 \001(\t\022\016\n\006record\030\003 \001(\t\022\017\n\007user_id\030\004 \001"
+    "(\014\022\r\n\005value\030\005 \001(\014\022\017\n\007version\030\006 \001(\014\022\027\n\017pe"
+    "rmission_read\030\007 \001(\003\022\030\n\020permission_write\030"
+    "\010 \001(\003\022\022\n\ncreated_at\030\t \001(\003\022\022\n\nupdated_at\030"
+    "\n \001(\003\022\022\n\nexpires_at\030\013 \001(\003\"\243\001\n\rTStorageWr"
+    "ite\022/\n\004data\030\003 \003(\0132!.server.TStorageWrite"
+    ".StorageData\032a\n\013StorageData\022\016\n\006bucket\030\001 "
+    "\001(\t\022\022\n\ncollection\030\002 \001(\t\022\016\n\006record\030\003 \001(\t\022"
+    "\r\n\005value\030\004 \001(\014\022\017\n\007version\030\005 \001(\014\"\216\001\n\013TSto"
+    "rageKey\022,\n\004keys\030\001 \003(\0132\036.server.TStorageK"
+    "ey.StorageKey\032Q\n\nStorageKey\022\016\n\006bucket\030\001 "
+    "\001(\t\022\022\n\ncollection\030\002 \001(\t\022\016\n\006record\030\003 \001(\t\022"
+    "\017\n\007version\030\004 \001(\014\"\224\001\n\016TStorageRemove\022/\n\004k"
+    "eys\030\001 \003(\0132!.server.TStorageRemove.Storag"
+    "eKey\032Q\n\nStorageKey\022\016\n\006bucket\030\001 \001(\t\022\022\n\nco"
+    "llection\030\002 \001(\t\022\016\n\006record\030\003 \001(\t\022\017\n\007versio"
+    "n\030\004 \001(\014\"\231\001\n\013Leaderboard\022\n\n\002id\030\001 \001(\014\022\025\n\ra"
+    "uthoritative\030\002 \001(\010\022\014\n\004sort\030\003 \001(\003\022\r\n\005coun"
+    "t\030\004 \001(\003\022\026\n\016reset_schedule\030\005 \001(\t\022\020\n\010metad"
+    "ata\030\006 \001(\014\022\017\n\007next_id\030\007 \001(\014\022\017\n\007prev_id\030\010 "
+    "\001(\014\"\374\001\n\021LeaderboardRecord\022\026\n\016leaderboard"
+    "_id\030\001 \001(\014\022\020\n\010owner_id\030\002 \001(\014\022\016\n\006handle\030\003 "
+    "\001(\t\022\014\n\004lang\030\004 \001(\t\022\020\n\010location\030\005 \001(\t\022\020\n\010t"
+    "imezone\030\006 \001(\t\022\014\n\004rank\030\007 \001(\003\022\r\n\005score\030\010 \001"
+    "(\003\022\021\n\tnum_score\030\t \001(\003\022\020\n\010metadata\030\n \001(\014\022"
+    "\021\n\tranked_at\030\013 \001(\003\022\022\n\nupdated_at\030\014 \001(\003\022\022"
+    "\n\nexpires_at\030\r \001(\003\"2\n\021TLeaderboardsList\022"
+    "\r\n\005limit\030\001 \001(\003\022\016\n\006cursor\030\002 \001(\014\"J\n\rTLeade"
+    "rboards\022)\n\014leaderboards\030\001 \003(\0132\023.server.L"
+    "eaderboard\022\016\n\006cursor\030\002 \001(\014\"\254\001\n\027TLeaderbo"
+    "ardRecordWrite\022\026\n\016leaderboard_id\030\001 \001(\014\022\016"
+    "\n\004incr\030\002 \001(\003H\000\022\016\n\004decr\030\003 \001(\003H\000\022\r\n\003set\030\004 "
+    "\001(\003H\000\022\016\n\004best\030\005 \001(\003H\000\022\020\n\010location\030\006 \001(\t\022"
+    "\020\n\010timezone\030\007 \001(\t\022\020\n\010metadata\030\010 \001(\014B\004\n\002o"
+    "p\"\?\n\022TLeaderboardRecord\022)\n\006record\030\001 \001(\0132"
+    "\031.server.LeaderboardRecord\"R\n\030TLeaderboa"
+    "rdRecordsFetch\022\027\n\017leaderboard_ids\030\001 \003(\014\022"
+    "\r\n\005limit\030\002 \001(\003\022\016\n\006cursor\030\003 \001(\014\"\200\002\n\027TLead"
+    "erboardRecordsList\022\026\n\016leaderboard_id\030\001 \001"
+    "(\014\022\022\n\010owner_id\030\002 \001(\014H\000\022;\n\towner_ids\030\003 \001("
+    "\0132&.server.TLeaderboardRecordsList.Owner"
+    "sH\000\022\016\n\004lang\030\004 \001(\tH\000\022\022\n\010location\030\005 \001(\tH\000\022"
+    "\022\n\010timezone\030\006 \001(\tH\000\022\r\n\005limit\030\007 \001(\003\022\016\n\006cu"
+    "rsor\030\010 \001(\014\032\033\n\006Owners\022\021\n\towner_ids\030\001 \003(\014B"
+    "\010\n\006filter\"Q\n\023TLeaderboardRecords\022*\n\007reco"
+    "rds\030\001 \003(\0132\031.server.LeaderboardRecord\022\016\n\006"
+    "cursor\030\002 \001(\014B\t\252\002\006Nakamab\006proto3", 10031);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "api.proto", &protobuf_RegisterTypes);
   ::google::protobuf::internal::OnShutdown(&protobuf_ShutdownFile_api_2eproto);
@@ -23907,74 +23967,74 @@ inline const TGroupsSelfList* TGroupsSelfList::internal_default_instance() {
 // ===================================================================
 
 #if !defined(_MSC_VER) || _MSC_VER >= 1900
-const int TGroupsFetch::kGroupIdsFieldNumber;
+const int TGroupsFetch_GroupIds::kGroupIdsFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
-TGroupsFetch::TGroupsFetch()
+TGroupsFetch_GroupIds::TGroupsFetch_GroupIds()
   : ::google::protobuf::Message(), _internal_metadata_(NULL) {
   if (this != internal_default_instance()) protobuf_InitDefaults_api_2eproto();
   SharedCtor();
-  // @@protoc_insertion_point(constructor:server.TGroupsFetch)
+  // @@protoc_insertion_point(constructor:server.TGroupsFetch.GroupIds)
 }
 
-void TGroupsFetch::InitAsDefaultInstance() {
+void TGroupsFetch_GroupIds::InitAsDefaultInstance() {
 }
 
-TGroupsFetch::TGroupsFetch(const TGroupsFetch& from)
+TGroupsFetch_GroupIds::TGroupsFetch_GroupIds(const TGroupsFetch_GroupIds& from)
   : ::google::protobuf::Message(),
     _internal_metadata_(NULL) {
   SharedCtor();
   UnsafeMergeFrom(from);
-  // @@protoc_insertion_point(copy_constructor:server.TGroupsFetch)
+  // @@protoc_insertion_point(copy_constructor:server.TGroupsFetch.GroupIds)
 }
 
-void TGroupsFetch::SharedCtor() {
+void TGroupsFetch_GroupIds::SharedCtor() {
   _cached_size_ = 0;
 }
 
-TGroupsFetch::~TGroupsFetch() {
-  // @@protoc_insertion_point(destructor:server.TGroupsFetch)
+TGroupsFetch_GroupIds::~TGroupsFetch_GroupIds() {
+  // @@protoc_insertion_point(destructor:server.TGroupsFetch.GroupIds)
   SharedDtor();
 }
 
-void TGroupsFetch::SharedDtor() {
+void TGroupsFetch_GroupIds::SharedDtor() {
 }
 
-void TGroupsFetch::SetCachedSize(int size) const {
+void TGroupsFetch_GroupIds::SetCachedSize(int size) const {
   GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
   _cached_size_ = size;
   GOOGLE_SAFE_CONCURRENT_WRITES_END();
 }
-const ::google::protobuf::Descriptor* TGroupsFetch::descriptor() {
+const ::google::protobuf::Descriptor* TGroupsFetch_GroupIds::descriptor() {
   protobuf_AssignDescriptorsOnce();
-  return TGroupsFetch_descriptor_;
+  return TGroupsFetch_GroupIds_descriptor_;
 }
 
-const TGroupsFetch& TGroupsFetch::default_instance() {
+const TGroupsFetch_GroupIds& TGroupsFetch_GroupIds::default_instance() {
   protobuf_InitDefaults_api_2eproto();
   return *internal_default_instance();
 }
 
-::google::protobuf::internal::ExplicitlyConstructed<TGroupsFetch> TGroupsFetch_default_instance_;
+::google::protobuf::internal::ExplicitlyConstructed<TGroupsFetch_GroupIds> TGroupsFetch_GroupIds_default_instance_;
 
-TGroupsFetch* TGroupsFetch::New(::google::protobuf::Arena* arena) const {
-  TGroupsFetch* n = new TGroupsFetch;
+TGroupsFetch_GroupIds* TGroupsFetch_GroupIds::New(::google::protobuf::Arena* arena) const {
+  TGroupsFetch_GroupIds* n = new TGroupsFetch_GroupIds;
   if (arena != NULL) {
     arena->Own(n);
   }
   return n;
 }
 
-void TGroupsFetch::Clear() {
-// @@protoc_insertion_point(message_clear_start:server.TGroupsFetch)
+void TGroupsFetch_GroupIds::Clear() {
+// @@protoc_insertion_point(message_clear_start:server.TGroupsFetch.GroupIds)
   group_ids_.Clear();
 }
 
-bool TGroupsFetch::MergePartialFromCodedStream(
+bool TGroupsFetch_GroupIds::MergePartialFromCodedStream(
     ::google::protobuf::io::CodedInputStream* input) {
 #define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
   ::google::protobuf::uint32 tag;
-  // @@protoc_insertion_point(parse_start:server.TGroupsFetch)
+  // @@protoc_insertion_point(parse_start:server.TGroupsFetch.GroupIds)
   for (;;) {
     ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoff(127);
     tag = p.first;
@@ -24007,6 +24067,504 @@ bool TGroupsFetch::MergePartialFromCodedStream(
     }
   }
 success:
+  // @@protoc_insertion_point(parse_success:server.TGroupsFetch.GroupIds)
+  return true;
+failure:
+  // @@protoc_insertion_point(parse_failure:server.TGroupsFetch.GroupIds)
+  return false;
+#undef DO_
+}
+
+void TGroupsFetch_GroupIds::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // @@protoc_insertion_point(serialize_start:server.TGroupsFetch.GroupIds)
+  // repeated bytes group_ids = 1;
+  for (int i = 0; i < this->group_ids_size(); i++) {
+    ::google::protobuf::internal::WireFormatLite::WriteBytes(
+      1, this->group_ids(i), output);
+  }
+
+  // @@protoc_insertion_point(serialize_end:server.TGroupsFetch.GroupIds)
+}
+
+::google::protobuf::uint8* TGroupsFetch_GroupIds::InternalSerializeWithCachedSizesToArray(
+    bool deterministic, ::google::protobuf::uint8* target) const {
+  (void)deterministic; // Unused
+  // @@protoc_insertion_point(serialize_to_array_start:server.TGroupsFetch.GroupIds)
+  // repeated bytes group_ids = 1;
+  for (int i = 0; i < this->group_ids_size(); i++) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteBytesToArray(1, this->group_ids(i), target);
+  }
+
+  // @@protoc_insertion_point(serialize_to_array_end:server.TGroupsFetch.GroupIds)
+  return target;
+}
+
+size_t TGroupsFetch_GroupIds::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:server.TGroupsFetch.GroupIds)
+  size_t total_size = 0;
+
+  // repeated bytes group_ids = 1;
+  total_size += 1 *
+      ::google::protobuf::internal::FromIntSize(this->group_ids_size());
+  for (int i = 0; i < this->group_ids_size(); i++) {
+    total_size += ::google::protobuf::internal::WireFormatLite::BytesSize(
+      this->group_ids(i));
+  }
+
+  int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = cached_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void TGroupsFetch_GroupIds::MergeFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_merge_from_start:server.TGroupsFetch.GroupIds)
+  if (GOOGLE_PREDICT_FALSE(&from == this)) MergeFromFail(__LINE__);
+  const TGroupsFetch_GroupIds* source =
+      ::google::protobuf::internal::DynamicCastToGenerated<const TGroupsFetch_GroupIds>(
+          &from);
+  if (source == NULL) {
+  // @@protoc_insertion_point(generalized_merge_from_cast_fail:server.TGroupsFetch.GroupIds)
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+  // @@protoc_insertion_point(generalized_merge_from_cast_success:server.TGroupsFetch.GroupIds)
+    UnsafeMergeFrom(*source);
+  }
+}
+
+void TGroupsFetch_GroupIds::MergeFrom(const TGroupsFetch_GroupIds& from) {
+// @@protoc_insertion_point(class_specific_merge_from_start:server.TGroupsFetch.GroupIds)
+  if (GOOGLE_PREDICT_TRUE(&from != this)) {
+    UnsafeMergeFrom(from);
+  } else {
+    MergeFromFail(__LINE__);
+  }
+}
+
+void TGroupsFetch_GroupIds::UnsafeMergeFrom(const TGroupsFetch_GroupIds& from) {
+  GOOGLE_DCHECK(&from != this);
+  group_ids_.UnsafeMergeFrom(from.group_ids_);
+}
+
+void TGroupsFetch_GroupIds::CopyFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_copy_from_start:server.TGroupsFetch.GroupIds)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void TGroupsFetch_GroupIds::CopyFrom(const TGroupsFetch_GroupIds& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:server.TGroupsFetch.GroupIds)
+  if (&from == this) return;
+  Clear();
+  UnsafeMergeFrom(from);
+}
+
+bool TGroupsFetch_GroupIds::IsInitialized() const {
+
+  return true;
+}
+
+void TGroupsFetch_GroupIds::Swap(TGroupsFetch_GroupIds* other) {
+  if (other == this) return;
+  InternalSwap(other);
+}
+void TGroupsFetch_GroupIds::InternalSwap(TGroupsFetch_GroupIds* other) {
+  group_ids_.UnsafeArenaSwap(&other->group_ids_);
+  _internal_metadata_.Swap(&other->_internal_metadata_);
+  std::swap(_cached_size_, other->_cached_size_);
+}
+
+::google::protobuf::Metadata TGroupsFetch_GroupIds::GetMetadata() const {
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = TGroupsFetch_GroupIds_descriptor_;
+  metadata.reflection = TGroupsFetch_GroupIds_reflection_;
+  return metadata;
+}
+
+
+// -------------------------------------------------------------------
+
+#if !defined(_MSC_VER) || _MSC_VER >= 1900
+const int TGroupsFetch_Names::kNamesFieldNumber;
+#endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
+
+TGroupsFetch_Names::TGroupsFetch_Names()
+  : ::google::protobuf::Message(), _internal_metadata_(NULL) {
+  if (this != internal_default_instance()) protobuf_InitDefaults_api_2eproto();
+  SharedCtor();
+  // @@protoc_insertion_point(constructor:server.TGroupsFetch.Names)
+}
+
+void TGroupsFetch_Names::InitAsDefaultInstance() {
+}
+
+TGroupsFetch_Names::TGroupsFetch_Names(const TGroupsFetch_Names& from)
+  : ::google::protobuf::Message(),
+    _internal_metadata_(NULL) {
+  SharedCtor();
+  UnsafeMergeFrom(from);
+  // @@protoc_insertion_point(copy_constructor:server.TGroupsFetch.Names)
+}
+
+void TGroupsFetch_Names::SharedCtor() {
+  _cached_size_ = 0;
+}
+
+TGroupsFetch_Names::~TGroupsFetch_Names() {
+  // @@protoc_insertion_point(destructor:server.TGroupsFetch.Names)
+  SharedDtor();
+}
+
+void TGroupsFetch_Names::SharedDtor() {
+}
+
+void TGroupsFetch_Names::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* TGroupsFetch_Names::descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return TGroupsFetch_Names_descriptor_;
+}
+
+const TGroupsFetch_Names& TGroupsFetch_Names::default_instance() {
+  protobuf_InitDefaults_api_2eproto();
+  return *internal_default_instance();
+}
+
+::google::protobuf::internal::ExplicitlyConstructed<TGroupsFetch_Names> TGroupsFetch_Names_default_instance_;
+
+TGroupsFetch_Names* TGroupsFetch_Names::New(::google::protobuf::Arena* arena) const {
+  TGroupsFetch_Names* n = new TGroupsFetch_Names;
+  if (arena != NULL) {
+    arena->Own(n);
+  }
+  return n;
+}
+
+void TGroupsFetch_Names::Clear() {
+// @@protoc_insertion_point(message_clear_start:server.TGroupsFetch.Names)
+  names_.Clear();
+}
+
+bool TGroupsFetch_Names::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
+  ::google::protobuf::uint32 tag;
+  // @@protoc_insertion_point(parse_start:server.TGroupsFetch.Names)
+  for (;;) {
+    ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoff(127);
+    tag = p.first;
+    if (!p.second) goto handle_unusual;
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // repeated string names = 1;
+      case 1: {
+        if (tag == 10) {
+         parse_names:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->add_names()));
+          DO_(::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+            this->names(this->names_size() - 1).data(),
+            this->names(this->names_size() - 1).length(),
+            ::google::protobuf::internal::WireFormatLite::PARSE,
+            "server.TGroupsFetch.Names.names"));
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(10)) goto parse_names;
+        if (input->ExpectAtEnd()) goto success;
+        break;
+      }
+
+      default: {
+      handle_unusual:
+        if (tag == 0 ||
+            ::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          goto success;
+        }
+        DO_(::google::protobuf::internal::WireFormatLite::SkipField(input, tag));
+        break;
+      }
+    }
+  }
+success:
+  // @@protoc_insertion_point(parse_success:server.TGroupsFetch.Names)
+  return true;
+failure:
+  // @@protoc_insertion_point(parse_failure:server.TGroupsFetch.Names)
+  return false;
+#undef DO_
+}
+
+void TGroupsFetch_Names::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // @@protoc_insertion_point(serialize_start:server.TGroupsFetch.Names)
+  // repeated string names = 1;
+  for (int i = 0; i < this->names_size(); i++) {
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+      this->names(i).data(), this->names(i).length(),
+      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
+      "server.TGroupsFetch.Names.names");
+    ::google::protobuf::internal::WireFormatLite::WriteString(
+      1, this->names(i), output);
+  }
+
+  // @@protoc_insertion_point(serialize_end:server.TGroupsFetch.Names)
+}
+
+::google::protobuf::uint8* TGroupsFetch_Names::InternalSerializeWithCachedSizesToArray(
+    bool deterministic, ::google::protobuf::uint8* target) const {
+  (void)deterministic; // Unused
+  // @@protoc_insertion_point(serialize_to_array_start:server.TGroupsFetch.Names)
+  // repeated string names = 1;
+  for (int i = 0; i < this->names_size(); i++) {
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+      this->names(i).data(), this->names(i).length(),
+      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
+      "server.TGroupsFetch.Names.names");
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteStringToArray(1, this->names(i), target);
+  }
+
+  // @@protoc_insertion_point(serialize_to_array_end:server.TGroupsFetch.Names)
+  return target;
+}
+
+size_t TGroupsFetch_Names::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:server.TGroupsFetch.Names)
+  size_t total_size = 0;
+
+  // repeated string names = 1;
+  total_size += 1 *
+      ::google::protobuf::internal::FromIntSize(this->names_size());
+  for (int i = 0; i < this->names_size(); i++) {
+    total_size += ::google::protobuf::internal::WireFormatLite::StringSize(
+      this->names(i));
+  }
+
+  int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = cached_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void TGroupsFetch_Names::MergeFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_merge_from_start:server.TGroupsFetch.Names)
+  if (GOOGLE_PREDICT_FALSE(&from == this)) MergeFromFail(__LINE__);
+  const TGroupsFetch_Names* source =
+      ::google::protobuf::internal::DynamicCastToGenerated<const TGroupsFetch_Names>(
+          &from);
+  if (source == NULL) {
+  // @@protoc_insertion_point(generalized_merge_from_cast_fail:server.TGroupsFetch.Names)
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+  // @@protoc_insertion_point(generalized_merge_from_cast_success:server.TGroupsFetch.Names)
+    UnsafeMergeFrom(*source);
+  }
+}
+
+void TGroupsFetch_Names::MergeFrom(const TGroupsFetch_Names& from) {
+// @@protoc_insertion_point(class_specific_merge_from_start:server.TGroupsFetch.Names)
+  if (GOOGLE_PREDICT_TRUE(&from != this)) {
+    UnsafeMergeFrom(from);
+  } else {
+    MergeFromFail(__LINE__);
+  }
+}
+
+void TGroupsFetch_Names::UnsafeMergeFrom(const TGroupsFetch_Names& from) {
+  GOOGLE_DCHECK(&from != this);
+  names_.UnsafeMergeFrom(from.names_);
+}
+
+void TGroupsFetch_Names::CopyFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_copy_from_start:server.TGroupsFetch.Names)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void TGroupsFetch_Names::CopyFrom(const TGroupsFetch_Names& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:server.TGroupsFetch.Names)
+  if (&from == this) return;
+  Clear();
+  UnsafeMergeFrom(from);
+}
+
+bool TGroupsFetch_Names::IsInitialized() const {
+
+  return true;
+}
+
+void TGroupsFetch_Names::Swap(TGroupsFetch_Names* other) {
+  if (other == this) return;
+  InternalSwap(other);
+}
+void TGroupsFetch_Names::InternalSwap(TGroupsFetch_Names* other) {
+  names_.UnsafeArenaSwap(&other->names_);
+  _internal_metadata_.Swap(&other->_internal_metadata_);
+  std::swap(_cached_size_, other->_cached_size_);
+}
+
+::google::protobuf::Metadata TGroupsFetch_Names::GetMetadata() const {
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = TGroupsFetch_Names_descriptor_;
+  metadata.reflection = TGroupsFetch_Names_reflection_;
+  return metadata;
+}
+
+
+// -------------------------------------------------------------------
+
+#if !defined(_MSC_VER) || _MSC_VER >= 1900
+const int TGroupsFetch::kGroupIdsFieldNumber;
+const int TGroupsFetch::kNamesFieldNumber;
+#endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
+
+TGroupsFetch::TGroupsFetch()
+  : ::google::protobuf::Message(), _internal_metadata_(NULL) {
+  if (this != internal_default_instance()) protobuf_InitDefaults_api_2eproto();
+  SharedCtor();
+  // @@protoc_insertion_point(constructor:server.TGroupsFetch)
+}
+
+void TGroupsFetch::InitAsDefaultInstance() {
+  TGroupsFetch_default_oneof_instance_->group_ids_ = const_cast< ::server::TGroupsFetch_GroupIds*>(
+      ::server::TGroupsFetch_GroupIds::internal_default_instance());
+  TGroupsFetch_default_oneof_instance_->names_ = const_cast< ::server::TGroupsFetch_Names*>(
+      ::server::TGroupsFetch_Names::internal_default_instance());
+}
+
+TGroupsFetch::TGroupsFetch(const TGroupsFetch& from)
+  : ::google::protobuf::Message(),
+    _internal_metadata_(NULL) {
+  SharedCtor();
+  UnsafeMergeFrom(from);
+  // @@protoc_insertion_point(copy_constructor:server.TGroupsFetch)
+}
+
+void TGroupsFetch::SharedCtor() {
+  clear_has_set();
+  _cached_size_ = 0;
+}
+
+TGroupsFetch::~TGroupsFetch() {
+  // @@protoc_insertion_point(destructor:server.TGroupsFetch)
+  SharedDtor();
+}
+
+void TGroupsFetch::SharedDtor() {
+  if (has_set()) {
+    clear_set();
+  }
+}
+
+void TGroupsFetch::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* TGroupsFetch::descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return TGroupsFetch_descriptor_;
+}
+
+const TGroupsFetch& TGroupsFetch::default_instance() {
+  protobuf_InitDefaults_api_2eproto();
+  return *internal_default_instance();
+}
+
+::google::protobuf::internal::ExplicitlyConstructed<TGroupsFetch> TGroupsFetch_default_instance_;
+
+TGroupsFetch* TGroupsFetch::New(::google::protobuf::Arena* arena) const {
+  TGroupsFetch* n = new TGroupsFetch;
+  if (arena != NULL) {
+    arena->Own(n);
+  }
+  return n;
+}
+
+void TGroupsFetch::clear_set() {
+// @@protoc_insertion_point(one_of_clear_start:server.TGroupsFetch)
+  switch (set_case()) {
+    case kGroupIds: {
+      delete set_.group_ids_;
+      break;
+    }
+    case kNames: {
+      delete set_.names_;
+      break;
+    }
+    case SET_NOT_SET: {
+      break;
+    }
+  }
+  _oneof_case_[0] = SET_NOT_SET;
+}
+
+
+void TGroupsFetch::Clear() {
+// @@protoc_insertion_point(message_clear_start:server.TGroupsFetch)
+  clear_set();
+}
+
+bool TGroupsFetch::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
+  ::google::protobuf::uint32 tag;
+  // @@protoc_insertion_point(parse_start:server.TGroupsFetch)
+  for (;;) {
+    ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoff(127);
+    tag = p.first;
+    if (!p.second) goto handle_unusual;
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // optional .server.TGroupsFetch.GroupIds group_ids = 1;
+      case 1: {
+        if (tag == 10) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_group_ids()));
+        } else {
+          goto handle_unusual;
+        }
+        goto after_names;
+        break;
+      }
+
+      // optional .server.TGroupsFetch.Names names = 2;
+      case 2: {
+        if (tag == 18) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_names()));
+        } else {
+          goto handle_unusual;
+        }
+       after_names:
+        if (input->ExpectAtEnd()) goto success;
+        break;
+      }
+
+      default: {
+      handle_unusual:
+        if (tag == 0 ||
+            ::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          goto success;
+        }
+        DO_(::google::protobuf::internal::WireFormatLite::SkipField(input, tag));
+        break;
+      }
+    }
+  }
+success:
   // @@protoc_insertion_point(parse_success:server.TGroupsFetch)
   return true;
 failure:
@@ -24018,10 +24576,16 @@ failure:
 void TGroupsFetch::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
   // @@protoc_insertion_point(serialize_start:server.TGroupsFetch)
-  // repeated bytes group_ids = 1;
-  for (int i = 0; i < this->group_ids_size(); i++) {
-    ::google::protobuf::internal::WireFormatLite::WriteBytes(
-      1, this->group_ids(i), output);
+  // optional .server.TGroupsFetch.GroupIds group_ids = 1;
+  if (has_group_ids()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      1, *set_.group_ids_, output);
+  }
+
+  // optional .server.TGroupsFetch.Names names = 2;
+  if (has_names()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      2, *set_.names_, output);
   }
 
   // @@protoc_insertion_point(serialize_end:server.TGroupsFetch)
@@ -24031,10 +24595,18 @@ void TGroupsFetch::SerializeWithCachedSizes(
     bool deterministic, ::google::protobuf::uint8* target) const {
   (void)deterministic; // Unused
   // @@protoc_insertion_point(serialize_to_array_start:server.TGroupsFetch)
-  // repeated bytes group_ids = 1;
-  for (int i = 0; i < this->group_ids_size(); i++) {
+  // optional .server.TGroupsFetch.GroupIds group_ids = 1;
+  if (has_group_ids()) {
     target = ::google::protobuf::internal::WireFormatLite::
-      WriteBytesToArray(1, this->group_ids(i), target);
+      InternalWriteMessageNoVirtualToArray(
+        1, *set_.group_ids_, false, target);
+  }
+
+  // optional .server.TGroupsFetch.Names names = 2;
+  if (has_names()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      InternalWriteMessageNoVirtualToArray(
+        2, *set_.names_, false, target);
   }
 
   // @@protoc_insertion_point(serialize_to_array_end:server.TGroupsFetch)
@@ -24045,14 +24617,25 @@ size_t TGroupsFetch::ByteSizeLong() const {
 // @@protoc_insertion_point(message_byte_size_start:server.TGroupsFetch)
   size_t total_size = 0;
 
-  // repeated bytes group_ids = 1;
-  total_size += 1 *
-      ::google::protobuf::internal::FromIntSize(this->group_ids_size());
-  for (int i = 0; i < this->group_ids_size(); i++) {
-    total_size += ::google::protobuf::internal::WireFormatLite::BytesSize(
-      this->group_ids(i));
+  switch (set_case()) {
+    // optional .server.TGroupsFetch.GroupIds group_ids = 1;
+    case kGroupIds: {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          *set_.group_ids_);
+      break;
+    }
+    // optional .server.TGroupsFetch.Names names = 2;
+    case kNames: {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          *set_.names_);
+      break;
+    }
+    case SET_NOT_SET: {
+      break;
+    }
   }
-
   int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
   GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
   _cached_size_ = cached_size;
@@ -24086,7 +24669,19 @@ void TGroupsFetch::MergeFrom(const TGroupsFetch& from) {
 
 void TGroupsFetch::UnsafeMergeFrom(const TGroupsFetch& from) {
   GOOGLE_DCHECK(&from != this);
-  group_ids_.UnsafeMergeFrom(from.group_ids_);
+  switch (from.set_case()) {
+    case kGroupIds: {
+      mutable_group_ids()->::server::TGroupsFetch_GroupIds::MergeFrom(from.group_ids());
+      break;
+    }
+    case kNames: {
+      mutable_names()->::server::TGroupsFetch_Names::MergeFrom(from.names());
+      break;
+    }
+    case SET_NOT_SET: {
+      break;
+    }
+  }
 }
 
 void TGroupsFetch::CopyFrom(const ::google::protobuf::Message& from) {
@@ -24113,7 +24708,8 @@ void TGroupsFetch::Swap(TGroupsFetch* other) {
   InternalSwap(other);
 }
 void TGroupsFetch::InternalSwap(TGroupsFetch* other) {
-  group_ids_.UnsafeArenaSwap(&other->group_ids_);
+  std::swap(set_, other->set_);
+  std::swap(_oneof_case_[0], other->_oneof_case_[0]);
   _internal_metadata_.Swap(&other->_internal_metadata_);
   std::swap(_cached_size_, other->_cached_size_);
 }
@@ -24127,63 +24723,237 @@ void TGroupsFetch::InternalSwap(TGroupsFetch* other) {
 }
 
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
-// TGroupsFetch
+// TGroupsFetch_GroupIds
 
 // repeated bytes group_ids = 1;
-int TGroupsFetch::group_ids_size() const {
+int TGroupsFetch_GroupIds::group_ids_size() const {
   return group_ids_.size();
 }
-void TGroupsFetch::clear_group_ids() {
+void TGroupsFetch_GroupIds::clear_group_ids() {
   group_ids_.Clear();
 }
-const ::std::string& TGroupsFetch::group_ids(int index) const {
-  // @@protoc_insertion_point(field_get:server.TGroupsFetch.group_ids)
+const ::std::string& TGroupsFetch_GroupIds::group_ids(int index) const {
+  // @@protoc_insertion_point(field_get:server.TGroupsFetch.GroupIds.group_ids)
   return group_ids_.Get(index);
 }
-::std::string* TGroupsFetch::mutable_group_ids(int index) {
-  // @@protoc_insertion_point(field_mutable:server.TGroupsFetch.group_ids)
+::std::string* TGroupsFetch_GroupIds::mutable_group_ids(int index) {
+  // @@protoc_insertion_point(field_mutable:server.TGroupsFetch.GroupIds.group_ids)
   return group_ids_.Mutable(index);
 }
-void TGroupsFetch::set_group_ids(int index, const ::std::string& value) {
-  // @@protoc_insertion_point(field_set:server.TGroupsFetch.group_ids)
+void TGroupsFetch_GroupIds::set_group_ids(int index, const ::std::string& value) {
+  // @@protoc_insertion_point(field_set:server.TGroupsFetch.GroupIds.group_ids)
   group_ids_.Mutable(index)->assign(value);
 }
-void TGroupsFetch::set_group_ids(int index, const char* value) {
+void TGroupsFetch_GroupIds::set_group_ids(int index, const char* value) {
   group_ids_.Mutable(index)->assign(value);
-  // @@protoc_insertion_point(field_set_char:server.TGroupsFetch.group_ids)
+  // @@protoc_insertion_point(field_set_char:server.TGroupsFetch.GroupIds.group_ids)
 }
-void TGroupsFetch::set_group_ids(int index, const void* value, size_t size) {
+void TGroupsFetch_GroupIds::set_group_ids(int index, const void* value, size_t size) {
   group_ids_.Mutable(index)->assign(
     reinterpret_cast<const char*>(value), size);
-  // @@protoc_insertion_point(field_set_pointer:server.TGroupsFetch.group_ids)
+  // @@protoc_insertion_point(field_set_pointer:server.TGroupsFetch.GroupIds.group_ids)
 }
-::std::string* TGroupsFetch::add_group_ids() {
-  // @@protoc_insertion_point(field_add_mutable:server.TGroupsFetch.group_ids)
+::std::string* TGroupsFetch_GroupIds::add_group_ids() {
+  // @@protoc_insertion_point(field_add_mutable:server.TGroupsFetch.GroupIds.group_ids)
   return group_ids_.Add();
 }
-void TGroupsFetch::add_group_ids(const ::std::string& value) {
+void TGroupsFetch_GroupIds::add_group_ids(const ::std::string& value) {
   group_ids_.Add()->assign(value);
-  // @@protoc_insertion_point(field_add:server.TGroupsFetch.group_ids)
+  // @@protoc_insertion_point(field_add:server.TGroupsFetch.GroupIds.group_ids)
 }
-void TGroupsFetch::add_group_ids(const char* value) {
+void TGroupsFetch_GroupIds::add_group_ids(const char* value) {
   group_ids_.Add()->assign(value);
-  // @@protoc_insertion_point(field_add_char:server.TGroupsFetch.group_ids)
+  // @@protoc_insertion_point(field_add_char:server.TGroupsFetch.GroupIds.group_ids)
 }
-void TGroupsFetch::add_group_ids(const void* value, size_t size) {
+void TGroupsFetch_GroupIds::add_group_ids(const void* value, size_t size) {
   group_ids_.Add()->assign(reinterpret_cast<const char*>(value), size);
-  // @@protoc_insertion_point(field_add_pointer:server.TGroupsFetch.group_ids)
+  // @@protoc_insertion_point(field_add_pointer:server.TGroupsFetch.GroupIds.group_ids)
 }
 const ::google::protobuf::RepeatedPtrField< ::std::string>&
-TGroupsFetch::group_ids() const {
-  // @@protoc_insertion_point(field_list:server.TGroupsFetch.group_ids)
+TGroupsFetch_GroupIds::group_ids() const {
+  // @@protoc_insertion_point(field_list:server.TGroupsFetch.GroupIds.group_ids)
   return group_ids_;
 }
 ::google::protobuf::RepeatedPtrField< ::std::string>*
-TGroupsFetch::mutable_group_ids() {
-  // @@protoc_insertion_point(field_mutable_list:server.TGroupsFetch.group_ids)
+TGroupsFetch_GroupIds::mutable_group_ids() {
+  // @@protoc_insertion_point(field_mutable_list:server.TGroupsFetch.GroupIds.group_ids)
   return &group_ids_;
 }
 
+inline const TGroupsFetch_GroupIds* TGroupsFetch_GroupIds::internal_default_instance() {
+  return &TGroupsFetch_GroupIds_default_instance_.get();
+}
+// -------------------------------------------------------------------
+
+// TGroupsFetch_Names
+
+// repeated string names = 1;
+int TGroupsFetch_Names::names_size() const {
+  return names_.size();
+}
+void TGroupsFetch_Names::clear_names() {
+  names_.Clear();
+}
+const ::std::string& TGroupsFetch_Names::names(int index) const {
+  // @@protoc_insertion_point(field_get:server.TGroupsFetch.Names.names)
+  return names_.Get(index);
+}
+::std::string* TGroupsFetch_Names::mutable_names(int index) {
+  // @@protoc_insertion_point(field_mutable:server.TGroupsFetch.Names.names)
+  return names_.Mutable(index);
+}
+void TGroupsFetch_Names::set_names(int index, const ::std::string& value) {
+  // @@protoc_insertion_point(field_set:server.TGroupsFetch.Names.names)
+  names_.Mutable(index)->assign(value);
+}
+void TGroupsFetch_Names::set_names(int index, const char* value) {
+  names_.Mutable(index)->assign(value);
+  // @@protoc_insertion_point(field_set_char:server.TGroupsFetch.Names.names)
+}
+void TGroupsFetch_Names::set_names(int index, const char* value, size_t size) {
+  names_.Mutable(index)->assign(
+    reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_set_pointer:server.TGroupsFetch.Names.names)
+}
+::std::string* TGroupsFetch_Names::add_names() {
+  // @@protoc_insertion_point(field_add_mutable:server.TGroupsFetch.Names.names)
+  return names_.Add();
+}
+void TGroupsFetch_Names::add_names(const ::std::string& value) {
+  names_.Add()->assign(value);
+  // @@protoc_insertion_point(field_add:server.TGroupsFetch.Names.names)
+}
+void TGroupsFetch_Names::add_names(const char* value) {
+  names_.Add()->assign(value);
+  // @@protoc_insertion_point(field_add_char:server.TGroupsFetch.Names.names)
+}
+void TGroupsFetch_Names::add_names(const char* value, size_t size) {
+  names_.Add()->assign(reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_add_pointer:server.TGroupsFetch.Names.names)
+}
+const ::google::protobuf::RepeatedPtrField< ::std::string>&
+TGroupsFetch_Names::names() const {
+  // @@protoc_insertion_point(field_list:server.TGroupsFetch.Names.names)
+  return names_;
+}
+::google::protobuf::RepeatedPtrField< ::std::string>*
+TGroupsFetch_Names::mutable_names() {
+  // @@protoc_insertion_point(field_mutable_list:server.TGroupsFetch.Names.names)
+  return &names_;
+}
+
+inline const TGroupsFetch_Names* TGroupsFetch_Names::internal_default_instance() {
+  return &TGroupsFetch_Names_default_instance_.get();
+}
+// -------------------------------------------------------------------
+
+// TGroupsFetch
+
+// optional .server.TGroupsFetch.GroupIds group_ids = 1;
+bool TGroupsFetch::has_group_ids() const {
+  return set_case() == kGroupIds;
+}
+void TGroupsFetch::set_has_group_ids() {
+  _oneof_case_[0] = kGroupIds;
+}
+void TGroupsFetch::clear_group_ids() {
+  if (has_group_ids()) {
+    delete set_.group_ids_;
+    clear_has_set();
+  }
+}
+ const ::server::TGroupsFetch_GroupIds& TGroupsFetch::group_ids() const {
+  // @@protoc_insertion_point(field_get:server.TGroupsFetch.group_ids)
+  return has_group_ids()
+      ? *set_.group_ids_
+      : ::server::TGroupsFetch_GroupIds::default_instance();
+}
+::server::TGroupsFetch_GroupIds* TGroupsFetch::mutable_group_ids() {
+  if (!has_group_ids()) {
+    clear_set();
+    set_has_group_ids();
+    set_.group_ids_ = new ::server::TGroupsFetch_GroupIds;
+  }
+  // @@protoc_insertion_point(field_mutable:server.TGroupsFetch.group_ids)
+  return set_.group_ids_;
+}
+::server::TGroupsFetch_GroupIds* TGroupsFetch::release_group_ids() {
+  // @@protoc_insertion_point(field_release:server.TGroupsFetch.group_ids)
+  if (has_group_ids()) {
+    clear_has_set();
+    ::server::TGroupsFetch_GroupIds* temp = set_.group_ids_;
+    set_.group_ids_ = NULL;
+    return temp;
+  } else {
+    return NULL;
+  }
+}
+void TGroupsFetch::set_allocated_group_ids(::server::TGroupsFetch_GroupIds* group_ids) {
+  clear_set();
+  if (group_ids) {
+    set_has_group_ids();
+    set_.group_ids_ = group_ids;
+  }
+  // @@protoc_insertion_point(field_set_allocated:server.TGroupsFetch.group_ids)
+}
+
+// optional .server.TGroupsFetch.Names names = 2;
+bool TGroupsFetch::has_names() const {
+  return set_case() == kNames;
+}
+void TGroupsFetch::set_has_names() {
+  _oneof_case_[0] = kNames;
+}
+void TGroupsFetch::clear_names() {
+  if (has_names()) {
+    delete set_.names_;
+    clear_has_set();
+  }
+}
+ const ::server::TGroupsFetch_Names& TGroupsFetch::names() const {
+  // @@protoc_insertion_point(field_get:server.TGroupsFetch.names)
+  return has_names()
+      ? *set_.names_
+      : ::server::TGroupsFetch_Names::default_instance();
+}
+::server::TGroupsFetch_Names* TGroupsFetch::mutable_names() {
+  if (!has_names()) {
+    clear_set();
+    set_has_names();
+    set_.names_ = new ::server::TGroupsFetch_Names;
+  }
+  // @@protoc_insertion_point(field_mutable:server.TGroupsFetch.names)
+  return set_.names_;
+}
+::server::TGroupsFetch_Names* TGroupsFetch::release_names() {
+  // @@protoc_insertion_point(field_release:server.TGroupsFetch.names)
+  if (has_names()) {
+    clear_has_set();
+    ::server::TGroupsFetch_Names* temp = set_.names_;
+    set_.names_ = NULL;
+    return temp;
+  } else {
+    return NULL;
+  }
+}
+void TGroupsFetch::set_allocated_names(::server::TGroupsFetch_Names* names) {
+  clear_set();
+  if (names) {
+    set_has_names();
+    set_.names_ = names;
+  }
+  // @@protoc_insertion_point(field_set_allocated:server.TGroupsFetch.names)
+}
+
+bool TGroupsFetch::has_set() const {
+  return set_case() != SET_NOT_SET;
+}
+void TGroupsFetch::clear_has_set() {
+  _oneof_case_[0] = SET_NOT_SET;
+}
+TGroupsFetch::SetCase TGroupsFetch::set_case() const {
+  return TGroupsFetch::SetCase(_oneof_case_[0]);
+}
 inline const TGroupsFetch* TGroupsFetch::internal_default_instance() {
   return &TGroupsFetch_default_instance_.get();
 }
