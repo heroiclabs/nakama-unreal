@@ -16,7 +16,7 @@
 
 #pragma once
 
-#include "INMessage.h"
+#include "INCollatedMessage.h"
 
 #include "Defines.h"
 
@@ -25,7 +25,7 @@ using namespace server;
 namespace Nakama {
 
 	// OnSuccess returns: NResultSet<NLeaderboard>*
-	class NAKAMA_API NLeaderboardsListMessage : public INMessage
+	class NAKAMA_API NLeaderboardsListMessage : public INCollatedMessage
 	{
 	private:
 		Envelope envelope;
@@ -50,6 +50,8 @@ namespace Nakama {
 
 		Builder Limit(int64_t limit);
 		Builder Cursor(NCursor cursor);
+		Builder Add(std::string id);
+		Builder Add(std::vector<std::string> ids);
 
 		NLeaderboardsListMessage Build();
 	};

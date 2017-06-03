@@ -16,7 +16,7 @@
 
 #pragma once
 
-#include "INMessage.h"
+#include "INCollatedMessage.h"
 
 #include "Defines.h"
 
@@ -25,7 +25,7 @@ using namespace server;
 namespace Nakama {
 
 	// OnSuccess returns: NSelf*
-	class NAKAMA_API NSelfFetchMessage : public INMessage
+	class NAKAMA_API NSelfFetchMessage : public INCollatedMessage
 	{
 
 	private:

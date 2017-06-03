@@ -52,6 +52,9 @@
 #include "NakamaSDK/NLeaderboardRecordsListMessage.h"
 #include "NakamaSDK/NLeaderboardRecordWriteMessage.h"
 #include "NakamaSDK/NLeaderboardsListMessage.h"
+#include "NakamaSDK/NMatchmakeAddMessage.h"
+#include "NakamaSDK/NMatchmakeRemoveMessage.h"
+#include "NakamaSDK/NRuntimeRpcMessage.h"
 #include "NakamaComponent.h"
 
 using namespace Nakama;
@@ -356,6 +359,17 @@ UNBPManageFriendRequest* UNBPManageFriendRequest::AddFriendByUserId(UNakamaCompo
 	return proxy;
 }
 
+UNBPManageFriendRequest* UNBPManageFriendRequest::AddFriendByHandle(UNakamaComponent* nakama, FString handle, FDelegateOnSuccess onSuccess, FDelegateOnFail onFail)
+{
+	auto proxy = NewObject<UNBPManageFriendRequest>();
+	proxy->mode = Mode::AddHandle;
+	proxy->Id = handle;
+	proxy->NakamaRef = nakama;
+	proxy->OnManageSuccess = onSuccess;
+	proxy->OnFail = onFail;
+	return proxy;
+}
+
 UNBPManageFriendRequest* UNBPManageFriendRequest::BlockFriendByUserId(UNakamaComponent* nakama, FString userId, FDelegateOnSuccess onSuccess, FDelegateOnFail onFail)
 {
 	auto proxy = NewObject<UNBPManageFriendRequest>();
@@ -406,7 +420,12 @@ void UNBPManageFriendRequest::Activate()
 
 		switch (mode) {
 			case Mode::Add: {
-				auto message = NFriendAddMessage::Default(TCHAR_TO_UTF8(*Id));
+				auto message = NFriendAddMessage::Id(TCHAR_TO_UTF8(*Id));
+				client->Send(message, success, fail);
+				break;
+			}
+			case Mode::AddHandle: {
+				auto message = NFriendAddMessage::Handle(TCHAR_TO_UTF8(*Id));
 				client->Send(message, success, fail);
 				break;
 			}
@@ -1006,8 +1025,8 @@ void UNBPListGroupsRequest::Activate()
 
 	switch (mode) {
 	case Mode::Fetch: {
-		if (GroupIds.Num() == 0) {
-			if (OnFail.IsBound()) OnFail.Execute(UNBPError::From(NError("GroupIds was empty.")));
+		if (GroupIds.Num() == 0 && Names.Num() == 0) {
+			if (OnFail.IsBound()) OnFail.Execute(UNBPError::From(NError("Names and GroupIds can not both be empty.")));
 			return;
 		}
 
@@ -1214,10 +1233,20 @@ void UNBPManageGroupUsersRequest::Activate()
 
 // ------------------------- UNBPListUsersRequest -------------------------
 
-UNBPListUsersRequest* UNBPListUsersRequest::FetchUsers(UNakamaComponent* nakama, TArray<FString> userIds, FDelegateOnSuccess_UsersList onSuccess, FDelegateOnFail onFail)
+UNBPListUsersRequest* UNBPListUsersRequest::FetchUsersById(UNakamaComponent* nakama, TArray<FString> userIds, FDelegateOnSuccess_UsersList onSuccess, FDelegateOnFail onFail)
 {
 	auto proxy = NewObject<UNBPListUsersRequest>();
 	proxy->UserIds = userIds;
+	proxy->NakamaRef = nakama;
+	proxy->OnSuccess = onSuccess;
+	proxy->OnFail = onFail;
+	return proxy;
+}
+
+UNBPListUsersRequest* UNBPListUsersRequest::FetchUsersByHandle(UNakamaComponent* nakama, TArray<FString> handles, FDelegateOnSuccess_UsersList onSuccess, FDelegateOnFail onFail)
+{
+	auto proxy = NewObject<UNBPListUsersRequest>();
+	proxy->Handles = handles;
 	proxy->NakamaRef = nakama;
 	proxy->OnSuccess = onSuccess;
 	proxy->OnFail = onFail;
@@ -1242,14 +1271,25 @@ void UNBPListUsersRequest::Activate()
 		}
 	};
 
-	if (UserIds.Num() == 0) {
-		if (OnFail.IsBound()) OnFail.Execute(UNBPError::From(NError("UserIds was empty.")));
+	if (UserIds.Num() == 0 && Handles.Num() == 0) {
+		if (OnFail.IsBound()) OnFail.Execute(UNBPError::From(NError("Handles and UserIds can not both be empty.")));
 		return;
 	}
 
-	auto builder = NUsersFetchMessage::Builder(TCHAR_TO_UTF8(*UserIds[0]));
-	for (int i = 1; i < UserIds.Num(); i++) {
-		builder.Add(TCHAR_TO_UTF8(*UserIds[i]));
+	auto builder = NUsersFetchMessage::Builder();
+	if (UserIds.Num() > 0) {
+		std::vector<std::string> ids;
+		for (int i = 0; i < UserIds.Num(); i++) {
+			ids.push_back(TCHAR_TO_UTF8(*UserIds[i]));
+		}
+		builder.SetUserIds(ids);
+	}
+	else if (Handles.Num() > 0) {
+		std::vector<std::string> handles;
+		for (int i = 0; i < Handles.Num(); i++) {
+			handles.push_back(TCHAR_TO_UTF8(*Handles[i]));
+		}
+		builder.SetHandles(handles);
 	}
 
 	auto message = builder.Build();
@@ -1263,7 +1303,7 @@ void UNBPListUsersRequest::Activate()
 
 // ------------------------- UNBPListUsersRequest -------------------------
 
-UNBPStorageRequest* UNBPStorageRequest::Write(UNakamaComponent* nakama, FString bucket, FString collection, FString record, FString value, FString version, FDelegateOnSuccess_StorageKeyList onSuccess, FDelegateOnFail onFail)
+UNBPStorageRequest* UNBPStorageRequest::Write(UNakamaComponent* nakama, FString bucket, FString collection, FString record, FString value, FString version, FDelegateOnSuccess_StorageKeyList onSuccess, FDelegateOnFail onFail, EStoragePermissionRead readPermission, EStoragePermissionWrite writePermission)
 {
 	auto proxy = NewObject<UNBPStorageRequest>();
 	proxy->mode = Mode::WriteData;
@@ -1275,10 +1315,12 @@ UNBPStorageRequest* UNBPStorageRequest::Write(UNakamaComponent* nakama, FString 
 	proxy->NakamaRef = nakama;
 	proxy->OnWriteSuccess = onSuccess;
 	proxy->OnFail = onFail;
+	proxy->ReadPermissions.Add(readPermission);
+	proxy->WritePermissions.Add(writePermission);
 	return proxy;
 }
 
-UNBPStorageRequest* UNBPStorageRequest::WriteMany(UNakamaComponent* nakama, TArray<FString> buckets, TArray<FString> collections, TArray<FString> records, TArray<FString> values, TArray<FString> versions, FDelegateOnSuccess_StorageKeyList onSuccess, FDelegateOnFail onFail)
+UNBPStorageRequest* UNBPStorageRequest::WriteMany(UNakamaComponent* nakama, TArray<FString> buckets, TArray<FString> collections, TArray<FString> records, TArray<FString> values, TArray<FString> versions, FDelegateOnSuccess_StorageKeyList onSuccess, FDelegateOnFail onFail, TArray<EStoragePermissionRead> readPermissions, TArray<EStoragePermissionWrite> writePermissions)
 {
 	auto proxy = NewObject<UNBPStorageRequest>();
 	proxy->mode = Mode::WriteData;
@@ -1290,6 +1332,8 @@ UNBPStorageRequest* UNBPStorageRequest::WriteMany(UNakamaComponent* nakama, TArr
 	proxy->NakamaRef = nakama;
 	proxy->OnWriteSuccess = onSuccess;
 	proxy->OnFail = onFail;
+	proxy->ReadPermissions = readPermissions;
+	proxy->WritePermissions = writePermissions;
 	return proxy;
 }
 
@@ -1371,8 +1415,11 @@ void UNBPStorageRequest::Activate()
 
 		auto builder = NStorageWriteMessage::Builder();
 		for (int i = 0; i < Buckets.Num(); i++) {
-			if (Versions.Num() == 0) builder.Write(TCHAR_TO_UTF8(*Buckets[i]), TCHAR_TO_UTF8(*Collections[i]), TCHAR_TO_UTF8(*Records[i]), TCHAR_TO_UTF8(*Values[i]));
-			else builder.Write(TCHAR_TO_UTF8(*Buckets[i]), TCHAR_TO_UTF8(*Collections[i]), TCHAR_TO_UTF8(*Records[i]), TCHAR_TO_UTF8(*Values[i]), TCHAR_TO_UTF8(*Versions[i]));
+			auto read = ReadPermissions.Num() > i ? ReadPermissions[i] : EStoragePermissionRead::OwnerRead;
+			auto write = WritePermissions.Num() > i ? WritePermissions[i] : EStoragePermissionWrite::OwnerWrite;
+			auto version = Versions.Num() > i ? Versions[i] : FString();
+
+			builder.Write(TCHAR_TO_UTF8(*Buckets[i]), TCHAR_TO_UTF8(*Collections[i]), TCHAR_TO_UTF8(*Records[i]), TCHAR_TO_UTF8(*Values[i]), (StoragePermissionRead)read, (StoragePermissionWrite)write, TCHAR_TO_UTF8(*version));
 		}
 
 		auto message = builder.Build();
@@ -1507,7 +1554,7 @@ void UNBPMatchRequest::Activate()
 		break;
 	}
 	case Mode::Post: {
-		auto success = [req](void* obj) {
+		auto success = [req]() {
 			if (req->OnLeaveSendSuccess.IsBound()) {
 				req->OnLeaveSendSuccess.Execute();
 			}
@@ -1892,4 +1939,112 @@ void UNBPLeaderboardRecordsRequest::Activate()
 		break;
 	}
 	}
+}
+
+
+/**
+* Handling for Matchmaking
+*/
+
+// ------------------------- UNBPMatchmakeRequest -------------------------
+
+UNBPMatchmakeRequest* UNBPMatchmakeRequest::AddRequest(UNakamaComponent* nakama, int32 requiredCount, FDelegateOnSuccess_MatchmakeTicket onSuccess, FDelegateOnFail onFail)
+{
+	auto proxy = NewObject<UNBPMatchmakeRequest>();
+	proxy->mode = Mode::Add;
+	proxy->RequiredCount = requiredCount;
+	proxy->NakamaRef = nakama;
+	proxy->OnAddSuccess = onSuccess;
+	proxy->OnFail = onFail;
+	return proxy;
+}
+
+UNBPMatchmakeRequest* UNBPMatchmakeRequest::RemoveRequest(UNakamaComponent* nakama, UNBPMatchmakeTicket* ticket, FDelegateOnSuccess onSuccess, FDelegateOnFail onFail)
+{
+	auto proxy = NewObject<UNBPMatchmakeRequest>();
+	proxy->mode = Mode::Remove;
+	proxy->Ticket = ticket;
+	proxy->NakamaRef = nakama;
+	proxy->OnRemoveSuccess = onSuccess;
+	proxy->OnFail = onFail;
+	return proxy;
+}
+
+void UNBPMatchmakeRequest::Activate()
+{
+	auto req = this;
+	auto client = NakamaRef != nullptr ? NakamaRef->GetClient() : nullptr;
+	if (client == nullptr) return;
+
+	auto fail = [req](NError error) {
+		if (req->OnFail.IsBound())
+			req->OnFail.Execute(UNBPError::From(error));
+	};
+
+	switch (mode) {
+	case Mode::Add: {
+		auto success = [req](void* obj) {
+			if (req->OnAddSuccess.IsBound()) {
+				auto data = (NMatchmakeTicket*)obj;
+				req->OnAddSuccess.Execute(UNBPMatchmakeTicket::From(*data));
+			}
+		};
+
+		auto message = NMatchmakeAddMessage::Default(RequiredCount);
+		client->Send(message, success, fail);
+		break;
+	}
+	case Mode::Remove: {
+		auto success = [req](void* obj) {
+			if (req->OnRemoveSuccess.IsBound()) req->OnRemoveSuccess.Execute();
+		};
+
+		auto message = NMatchmakeRemoveMessage::Default(Ticket->GetNMatchmakeTicket());
+		client->Send(message, success, fail);
+		break;
+	}
+	}
+}
+
+
+/**
+* Handling for RPC
+*/
+
+// ------------------------- UNBPMatchmakeRequest -------------------------
+
+UNBPRpcRequest* UNBPRpcRequest::RunRpc(UNakamaComponent* nakama, FString id, FString payload, FDelegateOnSuccess_RuntimeRpc onSuccess, FDelegateOnFail onFail)
+{
+	auto proxy = NewObject<UNBPRpcRequest>();
+	proxy->Id = id;
+	proxy->Payload = payload;
+	proxy->NakamaRef = nakama;
+	proxy->OnSuccess = onSuccess;
+	proxy->OnFail = onFail;
+	return proxy;
+}
+
+void UNBPRpcRequest::Activate()
+{
+	auto req = this;
+	auto client = NakamaRef != nullptr ? NakamaRef->GetClient() : nullptr;
+	if (client == nullptr) return;
+
+	auto fail = [req](NError error) {
+		if (req->OnFail.IsBound())
+			req->OnFail.Execute(UNBPError::From(error));
+	};
+
+	auto success = [req](void* obj) {
+		if (req->OnSuccess.IsBound()) {
+			auto data = (NRuntimeRpc*)obj;
+			req->OnSuccess.Execute(UNBPRuntimeRpc::From(*data));
+		}
+	};
+
+	auto builder = NRuntimeRpcMessage::Builder(TCHAR_TO_UTF8(*Id));
+	if (!Payload.IsEmpty()) builder.Payload(TCHAR_TO_UTF8(*Payload));
+
+	auto message = builder.Build();
+	client->Send(message, success, fail);
 }

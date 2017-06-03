@@ -16,27 +16,16 @@
 
 #pragma once
 
-#include "INCollatedMessage.h"
-
-#include "Defines.h"
-
-using namespace server;
+#include "INMessage.h"
 
 namespace Nakama {
 
-	// OnSuccess returns: nothing (nullptr)
-	class NAKAMA_API NMatchLeaveMessage : public INCollatedMessage
+	class NAKAMA_API INCollatedMessage : public INMessage
 	{
-	private:
-		Envelope envelope;
-		NMatchLeaveMessage(std::string matchId);
 
 	public:
-		~NMatchLeaveMessage() {}
+		virtual void SetCollationId(std::string id) = 0;
 
-		virtual Envelope* GetPayload() override { return &envelope; }
-		virtual void SetCollationId(std::string id) override { envelope.set_collation_id(id); }
-
-		static NMatchLeaveMessage Default(std::string matchId);
 	};
+
 }

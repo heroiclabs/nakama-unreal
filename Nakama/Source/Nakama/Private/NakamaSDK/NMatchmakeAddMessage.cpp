@@ -14,29 +14,18 @@
  * limitations under the License.
  */
 
-#pragma once
-
-#include "INCollatedMessage.h"
-
-#include "Defines.h"
-
-using namespace server;
+#include "NMatchmakeAddMessage.h"
 
 namespace Nakama {
 
-	// OnSuccess returns: nothing (nullptr)
-	class NAKAMA_API NMatchLeaveMessage : public INCollatedMessage
+	NMatchmakeAddMessage::NMatchmakeAddMessage(int64_t requiredCount)
 	{
-	private:
-		Envelope envelope;
-		NMatchLeaveMessage(std::string matchId);
+		// set our default
+		envelope.mutable_matchmake_add()->set_requiredcount(requiredCount);
+	}
 
-	public:
-		~NMatchLeaveMessage() {}
-
-		virtual Envelope* GetPayload() override { return &envelope; }
-		virtual void SetCollationId(std::string id) override { envelope.set_collation_id(id); }
-
-		static NMatchLeaveMessage Default(std::string matchId);
-	};
+	NMatchmakeAddMessage NMatchmakeAddMessage::Default(int64_t requiredCount)
+	{
+		return NMatchmakeAddMessage(requiredCount);
+	}
 }

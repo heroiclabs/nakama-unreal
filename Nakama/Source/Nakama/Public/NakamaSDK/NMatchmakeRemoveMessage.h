@@ -17,39 +17,31 @@
 #pragma once
 
 #include "INCollatedMessage.h"
+#include "NMatchmakeTicket.h"
 
 #include "Defines.h"
+#include <string>
 
 using namespace server;
 
 namespace Nakama {
 
-	// OnSuccess returns: NResultSet<NStorageData>*
-	class NAKAMA_API NStorageFetchMessage : public INCollatedMessage
+	// OnSuccess returns: nothing (nullptr)
+	class NAKAMA_API NMatchmakeRemoveMessage : public INCollatedMessage
 	{
+
 	private:
 		Envelope envelope;
-		NStorageFetchMessage();
+		NMatchmakeRemoveMessage(NMatchmakeTicket ticket);
 
 	public:
-		~NStorageFetchMessage() {}
+		~NMatchmakeRemoveMessage() {}
 
 		virtual Envelope* GetPayload() override { return &envelope; }
 		virtual void SetCollationId(std::string id) override { envelope.set_collation_id(id); }
 
-		class Builder;
+		static NMatchmakeRemoveMessage Default(NMatchmakeTicket ticket);
+
 	};
 
-	class NAKAMA_API NStorageFetchMessage::Builder
-	{
-	private:
-		NStorageFetchMessage message;
-
-	public:
-		Builder() {}
-
-		Builder Fetch(std::string bucket, std::string collection, std::string record, std::string userId);
-
-		NStorageFetchMessage Build();
-	};
 }

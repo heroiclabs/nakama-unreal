@@ -16,7 +16,7 @@
 
 #pragma once
 
-#include "INMessage.h"
+#include "INCollatedMessage.h"
 
 #include "Defines.h"
 
@@ -25,7 +25,7 @@ using namespace server;
 namespace Nakama {
 
 	// OnSuccess returns: NResultSet<NStorageKey>*
-	class NAKAMA_API NStorageWriteMessage : public INMessage
+	class NAKAMA_API NStorageWriteMessage : public INCollatedMessage
 	{
 	private:
 		Envelope envelope;
@@ -48,8 +48,7 @@ namespace Nakama {
 	public:
 		Builder() {}
 
-		Builder Write(std::string bucket, std::string collection, std::string record, std::string value);
-		Builder Write(std::string bucket, std::string collection, std::string record, std::string value, std::string version);
+		Builder Write(std::string bucket, std::string collection, std::string record, std::string value, StoragePermissionRead readPermission = StoragePermissionRead::OWNER_READ, StoragePermissionWrite writePermission = StoragePermissionWrite::OWNER_WRITE, std::string version = std::string());
 
 		NStorageWriteMessage Build();
 	};

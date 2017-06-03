@@ -14,29 +14,18 @@
  * limitations under the License.
  */
 
-#pragma once
-
-#include "INCollatedMessage.h"
-
-#include "Defines.h"
-
-using namespace server;
+#include "NMatchmakeRemoveMessage.h"
 
 namespace Nakama {
 
-	// OnSuccess returns: nothing (nullptr)
-	class NAKAMA_API NMatchLeaveMessage : public INCollatedMessage
+	NMatchmakeRemoveMessage::NMatchmakeRemoveMessage(NMatchmakeTicket ticket)
 	{
-	private:
-		Envelope envelope;
-		NMatchLeaveMessage(std::string matchId);
+		// set our default
+		envelope.mutable_matchmake_remove()->set_ticket(ticket.GetTicket());
+	}
 
-	public:
-		~NMatchLeaveMessage() {}
-
-		virtual Envelope* GetPayload() override { return &envelope; }
-		virtual void SetCollationId(std::string id) override { envelope.set_collation_id(id); }
-
-		static NMatchLeaveMessage Default(std::string matchId);
-	};
+	NMatchmakeRemoveMessage NMatchmakeRemoveMessage::Default(NMatchmakeTicket ticket)
+	{
+		return NMatchmakeRemoveMessage(ticket);
+	}
 }

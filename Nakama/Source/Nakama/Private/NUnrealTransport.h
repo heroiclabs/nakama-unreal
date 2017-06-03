@@ -40,7 +40,7 @@ namespace Nakama {
 			const std::function<void(const int32 &)> &errorAction) override;
 		virtual void Connect(const std::string host, const unsigned port, const std::string& path, const bool ssl) override;
 		virtual void Close() override;
-		virtual void Send(std::string data) override;
+		virtual void Send(std::string data, std::function<void(bool)> callback) override;
 		virtual void Tick(float DeltaTime) override;
 
 

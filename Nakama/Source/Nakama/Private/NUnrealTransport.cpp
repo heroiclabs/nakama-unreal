@@ -130,10 +130,14 @@ namespace Nakama {
 		}
 	}
 
-	void NUnrealTransport::Send(std::string data)
+	void NUnrealTransport::Send(std::string data, std::function<void(bool)> callback)
 	{
 		if (socket) {
-			socket->Send((uint8*)data.data(), data.size());
+			bool success = socket->Send((uint8*)data.data(), data.size());
+			if (callback) callback(success);
+		}
+		else {
+			if (callback) callback(false);
 		}
 	}
 }

@@ -16,30 +16,24 @@
 
 #pragma once
 
-#include "INCollatedMessage.h"
-#include "NMatchToken.h"
-
 #include "Defines.h"
-
-using namespace server;
 
 namespace Nakama {
 
-	// OnSuccess returns: NMatch*
-	class NAKAMA_API NMatchJoinMessage : public INCollatedMessage
-	{
-	private:
-		Envelope envelope;
-		NMatchJoinMessage(std::string matchId);
-		NMatchJoinMessage(NMatchToken token);
+	class NAKAMA_API NMatchToken {
 
 	public:
-		~NMatchJoinMessage() {}
+		NMatchToken() {}
+		NMatchToken(std::string token)
+		{
+			this->token = token;
+		}
 
-		virtual Envelope* GetPayload() override { return &envelope; }
-		virtual void SetCollationId(std::string id) override { envelope.set_collation_id(id); }
+		~NMatchToken() {}
 
-		static NMatchJoinMessage Default(std::string matchId);
-		static NMatchJoinMessage Default(NMatchToken token);
+		std::string GetToken() { return token; }
+
+	private:
+		std::string token;
 	};
 }

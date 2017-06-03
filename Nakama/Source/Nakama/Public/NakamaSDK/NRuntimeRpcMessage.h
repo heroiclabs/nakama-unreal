@@ -17,7 +17,6 @@
 #pragma once
 
 #include "INCollatedMessage.h"
-#include "NCursor.h"
 
 #include "Defines.h"
 
@@ -25,15 +24,15 @@ using namespace server;
 
 namespace Nakama {
 
-	// OnSuccess returns: NResultSet<NTopicMessage>*
-	class NAKAMA_API NTopicMessagesListMessage : public INCollatedMessage
+	// OnSuccess returns: NRuntimeRpc*
+	class NAKAMA_API NRuntimeRpcMessage : public INCollatedMessage
 	{
 	private:
 		Envelope envelope;
-		NTopicMessagesListMessage();
+		NRuntimeRpcMessage();
 
 	public:
-		~NTopicMessagesListMessage() {}
+		~NRuntimeRpcMessage() {}
 
 		virtual Envelope* GetPayload() override { return &envelope; }
 		virtual void SetCollationId(std::string id) override { envelope.set_collation_id(id); }
@@ -41,21 +40,16 @@ namespace Nakama {
 		class Builder;
 	};
 
-	class NAKAMA_API NTopicMessagesListMessage::Builder
+	class NAKAMA_API NRuntimeRpcMessage::Builder
 	{
 	private:
-		NTopicMessagesListMessage message;
+		NRuntimeRpcMessage message;
 
 	public:
-		Builder() {}
+		Builder(std::string id);
 
-		Builder Forward(bool forward);
-		Builder Cursor(NCursor cursor);
-		Builder Limit(int64_t limit);
-		Builder TopicDirectMessage(std::string userId);
-		Builder TopicRoom(std::string room);
-		Builder TopicGroup(std::string groupId);
+		Builder Payload(std::string payload);
 
-		NTopicMessagesListMessage Build();
+		NRuntimeRpcMessage Build();
 	};
 }

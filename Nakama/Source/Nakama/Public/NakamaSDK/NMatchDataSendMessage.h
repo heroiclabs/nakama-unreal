@@ -16,7 +16,8 @@
 
 #pragma once
 
-#include "INMessage.h"
+#include "INUncollatedMessage.h"
+#include "NUserPresence.h"
 
 #include "Defines.h"
 
@@ -25,18 +26,37 @@ using namespace server;
 namespace Nakama {
 
 	// OnSuccess returns: nothing (nullptr)
-	class NAKAMA_API NMatchDataSendMessage : public INMessage
+	class NAKAMA_API NMatchDataSendMessage : public INUncollatedMessage
 	{
 	private:
 		Envelope envelope;
+		NMatchDataSendMessage();
 		NMatchDataSendMessage(std::string matchId, int64_t opCode, std::string data);
 
 	public:
 		~NMatchDataSendMessage() {}
 
 		virtual Envelope* GetPayload() override { return &envelope; }
-		virtual void SetCollationId(std::string id) override { envelope.set_collation_id(id); }
 
 		static NMatchDataSendMessage Default(std::string matchId, int64_t opCode, std::string data);
+
+		class Builder;
+	};
+
+	class NAKAMA_API NMatchDataSendMessage::Builder
+	{
+	private:
+		NMatchDataSendMessage message;
+
+	public:
+		Builder();
+		Builder(std::string matchId, int64_t opCode, std::string data);
+
+		Builder MatchId(std::string matchId);
+		Builder OpCode(int64_t opCode);
+		Builder Data(std::string data);
+		Builder Presences(std::vector<NUserPresence> presences);
+
+		NMatchDataSendMessage Build();
 	};
 }

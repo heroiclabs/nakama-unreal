@@ -25,8 +25,20 @@ namespace Nakama {
 		payload->set_match_id(matchId);
 	}
 
+	NMatchJoinMessage::NMatchJoinMessage(NMatchToken token)
+	{
+		// set our default
+		auto payload = envelope.mutable_match_join();
+		payload->set_token(token.GetToken());
+	}
+
 	NMatchJoinMessage NMatchJoinMessage::Default(std::string matchId)
 	{
 		return NMatchJoinMessage(matchId);
+	}
+
+	NMatchJoinMessage NMatchJoinMessage::Default(NMatchToken token)
+	{
+		return NMatchJoinMessage(token);
 	}
 }

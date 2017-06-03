@@ -16,7 +16,7 @@
 
 #pragma once
 
-#include "INMessage.h"
+#include "INCollatedMessage.h"
 #include "NTopicId.h"
 
 #include "Defines.h"
@@ -26,7 +26,7 @@ using namespace server;
 namespace Nakama {
 
 	// OnSuccess returns: nothing (nullptr)
-	class NAKAMA_API NTopicLeaveMessage : public INMessage
+	class NAKAMA_API NTopicLeaveMessage : public INCollatedMessage
 	{
 	private:
 		Envelope envelope;

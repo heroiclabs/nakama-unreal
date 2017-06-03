@@ -16,7 +16,7 @@
 
 #pragma once
 
-#include "INMessage.h"
+#include "INCollatedMessage.h"
 
 #include "Defines.h"
 
@@ -25,7 +25,7 @@ using namespace server;
 namespace Nakama {
 
 	// OnSuccess returns: NResultSet<NUser>*
-	class NAKAMA_API NUsersFetchMessage : public INMessage
+	class NAKAMA_API NUsersFetchMessage : public INCollatedMessage
 	{
 	private:
 		Envelope envelope;
@@ -37,6 +37,8 @@ namespace Nakama {
 		virtual Envelope* GetPayload() override { return &envelope; }
 		virtual void SetCollationId(std::string id) override { envelope.set_collation_id(id); }
 
+		static NUsersFetchMessage Ids(std::vector<std::string> ids);
+		static NUsersFetchMessage Handles(std::vector<std::string> handles);
 		class Builder;
 	};
 
@@ -46,10 +48,10 @@ namespace Nakama {
 		NUsersFetchMessage message;
 
 	public:
-		Builder(std::string userId);
+		Builder() {}
 
-		Builder Add(std::string userId);
-		Builder Add(std::vector<std::string> userIds);
+		Builder SetUserIds(std::vector<std::string> ids);
+		Builder SetHandles(std::vector<std::string> handles);
 
 		NUsersFetchMessage Build();
 	};

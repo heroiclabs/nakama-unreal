@@ -16,7 +16,7 @@
 
 #pragma once
 
-#include "INMessage.h"
+#include "INCollatedMessage.h"
 
 #include "Defines.h"
 #include <string>
@@ -26,12 +26,12 @@ using namespace server;
 namespace Nakama {
 
 	// OnSuccess returns: nothing (nullptr)
-	class NAKAMA_API NFriendAddMessage : public INMessage
+	class NAKAMA_API NFriendAddMessage : public INCollatedMessage
 	{
 
 	private:
 		Envelope envelope;
-		NFriendAddMessage(std::string id);
+		NFriendAddMessage() {}
 
 	public:
 		~NFriendAddMessage() {}
@@ -39,7 +39,8 @@ namespace Nakama {
 		virtual Envelope* GetPayload() override { return &envelope; }
 		virtual void SetCollationId(std::string id) override { envelope.set_collation_id(id); }
 
-		static NFriendAddMessage Default(std::string id);
+		static NFriendAddMessage Id(std::string id);
+		static NFriendAddMessage Handle(std::string id);
 
 	};
 

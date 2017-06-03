@@ -16,7 +16,7 @@
 
 #pragma once
 
-#include "INMessage.h"
+#include "INCollatedMessage.h"
 
 #include "Defines.h"
 
@@ -25,7 +25,7 @@ using namespace server;
 namespace Nakama {
 
 	// OnSuccess returns: NResultSet<NGroup>*
-	class NAKAMA_API NGroupsFetchMessage : public INMessage
+	class NAKAMA_API NGroupsFetchMessage : public INCollatedMessage
 	{
 	private:
 		Envelope envelope;
@@ -37,7 +37,8 @@ namespace Nakama {
 		virtual Envelope* GetPayload() override { return &envelope; }
 		virtual void SetCollationId(std::string id) override { envelope.set_collation_id(id); }
 
-		static NGroupsFetchMessage Default(std::vector<std::string> ids);
+		static NGroupsFetchMessage Ids(std::vector<std::string> ids);
+		static NGroupsFetchMessage Names(std::vector<std::string> names);
 		class Builder;
 	};
 
@@ -49,7 +50,7 @@ namespace Nakama {
 	public:
 		Builder() {}
 
-		Builder SetGroupIds(std::vector<std::string> groupIds);
+		Builder SetGroupIds(std::vector<std::string> ids);
 		Builder SetNames(std::vector<std::string> names);
 
 		NGroupsFetchMessage Build();

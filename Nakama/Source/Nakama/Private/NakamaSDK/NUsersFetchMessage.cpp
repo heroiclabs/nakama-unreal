@@ -24,25 +24,39 @@ namespace Nakama {
 		envelope.mutable_users_fetch();
 	}
 
-	/* Factory Methods */
-	NUsersFetchMessage::Builder::Builder(std::string userId)
+	NUsersFetchMessage NUsersFetchMessage::Ids(std::vector<std::string> ids)
 	{
-		Add(userId);
+		return NUsersFetchMessage::Builder().SetUserIds(ids).Build();
 	}
 
-	NUsersFetchMessage::Builder NUsersFetchMessage::Builder::Add(std::string userId)
+	NUsersFetchMessage NUsersFetchMessage::Handles(std::vector<std::string> handles)
 	{
-		message.envelope.mutable_users_fetch()->mutable_user_ids()->Add()->assign(userId);
+		return NUsersFetchMessage::Builder().SetHandles(handles).Build();
+	}
+
+	/* Factory Methods */
+
+	NUsersFetchMessage::Builder NUsersFetchMessage::Builder::SetUserIds(std::vector<std::string> ids)
+	{
+		auto container = new TUsersFetch_UserIds();
+		for (size_t i = 0; i < ids.size(); i++)
+		{
+			container->mutable_user_ids()->Add()->assign(ids[i]);
+		}
+
+		message.envelope.mutable_users_fetch()->set_allocated_user_ids(container);
 		return *this;
 	}
 
-	NUsersFetchMessage::Builder NUsersFetchMessage::Builder::Add(std::vector<std::string> userIds)
+	NUsersFetchMessage::Builder NUsersFetchMessage::Builder::SetHandles(std::vector<std::string> handles)
 	{
-		auto container = message.envelope.mutable_users_fetch()->mutable_user_ids();
-		for (size_t i = 0; i < userIds.size(); i++)
+		auto container = new TUsersFetch_Handles();
+		for (size_t i = 0; i < handles.size(); i++)
 		{
-			container->Add()->assign(userIds[i]);
+			container->mutable_handles()->Add()->assign(handles[i]);
 		}
+
+		message.envelope.mutable_users_fetch()->set_allocated_handles(container);
 		return *this;
 	}
 

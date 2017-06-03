@@ -25,7 +25,6 @@ namespace Nakama {
 
 	public:
 		virtual ::google::protobuf::Message* GetPayload() = 0;
-		virtual void SetCollationId(std::string id) = 0;
 
 	};
 

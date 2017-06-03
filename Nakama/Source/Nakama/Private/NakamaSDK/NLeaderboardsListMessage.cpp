@@ -40,6 +40,21 @@ namespace Nakama {
 		return *this;
 	}
 
+	NLeaderboardsListMessage::Builder NLeaderboardsListMessage::Builder::Add(std::string id)
+	{
+		message.envelope.mutable_leaderboards_list()->mutable_filter_leaderboard_id()->Add()->assign(id);
+		return *this;
+	}
+
+	NLeaderboardsListMessage::Builder NLeaderboardsListMessage::Builder::Add(std::vector<std::string> ids)
+	{
+		for (int i = 0, maxI = ids.size(); i < maxI; i++)
+		{
+			message.envelope.mutable_leaderboards_list()->mutable_filter_leaderboard_id()->Add()->assign(ids[i]);
+		}
+		return *this;
+	}
+
 	NLeaderboardsListMessage NLeaderboardsListMessage::Builder::Build()
 	{
 		// Clone object so builder now operates on new copy.

@@ -17,7 +17,8 @@
 #pragma once
 
 #include "Defines.h"
-#include "INMessage.h"
+#include "INCollatedMessage.h"
+#include "INUncollatedMessage.h"
 #include "INTransport.h"
 #include "NAuthenticateMessage.h"
 #include "NCallbacks.h"
@@ -25,7 +26,10 @@
 #include "NLogger.h"
 #include "INLogSink.h"
 #include "NMatchData.h"
+#include "NMatchmakeMatched.h"
+#include "NMatchmakeTicket.h"
 #include "NMatchPresence.h"
+#include "NRuntimeRpc.h"
 #include "NSession.h"
 #include "NTopicMessage.h"
 #include "NTopicPresence.h"
@@ -76,8 +80,12 @@ namespace Nakama {
 		void Logout();
 		void Disconnect();
 
-		void Send(INMessage &message,
+		void Send(INCollatedMessage &message,
 			std::function<void(void*)> callback,
+			std::function<void(NError)> errback);
+
+		void Send(INUncollatedMessage &message,
+			std::function<void()> callback,
 			std::function<void(NError)> errback);
 
 		static NClient& Default(std::string serverKey);
@@ -88,6 +96,7 @@ namespace Nakama {
 		std::vector<std::function<void(const NMatchPresence&)>> OnMatchPresence;
 		std::vector<std::function<void(const NTopicMessage&)>> OnTopicMessage;
 		std::vector<std::function<void(const NTopicPresence&)>> OnTopicPresence;
+		std::vector<std::function<void(const NMatchmakeMatched&)>> OnMatchmakeMatched;
 
 		class Builder;
 

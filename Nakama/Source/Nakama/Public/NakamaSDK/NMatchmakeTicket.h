@@ -16,40 +16,30 @@
 
 #pragma once
 
-#include "INCollatedMessage.h"
-
 #include "Defines.h"
 
 using namespace server;
 
 namespace Nakama {
 
-	// OnSuccess returns: NResultSet<NStorageData>*
-	class NAKAMA_API NStorageFetchMessage : public INCollatedMessage
-	{
-	private:
-		Envelope envelope;
-		NStorageFetchMessage();
+	class NAKAMA_API NMatchmakeTicket {
 
 	public:
-		~NStorageFetchMessage() {}
+		NMatchmakeTicket() {}
+		NMatchmakeTicket(std::string ticket)
+		{
+			this->ticket = ticket;
+		}
+		NMatchmakeTicket(TMatchmakeTicket ticket)
+		{
+			this->ticket = ticket.ticket();
+		}
 
-		virtual Envelope* GetPayload() override { return &envelope; }
-		virtual void SetCollationId(std::string id) override { envelope.set_collation_id(id); }
+		~NMatchmakeTicket() {}
 
-		class Builder;
-	};
+		std::string GetTicket() { return ticket; }
 
-	class NAKAMA_API NStorageFetchMessage::Builder
-	{
 	private:
-		NStorageFetchMessage message;
-
-	public:
-		Builder() {}
-
-		Builder Fetch(std::string bucket, std::string collection, std::string record, std::string userId);
-
-		NStorageFetchMessage Build();
+		std::string ticket;
 	};
 }

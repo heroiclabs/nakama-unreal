@@ -39,9 +39,16 @@
 #include "NakamaSDK/NTopicPresence.h"
 #include "NakamaSDK/NLeaderboard.h"
 #include "NakamaSDK/NLeaderboardRecord.h"
+#include "NakamaSDK/NLeaderboard.h"
+#include "NakamaSDK/NMatchToken.h"
+#include "NakamaSDK/NMatchmakeTicket.h"
+#include "NakamaSDK/NMatchmakeMatched.h"
+#include "NakamaSDK/NRuntimeRpc.h"
 #include "NBPDataClasses.generated.h"
 
-#define FROM_NAKAMA_DATE(date) FDateTime::FromUnixTimestamp(date/1000)
+#define FROM_NAKAMA_DATE(__DATE__) FDateTime::FromUnixTimestamp(__DATE__/1000)
+#define CONVERT_TO_BP_STATIC(__NTYPE__, __BPTYPE__) static __BPTYPE__* From(__NTYPE__ data) { auto bpItem = NewObject<__BPTYPE__>(); bpItem->Wrapped = data; return bpItem; }
+#define CONVERT_RS_TO_BP_STATIC(__NTYPE__, __BPTYPE__) static TArray<__BPTYPE__*> FromResultSet(NResultSet<__NTYPE__>* resultSet) { TArray<__BPTYPE__*> rVal; auto results = resultSet->GetResults(); for (int i = 0, maxI = results.size(); i < maxI; i++) { rVal.Add(__BPTYPE__::From(results[i])); } return rVal; }
 
 class UPlayFabJsonObject;
 
@@ -55,10 +62,10 @@ class UNBPError : public UObject
 	GENERATED_BODY()
 
 public:
-	static UNBPError* From(NError data);
+	CONVERT_TO_BP_STATIC(NError, UNBPError)
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Error")
-		FString GetErrorMessage();
+		FString GetErrorMessage() { return UTF8_TO_TCHAR(Wrapped.GetErrorMessage().c_str()); }
 
 private:
 	NError Wrapped;
@@ -72,7 +79,7 @@ class UNBPCursor : public UObject
 	GENERATED_BODY()
 
 public:
-	static UNBPCursor* From(NCursor data);
+	CONVERT_TO_BP_STATIC(NCursor, UNBPCursor)
 	NCursor GetNCursor() { return Wrapped; }
 
 private:
@@ -93,9 +100,8 @@ class UNBPFriend : public UObject
 	GENERATED_BODY()
 
 public:
-	static UNBPFriend* From(NFriend data);
-
-	static TArray<UNBPFriend*> FromResultSet(NResultSet<NFriend>* resultSet);
+	CONVERT_TO_BP_STATIC(NFriend, UNBPFriend)
+	CONVERT_RS_TO_BP_STATIC(NFriend, UNBPFriend)
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Friend")
 		FString GetAvatarUrl() { return UTF8_TO_TCHAR(Wrapped.GetAvatarUrl().c_str()); }
@@ -145,7 +151,7 @@ class UNBPSelf : public UObject
 	GENERATED_BODY()
 
 public:
-	static UNBPSelf* From(NSelf data);
+	CONVERT_TO_BP_STATIC(NSelf, UNBPSelf)
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Self")
 		FString GetAvatarUrl() { return UTF8_TO_TCHAR(Wrapped.GetAvatarUrl().c_str()); }
@@ -213,9 +219,8 @@ class UNBPGroup : public UObject
 	GENERATED_BODY()
 
 public:
-	static TArray<UNBPGroup*> FromResultSet(NResultSet<NGroup>* resultSet);
-
-	static UNBPGroup* From(NGroup data);
+	CONVERT_TO_BP_STATIC(NGroup, UNBPGroup)
+	CONVERT_RS_TO_BP_STATIC(NGroup, UNBPGroup)
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Group")
 		FString GetId() { return UTF8_TO_TCHAR(Wrapped.GetId().c_str()); }
@@ -268,9 +273,8 @@ class UNBPGroupUser : public UObject
 	GENERATED_BODY()
 
 public:
-	static TArray<UNBPGroupUser*> FromResultSet(NResultSet<NGroupUser>* resultSet);
-
-	static UNBPGroupUser* From(NGroupUser data);
+	CONVERT_TO_BP_STATIC(NGroupUser, UNBPGroupUser)
+	CONVERT_RS_TO_BP_STATIC(NGroupUser, UNBPGroupUser)
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Group Users")
 		FString GetAvatarUrl() { return UTF8_TO_TCHAR(Wrapped.GetAvatarUrl().c_str()); }
@@ -321,9 +325,8 @@ class UNBPUser : public UObject
 	GENERATED_BODY()
 
 public:
-	static TArray<UNBPUser*> FromResultSet(NResultSet<NUser>* resultSet);
-
-	static UNBPUser* From(NUser data);
+	CONVERT_TO_BP_STATIC(NUser, UNBPUser)
+	CONVERT_RS_TO_BP_STATIC(NUser, UNBPUser)
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Users")
 		FString GetAvatarUrl() { return UTF8_TO_TCHAR(Wrapped.GetAvatarUrl().c_str()); }
@@ -371,9 +374,8 @@ class UNBPStorageKey : public UObject
 	GENERATED_BODY()
 
 public:
-	static TArray<UNBPStorageKey*> FromResultSet(NResultSet<NStorageKey>* resultSet);
-
-	static UNBPStorageKey* From(NStorageKey data);
+	CONVERT_TO_BP_STATIC(NStorageKey, UNBPStorageKey)
+	CONVERT_RS_TO_BP_STATIC(NStorageKey, UNBPStorageKey)
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Storage Key")
 		FString GetBucket() { return UTF8_TO_TCHAR(Wrapped.GetBucket().c_str()); }
@@ -394,15 +396,26 @@ private:
 
 // ------------------------- NStorageData -------------------------
 
+UENUM(BlueprintType)
+enum class EStoragePermissionRead : uint8
+{
+	NoRead = 0, OwnerRead, PublicRead
+};
+
+UENUM(BlueprintType)
+enum class EStoragePermissionWrite : uint8
+{
+	NoWrite = 0, OwnerWrite
+};
+
 UCLASS(BlueprintType)
 class UNBPStorageData : public UObject
 {
 	GENERATED_BODY()
 
 public:
-	static TArray<UNBPStorageData*> FromResultSet(NResultSet<NStorageData>* resultSet);
-
-	static UNBPStorageData* From(NStorageData data);
+	CONVERT_TO_BP_STATIC(NStorageData, UNBPStorageData)
+	CONVERT_RS_TO_BP_STATIC(NStorageData, UNBPStorageData)
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Storage Data")
 		FString GetBucket() { return UTF8_TO_TCHAR(Wrapped.GetBucket().c_str()); }
@@ -423,10 +436,10 @@ public:
 		FString GetVersion() { return UTF8_TO_TCHAR(Wrapped.GetVersion().c_str()); }
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Storage Data")
-		int32 GetPermissionRead() { return Wrapped.GetPermissionRead(); }
+		EStoragePermissionRead GetPermissionRead() { return (EStoragePermissionRead)Wrapped.GetPermissionRead(); }
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Storage Data")
-		int32 GetPermissionWrite() { return Wrapped.GetPermissionWrite(); }
+		EStoragePermissionWrite GetPermissionWrite() { return (EStoragePermissionWrite)Wrapped.GetPermissionWrite(); }
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Storage Data")
 		FDateTime GetCreatedAt() { return FROM_NAKAMA_DATE(Wrapped.GetCreatedAt()); }
@@ -450,9 +463,9 @@ class UNBPUserPresence : public UObject
 	GENERATED_BODY()
 
 public:
-	static TArray<UNBPUserPresence*> FromArray(std::vector<NUserPresence> pArray);
+	CONVERT_TO_BP_STATIC(NUserPresence, UNBPUserPresence)
 
-	static UNBPUserPresence* From(NUserPresence data);
+	static TArray<UNBPUserPresence*> FromArray(std::vector<NUserPresence> pArray);
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|User Presence")
 		FString GetUserId() { return UTF8_TO_TCHAR(Wrapped.GetUserId().c_str()); }
@@ -473,7 +486,7 @@ class UNBPMatch : public UObject
 	GENERATED_BODY()
 
 public:
-	static UNBPMatch* From(NMatch data);
+	CONVERT_TO_BP_STATIC(NMatch, UNBPMatch)
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Match")
 		FString GetId() { return UTF8_TO_TCHAR(Wrapped.GetId().c_str()); }
@@ -497,7 +510,7 @@ class UNBPMatchData : public UObject
 	GENERATED_BODY()
 
 public:
-	static UNBPMatchData* From(NMatchData data);
+	CONVERT_TO_BP_STATIC(NMatchData, UNBPMatchData)
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Match Data")
 		FString GetData() { return UTF8_TO_TCHAR(Wrapped.GetData().c_str()); }
@@ -523,7 +536,7 @@ class UNBPMatchPresence : public UObject
 	GENERATED_BODY()
 
 public:
-	static UNBPMatchPresence* From(NMatchPresence data);
+	CONVERT_TO_BP_STATIC(NMatchPresence, UNBPMatchPresence)
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Match Presence")
 		FString GetId() { return UTF8_TO_TCHAR(Wrapped.GetId().c_str()); }
@@ -552,7 +565,7 @@ class UNBPTopicId : public UObject
 	GENERATED_BODY()
 
 public:
-	static UNBPTopicId* From(NTopicId data);
+	CONVERT_TO_BP_STATIC(NTopicId, UNBPTopicId)
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Topic Id")
 		FString GetId() { return UTF8_TO_TCHAR(Wrapped.GetId().c_str()); }
@@ -574,7 +587,7 @@ class UNBPTopic : public UObject
 	GENERATED_BODY()
 
 public:
-	static UNBPTopic* From(NTopic data);
+	CONVERT_TO_BP_STATIC(NTopic, UNBPTopic)
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Topic")
 		UNBPTopicId* GetTopic() { return UNBPTopicId::From(Wrapped.GetTopic()); }
@@ -603,9 +616,8 @@ class UNBPTopicMessage : public UObject
 	GENERATED_BODY()
 
 public:
-	static TArray<UNBPTopicMessage*> FromResultSet(NResultSet<NTopicMessage>* resultSet);
-
-	static UNBPTopicMessage* From(NTopicMessage data);
+	CONVERT_TO_BP_STATIC(NTopicMessage, UNBPTopicMessage)
+	CONVERT_RS_TO_BP_STATIC(NTopicMessage, UNBPTopicMessage)
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Topic Message")
 		UNBPTopicId* GetTopic() { return UNBPTopicId::From(Wrapped.GetTopic()); }
@@ -643,7 +655,7 @@ class UNBPTopicMessageAck : public UObject
 	GENERATED_BODY()
 
 public:
-	static UNBPTopicMessageAck* From(NTopicMessageAck data);
+	CONVERT_TO_BP_STATIC(NTopicMessageAck, UNBPTopicMessageAck)
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Topic Message Ack")
 		FString GetMessageId() { return UTF8_TO_TCHAR(Wrapped.GetMessageId().c_str()); }
@@ -669,7 +681,7 @@ class UNBPTopicPresence : public UObject
 	GENERATED_BODY()
 
 public:
-	static UNBPTopicPresence* From(NTopicPresence data);
+	CONVERT_TO_BP_STATIC(NTopicPresence, UNBPTopicPresence)
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Topic Presence")
 		UNBPTopicId* GetTopic() { return UNBPTopicId::From(Wrapped.GetTopic()); }
@@ -692,9 +704,8 @@ class UNBPLeaderboard : public UObject
 	GENERATED_BODY()
 
 public:
-	static UNBPLeaderboard* From(NLeaderboard data);
-
-	static TArray<UNBPLeaderboard*> FromResultSet(NResultSet<NLeaderboard>* resultSet);
+	CONVERT_TO_BP_STATIC(NLeaderboard, UNBPLeaderboard)
+	CONVERT_RS_TO_BP_STATIC(NLeaderboard, UNBPLeaderboard)
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Leaderboard")
 		FString GetId() { return UTF8_TO_TCHAR(Wrapped.GetId().c_str()); }
@@ -732,9 +743,8 @@ class UNBPLeaderboardRecord : public UObject
 	GENERATED_BODY()
 
 public:
-	static UNBPLeaderboardRecord* From(NLeaderboardRecord data);
-
-	static TArray<UNBPLeaderboardRecord*> FromResultSet(NResultSet<NLeaderboardRecord>* resultSet);
+	CONVERT_TO_BP_STATIC(NLeaderboardRecord, UNBPLeaderboardRecord)
+	CONVERT_RS_TO_BP_STATIC(NLeaderboardRecord, UNBPLeaderboardRecord)
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Leaderboard Record")
 		FString GetLeaderboardId() { return UTF8_TO_TCHAR(Wrapped.GetLeaderboardId().c_str()); }
@@ -777,4 +787,86 @@ public:
 
 private:
 	NLeaderboardRecord Wrapped;
+};
+
+// ------------------------- NMatchToken -------------------------
+
+UCLASS(BlueprintType)
+class UNBPMatchToken : public UObject
+{
+	GENERATED_BODY()
+
+public:
+	CONVERT_TO_BP_STATIC(NMatchToken, UNBPMatchToken)
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Match Token")
+		FString GetToken() { return UTF8_TO_TCHAR(Wrapped.GetToken().c_str()); }
+
+private:
+	NMatchToken Wrapped;
+};
+
+// ------------------------- NMatchmakeTicket -------------------------
+
+UCLASS(BlueprintType)
+class UNBPMatchmakeTicket : public UObject
+{
+	GENERATED_BODY()
+
+public:
+	CONVERT_TO_BP_STATIC(NMatchmakeTicket, UNBPMatchmakeTicket)
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Matchmake Ticket")
+		FString GetTicket() { return UTF8_TO_TCHAR(Wrapped.GetTicket().c_str()); }
+
+	NMatchmakeTicket GetNMatchmakeTicket() { return Wrapped; }
+
+private:
+	NMatchmakeTicket Wrapped;
+};
+
+// ------------------------- NMatchmakeMatched -------------------------
+
+UCLASS(BlueprintType)
+class UNBPMatchmakeMatched : public UObject
+{
+	GENERATED_BODY()
+
+public:
+	CONVERT_TO_BP_STATIC(NMatchmakeMatched, UNBPMatchmakeMatched)
+
+		UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Matchmake Matched")
+		UNBPMatchmakeTicket* GetTicket() { return UNBPMatchmakeTicket::From(Wrapped.GetTicket()); }
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Matchmake Matched")
+		UNBPMatchToken* GetToken() { return UNBPMatchToken::From(Wrapped.GetToken()); }
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Matchmake Matched")
+		TArray<UNBPUserPresence*> GetPresence() { return  UNBPUserPresence::FromArray(Wrapped.GetPresence()); }
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Matchmake Matched")
+		UNBPUserPresence* GetSelf() { return UNBPUserPresence::From(Wrapped.GetSelf()); }
+
+private:
+	NMatchmakeMatched Wrapped;
+};
+
+// ------------------------- NRuntimeRpc -------------------------
+
+UCLASS(BlueprintType)
+class UNBPRuntimeRpc : public UObject
+{
+	GENERATED_BODY()
+
+public:
+	CONVERT_TO_BP_STATIC(NRuntimeRpc, UNBPRuntimeRpc)
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Runtime RPC")
+		FString GetId() { return UTF8_TO_TCHAR(Wrapped.GetId().c_str()); }
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Runtime RPC")
+		FString GetPayload() { return UTF8_TO_TCHAR(Wrapped.GetPayload().c_str()); }
+
+private:
+	NRuntimeRpc Wrapped;
 };

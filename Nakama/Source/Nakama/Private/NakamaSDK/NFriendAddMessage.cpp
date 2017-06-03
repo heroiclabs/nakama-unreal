@@ -18,14 +18,17 @@
 
 namespace Nakama {
 
-	NFriendAddMessage::NFriendAddMessage(std::string id)
+	NFriendAddMessage NFriendAddMessage::Id(std::string id)
 	{
-		// set our default
-		envelope.mutable_friend_add()->set_user_id(id);
+		auto message = NFriendAddMessage();
+		message.envelope.mutable_friend_add()->set_user_id(id);
+		return message;
 	}
 
-	NFriendAddMessage NFriendAddMessage::Default(std::string id)
+	NFriendAddMessage NFriendAddMessage::Handle(std::string handle)
 	{
-		return NFriendAddMessage(id);
+		auto message = NFriendAddMessage();
+		message.envelope.mutable_friend_add()->set_handle(handle);
+		return message;
 	}
 }

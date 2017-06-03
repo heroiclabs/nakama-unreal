@@ -16,7 +16,7 @@
 
 #pragma once
 
-#include "INMessage.h"
+#include "INCollatedMessage.h"
 #include "NCursor.h"
 
 #include "Defines.h"
@@ -26,7 +26,7 @@ using namespace server;
 namespace Nakama {
 
 	// OnSuccess returns: NResultSet<NGroup>*
-	class NAKAMA_API NGroupsListMessage : public INMessage
+	class NAKAMA_API NGroupsListMessage : public INCollatedMessage
 	{
 	private:
 		Envelope envelope;

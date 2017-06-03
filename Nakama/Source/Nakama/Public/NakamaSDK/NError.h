@@ -34,7 +34,7 @@ namespace Nakama {
 		UserLinkDisallowed,
 		UserHandleInuse,
 		GroupNameInuse,
-		StorageFetchDisallowed,
+		StorageRejected,
 		MatchNotFound
 	};
 

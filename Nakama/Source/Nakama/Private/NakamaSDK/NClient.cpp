@@ -168,7 +168,7 @@ namespace Nakama {
 		Envelope* payload = new Envelope();
 		payload->set_allocated_logout(new server::Logout());
 		std::string str = payload->SerializeAsString();
-		transport->Send(str.c_str());
+		transport->Send(str.c_str(), [](bool comp) {});
 	}
 
 	void NClient::Disconnect()
@@ -178,7 +178,7 @@ namespace Nakama {
 		transport = nullptr;
 	}
 
-	void NClient::Send(INMessage& message, std::function<void(void*)> callback, std::function<void(NError)> errback)
+	void NClient::Send(INCollatedMessage& message, std::function<void(void*)> callback, std::function<void(NError)> errback)
 	{
 		// Set a collation ID to dispatch callbacks on receive
 		std::string collationId = TCHAR_TO_UTF8(*FGuid::NewGuid().ToString());
@@ -193,16 +193,33 @@ namespace Nakama {
 		Envelope e = Envelope();
 		e.ParseFromString(str);
 
-		transport->Send(str);
-
-		/*transport->Send(str, (bool completed) = >
-		{
+		transport->Send(str, [=](bool completed) mutable {
 			if (!completed)
 			{
 				// The write may have failed; don't track it
-				collationIds.Remove(collationId);
+				collationIds.erase(collationId);
+				if (errback) errback(NError("Message send error"));
 			}
-		});*/
+		});
+	}
+
+	void NClient::Send(INUncollatedMessage& message, std::function<void()> callback, std::function<void(NError)> errback)
+	{
+		std::string str = message.GetPayload()->SerializeAsString();
+
+		Envelope e = Envelope();
+		e.ParseFromString(str);
+
+		transport->Send(str, [=](bool completed) mutable {
+			if (completed)
+			{
+				if (callback) callback();
+			}
+			else
+			{
+				if (errback) errback(NError("Message send error"));
+			}
+		});
 	}
 
 	inline std::string NClient::GetWebsocketPath(NSession* session)
@@ -220,6 +237,9 @@ namespace Nakama {
 		{
 		case Envelope::PayloadCase::kHeartbeat:
 			serverTime = message.heartbeat().timestamp();
+			return;
+		case Envelope::PayloadCase::kMatchmakeMatched:
+			for (size_t i = 0; i < OnMatchmakeMatched.size(); i++) OnMatchmakeMatched[i](NMatchmakeMatched(message.matchmake_matched()));
 			return;
 		case Envelope::PayloadCase::kMatchData:
 			for (size_t i = 0; i < OnMatchData.size(); i++) OnMatchData[i](NMatchData(message.match_data()));
@@ -299,6 +319,11 @@ namespace Nakama {
 				NCursor cursor = NCursor(message.groups().cursor());
 				callbacks->OnSuccess(new NResultSet<NGroup>(groups, cursor));
 			}
+			break;
+		}
+
+		case Envelope::PayloadCase::kMatchmakeTicket: {
+			if (callbacks) callbacks->OnSuccess(new NMatchmakeTicket(message.matchmake_ticket()));
 			break;
 		}
 
@@ -399,6 +424,11 @@ namespace Nakama {
 				NCursor cursor = NCursor(message.leaderboard_records().cursor());
 				callbacks->OnSuccess(new NResultSet<NLeaderboardRecord>(records, cursor));
 			}
+			break;
+		}
+
+		case Envelope::PayloadCase::kRpc: {
+			if (callbacks) callbacks->OnSuccess(new NRuntimeRpc(message.rpc()));
 			break;
 		}
 

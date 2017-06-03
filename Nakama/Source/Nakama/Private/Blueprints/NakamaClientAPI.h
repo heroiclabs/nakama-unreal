@@ -38,6 +38,8 @@ DECLARE_DYNAMIC_DELEGATE_TwoParams(FDelegateOnSuccess_TopicMessageList, TArray<U
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FDelegateOnSuccess_LeaderboardList, TArray<UNBPLeaderboard*>, leaderboards, UNBPCursor*, cursor);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FDelegateOnSuccess_LeaderboardRecord, UNBPLeaderboardRecord*, leaderboardRecord);
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FDelegateOnSuccess_LeaderboardRecordList, TArray<UNBPLeaderboardRecord*>, leaderboardRecords, UNBPCursor*, cursor);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FDelegateOnSuccess_MatchmakeTicket, UNBPMatchmakeTicket*, ticket);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FDelegateOnSuccess_RuntimeRpc, UNBPRuntimeRpc*, rpc);
 
 /**
  * Handling for Authentication
@@ -126,6 +128,9 @@ public:
 		static UNBPManageFriendRequest* AddFriendByUserId(UNakamaComponent* nakama, FString userId, FDelegateOnSuccess onSuccess, FDelegateOnFail onFail);
 
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true"), Category = "Nakama|Friends")
+		static UNBPManageFriendRequest* AddFriendByHandle(UNakamaComponent* nakama, FString handle, FDelegateOnSuccess onSuccess, FDelegateOnFail onFail);
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true"), Category = "Nakama|Friends")
 		static UNBPManageFriendRequest* BlockFriendByUserId(UNakamaComponent* nakama, FString userId, FDelegateOnSuccess onSuccess, FDelegateOnFail onFail);
 
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true"), Category = "Nakama|Friends")
@@ -135,7 +140,7 @@ public:
 		static UNBPManageFriendRequest* ListFriends(UNakamaComponent* nakama, FDelegateOnSuccess_FriendList onSuccess, FDelegateOnFail onFail);
 
 private:
-	enum Mode { Add, Block, Remove, List };
+	enum Mode { Add, AddHandle, Block, Remove, List };
 
 	Mode mode;
 	UPROPERTY() FString Id;
@@ -407,10 +412,14 @@ public:
 	virtual void Activate() override;
 
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true"), Category = "Nakama|Users")
-		static UNBPListUsersRequest* FetchUsers(UNakamaComponent* nakama, TArray<FString> userIds, FDelegateOnSuccess_UsersList onSuccess, FDelegateOnFail onFail);
+		static UNBPListUsersRequest* FetchUsersById(UNakamaComponent* nakama, TArray<FString> userIds, FDelegateOnSuccess_UsersList onSuccess, FDelegateOnFail onFail);
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true"), Category = "Nakama|Users")
+		static UNBPListUsersRequest* FetchUsersByHandle(UNakamaComponent* nakama, TArray<FString> handles, FDelegateOnSuccess_UsersList onSuccess, FDelegateOnFail onFail);
 
 private:
 	UPROPERTY() TArray<FString> UserIds;
+	UPROPERTY() TArray<FString> Handles;
 	UPROPERTY() UNakamaComponent* NakamaRef;
 	UPROPERTY() FDelegateOnSuccess_UsersList OnSuccess;
 	UPROPERTY() FDelegateOnFail OnFail;
@@ -430,10 +439,10 @@ public:
 	virtual void Activate() override;
 
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true"), Category = "Nakama|Storage")
-		static UNBPStorageRequest* Write(UNakamaComponent* nakama, FString bucket, FString collection, FString record, FString value, FString version, FDelegateOnSuccess_StorageKeyList onSuccess, FDelegateOnFail onFail);
+		static UNBPStorageRequest* Write(UNakamaComponent* nakama, FString bucket, FString collection, FString record, FString value, FString version, FDelegateOnSuccess_StorageKeyList onSuccess, FDelegateOnFail onFail, EStoragePermissionRead readPermission = EStoragePermissionRead::OwnerRead, EStoragePermissionWrite writePermission = EStoragePermissionWrite::OwnerWrite);
 
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true"), Category = "Nakama|Storage")
-		static UNBPStorageRequest* WriteMany(UNakamaComponent* nakama, TArray<FString> buckets, TArray<FString> collections, TArray<FString> records, TArray<FString> values, TArray<FString> versions, FDelegateOnSuccess_StorageKeyList onSuccess, FDelegateOnFail onFail);
+		static UNBPStorageRequest* WriteMany(UNakamaComponent* nakama, TArray<FString> buckets, TArray<FString> collections, TArray<FString> records, TArray<FString> values, TArray<FString> versions, FDelegateOnSuccess_StorageKeyList onSuccess, FDelegateOnFail onFail, TArray<EStoragePermissionRead> readPermission, TArray<EStoragePermissionWrite> writePermission);
 
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true"), Category = "Nakama|Storage")
 		static UNBPStorageRequest* Fetch(UNakamaComponent* nakama, FString bucket, FString collection, FString record, FString userId, FDelegateOnSuccess_StorageDataList onSuccess, FDelegateOnFail onFail);
@@ -458,6 +467,8 @@ private:
 	UPROPERTY() TArray<FString> Values;
 	UPROPERTY() TArray<FString> UserIds;
 	UPROPERTY() TArray<FString> Versions;
+	UPROPERTY() TArray<EStoragePermissionRead> ReadPermissions;
+	UPROPERTY() TArray<EStoragePermissionWrite> WritePermissions;
 	UPROPERTY() UNakamaComponent* NakamaRef;
 	UPROPERTY() FDelegateOnSuccess OnRemoveSuccess;
 	UPROPERTY() FDelegateOnSuccess_StorageKeyList OnWriteSuccess;
@@ -627,5 +638,61 @@ private:
 	UPROPERTY() UNakamaComponent* NakamaRef;
 	UPROPERTY() FDelegateOnSuccess_LeaderboardRecordList OnListFetchSuccess;
 	UPROPERTY() FDelegateOnSuccess_LeaderboardRecord OnWriteSuccess;
+	UPROPERTY() FDelegateOnFail OnFail;
+};
+
+
+/**
+* Handling for Matchmaking
+*/
+
+UCLASS()
+class UNBPMatchmakeRequest : public UOnlineBlueprintCallProxyBase
+{
+	GENERATED_BODY()
+
+public:
+	virtual void Activate() override;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true"), Category = "Nakama|Matchmake")
+		static UNBPMatchmakeRequest* AddRequest(UNakamaComponent* nakama, int32 requiredCount, FDelegateOnSuccess_MatchmakeTicket onSuccess, FDelegateOnFail onFail);
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true"), Category = "Nakama|Matchmake")
+		static UNBPMatchmakeRequest* RemoveRequest(UNakamaComponent* nakama, UNBPMatchmakeTicket* ticket, FDelegateOnSuccess onSuccess, FDelegateOnFail onFail);
+
+private:
+	enum Mode { Add, Remove };
+
+	Mode mode;
+
+	UPROPERTY() UNBPMatchmakeTicket* Ticket = nullptr;
+	UPROPERTY() int32 RequiredCount;
+	UPROPERTY() UNakamaComponent* NakamaRef;
+	UPROPERTY() FDelegateOnSuccess_MatchmakeTicket OnAddSuccess;
+	UPROPERTY() FDelegateOnSuccess OnRemoveSuccess;
+	UPROPERTY() FDelegateOnFail OnFail;
+};
+
+
+/**
+* Handling for RPC
+*/
+
+UCLASS()
+class UNBPRpcRequest : public UOnlineBlueprintCallProxyBase
+{
+	GENERATED_BODY()
+
+public:
+	virtual void Activate() override;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true"), Category = "Nakama|Matchmake")
+		static UNBPRpcRequest* RunRpc(UNakamaComponent* nakama, FString id, FString payload, FDelegateOnSuccess_RuntimeRpc onSuccess, FDelegateOnFail onFail);
+
+private:
+	UPROPERTY() FString Id;
+	UPROPERTY() FString Payload;
+	UPROPERTY() UNakamaComponent* NakamaRef;
+	UPROPERTY() FDelegateOnSuccess_RuntimeRpc OnSuccess;
 	UPROPERTY() FDelegateOnFail OnFail;
 };

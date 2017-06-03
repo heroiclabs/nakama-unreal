@@ -34,8 +34,8 @@ namespace Nakama {
 			userId = message.user_id();
 			value = message.value();
 			version = message.version();
-			permissionRead = message.permission_read();
-			permissionWrite = message.permission_write();
+			permissionRead = (StoragePermissionRead)message.permission_read();
+			permissionWrite = (StoragePermissionWrite)message.permission_write();
 			createdAt = message.created_at();
 			updatedAt = message.updated_at();
 			expiresAt = message.expires_at();
@@ -49,8 +49,8 @@ namespace Nakama {
 		std::string GetUserId() { return userId; }
 		std::string GetValue() { return value; }
 		std::string GetVersion() { return version; }
-		int64_t GetPermissionRead() { return permissionRead; }
-		int64_t GetPermissionWrite() { return permissionWrite; }
+		StoragePermissionRead GetPermissionRead() { return permissionRead; }
+		StoragePermissionWrite GetPermissionWrite() { return permissionWrite; }
 		int64_t GetCreatedAt() { return createdAt; }
 		int64_t GetUpdatedAt() { return updatedAt; }
 		int64_t GetExpiresAt() { return expiresAt; }
@@ -62,8 +62,8 @@ namespace Nakama {
 		std::string userId;
 		std::string value;
 		std::string version;
-		int64_t permissionRead;
-		int64_t permissionWrite;
+		StoragePermissionRead permissionRead;
+		StoragePermissionWrite permissionWrite;
 		int64_t createdAt;
 		int64_t updatedAt;
 		int64_t expiresAt;

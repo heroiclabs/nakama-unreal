@@ -25,7 +25,7 @@ namespace Nakama {
 	}
 
 	/* Factory Methods */
-	NStorageWriteMessage::Builder NStorageWriteMessage::Builder::Write(std::string bucket, std::string collection, std::string record, std::string value)
+	NStorageWriteMessage::Builder NStorageWriteMessage::Builder::Write(std::string bucket, std::string collection, std::string record, std::string value, StoragePermissionRead readPermission, StoragePermissionWrite writePermission, std::string version)
 	{
 		TStorageWrite* storage_write = message.envelope.mutable_storage_write();
 		TStorageWrite_StorageData* data = storage_write->add_data();
@@ -33,19 +33,9 @@ namespace Nakama {
 		data->set_collection(collection);
 		data->set_record(record);
 		data->set_value(value);
-
-		return *this;
-	}
-
-	NStorageWriteMessage::Builder NStorageWriteMessage::Builder::Write(std::string bucket, std::string collection, std::string record, std::string value, std::string version)
-	{
-		TStorageWrite* storage_write = message.envelope.mutable_storage_write();
-		TStorageWrite_StorageData* data = storage_write->add_data();
-		data->set_bucket(bucket);
-		data->set_collection(collection);
-		data->set_record(record);
-		data->set_value(value);
-		data->set_version(version);
+		data->set_permission_read(readPermission);
+		data->set_permission_write(writePermission);
+		if (!version.empty()) data->set_version(version);
 
 		return *this;
 	}

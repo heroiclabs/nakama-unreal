@@ -61,6 +61,9 @@ void UNakamaComponent::SetupClient(FString serverKey, FString host, int32 port, 
 	this->ClientRef->OnTopicPresence.push_back([=](NTopicPresence presence) {
 		OnTopicPresenceRcvd.Broadcast(UNBPTopicPresence::From(presence));
 	});
+	this->ClientRef->OnMatchmakeMatched.push_back([=](NMatchmakeMatched matched) {
+		OnMatchmakeMatchedRcvd.Broadcast(UNBPMatchmakeMatched::From(matched));
+	});
 }
 
 void UNakamaComponent::ShutdownClient()

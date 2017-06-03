@@ -24,32 +24,22 @@ using namespace server;
 
 namespace Nakama {
 
-	// OnSuccess returns: NResultSet<NStorageData>*
-	class NAKAMA_API NStorageFetchMessage : public INCollatedMessage
+	// OnSuccess returns: NMatchmakeTicket*
+	class NAKAMA_API NMatchmakeAddMessage : public INCollatedMessage
 	{
+
 	private:
 		Envelope envelope;
-		NStorageFetchMessage();
+		NMatchmakeAddMessage(int64_t requiredCount);
 
 	public:
-		~NStorageFetchMessage() {}
+		~NMatchmakeAddMessage() {}
 
 		virtual Envelope* GetPayload() override { return &envelope; }
 		virtual void SetCollationId(std::string id) override { envelope.set_collation_id(id); }
 
-		class Builder;
+		static NMatchmakeAddMessage Default(int64_t requiredCount);
+
 	};
 
-	class NAKAMA_API NStorageFetchMessage::Builder
-	{
-	private:
-		NStorageFetchMessage message;
-
-	public:
-		Builder() {}
-
-		Builder Fetch(std::string bucket, std::string collection, std::string record, std::string userId);
-
-		NStorageFetchMessage Build();
-	};
 }
