@@ -20,8 +20,7 @@ namespace Nakama {
 
 	NGroupLeaveMessage::NGroupLeaveMessage(std::string groupId)
 	{
-		auto payload = envelope.mutable_group_leave();
-		payload->set_group_id(groupId);
+		envelope.mutable_groups_leave()->add_group_ids()->assign(groupId);
 	}
 
 	NGroupLeaveMessage NGroupLeaveMessage::Default(std::string groupId)

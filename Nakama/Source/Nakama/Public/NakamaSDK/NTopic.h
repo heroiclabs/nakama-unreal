@@ -28,7 +28,7 @@ namespace Nakama {
 
 	public:
 		NTopic() {}
-		NTopic(server::TTopic message) : 
+		NTopic(server::TTopics_Topic message) : 
 			topic(NTopicId(message.topic())),
 			self(NUserPresence(message.self()))
 		{

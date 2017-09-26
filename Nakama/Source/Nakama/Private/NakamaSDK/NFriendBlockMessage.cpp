@@ -21,7 +21,7 @@ namespace Nakama {
 	NFriendBlockMessage::NFriendBlockMessage(std::string id)
 	{
 		// set our default
-		envelope.mutable_friend_block()->set_user_id(id);
+		envelope.mutable_friends_block()->add_user_ids()->assign(id);
 	}
 
 	NFriendBlockMessage NFriendBlockMessage::Default(std::string id)

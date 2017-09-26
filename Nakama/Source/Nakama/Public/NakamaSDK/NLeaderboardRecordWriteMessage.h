@@ -24,7 +24,7 @@ using namespace server;
 
 namespace Nakama {
 
-	// OnSuccess returns: NLeaderboardRecord*
+	// OnSuccess returns: NResultSet<NLeaderboardRecord>*
 	class NAKAMA_API NLeaderboardRecordWriteMessage : public INCollatedMessage
 	{
 	private:

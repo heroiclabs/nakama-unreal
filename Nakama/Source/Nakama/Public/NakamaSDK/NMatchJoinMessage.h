@@ -25,7 +25,7 @@ using namespace server;
 
 namespace Nakama {
 
-	// OnSuccess returns: NMatch*
+	// OnSuccess returns: NResultSet<NMatch>*
 	class NAKAMA_API NMatchJoinMessage : public INCollatedMessage
 	{
 	private:

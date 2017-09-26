@@ -21,41 +21,41 @@ namespace Nakama {
 	NGroupCreateMessage::NGroupCreateMessage()
 	{
 		// set our default
-		envelope.mutable_group_create();
+		envelope.mutable_groups_create();
 	}
 
 	/* Factory Methods */
 	NGroupCreateMessage::Builder::Builder(std::string name) {
-		message.envelope.mutable_group_create()->set_name(name);
+		message.envelope.mutable_groups_create()->add_groups()->set_name(name);
 	}
 
 	NGroupCreateMessage::Builder NGroupCreateMessage::Builder::Description(std::string description)
 	{
-		message.envelope.mutable_group_create()->set_description(description);
+		message.envelope.mutable_groups_create()->mutable_groups()->mutable_data()[0]->set_description(description);
 		return *this;
 	}
 
 	NGroupCreateMessage::Builder NGroupCreateMessage::Builder::AvatarUrl(std::string avatarUrl)
 	{
-		message.envelope.mutable_group_create()->set_avatar_url(avatarUrl);
+		message.envelope.mutable_groups_create()->mutable_groups()->mutable_data()[0]->set_avatar_url(avatarUrl);
 		return *this;
 	}
 
 	NGroupCreateMessage::Builder NGroupCreateMessage::Builder::Lang(std::string lang)
 	{
-		message.envelope.mutable_group_create()->set_lang(lang);
+		message.envelope.mutable_groups_create()->mutable_groups()->mutable_data()[0]->set_lang(lang);
 		return *this;
 	}
 
 	NGroupCreateMessage::Builder NGroupCreateMessage::Builder::Metadata(std::string metadata)
 	{
-		message.envelope.mutable_group_create()->set_metadata(metadata);
+		message.envelope.mutable_groups_create()->mutable_groups()->mutable_data()[0]->set_metadata(metadata);
 		return *this;
 	}
 
 	NGroupCreateMessage::Builder NGroupCreateMessage::Builder::Private(bool privateGroup)
 	{
-		message.envelope.mutable_group_create()->set_private_(privateGroup);
+		message.envelope.mutable_groups_create()->mutable_groups()->mutable_data()[0]->set_private_(privateGroup);
 		return *this;
 	}
 
@@ -64,7 +64,7 @@ namespace Nakama {
 		// Clone object so builder now operates on new copy.
 		NGroupCreateMessage original = message;
 		message = NGroupCreateMessage();
-		message.envelope.set_allocated_group_create(new TGroupCreate(original.envelope.group_create()));
+		message.envelope.set_allocated_groups_create(new TGroupsCreate(original.envelope.groups_create()));
 		return original;
 	}
 }

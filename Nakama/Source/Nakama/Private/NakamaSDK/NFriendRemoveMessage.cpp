@@ -21,7 +21,7 @@ namespace Nakama {
 	NFriendRemoveMessage::NFriendRemoveMessage(std::string id)
 	{
 		// set our default
-		envelope.mutable_friend_remove()->set_user_id(id);
+		envelope.mutable_friends_remove()->add_user_ids()->assign(id);
 	}
 
 	NFriendRemoveMessage NFriendRemoveMessage::Default(std::string id)

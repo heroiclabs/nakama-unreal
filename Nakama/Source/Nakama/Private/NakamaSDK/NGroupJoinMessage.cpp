@@ -20,8 +20,7 @@ namespace Nakama {
 
 	NGroupJoinMessage::NGroupJoinMessage(std::string groupId)
 	{
-		auto payload = envelope.mutable_group_join();
-		payload->set_group_id(groupId);
+		envelope.mutable_groups_join()->add_group_ids()->assign(groupId);
 	}
 
 	NGroupJoinMessage NGroupJoinMessage::Default(std::string groupId)

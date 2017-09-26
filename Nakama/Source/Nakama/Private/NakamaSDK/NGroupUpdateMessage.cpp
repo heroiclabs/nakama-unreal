@@ -21,47 +21,48 @@ namespace Nakama {
 	NGroupUpdateMessage::NGroupUpdateMessage()
 	{
 		// set our default
-		envelope.mutable_group_update();
+		envelope.mutable_groups_update();
 	}
 
 	/* Factory Methods */
 	NGroupUpdateMessage::Builder::Builder(std::string groupId) {
-		message.envelope.mutable_group_update()->set_group_id(groupId);
+
+		message.envelope.mutable_groups_update()->add_groups()->set_group_id(groupId);
 	}
 
 	NGroupUpdateMessage::Builder NGroupUpdateMessage::Builder::Name(std::string name)
 	{
-		message.envelope.mutable_group_update()->set_name(name);
+		message.envelope.mutable_groups_update()->mutable_groups()->mutable_data()[0]->set_name(name);
 		return *this;
 	}
 
 	NGroupUpdateMessage::Builder NGroupUpdateMessage::Builder::Description(std::string description)
 	{
-		message.envelope.mutable_group_update()->set_description(description);
+		message.envelope.mutable_groups_update()->mutable_groups()->mutable_data()[0]->set_description(description);
 		return *this;
 	}
 
 	NGroupUpdateMessage::Builder NGroupUpdateMessage::Builder::AvatarUrl(std::string avatarUrl)
 	{
-		message.envelope.mutable_group_update()->set_avatar_url(avatarUrl);
+		message.envelope.mutable_groups_update()->mutable_groups()->mutable_data()[0]->set_avatar_url(avatarUrl);
 		return *this;
 	}
 
 	NGroupUpdateMessage::Builder NGroupUpdateMessage::Builder::Lang(std::string lang)
 	{
-		message.envelope.mutable_group_update()->set_lang(lang);
+		message.envelope.mutable_groups_update()->mutable_groups()->mutable_data()[0]->set_lang(lang);
 		return *this;
 	}
 
 	NGroupUpdateMessage::Builder NGroupUpdateMessage::Builder::Metadata(std::string metadata)
 	{
-		message.envelope.mutable_group_update()->set_metadata(metadata);
+		message.envelope.mutable_groups_update()->mutable_groups()->mutable_data()[0]->set_metadata(metadata);
 		return *this;
 	}
 
 	NGroupUpdateMessage::Builder NGroupUpdateMessage::Builder::Private(bool privateGroup)
 	{
-		message.envelope.mutable_group_update()->set_private_(privateGroup);
+		message.envelope.mutable_groups_update()->mutable_groups()->mutable_data()[0]->set_private_(privateGroup);
 		return *this;
 	}
 
@@ -70,7 +71,7 @@ namespace Nakama {
 		// Clone object so builder now operates on new copy.
 		NGroupUpdateMessage original = message;
 		message = NGroupUpdateMessage();
-		message.envelope.set_allocated_group_update(new TGroupUpdate(original.envelope.group_update()));
+		message.envelope.set_allocated_groups_update(new TGroupsUpdate(original.envelope.groups_update()));
 		return original;
 	}
 }

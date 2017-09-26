@@ -21,14 +21,14 @@ namespace Nakama {
 	NFriendAddMessage NFriendAddMessage::Id(std::string id)
 	{
 		auto message = NFriendAddMessage();
-		message.envelope.mutable_friend_add()->set_user_id(id);
+		message.envelope.mutable_friends_add()->add_friends()->set_user_id(id);
 		return message;
 	}
 
 	NFriendAddMessage NFriendAddMessage::Handle(std::string handle)
 	{
 		auto message = NFriendAddMessage();
-		message.envelope.mutable_friend_add()->set_handle(handle);
+		message.envelope.mutable_friends_add()->add_friends()->set_handle(handle);
 		return message;
 	}
 }

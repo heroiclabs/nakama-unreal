@@ -21,8 +21,7 @@ namespace Nakama {
 	NMatchLeaveMessage::NMatchLeaveMessage(std::string matchId)
 	{
 		// set our default
-		auto payload = envelope.mutable_match_leave();
-		payload->set_match_id(matchId);
+		envelope.mutable_matches_leave()->add_match_ids()->assign(matchId);
 	}
 
 	NMatchLeaveMessage NMatchLeaveMessage::Default(std::string matchId)

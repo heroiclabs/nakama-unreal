@@ -35,7 +35,7 @@ namespace Nakama {
 			steamId = message.steam_id();
 			verified = message.verified();
 
-			auto msgDevices = message.device_id();
+			auto msgDevices = message.device_ids();
 			for (size_t i = 0, maxI = msgDevices.size(); i < maxI; i++) {
 				deviceIds.push_back(msgDevices[i]);
 			}

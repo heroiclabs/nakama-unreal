@@ -106,12 +106,12 @@ namespace Nakama {
 
 			//Logger.TraceFormatIf(Trace, "DecodedResponse={0}", authResponse);
 
-			switch (authResponse.payload_case())
+			switch (authResponse.id_case())
 			{
-			case AuthenticateResponse::PayloadCase::kSession:
+			case AuthenticateResponse::IdCase::kSession:
 				if (callback) callback(new NSession(authResponse.session().token().c_str(), span));
 				break;
-			case AuthenticateResponse::PayloadCase::kError:
+			case AuthenticateResponse::IdCase::kError:
 				if (errback) errback(NError(authResponse.error()));
 				break;
 			default:
@@ -292,11 +292,6 @@ namespace Nakama {
 			break;
 		}
 
-		case Envelope::PayloadCase::kGroup: {
-			if (callbacks) callbacks->OnSuccess(new NGroup(message.group().group()));
-			break;
-		}
-
 		case Envelope::PayloadCase::kGroupUsers: {
 			if (callbacks) {
 				auto msgGroupUsers = message.group_users().users();
@@ -332,14 +327,26 @@ namespace Nakama {
 			break;
 		}
 
+		case Envelope::PayloadCase::kMatches: {
+			if (callbacks) {
+				auto msgMatches = message.matches().matches();
+				auto matches = std::vector<NMatch>();
+				for (size_t i = 0, maxI = msgMatches.size(); i < maxI; i++) {
+					matches.push_back(NMatch(msgMatches[i]));
+				}
+				callbacks->OnSuccess(new NResultSet<NMatch>(matches, NCursor()));
+			}
+			break;
+		}
+
 		case Envelope::PayloadCase::kSelf: {
 			if (callbacks) callbacks->OnSuccess(new NSelf(message.self().self()));
 			break;
 		}
 
-		case Envelope::PayloadCase::kStorageKey: {
+		case Envelope::PayloadCase::kStorageKeys: {
 			if (callbacks) {
-				auto msgKeys = message.storage_key().keys();
+				auto msgKeys = message.storage_keys().keys();
 				auto keys = std::vector<NStorageKey>();
 				for (size_t i = 0, maxI = msgKeys.size(); i < maxI; i++) {
 					keys.push_back(NStorageKey(msgKeys[i]));
@@ -361,8 +368,15 @@ namespace Nakama {
 			break;
 		}
 
-		case Envelope::PayloadCase::kTopic: {
-			if (callbacks) callbacks->OnSuccess(new NTopic(message.topic()));
+		case Envelope::PayloadCase::kTopics: {
+			if (callbacks) {
+				auto msgTopics = message.topics().topics();
+				auto topics = std::vector<NTopic>();
+				for (size_t i = 0, maxI = msgTopics.size(); i < maxI; i++) {
+					topics.push_back(NTopic(msgTopics[i]));
+				}
+				callbacks->OnSuccess(new NResultSet<NTopic>(topics, NCursor()));
+			}
 			break;
 		}
 
@@ -406,11 +420,6 @@ namespace Nakama {
 				NCursor cursor = NCursor(message.leaderboards().cursor());
 				callbacks->OnSuccess(new NResultSet<NLeaderboard>(leaderboards, cursor));
 			}
-			break;
-		}
-
-		case Envelope::PayloadCase::kLeaderboardRecord: {
-			if (callbacks) callbacks->OnSuccess(new NLeaderboardRecord(message.leaderboard_record().record()));
 			break;
 		}
 

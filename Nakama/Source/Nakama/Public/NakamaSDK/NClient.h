@@ -153,8 +153,10 @@ namespace Nakama {
 template NAKAMA_API class Nakama::NResultSet<Nakama::NFriend>;
 template NAKAMA_API class Nakama::NResultSet<Nakama::NGroup>;
 template NAKAMA_API class Nakama::NResultSet<Nakama::NGroupUser>;
+template NAKAMA_API class Nakama::NResultSet<Nakama::NMatch>;
 template NAKAMA_API class Nakama::NResultSet<Nakama::NStorageData>;
 template NAKAMA_API class Nakama::NResultSet<Nakama::NStorageKey>;
+template NAKAMA_API class Nakama::NResultSet<Nakama::NTopic>;
 template NAKAMA_API class Nakama::NResultSet<Nakama::NTopicMessage>;
 template NAKAMA_API class Nakama::NResultSet<Nakama::NUser>;
 template NAKAMA_API class Nakama::NResultSet<Nakama::NLeaderboard>;

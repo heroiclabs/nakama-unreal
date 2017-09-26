@@ -21,25 +21,25 @@ namespace Nakama {
 	NTopicJoinMessage::NTopicJoinMessage()
 	{
 		// set our default
-		envelope.mutable_topic_join();
+		envelope.mutable_topics_join();
 	}
 
 	/* Factory Methods */
 	NTopicJoinMessage::Builder NTopicJoinMessage::Builder::TopicDirectMessage(std::string userId)
 	{
-		message.envelope.mutable_topic_join()->set_user_id(userId);
+		message.envelope.mutable_topics_join()->add_joins()->set_user_id(userId);
 		return *this;
 	}
 
 	NTopicJoinMessage::Builder NTopicJoinMessage::Builder::TopicRoom(std::string room)
 	{
-		message.envelope.mutable_topic_join()->set_room(room);
+		message.envelope.mutable_topics_join()->add_joins()->set_room(room);
 		return *this;
 	}
 
 	NTopicJoinMessage::Builder NTopicJoinMessage::Builder::TopicGroup(std::string groupId)
 	{
-		message.envelope.mutable_topic_join()->set_group_id(groupId);
+		message.envelope.mutable_topics_join()->add_joins()->set_group_id(groupId);
 		return *this;
 	}
 
@@ -48,7 +48,7 @@ namespace Nakama {
 		// Clone object so builder now operates on new copy.
 		NTopicJoinMessage original = message;
 		message = NTopicJoinMessage();
-		message.envelope.set_allocated_storage_remove(new TStorageRemove(original.envelope.storage_remove()));
+		message.envelope.set_allocated_topics_join(new TTopicsJoin(original.envelope.topics_join()));
 		return original;
 	}
 }

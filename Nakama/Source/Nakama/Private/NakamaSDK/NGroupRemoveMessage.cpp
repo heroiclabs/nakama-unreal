@@ -20,8 +20,7 @@ namespace Nakama {
 
 	NGroupRemoveMessage::NGroupRemoveMessage(std::string groupId)
 	{
-		auto payload = envelope.mutable_group_remove();
-		payload->set_group_id(groupId);
+		envelope.mutable_groups_remove()->add_group_ids()->assign(groupId);
 	}
 
 	NGroupRemoveMessage NGroupRemoveMessage::Default(std::string groupId)

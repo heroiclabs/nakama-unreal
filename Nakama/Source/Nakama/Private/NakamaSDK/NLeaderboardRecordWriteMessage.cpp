@@ -21,53 +21,53 @@ namespace Nakama {
 	NLeaderboardRecordWriteMessage::NLeaderboardRecordWriteMessage()
 	{
 		// set our default
-		envelope.mutable_leaderboard_record_write();
+		envelope.mutable_leaderboard_records_write();
 	}
 
 	/* Factory Methods */
 	NLeaderboardRecordWriteMessage::Builder::Builder(std::string leaderboardId) {
-		message.envelope.mutable_leaderboard_record_write()->set_leaderboard_id(leaderboardId);
+		message.envelope.mutable_leaderboard_records_write()->add_records()->set_leaderboard_id(leaderboardId);
 	}
 
 	NLeaderboardRecordWriteMessage::Builder NLeaderboardRecordWriteMessage::Builder::Location(std::string location)
 	{
-		message.envelope.mutable_leaderboard_record_write()->set_location(location);
+		message.envelope.mutable_leaderboard_records_write()->mutable_records()->mutable_data()[0]->set_location(location);
 		return *this;
 	}
 
 	NLeaderboardRecordWriteMessage::Builder NLeaderboardRecordWriteMessage::Builder::Timezone(std::string timezone)
 	{
-		message.envelope.mutable_leaderboard_record_write()->set_timezone(timezone);
+		message.envelope.mutable_leaderboard_records_write()->mutable_records()->mutable_data()[0]->set_timezone(timezone);
 		return *this;
 	}
 
 	NLeaderboardRecordWriteMessage::Builder NLeaderboardRecordWriteMessage::Builder::Metadata(std::string metadata)
 	{
-		message.envelope.mutable_leaderboard_record_write()->set_metadata(metadata);
+		message.envelope.mutable_leaderboard_records_write()->mutable_records()->mutable_data()[0]->set_metadata(metadata);
 		return *this;
 	}
 
 	NLeaderboardRecordWriteMessage::Builder NLeaderboardRecordWriteMessage::Builder::Increment(int64_t value)
 	{
-		message.envelope.mutable_leaderboard_record_write()->set_incr(value);
+		message.envelope.mutable_leaderboard_records_write()->mutable_records()->mutable_data()[0]->set_incr(value);
 		return *this;
 	}
 
 	NLeaderboardRecordWriteMessage::Builder NLeaderboardRecordWriteMessage::Builder::Decrement(int64_t value)
 	{
-		message.envelope.mutable_leaderboard_record_write()->set_decr(value);
+		message.envelope.mutable_leaderboard_records_write()->mutable_records()->mutable_data()[0]->set_decr(value);
 		return *this;
 	}
 
 	NLeaderboardRecordWriteMessage::Builder NLeaderboardRecordWriteMessage::Builder::Set(int64_t value)
 	{
-		message.envelope.mutable_leaderboard_record_write()->set_set(value);
+		message.envelope.mutable_leaderboard_records_write()->mutable_records()->mutable_data()[0]->set_set(value);
 		return *this;
 	}
 
 	NLeaderboardRecordWriteMessage::Builder NLeaderboardRecordWriteMessage::Builder::Best(int64_t value)
 	{
-		message.envelope.mutable_leaderboard_record_write()->set_best(value);
+		message.envelope.mutable_leaderboard_records_write()->mutable_records()->mutable_data()[0]->set_best(value);
 		return *this;
 	}
 
@@ -76,7 +76,7 @@ namespace Nakama {
 		// Clone object so builder now operates on new copy.
 		NLeaderboardRecordWriteMessage original = message;
 		message = NLeaderboardRecordWriteMessage();
-		message.envelope.set_allocated_leaderboard_record_write(new TLeaderboardRecordWrite(original.envelope.leaderboard_record_write()));
+		message.envelope.set_allocated_leaderboard_records_write(new TLeaderboardRecordsWrite(original.envelope.leaderboard_records_write()));
 		return original;
 	}
 }

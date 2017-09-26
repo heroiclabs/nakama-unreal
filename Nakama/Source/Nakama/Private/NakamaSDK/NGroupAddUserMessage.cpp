@@ -20,7 +20,7 @@ namespace Nakama {
 
 	NGroupAddUserMessage::NGroupAddUserMessage(std::string groupId, std::string userId)
 	{
-		auto payload = envelope.mutable_group_user_add();
+		auto payload = envelope.mutable_group_users_add()->add_group_users();
 		payload->set_group_id(groupId);
 		payload->set_user_id(userId);
 	}

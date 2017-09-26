@@ -53,46 +53,54 @@ class Heartbeat;
 class Leaderboard;
 class LeaderboardRecord;
 class Logout;
+class Match;
 class MatchData;
 class MatchDataSend;
 class MatchPresence;
 class MatchmakeMatched;
 class Self;
-class TFriendAdd;
-class TFriendBlock;
-class TFriendRemove;
 class TFriends;
+class TFriendsAdd;
+class TFriendsAdd_FriendsAdd;
+class TFriendsBlock;
 class TFriendsList;
+class TFriendsRemove;
 class TGroup;
-class TGroupCreate;
-class TGroupJoin;
-class TGroupLeave;
-class TGroupRemove;
-class TGroupUpdate;
-class TGroupUserAdd;
-class TGroupUserKick;
-class TGroupUserPromote;
 class TGroupUsers;
+class TGroupUsersAdd;
+class TGroupUsersAdd_GroupUserAdd;
+class TGroupUsersKick;
+class TGroupUsersKick_GroupUserKick;
 class TGroupUsersList;
+class TGroupUsersPromote;
+class TGroupUsersPromote_GroupUserPromote;
 class TGroups;
+class TGroupsCreate;
+class TGroupsCreate_GroupCreate;
 class TGroupsFetch;
-class TGroupsFetch_GroupIds;
-class TGroupsFetch_Names;
+class TGroupsFetch_GroupFetch;
+class TGroupsJoin;
+class TGroupsLeave;
 class TGroupsList;
+class TGroupsRemove;
 class TGroupsSelfList;
-class TLeaderboardRecord;
-class TLeaderboardRecordWrite;
+class TGroupsUpdate;
+class TGroupsUpdate_GroupUpdate;
 class TLeaderboardRecords;
 class TLeaderboardRecordsFetch;
 class TLeaderboardRecordsList;
 class TLeaderboardRecordsList_Owners;
+class TLeaderboardRecordsWrite;
+class TLeaderboardRecordsWrite_LeaderboardRecordWrite;
 class TLeaderboards;
 class TLeaderboardsList;
 class TLink;
 class TMatch;
 class TMatchCreate;
-class TMatchJoin;
-class TMatchLeave;
+class TMatches;
+class TMatchesJoin;
+class TMatchesJoin_MatchJoin;
+class TMatchesLeave;
 class TMatchmakeAdd;
 class TMatchmakeRemove;
 class TMatchmakeTicket;
@@ -104,24 +112,26 @@ class TStorageData;
 class TStorageData_StorageData;
 class TStorageFetch;
 class TStorageFetch_StorageKey;
-class TStorageKey;
-class TStorageKey_StorageKey;
+class TStorageKeys;
+class TStorageKeys_StorageKey;
+class TStorageList;
 class TStorageRemove;
 class TStorageRemove_StorageKey;
 class TStorageWrite;
 class TStorageWrite_StorageData;
-class TTopic;
-class TTopicJoin;
-class TTopicLeave;
 class TTopicMessageAck;
 class TTopicMessageSend;
 class TTopicMessages;
 class TTopicMessagesList;
+class TTopics;
+class TTopicsJoin;
+class TTopicsJoin_TopicJoin;
+class TTopicsLeave;
+class TTopics_Topic;
 class TUnlink;
 class TUsers;
 class TUsersFetch;
-class TUsersFetch_Handles;
-class TUsersFetch_UserIds;
+class TUsersFetch_UsersFetch;
 class TopicId;
 class TopicMessage;
 class TopicPresence;
@@ -704,7 +714,7 @@ class AuthenticateRequest : public ::google::protobuf::Message /* @@protoc_inser
   static const ::google::protobuf::Descriptor* descriptor();
   static const AuthenticateRequest& default_instance();
 
-  enum PayloadCase {
+  enum IdCase {
     kEmail = 2,
     kFacebook = 3,
     kGoogle = 4,
@@ -712,7 +722,7 @@ class AuthenticateRequest : public ::google::protobuf::Message /* @@protoc_inser
     kSteam = 6,
     kDevice = 7,
     kCustom = 8,
-    PAYLOAD_NOT_SET = 0,
+    ID_NOT_SET = 0,
   };
 
   static const AuthenticateRequest* internal_default_instance();
@@ -865,7 +875,7 @@ class AuthenticateRequest : public ::google::protobuf::Message /* @@protoc_inser
   ::std::string* release_custom();
   void set_allocated_custom(::std::string* custom);
 
-  PayloadCase payload_case() const;
+  IdCase id_case() const;
   // @@protoc_insertion_point(class_scope:server.AuthenticateRequest)
  private:
   inline void set_has_email();
@@ -876,14 +886,14 @@ class AuthenticateRequest : public ::google::protobuf::Message /* @@protoc_inser
   inline void set_has_device();
   inline void set_has_custom();
 
-  inline bool has_payload() const;
-  void clear_payload();
-  inline void clear_has_payload();
+  inline bool has_id() const;
+  void clear_id();
+  inline void clear_has_id();
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
   ::google::protobuf::internal::ArenaStringPtr collationid_;
-  union PayloadUnion {
-    PayloadUnion() {}
+  union IdUnion {
+    IdUnion() {}
     ::server::AuthenticateRequest_Email* email_;
     ::google::protobuf::internal::ArenaStringPtr facebook_;
     ::google::protobuf::internal::ArenaStringPtr google_;
@@ -891,7 +901,7 @@ class AuthenticateRequest : public ::google::protobuf::Message /* @@protoc_inser
     ::google::protobuf::internal::ArenaStringPtr steam_;
     ::google::protobuf::internal::ArenaStringPtr device_;
     ::google::protobuf::internal::ArenaStringPtr custom_;
-  } payload_;
+  } id_;
   mutable int _cached_size_;
   ::google::protobuf::uint32 _oneof_case_[1];
 
@@ -1120,10 +1130,10 @@ class AuthenticateResponse : public ::google::protobuf::Message /* @@protoc_inse
   static const ::google::protobuf::Descriptor* descriptor();
   static const AuthenticateResponse& default_instance();
 
-  enum PayloadCase {
+  enum IdCase {
     kSession = 2,
     kError = 3,
-    PAYLOAD_NOT_SET = 0,
+    ID_NOT_SET = 0,
   };
 
   static const AuthenticateResponse* internal_default_instance();
@@ -1206,23 +1216,23 @@ class AuthenticateResponse : public ::google::protobuf::Message /* @@protoc_inse
   ::server::AuthenticateResponse_Error* release_error();
   void set_allocated_error(::server::AuthenticateResponse_Error* error);
 
-  PayloadCase payload_case() const;
+  IdCase id_case() const;
   // @@protoc_insertion_point(class_scope:server.AuthenticateResponse)
  private:
   inline void set_has_session();
   inline void set_has_error();
 
-  inline bool has_payload() const;
-  void clear_payload();
-  inline void clear_has_payload();
+  inline bool has_id() const;
+  void clear_id();
+  inline void clear_has_id();
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
   ::google::protobuf::internal::ArenaStringPtr collation_id_;
-  union PayloadUnion {
-    PayloadUnion() {}
+  union IdUnion {
+    IdUnion() {}
     ::server::AuthenticateResponse_Session* session_;
     ::server::AuthenticateResponse_Error* error_;
-  } payload_;
+  } id_;
   mutable int _cached_size_;
   ::google::protobuf::uint32 _oneof_case_[1];
 
@@ -1263,59 +1273,60 @@ class Envelope : public ::google::protobuf::Message /* @@protoc_insertion_point(
     kUsersFetch = 9,
     kSelf = 10,
     kUsers = 11,
-    kFriendAdd = 12,
-    kFriendRemove = 13,
-    kFriendBlock = 14,
+    kFriendsAdd = 12,
+    kFriendsRemove = 13,
+    kFriendsBlock = 14,
     kFriendsList = 15,
     kFriends = 16,
-    kGroupCreate = 17,
-    kGroupUpdate = 18,
-    kGroupRemove = 19,
+    kGroupsCreate = 17,
+    kGroupsUpdate = 18,
+    kGroupsRemove = 19,
     kGroupsFetch = 20,
     kGroupsList = 21,
     kGroupsSelfList = 22,
     kGroupUsersList = 23,
-    kGroupJoin = 24,
-    kGroupLeave = 25,
-    kGroupUserAdd = 26,
-    kGroupUserKick = 27,
-    kGroupUserPromote = 28,
+    kGroupsJoin = 24,
+    kGroupsLeave = 25,
+    kGroupUsersAdd = 26,
+    kGroupUsersKick = 27,
+    kGroupUsersPromote = 28,
     kGroup = 29,
     kGroups = 30,
     kGroupUsers = 31,
-    kTopicJoin = 32,
-    kTopicLeave = 33,
+    kTopicsJoin = 32,
+    kTopicsLeave = 33,
     kTopicMessageSend = 34,
     kTopicMessagesList = 35,
-    kTopic = 36,
+    kTopics = 36,
     kTopicMessageAck = 37,
     kTopicMessage = 38,
     kTopicMessages = 39,
     kTopicPresence = 40,
     kMatchCreate = 41,
-    kMatchJoin = 42,
-    kMatchLeave = 43,
+    kMatchesJoin = 42,
+    kMatchesLeave = 43,
     kMatchDataSend = 44,
     kMatch = 45,
-    kMatchData = 46,
-    kMatchPresence = 47,
-    kStorageFetch = 48,
-    kStorageWrite = 49,
-    kStorageRemove = 50,
-    kStorageData = 51,
-    kStorageKey = 52,
-    kLeaderboardsList = 53,
-    kLeaderboardRecordWrite = 54,
-    kLeaderboardRecordsFetch = 55,
-    kLeaderboardRecordsList = 56,
-    kLeaderboards = 57,
-    kLeaderboardRecord = 58,
-    kLeaderboardRecords = 59,
-    kMatchmakeAdd = 60,
-    kMatchmakeRemove = 61,
-    kMatchmakeTicket = 62,
-    kMatchmakeMatched = 63,
-    kRpc = 64,
+    kMatches = 46,
+    kMatchData = 47,
+    kMatchPresence = 48,
+    kStorageList = 49,
+    kStorageFetch = 50,
+    kStorageWrite = 51,
+    kStorageRemove = 52,
+    kStorageData = 53,
+    kStorageKeys = 54,
+    kLeaderboardsList = 55,
+    kLeaderboardRecordsWrite = 56,
+    kLeaderboardRecordsFetch = 57,
+    kLeaderboardRecordsList = 58,
+    kLeaderboards = 59,
+    kLeaderboardRecords = 60,
+    kMatchmakeAdd = 61,
+    kMatchmakeRemove = 62,
+    kMatchmakeTicket = 63,
+    kMatchmakeMatched = 64,
+    kRpc = 65,
     PAYLOAD_NOT_SET = 0,
   };
 
@@ -1468,32 +1479,32 @@ class Envelope : public ::google::protobuf::Message /* @@protoc_insertion_point(
   ::server::TUsers* release_users();
   void set_allocated_users(::server::TUsers* users);
 
-  // optional .server.TFriendAdd friend_add = 12;
-  bool has_friend_add() const;
-  void clear_friend_add();
-  static const int kFriendAddFieldNumber = 12;
-  const ::server::TFriendAdd& friend_add() const;
-  ::server::TFriendAdd* mutable_friend_add();
-  ::server::TFriendAdd* release_friend_add();
-  void set_allocated_friend_add(::server::TFriendAdd* friend_add);
+  // optional .server.TFriendsAdd friends_add = 12;
+  bool has_friends_add() const;
+  void clear_friends_add();
+  static const int kFriendsAddFieldNumber = 12;
+  const ::server::TFriendsAdd& friends_add() const;
+  ::server::TFriendsAdd* mutable_friends_add();
+  ::server::TFriendsAdd* release_friends_add();
+  void set_allocated_friends_add(::server::TFriendsAdd* friends_add);
 
-  // optional .server.TFriendRemove friend_remove = 13;
-  bool has_friend_remove() const;
-  void clear_friend_remove();
-  static const int kFriendRemoveFieldNumber = 13;
-  const ::server::TFriendRemove& friend_remove() const;
-  ::server::TFriendRemove* mutable_friend_remove();
-  ::server::TFriendRemove* release_friend_remove();
-  void set_allocated_friend_remove(::server::TFriendRemove* friend_remove);
+  // optional .server.TFriendsRemove friends_remove = 13;
+  bool has_friends_remove() const;
+  void clear_friends_remove();
+  static const int kFriendsRemoveFieldNumber = 13;
+  const ::server::TFriendsRemove& friends_remove() const;
+  ::server::TFriendsRemove* mutable_friends_remove();
+  ::server::TFriendsRemove* release_friends_remove();
+  void set_allocated_friends_remove(::server::TFriendsRemove* friends_remove);
 
-  // optional .server.TFriendBlock friend_block = 14;
-  bool has_friend_block() const;
-  void clear_friend_block();
-  static const int kFriendBlockFieldNumber = 14;
-  const ::server::TFriendBlock& friend_block() const;
-  ::server::TFriendBlock* mutable_friend_block();
-  ::server::TFriendBlock* release_friend_block();
-  void set_allocated_friend_block(::server::TFriendBlock* friend_block);
+  // optional .server.TFriendsBlock friends_block = 14;
+  bool has_friends_block() const;
+  void clear_friends_block();
+  static const int kFriendsBlockFieldNumber = 14;
+  const ::server::TFriendsBlock& friends_block() const;
+  ::server::TFriendsBlock* mutable_friends_block();
+  ::server::TFriendsBlock* release_friends_block();
+  void set_allocated_friends_block(::server::TFriendsBlock* friends_block);
 
   // optional .server.TFriendsList friends_list = 15;
   bool has_friends_list() const;
@@ -1513,32 +1524,32 @@ class Envelope : public ::google::protobuf::Message /* @@protoc_insertion_point(
   ::server::TFriends* release_friends();
   void set_allocated_friends(::server::TFriends* friends);
 
-  // optional .server.TGroupCreate group_create = 17;
-  bool has_group_create() const;
-  void clear_group_create();
-  static const int kGroupCreateFieldNumber = 17;
-  const ::server::TGroupCreate& group_create() const;
-  ::server::TGroupCreate* mutable_group_create();
-  ::server::TGroupCreate* release_group_create();
-  void set_allocated_group_create(::server::TGroupCreate* group_create);
+  // optional .server.TGroupsCreate groups_create = 17;
+  bool has_groups_create() const;
+  void clear_groups_create();
+  static const int kGroupsCreateFieldNumber = 17;
+  const ::server::TGroupsCreate& groups_create() const;
+  ::server::TGroupsCreate* mutable_groups_create();
+  ::server::TGroupsCreate* release_groups_create();
+  void set_allocated_groups_create(::server::TGroupsCreate* groups_create);
 
-  // optional .server.TGroupUpdate group_update = 18;
-  bool has_group_update() const;
-  void clear_group_update();
-  static const int kGroupUpdateFieldNumber = 18;
-  const ::server::TGroupUpdate& group_update() const;
-  ::server::TGroupUpdate* mutable_group_update();
-  ::server::TGroupUpdate* release_group_update();
-  void set_allocated_group_update(::server::TGroupUpdate* group_update);
+  // optional .server.TGroupsUpdate groups_update = 18;
+  bool has_groups_update() const;
+  void clear_groups_update();
+  static const int kGroupsUpdateFieldNumber = 18;
+  const ::server::TGroupsUpdate& groups_update() const;
+  ::server::TGroupsUpdate* mutable_groups_update();
+  ::server::TGroupsUpdate* release_groups_update();
+  void set_allocated_groups_update(::server::TGroupsUpdate* groups_update);
 
-  // optional .server.TGroupRemove group_remove = 19;
-  bool has_group_remove() const;
-  void clear_group_remove();
-  static const int kGroupRemoveFieldNumber = 19;
-  const ::server::TGroupRemove& group_remove() const;
-  ::server::TGroupRemove* mutable_group_remove();
-  ::server::TGroupRemove* release_group_remove();
-  void set_allocated_group_remove(::server::TGroupRemove* group_remove);
+  // optional .server.TGroupsRemove groups_remove = 19;
+  bool has_groups_remove() const;
+  void clear_groups_remove();
+  static const int kGroupsRemoveFieldNumber = 19;
+  const ::server::TGroupsRemove& groups_remove() const;
+  ::server::TGroupsRemove* mutable_groups_remove();
+  ::server::TGroupsRemove* release_groups_remove();
+  void set_allocated_groups_remove(::server::TGroupsRemove* groups_remove);
 
   // optional .server.TGroupsFetch groups_fetch = 20;
   bool has_groups_fetch() const;
@@ -1576,50 +1587,50 @@ class Envelope : public ::google::protobuf::Message /* @@protoc_insertion_point(
   ::server::TGroupUsersList* release_group_users_list();
   void set_allocated_group_users_list(::server::TGroupUsersList* group_users_list);
 
-  // optional .server.TGroupJoin group_join = 24;
-  bool has_group_join() const;
-  void clear_group_join();
-  static const int kGroupJoinFieldNumber = 24;
-  const ::server::TGroupJoin& group_join() const;
-  ::server::TGroupJoin* mutable_group_join();
-  ::server::TGroupJoin* release_group_join();
-  void set_allocated_group_join(::server::TGroupJoin* group_join);
+  // optional .server.TGroupsJoin groups_join = 24;
+  bool has_groups_join() const;
+  void clear_groups_join();
+  static const int kGroupsJoinFieldNumber = 24;
+  const ::server::TGroupsJoin& groups_join() const;
+  ::server::TGroupsJoin* mutable_groups_join();
+  ::server::TGroupsJoin* release_groups_join();
+  void set_allocated_groups_join(::server::TGroupsJoin* groups_join);
 
-  // optional .server.TGroupLeave group_leave = 25;
-  bool has_group_leave() const;
-  void clear_group_leave();
-  static const int kGroupLeaveFieldNumber = 25;
-  const ::server::TGroupLeave& group_leave() const;
-  ::server::TGroupLeave* mutable_group_leave();
-  ::server::TGroupLeave* release_group_leave();
-  void set_allocated_group_leave(::server::TGroupLeave* group_leave);
+  // optional .server.TGroupsLeave groups_leave = 25;
+  bool has_groups_leave() const;
+  void clear_groups_leave();
+  static const int kGroupsLeaveFieldNumber = 25;
+  const ::server::TGroupsLeave& groups_leave() const;
+  ::server::TGroupsLeave* mutable_groups_leave();
+  ::server::TGroupsLeave* release_groups_leave();
+  void set_allocated_groups_leave(::server::TGroupsLeave* groups_leave);
 
-  // optional .server.TGroupUserAdd group_user_add = 26;
-  bool has_group_user_add() const;
-  void clear_group_user_add();
-  static const int kGroupUserAddFieldNumber = 26;
-  const ::server::TGroupUserAdd& group_user_add() const;
-  ::server::TGroupUserAdd* mutable_group_user_add();
-  ::server::TGroupUserAdd* release_group_user_add();
-  void set_allocated_group_user_add(::server::TGroupUserAdd* group_user_add);
+  // optional .server.TGroupUsersAdd group_users_add = 26;
+  bool has_group_users_add() const;
+  void clear_group_users_add();
+  static const int kGroupUsersAddFieldNumber = 26;
+  const ::server::TGroupUsersAdd& group_users_add() const;
+  ::server::TGroupUsersAdd* mutable_group_users_add();
+  ::server::TGroupUsersAdd* release_group_users_add();
+  void set_allocated_group_users_add(::server::TGroupUsersAdd* group_users_add);
 
-  // optional .server.TGroupUserKick group_user_kick = 27;
-  bool has_group_user_kick() const;
-  void clear_group_user_kick();
-  static const int kGroupUserKickFieldNumber = 27;
-  const ::server::TGroupUserKick& group_user_kick() const;
-  ::server::TGroupUserKick* mutable_group_user_kick();
-  ::server::TGroupUserKick* release_group_user_kick();
-  void set_allocated_group_user_kick(::server::TGroupUserKick* group_user_kick);
+  // optional .server.TGroupUsersKick group_users_kick = 27;
+  bool has_group_users_kick() const;
+  void clear_group_users_kick();
+  static const int kGroupUsersKickFieldNumber = 27;
+  const ::server::TGroupUsersKick& group_users_kick() const;
+  ::server::TGroupUsersKick* mutable_group_users_kick();
+  ::server::TGroupUsersKick* release_group_users_kick();
+  void set_allocated_group_users_kick(::server::TGroupUsersKick* group_users_kick);
 
-  // optional .server.TGroupUserPromote group_user_promote = 28;
-  bool has_group_user_promote() const;
-  void clear_group_user_promote();
-  static const int kGroupUserPromoteFieldNumber = 28;
-  const ::server::TGroupUserPromote& group_user_promote() const;
-  ::server::TGroupUserPromote* mutable_group_user_promote();
-  ::server::TGroupUserPromote* release_group_user_promote();
-  void set_allocated_group_user_promote(::server::TGroupUserPromote* group_user_promote);
+  // optional .server.TGroupUsersPromote group_users_promote = 28;
+  bool has_group_users_promote() const;
+  void clear_group_users_promote();
+  static const int kGroupUsersPromoteFieldNumber = 28;
+  const ::server::TGroupUsersPromote& group_users_promote() const;
+  ::server::TGroupUsersPromote* mutable_group_users_promote();
+  ::server::TGroupUsersPromote* release_group_users_promote();
+  void set_allocated_group_users_promote(::server::TGroupUsersPromote* group_users_promote);
 
   // optional .server.TGroup group = 29;
   bool has_group() const;
@@ -1648,23 +1659,23 @@ class Envelope : public ::google::protobuf::Message /* @@protoc_insertion_point(
   ::server::TGroupUsers* release_group_users();
   void set_allocated_group_users(::server::TGroupUsers* group_users);
 
-  // optional .server.TTopicJoin topic_join = 32;
-  bool has_topic_join() const;
-  void clear_topic_join();
-  static const int kTopicJoinFieldNumber = 32;
-  const ::server::TTopicJoin& topic_join() const;
-  ::server::TTopicJoin* mutable_topic_join();
-  ::server::TTopicJoin* release_topic_join();
-  void set_allocated_topic_join(::server::TTopicJoin* topic_join);
+  // optional .server.TTopicsJoin topics_join = 32;
+  bool has_topics_join() const;
+  void clear_topics_join();
+  static const int kTopicsJoinFieldNumber = 32;
+  const ::server::TTopicsJoin& topics_join() const;
+  ::server::TTopicsJoin* mutable_topics_join();
+  ::server::TTopicsJoin* release_topics_join();
+  void set_allocated_topics_join(::server::TTopicsJoin* topics_join);
 
-  // optional .server.TTopicLeave topic_leave = 33;
-  bool has_topic_leave() const;
-  void clear_topic_leave();
-  static const int kTopicLeaveFieldNumber = 33;
-  const ::server::TTopicLeave& topic_leave() const;
-  ::server::TTopicLeave* mutable_topic_leave();
-  ::server::TTopicLeave* release_topic_leave();
-  void set_allocated_topic_leave(::server::TTopicLeave* topic_leave);
+  // optional .server.TTopicsLeave topics_leave = 33;
+  bool has_topics_leave() const;
+  void clear_topics_leave();
+  static const int kTopicsLeaveFieldNumber = 33;
+  const ::server::TTopicsLeave& topics_leave() const;
+  ::server::TTopicsLeave* mutable_topics_leave();
+  ::server::TTopicsLeave* release_topics_leave();
+  void set_allocated_topics_leave(::server::TTopicsLeave* topics_leave);
 
   // optional .server.TTopicMessageSend topic_message_send = 34;
   bool has_topic_message_send() const;
@@ -1684,14 +1695,14 @@ class Envelope : public ::google::protobuf::Message /* @@protoc_insertion_point(
   ::server::TTopicMessagesList* release_topic_messages_list();
   void set_allocated_topic_messages_list(::server::TTopicMessagesList* topic_messages_list);
 
-  // optional .server.TTopic topic = 36;
-  bool has_topic() const;
-  void clear_topic();
-  static const int kTopicFieldNumber = 36;
-  const ::server::TTopic& topic() const;
-  ::server::TTopic* mutable_topic();
-  ::server::TTopic* release_topic();
-  void set_allocated_topic(::server::TTopic* topic);
+  // optional .server.TTopics topics = 36;
+  bool has_topics() const;
+  void clear_topics();
+  static const int kTopicsFieldNumber = 36;
+  const ::server::TTopics& topics() const;
+  ::server::TTopics* mutable_topics();
+  ::server::TTopics* release_topics();
+  void set_allocated_topics(::server::TTopics* topics);
 
   // optional .server.TTopicMessageAck topic_message_ack = 37;
   bool has_topic_message_ack() const;
@@ -1738,23 +1749,23 @@ class Envelope : public ::google::protobuf::Message /* @@protoc_insertion_point(
   ::server::TMatchCreate* release_match_create();
   void set_allocated_match_create(::server::TMatchCreate* match_create);
 
-  // optional .server.TMatchJoin match_join = 42;
-  bool has_match_join() const;
-  void clear_match_join();
-  static const int kMatchJoinFieldNumber = 42;
-  const ::server::TMatchJoin& match_join() const;
-  ::server::TMatchJoin* mutable_match_join();
-  ::server::TMatchJoin* release_match_join();
-  void set_allocated_match_join(::server::TMatchJoin* match_join);
+  // optional .server.TMatchesJoin matches_join = 42;
+  bool has_matches_join() const;
+  void clear_matches_join();
+  static const int kMatchesJoinFieldNumber = 42;
+  const ::server::TMatchesJoin& matches_join() const;
+  ::server::TMatchesJoin* mutable_matches_join();
+  ::server::TMatchesJoin* release_matches_join();
+  void set_allocated_matches_join(::server::TMatchesJoin* matches_join);
 
-  // optional .server.TMatchLeave match_leave = 43;
-  bool has_match_leave() const;
-  void clear_match_leave();
-  static const int kMatchLeaveFieldNumber = 43;
-  const ::server::TMatchLeave& match_leave() const;
-  ::server::TMatchLeave* mutable_match_leave();
-  ::server::TMatchLeave* release_match_leave();
-  void set_allocated_match_leave(::server::TMatchLeave* match_leave);
+  // optional .server.TMatchesLeave matches_leave = 43;
+  bool has_matches_leave() const;
+  void clear_matches_leave();
+  static const int kMatchesLeaveFieldNumber = 43;
+  const ::server::TMatchesLeave& matches_leave() const;
+  ::server::TMatchesLeave* mutable_matches_leave();
+  ::server::TMatchesLeave* release_matches_leave();
+  void set_allocated_matches_leave(::server::TMatchesLeave* matches_leave);
 
   // optional .server.MatchDataSend match_data_send = 44;
   bool has_match_data_send() const;
@@ -1774,172 +1785,181 @@ class Envelope : public ::google::protobuf::Message /* @@protoc_insertion_point(
   ::server::TMatch* release_match();
   void set_allocated_match(::server::TMatch* match);
 
-  // optional .server.MatchData match_data = 46;
+  // optional .server.TMatches matches = 46;
+  bool has_matches() const;
+  void clear_matches();
+  static const int kMatchesFieldNumber = 46;
+  const ::server::TMatches& matches() const;
+  ::server::TMatches* mutable_matches();
+  ::server::TMatches* release_matches();
+  void set_allocated_matches(::server::TMatches* matches);
+
+  // optional .server.MatchData match_data = 47;
   bool has_match_data() const;
   void clear_match_data();
-  static const int kMatchDataFieldNumber = 46;
+  static const int kMatchDataFieldNumber = 47;
   const ::server::MatchData& match_data() const;
   ::server::MatchData* mutable_match_data();
   ::server::MatchData* release_match_data();
   void set_allocated_match_data(::server::MatchData* match_data);
 
-  // optional .server.MatchPresence match_presence = 47;
+  // optional .server.MatchPresence match_presence = 48;
   bool has_match_presence() const;
   void clear_match_presence();
-  static const int kMatchPresenceFieldNumber = 47;
+  static const int kMatchPresenceFieldNumber = 48;
   const ::server::MatchPresence& match_presence() const;
   ::server::MatchPresence* mutable_match_presence();
   ::server::MatchPresence* release_match_presence();
   void set_allocated_match_presence(::server::MatchPresence* match_presence);
 
-  // optional .server.TStorageFetch storage_fetch = 48;
+  // optional .server.TStorageList storage_list = 49;
+  bool has_storage_list() const;
+  void clear_storage_list();
+  static const int kStorageListFieldNumber = 49;
+  const ::server::TStorageList& storage_list() const;
+  ::server::TStorageList* mutable_storage_list();
+  ::server::TStorageList* release_storage_list();
+  void set_allocated_storage_list(::server::TStorageList* storage_list);
+
+  // optional .server.TStorageFetch storage_fetch = 50;
   bool has_storage_fetch() const;
   void clear_storage_fetch();
-  static const int kStorageFetchFieldNumber = 48;
+  static const int kStorageFetchFieldNumber = 50;
   const ::server::TStorageFetch& storage_fetch() const;
   ::server::TStorageFetch* mutable_storage_fetch();
   ::server::TStorageFetch* release_storage_fetch();
   void set_allocated_storage_fetch(::server::TStorageFetch* storage_fetch);
 
-  // optional .server.TStorageWrite storage_write = 49;
+  // optional .server.TStorageWrite storage_write = 51;
   bool has_storage_write() const;
   void clear_storage_write();
-  static const int kStorageWriteFieldNumber = 49;
+  static const int kStorageWriteFieldNumber = 51;
   const ::server::TStorageWrite& storage_write() const;
   ::server::TStorageWrite* mutable_storage_write();
   ::server::TStorageWrite* release_storage_write();
   void set_allocated_storage_write(::server::TStorageWrite* storage_write);
 
-  // optional .server.TStorageRemove storage_remove = 50;
+  // optional .server.TStorageRemove storage_remove = 52;
   bool has_storage_remove() const;
   void clear_storage_remove();
-  static const int kStorageRemoveFieldNumber = 50;
+  static const int kStorageRemoveFieldNumber = 52;
   const ::server::TStorageRemove& storage_remove() const;
   ::server::TStorageRemove* mutable_storage_remove();
   ::server::TStorageRemove* release_storage_remove();
   void set_allocated_storage_remove(::server::TStorageRemove* storage_remove);
 
-  // optional .server.TStorageData storage_data = 51;
+  // optional .server.TStorageData storage_data = 53;
   bool has_storage_data() const;
   void clear_storage_data();
-  static const int kStorageDataFieldNumber = 51;
+  static const int kStorageDataFieldNumber = 53;
   const ::server::TStorageData& storage_data() const;
   ::server::TStorageData* mutable_storage_data();
   ::server::TStorageData* release_storage_data();
   void set_allocated_storage_data(::server::TStorageData* storage_data);
 
-  // optional .server.TStorageKey storage_key = 52;
-  bool has_storage_key() const;
-  void clear_storage_key();
-  static const int kStorageKeyFieldNumber = 52;
-  const ::server::TStorageKey& storage_key() const;
-  ::server::TStorageKey* mutable_storage_key();
-  ::server::TStorageKey* release_storage_key();
-  void set_allocated_storage_key(::server::TStorageKey* storage_key);
+  // optional .server.TStorageKeys storage_keys = 54;
+  bool has_storage_keys() const;
+  void clear_storage_keys();
+  static const int kStorageKeysFieldNumber = 54;
+  const ::server::TStorageKeys& storage_keys() const;
+  ::server::TStorageKeys* mutable_storage_keys();
+  ::server::TStorageKeys* release_storage_keys();
+  void set_allocated_storage_keys(::server::TStorageKeys* storage_keys);
 
-  // optional .server.TLeaderboardsList leaderboards_list = 53;
+  // optional .server.TLeaderboardsList leaderboards_list = 55;
   bool has_leaderboards_list() const;
   void clear_leaderboards_list();
-  static const int kLeaderboardsListFieldNumber = 53;
+  static const int kLeaderboardsListFieldNumber = 55;
   const ::server::TLeaderboardsList& leaderboards_list() const;
   ::server::TLeaderboardsList* mutable_leaderboards_list();
   ::server::TLeaderboardsList* release_leaderboards_list();
   void set_allocated_leaderboards_list(::server::TLeaderboardsList* leaderboards_list);
 
-  // optional .server.TLeaderboardRecordWrite leaderboard_record_write = 54;
-  bool has_leaderboard_record_write() const;
-  void clear_leaderboard_record_write();
-  static const int kLeaderboardRecordWriteFieldNumber = 54;
-  const ::server::TLeaderboardRecordWrite& leaderboard_record_write() const;
-  ::server::TLeaderboardRecordWrite* mutable_leaderboard_record_write();
-  ::server::TLeaderboardRecordWrite* release_leaderboard_record_write();
-  void set_allocated_leaderboard_record_write(::server::TLeaderboardRecordWrite* leaderboard_record_write);
+  // optional .server.TLeaderboardRecordsWrite leaderboard_records_write = 56;
+  bool has_leaderboard_records_write() const;
+  void clear_leaderboard_records_write();
+  static const int kLeaderboardRecordsWriteFieldNumber = 56;
+  const ::server::TLeaderboardRecordsWrite& leaderboard_records_write() const;
+  ::server::TLeaderboardRecordsWrite* mutable_leaderboard_records_write();
+  ::server::TLeaderboardRecordsWrite* release_leaderboard_records_write();
+  void set_allocated_leaderboard_records_write(::server::TLeaderboardRecordsWrite* leaderboard_records_write);
 
-  // optional .server.TLeaderboardRecordsFetch leaderboard_records_fetch = 55;
+  // optional .server.TLeaderboardRecordsFetch leaderboard_records_fetch = 57;
   bool has_leaderboard_records_fetch() const;
   void clear_leaderboard_records_fetch();
-  static const int kLeaderboardRecordsFetchFieldNumber = 55;
+  static const int kLeaderboardRecordsFetchFieldNumber = 57;
   const ::server::TLeaderboardRecordsFetch& leaderboard_records_fetch() const;
   ::server::TLeaderboardRecordsFetch* mutable_leaderboard_records_fetch();
   ::server::TLeaderboardRecordsFetch* release_leaderboard_records_fetch();
   void set_allocated_leaderboard_records_fetch(::server::TLeaderboardRecordsFetch* leaderboard_records_fetch);
 
-  // optional .server.TLeaderboardRecordsList leaderboard_records_list = 56;
+  // optional .server.TLeaderboardRecordsList leaderboard_records_list = 58;
   bool has_leaderboard_records_list() const;
   void clear_leaderboard_records_list();
-  static const int kLeaderboardRecordsListFieldNumber = 56;
+  static const int kLeaderboardRecordsListFieldNumber = 58;
   const ::server::TLeaderboardRecordsList& leaderboard_records_list() const;
   ::server::TLeaderboardRecordsList* mutable_leaderboard_records_list();
   ::server::TLeaderboardRecordsList* release_leaderboard_records_list();
   void set_allocated_leaderboard_records_list(::server::TLeaderboardRecordsList* leaderboard_records_list);
 
-  // optional .server.TLeaderboards leaderboards = 57;
+  // optional .server.TLeaderboards leaderboards = 59;
   bool has_leaderboards() const;
   void clear_leaderboards();
-  static const int kLeaderboardsFieldNumber = 57;
+  static const int kLeaderboardsFieldNumber = 59;
   const ::server::TLeaderboards& leaderboards() const;
   ::server::TLeaderboards* mutable_leaderboards();
   ::server::TLeaderboards* release_leaderboards();
   void set_allocated_leaderboards(::server::TLeaderboards* leaderboards);
 
-  // optional .server.TLeaderboardRecord leaderboard_record = 58;
-  bool has_leaderboard_record() const;
-  void clear_leaderboard_record();
-  static const int kLeaderboardRecordFieldNumber = 58;
-  const ::server::TLeaderboardRecord& leaderboard_record() const;
-  ::server::TLeaderboardRecord* mutable_leaderboard_record();
-  ::server::TLeaderboardRecord* release_leaderboard_record();
-  void set_allocated_leaderboard_record(::server::TLeaderboardRecord* leaderboard_record);
-
-  // optional .server.TLeaderboardRecords leaderboard_records = 59;
+  // optional .server.TLeaderboardRecords leaderboard_records = 60;
   bool has_leaderboard_records() const;
   void clear_leaderboard_records();
-  static const int kLeaderboardRecordsFieldNumber = 59;
+  static const int kLeaderboardRecordsFieldNumber = 60;
   const ::server::TLeaderboardRecords& leaderboard_records() const;
   ::server::TLeaderboardRecords* mutable_leaderboard_records();
   ::server::TLeaderboardRecords* release_leaderboard_records();
   void set_allocated_leaderboard_records(::server::TLeaderboardRecords* leaderboard_records);
 
-  // optional .server.TMatchmakeAdd matchmake_add = 60;
+  // optional .server.TMatchmakeAdd matchmake_add = 61;
   bool has_matchmake_add() const;
   void clear_matchmake_add();
-  static const int kMatchmakeAddFieldNumber = 60;
+  static const int kMatchmakeAddFieldNumber = 61;
   const ::server::TMatchmakeAdd& matchmake_add() const;
   ::server::TMatchmakeAdd* mutable_matchmake_add();
   ::server::TMatchmakeAdd* release_matchmake_add();
   void set_allocated_matchmake_add(::server::TMatchmakeAdd* matchmake_add);
 
-  // optional .server.TMatchmakeRemove matchmake_remove = 61;
+  // optional .server.TMatchmakeRemove matchmake_remove = 62;
   bool has_matchmake_remove() const;
   void clear_matchmake_remove();
-  static const int kMatchmakeRemoveFieldNumber = 61;
+  static const int kMatchmakeRemoveFieldNumber = 62;
   const ::server::TMatchmakeRemove& matchmake_remove() const;
   ::server::TMatchmakeRemove* mutable_matchmake_remove();
   ::server::TMatchmakeRemove* release_matchmake_remove();
   void set_allocated_matchmake_remove(::server::TMatchmakeRemove* matchmake_remove);
 
-  // optional .server.TMatchmakeTicket matchmake_ticket = 62;
+  // optional .server.TMatchmakeTicket matchmake_ticket = 63;
   bool has_matchmake_ticket() const;
   void clear_matchmake_ticket();
-  static const int kMatchmakeTicketFieldNumber = 62;
+  static const int kMatchmakeTicketFieldNumber = 63;
   const ::server::TMatchmakeTicket& matchmake_ticket() const;
   ::server::TMatchmakeTicket* mutable_matchmake_ticket();
   ::server::TMatchmakeTicket* release_matchmake_ticket();
   void set_allocated_matchmake_ticket(::server::TMatchmakeTicket* matchmake_ticket);
 
-  // optional .server.MatchmakeMatched matchmake_matched = 63;
+  // optional .server.MatchmakeMatched matchmake_matched = 64;
   bool has_matchmake_matched() const;
   void clear_matchmake_matched();
-  static const int kMatchmakeMatchedFieldNumber = 63;
+  static const int kMatchmakeMatchedFieldNumber = 64;
   const ::server::MatchmakeMatched& matchmake_matched() const;
   ::server::MatchmakeMatched* mutable_matchmake_matched();
   ::server::MatchmakeMatched* release_matchmake_matched();
   void set_allocated_matchmake_matched(::server::MatchmakeMatched* matchmake_matched);
 
-  // optional .server.TRpc rpc = 64;
+  // optional .server.TRpc rpc = 65;
   bool has_rpc() const;
   void clear_rpc();
-  static const int kRpcFieldNumber = 64;
+  static const int kRpcFieldNumber = 65;
   const ::server::TRpc& rpc() const;
   ::server::TRpc* mutable_rpc();
   ::server::TRpc* release_rpc();
@@ -1958,53 +1978,54 @@ class Envelope : public ::google::protobuf::Message /* @@protoc_insertion_point(
   inline void set_has_users_fetch();
   inline void set_has_self();
   inline void set_has_users();
-  inline void set_has_friend_add();
-  inline void set_has_friend_remove();
-  inline void set_has_friend_block();
+  inline void set_has_friends_add();
+  inline void set_has_friends_remove();
+  inline void set_has_friends_block();
   inline void set_has_friends_list();
   inline void set_has_friends();
-  inline void set_has_group_create();
-  inline void set_has_group_update();
-  inline void set_has_group_remove();
+  inline void set_has_groups_create();
+  inline void set_has_groups_update();
+  inline void set_has_groups_remove();
   inline void set_has_groups_fetch();
   inline void set_has_groups_list();
   inline void set_has_groups_self_list();
   inline void set_has_group_users_list();
-  inline void set_has_group_join();
-  inline void set_has_group_leave();
-  inline void set_has_group_user_add();
-  inline void set_has_group_user_kick();
-  inline void set_has_group_user_promote();
+  inline void set_has_groups_join();
+  inline void set_has_groups_leave();
+  inline void set_has_group_users_add();
+  inline void set_has_group_users_kick();
+  inline void set_has_group_users_promote();
   inline void set_has_group();
   inline void set_has_groups();
   inline void set_has_group_users();
-  inline void set_has_topic_join();
-  inline void set_has_topic_leave();
+  inline void set_has_topics_join();
+  inline void set_has_topics_leave();
   inline void set_has_topic_message_send();
   inline void set_has_topic_messages_list();
-  inline void set_has_topic();
+  inline void set_has_topics();
   inline void set_has_topic_message_ack();
   inline void set_has_topic_message();
   inline void set_has_topic_messages();
   inline void set_has_topic_presence();
   inline void set_has_match_create();
-  inline void set_has_match_join();
-  inline void set_has_match_leave();
+  inline void set_has_matches_join();
+  inline void set_has_matches_leave();
   inline void set_has_match_data_send();
   inline void set_has_match();
+  inline void set_has_matches();
   inline void set_has_match_data();
   inline void set_has_match_presence();
+  inline void set_has_storage_list();
   inline void set_has_storage_fetch();
   inline void set_has_storage_write();
   inline void set_has_storage_remove();
   inline void set_has_storage_data();
-  inline void set_has_storage_key();
+  inline void set_has_storage_keys();
   inline void set_has_leaderboards_list();
-  inline void set_has_leaderboard_record_write();
+  inline void set_has_leaderboard_records_write();
   inline void set_has_leaderboard_records_fetch();
   inline void set_has_leaderboard_records_list();
   inline void set_has_leaderboards();
-  inline void set_has_leaderboard_record();
   inline void set_has_leaderboard_records();
   inline void set_has_matchmake_add();
   inline void set_has_matchmake_remove();
@@ -2030,53 +2051,54 @@ class Envelope : public ::google::protobuf::Message /* @@protoc_insertion_point(
     ::server::TUsersFetch* users_fetch_;
     ::server::TSelf* self_;
     ::server::TUsers* users_;
-    ::server::TFriendAdd* friend_add_;
-    ::server::TFriendRemove* friend_remove_;
-    ::server::TFriendBlock* friend_block_;
+    ::server::TFriendsAdd* friends_add_;
+    ::server::TFriendsRemove* friends_remove_;
+    ::server::TFriendsBlock* friends_block_;
     ::server::TFriendsList* friends_list_;
     ::server::TFriends* friends_;
-    ::server::TGroupCreate* group_create_;
-    ::server::TGroupUpdate* group_update_;
-    ::server::TGroupRemove* group_remove_;
+    ::server::TGroupsCreate* groups_create_;
+    ::server::TGroupsUpdate* groups_update_;
+    ::server::TGroupsRemove* groups_remove_;
     ::server::TGroupsFetch* groups_fetch_;
     ::server::TGroupsList* groups_list_;
     ::server::TGroupsSelfList* groups_self_list_;
     ::server::TGroupUsersList* group_users_list_;
-    ::server::TGroupJoin* group_join_;
-    ::server::TGroupLeave* group_leave_;
-    ::server::TGroupUserAdd* group_user_add_;
-    ::server::TGroupUserKick* group_user_kick_;
-    ::server::TGroupUserPromote* group_user_promote_;
+    ::server::TGroupsJoin* groups_join_;
+    ::server::TGroupsLeave* groups_leave_;
+    ::server::TGroupUsersAdd* group_users_add_;
+    ::server::TGroupUsersKick* group_users_kick_;
+    ::server::TGroupUsersPromote* group_users_promote_;
     ::server::TGroup* group_;
     ::server::TGroups* groups_;
     ::server::TGroupUsers* group_users_;
-    ::server::TTopicJoin* topic_join_;
-    ::server::TTopicLeave* topic_leave_;
+    ::server::TTopicsJoin* topics_join_;
+    ::server::TTopicsLeave* topics_leave_;
     ::server::TTopicMessageSend* topic_message_send_;
     ::server::TTopicMessagesList* topic_messages_list_;
-    ::server::TTopic* topic_;
+    ::server::TTopics* topics_;
     ::server::TTopicMessageAck* topic_message_ack_;
     ::server::TopicMessage* topic_message_;
     ::server::TTopicMessages* topic_messages_;
     ::server::TopicPresence* topic_presence_;
     ::server::TMatchCreate* match_create_;
-    ::server::TMatchJoin* match_join_;
-    ::server::TMatchLeave* match_leave_;
+    ::server::TMatchesJoin* matches_join_;
+    ::server::TMatchesLeave* matches_leave_;
     ::server::MatchDataSend* match_data_send_;
     ::server::TMatch* match_;
+    ::server::TMatches* matches_;
     ::server::MatchData* match_data_;
     ::server::MatchPresence* match_presence_;
+    ::server::TStorageList* storage_list_;
     ::server::TStorageFetch* storage_fetch_;
     ::server::TStorageWrite* storage_write_;
     ::server::TStorageRemove* storage_remove_;
     ::server::TStorageData* storage_data_;
-    ::server::TStorageKey* storage_key_;
+    ::server::TStorageKeys* storage_keys_;
     ::server::TLeaderboardsList* leaderboards_list_;
-    ::server::TLeaderboardRecordWrite* leaderboard_record_write_;
+    ::server::TLeaderboardRecordsWrite* leaderboard_records_write_;
     ::server::TLeaderboardRecordsFetch* leaderboard_records_fetch_;
     ::server::TLeaderboardRecordsList* leaderboard_records_list_;
     ::server::TLeaderboards* leaderboards_;
-    ::server::TLeaderboardRecord* leaderboard_record_;
     ::server::TLeaderboardRecords* leaderboard_records_;
     ::server::TMatchmakeAdd* matchmake_add_;
     ::server::TMatchmakeRemove* matchmake_remove_;
@@ -2192,7 +2214,7 @@ class TLink : public ::google::protobuf::Message /* @@protoc_insertion_point(cla
   static const ::google::protobuf::Descriptor* descriptor();
   static const TLink& default_instance();
 
-  enum PayloadCase {
+  enum IdCase {
     kEmail = 1,
     kFacebook = 2,
     kGoogle = 3,
@@ -2200,7 +2222,7 @@ class TLink : public ::google::protobuf::Message /* @@protoc_insertion_point(cla
     kSteam = 5,
     kDevice = 6,
     kCustom = 7,
-    PAYLOAD_NOT_SET = 0,
+    ID_NOT_SET = 0,
   };
 
   static const TLink* internal_default_instance();
@@ -2339,7 +2361,7 @@ class TLink : public ::google::protobuf::Message /* @@protoc_insertion_point(cla
   ::std::string* release_custom();
   void set_allocated_custom(::std::string* custom);
 
-  PayloadCase payload_case() const;
+  IdCase id_case() const;
   // @@protoc_insertion_point(class_scope:server.TLink)
  private:
   inline void set_has_email();
@@ -2350,13 +2372,13 @@ class TLink : public ::google::protobuf::Message /* @@protoc_insertion_point(cla
   inline void set_has_device();
   inline void set_has_custom();
 
-  inline bool has_payload() const;
-  void clear_payload();
-  inline void clear_has_payload();
+  inline bool has_id() const;
+  void clear_id();
+  inline void clear_has_id();
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
-  union PayloadUnion {
-    PayloadUnion() {}
+  union IdUnion {
+    IdUnion() {}
     ::server::AuthenticateRequest_Email* email_;
     ::google::protobuf::internal::ArenaStringPtr facebook_;
     ::google::protobuf::internal::ArenaStringPtr google_;
@@ -2364,7 +2386,7 @@ class TLink : public ::google::protobuf::Message /* @@protoc_insertion_point(cla
     ::google::protobuf::internal::ArenaStringPtr steam_;
     ::google::protobuf::internal::ArenaStringPtr device_;
     ::google::protobuf::internal::ArenaStringPtr custom_;
-  } payload_;
+  } id_;
   mutable int _cached_size_;
   ::google::protobuf::uint32 _oneof_case_[1];
 
@@ -2394,7 +2416,7 @@ class TUnlink : public ::google::protobuf::Message /* @@protoc_insertion_point(c
   static const ::google::protobuf::Descriptor* descriptor();
   static const TUnlink& default_instance();
 
-  enum PayloadCase {
+  enum IdCase {
     kEmail = 1,
     kFacebook = 2,
     kGoogle = 3,
@@ -2402,7 +2424,7 @@ class TUnlink : public ::google::protobuf::Message /* @@protoc_insertion_point(c
     kSteam = 5,
     kDevice = 6,
     kCustom = 7,
-    PAYLOAD_NOT_SET = 0,
+    ID_NOT_SET = 0,
   };
 
   static const TUnlink* internal_default_instance();
@@ -2551,7 +2573,7 @@ class TUnlink : public ::google::protobuf::Message /* @@protoc_insertion_point(c
   ::std::string* release_custom();
   void set_allocated_custom(::std::string* custom);
 
-  PayloadCase payload_case() const;
+  IdCase id_case() const;
   // @@protoc_insertion_point(class_scope:server.TUnlink)
  private:
   inline void set_has_email();
@@ -2562,13 +2584,13 @@ class TUnlink : public ::google::protobuf::Message /* @@protoc_insertion_point(c
   inline void set_has_device();
   inline void set_has_custom();
 
-  inline bool has_payload() const;
-  void clear_payload();
-  inline void clear_has_payload();
+  inline bool has_id() const;
+  void clear_id();
+  inline void clear_has_id();
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
-  union PayloadUnion {
-    PayloadUnion() {}
+  union IdUnion {
+    IdUnion() {}
     ::google::protobuf::internal::ArenaStringPtr email_;
     ::google::protobuf::internal::ArenaStringPtr facebook_;
     ::google::protobuf::internal::ArenaStringPtr google_;
@@ -2576,7 +2598,7 @@ class TUnlink : public ::google::protobuf::Message /* @@protoc_insertion_point(c
     ::google::protobuf::internal::ArenaStringPtr steam_;
     ::google::protobuf::internal::ArenaStringPtr device_;
     ::google::protobuf::internal::ArenaStringPtr custom_;
-  } payload_;
+  } id_;
   mutable int _cached_size_;
   ::google::protobuf::uint32 _oneof_case_[1];
 
@@ -2876,21 +2898,21 @@ class Self : public ::google::protobuf::Message /* @@protoc_insertion_point(clas
   ::std::string* release_email();
   void set_allocated_email(::std::string* email);
 
-  // repeated string device_id = 4;
-  int device_id_size() const;
-  void clear_device_id();
-  static const int kDeviceIdFieldNumber = 4;
-  const ::std::string& device_id(int index) const;
-  ::std::string* mutable_device_id(int index);
-  void set_device_id(int index, const ::std::string& value);
-  void set_device_id(int index, const char* value);
-  void set_device_id(int index, const char* value, size_t size);
-  ::std::string* add_device_id();
-  void add_device_id(const ::std::string& value);
-  void add_device_id(const char* value);
-  void add_device_id(const char* value, size_t size);
-  const ::google::protobuf::RepeatedPtrField< ::std::string>& device_id() const;
-  ::google::protobuf::RepeatedPtrField< ::std::string>* mutable_device_id();
+  // repeated string device_ids = 4;
+  int device_ids_size() const;
+  void clear_device_ids();
+  static const int kDeviceIdsFieldNumber = 4;
+  const ::std::string& device_ids(int index) const;
+  ::std::string* mutable_device_ids(int index);
+  void set_device_ids(int index, const ::std::string& value);
+  void set_device_ids(int index, const char* value);
+  void set_device_ids(int index, const char* value, size_t size);
+  ::std::string* add_device_ids();
+  void add_device_ids(const ::std::string& value);
+  void add_device_ids(const char* value);
+  void add_device_ids(const char* value, size_t size);
+  const ::google::protobuf::RepeatedPtrField< ::std::string>& device_ids() const;
+  ::google::protobuf::RepeatedPtrField< ::std::string>* mutable_device_ids();
 
   // optional string facebook_id = 5;
   void clear_facebook_id();
@@ -2951,7 +2973,7 @@ class Self : public ::google::protobuf::Message /* @@protoc_insertion_point(clas
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
-  ::google::protobuf::RepeatedPtrField< ::std::string> device_id_;
+  ::google::protobuf::RepeatedPtrField< ::std::string> device_ids_;
   ::google::protobuf::internal::ArenaStringPtr email_;
   ::google::protobuf::internal::ArenaStringPtr facebook_id_;
   ::google::protobuf::internal::ArenaStringPtr google_id_;
@@ -3303,34 +3325,40 @@ extern ::google::protobuf::internal::ExplicitlyConstructed<TSelfUpdate> TSelfUpd
 
 // -------------------------------------------------------------------
 
-class TUsersFetch_UserIds : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.TUsersFetch.UserIds) */ {
+class TUsersFetch_UsersFetch : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.TUsersFetch.UsersFetch) */ {
  public:
-  TUsersFetch_UserIds();
-  virtual ~TUsersFetch_UserIds();
+  TUsersFetch_UsersFetch();
+  virtual ~TUsersFetch_UsersFetch();
 
-  TUsersFetch_UserIds(const TUsersFetch_UserIds& from);
+  TUsersFetch_UsersFetch(const TUsersFetch_UsersFetch& from);
 
-  inline TUsersFetch_UserIds& operator=(const TUsersFetch_UserIds& from) {
+  inline TUsersFetch_UsersFetch& operator=(const TUsersFetch_UsersFetch& from) {
     CopyFrom(from);
     return *this;
   }
 
   static const ::google::protobuf::Descriptor* descriptor();
-  static const TUsersFetch_UserIds& default_instance();
+  static const TUsersFetch_UsersFetch& default_instance();
 
-  static const TUsersFetch_UserIds* internal_default_instance();
+  enum IdCase {
+    kUserId = 1,
+    kHandle = 2,
+    ID_NOT_SET = 0,
+  };
 
-  void Swap(TUsersFetch_UserIds* other);
+  static const TUsersFetch_UsersFetch* internal_default_instance();
+
+  void Swap(TUsersFetch_UsersFetch* other);
 
   // implements Message ----------------------------------------------
 
-  inline TUsersFetch_UserIds* New() const { return New(NULL); }
+  inline TUsersFetch_UsersFetch* New() const { return New(NULL); }
 
-  TUsersFetch_UserIds* New(::google::protobuf::Arena* arena) const;
+  TUsersFetch_UsersFetch* New(::google::protobuf::Arena* arena) const;
   void CopyFrom(const ::google::protobuf::Message& from);
   void MergeFrom(const ::google::protobuf::Message& from);
-  void CopyFrom(const TUsersFetch_UserIds& from);
-  void MergeFrom(const TUsersFetch_UserIds& from);
+  void CopyFrom(const TUsersFetch_UsersFetch& from);
+  void MergeFrom(const TUsersFetch_UsersFetch& from);
   void Clear();
   bool IsInitialized() const;
 
@@ -3349,8 +3377,8 @@ class TUsersFetch_UserIds : public ::google::protobuf::Message /* @@protoc_inser
   void SharedCtor();
   void SharedDtor();
   void SetCachedSize(int size) const;
-  void InternalSwap(TUsersFetch_UserIds* other);
-  void UnsafeMergeFrom(const TUsersFetch_UserIds& from);
+  void InternalSwap(TUsersFetch_UsersFetch* other);
+  void UnsafeMergeFrom(const TUsersFetch_UsersFetch& from);
   private:
   inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
     return _internal_metadata_.arena();
@@ -3366,124 +3394,53 @@ class TUsersFetch_UserIds : public ::google::protobuf::Message /* @@protoc_inser
 
   // accessors -------------------------------------------------------
 
-  // repeated bytes user_ids = 1;
-  int user_ids_size() const;
-  void clear_user_ids();
-  static const int kUserIdsFieldNumber = 1;
-  const ::std::string& user_ids(int index) const;
-  ::std::string* mutable_user_ids(int index);
-  void set_user_ids(int index, const ::std::string& value);
-  void set_user_ids(int index, const char* value);
-  void set_user_ids(int index, const void* value, size_t size);
-  ::std::string* add_user_ids();
-  void add_user_ids(const ::std::string& value);
-  void add_user_ids(const char* value);
-  void add_user_ids(const void* value, size_t size);
-  const ::google::protobuf::RepeatedPtrField< ::std::string>& user_ids() const;
-  ::google::protobuf::RepeatedPtrField< ::std::string>* mutable_user_ids();
-
-  // @@protoc_insertion_point(class_scope:server.TUsersFetch.UserIds)
- private:
-
-  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
-  ::google::protobuf::RepeatedPtrField< ::std::string> user_ids_;
-  mutable int _cached_size_;
-  friend void  protobuf_InitDefaults_api_2eproto_impl();
-  friend void  protobuf_AddDesc_api_2eproto_impl();
-  friend void protobuf_AssignDesc_api_2eproto();
-  friend void protobuf_ShutdownFile_api_2eproto();
-
-  void InitAsDefaultInstance();
-};
-extern ::google::protobuf::internal::ExplicitlyConstructed<TUsersFetch_UserIds> TUsersFetch_UserIds_default_instance_;
-
-// -------------------------------------------------------------------
-
-class TUsersFetch_Handles : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.TUsersFetch.Handles) */ {
- public:
-  TUsersFetch_Handles();
-  virtual ~TUsersFetch_Handles();
-
-  TUsersFetch_Handles(const TUsersFetch_Handles& from);
-
-  inline TUsersFetch_Handles& operator=(const TUsersFetch_Handles& from) {
-    CopyFrom(from);
-    return *this;
-  }
-
-  static const ::google::protobuf::Descriptor* descriptor();
-  static const TUsersFetch_Handles& default_instance();
-
-  static const TUsersFetch_Handles* internal_default_instance();
-
-  void Swap(TUsersFetch_Handles* other);
-
-  // implements Message ----------------------------------------------
-
-  inline TUsersFetch_Handles* New() const { return New(NULL); }
-
-  TUsersFetch_Handles* New(::google::protobuf::Arena* arena) const;
-  void CopyFrom(const ::google::protobuf::Message& from);
-  void MergeFrom(const ::google::protobuf::Message& from);
-  void CopyFrom(const TUsersFetch_Handles& from);
-  void MergeFrom(const TUsersFetch_Handles& from);
-  void Clear();
-  bool IsInitialized() const;
-
-  size_t ByteSizeLong() const;
-  bool MergePartialFromCodedStream(
-      ::google::protobuf::io::CodedInputStream* input);
-  void SerializeWithCachedSizes(
-      ::google::protobuf::io::CodedOutputStream* output) const;
-  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
-      bool deterministic, ::google::protobuf::uint8* output) const;
-  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const {
-    return InternalSerializeWithCachedSizesToArray(false, output);
-  }
-  int GetCachedSize() const { return _cached_size_; }
+  // optional bytes user_id = 1;
   private:
-  void SharedCtor();
-  void SharedDtor();
-  void SetCachedSize(int size) const;
-  void InternalSwap(TUsersFetch_Handles* other);
-  void UnsafeMergeFrom(const TUsersFetch_Handles& from);
-  private:
-  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
-    return _internal_metadata_.arena();
-  }
-  inline void* MaybeArenaPtr() const {
-    return _internal_metadata_.raw_arena_ptr();
-  }
+  bool has_user_id() const;
   public:
+  void clear_user_id();
+  static const int kUserIdFieldNumber = 1;
+  const ::std::string& user_id() const;
+  void set_user_id(const ::std::string& value);
+  void set_user_id(const char* value);
+  void set_user_id(const void* value, size_t size);
+  ::std::string* mutable_user_id();
+  ::std::string* release_user_id();
+  void set_allocated_user_id(::std::string* user_id);
 
-  ::google::protobuf::Metadata GetMetadata() const;
+  // optional string handle = 2;
+  private:
+  bool has_handle() const;
+  public:
+  void clear_handle();
+  static const int kHandleFieldNumber = 2;
+  const ::std::string& handle() const;
+  void set_handle(const ::std::string& value);
+  void set_handle(const char* value);
+  void set_handle(const char* value, size_t size);
+  ::std::string* mutable_handle();
+  ::std::string* release_handle();
+  void set_allocated_handle(::std::string* handle);
 
-  // nested types ----------------------------------------------------
-
-  // accessors -------------------------------------------------------
-
-  // repeated string handles = 1;
-  int handles_size() const;
-  void clear_handles();
-  static const int kHandlesFieldNumber = 1;
-  const ::std::string& handles(int index) const;
-  ::std::string* mutable_handles(int index);
-  void set_handles(int index, const ::std::string& value);
-  void set_handles(int index, const char* value);
-  void set_handles(int index, const char* value, size_t size);
-  ::std::string* add_handles();
-  void add_handles(const ::std::string& value);
-  void add_handles(const char* value);
-  void add_handles(const char* value, size_t size);
-  const ::google::protobuf::RepeatedPtrField< ::std::string>& handles() const;
-  ::google::protobuf::RepeatedPtrField< ::std::string>* mutable_handles();
-
-  // @@protoc_insertion_point(class_scope:server.TUsersFetch.Handles)
+  IdCase id_case() const;
+  // @@protoc_insertion_point(class_scope:server.TUsersFetch.UsersFetch)
  private:
+  inline void set_has_user_id();
+  inline void set_has_handle();
+
+  inline bool has_id() const;
+  void clear_id();
+  inline void clear_has_id();
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
-  ::google::protobuf::RepeatedPtrField< ::std::string> handles_;
+  union IdUnion {
+    IdUnion() {}
+    ::google::protobuf::internal::ArenaStringPtr user_id_;
+    ::google::protobuf::internal::ArenaStringPtr handle_;
+  } id_;
   mutable int _cached_size_;
+  ::google::protobuf::uint32 _oneof_case_[1];
+
   friend void  protobuf_InitDefaults_api_2eproto_impl();
   friend void  protobuf_AddDesc_api_2eproto_impl();
   friend void protobuf_AssignDesc_api_2eproto();
@@ -3491,7 +3448,7 @@ class TUsersFetch_Handles : public ::google::protobuf::Message /* @@protoc_inser
 
   void InitAsDefaultInstance();
 };
-extern ::google::protobuf::internal::ExplicitlyConstructed<TUsersFetch_Handles> TUsersFetch_Handles_default_instance_;
+extern ::google::protobuf::internal::ExplicitlyConstructed<TUsersFetch_UsersFetch> TUsersFetch_UsersFetch_default_instance_;
 
 // -------------------------------------------------------------------
 
@@ -3509,12 +3466,6 @@ class TUsersFetch : public ::google::protobuf::Message /* @@protoc_insertion_poi
 
   static const ::google::protobuf::Descriptor* descriptor();
   static const TUsersFetch& default_instance();
-
-  enum SetCase {
-    kUserIds = 1,
-    kHandles = 2,
-    SET_NOT_SET = 0,
-  };
 
   static const TUsersFetch* internal_default_instance();
 
@@ -3562,48 +3513,28 @@ class TUsersFetch : public ::google::protobuf::Message /* @@protoc_insertion_poi
 
   // nested types ----------------------------------------------------
 
-  typedef TUsersFetch_UserIds UserIds;
-  typedef TUsersFetch_Handles Handles;
+  typedef TUsersFetch_UsersFetch UsersFetch;
 
   // accessors -------------------------------------------------------
 
-  // optional .server.TUsersFetch.UserIds user_ids = 1;
-  bool has_user_ids() const;
-  void clear_user_ids();
-  static const int kUserIdsFieldNumber = 1;
-  const ::server::TUsersFetch_UserIds& user_ids() const;
-  ::server::TUsersFetch_UserIds* mutable_user_ids();
-  ::server::TUsersFetch_UserIds* release_user_ids();
-  void set_allocated_user_ids(::server::TUsersFetch_UserIds* user_ids);
+  // repeated .server.TUsersFetch.UsersFetch users = 1;
+  int users_size() const;
+  void clear_users();
+  static const int kUsersFieldNumber = 1;
+  const ::server::TUsersFetch_UsersFetch& users(int index) const;
+  ::server::TUsersFetch_UsersFetch* mutable_users(int index);
+  ::server::TUsersFetch_UsersFetch* add_users();
+  ::google::protobuf::RepeatedPtrField< ::server::TUsersFetch_UsersFetch >*
+      mutable_users();
+  const ::google::protobuf::RepeatedPtrField< ::server::TUsersFetch_UsersFetch >&
+      users() const;
 
-  // optional .server.TUsersFetch.Handles handles = 2;
-  bool has_handles() const;
-  void clear_handles();
-  static const int kHandlesFieldNumber = 2;
-  const ::server::TUsersFetch_Handles& handles() const;
-  ::server::TUsersFetch_Handles* mutable_handles();
-  ::server::TUsersFetch_Handles* release_handles();
-  void set_allocated_handles(::server::TUsersFetch_Handles* handles);
-
-  SetCase set_case() const;
   // @@protoc_insertion_point(class_scope:server.TUsersFetch)
  private:
-  inline void set_has_user_ids();
-  inline void set_has_handles();
-
-  inline bool has_set() const;
-  void clear_set();
-  inline void clear_has_set();
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
-  union SetUnion {
-    SetUnion() {}
-    ::server::TUsersFetch_UserIds* user_ids_;
-    ::server::TUsersFetch_Handles* handles_;
-  } set_;
+  ::google::protobuf::RepeatedPtrField< ::server::TUsersFetch_UsersFetch > users_;
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _oneof_case_[1];
-
   friend void  protobuf_InitDefaults_api_2eproto_impl();
   friend void  protobuf_AddDesc_api_2eproto_impl();
   friend void protobuf_AssignDesc_api_2eproto();
@@ -3803,40 +3734,40 @@ extern ::google::protobuf::internal::ExplicitlyConstructed<Friend> Friend_defaul
 
 // -------------------------------------------------------------------
 
-class TFriendAdd : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.TFriendAdd) */ {
+class TFriendsAdd_FriendsAdd : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.TFriendsAdd.FriendsAdd) */ {
  public:
-  TFriendAdd();
-  virtual ~TFriendAdd();
+  TFriendsAdd_FriendsAdd();
+  virtual ~TFriendsAdd_FriendsAdd();
 
-  TFriendAdd(const TFriendAdd& from);
+  TFriendsAdd_FriendsAdd(const TFriendsAdd_FriendsAdd& from);
 
-  inline TFriendAdd& operator=(const TFriendAdd& from) {
+  inline TFriendsAdd_FriendsAdd& operator=(const TFriendsAdd_FriendsAdd& from) {
     CopyFrom(from);
     return *this;
   }
 
   static const ::google::protobuf::Descriptor* descriptor();
-  static const TFriendAdd& default_instance();
+  static const TFriendsAdd_FriendsAdd& default_instance();
 
-  enum SetCase {
+  enum IdCase {
     kUserId = 1,
     kHandle = 2,
-    SET_NOT_SET = 0,
+    ID_NOT_SET = 0,
   };
 
-  static const TFriendAdd* internal_default_instance();
+  static const TFriendsAdd_FriendsAdd* internal_default_instance();
 
-  void Swap(TFriendAdd* other);
+  void Swap(TFriendsAdd_FriendsAdd* other);
 
   // implements Message ----------------------------------------------
 
-  inline TFriendAdd* New() const { return New(NULL); }
+  inline TFriendsAdd_FriendsAdd* New() const { return New(NULL); }
 
-  TFriendAdd* New(::google::protobuf::Arena* arena) const;
+  TFriendsAdd_FriendsAdd* New(::google::protobuf::Arena* arena) const;
   void CopyFrom(const ::google::protobuf::Message& from);
   void MergeFrom(const ::google::protobuf::Message& from);
-  void CopyFrom(const TFriendAdd& from);
-  void MergeFrom(const TFriendAdd& from);
+  void CopyFrom(const TFriendsAdd_FriendsAdd& from);
+  void MergeFrom(const TFriendsAdd_FriendsAdd& from);
   void Clear();
   bool IsInitialized() const;
 
@@ -3855,8 +3786,8 @@ class TFriendAdd : public ::google::protobuf::Message /* @@protoc_insertion_poin
   void SharedCtor();
   void SharedDtor();
   void SetCachedSize(int size) const;
-  void InternalSwap(TFriendAdd* other);
-  void UnsafeMergeFrom(const TFriendAdd& from);
+  void InternalSwap(TFriendsAdd_FriendsAdd* other);
+  void UnsafeMergeFrom(const TFriendsAdd_FriendsAdd& from);
   private:
   inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
     return _internal_metadata_.arena();
@@ -3900,22 +3831,22 @@ class TFriendAdd : public ::google::protobuf::Message /* @@protoc_insertion_poin
   ::std::string* release_handle();
   void set_allocated_handle(::std::string* handle);
 
-  SetCase set_case() const;
-  // @@protoc_insertion_point(class_scope:server.TFriendAdd)
+  IdCase id_case() const;
+  // @@protoc_insertion_point(class_scope:server.TFriendsAdd.FriendsAdd)
  private:
   inline void set_has_user_id();
   inline void set_has_handle();
 
-  inline bool has_set() const;
-  void clear_set();
-  inline void clear_has_set();
+  inline bool has_id() const;
+  void clear_id();
+  inline void clear_has_id();
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
-  union SetUnion {
-    SetUnion() {}
+  union IdUnion {
+    IdUnion() {}
     ::google::protobuf::internal::ArenaStringPtr user_id_;
     ::google::protobuf::internal::ArenaStringPtr handle_;
-  } set_;
+  } id_;
   mutable int _cached_size_;
   ::google::protobuf::uint32 _oneof_case_[1];
 
@@ -3926,38 +3857,38 @@ class TFriendAdd : public ::google::protobuf::Message /* @@protoc_insertion_poin
 
   void InitAsDefaultInstance();
 };
-extern ::google::protobuf::internal::ExplicitlyConstructed<TFriendAdd> TFriendAdd_default_instance_;
+extern ::google::protobuf::internal::ExplicitlyConstructed<TFriendsAdd_FriendsAdd> TFriendsAdd_FriendsAdd_default_instance_;
 
 // -------------------------------------------------------------------
 
-class TFriendRemove : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.TFriendRemove) */ {
+class TFriendsAdd : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.TFriendsAdd) */ {
  public:
-  TFriendRemove();
-  virtual ~TFriendRemove();
+  TFriendsAdd();
+  virtual ~TFriendsAdd();
 
-  TFriendRemove(const TFriendRemove& from);
+  TFriendsAdd(const TFriendsAdd& from);
 
-  inline TFriendRemove& operator=(const TFriendRemove& from) {
+  inline TFriendsAdd& operator=(const TFriendsAdd& from) {
     CopyFrom(from);
     return *this;
   }
 
   static const ::google::protobuf::Descriptor* descriptor();
-  static const TFriendRemove& default_instance();
+  static const TFriendsAdd& default_instance();
 
-  static const TFriendRemove* internal_default_instance();
+  static const TFriendsAdd* internal_default_instance();
 
-  void Swap(TFriendRemove* other);
+  void Swap(TFriendsAdd* other);
 
   // implements Message ----------------------------------------------
 
-  inline TFriendRemove* New() const { return New(NULL); }
+  inline TFriendsAdd* New() const { return New(NULL); }
 
-  TFriendRemove* New(::google::protobuf::Arena* arena) const;
+  TFriendsAdd* New(::google::protobuf::Arena* arena) const;
   void CopyFrom(const ::google::protobuf::Message& from);
   void MergeFrom(const ::google::protobuf::Message& from);
-  void CopyFrom(const TFriendRemove& from);
-  void MergeFrom(const TFriendRemove& from);
+  void CopyFrom(const TFriendsAdd& from);
+  void MergeFrom(const TFriendsAdd& from);
   void Clear();
   bool IsInitialized() const;
 
@@ -3976,8 +3907,8 @@ class TFriendRemove : public ::google::protobuf::Message /* @@protoc_insertion_p
   void SharedCtor();
   void SharedDtor();
   void SetCachedSize(int size) const;
-  void InternalSwap(TFriendRemove* other);
-  void UnsafeMergeFrom(const TFriendRemove& from);
+  void InternalSwap(TFriendsAdd* other);
+  void UnsafeMergeFrom(const TFriendsAdd& from);
   private:
   inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
     return _internal_metadata_.arena();
@@ -3991,24 +3922,27 @@ class TFriendRemove : public ::google::protobuf::Message /* @@protoc_insertion_p
 
   // nested types ----------------------------------------------------
 
+  typedef TFriendsAdd_FriendsAdd FriendsAdd;
+
   // accessors -------------------------------------------------------
 
-  // optional bytes user_id = 1;
-  void clear_user_id();
-  static const int kUserIdFieldNumber = 1;
-  const ::std::string& user_id() const;
-  void set_user_id(const ::std::string& value);
-  void set_user_id(const char* value);
-  void set_user_id(const void* value, size_t size);
-  ::std::string* mutable_user_id();
-  ::std::string* release_user_id();
-  void set_allocated_user_id(::std::string* user_id);
+  // repeated .server.TFriendsAdd.FriendsAdd friends = 1;
+  int friends_size() const;
+  void clear_friends();
+  static const int kFriendsFieldNumber = 1;
+  const ::server::TFriendsAdd_FriendsAdd& friends(int index) const;
+  ::server::TFriendsAdd_FriendsAdd* mutable_friends(int index);
+  ::server::TFriendsAdd_FriendsAdd* add_friends();
+  ::google::protobuf::RepeatedPtrField< ::server::TFriendsAdd_FriendsAdd >*
+      mutable_friends();
+  const ::google::protobuf::RepeatedPtrField< ::server::TFriendsAdd_FriendsAdd >&
+      friends() const;
 
-  // @@protoc_insertion_point(class_scope:server.TFriendRemove)
+  // @@protoc_insertion_point(class_scope:server.TFriendsAdd)
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
-  ::google::protobuf::internal::ArenaStringPtr user_id_;
+  ::google::protobuf::RepeatedPtrField< ::server::TFriendsAdd_FriendsAdd > friends_;
   mutable int _cached_size_;
   friend void  protobuf_InitDefaults_api_2eproto_impl();
   friend void  protobuf_AddDesc_api_2eproto_impl();
@@ -4017,38 +3951,38 @@ class TFriendRemove : public ::google::protobuf::Message /* @@protoc_insertion_p
 
   void InitAsDefaultInstance();
 };
-extern ::google::protobuf::internal::ExplicitlyConstructed<TFriendRemove> TFriendRemove_default_instance_;
+extern ::google::protobuf::internal::ExplicitlyConstructed<TFriendsAdd> TFriendsAdd_default_instance_;
 
 // -------------------------------------------------------------------
 
-class TFriendBlock : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.TFriendBlock) */ {
+class TFriendsRemove : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.TFriendsRemove) */ {
  public:
-  TFriendBlock();
-  virtual ~TFriendBlock();
+  TFriendsRemove();
+  virtual ~TFriendsRemove();
 
-  TFriendBlock(const TFriendBlock& from);
+  TFriendsRemove(const TFriendsRemove& from);
 
-  inline TFriendBlock& operator=(const TFriendBlock& from) {
+  inline TFriendsRemove& operator=(const TFriendsRemove& from) {
     CopyFrom(from);
     return *this;
   }
 
   static const ::google::protobuf::Descriptor* descriptor();
-  static const TFriendBlock& default_instance();
+  static const TFriendsRemove& default_instance();
 
-  static const TFriendBlock* internal_default_instance();
+  static const TFriendsRemove* internal_default_instance();
 
-  void Swap(TFriendBlock* other);
+  void Swap(TFriendsRemove* other);
 
   // implements Message ----------------------------------------------
 
-  inline TFriendBlock* New() const { return New(NULL); }
+  inline TFriendsRemove* New() const { return New(NULL); }
 
-  TFriendBlock* New(::google::protobuf::Arena* arena) const;
+  TFriendsRemove* New(::google::protobuf::Arena* arena) const;
   void CopyFrom(const ::google::protobuf::Message& from);
   void MergeFrom(const ::google::protobuf::Message& from);
-  void CopyFrom(const TFriendBlock& from);
-  void MergeFrom(const TFriendBlock& from);
+  void CopyFrom(const TFriendsRemove& from);
+  void MergeFrom(const TFriendsRemove& from);
   void Clear();
   bool IsInitialized() const;
 
@@ -4067,8 +4001,8 @@ class TFriendBlock : public ::google::protobuf::Message /* @@protoc_insertion_po
   void SharedCtor();
   void SharedDtor();
   void SetCachedSize(int size) const;
-  void InternalSwap(TFriendBlock* other);
-  void UnsafeMergeFrom(const TFriendBlock& from);
+  void InternalSwap(TFriendsRemove* other);
+  void UnsafeMergeFrom(const TFriendsRemove& from);
   private:
   inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
     return _internal_metadata_.arena();
@@ -4084,22 +4018,27 @@ class TFriendBlock : public ::google::protobuf::Message /* @@protoc_insertion_po
 
   // accessors -------------------------------------------------------
 
-  // optional bytes user_id = 1;
-  void clear_user_id();
-  static const int kUserIdFieldNumber = 1;
-  const ::std::string& user_id() const;
-  void set_user_id(const ::std::string& value);
-  void set_user_id(const char* value);
-  void set_user_id(const void* value, size_t size);
-  ::std::string* mutable_user_id();
-  ::std::string* release_user_id();
-  void set_allocated_user_id(::std::string* user_id);
+  // repeated bytes user_ids = 1;
+  int user_ids_size() const;
+  void clear_user_ids();
+  static const int kUserIdsFieldNumber = 1;
+  const ::std::string& user_ids(int index) const;
+  ::std::string* mutable_user_ids(int index);
+  void set_user_ids(int index, const ::std::string& value);
+  void set_user_ids(int index, const char* value);
+  void set_user_ids(int index, const void* value, size_t size);
+  ::std::string* add_user_ids();
+  void add_user_ids(const ::std::string& value);
+  void add_user_ids(const char* value);
+  void add_user_ids(const void* value, size_t size);
+  const ::google::protobuf::RepeatedPtrField< ::std::string>& user_ids() const;
+  ::google::protobuf::RepeatedPtrField< ::std::string>* mutable_user_ids();
 
-  // @@protoc_insertion_point(class_scope:server.TFriendBlock)
+  // @@protoc_insertion_point(class_scope:server.TFriendsRemove)
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
-  ::google::protobuf::internal::ArenaStringPtr user_id_;
+  ::google::protobuf::RepeatedPtrField< ::std::string> user_ids_;
   mutable int _cached_size_;
   friend void  protobuf_InitDefaults_api_2eproto_impl();
   friend void  protobuf_AddDesc_api_2eproto_impl();
@@ -4108,7 +4047,103 @@ class TFriendBlock : public ::google::protobuf::Message /* @@protoc_insertion_po
 
   void InitAsDefaultInstance();
 };
-extern ::google::protobuf::internal::ExplicitlyConstructed<TFriendBlock> TFriendBlock_default_instance_;
+extern ::google::protobuf::internal::ExplicitlyConstructed<TFriendsRemove> TFriendsRemove_default_instance_;
+
+// -------------------------------------------------------------------
+
+class TFriendsBlock : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.TFriendsBlock) */ {
+ public:
+  TFriendsBlock();
+  virtual ~TFriendsBlock();
+
+  TFriendsBlock(const TFriendsBlock& from);
+
+  inline TFriendsBlock& operator=(const TFriendsBlock& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const TFriendsBlock& default_instance();
+
+  static const TFriendsBlock* internal_default_instance();
+
+  void Swap(TFriendsBlock* other);
+
+  // implements Message ----------------------------------------------
+
+  inline TFriendsBlock* New() const { return New(NULL); }
+
+  TFriendsBlock* New(::google::protobuf::Arena* arena) const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const TFriendsBlock& from);
+  void MergeFrom(const TFriendsBlock& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  size_t ByteSizeLong() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const {
+    return InternalSerializeWithCachedSizesToArray(false, output);
+  }
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  void InternalSwap(TFriendsBlock* other);
+  void UnsafeMergeFrom(const TFriendsBlock& from);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return _internal_metadata_.arena();
+  }
+  inline void* MaybeArenaPtr() const {
+    return _internal_metadata_.raw_arena_ptr();
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // repeated bytes user_ids = 1;
+  int user_ids_size() const;
+  void clear_user_ids();
+  static const int kUserIdsFieldNumber = 1;
+  const ::std::string& user_ids(int index) const;
+  ::std::string* mutable_user_ids(int index);
+  void set_user_ids(int index, const ::std::string& value);
+  void set_user_ids(int index, const char* value);
+  void set_user_ids(int index, const void* value, size_t size);
+  ::std::string* add_user_ids();
+  void add_user_ids(const ::std::string& value);
+  void add_user_ids(const char* value);
+  void add_user_ids(const void* value, size_t size);
+  const ::google::protobuf::RepeatedPtrField< ::std::string>& user_ids() const;
+  ::google::protobuf::RepeatedPtrField< ::std::string>* mutable_user_ids();
+
+  // @@protoc_insertion_point(class_scope:server.TFriendsBlock)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::RepeatedPtrField< ::std::string> user_ids_;
+  mutable int _cached_size_;
+  friend void  protobuf_InitDefaults_api_2eproto_impl();
+  friend void  protobuf_AddDesc_api_2eproto_impl();
+  friend void protobuf_AssignDesc_api_2eproto();
+  friend void protobuf_ShutdownFile_api_2eproto();
+
+  void InitAsDefaultInstance();
+};
+extern ::google::protobuf::internal::ExplicitlyConstructed<TFriendsBlock> TFriendsBlock_default_instance_;
 
 // -------------------------------------------------------------------
 
@@ -4481,34 +4516,34 @@ extern ::google::protobuf::internal::ExplicitlyConstructed<Group> Group_default_
 
 // -------------------------------------------------------------------
 
-class TGroupCreate : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.TGroupCreate) */ {
+class TGroupsCreate_GroupCreate : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.TGroupsCreate.GroupCreate) */ {
  public:
-  TGroupCreate();
-  virtual ~TGroupCreate();
+  TGroupsCreate_GroupCreate();
+  virtual ~TGroupsCreate_GroupCreate();
 
-  TGroupCreate(const TGroupCreate& from);
+  TGroupsCreate_GroupCreate(const TGroupsCreate_GroupCreate& from);
 
-  inline TGroupCreate& operator=(const TGroupCreate& from) {
+  inline TGroupsCreate_GroupCreate& operator=(const TGroupsCreate_GroupCreate& from) {
     CopyFrom(from);
     return *this;
   }
 
   static const ::google::protobuf::Descriptor* descriptor();
-  static const TGroupCreate& default_instance();
+  static const TGroupsCreate_GroupCreate& default_instance();
 
-  static const TGroupCreate* internal_default_instance();
+  static const TGroupsCreate_GroupCreate* internal_default_instance();
 
-  void Swap(TGroupCreate* other);
+  void Swap(TGroupsCreate_GroupCreate* other);
 
   // implements Message ----------------------------------------------
 
-  inline TGroupCreate* New() const { return New(NULL); }
+  inline TGroupsCreate_GroupCreate* New() const { return New(NULL); }
 
-  TGroupCreate* New(::google::protobuf::Arena* arena) const;
+  TGroupsCreate_GroupCreate* New(::google::protobuf::Arena* arena) const;
   void CopyFrom(const ::google::protobuf::Message& from);
   void MergeFrom(const ::google::protobuf::Message& from);
-  void CopyFrom(const TGroupCreate& from);
-  void MergeFrom(const TGroupCreate& from);
+  void CopyFrom(const TGroupsCreate_GroupCreate& from);
+  void MergeFrom(const TGroupsCreate_GroupCreate& from);
   void Clear();
   bool IsInitialized() const;
 
@@ -4527,8 +4562,8 @@ class TGroupCreate : public ::google::protobuf::Message /* @@protoc_insertion_po
   void SharedCtor();
   void SharedDtor();
   void SetCachedSize(int size) const;
-  void InternalSwap(TGroupCreate* other);
-  void UnsafeMergeFrom(const TGroupCreate& from);
+  void InternalSwap(TGroupsCreate_GroupCreate* other);
+  void UnsafeMergeFrom(const TGroupsCreate_GroupCreate& from);
   private:
   inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
     return _internal_metadata_.arena();
@@ -4605,7 +4640,7 @@ class TGroupCreate : public ::google::protobuf::Message /* @@protoc_insertion_po
   bool private_() const;
   void set_private_(bool value);
 
-  // @@protoc_insertion_point(class_scope:server.TGroupCreate)
+  // @@protoc_insertion_point(class_scope:server.TGroupsCreate.GroupCreate)
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
@@ -4623,7 +4658,101 @@ class TGroupCreate : public ::google::protobuf::Message /* @@protoc_insertion_po
 
   void InitAsDefaultInstance();
 };
-extern ::google::protobuf::internal::ExplicitlyConstructed<TGroupCreate> TGroupCreate_default_instance_;
+extern ::google::protobuf::internal::ExplicitlyConstructed<TGroupsCreate_GroupCreate> TGroupsCreate_GroupCreate_default_instance_;
+
+// -------------------------------------------------------------------
+
+class TGroupsCreate : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.TGroupsCreate) */ {
+ public:
+  TGroupsCreate();
+  virtual ~TGroupsCreate();
+
+  TGroupsCreate(const TGroupsCreate& from);
+
+  inline TGroupsCreate& operator=(const TGroupsCreate& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const TGroupsCreate& default_instance();
+
+  static const TGroupsCreate* internal_default_instance();
+
+  void Swap(TGroupsCreate* other);
+
+  // implements Message ----------------------------------------------
+
+  inline TGroupsCreate* New() const { return New(NULL); }
+
+  TGroupsCreate* New(::google::protobuf::Arena* arena) const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const TGroupsCreate& from);
+  void MergeFrom(const TGroupsCreate& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  size_t ByteSizeLong() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const {
+    return InternalSerializeWithCachedSizesToArray(false, output);
+  }
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  void InternalSwap(TGroupsCreate* other);
+  void UnsafeMergeFrom(const TGroupsCreate& from);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return _internal_metadata_.arena();
+  }
+  inline void* MaybeArenaPtr() const {
+    return _internal_metadata_.raw_arena_ptr();
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  typedef TGroupsCreate_GroupCreate GroupCreate;
+
+  // accessors -------------------------------------------------------
+
+  // repeated .server.TGroupsCreate.GroupCreate groups = 1;
+  int groups_size() const;
+  void clear_groups();
+  static const int kGroupsFieldNumber = 1;
+  const ::server::TGroupsCreate_GroupCreate& groups(int index) const;
+  ::server::TGroupsCreate_GroupCreate* mutable_groups(int index);
+  ::server::TGroupsCreate_GroupCreate* add_groups();
+  ::google::protobuf::RepeatedPtrField< ::server::TGroupsCreate_GroupCreate >*
+      mutable_groups();
+  const ::google::protobuf::RepeatedPtrField< ::server::TGroupsCreate_GroupCreate >&
+      groups() const;
+
+  // @@protoc_insertion_point(class_scope:server.TGroupsCreate)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::RepeatedPtrField< ::server::TGroupsCreate_GroupCreate > groups_;
+  mutable int _cached_size_;
+  friend void  protobuf_InitDefaults_api_2eproto_impl();
+  friend void  protobuf_AddDesc_api_2eproto_impl();
+  friend void protobuf_AssignDesc_api_2eproto();
+  friend void protobuf_ShutdownFile_api_2eproto();
+
+  void InitAsDefaultInstance();
+};
+extern ::google::protobuf::internal::ExplicitlyConstructed<TGroupsCreate> TGroupsCreate_default_instance_;
 
 // -------------------------------------------------------------------
 
@@ -4716,34 +4845,34 @@ extern ::google::protobuf::internal::ExplicitlyConstructed<TGroup> TGroup_defaul
 
 // -------------------------------------------------------------------
 
-class TGroupUpdate : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.TGroupUpdate) */ {
+class TGroupsUpdate_GroupUpdate : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.TGroupsUpdate.GroupUpdate) */ {
  public:
-  TGroupUpdate();
-  virtual ~TGroupUpdate();
+  TGroupsUpdate_GroupUpdate();
+  virtual ~TGroupsUpdate_GroupUpdate();
 
-  TGroupUpdate(const TGroupUpdate& from);
+  TGroupsUpdate_GroupUpdate(const TGroupsUpdate_GroupUpdate& from);
 
-  inline TGroupUpdate& operator=(const TGroupUpdate& from) {
+  inline TGroupsUpdate_GroupUpdate& operator=(const TGroupsUpdate_GroupUpdate& from) {
     CopyFrom(from);
     return *this;
   }
 
   static const ::google::protobuf::Descriptor* descriptor();
-  static const TGroupUpdate& default_instance();
+  static const TGroupsUpdate_GroupUpdate& default_instance();
 
-  static const TGroupUpdate* internal_default_instance();
+  static const TGroupsUpdate_GroupUpdate* internal_default_instance();
 
-  void Swap(TGroupUpdate* other);
+  void Swap(TGroupsUpdate_GroupUpdate* other);
 
   // implements Message ----------------------------------------------
 
-  inline TGroupUpdate* New() const { return New(NULL); }
+  inline TGroupsUpdate_GroupUpdate* New() const { return New(NULL); }
 
-  TGroupUpdate* New(::google::protobuf::Arena* arena) const;
+  TGroupsUpdate_GroupUpdate* New(::google::protobuf::Arena* arena) const;
   void CopyFrom(const ::google::protobuf::Message& from);
   void MergeFrom(const ::google::protobuf::Message& from);
-  void CopyFrom(const TGroupUpdate& from);
-  void MergeFrom(const TGroupUpdate& from);
+  void CopyFrom(const TGroupsUpdate_GroupUpdate& from);
+  void MergeFrom(const TGroupsUpdate_GroupUpdate& from);
   void Clear();
   bool IsInitialized() const;
 
@@ -4762,8 +4891,8 @@ class TGroupUpdate : public ::google::protobuf::Message /* @@protoc_insertion_po
   void SharedCtor();
   void SharedDtor();
   void SetCachedSize(int size) const;
-  void InternalSwap(TGroupUpdate* other);
-  void UnsafeMergeFrom(const TGroupUpdate& from);
+  void InternalSwap(TGroupsUpdate_GroupUpdate* other);
+  void UnsafeMergeFrom(const TGroupsUpdate_GroupUpdate& from);
   private:
   inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
     return _internal_metadata_.arena();
@@ -4851,7 +4980,7 @@ class TGroupUpdate : public ::google::protobuf::Message /* @@protoc_insertion_po
   ::std::string* release_metadata();
   void set_allocated_metadata(::std::string* metadata);
 
-  // @@protoc_insertion_point(class_scope:server.TGroupUpdate)
+  // @@protoc_insertion_point(class_scope:server.TGroupsUpdate.GroupUpdate)
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
@@ -4870,38 +4999,38 @@ class TGroupUpdate : public ::google::protobuf::Message /* @@protoc_insertion_po
 
   void InitAsDefaultInstance();
 };
-extern ::google::protobuf::internal::ExplicitlyConstructed<TGroupUpdate> TGroupUpdate_default_instance_;
+extern ::google::protobuf::internal::ExplicitlyConstructed<TGroupsUpdate_GroupUpdate> TGroupsUpdate_GroupUpdate_default_instance_;
 
 // -------------------------------------------------------------------
 
-class TGroupRemove : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.TGroupRemove) */ {
+class TGroupsUpdate : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.TGroupsUpdate) */ {
  public:
-  TGroupRemove();
-  virtual ~TGroupRemove();
+  TGroupsUpdate();
+  virtual ~TGroupsUpdate();
 
-  TGroupRemove(const TGroupRemove& from);
+  TGroupsUpdate(const TGroupsUpdate& from);
 
-  inline TGroupRemove& operator=(const TGroupRemove& from) {
+  inline TGroupsUpdate& operator=(const TGroupsUpdate& from) {
     CopyFrom(from);
     return *this;
   }
 
   static const ::google::protobuf::Descriptor* descriptor();
-  static const TGroupRemove& default_instance();
+  static const TGroupsUpdate& default_instance();
 
-  static const TGroupRemove* internal_default_instance();
+  static const TGroupsUpdate* internal_default_instance();
 
-  void Swap(TGroupRemove* other);
+  void Swap(TGroupsUpdate* other);
 
   // implements Message ----------------------------------------------
 
-  inline TGroupRemove* New() const { return New(NULL); }
+  inline TGroupsUpdate* New() const { return New(NULL); }
 
-  TGroupRemove* New(::google::protobuf::Arena* arena) const;
+  TGroupsUpdate* New(::google::protobuf::Arena* arena) const;
   void CopyFrom(const ::google::protobuf::Message& from);
   void MergeFrom(const ::google::protobuf::Message& from);
-  void CopyFrom(const TGroupRemove& from);
-  void MergeFrom(const TGroupRemove& from);
+  void CopyFrom(const TGroupsUpdate& from);
+  void MergeFrom(const TGroupsUpdate& from);
   void Clear();
   bool IsInitialized() const;
 
@@ -4920,8 +5049,102 @@ class TGroupRemove : public ::google::protobuf::Message /* @@protoc_insertion_po
   void SharedCtor();
   void SharedDtor();
   void SetCachedSize(int size) const;
-  void InternalSwap(TGroupRemove* other);
-  void UnsafeMergeFrom(const TGroupRemove& from);
+  void InternalSwap(TGroupsUpdate* other);
+  void UnsafeMergeFrom(const TGroupsUpdate& from);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return _internal_metadata_.arena();
+  }
+  inline void* MaybeArenaPtr() const {
+    return _internal_metadata_.raw_arena_ptr();
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  typedef TGroupsUpdate_GroupUpdate GroupUpdate;
+
+  // accessors -------------------------------------------------------
+
+  // repeated .server.TGroupsUpdate.GroupUpdate groups = 1;
+  int groups_size() const;
+  void clear_groups();
+  static const int kGroupsFieldNumber = 1;
+  const ::server::TGroupsUpdate_GroupUpdate& groups(int index) const;
+  ::server::TGroupsUpdate_GroupUpdate* mutable_groups(int index);
+  ::server::TGroupsUpdate_GroupUpdate* add_groups();
+  ::google::protobuf::RepeatedPtrField< ::server::TGroupsUpdate_GroupUpdate >*
+      mutable_groups();
+  const ::google::protobuf::RepeatedPtrField< ::server::TGroupsUpdate_GroupUpdate >&
+      groups() const;
+
+  // @@protoc_insertion_point(class_scope:server.TGroupsUpdate)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::RepeatedPtrField< ::server::TGroupsUpdate_GroupUpdate > groups_;
+  mutable int _cached_size_;
+  friend void  protobuf_InitDefaults_api_2eproto_impl();
+  friend void  protobuf_AddDesc_api_2eproto_impl();
+  friend void protobuf_AssignDesc_api_2eproto();
+  friend void protobuf_ShutdownFile_api_2eproto();
+
+  void InitAsDefaultInstance();
+};
+extern ::google::protobuf::internal::ExplicitlyConstructed<TGroupsUpdate> TGroupsUpdate_default_instance_;
+
+// -------------------------------------------------------------------
+
+class TGroupsRemove : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.TGroupsRemove) */ {
+ public:
+  TGroupsRemove();
+  virtual ~TGroupsRemove();
+
+  TGroupsRemove(const TGroupsRemove& from);
+
+  inline TGroupsRemove& operator=(const TGroupsRemove& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const TGroupsRemove& default_instance();
+
+  static const TGroupsRemove* internal_default_instance();
+
+  void Swap(TGroupsRemove* other);
+
+  // implements Message ----------------------------------------------
+
+  inline TGroupsRemove* New() const { return New(NULL); }
+
+  TGroupsRemove* New(::google::protobuf::Arena* arena) const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const TGroupsRemove& from);
+  void MergeFrom(const TGroupsRemove& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  size_t ByteSizeLong() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const {
+    return InternalSerializeWithCachedSizesToArray(false, output);
+  }
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  void InternalSwap(TGroupsRemove* other);
+  void UnsafeMergeFrom(const TGroupsRemove& from);
   private:
   inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
     return _internal_metadata_.arena();
@@ -4937,22 +5160,27 @@ class TGroupRemove : public ::google::protobuf::Message /* @@protoc_insertion_po
 
   // accessors -------------------------------------------------------
 
-  // optional bytes group_id = 1;
-  void clear_group_id();
-  static const int kGroupIdFieldNumber = 1;
-  const ::std::string& group_id() const;
-  void set_group_id(const ::std::string& value);
-  void set_group_id(const char* value);
-  void set_group_id(const void* value, size_t size);
-  ::std::string* mutable_group_id();
-  ::std::string* release_group_id();
-  void set_allocated_group_id(::std::string* group_id);
+  // repeated bytes group_ids = 1;
+  int group_ids_size() const;
+  void clear_group_ids();
+  static const int kGroupIdsFieldNumber = 1;
+  const ::std::string& group_ids(int index) const;
+  ::std::string* mutable_group_ids(int index);
+  void set_group_ids(int index, const ::std::string& value);
+  void set_group_ids(int index, const char* value);
+  void set_group_ids(int index, const void* value, size_t size);
+  ::std::string* add_group_ids();
+  void add_group_ids(const ::std::string& value);
+  void add_group_ids(const char* value);
+  void add_group_ids(const void* value, size_t size);
+  const ::google::protobuf::RepeatedPtrField< ::std::string>& group_ids() const;
+  ::google::protobuf::RepeatedPtrField< ::std::string>* mutable_group_ids();
 
-  // @@protoc_insertion_point(class_scope:server.TGroupRemove)
+  // @@protoc_insertion_point(class_scope:server.TGroupsRemove)
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
-  ::google::protobuf::internal::ArenaStringPtr group_id_;
+  ::google::protobuf::RepeatedPtrField< ::std::string> group_ids_;
   mutable int _cached_size_;
   friend void  protobuf_InitDefaults_api_2eproto_impl();
   friend void  protobuf_AddDesc_api_2eproto_impl();
@@ -4961,7 +5189,7 @@ class TGroupRemove : public ::google::protobuf::Message /* @@protoc_insertion_po
 
   void InitAsDefaultInstance();
 };
-extern ::google::protobuf::internal::ExplicitlyConstructed<TGroupRemove> TGroupRemove_default_instance_;
+extern ::google::protobuf::internal::ExplicitlyConstructed<TGroupsRemove> TGroupsRemove_default_instance_;
 
 // -------------------------------------------------------------------
 
@@ -5044,34 +5272,40 @@ extern ::google::protobuf::internal::ExplicitlyConstructed<TGroupsSelfList> TGro
 
 // -------------------------------------------------------------------
 
-class TGroupsFetch_GroupIds : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.TGroupsFetch.GroupIds) */ {
+class TGroupsFetch_GroupFetch : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.TGroupsFetch.GroupFetch) */ {
  public:
-  TGroupsFetch_GroupIds();
-  virtual ~TGroupsFetch_GroupIds();
+  TGroupsFetch_GroupFetch();
+  virtual ~TGroupsFetch_GroupFetch();
 
-  TGroupsFetch_GroupIds(const TGroupsFetch_GroupIds& from);
+  TGroupsFetch_GroupFetch(const TGroupsFetch_GroupFetch& from);
 
-  inline TGroupsFetch_GroupIds& operator=(const TGroupsFetch_GroupIds& from) {
+  inline TGroupsFetch_GroupFetch& operator=(const TGroupsFetch_GroupFetch& from) {
     CopyFrom(from);
     return *this;
   }
 
   static const ::google::protobuf::Descriptor* descriptor();
-  static const TGroupsFetch_GroupIds& default_instance();
+  static const TGroupsFetch_GroupFetch& default_instance();
 
-  static const TGroupsFetch_GroupIds* internal_default_instance();
+  enum IdCase {
+    kGroupId = 1,
+    kName = 2,
+    ID_NOT_SET = 0,
+  };
 
-  void Swap(TGroupsFetch_GroupIds* other);
+  static const TGroupsFetch_GroupFetch* internal_default_instance();
+
+  void Swap(TGroupsFetch_GroupFetch* other);
 
   // implements Message ----------------------------------------------
 
-  inline TGroupsFetch_GroupIds* New() const { return New(NULL); }
+  inline TGroupsFetch_GroupFetch* New() const { return New(NULL); }
 
-  TGroupsFetch_GroupIds* New(::google::protobuf::Arena* arena) const;
+  TGroupsFetch_GroupFetch* New(::google::protobuf::Arena* arena) const;
   void CopyFrom(const ::google::protobuf::Message& from);
   void MergeFrom(const ::google::protobuf::Message& from);
-  void CopyFrom(const TGroupsFetch_GroupIds& from);
-  void MergeFrom(const TGroupsFetch_GroupIds& from);
+  void CopyFrom(const TGroupsFetch_GroupFetch& from);
+  void MergeFrom(const TGroupsFetch_GroupFetch& from);
   void Clear();
   bool IsInitialized() const;
 
@@ -5090,8 +5324,8 @@ class TGroupsFetch_GroupIds : public ::google::protobuf::Message /* @@protoc_ins
   void SharedCtor();
   void SharedDtor();
   void SetCachedSize(int size) const;
-  void InternalSwap(TGroupsFetch_GroupIds* other);
-  void UnsafeMergeFrom(const TGroupsFetch_GroupIds& from);
+  void InternalSwap(TGroupsFetch_GroupFetch* other);
+  void UnsafeMergeFrom(const TGroupsFetch_GroupFetch& from);
   private:
   inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
     return _internal_metadata_.arena();
@@ -5107,124 +5341,53 @@ class TGroupsFetch_GroupIds : public ::google::protobuf::Message /* @@protoc_ins
 
   // accessors -------------------------------------------------------
 
-  // repeated bytes group_ids = 1;
-  int group_ids_size() const;
-  void clear_group_ids();
-  static const int kGroupIdsFieldNumber = 1;
-  const ::std::string& group_ids(int index) const;
-  ::std::string* mutable_group_ids(int index);
-  void set_group_ids(int index, const ::std::string& value);
-  void set_group_ids(int index, const char* value);
-  void set_group_ids(int index, const void* value, size_t size);
-  ::std::string* add_group_ids();
-  void add_group_ids(const ::std::string& value);
-  void add_group_ids(const char* value);
-  void add_group_ids(const void* value, size_t size);
-  const ::google::protobuf::RepeatedPtrField< ::std::string>& group_ids() const;
-  ::google::protobuf::RepeatedPtrField< ::std::string>* mutable_group_ids();
-
-  // @@protoc_insertion_point(class_scope:server.TGroupsFetch.GroupIds)
- private:
-
-  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
-  ::google::protobuf::RepeatedPtrField< ::std::string> group_ids_;
-  mutable int _cached_size_;
-  friend void  protobuf_InitDefaults_api_2eproto_impl();
-  friend void  protobuf_AddDesc_api_2eproto_impl();
-  friend void protobuf_AssignDesc_api_2eproto();
-  friend void protobuf_ShutdownFile_api_2eproto();
-
-  void InitAsDefaultInstance();
-};
-extern ::google::protobuf::internal::ExplicitlyConstructed<TGroupsFetch_GroupIds> TGroupsFetch_GroupIds_default_instance_;
-
-// -------------------------------------------------------------------
-
-class TGroupsFetch_Names : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.TGroupsFetch.Names) */ {
- public:
-  TGroupsFetch_Names();
-  virtual ~TGroupsFetch_Names();
-
-  TGroupsFetch_Names(const TGroupsFetch_Names& from);
-
-  inline TGroupsFetch_Names& operator=(const TGroupsFetch_Names& from) {
-    CopyFrom(from);
-    return *this;
-  }
-
-  static const ::google::protobuf::Descriptor* descriptor();
-  static const TGroupsFetch_Names& default_instance();
-
-  static const TGroupsFetch_Names* internal_default_instance();
-
-  void Swap(TGroupsFetch_Names* other);
-
-  // implements Message ----------------------------------------------
-
-  inline TGroupsFetch_Names* New() const { return New(NULL); }
-
-  TGroupsFetch_Names* New(::google::protobuf::Arena* arena) const;
-  void CopyFrom(const ::google::protobuf::Message& from);
-  void MergeFrom(const ::google::protobuf::Message& from);
-  void CopyFrom(const TGroupsFetch_Names& from);
-  void MergeFrom(const TGroupsFetch_Names& from);
-  void Clear();
-  bool IsInitialized() const;
-
-  size_t ByteSizeLong() const;
-  bool MergePartialFromCodedStream(
-      ::google::protobuf::io::CodedInputStream* input);
-  void SerializeWithCachedSizes(
-      ::google::protobuf::io::CodedOutputStream* output) const;
-  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
-      bool deterministic, ::google::protobuf::uint8* output) const;
-  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const {
-    return InternalSerializeWithCachedSizesToArray(false, output);
-  }
-  int GetCachedSize() const { return _cached_size_; }
+  // optional bytes group_id = 1;
   private:
-  void SharedCtor();
-  void SharedDtor();
-  void SetCachedSize(int size) const;
-  void InternalSwap(TGroupsFetch_Names* other);
-  void UnsafeMergeFrom(const TGroupsFetch_Names& from);
-  private:
-  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
-    return _internal_metadata_.arena();
-  }
-  inline void* MaybeArenaPtr() const {
-    return _internal_metadata_.raw_arena_ptr();
-  }
+  bool has_group_id() const;
   public:
+  void clear_group_id();
+  static const int kGroupIdFieldNumber = 1;
+  const ::std::string& group_id() const;
+  void set_group_id(const ::std::string& value);
+  void set_group_id(const char* value);
+  void set_group_id(const void* value, size_t size);
+  ::std::string* mutable_group_id();
+  ::std::string* release_group_id();
+  void set_allocated_group_id(::std::string* group_id);
 
-  ::google::protobuf::Metadata GetMetadata() const;
+  // optional string name = 2;
+  private:
+  bool has_name() const;
+  public:
+  void clear_name();
+  static const int kNameFieldNumber = 2;
+  const ::std::string& name() const;
+  void set_name(const ::std::string& value);
+  void set_name(const char* value);
+  void set_name(const char* value, size_t size);
+  ::std::string* mutable_name();
+  ::std::string* release_name();
+  void set_allocated_name(::std::string* name);
 
-  // nested types ----------------------------------------------------
-
-  // accessors -------------------------------------------------------
-
-  // repeated string names = 1;
-  int names_size() const;
-  void clear_names();
-  static const int kNamesFieldNumber = 1;
-  const ::std::string& names(int index) const;
-  ::std::string* mutable_names(int index);
-  void set_names(int index, const ::std::string& value);
-  void set_names(int index, const char* value);
-  void set_names(int index, const char* value, size_t size);
-  ::std::string* add_names();
-  void add_names(const ::std::string& value);
-  void add_names(const char* value);
-  void add_names(const char* value, size_t size);
-  const ::google::protobuf::RepeatedPtrField< ::std::string>& names() const;
-  ::google::protobuf::RepeatedPtrField< ::std::string>* mutable_names();
-
-  // @@protoc_insertion_point(class_scope:server.TGroupsFetch.Names)
+  IdCase id_case() const;
+  // @@protoc_insertion_point(class_scope:server.TGroupsFetch.GroupFetch)
  private:
+  inline void set_has_group_id();
+  inline void set_has_name();
+
+  inline bool has_id() const;
+  void clear_id();
+  inline void clear_has_id();
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
-  ::google::protobuf::RepeatedPtrField< ::std::string> names_;
+  union IdUnion {
+    IdUnion() {}
+    ::google::protobuf::internal::ArenaStringPtr group_id_;
+    ::google::protobuf::internal::ArenaStringPtr name_;
+  } id_;
   mutable int _cached_size_;
+  ::google::protobuf::uint32 _oneof_case_[1];
+
   friend void  protobuf_InitDefaults_api_2eproto_impl();
   friend void  protobuf_AddDesc_api_2eproto_impl();
   friend void protobuf_AssignDesc_api_2eproto();
@@ -5232,7 +5395,7 @@ class TGroupsFetch_Names : public ::google::protobuf::Message /* @@protoc_insert
 
   void InitAsDefaultInstance();
 };
-extern ::google::protobuf::internal::ExplicitlyConstructed<TGroupsFetch_Names> TGroupsFetch_Names_default_instance_;
+extern ::google::protobuf::internal::ExplicitlyConstructed<TGroupsFetch_GroupFetch> TGroupsFetch_GroupFetch_default_instance_;
 
 // -------------------------------------------------------------------
 
@@ -5250,12 +5413,6 @@ class TGroupsFetch : public ::google::protobuf::Message /* @@protoc_insertion_po
 
   static const ::google::protobuf::Descriptor* descriptor();
   static const TGroupsFetch& default_instance();
-
-  enum SetCase {
-    kGroupIds = 1,
-    kNames = 2,
-    SET_NOT_SET = 0,
-  };
 
   static const TGroupsFetch* internal_default_instance();
 
@@ -5303,48 +5460,28 @@ class TGroupsFetch : public ::google::protobuf::Message /* @@protoc_insertion_po
 
   // nested types ----------------------------------------------------
 
-  typedef TGroupsFetch_GroupIds GroupIds;
-  typedef TGroupsFetch_Names Names;
+  typedef TGroupsFetch_GroupFetch GroupFetch;
 
   // accessors -------------------------------------------------------
 
-  // optional .server.TGroupsFetch.GroupIds group_ids = 1;
-  bool has_group_ids() const;
-  void clear_group_ids();
-  static const int kGroupIdsFieldNumber = 1;
-  const ::server::TGroupsFetch_GroupIds& group_ids() const;
-  ::server::TGroupsFetch_GroupIds* mutable_group_ids();
-  ::server::TGroupsFetch_GroupIds* release_group_ids();
-  void set_allocated_group_ids(::server::TGroupsFetch_GroupIds* group_ids);
+  // repeated .server.TGroupsFetch.GroupFetch groups = 1;
+  int groups_size() const;
+  void clear_groups();
+  static const int kGroupsFieldNumber = 1;
+  const ::server::TGroupsFetch_GroupFetch& groups(int index) const;
+  ::server::TGroupsFetch_GroupFetch* mutable_groups(int index);
+  ::server::TGroupsFetch_GroupFetch* add_groups();
+  ::google::protobuf::RepeatedPtrField< ::server::TGroupsFetch_GroupFetch >*
+      mutable_groups();
+  const ::google::protobuf::RepeatedPtrField< ::server::TGroupsFetch_GroupFetch >&
+      groups() const;
 
-  // optional .server.TGroupsFetch.Names names = 2;
-  bool has_names() const;
-  void clear_names();
-  static const int kNamesFieldNumber = 2;
-  const ::server::TGroupsFetch_Names& names() const;
-  ::server::TGroupsFetch_Names* mutable_names();
-  ::server::TGroupsFetch_Names* release_names();
-  void set_allocated_names(::server::TGroupsFetch_Names* names);
-
-  SetCase set_case() const;
   // @@protoc_insertion_point(class_scope:server.TGroupsFetch)
  private:
-  inline void set_has_group_ids();
-  inline void set_has_names();
-
-  inline bool has_set() const;
-  void clear_set();
-  inline void clear_has_set();
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
-  union SetUnion {
-    SetUnion() {}
-    ::server::TGroupsFetch_GroupIds* group_ids_;
-    ::server::TGroupsFetch_Names* names_;
-  } set_;
+  ::google::protobuf::RepeatedPtrField< ::server::TGroupsFetch_GroupFetch > groups_;
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _oneof_case_[1];
-
   friend void  protobuf_InitDefaults_api_2eproto_impl();
   friend void  protobuf_AddDesc_api_2eproto_impl();
   friend void protobuf_AssignDesc_api_2eproto();
@@ -5899,34 +6036,34 @@ extern ::google::protobuf::internal::ExplicitlyConstructed<TGroupUsers> TGroupUs
 
 // -------------------------------------------------------------------
 
-class TGroupJoin : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.TGroupJoin) */ {
+class TGroupsJoin : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.TGroupsJoin) */ {
  public:
-  TGroupJoin();
-  virtual ~TGroupJoin();
+  TGroupsJoin();
+  virtual ~TGroupsJoin();
 
-  TGroupJoin(const TGroupJoin& from);
+  TGroupsJoin(const TGroupsJoin& from);
 
-  inline TGroupJoin& operator=(const TGroupJoin& from) {
+  inline TGroupsJoin& operator=(const TGroupsJoin& from) {
     CopyFrom(from);
     return *this;
   }
 
   static const ::google::protobuf::Descriptor* descriptor();
-  static const TGroupJoin& default_instance();
+  static const TGroupsJoin& default_instance();
 
-  static const TGroupJoin* internal_default_instance();
+  static const TGroupsJoin* internal_default_instance();
 
-  void Swap(TGroupJoin* other);
+  void Swap(TGroupsJoin* other);
 
   // implements Message ----------------------------------------------
 
-  inline TGroupJoin* New() const { return New(NULL); }
+  inline TGroupsJoin* New() const { return New(NULL); }
 
-  TGroupJoin* New(::google::protobuf::Arena* arena) const;
+  TGroupsJoin* New(::google::protobuf::Arena* arena) const;
   void CopyFrom(const ::google::protobuf::Message& from);
   void MergeFrom(const ::google::protobuf::Message& from);
-  void CopyFrom(const TGroupJoin& from);
-  void MergeFrom(const TGroupJoin& from);
+  void CopyFrom(const TGroupsJoin& from);
+  void MergeFrom(const TGroupsJoin& from);
   void Clear();
   bool IsInitialized() const;
 
@@ -5945,8 +6082,8 @@ class TGroupJoin : public ::google::protobuf::Message /* @@protoc_insertion_poin
   void SharedCtor();
   void SharedDtor();
   void SetCachedSize(int size) const;
-  void InternalSwap(TGroupJoin* other);
-  void UnsafeMergeFrom(const TGroupJoin& from);
+  void InternalSwap(TGroupsJoin* other);
+  void UnsafeMergeFrom(const TGroupsJoin& from);
   private:
   inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
     return _internal_metadata_.arena();
@@ -5962,22 +6099,27 @@ class TGroupJoin : public ::google::protobuf::Message /* @@protoc_insertion_poin
 
   // accessors -------------------------------------------------------
 
-  // optional bytes group_id = 1;
-  void clear_group_id();
-  static const int kGroupIdFieldNumber = 1;
-  const ::std::string& group_id() const;
-  void set_group_id(const ::std::string& value);
-  void set_group_id(const char* value);
-  void set_group_id(const void* value, size_t size);
-  ::std::string* mutable_group_id();
-  ::std::string* release_group_id();
-  void set_allocated_group_id(::std::string* group_id);
+  // repeated bytes group_ids = 1;
+  int group_ids_size() const;
+  void clear_group_ids();
+  static const int kGroupIdsFieldNumber = 1;
+  const ::std::string& group_ids(int index) const;
+  ::std::string* mutable_group_ids(int index);
+  void set_group_ids(int index, const ::std::string& value);
+  void set_group_ids(int index, const char* value);
+  void set_group_ids(int index, const void* value, size_t size);
+  ::std::string* add_group_ids();
+  void add_group_ids(const ::std::string& value);
+  void add_group_ids(const char* value);
+  void add_group_ids(const void* value, size_t size);
+  const ::google::protobuf::RepeatedPtrField< ::std::string>& group_ids() const;
+  ::google::protobuf::RepeatedPtrField< ::std::string>* mutable_group_ids();
 
-  // @@protoc_insertion_point(class_scope:server.TGroupJoin)
+  // @@protoc_insertion_point(class_scope:server.TGroupsJoin)
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
-  ::google::protobuf::internal::ArenaStringPtr group_id_;
+  ::google::protobuf::RepeatedPtrField< ::std::string> group_ids_;
   mutable int _cached_size_;
   friend void  protobuf_InitDefaults_api_2eproto_impl();
   friend void  protobuf_AddDesc_api_2eproto_impl();
@@ -5986,38 +6128,38 @@ class TGroupJoin : public ::google::protobuf::Message /* @@protoc_insertion_poin
 
   void InitAsDefaultInstance();
 };
-extern ::google::protobuf::internal::ExplicitlyConstructed<TGroupJoin> TGroupJoin_default_instance_;
+extern ::google::protobuf::internal::ExplicitlyConstructed<TGroupsJoin> TGroupsJoin_default_instance_;
 
 // -------------------------------------------------------------------
 
-class TGroupLeave : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.TGroupLeave) */ {
+class TGroupsLeave : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.TGroupsLeave) */ {
  public:
-  TGroupLeave();
-  virtual ~TGroupLeave();
+  TGroupsLeave();
+  virtual ~TGroupsLeave();
 
-  TGroupLeave(const TGroupLeave& from);
+  TGroupsLeave(const TGroupsLeave& from);
 
-  inline TGroupLeave& operator=(const TGroupLeave& from) {
+  inline TGroupsLeave& operator=(const TGroupsLeave& from) {
     CopyFrom(from);
     return *this;
   }
 
   static const ::google::protobuf::Descriptor* descriptor();
-  static const TGroupLeave& default_instance();
+  static const TGroupsLeave& default_instance();
 
-  static const TGroupLeave* internal_default_instance();
+  static const TGroupsLeave* internal_default_instance();
 
-  void Swap(TGroupLeave* other);
+  void Swap(TGroupsLeave* other);
 
   // implements Message ----------------------------------------------
 
-  inline TGroupLeave* New() const { return New(NULL); }
+  inline TGroupsLeave* New() const { return New(NULL); }
 
-  TGroupLeave* New(::google::protobuf::Arena* arena) const;
+  TGroupsLeave* New(::google::protobuf::Arena* arena) const;
   void CopyFrom(const ::google::protobuf::Message& from);
   void MergeFrom(const ::google::protobuf::Message& from);
-  void CopyFrom(const TGroupLeave& from);
-  void MergeFrom(const TGroupLeave& from);
+  void CopyFrom(const TGroupsLeave& from);
+  void MergeFrom(const TGroupsLeave& from);
   void Clear();
   bool IsInitialized() const;
 
@@ -6036,8 +6178,8 @@ class TGroupLeave : public ::google::protobuf::Message /* @@protoc_insertion_poi
   void SharedCtor();
   void SharedDtor();
   void SetCachedSize(int size) const;
-  void InternalSwap(TGroupLeave* other);
-  void UnsafeMergeFrom(const TGroupLeave& from);
+  void InternalSwap(TGroupsLeave* other);
+  void UnsafeMergeFrom(const TGroupsLeave& from);
   private:
   inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
     return _internal_metadata_.arena();
@@ -6053,22 +6195,27 @@ class TGroupLeave : public ::google::protobuf::Message /* @@protoc_insertion_poi
 
   // accessors -------------------------------------------------------
 
-  // optional bytes group_id = 1;
-  void clear_group_id();
-  static const int kGroupIdFieldNumber = 1;
-  const ::std::string& group_id() const;
-  void set_group_id(const ::std::string& value);
-  void set_group_id(const char* value);
-  void set_group_id(const void* value, size_t size);
-  ::std::string* mutable_group_id();
-  ::std::string* release_group_id();
-  void set_allocated_group_id(::std::string* group_id);
+  // repeated bytes group_ids = 1;
+  int group_ids_size() const;
+  void clear_group_ids();
+  static const int kGroupIdsFieldNumber = 1;
+  const ::std::string& group_ids(int index) const;
+  ::std::string* mutable_group_ids(int index);
+  void set_group_ids(int index, const ::std::string& value);
+  void set_group_ids(int index, const char* value);
+  void set_group_ids(int index, const void* value, size_t size);
+  ::std::string* add_group_ids();
+  void add_group_ids(const ::std::string& value);
+  void add_group_ids(const char* value);
+  void add_group_ids(const void* value, size_t size);
+  const ::google::protobuf::RepeatedPtrField< ::std::string>& group_ids() const;
+  ::google::protobuf::RepeatedPtrField< ::std::string>* mutable_group_ids();
 
-  // @@protoc_insertion_point(class_scope:server.TGroupLeave)
+  // @@protoc_insertion_point(class_scope:server.TGroupsLeave)
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
-  ::google::protobuf::internal::ArenaStringPtr group_id_;
+  ::google::protobuf::RepeatedPtrField< ::std::string> group_ids_;
   mutable int _cached_size_;
   friend void  protobuf_InitDefaults_api_2eproto_impl();
   friend void  protobuf_AddDesc_api_2eproto_impl();
@@ -6077,38 +6224,38 @@ class TGroupLeave : public ::google::protobuf::Message /* @@protoc_insertion_poi
 
   void InitAsDefaultInstance();
 };
-extern ::google::protobuf::internal::ExplicitlyConstructed<TGroupLeave> TGroupLeave_default_instance_;
+extern ::google::protobuf::internal::ExplicitlyConstructed<TGroupsLeave> TGroupsLeave_default_instance_;
 
 // -------------------------------------------------------------------
 
-class TGroupUserAdd : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.TGroupUserAdd) */ {
+class TGroupUsersAdd_GroupUserAdd : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.TGroupUsersAdd.GroupUserAdd) */ {
  public:
-  TGroupUserAdd();
-  virtual ~TGroupUserAdd();
+  TGroupUsersAdd_GroupUserAdd();
+  virtual ~TGroupUsersAdd_GroupUserAdd();
 
-  TGroupUserAdd(const TGroupUserAdd& from);
+  TGroupUsersAdd_GroupUserAdd(const TGroupUsersAdd_GroupUserAdd& from);
 
-  inline TGroupUserAdd& operator=(const TGroupUserAdd& from) {
+  inline TGroupUsersAdd_GroupUserAdd& operator=(const TGroupUsersAdd_GroupUserAdd& from) {
     CopyFrom(from);
     return *this;
   }
 
   static const ::google::protobuf::Descriptor* descriptor();
-  static const TGroupUserAdd& default_instance();
+  static const TGroupUsersAdd_GroupUserAdd& default_instance();
 
-  static const TGroupUserAdd* internal_default_instance();
+  static const TGroupUsersAdd_GroupUserAdd* internal_default_instance();
 
-  void Swap(TGroupUserAdd* other);
+  void Swap(TGroupUsersAdd_GroupUserAdd* other);
 
   // implements Message ----------------------------------------------
 
-  inline TGroupUserAdd* New() const { return New(NULL); }
+  inline TGroupUsersAdd_GroupUserAdd* New() const { return New(NULL); }
 
-  TGroupUserAdd* New(::google::protobuf::Arena* arena) const;
+  TGroupUsersAdd_GroupUserAdd* New(::google::protobuf::Arena* arena) const;
   void CopyFrom(const ::google::protobuf::Message& from);
   void MergeFrom(const ::google::protobuf::Message& from);
-  void CopyFrom(const TGroupUserAdd& from);
-  void MergeFrom(const TGroupUserAdd& from);
+  void CopyFrom(const TGroupUsersAdd_GroupUserAdd& from);
+  void MergeFrom(const TGroupUsersAdd_GroupUserAdd& from);
   void Clear();
   bool IsInitialized() const;
 
@@ -6127,8 +6274,8 @@ class TGroupUserAdd : public ::google::protobuf::Message /* @@protoc_insertion_p
   void SharedCtor();
   void SharedDtor();
   void SetCachedSize(int size) const;
-  void InternalSwap(TGroupUserAdd* other);
-  void UnsafeMergeFrom(const TGroupUserAdd& from);
+  void InternalSwap(TGroupUsersAdd_GroupUserAdd* other);
+  void UnsafeMergeFrom(const TGroupUsersAdd_GroupUserAdd& from);
   private:
   inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
     return _internal_metadata_.arena();
@@ -6166,7 +6313,7 @@ class TGroupUserAdd : public ::google::protobuf::Message /* @@protoc_insertion_p
   ::std::string* release_user_id();
   void set_allocated_user_id(::std::string* user_id);
 
-  // @@protoc_insertion_point(class_scope:server.TGroupUserAdd)
+  // @@protoc_insertion_point(class_scope:server.TGroupUsersAdd.GroupUserAdd)
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
@@ -6180,38 +6327,38 @@ class TGroupUserAdd : public ::google::protobuf::Message /* @@protoc_insertion_p
 
   void InitAsDefaultInstance();
 };
-extern ::google::protobuf::internal::ExplicitlyConstructed<TGroupUserAdd> TGroupUserAdd_default_instance_;
+extern ::google::protobuf::internal::ExplicitlyConstructed<TGroupUsersAdd_GroupUserAdd> TGroupUsersAdd_GroupUserAdd_default_instance_;
 
 // -------------------------------------------------------------------
 
-class TGroupUserKick : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.TGroupUserKick) */ {
+class TGroupUsersAdd : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.TGroupUsersAdd) */ {
  public:
-  TGroupUserKick();
-  virtual ~TGroupUserKick();
+  TGroupUsersAdd();
+  virtual ~TGroupUsersAdd();
 
-  TGroupUserKick(const TGroupUserKick& from);
+  TGroupUsersAdd(const TGroupUsersAdd& from);
 
-  inline TGroupUserKick& operator=(const TGroupUserKick& from) {
+  inline TGroupUsersAdd& operator=(const TGroupUsersAdd& from) {
     CopyFrom(from);
     return *this;
   }
 
   static const ::google::protobuf::Descriptor* descriptor();
-  static const TGroupUserKick& default_instance();
+  static const TGroupUsersAdd& default_instance();
 
-  static const TGroupUserKick* internal_default_instance();
+  static const TGroupUsersAdd* internal_default_instance();
 
-  void Swap(TGroupUserKick* other);
+  void Swap(TGroupUsersAdd* other);
 
   // implements Message ----------------------------------------------
 
-  inline TGroupUserKick* New() const { return New(NULL); }
+  inline TGroupUsersAdd* New() const { return New(NULL); }
 
-  TGroupUserKick* New(::google::protobuf::Arena* arena) const;
+  TGroupUsersAdd* New(::google::protobuf::Arena* arena) const;
   void CopyFrom(const ::google::protobuf::Message& from);
   void MergeFrom(const ::google::protobuf::Message& from);
-  void CopyFrom(const TGroupUserKick& from);
-  void MergeFrom(const TGroupUserKick& from);
+  void CopyFrom(const TGroupUsersAdd& from);
+  void MergeFrom(const TGroupUsersAdd& from);
   void Clear();
   bool IsInitialized() const;
 
@@ -6230,8 +6377,102 @@ class TGroupUserKick : public ::google::protobuf::Message /* @@protoc_insertion_
   void SharedCtor();
   void SharedDtor();
   void SetCachedSize(int size) const;
-  void InternalSwap(TGroupUserKick* other);
-  void UnsafeMergeFrom(const TGroupUserKick& from);
+  void InternalSwap(TGroupUsersAdd* other);
+  void UnsafeMergeFrom(const TGroupUsersAdd& from);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return _internal_metadata_.arena();
+  }
+  inline void* MaybeArenaPtr() const {
+    return _internal_metadata_.raw_arena_ptr();
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  typedef TGroupUsersAdd_GroupUserAdd GroupUserAdd;
+
+  // accessors -------------------------------------------------------
+
+  // repeated .server.TGroupUsersAdd.GroupUserAdd group_users = 1;
+  int group_users_size() const;
+  void clear_group_users();
+  static const int kGroupUsersFieldNumber = 1;
+  const ::server::TGroupUsersAdd_GroupUserAdd& group_users(int index) const;
+  ::server::TGroupUsersAdd_GroupUserAdd* mutable_group_users(int index);
+  ::server::TGroupUsersAdd_GroupUserAdd* add_group_users();
+  ::google::protobuf::RepeatedPtrField< ::server::TGroupUsersAdd_GroupUserAdd >*
+      mutable_group_users();
+  const ::google::protobuf::RepeatedPtrField< ::server::TGroupUsersAdd_GroupUserAdd >&
+      group_users() const;
+
+  // @@protoc_insertion_point(class_scope:server.TGroupUsersAdd)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::RepeatedPtrField< ::server::TGroupUsersAdd_GroupUserAdd > group_users_;
+  mutable int _cached_size_;
+  friend void  protobuf_InitDefaults_api_2eproto_impl();
+  friend void  protobuf_AddDesc_api_2eproto_impl();
+  friend void protobuf_AssignDesc_api_2eproto();
+  friend void protobuf_ShutdownFile_api_2eproto();
+
+  void InitAsDefaultInstance();
+};
+extern ::google::protobuf::internal::ExplicitlyConstructed<TGroupUsersAdd> TGroupUsersAdd_default_instance_;
+
+// -------------------------------------------------------------------
+
+class TGroupUsersKick_GroupUserKick : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.TGroupUsersKick.GroupUserKick) */ {
+ public:
+  TGroupUsersKick_GroupUserKick();
+  virtual ~TGroupUsersKick_GroupUserKick();
+
+  TGroupUsersKick_GroupUserKick(const TGroupUsersKick_GroupUserKick& from);
+
+  inline TGroupUsersKick_GroupUserKick& operator=(const TGroupUsersKick_GroupUserKick& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const TGroupUsersKick_GroupUserKick& default_instance();
+
+  static const TGroupUsersKick_GroupUserKick* internal_default_instance();
+
+  void Swap(TGroupUsersKick_GroupUserKick* other);
+
+  // implements Message ----------------------------------------------
+
+  inline TGroupUsersKick_GroupUserKick* New() const { return New(NULL); }
+
+  TGroupUsersKick_GroupUserKick* New(::google::protobuf::Arena* arena) const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const TGroupUsersKick_GroupUserKick& from);
+  void MergeFrom(const TGroupUsersKick_GroupUserKick& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  size_t ByteSizeLong() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const {
+    return InternalSerializeWithCachedSizesToArray(false, output);
+  }
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  void InternalSwap(TGroupUsersKick_GroupUserKick* other);
+  void UnsafeMergeFrom(const TGroupUsersKick_GroupUserKick& from);
   private:
   inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
     return _internal_metadata_.arena();
@@ -6269,7 +6510,7 @@ class TGroupUserKick : public ::google::protobuf::Message /* @@protoc_insertion_
   ::std::string* release_user_id();
   void set_allocated_user_id(::std::string* user_id);
 
-  // @@protoc_insertion_point(class_scope:server.TGroupUserKick)
+  // @@protoc_insertion_point(class_scope:server.TGroupUsersKick.GroupUserKick)
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
@@ -6283,38 +6524,38 @@ class TGroupUserKick : public ::google::protobuf::Message /* @@protoc_insertion_
 
   void InitAsDefaultInstance();
 };
-extern ::google::protobuf::internal::ExplicitlyConstructed<TGroupUserKick> TGroupUserKick_default_instance_;
+extern ::google::protobuf::internal::ExplicitlyConstructed<TGroupUsersKick_GroupUserKick> TGroupUsersKick_GroupUserKick_default_instance_;
 
 // -------------------------------------------------------------------
 
-class TGroupUserPromote : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.TGroupUserPromote) */ {
+class TGroupUsersKick : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.TGroupUsersKick) */ {
  public:
-  TGroupUserPromote();
-  virtual ~TGroupUserPromote();
+  TGroupUsersKick();
+  virtual ~TGroupUsersKick();
 
-  TGroupUserPromote(const TGroupUserPromote& from);
+  TGroupUsersKick(const TGroupUsersKick& from);
 
-  inline TGroupUserPromote& operator=(const TGroupUserPromote& from) {
+  inline TGroupUsersKick& operator=(const TGroupUsersKick& from) {
     CopyFrom(from);
     return *this;
   }
 
   static const ::google::protobuf::Descriptor* descriptor();
-  static const TGroupUserPromote& default_instance();
+  static const TGroupUsersKick& default_instance();
 
-  static const TGroupUserPromote* internal_default_instance();
+  static const TGroupUsersKick* internal_default_instance();
 
-  void Swap(TGroupUserPromote* other);
+  void Swap(TGroupUsersKick* other);
 
   // implements Message ----------------------------------------------
 
-  inline TGroupUserPromote* New() const { return New(NULL); }
+  inline TGroupUsersKick* New() const { return New(NULL); }
 
-  TGroupUserPromote* New(::google::protobuf::Arena* arena) const;
+  TGroupUsersKick* New(::google::protobuf::Arena* arena) const;
   void CopyFrom(const ::google::protobuf::Message& from);
   void MergeFrom(const ::google::protobuf::Message& from);
-  void CopyFrom(const TGroupUserPromote& from);
-  void MergeFrom(const TGroupUserPromote& from);
+  void CopyFrom(const TGroupUsersKick& from);
+  void MergeFrom(const TGroupUsersKick& from);
   void Clear();
   bool IsInitialized() const;
 
@@ -6333,8 +6574,102 @@ class TGroupUserPromote : public ::google::protobuf::Message /* @@protoc_inserti
   void SharedCtor();
   void SharedDtor();
   void SetCachedSize(int size) const;
-  void InternalSwap(TGroupUserPromote* other);
-  void UnsafeMergeFrom(const TGroupUserPromote& from);
+  void InternalSwap(TGroupUsersKick* other);
+  void UnsafeMergeFrom(const TGroupUsersKick& from);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return _internal_metadata_.arena();
+  }
+  inline void* MaybeArenaPtr() const {
+    return _internal_metadata_.raw_arena_ptr();
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  typedef TGroupUsersKick_GroupUserKick GroupUserKick;
+
+  // accessors -------------------------------------------------------
+
+  // repeated .server.TGroupUsersKick.GroupUserKick group_users = 1;
+  int group_users_size() const;
+  void clear_group_users();
+  static const int kGroupUsersFieldNumber = 1;
+  const ::server::TGroupUsersKick_GroupUserKick& group_users(int index) const;
+  ::server::TGroupUsersKick_GroupUserKick* mutable_group_users(int index);
+  ::server::TGroupUsersKick_GroupUserKick* add_group_users();
+  ::google::protobuf::RepeatedPtrField< ::server::TGroupUsersKick_GroupUserKick >*
+      mutable_group_users();
+  const ::google::protobuf::RepeatedPtrField< ::server::TGroupUsersKick_GroupUserKick >&
+      group_users() const;
+
+  // @@protoc_insertion_point(class_scope:server.TGroupUsersKick)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::RepeatedPtrField< ::server::TGroupUsersKick_GroupUserKick > group_users_;
+  mutable int _cached_size_;
+  friend void  protobuf_InitDefaults_api_2eproto_impl();
+  friend void  protobuf_AddDesc_api_2eproto_impl();
+  friend void protobuf_AssignDesc_api_2eproto();
+  friend void protobuf_ShutdownFile_api_2eproto();
+
+  void InitAsDefaultInstance();
+};
+extern ::google::protobuf::internal::ExplicitlyConstructed<TGroupUsersKick> TGroupUsersKick_default_instance_;
+
+// -------------------------------------------------------------------
+
+class TGroupUsersPromote_GroupUserPromote : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.TGroupUsersPromote.GroupUserPromote) */ {
+ public:
+  TGroupUsersPromote_GroupUserPromote();
+  virtual ~TGroupUsersPromote_GroupUserPromote();
+
+  TGroupUsersPromote_GroupUserPromote(const TGroupUsersPromote_GroupUserPromote& from);
+
+  inline TGroupUsersPromote_GroupUserPromote& operator=(const TGroupUsersPromote_GroupUserPromote& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const TGroupUsersPromote_GroupUserPromote& default_instance();
+
+  static const TGroupUsersPromote_GroupUserPromote* internal_default_instance();
+
+  void Swap(TGroupUsersPromote_GroupUserPromote* other);
+
+  // implements Message ----------------------------------------------
+
+  inline TGroupUsersPromote_GroupUserPromote* New() const { return New(NULL); }
+
+  TGroupUsersPromote_GroupUserPromote* New(::google::protobuf::Arena* arena) const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const TGroupUsersPromote_GroupUserPromote& from);
+  void MergeFrom(const TGroupUsersPromote_GroupUserPromote& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  size_t ByteSizeLong() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const {
+    return InternalSerializeWithCachedSizesToArray(false, output);
+  }
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  void InternalSwap(TGroupUsersPromote_GroupUserPromote* other);
+  void UnsafeMergeFrom(const TGroupUsersPromote_GroupUserPromote& from);
   private:
   inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
     return _internal_metadata_.arena();
@@ -6372,7 +6707,7 @@ class TGroupUserPromote : public ::google::protobuf::Message /* @@protoc_inserti
   ::std::string* release_user_id();
   void set_allocated_user_id(::std::string* user_id);
 
-  // @@protoc_insertion_point(class_scope:server.TGroupUserPromote)
+  // @@protoc_insertion_point(class_scope:server.TGroupUsersPromote.GroupUserPromote)
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
@@ -6386,7 +6721,101 @@ class TGroupUserPromote : public ::google::protobuf::Message /* @@protoc_inserti
 
   void InitAsDefaultInstance();
 };
-extern ::google::protobuf::internal::ExplicitlyConstructed<TGroupUserPromote> TGroupUserPromote_default_instance_;
+extern ::google::protobuf::internal::ExplicitlyConstructed<TGroupUsersPromote_GroupUserPromote> TGroupUsersPromote_GroupUserPromote_default_instance_;
+
+// -------------------------------------------------------------------
+
+class TGroupUsersPromote : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.TGroupUsersPromote) */ {
+ public:
+  TGroupUsersPromote();
+  virtual ~TGroupUsersPromote();
+
+  TGroupUsersPromote(const TGroupUsersPromote& from);
+
+  inline TGroupUsersPromote& operator=(const TGroupUsersPromote& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const TGroupUsersPromote& default_instance();
+
+  static const TGroupUsersPromote* internal_default_instance();
+
+  void Swap(TGroupUsersPromote* other);
+
+  // implements Message ----------------------------------------------
+
+  inline TGroupUsersPromote* New() const { return New(NULL); }
+
+  TGroupUsersPromote* New(::google::protobuf::Arena* arena) const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const TGroupUsersPromote& from);
+  void MergeFrom(const TGroupUsersPromote& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  size_t ByteSizeLong() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const {
+    return InternalSerializeWithCachedSizesToArray(false, output);
+  }
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  void InternalSwap(TGroupUsersPromote* other);
+  void UnsafeMergeFrom(const TGroupUsersPromote& from);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return _internal_metadata_.arena();
+  }
+  inline void* MaybeArenaPtr() const {
+    return _internal_metadata_.raw_arena_ptr();
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  typedef TGroupUsersPromote_GroupUserPromote GroupUserPromote;
+
+  // accessors -------------------------------------------------------
+
+  // repeated .server.TGroupUsersPromote.GroupUserPromote group_users = 1;
+  int group_users_size() const;
+  void clear_group_users();
+  static const int kGroupUsersFieldNumber = 1;
+  const ::server::TGroupUsersPromote_GroupUserPromote& group_users(int index) const;
+  ::server::TGroupUsersPromote_GroupUserPromote* mutable_group_users(int index);
+  ::server::TGroupUsersPromote_GroupUserPromote* add_group_users();
+  ::google::protobuf::RepeatedPtrField< ::server::TGroupUsersPromote_GroupUserPromote >*
+      mutable_group_users();
+  const ::google::protobuf::RepeatedPtrField< ::server::TGroupUsersPromote_GroupUserPromote >&
+      group_users() const;
+
+  // @@protoc_insertion_point(class_scope:server.TGroupUsersPromote)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::RepeatedPtrField< ::server::TGroupUsersPromote_GroupUserPromote > group_users_;
+  mutable int _cached_size_;
+  friend void  protobuf_InitDefaults_api_2eproto_impl();
+  friend void  protobuf_AddDesc_api_2eproto_impl();
+  friend void protobuf_AssignDesc_api_2eproto();
+  friend void protobuf_ShutdownFile_api_2eproto();
+
+  void InitAsDefaultInstance();
+};
+extern ::google::protobuf::internal::ExplicitlyConstructed<TGroupUsersPromote> TGroupUsersPromote_default_instance_;
 
 // -------------------------------------------------------------------
 
@@ -6649,20 +7078,20 @@ extern ::google::protobuf::internal::ExplicitlyConstructed<UserPresence> UserPre
 
 // -------------------------------------------------------------------
 
-class TTopicJoin : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.TTopicJoin) */ {
+class TTopicsJoin_TopicJoin : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.TTopicsJoin.TopicJoin) */ {
  public:
-  TTopicJoin();
-  virtual ~TTopicJoin();
+  TTopicsJoin_TopicJoin();
+  virtual ~TTopicsJoin_TopicJoin();
 
-  TTopicJoin(const TTopicJoin& from);
+  TTopicsJoin_TopicJoin(const TTopicsJoin_TopicJoin& from);
 
-  inline TTopicJoin& operator=(const TTopicJoin& from) {
+  inline TTopicsJoin_TopicJoin& operator=(const TTopicsJoin_TopicJoin& from) {
     CopyFrom(from);
     return *this;
   }
 
   static const ::google::protobuf::Descriptor* descriptor();
-  static const TTopicJoin& default_instance();
+  static const TTopicsJoin_TopicJoin& default_instance();
 
   enum IdCase {
     kUserId = 1,
@@ -6671,19 +7100,19 @@ class TTopicJoin : public ::google::protobuf::Message /* @@protoc_insertion_poin
     ID_NOT_SET = 0,
   };
 
-  static const TTopicJoin* internal_default_instance();
+  static const TTopicsJoin_TopicJoin* internal_default_instance();
 
-  void Swap(TTopicJoin* other);
+  void Swap(TTopicsJoin_TopicJoin* other);
 
   // implements Message ----------------------------------------------
 
-  inline TTopicJoin* New() const { return New(NULL); }
+  inline TTopicsJoin_TopicJoin* New() const { return New(NULL); }
 
-  TTopicJoin* New(::google::protobuf::Arena* arena) const;
+  TTopicsJoin_TopicJoin* New(::google::protobuf::Arena* arena) const;
   void CopyFrom(const ::google::protobuf::Message& from);
   void MergeFrom(const ::google::protobuf::Message& from);
-  void CopyFrom(const TTopicJoin& from);
-  void MergeFrom(const TTopicJoin& from);
+  void CopyFrom(const TTopicsJoin_TopicJoin& from);
+  void MergeFrom(const TTopicsJoin_TopicJoin& from);
   void Clear();
   bool IsInitialized() const;
 
@@ -6702,8 +7131,8 @@ class TTopicJoin : public ::google::protobuf::Message /* @@protoc_insertion_poin
   void SharedCtor();
   void SharedDtor();
   void SetCachedSize(int size) const;
-  void InternalSwap(TTopicJoin* other);
-  void UnsafeMergeFrom(const TTopicJoin& from);
+  void InternalSwap(TTopicsJoin_TopicJoin* other);
+  void UnsafeMergeFrom(const TTopicsJoin_TopicJoin& from);
   private:
   inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
     return _internal_metadata_.arena();
@@ -6762,7 +7191,7 @@ class TTopicJoin : public ::google::protobuf::Message /* @@protoc_insertion_poin
   void set_allocated_group_id(::std::string* group_id);
 
   IdCase id_case() const;
-  // @@protoc_insertion_point(class_scope:server.TTopicJoin)
+  // @@protoc_insertion_point(class_scope:server.TTopicsJoin.TopicJoin)
  private:
   inline void set_has_user_id();
   inline void set_has_room();
@@ -6789,38 +7218,38 @@ class TTopicJoin : public ::google::protobuf::Message /* @@protoc_insertion_poin
 
   void InitAsDefaultInstance();
 };
-extern ::google::protobuf::internal::ExplicitlyConstructed<TTopicJoin> TTopicJoin_default_instance_;
+extern ::google::protobuf::internal::ExplicitlyConstructed<TTopicsJoin_TopicJoin> TTopicsJoin_TopicJoin_default_instance_;
 
 // -------------------------------------------------------------------
 
-class TTopic : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.TTopic) */ {
+class TTopicsJoin : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.TTopicsJoin) */ {
  public:
-  TTopic();
-  virtual ~TTopic();
+  TTopicsJoin();
+  virtual ~TTopicsJoin();
 
-  TTopic(const TTopic& from);
+  TTopicsJoin(const TTopicsJoin& from);
 
-  inline TTopic& operator=(const TTopic& from) {
+  inline TTopicsJoin& operator=(const TTopicsJoin& from) {
     CopyFrom(from);
     return *this;
   }
 
   static const ::google::protobuf::Descriptor* descriptor();
-  static const TTopic& default_instance();
+  static const TTopicsJoin& default_instance();
 
-  static const TTopic* internal_default_instance();
+  static const TTopicsJoin* internal_default_instance();
 
-  void Swap(TTopic* other);
+  void Swap(TTopicsJoin* other);
 
   // implements Message ----------------------------------------------
 
-  inline TTopic* New() const { return New(NULL); }
+  inline TTopicsJoin* New() const { return New(NULL); }
 
-  TTopic* New(::google::protobuf::Arena* arena) const;
+  TTopicsJoin* New(::google::protobuf::Arena* arena) const;
   void CopyFrom(const ::google::protobuf::Message& from);
   void MergeFrom(const ::google::protobuf::Message& from);
-  void CopyFrom(const TTopic& from);
-  void MergeFrom(const TTopic& from);
+  void CopyFrom(const TTopicsJoin& from);
+  void MergeFrom(const TTopicsJoin& from);
   void Clear();
   bool IsInitialized() const;
 
@@ -6839,8 +7268,102 @@ class TTopic : public ::google::protobuf::Message /* @@protoc_insertion_point(cl
   void SharedCtor();
   void SharedDtor();
   void SetCachedSize(int size) const;
-  void InternalSwap(TTopic* other);
-  void UnsafeMergeFrom(const TTopic& from);
+  void InternalSwap(TTopicsJoin* other);
+  void UnsafeMergeFrom(const TTopicsJoin& from);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return _internal_metadata_.arena();
+  }
+  inline void* MaybeArenaPtr() const {
+    return _internal_metadata_.raw_arena_ptr();
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  typedef TTopicsJoin_TopicJoin TopicJoin;
+
+  // accessors -------------------------------------------------------
+
+  // repeated .server.TTopicsJoin.TopicJoin joins = 1;
+  int joins_size() const;
+  void clear_joins();
+  static const int kJoinsFieldNumber = 1;
+  const ::server::TTopicsJoin_TopicJoin& joins(int index) const;
+  ::server::TTopicsJoin_TopicJoin* mutable_joins(int index);
+  ::server::TTopicsJoin_TopicJoin* add_joins();
+  ::google::protobuf::RepeatedPtrField< ::server::TTopicsJoin_TopicJoin >*
+      mutable_joins();
+  const ::google::protobuf::RepeatedPtrField< ::server::TTopicsJoin_TopicJoin >&
+      joins() const;
+
+  // @@protoc_insertion_point(class_scope:server.TTopicsJoin)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::RepeatedPtrField< ::server::TTopicsJoin_TopicJoin > joins_;
+  mutable int _cached_size_;
+  friend void  protobuf_InitDefaults_api_2eproto_impl();
+  friend void  protobuf_AddDesc_api_2eproto_impl();
+  friend void protobuf_AssignDesc_api_2eproto();
+  friend void protobuf_ShutdownFile_api_2eproto();
+
+  void InitAsDefaultInstance();
+};
+extern ::google::protobuf::internal::ExplicitlyConstructed<TTopicsJoin> TTopicsJoin_default_instance_;
+
+// -------------------------------------------------------------------
+
+class TTopics_Topic : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.TTopics.Topic) */ {
+ public:
+  TTopics_Topic();
+  virtual ~TTopics_Topic();
+
+  TTopics_Topic(const TTopics_Topic& from);
+
+  inline TTopics_Topic& operator=(const TTopics_Topic& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const TTopics_Topic& default_instance();
+
+  static const TTopics_Topic* internal_default_instance();
+
+  void Swap(TTopics_Topic* other);
+
+  // implements Message ----------------------------------------------
+
+  inline TTopics_Topic* New() const { return New(NULL); }
+
+  TTopics_Topic* New(::google::protobuf::Arena* arena) const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const TTopics_Topic& from);
+  void MergeFrom(const TTopics_Topic& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  size_t ByteSizeLong() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const {
+    return InternalSerializeWithCachedSizesToArray(false, output);
+  }
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  void InternalSwap(TTopics_Topic* other);
+  void UnsafeMergeFrom(const TTopics_Topic& from);
   private:
   inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
     return _internal_metadata_.arena();
@@ -6886,7 +7409,7 @@ class TTopic : public ::google::protobuf::Message /* @@protoc_insertion_point(cl
   ::server::UserPresence* release_self();
   void set_allocated_self(::server::UserPresence* self);
 
-  // @@protoc_insertion_point(class_scope:server.TTopic)
+  // @@protoc_insertion_point(class_scope:server.TTopics.Topic)
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
@@ -6901,38 +7424,38 @@ class TTopic : public ::google::protobuf::Message /* @@protoc_insertion_point(cl
 
   void InitAsDefaultInstance();
 };
-extern ::google::protobuf::internal::ExplicitlyConstructed<TTopic> TTopic_default_instance_;
+extern ::google::protobuf::internal::ExplicitlyConstructed<TTopics_Topic> TTopics_Topic_default_instance_;
 
 // -------------------------------------------------------------------
 
-class TTopicLeave : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.TTopicLeave) */ {
+class TTopics : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.TTopics) */ {
  public:
-  TTopicLeave();
-  virtual ~TTopicLeave();
+  TTopics();
+  virtual ~TTopics();
 
-  TTopicLeave(const TTopicLeave& from);
+  TTopics(const TTopics& from);
 
-  inline TTopicLeave& operator=(const TTopicLeave& from) {
+  inline TTopics& operator=(const TTopics& from) {
     CopyFrom(from);
     return *this;
   }
 
   static const ::google::protobuf::Descriptor* descriptor();
-  static const TTopicLeave& default_instance();
+  static const TTopics& default_instance();
 
-  static const TTopicLeave* internal_default_instance();
+  static const TTopics* internal_default_instance();
 
-  void Swap(TTopicLeave* other);
+  void Swap(TTopics* other);
 
   // implements Message ----------------------------------------------
 
-  inline TTopicLeave* New() const { return New(NULL); }
+  inline TTopics* New() const { return New(NULL); }
 
-  TTopicLeave* New(::google::protobuf::Arena* arena) const;
+  TTopics* New(::google::protobuf::Arena* arena) const;
   void CopyFrom(const ::google::protobuf::Message& from);
   void MergeFrom(const ::google::protobuf::Message& from);
-  void CopyFrom(const TTopicLeave& from);
-  void MergeFrom(const TTopicLeave& from);
+  void CopyFrom(const TTopics& from);
+  void MergeFrom(const TTopics& from);
   void Clear();
   bool IsInitialized() const;
 
@@ -6951,8 +7474,102 @@ class TTopicLeave : public ::google::protobuf::Message /* @@protoc_insertion_poi
   void SharedCtor();
   void SharedDtor();
   void SetCachedSize(int size) const;
-  void InternalSwap(TTopicLeave* other);
-  void UnsafeMergeFrom(const TTopicLeave& from);
+  void InternalSwap(TTopics* other);
+  void UnsafeMergeFrom(const TTopics& from);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return _internal_metadata_.arena();
+  }
+  inline void* MaybeArenaPtr() const {
+    return _internal_metadata_.raw_arena_ptr();
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  typedef TTopics_Topic Topic;
+
+  // accessors -------------------------------------------------------
+
+  // repeated .server.TTopics.Topic topics = 1;
+  int topics_size() const;
+  void clear_topics();
+  static const int kTopicsFieldNumber = 1;
+  const ::server::TTopics_Topic& topics(int index) const;
+  ::server::TTopics_Topic* mutable_topics(int index);
+  ::server::TTopics_Topic* add_topics();
+  ::google::protobuf::RepeatedPtrField< ::server::TTopics_Topic >*
+      mutable_topics();
+  const ::google::protobuf::RepeatedPtrField< ::server::TTopics_Topic >&
+      topics() const;
+
+  // @@protoc_insertion_point(class_scope:server.TTopics)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::RepeatedPtrField< ::server::TTopics_Topic > topics_;
+  mutable int _cached_size_;
+  friend void  protobuf_InitDefaults_api_2eproto_impl();
+  friend void  protobuf_AddDesc_api_2eproto_impl();
+  friend void protobuf_AssignDesc_api_2eproto();
+  friend void protobuf_ShutdownFile_api_2eproto();
+
+  void InitAsDefaultInstance();
+};
+extern ::google::protobuf::internal::ExplicitlyConstructed<TTopics> TTopics_default_instance_;
+
+// -------------------------------------------------------------------
+
+class TTopicsLeave : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.TTopicsLeave) */ {
+ public:
+  TTopicsLeave();
+  virtual ~TTopicsLeave();
+
+  TTopicsLeave(const TTopicsLeave& from);
+
+  inline TTopicsLeave& operator=(const TTopicsLeave& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const TTopicsLeave& default_instance();
+
+  static const TTopicsLeave* internal_default_instance();
+
+  void Swap(TTopicsLeave* other);
+
+  // implements Message ----------------------------------------------
+
+  inline TTopicsLeave* New() const { return New(NULL); }
+
+  TTopicsLeave* New(::google::protobuf::Arena* arena) const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const TTopicsLeave& from);
+  void MergeFrom(const TTopicsLeave& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  size_t ByteSizeLong() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const {
+    return InternalSerializeWithCachedSizesToArray(false, output);
+  }
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  void InternalSwap(TTopicsLeave* other);
+  void UnsafeMergeFrom(const TTopicsLeave& from);
   private:
   inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
     return _internal_metadata_.arena();
@@ -6968,20 +7585,23 @@ class TTopicLeave : public ::google::protobuf::Message /* @@protoc_insertion_poi
 
   // accessors -------------------------------------------------------
 
-  // optional .server.TopicId topic = 1;
-  bool has_topic() const;
-  void clear_topic();
-  static const int kTopicFieldNumber = 1;
-  const ::server::TopicId& topic() const;
-  ::server::TopicId* mutable_topic();
-  ::server::TopicId* release_topic();
-  void set_allocated_topic(::server::TopicId* topic);
+  // repeated .server.TopicId topics = 1;
+  int topics_size() const;
+  void clear_topics();
+  static const int kTopicsFieldNumber = 1;
+  const ::server::TopicId& topics(int index) const;
+  ::server::TopicId* mutable_topics(int index);
+  ::server::TopicId* add_topics();
+  ::google::protobuf::RepeatedPtrField< ::server::TopicId >*
+      mutable_topics();
+  const ::google::protobuf::RepeatedPtrField< ::server::TopicId >&
+      topics() const;
 
-  // @@protoc_insertion_point(class_scope:server.TTopicLeave)
+  // @@protoc_insertion_point(class_scope:server.TTopicsLeave)
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
-  ::server::TopicId* topic_;
+  ::google::protobuf::RepeatedPtrField< ::server::TopicId > topics_;
   mutable int _cached_size_;
   friend void  protobuf_InitDefaults_api_2eproto_impl();
   friend void  protobuf_AddDesc_api_2eproto_impl();
@@ -6990,7 +7610,7 @@ class TTopicLeave : public ::google::protobuf::Message /* @@protoc_insertion_poi
 
   void InitAsDefaultInstance();
 };
-extern ::google::protobuf::internal::ExplicitlyConstructed<TTopicLeave> TTopicLeave_default_instance_;
+extern ::google::protobuf::internal::ExplicitlyConstructed<TTopicsLeave> TTopicsLeave_default_instance_;
 
 // -------------------------------------------------------------------
 
@@ -8153,6 +8773,237 @@ extern ::google::protobuf::internal::ExplicitlyConstructed<MatchmakeMatched> Mat
 
 // -------------------------------------------------------------------
 
+class Match : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.Match) */ {
+ public:
+  Match();
+  virtual ~Match();
+
+  Match(const Match& from);
+
+  inline Match& operator=(const Match& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const Match& default_instance();
+
+  static const Match* internal_default_instance();
+
+  void Swap(Match* other);
+
+  // implements Message ----------------------------------------------
+
+  inline Match* New() const { return New(NULL); }
+
+  Match* New(::google::protobuf::Arena* arena) const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const Match& from);
+  void MergeFrom(const Match& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  size_t ByteSizeLong() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const {
+    return InternalSerializeWithCachedSizesToArray(false, output);
+  }
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  void InternalSwap(Match* other);
+  void UnsafeMergeFrom(const Match& from);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return _internal_metadata_.arena();
+  }
+  inline void* MaybeArenaPtr() const {
+    return _internal_metadata_.raw_arena_ptr();
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // optional bytes match_id = 1;
+  void clear_match_id();
+  static const int kMatchIdFieldNumber = 1;
+  const ::std::string& match_id() const;
+  void set_match_id(const ::std::string& value);
+  void set_match_id(const char* value);
+  void set_match_id(const void* value, size_t size);
+  ::std::string* mutable_match_id();
+  ::std::string* release_match_id();
+  void set_allocated_match_id(::std::string* match_id);
+
+  // repeated .server.UserPresence presences = 2;
+  int presences_size() const;
+  void clear_presences();
+  static const int kPresencesFieldNumber = 2;
+  const ::server::UserPresence& presences(int index) const;
+  ::server::UserPresence* mutable_presences(int index);
+  ::server::UserPresence* add_presences();
+  ::google::protobuf::RepeatedPtrField< ::server::UserPresence >*
+      mutable_presences();
+  const ::google::protobuf::RepeatedPtrField< ::server::UserPresence >&
+      presences() const;
+
+  // optional .server.UserPresence self = 3;
+  bool has_self() const;
+  void clear_self();
+  static const int kSelfFieldNumber = 3;
+  const ::server::UserPresence& self() const;
+  ::server::UserPresence* mutable_self();
+  ::server::UserPresence* release_self();
+  void set_allocated_self(::server::UserPresence* self);
+
+  // @@protoc_insertion_point(class_scope:server.Match)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::RepeatedPtrField< ::server::UserPresence > presences_;
+  ::google::protobuf::internal::ArenaStringPtr match_id_;
+  ::server::UserPresence* self_;
+  mutable int _cached_size_;
+  friend void  protobuf_InitDefaults_api_2eproto_impl();
+  friend void  protobuf_AddDesc_api_2eproto_impl();
+  friend void protobuf_AssignDesc_api_2eproto();
+  friend void protobuf_ShutdownFile_api_2eproto();
+
+  void InitAsDefaultInstance();
+};
+extern ::google::protobuf::internal::ExplicitlyConstructed<Match> Match_default_instance_;
+
+// -------------------------------------------------------------------
+
+class MatchPresence : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.MatchPresence) */ {
+ public:
+  MatchPresence();
+  virtual ~MatchPresence();
+
+  MatchPresence(const MatchPresence& from);
+
+  inline MatchPresence& operator=(const MatchPresence& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const MatchPresence& default_instance();
+
+  static const MatchPresence* internal_default_instance();
+
+  void Swap(MatchPresence* other);
+
+  // implements Message ----------------------------------------------
+
+  inline MatchPresence* New() const { return New(NULL); }
+
+  MatchPresence* New(::google::protobuf::Arena* arena) const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const MatchPresence& from);
+  void MergeFrom(const MatchPresence& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  size_t ByteSizeLong() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const {
+    return InternalSerializeWithCachedSizesToArray(false, output);
+  }
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  void InternalSwap(MatchPresence* other);
+  void UnsafeMergeFrom(const MatchPresence& from);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return _internal_metadata_.arena();
+  }
+  inline void* MaybeArenaPtr() const {
+    return _internal_metadata_.raw_arena_ptr();
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // optional bytes match_id = 1;
+  void clear_match_id();
+  static const int kMatchIdFieldNumber = 1;
+  const ::std::string& match_id() const;
+  void set_match_id(const ::std::string& value);
+  void set_match_id(const char* value);
+  void set_match_id(const void* value, size_t size);
+  ::std::string* mutable_match_id();
+  ::std::string* release_match_id();
+  void set_allocated_match_id(::std::string* match_id);
+
+  // repeated .server.UserPresence joins = 2;
+  int joins_size() const;
+  void clear_joins();
+  static const int kJoinsFieldNumber = 2;
+  const ::server::UserPresence& joins(int index) const;
+  ::server::UserPresence* mutable_joins(int index);
+  ::server::UserPresence* add_joins();
+  ::google::protobuf::RepeatedPtrField< ::server::UserPresence >*
+      mutable_joins();
+  const ::google::protobuf::RepeatedPtrField< ::server::UserPresence >&
+      joins() const;
+
+  // repeated .server.UserPresence leaves = 3;
+  int leaves_size() const;
+  void clear_leaves();
+  static const int kLeavesFieldNumber = 3;
+  const ::server::UserPresence& leaves(int index) const;
+  ::server::UserPresence* mutable_leaves(int index);
+  ::server::UserPresence* add_leaves();
+  ::google::protobuf::RepeatedPtrField< ::server::UserPresence >*
+      mutable_leaves();
+  const ::google::protobuf::RepeatedPtrField< ::server::UserPresence >&
+      leaves() const;
+
+  // @@protoc_insertion_point(class_scope:server.MatchPresence)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::RepeatedPtrField< ::server::UserPresence > joins_;
+  ::google::protobuf::RepeatedPtrField< ::server::UserPresence > leaves_;
+  ::google::protobuf::internal::ArenaStringPtr match_id_;
+  mutable int _cached_size_;
+  friend void  protobuf_InitDefaults_api_2eproto_impl();
+  friend void  protobuf_AddDesc_api_2eproto_impl();
+  friend void protobuf_AssignDesc_api_2eproto();
+  friend void protobuf_ShutdownFile_api_2eproto();
+
+  void InitAsDefaultInstance();
+};
+extern ::google::protobuf::internal::ExplicitlyConstructed<MatchPresence> MatchPresence_default_instance_;
+
+// -------------------------------------------------------------------
+
 class TMatchCreate : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.TMatchCreate) */ {
  public:
   TMatchCreate();
@@ -8232,133 +9083,6 @@ extern ::google::protobuf::internal::ExplicitlyConstructed<TMatchCreate> TMatchC
 
 // -------------------------------------------------------------------
 
-class TMatchJoin : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.TMatchJoin) */ {
- public:
-  TMatchJoin();
-  virtual ~TMatchJoin();
-
-  TMatchJoin(const TMatchJoin& from);
-
-  inline TMatchJoin& operator=(const TMatchJoin& from) {
-    CopyFrom(from);
-    return *this;
-  }
-
-  static const ::google::protobuf::Descriptor* descriptor();
-  static const TMatchJoin& default_instance();
-
-  enum IdCase {
-    kMatchId = 1,
-    kToken = 2,
-    ID_NOT_SET = 0,
-  };
-
-  static const TMatchJoin* internal_default_instance();
-
-  void Swap(TMatchJoin* other);
-
-  // implements Message ----------------------------------------------
-
-  inline TMatchJoin* New() const { return New(NULL); }
-
-  TMatchJoin* New(::google::protobuf::Arena* arena) const;
-  void CopyFrom(const ::google::protobuf::Message& from);
-  void MergeFrom(const ::google::protobuf::Message& from);
-  void CopyFrom(const TMatchJoin& from);
-  void MergeFrom(const TMatchJoin& from);
-  void Clear();
-  bool IsInitialized() const;
-
-  size_t ByteSizeLong() const;
-  bool MergePartialFromCodedStream(
-      ::google::protobuf::io::CodedInputStream* input);
-  void SerializeWithCachedSizes(
-      ::google::protobuf::io::CodedOutputStream* output) const;
-  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
-      bool deterministic, ::google::protobuf::uint8* output) const;
-  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const {
-    return InternalSerializeWithCachedSizesToArray(false, output);
-  }
-  int GetCachedSize() const { return _cached_size_; }
-  private:
-  void SharedCtor();
-  void SharedDtor();
-  void SetCachedSize(int size) const;
-  void InternalSwap(TMatchJoin* other);
-  void UnsafeMergeFrom(const TMatchJoin& from);
-  private:
-  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
-    return _internal_metadata_.arena();
-  }
-  inline void* MaybeArenaPtr() const {
-    return _internal_metadata_.raw_arena_ptr();
-  }
-  public:
-
-  ::google::protobuf::Metadata GetMetadata() const;
-
-  // nested types ----------------------------------------------------
-
-  // accessors -------------------------------------------------------
-
-  // optional bytes match_id = 1;
-  private:
-  bool has_match_id() const;
-  public:
-  void clear_match_id();
-  static const int kMatchIdFieldNumber = 1;
-  const ::std::string& match_id() const;
-  void set_match_id(const ::std::string& value);
-  void set_match_id(const char* value);
-  void set_match_id(const void* value, size_t size);
-  ::std::string* mutable_match_id();
-  ::std::string* release_match_id();
-  void set_allocated_match_id(::std::string* match_id);
-
-  // optional bytes token = 2;
-  private:
-  bool has_token() const;
-  public:
-  void clear_token();
-  static const int kTokenFieldNumber = 2;
-  const ::std::string& token() const;
-  void set_token(const ::std::string& value);
-  void set_token(const char* value);
-  void set_token(const void* value, size_t size);
-  ::std::string* mutable_token();
-  ::std::string* release_token();
-  void set_allocated_token(::std::string* token);
-
-  IdCase id_case() const;
-  // @@protoc_insertion_point(class_scope:server.TMatchJoin)
- private:
-  inline void set_has_match_id();
-  inline void set_has_token();
-
-  inline bool has_id() const;
-  void clear_id();
-  inline void clear_has_id();
-
-  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
-  union IdUnion {
-    IdUnion() {}
-    ::google::protobuf::internal::ArenaStringPtr match_id_;
-    ::google::protobuf::internal::ArenaStringPtr token_;
-  } id_;
-  mutable int _cached_size_;
-  ::google::protobuf::uint32 _oneof_case_[1];
-
-  friend void  protobuf_InitDefaults_api_2eproto_impl();
-  friend void  protobuf_AddDesc_api_2eproto_impl();
-  friend void protobuf_AssignDesc_api_2eproto();
-  friend void protobuf_ShutdownFile_api_2eproto();
-
-  void InitAsDefaultInstance();
-};
-extern ::google::protobuf::internal::ExplicitlyConstructed<TMatchJoin> TMatchJoin_default_instance_;
-
-// -------------------------------------------------------------------
-
 class TMatch : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.TMatch) */ {
  public:
   TMatch();
@@ -8422,7 +9146,105 @@ class TMatch : public ::google::protobuf::Message /* @@protoc_insertion_point(cl
 
   // accessors -------------------------------------------------------
 
+  // optional .server.Match match = 1;
+  bool has_match() const;
+  void clear_match();
+  static const int kMatchFieldNumber = 1;
+  const ::server::Match& match() const;
+  ::server::Match* mutable_match();
+  ::server::Match* release_match();
+  void set_allocated_match(::server::Match* match);
+
+  // @@protoc_insertion_point(class_scope:server.TMatch)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::server::Match* match_;
+  mutable int _cached_size_;
+  friend void  protobuf_InitDefaults_api_2eproto_impl();
+  friend void  protobuf_AddDesc_api_2eproto_impl();
+  friend void protobuf_AssignDesc_api_2eproto();
+  friend void protobuf_ShutdownFile_api_2eproto();
+
+  void InitAsDefaultInstance();
+};
+extern ::google::protobuf::internal::ExplicitlyConstructed<TMatch> TMatch_default_instance_;
+
+// -------------------------------------------------------------------
+
+class TMatchesJoin_MatchJoin : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.TMatchesJoin.MatchJoin) */ {
+ public:
+  TMatchesJoin_MatchJoin();
+  virtual ~TMatchesJoin_MatchJoin();
+
+  TMatchesJoin_MatchJoin(const TMatchesJoin_MatchJoin& from);
+
+  inline TMatchesJoin_MatchJoin& operator=(const TMatchesJoin_MatchJoin& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const TMatchesJoin_MatchJoin& default_instance();
+
+  enum IdCase {
+    kMatchId = 1,
+    kToken = 2,
+    ID_NOT_SET = 0,
+  };
+
+  static const TMatchesJoin_MatchJoin* internal_default_instance();
+
+  void Swap(TMatchesJoin_MatchJoin* other);
+
+  // implements Message ----------------------------------------------
+
+  inline TMatchesJoin_MatchJoin* New() const { return New(NULL); }
+
+  TMatchesJoin_MatchJoin* New(::google::protobuf::Arena* arena) const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const TMatchesJoin_MatchJoin& from);
+  void MergeFrom(const TMatchesJoin_MatchJoin& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  size_t ByteSizeLong() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const {
+    return InternalSerializeWithCachedSizesToArray(false, output);
+  }
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  void InternalSwap(TMatchesJoin_MatchJoin* other);
+  void UnsafeMergeFrom(const TMatchesJoin_MatchJoin& from);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return _internal_metadata_.arena();
+  }
+  inline void* MaybeArenaPtr() const {
+    return _internal_metadata_.raw_arena_ptr();
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
   // optional bytes match_id = 1;
+  private:
+  bool has_match_id() const;
+  public:
   void clear_match_id();
   static const int kMatchIdFieldNumber = 1;
   const ::std::string& match_id() const;
@@ -8433,34 +9255,132 @@ class TMatch : public ::google::protobuf::Message /* @@protoc_insertion_point(cl
   ::std::string* release_match_id();
   void set_allocated_match_id(::std::string* match_id);
 
-  // repeated .server.UserPresence presences = 2;
-  int presences_size() const;
-  void clear_presences();
-  static const int kPresencesFieldNumber = 2;
-  const ::server::UserPresence& presences(int index) const;
-  ::server::UserPresence* mutable_presences(int index);
-  ::server::UserPresence* add_presences();
-  ::google::protobuf::RepeatedPtrField< ::server::UserPresence >*
-      mutable_presences();
-  const ::google::protobuf::RepeatedPtrField< ::server::UserPresence >&
-      presences() const;
+  // optional bytes token = 2;
+  private:
+  bool has_token() const;
+  public:
+  void clear_token();
+  static const int kTokenFieldNumber = 2;
+  const ::std::string& token() const;
+  void set_token(const ::std::string& value);
+  void set_token(const char* value);
+  void set_token(const void* value, size_t size);
+  ::std::string* mutable_token();
+  ::std::string* release_token();
+  void set_allocated_token(::std::string* token);
 
-  // optional .server.UserPresence self = 3;
-  bool has_self() const;
-  void clear_self();
-  static const int kSelfFieldNumber = 3;
-  const ::server::UserPresence& self() const;
-  ::server::UserPresence* mutable_self();
-  ::server::UserPresence* release_self();
-  void set_allocated_self(::server::UserPresence* self);
+  IdCase id_case() const;
+  // @@protoc_insertion_point(class_scope:server.TMatchesJoin.MatchJoin)
+ private:
+  inline void set_has_match_id();
+  inline void set_has_token();
 
-  // @@protoc_insertion_point(class_scope:server.TMatch)
+  inline bool has_id() const;
+  void clear_id();
+  inline void clear_has_id();
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  union IdUnion {
+    IdUnion() {}
+    ::google::protobuf::internal::ArenaStringPtr match_id_;
+    ::google::protobuf::internal::ArenaStringPtr token_;
+  } id_;
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _oneof_case_[1];
+
+  friend void  protobuf_InitDefaults_api_2eproto_impl();
+  friend void  protobuf_AddDesc_api_2eproto_impl();
+  friend void protobuf_AssignDesc_api_2eproto();
+  friend void protobuf_ShutdownFile_api_2eproto();
+
+  void InitAsDefaultInstance();
+};
+extern ::google::protobuf::internal::ExplicitlyConstructed<TMatchesJoin_MatchJoin> TMatchesJoin_MatchJoin_default_instance_;
+
+// -------------------------------------------------------------------
+
+class TMatchesJoin : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.TMatchesJoin) */ {
+ public:
+  TMatchesJoin();
+  virtual ~TMatchesJoin();
+
+  TMatchesJoin(const TMatchesJoin& from);
+
+  inline TMatchesJoin& operator=(const TMatchesJoin& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const TMatchesJoin& default_instance();
+
+  static const TMatchesJoin* internal_default_instance();
+
+  void Swap(TMatchesJoin* other);
+
+  // implements Message ----------------------------------------------
+
+  inline TMatchesJoin* New() const { return New(NULL); }
+
+  TMatchesJoin* New(::google::protobuf::Arena* arena) const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const TMatchesJoin& from);
+  void MergeFrom(const TMatchesJoin& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  size_t ByteSizeLong() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const {
+    return InternalSerializeWithCachedSizesToArray(false, output);
+  }
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  void InternalSwap(TMatchesJoin* other);
+  void UnsafeMergeFrom(const TMatchesJoin& from);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return _internal_metadata_.arena();
+  }
+  inline void* MaybeArenaPtr() const {
+    return _internal_metadata_.raw_arena_ptr();
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  typedef TMatchesJoin_MatchJoin MatchJoin;
+
+  // accessors -------------------------------------------------------
+
+  // repeated .server.TMatchesJoin.MatchJoin matches = 1;
+  int matches_size() const;
+  void clear_matches();
+  static const int kMatchesFieldNumber = 1;
+  const ::server::TMatchesJoin_MatchJoin& matches(int index) const;
+  ::server::TMatchesJoin_MatchJoin* mutable_matches(int index);
+  ::server::TMatchesJoin_MatchJoin* add_matches();
+  ::google::protobuf::RepeatedPtrField< ::server::TMatchesJoin_MatchJoin >*
+      mutable_matches();
+  const ::google::protobuf::RepeatedPtrField< ::server::TMatchesJoin_MatchJoin >&
+      matches() const;
+
+  // @@protoc_insertion_point(class_scope:server.TMatchesJoin)
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
-  ::google::protobuf::RepeatedPtrField< ::server::UserPresence > presences_;
-  ::google::protobuf::internal::ArenaStringPtr match_id_;
-  ::server::UserPresence* self_;
+  ::google::protobuf::RepeatedPtrField< ::server::TMatchesJoin_MatchJoin > matches_;
   mutable int _cached_size_;
   friend void  protobuf_InitDefaults_api_2eproto_impl();
   friend void  protobuf_AddDesc_api_2eproto_impl();
@@ -8469,7 +9389,99 @@ class TMatch : public ::google::protobuf::Message /* @@protoc_insertion_point(cl
 
   void InitAsDefaultInstance();
 };
-extern ::google::protobuf::internal::ExplicitlyConstructed<TMatch> TMatch_default_instance_;
+extern ::google::protobuf::internal::ExplicitlyConstructed<TMatchesJoin> TMatchesJoin_default_instance_;
+
+// -------------------------------------------------------------------
+
+class TMatches : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.TMatches) */ {
+ public:
+  TMatches();
+  virtual ~TMatches();
+
+  TMatches(const TMatches& from);
+
+  inline TMatches& operator=(const TMatches& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const TMatches& default_instance();
+
+  static const TMatches* internal_default_instance();
+
+  void Swap(TMatches* other);
+
+  // implements Message ----------------------------------------------
+
+  inline TMatches* New() const { return New(NULL); }
+
+  TMatches* New(::google::protobuf::Arena* arena) const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const TMatches& from);
+  void MergeFrom(const TMatches& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  size_t ByteSizeLong() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const {
+    return InternalSerializeWithCachedSizesToArray(false, output);
+  }
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  void InternalSwap(TMatches* other);
+  void UnsafeMergeFrom(const TMatches& from);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return _internal_metadata_.arena();
+  }
+  inline void* MaybeArenaPtr() const {
+    return _internal_metadata_.raw_arena_ptr();
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // repeated .server.Match matches = 1;
+  int matches_size() const;
+  void clear_matches();
+  static const int kMatchesFieldNumber = 1;
+  const ::server::Match& matches(int index) const;
+  ::server::Match* mutable_matches(int index);
+  ::server::Match* add_matches();
+  ::google::protobuf::RepeatedPtrField< ::server::Match >*
+      mutable_matches();
+  const ::google::protobuf::RepeatedPtrField< ::server::Match >&
+      matches() const;
+
+  // @@protoc_insertion_point(class_scope:server.TMatches)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::RepeatedPtrField< ::server::Match > matches_;
+  mutable int _cached_size_;
+  friend void  protobuf_InitDefaults_api_2eproto_impl();
+  friend void  protobuf_AddDesc_api_2eproto_impl();
+  friend void protobuf_AssignDesc_api_2eproto();
+  friend void protobuf_ShutdownFile_api_2eproto();
+
+  void InitAsDefaultInstance();
+};
+extern ::google::protobuf::internal::ExplicitlyConstructed<TMatches> TMatches_default_instance_;
 
 // -------------------------------------------------------------------
 
@@ -8716,34 +9728,34 @@ extern ::google::protobuf::internal::ExplicitlyConstructed<MatchData> MatchData_
 
 // -------------------------------------------------------------------
 
-class TMatchLeave : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.TMatchLeave) */ {
+class TMatchesLeave : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.TMatchesLeave) */ {
  public:
-  TMatchLeave();
-  virtual ~TMatchLeave();
+  TMatchesLeave();
+  virtual ~TMatchesLeave();
 
-  TMatchLeave(const TMatchLeave& from);
+  TMatchesLeave(const TMatchesLeave& from);
 
-  inline TMatchLeave& operator=(const TMatchLeave& from) {
+  inline TMatchesLeave& operator=(const TMatchesLeave& from) {
     CopyFrom(from);
     return *this;
   }
 
   static const ::google::protobuf::Descriptor* descriptor();
-  static const TMatchLeave& default_instance();
+  static const TMatchesLeave& default_instance();
 
-  static const TMatchLeave* internal_default_instance();
+  static const TMatchesLeave* internal_default_instance();
 
-  void Swap(TMatchLeave* other);
+  void Swap(TMatchesLeave* other);
 
   // implements Message ----------------------------------------------
 
-  inline TMatchLeave* New() const { return New(NULL); }
+  inline TMatchesLeave* New() const { return New(NULL); }
 
-  TMatchLeave* New(::google::protobuf::Arena* arena) const;
+  TMatchesLeave* New(::google::protobuf::Arena* arena) const;
   void CopyFrom(const ::google::protobuf::Message& from);
   void MergeFrom(const ::google::protobuf::Message& from);
-  void CopyFrom(const TMatchLeave& from);
-  void MergeFrom(const TMatchLeave& from);
+  void CopyFrom(const TMatchesLeave& from);
+  void MergeFrom(const TMatchesLeave& from);
   void Clear();
   bool IsInitialized() const;
 
@@ -8762,8 +9774,8 @@ class TMatchLeave : public ::google::protobuf::Message /* @@protoc_insertion_poi
   void SharedCtor();
   void SharedDtor();
   void SetCachedSize(int size) const;
-  void InternalSwap(TMatchLeave* other);
-  void UnsafeMergeFrom(const TMatchLeave& from);
+  void InternalSwap(TMatchesLeave* other);
+  void UnsafeMergeFrom(const TMatchesLeave& from);
   private:
   inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
     return _internal_metadata_.arena();
@@ -8779,22 +9791,27 @@ class TMatchLeave : public ::google::protobuf::Message /* @@protoc_insertion_poi
 
   // accessors -------------------------------------------------------
 
-  // optional bytes match_id = 1;
-  void clear_match_id();
-  static const int kMatchIdFieldNumber = 1;
-  const ::std::string& match_id() const;
-  void set_match_id(const ::std::string& value);
-  void set_match_id(const char* value);
-  void set_match_id(const void* value, size_t size);
-  ::std::string* mutable_match_id();
-  ::std::string* release_match_id();
-  void set_allocated_match_id(::std::string* match_id);
+  // repeated bytes match_ids = 1;
+  int match_ids_size() const;
+  void clear_match_ids();
+  static const int kMatchIdsFieldNumber = 1;
+  const ::std::string& match_ids(int index) const;
+  ::std::string* mutable_match_ids(int index);
+  void set_match_ids(int index, const ::std::string& value);
+  void set_match_ids(int index, const char* value);
+  void set_match_ids(int index, const void* value, size_t size);
+  ::std::string* add_match_ids();
+  void add_match_ids(const ::std::string& value);
+  void add_match_ids(const char* value);
+  void add_match_ids(const void* value, size_t size);
+  const ::google::protobuf::RepeatedPtrField< ::std::string>& match_ids() const;
+  ::google::protobuf::RepeatedPtrField< ::std::string>* mutable_match_ids();
 
-  // @@protoc_insertion_point(class_scope:server.TMatchLeave)
+  // @@protoc_insertion_point(class_scope:server.TMatchesLeave)
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
-  ::google::protobuf::internal::ArenaStringPtr match_id_;
+  ::google::protobuf::RepeatedPtrField< ::std::string> match_ids_;
   mutable int _cached_size_;
   friend void  protobuf_InitDefaults_api_2eproto_impl();
   friend void  protobuf_AddDesc_api_2eproto_impl();
@@ -8803,38 +9820,38 @@ class TMatchLeave : public ::google::protobuf::Message /* @@protoc_insertion_poi
 
   void InitAsDefaultInstance();
 };
-extern ::google::protobuf::internal::ExplicitlyConstructed<TMatchLeave> TMatchLeave_default_instance_;
+extern ::google::protobuf::internal::ExplicitlyConstructed<TMatchesLeave> TMatchesLeave_default_instance_;
 
 // -------------------------------------------------------------------
 
-class MatchPresence : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.MatchPresence) */ {
+class TStorageList : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.TStorageList) */ {
  public:
-  MatchPresence();
-  virtual ~MatchPresence();
+  TStorageList();
+  virtual ~TStorageList();
 
-  MatchPresence(const MatchPresence& from);
+  TStorageList(const TStorageList& from);
 
-  inline MatchPresence& operator=(const MatchPresence& from) {
+  inline TStorageList& operator=(const TStorageList& from) {
     CopyFrom(from);
     return *this;
   }
 
   static const ::google::protobuf::Descriptor* descriptor();
-  static const MatchPresence& default_instance();
+  static const TStorageList& default_instance();
 
-  static const MatchPresence* internal_default_instance();
+  static const TStorageList* internal_default_instance();
 
-  void Swap(MatchPresence* other);
+  void Swap(TStorageList* other);
 
   // implements Message ----------------------------------------------
 
-  inline MatchPresence* New() const { return New(NULL); }
+  inline TStorageList* New() const { return New(NULL); }
 
-  MatchPresence* New(::google::protobuf::Arena* arena) const;
+  TStorageList* New(::google::protobuf::Arena* arena) const;
   void CopyFrom(const ::google::protobuf::Message& from);
   void MergeFrom(const ::google::protobuf::Message& from);
-  void CopyFrom(const MatchPresence& from);
-  void MergeFrom(const MatchPresence& from);
+  void CopyFrom(const TStorageList& from);
+  void MergeFrom(const TStorageList& from);
   void Clear();
   bool IsInitialized() const;
 
@@ -8853,8 +9870,8 @@ class MatchPresence : public ::google::protobuf::Message /* @@protoc_insertion_p
   void SharedCtor();
   void SharedDtor();
   void SetCachedSize(int size) const;
-  void InternalSwap(MatchPresence* other);
-  void UnsafeMergeFrom(const MatchPresence& from);
+  void InternalSwap(TStorageList* other);
+  void UnsafeMergeFrom(const TStorageList& from);
   private:
   inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
     return _internal_metadata_.arena();
@@ -8870,48 +9887,65 @@ class MatchPresence : public ::google::protobuf::Message /* @@protoc_insertion_p
 
   // accessors -------------------------------------------------------
 
-  // optional bytes match_id = 1;
-  void clear_match_id();
-  static const int kMatchIdFieldNumber = 1;
-  const ::std::string& match_id() const;
-  void set_match_id(const ::std::string& value);
-  void set_match_id(const char* value);
-  void set_match_id(const void* value, size_t size);
-  ::std::string* mutable_match_id();
-  ::std::string* release_match_id();
-  void set_allocated_match_id(::std::string* match_id);
+  // optional bytes user_id = 1;
+  void clear_user_id();
+  static const int kUserIdFieldNumber = 1;
+  const ::std::string& user_id() const;
+  void set_user_id(const ::std::string& value);
+  void set_user_id(const char* value);
+  void set_user_id(const void* value, size_t size);
+  ::std::string* mutable_user_id();
+  ::std::string* release_user_id();
+  void set_allocated_user_id(::std::string* user_id);
 
-  // repeated .server.UserPresence joins = 2;
-  int joins_size() const;
-  void clear_joins();
-  static const int kJoinsFieldNumber = 2;
-  const ::server::UserPresence& joins(int index) const;
-  ::server::UserPresence* mutable_joins(int index);
-  ::server::UserPresence* add_joins();
-  ::google::protobuf::RepeatedPtrField< ::server::UserPresence >*
-      mutable_joins();
-  const ::google::protobuf::RepeatedPtrField< ::server::UserPresence >&
-      joins() const;
+  // optional string bucket = 2;
+  void clear_bucket();
+  static const int kBucketFieldNumber = 2;
+  const ::std::string& bucket() const;
+  void set_bucket(const ::std::string& value);
+  void set_bucket(const char* value);
+  void set_bucket(const char* value, size_t size);
+  ::std::string* mutable_bucket();
+  ::std::string* release_bucket();
+  void set_allocated_bucket(::std::string* bucket);
 
-  // repeated .server.UserPresence leaves = 3;
-  int leaves_size() const;
-  void clear_leaves();
-  static const int kLeavesFieldNumber = 3;
-  const ::server::UserPresence& leaves(int index) const;
-  ::server::UserPresence* mutable_leaves(int index);
-  ::server::UserPresence* add_leaves();
-  ::google::protobuf::RepeatedPtrField< ::server::UserPresence >*
-      mutable_leaves();
-  const ::google::protobuf::RepeatedPtrField< ::server::UserPresence >&
-      leaves() const;
+  // optional string collection = 3;
+  void clear_collection();
+  static const int kCollectionFieldNumber = 3;
+  const ::std::string& collection() const;
+  void set_collection(const ::std::string& value);
+  void set_collection(const char* value);
+  void set_collection(const char* value, size_t size);
+  ::std::string* mutable_collection();
+  ::std::string* release_collection();
+  void set_allocated_collection(::std::string* collection);
 
-  // @@protoc_insertion_point(class_scope:server.MatchPresence)
+  // optional int64 limit = 4;
+  void clear_limit();
+  static const int kLimitFieldNumber = 4;
+  ::google::protobuf::int64 limit() const;
+  void set_limit(::google::protobuf::int64 value);
+
+  // optional bytes cursor = 5;
+  void clear_cursor();
+  static const int kCursorFieldNumber = 5;
+  const ::std::string& cursor() const;
+  void set_cursor(const ::std::string& value);
+  void set_cursor(const char* value);
+  void set_cursor(const void* value, size_t size);
+  ::std::string* mutable_cursor();
+  ::std::string* release_cursor();
+  void set_allocated_cursor(::std::string* cursor);
+
+  // @@protoc_insertion_point(class_scope:server.TStorageList)
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
-  ::google::protobuf::RepeatedPtrField< ::server::UserPresence > joins_;
-  ::google::protobuf::RepeatedPtrField< ::server::UserPresence > leaves_;
-  ::google::protobuf::internal::ArenaStringPtr match_id_;
+  ::google::protobuf::internal::ArenaStringPtr user_id_;
+  ::google::protobuf::internal::ArenaStringPtr bucket_;
+  ::google::protobuf::internal::ArenaStringPtr collection_;
+  ::google::protobuf::internal::ArenaStringPtr cursor_;
+  ::google::protobuf::int64 limit_;
   mutable int _cached_size_;
   friend void  protobuf_InitDefaults_api_2eproto_impl();
   friend void  protobuf_AddDesc_api_2eproto_impl();
@@ -8920,7 +9954,7 @@ class MatchPresence : public ::google::protobuf::Message /* @@protoc_insertion_p
 
   void InitAsDefaultInstance();
 };
-extern ::google::protobuf::internal::ExplicitlyConstructed<MatchPresence> MatchPresence_default_instance_;
+extern ::google::protobuf::internal::ExplicitlyConstructed<TStorageList> TStorageList_default_instance_;
 
 // -------------------------------------------------------------------
 
@@ -9408,11 +10442,23 @@ class TStorageData : public ::google::protobuf::Message /* @@protoc_insertion_po
   const ::google::protobuf::RepeatedPtrField< ::server::TStorageData_StorageData >&
       data() const;
 
+  // optional bytes cursor = 2;
+  void clear_cursor();
+  static const int kCursorFieldNumber = 2;
+  const ::std::string& cursor() const;
+  void set_cursor(const ::std::string& value);
+  void set_cursor(const char* value);
+  void set_cursor(const void* value, size_t size);
+  ::std::string* mutable_cursor();
+  ::std::string* release_cursor();
+  void set_allocated_cursor(::std::string* cursor);
+
   // @@protoc_insertion_point(class_scope:server.TStorageData)
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
   ::google::protobuf::RepeatedPtrField< ::server::TStorageData_StorageData > data_;
+  ::google::protobuf::internal::ArenaStringPtr cursor_;
   mutable int _cached_size_;
   friend void  protobuf_InitDefaults_api_2eproto_impl();
   friend void  protobuf_AddDesc_api_2eproto_impl();
@@ -9672,34 +10718,34 @@ extern ::google::protobuf::internal::ExplicitlyConstructed<TStorageWrite> TStora
 
 // -------------------------------------------------------------------
 
-class TStorageKey_StorageKey : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.TStorageKey.StorageKey) */ {
+class TStorageKeys_StorageKey : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.TStorageKeys.StorageKey) */ {
  public:
-  TStorageKey_StorageKey();
-  virtual ~TStorageKey_StorageKey();
+  TStorageKeys_StorageKey();
+  virtual ~TStorageKeys_StorageKey();
 
-  TStorageKey_StorageKey(const TStorageKey_StorageKey& from);
+  TStorageKeys_StorageKey(const TStorageKeys_StorageKey& from);
 
-  inline TStorageKey_StorageKey& operator=(const TStorageKey_StorageKey& from) {
+  inline TStorageKeys_StorageKey& operator=(const TStorageKeys_StorageKey& from) {
     CopyFrom(from);
     return *this;
   }
 
   static const ::google::protobuf::Descriptor* descriptor();
-  static const TStorageKey_StorageKey& default_instance();
+  static const TStorageKeys_StorageKey& default_instance();
 
-  static const TStorageKey_StorageKey* internal_default_instance();
+  static const TStorageKeys_StorageKey* internal_default_instance();
 
-  void Swap(TStorageKey_StorageKey* other);
+  void Swap(TStorageKeys_StorageKey* other);
 
   // implements Message ----------------------------------------------
 
-  inline TStorageKey_StorageKey* New() const { return New(NULL); }
+  inline TStorageKeys_StorageKey* New() const { return New(NULL); }
 
-  TStorageKey_StorageKey* New(::google::protobuf::Arena* arena) const;
+  TStorageKeys_StorageKey* New(::google::protobuf::Arena* arena) const;
   void CopyFrom(const ::google::protobuf::Message& from);
   void MergeFrom(const ::google::protobuf::Message& from);
-  void CopyFrom(const TStorageKey_StorageKey& from);
-  void MergeFrom(const TStorageKey_StorageKey& from);
+  void CopyFrom(const TStorageKeys_StorageKey& from);
+  void MergeFrom(const TStorageKeys_StorageKey& from);
   void Clear();
   bool IsInitialized() const;
 
@@ -9718,8 +10764,8 @@ class TStorageKey_StorageKey : public ::google::protobuf::Message /* @@protoc_in
   void SharedCtor();
   void SharedDtor();
   void SetCachedSize(int size) const;
-  void InternalSwap(TStorageKey_StorageKey* other);
-  void UnsafeMergeFrom(const TStorageKey_StorageKey& from);
+  void InternalSwap(TStorageKeys_StorageKey* other);
+  void UnsafeMergeFrom(const TStorageKeys_StorageKey& from);
   private:
   inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
     return _internal_metadata_.arena();
@@ -9779,7 +10825,7 @@ class TStorageKey_StorageKey : public ::google::protobuf::Message /* @@protoc_in
   ::std::string* release_version();
   void set_allocated_version(::std::string* version);
 
-  // @@protoc_insertion_point(class_scope:server.TStorageKey.StorageKey)
+  // @@protoc_insertion_point(class_scope:server.TStorageKeys.StorageKey)
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
@@ -9795,38 +10841,38 @@ class TStorageKey_StorageKey : public ::google::protobuf::Message /* @@protoc_in
 
   void InitAsDefaultInstance();
 };
-extern ::google::protobuf::internal::ExplicitlyConstructed<TStorageKey_StorageKey> TStorageKey_StorageKey_default_instance_;
+extern ::google::protobuf::internal::ExplicitlyConstructed<TStorageKeys_StorageKey> TStorageKeys_StorageKey_default_instance_;
 
 // -------------------------------------------------------------------
 
-class TStorageKey : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.TStorageKey) */ {
+class TStorageKeys : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.TStorageKeys) */ {
  public:
-  TStorageKey();
-  virtual ~TStorageKey();
+  TStorageKeys();
+  virtual ~TStorageKeys();
 
-  TStorageKey(const TStorageKey& from);
+  TStorageKeys(const TStorageKeys& from);
 
-  inline TStorageKey& operator=(const TStorageKey& from) {
+  inline TStorageKeys& operator=(const TStorageKeys& from) {
     CopyFrom(from);
     return *this;
   }
 
   static const ::google::protobuf::Descriptor* descriptor();
-  static const TStorageKey& default_instance();
+  static const TStorageKeys& default_instance();
 
-  static const TStorageKey* internal_default_instance();
+  static const TStorageKeys* internal_default_instance();
 
-  void Swap(TStorageKey* other);
+  void Swap(TStorageKeys* other);
 
   // implements Message ----------------------------------------------
 
-  inline TStorageKey* New() const { return New(NULL); }
+  inline TStorageKeys* New() const { return New(NULL); }
 
-  TStorageKey* New(::google::protobuf::Arena* arena) const;
+  TStorageKeys* New(::google::protobuf::Arena* arena) const;
   void CopyFrom(const ::google::protobuf::Message& from);
   void MergeFrom(const ::google::protobuf::Message& from);
-  void CopyFrom(const TStorageKey& from);
-  void MergeFrom(const TStorageKey& from);
+  void CopyFrom(const TStorageKeys& from);
+  void MergeFrom(const TStorageKeys& from);
   void Clear();
   bool IsInitialized() const;
 
@@ -9845,8 +10891,8 @@ class TStorageKey : public ::google::protobuf::Message /* @@protoc_insertion_poi
   void SharedCtor();
   void SharedDtor();
   void SetCachedSize(int size) const;
-  void InternalSwap(TStorageKey* other);
-  void UnsafeMergeFrom(const TStorageKey& from);
+  void InternalSwap(TStorageKeys* other);
+  void UnsafeMergeFrom(const TStorageKeys& from);
   private:
   inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
     return _internal_metadata_.arena();
@@ -9860,27 +10906,27 @@ class TStorageKey : public ::google::protobuf::Message /* @@protoc_insertion_poi
 
   // nested types ----------------------------------------------------
 
-  typedef TStorageKey_StorageKey StorageKey;
+  typedef TStorageKeys_StorageKey StorageKey;
 
   // accessors -------------------------------------------------------
 
-  // repeated .server.TStorageKey.StorageKey keys = 1;
+  // repeated .server.TStorageKeys.StorageKey keys = 1;
   int keys_size() const;
   void clear_keys();
   static const int kKeysFieldNumber = 1;
-  const ::server::TStorageKey_StorageKey& keys(int index) const;
-  ::server::TStorageKey_StorageKey* mutable_keys(int index);
-  ::server::TStorageKey_StorageKey* add_keys();
-  ::google::protobuf::RepeatedPtrField< ::server::TStorageKey_StorageKey >*
+  const ::server::TStorageKeys_StorageKey& keys(int index) const;
+  ::server::TStorageKeys_StorageKey* mutable_keys(int index);
+  ::server::TStorageKeys_StorageKey* add_keys();
+  ::google::protobuf::RepeatedPtrField< ::server::TStorageKeys_StorageKey >*
       mutable_keys();
-  const ::google::protobuf::RepeatedPtrField< ::server::TStorageKey_StorageKey >&
+  const ::google::protobuf::RepeatedPtrField< ::server::TStorageKeys_StorageKey >&
       keys() const;
 
-  // @@protoc_insertion_point(class_scope:server.TStorageKey)
+  // @@protoc_insertion_point(class_scope:server.TStorageKeys)
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
-  ::google::protobuf::RepeatedPtrField< ::server::TStorageKey_StorageKey > keys_;
+  ::google::protobuf::RepeatedPtrField< ::server::TStorageKeys_StorageKey > keys_;
   mutable int _cached_size_;
   friend void  protobuf_InitDefaults_api_2eproto_impl();
   friend void  protobuf_AddDesc_api_2eproto_impl();
@@ -9889,7 +10935,7 @@ class TStorageKey : public ::google::protobuf::Message /* @@protoc_insertion_poi
 
   void InitAsDefaultInstance();
 };
-extern ::google::protobuf::internal::ExplicitlyConstructed<TStorageKey> TStorageKey_default_instance_;
+extern ::google::protobuf::internal::ExplicitlyConstructed<TStorageKeys> TStorageKeys_default_instance_;
 
 // -------------------------------------------------------------------
 
@@ -10698,20 +11744,20 @@ extern ::google::protobuf::internal::ExplicitlyConstructed<TLeaderboards> TLeade
 
 // -------------------------------------------------------------------
 
-class TLeaderboardRecordWrite : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.TLeaderboardRecordWrite) */ {
+class TLeaderboardRecordsWrite_LeaderboardRecordWrite : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.TLeaderboardRecordsWrite.LeaderboardRecordWrite) */ {
  public:
-  TLeaderboardRecordWrite();
-  virtual ~TLeaderboardRecordWrite();
+  TLeaderboardRecordsWrite_LeaderboardRecordWrite();
+  virtual ~TLeaderboardRecordsWrite_LeaderboardRecordWrite();
 
-  TLeaderboardRecordWrite(const TLeaderboardRecordWrite& from);
+  TLeaderboardRecordsWrite_LeaderboardRecordWrite(const TLeaderboardRecordsWrite_LeaderboardRecordWrite& from);
 
-  inline TLeaderboardRecordWrite& operator=(const TLeaderboardRecordWrite& from) {
+  inline TLeaderboardRecordsWrite_LeaderboardRecordWrite& operator=(const TLeaderboardRecordsWrite_LeaderboardRecordWrite& from) {
     CopyFrom(from);
     return *this;
   }
 
   static const ::google::protobuf::Descriptor* descriptor();
-  static const TLeaderboardRecordWrite& default_instance();
+  static const TLeaderboardRecordsWrite_LeaderboardRecordWrite& default_instance();
 
   enum OpCase {
     kIncr = 2,
@@ -10721,19 +11767,19 @@ class TLeaderboardRecordWrite : public ::google::protobuf::Message /* @@protoc_i
     OP_NOT_SET = 0,
   };
 
-  static const TLeaderboardRecordWrite* internal_default_instance();
+  static const TLeaderboardRecordsWrite_LeaderboardRecordWrite* internal_default_instance();
 
-  void Swap(TLeaderboardRecordWrite* other);
+  void Swap(TLeaderboardRecordsWrite_LeaderboardRecordWrite* other);
 
   // implements Message ----------------------------------------------
 
-  inline TLeaderboardRecordWrite* New() const { return New(NULL); }
+  inline TLeaderboardRecordsWrite_LeaderboardRecordWrite* New() const { return New(NULL); }
 
-  TLeaderboardRecordWrite* New(::google::protobuf::Arena* arena) const;
+  TLeaderboardRecordsWrite_LeaderboardRecordWrite* New(::google::protobuf::Arena* arena) const;
   void CopyFrom(const ::google::protobuf::Message& from);
   void MergeFrom(const ::google::protobuf::Message& from);
-  void CopyFrom(const TLeaderboardRecordWrite& from);
-  void MergeFrom(const TLeaderboardRecordWrite& from);
+  void CopyFrom(const TLeaderboardRecordsWrite_LeaderboardRecordWrite& from);
+  void MergeFrom(const TLeaderboardRecordsWrite_LeaderboardRecordWrite& from);
   void Clear();
   bool IsInitialized() const;
 
@@ -10752,8 +11798,8 @@ class TLeaderboardRecordWrite : public ::google::protobuf::Message /* @@protoc_i
   void SharedCtor();
   void SharedDtor();
   void SetCachedSize(int size) const;
-  void InternalSwap(TLeaderboardRecordWrite* other);
-  void UnsafeMergeFrom(const TLeaderboardRecordWrite& from);
+  void InternalSwap(TLeaderboardRecordsWrite_LeaderboardRecordWrite* other);
+  void UnsafeMergeFrom(const TLeaderboardRecordsWrite_LeaderboardRecordWrite& from);
   private:
   inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
     return _internal_metadata_.arena();
@@ -10850,7 +11896,7 @@ class TLeaderboardRecordWrite : public ::google::protobuf::Message /* @@protoc_i
   void set_allocated_metadata(::std::string* metadata);
 
   OpCase op_case() const;
-  // @@protoc_insertion_point(class_scope:server.TLeaderboardRecordWrite)
+  // @@protoc_insertion_point(class_scope:server.TLeaderboardRecordsWrite.LeaderboardRecordWrite)
  private:
   inline void set_has_incr();
   inline void set_has_decr();
@@ -10883,38 +11929,38 @@ class TLeaderboardRecordWrite : public ::google::protobuf::Message /* @@protoc_i
 
   void InitAsDefaultInstance();
 };
-extern ::google::protobuf::internal::ExplicitlyConstructed<TLeaderboardRecordWrite> TLeaderboardRecordWrite_default_instance_;
+extern ::google::protobuf::internal::ExplicitlyConstructed<TLeaderboardRecordsWrite_LeaderboardRecordWrite> TLeaderboardRecordsWrite_LeaderboardRecordWrite_default_instance_;
 
 // -------------------------------------------------------------------
 
-class TLeaderboardRecord : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.TLeaderboardRecord) */ {
+class TLeaderboardRecordsWrite : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.TLeaderboardRecordsWrite) */ {
  public:
-  TLeaderboardRecord();
-  virtual ~TLeaderboardRecord();
+  TLeaderboardRecordsWrite();
+  virtual ~TLeaderboardRecordsWrite();
 
-  TLeaderboardRecord(const TLeaderboardRecord& from);
+  TLeaderboardRecordsWrite(const TLeaderboardRecordsWrite& from);
 
-  inline TLeaderboardRecord& operator=(const TLeaderboardRecord& from) {
+  inline TLeaderboardRecordsWrite& operator=(const TLeaderboardRecordsWrite& from) {
     CopyFrom(from);
     return *this;
   }
 
   static const ::google::protobuf::Descriptor* descriptor();
-  static const TLeaderboardRecord& default_instance();
+  static const TLeaderboardRecordsWrite& default_instance();
 
-  static const TLeaderboardRecord* internal_default_instance();
+  static const TLeaderboardRecordsWrite* internal_default_instance();
 
-  void Swap(TLeaderboardRecord* other);
+  void Swap(TLeaderboardRecordsWrite* other);
 
   // implements Message ----------------------------------------------
 
-  inline TLeaderboardRecord* New() const { return New(NULL); }
+  inline TLeaderboardRecordsWrite* New() const { return New(NULL); }
 
-  TLeaderboardRecord* New(::google::protobuf::Arena* arena) const;
+  TLeaderboardRecordsWrite* New(::google::protobuf::Arena* arena) const;
   void CopyFrom(const ::google::protobuf::Message& from);
   void MergeFrom(const ::google::protobuf::Message& from);
-  void CopyFrom(const TLeaderboardRecord& from);
-  void MergeFrom(const TLeaderboardRecord& from);
+  void CopyFrom(const TLeaderboardRecordsWrite& from);
+  void MergeFrom(const TLeaderboardRecordsWrite& from);
   void Clear();
   bool IsInitialized() const;
 
@@ -10933,8 +11979,8 @@ class TLeaderboardRecord : public ::google::protobuf::Message /* @@protoc_insert
   void SharedCtor();
   void SharedDtor();
   void SetCachedSize(int size) const;
-  void InternalSwap(TLeaderboardRecord* other);
-  void UnsafeMergeFrom(const TLeaderboardRecord& from);
+  void InternalSwap(TLeaderboardRecordsWrite* other);
+  void UnsafeMergeFrom(const TLeaderboardRecordsWrite& from);
   private:
   inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
     return _internal_metadata_.arena();
@@ -10948,22 +11994,27 @@ class TLeaderboardRecord : public ::google::protobuf::Message /* @@protoc_insert
 
   // nested types ----------------------------------------------------
 
+  typedef TLeaderboardRecordsWrite_LeaderboardRecordWrite LeaderboardRecordWrite;
+
   // accessors -------------------------------------------------------
 
-  // optional .server.LeaderboardRecord record = 1;
-  bool has_record() const;
-  void clear_record();
-  static const int kRecordFieldNumber = 1;
-  const ::server::LeaderboardRecord& record() const;
-  ::server::LeaderboardRecord* mutable_record();
-  ::server::LeaderboardRecord* release_record();
-  void set_allocated_record(::server::LeaderboardRecord* record);
+  // repeated .server.TLeaderboardRecordsWrite.LeaderboardRecordWrite records = 1;
+  int records_size() const;
+  void clear_records();
+  static const int kRecordsFieldNumber = 1;
+  const ::server::TLeaderboardRecordsWrite_LeaderboardRecordWrite& records(int index) const;
+  ::server::TLeaderboardRecordsWrite_LeaderboardRecordWrite* mutable_records(int index);
+  ::server::TLeaderboardRecordsWrite_LeaderboardRecordWrite* add_records();
+  ::google::protobuf::RepeatedPtrField< ::server::TLeaderboardRecordsWrite_LeaderboardRecordWrite >*
+      mutable_records();
+  const ::google::protobuf::RepeatedPtrField< ::server::TLeaderboardRecordsWrite_LeaderboardRecordWrite >&
+      records() const;
 
-  // @@protoc_insertion_point(class_scope:server.TLeaderboardRecord)
+  // @@protoc_insertion_point(class_scope:server.TLeaderboardRecordsWrite)
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
-  ::server::LeaderboardRecord* record_;
+  ::google::protobuf::RepeatedPtrField< ::server::TLeaderboardRecordsWrite_LeaderboardRecordWrite > records_;
   mutable int _cached_size_;
   friend void  protobuf_InitDefaults_api_2eproto_impl();
   friend void  protobuf_AddDesc_api_2eproto_impl();
@@ -10972,7 +12023,7 @@ class TLeaderboardRecord : public ::google::protobuf::Message /* @@protoc_insert
 
   void InitAsDefaultInstance();
 };
-extern ::google::protobuf::internal::ExplicitlyConstructed<TLeaderboardRecord> TLeaderboardRecord_default_instance_;
+extern ::google::protobuf::internal::ExplicitlyConstructed<TLeaderboardRecordsWrite> TLeaderboardRecordsWrite_default_instance_;
 
 // -------------------------------------------------------------------
 
@@ -12074,128 +13125,128 @@ inline void AuthenticateRequest::set_allocated_collationid(::std::string* collat
 
 // optional .server.AuthenticateRequest.Email email = 2;
 inline bool AuthenticateRequest::has_email() const {
-  return payload_case() == kEmail;
+  return id_case() == kEmail;
 }
 inline void AuthenticateRequest::set_has_email() {
   _oneof_case_[0] = kEmail;
 }
 inline void AuthenticateRequest::clear_email() {
   if (has_email()) {
-    delete payload_.email_;
-    clear_has_payload();
+    delete id_.email_;
+    clear_has_id();
   }
 }
 inline  const ::server::AuthenticateRequest_Email& AuthenticateRequest::email() const {
   // @@protoc_insertion_point(field_get:server.AuthenticateRequest.email)
   return has_email()
-      ? *payload_.email_
+      ? *id_.email_
       : ::server::AuthenticateRequest_Email::default_instance();
 }
 inline ::server::AuthenticateRequest_Email* AuthenticateRequest::mutable_email() {
   if (!has_email()) {
-    clear_payload();
+    clear_id();
     set_has_email();
-    payload_.email_ = new ::server::AuthenticateRequest_Email;
+    id_.email_ = new ::server::AuthenticateRequest_Email;
   }
   // @@protoc_insertion_point(field_mutable:server.AuthenticateRequest.email)
-  return payload_.email_;
+  return id_.email_;
 }
 inline ::server::AuthenticateRequest_Email* AuthenticateRequest::release_email() {
   // @@protoc_insertion_point(field_release:server.AuthenticateRequest.email)
   if (has_email()) {
-    clear_has_payload();
-    ::server::AuthenticateRequest_Email* temp = payload_.email_;
-    payload_.email_ = NULL;
+    clear_has_id();
+    ::server::AuthenticateRequest_Email* temp = id_.email_;
+    id_.email_ = NULL;
     return temp;
   } else {
     return NULL;
   }
 }
 inline void AuthenticateRequest::set_allocated_email(::server::AuthenticateRequest_Email* email) {
-  clear_payload();
+  clear_id();
   if (email) {
     set_has_email();
-    payload_.email_ = email;
+    id_.email_ = email;
   }
   // @@protoc_insertion_point(field_set_allocated:server.AuthenticateRequest.email)
 }
 
 // optional string facebook = 3;
 inline bool AuthenticateRequest::has_facebook() const {
-  return payload_case() == kFacebook;
+  return id_case() == kFacebook;
 }
 inline void AuthenticateRequest::set_has_facebook() {
   _oneof_case_[0] = kFacebook;
 }
 inline void AuthenticateRequest::clear_facebook() {
   if (has_facebook()) {
-    payload_.facebook_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-    clear_has_payload();
+    id_.facebook_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    clear_has_id();
   }
 }
 inline const ::std::string& AuthenticateRequest::facebook() const {
   // @@protoc_insertion_point(field_get:server.AuthenticateRequest.facebook)
   if (has_facebook()) {
-    return payload_.facebook_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    return id_.facebook_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
   return *&::google::protobuf::internal::GetEmptyStringAlreadyInited();
 }
 inline void AuthenticateRequest::set_facebook(const ::std::string& value) {
   // @@protoc_insertion_point(field_set:server.AuthenticateRequest.facebook)
   if (!has_facebook()) {
-    clear_payload();
+    clear_id();
     set_has_facebook();
-    payload_.facebook_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.facebook_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  payload_.facebook_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  id_.facebook_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
   // @@protoc_insertion_point(field_set:server.AuthenticateRequest.facebook)
 }
 inline void AuthenticateRequest::set_facebook(const char* value) {
   if (!has_facebook()) {
-    clear_payload();
+    clear_id();
     set_has_facebook();
-    payload_.facebook_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.facebook_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  payload_.facebook_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+  id_.facebook_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.AuthenticateRequest.facebook)
 }
 inline void AuthenticateRequest::set_facebook(const char* value, size_t size) {
   if (!has_facebook()) {
-    clear_payload();
+    clear_id();
     set_has_facebook();
-    payload_.facebook_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.facebook_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  payload_.facebook_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(
+  id_.facebook_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(
       reinterpret_cast<const char*>(value), size));
   // @@protoc_insertion_point(field_set_pointer:server.AuthenticateRequest.facebook)
 }
 inline ::std::string* AuthenticateRequest::mutable_facebook() {
   if (!has_facebook()) {
-    clear_payload();
+    clear_id();
     set_has_facebook();
-    payload_.facebook_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.facebook_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
   // @@protoc_insertion_point(field_mutable:server.AuthenticateRequest.facebook)
-  return payload_.facebook_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  return id_.facebook_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
 inline ::std::string* AuthenticateRequest::release_facebook() {
   // @@protoc_insertion_point(field_release:server.AuthenticateRequest.facebook)
   if (has_facebook()) {
-    clear_has_payload();
-    return payload_.facebook_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    clear_has_id();
+    return id_.facebook_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   } else {
     return NULL;
   }
 }
 inline void AuthenticateRequest::set_allocated_facebook(::std::string* facebook) {
   if (!has_facebook()) {
-    payload_.facebook_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.facebook_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  clear_payload();
+  clear_id();
   if (facebook != NULL) {
     set_has_facebook();
-    payload_.facebook_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+    id_.facebook_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
         facebook);
   }
   // @@protoc_insertion_point(field_set_allocated:server.AuthenticateRequest.facebook)
@@ -12203,80 +13254,80 @@ inline void AuthenticateRequest::set_allocated_facebook(::std::string* facebook)
 
 // optional string google = 4;
 inline bool AuthenticateRequest::has_google() const {
-  return payload_case() == kGoogle;
+  return id_case() == kGoogle;
 }
 inline void AuthenticateRequest::set_has_google() {
   _oneof_case_[0] = kGoogle;
 }
 inline void AuthenticateRequest::clear_google() {
   if (has_google()) {
-    payload_.google_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-    clear_has_payload();
+    id_.google_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    clear_has_id();
   }
 }
 inline const ::std::string& AuthenticateRequest::google() const {
   // @@protoc_insertion_point(field_get:server.AuthenticateRequest.google)
   if (has_google()) {
-    return payload_.google_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    return id_.google_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
   return *&::google::protobuf::internal::GetEmptyStringAlreadyInited();
 }
 inline void AuthenticateRequest::set_google(const ::std::string& value) {
   // @@protoc_insertion_point(field_set:server.AuthenticateRequest.google)
   if (!has_google()) {
-    clear_payload();
+    clear_id();
     set_has_google();
-    payload_.google_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.google_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  payload_.google_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  id_.google_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
   // @@protoc_insertion_point(field_set:server.AuthenticateRequest.google)
 }
 inline void AuthenticateRequest::set_google(const char* value) {
   if (!has_google()) {
-    clear_payload();
+    clear_id();
     set_has_google();
-    payload_.google_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.google_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  payload_.google_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+  id_.google_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.AuthenticateRequest.google)
 }
 inline void AuthenticateRequest::set_google(const char* value, size_t size) {
   if (!has_google()) {
-    clear_payload();
+    clear_id();
     set_has_google();
-    payload_.google_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.google_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  payload_.google_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(
+  id_.google_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(
       reinterpret_cast<const char*>(value), size));
   // @@protoc_insertion_point(field_set_pointer:server.AuthenticateRequest.google)
 }
 inline ::std::string* AuthenticateRequest::mutable_google() {
   if (!has_google()) {
-    clear_payload();
+    clear_id();
     set_has_google();
-    payload_.google_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.google_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
   // @@protoc_insertion_point(field_mutable:server.AuthenticateRequest.google)
-  return payload_.google_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  return id_.google_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
 inline ::std::string* AuthenticateRequest::release_google() {
   // @@protoc_insertion_point(field_release:server.AuthenticateRequest.google)
   if (has_google()) {
-    clear_has_payload();
-    return payload_.google_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    clear_has_id();
+    return id_.google_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   } else {
     return NULL;
   }
 }
 inline void AuthenticateRequest::set_allocated_google(::std::string* google) {
   if (!has_google()) {
-    payload_.google_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.google_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  clear_payload();
+  clear_id();
   if (google != NULL) {
     set_has_google();
-    payload_.google_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+    id_.google_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
         google);
   }
   // @@protoc_insertion_point(field_set_allocated:server.AuthenticateRequest.google)
@@ -12284,128 +13335,128 @@ inline void AuthenticateRequest::set_allocated_google(::std::string* google) {
 
 // optional .server.AuthenticateRequest.GameCenter game_center = 5;
 inline bool AuthenticateRequest::has_game_center() const {
-  return payload_case() == kGameCenter;
+  return id_case() == kGameCenter;
 }
 inline void AuthenticateRequest::set_has_game_center() {
   _oneof_case_[0] = kGameCenter;
 }
 inline void AuthenticateRequest::clear_game_center() {
   if (has_game_center()) {
-    delete payload_.game_center_;
-    clear_has_payload();
+    delete id_.game_center_;
+    clear_has_id();
   }
 }
 inline  const ::server::AuthenticateRequest_GameCenter& AuthenticateRequest::game_center() const {
   // @@protoc_insertion_point(field_get:server.AuthenticateRequest.game_center)
   return has_game_center()
-      ? *payload_.game_center_
+      ? *id_.game_center_
       : ::server::AuthenticateRequest_GameCenter::default_instance();
 }
 inline ::server::AuthenticateRequest_GameCenter* AuthenticateRequest::mutable_game_center() {
   if (!has_game_center()) {
-    clear_payload();
+    clear_id();
     set_has_game_center();
-    payload_.game_center_ = new ::server::AuthenticateRequest_GameCenter;
+    id_.game_center_ = new ::server::AuthenticateRequest_GameCenter;
   }
   // @@protoc_insertion_point(field_mutable:server.AuthenticateRequest.game_center)
-  return payload_.game_center_;
+  return id_.game_center_;
 }
 inline ::server::AuthenticateRequest_GameCenter* AuthenticateRequest::release_game_center() {
   // @@protoc_insertion_point(field_release:server.AuthenticateRequest.game_center)
   if (has_game_center()) {
-    clear_has_payload();
-    ::server::AuthenticateRequest_GameCenter* temp = payload_.game_center_;
-    payload_.game_center_ = NULL;
+    clear_has_id();
+    ::server::AuthenticateRequest_GameCenter* temp = id_.game_center_;
+    id_.game_center_ = NULL;
     return temp;
   } else {
     return NULL;
   }
 }
 inline void AuthenticateRequest::set_allocated_game_center(::server::AuthenticateRequest_GameCenter* game_center) {
-  clear_payload();
+  clear_id();
   if (game_center) {
     set_has_game_center();
-    payload_.game_center_ = game_center;
+    id_.game_center_ = game_center;
   }
   // @@protoc_insertion_point(field_set_allocated:server.AuthenticateRequest.game_center)
 }
 
 // optional string steam = 6;
 inline bool AuthenticateRequest::has_steam() const {
-  return payload_case() == kSteam;
+  return id_case() == kSteam;
 }
 inline void AuthenticateRequest::set_has_steam() {
   _oneof_case_[0] = kSteam;
 }
 inline void AuthenticateRequest::clear_steam() {
   if (has_steam()) {
-    payload_.steam_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-    clear_has_payload();
+    id_.steam_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    clear_has_id();
   }
 }
 inline const ::std::string& AuthenticateRequest::steam() const {
   // @@protoc_insertion_point(field_get:server.AuthenticateRequest.steam)
   if (has_steam()) {
-    return payload_.steam_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    return id_.steam_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
   return *&::google::protobuf::internal::GetEmptyStringAlreadyInited();
 }
 inline void AuthenticateRequest::set_steam(const ::std::string& value) {
   // @@protoc_insertion_point(field_set:server.AuthenticateRequest.steam)
   if (!has_steam()) {
-    clear_payload();
+    clear_id();
     set_has_steam();
-    payload_.steam_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.steam_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  payload_.steam_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  id_.steam_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
   // @@protoc_insertion_point(field_set:server.AuthenticateRequest.steam)
 }
 inline void AuthenticateRequest::set_steam(const char* value) {
   if (!has_steam()) {
-    clear_payload();
+    clear_id();
     set_has_steam();
-    payload_.steam_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.steam_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  payload_.steam_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+  id_.steam_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.AuthenticateRequest.steam)
 }
 inline void AuthenticateRequest::set_steam(const char* value, size_t size) {
   if (!has_steam()) {
-    clear_payload();
+    clear_id();
     set_has_steam();
-    payload_.steam_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.steam_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  payload_.steam_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(
+  id_.steam_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(
       reinterpret_cast<const char*>(value), size));
   // @@protoc_insertion_point(field_set_pointer:server.AuthenticateRequest.steam)
 }
 inline ::std::string* AuthenticateRequest::mutable_steam() {
   if (!has_steam()) {
-    clear_payload();
+    clear_id();
     set_has_steam();
-    payload_.steam_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.steam_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
   // @@protoc_insertion_point(field_mutable:server.AuthenticateRequest.steam)
-  return payload_.steam_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  return id_.steam_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
 inline ::std::string* AuthenticateRequest::release_steam() {
   // @@protoc_insertion_point(field_release:server.AuthenticateRequest.steam)
   if (has_steam()) {
-    clear_has_payload();
-    return payload_.steam_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    clear_has_id();
+    return id_.steam_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   } else {
     return NULL;
   }
 }
 inline void AuthenticateRequest::set_allocated_steam(::std::string* steam) {
   if (!has_steam()) {
-    payload_.steam_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.steam_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  clear_payload();
+  clear_id();
   if (steam != NULL) {
     set_has_steam();
-    payload_.steam_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+    id_.steam_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
         steam);
   }
   // @@protoc_insertion_point(field_set_allocated:server.AuthenticateRequest.steam)
@@ -12413,80 +13464,80 @@ inline void AuthenticateRequest::set_allocated_steam(::std::string* steam) {
 
 // optional string device = 7;
 inline bool AuthenticateRequest::has_device() const {
-  return payload_case() == kDevice;
+  return id_case() == kDevice;
 }
 inline void AuthenticateRequest::set_has_device() {
   _oneof_case_[0] = kDevice;
 }
 inline void AuthenticateRequest::clear_device() {
   if (has_device()) {
-    payload_.device_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-    clear_has_payload();
+    id_.device_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    clear_has_id();
   }
 }
 inline const ::std::string& AuthenticateRequest::device() const {
   // @@protoc_insertion_point(field_get:server.AuthenticateRequest.device)
   if (has_device()) {
-    return payload_.device_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    return id_.device_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
   return *&::google::protobuf::internal::GetEmptyStringAlreadyInited();
 }
 inline void AuthenticateRequest::set_device(const ::std::string& value) {
   // @@protoc_insertion_point(field_set:server.AuthenticateRequest.device)
   if (!has_device()) {
-    clear_payload();
+    clear_id();
     set_has_device();
-    payload_.device_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.device_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  payload_.device_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  id_.device_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
   // @@protoc_insertion_point(field_set:server.AuthenticateRequest.device)
 }
 inline void AuthenticateRequest::set_device(const char* value) {
   if (!has_device()) {
-    clear_payload();
+    clear_id();
     set_has_device();
-    payload_.device_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.device_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  payload_.device_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+  id_.device_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.AuthenticateRequest.device)
 }
 inline void AuthenticateRequest::set_device(const char* value, size_t size) {
   if (!has_device()) {
-    clear_payload();
+    clear_id();
     set_has_device();
-    payload_.device_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.device_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  payload_.device_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(
+  id_.device_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(
       reinterpret_cast<const char*>(value), size));
   // @@protoc_insertion_point(field_set_pointer:server.AuthenticateRequest.device)
 }
 inline ::std::string* AuthenticateRequest::mutable_device() {
   if (!has_device()) {
-    clear_payload();
+    clear_id();
     set_has_device();
-    payload_.device_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.device_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
   // @@protoc_insertion_point(field_mutable:server.AuthenticateRequest.device)
-  return payload_.device_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  return id_.device_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
 inline ::std::string* AuthenticateRequest::release_device() {
   // @@protoc_insertion_point(field_release:server.AuthenticateRequest.device)
   if (has_device()) {
-    clear_has_payload();
-    return payload_.device_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    clear_has_id();
+    return id_.device_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   } else {
     return NULL;
   }
 }
 inline void AuthenticateRequest::set_allocated_device(::std::string* device) {
   if (!has_device()) {
-    payload_.device_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.device_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  clear_payload();
+  clear_id();
   if (device != NULL) {
     set_has_device();
-    payload_.device_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+    id_.device_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
         device);
   }
   // @@protoc_insertion_point(field_set_allocated:server.AuthenticateRequest.device)
@@ -12494,93 +13545,93 @@ inline void AuthenticateRequest::set_allocated_device(::std::string* device) {
 
 // optional string custom = 8;
 inline bool AuthenticateRequest::has_custom() const {
-  return payload_case() == kCustom;
+  return id_case() == kCustom;
 }
 inline void AuthenticateRequest::set_has_custom() {
   _oneof_case_[0] = kCustom;
 }
 inline void AuthenticateRequest::clear_custom() {
   if (has_custom()) {
-    payload_.custom_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-    clear_has_payload();
+    id_.custom_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    clear_has_id();
   }
 }
 inline const ::std::string& AuthenticateRequest::custom() const {
   // @@protoc_insertion_point(field_get:server.AuthenticateRequest.custom)
   if (has_custom()) {
-    return payload_.custom_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    return id_.custom_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
   return *&::google::protobuf::internal::GetEmptyStringAlreadyInited();
 }
 inline void AuthenticateRequest::set_custom(const ::std::string& value) {
   // @@protoc_insertion_point(field_set:server.AuthenticateRequest.custom)
   if (!has_custom()) {
-    clear_payload();
+    clear_id();
     set_has_custom();
-    payload_.custom_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.custom_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  payload_.custom_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  id_.custom_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
   // @@protoc_insertion_point(field_set:server.AuthenticateRequest.custom)
 }
 inline void AuthenticateRequest::set_custom(const char* value) {
   if (!has_custom()) {
-    clear_payload();
+    clear_id();
     set_has_custom();
-    payload_.custom_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.custom_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  payload_.custom_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+  id_.custom_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.AuthenticateRequest.custom)
 }
 inline void AuthenticateRequest::set_custom(const char* value, size_t size) {
   if (!has_custom()) {
-    clear_payload();
+    clear_id();
     set_has_custom();
-    payload_.custom_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.custom_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  payload_.custom_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(
+  id_.custom_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(
       reinterpret_cast<const char*>(value), size));
   // @@protoc_insertion_point(field_set_pointer:server.AuthenticateRequest.custom)
 }
 inline ::std::string* AuthenticateRequest::mutable_custom() {
   if (!has_custom()) {
-    clear_payload();
+    clear_id();
     set_has_custom();
-    payload_.custom_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.custom_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
   // @@protoc_insertion_point(field_mutable:server.AuthenticateRequest.custom)
-  return payload_.custom_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  return id_.custom_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
 inline ::std::string* AuthenticateRequest::release_custom() {
   // @@protoc_insertion_point(field_release:server.AuthenticateRequest.custom)
   if (has_custom()) {
-    clear_has_payload();
-    return payload_.custom_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    clear_has_id();
+    return id_.custom_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   } else {
     return NULL;
   }
 }
 inline void AuthenticateRequest::set_allocated_custom(::std::string* custom) {
   if (!has_custom()) {
-    payload_.custom_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.custom_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  clear_payload();
+  clear_id();
   if (custom != NULL) {
     set_has_custom();
-    payload_.custom_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+    id_.custom_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
         custom);
   }
   // @@protoc_insertion_point(field_set_allocated:server.AuthenticateRequest.custom)
 }
 
-inline bool AuthenticateRequest::has_payload() const {
-  return payload_case() != PAYLOAD_NOT_SET;
+inline bool AuthenticateRequest::has_id() const {
+  return id_case() != ID_NOT_SET;
 }
-inline void AuthenticateRequest::clear_has_payload() {
-  _oneof_case_[0] = PAYLOAD_NOT_SET;
+inline void AuthenticateRequest::clear_has_id() {
+  _oneof_case_[0] = ID_NOT_SET;
 }
-inline AuthenticateRequest::PayloadCase AuthenticateRequest::payload_case() const {
-  return AuthenticateRequest::PayloadCase(_oneof_case_[0]);
+inline AuthenticateRequest::IdCase AuthenticateRequest::id_case() const {
+  return AuthenticateRequest::IdCase(_oneof_case_[0]);
 }
 inline const AuthenticateRequest* AuthenticateRequest::internal_default_instance() {
   return &AuthenticateRequest_default_instance_.get();
@@ -12790,108 +13841,108 @@ inline void AuthenticateResponse::set_allocated_collation_id(::std::string* coll
 
 // optional .server.AuthenticateResponse.Session session = 2;
 inline bool AuthenticateResponse::has_session() const {
-  return payload_case() == kSession;
+  return id_case() == kSession;
 }
 inline void AuthenticateResponse::set_has_session() {
   _oneof_case_[0] = kSession;
 }
 inline void AuthenticateResponse::clear_session() {
   if (has_session()) {
-    delete payload_.session_;
-    clear_has_payload();
+    delete id_.session_;
+    clear_has_id();
   }
 }
 inline  const ::server::AuthenticateResponse_Session& AuthenticateResponse::session() const {
   // @@protoc_insertion_point(field_get:server.AuthenticateResponse.session)
   return has_session()
-      ? *payload_.session_
+      ? *id_.session_
       : ::server::AuthenticateResponse_Session::default_instance();
 }
 inline ::server::AuthenticateResponse_Session* AuthenticateResponse::mutable_session() {
   if (!has_session()) {
-    clear_payload();
+    clear_id();
     set_has_session();
-    payload_.session_ = new ::server::AuthenticateResponse_Session;
+    id_.session_ = new ::server::AuthenticateResponse_Session;
   }
   // @@protoc_insertion_point(field_mutable:server.AuthenticateResponse.session)
-  return payload_.session_;
+  return id_.session_;
 }
 inline ::server::AuthenticateResponse_Session* AuthenticateResponse::release_session() {
   // @@protoc_insertion_point(field_release:server.AuthenticateResponse.session)
   if (has_session()) {
-    clear_has_payload();
-    ::server::AuthenticateResponse_Session* temp = payload_.session_;
-    payload_.session_ = NULL;
+    clear_has_id();
+    ::server::AuthenticateResponse_Session* temp = id_.session_;
+    id_.session_ = NULL;
     return temp;
   } else {
     return NULL;
   }
 }
 inline void AuthenticateResponse::set_allocated_session(::server::AuthenticateResponse_Session* session) {
-  clear_payload();
+  clear_id();
   if (session) {
     set_has_session();
-    payload_.session_ = session;
+    id_.session_ = session;
   }
   // @@protoc_insertion_point(field_set_allocated:server.AuthenticateResponse.session)
 }
 
 // optional .server.AuthenticateResponse.Error error = 3;
 inline bool AuthenticateResponse::has_error() const {
-  return payload_case() == kError;
+  return id_case() == kError;
 }
 inline void AuthenticateResponse::set_has_error() {
   _oneof_case_[0] = kError;
 }
 inline void AuthenticateResponse::clear_error() {
   if (has_error()) {
-    delete payload_.error_;
-    clear_has_payload();
+    delete id_.error_;
+    clear_has_id();
   }
 }
 inline  const ::server::AuthenticateResponse_Error& AuthenticateResponse::error() const {
   // @@protoc_insertion_point(field_get:server.AuthenticateResponse.error)
   return has_error()
-      ? *payload_.error_
+      ? *id_.error_
       : ::server::AuthenticateResponse_Error::default_instance();
 }
 inline ::server::AuthenticateResponse_Error* AuthenticateResponse::mutable_error() {
   if (!has_error()) {
-    clear_payload();
+    clear_id();
     set_has_error();
-    payload_.error_ = new ::server::AuthenticateResponse_Error;
+    id_.error_ = new ::server::AuthenticateResponse_Error;
   }
   // @@protoc_insertion_point(field_mutable:server.AuthenticateResponse.error)
-  return payload_.error_;
+  return id_.error_;
 }
 inline ::server::AuthenticateResponse_Error* AuthenticateResponse::release_error() {
   // @@protoc_insertion_point(field_release:server.AuthenticateResponse.error)
   if (has_error()) {
-    clear_has_payload();
-    ::server::AuthenticateResponse_Error* temp = payload_.error_;
-    payload_.error_ = NULL;
+    clear_has_id();
+    ::server::AuthenticateResponse_Error* temp = id_.error_;
+    id_.error_ = NULL;
     return temp;
   } else {
     return NULL;
   }
 }
 inline void AuthenticateResponse::set_allocated_error(::server::AuthenticateResponse_Error* error) {
-  clear_payload();
+  clear_id();
   if (error) {
     set_has_error();
-    payload_.error_ = error;
+    id_.error_ = error;
   }
   // @@protoc_insertion_point(field_set_allocated:server.AuthenticateResponse.error)
 }
 
-inline bool AuthenticateResponse::has_payload() const {
-  return payload_case() != PAYLOAD_NOT_SET;
+inline bool AuthenticateResponse::has_id() const {
+  return id_case() != ID_NOT_SET;
 }
-inline void AuthenticateResponse::clear_has_payload() {
-  _oneof_case_[0] = PAYLOAD_NOT_SET;
+inline void AuthenticateResponse::clear_has_id() {
+  _oneof_case_[0] = ID_NOT_SET;
 }
-inline AuthenticateResponse::PayloadCase AuthenticateResponse::payload_case() const {
-  return AuthenticateResponse::PayloadCase(_oneof_case_[0]);
+inline AuthenticateResponse::IdCase AuthenticateResponse::id_case() const {
+  return AuthenticateResponse::IdCase(_oneof_case_[0]);
 }
 inline const AuthenticateResponse* AuthenticateResponse::internal_default_instance() {
   return &AuthenticateResponse_default_instance_.get();
@@ -13424,148 +14475,148 @@ inline void Envelope::set_allocated_users(::server::TUsers* users) {
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.users)
 }
 
-// optional .server.TFriendAdd friend_add = 12;
-inline bool Envelope::has_friend_add() const {
-  return payload_case() == kFriendAdd;
+// optional .server.TFriendsAdd friends_add = 12;
+inline bool Envelope::has_friends_add() const {
+  return payload_case() == kFriendsAdd;
 }
-inline void Envelope::set_has_friend_add() {
-  _oneof_case_[0] = kFriendAdd;
+inline void Envelope::set_has_friends_add() {
+  _oneof_case_[0] = kFriendsAdd;
 }
-inline void Envelope::clear_friend_add() {
-  if (has_friend_add()) {
-    delete payload_.friend_add_;
+inline void Envelope::clear_friends_add() {
+  if (has_friends_add()) {
+    delete payload_.friends_add_;
     clear_has_payload();
   }
 }
-inline  const ::server::TFriendAdd& Envelope::friend_add() const {
-  // @@protoc_insertion_point(field_get:server.Envelope.friend_add)
-  return has_friend_add()
-      ? *payload_.friend_add_
-      : ::server::TFriendAdd::default_instance();
+inline  const ::server::TFriendsAdd& Envelope::friends_add() const {
+  // @@protoc_insertion_point(field_get:server.Envelope.friends_add)
+  return has_friends_add()
+      ? *payload_.friends_add_
+      : ::server::TFriendsAdd::default_instance();
 }
-inline ::server::TFriendAdd* Envelope::mutable_friend_add() {
-  if (!has_friend_add()) {
+inline ::server::TFriendsAdd* Envelope::mutable_friends_add() {
+  if (!has_friends_add()) {
     clear_payload();
-    set_has_friend_add();
-    payload_.friend_add_ = new ::server::TFriendAdd;
+    set_has_friends_add();
+    payload_.friends_add_ = new ::server::TFriendsAdd;
   }
-  // @@protoc_insertion_point(field_mutable:server.Envelope.friend_add)
-  return payload_.friend_add_;
+  // @@protoc_insertion_point(field_mutable:server.Envelope.friends_add)
+  return payload_.friends_add_;
 }
-inline ::server::TFriendAdd* Envelope::release_friend_add() {
-  // @@protoc_insertion_point(field_release:server.Envelope.friend_add)
-  if (has_friend_add()) {
+inline ::server::TFriendsAdd* Envelope::release_friends_add() {
+  // @@protoc_insertion_point(field_release:server.Envelope.friends_add)
+  if (has_friends_add()) {
     clear_has_payload();
-    ::server::TFriendAdd* temp = payload_.friend_add_;
-    payload_.friend_add_ = NULL;
+    ::server::TFriendsAdd* temp = payload_.friends_add_;
+    payload_.friends_add_ = NULL;
     return temp;
   } else {
     return NULL;
   }
 }
-inline void Envelope::set_allocated_friend_add(::server::TFriendAdd* friend_add) {
+inline void Envelope::set_allocated_friends_add(::server::TFriendsAdd* friends_add) {
   clear_payload();
-  if (friend_add) {
-    set_has_friend_add();
-    payload_.friend_add_ = friend_add;
+  if (friends_add) {
+    set_has_friends_add();
+    payload_.friends_add_ = friends_add;
   }
-  // @@protoc_insertion_point(field_set_allocated:server.Envelope.friend_add)
+  // @@protoc_insertion_point(field_set_allocated:server.Envelope.friends_add)
 }
 
-// optional .server.TFriendRemove friend_remove = 13;
-inline bool Envelope::has_friend_remove() const {
-  return payload_case() == kFriendRemove;
+// optional .server.TFriendsRemove friends_remove = 13;
+inline bool Envelope::has_friends_remove() const {
+  return payload_case() == kFriendsRemove;
 }
-inline void Envelope::set_has_friend_remove() {
-  _oneof_case_[0] = kFriendRemove;
+inline void Envelope::set_has_friends_remove() {
+  _oneof_case_[0] = kFriendsRemove;
 }
-inline void Envelope::clear_friend_remove() {
-  if (has_friend_remove()) {
-    delete payload_.friend_remove_;
+inline void Envelope::clear_friends_remove() {
+  if (has_friends_remove()) {
+    delete payload_.friends_remove_;
     clear_has_payload();
   }
 }
-inline  const ::server::TFriendRemove& Envelope::friend_remove() const {
-  // @@protoc_insertion_point(field_get:server.Envelope.friend_remove)
-  return has_friend_remove()
-      ? *payload_.friend_remove_
-      : ::server::TFriendRemove::default_instance();
+inline  const ::server::TFriendsRemove& Envelope::friends_remove() const {
+  // @@protoc_insertion_point(field_get:server.Envelope.friends_remove)
+  return has_friends_remove()
+      ? *payload_.friends_remove_
+      : ::server::TFriendsRemove::default_instance();
 }
-inline ::server::TFriendRemove* Envelope::mutable_friend_remove() {
-  if (!has_friend_remove()) {
+inline ::server::TFriendsRemove* Envelope::mutable_friends_remove() {
+  if (!has_friends_remove()) {
     clear_payload();
-    set_has_friend_remove();
-    payload_.friend_remove_ = new ::server::TFriendRemove;
+    set_has_friends_remove();
+    payload_.friends_remove_ = new ::server::TFriendsRemove;
   }
-  // @@protoc_insertion_point(field_mutable:server.Envelope.friend_remove)
-  return payload_.friend_remove_;
+  // @@protoc_insertion_point(field_mutable:server.Envelope.friends_remove)
+  return payload_.friends_remove_;
 }
-inline ::server::TFriendRemove* Envelope::release_friend_remove() {
-  // @@protoc_insertion_point(field_release:server.Envelope.friend_remove)
-  if (has_friend_remove()) {
+inline ::server::TFriendsRemove* Envelope::release_friends_remove() {
+  // @@protoc_insertion_point(field_release:server.Envelope.friends_remove)
+  if (has_friends_remove()) {
     clear_has_payload();
-    ::server::TFriendRemove* temp = payload_.friend_remove_;
-    payload_.friend_remove_ = NULL;
+    ::server::TFriendsRemove* temp = payload_.friends_remove_;
+    payload_.friends_remove_ = NULL;
     return temp;
   } else {
     return NULL;
   }
 }
-inline void Envelope::set_allocated_friend_remove(::server::TFriendRemove* friend_remove) {
+inline void Envelope::set_allocated_friends_remove(::server::TFriendsRemove* friends_remove) {
   clear_payload();
-  if (friend_remove) {
-    set_has_friend_remove();
-    payload_.friend_remove_ = friend_remove;
+  if (friends_remove) {
+    set_has_friends_remove();
+    payload_.friends_remove_ = friends_remove;
   }
-  // @@protoc_insertion_point(field_set_allocated:server.Envelope.friend_remove)
+  // @@protoc_insertion_point(field_set_allocated:server.Envelope.friends_remove)
 }
 
-// optional .server.TFriendBlock friend_block = 14;
-inline bool Envelope::has_friend_block() const {
-  return payload_case() == kFriendBlock;
+// optional .server.TFriendsBlock friends_block = 14;
+inline bool Envelope::has_friends_block() const {
+  return payload_case() == kFriendsBlock;
 }
-inline void Envelope::set_has_friend_block() {
-  _oneof_case_[0] = kFriendBlock;
+inline void Envelope::set_has_friends_block() {
+  _oneof_case_[0] = kFriendsBlock;
 }
-inline void Envelope::clear_friend_block() {
-  if (has_friend_block()) {
-    delete payload_.friend_block_;
+inline void Envelope::clear_friends_block() {
+  if (has_friends_block()) {
+    delete payload_.friends_block_;
     clear_has_payload();
   }
 }
-inline  const ::server::TFriendBlock& Envelope::friend_block() const {
-  // @@protoc_insertion_point(field_get:server.Envelope.friend_block)
-  return has_friend_block()
-      ? *payload_.friend_block_
-      : ::server::TFriendBlock::default_instance();
+inline  const ::server::TFriendsBlock& Envelope::friends_block() const {
+  // @@protoc_insertion_point(field_get:server.Envelope.friends_block)
+  return has_friends_block()
+      ? *payload_.friends_block_
+      : ::server::TFriendsBlock::default_instance();
 }
-inline ::server::TFriendBlock* Envelope::mutable_friend_block() {
-  if (!has_friend_block()) {
+inline ::server::TFriendsBlock* Envelope::mutable_friends_block() {
+  if (!has_friends_block()) {
     clear_payload();
-    set_has_friend_block();
-    payload_.friend_block_ = new ::server::TFriendBlock;
+    set_has_friends_block();
+    payload_.friends_block_ = new ::server::TFriendsBlock;
   }
-  // @@protoc_insertion_point(field_mutable:server.Envelope.friend_block)
-  return payload_.friend_block_;
+  // @@protoc_insertion_point(field_mutable:server.Envelope.friends_block)
+  return payload_.friends_block_;
 }
-inline ::server::TFriendBlock* Envelope::release_friend_block() {
-  // @@protoc_insertion_point(field_release:server.Envelope.friend_block)
-  if (has_friend_block()) {
+inline ::server::TFriendsBlock* Envelope::release_friends_block() {
+  // @@protoc_insertion_point(field_release:server.Envelope.friends_block)
+  if (has_friends_block()) {
     clear_has_payload();
-    ::server::TFriendBlock* temp = payload_.friend_block_;
-    payload_.friend_block_ = NULL;
+    ::server::TFriendsBlock* temp = payload_.friends_block_;
+    payload_.friends_block_ = NULL;
     return temp;
   } else {
     return NULL;
   }
 }
-inline void Envelope::set_allocated_friend_block(::server::TFriendBlock* friend_block) {
+inline void Envelope::set_allocated_friends_block(::server::TFriendsBlock* friends_block) {
   clear_payload();
-  if (friend_block) {
-    set_has_friend_block();
-    payload_.friend_block_ = friend_block;
+  if (friends_block) {
+    set_has_friends_block();
+    payload_.friends_block_ = friends_block;
   }
-  // @@protoc_insertion_point(field_set_allocated:server.Envelope.friend_block)
+  // @@protoc_insertion_point(field_set_allocated:server.Envelope.friends_block)
 }
 
 // optional .server.TFriendsList friends_list = 15;
@@ -13664,148 +14715,148 @@ inline void Envelope::set_allocated_friends(::server::TFriends* friends) {
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.friends)
 }
 
-// optional .server.TGroupCreate group_create = 17;
-inline bool Envelope::has_group_create() const {
-  return payload_case() == kGroupCreate;
+// optional .server.TGroupsCreate groups_create = 17;
+inline bool Envelope::has_groups_create() const {
+  return payload_case() == kGroupsCreate;
 }
-inline void Envelope::set_has_group_create() {
-  _oneof_case_[0] = kGroupCreate;
+inline void Envelope::set_has_groups_create() {
+  _oneof_case_[0] = kGroupsCreate;
 }
-inline void Envelope::clear_group_create() {
-  if (has_group_create()) {
-    delete payload_.group_create_;
+inline void Envelope::clear_groups_create() {
+  if (has_groups_create()) {
+    delete payload_.groups_create_;
     clear_has_payload();
   }
 }
-inline  const ::server::TGroupCreate& Envelope::group_create() const {
-  // @@protoc_insertion_point(field_get:server.Envelope.group_create)
-  return has_group_create()
-      ? *payload_.group_create_
-      : ::server::TGroupCreate::default_instance();
+inline  const ::server::TGroupsCreate& Envelope::groups_create() const {
+  // @@protoc_insertion_point(field_get:server.Envelope.groups_create)
+  return has_groups_create()
+      ? *payload_.groups_create_
+      : ::server::TGroupsCreate::default_instance();
 }
-inline ::server::TGroupCreate* Envelope::mutable_group_create() {
-  if (!has_group_create()) {
+inline ::server::TGroupsCreate* Envelope::mutable_groups_create() {
+  if (!has_groups_create()) {
     clear_payload();
-    set_has_group_create();
-    payload_.group_create_ = new ::server::TGroupCreate;
+    set_has_groups_create();
+    payload_.groups_create_ = new ::server::TGroupsCreate;
   }
-  // @@protoc_insertion_point(field_mutable:server.Envelope.group_create)
-  return payload_.group_create_;
+  // @@protoc_insertion_point(field_mutable:server.Envelope.groups_create)
+  return payload_.groups_create_;
 }
-inline ::server::TGroupCreate* Envelope::release_group_create() {
-  // @@protoc_insertion_point(field_release:server.Envelope.group_create)
-  if (has_group_create()) {
+inline ::server::TGroupsCreate* Envelope::release_groups_create() {
+  // @@protoc_insertion_point(field_release:server.Envelope.groups_create)
+  if (has_groups_create()) {
     clear_has_payload();
-    ::server::TGroupCreate* temp = payload_.group_create_;
-    payload_.group_create_ = NULL;
+    ::server::TGroupsCreate* temp = payload_.groups_create_;
+    payload_.groups_create_ = NULL;
     return temp;
   } else {
     return NULL;
   }
 }
-inline void Envelope::set_allocated_group_create(::server::TGroupCreate* group_create) {
+inline void Envelope::set_allocated_groups_create(::server::TGroupsCreate* groups_create) {
   clear_payload();
-  if (group_create) {
-    set_has_group_create();
-    payload_.group_create_ = group_create;
+  if (groups_create) {
+    set_has_groups_create();
+    payload_.groups_create_ = groups_create;
   }
-  // @@protoc_insertion_point(field_set_allocated:server.Envelope.group_create)
+  // @@protoc_insertion_point(field_set_allocated:server.Envelope.groups_create)
 }
 
-// optional .server.TGroupUpdate group_update = 18;
-inline bool Envelope::has_group_update() const {
-  return payload_case() == kGroupUpdate;
+// optional .server.TGroupsUpdate groups_update = 18;
+inline bool Envelope::has_groups_update() const {
+  return payload_case() == kGroupsUpdate;
 }
-inline void Envelope::set_has_group_update() {
-  _oneof_case_[0] = kGroupUpdate;
+inline void Envelope::set_has_groups_update() {
+  _oneof_case_[0] = kGroupsUpdate;
 }
-inline void Envelope::clear_group_update() {
-  if (has_group_update()) {
-    delete payload_.group_update_;
+inline void Envelope::clear_groups_update() {
+  if (has_groups_update()) {
+    delete payload_.groups_update_;
     clear_has_payload();
   }
 }
-inline  const ::server::TGroupUpdate& Envelope::group_update() const {
-  // @@protoc_insertion_point(field_get:server.Envelope.group_update)
-  return has_group_update()
-      ? *payload_.group_update_
-      : ::server::TGroupUpdate::default_instance();
+inline  const ::server::TGroupsUpdate& Envelope::groups_update() const {
+  // @@protoc_insertion_point(field_get:server.Envelope.groups_update)
+  return has_groups_update()
+      ? *payload_.groups_update_
+      : ::server::TGroupsUpdate::default_instance();
 }
-inline ::server::TGroupUpdate* Envelope::mutable_group_update() {
-  if (!has_group_update()) {
+inline ::server::TGroupsUpdate* Envelope::mutable_groups_update() {
+  if (!has_groups_update()) {
     clear_payload();
-    set_has_group_update();
-    payload_.group_update_ = new ::server::TGroupUpdate;
+    set_has_groups_update();
+    payload_.groups_update_ = new ::server::TGroupsUpdate;
   }
-  // @@protoc_insertion_point(field_mutable:server.Envelope.group_update)
-  return payload_.group_update_;
+  // @@protoc_insertion_point(field_mutable:server.Envelope.groups_update)
+  return payload_.groups_update_;
 }
-inline ::server::TGroupUpdate* Envelope::release_group_update() {
-  // @@protoc_insertion_point(field_release:server.Envelope.group_update)
-  if (has_group_update()) {
+inline ::server::TGroupsUpdate* Envelope::release_groups_update() {
+  // @@protoc_insertion_point(field_release:server.Envelope.groups_update)
+  if (has_groups_update()) {
     clear_has_payload();
-    ::server::TGroupUpdate* temp = payload_.group_update_;
-    payload_.group_update_ = NULL;
+    ::server::TGroupsUpdate* temp = payload_.groups_update_;
+    payload_.groups_update_ = NULL;
     return temp;
   } else {
     return NULL;
   }
 }
-inline void Envelope::set_allocated_group_update(::server::TGroupUpdate* group_update) {
+inline void Envelope::set_allocated_groups_update(::server::TGroupsUpdate* groups_update) {
   clear_payload();
-  if (group_update) {
-    set_has_group_update();
-    payload_.group_update_ = group_update;
+  if (groups_update) {
+    set_has_groups_update();
+    payload_.groups_update_ = groups_update;
   }
-  // @@protoc_insertion_point(field_set_allocated:server.Envelope.group_update)
+  // @@protoc_insertion_point(field_set_allocated:server.Envelope.groups_update)
 }
 
-// optional .server.TGroupRemove group_remove = 19;
-inline bool Envelope::has_group_remove() const {
-  return payload_case() == kGroupRemove;
+// optional .server.TGroupsRemove groups_remove = 19;
+inline bool Envelope::has_groups_remove() const {
+  return payload_case() == kGroupsRemove;
 }
-inline void Envelope::set_has_group_remove() {
-  _oneof_case_[0] = kGroupRemove;
+inline void Envelope::set_has_groups_remove() {
+  _oneof_case_[0] = kGroupsRemove;
 }
-inline void Envelope::clear_group_remove() {
-  if (has_group_remove()) {
-    delete payload_.group_remove_;
+inline void Envelope::clear_groups_remove() {
+  if (has_groups_remove()) {
+    delete payload_.groups_remove_;
     clear_has_payload();
   }
 }
-inline  const ::server::TGroupRemove& Envelope::group_remove() const {
-  // @@protoc_insertion_point(field_get:server.Envelope.group_remove)
-  return has_group_remove()
-      ? *payload_.group_remove_
-      : ::server::TGroupRemove::default_instance();
+inline  const ::server::TGroupsRemove& Envelope::groups_remove() const {
+  // @@protoc_insertion_point(field_get:server.Envelope.groups_remove)
+  return has_groups_remove()
+      ? *payload_.groups_remove_
+      : ::server::TGroupsRemove::default_instance();
 }
-inline ::server::TGroupRemove* Envelope::mutable_group_remove() {
-  if (!has_group_remove()) {
+inline ::server::TGroupsRemove* Envelope::mutable_groups_remove() {
+  if (!has_groups_remove()) {
     clear_payload();
-    set_has_group_remove();
-    payload_.group_remove_ = new ::server::TGroupRemove;
+    set_has_groups_remove();
+    payload_.groups_remove_ = new ::server::TGroupsRemove;
   }
-  // @@protoc_insertion_point(field_mutable:server.Envelope.group_remove)
-  return payload_.group_remove_;
+  // @@protoc_insertion_point(field_mutable:server.Envelope.groups_remove)
+  return payload_.groups_remove_;
 }
-inline ::server::TGroupRemove* Envelope::release_group_remove() {
-  // @@protoc_insertion_point(field_release:server.Envelope.group_remove)
-  if (has_group_remove()) {
+inline ::server::TGroupsRemove* Envelope::release_groups_remove() {
+  // @@protoc_insertion_point(field_release:server.Envelope.groups_remove)
+  if (has_groups_remove()) {
     clear_has_payload();
-    ::server::TGroupRemove* temp = payload_.group_remove_;
-    payload_.group_remove_ = NULL;
+    ::server::TGroupsRemove* temp = payload_.groups_remove_;
+    payload_.groups_remove_ = NULL;
     return temp;
   } else {
     return NULL;
   }
 }
-inline void Envelope::set_allocated_group_remove(::server::TGroupRemove* group_remove) {
+inline void Envelope::set_allocated_groups_remove(::server::TGroupsRemove* groups_remove) {
   clear_payload();
-  if (group_remove) {
-    set_has_group_remove();
-    payload_.group_remove_ = group_remove;
+  if (groups_remove) {
+    set_has_groups_remove();
+    payload_.groups_remove_ = groups_remove;
   }
-  // @@protoc_insertion_point(field_set_allocated:server.Envelope.group_remove)
+  // @@protoc_insertion_point(field_set_allocated:server.Envelope.groups_remove)
 }
 
 // optional .server.TGroupsFetch groups_fetch = 20;
@@ -14000,244 +15051,244 @@ inline void Envelope::set_allocated_group_users_list(::server::TGroupUsersList* 
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.group_users_list)
 }
 
-// optional .server.TGroupJoin group_join = 24;
-inline bool Envelope::has_group_join() const {
-  return payload_case() == kGroupJoin;
+// optional .server.TGroupsJoin groups_join = 24;
+inline bool Envelope::has_groups_join() const {
+  return payload_case() == kGroupsJoin;
 }
-inline void Envelope::set_has_group_join() {
-  _oneof_case_[0] = kGroupJoin;
+inline void Envelope::set_has_groups_join() {
+  _oneof_case_[0] = kGroupsJoin;
 }
-inline void Envelope::clear_group_join() {
-  if (has_group_join()) {
-    delete payload_.group_join_;
+inline void Envelope::clear_groups_join() {
+  if (has_groups_join()) {
+    delete payload_.groups_join_;
     clear_has_payload();
   }
 }
-inline  const ::server::TGroupJoin& Envelope::group_join() const {
-  // @@protoc_insertion_point(field_get:server.Envelope.group_join)
-  return has_group_join()
-      ? *payload_.group_join_
-      : ::server::TGroupJoin::default_instance();
+inline  const ::server::TGroupsJoin& Envelope::groups_join() const {
+  // @@protoc_insertion_point(field_get:server.Envelope.groups_join)
+  return has_groups_join()
+      ? *payload_.groups_join_
+      : ::server::TGroupsJoin::default_instance();
 }
-inline ::server::TGroupJoin* Envelope::mutable_group_join() {
-  if (!has_group_join()) {
+inline ::server::TGroupsJoin* Envelope::mutable_groups_join() {
+  if (!has_groups_join()) {
     clear_payload();
-    set_has_group_join();
-    payload_.group_join_ = new ::server::TGroupJoin;
+    set_has_groups_join();
+    payload_.groups_join_ = new ::server::TGroupsJoin;
   }
-  // @@protoc_insertion_point(field_mutable:server.Envelope.group_join)
-  return payload_.group_join_;
+  // @@protoc_insertion_point(field_mutable:server.Envelope.groups_join)
+  return payload_.groups_join_;
 }
-inline ::server::TGroupJoin* Envelope::release_group_join() {
-  // @@protoc_insertion_point(field_release:server.Envelope.group_join)
-  if (has_group_join()) {
+inline ::server::TGroupsJoin* Envelope::release_groups_join() {
+  // @@protoc_insertion_point(field_release:server.Envelope.groups_join)
+  if (has_groups_join()) {
     clear_has_payload();
-    ::server::TGroupJoin* temp = payload_.group_join_;
-    payload_.group_join_ = NULL;
+    ::server::TGroupsJoin* temp = payload_.groups_join_;
+    payload_.groups_join_ = NULL;
     return temp;
   } else {
     return NULL;
   }
 }
-inline void Envelope::set_allocated_group_join(::server::TGroupJoin* group_join) {
+inline void Envelope::set_allocated_groups_join(::server::TGroupsJoin* groups_join) {
   clear_payload();
-  if (group_join) {
-    set_has_group_join();
-    payload_.group_join_ = group_join;
+  if (groups_join) {
+    set_has_groups_join();
+    payload_.groups_join_ = groups_join;
   }
-  // @@protoc_insertion_point(field_set_allocated:server.Envelope.group_join)
+  // @@protoc_insertion_point(field_set_allocated:server.Envelope.groups_join)
 }
 
-// optional .server.TGroupLeave group_leave = 25;
-inline bool Envelope::has_group_leave() const {
-  return payload_case() == kGroupLeave;
+// optional .server.TGroupsLeave groups_leave = 25;
+inline bool Envelope::has_groups_leave() const {
+  return payload_case() == kGroupsLeave;
 }
-inline void Envelope::set_has_group_leave() {
-  _oneof_case_[0] = kGroupLeave;
+inline void Envelope::set_has_groups_leave() {
+  _oneof_case_[0] = kGroupsLeave;
 }
-inline void Envelope::clear_group_leave() {
-  if (has_group_leave()) {
-    delete payload_.group_leave_;
+inline void Envelope::clear_groups_leave() {
+  if (has_groups_leave()) {
+    delete payload_.groups_leave_;
     clear_has_payload();
   }
 }
-inline  const ::server::TGroupLeave& Envelope::group_leave() const {
-  // @@protoc_insertion_point(field_get:server.Envelope.group_leave)
-  return has_group_leave()
-      ? *payload_.group_leave_
-      : ::server::TGroupLeave::default_instance();
+inline  const ::server::TGroupsLeave& Envelope::groups_leave() const {
+  // @@protoc_insertion_point(field_get:server.Envelope.groups_leave)
+  return has_groups_leave()
+      ? *payload_.groups_leave_
+      : ::server::TGroupsLeave::default_instance();
 }
-inline ::server::TGroupLeave* Envelope::mutable_group_leave() {
-  if (!has_group_leave()) {
+inline ::server::TGroupsLeave* Envelope::mutable_groups_leave() {
+  if (!has_groups_leave()) {
     clear_payload();
-    set_has_group_leave();
-    payload_.group_leave_ = new ::server::TGroupLeave;
+    set_has_groups_leave();
+    payload_.groups_leave_ = new ::server::TGroupsLeave;
   }
-  // @@protoc_insertion_point(field_mutable:server.Envelope.group_leave)
-  return payload_.group_leave_;
+  // @@protoc_insertion_point(field_mutable:server.Envelope.groups_leave)
+  return payload_.groups_leave_;
 }
-inline ::server::TGroupLeave* Envelope::release_group_leave() {
-  // @@protoc_insertion_point(field_release:server.Envelope.group_leave)
-  if (has_group_leave()) {
+inline ::server::TGroupsLeave* Envelope::release_groups_leave() {
+  // @@protoc_insertion_point(field_release:server.Envelope.groups_leave)
+  if (has_groups_leave()) {
     clear_has_payload();
-    ::server::TGroupLeave* temp = payload_.group_leave_;
-    payload_.group_leave_ = NULL;
+    ::server::TGroupsLeave* temp = payload_.groups_leave_;
+    payload_.groups_leave_ = NULL;
     return temp;
   } else {
     return NULL;
   }
 }
-inline void Envelope::set_allocated_group_leave(::server::TGroupLeave* group_leave) {
+inline void Envelope::set_allocated_groups_leave(::server::TGroupsLeave* groups_leave) {
   clear_payload();
-  if (group_leave) {
-    set_has_group_leave();
-    payload_.group_leave_ = group_leave;
+  if (groups_leave) {
+    set_has_groups_leave();
+    payload_.groups_leave_ = groups_leave;
   }
-  // @@protoc_insertion_point(field_set_allocated:server.Envelope.group_leave)
+  // @@protoc_insertion_point(field_set_allocated:server.Envelope.groups_leave)
 }
 
-// optional .server.TGroupUserAdd group_user_add = 26;
-inline bool Envelope::has_group_user_add() const {
-  return payload_case() == kGroupUserAdd;
+// optional .server.TGroupUsersAdd group_users_add = 26;
+inline bool Envelope::has_group_users_add() const {
+  return payload_case() == kGroupUsersAdd;
 }
-inline void Envelope::set_has_group_user_add() {
-  _oneof_case_[0] = kGroupUserAdd;
+inline void Envelope::set_has_group_users_add() {
+  _oneof_case_[0] = kGroupUsersAdd;
 }
-inline void Envelope::clear_group_user_add() {
-  if (has_group_user_add()) {
-    delete payload_.group_user_add_;
+inline void Envelope::clear_group_users_add() {
+  if (has_group_users_add()) {
+    delete payload_.group_users_add_;
     clear_has_payload();
   }
 }
-inline  const ::server::TGroupUserAdd& Envelope::group_user_add() const {
-  // @@protoc_insertion_point(field_get:server.Envelope.group_user_add)
-  return has_group_user_add()
-      ? *payload_.group_user_add_
-      : ::server::TGroupUserAdd::default_instance();
+inline  const ::server::TGroupUsersAdd& Envelope::group_users_add() const {
+  // @@protoc_insertion_point(field_get:server.Envelope.group_users_add)
+  return has_group_users_add()
+      ? *payload_.group_users_add_
+      : ::server::TGroupUsersAdd::default_instance();
 }
-inline ::server::TGroupUserAdd* Envelope::mutable_group_user_add() {
-  if (!has_group_user_add()) {
+inline ::server::TGroupUsersAdd* Envelope::mutable_group_users_add() {
+  if (!has_group_users_add()) {
     clear_payload();
-    set_has_group_user_add();
-    payload_.group_user_add_ = new ::server::TGroupUserAdd;
+    set_has_group_users_add();
+    payload_.group_users_add_ = new ::server::TGroupUsersAdd;
   }
-  // @@protoc_insertion_point(field_mutable:server.Envelope.group_user_add)
-  return payload_.group_user_add_;
+  // @@protoc_insertion_point(field_mutable:server.Envelope.group_users_add)
+  return payload_.group_users_add_;
 }
-inline ::server::TGroupUserAdd* Envelope::release_group_user_add() {
-  // @@protoc_insertion_point(field_release:server.Envelope.group_user_add)
-  if (has_group_user_add()) {
+inline ::server::TGroupUsersAdd* Envelope::release_group_users_add() {
+  // @@protoc_insertion_point(field_release:server.Envelope.group_users_add)
+  if (has_group_users_add()) {
     clear_has_payload();
-    ::server::TGroupUserAdd* temp = payload_.group_user_add_;
-    payload_.group_user_add_ = NULL;
+    ::server::TGroupUsersAdd* temp = payload_.group_users_add_;
+    payload_.group_users_add_ = NULL;
     return temp;
   } else {
     return NULL;
   }
 }
-inline void Envelope::set_allocated_group_user_add(::server::TGroupUserAdd* group_user_add) {
+inline void Envelope::set_allocated_group_users_add(::server::TGroupUsersAdd* group_users_add) {
   clear_payload();
-  if (group_user_add) {
-    set_has_group_user_add();
-    payload_.group_user_add_ = group_user_add;
+  if (group_users_add) {
+    set_has_group_users_add();
+    payload_.group_users_add_ = group_users_add;
   }
-  // @@protoc_insertion_point(field_set_allocated:server.Envelope.group_user_add)
+  // @@protoc_insertion_point(field_set_allocated:server.Envelope.group_users_add)
 }
 
-// optional .server.TGroupUserKick group_user_kick = 27;
-inline bool Envelope::has_group_user_kick() const {
-  return payload_case() == kGroupUserKick;
+// optional .server.TGroupUsersKick group_users_kick = 27;
+inline bool Envelope::has_group_users_kick() const {
+  return payload_case() == kGroupUsersKick;
 }
-inline void Envelope::set_has_group_user_kick() {
-  _oneof_case_[0] = kGroupUserKick;
+inline void Envelope::set_has_group_users_kick() {
+  _oneof_case_[0] = kGroupUsersKick;
 }
-inline void Envelope::clear_group_user_kick() {
-  if (has_group_user_kick()) {
-    delete payload_.group_user_kick_;
+inline void Envelope::clear_group_users_kick() {
+  if (has_group_users_kick()) {
+    delete payload_.group_users_kick_;
     clear_has_payload();
   }
 }
-inline  const ::server::TGroupUserKick& Envelope::group_user_kick() const {
-  // @@protoc_insertion_point(field_get:server.Envelope.group_user_kick)
-  return has_group_user_kick()
-      ? *payload_.group_user_kick_
-      : ::server::TGroupUserKick::default_instance();
+inline  const ::server::TGroupUsersKick& Envelope::group_users_kick() const {
+  // @@protoc_insertion_point(field_get:server.Envelope.group_users_kick)
+  return has_group_users_kick()
+      ? *payload_.group_users_kick_
+      : ::server::TGroupUsersKick::default_instance();
 }
-inline ::server::TGroupUserKick* Envelope::mutable_group_user_kick() {
-  if (!has_group_user_kick()) {
+inline ::server::TGroupUsersKick* Envelope::mutable_group_users_kick() {
+  if (!has_group_users_kick()) {
     clear_payload();
-    set_has_group_user_kick();
-    payload_.group_user_kick_ = new ::server::TGroupUserKick;
+    set_has_group_users_kick();
+    payload_.group_users_kick_ = new ::server::TGroupUsersKick;
   }
-  // @@protoc_insertion_point(field_mutable:server.Envelope.group_user_kick)
-  return payload_.group_user_kick_;
+  // @@protoc_insertion_point(field_mutable:server.Envelope.group_users_kick)
+  return payload_.group_users_kick_;
 }
-inline ::server::TGroupUserKick* Envelope::release_group_user_kick() {
-  // @@protoc_insertion_point(field_release:server.Envelope.group_user_kick)
-  if (has_group_user_kick()) {
+inline ::server::TGroupUsersKick* Envelope::release_group_users_kick() {
+  // @@protoc_insertion_point(field_release:server.Envelope.group_users_kick)
+  if (has_group_users_kick()) {
     clear_has_payload();
-    ::server::TGroupUserKick* temp = payload_.group_user_kick_;
-    payload_.group_user_kick_ = NULL;
+    ::server::TGroupUsersKick* temp = payload_.group_users_kick_;
+    payload_.group_users_kick_ = NULL;
     return temp;
   } else {
     return NULL;
   }
 }
-inline void Envelope::set_allocated_group_user_kick(::server::TGroupUserKick* group_user_kick) {
+inline void Envelope::set_allocated_group_users_kick(::server::TGroupUsersKick* group_users_kick) {
   clear_payload();
-  if (group_user_kick) {
-    set_has_group_user_kick();
-    payload_.group_user_kick_ = group_user_kick;
+  if (group_users_kick) {
+    set_has_group_users_kick();
+    payload_.group_users_kick_ = group_users_kick;
   }
-  // @@protoc_insertion_point(field_set_allocated:server.Envelope.group_user_kick)
+  // @@protoc_insertion_point(field_set_allocated:server.Envelope.group_users_kick)
 }
 
-// optional .server.TGroupUserPromote group_user_promote = 28;
-inline bool Envelope::has_group_user_promote() const {
-  return payload_case() == kGroupUserPromote;
+// optional .server.TGroupUsersPromote group_users_promote = 28;
+inline bool Envelope::has_group_users_promote() const {
+  return payload_case() == kGroupUsersPromote;
 }
-inline void Envelope::set_has_group_user_promote() {
-  _oneof_case_[0] = kGroupUserPromote;
+inline void Envelope::set_has_group_users_promote() {
+  _oneof_case_[0] = kGroupUsersPromote;
 }
-inline void Envelope::clear_group_user_promote() {
-  if (has_group_user_promote()) {
-    delete payload_.group_user_promote_;
+inline void Envelope::clear_group_users_promote() {
+  if (has_group_users_promote()) {
+    delete payload_.group_users_promote_;
     clear_has_payload();
   }
 }
-inline  const ::server::TGroupUserPromote& Envelope::group_user_promote() const {
-  // @@protoc_insertion_point(field_get:server.Envelope.group_user_promote)
-  return has_group_user_promote()
-      ? *payload_.group_user_promote_
-      : ::server::TGroupUserPromote::default_instance();
+inline  const ::server::TGroupUsersPromote& Envelope::group_users_promote() const {
+  // @@protoc_insertion_point(field_get:server.Envelope.group_users_promote)
+  return has_group_users_promote()
+      ? *payload_.group_users_promote_
+      : ::server::TGroupUsersPromote::default_instance();
 }
-inline ::server::TGroupUserPromote* Envelope::mutable_group_user_promote() {
-  if (!has_group_user_promote()) {
+inline ::server::TGroupUsersPromote* Envelope::mutable_group_users_promote() {
+  if (!has_group_users_promote()) {
     clear_payload();
-    set_has_group_user_promote();
-    payload_.group_user_promote_ = new ::server::TGroupUserPromote;
+    set_has_group_users_promote();
+    payload_.group_users_promote_ = new ::server::TGroupUsersPromote;
   }
-  // @@protoc_insertion_point(field_mutable:server.Envelope.group_user_promote)
-  return payload_.group_user_promote_;
+  // @@protoc_insertion_point(field_mutable:server.Envelope.group_users_promote)
+  return payload_.group_users_promote_;
 }
-inline ::server::TGroupUserPromote* Envelope::release_group_user_promote() {
-  // @@protoc_insertion_point(field_release:server.Envelope.group_user_promote)
-  if (has_group_user_promote()) {
+inline ::server::TGroupUsersPromote* Envelope::release_group_users_promote() {
+  // @@protoc_insertion_point(field_release:server.Envelope.group_users_promote)
+  if (has_group_users_promote()) {
     clear_has_payload();
-    ::server::TGroupUserPromote* temp = payload_.group_user_promote_;
-    payload_.group_user_promote_ = NULL;
+    ::server::TGroupUsersPromote* temp = payload_.group_users_promote_;
+    payload_.group_users_promote_ = NULL;
     return temp;
   } else {
     return NULL;
   }
 }
-inline void Envelope::set_allocated_group_user_promote(::server::TGroupUserPromote* group_user_promote) {
+inline void Envelope::set_allocated_group_users_promote(::server::TGroupUsersPromote* group_users_promote) {
   clear_payload();
-  if (group_user_promote) {
-    set_has_group_user_promote();
-    payload_.group_user_promote_ = group_user_promote;
+  if (group_users_promote) {
+    set_has_group_users_promote();
+    payload_.group_users_promote_ = group_users_promote;
   }
-  // @@protoc_insertion_point(field_set_allocated:server.Envelope.group_user_promote)
+  // @@protoc_insertion_point(field_set_allocated:server.Envelope.group_users_promote)
 }
 
 // optional .server.TGroup group = 29;
@@ -14384,100 +15435,100 @@ inline void Envelope::set_allocated_group_users(::server::TGroupUsers* group_use
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.group_users)
 }
 
-// optional .server.TTopicJoin topic_join = 32;
-inline bool Envelope::has_topic_join() const {
-  return payload_case() == kTopicJoin;
+// optional .server.TTopicsJoin topics_join = 32;
+inline bool Envelope::has_topics_join() const {
+  return payload_case() == kTopicsJoin;
 }
-inline void Envelope::set_has_topic_join() {
-  _oneof_case_[0] = kTopicJoin;
+inline void Envelope::set_has_topics_join() {
+  _oneof_case_[0] = kTopicsJoin;
 }
-inline void Envelope::clear_topic_join() {
-  if (has_topic_join()) {
-    delete payload_.topic_join_;
+inline void Envelope::clear_topics_join() {
+  if (has_topics_join()) {
+    delete payload_.topics_join_;
     clear_has_payload();
   }
 }
-inline  const ::server::TTopicJoin& Envelope::topic_join() const {
-  // @@protoc_insertion_point(field_get:server.Envelope.topic_join)
-  return has_topic_join()
-      ? *payload_.topic_join_
-      : ::server::TTopicJoin::default_instance();
+inline  const ::server::TTopicsJoin& Envelope::topics_join() const {
+  // @@protoc_insertion_point(field_get:server.Envelope.topics_join)
+  return has_topics_join()
+      ? *payload_.topics_join_
+      : ::server::TTopicsJoin::default_instance();
 }
-inline ::server::TTopicJoin* Envelope::mutable_topic_join() {
-  if (!has_topic_join()) {
+inline ::server::TTopicsJoin* Envelope::mutable_topics_join() {
+  if (!has_topics_join()) {
     clear_payload();
-    set_has_topic_join();
-    payload_.topic_join_ = new ::server::TTopicJoin;
+    set_has_topics_join();
+    payload_.topics_join_ = new ::server::TTopicsJoin;
   }
-  // @@protoc_insertion_point(field_mutable:server.Envelope.topic_join)
-  return payload_.topic_join_;
+  // @@protoc_insertion_point(field_mutable:server.Envelope.topics_join)
+  return payload_.topics_join_;
 }
-inline ::server::TTopicJoin* Envelope::release_topic_join() {
-  // @@protoc_insertion_point(field_release:server.Envelope.topic_join)
-  if (has_topic_join()) {
+inline ::server::TTopicsJoin* Envelope::release_topics_join() {
+  // @@protoc_insertion_point(field_release:server.Envelope.topics_join)
+  if (has_topics_join()) {
     clear_has_payload();
-    ::server::TTopicJoin* temp = payload_.topic_join_;
-    payload_.topic_join_ = NULL;
+    ::server::TTopicsJoin* temp = payload_.topics_join_;
+    payload_.topics_join_ = NULL;
     return temp;
   } else {
     return NULL;
   }
 }
-inline void Envelope::set_allocated_topic_join(::server::TTopicJoin* topic_join) {
+inline void Envelope::set_allocated_topics_join(::server::TTopicsJoin* topics_join) {
   clear_payload();
-  if (topic_join) {
-    set_has_topic_join();
-    payload_.topic_join_ = topic_join;
+  if (topics_join) {
+    set_has_topics_join();
+    payload_.topics_join_ = topics_join;
   }
-  // @@protoc_insertion_point(field_set_allocated:server.Envelope.topic_join)
+  // @@protoc_insertion_point(field_set_allocated:server.Envelope.topics_join)
 }
 
-// optional .server.TTopicLeave topic_leave = 33;
-inline bool Envelope::has_topic_leave() const {
-  return payload_case() == kTopicLeave;
+// optional .server.TTopicsLeave topics_leave = 33;
+inline bool Envelope::has_topics_leave() const {
+  return payload_case() == kTopicsLeave;
 }
-inline void Envelope::set_has_topic_leave() {
-  _oneof_case_[0] = kTopicLeave;
+inline void Envelope::set_has_topics_leave() {
+  _oneof_case_[0] = kTopicsLeave;
 }
-inline void Envelope::clear_topic_leave() {
-  if (has_topic_leave()) {
-    delete payload_.topic_leave_;
+inline void Envelope::clear_topics_leave() {
+  if (has_topics_leave()) {
+    delete payload_.topics_leave_;
     clear_has_payload();
   }
 }
-inline  const ::server::TTopicLeave& Envelope::topic_leave() const {
-  // @@protoc_insertion_point(field_get:server.Envelope.topic_leave)
-  return has_topic_leave()
-      ? *payload_.topic_leave_
-      : ::server::TTopicLeave::default_instance();
+inline  const ::server::TTopicsLeave& Envelope::topics_leave() const {
+  // @@protoc_insertion_point(field_get:server.Envelope.topics_leave)
+  return has_topics_leave()
+      ? *payload_.topics_leave_
+      : ::server::TTopicsLeave::default_instance();
 }
-inline ::server::TTopicLeave* Envelope::mutable_topic_leave() {
-  if (!has_topic_leave()) {
+inline ::server::TTopicsLeave* Envelope::mutable_topics_leave() {
+  if (!has_topics_leave()) {
     clear_payload();
-    set_has_topic_leave();
-    payload_.topic_leave_ = new ::server::TTopicLeave;
+    set_has_topics_leave();
+    payload_.topics_leave_ = new ::server::TTopicsLeave;
   }
-  // @@protoc_insertion_point(field_mutable:server.Envelope.topic_leave)
-  return payload_.topic_leave_;
+  // @@protoc_insertion_point(field_mutable:server.Envelope.topics_leave)
+  return payload_.topics_leave_;
 }
-inline ::server::TTopicLeave* Envelope::release_topic_leave() {
-  // @@protoc_insertion_point(field_release:server.Envelope.topic_leave)
-  if (has_topic_leave()) {
+inline ::server::TTopicsLeave* Envelope::release_topics_leave() {
+  // @@protoc_insertion_point(field_release:server.Envelope.topics_leave)
+  if (has_topics_leave()) {
     clear_has_payload();
-    ::server::TTopicLeave* temp = payload_.topic_leave_;
-    payload_.topic_leave_ = NULL;
+    ::server::TTopicsLeave* temp = payload_.topics_leave_;
+    payload_.topics_leave_ = NULL;
     return temp;
   } else {
     return NULL;
   }
 }
-inline void Envelope::set_allocated_topic_leave(::server::TTopicLeave* topic_leave) {
+inline void Envelope::set_allocated_topics_leave(::server::TTopicsLeave* topics_leave) {
   clear_payload();
-  if (topic_leave) {
-    set_has_topic_leave();
-    payload_.topic_leave_ = topic_leave;
+  if (topics_leave) {
+    set_has_topics_leave();
+    payload_.topics_leave_ = topics_leave;
   }
-  // @@protoc_insertion_point(field_set_allocated:server.Envelope.topic_leave)
+  // @@protoc_insertion_point(field_set_allocated:server.Envelope.topics_leave)
 }
 
 // optional .server.TTopicMessageSend topic_message_send = 34;
@@ -14576,52 +15627,52 @@ inline void Envelope::set_allocated_topic_messages_list(::server::TTopicMessages
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.topic_messages_list)
 }
 
-// optional .server.TTopic topic = 36;
-inline bool Envelope::has_topic() const {
-  return payload_case() == kTopic;
+// optional .server.TTopics topics = 36;
+inline bool Envelope::has_topics() const {
+  return payload_case() == kTopics;
 }
-inline void Envelope::set_has_topic() {
-  _oneof_case_[0] = kTopic;
+inline void Envelope::set_has_topics() {
+  _oneof_case_[0] = kTopics;
 }
-inline void Envelope::clear_topic() {
-  if (has_topic()) {
-    delete payload_.topic_;
+inline void Envelope::clear_topics() {
+  if (has_topics()) {
+    delete payload_.topics_;
     clear_has_payload();
   }
 }
-inline  const ::server::TTopic& Envelope::topic() const {
-  // @@protoc_insertion_point(field_get:server.Envelope.topic)
-  return has_topic()
-      ? *payload_.topic_
-      : ::server::TTopic::default_instance();
+inline  const ::server::TTopics& Envelope::topics() const {
+  // @@protoc_insertion_point(field_get:server.Envelope.topics)
+  return has_topics()
+      ? *payload_.topics_
+      : ::server::TTopics::default_instance();
 }
-inline ::server::TTopic* Envelope::mutable_topic() {
-  if (!has_topic()) {
+inline ::server::TTopics* Envelope::mutable_topics() {
+  if (!has_topics()) {
     clear_payload();
-    set_has_topic();
-    payload_.topic_ = new ::server::TTopic;
+    set_has_topics();
+    payload_.topics_ = new ::server::TTopics;
   }
-  // @@protoc_insertion_point(field_mutable:server.Envelope.topic)
-  return payload_.topic_;
+  // @@protoc_insertion_point(field_mutable:server.Envelope.topics)
+  return payload_.topics_;
 }
-inline ::server::TTopic* Envelope::release_topic() {
-  // @@protoc_insertion_point(field_release:server.Envelope.topic)
-  if (has_topic()) {
+inline ::server::TTopics* Envelope::release_topics() {
+  // @@protoc_insertion_point(field_release:server.Envelope.topics)
+  if (has_topics()) {
     clear_has_payload();
-    ::server::TTopic* temp = payload_.topic_;
-    payload_.topic_ = NULL;
+    ::server::TTopics* temp = payload_.topics_;
+    payload_.topics_ = NULL;
     return temp;
   } else {
     return NULL;
   }
 }
-inline void Envelope::set_allocated_topic(::server::TTopic* topic) {
+inline void Envelope::set_allocated_topics(::server::TTopics* topics) {
   clear_payload();
-  if (topic) {
-    set_has_topic();
-    payload_.topic_ = topic;
+  if (topics) {
+    set_has_topics();
+    payload_.topics_ = topics;
   }
-  // @@protoc_insertion_point(field_set_allocated:server.Envelope.topic)
+  // @@protoc_insertion_point(field_set_allocated:server.Envelope.topics)
 }
 
 // optional .server.TTopicMessageAck topic_message_ack = 37;
@@ -14864,100 +15915,100 @@ inline void Envelope::set_allocated_match_create(::server::TMatchCreate* match_c
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.match_create)
 }
 
-// optional .server.TMatchJoin match_join = 42;
-inline bool Envelope::has_match_join() const {
-  return payload_case() == kMatchJoin;
+// optional .server.TMatchesJoin matches_join = 42;
+inline bool Envelope::has_matches_join() const {
+  return payload_case() == kMatchesJoin;
 }
-inline void Envelope::set_has_match_join() {
-  _oneof_case_[0] = kMatchJoin;
+inline void Envelope::set_has_matches_join() {
+  _oneof_case_[0] = kMatchesJoin;
 }
-inline void Envelope::clear_match_join() {
-  if (has_match_join()) {
-    delete payload_.match_join_;
+inline void Envelope::clear_matches_join() {
+  if (has_matches_join()) {
+    delete payload_.matches_join_;
     clear_has_payload();
   }
 }
-inline  const ::server::TMatchJoin& Envelope::match_join() const {
-  // @@protoc_insertion_point(field_get:server.Envelope.match_join)
-  return has_match_join()
-      ? *payload_.match_join_
-      : ::server::TMatchJoin::default_instance();
+inline  const ::server::TMatchesJoin& Envelope::matches_join() const {
+  // @@protoc_insertion_point(field_get:server.Envelope.matches_join)
+  return has_matches_join()
+      ? *payload_.matches_join_
+      : ::server::TMatchesJoin::default_instance();
 }
-inline ::server::TMatchJoin* Envelope::mutable_match_join() {
-  if (!has_match_join()) {
+inline ::server::TMatchesJoin* Envelope::mutable_matches_join() {
+  if (!has_matches_join()) {
     clear_payload();
-    set_has_match_join();
-    payload_.match_join_ = new ::server::TMatchJoin;
+    set_has_matches_join();
+    payload_.matches_join_ = new ::server::TMatchesJoin;
   }
-  // @@protoc_insertion_point(field_mutable:server.Envelope.match_join)
-  return payload_.match_join_;
+  // @@protoc_insertion_point(field_mutable:server.Envelope.matches_join)
+  return payload_.matches_join_;
 }
-inline ::server::TMatchJoin* Envelope::release_match_join() {
-  // @@protoc_insertion_point(field_release:server.Envelope.match_join)
-  if (has_match_join()) {
+inline ::server::TMatchesJoin* Envelope::release_matches_join() {
+  // @@protoc_insertion_point(field_release:server.Envelope.matches_join)
+  if (has_matches_join()) {
     clear_has_payload();
-    ::server::TMatchJoin* temp = payload_.match_join_;
-    payload_.match_join_ = NULL;
+    ::server::TMatchesJoin* temp = payload_.matches_join_;
+    payload_.matches_join_ = NULL;
     return temp;
   } else {
     return NULL;
   }
 }
-inline void Envelope::set_allocated_match_join(::server::TMatchJoin* match_join) {
+inline void Envelope::set_allocated_matches_join(::server::TMatchesJoin* matches_join) {
   clear_payload();
-  if (match_join) {
-    set_has_match_join();
-    payload_.match_join_ = match_join;
+  if (matches_join) {
+    set_has_matches_join();
+    payload_.matches_join_ = matches_join;
   }
-  // @@protoc_insertion_point(field_set_allocated:server.Envelope.match_join)
+  // @@protoc_insertion_point(field_set_allocated:server.Envelope.matches_join)
 }
 
-// optional .server.TMatchLeave match_leave = 43;
-inline bool Envelope::has_match_leave() const {
-  return payload_case() == kMatchLeave;
+// optional .server.TMatchesLeave matches_leave = 43;
+inline bool Envelope::has_matches_leave() const {
+  return payload_case() == kMatchesLeave;
 }
-inline void Envelope::set_has_match_leave() {
-  _oneof_case_[0] = kMatchLeave;
+inline void Envelope::set_has_matches_leave() {
+  _oneof_case_[0] = kMatchesLeave;
 }
-inline void Envelope::clear_match_leave() {
-  if (has_match_leave()) {
-    delete payload_.match_leave_;
+inline void Envelope::clear_matches_leave() {
+  if (has_matches_leave()) {
+    delete payload_.matches_leave_;
     clear_has_payload();
   }
 }
-inline  const ::server::TMatchLeave& Envelope::match_leave() const {
-  // @@protoc_insertion_point(field_get:server.Envelope.match_leave)
-  return has_match_leave()
-      ? *payload_.match_leave_
-      : ::server::TMatchLeave::default_instance();
+inline  const ::server::TMatchesLeave& Envelope::matches_leave() const {
+  // @@protoc_insertion_point(field_get:server.Envelope.matches_leave)
+  return has_matches_leave()
+      ? *payload_.matches_leave_
+      : ::server::TMatchesLeave::default_instance();
 }
-inline ::server::TMatchLeave* Envelope::mutable_match_leave() {
-  if (!has_match_leave()) {
+inline ::server::TMatchesLeave* Envelope::mutable_matches_leave() {
+  if (!has_matches_leave()) {
     clear_payload();
-    set_has_match_leave();
-    payload_.match_leave_ = new ::server::TMatchLeave;
+    set_has_matches_leave();
+    payload_.matches_leave_ = new ::server::TMatchesLeave;
   }
-  // @@protoc_insertion_point(field_mutable:server.Envelope.match_leave)
-  return payload_.match_leave_;
+  // @@protoc_insertion_point(field_mutable:server.Envelope.matches_leave)
+  return payload_.matches_leave_;
 }
-inline ::server::TMatchLeave* Envelope::release_match_leave() {
-  // @@protoc_insertion_point(field_release:server.Envelope.match_leave)
-  if (has_match_leave()) {
+inline ::server::TMatchesLeave* Envelope::release_matches_leave() {
+  // @@protoc_insertion_point(field_release:server.Envelope.matches_leave)
+  if (has_matches_leave()) {
     clear_has_payload();
-    ::server::TMatchLeave* temp = payload_.match_leave_;
-    payload_.match_leave_ = NULL;
+    ::server::TMatchesLeave* temp = payload_.matches_leave_;
+    payload_.matches_leave_ = NULL;
     return temp;
   } else {
     return NULL;
   }
 }
-inline void Envelope::set_allocated_match_leave(::server::TMatchLeave* match_leave) {
+inline void Envelope::set_allocated_matches_leave(::server::TMatchesLeave* matches_leave) {
   clear_payload();
-  if (match_leave) {
-    set_has_match_leave();
-    payload_.match_leave_ = match_leave;
+  if (matches_leave) {
+    set_has_matches_leave();
+    payload_.matches_leave_ = matches_leave;
   }
-  // @@protoc_insertion_point(field_set_allocated:server.Envelope.match_leave)
+  // @@protoc_insertion_point(field_set_allocated:server.Envelope.matches_leave)
 }
 
 // optional .server.MatchDataSend match_data_send = 44;
@@ -15056,7 +16107,55 @@ inline void Envelope::set_allocated_match(::server::TMatch* match) {
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.match)
 }
 
-// optional .server.MatchData match_data = 46;
+// optional .server.TMatches matches = 46;
+inline bool Envelope::has_matches() const {
+  return payload_case() == kMatches;
+}
+inline void Envelope::set_has_matches() {
+  _oneof_case_[0] = kMatches;
+}
+inline void Envelope::clear_matches() {
+  if (has_matches()) {
+    delete payload_.matches_;
+    clear_has_payload();
+  }
+}
+inline  const ::server::TMatches& Envelope::matches() const {
+  // @@protoc_insertion_point(field_get:server.Envelope.matches)
+  return has_matches()
+      ? *payload_.matches_
+      : ::server::TMatches::default_instance();
+}
+inline ::server::TMatches* Envelope::mutable_matches() {
+  if (!has_matches()) {
+    clear_payload();
+    set_has_matches();
+    payload_.matches_ = new ::server::TMatches;
+  }
+  // @@protoc_insertion_point(field_mutable:server.Envelope.matches)
+  return payload_.matches_;
+}
+inline ::server::TMatches* Envelope::release_matches() {
+  // @@protoc_insertion_point(field_release:server.Envelope.matches)
+  if (has_matches()) {
+    clear_has_payload();
+    ::server::TMatches* temp = payload_.matches_;
+    payload_.matches_ = NULL;
+    return temp;
+  } else {
+    return NULL;
+  }
+}
+inline void Envelope::set_allocated_matches(::server::TMatches* matches) {
+  clear_payload();
+  if (matches) {
+    set_has_matches();
+    payload_.matches_ = matches;
+  }
+  // @@protoc_insertion_point(field_set_allocated:server.Envelope.matches)
+}
+
+// optional .server.MatchData match_data = 47;
 inline bool Envelope::has_match_data() const {
   return payload_case() == kMatchData;
 }
@@ -15104,7 +16203,7 @@ inline void Envelope::set_allocated_match_data(::server::MatchData* match_data) 
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.match_data)
 }
 
-// optional .server.MatchPresence match_presence = 47;
+// optional .server.MatchPresence match_presence = 48;
 inline bool Envelope::has_match_presence() const {
   return payload_case() == kMatchPresence;
 }
@@ -15152,7 +16251,55 @@ inline void Envelope::set_allocated_match_presence(::server::MatchPresence* matc
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.match_presence)
 }
 
-// optional .server.TStorageFetch storage_fetch = 48;
+// optional .server.TStorageList storage_list = 49;
+inline bool Envelope::has_storage_list() const {
+  return payload_case() == kStorageList;
+}
+inline void Envelope::set_has_storage_list() {
+  _oneof_case_[0] = kStorageList;
+}
+inline void Envelope::clear_storage_list() {
+  if (has_storage_list()) {
+    delete payload_.storage_list_;
+    clear_has_payload();
+  }
+}
+inline  const ::server::TStorageList& Envelope::storage_list() const {
+  // @@protoc_insertion_point(field_get:server.Envelope.storage_list)
+  return has_storage_list()
+      ? *payload_.storage_list_
+      : ::server::TStorageList::default_instance();
+}
+inline ::server::TStorageList* Envelope::mutable_storage_list() {
+  if (!has_storage_list()) {
+    clear_payload();
+    set_has_storage_list();
+    payload_.storage_list_ = new ::server::TStorageList;
+  }
+  // @@protoc_insertion_point(field_mutable:server.Envelope.storage_list)
+  return payload_.storage_list_;
+}
+inline ::server::TStorageList* Envelope::release_storage_list() {
+  // @@protoc_insertion_point(field_release:server.Envelope.storage_list)
+  if (has_storage_list()) {
+    clear_has_payload();
+    ::server::TStorageList* temp = payload_.storage_list_;
+    payload_.storage_list_ = NULL;
+    return temp;
+  } else {
+    return NULL;
+  }
+}
+inline void Envelope::set_allocated_storage_list(::server::TStorageList* storage_list) {
+  clear_payload();
+  if (storage_list) {
+    set_has_storage_list();
+    payload_.storage_list_ = storage_list;
+  }
+  // @@protoc_insertion_point(field_set_allocated:server.Envelope.storage_list)
+}
+
+// optional .server.TStorageFetch storage_fetch = 50;
 inline bool Envelope::has_storage_fetch() const {
   return payload_case() == kStorageFetch;
 }
@@ -15200,7 +16347,7 @@ inline void Envelope::set_allocated_storage_fetch(::server::TStorageFetch* stora
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.storage_fetch)
 }
 
-// optional .server.TStorageWrite storage_write = 49;
+// optional .server.TStorageWrite storage_write = 51;
 inline bool Envelope::has_storage_write() const {
   return payload_case() == kStorageWrite;
 }
@@ -15248,7 +16395,7 @@ inline void Envelope::set_allocated_storage_write(::server::TStorageWrite* stora
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.storage_write)
 }
 
-// optional .server.TStorageRemove storage_remove = 50;
+// optional .server.TStorageRemove storage_remove = 52;
 inline bool Envelope::has_storage_remove() const {
   return payload_case() == kStorageRemove;
 }
@@ -15296,7 +16443,7 @@ inline void Envelope::set_allocated_storage_remove(::server::TStorageRemove* sto
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.storage_remove)
 }
 
-// optional .server.TStorageData storage_data = 51;
+// optional .server.TStorageData storage_data = 53;
 inline bool Envelope::has_storage_data() const {
   return payload_case() == kStorageData;
 }
@@ -15344,55 +16491,55 @@ inline void Envelope::set_allocated_storage_data(::server::TStorageData* storage
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.storage_data)
 }
 
-// optional .server.TStorageKey storage_key = 52;
-inline bool Envelope::has_storage_key() const {
-  return payload_case() == kStorageKey;
+// optional .server.TStorageKeys storage_keys = 54;
+inline bool Envelope::has_storage_keys() const {
+  return payload_case() == kStorageKeys;
 }
-inline void Envelope::set_has_storage_key() {
-  _oneof_case_[0] = kStorageKey;
+inline void Envelope::set_has_storage_keys() {
+  _oneof_case_[0] = kStorageKeys;
 }
-inline void Envelope::clear_storage_key() {
-  if (has_storage_key()) {
-    delete payload_.storage_key_;
+inline void Envelope::clear_storage_keys() {
+  if (has_storage_keys()) {
+    delete payload_.storage_keys_;
     clear_has_payload();
   }
 }
-inline  const ::server::TStorageKey& Envelope::storage_key() const {
-  // @@protoc_insertion_point(field_get:server.Envelope.storage_key)
-  return has_storage_key()
-      ? *payload_.storage_key_
-      : ::server::TStorageKey::default_instance();
+inline  const ::server::TStorageKeys& Envelope::storage_keys() const {
+  // @@protoc_insertion_point(field_get:server.Envelope.storage_keys)
+  return has_storage_keys()
+      ? *payload_.storage_keys_
+      : ::server::TStorageKeys::default_instance();
 }
-inline ::server::TStorageKey* Envelope::mutable_storage_key() {
-  if (!has_storage_key()) {
+inline ::server::TStorageKeys* Envelope::mutable_storage_keys() {
+  if (!has_storage_keys()) {
     clear_payload();
-    set_has_storage_key();
-    payload_.storage_key_ = new ::server::TStorageKey;
+    set_has_storage_keys();
+    payload_.storage_keys_ = new ::server::TStorageKeys;
   }
-  // @@protoc_insertion_point(field_mutable:server.Envelope.storage_key)
-  return payload_.storage_key_;
+  // @@protoc_insertion_point(field_mutable:server.Envelope.storage_keys)
+  return payload_.storage_keys_;
 }
-inline ::server::TStorageKey* Envelope::release_storage_key() {
-  // @@protoc_insertion_point(field_release:server.Envelope.storage_key)
-  if (has_storage_key()) {
+inline ::server::TStorageKeys* Envelope::release_storage_keys() {
+  // @@protoc_insertion_point(field_release:server.Envelope.storage_keys)
+  if (has_storage_keys()) {
     clear_has_payload();
-    ::server::TStorageKey* temp = payload_.storage_key_;
-    payload_.storage_key_ = NULL;
+    ::server::TStorageKeys* temp = payload_.storage_keys_;
+    payload_.storage_keys_ = NULL;
     return temp;
   } else {
     return NULL;
   }
 }
-inline void Envelope::set_allocated_storage_key(::server::TStorageKey* storage_key) {
+inline void Envelope::set_allocated_storage_keys(::server::TStorageKeys* storage_keys) {
   clear_payload();
-  if (storage_key) {
-    set_has_storage_key();
-    payload_.storage_key_ = storage_key;
+  if (storage_keys) {
+    set_has_storage_keys();
+    payload_.storage_keys_ = storage_keys;
   }
-  // @@protoc_insertion_point(field_set_allocated:server.Envelope.storage_key)
+  // @@protoc_insertion_point(field_set_allocated:server.Envelope.storage_keys)
 }
 
-// optional .server.TLeaderboardsList leaderboards_list = 53;
+// optional .server.TLeaderboardsList leaderboards_list = 55;
 inline bool Envelope::has_leaderboards_list() const {
   return payload_case() == kLeaderboardsList;
 }
@@ -15440,55 +16587,55 @@ inline void Envelope::set_allocated_leaderboards_list(::server::TLeaderboardsLis
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.leaderboards_list)
 }
 
-// optional .server.TLeaderboardRecordWrite leaderboard_record_write = 54;
-inline bool Envelope::has_leaderboard_record_write() const {
-  return payload_case() == kLeaderboardRecordWrite;
+// optional .server.TLeaderboardRecordsWrite leaderboard_records_write = 56;
+inline bool Envelope::has_leaderboard_records_write() const {
+  return payload_case() == kLeaderboardRecordsWrite;
 }
-inline void Envelope::set_has_leaderboard_record_write() {
-  _oneof_case_[0] = kLeaderboardRecordWrite;
+inline void Envelope::set_has_leaderboard_records_write() {
+  _oneof_case_[0] = kLeaderboardRecordsWrite;
 }
-inline void Envelope::clear_leaderboard_record_write() {
-  if (has_leaderboard_record_write()) {
-    delete payload_.leaderboard_record_write_;
+inline void Envelope::clear_leaderboard_records_write() {
+  if (has_leaderboard_records_write()) {
+    delete payload_.leaderboard_records_write_;
     clear_has_payload();
   }
 }
-inline  const ::server::TLeaderboardRecordWrite& Envelope::leaderboard_record_write() const {
-  // @@protoc_insertion_point(field_get:server.Envelope.leaderboard_record_write)
-  return has_leaderboard_record_write()
-      ? *payload_.leaderboard_record_write_
-      : ::server::TLeaderboardRecordWrite::default_instance();
+inline  const ::server::TLeaderboardRecordsWrite& Envelope::leaderboard_records_write() const {
+  // @@protoc_insertion_point(field_get:server.Envelope.leaderboard_records_write)
+  return has_leaderboard_records_write()
+      ? *payload_.leaderboard_records_write_
+      : ::server::TLeaderboardRecordsWrite::default_instance();
 }
-inline ::server::TLeaderboardRecordWrite* Envelope::mutable_leaderboard_record_write() {
-  if (!has_leaderboard_record_write()) {
+inline ::server::TLeaderboardRecordsWrite* Envelope::mutable_leaderboard_records_write() {
+  if (!has_leaderboard_records_write()) {
     clear_payload();
-    set_has_leaderboard_record_write();
-    payload_.leaderboard_record_write_ = new ::server::TLeaderboardRecordWrite;
+    set_has_leaderboard_records_write();
+    payload_.leaderboard_records_write_ = new ::server::TLeaderboardRecordsWrite;
   }
-  // @@protoc_insertion_point(field_mutable:server.Envelope.leaderboard_record_write)
-  return payload_.leaderboard_record_write_;
+  // @@protoc_insertion_point(field_mutable:server.Envelope.leaderboard_records_write)
+  return payload_.leaderboard_records_write_;
 }
-inline ::server::TLeaderboardRecordWrite* Envelope::release_leaderboard_record_write() {
-  // @@protoc_insertion_point(field_release:server.Envelope.leaderboard_record_write)
-  if (has_leaderboard_record_write()) {
+inline ::server::TLeaderboardRecordsWrite* Envelope::release_leaderboard_records_write() {
+  // @@protoc_insertion_point(field_release:server.Envelope.leaderboard_records_write)
+  if (has_leaderboard_records_write()) {
     clear_has_payload();
-    ::server::TLeaderboardRecordWrite* temp = payload_.leaderboard_record_write_;
-    payload_.leaderboard_record_write_ = NULL;
+    ::server::TLeaderboardRecordsWrite* temp = payload_.leaderboard_records_write_;
+    payload_.leaderboard_records_write_ = NULL;
     return temp;
   } else {
     return NULL;
   }
 }
-inline void Envelope::set_allocated_leaderboard_record_write(::server::TLeaderboardRecordWrite* leaderboard_record_write) {
+inline void Envelope::set_allocated_leaderboard_records_write(::server::TLeaderboardRecordsWrite* leaderboard_records_write) {
   clear_payload();
-  if (leaderboard_record_write) {
-    set_has_leaderboard_record_write();
-    payload_.leaderboard_record_write_ = leaderboard_record_write;
+  if (leaderboard_records_write) {
+    set_has_leaderboard_records_write();
+    payload_.leaderboard_records_write_ = leaderboard_records_write;
   }
-  // @@protoc_insertion_point(field_set_allocated:server.Envelope.leaderboard_record_write)
+  // @@protoc_insertion_point(field_set_allocated:server.Envelope.leaderboard_records_write)
 }
 
-// optional .server.TLeaderboardRecordsFetch leaderboard_records_fetch = 55;
+// optional .server.TLeaderboardRecordsFetch leaderboard_records_fetch = 57;
 inline bool Envelope::has_leaderboard_records_fetch() const {
   return payload_case() == kLeaderboardRecordsFetch;
 }
@@ -15536,7 +16683,7 @@ inline void Envelope::set_allocated_leaderboard_records_fetch(::server::TLeaderb
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.leaderboard_records_fetch)
 }
 
-// optional .server.TLeaderboardRecordsList leaderboard_records_list = 56;
+// optional .server.TLeaderboardRecordsList leaderboard_records_list = 58;
 inline bool Envelope::has_leaderboard_records_list() const {
   return payload_case() == kLeaderboardRecordsList;
 }
@@ -15584,7 +16731,7 @@ inline void Envelope::set_allocated_leaderboard_records_list(::server::TLeaderbo
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.leaderboard_records_list)
 }
 
-// optional .server.TLeaderboards leaderboards = 57;
+// optional .server.TLeaderboards leaderboards = 59;
 inline bool Envelope::has_leaderboards() const {
   return payload_case() == kLeaderboards;
 }
@@ -15632,55 +16779,7 @@ inline void Envelope::set_allocated_leaderboards(::server::TLeaderboards* leader
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.leaderboards)
 }
 
-// optional .server.TLeaderboardRecord leaderboard_record = 58;
-inline bool Envelope::has_leaderboard_record() const {
-  return payload_case() == kLeaderboardRecord;
-}
-inline void Envelope::set_has_leaderboard_record() {
-  _oneof_case_[0] = kLeaderboardRecord;
-}
-inline void Envelope::clear_leaderboard_record() {
-  if (has_leaderboard_record()) {
-    delete payload_.leaderboard_record_;
-    clear_has_payload();
-  }
-}
-inline  const ::server::TLeaderboardRecord& Envelope::leaderboard_record() const {
-  // @@protoc_insertion_point(field_get:server.Envelope.leaderboard_record)
-  return has_leaderboard_record()
-      ? *payload_.leaderboard_record_
-      : ::server::TLeaderboardRecord::default_instance();
-}
-inline ::server::TLeaderboardRecord* Envelope::mutable_leaderboard_record() {
-  if (!has_leaderboard_record()) {
-    clear_payload();
-    set_has_leaderboard_record();
-    payload_.leaderboard_record_ = new ::server::TLeaderboardRecord;
-  }
-  // @@protoc_insertion_point(field_mutable:server.Envelope.leaderboard_record)
-  return payload_.leaderboard_record_;
-}
-inline ::server::TLeaderboardRecord* Envelope::release_leaderboard_record() {
-  // @@protoc_insertion_point(field_release:server.Envelope.leaderboard_record)
-  if (has_leaderboard_record()) {
-    clear_has_payload();
-    ::server::TLeaderboardRecord* temp = payload_.leaderboard_record_;
-    payload_.leaderboard_record_ = NULL;
-    return temp;
-  } else {
-    return NULL;
-  }
-}
-inline void Envelope::set_allocated_leaderboard_record(::server::TLeaderboardRecord* leaderboard_record) {
-  clear_payload();
-  if (leaderboard_record) {
-    set_has_leaderboard_record();
-    payload_.leaderboard_record_ = leaderboard_record;
-  }
-  // @@protoc_insertion_point(field_set_allocated:server.Envelope.leaderboard_record)
-}
-
-// optional .server.TLeaderboardRecords leaderboard_records = 59;
+// optional .server.TLeaderboardRecords leaderboard_records = 60;
 inline bool Envelope::has_leaderboard_records() const {
   return payload_case() == kLeaderboardRecords;
 }
@@ -15728,7 +16827,7 @@ inline void Envelope::set_allocated_leaderboard_records(::server::TLeaderboardRe
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.leaderboard_records)
 }
 
-// optional .server.TMatchmakeAdd matchmake_add = 60;
+// optional .server.TMatchmakeAdd matchmake_add = 61;
 inline bool Envelope::has_matchmake_add() const {
   return payload_case() == kMatchmakeAdd;
 }
@@ -15776,7 +16875,7 @@ inline void Envelope::set_allocated_matchmake_add(::server::TMatchmakeAdd* match
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.matchmake_add)
 }
 
-// optional .server.TMatchmakeRemove matchmake_remove = 61;
+// optional .server.TMatchmakeRemove matchmake_remove = 62;
 inline bool Envelope::has_matchmake_remove() const {
   return payload_case() == kMatchmakeRemove;
 }
@@ -15824,7 +16923,7 @@ inline void Envelope::set_allocated_matchmake_remove(::server::TMatchmakeRemove*
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.matchmake_remove)
 }
 
-// optional .server.TMatchmakeTicket matchmake_ticket = 62;
+// optional .server.TMatchmakeTicket matchmake_ticket = 63;
 inline bool Envelope::has_matchmake_ticket() const {
   return payload_case() == kMatchmakeTicket;
 }
@@ -15872,7 +16971,7 @@ inline void Envelope::set_allocated_matchmake_ticket(::server::TMatchmakeTicket*
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.matchmake_ticket)
 }
 
-// optional .server.MatchmakeMatched matchmake_matched = 63;
+// optional .server.MatchmakeMatched matchmake_matched = 64;
 inline bool Envelope::has_matchmake_matched() const {
   return payload_case() == kMatchmakeMatched;
 }
@@ -15920,7 +17019,7 @@ inline void Envelope::set_allocated_matchmake_matched(::server::MatchmakeMatched
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.matchmake_matched)
 }
 
-// optional .server.TRpc rpc = 64;
+// optional .server.TRpc rpc = 65;
 inline bool Envelope::has_rpc() const {
   return payload_case() == kRpc;
 }
@@ -15993,128 +17092,128 @@ inline const Logout* Logout::internal_default_instance() {
 
 // optional .server.AuthenticateRequest.Email email = 1;
 inline bool TLink::has_email() const {
-  return payload_case() == kEmail;
+  return id_case() == kEmail;
 }
 inline void TLink::set_has_email() {
   _oneof_case_[0] = kEmail;
 }
 inline void TLink::clear_email() {
   if (has_email()) {
-    delete payload_.email_;
-    clear_has_payload();
+    delete id_.email_;
+    clear_has_id();
   }
 }
 inline  const ::server::AuthenticateRequest_Email& TLink::email() const {
   // @@protoc_insertion_point(field_get:server.TLink.email)
   return has_email()
-      ? *payload_.email_
+      ? *id_.email_
       : ::server::AuthenticateRequest_Email::default_instance();
 }
 inline ::server::AuthenticateRequest_Email* TLink::mutable_email() {
   if (!has_email()) {
-    clear_payload();
+    clear_id();
     set_has_email();
-    payload_.email_ = new ::server::AuthenticateRequest_Email;
+    id_.email_ = new ::server::AuthenticateRequest_Email;
   }
   // @@protoc_insertion_point(field_mutable:server.TLink.email)
-  return payload_.email_;
+  return id_.email_;
 }
 inline ::server::AuthenticateRequest_Email* TLink::release_email() {
   // @@protoc_insertion_point(field_release:server.TLink.email)
   if (has_email()) {
-    clear_has_payload();
-    ::server::AuthenticateRequest_Email* temp = payload_.email_;
-    payload_.email_ = NULL;
+    clear_has_id();
+    ::server::AuthenticateRequest_Email* temp = id_.email_;
+    id_.email_ = NULL;
     return temp;
   } else {
     return NULL;
   }
 }
 inline void TLink::set_allocated_email(::server::AuthenticateRequest_Email* email) {
-  clear_payload();
+  clear_id();
   if (email) {
     set_has_email();
-    payload_.email_ = email;
+    id_.email_ = email;
   }
   // @@protoc_insertion_point(field_set_allocated:server.TLink.email)
 }
 
 // optional string facebook = 2;
 inline bool TLink::has_facebook() const {
-  return payload_case() == kFacebook;
+  return id_case() == kFacebook;
 }
 inline void TLink::set_has_facebook() {
   _oneof_case_[0] = kFacebook;
 }
 inline void TLink::clear_facebook() {
   if (has_facebook()) {
-    payload_.facebook_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-    clear_has_payload();
+    id_.facebook_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    clear_has_id();
   }
 }
 inline const ::std::string& TLink::facebook() const {
   // @@protoc_insertion_point(field_get:server.TLink.facebook)
   if (has_facebook()) {
-    return payload_.facebook_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    return id_.facebook_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
   return *&::google::protobuf::internal::GetEmptyStringAlreadyInited();
 }
 inline void TLink::set_facebook(const ::std::string& value) {
   // @@protoc_insertion_point(field_set:server.TLink.facebook)
   if (!has_facebook()) {
-    clear_payload();
+    clear_id();
     set_has_facebook();
-    payload_.facebook_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.facebook_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  payload_.facebook_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  id_.facebook_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
   // @@protoc_insertion_point(field_set:server.TLink.facebook)
 }
 inline void TLink::set_facebook(const char* value) {
   if (!has_facebook()) {
-    clear_payload();
+    clear_id();
     set_has_facebook();
-    payload_.facebook_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.facebook_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  payload_.facebook_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+  id_.facebook_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.TLink.facebook)
 }
 inline void TLink::set_facebook(const char* value, size_t size) {
   if (!has_facebook()) {
-    clear_payload();
+    clear_id();
     set_has_facebook();
-    payload_.facebook_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.facebook_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  payload_.facebook_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(
+  id_.facebook_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(
       reinterpret_cast<const char*>(value), size));
   // @@protoc_insertion_point(field_set_pointer:server.TLink.facebook)
 }
 inline ::std::string* TLink::mutable_facebook() {
   if (!has_facebook()) {
-    clear_payload();
+    clear_id();
     set_has_facebook();
-    payload_.facebook_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.facebook_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
   // @@protoc_insertion_point(field_mutable:server.TLink.facebook)
-  return payload_.facebook_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  return id_.facebook_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
 inline ::std::string* TLink::release_facebook() {
   // @@protoc_insertion_point(field_release:server.TLink.facebook)
   if (has_facebook()) {
-    clear_has_payload();
-    return payload_.facebook_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    clear_has_id();
+    return id_.facebook_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   } else {
     return NULL;
   }
 }
 inline void TLink::set_allocated_facebook(::std::string* facebook) {
   if (!has_facebook()) {
-    payload_.facebook_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.facebook_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  clear_payload();
+  clear_id();
   if (facebook != NULL) {
     set_has_facebook();
-    payload_.facebook_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+    id_.facebook_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
         facebook);
   }
   // @@protoc_insertion_point(field_set_allocated:server.TLink.facebook)
@@ -16122,80 +17221,80 @@ inline void TLink::set_allocated_facebook(::std::string* facebook) {
 
 // optional string google = 3;
 inline bool TLink::has_google() const {
-  return payload_case() == kGoogle;
+  return id_case() == kGoogle;
 }
 inline void TLink::set_has_google() {
   _oneof_case_[0] = kGoogle;
 }
 inline void TLink::clear_google() {
   if (has_google()) {
-    payload_.google_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-    clear_has_payload();
+    id_.google_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    clear_has_id();
   }
 }
 inline const ::std::string& TLink::google() const {
   // @@protoc_insertion_point(field_get:server.TLink.google)
   if (has_google()) {
-    return payload_.google_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    return id_.google_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
   return *&::google::protobuf::internal::GetEmptyStringAlreadyInited();
 }
 inline void TLink::set_google(const ::std::string& value) {
   // @@protoc_insertion_point(field_set:server.TLink.google)
   if (!has_google()) {
-    clear_payload();
+    clear_id();
     set_has_google();
-    payload_.google_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.google_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  payload_.google_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  id_.google_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
   // @@protoc_insertion_point(field_set:server.TLink.google)
 }
 inline void TLink::set_google(const char* value) {
   if (!has_google()) {
-    clear_payload();
+    clear_id();
     set_has_google();
-    payload_.google_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.google_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  payload_.google_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+  id_.google_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.TLink.google)
 }
 inline void TLink::set_google(const char* value, size_t size) {
   if (!has_google()) {
-    clear_payload();
+    clear_id();
     set_has_google();
-    payload_.google_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.google_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  payload_.google_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(
+  id_.google_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(
       reinterpret_cast<const char*>(value), size));
   // @@protoc_insertion_point(field_set_pointer:server.TLink.google)
 }
 inline ::std::string* TLink::mutable_google() {
   if (!has_google()) {
-    clear_payload();
+    clear_id();
     set_has_google();
-    payload_.google_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.google_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
   // @@protoc_insertion_point(field_mutable:server.TLink.google)
-  return payload_.google_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  return id_.google_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
 inline ::std::string* TLink::release_google() {
   // @@protoc_insertion_point(field_release:server.TLink.google)
   if (has_google()) {
-    clear_has_payload();
-    return payload_.google_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    clear_has_id();
+    return id_.google_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   } else {
     return NULL;
   }
 }
 inline void TLink::set_allocated_google(::std::string* google) {
   if (!has_google()) {
-    payload_.google_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.google_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  clear_payload();
+  clear_id();
   if (google != NULL) {
     set_has_google();
-    payload_.google_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+    id_.google_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
         google);
   }
   // @@protoc_insertion_point(field_set_allocated:server.TLink.google)
@@ -16203,128 +17302,128 @@ inline void TLink::set_allocated_google(::std::string* google) {
 
 // optional .server.AuthenticateRequest.GameCenter game_center = 4;
 inline bool TLink::has_game_center() const {
-  return payload_case() == kGameCenter;
+  return id_case() == kGameCenter;
 }
 inline void TLink::set_has_game_center() {
   _oneof_case_[0] = kGameCenter;
 }
 inline void TLink::clear_game_center() {
   if (has_game_center()) {
-    delete payload_.game_center_;
-    clear_has_payload();
+    delete id_.game_center_;
+    clear_has_id();
   }
 }
 inline  const ::server::AuthenticateRequest_GameCenter& TLink::game_center() const {
   // @@protoc_insertion_point(field_get:server.TLink.game_center)
   return has_game_center()
-      ? *payload_.game_center_
+      ? *id_.game_center_
       : ::server::AuthenticateRequest_GameCenter::default_instance();
 }
 inline ::server::AuthenticateRequest_GameCenter* TLink::mutable_game_center() {
   if (!has_game_center()) {
-    clear_payload();
+    clear_id();
     set_has_game_center();
-    payload_.game_center_ = new ::server::AuthenticateRequest_GameCenter;
+    id_.game_center_ = new ::server::AuthenticateRequest_GameCenter;
   }
   // @@protoc_insertion_point(field_mutable:server.TLink.game_center)
-  return payload_.game_center_;
+  return id_.game_center_;
 }
 inline ::server::AuthenticateRequest_GameCenter* TLink::release_game_center() {
   // @@protoc_insertion_point(field_release:server.TLink.game_center)
   if (has_game_center()) {
-    clear_has_payload();
-    ::server::AuthenticateRequest_GameCenter* temp = payload_.game_center_;
-    payload_.game_center_ = NULL;
+    clear_has_id();
+    ::server::AuthenticateRequest_GameCenter* temp = id_.game_center_;
+    id_.game_center_ = NULL;
     return temp;
   } else {
     return NULL;
   }
 }
 inline void TLink::set_allocated_game_center(::server::AuthenticateRequest_GameCenter* game_center) {
-  clear_payload();
+  clear_id();
   if (game_center) {
     set_has_game_center();
-    payload_.game_center_ = game_center;
+    id_.game_center_ = game_center;
   }
   // @@protoc_insertion_point(field_set_allocated:server.TLink.game_center)
 }
 
 // optional string steam = 5;
 inline bool TLink::has_steam() const {
-  return payload_case() == kSteam;
+  return id_case() == kSteam;
 }
 inline void TLink::set_has_steam() {
   _oneof_case_[0] = kSteam;
 }
 inline void TLink::clear_steam() {
   if (has_steam()) {
-    payload_.steam_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-    clear_has_payload();
+    id_.steam_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    clear_has_id();
   }
 }
 inline const ::std::string& TLink::steam() const {
   // @@protoc_insertion_point(field_get:server.TLink.steam)
   if (has_steam()) {
-    return payload_.steam_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    return id_.steam_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
   return *&::google::protobuf::internal::GetEmptyStringAlreadyInited();
 }
 inline void TLink::set_steam(const ::std::string& value) {
   // @@protoc_insertion_point(field_set:server.TLink.steam)
   if (!has_steam()) {
-    clear_payload();
+    clear_id();
     set_has_steam();
-    payload_.steam_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.steam_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  payload_.steam_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  id_.steam_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
   // @@protoc_insertion_point(field_set:server.TLink.steam)
 }
 inline void TLink::set_steam(const char* value) {
   if (!has_steam()) {
-    clear_payload();
+    clear_id();
     set_has_steam();
-    payload_.steam_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.steam_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  payload_.steam_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+  id_.steam_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.TLink.steam)
 }
 inline void TLink::set_steam(const char* value, size_t size) {
   if (!has_steam()) {
-    clear_payload();
+    clear_id();
     set_has_steam();
-    payload_.steam_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.steam_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  payload_.steam_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(
+  id_.steam_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(
       reinterpret_cast<const char*>(value), size));
   // @@protoc_insertion_point(field_set_pointer:server.TLink.steam)
 }
 inline ::std::string* TLink::mutable_steam() {
   if (!has_steam()) {
-    clear_payload();
+    clear_id();
     set_has_steam();
-    payload_.steam_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.steam_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
   // @@protoc_insertion_point(field_mutable:server.TLink.steam)
-  return payload_.steam_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  return id_.steam_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
 inline ::std::string* TLink::release_steam() {
   // @@protoc_insertion_point(field_release:server.TLink.steam)
   if (has_steam()) {
-    clear_has_payload();
-    return payload_.steam_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    clear_has_id();
+    return id_.steam_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   } else {
     return NULL;
   }
 }
 inline void TLink::set_allocated_steam(::std::string* steam) {
   if (!has_steam()) {
-    payload_.steam_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.steam_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  clear_payload();
+  clear_id();
   if (steam != NULL) {
     set_has_steam();
-    payload_.steam_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+    id_.steam_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
         steam);
   }
   // @@protoc_insertion_point(field_set_allocated:server.TLink.steam)
@@ -16332,80 +17431,80 @@ inline void TLink::set_allocated_steam(::std::string* steam) {
 
 // optional string device = 6;
 inline bool TLink::has_device() const {
-  return payload_case() == kDevice;
+  return id_case() == kDevice;
 }
 inline void TLink::set_has_device() {
   _oneof_case_[0] = kDevice;
 }
 inline void TLink::clear_device() {
   if (has_device()) {
-    payload_.device_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-    clear_has_payload();
+    id_.device_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    clear_has_id();
   }
 }
 inline const ::std::string& TLink::device() const {
   // @@protoc_insertion_point(field_get:server.TLink.device)
   if (has_device()) {
-    return payload_.device_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    return id_.device_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
   return *&::google::protobuf::internal::GetEmptyStringAlreadyInited();
 }
 inline void TLink::set_device(const ::std::string& value) {
   // @@protoc_insertion_point(field_set:server.TLink.device)
   if (!has_device()) {
-    clear_payload();
+    clear_id();
     set_has_device();
-    payload_.device_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.device_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  payload_.device_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  id_.device_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
   // @@protoc_insertion_point(field_set:server.TLink.device)
 }
 inline void TLink::set_device(const char* value) {
   if (!has_device()) {
-    clear_payload();
+    clear_id();
     set_has_device();
-    payload_.device_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.device_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  payload_.device_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+  id_.device_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.TLink.device)
 }
 inline void TLink::set_device(const char* value, size_t size) {
   if (!has_device()) {
-    clear_payload();
+    clear_id();
     set_has_device();
-    payload_.device_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.device_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  payload_.device_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(
+  id_.device_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(
       reinterpret_cast<const char*>(value), size));
   // @@protoc_insertion_point(field_set_pointer:server.TLink.device)
 }
 inline ::std::string* TLink::mutable_device() {
   if (!has_device()) {
-    clear_payload();
+    clear_id();
     set_has_device();
-    payload_.device_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.device_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
   // @@protoc_insertion_point(field_mutable:server.TLink.device)
-  return payload_.device_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  return id_.device_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
 inline ::std::string* TLink::release_device() {
   // @@protoc_insertion_point(field_release:server.TLink.device)
   if (has_device()) {
-    clear_has_payload();
-    return payload_.device_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    clear_has_id();
+    return id_.device_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   } else {
     return NULL;
   }
 }
 inline void TLink::set_allocated_device(::std::string* device) {
   if (!has_device()) {
-    payload_.device_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.device_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  clear_payload();
+  clear_id();
   if (device != NULL) {
     set_has_device();
-    payload_.device_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+    id_.device_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
         device);
   }
   // @@protoc_insertion_point(field_set_allocated:server.TLink.device)
@@ -16413,93 +17512,93 @@ inline void TLink::set_allocated_device(::std::string* device) {
 
 // optional string custom = 7;
 inline bool TLink::has_custom() const {
-  return payload_case() == kCustom;
+  return id_case() == kCustom;
 }
 inline void TLink::set_has_custom() {
   _oneof_case_[0] = kCustom;
 }
 inline void TLink::clear_custom() {
   if (has_custom()) {
-    payload_.custom_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-    clear_has_payload();
+    id_.custom_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    clear_has_id();
   }
 }
 inline const ::std::string& TLink::custom() const {
   // @@protoc_insertion_point(field_get:server.TLink.custom)
   if (has_custom()) {
-    return payload_.custom_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    return id_.custom_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
   return *&::google::protobuf::internal::GetEmptyStringAlreadyInited();
 }
 inline void TLink::set_custom(const ::std::string& value) {
   // @@protoc_insertion_point(field_set:server.TLink.custom)
   if (!has_custom()) {
-    clear_payload();
+    clear_id();
     set_has_custom();
-    payload_.custom_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.custom_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  payload_.custom_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  id_.custom_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
   // @@protoc_insertion_point(field_set:server.TLink.custom)
 }
 inline void TLink::set_custom(const char* value) {
   if (!has_custom()) {
-    clear_payload();
+    clear_id();
     set_has_custom();
-    payload_.custom_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.custom_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  payload_.custom_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+  id_.custom_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.TLink.custom)
 }
 inline void TLink::set_custom(const char* value, size_t size) {
   if (!has_custom()) {
-    clear_payload();
+    clear_id();
     set_has_custom();
-    payload_.custom_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.custom_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  payload_.custom_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(
+  id_.custom_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(
       reinterpret_cast<const char*>(value), size));
   // @@protoc_insertion_point(field_set_pointer:server.TLink.custom)
 }
 inline ::std::string* TLink::mutable_custom() {
   if (!has_custom()) {
-    clear_payload();
+    clear_id();
     set_has_custom();
-    payload_.custom_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.custom_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
   // @@protoc_insertion_point(field_mutable:server.TLink.custom)
-  return payload_.custom_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  return id_.custom_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
 inline ::std::string* TLink::release_custom() {
   // @@protoc_insertion_point(field_release:server.TLink.custom)
   if (has_custom()) {
-    clear_has_payload();
-    return payload_.custom_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    clear_has_id();
+    return id_.custom_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   } else {
     return NULL;
   }
 }
 inline void TLink::set_allocated_custom(::std::string* custom) {
   if (!has_custom()) {
-    payload_.custom_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.custom_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  clear_payload();
+  clear_id();
   if (custom != NULL) {
     set_has_custom();
-    payload_.custom_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+    id_.custom_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
         custom);
   }
   // @@protoc_insertion_point(field_set_allocated:server.TLink.custom)
 }
 
-inline bool TLink::has_payload() const {
-  return payload_case() != PAYLOAD_NOT_SET;
+inline bool TLink::has_id() const {
+  return id_case() != ID_NOT_SET;
 }
-inline void TLink::clear_has_payload() {
-  _oneof_case_[0] = PAYLOAD_NOT_SET;
+inline void TLink::clear_has_id() {
+  _oneof_case_[0] = ID_NOT_SET;
 }
-inline TLink::PayloadCase TLink::payload_case() const {
-  return TLink::PayloadCase(_oneof_case_[0]);
+inline TLink::IdCase TLink::id_case() const {
+  return TLink::IdCase(_oneof_case_[0]);
 }
 inline const TLink* TLink::internal_default_instance() {
   return &TLink_default_instance_.get();
@@ -16510,80 +17609,80 @@ inline const TLink* TLink::internal_default_instance() {
 
 // optional string email = 1;
 inline bool TUnlink::has_email() const {
-  return payload_case() == kEmail;
+  return id_case() == kEmail;
 }
 inline void TUnlink::set_has_email() {
   _oneof_case_[0] = kEmail;
 }
 inline void TUnlink::clear_email() {
   if (has_email()) {
-    payload_.email_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-    clear_has_payload();
+    id_.email_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    clear_has_id();
   }
 }
 inline const ::std::string& TUnlink::email() const {
   // @@protoc_insertion_point(field_get:server.TUnlink.email)
   if (has_email()) {
-    return payload_.email_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    return id_.email_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
   return *&::google::protobuf::internal::GetEmptyStringAlreadyInited();
 }
 inline void TUnlink::set_email(const ::std::string& value) {
   // @@protoc_insertion_point(field_set:server.TUnlink.email)
   if (!has_email()) {
-    clear_payload();
+    clear_id();
     set_has_email();
-    payload_.email_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.email_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  payload_.email_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  id_.email_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
   // @@protoc_insertion_point(field_set:server.TUnlink.email)
 }
 inline void TUnlink::set_email(const char* value) {
   if (!has_email()) {
-    clear_payload();
+    clear_id();
     set_has_email();
-    payload_.email_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.email_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  payload_.email_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+  id_.email_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.TUnlink.email)
 }
 inline void TUnlink::set_email(const char* value, size_t size) {
   if (!has_email()) {
-    clear_payload();
+    clear_id();
     set_has_email();
-    payload_.email_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.email_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  payload_.email_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(
+  id_.email_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(
       reinterpret_cast<const char*>(value), size));
   // @@protoc_insertion_point(field_set_pointer:server.TUnlink.email)
 }
 inline ::std::string* TUnlink::mutable_email() {
   if (!has_email()) {
-    clear_payload();
+    clear_id();
     set_has_email();
-    payload_.email_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.email_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
   // @@protoc_insertion_point(field_mutable:server.TUnlink.email)
-  return payload_.email_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  return id_.email_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
 inline ::std::string* TUnlink::release_email() {
   // @@protoc_insertion_point(field_release:server.TUnlink.email)
   if (has_email()) {
-    clear_has_payload();
-    return payload_.email_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    clear_has_id();
+    return id_.email_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   } else {
     return NULL;
   }
 }
 inline void TUnlink::set_allocated_email(::std::string* email) {
   if (!has_email()) {
-    payload_.email_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.email_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  clear_payload();
+  clear_id();
   if (email != NULL) {
     set_has_email();
-    payload_.email_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+    id_.email_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
         email);
   }
   // @@protoc_insertion_point(field_set_allocated:server.TUnlink.email)
@@ -16591,80 +17690,80 @@ inline void TUnlink::set_allocated_email(::std::string* email) {
 
 // optional string facebook = 2;
 inline bool TUnlink::has_facebook() const {
-  return payload_case() == kFacebook;
+  return id_case() == kFacebook;
 }
 inline void TUnlink::set_has_facebook() {
   _oneof_case_[0] = kFacebook;
 }
 inline void TUnlink::clear_facebook() {
   if (has_facebook()) {
-    payload_.facebook_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-    clear_has_payload();
+    id_.facebook_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    clear_has_id();
   }
 }
 inline const ::std::string& TUnlink::facebook() const {
   // @@protoc_insertion_point(field_get:server.TUnlink.facebook)
   if (has_facebook()) {
-    return payload_.facebook_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    return id_.facebook_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
   return *&::google::protobuf::internal::GetEmptyStringAlreadyInited();
 }
 inline void TUnlink::set_facebook(const ::std::string& value) {
   // @@protoc_insertion_point(field_set:server.TUnlink.facebook)
   if (!has_facebook()) {
-    clear_payload();
+    clear_id();
     set_has_facebook();
-    payload_.facebook_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.facebook_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  payload_.facebook_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  id_.facebook_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
   // @@protoc_insertion_point(field_set:server.TUnlink.facebook)
 }
 inline void TUnlink::set_facebook(const char* value) {
   if (!has_facebook()) {
-    clear_payload();
+    clear_id();
     set_has_facebook();
-    payload_.facebook_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.facebook_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  payload_.facebook_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+  id_.facebook_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.TUnlink.facebook)
 }
 inline void TUnlink::set_facebook(const char* value, size_t size) {
   if (!has_facebook()) {
-    clear_payload();
+    clear_id();
     set_has_facebook();
-    payload_.facebook_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.facebook_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  payload_.facebook_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(
+  id_.facebook_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(
       reinterpret_cast<const char*>(value), size));
   // @@protoc_insertion_point(field_set_pointer:server.TUnlink.facebook)
 }
 inline ::std::string* TUnlink::mutable_facebook() {
   if (!has_facebook()) {
-    clear_payload();
+    clear_id();
     set_has_facebook();
-    payload_.facebook_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.facebook_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
   // @@protoc_insertion_point(field_mutable:server.TUnlink.facebook)
-  return payload_.facebook_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  return id_.facebook_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
 inline ::std::string* TUnlink::release_facebook() {
   // @@protoc_insertion_point(field_release:server.TUnlink.facebook)
   if (has_facebook()) {
-    clear_has_payload();
-    return payload_.facebook_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    clear_has_id();
+    return id_.facebook_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   } else {
     return NULL;
   }
 }
 inline void TUnlink::set_allocated_facebook(::std::string* facebook) {
   if (!has_facebook()) {
-    payload_.facebook_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.facebook_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  clear_payload();
+  clear_id();
   if (facebook != NULL) {
     set_has_facebook();
-    payload_.facebook_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+    id_.facebook_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
         facebook);
   }
   // @@protoc_insertion_point(field_set_allocated:server.TUnlink.facebook)
@@ -16672,80 +17771,80 @@ inline void TUnlink::set_allocated_facebook(::std::string* facebook) {
 
 // optional string google = 3;
 inline bool TUnlink::has_google() const {
-  return payload_case() == kGoogle;
+  return id_case() == kGoogle;
 }
 inline void TUnlink::set_has_google() {
   _oneof_case_[0] = kGoogle;
 }
 inline void TUnlink::clear_google() {
   if (has_google()) {
-    payload_.google_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-    clear_has_payload();
+    id_.google_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    clear_has_id();
   }
 }
 inline const ::std::string& TUnlink::google() const {
   // @@protoc_insertion_point(field_get:server.TUnlink.google)
   if (has_google()) {
-    return payload_.google_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    return id_.google_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
   return *&::google::protobuf::internal::GetEmptyStringAlreadyInited();
 }
 inline void TUnlink::set_google(const ::std::string& value) {
   // @@protoc_insertion_point(field_set:server.TUnlink.google)
   if (!has_google()) {
-    clear_payload();
+    clear_id();
     set_has_google();
-    payload_.google_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.google_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  payload_.google_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  id_.google_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
   // @@protoc_insertion_point(field_set:server.TUnlink.google)
 }
 inline void TUnlink::set_google(const char* value) {
   if (!has_google()) {
-    clear_payload();
+    clear_id();
     set_has_google();
-    payload_.google_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.google_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  payload_.google_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+  id_.google_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.TUnlink.google)
 }
 inline void TUnlink::set_google(const char* value, size_t size) {
   if (!has_google()) {
-    clear_payload();
+    clear_id();
     set_has_google();
-    payload_.google_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.google_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  payload_.google_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(
+  id_.google_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(
       reinterpret_cast<const char*>(value), size));
   // @@protoc_insertion_point(field_set_pointer:server.TUnlink.google)
 }
 inline ::std::string* TUnlink::mutable_google() {
   if (!has_google()) {
-    clear_payload();
+    clear_id();
     set_has_google();
-    payload_.google_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.google_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
   // @@protoc_insertion_point(field_mutable:server.TUnlink.google)
-  return payload_.google_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  return id_.google_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
 inline ::std::string* TUnlink::release_google() {
   // @@protoc_insertion_point(field_release:server.TUnlink.google)
   if (has_google()) {
-    clear_has_payload();
-    return payload_.google_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    clear_has_id();
+    return id_.google_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   } else {
     return NULL;
   }
 }
 inline void TUnlink::set_allocated_google(::std::string* google) {
   if (!has_google()) {
-    payload_.google_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.google_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  clear_payload();
+  clear_id();
   if (google != NULL) {
     set_has_google();
-    payload_.google_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+    id_.google_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
         google);
   }
   // @@protoc_insertion_point(field_set_allocated:server.TUnlink.google)
@@ -16753,80 +17852,80 @@ inline void TUnlink::set_allocated_google(::std::string* google) {
 
 // optional string game_center = 4;
 inline bool TUnlink::has_game_center() const {
-  return payload_case() == kGameCenter;
+  return id_case() == kGameCenter;
 }
 inline void TUnlink::set_has_game_center() {
   _oneof_case_[0] = kGameCenter;
 }
 inline void TUnlink::clear_game_center() {
   if (has_game_center()) {
-    payload_.game_center_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-    clear_has_payload();
+    id_.game_center_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    clear_has_id();
   }
 }
 inline const ::std::string& TUnlink::game_center() const {
   // @@protoc_insertion_point(field_get:server.TUnlink.game_center)
   if (has_game_center()) {
-    return payload_.game_center_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    return id_.game_center_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
   return *&::google::protobuf::internal::GetEmptyStringAlreadyInited();
 }
 inline void TUnlink::set_game_center(const ::std::string& value) {
   // @@protoc_insertion_point(field_set:server.TUnlink.game_center)
   if (!has_game_center()) {
-    clear_payload();
+    clear_id();
     set_has_game_center();
-    payload_.game_center_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.game_center_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  payload_.game_center_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  id_.game_center_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
   // @@protoc_insertion_point(field_set:server.TUnlink.game_center)
 }
 inline void TUnlink::set_game_center(const char* value) {
   if (!has_game_center()) {
-    clear_payload();
+    clear_id();
     set_has_game_center();
-    payload_.game_center_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.game_center_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  payload_.game_center_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+  id_.game_center_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.TUnlink.game_center)
 }
 inline void TUnlink::set_game_center(const char* value, size_t size) {
   if (!has_game_center()) {
-    clear_payload();
+    clear_id();
     set_has_game_center();
-    payload_.game_center_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.game_center_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  payload_.game_center_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(
+  id_.game_center_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(
       reinterpret_cast<const char*>(value), size));
   // @@protoc_insertion_point(field_set_pointer:server.TUnlink.game_center)
 }
 inline ::std::string* TUnlink::mutable_game_center() {
   if (!has_game_center()) {
-    clear_payload();
+    clear_id();
     set_has_game_center();
-    payload_.game_center_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.game_center_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
   // @@protoc_insertion_point(field_mutable:server.TUnlink.game_center)
-  return payload_.game_center_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  return id_.game_center_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
 inline ::std::string* TUnlink::release_game_center() {
   // @@protoc_insertion_point(field_release:server.TUnlink.game_center)
   if (has_game_center()) {
-    clear_has_payload();
-    return payload_.game_center_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    clear_has_id();
+    return id_.game_center_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   } else {
     return NULL;
   }
 }
 inline void TUnlink::set_allocated_game_center(::std::string* game_center) {
   if (!has_game_center()) {
-    payload_.game_center_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.game_center_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  clear_payload();
+  clear_id();
   if (game_center != NULL) {
     set_has_game_center();
-    payload_.game_center_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+    id_.game_center_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
         game_center);
   }
   // @@protoc_insertion_point(field_set_allocated:server.TUnlink.game_center)
@@ -16834,80 +17933,80 @@ inline void TUnlink::set_allocated_game_center(::std::string* game_center) {
 
 // optional string steam = 5;
 inline bool TUnlink::has_steam() const {
-  return payload_case() == kSteam;
+  return id_case() == kSteam;
 }
 inline void TUnlink::set_has_steam() {
   _oneof_case_[0] = kSteam;
 }
 inline void TUnlink::clear_steam() {
   if (has_steam()) {
-    payload_.steam_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-    clear_has_payload();
+    id_.steam_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    clear_has_id();
   }
 }
 inline const ::std::string& TUnlink::steam() const {
   // @@protoc_insertion_point(field_get:server.TUnlink.steam)
   if (has_steam()) {
-    return payload_.steam_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    return id_.steam_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
   return *&::google::protobuf::internal::GetEmptyStringAlreadyInited();
 }
 inline void TUnlink::set_steam(const ::std::string& value) {
   // @@protoc_insertion_point(field_set:server.TUnlink.steam)
   if (!has_steam()) {
-    clear_payload();
+    clear_id();
     set_has_steam();
-    payload_.steam_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.steam_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  payload_.steam_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  id_.steam_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
   // @@protoc_insertion_point(field_set:server.TUnlink.steam)
 }
 inline void TUnlink::set_steam(const char* value) {
   if (!has_steam()) {
-    clear_payload();
+    clear_id();
     set_has_steam();
-    payload_.steam_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.steam_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  payload_.steam_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+  id_.steam_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.TUnlink.steam)
 }
 inline void TUnlink::set_steam(const char* value, size_t size) {
   if (!has_steam()) {
-    clear_payload();
+    clear_id();
     set_has_steam();
-    payload_.steam_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.steam_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  payload_.steam_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(
+  id_.steam_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(
       reinterpret_cast<const char*>(value), size));
   // @@protoc_insertion_point(field_set_pointer:server.TUnlink.steam)
 }
 inline ::std::string* TUnlink::mutable_steam() {
   if (!has_steam()) {
-    clear_payload();
+    clear_id();
     set_has_steam();
-    payload_.steam_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.steam_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
   // @@protoc_insertion_point(field_mutable:server.TUnlink.steam)
-  return payload_.steam_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  return id_.steam_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
 inline ::std::string* TUnlink::release_steam() {
   // @@protoc_insertion_point(field_release:server.TUnlink.steam)
   if (has_steam()) {
-    clear_has_payload();
-    return payload_.steam_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    clear_has_id();
+    return id_.steam_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   } else {
     return NULL;
   }
 }
 inline void TUnlink::set_allocated_steam(::std::string* steam) {
   if (!has_steam()) {
-    payload_.steam_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.steam_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  clear_payload();
+  clear_id();
   if (steam != NULL) {
     set_has_steam();
-    payload_.steam_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+    id_.steam_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
         steam);
   }
   // @@protoc_insertion_point(field_set_allocated:server.TUnlink.steam)
@@ -16915,80 +18014,80 @@ inline void TUnlink::set_allocated_steam(::std::string* steam) {
 
 // optional string device = 6;
 inline bool TUnlink::has_device() const {
-  return payload_case() == kDevice;
+  return id_case() == kDevice;
 }
 inline void TUnlink::set_has_device() {
   _oneof_case_[0] = kDevice;
 }
 inline void TUnlink::clear_device() {
   if (has_device()) {
-    payload_.device_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-    clear_has_payload();
+    id_.device_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    clear_has_id();
   }
 }
 inline const ::std::string& TUnlink::device() const {
   // @@protoc_insertion_point(field_get:server.TUnlink.device)
   if (has_device()) {
-    return payload_.device_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    return id_.device_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
   return *&::google::protobuf::internal::GetEmptyStringAlreadyInited();
 }
 inline void TUnlink::set_device(const ::std::string& value) {
   // @@protoc_insertion_point(field_set:server.TUnlink.device)
   if (!has_device()) {
-    clear_payload();
+    clear_id();
     set_has_device();
-    payload_.device_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.device_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  payload_.device_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  id_.device_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
   // @@protoc_insertion_point(field_set:server.TUnlink.device)
 }
 inline void TUnlink::set_device(const char* value) {
   if (!has_device()) {
-    clear_payload();
+    clear_id();
     set_has_device();
-    payload_.device_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.device_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  payload_.device_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+  id_.device_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.TUnlink.device)
 }
 inline void TUnlink::set_device(const char* value, size_t size) {
   if (!has_device()) {
-    clear_payload();
+    clear_id();
     set_has_device();
-    payload_.device_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.device_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  payload_.device_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(
+  id_.device_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(
       reinterpret_cast<const char*>(value), size));
   // @@protoc_insertion_point(field_set_pointer:server.TUnlink.device)
 }
 inline ::std::string* TUnlink::mutable_device() {
   if (!has_device()) {
-    clear_payload();
+    clear_id();
     set_has_device();
-    payload_.device_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.device_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
   // @@protoc_insertion_point(field_mutable:server.TUnlink.device)
-  return payload_.device_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  return id_.device_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
 inline ::std::string* TUnlink::release_device() {
   // @@protoc_insertion_point(field_release:server.TUnlink.device)
   if (has_device()) {
-    clear_has_payload();
-    return payload_.device_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    clear_has_id();
+    return id_.device_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   } else {
     return NULL;
   }
 }
 inline void TUnlink::set_allocated_device(::std::string* device) {
   if (!has_device()) {
-    payload_.device_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.device_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  clear_payload();
+  clear_id();
   if (device != NULL) {
     set_has_device();
-    payload_.device_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+    id_.device_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
         device);
   }
   // @@protoc_insertion_point(field_set_allocated:server.TUnlink.device)
@@ -16996,93 +18095,93 @@ inline void TUnlink::set_allocated_device(::std::string* device) {
 
 // optional string custom = 7;
 inline bool TUnlink::has_custom() const {
-  return payload_case() == kCustom;
+  return id_case() == kCustom;
 }
 inline void TUnlink::set_has_custom() {
   _oneof_case_[0] = kCustom;
 }
 inline void TUnlink::clear_custom() {
   if (has_custom()) {
-    payload_.custom_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-    clear_has_payload();
+    id_.custom_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    clear_has_id();
   }
 }
 inline const ::std::string& TUnlink::custom() const {
   // @@protoc_insertion_point(field_get:server.TUnlink.custom)
   if (has_custom()) {
-    return payload_.custom_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    return id_.custom_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
   return *&::google::protobuf::internal::GetEmptyStringAlreadyInited();
 }
 inline void TUnlink::set_custom(const ::std::string& value) {
   // @@protoc_insertion_point(field_set:server.TUnlink.custom)
   if (!has_custom()) {
-    clear_payload();
+    clear_id();
     set_has_custom();
-    payload_.custom_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.custom_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  payload_.custom_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  id_.custom_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
   // @@protoc_insertion_point(field_set:server.TUnlink.custom)
 }
 inline void TUnlink::set_custom(const char* value) {
   if (!has_custom()) {
-    clear_payload();
+    clear_id();
     set_has_custom();
-    payload_.custom_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.custom_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  payload_.custom_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+  id_.custom_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.TUnlink.custom)
 }
 inline void TUnlink::set_custom(const char* value, size_t size) {
   if (!has_custom()) {
-    clear_payload();
+    clear_id();
     set_has_custom();
-    payload_.custom_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.custom_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  payload_.custom_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(
+  id_.custom_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(
       reinterpret_cast<const char*>(value), size));
   // @@protoc_insertion_point(field_set_pointer:server.TUnlink.custom)
 }
 inline ::std::string* TUnlink::mutable_custom() {
   if (!has_custom()) {
-    clear_payload();
+    clear_id();
     set_has_custom();
-    payload_.custom_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.custom_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
   // @@protoc_insertion_point(field_mutable:server.TUnlink.custom)
-  return payload_.custom_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  return id_.custom_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
 inline ::std::string* TUnlink::release_custom() {
   // @@protoc_insertion_point(field_release:server.TUnlink.custom)
   if (has_custom()) {
-    clear_has_payload();
-    return payload_.custom_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    clear_has_id();
+    return id_.custom_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   } else {
     return NULL;
   }
 }
 inline void TUnlink::set_allocated_custom(::std::string* custom) {
   if (!has_custom()) {
-    payload_.custom_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.custom_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  clear_payload();
+  clear_id();
   if (custom != NULL) {
     set_has_custom();
-    payload_.custom_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+    id_.custom_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
         custom);
   }
   // @@protoc_insertion_point(field_set_allocated:server.TUnlink.custom)
 }
 
-inline bool TUnlink::has_payload() const {
-  return payload_case() != PAYLOAD_NOT_SET;
+inline bool TUnlink::has_id() const {
+  return id_case() != ID_NOT_SET;
 }
-inline void TUnlink::clear_has_payload() {
-  _oneof_case_[0] = PAYLOAD_NOT_SET;
+inline void TUnlink::clear_has_id() {
+  _oneof_case_[0] = ID_NOT_SET;
 }
-inline TUnlink::PayloadCase TUnlink::payload_case() const {
-  return TUnlink::PayloadCase(_oneof_case_[0]);
+inline TUnlink::IdCase TUnlink::id_case() const {
+  return TUnlink::IdCase(_oneof_case_[0]);
 }
 inline const TUnlink* TUnlink::internal_default_instance() {
   return &TUnlink_default_instance_.get();
@@ -17589,59 +18688,59 @@ inline void Self::set_allocated_email(::std::string* email) {
   // @@protoc_insertion_point(field_set_allocated:server.Self.email)
 }
 
-// repeated string device_id = 4;
-inline int Self::device_id_size() const {
-  return device_id_.size();
+// repeated string device_ids = 4;
+inline int Self::device_ids_size() const {
+  return device_ids_.size();
 }
-inline void Self::clear_device_id() {
-  device_id_.Clear();
+inline void Self::clear_device_ids() {
+  device_ids_.Clear();
 }
-inline const ::std::string& Self::device_id(int index) const {
-  // @@protoc_insertion_point(field_get:server.Self.device_id)
-  return device_id_.Get(index);
+inline const ::std::string& Self::device_ids(int index) const {
+  // @@protoc_insertion_point(field_get:server.Self.device_ids)
+  return device_ids_.Get(index);
 }
-inline ::std::string* Self::mutable_device_id(int index) {
-  // @@protoc_insertion_point(field_mutable:server.Self.device_id)
-  return device_id_.Mutable(index);
+inline ::std::string* Self::mutable_device_ids(int index) {
+  // @@protoc_insertion_point(field_mutable:server.Self.device_ids)
+  return device_ids_.Mutable(index);
 }
-inline void Self::set_device_id(int index, const ::std::string& value) {
-  // @@protoc_insertion_point(field_set:server.Self.device_id)
-  device_id_.Mutable(index)->assign(value);
+inline void Self::set_device_ids(int index, const ::std::string& value) {
+  // @@protoc_insertion_point(field_set:server.Self.device_ids)
+  device_ids_.Mutable(index)->assign(value);
 }
-inline void Self::set_device_id(int index, const char* value) {
-  device_id_.Mutable(index)->assign(value);
-  // @@protoc_insertion_point(field_set_char:server.Self.device_id)
+inline void Self::set_device_ids(int index, const char* value) {
+  device_ids_.Mutable(index)->assign(value);
+  // @@protoc_insertion_point(field_set_char:server.Self.device_ids)
 }
-inline void Self::set_device_id(int index, const char* value, size_t size) {
-  device_id_.Mutable(index)->assign(
+inline void Self::set_device_ids(int index, const char* value, size_t size) {
+  device_ids_.Mutable(index)->assign(
     reinterpret_cast<const char*>(value), size);
-  // @@protoc_insertion_point(field_set_pointer:server.Self.device_id)
+  // @@protoc_insertion_point(field_set_pointer:server.Self.device_ids)
 }
-inline ::std::string* Self::add_device_id() {
-  // @@protoc_insertion_point(field_add_mutable:server.Self.device_id)
-  return device_id_.Add();
+inline ::std::string* Self::add_device_ids() {
+  // @@protoc_insertion_point(field_add_mutable:server.Self.device_ids)
+  return device_ids_.Add();
 }
-inline void Self::add_device_id(const ::std::string& value) {
-  device_id_.Add()->assign(value);
-  // @@protoc_insertion_point(field_add:server.Self.device_id)
+inline void Self::add_device_ids(const ::std::string& value) {
+  device_ids_.Add()->assign(value);
+  // @@protoc_insertion_point(field_add:server.Self.device_ids)
 }
-inline void Self::add_device_id(const char* value) {
-  device_id_.Add()->assign(value);
-  // @@protoc_insertion_point(field_add_char:server.Self.device_id)
+inline void Self::add_device_ids(const char* value) {
+  device_ids_.Add()->assign(value);
+  // @@protoc_insertion_point(field_add_char:server.Self.device_ids)
 }
-inline void Self::add_device_id(const char* value, size_t size) {
-  device_id_.Add()->assign(reinterpret_cast<const char*>(value), size);
-  // @@protoc_insertion_point(field_add_pointer:server.Self.device_id)
+inline void Self::add_device_ids(const char* value, size_t size) {
+  device_ids_.Add()->assign(reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_add_pointer:server.Self.device_ids)
 }
 inline const ::google::protobuf::RepeatedPtrField< ::std::string>&
-Self::device_id() const {
-  // @@protoc_insertion_point(field_list:server.Self.device_id)
-  return device_id_;
+Self::device_ids() const {
+  // @@protoc_insertion_point(field_list:server.Self.device_ids)
+  return device_ids_;
 }
 inline ::google::protobuf::RepeatedPtrField< ::std::string>*
-Self::mutable_device_id() {
-  // @@protoc_insertion_point(field_mutable_list:server.Self.device_id)
-  return &device_id_;
+Self::mutable_device_ids() {
+  // @@protoc_insertion_point(field_mutable_list:server.Self.device_ids)
+  return &device_ids_;
 }
 
 // optional string facebook_id = 5;
@@ -18237,237 +19336,216 @@ inline const TSelfUpdate* TSelfUpdate::internal_default_instance() {
 }
 // -------------------------------------------------------------------
 
-// TUsersFetch_UserIds
+// TUsersFetch_UsersFetch
 
-// repeated bytes user_ids = 1;
-inline int TUsersFetch_UserIds::user_ids_size() const {
-  return user_ids_.size();
+// optional bytes user_id = 1;
+inline bool TUsersFetch_UsersFetch::has_user_id() const {
+  return id_case() == kUserId;
 }
-inline void TUsersFetch_UserIds::clear_user_ids() {
-  user_ids_.Clear();
+inline void TUsersFetch_UsersFetch::set_has_user_id() {
+  _oneof_case_[0] = kUserId;
 }
-inline const ::std::string& TUsersFetch_UserIds::user_ids(int index) const {
-  // @@protoc_insertion_point(field_get:server.TUsersFetch.UserIds.user_ids)
-  return user_ids_.Get(index);
+inline void TUsersFetch_UsersFetch::clear_user_id() {
+  if (has_user_id()) {
+    id_.user_id_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    clear_has_id();
+  }
 }
-inline ::std::string* TUsersFetch_UserIds::mutable_user_ids(int index) {
-  // @@protoc_insertion_point(field_mutable:server.TUsersFetch.UserIds.user_ids)
-  return user_ids_.Mutable(index);
+inline const ::std::string& TUsersFetch_UsersFetch::user_id() const {
+  // @@protoc_insertion_point(field_get:server.TUsersFetch.UsersFetch.user_id)
+  if (has_user_id()) {
+    return id_.user_id_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  return *&::google::protobuf::internal::GetEmptyStringAlreadyInited();
 }
-inline void TUsersFetch_UserIds::set_user_ids(int index, const ::std::string& value) {
-  // @@protoc_insertion_point(field_set:server.TUsersFetch.UserIds.user_ids)
-  user_ids_.Mutable(index)->assign(value);
+inline void TUsersFetch_UsersFetch::set_user_id(const ::std::string& value) {
+  // @@protoc_insertion_point(field_set:server.TUsersFetch.UsersFetch.user_id)
+  if (!has_user_id()) {
+    clear_id();
+    set_has_user_id();
+    id_.user_id_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  id_.user_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:server.TUsersFetch.UsersFetch.user_id)
 }
-inline void TUsersFetch_UserIds::set_user_ids(int index, const char* value) {
-  user_ids_.Mutable(index)->assign(value);
-  // @@protoc_insertion_point(field_set_char:server.TUsersFetch.UserIds.user_ids)
+inline void TUsersFetch_UsersFetch::set_user_id(const char* value) {
+  if (!has_user_id()) {
+    clear_id();
+    set_has_user_id();
+    id_.user_id_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  id_.user_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:server.TUsersFetch.UsersFetch.user_id)
 }
-inline void TUsersFetch_UserIds::set_user_ids(int index, const void* value, size_t size) {
-  user_ids_.Mutable(index)->assign(
-    reinterpret_cast<const char*>(value), size);
-  // @@protoc_insertion_point(field_set_pointer:server.TUsersFetch.UserIds.user_ids)
+inline void TUsersFetch_UsersFetch::set_user_id(const void* value, size_t size) {
+  if (!has_user_id()) {
+    clear_id();
+    set_has_user_id();
+    id_.user_id_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  id_.user_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(
+      reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:server.TUsersFetch.UsersFetch.user_id)
 }
-inline ::std::string* TUsersFetch_UserIds::add_user_ids() {
-  // @@protoc_insertion_point(field_add_mutable:server.TUsersFetch.UserIds.user_ids)
-  return user_ids_.Add();
+inline ::std::string* TUsersFetch_UsersFetch::mutable_user_id() {
+  if (!has_user_id()) {
+    clear_id();
+    set_has_user_id();
+    id_.user_id_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  // @@protoc_insertion_point(field_mutable:server.TUsersFetch.UsersFetch.user_id)
+  return id_.user_id_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline void TUsersFetch_UserIds::add_user_ids(const ::std::string& value) {
-  user_ids_.Add()->assign(value);
-  // @@protoc_insertion_point(field_add:server.TUsersFetch.UserIds.user_ids)
+inline ::std::string* TUsersFetch_UsersFetch::release_user_id() {
+  // @@protoc_insertion_point(field_release:server.TUsersFetch.UsersFetch.user_id)
+  if (has_user_id()) {
+    clear_has_id();
+    return id_.user_id_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  } else {
+    return NULL;
+  }
 }
-inline void TUsersFetch_UserIds::add_user_ids(const char* value) {
-  user_ids_.Add()->assign(value);
-  // @@protoc_insertion_point(field_add_char:server.TUsersFetch.UserIds.user_ids)
-}
-inline void TUsersFetch_UserIds::add_user_ids(const void* value, size_t size) {
-  user_ids_.Add()->assign(reinterpret_cast<const char*>(value), size);
-  // @@protoc_insertion_point(field_add_pointer:server.TUsersFetch.UserIds.user_ids)
-}
-inline const ::google::protobuf::RepeatedPtrField< ::std::string>&
-TUsersFetch_UserIds::user_ids() const {
-  // @@protoc_insertion_point(field_list:server.TUsersFetch.UserIds.user_ids)
-  return user_ids_;
-}
-inline ::google::protobuf::RepeatedPtrField< ::std::string>*
-TUsersFetch_UserIds::mutable_user_ids() {
-  // @@protoc_insertion_point(field_mutable_list:server.TUsersFetch.UserIds.user_ids)
-  return &user_ids_;
-}
-
-inline const TUsersFetch_UserIds* TUsersFetch_UserIds::internal_default_instance() {
-  return &TUsersFetch_UserIds_default_instance_.get();
-}
-// -------------------------------------------------------------------
-
-// TUsersFetch_Handles
-
-// repeated string handles = 1;
-inline int TUsersFetch_Handles::handles_size() const {
-  return handles_.size();
-}
-inline void TUsersFetch_Handles::clear_handles() {
-  handles_.Clear();
-}
-inline const ::std::string& TUsersFetch_Handles::handles(int index) const {
-  // @@protoc_insertion_point(field_get:server.TUsersFetch.Handles.handles)
-  return handles_.Get(index);
-}
-inline ::std::string* TUsersFetch_Handles::mutable_handles(int index) {
-  // @@protoc_insertion_point(field_mutable:server.TUsersFetch.Handles.handles)
-  return handles_.Mutable(index);
-}
-inline void TUsersFetch_Handles::set_handles(int index, const ::std::string& value) {
-  // @@protoc_insertion_point(field_set:server.TUsersFetch.Handles.handles)
-  handles_.Mutable(index)->assign(value);
-}
-inline void TUsersFetch_Handles::set_handles(int index, const char* value) {
-  handles_.Mutable(index)->assign(value);
-  // @@protoc_insertion_point(field_set_char:server.TUsersFetch.Handles.handles)
-}
-inline void TUsersFetch_Handles::set_handles(int index, const char* value, size_t size) {
-  handles_.Mutable(index)->assign(
-    reinterpret_cast<const char*>(value), size);
-  // @@protoc_insertion_point(field_set_pointer:server.TUsersFetch.Handles.handles)
-}
-inline ::std::string* TUsersFetch_Handles::add_handles() {
-  // @@protoc_insertion_point(field_add_mutable:server.TUsersFetch.Handles.handles)
-  return handles_.Add();
-}
-inline void TUsersFetch_Handles::add_handles(const ::std::string& value) {
-  handles_.Add()->assign(value);
-  // @@protoc_insertion_point(field_add:server.TUsersFetch.Handles.handles)
-}
-inline void TUsersFetch_Handles::add_handles(const char* value) {
-  handles_.Add()->assign(value);
-  // @@protoc_insertion_point(field_add_char:server.TUsersFetch.Handles.handles)
-}
-inline void TUsersFetch_Handles::add_handles(const char* value, size_t size) {
-  handles_.Add()->assign(reinterpret_cast<const char*>(value), size);
-  // @@protoc_insertion_point(field_add_pointer:server.TUsersFetch.Handles.handles)
-}
-inline const ::google::protobuf::RepeatedPtrField< ::std::string>&
-TUsersFetch_Handles::handles() const {
-  // @@protoc_insertion_point(field_list:server.TUsersFetch.Handles.handles)
-  return handles_;
-}
-inline ::google::protobuf::RepeatedPtrField< ::std::string>*
-TUsersFetch_Handles::mutable_handles() {
-  // @@protoc_insertion_point(field_mutable_list:server.TUsersFetch.Handles.handles)
-  return &handles_;
+inline void TUsersFetch_UsersFetch::set_allocated_user_id(::std::string* user_id) {
+  if (!has_user_id()) {
+    id_.user_id_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  clear_id();
+  if (user_id != NULL) {
+    set_has_user_id();
+    id_.user_id_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+        user_id);
+  }
+  // @@protoc_insertion_point(field_set_allocated:server.TUsersFetch.UsersFetch.user_id)
 }
 
-inline const TUsersFetch_Handles* TUsersFetch_Handles::internal_default_instance() {
-  return &TUsersFetch_Handles_default_instance_.get();
+// optional string handle = 2;
+inline bool TUsersFetch_UsersFetch::has_handle() const {
+  return id_case() == kHandle;
+}
+inline void TUsersFetch_UsersFetch::set_has_handle() {
+  _oneof_case_[0] = kHandle;
+}
+inline void TUsersFetch_UsersFetch::clear_handle() {
+  if (has_handle()) {
+    id_.handle_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    clear_has_id();
+  }
+}
+inline const ::std::string& TUsersFetch_UsersFetch::handle() const {
+  // @@protoc_insertion_point(field_get:server.TUsersFetch.UsersFetch.handle)
+  if (has_handle()) {
+    return id_.handle_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  return *&::google::protobuf::internal::GetEmptyStringAlreadyInited();
+}
+inline void TUsersFetch_UsersFetch::set_handle(const ::std::string& value) {
+  // @@protoc_insertion_point(field_set:server.TUsersFetch.UsersFetch.handle)
+  if (!has_handle()) {
+    clear_id();
+    set_has_handle();
+    id_.handle_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  id_.handle_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:server.TUsersFetch.UsersFetch.handle)
+}
+inline void TUsersFetch_UsersFetch::set_handle(const char* value) {
+  if (!has_handle()) {
+    clear_id();
+    set_has_handle();
+    id_.handle_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  id_.handle_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:server.TUsersFetch.UsersFetch.handle)
+}
+inline void TUsersFetch_UsersFetch::set_handle(const char* value, size_t size) {
+  if (!has_handle()) {
+    clear_id();
+    set_has_handle();
+    id_.handle_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  id_.handle_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(
+      reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:server.TUsersFetch.UsersFetch.handle)
+}
+inline ::std::string* TUsersFetch_UsersFetch::mutable_handle() {
+  if (!has_handle()) {
+    clear_id();
+    set_has_handle();
+    id_.handle_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  // @@protoc_insertion_point(field_mutable:server.TUsersFetch.UsersFetch.handle)
+  return id_.handle_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* TUsersFetch_UsersFetch::release_handle() {
+  // @@protoc_insertion_point(field_release:server.TUsersFetch.UsersFetch.handle)
+  if (has_handle()) {
+    clear_has_id();
+    return id_.handle_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  } else {
+    return NULL;
+  }
+}
+inline void TUsersFetch_UsersFetch::set_allocated_handle(::std::string* handle) {
+  if (!has_handle()) {
+    id_.handle_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  clear_id();
+  if (handle != NULL) {
+    set_has_handle();
+    id_.handle_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+        handle);
+  }
+  // @@protoc_insertion_point(field_set_allocated:server.TUsersFetch.UsersFetch.handle)
+}
+
+inline bool TUsersFetch_UsersFetch::has_id() const {
+  return id_case() != ID_NOT_SET;
+}
+inline void TUsersFetch_UsersFetch::clear_has_id() {
+  _oneof_case_[0] = ID_NOT_SET;
+}
+inline TUsersFetch_UsersFetch::IdCase TUsersFetch_UsersFetch::id_case() const {
+  return TUsersFetch_UsersFetch::IdCase(_oneof_case_[0]);
+}
+inline const TUsersFetch_UsersFetch* TUsersFetch_UsersFetch::internal_default_instance() {
+  return &TUsersFetch_UsersFetch_default_instance_.get();
 }
 // -------------------------------------------------------------------
 
 // TUsersFetch
 
-// optional .server.TUsersFetch.UserIds user_ids = 1;
-inline bool TUsersFetch::has_user_ids() const {
-  return set_case() == kUserIds;
+// repeated .server.TUsersFetch.UsersFetch users = 1;
+inline int TUsersFetch::users_size() const {
+  return users_.size();
 }
-inline void TUsersFetch::set_has_user_ids() {
-  _oneof_case_[0] = kUserIds;
+inline void TUsersFetch::clear_users() {
+  users_.Clear();
 }
-inline void TUsersFetch::clear_user_ids() {
-  if (has_user_ids()) {
-    delete set_.user_ids_;
-    clear_has_set();
-  }
+inline const ::server::TUsersFetch_UsersFetch& TUsersFetch::users(int index) const {
+  // @@protoc_insertion_point(field_get:server.TUsersFetch.users)
+  return users_.Get(index);
 }
-inline  const ::server::TUsersFetch_UserIds& TUsersFetch::user_ids() const {
-  // @@protoc_insertion_point(field_get:server.TUsersFetch.user_ids)
-  return has_user_ids()
-      ? *set_.user_ids_
-      : ::server::TUsersFetch_UserIds::default_instance();
+inline ::server::TUsersFetch_UsersFetch* TUsersFetch::mutable_users(int index) {
+  // @@protoc_insertion_point(field_mutable:server.TUsersFetch.users)
+  return users_.Mutable(index);
 }
-inline ::server::TUsersFetch_UserIds* TUsersFetch::mutable_user_ids() {
-  if (!has_user_ids()) {
-    clear_set();
-    set_has_user_ids();
-    set_.user_ids_ = new ::server::TUsersFetch_UserIds;
-  }
-  // @@protoc_insertion_point(field_mutable:server.TUsersFetch.user_ids)
-  return set_.user_ids_;
+inline ::server::TUsersFetch_UsersFetch* TUsersFetch::add_users() {
+  // @@protoc_insertion_point(field_add:server.TUsersFetch.users)
+  return users_.Add();
 }
-inline ::server::TUsersFetch_UserIds* TUsersFetch::release_user_ids() {
-  // @@protoc_insertion_point(field_release:server.TUsersFetch.user_ids)
-  if (has_user_ids()) {
-    clear_has_set();
-    ::server::TUsersFetch_UserIds* temp = set_.user_ids_;
-    set_.user_ids_ = NULL;
-    return temp;
-  } else {
-    return NULL;
-  }
+inline ::google::protobuf::RepeatedPtrField< ::server::TUsersFetch_UsersFetch >*
+TUsersFetch::mutable_users() {
+  // @@protoc_insertion_point(field_mutable_list:server.TUsersFetch.users)
+  return &users_;
 }
-inline void TUsersFetch::set_allocated_user_ids(::server::TUsersFetch_UserIds* user_ids) {
-  clear_set();
-  if (user_ids) {
-    set_has_user_ids();
-    set_.user_ids_ = user_ids;
-  }
-  // @@protoc_insertion_point(field_set_allocated:server.TUsersFetch.user_ids)
+inline const ::google::protobuf::RepeatedPtrField< ::server::TUsersFetch_UsersFetch >&
+TUsersFetch::users() const {
+  // @@protoc_insertion_point(field_list:server.TUsersFetch.users)
+  return users_;
 }
 
-// optional .server.TUsersFetch.Handles handles = 2;
-inline bool TUsersFetch::has_handles() const {
-  return set_case() == kHandles;
-}
-inline void TUsersFetch::set_has_handles() {
-  _oneof_case_[0] = kHandles;
-}
-inline void TUsersFetch::clear_handles() {
-  if (has_handles()) {
-    delete set_.handles_;
-    clear_has_set();
-  }
-}
-inline  const ::server::TUsersFetch_Handles& TUsersFetch::handles() const {
-  // @@protoc_insertion_point(field_get:server.TUsersFetch.handles)
-  return has_handles()
-      ? *set_.handles_
-      : ::server::TUsersFetch_Handles::default_instance();
-}
-inline ::server::TUsersFetch_Handles* TUsersFetch::mutable_handles() {
-  if (!has_handles()) {
-    clear_set();
-    set_has_handles();
-    set_.handles_ = new ::server::TUsersFetch_Handles;
-  }
-  // @@protoc_insertion_point(field_mutable:server.TUsersFetch.handles)
-  return set_.handles_;
-}
-inline ::server::TUsersFetch_Handles* TUsersFetch::release_handles() {
-  // @@protoc_insertion_point(field_release:server.TUsersFetch.handles)
-  if (has_handles()) {
-    clear_has_set();
-    ::server::TUsersFetch_Handles* temp = set_.handles_;
-    set_.handles_ = NULL;
-    return temp;
-  } else {
-    return NULL;
-  }
-}
-inline void TUsersFetch::set_allocated_handles(::server::TUsersFetch_Handles* handles) {
-  clear_set();
-  if (handles) {
-    set_has_handles();
-    set_.handles_ = handles;
-  }
-  // @@protoc_insertion_point(field_set_allocated:server.TUsersFetch.handles)
-}
-
-inline bool TUsersFetch::has_set() const {
-  return set_case() != SET_NOT_SET;
-}
-inline void TUsersFetch::clear_has_set() {
-  _oneof_case_[0] = SET_NOT_SET;
-}
-inline TUsersFetch::SetCase TUsersFetch::set_case() const {
-  return TUsersFetch::SetCase(_oneof_case_[0]);
-}
 inline const TUsersFetch* TUsersFetch::internal_default_instance() {
   return &TUsersFetch_default_instance_.get();
 }
@@ -18570,283 +19648,342 @@ inline const Friend* Friend::internal_default_instance() {
 }
 // -------------------------------------------------------------------
 
-// TFriendAdd
+// TFriendsAdd_FriendsAdd
 
 // optional bytes user_id = 1;
-inline bool TFriendAdd::has_user_id() const {
-  return set_case() == kUserId;
+inline bool TFriendsAdd_FriendsAdd::has_user_id() const {
+  return id_case() == kUserId;
 }
-inline void TFriendAdd::set_has_user_id() {
+inline void TFriendsAdd_FriendsAdd::set_has_user_id() {
   _oneof_case_[0] = kUserId;
 }
-inline void TFriendAdd::clear_user_id() {
+inline void TFriendsAdd_FriendsAdd::clear_user_id() {
   if (has_user_id()) {
-    set_.user_id_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-    clear_has_set();
+    id_.user_id_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    clear_has_id();
   }
 }
-inline const ::std::string& TFriendAdd::user_id() const {
-  // @@protoc_insertion_point(field_get:server.TFriendAdd.user_id)
+inline const ::std::string& TFriendsAdd_FriendsAdd::user_id() const {
+  // @@protoc_insertion_point(field_get:server.TFriendsAdd.FriendsAdd.user_id)
   if (has_user_id()) {
-    return set_.user_id_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    return id_.user_id_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
   return *&::google::protobuf::internal::GetEmptyStringAlreadyInited();
 }
-inline void TFriendAdd::set_user_id(const ::std::string& value) {
-  // @@protoc_insertion_point(field_set:server.TFriendAdd.user_id)
+inline void TFriendsAdd_FriendsAdd::set_user_id(const ::std::string& value) {
+  // @@protoc_insertion_point(field_set:server.TFriendsAdd.FriendsAdd.user_id)
   if (!has_user_id()) {
-    clear_set();
+    clear_id();
     set_has_user_id();
-    set_.user_id_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.user_id_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  set_.user_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:server.TFriendAdd.user_id)
+  id_.user_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:server.TFriendsAdd.FriendsAdd.user_id)
 }
-inline void TFriendAdd::set_user_id(const char* value) {
+inline void TFriendsAdd_FriendsAdd::set_user_id(const char* value) {
   if (!has_user_id()) {
-    clear_set();
+    clear_id();
     set_has_user_id();
-    set_.user_id_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.user_id_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  set_.user_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+  id_.user_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:server.TFriendAdd.user_id)
+  // @@protoc_insertion_point(field_set_char:server.TFriendsAdd.FriendsAdd.user_id)
 }
-inline void TFriendAdd::set_user_id(const void* value, size_t size) {
+inline void TFriendsAdd_FriendsAdd::set_user_id(const void* value, size_t size) {
   if (!has_user_id()) {
-    clear_set();
+    clear_id();
     set_has_user_id();
-    set_.user_id_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.user_id_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  set_.user_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(
+  id_.user_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(
       reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:server.TFriendAdd.user_id)
+  // @@protoc_insertion_point(field_set_pointer:server.TFriendsAdd.FriendsAdd.user_id)
 }
-inline ::std::string* TFriendAdd::mutable_user_id() {
+inline ::std::string* TFriendsAdd_FriendsAdd::mutable_user_id() {
   if (!has_user_id()) {
-    clear_set();
+    clear_id();
     set_has_user_id();
-    set_.user_id_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.user_id_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  // @@protoc_insertion_point(field_mutable:server.TFriendAdd.user_id)
-  return set_.user_id_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  // @@protoc_insertion_point(field_mutable:server.TFriendsAdd.FriendsAdd.user_id)
+  return id_.user_id_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline ::std::string* TFriendAdd::release_user_id() {
-  // @@protoc_insertion_point(field_release:server.TFriendAdd.user_id)
+inline ::std::string* TFriendsAdd_FriendsAdd::release_user_id() {
+  // @@protoc_insertion_point(field_release:server.TFriendsAdd.FriendsAdd.user_id)
   if (has_user_id()) {
-    clear_has_set();
-    return set_.user_id_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    clear_has_id();
+    return id_.user_id_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   } else {
     return NULL;
   }
 }
-inline void TFriendAdd::set_allocated_user_id(::std::string* user_id) {
+inline void TFriendsAdd_FriendsAdd::set_allocated_user_id(::std::string* user_id) {
   if (!has_user_id()) {
-    set_.user_id_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.user_id_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  clear_set();
+  clear_id();
   if (user_id != NULL) {
     set_has_user_id();
-    set_.user_id_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+    id_.user_id_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
         user_id);
   }
-  // @@protoc_insertion_point(field_set_allocated:server.TFriendAdd.user_id)
+  // @@protoc_insertion_point(field_set_allocated:server.TFriendsAdd.FriendsAdd.user_id)
 }
 
 // optional string handle = 2;
-inline bool TFriendAdd::has_handle() const {
-  return set_case() == kHandle;
+inline bool TFriendsAdd_FriendsAdd::has_handle() const {
+  return id_case() == kHandle;
 }
-inline void TFriendAdd::set_has_handle() {
+inline void TFriendsAdd_FriendsAdd::set_has_handle() {
   _oneof_case_[0] = kHandle;
 }
-inline void TFriendAdd::clear_handle() {
+inline void TFriendsAdd_FriendsAdd::clear_handle() {
   if (has_handle()) {
-    set_.handle_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-    clear_has_set();
+    id_.handle_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    clear_has_id();
   }
 }
-inline const ::std::string& TFriendAdd::handle() const {
-  // @@protoc_insertion_point(field_get:server.TFriendAdd.handle)
+inline const ::std::string& TFriendsAdd_FriendsAdd::handle() const {
+  // @@protoc_insertion_point(field_get:server.TFriendsAdd.FriendsAdd.handle)
   if (has_handle()) {
-    return set_.handle_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    return id_.handle_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
   return *&::google::protobuf::internal::GetEmptyStringAlreadyInited();
 }
-inline void TFriendAdd::set_handle(const ::std::string& value) {
-  // @@protoc_insertion_point(field_set:server.TFriendAdd.handle)
+inline void TFriendsAdd_FriendsAdd::set_handle(const ::std::string& value) {
+  // @@protoc_insertion_point(field_set:server.TFriendsAdd.FriendsAdd.handle)
   if (!has_handle()) {
-    clear_set();
+    clear_id();
     set_has_handle();
-    set_.handle_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.handle_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  set_.handle_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:server.TFriendAdd.handle)
+  id_.handle_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:server.TFriendsAdd.FriendsAdd.handle)
 }
-inline void TFriendAdd::set_handle(const char* value) {
+inline void TFriendsAdd_FriendsAdd::set_handle(const char* value) {
   if (!has_handle()) {
-    clear_set();
+    clear_id();
     set_has_handle();
-    set_.handle_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.handle_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  set_.handle_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+  id_.handle_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:server.TFriendAdd.handle)
+  // @@protoc_insertion_point(field_set_char:server.TFriendsAdd.FriendsAdd.handle)
 }
-inline void TFriendAdd::set_handle(const char* value, size_t size) {
+inline void TFriendsAdd_FriendsAdd::set_handle(const char* value, size_t size) {
   if (!has_handle()) {
-    clear_set();
+    clear_id();
     set_has_handle();
-    set_.handle_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.handle_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  set_.handle_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(
+  id_.handle_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(
       reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:server.TFriendAdd.handle)
+  // @@protoc_insertion_point(field_set_pointer:server.TFriendsAdd.FriendsAdd.handle)
 }
-inline ::std::string* TFriendAdd::mutable_handle() {
+inline ::std::string* TFriendsAdd_FriendsAdd::mutable_handle() {
   if (!has_handle()) {
-    clear_set();
+    clear_id();
     set_has_handle();
-    set_.handle_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.handle_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  // @@protoc_insertion_point(field_mutable:server.TFriendAdd.handle)
-  return set_.handle_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  // @@protoc_insertion_point(field_mutable:server.TFriendsAdd.FriendsAdd.handle)
+  return id_.handle_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline ::std::string* TFriendAdd::release_handle() {
-  // @@protoc_insertion_point(field_release:server.TFriendAdd.handle)
+inline ::std::string* TFriendsAdd_FriendsAdd::release_handle() {
+  // @@protoc_insertion_point(field_release:server.TFriendsAdd.FriendsAdd.handle)
   if (has_handle()) {
-    clear_has_set();
-    return set_.handle_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    clear_has_id();
+    return id_.handle_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   } else {
     return NULL;
   }
 }
-inline void TFriendAdd::set_allocated_handle(::std::string* handle) {
+inline void TFriendsAdd_FriendsAdd::set_allocated_handle(::std::string* handle) {
   if (!has_handle()) {
-    set_.handle_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    id_.handle_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  clear_set();
+  clear_id();
   if (handle != NULL) {
     set_has_handle();
-    set_.handle_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+    id_.handle_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
         handle);
   }
-  // @@protoc_insertion_point(field_set_allocated:server.TFriendAdd.handle)
+  // @@protoc_insertion_point(field_set_allocated:server.TFriendsAdd.FriendsAdd.handle)
 }
 
-inline bool TFriendAdd::has_set() const {
-  return set_case() != SET_NOT_SET;
+inline bool TFriendsAdd_FriendsAdd::has_id() const {
+  return id_case() != ID_NOT_SET;
 }
-inline void TFriendAdd::clear_has_set() {
-  _oneof_case_[0] = SET_NOT_SET;
+inline void TFriendsAdd_FriendsAdd::clear_has_id() {
+  _oneof_case_[0] = ID_NOT_SET;
 }
-inline TFriendAdd::SetCase TFriendAdd::set_case() const {
-  return TFriendAdd::SetCase(_oneof_case_[0]);
+inline TFriendsAdd_FriendsAdd::IdCase TFriendsAdd_FriendsAdd::id_case() const {
+  return TFriendsAdd_FriendsAdd::IdCase(_oneof_case_[0]);
 }
-inline const TFriendAdd* TFriendAdd::internal_default_instance() {
-  return &TFriendAdd_default_instance_.get();
+inline const TFriendsAdd_FriendsAdd* TFriendsAdd_FriendsAdd::internal_default_instance() {
+  return &TFriendsAdd_FriendsAdd_default_instance_.get();
 }
 // -------------------------------------------------------------------
 
-// TFriendRemove
+// TFriendsAdd
 
-// optional bytes user_id = 1;
-inline void TFriendRemove::clear_user_id() {
-  user_id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+// repeated .server.TFriendsAdd.FriendsAdd friends = 1;
+inline int TFriendsAdd::friends_size() const {
+  return friends_.size();
 }
-inline const ::std::string& TFriendRemove::user_id() const {
-  // @@protoc_insertion_point(field_get:server.TFriendRemove.user_id)
-  return user_id_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+inline void TFriendsAdd::clear_friends() {
+  friends_.Clear();
 }
-inline void TFriendRemove::set_user_id(const ::std::string& value) {
-  
-  user_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:server.TFriendRemove.user_id)
+inline const ::server::TFriendsAdd_FriendsAdd& TFriendsAdd::friends(int index) const {
+  // @@protoc_insertion_point(field_get:server.TFriendsAdd.friends)
+  return friends_.Get(index);
 }
-inline void TFriendRemove::set_user_id(const char* value) {
-  
-  user_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:server.TFriendRemove.user_id)
+inline ::server::TFriendsAdd_FriendsAdd* TFriendsAdd::mutable_friends(int index) {
+  // @@protoc_insertion_point(field_mutable:server.TFriendsAdd.friends)
+  return friends_.Mutable(index);
 }
-inline void TFriendRemove::set_user_id(const void* value, size_t size) {
-  
-  user_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
-      ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:server.TFriendRemove.user_id)
+inline ::server::TFriendsAdd_FriendsAdd* TFriendsAdd::add_friends() {
+  // @@protoc_insertion_point(field_add:server.TFriendsAdd.friends)
+  return friends_.Add();
 }
-inline ::std::string* TFriendRemove::mutable_user_id() {
-  
-  // @@protoc_insertion_point(field_mutable:server.TFriendRemove.user_id)
-  return user_id_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+inline ::google::protobuf::RepeatedPtrField< ::server::TFriendsAdd_FriendsAdd >*
+TFriendsAdd::mutable_friends() {
+  // @@protoc_insertion_point(field_mutable_list:server.TFriendsAdd.friends)
+  return &friends_;
 }
-inline ::std::string* TFriendRemove::release_user_id() {
-  // @@protoc_insertion_point(field_release:server.TFriendRemove.user_id)
-  
-  return user_id_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-}
-inline void TFriendRemove::set_allocated_user_id(::std::string* user_id) {
-  if (user_id != NULL) {
-    
-  } else {
-    
-  }
-  user_id_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), user_id);
-  // @@protoc_insertion_point(field_set_allocated:server.TFriendRemove.user_id)
+inline const ::google::protobuf::RepeatedPtrField< ::server::TFriendsAdd_FriendsAdd >&
+TFriendsAdd::friends() const {
+  // @@protoc_insertion_point(field_list:server.TFriendsAdd.friends)
+  return friends_;
 }
 
-inline const TFriendRemove* TFriendRemove::internal_default_instance() {
-  return &TFriendRemove_default_instance_.get();
+inline const TFriendsAdd* TFriendsAdd::internal_default_instance() {
+  return &TFriendsAdd_default_instance_.get();
 }
 // -------------------------------------------------------------------
 
-// TFriendBlock
+// TFriendsRemove
 
-// optional bytes user_id = 1;
-inline void TFriendBlock::clear_user_id() {
-  user_id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+// repeated bytes user_ids = 1;
+inline int TFriendsRemove::user_ids_size() const {
+  return user_ids_.size();
 }
-inline const ::std::string& TFriendBlock::user_id() const {
-  // @@protoc_insertion_point(field_get:server.TFriendBlock.user_id)
-  return user_id_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+inline void TFriendsRemove::clear_user_ids() {
+  user_ids_.Clear();
 }
-inline void TFriendBlock::set_user_id(const ::std::string& value) {
-  
-  user_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:server.TFriendBlock.user_id)
+inline const ::std::string& TFriendsRemove::user_ids(int index) const {
+  // @@protoc_insertion_point(field_get:server.TFriendsRemove.user_ids)
+  return user_ids_.Get(index);
 }
-inline void TFriendBlock::set_user_id(const char* value) {
-  
-  user_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:server.TFriendBlock.user_id)
+inline ::std::string* TFriendsRemove::mutable_user_ids(int index) {
+  // @@protoc_insertion_point(field_mutable:server.TFriendsRemove.user_ids)
+  return user_ids_.Mutable(index);
 }
-inline void TFriendBlock::set_user_id(const void* value, size_t size) {
-  
-  user_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
-      ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:server.TFriendBlock.user_id)
+inline void TFriendsRemove::set_user_ids(int index, const ::std::string& value) {
+  // @@protoc_insertion_point(field_set:server.TFriendsRemove.user_ids)
+  user_ids_.Mutable(index)->assign(value);
 }
-inline ::std::string* TFriendBlock::mutable_user_id() {
-  
-  // @@protoc_insertion_point(field_mutable:server.TFriendBlock.user_id)
-  return user_id_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+inline void TFriendsRemove::set_user_ids(int index, const char* value) {
+  user_ids_.Mutable(index)->assign(value);
+  // @@protoc_insertion_point(field_set_char:server.TFriendsRemove.user_ids)
 }
-inline ::std::string* TFriendBlock::release_user_id() {
-  // @@protoc_insertion_point(field_release:server.TFriendBlock.user_id)
-  
-  return user_id_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+inline void TFriendsRemove::set_user_ids(int index, const void* value, size_t size) {
+  user_ids_.Mutable(index)->assign(
+    reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_set_pointer:server.TFriendsRemove.user_ids)
 }
-inline void TFriendBlock::set_allocated_user_id(::std::string* user_id) {
-  if (user_id != NULL) {
-    
-  } else {
-    
-  }
-  user_id_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), user_id);
-  // @@protoc_insertion_point(field_set_allocated:server.TFriendBlock.user_id)
+inline ::std::string* TFriendsRemove::add_user_ids() {
+  // @@protoc_insertion_point(field_add_mutable:server.TFriendsRemove.user_ids)
+  return user_ids_.Add();
+}
+inline void TFriendsRemove::add_user_ids(const ::std::string& value) {
+  user_ids_.Add()->assign(value);
+  // @@protoc_insertion_point(field_add:server.TFriendsRemove.user_ids)
+}
+inline void TFriendsRemove::add_user_ids(const char* value) {
+  user_ids_.Add()->assign(value);
+  // @@protoc_insertion_point(field_add_char:server.TFriendsRemove.user_ids)
+}
+inline void TFriendsRemove::add_user_ids(const void* value, size_t size) {
+  user_ids_.Add()->assign(reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_add_pointer:server.TFriendsRemove.user_ids)
+}
+inline const ::google::protobuf::RepeatedPtrField< ::std::string>&
+TFriendsRemove::user_ids() const {
+  // @@protoc_insertion_point(field_list:server.TFriendsRemove.user_ids)
+  return user_ids_;
+}
+inline ::google::protobuf::RepeatedPtrField< ::std::string>*
+TFriendsRemove::mutable_user_ids() {
+  // @@protoc_insertion_point(field_mutable_list:server.TFriendsRemove.user_ids)
+  return &user_ids_;
 }
 
-inline const TFriendBlock* TFriendBlock::internal_default_instance() {
-  return &TFriendBlock_default_instance_.get();
+inline const TFriendsRemove* TFriendsRemove::internal_default_instance() {
+  return &TFriendsRemove_default_instance_.get();
+}
+// -------------------------------------------------------------------
+
+// TFriendsBlock
+
+// repeated bytes user_ids = 1;
+inline int TFriendsBlock::user_ids_size() const {
+  return user_ids_.size();
+}
+inline void TFriendsBlock::clear_user_ids() {
+  user_ids_.Clear();
+}
+inline const ::std::string& TFriendsBlock::user_ids(int index) const {
+  // @@protoc_insertion_point(field_get:server.TFriendsBlock.user_ids)
+  return user_ids_.Get(index);
+}
+inline ::std::string* TFriendsBlock::mutable_user_ids(int index) {
+  // @@protoc_insertion_point(field_mutable:server.TFriendsBlock.user_ids)
+  return user_ids_.Mutable(index);
+}
+inline void TFriendsBlock::set_user_ids(int index, const ::std::string& value) {
+  // @@protoc_insertion_point(field_set:server.TFriendsBlock.user_ids)
+  user_ids_.Mutable(index)->assign(value);
+}
+inline void TFriendsBlock::set_user_ids(int index, const char* value) {
+  user_ids_.Mutable(index)->assign(value);
+  // @@protoc_insertion_point(field_set_char:server.TFriendsBlock.user_ids)
+}
+inline void TFriendsBlock::set_user_ids(int index, const void* value, size_t size) {
+  user_ids_.Mutable(index)->assign(
+    reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_set_pointer:server.TFriendsBlock.user_ids)
+}
+inline ::std::string* TFriendsBlock::add_user_ids() {
+  // @@protoc_insertion_point(field_add_mutable:server.TFriendsBlock.user_ids)
+  return user_ids_.Add();
+}
+inline void TFriendsBlock::add_user_ids(const ::std::string& value) {
+  user_ids_.Add()->assign(value);
+  // @@protoc_insertion_point(field_add:server.TFriendsBlock.user_ids)
+}
+inline void TFriendsBlock::add_user_ids(const char* value) {
+  user_ids_.Add()->assign(value);
+  // @@protoc_insertion_point(field_add_char:server.TFriendsBlock.user_ids)
+}
+inline void TFriendsBlock::add_user_ids(const void* value, size_t size) {
+  user_ids_.Add()->assign(reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_add_pointer:server.TFriendsBlock.user_ids)
+}
+inline const ::google::protobuf::RepeatedPtrField< ::std::string>&
+TFriendsBlock::user_ids() const {
+  // @@protoc_insertion_point(field_list:server.TFriendsBlock.user_ids)
+  return user_ids_;
+}
+inline ::google::protobuf::RepeatedPtrField< ::std::string>*
+TFriendsBlock::mutable_user_ids() {
+  // @@protoc_insertion_point(field_mutable_list:server.TFriendsBlock.user_ids)
+  return &user_ids_;
+}
+
+inline const TFriendsBlock* TFriendsBlock::internal_default_instance() {
+  return &TFriendsBlock_default_instance_.get();
 }
 // -------------------------------------------------------------------
 
@@ -19279,244 +20416,281 @@ inline const Group* Group::internal_default_instance() {
 }
 // -------------------------------------------------------------------
 
-// TGroupCreate
+// TGroupsCreate_GroupCreate
 
 // optional string name = 1;
-inline void TGroupCreate::clear_name() {
+inline void TGroupsCreate_GroupCreate::clear_name() {
   name_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline const ::std::string& TGroupCreate::name() const {
-  // @@protoc_insertion_point(field_get:server.TGroupCreate.name)
+inline const ::std::string& TGroupsCreate_GroupCreate::name() const {
+  // @@protoc_insertion_point(field_get:server.TGroupsCreate.GroupCreate.name)
   return name_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline void TGroupCreate::set_name(const ::std::string& value) {
+inline void TGroupsCreate_GroupCreate::set_name(const ::std::string& value) {
   
   name_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:server.TGroupCreate.name)
+  // @@protoc_insertion_point(field_set:server.TGroupsCreate.GroupCreate.name)
 }
-inline void TGroupCreate::set_name(const char* value) {
+inline void TGroupsCreate_GroupCreate::set_name(const char* value) {
   
   name_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:server.TGroupCreate.name)
+  // @@protoc_insertion_point(field_set_char:server.TGroupsCreate.GroupCreate.name)
 }
-inline void TGroupCreate::set_name(const char* value, size_t size) {
+inline void TGroupsCreate_GroupCreate::set_name(const char* value, size_t size) {
   
   name_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:server.TGroupCreate.name)
+  // @@protoc_insertion_point(field_set_pointer:server.TGroupsCreate.GroupCreate.name)
 }
-inline ::std::string* TGroupCreate::mutable_name() {
+inline ::std::string* TGroupsCreate_GroupCreate::mutable_name() {
   
-  // @@protoc_insertion_point(field_mutable:server.TGroupCreate.name)
+  // @@protoc_insertion_point(field_mutable:server.TGroupsCreate.GroupCreate.name)
   return name_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline ::std::string* TGroupCreate::release_name() {
-  // @@protoc_insertion_point(field_release:server.TGroupCreate.name)
+inline ::std::string* TGroupsCreate_GroupCreate::release_name() {
+  // @@protoc_insertion_point(field_release:server.TGroupsCreate.GroupCreate.name)
   
   return name_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline void TGroupCreate::set_allocated_name(::std::string* name) {
+inline void TGroupsCreate_GroupCreate::set_allocated_name(::std::string* name) {
   if (name != NULL) {
     
   } else {
     
   }
   name_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), name);
-  // @@protoc_insertion_point(field_set_allocated:server.TGroupCreate.name)
+  // @@protoc_insertion_point(field_set_allocated:server.TGroupsCreate.GroupCreate.name)
 }
 
 // optional string description = 2;
-inline void TGroupCreate::clear_description() {
+inline void TGroupsCreate_GroupCreate::clear_description() {
   description_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline const ::std::string& TGroupCreate::description() const {
-  // @@protoc_insertion_point(field_get:server.TGroupCreate.description)
+inline const ::std::string& TGroupsCreate_GroupCreate::description() const {
+  // @@protoc_insertion_point(field_get:server.TGroupsCreate.GroupCreate.description)
   return description_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline void TGroupCreate::set_description(const ::std::string& value) {
+inline void TGroupsCreate_GroupCreate::set_description(const ::std::string& value) {
   
   description_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:server.TGroupCreate.description)
+  // @@protoc_insertion_point(field_set:server.TGroupsCreate.GroupCreate.description)
 }
-inline void TGroupCreate::set_description(const char* value) {
+inline void TGroupsCreate_GroupCreate::set_description(const char* value) {
   
   description_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:server.TGroupCreate.description)
+  // @@protoc_insertion_point(field_set_char:server.TGroupsCreate.GroupCreate.description)
 }
-inline void TGroupCreate::set_description(const char* value, size_t size) {
+inline void TGroupsCreate_GroupCreate::set_description(const char* value, size_t size) {
   
   description_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:server.TGroupCreate.description)
+  // @@protoc_insertion_point(field_set_pointer:server.TGroupsCreate.GroupCreate.description)
 }
-inline ::std::string* TGroupCreate::mutable_description() {
+inline ::std::string* TGroupsCreate_GroupCreate::mutable_description() {
   
-  // @@protoc_insertion_point(field_mutable:server.TGroupCreate.description)
+  // @@protoc_insertion_point(field_mutable:server.TGroupsCreate.GroupCreate.description)
   return description_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline ::std::string* TGroupCreate::release_description() {
-  // @@protoc_insertion_point(field_release:server.TGroupCreate.description)
+inline ::std::string* TGroupsCreate_GroupCreate::release_description() {
+  // @@protoc_insertion_point(field_release:server.TGroupsCreate.GroupCreate.description)
   
   return description_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline void TGroupCreate::set_allocated_description(::std::string* description) {
+inline void TGroupsCreate_GroupCreate::set_allocated_description(::std::string* description) {
   if (description != NULL) {
     
   } else {
     
   }
   description_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), description);
-  // @@protoc_insertion_point(field_set_allocated:server.TGroupCreate.description)
+  // @@protoc_insertion_point(field_set_allocated:server.TGroupsCreate.GroupCreate.description)
 }
 
 // optional string avatar_url = 3;
-inline void TGroupCreate::clear_avatar_url() {
+inline void TGroupsCreate_GroupCreate::clear_avatar_url() {
   avatar_url_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline const ::std::string& TGroupCreate::avatar_url() const {
-  // @@protoc_insertion_point(field_get:server.TGroupCreate.avatar_url)
+inline const ::std::string& TGroupsCreate_GroupCreate::avatar_url() const {
+  // @@protoc_insertion_point(field_get:server.TGroupsCreate.GroupCreate.avatar_url)
   return avatar_url_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline void TGroupCreate::set_avatar_url(const ::std::string& value) {
+inline void TGroupsCreate_GroupCreate::set_avatar_url(const ::std::string& value) {
   
   avatar_url_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:server.TGroupCreate.avatar_url)
+  // @@protoc_insertion_point(field_set:server.TGroupsCreate.GroupCreate.avatar_url)
 }
-inline void TGroupCreate::set_avatar_url(const char* value) {
+inline void TGroupsCreate_GroupCreate::set_avatar_url(const char* value) {
   
   avatar_url_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:server.TGroupCreate.avatar_url)
+  // @@protoc_insertion_point(field_set_char:server.TGroupsCreate.GroupCreate.avatar_url)
 }
-inline void TGroupCreate::set_avatar_url(const char* value, size_t size) {
+inline void TGroupsCreate_GroupCreate::set_avatar_url(const char* value, size_t size) {
   
   avatar_url_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:server.TGroupCreate.avatar_url)
+  // @@protoc_insertion_point(field_set_pointer:server.TGroupsCreate.GroupCreate.avatar_url)
 }
-inline ::std::string* TGroupCreate::mutable_avatar_url() {
+inline ::std::string* TGroupsCreate_GroupCreate::mutable_avatar_url() {
   
-  // @@protoc_insertion_point(field_mutable:server.TGroupCreate.avatar_url)
+  // @@protoc_insertion_point(field_mutable:server.TGroupsCreate.GroupCreate.avatar_url)
   return avatar_url_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline ::std::string* TGroupCreate::release_avatar_url() {
-  // @@protoc_insertion_point(field_release:server.TGroupCreate.avatar_url)
+inline ::std::string* TGroupsCreate_GroupCreate::release_avatar_url() {
+  // @@protoc_insertion_point(field_release:server.TGroupsCreate.GroupCreate.avatar_url)
   
   return avatar_url_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline void TGroupCreate::set_allocated_avatar_url(::std::string* avatar_url) {
+inline void TGroupsCreate_GroupCreate::set_allocated_avatar_url(::std::string* avatar_url) {
   if (avatar_url != NULL) {
     
   } else {
     
   }
   avatar_url_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), avatar_url);
-  // @@protoc_insertion_point(field_set_allocated:server.TGroupCreate.avatar_url)
+  // @@protoc_insertion_point(field_set_allocated:server.TGroupsCreate.GroupCreate.avatar_url)
 }
 
 // optional string lang = 4;
-inline void TGroupCreate::clear_lang() {
+inline void TGroupsCreate_GroupCreate::clear_lang() {
   lang_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline const ::std::string& TGroupCreate::lang() const {
-  // @@protoc_insertion_point(field_get:server.TGroupCreate.lang)
+inline const ::std::string& TGroupsCreate_GroupCreate::lang() const {
+  // @@protoc_insertion_point(field_get:server.TGroupsCreate.GroupCreate.lang)
   return lang_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline void TGroupCreate::set_lang(const ::std::string& value) {
+inline void TGroupsCreate_GroupCreate::set_lang(const ::std::string& value) {
   
   lang_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:server.TGroupCreate.lang)
+  // @@protoc_insertion_point(field_set:server.TGroupsCreate.GroupCreate.lang)
 }
-inline void TGroupCreate::set_lang(const char* value) {
+inline void TGroupsCreate_GroupCreate::set_lang(const char* value) {
   
   lang_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:server.TGroupCreate.lang)
+  // @@protoc_insertion_point(field_set_char:server.TGroupsCreate.GroupCreate.lang)
 }
-inline void TGroupCreate::set_lang(const char* value, size_t size) {
+inline void TGroupsCreate_GroupCreate::set_lang(const char* value, size_t size) {
   
   lang_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:server.TGroupCreate.lang)
+  // @@protoc_insertion_point(field_set_pointer:server.TGroupsCreate.GroupCreate.lang)
 }
-inline ::std::string* TGroupCreate::mutable_lang() {
+inline ::std::string* TGroupsCreate_GroupCreate::mutable_lang() {
   
-  // @@protoc_insertion_point(field_mutable:server.TGroupCreate.lang)
+  // @@protoc_insertion_point(field_mutable:server.TGroupsCreate.GroupCreate.lang)
   return lang_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline ::std::string* TGroupCreate::release_lang() {
-  // @@protoc_insertion_point(field_release:server.TGroupCreate.lang)
+inline ::std::string* TGroupsCreate_GroupCreate::release_lang() {
+  // @@protoc_insertion_point(field_release:server.TGroupsCreate.GroupCreate.lang)
   
   return lang_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline void TGroupCreate::set_allocated_lang(::std::string* lang) {
+inline void TGroupsCreate_GroupCreate::set_allocated_lang(::std::string* lang) {
   if (lang != NULL) {
     
   } else {
     
   }
   lang_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), lang);
-  // @@protoc_insertion_point(field_set_allocated:server.TGroupCreate.lang)
+  // @@protoc_insertion_point(field_set_allocated:server.TGroupsCreate.GroupCreate.lang)
 }
 
 // optional bytes metadata = 5;
-inline void TGroupCreate::clear_metadata() {
+inline void TGroupsCreate_GroupCreate::clear_metadata() {
   metadata_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline const ::std::string& TGroupCreate::metadata() const {
-  // @@protoc_insertion_point(field_get:server.TGroupCreate.metadata)
+inline const ::std::string& TGroupsCreate_GroupCreate::metadata() const {
+  // @@protoc_insertion_point(field_get:server.TGroupsCreate.GroupCreate.metadata)
   return metadata_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline void TGroupCreate::set_metadata(const ::std::string& value) {
+inline void TGroupsCreate_GroupCreate::set_metadata(const ::std::string& value) {
   
   metadata_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:server.TGroupCreate.metadata)
+  // @@protoc_insertion_point(field_set:server.TGroupsCreate.GroupCreate.metadata)
 }
-inline void TGroupCreate::set_metadata(const char* value) {
+inline void TGroupsCreate_GroupCreate::set_metadata(const char* value) {
   
   metadata_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:server.TGroupCreate.metadata)
+  // @@protoc_insertion_point(field_set_char:server.TGroupsCreate.GroupCreate.metadata)
 }
-inline void TGroupCreate::set_metadata(const void* value, size_t size) {
+inline void TGroupsCreate_GroupCreate::set_metadata(const void* value, size_t size) {
   
   metadata_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:server.TGroupCreate.metadata)
+  // @@protoc_insertion_point(field_set_pointer:server.TGroupsCreate.GroupCreate.metadata)
 }
-inline ::std::string* TGroupCreate::mutable_metadata() {
+inline ::std::string* TGroupsCreate_GroupCreate::mutable_metadata() {
   
-  // @@protoc_insertion_point(field_mutable:server.TGroupCreate.metadata)
+  // @@protoc_insertion_point(field_mutable:server.TGroupsCreate.GroupCreate.metadata)
   return metadata_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline ::std::string* TGroupCreate::release_metadata() {
-  // @@protoc_insertion_point(field_release:server.TGroupCreate.metadata)
+inline ::std::string* TGroupsCreate_GroupCreate::release_metadata() {
+  // @@protoc_insertion_point(field_release:server.TGroupsCreate.GroupCreate.metadata)
   
   return metadata_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline void TGroupCreate::set_allocated_metadata(::std::string* metadata) {
+inline void TGroupsCreate_GroupCreate::set_allocated_metadata(::std::string* metadata) {
   if (metadata != NULL) {
     
   } else {
     
   }
   metadata_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), metadata);
-  // @@protoc_insertion_point(field_set_allocated:server.TGroupCreate.metadata)
+  // @@protoc_insertion_point(field_set_allocated:server.TGroupsCreate.GroupCreate.metadata)
 }
 
 // optional bool private = 6;
-inline void TGroupCreate::clear_private_() {
+inline void TGroupsCreate_GroupCreate::clear_private_() {
   private__ = false;
 }
-inline bool TGroupCreate::private_() const {
-  // @@protoc_insertion_point(field_get:server.TGroupCreate.private)
+inline bool TGroupsCreate_GroupCreate::private_() const {
+  // @@protoc_insertion_point(field_get:server.TGroupsCreate.GroupCreate.private)
   return private__;
 }
-inline void TGroupCreate::set_private_(bool value) {
+inline void TGroupsCreate_GroupCreate::set_private_(bool value) {
   
   private__ = value;
-  // @@protoc_insertion_point(field_set:server.TGroupCreate.private)
+  // @@protoc_insertion_point(field_set:server.TGroupsCreate.GroupCreate.private)
 }
 
-inline const TGroupCreate* TGroupCreate::internal_default_instance() {
-  return &TGroupCreate_default_instance_.get();
+inline const TGroupsCreate_GroupCreate* TGroupsCreate_GroupCreate::internal_default_instance() {
+  return &TGroupsCreate_GroupCreate_default_instance_.get();
+}
+// -------------------------------------------------------------------
+
+// TGroupsCreate
+
+// repeated .server.TGroupsCreate.GroupCreate groups = 1;
+inline int TGroupsCreate::groups_size() const {
+  return groups_.size();
+}
+inline void TGroupsCreate::clear_groups() {
+  groups_.Clear();
+}
+inline const ::server::TGroupsCreate_GroupCreate& TGroupsCreate::groups(int index) const {
+  // @@protoc_insertion_point(field_get:server.TGroupsCreate.groups)
+  return groups_.Get(index);
+}
+inline ::server::TGroupsCreate_GroupCreate* TGroupsCreate::mutable_groups(int index) {
+  // @@protoc_insertion_point(field_mutable:server.TGroupsCreate.groups)
+  return groups_.Mutable(index);
+}
+inline ::server::TGroupsCreate_GroupCreate* TGroupsCreate::add_groups() {
+  // @@protoc_insertion_point(field_add:server.TGroupsCreate.groups)
+  return groups_.Add();
+}
+inline ::google::protobuf::RepeatedPtrField< ::server::TGroupsCreate_GroupCreate >*
+TGroupsCreate::mutable_groups() {
+  // @@protoc_insertion_point(field_mutable_list:server.TGroupsCreate.groups)
+  return &groups_;
+}
+inline const ::google::protobuf::RepeatedPtrField< ::server::TGroupsCreate_GroupCreate >&
+TGroupsCreate::groups() const {
+  // @@protoc_insertion_point(field_list:server.TGroupsCreate.groups)
+  return groups_;
+}
+
+inline const TGroupsCreate* TGroupsCreate::internal_default_instance() {
+  return &TGroupsCreate_default_instance_.get();
 }
 // -------------------------------------------------------------------
 
@@ -19566,339 +20740,387 @@ inline const TGroup* TGroup::internal_default_instance() {
 }
 // -------------------------------------------------------------------
 
-// TGroupUpdate
+// TGroupsUpdate_GroupUpdate
 
 // optional bytes group_id = 1;
-inline void TGroupUpdate::clear_group_id() {
+inline void TGroupsUpdate_GroupUpdate::clear_group_id() {
   group_id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline const ::std::string& TGroupUpdate::group_id() const {
-  // @@protoc_insertion_point(field_get:server.TGroupUpdate.group_id)
+inline const ::std::string& TGroupsUpdate_GroupUpdate::group_id() const {
+  // @@protoc_insertion_point(field_get:server.TGroupsUpdate.GroupUpdate.group_id)
   return group_id_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline void TGroupUpdate::set_group_id(const ::std::string& value) {
+inline void TGroupsUpdate_GroupUpdate::set_group_id(const ::std::string& value) {
   
   group_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:server.TGroupUpdate.group_id)
+  // @@protoc_insertion_point(field_set:server.TGroupsUpdate.GroupUpdate.group_id)
 }
-inline void TGroupUpdate::set_group_id(const char* value) {
+inline void TGroupsUpdate_GroupUpdate::set_group_id(const char* value) {
   
   group_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:server.TGroupUpdate.group_id)
+  // @@protoc_insertion_point(field_set_char:server.TGroupsUpdate.GroupUpdate.group_id)
 }
-inline void TGroupUpdate::set_group_id(const void* value, size_t size) {
+inline void TGroupsUpdate_GroupUpdate::set_group_id(const void* value, size_t size) {
   
   group_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:server.TGroupUpdate.group_id)
+  // @@protoc_insertion_point(field_set_pointer:server.TGroupsUpdate.GroupUpdate.group_id)
 }
-inline ::std::string* TGroupUpdate::mutable_group_id() {
+inline ::std::string* TGroupsUpdate_GroupUpdate::mutable_group_id() {
   
-  // @@protoc_insertion_point(field_mutable:server.TGroupUpdate.group_id)
+  // @@protoc_insertion_point(field_mutable:server.TGroupsUpdate.GroupUpdate.group_id)
   return group_id_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline ::std::string* TGroupUpdate::release_group_id() {
-  // @@protoc_insertion_point(field_release:server.TGroupUpdate.group_id)
+inline ::std::string* TGroupsUpdate_GroupUpdate::release_group_id() {
+  // @@protoc_insertion_point(field_release:server.TGroupsUpdate.GroupUpdate.group_id)
   
   return group_id_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline void TGroupUpdate::set_allocated_group_id(::std::string* group_id) {
+inline void TGroupsUpdate_GroupUpdate::set_allocated_group_id(::std::string* group_id) {
   if (group_id != NULL) {
     
   } else {
     
   }
   group_id_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), group_id);
-  // @@protoc_insertion_point(field_set_allocated:server.TGroupUpdate.group_id)
+  // @@protoc_insertion_point(field_set_allocated:server.TGroupsUpdate.GroupUpdate.group_id)
 }
 
 // optional bool private = 2;
-inline void TGroupUpdate::clear_private_() {
+inline void TGroupsUpdate_GroupUpdate::clear_private_() {
   private__ = false;
 }
-inline bool TGroupUpdate::private_() const {
-  // @@protoc_insertion_point(field_get:server.TGroupUpdate.private)
+inline bool TGroupsUpdate_GroupUpdate::private_() const {
+  // @@protoc_insertion_point(field_get:server.TGroupsUpdate.GroupUpdate.private)
   return private__;
 }
-inline void TGroupUpdate::set_private_(bool value) {
+inline void TGroupsUpdate_GroupUpdate::set_private_(bool value) {
   
   private__ = value;
-  // @@protoc_insertion_point(field_set:server.TGroupUpdate.private)
+  // @@protoc_insertion_point(field_set:server.TGroupsUpdate.GroupUpdate.private)
 }
 
 // optional string name = 3;
-inline void TGroupUpdate::clear_name() {
+inline void TGroupsUpdate_GroupUpdate::clear_name() {
   name_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline const ::std::string& TGroupUpdate::name() const {
-  // @@protoc_insertion_point(field_get:server.TGroupUpdate.name)
+inline const ::std::string& TGroupsUpdate_GroupUpdate::name() const {
+  // @@protoc_insertion_point(field_get:server.TGroupsUpdate.GroupUpdate.name)
   return name_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline void TGroupUpdate::set_name(const ::std::string& value) {
+inline void TGroupsUpdate_GroupUpdate::set_name(const ::std::string& value) {
   
   name_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:server.TGroupUpdate.name)
+  // @@protoc_insertion_point(field_set:server.TGroupsUpdate.GroupUpdate.name)
 }
-inline void TGroupUpdate::set_name(const char* value) {
+inline void TGroupsUpdate_GroupUpdate::set_name(const char* value) {
   
   name_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:server.TGroupUpdate.name)
+  // @@protoc_insertion_point(field_set_char:server.TGroupsUpdate.GroupUpdate.name)
 }
-inline void TGroupUpdate::set_name(const char* value, size_t size) {
+inline void TGroupsUpdate_GroupUpdate::set_name(const char* value, size_t size) {
   
   name_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:server.TGroupUpdate.name)
+  // @@protoc_insertion_point(field_set_pointer:server.TGroupsUpdate.GroupUpdate.name)
 }
-inline ::std::string* TGroupUpdate::mutable_name() {
+inline ::std::string* TGroupsUpdate_GroupUpdate::mutable_name() {
   
-  // @@protoc_insertion_point(field_mutable:server.TGroupUpdate.name)
+  // @@protoc_insertion_point(field_mutable:server.TGroupsUpdate.GroupUpdate.name)
   return name_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline ::std::string* TGroupUpdate::release_name() {
-  // @@protoc_insertion_point(field_release:server.TGroupUpdate.name)
+inline ::std::string* TGroupsUpdate_GroupUpdate::release_name() {
+  // @@protoc_insertion_point(field_release:server.TGroupsUpdate.GroupUpdate.name)
   
   return name_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline void TGroupUpdate::set_allocated_name(::std::string* name) {
+inline void TGroupsUpdate_GroupUpdate::set_allocated_name(::std::string* name) {
   if (name != NULL) {
     
   } else {
     
   }
   name_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), name);
-  // @@protoc_insertion_point(field_set_allocated:server.TGroupUpdate.name)
+  // @@protoc_insertion_point(field_set_allocated:server.TGroupsUpdate.GroupUpdate.name)
 }
 
 // optional string description = 4;
-inline void TGroupUpdate::clear_description() {
+inline void TGroupsUpdate_GroupUpdate::clear_description() {
   description_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline const ::std::string& TGroupUpdate::description() const {
-  // @@protoc_insertion_point(field_get:server.TGroupUpdate.description)
+inline const ::std::string& TGroupsUpdate_GroupUpdate::description() const {
+  // @@protoc_insertion_point(field_get:server.TGroupsUpdate.GroupUpdate.description)
   return description_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline void TGroupUpdate::set_description(const ::std::string& value) {
+inline void TGroupsUpdate_GroupUpdate::set_description(const ::std::string& value) {
   
   description_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:server.TGroupUpdate.description)
+  // @@protoc_insertion_point(field_set:server.TGroupsUpdate.GroupUpdate.description)
 }
-inline void TGroupUpdate::set_description(const char* value) {
+inline void TGroupsUpdate_GroupUpdate::set_description(const char* value) {
   
   description_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:server.TGroupUpdate.description)
+  // @@protoc_insertion_point(field_set_char:server.TGroupsUpdate.GroupUpdate.description)
 }
-inline void TGroupUpdate::set_description(const char* value, size_t size) {
+inline void TGroupsUpdate_GroupUpdate::set_description(const char* value, size_t size) {
   
   description_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:server.TGroupUpdate.description)
+  // @@protoc_insertion_point(field_set_pointer:server.TGroupsUpdate.GroupUpdate.description)
 }
-inline ::std::string* TGroupUpdate::mutable_description() {
+inline ::std::string* TGroupsUpdate_GroupUpdate::mutable_description() {
   
-  // @@protoc_insertion_point(field_mutable:server.TGroupUpdate.description)
+  // @@protoc_insertion_point(field_mutable:server.TGroupsUpdate.GroupUpdate.description)
   return description_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline ::std::string* TGroupUpdate::release_description() {
-  // @@protoc_insertion_point(field_release:server.TGroupUpdate.description)
+inline ::std::string* TGroupsUpdate_GroupUpdate::release_description() {
+  // @@protoc_insertion_point(field_release:server.TGroupsUpdate.GroupUpdate.description)
   
   return description_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline void TGroupUpdate::set_allocated_description(::std::string* description) {
+inline void TGroupsUpdate_GroupUpdate::set_allocated_description(::std::string* description) {
   if (description != NULL) {
     
   } else {
     
   }
   description_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), description);
-  // @@protoc_insertion_point(field_set_allocated:server.TGroupUpdate.description)
+  // @@protoc_insertion_point(field_set_allocated:server.TGroupsUpdate.GroupUpdate.description)
 }
 
 // optional string avatar_url = 5;
-inline void TGroupUpdate::clear_avatar_url() {
+inline void TGroupsUpdate_GroupUpdate::clear_avatar_url() {
   avatar_url_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline const ::std::string& TGroupUpdate::avatar_url() const {
-  // @@protoc_insertion_point(field_get:server.TGroupUpdate.avatar_url)
+inline const ::std::string& TGroupsUpdate_GroupUpdate::avatar_url() const {
+  // @@protoc_insertion_point(field_get:server.TGroupsUpdate.GroupUpdate.avatar_url)
   return avatar_url_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline void TGroupUpdate::set_avatar_url(const ::std::string& value) {
+inline void TGroupsUpdate_GroupUpdate::set_avatar_url(const ::std::string& value) {
   
   avatar_url_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:server.TGroupUpdate.avatar_url)
+  // @@protoc_insertion_point(field_set:server.TGroupsUpdate.GroupUpdate.avatar_url)
 }
-inline void TGroupUpdate::set_avatar_url(const char* value) {
+inline void TGroupsUpdate_GroupUpdate::set_avatar_url(const char* value) {
   
   avatar_url_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:server.TGroupUpdate.avatar_url)
+  // @@protoc_insertion_point(field_set_char:server.TGroupsUpdate.GroupUpdate.avatar_url)
 }
-inline void TGroupUpdate::set_avatar_url(const char* value, size_t size) {
+inline void TGroupsUpdate_GroupUpdate::set_avatar_url(const char* value, size_t size) {
   
   avatar_url_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:server.TGroupUpdate.avatar_url)
+  // @@protoc_insertion_point(field_set_pointer:server.TGroupsUpdate.GroupUpdate.avatar_url)
 }
-inline ::std::string* TGroupUpdate::mutable_avatar_url() {
+inline ::std::string* TGroupsUpdate_GroupUpdate::mutable_avatar_url() {
   
-  // @@protoc_insertion_point(field_mutable:server.TGroupUpdate.avatar_url)
+  // @@protoc_insertion_point(field_mutable:server.TGroupsUpdate.GroupUpdate.avatar_url)
   return avatar_url_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline ::std::string* TGroupUpdate::release_avatar_url() {
-  // @@protoc_insertion_point(field_release:server.TGroupUpdate.avatar_url)
+inline ::std::string* TGroupsUpdate_GroupUpdate::release_avatar_url() {
+  // @@protoc_insertion_point(field_release:server.TGroupsUpdate.GroupUpdate.avatar_url)
   
   return avatar_url_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline void TGroupUpdate::set_allocated_avatar_url(::std::string* avatar_url) {
+inline void TGroupsUpdate_GroupUpdate::set_allocated_avatar_url(::std::string* avatar_url) {
   if (avatar_url != NULL) {
     
   } else {
     
   }
   avatar_url_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), avatar_url);
-  // @@protoc_insertion_point(field_set_allocated:server.TGroupUpdate.avatar_url)
+  // @@protoc_insertion_point(field_set_allocated:server.TGroupsUpdate.GroupUpdate.avatar_url)
 }
 
 // optional string lang = 6;
-inline void TGroupUpdate::clear_lang() {
+inline void TGroupsUpdate_GroupUpdate::clear_lang() {
   lang_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline const ::std::string& TGroupUpdate::lang() const {
-  // @@protoc_insertion_point(field_get:server.TGroupUpdate.lang)
+inline const ::std::string& TGroupsUpdate_GroupUpdate::lang() const {
+  // @@protoc_insertion_point(field_get:server.TGroupsUpdate.GroupUpdate.lang)
   return lang_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline void TGroupUpdate::set_lang(const ::std::string& value) {
+inline void TGroupsUpdate_GroupUpdate::set_lang(const ::std::string& value) {
   
   lang_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:server.TGroupUpdate.lang)
+  // @@protoc_insertion_point(field_set:server.TGroupsUpdate.GroupUpdate.lang)
 }
-inline void TGroupUpdate::set_lang(const char* value) {
+inline void TGroupsUpdate_GroupUpdate::set_lang(const char* value) {
   
   lang_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:server.TGroupUpdate.lang)
+  // @@protoc_insertion_point(field_set_char:server.TGroupsUpdate.GroupUpdate.lang)
 }
-inline void TGroupUpdate::set_lang(const char* value, size_t size) {
+inline void TGroupsUpdate_GroupUpdate::set_lang(const char* value, size_t size) {
   
   lang_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:server.TGroupUpdate.lang)
+  // @@protoc_insertion_point(field_set_pointer:server.TGroupsUpdate.GroupUpdate.lang)
 }
-inline ::std::string* TGroupUpdate::mutable_lang() {
+inline ::std::string* TGroupsUpdate_GroupUpdate::mutable_lang() {
   
-  // @@protoc_insertion_point(field_mutable:server.TGroupUpdate.lang)
+  // @@protoc_insertion_point(field_mutable:server.TGroupsUpdate.GroupUpdate.lang)
   return lang_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline ::std::string* TGroupUpdate::release_lang() {
-  // @@protoc_insertion_point(field_release:server.TGroupUpdate.lang)
+inline ::std::string* TGroupsUpdate_GroupUpdate::release_lang() {
+  // @@protoc_insertion_point(field_release:server.TGroupsUpdate.GroupUpdate.lang)
   
   return lang_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline void TGroupUpdate::set_allocated_lang(::std::string* lang) {
+inline void TGroupsUpdate_GroupUpdate::set_allocated_lang(::std::string* lang) {
   if (lang != NULL) {
     
   } else {
     
   }
   lang_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), lang);
-  // @@protoc_insertion_point(field_set_allocated:server.TGroupUpdate.lang)
+  // @@protoc_insertion_point(field_set_allocated:server.TGroupsUpdate.GroupUpdate.lang)
 }
 
 // optional bytes metadata = 7;
-inline void TGroupUpdate::clear_metadata() {
+inline void TGroupsUpdate_GroupUpdate::clear_metadata() {
   metadata_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline const ::std::string& TGroupUpdate::metadata() const {
-  // @@protoc_insertion_point(field_get:server.TGroupUpdate.metadata)
+inline const ::std::string& TGroupsUpdate_GroupUpdate::metadata() const {
+  // @@protoc_insertion_point(field_get:server.TGroupsUpdate.GroupUpdate.metadata)
   return metadata_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline void TGroupUpdate::set_metadata(const ::std::string& value) {
+inline void TGroupsUpdate_GroupUpdate::set_metadata(const ::std::string& value) {
   
   metadata_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:server.TGroupUpdate.metadata)
+  // @@protoc_insertion_point(field_set:server.TGroupsUpdate.GroupUpdate.metadata)
 }
-inline void TGroupUpdate::set_metadata(const char* value) {
+inline void TGroupsUpdate_GroupUpdate::set_metadata(const char* value) {
   
   metadata_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:server.TGroupUpdate.metadata)
+  // @@protoc_insertion_point(field_set_char:server.TGroupsUpdate.GroupUpdate.metadata)
 }
-inline void TGroupUpdate::set_metadata(const void* value, size_t size) {
+inline void TGroupsUpdate_GroupUpdate::set_metadata(const void* value, size_t size) {
   
   metadata_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:server.TGroupUpdate.metadata)
+  // @@protoc_insertion_point(field_set_pointer:server.TGroupsUpdate.GroupUpdate.metadata)
 }
-inline ::std::string* TGroupUpdate::mutable_metadata() {
+inline ::std::string* TGroupsUpdate_GroupUpdate::mutable_metadata() {
   
-  // @@protoc_insertion_point(field_mutable:server.TGroupUpdate.metadata)
+  // @@protoc_insertion_point(field_mutable:server.TGroupsUpdate.GroupUpdate.metadata)
   return metadata_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline ::std::string* TGroupUpdate::release_metadata() {
-  // @@protoc_insertion_point(field_release:server.TGroupUpdate.metadata)
+inline ::std::string* TGroupsUpdate_GroupUpdate::release_metadata() {
+  // @@protoc_insertion_point(field_release:server.TGroupsUpdate.GroupUpdate.metadata)
   
   return metadata_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline void TGroupUpdate::set_allocated_metadata(::std::string* metadata) {
+inline void TGroupsUpdate_GroupUpdate::set_allocated_metadata(::std::string* metadata) {
   if (metadata != NULL) {
     
   } else {
     
   }
   metadata_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), metadata);
-  // @@protoc_insertion_point(field_set_allocated:server.TGroupUpdate.metadata)
+  // @@protoc_insertion_point(field_set_allocated:server.TGroupsUpdate.GroupUpdate.metadata)
 }
 
-inline const TGroupUpdate* TGroupUpdate::internal_default_instance() {
-  return &TGroupUpdate_default_instance_.get();
+inline const TGroupsUpdate_GroupUpdate* TGroupsUpdate_GroupUpdate::internal_default_instance() {
+  return &TGroupsUpdate_GroupUpdate_default_instance_.get();
 }
 // -------------------------------------------------------------------
 
-// TGroupRemove
+// TGroupsUpdate
 
-// optional bytes group_id = 1;
-inline void TGroupRemove::clear_group_id() {
-  group_id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+// repeated .server.TGroupsUpdate.GroupUpdate groups = 1;
+inline int TGroupsUpdate::groups_size() const {
+  return groups_.size();
 }
-inline const ::std::string& TGroupRemove::group_id() const {
-  // @@protoc_insertion_point(field_get:server.TGroupRemove.group_id)
-  return group_id_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+inline void TGroupsUpdate::clear_groups() {
+  groups_.Clear();
 }
-inline void TGroupRemove::set_group_id(const ::std::string& value) {
-  
-  group_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:server.TGroupRemove.group_id)
+inline const ::server::TGroupsUpdate_GroupUpdate& TGroupsUpdate::groups(int index) const {
+  // @@protoc_insertion_point(field_get:server.TGroupsUpdate.groups)
+  return groups_.Get(index);
 }
-inline void TGroupRemove::set_group_id(const char* value) {
-  
-  group_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:server.TGroupRemove.group_id)
+inline ::server::TGroupsUpdate_GroupUpdate* TGroupsUpdate::mutable_groups(int index) {
+  // @@protoc_insertion_point(field_mutable:server.TGroupsUpdate.groups)
+  return groups_.Mutable(index);
 }
-inline void TGroupRemove::set_group_id(const void* value, size_t size) {
-  
-  group_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
-      ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:server.TGroupRemove.group_id)
+inline ::server::TGroupsUpdate_GroupUpdate* TGroupsUpdate::add_groups() {
+  // @@protoc_insertion_point(field_add:server.TGroupsUpdate.groups)
+  return groups_.Add();
 }
-inline ::std::string* TGroupRemove::mutable_group_id() {
-  
-  // @@protoc_insertion_point(field_mutable:server.TGroupRemove.group_id)
-  return group_id_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+inline ::google::protobuf::RepeatedPtrField< ::server::TGroupsUpdate_GroupUpdate >*
+TGroupsUpdate::mutable_groups() {
+  // @@protoc_insertion_point(field_mutable_list:server.TGroupsUpdate.groups)
+  return &groups_;
 }
-inline ::std::string* TGroupRemove::release_group_id() {
-  // @@protoc_insertion_point(field_release:server.TGroupRemove.group_id)
-  
-  return group_id_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-}
-inline void TGroupRemove::set_allocated_group_id(::std::string* group_id) {
-  if (group_id != NULL) {
-    
-  } else {
-    
-  }
-  group_id_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), group_id);
-  // @@protoc_insertion_point(field_set_allocated:server.TGroupRemove.group_id)
+inline const ::google::protobuf::RepeatedPtrField< ::server::TGroupsUpdate_GroupUpdate >&
+TGroupsUpdate::groups() const {
+  // @@protoc_insertion_point(field_list:server.TGroupsUpdate.groups)
+  return groups_;
 }
 
-inline const TGroupRemove* TGroupRemove::internal_default_instance() {
-  return &TGroupRemove_default_instance_.get();
+inline const TGroupsUpdate* TGroupsUpdate::internal_default_instance() {
+  return &TGroupsUpdate_default_instance_.get();
+}
+// -------------------------------------------------------------------
+
+// TGroupsRemove
+
+// repeated bytes group_ids = 1;
+inline int TGroupsRemove::group_ids_size() const {
+  return group_ids_.size();
+}
+inline void TGroupsRemove::clear_group_ids() {
+  group_ids_.Clear();
+}
+inline const ::std::string& TGroupsRemove::group_ids(int index) const {
+  // @@protoc_insertion_point(field_get:server.TGroupsRemove.group_ids)
+  return group_ids_.Get(index);
+}
+inline ::std::string* TGroupsRemove::mutable_group_ids(int index) {
+  // @@protoc_insertion_point(field_mutable:server.TGroupsRemove.group_ids)
+  return group_ids_.Mutable(index);
+}
+inline void TGroupsRemove::set_group_ids(int index, const ::std::string& value) {
+  // @@protoc_insertion_point(field_set:server.TGroupsRemove.group_ids)
+  group_ids_.Mutable(index)->assign(value);
+}
+inline void TGroupsRemove::set_group_ids(int index, const char* value) {
+  group_ids_.Mutable(index)->assign(value);
+  // @@protoc_insertion_point(field_set_char:server.TGroupsRemove.group_ids)
+}
+inline void TGroupsRemove::set_group_ids(int index, const void* value, size_t size) {
+  group_ids_.Mutable(index)->assign(
+    reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_set_pointer:server.TGroupsRemove.group_ids)
+}
+inline ::std::string* TGroupsRemove::add_group_ids() {
+  // @@protoc_insertion_point(field_add_mutable:server.TGroupsRemove.group_ids)
+  return group_ids_.Add();
+}
+inline void TGroupsRemove::add_group_ids(const ::std::string& value) {
+  group_ids_.Add()->assign(value);
+  // @@protoc_insertion_point(field_add:server.TGroupsRemove.group_ids)
+}
+inline void TGroupsRemove::add_group_ids(const char* value) {
+  group_ids_.Add()->assign(value);
+  // @@protoc_insertion_point(field_add_char:server.TGroupsRemove.group_ids)
+}
+inline void TGroupsRemove::add_group_ids(const void* value, size_t size) {
+  group_ids_.Add()->assign(reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_add_pointer:server.TGroupsRemove.group_ids)
+}
+inline const ::google::protobuf::RepeatedPtrField< ::std::string>&
+TGroupsRemove::group_ids() const {
+  // @@protoc_insertion_point(field_list:server.TGroupsRemove.group_ids)
+  return group_ids_;
+}
+inline ::google::protobuf::RepeatedPtrField< ::std::string>*
+TGroupsRemove::mutable_group_ids() {
+  // @@protoc_insertion_point(field_mutable_list:server.TGroupsRemove.group_ids)
+  return &group_ids_;
+}
+
+inline const TGroupsRemove* TGroupsRemove::internal_default_instance() {
+  return &TGroupsRemove_default_instance_.get();
 }
 // -------------------------------------------------------------------
 
@@ -19909,237 +21131,216 @@ inline const TGroupsSelfList* TGroupsSelfList::internal_default_instance() {
 }
 // -------------------------------------------------------------------
 
-// TGroupsFetch_GroupIds
+// TGroupsFetch_GroupFetch
 
-// repeated bytes group_ids = 1;
-inline int TGroupsFetch_GroupIds::group_ids_size() const {
-  return group_ids_.size();
+// optional bytes group_id = 1;
+inline bool TGroupsFetch_GroupFetch::has_group_id() const {
+  return id_case() == kGroupId;
 }
-inline void TGroupsFetch_GroupIds::clear_group_ids() {
-  group_ids_.Clear();
+inline void TGroupsFetch_GroupFetch::set_has_group_id() {
+  _oneof_case_[0] = kGroupId;
 }
-inline const ::std::string& TGroupsFetch_GroupIds::group_ids(int index) const {
-  // @@protoc_insertion_point(field_get:server.TGroupsFetch.GroupIds.group_ids)
-  return group_ids_.Get(index);
+inline void TGroupsFetch_GroupFetch::clear_group_id() {
+  if (has_group_id()) {
+    id_.group_id_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    clear_has_id();
+  }
 }
-inline ::std::string* TGroupsFetch_GroupIds::mutable_group_ids(int index) {
-  // @@protoc_insertion_point(field_mutable:server.TGroupsFetch.GroupIds.group_ids)
-  return group_ids_.Mutable(index);
+inline const ::std::string& TGroupsFetch_GroupFetch::group_id() const {
+  // @@protoc_insertion_point(field_get:server.TGroupsFetch.GroupFetch.group_id)
+  if (has_group_id()) {
+    return id_.group_id_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  return *&::google::protobuf::internal::GetEmptyStringAlreadyInited();
 }
-inline void TGroupsFetch_GroupIds::set_group_ids(int index, const ::std::string& value) {
-  // @@protoc_insertion_point(field_set:server.TGroupsFetch.GroupIds.group_ids)
-  group_ids_.Mutable(index)->assign(value);
+inline void TGroupsFetch_GroupFetch::set_group_id(const ::std::string& value) {
+  // @@protoc_insertion_point(field_set:server.TGroupsFetch.GroupFetch.group_id)
+  if (!has_group_id()) {
+    clear_id();
+    set_has_group_id();
+    id_.group_id_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  id_.group_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:server.TGroupsFetch.GroupFetch.group_id)
 }
-inline void TGroupsFetch_GroupIds::set_group_ids(int index, const char* value) {
-  group_ids_.Mutable(index)->assign(value);
-  // @@protoc_insertion_point(field_set_char:server.TGroupsFetch.GroupIds.group_ids)
+inline void TGroupsFetch_GroupFetch::set_group_id(const char* value) {
+  if (!has_group_id()) {
+    clear_id();
+    set_has_group_id();
+    id_.group_id_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  id_.group_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:server.TGroupsFetch.GroupFetch.group_id)
 }
-inline void TGroupsFetch_GroupIds::set_group_ids(int index, const void* value, size_t size) {
-  group_ids_.Mutable(index)->assign(
-    reinterpret_cast<const char*>(value), size);
-  // @@protoc_insertion_point(field_set_pointer:server.TGroupsFetch.GroupIds.group_ids)
+inline void TGroupsFetch_GroupFetch::set_group_id(const void* value, size_t size) {
+  if (!has_group_id()) {
+    clear_id();
+    set_has_group_id();
+    id_.group_id_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  id_.group_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(
+      reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:server.TGroupsFetch.GroupFetch.group_id)
 }
-inline ::std::string* TGroupsFetch_GroupIds::add_group_ids() {
-  // @@protoc_insertion_point(field_add_mutable:server.TGroupsFetch.GroupIds.group_ids)
-  return group_ids_.Add();
+inline ::std::string* TGroupsFetch_GroupFetch::mutable_group_id() {
+  if (!has_group_id()) {
+    clear_id();
+    set_has_group_id();
+    id_.group_id_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  // @@protoc_insertion_point(field_mutable:server.TGroupsFetch.GroupFetch.group_id)
+  return id_.group_id_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline void TGroupsFetch_GroupIds::add_group_ids(const ::std::string& value) {
-  group_ids_.Add()->assign(value);
-  // @@protoc_insertion_point(field_add:server.TGroupsFetch.GroupIds.group_ids)
+inline ::std::string* TGroupsFetch_GroupFetch::release_group_id() {
+  // @@protoc_insertion_point(field_release:server.TGroupsFetch.GroupFetch.group_id)
+  if (has_group_id()) {
+    clear_has_id();
+    return id_.group_id_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  } else {
+    return NULL;
+  }
 }
-inline void TGroupsFetch_GroupIds::add_group_ids(const char* value) {
-  group_ids_.Add()->assign(value);
-  // @@protoc_insertion_point(field_add_char:server.TGroupsFetch.GroupIds.group_ids)
-}
-inline void TGroupsFetch_GroupIds::add_group_ids(const void* value, size_t size) {
-  group_ids_.Add()->assign(reinterpret_cast<const char*>(value), size);
-  // @@protoc_insertion_point(field_add_pointer:server.TGroupsFetch.GroupIds.group_ids)
-}
-inline const ::google::protobuf::RepeatedPtrField< ::std::string>&
-TGroupsFetch_GroupIds::group_ids() const {
-  // @@protoc_insertion_point(field_list:server.TGroupsFetch.GroupIds.group_ids)
-  return group_ids_;
-}
-inline ::google::protobuf::RepeatedPtrField< ::std::string>*
-TGroupsFetch_GroupIds::mutable_group_ids() {
-  // @@protoc_insertion_point(field_mutable_list:server.TGroupsFetch.GroupIds.group_ids)
-  return &group_ids_;
-}
-
-inline const TGroupsFetch_GroupIds* TGroupsFetch_GroupIds::internal_default_instance() {
-  return &TGroupsFetch_GroupIds_default_instance_.get();
-}
-// -------------------------------------------------------------------
-
-// TGroupsFetch_Names
-
-// repeated string names = 1;
-inline int TGroupsFetch_Names::names_size() const {
-  return names_.size();
-}
-inline void TGroupsFetch_Names::clear_names() {
-  names_.Clear();
-}
-inline const ::std::string& TGroupsFetch_Names::names(int index) const {
-  // @@protoc_insertion_point(field_get:server.TGroupsFetch.Names.names)
-  return names_.Get(index);
-}
-inline ::std::string* TGroupsFetch_Names::mutable_names(int index) {
-  // @@protoc_insertion_point(field_mutable:server.TGroupsFetch.Names.names)
-  return names_.Mutable(index);
-}
-inline void TGroupsFetch_Names::set_names(int index, const ::std::string& value) {
-  // @@protoc_insertion_point(field_set:server.TGroupsFetch.Names.names)
-  names_.Mutable(index)->assign(value);
-}
-inline void TGroupsFetch_Names::set_names(int index, const char* value) {
-  names_.Mutable(index)->assign(value);
-  // @@protoc_insertion_point(field_set_char:server.TGroupsFetch.Names.names)
-}
-inline void TGroupsFetch_Names::set_names(int index, const char* value, size_t size) {
-  names_.Mutable(index)->assign(
-    reinterpret_cast<const char*>(value), size);
-  // @@protoc_insertion_point(field_set_pointer:server.TGroupsFetch.Names.names)
-}
-inline ::std::string* TGroupsFetch_Names::add_names() {
-  // @@protoc_insertion_point(field_add_mutable:server.TGroupsFetch.Names.names)
-  return names_.Add();
-}
-inline void TGroupsFetch_Names::add_names(const ::std::string& value) {
-  names_.Add()->assign(value);
-  // @@protoc_insertion_point(field_add:server.TGroupsFetch.Names.names)
-}
-inline void TGroupsFetch_Names::add_names(const char* value) {
-  names_.Add()->assign(value);
-  // @@protoc_insertion_point(field_add_char:server.TGroupsFetch.Names.names)
-}
-inline void TGroupsFetch_Names::add_names(const char* value, size_t size) {
-  names_.Add()->assign(reinterpret_cast<const char*>(value), size);
-  // @@protoc_insertion_point(field_add_pointer:server.TGroupsFetch.Names.names)
-}
-inline const ::google::protobuf::RepeatedPtrField< ::std::string>&
-TGroupsFetch_Names::names() const {
-  // @@protoc_insertion_point(field_list:server.TGroupsFetch.Names.names)
-  return names_;
-}
-inline ::google::protobuf::RepeatedPtrField< ::std::string>*
-TGroupsFetch_Names::mutable_names() {
-  // @@protoc_insertion_point(field_mutable_list:server.TGroupsFetch.Names.names)
-  return &names_;
+inline void TGroupsFetch_GroupFetch::set_allocated_group_id(::std::string* group_id) {
+  if (!has_group_id()) {
+    id_.group_id_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  clear_id();
+  if (group_id != NULL) {
+    set_has_group_id();
+    id_.group_id_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+        group_id);
+  }
+  // @@protoc_insertion_point(field_set_allocated:server.TGroupsFetch.GroupFetch.group_id)
 }
 
-inline const TGroupsFetch_Names* TGroupsFetch_Names::internal_default_instance() {
-  return &TGroupsFetch_Names_default_instance_.get();
+// optional string name = 2;
+inline bool TGroupsFetch_GroupFetch::has_name() const {
+  return id_case() == kName;
+}
+inline void TGroupsFetch_GroupFetch::set_has_name() {
+  _oneof_case_[0] = kName;
+}
+inline void TGroupsFetch_GroupFetch::clear_name() {
+  if (has_name()) {
+    id_.name_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    clear_has_id();
+  }
+}
+inline const ::std::string& TGroupsFetch_GroupFetch::name() const {
+  // @@protoc_insertion_point(field_get:server.TGroupsFetch.GroupFetch.name)
+  if (has_name()) {
+    return id_.name_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  return *&::google::protobuf::internal::GetEmptyStringAlreadyInited();
+}
+inline void TGroupsFetch_GroupFetch::set_name(const ::std::string& value) {
+  // @@protoc_insertion_point(field_set:server.TGroupsFetch.GroupFetch.name)
+  if (!has_name()) {
+    clear_id();
+    set_has_name();
+    id_.name_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  id_.name_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:server.TGroupsFetch.GroupFetch.name)
+}
+inline void TGroupsFetch_GroupFetch::set_name(const char* value) {
+  if (!has_name()) {
+    clear_id();
+    set_has_name();
+    id_.name_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  id_.name_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:server.TGroupsFetch.GroupFetch.name)
+}
+inline void TGroupsFetch_GroupFetch::set_name(const char* value, size_t size) {
+  if (!has_name()) {
+    clear_id();
+    set_has_name();
+    id_.name_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  id_.name_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(
+      reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:server.TGroupsFetch.GroupFetch.name)
+}
+inline ::std::string* TGroupsFetch_GroupFetch::mutable_name() {
+  if (!has_name()) {
+    clear_id();
+    set_has_name();
+    id_.name_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  // @@protoc_insertion_point(field_mutable:server.TGroupsFetch.GroupFetch.name)
+  return id_.name_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* TGroupsFetch_GroupFetch::release_name() {
+  // @@protoc_insertion_point(field_release:server.TGroupsFetch.GroupFetch.name)
+  if (has_name()) {
+    clear_has_id();
+    return id_.name_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  } else {
+    return NULL;
+  }
+}
+inline void TGroupsFetch_GroupFetch::set_allocated_name(::std::string* name) {
+  if (!has_name()) {
+    id_.name_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  clear_id();
+  if (name != NULL) {
+    set_has_name();
+    id_.name_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+        name);
+  }
+  // @@protoc_insertion_point(field_set_allocated:server.TGroupsFetch.GroupFetch.name)
+}
+
+inline bool TGroupsFetch_GroupFetch::has_id() const {
+  return id_case() != ID_NOT_SET;
+}
+inline void TGroupsFetch_GroupFetch::clear_has_id() {
+  _oneof_case_[0] = ID_NOT_SET;
+}
+inline TGroupsFetch_GroupFetch::IdCase TGroupsFetch_GroupFetch::id_case() const {
+  return TGroupsFetch_GroupFetch::IdCase(_oneof_case_[0]);
+}
+inline const TGroupsFetch_GroupFetch* TGroupsFetch_GroupFetch::internal_default_instance() {
+  return &TGroupsFetch_GroupFetch_default_instance_.get();
 }
 // -------------------------------------------------------------------
 
 // TGroupsFetch
 
-// optional .server.TGroupsFetch.GroupIds group_ids = 1;
-inline bool TGroupsFetch::has_group_ids() const {
-  return set_case() == kGroupIds;
+// repeated .server.TGroupsFetch.GroupFetch groups = 1;
+inline int TGroupsFetch::groups_size() const {
+  return groups_.size();
 }
-inline void TGroupsFetch::set_has_group_ids() {
-  _oneof_case_[0] = kGroupIds;
+inline void TGroupsFetch::clear_groups() {
+  groups_.Clear();
 }
-inline void TGroupsFetch::clear_group_ids() {
-  if (has_group_ids()) {
-    delete set_.group_ids_;
-    clear_has_set();
-  }
+inline const ::server::TGroupsFetch_GroupFetch& TGroupsFetch::groups(int index) const {
+  // @@protoc_insertion_point(field_get:server.TGroupsFetch.groups)
+  return groups_.Get(index);
 }
-inline  const ::server::TGroupsFetch_GroupIds& TGroupsFetch::group_ids() const {
-  // @@protoc_insertion_point(field_get:server.TGroupsFetch.group_ids)
-  return has_group_ids()
-      ? *set_.group_ids_
-      : ::server::TGroupsFetch_GroupIds::default_instance();
+inline ::server::TGroupsFetch_GroupFetch* TGroupsFetch::mutable_groups(int index) {
+  // @@protoc_insertion_point(field_mutable:server.TGroupsFetch.groups)
+  return groups_.Mutable(index);
 }
-inline ::server::TGroupsFetch_GroupIds* TGroupsFetch::mutable_group_ids() {
-  if (!has_group_ids()) {
-    clear_set();
-    set_has_group_ids();
-    set_.group_ids_ = new ::server::TGroupsFetch_GroupIds;
-  }
-  // @@protoc_insertion_point(field_mutable:server.TGroupsFetch.group_ids)
-  return set_.group_ids_;
+inline ::server::TGroupsFetch_GroupFetch* TGroupsFetch::add_groups() {
+  // @@protoc_insertion_point(field_add:server.TGroupsFetch.groups)
+  return groups_.Add();
 }
-inline ::server::TGroupsFetch_GroupIds* TGroupsFetch::release_group_ids() {
-  // @@protoc_insertion_point(field_release:server.TGroupsFetch.group_ids)
-  if (has_group_ids()) {
-    clear_has_set();
-    ::server::TGroupsFetch_GroupIds* temp = set_.group_ids_;
-    set_.group_ids_ = NULL;
-    return temp;
-  } else {
-    return NULL;
-  }
+inline ::google::protobuf::RepeatedPtrField< ::server::TGroupsFetch_GroupFetch >*
+TGroupsFetch::mutable_groups() {
+  // @@protoc_insertion_point(field_mutable_list:server.TGroupsFetch.groups)
+  return &groups_;
 }
-inline void TGroupsFetch::set_allocated_group_ids(::server::TGroupsFetch_GroupIds* group_ids) {
-  clear_set();
-  if (group_ids) {
-    set_has_group_ids();
-    set_.group_ids_ = group_ids;
-  }
-  // @@protoc_insertion_point(field_set_allocated:server.TGroupsFetch.group_ids)
+inline const ::google::protobuf::RepeatedPtrField< ::server::TGroupsFetch_GroupFetch >&
+TGroupsFetch::groups() const {
+  // @@protoc_insertion_point(field_list:server.TGroupsFetch.groups)
+  return groups_;
 }
 
-// optional .server.TGroupsFetch.Names names = 2;
-inline bool TGroupsFetch::has_names() const {
-  return set_case() == kNames;
-}
-inline void TGroupsFetch::set_has_names() {
-  _oneof_case_[0] = kNames;
-}
-inline void TGroupsFetch::clear_names() {
-  if (has_names()) {
-    delete set_.names_;
-    clear_has_set();
-  }
-}
-inline  const ::server::TGroupsFetch_Names& TGroupsFetch::names() const {
-  // @@protoc_insertion_point(field_get:server.TGroupsFetch.names)
-  return has_names()
-      ? *set_.names_
-      : ::server::TGroupsFetch_Names::default_instance();
-}
-inline ::server::TGroupsFetch_Names* TGroupsFetch::mutable_names() {
-  if (!has_names()) {
-    clear_set();
-    set_has_names();
-    set_.names_ = new ::server::TGroupsFetch_Names;
-  }
-  // @@protoc_insertion_point(field_mutable:server.TGroupsFetch.names)
-  return set_.names_;
-}
-inline ::server::TGroupsFetch_Names* TGroupsFetch::release_names() {
-  // @@protoc_insertion_point(field_release:server.TGroupsFetch.names)
-  if (has_names()) {
-    clear_has_set();
-    ::server::TGroupsFetch_Names* temp = set_.names_;
-    set_.names_ = NULL;
-    return temp;
-  } else {
-    return NULL;
-  }
-}
-inline void TGroupsFetch::set_allocated_names(::server::TGroupsFetch_Names* names) {
-  clear_set();
-  if (names) {
-    set_has_names();
-    set_.names_ = names;
-  }
-  // @@protoc_insertion_point(field_set_allocated:server.TGroupsFetch.names)
-}
-
-inline bool TGroupsFetch::has_set() const {
-  return set_case() != SET_NOT_SET;
-}
-inline void TGroupsFetch::clear_has_set() {
-  _oneof_case_[0] = SET_NOT_SET;
-}
-inline TGroupsFetch::SetCase TGroupsFetch::set_case() const {
-  return TGroupsFetch::SetCase(_oneof_case_[0]);
-}
 inline const TGroupsFetch* TGroupsFetch::internal_default_instance() {
   return &TGroupsFetch_default_instance_.get();
 }
@@ -20601,390 +21802,523 @@ inline const TGroupUsers* TGroupUsers::internal_default_instance() {
 }
 // -------------------------------------------------------------------
 
-// TGroupJoin
+// TGroupsJoin
 
-// optional bytes group_id = 1;
-inline void TGroupJoin::clear_group_id() {
-  group_id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+// repeated bytes group_ids = 1;
+inline int TGroupsJoin::group_ids_size() const {
+  return group_ids_.size();
 }
-inline const ::std::string& TGroupJoin::group_id() const {
-  // @@protoc_insertion_point(field_get:server.TGroupJoin.group_id)
-  return group_id_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+inline void TGroupsJoin::clear_group_ids() {
+  group_ids_.Clear();
 }
-inline void TGroupJoin::set_group_id(const ::std::string& value) {
-  
-  group_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:server.TGroupJoin.group_id)
+inline const ::std::string& TGroupsJoin::group_ids(int index) const {
+  // @@protoc_insertion_point(field_get:server.TGroupsJoin.group_ids)
+  return group_ids_.Get(index);
 }
-inline void TGroupJoin::set_group_id(const char* value) {
-  
-  group_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:server.TGroupJoin.group_id)
+inline ::std::string* TGroupsJoin::mutable_group_ids(int index) {
+  // @@protoc_insertion_point(field_mutable:server.TGroupsJoin.group_ids)
+  return group_ids_.Mutable(index);
 }
-inline void TGroupJoin::set_group_id(const void* value, size_t size) {
-  
-  group_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
-      ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:server.TGroupJoin.group_id)
+inline void TGroupsJoin::set_group_ids(int index, const ::std::string& value) {
+  // @@protoc_insertion_point(field_set:server.TGroupsJoin.group_ids)
+  group_ids_.Mutable(index)->assign(value);
 }
-inline ::std::string* TGroupJoin::mutable_group_id() {
-  
-  // @@protoc_insertion_point(field_mutable:server.TGroupJoin.group_id)
-  return group_id_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+inline void TGroupsJoin::set_group_ids(int index, const char* value) {
+  group_ids_.Mutable(index)->assign(value);
+  // @@protoc_insertion_point(field_set_char:server.TGroupsJoin.group_ids)
 }
-inline ::std::string* TGroupJoin::release_group_id() {
-  // @@protoc_insertion_point(field_release:server.TGroupJoin.group_id)
-  
-  return group_id_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+inline void TGroupsJoin::set_group_ids(int index, const void* value, size_t size) {
+  group_ids_.Mutable(index)->assign(
+    reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_set_pointer:server.TGroupsJoin.group_ids)
 }
-inline void TGroupJoin::set_allocated_group_id(::std::string* group_id) {
-  if (group_id != NULL) {
-    
-  } else {
-    
-  }
-  group_id_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), group_id);
-  // @@protoc_insertion_point(field_set_allocated:server.TGroupJoin.group_id)
+inline ::std::string* TGroupsJoin::add_group_ids() {
+  // @@protoc_insertion_point(field_add_mutable:server.TGroupsJoin.group_ids)
+  return group_ids_.Add();
+}
+inline void TGroupsJoin::add_group_ids(const ::std::string& value) {
+  group_ids_.Add()->assign(value);
+  // @@protoc_insertion_point(field_add:server.TGroupsJoin.group_ids)
+}
+inline void TGroupsJoin::add_group_ids(const char* value) {
+  group_ids_.Add()->assign(value);
+  // @@protoc_insertion_point(field_add_char:server.TGroupsJoin.group_ids)
+}
+inline void TGroupsJoin::add_group_ids(const void* value, size_t size) {
+  group_ids_.Add()->assign(reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_add_pointer:server.TGroupsJoin.group_ids)
+}
+inline const ::google::protobuf::RepeatedPtrField< ::std::string>&
+TGroupsJoin::group_ids() const {
+  // @@protoc_insertion_point(field_list:server.TGroupsJoin.group_ids)
+  return group_ids_;
+}
+inline ::google::protobuf::RepeatedPtrField< ::std::string>*
+TGroupsJoin::mutable_group_ids() {
+  // @@protoc_insertion_point(field_mutable_list:server.TGroupsJoin.group_ids)
+  return &group_ids_;
 }
 
-inline const TGroupJoin* TGroupJoin::internal_default_instance() {
-  return &TGroupJoin_default_instance_.get();
+inline const TGroupsJoin* TGroupsJoin::internal_default_instance() {
+  return &TGroupsJoin_default_instance_.get();
 }
 // -------------------------------------------------------------------
 
-// TGroupLeave
+// TGroupsLeave
 
-// optional bytes group_id = 1;
-inline void TGroupLeave::clear_group_id() {
-  group_id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+// repeated bytes group_ids = 1;
+inline int TGroupsLeave::group_ids_size() const {
+  return group_ids_.size();
 }
-inline const ::std::string& TGroupLeave::group_id() const {
-  // @@protoc_insertion_point(field_get:server.TGroupLeave.group_id)
-  return group_id_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+inline void TGroupsLeave::clear_group_ids() {
+  group_ids_.Clear();
 }
-inline void TGroupLeave::set_group_id(const ::std::string& value) {
-  
-  group_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:server.TGroupLeave.group_id)
+inline const ::std::string& TGroupsLeave::group_ids(int index) const {
+  // @@protoc_insertion_point(field_get:server.TGroupsLeave.group_ids)
+  return group_ids_.Get(index);
 }
-inline void TGroupLeave::set_group_id(const char* value) {
-  
-  group_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:server.TGroupLeave.group_id)
+inline ::std::string* TGroupsLeave::mutable_group_ids(int index) {
+  // @@protoc_insertion_point(field_mutable:server.TGroupsLeave.group_ids)
+  return group_ids_.Mutable(index);
 }
-inline void TGroupLeave::set_group_id(const void* value, size_t size) {
-  
-  group_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
-      ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:server.TGroupLeave.group_id)
+inline void TGroupsLeave::set_group_ids(int index, const ::std::string& value) {
+  // @@protoc_insertion_point(field_set:server.TGroupsLeave.group_ids)
+  group_ids_.Mutable(index)->assign(value);
 }
-inline ::std::string* TGroupLeave::mutable_group_id() {
-  
-  // @@protoc_insertion_point(field_mutable:server.TGroupLeave.group_id)
-  return group_id_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+inline void TGroupsLeave::set_group_ids(int index, const char* value) {
+  group_ids_.Mutable(index)->assign(value);
+  // @@protoc_insertion_point(field_set_char:server.TGroupsLeave.group_ids)
 }
-inline ::std::string* TGroupLeave::release_group_id() {
-  // @@protoc_insertion_point(field_release:server.TGroupLeave.group_id)
-  
-  return group_id_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+inline void TGroupsLeave::set_group_ids(int index, const void* value, size_t size) {
+  group_ids_.Mutable(index)->assign(
+    reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_set_pointer:server.TGroupsLeave.group_ids)
 }
-inline void TGroupLeave::set_allocated_group_id(::std::string* group_id) {
-  if (group_id != NULL) {
-    
-  } else {
-    
-  }
-  group_id_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), group_id);
-  // @@protoc_insertion_point(field_set_allocated:server.TGroupLeave.group_id)
+inline ::std::string* TGroupsLeave::add_group_ids() {
+  // @@protoc_insertion_point(field_add_mutable:server.TGroupsLeave.group_ids)
+  return group_ids_.Add();
+}
+inline void TGroupsLeave::add_group_ids(const ::std::string& value) {
+  group_ids_.Add()->assign(value);
+  // @@protoc_insertion_point(field_add:server.TGroupsLeave.group_ids)
+}
+inline void TGroupsLeave::add_group_ids(const char* value) {
+  group_ids_.Add()->assign(value);
+  // @@protoc_insertion_point(field_add_char:server.TGroupsLeave.group_ids)
+}
+inline void TGroupsLeave::add_group_ids(const void* value, size_t size) {
+  group_ids_.Add()->assign(reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_add_pointer:server.TGroupsLeave.group_ids)
+}
+inline const ::google::protobuf::RepeatedPtrField< ::std::string>&
+TGroupsLeave::group_ids() const {
+  // @@protoc_insertion_point(field_list:server.TGroupsLeave.group_ids)
+  return group_ids_;
+}
+inline ::google::protobuf::RepeatedPtrField< ::std::string>*
+TGroupsLeave::mutable_group_ids() {
+  // @@protoc_insertion_point(field_mutable_list:server.TGroupsLeave.group_ids)
+  return &group_ids_;
 }
 
-inline const TGroupLeave* TGroupLeave::internal_default_instance() {
-  return &TGroupLeave_default_instance_.get();
+inline const TGroupsLeave* TGroupsLeave::internal_default_instance() {
+  return &TGroupsLeave_default_instance_.get();
 }
 // -------------------------------------------------------------------
 
-// TGroupUserAdd
+// TGroupUsersAdd_GroupUserAdd
 
 // optional bytes group_id = 1;
-inline void TGroupUserAdd::clear_group_id() {
+inline void TGroupUsersAdd_GroupUserAdd::clear_group_id() {
   group_id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline const ::std::string& TGroupUserAdd::group_id() const {
-  // @@protoc_insertion_point(field_get:server.TGroupUserAdd.group_id)
+inline const ::std::string& TGroupUsersAdd_GroupUserAdd::group_id() const {
+  // @@protoc_insertion_point(field_get:server.TGroupUsersAdd.GroupUserAdd.group_id)
   return group_id_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline void TGroupUserAdd::set_group_id(const ::std::string& value) {
+inline void TGroupUsersAdd_GroupUserAdd::set_group_id(const ::std::string& value) {
   
   group_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:server.TGroupUserAdd.group_id)
+  // @@protoc_insertion_point(field_set:server.TGroupUsersAdd.GroupUserAdd.group_id)
 }
-inline void TGroupUserAdd::set_group_id(const char* value) {
+inline void TGroupUsersAdd_GroupUserAdd::set_group_id(const char* value) {
   
   group_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:server.TGroupUserAdd.group_id)
+  // @@protoc_insertion_point(field_set_char:server.TGroupUsersAdd.GroupUserAdd.group_id)
 }
-inline void TGroupUserAdd::set_group_id(const void* value, size_t size) {
+inline void TGroupUsersAdd_GroupUserAdd::set_group_id(const void* value, size_t size) {
   
   group_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:server.TGroupUserAdd.group_id)
+  // @@protoc_insertion_point(field_set_pointer:server.TGroupUsersAdd.GroupUserAdd.group_id)
 }
-inline ::std::string* TGroupUserAdd::mutable_group_id() {
+inline ::std::string* TGroupUsersAdd_GroupUserAdd::mutable_group_id() {
   
-  // @@protoc_insertion_point(field_mutable:server.TGroupUserAdd.group_id)
+  // @@protoc_insertion_point(field_mutable:server.TGroupUsersAdd.GroupUserAdd.group_id)
   return group_id_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline ::std::string* TGroupUserAdd::release_group_id() {
-  // @@protoc_insertion_point(field_release:server.TGroupUserAdd.group_id)
+inline ::std::string* TGroupUsersAdd_GroupUserAdd::release_group_id() {
+  // @@protoc_insertion_point(field_release:server.TGroupUsersAdd.GroupUserAdd.group_id)
   
   return group_id_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline void TGroupUserAdd::set_allocated_group_id(::std::string* group_id) {
+inline void TGroupUsersAdd_GroupUserAdd::set_allocated_group_id(::std::string* group_id) {
   if (group_id != NULL) {
     
   } else {
     
   }
   group_id_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), group_id);
-  // @@protoc_insertion_point(field_set_allocated:server.TGroupUserAdd.group_id)
+  // @@protoc_insertion_point(field_set_allocated:server.TGroupUsersAdd.GroupUserAdd.group_id)
 }
 
 // optional bytes user_id = 2;
-inline void TGroupUserAdd::clear_user_id() {
+inline void TGroupUsersAdd_GroupUserAdd::clear_user_id() {
   user_id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline const ::std::string& TGroupUserAdd::user_id() const {
-  // @@protoc_insertion_point(field_get:server.TGroupUserAdd.user_id)
+inline const ::std::string& TGroupUsersAdd_GroupUserAdd::user_id() const {
+  // @@protoc_insertion_point(field_get:server.TGroupUsersAdd.GroupUserAdd.user_id)
   return user_id_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline void TGroupUserAdd::set_user_id(const ::std::string& value) {
+inline void TGroupUsersAdd_GroupUserAdd::set_user_id(const ::std::string& value) {
   
   user_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:server.TGroupUserAdd.user_id)
+  // @@protoc_insertion_point(field_set:server.TGroupUsersAdd.GroupUserAdd.user_id)
 }
-inline void TGroupUserAdd::set_user_id(const char* value) {
+inline void TGroupUsersAdd_GroupUserAdd::set_user_id(const char* value) {
   
   user_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:server.TGroupUserAdd.user_id)
+  // @@protoc_insertion_point(field_set_char:server.TGroupUsersAdd.GroupUserAdd.user_id)
 }
-inline void TGroupUserAdd::set_user_id(const void* value, size_t size) {
+inline void TGroupUsersAdd_GroupUserAdd::set_user_id(const void* value, size_t size) {
   
   user_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:server.TGroupUserAdd.user_id)
+  // @@protoc_insertion_point(field_set_pointer:server.TGroupUsersAdd.GroupUserAdd.user_id)
 }
-inline ::std::string* TGroupUserAdd::mutable_user_id() {
+inline ::std::string* TGroupUsersAdd_GroupUserAdd::mutable_user_id() {
   
-  // @@protoc_insertion_point(field_mutable:server.TGroupUserAdd.user_id)
+  // @@protoc_insertion_point(field_mutable:server.TGroupUsersAdd.GroupUserAdd.user_id)
   return user_id_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline ::std::string* TGroupUserAdd::release_user_id() {
-  // @@protoc_insertion_point(field_release:server.TGroupUserAdd.user_id)
+inline ::std::string* TGroupUsersAdd_GroupUserAdd::release_user_id() {
+  // @@protoc_insertion_point(field_release:server.TGroupUsersAdd.GroupUserAdd.user_id)
   
   return user_id_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline void TGroupUserAdd::set_allocated_user_id(::std::string* user_id) {
+inline void TGroupUsersAdd_GroupUserAdd::set_allocated_user_id(::std::string* user_id) {
   if (user_id != NULL) {
     
   } else {
     
   }
   user_id_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), user_id);
-  // @@protoc_insertion_point(field_set_allocated:server.TGroupUserAdd.user_id)
+  // @@protoc_insertion_point(field_set_allocated:server.TGroupUsersAdd.GroupUserAdd.user_id)
 }
 
-inline const TGroupUserAdd* TGroupUserAdd::internal_default_instance() {
-  return &TGroupUserAdd_default_instance_.get();
+inline const TGroupUsersAdd_GroupUserAdd* TGroupUsersAdd_GroupUserAdd::internal_default_instance() {
+  return &TGroupUsersAdd_GroupUserAdd_default_instance_.get();
 }
 // -------------------------------------------------------------------
 
-// TGroupUserKick
+// TGroupUsersAdd
+
+// repeated .server.TGroupUsersAdd.GroupUserAdd group_users = 1;
+inline int TGroupUsersAdd::group_users_size() const {
+  return group_users_.size();
+}
+inline void TGroupUsersAdd::clear_group_users() {
+  group_users_.Clear();
+}
+inline const ::server::TGroupUsersAdd_GroupUserAdd& TGroupUsersAdd::group_users(int index) const {
+  // @@protoc_insertion_point(field_get:server.TGroupUsersAdd.group_users)
+  return group_users_.Get(index);
+}
+inline ::server::TGroupUsersAdd_GroupUserAdd* TGroupUsersAdd::mutable_group_users(int index) {
+  // @@protoc_insertion_point(field_mutable:server.TGroupUsersAdd.group_users)
+  return group_users_.Mutable(index);
+}
+inline ::server::TGroupUsersAdd_GroupUserAdd* TGroupUsersAdd::add_group_users() {
+  // @@protoc_insertion_point(field_add:server.TGroupUsersAdd.group_users)
+  return group_users_.Add();
+}
+inline ::google::protobuf::RepeatedPtrField< ::server::TGroupUsersAdd_GroupUserAdd >*
+TGroupUsersAdd::mutable_group_users() {
+  // @@protoc_insertion_point(field_mutable_list:server.TGroupUsersAdd.group_users)
+  return &group_users_;
+}
+inline const ::google::protobuf::RepeatedPtrField< ::server::TGroupUsersAdd_GroupUserAdd >&
+TGroupUsersAdd::group_users() const {
+  // @@protoc_insertion_point(field_list:server.TGroupUsersAdd.group_users)
+  return group_users_;
+}
+
+inline const TGroupUsersAdd* TGroupUsersAdd::internal_default_instance() {
+  return &TGroupUsersAdd_default_instance_.get();
+}
+// -------------------------------------------------------------------
+
+// TGroupUsersKick_GroupUserKick
 
 // optional bytes group_id = 1;
-inline void TGroupUserKick::clear_group_id() {
+inline void TGroupUsersKick_GroupUserKick::clear_group_id() {
   group_id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline const ::std::string& TGroupUserKick::group_id() const {
-  // @@protoc_insertion_point(field_get:server.TGroupUserKick.group_id)
+inline const ::std::string& TGroupUsersKick_GroupUserKick::group_id() const {
+  // @@protoc_insertion_point(field_get:server.TGroupUsersKick.GroupUserKick.group_id)
   return group_id_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline void TGroupUserKick::set_group_id(const ::std::string& value) {
+inline void TGroupUsersKick_GroupUserKick::set_group_id(const ::std::string& value) {
   
   group_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:server.TGroupUserKick.group_id)
+  // @@protoc_insertion_point(field_set:server.TGroupUsersKick.GroupUserKick.group_id)
 }
-inline void TGroupUserKick::set_group_id(const char* value) {
+inline void TGroupUsersKick_GroupUserKick::set_group_id(const char* value) {
   
   group_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:server.TGroupUserKick.group_id)
+  // @@protoc_insertion_point(field_set_char:server.TGroupUsersKick.GroupUserKick.group_id)
 }
-inline void TGroupUserKick::set_group_id(const void* value, size_t size) {
+inline void TGroupUsersKick_GroupUserKick::set_group_id(const void* value, size_t size) {
   
   group_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:server.TGroupUserKick.group_id)
+  // @@protoc_insertion_point(field_set_pointer:server.TGroupUsersKick.GroupUserKick.group_id)
 }
-inline ::std::string* TGroupUserKick::mutable_group_id() {
+inline ::std::string* TGroupUsersKick_GroupUserKick::mutable_group_id() {
   
-  // @@protoc_insertion_point(field_mutable:server.TGroupUserKick.group_id)
+  // @@protoc_insertion_point(field_mutable:server.TGroupUsersKick.GroupUserKick.group_id)
   return group_id_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline ::std::string* TGroupUserKick::release_group_id() {
-  // @@protoc_insertion_point(field_release:server.TGroupUserKick.group_id)
+inline ::std::string* TGroupUsersKick_GroupUserKick::release_group_id() {
+  // @@protoc_insertion_point(field_release:server.TGroupUsersKick.GroupUserKick.group_id)
   
   return group_id_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline void TGroupUserKick::set_allocated_group_id(::std::string* group_id) {
+inline void TGroupUsersKick_GroupUserKick::set_allocated_group_id(::std::string* group_id) {
   if (group_id != NULL) {
     
   } else {
     
   }
   group_id_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), group_id);
-  // @@protoc_insertion_point(field_set_allocated:server.TGroupUserKick.group_id)
+  // @@protoc_insertion_point(field_set_allocated:server.TGroupUsersKick.GroupUserKick.group_id)
 }
 
 // optional bytes user_id = 2;
-inline void TGroupUserKick::clear_user_id() {
+inline void TGroupUsersKick_GroupUserKick::clear_user_id() {
   user_id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline const ::std::string& TGroupUserKick::user_id() const {
-  // @@protoc_insertion_point(field_get:server.TGroupUserKick.user_id)
+inline const ::std::string& TGroupUsersKick_GroupUserKick::user_id() const {
+  // @@protoc_insertion_point(field_get:server.TGroupUsersKick.GroupUserKick.user_id)
   return user_id_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline void TGroupUserKick::set_user_id(const ::std::string& value) {
+inline void TGroupUsersKick_GroupUserKick::set_user_id(const ::std::string& value) {
   
   user_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:server.TGroupUserKick.user_id)
+  // @@protoc_insertion_point(field_set:server.TGroupUsersKick.GroupUserKick.user_id)
 }
-inline void TGroupUserKick::set_user_id(const char* value) {
+inline void TGroupUsersKick_GroupUserKick::set_user_id(const char* value) {
   
   user_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:server.TGroupUserKick.user_id)
+  // @@protoc_insertion_point(field_set_char:server.TGroupUsersKick.GroupUserKick.user_id)
 }
-inline void TGroupUserKick::set_user_id(const void* value, size_t size) {
+inline void TGroupUsersKick_GroupUserKick::set_user_id(const void* value, size_t size) {
   
   user_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:server.TGroupUserKick.user_id)
+  // @@protoc_insertion_point(field_set_pointer:server.TGroupUsersKick.GroupUserKick.user_id)
 }
-inline ::std::string* TGroupUserKick::mutable_user_id() {
+inline ::std::string* TGroupUsersKick_GroupUserKick::mutable_user_id() {
   
-  // @@protoc_insertion_point(field_mutable:server.TGroupUserKick.user_id)
+  // @@protoc_insertion_point(field_mutable:server.TGroupUsersKick.GroupUserKick.user_id)
   return user_id_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline ::std::string* TGroupUserKick::release_user_id() {
-  // @@protoc_insertion_point(field_release:server.TGroupUserKick.user_id)
+inline ::std::string* TGroupUsersKick_GroupUserKick::release_user_id() {
+  // @@protoc_insertion_point(field_release:server.TGroupUsersKick.GroupUserKick.user_id)
   
   return user_id_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline void TGroupUserKick::set_allocated_user_id(::std::string* user_id) {
+inline void TGroupUsersKick_GroupUserKick::set_allocated_user_id(::std::string* user_id) {
   if (user_id != NULL) {
     
   } else {
     
   }
   user_id_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), user_id);
-  // @@protoc_insertion_point(field_set_allocated:server.TGroupUserKick.user_id)
+  // @@protoc_insertion_point(field_set_allocated:server.TGroupUsersKick.GroupUserKick.user_id)
 }
 
-inline const TGroupUserKick* TGroupUserKick::internal_default_instance() {
-  return &TGroupUserKick_default_instance_.get();
+inline const TGroupUsersKick_GroupUserKick* TGroupUsersKick_GroupUserKick::internal_default_instance() {
+  return &TGroupUsersKick_GroupUserKick_default_instance_.get();
 }
 // -------------------------------------------------------------------
 
-// TGroupUserPromote
+// TGroupUsersKick
+
+// repeated .server.TGroupUsersKick.GroupUserKick group_users = 1;
+inline int TGroupUsersKick::group_users_size() const {
+  return group_users_.size();
+}
+inline void TGroupUsersKick::clear_group_users() {
+  group_users_.Clear();
+}
+inline const ::server::TGroupUsersKick_GroupUserKick& TGroupUsersKick::group_users(int index) const {
+  // @@protoc_insertion_point(field_get:server.TGroupUsersKick.group_users)
+  return group_users_.Get(index);
+}
+inline ::server::TGroupUsersKick_GroupUserKick* TGroupUsersKick::mutable_group_users(int index) {
+  // @@protoc_insertion_point(field_mutable:server.TGroupUsersKick.group_users)
+  return group_users_.Mutable(index);
+}
+inline ::server::TGroupUsersKick_GroupUserKick* TGroupUsersKick::add_group_users() {
+  // @@protoc_insertion_point(field_add:server.TGroupUsersKick.group_users)
+  return group_users_.Add();
+}
+inline ::google::protobuf::RepeatedPtrField< ::server::TGroupUsersKick_GroupUserKick >*
+TGroupUsersKick::mutable_group_users() {
+  // @@protoc_insertion_point(field_mutable_list:server.TGroupUsersKick.group_users)
+  return &group_users_;
+}
+inline const ::google::protobuf::RepeatedPtrField< ::server::TGroupUsersKick_GroupUserKick >&
+TGroupUsersKick::group_users() const {
+  // @@protoc_insertion_point(field_list:server.TGroupUsersKick.group_users)
+  return group_users_;
+}
+
+inline const TGroupUsersKick* TGroupUsersKick::internal_default_instance() {
+  return &TGroupUsersKick_default_instance_.get();
+}
+// -------------------------------------------------------------------
+
+// TGroupUsersPromote_GroupUserPromote
 
 // optional bytes group_id = 1;
-inline void TGroupUserPromote::clear_group_id() {
+inline void TGroupUsersPromote_GroupUserPromote::clear_group_id() {
   group_id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline const ::std::string& TGroupUserPromote::group_id() const {
-  // @@protoc_insertion_point(field_get:server.TGroupUserPromote.group_id)
+inline const ::std::string& TGroupUsersPromote_GroupUserPromote::group_id() const {
+  // @@protoc_insertion_point(field_get:server.TGroupUsersPromote.GroupUserPromote.group_id)
   return group_id_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline void TGroupUserPromote::set_group_id(const ::std::string& value) {
+inline void TGroupUsersPromote_GroupUserPromote::set_group_id(const ::std::string& value) {
   
   group_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:server.TGroupUserPromote.group_id)
+  // @@protoc_insertion_point(field_set:server.TGroupUsersPromote.GroupUserPromote.group_id)
 }
-inline void TGroupUserPromote::set_group_id(const char* value) {
+inline void TGroupUsersPromote_GroupUserPromote::set_group_id(const char* value) {
   
   group_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:server.TGroupUserPromote.group_id)
+  // @@protoc_insertion_point(field_set_char:server.TGroupUsersPromote.GroupUserPromote.group_id)
 }
-inline void TGroupUserPromote::set_group_id(const void* value, size_t size) {
+inline void TGroupUsersPromote_GroupUserPromote::set_group_id(const void* value, size_t size) {
   
   group_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:server.TGroupUserPromote.group_id)
+  // @@protoc_insertion_point(field_set_pointer:server.TGroupUsersPromote.GroupUserPromote.group_id)
 }
-inline ::std::string* TGroupUserPromote::mutable_group_id() {
+inline ::std::string* TGroupUsersPromote_GroupUserPromote::mutable_group_id() {
   
-  // @@protoc_insertion_point(field_mutable:server.TGroupUserPromote.group_id)
+  // @@protoc_insertion_point(field_mutable:server.TGroupUsersPromote.GroupUserPromote.group_id)
   return group_id_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline ::std::string* TGroupUserPromote::release_group_id() {
-  // @@protoc_insertion_point(field_release:server.TGroupUserPromote.group_id)
+inline ::std::string* TGroupUsersPromote_GroupUserPromote::release_group_id() {
+  // @@protoc_insertion_point(field_release:server.TGroupUsersPromote.GroupUserPromote.group_id)
   
   return group_id_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline void TGroupUserPromote::set_allocated_group_id(::std::string* group_id) {
+inline void TGroupUsersPromote_GroupUserPromote::set_allocated_group_id(::std::string* group_id) {
   if (group_id != NULL) {
     
   } else {
     
   }
   group_id_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), group_id);
-  // @@protoc_insertion_point(field_set_allocated:server.TGroupUserPromote.group_id)
+  // @@protoc_insertion_point(field_set_allocated:server.TGroupUsersPromote.GroupUserPromote.group_id)
 }
 
 // optional bytes user_id = 2;
-inline void TGroupUserPromote::clear_user_id() {
+inline void TGroupUsersPromote_GroupUserPromote::clear_user_id() {
   user_id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline const ::std::string& TGroupUserPromote::user_id() const {
-  // @@protoc_insertion_point(field_get:server.TGroupUserPromote.user_id)
+inline const ::std::string& TGroupUsersPromote_GroupUserPromote::user_id() const {
+  // @@protoc_insertion_point(field_get:server.TGroupUsersPromote.GroupUserPromote.user_id)
   return user_id_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline void TGroupUserPromote::set_user_id(const ::std::string& value) {
+inline void TGroupUsersPromote_GroupUserPromote::set_user_id(const ::std::string& value) {
   
   user_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:server.TGroupUserPromote.user_id)
+  // @@protoc_insertion_point(field_set:server.TGroupUsersPromote.GroupUserPromote.user_id)
 }
-inline void TGroupUserPromote::set_user_id(const char* value) {
+inline void TGroupUsersPromote_GroupUserPromote::set_user_id(const char* value) {
   
   user_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:server.TGroupUserPromote.user_id)
+  // @@protoc_insertion_point(field_set_char:server.TGroupUsersPromote.GroupUserPromote.user_id)
 }
-inline void TGroupUserPromote::set_user_id(const void* value, size_t size) {
+inline void TGroupUsersPromote_GroupUserPromote::set_user_id(const void* value, size_t size) {
   
   user_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:server.TGroupUserPromote.user_id)
+  // @@protoc_insertion_point(field_set_pointer:server.TGroupUsersPromote.GroupUserPromote.user_id)
 }
-inline ::std::string* TGroupUserPromote::mutable_user_id() {
+inline ::std::string* TGroupUsersPromote_GroupUserPromote::mutable_user_id() {
   
-  // @@protoc_insertion_point(field_mutable:server.TGroupUserPromote.user_id)
+  // @@protoc_insertion_point(field_mutable:server.TGroupUsersPromote.GroupUserPromote.user_id)
   return user_id_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline ::std::string* TGroupUserPromote::release_user_id() {
-  // @@protoc_insertion_point(field_release:server.TGroupUserPromote.user_id)
+inline ::std::string* TGroupUsersPromote_GroupUserPromote::release_user_id() {
+  // @@protoc_insertion_point(field_release:server.TGroupUsersPromote.GroupUserPromote.user_id)
   
   return user_id_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline void TGroupUserPromote::set_allocated_user_id(::std::string* user_id) {
+inline void TGroupUsersPromote_GroupUserPromote::set_allocated_user_id(::std::string* user_id) {
   if (user_id != NULL) {
     
   } else {
     
   }
   user_id_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), user_id);
-  // @@protoc_insertion_point(field_set_allocated:server.TGroupUserPromote.user_id)
+  // @@protoc_insertion_point(field_set_allocated:server.TGroupUsersPromote.GroupUserPromote.user_id)
 }
 
-inline const TGroupUserPromote* TGroupUserPromote::internal_default_instance() {
-  return &TGroupUserPromote_default_instance_.get();
+inline const TGroupUsersPromote_GroupUserPromote* TGroupUsersPromote_GroupUserPromote::internal_default_instance() {
+  return &TGroupUsersPromote_GroupUserPromote_default_instance_.get();
+}
+// -------------------------------------------------------------------
+
+// TGroupUsersPromote
+
+// repeated .server.TGroupUsersPromote.GroupUserPromote group_users = 1;
+inline int TGroupUsersPromote::group_users_size() const {
+  return group_users_.size();
+}
+inline void TGroupUsersPromote::clear_group_users() {
+  group_users_.Clear();
+}
+inline const ::server::TGroupUsersPromote_GroupUserPromote& TGroupUsersPromote::group_users(int index) const {
+  // @@protoc_insertion_point(field_get:server.TGroupUsersPromote.group_users)
+  return group_users_.Get(index);
+}
+inline ::server::TGroupUsersPromote_GroupUserPromote* TGroupUsersPromote::mutable_group_users(int index) {
+  // @@protoc_insertion_point(field_mutable:server.TGroupUsersPromote.group_users)
+  return group_users_.Mutable(index);
+}
+inline ::server::TGroupUsersPromote_GroupUserPromote* TGroupUsersPromote::add_group_users() {
+  // @@protoc_insertion_point(field_add:server.TGroupUsersPromote.group_users)
+  return group_users_.Add();
+}
+inline ::google::protobuf::RepeatedPtrField< ::server::TGroupUsersPromote_GroupUserPromote >*
+TGroupUsersPromote::mutable_group_users() {
+  // @@protoc_insertion_point(field_mutable_list:server.TGroupUsersPromote.group_users)
+  return &group_users_;
+}
+inline const ::google::protobuf::RepeatedPtrField< ::server::TGroupUsersPromote_GroupUserPromote >&
+TGroupUsersPromote::group_users() const {
+  // @@protoc_insertion_point(field_list:server.TGroupUsersPromote.group_users)
+  return group_users_;
+}
+
+inline const TGroupUsersPromote* TGroupUsersPromote::internal_default_instance() {
+  return &TGroupUsersPromote_default_instance_.get();
 }
 // -------------------------------------------------------------------
 
@@ -21386,39 +22720,39 @@ inline const UserPresence* UserPresence::internal_default_instance() {
 }
 // -------------------------------------------------------------------
 
-// TTopicJoin
+// TTopicsJoin_TopicJoin
 
 // optional bytes user_id = 1;
-inline bool TTopicJoin::has_user_id() const {
+inline bool TTopicsJoin_TopicJoin::has_user_id() const {
   return id_case() == kUserId;
 }
-inline void TTopicJoin::set_has_user_id() {
+inline void TTopicsJoin_TopicJoin::set_has_user_id() {
   _oneof_case_[0] = kUserId;
 }
-inline void TTopicJoin::clear_user_id() {
+inline void TTopicsJoin_TopicJoin::clear_user_id() {
   if (has_user_id()) {
     id_.user_id_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
     clear_has_id();
   }
 }
-inline const ::std::string& TTopicJoin::user_id() const {
-  // @@protoc_insertion_point(field_get:server.TTopicJoin.user_id)
+inline const ::std::string& TTopicsJoin_TopicJoin::user_id() const {
+  // @@protoc_insertion_point(field_get:server.TTopicsJoin.TopicJoin.user_id)
   if (has_user_id()) {
     return id_.user_id_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
   return *&::google::protobuf::internal::GetEmptyStringAlreadyInited();
 }
-inline void TTopicJoin::set_user_id(const ::std::string& value) {
-  // @@protoc_insertion_point(field_set:server.TTopicJoin.user_id)
+inline void TTopicsJoin_TopicJoin::set_user_id(const ::std::string& value) {
+  // @@protoc_insertion_point(field_set:server.TTopicsJoin.TopicJoin.user_id)
   if (!has_user_id()) {
     clear_id();
     set_has_user_id();
     id_.user_id_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
   id_.user_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:server.TTopicJoin.user_id)
+  // @@protoc_insertion_point(field_set:server.TTopicsJoin.TopicJoin.user_id)
 }
-inline void TTopicJoin::set_user_id(const char* value) {
+inline void TTopicsJoin_TopicJoin::set_user_id(const char* value) {
   if (!has_user_id()) {
     clear_id();
     set_has_user_id();
@@ -21426,9 +22760,9 @@ inline void TTopicJoin::set_user_id(const char* value) {
   }
   id_.user_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:server.TTopicJoin.user_id)
+  // @@protoc_insertion_point(field_set_char:server.TTopicsJoin.TopicJoin.user_id)
 }
-inline void TTopicJoin::set_user_id(const void* value, size_t size) {
+inline void TTopicsJoin_TopicJoin::set_user_id(const void* value, size_t size) {
   if (!has_user_id()) {
     clear_id();
     set_has_user_id();
@@ -21436,19 +22770,19 @@ inline void TTopicJoin::set_user_id(const void* value, size_t size) {
   }
   id_.user_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(
       reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:server.TTopicJoin.user_id)
+  // @@protoc_insertion_point(field_set_pointer:server.TTopicsJoin.TopicJoin.user_id)
 }
-inline ::std::string* TTopicJoin::mutable_user_id() {
+inline ::std::string* TTopicsJoin_TopicJoin::mutable_user_id() {
   if (!has_user_id()) {
     clear_id();
     set_has_user_id();
     id_.user_id_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  // @@protoc_insertion_point(field_mutable:server.TTopicJoin.user_id)
+  // @@protoc_insertion_point(field_mutable:server.TTopicsJoin.TopicJoin.user_id)
   return id_.user_id_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline ::std::string* TTopicJoin::release_user_id() {
-  // @@protoc_insertion_point(field_release:server.TTopicJoin.user_id)
+inline ::std::string* TTopicsJoin_TopicJoin::release_user_id() {
+  // @@protoc_insertion_point(field_release:server.TTopicsJoin.TopicJoin.user_id)
   if (has_user_id()) {
     clear_has_id();
     return id_.user_id_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
@@ -21456,7 +22790,7 @@ inline ::std::string* TTopicJoin::release_user_id() {
     return NULL;
   }
 }
-inline void TTopicJoin::set_allocated_user_id(::std::string* user_id) {
+inline void TTopicsJoin_TopicJoin::set_allocated_user_id(::std::string* user_id) {
   if (!has_user_id()) {
     id_.user_id_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
@@ -21466,40 +22800,40 @@ inline void TTopicJoin::set_allocated_user_id(::std::string* user_id) {
     id_.user_id_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
         user_id);
   }
-  // @@protoc_insertion_point(field_set_allocated:server.TTopicJoin.user_id)
+  // @@protoc_insertion_point(field_set_allocated:server.TTopicsJoin.TopicJoin.user_id)
 }
 
 // optional bytes room = 2;
-inline bool TTopicJoin::has_room() const {
+inline bool TTopicsJoin_TopicJoin::has_room() const {
   return id_case() == kRoom;
 }
-inline void TTopicJoin::set_has_room() {
+inline void TTopicsJoin_TopicJoin::set_has_room() {
   _oneof_case_[0] = kRoom;
 }
-inline void TTopicJoin::clear_room() {
+inline void TTopicsJoin_TopicJoin::clear_room() {
   if (has_room()) {
     id_.room_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
     clear_has_id();
   }
 }
-inline const ::std::string& TTopicJoin::room() const {
-  // @@protoc_insertion_point(field_get:server.TTopicJoin.room)
+inline const ::std::string& TTopicsJoin_TopicJoin::room() const {
+  // @@protoc_insertion_point(field_get:server.TTopicsJoin.TopicJoin.room)
   if (has_room()) {
     return id_.room_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
   return *&::google::protobuf::internal::GetEmptyStringAlreadyInited();
 }
-inline void TTopicJoin::set_room(const ::std::string& value) {
-  // @@protoc_insertion_point(field_set:server.TTopicJoin.room)
+inline void TTopicsJoin_TopicJoin::set_room(const ::std::string& value) {
+  // @@protoc_insertion_point(field_set:server.TTopicsJoin.TopicJoin.room)
   if (!has_room()) {
     clear_id();
     set_has_room();
     id_.room_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
   id_.room_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:server.TTopicJoin.room)
+  // @@protoc_insertion_point(field_set:server.TTopicsJoin.TopicJoin.room)
 }
-inline void TTopicJoin::set_room(const char* value) {
+inline void TTopicsJoin_TopicJoin::set_room(const char* value) {
   if (!has_room()) {
     clear_id();
     set_has_room();
@@ -21507,9 +22841,9 @@ inline void TTopicJoin::set_room(const char* value) {
   }
   id_.room_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:server.TTopicJoin.room)
+  // @@protoc_insertion_point(field_set_char:server.TTopicsJoin.TopicJoin.room)
 }
-inline void TTopicJoin::set_room(const void* value, size_t size) {
+inline void TTopicsJoin_TopicJoin::set_room(const void* value, size_t size) {
   if (!has_room()) {
     clear_id();
     set_has_room();
@@ -21517,19 +22851,19 @@ inline void TTopicJoin::set_room(const void* value, size_t size) {
   }
   id_.room_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(
       reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:server.TTopicJoin.room)
+  // @@protoc_insertion_point(field_set_pointer:server.TTopicsJoin.TopicJoin.room)
 }
-inline ::std::string* TTopicJoin::mutable_room() {
+inline ::std::string* TTopicsJoin_TopicJoin::mutable_room() {
   if (!has_room()) {
     clear_id();
     set_has_room();
     id_.room_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  // @@protoc_insertion_point(field_mutable:server.TTopicJoin.room)
+  // @@protoc_insertion_point(field_mutable:server.TTopicsJoin.TopicJoin.room)
   return id_.room_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline ::std::string* TTopicJoin::release_room() {
-  // @@protoc_insertion_point(field_release:server.TTopicJoin.room)
+inline ::std::string* TTopicsJoin_TopicJoin::release_room() {
+  // @@protoc_insertion_point(field_release:server.TTopicsJoin.TopicJoin.room)
   if (has_room()) {
     clear_has_id();
     return id_.room_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
@@ -21537,7 +22871,7 @@ inline ::std::string* TTopicJoin::release_room() {
     return NULL;
   }
 }
-inline void TTopicJoin::set_allocated_room(::std::string* room) {
+inline void TTopicsJoin_TopicJoin::set_allocated_room(::std::string* room) {
   if (!has_room()) {
     id_.room_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
@@ -21547,40 +22881,40 @@ inline void TTopicJoin::set_allocated_room(::std::string* room) {
     id_.room_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
         room);
   }
-  // @@protoc_insertion_point(field_set_allocated:server.TTopicJoin.room)
+  // @@protoc_insertion_point(field_set_allocated:server.TTopicsJoin.TopicJoin.room)
 }
 
 // optional bytes group_id = 3;
-inline bool TTopicJoin::has_group_id() const {
+inline bool TTopicsJoin_TopicJoin::has_group_id() const {
   return id_case() == kGroupId;
 }
-inline void TTopicJoin::set_has_group_id() {
+inline void TTopicsJoin_TopicJoin::set_has_group_id() {
   _oneof_case_[0] = kGroupId;
 }
-inline void TTopicJoin::clear_group_id() {
+inline void TTopicsJoin_TopicJoin::clear_group_id() {
   if (has_group_id()) {
     id_.group_id_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
     clear_has_id();
   }
 }
-inline const ::std::string& TTopicJoin::group_id() const {
-  // @@protoc_insertion_point(field_get:server.TTopicJoin.group_id)
+inline const ::std::string& TTopicsJoin_TopicJoin::group_id() const {
+  // @@protoc_insertion_point(field_get:server.TTopicsJoin.TopicJoin.group_id)
   if (has_group_id()) {
     return id_.group_id_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
   return *&::google::protobuf::internal::GetEmptyStringAlreadyInited();
 }
-inline void TTopicJoin::set_group_id(const ::std::string& value) {
-  // @@protoc_insertion_point(field_set:server.TTopicJoin.group_id)
+inline void TTopicsJoin_TopicJoin::set_group_id(const ::std::string& value) {
+  // @@protoc_insertion_point(field_set:server.TTopicsJoin.TopicJoin.group_id)
   if (!has_group_id()) {
     clear_id();
     set_has_group_id();
     id_.group_id_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
   id_.group_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:server.TTopicJoin.group_id)
+  // @@protoc_insertion_point(field_set:server.TTopicsJoin.TopicJoin.group_id)
 }
-inline void TTopicJoin::set_group_id(const char* value) {
+inline void TTopicsJoin_TopicJoin::set_group_id(const char* value) {
   if (!has_group_id()) {
     clear_id();
     set_has_group_id();
@@ -21588,9 +22922,9 @@ inline void TTopicJoin::set_group_id(const char* value) {
   }
   id_.group_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:server.TTopicJoin.group_id)
+  // @@protoc_insertion_point(field_set_char:server.TTopicsJoin.TopicJoin.group_id)
 }
-inline void TTopicJoin::set_group_id(const void* value, size_t size) {
+inline void TTopicsJoin_TopicJoin::set_group_id(const void* value, size_t size) {
   if (!has_group_id()) {
     clear_id();
     set_has_group_id();
@@ -21598,19 +22932,19 @@ inline void TTopicJoin::set_group_id(const void* value, size_t size) {
   }
   id_.group_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(
       reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:server.TTopicJoin.group_id)
+  // @@protoc_insertion_point(field_set_pointer:server.TTopicsJoin.TopicJoin.group_id)
 }
-inline ::std::string* TTopicJoin::mutable_group_id() {
+inline ::std::string* TTopicsJoin_TopicJoin::mutable_group_id() {
   if (!has_group_id()) {
     clear_id();
     set_has_group_id();
     id_.group_id_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  // @@protoc_insertion_point(field_mutable:server.TTopicJoin.group_id)
+  // @@protoc_insertion_point(field_mutable:server.TTopicsJoin.TopicJoin.group_id)
   return id_.group_id_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline ::std::string* TTopicJoin::release_group_id() {
-  // @@protoc_insertion_point(field_release:server.TTopicJoin.group_id)
+inline ::std::string* TTopicsJoin_TopicJoin::release_group_id() {
+  // @@protoc_insertion_point(field_release:server.TTopicsJoin.TopicJoin.group_id)
   if (has_group_id()) {
     clear_has_id();
     return id_.group_id_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
@@ -21618,7 +22952,7 @@ inline ::std::string* TTopicJoin::release_group_id() {
     return NULL;
   }
 }
-inline void TTopicJoin::set_allocated_group_id(::std::string* group_id) {
+inline void TTopicsJoin_TopicJoin::set_allocated_group_id(::std::string* group_id) {
   if (!has_group_id()) {
     id_.group_id_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
@@ -21628,54 +22962,91 @@ inline void TTopicJoin::set_allocated_group_id(::std::string* group_id) {
     id_.group_id_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
         group_id);
   }
-  // @@protoc_insertion_point(field_set_allocated:server.TTopicJoin.group_id)
+  // @@protoc_insertion_point(field_set_allocated:server.TTopicsJoin.TopicJoin.group_id)
 }
 
-inline bool TTopicJoin::has_id() const {
+inline bool TTopicsJoin_TopicJoin::has_id() const {
   return id_case() != ID_NOT_SET;
 }
-inline void TTopicJoin::clear_has_id() {
+inline void TTopicsJoin_TopicJoin::clear_has_id() {
   _oneof_case_[0] = ID_NOT_SET;
 }
-inline TTopicJoin::IdCase TTopicJoin::id_case() const {
-  return TTopicJoin::IdCase(_oneof_case_[0]);
+inline TTopicsJoin_TopicJoin::IdCase TTopicsJoin_TopicJoin::id_case() const {
+  return TTopicsJoin_TopicJoin::IdCase(_oneof_case_[0]);
 }
-inline const TTopicJoin* TTopicJoin::internal_default_instance() {
-  return &TTopicJoin_default_instance_.get();
+inline const TTopicsJoin_TopicJoin* TTopicsJoin_TopicJoin::internal_default_instance() {
+  return &TTopicsJoin_TopicJoin_default_instance_.get();
 }
 // -------------------------------------------------------------------
 
-// TTopic
+// TTopicsJoin
+
+// repeated .server.TTopicsJoin.TopicJoin joins = 1;
+inline int TTopicsJoin::joins_size() const {
+  return joins_.size();
+}
+inline void TTopicsJoin::clear_joins() {
+  joins_.Clear();
+}
+inline const ::server::TTopicsJoin_TopicJoin& TTopicsJoin::joins(int index) const {
+  // @@protoc_insertion_point(field_get:server.TTopicsJoin.joins)
+  return joins_.Get(index);
+}
+inline ::server::TTopicsJoin_TopicJoin* TTopicsJoin::mutable_joins(int index) {
+  // @@protoc_insertion_point(field_mutable:server.TTopicsJoin.joins)
+  return joins_.Mutable(index);
+}
+inline ::server::TTopicsJoin_TopicJoin* TTopicsJoin::add_joins() {
+  // @@protoc_insertion_point(field_add:server.TTopicsJoin.joins)
+  return joins_.Add();
+}
+inline ::google::protobuf::RepeatedPtrField< ::server::TTopicsJoin_TopicJoin >*
+TTopicsJoin::mutable_joins() {
+  // @@protoc_insertion_point(field_mutable_list:server.TTopicsJoin.joins)
+  return &joins_;
+}
+inline const ::google::protobuf::RepeatedPtrField< ::server::TTopicsJoin_TopicJoin >&
+TTopicsJoin::joins() const {
+  // @@protoc_insertion_point(field_list:server.TTopicsJoin.joins)
+  return joins_;
+}
+
+inline const TTopicsJoin* TTopicsJoin::internal_default_instance() {
+  return &TTopicsJoin_default_instance_.get();
+}
+// -------------------------------------------------------------------
+
+// TTopics_Topic
 
 // optional .server.TopicId topic = 1;
-inline bool TTopic::has_topic() const {
+inline bool TTopics_Topic::has_topic() const {
   return this != internal_default_instance() && topic_ != NULL;
 }
-inline void TTopic::clear_topic() {
+inline void TTopics_Topic::clear_topic() {
   if (GetArenaNoVirtual() == NULL && topic_ != NULL) delete topic_;
   topic_ = NULL;
 }
-inline const ::server::TopicId& TTopic::topic() const {
-  // @@protoc_insertion_point(field_get:server.TTopic.topic)
+inline const ::server::TopicId& TTopics_Topic::topic() const {
+  // @@protoc_insertion_point(field_get:server.TTopics.Topic.topic)
   return topic_ != NULL ? *topic_
                          : *::server::TopicId::internal_default_instance();
 }
-inline ::server::TopicId* TTopic::mutable_topic() {
+inline ::server::TopicId* TTopics_Topic::mutable_topic() {
   
   if (topic_ == NULL) {
     topic_ = new ::server::TopicId;
   }
-  // @@protoc_insertion_point(field_mutable:server.TTopic.topic)
+  // @@protoc_insertion_point(field_mutable:server.TTopics.Topic.topic)
   return topic_;
 }
-inline ::server::TopicId* TTopic::release_topic() {
-  // @@protoc_insertion_point(field_release:server.TTopic.topic)
+inline ::server::TopicId* TTopics_Topic::release_topic() {
+  // @@protoc_insertion_point(field_release:server.TTopics.Topic.topic)
   
   ::server::TopicId* temp = topic_;
   topic_ = NULL;
   return temp;
 }
-inline void TTopic::set_allocated_topic(::server::TopicId* topic) {
+inline void TTopics_Topic::set_allocated_topic(::server::TopicId* topic) {
   delete topic_;
   topic_ = topic;
   if (topic) {
@@ -21683,68 +23054,68 @@ inline void TTopic::set_allocated_topic(::server::TopicId* topic) {
   } else {
     
   }
-  // @@protoc_insertion_point(field_set_allocated:server.TTopic.topic)
+  // @@protoc_insertion_point(field_set_allocated:server.TTopics.Topic.topic)
 }
 
 // repeated .server.UserPresence presences = 2;
-inline int TTopic::presences_size() const {
+inline int TTopics_Topic::presences_size() const {
   return presences_.size();
 }
-inline void TTopic::clear_presences() {
+inline void TTopics_Topic::clear_presences() {
   presences_.Clear();
 }
-inline const ::server::UserPresence& TTopic::presences(int index) const {
-  // @@protoc_insertion_point(field_get:server.TTopic.presences)
+inline const ::server::UserPresence& TTopics_Topic::presences(int index) const {
+  // @@protoc_insertion_point(field_get:server.TTopics.Topic.presences)
   return presences_.Get(index);
 }
-inline ::server::UserPresence* TTopic::mutable_presences(int index) {
-  // @@protoc_insertion_point(field_mutable:server.TTopic.presences)
+inline ::server::UserPresence* TTopics_Topic::mutable_presences(int index) {
+  // @@protoc_insertion_point(field_mutable:server.TTopics.Topic.presences)
   return presences_.Mutable(index);
 }
-inline ::server::UserPresence* TTopic::add_presences() {
-  // @@protoc_insertion_point(field_add:server.TTopic.presences)
+inline ::server::UserPresence* TTopics_Topic::add_presences() {
+  // @@protoc_insertion_point(field_add:server.TTopics.Topic.presences)
   return presences_.Add();
 }
 inline ::google::protobuf::RepeatedPtrField< ::server::UserPresence >*
-TTopic::mutable_presences() {
-  // @@protoc_insertion_point(field_mutable_list:server.TTopic.presences)
+TTopics_Topic::mutable_presences() {
+  // @@protoc_insertion_point(field_mutable_list:server.TTopics.Topic.presences)
   return &presences_;
 }
 inline const ::google::protobuf::RepeatedPtrField< ::server::UserPresence >&
-TTopic::presences() const {
-  // @@protoc_insertion_point(field_list:server.TTopic.presences)
+TTopics_Topic::presences() const {
+  // @@protoc_insertion_point(field_list:server.TTopics.Topic.presences)
   return presences_;
 }
 
 // optional .server.UserPresence self = 3;
-inline bool TTopic::has_self() const {
+inline bool TTopics_Topic::has_self() const {
   return this != internal_default_instance() && self_ != NULL;
 }
-inline void TTopic::clear_self() {
+inline void TTopics_Topic::clear_self() {
   if (GetArenaNoVirtual() == NULL && self_ != NULL) delete self_;
   self_ = NULL;
 }
-inline const ::server::UserPresence& TTopic::self() const {
-  // @@protoc_insertion_point(field_get:server.TTopic.self)
+inline const ::server::UserPresence& TTopics_Topic::self() const {
+  // @@protoc_insertion_point(field_get:server.TTopics.Topic.self)
   return self_ != NULL ? *self_
                          : *::server::UserPresence::internal_default_instance();
 }
-inline ::server::UserPresence* TTopic::mutable_self() {
+inline ::server::UserPresence* TTopics_Topic::mutable_self() {
   
   if (self_ == NULL) {
     self_ = new ::server::UserPresence;
   }
-  // @@protoc_insertion_point(field_mutable:server.TTopic.self)
+  // @@protoc_insertion_point(field_mutable:server.TTopics.Topic.self)
   return self_;
 }
-inline ::server::UserPresence* TTopic::release_self() {
-  // @@protoc_insertion_point(field_release:server.TTopic.self)
+inline ::server::UserPresence* TTopics_Topic::release_self() {
+  // @@protoc_insertion_point(field_release:server.TTopics.Topic.self)
   
   ::server::UserPresence* temp = self_;
   self_ = NULL;
   return temp;
 }
-inline void TTopic::set_allocated_self(::server::UserPresence* self) {
+inline void TTopics_Topic::set_allocated_self(::server::UserPresence* self) {
   delete self_;
   self_ = self;
   if (self) {
@@ -21752,57 +23123,85 @@ inline void TTopic::set_allocated_self(::server::UserPresence* self) {
   } else {
     
   }
-  // @@protoc_insertion_point(field_set_allocated:server.TTopic.self)
+  // @@protoc_insertion_point(field_set_allocated:server.TTopics.Topic.self)
 }
 
-inline const TTopic* TTopic::internal_default_instance() {
-  return &TTopic_default_instance_.get();
+inline const TTopics_Topic* TTopics_Topic::internal_default_instance() {
+  return &TTopics_Topic_default_instance_.get();
 }
 // -------------------------------------------------------------------
 
-// TTopicLeave
+// TTopics
 
-// optional .server.TopicId topic = 1;
-inline bool TTopicLeave::has_topic() const {
-  return this != internal_default_instance() && topic_ != NULL;
+// repeated .server.TTopics.Topic topics = 1;
+inline int TTopics::topics_size() const {
+  return topics_.size();
 }
-inline void TTopicLeave::clear_topic() {
-  if (GetArenaNoVirtual() == NULL && topic_ != NULL) delete topic_;
-  topic_ = NULL;
+inline void TTopics::clear_topics() {
+  topics_.Clear();
 }
-inline const ::server::TopicId& TTopicLeave::topic() const {
-  // @@protoc_insertion_point(field_get:server.TTopicLeave.topic)
-  return topic_ != NULL ? *topic_
-                         : *::server::TopicId::internal_default_instance();
+inline const ::server::TTopics_Topic& TTopics::topics(int index) const {
+  // @@protoc_insertion_point(field_get:server.TTopics.topics)
+  return topics_.Get(index);
 }
-inline ::server::TopicId* TTopicLeave::mutable_topic() {
-  
-  if (topic_ == NULL) {
-    topic_ = new ::server::TopicId;
-  }
-  // @@protoc_insertion_point(field_mutable:server.TTopicLeave.topic)
-  return topic_;
+inline ::server::TTopics_Topic* TTopics::mutable_topics(int index) {
+  // @@protoc_insertion_point(field_mutable:server.TTopics.topics)
+  return topics_.Mutable(index);
 }
-inline ::server::TopicId* TTopicLeave::release_topic() {
-  // @@protoc_insertion_point(field_release:server.TTopicLeave.topic)
-  
-  ::server::TopicId* temp = topic_;
-  topic_ = NULL;
-  return temp;
+inline ::server::TTopics_Topic* TTopics::add_topics() {
+  // @@protoc_insertion_point(field_add:server.TTopics.topics)
+  return topics_.Add();
 }
-inline void TTopicLeave::set_allocated_topic(::server::TopicId* topic) {
-  delete topic_;
-  topic_ = topic;
-  if (topic) {
-    
-  } else {
-    
-  }
-  // @@protoc_insertion_point(field_set_allocated:server.TTopicLeave.topic)
+inline ::google::protobuf::RepeatedPtrField< ::server::TTopics_Topic >*
+TTopics::mutable_topics() {
+  // @@protoc_insertion_point(field_mutable_list:server.TTopics.topics)
+  return &topics_;
+}
+inline const ::google::protobuf::RepeatedPtrField< ::server::TTopics_Topic >&
+TTopics::topics() const {
+  // @@protoc_insertion_point(field_list:server.TTopics.topics)
+  return topics_;
 }
 
-inline const TTopicLeave* TTopicLeave::internal_default_instance() {
-  return &TTopicLeave_default_instance_.get();
+inline const TTopics* TTopics::internal_default_instance() {
+  return &TTopics_default_instance_.get();
+}
+// -------------------------------------------------------------------
+
+// TTopicsLeave
+
+// repeated .server.TopicId topics = 1;
+inline int TTopicsLeave::topics_size() const {
+  return topics_.size();
+}
+inline void TTopicsLeave::clear_topics() {
+  topics_.Clear();
+}
+inline const ::server::TopicId& TTopicsLeave::topics(int index) const {
+  // @@protoc_insertion_point(field_get:server.TTopicsLeave.topics)
+  return topics_.Get(index);
+}
+inline ::server::TopicId* TTopicsLeave::mutable_topics(int index) {
+  // @@protoc_insertion_point(field_mutable:server.TTopicsLeave.topics)
+  return topics_.Mutable(index);
+}
+inline ::server::TopicId* TTopicsLeave::add_topics() {
+  // @@protoc_insertion_point(field_add:server.TTopicsLeave.topics)
+  return topics_.Add();
+}
+inline ::google::protobuf::RepeatedPtrField< ::server::TopicId >*
+TTopicsLeave::mutable_topics() {
+  // @@protoc_insertion_point(field_mutable_list:server.TTopicsLeave.topics)
+  return &topics_;
+}
+inline const ::google::protobuf::RepeatedPtrField< ::server::TopicId >&
+TTopicsLeave::topics() const {
+  // @@protoc_insertion_point(field_list:server.TTopicsLeave.topics)
+  return topics_;
+}
+
+inline const TTopicsLeave* TTopicsLeave::internal_default_instance() {
+  return &TTopicsLeave_default_instance_.get();
 }
 // -------------------------------------------------------------------
 
@@ -23088,6 +24487,237 @@ inline const MatchmakeMatched* MatchmakeMatched::internal_default_instance() {
 }
 // -------------------------------------------------------------------
 
+// Match
+
+// optional bytes match_id = 1;
+inline void Match::clear_match_id() {
+  match_id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& Match::match_id() const {
+  // @@protoc_insertion_point(field_get:server.Match.match_id)
+  return match_id_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void Match::set_match_id(const ::std::string& value) {
+  
+  match_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:server.Match.match_id)
+}
+inline void Match::set_match_id(const char* value) {
+  
+  match_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:server.Match.match_id)
+}
+inline void Match::set_match_id(const void* value, size_t size) {
+  
+  match_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:server.Match.match_id)
+}
+inline ::std::string* Match::mutable_match_id() {
+  
+  // @@protoc_insertion_point(field_mutable:server.Match.match_id)
+  return match_id_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* Match::release_match_id() {
+  // @@protoc_insertion_point(field_release:server.Match.match_id)
+  
+  return match_id_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void Match::set_allocated_match_id(::std::string* match_id) {
+  if (match_id != NULL) {
+    
+  } else {
+    
+  }
+  match_id_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), match_id);
+  // @@protoc_insertion_point(field_set_allocated:server.Match.match_id)
+}
+
+// repeated .server.UserPresence presences = 2;
+inline int Match::presences_size() const {
+  return presences_.size();
+}
+inline void Match::clear_presences() {
+  presences_.Clear();
+}
+inline const ::server::UserPresence& Match::presences(int index) const {
+  // @@protoc_insertion_point(field_get:server.Match.presences)
+  return presences_.Get(index);
+}
+inline ::server::UserPresence* Match::mutable_presences(int index) {
+  // @@protoc_insertion_point(field_mutable:server.Match.presences)
+  return presences_.Mutable(index);
+}
+inline ::server::UserPresence* Match::add_presences() {
+  // @@protoc_insertion_point(field_add:server.Match.presences)
+  return presences_.Add();
+}
+inline ::google::protobuf::RepeatedPtrField< ::server::UserPresence >*
+Match::mutable_presences() {
+  // @@protoc_insertion_point(field_mutable_list:server.Match.presences)
+  return &presences_;
+}
+inline const ::google::protobuf::RepeatedPtrField< ::server::UserPresence >&
+Match::presences() const {
+  // @@protoc_insertion_point(field_list:server.Match.presences)
+  return presences_;
+}
+
+// optional .server.UserPresence self = 3;
+inline bool Match::has_self() const {
+  return this != internal_default_instance() && self_ != NULL;
+}
+inline void Match::clear_self() {
+  if (GetArenaNoVirtual() == NULL && self_ != NULL) delete self_;
+  self_ = NULL;
+}
+inline const ::server::UserPresence& Match::self() const {
+  // @@protoc_insertion_point(field_get:server.Match.self)
+  return self_ != NULL ? *self_
+                         : *::server::UserPresence::internal_default_instance();
+}
+inline ::server::UserPresence* Match::mutable_self() {
+  
+  if (self_ == NULL) {
+    self_ = new ::server::UserPresence;
+  }
+  // @@protoc_insertion_point(field_mutable:server.Match.self)
+  return self_;
+}
+inline ::server::UserPresence* Match::release_self() {
+  // @@protoc_insertion_point(field_release:server.Match.self)
+  
+  ::server::UserPresence* temp = self_;
+  self_ = NULL;
+  return temp;
+}
+inline void Match::set_allocated_self(::server::UserPresence* self) {
+  delete self_;
+  self_ = self;
+  if (self) {
+    
+  } else {
+    
+  }
+  // @@protoc_insertion_point(field_set_allocated:server.Match.self)
+}
+
+inline const Match* Match::internal_default_instance() {
+  return &Match_default_instance_.get();
+}
+// -------------------------------------------------------------------
+
+// MatchPresence
+
+// optional bytes match_id = 1;
+inline void MatchPresence::clear_match_id() {
+  match_id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& MatchPresence::match_id() const {
+  // @@protoc_insertion_point(field_get:server.MatchPresence.match_id)
+  return match_id_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void MatchPresence::set_match_id(const ::std::string& value) {
+  
+  match_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:server.MatchPresence.match_id)
+}
+inline void MatchPresence::set_match_id(const char* value) {
+  
+  match_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:server.MatchPresence.match_id)
+}
+inline void MatchPresence::set_match_id(const void* value, size_t size) {
+  
+  match_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:server.MatchPresence.match_id)
+}
+inline ::std::string* MatchPresence::mutable_match_id() {
+  
+  // @@protoc_insertion_point(field_mutable:server.MatchPresence.match_id)
+  return match_id_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* MatchPresence::release_match_id() {
+  // @@protoc_insertion_point(field_release:server.MatchPresence.match_id)
+  
+  return match_id_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void MatchPresence::set_allocated_match_id(::std::string* match_id) {
+  if (match_id != NULL) {
+    
+  } else {
+    
+  }
+  match_id_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), match_id);
+  // @@protoc_insertion_point(field_set_allocated:server.MatchPresence.match_id)
+}
+
+// repeated .server.UserPresence joins = 2;
+inline int MatchPresence::joins_size() const {
+  return joins_.size();
+}
+inline void MatchPresence::clear_joins() {
+  joins_.Clear();
+}
+inline const ::server::UserPresence& MatchPresence::joins(int index) const {
+  // @@protoc_insertion_point(field_get:server.MatchPresence.joins)
+  return joins_.Get(index);
+}
+inline ::server::UserPresence* MatchPresence::mutable_joins(int index) {
+  // @@protoc_insertion_point(field_mutable:server.MatchPresence.joins)
+  return joins_.Mutable(index);
+}
+inline ::server::UserPresence* MatchPresence::add_joins() {
+  // @@protoc_insertion_point(field_add:server.MatchPresence.joins)
+  return joins_.Add();
+}
+inline ::google::protobuf::RepeatedPtrField< ::server::UserPresence >*
+MatchPresence::mutable_joins() {
+  // @@protoc_insertion_point(field_mutable_list:server.MatchPresence.joins)
+  return &joins_;
+}
+inline const ::google::protobuf::RepeatedPtrField< ::server::UserPresence >&
+MatchPresence::joins() const {
+  // @@protoc_insertion_point(field_list:server.MatchPresence.joins)
+  return joins_;
+}
+
+// repeated .server.UserPresence leaves = 3;
+inline int MatchPresence::leaves_size() const {
+  return leaves_.size();
+}
+inline void MatchPresence::clear_leaves() {
+  leaves_.Clear();
+}
+inline const ::server::UserPresence& MatchPresence::leaves(int index) const {
+  // @@protoc_insertion_point(field_get:server.MatchPresence.leaves)
+  return leaves_.Get(index);
+}
+inline ::server::UserPresence* MatchPresence::mutable_leaves(int index) {
+  // @@protoc_insertion_point(field_mutable:server.MatchPresence.leaves)
+  return leaves_.Mutable(index);
+}
+inline ::server::UserPresence* MatchPresence::add_leaves() {
+  // @@protoc_insertion_point(field_add:server.MatchPresence.leaves)
+  return leaves_.Add();
+}
+inline ::google::protobuf::RepeatedPtrField< ::server::UserPresence >*
+MatchPresence::mutable_leaves() {
+  // @@protoc_insertion_point(field_mutable_list:server.MatchPresence.leaves)
+  return &leaves_;
+}
+inline const ::google::protobuf::RepeatedPtrField< ::server::UserPresence >&
+MatchPresence::leaves() const {
+  // @@protoc_insertion_point(field_list:server.MatchPresence.leaves)
+  return leaves_;
+}
+
+inline const MatchPresence* MatchPresence::internal_default_instance() {
+  return &MatchPresence_default_instance_.get();
+}
+// -------------------------------------------------------------------
+
 // TMatchCreate
 
 inline const TMatchCreate* TMatchCreate::internal_default_instance() {
@@ -23095,39 +24725,85 @@ inline const TMatchCreate* TMatchCreate::internal_default_instance() {
 }
 // -------------------------------------------------------------------
 
-// TMatchJoin
+// TMatch
+
+// optional .server.Match match = 1;
+inline bool TMatch::has_match() const {
+  return this != internal_default_instance() && match_ != NULL;
+}
+inline void TMatch::clear_match() {
+  if (GetArenaNoVirtual() == NULL && match_ != NULL) delete match_;
+  match_ = NULL;
+}
+inline const ::server::Match& TMatch::match() const {
+  // @@protoc_insertion_point(field_get:server.TMatch.match)
+  return match_ != NULL ? *match_
+                         : *::server::Match::internal_default_instance();
+}
+inline ::server::Match* TMatch::mutable_match() {
+  
+  if (match_ == NULL) {
+    match_ = new ::server::Match;
+  }
+  // @@protoc_insertion_point(field_mutable:server.TMatch.match)
+  return match_;
+}
+inline ::server::Match* TMatch::release_match() {
+  // @@protoc_insertion_point(field_release:server.TMatch.match)
+  
+  ::server::Match* temp = match_;
+  match_ = NULL;
+  return temp;
+}
+inline void TMatch::set_allocated_match(::server::Match* match) {
+  delete match_;
+  match_ = match;
+  if (match) {
+    
+  } else {
+    
+  }
+  // @@protoc_insertion_point(field_set_allocated:server.TMatch.match)
+}
+
+inline const TMatch* TMatch::internal_default_instance() {
+  return &TMatch_default_instance_.get();
+}
+// -------------------------------------------------------------------
+
+// TMatchesJoin_MatchJoin
 
 // optional bytes match_id = 1;
-inline bool TMatchJoin::has_match_id() const {
+inline bool TMatchesJoin_MatchJoin::has_match_id() const {
   return id_case() == kMatchId;
 }
-inline void TMatchJoin::set_has_match_id() {
+inline void TMatchesJoin_MatchJoin::set_has_match_id() {
   _oneof_case_[0] = kMatchId;
 }
-inline void TMatchJoin::clear_match_id() {
+inline void TMatchesJoin_MatchJoin::clear_match_id() {
   if (has_match_id()) {
     id_.match_id_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
     clear_has_id();
   }
 }
-inline const ::std::string& TMatchJoin::match_id() const {
-  // @@protoc_insertion_point(field_get:server.TMatchJoin.match_id)
+inline const ::std::string& TMatchesJoin_MatchJoin::match_id() const {
+  // @@protoc_insertion_point(field_get:server.TMatchesJoin.MatchJoin.match_id)
   if (has_match_id()) {
     return id_.match_id_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
   return *&::google::protobuf::internal::GetEmptyStringAlreadyInited();
 }
-inline void TMatchJoin::set_match_id(const ::std::string& value) {
-  // @@protoc_insertion_point(field_set:server.TMatchJoin.match_id)
+inline void TMatchesJoin_MatchJoin::set_match_id(const ::std::string& value) {
+  // @@protoc_insertion_point(field_set:server.TMatchesJoin.MatchJoin.match_id)
   if (!has_match_id()) {
     clear_id();
     set_has_match_id();
     id_.match_id_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
   id_.match_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:server.TMatchJoin.match_id)
+  // @@protoc_insertion_point(field_set:server.TMatchesJoin.MatchJoin.match_id)
 }
-inline void TMatchJoin::set_match_id(const char* value) {
+inline void TMatchesJoin_MatchJoin::set_match_id(const char* value) {
   if (!has_match_id()) {
     clear_id();
     set_has_match_id();
@@ -23135,9 +24811,9 @@ inline void TMatchJoin::set_match_id(const char* value) {
   }
   id_.match_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:server.TMatchJoin.match_id)
+  // @@protoc_insertion_point(field_set_char:server.TMatchesJoin.MatchJoin.match_id)
 }
-inline void TMatchJoin::set_match_id(const void* value, size_t size) {
+inline void TMatchesJoin_MatchJoin::set_match_id(const void* value, size_t size) {
   if (!has_match_id()) {
     clear_id();
     set_has_match_id();
@@ -23145,19 +24821,19 @@ inline void TMatchJoin::set_match_id(const void* value, size_t size) {
   }
   id_.match_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(
       reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:server.TMatchJoin.match_id)
+  // @@protoc_insertion_point(field_set_pointer:server.TMatchesJoin.MatchJoin.match_id)
 }
-inline ::std::string* TMatchJoin::mutable_match_id() {
+inline ::std::string* TMatchesJoin_MatchJoin::mutable_match_id() {
   if (!has_match_id()) {
     clear_id();
     set_has_match_id();
     id_.match_id_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  // @@protoc_insertion_point(field_mutable:server.TMatchJoin.match_id)
+  // @@protoc_insertion_point(field_mutable:server.TMatchesJoin.MatchJoin.match_id)
   return id_.match_id_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline ::std::string* TMatchJoin::release_match_id() {
-  // @@protoc_insertion_point(field_release:server.TMatchJoin.match_id)
+inline ::std::string* TMatchesJoin_MatchJoin::release_match_id() {
+  // @@protoc_insertion_point(field_release:server.TMatchesJoin.MatchJoin.match_id)
   if (has_match_id()) {
     clear_has_id();
     return id_.match_id_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
@@ -23165,7 +24841,7 @@ inline ::std::string* TMatchJoin::release_match_id() {
     return NULL;
   }
 }
-inline void TMatchJoin::set_allocated_match_id(::std::string* match_id) {
+inline void TMatchesJoin_MatchJoin::set_allocated_match_id(::std::string* match_id) {
   if (!has_match_id()) {
     id_.match_id_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
@@ -23175,40 +24851,40 @@ inline void TMatchJoin::set_allocated_match_id(::std::string* match_id) {
     id_.match_id_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
         match_id);
   }
-  // @@protoc_insertion_point(field_set_allocated:server.TMatchJoin.match_id)
+  // @@protoc_insertion_point(field_set_allocated:server.TMatchesJoin.MatchJoin.match_id)
 }
 
 // optional bytes token = 2;
-inline bool TMatchJoin::has_token() const {
+inline bool TMatchesJoin_MatchJoin::has_token() const {
   return id_case() == kToken;
 }
-inline void TMatchJoin::set_has_token() {
+inline void TMatchesJoin_MatchJoin::set_has_token() {
   _oneof_case_[0] = kToken;
 }
-inline void TMatchJoin::clear_token() {
+inline void TMatchesJoin_MatchJoin::clear_token() {
   if (has_token()) {
     id_.token_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
     clear_has_id();
   }
 }
-inline const ::std::string& TMatchJoin::token() const {
-  // @@protoc_insertion_point(field_get:server.TMatchJoin.token)
+inline const ::std::string& TMatchesJoin_MatchJoin::token() const {
+  // @@protoc_insertion_point(field_get:server.TMatchesJoin.MatchJoin.token)
   if (has_token()) {
     return id_.token_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
   return *&::google::protobuf::internal::GetEmptyStringAlreadyInited();
 }
-inline void TMatchJoin::set_token(const ::std::string& value) {
-  // @@protoc_insertion_point(field_set:server.TMatchJoin.token)
+inline void TMatchesJoin_MatchJoin::set_token(const ::std::string& value) {
+  // @@protoc_insertion_point(field_set:server.TMatchesJoin.MatchJoin.token)
   if (!has_token()) {
     clear_id();
     set_has_token();
     id_.token_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
   id_.token_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:server.TMatchJoin.token)
+  // @@protoc_insertion_point(field_set:server.TMatchesJoin.MatchJoin.token)
 }
-inline void TMatchJoin::set_token(const char* value) {
+inline void TMatchesJoin_MatchJoin::set_token(const char* value) {
   if (!has_token()) {
     clear_id();
     set_has_token();
@@ -23216,9 +24892,9 @@ inline void TMatchJoin::set_token(const char* value) {
   }
   id_.token_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:server.TMatchJoin.token)
+  // @@protoc_insertion_point(field_set_char:server.TMatchesJoin.MatchJoin.token)
 }
-inline void TMatchJoin::set_token(const void* value, size_t size) {
+inline void TMatchesJoin_MatchJoin::set_token(const void* value, size_t size) {
   if (!has_token()) {
     clear_id();
     set_has_token();
@@ -23226,19 +24902,19 @@ inline void TMatchJoin::set_token(const void* value, size_t size) {
   }
   id_.token_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(
       reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:server.TMatchJoin.token)
+  // @@protoc_insertion_point(field_set_pointer:server.TMatchesJoin.MatchJoin.token)
 }
-inline ::std::string* TMatchJoin::mutable_token() {
+inline ::std::string* TMatchesJoin_MatchJoin::mutable_token() {
   if (!has_token()) {
     clear_id();
     set_has_token();
     id_.token_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
-  // @@protoc_insertion_point(field_mutable:server.TMatchJoin.token)
+  // @@protoc_insertion_point(field_mutable:server.TMatchesJoin.MatchJoin.token)
   return id_.token_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline ::std::string* TMatchJoin::release_token() {
-  // @@protoc_insertion_point(field_release:server.TMatchJoin.token)
+inline ::std::string* TMatchesJoin_MatchJoin::release_token() {
+  // @@protoc_insertion_point(field_release:server.TMatchesJoin.MatchJoin.token)
   if (has_token()) {
     clear_has_id();
     return id_.token_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
@@ -23246,7 +24922,7 @@ inline ::std::string* TMatchJoin::release_token() {
     return NULL;
   }
 }
-inline void TMatchJoin::set_allocated_token(::std::string* token) {
+inline void TMatchesJoin_MatchJoin::set_allocated_token(::std::string* token) {
   if (!has_token()) {
     id_.token_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   }
@@ -23256,140 +24932,94 @@ inline void TMatchJoin::set_allocated_token(::std::string* token) {
     id_.token_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
         token);
   }
-  // @@protoc_insertion_point(field_set_allocated:server.TMatchJoin.token)
+  // @@protoc_insertion_point(field_set_allocated:server.TMatchesJoin.MatchJoin.token)
 }
 
-inline bool TMatchJoin::has_id() const {
+inline bool TMatchesJoin_MatchJoin::has_id() const {
   return id_case() != ID_NOT_SET;
 }
-inline void TMatchJoin::clear_has_id() {
+inline void TMatchesJoin_MatchJoin::clear_has_id() {
   _oneof_case_[0] = ID_NOT_SET;
 }
-inline TMatchJoin::IdCase TMatchJoin::id_case() const {
-  return TMatchJoin::IdCase(_oneof_case_[0]);
+inline TMatchesJoin_MatchJoin::IdCase TMatchesJoin_MatchJoin::id_case() const {
+  return TMatchesJoin_MatchJoin::IdCase(_oneof_case_[0]);
 }
-inline const TMatchJoin* TMatchJoin::internal_default_instance() {
-  return &TMatchJoin_default_instance_.get();
+inline const TMatchesJoin_MatchJoin* TMatchesJoin_MatchJoin::internal_default_instance() {
+  return &TMatchesJoin_MatchJoin_default_instance_.get();
 }
 // -------------------------------------------------------------------
 
-// TMatch
+// TMatchesJoin
 
-// optional bytes match_id = 1;
-inline void TMatch::clear_match_id() {
-  match_id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+// repeated .server.TMatchesJoin.MatchJoin matches = 1;
+inline int TMatchesJoin::matches_size() const {
+  return matches_.size();
 }
-inline const ::std::string& TMatch::match_id() const {
-  // @@protoc_insertion_point(field_get:server.TMatch.match_id)
-  return match_id_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+inline void TMatchesJoin::clear_matches() {
+  matches_.Clear();
 }
-inline void TMatch::set_match_id(const ::std::string& value) {
-  
-  match_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:server.TMatch.match_id)
+inline const ::server::TMatchesJoin_MatchJoin& TMatchesJoin::matches(int index) const {
+  // @@protoc_insertion_point(field_get:server.TMatchesJoin.matches)
+  return matches_.Get(index);
 }
-inline void TMatch::set_match_id(const char* value) {
-  
-  match_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:server.TMatch.match_id)
+inline ::server::TMatchesJoin_MatchJoin* TMatchesJoin::mutable_matches(int index) {
+  // @@protoc_insertion_point(field_mutable:server.TMatchesJoin.matches)
+  return matches_.Mutable(index);
 }
-inline void TMatch::set_match_id(const void* value, size_t size) {
-  
-  match_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
-      ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:server.TMatch.match_id)
+inline ::server::TMatchesJoin_MatchJoin* TMatchesJoin::add_matches() {
+  // @@protoc_insertion_point(field_add:server.TMatchesJoin.matches)
+  return matches_.Add();
 }
-inline ::std::string* TMatch::mutable_match_id() {
-  
-  // @@protoc_insertion_point(field_mutable:server.TMatch.match_id)
-  return match_id_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+inline ::google::protobuf::RepeatedPtrField< ::server::TMatchesJoin_MatchJoin >*
+TMatchesJoin::mutable_matches() {
+  // @@protoc_insertion_point(field_mutable_list:server.TMatchesJoin.matches)
+  return &matches_;
 }
-inline ::std::string* TMatch::release_match_id() {
-  // @@protoc_insertion_point(field_release:server.TMatch.match_id)
-  
-  return match_id_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-}
-inline void TMatch::set_allocated_match_id(::std::string* match_id) {
-  if (match_id != NULL) {
-    
-  } else {
-    
-  }
-  match_id_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), match_id);
-  // @@protoc_insertion_point(field_set_allocated:server.TMatch.match_id)
+inline const ::google::protobuf::RepeatedPtrField< ::server::TMatchesJoin_MatchJoin >&
+TMatchesJoin::matches() const {
+  // @@protoc_insertion_point(field_list:server.TMatchesJoin.matches)
+  return matches_;
 }
 
-// repeated .server.UserPresence presences = 2;
-inline int TMatch::presences_size() const {
-  return presences_.size();
+inline const TMatchesJoin* TMatchesJoin::internal_default_instance() {
+  return &TMatchesJoin_default_instance_.get();
 }
-inline void TMatch::clear_presences() {
-  presences_.Clear();
+// -------------------------------------------------------------------
+
+// TMatches
+
+// repeated .server.Match matches = 1;
+inline int TMatches::matches_size() const {
+  return matches_.size();
 }
-inline const ::server::UserPresence& TMatch::presences(int index) const {
-  // @@protoc_insertion_point(field_get:server.TMatch.presences)
-  return presences_.Get(index);
+inline void TMatches::clear_matches() {
+  matches_.Clear();
 }
-inline ::server::UserPresence* TMatch::mutable_presences(int index) {
-  // @@protoc_insertion_point(field_mutable:server.TMatch.presences)
-  return presences_.Mutable(index);
+inline const ::server::Match& TMatches::matches(int index) const {
+  // @@protoc_insertion_point(field_get:server.TMatches.matches)
+  return matches_.Get(index);
 }
-inline ::server::UserPresence* TMatch::add_presences() {
-  // @@protoc_insertion_point(field_add:server.TMatch.presences)
-  return presences_.Add();
+inline ::server::Match* TMatches::mutable_matches(int index) {
+  // @@protoc_insertion_point(field_mutable:server.TMatches.matches)
+  return matches_.Mutable(index);
 }
-inline ::google::protobuf::RepeatedPtrField< ::server::UserPresence >*
-TMatch::mutable_presences() {
-  // @@protoc_insertion_point(field_mutable_list:server.TMatch.presences)
-  return &presences_;
+inline ::server::Match* TMatches::add_matches() {
+  // @@protoc_insertion_point(field_add:server.TMatches.matches)
+  return matches_.Add();
 }
-inline const ::google::protobuf::RepeatedPtrField< ::server::UserPresence >&
-TMatch::presences() const {
-  // @@protoc_insertion_point(field_list:server.TMatch.presences)
-  return presences_;
+inline ::google::protobuf::RepeatedPtrField< ::server::Match >*
+TMatches::mutable_matches() {
+  // @@protoc_insertion_point(field_mutable_list:server.TMatches.matches)
+  return &matches_;
+}
+inline const ::google::protobuf::RepeatedPtrField< ::server::Match >&
+TMatches::matches() const {
+  // @@protoc_insertion_point(field_list:server.TMatches.matches)
+  return matches_;
 }
 
-// optional .server.UserPresence self = 3;
-inline bool TMatch::has_self() const {
-  return this != internal_default_instance() && self_ != NULL;
-}
-inline void TMatch::clear_self() {
-  if (GetArenaNoVirtual() == NULL && self_ != NULL) delete self_;
-  self_ = NULL;
-}
-inline const ::server::UserPresence& TMatch::self() const {
-  // @@protoc_insertion_point(field_get:server.TMatch.self)
-  return self_ != NULL ? *self_
-                         : *::server::UserPresence::internal_default_instance();
-}
-inline ::server::UserPresence* TMatch::mutable_self() {
-  
-  if (self_ == NULL) {
-    self_ = new ::server::UserPresence;
-  }
-  // @@protoc_insertion_point(field_mutable:server.TMatch.self)
-  return self_;
-}
-inline ::server::UserPresence* TMatch::release_self() {
-  // @@protoc_insertion_point(field_release:server.TMatch.self)
-  
-  ::server::UserPresence* temp = self_;
-  self_ = NULL;
-  return temp;
-}
-inline void TMatch::set_allocated_self(::server::UserPresence* self) {
-  delete self_;
-  self_ = self;
-  if (self) {
-    
-  } else {
-    
-  }
-  // @@protoc_insertion_point(field_set_allocated:server.TMatch.self)
-}
-
-inline const TMatch* TMatch::internal_default_instance() {
-  return &TMatch_default_instance_.get();
+inline const TMatches* TMatches::internal_default_instance() {
+  return &TMatches_default_instance_.get();
 }
 // -------------------------------------------------------------------
 
@@ -23680,165 +25310,262 @@ inline const MatchData* MatchData::internal_default_instance() {
 }
 // -------------------------------------------------------------------
 
-// TMatchLeave
+// TMatchesLeave
 
-// optional bytes match_id = 1;
-inline void TMatchLeave::clear_match_id() {
-  match_id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+// repeated bytes match_ids = 1;
+inline int TMatchesLeave::match_ids_size() const {
+  return match_ids_.size();
 }
-inline const ::std::string& TMatchLeave::match_id() const {
-  // @@protoc_insertion_point(field_get:server.TMatchLeave.match_id)
-  return match_id_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+inline void TMatchesLeave::clear_match_ids() {
+  match_ids_.Clear();
 }
-inline void TMatchLeave::set_match_id(const ::std::string& value) {
-  
-  match_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:server.TMatchLeave.match_id)
+inline const ::std::string& TMatchesLeave::match_ids(int index) const {
+  // @@protoc_insertion_point(field_get:server.TMatchesLeave.match_ids)
+  return match_ids_.Get(index);
 }
-inline void TMatchLeave::set_match_id(const char* value) {
-  
-  match_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:server.TMatchLeave.match_id)
+inline ::std::string* TMatchesLeave::mutable_match_ids(int index) {
+  // @@protoc_insertion_point(field_mutable:server.TMatchesLeave.match_ids)
+  return match_ids_.Mutable(index);
 }
-inline void TMatchLeave::set_match_id(const void* value, size_t size) {
-  
-  match_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
-      ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:server.TMatchLeave.match_id)
+inline void TMatchesLeave::set_match_ids(int index, const ::std::string& value) {
+  // @@protoc_insertion_point(field_set:server.TMatchesLeave.match_ids)
+  match_ids_.Mutable(index)->assign(value);
 }
-inline ::std::string* TMatchLeave::mutable_match_id() {
-  
-  // @@protoc_insertion_point(field_mutable:server.TMatchLeave.match_id)
-  return match_id_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+inline void TMatchesLeave::set_match_ids(int index, const char* value) {
+  match_ids_.Mutable(index)->assign(value);
+  // @@protoc_insertion_point(field_set_char:server.TMatchesLeave.match_ids)
 }
-inline ::std::string* TMatchLeave::release_match_id() {
-  // @@protoc_insertion_point(field_release:server.TMatchLeave.match_id)
-  
-  return match_id_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+inline void TMatchesLeave::set_match_ids(int index, const void* value, size_t size) {
+  match_ids_.Mutable(index)->assign(
+    reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_set_pointer:server.TMatchesLeave.match_ids)
 }
-inline void TMatchLeave::set_allocated_match_id(::std::string* match_id) {
-  if (match_id != NULL) {
-    
-  } else {
-    
-  }
-  match_id_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), match_id);
-  // @@protoc_insertion_point(field_set_allocated:server.TMatchLeave.match_id)
+inline ::std::string* TMatchesLeave::add_match_ids() {
+  // @@protoc_insertion_point(field_add_mutable:server.TMatchesLeave.match_ids)
+  return match_ids_.Add();
+}
+inline void TMatchesLeave::add_match_ids(const ::std::string& value) {
+  match_ids_.Add()->assign(value);
+  // @@protoc_insertion_point(field_add:server.TMatchesLeave.match_ids)
+}
+inline void TMatchesLeave::add_match_ids(const char* value) {
+  match_ids_.Add()->assign(value);
+  // @@protoc_insertion_point(field_add_char:server.TMatchesLeave.match_ids)
+}
+inline void TMatchesLeave::add_match_ids(const void* value, size_t size) {
+  match_ids_.Add()->assign(reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_add_pointer:server.TMatchesLeave.match_ids)
+}
+inline const ::google::protobuf::RepeatedPtrField< ::std::string>&
+TMatchesLeave::match_ids() const {
+  // @@protoc_insertion_point(field_list:server.TMatchesLeave.match_ids)
+  return match_ids_;
+}
+inline ::google::protobuf::RepeatedPtrField< ::std::string>*
+TMatchesLeave::mutable_match_ids() {
+  // @@protoc_insertion_point(field_mutable_list:server.TMatchesLeave.match_ids)
+  return &match_ids_;
 }
 
-inline const TMatchLeave* TMatchLeave::internal_default_instance() {
-  return &TMatchLeave_default_instance_.get();
+inline const TMatchesLeave* TMatchesLeave::internal_default_instance() {
+  return &TMatchesLeave_default_instance_.get();
 }
 // -------------------------------------------------------------------
 
-// MatchPresence
+// TStorageList
 
-// optional bytes match_id = 1;
-inline void MatchPresence::clear_match_id() {
-  match_id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+// optional bytes user_id = 1;
+inline void TStorageList::clear_user_id() {
+  user_id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline const ::std::string& MatchPresence::match_id() const {
-  // @@protoc_insertion_point(field_get:server.MatchPresence.match_id)
-  return match_id_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+inline const ::std::string& TStorageList::user_id() const {
+  // @@protoc_insertion_point(field_get:server.TStorageList.user_id)
+  return user_id_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline void MatchPresence::set_match_id(const ::std::string& value) {
+inline void TStorageList::set_user_id(const ::std::string& value) {
   
-  match_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:server.MatchPresence.match_id)
+  user_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:server.TStorageList.user_id)
 }
-inline void MatchPresence::set_match_id(const char* value) {
+inline void TStorageList::set_user_id(const char* value) {
   
-  match_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:server.MatchPresence.match_id)
+  user_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:server.TStorageList.user_id)
 }
-inline void MatchPresence::set_match_id(const void* value, size_t size) {
+inline void TStorageList::set_user_id(const void* value, size_t size) {
   
-  match_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+  user_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:server.MatchPresence.match_id)
+  // @@protoc_insertion_point(field_set_pointer:server.TStorageList.user_id)
 }
-inline ::std::string* MatchPresence::mutable_match_id() {
+inline ::std::string* TStorageList::mutable_user_id() {
   
-  // @@protoc_insertion_point(field_mutable:server.MatchPresence.match_id)
-  return match_id_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  // @@protoc_insertion_point(field_mutable:server.TStorageList.user_id)
+  return user_id_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline ::std::string* MatchPresence::release_match_id() {
-  // @@protoc_insertion_point(field_release:server.MatchPresence.match_id)
+inline ::std::string* TStorageList::release_user_id() {
+  // @@protoc_insertion_point(field_release:server.TStorageList.user_id)
   
-  return match_id_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  return user_id_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline void MatchPresence::set_allocated_match_id(::std::string* match_id) {
-  if (match_id != NULL) {
+inline void TStorageList::set_allocated_user_id(::std::string* user_id) {
+  if (user_id != NULL) {
     
   } else {
     
   }
-  match_id_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), match_id);
-  // @@protoc_insertion_point(field_set_allocated:server.MatchPresence.match_id)
+  user_id_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), user_id);
+  // @@protoc_insertion_point(field_set_allocated:server.TStorageList.user_id)
 }
 
-// repeated .server.UserPresence joins = 2;
-inline int MatchPresence::joins_size() const {
-  return joins_.size();
+// optional string bucket = 2;
+inline void TStorageList::clear_bucket() {
+  bucket_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline void MatchPresence::clear_joins() {
-  joins_.Clear();
+inline const ::std::string& TStorageList::bucket() const {
+  // @@protoc_insertion_point(field_get:server.TStorageList.bucket)
+  return bucket_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline const ::server::UserPresence& MatchPresence::joins(int index) const {
-  // @@protoc_insertion_point(field_get:server.MatchPresence.joins)
-  return joins_.Get(index);
+inline void TStorageList::set_bucket(const ::std::string& value) {
+  
+  bucket_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:server.TStorageList.bucket)
 }
-inline ::server::UserPresence* MatchPresence::mutable_joins(int index) {
-  // @@protoc_insertion_point(field_mutable:server.MatchPresence.joins)
-  return joins_.Mutable(index);
+inline void TStorageList::set_bucket(const char* value) {
+  
+  bucket_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:server.TStorageList.bucket)
 }
-inline ::server::UserPresence* MatchPresence::add_joins() {
-  // @@protoc_insertion_point(field_add:server.MatchPresence.joins)
-  return joins_.Add();
+inline void TStorageList::set_bucket(const char* value, size_t size) {
+  
+  bucket_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:server.TStorageList.bucket)
 }
-inline ::google::protobuf::RepeatedPtrField< ::server::UserPresence >*
-MatchPresence::mutable_joins() {
-  // @@protoc_insertion_point(field_mutable_list:server.MatchPresence.joins)
-  return &joins_;
+inline ::std::string* TStorageList::mutable_bucket() {
+  
+  // @@protoc_insertion_point(field_mutable:server.TStorageList.bucket)
+  return bucket_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline const ::google::protobuf::RepeatedPtrField< ::server::UserPresence >&
-MatchPresence::joins() const {
-  // @@protoc_insertion_point(field_list:server.MatchPresence.joins)
-  return joins_;
+inline ::std::string* TStorageList::release_bucket() {
+  // @@protoc_insertion_point(field_release:server.TStorageList.bucket)
+  
+  return bucket_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-
-// repeated .server.UserPresence leaves = 3;
-inline int MatchPresence::leaves_size() const {
-  return leaves_.size();
-}
-inline void MatchPresence::clear_leaves() {
-  leaves_.Clear();
-}
-inline const ::server::UserPresence& MatchPresence::leaves(int index) const {
-  // @@protoc_insertion_point(field_get:server.MatchPresence.leaves)
-  return leaves_.Get(index);
-}
-inline ::server::UserPresence* MatchPresence::mutable_leaves(int index) {
-  // @@protoc_insertion_point(field_mutable:server.MatchPresence.leaves)
-  return leaves_.Mutable(index);
-}
-inline ::server::UserPresence* MatchPresence::add_leaves() {
-  // @@protoc_insertion_point(field_add:server.MatchPresence.leaves)
-  return leaves_.Add();
-}
-inline ::google::protobuf::RepeatedPtrField< ::server::UserPresence >*
-MatchPresence::mutable_leaves() {
-  // @@protoc_insertion_point(field_mutable_list:server.MatchPresence.leaves)
-  return &leaves_;
-}
-inline const ::google::protobuf::RepeatedPtrField< ::server::UserPresence >&
-MatchPresence::leaves() const {
-  // @@protoc_insertion_point(field_list:server.MatchPresence.leaves)
-  return leaves_;
+inline void TStorageList::set_allocated_bucket(::std::string* bucket) {
+  if (bucket != NULL) {
+    
+  } else {
+    
+  }
+  bucket_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), bucket);
+  // @@protoc_insertion_point(field_set_allocated:server.TStorageList.bucket)
 }
 
-inline const MatchPresence* MatchPresence::internal_default_instance() {
-  return &MatchPresence_default_instance_.get();
+// optional string collection = 3;
+inline void TStorageList::clear_collection() {
+  collection_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& TStorageList::collection() const {
+  // @@protoc_insertion_point(field_get:server.TStorageList.collection)
+  return collection_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void TStorageList::set_collection(const ::std::string& value) {
+  
+  collection_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:server.TStorageList.collection)
+}
+inline void TStorageList::set_collection(const char* value) {
+  
+  collection_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:server.TStorageList.collection)
+}
+inline void TStorageList::set_collection(const char* value, size_t size) {
+  
+  collection_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:server.TStorageList.collection)
+}
+inline ::std::string* TStorageList::mutable_collection() {
+  
+  // @@protoc_insertion_point(field_mutable:server.TStorageList.collection)
+  return collection_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* TStorageList::release_collection() {
+  // @@protoc_insertion_point(field_release:server.TStorageList.collection)
+  
+  return collection_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void TStorageList::set_allocated_collection(::std::string* collection) {
+  if (collection != NULL) {
+    
+  } else {
+    
+  }
+  collection_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), collection);
+  // @@protoc_insertion_point(field_set_allocated:server.TStorageList.collection)
+}
+
+// optional int64 limit = 4;
+inline void TStorageList::clear_limit() {
+  limit_ = GOOGLE_LONGLONG(0);
+}
+inline ::google::protobuf::int64 TStorageList::limit() const {
+  // @@protoc_insertion_point(field_get:server.TStorageList.limit)
+  return limit_;
+}
+inline void TStorageList::set_limit(::google::protobuf::int64 value) {
+  
+  limit_ = value;
+  // @@protoc_insertion_point(field_set:server.TStorageList.limit)
+}
+
+// optional bytes cursor = 5;
+inline void TStorageList::clear_cursor() {
+  cursor_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& TStorageList::cursor() const {
+  // @@protoc_insertion_point(field_get:server.TStorageList.cursor)
+  return cursor_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void TStorageList::set_cursor(const ::std::string& value) {
+  
+  cursor_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:server.TStorageList.cursor)
+}
+inline void TStorageList::set_cursor(const char* value) {
+  
+  cursor_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:server.TStorageList.cursor)
+}
+inline void TStorageList::set_cursor(const void* value, size_t size) {
+  
+  cursor_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:server.TStorageList.cursor)
+}
+inline ::std::string* TStorageList::mutable_cursor() {
+  
+  // @@protoc_insertion_point(field_mutable:server.TStorageList.cursor)
+  return cursor_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* TStorageList::release_cursor() {
+  // @@protoc_insertion_point(field_release:server.TStorageList.cursor)
+  
+  return cursor_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void TStorageList::set_allocated_cursor(::std::string* cursor) {
+  if (cursor != NULL) {
+    
+  } else {
+    
+  }
+  cursor_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), cursor);
+  // @@protoc_insertion_point(field_set_allocated:server.TStorageList.cursor)
+}
+
+inline const TStorageList* TStorageList::internal_default_instance() {
+  return &TStorageList_default_instance_.get();
 }
 // -------------------------------------------------------------------
 
@@ -24435,6 +26162,50 @@ TStorageData::data() const {
   return data_;
 }
 
+// optional bytes cursor = 2;
+inline void TStorageData::clear_cursor() {
+  cursor_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& TStorageData::cursor() const {
+  // @@protoc_insertion_point(field_get:server.TStorageData.cursor)
+  return cursor_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void TStorageData::set_cursor(const ::std::string& value) {
+  
+  cursor_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:server.TStorageData.cursor)
+}
+inline void TStorageData::set_cursor(const char* value) {
+  
+  cursor_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:server.TStorageData.cursor)
+}
+inline void TStorageData::set_cursor(const void* value, size_t size) {
+  
+  cursor_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:server.TStorageData.cursor)
+}
+inline ::std::string* TStorageData::mutable_cursor() {
+  
+  // @@protoc_insertion_point(field_mutable:server.TStorageData.cursor)
+  return cursor_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* TStorageData::release_cursor() {
+  // @@protoc_insertion_point(field_release:server.TStorageData.cursor)
+  
+  return cursor_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void TStorageData::set_allocated_cursor(::std::string* cursor) {
+  if (cursor != NULL) {
+    
+  } else {
+    
+  }
+  cursor_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), cursor);
+  // @@protoc_insertion_point(field_set_allocated:server.TStorageData.cursor)
+}
+
 inline const TStorageData* TStorageData::internal_default_instance() {
   return &TStorageData_default_instance_.get();
 }
@@ -24732,223 +26503,223 @@ inline const TStorageWrite* TStorageWrite::internal_default_instance() {
 }
 // -------------------------------------------------------------------
 
-// TStorageKey_StorageKey
+// TStorageKeys_StorageKey
 
 // optional string bucket = 1;
-inline void TStorageKey_StorageKey::clear_bucket() {
+inline void TStorageKeys_StorageKey::clear_bucket() {
   bucket_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline const ::std::string& TStorageKey_StorageKey::bucket() const {
-  // @@protoc_insertion_point(field_get:server.TStorageKey.StorageKey.bucket)
+inline const ::std::string& TStorageKeys_StorageKey::bucket() const {
+  // @@protoc_insertion_point(field_get:server.TStorageKeys.StorageKey.bucket)
   return bucket_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline void TStorageKey_StorageKey::set_bucket(const ::std::string& value) {
+inline void TStorageKeys_StorageKey::set_bucket(const ::std::string& value) {
   
   bucket_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:server.TStorageKey.StorageKey.bucket)
+  // @@protoc_insertion_point(field_set:server.TStorageKeys.StorageKey.bucket)
 }
-inline void TStorageKey_StorageKey::set_bucket(const char* value) {
+inline void TStorageKeys_StorageKey::set_bucket(const char* value) {
   
   bucket_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:server.TStorageKey.StorageKey.bucket)
+  // @@protoc_insertion_point(field_set_char:server.TStorageKeys.StorageKey.bucket)
 }
-inline void TStorageKey_StorageKey::set_bucket(const char* value, size_t size) {
+inline void TStorageKeys_StorageKey::set_bucket(const char* value, size_t size) {
   
   bucket_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:server.TStorageKey.StorageKey.bucket)
+  // @@protoc_insertion_point(field_set_pointer:server.TStorageKeys.StorageKey.bucket)
 }
-inline ::std::string* TStorageKey_StorageKey::mutable_bucket() {
+inline ::std::string* TStorageKeys_StorageKey::mutable_bucket() {
   
-  // @@protoc_insertion_point(field_mutable:server.TStorageKey.StorageKey.bucket)
+  // @@protoc_insertion_point(field_mutable:server.TStorageKeys.StorageKey.bucket)
   return bucket_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline ::std::string* TStorageKey_StorageKey::release_bucket() {
-  // @@protoc_insertion_point(field_release:server.TStorageKey.StorageKey.bucket)
+inline ::std::string* TStorageKeys_StorageKey::release_bucket() {
+  // @@protoc_insertion_point(field_release:server.TStorageKeys.StorageKey.bucket)
   
   return bucket_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline void TStorageKey_StorageKey::set_allocated_bucket(::std::string* bucket) {
+inline void TStorageKeys_StorageKey::set_allocated_bucket(::std::string* bucket) {
   if (bucket != NULL) {
     
   } else {
     
   }
   bucket_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), bucket);
-  // @@protoc_insertion_point(field_set_allocated:server.TStorageKey.StorageKey.bucket)
+  // @@protoc_insertion_point(field_set_allocated:server.TStorageKeys.StorageKey.bucket)
 }
 
 // optional string collection = 2;
-inline void TStorageKey_StorageKey::clear_collection() {
+inline void TStorageKeys_StorageKey::clear_collection() {
   collection_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline const ::std::string& TStorageKey_StorageKey::collection() const {
-  // @@protoc_insertion_point(field_get:server.TStorageKey.StorageKey.collection)
+inline const ::std::string& TStorageKeys_StorageKey::collection() const {
+  // @@protoc_insertion_point(field_get:server.TStorageKeys.StorageKey.collection)
   return collection_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline void TStorageKey_StorageKey::set_collection(const ::std::string& value) {
+inline void TStorageKeys_StorageKey::set_collection(const ::std::string& value) {
   
   collection_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:server.TStorageKey.StorageKey.collection)
+  // @@protoc_insertion_point(field_set:server.TStorageKeys.StorageKey.collection)
 }
-inline void TStorageKey_StorageKey::set_collection(const char* value) {
+inline void TStorageKeys_StorageKey::set_collection(const char* value) {
   
   collection_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:server.TStorageKey.StorageKey.collection)
+  // @@protoc_insertion_point(field_set_char:server.TStorageKeys.StorageKey.collection)
 }
-inline void TStorageKey_StorageKey::set_collection(const char* value, size_t size) {
+inline void TStorageKeys_StorageKey::set_collection(const char* value, size_t size) {
   
   collection_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:server.TStorageKey.StorageKey.collection)
+  // @@protoc_insertion_point(field_set_pointer:server.TStorageKeys.StorageKey.collection)
 }
-inline ::std::string* TStorageKey_StorageKey::mutable_collection() {
+inline ::std::string* TStorageKeys_StorageKey::mutable_collection() {
   
-  // @@protoc_insertion_point(field_mutable:server.TStorageKey.StorageKey.collection)
+  // @@protoc_insertion_point(field_mutable:server.TStorageKeys.StorageKey.collection)
   return collection_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline ::std::string* TStorageKey_StorageKey::release_collection() {
-  // @@protoc_insertion_point(field_release:server.TStorageKey.StorageKey.collection)
+inline ::std::string* TStorageKeys_StorageKey::release_collection() {
+  // @@protoc_insertion_point(field_release:server.TStorageKeys.StorageKey.collection)
   
   return collection_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline void TStorageKey_StorageKey::set_allocated_collection(::std::string* collection) {
+inline void TStorageKeys_StorageKey::set_allocated_collection(::std::string* collection) {
   if (collection != NULL) {
     
   } else {
     
   }
   collection_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), collection);
-  // @@protoc_insertion_point(field_set_allocated:server.TStorageKey.StorageKey.collection)
+  // @@protoc_insertion_point(field_set_allocated:server.TStorageKeys.StorageKey.collection)
 }
 
 // optional string record = 3;
-inline void TStorageKey_StorageKey::clear_record() {
+inline void TStorageKeys_StorageKey::clear_record() {
   record_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline const ::std::string& TStorageKey_StorageKey::record() const {
-  // @@protoc_insertion_point(field_get:server.TStorageKey.StorageKey.record)
+inline const ::std::string& TStorageKeys_StorageKey::record() const {
+  // @@protoc_insertion_point(field_get:server.TStorageKeys.StorageKey.record)
   return record_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline void TStorageKey_StorageKey::set_record(const ::std::string& value) {
+inline void TStorageKeys_StorageKey::set_record(const ::std::string& value) {
   
   record_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:server.TStorageKey.StorageKey.record)
+  // @@protoc_insertion_point(field_set:server.TStorageKeys.StorageKey.record)
 }
-inline void TStorageKey_StorageKey::set_record(const char* value) {
+inline void TStorageKeys_StorageKey::set_record(const char* value) {
   
   record_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:server.TStorageKey.StorageKey.record)
+  // @@protoc_insertion_point(field_set_char:server.TStorageKeys.StorageKey.record)
 }
-inline void TStorageKey_StorageKey::set_record(const char* value, size_t size) {
+inline void TStorageKeys_StorageKey::set_record(const char* value, size_t size) {
   
   record_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:server.TStorageKey.StorageKey.record)
+  // @@protoc_insertion_point(field_set_pointer:server.TStorageKeys.StorageKey.record)
 }
-inline ::std::string* TStorageKey_StorageKey::mutable_record() {
+inline ::std::string* TStorageKeys_StorageKey::mutable_record() {
   
-  // @@protoc_insertion_point(field_mutable:server.TStorageKey.StorageKey.record)
+  // @@protoc_insertion_point(field_mutable:server.TStorageKeys.StorageKey.record)
   return record_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline ::std::string* TStorageKey_StorageKey::release_record() {
-  // @@protoc_insertion_point(field_release:server.TStorageKey.StorageKey.record)
+inline ::std::string* TStorageKeys_StorageKey::release_record() {
+  // @@protoc_insertion_point(field_release:server.TStorageKeys.StorageKey.record)
   
   return record_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline void TStorageKey_StorageKey::set_allocated_record(::std::string* record) {
+inline void TStorageKeys_StorageKey::set_allocated_record(::std::string* record) {
   if (record != NULL) {
     
   } else {
     
   }
   record_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), record);
-  // @@protoc_insertion_point(field_set_allocated:server.TStorageKey.StorageKey.record)
+  // @@protoc_insertion_point(field_set_allocated:server.TStorageKeys.StorageKey.record)
 }
 
 // optional bytes version = 4;
-inline void TStorageKey_StorageKey::clear_version() {
+inline void TStorageKeys_StorageKey::clear_version() {
   version_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline const ::std::string& TStorageKey_StorageKey::version() const {
-  // @@protoc_insertion_point(field_get:server.TStorageKey.StorageKey.version)
+inline const ::std::string& TStorageKeys_StorageKey::version() const {
+  // @@protoc_insertion_point(field_get:server.TStorageKeys.StorageKey.version)
   return version_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline void TStorageKey_StorageKey::set_version(const ::std::string& value) {
+inline void TStorageKeys_StorageKey::set_version(const ::std::string& value) {
   
   version_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:server.TStorageKey.StorageKey.version)
+  // @@protoc_insertion_point(field_set:server.TStorageKeys.StorageKey.version)
 }
-inline void TStorageKey_StorageKey::set_version(const char* value) {
+inline void TStorageKeys_StorageKey::set_version(const char* value) {
   
   version_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:server.TStorageKey.StorageKey.version)
+  // @@protoc_insertion_point(field_set_char:server.TStorageKeys.StorageKey.version)
 }
-inline void TStorageKey_StorageKey::set_version(const void* value, size_t size) {
+inline void TStorageKeys_StorageKey::set_version(const void* value, size_t size) {
   
   version_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:server.TStorageKey.StorageKey.version)
+  // @@protoc_insertion_point(field_set_pointer:server.TStorageKeys.StorageKey.version)
 }
-inline ::std::string* TStorageKey_StorageKey::mutable_version() {
+inline ::std::string* TStorageKeys_StorageKey::mutable_version() {
   
-  // @@protoc_insertion_point(field_mutable:server.TStorageKey.StorageKey.version)
+  // @@protoc_insertion_point(field_mutable:server.TStorageKeys.StorageKey.version)
   return version_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline ::std::string* TStorageKey_StorageKey::release_version() {
-  // @@protoc_insertion_point(field_release:server.TStorageKey.StorageKey.version)
+inline ::std::string* TStorageKeys_StorageKey::release_version() {
+  // @@protoc_insertion_point(field_release:server.TStorageKeys.StorageKey.version)
   
   return version_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline void TStorageKey_StorageKey::set_allocated_version(::std::string* version) {
+inline void TStorageKeys_StorageKey::set_allocated_version(::std::string* version) {
   if (version != NULL) {
     
   } else {
     
   }
   version_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), version);
-  // @@protoc_insertion_point(field_set_allocated:server.TStorageKey.StorageKey.version)
+  // @@protoc_insertion_point(field_set_allocated:server.TStorageKeys.StorageKey.version)
 }
 
-inline const TStorageKey_StorageKey* TStorageKey_StorageKey::internal_default_instance() {
-  return &TStorageKey_StorageKey_default_instance_.get();
+inline const TStorageKeys_StorageKey* TStorageKeys_StorageKey::internal_default_instance() {
+  return &TStorageKeys_StorageKey_default_instance_.get();
 }
 // -------------------------------------------------------------------
 
-// TStorageKey
+// TStorageKeys
 
-// repeated .server.TStorageKey.StorageKey keys = 1;
-inline int TStorageKey::keys_size() const {
+// repeated .server.TStorageKeys.StorageKey keys = 1;
+inline int TStorageKeys::keys_size() const {
   return keys_.size();
 }
-inline void TStorageKey::clear_keys() {
+inline void TStorageKeys::clear_keys() {
   keys_.Clear();
 }
-inline const ::server::TStorageKey_StorageKey& TStorageKey::keys(int index) const {
-  // @@protoc_insertion_point(field_get:server.TStorageKey.keys)
+inline const ::server::TStorageKeys_StorageKey& TStorageKeys::keys(int index) const {
+  // @@protoc_insertion_point(field_get:server.TStorageKeys.keys)
   return keys_.Get(index);
 }
-inline ::server::TStorageKey_StorageKey* TStorageKey::mutable_keys(int index) {
-  // @@protoc_insertion_point(field_mutable:server.TStorageKey.keys)
+inline ::server::TStorageKeys_StorageKey* TStorageKeys::mutable_keys(int index) {
+  // @@protoc_insertion_point(field_mutable:server.TStorageKeys.keys)
   return keys_.Mutable(index);
 }
-inline ::server::TStorageKey_StorageKey* TStorageKey::add_keys() {
-  // @@protoc_insertion_point(field_add:server.TStorageKey.keys)
+inline ::server::TStorageKeys_StorageKey* TStorageKeys::add_keys() {
+  // @@protoc_insertion_point(field_add:server.TStorageKeys.keys)
   return keys_.Add();
 }
-inline ::google::protobuf::RepeatedPtrField< ::server::TStorageKey_StorageKey >*
-TStorageKey::mutable_keys() {
-  // @@protoc_insertion_point(field_mutable_list:server.TStorageKey.keys)
+inline ::google::protobuf::RepeatedPtrField< ::server::TStorageKeys_StorageKey >*
+TStorageKeys::mutable_keys() {
+  // @@protoc_insertion_point(field_mutable_list:server.TStorageKeys.keys)
   return &keys_;
 }
-inline const ::google::protobuf::RepeatedPtrField< ::server::TStorageKey_StorageKey >&
-TStorageKey::keys() const {
-  // @@protoc_insertion_point(field_list:server.TStorageKey.keys)
+inline const ::google::protobuf::RepeatedPtrField< ::server::TStorageKeys_StorageKey >&
+TStorageKeys::keys() const {
+  // @@protoc_insertion_point(field_list:server.TStorageKeys.keys)
   return keys_;
 }
 
-inline const TStorageKey* TStorageKey::internal_default_instance() {
-  return &TStorageKey_default_instance_.get();
+inline const TStorageKeys* TStorageKeys::internal_default_instance() {
+  return &TStorageKeys_default_instance_.get();
 }
 // -------------------------------------------------------------------
 
@@ -26041,357 +27812,348 @@ inline const TLeaderboards* TLeaderboards::internal_default_instance() {
 }
 // -------------------------------------------------------------------
 
-// TLeaderboardRecordWrite
+// TLeaderboardRecordsWrite_LeaderboardRecordWrite
 
 // optional bytes leaderboard_id = 1;
-inline void TLeaderboardRecordWrite::clear_leaderboard_id() {
+inline void TLeaderboardRecordsWrite_LeaderboardRecordWrite::clear_leaderboard_id() {
   leaderboard_id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline const ::std::string& TLeaderboardRecordWrite::leaderboard_id() const {
-  // @@protoc_insertion_point(field_get:server.TLeaderboardRecordWrite.leaderboard_id)
+inline const ::std::string& TLeaderboardRecordsWrite_LeaderboardRecordWrite::leaderboard_id() const {
+  // @@protoc_insertion_point(field_get:server.TLeaderboardRecordsWrite.LeaderboardRecordWrite.leaderboard_id)
   return leaderboard_id_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline void TLeaderboardRecordWrite::set_leaderboard_id(const ::std::string& value) {
+inline void TLeaderboardRecordsWrite_LeaderboardRecordWrite::set_leaderboard_id(const ::std::string& value) {
   
   leaderboard_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:server.TLeaderboardRecordWrite.leaderboard_id)
+  // @@protoc_insertion_point(field_set:server.TLeaderboardRecordsWrite.LeaderboardRecordWrite.leaderboard_id)
 }
-inline void TLeaderboardRecordWrite::set_leaderboard_id(const char* value) {
+inline void TLeaderboardRecordsWrite_LeaderboardRecordWrite::set_leaderboard_id(const char* value) {
   
   leaderboard_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:server.TLeaderboardRecordWrite.leaderboard_id)
+  // @@protoc_insertion_point(field_set_char:server.TLeaderboardRecordsWrite.LeaderboardRecordWrite.leaderboard_id)
 }
-inline void TLeaderboardRecordWrite::set_leaderboard_id(const void* value, size_t size) {
+inline void TLeaderboardRecordsWrite_LeaderboardRecordWrite::set_leaderboard_id(const void* value, size_t size) {
   
   leaderboard_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:server.TLeaderboardRecordWrite.leaderboard_id)
+  // @@protoc_insertion_point(field_set_pointer:server.TLeaderboardRecordsWrite.LeaderboardRecordWrite.leaderboard_id)
 }
-inline ::std::string* TLeaderboardRecordWrite::mutable_leaderboard_id() {
+inline ::std::string* TLeaderboardRecordsWrite_LeaderboardRecordWrite::mutable_leaderboard_id() {
   
-  // @@protoc_insertion_point(field_mutable:server.TLeaderboardRecordWrite.leaderboard_id)
+  // @@protoc_insertion_point(field_mutable:server.TLeaderboardRecordsWrite.LeaderboardRecordWrite.leaderboard_id)
   return leaderboard_id_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline ::std::string* TLeaderboardRecordWrite::release_leaderboard_id() {
-  // @@protoc_insertion_point(field_release:server.TLeaderboardRecordWrite.leaderboard_id)
+inline ::std::string* TLeaderboardRecordsWrite_LeaderboardRecordWrite::release_leaderboard_id() {
+  // @@protoc_insertion_point(field_release:server.TLeaderboardRecordsWrite.LeaderboardRecordWrite.leaderboard_id)
   
   return leaderboard_id_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline void TLeaderboardRecordWrite::set_allocated_leaderboard_id(::std::string* leaderboard_id) {
+inline void TLeaderboardRecordsWrite_LeaderboardRecordWrite::set_allocated_leaderboard_id(::std::string* leaderboard_id) {
   if (leaderboard_id != NULL) {
     
   } else {
     
   }
   leaderboard_id_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), leaderboard_id);
-  // @@protoc_insertion_point(field_set_allocated:server.TLeaderboardRecordWrite.leaderboard_id)
+  // @@protoc_insertion_point(field_set_allocated:server.TLeaderboardRecordsWrite.LeaderboardRecordWrite.leaderboard_id)
 }
 
 // optional int64 incr = 2;
-inline bool TLeaderboardRecordWrite::has_incr() const {
+inline bool TLeaderboardRecordsWrite_LeaderboardRecordWrite::has_incr() const {
   return op_case() == kIncr;
 }
-inline void TLeaderboardRecordWrite::set_has_incr() {
+inline void TLeaderboardRecordsWrite_LeaderboardRecordWrite::set_has_incr() {
   _oneof_case_[0] = kIncr;
 }
-inline void TLeaderboardRecordWrite::clear_incr() {
+inline void TLeaderboardRecordsWrite_LeaderboardRecordWrite::clear_incr() {
   if (has_incr()) {
     op_.incr_ = GOOGLE_LONGLONG(0);
     clear_has_op();
   }
 }
-inline ::google::protobuf::int64 TLeaderboardRecordWrite::incr() const {
-  // @@protoc_insertion_point(field_get:server.TLeaderboardRecordWrite.incr)
+inline ::google::protobuf::int64 TLeaderboardRecordsWrite_LeaderboardRecordWrite::incr() const {
+  // @@protoc_insertion_point(field_get:server.TLeaderboardRecordsWrite.LeaderboardRecordWrite.incr)
   if (has_incr()) {
     return op_.incr_;
   }
   return GOOGLE_LONGLONG(0);
 }
-inline void TLeaderboardRecordWrite::set_incr(::google::protobuf::int64 value) {
+inline void TLeaderboardRecordsWrite_LeaderboardRecordWrite::set_incr(::google::protobuf::int64 value) {
   if (!has_incr()) {
     clear_op();
     set_has_incr();
   }
   op_.incr_ = value;
-  // @@protoc_insertion_point(field_set:server.TLeaderboardRecordWrite.incr)
+  // @@protoc_insertion_point(field_set:server.TLeaderboardRecordsWrite.LeaderboardRecordWrite.incr)
 }
 
 // optional int64 decr = 3;
-inline bool TLeaderboardRecordWrite::has_decr() const {
+inline bool TLeaderboardRecordsWrite_LeaderboardRecordWrite::has_decr() const {
   return op_case() == kDecr;
 }
-inline void TLeaderboardRecordWrite::set_has_decr() {
+inline void TLeaderboardRecordsWrite_LeaderboardRecordWrite::set_has_decr() {
   _oneof_case_[0] = kDecr;
 }
-inline void TLeaderboardRecordWrite::clear_decr() {
+inline void TLeaderboardRecordsWrite_LeaderboardRecordWrite::clear_decr() {
   if (has_decr()) {
     op_.decr_ = GOOGLE_LONGLONG(0);
     clear_has_op();
   }
 }
-inline ::google::protobuf::int64 TLeaderboardRecordWrite::decr() const {
-  // @@protoc_insertion_point(field_get:server.TLeaderboardRecordWrite.decr)
+inline ::google::protobuf::int64 TLeaderboardRecordsWrite_LeaderboardRecordWrite::decr() const {
+  // @@protoc_insertion_point(field_get:server.TLeaderboardRecordsWrite.LeaderboardRecordWrite.decr)
   if (has_decr()) {
     return op_.decr_;
   }
   return GOOGLE_LONGLONG(0);
 }
-inline void TLeaderboardRecordWrite::set_decr(::google::protobuf::int64 value) {
+inline void TLeaderboardRecordsWrite_LeaderboardRecordWrite::set_decr(::google::protobuf::int64 value) {
   if (!has_decr()) {
     clear_op();
     set_has_decr();
   }
   op_.decr_ = value;
-  // @@protoc_insertion_point(field_set:server.TLeaderboardRecordWrite.decr)
+  // @@protoc_insertion_point(field_set:server.TLeaderboardRecordsWrite.LeaderboardRecordWrite.decr)
 }
 
 // optional int64 set = 4;
-inline bool TLeaderboardRecordWrite::has_set() const {
+inline bool TLeaderboardRecordsWrite_LeaderboardRecordWrite::has_set() const {
   return op_case() == kSet;
 }
-inline void TLeaderboardRecordWrite::set_has_set() {
+inline void TLeaderboardRecordsWrite_LeaderboardRecordWrite::set_has_set() {
   _oneof_case_[0] = kSet;
 }
-inline void TLeaderboardRecordWrite::clear_set() {
+inline void TLeaderboardRecordsWrite_LeaderboardRecordWrite::clear_set() {
   if (has_set()) {
     op_.set_ = GOOGLE_LONGLONG(0);
     clear_has_op();
   }
 }
-inline ::google::protobuf::int64 TLeaderboardRecordWrite::set() const {
-  // @@protoc_insertion_point(field_get:server.TLeaderboardRecordWrite.set)
+inline ::google::protobuf::int64 TLeaderboardRecordsWrite_LeaderboardRecordWrite::set() const {
+  // @@protoc_insertion_point(field_get:server.TLeaderboardRecordsWrite.LeaderboardRecordWrite.set)
   if (has_set()) {
     return op_.set_;
   }
   return GOOGLE_LONGLONG(0);
 }
-inline void TLeaderboardRecordWrite::set_set(::google::protobuf::int64 value) {
+inline void TLeaderboardRecordsWrite_LeaderboardRecordWrite::set_set(::google::protobuf::int64 value) {
   if (!has_set()) {
     clear_op();
     set_has_set();
   }
   op_.set_ = value;
-  // @@protoc_insertion_point(field_set:server.TLeaderboardRecordWrite.set)
+  // @@protoc_insertion_point(field_set:server.TLeaderboardRecordsWrite.LeaderboardRecordWrite.set)
 }
 
 // optional int64 best = 5;
-inline bool TLeaderboardRecordWrite::has_best() const {
+inline bool TLeaderboardRecordsWrite_LeaderboardRecordWrite::has_best() const {
   return op_case() == kBest;
 }
-inline void TLeaderboardRecordWrite::set_has_best() {
+inline void TLeaderboardRecordsWrite_LeaderboardRecordWrite::set_has_best() {
   _oneof_case_[0] = kBest;
 }
-inline void TLeaderboardRecordWrite::clear_best() {
+inline void TLeaderboardRecordsWrite_LeaderboardRecordWrite::clear_best() {
   if (has_best()) {
     op_.best_ = GOOGLE_LONGLONG(0);
     clear_has_op();
   }
 }
-inline ::google::protobuf::int64 TLeaderboardRecordWrite::best() const {
-  // @@protoc_insertion_point(field_get:server.TLeaderboardRecordWrite.best)
+inline ::google::protobuf::int64 TLeaderboardRecordsWrite_LeaderboardRecordWrite::best() const {
+  // @@protoc_insertion_point(field_get:server.TLeaderboardRecordsWrite.LeaderboardRecordWrite.best)
   if (has_best()) {
     return op_.best_;
   }
   return GOOGLE_LONGLONG(0);
 }
-inline void TLeaderboardRecordWrite::set_best(::google::protobuf::int64 value) {
+inline void TLeaderboardRecordsWrite_LeaderboardRecordWrite::set_best(::google::protobuf::int64 value) {
   if (!has_best()) {
     clear_op();
     set_has_best();
   }
   op_.best_ = value;
-  // @@protoc_insertion_point(field_set:server.TLeaderboardRecordWrite.best)
+  // @@protoc_insertion_point(field_set:server.TLeaderboardRecordsWrite.LeaderboardRecordWrite.best)
 }
 
 // optional string location = 6;
-inline void TLeaderboardRecordWrite::clear_location() {
+inline void TLeaderboardRecordsWrite_LeaderboardRecordWrite::clear_location() {
   location_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline const ::std::string& TLeaderboardRecordWrite::location() const {
-  // @@protoc_insertion_point(field_get:server.TLeaderboardRecordWrite.location)
+inline const ::std::string& TLeaderboardRecordsWrite_LeaderboardRecordWrite::location() const {
+  // @@protoc_insertion_point(field_get:server.TLeaderboardRecordsWrite.LeaderboardRecordWrite.location)
   return location_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline void TLeaderboardRecordWrite::set_location(const ::std::string& value) {
+inline void TLeaderboardRecordsWrite_LeaderboardRecordWrite::set_location(const ::std::string& value) {
   
   location_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:server.TLeaderboardRecordWrite.location)
+  // @@protoc_insertion_point(field_set:server.TLeaderboardRecordsWrite.LeaderboardRecordWrite.location)
 }
-inline void TLeaderboardRecordWrite::set_location(const char* value) {
+inline void TLeaderboardRecordsWrite_LeaderboardRecordWrite::set_location(const char* value) {
   
   location_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:server.TLeaderboardRecordWrite.location)
+  // @@protoc_insertion_point(field_set_char:server.TLeaderboardRecordsWrite.LeaderboardRecordWrite.location)
 }
-inline void TLeaderboardRecordWrite::set_location(const char* value, size_t size) {
+inline void TLeaderboardRecordsWrite_LeaderboardRecordWrite::set_location(const char* value, size_t size) {
   
   location_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:server.TLeaderboardRecordWrite.location)
+  // @@protoc_insertion_point(field_set_pointer:server.TLeaderboardRecordsWrite.LeaderboardRecordWrite.location)
 }
-inline ::std::string* TLeaderboardRecordWrite::mutable_location() {
+inline ::std::string* TLeaderboardRecordsWrite_LeaderboardRecordWrite::mutable_location() {
   
-  // @@protoc_insertion_point(field_mutable:server.TLeaderboardRecordWrite.location)
+  // @@protoc_insertion_point(field_mutable:server.TLeaderboardRecordsWrite.LeaderboardRecordWrite.location)
   return location_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline ::std::string* TLeaderboardRecordWrite::release_location() {
-  // @@protoc_insertion_point(field_release:server.TLeaderboardRecordWrite.location)
+inline ::std::string* TLeaderboardRecordsWrite_LeaderboardRecordWrite::release_location() {
+  // @@protoc_insertion_point(field_release:server.TLeaderboardRecordsWrite.LeaderboardRecordWrite.location)
   
   return location_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline void TLeaderboardRecordWrite::set_allocated_location(::std::string* location) {
+inline void TLeaderboardRecordsWrite_LeaderboardRecordWrite::set_allocated_location(::std::string* location) {
   if (location != NULL) {
     
   } else {
     
   }
   location_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), location);
-  // @@protoc_insertion_point(field_set_allocated:server.TLeaderboardRecordWrite.location)
+  // @@protoc_insertion_point(field_set_allocated:server.TLeaderboardRecordsWrite.LeaderboardRecordWrite.location)
 }
 
 // optional string timezone = 7;
-inline void TLeaderboardRecordWrite::clear_timezone() {
+inline void TLeaderboardRecordsWrite_LeaderboardRecordWrite::clear_timezone() {
   timezone_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline const ::std::string& TLeaderboardRecordWrite::timezone() const {
-  // @@protoc_insertion_point(field_get:server.TLeaderboardRecordWrite.timezone)
+inline const ::std::string& TLeaderboardRecordsWrite_LeaderboardRecordWrite::timezone() const {
+  // @@protoc_insertion_point(field_get:server.TLeaderboardRecordsWrite.LeaderboardRecordWrite.timezone)
   return timezone_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline void TLeaderboardRecordWrite::set_timezone(const ::std::string& value) {
+inline void TLeaderboardRecordsWrite_LeaderboardRecordWrite::set_timezone(const ::std::string& value) {
   
   timezone_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:server.TLeaderboardRecordWrite.timezone)
+  // @@protoc_insertion_point(field_set:server.TLeaderboardRecordsWrite.LeaderboardRecordWrite.timezone)
 }
-inline void TLeaderboardRecordWrite::set_timezone(const char* value) {
+inline void TLeaderboardRecordsWrite_LeaderboardRecordWrite::set_timezone(const char* value) {
   
   timezone_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:server.TLeaderboardRecordWrite.timezone)
+  // @@protoc_insertion_point(field_set_char:server.TLeaderboardRecordsWrite.LeaderboardRecordWrite.timezone)
 }
-inline void TLeaderboardRecordWrite::set_timezone(const char* value, size_t size) {
+inline void TLeaderboardRecordsWrite_LeaderboardRecordWrite::set_timezone(const char* value, size_t size) {
   
   timezone_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:server.TLeaderboardRecordWrite.timezone)
+  // @@protoc_insertion_point(field_set_pointer:server.TLeaderboardRecordsWrite.LeaderboardRecordWrite.timezone)
 }
-inline ::std::string* TLeaderboardRecordWrite::mutable_timezone() {
+inline ::std::string* TLeaderboardRecordsWrite_LeaderboardRecordWrite::mutable_timezone() {
   
-  // @@protoc_insertion_point(field_mutable:server.TLeaderboardRecordWrite.timezone)
+  // @@protoc_insertion_point(field_mutable:server.TLeaderboardRecordsWrite.LeaderboardRecordWrite.timezone)
   return timezone_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline ::std::string* TLeaderboardRecordWrite::release_timezone() {
-  // @@protoc_insertion_point(field_release:server.TLeaderboardRecordWrite.timezone)
+inline ::std::string* TLeaderboardRecordsWrite_LeaderboardRecordWrite::release_timezone() {
+  // @@protoc_insertion_point(field_release:server.TLeaderboardRecordsWrite.LeaderboardRecordWrite.timezone)
   
   return timezone_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline void TLeaderboardRecordWrite::set_allocated_timezone(::std::string* timezone) {
+inline void TLeaderboardRecordsWrite_LeaderboardRecordWrite::set_allocated_timezone(::std::string* timezone) {
   if (timezone != NULL) {
     
   } else {
     
   }
   timezone_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), timezone);
-  // @@protoc_insertion_point(field_set_allocated:server.TLeaderboardRecordWrite.timezone)
+  // @@protoc_insertion_point(field_set_allocated:server.TLeaderboardRecordsWrite.LeaderboardRecordWrite.timezone)
 }
 
 // optional bytes metadata = 8;
-inline void TLeaderboardRecordWrite::clear_metadata() {
+inline void TLeaderboardRecordsWrite_LeaderboardRecordWrite::clear_metadata() {
   metadata_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline const ::std::string& TLeaderboardRecordWrite::metadata() const {
-  // @@protoc_insertion_point(field_get:server.TLeaderboardRecordWrite.metadata)
+inline const ::std::string& TLeaderboardRecordsWrite_LeaderboardRecordWrite::metadata() const {
+  // @@protoc_insertion_point(field_get:server.TLeaderboardRecordsWrite.LeaderboardRecordWrite.metadata)
   return metadata_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline void TLeaderboardRecordWrite::set_metadata(const ::std::string& value) {
+inline void TLeaderboardRecordsWrite_LeaderboardRecordWrite::set_metadata(const ::std::string& value) {
   
   metadata_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:server.TLeaderboardRecordWrite.metadata)
+  // @@protoc_insertion_point(field_set:server.TLeaderboardRecordsWrite.LeaderboardRecordWrite.metadata)
 }
-inline void TLeaderboardRecordWrite::set_metadata(const char* value) {
+inline void TLeaderboardRecordsWrite_LeaderboardRecordWrite::set_metadata(const char* value) {
   
   metadata_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:server.TLeaderboardRecordWrite.metadata)
+  // @@protoc_insertion_point(field_set_char:server.TLeaderboardRecordsWrite.LeaderboardRecordWrite.metadata)
 }
-inline void TLeaderboardRecordWrite::set_metadata(const void* value, size_t size) {
+inline void TLeaderboardRecordsWrite_LeaderboardRecordWrite::set_metadata(const void* value, size_t size) {
   
   metadata_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:server.TLeaderboardRecordWrite.metadata)
+  // @@protoc_insertion_point(field_set_pointer:server.TLeaderboardRecordsWrite.LeaderboardRecordWrite.metadata)
 }
-inline ::std::string* TLeaderboardRecordWrite::mutable_metadata() {
+inline ::std::string* TLeaderboardRecordsWrite_LeaderboardRecordWrite::mutable_metadata() {
   
-  // @@protoc_insertion_point(field_mutable:server.TLeaderboardRecordWrite.metadata)
+  // @@protoc_insertion_point(field_mutable:server.TLeaderboardRecordsWrite.LeaderboardRecordWrite.metadata)
   return metadata_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline ::std::string* TLeaderboardRecordWrite::release_metadata() {
-  // @@protoc_insertion_point(field_release:server.TLeaderboardRecordWrite.metadata)
+inline ::std::string* TLeaderboardRecordsWrite_LeaderboardRecordWrite::release_metadata() {
+  // @@protoc_insertion_point(field_release:server.TLeaderboardRecordsWrite.LeaderboardRecordWrite.metadata)
   
   return metadata_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline void TLeaderboardRecordWrite::set_allocated_metadata(::std::string* metadata) {
+inline void TLeaderboardRecordsWrite_LeaderboardRecordWrite::set_allocated_metadata(::std::string* metadata) {
   if (metadata != NULL) {
     
   } else {
     
   }
   metadata_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), metadata);
-  // @@protoc_insertion_point(field_set_allocated:server.TLeaderboardRecordWrite.metadata)
+  // @@protoc_insertion_point(field_set_allocated:server.TLeaderboardRecordsWrite.LeaderboardRecordWrite.metadata)
 }
 
-inline bool TLeaderboardRecordWrite::has_op() const {
+inline bool TLeaderboardRecordsWrite_LeaderboardRecordWrite::has_op() const {
   return op_case() != OP_NOT_SET;
 }
-inline void TLeaderboardRecordWrite::clear_has_op() {
+inline void TLeaderboardRecordsWrite_LeaderboardRecordWrite::clear_has_op() {
   _oneof_case_[0] = OP_NOT_SET;
 }
-inline TLeaderboardRecordWrite::OpCase TLeaderboardRecordWrite::op_case() const {
-  return TLeaderboardRecordWrite::OpCase(_oneof_case_[0]);
+inline TLeaderboardRecordsWrite_LeaderboardRecordWrite::OpCase TLeaderboardRecordsWrite_LeaderboardRecordWrite::op_case() const {
+  return TLeaderboardRecordsWrite_LeaderboardRecordWrite::OpCase(_oneof_case_[0]);
 }
-inline const TLeaderboardRecordWrite* TLeaderboardRecordWrite::internal_default_instance() {
-  return &TLeaderboardRecordWrite_default_instance_.get();
+inline const TLeaderboardRecordsWrite_LeaderboardRecordWrite* TLeaderboardRecordsWrite_LeaderboardRecordWrite::internal_default_instance() {
+  return &TLeaderboardRecordsWrite_LeaderboardRecordWrite_default_instance_.get();
 }
 // -------------------------------------------------------------------
 
-// TLeaderboardRecord
+// TLeaderboardRecordsWrite
 
-// optional .server.LeaderboardRecord record = 1;
-inline bool TLeaderboardRecord::has_record() const {
-  return this != internal_default_instance() && record_ != NULL;
+// repeated .server.TLeaderboardRecordsWrite.LeaderboardRecordWrite records = 1;
+inline int TLeaderboardRecordsWrite::records_size() const {
+  return records_.size();
 }
-inline void TLeaderboardRecord::clear_record() {
-  if (GetArenaNoVirtual() == NULL && record_ != NULL) delete record_;
-  record_ = NULL;
+inline void TLeaderboardRecordsWrite::clear_records() {
+  records_.Clear();
 }
-inline const ::server::LeaderboardRecord& TLeaderboardRecord::record() const {
-  // @@protoc_insertion_point(field_get:server.TLeaderboardRecord.record)
-  return record_ != NULL ? *record_
-                         : *::server::LeaderboardRecord::internal_default_instance();
+inline const ::server::TLeaderboardRecordsWrite_LeaderboardRecordWrite& TLeaderboardRecordsWrite::records(int index) const {
+  // @@protoc_insertion_point(field_get:server.TLeaderboardRecordsWrite.records)
+  return records_.Get(index);
 }
-inline ::server::LeaderboardRecord* TLeaderboardRecord::mutable_record() {
-  
-  if (record_ == NULL) {
-    record_ = new ::server::LeaderboardRecord;
-  }
-  // @@protoc_insertion_point(field_mutable:server.TLeaderboardRecord.record)
-  return record_;
+inline ::server::TLeaderboardRecordsWrite_LeaderboardRecordWrite* TLeaderboardRecordsWrite::mutable_records(int index) {
+  // @@protoc_insertion_point(field_mutable:server.TLeaderboardRecordsWrite.records)
+  return records_.Mutable(index);
 }
-inline ::server::LeaderboardRecord* TLeaderboardRecord::release_record() {
-  // @@protoc_insertion_point(field_release:server.TLeaderboardRecord.record)
-  
-  ::server::LeaderboardRecord* temp = record_;
-  record_ = NULL;
-  return temp;
+inline ::server::TLeaderboardRecordsWrite_LeaderboardRecordWrite* TLeaderboardRecordsWrite::add_records() {
+  // @@protoc_insertion_point(field_add:server.TLeaderboardRecordsWrite.records)
+  return records_.Add();
 }
-inline void TLeaderboardRecord::set_allocated_record(::server::LeaderboardRecord* record) {
-  delete record_;
-  record_ = record;
-  if (record) {
-    
-  } else {
-    
-  }
-  // @@protoc_insertion_point(field_set_allocated:server.TLeaderboardRecord.record)
+inline ::google::protobuf::RepeatedPtrField< ::server::TLeaderboardRecordsWrite_LeaderboardRecordWrite >*
+TLeaderboardRecordsWrite::mutable_records() {
+  // @@protoc_insertion_point(field_mutable_list:server.TLeaderboardRecordsWrite.records)
+  return &records_;
+}
+inline const ::google::protobuf::RepeatedPtrField< ::server::TLeaderboardRecordsWrite_LeaderboardRecordWrite >&
+TLeaderboardRecordsWrite::records() const {
+  // @@protoc_insertion_point(field_list:server.TLeaderboardRecordsWrite.records)
+  return records_;
 }
 
-inline const TLeaderboardRecord* TLeaderboardRecord::internal_default_instance() {
-  return &TLeaderboardRecord_default_instance_.get();
+inline const TLeaderboardRecordsWrite* TLeaderboardRecordsWrite::internal_default_instance() {
+  return &TLeaderboardRecordsWrite_default_instance_.get();
 }
 // -------------------------------------------------------------------
 
@@ -27242,6 +29004,26 @@ inline const TRpc* TRpc::internal_default_instance() {
   return &TRpc_default_instance_.get();
 }
 #endif  // !PROTOBUF_INLINE_NOT_IN_HEADERS
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
 // -------------------------------------------------------------------
 
 // -------------------------------------------------------------------

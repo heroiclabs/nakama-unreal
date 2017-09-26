@@ -25,11 +25,12 @@ namespace Nakama {
 
 	public:
 		NMatch() {}
-		NMatch(server::TMatch message) : 
-			self(NUserPresence(message.self()))
+		NMatch(server::TMatch match) : NMatch(match.match()) {}
+		NMatch(server::Match match) :
+			self(NUserPresence(match.self()))
 		{
-			id = message.match_id();
-			auto msgPresences = message.presences();
+			id = match.match_id();
+			auto msgPresences = match.presences();
 			for (size_t i = 0, maxI = msgPresences.size(); i < maxI; i++) {
 				presence.push_back(NUserPresence(msgPresences[i]));
 			}

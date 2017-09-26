@@ -487,6 +487,7 @@ class UNBPMatch : public UObject
 
 public:
 	CONVERT_TO_BP_STATIC(NMatch, UNBPMatch)
+	CONVERT_RS_TO_BP_STATIC(NMatch, UNBPMatch)
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Match")
 		FString GetId() { return UTF8_TO_TCHAR(Wrapped.GetId().c_str()); }
@@ -588,6 +589,7 @@ class UNBPTopic : public UObject
 
 public:
 	CONVERT_TO_BP_STATIC(NTopic, UNBPTopic)
+	CONVERT_RS_TO_BP_STATIC(NTopic, UNBPTopic)
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Topic")
 		UNBPTopicId* GetTopic() { return UNBPTopicId::From(Wrapped.GetTopic()); }

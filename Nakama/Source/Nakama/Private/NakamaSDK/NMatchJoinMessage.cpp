@@ -21,15 +21,13 @@ namespace Nakama {
 	NMatchJoinMessage::NMatchJoinMessage(std::string matchId)
 	{
 		// set our default
-		auto payload = envelope.mutable_match_join();
-		payload->set_match_id(matchId);
+		envelope.mutable_matches_join()->add_matches()->set_match_id(matchId);
 	}
 
 	NMatchJoinMessage::NMatchJoinMessage(NMatchToken token)
 	{
 		// set our default
-		auto payload = envelope.mutable_match_join();
-		payload->set_token(token.GetToken());
+		envelope.mutable_matches_join()->add_matches()->set_token(token.GetToken());
 	}
 
 	NMatchJoinMessage NMatchJoinMessage::Default(std::string matchId)

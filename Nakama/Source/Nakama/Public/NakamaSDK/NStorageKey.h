@@ -27,7 +27,7 @@ namespace Nakama {
 
 	public:
 		NStorageKey() {}
-		NStorageKey(TStorageKey::StorageKey &message) {
+		NStorageKey(TStorageKeys_StorageKey &message) {
 			bucket = message.bucket();
 			collection = message.collection();
 			record = message.record();

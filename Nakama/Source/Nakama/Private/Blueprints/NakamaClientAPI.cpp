@@ -865,7 +865,7 @@ void UNBPSelfLinkRequest::Activate()
 
 // ------------------------- UNBPManageGroupsRequest -------------------------
 
-UNBPManageGroupsRequest* UNBPManageGroupsRequest::CreateGroup(UNakamaComponent* nakama, FString name, FString description, FString avatarUrl, FString lang, FString metadata, bool privateGroup, FDelegateOnSuccess_Group onSuccess, FDelegateOnFail onFail)
+UNBPManageGroupsRequest* UNBPManageGroupsRequest::CreateGroup(UNakamaComponent* nakama, FString name, FString description, FString avatarUrl, FString lang, FString metadata, bool privateGroup, FDelegateOnSuccess_GroupList onSuccess, FDelegateOnFail onFail)
 {
 	auto proxy = NewObject<UNBPManageGroupsRequest>();
 	proxy->mode = Mode::Create;
@@ -948,8 +948,8 @@ void UNBPManageGroupsRequest::Activate()
 	else {
 		auto success = [req](void* obj) {
 			if (req->OnGroupSuccess.IsBound()) {
-				auto data = (NGroup*)obj;
-				req->OnGroupSuccess.Execute(UNBPGroup::From(*data));
+				auto rs = (NResultSet<NGroup>*)obj;
+				req->OnGroupSuccess.Execute(UNBPGroup::FromResultSet(rs), UNBPCursor::From(rs->GetCursor()));
 			}
 		};
 
@@ -1466,18 +1466,18 @@ UNBPMatchRequest* UNBPMatchRequest::CreateMatch(UNakamaComponent* nakama, FDeleg
 	auto proxy = NewObject<UNBPMatchRequest>();
 	proxy->mode = Mode::Create;
 	proxy->NakamaRef = nakama;
-	proxy->OnCreateJoinSuccess = onSuccess;
+	proxy->OnCreateSuccess = onSuccess;
 	proxy->OnFail = onFail;
 	return proxy;
 }
 
-UNBPMatchRequest* UNBPMatchRequest::JoinMatch(UNakamaComponent* nakama, FString matchId, FDelegateOnSuccess_Match onSuccess, FDelegateOnFail onFail)
+UNBPMatchRequest* UNBPMatchRequest::JoinMatch(UNakamaComponent* nakama, FString matchId, FDelegateOnSuccess_MatchList onSuccess, FDelegateOnFail onFail)
 {
 	auto proxy = NewObject<UNBPMatchRequest>();
 	proxy->mode = Mode::Join;
 	proxy->MatchId = matchId;
 	proxy->NakamaRef = nakama;
-	proxy->OnCreateJoinSuccess = onSuccess;
+	proxy->OnJoinSuccess = onSuccess;
 	proxy->OnFail = onFail;
 	return proxy;
 }
@@ -1520,9 +1520,9 @@ void UNBPMatchRequest::Activate()
 	switch (mode) {
 	case Mode::Create: {
 		auto success = [req](void* obj) {
-			if (req->OnCreateJoinSuccess.IsBound()) {
+			if (req->OnCreateSuccess.IsBound()) {
 				auto data = (NMatch*)obj;
-				req->OnCreateJoinSuccess.Execute(UNBPMatch::From(*data));
+				req->OnCreateSuccess.Execute(UNBPMatch::From(*data));
 			}
 		};
 
@@ -1532,9 +1532,9 @@ void UNBPMatchRequest::Activate()
 	}
 	case Mode::Join: {
 		auto success = [req](void* obj) {
-			if (req->OnCreateJoinSuccess.IsBound()) {
-				auto data = (NMatch*)obj;
-				req->OnCreateJoinSuccess.Execute(UNBPMatch::From(*data));
+			if (req->OnJoinSuccess.IsBound()) {
+				auto rs = (NResultSet<NMatch>*)obj;
+				req->OnJoinSuccess.Execute(UNBPMatch::FromResultSet(rs), UNBPCursor::From(rs->GetCursor()));
 			}
 		};
 
@@ -1567,7 +1567,7 @@ void UNBPMatchRequest::Activate()
 	}
 }
 
-UNBPTopicRequest* UNBPTopicRequest::JoinDirectMessageTopic(UNakamaComponent* nakama, FString userId, FDelegateOnSuccess_Topic onSuccess, FDelegateOnFail onFail)
+UNBPTopicRequest* UNBPTopicRequest::JoinDirectMessageTopic(UNakamaComponent* nakama, FString userId, FDelegateOnSuccess_TopicList onSuccess, FDelegateOnFail onFail)
 {
 	auto proxy = NewObject<UNBPTopicRequest>();
 	proxy->mode = Mode::Join;
@@ -1579,7 +1579,7 @@ UNBPTopicRequest* UNBPTopicRequest::JoinDirectMessageTopic(UNakamaComponent* nak
 	return proxy;
 }
 
-UNBPTopicRequest* UNBPTopicRequest::JoinRoomTopic(UNakamaComponent* nakama, FString room, FDelegateOnSuccess_Topic onSuccess, FDelegateOnFail onFail)
+UNBPTopicRequest* UNBPTopicRequest::JoinRoomTopic(UNakamaComponent* nakama, FString room, FDelegateOnSuccess_TopicList onSuccess, FDelegateOnFail onFail)
 {
 	auto proxy = NewObject<UNBPTopicRequest>();
 	proxy->mode = Mode::Join;
@@ -1591,7 +1591,7 @@ UNBPTopicRequest* UNBPTopicRequest::JoinRoomTopic(UNakamaComponent* nakama, FStr
 	return proxy;
 }
 
-UNBPTopicRequest* UNBPTopicRequest::JoinGroupTopic(UNakamaComponent* nakama, FString groupId, FDelegateOnSuccess_Topic onSuccess, FDelegateOnFail onFail)
+UNBPTopicRequest* UNBPTopicRequest::JoinGroupTopic(UNakamaComponent* nakama, FString groupId, FDelegateOnSuccess_TopicList onSuccess, FDelegateOnFail onFail)
 {
 	auto proxy = NewObject<UNBPTopicRequest>();
 	proxy->mode = Mode::Join;
@@ -1686,8 +1686,8 @@ void UNBPTopicRequest::Activate()
 	case Mode::Join: {
 		auto success = [req](void* obj) {
 			if (req->OnJoinSuccess.IsBound()) {
-				auto data = (NTopic*)obj;
-				req->OnJoinSuccess.Execute(UNBPTopic::From(*data));
+				auto rs = (NResultSet<NTopic>*)obj;
+				req->OnJoinSuccess.Execute(UNBPTopic::FromResultSet(rs), UNBPCursor::From(rs->GetCursor()));
 			}
 		};
 
@@ -1821,7 +1821,7 @@ UNBPLeaderboardRecordsRequest* UNBPLeaderboardRecordsRequest::FetchRecords(UNaka
 	proxy->Cursor = cursor;
 	proxy->Limit = limit;
 	proxy->NakamaRef = nakama;
-	proxy->OnListFetchSuccess = onSuccess;
+	proxy->OnSuccess = onSuccess;
 	proxy->OnFail = onFail;
 	return proxy;
 }
@@ -1838,12 +1838,12 @@ UNBPLeaderboardRecordsRequest* UNBPLeaderboardRecordsRequest::ListRecords(UNakam
 	proxy->Cursor = cursor;
 	proxy->Limit = limit;
 	proxy->NakamaRef = nakama;
-	proxy->OnListFetchSuccess = onSuccess;
+	proxy->OnSuccess = onSuccess;
 	proxy->OnFail = onFail;
 	return proxy;
 }
 
-UNBPLeaderboardRecordsRequest* UNBPLeaderboardRecordsRequest::WriteRecord(UNakamaComponent* nakama, FString leaderboardId, FString location, FString timezone, FString metadata, int32 setValue, int32 bestValue, int32 incr, int32 decr, FDelegateOnSuccess_LeaderboardRecord onSuccess, FDelegateOnFail onFail)
+UNBPLeaderboardRecordsRequest* UNBPLeaderboardRecordsRequest::WriteRecord(UNakamaComponent* nakama, FString leaderboardId, FString location, FString timezone, FString metadata, int32 setValue, int32 bestValue, int32 incr, int32 decr, FDelegateOnSuccess_LeaderboardRecordList onSuccess, FDelegateOnFail onFail)
 {
 	auto proxy = NewObject<UNBPLeaderboardRecordsRequest>();
 	proxy->mode = Mode::Write;
@@ -1856,7 +1856,7 @@ UNBPLeaderboardRecordsRequest* UNBPLeaderboardRecordsRequest::WriteRecord(UNakam
 	proxy->Incr = incr;
 	proxy->Decr = decr;
 	proxy->NakamaRef = nakama;
-	proxy->OnWriteSuccess = onSuccess;
+	proxy->OnSuccess = onSuccess;
 	proxy->OnFail = onFail;
 	return proxy;
 }
@@ -1872,15 +1872,15 @@ void UNBPLeaderboardRecordsRequest::Activate()
 			req->OnFail.Execute(UNBPError::From(error));
 	};
 
+	auto success = [req](void* obj) {
+		if (req->OnSuccess.IsBound()) {
+			auto rs = (NResultSet<NLeaderboardRecord>*)obj;
+			req->OnSuccess.Execute(UNBPLeaderboardRecord::FromResultSet(rs), UNBPCursor::From(rs->GetCursor()));
+		}
+	};
+
 	switch (mode) {
 	case Mode::Fetch: {
-		auto success = [req](void* obj) {
-			if (req->OnListFetchSuccess.IsBound()) {
-				auto rs = (NResultSet<NLeaderboardRecord>*)obj;
-				req->OnListFetchSuccess.Execute(UNBPLeaderboardRecord::FromResultSet(rs), UNBPCursor::From(rs->GetCursor()));
-			}
-		};
-
 		auto builder = NLeaderboardRecordsFetchMessage::Builder(TCHAR_TO_UTF8(*LeaderboardId));
 		if (Cursor != nullptr) builder.Cursor(Cursor->GetNCursor());
 		if (Limit != 0) builder.Limit(Limit);
@@ -1890,13 +1890,6 @@ void UNBPLeaderboardRecordsRequest::Activate()
 		break;
 	}
 	case Mode::List: {
-		auto success = [req](void* obj) {
-			if (req->OnListFetchSuccess.IsBound()) {
-				auto rs = (NResultSet<NLeaderboardRecord>*)obj;
-				req->OnListFetchSuccess.Execute(UNBPLeaderboardRecord::FromResultSet(rs), UNBPCursor::From(rs->GetCursor()));
-			}
-		};
-
 		auto builder = NLeaderboardRecordsListMessage::Builder(TCHAR_TO_UTF8(*LeaderboardId));
 		if (OwnerIds.Num() > 0) {
 			std::vector<std::string> ids;
@@ -1916,13 +1909,6 @@ void UNBPLeaderboardRecordsRequest::Activate()
 		break;
 	}
 	case Mode::Write: {
-		auto success = [req](void* obj) {
-			if (req->OnWriteSuccess.IsBound()) {
-				auto data = (NLeaderboardRecord*)obj;
-				req->OnWriteSuccess.Execute(UNBPLeaderboardRecord::From(*data));
-			}
-		};
-
 		auto builder = NLeaderboardRecordWriteMessage::Builder(TCHAR_TO_UTF8(*LeaderboardId));
 		if (!Location.IsEmpty()) builder.Location(TCHAR_TO_UTF8(*Location));
 		if (!Timezone.IsEmpty()) builder.Timezone(TCHAR_TO_UTF8(*Timezone));

@@ -21,8 +21,8 @@ namespace Nakama {
 	NTopicLeaveMessage::NTopicLeaveMessage(NTopicId topic)
 	{
 		// set our default
-		auto payload = envelope.mutable_topic_leave();
-		auto myTopic = payload->mutable_topic();
+		auto payload = envelope.mutable_topics_leave();
+		auto myTopic = payload->add_topics();
 		switch (topic.GetType()) {
 		case DirectMessage:
 			myTopic->set_dm(topic.GetId());

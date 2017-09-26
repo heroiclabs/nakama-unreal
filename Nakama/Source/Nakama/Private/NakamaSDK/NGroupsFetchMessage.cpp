@@ -38,25 +38,19 @@ namespace Nakama {
 
 	NGroupsFetchMessage::Builder NGroupsFetchMessage::Builder::SetGroupIds(std::vector<std::string> ids)
 	{
-		auto container = new TGroupsFetch_GroupIds();
 		for (size_t i = 0; i < ids.size(); i++)
 		{
-			container->mutable_group_ids()->Add()->assign(ids[i]);
+			message.envelope.mutable_groups_fetch()->add_groups()->set_group_id(ids[i]);
 		}
-
-		message.envelope.mutable_groups_fetch()->set_allocated_group_ids(container);
 		return *this;
 	}
 
 	NGroupsFetchMessage::Builder NGroupsFetchMessage::Builder::SetNames(std::vector<std::string> names)
 	{
-		auto container = new TGroupsFetch_Names();
 		for (size_t i = 0; i < names.size(); i++)
 		{
-			container->mutable_names()->Add()->assign(names[i]);
+			message.envelope.mutable_groups_fetch()->add_groups()->set_name(names[i]);
 		}
-
-		message.envelope.mutable_groups_fetch()->set_allocated_names(container);
 		return *this;
 	}
 

@@ -38,25 +38,19 @@ namespace Nakama {
 
 	NUsersFetchMessage::Builder NUsersFetchMessage::Builder::SetUserIds(std::vector<std::string> ids)
 	{
-		auto container = new TUsersFetch_UserIds();
 		for (size_t i = 0; i < ids.size(); i++)
 		{
-			container->mutable_user_ids()->Add()->assign(ids[i]);
+			message.envelope.mutable_users_fetch()->add_users()->set_user_id(ids[i]);
 		}
-
-		message.envelope.mutable_users_fetch()->set_allocated_user_ids(container);
 		return *this;
 	}
 
 	NUsersFetchMessage::Builder NUsersFetchMessage::Builder::SetHandles(std::vector<std::string> handles)
 	{
-		auto container = new TUsersFetch_Handles();
 		for (size_t i = 0; i < handles.size(); i++)
 		{
-			container->mutable_handles()->Add()->assign(handles[i]);
+			message.envelope.mutable_users_fetch()->add_users()->set_handle(handles[i]);
 		}
-
-		message.envelope.mutable_users_fetch()->set_allocated_handles(container);
 		return *this;
 	}
 
