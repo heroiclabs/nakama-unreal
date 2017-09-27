@@ -152,15 +152,17 @@ enum Error_Code {
   Error_Code_MISSING_PAYLOAD = 2,
   Error_Code_BAD_INPUT = 3,
   Error_Code_AUTH_ERROR = 4,
-  Error_Code_USER_LINK_INUSE = 5,
-  Error_Code_USER_LINK_PROVIDER_UNAVAILABLE = 6,
-  Error_Code_USER_UNLINK_DISALLOWED = 7,
-  Error_Code_USER_HANDLE_INUSE = 8,
-  Error_Code_GROUP_NAME_INUSE = 9,
-  Error_Code_STORAGE_REJECTED = 10,
-  Error_Code_MATCH_NOT_FOUND = 11,
-  Error_Code_RUNTIME_FUNCTION_NOT_FOUND = 12,
-  Error_Code_RUNTIME_FUNCTION_EXCEPTION = 13,
+  Error_Code_USER_NOT_FOUND = 5,
+  Error_Code_USER_REGISTER_INUSE = 6,
+  Error_Code_USER_LINK_INUSE = 7,
+  Error_Code_USER_LINK_PROVIDER_UNAVAILABLE = 8,
+  Error_Code_USER_UNLINK_DISALLOWED = 9,
+  Error_Code_USER_HANDLE_INUSE = 10,
+  Error_Code_GROUP_NAME_INUSE = 11,
+  Error_Code_STORAGE_REJECTED = 12,
+  Error_Code_MATCH_NOT_FOUND = 13,
+  Error_Code_RUNTIME_FUNCTION_NOT_FOUND = 14,
+  Error_Code_RUNTIME_FUNCTION_EXCEPTION = 15,
   Error_Code_Error_Code_INT_MIN_SENTINEL_DO_NOT_USE_ = ::google::protobuf::kint32min,
   Error_Code_Error_Code_INT_MAX_SENTINEL_DO_NOT_USE_ = ::google::protobuf::kint32max
 };
@@ -382,6 +384,10 @@ class Error : public ::google::protobuf::Message /* @@protoc_insertion_point(cla
     Error_Code_BAD_INPUT;
   static const Code AUTH_ERROR =
     Error_Code_AUTH_ERROR;
+  static const Code USER_NOT_FOUND =
+    Error_Code_USER_NOT_FOUND;
+  static const Code USER_REGISTER_INUSE =
+    Error_Code_USER_REGISTER_INUSE;
   static const Code USER_LINK_INUSE =
     Error_Code_USER_LINK_INUSE;
   static const Code USER_LINK_PROVIDER_UNAVAILABLE =

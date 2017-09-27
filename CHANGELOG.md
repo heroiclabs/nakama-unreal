@@ -3,8 +3,7 @@ All notable changes to this project are documented below.
 
 The format is based on [keep a changelog](http://keepachangelog.com/) and this project uses [semantic versioning](http://semver.org/).
 
-## [Unreleased]
-
+## [0.7.0] - 2017-09-26
 ### Added
 - Add new In-App Notification feature.
 - Add new In-App Purchase Validation feature.   
