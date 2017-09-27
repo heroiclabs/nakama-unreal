@@ -253,6 +253,11 @@ namespace Nakama {
 		case Envelope::PayloadCase::kTopicPresence:
 			for (size_t i = 0; i < OnTopicPresence.size(); i++) OnTopicPresence[i](NTopicPresence(message.topic_presence()));
 			return;
+		case Envelope::PayloadCase::kLiveNotifications:
+			for (size_t i = 0; i < OnNotification.size(); i++) 
+				for (size_t j = 0; j < message.live_notifications().notifications_size(); i++)
+					OnNotification[i](NNotification(message.live_notifications().notifications().Get(j)));
+			return;
 		}
 
 		std::string collationId = message.collation_id();
@@ -438,6 +443,18 @@ namespace Nakama {
 
 		case Envelope::PayloadCase::kRpc: {
 			if (callbacks) callbacks->OnSuccess(new NRuntimeRpc(message.rpc()));
+			break;
+		}
+
+		case Envelope::PayloadCase::kNotifications: {
+			if (callbacks) {
+				auto msgNotifs = message.notifications().notifications();
+				auto notifs = std::vector<NNotification>();
+				for (size_t i = 0, maxI = msgNotifs.size(); i < maxI; i++) {
+					notifs.push_back(NNotification(msgNotifs[i]));
+				}
+				callbacks->OnSuccess(new NResultSet<NNotification>(notifs, NCursor()));
+			}
 			break;
 		}
 

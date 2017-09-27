@@ -29,6 +29,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMatchPresenceRcvd, UNBPMatchPrese
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnTopicMessageRcvd, UNBPTopicMessage*, data);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnTopicPresenceRcvd, UNBPTopicPresence*, presence);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMatchmakeMatchedRcvd, UNBPMatchmakeMatched*, matched);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNotificationRcvd, UNBPNotification*, notification);
 
 UCLASS(ClassGroup=(Nakama), Blueprintable, meta = (BlueprintSpawnableComponent))
 class NAKAMA_API UNakamaComponent : public UActorComponent
@@ -59,6 +60,9 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 		FOnMatchmakeMatchedRcvd OnMatchmakeMatchedRcvd;
+
+	UPROPERTY(BlueprintAssignable)
+		FOnNotificationRcvd OnNotificationRcvd;
 
 	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction * ThisTickFunction) override;
 

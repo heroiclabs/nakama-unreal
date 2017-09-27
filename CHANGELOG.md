@@ -5,6 +5,10 @@ The format is based on [keep a changelog](http://keepachangelog.com/) and this p
 
 ## [Unreleased]
 
+### Added
+- Add new In-App Notification feature.
+- Add new In-App Purchase Validation feature.   
+
 ### Changed
 - Update Client to support the new batching API.
 

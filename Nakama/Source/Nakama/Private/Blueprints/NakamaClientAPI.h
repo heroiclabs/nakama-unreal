@@ -41,6 +41,8 @@ DECLARE_DYNAMIC_DELEGATE_OneParam(FDelegateOnSuccess_LeaderboardRecord, UNBPLead
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FDelegateOnSuccess_LeaderboardRecordList, TArray<UNBPLeaderboardRecord*>, leaderboardRecords, UNBPCursor*, cursor);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FDelegateOnSuccess_MatchmakeTicket, UNBPMatchmakeTicket*, ticket);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FDelegateOnSuccess_RuntimeRpc, UNBPRuntimeRpc*, rpc);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FDelegateOnSuccess_PurchaseRecord, UNBPPurchaseRecord*, record);
+DECLARE_DYNAMIC_DELEGATE_TwoParams(FDelegateOnSuccess_NotificationList, TArray<UNBPNotification*>, notifications, UNBPCursor*, cursor);
 
 /**
  * Handling for Authentication
@@ -671,6 +673,75 @@ private:
 	UPROPERTY() UNakamaComponent* NakamaRef;
 	UPROPERTY() FDelegateOnSuccess_MatchmakeTicket OnAddSuccess;
 	UPROPERTY() FDelegateOnSuccess OnRemoveSuccess;
+	UPROPERTY() FDelegateOnFail OnFail;
+};
+
+
+/**
+* Handling for Notifications
+*/
+
+UCLASS()
+class UNBPNotificationRequest : public UOnlineBlueprintCallProxyBase
+{
+	GENERATED_BODY()
+
+public:
+	virtual void Activate() override;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true"), Category = "Nakama|Notification")
+		static UNBPNotificationRequest* ListMessages(UNakamaComponent* nakama, FString resumableCursor, int32 limit, FDelegateOnSuccess_NotificationList onSuccess, FDelegateOnFail onFail);
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true"), Category = "Nakama|Notification")
+		static UNBPNotificationRequest* RemoveMessage(UNakamaComponent* nakama, FString notificationId, FDelegateOnSuccess onSuccess, FDelegateOnFail onFail);
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true"), Category = "Nakama|Notification")
+		static UNBPNotificationRequest* RemoveMessages(UNakamaComponent* nakama, TArray<FString> notificationIds, FDelegateOnSuccess onSuccess, FDelegateOnFail onFail);
+
+private:
+	enum Mode { List, Remove };
+
+	Mode mode;
+
+	UPROPERTY() TArray<FString> NotificationIds;
+	UPROPERTY() FString ResumableCursor;
+	UPROPERTY() int32 Limit;
+	UPROPERTY() UNakamaComponent* NakamaRef;
+	UPROPERTY() FDelegateOnSuccess_NotificationList OnListSuccess;
+	UPROPERTY() FDelegateOnSuccess OnRemoveSuccess;
+	UPROPERTY() FDelegateOnFail OnFail;
+};
+
+
+/**
+* Handling for PurchaseValidations
+*/
+
+UCLASS()
+class UNBPPurchaseValidationRequest : public UOnlineBlueprintCallProxyBase
+{
+	GENERATED_BODY()
+
+public:
+	virtual void Activate() override;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true"), Category = "Nakama|Purchase Validation")
+		static UNBPPurchaseValidationRequest* ValidateApplePurchase(UNakamaComponent* nakama, FString productId, FString receiptData, FDelegateOnSuccess_PurchaseRecord onSuccess, FDelegateOnFail onFail);
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true"), Category = "Nakama|Purchase Validation")
+		static UNBPPurchaseValidationRequest* ValidateGooglePurchase(UNakamaComponent* nakama, FString productId, FString productType, FString purchaseToken, FDelegateOnSuccess_PurchaseRecord onSuccess, FDelegateOnFail onFail);
+
+private:
+	enum Mode { Apple, Google };
+
+	Mode mode;
+
+	UPROPERTY() FString ProductId;
+	UPROPERTY() FString ReceiptData;
+	UPROPERTY() FString ProductType;
+	UPROPERTY() FString PurchaseToken;
+	UPROPERTY() UNakamaComponent* NakamaRef;
+	UPROPERTY() FDelegateOnSuccess_PurchaseRecord OnSuccess;
 	UPROPERTY() FDelegateOnFail OnFail;
 };
 

@@ -43,6 +43,8 @@
 #include "NakamaSDK/NMatchToken.h"
 #include "NakamaSDK/NMatchmakeTicket.h"
 #include "NakamaSDK/NMatchmakeMatched.h"
+#include "NakamaSDK/NNotification.h"
+#include "NakamaSDK/NPurchaseRecord.h"
 #include "NakamaSDK/NRuntimeRpc.h"
 #include "NBPDataClasses.generated.h"
 
@@ -631,10 +633,10 @@ public:
 		FString GetMessageId() { return UTF8_TO_TCHAR(Wrapped.GetMessageId().c_str()); }
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Topic Message")
-		int32 GetCreatedAt() { return Wrapped.GetCreatedAt(); }
+		FDateTime GetCreatedAt() { return FROM_NAKAMA_DATE(Wrapped.GetCreatedAt()); }
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Topic Message")
-		int32 GetExpiresAt() { return Wrapped.GetExpiresAt(); }
+		FDateTime GetExpiresAt() { return FROM_NAKAMA_DATE(Wrapped.GetExpiresAt()); }
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Topic Message")
 		FString GetHandle() { return UTF8_TO_TCHAR(Wrapped.GetHandle().c_str()); }
@@ -663,10 +665,10 @@ public:
 		FString GetMessageId() { return UTF8_TO_TCHAR(Wrapped.GetMessageId().c_str()); }
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Topic Message Ack")
-		int32 GetCreatedAt() { return Wrapped.GetCreatedAt(); }
+		FDateTime GetCreatedAt() { return FROM_NAKAMA_DATE(Wrapped.GetCreatedAt()); }
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Topic Message Ack")
-		int32 GetExpiresAt() { return Wrapped.GetExpiresAt(); }
+		FDateTime GetExpiresAt() { return FROM_NAKAMA_DATE(Wrapped.GetExpiresAt()); }
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Topic Message Ack")
 		FString GetHandle() { return UTF8_TO_TCHAR(Wrapped.GetHandle().c_str()); }
@@ -779,13 +781,13 @@ public:
 		FString GetMetadata() { return UTF8_TO_TCHAR(Wrapped.GetMetadata().c_str()); }
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Leaderboard Record")
-		int32 GetRankedAt() { return Wrapped.GetRankedAt(); }
+		FDateTime GetRankedAt() { return FROM_NAKAMA_DATE(Wrapped.GetRankedAt()); }
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Leaderboard Record")
-		int32 GetUpdatedAt() { return Wrapped.GetUpdatedAt(); }
+		FDateTime GetUpdatedAt() { return FROM_NAKAMA_DATE(Wrapped.GetUpdatedAt()); }
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Leaderboard Record")
-		int32 GetExpiresAt() { return Wrapped.GetExpiresAt(); }
+		FDateTime GetExpiresAt() { return FROM_NAKAMA_DATE(Wrapped.GetExpiresAt()); }
 
 private:
 	NLeaderboardRecord Wrapped;
@@ -837,7 +839,7 @@ class UNBPMatchmakeMatched : public UObject
 public:
 	CONVERT_TO_BP_STATIC(NMatchmakeMatched, UNBPMatchmakeMatched)
 
-		UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Matchmake Matched")
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Matchmake Matched")
 		UNBPMatchmakeTicket* GetTicket() { return UNBPMatchmakeTicket::From(Wrapped.GetTicket()); }
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Matchmake Matched")
@@ -851,6 +853,74 @@ public:
 
 private:
 	NMatchmakeMatched Wrapped;
+};
+
+// ------------------------- NNotification -------------------------
+
+UCLASS(BlueprintType)
+class UNBPNotification : public UObject
+{
+	GENERATED_BODY()
+
+public:
+	CONVERT_TO_BP_STATIC(NNotification, UNBPNotification)
+	CONVERT_RS_TO_BP_STATIC(NNotification, UNBPNotification)
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Notification")
+		FString GetId() { return UTF8_TO_TCHAR(Wrapped.GetId().c_str()); }
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Notification")
+		FString GetSubject() { return UTF8_TO_TCHAR(Wrapped.GetSubject().c_str()); }
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Notification")
+		FString GetContent() { return UTF8_TO_TCHAR(Wrapped.GetContent().c_str()); }
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Notification")
+		int32 GetCode() { return Wrapped.GetCode(); }
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Notification")
+		FString GetSenderId() { return UTF8_TO_TCHAR(Wrapped.GetSenderId().c_str()); }
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Notification")
+		FDateTime GetCreatedAt() { return FROM_NAKAMA_DATE(Wrapped.GetCreatedAt()); }
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Notification")
+		FDateTime GetExpiresAt() { return FROM_NAKAMA_DATE(Wrapped.GetExpiresAt()); }
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Notification")
+		bool IsPersistent() { return Wrapped.IsPersistent(); }
+
+private:
+	NNotification Wrapped;
+};
+
+// ------------------------- NPurchaseRecord -------------------------
+
+UCLASS(BlueprintType)
+class UNBPPurchaseRecord : public UObject
+{
+	GENERATED_BODY()
+
+public:
+	CONVERT_TO_BP_STATIC(NPurchaseRecord, UNBPPurchaseRecord)
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Purchase Record")
+		bool IsSuccess() { return Wrapped.IsSuccess(); }
+	
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Purchase Record")
+		bool IsSeenBefore() { return Wrapped.IsSeenBefore(); }
+	
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Purchase Record")
+		bool IsPurchaseProviderReachable() { return Wrapped.IsPurchaseProviderReachable(); }
+	
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Purchase Record")
+		FString GetMessage() { return UTF8_TO_TCHAR(Wrapped.GetMessage().c_str()); }
+	
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Purchase Record")
+		FString GetData() { return UTF8_TO_TCHAR(Wrapped.GetData().c_str()); }
+
+private:
+	NPurchaseRecord Wrapped;
 };
 
 // ------------------------- NRuntimeRpc -------------------------

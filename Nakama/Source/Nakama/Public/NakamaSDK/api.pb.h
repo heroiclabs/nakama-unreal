@@ -58,6 +58,8 @@ class MatchData;
 class MatchDataSend;
 class MatchPresence;
 class MatchmakeMatched;
+class Notification;
+class Notifications;
 class Self;
 class TFriends;
 class TFriendsAdd;
@@ -65,7 +67,6 @@ class TFriendsAdd_FriendsAdd;
 class TFriendsBlock;
 class TFriendsList;
 class TFriendsRemove;
-class TGroup;
 class TGroupUsers;
 class TGroupUsersAdd;
 class TGroupUsersAdd_GroupUserAdd;
@@ -104,6 +105,13 @@ class TMatchesLeave;
 class TMatchmakeAdd;
 class TMatchmakeRemove;
 class TMatchmakeTicket;
+class TNotifications;
+class TNotificationsList;
+class TNotificationsRemove;
+class TPurchaseRecord;
+class TPurchaseValidation;
+class TPurchaseValidation_ApplePurchase;
+class TPurchaseValidation_GooglePurchase;
 class TRpc;
 class TSelf;
 class TSelfFetch;
@@ -1290,43 +1298,48 @@ class Envelope : public ::google::protobuf::Message /* @@protoc_insertion_point(
     kGroupUsersAdd = 26,
     kGroupUsersKick = 27,
     kGroupUsersPromote = 28,
-    kGroup = 29,
-    kGroups = 30,
-    kGroupUsers = 31,
-    kTopicsJoin = 32,
-    kTopicsLeave = 33,
-    kTopicMessageSend = 34,
-    kTopicMessagesList = 35,
-    kTopics = 36,
-    kTopicMessageAck = 37,
-    kTopicMessage = 38,
-    kTopicMessages = 39,
-    kTopicPresence = 40,
-    kMatchCreate = 41,
-    kMatchesJoin = 42,
-    kMatchesLeave = 43,
-    kMatchDataSend = 44,
-    kMatch = 45,
-    kMatches = 46,
-    kMatchData = 47,
-    kMatchPresence = 48,
-    kStorageList = 49,
-    kStorageFetch = 50,
-    kStorageWrite = 51,
-    kStorageRemove = 52,
-    kStorageData = 53,
-    kStorageKeys = 54,
-    kLeaderboardsList = 55,
-    kLeaderboardRecordsWrite = 56,
-    kLeaderboardRecordsFetch = 57,
-    kLeaderboardRecordsList = 58,
-    kLeaderboards = 59,
-    kLeaderboardRecords = 60,
-    kMatchmakeAdd = 61,
-    kMatchmakeRemove = 62,
-    kMatchmakeTicket = 63,
-    kMatchmakeMatched = 64,
-    kRpc = 65,
+    kGroups = 29,
+    kGroupUsers = 30,
+    kTopicsJoin = 31,
+    kTopicsLeave = 32,
+    kTopicMessageSend = 33,
+    kTopicMessagesList = 34,
+    kTopics = 35,
+    kTopicMessageAck = 36,
+    kTopicMessage = 37,
+    kTopicMessages = 38,
+    kTopicPresence = 39,
+    kMatchCreate = 40,
+    kMatchesJoin = 41,
+    kMatchesLeave = 42,
+    kMatchDataSend = 43,
+    kMatch = 44,
+    kMatches = 45,
+    kMatchData = 46,
+    kMatchPresence = 47,
+    kStorageList = 48,
+    kStorageFetch = 49,
+    kStorageWrite = 50,
+    kStorageRemove = 51,
+    kStorageData = 52,
+    kStorageKeys = 53,
+    kLeaderboardsList = 54,
+    kLeaderboardRecordsWrite = 55,
+    kLeaderboardRecordsFetch = 56,
+    kLeaderboardRecordsList = 57,
+    kLeaderboards = 58,
+    kLeaderboardRecords = 59,
+    kMatchmakeAdd = 60,
+    kMatchmakeRemove = 61,
+    kMatchmakeTicket = 62,
+    kMatchmakeMatched = 63,
+    kRpc = 64,
+    kPurchase = 65,
+    kPurchaseRecord = 66,
+    kNotificationsList = 67,
+    kNotificationsRemove = 68,
+    kNotifications = 69,
+    kLiveNotifications = 70,
     PAYLOAD_NOT_SET = 0,
   };
 
@@ -1632,338 +1645,383 @@ class Envelope : public ::google::protobuf::Message /* @@protoc_insertion_point(
   ::server::TGroupUsersPromote* release_group_users_promote();
   void set_allocated_group_users_promote(::server::TGroupUsersPromote* group_users_promote);
 
-  // optional .server.TGroup group = 29;
-  bool has_group() const;
-  void clear_group();
-  static const int kGroupFieldNumber = 29;
-  const ::server::TGroup& group() const;
-  ::server::TGroup* mutable_group();
-  ::server::TGroup* release_group();
-  void set_allocated_group(::server::TGroup* group);
-
-  // optional .server.TGroups groups = 30;
+  // optional .server.TGroups groups = 29;
   bool has_groups() const;
   void clear_groups();
-  static const int kGroupsFieldNumber = 30;
+  static const int kGroupsFieldNumber = 29;
   const ::server::TGroups& groups() const;
   ::server::TGroups* mutable_groups();
   ::server::TGroups* release_groups();
   void set_allocated_groups(::server::TGroups* groups);
 
-  // optional .server.TGroupUsers group_users = 31;
+  // optional .server.TGroupUsers group_users = 30;
   bool has_group_users() const;
   void clear_group_users();
-  static const int kGroupUsersFieldNumber = 31;
+  static const int kGroupUsersFieldNumber = 30;
   const ::server::TGroupUsers& group_users() const;
   ::server::TGroupUsers* mutable_group_users();
   ::server::TGroupUsers* release_group_users();
   void set_allocated_group_users(::server::TGroupUsers* group_users);
 
-  // optional .server.TTopicsJoin topics_join = 32;
+  // optional .server.TTopicsJoin topics_join = 31;
   bool has_topics_join() const;
   void clear_topics_join();
-  static const int kTopicsJoinFieldNumber = 32;
+  static const int kTopicsJoinFieldNumber = 31;
   const ::server::TTopicsJoin& topics_join() const;
   ::server::TTopicsJoin* mutable_topics_join();
   ::server::TTopicsJoin* release_topics_join();
   void set_allocated_topics_join(::server::TTopicsJoin* topics_join);
 
-  // optional .server.TTopicsLeave topics_leave = 33;
+  // optional .server.TTopicsLeave topics_leave = 32;
   bool has_topics_leave() const;
   void clear_topics_leave();
-  static const int kTopicsLeaveFieldNumber = 33;
+  static const int kTopicsLeaveFieldNumber = 32;
   const ::server::TTopicsLeave& topics_leave() const;
   ::server::TTopicsLeave* mutable_topics_leave();
   ::server::TTopicsLeave* release_topics_leave();
   void set_allocated_topics_leave(::server::TTopicsLeave* topics_leave);
 
-  // optional .server.TTopicMessageSend topic_message_send = 34;
+  // optional .server.TTopicMessageSend topic_message_send = 33;
   bool has_topic_message_send() const;
   void clear_topic_message_send();
-  static const int kTopicMessageSendFieldNumber = 34;
+  static const int kTopicMessageSendFieldNumber = 33;
   const ::server::TTopicMessageSend& topic_message_send() const;
   ::server::TTopicMessageSend* mutable_topic_message_send();
   ::server::TTopicMessageSend* release_topic_message_send();
   void set_allocated_topic_message_send(::server::TTopicMessageSend* topic_message_send);
 
-  // optional .server.TTopicMessagesList topic_messages_list = 35;
+  // optional .server.TTopicMessagesList topic_messages_list = 34;
   bool has_topic_messages_list() const;
   void clear_topic_messages_list();
-  static const int kTopicMessagesListFieldNumber = 35;
+  static const int kTopicMessagesListFieldNumber = 34;
   const ::server::TTopicMessagesList& topic_messages_list() const;
   ::server::TTopicMessagesList* mutable_topic_messages_list();
   ::server::TTopicMessagesList* release_topic_messages_list();
   void set_allocated_topic_messages_list(::server::TTopicMessagesList* topic_messages_list);
 
-  // optional .server.TTopics topics = 36;
+  // optional .server.TTopics topics = 35;
   bool has_topics() const;
   void clear_topics();
-  static const int kTopicsFieldNumber = 36;
+  static const int kTopicsFieldNumber = 35;
   const ::server::TTopics& topics() const;
   ::server::TTopics* mutable_topics();
   ::server::TTopics* release_topics();
   void set_allocated_topics(::server::TTopics* topics);
 
-  // optional .server.TTopicMessageAck topic_message_ack = 37;
+  // optional .server.TTopicMessageAck topic_message_ack = 36;
   bool has_topic_message_ack() const;
   void clear_topic_message_ack();
-  static const int kTopicMessageAckFieldNumber = 37;
+  static const int kTopicMessageAckFieldNumber = 36;
   const ::server::TTopicMessageAck& topic_message_ack() const;
   ::server::TTopicMessageAck* mutable_topic_message_ack();
   ::server::TTopicMessageAck* release_topic_message_ack();
   void set_allocated_topic_message_ack(::server::TTopicMessageAck* topic_message_ack);
 
-  // optional .server.TopicMessage topic_message = 38;
+  // optional .server.TopicMessage topic_message = 37;
   bool has_topic_message() const;
   void clear_topic_message();
-  static const int kTopicMessageFieldNumber = 38;
+  static const int kTopicMessageFieldNumber = 37;
   const ::server::TopicMessage& topic_message() const;
   ::server::TopicMessage* mutable_topic_message();
   ::server::TopicMessage* release_topic_message();
   void set_allocated_topic_message(::server::TopicMessage* topic_message);
 
-  // optional .server.TTopicMessages topic_messages = 39;
+  // optional .server.TTopicMessages topic_messages = 38;
   bool has_topic_messages() const;
   void clear_topic_messages();
-  static const int kTopicMessagesFieldNumber = 39;
+  static const int kTopicMessagesFieldNumber = 38;
   const ::server::TTopicMessages& topic_messages() const;
   ::server::TTopicMessages* mutable_topic_messages();
   ::server::TTopicMessages* release_topic_messages();
   void set_allocated_topic_messages(::server::TTopicMessages* topic_messages);
 
-  // optional .server.TopicPresence topic_presence = 40;
+  // optional .server.TopicPresence topic_presence = 39;
   bool has_topic_presence() const;
   void clear_topic_presence();
-  static const int kTopicPresenceFieldNumber = 40;
+  static const int kTopicPresenceFieldNumber = 39;
   const ::server::TopicPresence& topic_presence() const;
   ::server::TopicPresence* mutable_topic_presence();
   ::server::TopicPresence* release_topic_presence();
   void set_allocated_topic_presence(::server::TopicPresence* topic_presence);
 
-  // optional .server.TMatchCreate match_create = 41;
+  // optional .server.TMatchCreate match_create = 40;
   bool has_match_create() const;
   void clear_match_create();
-  static const int kMatchCreateFieldNumber = 41;
+  static const int kMatchCreateFieldNumber = 40;
   const ::server::TMatchCreate& match_create() const;
   ::server::TMatchCreate* mutable_match_create();
   ::server::TMatchCreate* release_match_create();
   void set_allocated_match_create(::server::TMatchCreate* match_create);
 
-  // optional .server.TMatchesJoin matches_join = 42;
+  // optional .server.TMatchesJoin matches_join = 41;
   bool has_matches_join() const;
   void clear_matches_join();
-  static const int kMatchesJoinFieldNumber = 42;
+  static const int kMatchesJoinFieldNumber = 41;
   const ::server::TMatchesJoin& matches_join() const;
   ::server::TMatchesJoin* mutable_matches_join();
   ::server::TMatchesJoin* release_matches_join();
   void set_allocated_matches_join(::server::TMatchesJoin* matches_join);
 
-  // optional .server.TMatchesLeave matches_leave = 43;
+  // optional .server.TMatchesLeave matches_leave = 42;
   bool has_matches_leave() const;
   void clear_matches_leave();
-  static const int kMatchesLeaveFieldNumber = 43;
+  static const int kMatchesLeaveFieldNumber = 42;
   const ::server::TMatchesLeave& matches_leave() const;
   ::server::TMatchesLeave* mutable_matches_leave();
   ::server::TMatchesLeave* release_matches_leave();
   void set_allocated_matches_leave(::server::TMatchesLeave* matches_leave);
 
-  // optional .server.MatchDataSend match_data_send = 44;
+  // optional .server.MatchDataSend match_data_send = 43;
   bool has_match_data_send() const;
   void clear_match_data_send();
-  static const int kMatchDataSendFieldNumber = 44;
+  static const int kMatchDataSendFieldNumber = 43;
   const ::server::MatchDataSend& match_data_send() const;
   ::server::MatchDataSend* mutable_match_data_send();
   ::server::MatchDataSend* release_match_data_send();
   void set_allocated_match_data_send(::server::MatchDataSend* match_data_send);
 
-  // optional .server.TMatch match = 45;
+  // optional .server.TMatch match = 44;
   bool has_match() const;
   void clear_match();
-  static const int kMatchFieldNumber = 45;
+  static const int kMatchFieldNumber = 44;
   const ::server::TMatch& match() const;
   ::server::TMatch* mutable_match();
   ::server::TMatch* release_match();
   void set_allocated_match(::server::TMatch* match);
 
-  // optional .server.TMatches matches = 46;
+  // optional .server.TMatches matches = 45;
   bool has_matches() const;
   void clear_matches();
-  static const int kMatchesFieldNumber = 46;
+  static const int kMatchesFieldNumber = 45;
   const ::server::TMatches& matches() const;
   ::server::TMatches* mutable_matches();
   ::server::TMatches* release_matches();
   void set_allocated_matches(::server::TMatches* matches);
 
-  // optional .server.MatchData match_data = 47;
+  // optional .server.MatchData match_data = 46;
   bool has_match_data() const;
   void clear_match_data();
-  static const int kMatchDataFieldNumber = 47;
+  static const int kMatchDataFieldNumber = 46;
   const ::server::MatchData& match_data() const;
   ::server::MatchData* mutable_match_data();
   ::server::MatchData* release_match_data();
   void set_allocated_match_data(::server::MatchData* match_data);
 
-  // optional .server.MatchPresence match_presence = 48;
+  // optional .server.MatchPresence match_presence = 47;
   bool has_match_presence() const;
   void clear_match_presence();
-  static const int kMatchPresenceFieldNumber = 48;
+  static const int kMatchPresenceFieldNumber = 47;
   const ::server::MatchPresence& match_presence() const;
   ::server::MatchPresence* mutable_match_presence();
   ::server::MatchPresence* release_match_presence();
   void set_allocated_match_presence(::server::MatchPresence* match_presence);
 
-  // optional .server.TStorageList storage_list = 49;
+  // optional .server.TStorageList storage_list = 48;
   bool has_storage_list() const;
   void clear_storage_list();
-  static const int kStorageListFieldNumber = 49;
+  static const int kStorageListFieldNumber = 48;
   const ::server::TStorageList& storage_list() const;
   ::server::TStorageList* mutable_storage_list();
   ::server::TStorageList* release_storage_list();
   void set_allocated_storage_list(::server::TStorageList* storage_list);
 
-  // optional .server.TStorageFetch storage_fetch = 50;
+  // optional .server.TStorageFetch storage_fetch = 49;
   bool has_storage_fetch() const;
   void clear_storage_fetch();
-  static const int kStorageFetchFieldNumber = 50;
+  static const int kStorageFetchFieldNumber = 49;
   const ::server::TStorageFetch& storage_fetch() const;
   ::server::TStorageFetch* mutable_storage_fetch();
   ::server::TStorageFetch* release_storage_fetch();
   void set_allocated_storage_fetch(::server::TStorageFetch* storage_fetch);
 
-  // optional .server.TStorageWrite storage_write = 51;
+  // optional .server.TStorageWrite storage_write = 50;
   bool has_storage_write() const;
   void clear_storage_write();
-  static const int kStorageWriteFieldNumber = 51;
+  static const int kStorageWriteFieldNumber = 50;
   const ::server::TStorageWrite& storage_write() const;
   ::server::TStorageWrite* mutable_storage_write();
   ::server::TStorageWrite* release_storage_write();
   void set_allocated_storage_write(::server::TStorageWrite* storage_write);
 
-  // optional .server.TStorageRemove storage_remove = 52;
+  // optional .server.TStorageRemove storage_remove = 51;
   bool has_storage_remove() const;
   void clear_storage_remove();
-  static const int kStorageRemoveFieldNumber = 52;
+  static const int kStorageRemoveFieldNumber = 51;
   const ::server::TStorageRemove& storage_remove() const;
   ::server::TStorageRemove* mutable_storage_remove();
   ::server::TStorageRemove* release_storage_remove();
   void set_allocated_storage_remove(::server::TStorageRemove* storage_remove);
 
-  // optional .server.TStorageData storage_data = 53;
+  // optional .server.TStorageData storage_data = 52;
   bool has_storage_data() const;
   void clear_storage_data();
-  static const int kStorageDataFieldNumber = 53;
+  static const int kStorageDataFieldNumber = 52;
   const ::server::TStorageData& storage_data() const;
   ::server::TStorageData* mutable_storage_data();
   ::server::TStorageData* release_storage_data();
   void set_allocated_storage_data(::server::TStorageData* storage_data);
 
-  // optional .server.TStorageKeys storage_keys = 54;
+  // optional .server.TStorageKeys storage_keys = 53;
   bool has_storage_keys() const;
   void clear_storage_keys();
-  static const int kStorageKeysFieldNumber = 54;
+  static const int kStorageKeysFieldNumber = 53;
   const ::server::TStorageKeys& storage_keys() const;
   ::server::TStorageKeys* mutable_storage_keys();
   ::server::TStorageKeys* release_storage_keys();
   void set_allocated_storage_keys(::server::TStorageKeys* storage_keys);
 
-  // optional .server.TLeaderboardsList leaderboards_list = 55;
+  // optional .server.TLeaderboardsList leaderboards_list = 54;
   bool has_leaderboards_list() const;
   void clear_leaderboards_list();
-  static const int kLeaderboardsListFieldNumber = 55;
+  static const int kLeaderboardsListFieldNumber = 54;
   const ::server::TLeaderboardsList& leaderboards_list() const;
   ::server::TLeaderboardsList* mutable_leaderboards_list();
   ::server::TLeaderboardsList* release_leaderboards_list();
   void set_allocated_leaderboards_list(::server::TLeaderboardsList* leaderboards_list);
 
-  // optional .server.TLeaderboardRecordsWrite leaderboard_records_write = 56;
+  // optional .server.TLeaderboardRecordsWrite leaderboard_records_write = 55;
   bool has_leaderboard_records_write() const;
   void clear_leaderboard_records_write();
-  static const int kLeaderboardRecordsWriteFieldNumber = 56;
+  static const int kLeaderboardRecordsWriteFieldNumber = 55;
   const ::server::TLeaderboardRecordsWrite& leaderboard_records_write() const;
   ::server::TLeaderboardRecordsWrite* mutable_leaderboard_records_write();
   ::server::TLeaderboardRecordsWrite* release_leaderboard_records_write();
   void set_allocated_leaderboard_records_write(::server::TLeaderboardRecordsWrite* leaderboard_records_write);
 
-  // optional .server.TLeaderboardRecordsFetch leaderboard_records_fetch = 57;
+  // optional .server.TLeaderboardRecordsFetch leaderboard_records_fetch = 56;
   bool has_leaderboard_records_fetch() const;
   void clear_leaderboard_records_fetch();
-  static const int kLeaderboardRecordsFetchFieldNumber = 57;
+  static const int kLeaderboardRecordsFetchFieldNumber = 56;
   const ::server::TLeaderboardRecordsFetch& leaderboard_records_fetch() const;
   ::server::TLeaderboardRecordsFetch* mutable_leaderboard_records_fetch();
   ::server::TLeaderboardRecordsFetch* release_leaderboard_records_fetch();
   void set_allocated_leaderboard_records_fetch(::server::TLeaderboardRecordsFetch* leaderboard_records_fetch);
 
-  // optional .server.TLeaderboardRecordsList leaderboard_records_list = 58;
+  // optional .server.TLeaderboardRecordsList leaderboard_records_list = 57;
   bool has_leaderboard_records_list() const;
   void clear_leaderboard_records_list();
-  static const int kLeaderboardRecordsListFieldNumber = 58;
+  static const int kLeaderboardRecordsListFieldNumber = 57;
   const ::server::TLeaderboardRecordsList& leaderboard_records_list() const;
   ::server::TLeaderboardRecordsList* mutable_leaderboard_records_list();
   ::server::TLeaderboardRecordsList* release_leaderboard_records_list();
   void set_allocated_leaderboard_records_list(::server::TLeaderboardRecordsList* leaderboard_records_list);
 
-  // optional .server.TLeaderboards leaderboards = 59;
+  // optional .server.TLeaderboards leaderboards = 58;
   bool has_leaderboards() const;
   void clear_leaderboards();
-  static const int kLeaderboardsFieldNumber = 59;
+  static const int kLeaderboardsFieldNumber = 58;
   const ::server::TLeaderboards& leaderboards() const;
   ::server::TLeaderboards* mutable_leaderboards();
   ::server::TLeaderboards* release_leaderboards();
   void set_allocated_leaderboards(::server::TLeaderboards* leaderboards);
 
-  // optional .server.TLeaderboardRecords leaderboard_records = 60;
+  // optional .server.TLeaderboardRecords leaderboard_records = 59;
   bool has_leaderboard_records() const;
   void clear_leaderboard_records();
-  static const int kLeaderboardRecordsFieldNumber = 60;
+  static const int kLeaderboardRecordsFieldNumber = 59;
   const ::server::TLeaderboardRecords& leaderboard_records() const;
   ::server::TLeaderboardRecords* mutable_leaderboard_records();
   ::server::TLeaderboardRecords* release_leaderboard_records();
   void set_allocated_leaderboard_records(::server::TLeaderboardRecords* leaderboard_records);
 
-  // optional .server.TMatchmakeAdd matchmake_add = 61;
+  // optional .server.TMatchmakeAdd matchmake_add = 60;
   bool has_matchmake_add() const;
   void clear_matchmake_add();
-  static const int kMatchmakeAddFieldNumber = 61;
+  static const int kMatchmakeAddFieldNumber = 60;
   const ::server::TMatchmakeAdd& matchmake_add() const;
   ::server::TMatchmakeAdd* mutable_matchmake_add();
   ::server::TMatchmakeAdd* release_matchmake_add();
   void set_allocated_matchmake_add(::server::TMatchmakeAdd* matchmake_add);
 
-  // optional .server.TMatchmakeRemove matchmake_remove = 62;
+  // optional .server.TMatchmakeRemove matchmake_remove = 61;
   bool has_matchmake_remove() const;
   void clear_matchmake_remove();
-  static const int kMatchmakeRemoveFieldNumber = 62;
+  static const int kMatchmakeRemoveFieldNumber = 61;
   const ::server::TMatchmakeRemove& matchmake_remove() const;
   ::server::TMatchmakeRemove* mutable_matchmake_remove();
   ::server::TMatchmakeRemove* release_matchmake_remove();
   void set_allocated_matchmake_remove(::server::TMatchmakeRemove* matchmake_remove);
 
-  // optional .server.TMatchmakeTicket matchmake_ticket = 63;
+  // optional .server.TMatchmakeTicket matchmake_ticket = 62;
   bool has_matchmake_ticket() const;
   void clear_matchmake_ticket();
-  static const int kMatchmakeTicketFieldNumber = 63;
+  static const int kMatchmakeTicketFieldNumber = 62;
   const ::server::TMatchmakeTicket& matchmake_ticket() const;
   ::server::TMatchmakeTicket* mutable_matchmake_ticket();
   ::server::TMatchmakeTicket* release_matchmake_ticket();
   void set_allocated_matchmake_ticket(::server::TMatchmakeTicket* matchmake_ticket);
 
-  // optional .server.MatchmakeMatched matchmake_matched = 64;
+  // optional .server.MatchmakeMatched matchmake_matched = 63;
   bool has_matchmake_matched() const;
   void clear_matchmake_matched();
-  static const int kMatchmakeMatchedFieldNumber = 64;
+  static const int kMatchmakeMatchedFieldNumber = 63;
   const ::server::MatchmakeMatched& matchmake_matched() const;
   ::server::MatchmakeMatched* mutable_matchmake_matched();
   ::server::MatchmakeMatched* release_matchmake_matched();
   void set_allocated_matchmake_matched(::server::MatchmakeMatched* matchmake_matched);
 
-  // optional .server.TRpc rpc = 65;
+  // optional .server.TRpc rpc = 64;
   bool has_rpc() const;
   void clear_rpc();
-  static const int kRpcFieldNumber = 65;
+  static const int kRpcFieldNumber = 64;
   const ::server::TRpc& rpc() const;
   ::server::TRpc* mutable_rpc();
   ::server::TRpc* release_rpc();
   void set_allocated_rpc(::server::TRpc* rpc);
+
+  // optional .server.TPurchaseValidation purchase = 65;
+  bool has_purchase() const;
+  void clear_purchase();
+  static const int kPurchaseFieldNumber = 65;
+  const ::server::TPurchaseValidation& purchase() const;
+  ::server::TPurchaseValidation* mutable_purchase();
+  ::server::TPurchaseValidation* release_purchase();
+  void set_allocated_purchase(::server::TPurchaseValidation* purchase);
+
+  // optional .server.TPurchaseRecord purchase_record = 66;
+  bool has_purchase_record() const;
+  void clear_purchase_record();
+  static const int kPurchaseRecordFieldNumber = 66;
+  const ::server::TPurchaseRecord& purchase_record() const;
+  ::server::TPurchaseRecord* mutable_purchase_record();
+  ::server::TPurchaseRecord* release_purchase_record();
+  void set_allocated_purchase_record(::server::TPurchaseRecord* purchase_record);
+
+  // optional .server.TNotificationsList notifications_list = 67;
+  bool has_notifications_list() const;
+  void clear_notifications_list();
+  static const int kNotificationsListFieldNumber = 67;
+  const ::server::TNotificationsList& notifications_list() const;
+  ::server::TNotificationsList* mutable_notifications_list();
+  ::server::TNotificationsList* release_notifications_list();
+  void set_allocated_notifications_list(::server::TNotificationsList* notifications_list);
+
+  // optional .server.TNotificationsRemove notifications_remove = 68;
+  bool has_notifications_remove() const;
+  void clear_notifications_remove();
+  static const int kNotificationsRemoveFieldNumber = 68;
+  const ::server::TNotificationsRemove& notifications_remove() const;
+  ::server::TNotificationsRemove* mutable_notifications_remove();
+  ::server::TNotificationsRemove* release_notifications_remove();
+  void set_allocated_notifications_remove(::server::TNotificationsRemove* notifications_remove);
+
+  // optional .server.TNotifications notifications = 69;
+  bool has_notifications() const;
+  void clear_notifications();
+  static const int kNotificationsFieldNumber = 69;
+  const ::server::TNotifications& notifications() const;
+  ::server::TNotifications* mutable_notifications();
+  ::server::TNotifications* release_notifications();
+  void set_allocated_notifications(::server::TNotifications* notifications);
+
+  // optional .server.Notifications live_notifications = 70;
+  bool has_live_notifications() const;
+  void clear_live_notifications();
+  static const int kLiveNotificationsFieldNumber = 70;
+  const ::server::Notifications& live_notifications() const;
+  ::server::Notifications* mutable_live_notifications();
+  ::server::Notifications* release_live_notifications();
+  void set_allocated_live_notifications(::server::Notifications* live_notifications);
 
   PayloadCase payload_case() const;
   // @@protoc_insertion_point(class_scope:server.Envelope)
@@ -1995,7 +2053,6 @@ class Envelope : public ::google::protobuf::Message /* @@protoc_insertion_point(
   inline void set_has_group_users_add();
   inline void set_has_group_users_kick();
   inline void set_has_group_users_promote();
-  inline void set_has_group();
   inline void set_has_groups();
   inline void set_has_group_users();
   inline void set_has_topics_join();
@@ -2032,6 +2089,12 @@ class Envelope : public ::google::protobuf::Message /* @@protoc_insertion_point(
   inline void set_has_matchmake_ticket();
   inline void set_has_matchmake_matched();
   inline void set_has_rpc();
+  inline void set_has_purchase();
+  inline void set_has_purchase_record();
+  inline void set_has_notifications_list();
+  inline void set_has_notifications_remove();
+  inline void set_has_notifications();
+  inline void set_has_live_notifications();
 
   inline bool has_payload() const;
   void clear_payload();
@@ -2068,7 +2131,6 @@ class Envelope : public ::google::protobuf::Message /* @@protoc_insertion_point(
     ::server::TGroupUsersAdd* group_users_add_;
     ::server::TGroupUsersKick* group_users_kick_;
     ::server::TGroupUsersPromote* group_users_promote_;
-    ::server::TGroup* group_;
     ::server::TGroups* groups_;
     ::server::TGroupUsers* group_users_;
     ::server::TTopicsJoin* topics_join_;
@@ -2105,6 +2167,12 @@ class Envelope : public ::google::protobuf::Message /* @@protoc_insertion_point(
     ::server::TMatchmakeTicket* matchmake_ticket_;
     ::server::MatchmakeMatched* matchmake_matched_;
     ::server::TRpc* rpc_;
+    ::server::TPurchaseValidation* purchase_;
+    ::server::TPurchaseRecord* purchase_record_;
+    ::server::TNotificationsList* notifications_list_;
+    ::server::TNotificationsRemove* notifications_remove_;
+    ::server::TNotifications* notifications_;
+    ::server::Notifications* live_notifications_;
   } payload_;
   mutable int _cached_size_;
   ::google::protobuf::uint32 _oneof_case_[1];
@@ -4753,95 +4821,6 @@ class TGroupsCreate : public ::google::protobuf::Message /* @@protoc_insertion_p
   void InitAsDefaultInstance();
 };
 extern ::google::protobuf::internal::ExplicitlyConstructed<TGroupsCreate> TGroupsCreate_default_instance_;
-
-// -------------------------------------------------------------------
-
-class TGroup : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.TGroup) */ {
- public:
-  TGroup();
-  virtual ~TGroup();
-
-  TGroup(const TGroup& from);
-
-  inline TGroup& operator=(const TGroup& from) {
-    CopyFrom(from);
-    return *this;
-  }
-
-  static const ::google::protobuf::Descriptor* descriptor();
-  static const TGroup& default_instance();
-
-  static const TGroup* internal_default_instance();
-
-  void Swap(TGroup* other);
-
-  // implements Message ----------------------------------------------
-
-  inline TGroup* New() const { return New(NULL); }
-
-  TGroup* New(::google::protobuf::Arena* arena) const;
-  void CopyFrom(const ::google::protobuf::Message& from);
-  void MergeFrom(const ::google::protobuf::Message& from);
-  void CopyFrom(const TGroup& from);
-  void MergeFrom(const TGroup& from);
-  void Clear();
-  bool IsInitialized() const;
-
-  size_t ByteSizeLong() const;
-  bool MergePartialFromCodedStream(
-      ::google::protobuf::io::CodedInputStream* input);
-  void SerializeWithCachedSizes(
-      ::google::protobuf::io::CodedOutputStream* output) const;
-  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
-      bool deterministic, ::google::protobuf::uint8* output) const;
-  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const {
-    return InternalSerializeWithCachedSizesToArray(false, output);
-  }
-  int GetCachedSize() const { return _cached_size_; }
-  private:
-  void SharedCtor();
-  void SharedDtor();
-  void SetCachedSize(int size) const;
-  void InternalSwap(TGroup* other);
-  void UnsafeMergeFrom(const TGroup& from);
-  private:
-  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
-    return _internal_metadata_.arena();
-  }
-  inline void* MaybeArenaPtr() const {
-    return _internal_metadata_.raw_arena_ptr();
-  }
-  public:
-
-  ::google::protobuf::Metadata GetMetadata() const;
-
-  // nested types ----------------------------------------------------
-
-  // accessors -------------------------------------------------------
-
-  // optional .server.Group group = 1;
-  bool has_group() const;
-  void clear_group();
-  static const int kGroupFieldNumber = 1;
-  const ::server::Group& group() const;
-  ::server::Group* mutable_group();
-  ::server::Group* release_group();
-  void set_allocated_group(::server::Group* group);
-
-  // @@protoc_insertion_point(class_scope:server.TGroup)
- private:
-
-  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
-  ::server::Group* group_;
-  mutable int _cached_size_;
-  friend void  protobuf_InitDefaults_api_2eproto_impl();
-  friend void  protobuf_AddDesc_api_2eproto_impl();
-  friend void protobuf_AssignDesc_api_2eproto();
-  friend void protobuf_ShutdownFile_api_2eproto();
-
-  void InitAsDefaultInstance();
-};
-extern ::google::protobuf::internal::ExplicitlyConstructed<TGroup> TGroup_default_instance_;
 
 // -------------------------------------------------------------------
 
@@ -12649,6 +12628,1013 @@ class TRpc : public ::google::protobuf::Message /* @@protoc_insertion_point(clas
 };
 extern ::google::protobuf::internal::ExplicitlyConstructed<TRpc> TRpc_default_instance_;
 
+// -------------------------------------------------------------------
+
+class TPurchaseValidation_ApplePurchase : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.TPurchaseValidation.ApplePurchase) */ {
+ public:
+  TPurchaseValidation_ApplePurchase();
+  virtual ~TPurchaseValidation_ApplePurchase();
+
+  TPurchaseValidation_ApplePurchase(const TPurchaseValidation_ApplePurchase& from);
+
+  inline TPurchaseValidation_ApplePurchase& operator=(const TPurchaseValidation_ApplePurchase& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const TPurchaseValidation_ApplePurchase& default_instance();
+
+  static const TPurchaseValidation_ApplePurchase* internal_default_instance();
+
+  void Swap(TPurchaseValidation_ApplePurchase* other);
+
+  // implements Message ----------------------------------------------
+
+  inline TPurchaseValidation_ApplePurchase* New() const { return New(NULL); }
+
+  TPurchaseValidation_ApplePurchase* New(::google::protobuf::Arena* arena) const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const TPurchaseValidation_ApplePurchase& from);
+  void MergeFrom(const TPurchaseValidation_ApplePurchase& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  size_t ByteSizeLong() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const {
+    return InternalSerializeWithCachedSizesToArray(false, output);
+  }
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  void InternalSwap(TPurchaseValidation_ApplePurchase* other);
+  void UnsafeMergeFrom(const TPurchaseValidation_ApplePurchase& from);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return _internal_metadata_.arena();
+  }
+  inline void* MaybeArenaPtr() const {
+    return _internal_metadata_.raw_arena_ptr();
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // optional string product_id = 1;
+  void clear_product_id();
+  static const int kProductIdFieldNumber = 1;
+  const ::std::string& product_id() const;
+  void set_product_id(const ::std::string& value);
+  void set_product_id(const char* value);
+  void set_product_id(const char* value, size_t size);
+  ::std::string* mutable_product_id();
+  ::std::string* release_product_id();
+  void set_allocated_product_id(::std::string* product_id);
+
+  // optional string receipt_data = 2;
+  void clear_receipt_data();
+  static const int kReceiptDataFieldNumber = 2;
+  const ::std::string& receipt_data() const;
+  void set_receipt_data(const ::std::string& value);
+  void set_receipt_data(const char* value);
+  void set_receipt_data(const char* value, size_t size);
+  ::std::string* mutable_receipt_data();
+  ::std::string* release_receipt_data();
+  void set_allocated_receipt_data(::std::string* receipt_data);
+
+  // @@protoc_insertion_point(class_scope:server.TPurchaseValidation.ApplePurchase)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::internal::ArenaStringPtr product_id_;
+  ::google::protobuf::internal::ArenaStringPtr receipt_data_;
+  mutable int _cached_size_;
+  friend void  protobuf_InitDefaults_api_2eproto_impl();
+  friend void  protobuf_AddDesc_api_2eproto_impl();
+  friend void protobuf_AssignDesc_api_2eproto();
+  friend void protobuf_ShutdownFile_api_2eproto();
+
+  void InitAsDefaultInstance();
+};
+extern ::google::protobuf::internal::ExplicitlyConstructed<TPurchaseValidation_ApplePurchase> TPurchaseValidation_ApplePurchase_default_instance_;
+
+// -------------------------------------------------------------------
+
+class TPurchaseValidation_GooglePurchase : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.TPurchaseValidation.GooglePurchase) */ {
+ public:
+  TPurchaseValidation_GooglePurchase();
+  virtual ~TPurchaseValidation_GooglePurchase();
+
+  TPurchaseValidation_GooglePurchase(const TPurchaseValidation_GooglePurchase& from);
+
+  inline TPurchaseValidation_GooglePurchase& operator=(const TPurchaseValidation_GooglePurchase& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const TPurchaseValidation_GooglePurchase& default_instance();
+
+  static const TPurchaseValidation_GooglePurchase* internal_default_instance();
+
+  void Swap(TPurchaseValidation_GooglePurchase* other);
+
+  // implements Message ----------------------------------------------
+
+  inline TPurchaseValidation_GooglePurchase* New() const { return New(NULL); }
+
+  TPurchaseValidation_GooglePurchase* New(::google::protobuf::Arena* arena) const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const TPurchaseValidation_GooglePurchase& from);
+  void MergeFrom(const TPurchaseValidation_GooglePurchase& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  size_t ByteSizeLong() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const {
+    return InternalSerializeWithCachedSizesToArray(false, output);
+  }
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  void InternalSwap(TPurchaseValidation_GooglePurchase* other);
+  void UnsafeMergeFrom(const TPurchaseValidation_GooglePurchase& from);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return _internal_metadata_.arena();
+  }
+  inline void* MaybeArenaPtr() const {
+    return _internal_metadata_.raw_arena_ptr();
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // optional string product_id = 1;
+  void clear_product_id();
+  static const int kProductIdFieldNumber = 1;
+  const ::std::string& product_id() const;
+  void set_product_id(const ::std::string& value);
+  void set_product_id(const char* value);
+  void set_product_id(const char* value, size_t size);
+  ::std::string* mutable_product_id();
+  ::std::string* release_product_id();
+  void set_allocated_product_id(::std::string* product_id);
+
+  // optional string product_type = 2;
+  void clear_product_type();
+  static const int kProductTypeFieldNumber = 2;
+  const ::std::string& product_type() const;
+  void set_product_type(const ::std::string& value);
+  void set_product_type(const char* value);
+  void set_product_type(const char* value, size_t size);
+  ::std::string* mutable_product_type();
+  ::std::string* release_product_type();
+  void set_allocated_product_type(::std::string* product_type);
+
+  // optional string purchase_token = 3;
+  void clear_purchase_token();
+  static const int kPurchaseTokenFieldNumber = 3;
+  const ::std::string& purchase_token() const;
+  void set_purchase_token(const ::std::string& value);
+  void set_purchase_token(const char* value);
+  void set_purchase_token(const char* value, size_t size);
+  ::std::string* mutable_purchase_token();
+  ::std::string* release_purchase_token();
+  void set_allocated_purchase_token(::std::string* purchase_token);
+
+  // @@protoc_insertion_point(class_scope:server.TPurchaseValidation.GooglePurchase)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::internal::ArenaStringPtr product_id_;
+  ::google::protobuf::internal::ArenaStringPtr product_type_;
+  ::google::protobuf::internal::ArenaStringPtr purchase_token_;
+  mutable int _cached_size_;
+  friend void  protobuf_InitDefaults_api_2eproto_impl();
+  friend void  protobuf_AddDesc_api_2eproto_impl();
+  friend void protobuf_AssignDesc_api_2eproto();
+  friend void protobuf_ShutdownFile_api_2eproto();
+
+  void InitAsDefaultInstance();
+};
+extern ::google::protobuf::internal::ExplicitlyConstructed<TPurchaseValidation_GooglePurchase> TPurchaseValidation_GooglePurchase_default_instance_;
+
+// -------------------------------------------------------------------
+
+class TPurchaseValidation : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.TPurchaseValidation) */ {
+ public:
+  TPurchaseValidation();
+  virtual ~TPurchaseValidation();
+
+  TPurchaseValidation(const TPurchaseValidation& from);
+
+  inline TPurchaseValidation& operator=(const TPurchaseValidation& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const TPurchaseValidation& default_instance();
+
+  enum IdCase {
+    kApplePurchase = 1,
+    kGooglePurchase = 2,
+    ID_NOT_SET = 0,
+  };
+
+  static const TPurchaseValidation* internal_default_instance();
+
+  void Swap(TPurchaseValidation* other);
+
+  // implements Message ----------------------------------------------
+
+  inline TPurchaseValidation* New() const { return New(NULL); }
+
+  TPurchaseValidation* New(::google::protobuf::Arena* arena) const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const TPurchaseValidation& from);
+  void MergeFrom(const TPurchaseValidation& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  size_t ByteSizeLong() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const {
+    return InternalSerializeWithCachedSizesToArray(false, output);
+  }
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  void InternalSwap(TPurchaseValidation* other);
+  void UnsafeMergeFrom(const TPurchaseValidation& from);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return _internal_metadata_.arena();
+  }
+  inline void* MaybeArenaPtr() const {
+    return _internal_metadata_.raw_arena_ptr();
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  typedef TPurchaseValidation_ApplePurchase ApplePurchase;
+  typedef TPurchaseValidation_GooglePurchase GooglePurchase;
+
+  // accessors -------------------------------------------------------
+
+  // optional .server.TPurchaseValidation.ApplePurchase apple_purchase = 1;
+  bool has_apple_purchase() const;
+  void clear_apple_purchase();
+  static const int kApplePurchaseFieldNumber = 1;
+  const ::server::TPurchaseValidation_ApplePurchase& apple_purchase() const;
+  ::server::TPurchaseValidation_ApplePurchase* mutable_apple_purchase();
+  ::server::TPurchaseValidation_ApplePurchase* release_apple_purchase();
+  void set_allocated_apple_purchase(::server::TPurchaseValidation_ApplePurchase* apple_purchase);
+
+  // optional .server.TPurchaseValidation.GooglePurchase google_purchase = 2;
+  bool has_google_purchase() const;
+  void clear_google_purchase();
+  static const int kGooglePurchaseFieldNumber = 2;
+  const ::server::TPurchaseValidation_GooglePurchase& google_purchase() const;
+  ::server::TPurchaseValidation_GooglePurchase* mutable_google_purchase();
+  ::server::TPurchaseValidation_GooglePurchase* release_google_purchase();
+  void set_allocated_google_purchase(::server::TPurchaseValidation_GooglePurchase* google_purchase);
+
+  IdCase id_case() const;
+  // @@protoc_insertion_point(class_scope:server.TPurchaseValidation)
+ private:
+  inline void set_has_apple_purchase();
+  inline void set_has_google_purchase();
+
+  inline bool has_id() const;
+  void clear_id();
+  inline void clear_has_id();
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  union IdUnion {
+    IdUnion() {}
+    ::server::TPurchaseValidation_ApplePurchase* apple_purchase_;
+    ::server::TPurchaseValidation_GooglePurchase* google_purchase_;
+  } id_;
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _oneof_case_[1];
+
+  friend void  protobuf_InitDefaults_api_2eproto_impl();
+  friend void  protobuf_AddDesc_api_2eproto_impl();
+  friend void protobuf_AssignDesc_api_2eproto();
+  friend void protobuf_ShutdownFile_api_2eproto();
+
+  void InitAsDefaultInstance();
+};
+extern ::google::protobuf::internal::ExplicitlyConstructed<TPurchaseValidation> TPurchaseValidation_default_instance_;
+
+// -------------------------------------------------------------------
+
+class TPurchaseRecord : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.TPurchaseRecord) */ {
+ public:
+  TPurchaseRecord();
+  virtual ~TPurchaseRecord();
+
+  TPurchaseRecord(const TPurchaseRecord& from);
+
+  inline TPurchaseRecord& operator=(const TPurchaseRecord& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const TPurchaseRecord& default_instance();
+
+  static const TPurchaseRecord* internal_default_instance();
+
+  void Swap(TPurchaseRecord* other);
+
+  // implements Message ----------------------------------------------
+
+  inline TPurchaseRecord* New() const { return New(NULL); }
+
+  TPurchaseRecord* New(::google::protobuf::Arena* arena) const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const TPurchaseRecord& from);
+  void MergeFrom(const TPurchaseRecord& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  size_t ByteSizeLong() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const {
+    return InternalSerializeWithCachedSizesToArray(false, output);
+  }
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  void InternalSwap(TPurchaseRecord* other);
+  void UnsafeMergeFrom(const TPurchaseRecord& from);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return _internal_metadata_.arena();
+  }
+  inline void* MaybeArenaPtr() const {
+    return _internal_metadata_.raw_arena_ptr();
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // optional bool success = 1;
+  void clear_success();
+  static const int kSuccessFieldNumber = 1;
+  bool success() const;
+  void set_success(bool value);
+
+  // optional bool seen_before = 2;
+  void clear_seen_before();
+  static const int kSeenBeforeFieldNumber = 2;
+  bool seen_before() const;
+  void set_seen_before(bool value);
+
+  // optional bool purchase_provider_reachable = 3;
+  void clear_purchase_provider_reachable();
+  static const int kPurchaseProviderReachableFieldNumber = 3;
+  bool purchase_provider_reachable() const;
+  void set_purchase_provider_reachable(bool value);
+
+  // optional string message = 6;
+  void clear_message();
+  static const int kMessageFieldNumber = 6;
+  const ::std::string& message() const;
+  void set_message(const ::std::string& value);
+  void set_message(const char* value);
+  void set_message(const char* value, size_t size);
+  ::std::string* mutable_message();
+  ::std::string* release_message();
+  void set_allocated_message(::std::string* message);
+
+  // optional string data = 5;
+  void clear_data();
+  static const int kDataFieldNumber = 5;
+  const ::std::string& data() const;
+  void set_data(const ::std::string& value);
+  void set_data(const char* value);
+  void set_data(const char* value, size_t size);
+  ::std::string* mutable_data();
+  ::std::string* release_data();
+  void set_allocated_data(::std::string* data);
+
+  // @@protoc_insertion_point(class_scope:server.TPurchaseRecord)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::internal::ArenaStringPtr message_;
+  ::google::protobuf::internal::ArenaStringPtr data_;
+  bool success_;
+  bool seen_before_;
+  bool purchase_provider_reachable_;
+  mutable int _cached_size_;
+  friend void  protobuf_InitDefaults_api_2eproto_impl();
+  friend void  protobuf_AddDesc_api_2eproto_impl();
+  friend void protobuf_AssignDesc_api_2eproto();
+  friend void protobuf_ShutdownFile_api_2eproto();
+
+  void InitAsDefaultInstance();
+};
+extern ::google::protobuf::internal::ExplicitlyConstructed<TPurchaseRecord> TPurchaseRecord_default_instance_;
+
+// -------------------------------------------------------------------
+
+class Notification : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.Notification) */ {
+ public:
+  Notification();
+  virtual ~Notification();
+
+  Notification(const Notification& from);
+
+  inline Notification& operator=(const Notification& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const Notification& default_instance();
+
+  static const Notification* internal_default_instance();
+
+  void Swap(Notification* other);
+
+  // implements Message ----------------------------------------------
+
+  inline Notification* New() const { return New(NULL); }
+
+  Notification* New(::google::protobuf::Arena* arena) const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const Notification& from);
+  void MergeFrom(const Notification& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  size_t ByteSizeLong() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const {
+    return InternalSerializeWithCachedSizesToArray(false, output);
+  }
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  void InternalSwap(Notification* other);
+  void UnsafeMergeFrom(const Notification& from);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return _internal_metadata_.arena();
+  }
+  inline void* MaybeArenaPtr() const {
+    return _internal_metadata_.raw_arena_ptr();
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // optional bytes id = 1;
+  void clear_id();
+  static const int kIdFieldNumber = 1;
+  const ::std::string& id() const;
+  void set_id(const ::std::string& value);
+  void set_id(const char* value);
+  void set_id(const void* value, size_t size);
+  ::std::string* mutable_id();
+  ::std::string* release_id();
+  void set_allocated_id(::std::string* id);
+
+  // optional string subject = 2;
+  void clear_subject();
+  static const int kSubjectFieldNumber = 2;
+  const ::std::string& subject() const;
+  void set_subject(const ::std::string& value);
+  void set_subject(const char* value);
+  void set_subject(const char* value, size_t size);
+  ::std::string* mutable_subject();
+  ::std::string* release_subject();
+  void set_allocated_subject(::std::string* subject);
+
+  // optional bytes content = 3;
+  void clear_content();
+  static const int kContentFieldNumber = 3;
+  const ::std::string& content() const;
+  void set_content(const ::std::string& value);
+  void set_content(const char* value);
+  void set_content(const void* value, size_t size);
+  ::std::string* mutable_content();
+  ::std::string* release_content();
+  void set_allocated_content(::std::string* content);
+
+  // optional int64 code = 4;
+  void clear_code();
+  static const int kCodeFieldNumber = 4;
+  ::google::protobuf::int64 code() const;
+  void set_code(::google::protobuf::int64 value);
+
+  // optional bytes sender_id = 5;
+  void clear_sender_id();
+  static const int kSenderIdFieldNumber = 5;
+  const ::std::string& sender_id() const;
+  void set_sender_id(const ::std::string& value);
+  void set_sender_id(const char* value);
+  void set_sender_id(const void* value, size_t size);
+  ::std::string* mutable_sender_id();
+  ::std::string* release_sender_id();
+  void set_allocated_sender_id(::std::string* sender_id);
+
+  // optional int64 created_at = 6;
+  void clear_created_at();
+  static const int kCreatedAtFieldNumber = 6;
+  ::google::protobuf::int64 created_at() const;
+  void set_created_at(::google::protobuf::int64 value);
+
+  // optional int64 expires_at = 7;
+  void clear_expires_at();
+  static const int kExpiresAtFieldNumber = 7;
+  ::google::protobuf::int64 expires_at() const;
+  void set_expires_at(::google::protobuf::int64 value);
+
+  // optional bool persistent = 8;
+  void clear_persistent();
+  static const int kPersistentFieldNumber = 8;
+  bool persistent() const;
+  void set_persistent(bool value);
+
+  // @@protoc_insertion_point(class_scope:server.Notification)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::internal::ArenaStringPtr id_;
+  ::google::protobuf::internal::ArenaStringPtr subject_;
+  ::google::protobuf::internal::ArenaStringPtr content_;
+  ::google::protobuf::internal::ArenaStringPtr sender_id_;
+  ::google::protobuf::int64 code_;
+  ::google::protobuf::int64 created_at_;
+  ::google::protobuf::int64 expires_at_;
+  bool persistent_;
+  mutable int _cached_size_;
+  friend void  protobuf_InitDefaults_api_2eproto_impl();
+  friend void  protobuf_AddDesc_api_2eproto_impl();
+  friend void protobuf_AssignDesc_api_2eproto();
+  friend void protobuf_ShutdownFile_api_2eproto();
+
+  void InitAsDefaultInstance();
+};
+extern ::google::protobuf::internal::ExplicitlyConstructed<Notification> Notification_default_instance_;
+
+// -------------------------------------------------------------------
+
+class Notifications : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.Notifications) */ {
+ public:
+  Notifications();
+  virtual ~Notifications();
+
+  Notifications(const Notifications& from);
+
+  inline Notifications& operator=(const Notifications& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const Notifications& default_instance();
+
+  static const Notifications* internal_default_instance();
+
+  void Swap(Notifications* other);
+
+  // implements Message ----------------------------------------------
+
+  inline Notifications* New() const { return New(NULL); }
+
+  Notifications* New(::google::protobuf::Arena* arena) const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const Notifications& from);
+  void MergeFrom(const Notifications& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  size_t ByteSizeLong() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const {
+    return InternalSerializeWithCachedSizesToArray(false, output);
+  }
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  void InternalSwap(Notifications* other);
+  void UnsafeMergeFrom(const Notifications& from);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return _internal_metadata_.arena();
+  }
+  inline void* MaybeArenaPtr() const {
+    return _internal_metadata_.raw_arena_ptr();
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // repeated .server.Notification notifications = 1;
+  int notifications_size() const;
+  void clear_notifications();
+  static const int kNotificationsFieldNumber = 1;
+  const ::server::Notification& notifications(int index) const;
+  ::server::Notification* mutable_notifications(int index);
+  ::server::Notification* add_notifications();
+  ::google::protobuf::RepeatedPtrField< ::server::Notification >*
+      mutable_notifications();
+  const ::google::protobuf::RepeatedPtrField< ::server::Notification >&
+      notifications() const;
+
+  // @@protoc_insertion_point(class_scope:server.Notifications)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::RepeatedPtrField< ::server::Notification > notifications_;
+  mutable int _cached_size_;
+  friend void  protobuf_InitDefaults_api_2eproto_impl();
+  friend void  protobuf_AddDesc_api_2eproto_impl();
+  friend void protobuf_AssignDesc_api_2eproto();
+  friend void protobuf_ShutdownFile_api_2eproto();
+
+  void InitAsDefaultInstance();
+};
+extern ::google::protobuf::internal::ExplicitlyConstructed<Notifications> Notifications_default_instance_;
+
+// -------------------------------------------------------------------
+
+class TNotificationsList : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.TNotificationsList) */ {
+ public:
+  TNotificationsList();
+  virtual ~TNotificationsList();
+
+  TNotificationsList(const TNotificationsList& from);
+
+  inline TNotificationsList& operator=(const TNotificationsList& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const TNotificationsList& default_instance();
+
+  static const TNotificationsList* internal_default_instance();
+
+  void Swap(TNotificationsList* other);
+
+  // implements Message ----------------------------------------------
+
+  inline TNotificationsList* New() const { return New(NULL); }
+
+  TNotificationsList* New(::google::protobuf::Arena* arena) const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const TNotificationsList& from);
+  void MergeFrom(const TNotificationsList& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  size_t ByteSizeLong() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const {
+    return InternalSerializeWithCachedSizesToArray(false, output);
+  }
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  void InternalSwap(TNotificationsList* other);
+  void UnsafeMergeFrom(const TNotificationsList& from);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return _internal_metadata_.arena();
+  }
+  inline void* MaybeArenaPtr() const {
+    return _internal_metadata_.raw_arena_ptr();
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // optional int64 limit = 1;
+  void clear_limit();
+  static const int kLimitFieldNumber = 1;
+  ::google::protobuf::int64 limit() const;
+  void set_limit(::google::protobuf::int64 value);
+
+  // optional bytes resumable_cursor = 2;
+  void clear_resumable_cursor();
+  static const int kResumableCursorFieldNumber = 2;
+  const ::std::string& resumable_cursor() const;
+  void set_resumable_cursor(const ::std::string& value);
+  void set_resumable_cursor(const char* value);
+  void set_resumable_cursor(const void* value, size_t size);
+  ::std::string* mutable_resumable_cursor();
+  ::std::string* release_resumable_cursor();
+  void set_allocated_resumable_cursor(::std::string* resumable_cursor);
+
+  // @@protoc_insertion_point(class_scope:server.TNotificationsList)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::internal::ArenaStringPtr resumable_cursor_;
+  ::google::protobuf::int64 limit_;
+  mutable int _cached_size_;
+  friend void  protobuf_InitDefaults_api_2eproto_impl();
+  friend void  protobuf_AddDesc_api_2eproto_impl();
+  friend void protobuf_AssignDesc_api_2eproto();
+  friend void protobuf_ShutdownFile_api_2eproto();
+
+  void InitAsDefaultInstance();
+};
+extern ::google::protobuf::internal::ExplicitlyConstructed<TNotificationsList> TNotificationsList_default_instance_;
+
+// -------------------------------------------------------------------
+
+class TNotifications : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.TNotifications) */ {
+ public:
+  TNotifications();
+  virtual ~TNotifications();
+
+  TNotifications(const TNotifications& from);
+
+  inline TNotifications& operator=(const TNotifications& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const TNotifications& default_instance();
+
+  static const TNotifications* internal_default_instance();
+
+  void Swap(TNotifications* other);
+
+  // implements Message ----------------------------------------------
+
+  inline TNotifications* New() const { return New(NULL); }
+
+  TNotifications* New(::google::protobuf::Arena* arena) const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const TNotifications& from);
+  void MergeFrom(const TNotifications& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  size_t ByteSizeLong() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const {
+    return InternalSerializeWithCachedSizesToArray(false, output);
+  }
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  void InternalSwap(TNotifications* other);
+  void UnsafeMergeFrom(const TNotifications& from);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return _internal_metadata_.arena();
+  }
+  inline void* MaybeArenaPtr() const {
+    return _internal_metadata_.raw_arena_ptr();
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // repeated .server.Notification notifications = 1;
+  int notifications_size() const;
+  void clear_notifications();
+  static const int kNotificationsFieldNumber = 1;
+  const ::server::Notification& notifications(int index) const;
+  ::server::Notification* mutable_notifications(int index);
+  ::server::Notification* add_notifications();
+  ::google::protobuf::RepeatedPtrField< ::server::Notification >*
+      mutable_notifications();
+  const ::google::protobuf::RepeatedPtrField< ::server::Notification >&
+      notifications() const;
+
+  // optional bytes resumable_cursor = 2;
+  void clear_resumable_cursor();
+  static const int kResumableCursorFieldNumber = 2;
+  const ::std::string& resumable_cursor() const;
+  void set_resumable_cursor(const ::std::string& value);
+  void set_resumable_cursor(const char* value);
+  void set_resumable_cursor(const void* value, size_t size);
+  ::std::string* mutable_resumable_cursor();
+  ::std::string* release_resumable_cursor();
+  void set_allocated_resumable_cursor(::std::string* resumable_cursor);
+
+  // @@protoc_insertion_point(class_scope:server.TNotifications)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::RepeatedPtrField< ::server::Notification > notifications_;
+  ::google::protobuf::internal::ArenaStringPtr resumable_cursor_;
+  mutable int _cached_size_;
+  friend void  protobuf_InitDefaults_api_2eproto_impl();
+  friend void  protobuf_AddDesc_api_2eproto_impl();
+  friend void protobuf_AssignDesc_api_2eproto();
+  friend void protobuf_ShutdownFile_api_2eproto();
+
+  void InitAsDefaultInstance();
+};
+extern ::google::protobuf::internal::ExplicitlyConstructed<TNotifications> TNotifications_default_instance_;
+
+// -------------------------------------------------------------------
+
+class TNotificationsRemove : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.TNotificationsRemove) */ {
+ public:
+  TNotificationsRemove();
+  virtual ~TNotificationsRemove();
+
+  TNotificationsRemove(const TNotificationsRemove& from);
+
+  inline TNotificationsRemove& operator=(const TNotificationsRemove& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const TNotificationsRemove& default_instance();
+
+  static const TNotificationsRemove* internal_default_instance();
+
+  void Swap(TNotificationsRemove* other);
+
+  // implements Message ----------------------------------------------
+
+  inline TNotificationsRemove* New() const { return New(NULL); }
+
+  TNotificationsRemove* New(::google::protobuf::Arena* arena) const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const TNotificationsRemove& from);
+  void MergeFrom(const TNotificationsRemove& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  size_t ByteSizeLong() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const {
+    return InternalSerializeWithCachedSizesToArray(false, output);
+  }
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  void InternalSwap(TNotificationsRemove* other);
+  void UnsafeMergeFrom(const TNotificationsRemove& from);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return _internal_metadata_.arena();
+  }
+  inline void* MaybeArenaPtr() const {
+    return _internal_metadata_.raw_arena_ptr();
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // repeated bytes notification_ids = 1;
+  int notification_ids_size() const;
+  void clear_notification_ids();
+  static const int kNotificationIdsFieldNumber = 1;
+  const ::std::string& notification_ids(int index) const;
+  ::std::string* mutable_notification_ids(int index);
+  void set_notification_ids(int index, const ::std::string& value);
+  void set_notification_ids(int index, const char* value);
+  void set_notification_ids(int index, const void* value, size_t size);
+  ::std::string* add_notification_ids();
+  void add_notification_ids(const ::std::string& value);
+  void add_notification_ids(const char* value);
+  void add_notification_ids(const void* value, size_t size);
+  const ::google::protobuf::RepeatedPtrField< ::std::string>& notification_ids() const;
+  ::google::protobuf::RepeatedPtrField< ::std::string>* mutable_notification_ids();
+
+  // @@protoc_insertion_point(class_scope:server.TNotificationsRemove)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::RepeatedPtrField< ::std::string> notification_ids_;
+  mutable int _cached_size_;
+  friend void  protobuf_InitDefaults_api_2eproto_impl();
+  friend void  protobuf_AddDesc_api_2eproto_impl();
+  friend void protobuf_AssignDesc_api_2eproto();
+  friend void protobuf_ShutdownFile_api_2eproto();
+
+  void InitAsDefaultInstance();
+};
+extern ::google::protobuf::internal::ExplicitlyConstructed<TNotificationsRemove> TNotificationsRemove_default_instance_;
+
 // ===================================================================
 
 
@@ -15291,55 +16277,7 @@ inline void Envelope::set_allocated_group_users_promote(::server::TGroupUsersPro
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.group_users_promote)
 }
 
-// optional .server.TGroup group = 29;
-inline bool Envelope::has_group() const {
-  return payload_case() == kGroup;
-}
-inline void Envelope::set_has_group() {
-  _oneof_case_[0] = kGroup;
-}
-inline void Envelope::clear_group() {
-  if (has_group()) {
-    delete payload_.group_;
-    clear_has_payload();
-  }
-}
-inline  const ::server::TGroup& Envelope::group() const {
-  // @@protoc_insertion_point(field_get:server.Envelope.group)
-  return has_group()
-      ? *payload_.group_
-      : ::server::TGroup::default_instance();
-}
-inline ::server::TGroup* Envelope::mutable_group() {
-  if (!has_group()) {
-    clear_payload();
-    set_has_group();
-    payload_.group_ = new ::server::TGroup;
-  }
-  // @@protoc_insertion_point(field_mutable:server.Envelope.group)
-  return payload_.group_;
-}
-inline ::server::TGroup* Envelope::release_group() {
-  // @@protoc_insertion_point(field_release:server.Envelope.group)
-  if (has_group()) {
-    clear_has_payload();
-    ::server::TGroup* temp = payload_.group_;
-    payload_.group_ = NULL;
-    return temp;
-  } else {
-    return NULL;
-  }
-}
-inline void Envelope::set_allocated_group(::server::TGroup* group) {
-  clear_payload();
-  if (group) {
-    set_has_group();
-    payload_.group_ = group;
-  }
-  // @@protoc_insertion_point(field_set_allocated:server.Envelope.group)
-}
-
-// optional .server.TGroups groups = 30;
+// optional .server.TGroups groups = 29;
 inline bool Envelope::has_groups() const {
   return payload_case() == kGroups;
 }
@@ -15387,7 +16325,7 @@ inline void Envelope::set_allocated_groups(::server::TGroups* groups) {
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.groups)
 }
 
-// optional .server.TGroupUsers group_users = 31;
+// optional .server.TGroupUsers group_users = 30;
 inline bool Envelope::has_group_users() const {
   return payload_case() == kGroupUsers;
 }
@@ -15435,7 +16373,7 @@ inline void Envelope::set_allocated_group_users(::server::TGroupUsers* group_use
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.group_users)
 }
 
-// optional .server.TTopicsJoin topics_join = 32;
+// optional .server.TTopicsJoin topics_join = 31;
 inline bool Envelope::has_topics_join() const {
   return payload_case() == kTopicsJoin;
 }
@@ -15483,7 +16421,7 @@ inline void Envelope::set_allocated_topics_join(::server::TTopicsJoin* topics_jo
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.topics_join)
 }
 
-// optional .server.TTopicsLeave topics_leave = 33;
+// optional .server.TTopicsLeave topics_leave = 32;
 inline bool Envelope::has_topics_leave() const {
   return payload_case() == kTopicsLeave;
 }
@@ -15531,7 +16469,7 @@ inline void Envelope::set_allocated_topics_leave(::server::TTopicsLeave* topics_
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.topics_leave)
 }
 
-// optional .server.TTopicMessageSend topic_message_send = 34;
+// optional .server.TTopicMessageSend topic_message_send = 33;
 inline bool Envelope::has_topic_message_send() const {
   return payload_case() == kTopicMessageSend;
 }
@@ -15579,7 +16517,7 @@ inline void Envelope::set_allocated_topic_message_send(::server::TTopicMessageSe
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.topic_message_send)
 }
 
-// optional .server.TTopicMessagesList topic_messages_list = 35;
+// optional .server.TTopicMessagesList topic_messages_list = 34;
 inline bool Envelope::has_topic_messages_list() const {
   return payload_case() == kTopicMessagesList;
 }
@@ -15627,7 +16565,7 @@ inline void Envelope::set_allocated_topic_messages_list(::server::TTopicMessages
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.topic_messages_list)
 }
 
-// optional .server.TTopics topics = 36;
+// optional .server.TTopics topics = 35;
 inline bool Envelope::has_topics() const {
   return payload_case() == kTopics;
 }
@@ -15675,7 +16613,7 @@ inline void Envelope::set_allocated_topics(::server::TTopics* topics) {
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.topics)
 }
 
-// optional .server.TTopicMessageAck topic_message_ack = 37;
+// optional .server.TTopicMessageAck topic_message_ack = 36;
 inline bool Envelope::has_topic_message_ack() const {
   return payload_case() == kTopicMessageAck;
 }
@@ -15723,7 +16661,7 @@ inline void Envelope::set_allocated_topic_message_ack(::server::TTopicMessageAck
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.topic_message_ack)
 }
 
-// optional .server.TopicMessage topic_message = 38;
+// optional .server.TopicMessage topic_message = 37;
 inline bool Envelope::has_topic_message() const {
   return payload_case() == kTopicMessage;
 }
@@ -15771,7 +16709,7 @@ inline void Envelope::set_allocated_topic_message(::server::TopicMessage* topic_
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.topic_message)
 }
 
-// optional .server.TTopicMessages topic_messages = 39;
+// optional .server.TTopicMessages topic_messages = 38;
 inline bool Envelope::has_topic_messages() const {
   return payload_case() == kTopicMessages;
 }
@@ -15819,7 +16757,7 @@ inline void Envelope::set_allocated_topic_messages(::server::TTopicMessages* top
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.topic_messages)
 }
 
-// optional .server.TopicPresence topic_presence = 40;
+// optional .server.TopicPresence topic_presence = 39;
 inline bool Envelope::has_topic_presence() const {
   return payload_case() == kTopicPresence;
 }
@@ -15867,7 +16805,7 @@ inline void Envelope::set_allocated_topic_presence(::server::TopicPresence* topi
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.topic_presence)
 }
 
-// optional .server.TMatchCreate match_create = 41;
+// optional .server.TMatchCreate match_create = 40;
 inline bool Envelope::has_match_create() const {
   return payload_case() == kMatchCreate;
 }
@@ -15915,7 +16853,7 @@ inline void Envelope::set_allocated_match_create(::server::TMatchCreate* match_c
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.match_create)
 }
 
-// optional .server.TMatchesJoin matches_join = 42;
+// optional .server.TMatchesJoin matches_join = 41;
 inline bool Envelope::has_matches_join() const {
   return payload_case() == kMatchesJoin;
 }
@@ -15963,7 +16901,7 @@ inline void Envelope::set_allocated_matches_join(::server::TMatchesJoin* matches
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.matches_join)
 }
 
-// optional .server.TMatchesLeave matches_leave = 43;
+// optional .server.TMatchesLeave matches_leave = 42;
 inline bool Envelope::has_matches_leave() const {
   return payload_case() == kMatchesLeave;
 }
@@ -16011,7 +16949,7 @@ inline void Envelope::set_allocated_matches_leave(::server::TMatchesLeave* match
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.matches_leave)
 }
 
-// optional .server.MatchDataSend match_data_send = 44;
+// optional .server.MatchDataSend match_data_send = 43;
 inline bool Envelope::has_match_data_send() const {
   return payload_case() == kMatchDataSend;
 }
@@ -16059,7 +16997,7 @@ inline void Envelope::set_allocated_match_data_send(::server::MatchDataSend* mat
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.match_data_send)
 }
 
-// optional .server.TMatch match = 45;
+// optional .server.TMatch match = 44;
 inline bool Envelope::has_match() const {
   return payload_case() == kMatch;
 }
@@ -16107,7 +17045,7 @@ inline void Envelope::set_allocated_match(::server::TMatch* match) {
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.match)
 }
 
-// optional .server.TMatches matches = 46;
+// optional .server.TMatches matches = 45;
 inline bool Envelope::has_matches() const {
   return payload_case() == kMatches;
 }
@@ -16155,7 +17093,7 @@ inline void Envelope::set_allocated_matches(::server::TMatches* matches) {
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.matches)
 }
 
-// optional .server.MatchData match_data = 47;
+// optional .server.MatchData match_data = 46;
 inline bool Envelope::has_match_data() const {
   return payload_case() == kMatchData;
 }
@@ -16203,7 +17141,7 @@ inline void Envelope::set_allocated_match_data(::server::MatchData* match_data) 
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.match_data)
 }
 
-// optional .server.MatchPresence match_presence = 48;
+// optional .server.MatchPresence match_presence = 47;
 inline bool Envelope::has_match_presence() const {
   return payload_case() == kMatchPresence;
 }
@@ -16251,7 +17189,7 @@ inline void Envelope::set_allocated_match_presence(::server::MatchPresence* matc
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.match_presence)
 }
 
-// optional .server.TStorageList storage_list = 49;
+// optional .server.TStorageList storage_list = 48;
 inline bool Envelope::has_storage_list() const {
   return payload_case() == kStorageList;
 }
@@ -16299,7 +17237,7 @@ inline void Envelope::set_allocated_storage_list(::server::TStorageList* storage
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.storage_list)
 }
 
-// optional .server.TStorageFetch storage_fetch = 50;
+// optional .server.TStorageFetch storage_fetch = 49;
 inline bool Envelope::has_storage_fetch() const {
   return payload_case() == kStorageFetch;
 }
@@ -16347,7 +17285,7 @@ inline void Envelope::set_allocated_storage_fetch(::server::TStorageFetch* stora
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.storage_fetch)
 }
 
-// optional .server.TStorageWrite storage_write = 51;
+// optional .server.TStorageWrite storage_write = 50;
 inline bool Envelope::has_storage_write() const {
   return payload_case() == kStorageWrite;
 }
@@ -16395,7 +17333,7 @@ inline void Envelope::set_allocated_storage_write(::server::TStorageWrite* stora
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.storage_write)
 }
 
-// optional .server.TStorageRemove storage_remove = 52;
+// optional .server.TStorageRemove storage_remove = 51;
 inline bool Envelope::has_storage_remove() const {
   return payload_case() == kStorageRemove;
 }
@@ -16443,7 +17381,7 @@ inline void Envelope::set_allocated_storage_remove(::server::TStorageRemove* sto
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.storage_remove)
 }
 
-// optional .server.TStorageData storage_data = 53;
+// optional .server.TStorageData storage_data = 52;
 inline bool Envelope::has_storage_data() const {
   return payload_case() == kStorageData;
 }
@@ -16491,7 +17429,7 @@ inline void Envelope::set_allocated_storage_data(::server::TStorageData* storage
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.storage_data)
 }
 
-// optional .server.TStorageKeys storage_keys = 54;
+// optional .server.TStorageKeys storage_keys = 53;
 inline bool Envelope::has_storage_keys() const {
   return payload_case() == kStorageKeys;
 }
@@ -16539,7 +17477,7 @@ inline void Envelope::set_allocated_storage_keys(::server::TStorageKeys* storage
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.storage_keys)
 }
 
-// optional .server.TLeaderboardsList leaderboards_list = 55;
+// optional .server.TLeaderboardsList leaderboards_list = 54;
 inline bool Envelope::has_leaderboards_list() const {
   return payload_case() == kLeaderboardsList;
 }
@@ -16587,7 +17525,7 @@ inline void Envelope::set_allocated_leaderboards_list(::server::TLeaderboardsLis
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.leaderboards_list)
 }
 
-// optional .server.TLeaderboardRecordsWrite leaderboard_records_write = 56;
+// optional .server.TLeaderboardRecordsWrite leaderboard_records_write = 55;
 inline bool Envelope::has_leaderboard_records_write() const {
   return payload_case() == kLeaderboardRecordsWrite;
 }
@@ -16635,7 +17573,7 @@ inline void Envelope::set_allocated_leaderboard_records_write(::server::TLeaderb
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.leaderboard_records_write)
 }
 
-// optional .server.TLeaderboardRecordsFetch leaderboard_records_fetch = 57;
+// optional .server.TLeaderboardRecordsFetch leaderboard_records_fetch = 56;
 inline bool Envelope::has_leaderboard_records_fetch() const {
   return payload_case() == kLeaderboardRecordsFetch;
 }
@@ -16683,7 +17621,7 @@ inline void Envelope::set_allocated_leaderboard_records_fetch(::server::TLeaderb
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.leaderboard_records_fetch)
 }
 
-// optional .server.TLeaderboardRecordsList leaderboard_records_list = 58;
+// optional .server.TLeaderboardRecordsList leaderboard_records_list = 57;
 inline bool Envelope::has_leaderboard_records_list() const {
   return payload_case() == kLeaderboardRecordsList;
 }
@@ -16731,7 +17669,7 @@ inline void Envelope::set_allocated_leaderboard_records_list(::server::TLeaderbo
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.leaderboard_records_list)
 }
 
-// optional .server.TLeaderboards leaderboards = 59;
+// optional .server.TLeaderboards leaderboards = 58;
 inline bool Envelope::has_leaderboards() const {
   return payload_case() == kLeaderboards;
 }
@@ -16779,7 +17717,7 @@ inline void Envelope::set_allocated_leaderboards(::server::TLeaderboards* leader
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.leaderboards)
 }
 
-// optional .server.TLeaderboardRecords leaderboard_records = 60;
+// optional .server.TLeaderboardRecords leaderboard_records = 59;
 inline bool Envelope::has_leaderboard_records() const {
   return payload_case() == kLeaderboardRecords;
 }
@@ -16827,7 +17765,7 @@ inline void Envelope::set_allocated_leaderboard_records(::server::TLeaderboardRe
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.leaderboard_records)
 }
 
-// optional .server.TMatchmakeAdd matchmake_add = 61;
+// optional .server.TMatchmakeAdd matchmake_add = 60;
 inline bool Envelope::has_matchmake_add() const {
   return payload_case() == kMatchmakeAdd;
 }
@@ -16875,7 +17813,7 @@ inline void Envelope::set_allocated_matchmake_add(::server::TMatchmakeAdd* match
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.matchmake_add)
 }
 
-// optional .server.TMatchmakeRemove matchmake_remove = 62;
+// optional .server.TMatchmakeRemove matchmake_remove = 61;
 inline bool Envelope::has_matchmake_remove() const {
   return payload_case() == kMatchmakeRemove;
 }
@@ -16923,7 +17861,7 @@ inline void Envelope::set_allocated_matchmake_remove(::server::TMatchmakeRemove*
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.matchmake_remove)
 }
 
-// optional .server.TMatchmakeTicket matchmake_ticket = 63;
+// optional .server.TMatchmakeTicket matchmake_ticket = 62;
 inline bool Envelope::has_matchmake_ticket() const {
   return payload_case() == kMatchmakeTicket;
 }
@@ -16971,7 +17909,7 @@ inline void Envelope::set_allocated_matchmake_ticket(::server::TMatchmakeTicket*
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.matchmake_ticket)
 }
 
-// optional .server.MatchmakeMatched matchmake_matched = 64;
+// optional .server.MatchmakeMatched matchmake_matched = 63;
 inline bool Envelope::has_matchmake_matched() const {
   return payload_case() == kMatchmakeMatched;
 }
@@ -17019,7 +17957,7 @@ inline void Envelope::set_allocated_matchmake_matched(::server::MatchmakeMatched
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.matchmake_matched)
 }
 
-// optional .server.TRpc rpc = 65;
+// optional .server.TRpc rpc = 64;
 inline bool Envelope::has_rpc() const {
   return payload_case() == kRpc;
 }
@@ -17065,6 +18003,294 @@ inline void Envelope::set_allocated_rpc(::server::TRpc* rpc) {
     payload_.rpc_ = rpc;
   }
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.rpc)
+}
+
+// optional .server.TPurchaseValidation purchase = 65;
+inline bool Envelope::has_purchase() const {
+  return payload_case() == kPurchase;
+}
+inline void Envelope::set_has_purchase() {
+  _oneof_case_[0] = kPurchase;
+}
+inline void Envelope::clear_purchase() {
+  if (has_purchase()) {
+    delete payload_.purchase_;
+    clear_has_payload();
+  }
+}
+inline  const ::server::TPurchaseValidation& Envelope::purchase() const {
+  // @@protoc_insertion_point(field_get:server.Envelope.purchase)
+  return has_purchase()
+      ? *payload_.purchase_
+      : ::server::TPurchaseValidation::default_instance();
+}
+inline ::server::TPurchaseValidation* Envelope::mutable_purchase() {
+  if (!has_purchase()) {
+    clear_payload();
+    set_has_purchase();
+    payload_.purchase_ = new ::server::TPurchaseValidation;
+  }
+  // @@protoc_insertion_point(field_mutable:server.Envelope.purchase)
+  return payload_.purchase_;
+}
+inline ::server::TPurchaseValidation* Envelope::release_purchase() {
+  // @@protoc_insertion_point(field_release:server.Envelope.purchase)
+  if (has_purchase()) {
+    clear_has_payload();
+    ::server::TPurchaseValidation* temp = payload_.purchase_;
+    payload_.purchase_ = NULL;
+    return temp;
+  } else {
+    return NULL;
+  }
+}
+inline void Envelope::set_allocated_purchase(::server::TPurchaseValidation* purchase) {
+  clear_payload();
+  if (purchase) {
+    set_has_purchase();
+    payload_.purchase_ = purchase;
+  }
+  // @@protoc_insertion_point(field_set_allocated:server.Envelope.purchase)
+}
+
+// optional .server.TPurchaseRecord purchase_record = 66;
+inline bool Envelope::has_purchase_record() const {
+  return payload_case() == kPurchaseRecord;
+}
+inline void Envelope::set_has_purchase_record() {
+  _oneof_case_[0] = kPurchaseRecord;
+}
+inline void Envelope::clear_purchase_record() {
+  if (has_purchase_record()) {
+    delete payload_.purchase_record_;
+    clear_has_payload();
+  }
+}
+inline  const ::server::TPurchaseRecord& Envelope::purchase_record() const {
+  // @@protoc_insertion_point(field_get:server.Envelope.purchase_record)
+  return has_purchase_record()
+      ? *payload_.purchase_record_
+      : ::server::TPurchaseRecord::default_instance();
+}
+inline ::server::TPurchaseRecord* Envelope::mutable_purchase_record() {
+  if (!has_purchase_record()) {
+    clear_payload();
+    set_has_purchase_record();
+    payload_.purchase_record_ = new ::server::TPurchaseRecord;
+  }
+  // @@protoc_insertion_point(field_mutable:server.Envelope.purchase_record)
+  return payload_.purchase_record_;
+}
+inline ::server::TPurchaseRecord* Envelope::release_purchase_record() {
+  // @@protoc_insertion_point(field_release:server.Envelope.purchase_record)
+  if (has_purchase_record()) {
+    clear_has_payload();
+    ::server::TPurchaseRecord* temp = payload_.purchase_record_;
+    payload_.purchase_record_ = NULL;
+    return temp;
+  } else {
+    return NULL;
+  }
+}
+inline void Envelope::set_allocated_purchase_record(::server::TPurchaseRecord* purchase_record) {
+  clear_payload();
+  if (purchase_record) {
+    set_has_purchase_record();
+    payload_.purchase_record_ = purchase_record;
+  }
+  // @@protoc_insertion_point(field_set_allocated:server.Envelope.purchase_record)
+}
+
+// optional .server.TNotificationsList notifications_list = 67;
+inline bool Envelope::has_notifications_list() const {
+  return payload_case() == kNotificationsList;
+}
+inline void Envelope::set_has_notifications_list() {
+  _oneof_case_[0] = kNotificationsList;
+}
+inline void Envelope::clear_notifications_list() {
+  if (has_notifications_list()) {
+    delete payload_.notifications_list_;
+    clear_has_payload();
+  }
+}
+inline  const ::server::TNotificationsList& Envelope::notifications_list() const {
+  // @@protoc_insertion_point(field_get:server.Envelope.notifications_list)
+  return has_notifications_list()
+      ? *payload_.notifications_list_
+      : ::server::TNotificationsList::default_instance();
+}
+inline ::server::TNotificationsList* Envelope::mutable_notifications_list() {
+  if (!has_notifications_list()) {
+    clear_payload();
+    set_has_notifications_list();
+    payload_.notifications_list_ = new ::server::TNotificationsList;
+  }
+  // @@protoc_insertion_point(field_mutable:server.Envelope.notifications_list)
+  return payload_.notifications_list_;
+}
+inline ::server::TNotificationsList* Envelope::release_notifications_list() {
+  // @@protoc_insertion_point(field_release:server.Envelope.notifications_list)
+  if (has_notifications_list()) {
+    clear_has_payload();
+    ::server::TNotificationsList* temp = payload_.notifications_list_;
+    payload_.notifications_list_ = NULL;
+    return temp;
+  } else {
+    return NULL;
+  }
+}
+inline void Envelope::set_allocated_notifications_list(::server::TNotificationsList* notifications_list) {
+  clear_payload();
+  if (notifications_list) {
+    set_has_notifications_list();
+    payload_.notifications_list_ = notifications_list;
+  }
+  // @@protoc_insertion_point(field_set_allocated:server.Envelope.notifications_list)
+}
+
+// optional .server.TNotificationsRemove notifications_remove = 68;
+inline bool Envelope::has_notifications_remove() const {
+  return payload_case() == kNotificationsRemove;
+}
+inline void Envelope::set_has_notifications_remove() {
+  _oneof_case_[0] = kNotificationsRemove;
+}
+inline void Envelope::clear_notifications_remove() {
+  if (has_notifications_remove()) {
+    delete payload_.notifications_remove_;
+    clear_has_payload();
+  }
+}
+inline  const ::server::TNotificationsRemove& Envelope::notifications_remove() const {
+  // @@protoc_insertion_point(field_get:server.Envelope.notifications_remove)
+  return has_notifications_remove()
+      ? *payload_.notifications_remove_
+      : ::server::TNotificationsRemove::default_instance();
+}
+inline ::server::TNotificationsRemove* Envelope::mutable_notifications_remove() {
+  if (!has_notifications_remove()) {
+    clear_payload();
+    set_has_notifications_remove();
+    payload_.notifications_remove_ = new ::server::TNotificationsRemove;
+  }
+  // @@protoc_insertion_point(field_mutable:server.Envelope.notifications_remove)
+  return payload_.notifications_remove_;
+}
+inline ::server::TNotificationsRemove* Envelope::release_notifications_remove() {
+  // @@protoc_insertion_point(field_release:server.Envelope.notifications_remove)
+  if (has_notifications_remove()) {
+    clear_has_payload();
+    ::server::TNotificationsRemove* temp = payload_.notifications_remove_;
+    payload_.notifications_remove_ = NULL;
+    return temp;
+  } else {
+    return NULL;
+  }
+}
+inline void Envelope::set_allocated_notifications_remove(::server::TNotificationsRemove* notifications_remove) {
+  clear_payload();
+  if (notifications_remove) {
+    set_has_notifications_remove();
+    payload_.notifications_remove_ = notifications_remove;
+  }
+  // @@protoc_insertion_point(field_set_allocated:server.Envelope.notifications_remove)
+}
+
+// optional .server.TNotifications notifications = 69;
+inline bool Envelope::has_notifications() const {
+  return payload_case() == kNotifications;
+}
+inline void Envelope::set_has_notifications() {
+  _oneof_case_[0] = kNotifications;
+}
+inline void Envelope::clear_notifications() {
+  if (has_notifications()) {
+    delete payload_.notifications_;
+    clear_has_payload();
+  }
+}
+inline  const ::server::TNotifications& Envelope::notifications() const {
+  // @@protoc_insertion_point(field_get:server.Envelope.notifications)
+  return has_notifications()
+      ? *payload_.notifications_
+      : ::server::TNotifications::default_instance();
+}
+inline ::server::TNotifications* Envelope::mutable_notifications() {
+  if (!has_notifications()) {
+    clear_payload();
+    set_has_notifications();
+    payload_.notifications_ = new ::server::TNotifications;
+  }
+  // @@protoc_insertion_point(field_mutable:server.Envelope.notifications)
+  return payload_.notifications_;
+}
+inline ::server::TNotifications* Envelope::release_notifications() {
+  // @@protoc_insertion_point(field_release:server.Envelope.notifications)
+  if (has_notifications()) {
+    clear_has_payload();
+    ::server::TNotifications* temp = payload_.notifications_;
+    payload_.notifications_ = NULL;
+    return temp;
+  } else {
+    return NULL;
+  }
+}
+inline void Envelope::set_allocated_notifications(::server::TNotifications* notifications) {
+  clear_payload();
+  if (notifications) {
+    set_has_notifications();
+    payload_.notifications_ = notifications;
+  }
+  // @@protoc_insertion_point(field_set_allocated:server.Envelope.notifications)
+}
+
+// optional .server.Notifications live_notifications = 70;
+inline bool Envelope::has_live_notifications() const {
+  return payload_case() == kLiveNotifications;
+}
+inline void Envelope::set_has_live_notifications() {
+  _oneof_case_[0] = kLiveNotifications;
+}
+inline void Envelope::clear_live_notifications() {
+  if (has_live_notifications()) {
+    delete payload_.live_notifications_;
+    clear_has_payload();
+  }
+}
+inline  const ::server::Notifications& Envelope::live_notifications() const {
+  // @@protoc_insertion_point(field_get:server.Envelope.live_notifications)
+  return has_live_notifications()
+      ? *payload_.live_notifications_
+      : ::server::Notifications::default_instance();
+}
+inline ::server::Notifications* Envelope::mutable_live_notifications() {
+  if (!has_live_notifications()) {
+    clear_payload();
+    set_has_live_notifications();
+    payload_.live_notifications_ = new ::server::Notifications;
+  }
+  // @@protoc_insertion_point(field_mutable:server.Envelope.live_notifications)
+  return payload_.live_notifications_;
+}
+inline ::server::Notifications* Envelope::release_live_notifications() {
+  // @@protoc_insertion_point(field_release:server.Envelope.live_notifications)
+  if (has_live_notifications()) {
+    clear_has_payload();
+    ::server::Notifications* temp = payload_.live_notifications_;
+    payload_.live_notifications_ = NULL;
+    return temp;
+  } else {
+    return NULL;
+  }
+}
+inline void Envelope::set_allocated_live_notifications(::server::Notifications* live_notifications) {
+  clear_payload();
+  if (live_notifications) {
+    set_has_live_notifications();
+    payload_.live_notifications_ = live_notifications;
+  }
+  // @@protoc_insertion_point(field_set_allocated:server.Envelope.live_notifications)
 }
 
 inline bool Envelope::has_payload() const {
@@ -20691,52 +21917,6 @@ TGroupsCreate::groups() const {
 
 inline const TGroupsCreate* TGroupsCreate::internal_default_instance() {
   return &TGroupsCreate_default_instance_.get();
-}
-// -------------------------------------------------------------------
-
-// TGroup
-
-// optional .server.Group group = 1;
-inline bool TGroup::has_group() const {
-  return this != internal_default_instance() && group_ != NULL;
-}
-inline void TGroup::clear_group() {
-  if (GetArenaNoVirtual() == NULL && group_ != NULL) delete group_;
-  group_ = NULL;
-}
-inline const ::server::Group& TGroup::group() const {
-  // @@protoc_insertion_point(field_get:server.TGroup.group)
-  return group_ != NULL ? *group_
-                         : *::server::Group::internal_default_instance();
-}
-inline ::server::Group* TGroup::mutable_group() {
-  
-  if (group_ == NULL) {
-    group_ = new ::server::Group;
-  }
-  // @@protoc_insertion_point(field_mutable:server.TGroup.group)
-  return group_;
-}
-inline ::server::Group* TGroup::release_group() {
-  // @@protoc_insertion_point(field_release:server.TGroup.group)
-  
-  ::server::Group* temp = group_;
-  group_ = NULL;
-  return temp;
-}
-inline void TGroup::set_allocated_group(::server::Group* group) {
-  delete group_;
-  group_ = group;
-  if (group) {
-    
-  } else {
-    
-  }
-  // @@protoc_insertion_point(field_set_allocated:server.TGroup.group)
-}
-
-inline const TGroup* TGroup::internal_default_instance() {
-  return &TGroup_default_instance_.get();
 }
 // -------------------------------------------------------------------
 
@@ -29003,7 +30183,990 @@ inline void TRpc::set_allocated_payload(::std::string* payload) {
 inline const TRpc* TRpc::internal_default_instance() {
   return &TRpc_default_instance_.get();
 }
+// -------------------------------------------------------------------
+
+// TPurchaseValidation_ApplePurchase
+
+// optional string product_id = 1;
+inline void TPurchaseValidation_ApplePurchase::clear_product_id() {
+  product_id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& TPurchaseValidation_ApplePurchase::product_id() const {
+  // @@protoc_insertion_point(field_get:server.TPurchaseValidation.ApplePurchase.product_id)
+  return product_id_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void TPurchaseValidation_ApplePurchase::set_product_id(const ::std::string& value) {
+  
+  product_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:server.TPurchaseValidation.ApplePurchase.product_id)
+}
+inline void TPurchaseValidation_ApplePurchase::set_product_id(const char* value) {
+  
+  product_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:server.TPurchaseValidation.ApplePurchase.product_id)
+}
+inline void TPurchaseValidation_ApplePurchase::set_product_id(const char* value, size_t size) {
+  
+  product_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:server.TPurchaseValidation.ApplePurchase.product_id)
+}
+inline ::std::string* TPurchaseValidation_ApplePurchase::mutable_product_id() {
+  
+  // @@protoc_insertion_point(field_mutable:server.TPurchaseValidation.ApplePurchase.product_id)
+  return product_id_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* TPurchaseValidation_ApplePurchase::release_product_id() {
+  // @@protoc_insertion_point(field_release:server.TPurchaseValidation.ApplePurchase.product_id)
+  
+  return product_id_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void TPurchaseValidation_ApplePurchase::set_allocated_product_id(::std::string* product_id) {
+  if (product_id != NULL) {
+    
+  } else {
+    
+  }
+  product_id_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), product_id);
+  // @@protoc_insertion_point(field_set_allocated:server.TPurchaseValidation.ApplePurchase.product_id)
+}
+
+// optional string receipt_data = 2;
+inline void TPurchaseValidation_ApplePurchase::clear_receipt_data() {
+  receipt_data_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& TPurchaseValidation_ApplePurchase::receipt_data() const {
+  // @@protoc_insertion_point(field_get:server.TPurchaseValidation.ApplePurchase.receipt_data)
+  return receipt_data_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void TPurchaseValidation_ApplePurchase::set_receipt_data(const ::std::string& value) {
+  
+  receipt_data_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:server.TPurchaseValidation.ApplePurchase.receipt_data)
+}
+inline void TPurchaseValidation_ApplePurchase::set_receipt_data(const char* value) {
+  
+  receipt_data_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:server.TPurchaseValidation.ApplePurchase.receipt_data)
+}
+inline void TPurchaseValidation_ApplePurchase::set_receipt_data(const char* value, size_t size) {
+  
+  receipt_data_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:server.TPurchaseValidation.ApplePurchase.receipt_data)
+}
+inline ::std::string* TPurchaseValidation_ApplePurchase::mutable_receipt_data() {
+  
+  // @@protoc_insertion_point(field_mutable:server.TPurchaseValidation.ApplePurchase.receipt_data)
+  return receipt_data_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* TPurchaseValidation_ApplePurchase::release_receipt_data() {
+  // @@protoc_insertion_point(field_release:server.TPurchaseValidation.ApplePurchase.receipt_data)
+  
+  return receipt_data_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void TPurchaseValidation_ApplePurchase::set_allocated_receipt_data(::std::string* receipt_data) {
+  if (receipt_data != NULL) {
+    
+  } else {
+    
+  }
+  receipt_data_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), receipt_data);
+  // @@protoc_insertion_point(field_set_allocated:server.TPurchaseValidation.ApplePurchase.receipt_data)
+}
+
+inline const TPurchaseValidation_ApplePurchase* TPurchaseValidation_ApplePurchase::internal_default_instance() {
+  return &TPurchaseValidation_ApplePurchase_default_instance_.get();
+}
+// -------------------------------------------------------------------
+
+// TPurchaseValidation_GooglePurchase
+
+// optional string product_id = 1;
+inline void TPurchaseValidation_GooglePurchase::clear_product_id() {
+  product_id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& TPurchaseValidation_GooglePurchase::product_id() const {
+  // @@protoc_insertion_point(field_get:server.TPurchaseValidation.GooglePurchase.product_id)
+  return product_id_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void TPurchaseValidation_GooglePurchase::set_product_id(const ::std::string& value) {
+  
+  product_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:server.TPurchaseValidation.GooglePurchase.product_id)
+}
+inline void TPurchaseValidation_GooglePurchase::set_product_id(const char* value) {
+  
+  product_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:server.TPurchaseValidation.GooglePurchase.product_id)
+}
+inline void TPurchaseValidation_GooglePurchase::set_product_id(const char* value, size_t size) {
+  
+  product_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:server.TPurchaseValidation.GooglePurchase.product_id)
+}
+inline ::std::string* TPurchaseValidation_GooglePurchase::mutable_product_id() {
+  
+  // @@protoc_insertion_point(field_mutable:server.TPurchaseValidation.GooglePurchase.product_id)
+  return product_id_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* TPurchaseValidation_GooglePurchase::release_product_id() {
+  // @@protoc_insertion_point(field_release:server.TPurchaseValidation.GooglePurchase.product_id)
+  
+  return product_id_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void TPurchaseValidation_GooglePurchase::set_allocated_product_id(::std::string* product_id) {
+  if (product_id != NULL) {
+    
+  } else {
+    
+  }
+  product_id_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), product_id);
+  // @@protoc_insertion_point(field_set_allocated:server.TPurchaseValidation.GooglePurchase.product_id)
+}
+
+// optional string product_type = 2;
+inline void TPurchaseValidation_GooglePurchase::clear_product_type() {
+  product_type_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& TPurchaseValidation_GooglePurchase::product_type() const {
+  // @@protoc_insertion_point(field_get:server.TPurchaseValidation.GooglePurchase.product_type)
+  return product_type_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void TPurchaseValidation_GooglePurchase::set_product_type(const ::std::string& value) {
+  
+  product_type_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:server.TPurchaseValidation.GooglePurchase.product_type)
+}
+inline void TPurchaseValidation_GooglePurchase::set_product_type(const char* value) {
+  
+  product_type_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:server.TPurchaseValidation.GooglePurchase.product_type)
+}
+inline void TPurchaseValidation_GooglePurchase::set_product_type(const char* value, size_t size) {
+  
+  product_type_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:server.TPurchaseValidation.GooglePurchase.product_type)
+}
+inline ::std::string* TPurchaseValidation_GooglePurchase::mutable_product_type() {
+  
+  // @@protoc_insertion_point(field_mutable:server.TPurchaseValidation.GooglePurchase.product_type)
+  return product_type_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* TPurchaseValidation_GooglePurchase::release_product_type() {
+  // @@protoc_insertion_point(field_release:server.TPurchaseValidation.GooglePurchase.product_type)
+  
+  return product_type_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void TPurchaseValidation_GooglePurchase::set_allocated_product_type(::std::string* product_type) {
+  if (product_type != NULL) {
+    
+  } else {
+    
+  }
+  product_type_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), product_type);
+  // @@protoc_insertion_point(field_set_allocated:server.TPurchaseValidation.GooglePurchase.product_type)
+}
+
+// optional string purchase_token = 3;
+inline void TPurchaseValidation_GooglePurchase::clear_purchase_token() {
+  purchase_token_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& TPurchaseValidation_GooglePurchase::purchase_token() const {
+  // @@protoc_insertion_point(field_get:server.TPurchaseValidation.GooglePurchase.purchase_token)
+  return purchase_token_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void TPurchaseValidation_GooglePurchase::set_purchase_token(const ::std::string& value) {
+  
+  purchase_token_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:server.TPurchaseValidation.GooglePurchase.purchase_token)
+}
+inline void TPurchaseValidation_GooglePurchase::set_purchase_token(const char* value) {
+  
+  purchase_token_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:server.TPurchaseValidation.GooglePurchase.purchase_token)
+}
+inline void TPurchaseValidation_GooglePurchase::set_purchase_token(const char* value, size_t size) {
+  
+  purchase_token_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:server.TPurchaseValidation.GooglePurchase.purchase_token)
+}
+inline ::std::string* TPurchaseValidation_GooglePurchase::mutable_purchase_token() {
+  
+  // @@protoc_insertion_point(field_mutable:server.TPurchaseValidation.GooglePurchase.purchase_token)
+  return purchase_token_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* TPurchaseValidation_GooglePurchase::release_purchase_token() {
+  // @@protoc_insertion_point(field_release:server.TPurchaseValidation.GooglePurchase.purchase_token)
+  
+  return purchase_token_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void TPurchaseValidation_GooglePurchase::set_allocated_purchase_token(::std::string* purchase_token) {
+  if (purchase_token != NULL) {
+    
+  } else {
+    
+  }
+  purchase_token_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), purchase_token);
+  // @@protoc_insertion_point(field_set_allocated:server.TPurchaseValidation.GooglePurchase.purchase_token)
+}
+
+inline const TPurchaseValidation_GooglePurchase* TPurchaseValidation_GooglePurchase::internal_default_instance() {
+  return &TPurchaseValidation_GooglePurchase_default_instance_.get();
+}
+// -------------------------------------------------------------------
+
+// TPurchaseValidation
+
+// optional .server.TPurchaseValidation.ApplePurchase apple_purchase = 1;
+inline bool TPurchaseValidation::has_apple_purchase() const {
+  return id_case() == kApplePurchase;
+}
+inline void TPurchaseValidation::set_has_apple_purchase() {
+  _oneof_case_[0] = kApplePurchase;
+}
+inline void TPurchaseValidation::clear_apple_purchase() {
+  if (has_apple_purchase()) {
+    delete id_.apple_purchase_;
+    clear_has_id();
+  }
+}
+inline  const ::server::TPurchaseValidation_ApplePurchase& TPurchaseValidation::apple_purchase() const {
+  // @@protoc_insertion_point(field_get:server.TPurchaseValidation.apple_purchase)
+  return has_apple_purchase()
+      ? *id_.apple_purchase_
+      : ::server::TPurchaseValidation_ApplePurchase::default_instance();
+}
+inline ::server::TPurchaseValidation_ApplePurchase* TPurchaseValidation::mutable_apple_purchase() {
+  if (!has_apple_purchase()) {
+    clear_id();
+    set_has_apple_purchase();
+    id_.apple_purchase_ = new ::server::TPurchaseValidation_ApplePurchase;
+  }
+  // @@protoc_insertion_point(field_mutable:server.TPurchaseValidation.apple_purchase)
+  return id_.apple_purchase_;
+}
+inline ::server::TPurchaseValidation_ApplePurchase* TPurchaseValidation::release_apple_purchase() {
+  // @@protoc_insertion_point(field_release:server.TPurchaseValidation.apple_purchase)
+  if (has_apple_purchase()) {
+    clear_has_id();
+    ::server::TPurchaseValidation_ApplePurchase* temp = id_.apple_purchase_;
+    id_.apple_purchase_ = NULL;
+    return temp;
+  } else {
+    return NULL;
+  }
+}
+inline void TPurchaseValidation::set_allocated_apple_purchase(::server::TPurchaseValidation_ApplePurchase* apple_purchase) {
+  clear_id();
+  if (apple_purchase) {
+    set_has_apple_purchase();
+    id_.apple_purchase_ = apple_purchase;
+  }
+  // @@protoc_insertion_point(field_set_allocated:server.TPurchaseValidation.apple_purchase)
+}
+
+// optional .server.TPurchaseValidation.GooglePurchase google_purchase = 2;
+inline bool TPurchaseValidation::has_google_purchase() const {
+  return id_case() == kGooglePurchase;
+}
+inline void TPurchaseValidation::set_has_google_purchase() {
+  _oneof_case_[0] = kGooglePurchase;
+}
+inline void TPurchaseValidation::clear_google_purchase() {
+  if (has_google_purchase()) {
+    delete id_.google_purchase_;
+    clear_has_id();
+  }
+}
+inline  const ::server::TPurchaseValidation_GooglePurchase& TPurchaseValidation::google_purchase() const {
+  // @@protoc_insertion_point(field_get:server.TPurchaseValidation.google_purchase)
+  return has_google_purchase()
+      ? *id_.google_purchase_
+      : ::server::TPurchaseValidation_GooglePurchase::default_instance();
+}
+inline ::server::TPurchaseValidation_GooglePurchase* TPurchaseValidation::mutable_google_purchase() {
+  if (!has_google_purchase()) {
+    clear_id();
+    set_has_google_purchase();
+    id_.google_purchase_ = new ::server::TPurchaseValidation_GooglePurchase;
+  }
+  // @@protoc_insertion_point(field_mutable:server.TPurchaseValidation.google_purchase)
+  return id_.google_purchase_;
+}
+inline ::server::TPurchaseValidation_GooglePurchase* TPurchaseValidation::release_google_purchase() {
+  // @@protoc_insertion_point(field_release:server.TPurchaseValidation.google_purchase)
+  if (has_google_purchase()) {
+    clear_has_id();
+    ::server::TPurchaseValidation_GooglePurchase* temp = id_.google_purchase_;
+    id_.google_purchase_ = NULL;
+    return temp;
+  } else {
+    return NULL;
+  }
+}
+inline void TPurchaseValidation::set_allocated_google_purchase(::server::TPurchaseValidation_GooglePurchase* google_purchase) {
+  clear_id();
+  if (google_purchase) {
+    set_has_google_purchase();
+    id_.google_purchase_ = google_purchase;
+  }
+  // @@protoc_insertion_point(field_set_allocated:server.TPurchaseValidation.google_purchase)
+}
+
+inline bool TPurchaseValidation::has_id() const {
+  return id_case() != ID_NOT_SET;
+}
+inline void TPurchaseValidation::clear_has_id() {
+  _oneof_case_[0] = ID_NOT_SET;
+}
+inline TPurchaseValidation::IdCase TPurchaseValidation::id_case() const {
+  return TPurchaseValidation::IdCase(_oneof_case_[0]);
+}
+inline const TPurchaseValidation* TPurchaseValidation::internal_default_instance() {
+  return &TPurchaseValidation_default_instance_.get();
+}
+// -------------------------------------------------------------------
+
+// TPurchaseRecord
+
+// optional bool success = 1;
+inline void TPurchaseRecord::clear_success() {
+  success_ = false;
+}
+inline bool TPurchaseRecord::success() const {
+  // @@protoc_insertion_point(field_get:server.TPurchaseRecord.success)
+  return success_;
+}
+inline void TPurchaseRecord::set_success(bool value) {
+  
+  success_ = value;
+  // @@protoc_insertion_point(field_set:server.TPurchaseRecord.success)
+}
+
+// optional bool seen_before = 2;
+inline void TPurchaseRecord::clear_seen_before() {
+  seen_before_ = false;
+}
+inline bool TPurchaseRecord::seen_before() const {
+  // @@protoc_insertion_point(field_get:server.TPurchaseRecord.seen_before)
+  return seen_before_;
+}
+inline void TPurchaseRecord::set_seen_before(bool value) {
+  
+  seen_before_ = value;
+  // @@protoc_insertion_point(field_set:server.TPurchaseRecord.seen_before)
+}
+
+// optional bool purchase_provider_reachable = 3;
+inline void TPurchaseRecord::clear_purchase_provider_reachable() {
+  purchase_provider_reachable_ = false;
+}
+inline bool TPurchaseRecord::purchase_provider_reachable() const {
+  // @@protoc_insertion_point(field_get:server.TPurchaseRecord.purchase_provider_reachable)
+  return purchase_provider_reachable_;
+}
+inline void TPurchaseRecord::set_purchase_provider_reachable(bool value) {
+  
+  purchase_provider_reachable_ = value;
+  // @@protoc_insertion_point(field_set:server.TPurchaseRecord.purchase_provider_reachable)
+}
+
+// optional string message = 6;
+inline void TPurchaseRecord::clear_message() {
+  message_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& TPurchaseRecord::message() const {
+  // @@protoc_insertion_point(field_get:server.TPurchaseRecord.message)
+  return message_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void TPurchaseRecord::set_message(const ::std::string& value) {
+  
+  message_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:server.TPurchaseRecord.message)
+}
+inline void TPurchaseRecord::set_message(const char* value) {
+  
+  message_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:server.TPurchaseRecord.message)
+}
+inline void TPurchaseRecord::set_message(const char* value, size_t size) {
+  
+  message_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:server.TPurchaseRecord.message)
+}
+inline ::std::string* TPurchaseRecord::mutable_message() {
+  
+  // @@protoc_insertion_point(field_mutable:server.TPurchaseRecord.message)
+  return message_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* TPurchaseRecord::release_message() {
+  // @@protoc_insertion_point(field_release:server.TPurchaseRecord.message)
+  
+  return message_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void TPurchaseRecord::set_allocated_message(::std::string* message) {
+  if (message != NULL) {
+    
+  } else {
+    
+  }
+  message_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), message);
+  // @@protoc_insertion_point(field_set_allocated:server.TPurchaseRecord.message)
+}
+
+// optional string data = 5;
+inline void TPurchaseRecord::clear_data() {
+  data_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& TPurchaseRecord::data() const {
+  // @@protoc_insertion_point(field_get:server.TPurchaseRecord.data)
+  return data_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void TPurchaseRecord::set_data(const ::std::string& value) {
+  
+  data_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:server.TPurchaseRecord.data)
+}
+inline void TPurchaseRecord::set_data(const char* value) {
+  
+  data_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:server.TPurchaseRecord.data)
+}
+inline void TPurchaseRecord::set_data(const char* value, size_t size) {
+  
+  data_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:server.TPurchaseRecord.data)
+}
+inline ::std::string* TPurchaseRecord::mutable_data() {
+  
+  // @@protoc_insertion_point(field_mutable:server.TPurchaseRecord.data)
+  return data_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* TPurchaseRecord::release_data() {
+  // @@protoc_insertion_point(field_release:server.TPurchaseRecord.data)
+  
+  return data_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void TPurchaseRecord::set_allocated_data(::std::string* data) {
+  if (data != NULL) {
+    
+  } else {
+    
+  }
+  data_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), data);
+  // @@protoc_insertion_point(field_set_allocated:server.TPurchaseRecord.data)
+}
+
+inline const TPurchaseRecord* TPurchaseRecord::internal_default_instance() {
+  return &TPurchaseRecord_default_instance_.get();
+}
+// -------------------------------------------------------------------
+
+// Notification
+
+// optional bytes id = 1;
+inline void Notification::clear_id() {
+  id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& Notification::id() const {
+  // @@protoc_insertion_point(field_get:server.Notification.id)
+  return id_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void Notification::set_id(const ::std::string& value) {
+  
+  id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:server.Notification.id)
+}
+inline void Notification::set_id(const char* value) {
+  
+  id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:server.Notification.id)
+}
+inline void Notification::set_id(const void* value, size_t size) {
+  
+  id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:server.Notification.id)
+}
+inline ::std::string* Notification::mutable_id() {
+  
+  // @@protoc_insertion_point(field_mutable:server.Notification.id)
+  return id_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* Notification::release_id() {
+  // @@protoc_insertion_point(field_release:server.Notification.id)
+  
+  return id_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void Notification::set_allocated_id(::std::string* id) {
+  if (id != NULL) {
+    
+  } else {
+    
+  }
+  id_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), id);
+  // @@protoc_insertion_point(field_set_allocated:server.Notification.id)
+}
+
+// optional string subject = 2;
+inline void Notification::clear_subject() {
+  subject_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& Notification::subject() const {
+  // @@protoc_insertion_point(field_get:server.Notification.subject)
+  return subject_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void Notification::set_subject(const ::std::string& value) {
+  
+  subject_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:server.Notification.subject)
+}
+inline void Notification::set_subject(const char* value) {
+  
+  subject_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:server.Notification.subject)
+}
+inline void Notification::set_subject(const char* value, size_t size) {
+  
+  subject_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:server.Notification.subject)
+}
+inline ::std::string* Notification::mutable_subject() {
+  
+  // @@protoc_insertion_point(field_mutable:server.Notification.subject)
+  return subject_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* Notification::release_subject() {
+  // @@protoc_insertion_point(field_release:server.Notification.subject)
+  
+  return subject_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void Notification::set_allocated_subject(::std::string* subject) {
+  if (subject != NULL) {
+    
+  } else {
+    
+  }
+  subject_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), subject);
+  // @@protoc_insertion_point(field_set_allocated:server.Notification.subject)
+}
+
+// optional bytes content = 3;
+inline void Notification::clear_content() {
+  content_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& Notification::content() const {
+  // @@protoc_insertion_point(field_get:server.Notification.content)
+  return content_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void Notification::set_content(const ::std::string& value) {
+  
+  content_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:server.Notification.content)
+}
+inline void Notification::set_content(const char* value) {
+  
+  content_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:server.Notification.content)
+}
+inline void Notification::set_content(const void* value, size_t size) {
+  
+  content_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:server.Notification.content)
+}
+inline ::std::string* Notification::mutable_content() {
+  
+  // @@protoc_insertion_point(field_mutable:server.Notification.content)
+  return content_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* Notification::release_content() {
+  // @@protoc_insertion_point(field_release:server.Notification.content)
+  
+  return content_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void Notification::set_allocated_content(::std::string* content) {
+  if (content != NULL) {
+    
+  } else {
+    
+  }
+  content_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), content);
+  // @@protoc_insertion_point(field_set_allocated:server.Notification.content)
+}
+
+// optional int64 code = 4;
+inline void Notification::clear_code() {
+  code_ = GOOGLE_LONGLONG(0);
+}
+inline ::google::protobuf::int64 Notification::code() const {
+  // @@protoc_insertion_point(field_get:server.Notification.code)
+  return code_;
+}
+inline void Notification::set_code(::google::protobuf::int64 value) {
+  
+  code_ = value;
+  // @@protoc_insertion_point(field_set:server.Notification.code)
+}
+
+// optional bytes sender_id = 5;
+inline void Notification::clear_sender_id() {
+  sender_id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& Notification::sender_id() const {
+  // @@protoc_insertion_point(field_get:server.Notification.sender_id)
+  return sender_id_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void Notification::set_sender_id(const ::std::string& value) {
+  
+  sender_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:server.Notification.sender_id)
+}
+inline void Notification::set_sender_id(const char* value) {
+  
+  sender_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:server.Notification.sender_id)
+}
+inline void Notification::set_sender_id(const void* value, size_t size) {
+  
+  sender_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:server.Notification.sender_id)
+}
+inline ::std::string* Notification::mutable_sender_id() {
+  
+  // @@protoc_insertion_point(field_mutable:server.Notification.sender_id)
+  return sender_id_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* Notification::release_sender_id() {
+  // @@protoc_insertion_point(field_release:server.Notification.sender_id)
+  
+  return sender_id_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void Notification::set_allocated_sender_id(::std::string* sender_id) {
+  if (sender_id != NULL) {
+    
+  } else {
+    
+  }
+  sender_id_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), sender_id);
+  // @@protoc_insertion_point(field_set_allocated:server.Notification.sender_id)
+}
+
+// optional int64 created_at = 6;
+inline void Notification::clear_created_at() {
+  created_at_ = GOOGLE_LONGLONG(0);
+}
+inline ::google::protobuf::int64 Notification::created_at() const {
+  // @@protoc_insertion_point(field_get:server.Notification.created_at)
+  return created_at_;
+}
+inline void Notification::set_created_at(::google::protobuf::int64 value) {
+  
+  created_at_ = value;
+  // @@protoc_insertion_point(field_set:server.Notification.created_at)
+}
+
+// optional int64 expires_at = 7;
+inline void Notification::clear_expires_at() {
+  expires_at_ = GOOGLE_LONGLONG(0);
+}
+inline ::google::protobuf::int64 Notification::expires_at() const {
+  // @@protoc_insertion_point(field_get:server.Notification.expires_at)
+  return expires_at_;
+}
+inline void Notification::set_expires_at(::google::protobuf::int64 value) {
+  
+  expires_at_ = value;
+  // @@protoc_insertion_point(field_set:server.Notification.expires_at)
+}
+
+// optional bool persistent = 8;
+inline void Notification::clear_persistent() {
+  persistent_ = false;
+}
+inline bool Notification::persistent() const {
+  // @@protoc_insertion_point(field_get:server.Notification.persistent)
+  return persistent_;
+}
+inline void Notification::set_persistent(bool value) {
+  
+  persistent_ = value;
+  // @@protoc_insertion_point(field_set:server.Notification.persistent)
+}
+
+inline const Notification* Notification::internal_default_instance() {
+  return &Notification_default_instance_.get();
+}
+// -------------------------------------------------------------------
+
+// Notifications
+
+// repeated .server.Notification notifications = 1;
+inline int Notifications::notifications_size() const {
+  return notifications_.size();
+}
+inline void Notifications::clear_notifications() {
+  notifications_.Clear();
+}
+inline const ::server::Notification& Notifications::notifications(int index) const {
+  // @@protoc_insertion_point(field_get:server.Notifications.notifications)
+  return notifications_.Get(index);
+}
+inline ::server::Notification* Notifications::mutable_notifications(int index) {
+  // @@protoc_insertion_point(field_mutable:server.Notifications.notifications)
+  return notifications_.Mutable(index);
+}
+inline ::server::Notification* Notifications::add_notifications() {
+  // @@protoc_insertion_point(field_add:server.Notifications.notifications)
+  return notifications_.Add();
+}
+inline ::google::protobuf::RepeatedPtrField< ::server::Notification >*
+Notifications::mutable_notifications() {
+  // @@protoc_insertion_point(field_mutable_list:server.Notifications.notifications)
+  return &notifications_;
+}
+inline const ::google::protobuf::RepeatedPtrField< ::server::Notification >&
+Notifications::notifications() const {
+  // @@protoc_insertion_point(field_list:server.Notifications.notifications)
+  return notifications_;
+}
+
+inline const Notifications* Notifications::internal_default_instance() {
+  return &Notifications_default_instance_.get();
+}
+// -------------------------------------------------------------------
+
+// TNotificationsList
+
+// optional int64 limit = 1;
+inline void TNotificationsList::clear_limit() {
+  limit_ = GOOGLE_LONGLONG(0);
+}
+inline ::google::protobuf::int64 TNotificationsList::limit() const {
+  // @@protoc_insertion_point(field_get:server.TNotificationsList.limit)
+  return limit_;
+}
+inline void TNotificationsList::set_limit(::google::protobuf::int64 value) {
+  
+  limit_ = value;
+  // @@protoc_insertion_point(field_set:server.TNotificationsList.limit)
+}
+
+// optional bytes resumable_cursor = 2;
+inline void TNotificationsList::clear_resumable_cursor() {
+  resumable_cursor_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& TNotificationsList::resumable_cursor() const {
+  // @@protoc_insertion_point(field_get:server.TNotificationsList.resumable_cursor)
+  return resumable_cursor_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void TNotificationsList::set_resumable_cursor(const ::std::string& value) {
+  
+  resumable_cursor_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:server.TNotificationsList.resumable_cursor)
+}
+inline void TNotificationsList::set_resumable_cursor(const char* value) {
+  
+  resumable_cursor_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:server.TNotificationsList.resumable_cursor)
+}
+inline void TNotificationsList::set_resumable_cursor(const void* value, size_t size) {
+  
+  resumable_cursor_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:server.TNotificationsList.resumable_cursor)
+}
+inline ::std::string* TNotificationsList::mutable_resumable_cursor() {
+  
+  // @@protoc_insertion_point(field_mutable:server.TNotificationsList.resumable_cursor)
+  return resumable_cursor_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* TNotificationsList::release_resumable_cursor() {
+  // @@protoc_insertion_point(field_release:server.TNotificationsList.resumable_cursor)
+  
+  return resumable_cursor_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void TNotificationsList::set_allocated_resumable_cursor(::std::string* resumable_cursor) {
+  if (resumable_cursor != NULL) {
+    
+  } else {
+    
+  }
+  resumable_cursor_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), resumable_cursor);
+  // @@protoc_insertion_point(field_set_allocated:server.TNotificationsList.resumable_cursor)
+}
+
+inline const TNotificationsList* TNotificationsList::internal_default_instance() {
+  return &TNotificationsList_default_instance_.get();
+}
+// -------------------------------------------------------------------
+
+// TNotifications
+
+// repeated .server.Notification notifications = 1;
+inline int TNotifications::notifications_size() const {
+  return notifications_.size();
+}
+inline void TNotifications::clear_notifications() {
+  notifications_.Clear();
+}
+inline const ::server::Notification& TNotifications::notifications(int index) const {
+  // @@protoc_insertion_point(field_get:server.TNotifications.notifications)
+  return notifications_.Get(index);
+}
+inline ::server::Notification* TNotifications::mutable_notifications(int index) {
+  // @@protoc_insertion_point(field_mutable:server.TNotifications.notifications)
+  return notifications_.Mutable(index);
+}
+inline ::server::Notification* TNotifications::add_notifications() {
+  // @@protoc_insertion_point(field_add:server.TNotifications.notifications)
+  return notifications_.Add();
+}
+inline ::google::protobuf::RepeatedPtrField< ::server::Notification >*
+TNotifications::mutable_notifications() {
+  // @@protoc_insertion_point(field_mutable_list:server.TNotifications.notifications)
+  return &notifications_;
+}
+inline const ::google::protobuf::RepeatedPtrField< ::server::Notification >&
+TNotifications::notifications() const {
+  // @@protoc_insertion_point(field_list:server.TNotifications.notifications)
+  return notifications_;
+}
+
+// optional bytes resumable_cursor = 2;
+inline void TNotifications::clear_resumable_cursor() {
+  resumable_cursor_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& TNotifications::resumable_cursor() const {
+  // @@protoc_insertion_point(field_get:server.TNotifications.resumable_cursor)
+  return resumable_cursor_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void TNotifications::set_resumable_cursor(const ::std::string& value) {
+  
+  resumable_cursor_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:server.TNotifications.resumable_cursor)
+}
+inline void TNotifications::set_resumable_cursor(const char* value) {
+  
+  resumable_cursor_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:server.TNotifications.resumable_cursor)
+}
+inline void TNotifications::set_resumable_cursor(const void* value, size_t size) {
+  
+  resumable_cursor_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:server.TNotifications.resumable_cursor)
+}
+inline ::std::string* TNotifications::mutable_resumable_cursor() {
+  
+  // @@protoc_insertion_point(field_mutable:server.TNotifications.resumable_cursor)
+  return resumable_cursor_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* TNotifications::release_resumable_cursor() {
+  // @@protoc_insertion_point(field_release:server.TNotifications.resumable_cursor)
+  
+  return resumable_cursor_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void TNotifications::set_allocated_resumable_cursor(::std::string* resumable_cursor) {
+  if (resumable_cursor != NULL) {
+    
+  } else {
+    
+  }
+  resumable_cursor_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), resumable_cursor);
+  // @@protoc_insertion_point(field_set_allocated:server.TNotifications.resumable_cursor)
+}
+
+inline const TNotifications* TNotifications::internal_default_instance() {
+  return &TNotifications_default_instance_.get();
+}
+// -------------------------------------------------------------------
+
+// TNotificationsRemove
+
+// repeated bytes notification_ids = 1;
+inline int TNotificationsRemove::notification_ids_size() const {
+  return notification_ids_.size();
+}
+inline void TNotificationsRemove::clear_notification_ids() {
+  notification_ids_.Clear();
+}
+inline const ::std::string& TNotificationsRemove::notification_ids(int index) const {
+  // @@protoc_insertion_point(field_get:server.TNotificationsRemove.notification_ids)
+  return notification_ids_.Get(index);
+}
+inline ::std::string* TNotificationsRemove::mutable_notification_ids(int index) {
+  // @@protoc_insertion_point(field_mutable:server.TNotificationsRemove.notification_ids)
+  return notification_ids_.Mutable(index);
+}
+inline void TNotificationsRemove::set_notification_ids(int index, const ::std::string& value) {
+  // @@protoc_insertion_point(field_set:server.TNotificationsRemove.notification_ids)
+  notification_ids_.Mutable(index)->assign(value);
+}
+inline void TNotificationsRemove::set_notification_ids(int index, const char* value) {
+  notification_ids_.Mutable(index)->assign(value);
+  // @@protoc_insertion_point(field_set_char:server.TNotificationsRemove.notification_ids)
+}
+inline void TNotificationsRemove::set_notification_ids(int index, const void* value, size_t size) {
+  notification_ids_.Mutable(index)->assign(
+    reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_set_pointer:server.TNotificationsRemove.notification_ids)
+}
+inline ::std::string* TNotificationsRemove::add_notification_ids() {
+  // @@protoc_insertion_point(field_add_mutable:server.TNotificationsRemove.notification_ids)
+  return notification_ids_.Add();
+}
+inline void TNotificationsRemove::add_notification_ids(const ::std::string& value) {
+  notification_ids_.Add()->assign(value);
+  // @@protoc_insertion_point(field_add:server.TNotificationsRemove.notification_ids)
+}
+inline void TNotificationsRemove::add_notification_ids(const char* value) {
+  notification_ids_.Add()->assign(value);
+  // @@protoc_insertion_point(field_add_char:server.TNotificationsRemove.notification_ids)
+}
+inline void TNotificationsRemove::add_notification_ids(const void* value, size_t size) {
+  notification_ids_.Add()->assign(reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_add_pointer:server.TNotificationsRemove.notification_ids)
+}
+inline const ::google::protobuf::RepeatedPtrField< ::std::string>&
+TNotificationsRemove::notification_ids() const {
+  // @@protoc_insertion_point(field_list:server.TNotificationsRemove.notification_ids)
+  return notification_ids_;
+}
+inline ::google::protobuf::RepeatedPtrField< ::std::string>*
+TNotificationsRemove::mutable_notification_ids() {
+  // @@protoc_insertion_point(field_mutable_list:server.TNotificationsRemove.notification_ids)
+  return &notification_ids_;
+}
+
+inline const TNotificationsRemove* TNotificationsRemove::internal_default_instance() {
+  return &TNotificationsRemove_default_instance_.get();
+}
 #endif  // !PROTOBUF_INLINE_NOT_IN_HEADERS
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
 // -------------------------------------------------------------------
 
 // -------------------------------------------------------------------

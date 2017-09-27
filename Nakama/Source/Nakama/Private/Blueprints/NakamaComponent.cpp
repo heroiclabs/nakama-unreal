@@ -64,6 +64,9 @@ void UNakamaComponent::SetupClient(FString serverKey, FString host, int32 port, 
 	this->ClientRef->OnMatchmakeMatched.push_back([=](NMatchmakeMatched matched) {
 		OnMatchmakeMatchedRcvd.Broadcast(UNBPMatchmakeMatched::From(matched));
 	});
+	this->ClientRef->OnNotification.push_back([=](NNotification notification) {
+		OnNotificationRcvd.Broadcast(UNBPNotification::From(notification));
+	});
 }
 
 void UNakamaComponent::ShutdownClient()

@@ -29,6 +29,7 @@
 #include "NMatchmakeMatched.h"
 #include "NMatchmakeTicket.h"
 #include "NMatchPresence.h"
+#include "NNotification.h"
 #include "NRuntimeRpc.h"
 #include "NSession.h"
 #include "NTopicMessage.h"
@@ -48,6 +49,7 @@
 #include "NTopicMessageAck.h"
 #include "NLeaderboard.h"
 #include "NLeaderboardRecord.h"
+#include "NPurchaseRecord.h"
 
 using namespace server;
 
@@ -97,6 +99,7 @@ namespace Nakama {
 		std::vector<std::function<void(const NTopicMessage&)>> OnTopicMessage;
 		std::vector<std::function<void(const NTopicPresence&)>> OnTopicPresence;
 		std::vector<std::function<void(const NMatchmakeMatched&)>> OnMatchmakeMatched;
+		std::vector<std::function<void(const NNotification&)>> OnNotification;
 
 		class Builder;
 
@@ -154,6 +157,7 @@ template NAKAMA_API class Nakama::NResultSet<Nakama::NFriend>;
 template NAKAMA_API class Nakama::NResultSet<Nakama::NGroup>;
 template NAKAMA_API class Nakama::NResultSet<Nakama::NGroupUser>;
 template NAKAMA_API class Nakama::NResultSet<Nakama::NMatch>;
+template NAKAMA_API class Nakama::NResultSet<Nakama::NNotification>;
 template NAKAMA_API class Nakama::NResultSet<Nakama::NStorageData>;
 template NAKAMA_API class Nakama::NResultSet<Nakama::NStorageKey>;
 template NAKAMA_API class Nakama::NResultSet<Nakama::NTopic>;

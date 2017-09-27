@@ -44,6 +44,9 @@
 #include "NakamaSDK/NMatchJoinMessage.h"
 #include "NakamaSDK/NMatchLeaveMessage.h"
 #include "NakamaSDK/NMatchDataSendMessage.h"
+#include "NakamaSDK/NNotificationsListMessage.h"
+#include "NakamaSDK/NNotificationsRemoveMessage.h"
+#include "NakamaSDK/NPurchaseValidateMessage.h"
 #include "NakamaSDK/NTopicJoinMessage.h"
 #include "NakamaSDK/NTopicLeaveMessage.h"
 #include "NakamaSDK/NTopicMessageSendMessage.h"
@@ -1997,7 +2000,7 @@ void UNBPMatchmakeRequest::Activate()
 * Handling for RPC
 */
 
-// ------------------------- UNBPMatchmakeRequest -------------------------
+// ------------------------- UNBPRpcRequest -------------------------
 
 UNBPRpcRequest* UNBPRpcRequest::RunRpc(UNakamaComponent* nakama, FString id, FString payload, FDelegateOnSuccess_RuntimeRpc onSuccess, FDelegateOnFail onFail)
 {
@@ -2033,4 +2036,153 @@ void UNBPRpcRequest::Activate()
 
 	auto message = builder.Build();
 	client->Send(message, success, fail);
+}
+
+
+/**
+* Handling for Notifications
+*/
+
+// ------------------------- UNBPNotificationRequest -------------------------
+
+UNBPNotificationRequest* UNBPNotificationRequest::ListMessages(UNakamaComponent* nakama, FString resumableCursor, int32 limit, FDelegateOnSuccess_NotificationList onSuccess, FDelegateOnFail onFail)
+{
+	auto proxy = NewObject<UNBPNotificationRequest>();
+	proxy->mode = Mode::List;
+	proxy->Limit = limit;
+	proxy->ResumableCursor = resumableCursor;
+	proxy->NakamaRef = nakama;
+	proxy->OnListSuccess = onSuccess;
+	proxy->OnFail = onFail;
+	return proxy;
+}
+
+UNBPNotificationRequest* UNBPNotificationRequest::RemoveMessage(UNakamaComponent* nakama, FString notificationId, FDelegateOnSuccess onSuccess, FDelegateOnFail onFail)
+{
+	auto proxy = NewObject<UNBPNotificationRequest>();
+	proxy->mode = Mode::Remove;
+	proxy->NotificationIds.Add(notificationId);
+	proxy->NakamaRef = nakama;
+	proxy->OnRemoveSuccess = onSuccess;
+	proxy->OnFail = onFail;
+	return proxy;
+}
+
+UNBPNotificationRequest* UNBPNotificationRequest::RemoveMessages(UNakamaComponent* nakama, TArray<FString> notificationIds, FDelegateOnSuccess onSuccess, FDelegateOnFail onFail)
+{
+	auto proxy = NewObject<UNBPNotificationRequest>();
+	proxy->mode = Mode::Remove;
+	proxy->NotificationIds = notificationIds;
+	proxy->NakamaRef = nakama;
+	proxy->OnRemoveSuccess = onSuccess;
+	proxy->OnFail = onFail;
+	return proxy;
+}
+
+void UNBPNotificationRequest::Activate()
+{
+	auto req = this;
+	auto client = NakamaRef != nullptr ? NakamaRef->GetClient() : nullptr;
+	if (client == nullptr) return;
+
+	auto fail = [req](NError error) {
+		if (req->OnFail.IsBound())
+			req->OnFail.Execute(UNBPError::From(error));
+	};
+
+	switch (mode) {
+	case Mode::List: {
+		auto success = [req](void* obj) {
+			if (req->OnListSuccess.IsBound()) {
+				auto rs = (NResultSet<NNotification>*)obj;
+				req->OnListSuccess.Execute(UNBPNotification::FromResultSet(rs), UNBPCursor::From(rs->GetCursor()));
+			}
+		};
+
+		auto builder = NNotificationsListMessage::Builder();
+		if (!ResumableCursor.IsEmpty()) builder.ResumableCursor(TCHAR_TO_UTF8(*ResumableCursor));
+		if (Limit != 0) builder.Limit(Limit);
+
+		auto message = builder.Build();
+		client->Send(message, success, fail);
+		break;
+	}
+	case Mode::Remove: {
+		auto success = [req](void* obj) {
+			if (req->OnRemoveSuccess.IsBound()) req->OnRemoveSuccess.Execute();
+		};
+
+		std::vector<std::string> ids;
+		for (int i = 0; i < NotificationIds.Num(); i++) {
+			ids.push_back(TCHAR_TO_UTF8(*NotificationIds[i]));
+		}
+		auto builder = NNotificationsRemoveMessage::Builder(ids);
+
+		auto message = builder.Build();
+		client->Send(message, success, fail);
+		break;
+	}
+	}
+}
+
+
+/**
+* Handling for PurchaseValidation
+*/
+
+// ------------------------- UNBPPurchaseValidationRequest -------------------------
+
+UNBPPurchaseValidationRequest* UNBPPurchaseValidationRequest::ValidateApplePurchase(UNakamaComponent* nakama, FString productId, FString receiptData, FDelegateOnSuccess_PurchaseRecord onSuccess, FDelegateOnFail onFail)
+{
+	auto proxy = NewObject<UNBPPurchaseValidationRequest>();
+	proxy->mode = Mode::Apple;
+	proxy->ProductId = productId;
+	proxy->ReceiptData = receiptData;
+	proxy->NakamaRef = nakama;
+	proxy->OnSuccess = onSuccess;
+	proxy->OnFail = onFail;
+	return proxy;
+}
+
+UNBPPurchaseValidationRequest* UNBPPurchaseValidationRequest::ValidateGooglePurchase(UNakamaComponent* nakama, FString productId, FString productType, FString purchaseToken, FDelegateOnSuccess_PurchaseRecord onSuccess, FDelegateOnFail onFail)
+{
+	auto proxy = NewObject<UNBPPurchaseValidationRequest>();
+	proxy->mode = Mode::Google;
+	proxy->ProductId = productId;
+	proxy->ProductType = productType;
+	proxy->PurchaseToken = purchaseToken;
+	proxy->NakamaRef = nakama;
+	proxy->OnSuccess = onSuccess;
+	proxy->OnFail = onFail;
+	return proxy;
+}
+
+void UNBPPurchaseValidationRequest::Activate()
+{
+	auto req = this;
+	auto client = NakamaRef != nullptr ? NakamaRef->GetClient() : nullptr;
+	if (client == nullptr) return;
+
+	auto fail = [req](NError error) {
+		if (req->OnFail.IsBound())
+			req->OnFail.Execute(UNBPError::From(error));
+	};
+
+	auto success = [req](void* obj) {
+		auto data = (NPurchaseRecord*)obj;
+		req->OnSuccess.Execute(UNBPPurchaseRecord::From(*data));
+	};
+
+	switch (mode) {
+	case Mode::Apple: {
+		auto message = NPurchaseValidateMessage::Apple(TCHAR_TO_UTF8(*ProductId), TCHAR_TO_UTF8(*ReceiptData));
+		client->Send(message, success, fail);
+		break;
+	}
+	case Mode::Google: {
+		auto message = NPurchaseValidateMessage::Google(TCHAR_TO_UTF8(*ProductId), TCHAR_TO_UTF8(*ProductType), TCHAR_TO_UTF8(*PurchaseToken));
+		client->Send(message, success, fail);
+		break;
+	}
+	}
 }
