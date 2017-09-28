@@ -79,6 +79,7 @@ namespace Nakama {
 			const std::function<void(NSession*)> callback,
 			const std::function<void(const NError)> errback);
 
+		void Connect(NSession* session);
 		void Connect(NSession* session, std::function<void(const bool)> callback);
 		void Logout();
 		void Disconnect();

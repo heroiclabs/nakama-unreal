@@ -157,9 +157,11 @@ namespace Nakama {
 	}
 	
 	void  NClient::Connect(NSession* session)
-        {
-            	transport->Connect(host, port, GetWebsocketPath(session), ssl);
-        }
+	{
+		NLogger::Info("Nakama::Client->Connect() - Connecting to API");
+		OnConnected = nullptr;
+		transport->Connect(host, port, GetWebsocketPath(session), ssl);
+	}
 
 	void NClient::Connect(NSession* session, std::function<void(const bool)> callback)
 	{
