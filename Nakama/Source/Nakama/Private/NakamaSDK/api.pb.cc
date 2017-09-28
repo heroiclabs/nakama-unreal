@@ -3632,7 +3632,8 @@ void protobuf_AddDesc_api_2eproto_impl() {
     "(\014*E\n\025StoragePermissionRead\022\013\n\007NO_READ\020\000"
     "\022\016\n\nOWNER_READ\020\001\022\017\n\013PUBLIC_READ\020\002*7\n\026Sto"
     "ragePermissionWrite\022\014\n\010NO_WRITE\020\000\022\017\n\013OWN"
-    "ER_WRITE\020\001B\t\252\002\006Nakamab\006proto3", 13909);
+    "ER_WRITE\020\001B \n\025com.heroiclabs.nakama\252\002\006Na"
+    "kamab\006proto3", 13932);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "api.proto", &protobuf_RegisterTypes);
   ::google::protobuf::internal::OnShutdown(&protobuf_ShutdownFile_api_2eproto);

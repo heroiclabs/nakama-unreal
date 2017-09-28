@@ -3,6 +3,10 @@ All notable changes to this project are documented below.
 
 The format is based on [keep a changelog](http://keepachangelog.com/) and this project uses [semantic versioning](http://semver.org/).
 
+## [0.8.1] - 2017-09-28
+### Changed
+- Now targeting nakama 1.0.1
+
 ## [0.8.0] - 2017-09-28
 ### Added
 - A paging cursor can now be serialized and restored.
