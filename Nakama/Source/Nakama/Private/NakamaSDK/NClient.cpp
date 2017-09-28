@@ -155,6 +155,11 @@ namespace Nakama {
 	{
 		Authenticate("/user/login", message.GetPayload(), lang, callback, errback);
 	}
+	
+	void  NClient::Connect(NSession* session)
+        {
+            	transport->Connect(host, port, GetWebsocketPath(session), ssl);
+        }
 
 	void NClient::Connect(NSession* session, std::function<void(const bool)> callback)
 	{
