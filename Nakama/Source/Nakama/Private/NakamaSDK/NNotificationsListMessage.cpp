@@ -24,16 +24,20 @@ namespace Nakama {
 		envelope.mutable_notifications_list();
 	}
 
-	/* Factory Methods */
-	NNotificationsListMessage::Builder NNotificationsListMessage::Builder::Limit(int64_t limit)
+	NNotificationsListMessage NNotificationsListMessage::Default(int64_t limit) 
 	{
-		message.envelope.mutable_notifications_list()->set_limit(limit);
-		return *this;
+		return Builder(limit).Build();
 	}
 
-	NNotificationsListMessage::Builder NNotificationsListMessage::Builder::ResumableCursor(std::string resumableCursor)
+	/* Factory Methods */
+	NNotificationsListMessage::Builder::Builder(int64_t limit)
 	{
-		message.envelope.mutable_notifications_list()->set_resumable_cursor(resumableCursor);
+		message.envelope.mutable_notifications_list()->set_limit(limit);
+	}
+
+	NNotificationsListMessage::Builder NNotificationsListMessage::Builder::Cursor(NCursor resumableCursor)
+	{
+		message.envelope.mutable_notifications_list()->set_resumable_cursor(resumableCursor.GetValue());
 		return *this;
 	}
 

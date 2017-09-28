@@ -109,7 +109,7 @@ namespace Nakama {
 			switch (authResponse.id_case())
 			{
 			case AuthenticateResponse::IdCase::kSession:
-				if (callback) callback(new NSession(authResponse.session().token().c_str(), span));
+				if (callback) callback(new NSession(authResponse.session().token().c_str(), std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::seconds(span))));
 				break;
 			case AuthenticateResponse::IdCase::kError:
 				if (errback) errback(NError(authResponse.error()));
@@ -318,6 +318,18 @@ namespace Nakama {
 				}
 				NCursor cursor = NCursor(message.groups().cursor());
 				callbacks->OnSuccess(new NResultSet<NGroup>(groups, cursor));
+			}
+			break;
+		}
+
+		case Envelope::PayloadCase::kGroupsSelf: {
+			if (callbacks) {
+				auto msgGroupsSelf = message.groups_self().groups_self();
+				auto groupsSelf = std::vector<NGroupSelf>();
+				for (size_t i = 0, maxI = msgGroupsSelf.size(); i < maxI; i++) {
+					groupsSelf.push_back(NGroupSelf(msgGroupsSelf[i]));
+				}
+				callbacks->OnSuccess(new NResultSet<NGroupSelf>(groupsSelf, NCursor()));
 			}
 			break;
 		}

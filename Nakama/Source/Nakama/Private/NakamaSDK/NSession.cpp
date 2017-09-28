@@ -16,6 +16,12 @@
 
 #include "NSession.h"
 #include "NibbleAndAHalf/base64.h"
+#include "rapidjson/document.h"
+#include "rapidjson/writer.h"
+#include "rapidjson/stringbuffer.h"
+
+using namespace rapidjson;
+using namespace std::chrono;
 
 namespace Nakama {
 
@@ -55,8 +61,10 @@ namespace Nakama {
 		return rVal;
 	}
 
-	std::string NSession::GetId() {
-		if (cachedId != "") return cachedId;
+	NSession::NSession(std::string token, std::chrono::milliseconds createdAt)
+	{
+		this->token = token;
+		this->createdAt = createdAt;
 
 		// Hack decode JSON payload from JWT
 		// first we narrow down to the segment between the first two '.'
@@ -70,27 +78,39 @@ namespace Nakama {
 
 		// now we have some json to parse.
 		// e.g.: {"exp":1489862293,"uid":"3c01e3ee-878a-4ec4-8923-40d51a86f91f"}
-		std::string json = std::string((const char*)decoded, decodedLen);
+		Document d;
+		d.Parse((const char*)decoded, decodedLen);
 
-		// find our uid key...
-		size_t index = json.find("\"uid\"");
+		if (d.HasMember("handle")) {
+			Value& val = d["handle"];
+			handle = std::string(val.GetString(), val.GetStringLength());
+		}
 
-		// find the boundaries of the uid value
-		size_t guidIndex1 = json.find("\"", index + 5);
-		size_t guidIndex2 = json.find("\"", guidIndex1 + 1);
+		if (d.HasMember("exp")) {
+			Value& val = d["exp"];
+			expiresAt = milliseconds(std::atol(val.GetString()) * 1000L);
+		}
 
-		// now pull out the uid
-		std::string guid = json.substr(guidIndex1 + 1, guidIndex2 - guidIndex1 - 1);
+		if (d.HasMember("uid")) {
+			Value& val = d["uid"];
+			std::string guid = std::string(val.GetString(), val.GetStringLength());
 
-		// we now need to turn this into a byte sequence.  We still store in a string for convenience.
-		cachedId = ConvertGuidStringToBytes(guid);
-		return cachedId;
+			// we now need to turn this into a byte sequence.  We still store in a string for convenience.
+			id = ConvertGuidStringToBytes(guid);
+		}
+	}
+
+	bool NSession::HasExpired(milliseconds time)
+	{
+		return time <= expiresAt;
 	}
 
 	NSession NSession::Restore(std::string token)
 	{
-		auto span = FDateTime::UtcNow().ToUnixTimestamp();
-		return NSession(token, span);
+		milliseconds ms = duration_cast< milliseconds >(
+			system_clock::now().time_since_epoch()
+			);
+		return NSession(token, ms);
 	}
 
 }

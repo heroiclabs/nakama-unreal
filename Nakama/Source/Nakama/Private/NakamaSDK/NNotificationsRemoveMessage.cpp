@@ -24,31 +24,18 @@ namespace Nakama {
 		envelope.mutable_notifications_remove();
 	}
 
-	/* Factory Methods */
-
-	NNotificationsRemoveMessage::Builder::Builder(std::string leaderboardId) {
-		Remove(leaderboardId);
-	}
-	
-	NNotificationsRemoveMessage::Builder::Builder(std::vector<std::string> leaderboardIds) {
-		for (int i = 0, maxI = leaderboardIds.size(); i < maxI; i++)
-		{
-			Remove(leaderboardIds[i]);
-		}
-	}
-
-	NNotificationsRemoveMessage::Builder NNotificationsRemoveMessage::Builder::Remove(std::string notificationId)
-	{
+	NNotificationsRemoveMessage NNotificationsRemoveMessage::Default(std::string notificationId) {
+		NNotificationsRemoveMessage message;
 		message.envelope.mutable_notifications_remove()->add_notification_ids()->assign(notificationId);
-		return *this;
+		return message;
 	}
 
-	NNotificationsRemoveMessage NNotificationsRemoveMessage::Builder::Build()
-	{
-		// Clone object so builder now operates on new copy.
-		NNotificationsRemoveMessage original = message;
-		message = NNotificationsRemoveMessage();
-		message.envelope.set_allocated_notifications_remove(new TNotificationsRemove(original.envelope.notifications_remove()));
-		return original;
+	NNotificationsRemoveMessage NNotificationsRemoveMessage::Default(std::vector<std::string> notificationIds) {
+		NNotificationsRemoveMessage message;
+		for (int i = 0, maxI = notificationIds.size(); i < maxI; i++)
+		{
+			message.envelope.mutable_notifications_remove()->add_notification_ids()->assign(notificationIds[i]);
+		}
+		return message;
 	}
 }

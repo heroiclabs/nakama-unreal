@@ -24,6 +24,7 @@
 #include "NakamaSDK/NUser.h"
 #include "NakamaSDK/NUserPresence.h"
 #include "NakamaSDK/NGroup.h"
+#include "NakamaSDK/NGroupSelf.h"
 #include "NakamaSDK/NCursor.h"
 #include "NakamaSDK/NGroupUser.h"
 #include "NakamaSDK/NResultSet.h"
@@ -46,6 +47,7 @@
 #include "NakamaSDK/NNotification.h"
 #include "NakamaSDK/NPurchaseRecord.h"
 #include "NakamaSDK/NRuntimeRpc.h"
+#include "NakamaSDK/NStorageUpdateMessage.h"
 #include "NBPDataClasses.generated.h"
 
 #define FROM_NAKAMA_DATE(__DATE__) FDateTime::FromUnixTimestamp(__DATE__/1000)
@@ -261,10 +263,33 @@ private:
 	NGroup Wrapped;
 };
 
+// ------------------------- NGroupSelf -------------------------
+
+UENUM(BlueprintType)
+enum class EGroupState : uint8
+{
+	Admin = 0, Member, Join
+};
+
+UCLASS(BlueprintType)
+class UNBPGroupSelf : public UNBPGroup
+{
+	GENERATED_BODY()
+
+public:
+	CONVERT_TO_BP_STATIC(NGroupSelf, UNBPGroupSelf)
+	CONVERT_RS_TO_BP_STATIC(NGroupSelf, UNBPGroupSelf)
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Group")
+		EGroupState GetState() { return (EGroupState)Wrapped.GetState(); }
+private:
+	NGroupSelf Wrapped;
+};
+
 // ------------------------- NGroupUser -------------------------
 
 UENUM(BlueprintType)
-enum class EGroupUserType : uint8
+enum class EGroupUserState : uint8
 {
 	Admin = 0, Member, Join
 };
@@ -312,7 +337,7 @@ public:
 		FDateTime GetUpdatedAt() { return FROM_NAKAMA_DATE(Wrapped.GetUpdatedAt()); }
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Group Users")
-		EGroupUserType GetState() { return (EGroupUserType)Wrapped.GetState(); }
+		EGroupUserState GetState() { return (EGroupUserState)Wrapped.GetState(); }
 
 private:
 	NGroupUser Wrapped;
@@ -923,6 +948,55 @@ private:
 	NPurchaseRecord Wrapped;
 };
 
+// ------------------------- NStorageUpdateMessage::StorageUpdateBuilder -------------------------
+
+// This is a collection of TStorageUpdate_StorageUpdate_UpdateOp items
+UCLASS(BlueprintType)
+class UNBPStorateUpdateOps : public UObject
+{
+	GENERATED_BODY()
+
+public:
+
+	UFUNCTION(BlueprintCallable, Category = "Nakama|Storage Update Operation")
+		void Add(FString path, FString value)					{ Wrapped.Add(TCHAR_TO_UTF8(*path), TCHAR_TO_UTF8(*value)); }
+
+	UFUNCTION(BlueprintCallable, Category = "Nakama|Storage Update Operation")
+		void Append(FString path, FString value)				{ Wrapped.Append(TCHAR_TO_UTF8(*path), TCHAR_TO_UTF8(*value)); }
+
+	UFUNCTION(BlueprintCallable, Category = "Nakama|Storage Update Operation")
+		void Copy(FString from, FString path)					{ Wrapped.Copy(TCHAR_TO_UTF8(*from), TCHAR_TO_UTF8(*path)); }
+
+	UFUNCTION(BlueprintCallable, Category = "Nakama|Storage Update Operation")
+		void Incr(FString path, int32 value)					{ Wrapped.Incr(TCHAR_TO_UTF8(*path), value); }
+
+	UFUNCTION(BlueprintCallable, Category = "Nakama|Storage Update Operation")
+		void Init(FString path, FString value)					{ Wrapped.Init(TCHAR_TO_UTF8(*path), TCHAR_TO_UTF8(*value)); }
+
+	UFUNCTION(BlueprintCallable, Category = "Nakama|Storage Update Operation")
+		void Merge(FString path, FString value)					{ Wrapped.Merge(TCHAR_TO_UTF8(*path), TCHAR_TO_UTF8(*value)); }
+
+	UFUNCTION(BlueprintCallable, Category = "Nakama|Storage Update Operation")
+		void Move(FString path, FString value)					{ Wrapped.Move(TCHAR_TO_UTF8(*path), TCHAR_TO_UTF8(*value)); }
+
+	UFUNCTION(BlueprintCallable, Category = "Nakama|Storage Update Operation")
+		void Remove(FString path)								{ Wrapped.Remove(TCHAR_TO_UTF8(*path)); }
+
+	UFUNCTION(BlueprintCallable, Category = "Nakama|Storage Update Operation")
+		void Replace(FString path, FString value)				{ Wrapped.Replace(TCHAR_TO_UTF8(*path), TCHAR_TO_UTF8(*value)); }
+
+	UFUNCTION(BlueprintCallable, Category = "Nakama|Storage Update Operation")
+		void Test(FString path, FString value)					{ Wrapped.Test(TCHAR_TO_UTF8(*path), TCHAR_TO_UTF8(*value)); }
+
+	UFUNCTION(BlueprintCallable, Category = "Nakama|Storage Update Operation")
+		void Compare(FString path, FString value, int32 assert) { Wrapped.Compare(TCHAR_TO_UTF8(*path), TCHAR_TO_UTF8(*value), assert); }
+
+	std::vector<TStorageUpdate_StorageUpdate_UpdateOp> FetchOperations() { return Wrapped.Build(); }
+
+private:
+	NStorageUpdateMessage::StorageUpdateBuilder Wrapped;
+};
+
 // ------------------------- NRuntimeRpc -------------------------
 
 UCLASS(BlueprintType)
@@ -933,7 +1007,7 @@ class UNBPRuntimeRpc : public UObject
 public:
 	CONVERT_TO_BP_STATIC(NRuntimeRpc, UNBPRuntimeRpc)
 
-	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Runtime RPC")
+		UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Runtime RPC")
 		FString GetId() { return UTF8_TO_TCHAR(Wrapped.GetId().c_str()); }
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Runtime RPC")

@@ -17,6 +17,7 @@
 #pragma once
 
 #include "INCollatedMessage.h"
+#include "NCursor.h"
 
 #include "Defines.h"
 
@@ -24,20 +25,38 @@ using namespace server;
 
 namespace Nakama {
 
-	// OnSuccess returns: nothing (nullptr)
-	class NAKAMA_API NNotificationsRemoveMessage : public INCollatedMessage
+	// OnSuccess returns: NResultSet<NStorageData>*
+	class NAKAMA_API NStorageListMessage : public INCollatedMessage
 	{
+
 	private:
 		Envelope envelope;
-		NNotificationsRemoveMessage();
+		NStorageListMessage();
 
 	public:
-		~NNotificationsRemoveMessage() {}
+		~NStorageListMessage() {}
 
 		virtual Envelope* GetPayload() override { return &envelope; }
 		virtual void SetCollationId(std::string id) override { envelope.set_collation_id(id); }
 
-		static NNotificationsRemoveMessage Default(std::string notificationId);
-		static NNotificationsRemoveMessage Default(std::vector<std::string> notificationIds);
+		class Builder;
 	};
+
+	class NAKAMA_API NStorageListMessage::Builder
+	{
+	private:
+		NStorageListMessage message;
+
+	public:
+		Builder() {}
+
+		Builder Bucket(std::string bucket);
+		Builder Collection(std::string collection);
+		Builder UserId(std::string userId);
+		Builder Limit(int64_t limit);
+		Builder Cursor(NCursor cursor);
+
+		NStorageListMessage Build();
+	};
+
 }

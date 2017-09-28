@@ -17,28 +17,32 @@
 #pragma once
 
 #include <string>
+#include <chrono>
 
 namespace Nakama {
 
 	class NAKAMA_API NSession {
 
 	public:
-		NSession(std::string token, int64_t createdAt) :
-			token(token),
-			createdAt(createdAt) {}
+		NSession(std::string token, std::chrono::milliseconds createdAt);
 
 		~NSession() {}
 
-		int64_t GetCreatedAt() { return createdAt; }
+		std::chrono::milliseconds GetCreatedAt() { return createdAt; }
+		std::chrono::milliseconds GetExpiresAt() { return expiresAt; }
+		std::string GetHandle() { return handle; }
 		std::string GetToken() { return token; }
-		std::string GetId();
+		std::string GetId() { return id; }
+		bool HasExpired(std::chrono::milliseconds time);
 
 		static NSession Restore(std::string token);
 
 	private:
-		int64_t createdAt;
+		std::chrono::milliseconds createdAt;
+		std::chrono::milliseconds expiresAt;
+		std::string handle;
 		std::string token;
-		std::string cachedId;
+		std::string id;
 	};
 
 }

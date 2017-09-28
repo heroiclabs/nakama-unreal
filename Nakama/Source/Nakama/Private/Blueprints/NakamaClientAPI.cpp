@@ -38,6 +38,7 @@
 #include "NakamaSDK/NGroupLeaveMessage.h"
 #include "NakamaSDK/NUsersFetchMessage.h"
 #include "NakamaSDK/NStorageFetchMessage.h"
+#include "NakamaSDK/NStorageListMessage.h"
 #include "NakamaSDK/NStorageRemoveMessage.h"
 #include "NakamaSDK/NStorageWriteMessage.h"
 #include "NakamaSDK/NMatchCreateMessage.h"
@@ -998,12 +999,12 @@ UNBPListGroupsRequest* UNBPListGroupsRequest::ListGroups(UNakamaComponent* nakam
 	return proxy;
 }
 
-UNBPListGroupsRequest* UNBPListGroupsRequest::ListSelfGroups(UNakamaComponent* nakama, FDelegateOnSuccess_GroupList onSuccess, FDelegateOnFail onFail)
+UNBPListGroupsRequest* UNBPListGroupsRequest::ListSelfGroups(UNakamaComponent* nakama, FDelegateOnSuccess_GroupSelfList onSuccess, FDelegateOnFail onFail)
 {
 	auto proxy = NewObject<UNBPListGroupsRequest>();
 	proxy->mode = Mode::SelfList;
 	proxy->NakamaRef = nakama;
-	proxy->OnSuccess = onSuccess;
+	proxy->OnSelfSuccess = onSuccess;
 	proxy->OnFail = onFail;
 	return proxy;
 }
@@ -1019,15 +1020,15 @@ void UNBPListGroupsRequest::Activate()
 			req->OnFail.Execute(UNBPError::From(error));
 	};
 
-	auto success = [req](void* obj) {
-		if (req->OnSuccess.IsBound()) {
-			auto rs = (NResultSet<NGroup>*)obj;
-			req->OnSuccess.Execute(UNBPGroup::FromResultSet(rs), UNBPCursor::From(rs->GetCursor()));
-		}
-	};
-
 	switch (mode) {
 	case Mode::Fetch: {
+		auto success = [req](void* obj) {
+			if (req->OnSuccess.IsBound()) {
+				auto rs = (NResultSet<NGroup>*)obj;
+				req->OnSuccess.Execute(UNBPGroup::FromResultSet(rs), UNBPCursor::From(rs->GetCursor()));
+			}
+		};
+
 		if (GroupIds.Num() == 0 && Names.Num() == 0) {
 			if (OnFail.IsBound()) OnFail.Execute(UNBPError::From(NError("Names and GroupIds can not both be empty.")));
 			return;
@@ -1055,6 +1056,13 @@ void UNBPListGroupsRequest::Activate()
 		break;
 	}
 	case Mode::List: {
+		auto success = [req](void* obj) {
+			if (req->OnSuccess.IsBound()) {
+				auto rs = (NResultSet<NGroup>*)obj;
+				req->OnSuccess.Execute(UNBPGroup::FromResultSet(rs), UNBPCursor::From(rs->GetCursor()));
+			}
+		};
+
 		auto builder = NGroupsListMessage::Builder().OrderByAsc(Ascending);
 
 		if (PageLimit != 0) builder.PageLimit(PageLimit);
@@ -1068,6 +1076,13 @@ void UNBPListGroupsRequest::Activate()
 		break;
 	}
 	case Mode::SelfList: {
+		auto success = [req](void* obj) {
+			if (req->OnSelfSuccess.IsBound()) {
+				auto rs = (NResultSet<NGroupSelf>*)obj;
+				req->OnSelfSuccess.Execute(UNBPGroupSelf::FromResultSet(rs), UNBPCursor::From(rs->GetCursor()));
+			}
+		};
+
 		auto message = NGroupsSelfListMessage::Default();
 		client->Send(message, success, fail);
 		break;
@@ -1316,7 +1331,7 @@ UNBPStorageRequest* UNBPStorageRequest::Write(UNakamaComponent* nakama, FString 
 	proxy->Values.Add(value);
 	if (!version.IsEmpty()) proxy->Versions.Add(version);
 	proxy->NakamaRef = nakama;
-	proxy->OnWriteSuccess = onSuccess;
+	proxy->OnKeySuccess = onSuccess;
 	proxy->OnFail = onFail;
 	proxy->ReadPermissions.Add(readPermission);
 	proxy->WritePermissions.Add(writePermission);
@@ -1333,10 +1348,41 @@ UNBPStorageRequest* UNBPStorageRequest::WriteMany(UNakamaComponent* nakama, TArr
 	proxy->Values = values;
 	proxy->Versions = versions;
 	proxy->NakamaRef = nakama;
-	proxy->OnWriteSuccess = onSuccess;
+	proxy->OnKeySuccess = onSuccess;
 	proxy->OnFail = onFail;
 	proxy->ReadPermissions = readPermissions;
 	proxy->WritePermissions = writePermissions;
+	return proxy;
+}
+
+UNBPStorageRequest* UNBPStorageRequest::Update(UNakamaComponent* nakama, FString bucket, FString collection, FString record, UNBPStorateUpdateOps* operations, FDelegateOnSuccess_StorageKeyList onSuccess, FDelegateOnFail onFail)
+{
+	auto proxy = NewObject<UNBPStorageRequest>();
+	proxy->mode = Mode::UpdateData;
+	proxy->Buckets.Add(bucket);
+	proxy->Collections.Add(collection);
+	proxy->Records.Add(record);
+	proxy->Operations = operations;
+	proxy->NakamaRef = nakama;
+	proxy->OnKeySuccess = onSuccess;
+	proxy->OnFail = onFail;
+	return proxy;
+}
+
+UNBPStorageRequest* UNBPStorageRequest::UpdateFull(UNakamaComponent* nakama, FString bucket, FString collection, FString record, FString version, UNBPStorateUpdateOps* operations, FDelegateOnSuccess_StorageKeyList onSuccess, FDelegateOnFail onFail, EStoragePermissionRead readPermission, EStoragePermissionWrite writePermission)
+{
+	auto proxy = NewObject<UNBPStorageRequest>();
+	proxy->mode = Mode::UpdateData;
+	proxy->Buckets.Add(bucket);
+	proxy->Collections.Add(collection);
+	proxy->Records.Add(record);
+	if (!version.IsEmpty()) proxy->Versions.Add(version);
+	proxy->Operations = operations;
+	proxy->NakamaRef = nakama;
+	proxy->OnKeySuccess = onSuccess;
+	proxy->OnFail = onFail;
+	proxy->ReadPermissions.Add(readPermission);
+	proxy->WritePermissions.Add(writePermission);
 	return proxy;
 }
 
@@ -1349,7 +1395,7 @@ UNBPStorageRequest* UNBPStorageRequest::Fetch(UNakamaComponent* nakama, FString 
 	proxy->Records.Add(record);
 	proxy->UserIds.Add(userId);
 	proxy->NakamaRef = nakama;
-	proxy->OnFetchSuccess = onSuccess;
+	proxy->OnDataSuccess = onSuccess;
 	proxy->OnFail = onFail;
 	return proxy;
 }
@@ -1363,7 +1409,22 @@ UNBPStorageRequest* UNBPStorageRequest::FetchMany(UNakamaComponent* nakama, TArr
 	proxy->Records = records;
 	proxy->UserIds = userIds;
 	proxy->NakamaRef = nakama;
-	proxy->OnFetchSuccess = onSuccess;
+	proxy->OnDataSuccess = onSuccess;
+	proxy->OnFail = onFail;
+	return proxy;
+}
+
+UNBPStorageRequest* UNBPStorageRequest::List(UNakamaComponent* nakama, FString bucket, FString collection, FString userId, UNBPCursor* cursor, int32 limit, FDelegateOnSuccess_StorageDataList onSuccess, FDelegateOnFail onFail)
+{
+	auto proxy = NewObject<UNBPStorageRequest>();
+	proxy->mode = Mode::ListData;
+	proxy->Buckets.Add(bucket);
+	proxy->Collections.Add(collection);
+	proxy->UserIds.Add(userId);
+	proxy->Cursor = cursor;
+	proxy->Limit = limit;
+	proxy->NakamaRef = nakama;
+	proxy->OnDataSuccess = onSuccess;
 	proxy->OnFail = onFail;
 	return proxy;
 }
@@ -1377,7 +1438,7 @@ UNBPStorageRequest* UNBPStorageRequest::Remove(UNakamaComponent* nakama, FString
 	proxy->Records.Add(record);
 	if (!version.IsEmpty()) proxy->Versions.Add(version);
 	proxy->NakamaRef = nakama;
-	proxy->OnRemoveSuccess = onSuccess;
+	proxy->OnVoidSuccess = onSuccess;
 	proxy->OnFail = onFail;
 	return proxy;
 }
@@ -1391,7 +1452,7 @@ UNBPStorageRequest* UNBPStorageRequest::RemoveMany(UNakamaComponent* nakama, TAr
 	proxy->Records = records;
 	proxy->Versions = versions;
 	proxy->NakamaRef = nakama;
-	proxy->OnRemoveSuccess = onSuccess;
+	proxy->OnVoidSuccess = onSuccess;
 	proxy->OnFail = onFail;
 	return proxy;
 }
@@ -1410,9 +1471,9 @@ void UNBPStorageRequest::Activate()
 	switch (mode) {
 	case Mode::WriteData: {
 		auto success = [req](void* obj) {
-			if (req->OnWriteSuccess.IsBound()) {
+			if (req->OnKeySuccess.IsBound()) {
 				auto rs = (NResultSet<NStorageKey>*)obj;
-				req->OnWriteSuccess.Execute(UNBPStorageKey::FromResultSet(rs), UNBPCursor::From(rs->GetCursor()));
+				req->OnKeySuccess.Execute(UNBPStorageKey::FromResultSet(rs), UNBPCursor::From(rs->GetCursor()));
 			}
 		};
 
@@ -1429,11 +1490,34 @@ void UNBPStorageRequest::Activate()
 		client->Send(message, success, fail);
 		break;
 	}
+	case Mode::UpdateData: {
+		auto success = [req](void* obj) {
+			if (req->OnKeySuccess.IsBound()) {
+				auto rs = (NResultSet<NStorageKey>*)obj;
+				req->OnKeySuccess.Execute(UNBPStorageKey::FromResultSet(rs), UNBPCursor::From(rs->GetCursor()));
+			}
+		};
+
+		auto builder = NStorageUpdateMessage::Builder();
+		for (int i = 0; i < Buckets.Num(); i++) {
+			bool full = ReadPermissions.Num() > i;
+			auto read = ReadPermissions.Num() > i ? (StoragePermissionRead)ReadPermissions[i] : StoragePermissionRead::OWNER_READ;
+			auto write = WritePermissions.Num() > i ? (StoragePermissionWrite)WritePermissions[i] : StoragePermissionWrite::OWNER_WRITE;
+			auto version = Versions.Num() > i ? Versions[i] : FString();
+
+			if (!full) builder.Update(TCHAR_TO_UTF8(*Buckets[i]), TCHAR_TO_UTF8(*Collections[i]), TCHAR_TO_UTF8(*Records[i]), Operations->FetchOperations());
+			else builder.Update(TCHAR_TO_UTF8(*Buckets[i]), TCHAR_TO_UTF8(*Collections[i]), TCHAR_TO_UTF8(*Records[i]), TCHAR_TO_UTF8(*version), read, write, Operations->FetchOperations());
+		}
+
+		auto message = builder.Build();
+		client->Send(message, success, fail);
+		break;
+	}
 	case Mode::FetchData: {
 		auto success = [req](void* obj) {
-			if (req->OnFetchSuccess.IsBound()) {
+			if (req->OnDataSuccess.IsBound()) {
 				auto rs = (NResultSet<NStorageData>*)obj;
-				req->OnFetchSuccess.Execute(UNBPStorageData::FromResultSet(rs), UNBPCursor::From(rs->GetCursor()));
+				req->OnDataSuccess.Execute(UNBPStorageData::FromResultSet(rs), UNBPCursor::From(rs->GetCursor()));
 			}
 		};
 
@@ -1446,9 +1530,28 @@ void UNBPStorageRequest::Activate()
 		client->Send(message, success, fail);
 		break;
 	}
+	case Mode::ListData: {
+		auto success = [req](void* obj) {
+			if (req->OnDataSuccess.IsBound()) {
+				auto rs = (NResultSet<NStorageData>*)obj;
+				req->OnDataSuccess.Execute(UNBPStorageData::FromResultSet(rs), UNBPCursor::From(rs->GetCursor()));
+			}
+		};
+
+		auto builder = NStorageListMessage::Builder();
+		if (Buckets.Num() > 0 && !Buckets[0].IsEmpty()) builder.Bucket(TCHAR_TO_UTF8(*Buckets[0]));
+		if (Collections.Num() > 0 && !Collections[0].IsEmpty()) builder.Collection(TCHAR_TO_UTF8(*Collections[0]));
+		if (UserIds.Num() > 0 && !UserIds[0].IsEmpty()) builder.UserId(TCHAR_TO_UTF8(*UserIds[0]));
+		if (Limit != 0) builder.Limit(Limit);
+		if (Cursor != nullptr) builder.Cursor(Cursor->GetNCursor());
+
+		auto message = builder.Build();
+		client->Send(message, success, fail);
+		break;
+	}
 	case Mode::RemoveData: {
 		auto success = [req](void* obj) {
-			if (req->OnRemoveSuccess.IsBound()) req->OnRemoveSuccess.Execute();
+			if (req->OnVoidSuccess.IsBound()) req->OnVoidSuccess.Execute();
 		};
 
 		auto builder = NStorageRemoveMessage::Builder();
@@ -2045,12 +2148,12 @@ void UNBPRpcRequest::Activate()
 
 // ------------------------- UNBPNotificationRequest -------------------------
 
-UNBPNotificationRequest* UNBPNotificationRequest::ListMessages(UNakamaComponent* nakama, FString resumableCursor, int32 limit, FDelegateOnSuccess_NotificationList onSuccess, FDelegateOnFail onFail)
+UNBPNotificationRequest* UNBPNotificationRequest::ListMessages(UNakamaComponent* nakama, UNBPCursor* cursor, int32 limit, FDelegateOnSuccess_NotificationList onSuccess, FDelegateOnFail onFail)
 {
 	auto proxy = NewObject<UNBPNotificationRequest>();
 	proxy->mode = Mode::List;
 	proxy->Limit = limit;
-	proxy->ResumableCursor = resumableCursor;
+	proxy->Cursor = cursor;
 	proxy->NakamaRef = nakama;
 	proxy->OnListSuccess = onSuccess;
 	proxy->OnFail = onFail;
@@ -2099,9 +2202,8 @@ void UNBPNotificationRequest::Activate()
 			}
 		};
 
-		auto builder = NNotificationsListMessage::Builder();
-		if (!ResumableCursor.IsEmpty()) builder.ResumableCursor(TCHAR_TO_UTF8(*ResumableCursor));
-		if (Limit != 0) builder.Limit(Limit);
+		auto builder = NNotificationsListMessage::Builder(Limit);
+		if (Cursor != nullptr) builder.Cursor(Cursor->GetNCursor());
 
 		auto message = builder.Build();
 		client->Send(message, success, fail);
@@ -2116,9 +2218,7 @@ void UNBPNotificationRequest::Activate()
 		for (int i = 0; i < NotificationIds.Num(); i++) {
 			ids.push_back(TCHAR_TO_UTF8(*NotificationIds[i]));
 		}
-		auto builder = NNotificationsRemoveMessage::Builder(ids);
-
-		auto message = builder.Build();
+		auto message = NNotificationsRemoveMessage::Default(ids);
 		client->Send(message, success, fail);
 		break;
 	}

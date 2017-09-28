@@ -27,6 +27,7 @@ DECLARE_DYNAMIC_DELEGATE_TwoParams(FDelegateOnSuccess_FriendList, TArray<UNBPFri
 DECLARE_DYNAMIC_DELEGATE_OneParam(FDelegateOnSuccess_Self, UNBPSelf*, playerSelf);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FDelegateOnSuccess_Group, UNBPGroup*, group);
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FDelegateOnSuccess_GroupList, TArray<UNBPGroup*>, groups, UNBPCursor*, cursor);
+DECLARE_DYNAMIC_DELEGATE_TwoParams(FDelegateOnSuccess_GroupSelfList, TArray<UNBPGroupSelf*>, groups, UNBPCursor*, cursor);
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FDelegateOnSuccess_GroupUserList, TArray<UNBPGroupUser*>, users, UNBPCursor*, cursor);
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FDelegateOnSuccess_UsersList, TArray<UNBPUser*>, users, UNBPCursor*, cursor);
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FDelegateOnSuccess_StorageKeyList, TArray<UNBPStorageKey*>, keys, UNBPCursor*, cursor);
@@ -320,7 +321,7 @@ public:
 		static UNBPListGroupsRequest* ListGroups(UNakamaComponent* nakama, int32 pageLimit, bool ascending, UNBPCursor* cursor, FString filterByLang, FDateTime filterByCreatedAt, int32 filterByCount, FDelegateOnSuccess_GroupList onSuccess, FDelegateOnFail onFail);
 
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true"), Category = "Nakama|Group")
-		static UNBPListGroupsRequest* ListSelfGroups(UNakamaComponent* nakama, FDelegateOnSuccess_GroupList onSuccess, FDelegateOnFail onFail);
+		static UNBPListGroupsRequest* ListSelfGroups(UNakamaComponent* nakama, FDelegateOnSuccess_GroupSelfList onSuccess, FDelegateOnFail onFail);
 
 private:
 	enum Mode { Fetch, List, SelfList };
@@ -336,6 +337,7 @@ private:
 	UPROPERTY() int32 FilterByCount;
 	UPROPERTY() UNakamaComponent* NakamaRef;
 	UPROPERTY() FDelegateOnSuccess_GroupList OnSuccess;
+	UPROPERTY() FDelegateOnSuccess_GroupSelfList OnSelfSuccess;
 	UPROPERTY() FDelegateOnFail OnFail;
 };
 
@@ -448,10 +450,19 @@ public:
 		static UNBPStorageRequest* WriteMany(UNakamaComponent* nakama, TArray<FString> buckets, TArray<FString> collections, TArray<FString> records, TArray<FString> values, TArray<FString> versions, FDelegateOnSuccess_StorageKeyList onSuccess, FDelegateOnFail onFail, TArray<EStoragePermissionRead> readPermission, TArray<EStoragePermissionWrite> writePermission);
 
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true"), Category = "Nakama|Storage")
+		static UNBPStorageRequest* Update(UNakamaComponent* nakama, FString bucket, FString collection, FString record, UNBPStorateUpdateOps* operations, FDelegateOnSuccess_StorageKeyList onSuccess, FDelegateOnFail onFail);
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true"), Category = "Nakama|Storage")
+		static UNBPStorageRequest* UpdateFull(UNakamaComponent* nakama, FString bucket, FString collection, FString record, FString version, UNBPStorateUpdateOps* operations, FDelegateOnSuccess_StorageKeyList onSuccess, FDelegateOnFail onFail, EStoragePermissionRead readPermission = EStoragePermissionRead::OwnerRead, EStoragePermissionWrite writePermission = EStoragePermissionWrite::OwnerWrite);
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true"), Category = "Nakama|Storage")
 		static UNBPStorageRequest* Fetch(UNakamaComponent* nakama, FString bucket, FString collection, FString record, FString userId, FDelegateOnSuccess_StorageDataList onSuccess, FDelegateOnFail onFail);
 
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true"), Category = "Nakama|Storage")
 		static UNBPStorageRequest* FetchMany(UNakamaComponent* nakama, TArray<FString> buckets, TArray<FString> collections, TArray<FString> records, TArray<FString> userIds, FDelegateOnSuccess_StorageDataList onSuccess, FDelegateOnFail onFail);
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true"), Category = "Nakama|Storage")
+		static UNBPStorageRequest* List(UNakamaComponent* nakama, FString bucket, FString collection, FString userId, UNBPCursor* cursor, int32 limit, FDelegateOnSuccess_StorageDataList onSuccess, FDelegateOnFail onFail);
 
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true"), Category = "Nakama|Storage")
 		static UNBPStorageRequest* Remove(UNakamaComponent* nakama, FString bucket, FString collection, FString record, FString version, FDelegateOnSuccess onSuccess, FDelegateOnFail onFail);
@@ -460,7 +471,7 @@ public:
 		static UNBPStorageRequest* RemoveMany(UNakamaComponent* nakama, TArray<FString> buckets, TArray<FString> collections, TArray<FString> records, TArray<FString> versions, FDelegateOnSuccess onSuccess, FDelegateOnFail onFail);
 
 private:
-	enum Mode { WriteData, FetchData, RemoveData };
+	enum Mode { WriteData, FetchData, ListData, RemoveData, UpdateData };
 
 	Mode mode;
 
@@ -470,12 +481,15 @@ private:
 	UPROPERTY() TArray<FString> Values;
 	UPROPERTY() TArray<FString> UserIds;
 	UPROPERTY() TArray<FString> Versions;
+	UPROPERTY() UNBPStorateUpdateOps* Operations;
 	UPROPERTY() TArray<EStoragePermissionRead> ReadPermissions;
 	UPROPERTY() TArray<EStoragePermissionWrite> WritePermissions;
+	UPROPERTY() UNBPCursor* Cursor = nullptr;
+	UPROPERTY() int32 Limit;
 	UPROPERTY() UNakamaComponent* NakamaRef;
-	UPROPERTY() FDelegateOnSuccess OnRemoveSuccess;
-	UPROPERTY() FDelegateOnSuccess_StorageKeyList OnWriteSuccess;
-	UPROPERTY() FDelegateOnSuccess_StorageDataList OnFetchSuccess;
+	UPROPERTY() FDelegateOnSuccess OnVoidSuccess;
+	UPROPERTY() FDelegateOnSuccess_StorageKeyList OnKeySuccess;
+	UPROPERTY() FDelegateOnSuccess_StorageDataList OnDataSuccess;
 	UPROPERTY() FDelegateOnFail OnFail;
 };
 
@@ -690,7 +704,7 @@ public:
 	virtual void Activate() override;
 
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true"), Category = "Nakama|Notification")
-		static UNBPNotificationRequest* ListMessages(UNakamaComponent* nakama, FString resumableCursor, int32 limit, FDelegateOnSuccess_NotificationList onSuccess, FDelegateOnFail onFail);
+		static UNBPNotificationRequest* ListMessages(UNakamaComponent* nakama, UNBPCursor* cursor, int32 limit, FDelegateOnSuccess_NotificationList onSuccess, FDelegateOnFail onFail);
 
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true"), Category = "Nakama|Notification")
 		static UNBPNotificationRequest* RemoveMessage(UNakamaComponent* nakama, FString notificationId, FDelegateOnSuccess onSuccess, FDelegateOnFail onFail);
@@ -704,7 +718,7 @@ private:
 	Mode mode;
 
 	UPROPERTY() TArray<FString> NotificationIds;
-	UPROPERTY() FString ResumableCursor;
+	UPROPERTY() UNBPCursor* Cursor = nullptr;
 	UPROPERTY() int32 Limit;
 	UPROPERTY() UNakamaComponent* NakamaRef;
 	UPROPERTY() FDelegateOnSuccess_NotificationList OnListSuccess;

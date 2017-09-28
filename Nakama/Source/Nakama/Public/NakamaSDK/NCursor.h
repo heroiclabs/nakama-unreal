@@ -30,6 +30,10 @@ namespace Nakama {
 
 		std::string GetValue() { return value; }
 
+		std::string Serialize();
+
+		void Restore(std::string serialized);
+
 	private:
 		std::string value;
 	};

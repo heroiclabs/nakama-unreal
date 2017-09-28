@@ -39,6 +39,7 @@
 #include "NCursor.h"
 #include "NFriend.h"
 #include "NGroup.h"
+#include "NGroupSelf.h"
 #include "NGroupUser.h"
 #include "NMatch.h"
 #include "NResultSet.h"
@@ -155,6 +156,7 @@ namespace Nakama {
 
 template NAKAMA_API class Nakama::NResultSet<Nakama::NFriend>;
 template NAKAMA_API class Nakama::NResultSet<Nakama::NGroup>;
+template NAKAMA_API class Nakama::NResultSet<Nakama::NGroupSelf>;
 template NAKAMA_API class Nakama::NResultSet<Nakama::NGroupUser>;
 template NAKAMA_API class Nakama::NResultSet<Nakama::NMatch>;
 template NAKAMA_API class Nakama::NResultSet<Nakama::NNotification>;

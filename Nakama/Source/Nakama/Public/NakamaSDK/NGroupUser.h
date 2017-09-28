@@ -21,7 +21,7 @@
 
 namespace Nakama {
 	
-	enum NAKAMA_API UserType { Admin = 0, Member, Join };
+	enum class NAKAMA_API UserState : uint8 { Admin = 0, Member, Join };
 
 	class NAKAMA_API NGroupUser {
 
@@ -30,16 +30,16 @@ namespace Nakama {
 		NGroupUser(server::GroupUser message) : 
 			userInfo(message.user()) {
 
-			switch (message.type())
+			switch (message.state())
 			{
 			case 0:
-				type = UserType::Admin;
+				state = UserState::Admin;
 				break;
 			case 1:
-				type = UserType::Member;
+				state = UserState::Member;
 				break;
 			case 2:
-				type = UserType::Join;
+				state = UserState::Join;
 				break;
 			default:
 				// FIXME: Should handle this...
@@ -49,23 +49,23 @@ namespace Nakama {
 
 		~NGroupUser() {}
 
-		std::string GetAvatarUrl();
-		uint64_t GetCreatedAt();
-		std::string GetFullname();
-		std::string GetHandle();
-		std::string GetId();
-		std::string GetLang();
-		uint64_t GetLastOnlineAt();
-		std::string GetLocation();
-		std::string GetMetadata();
-		std::string GetTimezone();
-		uint64_t GetUpdatedAt();
+		std::string GetAvatarUrl() { return userInfo.GetAvatarUrl(); }
+		uint64_t GetCreatedAt() { return userInfo.GetCreatedAt(); }
+		std::string GetFullname() { return userInfo.GetFullname(); }
+		std::string GetHandle() { return userInfo.GetHandle(); }
+		std::string GetId() { return userInfo.GetId(); }
+		std::string GetLang() { return userInfo.GetLang(); }
+		uint64_t GetLastOnlineAt() { return userInfo.GetLastOnlineAt(); }
+		std::string GetLocation() { return userInfo.GetLocation(); }
+		std::string GetMetadata() { return userInfo.GetMetadata(); }
+		std::string GetTimezone() { return userInfo.GetTimezone(); }
+		uint64_t GetUpdatedAt() { return userInfo.GetUpdatedAt(); }
 
-		UserType GetState() { return type; }
+		UserState GetState() { return state; }
 
 	private:
 		NUser userInfo;
-		UserType type;
+		UserState state;
 	};
 
 }

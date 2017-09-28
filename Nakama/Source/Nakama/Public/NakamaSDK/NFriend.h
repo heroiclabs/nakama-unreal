@@ -30,7 +30,7 @@ namespace Nakama {
 		NFriend(server::Friend message) :
 			userInfo(message.user()) {
 
-			switch (message.type())
+			switch (message.state())
 			{
 			case 0:
 				state = FriendState::Friend;

@@ -37,6 +37,8 @@ namespace Nakama {
 		virtual Envelope* GetPayload() override { return &envelope; }
 		virtual void SetCollationId(std::string id) override { envelope.set_collation_id(id); }
 
+		static NNotificationsListMessage Default(int64_t limit);
+
 		class Builder;
 	};
 
@@ -46,10 +48,9 @@ namespace Nakama {
 		NNotificationsListMessage message;
 
 	public:
-		Builder() {}
+		Builder(int64_t limit);
 
-		Builder Limit(int64_t limit);
-		Builder ResumableCursor(std::string resumableCursor);
+		Builder Cursor(NCursor resumableCursor);
 
 		NNotificationsListMessage Build();
 	};

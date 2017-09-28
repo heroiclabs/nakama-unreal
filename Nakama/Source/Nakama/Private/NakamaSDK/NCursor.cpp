@@ -14,31 +14,20 @@
 * limitations under the License.
 */
 
-#pragma once
-
-#include "INCollatedMessage.h"
-
-#include "Defines.h"
-
-using namespace server;
+#include "NCursor.h"
+#include "NibbleAndAHalf/base64.h"
 
 namespace Nakama {
 
-	// OnSuccess returns: NResultSet<NGroupSelf>*
-	class NAKAMA_API NGroupsSelfListMessage : public INCollatedMessage
-	{
+	std::string NCursor::Serialize() {
+		int rLen = 0;
+		char* enc = base64(value.c_str(), value.length(), &rLen);
+		return std::string(enc);
+	}
 
-	private:
-		Envelope envelope;
-		NGroupsSelfListMessage();
-
-	public:
-		~NGroupsSelfListMessage() {}
-
-		virtual Envelope* GetPayload() override { return &envelope; }
-		virtual void SetCollationId(std::string id) override { envelope.set_collation_id(id); }
-
-		static NGroupsSelfListMessage Default();
-	};
-
+	void NCursor::Restore(std::string serialized) {
+		int rLen = 0;
+		char* dec = (char*)unbase64(serialized.c_str(), serialized.length(), &rLen);
+		value = std::string(dec);
+	}
 }

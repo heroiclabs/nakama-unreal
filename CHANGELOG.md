@@ -3,6 +3,18 @@ All notable changes to this project are documented below.
 
 The format is based on [keep a changelog](http://keepachangelog.com/) and this project uses [semantic versioning](http://semver.org/).
 
+## [0.8.0] - 2017-09-28
+### Added
+- A paging cursor can now be serialized and restored.
+- New storage partial update feature.
+- New storage list feature.
+- A session now exposes `.ExpiresAt` and `.Handle` from the token.
+
+### Changed
+- Added default builder for notification list and remove messages.
+- A group self list operation now return the user's membership state with each group.
+- A group leave operation now return a specific error code when the last admin attempts to leave.
+
 ## [0.7.0] - 2017-09-26
 ### Added
 - Add new In-App Notification feature.

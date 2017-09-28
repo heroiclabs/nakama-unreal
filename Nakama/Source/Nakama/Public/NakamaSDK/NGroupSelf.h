@@ -16,28 +16,39 @@
 
 #pragma once
 
-#include "INCollatedMessage.h"
-
 #include "Defines.h"
-
-using namespace server;
+#include "NUser.h"
+#include "NGroup.h"
 
 namespace Nakama {
+	
+	enum class NAKAMA_API GroupState : uint8 { Admin = 0, Member, Join };
 
-	// OnSuccess returns: nothing (nullptr)
-	class NAKAMA_API NNotificationsRemoveMessage : public INCollatedMessage
-	{
-	private:
-		Envelope envelope;
-		NNotificationsRemoveMessage();
+	class NAKAMA_API NGroupSelf : public NGroup {
 
 	public:
-		~NNotificationsRemoveMessage() {}
+		NGroupSelf() {}
+		NGroupSelf(server::TGroupsSelf_GroupSelf message) : NGroup(message.group()) {
+			switch (message.state())
+			{
+			case 0:
+				state = GroupState::Admin;
+				break;
+			case 1:
+				state = GroupState::Member;
+				break;
+			case 2:
+				state = GroupState::Join;
+				break;
+			}
+		}
 
-		virtual Envelope* GetPayload() override { return &envelope; }
-		virtual void SetCollationId(std::string id) override { envelope.set_collation_id(id); }
+		~NGroupSelf() {}
 
-		static NNotificationsRemoveMessage Default(std::string notificationId);
-		static NNotificationsRemoveMessage Default(std::vector<std::string> notificationIds);
+		GroupState GetState() { return state; }
+
+	private:
+		GroupState state;
 	};
+
 }

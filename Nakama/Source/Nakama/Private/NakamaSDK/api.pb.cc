@@ -17,6 +17,7 @@
 #include <google/protobuf/wire_format.h>
 // @@protoc_insertion_point(includes)
 
+#undef assert
 #pragma warning( push )  
 #pragma warning(disable: 4125; once: 4267)
 
@@ -94,6 +95,7 @@ struct EnvelopeOneofInstance {
   const ::server::TGroupUsersKick* group_users_kick_;
   const ::server::TGroupUsersPromote* group_users_promote_;
   const ::server::TGroups* groups_;
+  const ::server::TGroupsSelf* groups_self_;
   const ::server::TGroupUsers* group_users_;
   const ::server::TTopicsJoin* topics_join_;
   const ::server::TTopicsLeave* topics_leave_;
@@ -115,6 +117,7 @@ struct EnvelopeOneofInstance {
   const ::server::TStorageList* storage_list_;
   const ::server::TStorageFetch* storage_fetch_;
   const ::server::TStorageWrite* storage_write_;
+  const ::server::TStorageUpdate* storage_update_;
   const ::server::TStorageRemove* storage_remove_;
   const ::server::TStorageData* storage_data_;
   const ::server::TStorageKeys* storage_keys_;
@@ -258,6 +261,12 @@ struct TGroupsListOneofInstance {
 const ::google::protobuf::Descriptor* TGroups_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   TGroups_reflection_ = NULL;
+const ::google::protobuf::Descriptor* TGroupsSelf_descriptor_ = NULL;
+const ::google::protobuf::internal::GeneratedMessageReflection*
+  TGroupsSelf_reflection_ = NULL;
+const ::google::protobuf::Descriptor* TGroupsSelf_GroupSelf_descriptor_ = NULL;
+const ::google::protobuf::internal::GeneratedMessageReflection*
+  TGroupsSelf_GroupSelf_reflection_ = NULL;
 const ::google::protobuf::Descriptor* GroupUser_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   GroupUser_reflection_ = NULL;
@@ -412,6 +421,19 @@ const ::google::protobuf::internal::GeneratedMessageReflection*
 const ::google::protobuf::Descriptor* TStorageWrite_StorageData_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   TStorageWrite_StorageData_reflection_ = NULL;
+const ::google::protobuf::Descriptor* TStorageUpdate_descriptor_ = NULL;
+const ::google::protobuf::internal::GeneratedMessageReflection*
+  TStorageUpdate_reflection_ = NULL;
+const ::google::protobuf::Descriptor* TStorageUpdate_StorageUpdate_descriptor_ = NULL;
+const ::google::protobuf::internal::GeneratedMessageReflection*
+  TStorageUpdate_StorageUpdate_reflection_ = NULL;
+const ::google::protobuf::Descriptor* TStorageUpdate_StorageUpdate_UpdateOp_descriptor_ = NULL;
+const ::google::protobuf::internal::GeneratedMessageReflection*
+  TStorageUpdate_StorageUpdate_UpdateOp_reflection_ = NULL;
+const ::google::protobuf::EnumDescriptor* TStorageUpdate_StorageUpdate_UpdateOp_UpdateOpCode_descriptor_ = NULL;
+const ::google::protobuf::Descriptor* TStorageUpdate_StorageUpdate_StorageKey_descriptor_ = NULL;
+const ::google::protobuf::internal::GeneratedMessageReflection*
+  TStorageUpdate_StorageUpdate_StorageKey_reflection_ = NULL;
 const ::google::protobuf::Descriptor* TStorageKeys_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   TStorageKeys_reflection_ = NULL;
@@ -652,7 +674,7 @@ void protobuf_AssignDesc_api_2eproto() {
       sizeof(AuthenticateResponse_Error),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(AuthenticateResponse_Error, _internal_metadata_));
   Envelope_descriptor_ = file->message_type(4);
-  static const int Envelope_offsets_[71] = {
+  static const int Envelope_offsets_[73] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Envelope, collation_id_),
     PROTO2_GENERATED_DEFAULT_ONEOF_FIELD_OFFSET(Envelope_default_oneof_instance_, error_),
     PROTO2_GENERATED_DEFAULT_ONEOF_FIELD_OFFSET(Envelope_default_oneof_instance_, heartbeat_),
@@ -682,6 +704,7 @@ void protobuf_AssignDesc_api_2eproto() {
     PROTO2_GENERATED_DEFAULT_ONEOF_FIELD_OFFSET(Envelope_default_oneof_instance_, group_users_kick_),
     PROTO2_GENERATED_DEFAULT_ONEOF_FIELD_OFFSET(Envelope_default_oneof_instance_, group_users_promote_),
     PROTO2_GENERATED_DEFAULT_ONEOF_FIELD_OFFSET(Envelope_default_oneof_instance_, groups_),
+    PROTO2_GENERATED_DEFAULT_ONEOF_FIELD_OFFSET(Envelope_default_oneof_instance_, groups_self_),
     PROTO2_GENERATED_DEFAULT_ONEOF_FIELD_OFFSET(Envelope_default_oneof_instance_, group_users_),
     PROTO2_GENERATED_DEFAULT_ONEOF_FIELD_OFFSET(Envelope_default_oneof_instance_, topics_join_),
     PROTO2_GENERATED_DEFAULT_ONEOF_FIELD_OFFSET(Envelope_default_oneof_instance_, topics_leave_),
@@ -703,6 +726,7 @@ void protobuf_AssignDesc_api_2eproto() {
     PROTO2_GENERATED_DEFAULT_ONEOF_FIELD_OFFSET(Envelope_default_oneof_instance_, storage_list_),
     PROTO2_GENERATED_DEFAULT_ONEOF_FIELD_OFFSET(Envelope_default_oneof_instance_, storage_fetch_),
     PROTO2_GENERATED_DEFAULT_ONEOF_FIELD_OFFSET(Envelope_default_oneof_instance_, storage_write_),
+    PROTO2_GENERATED_DEFAULT_ONEOF_FIELD_OFFSET(Envelope_default_oneof_instance_, storage_update_),
     PROTO2_GENERATED_DEFAULT_ONEOF_FIELD_OFFSET(Envelope_default_oneof_instance_, storage_remove_),
     PROTO2_GENERATED_DEFAULT_ONEOF_FIELD_OFFSET(Envelope_default_oneof_instance_, storage_data_),
     PROTO2_GENERATED_DEFAULT_ONEOF_FIELD_OFFSET(Envelope_default_oneof_instance_, storage_keys_),
@@ -938,7 +962,7 @@ void protobuf_AssignDesc_api_2eproto() {
   Friend_descriptor_ = file->message_type(15);
   static const int Friend_offsets_[2] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Friend, user_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Friend, type_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Friend, state_),
   };
   Friend_reflection_ =
     ::google::protobuf::internal::GeneratedMessageReflection::NewGeneratedMessageReflection(
@@ -1225,10 +1249,39 @@ void protobuf_AssignDesc_api_2eproto() {
       -1,
       sizeof(TGroups),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TGroups, _internal_metadata_));
-  GroupUser_descriptor_ = file->message_type(29);
+  TGroupsSelf_descriptor_ = file->message_type(29);
+  static const int TGroupsSelf_offsets_[1] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TGroupsSelf, groups_self_),
+  };
+  TGroupsSelf_reflection_ =
+    ::google::protobuf::internal::GeneratedMessageReflection::NewGeneratedMessageReflection(
+      TGroupsSelf_descriptor_,
+      TGroupsSelf::internal_default_instance(),
+      TGroupsSelf_offsets_,
+      -1,
+      -1,
+      -1,
+      sizeof(TGroupsSelf),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TGroupsSelf, _internal_metadata_));
+  TGroupsSelf_GroupSelf_descriptor_ = TGroupsSelf_descriptor_->nested_type(0);
+  static const int TGroupsSelf_GroupSelf_offsets_[2] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TGroupsSelf_GroupSelf, group_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TGroupsSelf_GroupSelf, state_),
+  };
+  TGroupsSelf_GroupSelf_reflection_ =
+    ::google::protobuf::internal::GeneratedMessageReflection::NewGeneratedMessageReflection(
+      TGroupsSelf_GroupSelf_descriptor_,
+      TGroupsSelf_GroupSelf::internal_default_instance(),
+      TGroupsSelf_GroupSelf_offsets_,
+      -1,
+      -1,
+      -1,
+      sizeof(TGroupsSelf_GroupSelf),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TGroupsSelf_GroupSelf, _internal_metadata_));
+  GroupUser_descriptor_ = file->message_type(30);
   static const int GroupUser_offsets_[2] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(GroupUser, user_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(GroupUser, type_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(GroupUser, state_),
   };
   GroupUser_reflection_ =
     ::google::protobuf::internal::GeneratedMessageReflection::NewGeneratedMessageReflection(
@@ -1240,7 +1293,7 @@ void protobuf_AssignDesc_api_2eproto() {
       -1,
       sizeof(GroupUser),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(GroupUser, _internal_metadata_));
-  TGroupUsersList_descriptor_ = file->message_type(30);
+  TGroupUsersList_descriptor_ = file->message_type(31);
   static const int TGroupUsersList_offsets_[1] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TGroupUsersList, group_id_),
   };
@@ -1254,7 +1307,7 @@ void protobuf_AssignDesc_api_2eproto() {
       -1,
       sizeof(TGroupUsersList),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TGroupUsersList, _internal_metadata_));
-  TGroupUsers_descriptor_ = file->message_type(31);
+  TGroupUsers_descriptor_ = file->message_type(32);
   static const int TGroupUsers_offsets_[1] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TGroupUsers, users_),
   };
@@ -1268,7 +1321,7 @@ void protobuf_AssignDesc_api_2eproto() {
       -1,
       sizeof(TGroupUsers),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TGroupUsers, _internal_metadata_));
-  TGroupsJoin_descriptor_ = file->message_type(32);
+  TGroupsJoin_descriptor_ = file->message_type(33);
   static const int TGroupsJoin_offsets_[1] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TGroupsJoin, group_ids_),
   };
@@ -1282,7 +1335,7 @@ void protobuf_AssignDesc_api_2eproto() {
       -1,
       sizeof(TGroupsJoin),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TGroupsJoin, _internal_metadata_));
-  TGroupsLeave_descriptor_ = file->message_type(33);
+  TGroupsLeave_descriptor_ = file->message_type(34);
   static const int TGroupsLeave_offsets_[1] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TGroupsLeave, group_ids_),
   };
@@ -1296,7 +1349,7 @@ void protobuf_AssignDesc_api_2eproto() {
       -1,
       sizeof(TGroupsLeave),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TGroupsLeave, _internal_metadata_));
-  TGroupUsersAdd_descriptor_ = file->message_type(34);
+  TGroupUsersAdd_descriptor_ = file->message_type(35);
   static const int TGroupUsersAdd_offsets_[1] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TGroupUsersAdd, group_users_),
   };
@@ -1325,7 +1378,7 @@ void protobuf_AssignDesc_api_2eproto() {
       -1,
       sizeof(TGroupUsersAdd_GroupUserAdd),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TGroupUsersAdd_GroupUserAdd, _internal_metadata_));
-  TGroupUsersKick_descriptor_ = file->message_type(35);
+  TGroupUsersKick_descriptor_ = file->message_type(36);
   static const int TGroupUsersKick_offsets_[1] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TGroupUsersKick, group_users_),
   };
@@ -1354,7 +1407,7 @@ void protobuf_AssignDesc_api_2eproto() {
       -1,
       sizeof(TGroupUsersKick_GroupUserKick),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TGroupUsersKick_GroupUserKick, _internal_metadata_));
-  TGroupUsersPromote_descriptor_ = file->message_type(36);
+  TGroupUsersPromote_descriptor_ = file->message_type(37);
   static const int TGroupUsersPromote_offsets_[1] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TGroupUsersPromote, group_users_),
   };
@@ -1383,7 +1436,7 @@ void protobuf_AssignDesc_api_2eproto() {
       -1,
       sizeof(TGroupUsersPromote_GroupUserPromote),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TGroupUsersPromote_GroupUserPromote, _internal_metadata_));
-  TopicId_descriptor_ = file->message_type(37);
+  TopicId_descriptor_ = file->message_type(38);
   static const int TopicId_offsets_[4] = {
     PROTO2_GENERATED_DEFAULT_ONEOF_FIELD_OFFSET(TopicId_default_oneof_instance_, dm_),
     PROTO2_GENERATED_DEFAULT_ONEOF_FIELD_OFFSET(TopicId_default_oneof_instance_, room_),
@@ -1402,7 +1455,7 @@ void protobuf_AssignDesc_api_2eproto() {
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TopicId, _oneof_case_[0]),
       sizeof(TopicId),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TopicId, _internal_metadata_));
-  UserPresence_descriptor_ = file->message_type(38);
+  UserPresence_descriptor_ = file->message_type(39);
   static const int UserPresence_offsets_[3] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(UserPresence, user_id_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(UserPresence, session_id_),
@@ -1418,7 +1471,7 @@ void protobuf_AssignDesc_api_2eproto() {
       -1,
       sizeof(UserPresence),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(UserPresence, _internal_metadata_));
-  TTopicsJoin_descriptor_ = file->message_type(39);
+  TTopicsJoin_descriptor_ = file->message_type(40);
   static const int TTopicsJoin_offsets_[1] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TTopicsJoin, joins_),
   };
@@ -1451,7 +1504,7 @@ void protobuf_AssignDesc_api_2eproto() {
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TTopicsJoin_TopicJoin, _oneof_case_[0]),
       sizeof(TTopicsJoin_TopicJoin),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TTopicsJoin_TopicJoin, _internal_metadata_));
-  TTopics_descriptor_ = file->message_type(40);
+  TTopics_descriptor_ = file->message_type(41);
   static const int TTopics_offsets_[1] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TTopics, topics_),
   };
@@ -1481,7 +1534,7 @@ void protobuf_AssignDesc_api_2eproto() {
       -1,
       sizeof(TTopics_Topic),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TTopics_Topic, _internal_metadata_));
-  TTopicsLeave_descriptor_ = file->message_type(41);
+  TTopicsLeave_descriptor_ = file->message_type(42);
   static const int TTopicsLeave_offsets_[1] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TTopicsLeave, topics_),
   };
@@ -1495,7 +1548,7 @@ void protobuf_AssignDesc_api_2eproto() {
       -1,
       sizeof(TTopicsLeave),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TTopicsLeave, _internal_metadata_));
-  TTopicMessageSend_descriptor_ = file->message_type(42);
+  TTopicMessageSend_descriptor_ = file->message_type(43);
   static const int TTopicMessageSend_offsets_[2] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TTopicMessageSend, topic_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TTopicMessageSend, data_),
@@ -1510,7 +1563,7 @@ void protobuf_AssignDesc_api_2eproto() {
       -1,
       sizeof(TTopicMessageSend),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TTopicMessageSend, _internal_metadata_));
-  TTopicMessageAck_descriptor_ = file->message_type(43);
+  TTopicMessageAck_descriptor_ = file->message_type(44);
   static const int TTopicMessageAck_offsets_[4] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TTopicMessageAck, message_id_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TTopicMessageAck, created_at_),
@@ -1527,7 +1580,7 @@ void protobuf_AssignDesc_api_2eproto() {
       -1,
       sizeof(TTopicMessageAck),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TTopicMessageAck, _internal_metadata_));
-  TopicMessage_descriptor_ = file->message_type(44);
+  TopicMessage_descriptor_ = file->message_type(45);
   static const int TopicMessage_offsets_[8] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TopicMessage, topic_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TopicMessage, user_id_),
@@ -1548,7 +1601,7 @@ void protobuf_AssignDesc_api_2eproto() {
       -1,
       sizeof(TopicMessage),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TopicMessage, _internal_metadata_));
-  TTopicMessagesList_descriptor_ = file->message_type(45);
+  TTopicMessagesList_descriptor_ = file->message_type(46);
   static const int TTopicMessagesList_offsets_[7] = {
     PROTO2_GENERATED_DEFAULT_ONEOF_FIELD_OFFSET(TTopicMessagesList_default_oneof_instance_, user_id_),
     PROTO2_GENERATED_DEFAULT_ONEOF_FIELD_OFFSET(TTopicMessagesList_default_oneof_instance_, room_),
@@ -1570,7 +1623,7 @@ void protobuf_AssignDesc_api_2eproto() {
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TTopicMessagesList, _oneof_case_[0]),
       sizeof(TTopicMessagesList),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TTopicMessagesList, _internal_metadata_));
-  TTopicMessages_descriptor_ = file->message_type(46);
+  TTopicMessages_descriptor_ = file->message_type(47);
   static const int TTopicMessages_offsets_[2] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TTopicMessages, messages_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TTopicMessages, cursor_),
@@ -1585,7 +1638,7 @@ void protobuf_AssignDesc_api_2eproto() {
       -1,
       sizeof(TTopicMessages),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TTopicMessages, _internal_metadata_));
-  TopicPresence_descriptor_ = file->message_type(47);
+  TopicPresence_descriptor_ = file->message_type(48);
   static const int TopicPresence_offsets_[3] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TopicPresence, topic_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TopicPresence, joins_),
@@ -1601,7 +1654,7 @@ void protobuf_AssignDesc_api_2eproto() {
       -1,
       sizeof(TopicPresence),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TopicPresence, _internal_metadata_));
-  TMatchmakeAdd_descriptor_ = file->message_type(48);
+  TMatchmakeAdd_descriptor_ = file->message_type(49);
   static const int TMatchmakeAdd_offsets_[1] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TMatchmakeAdd, requiredcount_),
   };
@@ -1615,7 +1668,7 @@ void protobuf_AssignDesc_api_2eproto() {
       -1,
       sizeof(TMatchmakeAdd),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TMatchmakeAdd, _internal_metadata_));
-  TMatchmakeTicket_descriptor_ = file->message_type(49);
+  TMatchmakeTicket_descriptor_ = file->message_type(50);
   static const int TMatchmakeTicket_offsets_[1] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TMatchmakeTicket, ticket_),
   };
@@ -1629,7 +1682,7 @@ void protobuf_AssignDesc_api_2eproto() {
       -1,
       sizeof(TMatchmakeTicket),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TMatchmakeTicket, _internal_metadata_));
-  TMatchmakeRemove_descriptor_ = file->message_type(50);
+  TMatchmakeRemove_descriptor_ = file->message_type(51);
   static const int TMatchmakeRemove_offsets_[1] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TMatchmakeRemove, ticket_),
   };
@@ -1643,7 +1696,7 @@ void protobuf_AssignDesc_api_2eproto() {
       -1,
       sizeof(TMatchmakeRemove),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TMatchmakeRemove, _internal_metadata_));
-  MatchmakeMatched_descriptor_ = file->message_type(51);
+  MatchmakeMatched_descriptor_ = file->message_type(52);
   static const int MatchmakeMatched_offsets_[4] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MatchmakeMatched, ticket_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MatchmakeMatched, token_),
@@ -1660,7 +1713,7 @@ void protobuf_AssignDesc_api_2eproto() {
       -1,
       sizeof(MatchmakeMatched),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MatchmakeMatched, _internal_metadata_));
-  Match_descriptor_ = file->message_type(52);
+  Match_descriptor_ = file->message_type(53);
   static const int Match_offsets_[3] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Match, match_id_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Match, presences_),
@@ -1676,7 +1729,7 @@ void protobuf_AssignDesc_api_2eproto() {
       -1,
       sizeof(Match),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Match, _internal_metadata_));
-  MatchPresence_descriptor_ = file->message_type(53);
+  MatchPresence_descriptor_ = file->message_type(54);
   static const int MatchPresence_offsets_[3] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MatchPresence, match_id_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MatchPresence, joins_),
@@ -1692,7 +1745,7 @@ void protobuf_AssignDesc_api_2eproto() {
       -1,
       sizeof(MatchPresence),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MatchPresence, _internal_metadata_));
-  TMatchCreate_descriptor_ = file->message_type(54);
+  TMatchCreate_descriptor_ = file->message_type(55);
   static const int TMatchCreate_offsets_[1] = {
   };
   TMatchCreate_reflection_ =
@@ -1705,7 +1758,7 @@ void protobuf_AssignDesc_api_2eproto() {
       -1,
       sizeof(TMatchCreate),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TMatchCreate, _internal_metadata_));
-  TMatch_descriptor_ = file->message_type(55);
+  TMatch_descriptor_ = file->message_type(56);
   static const int TMatch_offsets_[1] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TMatch, match_),
   };
@@ -1719,7 +1772,7 @@ void protobuf_AssignDesc_api_2eproto() {
       -1,
       sizeof(TMatch),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TMatch, _internal_metadata_));
-  TMatchesJoin_descriptor_ = file->message_type(56);
+  TMatchesJoin_descriptor_ = file->message_type(57);
   static const int TMatchesJoin_offsets_[1] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TMatchesJoin, matches_),
   };
@@ -1751,7 +1804,7 @@ void protobuf_AssignDesc_api_2eproto() {
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TMatchesJoin_MatchJoin, _oneof_case_[0]),
       sizeof(TMatchesJoin_MatchJoin),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TMatchesJoin_MatchJoin, _internal_metadata_));
-  TMatches_descriptor_ = file->message_type(57);
+  TMatches_descriptor_ = file->message_type(58);
   static const int TMatches_offsets_[1] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TMatches, matches_),
   };
@@ -1765,7 +1818,7 @@ void protobuf_AssignDesc_api_2eproto() {
       -1,
       sizeof(TMatches),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TMatches, _internal_metadata_));
-  MatchDataSend_descriptor_ = file->message_type(58);
+  MatchDataSend_descriptor_ = file->message_type(59);
   static const int MatchDataSend_offsets_[4] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MatchDataSend, match_id_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MatchDataSend, op_code_),
@@ -1782,7 +1835,7 @@ void protobuf_AssignDesc_api_2eproto() {
       -1,
       sizeof(MatchDataSend),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MatchDataSend, _internal_metadata_));
-  MatchData_descriptor_ = file->message_type(59);
+  MatchData_descriptor_ = file->message_type(60);
   static const int MatchData_offsets_[4] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MatchData, match_id_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MatchData, presence_),
@@ -1799,7 +1852,7 @@ void protobuf_AssignDesc_api_2eproto() {
       -1,
       sizeof(MatchData),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MatchData, _internal_metadata_));
-  TMatchesLeave_descriptor_ = file->message_type(60);
+  TMatchesLeave_descriptor_ = file->message_type(61);
   static const int TMatchesLeave_offsets_[1] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TMatchesLeave, match_ids_),
   };
@@ -1813,7 +1866,7 @@ void protobuf_AssignDesc_api_2eproto() {
       -1,
       sizeof(TMatchesLeave),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TMatchesLeave, _internal_metadata_));
-  TStorageList_descriptor_ = file->message_type(61);
+  TStorageList_descriptor_ = file->message_type(62);
   static const int TStorageList_offsets_[5] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TStorageList, user_id_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TStorageList, bucket_),
@@ -1831,7 +1884,7 @@ void protobuf_AssignDesc_api_2eproto() {
       -1,
       sizeof(TStorageList),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TStorageList, _internal_metadata_));
-  TStorageFetch_descriptor_ = file->message_type(62);
+  TStorageFetch_descriptor_ = file->message_type(63);
   static const int TStorageFetch_offsets_[1] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TStorageFetch, keys_),
   };
@@ -1862,7 +1915,7 @@ void protobuf_AssignDesc_api_2eproto() {
       -1,
       sizeof(TStorageFetch_StorageKey),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TStorageFetch_StorageKey, _internal_metadata_));
-  TStorageData_descriptor_ = file->message_type(63);
+  TStorageData_descriptor_ = file->message_type(64);
   static const int TStorageData_offsets_[2] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TStorageData, data_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TStorageData, cursor_),
@@ -1901,7 +1954,7 @@ void protobuf_AssignDesc_api_2eproto() {
       -1,
       sizeof(TStorageData_StorageData),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TStorageData_StorageData, _internal_metadata_));
-  TStorageWrite_descriptor_ = file->message_type(64);
+  TStorageWrite_descriptor_ = file->message_type(65);
   static const int TStorageWrite_offsets_[1] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TStorageWrite, data_),
   };
@@ -1935,7 +1988,76 @@ void protobuf_AssignDesc_api_2eproto() {
       -1,
       sizeof(TStorageWrite_StorageData),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TStorageWrite_StorageData, _internal_metadata_));
-  TStorageKeys_descriptor_ = file->message_type(65);
+  TStorageUpdate_descriptor_ = file->message_type(66);
+  static const int TStorageUpdate_offsets_[1] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TStorageUpdate, updates_),
+  };
+  TStorageUpdate_reflection_ =
+    ::google::protobuf::internal::GeneratedMessageReflection::NewGeneratedMessageReflection(
+      TStorageUpdate_descriptor_,
+      TStorageUpdate::internal_default_instance(),
+      TStorageUpdate_offsets_,
+      -1,
+      -1,
+      -1,
+      sizeof(TStorageUpdate),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TStorageUpdate, _internal_metadata_));
+  TStorageUpdate_StorageUpdate_descriptor_ = TStorageUpdate_descriptor_->nested_type(0);
+  static const int TStorageUpdate_StorageUpdate_offsets_[4] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TStorageUpdate_StorageUpdate, key_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TStorageUpdate_StorageUpdate, permission_read_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TStorageUpdate_StorageUpdate, permission_write_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TStorageUpdate_StorageUpdate, ops_),
+  };
+  TStorageUpdate_StorageUpdate_reflection_ =
+    ::google::protobuf::internal::GeneratedMessageReflection::NewGeneratedMessageReflection(
+      TStorageUpdate_StorageUpdate_descriptor_,
+      TStorageUpdate_StorageUpdate::internal_default_instance(),
+      TStorageUpdate_StorageUpdate_offsets_,
+      -1,
+      -1,
+      -1,
+      sizeof(TStorageUpdate_StorageUpdate),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TStorageUpdate_StorageUpdate, _internal_metadata_));
+  TStorageUpdate_StorageUpdate_UpdateOp_descriptor_ = TStorageUpdate_StorageUpdate_descriptor_->nested_type(0);
+  static const int TStorageUpdate_StorageUpdate_UpdateOp_offsets_[7] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TStorageUpdate_StorageUpdate_UpdateOp, op_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TStorageUpdate_StorageUpdate_UpdateOp, path_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TStorageUpdate_StorageUpdate_UpdateOp, value_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TStorageUpdate_StorageUpdate_UpdateOp, from_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TStorageUpdate_StorageUpdate_UpdateOp, conditional_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TStorageUpdate_StorageUpdate_UpdateOp, assert_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TStorageUpdate_StorageUpdate_UpdateOp, ops_),
+  };
+  TStorageUpdate_StorageUpdate_UpdateOp_reflection_ =
+    ::google::protobuf::internal::GeneratedMessageReflection::NewGeneratedMessageReflection(
+      TStorageUpdate_StorageUpdate_UpdateOp_descriptor_,
+      TStorageUpdate_StorageUpdate_UpdateOp::internal_default_instance(),
+      TStorageUpdate_StorageUpdate_UpdateOp_offsets_,
+      -1,
+      -1,
+      -1,
+      sizeof(TStorageUpdate_StorageUpdate_UpdateOp),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TStorageUpdate_StorageUpdate_UpdateOp, _internal_metadata_));
+  TStorageUpdate_StorageUpdate_UpdateOp_UpdateOpCode_descriptor_ = TStorageUpdate_StorageUpdate_UpdateOp_descriptor_->enum_type(0);
+  TStorageUpdate_StorageUpdate_StorageKey_descriptor_ = TStorageUpdate_StorageUpdate_descriptor_->nested_type(1);
+  static const int TStorageUpdate_StorageUpdate_StorageKey_offsets_[4] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TStorageUpdate_StorageUpdate_StorageKey, bucket_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TStorageUpdate_StorageUpdate_StorageKey, collection_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TStorageUpdate_StorageUpdate_StorageKey, record_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TStorageUpdate_StorageUpdate_StorageKey, version_),
+  };
+  TStorageUpdate_StorageUpdate_StorageKey_reflection_ =
+    ::google::protobuf::internal::GeneratedMessageReflection::NewGeneratedMessageReflection(
+      TStorageUpdate_StorageUpdate_StorageKey_descriptor_,
+      TStorageUpdate_StorageUpdate_StorageKey::internal_default_instance(),
+      TStorageUpdate_StorageUpdate_StorageKey_offsets_,
+      -1,
+      -1,
+      -1,
+      sizeof(TStorageUpdate_StorageUpdate_StorageKey),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TStorageUpdate_StorageUpdate_StorageKey, _internal_metadata_));
+  TStorageKeys_descriptor_ = file->message_type(67);
   static const int TStorageKeys_offsets_[1] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TStorageKeys, keys_),
   };
@@ -1966,7 +2088,7 @@ void protobuf_AssignDesc_api_2eproto() {
       -1,
       sizeof(TStorageKeys_StorageKey),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TStorageKeys_StorageKey, _internal_metadata_));
-  TStorageRemove_descriptor_ = file->message_type(66);
+  TStorageRemove_descriptor_ = file->message_type(68);
   static const int TStorageRemove_offsets_[1] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TStorageRemove, keys_),
   };
@@ -1997,7 +2119,7 @@ void protobuf_AssignDesc_api_2eproto() {
       -1,
       sizeof(TStorageRemove_StorageKey),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TStorageRemove_StorageKey, _internal_metadata_));
-  Leaderboard_descriptor_ = file->message_type(67);
+  Leaderboard_descriptor_ = file->message_type(69);
   static const int Leaderboard_offsets_[8] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Leaderboard, id_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Leaderboard, authoritative_),
@@ -2018,7 +2140,7 @@ void protobuf_AssignDesc_api_2eproto() {
       -1,
       sizeof(Leaderboard),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Leaderboard, _internal_metadata_));
-  LeaderboardRecord_descriptor_ = file->message_type(68);
+  LeaderboardRecord_descriptor_ = file->message_type(70);
   static const int LeaderboardRecord_offsets_[13] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(LeaderboardRecord, leaderboard_id_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(LeaderboardRecord, owner_id_),
@@ -2044,7 +2166,7 @@ void protobuf_AssignDesc_api_2eproto() {
       -1,
       sizeof(LeaderboardRecord),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(LeaderboardRecord, _internal_metadata_));
-  TLeaderboardsList_descriptor_ = file->message_type(69);
+  TLeaderboardsList_descriptor_ = file->message_type(71);
   static const int TLeaderboardsList_offsets_[3] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TLeaderboardsList, limit_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TLeaderboardsList, cursor_),
@@ -2060,7 +2182,7 @@ void protobuf_AssignDesc_api_2eproto() {
       -1,
       sizeof(TLeaderboardsList),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TLeaderboardsList, _internal_metadata_));
-  TLeaderboards_descriptor_ = file->message_type(70);
+  TLeaderboards_descriptor_ = file->message_type(72);
   static const int TLeaderboards_offsets_[2] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TLeaderboards, leaderboards_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TLeaderboards, cursor_),
@@ -2075,7 +2197,7 @@ void protobuf_AssignDesc_api_2eproto() {
       -1,
       sizeof(TLeaderboards),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TLeaderboards, _internal_metadata_));
-  TLeaderboardRecordsWrite_descriptor_ = file->message_type(71);
+  TLeaderboardRecordsWrite_descriptor_ = file->message_type(73);
   static const int TLeaderboardRecordsWrite_offsets_[1] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TLeaderboardRecordsWrite, records_),
   };
@@ -2113,7 +2235,7 @@ void protobuf_AssignDesc_api_2eproto() {
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TLeaderboardRecordsWrite_LeaderboardRecordWrite, _oneof_case_[0]),
       sizeof(TLeaderboardRecordsWrite_LeaderboardRecordWrite),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TLeaderboardRecordsWrite_LeaderboardRecordWrite, _internal_metadata_));
-  TLeaderboardRecordsFetch_descriptor_ = file->message_type(72);
+  TLeaderboardRecordsFetch_descriptor_ = file->message_type(74);
   static const int TLeaderboardRecordsFetch_offsets_[3] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TLeaderboardRecordsFetch, leaderboard_ids_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TLeaderboardRecordsFetch, limit_),
@@ -2129,7 +2251,7 @@ void protobuf_AssignDesc_api_2eproto() {
       -1,
       sizeof(TLeaderboardRecordsFetch),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TLeaderboardRecordsFetch, _internal_metadata_));
-  TLeaderboardRecordsList_descriptor_ = file->message_type(73);
+  TLeaderboardRecordsList_descriptor_ = file->message_type(75);
   static const int TLeaderboardRecordsList_offsets_[9] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TLeaderboardRecordsList, leaderboard_id_),
     PROTO2_GENERATED_DEFAULT_ONEOF_FIELD_OFFSET(TLeaderboardRecordsList_default_oneof_instance_, owner_id_),
@@ -2167,7 +2289,7 @@ void protobuf_AssignDesc_api_2eproto() {
       -1,
       sizeof(TLeaderboardRecordsList_Owners),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TLeaderboardRecordsList_Owners, _internal_metadata_));
-  TLeaderboardRecords_descriptor_ = file->message_type(74);
+  TLeaderboardRecords_descriptor_ = file->message_type(76);
   static const int TLeaderboardRecords_offsets_[2] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TLeaderboardRecords, records_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TLeaderboardRecords, cursor_),
@@ -2182,7 +2304,7 @@ void protobuf_AssignDesc_api_2eproto() {
       -1,
       sizeof(TLeaderboardRecords),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TLeaderboardRecords, _internal_metadata_));
-  TRpc_descriptor_ = file->message_type(75);
+  TRpc_descriptor_ = file->message_type(77);
   static const int TRpc_offsets_[2] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TRpc, id_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TRpc, payload_),
@@ -2197,7 +2319,7 @@ void protobuf_AssignDesc_api_2eproto() {
       -1,
       sizeof(TRpc),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TRpc, _internal_metadata_));
-  TPurchaseValidation_descriptor_ = file->message_type(76);
+  TPurchaseValidation_descriptor_ = file->message_type(78);
   static const int TPurchaseValidation_offsets_[3] = {
     PROTO2_GENERATED_DEFAULT_ONEOF_FIELD_OFFSET(TPurchaseValidation_default_oneof_instance_, apple_purchase_),
     PROTO2_GENERATED_DEFAULT_ONEOF_FIELD_OFFSET(TPurchaseValidation_default_oneof_instance_, google_purchase_),
@@ -2246,7 +2368,7 @@ void protobuf_AssignDesc_api_2eproto() {
       -1,
       sizeof(TPurchaseValidation_GooglePurchase),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TPurchaseValidation_GooglePurchase, _internal_metadata_));
-  TPurchaseRecord_descriptor_ = file->message_type(77);
+  TPurchaseRecord_descriptor_ = file->message_type(79);
   static const int TPurchaseRecord_offsets_[5] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TPurchaseRecord, success_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TPurchaseRecord, seen_before_),
@@ -2264,7 +2386,7 @@ void protobuf_AssignDesc_api_2eproto() {
       -1,
       sizeof(TPurchaseRecord),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TPurchaseRecord, _internal_metadata_));
-  Notification_descriptor_ = file->message_type(78);
+  Notification_descriptor_ = file->message_type(80);
   static const int Notification_offsets_[8] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Notification, id_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Notification, subject_),
@@ -2285,7 +2407,7 @@ void protobuf_AssignDesc_api_2eproto() {
       -1,
       sizeof(Notification),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Notification, _internal_metadata_));
-  Notifications_descriptor_ = file->message_type(79);
+  Notifications_descriptor_ = file->message_type(81);
   static const int Notifications_offsets_[1] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Notifications, notifications_),
   };
@@ -2299,7 +2421,7 @@ void protobuf_AssignDesc_api_2eproto() {
       -1,
       sizeof(Notifications),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Notifications, _internal_metadata_));
-  TNotificationsList_descriptor_ = file->message_type(80);
+  TNotificationsList_descriptor_ = file->message_type(82);
   static const int TNotificationsList_offsets_[2] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TNotificationsList, limit_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TNotificationsList, resumable_cursor_),
@@ -2314,7 +2436,7 @@ void protobuf_AssignDesc_api_2eproto() {
       -1,
       sizeof(TNotificationsList),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TNotificationsList, _internal_metadata_));
-  TNotifications_descriptor_ = file->message_type(81);
+  TNotifications_descriptor_ = file->message_type(83);
   static const int TNotifications_offsets_[2] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TNotifications, notifications_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TNotifications, resumable_cursor_),
@@ -2329,7 +2451,7 @@ void protobuf_AssignDesc_api_2eproto() {
       -1,
       sizeof(TNotifications),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TNotifications, _internal_metadata_));
-  TNotificationsRemove_descriptor_ = file->message_type(82);
+  TNotificationsRemove_descriptor_ = file->message_type(84);
   static const int TNotificationsRemove_offsets_[1] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TNotificationsRemove, notification_ids_),
   };
@@ -2435,6 +2557,10 @@ void protobuf_RegisterTypes(const ::std::string&) {
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
       TGroups_descriptor_, TGroups::internal_default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+      TGroupsSelf_descriptor_, TGroupsSelf::internal_default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+      TGroupsSelf_GroupSelf_descriptor_, TGroupsSelf_GroupSelf::internal_default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
       GroupUser_descriptor_, GroupUser::internal_default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
       TGroupUsersList_descriptor_, TGroupUsersList::internal_default_instance());
@@ -2524,6 +2650,14 @@ void protobuf_RegisterTypes(const ::std::string&) {
       TStorageWrite_descriptor_, TStorageWrite::internal_default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
       TStorageWrite_StorageData_descriptor_, TStorageWrite_StorageData::internal_default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+      TStorageUpdate_descriptor_, TStorageUpdate::internal_default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+      TStorageUpdate_StorageUpdate_descriptor_, TStorageUpdate_StorageUpdate::internal_default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+      TStorageUpdate_StorageUpdate_UpdateOp_descriptor_, TStorageUpdate_StorageUpdate_UpdateOp::internal_default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+      TStorageUpdate_StorageUpdate_StorageKey_descriptor_, TStorageUpdate_StorageUpdate_StorageKey::internal_default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
       TStorageKeys_descriptor_, TStorageKeys::internal_default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
@@ -2662,6 +2796,10 @@ void protobuf_ShutdownFile_api_2eproto() {
   delete TGroupsList_reflection_;
   TGroups_default_instance_.Shutdown();
   delete TGroups_reflection_;
+  TGroupsSelf_default_instance_.Shutdown();
+  delete TGroupsSelf_reflection_;
+  TGroupsSelf_GroupSelf_default_instance_.Shutdown();
+  delete TGroupsSelf_GroupSelf_reflection_;
   GroupUser_default_instance_.Shutdown();
   delete GroupUser_reflection_;
   TGroupUsersList_default_instance_.Shutdown();
@@ -2756,6 +2894,14 @@ void protobuf_ShutdownFile_api_2eproto() {
   delete TStorageWrite_reflection_;
   TStorageWrite_StorageData_default_instance_.Shutdown();
   delete TStorageWrite_StorageData_reflection_;
+  TStorageUpdate_default_instance_.Shutdown();
+  delete TStorageUpdate_reflection_;
+  TStorageUpdate_StorageUpdate_default_instance_.Shutdown();
+  delete TStorageUpdate_StorageUpdate_reflection_;
+  TStorageUpdate_StorageUpdate_UpdateOp_default_instance_.Shutdown();
+  delete TStorageUpdate_StorageUpdate_UpdateOp_reflection_;
+  TStorageUpdate_StorageUpdate_StorageKey_default_instance_.Shutdown();
+  delete TStorageUpdate_StorageUpdate_StorageKey_reflection_;
   TStorageKeys_default_instance_.Shutdown();
   delete TStorageKeys_reflection_;
   TStorageKeys_StorageKey_default_instance_.Shutdown();
@@ -2883,6 +3029,8 @@ void protobuf_InitDefaults_api_2eproto_impl() {
   TGroupsList_default_oneof_instance_ = new TGroupsListOneofInstance();
   ::google::protobuf::internal::GetEmptyString();
   TGroups_default_instance_.DefaultConstruct();
+  TGroupsSelf_default_instance_.DefaultConstruct();
+  TGroupsSelf_GroupSelf_default_instance_.DefaultConstruct();
   GroupUser_default_instance_.DefaultConstruct();
   ::google::protobuf::internal::GetEmptyString();
   TGroupUsersList_default_instance_.DefaultConstruct();
@@ -2960,6 +3108,12 @@ void protobuf_InitDefaults_api_2eproto_impl() {
   TStorageWrite_default_instance_.DefaultConstruct();
   ::google::protobuf::internal::GetEmptyString();
   TStorageWrite_StorageData_default_instance_.DefaultConstruct();
+  TStorageUpdate_default_instance_.DefaultConstruct();
+  TStorageUpdate_StorageUpdate_default_instance_.DefaultConstruct();
+  ::google::protobuf::internal::GetEmptyString();
+  TStorageUpdate_StorageUpdate_UpdateOp_default_instance_.DefaultConstruct();
+  ::google::protobuf::internal::GetEmptyString();
+  TStorageUpdate_StorageUpdate_StorageKey_default_instance_.DefaultConstruct();
   TStorageKeys_default_instance_.DefaultConstruct();
   ::google::protobuf::internal::GetEmptyString();
   TStorageKeys_StorageKey_default_instance_.DefaultConstruct();
@@ -3044,6 +3198,8 @@ void protobuf_InitDefaults_api_2eproto_impl() {
   TGroupsFetch_GroupFetch_default_instance_.get_mutable()->InitAsDefaultInstance();
   TGroupsList_default_instance_.get_mutable()->InitAsDefaultInstance();
   TGroups_default_instance_.get_mutable()->InitAsDefaultInstance();
+  TGroupsSelf_default_instance_.get_mutable()->InitAsDefaultInstance();
+  TGroupsSelf_GroupSelf_default_instance_.get_mutable()->InitAsDefaultInstance();
   GroupUser_default_instance_.get_mutable()->InitAsDefaultInstance();
   TGroupUsersList_default_instance_.get_mutable()->InitAsDefaultInstance();
   TGroupUsers_default_instance_.get_mutable()->InitAsDefaultInstance();
@@ -3089,6 +3245,10 @@ void protobuf_InitDefaults_api_2eproto_impl() {
   TStorageData_StorageData_default_instance_.get_mutable()->InitAsDefaultInstance();
   TStorageWrite_default_instance_.get_mutable()->InitAsDefaultInstance();
   TStorageWrite_StorageData_default_instance_.get_mutable()->InitAsDefaultInstance();
+  TStorageUpdate_default_instance_.get_mutable()->InitAsDefaultInstance();
+  TStorageUpdate_StorageUpdate_default_instance_.get_mutable()->InitAsDefaultInstance();
+  TStorageUpdate_StorageUpdate_UpdateOp_default_instance_.get_mutable()->InitAsDefaultInstance();
+  TStorageUpdate_StorageUpdate_StorageKey_default_instance_.get_mutable()->InitAsDefaultInstance();
   TStorageKeys_default_instance_.get_mutable()->InitAsDefaultInstance();
   TStorageKeys_StorageKey_default_instance_.get_mutable()->InitAsDefaultInstance();
   TStorageRemove_default_instance_.get_mutable()->InitAsDefaultInstance();
@@ -3126,331 +3286,353 @@ void protobuf_AddDesc_api_2eproto_impl() {
   protobuf_InitDefaults_api_2eproto();
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
     "\n\tapi.proto\022\006server\"\036\n\tHeartbeat\022\021\n\ttime"
-    "stamp\030\001 \001(\003\"\256\003\n\005Error\022\014\n\004code\030\001 \001(\005\022\017\n\007m"
-    "essage\030\002 \001(\t\"\205\003\n\004Code\022\025\n\021RUNTIME_EXCEPTI"
+    "stamp\030\001 \001(\003\"\304\003\n\005Error\022\014\n\004code\030\001 \001(\005\022\017\n\007m"
+    "essage\030\002 \001(\t\"\233\003\n\004Code\022\025\n\021RUNTIME_EXCEPTI"
     "ON\020\000\022\030\n\024UNRECOGNIZED_PAYLOAD\020\001\022\023\n\017MISSIN"
     "G_PAYLOAD\020\002\022\r\n\tBAD_INPUT\020\003\022\016\n\nAUTH_ERROR"
     "\020\004\022\022\n\016USER_NOT_FOUND\020\005\022\027\n\023USER_REGISTER_"
     "INUSE\020\006\022\023\n\017USER_LINK_INUSE\020\007\022\"\n\036USER_LIN"
     "K_PROVIDER_UNAVAILABLE\020\010\022\032\n\026USER_UNLINK_"
     "DISALLOWED\020\t\022\025\n\021USER_HANDLE_INUSE\020\n\022\024\n\020G"
-    "ROUP_NAME_INUSE\020\013\022\024\n\020STORAGE_REJECTED\020\014\022"
-    "\023\n\017MATCH_NOT_FOUND\020\r\022\036\n\032RUNTIME_FUNCTION"
-    "_NOT_FOUND\020\016\022\036\n\032RUNTIME_FUNCTION_EXCEPTI"
-    "ON\020\017\"\250\003\n\023AuthenticateRequest\022\023\n\013collatio"
-    "nId\030\001 \001(\t\0222\n\005email\030\002 \001(\0132!.server.Authen"
-    "ticateRequest.EmailH\000\022\022\n\010facebook\030\003 \001(\tH"
-    "\000\022\020\n\006google\030\004 \001(\tH\000\022=\n\013game_center\030\005 \001(\013"
-    "2&.server.AuthenticateRequest.GameCenter"
-    "H\000\022\017\n\005steam\030\006 \001(\tH\000\022\020\n\006device\030\007 \001(\tH\000\022\020\n"
-    "\006custom\030\010 \001(\tH\000\032(\n\005Email\022\r\n\005email\030\001 \001(\t\022"
-    "\020\n\010password\030\002 \001(\t\032~\n\nGameCenter\022\021\n\tplaye"
-    "r_id\030\001 \001(\t\022\021\n\tbundle_id\030\002 \001(\t\022\021\n\ttimesta"
-    "mp\030\003 \001(\003\022\014\n\004salt\030\004 \001(\t\022\021\n\tsignature\030\005 \001("
-    "\t\022\026\n\016public_key_url\030\006 \001(\tB\004\n\002id\"\220\002\n\024Auth"
-    "enticateResponse\022\024\n\014collation_id\030\001 \001(\t\0227"
-    "\n\007session\030\002 \001(\0132$.server.AuthenticateRes"
-    "ponse.SessionH\000\0223\n\005error\030\003 \001(\0132\".server."
-    "AuthenticateResponse.ErrorH\000\032\030\n\007Session\022"
-    "\r\n\005token\030\001 \001(\t\032T\n\005Error\022\014\n\004code\030\001 \001(\005\022\017\n"
-    "\007message\030\002 \001(\t\022,\n\007request\030\003 \001(\0132\033.server"
-    ".AuthenticateRequestB\004\n\002id\"\367\031\n\010Envelope\022"
-    "\024\n\014collation_id\030\001 \001(\t\022\036\n\005error\030\002 \001(\0132\r.s"
-    "erver.ErrorH\000\022&\n\theartbeat\030\003 \001(\0132\021.serve"
-    "r.HeartbeatH\000\022 \n\006logout\030\004 \001(\0132\016.server.L"
-    "ogoutH\000\022\035\n\004link\030\005 \001(\0132\r.server.TLinkH\000\022!"
-    "\n\006unlink\030\006 \001(\0132\017.server.TUnlinkH\000\022(\n\nsel"
-    "f_fetch\030\007 \001(\0132\022.server.TSelfFetchH\000\022*\n\013s"
-    "elf_update\030\010 \001(\0132\023.server.TSelfUpdateH\000\022"
-    "*\n\013users_fetch\030\t \001(\0132\023.server.TUsersFetc"
-    "hH\000\022\035\n\004self\030\n \001(\0132\r.server.TSelfH\000\022\037\n\005us"
-    "ers\030\013 \001(\0132\016.server.TUsersH\000\022*\n\013friends_a"
-    "dd\030\014 \001(\0132\023.server.TFriendsAddH\000\0220\n\016frien"
-    "ds_remove\030\r \001(\0132\026.server.TFriendsRemoveH"
-    "\000\022.\n\rfriends_block\030\016 \001(\0132\025.server.TFrien"
-    "dsBlockH\000\022,\n\014friends_list\030\017 \001(\0132\024.server"
-    ".TFriendsListH\000\022#\n\007friends\030\020 \001(\0132\020.serve"
-    "r.TFriendsH\000\022.\n\rgroups_create\030\021 \001(\0132\025.se"
-    "rver.TGroupsCreateH\000\022.\n\rgroups_update\030\022 "
-    "\001(\0132\025.server.TGroupsUpdateH\000\022.\n\rgroups_r"
-    "emove\030\023 \001(\0132\025.server.TGroupsRemoveH\000\022,\n\014"
-    "groups_fetch\030\024 \001(\0132\024.server.TGroupsFetch"
-    "H\000\022*\n\013groups_list\030\025 \001(\0132\023.server.TGroups"
-    "ListH\000\0223\n\020groups_self_list\030\026 \001(\0132\027.serve"
-    "r.TGroupsSelfListH\000\0223\n\020group_users_list\030"
-    "\027 \001(\0132\027.server.TGroupUsersListH\000\022*\n\013grou"
-    "ps_join\030\030 \001(\0132\023.server.TGroupsJoinH\000\022,\n\014"
-    "groups_leave\030\031 \001(\0132\024.server.TGroupsLeave"
-    "H\000\0221\n\017group_users_add\030\032 \001(\0132\026.server.TGr"
-    "oupUsersAddH\000\0223\n\020group_users_kick\030\033 \001(\0132"
-    "\027.server.TGroupUsersKickH\000\0229\n\023group_user"
-    "s_promote\030\034 \001(\0132\032.server.TGroupUsersProm"
-    "oteH\000\022!\n\006groups\030\035 \001(\0132\017.server.TGroupsH\000"
-    "\022*\n\013group_users\030\036 \001(\0132\023.server.TGroupUse"
-    "rsH\000\022*\n\013topics_join\030\037 \001(\0132\023.server.TTopi"
-    "csJoinH\000\022,\n\014topics_leave\030  \001(\0132\024.server."
-    "TTopicsLeaveH\000\0227\n\022topic_message_send\030! \001"
-    "(\0132\031.server.TTopicMessageSendH\000\0229\n\023topic"
-    "_messages_list\030\" \001(\0132\032.server.TTopicMess"
-    "agesListH\000\022!\n\006topics\030# \001(\0132\017.server.TTop"
-    "icsH\000\0225\n\021topic_message_ack\030$ \001(\0132\030.serve"
-    "r.TTopicMessageAckH\000\022-\n\rtopic_message\030% "
-    "\001(\0132\024.server.TopicMessageH\000\0220\n\016topic_mes"
-    "sages\030& \001(\0132\026.server.TTopicMessagesH\000\022/\n"
-    "\016topic_presence\030\' \001(\0132\025.server.TopicPres"
-    "enceH\000\022,\n\014match_create\030( \001(\0132\024.server.TM"
-    "atchCreateH\000\022,\n\014matches_join\030) \001(\0132\024.ser"
-    "ver.TMatchesJoinH\000\022.\n\rmatches_leave\030* \001("
-    "\0132\025.server.TMatchesLeaveH\000\0220\n\017match_data"
-    "_send\030+ \001(\0132\025.server.MatchDataSendH\000\022\037\n\005"
-    "match\030, \001(\0132\016.server.TMatchH\000\022#\n\007matches"
-    "\030- \001(\0132\020.server.TMatchesH\000\022\'\n\nmatch_data"
-    "\030. \001(\0132\021.server.MatchDataH\000\022/\n\016match_pre"
-    "sence\030/ \001(\0132\025.server.MatchPresenceH\000\022,\n\014"
-    "storage_list\0300 \001(\0132\024.server.TStorageList"
-    "H\000\022.\n\rstorage_fetch\0301 \001(\0132\025.server.TStor"
-    "ageFetchH\000\022.\n\rstorage_write\0302 \001(\0132\025.serv"
-    "er.TStorageWriteH\000\0220\n\016storage_remove\0303 \001"
-    "(\0132\026.server.TStorageRemoveH\000\022,\n\014storage_"
-    "data\0304 \001(\0132\024.server.TStorageDataH\000\022,\n\014st"
-    "orage_keys\0305 \001(\0132\024.server.TStorageKeysH\000"
-    "\0226\n\021leaderboards_list\0306 \001(\0132\031.server.TLe"
-    "aderboardsListH\000\022E\n\031leaderboard_records_"
-    "write\0307 \001(\0132 .server.TLeaderboardRecords"
-    "WriteH\000\022E\n\031leaderboard_records_fetch\0308 \001"
-    "(\0132 .server.TLeaderboardRecordsFetchH\000\022C"
-    "\n\030leaderboard_records_list\0309 \001(\0132\037.serve"
-    "r.TLeaderboardRecordsListH\000\022-\n\014leaderboa"
-    "rds\030: \001(\0132\025.server.TLeaderboardsH\000\022:\n\023le"
-    "aderboard_records\030; \001(\0132\033.server.TLeader"
-    "boardRecordsH\000\022.\n\rmatchmake_add\030< \001(\0132\025."
-    "server.TMatchmakeAddH\000\0224\n\020matchmake_remo"
-    "ve\030= \001(\0132\030.server.TMatchmakeRemoveH\000\0224\n\020"
-    "matchmake_ticket\030> \001(\0132\030.server.TMatchma"
-    "keTicketH\000\0225\n\021matchmake_matched\030\? \001(\0132\030."
-    "server.MatchmakeMatchedH\000\022\033\n\003rpc\030@ \001(\0132\014"
-    ".server.TRpcH\000\022/\n\010purchase\030A \001(\0132\033.serve"
-    "r.TPurchaseValidationH\000\0222\n\017purchase_reco"
-    "rd\030B \001(\0132\027.server.TPurchaseRecordH\000\0228\n\022n"
-    "otifications_list\030C \001(\0132\032.server.TNotifi"
-    "cationsListH\000\022<\n\024notifications_remove\030D "
-    "\001(\0132\034.server.TNotificationsRemoveH\000\022/\n\rn"
-    "otifications\030E \001(\0132\026.server.TNotificatio"
-    "nsH\000\0223\n\022live_notifications\030F \001(\0132\025.serve"
-    "r.NotificationsH\000B\t\n\007payload\"\010\n\006Logout\"\333"
-    "\001\n\005TLink\0222\n\005email\030\001 \001(\0132!.server.Authent"
-    "icateRequest.EmailH\000\022\022\n\010facebook\030\002 \001(\tH\000"
-    "\022\020\n\006google\030\003 \001(\tH\000\022=\n\013game_center\030\004 \001(\0132"
-    "&.server.AuthenticateRequest.GameCenterH"
-    "\000\022\017\n\005steam\030\005 \001(\tH\000\022\020\n\006device\030\006 \001(\tH\000\022\020\n\006"
-    "custom\030\007 \001(\tH\000B\004\n\002id\"\222\001\n\007TUnlink\022\017\n\005emai"
-    "l\030\001 \001(\tH\000\022\022\n\010facebook\030\002 \001(\tH\000\022\020\n\006google\030"
-    "\003 \001(\tH\000\022\025\n\013game_center\030\004 \001(\tH\000\022\017\n\005steam\030"
-    "\005 \001(\tH\000\022\020\n\006device\030\006 \001(\tH\000\022\020\n\006custom\030\007 \001("
-    "\tH\000B\004\n\002id\"\314\001\n\004User\022\n\n\002id\030\001 \001(\014\022\016\n\006handle"
-    "\030\002 \001(\t\022\020\n\010fullname\030\003 \001(\t\022\022\n\navatar_url\030\004"
-    " \001(\t\022\014\n\004lang\030\005 \001(\t\022\020\n\010location\030\006 \001(\t\022\020\n\010"
-    "timezone\030\007 \001(\t\022\020\n\010metadata\030\010 \001(\014\022\022\n\ncrea"
-    "ted_at\030\t \001(\003\022\022\n\nupdated_at\030\n \001(\003\022\026\n\016last"
-    "_online_at\030\013 \001(\003\"\273\001\n\004Self\022\032\n\004user\030\001 \001(\0132"
-    "\014.server.User\022\020\n\010verified\030\002 \001(\010\022\r\n\005email"
-    "\030\003 \001(\t\022\022\n\ndevice_ids\030\004 \003(\t\022\023\n\013facebook_i"
-    "d\030\005 \001(\t\022\021\n\tgoogle_id\030\006 \001(\t\022\025\n\rgamecenter"
-    "_id\030\007 \001(\t\022\020\n\010steam_id\030\010 \001(\t\022\021\n\tcustom_id"
-    "\030\t \001(\t\"\014\n\nTSelfFetch\"#\n\005TSelf\022\032\n\004self\030\001 "
-    "\001(\0132\014.server.Self\"\207\001\n\013TSelfUpdate\022\016\n\006han"
-    "dle\030\001 \001(\t\022\020\n\010fullname\030\002 \001(\t\022\020\n\010timezone\030"
-    "\003 \001(\t\022\020\n\010location\030\004 \001(\t\022\014\n\004lang\030\005 \001(\t\022\020\n"
-    "\010metadata\030\006 \001(\014\022\022\n\navatar_url\030\007 \001(\t\"u\n\013T"
-    "UsersFetch\022-\n\005users\030\001 \003(\0132\036.server.TUser"
-    "sFetch.UsersFetch\0327\n\nUsersFetch\022\021\n\007user_"
-    "id\030\001 \001(\014H\000\022\020\n\006handle\030\002 \001(\tH\000B\004\n\002id\"%\n\006TU"
-    "sers\022\033\n\005users\030\001 \003(\0132\014.server.User\"2\n\006Fri"
-    "end\022\032\n\004user\030\001 \001(\0132\014.server.User\022\014\n\004type\030"
-    "\002 \001(\003\"w\n\013TFriendsAdd\022/\n\007friends\030\001 \003(\0132\036."
-    "server.TFriendsAdd.FriendsAdd\0327\n\nFriends"
-    "Add\022\021\n\007user_id\030\001 \001(\014H\000\022\020\n\006handle\030\002 \001(\tH\000"
-    "B\004\n\002id\"\"\n\016TFriendsRemove\022\020\n\010user_ids\030\001 \003"
-    "(\014\"!\n\rTFriendsBlock\022\020\n\010user_ids\030\001 \003(\014\"\016\n"
-    "\014TFriendsList\"+\n\010TFriends\022\037\n\007friends\030\001 \003"
-    "(\0132\016.server.Friend\"\335\001\n\005Group\022\n\n\002id\030\001 \001(\014"
-    "\022\017\n\007private\030\002 \001(\010\022\022\n\ncreator_id\030\003 \001(\014\022\014\n"
-    "\004name\030\004 \001(\t\022\023\n\013description\030\005 \001(\t\022\022\n\navat"
-    "ar_url\030\006 \001(\t\022\014\n\004lang\030\007 \001(\t\022\025\n\rutc_offset"
-    "_ms\030\010 \001(\003\022\020\n\010metadata\030\t \001(\014\022\r\n\005count\030\n \001"
-    "(\003\022\022\n\ncreated_at\030\013 \001(\003\022\022\n\nupdated_at\030\014 \001"
-    "(\003\"\271\001\n\rTGroupsCreate\0221\n\006groups\030\001 \003(\0132!.s"
-    "erver.TGroupsCreate.GroupCreate\032u\n\013Group"
-    "Create\022\014\n\004name\030\001 \001(\t\022\023\n\013description\030\002 \001("
-    "\t\022\022\n\navatar_url\030\003 \001(\t\022\014\n\004lang\030\004 \001(\t\022\020\n\010m"
-    "etadata\030\005 \001(\014\022\017\n\007private\030\006 \001(\010\"\314\001\n\rTGrou"
-    "psUpdate\0221\n\006groups\030\001 \003(\0132!.server.TGroup"
-    "sUpdate.GroupUpdate\032\207\001\n\013GroupUpdate\022\020\n\010g"
-    "roup_id\030\001 \001(\014\022\017\n\007private\030\002 \001(\010\022\014\n\004name\030\003"
-    " \001(\t\022\023\n\013description\030\004 \001(\t\022\022\n\navatar_url\030"
-    "\005 \001(\t\022\014\n\004lang\030\006 \001(\t\022\020\n\010metadata\030\007 \001(\014\"\"\n"
-    "\rTGroupsRemove\022\021\n\tgroup_ids\030\001 \003(\014\"\021\n\017TGr"
-    "oupsSelfList\"w\n\014TGroupsFetch\022/\n\006groups\030\001"
-    " \003(\0132\037.server.TGroupsFetch.GroupFetch\0326\n"
-    "\nGroupFetch\022\022\n\010group_id\030\001 \001(\014H\000\022\016\n\004name\030"
-    "\002 \001(\tH\000B\004\n\002id\"\210\001\n\013TGroupsList\022\022\n\npage_li"
-    "mit\030\001 \001(\003\022\024\n\014order_by_asc\030\002 \001(\010\022\016\n\004lang\030"
-    "\003 \001(\tH\000\022\024\n\ncreated_at\030\004 \001(\003H\000\022\017\n\005count\030\005"
-    " \001(\003H\000\022\016\n\006cursor\030\007 \001(\014B\010\n\006filter\"8\n\007TGro"
-    "ups\022\035\n\006groups\030\001 \003(\0132\r.server.Group\022\016\n\006cu"
-    "rsor\030\002 \001(\014\"5\n\tGroupUser\022\032\n\004user\030\001 \001(\0132\014."
-    "server.User\022\014\n\004type\030\002 \001(\003\"#\n\017TGroupUsers"
-    "List\022\020\n\010group_id\030\001 \001(\014\"/\n\013TGroupUsers\022 \n"
-    "\005users\030\001 \003(\0132\021.server.GroupUser\" \n\013TGrou"
-    "psJoin\022\021\n\tgroup_ids\030\001 \003(\014\"!\n\014TGroupsLeav"
-    "e\022\021\n\tgroup_ids\030\001 \003(\014\"}\n\016TGroupUsersAdd\0228"
-    "\n\013group_users\030\001 \003(\0132#.server.TGroupUsers"
-    "Add.GroupUserAdd\0321\n\014GroupUserAdd\022\020\n\010grou"
-    "p_id\030\001 \001(\014\022\017\n\007user_id\030\002 \001(\014\"\201\001\n\017TGroupUs"
-    "ersKick\022:\n\013group_users\030\001 \003(\0132%.server.TG"
-    "roupUsersKick.GroupUserKick\0322\n\rGroupUser"
-    "Kick\022\020\n\010group_id\030\001 \001(\014\022\017\n\007user_id\030\002 \001(\014\""
-    "\215\001\n\022TGroupUsersPromote\022@\n\013group_users\030\001 "
-    "\003(\0132+.server.TGroupUsersPromote.GroupUse"
-    "rPromote\0325\n\020GroupUserPromote\022\020\n\010group_id"
-    "\030\001 \001(\014\022\017\n\007user_id\030\002 \001(\014\"A\n\007TopicId\022\014\n\002dm"
-    "\030\001 \001(\014H\000\022\016\n\004room\030\002 \001(\014H\000\022\022\n\010group_id\030\003 \001"
-    "(\014H\000B\004\n\002id\"C\n\014UserPresence\022\017\n\007user_id\030\001 "
-    "\001(\014\022\022\n\nsession_id\030\002 \001(\014\022\016\n\006handle\030\003 \001(\t\""
-    "\205\001\n\013TTopicsJoin\022,\n\005joins\030\001 \003(\0132\035.server."
-    "TTopicsJoin.TopicJoin\032H\n\tTopicJoin\022\021\n\007us"
-    "er_id\030\001 \001(\014H\000\022\016\n\004room\030\002 \001(\014H\000\022\022\n\010group_i"
-    "d\030\003 \001(\014H\000B\004\n\002id\"\246\001\n\007TTopics\022%\n\006topics\030\001 "
-    "\003(\0132\025.server.TTopics.Topic\032t\n\005Topic\022\036\n\005t"
-    "opic\030\001 \001(\0132\017.server.TopicId\022\'\n\tpresences"
-    "\030\002 \003(\0132\024.server.UserPresence\022\"\n\004self\030\003 \001"
-    "(\0132\024.server.UserPresence\"/\n\014TTopicsLeave"
-    "\022\037\n\006topics\030\001 \003(\0132\017.server.TopicId\"A\n\021TTo"
-    "picMessageSend\022\036\n\005topic\030\001 \001(\0132\017.server.T"
-    "opicId\022\014\n\004data\030\002 \001(\014\"^\n\020TTopicMessageAck"
-    "\022\022\n\nmessage_id\030\001 \001(\014\022\022\n\ncreated_at\030\002 \001(\003"
-    "\022\022\n\nexpires_at\030\003 \001(\003\022\016\n\006handle\030\004 \001(\t\"\247\001\n"
-    "\014TopicMessage\022\036\n\005topic\030\001 \001(\0132\017.server.To"
-    "picId\022\017\n\007user_id\030\002 \001(\014\022\022\n\nmessage_id\030\003 \001"
-    "(\014\022\022\n\ncreated_at\030\004 \001(\003\022\022\n\nexpires_at\030\005 \001"
-    "(\003\022\016\n\006handle\030\006 \001(\t\022\014\n\004type\030\007 \001(\003\022\014\n\004data"
-    "\030\010 \001(\014\"\201\001\n\022TTopicMessagesList\022\021\n\007user_id"
-    "\030\001 \001(\014H\000\022\016\n\004room\030\002 \001(\014H\000\022\022\n\010group_id\030\003 \001"
-    "(\014H\000\022\016\n\006cursor\030\004 \001(\014\022\017\n\007forward\030\005 \001(\010\022\r\n"
-    "\005limit\030\006 \001(\003B\004\n\002id\"H\n\016TTopicMessages\022&\n\010"
-    "messages\030\001 \003(\0132\024.server.TopicMessage\022\016\n\006"
-    "cursor\030\002 \001(\014\"z\n\rTopicPresence\022\036\n\005topic\030\001"
-    " \001(\0132\017.server.TopicId\022#\n\005joins\030\002 \003(\0132\024.s"
-    "erver.UserPresence\022$\n\006leaves\030\003 \003(\0132\024.ser"
-    "ver.UserPresence\"&\n\rTMatchmakeAdd\022\025\n\rreq"
-    "uiredCount\030\001 \001(\003\"\"\n\020TMatchmakeTicket\022\016\n\006"
-    "ticket\030\001 \001(\014\"\"\n\020TMatchmakeRemove\022\016\n\006tick"
-    "et\030\001 \001(\014\"~\n\020MatchmakeMatched\022\016\n\006ticket\030\001"
-    " \001(\014\022\r\n\005token\030\002 \001(\014\022\'\n\tpresences\030\003 \003(\0132\024"
-    ".server.UserPresence\022\"\n\004self\030\004 \001(\0132\024.ser"
-    "ver.UserPresence\"f\n\005Match\022\020\n\010match_id\030\001 "
-    "\001(\014\022\'\n\tpresences\030\002 \003(\0132\024.server.UserPres"
-    "ence\022\"\n\004self\030\003 \001(\0132\024.server.UserPresence"
-    "\"l\n\rMatchPresence\022\020\n\010match_id\030\001 \001(\014\022#\n\005j"
-    "oins\030\002 \003(\0132\024.server.UserPresence\022$\n\006leav"
-    "es\030\003 \003(\0132\024.server.UserPresence\"\016\n\014TMatch"
-    "Create\"&\n\006TMatch\022\034\n\005match\030\001 \001(\0132\r.server"
-    ".Match\"w\n\014TMatchesJoin\022/\n\007matches\030\001 \003(\0132"
-    "\036.server.TMatchesJoin.MatchJoin\0326\n\tMatch"
-    "Join\022\022\n\010match_id\030\001 \001(\014H\000\022\017\n\005token\030\002 \001(\014H"
-    "\000B\004\n\002id\"*\n\010TMatches\022\036\n\007matches\030\001 \003(\0132\r.s"
-    "erver.Match\"i\n\rMatchDataSend\022\020\n\010match_id"
-    "\030\001 \001(\014\022\017\n\007op_code\030\002 \001(\003\022\014\n\004data\030\003 \001(\014\022\'\n"
-    "\tpresences\030\004 \003(\0132\024.server.UserPresence\"d"
-    "\n\tMatchData\022\020\n\010match_id\030\001 \001(\014\022&\n\010presenc"
-    "e\030\002 \001(\0132\024.server.UserPresence\022\017\n\007op_code"
-    "\030\003 \001(\003\022\014\n\004data\030\004 \001(\014\"\"\n\rTMatchesLeave\022\021\n"
-    "\tmatch_ids\030\001 \003(\014\"b\n\014TStorageList\022\017\n\007user"
-    "_id\030\001 \001(\014\022\016\n\006bucket\030\002 \001(\t\022\022\n\ncollection\030"
-    "\003 \001(\t\022\r\n\005limit\030\004 \001(\003\022\016\n\006cursor\030\005 \001(\014\"\222\001\n"
-    "\rTStorageFetch\022.\n\004keys\030\001 \003(\0132 .server.TS"
-    "torageFetch.StorageKey\032Q\n\nStorageKey\022\016\n\006"
-    "bucket\030\001 \001(\t\022\022\n\ncollection\030\002 \001(\t\022\016\n\006reco"
-    "rd\030\003 \001(\t\022\017\n\007user_id\030\004 \001(\014\"\262\002\n\014TStorageDa"
-    "ta\022.\n\004data\030\001 \003(\0132 .server.TStorageData.S"
-    "torageData\022\016\n\006cursor\030\002 \001(\014\032\341\001\n\013StorageDa"
-    "ta\022\016\n\006bucket\030\001 \001(\t\022\022\n\ncollection\030\002 \001(\t\022\016"
-    "\n\006record\030\003 \001(\t\022\017\n\007user_id\030\004 \001(\014\022\r\n\005value"
-    "\030\005 \001(\014\022\017\n\007version\030\006 \001(\014\022\027\n\017permission_re"
-    "ad\030\007 \001(\005\022\030\n\020permission_write\030\010 \001(\005\022\022\n\ncr"
-    "eated_at\030\t \001(\003\022\022\n\nupdated_at\030\n \001(\003\022\022\n\nex"
-    "pires_at\030\013 \001(\003\"\327\001\n\rTStorageWrite\022/\n\004data"
-    "\030\003 \003(\0132!.server.TStorageWrite.StorageDat"
-    "a\032\224\001\n\013StorageData\022\016\n\006bucket\030\001 \001(\t\022\022\n\ncol"
-    "lection\030\002 \001(\t\022\016\n\006record\030\003 \001(\t\022\r\n\005value\030\004"
-    " \001(\014\022\017\n\007version\030\005 \001(\014\022\027\n\017permission_read"
-    "\030\006 \001(\005\022\030\n\020permission_write\030\007 \001(\005\"\220\001\n\014TSt"
-    "orageKeys\022-\n\004keys\030\001 \003(\0132\037.server.TStorag"
-    "eKeys.StorageKey\032Q\n\nStorageKey\022\016\n\006bucket"
-    "\030\001 \001(\t\022\022\n\ncollection\030\002 \001(\t\022\016\n\006record\030\003 \001"
-    "(\t\022\017\n\007version\030\004 \001(\014\"\224\001\n\016TStorageRemove\022/"
-    "\n\004keys\030\001 \003(\0132!.server.TStorageRemove.Sto"
-    "rageKey\032Q\n\nStorageKey\022\016\n\006bucket\030\001 \001(\t\022\022\n"
-    "\ncollection\030\002 \001(\t\022\016\n\006record\030\003 \001(\t\022\017\n\007ver"
-    "sion\030\004 \001(\014\"\231\001\n\013Leaderboard\022\n\n\002id\030\001 \001(\014\022\025"
-    "\n\rauthoritative\030\002 \001(\010\022\014\n\004sort\030\003 \001(\003\022\r\n\005c"
-    "ount\030\004 \001(\003\022\026\n\016reset_schedule\030\005 \001(\t\022\020\n\010me"
-    "tadata\030\006 \001(\014\022\017\n\007next_id\030\007 \001(\014\022\017\n\007prev_id"
-    "\030\010 \001(\014\"\374\001\n\021LeaderboardRecord\022\026\n\016leaderbo"
-    "ard_id\030\001 \001(\014\022\020\n\010owner_id\030\002 \001(\014\022\016\n\006handle"
-    "\030\003 \001(\t\022\014\n\004lang\030\004 \001(\t\022\020\n\010location\030\005 \001(\t\022\020"
-    "\n\010timezone\030\006 \001(\t\022\014\n\004rank\030\007 \001(\003\022\r\n\005score\030"
-    "\010 \001(\003\022\021\n\tnum_score\030\t \001(\003\022\020\n\010metadata\030\n \001"
-    "(\014\022\021\n\tranked_at\030\013 \001(\003\022\022\n\nupdated_at\030\014 \001("
-    "\003\022\022\n\nexpires_at\030\r \001(\003\"Q\n\021TLeaderboardsLi"
-    "st\022\r\n\005limit\030\001 \001(\003\022\016\n\006cursor\030\002 \001(\014\022\035\n\025fil"
-    "ter_leaderboard_id\030\003 \003(\014\"J\n\rTLeaderboard"
-    "s\022)\n\014leaderboards\030\001 \003(\0132\023.server.Leaderb"
-    "oard\022\016\n\006cursor\030\002 \001(\014\"\222\002\n\030TLeaderboardRec"
-    "ordsWrite\022H\n\007records\030\001 \003(\01327.server.TLea"
-    "derboardRecordsWrite.LeaderboardRecordWr"
-    "ite\032\253\001\n\026LeaderboardRecordWrite\022\026\n\016leader"
-    "board_id\030\001 \001(\014\022\016\n\004incr\030\002 \001(\003H\000\022\016\n\004decr\030\003"
-    " \001(\003H\000\022\r\n\003set\030\004 \001(\003H\000\022\016\n\004best\030\005 \001(\003H\000\022\020\n"
-    "\010location\030\006 \001(\t\022\020\n\010timezone\030\007 \001(\t\022\020\n\010met"
-    "adata\030\010 \001(\014B\004\n\002op\"R\n\030TLeaderboardRecords"
-    "Fetch\022\027\n\017leaderboard_ids\030\001 \003(\014\022\r\n\005limit\030"
-    "\002 \001(\003\022\016\n\006cursor\030\003 \001(\014\"\200\002\n\027TLeaderboardRe"
-    "cordsList\022\026\n\016leaderboard_id\030\001 \001(\014\022\022\n\010own"
-    "er_id\030\002 \001(\014H\000\022;\n\towner_ids\030\003 \001(\0132&.serve"
-    "r.TLeaderboardRecordsList.OwnersH\000\022\016\n\004la"
-    "ng\030\004 \001(\tH\000\022\022\n\010location\030\005 \001(\tH\000\022\022\n\010timezo"
-    "ne\030\006 \001(\tH\000\022\r\n\005limit\030\007 \001(\003\022\016\n\006cursor\030\010 \001("
-    "\014\032\033\n\006Owners\022\021\n\towner_ids\030\001 \003(\014B\010\n\006filter"
-    "\"Q\n\023TLeaderboardRecords\022*\n\007records\030\001 \003(\013"
-    "2\031.server.LeaderboardRecord\022\016\n\006cursor\030\002 "
-    "\001(\014\"#\n\004TRpc\022\n\n\002id\030\001 \001(\t\022\017\n\007payload\030\002 \001(\014"
-    "\"\266\002\n\023TPurchaseValidation\022C\n\016apple_purcha"
-    "se\030\001 \001(\0132).server.TPurchaseValidation.Ap"
-    "plePurchaseH\000\022E\n\017google_purchase\030\002 \001(\0132*"
-    ".server.TPurchaseValidation.GooglePurcha"
-    "seH\000\0329\n\rApplePurchase\022\022\n\nproduct_id\030\001 \001("
-    "\t\022\024\n\014receipt_data\030\002 \001(\t\032R\n\016GooglePurchas"
-    "e\022\022\n\nproduct_id\030\001 \001(\t\022\024\n\014product_type\030\002 "
-    "\001(\t\022\026\n\016purchase_token\030\003 \001(\tB\004\n\002id\"{\n\017TPu"
-    "rchaseRecord\022\017\n\007success\030\001 \001(\010\022\023\n\013seen_be"
-    "fore\030\002 \001(\010\022#\n\033purchase_provider_reachabl"
-    "e\030\003 \001(\010\022\017\n\007message\030\006 \001(\t\022\014\n\004data\030\005 \001(\t\"\231"
-    "\001\n\014Notification\022\n\n\002id\030\001 \001(\014\022\017\n\007subject\030\002"
-    " \001(\t\022\017\n\007content\030\003 \001(\014\022\014\n\004code\030\004 \001(\003\022\021\n\ts"
-    "ender_id\030\005 \001(\014\022\022\n\ncreated_at\030\006 \001(\003\022\022\n\nex"
-    "pires_at\030\007 \001(\003\022\022\n\npersistent\030\010 \001(\010\"<\n\rNo"
-    "tifications\022+\n\rnotifications\030\001 \003(\0132\024.ser"
-    "ver.Notification\"=\n\022TNotificationsList\022\r"
-    "\n\005limit\030\001 \001(\003\022\030\n\020resumable_cursor\030\002 \001(\014\""
-    "W\n\016TNotifications\022+\n\rnotifications\030\001 \003(\013"
-    "2\024.server.Notification\022\030\n\020resumable_curs"
-    "or\030\002 \001(\014\"0\n\024TNotificationsRemove\022\030\n\020noti"
-    "fication_ids\030\001 \003(\014*E\n\025StoragePermissionR"
-    "ead\022\013\n\007NO_READ\020\000\022\016\n\nOWNER_READ\020\001\022\017\n\013PUBL"
-    "IC_READ\020\002*7\n\026StoragePermissionWrite\022\014\n\010N"
-    "O_WRITE\020\000\022\017\n\013OWNER_WRITE\020\001B\t\252\002\006Nakamab\006p"
-    "roto3", 13005);
+    "ROUP_NAME_INUSE\020\013\022\024\n\020GROUP_LAST_ADMIN\020\014\022"
+    "\024\n\020STORAGE_REJECTED\020\r\022\023\n\017MATCH_NOT_FOUND"
+    "\020\016\022\036\n\032RUNTIME_FUNCTION_NOT_FOUND\020\017\022\036\n\032RU"
+    "NTIME_FUNCTION_EXCEPTION\020\020\"\250\003\n\023Authentic"
+    "ateRequest\022\023\n\013collationId\030\001 \001(\t\0222\n\005email"
+    "\030\002 \001(\0132!.server.AuthenticateRequest.Emai"
+    "lH\000\022\022\n\010facebook\030\003 \001(\tH\000\022\020\n\006google\030\004 \001(\tH"
+    "\000\022=\n\013game_center\030\005 \001(\0132&.server.Authenti"
+    "cateRequest.GameCenterH\000\022\017\n\005steam\030\006 \001(\tH"
+    "\000\022\020\n\006device\030\007 \001(\tH\000\022\020\n\006custom\030\010 \001(\tH\000\032(\n"
+    "\005Email\022\r\n\005email\030\001 \001(\t\022\020\n\010password\030\002 \001(\t\032"
+    "~\n\nGameCenter\022\021\n\tplayer_id\030\001 \001(\t\022\021\n\tbund"
+    "le_id\030\002 \001(\t\022\021\n\ttimestamp\030\003 \001(\003\022\014\n\004salt\030\004"
+    " \001(\t\022\021\n\tsignature\030\005 \001(\t\022\026\n\016public_key_ur"
+    "l\030\006 \001(\tB\004\n\002id\"\220\002\n\024AuthenticateResponse\022\024"
+    "\n\014collation_id\030\001 \001(\t\0227\n\007session\030\002 \001(\0132$."
+    "server.AuthenticateResponse.SessionH\000\0223\n"
+    "\005error\030\003 \001(\0132\".server.AuthenticateRespon"
+    "se.ErrorH\000\032\030\n\007Session\022\r\n\005token\030\001 \001(\t\032T\n\005"
+    "Error\022\014\n\004code\030\001 \001(\005\022\017\n\007message\030\002 \001(\t\022,\n\007"
+    "request\030\003 \001(\0132\033.server.AuthenticateReque"
+    "stB\004\n\002id\"\325\032\n\010Envelope\022\024\n\014collation_id\030\001 "
+    "\001(\t\022\036\n\005error\030\002 \001(\0132\r.server.ErrorH\000\022&\n\th"
+    "eartbeat\030\003 \001(\0132\021.server.HeartbeatH\000\022 \n\006l"
+    "ogout\030\004 \001(\0132\016.server.LogoutH\000\022\035\n\004link\030\005 "
+    "\001(\0132\r.server.TLinkH\000\022!\n\006unlink\030\006 \001(\0132\017.s"
+    "erver.TUnlinkH\000\022(\n\nself_fetch\030\007 \001(\0132\022.se"
+    "rver.TSelfFetchH\000\022*\n\013self_update\030\010 \001(\0132\023"
+    ".server.TSelfUpdateH\000\022*\n\013users_fetch\030\t \001"
+    "(\0132\023.server.TUsersFetchH\000\022\035\n\004self\030\n \001(\0132"
+    "\r.server.TSelfH\000\022\037\n\005users\030\013 \001(\0132\016.server"
+    ".TUsersH\000\022*\n\013friends_add\030\014 \001(\0132\023.server."
+    "TFriendsAddH\000\0220\n\016friends_remove\030\r \001(\0132\026."
+    "server.TFriendsRemoveH\000\022.\n\rfriends_block"
+    "\030\016 \001(\0132\025.server.TFriendsBlockH\000\022,\n\014frien"
+    "ds_list\030\017 \001(\0132\024.server.TFriendsListH\000\022#\n"
+    "\007friends\030\020 \001(\0132\020.server.TFriendsH\000\022.\n\rgr"
+    "oups_create\030\021 \001(\0132\025.server.TGroupsCreate"
+    "H\000\022.\n\rgroups_update\030\022 \001(\0132\025.server.TGrou"
+    "psUpdateH\000\022.\n\rgroups_remove\030\023 \001(\0132\025.serv"
+    "er.TGroupsRemoveH\000\022,\n\014groups_fetch\030\024 \001(\013"
+    "2\024.server.TGroupsFetchH\000\022*\n\013groups_list\030"
+    "\025 \001(\0132\023.server.TGroupsListH\000\0223\n\020groups_s"
+    "elf_list\030\026 \001(\0132\027.server.TGroupsSelfListH"
+    "\000\0223\n\020group_users_list\030\027 \001(\0132\027.server.TGr"
+    "oupUsersListH\000\022*\n\013groups_join\030\030 \001(\0132\023.se"
+    "rver.TGroupsJoinH\000\022,\n\014groups_leave\030\031 \001(\013"
+    "2\024.server.TGroupsLeaveH\000\0221\n\017group_users_"
+    "add\030\032 \001(\0132\026.server.TGroupUsersAddH\000\0223\n\020g"
+    "roup_users_kick\030\033 \001(\0132\027.server.TGroupUse"
+    "rsKickH\000\0229\n\023group_users_promote\030\034 \001(\0132\032."
+    "server.TGroupUsersPromoteH\000\022!\n\006groups\030\035 "
+    "\001(\0132\017.server.TGroupsH\000\022*\n\013groups_self\030\036 "
+    "\001(\0132\023.server.TGroupsSelfH\000\022*\n\013group_user"
+    "s\030\037 \001(\0132\023.server.TGroupUsersH\000\022*\n\013topics"
+    "_join\030  \001(\0132\023.server.TTopicsJoinH\000\022,\n\014to"
+    "pics_leave\030! \001(\0132\024.server.TTopicsLeaveH\000"
+    "\0227\n\022topic_message_send\030\" \001(\0132\031.server.TT"
+    "opicMessageSendH\000\0229\n\023topic_messages_list"
+    "\030# \001(\0132\032.server.TTopicMessagesListH\000\022!\n\006"
+    "topics\030$ \001(\0132\017.server.TTopicsH\000\0225\n\021topic"
+    "_message_ack\030% \001(\0132\030.server.TTopicMessag"
+    "eAckH\000\022-\n\rtopic_message\030& \001(\0132\024.server.T"
+    "opicMessageH\000\0220\n\016topic_messages\030\' \001(\0132\026."
+    "server.TTopicMessagesH\000\022/\n\016topic_presenc"
+    "e\030( \001(\0132\025.server.TopicPresenceH\000\022,\n\014matc"
+    "h_create\030) \001(\0132\024.server.TMatchCreateH\000\022,"
+    "\n\014matches_join\030* \001(\0132\024.server.TMatchesJo"
+    "inH\000\022.\n\rmatches_leave\030+ \001(\0132\025.server.TMa"
+    "tchesLeaveH\000\0220\n\017match_data_send\030, \001(\0132\025."
+    "server.MatchDataSendH\000\022\037\n\005match\030- \001(\0132\016."
+    "server.TMatchH\000\022#\n\007matches\030. \001(\0132\020.serve"
+    "r.TMatchesH\000\022\'\n\nmatch_data\030/ \001(\0132\021.serve"
+    "r.MatchDataH\000\022/\n\016match_presence\0300 \001(\0132\025."
+    "server.MatchPresenceH\000\022,\n\014storage_list\0301"
+    " \001(\0132\024.server.TStorageListH\000\022.\n\rstorage_"
+    "fetch\0302 \001(\0132\025.server.TStorageFetchH\000\022.\n\r"
+    "storage_write\0303 \001(\0132\025.server.TStorageWri"
+    "teH\000\0220\n\016storage_update\0304 \001(\0132\026.server.TS"
+    "torageUpdateH\000\0220\n\016storage_remove\0305 \001(\0132\026"
+    ".server.TStorageRemoveH\000\022,\n\014storage_data"
+    "\0306 \001(\0132\024.server.TStorageDataH\000\022,\n\014storag"
+    "e_keys\0307 \001(\0132\024.server.TStorageKeysH\000\0226\n\021"
+    "leaderboards_list\0308 \001(\0132\031.server.TLeader"
+    "boardsListH\000\022E\n\031leaderboard_records_writ"
+    "e\0309 \001(\0132 .server.TLeaderboardRecordsWrit"
+    "eH\000\022E\n\031leaderboard_records_fetch\030: \001(\0132 "
+    ".server.TLeaderboardRecordsFetchH\000\022C\n\030le"
+    "aderboard_records_list\030; \001(\0132\037.server.TL"
+    "eaderboardRecordsListH\000\022-\n\014leaderboards\030"
+    "< \001(\0132\025.server.TLeaderboardsH\000\022:\n\023leader"
+    "board_records\030= \001(\0132\033.server.TLeaderboar"
+    "dRecordsH\000\022.\n\rmatchmake_add\030> \001(\0132\025.serv"
+    "er.TMatchmakeAddH\000\0224\n\020matchmake_remove\030\?"
+    " \001(\0132\030.server.TMatchmakeRemoveH\000\0224\n\020matc"
+    "hmake_ticket\030@ \001(\0132\030.server.TMatchmakeTi"
+    "cketH\000\0225\n\021matchmake_matched\030A \001(\0132\030.serv"
+    "er.MatchmakeMatchedH\000\022\033\n\003rpc\030B \001(\0132\014.ser"
+    "ver.TRpcH\000\022/\n\010purchase\030C \001(\0132\033.server.TP"
+    "urchaseValidationH\000\0222\n\017purchase_record\030D"
+    " \001(\0132\027.server.TPurchaseRecordH\000\0228\n\022notif"
+    "ications_list\030E \001(\0132\032.server.TNotificati"
+    "onsListH\000\022<\n\024notifications_remove\030F \001(\0132"
+    "\034.server.TNotificationsRemoveH\000\022/\n\rnotif"
+    "ications\030G \001(\0132\026.server.TNotificationsH\000"
+    "\0223\n\022live_notifications\030H \001(\0132\025.server.No"
+    "tificationsH\000B\t\n\007payload\"\010\n\006Logout\"\333\001\n\005T"
+    "Link\0222\n\005email\030\001 \001(\0132!.server.Authenticat"
+    "eRequest.EmailH\000\022\022\n\010facebook\030\002 \001(\tH\000\022\020\n\006"
+    "google\030\003 \001(\tH\000\022=\n\013game_center\030\004 \001(\0132&.se"
+    "rver.AuthenticateRequest.GameCenterH\000\022\017\n"
+    "\005steam\030\005 \001(\tH\000\022\020\n\006device\030\006 \001(\tH\000\022\020\n\006cust"
+    "om\030\007 \001(\tH\000B\004\n\002id\"\222\001\n\007TUnlink\022\017\n\005email\030\001 "
+    "\001(\tH\000\022\022\n\010facebook\030\002 \001(\tH\000\022\020\n\006google\030\003 \001("
+    "\tH\000\022\025\n\013game_center\030\004 \001(\tH\000\022\017\n\005steam\030\005 \001("
+    "\tH\000\022\020\n\006device\030\006 \001(\tH\000\022\020\n\006custom\030\007 \001(\tH\000B"
+    "\004\n\002id\"\314\001\n\004User\022\n\n\002id\030\001 \001(\014\022\016\n\006handle\030\002 \001"
+    "(\t\022\020\n\010fullname\030\003 \001(\t\022\022\n\navatar_url\030\004 \001(\t"
+    "\022\014\n\004lang\030\005 \001(\t\022\020\n\010location\030\006 \001(\t\022\020\n\010time"
+    "zone\030\007 \001(\t\022\020\n\010metadata\030\010 \001(\014\022\022\n\ncreated_"
+    "at\030\t \001(\003\022\022\n\nupdated_at\030\n \001(\003\022\026\n\016last_onl"
+    "ine_at\030\013 \001(\003\"\273\001\n\004Self\022\032\n\004user\030\001 \001(\0132\014.se"
+    "rver.User\022\020\n\010verified\030\002 \001(\010\022\r\n\005email\030\003 \001"
+    "(\t\022\022\n\ndevice_ids\030\004 \003(\t\022\023\n\013facebook_id\030\005 "
+    "\001(\t\022\021\n\tgoogle_id\030\006 \001(\t\022\025\n\rgamecenter_id\030"
+    "\007 \001(\t\022\020\n\010steam_id\030\010 \001(\t\022\021\n\tcustom_id\030\t \001"
+    "(\t\"\014\n\nTSelfFetch\"#\n\005TSelf\022\032\n\004self\030\001 \001(\0132"
+    "\014.server.Self\"\207\001\n\013TSelfUpdate\022\016\n\006handle\030"
+    "\001 \001(\t\022\020\n\010fullname\030\002 \001(\t\022\020\n\010timezone\030\003 \001("
+    "\t\022\020\n\010location\030\004 \001(\t\022\014\n\004lang\030\005 \001(\t\022\020\n\010met"
+    "adata\030\006 \001(\014\022\022\n\navatar_url\030\007 \001(\t\"u\n\013TUser"
+    "sFetch\022-\n\005users\030\001 \003(\0132\036.server.TUsersFet"
+    "ch.UsersFetch\0327\n\nUsersFetch\022\021\n\007user_id\030\001"
+    " \001(\014H\000\022\020\n\006handle\030\002 \001(\tH\000B\004\n\002id\"%\n\006TUsers"
+    "\022\033\n\005users\030\001 \003(\0132\014.server.User\"3\n\006Friend\022"
+    "\032\n\004user\030\001 \001(\0132\014.server.User\022\r\n\005state\030\002 \001"
+    "(\003\"w\n\013TFriendsAdd\022/\n\007friends\030\001 \003(\0132\036.ser"
+    "ver.TFriendsAdd.FriendsAdd\0327\n\nFriendsAdd"
+    "\022\021\n\007user_id\030\001 \001(\014H\000\022\020\n\006handle\030\002 \001(\tH\000B\004\n"
+    "\002id\"\"\n\016TFriendsRemove\022\020\n\010user_ids\030\001 \003(\014\""
+    "!\n\rTFriendsBlock\022\020\n\010user_ids\030\001 \003(\014\"\016\n\014TF"
+    "riendsList\"+\n\010TFriends\022\037\n\007friends\030\001 \003(\0132"
+    "\016.server.Friend\"\335\001\n\005Group\022\n\n\002id\030\001 \001(\014\022\017\n"
+    "\007private\030\002 \001(\010\022\022\n\ncreator_id\030\003 \001(\014\022\014\n\004na"
+    "me\030\004 \001(\t\022\023\n\013description\030\005 \001(\t\022\022\n\navatar_"
+    "url\030\006 \001(\t\022\014\n\004lang\030\007 \001(\t\022\025\n\rutc_offset_ms"
+    "\030\010 \001(\003\022\020\n\010metadata\030\t \001(\014\022\r\n\005count\030\n \001(\003\022"
+    "\022\n\ncreated_at\030\013 \001(\003\022\022\n\nupdated_at\030\014 \001(\003\""
+    "\271\001\n\rTGroupsCreate\0221\n\006groups\030\001 \003(\0132!.serv"
+    "er.TGroupsCreate.GroupCreate\032u\n\013GroupCre"
+    "ate\022\014\n\004name\030\001 \001(\t\022\023\n\013description\030\002 \001(\t\022\022"
+    "\n\navatar_url\030\003 \001(\t\022\014\n\004lang\030\004 \001(\t\022\020\n\010meta"
+    "data\030\005 \001(\014\022\017\n\007private\030\006 \001(\010\"\314\001\n\rTGroupsU"
+    "pdate\0221\n\006groups\030\001 \003(\0132!.server.TGroupsUp"
+    "date.GroupUpdate\032\207\001\n\013GroupUpdate\022\020\n\010grou"
+    "p_id\030\001 \001(\014\022\017\n\007private\030\002 \001(\010\022\014\n\004name\030\003 \001("
+    "\t\022\023\n\013description\030\004 \001(\t\022\022\n\navatar_url\030\005 \001"
+    "(\t\022\014\n\004lang\030\006 \001(\t\022\020\n\010metadata\030\007 \001(\014\"\"\n\rTG"
+    "roupsRemove\022\021\n\tgroup_ids\030\001 \003(\014\"\021\n\017TGroup"
+    "sSelfList\"w\n\014TGroupsFetch\022/\n\006groups\030\001 \003("
+    "\0132\037.server.TGroupsFetch.GroupFetch\0326\n\nGr"
+    "oupFetch\022\022\n\010group_id\030\001 \001(\014H\000\022\016\n\004name\030\002 \001"
+    "(\tH\000B\004\n\002id\"\210\001\n\013TGroupsList\022\022\n\npage_limit"
+    "\030\001 \001(\003\022\024\n\014order_by_asc\030\002 \001(\010\022\016\n\004lang\030\003 \001"
+    "(\tH\000\022\024\n\ncreated_at\030\004 \001(\003H\000\022\017\n\005count\030\005 \001("
+    "\003H\000\022\016\n\006cursor\030\007 \001(\014B\010\n\006filter\"8\n\007TGroups"
+    "\022\035\n\006groups\030\001 \003(\0132\r.server.Group\022\016\n\006curso"
+    "r\030\002 \001(\014\"{\n\013TGroupsSelf\0222\n\013groups_self\030\001 "
+    "\003(\0132\035.server.TGroupsSelf.GroupSelf\0328\n\tGr"
+    "oupSelf\022\034\n\005group\030\001 \001(\0132\r.server.Group\022\r\n"
+    "\005state\030\002 \001(\003\"6\n\tGroupUser\022\032\n\004user\030\001 \001(\0132"
+    "\014.server.User\022\r\n\005state\030\002 \001(\003\"#\n\017TGroupUs"
+    "ersList\022\020\n\010group_id\030\001 \001(\014\"/\n\013TGroupUsers"
+    "\022 \n\005users\030\001 \003(\0132\021.server.GroupUser\" \n\013TG"
+    "roupsJoin\022\021\n\tgroup_ids\030\001 \003(\014\"!\n\014TGroupsL"
+    "eave\022\021\n\tgroup_ids\030\001 \003(\014\"}\n\016TGroupUsersAd"
+    "d\0228\n\013group_users\030\001 \003(\0132#.server.TGroupUs"
+    "ersAdd.GroupUserAdd\0321\n\014GroupUserAdd\022\020\n\010g"
+    "roup_id\030\001 \001(\014\022\017\n\007user_id\030\002 \001(\014\"\201\001\n\017TGrou"
+    "pUsersKick\022:\n\013group_users\030\001 \003(\0132%.server"
+    ".TGroupUsersKick.GroupUserKick\0322\n\rGroupU"
+    "serKick\022\020\n\010group_id\030\001 \001(\014\022\017\n\007user_id\030\002 \001"
+    "(\014\"\215\001\n\022TGroupUsersPromote\022@\n\013group_users"
+    "\030\001 \003(\0132+.server.TGroupUsersPromote.Group"
+    "UserPromote\0325\n\020GroupUserPromote\022\020\n\010group"
+    "_id\030\001 \001(\014\022\017\n\007user_id\030\002 \001(\014\"A\n\007TopicId\022\014\n"
+    "\002dm\030\001 \001(\014H\000\022\016\n\004room\030\002 \001(\014H\000\022\022\n\010group_id\030"
+    "\003 \001(\014H\000B\004\n\002id\"C\n\014UserPresence\022\017\n\007user_id"
+    "\030\001 \001(\014\022\022\n\nsession_id\030\002 \001(\014\022\016\n\006handle\030\003 \001"
+    "(\t\"\205\001\n\013TTopicsJoin\022,\n\005joins\030\001 \003(\0132\035.serv"
+    "er.TTopicsJoin.TopicJoin\032H\n\tTopicJoin\022\021\n"
+    "\007user_id\030\001 \001(\014H\000\022\016\n\004room\030\002 \001(\014H\000\022\022\n\010grou"
+    "p_id\030\003 \001(\014H\000B\004\n\002id\"\246\001\n\007TTopics\022%\n\006topics"
+    "\030\001 \003(\0132\025.server.TTopics.Topic\032t\n\005Topic\022\036"
+    "\n\005topic\030\001 \001(\0132\017.server.TopicId\022\'\n\tpresen"
+    "ces\030\002 \003(\0132\024.server.UserPresence\022\"\n\004self\030"
+    "\003 \001(\0132\024.server.UserPresence\"/\n\014TTopicsLe"
+    "ave\022\037\n\006topics\030\001 \003(\0132\017.server.TopicId\"A\n\021"
+    "TTopicMessageSend\022\036\n\005topic\030\001 \001(\0132\017.serve"
+    "r.TopicId\022\014\n\004data\030\002 \001(\014\"^\n\020TTopicMessage"
+    "Ack\022\022\n\nmessage_id\030\001 \001(\014\022\022\n\ncreated_at\030\002 "
+    "\001(\003\022\022\n\nexpires_at\030\003 \001(\003\022\016\n\006handle\030\004 \001(\t\""
+    "\247\001\n\014TopicMessage\022\036\n\005topic\030\001 \001(\0132\017.server"
+    ".TopicId\022\017\n\007user_id\030\002 \001(\014\022\022\n\nmessage_id\030"
+    "\003 \001(\014\022\022\n\ncreated_at\030\004 \001(\003\022\022\n\nexpires_at\030"
+    "\005 \001(\003\022\016\n\006handle\030\006 \001(\t\022\014\n\004type\030\007 \001(\003\022\014\n\004d"
+    "ata\030\010 \001(\014\"\201\001\n\022TTopicMessagesList\022\021\n\007user"
+    "_id\030\001 \001(\014H\000\022\016\n\004room\030\002 \001(\014H\000\022\022\n\010group_id\030"
+    "\003 \001(\014H\000\022\016\n\006cursor\030\004 \001(\014\022\017\n\007forward\030\005 \001(\010"
+    "\022\r\n\005limit\030\006 \001(\003B\004\n\002id\"H\n\016TTopicMessages\022"
+    "&\n\010messages\030\001 \003(\0132\024.server.TopicMessage\022"
+    "\016\n\006cursor\030\002 \001(\014\"z\n\rTopicPresence\022\036\n\005topi"
+    "c\030\001 \001(\0132\017.server.TopicId\022#\n\005joins\030\002 \003(\0132"
+    "\024.server.UserPresence\022$\n\006leaves\030\003 \003(\0132\024."
+    "server.UserPresence\"&\n\rTMatchmakeAdd\022\025\n\r"
+    "requiredCount\030\001 \001(\003\"\"\n\020TMatchmakeTicket\022"
+    "\016\n\006ticket\030\001 \001(\014\"\"\n\020TMatchmakeRemove\022\016\n\006t"
+    "icket\030\001 \001(\014\"~\n\020MatchmakeMatched\022\016\n\006ticke"
+    "t\030\001 \001(\014\022\r\n\005token\030\002 \001(\014\022\'\n\tpresences\030\003 \003("
+    "\0132\024.server.UserPresence\022\"\n\004self\030\004 \001(\0132\024."
+    "server.UserPresence\"f\n\005Match\022\020\n\010match_id"
+    "\030\001 \001(\014\022\'\n\tpresences\030\002 \003(\0132\024.server.UserP"
+    "resence\022\"\n\004self\030\003 \001(\0132\024.server.UserPrese"
+    "nce\"l\n\rMatchPresence\022\020\n\010match_id\030\001 \001(\014\022#"
+    "\n\005joins\030\002 \003(\0132\024.server.UserPresence\022$\n\006l"
+    "eaves\030\003 \003(\0132\024.server.UserPresence\"\016\n\014TMa"
+    "tchCreate\"&\n\006TMatch\022\034\n\005match\030\001 \001(\0132\r.ser"
+    "ver.Match\"w\n\014TMatchesJoin\022/\n\007matches\030\001 \003"
+    "(\0132\036.server.TMatchesJoin.MatchJoin\0326\n\tMa"
+    "tchJoin\022\022\n\010match_id\030\001 \001(\014H\000\022\017\n\005token\030\002 \001"
+    "(\014H\000B\004\n\002id\"*\n\010TMatches\022\036\n\007matches\030\001 \003(\0132"
+    "\r.server.Match\"i\n\rMatchDataSend\022\020\n\010match"
+    "_id\030\001 \001(\014\022\017\n\007op_code\030\002 \001(\003\022\014\n\004data\030\003 \001(\014"
+    "\022\'\n\tpresences\030\004 \003(\0132\024.server.UserPresenc"
+    "e\"d\n\tMatchData\022\020\n\010match_id\030\001 \001(\014\022&\n\010pres"
+    "ence\030\002 \001(\0132\024.server.UserPresence\022\017\n\007op_c"
+    "ode\030\003 \001(\003\022\014\n\004data\030\004 \001(\014\"\"\n\rTMatchesLeave"
+    "\022\021\n\tmatch_ids\030\001 \003(\014\"b\n\014TStorageList\022\017\n\007u"
+    "ser_id\030\001 \001(\014\022\016\n\006bucket\030\002 \001(\t\022\022\n\ncollecti"
+    "on\030\003 \001(\t\022\r\n\005limit\030\004 \001(\003\022\016\n\006cursor\030\005 \001(\014\""
+    "\222\001\n\rTStorageFetch\022.\n\004keys\030\001 \003(\0132 .server"
+    ".TStorageFetch.StorageKey\032Q\n\nStorageKey\022"
+    "\016\n\006bucket\030\001 \001(\t\022\022\n\ncollection\030\002 \001(\t\022\016\n\006r"
+    "ecord\030\003 \001(\t\022\017\n\007user_id\030\004 \001(\014\"\262\002\n\014TStorag"
+    "eData\022.\n\004data\030\001 \003(\0132 .server.TStorageDat"
+    "a.StorageData\022\016\n\006cursor\030\002 \001(\014\032\341\001\n\013Storag"
+    "eData\022\016\n\006bucket\030\001 \001(\t\022\022\n\ncollection\030\002 \001("
+    "\t\022\016\n\006record\030\003 \001(\t\022\017\n\007user_id\030\004 \001(\014\022\r\n\005va"
+    "lue\030\005 \001(\014\022\017\n\007version\030\006 \001(\014\022\027\n\017permission"
+    "_read\030\007 \001(\005\022\030\n\020permission_write\030\010 \001(\005\022\022\n"
+    "\ncreated_at\030\t \001(\003\022\022\n\nupdated_at\030\n \001(\003\022\022\n"
+    "\nexpires_at\030\013 \001(\003\"\327\001\n\rTStorageWrite\022/\n\004d"
+    "ata\030\003 \003(\0132!.server.TStorageWrite.Storage"
+    "Data\032\224\001\n\013StorageData\022\016\n\006bucket\030\001 \001(\t\022\022\n\n"
+    "collection\030\002 \001(\t\022\016\n\006record\030\003 \001(\t\022\r\n\005valu"
+    "e\030\004 \001(\014\022\017\n\007version\030\005 \001(\014\022\027\n\017permission_r"
+    "ead\030\006 \001(\005\022\030\n\020permission_write\030\007 \001(\005\"\222\005\n\016"
+    "TStorageUpdate\0225\n\007updates\030\001 \003(\0132$.server"
+    ".TStorageUpdate.StorageUpdate\032\310\004\n\rStorag"
+    "eUpdate\022<\n\003key\030\001 \001(\0132/.server.TStorageUp"
+    "date.StorageUpdate.StorageKey\022\027\n\017permiss"
+    "ion_read\030\002 \001(\005\022\030\n\020permission_write\030\003 \001(\005"
+    "\022:\n\003ops\030\004 \003(\0132-.server.TStorageUpdate.St"
+    "orageUpdate.UpdateOp\032\266\002\n\010UpdateOp\022\n\n\002op\030"
+    "\001 \001(\005\022\014\n\004path\030\002 \001(\t\022\r\n\005value\030\003 \001(\014\022\014\n\004fr"
+    "om\030\004 \001(\t\022\023\n\013conditional\030\005 \001(\010\022\016\n\006assert\030"
+    "\006 \001(\003\022:\n\003ops\030\007 \003(\0132-.server.TStorageUpda"
+    "te.StorageUpdate.UpdateOp\"\221\001\n\014UpdateOpCo"
+    "de\022\007\n\003ADD\020\000\022\n\n\006APPEND\020\001\022\010\n\004COPY\020\002\022\010\n\004INC"
+    "R\020\003\022\010\n\004INIT\020\004\022\t\n\005MERGE\020\005\022\010\n\004MOVE\020\006\022\t\n\005PA"
+    "TCH\020\007\022\n\n\006REMOVE\020\010\022\013\n\007REPLACE\020\t\022\010\n\004TEST\020\n"
+    "\022\013\n\007COMPARE\020\013\032Q\n\nStorageKey\022\016\n\006bucket\030\001 "
+    "\001(\t\022\022\n\ncollection\030\002 \001(\t\022\016\n\006record\030\003 \001(\t\022"
+    "\017\n\007version\030\004 \001(\014\"\220\001\n\014TStorageKeys\022-\n\004key"
+    "s\030\001 \003(\0132\037.server.TStorageKeys.StorageKey"
+    "\032Q\n\nStorageKey\022\016\n\006bucket\030\001 \001(\t\022\022\n\ncollec"
+    "tion\030\002 \001(\t\022\016\n\006record\030\003 \001(\t\022\017\n\007version\030\004 "
+    "\001(\014\"\224\001\n\016TStorageRemove\022/\n\004keys\030\001 \003(\0132!.s"
+    "erver.TStorageRemove.StorageKey\032Q\n\nStora"
+    "geKey\022\016\n\006bucket\030\001 \001(\t\022\022\n\ncollection\030\002 \001("
+    "\t\022\016\n\006record\030\003 \001(\t\022\017\n\007version\030\004 \001(\014\"\231\001\n\013L"
+    "eaderboard\022\n\n\002id\030\001 \001(\014\022\025\n\rauthoritative\030"
+    "\002 \001(\010\022\014\n\004sort\030\003 \001(\003\022\r\n\005count\030\004 \001(\003\022\026\n\016re"
+    "set_schedule\030\005 \001(\t\022\020\n\010metadata\030\006 \001(\014\022\017\n\007"
+    "next_id\030\007 \001(\014\022\017\n\007prev_id\030\010 \001(\014\"\374\001\n\021Leade"
+    "rboardRecord\022\026\n\016leaderboard_id\030\001 \001(\014\022\020\n\010"
+    "owner_id\030\002 \001(\014\022\016\n\006handle\030\003 \001(\t\022\014\n\004lang\030\004"
+    " \001(\t\022\020\n\010location\030\005 \001(\t\022\020\n\010timezone\030\006 \001(\t"
+    "\022\014\n\004rank\030\007 \001(\003\022\r\n\005score\030\010 \001(\003\022\021\n\tnum_sco"
+    "re\030\t \001(\003\022\020\n\010metadata\030\n \001(\014\022\021\n\tranked_at\030"
+    "\013 \001(\003\022\022\n\nupdated_at\030\014 \001(\003\022\022\n\nexpires_at\030"
+    "\r \001(\003\"Q\n\021TLeaderboardsList\022\r\n\005limit\030\001 \001("
+    "\003\022\016\n\006cursor\030\002 \001(\014\022\035\n\025filter_leaderboard_"
+    "id\030\003 \003(\014\"J\n\rTLeaderboards\022)\n\014leaderboard"
+    "s\030\001 \003(\0132\023.server.Leaderboard\022\016\n\006cursor\030\002"
+    " \001(\014\"\222\002\n\030TLeaderboardRecordsWrite\022H\n\007rec"
+    "ords\030\001 \003(\01327.server.TLeaderboardRecordsW"
+    "rite.LeaderboardRecordWrite\032\253\001\n\026Leaderbo"
+    "ardRecordWrite\022\026\n\016leaderboard_id\030\001 \001(\014\022\016"
+    "\n\004incr\030\002 \001(\003H\000\022\016\n\004decr\030\003 \001(\003H\000\022\r\n\003set\030\004 "
+    "\001(\003H\000\022\016\n\004best\030\005 \001(\003H\000\022\020\n\010location\030\006 \001(\t\022"
+    "\020\n\010timezone\030\007 \001(\t\022\020\n\010metadata\030\010 \001(\014B\004\n\002o"
+    "p\"R\n\030TLeaderboardRecordsFetch\022\027\n\017leaderb"
+    "oard_ids\030\001 \003(\014\022\r\n\005limit\030\002 \001(\003\022\016\n\006cursor\030"
+    "\003 \001(\014\"\200\002\n\027TLeaderboardRecordsList\022\026\n\016lea"
+    "derboard_id\030\001 \001(\014\022\022\n\010owner_id\030\002 \001(\014H\000\022;\n"
+    "\towner_ids\030\003 \001(\0132&.server.TLeaderboardRe"
+    "cordsList.OwnersH\000\022\016\n\004lang\030\004 \001(\tH\000\022\022\n\010lo"
+    "cation\030\005 \001(\tH\000\022\022\n\010timezone\030\006 \001(\tH\000\022\r\n\005li"
+    "mit\030\007 \001(\003\022\016\n\006cursor\030\010 \001(\014\032\033\n\006Owners\022\021\n\to"
+    "wner_ids\030\001 \003(\014B\010\n\006filter\"Q\n\023TLeaderboard"
+    "Records\022*\n\007records\030\001 \003(\0132\031.server.Leader"
+    "boardRecord\022\016\n\006cursor\030\002 \001(\014\"#\n\004TRpc\022\n\n\002i"
+    "d\030\001 \001(\t\022\017\n\007payload\030\002 \001(\014\"\266\002\n\023TPurchaseVa"
+    "lidation\022C\n\016apple_purchase\030\001 \001(\0132).serve"
+    "r.TPurchaseValidation.ApplePurchaseH\000\022E\n"
+    "\017google_purchase\030\002 \001(\0132*.server.TPurchas"
+    "eValidation.GooglePurchaseH\000\0329\n\rApplePur"
+    "chase\022\022\n\nproduct_id\030\001 \001(\t\022\024\n\014receipt_dat"
+    "a\030\002 \001(\t\032R\n\016GooglePurchase\022\022\n\nproduct_id\030"
+    "\001 \001(\t\022\024\n\014product_type\030\002 \001(\t\022\026\n\016purchase_"
+    "token\030\003 \001(\tB\004\n\002id\"{\n\017TPurchaseRecord\022\017\n\007"
+    "success\030\001 \001(\010\022\023\n\013seen_before\030\002 \001(\010\022#\n\033pu"
+    "rchase_provider_reachable\030\003 \001(\010\022\017\n\007messa"
+    "ge\030\006 \001(\t\022\014\n\004data\030\005 \001(\t\"\231\001\n\014Notification\022"
+    "\n\n\002id\030\001 \001(\014\022\017\n\007subject\030\002 \001(\t\022\017\n\007content\030"
+    "\003 \001(\014\022\014\n\004code\030\004 \001(\003\022\021\n\tsender_id\030\005 \001(\014\022\022"
+    "\n\ncreated_at\030\006 \001(\003\022\022\n\nexpires_at\030\007 \001(\003\022\022"
+    "\n\npersistent\030\010 \001(\010\"<\n\rNotifications\022+\n\rn"
+    "otifications\030\001 \003(\0132\024.server.Notification"
+    "\"=\n\022TNotificationsList\022\r\n\005limit\030\001 \001(\003\022\030\n"
+    "\020resumable_cursor\030\002 \001(\014\"W\n\016TNotification"
+    "s\022+\n\rnotifications\030\001 \003(\0132\024.server.Notifi"
+    "cation\022\030\n\020resumable_cursor\030\002 \001(\014\"0\n\024TNot"
+    "ificationsRemove\022\030\n\020notification_ids\030\001 \003"
+    "(\014*E\n\025StoragePermissionRead\022\013\n\007NO_READ\020\000"
+    "\022\016\n\nOWNER_READ\020\001\022\017\n\013PUBLIC_READ\020\002*7\n\026Sto"
+    "ragePermissionWrite\022\014\n\010NO_WRITE\020\000\022\017\n\013OWN"
+    "ER_WRITE\020\001B\t\252\002\006Nakamab\006proto3", 13909);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "api.proto", &protobuf_RegisterTypes);
   ::google::protobuf::internal::OnShutdown(&protobuf_ShutdownFile_api_2eproto);
@@ -3775,6 +3957,7 @@ bool Error_Code_IsValid(int value) {
     case 13:
     case 14:
     case 15:
+    case 16:
       return true;
     default:
       return false;
@@ -3794,6 +3977,7 @@ const Error_Code Error::USER_LINK_PROVIDER_UNAVAILABLE;
 const Error_Code Error::USER_UNLINK_DISALLOWED;
 const Error_Code Error::USER_HANDLE_INUSE;
 const Error_Code Error::GROUP_NAME_INUSE;
+const Error_Code Error::GROUP_LAST_ADMIN;
 const Error_Code Error::STORAGE_REJECTED;
 const Error_Code Error::MATCH_NOT_FOUND;
 const Error_Code Error::RUNTIME_FUNCTION_NOT_FOUND;
@@ -7707,6 +7891,7 @@ const int Envelope::kGroupUsersAddFieldNumber;
 const int Envelope::kGroupUsersKickFieldNumber;
 const int Envelope::kGroupUsersPromoteFieldNumber;
 const int Envelope::kGroupsFieldNumber;
+const int Envelope::kGroupsSelfFieldNumber;
 const int Envelope::kGroupUsersFieldNumber;
 const int Envelope::kTopicsJoinFieldNumber;
 const int Envelope::kTopicsLeaveFieldNumber;
@@ -7728,6 +7913,7 @@ const int Envelope::kMatchPresenceFieldNumber;
 const int Envelope::kStorageListFieldNumber;
 const int Envelope::kStorageFetchFieldNumber;
 const int Envelope::kStorageWriteFieldNumber;
+const int Envelope::kStorageUpdateFieldNumber;
 const int Envelope::kStorageRemoveFieldNumber;
 const int Envelope::kStorageDataFieldNumber;
 const int Envelope::kStorageKeysFieldNumber;
@@ -7814,6 +8000,8 @@ void Envelope::InitAsDefaultInstance() {
       ::server::TGroupUsersPromote::internal_default_instance());
   Envelope_default_oneof_instance_->groups_ = const_cast< ::server::TGroups*>(
       ::server::TGroups::internal_default_instance());
+  Envelope_default_oneof_instance_->groups_self_ = const_cast< ::server::TGroupsSelf*>(
+      ::server::TGroupsSelf::internal_default_instance());
   Envelope_default_oneof_instance_->group_users_ = const_cast< ::server::TGroupUsers*>(
       ::server::TGroupUsers::internal_default_instance());
   Envelope_default_oneof_instance_->topics_join_ = const_cast< ::server::TTopicsJoin*>(
@@ -7856,6 +8044,8 @@ void Envelope::InitAsDefaultInstance() {
       ::server::TStorageFetch::internal_default_instance());
   Envelope_default_oneof_instance_->storage_write_ = const_cast< ::server::TStorageWrite*>(
       ::server::TStorageWrite::internal_default_instance());
+  Envelope_default_oneof_instance_->storage_update_ = const_cast< ::server::TStorageUpdate*>(
+      ::server::TStorageUpdate::internal_default_instance());
   Envelope_default_oneof_instance_->storage_remove_ = const_cast< ::server::TStorageRemove*>(
       ::server::TStorageRemove::internal_default_instance());
   Envelope_default_oneof_instance_->storage_data_ = const_cast< ::server::TStorageData*>(
@@ -8064,6 +8254,10 @@ void Envelope::clear_payload() {
       delete payload_.groups_;
       break;
     }
+    case kGroupsSelf: {
+      delete payload_.groups_self_;
+      break;
+    }
     case kGroupUsers: {
       delete payload_.group_users_;
       break;
@@ -8146,6 +8340,10 @@ void Envelope::clear_payload() {
     }
     case kStorageWrite: {
       delete payload_.storage_write_;
+      break;
+    }
+    case kStorageUpdate: {
+      delete payload_.storage_update_;
       break;
     }
     case kStorageRemove: {
@@ -8605,9 +8803,21 @@ bool Envelope::MergePartialFromCodedStream(
         break;
       }
 
-      // optional .server.TGroupUsers group_users = 30;
+      // optional .server.TGroupsSelf groups_self = 30;
       case 30: {
         if (tag == 242) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_groups_self()));
+        } else {
+          goto handle_unusual;
+        }
+        goto after_live_notifications;
+        break;
+      }
+
+      // optional .server.TGroupUsers group_users = 31;
+      case 31: {
+        if (tag == 250) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
                input, mutable_group_users()));
         } else {
@@ -8617,9 +8827,9 @@ bool Envelope::MergePartialFromCodedStream(
         break;
       }
 
-      // optional .server.TTopicsJoin topics_join = 31;
-      case 31: {
-        if (tag == 250) {
+      // optional .server.TTopicsJoin topics_join = 32;
+      case 32: {
+        if (tag == 258) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
                input, mutable_topics_join()));
         } else {
@@ -8629,9 +8839,9 @@ bool Envelope::MergePartialFromCodedStream(
         break;
       }
 
-      // optional .server.TTopicsLeave topics_leave = 32;
-      case 32: {
-        if (tag == 258) {
+      // optional .server.TTopicsLeave topics_leave = 33;
+      case 33: {
+        if (tag == 266) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
                input, mutable_topics_leave()));
         } else {
@@ -8641,9 +8851,9 @@ bool Envelope::MergePartialFromCodedStream(
         break;
       }
 
-      // optional .server.TTopicMessageSend topic_message_send = 33;
-      case 33: {
-        if (tag == 266) {
+      // optional .server.TTopicMessageSend topic_message_send = 34;
+      case 34: {
+        if (tag == 274) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
                input, mutable_topic_message_send()));
         } else {
@@ -8653,9 +8863,9 @@ bool Envelope::MergePartialFromCodedStream(
         break;
       }
 
-      // optional .server.TTopicMessagesList topic_messages_list = 34;
-      case 34: {
-        if (tag == 274) {
+      // optional .server.TTopicMessagesList topic_messages_list = 35;
+      case 35: {
+        if (tag == 282) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
                input, mutable_topic_messages_list()));
         } else {
@@ -8665,9 +8875,9 @@ bool Envelope::MergePartialFromCodedStream(
         break;
       }
 
-      // optional .server.TTopics topics = 35;
-      case 35: {
-        if (tag == 282) {
+      // optional .server.TTopics topics = 36;
+      case 36: {
+        if (tag == 290) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
                input, mutable_topics()));
         } else {
@@ -8677,9 +8887,9 @@ bool Envelope::MergePartialFromCodedStream(
         break;
       }
 
-      // optional .server.TTopicMessageAck topic_message_ack = 36;
-      case 36: {
-        if (tag == 290) {
+      // optional .server.TTopicMessageAck topic_message_ack = 37;
+      case 37: {
+        if (tag == 298) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
                input, mutable_topic_message_ack()));
         } else {
@@ -8689,9 +8899,9 @@ bool Envelope::MergePartialFromCodedStream(
         break;
       }
 
-      // optional .server.TopicMessage topic_message = 37;
-      case 37: {
-        if (tag == 298) {
+      // optional .server.TopicMessage topic_message = 38;
+      case 38: {
+        if (tag == 306) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
                input, mutable_topic_message()));
         } else {
@@ -8701,9 +8911,9 @@ bool Envelope::MergePartialFromCodedStream(
         break;
       }
 
-      // optional .server.TTopicMessages topic_messages = 38;
-      case 38: {
-        if (tag == 306) {
+      // optional .server.TTopicMessages topic_messages = 39;
+      case 39: {
+        if (tag == 314) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
                input, mutable_topic_messages()));
         } else {
@@ -8713,9 +8923,9 @@ bool Envelope::MergePartialFromCodedStream(
         break;
       }
 
-      // optional .server.TopicPresence topic_presence = 39;
-      case 39: {
-        if (tag == 314) {
+      // optional .server.TopicPresence topic_presence = 40;
+      case 40: {
+        if (tag == 322) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
                input, mutable_topic_presence()));
         } else {
@@ -8725,9 +8935,9 @@ bool Envelope::MergePartialFromCodedStream(
         break;
       }
 
-      // optional .server.TMatchCreate match_create = 40;
-      case 40: {
-        if (tag == 322) {
+      // optional .server.TMatchCreate match_create = 41;
+      case 41: {
+        if (tag == 330) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
                input, mutable_match_create()));
         } else {
@@ -8737,9 +8947,9 @@ bool Envelope::MergePartialFromCodedStream(
         break;
       }
 
-      // optional .server.TMatchesJoin matches_join = 41;
-      case 41: {
-        if (tag == 330) {
+      // optional .server.TMatchesJoin matches_join = 42;
+      case 42: {
+        if (tag == 338) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
                input, mutable_matches_join()));
         } else {
@@ -8749,9 +8959,9 @@ bool Envelope::MergePartialFromCodedStream(
         break;
       }
 
-      // optional .server.TMatchesLeave matches_leave = 42;
-      case 42: {
-        if (tag == 338) {
+      // optional .server.TMatchesLeave matches_leave = 43;
+      case 43: {
+        if (tag == 346) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
                input, mutable_matches_leave()));
         } else {
@@ -8761,9 +8971,9 @@ bool Envelope::MergePartialFromCodedStream(
         break;
       }
 
-      // optional .server.MatchDataSend match_data_send = 43;
-      case 43: {
-        if (tag == 346) {
+      // optional .server.MatchDataSend match_data_send = 44;
+      case 44: {
+        if (tag == 354) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
                input, mutable_match_data_send()));
         } else {
@@ -8773,9 +8983,9 @@ bool Envelope::MergePartialFromCodedStream(
         break;
       }
 
-      // optional .server.TMatch match = 44;
-      case 44: {
-        if (tag == 354) {
+      // optional .server.TMatch match = 45;
+      case 45: {
+        if (tag == 362) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
                input, mutable_match()));
         } else {
@@ -8785,9 +8995,9 @@ bool Envelope::MergePartialFromCodedStream(
         break;
       }
 
-      // optional .server.TMatches matches = 45;
-      case 45: {
-        if (tag == 362) {
+      // optional .server.TMatches matches = 46;
+      case 46: {
+        if (tag == 370) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
                input, mutable_matches()));
         } else {
@@ -8797,9 +9007,9 @@ bool Envelope::MergePartialFromCodedStream(
         break;
       }
 
-      // optional .server.MatchData match_data = 46;
-      case 46: {
-        if (tag == 370) {
+      // optional .server.MatchData match_data = 47;
+      case 47: {
+        if (tag == 378) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
                input, mutable_match_data()));
         } else {
@@ -8809,9 +9019,9 @@ bool Envelope::MergePartialFromCodedStream(
         break;
       }
 
-      // optional .server.MatchPresence match_presence = 47;
-      case 47: {
-        if (tag == 378) {
+      // optional .server.MatchPresence match_presence = 48;
+      case 48: {
+        if (tag == 386) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
                input, mutable_match_presence()));
         } else {
@@ -8821,9 +9031,9 @@ bool Envelope::MergePartialFromCodedStream(
         break;
       }
 
-      // optional .server.TStorageList storage_list = 48;
-      case 48: {
-        if (tag == 386) {
+      // optional .server.TStorageList storage_list = 49;
+      case 49: {
+        if (tag == 394) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
                input, mutable_storage_list()));
         } else {
@@ -8833,9 +9043,9 @@ bool Envelope::MergePartialFromCodedStream(
         break;
       }
 
-      // optional .server.TStorageFetch storage_fetch = 49;
-      case 49: {
-        if (tag == 394) {
+      // optional .server.TStorageFetch storage_fetch = 50;
+      case 50: {
+        if (tag == 402) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
                input, mutable_storage_fetch()));
         } else {
@@ -8845,9 +9055,9 @@ bool Envelope::MergePartialFromCodedStream(
         break;
       }
 
-      // optional .server.TStorageWrite storage_write = 50;
-      case 50: {
-        if (tag == 402) {
+      // optional .server.TStorageWrite storage_write = 51;
+      case 51: {
+        if (tag == 410) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
                input, mutable_storage_write()));
         } else {
@@ -8857,9 +9067,21 @@ bool Envelope::MergePartialFromCodedStream(
         break;
       }
 
-      // optional .server.TStorageRemove storage_remove = 51;
-      case 51: {
-        if (tag == 410) {
+      // optional .server.TStorageUpdate storage_update = 52;
+      case 52: {
+        if (tag == 418) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_storage_update()));
+        } else {
+          goto handle_unusual;
+        }
+        goto after_live_notifications;
+        break;
+      }
+
+      // optional .server.TStorageRemove storage_remove = 53;
+      case 53: {
+        if (tag == 426) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
                input, mutable_storage_remove()));
         } else {
@@ -8869,9 +9091,9 @@ bool Envelope::MergePartialFromCodedStream(
         break;
       }
 
-      // optional .server.TStorageData storage_data = 52;
-      case 52: {
-        if (tag == 418) {
+      // optional .server.TStorageData storage_data = 54;
+      case 54: {
+        if (tag == 434) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
                input, mutable_storage_data()));
         } else {
@@ -8881,9 +9103,9 @@ bool Envelope::MergePartialFromCodedStream(
         break;
       }
 
-      // optional .server.TStorageKeys storage_keys = 53;
-      case 53: {
-        if (tag == 426) {
+      // optional .server.TStorageKeys storage_keys = 55;
+      case 55: {
+        if (tag == 442) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
                input, mutable_storage_keys()));
         } else {
@@ -8893,9 +9115,9 @@ bool Envelope::MergePartialFromCodedStream(
         break;
       }
 
-      // optional .server.TLeaderboardsList leaderboards_list = 54;
-      case 54: {
-        if (tag == 434) {
+      // optional .server.TLeaderboardsList leaderboards_list = 56;
+      case 56: {
+        if (tag == 450) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
                input, mutable_leaderboards_list()));
         } else {
@@ -8905,9 +9127,9 @@ bool Envelope::MergePartialFromCodedStream(
         break;
       }
 
-      // optional .server.TLeaderboardRecordsWrite leaderboard_records_write = 55;
-      case 55: {
-        if (tag == 442) {
+      // optional .server.TLeaderboardRecordsWrite leaderboard_records_write = 57;
+      case 57: {
+        if (tag == 458) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
                input, mutable_leaderboard_records_write()));
         } else {
@@ -8917,9 +9139,9 @@ bool Envelope::MergePartialFromCodedStream(
         break;
       }
 
-      // optional .server.TLeaderboardRecordsFetch leaderboard_records_fetch = 56;
-      case 56: {
-        if (tag == 450) {
+      // optional .server.TLeaderboardRecordsFetch leaderboard_records_fetch = 58;
+      case 58: {
+        if (tag == 466) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
                input, mutable_leaderboard_records_fetch()));
         } else {
@@ -8929,9 +9151,9 @@ bool Envelope::MergePartialFromCodedStream(
         break;
       }
 
-      // optional .server.TLeaderboardRecordsList leaderboard_records_list = 57;
-      case 57: {
-        if (tag == 458) {
+      // optional .server.TLeaderboardRecordsList leaderboard_records_list = 59;
+      case 59: {
+        if (tag == 474) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
                input, mutable_leaderboard_records_list()));
         } else {
@@ -8941,9 +9163,9 @@ bool Envelope::MergePartialFromCodedStream(
         break;
       }
 
-      // optional .server.TLeaderboards leaderboards = 58;
-      case 58: {
-        if (tag == 466) {
+      // optional .server.TLeaderboards leaderboards = 60;
+      case 60: {
+        if (tag == 482) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
                input, mutable_leaderboards()));
         } else {
@@ -8953,9 +9175,9 @@ bool Envelope::MergePartialFromCodedStream(
         break;
       }
 
-      // optional .server.TLeaderboardRecords leaderboard_records = 59;
-      case 59: {
-        if (tag == 474) {
+      // optional .server.TLeaderboardRecords leaderboard_records = 61;
+      case 61: {
+        if (tag == 490) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
                input, mutable_leaderboard_records()));
         } else {
@@ -8965,9 +9187,9 @@ bool Envelope::MergePartialFromCodedStream(
         break;
       }
 
-      // optional .server.TMatchmakeAdd matchmake_add = 60;
-      case 60: {
-        if (tag == 482) {
+      // optional .server.TMatchmakeAdd matchmake_add = 62;
+      case 62: {
+        if (tag == 498) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
                input, mutable_matchmake_add()));
         } else {
@@ -8977,9 +9199,9 @@ bool Envelope::MergePartialFromCodedStream(
         break;
       }
 
-      // optional .server.TMatchmakeRemove matchmake_remove = 61;
-      case 61: {
-        if (tag == 490) {
+      // optional .server.TMatchmakeRemove matchmake_remove = 63;
+      case 63: {
+        if (tag == 506) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
                input, mutable_matchmake_remove()));
         } else {
@@ -8989,9 +9211,9 @@ bool Envelope::MergePartialFromCodedStream(
         break;
       }
 
-      // optional .server.TMatchmakeTicket matchmake_ticket = 62;
-      case 62: {
-        if (tag == 498) {
+      // optional .server.TMatchmakeTicket matchmake_ticket = 64;
+      case 64: {
+        if (tag == 514) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
                input, mutable_matchmake_ticket()));
         } else {
@@ -9001,9 +9223,9 @@ bool Envelope::MergePartialFromCodedStream(
         break;
       }
 
-      // optional .server.MatchmakeMatched matchmake_matched = 63;
-      case 63: {
-        if (tag == 506) {
+      // optional .server.MatchmakeMatched matchmake_matched = 65;
+      case 65: {
+        if (tag == 522) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
                input, mutable_matchmake_matched()));
         } else {
@@ -9013,9 +9235,9 @@ bool Envelope::MergePartialFromCodedStream(
         break;
       }
 
-      // optional .server.TRpc rpc = 64;
-      case 64: {
-        if (tag == 514) {
+      // optional .server.TRpc rpc = 66;
+      case 66: {
+        if (tag == 530) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
                input, mutable_rpc()));
         } else {
@@ -9025,9 +9247,9 @@ bool Envelope::MergePartialFromCodedStream(
         break;
       }
 
-      // optional .server.TPurchaseValidation purchase = 65;
-      case 65: {
-        if (tag == 522) {
+      // optional .server.TPurchaseValidation purchase = 67;
+      case 67: {
+        if (tag == 538) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
                input, mutable_purchase()));
         } else {
@@ -9037,9 +9259,9 @@ bool Envelope::MergePartialFromCodedStream(
         break;
       }
 
-      // optional .server.TPurchaseRecord purchase_record = 66;
-      case 66: {
-        if (tag == 530) {
+      // optional .server.TPurchaseRecord purchase_record = 68;
+      case 68: {
+        if (tag == 546) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
                input, mutable_purchase_record()));
         } else {
@@ -9049,9 +9271,9 @@ bool Envelope::MergePartialFromCodedStream(
         break;
       }
 
-      // optional .server.TNotificationsList notifications_list = 67;
-      case 67: {
-        if (tag == 538) {
+      // optional .server.TNotificationsList notifications_list = 69;
+      case 69: {
+        if (tag == 554) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
                input, mutable_notifications_list()));
         } else {
@@ -9061,9 +9283,9 @@ bool Envelope::MergePartialFromCodedStream(
         break;
       }
 
-      // optional .server.TNotificationsRemove notifications_remove = 68;
-      case 68: {
-        if (tag == 546) {
+      // optional .server.TNotificationsRemove notifications_remove = 70;
+      case 70: {
+        if (tag == 562) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
                input, mutable_notifications_remove()));
         } else {
@@ -9073,21 +9295,21 @@ bool Envelope::MergePartialFromCodedStream(
         break;
       }
 
-      // optional .server.TNotifications notifications = 69;
-      case 69: {
-        if (tag == 554) {
+      // optional .server.TNotifications notifications = 71;
+      case 71: {
+        if (tag == 570) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
                input, mutable_notifications()));
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(562)) goto parse_live_notifications;
+        if (input->ExpectTag(578)) goto parse_live_notifications;
         break;
       }
 
-      // optional .server.Notifications live_notifications = 70;
-      case 70: {
-        if (tag == 562) {
+      // optional .server.Notifications live_notifications = 72;
+      case 72: {
+        if (tag == 578) {
          parse_live_notifications:
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
                input, mutable_live_notifications()));
@@ -9301,250 +9523,262 @@ void Envelope::SerializeWithCachedSizes(
       29, *payload_.groups_, output);
   }
 
-  // optional .server.TGroupUsers group_users = 30;
+  // optional .server.TGroupsSelf groups_self = 30;
+  if (has_groups_self()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      30, *payload_.groups_self_, output);
+  }
+
+  // optional .server.TGroupUsers group_users = 31;
   if (has_group_users()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      30, *payload_.group_users_, output);
+      31, *payload_.group_users_, output);
   }
 
-  // optional .server.TTopicsJoin topics_join = 31;
+  // optional .server.TTopicsJoin topics_join = 32;
   if (has_topics_join()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      31, *payload_.topics_join_, output);
+      32, *payload_.topics_join_, output);
   }
 
-  // optional .server.TTopicsLeave topics_leave = 32;
+  // optional .server.TTopicsLeave topics_leave = 33;
   if (has_topics_leave()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      32, *payload_.topics_leave_, output);
+      33, *payload_.topics_leave_, output);
   }
 
-  // optional .server.TTopicMessageSend topic_message_send = 33;
+  // optional .server.TTopicMessageSend topic_message_send = 34;
   if (has_topic_message_send()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      33, *payload_.topic_message_send_, output);
+      34, *payload_.topic_message_send_, output);
   }
 
-  // optional .server.TTopicMessagesList topic_messages_list = 34;
+  // optional .server.TTopicMessagesList topic_messages_list = 35;
   if (has_topic_messages_list()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      34, *payload_.topic_messages_list_, output);
+      35, *payload_.topic_messages_list_, output);
   }
 
-  // optional .server.TTopics topics = 35;
+  // optional .server.TTopics topics = 36;
   if (has_topics()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      35, *payload_.topics_, output);
+      36, *payload_.topics_, output);
   }
 
-  // optional .server.TTopicMessageAck topic_message_ack = 36;
+  // optional .server.TTopicMessageAck topic_message_ack = 37;
   if (has_topic_message_ack()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      36, *payload_.topic_message_ack_, output);
+      37, *payload_.topic_message_ack_, output);
   }
 
-  // optional .server.TopicMessage topic_message = 37;
+  // optional .server.TopicMessage topic_message = 38;
   if (has_topic_message()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      37, *payload_.topic_message_, output);
+      38, *payload_.topic_message_, output);
   }
 
-  // optional .server.TTopicMessages topic_messages = 38;
+  // optional .server.TTopicMessages topic_messages = 39;
   if (has_topic_messages()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      38, *payload_.topic_messages_, output);
+      39, *payload_.topic_messages_, output);
   }
 
-  // optional .server.TopicPresence topic_presence = 39;
+  // optional .server.TopicPresence topic_presence = 40;
   if (has_topic_presence()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      39, *payload_.topic_presence_, output);
+      40, *payload_.topic_presence_, output);
   }
 
-  // optional .server.TMatchCreate match_create = 40;
+  // optional .server.TMatchCreate match_create = 41;
   if (has_match_create()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      40, *payload_.match_create_, output);
+      41, *payload_.match_create_, output);
   }
 
-  // optional .server.TMatchesJoin matches_join = 41;
+  // optional .server.TMatchesJoin matches_join = 42;
   if (has_matches_join()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      41, *payload_.matches_join_, output);
+      42, *payload_.matches_join_, output);
   }
 
-  // optional .server.TMatchesLeave matches_leave = 42;
+  // optional .server.TMatchesLeave matches_leave = 43;
   if (has_matches_leave()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      42, *payload_.matches_leave_, output);
+      43, *payload_.matches_leave_, output);
   }
 
-  // optional .server.MatchDataSend match_data_send = 43;
+  // optional .server.MatchDataSend match_data_send = 44;
   if (has_match_data_send()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      43, *payload_.match_data_send_, output);
+      44, *payload_.match_data_send_, output);
   }
 
-  // optional .server.TMatch match = 44;
+  // optional .server.TMatch match = 45;
   if (has_match()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      44, *payload_.match_, output);
+      45, *payload_.match_, output);
   }
 
-  // optional .server.TMatches matches = 45;
+  // optional .server.TMatches matches = 46;
   if (has_matches()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      45, *payload_.matches_, output);
+      46, *payload_.matches_, output);
   }
 
-  // optional .server.MatchData match_data = 46;
+  // optional .server.MatchData match_data = 47;
   if (has_match_data()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      46, *payload_.match_data_, output);
+      47, *payload_.match_data_, output);
   }
 
-  // optional .server.MatchPresence match_presence = 47;
+  // optional .server.MatchPresence match_presence = 48;
   if (has_match_presence()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      47, *payload_.match_presence_, output);
+      48, *payload_.match_presence_, output);
   }
 
-  // optional .server.TStorageList storage_list = 48;
+  // optional .server.TStorageList storage_list = 49;
   if (has_storage_list()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      48, *payload_.storage_list_, output);
+      49, *payload_.storage_list_, output);
   }
 
-  // optional .server.TStorageFetch storage_fetch = 49;
+  // optional .server.TStorageFetch storage_fetch = 50;
   if (has_storage_fetch()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      49, *payload_.storage_fetch_, output);
+      50, *payload_.storage_fetch_, output);
   }
 
-  // optional .server.TStorageWrite storage_write = 50;
+  // optional .server.TStorageWrite storage_write = 51;
   if (has_storage_write()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      50, *payload_.storage_write_, output);
+      51, *payload_.storage_write_, output);
   }
 
-  // optional .server.TStorageRemove storage_remove = 51;
+  // optional .server.TStorageUpdate storage_update = 52;
+  if (has_storage_update()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      52, *payload_.storage_update_, output);
+  }
+
+  // optional .server.TStorageRemove storage_remove = 53;
   if (has_storage_remove()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      51, *payload_.storage_remove_, output);
+      53, *payload_.storage_remove_, output);
   }
 
-  // optional .server.TStorageData storage_data = 52;
+  // optional .server.TStorageData storage_data = 54;
   if (has_storage_data()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      52, *payload_.storage_data_, output);
+      54, *payload_.storage_data_, output);
   }
 
-  // optional .server.TStorageKeys storage_keys = 53;
+  // optional .server.TStorageKeys storage_keys = 55;
   if (has_storage_keys()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      53, *payload_.storage_keys_, output);
+      55, *payload_.storage_keys_, output);
   }
 
-  // optional .server.TLeaderboardsList leaderboards_list = 54;
+  // optional .server.TLeaderboardsList leaderboards_list = 56;
   if (has_leaderboards_list()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      54, *payload_.leaderboards_list_, output);
+      56, *payload_.leaderboards_list_, output);
   }
 
-  // optional .server.TLeaderboardRecordsWrite leaderboard_records_write = 55;
+  // optional .server.TLeaderboardRecordsWrite leaderboard_records_write = 57;
   if (has_leaderboard_records_write()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      55, *payload_.leaderboard_records_write_, output);
+      57, *payload_.leaderboard_records_write_, output);
   }
 
-  // optional .server.TLeaderboardRecordsFetch leaderboard_records_fetch = 56;
+  // optional .server.TLeaderboardRecordsFetch leaderboard_records_fetch = 58;
   if (has_leaderboard_records_fetch()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      56, *payload_.leaderboard_records_fetch_, output);
+      58, *payload_.leaderboard_records_fetch_, output);
   }
 
-  // optional .server.TLeaderboardRecordsList leaderboard_records_list = 57;
+  // optional .server.TLeaderboardRecordsList leaderboard_records_list = 59;
   if (has_leaderboard_records_list()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      57, *payload_.leaderboard_records_list_, output);
+      59, *payload_.leaderboard_records_list_, output);
   }
 
-  // optional .server.TLeaderboards leaderboards = 58;
+  // optional .server.TLeaderboards leaderboards = 60;
   if (has_leaderboards()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      58, *payload_.leaderboards_, output);
+      60, *payload_.leaderboards_, output);
   }
 
-  // optional .server.TLeaderboardRecords leaderboard_records = 59;
+  // optional .server.TLeaderboardRecords leaderboard_records = 61;
   if (has_leaderboard_records()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      59, *payload_.leaderboard_records_, output);
+      61, *payload_.leaderboard_records_, output);
   }
 
-  // optional .server.TMatchmakeAdd matchmake_add = 60;
+  // optional .server.TMatchmakeAdd matchmake_add = 62;
   if (has_matchmake_add()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      60, *payload_.matchmake_add_, output);
+      62, *payload_.matchmake_add_, output);
   }
 
-  // optional .server.TMatchmakeRemove matchmake_remove = 61;
+  // optional .server.TMatchmakeRemove matchmake_remove = 63;
   if (has_matchmake_remove()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      61, *payload_.matchmake_remove_, output);
+      63, *payload_.matchmake_remove_, output);
   }
 
-  // optional .server.TMatchmakeTicket matchmake_ticket = 62;
+  // optional .server.TMatchmakeTicket matchmake_ticket = 64;
   if (has_matchmake_ticket()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      62, *payload_.matchmake_ticket_, output);
+      64, *payload_.matchmake_ticket_, output);
   }
 
-  // optional .server.MatchmakeMatched matchmake_matched = 63;
+  // optional .server.MatchmakeMatched matchmake_matched = 65;
   if (has_matchmake_matched()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      63, *payload_.matchmake_matched_, output);
+      65, *payload_.matchmake_matched_, output);
   }
 
-  // optional .server.TRpc rpc = 64;
+  // optional .server.TRpc rpc = 66;
   if (has_rpc()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      64, *payload_.rpc_, output);
+      66, *payload_.rpc_, output);
   }
 
-  // optional .server.TPurchaseValidation purchase = 65;
+  // optional .server.TPurchaseValidation purchase = 67;
   if (has_purchase()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      65, *payload_.purchase_, output);
+      67, *payload_.purchase_, output);
   }
 
-  // optional .server.TPurchaseRecord purchase_record = 66;
+  // optional .server.TPurchaseRecord purchase_record = 68;
   if (has_purchase_record()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      66, *payload_.purchase_record_, output);
+      68, *payload_.purchase_record_, output);
   }
 
-  // optional .server.TNotificationsList notifications_list = 67;
+  // optional .server.TNotificationsList notifications_list = 69;
   if (has_notifications_list()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      67, *payload_.notifications_list_, output);
+      69, *payload_.notifications_list_, output);
   }
 
-  // optional .server.TNotificationsRemove notifications_remove = 68;
+  // optional .server.TNotificationsRemove notifications_remove = 70;
   if (has_notifications_remove()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      68, *payload_.notifications_remove_, output);
+      70, *payload_.notifications_remove_, output);
   }
 
-  // optional .server.TNotifications notifications = 69;
+  // optional .server.TNotifications notifications = 71;
   if (has_notifications()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      69, *payload_.notifications_, output);
+      71, *payload_.notifications_, output);
   }
 
-  // optional .server.Notifications live_notifications = 70;
+  // optional .server.Notifications live_notifications = 72;
   if (has_live_notifications()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      70, *payload_.live_notifications_, output);
+      72, *payload_.live_notifications_, output);
   }
 
   // @@protoc_insertion_point(serialize_end:server.Envelope)
@@ -9761,291 +9995,305 @@ void Envelope::SerializeWithCachedSizes(
         29, *payload_.groups_, false, target);
   }
 
-  // optional .server.TGroupUsers group_users = 30;
+  // optional .server.TGroupsSelf groups_self = 30;
+  if (has_groups_self()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      InternalWriteMessageNoVirtualToArray(
+        30, *payload_.groups_self_, false, target);
+  }
+
+  // optional .server.TGroupUsers group_users = 31;
   if (has_group_users()) {
     target = ::google::protobuf::internal::WireFormatLite::
       InternalWriteMessageNoVirtualToArray(
-        30, *payload_.group_users_, false, target);
+        31, *payload_.group_users_, false, target);
   }
 
-  // optional .server.TTopicsJoin topics_join = 31;
+  // optional .server.TTopicsJoin topics_join = 32;
   if (has_topics_join()) {
     target = ::google::protobuf::internal::WireFormatLite::
       InternalWriteMessageNoVirtualToArray(
-        31, *payload_.topics_join_, false, target);
+        32, *payload_.topics_join_, false, target);
   }
 
-  // optional .server.TTopicsLeave topics_leave = 32;
+  // optional .server.TTopicsLeave topics_leave = 33;
   if (has_topics_leave()) {
     target = ::google::protobuf::internal::WireFormatLite::
       InternalWriteMessageNoVirtualToArray(
-        32, *payload_.topics_leave_, false, target);
+        33, *payload_.topics_leave_, false, target);
   }
 
-  // optional .server.TTopicMessageSend topic_message_send = 33;
+  // optional .server.TTopicMessageSend topic_message_send = 34;
   if (has_topic_message_send()) {
     target = ::google::protobuf::internal::WireFormatLite::
       InternalWriteMessageNoVirtualToArray(
-        33, *payload_.topic_message_send_, false, target);
+        34, *payload_.topic_message_send_, false, target);
   }
 
-  // optional .server.TTopicMessagesList topic_messages_list = 34;
+  // optional .server.TTopicMessagesList topic_messages_list = 35;
   if (has_topic_messages_list()) {
     target = ::google::protobuf::internal::WireFormatLite::
       InternalWriteMessageNoVirtualToArray(
-        34, *payload_.topic_messages_list_, false, target);
+        35, *payload_.topic_messages_list_, false, target);
   }
 
-  // optional .server.TTopics topics = 35;
+  // optional .server.TTopics topics = 36;
   if (has_topics()) {
     target = ::google::protobuf::internal::WireFormatLite::
       InternalWriteMessageNoVirtualToArray(
-        35, *payload_.topics_, false, target);
+        36, *payload_.topics_, false, target);
   }
 
-  // optional .server.TTopicMessageAck topic_message_ack = 36;
+  // optional .server.TTopicMessageAck topic_message_ack = 37;
   if (has_topic_message_ack()) {
     target = ::google::protobuf::internal::WireFormatLite::
       InternalWriteMessageNoVirtualToArray(
-        36, *payload_.topic_message_ack_, false, target);
+        37, *payload_.topic_message_ack_, false, target);
   }
 
-  // optional .server.TopicMessage topic_message = 37;
+  // optional .server.TopicMessage topic_message = 38;
   if (has_topic_message()) {
     target = ::google::protobuf::internal::WireFormatLite::
       InternalWriteMessageNoVirtualToArray(
-        37, *payload_.topic_message_, false, target);
+        38, *payload_.topic_message_, false, target);
   }
 
-  // optional .server.TTopicMessages topic_messages = 38;
+  // optional .server.TTopicMessages topic_messages = 39;
   if (has_topic_messages()) {
     target = ::google::protobuf::internal::WireFormatLite::
       InternalWriteMessageNoVirtualToArray(
-        38, *payload_.topic_messages_, false, target);
+        39, *payload_.topic_messages_, false, target);
   }
 
-  // optional .server.TopicPresence topic_presence = 39;
+  // optional .server.TopicPresence topic_presence = 40;
   if (has_topic_presence()) {
     target = ::google::protobuf::internal::WireFormatLite::
       InternalWriteMessageNoVirtualToArray(
-        39, *payload_.topic_presence_, false, target);
+        40, *payload_.topic_presence_, false, target);
   }
 
-  // optional .server.TMatchCreate match_create = 40;
+  // optional .server.TMatchCreate match_create = 41;
   if (has_match_create()) {
     target = ::google::protobuf::internal::WireFormatLite::
       InternalWriteMessageNoVirtualToArray(
-        40, *payload_.match_create_, false, target);
+        41, *payload_.match_create_, false, target);
   }
 
-  // optional .server.TMatchesJoin matches_join = 41;
+  // optional .server.TMatchesJoin matches_join = 42;
   if (has_matches_join()) {
     target = ::google::protobuf::internal::WireFormatLite::
       InternalWriteMessageNoVirtualToArray(
-        41, *payload_.matches_join_, false, target);
+        42, *payload_.matches_join_, false, target);
   }
 
-  // optional .server.TMatchesLeave matches_leave = 42;
+  // optional .server.TMatchesLeave matches_leave = 43;
   if (has_matches_leave()) {
     target = ::google::protobuf::internal::WireFormatLite::
       InternalWriteMessageNoVirtualToArray(
-        42, *payload_.matches_leave_, false, target);
+        43, *payload_.matches_leave_, false, target);
   }
 
-  // optional .server.MatchDataSend match_data_send = 43;
+  // optional .server.MatchDataSend match_data_send = 44;
   if (has_match_data_send()) {
     target = ::google::protobuf::internal::WireFormatLite::
       InternalWriteMessageNoVirtualToArray(
-        43, *payload_.match_data_send_, false, target);
+        44, *payload_.match_data_send_, false, target);
   }
 
-  // optional .server.TMatch match = 44;
+  // optional .server.TMatch match = 45;
   if (has_match()) {
     target = ::google::protobuf::internal::WireFormatLite::
       InternalWriteMessageNoVirtualToArray(
-        44, *payload_.match_, false, target);
+        45, *payload_.match_, false, target);
   }
 
-  // optional .server.TMatches matches = 45;
+  // optional .server.TMatches matches = 46;
   if (has_matches()) {
     target = ::google::protobuf::internal::WireFormatLite::
       InternalWriteMessageNoVirtualToArray(
-        45, *payload_.matches_, false, target);
+        46, *payload_.matches_, false, target);
   }
 
-  // optional .server.MatchData match_data = 46;
+  // optional .server.MatchData match_data = 47;
   if (has_match_data()) {
     target = ::google::protobuf::internal::WireFormatLite::
       InternalWriteMessageNoVirtualToArray(
-        46, *payload_.match_data_, false, target);
+        47, *payload_.match_data_, false, target);
   }
 
-  // optional .server.MatchPresence match_presence = 47;
+  // optional .server.MatchPresence match_presence = 48;
   if (has_match_presence()) {
     target = ::google::protobuf::internal::WireFormatLite::
       InternalWriteMessageNoVirtualToArray(
-        47, *payload_.match_presence_, false, target);
+        48, *payload_.match_presence_, false, target);
   }
 
-  // optional .server.TStorageList storage_list = 48;
+  // optional .server.TStorageList storage_list = 49;
   if (has_storage_list()) {
     target = ::google::protobuf::internal::WireFormatLite::
       InternalWriteMessageNoVirtualToArray(
-        48, *payload_.storage_list_, false, target);
+        49, *payload_.storage_list_, false, target);
   }
 
-  // optional .server.TStorageFetch storage_fetch = 49;
+  // optional .server.TStorageFetch storage_fetch = 50;
   if (has_storage_fetch()) {
     target = ::google::protobuf::internal::WireFormatLite::
       InternalWriteMessageNoVirtualToArray(
-        49, *payload_.storage_fetch_, false, target);
+        50, *payload_.storage_fetch_, false, target);
   }
 
-  // optional .server.TStorageWrite storage_write = 50;
+  // optional .server.TStorageWrite storage_write = 51;
   if (has_storage_write()) {
     target = ::google::protobuf::internal::WireFormatLite::
       InternalWriteMessageNoVirtualToArray(
-        50, *payload_.storage_write_, false, target);
+        51, *payload_.storage_write_, false, target);
   }
 
-  // optional .server.TStorageRemove storage_remove = 51;
+  // optional .server.TStorageUpdate storage_update = 52;
+  if (has_storage_update()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      InternalWriteMessageNoVirtualToArray(
+        52, *payload_.storage_update_, false, target);
+  }
+
+  // optional .server.TStorageRemove storage_remove = 53;
   if (has_storage_remove()) {
     target = ::google::protobuf::internal::WireFormatLite::
       InternalWriteMessageNoVirtualToArray(
-        51, *payload_.storage_remove_, false, target);
+        53, *payload_.storage_remove_, false, target);
   }
 
-  // optional .server.TStorageData storage_data = 52;
+  // optional .server.TStorageData storage_data = 54;
   if (has_storage_data()) {
     target = ::google::protobuf::internal::WireFormatLite::
       InternalWriteMessageNoVirtualToArray(
-        52, *payload_.storage_data_, false, target);
+        54, *payload_.storage_data_, false, target);
   }
 
-  // optional .server.TStorageKeys storage_keys = 53;
+  // optional .server.TStorageKeys storage_keys = 55;
   if (has_storage_keys()) {
     target = ::google::protobuf::internal::WireFormatLite::
       InternalWriteMessageNoVirtualToArray(
-        53, *payload_.storage_keys_, false, target);
+        55, *payload_.storage_keys_, false, target);
   }
 
-  // optional .server.TLeaderboardsList leaderboards_list = 54;
+  // optional .server.TLeaderboardsList leaderboards_list = 56;
   if (has_leaderboards_list()) {
     target = ::google::protobuf::internal::WireFormatLite::
       InternalWriteMessageNoVirtualToArray(
-        54, *payload_.leaderboards_list_, false, target);
+        56, *payload_.leaderboards_list_, false, target);
   }
 
-  // optional .server.TLeaderboardRecordsWrite leaderboard_records_write = 55;
+  // optional .server.TLeaderboardRecordsWrite leaderboard_records_write = 57;
   if (has_leaderboard_records_write()) {
     target = ::google::protobuf::internal::WireFormatLite::
       InternalWriteMessageNoVirtualToArray(
-        55, *payload_.leaderboard_records_write_, false, target);
+        57, *payload_.leaderboard_records_write_, false, target);
   }
 
-  // optional .server.TLeaderboardRecordsFetch leaderboard_records_fetch = 56;
+  // optional .server.TLeaderboardRecordsFetch leaderboard_records_fetch = 58;
   if (has_leaderboard_records_fetch()) {
     target = ::google::protobuf::internal::WireFormatLite::
       InternalWriteMessageNoVirtualToArray(
-        56, *payload_.leaderboard_records_fetch_, false, target);
+        58, *payload_.leaderboard_records_fetch_, false, target);
   }
 
-  // optional .server.TLeaderboardRecordsList leaderboard_records_list = 57;
+  // optional .server.TLeaderboardRecordsList leaderboard_records_list = 59;
   if (has_leaderboard_records_list()) {
     target = ::google::protobuf::internal::WireFormatLite::
       InternalWriteMessageNoVirtualToArray(
-        57, *payload_.leaderboard_records_list_, false, target);
+        59, *payload_.leaderboard_records_list_, false, target);
   }
 
-  // optional .server.TLeaderboards leaderboards = 58;
+  // optional .server.TLeaderboards leaderboards = 60;
   if (has_leaderboards()) {
     target = ::google::protobuf::internal::WireFormatLite::
       InternalWriteMessageNoVirtualToArray(
-        58, *payload_.leaderboards_, false, target);
+        60, *payload_.leaderboards_, false, target);
   }
 
-  // optional .server.TLeaderboardRecords leaderboard_records = 59;
+  // optional .server.TLeaderboardRecords leaderboard_records = 61;
   if (has_leaderboard_records()) {
     target = ::google::protobuf::internal::WireFormatLite::
       InternalWriteMessageNoVirtualToArray(
-        59, *payload_.leaderboard_records_, false, target);
+        61, *payload_.leaderboard_records_, false, target);
   }
 
-  // optional .server.TMatchmakeAdd matchmake_add = 60;
+  // optional .server.TMatchmakeAdd matchmake_add = 62;
   if (has_matchmake_add()) {
     target = ::google::protobuf::internal::WireFormatLite::
       InternalWriteMessageNoVirtualToArray(
-        60, *payload_.matchmake_add_, false, target);
+        62, *payload_.matchmake_add_, false, target);
   }
 
-  // optional .server.TMatchmakeRemove matchmake_remove = 61;
+  // optional .server.TMatchmakeRemove matchmake_remove = 63;
   if (has_matchmake_remove()) {
     target = ::google::protobuf::internal::WireFormatLite::
       InternalWriteMessageNoVirtualToArray(
-        61, *payload_.matchmake_remove_, false, target);
+        63, *payload_.matchmake_remove_, false, target);
   }
 
-  // optional .server.TMatchmakeTicket matchmake_ticket = 62;
+  // optional .server.TMatchmakeTicket matchmake_ticket = 64;
   if (has_matchmake_ticket()) {
     target = ::google::protobuf::internal::WireFormatLite::
       InternalWriteMessageNoVirtualToArray(
-        62, *payload_.matchmake_ticket_, false, target);
+        64, *payload_.matchmake_ticket_, false, target);
   }
 
-  // optional .server.MatchmakeMatched matchmake_matched = 63;
+  // optional .server.MatchmakeMatched matchmake_matched = 65;
   if (has_matchmake_matched()) {
     target = ::google::protobuf::internal::WireFormatLite::
       InternalWriteMessageNoVirtualToArray(
-        63, *payload_.matchmake_matched_, false, target);
+        65, *payload_.matchmake_matched_, false, target);
   }
 
-  // optional .server.TRpc rpc = 64;
+  // optional .server.TRpc rpc = 66;
   if (has_rpc()) {
     target = ::google::protobuf::internal::WireFormatLite::
       InternalWriteMessageNoVirtualToArray(
-        64, *payload_.rpc_, false, target);
+        66, *payload_.rpc_, false, target);
   }
 
-  // optional .server.TPurchaseValidation purchase = 65;
+  // optional .server.TPurchaseValidation purchase = 67;
   if (has_purchase()) {
     target = ::google::protobuf::internal::WireFormatLite::
       InternalWriteMessageNoVirtualToArray(
-        65, *payload_.purchase_, false, target);
+        67, *payload_.purchase_, false, target);
   }
 
-  // optional .server.TPurchaseRecord purchase_record = 66;
+  // optional .server.TPurchaseRecord purchase_record = 68;
   if (has_purchase_record()) {
     target = ::google::protobuf::internal::WireFormatLite::
       InternalWriteMessageNoVirtualToArray(
-        66, *payload_.purchase_record_, false, target);
+        68, *payload_.purchase_record_, false, target);
   }
 
-  // optional .server.TNotificationsList notifications_list = 67;
+  // optional .server.TNotificationsList notifications_list = 69;
   if (has_notifications_list()) {
     target = ::google::protobuf::internal::WireFormatLite::
       InternalWriteMessageNoVirtualToArray(
-        67, *payload_.notifications_list_, false, target);
+        69, *payload_.notifications_list_, false, target);
   }
 
-  // optional .server.TNotificationsRemove notifications_remove = 68;
+  // optional .server.TNotificationsRemove notifications_remove = 70;
   if (has_notifications_remove()) {
     target = ::google::protobuf::internal::WireFormatLite::
       InternalWriteMessageNoVirtualToArray(
-        68, *payload_.notifications_remove_, false, target);
+        70, *payload_.notifications_remove_, false, target);
   }
 
-  // optional .server.TNotifications notifications = 69;
+  // optional .server.TNotifications notifications = 71;
   if (has_notifications()) {
     target = ::google::protobuf::internal::WireFormatLite::
       InternalWriteMessageNoVirtualToArray(
-        69, *payload_.notifications_, false, target);
+        71, *payload_.notifications_, false, target);
   }
 
-  // optional .server.Notifications live_notifications = 70;
+  // optional .server.Notifications live_notifications = 72;
   if (has_live_notifications()) {
     target = ::google::protobuf::internal::WireFormatLite::
       InternalWriteMessageNoVirtualToArray(
-        70, *payload_.live_notifications_, false, target);
+        72, *payload_.live_notifications_, false, target);
   }
 
   // @@protoc_insertion_point(serialize_to_array_end:server.Envelope)
@@ -10260,287 +10508,301 @@ size_t Envelope::ByteSizeLong() const {
           *payload_.groups_);
       break;
     }
-    // optional .server.TGroupUsers group_users = 30;
+    // optional .server.TGroupsSelf groups_self = 30;
+    case kGroupsSelf: {
+      total_size += 2 +
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          *payload_.groups_self_);
+      break;
+    }
+    // optional .server.TGroupUsers group_users = 31;
     case kGroupUsers: {
       total_size += 2 +
         ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
           *payload_.group_users_);
       break;
     }
-    // optional .server.TTopicsJoin topics_join = 31;
+    // optional .server.TTopicsJoin topics_join = 32;
     case kTopicsJoin: {
       total_size += 2 +
         ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
           *payload_.topics_join_);
       break;
     }
-    // optional .server.TTopicsLeave topics_leave = 32;
+    // optional .server.TTopicsLeave topics_leave = 33;
     case kTopicsLeave: {
       total_size += 2 +
         ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
           *payload_.topics_leave_);
       break;
     }
-    // optional .server.TTopicMessageSend topic_message_send = 33;
+    // optional .server.TTopicMessageSend topic_message_send = 34;
     case kTopicMessageSend: {
       total_size += 2 +
         ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
           *payload_.topic_message_send_);
       break;
     }
-    // optional .server.TTopicMessagesList topic_messages_list = 34;
+    // optional .server.TTopicMessagesList topic_messages_list = 35;
     case kTopicMessagesList: {
       total_size += 2 +
         ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
           *payload_.topic_messages_list_);
       break;
     }
-    // optional .server.TTopics topics = 35;
+    // optional .server.TTopics topics = 36;
     case kTopics: {
       total_size += 2 +
         ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
           *payload_.topics_);
       break;
     }
-    // optional .server.TTopicMessageAck topic_message_ack = 36;
+    // optional .server.TTopicMessageAck topic_message_ack = 37;
     case kTopicMessageAck: {
       total_size += 2 +
         ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
           *payload_.topic_message_ack_);
       break;
     }
-    // optional .server.TopicMessage topic_message = 37;
+    // optional .server.TopicMessage topic_message = 38;
     case kTopicMessage: {
       total_size += 2 +
         ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
           *payload_.topic_message_);
       break;
     }
-    // optional .server.TTopicMessages topic_messages = 38;
+    // optional .server.TTopicMessages topic_messages = 39;
     case kTopicMessages: {
       total_size += 2 +
         ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
           *payload_.topic_messages_);
       break;
     }
-    // optional .server.TopicPresence topic_presence = 39;
+    // optional .server.TopicPresence topic_presence = 40;
     case kTopicPresence: {
       total_size += 2 +
         ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
           *payload_.topic_presence_);
       break;
     }
-    // optional .server.TMatchCreate match_create = 40;
+    // optional .server.TMatchCreate match_create = 41;
     case kMatchCreate: {
       total_size += 2 +
         ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
           *payload_.match_create_);
       break;
     }
-    // optional .server.TMatchesJoin matches_join = 41;
+    // optional .server.TMatchesJoin matches_join = 42;
     case kMatchesJoin: {
       total_size += 2 +
         ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
           *payload_.matches_join_);
       break;
     }
-    // optional .server.TMatchesLeave matches_leave = 42;
+    // optional .server.TMatchesLeave matches_leave = 43;
     case kMatchesLeave: {
       total_size += 2 +
         ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
           *payload_.matches_leave_);
       break;
     }
-    // optional .server.MatchDataSend match_data_send = 43;
+    // optional .server.MatchDataSend match_data_send = 44;
     case kMatchDataSend: {
       total_size += 2 +
         ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
           *payload_.match_data_send_);
       break;
     }
-    // optional .server.TMatch match = 44;
+    // optional .server.TMatch match = 45;
     case kMatch: {
       total_size += 2 +
         ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
           *payload_.match_);
       break;
     }
-    // optional .server.TMatches matches = 45;
+    // optional .server.TMatches matches = 46;
     case kMatches: {
       total_size += 2 +
         ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
           *payload_.matches_);
       break;
     }
-    // optional .server.MatchData match_data = 46;
+    // optional .server.MatchData match_data = 47;
     case kMatchData: {
       total_size += 2 +
         ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
           *payload_.match_data_);
       break;
     }
-    // optional .server.MatchPresence match_presence = 47;
+    // optional .server.MatchPresence match_presence = 48;
     case kMatchPresence: {
       total_size += 2 +
         ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
           *payload_.match_presence_);
       break;
     }
-    // optional .server.TStorageList storage_list = 48;
+    // optional .server.TStorageList storage_list = 49;
     case kStorageList: {
       total_size += 2 +
         ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
           *payload_.storage_list_);
       break;
     }
-    // optional .server.TStorageFetch storage_fetch = 49;
+    // optional .server.TStorageFetch storage_fetch = 50;
     case kStorageFetch: {
       total_size += 2 +
         ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
           *payload_.storage_fetch_);
       break;
     }
-    // optional .server.TStorageWrite storage_write = 50;
+    // optional .server.TStorageWrite storage_write = 51;
     case kStorageWrite: {
       total_size += 2 +
         ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
           *payload_.storage_write_);
       break;
     }
-    // optional .server.TStorageRemove storage_remove = 51;
+    // optional .server.TStorageUpdate storage_update = 52;
+    case kStorageUpdate: {
+      total_size += 2 +
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          *payload_.storage_update_);
+      break;
+    }
+    // optional .server.TStorageRemove storage_remove = 53;
     case kStorageRemove: {
       total_size += 2 +
         ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
           *payload_.storage_remove_);
       break;
     }
-    // optional .server.TStorageData storage_data = 52;
+    // optional .server.TStorageData storage_data = 54;
     case kStorageData: {
       total_size += 2 +
         ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
           *payload_.storage_data_);
       break;
     }
-    // optional .server.TStorageKeys storage_keys = 53;
+    // optional .server.TStorageKeys storage_keys = 55;
     case kStorageKeys: {
       total_size += 2 +
         ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
           *payload_.storage_keys_);
       break;
     }
-    // optional .server.TLeaderboardsList leaderboards_list = 54;
+    // optional .server.TLeaderboardsList leaderboards_list = 56;
     case kLeaderboardsList: {
       total_size += 2 +
         ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
           *payload_.leaderboards_list_);
       break;
     }
-    // optional .server.TLeaderboardRecordsWrite leaderboard_records_write = 55;
+    // optional .server.TLeaderboardRecordsWrite leaderboard_records_write = 57;
     case kLeaderboardRecordsWrite: {
       total_size += 2 +
         ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
           *payload_.leaderboard_records_write_);
       break;
     }
-    // optional .server.TLeaderboardRecordsFetch leaderboard_records_fetch = 56;
+    // optional .server.TLeaderboardRecordsFetch leaderboard_records_fetch = 58;
     case kLeaderboardRecordsFetch: {
       total_size += 2 +
         ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
           *payload_.leaderboard_records_fetch_);
       break;
     }
-    // optional .server.TLeaderboardRecordsList leaderboard_records_list = 57;
+    // optional .server.TLeaderboardRecordsList leaderboard_records_list = 59;
     case kLeaderboardRecordsList: {
       total_size += 2 +
         ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
           *payload_.leaderboard_records_list_);
       break;
     }
-    // optional .server.TLeaderboards leaderboards = 58;
+    // optional .server.TLeaderboards leaderboards = 60;
     case kLeaderboards: {
       total_size += 2 +
         ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
           *payload_.leaderboards_);
       break;
     }
-    // optional .server.TLeaderboardRecords leaderboard_records = 59;
+    // optional .server.TLeaderboardRecords leaderboard_records = 61;
     case kLeaderboardRecords: {
       total_size += 2 +
         ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
           *payload_.leaderboard_records_);
       break;
     }
-    // optional .server.TMatchmakeAdd matchmake_add = 60;
+    // optional .server.TMatchmakeAdd matchmake_add = 62;
     case kMatchmakeAdd: {
       total_size += 2 +
         ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
           *payload_.matchmake_add_);
       break;
     }
-    // optional .server.TMatchmakeRemove matchmake_remove = 61;
+    // optional .server.TMatchmakeRemove matchmake_remove = 63;
     case kMatchmakeRemove: {
       total_size += 2 +
         ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
           *payload_.matchmake_remove_);
       break;
     }
-    // optional .server.TMatchmakeTicket matchmake_ticket = 62;
+    // optional .server.TMatchmakeTicket matchmake_ticket = 64;
     case kMatchmakeTicket: {
       total_size += 2 +
         ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
           *payload_.matchmake_ticket_);
       break;
     }
-    // optional .server.MatchmakeMatched matchmake_matched = 63;
+    // optional .server.MatchmakeMatched matchmake_matched = 65;
     case kMatchmakeMatched: {
       total_size += 2 +
         ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
           *payload_.matchmake_matched_);
       break;
     }
-    // optional .server.TRpc rpc = 64;
+    // optional .server.TRpc rpc = 66;
     case kRpc: {
       total_size += 2 +
         ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
           *payload_.rpc_);
       break;
     }
-    // optional .server.TPurchaseValidation purchase = 65;
+    // optional .server.TPurchaseValidation purchase = 67;
     case kPurchase: {
       total_size += 2 +
         ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
           *payload_.purchase_);
       break;
     }
-    // optional .server.TPurchaseRecord purchase_record = 66;
+    // optional .server.TPurchaseRecord purchase_record = 68;
     case kPurchaseRecord: {
       total_size += 2 +
         ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
           *payload_.purchase_record_);
       break;
     }
-    // optional .server.TNotificationsList notifications_list = 67;
+    // optional .server.TNotificationsList notifications_list = 69;
     case kNotificationsList: {
       total_size += 2 +
         ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
           *payload_.notifications_list_);
       break;
     }
-    // optional .server.TNotificationsRemove notifications_remove = 68;
+    // optional .server.TNotificationsRemove notifications_remove = 70;
     case kNotificationsRemove: {
       total_size += 2 +
         ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
           *payload_.notifications_remove_);
       break;
     }
-    // optional .server.TNotifications notifications = 69;
+    // optional .server.TNotifications notifications = 71;
     case kNotifications: {
       total_size += 2 +
         ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
           *payload_.notifications_);
       break;
     }
-    // optional .server.Notifications live_notifications = 70;
+    // optional .server.Notifications live_notifications = 72;
     case kLiveNotifications: {
       total_size += 2 +
         ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
@@ -10697,6 +10959,10 @@ void Envelope::UnsafeMergeFrom(const Envelope& from) {
       mutable_groups()->::server::TGroups::MergeFrom(from.groups());
       break;
     }
+    case kGroupsSelf: {
+      mutable_groups_self()->::server::TGroupsSelf::MergeFrom(from.groups_self());
+      break;
+    }
     case kGroupUsers: {
       mutable_group_users()->::server::TGroupUsers::MergeFrom(from.group_users());
       break;
@@ -10779,6 +11045,10 @@ void Envelope::UnsafeMergeFrom(const Envelope& from) {
     }
     case kStorageWrite: {
       mutable_storage_write()->::server::TStorageWrite::MergeFrom(from.storage_write());
+      break;
+    }
+    case kStorageUpdate: {
+      mutable_storage_update()->::server::TStorageUpdate::MergeFrom(from.storage_update());
       break;
     }
     case kStorageRemove: {
@@ -12301,7 +12571,55 @@ void Envelope::set_allocated_groups(::server::TGroups* groups) {
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.groups)
 }
 
-// optional .server.TGroupUsers group_users = 30;
+// optional .server.TGroupsSelf groups_self = 30;
+bool Envelope::has_groups_self() const {
+  return payload_case() == kGroupsSelf;
+}
+void Envelope::set_has_groups_self() {
+  _oneof_case_[0] = kGroupsSelf;
+}
+void Envelope::clear_groups_self() {
+  if (has_groups_self()) {
+    delete payload_.groups_self_;
+    clear_has_payload();
+  }
+}
+ const ::server::TGroupsSelf& Envelope::groups_self() const {
+  // @@protoc_insertion_point(field_get:server.Envelope.groups_self)
+  return has_groups_self()
+      ? *payload_.groups_self_
+      : ::server::TGroupsSelf::default_instance();
+}
+::server::TGroupsSelf* Envelope::mutable_groups_self() {
+  if (!has_groups_self()) {
+    clear_payload();
+    set_has_groups_self();
+    payload_.groups_self_ = new ::server::TGroupsSelf;
+  }
+  // @@protoc_insertion_point(field_mutable:server.Envelope.groups_self)
+  return payload_.groups_self_;
+}
+::server::TGroupsSelf* Envelope::release_groups_self() {
+  // @@protoc_insertion_point(field_release:server.Envelope.groups_self)
+  if (has_groups_self()) {
+    clear_has_payload();
+    ::server::TGroupsSelf* temp = payload_.groups_self_;
+    payload_.groups_self_ = NULL;
+    return temp;
+  } else {
+    return NULL;
+  }
+}
+void Envelope::set_allocated_groups_self(::server::TGroupsSelf* groups_self) {
+  clear_payload();
+  if (groups_self) {
+    set_has_groups_self();
+    payload_.groups_self_ = groups_self;
+  }
+  // @@protoc_insertion_point(field_set_allocated:server.Envelope.groups_self)
+}
+
+// optional .server.TGroupUsers group_users = 31;
 bool Envelope::has_group_users() const {
   return payload_case() == kGroupUsers;
 }
@@ -12349,7 +12667,7 @@ void Envelope::set_allocated_group_users(::server::TGroupUsers* group_users) {
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.group_users)
 }
 
-// optional .server.TTopicsJoin topics_join = 31;
+// optional .server.TTopicsJoin topics_join = 32;
 bool Envelope::has_topics_join() const {
   return payload_case() == kTopicsJoin;
 }
@@ -12397,7 +12715,7 @@ void Envelope::set_allocated_topics_join(::server::TTopicsJoin* topics_join) {
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.topics_join)
 }
 
-// optional .server.TTopicsLeave topics_leave = 32;
+// optional .server.TTopicsLeave topics_leave = 33;
 bool Envelope::has_topics_leave() const {
   return payload_case() == kTopicsLeave;
 }
@@ -12445,7 +12763,7 @@ void Envelope::set_allocated_topics_leave(::server::TTopicsLeave* topics_leave) 
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.topics_leave)
 }
 
-// optional .server.TTopicMessageSend topic_message_send = 33;
+// optional .server.TTopicMessageSend topic_message_send = 34;
 bool Envelope::has_topic_message_send() const {
   return payload_case() == kTopicMessageSend;
 }
@@ -12493,7 +12811,7 @@ void Envelope::set_allocated_topic_message_send(::server::TTopicMessageSend* top
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.topic_message_send)
 }
 
-// optional .server.TTopicMessagesList topic_messages_list = 34;
+// optional .server.TTopicMessagesList topic_messages_list = 35;
 bool Envelope::has_topic_messages_list() const {
   return payload_case() == kTopicMessagesList;
 }
@@ -12541,7 +12859,7 @@ void Envelope::set_allocated_topic_messages_list(::server::TTopicMessagesList* t
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.topic_messages_list)
 }
 
-// optional .server.TTopics topics = 35;
+// optional .server.TTopics topics = 36;
 bool Envelope::has_topics() const {
   return payload_case() == kTopics;
 }
@@ -12589,7 +12907,7 @@ void Envelope::set_allocated_topics(::server::TTopics* topics) {
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.topics)
 }
 
-// optional .server.TTopicMessageAck topic_message_ack = 36;
+// optional .server.TTopicMessageAck topic_message_ack = 37;
 bool Envelope::has_topic_message_ack() const {
   return payload_case() == kTopicMessageAck;
 }
@@ -12637,7 +12955,7 @@ void Envelope::set_allocated_topic_message_ack(::server::TTopicMessageAck* topic
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.topic_message_ack)
 }
 
-// optional .server.TopicMessage topic_message = 37;
+// optional .server.TopicMessage topic_message = 38;
 bool Envelope::has_topic_message() const {
   return payload_case() == kTopicMessage;
 }
@@ -12685,7 +13003,7 @@ void Envelope::set_allocated_topic_message(::server::TopicMessage* topic_message
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.topic_message)
 }
 
-// optional .server.TTopicMessages topic_messages = 38;
+// optional .server.TTopicMessages topic_messages = 39;
 bool Envelope::has_topic_messages() const {
   return payload_case() == kTopicMessages;
 }
@@ -12733,7 +13051,7 @@ void Envelope::set_allocated_topic_messages(::server::TTopicMessages* topic_mess
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.topic_messages)
 }
 
-// optional .server.TopicPresence topic_presence = 39;
+// optional .server.TopicPresence topic_presence = 40;
 bool Envelope::has_topic_presence() const {
   return payload_case() == kTopicPresence;
 }
@@ -12781,7 +13099,7 @@ void Envelope::set_allocated_topic_presence(::server::TopicPresence* topic_prese
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.topic_presence)
 }
 
-// optional .server.TMatchCreate match_create = 40;
+// optional .server.TMatchCreate match_create = 41;
 bool Envelope::has_match_create() const {
   return payload_case() == kMatchCreate;
 }
@@ -12829,7 +13147,7 @@ void Envelope::set_allocated_match_create(::server::TMatchCreate* match_create) 
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.match_create)
 }
 
-// optional .server.TMatchesJoin matches_join = 41;
+// optional .server.TMatchesJoin matches_join = 42;
 bool Envelope::has_matches_join() const {
   return payload_case() == kMatchesJoin;
 }
@@ -12877,7 +13195,7 @@ void Envelope::set_allocated_matches_join(::server::TMatchesJoin* matches_join) 
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.matches_join)
 }
 
-// optional .server.TMatchesLeave matches_leave = 42;
+// optional .server.TMatchesLeave matches_leave = 43;
 bool Envelope::has_matches_leave() const {
   return payload_case() == kMatchesLeave;
 }
@@ -12925,7 +13243,7 @@ void Envelope::set_allocated_matches_leave(::server::TMatchesLeave* matches_leav
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.matches_leave)
 }
 
-// optional .server.MatchDataSend match_data_send = 43;
+// optional .server.MatchDataSend match_data_send = 44;
 bool Envelope::has_match_data_send() const {
   return payload_case() == kMatchDataSend;
 }
@@ -12973,7 +13291,7 @@ void Envelope::set_allocated_match_data_send(::server::MatchDataSend* match_data
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.match_data_send)
 }
 
-// optional .server.TMatch match = 44;
+// optional .server.TMatch match = 45;
 bool Envelope::has_match() const {
   return payload_case() == kMatch;
 }
@@ -13021,7 +13339,7 @@ void Envelope::set_allocated_match(::server::TMatch* match) {
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.match)
 }
 
-// optional .server.TMatches matches = 45;
+// optional .server.TMatches matches = 46;
 bool Envelope::has_matches() const {
   return payload_case() == kMatches;
 }
@@ -13069,7 +13387,7 @@ void Envelope::set_allocated_matches(::server::TMatches* matches) {
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.matches)
 }
 
-// optional .server.MatchData match_data = 46;
+// optional .server.MatchData match_data = 47;
 bool Envelope::has_match_data() const {
   return payload_case() == kMatchData;
 }
@@ -13117,7 +13435,7 @@ void Envelope::set_allocated_match_data(::server::MatchData* match_data) {
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.match_data)
 }
 
-// optional .server.MatchPresence match_presence = 47;
+// optional .server.MatchPresence match_presence = 48;
 bool Envelope::has_match_presence() const {
   return payload_case() == kMatchPresence;
 }
@@ -13165,7 +13483,7 @@ void Envelope::set_allocated_match_presence(::server::MatchPresence* match_prese
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.match_presence)
 }
 
-// optional .server.TStorageList storage_list = 48;
+// optional .server.TStorageList storage_list = 49;
 bool Envelope::has_storage_list() const {
   return payload_case() == kStorageList;
 }
@@ -13213,7 +13531,7 @@ void Envelope::set_allocated_storage_list(::server::TStorageList* storage_list) 
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.storage_list)
 }
 
-// optional .server.TStorageFetch storage_fetch = 49;
+// optional .server.TStorageFetch storage_fetch = 50;
 bool Envelope::has_storage_fetch() const {
   return payload_case() == kStorageFetch;
 }
@@ -13261,7 +13579,7 @@ void Envelope::set_allocated_storage_fetch(::server::TStorageFetch* storage_fetc
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.storage_fetch)
 }
 
-// optional .server.TStorageWrite storage_write = 50;
+// optional .server.TStorageWrite storage_write = 51;
 bool Envelope::has_storage_write() const {
   return payload_case() == kStorageWrite;
 }
@@ -13309,7 +13627,55 @@ void Envelope::set_allocated_storage_write(::server::TStorageWrite* storage_writ
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.storage_write)
 }
 
-// optional .server.TStorageRemove storage_remove = 51;
+// optional .server.TStorageUpdate storage_update = 52;
+bool Envelope::has_storage_update() const {
+  return payload_case() == kStorageUpdate;
+}
+void Envelope::set_has_storage_update() {
+  _oneof_case_[0] = kStorageUpdate;
+}
+void Envelope::clear_storage_update() {
+  if (has_storage_update()) {
+    delete payload_.storage_update_;
+    clear_has_payload();
+  }
+}
+ const ::server::TStorageUpdate& Envelope::storage_update() const {
+  // @@protoc_insertion_point(field_get:server.Envelope.storage_update)
+  return has_storage_update()
+      ? *payload_.storage_update_
+      : ::server::TStorageUpdate::default_instance();
+}
+::server::TStorageUpdate* Envelope::mutable_storage_update() {
+  if (!has_storage_update()) {
+    clear_payload();
+    set_has_storage_update();
+    payload_.storage_update_ = new ::server::TStorageUpdate;
+  }
+  // @@protoc_insertion_point(field_mutable:server.Envelope.storage_update)
+  return payload_.storage_update_;
+}
+::server::TStorageUpdate* Envelope::release_storage_update() {
+  // @@protoc_insertion_point(field_release:server.Envelope.storage_update)
+  if (has_storage_update()) {
+    clear_has_payload();
+    ::server::TStorageUpdate* temp = payload_.storage_update_;
+    payload_.storage_update_ = NULL;
+    return temp;
+  } else {
+    return NULL;
+  }
+}
+void Envelope::set_allocated_storage_update(::server::TStorageUpdate* storage_update) {
+  clear_payload();
+  if (storage_update) {
+    set_has_storage_update();
+    payload_.storage_update_ = storage_update;
+  }
+  // @@protoc_insertion_point(field_set_allocated:server.Envelope.storage_update)
+}
+
+// optional .server.TStorageRemove storage_remove = 53;
 bool Envelope::has_storage_remove() const {
   return payload_case() == kStorageRemove;
 }
@@ -13357,7 +13723,7 @@ void Envelope::set_allocated_storage_remove(::server::TStorageRemove* storage_re
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.storage_remove)
 }
 
-// optional .server.TStorageData storage_data = 52;
+// optional .server.TStorageData storage_data = 54;
 bool Envelope::has_storage_data() const {
   return payload_case() == kStorageData;
 }
@@ -13405,7 +13771,7 @@ void Envelope::set_allocated_storage_data(::server::TStorageData* storage_data) 
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.storage_data)
 }
 
-// optional .server.TStorageKeys storage_keys = 53;
+// optional .server.TStorageKeys storage_keys = 55;
 bool Envelope::has_storage_keys() const {
   return payload_case() == kStorageKeys;
 }
@@ -13453,7 +13819,7 @@ void Envelope::set_allocated_storage_keys(::server::TStorageKeys* storage_keys) 
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.storage_keys)
 }
 
-// optional .server.TLeaderboardsList leaderboards_list = 54;
+// optional .server.TLeaderboardsList leaderboards_list = 56;
 bool Envelope::has_leaderboards_list() const {
   return payload_case() == kLeaderboardsList;
 }
@@ -13501,7 +13867,7 @@ void Envelope::set_allocated_leaderboards_list(::server::TLeaderboardsList* lead
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.leaderboards_list)
 }
 
-// optional .server.TLeaderboardRecordsWrite leaderboard_records_write = 55;
+// optional .server.TLeaderboardRecordsWrite leaderboard_records_write = 57;
 bool Envelope::has_leaderboard_records_write() const {
   return payload_case() == kLeaderboardRecordsWrite;
 }
@@ -13549,7 +13915,7 @@ void Envelope::set_allocated_leaderboard_records_write(::server::TLeaderboardRec
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.leaderboard_records_write)
 }
 
-// optional .server.TLeaderboardRecordsFetch leaderboard_records_fetch = 56;
+// optional .server.TLeaderboardRecordsFetch leaderboard_records_fetch = 58;
 bool Envelope::has_leaderboard_records_fetch() const {
   return payload_case() == kLeaderboardRecordsFetch;
 }
@@ -13597,7 +13963,7 @@ void Envelope::set_allocated_leaderboard_records_fetch(::server::TLeaderboardRec
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.leaderboard_records_fetch)
 }
 
-// optional .server.TLeaderboardRecordsList leaderboard_records_list = 57;
+// optional .server.TLeaderboardRecordsList leaderboard_records_list = 59;
 bool Envelope::has_leaderboard_records_list() const {
   return payload_case() == kLeaderboardRecordsList;
 }
@@ -13645,7 +14011,7 @@ void Envelope::set_allocated_leaderboard_records_list(::server::TLeaderboardReco
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.leaderboard_records_list)
 }
 
-// optional .server.TLeaderboards leaderboards = 58;
+// optional .server.TLeaderboards leaderboards = 60;
 bool Envelope::has_leaderboards() const {
   return payload_case() == kLeaderboards;
 }
@@ -13693,7 +14059,7 @@ void Envelope::set_allocated_leaderboards(::server::TLeaderboards* leaderboards)
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.leaderboards)
 }
 
-// optional .server.TLeaderboardRecords leaderboard_records = 59;
+// optional .server.TLeaderboardRecords leaderboard_records = 61;
 bool Envelope::has_leaderboard_records() const {
   return payload_case() == kLeaderboardRecords;
 }
@@ -13741,7 +14107,7 @@ void Envelope::set_allocated_leaderboard_records(::server::TLeaderboardRecords* 
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.leaderboard_records)
 }
 
-// optional .server.TMatchmakeAdd matchmake_add = 60;
+// optional .server.TMatchmakeAdd matchmake_add = 62;
 bool Envelope::has_matchmake_add() const {
   return payload_case() == kMatchmakeAdd;
 }
@@ -13789,7 +14155,7 @@ void Envelope::set_allocated_matchmake_add(::server::TMatchmakeAdd* matchmake_ad
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.matchmake_add)
 }
 
-// optional .server.TMatchmakeRemove matchmake_remove = 61;
+// optional .server.TMatchmakeRemove matchmake_remove = 63;
 bool Envelope::has_matchmake_remove() const {
   return payload_case() == kMatchmakeRemove;
 }
@@ -13837,7 +14203,7 @@ void Envelope::set_allocated_matchmake_remove(::server::TMatchmakeRemove* matchm
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.matchmake_remove)
 }
 
-// optional .server.TMatchmakeTicket matchmake_ticket = 62;
+// optional .server.TMatchmakeTicket matchmake_ticket = 64;
 bool Envelope::has_matchmake_ticket() const {
   return payload_case() == kMatchmakeTicket;
 }
@@ -13885,7 +14251,7 @@ void Envelope::set_allocated_matchmake_ticket(::server::TMatchmakeTicket* matchm
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.matchmake_ticket)
 }
 
-// optional .server.MatchmakeMatched matchmake_matched = 63;
+// optional .server.MatchmakeMatched matchmake_matched = 65;
 bool Envelope::has_matchmake_matched() const {
   return payload_case() == kMatchmakeMatched;
 }
@@ -13933,7 +14299,7 @@ void Envelope::set_allocated_matchmake_matched(::server::MatchmakeMatched* match
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.matchmake_matched)
 }
 
-// optional .server.TRpc rpc = 64;
+// optional .server.TRpc rpc = 66;
 bool Envelope::has_rpc() const {
   return payload_case() == kRpc;
 }
@@ -13981,7 +14347,7 @@ void Envelope::set_allocated_rpc(::server::TRpc* rpc) {
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.rpc)
 }
 
-// optional .server.TPurchaseValidation purchase = 65;
+// optional .server.TPurchaseValidation purchase = 67;
 bool Envelope::has_purchase() const {
   return payload_case() == kPurchase;
 }
@@ -14029,7 +14395,7 @@ void Envelope::set_allocated_purchase(::server::TPurchaseValidation* purchase) {
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.purchase)
 }
 
-// optional .server.TPurchaseRecord purchase_record = 66;
+// optional .server.TPurchaseRecord purchase_record = 68;
 bool Envelope::has_purchase_record() const {
   return payload_case() == kPurchaseRecord;
 }
@@ -14077,7 +14443,7 @@ void Envelope::set_allocated_purchase_record(::server::TPurchaseRecord* purchase
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.purchase_record)
 }
 
-// optional .server.TNotificationsList notifications_list = 67;
+// optional .server.TNotificationsList notifications_list = 69;
 bool Envelope::has_notifications_list() const {
   return payload_case() == kNotificationsList;
 }
@@ -14125,7 +14491,7 @@ void Envelope::set_allocated_notifications_list(::server::TNotificationsList* no
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.notifications_list)
 }
 
-// optional .server.TNotificationsRemove notifications_remove = 68;
+// optional .server.TNotificationsRemove notifications_remove = 70;
 bool Envelope::has_notifications_remove() const {
   return payload_case() == kNotificationsRemove;
 }
@@ -14173,7 +14539,7 @@ void Envelope::set_allocated_notifications_remove(::server::TNotificationsRemove
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.notifications_remove)
 }
 
-// optional .server.TNotifications notifications = 69;
+// optional .server.TNotifications notifications = 71;
 bool Envelope::has_notifications() const {
   return payload_case() == kNotifications;
 }
@@ -14221,7 +14587,7 @@ void Envelope::set_allocated_notifications(::server::TNotifications* notificatio
   // @@protoc_insertion_point(field_set_allocated:server.Envelope.notifications)
 }
 
-// optional .server.Notifications live_notifications = 70;
+// optional .server.Notifications live_notifications = 72;
 bool Envelope::has_live_notifications() const {
   return payload_case() == kLiveNotifications;
 }
@@ -21234,7 +21600,7 @@ inline const TUsers* TUsers::internal_default_instance() {
 
 #if !defined(_MSC_VER) || _MSC_VER >= 1900
 const int Friend::kUserFieldNumber;
-const int Friend::kTypeFieldNumber;
+const int Friend::kStateFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
 Friend::Friend()
@@ -21259,7 +21625,7 @@ Friend::Friend(const Friend& from)
 
 void Friend::SharedCtor() {
   user_ = NULL;
-  type_ = GOOGLE_LONGLONG(0);
+  state_ = GOOGLE_LONGLONG(0);
   _cached_size_ = 0;
 }
 
@@ -21303,7 +21669,7 @@ void Friend::Clear() {
 // @@protoc_insertion_point(message_clear_start:server.Friend)
   if (GetArenaNoVirtual() == NULL && user_ != NULL) delete user_;
   user_ = NULL;
-  type_ = GOOGLE_LONGLONG(0);
+  state_ = GOOGLE_LONGLONG(0);
 }
 
 bool Friend::MergePartialFromCodedStream(
@@ -21324,18 +21690,18 @@ bool Friend::MergePartialFromCodedStream(
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(16)) goto parse_type;
+        if (input->ExpectTag(16)) goto parse_state;
         break;
       }
 
-      // optional int64 type = 2;
+      // optional int64 state = 2;
       case 2: {
         if (tag == 16) {
-         parse_type:
+         parse_state:
 
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    ::google::protobuf::int64, ::google::protobuf::internal::WireFormatLite::TYPE_INT64>(
-                 input, &type_)));
+                 input, &state_)));
         } else {
           goto handle_unusual;
         }
@@ -21373,9 +21739,9 @@ void Friend::SerializeWithCachedSizes(
       1, *this->user_, output);
   }
 
-  // optional int64 type = 2;
-  if (this->type() != 0) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt64(2, this->type(), output);
+  // optional int64 state = 2;
+  if (this->state() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt64(2, this->state(), output);
   }
 
   // @@protoc_insertion_point(serialize_end:server.Friend)
@@ -21392,9 +21758,9 @@ void Friend::SerializeWithCachedSizes(
         1, *this->user_, false, target);
   }
 
-  // optional int64 type = 2;
-  if (this->type() != 0) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteInt64ToArray(2, this->type(), target);
+  // optional int64 state = 2;
+  if (this->state() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt64ToArray(2, this->state(), target);
   }
 
   // @@protoc_insertion_point(serialize_to_array_end:server.Friend)
@@ -21412,11 +21778,11 @@ size_t Friend::ByteSizeLong() const {
         *this->user_);
   }
 
-  // optional int64 type = 2;
-  if (this->type() != 0) {
+  // optional int64 state = 2;
+  if (this->state() != 0) {
     total_size += 1 +
       ::google::protobuf::internal::WireFormatLite::Int64Size(
-        this->type());
+        this->state());
   }
 
   int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
@@ -21455,8 +21821,8 @@ void Friend::UnsafeMergeFrom(const Friend& from) {
   if (from.has_user()) {
     mutable_user()->::server::User::MergeFrom(from.user());
   }
-  if (from.type() != 0) {
-    set_type(from.type());
+  if (from.state() != 0) {
+    set_state(from.state());
   }
 }
 
@@ -21485,7 +21851,7 @@ void Friend::Swap(Friend* other) {
 }
 void Friend::InternalSwap(Friend* other) {
   std::swap(user_, other->user_);
-  std::swap(type_, other->type_);
+  std::swap(state_, other->state_);
   _internal_metadata_.Swap(&other->_internal_metadata_);
   std::swap(_cached_size_, other->_cached_size_);
 }
@@ -21540,18 +21906,18 @@ void Friend::set_allocated_user(::server::User* user) {
   // @@protoc_insertion_point(field_set_allocated:server.Friend.user)
 }
 
-// optional int64 type = 2;
-void Friend::clear_type() {
-  type_ = GOOGLE_LONGLONG(0);
+// optional int64 state = 2;
+void Friend::clear_state() {
+  state_ = GOOGLE_LONGLONG(0);
 }
-::google::protobuf::int64 Friend::type() const {
-  // @@protoc_insertion_point(field_get:server.Friend.type)
-  return type_;
+::google::protobuf::int64 Friend::state() const {
+  // @@protoc_insertion_point(field_get:server.Friend.state)
+  return state_;
 }
-void Friend::set_type(::google::protobuf::int64 value) {
+void Friend::set_state(::google::protobuf::int64 value) {
   
-  type_ = value;
-  // @@protoc_insertion_point(field_set:server.Friend.type)
+  state_ = value;
+  // @@protoc_insertion_point(field_set:server.Friend.state)
 }
 
 inline const Friend* Friend::internal_default_instance() {
@@ -28811,8 +29177,603 @@ inline const TGroups* TGroups::internal_default_instance() {
 // ===================================================================
 
 #if !defined(_MSC_VER) || _MSC_VER >= 1900
+const int TGroupsSelf_GroupSelf::kGroupFieldNumber;
+const int TGroupsSelf_GroupSelf::kStateFieldNumber;
+#endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
+
+TGroupsSelf_GroupSelf::TGroupsSelf_GroupSelf()
+  : ::google::protobuf::Message(), _internal_metadata_(NULL) {
+  if (this != internal_default_instance()) protobuf_InitDefaults_api_2eproto();
+  SharedCtor();
+  // @@protoc_insertion_point(constructor:server.TGroupsSelf.GroupSelf)
+}
+
+void TGroupsSelf_GroupSelf::InitAsDefaultInstance() {
+  group_ = const_cast< ::server::Group*>(
+      ::server::Group::internal_default_instance());
+}
+
+TGroupsSelf_GroupSelf::TGroupsSelf_GroupSelf(const TGroupsSelf_GroupSelf& from)
+  : ::google::protobuf::Message(),
+    _internal_metadata_(NULL) {
+  SharedCtor();
+  UnsafeMergeFrom(from);
+  // @@protoc_insertion_point(copy_constructor:server.TGroupsSelf.GroupSelf)
+}
+
+void TGroupsSelf_GroupSelf::SharedCtor() {
+  group_ = NULL;
+  state_ = GOOGLE_LONGLONG(0);
+  _cached_size_ = 0;
+}
+
+TGroupsSelf_GroupSelf::~TGroupsSelf_GroupSelf() {
+  // @@protoc_insertion_point(destructor:server.TGroupsSelf.GroupSelf)
+  SharedDtor();
+}
+
+void TGroupsSelf_GroupSelf::SharedDtor() {
+  if (this != &TGroupsSelf_GroupSelf_default_instance_.get()) {
+    delete group_;
+  }
+}
+
+void TGroupsSelf_GroupSelf::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* TGroupsSelf_GroupSelf::descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return TGroupsSelf_GroupSelf_descriptor_;
+}
+
+const TGroupsSelf_GroupSelf& TGroupsSelf_GroupSelf::default_instance() {
+  protobuf_InitDefaults_api_2eproto();
+  return *internal_default_instance();
+}
+
+::google::protobuf::internal::ExplicitlyConstructed<TGroupsSelf_GroupSelf> TGroupsSelf_GroupSelf_default_instance_;
+
+TGroupsSelf_GroupSelf* TGroupsSelf_GroupSelf::New(::google::protobuf::Arena* arena) const {
+  TGroupsSelf_GroupSelf* n = new TGroupsSelf_GroupSelf;
+  if (arena != NULL) {
+    arena->Own(n);
+  }
+  return n;
+}
+
+void TGroupsSelf_GroupSelf::Clear() {
+// @@protoc_insertion_point(message_clear_start:server.TGroupsSelf.GroupSelf)
+  if (GetArenaNoVirtual() == NULL && group_ != NULL) delete group_;
+  group_ = NULL;
+  state_ = GOOGLE_LONGLONG(0);
+}
+
+bool TGroupsSelf_GroupSelf::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
+  ::google::protobuf::uint32 tag;
+  // @@protoc_insertion_point(parse_start:server.TGroupsSelf.GroupSelf)
+  for (;;) {
+    ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoff(127);
+    tag = p.first;
+    if (!p.second) goto handle_unusual;
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // optional .server.Group group = 1;
+      case 1: {
+        if (tag == 10) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_group()));
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(16)) goto parse_state;
+        break;
+      }
+
+      // optional int64 state = 2;
+      case 2: {
+        if (tag == 16) {
+         parse_state:
+
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::int64, ::google::protobuf::internal::WireFormatLite::TYPE_INT64>(
+                 input, &state_)));
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectAtEnd()) goto success;
+        break;
+      }
+
+      default: {
+      handle_unusual:
+        if (tag == 0 ||
+            ::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          goto success;
+        }
+        DO_(::google::protobuf::internal::WireFormatLite::SkipField(input, tag));
+        break;
+      }
+    }
+  }
+success:
+  // @@protoc_insertion_point(parse_success:server.TGroupsSelf.GroupSelf)
+  return true;
+failure:
+  // @@protoc_insertion_point(parse_failure:server.TGroupsSelf.GroupSelf)
+  return false;
+#undef DO_
+}
+
+void TGroupsSelf_GroupSelf::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // @@protoc_insertion_point(serialize_start:server.TGroupsSelf.GroupSelf)
+  // optional .server.Group group = 1;
+  if (this->has_group()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      1, *this->group_, output);
+  }
+
+  // optional int64 state = 2;
+  if (this->state() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt64(2, this->state(), output);
+  }
+
+  // @@protoc_insertion_point(serialize_end:server.TGroupsSelf.GroupSelf)
+}
+
+::google::protobuf::uint8* TGroupsSelf_GroupSelf::InternalSerializeWithCachedSizesToArray(
+    bool deterministic, ::google::protobuf::uint8* target) const {
+  (void)deterministic; // Unused
+  // @@protoc_insertion_point(serialize_to_array_start:server.TGroupsSelf.GroupSelf)
+  // optional .server.Group group = 1;
+  if (this->has_group()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      InternalWriteMessageNoVirtualToArray(
+        1, *this->group_, false, target);
+  }
+
+  // optional int64 state = 2;
+  if (this->state() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt64ToArray(2, this->state(), target);
+  }
+
+  // @@protoc_insertion_point(serialize_to_array_end:server.TGroupsSelf.GroupSelf)
+  return target;
+}
+
+size_t TGroupsSelf_GroupSelf::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:server.TGroupsSelf.GroupSelf)
+  size_t total_size = 0;
+
+  // optional .server.Group group = 1;
+  if (this->has_group()) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+        *this->group_);
+  }
+
+  // optional int64 state = 2;
+  if (this->state() != 0) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::Int64Size(
+        this->state());
+  }
+
+  int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = cached_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void TGroupsSelf_GroupSelf::MergeFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_merge_from_start:server.TGroupsSelf.GroupSelf)
+  if (GOOGLE_PREDICT_FALSE(&from == this)) MergeFromFail(__LINE__);
+  const TGroupsSelf_GroupSelf* source =
+      ::google::protobuf::internal::DynamicCastToGenerated<const TGroupsSelf_GroupSelf>(
+          &from);
+  if (source == NULL) {
+  // @@protoc_insertion_point(generalized_merge_from_cast_fail:server.TGroupsSelf.GroupSelf)
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+  // @@protoc_insertion_point(generalized_merge_from_cast_success:server.TGroupsSelf.GroupSelf)
+    UnsafeMergeFrom(*source);
+  }
+}
+
+void TGroupsSelf_GroupSelf::MergeFrom(const TGroupsSelf_GroupSelf& from) {
+// @@protoc_insertion_point(class_specific_merge_from_start:server.TGroupsSelf.GroupSelf)
+  if (GOOGLE_PREDICT_TRUE(&from != this)) {
+    UnsafeMergeFrom(from);
+  } else {
+    MergeFromFail(__LINE__);
+  }
+}
+
+void TGroupsSelf_GroupSelf::UnsafeMergeFrom(const TGroupsSelf_GroupSelf& from) {
+  GOOGLE_DCHECK(&from != this);
+  if (from.has_group()) {
+    mutable_group()->::server::Group::MergeFrom(from.group());
+  }
+  if (from.state() != 0) {
+    set_state(from.state());
+  }
+}
+
+void TGroupsSelf_GroupSelf::CopyFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_copy_from_start:server.TGroupsSelf.GroupSelf)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void TGroupsSelf_GroupSelf::CopyFrom(const TGroupsSelf_GroupSelf& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:server.TGroupsSelf.GroupSelf)
+  if (&from == this) return;
+  Clear();
+  UnsafeMergeFrom(from);
+}
+
+bool TGroupsSelf_GroupSelf::IsInitialized() const {
+
+  return true;
+}
+
+void TGroupsSelf_GroupSelf::Swap(TGroupsSelf_GroupSelf* other) {
+  if (other == this) return;
+  InternalSwap(other);
+}
+void TGroupsSelf_GroupSelf::InternalSwap(TGroupsSelf_GroupSelf* other) {
+  std::swap(group_, other->group_);
+  std::swap(state_, other->state_);
+  _internal_metadata_.Swap(&other->_internal_metadata_);
+  std::swap(_cached_size_, other->_cached_size_);
+}
+
+::google::protobuf::Metadata TGroupsSelf_GroupSelf::GetMetadata() const {
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = TGroupsSelf_GroupSelf_descriptor_;
+  metadata.reflection = TGroupsSelf_GroupSelf_reflection_;
+  return metadata;
+}
+
+
+// -------------------------------------------------------------------
+
+#if !defined(_MSC_VER) || _MSC_VER >= 1900
+const int TGroupsSelf::kGroupsSelfFieldNumber;
+#endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
+
+TGroupsSelf::TGroupsSelf()
+  : ::google::protobuf::Message(), _internal_metadata_(NULL) {
+  if (this != internal_default_instance()) protobuf_InitDefaults_api_2eproto();
+  SharedCtor();
+  // @@protoc_insertion_point(constructor:server.TGroupsSelf)
+}
+
+void TGroupsSelf::InitAsDefaultInstance() {
+}
+
+TGroupsSelf::TGroupsSelf(const TGroupsSelf& from)
+  : ::google::protobuf::Message(),
+    _internal_metadata_(NULL) {
+  SharedCtor();
+  UnsafeMergeFrom(from);
+  // @@protoc_insertion_point(copy_constructor:server.TGroupsSelf)
+}
+
+void TGroupsSelf::SharedCtor() {
+  _cached_size_ = 0;
+}
+
+TGroupsSelf::~TGroupsSelf() {
+  // @@protoc_insertion_point(destructor:server.TGroupsSelf)
+  SharedDtor();
+}
+
+void TGroupsSelf::SharedDtor() {
+}
+
+void TGroupsSelf::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* TGroupsSelf::descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return TGroupsSelf_descriptor_;
+}
+
+const TGroupsSelf& TGroupsSelf::default_instance() {
+  protobuf_InitDefaults_api_2eproto();
+  return *internal_default_instance();
+}
+
+::google::protobuf::internal::ExplicitlyConstructed<TGroupsSelf> TGroupsSelf_default_instance_;
+
+TGroupsSelf* TGroupsSelf::New(::google::protobuf::Arena* arena) const {
+  TGroupsSelf* n = new TGroupsSelf;
+  if (arena != NULL) {
+    arena->Own(n);
+  }
+  return n;
+}
+
+void TGroupsSelf::Clear() {
+// @@protoc_insertion_point(message_clear_start:server.TGroupsSelf)
+  groups_self_.Clear();
+}
+
+bool TGroupsSelf::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
+  ::google::protobuf::uint32 tag;
+  // @@protoc_insertion_point(parse_start:server.TGroupsSelf)
+  for (;;) {
+    ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoff(127);
+    tag = p.first;
+    if (!p.second) goto handle_unusual;
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // repeated .server.TGroupsSelf.GroupSelf groups_self = 1;
+      case 1: {
+        if (tag == 10) {
+          DO_(input->IncrementRecursionDepth());
+         parse_loop_groups_self:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtualNoRecursionDepth(
+                input, add_groups_self()));
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(10)) goto parse_loop_groups_self;
+        input->UnsafeDecrementRecursionDepth();
+        if (input->ExpectAtEnd()) goto success;
+        break;
+      }
+
+      default: {
+      handle_unusual:
+        if (tag == 0 ||
+            ::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          goto success;
+        }
+        DO_(::google::protobuf::internal::WireFormatLite::SkipField(input, tag));
+        break;
+      }
+    }
+  }
+success:
+  // @@protoc_insertion_point(parse_success:server.TGroupsSelf)
+  return true;
+failure:
+  // @@protoc_insertion_point(parse_failure:server.TGroupsSelf)
+  return false;
+#undef DO_
+}
+
+void TGroupsSelf::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // @@protoc_insertion_point(serialize_start:server.TGroupsSelf)
+  // repeated .server.TGroupsSelf.GroupSelf groups_self = 1;
+  for (unsigned int i = 0, n = this->groups_self_size(); i < n; i++) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      1, this->groups_self(i), output);
+  }
+
+  // @@protoc_insertion_point(serialize_end:server.TGroupsSelf)
+}
+
+::google::protobuf::uint8* TGroupsSelf::InternalSerializeWithCachedSizesToArray(
+    bool deterministic, ::google::protobuf::uint8* target) const {
+  (void)deterministic; // Unused
+  // @@protoc_insertion_point(serialize_to_array_start:server.TGroupsSelf)
+  // repeated .server.TGroupsSelf.GroupSelf groups_self = 1;
+  for (unsigned int i = 0, n = this->groups_self_size(); i < n; i++) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      InternalWriteMessageNoVirtualToArray(
+        1, this->groups_self(i), false, target);
+  }
+
+  // @@protoc_insertion_point(serialize_to_array_end:server.TGroupsSelf)
+  return target;
+}
+
+size_t TGroupsSelf::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:server.TGroupsSelf)
+  size_t total_size = 0;
+
+  // repeated .server.TGroupsSelf.GroupSelf groups_self = 1;
+  {
+    unsigned int count = this->groups_self_size();
+    total_size += 1UL * count;
+    for (unsigned int i = 0; i < count; i++) {
+      total_size +=
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          this->groups_self(i));
+    }
+  }
+
+  int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = cached_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void TGroupsSelf::MergeFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_merge_from_start:server.TGroupsSelf)
+  if (GOOGLE_PREDICT_FALSE(&from == this)) MergeFromFail(__LINE__);
+  const TGroupsSelf* source =
+      ::google::protobuf::internal::DynamicCastToGenerated<const TGroupsSelf>(
+          &from);
+  if (source == NULL) {
+  // @@protoc_insertion_point(generalized_merge_from_cast_fail:server.TGroupsSelf)
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+  // @@protoc_insertion_point(generalized_merge_from_cast_success:server.TGroupsSelf)
+    UnsafeMergeFrom(*source);
+  }
+}
+
+void TGroupsSelf::MergeFrom(const TGroupsSelf& from) {
+// @@protoc_insertion_point(class_specific_merge_from_start:server.TGroupsSelf)
+  if (GOOGLE_PREDICT_TRUE(&from != this)) {
+    UnsafeMergeFrom(from);
+  } else {
+    MergeFromFail(__LINE__);
+  }
+}
+
+void TGroupsSelf::UnsafeMergeFrom(const TGroupsSelf& from) {
+  GOOGLE_DCHECK(&from != this);
+  groups_self_.MergeFrom(from.groups_self_);
+}
+
+void TGroupsSelf::CopyFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_copy_from_start:server.TGroupsSelf)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void TGroupsSelf::CopyFrom(const TGroupsSelf& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:server.TGroupsSelf)
+  if (&from == this) return;
+  Clear();
+  UnsafeMergeFrom(from);
+}
+
+bool TGroupsSelf::IsInitialized() const {
+
+  return true;
+}
+
+void TGroupsSelf::Swap(TGroupsSelf* other) {
+  if (other == this) return;
+  InternalSwap(other);
+}
+void TGroupsSelf::InternalSwap(TGroupsSelf* other) {
+  groups_self_.UnsafeArenaSwap(&other->groups_self_);
+  _internal_metadata_.Swap(&other->_internal_metadata_);
+  std::swap(_cached_size_, other->_cached_size_);
+}
+
+::google::protobuf::Metadata TGroupsSelf::GetMetadata() const {
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = TGroupsSelf_descriptor_;
+  metadata.reflection = TGroupsSelf_reflection_;
+  return metadata;
+}
+
+#if PROTOBUF_INLINE_NOT_IN_HEADERS
+// TGroupsSelf_GroupSelf
+
+// optional .server.Group group = 1;
+bool TGroupsSelf_GroupSelf::has_group() const {
+  return this != internal_default_instance() && group_ != NULL;
+}
+void TGroupsSelf_GroupSelf::clear_group() {
+  if (GetArenaNoVirtual() == NULL && group_ != NULL) delete group_;
+  group_ = NULL;
+}
+const ::server::Group& TGroupsSelf_GroupSelf::group() const {
+  // @@protoc_insertion_point(field_get:server.TGroupsSelf.GroupSelf.group)
+  return group_ != NULL ? *group_
+                         : *::server::Group::internal_default_instance();
+}
+::server::Group* TGroupsSelf_GroupSelf::mutable_group() {
+  
+  if (group_ == NULL) {
+    group_ = new ::server::Group;
+  }
+  // @@protoc_insertion_point(field_mutable:server.TGroupsSelf.GroupSelf.group)
+  return group_;
+}
+::server::Group* TGroupsSelf_GroupSelf::release_group() {
+  // @@protoc_insertion_point(field_release:server.TGroupsSelf.GroupSelf.group)
+  
+  ::server::Group* temp = group_;
+  group_ = NULL;
+  return temp;
+}
+void TGroupsSelf_GroupSelf::set_allocated_group(::server::Group* group) {
+  delete group_;
+  group_ = group;
+  if (group) {
+    
+  } else {
+    
+  }
+  // @@protoc_insertion_point(field_set_allocated:server.TGroupsSelf.GroupSelf.group)
+}
+
+// optional int64 state = 2;
+void TGroupsSelf_GroupSelf::clear_state() {
+  state_ = GOOGLE_LONGLONG(0);
+}
+::google::protobuf::int64 TGroupsSelf_GroupSelf::state() const {
+  // @@protoc_insertion_point(field_get:server.TGroupsSelf.GroupSelf.state)
+  return state_;
+}
+void TGroupsSelf_GroupSelf::set_state(::google::protobuf::int64 value) {
+  
+  state_ = value;
+  // @@protoc_insertion_point(field_set:server.TGroupsSelf.GroupSelf.state)
+}
+
+inline const TGroupsSelf_GroupSelf* TGroupsSelf_GroupSelf::internal_default_instance() {
+  return &TGroupsSelf_GroupSelf_default_instance_.get();
+}
+// -------------------------------------------------------------------
+
+// TGroupsSelf
+
+// repeated .server.TGroupsSelf.GroupSelf groups_self = 1;
+int TGroupsSelf::groups_self_size() const {
+  return groups_self_.size();
+}
+void TGroupsSelf::clear_groups_self() {
+  groups_self_.Clear();
+}
+const ::server::TGroupsSelf_GroupSelf& TGroupsSelf::groups_self(int index) const {
+  // @@protoc_insertion_point(field_get:server.TGroupsSelf.groups_self)
+  return groups_self_.Get(index);
+}
+::server::TGroupsSelf_GroupSelf* TGroupsSelf::mutable_groups_self(int index) {
+  // @@protoc_insertion_point(field_mutable:server.TGroupsSelf.groups_self)
+  return groups_self_.Mutable(index);
+}
+::server::TGroupsSelf_GroupSelf* TGroupsSelf::add_groups_self() {
+  // @@protoc_insertion_point(field_add:server.TGroupsSelf.groups_self)
+  return groups_self_.Add();
+}
+::google::protobuf::RepeatedPtrField< ::server::TGroupsSelf_GroupSelf >*
+TGroupsSelf::mutable_groups_self() {
+  // @@protoc_insertion_point(field_mutable_list:server.TGroupsSelf.groups_self)
+  return &groups_self_;
+}
+const ::google::protobuf::RepeatedPtrField< ::server::TGroupsSelf_GroupSelf >&
+TGroupsSelf::groups_self() const {
+  // @@protoc_insertion_point(field_list:server.TGroupsSelf.groups_self)
+  return groups_self_;
+}
+
+inline const TGroupsSelf* TGroupsSelf::internal_default_instance() {
+  return &TGroupsSelf_default_instance_.get();
+}
+#endif  // PROTOBUF_INLINE_NOT_IN_HEADERS
+
+// ===================================================================
+
+#if !defined(_MSC_VER) || _MSC_VER >= 1900
 const int GroupUser::kUserFieldNumber;
-const int GroupUser::kTypeFieldNumber;
+const int GroupUser::kStateFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
 GroupUser::GroupUser()
@@ -28837,7 +29798,7 @@ GroupUser::GroupUser(const GroupUser& from)
 
 void GroupUser::SharedCtor() {
   user_ = NULL;
-  type_ = GOOGLE_LONGLONG(0);
+  state_ = GOOGLE_LONGLONG(0);
   _cached_size_ = 0;
 }
 
@@ -28881,7 +29842,7 @@ void GroupUser::Clear() {
 // @@protoc_insertion_point(message_clear_start:server.GroupUser)
   if (GetArenaNoVirtual() == NULL && user_ != NULL) delete user_;
   user_ = NULL;
-  type_ = GOOGLE_LONGLONG(0);
+  state_ = GOOGLE_LONGLONG(0);
 }
 
 bool GroupUser::MergePartialFromCodedStream(
@@ -28902,18 +29863,18 @@ bool GroupUser::MergePartialFromCodedStream(
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(16)) goto parse_type;
+        if (input->ExpectTag(16)) goto parse_state;
         break;
       }
 
-      // optional int64 type = 2;
+      // optional int64 state = 2;
       case 2: {
         if (tag == 16) {
-         parse_type:
+         parse_state:
 
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    ::google::protobuf::int64, ::google::protobuf::internal::WireFormatLite::TYPE_INT64>(
-                 input, &type_)));
+                 input, &state_)));
         } else {
           goto handle_unusual;
         }
@@ -28951,9 +29912,9 @@ void GroupUser::SerializeWithCachedSizes(
       1, *this->user_, output);
   }
 
-  // optional int64 type = 2;
-  if (this->type() != 0) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt64(2, this->type(), output);
+  // optional int64 state = 2;
+  if (this->state() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt64(2, this->state(), output);
   }
 
   // @@protoc_insertion_point(serialize_end:server.GroupUser)
@@ -28970,9 +29931,9 @@ void GroupUser::SerializeWithCachedSizes(
         1, *this->user_, false, target);
   }
 
-  // optional int64 type = 2;
-  if (this->type() != 0) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteInt64ToArray(2, this->type(), target);
+  // optional int64 state = 2;
+  if (this->state() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt64ToArray(2, this->state(), target);
   }
 
   // @@protoc_insertion_point(serialize_to_array_end:server.GroupUser)
@@ -28990,11 +29951,11 @@ size_t GroupUser::ByteSizeLong() const {
         *this->user_);
   }
 
-  // optional int64 type = 2;
-  if (this->type() != 0) {
+  // optional int64 state = 2;
+  if (this->state() != 0) {
     total_size += 1 +
       ::google::protobuf::internal::WireFormatLite::Int64Size(
-        this->type());
+        this->state());
   }
 
   int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
@@ -29033,8 +29994,8 @@ void GroupUser::UnsafeMergeFrom(const GroupUser& from) {
   if (from.has_user()) {
     mutable_user()->::server::User::MergeFrom(from.user());
   }
-  if (from.type() != 0) {
-    set_type(from.type());
+  if (from.state() != 0) {
+    set_state(from.state());
   }
 }
 
@@ -29063,7 +30024,7 @@ void GroupUser::Swap(GroupUser* other) {
 }
 void GroupUser::InternalSwap(GroupUser* other) {
   std::swap(user_, other->user_);
-  std::swap(type_, other->type_);
+  std::swap(state_, other->state_);
   _internal_metadata_.Swap(&other->_internal_metadata_);
   std::swap(_cached_size_, other->_cached_size_);
 }
@@ -29118,18 +30079,18 @@ void GroupUser::set_allocated_user(::server::User* user) {
   // @@protoc_insertion_point(field_set_allocated:server.GroupUser.user)
 }
 
-// optional int64 type = 2;
-void GroupUser::clear_type() {
-  type_ = GOOGLE_LONGLONG(0);
+// optional int64 state = 2;
+void GroupUser::clear_state() {
+  state_ = GOOGLE_LONGLONG(0);
 }
-::google::protobuf::int64 GroupUser::type() const {
-  // @@protoc_insertion_point(field_get:server.GroupUser.type)
-  return type_;
+::google::protobuf::int64 GroupUser::state() const {
+  // @@protoc_insertion_point(field_get:server.GroupUser.state)
+  return state_;
 }
-void GroupUser::set_type(::google::protobuf::int64 value) {
+void GroupUser::set_state(::google::protobuf::int64 value) {
   
-  type_ = value;
-  // @@protoc_insertion_point(field_set:server.GroupUser.type)
+  state_ = value;
+  // @@protoc_insertion_point(field_set:server.GroupUser.state)
 }
 
 inline const GroupUser* GroupUser::internal_default_instance() {
@@ -47086,6 +48047,2082 @@ TStorageWrite::data() const {
 
 inline const TStorageWrite* TStorageWrite::internal_default_instance() {
   return &TStorageWrite_default_instance_.get();
+}
+#endif  // PROTOBUF_INLINE_NOT_IN_HEADERS
+
+// ===================================================================
+
+const ::google::protobuf::EnumDescriptor* TStorageUpdate_StorageUpdate_UpdateOp_UpdateOpCode_descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return TStorageUpdate_StorageUpdate_UpdateOp_UpdateOpCode_descriptor_;
+}
+bool TStorageUpdate_StorageUpdate_UpdateOp_UpdateOpCode_IsValid(int value) {
+  switch (value) {
+    case 0:
+    case 1:
+    case 2:
+    case 3:
+    case 4:
+    case 5:
+    case 6:
+    case 7:
+    case 8:
+    case 9:
+    case 10:
+    case 11:
+      return true;
+    default:
+      return false;
+  }
+}
+
+#if !defined(_MSC_VER) || _MSC_VER >= 1900
+const TStorageUpdate_StorageUpdate_UpdateOp_UpdateOpCode TStorageUpdate_StorageUpdate_UpdateOp::ADD;
+const TStorageUpdate_StorageUpdate_UpdateOp_UpdateOpCode TStorageUpdate_StorageUpdate_UpdateOp::APPEND;
+const TStorageUpdate_StorageUpdate_UpdateOp_UpdateOpCode TStorageUpdate_StorageUpdate_UpdateOp::COPY;
+const TStorageUpdate_StorageUpdate_UpdateOp_UpdateOpCode TStorageUpdate_StorageUpdate_UpdateOp::INCR;
+const TStorageUpdate_StorageUpdate_UpdateOp_UpdateOpCode TStorageUpdate_StorageUpdate_UpdateOp::INIT;
+const TStorageUpdate_StorageUpdate_UpdateOp_UpdateOpCode TStorageUpdate_StorageUpdate_UpdateOp::MERGE;
+const TStorageUpdate_StorageUpdate_UpdateOp_UpdateOpCode TStorageUpdate_StorageUpdate_UpdateOp::MOVE;
+const TStorageUpdate_StorageUpdate_UpdateOp_UpdateOpCode TStorageUpdate_StorageUpdate_UpdateOp::PATCH;
+const TStorageUpdate_StorageUpdate_UpdateOp_UpdateOpCode TStorageUpdate_StorageUpdate_UpdateOp::REMOVE;
+const TStorageUpdate_StorageUpdate_UpdateOp_UpdateOpCode TStorageUpdate_StorageUpdate_UpdateOp::REPLACE;
+const TStorageUpdate_StorageUpdate_UpdateOp_UpdateOpCode TStorageUpdate_StorageUpdate_UpdateOp::TEST;
+const TStorageUpdate_StorageUpdate_UpdateOp_UpdateOpCode TStorageUpdate_StorageUpdate_UpdateOp::COMPARE;
+const TStorageUpdate_StorageUpdate_UpdateOp_UpdateOpCode TStorageUpdate_StorageUpdate_UpdateOp::UpdateOpCode_MIN;
+const TStorageUpdate_StorageUpdate_UpdateOp_UpdateOpCode TStorageUpdate_StorageUpdate_UpdateOp::UpdateOpCode_MAX;
+const int TStorageUpdate_StorageUpdate_UpdateOp::UpdateOpCode_ARRAYSIZE;
+#endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
+#if !defined(_MSC_VER) || _MSC_VER >= 1900
+const int TStorageUpdate_StorageUpdate_UpdateOp::kOpFieldNumber;
+const int TStorageUpdate_StorageUpdate_UpdateOp::kPathFieldNumber;
+const int TStorageUpdate_StorageUpdate_UpdateOp::kValueFieldNumber;
+const int TStorageUpdate_StorageUpdate_UpdateOp::kFromFieldNumber;
+const int TStorageUpdate_StorageUpdate_UpdateOp::kConditionalFieldNumber;
+const int TStorageUpdate_StorageUpdate_UpdateOp::kAssertFieldNumber;
+const int TStorageUpdate_StorageUpdate_UpdateOp::kOpsFieldNumber;
+#endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
+
+TStorageUpdate_StorageUpdate_UpdateOp::TStorageUpdate_StorageUpdate_UpdateOp()
+  : ::google::protobuf::Message(), _internal_metadata_(NULL) {
+  if (this != internal_default_instance()) protobuf_InitDefaults_api_2eproto();
+  SharedCtor();
+  // @@protoc_insertion_point(constructor:server.TStorageUpdate.StorageUpdate.UpdateOp)
+}
+
+void TStorageUpdate_StorageUpdate_UpdateOp::InitAsDefaultInstance() {
+}
+
+TStorageUpdate_StorageUpdate_UpdateOp::TStorageUpdate_StorageUpdate_UpdateOp(const TStorageUpdate_StorageUpdate_UpdateOp& from)
+  : ::google::protobuf::Message(),
+    _internal_metadata_(NULL) {
+  SharedCtor();
+  UnsafeMergeFrom(from);
+  // @@protoc_insertion_point(copy_constructor:server.TStorageUpdate.StorageUpdate.UpdateOp)
+}
+
+void TStorageUpdate_StorageUpdate_UpdateOp::SharedCtor() {
+  path_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  value_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  from_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  ::memset(&op_, 0, reinterpret_cast<char*>(&assert_) -
+    reinterpret_cast<char*>(&op_) + sizeof(assert_));
+  _cached_size_ = 0;
+}
+
+TStorageUpdate_StorageUpdate_UpdateOp::~TStorageUpdate_StorageUpdate_UpdateOp() {
+  // @@protoc_insertion_point(destructor:server.TStorageUpdate.StorageUpdate.UpdateOp)
+  SharedDtor();
+}
+
+void TStorageUpdate_StorageUpdate_UpdateOp::SharedDtor() {
+  path_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  value_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  from_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+
+void TStorageUpdate_StorageUpdate_UpdateOp::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* TStorageUpdate_StorageUpdate_UpdateOp::descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return TStorageUpdate_StorageUpdate_UpdateOp_descriptor_;
+}
+
+const TStorageUpdate_StorageUpdate_UpdateOp& TStorageUpdate_StorageUpdate_UpdateOp::default_instance() {
+  protobuf_InitDefaults_api_2eproto();
+  return *internal_default_instance();
+}
+
+::google::protobuf::internal::ExplicitlyConstructed<TStorageUpdate_StorageUpdate_UpdateOp> TStorageUpdate_StorageUpdate_UpdateOp_default_instance_;
+
+TStorageUpdate_StorageUpdate_UpdateOp* TStorageUpdate_StorageUpdate_UpdateOp::New(::google::protobuf::Arena* arena) const {
+  TStorageUpdate_StorageUpdate_UpdateOp* n = new TStorageUpdate_StorageUpdate_UpdateOp;
+  if (arena != NULL) {
+    arena->Own(n);
+  }
+  return n;
+}
+
+void TStorageUpdate_StorageUpdate_UpdateOp::Clear() {
+// @@protoc_insertion_point(message_clear_start:server.TStorageUpdate.StorageUpdate.UpdateOp)
+#if defined(__clang__)
+#define ZR_HELPER_(f) \
+  _Pragma("clang diagnostic push") \
+  _Pragma("clang diagnostic ignored \"-Winvalid-offsetof\"") \
+  __builtin_offsetof(TStorageUpdate_StorageUpdate_UpdateOp, f) \
+  _Pragma("clang diagnostic pop")
+#else
+#define ZR_HELPER_(f) reinterpret_cast<char*>(\
+  &reinterpret_cast<TStorageUpdate_StorageUpdate_UpdateOp*>(16)->f)
+#endif
+
+#define ZR_(first, last) do {\
+  ::memset(&(first), 0,\
+           ZR_HELPER_(last) - ZR_HELPER_(first) + sizeof(last));\
+} while (0)
+
+  ZR_(op_, assert_);
+  path_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  value_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  from_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+
+#undef ZR_HELPER_
+#undef ZR_
+
+  ops_.Clear();
+}
+
+bool TStorageUpdate_StorageUpdate_UpdateOp::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
+  ::google::protobuf::uint32 tag;
+  // @@protoc_insertion_point(parse_start:server.TStorageUpdate.StorageUpdate.UpdateOp)
+  for (;;) {
+    ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoff(127);
+    tag = p.first;
+    if (!p.second) goto handle_unusual;
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // optional int32 op = 1;
+      case 1: {
+        if (tag == 8) {
+
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
+                 input, &op_)));
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(18)) goto parse_path;
+        break;
+      }
+
+      // optional string path = 2;
+      case 2: {
+        if (tag == 18) {
+         parse_path:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_path()));
+          DO_(::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+            this->path().data(), this->path().length(),
+            ::google::protobuf::internal::WireFormatLite::PARSE,
+            "server.TStorageUpdate.StorageUpdate.UpdateOp.path"));
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(26)) goto parse_value;
+        break;
+      }
+
+      // optional bytes value = 3;
+      case 3: {
+        if (tag == 26) {
+         parse_value:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadBytes(
+                input, this->mutable_value()));
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(34)) goto parse_from;
+        break;
+      }
+
+      // optional string from = 4;
+      case 4: {
+        if (tag == 34) {
+         parse_from:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_from()));
+          DO_(::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+            this->from().data(), this->from().length(),
+            ::google::protobuf::internal::WireFormatLite::PARSE,
+            "server.TStorageUpdate.StorageUpdate.UpdateOp.from"));
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(40)) goto parse_conditional;
+        break;
+      }
+
+      // optional bool conditional = 5;
+      case 5: {
+        if (tag == 40) {
+         parse_conditional:
+
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   bool, ::google::protobuf::internal::WireFormatLite::TYPE_BOOL>(
+                 input, &conditional_)));
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(48)) goto parse_assert;
+        break;
+      }
+
+      // optional int64 assert = 6;
+      case 6: {
+        if (tag == 48) {
+         parse_assert:
+
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::int64, ::google::protobuf::internal::WireFormatLite::TYPE_INT64>(
+                 input, &assert_)));
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(58)) goto parse_ops;
+        break;
+      }
+
+      // repeated .server.TStorageUpdate.StorageUpdate.UpdateOp ops = 7;
+      case 7: {
+        if (tag == 58) {
+         parse_ops:
+          DO_(input->IncrementRecursionDepth());
+         parse_loop_ops:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtualNoRecursionDepth(
+                input, add_ops()));
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(58)) goto parse_loop_ops;
+        input->UnsafeDecrementRecursionDepth();
+        if (input->ExpectAtEnd()) goto success;
+        break;
+      }
+
+      default: {
+      handle_unusual:
+        if (tag == 0 ||
+            ::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          goto success;
+        }
+        DO_(::google::protobuf::internal::WireFormatLite::SkipField(input, tag));
+        break;
+      }
+    }
+  }
+success:
+  // @@protoc_insertion_point(parse_success:server.TStorageUpdate.StorageUpdate.UpdateOp)
+  return true;
+failure:
+  // @@protoc_insertion_point(parse_failure:server.TStorageUpdate.StorageUpdate.UpdateOp)
+  return false;
+#undef DO_
+}
+
+void TStorageUpdate_StorageUpdate_UpdateOp::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // @@protoc_insertion_point(serialize_start:server.TStorageUpdate.StorageUpdate.UpdateOp)
+  // optional int32 op = 1;
+  if (this->op() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->op(), output);
+  }
+
+  // optional string path = 2;
+  if (this->path().size() > 0) {
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+      this->path().data(), this->path().length(),
+      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
+      "server.TStorageUpdate.StorageUpdate.UpdateOp.path");
+    ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
+      2, this->path(), output);
+  }
+
+  // optional bytes value = 3;
+  if (this->value().size() > 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteBytesMaybeAliased(
+      3, this->value(), output);
+  }
+
+  // optional string from = 4;
+  if (this->from().size() > 0) {
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+      this->from().data(), this->from().length(),
+      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
+      "server.TStorageUpdate.StorageUpdate.UpdateOp.from");
+    ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
+      4, this->from(), output);
+  }
+
+  // optional bool conditional = 5;
+  if (this->conditional() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteBool(5, this->conditional(), output);
+  }
+
+  // optional int64 assert = 6;
+  if (this->assert() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt64(6, this->assert(), output);
+  }
+
+  // repeated .server.TStorageUpdate.StorageUpdate.UpdateOp ops = 7;
+  for (unsigned int i = 0, n = this->ops_size(); i < n; i++) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      7, this->ops(i), output);
+  }
+
+  // @@protoc_insertion_point(serialize_end:server.TStorageUpdate.StorageUpdate.UpdateOp)
+}
+
+::google::protobuf::uint8* TStorageUpdate_StorageUpdate_UpdateOp::InternalSerializeWithCachedSizesToArray(
+    bool deterministic, ::google::protobuf::uint8* target) const {
+  (void)deterministic; // Unused
+  // @@protoc_insertion_point(serialize_to_array_start:server.TStorageUpdate.StorageUpdate.UpdateOp)
+  // optional int32 op = 1;
+  if (this->op() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->op(), target);
+  }
+
+  // optional string path = 2;
+  if (this->path().size() > 0) {
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+      this->path().data(), this->path().length(),
+      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
+      "server.TStorageUpdate.StorageUpdate.UpdateOp.path");
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        2, this->path(), target);
+  }
+
+  // optional bytes value = 3;
+  if (this->value().size() > 0) {
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteBytesToArray(
+        3, this->value(), target);
+  }
+
+  // optional string from = 4;
+  if (this->from().size() > 0) {
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+      this->from().data(), this->from().length(),
+      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
+      "server.TStorageUpdate.StorageUpdate.UpdateOp.from");
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        4, this->from(), target);
+  }
+
+  // optional bool conditional = 5;
+  if (this->conditional() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteBoolToArray(5, this->conditional(), target);
+  }
+
+  // optional int64 assert = 6;
+  if (this->assert() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt64ToArray(6, this->assert(), target);
+  }
+
+  // repeated .server.TStorageUpdate.StorageUpdate.UpdateOp ops = 7;
+  for (unsigned int i = 0, n = this->ops_size(); i < n; i++) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      InternalWriteMessageNoVirtualToArray(
+        7, this->ops(i), false, target);
+  }
+
+  // @@protoc_insertion_point(serialize_to_array_end:server.TStorageUpdate.StorageUpdate.UpdateOp)
+  return target;
+}
+
+size_t TStorageUpdate_StorageUpdate_UpdateOp::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:server.TStorageUpdate.StorageUpdate.UpdateOp)
+  size_t total_size = 0;
+
+  // optional int32 op = 1;
+  if (this->op() != 0) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::Int32Size(
+        this->op());
+  }
+
+  // optional string path = 2;
+  if (this->path().size() > 0) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::StringSize(
+        this->path());
+  }
+
+  // optional bytes value = 3;
+  if (this->value().size() > 0) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::BytesSize(
+        this->value());
+  }
+
+  // optional string from = 4;
+  if (this->from().size() > 0) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::StringSize(
+        this->from());
+  }
+
+  // optional bool conditional = 5;
+  if (this->conditional() != 0) {
+    total_size += 1 + 1;
+  }
+
+  // optional int64 assert = 6;
+  if (this->assert() != 0) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::Int64Size(
+        this->assert());
+  }
+
+  // repeated .server.TStorageUpdate.StorageUpdate.UpdateOp ops = 7;
+  {
+    unsigned int count = this->ops_size();
+    total_size += 1UL * count;
+    for (unsigned int i = 0; i < count; i++) {
+      total_size +=
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          this->ops(i));
+    }
+  }
+
+  int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = cached_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void TStorageUpdate_StorageUpdate_UpdateOp::MergeFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_merge_from_start:server.TStorageUpdate.StorageUpdate.UpdateOp)
+  if (GOOGLE_PREDICT_FALSE(&from == this)) MergeFromFail(__LINE__);
+  const TStorageUpdate_StorageUpdate_UpdateOp* source =
+      ::google::protobuf::internal::DynamicCastToGenerated<const TStorageUpdate_StorageUpdate_UpdateOp>(
+          &from);
+  if (source == NULL) {
+  // @@protoc_insertion_point(generalized_merge_from_cast_fail:server.TStorageUpdate.StorageUpdate.UpdateOp)
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+  // @@protoc_insertion_point(generalized_merge_from_cast_success:server.TStorageUpdate.StorageUpdate.UpdateOp)
+    UnsafeMergeFrom(*source);
+  }
+}
+
+void TStorageUpdate_StorageUpdate_UpdateOp::MergeFrom(const TStorageUpdate_StorageUpdate_UpdateOp& from) {
+// @@protoc_insertion_point(class_specific_merge_from_start:server.TStorageUpdate.StorageUpdate.UpdateOp)
+  if (GOOGLE_PREDICT_TRUE(&from != this)) {
+    UnsafeMergeFrom(from);
+  } else {
+    MergeFromFail(__LINE__);
+  }
+}
+
+void TStorageUpdate_StorageUpdate_UpdateOp::UnsafeMergeFrom(const TStorageUpdate_StorageUpdate_UpdateOp& from) {
+  GOOGLE_DCHECK(&from != this);
+  ops_.MergeFrom(from.ops_);
+  if (from.op() != 0) {
+    set_op(from.op());
+  }
+  if (from.path().size() > 0) {
+
+    path_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.path_);
+  }
+  if (from.value().size() > 0) {
+
+    value_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.value_);
+  }
+  if (from.from().size() > 0) {
+
+    from_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.from_);
+  }
+  if (from.conditional() != 0) {
+    set_conditional(from.conditional());
+  }
+  if (from.assert() != 0) {
+    set_assert(from.assert());
+  }
+}
+
+void TStorageUpdate_StorageUpdate_UpdateOp::CopyFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_copy_from_start:server.TStorageUpdate.StorageUpdate.UpdateOp)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void TStorageUpdate_StorageUpdate_UpdateOp::CopyFrom(const TStorageUpdate_StorageUpdate_UpdateOp& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:server.TStorageUpdate.StorageUpdate.UpdateOp)
+  if (&from == this) return;
+  Clear();
+  UnsafeMergeFrom(from);
+}
+
+bool TStorageUpdate_StorageUpdate_UpdateOp::IsInitialized() const {
+
+  return true;
+}
+
+void TStorageUpdate_StorageUpdate_UpdateOp::Swap(TStorageUpdate_StorageUpdate_UpdateOp* other) {
+  if (other == this) return;
+  InternalSwap(other);
+}
+void TStorageUpdate_StorageUpdate_UpdateOp::InternalSwap(TStorageUpdate_StorageUpdate_UpdateOp* other) {
+  std::swap(op_, other->op_);
+  path_.Swap(&other->path_);
+  value_.Swap(&other->value_);
+  from_.Swap(&other->from_);
+  std::swap(conditional_, other->conditional_);
+  std::swap(assert_, other->assert_);
+  ops_.UnsafeArenaSwap(&other->ops_);
+  _internal_metadata_.Swap(&other->_internal_metadata_);
+  std::swap(_cached_size_, other->_cached_size_);
+}
+
+::google::protobuf::Metadata TStorageUpdate_StorageUpdate_UpdateOp::GetMetadata() const {
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = TStorageUpdate_StorageUpdate_UpdateOp_descriptor_;
+  metadata.reflection = TStorageUpdate_StorageUpdate_UpdateOp_reflection_;
+  return metadata;
+}
+
+
+// -------------------------------------------------------------------
+
+#if !defined(_MSC_VER) || _MSC_VER >= 1900
+const int TStorageUpdate_StorageUpdate_StorageKey::kBucketFieldNumber;
+const int TStorageUpdate_StorageUpdate_StorageKey::kCollectionFieldNumber;
+const int TStorageUpdate_StorageUpdate_StorageKey::kRecordFieldNumber;
+const int TStorageUpdate_StorageUpdate_StorageKey::kVersionFieldNumber;
+#endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
+
+TStorageUpdate_StorageUpdate_StorageKey::TStorageUpdate_StorageUpdate_StorageKey()
+  : ::google::protobuf::Message(), _internal_metadata_(NULL) {
+  if (this != internal_default_instance()) protobuf_InitDefaults_api_2eproto();
+  SharedCtor();
+  // @@protoc_insertion_point(constructor:server.TStorageUpdate.StorageUpdate.StorageKey)
+}
+
+void TStorageUpdate_StorageUpdate_StorageKey::InitAsDefaultInstance() {
+}
+
+TStorageUpdate_StorageUpdate_StorageKey::TStorageUpdate_StorageUpdate_StorageKey(const TStorageUpdate_StorageUpdate_StorageKey& from)
+  : ::google::protobuf::Message(),
+    _internal_metadata_(NULL) {
+  SharedCtor();
+  UnsafeMergeFrom(from);
+  // @@protoc_insertion_point(copy_constructor:server.TStorageUpdate.StorageUpdate.StorageKey)
+}
+
+void TStorageUpdate_StorageUpdate_StorageKey::SharedCtor() {
+  bucket_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  collection_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  record_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  version_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  _cached_size_ = 0;
+}
+
+TStorageUpdate_StorageUpdate_StorageKey::~TStorageUpdate_StorageUpdate_StorageKey() {
+  // @@protoc_insertion_point(destructor:server.TStorageUpdate.StorageUpdate.StorageKey)
+  SharedDtor();
+}
+
+void TStorageUpdate_StorageUpdate_StorageKey::SharedDtor() {
+  bucket_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  collection_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  record_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  version_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+
+void TStorageUpdate_StorageUpdate_StorageKey::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* TStorageUpdate_StorageUpdate_StorageKey::descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return TStorageUpdate_StorageUpdate_StorageKey_descriptor_;
+}
+
+const TStorageUpdate_StorageUpdate_StorageKey& TStorageUpdate_StorageUpdate_StorageKey::default_instance() {
+  protobuf_InitDefaults_api_2eproto();
+  return *internal_default_instance();
+}
+
+::google::protobuf::internal::ExplicitlyConstructed<TStorageUpdate_StorageUpdate_StorageKey> TStorageUpdate_StorageUpdate_StorageKey_default_instance_;
+
+TStorageUpdate_StorageUpdate_StorageKey* TStorageUpdate_StorageUpdate_StorageKey::New(::google::protobuf::Arena* arena) const {
+  TStorageUpdate_StorageUpdate_StorageKey* n = new TStorageUpdate_StorageUpdate_StorageKey;
+  if (arena != NULL) {
+    arena->Own(n);
+  }
+  return n;
+}
+
+void TStorageUpdate_StorageUpdate_StorageKey::Clear() {
+// @@protoc_insertion_point(message_clear_start:server.TStorageUpdate.StorageUpdate.StorageKey)
+  bucket_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  collection_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  record_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  version_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+
+bool TStorageUpdate_StorageUpdate_StorageKey::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
+  ::google::protobuf::uint32 tag;
+  // @@protoc_insertion_point(parse_start:server.TStorageUpdate.StorageUpdate.StorageKey)
+  for (;;) {
+    ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoff(127);
+    tag = p.first;
+    if (!p.second) goto handle_unusual;
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // optional string bucket = 1;
+      case 1: {
+        if (tag == 10) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_bucket()));
+          DO_(::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+            this->bucket().data(), this->bucket().length(),
+            ::google::protobuf::internal::WireFormatLite::PARSE,
+            "server.TStorageUpdate.StorageUpdate.StorageKey.bucket"));
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(18)) goto parse_collection;
+        break;
+      }
+
+      // optional string collection = 2;
+      case 2: {
+        if (tag == 18) {
+         parse_collection:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_collection()));
+          DO_(::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+            this->collection().data(), this->collection().length(),
+            ::google::protobuf::internal::WireFormatLite::PARSE,
+            "server.TStorageUpdate.StorageUpdate.StorageKey.collection"));
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(26)) goto parse_record;
+        break;
+      }
+
+      // optional string record = 3;
+      case 3: {
+        if (tag == 26) {
+         parse_record:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_record()));
+          DO_(::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+            this->record().data(), this->record().length(),
+            ::google::protobuf::internal::WireFormatLite::PARSE,
+            "server.TStorageUpdate.StorageUpdate.StorageKey.record"));
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(34)) goto parse_version;
+        break;
+      }
+
+      // optional bytes version = 4;
+      case 4: {
+        if (tag == 34) {
+         parse_version:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadBytes(
+                input, this->mutable_version()));
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectAtEnd()) goto success;
+        break;
+      }
+
+      default: {
+      handle_unusual:
+        if (tag == 0 ||
+            ::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          goto success;
+        }
+        DO_(::google::protobuf::internal::WireFormatLite::SkipField(input, tag));
+        break;
+      }
+    }
+  }
+success:
+  // @@protoc_insertion_point(parse_success:server.TStorageUpdate.StorageUpdate.StorageKey)
+  return true;
+failure:
+  // @@protoc_insertion_point(parse_failure:server.TStorageUpdate.StorageUpdate.StorageKey)
+  return false;
+#undef DO_
+}
+
+void TStorageUpdate_StorageUpdate_StorageKey::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // @@protoc_insertion_point(serialize_start:server.TStorageUpdate.StorageUpdate.StorageKey)
+  // optional string bucket = 1;
+  if (this->bucket().size() > 0) {
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+      this->bucket().data(), this->bucket().length(),
+      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
+      "server.TStorageUpdate.StorageUpdate.StorageKey.bucket");
+    ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
+      1, this->bucket(), output);
+  }
+
+  // optional string collection = 2;
+  if (this->collection().size() > 0) {
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+      this->collection().data(), this->collection().length(),
+      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
+      "server.TStorageUpdate.StorageUpdate.StorageKey.collection");
+    ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
+      2, this->collection(), output);
+  }
+
+  // optional string record = 3;
+  if (this->record().size() > 0) {
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+      this->record().data(), this->record().length(),
+      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
+      "server.TStorageUpdate.StorageUpdate.StorageKey.record");
+    ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
+      3, this->record(), output);
+  }
+
+  // optional bytes version = 4;
+  if (this->version().size() > 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteBytesMaybeAliased(
+      4, this->version(), output);
+  }
+
+  // @@protoc_insertion_point(serialize_end:server.TStorageUpdate.StorageUpdate.StorageKey)
+}
+
+::google::protobuf::uint8* TStorageUpdate_StorageUpdate_StorageKey::InternalSerializeWithCachedSizesToArray(
+    bool deterministic, ::google::protobuf::uint8* target) const {
+  (void)deterministic; // Unused
+  // @@protoc_insertion_point(serialize_to_array_start:server.TStorageUpdate.StorageUpdate.StorageKey)
+  // optional string bucket = 1;
+  if (this->bucket().size() > 0) {
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+      this->bucket().data(), this->bucket().length(),
+      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
+      "server.TStorageUpdate.StorageUpdate.StorageKey.bucket");
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        1, this->bucket(), target);
+  }
+
+  // optional string collection = 2;
+  if (this->collection().size() > 0) {
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+      this->collection().data(), this->collection().length(),
+      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
+      "server.TStorageUpdate.StorageUpdate.StorageKey.collection");
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        2, this->collection(), target);
+  }
+
+  // optional string record = 3;
+  if (this->record().size() > 0) {
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+      this->record().data(), this->record().length(),
+      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
+      "server.TStorageUpdate.StorageUpdate.StorageKey.record");
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        3, this->record(), target);
+  }
+
+  // optional bytes version = 4;
+  if (this->version().size() > 0) {
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteBytesToArray(
+        4, this->version(), target);
+  }
+
+  // @@protoc_insertion_point(serialize_to_array_end:server.TStorageUpdate.StorageUpdate.StorageKey)
+  return target;
+}
+
+size_t TStorageUpdate_StorageUpdate_StorageKey::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:server.TStorageUpdate.StorageUpdate.StorageKey)
+  size_t total_size = 0;
+
+  // optional string bucket = 1;
+  if (this->bucket().size() > 0) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::StringSize(
+        this->bucket());
+  }
+
+  // optional string collection = 2;
+  if (this->collection().size() > 0) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::StringSize(
+        this->collection());
+  }
+
+  // optional string record = 3;
+  if (this->record().size() > 0) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::StringSize(
+        this->record());
+  }
+
+  // optional bytes version = 4;
+  if (this->version().size() > 0) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::BytesSize(
+        this->version());
+  }
+
+  int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = cached_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void TStorageUpdate_StorageUpdate_StorageKey::MergeFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_merge_from_start:server.TStorageUpdate.StorageUpdate.StorageKey)
+  if (GOOGLE_PREDICT_FALSE(&from == this)) MergeFromFail(__LINE__);
+  const TStorageUpdate_StorageUpdate_StorageKey* source =
+      ::google::protobuf::internal::DynamicCastToGenerated<const TStorageUpdate_StorageUpdate_StorageKey>(
+          &from);
+  if (source == NULL) {
+  // @@protoc_insertion_point(generalized_merge_from_cast_fail:server.TStorageUpdate.StorageUpdate.StorageKey)
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+  // @@protoc_insertion_point(generalized_merge_from_cast_success:server.TStorageUpdate.StorageUpdate.StorageKey)
+    UnsafeMergeFrom(*source);
+  }
+}
+
+void TStorageUpdate_StorageUpdate_StorageKey::MergeFrom(const TStorageUpdate_StorageUpdate_StorageKey& from) {
+// @@protoc_insertion_point(class_specific_merge_from_start:server.TStorageUpdate.StorageUpdate.StorageKey)
+  if (GOOGLE_PREDICT_TRUE(&from != this)) {
+    UnsafeMergeFrom(from);
+  } else {
+    MergeFromFail(__LINE__);
+  }
+}
+
+void TStorageUpdate_StorageUpdate_StorageKey::UnsafeMergeFrom(const TStorageUpdate_StorageUpdate_StorageKey& from) {
+  GOOGLE_DCHECK(&from != this);
+  if (from.bucket().size() > 0) {
+
+    bucket_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.bucket_);
+  }
+  if (from.collection().size() > 0) {
+
+    collection_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.collection_);
+  }
+  if (from.record().size() > 0) {
+
+    record_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.record_);
+  }
+  if (from.version().size() > 0) {
+
+    version_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.version_);
+  }
+}
+
+void TStorageUpdate_StorageUpdate_StorageKey::CopyFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_copy_from_start:server.TStorageUpdate.StorageUpdate.StorageKey)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void TStorageUpdate_StorageUpdate_StorageKey::CopyFrom(const TStorageUpdate_StorageUpdate_StorageKey& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:server.TStorageUpdate.StorageUpdate.StorageKey)
+  if (&from == this) return;
+  Clear();
+  UnsafeMergeFrom(from);
+}
+
+bool TStorageUpdate_StorageUpdate_StorageKey::IsInitialized() const {
+
+  return true;
+}
+
+void TStorageUpdate_StorageUpdate_StorageKey::Swap(TStorageUpdate_StorageUpdate_StorageKey* other) {
+  if (other == this) return;
+  InternalSwap(other);
+}
+void TStorageUpdate_StorageUpdate_StorageKey::InternalSwap(TStorageUpdate_StorageUpdate_StorageKey* other) {
+  bucket_.Swap(&other->bucket_);
+  collection_.Swap(&other->collection_);
+  record_.Swap(&other->record_);
+  version_.Swap(&other->version_);
+  _internal_metadata_.Swap(&other->_internal_metadata_);
+  std::swap(_cached_size_, other->_cached_size_);
+}
+
+::google::protobuf::Metadata TStorageUpdate_StorageUpdate_StorageKey::GetMetadata() const {
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = TStorageUpdate_StorageUpdate_StorageKey_descriptor_;
+  metadata.reflection = TStorageUpdate_StorageUpdate_StorageKey_reflection_;
+  return metadata;
+}
+
+
+// -------------------------------------------------------------------
+
+#if !defined(_MSC_VER) || _MSC_VER >= 1900
+const int TStorageUpdate_StorageUpdate::kKeyFieldNumber;
+const int TStorageUpdate_StorageUpdate::kPermissionReadFieldNumber;
+const int TStorageUpdate_StorageUpdate::kPermissionWriteFieldNumber;
+const int TStorageUpdate_StorageUpdate::kOpsFieldNumber;
+#endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
+
+TStorageUpdate_StorageUpdate::TStorageUpdate_StorageUpdate()
+  : ::google::protobuf::Message(), _internal_metadata_(NULL) {
+  if (this != internal_default_instance()) protobuf_InitDefaults_api_2eproto();
+  SharedCtor();
+  // @@protoc_insertion_point(constructor:server.TStorageUpdate.StorageUpdate)
+}
+
+void TStorageUpdate_StorageUpdate::InitAsDefaultInstance() {
+  key_ = const_cast< ::server::TStorageUpdate_StorageUpdate_StorageKey*>(
+      ::server::TStorageUpdate_StorageUpdate_StorageKey::internal_default_instance());
+}
+
+TStorageUpdate_StorageUpdate::TStorageUpdate_StorageUpdate(const TStorageUpdate_StorageUpdate& from)
+  : ::google::protobuf::Message(),
+    _internal_metadata_(NULL) {
+  SharedCtor();
+  UnsafeMergeFrom(from);
+  // @@protoc_insertion_point(copy_constructor:server.TStorageUpdate.StorageUpdate)
+}
+
+void TStorageUpdate_StorageUpdate::SharedCtor() {
+  key_ = NULL;
+  ::memset(&permission_read_, 0, reinterpret_cast<char*>(&permission_write_) -
+    reinterpret_cast<char*>(&permission_read_) + sizeof(permission_write_));
+  _cached_size_ = 0;
+}
+
+TStorageUpdate_StorageUpdate::~TStorageUpdate_StorageUpdate() {
+  // @@protoc_insertion_point(destructor:server.TStorageUpdate.StorageUpdate)
+  SharedDtor();
+}
+
+void TStorageUpdate_StorageUpdate::SharedDtor() {
+  if (this != &TStorageUpdate_StorageUpdate_default_instance_.get()) {
+    delete key_;
+  }
+}
+
+void TStorageUpdate_StorageUpdate::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* TStorageUpdate_StorageUpdate::descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return TStorageUpdate_StorageUpdate_descriptor_;
+}
+
+const TStorageUpdate_StorageUpdate& TStorageUpdate_StorageUpdate::default_instance() {
+  protobuf_InitDefaults_api_2eproto();
+  return *internal_default_instance();
+}
+
+::google::protobuf::internal::ExplicitlyConstructed<TStorageUpdate_StorageUpdate> TStorageUpdate_StorageUpdate_default_instance_;
+
+TStorageUpdate_StorageUpdate* TStorageUpdate_StorageUpdate::New(::google::protobuf::Arena* arena) const {
+  TStorageUpdate_StorageUpdate* n = new TStorageUpdate_StorageUpdate;
+  if (arena != NULL) {
+    arena->Own(n);
+  }
+  return n;
+}
+
+void TStorageUpdate_StorageUpdate::Clear() {
+// @@protoc_insertion_point(message_clear_start:server.TStorageUpdate.StorageUpdate)
+#if defined(__clang__)
+#define ZR_HELPER_(f) \
+  _Pragma("clang diagnostic push") \
+  _Pragma("clang diagnostic ignored \"-Winvalid-offsetof\"") \
+  __builtin_offsetof(TStorageUpdate_StorageUpdate, f) \
+  _Pragma("clang diagnostic pop")
+#else
+#define ZR_HELPER_(f) reinterpret_cast<char*>(\
+  &reinterpret_cast<TStorageUpdate_StorageUpdate*>(16)->f)
+#endif
+
+#define ZR_(first, last) do {\
+  ::memset(&(first), 0,\
+           ZR_HELPER_(last) - ZR_HELPER_(first) + sizeof(last));\
+} while (0)
+
+  ZR_(permission_read_, permission_write_);
+  if (GetArenaNoVirtual() == NULL && key_ != NULL) delete key_;
+  key_ = NULL;
+
+#undef ZR_HELPER_
+#undef ZR_
+
+  ops_.Clear();
+}
+
+bool TStorageUpdate_StorageUpdate::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
+  ::google::protobuf::uint32 tag;
+  // @@protoc_insertion_point(parse_start:server.TStorageUpdate.StorageUpdate)
+  for (;;) {
+    ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoff(127);
+    tag = p.first;
+    if (!p.second) goto handle_unusual;
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // optional .server.TStorageUpdate.StorageUpdate.StorageKey key = 1;
+      case 1: {
+        if (tag == 10) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_key()));
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(16)) goto parse_permission_read;
+        break;
+      }
+
+      // optional int32 permission_read = 2;
+      case 2: {
+        if (tag == 16) {
+         parse_permission_read:
+
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
+                 input, &permission_read_)));
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(24)) goto parse_permission_write;
+        break;
+      }
+
+      // optional int32 permission_write = 3;
+      case 3: {
+        if (tag == 24) {
+         parse_permission_write:
+
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
+                 input, &permission_write_)));
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(34)) goto parse_ops;
+        break;
+      }
+
+      // repeated .server.TStorageUpdate.StorageUpdate.UpdateOp ops = 4;
+      case 4: {
+        if (tag == 34) {
+         parse_ops:
+          DO_(input->IncrementRecursionDepth());
+         parse_loop_ops:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtualNoRecursionDepth(
+                input, add_ops()));
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(34)) goto parse_loop_ops;
+        input->UnsafeDecrementRecursionDepth();
+        if (input->ExpectAtEnd()) goto success;
+        break;
+      }
+
+      default: {
+      handle_unusual:
+        if (tag == 0 ||
+            ::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          goto success;
+        }
+        DO_(::google::protobuf::internal::WireFormatLite::SkipField(input, tag));
+        break;
+      }
+    }
+  }
+success:
+  // @@protoc_insertion_point(parse_success:server.TStorageUpdate.StorageUpdate)
+  return true;
+failure:
+  // @@protoc_insertion_point(parse_failure:server.TStorageUpdate.StorageUpdate)
+  return false;
+#undef DO_
+}
+
+void TStorageUpdate_StorageUpdate::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // @@protoc_insertion_point(serialize_start:server.TStorageUpdate.StorageUpdate)
+  // optional .server.TStorageUpdate.StorageUpdate.StorageKey key = 1;
+  if (this->has_key()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      1, *this->key_, output);
+  }
+
+  // optional int32 permission_read = 2;
+  if (this->permission_read() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(2, this->permission_read(), output);
+  }
+
+  // optional int32 permission_write = 3;
+  if (this->permission_write() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(3, this->permission_write(), output);
+  }
+
+  // repeated .server.TStorageUpdate.StorageUpdate.UpdateOp ops = 4;
+  for (unsigned int i = 0, n = this->ops_size(); i < n; i++) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      4, this->ops(i), output);
+  }
+
+  // @@protoc_insertion_point(serialize_end:server.TStorageUpdate.StorageUpdate)
+}
+
+::google::protobuf::uint8* TStorageUpdate_StorageUpdate::InternalSerializeWithCachedSizesToArray(
+    bool deterministic, ::google::protobuf::uint8* target) const {
+  (void)deterministic; // Unused
+  // @@protoc_insertion_point(serialize_to_array_start:server.TStorageUpdate.StorageUpdate)
+  // optional .server.TStorageUpdate.StorageUpdate.StorageKey key = 1;
+  if (this->has_key()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      InternalWriteMessageNoVirtualToArray(
+        1, *this->key_, false, target);
+  }
+
+  // optional int32 permission_read = 2;
+  if (this->permission_read() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(2, this->permission_read(), target);
+  }
+
+  // optional int32 permission_write = 3;
+  if (this->permission_write() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(3, this->permission_write(), target);
+  }
+
+  // repeated .server.TStorageUpdate.StorageUpdate.UpdateOp ops = 4;
+  for (unsigned int i = 0, n = this->ops_size(); i < n; i++) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      InternalWriteMessageNoVirtualToArray(
+        4, this->ops(i), false, target);
+  }
+
+  // @@protoc_insertion_point(serialize_to_array_end:server.TStorageUpdate.StorageUpdate)
+  return target;
+}
+
+size_t TStorageUpdate_StorageUpdate::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:server.TStorageUpdate.StorageUpdate)
+  size_t total_size = 0;
+
+  // optional .server.TStorageUpdate.StorageUpdate.StorageKey key = 1;
+  if (this->has_key()) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+        *this->key_);
+  }
+
+  // optional int32 permission_read = 2;
+  if (this->permission_read() != 0) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::Int32Size(
+        this->permission_read());
+  }
+
+  // optional int32 permission_write = 3;
+  if (this->permission_write() != 0) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::Int32Size(
+        this->permission_write());
+  }
+
+  // repeated .server.TStorageUpdate.StorageUpdate.UpdateOp ops = 4;
+  {
+    unsigned int count = this->ops_size();
+    total_size += 1UL * count;
+    for (unsigned int i = 0; i < count; i++) {
+      total_size +=
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          this->ops(i));
+    }
+  }
+
+  int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = cached_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void TStorageUpdate_StorageUpdate::MergeFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_merge_from_start:server.TStorageUpdate.StorageUpdate)
+  if (GOOGLE_PREDICT_FALSE(&from == this)) MergeFromFail(__LINE__);
+  const TStorageUpdate_StorageUpdate* source =
+      ::google::protobuf::internal::DynamicCastToGenerated<const TStorageUpdate_StorageUpdate>(
+          &from);
+  if (source == NULL) {
+  // @@protoc_insertion_point(generalized_merge_from_cast_fail:server.TStorageUpdate.StorageUpdate)
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+  // @@protoc_insertion_point(generalized_merge_from_cast_success:server.TStorageUpdate.StorageUpdate)
+    UnsafeMergeFrom(*source);
+  }
+}
+
+void TStorageUpdate_StorageUpdate::MergeFrom(const TStorageUpdate_StorageUpdate& from) {
+// @@protoc_insertion_point(class_specific_merge_from_start:server.TStorageUpdate.StorageUpdate)
+  if (GOOGLE_PREDICT_TRUE(&from != this)) {
+    UnsafeMergeFrom(from);
+  } else {
+    MergeFromFail(__LINE__);
+  }
+}
+
+void TStorageUpdate_StorageUpdate::UnsafeMergeFrom(const TStorageUpdate_StorageUpdate& from) {
+  GOOGLE_DCHECK(&from != this);
+  ops_.MergeFrom(from.ops_);
+  if (from.has_key()) {
+    mutable_key()->::server::TStorageUpdate_StorageUpdate_StorageKey::MergeFrom(from.key());
+  }
+  if (from.permission_read() != 0) {
+    set_permission_read(from.permission_read());
+  }
+  if (from.permission_write() != 0) {
+    set_permission_write(from.permission_write());
+  }
+}
+
+void TStorageUpdate_StorageUpdate::CopyFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_copy_from_start:server.TStorageUpdate.StorageUpdate)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void TStorageUpdate_StorageUpdate::CopyFrom(const TStorageUpdate_StorageUpdate& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:server.TStorageUpdate.StorageUpdate)
+  if (&from == this) return;
+  Clear();
+  UnsafeMergeFrom(from);
+}
+
+bool TStorageUpdate_StorageUpdate::IsInitialized() const {
+
+  return true;
+}
+
+void TStorageUpdate_StorageUpdate::Swap(TStorageUpdate_StorageUpdate* other) {
+  if (other == this) return;
+  InternalSwap(other);
+}
+void TStorageUpdate_StorageUpdate::InternalSwap(TStorageUpdate_StorageUpdate* other) {
+  std::swap(key_, other->key_);
+  std::swap(permission_read_, other->permission_read_);
+  std::swap(permission_write_, other->permission_write_);
+  ops_.UnsafeArenaSwap(&other->ops_);
+  _internal_metadata_.Swap(&other->_internal_metadata_);
+  std::swap(_cached_size_, other->_cached_size_);
+}
+
+::google::protobuf::Metadata TStorageUpdate_StorageUpdate::GetMetadata() const {
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = TStorageUpdate_StorageUpdate_descriptor_;
+  metadata.reflection = TStorageUpdate_StorageUpdate_reflection_;
+  return metadata;
+}
+
+
+// -------------------------------------------------------------------
+
+#if !defined(_MSC_VER) || _MSC_VER >= 1900
+const int TStorageUpdate::kUpdatesFieldNumber;
+#endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
+
+TStorageUpdate::TStorageUpdate()
+  : ::google::protobuf::Message(), _internal_metadata_(NULL) {
+  if (this != internal_default_instance()) protobuf_InitDefaults_api_2eproto();
+  SharedCtor();
+  // @@protoc_insertion_point(constructor:server.TStorageUpdate)
+}
+
+void TStorageUpdate::InitAsDefaultInstance() {
+}
+
+TStorageUpdate::TStorageUpdate(const TStorageUpdate& from)
+  : ::google::protobuf::Message(),
+    _internal_metadata_(NULL) {
+  SharedCtor();
+  UnsafeMergeFrom(from);
+  // @@protoc_insertion_point(copy_constructor:server.TStorageUpdate)
+}
+
+void TStorageUpdate::SharedCtor() {
+  _cached_size_ = 0;
+}
+
+TStorageUpdate::~TStorageUpdate() {
+  // @@protoc_insertion_point(destructor:server.TStorageUpdate)
+  SharedDtor();
+}
+
+void TStorageUpdate::SharedDtor() {
+}
+
+void TStorageUpdate::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* TStorageUpdate::descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return TStorageUpdate_descriptor_;
+}
+
+const TStorageUpdate& TStorageUpdate::default_instance() {
+  protobuf_InitDefaults_api_2eproto();
+  return *internal_default_instance();
+}
+
+::google::protobuf::internal::ExplicitlyConstructed<TStorageUpdate> TStorageUpdate_default_instance_;
+
+TStorageUpdate* TStorageUpdate::New(::google::protobuf::Arena* arena) const {
+  TStorageUpdate* n = new TStorageUpdate;
+  if (arena != NULL) {
+    arena->Own(n);
+  }
+  return n;
+}
+
+void TStorageUpdate::Clear() {
+// @@protoc_insertion_point(message_clear_start:server.TStorageUpdate)
+  updates_.Clear();
+}
+
+bool TStorageUpdate::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
+  ::google::protobuf::uint32 tag;
+  // @@protoc_insertion_point(parse_start:server.TStorageUpdate)
+  for (;;) {
+    ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoff(127);
+    tag = p.first;
+    if (!p.second) goto handle_unusual;
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // repeated .server.TStorageUpdate.StorageUpdate updates = 1;
+      case 1: {
+        if (tag == 10) {
+          DO_(input->IncrementRecursionDepth());
+         parse_loop_updates:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtualNoRecursionDepth(
+                input, add_updates()));
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(10)) goto parse_loop_updates;
+        input->UnsafeDecrementRecursionDepth();
+        if (input->ExpectAtEnd()) goto success;
+        break;
+      }
+
+      default: {
+      handle_unusual:
+        if (tag == 0 ||
+            ::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          goto success;
+        }
+        DO_(::google::protobuf::internal::WireFormatLite::SkipField(input, tag));
+        break;
+      }
+    }
+  }
+success:
+  // @@protoc_insertion_point(parse_success:server.TStorageUpdate)
+  return true;
+failure:
+  // @@protoc_insertion_point(parse_failure:server.TStorageUpdate)
+  return false;
+#undef DO_
+}
+
+void TStorageUpdate::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // @@protoc_insertion_point(serialize_start:server.TStorageUpdate)
+  // repeated .server.TStorageUpdate.StorageUpdate updates = 1;
+  for (unsigned int i = 0, n = this->updates_size(); i < n; i++) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      1, this->updates(i), output);
+  }
+
+  // @@protoc_insertion_point(serialize_end:server.TStorageUpdate)
+}
+
+::google::protobuf::uint8* TStorageUpdate::InternalSerializeWithCachedSizesToArray(
+    bool deterministic, ::google::protobuf::uint8* target) const {
+  (void)deterministic; // Unused
+  // @@protoc_insertion_point(serialize_to_array_start:server.TStorageUpdate)
+  // repeated .server.TStorageUpdate.StorageUpdate updates = 1;
+  for (unsigned int i = 0, n = this->updates_size(); i < n; i++) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      InternalWriteMessageNoVirtualToArray(
+        1, this->updates(i), false, target);
+  }
+
+  // @@protoc_insertion_point(serialize_to_array_end:server.TStorageUpdate)
+  return target;
+}
+
+size_t TStorageUpdate::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:server.TStorageUpdate)
+  size_t total_size = 0;
+
+  // repeated .server.TStorageUpdate.StorageUpdate updates = 1;
+  {
+    unsigned int count = this->updates_size();
+    total_size += 1UL * count;
+    for (unsigned int i = 0; i < count; i++) {
+      total_size +=
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          this->updates(i));
+    }
+  }
+
+  int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = cached_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void TStorageUpdate::MergeFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_merge_from_start:server.TStorageUpdate)
+  if (GOOGLE_PREDICT_FALSE(&from == this)) MergeFromFail(__LINE__);
+  const TStorageUpdate* source =
+      ::google::protobuf::internal::DynamicCastToGenerated<const TStorageUpdate>(
+          &from);
+  if (source == NULL) {
+  // @@protoc_insertion_point(generalized_merge_from_cast_fail:server.TStorageUpdate)
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+  // @@protoc_insertion_point(generalized_merge_from_cast_success:server.TStorageUpdate)
+    UnsafeMergeFrom(*source);
+  }
+}
+
+void TStorageUpdate::MergeFrom(const TStorageUpdate& from) {
+// @@protoc_insertion_point(class_specific_merge_from_start:server.TStorageUpdate)
+  if (GOOGLE_PREDICT_TRUE(&from != this)) {
+    UnsafeMergeFrom(from);
+  } else {
+    MergeFromFail(__LINE__);
+  }
+}
+
+void TStorageUpdate::UnsafeMergeFrom(const TStorageUpdate& from) {
+  GOOGLE_DCHECK(&from != this);
+  updates_.MergeFrom(from.updates_);
+}
+
+void TStorageUpdate::CopyFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_copy_from_start:server.TStorageUpdate)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void TStorageUpdate::CopyFrom(const TStorageUpdate& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:server.TStorageUpdate)
+  if (&from == this) return;
+  Clear();
+  UnsafeMergeFrom(from);
+}
+
+bool TStorageUpdate::IsInitialized() const {
+
+  return true;
+}
+
+void TStorageUpdate::Swap(TStorageUpdate* other) {
+  if (other == this) return;
+  InternalSwap(other);
+}
+void TStorageUpdate::InternalSwap(TStorageUpdate* other) {
+  updates_.UnsafeArenaSwap(&other->updates_);
+  _internal_metadata_.Swap(&other->_internal_metadata_);
+  std::swap(_cached_size_, other->_cached_size_);
+}
+
+::google::protobuf::Metadata TStorageUpdate::GetMetadata() const {
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = TStorageUpdate_descriptor_;
+  metadata.reflection = TStorageUpdate_reflection_;
+  return metadata;
+}
+
+#if PROTOBUF_INLINE_NOT_IN_HEADERS
+// TStorageUpdate_StorageUpdate_UpdateOp
+
+// optional int32 op = 1;
+void TStorageUpdate_StorageUpdate_UpdateOp::clear_op() {
+  op_ = 0;
+}
+::google::protobuf::int32 TStorageUpdate_StorageUpdate_UpdateOp::op() const {
+  // @@protoc_insertion_point(field_get:server.TStorageUpdate.StorageUpdate.UpdateOp.op)
+  return op_;
+}
+void TStorageUpdate_StorageUpdate_UpdateOp::set_op(::google::protobuf::int32 value) {
+  
+  op_ = value;
+  // @@protoc_insertion_point(field_set:server.TStorageUpdate.StorageUpdate.UpdateOp.op)
+}
+
+// optional string path = 2;
+void TStorageUpdate_StorageUpdate_UpdateOp::clear_path() {
+  path_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+const ::std::string& TStorageUpdate_StorageUpdate_UpdateOp::path() const {
+  // @@protoc_insertion_point(field_get:server.TStorageUpdate.StorageUpdate.UpdateOp.path)
+  return path_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+void TStorageUpdate_StorageUpdate_UpdateOp::set_path(const ::std::string& value) {
+  
+  path_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:server.TStorageUpdate.StorageUpdate.UpdateOp.path)
+}
+void TStorageUpdate_StorageUpdate_UpdateOp::set_path(const char* value) {
+  
+  path_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:server.TStorageUpdate.StorageUpdate.UpdateOp.path)
+}
+void TStorageUpdate_StorageUpdate_UpdateOp::set_path(const char* value, size_t size) {
+  
+  path_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:server.TStorageUpdate.StorageUpdate.UpdateOp.path)
+}
+::std::string* TStorageUpdate_StorageUpdate_UpdateOp::mutable_path() {
+  
+  // @@protoc_insertion_point(field_mutable:server.TStorageUpdate.StorageUpdate.UpdateOp.path)
+  return path_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+::std::string* TStorageUpdate_StorageUpdate_UpdateOp::release_path() {
+  // @@protoc_insertion_point(field_release:server.TStorageUpdate.StorageUpdate.UpdateOp.path)
+  
+  return path_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+void TStorageUpdate_StorageUpdate_UpdateOp::set_allocated_path(::std::string* path) {
+  if (path != NULL) {
+    
+  } else {
+    
+  }
+  path_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), path);
+  // @@protoc_insertion_point(field_set_allocated:server.TStorageUpdate.StorageUpdate.UpdateOp.path)
+}
+
+// optional bytes value = 3;
+void TStorageUpdate_StorageUpdate_UpdateOp::clear_value() {
+  value_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+const ::std::string& TStorageUpdate_StorageUpdate_UpdateOp::value() const {
+  // @@protoc_insertion_point(field_get:server.TStorageUpdate.StorageUpdate.UpdateOp.value)
+  return value_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+void TStorageUpdate_StorageUpdate_UpdateOp::set_value(const ::std::string& value) {
+  
+  value_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:server.TStorageUpdate.StorageUpdate.UpdateOp.value)
+}
+void TStorageUpdate_StorageUpdate_UpdateOp::set_value(const char* value) {
+  
+  value_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:server.TStorageUpdate.StorageUpdate.UpdateOp.value)
+}
+void TStorageUpdate_StorageUpdate_UpdateOp::set_value(const void* value, size_t size) {
+  
+  value_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:server.TStorageUpdate.StorageUpdate.UpdateOp.value)
+}
+::std::string* TStorageUpdate_StorageUpdate_UpdateOp::mutable_value() {
+  
+  // @@protoc_insertion_point(field_mutable:server.TStorageUpdate.StorageUpdate.UpdateOp.value)
+  return value_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+::std::string* TStorageUpdate_StorageUpdate_UpdateOp::release_value() {
+  // @@protoc_insertion_point(field_release:server.TStorageUpdate.StorageUpdate.UpdateOp.value)
+  
+  return value_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+void TStorageUpdate_StorageUpdate_UpdateOp::set_allocated_value(::std::string* value) {
+  if (value != NULL) {
+    
+  } else {
+    
+  }
+  value_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set_allocated:server.TStorageUpdate.StorageUpdate.UpdateOp.value)
+}
+
+// optional string from = 4;
+void TStorageUpdate_StorageUpdate_UpdateOp::clear_from() {
+  from_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+const ::std::string& TStorageUpdate_StorageUpdate_UpdateOp::from() const {
+  // @@protoc_insertion_point(field_get:server.TStorageUpdate.StorageUpdate.UpdateOp.from)
+  return from_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+void TStorageUpdate_StorageUpdate_UpdateOp::set_from(const ::std::string& value) {
+  
+  from_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:server.TStorageUpdate.StorageUpdate.UpdateOp.from)
+}
+void TStorageUpdate_StorageUpdate_UpdateOp::set_from(const char* value) {
+  
+  from_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:server.TStorageUpdate.StorageUpdate.UpdateOp.from)
+}
+void TStorageUpdate_StorageUpdate_UpdateOp::set_from(const char* value, size_t size) {
+  
+  from_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:server.TStorageUpdate.StorageUpdate.UpdateOp.from)
+}
+::std::string* TStorageUpdate_StorageUpdate_UpdateOp::mutable_from() {
+  
+  // @@protoc_insertion_point(field_mutable:server.TStorageUpdate.StorageUpdate.UpdateOp.from)
+  return from_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+::std::string* TStorageUpdate_StorageUpdate_UpdateOp::release_from() {
+  // @@protoc_insertion_point(field_release:server.TStorageUpdate.StorageUpdate.UpdateOp.from)
+  
+  return from_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+void TStorageUpdate_StorageUpdate_UpdateOp::set_allocated_from(::std::string* from) {
+  if (from != NULL) {
+    
+  } else {
+    
+  }
+  from_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from);
+  // @@protoc_insertion_point(field_set_allocated:server.TStorageUpdate.StorageUpdate.UpdateOp.from)
+}
+
+// optional bool conditional = 5;
+void TStorageUpdate_StorageUpdate_UpdateOp::clear_conditional() {
+  conditional_ = false;
+}
+bool TStorageUpdate_StorageUpdate_UpdateOp::conditional() const {
+  // @@protoc_insertion_point(field_get:server.TStorageUpdate.StorageUpdate.UpdateOp.conditional)
+  return conditional_;
+}
+void TStorageUpdate_StorageUpdate_UpdateOp::set_conditional(bool value) {
+  
+  conditional_ = value;
+  // @@protoc_insertion_point(field_set:server.TStorageUpdate.StorageUpdate.UpdateOp.conditional)
+}
+
+// optional int64 assert = 6;
+void TStorageUpdate_StorageUpdate_UpdateOp::clear_assert() {
+  assert_ = GOOGLE_LONGLONG(0);
+}
+::google::protobuf::int64 TStorageUpdate_StorageUpdate_UpdateOp::assert() const {
+  // @@protoc_insertion_point(field_get:server.TStorageUpdate.StorageUpdate.UpdateOp.assert)
+  return assert_;
+}
+void TStorageUpdate_StorageUpdate_UpdateOp::set_assert(::google::protobuf::int64 value) {
+  
+  assert_ = value;
+  // @@protoc_insertion_point(field_set:server.TStorageUpdate.StorageUpdate.UpdateOp.assert)
+}
+
+// repeated .server.TStorageUpdate.StorageUpdate.UpdateOp ops = 7;
+int TStorageUpdate_StorageUpdate_UpdateOp::ops_size() const {
+  return ops_.size();
+}
+void TStorageUpdate_StorageUpdate_UpdateOp::clear_ops() {
+  ops_.Clear();
+}
+const ::server::TStorageUpdate_StorageUpdate_UpdateOp& TStorageUpdate_StorageUpdate_UpdateOp::ops(int index) const {
+  // @@protoc_insertion_point(field_get:server.TStorageUpdate.StorageUpdate.UpdateOp.ops)
+  return ops_.Get(index);
+}
+::server::TStorageUpdate_StorageUpdate_UpdateOp* TStorageUpdate_StorageUpdate_UpdateOp::mutable_ops(int index) {
+  // @@protoc_insertion_point(field_mutable:server.TStorageUpdate.StorageUpdate.UpdateOp.ops)
+  return ops_.Mutable(index);
+}
+::server::TStorageUpdate_StorageUpdate_UpdateOp* TStorageUpdate_StorageUpdate_UpdateOp::add_ops() {
+  // @@protoc_insertion_point(field_add:server.TStorageUpdate.StorageUpdate.UpdateOp.ops)
+  return ops_.Add();
+}
+::google::protobuf::RepeatedPtrField< ::server::TStorageUpdate_StorageUpdate_UpdateOp >*
+TStorageUpdate_StorageUpdate_UpdateOp::mutable_ops() {
+  // @@protoc_insertion_point(field_mutable_list:server.TStorageUpdate.StorageUpdate.UpdateOp.ops)
+  return &ops_;
+}
+const ::google::protobuf::RepeatedPtrField< ::server::TStorageUpdate_StorageUpdate_UpdateOp >&
+TStorageUpdate_StorageUpdate_UpdateOp::ops() const {
+  // @@protoc_insertion_point(field_list:server.TStorageUpdate.StorageUpdate.UpdateOp.ops)
+  return ops_;
+}
+
+inline const TStorageUpdate_StorageUpdate_UpdateOp* TStorageUpdate_StorageUpdate_UpdateOp::internal_default_instance() {
+  return &TStorageUpdate_StorageUpdate_UpdateOp_default_instance_.get();
+}
+// -------------------------------------------------------------------
+
+// TStorageUpdate_StorageUpdate_StorageKey
+
+// optional string bucket = 1;
+void TStorageUpdate_StorageUpdate_StorageKey::clear_bucket() {
+  bucket_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+const ::std::string& TStorageUpdate_StorageUpdate_StorageKey::bucket() const {
+  // @@protoc_insertion_point(field_get:server.TStorageUpdate.StorageUpdate.StorageKey.bucket)
+  return bucket_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+void TStorageUpdate_StorageUpdate_StorageKey::set_bucket(const ::std::string& value) {
+  
+  bucket_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:server.TStorageUpdate.StorageUpdate.StorageKey.bucket)
+}
+void TStorageUpdate_StorageUpdate_StorageKey::set_bucket(const char* value) {
+  
+  bucket_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:server.TStorageUpdate.StorageUpdate.StorageKey.bucket)
+}
+void TStorageUpdate_StorageUpdate_StorageKey::set_bucket(const char* value, size_t size) {
+  
+  bucket_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:server.TStorageUpdate.StorageUpdate.StorageKey.bucket)
+}
+::std::string* TStorageUpdate_StorageUpdate_StorageKey::mutable_bucket() {
+  
+  // @@protoc_insertion_point(field_mutable:server.TStorageUpdate.StorageUpdate.StorageKey.bucket)
+  return bucket_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+::std::string* TStorageUpdate_StorageUpdate_StorageKey::release_bucket() {
+  // @@protoc_insertion_point(field_release:server.TStorageUpdate.StorageUpdate.StorageKey.bucket)
+  
+  return bucket_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+void TStorageUpdate_StorageUpdate_StorageKey::set_allocated_bucket(::std::string* bucket) {
+  if (bucket != NULL) {
+    
+  } else {
+    
+  }
+  bucket_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), bucket);
+  // @@protoc_insertion_point(field_set_allocated:server.TStorageUpdate.StorageUpdate.StorageKey.bucket)
+}
+
+// optional string collection = 2;
+void TStorageUpdate_StorageUpdate_StorageKey::clear_collection() {
+  collection_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+const ::std::string& TStorageUpdate_StorageUpdate_StorageKey::collection() const {
+  // @@protoc_insertion_point(field_get:server.TStorageUpdate.StorageUpdate.StorageKey.collection)
+  return collection_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+void TStorageUpdate_StorageUpdate_StorageKey::set_collection(const ::std::string& value) {
+  
+  collection_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:server.TStorageUpdate.StorageUpdate.StorageKey.collection)
+}
+void TStorageUpdate_StorageUpdate_StorageKey::set_collection(const char* value) {
+  
+  collection_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:server.TStorageUpdate.StorageUpdate.StorageKey.collection)
+}
+void TStorageUpdate_StorageUpdate_StorageKey::set_collection(const char* value, size_t size) {
+  
+  collection_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:server.TStorageUpdate.StorageUpdate.StorageKey.collection)
+}
+::std::string* TStorageUpdate_StorageUpdate_StorageKey::mutable_collection() {
+  
+  // @@protoc_insertion_point(field_mutable:server.TStorageUpdate.StorageUpdate.StorageKey.collection)
+  return collection_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+::std::string* TStorageUpdate_StorageUpdate_StorageKey::release_collection() {
+  // @@protoc_insertion_point(field_release:server.TStorageUpdate.StorageUpdate.StorageKey.collection)
+  
+  return collection_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+void TStorageUpdate_StorageUpdate_StorageKey::set_allocated_collection(::std::string* collection) {
+  if (collection != NULL) {
+    
+  } else {
+    
+  }
+  collection_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), collection);
+  // @@protoc_insertion_point(field_set_allocated:server.TStorageUpdate.StorageUpdate.StorageKey.collection)
+}
+
+// optional string record = 3;
+void TStorageUpdate_StorageUpdate_StorageKey::clear_record() {
+  record_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+const ::std::string& TStorageUpdate_StorageUpdate_StorageKey::record() const {
+  // @@protoc_insertion_point(field_get:server.TStorageUpdate.StorageUpdate.StorageKey.record)
+  return record_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+void TStorageUpdate_StorageUpdate_StorageKey::set_record(const ::std::string& value) {
+  
+  record_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:server.TStorageUpdate.StorageUpdate.StorageKey.record)
+}
+void TStorageUpdate_StorageUpdate_StorageKey::set_record(const char* value) {
+  
+  record_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:server.TStorageUpdate.StorageUpdate.StorageKey.record)
+}
+void TStorageUpdate_StorageUpdate_StorageKey::set_record(const char* value, size_t size) {
+  
+  record_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:server.TStorageUpdate.StorageUpdate.StorageKey.record)
+}
+::std::string* TStorageUpdate_StorageUpdate_StorageKey::mutable_record() {
+  
+  // @@protoc_insertion_point(field_mutable:server.TStorageUpdate.StorageUpdate.StorageKey.record)
+  return record_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+::std::string* TStorageUpdate_StorageUpdate_StorageKey::release_record() {
+  // @@protoc_insertion_point(field_release:server.TStorageUpdate.StorageUpdate.StorageKey.record)
+  
+  return record_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+void TStorageUpdate_StorageUpdate_StorageKey::set_allocated_record(::std::string* record) {
+  if (record != NULL) {
+    
+  } else {
+    
+  }
+  record_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), record);
+  // @@protoc_insertion_point(field_set_allocated:server.TStorageUpdate.StorageUpdate.StorageKey.record)
+}
+
+// optional bytes version = 4;
+void TStorageUpdate_StorageUpdate_StorageKey::clear_version() {
+  version_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+const ::std::string& TStorageUpdate_StorageUpdate_StorageKey::version() const {
+  // @@protoc_insertion_point(field_get:server.TStorageUpdate.StorageUpdate.StorageKey.version)
+  return version_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+void TStorageUpdate_StorageUpdate_StorageKey::set_version(const ::std::string& value) {
+  
+  version_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:server.TStorageUpdate.StorageUpdate.StorageKey.version)
+}
+void TStorageUpdate_StorageUpdate_StorageKey::set_version(const char* value) {
+  
+  version_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:server.TStorageUpdate.StorageUpdate.StorageKey.version)
+}
+void TStorageUpdate_StorageUpdate_StorageKey::set_version(const void* value, size_t size) {
+  
+  version_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:server.TStorageUpdate.StorageUpdate.StorageKey.version)
+}
+::std::string* TStorageUpdate_StorageUpdate_StorageKey::mutable_version() {
+  
+  // @@protoc_insertion_point(field_mutable:server.TStorageUpdate.StorageUpdate.StorageKey.version)
+  return version_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+::std::string* TStorageUpdate_StorageUpdate_StorageKey::release_version() {
+  // @@protoc_insertion_point(field_release:server.TStorageUpdate.StorageUpdate.StorageKey.version)
+  
+  return version_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+void TStorageUpdate_StorageUpdate_StorageKey::set_allocated_version(::std::string* version) {
+  if (version != NULL) {
+    
+  } else {
+    
+  }
+  version_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), version);
+  // @@protoc_insertion_point(field_set_allocated:server.TStorageUpdate.StorageUpdate.StorageKey.version)
+}
+
+inline const TStorageUpdate_StorageUpdate_StorageKey* TStorageUpdate_StorageUpdate_StorageKey::internal_default_instance() {
+  return &TStorageUpdate_StorageUpdate_StorageKey_default_instance_.get();
+}
+// -------------------------------------------------------------------
+
+// TStorageUpdate_StorageUpdate
+
+// optional .server.TStorageUpdate.StorageUpdate.StorageKey key = 1;
+bool TStorageUpdate_StorageUpdate::has_key() const {
+  return this != internal_default_instance() && key_ != NULL;
+}
+void TStorageUpdate_StorageUpdate::clear_key() {
+  if (GetArenaNoVirtual() == NULL && key_ != NULL) delete key_;
+  key_ = NULL;
+}
+const ::server::TStorageUpdate_StorageUpdate_StorageKey& TStorageUpdate_StorageUpdate::key() const {
+  // @@protoc_insertion_point(field_get:server.TStorageUpdate.StorageUpdate.key)
+  return key_ != NULL ? *key_
+                         : *::server::TStorageUpdate_StorageUpdate_StorageKey::internal_default_instance();
+}
+::server::TStorageUpdate_StorageUpdate_StorageKey* TStorageUpdate_StorageUpdate::mutable_key() {
+  
+  if (key_ == NULL) {
+    key_ = new ::server::TStorageUpdate_StorageUpdate_StorageKey;
+  }
+  // @@protoc_insertion_point(field_mutable:server.TStorageUpdate.StorageUpdate.key)
+  return key_;
+}
+::server::TStorageUpdate_StorageUpdate_StorageKey* TStorageUpdate_StorageUpdate::release_key() {
+  // @@protoc_insertion_point(field_release:server.TStorageUpdate.StorageUpdate.key)
+  
+  ::server::TStorageUpdate_StorageUpdate_StorageKey* temp = key_;
+  key_ = NULL;
+  return temp;
+}
+void TStorageUpdate_StorageUpdate::set_allocated_key(::server::TStorageUpdate_StorageUpdate_StorageKey* key) {
+  delete key_;
+  key_ = key;
+  if (key) {
+    
+  } else {
+    
+  }
+  // @@protoc_insertion_point(field_set_allocated:server.TStorageUpdate.StorageUpdate.key)
+}
+
+// optional int32 permission_read = 2;
+void TStorageUpdate_StorageUpdate::clear_permission_read() {
+  permission_read_ = 0;
+}
+::google::protobuf::int32 TStorageUpdate_StorageUpdate::permission_read() const {
+  // @@protoc_insertion_point(field_get:server.TStorageUpdate.StorageUpdate.permission_read)
+  return permission_read_;
+}
+void TStorageUpdate_StorageUpdate::set_permission_read(::google::protobuf::int32 value) {
+  
+  permission_read_ = value;
+  // @@protoc_insertion_point(field_set:server.TStorageUpdate.StorageUpdate.permission_read)
+}
+
+// optional int32 permission_write = 3;
+void TStorageUpdate_StorageUpdate::clear_permission_write() {
+  permission_write_ = 0;
+}
+::google::protobuf::int32 TStorageUpdate_StorageUpdate::permission_write() const {
+  // @@protoc_insertion_point(field_get:server.TStorageUpdate.StorageUpdate.permission_write)
+  return permission_write_;
+}
+void TStorageUpdate_StorageUpdate::set_permission_write(::google::protobuf::int32 value) {
+  
+  permission_write_ = value;
+  // @@protoc_insertion_point(field_set:server.TStorageUpdate.StorageUpdate.permission_write)
+}
+
+// repeated .server.TStorageUpdate.StorageUpdate.UpdateOp ops = 4;
+int TStorageUpdate_StorageUpdate::ops_size() const {
+  return ops_.size();
+}
+void TStorageUpdate_StorageUpdate::clear_ops() {
+  ops_.Clear();
+}
+const ::server::TStorageUpdate_StorageUpdate_UpdateOp& TStorageUpdate_StorageUpdate::ops(int index) const {
+  // @@protoc_insertion_point(field_get:server.TStorageUpdate.StorageUpdate.ops)
+  return ops_.Get(index);
+}
+::server::TStorageUpdate_StorageUpdate_UpdateOp* TStorageUpdate_StorageUpdate::mutable_ops(int index) {
+  // @@protoc_insertion_point(field_mutable:server.TStorageUpdate.StorageUpdate.ops)
+  return ops_.Mutable(index);
+}
+::server::TStorageUpdate_StorageUpdate_UpdateOp* TStorageUpdate_StorageUpdate::add_ops() {
+  // @@protoc_insertion_point(field_add:server.TStorageUpdate.StorageUpdate.ops)
+  return ops_.Add();
+}
+::google::protobuf::RepeatedPtrField< ::server::TStorageUpdate_StorageUpdate_UpdateOp >*
+TStorageUpdate_StorageUpdate::mutable_ops() {
+  // @@protoc_insertion_point(field_mutable_list:server.TStorageUpdate.StorageUpdate.ops)
+  return &ops_;
+}
+const ::google::protobuf::RepeatedPtrField< ::server::TStorageUpdate_StorageUpdate_UpdateOp >&
+TStorageUpdate_StorageUpdate::ops() const {
+  // @@protoc_insertion_point(field_list:server.TStorageUpdate.StorageUpdate.ops)
+  return ops_;
+}
+
+inline const TStorageUpdate_StorageUpdate* TStorageUpdate_StorageUpdate::internal_default_instance() {
+  return &TStorageUpdate_StorageUpdate_default_instance_.get();
+}
+// -------------------------------------------------------------------
+
+// TStorageUpdate
+
+// repeated .server.TStorageUpdate.StorageUpdate updates = 1;
+int TStorageUpdate::updates_size() const {
+  return updates_.size();
+}
+void TStorageUpdate::clear_updates() {
+  updates_.Clear();
+}
+const ::server::TStorageUpdate_StorageUpdate& TStorageUpdate::updates(int index) const {
+  // @@protoc_insertion_point(field_get:server.TStorageUpdate.updates)
+  return updates_.Get(index);
+}
+::server::TStorageUpdate_StorageUpdate* TStorageUpdate::mutable_updates(int index) {
+  // @@protoc_insertion_point(field_mutable:server.TStorageUpdate.updates)
+  return updates_.Mutable(index);
+}
+::server::TStorageUpdate_StorageUpdate* TStorageUpdate::add_updates() {
+  // @@protoc_insertion_point(field_add:server.TStorageUpdate.updates)
+  return updates_.Add();
+}
+::google::protobuf::RepeatedPtrField< ::server::TStorageUpdate_StorageUpdate >*
+TStorageUpdate::mutable_updates() {
+  // @@protoc_insertion_point(field_mutable_list:server.TStorageUpdate.updates)
+  return &updates_;
+}
+const ::google::protobuf::RepeatedPtrField< ::server::TStorageUpdate_StorageUpdate >&
+TStorageUpdate::updates() const {
+  // @@protoc_insertion_point(field_list:server.TStorageUpdate.updates)
+  return updates_;
+}
+
+inline const TStorageUpdate* TStorageUpdate::internal_default_instance() {
+  return &TStorageUpdate_default_instance_.get();
 }
 #endif  // PROTOBUF_INLINE_NOT_IN_HEADERS
 
