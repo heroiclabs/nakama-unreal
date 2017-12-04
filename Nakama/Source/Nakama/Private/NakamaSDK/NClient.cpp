@@ -112,7 +112,7 @@ namespace Nakama {
 				if (callback) callback(new NSession(authResponse.session().token().c_str(), std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::seconds(span))));
 				break;
 			case AuthenticateResponse::IdCase::kError:
-				if (errback) errback(NError(authResponse.error()));
+				if (errback) errback(NError(authResponse.error(), authResponse.collation_id()));
 				break;
 			default:
 				NLogger::Error("Received invalid response from server");
@@ -282,7 +282,7 @@ namespace Nakama {
 		}
 
 		case Envelope::PayloadCase::kError: {
-			NError error = NError(message.error());
+			NError error = NError(message.error(), collationId);
 			if (callbacks) {
 				callbacks->OnError(error);
 			}

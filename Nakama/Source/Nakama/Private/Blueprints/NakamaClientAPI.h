@@ -675,15 +675,20 @@ public:
 		static UNBPMatchmakeRequest* AddRequest(UNakamaComponent* nakama, int32 requiredCount, FDelegateOnSuccess_MatchmakeTicket onSuccess, FDelegateOnFail onFail);
 
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true"), Category = "Nakama|Matchmake")
+		static UNBPMatchmakeRequest* ComplexAddRequest(UNakamaComponent* nakama, int32 requiredCount, UNBPMatchmakeFilters* filters, UNBPMatchmakeProps* props, FDelegateOnSuccess_MatchmakeTicket onSuccess, FDelegateOnFail onFail);
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true"), Category = "Nakama|Matchmake")
 		static UNBPMatchmakeRequest* RemoveRequest(UNakamaComponent* nakama, UNBPMatchmakeTicket* ticket, FDelegateOnSuccess onSuccess, FDelegateOnFail onFail);
 
 private:
-	enum Mode { Add, Remove };
+	enum Mode { Add, ComplexAdd, Remove };
 
 	Mode mode;
 
 	UPROPERTY() UNBPMatchmakeTicket* Ticket = nullptr;
 	UPROPERTY() int32 RequiredCount;
+	UPROPERTY() UNBPMatchmakeFilters* Filters = nullptr;
+	UPROPERTY() UNBPMatchmakeProps* Props = nullptr;
 	UPROPERTY() UNakamaComponent* NakamaRef;
 	UPROPERTY() FDelegateOnSuccess_MatchmakeTicket OnAddSuccess;
 	UPROPERTY() FDelegateOnSuccess OnRemoveSuccess;

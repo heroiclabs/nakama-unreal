@@ -30,7 +30,7 @@ namespace Nakama {
 
 	private:
 		Envelope envelope;
-		NMatchmakeAddMessage(int64_t requiredCount);
+		NMatchmakeAddMessage() {}
 
 	public:
 		~NMatchmakeAddMessage() {}
@@ -40,6 +40,25 @@ namespace Nakama {
 
 		static NMatchmakeAddMessage Default(int64_t requiredCount);
 
+		class Builder;
 	};
 
+	class NAKAMA_API NMatchmakeAddMessage::Builder
+	{
+	private:
+		NMatchmakeAddMessage message;
+
+	public:
+		Builder(int64_t requiredCount);
+
+		Builder AddTermFilter(std::string name, std::vector<std::string> terms, bool matchAllTerms);
+		Builder AddRangeFilter(std::string name, int64_t lowerbound, int64_t upperbound);
+		Builder AddCheckFilter(std::string name, bool value);
+
+		Builder AddProperty(std::string key, bool value);
+		Builder AddProperty(std::string key, int64_t value);
+		Builder AddProperty(std::string key, std::vector<std::string> values);
+
+		NMatchmakeAddMessage Build();
+	};
 }

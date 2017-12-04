@@ -20,6 +20,7 @@
 #include "NUserPresence.h"
 #include "NMatchmakeTicket.h"
 #include "NMatchToken.h"
+#include "NMatchmakeUserProperty.h"
 #include <functional>
 
 using namespace server;
@@ -38,6 +39,9 @@ namespace Nakama {
 				presence.push_back(NUserPresence(message.presences(i)));
 			}
 			self = NUserPresence(message.self());
+			for (size_t i = 0; i < message.properties_size(); i++) {
+				userProperties.push_back(NMatchmakeUserProperty(message.properties(i)));
+			}
 		}
 
 		~NMatchmakeMatched() {}
@@ -46,11 +50,13 @@ namespace Nakama {
 		NMatchToken GetToken() { return token; }
 		std::vector<NUserPresence> GetPresence() { return presence; }
 		NUserPresence GetSelf() { return self; }
+		std::vector<NMatchmakeUserProperty> GetUserProperties() { return userProperties; }
 
 	private:
 		NMatchmakeTicket ticket;
 		NMatchToken token;
 		std::vector<NUserPresence> presence;
 		NUserPresence self;
+		std::vector<NMatchmakeUserProperty> userProperties;
 	};
 }

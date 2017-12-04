@@ -3,6 +3,11 @@ All notable changes to this project are documented below.
 
 The format is based on [keep a changelog](http://keepachangelog.com/) and this project uses [semantic versioning](http://semver.org/).
 
+## [0.9.0] - 2017-12-03
+### Added
+- Advanced Matchmaking with custom filters and user properties. 
+- Expose Collation ID when client operations result in an error.
+
 ## [0.8.1] - 2017-09-28
 ### Changed
 - Now targeting nakama 1.0.1

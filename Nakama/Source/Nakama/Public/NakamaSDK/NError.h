@@ -45,16 +45,16 @@ namespace Nakama {
 	class NAKAMA_API NError {
 
 	public:
-		NError(std::string message = std::string()) : 
+		NError(std::string message = std::string()) :
 			message(message), code(ErrorCode::Unknown) {}
-		NError(const AuthenticateResponse_Error error) : 
-			message(error.message()) {
+		NError(const AuthenticateResponse_Error error, std::string collationId) :
+			message(error.message()), collationId(collationId) {
 			auto c = error.code();
 			if (c >= Unknown && c <= MatchNotFound) code = (ErrorCode)c;
 			else code = ErrorCode::Unknown;
 		}
-		NError(server::Error error) :
-			message(error.message()) {
+		NError(server::Error error, std::string collationId) :
+			message(error.message()), collationId(collationId) {
 			auto c = error.code();
 			if (c >= Unknown && c <= MatchNotFound) code = (ErrorCode)c;
 			else code = ErrorCode::Unknown;
@@ -64,10 +64,12 @@ namespace Nakama {
 
 		std::string GetErrorMessage() { return message; }
 		ErrorCode GetErrorCode() { return code; }
+		std::string GetCollationId() { return collationId; }
 
 	private:
 		std::string message;
 		ErrorCode code;
+		std::string collationId;
 	};
 
 }

@@ -2051,6 +2051,19 @@ UNBPMatchmakeRequest* UNBPMatchmakeRequest::AddRequest(UNakamaComponent* nakama,
 	return proxy;
 }
 
+UNBPMatchmakeRequest* UNBPMatchmakeRequest::ComplexAddRequest(UNakamaComponent* nakama, int32 requiredCount, UNBPMatchmakeFilters* filters, UNBPMatchmakeProps* props, FDelegateOnSuccess_MatchmakeTicket onSuccess, FDelegateOnFail onFail)
+{
+	auto proxy = NewObject<UNBPMatchmakeRequest>();
+	proxy->mode = Mode::ComplexAdd;
+	proxy->RequiredCount = requiredCount;
+	proxy->Filters = filters;
+	proxy->Props = props;
+	proxy->NakamaRef = nakama;
+	proxy->OnAddSuccess = onSuccess;
+	proxy->OnFail = onFail;
+	return proxy;
+}
+
 UNBPMatchmakeRequest* UNBPMatchmakeRequest::RemoveRequest(UNakamaComponent* nakama, UNBPMatchmakeTicket* ticket, FDelegateOnSuccess onSuccess, FDelegateOnFail onFail)
 {
 	auto proxy = NewObject<UNBPMatchmakeRequest>();
@@ -2082,7 +2095,51 @@ void UNBPMatchmakeRequest::Activate()
 			}
 		};
 
-		auto message = NMatchmakeAddMessage::Default(RequiredCount);
+		auto builder = NMatchmakeAddMessage::Builder(RequiredCount);
+		auto message = builder.Build();
+		client->Send(message, success, fail);
+		break;
+	}
+	case Mode::ComplexAdd: {
+		auto success = [req](void* obj) {
+			if (req->OnAddSuccess.IsBound()) {
+				auto data = (NMatchmakeTicket*)obj;
+				req->OnAddSuccess.Execute(UNBPMatchmakeTicket::From(*data));
+			}
+		};
+
+		auto builder = NMatchmakeAddMessage::Builder(RequiredCount);
+		if (Props != nullptr) {
+			auto intProps = Props->GetIntProperties();
+			for (auto& elem : intProps) builder.AddProperty(TCHAR_TO_UTF8(*elem.Key), (int64_t)elem.Value);
+			auto boolProps = Props->GetBoolProperties();
+			for (auto& elem : boolProps) builder.AddProperty(TCHAR_TO_UTF8(*elem.Key), elem.Value);
+			auto termProps = Props->GetTermProperties();
+			for (auto& elem : termProps) {
+				std::vector<std::string> terms;
+				for (auto& t : elem.Value.Entries) terms.push_back(TCHAR_TO_UTF8(*t));
+				builder.AddProperty(TCHAR_TO_UTF8(*elem.Key), terms);
+			}
+		}
+
+		if (Filters != nullptr) {
+			auto checks = Filters->GetChecks();
+			for (auto& elem : checks) builder.AddCheckFilter(TCHAR_TO_UTF8(*elem.Key), elem.Value);
+
+			auto rangeslb = Filters->GetRangesLB();
+			auto rangesub = Filters->GetRangesUB();
+			for (auto& elem : rangeslb) builder.AddRangeFilter(TCHAR_TO_UTF8(*elem.Key), (int64_t)elem.Value, (int64_t)rangesub[elem.Key]);
+
+			auto terms = Filters->GetTerms();
+			auto termMatches = Filters->GetTermMatchAll();
+			for (auto& elem : terms) {
+				std::vector<std::string> terms;
+				for (auto& t : elem.Value.Entries) terms.push_back(TCHAR_TO_UTF8(*t));
+				builder.AddTermFilter(TCHAR_TO_UTF8(*elem.Key), terms, termMatches[elem.Key]);
+			}
+		}
+
+		auto message = builder.Build();
 		client->Send(message, success, fail);
 		break;
 	}

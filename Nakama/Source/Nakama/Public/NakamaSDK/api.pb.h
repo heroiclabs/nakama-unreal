@@ -29,7 +29,7 @@
 #include <google/protobuf/generated_enum_reflection.h>
 #include <google/protobuf/unknown_field_set.h>
 // @@protoc_insertion_point(includes)
-
+#pragma push_macro("assert")
 #undef assert
 
 namespace server {
@@ -59,9 +59,15 @@ class Match;
 class MatchData;
 class MatchDataSend;
 class MatchPresence;
+class MatchmakeFilter;
+class MatchmakeFilter_RangeFilter;
+class MatchmakeFilter_TermFilter;
 class MatchmakeMatched;
+class MatchmakeMatched_UserProperty;
 class Notification;
 class Notifications;
+class PropertyPair;
+class PropertyPair_StringSet;
 class Self;
 class TFriends;
 class TFriendsAdd;
@@ -8620,6 +8626,585 @@ extern ::google::protobuf::internal::ExplicitlyConstructed<TopicPresence> TopicP
 
 // -------------------------------------------------------------------
 
+class PropertyPair_StringSet : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.PropertyPair.StringSet) */ {
+ public:
+  PropertyPair_StringSet();
+  virtual ~PropertyPair_StringSet();
+
+  PropertyPair_StringSet(const PropertyPair_StringSet& from);
+
+  inline PropertyPair_StringSet& operator=(const PropertyPair_StringSet& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const PropertyPair_StringSet& default_instance();
+
+  static const PropertyPair_StringSet* internal_default_instance();
+
+  void Swap(PropertyPair_StringSet* other);
+
+  // implements Message ----------------------------------------------
+
+  inline PropertyPair_StringSet* New() const { return New(NULL); }
+
+  PropertyPair_StringSet* New(::google::protobuf::Arena* arena) const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const PropertyPair_StringSet& from);
+  void MergeFrom(const PropertyPair_StringSet& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  size_t ByteSizeLong() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const {
+    return InternalSerializeWithCachedSizesToArray(false, output);
+  }
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  void InternalSwap(PropertyPair_StringSet* other);
+  void UnsafeMergeFrom(const PropertyPair_StringSet& from);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return _internal_metadata_.arena();
+  }
+  inline void* MaybeArenaPtr() const {
+    return _internal_metadata_.raw_arena_ptr();
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // repeated string values = 1;
+  int values_size() const;
+  void clear_values();
+  static const int kValuesFieldNumber = 1;
+  const ::std::string& values(int index) const;
+  ::std::string* mutable_values(int index);
+  void set_values(int index, const ::std::string& value);
+  void set_values(int index, const char* value);
+  void set_values(int index, const char* value, size_t size);
+  ::std::string* add_values();
+  void add_values(const ::std::string& value);
+  void add_values(const char* value);
+  void add_values(const char* value, size_t size);
+  const ::google::protobuf::RepeatedPtrField< ::std::string>& values() const;
+  ::google::protobuf::RepeatedPtrField< ::std::string>* mutable_values();
+
+  // @@protoc_insertion_point(class_scope:server.PropertyPair.StringSet)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::RepeatedPtrField< ::std::string> values_;
+  mutable int _cached_size_;
+  friend void  protobuf_InitDefaults_api_2eproto_impl();
+  friend void  protobuf_AddDesc_api_2eproto_impl();
+  friend void protobuf_AssignDesc_api_2eproto();
+  friend void protobuf_ShutdownFile_api_2eproto();
+
+  void InitAsDefaultInstance();
+};
+extern ::google::protobuf::internal::ExplicitlyConstructed<PropertyPair_StringSet> PropertyPair_StringSet_default_instance_;
+
+// -------------------------------------------------------------------
+
+class PropertyPair : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.PropertyPair) */ {
+ public:
+  PropertyPair();
+  virtual ~PropertyPair();
+
+  PropertyPair(const PropertyPair& from);
+
+  inline PropertyPair& operator=(const PropertyPair& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const PropertyPair& default_instance();
+
+  enum ValueCase {
+    kStringSet = 2,
+    kBoolValue = 3,
+    kIntValue = 4,
+    VALUE_NOT_SET = 0,
+  };
+
+  static const PropertyPair* internal_default_instance();
+
+  void Swap(PropertyPair* other);
+
+  // implements Message ----------------------------------------------
+
+  inline PropertyPair* New() const { return New(NULL); }
+
+  PropertyPair* New(::google::protobuf::Arena* arena) const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const PropertyPair& from);
+  void MergeFrom(const PropertyPair& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  size_t ByteSizeLong() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const {
+    return InternalSerializeWithCachedSizesToArray(false, output);
+  }
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  void InternalSwap(PropertyPair* other);
+  void UnsafeMergeFrom(const PropertyPair& from);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return _internal_metadata_.arena();
+  }
+  inline void* MaybeArenaPtr() const {
+    return _internal_metadata_.raw_arena_ptr();
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  typedef PropertyPair_StringSet StringSet;
+
+  // accessors -------------------------------------------------------
+
+  // optional string key = 1;
+  void clear_key();
+  static const int kKeyFieldNumber = 1;
+  const ::std::string& key() const;
+  void set_key(const ::std::string& value);
+  void set_key(const char* value);
+  void set_key(const char* value, size_t size);
+  ::std::string* mutable_key();
+  ::std::string* release_key();
+  void set_allocated_key(::std::string* key);
+
+  // optional .server.PropertyPair.StringSet stringSet = 2;
+  bool has_stringset() const;
+  void clear_stringset();
+  static const int kStringSetFieldNumber = 2;
+  const ::server::PropertyPair_StringSet& stringset() const;
+  ::server::PropertyPair_StringSet* mutable_stringset();
+  ::server::PropertyPair_StringSet* release_stringset();
+  void set_allocated_stringset(::server::PropertyPair_StringSet* stringset);
+
+  // optional bool boolValue = 3;
+  private:
+  bool has_boolvalue() const;
+  public:
+  void clear_boolvalue();
+  static const int kBoolValueFieldNumber = 3;
+  bool boolvalue() const;
+  void set_boolvalue(bool value);
+
+  // optional int64 intValue = 4;
+  private:
+  bool has_intvalue() const;
+  public:
+  void clear_intvalue();
+  static const int kIntValueFieldNumber = 4;
+  ::google::protobuf::int64 intvalue() const;
+  void set_intvalue(::google::protobuf::int64 value);
+
+  ValueCase value_case() const;
+  // @@protoc_insertion_point(class_scope:server.PropertyPair)
+ private:
+  inline void set_has_stringset();
+  inline void set_has_boolvalue();
+  inline void set_has_intvalue();
+
+  inline bool has_value() const;
+  void clear_value();
+  inline void clear_has_value();
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::internal::ArenaStringPtr key_;
+  union ValueUnion {
+    ValueUnion() {}
+    ::server::PropertyPair_StringSet* stringset_;
+    bool boolvalue_;
+    ::google::protobuf::int64 intvalue_;
+  } value_;
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _oneof_case_[1];
+
+  friend void  protobuf_InitDefaults_api_2eproto_impl();
+  friend void  protobuf_AddDesc_api_2eproto_impl();
+  friend void protobuf_AssignDesc_api_2eproto();
+  friend void protobuf_ShutdownFile_api_2eproto();
+
+  void InitAsDefaultInstance();
+};
+extern ::google::protobuf::internal::ExplicitlyConstructed<PropertyPair> PropertyPair_default_instance_;
+
+// -------------------------------------------------------------------
+
+class MatchmakeFilter_TermFilter : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.MatchmakeFilter.TermFilter) */ {
+ public:
+  MatchmakeFilter_TermFilter();
+  virtual ~MatchmakeFilter_TermFilter();
+
+  MatchmakeFilter_TermFilter(const MatchmakeFilter_TermFilter& from);
+
+  inline MatchmakeFilter_TermFilter& operator=(const MatchmakeFilter_TermFilter& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const MatchmakeFilter_TermFilter& default_instance();
+
+  static const MatchmakeFilter_TermFilter* internal_default_instance();
+
+  void Swap(MatchmakeFilter_TermFilter* other);
+
+  // implements Message ----------------------------------------------
+
+  inline MatchmakeFilter_TermFilter* New() const { return New(NULL); }
+
+  MatchmakeFilter_TermFilter* New(::google::protobuf::Arena* arena) const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const MatchmakeFilter_TermFilter& from);
+  void MergeFrom(const MatchmakeFilter_TermFilter& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  size_t ByteSizeLong() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const {
+    return InternalSerializeWithCachedSizesToArray(false, output);
+  }
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  void InternalSwap(MatchmakeFilter_TermFilter* other);
+  void UnsafeMergeFrom(const MatchmakeFilter_TermFilter& from);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return _internal_metadata_.arena();
+  }
+  inline void* MaybeArenaPtr() const {
+    return _internal_metadata_.raw_arena_ptr();
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // repeated string terms = 1;
+  int terms_size() const;
+  void clear_terms();
+  static const int kTermsFieldNumber = 1;
+  const ::std::string& terms(int index) const;
+  ::std::string* mutable_terms(int index);
+  void set_terms(int index, const ::std::string& value);
+  void set_terms(int index, const char* value);
+  void set_terms(int index, const char* value, size_t size);
+  ::std::string* add_terms();
+  void add_terms(const ::std::string& value);
+  void add_terms(const char* value);
+  void add_terms(const char* value, size_t size);
+  const ::google::protobuf::RepeatedPtrField< ::std::string>& terms() const;
+  ::google::protobuf::RepeatedPtrField< ::std::string>* mutable_terms();
+
+  // optional bool matchAllTerms = 2;
+  void clear_matchallterms();
+  static const int kMatchAllTermsFieldNumber = 2;
+  bool matchallterms() const;
+  void set_matchallterms(bool value);
+
+  // @@protoc_insertion_point(class_scope:server.MatchmakeFilter.TermFilter)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::RepeatedPtrField< ::std::string> terms_;
+  bool matchallterms_;
+  mutable int _cached_size_;
+  friend void  protobuf_InitDefaults_api_2eproto_impl();
+  friend void  protobuf_AddDesc_api_2eproto_impl();
+  friend void protobuf_AssignDesc_api_2eproto();
+  friend void protobuf_ShutdownFile_api_2eproto();
+
+  void InitAsDefaultInstance();
+};
+extern ::google::protobuf::internal::ExplicitlyConstructed<MatchmakeFilter_TermFilter> MatchmakeFilter_TermFilter_default_instance_;
+
+// -------------------------------------------------------------------
+
+class MatchmakeFilter_RangeFilter : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.MatchmakeFilter.RangeFilter) */ {
+ public:
+  MatchmakeFilter_RangeFilter();
+  virtual ~MatchmakeFilter_RangeFilter();
+
+  MatchmakeFilter_RangeFilter(const MatchmakeFilter_RangeFilter& from);
+
+  inline MatchmakeFilter_RangeFilter& operator=(const MatchmakeFilter_RangeFilter& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const MatchmakeFilter_RangeFilter& default_instance();
+
+  static const MatchmakeFilter_RangeFilter* internal_default_instance();
+
+  void Swap(MatchmakeFilter_RangeFilter* other);
+
+  // implements Message ----------------------------------------------
+
+  inline MatchmakeFilter_RangeFilter* New() const { return New(NULL); }
+
+  MatchmakeFilter_RangeFilter* New(::google::protobuf::Arena* arena) const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const MatchmakeFilter_RangeFilter& from);
+  void MergeFrom(const MatchmakeFilter_RangeFilter& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  size_t ByteSizeLong() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const {
+    return InternalSerializeWithCachedSizesToArray(false, output);
+  }
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  void InternalSwap(MatchmakeFilter_RangeFilter* other);
+  void UnsafeMergeFrom(const MatchmakeFilter_RangeFilter& from);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return _internal_metadata_.arena();
+  }
+  inline void* MaybeArenaPtr() const {
+    return _internal_metadata_.raw_arena_ptr();
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // optional int64 lower_bound = 1;
+  void clear_lower_bound();
+  static const int kLowerBoundFieldNumber = 1;
+  ::google::protobuf::int64 lower_bound() const;
+  void set_lower_bound(::google::protobuf::int64 value);
+
+  // optional int64 upper_bound = 2;
+  void clear_upper_bound();
+  static const int kUpperBoundFieldNumber = 2;
+  ::google::protobuf::int64 upper_bound() const;
+  void set_upper_bound(::google::protobuf::int64 value);
+
+  // @@protoc_insertion_point(class_scope:server.MatchmakeFilter.RangeFilter)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::int64 lower_bound_;
+  ::google::protobuf::int64 upper_bound_;
+  mutable int _cached_size_;
+  friend void  protobuf_InitDefaults_api_2eproto_impl();
+  friend void  protobuf_AddDesc_api_2eproto_impl();
+  friend void protobuf_AssignDesc_api_2eproto();
+  friend void protobuf_ShutdownFile_api_2eproto();
+
+  void InitAsDefaultInstance();
+};
+extern ::google::protobuf::internal::ExplicitlyConstructed<MatchmakeFilter_RangeFilter> MatchmakeFilter_RangeFilter_default_instance_;
+
+// -------------------------------------------------------------------
+
+class MatchmakeFilter : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.MatchmakeFilter) */ {
+ public:
+  MatchmakeFilter();
+  virtual ~MatchmakeFilter();
+
+  MatchmakeFilter(const MatchmakeFilter& from);
+
+  inline MatchmakeFilter& operator=(const MatchmakeFilter& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const MatchmakeFilter& default_instance();
+
+  enum ValueCase {
+    kTerm = 2,
+    kRange = 3,
+    kCheck = 4,
+    VALUE_NOT_SET = 0,
+  };
+
+  static const MatchmakeFilter* internal_default_instance();
+
+  void Swap(MatchmakeFilter* other);
+
+  // implements Message ----------------------------------------------
+
+  inline MatchmakeFilter* New() const { return New(NULL); }
+
+  MatchmakeFilter* New(::google::protobuf::Arena* arena) const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const MatchmakeFilter& from);
+  void MergeFrom(const MatchmakeFilter& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  size_t ByteSizeLong() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const {
+    return InternalSerializeWithCachedSizesToArray(false, output);
+  }
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  void InternalSwap(MatchmakeFilter* other);
+  void UnsafeMergeFrom(const MatchmakeFilter& from);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return _internal_metadata_.arena();
+  }
+  inline void* MaybeArenaPtr() const {
+    return _internal_metadata_.raw_arena_ptr();
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  typedef MatchmakeFilter_TermFilter TermFilter;
+  typedef MatchmakeFilter_RangeFilter RangeFilter;
+
+  // accessors -------------------------------------------------------
+
+  // optional string name = 1;
+  void clear_name();
+  static const int kNameFieldNumber = 1;
+  const ::std::string& name() const;
+  void set_name(const ::std::string& value);
+  void set_name(const char* value);
+  void set_name(const char* value, size_t size);
+  ::std::string* mutable_name();
+  ::std::string* release_name();
+  void set_allocated_name(::std::string* name);
+
+  // optional .server.MatchmakeFilter.TermFilter term = 2;
+  bool has_term() const;
+  void clear_term();
+  static const int kTermFieldNumber = 2;
+  const ::server::MatchmakeFilter_TermFilter& term() const;
+  ::server::MatchmakeFilter_TermFilter* mutable_term();
+  ::server::MatchmakeFilter_TermFilter* release_term();
+  void set_allocated_term(::server::MatchmakeFilter_TermFilter* term);
+
+  // optional .server.MatchmakeFilter.RangeFilter range = 3;
+  bool has_range() const;
+  void clear_range();
+  static const int kRangeFieldNumber = 3;
+  const ::server::MatchmakeFilter_RangeFilter& range() const;
+  ::server::MatchmakeFilter_RangeFilter* mutable_range();
+  ::server::MatchmakeFilter_RangeFilter* release_range();
+  void set_allocated_range(::server::MatchmakeFilter_RangeFilter* range);
+
+  // optional bool check = 4;
+  private:
+  bool has_check() const;
+  public:
+  void clear_check();
+  static const int kCheckFieldNumber = 4;
+  bool check() const;
+  void set_check(bool value);
+
+  ValueCase value_case() const;
+  // @@protoc_insertion_point(class_scope:server.MatchmakeFilter)
+ private:
+  inline void set_has_term();
+  inline void set_has_range();
+  inline void set_has_check();
+
+  inline bool has_value() const;
+  void clear_value();
+  inline void clear_has_value();
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::internal::ArenaStringPtr name_;
+  union ValueUnion {
+    ValueUnion() {}
+    ::server::MatchmakeFilter_TermFilter* term_;
+    ::server::MatchmakeFilter_RangeFilter* range_;
+    bool check_;
+  } value_;
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _oneof_case_[1];
+
+  friend void  protobuf_InitDefaults_api_2eproto_impl();
+  friend void  protobuf_AddDesc_api_2eproto_impl();
+  friend void protobuf_AssignDesc_api_2eproto();
+  friend void protobuf_ShutdownFile_api_2eproto();
+
+  void InitAsDefaultInstance();
+};
+extern ::google::protobuf::internal::ExplicitlyConstructed<MatchmakeFilter> MatchmakeFilter_default_instance_;
+
+// -------------------------------------------------------------------
+
 class TMatchmakeAdd : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.TMatchmakeAdd) */ {
  public:
   TMatchmakeAdd();
@@ -8683,17 +9268,43 @@ class TMatchmakeAdd : public ::google::protobuf::Message /* @@protoc_insertion_p
 
   // accessors -------------------------------------------------------
 
-  // optional int64 requiredCount = 1;
-  void clear_requiredcount();
+  // optional int64 required_count = 1;
+  void clear_required_count();
   static const int kRequiredCountFieldNumber = 1;
-  ::google::protobuf::int64 requiredcount() const;
-  void set_requiredcount(::google::protobuf::int64 value);
+  ::google::protobuf::int64 required_count() const;
+  void set_required_count(::google::protobuf::int64 value);
+
+  // repeated .server.MatchmakeFilter filters = 2;
+  int filters_size() const;
+  void clear_filters();
+  static const int kFiltersFieldNumber = 2;
+  const ::server::MatchmakeFilter& filters(int index) const;
+  ::server::MatchmakeFilter* mutable_filters(int index);
+  ::server::MatchmakeFilter* add_filters();
+  ::google::protobuf::RepeatedPtrField< ::server::MatchmakeFilter >*
+      mutable_filters();
+  const ::google::protobuf::RepeatedPtrField< ::server::MatchmakeFilter >&
+      filters() const;
+
+  // repeated .server.PropertyPair properties = 3;
+  int properties_size() const;
+  void clear_properties();
+  static const int kPropertiesFieldNumber = 3;
+  const ::server::PropertyPair& properties(int index) const;
+  ::server::PropertyPair* mutable_properties(int index);
+  ::server::PropertyPair* add_properties();
+  ::google::protobuf::RepeatedPtrField< ::server::PropertyPair >*
+      mutable_properties();
+  const ::google::protobuf::RepeatedPtrField< ::server::PropertyPair >&
+      properties() const;
 
   // @@protoc_insertion_point(class_scope:server.TMatchmakeAdd)
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
-  ::google::protobuf::int64 requiredcount_;
+  ::google::protobuf::RepeatedPtrField< ::server::MatchmakeFilter > filters_;
+  ::google::protobuf::RepeatedPtrField< ::server::PropertyPair > properties_;
+  ::google::protobuf::int64 required_count_;
   mutable int _cached_size_;
   friend void  protobuf_InitDefaults_api_2eproto_impl();
   friend void  protobuf_AddDesc_api_2eproto_impl();
@@ -8888,6 +9499,123 @@ extern ::google::protobuf::internal::ExplicitlyConstructed<TMatchmakeRemove> TMa
 
 // -------------------------------------------------------------------
 
+class MatchmakeMatched_UserProperty : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.MatchmakeMatched.UserProperty) */ {
+ public:
+  MatchmakeMatched_UserProperty();
+  virtual ~MatchmakeMatched_UserProperty();
+
+  MatchmakeMatched_UserProperty(const MatchmakeMatched_UserProperty& from);
+
+  inline MatchmakeMatched_UserProperty& operator=(const MatchmakeMatched_UserProperty& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const MatchmakeMatched_UserProperty& default_instance();
+
+  static const MatchmakeMatched_UserProperty* internal_default_instance();
+
+  void Swap(MatchmakeMatched_UserProperty* other);
+
+  // implements Message ----------------------------------------------
+
+  inline MatchmakeMatched_UserProperty* New() const { return New(NULL); }
+
+  MatchmakeMatched_UserProperty* New(::google::protobuf::Arena* arena) const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const MatchmakeMatched_UserProperty& from);
+  void MergeFrom(const MatchmakeMatched_UserProperty& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  size_t ByteSizeLong() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const {
+    return InternalSerializeWithCachedSizesToArray(false, output);
+  }
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  void InternalSwap(MatchmakeMatched_UserProperty* other);
+  void UnsafeMergeFrom(const MatchmakeMatched_UserProperty& from);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return _internal_metadata_.arena();
+  }
+  inline void* MaybeArenaPtr() const {
+    return _internal_metadata_.raw_arena_ptr();
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // optional bytes user_id = 1;
+  void clear_user_id();
+  static const int kUserIdFieldNumber = 1;
+  const ::std::string& user_id() const;
+  void set_user_id(const ::std::string& value);
+  void set_user_id(const char* value);
+  void set_user_id(const void* value, size_t size);
+  ::std::string* mutable_user_id();
+  ::std::string* release_user_id();
+  void set_allocated_user_id(::std::string* user_id);
+
+  // repeated .server.PropertyPair properties = 2;
+  int properties_size() const;
+  void clear_properties();
+  static const int kPropertiesFieldNumber = 2;
+  const ::server::PropertyPair& properties(int index) const;
+  ::server::PropertyPair* mutable_properties(int index);
+  ::server::PropertyPair* add_properties();
+  ::google::protobuf::RepeatedPtrField< ::server::PropertyPair >*
+      mutable_properties();
+  const ::google::protobuf::RepeatedPtrField< ::server::PropertyPair >&
+      properties() const;
+
+  // repeated .server.MatchmakeFilter filters = 3;
+  int filters_size() const;
+  void clear_filters();
+  static const int kFiltersFieldNumber = 3;
+  const ::server::MatchmakeFilter& filters(int index) const;
+  ::server::MatchmakeFilter* mutable_filters(int index);
+  ::server::MatchmakeFilter* add_filters();
+  ::google::protobuf::RepeatedPtrField< ::server::MatchmakeFilter >*
+      mutable_filters();
+  const ::google::protobuf::RepeatedPtrField< ::server::MatchmakeFilter >&
+      filters() const;
+
+  // @@protoc_insertion_point(class_scope:server.MatchmakeMatched.UserProperty)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::RepeatedPtrField< ::server::PropertyPair > properties_;
+  ::google::protobuf::RepeatedPtrField< ::server::MatchmakeFilter > filters_;
+  ::google::protobuf::internal::ArenaStringPtr user_id_;
+  mutable int _cached_size_;
+  friend void  protobuf_InitDefaults_api_2eproto_impl();
+  friend void  protobuf_AddDesc_api_2eproto_impl();
+  friend void protobuf_AssignDesc_api_2eproto();
+  friend void protobuf_ShutdownFile_api_2eproto();
+
+  void InitAsDefaultInstance();
+};
+extern ::google::protobuf::internal::ExplicitlyConstructed<MatchmakeMatched_UserProperty> MatchmakeMatched_UserProperty_default_instance_;
+
+// -------------------------------------------------------------------
+
 class MatchmakeMatched : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:server.MatchmakeMatched) */ {
  public:
   MatchmakeMatched();
@@ -8949,6 +9677,8 @@ class MatchmakeMatched : public ::google::protobuf::Message /* @@protoc_insertio
 
   // nested types ----------------------------------------------------
 
+  typedef MatchmakeMatched_UserProperty UserProperty;
+
   // accessors -------------------------------------------------------
 
   // optional bytes ticket = 1;
@@ -8994,11 +9724,24 @@ class MatchmakeMatched : public ::google::protobuf::Message /* @@protoc_insertio
   ::server::UserPresence* release_self();
   void set_allocated_self(::server::UserPresence* self);
 
+  // repeated .server.MatchmakeMatched.UserProperty properties = 5;
+  int properties_size() const;
+  void clear_properties();
+  static const int kPropertiesFieldNumber = 5;
+  const ::server::MatchmakeMatched_UserProperty& properties(int index) const;
+  ::server::MatchmakeMatched_UserProperty* mutable_properties(int index);
+  ::server::MatchmakeMatched_UserProperty* add_properties();
+  ::google::protobuf::RepeatedPtrField< ::server::MatchmakeMatched_UserProperty >*
+      mutable_properties();
+  const ::google::protobuf::RepeatedPtrField< ::server::MatchmakeMatched_UserProperty >&
+      properties() const;
+
   // @@protoc_insertion_point(class_scope:server.MatchmakeMatched)
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
   ::google::protobuf::RepeatedPtrField< ::server::UserPresence > presences_;
+  ::google::protobuf::RepeatedPtrField< ::server::MatchmakeMatched_UserProperty > properties_;
   ::google::protobuf::internal::ArenaStringPtr ticket_;
   ::google::protobuf::internal::ArenaStringPtr token_;
   ::server::UserPresence* self_;
@@ -26370,20 +27113,604 @@ inline const TopicPresence* TopicPresence::internal_default_instance() {
 }
 // -------------------------------------------------------------------
 
+// PropertyPair_StringSet
+
+// repeated string values = 1;
+inline int PropertyPair_StringSet::values_size() const {
+  return values_.size();
+}
+inline void PropertyPair_StringSet::clear_values() {
+  values_.Clear();
+}
+inline const ::std::string& PropertyPair_StringSet::values(int index) const {
+  // @@protoc_insertion_point(field_get:server.PropertyPair.StringSet.values)
+  return values_.Get(index);
+}
+inline ::std::string* PropertyPair_StringSet::mutable_values(int index) {
+  // @@protoc_insertion_point(field_mutable:server.PropertyPair.StringSet.values)
+  return values_.Mutable(index);
+}
+inline void PropertyPair_StringSet::set_values(int index, const ::std::string& value) {
+  // @@protoc_insertion_point(field_set:server.PropertyPair.StringSet.values)
+  values_.Mutable(index)->assign(value);
+}
+inline void PropertyPair_StringSet::set_values(int index, const char* value) {
+  values_.Mutable(index)->assign(value);
+  // @@protoc_insertion_point(field_set_char:server.PropertyPair.StringSet.values)
+}
+inline void PropertyPair_StringSet::set_values(int index, const char* value, size_t size) {
+  values_.Mutable(index)->assign(
+    reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_set_pointer:server.PropertyPair.StringSet.values)
+}
+inline ::std::string* PropertyPair_StringSet::add_values() {
+  // @@protoc_insertion_point(field_add_mutable:server.PropertyPair.StringSet.values)
+  return values_.Add();
+}
+inline void PropertyPair_StringSet::add_values(const ::std::string& value) {
+  values_.Add()->assign(value);
+  // @@protoc_insertion_point(field_add:server.PropertyPair.StringSet.values)
+}
+inline void PropertyPair_StringSet::add_values(const char* value) {
+  values_.Add()->assign(value);
+  // @@protoc_insertion_point(field_add_char:server.PropertyPair.StringSet.values)
+}
+inline void PropertyPair_StringSet::add_values(const char* value, size_t size) {
+  values_.Add()->assign(reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_add_pointer:server.PropertyPair.StringSet.values)
+}
+inline const ::google::protobuf::RepeatedPtrField< ::std::string>&
+PropertyPair_StringSet::values() const {
+  // @@protoc_insertion_point(field_list:server.PropertyPair.StringSet.values)
+  return values_;
+}
+inline ::google::protobuf::RepeatedPtrField< ::std::string>*
+PropertyPair_StringSet::mutable_values() {
+  // @@protoc_insertion_point(field_mutable_list:server.PropertyPair.StringSet.values)
+  return &values_;
+}
+
+inline const PropertyPair_StringSet* PropertyPair_StringSet::internal_default_instance() {
+  return &PropertyPair_StringSet_default_instance_.get();
+}
+// -------------------------------------------------------------------
+
+// PropertyPair
+
+// optional string key = 1;
+inline void PropertyPair::clear_key() {
+  key_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& PropertyPair::key() const {
+  // @@protoc_insertion_point(field_get:server.PropertyPair.key)
+  return key_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void PropertyPair::set_key(const ::std::string& value) {
+  
+  key_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:server.PropertyPair.key)
+}
+inline void PropertyPair::set_key(const char* value) {
+  
+  key_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:server.PropertyPair.key)
+}
+inline void PropertyPair::set_key(const char* value, size_t size) {
+  
+  key_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:server.PropertyPair.key)
+}
+inline ::std::string* PropertyPair::mutable_key() {
+  
+  // @@protoc_insertion_point(field_mutable:server.PropertyPair.key)
+  return key_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* PropertyPair::release_key() {
+  // @@protoc_insertion_point(field_release:server.PropertyPair.key)
+  
+  return key_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void PropertyPair::set_allocated_key(::std::string* key) {
+  if (key != NULL) {
+    
+  } else {
+    
+  }
+  key_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), key);
+  // @@protoc_insertion_point(field_set_allocated:server.PropertyPair.key)
+}
+
+// optional .server.PropertyPair.StringSet stringSet = 2;
+inline bool PropertyPair::has_stringset() const {
+  return value_case() == kStringSet;
+}
+inline void PropertyPair::set_has_stringset() {
+  _oneof_case_[0] = kStringSet;
+}
+inline void PropertyPair::clear_stringset() {
+  if (has_stringset()) {
+    delete value_.stringset_;
+    clear_has_value();
+  }
+}
+inline  const ::server::PropertyPair_StringSet& PropertyPair::stringset() const {
+  // @@protoc_insertion_point(field_get:server.PropertyPair.stringSet)
+  return has_stringset()
+      ? *value_.stringset_
+      : ::server::PropertyPair_StringSet::default_instance();
+}
+inline ::server::PropertyPair_StringSet* PropertyPair::mutable_stringset() {
+  if (!has_stringset()) {
+    clear_value();
+    set_has_stringset();
+    value_.stringset_ = new ::server::PropertyPair_StringSet;
+  }
+  // @@protoc_insertion_point(field_mutable:server.PropertyPair.stringSet)
+  return value_.stringset_;
+}
+inline ::server::PropertyPair_StringSet* PropertyPair::release_stringset() {
+  // @@protoc_insertion_point(field_release:server.PropertyPair.stringSet)
+  if (has_stringset()) {
+    clear_has_value();
+    ::server::PropertyPair_StringSet* temp = value_.stringset_;
+    value_.stringset_ = NULL;
+    return temp;
+  } else {
+    return NULL;
+  }
+}
+inline void PropertyPair::set_allocated_stringset(::server::PropertyPair_StringSet* stringset) {
+  clear_value();
+  if (stringset) {
+    set_has_stringset();
+    value_.stringset_ = stringset;
+  }
+  // @@protoc_insertion_point(field_set_allocated:server.PropertyPair.stringSet)
+}
+
+// optional bool boolValue = 3;
+inline bool PropertyPair::has_boolvalue() const {
+  return value_case() == kBoolValue;
+}
+inline void PropertyPair::set_has_boolvalue() {
+  _oneof_case_[0] = kBoolValue;
+}
+inline void PropertyPair::clear_boolvalue() {
+  if (has_boolvalue()) {
+    value_.boolvalue_ = false;
+    clear_has_value();
+  }
+}
+inline bool PropertyPair::boolvalue() const {
+  // @@protoc_insertion_point(field_get:server.PropertyPair.boolValue)
+  if (has_boolvalue()) {
+    return value_.boolvalue_;
+  }
+  return false;
+}
+inline void PropertyPair::set_boolvalue(bool value) {
+  if (!has_boolvalue()) {
+    clear_value();
+    set_has_boolvalue();
+  }
+  value_.boolvalue_ = value;
+  // @@protoc_insertion_point(field_set:server.PropertyPair.boolValue)
+}
+
+// optional int64 intValue = 4;
+inline bool PropertyPair::has_intvalue() const {
+  return value_case() == kIntValue;
+}
+inline void PropertyPair::set_has_intvalue() {
+  _oneof_case_[0] = kIntValue;
+}
+inline void PropertyPair::clear_intvalue() {
+  if (has_intvalue()) {
+    value_.intvalue_ = GOOGLE_LONGLONG(0);
+    clear_has_value();
+  }
+}
+inline ::google::protobuf::int64 PropertyPair::intvalue() const {
+  // @@protoc_insertion_point(field_get:server.PropertyPair.intValue)
+  if (has_intvalue()) {
+    return value_.intvalue_;
+  }
+  return GOOGLE_LONGLONG(0);
+}
+inline void PropertyPair::set_intvalue(::google::protobuf::int64 value) {
+  if (!has_intvalue()) {
+    clear_value();
+    set_has_intvalue();
+  }
+  value_.intvalue_ = value;
+  // @@protoc_insertion_point(field_set:server.PropertyPair.intValue)
+}
+
+inline bool PropertyPair::has_value() const {
+  return value_case() != VALUE_NOT_SET;
+}
+inline void PropertyPair::clear_has_value() {
+  _oneof_case_[0] = VALUE_NOT_SET;
+}
+inline PropertyPair::ValueCase PropertyPair::value_case() const {
+  return PropertyPair::ValueCase(_oneof_case_[0]);
+}
+inline const PropertyPair* PropertyPair::internal_default_instance() {
+  return &PropertyPair_default_instance_.get();
+}
+// -------------------------------------------------------------------
+
+// MatchmakeFilter_TermFilter
+
+// repeated string terms = 1;
+inline int MatchmakeFilter_TermFilter::terms_size() const {
+  return terms_.size();
+}
+inline void MatchmakeFilter_TermFilter::clear_terms() {
+  terms_.Clear();
+}
+inline const ::std::string& MatchmakeFilter_TermFilter::terms(int index) const {
+  // @@protoc_insertion_point(field_get:server.MatchmakeFilter.TermFilter.terms)
+  return terms_.Get(index);
+}
+inline ::std::string* MatchmakeFilter_TermFilter::mutable_terms(int index) {
+  // @@protoc_insertion_point(field_mutable:server.MatchmakeFilter.TermFilter.terms)
+  return terms_.Mutable(index);
+}
+inline void MatchmakeFilter_TermFilter::set_terms(int index, const ::std::string& value) {
+  // @@protoc_insertion_point(field_set:server.MatchmakeFilter.TermFilter.terms)
+  terms_.Mutable(index)->assign(value);
+}
+inline void MatchmakeFilter_TermFilter::set_terms(int index, const char* value) {
+  terms_.Mutable(index)->assign(value);
+  // @@protoc_insertion_point(field_set_char:server.MatchmakeFilter.TermFilter.terms)
+}
+inline void MatchmakeFilter_TermFilter::set_terms(int index, const char* value, size_t size) {
+  terms_.Mutable(index)->assign(
+    reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_set_pointer:server.MatchmakeFilter.TermFilter.terms)
+}
+inline ::std::string* MatchmakeFilter_TermFilter::add_terms() {
+  // @@protoc_insertion_point(field_add_mutable:server.MatchmakeFilter.TermFilter.terms)
+  return terms_.Add();
+}
+inline void MatchmakeFilter_TermFilter::add_terms(const ::std::string& value) {
+  terms_.Add()->assign(value);
+  // @@protoc_insertion_point(field_add:server.MatchmakeFilter.TermFilter.terms)
+}
+inline void MatchmakeFilter_TermFilter::add_terms(const char* value) {
+  terms_.Add()->assign(value);
+  // @@protoc_insertion_point(field_add_char:server.MatchmakeFilter.TermFilter.terms)
+}
+inline void MatchmakeFilter_TermFilter::add_terms(const char* value, size_t size) {
+  terms_.Add()->assign(reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_add_pointer:server.MatchmakeFilter.TermFilter.terms)
+}
+inline const ::google::protobuf::RepeatedPtrField< ::std::string>&
+MatchmakeFilter_TermFilter::terms() const {
+  // @@protoc_insertion_point(field_list:server.MatchmakeFilter.TermFilter.terms)
+  return terms_;
+}
+inline ::google::protobuf::RepeatedPtrField< ::std::string>*
+MatchmakeFilter_TermFilter::mutable_terms() {
+  // @@protoc_insertion_point(field_mutable_list:server.MatchmakeFilter.TermFilter.terms)
+  return &terms_;
+}
+
+// optional bool matchAllTerms = 2;
+inline void MatchmakeFilter_TermFilter::clear_matchallterms() {
+  matchallterms_ = false;
+}
+inline bool MatchmakeFilter_TermFilter::matchallterms() const {
+  // @@protoc_insertion_point(field_get:server.MatchmakeFilter.TermFilter.matchAllTerms)
+  return matchallterms_;
+}
+inline void MatchmakeFilter_TermFilter::set_matchallterms(bool value) {
+  
+  matchallterms_ = value;
+  // @@protoc_insertion_point(field_set:server.MatchmakeFilter.TermFilter.matchAllTerms)
+}
+
+inline const MatchmakeFilter_TermFilter* MatchmakeFilter_TermFilter::internal_default_instance() {
+  return &MatchmakeFilter_TermFilter_default_instance_.get();
+}
+// -------------------------------------------------------------------
+
+// MatchmakeFilter_RangeFilter
+
+// optional int64 lower_bound = 1;
+inline void MatchmakeFilter_RangeFilter::clear_lower_bound() {
+  lower_bound_ = GOOGLE_LONGLONG(0);
+}
+inline ::google::protobuf::int64 MatchmakeFilter_RangeFilter::lower_bound() const {
+  // @@protoc_insertion_point(field_get:server.MatchmakeFilter.RangeFilter.lower_bound)
+  return lower_bound_;
+}
+inline void MatchmakeFilter_RangeFilter::set_lower_bound(::google::protobuf::int64 value) {
+  
+  lower_bound_ = value;
+  // @@protoc_insertion_point(field_set:server.MatchmakeFilter.RangeFilter.lower_bound)
+}
+
+// optional int64 upper_bound = 2;
+inline void MatchmakeFilter_RangeFilter::clear_upper_bound() {
+  upper_bound_ = GOOGLE_LONGLONG(0);
+}
+inline ::google::protobuf::int64 MatchmakeFilter_RangeFilter::upper_bound() const {
+  // @@protoc_insertion_point(field_get:server.MatchmakeFilter.RangeFilter.upper_bound)
+  return upper_bound_;
+}
+inline void MatchmakeFilter_RangeFilter::set_upper_bound(::google::protobuf::int64 value) {
+  
+  upper_bound_ = value;
+  // @@protoc_insertion_point(field_set:server.MatchmakeFilter.RangeFilter.upper_bound)
+}
+
+inline const MatchmakeFilter_RangeFilter* MatchmakeFilter_RangeFilter::internal_default_instance() {
+  return &MatchmakeFilter_RangeFilter_default_instance_.get();
+}
+// -------------------------------------------------------------------
+
+// MatchmakeFilter
+
+// optional string name = 1;
+inline void MatchmakeFilter::clear_name() {
+  name_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& MatchmakeFilter::name() const {
+  // @@protoc_insertion_point(field_get:server.MatchmakeFilter.name)
+  return name_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void MatchmakeFilter::set_name(const ::std::string& value) {
+  
+  name_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:server.MatchmakeFilter.name)
+}
+inline void MatchmakeFilter::set_name(const char* value) {
+  
+  name_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:server.MatchmakeFilter.name)
+}
+inline void MatchmakeFilter::set_name(const char* value, size_t size) {
+  
+  name_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:server.MatchmakeFilter.name)
+}
+inline ::std::string* MatchmakeFilter::mutable_name() {
+  
+  // @@protoc_insertion_point(field_mutable:server.MatchmakeFilter.name)
+  return name_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* MatchmakeFilter::release_name() {
+  // @@protoc_insertion_point(field_release:server.MatchmakeFilter.name)
+  
+  return name_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void MatchmakeFilter::set_allocated_name(::std::string* name) {
+  if (name != NULL) {
+    
+  } else {
+    
+  }
+  name_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), name);
+  // @@protoc_insertion_point(field_set_allocated:server.MatchmakeFilter.name)
+}
+
+// optional .server.MatchmakeFilter.TermFilter term = 2;
+inline bool MatchmakeFilter::has_term() const {
+  return value_case() == kTerm;
+}
+inline void MatchmakeFilter::set_has_term() {
+  _oneof_case_[0] = kTerm;
+}
+inline void MatchmakeFilter::clear_term() {
+  if (has_term()) {
+    delete value_.term_;
+    clear_has_value();
+  }
+}
+inline  const ::server::MatchmakeFilter_TermFilter& MatchmakeFilter::term() const {
+  // @@protoc_insertion_point(field_get:server.MatchmakeFilter.term)
+  return has_term()
+      ? *value_.term_
+      : ::server::MatchmakeFilter_TermFilter::default_instance();
+}
+inline ::server::MatchmakeFilter_TermFilter* MatchmakeFilter::mutable_term() {
+  if (!has_term()) {
+    clear_value();
+    set_has_term();
+    value_.term_ = new ::server::MatchmakeFilter_TermFilter;
+  }
+  // @@protoc_insertion_point(field_mutable:server.MatchmakeFilter.term)
+  return value_.term_;
+}
+inline ::server::MatchmakeFilter_TermFilter* MatchmakeFilter::release_term() {
+  // @@protoc_insertion_point(field_release:server.MatchmakeFilter.term)
+  if (has_term()) {
+    clear_has_value();
+    ::server::MatchmakeFilter_TermFilter* temp = value_.term_;
+    value_.term_ = NULL;
+    return temp;
+  } else {
+    return NULL;
+  }
+}
+inline void MatchmakeFilter::set_allocated_term(::server::MatchmakeFilter_TermFilter* term) {
+  clear_value();
+  if (term) {
+    set_has_term();
+    value_.term_ = term;
+  }
+  // @@protoc_insertion_point(field_set_allocated:server.MatchmakeFilter.term)
+}
+
+// optional .server.MatchmakeFilter.RangeFilter range = 3;
+inline bool MatchmakeFilter::has_range() const {
+  return value_case() == kRange;
+}
+inline void MatchmakeFilter::set_has_range() {
+  _oneof_case_[0] = kRange;
+}
+inline void MatchmakeFilter::clear_range() {
+  if (has_range()) {
+    delete value_.range_;
+    clear_has_value();
+  }
+}
+inline  const ::server::MatchmakeFilter_RangeFilter& MatchmakeFilter::range() const {
+  // @@protoc_insertion_point(field_get:server.MatchmakeFilter.range)
+  return has_range()
+      ? *value_.range_
+      : ::server::MatchmakeFilter_RangeFilter::default_instance();
+}
+inline ::server::MatchmakeFilter_RangeFilter* MatchmakeFilter::mutable_range() {
+  if (!has_range()) {
+    clear_value();
+    set_has_range();
+    value_.range_ = new ::server::MatchmakeFilter_RangeFilter;
+  }
+  // @@protoc_insertion_point(field_mutable:server.MatchmakeFilter.range)
+  return value_.range_;
+}
+inline ::server::MatchmakeFilter_RangeFilter* MatchmakeFilter::release_range() {
+  // @@protoc_insertion_point(field_release:server.MatchmakeFilter.range)
+  if (has_range()) {
+    clear_has_value();
+    ::server::MatchmakeFilter_RangeFilter* temp = value_.range_;
+    value_.range_ = NULL;
+    return temp;
+  } else {
+    return NULL;
+  }
+}
+inline void MatchmakeFilter::set_allocated_range(::server::MatchmakeFilter_RangeFilter* range) {
+  clear_value();
+  if (range) {
+    set_has_range();
+    value_.range_ = range;
+  }
+  // @@protoc_insertion_point(field_set_allocated:server.MatchmakeFilter.range)
+}
+
+// optional bool check = 4;
+inline bool MatchmakeFilter::has_check() const {
+  return value_case() == kCheck;
+}
+inline void MatchmakeFilter::set_has_check() {
+  _oneof_case_[0] = kCheck;
+}
+inline void MatchmakeFilter::clear_check() {
+  if (has_check()) {
+    value_.check_ = false;
+    clear_has_value();
+  }
+}
+inline bool MatchmakeFilter::check() const {
+  // @@protoc_insertion_point(field_get:server.MatchmakeFilter.check)
+  if (has_check()) {
+    return value_.check_;
+  }
+  return false;
+}
+inline void MatchmakeFilter::set_check(bool value) {
+  if (!has_check()) {
+    clear_value();
+    set_has_check();
+  }
+  value_.check_ = value;
+  // @@protoc_insertion_point(field_set:server.MatchmakeFilter.check)
+}
+
+inline bool MatchmakeFilter::has_value() const {
+  return value_case() != VALUE_NOT_SET;
+}
+inline void MatchmakeFilter::clear_has_value() {
+  _oneof_case_[0] = VALUE_NOT_SET;
+}
+inline MatchmakeFilter::ValueCase MatchmakeFilter::value_case() const {
+  return MatchmakeFilter::ValueCase(_oneof_case_[0]);
+}
+inline const MatchmakeFilter* MatchmakeFilter::internal_default_instance() {
+  return &MatchmakeFilter_default_instance_.get();
+}
+// -------------------------------------------------------------------
+
 // TMatchmakeAdd
 
-// optional int64 requiredCount = 1;
-inline void TMatchmakeAdd::clear_requiredcount() {
-  requiredcount_ = GOOGLE_LONGLONG(0);
+// optional int64 required_count = 1;
+inline void TMatchmakeAdd::clear_required_count() {
+  required_count_ = GOOGLE_LONGLONG(0);
 }
-inline ::google::protobuf::int64 TMatchmakeAdd::requiredcount() const {
-  // @@protoc_insertion_point(field_get:server.TMatchmakeAdd.requiredCount)
-  return requiredcount_;
+inline ::google::protobuf::int64 TMatchmakeAdd::required_count() const {
+  // @@protoc_insertion_point(field_get:server.TMatchmakeAdd.required_count)
+  return required_count_;
 }
-inline void TMatchmakeAdd::set_requiredcount(::google::protobuf::int64 value) {
+inline void TMatchmakeAdd::set_required_count(::google::protobuf::int64 value) {
   
-  requiredcount_ = value;
-  // @@protoc_insertion_point(field_set:server.TMatchmakeAdd.requiredCount)
+  required_count_ = value;
+  // @@protoc_insertion_point(field_set:server.TMatchmakeAdd.required_count)
+}
+
+// repeated .server.MatchmakeFilter filters = 2;
+inline int TMatchmakeAdd::filters_size() const {
+  return filters_.size();
+}
+inline void TMatchmakeAdd::clear_filters() {
+  filters_.Clear();
+}
+inline const ::server::MatchmakeFilter& TMatchmakeAdd::filters(int index) const {
+  // @@protoc_insertion_point(field_get:server.TMatchmakeAdd.filters)
+  return filters_.Get(index);
+}
+inline ::server::MatchmakeFilter* TMatchmakeAdd::mutable_filters(int index) {
+  // @@protoc_insertion_point(field_mutable:server.TMatchmakeAdd.filters)
+  return filters_.Mutable(index);
+}
+inline ::server::MatchmakeFilter* TMatchmakeAdd::add_filters() {
+  // @@protoc_insertion_point(field_add:server.TMatchmakeAdd.filters)
+  return filters_.Add();
+}
+inline ::google::protobuf::RepeatedPtrField< ::server::MatchmakeFilter >*
+TMatchmakeAdd::mutable_filters() {
+  // @@protoc_insertion_point(field_mutable_list:server.TMatchmakeAdd.filters)
+  return &filters_;
+}
+inline const ::google::protobuf::RepeatedPtrField< ::server::MatchmakeFilter >&
+TMatchmakeAdd::filters() const {
+  // @@protoc_insertion_point(field_list:server.TMatchmakeAdd.filters)
+  return filters_;
+}
+
+// repeated .server.PropertyPair properties = 3;
+inline int TMatchmakeAdd::properties_size() const {
+  return properties_.size();
+}
+inline void TMatchmakeAdd::clear_properties() {
+  properties_.Clear();
+}
+inline const ::server::PropertyPair& TMatchmakeAdd::properties(int index) const {
+  // @@protoc_insertion_point(field_get:server.TMatchmakeAdd.properties)
+  return properties_.Get(index);
+}
+inline ::server::PropertyPair* TMatchmakeAdd::mutable_properties(int index) {
+  // @@protoc_insertion_point(field_mutable:server.TMatchmakeAdd.properties)
+  return properties_.Mutable(index);
+}
+inline ::server::PropertyPair* TMatchmakeAdd::add_properties() {
+  // @@protoc_insertion_point(field_add:server.TMatchmakeAdd.properties)
+  return properties_.Add();
+}
+inline ::google::protobuf::RepeatedPtrField< ::server::PropertyPair >*
+TMatchmakeAdd::mutable_properties() {
+  // @@protoc_insertion_point(field_mutable_list:server.TMatchmakeAdd.properties)
+  return &properties_;
+}
+inline const ::google::protobuf::RepeatedPtrField< ::server::PropertyPair >&
+TMatchmakeAdd::properties() const {
+  // @@protoc_insertion_point(field_list:server.TMatchmakeAdd.properties)
+  return properties_;
 }
 
 inline const TMatchmakeAdd* TMatchmakeAdd::internal_default_instance() {
@@ -26490,6 +27817,117 @@ inline void TMatchmakeRemove::set_allocated_ticket(::std::string* ticket) {
 
 inline const TMatchmakeRemove* TMatchmakeRemove::internal_default_instance() {
   return &TMatchmakeRemove_default_instance_.get();
+}
+// -------------------------------------------------------------------
+
+// MatchmakeMatched_UserProperty
+
+// optional bytes user_id = 1;
+inline void MatchmakeMatched_UserProperty::clear_user_id() {
+  user_id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& MatchmakeMatched_UserProperty::user_id() const {
+  // @@protoc_insertion_point(field_get:server.MatchmakeMatched.UserProperty.user_id)
+  return user_id_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void MatchmakeMatched_UserProperty::set_user_id(const ::std::string& value) {
+  
+  user_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:server.MatchmakeMatched.UserProperty.user_id)
+}
+inline void MatchmakeMatched_UserProperty::set_user_id(const char* value) {
+  
+  user_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:server.MatchmakeMatched.UserProperty.user_id)
+}
+inline void MatchmakeMatched_UserProperty::set_user_id(const void* value, size_t size) {
+  
+  user_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:server.MatchmakeMatched.UserProperty.user_id)
+}
+inline ::std::string* MatchmakeMatched_UserProperty::mutable_user_id() {
+  
+  // @@protoc_insertion_point(field_mutable:server.MatchmakeMatched.UserProperty.user_id)
+  return user_id_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* MatchmakeMatched_UserProperty::release_user_id() {
+  // @@protoc_insertion_point(field_release:server.MatchmakeMatched.UserProperty.user_id)
+  
+  return user_id_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void MatchmakeMatched_UserProperty::set_allocated_user_id(::std::string* user_id) {
+  if (user_id != NULL) {
+    
+  } else {
+    
+  }
+  user_id_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), user_id);
+  // @@protoc_insertion_point(field_set_allocated:server.MatchmakeMatched.UserProperty.user_id)
+}
+
+// repeated .server.PropertyPair properties = 2;
+inline int MatchmakeMatched_UserProperty::properties_size() const {
+  return properties_.size();
+}
+inline void MatchmakeMatched_UserProperty::clear_properties() {
+  properties_.Clear();
+}
+inline const ::server::PropertyPair& MatchmakeMatched_UserProperty::properties(int index) const {
+  // @@protoc_insertion_point(field_get:server.MatchmakeMatched.UserProperty.properties)
+  return properties_.Get(index);
+}
+inline ::server::PropertyPair* MatchmakeMatched_UserProperty::mutable_properties(int index) {
+  // @@protoc_insertion_point(field_mutable:server.MatchmakeMatched.UserProperty.properties)
+  return properties_.Mutable(index);
+}
+inline ::server::PropertyPair* MatchmakeMatched_UserProperty::add_properties() {
+  // @@protoc_insertion_point(field_add:server.MatchmakeMatched.UserProperty.properties)
+  return properties_.Add();
+}
+inline ::google::protobuf::RepeatedPtrField< ::server::PropertyPair >*
+MatchmakeMatched_UserProperty::mutable_properties() {
+  // @@protoc_insertion_point(field_mutable_list:server.MatchmakeMatched.UserProperty.properties)
+  return &properties_;
+}
+inline const ::google::protobuf::RepeatedPtrField< ::server::PropertyPair >&
+MatchmakeMatched_UserProperty::properties() const {
+  // @@protoc_insertion_point(field_list:server.MatchmakeMatched.UserProperty.properties)
+  return properties_;
+}
+
+// repeated .server.MatchmakeFilter filters = 3;
+inline int MatchmakeMatched_UserProperty::filters_size() const {
+  return filters_.size();
+}
+inline void MatchmakeMatched_UserProperty::clear_filters() {
+  filters_.Clear();
+}
+inline const ::server::MatchmakeFilter& MatchmakeMatched_UserProperty::filters(int index) const {
+  // @@protoc_insertion_point(field_get:server.MatchmakeMatched.UserProperty.filters)
+  return filters_.Get(index);
+}
+inline ::server::MatchmakeFilter* MatchmakeMatched_UserProperty::mutable_filters(int index) {
+  // @@protoc_insertion_point(field_mutable:server.MatchmakeMatched.UserProperty.filters)
+  return filters_.Mutable(index);
+}
+inline ::server::MatchmakeFilter* MatchmakeMatched_UserProperty::add_filters() {
+  // @@protoc_insertion_point(field_add:server.MatchmakeMatched.UserProperty.filters)
+  return filters_.Add();
+}
+inline ::google::protobuf::RepeatedPtrField< ::server::MatchmakeFilter >*
+MatchmakeMatched_UserProperty::mutable_filters() {
+  // @@protoc_insertion_point(field_mutable_list:server.MatchmakeMatched.UserProperty.filters)
+  return &filters_;
+}
+inline const ::google::protobuf::RepeatedPtrField< ::server::MatchmakeFilter >&
+MatchmakeMatched_UserProperty::filters() const {
+  // @@protoc_insertion_point(field_list:server.MatchmakeMatched.UserProperty.filters)
+  return filters_;
+}
+
+inline const MatchmakeMatched_UserProperty* MatchmakeMatched_UserProperty::internal_default_instance() {
+  return &MatchmakeMatched_UserProperty_default_instance_.get();
 }
 // -------------------------------------------------------------------
 
@@ -26650,6 +28088,36 @@ inline void MatchmakeMatched::set_allocated_self(::server::UserPresence* self) {
     
   }
   // @@protoc_insertion_point(field_set_allocated:server.MatchmakeMatched.self)
+}
+
+// repeated .server.MatchmakeMatched.UserProperty properties = 5;
+inline int MatchmakeMatched::properties_size() const {
+  return properties_.size();
+}
+inline void MatchmakeMatched::clear_properties() {
+  properties_.Clear();
+}
+inline const ::server::MatchmakeMatched_UserProperty& MatchmakeMatched::properties(int index) const {
+  // @@protoc_insertion_point(field_get:server.MatchmakeMatched.properties)
+  return properties_.Get(index);
+}
+inline ::server::MatchmakeMatched_UserProperty* MatchmakeMatched::mutable_properties(int index) {
+  // @@protoc_insertion_point(field_mutable:server.MatchmakeMatched.properties)
+  return properties_.Mutable(index);
+}
+inline ::server::MatchmakeMatched_UserProperty* MatchmakeMatched::add_properties() {
+  // @@protoc_insertion_point(field_add:server.MatchmakeMatched.properties)
+  return properties_.Add();
+}
+inline ::google::protobuf::RepeatedPtrField< ::server::MatchmakeMatched_UserProperty >*
+MatchmakeMatched::mutable_properties() {
+  // @@protoc_insertion_point(field_mutable_list:server.MatchmakeMatched.properties)
+  return &properties_;
+}
+inline const ::google::protobuf::RepeatedPtrField< ::server::MatchmakeMatched_UserProperty >&
+MatchmakeMatched::properties() const {
+  // @@protoc_insertion_point(field_list:server.MatchmakeMatched.properties)
+  return properties_;
 }
 
 inline const MatchmakeMatched* MatchmakeMatched::internal_default_instance() {
@@ -32900,6 +34368,18 @@ inline const TNotificationsRemove* TNotificationsRemove::internal_default_instan
 
 // -------------------------------------------------------------------
 
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
 
 // @@protoc_insertion_point(namespace_scope)
 
@@ -32935,5 +34415,6 @@ inline const EnumDescriptor* GetEnumDescriptor< ::server::StoragePermissionWrite
 #endif  // SWIG
 
 // @@protoc_insertion_point(global_scope)
+#pragma pop_macro("assert")
 
 #endif  // PROTOBUF_api_2eproto__INCLUDED

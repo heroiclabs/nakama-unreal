@@ -1007,7 +1007,7 @@ class UNBPRuntimeRpc : public UObject
 public:
 	CONVERT_TO_BP_STATIC(NRuntimeRpc, UNBPRuntimeRpc)
 
-		UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Runtime RPC")
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Runtime RPC")
 		FString GetId() { return UTF8_TO_TCHAR(Wrapped.GetId().c_str()); }
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Runtime RPC")
@@ -1015,4 +1015,86 @@ public:
 
 private:
 	NRuntimeRpc Wrapped;
+};
+
+// ------------------------- NMatchmakeFilters -------------------------
+
+USTRUCT()
+struct FTermsData
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+		TArray<FString> Entries;
+};
+
+UCLASS(BlueprintType)
+class UNBPMatchmakeFilters : public UObject
+{
+	GENERATED_BODY()
+
+public:
+
+	UFUNCTION(BlueprintCallable, Category = "Nakama|Matchmake Filters")
+		void AddTermFilter(FString name, TArray<FString> terms, bool matchAllTerms) {
+		TermMatchAll.Add(name, matchAllTerms);
+		FTermsData data;
+		data.Entries.Append(terms);
+		Terms.Add(name, data);
+	}
+
+	UFUNCTION(BlueprintCallable, Category = "Nakama|Matchmake Filters")
+		void AddRangeFilter(FString name, int32 lowerBound, int32 upperBound) {
+		RangesLB.Add(name, lowerBound);
+		RangesUB.Add(name, upperBound);
+	}
+
+	UFUNCTION(BlueprintCallable, Category = "Nakama|Matchmake Filters")
+		void AddCheckFilter(FString name, bool value) { Checks.Add(name, value); }
+
+	TMap<FString, FTermsData> GetTerms() { return Terms; }
+	TMap<FString, bool> GetTermMatchAll() { return TermMatchAll; }
+	TMap<FString, int32> GetRangesLB() { return RangesLB; }
+	TMap<FString, int32> GetRangesUB() { return RangesUB; }
+	TMap<FString, bool> GetChecks() { return Checks; }
+
+private:
+	UPROPERTY() TMap<FString, FTermsData> Terms;
+	UPROPERTY() TMap<FString, bool> TermMatchAll;
+	UPROPERTY() TMap<FString, int32> RangesLB;
+	UPROPERTY() TMap<FString, int32> RangesUB;
+	UPROPERTY() TMap<FString, bool> Checks;
+
+};
+
+// ------------------------- NMatchmakeProps -------------------------
+
+UCLASS(BlueprintType)
+class UNBPMatchmakeProps : public UObject
+{
+	GENERATED_BODY()
+
+public:
+
+	UFUNCTION(BlueprintCallable, Category = "Nakama|Matchmake Properties")
+		void SetStringTermsProperty(FString key, TArray<FString> terms) { 
+		FTermsData data;
+		data.Entries.Append(terms);
+		TermProperties.Add(key, data);
+	}
+
+	UFUNCTION(BlueprintCallable, Category = "Nakama|Matchmake Properties")
+		void SetIntProperty(FString key, int32 value) { IntProperties.Add(key, value); }
+
+	UFUNCTION(BlueprintCallable, Category = "Nakama|Matchmake Properties")
+		void SetBoolProperty(FString key, bool value) { BoolProperties.Add(key, value); }
+
+	TMap<FString, FTermsData> GetTermProperties() { return TermProperties; }
+	TMap<FString, int32> GetIntProperties() { return IntProperties; }
+	TMap<FString, bool> GetBoolProperties() { return BoolProperties; }
+
+private:
+	UPROPERTY() TMap<FString, FTermsData> TermProperties;
+	UPROPERTY() TMap<FString, int32> IntProperties;
+	UPROPERTY() TMap<FString, bool> BoolProperties;
 };
