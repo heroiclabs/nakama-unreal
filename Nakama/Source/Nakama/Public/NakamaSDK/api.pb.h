@@ -1052,11 +1052,23 @@ class AuthenticateResponse_Session : public ::google::protobuf::Message /* @@pro
   ::std::string* release_token();
   void set_allocated_token(::std::string* token);
 
+  // optional string udp_token = 2;
+  void clear_udp_token();
+  static const int kUdpTokenFieldNumber = 2;
+  const ::std::string& udp_token() const;
+  void set_udp_token(const ::std::string& value);
+  void set_udp_token(const char* value);
+  void set_udp_token(const char* value, size_t size);
+  ::std::string* mutable_udp_token();
+  ::std::string* release_udp_token();
+  void set_allocated_udp_token(::std::string* udp_token);
+
   // @@protoc_insertion_point(class_scope:server.AuthenticateResponse.Session)
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
   ::google::protobuf::internal::ArenaStringPtr token_;
+  ::google::protobuf::internal::ArenaStringPtr udp_token_;
   mutable int _cached_size_;
   friend void  protobuf_InitDefaults_api_2eproto_impl();
   friend void  protobuf_AddDesc_api_2eproto_impl();
@@ -2822,13 +2834,13 @@ class User : public ::google::protobuf::Message /* @@protoc_insertion_point(clas
 
   // accessors -------------------------------------------------------
 
-  // optional bytes id = 1;
+  // optional string id = 1;
   void clear_id();
   static const int kIdFieldNumber = 1;
   const ::std::string& id() const;
   void set_id(const ::std::string& value);
   void set_id(const char* value);
-  void set_id(const void* value, size_t size);
+  void set_id(const char* value, size_t size);
   ::std::string* mutable_id();
   ::std::string* release_id();
   void set_allocated_id(::std::string* id);
@@ -2899,13 +2911,13 @@ class User : public ::google::protobuf::Message /* @@protoc_insertion_point(clas
   ::std::string* release_timezone();
   void set_allocated_timezone(::std::string* timezone);
 
-  // optional bytes metadata = 8;
+  // optional string metadata = 8;
   void clear_metadata();
   static const int kMetadataFieldNumber = 8;
   const ::std::string& metadata() const;
   void set_metadata(const ::std::string& value);
   void set_metadata(const char* value);
-  void set_metadata(const void* value, size_t size);
+  void set_metadata(const char* value, size_t size);
   ::std::string* mutable_metadata();
   ::std::string* release_metadata();
   void set_allocated_metadata(::std::string* metadata);
@@ -3426,13 +3438,13 @@ class TSelfUpdate : public ::google::protobuf::Message /* @@protoc_insertion_poi
   ::std::string* release_lang();
   void set_allocated_lang(::std::string* lang);
 
-  // optional bytes metadata = 6;
+  // optional string metadata = 6;
   void clear_metadata();
   static const int kMetadataFieldNumber = 6;
   const ::std::string& metadata() const;
   void set_metadata(const ::std::string& value);
   void set_metadata(const char* value);
-  void set_metadata(const void* value, size_t size);
+  void set_metadata(const char* value, size_t size);
   ::std::string* mutable_metadata();
   ::std::string* release_metadata();
   void set_allocated_metadata(::std::string* metadata);
@@ -3540,7 +3552,7 @@ class TUsersFetch_UsersFetch : public ::google::protobuf::Message /* @@protoc_in
 
   // accessors -------------------------------------------------------
 
-  // optional bytes user_id = 1;
+  // optional string user_id = 1;
   private:
   bool has_user_id() const;
   public:
@@ -3549,7 +3561,7 @@ class TUsersFetch_UsersFetch : public ::google::protobuf::Message /* @@protoc_in
   const ::std::string& user_id() const;
   void set_user_id(const ::std::string& value);
   void set_user_id(const char* value);
-  void set_user_id(const void* value, size_t size);
+  void set_user_id(const char* value, size_t size);
   ::std::string* mutable_user_id();
   ::std::string* release_user_id();
   void set_allocated_user_id(::std::string* user_id);
@@ -3949,7 +3961,7 @@ class TFriendsAdd_FriendsAdd : public ::google::protobuf::Message /* @@protoc_in
 
   // accessors -------------------------------------------------------
 
-  // optional bytes user_id = 1;
+  // optional string user_id = 1;
   private:
   bool has_user_id() const;
   public:
@@ -3958,7 +3970,7 @@ class TFriendsAdd_FriendsAdd : public ::google::protobuf::Message /* @@protoc_in
   const ::std::string& user_id() const;
   void set_user_id(const ::std::string& value);
   void set_user_id(const char* value);
-  void set_user_id(const void* value, size_t size);
+  void set_user_id(const char* value, size_t size);
   ::std::string* mutable_user_id();
   ::std::string* release_user_id();
   void set_allocated_user_id(::std::string* user_id);
@@ -4164,7 +4176,7 @@ class TFriendsRemove : public ::google::protobuf::Message /* @@protoc_insertion_
 
   // accessors -------------------------------------------------------
 
-  // repeated bytes user_ids = 1;
+  // repeated string user_ids = 1;
   int user_ids_size() const;
   void clear_user_ids();
   static const int kUserIdsFieldNumber = 1;
@@ -4172,11 +4184,11 @@ class TFriendsRemove : public ::google::protobuf::Message /* @@protoc_insertion_
   ::std::string* mutable_user_ids(int index);
   void set_user_ids(int index, const ::std::string& value);
   void set_user_ids(int index, const char* value);
-  void set_user_ids(int index, const void* value, size_t size);
+  void set_user_ids(int index, const char* value, size_t size);
   ::std::string* add_user_ids();
   void add_user_ids(const ::std::string& value);
   void add_user_ids(const char* value);
-  void add_user_ids(const void* value, size_t size);
+  void add_user_ids(const char* value, size_t size);
   const ::google::protobuf::RepeatedPtrField< ::std::string>& user_ids() const;
   ::google::protobuf::RepeatedPtrField< ::std::string>* mutable_user_ids();
 
@@ -4260,7 +4272,7 @@ class TFriendsBlock : public ::google::protobuf::Message /* @@protoc_insertion_p
 
   // accessors -------------------------------------------------------
 
-  // repeated bytes user_ids = 1;
+  // repeated string user_ids = 1;
   int user_ids_size() const;
   void clear_user_ids();
   static const int kUserIdsFieldNumber = 1;
@@ -4268,11 +4280,11 @@ class TFriendsBlock : public ::google::protobuf::Message /* @@protoc_insertion_p
   ::std::string* mutable_user_ids(int index);
   void set_user_ids(int index, const ::std::string& value);
   void set_user_ids(int index, const char* value);
-  void set_user_ids(int index, const void* value, size_t size);
+  void set_user_ids(int index, const char* value, size_t size);
   ::std::string* add_user_ids();
   void add_user_ids(const ::std::string& value);
   void add_user_ids(const char* value);
-  void add_user_ids(const void* value, size_t size);
+  void add_user_ids(const char* value, size_t size);
   const ::google::protobuf::RepeatedPtrField< ::std::string>& user_ids() const;
   ::google::protobuf::RepeatedPtrField< ::std::string>* mutable_user_ids();
 
@@ -4527,13 +4539,13 @@ class Group : public ::google::protobuf::Message /* @@protoc_insertion_point(cla
 
   // accessors -------------------------------------------------------
 
-  // optional bytes id = 1;
+  // optional string id = 1;
   void clear_id();
   static const int kIdFieldNumber = 1;
   const ::std::string& id() const;
   void set_id(const ::std::string& value);
   void set_id(const char* value);
-  void set_id(const void* value, size_t size);
+  void set_id(const char* value, size_t size);
   ::std::string* mutable_id();
   ::std::string* release_id();
   void set_allocated_id(::std::string* id);
@@ -4544,13 +4556,13 @@ class Group : public ::google::protobuf::Message /* @@protoc_insertion_point(cla
   bool private_() const;
   void set_private_(bool value);
 
-  // optional bytes creator_id = 3;
+  // optional string creator_id = 3;
   void clear_creator_id();
   static const int kCreatorIdFieldNumber = 3;
   const ::std::string& creator_id() const;
   void set_creator_id(const ::std::string& value);
   void set_creator_id(const char* value);
-  void set_creator_id(const void* value, size_t size);
+  void set_creator_id(const char* value, size_t size);
   ::std::string* mutable_creator_id();
   ::std::string* release_creator_id();
   void set_allocated_creator_id(::std::string* creator_id);
@@ -4605,13 +4617,13 @@ class Group : public ::google::protobuf::Message /* @@protoc_insertion_point(cla
   ::google::protobuf::int64 utc_offset_ms() const;
   void set_utc_offset_ms(::google::protobuf::int64 value);
 
-  // optional bytes metadata = 9;
+  // optional string metadata = 9;
   void clear_metadata();
   static const int kMetadataFieldNumber = 9;
   const ::std::string& metadata() const;
   void set_metadata(const ::std::string& value);
   void set_metadata(const char* value);
-  void set_metadata(const void* value, size_t size);
+  void set_metadata(const char* value, size_t size);
   ::std::string* mutable_metadata();
   ::std::string* release_metadata();
   void set_allocated_metadata(::std::string* metadata);
@@ -4769,13 +4781,13 @@ class TGroupsCreate_GroupCreate : public ::google::protobuf::Message /* @@protoc
   ::std::string* release_lang();
   void set_allocated_lang(::std::string* lang);
 
-  // optional bytes metadata = 5;
+  // optional string metadata = 5;
   void clear_metadata();
   static const int kMetadataFieldNumber = 5;
   const ::std::string& metadata() const;
   void set_metadata(const ::std::string& value);
   void set_metadata(const char* value);
-  void set_metadata(const void* value, size_t size);
+  void set_metadata(const char* value, size_t size);
   ::std::string* mutable_metadata();
   ::std::string* release_metadata();
   void set_allocated_metadata(::std::string* metadata);
@@ -4965,13 +4977,13 @@ class TGroupsUpdate_GroupUpdate : public ::google::protobuf::Message /* @@protoc
 
   // accessors -------------------------------------------------------
 
-  // optional bytes group_id = 1;
+  // optional string group_id = 1;
   void clear_group_id();
   static const int kGroupIdFieldNumber = 1;
   const ::std::string& group_id() const;
   void set_group_id(const ::std::string& value);
   void set_group_id(const char* value);
-  void set_group_id(const void* value, size_t size);
+  void set_group_id(const char* value, size_t size);
   ::std::string* mutable_group_id();
   ::std::string* release_group_id();
   void set_allocated_group_id(::std::string* group_id);
@@ -5026,13 +5038,13 @@ class TGroupsUpdate_GroupUpdate : public ::google::protobuf::Message /* @@protoc
   ::std::string* release_lang();
   void set_allocated_lang(::std::string* lang);
 
-  // optional bytes metadata = 7;
+  // optional string metadata = 7;
   void clear_metadata();
   static const int kMetadataFieldNumber = 7;
   const ::std::string& metadata() const;
   void set_metadata(const ::std::string& value);
   void set_metadata(const char* value);
-  void set_metadata(const void* value, size_t size);
+  void set_metadata(const char* value, size_t size);
   ::std::string* mutable_metadata();
   ::std::string* release_metadata();
   void set_allocated_metadata(::std::string* metadata);
@@ -5217,7 +5229,7 @@ class TGroupsRemove : public ::google::protobuf::Message /* @@protoc_insertion_p
 
   // accessors -------------------------------------------------------
 
-  // repeated bytes group_ids = 1;
+  // repeated string group_ids = 1;
   int group_ids_size() const;
   void clear_group_ids();
   static const int kGroupIdsFieldNumber = 1;
@@ -5225,11 +5237,11 @@ class TGroupsRemove : public ::google::protobuf::Message /* @@protoc_insertion_p
   ::std::string* mutable_group_ids(int index);
   void set_group_ids(int index, const ::std::string& value);
   void set_group_ids(int index, const char* value);
-  void set_group_ids(int index, const void* value, size_t size);
+  void set_group_ids(int index, const char* value, size_t size);
   ::std::string* add_group_ids();
   void add_group_ids(const ::std::string& value);
   void add_group_ids(const char* value);
-  void add_group_ids(const void* value, size_t size);
+  void add_group_ids(const char* value, size_t size);
   const ::google::protobuf::RepeatedPtrField< ::std::string>& group_ids() const;
   ::google::protobuf::RepeatedPtrField< ::std::string>* mutable_group_ids();
 
@@ -5398,7 +5410,7 @@ class TGroupsFetch_GroupFetch : public ::google::protobuf::Message /* @@protoc_i
 
   // accessors -------------------------------------------------------
 
-  // optional bytes group_id = 1;
+  // optional string group_id = 1;
   private:
   bool has_group_id() const;
   public:
@@ -5407,7 +5419,7 @@ class TGroupsFetch_GroupFetch : public ::google::protobuf::Message /* @@protoc_i
   const ::std::string& group_id() const;
   void set_group_id(const ::std::string& value);
   void set_group_id(const char* value);
-  void set_group_id(const void* value, size_t size);
+  void set_group_id(const char* value, size_t size);
   ::std::string* mutable_group_id();
   ::std::string* release_group_id();
   void set_allocated_group_id(::std::string* group_id);
@@ -5664,13 +5676,13 @@ class TGroupsList : public ::google::protobuf::Message /* @@protoc_insertion_poi
   ::google::protobuf::int64 count() const;
   void set_count(::google::protobuf::int64 value);
 
-  // optional bytes cursor = 7;
+  // optional string cursor = 7;
   void clear_cursor();
   static const int kCursorFieldNumber = 7;
   const ::std::string& cursor() const;
   void set_cursor(const ::std::string& value);
   void set_cursor(const char* value);
-  void set_cursor(const void* value, size_t size);
+  void set_cursor(const char* value, size_t size);
   ::std::string* mutable_cursor();
   ::std::string* release_cursor();
   void set_allocated_cursor(::std::string* cursor);
@@ -5785,13 +5797,13 @@ class TGroups : public ::google::protobuf::Message /* @@protoc_insertion_point(c
   const ::google::protobuf::RepeatedPtrField< ::server::Group >&
       groups() const;
 
-  // optional bytes cursor = 2;
+  // optional string cursor = 2;
   void clear_cursor();
   static const int kCursorFieldNumber = 2;
   const ::std::string& cursor() const;
   void set_cursor(const ::std::string& value);
   void set_cursor(const char* value);
-  void set_cursor(const void* value, size_t size);
+  void set_cursor(const char* value, size_t size);
   ::std::string* mutable_cursor();
   ::std::string* release_cursor();
   void set_allocated_cursor(::std::string* cursor);
@@ -6163,13 +6175,13 @@ class TGroupUsersList : public ::google::protobuf::Message /* @@protoc_insertion
 
   // accessors -------------------------------------------------------
 
-  // optional bytes group_id = 1;
+  // optional string group_id = 1;
   void clear_group_id();
   static const int kGroupIdFieldNumber = 1;
   const ::std::string& group_id() const;
   void set_group_id(const ::std::string& value);
   void set_group_id(const char* value);
-  void set_group_id(const void* value, size_t size);
+  void set_group_id(const char* value, size_t size);
   ::std::string* mutable_group_id();
   ::std::string* release_group_id();
   void set_allocated_group_id(::std::string* group_id);
@@ -6346,7 +6358,7 @@ class TGroupsJoin : public ::google::protobuf::Message /* @@protoc_insertion_poi
 
   // accessors -------------------------------------------------------
 
-  // repeated bytes group_ids = 1;
+  // repeated string group_ids = 1;
   int group_ids_size() const;
   void clear_group_ids();
   static const int kGroupIdsFieldNumber = 1;
@@ -6354,11 +6366,11 @@ class TGroupsJoin : public ::google::protobuf::Message /* @@protoc_insertion_poi
   ::std::string* mutable_group_ids(int index);
   void set_group_ids(int index, const ::std::string& value);
   void set_group_ids(int index, const char* value);
-  void set_group_ids(int index, const void* value, size_t size);
+  void set_group_ids(int index, const char* value, size_t size);
   ::std::string* add_group_ids();
   void add_group_ids(const ::std::string& value);
   void add_group_ids(const char* value);
-  void add_group_ids(const void* value, size_t size);
+  void add_group_ids(const char* value, size_t size);
   const ::google::protobuf::RepeatedPtrField< ::std::string>& group_ids() const;
   ::google::protobuf::RepeatedPtrField< ::std::string>* mutable_group_ids();
 
@@ -6442,7 +6454,7 @@ class TGroupsLeave : public ::google::protobuf::Message /* @@protoc_insertion_po
 
   // accessors -------------------------------------------------------
 
-  // repeated bytes group_ids = 1;
+  // repeated string group_ids = 1;
   int group_ids_size() const;
   void clear_group_ids();
   static const int kGroupIdsFieldNumber = 1;
@@ -6450,11 +6462,11 @@ class TGroupsLeave : public ::google::protobuf::Message /* @@protoc_insertion_po
   ::std::string* mutable_group_ids(int index);
   void set_group_ids(int index, const ::std::string& value);
   void set_group_ids(int index, const char* value);
-  void set_group_ids(int index, const void* value, size_t size);
+  void set_group_ids(int index, const char* value, size_t size);
   ::std::string* add_group_ids();
   void add_group_ids(const ::std::string& value);
   void add_group_ids(const char* value);
-  void add_group_ids(const void* value, size_t size);
+  void add_group_ids(const char* value, size_t size);
   const ::google::protobuf::RepeatedPtrField< ::std::string>& group_ids() const;
   ::google::protobuf::RepeatedPtrField< ::std::string>* mutable_group_ids();
 
@@ -6538,24 +6550,24 @@ class TGroupUsersAdd_GroupUserAdd : public ::google::protobuf::Message /* @@prot
 
   // accessors -------------------------------------------------------
 
-  // optional bytes group_id = 1;
+  // optional string group_id = 1;
   void clear_group_id();
   static const int kGroupIdFieldNumber = 1;
   const ::std::string& group_id() const;
   void set_group_id(const ::std::string& value);
   void set_group_id(const char* value);
-  void set_group_id(const void* value, size_t size);
+  void set_group_id(const char* value, size_t size);
   ::std::string* mutable_group_id();
   ::std::string* release_group_id();
   void set_allocated_group_id(::std::string* group_id);
 
-  // optional bytes user_id = 2;
+  // optional string user_id = 2;
   void clear_user_id();
   static const int kUserIdFieldNumber = 2;
   const ::std::string& user_id() const;
   void set_user_id(const ::std::string& value);
   void set_user_id(const char* value);
-  void set_user_id(const void* value, size_t size);
+  void set_user_id(const char* value, size_t size);
   ::std::string* mutable_user_id();
   ::std::string* release_user_id();
   void set_allocated_user_id(::std::string* user_id);
@@ -6735,24 +6747,24 @@ class TGroupUsersKick_GroupUserKick : public ::google::protobuf::Message /* @@pr
 
   // accessors -------------------------------------------------------
 
-  // optional bytes group_id = 1;
+  // optional string group_id = 1;
   void clear_group_id();
   static const int kGroupIdFieldNumber = 1;
   const ::std::string& group_id() const;
   void set_group_id(const ::std::string& value);
   void set_group_id(const char* value);
-  void set_group_id(const void* value, size_t size);
+  void set_group_id(const char* value, size_t size);
   ::std::string* mutable_group_id();
   ::std::string* release_group_id();
   void set_allocated_group_id(::std::string* group_id);
 
-  // optional bytes user_id = 2;
+  // optional string user_id = 2;
   void clear_user_id();
   static const int kUserIdFieldNumber = 2;
   const ::std::string& user_id() const;
   void set_user_id(const ::std::string& value);
   void set_user_id(const char* value);
-  void set_user_id(const void* value, size_t size);
+  void set_user_id(const char* value, size_t size);
   ::std::string* mutable_user_id();
   ::std::string* release_user_id();
   void set_allocated_user_id(::std::string* user_id);
@@ -6932,24 +6944,24 @@ class TGroupUsersPromote_GroupUserPromote : public ::google::protobuf::Message /
 
   // accessors -------------------------------------------------------
 
-  // optional bytes group_id = 1;
+  // optional string group_id = 1;
   void clear_group_id();
   static const int kGroupIdFieldNumber = 1;
   const ::std::string& group_id() const;
   void set_group_id(const ::std::string& value);
   void set_group_id(const char* value);
-  void set_group_id(const void* value, size_t size);
+  void set_group_id(const char* value, size_t size);
   ::std::string* mutable_group_id();
   ::std::string* release_group_id();
   void set_allocated_group_id(::std::string* group_id);
 
-  // optional bytes user_id = 2;
+  // optional string user_id = 2;
   void clear_user_id();
   static const int kUserIdFieldNumber = 2;
   const ::std::string& user_id() const;
   void set_user_id(const ::std::string& value);
   void set_user_id(const char* value);
-  void set_user_id(const void* value, size_t size);
+  void set_user_id(const char* value, size_t size);
   ::std::string* mutable_user_id();
   ::std::string* release_user_id();
   void set_allocated_user_id(::std::string* user_id);
@@ -7136,7 +7148,7 @@ class TopicId : public ::google::protobuf::Message /* @@protoc_insertion_point(c
 
   // accessors -------------------------------------------------------
 
-  // optional bytes dm = 1;
+  // optional string dm = 1;
   private:
   bool has_dm() const;
   public:
@@ -7145,12 +7157,12 @@ class TopicId : public ::google::protobuf::Message /* @@protoc_insertion_point(c
   const ::std::string& dm() const;
   void set_dm(const ::std::string& value);
   void set_dm(const char* value);
-  void set_dm(const void* value, size_t size);
+  void set_dm(const char* value, size_t size);
   ::std::string* mutable_dm();
   ::std::string* release_dm();
   void set_allocated_dm(::std::string* dm);
 
-  // optional bytes room = 2;
+  // optional string room = 2;
   private:
   bool has_room() const;
   public:
@@ -7159,12 +7171,12 @@ class TopicId : public ::google::protobuf::Message /* @@protoc_insertion_point(c
   const ::std::string& room() const;
   void set_room(const ::std::string& value);
   void set_room(const char* value);
-  void set_room(const void* value, size_t size);
+  void set_room(const char* value, size_t size);
   ::std::string* mutable_room();
   ::std::string* release_room();
   void set_allocated_room(::std::string* room);
 
-  // optional bytes group_id = 3;
+  // optional string group_id = 3;
   private:
   bool has_group_id() const;
   public:
@@ -7173,7 +7185,7 @@ class TopicId : public ::google::protobuf::Message /* @@protoc_insertion_point(c
   const ::std::string& group_id() const;
   void set_group_id(const ::std::string& value);
   void set_group_id(const char* value);
-  void set_group_id(const void* value, size_t size);
+  void set_group_id(const char* value, size_t size);
   ::std::string* mutable_group_id();
   ::std::string* release_group_id();
   void set_allocated_group_id(::std::string* group_id);
@@ -7273,24 +7285,24 @@ class UserPresence : public ::google::protobuf::Message /* @@protoc_insertion_po
 
   // accessors -------------------------------------------------------
 
-  // optional bytes user_id = 1;
+  // optional string user_id = 1;
   void clear_user_id();
   static const int kUserIdFieldNumber = 1;
   const ::std::string& user_id() const;
   void set_user_id(const ::std::string& value);
   void set_user_id(const char* value);
-  void set_user_id(const void* value, size_t size);
+  void set_user_id(const char* value, size_t size);
   ::std::string* mutable_user_id();
   ::std::string* release_user_id();
   void set_allocated_user_id(::std::string* user_id);
 
-  // optional bytes session_id = 2;
+  // optional string session_id = 2;
   void clear_session_id();
   static const int kSessionIdFieldNumber = 2;
   const ::std::string& session_id() const;
   void set_session_id(const ::std::string& value);
   void set_session_id(const char* value);
-  void set_session_id(const void* value, size_t size);
+  void set_session_id(const char* value, size_t size);
   ::std::string* mutable_session_id();
   ::std::string* release_session_id();
   void set_allocated_session_id(::std::string* session_id);
@@ -7395,7 +7407,7 @@ class TTopicsJoin_TopicJoin : public ::google::protobuf::Message /* @@protoc_ins
 
   // accessors -------------------------------------------------------
 
-  // optional bytes user_id = 1;
+  // optional string user_id = 1;
   private:
   bool has_user_id() const;
   public:
@@ -7404,12 +7416,12 @@ class TTopicsJoin_TopicJoin : public ::google::protobuf::Message /* @@protoc_ins
   const ::std::string& user_id() const;
   void set_user_id(const ::std::string& value);
   void set_user_id(const char* value);
-  void set_user_id(const void* value, size_t size);
+  void set_user_id(const char* value, size_t size);
   ::std::string* mutable_user_id();
   ::std::string* release_user_id();
   void set_allocated_user_id(::std::string* user_id);
 
-  // optional bytes room = 2;
+  // optional string room = 2;
   private:
   bool has_room() const;
   public:
@@ -7418,12 +7430,12 @@ class TTopicsJoin_TopicJoin : public ::google::protobuf::Message /* @@protoc_ins
   const ::std::string& room() const;
   void set_room(const ::std::string& value);
   void set_room(const char* value);
-  void set_room(const void* value, size_t size);
+  void set_room(const char* value, size_t size);
   ::std::string* mutable_room();
   ::std::string* release_room();
   void set_allocated_room(::std::string* room);
 
-  // optional bytes group_id = 3;
+  // optional string group_id = 3;
   private:
   bool has_group_id() const;
   public:
@@ -7432,7 +7444,7 @@ class TTopicsJoin_TopicJoin : public ::google::protobuf::Message /* @@protoc_ins
   const ::std::string& group_id() const;
   void set_group_id(const ::std::string& value);
   void set_group_id(const char* value);
-  void set_group_id(const void* value, size_t size);
+  void set_group_id(const char* value, size_t size);
   ::std::string* mutable_group_id();
   ::std::string* release_group_id();
   void set_allocated_group_id(::std::string* group_id);
@@ -7933,13 +7945,13 @@ class TTopicMessageSend : public ::google::protobuf::Message /* @@protoc_inserti
   ::server::TopicId* release_topic();
   void set_allocated_topic(::server::TopicId* topic);
 
-  // optional bytes data = 2;
+  // optional string data = 2;
   void clear_data();
   static const int kDataFieldNumber = 2;
   const ::std::string& data() const;
   void set_data(const ::std::string& value);
   void set_data(const char* value);
-  void set_data(const void* value, size_t size);
+  void set_data(const char* value, size_t size);
   ::std::string* mutable_data();
   ::std::string* release_data();
   void set_allocated_data(::std::string* data);
@@ -8025,13 +8037,13 @@ class TTopicMessageAck : public ::google::protobuf::Message /* @@protoc_insertio
 
   // accessors -------------------------------------------------------
 
-  // optional bytes message_id = 1;
+  // optional string message_id = 1;
   void clear_message_id();
   static const int kMessageIdFieldNumber = 1;
   const ::std::string& message_id() const;
   void set_message_id(const ::std::string& value);
   void set_message_id(const char* value);
-  void set_message_id(const void* value, size_t size);
+  void set_message_id(const char* value, size_t size);
   ::std::string* mutable_message_id();
   ::std::string* release_message_id();
   void set_allocated_message_id(::std::string* message_id);
@@ -8151,24 +8163,24 @@ class TopicMessage : public ::google::protobuf::Message /* @@protoc_insertion_po
   ::server::TopicId* release_topic();
   void set_allocated_topic(::server::TopicId* topic);
 
-  // optional bytes user_id = 2;
+  // optional string user_id = 2;
   void clear_user_id();
   static const int kUserIdFieldNumber = 2;
   const ::std::string& user_id() const;
   void set_user_id(const ::std::string& value);
   void set_user_id(const char* value);
-  void set_user_id(const void* value, size_t size);
+  void set_user_id(const char* value, size_t size);
   ::std::string* mutable_user_id();
   ::std::string* release_user_id();
   void set_allocated_user_id(::std::string* user_id);
 
-  // optional bytes message_id = 3;
+  // optional string message_id = 3;
   void clear_message_id();
   static const int kMessageIdFieldNumber = 3;
   const ::std::string& message_id() const;
   void set_message_id(const ::std::string& value);
   void set_message_id(const char* value);
-  void set_message_id(const void* value, size_t size);
+  void set_message_id(const char* value, size_t size);
   ::std::string* mutable_message_id();
   ::std::string* release_message_id();
   void set_allocated_message_id(::std::string* message_id);
@@ -8202,13 +8214,13 @@ class TopicMessage : public ::google::protobuf::Message /* @@protoc_insertion_po
   ::google::protobuf::int64 type() const;
   void set_type(::google::protobuf::int64 value);
 
-  // optional bytes data = 8;
+  // optional string data = 8;
   void clear_data();
   static const int kDataFieldNumber = 8;
   const ::std::string& data() const;
   void set_data(const ::std::string& value);
   void set_data(const char* value);
-  void set_data(const void* value, size_t size);
+  void set_data(const char* value, size_t size);
   ::std::string* mutable_data();
   ::std::string* release_data();
   void set_allocated_data(::std::string* data);
@@ -8307,7 +8319,7 @@ class TTopicMessagesList : public ::google::protobuf::Message /* @@protoc_insert
 
   // accessors -------------------------------------------------------
 
-  // optional bytes user_id = 1;
+  // optional string user_id = 1;
   private:
   bool has_user_id() const;
   public:
@@ -8316,12 +8328,12 @@ class TTopicMessagesList : public ::google::protobuf::Message /* @@protoc_insert
   const ::std::string& user_id() const;
   void set_user_id(const ::std::string& value);
   void set_user_id(const char* value);
-  void set_user_id(const void* value, size_t size);
+  void set_user_id(const char* value, size_t size);
   ::std::string* mutable_user_id();
   ::std::string* release_user_id();
   void set_allocated_user_id(::std::string* user_id);
 
-  // optional bytes room = 2;
+  // optional string room = 2;
   private:
   bool has_room() const;
   public:
@@ -8330,12 +8342,12 @@ class TTopicMessagesList : public ::google::protobuf::Message /* @@protoc_insert
   const ::std::string& room() const;
   void set_room(const ::std::string& value);
   void set_room(const char* value);
-  void set_room(const void* value, size_t size);
+  void set_room(const char* value, size_t size);
   ::std::string* mutable_room();
   ::std::string* release_room();
   void set_allocated_room(::std::string* room);
 
-  // optional bytes group_id = 3;
+  // optional string group_id = 3;
   private:
   bool has_group_id() const;
   public:
@@ -8344,18 +8356,18 @@ class TTopicMessagesList : public ::google::protobuf::Message /* @@protoc_insert
   const ::std::string& group_id() const;
   void set_group_id(const ::std::string& value);
   void set_group_id(const char* value);
-  void set_group_id(const void* value, size_t size);
+  void set_group_id(const char* value, size_t size);
   ::std::string* mutable_group_id();
   ::std::string* release_group_id();
   void set_allocated_group_id(::std::string* group_id);
 
-  // optional bytes cursor = 4;
+  // optional string cursor = 4;
   void clear_cursor();
   static const int kCursorFieldNumber = 4;
   const ::std::string& cursor() const;
   void set_cursor(const ::std::string& value);
   void set_cursor(const char* value);
-  void set_cursor(const void* value, size_t size);
+  void set_cursor(const char* value, size_t size);
   ::std::string* mutable_cursor();
   ::std::string* release_cursor();
   void set_allocated_cursor(::std::string* cursor);
@@ -8482,13 +8494,13 @@ class TTopicMessages : public ::google::protobuf::Message /* @@protoc_insertion_
   const ::google::protobuf::RepeatedPtrField< ::server::TopicMessage >&
       messages() const;
 
-  // optional bytes cursor = 2;
+  // optional string cursor = 2;
   void clear_cursor();
   static const int kCursorFieldNumber = 2;
   const ::std::string& cursor() const;
   void set_cursor(const ::std::string& value);
   void set_cursor(const char* value);
-  void set_cursor(const void* value, size_t size);
+  void set_cursor(const char* value, size_t size);
   ::std::string* mutable_cursor();
   ::std::string* release_cursor();
   void set_allocated_cursor(::std::string* cursor);
@@ -9380,13 +9392,13 @@ class TMatchmakeTicket : public ::google::protobuf::Message /* @@protoc_insertio
 
   // accessors -------------------------------------------------------
 
-  // optional bytes ticket = 1;
+  // optional string ticket = 1;
   void clear_ticket();
   static const int kTicketFieldNumber = 1;
   const ::std::string& ticket() const;
   void set_ticket(const ::std::string& value);
   void set_ticket(const char* value);
-  void set_ticket(const void* value, size_t size);
+  void set_ticket(const char* value, size_t size);
   ::std::string* mutable_ticket();
   ::std::string* release_ticket();
   void set_allocated_ticket(::std::string* ticket);
@@ -9471,13 +9483,13 @@ class TMatchmakeRemove : public ::google::protobuf::Message /* @@protoc_insertio
 
   // accessors -------------------------------------------------------
 
-  // optional bytes ticket = 1;
+  // optional string ticket = 1;
   void clear_ticket();
   static const int kTicketFieldNumber = 1;
   const ::std::string& ticket() const;
   void set_ticket(const ::std::string& value);
   void set_ticket(const char* value);
-  void set_ticket(const void* value, size_t size);
+  void set_ticket(const char* value, size_t size);
   ::std::string* mutable_ticket();
   ::std::string* release_ticket();
   void set_allocated_ticket(::std::string* ticket);
@@ -9562,13 +9574,13 @@ class MatchmakeMatched_UserProperty : public ::google::protobuf::Message /* @@pr
 
   // accessors -------------------------------------------------------
 
-  // optional bytes user_id = 1;
+  // optional string user_id = 1;
   void clear_user_id();
   static const int kUserIdFieldNumber = 1;
   const ::std::string& user_id() const;
   void set_user_id(const ::std::string& value);
   void set_user_id(const char* value);
-  void set_user_id(const void* value, size_t size);
+  void set_user_id(const char* value, size_t size);
   ::std::string* mutable_user_id();
   ::std::string* release_user_id();
   void set_allocated_user_id(::std::string* user_id);
@@ -9681,24 +9693,24 @@ class MatchmakeMatched : public ::google::protobuf::Message /* @@protoc_insertio
 
   // accessors -------------------------------------------------------
 
-  // optional bytes ticket = 1;
+  // optional string ticket = 1;
   void clear_ticket();
   static const int kTicketFieldNumber = 1;
   const ::std::string& ticket() const;
   void set_ticket(const ::std::string& value);
   void set_ticket(const char* value);
-  void set_ticket(const void* value, size_t size);
+  void set_ticket(const char* value, size_t size);
   ::std::string* mutable_ticket();
   ::std::string* release_ticket();
   void set_allocated_ticket(::std::string* ticket);
 
-  // optional bytes token = 2;
+  // optional string token = 2;
   void clear_token();
   static const int kTokenFieldNumber = 2;
   const ::std::string& token() const;
   void set_token(const ::std::string& value);
   void set_token(const char* value);
-  void set_token(const void* value, size_t size);
+  void set_token(const char* value, size_t size);
   ::std::string* mutable_token();
   ::std::string* release_token();
   void set_allocated_token(::std::string* token);
@@ -9820,13 +9832,13 @@ class Match : public ::google::protobuf::Message /* @@protoc_insertion_point(cla
 
   // accessors -------------------------------------------------------
 
-  // optional bytes match_id = 1;
+  // optional string match_id = 1;
   void clear_match_id();
   static const int kMatchIdFieldNumber = 1;
   const ::std::string& match_id() const;
   void set_match_id(const ::std::string& value);
   void set_match_id(const char* value);
-  void set_match_id(const void* value, size_t size);
+  void set_match_id(const char* value, size_t size);
   ::std::string* mutable_match_id();
   ::std::string* release_match_id();
   void set_allocated_match_id(::std::string* match_id);
@@ -9934,13 +9946,13 @@ class MatchPresence : public ::google::protobuf::Message /* @@protoc_insertion_p
 
   // accessors -------------------------------------------------------
 
-  // optional bytes match_id = 1;
+  // optional string match_id = 1;
   void clear_match_id();
   static const int kMatchIdFieldNumber = 1;
   const ::std::string& match_id() const;
   void set_match_id(const ::std::string& value);
   void set_match_id(const char* value);
-  void set_match_id(const void* value, size_t size);
+  void set_match_id(const char* value, size_t size);
   ::std::string* mutable_match_id();
   ::std::string* release_match_id();
   void set_allocated_match_id(::std::string* match_id);
@@ -10225,7 +10237,7 @@ class TMatchesJoin_MatchJoin : public ::google::protobuf::Message /* @@protoc_in
 
   // accessors -------------------------------------------------------
 
-  // optional bytes match_id = 1;
+  // optional string match_id = 1;
   private:
   bool has_match_id() const;
   public:
@@ -10234,12 +10246,12 @@ class TMatchesJoin_MatchJoin : public ::google::protobuf::Message /* @@protoc_in
   const ::std::string& match_id() const;
   void set_match_id(const ::std::string& value);
   void set_match_id(const char* value);
-  void set_match_id(const void* value, size_t size);
+  void set_match_id(const char* value, size_t size);
   ::std::string* mutable_match_id();
   ::std::string* release_match_id();
   void set_allocated_match_id(::std::string* match_id);
 
-  // optional bytes token = 2;
+  // optional string token = 2;
   private:
   bool has_token() const;
   public:
@@ -10248,7 +10260,7 @@ class TMatchesJoin_MatchJoin : public ::google::protobuf::Message /* @@protoc_in
   const ::std::string& token() const;
   void set_token(const ::std::string& value);
   void set_token(const char* value);
-  void set_token(const void* value, size_t size);
+  void set_token(const char* value, size_t size);
   ::std::string* mutable_token();
   ::std::string* release_token();
   void set_allocated_token(::std::string* token);
@@ -10532,13 +10544,13 @@ class MatchDataSend : public ::google::protobuf::Message /* @@protoc_insertion_p
 
   // accessors -------------------------------------------------------
 
-  // optional bytes match_id = 1;
+  // optional string match_id = 1;
   void clear_match_id();
   static const int kMatchIdFieldNumber = 1;
   const ::std::string& match_id() const;
   void set_match_id(const ::std::string& value);
   void set_match_id(const char* value);
-  void set_match_id(const void* value, size_t size);
+  void set_match_id(const char* value, size_t size);
   ::std::string* mutable_match_id();
   ::std::string* release_match_id();
   void set_allocated_match_id(::std::string* match_id);
@@ -10655,13 +10667,13 @@ class MatchData : public ::google::protobuf::Message /* @@protoc_insertion_point
 
   // accessors -------------------------------------------------------
 
-  // optional bytes match_id = 1;
+  // optional string match_id = 1;
   void clear_match_id();
   static const int kMatchIdFieldNumber = 1;
   const ::std::string& match_id() const;
   void set_match_id(const ::std::string& value);
   void set_match_id(const char* value);
-  void set_match_id(const void* value, size_t size);
+  void set_match_id(const char* value, size_t size);
   ::std::string* mutable_match_id();
   ::std::string* release_match_id();
   void set_allocated_match_id(::std::string* match_id);
@@ -10775,7 +10787,7 @@ class TMatchesLeave : public ::google::protobuf::Message /* @@protoc_insertion_p
 
   // accessors -------------------------------------------------------
 
-  // repeated bytes match_ids = 1;
+  // repeated string match_ids = 1;
   int match_ids_size() const;
   void clear_match_ids();
   static const int kMatchIdsFieldNumber = 1;
@@ -10783,11 +10795,11 @@ class TMatchesLeave : public ::google::protobuf::Message /* @@protoc_insertion_p
   ::std::string* mutable_match_ids(int index);
   void set_match_ids(int index, const ::std::string& value);
   void set_match_ids(int index, const char* value);
-  void set_match_ids(int index, const void* value, size_t size);
+  void set_match_ids(int index, const char* value, size_t size);
   ::std::string* add_match_ids();
   void add_match_ids(const ::std::string& value);
   void add_match_ids(const char* value);
-  void add_match_ids(const void* value, size_t size);
+  void add_match_ids(const char* value, size_t size);
   const ::google::protobuf::RepeatedPtrField< ::std::string>& match_ids() const;
   ::google::protobuf::RepeatedPtrField< ::std::string>* mutable_match_ids();
 
@@ -10871,13 +10883,13 @@ class TStorageList : public ::google::protobuf::Message /* @@protoc_insertion_po
 
   // accessors -------------------------------------------------------
 
-  // optional bytes user_id = 1;
+  // optional string user_id = 1;
   void clear_user_id();
   static const int kUserIdFieldNumber = 1;
   const ::std::string& user_id() const;
   void set_user_id(const ::std::string& value);
   void set_user_id(const char* value);
-  void set_user_id(const void* value, size_t size);
+  void set_user_id(const char* value, size_t size);
   ::std::string* mutable_user_id();
   ::std::string* release_user_id();
   void set_allocated_user_id(::std::string* user_id);
@@ -10910,13 +10922,13 @@ class TStorageList : public ::google::protobuf::Message /* @@protoc_insertion_po
   ::google::protobuf::int64 limit() const;
   void set_limit(::google::protobuf::int64 value);
 
-  // optional bytes cursor = 5;
+  // optional string cursor = 5;
   void clear_cursor();
   static const int kCursorFieldNumber = 5;
   const ::std::string& cursor() const;
   void set_cursor(const ::std::string& value);
   void set_cursor(const char* value);
-  void set_cursor(const void* value, size_t size);
+  void set_cursor(const char* value, size_t size);
   ::std::string* mutable_cursor();
   ::std::string* release_cursor();
   void set_allocated_cursor(::std::string* cursor);
@@ -11038,13 +11050,13 @@ class TStorageFetch_StorageKey : public ::google::protobuf::Message /* @@protoc_
   ::std::string* release_record();
   void set_allocated_record(::std::string* record);
 
-  // optional bytes user_id = 4;
+  // optional string user_id = 4;
   void clear_user_id();
   static const int kUserIdFieldNumber = 4;
   const ::std::string& user_id() const;
   void set_user_id(const ::std::string& value);
   void set_user_id(const char* value);
-  void set_user_id(const void* value, size_t size);
+  void set_user_id(const char* value, size_t size);
   ::std::string* mutable_user_id();
   ::std::string* release_user_id();
   void set_allocated_user_id(::std::string* user_id);
@@ -11259,35 +11271,35 @@ class TStorageData_StorageData : public ::google::protobuf::Message /* @@protoc_
   ::std::string* release_record();
   void set_allocated_record(::std::string* record);
 
-  // optional bytes user_id = 4;
+  // optional string user_id = 4;
   void clear_user_id();
   static const int kUserIdFieldNumber = 4;
   const ::std::string& user_id() const;
   void set_user_id(const ::std::string& value);
   void set_user_id(const char* value);
-  void set_user_id(const void* value, size_t size);
+  void set_user_id(const char* value, size_t size);
   ::std::string* mutable_user_id();
   ::std::string* release_user_id();
   void set_allocated_user_id(::std::string* user_id);
 
-  // optional bytes value = 5;
+  // optional string value = 5;
   void clear_value();
   static const int kValueFieldNumber = 5;
   const ::std::string& value() const;
   void set_value(const ::std::string& value);
   void set_value(const char* value);
-  void set_value(const void* value, size_t size);
+  void set_value(const char* value, size_t size);
   ::std::string* mutable_value();
   ::std::string* release_value();
   void set_allocated_value(::std::string* value);
 
-  // optional bytes version = 6;
+  // optional string version = 6;
   void clear_version();
   static const int kVersionFieldNumber = 6;
   const ::std::string& version() const;
   void set_version(const ::std::string& value);
   void set_version(const char* value);
-  void set_version(const void* value, size_t size);
+  void set_version(const char* value, size_t size);
   ::std::string* mutable_version();
   ::std::string* release_version();
   void set_allocated_version(::std::string* version);
@@ -11426,13 +11438,13 @@ class TStorageData : public ::google::protobuf::Message /* @@protoc_insertion_po
   const ::google::protobuf::RepeatedPtrField< ::server::TStorageData_StorageData >&
       data() const;
 
-  // optional bytes cursor = 2;
+  // optional string cursor = 2;
   void clear_cursor();
   static const int kCursorFieldNumber = 2;
   const ::std::string& cursor() const;
   void set_cursor(const ::std::string& value);
   void set_cursor(const char* value);
-  void set_cursor(const void* value, size_t size);
+  void set_cursor(const char* value, size_t size);
   ::std::string* mutable_cursor();
   ::std::string* release_cursor();
   void set_allocated_cursor(::std::string* cursor);
@@ -11551,24 +11563,24 @@ class TStorageWrite_StorageData : public ::google::protobuf::Message /* @@protoc
   ::std::string* release_record();
   void set_allocated_record(::std::string* record);
 
-  // optional bytes value = 4;
+  // optional string value = 4;
   void clear_value();
   static const int kValueFieldNumber = 4;
   const ::std::string& value() const;
   void set_value(const ::std::string& value);
   void set_value(const char* value);
-  void set_value(const void* value, size_t size);
+  void set_value(const char* value, size_t size);
   ::std::string* mutable_value();
   ::std::string* release_value();
   void set_allocated_value(::std::string* value);
 
-  // optional bytes version = 5;
+  // optional string version = 5;
   void clear_version();
   static const int kVersionFieldNumber = 5;
   const ::std::string& version() const;
   void set_version(const ::std::string& value);
   void set_version(const char* value);
-  void set_version(const void* value, size_t size);
+  void set_version(const char* value, size_t size);
   ::std::string* mutable_version();
   ::std::string* release_version();
   void set_allocated_version(::std::string* version);
@@ -11828,13 +11840,13 @@ class TStorageUpdate_StorageUpdate_UpdateOp : public ::google::protobuf::Message
   ::std::string* release_path();
   void set_allocated_path(::std::string* path);
 
-  // optional bytes value = 3;
+  // optional string value = 3;
   void clear_value();
   static const int kValueFieldNumber = 3;
   const ::std::string& value() const;
   void set_value(const ::std::string& value);
   void set_value(const char* value);
-  void set_value(const void* value, size_t size);
+  void set_value(const char* value, size_t size);
   ::std::string* mutable_value();
   ::std::string* release_value();
   void set_allocated_value(::std::string* value);
@@ -11993,13 +12005,13 @@ class TStorageUpdate_StorageUpdate_StorageKey : public ::google::protobuf::Messa
   ::std::string* release_record();
   void set_allocated_record(::std::string* record);
 
-  // optional bytes version = 4;
+  // optional string version = 4;
   void clear_version();
   static const int kVersionFieldNumber = 4;
   const ::std::string& version() const;
   void set_version(const ::std::string& value);
   void set_version(const char* value);
-  void set_version(const void* value, size_t size);
+  void set_version(const char* value, size_t size);
   ::std::string* mutable_version();
   ::std::string* release_version();
   void set_allocated_version(::std::string* version);
@@ -12333,13 +12345,13 @@ class TStorageKeys_StorageKey : public ::google::protobuf::Message /* @@protoc_i
   ::std::string* release_record();
   void set_allocated_record(::std::string* record);
 
-  // optional bytes version = 4;
+  // optional string version = 4;
   void clear_version();
   static const int kVersionFieldNumber = 4;
   const ::std::string& version() const;
   void set_version(const ::std::string& value);
   void set_version(const char* value);
-  void set_version(const void* value, size_t size);
+  void set_version(const char* value, size_t size);
   ::std::string* mutable_version();
   ::std::string* release_version();
   void set_allocated_version(::std::string* version);
@@ -12554,13 +12566,13 @@ class TStorageRemove_StorageKey : public ::google::protobuf::Message /* @@protoc
   ::std::string* release_record();
   void set_allocated_record(::std::string* record);
 
-  // optional bytes version = 4;
+  // optional string version = 4;
   void clear_version();
   static const int kVersionFieldNumber = 4;
   const ::std::string& version() const;
   void set_version(const ::std::string& value);
   void set_version(const char* value);
-  void set_version(const void* value, size_t size);
+  void set_version(const char* value, size_t size);
   ::std::string* mutable_version();
   ::std::string* release_version();
   void set_allocated_version(::std::string* version);
@@ -12742,13 +12754,13 @@ class Leaderboard : public ::google::protobuf::Message /* @@protoc_insertion_poi
 
   // accessors -------------------------------------------------------
 
-  // optional bytes id = 1;
+  // optional string id = 1;
   void clear_id();
   static const int kIdFieldNumber = 1;
   const ::std::string& id() const;
   void set_id(const ::std::string& value);
   void set_id(const char* value);
-  void set_id(const void* value, size_t size);
+  void set_id(const char* value, size_t size);
   ::std::string* mutable_id();
   ::std::string* release_id();
   void set_allocated_id(::std::string* id);
@@ -12782,35 +12794,35 @@ class Leaderboard : public ::google::protobuf::Message /* @@protoc_insertion_poi
   ::std::string* release_reset_schedule();
   void set_allocated_reset_schedule(::std::string* reset_schedule);
 
-  // optional bytes metadata = 6;
+  // optional string metadata = 6;
   void clear_metadata();
   static const int kMetadataFieldNumber = 6;
   const ::std::string& metadata() const;
   void set_metadata(const ::std::string& value);
   void set_metadata(const char* value);
-  void set_metadata(const void* value, size_t size);
+  void set_metadata(const char* value, size_t size);
   ::std::string* mutable_metadata();
   ::std::string* release_metadata();
   void set_allocated_metadata(::std::string* metadata);
 
-  // optional bytes next_id = 7;
+  // optional string next_id = 7;
   void clear_next_id();
   static const int kNextIdFieldNumber = 7;
   const ::std::string& next_id() const;
   void set_next_id(const ::std::string& value);
   void set_next_id(const char* value);
-  void set_next_id(const void* value, size_t size);
+  void set_next_id(const char* value, size_t size);
   ::std::string* mutable_next_id();
   ::std::string* release_next_id();
   void set_allocated_next_id(::std::string* next_id);
 
-  // optional bytes prev_id = 8;
+  // optional string prev_id = 8;
   void clear_prev_id();
   static const int kPrevIdFieldNumber = 8;
   const ::std::string& prev_id() const;
   void set_prev_id(const ::std::string& value);
   void set_prev_id(const char* value);
-  void set_prev_id(const void* value, size_t size);
+  void set_prev_id(const char* value, size_t size);
   ::std::string* mutable_prev_id();
   ::std::string* release_prev_id();
   void set_allocated_prev_id(::std::string* prev_id);
@@ -12902,24 +12914,24 @@ class LeaderboardRecord : public ::google::protobuf::Message /* @@protoc_inserti
 
   // accessors -------------------------------------------------------
 
-  // optional bytes leaderboard_id = 1;
+  // optional string leaderboard_id = 1;
   void clear_leaderboard_id();
   static const int kLeaderboardIdFieldNumber = 1;
   const ::std::string& leaderboard_id() const;
   void set_leaderboard_id(const ::std::string& value);
   void set_leaderboard_id(const char* value);
-  void set_leaderboard_id(const void* value, size_t size);
+  void set_leaderboard_id(const char* value, size_t size);
   ::std::string* mutable_leaderboard_id();
   ::std::string* release_leaderboard_id();
   void set_allocated_leaderboard_id(::std::string* leaderboard_id);
 
-  // optional bytes owner_id = 2;
+  // optional string owner_id = 2;
   void clear_owner_id();
   static const int kOwnerIdFieldNumber = 2;
   const ::std::string& owner_id() const;
   void set_owner_id(const ::std::string& value);
   void set_owner_id(const char* value);
-  void set_owner_id(const void* value, size_t size);
+  void set_owner_id(const char* value, size_t size);
   ::std::string* mutable_owner_id();
   ::std::string* release_owner_id();
   void set_allocated_owner_id(::std::string* owner_id);
@@ -12986,13 +12998,13 @@ class LeaderboardRecord : public ::google::protobuf::Message /* @@protoc_inserti
   ::google::protobuf::int64 num_score() const;
   void set_num_score(::google::protobuf::int64 value);
 
-  // optional bytes metadata = 10;
+  // optional string metadata = 10;
   void clear_metadata();
   static const int kMetadataFieldNumber = 10;
   const ::std::string& metadata() const;
   void set_metadata(const ::std::string& value);
   void set_metadata(const char* value);
-  void set_metadata(const void* value, size_t size);
+  void set_metadata(const char* value, size_t size);
   ::std::string* mutable_metadata();
   ::std::string* release_metadata();
   void set_allocated_metadata(::std::string* metadata);
@@ -13113,18 +13125,18 @@ class TLeaderboardsList : public ::google::protobuf::Message /* @@protoc_inserti
   ::google::protobuf::int64 limit() const;
   void set_limit(::google::protobuf::int64 value);
 
-  // optional bytes cursor = 2;
+  // optional string cursor = 2;
   void clear_cursor();
   static const int kCursorFieldNumber = 2;
   const ::std::string& cursor() const;
   void set_cursor(const ::std::string& value);
   void set_cursor(const char* value);
-  void set_cursor(const void* value, size_t size);
+  void set_cursor(const char* value, size_t size);
   ::std::string* mutable_cursor();
   ::std::string* release_cursor();
   void set_allocated_cursor(::std::string* cursor);
 
-  // repeated bytes filter_leaderboard_id = 3;
+  // repeated string filter_leaderboard_id = 3;
   int filter_leaderboard_id_size() const;
   void clear_filter_leaderboard_id();
   static const int kFilterLeaderboardIdFieldNumber = 3;
@@ -13132,11 +13144,11 @@ class TLeaderboardsList : public ::google::protobuf::Message /* @@protoc_inserti
   ::std::string* mutable_filter_leaderboard_id(int index);
   void set_filter_leaderboard_id(int index, const ::std::string& value);
   void set_filter_leaderboard_id(int index, const char* value);
-  void set_filter_leaderboard_id(int index, const void* value, size_t size);
+  void set_filter_leaderboard_id(int index, const char* value, size_t size);
   ::std::string* add_filter_leaderboard_id();
   void add_filter_leaderboard_id(const ::std::string& value);
   void add_filter_leaderboard_id(const char* value);
-  void add_filter_leaderboard_id(const void* value, size_t size);
+  void add_filter_leaderboard_id(const char* value, size_t size);
   const ::google::protobuf::RepeatedPtrField< ::std::string>& filter_leaderboard_id() const;
   ::google::protobuf::RepeatedPtrField< ::std::string>* mutable_filter_leaderboard_id();
 
@@ -13234,13 +13246,13 @@ class TLeaderboards : public ::google::protobuf::Message /* @@protoc_insertion_p
   const ::google::protobuf::RepeatedPtrField< ::server::Leaderboard >&
       leaderboards() const;
 
-  // optional bytes cursor = 2;
+  // optional string cursor = 2;
   void clear_cursor();
   static const int kCursorFieldNumber = 2;
   const ::std::string& cursor() const;
   void set_cursor(const ::std::string& value);
   void set_cursor(const char* value);
-  void set_cursor(const void* value, size_t size);
+  void set_cursor(const char* value, size_t size);
   ::std::string* mutable_cursor();
   ::std::string* release_cursor();
   void set_allocated_cursor(::std::string* cursor);
@@ -13334,13 +13346,13 @@ class TLeaderboardRecordsWrite_LeaderboardRecordWrite : public ::google::protobu
 
   // accessors -------------------------------------------------------
 
-  // optional bytes leaderboard_id = 1;
+  // optional string leaderboard_id = 1;
   void clear_leaderboard_id();
   static const int kLeaderboardIdFieldNumber = 1;
   const ::std::string& leaderboard_id() const;
   void set_leaderboard_id(const ::std::string& value);
   void set_leaderboard_id(const char* value);
-  void set_leaderboard_id(const void* value, size_t size);
+  void set_leaderboard_id(const char* value, size_t size);
   ::std::string* mutable_leaderboard_id();
   ::std::string* release_leaderboard_id();
   void set_allocated_leaderboard_id(::std::string* leaderboard_id);
@@ -13403,13 +13415,13 @@ class TLeaderboardRecordsWrite_LeaderboardRecordWrite : public ::google::protobu
   ::std::string* release_timezone();
   void set_allocated_timezone(::std::string* timezone);
 
-  // optional bytes metadata = 8;
+  // optional string metadata = 8;
   void clear_metadata();
   static const int kMetadataFieldNumber = 8;
   const ::std::string& metadata() const;
   void set_metadata(const ::std::string& value);
   void set_metadata(const char* value);
-  void set_metadata(const void* value, size_t size);
+  void set_metadata(const char* value, size_t size);
   ::std::string* mutable_metadata();
   ::std::string* release_metadata();
   void set_allocated_metadata(::std::string* metadata);
@@ -13609,7 +13621,7 @@ class TLeaderboardRecordsFetch : public ::google::protobuf::Message /* @@protoc_
 
   // accessors -------------------------------------------------------
 
-  // repeated bytes leaderboard_ids = 1;
+  // repeated string leaderboard_ids = 1;
   int leaderboard_ids_size() const;
   void clear_leaderboard_ids();
   static const int kLeaderboardIdsFieldNumber = 1;
@@ -13617,11 +13629,11 @@ class TLeaderboardRecordsFetch : public ::google::protobuf::Message /* @@protoc_
   ::std::string* mutable_leaderboard_ids(int index);
   void set_leaderboard_ids(int index, const ::std::string& value);
   void set_leaderboard_ids(int index, const char* value);
-  void set_leaderboard_ids(int index, const void* value, size_t size);
+  void set_leaderboard_ids(int index, const char* value, size_t size);
   ::std::string* add_leaderboard_ids();
   void add_leaderboard_ids(const ::std::string& value);
   void add_leaderboard_ids(const char* value);
-  void add_leaderboard_ids(const void* value, size_t size);
+  void add_leaderboard_ids(const char* value, size_t size);
   const ::google::protobuf::RepeatedPtrField< ::std::string>& leaderboard_ids() const;
   ::google::protobuf::RepeatedPtrField< ::std::string>* mutable_leaderboard_ids();
 
@@ -13631,13 +13643,13 @@ class TLeaderboardRecordsFetch : public ::google::protobuf::Message /* @@protoc_
   ::google::protobuf::int64 limit() const;
   void set_limit(::google::protobuf::int64 value);
 
-  // optional bytes cursor = 3;
+  // optional string cursor = 3;
   void clear_cursor();
   static const int kCursorFieldNumber = 3;
   const ::std::string& cursor() const;
   void set_cursor(const ::std::string& value);
   void set_cursor(const char* value);
-  void set_cursor(const void* value, size_t size);
+  void set_cursor(const char* value, size_t size);
   ::std::string* mutable_cursor();
   ::std::string* release_cursor();
   void set_allocated_cursor(::std::string* cursor);
@@ -13724,7 +13736,7 @@ class TLeaderboardRecordsList_Owners : public ::google::protobuf::Message /* @@p
 
   // accessors -------------------------------------------------------
 
-  // repeated bytes owner_ids = 1;
+  // repeated string owner_ids = 1;
   int owner_ids_size() const;
   void clear_owner_ids();
   static const int kOwnerIdsFieldNumber = 1;
@@ -13732,11 +13744,11 @@ class TLeaderboardRecordsList_Owners : public ::google::protobuf::Message /* @@p
   ::std::string* mutable_owner_ids(int index);
   void set_owner_ids(int index, const ::std::string& value);
   void set_owner_ids(int index, const char* value);
-  void set_owner_ids(int index, const void* value, size_t size);
+  void set_owner_ids(int index, const char* value, size_t size);
   ::std::string* add_owner_ids();
   void add_owner_ids(const ::std::string& value);
   void add_owner_ids(const char* value);
-  void add_owner_ids(const void* value, size_t size);
+  void add_owner_ids(const char* value, size_t size);
   const ::google::protobuf::RepeatedPtrField< ::std::string>& owner_ids() const;
   ::google::protobuf::RepeatedPtrField< ::std::string>* mutable_owner_ids();
 
@@ -13831,18 +13843,18 @@ class TLeaderboardRecordsList : public ::google::protobuf::Message /* @@protoc_i
 
   // accessors -------------------------------------------------------
 
-  // optional bytes leaderboard_id = 1;
+  // optional string leaderboard_id = 1;
   void clear_leaderboard_id();
   static const int kLeaderboardIdFieldNumber = 1;
   const ::std::string& leaderboard_id() const;
   void set_leaderboard_id(const ::std::string& value);
   void set_leaderboard_id(const char* value);
-  void set_leaderboard_id(const void* value, size_t size);
+  void set_leaderboard_id(const char* value, size_t size);
   ::std::string* mutable_leaderboard_id();
   ::std::string* release_leaderboard_id();
   void set_allocated_leaderboard_id(::std::string* leaderboard_id);
 
-  // optional bytes owner_id = 2;
+  // optional string owner_id = 2;
   private:
   bool has_owner_id() const;
   public:
@@ -13851,7 +13863,7 @@ class TLeaderboardRecordsList : public ::google::protobuf::Message /* @@protoc_i
   const ::std::string& owner_id() const;
   void set_owner_id(const ::std::string& value);
   void set_owner_id(const char* value);
-  void set_owner_id(const void* value, size_t size);
+  void set_owner_id(const char* value, size_t size);
   ::std::string* mutable_owner_id();
   ::std::string* release_owner_id();
   void set_allocated_owner_id(::std::string* owner_id);
@@ -13913,13 +13925,13 @@ class TLeaderboardRecordsList : public ::google::protobuf::Message /* @@protoc_i
   ::google::protobuf::int64 limit() const;
   void set_limit(::google::protobuf::int64 value);
 
-  // optional bytes cursor = 8;
+  // optional string cursor = 8;
   void clear_cursor();
   static const int kCursorFieldNumber = 8;
   const ::std::string& cursor() const;
   void set_cursor(const ::std::string& value);
   void set_cursor(const char* value);
-  void set_cursor(const void* value, size_t size);
+  void set_cursor(const char* value, size_t size);
   ::std::string* mutable_cursor();
   ::std::string* release_cursor();
   void set_allocated_cursor(::std::string* cursor);
@@ -14038,13 +14050,13 @@ class TLeaderboardRecords : public ::google::protobuf::Message /* @@protoc_inser
   const ::google::protobuf::RepeatedPtrField< ::server::LeaderboardRecord >&
       records() const;
 
-  // optional bytes cursor = 2;
+  // optional string cursor = 2;
   void clear_cursor();
   static const int kCursorFieldNumber = 2;
   const ::std::string& cursor() const;
   void set_cursor(const ::std::string& value);
   void set_cursor(const char* value);
-  void set_cursor(const void* value, size_t size);
+  void set_cursor(const char* value, size_t size);
   ::std::string* mutable_cursor();
   ::std::string* release_cursor();
   void set_allocated_cursor(::std::string* cursor);
@@ -14141,13 +14153,13 @@ class TRpc : public ::google::protobuf::Message /* @@protoc_insertion_point(clas
   ::std::string* release_id();
   void set_allocated_id(::std::string* id);
 
-  // optional bytes payload = 2;
+  // optional string payload = 2;
   void clear_payload();
   static const int kPayloadFieldNumber = 2;
   const ::std::string& payload() const;
   void set_payload(const ::std::string& value);
   void set_payload(const char* value);
-  void set_payload(const void* value, size_t size);
+  void set_payload(const char* value, size_t size);
   ::std::string* mutable_payload();
   ::std::string* release_payload();
   void set_allocated_payload(::std::string* payload);
@@ -14695,13 +14707,13 @@ class Notification : public ::google::protobuf::Message /* @@protoc_insertion_po
 
   // accessors -------------------------------------------------------
 
-  // optional bytes id = 1;
+  // optional string id = 1;
   void clear_id();
   static const int kIdFieldNumber = 1;
   const ::std::string& id() const;
   void set_id(const ::std::string& value);
   void set_id(const char* value);
-  void set_id(const void* value, size_t size);
+  void set_id(const char* value, size_t size);
   ::std::string* mutable_id();
   ::std::string* release_id();
   void set_allocated_id(::std::string* id);
@@ -14717,13 +14729,13 @@ class Notification : public ::google::protobuf::Message /* @@protoc_insertion_po
   ::std::string* release_subject();
   void set_allocated_subject(::std::string* subject);
 
-  // optional bytes content = 3;
+  // optional string content = 3;
   void clear_content();
   static const int kContentFieldNumber = 3;
   const ::std::string& content() const;
   void set_content(const ::std::string& value);
   void set_content(const char* value);
-  void set_content(const void* value, size_t size);
+  void set_content(const char* value, size_t size);
   ::std::string* mutable_content();
   ::std::string* release_content();
   void set_allocated_content(::std::string* content);
@@ -14734,13 +14746,13 @@ class Notification : public ::google::protobuf::Message /* @@protoc_insertion_po
   ::google::protobuf::int64 code() const;
   void set_code(::google::protobuf::int64 value);
 
-  // optional bytes sender_id = 5;
+  // optional string sender_id = 5;
   void clear_sender_id();
   static const int kSenderIdFieldNumber = 5;
   const ::std::string& sender_id() const;
   void set_sender_id(const ::std::string& value);
   void set_sender_id(const char* value);
-  void set_sender_id(const void* value, size_t size);
+  void set_sender_id(const char* value, size_t size);
   ::std::string* mutable_sender_id();
   ::std::string* release_sender_id();
   void set_allocated_sender_id(::std::string* sender_id);
@@ -14948,13 +14960,13 @@ class TNotificationsList : public ::google::protobuf::Message /* @@protoc_insert
   ::google::protobuf::int64 limit() const;
   void set_limit(::google::protobuf::int64 value);
 
-  // optional bytes resumable_cursor = 2;
+  // optional string resumable_cursor = 2;
   void clear_resumable_cursor();
   static const int kResumableCursorFieldNumber = 2;
   const ::std::string& resumable_cursor() const;
   void set_resumable_cursor(const ::std::string& value);
   void set_resumable_cursor(const char* value);
-  void set_resumable_cursor(const void* value, size_t size);
+  void set_resumable_cursor(const char* value, size_t size);
   ::std::string* mutable_resumable_cursor();
   ::std::string* release_resumable_cursor();
   void set_allocated_resumable_cursor(::std::string* resumable_cursor);
@@ -15052,13 +15064,13 @@ class TNotifications : public ::google::protobuf::Message /* @@protoc_insertion_
   const ::google::protobuf::RepeatedPtrField< ::server::Notification >&
       notifications() const;
 
-  // optional bytes resumable_cursor = 2;
+  // optional string resumable_cursor = 2;
   void clear_resumable_cursor();
   static const int kResumableCursorFieldNumber = 2;
   const ::std::string& resumable_cursor() const;
   void set_resumable_cursor(const ::std::string& value);
   void set_resumable_cursor(const char* value);
-  void set_resumable_cursor(const void* value, size_t size);
+  void set_resumable_cursor(const char* value, size_t size);
   ::std::string* mutable_resumable_cursor();
   ::std::string* release_resumable_cursor();
   void set_allocated_resumable_cursor(::std::string* resumable_cursor);
@@ -15144,7 +15156,7 @@ class TNotificationsRemove : public ::google::protobuf::Message /* @@protoc_inse
 
   // accessors -------------------------------------------------------
 
-  // repeated bytes notification_ids = 1;
+  // repeated string notification_ids = 1;
   int notification_ids_size() const;
   void clear_notification_ids();
   static const int kNotificationIdsFieldNumber = 1;
@@ -15152,11 +15164,11 @@ class TNotificationsRemove : public ::google::protobuf::Message /* @@protoc_inse
   ::std::string* mutable_notification_ids(int index);
   void set_notification_ids(int index, const ::std::string& value);
   void set_notification_ids(int index, const char* value);
-  void set_notification_ids(int index, const void* value, size_t size);
+  void set_notification_ids(int index, const char* value, size_t size);
   ::std::string* add_notification_ids();
   void add_notification_ids(const ::std::string& value);
   void add_notification_ids(const char* value);
-  void add_notification_ids(const void* value, size_t size);
+  void add_notification_ids(const char* value, size_t size);
   const ::google::protobuf::RepeatedPtrField< ::std::string>& notification_ids() const;
   ::google::protobuf::RepeatedPtrField< ::std::string>* mutable_notification_ids();
 
@@ -16208,6 +16220,50 @@ inline void AuthenticateResponse_Session::set_allocated_token(::std::string* tok
   }
   token_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), token);
   // @@protoc_insertion_point(field_set_allocated:server.AuthenticateResponse.Session.token)
+}
+
+// optional string udp_token = 2;
+inline void AuthenticateResponse_Session::clear_udp_token() {
+  udp_token_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& AuthenticateResponse_Session::udp_token() const {
+  // @@protoc_insertion_point(field_get:server.AuthenticateResponse.Session.udp_token)
+  return udp_token_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void AuthenticateResponse_Session::set_udp_token(const ::std::string& value) {
+  
+  udp_token_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:server.AuthenticateResponse.Session.udp_token)
+}
+inline void AuthenticateResponse_Session::set_udp_token(const char* value) {
+  
+  udp_token_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:server.AuthenticateResponse.Session.udp_token)
+}
+inline void AuthenticateResponse_Session::set_udp_token(const char* value, size_t size) {
+  
+  udp_token_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:server.AuthenticateResponse.Session.udp_token)
+}
+inline ::std::string* AuthenticateResponse_Session::mutable_udp_token() {
+  
+  // @@protoc_insertion_point(field_mutable:server.AuthenticateResponse.Session.udp_token)
+  return udp_token_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* AuthenticateResponse_Session::release_udp_token() {
+  // @@protoc_insertion_point(field_release:server.AuthenticateResponse.Session.udp_token)
+  
+  return udp_token_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void AuthenticateResponse_Session::set_allocated_udp_token(::std::string* udp_token) {
+  if (udp_token != NULL) {
+    
+  } else {
+    
+  }
+  udp_token_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), udp_token);
+  // @@protoc_insertion_point(field_set_allocated:server.AuthenticateResponse.Session.udp_token)
 }
 
 inline const AuthenticateResponse_Session* AuthenticateResponse_Session::internal_default_instance() {
@@ -21052,7 +21108,7 @@ inline const TUnlink* TUnlink::internal_default_instance() {
 
 // User
 
-// optional bytes id = 1;
+// optional string id = 1;
 inline void User::clear_id() {
   id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
@@ -21070,7 +21126,7 @@ inline void User::set_id(const char* value) {
   id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.User.id)
 }
-inline void User::set_id(const void* value, size_t size) {
+inline void User::set_id(const char* value, size_t size) {
   
   id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
@@ -21360,7 +21416,7 @@ inline void User::set_allocated_timezone(::std::string* timezone) {
   // @@protoc_insertion_point(field_set_allocated:server.User.timezone)
 }
 
-// optional bytes metadata = 8;
+// optional string metadata = 8;
 inline void User::clear_metadata() {
   metadata_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
@@ -21378,7 +21434,7 @@ inline void User::set_metadata(const char* value) {
   metadata_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.User.metadata)
 }
-inline void User::set_metadata(const void* value, size_t size) {
+inline void User::set_metadata(const char* value, size_t size) {
   
   metadata_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
@@ -22105,7 +22161,7 @@ inline void TSelfUpdate::set_allocated_lang(::std::string* lang) {
   // @@protoc_insertion_point(field_set_allocated:server.TSelfUpdate.lang)
 }
 
-// optional bytes metadata = 6;
+// optional string metadata = 6;
 inline void TSelfUpdate::clear_metadata() {
   metadata_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
@@ -22123,7 +22179,7 @@ inline void TSelfUpdate::set_metadata(const char* value) {
   metadata_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.TSelfUpdate.metadata)
 }
-inline void TSelfUpdate::set_metadata(const void* value, size_t size) {
+inline void TSelfUpdate::set_metadata(const char* value, size_t size) {
   
   metadata_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
@@ -22200,7 +22256,7 @@ inline const TSelfUpdate* TSelfUpdate::internal_default_instance() {
 
 // TUsersFetch_UsersFetch
 
-// optional bytes user_id = 1;
+// optional string user_id = 1;
 inline bool TUsersFetch_UsersFetch::has_user_id() const {
   return id_case() == kUserId;
 }
@@ -22240,7 +22296,7 @@ inline void TUsersFetch_UsersFetch::set_user_id(const char* value) {
       ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.TUsersFetch.UsersFetch.user_id)
 }
-inline void TUsersFetch_UsersFetch::set_user_id(const void* value, size_t size) {
+inline void TUsersFetch_UsersFetch::set_user_id(const char* value, size_t size) {
   if (!has_user_id()) {
     clear_id();
     set_has_user_id();
@@ -22512,7 +22568,7 @@ inline const Friend* Friend::internal_default_instance() {
 
 // TFriendsAdd_FriendsAdd
 
-// optional bytes user_id = 1;
+// optional string user_id = 1;
 inline bool TFriendsAdd_FriendsAdd::has_user_id() const {
   return id_case() == kUserId;
 }
@@ -22552,7 +22608,7 @@ inline void TFriendsAdd_FriendsAdd::set_user_id(const char* value) {
       ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.TFriendsAdd.FriendsAdd.user_id)
 }
-inline void TFriendsAdd_FriendsAdd::set_user_id(const void* value, size_t size) {
+inline void TFriendsAdd_FriendsAdd::set_user_id(const char* value, size_t size) {
   if (!has_user_id()) {
     clear_id();
     set_has_user_id();
@@ -22727,7 +22783,7 @@ inline const TFriendsAdd* TFriendsAdd::internal_default_instance() {
 
 // TFriendsRemove
 
-// repeated bytes user_ids = 1;
+// repeated string user_ids = 1;
 inline int TFriendsRemove::user_ids_size() const {
   return user_ids_.size();
 }
@@ -22750,7 +22806,7 @@ inline void TFriendsRemove::set_user_ids(int index, const char* value) {
   user_ids_.Mutable(index)->assign(value);
   // @@protoc_insertion_point(field_set_char:server.TFriendsRemove.user_ids)
 }
-inline void TFriendsRemove::set_user_ids(int index, const void* value, size_t size) {
+inline void TFriendsRemove::set_user_ids(int index, const char* value, size_t size) {
   user_ids_.Mutable(index)->assign(
     reinterpret_cast<const char*>(value), size);
   // @@protoc_insertion_point(field_set_pointer:server.TFriendsRemove.user_ids)
@@ -22767,7 +22823,7 @@ inline void TFriendsRemove::add_user_ids(const char* value) {
   user_ids_.Add()->assign(value);
   // @@protoc_insertion_point(field_add_char:server.TFriendsRemove.user_ids)
 }
-inline void TFriendsRemove::add_user_ids(const void* value, size_t size) {
+inline void TFriendsRemove::add_user_ids(const char* value, size_t size) {
   user_ids_.Add()->assign(reinterpret_cast<const char*>(value), size);
   // @@protoc_insertion_point(field_add_pointer:server.TFriendsRemove.user_ids)
 }
@@ -22789,7 +22845,7 @@ inline const TFriendsRemove* TFriendsRemove::internal_default_instance() {
 
 // TFriendsBlock
 
-// repeated bytes user_ids = 1;
+// repeated string user_ids = 1;
 inline int TFriendsBlock::user_ids_size() const {
   return user_ids_.size();
 }
@@ -22812,7 +22868,7 @@ inline void TFriendsBlock::set_user_ids(int index, const char* value) {
   user_ids_.Mutable(index)->assign(value);
   // @@protoc_insertion_point(field_set_char:server.TFriendsBlock.user_ids)
 }
-inline void TFriendsBlock::set_user_ids(int index, const void* value, size_t size) {
+inline void TFriendsBlock::set_user_ids(int index, const char* value, size_t size) {
   user_ids_.Mutable(index)->assign(
     reinterpret_cast<const char*>(value), size);
   // @@protoc_insertion_point(field_set_pointer:server.TFriendsBlock.user_ids)
@@ -22829,7 +22885,7 @@ inline void TFriendsBlock::add_user_ids(const char* value) {
   user_ids_.Add()->assign(value);
   // @@protoc_insertion_point(field_add_char:server.TFriendsBlock.user_ids)
 }
-inline void TFriendsBlock::add_user_ids(const void* value, size_t size) {
+inline void TFriendsBlock::add_user_ids(const char* value, size_t size) {
   user_ids_.Add()->assign(reinterpret_cast<const char*>(value), size);
   // @@protoc_insertion_point(field_add_pointer:server.TFriendsBlock.user_ids)
 }
@@ -22895,7 +22951,7 @@ inline const TFriends* TFriends::internal_default_instance() {
 
 // Group
 
-// optional bytes id = 1;
+// optional string id = 1;
 inline void Group::clear_id() {
   id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
@@ -22913,7 +22969,7 @@ inline void Group::set_id(const char* value) {
   id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.Group.id)
 }
-inline void Group::set_id(const void* value, size_t size) {
+inline void Group::set_id(const char* value, size_t size) {
   
   id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
@@ -22953,7 +23009,7 @@ inline void Group::set_private_(bool value) {
   // @@protoc_insertion_point(field_set:server.Group.private)
 }
 
-// optional bytes creator_id = 3;
+// optional string creator_id = 3;
 inline void Group::clear_creator_id() {
   creator_id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
@@ -22971,7 +23027,7 @@ inline void Group::set_creator_id(const char* value) {
   creator_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.Group.creator_id)
 }
-inline void Group::set_creator_id(const void* value, size_t size) {
+inline void Group::set_creator_id(const char* value, size_t size) {
   
   creator_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
@@ -23187,7 +23243,7 @@ inline void Group::set_utc_offset_ms(::google::protobuf::int64 value) {
   // @@protoc_insertion_point(field_set:server.Group.utc_offset_ms)
 }
 
-// optional bytes metadata = 9;
+// optional string metadata = 9;
 inline void Group::clear_metadata() {
   metadata_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
@@ -23205,7 +23261,7 @@ inline void Group::set_metadata(const char* value) {
   metadata_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.Group.metadata)
 }
-inline void Group::set_metadata(const void* value, size_t size) {
+inline void Group::set_metadata(const char* value, size_t size) {
   
   metadata_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
@@ -23456,7 +23512,7 @@ inline void TGroupsCreate_GroupCreate::set_allocated_lang(::std::string* lang) {
   // @@protoc_insertion_point(field_set_allocated:server.TGroupsCreate.GroupCreate.lang)
 }
 
-// optional bytes metadata = 5;
+// optional string metadata = 5;
 inline void TGroupsCreate_GroupCreate::clear_metadata() {
   metadata_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
@@ -23474,7 +23530,7 @@ inline void TGroupsCreate_GroupCreate::set_metadata(const char* value) {
   metadata_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.TGroupsCreate.GroupCreate.metadata)
 }
-inline void TGroupsCreate_GroupCreate::set_metadata(const void* value, size_t size) {
+inline void TGroupsCreate_GroupCreate::set_metadata(const char* value, size_t size) {
   
   metadata_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
@@ -23558,7 +23614,7 @@ inline const TGroupsCreate* TGroupsCreate::internal_default_instance() {
 
 // TGroupsUpdate_GroupUpdate
 
-// optional bytes group_id = 1;
+// optional string group_id = 1;
 inline void TGroupsUpdate_GroupUpdate::clear_group_id() {
   group_id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
@@ -23576,7 +23632,7 @@ inline void TGroupsUpdate_GroupUpdate::set_group_id(const char* value) {
   group_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.TGroupsUpdate.GroupUpdate.group_id)
 }
-inline void TGroupsUpdate_GroupUpdate::set_group_id(const void* value, size_t size) {
+inline void TGroupsUpdate_GroupUpdate::set_group_id(const char* value, size_t size) {
   
   group_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
@@ -23792,7 +23848,7 @@ inline void TGroupsUpdate_GroupUpdate::set_allocated_lang(::std::string* lang) {
   // @@protoc_insertion_point(field_set_allocated:server.TGroupsUpdate.GroupUpdate.lang)
 }
 
-// optional bytes metadata = 7;
+// optional string metadata = 7;
 inline void TGroupsUpdate_GroupUpdate::clear_metadata() {
   metadata_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
@@ -23810,7 +23866,7 @@ inline void TGroupsUpdate_GroupUpdate::set_metadata(const char* value) {
   metadata_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.TGroupsUpdate.GroupUpdate.metadata)
 }
-inline void TGroupsUpdate_GroupUpdate::set_metadata(const void* value, size_t size) {
+inline void TGroupsUpdate_GroupUpdate::set_metadata(const char* value, size_t size) {
   
   metadata_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
@@ -23880,7 +23936,7 @@ inline const TGroupsUpdate* TGroupsUpdate::internal_default_instance() {
 
 // TGroupsRemove
 
-// repeated bytes group_ids = 1;
+// repeated string group_ids = 1;
 inline int TGroupsRemove::group_ids_size() const {
   return group_ids_.size();
 }
@@ -23903,7 +23959,7 @@ inline void TGroupsRemove::set_group_ids(int index, const char* value) {
   group_ids_.Mutable(index)->assign(value);
   // @@protoc_insertion_point(field_set_char:server.TGroupsRemove.group_ids)
 }
-inline void TGroupsRemove::set_group_ids(int index, const void* value, size_t size) {
+inline void TGroupsRemove::set_group_ids(int index, const char* value, size_t size) {
   group_ids_.Mutable(index)->assign(
     reinterpret_cast<const char*>(value), size);
   // @@protoc_insertion_point(field_set_pointer:server.TGroupsRemove.group_ids)
@@ -23920,7 +23976,7 @@ inline void TGroupsRemove::add_group_ids(const char* value) {
   group_ids_.Add()->assign(value);
   // @@protoc_insertion_point(field_add_char:server.TGroupsRemove.group_ids)
 }
-inline void TGroupsRemove::add_group_ids(const void* value, size_t size) {
+inline void TGroupsRemove::add_group_ids(const char* value, size_t size) {
   group_ids_.Add()->assign(reinterpret_cast<const char*>(value), size);
   // @@protoc_insertion_point(field_add_pointer:server.TGroupsRemove.group_ids)
 }
@@ -23949,7 +24005,7 @@ inline const TGroupsSelfList* TGroupsSelfList::internal_default_instance() {
 
 // TGroupsFetch_GroupFetch
 
-// optional bytes group_id = 1;
+// optional string group_id = 1;
 inline bool TGroupsFetch_GroupFetch::has_group_id() const {
   return id_case() == kGroupId;
 }
@@ -23989,7 +24045,7 @@ inline void TGroupsFetch_GroupFetch::set_group_id(const char* value) {
       ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.TGroupsFetch.GroupFetch.group_id)
 }
-inline void TGroupsFetch_GroupFetch::set_group_id(const void* value, size_t size) {
+inline void TGroupsFetch_GroupFetch::set_group_id(const char* value, size_t size) {
   if (!has_group_id()) {
     clear_id();
     set_has_group_id();
@@ -24331,7 +24387,7 @@ inline void TGroupsList::set_count(::google::protobuf::int64 value) {
   // @@protoc_insertion_point(field_set:server.TGroupsList.count)
 }
 
-// optional bytes cursor = 7;
+// optional string cursor = 7;
 inline void TGroupsList::clear_cursor() {
   cursor_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
@@ -24349,7 +24405,7 @@ inline void TGroupsList::set_cursor(const char* value) {
   cursor_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.TGroupsList.cursor)
 }
-inline void TGroupsList::set_cursor(const void* value, size_t size) {
+inline void TGroupsList::set_cursor(const char* value, size_t size) {
   
   cursor_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
@@ -24421,7 +24477,7 @@ TGroups::groups() const {
   return groups_;
 }
 
-// optional bytes cursor = 2;
+// optional string cursor = 2;
 inline void TGroups::clear_cursor() {
   cursor_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
@@ -24439,7 +24495,7 @@ inline void TGroups::set_cursor(const char* value) {
   cursor_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.TGroups.cursor)
 }
-inline void TGroups::set_cursor(const void* value, size_t size) {
+inline void TGroups::set_cursor(const char* value, size_t size) {
   
   cursor_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
@@ -24629,7 +24685,7 @@ inline const GroupUser* GroupUser::internal_default_instance() {
 
 // TGroupUsersList
 
-// optional bytes group_id = 1;
+// optional string group_id = 1;
 inline void TGroupUsersList::clear_group_id() {
   group_id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
@@ -24647,7 +24703,7 @@ inline void TGroupUsersList::set_group_id(const char* value) {
   group_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.TGroupUsersList.group_id)
 }
-inline void TGroupUsersList::set_group_id(const void* value, size_t size) {
+inline void TGroupUsersList::set_group_id(const char* value, size_t size) {
   
   group_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
@@ -24717,7 +24773,7 @@ inline const TGroupUsers* TGroupUsers::internal_default_instance() {
 
 // TGroupsJoin
 
-// repeated bytes group_ids = 1;
+// repeated string group_ids = 1;
 inline int TGroupsJoin::group_ids_size() const {
   return group_ids_.size();
 }
@@ -24740,7 +24796,7 @@ inline void TGroupsJoin::set_group_ids(int index, const char* value) {
   group_ids_.Mutable(index)->assign(value);
   // @@protoc_insertion_point(field_set_char:server.TGroupsJoin.group_ids)
 }
-inline void TGroupsJoin::set_group_ids(int index, const void* value, size_t size) {
+inline void TGroupsJoin::set_group_ids(int index, const char* value, size_t size) {
   group_ids_.Mutable(index)->assign(
     reinterpret_cast<const char*>(value), size);
   // @@protoc_insertion_point(field_set_pointer:server.TGroupsJoin.group_ids)
@@ -24757,7 +24813,7 @@ inline void TGroupsJoin::add_group_ids(const char* value) {
   group_ids_.Add()->assign(value);
   // @@protoc_insertion_point(field_add_char:server.TGroupsJoin.group_ids)
 }
-inline void TGroupsJoin::add_group_ids(const void* value, size_t size) {
+inline void TGroupsJoin::add_group_ids(const char* value, size_t size) {
   group_ids_.Add()->assign(reinterpret_cast<const char*>(value), size);
   // @@protoc_insertion_point(field_add_pointer:server.TGroupsJoin.group_ids)
 }
@@ -24779,7 +24835,7 @@ inline const TGroupsJoin* TGroupsJoin::internal_default_instance() {
 
 // TGroupsLeave
 
-// repeated bytes group_ids = 1;
+// repeated string group_ids = 1;
 inline int TGroupsLeave::group_ids_size() const {
   return group_ids_.size();
 }
@@ -24802,7 +24858,7 @@ inline void TGroupsLeave::set_group_ids(int index, const char* value) {
   group_ids_.Mutable(index)->assign(value);
   // @@protoc_insertion_point(field_set_char:server.TGroupsLeave.group_ids)
 }
-inline void TGroupsLeave::set_group_ids(int index, const void* value, size_t size) {
+inline void TGroupsLeave::set_group_ids(int index, const char* value, size_t size) {
   group_ids_.Mutable(index)->assign(
     reinterpret_cast<const char*>(value), size);
   // @@protoc_insertion_point(field_set_pointer:server.TGroupsLeave.group_ids)
@@ -24819,7 +24875,7 @@ inline void TGroupsLeave::add_group_ids(const char* value) {
   group_ids_.Add()->assign(value);
   // @@protoc_insertion_point(field_add_char:server.TGroupsLeave.group_ids)
 }
-inline void TGroupsLeave::add_group_ids(const void* value, size_t size) {
+inline void TGroupsLeave::add_group_ids(const char* value, size_t size) {
   group_ids_.Add()->assign(reinterpret_cast<const char*>(value), size);
   // @@protoc_insertion_point(field_add_pointer:server.TGroupsLeave.group_ids)
 }
@@ -24841,7 +24897,7 @@ inline const TGroupsLeave* TGroupsLeave::internal_default_instance() {
 
 // TGroupUsersAdd_GroupUserAdd
 
-// optional bytes group_id = 1;
+// optional string group_id = 1;
 inline void TGroupUsersAdd_GroupUserAdd::clear_group_id() {
   group_id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
@@ -24859,7 +24915,7 @@ inline void TGroupUsersAdd_GroupUserAdd::set_group_id(const char* value) {
   group_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.TGroupUsersAdd.GroupUserAdd.group_id)
 }
-inline void TGroupUsersAdd_GroupUserAdd::set_group_id(const void* value, size_t size) {
+inline void TGroupUsersAdd_GroupUserAdd::set_group_id(const char* value, size_t size) {
   
   group_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
@@ -24885,7 +24941,7 @@ inline void TGroupUsersAdd_GroupUserAdd::set_allocated_group_id(::std::string* g
   // @@protoc_insertion_point(field_set_allocated:server.TGroupUsersAdd.GroupUserAdd.group_id)
 }
 
-// optional bytes user_id = 2;
+// optional string user_id = 2;
 inline void TGroupUsersAdd_GroupUserAdd::clear_user_id() {
   user_id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
@@ -24903,7 +24959,7 @@ inline void TGroupUsersAdd_GroupUserAdd::set_user_id(const char* value) {
   user_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.TGroupUsersAdd.GroupUserAdd.user_id)
 }
-inline void TGroupUsersAdd_GroupUserAdd::set_user_id(const void* value, size_t size) {
+inline void TGroupUsersAdd_GroupUserAdd::set_user_id(const char* value, size_t size) {
   
   user_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
@@ -24973,7 +25029,7 @@ inline const TGroupUsersAdd* TGroupUsersAdd::internal_default_instance() {
 
 // TGroupUsersKick_GroupUserKick
 
-// optional bytes group_id = 1;
+// optional string group_id = 1;
 inline void TGroupUsersKick_GroupUserKick::clear_group_id() {
   group_id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
@@ -24991,7 +25047,7 @@ inline void TGroupUsersKick_GroupUserKick::set_group_id(const char* value) {
   group_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.TGroupUsersKick.GroupUserKick.group_id)
 }
-inline void TGroupUsersKick_GroupUserKick::set_group_id(const void* value, size_t size) {
+inline void TGroupUsersKick_GroupUserKick::set_group_id(const char* value, size_t size) {
   
   group_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
@@ -25017,7 +25073,7 @@ inline void TGroupUsersKick_GroupUserKick::set_allocated_group_id(::std::string*
   // @@protoc_insertion_point(field_set_allocated:server.TGroupUsersKick.GroupUserKick.group_id)
 }
 
-// optional bytes user_id = 2;
+// optional string user_id = 2;
 inline void TGroupUsersKick_GroupUserKick::clear_user_id() {
   user_id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
@@ -25035,7 +25091,7 @@ inline void TGroupUsersKick_GroupUserKick::set_user_id(const char* value) {
   user_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.TGroupUsersKick.GroupUserKick.user_id)
 }
-inline void TGroupUsersKick_GroupUserKick::set_user_id(const void* value, size_t size) {
+inline void TGroupUsersKick_GroupUserKick::set_user_id(const char* value, size_t size) {
   
   user_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
@@ -25105,7 +25161,7 @@ inline const TGroupUsersKick* TGroupUsersKick::internal_default_instance() {
 
 // TGroupUsersPromote_GroupUserPromote
 
-// optional bytes group_id = 1;
+// optional string group_id = 1;
 inline void TGroupUsersPromote_GroupUserPromote::clear_group_id() {
   group_id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
@@ -25123,7 +25179,7 @@ inline void TGroupUsersPromote_GroupUserPromote::set_group_id(const char* value)
   group_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.TGroupUsersPromote.GroupUserPromote.group_id)
 }
-inline void TGroupUsersPromote_GroupUserPromote::set_group_id(const void* value, size_t size) {
+inline void TGroupUsersPromote_GroupUserPromote::set_group_id(const char* value, size_t size) {
   
   group_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
@@ -25149,7 +25205,7 @@ inline void TGroupUsersPromote_GroupUserPromote::set_allocated_group_id(::std::s
   // @@protoc_insertion_point(field_set_allocated:server.TGroupUsersPromote.GroupUserPromote.group_id)
 }
 
-// optional bytes user_id = 2;
+// optional string user_id = 2;
 inline void TGroupUsersPromote_GroupUserPromote::clear_user_id() {
   user_id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
@@ -25167,7 +25223,7 @@ inline void TGroupUsersPromote_GroupUserPromote::set_user_id(const char* value) 
   user_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.TGroupUsersPromote.GroupUserPromote.user_id)
 }
-inline void TGroupUsersPromote_GroupUserPromote::set_user_id(const void* value, size_t size) {
+inline void TGroupUsersPromote_GroupUserPromote::set_user_id(const char* value, size_t size) {
   
   user_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
@@ -25237,7 +25293,7 @@ inline const TGroupUsersPromote* TGroupUsersPromote::internal_default_instance()
 
 // TopicId
 
-// optional bytes dm = 1;
+// optional string dm = 1;
 inline bool TopicId::has_dm() const {
   return id_case() == kDm;
 }
@@ -25277,7 +25333,7 @@ inline void TopicId::set_dm(const char* value) {
       ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.TopicId.dm)
 }
-inline void TopicId::set_dm(const void* value, size_t size) {
+inline void TopicId::set_dm(const char* value, size_t size) {
   if (!has_dm()) {
     clear_id();
     set_has_dm();
@@ -25318,7 +25374,7 @@ inline void TopicId::set_allocated_dm(::std::string* dm) {
   // @@protoc_insertion_point(field_set_allocated:server.TopicId.dm)
 }
 
-// optional bytes room = 2;
+// optional string room = 2;
 inline bool TopicId::has_room() const {
   return id_case() == kRoom;
 }
@@ -25358,7 +25414,7 @@ inline void TopicId::set_room(const char* value) {
       ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.TopicId.room)
 }
-inline void TopicId::set_room(const void* value, size_t size) {
+inline void TopicId::set_room(const char* value, size_t size) {
   if (!has_room()) {
     clear_id();
     set_has_room();
@@ -25399,7 +25455,7 @@ inline void TopicId::set_allocated_room(::std::string* room) {
   // @@protoc_insertion_point(field_set_allocated:server.TopicId.room)
 }
 
-// optional bytes group_id = 3;
+// optional string group_id = 3;
 inline bool TopicId::has_group_id() const {
   return id_case() == kGroupId;
 }
@@ -25439,7 +25495,7 @@ inline void TopicId::set_group_id(const char* value) {
       ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.TopicId.group_id)
 }
-inline void TopicId::set_group_id(const void* value, size_t size) {
+inline void TopicId::set_group_id(const char* value, size_t size) {
   if (!has_group_id()) {
     clear_id();
     set_has_group_id();
@@ -25496,7 +25552,7 @@ inline const TopicId* TopicId::internal_default_instance() {
 
 // UserPresence
 
-// optional bytes user_id = 1;
+// optional string user_id = 1;
 inline void UserPresence::clear_user_id() {
   user_id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
@@ -25514,7 +25570,7 @@ inline void UserPresence::set_user_id(const char* value) {
   user_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.UserPresence.user_id)
 }
-inline void UserPresence::set_user_id(const void* value, size_t size) {
+inline void UserPresence::set_user_id(const char* value, size_t size) {
   
   user_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
@@ -25540,7 +25596,7 @@ inline void UserPresence::set_allocated_user_id(::std::string* user_id) {
   // @@protoc_insertion_point(field_set_allocated:server.UserPresence.user_id)
 }
 
-// optional bytes session_id = 2;
+// optional string session_id = 2;
 inline void UserPresence::clear_session_id() {
   session_id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
@@ -25558,7 +25614,7 @@ inline void UserPresence::set_session_id(const char* value) {
   session_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.UserPresence.session_id)
 }
-inline void UserPresence::set_session_id(const void* value, size_t size) {
+inline void UserPresence::set_session_id(const char* value, size_t size) {
   
   session_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
@@ -25635,7 +25691,7 @@ inline const UserPresence* UserPresence::internal_default_instance() {
 
 // TTopicsJoin_TopicJoin
 
-// optional bytes user_id = 1;
+// optional string user_id = 1;
 inline bool TTopicsJoin_TopicJoin::has_user_id() const {
   return id_case() == kUserId;
 }
@@ -25675,7 +25731,7 @@ inline void TTopicsJoin_TopicJoin::set_user_id(const char* value) {
       ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.TTopicsJoin.TopicJoin.user_id)
 }
-inline void TTopicsJoin_TopicJoin::set_user_id(const void* value, size_t size) {
+inline void TTopicsJoin_TopicJoin::set_user_id(const char* value, size_t size) {
   if (!has_user_id()) {
     clear_id();
     set_has_user_id();
@@ -25716,7 +25772,7 @@ inline void TTopicsJoin_TopicJoin::set_allocated_user_id(::std::string* user_id)
   // @@protoc_insertion_point(field_set_allocated:server.TTopicsJoin.TopicJoin.user_id)
 }
 
-// optional bytes room = 2;
+// optional string room = 2;
 inline bool TTopicsJoin_TopicJoin::has_room() const {
   return id_case() == kRoom;
 }
@@ -25756,7 +25812,7 @@ inline void TTopicsJoin_TopicJoin::set_room(const char* value) {
       ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.TTopicsJoin.TopicJoin.room)
 }
-inline void TTopicsJoin_TopicJoin::set_room(const void* value, size_t size) {
+inline void TTopicsJoin_TopicJoin::set_room(const char* value, size_t size) {
   if (!has_room()) {
     clear_id();
     set_has_room();
@@ -25797,7 +25853,7 @@ inline void TTopicsJoin_TopicJoin::set_allocated_room(::std::string* room) {
   // @@protoc_insertion_point(field_set_allocated:server.TTopicsJoin.TopicJoin.room)
 }
 
-// optional bytes group_id = 3;
+// optional string group_id = 3;
 inline bool TTopicsJoin_TopicJoin::has_group_id() const {
   return id_case() == kGroupId;
 }
@@ -25837,7 +25893,7 @@ inline void TTopicsJoin_TopicJoin::set_group_id(const char* value) {
       ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.TTopicsJoin.TopicJoin.group_id)
 }
-inline void TTopicsJoin_TopicJoin::set_group_id(const void* value, size_t size) {
+inline void TTopicsJoin_TopicJoin::set_group_id(const char* value, size_t size) {
   if (!has_group_id()) {
     clear_id();
     set_has_group_id();
@@ -26159,7 +26215,7 @@ inline void TTopicMessageSend::set_allocated_topic(::server::TopicId* topic) {
   // @@protoc_insertion_point(field_set_allocated:server.TTopicMessageSend.topic)
 }
 
-// optional bytes data = 2;
+// optional string data = 2;
 inline void TTopicMessageSend::clear_data() {
   data_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
@@ -26177,7 +26233,7 @@ inline void TTopicMessageSend::set_data(const char* value) {
   data_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.TTopicMessageSend.data)
 }
-inline void TTopicMessageSend::set_data(const void* value, size_t size) {
+inline void TTopicMessageSend::set_data(const char* value, size_t size) {
   
   data_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
@@ -26210,7 +26266,7 @@ inline const TTopicMessageSend* TTopicMessageSend::internal_default_instance() {
 
 // TTopicMessageAck
 
-// optional bytes message_id = 1;
+// optional string message_id = 1;
 inline void TTopicMessageAck::clear_message_id() {
   message_id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
@@ -26228,7 +26284,7 @@ inline void TTopicMessageAck::set_message_id(const char* value) {
   message_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.TTopicMessageAck.message_id)
 }
-inline void TTopicMessageAck::set_message_id(const void* value, size_t size) {
+inline void TTopicMessageAck::set_message_id(const char* value, size_t size) {
   
   message_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
@@ -26372,7 +26428,7 @@ inline void TopicMessage::set_allocated_topic(::server::TopicId* topic) {
   // @@protoc_insertion_point(field_set_allocated:server.TopicMessage.topic)
 }
 
-// optional bytes user_id = 2;
+// optional string user_id = 2;
 inline void TopicMessage::clear_user_id() {
   user_id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
@@ -26390,7 +26446,7 @@ inline void TopicMessage::set_user_id(const char* value) {
   user_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.TopicMessage.user_id)
 }
-inline void TopicMessage::set_user_id(const void* value, size_t size) {
+inline void TopicMessage::set_user_id(const char* value, size_t size) {
   
   user_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
@@ -26416,7 +26472,7 @@ inline void TopicMessage::set_allocated_user_id(::std::string* user_id) {
   // @@protoc_insertion_point(field_set_allocated:server.TopicMessage.user_id)
 }
 
-// optional bytes message_id = 3;
+// optional string message_id = 3;
 inline void TopicMessage::clear_message_id() {
   message_id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
@@ -26434,7 +26490,7 @@ inline void TopicMessage::set_message_id(const char* value) {
   message_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.TopicMessage.message_id)
 }
-inline void TopicMessage::set_message_id(const void* value, size_t size) {
+inline void TopicMessage::set_message_id(const char* value, size_t size) {
   
   message_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
@@ -26546,7 +26602,7 @@ inline void TopicMessage::set_type(::google::protobuf::int64 value) {
   // @@protoc_insertion_point(field_set:server.TopicMessage.type)
 }
 
-// optional bytes data = 8;
+// optional string data = 8;
 inline void TopicMessage::clear_data() {
   data_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
@@ -26564,7 +26620,7 @@ inline void TopicMessage::set_data(const char* value) {
   data_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.TopicMessage.data)
 }
-inline void TopicMessage::set_data(const void* value, size_t size) {
+inline void TopicMessage::set_data(const char* value, size_t size) {
   
   data_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
@@ -26597,7 +26653,7 @@ inline const TopicMessage* TopicMessage::internal_default_instance() {
 
 // TTopicMessagesList
 
-// optional bytes user_id = 1;
+// optional string user_id = 1;
 inline bool TTopicMessagesList::has_user_id() const {
   return id_case() == kUserId;
 }
@@ -26637,7 +26693,7 @@ inline void TTopicMessagesList::set_user_id(const char* value) {
       ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.TTopicMessagesList.user_id)
 }
-inline void TTopicMessagesList::set_user_id(const void* value, size_t size) {
+inline void TTopicMessagesList::set_user_id(const char* value, size_t size) {
   if (!has_user_id()) {
     clear_id();
     set_has_user_id();
@@ -26678,7 +26734,7 @@ inline void TTopicMessagesList::set_allocated_user_id(::std::string* user_id) {
   // @@protoc_insertion_point(field_set_allocated:server.TTopicMessagesList.user_id)
 }
 
-// optional bytes room = 2;
+// optional string room = 2;
 inline bool TTopicMessagesList::has_room() const {
   return id_case() == kRoom;
 }
@@ -26718,7 +26774,7 @@ inline void TTopicMessagesList::set_room(const char* value) {
       ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.TTopicMessagesList.room)
 }
-inline void TTopicMessagesList::set_room(const void* value, size_t size) {
+inline void TTopicMessagesList::set_room(const char* value, size_t size) {
   if (!has_room()) {
     clear_id();
     set_has_room();
@@ -26759,7 +26815,7 @@ inline void TTopicMessagesList::set_allocated_room(::std::string* room) {
   // @@protoc_insertion_point(field_set_allocated:server.TTopicMessagesList.room)
 }
 
-// optional bytes group_id = 3;
+// optional string group_id = 3;
 inline bool TTopicMessagesList::has_group_id() const {
   return id_case() == kGroupId;
 }
@@ -26799,7 +26855,7 @@ inline void TTopicMessagesList::set_group_id(const char* value) {
       ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.TTopicMessagesList.group_id)
 }
-inline void TTopicMessagesList::set_group_id(const void* value, size_t size) {
+inline void TTopicMessagesList::set_group_id(const char* value, size_t size) {
   if (!has_group_id()) {
     clear_id();
     set_has_group_id();
@@ -26840,7 +26896,7 @@ inline void TTopicMessagesList::set_allocated_group_id(::std::string* group_id) 
   // @@protoc_insertion_point(field_set_allocated:server.TTopicMessagesList.group_id)
 }
 
-// optional bytes cursor = 4;
+// optional string cursor = 4;
 inline void TTopicMessagesList::clear_cursor() {
   cursor_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
@@ -26858,7 +26914,7 @@ inline void TTopicMessagesList::set_cursor(const char* value) {
   cursor_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.TTopicMessagesList.cursor)
 }
-inline void TTopicMessagesList::set_cursor(const void* value, size_t size) {
+inline void TTopicMessagesList::set_cursor(const char* value, size_t size) {
   
   cursor_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
@@ -26958,7 +27014,7 @@ TTopicMessages::messages() const {
   return messages_;
 }
 
-// optional bytes cursor = 2;
+// optional string cursor = 2;
 inline void TTopicMessages::clear_cursor() {
   cursor_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
@@ -26976,7 +27032,7 @@ inline void TTopicMessages::set_cursor(const char* value) {
   cursor_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.TTopicMessages.cursor)
 }
-inline void TTopicMessages::set_cursor(const void* value, size_t size) {
+inline void TTopicMessages::set_cursor(const char* value, size_t size) {
   
   cursor_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
@@ -27720,7 +27776,7 @@ inline const TMatchmakeAdd* TMatchmakeAdd::internal_default_instance() {
 
 // TMatchmakeTicket
 
-// optional bytes ticket = 1;
+// optional string ticket = 1;
 inline void TMatchmakeTicket::clear_ticket() {
   ticket_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
@@ -27738,7 +27794,7 @@ inline void TMatchmakeTicket::set_ticket(const char* value) {
   ticket_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.TMatchmakeTicket.ticket)
 }
-inline void TMatchmakeTicket::set_ticket(const void* value, size_t size) {
+inline void TMatchmakeTicket::set_ticket(const char* value, size_t size) {
   
   ticket_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
@@ -27771,7 +27827,7 @@ inline const TMatchmakeTicket* TMatchmakeTicket::internal_default_instance() {
 
 // TMatchmakeRemove
 
-// optional bytes ticket = 1;
+// optional string ticket = 1;
 inline void TMatchmakeRemove::clear_ticket() {
   ticket_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
@@ -27789,7 +27845,7 @@ inline void TMatchmakeRemove::set_ticket(const char* value) {
   ticket_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.TMatchmakeRemove.ticket)
 }
-inline void TMatchmakeRemove::set_ticket(const void* value, size_t size) {
+inline void TMatchmakeRemove::set_ticket(const char* value, size_t size) {
   
   ticket_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
@@ -27822,7 +27878,7 @@ inline const TMatchmakeRemove* TMatchmakeRemove::internal_default_instance() {
 
 // MatchmakeMatched_UserProperty
 
-// optional bytes user_id = 1;
+// optional string user_id = 1;
 inline void MatchmakeMatched_UserProperty::clear_user_id() {
   user_id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
@@ -27840,7 +27896,7 @@ inline void MatchmakeMatched_UserProperty::set_user_id(const char* value) {
   user_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.MatchmakeMatched.UserProperty.user_id)
 }
-inline void MatchmakeMatched_UserProperty::set_user_id(const void* value, size_t size) {
+inline void MatchmakeMatched_UserProperty::set_user_id(const char* value, size_t size) {
   
   user_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
@@ -27933,7 +27989,7 @@ inline const MatchmakeMatched_UserProperty* MatchmakeMatched_UserProperty::inter
 
 // MatchmakeMatched
 
-// optional bytes ticket = 1;
+// optional string ticket = 1;
 inline void MatchmakeMatched::clear_ticket() {
   ticket_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
@@ -27951,7 +28007,7 @@ inline void MatchmakeMatched::set_ticket(const char* value) {
   ticket_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.MatchmakeMatched.ticket)
 }
-inline void MatchmakeMatched::set_ticket(const void* value, size_t size) {
+inline void MatchmakeMatched::set_ticket(const char* value, size_t size) {
   
   ticket_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
@@ -27977,7 +28033,7 @@ inline void MatchmakeMatched::set_allocated_ticket(::std::string* ticket) {
   // @@protoc_insertion_point(field_set_allocated:server.MatchmakeMatched.ticket)
 }
 
-// optional bytes token = 2;
+// optional string token = 2;
 inline void MatchmakeMatched::clear_token() {
   token_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
@@ -27995,7 +28051,7 @@ inline void MatchmakeMatched::set_token(const char* value) {
   token_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.MatchmakeMatched.token)
 }
-inline void MatchmakeMatched::set_token(const void* value, size_t size) {
+inline void MatchmakeMatched::set_token(const char* value, size_t size) {
   
   token_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
@@ -28127,7 +28183,7 @@ inline const MatchmakeMatched* MatchmakeMatched::internal_default_instance() {
 
 // Match
 
-// optional bytes match_id = 1;
+// optional string match_id = 1;
 inline void Match::clear_match_id() {
   match_id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
@@ -28145,7 +28201,7 @@ inline void Match::set_match_id(const char* value) {
   match_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.Match.match_id)
 }
-inline void Match::set_match_id(const void* value, size_t size) {
+inline void Match::set_match_id(const char* value, size_t size) {
   
   match_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
@@ -28247,7 +28303,7 @@ inline const Match* Match::internal_default_instance() {
 
 // MatchPresence
 
-// optional bytes match_id = 1;
+// optional string match_id = 1;
 inline void MatchPresence::clear_match_id() {
   match_id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
@@ -28265,7 +28321,7 @@ inline void MatchPresence::set_match_id(const char* value) {
   match_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.MatchPresence.match_id)
 }
-inline void MatchPresence::set_match_id(const void* value, size_t size) {
+inline void MatchPresence::set_match_id(const char* value, size_t size) {
   
   match_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
@@ -28411,7 +28467,7 @@ inline const TMatch* TMatch::internal_default_instance() {
 
 // TMatchesJoin_MatchJoin
 
-// optional bytes match_id = 1;
+// optional string match_id = 1;
 inline bool TMatchesJoin_MatchJoin::has_match_id() const {
   return id_case() == kMatchId;
 }
@@ -28451,7 +28507,7 @@ inline void TMatchesJoin_MatchJoin::set_match_id(const char* value) {
       ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.TMatchesJoin.MatchJoin.match_id)
 }
-inline void TMatchesJoin_MatchJoin::set_match_id(const void* value, size_t size) {
+inline void TMatchesJoin_MatchJoin::set_match_id(const char* value, size_t size) {
   if (!has_match_id()) {
     clear_id();
     set_has_match_id();
@@ -28492,7 +28548,7 @@ inline void TMatchesJoin_MatchJoin::set_allocated_match_id(::std::string* match_
   // @@protoc_insertion_point(field_set_allocated:server.TMatchesJoin.MatchJoin.match_id)
 }
 
-// optional bytes token = 2;
+// optional string token = 2;
 inline bool TMatchesJoin_MatchJoin::has_token() const {
   return id_case() == kToken;
 }
@@ -28532,7 +28588,7 @@ inline void TMatchesJoin_MatchJoin::set_token(const char* value) {
       ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.TMatchesJoin.MatchJoin.token)
 }
-inline void TMatchesJoin_MatchJoin::set_token(const void* value, size_t size) {
+inline void TMatchesJoin_MatchJoin::set_token(const char* value, size_t size) {
   if (!has_token()) {
     clear_id();
     set_has_token();
@@ -28663,7 +28719,7 @@ inline const TMatches* TMatches::internal_default_instance() {
 
 // MatchDataSend
 
-// optional bytes match_id = 1;
+// optional string match_id = 1;
 inline void MatchDataSend::clear_match_id() {
   match_id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
@@ -28681,7 +28737,7 @@ inline void MatchDataSend::set_match_id(const char* value) {
   match_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.MatchDataSend.match_id)
 }
-inline void MatchDataSend::set_match_id(const void* value, size_t size) {
+inline void MatchDataSend::set_match_id(const char* value, size_t size) {
   
   match_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
@@ -28802,7 +28858,7 @@ inline const MatchDataSend* MatchDataSend::internal_default_instance() {
 
 // MatchData
 
-// optional bytes match_id = 1;
+// optional string match_id = 1;
 inline void MatchData::clear_match_id() {
   match_id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
@@ -28820,7 +28876,7 @@ inline void MatchData::set_match_id(const char* value) {
   match_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.MatchData.match_id)
 }
-inline void MatchData::set_match_id(const void* value, size_t size) {
+inline void MatchData::set_match_id(const char* value, size_t size) {
   
   match_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
@@ -28950,7 +29006,7 @@ inline const MatchData* MatchData::internal_default_instance() {
 
 // TMatchesLeave
 
-// repeated bytes match_ids = 1;
+// repeated string match_ids = 1;
 inline int TMatchesLeave::match_ids_size() const {
   return match_ids_.size();
 }
@@ -28973,7 +29029,7 @@ inline void TMatchesLeave::set_match_ids(int index, const char* value) {
   match_ids_.Mutable(index)->assign(value);
   // @@protoc_insertion_point(field_set_char:server.TMatchesLeave.match_ids)
 }
-inline void TMatchesLeave::set_match_ids(int index, const void* value, size_t size) {
+inline void TMatchesLeave::set_match_ids(int index, const char* value, size_t size) {
   match_ids_.Mutable(index)->assign(
     reinterpret_cast<const char*>(value), size);
   // @@protoc_insertion_point(field_set_pointer:server.TMatchesLeave.match_ids)
@@ -28990,7 +29046,7 @@ inline void TMatchesLeave::add_match_ids(const char* value) {
   match_ids_.Add()->assign(value);
   // @@protoc_insertion_point(field_add_char:server.TMatchesLeave.match_ids)
 }
-inline void TMatchesLeave::add_match_ids(const void* value, size_t size) {
+inline void TMatchesLeave::add_match_ids(const char* value, size_t size) {
   match_ids_.Add()->assign(reinterpret_cast<const char*>(value), size);
   // @@protoc_insertion_point(field_add_pointer:server.TMatchesLeave.match_ids)
 }
@@ -29012,7 +29068,7 @@ inline const TMatchesLeave* TMatchesLeave::internal_default_instance() {
 
 // TStorageList
 
-// optional bytes user_id = 1;
+// optional string user_id = 1;
 inline void TStorageList::clear_user_id() {
   user_id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
@@ -29030,7 +29086,7 @@ inline void TStorageList::set_user_id(const char* value) {
   user_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.TStorageList.user_id)
 }
-inline void TStorageList::set_user_id(const void* value, size_t size) {
+inline void TStorageList::set_user_id(const char* value, size_t size) {
   
   user_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
@@ -29158,7 +29214,7 @@ inline void TStorageList::set_limit(::google::protobuf::int64 value) {
   // @@protoc_insertion_point(field_set:server.TStorageList.limit)
 }
 
-// optional bytes cursor = 5;
+// optional string cursor = 5;
 inline void TStorageList::clear_cursor() {
   cursor_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
@@ -29176,7 +29232,7 @@ inline void TStorageList::set_cursor(const char* value) {
   cursor_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.TStorageList.cursor)
 }
-inline void TStorageList::set_cursor(const void* value, size_t size) {
+inline void TStorageList::set_cursor(const char* value, size_t size) {
   
   cursor_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
@@ -29341,7 +29397,7 @@ inline void TStorageFetch_StorageKey::set_allocated_record(::std::string* record
   // @@protoc_insertion_point(field_set_allocated:server.TStorageFetch.StorageKey.record)
 }
 
-// optional bytes user_id = 4;
+// optional string user_id = 4;
 inline void TStorageFetch_StorageKey::clear_user_id() {
   user_id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
@@ -29359,7 +29415,7 @@ inline void TStorageFetch_StorageKey::set_user_id(const char* value) {
   user_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.TStorageFetch.StorageKey.user_id)
 }
-inline void TStorageFetch_StorageKey::set_user_id(const void* value, size_t size) {
+inline void TStorageFetch_StorageKey::set_user_id(const char* value, size_t size) {
   
   user_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
@@ -29561,7 +29617,7 @@ inline void TStorageData_StorageData::set_allocated_record(::std::string* record
   // @@protoc_insertion_point(field_set_allocated:server.TStorageData.StorageData.record)
 }
 
-// optional bytes user_id = 4;
+// optional string user_id = 4;
 inline void TStorageData_StorageData::clear_user_id() {
   user_id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
@@ -29579,7 +29635,7 @@ inline void TStorageData_StorageData::set_user_id(const char* value) {
   user_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.TStorageData.StorageData.user_id)
 }
-inline void TStorageData_StorageData::set_user_id(const void* value, size_t size) {
+inline void TStorageData_StorageData::set_user_id(const char* value, size_t size) {
   
   user_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
@@ -29605,7 +29661,7 @@ inline void TStorageData_StorageData::set_allocated_user_id(::std::string* user_
   // @@protoc_insertion_point(field_set_allocated:server.TStorageData.StorageData.user_id)
 }
 
-// optional bytes value = 5;
+// optional string value = 5;
 inline void TStorageData_StorageData::clear_value() {
   value_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
@@ -29623,7 +29679,7 @@ inline void TStorageData_StorageData::set_value(const char* value) {
   value_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.TStorageData.StorageData.value)
 }
-inline void TStorageData_StorageData::set_value(const void* value, size_t size) {
+inline void TStorageData_StorageData::set_value(const char* value, size_t size) {
   
   value_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
@@ -29649,7 +29705,7 @@ inline void TStorageData_StorageData::set_allocated_value(::std::string* value) 
   // @@protoc_insertion_point(field_set_allocated:server.TStorageData.StorageData.value)
 }
 
-// optional bytes version = 6;
+// optional string version = 6;
 inline void TStorageData_StorageData::clear_version() {
   version_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
@@ -29667,7 +29723,7 @@ inline void TStorageData_StorageData::set_version(const char* value) {
   version_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.TStorageData.StorageData.version)
 }
-inline void TStorageData_StorageData::set_version(const void* value, size_t size) {
+inline void TStorageData_StorageData::set_version(const char* value, size_t size) {
   
   version_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
@@ -29800,7 +29856,7 @@ TStorageData::data() const {
   return data_;
 }
 
-// optional bytes cursor = 2;
+// optional string cursor = 2;
 inline void TStorageData::clear_cursor() {
   cursor_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
@@ -29818,7 +29874,7 @@ inline void TStorageData::set_cursor(const char* value) {
   cursor_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.TStorageData.cursor)
 }
-inline void TStorageData::set_cursor(const void* value, size_t size) {
+inline void TStorageData::set_cursor(const char* value, size_t size) {
   
   cursor_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
@@ -29983,7 +30039,7 @@ inline void TStorageWrite_StorageData::set_allocated_record(::std::string* recor
   // @@protoc_insertion_point(field_set_allocated:server.TStorageWrite.StorageData.record)
 }
 
-// optional bytes value = 4;
+// optional string value = 4;
 inline void TStorageWrite_StorageData::clear_value() {
   value_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
@@ -30001,7 +30057,7 @@ inline void TStorageWrite_StorageData::set_value(const char* value) {
   value_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.TStorageWrite.StorageData.value)
 }
-inline void TStorageWrite_StorageData::set_value(const void* value, size_t size) {
+inline void TStorageWrite_StorageData::set_value(const char* value, size_t size) {
   
   value_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
@@ -30027,7 +30083,7 @@ inline void TStorageWrite_StorageData::set_allocated_value(::std::string* value)
   // @@protoc_insertion_point(field_set_allocated:server.TStorageWrite.StorageData.value)
 }
 
-// optional bytes version = 5;
+// optional string version = 5;
 inline void TStorageWrite_StorageData::clear_version() {
   version_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
@@ -30045,7 +30101,7 @@ inline void TStorageWrite_StorageData::set_version(const char* value) {
   version_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.TStorageWrite.StorageData.version)
 }
-inline void TStorageWrite_StorageData::set_version(const void* value, size_t size) {
+inline void TStorageWrite_StorageData::set_version(const char* value, size_t size) {
   
   version_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
@@ -30201,7 +30257,7 @@ inline void TStorageUpdate_StorageUpdate_UpdateOp::set_allocated_path(::std::str
   // @@protoc_insertion_point(field_set_allocated:server.TStorageUpdate.StorageUpdate.UpdateOp.path)
 }
 
-// optional bytes value = 3;
+// optional string value = 3;
 inline void TStorageUpdate_StorageUpdate_UpdateOp::clear_value() {
   value_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
@@ -30219,7 +30275,7 @@ inline void TStorageUpdate_StorageUpdate_UpdateOp::set_value(const char* value) 
   value_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.TStorageUpdate.StorageUpdate.UpdateOp.value)
 }
-inline void TStorageUpdate_StorageUpdate_UpdateOp::set_value(const void* value, size_t size) {
+inline void TStorageUpdate_StorageUpdate_UpdateOp::set_value(const char* value, size_t size) {
   
   value_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
@@ -30486,7 +30542,7 @@ inline void TStorageUpdate_StorageUpdate_StorageKey::set_allocated_record(::std:
   // @@protoc_insertion_point(field_set_allocated:server.TStorageUpdate.StorageUpdate.StorageKey.record)
 }
 
-// optional bytes version = 4;
+// optional string version = 4;
 inline void TStorageUpdate_StorageUpdate_StorageKey::clear_version() {
   version_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
@@ -30504,7 +30560,7 @@ inline void TStorageUpdate_StorageUpdate_StorageKey::set_version(const char* val
   version_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.TStorageUpdate.StorageUpdate.StorageKey.version)
 }
-inline void TStorageUpdate_StorageUpdate_StorageKey::set_version(const void* value, size_t size) {
+inline void TStorageUpdate_StorageUpdate_StorageKey::set_version(const char* value, size_t size) {
   
   version_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
@@ -30810,7 +30866,7 @@ inline void TStorageKeys_StorageKey::set_allocated_record(::std::string* record)
   // @@protoc_insertion_point(field_set_allocated:server.TStorageKeys.StorageKey.record)
 }
 
-// optional bytes version = 4;
+// optional string version = 4;
 inline void TStorageKeys_StorageKey::clear_version() {
   version_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
@@ -30828,7 +30884,7 @@ inline void TStorageKeys_StorageKey::set_version(const char* value) {
   version_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.TStorageKeys.StorageKey.version)
 }
-inline void TStorageKeys_StorageKey::set_version(const void* value, size_t size) {
+inline void TStorageKeys_StorageKey::set_version(const char* value, size_t size) {
   
   version_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
@@ -31030,7 +31086,7 @@ inline void TStorageRemove_StorageKey::set_allocated_record(::std::string* recor
   // @@protoc_insertion_point(field_set_allocated:server.TStorageRemove.StorageKey.record)
 }
 
-// optional bytes version = 4;
+// optional string version = 4;
 inline void TStorageRemove_StorageKey::clear_version() {
   version_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
@@ -31048,7 +31104,7 @@ inline void TStorageRemove_StorageKey::set_version(const char* value) {
   version_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.TStorageRemove.StorageKey.version)
 }
-inline void TStorageRemove_StorageKey::set_version(const void* value, size_t size) {
+inline void TStorageRemove_StorageKey::set_version(const char* value, size_t size) {
   
   version_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
@@ -31118,7 +31174,7 @@ inline const TStorageRemove* TStorageRemove::internal_default_instance() {
 
 // Leaderboard
 
-// optional bytes id = 1;
+// optional string id = 1;
 inline void Leaderboard::clear_id() {
   id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
@@ -31136,7 +31192,7 @@ inline void Leaderboard::set_id(const char* value) {
   id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.Leaderboard.id)
 }
-inline void Leaderboard::set_id(const void* value, size_t size) {
+inline void Leaderboard::set_id(const char* value, size_t size) {
   
   id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
@@ -31248,7 +31304,7 @@ inline void Leaderboard::set_allocated_reset_schedule(::std::string* reset_sched
   // @@protoc_insertion_point(field_set_allocated:server.Leaderboard.reset_schedule)
 }
 
-// optional bytes metadata = 6;
+// optional string metadata = 6;
 inline void Leaderboard::clear_metadata() {
   metadata_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
@@ -31266,7 +31322,7 @@ inline void Leaderboard::set_metadata(const char* value) {
   metadata_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.Leaderboard.metadata)
 }
-inline void Leaderboard::set_metadata(const void* value, size_t size) {
+inline void Leaderboard::set_metadata(const char* value, size_t size) {
   
   metadata_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
@@ -31292,7 +31348,7 @@ inline void Leaderboard::set_allocated_metadata(::std::string* metadata) {
   // @@protoc_insertion_point(field_set_allocated:server.Leaderboard.metadata)
 }
 
-// optional bytes next_id = 7;
+// optional string next_id = 7;
 inline void Leaderboard::clear_next_id() {
   next_id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
@@ -31310,7 +31366,7 @@ inline void Leaderboard::set_next_id(const char* value) {
   next_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.Leaderboard.next_id)
 }
-inline void Leaderboard::set_next_id(const void* value, size_t size) {
+inline void Leaderboard::set_next_id(const char* value, size_t size) {
   
   next_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
@@ -31336,7 +31392,7 @@ inline void Leaderboard::set_allocated_next_id(::std::string* next_id) {
   // @@protoc_insertion_point(field_set_allocated:server.Leaderboard.next_id)
 }
 
-// optional bytes prev_id = 8;
+// optional string prev_id = 8;
 inline void Leaderboard::clear_prev_id() {
   prev_id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
@@ -31354,7 +31410,7 @@ inline void Leaderboard::set_prev_id(const char* value) {
   prev_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.Leaderboard.prev_id)
 }
-inline void Leaderboard::set_prev_id(const void* value, size_t size) {
+inline void Leaderboard::set_prev_id(const char* value, size_t size) {
   
   prev_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
@@ -31387,7 +31443,7 @@ inline const Leaderboard* Leaderboard::internal_default_instance() {
 
 // LeaderboardRecord
 
-// optional bytes leaderboard_id = 1;
+// optional string leaderboard_id = 1;
 inline void LeaderboardRecord::clear_leaderboard_id() {
   leaderboard_id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
@@ -31405,7 +31461,7 @@ inline void LeaderboardRecord::set_leaderboard_id(const char* value) {
   leaderboard_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.LeaderboardRecord.leaderboard_id)
 }
-inline void LeaderboardRecord::set_leaderboard_id(const void* value, size_t size) {
+inline void LeaderboardRecord::set_leaderboard_id(const char* value, size_t size) {
   
   leaderboard_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
@@ -31431,7 +31487,7 @@ inline void LeaderboardRecord::set_allocated_leaderboard_id(::std::string* leade
   // @@protoc_insertion_point(field_set_allocated:server.LeaderboardRecord.leaderboard_id)
 }
 
-// optional bytes owner_id = 2;
+// optional string owner_id = 2;
 inline void LeaderboardRecord::clear_owner_id() {
   owner_id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
@@ -31449,7 +31505,7 @@ inline void LeaderboardRecord::set_owner_id(const char* value) {
   owner_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.LeaderboardRecord.owner_id)
 }
-inline void LeaderboardRecord::set_owner_id(const void* value, size_t size) {
+inline void LeaderboardRecord::set_owner_id(const char* value, size_t size) {
   
   owner_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
@@ -31693,7 +31749,7 @@ inline void LeaderboardRecord::set_num_score(::google::protobuf::int64 value) {
   // @@protoc_insertion_point(field_set:server.LeaderboardRecord.num_score)
 }
 
-// optional bytes metadata = 10;
+// optional string metadata = 10;
 inline void LeaderboardRecord::clear_metadata() {
   metadata_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
@@ -31711,7 +31767,7 @@ inline void LeaderboardRecord::set_metadata(const char* value) {
   metadata_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.LeaderboardRecord.metadata)
 }
-inline void LeaderboardRecord::set_metadata(const void* value, size_t size) {
+inline void LeaderboardRecord::set_metadata(const char* value, size_t size) {
   
   metadata_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
@@ -31800,7 +31856,7 @@ inline void TLeaderboardsList::set_limit(::google::protobuf::int64 value) {
   // @@protoc_insertion_point(field_set:server.TLeaderboardsList.limit)
 }
 
-// optional bytes cursor = 2;
+// optional string cursor = 2;
 inline void TLeaderboardsList::clear_cursor() {
   cursor_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
@@ -31818,7 +31874,7 @@ inline void TLeaderboardsList::set_cursor(const char* value) {
   cursor_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.TLeaderboardsList.cursor)
 }
-inline void TLeaderboardsList::set_cursor(const void* value, size_t size) {
+inline void TLeaderboardsList::set_cursor(const char* value, size_t size) {
   
   cursor_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
@@ -31844,7 +31900,7 @@ inline void TLeaderboardsList::set_allocated_cursor(::std::string* cursor) {
   // @@protoc_insertion_point(field_set_allocated:server.TLeaderboardsList.cursor)
 }
 
-// repeated bytes filter_leaderboard_id = 3;
+// repeated string filter_leaderboard_id = 3;
 inline int TLeaderboardsList::filter_leaderboard_id_size() const {
   return filter_leaderboard_id_.size();
 }
@@ -31867,7 +31923,7 @@ inline void TLeaderboardsList::set_filter_leaderboard_id(int index, const char* 
   filter_leaderboard_id_.Mutable(index)->assign(value);
   // @@protoc_insertion_point(field_set_char:server.TLeaderboardsList.filter_leaderboard_id)
 }
-inline void TLeaderboardsList::set_filter_leaderboard_id(int index, const void* value, size_t size) {
+inline void TLeaderboardsList::set_filter_leaderboard_id(int index, const char* value, size_t size) {
   filter_leaderboard_id_.Mutable(index)->assign(
     reinterpret_cast<const char*>(value), size);
   // @@protoc_insertion_point(field_set_pointer:server.TLeaderboardsList.filter_leaderboard_id)
@@ -31884,7 +31940,7 @@ inline void TLeaderboardsList::add_filter_leaderboard_id(const char* value) {
   filter_leaderboard_id_.Add()->assign(value);
   // @@protoc_insertion_point(field_add_char:server.TLeaderboardsList.filter_leaderboard_id)
 }
-inline void TLeaderboardsList::add_filter_leaderboard_id(const void* value, size_t size) {
+inline void TLeaderboardsList::add_filter_leaderboard_id(const char* value, size_t size) {
   filter_leaderboard_id_.Add()->assign(reinterpret_cast<const char*>(value), size);
   // @@protoc_insertion_point(field_add_pointer:server.TLeaderboardsList.filter_leaderboard_id)
 }
@@ -31936,7 +31992,7 @@ TLeaderboards::leaderboards() const {
   return leaderboards_;
 }
 
-// optional bytes cursor = 2;
+// optional string cursor = 2;
 inline void TLeaderboards::clear_cursor() {
   cursor_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
@@ -31954,7 +32010,7 @@ inline void TLeaderboards::set_cursor(const char* value) {
   cursor_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.TLeaderboards.cursor)
 }
-inline void TLeaderboards::set_cursor(const void* value, size_t size) {
+inline void TLeaderboards::set_cursor(const char* value, size_t size) {
   
   cursor_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
@@ -31987,7 +32043,7 @@ inline const TLeaderboards* TLeaderboards::internal_default_instance() {
 
 // TLeaderboardRecordsWrite_LeaderboardRecordWrite
 
-// optional bytes leaderboard_id = 1;
+// optional string leaderboard_id = 1;
 inline void TLeaderboardRecordsWrite_LeaderboardRecordWrite::clear_leaderboard_id() {
   leaderboard_id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
@@ -32005,7 +32061,7 @@ inline void TLeaderboardRecordsWrite_LeaderboardRecordWrite::set_leaderboard_id(
   leaderboard_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.TLeaderboardRecordsWrite.LeaderboardRecordWrite.leaderboard_id)
 }
-inline void TLeaderboardRecordsWrite_LeaderboardRecordWrite::set_leaderboard_id(const void* value, size_t size) {
+inline void TLeaderboardRecordsWrite_LeaderboardRecordWrite::set_leaderboard_id(const char* value, size_t size) {
   
   leaderboard_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
@@ -32235,7 +32291,7 @@ inline void TLeaderboardRecordsWrite_LeaderboardRecordWrite::set_allocated_timez
   // @@protoc_insertion_point(field_set_allocated:server.TLeaderboardRecordsWrite.LeaderboardRecordWrite.timezone)
 }
 
-// optional bytes metadata = 8;
+// optional string metadata = 8;
 inline void TLeaderboardRecordsWrite_LeaderboardRecordWrite::clear_metadata() {
   metadata_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
@@ -32253,7 +32309,7 @@ inline void TLeaderboardRecordsWrite_LeaderboardRecordWrite::set_metadata(const 
   metadata_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.TLeaderboardRecordsWrite.LeaderboardRecordWrite.metadata)
 }
-inline void TLeaderboardRecordsWrite_LeaderboardRecordWrite::set_metadata(const void* value, size_t size) {
+inline void TLeaderboardRecordsWrite_LeaderboardRecordWrite::set_metadata(const char* value, size_t size) {
   
   metadata_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
@@ -32332,7 +32388,7 @@ inline const TLeaderboardRecordsWrite* TLeaderboardRecordsWrite::internal_defaul
 
 // TLeaderboardRecordsFetch
 
-// repeated bytes leaderboard_ids = 1;
+// repeated string leaderboard_ids = 1;
 inline int TLeaderboardRecordsFetch::leaderboard_ids_size() const {
   return leaderboard_ids_.size();
 }
@@ -32355,7 +32411,7 @@ inline void TLeaderboardRecordsFetch::set_leaderboard_ids(int index, const char*
   leaderboard_ids_.Mutable(index)->assign(value);
   // @@protoc_insertion_point(field_set_char:server.TLeaderboardRecordsFetch.leaderboard_ids)
 }
-inline void TLeaderboardRecordsFetch::set_leaderboard_ids(int index, const void* value, size_t size) {
+inline void TLeaderboardRecordsFetch::set_leaderboard_ids(int index, const char* value, size_t size) {
   leaderboard_ids_.Mutable(index)->assign(
     reinterpret_cast<const char*>(value), size);
   // @@protoc_insertion_point(field_set_pointer:server.TLeaderboardRecordsFetch.leaderboard_ids)
@@ -32372,7 +32428,7 @@ inline void TLeaderboardRecordsFetch::add_leaderboard_ids(const char* value) {
   leaderboard_ids_.Add()->assign(value);
   // @@protoc_insertion_point(field_add_char:server.TLeaderboardRecordsFetch.leaderboard_ids)
 }
-inline void TLeaderboardRecordsFetch::add_leaderboard_ids(const void* value, size_t size) {
+inline void TLeaderboardRecordsFetch::add_leaderboard_ids(const char* value, size_t size) {
   leaderboard_ids_.Add()->assign(reinterpret_cast<const char*>(value), size);
   // @@protoc_insertion_point(field_add_pointer:server.TLeaderboardRecordsFetch.leaderboard_ids)
 }
@@ -32401,7 +32457,7 @@ inline void TLeaderboardRecordsFetch::set_limit(::google::protobuf::int64 value)
   // @@protoc_insertion_point(field_set:server.TLeaderboardRecordsFetch.limit)
 }
 
-// optional bytes cursor = 3;
+// optional string cursor = 3;
 inline void TLeaderboardRecordsFetch::clear_cursor() {
   cursor_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
@@ -32419,7 +32475,7 @@ inline void TLeaderboardRecordsFetch::set_cursor(const char* value) {
   cursor_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.TLeaderboardRecordsFetch.cursor)
 }
-inline void TLeaderboardRecordsFetch::set_cursor(const void* value, size_t size) {
+inline void TLeaderboardRecordsFetch::set_cursor(const char* value, size_t size) {
   
   cursor_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
@@ -32452,7 +32508,7 @@ inline const TLeaderboardRecordsFetch* TLeaderboardRecordsFetch::internal_defaul
 
 // TLeaderboardRecordsList_Owners
 
-// repeated bytes owner_ids = 1;
+// repeated string owner_ids = 1;
 inline int TLeaderboardRecordsList_Owners::owner_ids_size() const {
   return owner_ids_.size();
 }
@@ -32475,7 +32531,7 @@ inline void TLeaderboardRecordsList_Owners::set_owner_ids(int index, const char*
   owner_ids_.Mutable(index)->assign(value);
   // @@protoc_insertion_point(field_set_char:server.TLeaderboardRecordsList.Owners.owner_ids)
 }
-inline void TLeaderboardRecordsList_Owners::set_owner_ids(int index, const void* value, size_t size) {
+inline void TLeaderboardRecordsList_Owners::set_owner_ids(int index, const char* value, size_t size) {
   owner_ids_.Mutable(index)->assign(
     reinterpret_cast<const char*>(value), size);
   // @@protoc_insertion_point(field_set_pointer:server.TLeaderboardRecordsList.Owners.owner_ids)
@@ -32492,7 +32548,7 @@ inline void TLeaderboardRecordsList_Owners::add_owner_ids(const char* value) {
   owner_ids_.Add()->assign(value);
   // @@protoc_insertion_point(field_add_char:server.TLeaderboardRecordsList.Owners.owner_ids)
 }
-inline void TLeaderboardRecordsList_Owners::add_owner_ids(const void* value, size_t size) {
+inline void TLeaderboardRecordsList_Owners::add_owner_ids(const char* value, size_t size) {
   owner_ids_.Add()->assign(reinterpret_cast<const char*>(value), size);
   // @@protoc_insertion_point(field_add_pointer:server.TLeaderboardRecordsList.Owners.owner_ids)
 }
@@ -32514,7 +32570,7 @@ inline const TLeaderboardRecordsList_Owners* TLeaderboardRecordsList_Owners::int
 
 // TLeaderboardRecordsList
 
-// optional bytes leaderboard_id = 1;
+// optional string leaderboard_id = 1;
 inline void TLeaderboardRecordsList::clear_leaderboard_id() {
   leaderboard_id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
@@ -32532,7 +32588,7 @@ inline void TLeaderboardRecordsList::set_leaderboard_id(const char* value) {
   leaderboard_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.TLeaderboardRecordsList.leaderboard_id)
 }
-inline void TLeaderboardRecordsList::set_leaderboard_id(const void* value, size_t size) {
+inline void TLeaderboardRecordsList::set_leaderboard_id(const char* value, size_t size) {
   
   leaderboard_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
@@ -32558,7 +32614,7 @@ inline void TLeaderboardRecordsList::set_allocated_leaderboard_id(::std::string*
   // @@protoc_insertion_point(field_set_allocated:server.TLeaderboardRecordsList.leaderboard_id)
 }
 
-// optional bytes owner_id = 2;
+// optional string owner_id = 2;
 inline bool TLeaderboardRecordsList::has_owner_id() const {
   return filter_case() == kOwnerId;
 }
@@ -32598,7 +32654,7 @@ inline void TLeaderboardRecordsList::set_owner_id(const char* value) {
       ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.TLeaderboardRecordsList.owner_id)
 }
-inline void TLeaderboardRecordsList::set_owner_id(const void* value, size_t size) {
+inline void TLeaderboardRecordsList::set_owner_id(const char* value, size_t size) {
   if (!has_owner_id()) {
     clear_filter();
     set_has_owner_id();
@@ -32944,7 +33000,7 @@ inline void TLeaderboardRecordsList::set_limit(::google::protobuf::int64 value) 
   // @@protoc_insertion_point(field_set:server.TLeaderboardRecordsList.limit)
 }
 
-// optional bytes cursor = 8;
+// optional string cursor = 8;
 inline void TLeaderboardRecordsList::clear_cursor() {
   cursor_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
@@ -32962,7 +33018,7 @@ inline void TLeaderboardRecordsList::set_cursor(const char* value) {
   cursor_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.TLeaderboardRecordsList.cursor)
 }
-inline void TLeaderboardRecordsList::set_cursor(const void* value, size_t size) {
+inline void TLeaderboardRecordsList::set_cursor(const char* value, size_t size) {
   
   cursor_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
@@ -33034,7 +33090,7 @@ TLeaderboardRecords::records() const {
   return records_;
 }
 
-// optional bytes cursor = 2;
+// optional string cursor = 2;
 inline void TLeaderboardRecords::clear_cursor() {
   cursor_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
@@ -33052,7 +33108,7 @@ inline void TLeaderboardRecords::set_cursor(const char* value) {
   cursor_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.TLeaderboardRecords.cursor)
 }
-inline void TLeaderboardRecords::set_cursor(const void* value, size_t size) {
+inline void TLeaderboardRecords::set_cursor(const char* value, size_t size) {
   
   cursor_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
@@ -33129,7 +33185,7 @@ inline void TRpc::set_allocated_id(::std::string* id) {
   // @@protoc_insertion_point(field_set_allocated:server.TRpc.id)
 }
 
-// optional bytes payload = 2;
+// optional string payload = 2;
 inline void TRpc::clear_payload() {
   payload_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
@@ -33147,7 +33203,7 @@ inline void TRpc::set_payload(const char* value) {
   payload_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.TRpc.payload)
 }
-inline void TRpc::set_payload(const void* value, size_t size) {
+inline void TRpc::set_payload(const char* value, size_t size) {
   
   payload_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
@@ -33663,7 +33719,7 @@ inline const TPurchaseRecord* TPurchaseRecord::internal_default_instance() {
 
 // Notification
 
-// optional bytes id = 1;
+// optional string id = 1;
 inline void Notification::clear_id() {
   id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
@@ -33681,7 +33737,7 @@ inline void Notification::set_id(const char* value) {
   id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.Notification.id)
 }
-inline void Notification::set_id(const void* value, size_t size) {
+inline void Notification::set_id(const char* value, size_t size) {
   
   id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
@@ -33751,7 +33807,7 @@ inline void Notification::set_allocated_subject(::std::string* subject) {
   // @@protoc_insertion_point(field_set_allocated:server.Notification.subject)
 }
 
-// optional bytes content = 3;
+// optional string content = 3;
 inline void Notification::clear_content() {
   content_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
@@ -33769,7 +33825,7 @@ inline void Notification::set_content(const char* value) {
   content_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.Notification.content)
 }
-inline void Notification::set_content(const void* value, size_t size) {
+inline void Notification::set_content(const char* value, size_t size) {
   
   content_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
@@ -33809,7 +33865,7 @@ inline void Notification::set_code(::google::protobuf::int64 value) {
   // @@protoc_insertion_point(field_set:server.Notification.code)
 }
 
-// optional bytes sender_id = 5;
+// optional string sender_id = 5;
 inline void Notification::clear_sender_id() {
   sender_id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
@@ -33827,7 +33883,7 @@ inline void Notification::set_sender_id(const char* value) {
   sender_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.Notification.sender_id)
 }
-inline void Notification::set_sender_id(const void* value, size_t size) {
+inline void Notification::set_sender_id(const char* value, size_t size) {
   
   sender_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
@@ -33953,7 +34009,7 @@ inline void TNotificationsList::set_limit(::google::protobuf::int64 value) {
   // @@protoc_insertion_point(field_set:server.TNotificationsList.limit)
 }
 
-// optional bytes resumable_cursor = 2;
+// optional string resumable_cursor = 2;
 inline void TNotificationsList::clear_resumable_cursor() {
   resumable_cursor_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
@@ -33971,7 +34027,7 @@ inline void TNotificationsList::set_resumable_cursor(const char* value) {
   resumable_cursor_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.TNotificationsList.resumable_cursor)
 }
-inline void TNotificationsList::set_resumable_cursor(const void* value, size_t size) {
+inline void TNotificationsList::set_resumable_cursor(const char* value, size_t size) {
   
   resumable_cursor_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
@@ -34034,7 +34090,7 @@ TNotifications::notifications() const {
   return notifications_;
 }
 
-// optional bytes resumable_cursor = 2;
+// optional string resumable_cursor = 2;
 inline void TNotifications::clear_resumable_cursor() {
   resumable_cursor_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
@@ -34052,7 +34108,7 @@ inline void TNotifications::set_resumable_cursor(const char* value) {
   resumable_cursor_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
   // @@protoc_insertion_point(field_set_char:server.TNotifications.resumable_cursor)
 }
-inline void TNotifications::set_resumable_cursor(const void* value, size_t size) {
+inline void TNotifications::set_resumable_cursor(const char* value, size_t size) {
   
   resumable_cursor_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
@@ -34085,7 +34141,7 @@ inline const TNotifications* TNotifications::internal_default_instance() {
 
 // TNotificationsRemove
 
-// repeated bytes notification_ids = 1;
+// repeated string notification_ids = 1;
 inline int TNotificationsRemove::notification_ids_size() const {
   return notification_ids_.size();
 }
@@ -34108,7 +34164,7 @@ inline void TNotificationsRemove::set_notification_ids(int index, const char* va
   notification_ids_.Mutable(index)->assign(value);
   // @@protoc_insertion_point(field_set_char:server.TNotificationsRemove.notification_ids)
 }
-inline void TNotificationsRemove::set_notification_ids(int index, const void* value, size_t size) {
+inline void TNotificationsRemove::set_notification_ids(int index, const char* value, size_t size) {
   notification_ids_.Mutable(index)->assign(
     reinterpret_cast<const char*>(value), size);
   // @@protoc_insertion_point(field_set_pointer:server.TNotificationsRemove.notification_ids)
@@ -34125,7 +34181,7 @@ inline void TNotificationsRemove::add_notification_ids(const char* value) {
   notification_ids_.Add()->assign(value);
   // @@protoc_insertion_point(field_add_char:server.TNotificationsRemove.notification_ids)
 }
-inline void TNotificationsRemove::add_notification_ids(const void* value, size_t size) {
+inline void TNotificationsRemove::add_notification_ids(const char* value, size_t size) {
   notification_ids_.Add()->assign(reinterpret_cast<const char*>(value), size);
   // @@protoc_insertion_point(field_add_pointer:server.TNotificationsRemove.notification_ids)
 }

@@ -16,14 +16,15 @@
 
 #pragma once
 
-#include "INMessage.h"
+#include "Defines.h"
 
 namespace Nakama {
 
-	class NAKAMA_API INCollatedMessage : public INMessage
+	class NAKAMA_API INCollatedMessage
 	{
 
 	public:
+		virtual ::google::protobuf::Message* GetPayload() = 0;
 		virtual void SetCollationId(std::string id) = 0;
 
 	};
