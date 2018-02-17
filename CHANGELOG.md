@@ -3,6 +3,14 @@ All notable changes to this project are documented below.
 
 The format is based on [keep a changelog](http://keepachangelog.com/) and this project uses [semantic versioning](http://semver.org/).
 
+## [0.10.1] - 2018-02-16
+### Changed
+- Now targeting nakama 1.4.0
+
+### Fixed
+- Updated session parsing to look for "han" for handle keyword.
+- Added correct purchase records processing.
+
 ## [0.10.0] - 2017-12-05
 ### Changed
 - Now targeting nakama 1.3.0

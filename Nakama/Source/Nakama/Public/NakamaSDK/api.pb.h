@@ -12805,28 +12805,6 @@ class Leaderboard : public ::google::protobuf::Message /* @@protoc_insertion_poi
   ::std::string* release_metadata();
   void set_allocated_metadata(::std::string* metadata);
 
-  // optional string next_id = 7;
-  void clear_next_id();
-  static const int kNextIdFieldNumber = 7;
-  const ::std::string& next_id() const;
-  void set_next_id(const ::std::string& value);
-  void set_next_id(const char* value);
-  void set_next_id(const char* value, size_t size);
-  ::std::string* mutable_next_id();
-  ::std::string* release_next_id();
-  void set_allocated_next_id(::std::string* next_id);
-
-  // optional string prev_id = 8;
-  void clear_prev_id();
-  static const int kPrevIdFieldNumber = 8;
-  const ::std::string& prev_id() const;
-  void set_prev_id(const ::std::string& value);
-  void set_prev_id(const char* value);
-  void set_prev_id(const char* value, size_t size);
-  ::std::string* mutable_prev_id();
-  ::std::string* release_prev_id();
-  void set_allocated_prev_id(::std::string* prev_id);
-
   // @@protoc_insertion_point(class_scope:server.Leaderboard)
  private:
 
@@ -12834,8 +12812,6 @@ class Leaderboard : public ::google::protobuf::Message /* @@protoc_insertion_poi
   ::google::protobuf::internal::ArenaStringPtr id_;
   ::google::protobuf::internal::ArenaStringPtr reset_schedule_;
   ::google::protobuf::internal::ArenaStringPtr metadata_;
-  ::google::protobuf::internal::ArenaStringPtr next_id_;
-  ::google::protobuf::internal::ArenaStringPtr prev_id_;
   ::google::protobuf::int64 sort_;
   ::google::protobuf::int64 count_;
   bool authoritative_;
@@ -31346,94 +31322,6 @@ inline void Leaderboard::set_allocated_metadata(::std::string* metadata) {
   }
   metadata_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), metadata);
   // @@protoc_insertion_point(field_set_allocated:server.Leaderboard.metadata)
-}
-
-// optional string next_id = 7;
-inline void Leaderboard::clear_next_id() {
-  next_id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-}
-inline const ::std::string& Leaderboard::next_id() const {
-  // @@protoc_insertion_point(field_get:server.Leaderboard.next_id)
-  return next_id_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-}
-inline void Leaderboard::set_next_id(const ::std::string& value) {
-  
-  next_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:server.Leaderboard.next_id)
-}
-inline void Leaderboard::set_next_id(const char* value) {
-  
-  next_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:server.Leaderboard.next_id)
-}
-inline void Leaderboard::set_next_id(const char* value, size_t size) {
-  
-  next_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
-      ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:server.Leaderboard.next_id)
-}
-inline ::std::string* Leaderboard::mutable_next_id() {
-  
-  // @@protoc_insertion_point(field_mutable:server.Leaderboard.next_id)
-  return next_id_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-}
-inline ::std::string* Leaderboard::release_next_id() {
-  // @@protoc_insertion_point(field_release:server.Leaderboard.next_id)
-  
-  return next_id_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-}
-inline void Leaderboard::set_allocated_next_id(::std::string* next_id) {
-  if (next_id != NULL) {
-    
-  } else {
-    
-  }
-  next_id_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), next_id);
-  // @@protoc_insertion_point(field_set_allocated:server.Leaderboard.next_id)
-}
-
-// optional string prev_id = 8;
-inline void Leaderboard::clear_prev_id() {
-  prev_id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-}
-inline const ::std::string& Leaderboard::prev_id() const {
-  // @@protoc_insertion_point(field_get:server.Leaderboard.prev_id)
-  return prev_id_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-}
-inline void Leaderboard::set_prev_id(const ::std::string& value) {
-  
-  prev_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:server.Leaderboard.prev_id)
-}
-inline void Leaderboard::set_prev_id(const char* value) {
-  
-  prev_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:server.Leaderboard.prev_id)
-}
-inline void Leaderboard::set_prev_id(const char* value, size_t size) {
-  
-  prev_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
-      ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:server.Leaderboard.prev_id)
-}
-inline ::std::string* Leaderboard::mutable_prev_id() {
-  
-  // @@protoc_insertion_point(field_mutable:server.Leaderboard.prev_id)
-  return prev_id_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-}
-inline ::std::string* Leaderboard::release_prev_id() {
-  // @@protoc_insertion_point(field_release:server.Leaderboard.prev_id)
-  
-  return prev_id_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-}
-inline void Leaderboard::set_allocated_prev_id(::std::string* prev_id) {
-  if (prev_id != NULL) {
-    
-  } else {
-    
-  }
-  prev_id_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), prev_id);
-  // @@protoc_insertion_point(field_set_allocated:server.Leaderboard.prev_id)
 }
 
 inline const Leaderboard* Leaderboard::internal_default_instance() {

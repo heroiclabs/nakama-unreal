@@ -81,8 +81,8 @@ namespace Nakama {
 		Document d;
 		d.Parse((const char*)decoded, decodedLen);
 
-		if (d.HasMember("handle")) {
-			Value& val = d["handle"];
+		if (d.HasMember("han")) {
+			Value& val = d["han"];
 			handle = std::string(val.GetString(), val.GetStringLength());
 		}
 

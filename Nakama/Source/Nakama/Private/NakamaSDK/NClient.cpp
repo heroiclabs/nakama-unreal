@@ -477,8 +477,13 @@ namespace Nakama {
 			break;
 		}
 
+		case Envelope::PayloadCase::kPurchaseRecord: {
+			if (callbacks) callbacks->OnSuccess(new NPurchaseRecord(message.purchase_record()));
+			break;
+		}
+
 		default:
-			NLogger::Format(Trace, "Unrecognized message: %d", (int)message.payload_case());
+			NLogger::Format(Trace, "Unrecognized protocol message: %d", (int)message.payload_case());
 			break;
 		}
 

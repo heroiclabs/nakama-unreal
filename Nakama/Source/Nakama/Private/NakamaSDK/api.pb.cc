@@ -2252,15 +2252,13 @@ void protobuf_AssignDesc_api_2eproto() {
       sizeof(TStorageRemove_StorageKey),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(TStorageRemove_StorageKey, _internal_metadata_));
   Leaderboard_descriptor_ = file->message_type(71);
-  static const int Leaderboard_offsets_[8] = {
+  static const int Leaderboard_offsets_[6] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Leaderboard, id_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Leaderboard, authoritative_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Leaderboard, sort_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Leaderboard, count_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Leaderboard, reset_schedule_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Leaderboard, metadata_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Leaderboard, next_id_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Leaderboard, prev_id_),
   };
   Leaderboard_reflection_ =
     ::google::protobuf::internal::GeneratedMessageReflection::NewGeneratedMessageReflection(
@@ -3769,66 +3767,65 @@ void protobuf_AddDesc_api_2eproto_impl() {
     "\t\"\224\001\n\016TStorageRemove\022/\n\004keys\030\001 \003(\0132!.ser"
     "ver.TStorageRemove.StorageKey\032Q\n\nStorage"
     "Key\022\016\n\006bucket\030\001 \001(\t\022\022\n\ncollection\030\002 \001(\t\022"
-    "\016\n\006record\030\003 \001(\t\022\017\n\007version\030\004 \001(\t\"\231\001\n\013Lea"
+    "\016\n\006record\030\003 \001(\t\022\017\n\007version\030\004 \001(\t\"\203\001\n\013Lea"
     "derboard\022\n\n\002id\030\001 \001(\t\022\025\n\rauthoritative\030\002 "
     "\001(\010\022\014\n\004sort\030\003 \001(\003\022\r\n\005count\030\004 \001(\003\022\026\n\016rese"
-    "t_schedule\030\005 \001(\t\022\020\n\010metadata\030\006 \001(\t\022\017\n\007ne"
-    "xt_id\030\007 \001(\t\022\017\n\007prev_id\030\010 \001(\t\"\374\001\n\021Leaderb"
-    "oardRecord\022\026\n\016leaderboard_id\030\001 \001(\t\022\020\n\010ow"
-    "ner_id\030\002 \001(\t\022\016\n\006handle\030\003 \001(\t\022\014\n\004lang\030\004 \001"
-    "(\t\022\020\n\010location\030\005 \001(\t\022\020\n\010timezone\030\006 \001(\t\022\014"
-    "\n\004rank\030\007 \001(\003\022\r\n\005score\030\010 \001(\003\022\021\n\tnum_score"
-    "\030\t \001(\003\022\020\n\010metadata\030\n \001(\t\022\021\n\tranked_at\030\013 "
-    "\001(\003\022\022\n\nupdated_at\030\014 \001(\003\022\022\n\nexpires_at\030\r "
-    "\001(\003\"Q\n\021TLeaderboardsList\022\r\n\005limit\030\001 \001(\003\022"
-    "\016\n\006cursor\030\002 \001(\t\022\035\n\025filter_leaderboard_id"
-    "\030\003 \003(\t\"J\n\rTLeaderboards\022)\n\014leaderboards\030"
-    "\001 \003(\0132\023.server.Leaderboard\022\016\n\006cursor\030\002 \001"
-    "(\t\"\222\002\n\030TLeaderboardRecordsWrite\022H\n\007recor"
-    "ds\030\001 \003(\01327.server.TLeaderboardRecordsWri"
-    "te.LeaderboardRecordWrite\032\253\001\n\026Leaderboar"
-    "dRecordWrite\022\026\n\016leaderboard_id\030\001 \001(\t\022\016\n\004"
-    "incr\030\002 \001(\003H\000\022\016\n\004decr\030\003 \001(\003H\000\022\r\n\003set\030\004 \001("
-    "\003H\000\022\016\n\004best\030\005 \001(\003H\000\022\020\n\010location\030\006 \001(\t\022\020\n"
-    "\010timezone\030\007 \001(\t\022\020\n\010metadata\030\010 \001(\tB\004\n\002op\""
-    "R\n\030TLeaderboardRecordsFetch\022\027\n\017leaderboa"
-    "rd_ids\030\001 \003(\t\022\r\n\005limit\030\002 \001(\003\022\016\n\006cursor\030\003 "
-    "\001(\t\"\200\002\n\027TLeaderboardRecordsList\022\026\n\016leade"
-    "rboard_id\030\001 \001(\t\022\022\n\010owner_id\030\002 \001(\tH\000\022;\n\to"
-    "wner_ids\030\003 \001(\0132&.server.TLeaderboardReco"
-    "rdsList.OwnersH\000\022\016\n\004lang\030\004 \001(\tH\000\022\022\n\010loca"
-    "tion\030\005 \001(\tH\000\022\022\n\010timezone\030\006 \001(\tH\000\022\r\n\005limi"
-    "t\030\007 \001(\003\022\016\n\006cursor\030\010 \001(\t\032\033\n\006Owners\022\021\n\town"
-    "er_ids\030\001 \003(\tB\010\n\006filter\"Q\n\023TLeaderboardRe"
-    "cords\022*\n\007records\030\001 \003(\0132\031.server.Leaderbo"
-    "ardRecord\022\016\n\006cursor\030\002 \001(\t\"#\n\004TRpc\022\n\n\002id\030"
-    "\001 \001(\t\022\017\n\007payload\030\002 \001(\t\"\266\002\n\023TPurchaseVali"
-    "dation\022C\n\016apple_purchase\030\001 \001(\0132).server."
-    "TPurchaseValidation.ApplePurchaseH\000\022E\n\017g"
-    "oogle_purchase\030\002 \001(\0132*.server.TPurchaseV"
-    "alidation.GooglePurchaseH\000\0329\n\rApplePurch"
-    "ase\022\022\n\nproduct_id\030\001 \001(\t\022\024\n\014receipt_data\030"
-    "\002 \001(\t\032R\n\016GooglePurchase\022\022\n\nproduct_id\030\001 "
-    "\001(\t\022\024\n\014product_type\030\002 \001(\t\022\026\n\016purchase_to"
-    "ken\030\003 \001(\tB\004\n\002id\"{\n\017TPurchaseRecord\022\017\n\007su"
-    "ccess\030\001 \001(\010\022\023\n\013seen_before\030\002 \001(\010\022#\n\033purc"
-    "hase_provider_reachable\030\003 \001(\010\022\017\n\007message"
-    "\030\006 \001(\t\022\014\n\004data\030\005 \001(\t\"\231\001\n\014Notification\022\n\n"
-    "\002id\030\001 \001(\t\022\017\n\007subject\030\002 \001(\t\022\017\n\007content\030\003 "
-    "\001(\t\022\014\n\004code\030\004 \001(\003\022\021\n\tsender_id\030\005 \001(\t\022\022\n\n"
-    "created_at\030\006 \001(\003\022\022\n\nexpires_at\030\007 \001(\003\022\022\n\n"
-    "persistent\030\010 \001(\010\"<\n\rNotifications\022+\n\rnot"
-    "ifications\030\001 \003(\0132\024.server.Notification\"="
-    "\n\022TNotificationsList\022\r\n\005limit\030\001 \001(\003\022\030\n\020r"
-    "esumable_cursor\030\002 \001(\t\"W\n\016TNotifications\022"
-    "+\n\rnotifications\030\001 \003(\0132\024.server.Notifica"
-    "tion\022\030\n\020resumable_cursor\030\002 \001(\t\"0\n\024TNotif"
-    "icationsRemove\022\030\n\020notification_ids\030\001 \003(\t"
-    "*E\n\025StoragePermissionRead\022\013\n\007NO_READ\020\000\022\016"
-    "\n\nOWNER_READ\020\001\022\017\n\013PUBLIC_READ\020\002*7\n\026Stora"
-    "gePermissionWrite\022\014\n\010NO_WRITE\020\000\022\017\n\013OWNER"
-    "_WRITE\020\001B \n\025com.heroiclabs.nakama\252\002\006Naka"
-    "mab\006proto3", 14650);
+    "t_schedule\030\005 \001(\t\022\020\n\010metadata\030\006 \001(\tJ\004\010\007\020\010"
+    "J\004\010\010\020\t\"\374\001\n\021LeaderboardRecord\022\026\n\016leaderbo"
+    "ard_id\030\001 \001(\t\022\020\n\010owner_id\030\002 \001(\t\022\016\n\006handle"
+    "\030\003 \001(\t\022\014\n\004lang\030\004 \001(\t\022\020\n\010location\030\005 \001(\t\022\020"
+    "\n\010timezone\030\006 \001(\t\022\014\n\004rank\030\007 \001(\003\022\r\n\005score\030"
+    "\010 \001(\003\022\021\n\tnum_score\030\t \001(\003\022\020\n\010metadata\030\n \001"
+    "(\t\022\021\n\tranked_at\030\013 \001(\003\022\022\n\nupdated_at\030\014 \001("
+    "\003\022\022\n\nexpires_at\030\r \001(\003\"Q\n\021TLeaderboardsLi"
+    "st\022\r\n\005limit\030\001 \001(\003\022\016\n\006cursor\030\002 \001(\t\022\035\n\025fil"
+    "ter_leaderboard_id\030\003 \003(\t\"J\n\rTLeaderboard"
+    "s\022)\n\014leaderboards\030\001 \003(\0132\023.server.Leaderb"
+    "oard\022\016\n\006cursor\030\002 \001(\t\"\222\002\n\030TLeaderboardRec"
+    "ordsWrite\022H\n\007records\030\001 \003(\01327.server.TLea"
+    "derboardRecordsWrite.LeaderboardRecordWr"
+    "ite\032\253\001\n\026LeaderboardRecordWrite\022\026\n\016leader"
+    "board_id\030\001 \001(\t\022\016\n\004incr\030\002 \001(\003H\000\022\016\n\004decr\030\003"
+    " \001(\003H\000\022\r\n\003set\030\004 \001(\003H\000\022\016\n\004best\030\005 \001(\003H\000\022\020\n"
+    "\010location\030\006 \001(\t\022\020\n\010timezone\030\007 \001(\t\022\020\n\010met"
+    "adata\030\010 \001(\tB\004\n\002op\"R\n\030TLeaderboardRecords"
+    "Fetch\022\027\n\017leaderboard_ids\030\001 \003(\t\022\r\n\005limit\030"
+    "\002 \001(\003\022\016\n\006cursor\030\003 \001(\t\"\200\002\n\027TLeaderboardRe"
+    "cordsList\022\026\n\016leaderboard_id\030\001 \001(\t\022\022\n\010own"
+    "er_id\030\002 \001(\tH\000\022;\n\towner_ids\030\003 \001(\0132&.serve"
+    "r.TLeaderboardRecordsList.OwnersH\000\022\016\n\004la"
+    "ng\030\004 \001(\tH\000\022\022\n\010location\030\005 \001(\tH\000\022\022\n\010timezo"
+    "ne\030\006 \001(\tH\000\022\r\n\005limit\030\007 \001(\003\022\016\n\006cursor\030\010 \001("
+    "\t\032\033\n\006Owners\022\021\n\towner_ids\030\001 \003(\tB\010\n\006filter"
+    "\"Q\n\023TLeaderboardRecords\022*\n\007records\030\001 \003(\013"
+    "2\031.server.LeaderboardRecord\022\016\n\006cursor\030\002 "
+    "\001(\t\"#\n\004TRpc\022\n\n\002id\030\001 \001(\t\022\017\n\007payload\030\002 \001(\t"
+    "\"\266\002\n\023TPurchaseValidation\022C\n\016apple_purcha"
+    "se\030\001 \001(\0132).server.TPurchaseValidation.Ap"
+    "plePurchaseH\000\022E\n\017google_purchase\030\002 \001(\0132*"
+    ".server.TPurchaseValidation.GooglePurcha"
+    "seH\000\0329\n\rApplePurchase\022\022\n\nproduct_id\030\001 \001("
+    "\t\022\024\n\014receipt_data\030\002 \001(\t\032R\n\016GooglePurchas"
+    "e\022\022\n\nproduct_id\030\001 \001(\t\022\024\n\014product_type\030\002 "
+    "\001(\t\022\026\n\016purchase_token\030\003 \001(\tB\004\n\002id\"{\n\017TPu"
+    "rchaseRecord\022\017\n\007success\030\001 \001(\010\022\023\n\013seen_be"
+    "fore\030\002 \001(\010\022#\n\033purchase_provider_reachabl"
+    "e\030\003 \001(\010\022\017\n\007message\030\006 \001(\t\022\014\n\004data\030\005 \001(\t\"\231"
+    "\001\n\014Notification\022\n\n\002id\030\001 \001(\t\022\017\n\007subject\030\002"
+    " \001(\t\022\017\n\007content\030\003 \001(\t\022\014\n\004code\030\004 \001(\003\022\021\n\ts"
+    "ender_id\030\005 \001(\t\022\022\n\ncreated_at\030\006 \001(\003\022\022\n\nex"
+    "pires_at\030\007 \001(\003\022\022\n\npersistent\030\010 \001(\010\"<\n\rNo"
+    "tifications\022+\n\rnotifications\030\001 \003(\0132\024.ser"
+    "ver.Notification\"=\n\022TNotificationsList\022\r"
+    "\n\005limit\030\001 \001(\003\022\030\n\020resumable_cursor\030\002 \001(\t\""
+    "W\n\016TNotifications\022+\n\rnotifications\030\001 \003(\013"
+    "2\024.server.Notification\022\030\n\020resumable_curs"
+    "or\030\002 \001(\t\"0\n\024TNotificationsRemove\022\030\n\020noti"
+    "fication_ids\030\001 \003(\t*E\n\025StoragePermissionR"
+    "ead\022\013\n\007NO_READ\020\000\022\016\n\nOWNER_READ\020\001\022\017\n\013PUBL"
+    "IC_READ\020\002*7\n\026StoragePermissionWrite\022\014\n\010N"
+    "O_WRITE\020\000\022\017\n\013OWNER_WRITE\020\001B \n\025com.heroic"
+    "labs.nakama\252\002\006Nakamab\006proto3", 14628);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "api.proto", &protobuf_RegisterTypes);
   ::google::protobuf::internal::OnShutdown(&protobuf_ShutdownFile_api_2eproto);
@@ -55690,8 +55687,6 @@ const int Leaderboard::kSortFieldNumber;
 const int Leaderboard::kCountFieldNumber;
 const int Leaderboard::kResetScheduleFieldNumber;
 const int Leaderboard::kMetadataFieldNumber;
-const int Leaderboard::kNextIdFieldNumber;
-const int Leaderboard::kPrevIdFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
 Leaderboard::Leaderboard()
@@ -55716,8 +55711,6 @@ void Leaderboard::SharedCtor() {
   id_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   reset_schedule_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   metadata_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  next_id_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  prev_id_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   ::memset(&sort_, 0, reinterpret_cast<char*>(&authoritative_) -
     reinterpret_cast<char*>(&sort_) + sizeof(authoritative_));
   _cached_size_ = 0;
@@ -55732,8 +55725,6 @@ void Leaderboard::SharedDtor() {
   id_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   reset_schedule_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   metadata_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  next_id_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  prev_id_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
 
 void Leaderboard::SetCachedSize(int size) const {
@@ -55783,8 +55774,6 @@ void Leaderboard::Clear() {
   id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   reset_schedule_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   metadata_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  next_id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  prev_id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 
 #undef ZR_HELPER_
 #undef ZR_
@@ -55892,40 +55881,6 @@ bool Leaderboard::MergePartialFromCodedStream(
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(58)) goto parse_next_id;
-        break;
-      }
-
-      // optional string next_id = 7;
-      case 7: {
-        if (tag == 58) {
-         parse_next_id:
-          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
-                input, this->mutable_next_id()));
-          DO_(::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-            this->next_id().data(), this->next_id().length(),
-            ::google::protobuf::internal::WireFormatLite::PARSE,
-            "server.Leaderboard.next_id"));
-        } else {
-          goto handle_unusual;
-        }
-        if (input->ExpectTag(66)) goto parse_prev_id;
-        break;
-      }
-
-      // optional string prev_id = 8;
-      case 8: {
-        if (tag == 66) {
-         parse_prev_id:
-          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
-                input, this->mutable_prev_id()));
-          DO_(::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-            this->prev_id().data(), this->prev_id().length(),
-            ::google::protobuf::internal::WireFormatLite::PARSE,
-            "server.Leaderboard.prev_id"));
-        } else {
-          goto handle_unusual;
-        }
         if (input->ExpectAtEnd()) goto success;
         break;
       }
@@ -55999,26 +55954,6 @@ void Leaderboard::SerializeWithCachedSizes(
       6, this->metadata(), output);
   }
 
-  // optional string next_id = 7;
-  if (this->next_id().size() > 0) {
-    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-      this->next_id().data(), this->next_id().length(),
-      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
-      "server.Leaderboard.next_id");
-    ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
-      7, this->next_id(), output);
-  }
-
-  // optional string prev_id = 8;
-  if (this->prev_id().size() > 0) {
-    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-      this->prev_id().data(), this->prev_id().length(),
-      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
-      "server.Leaderboard.prev_id");
-    ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
-      8, this->prev_id(), output);
-  }
-
   // @@protoc_insertion_point(serialize_end:server.Leaderboard)
 }
 
@@ -56074,28 +56009,6 @@ void Leaderboard::SerializeWithCachedSizes(
         6, this->metadata(), target);
   }
 
-  // optional string next_id = 7;
-  if (this->next_id().size() > 0) {
-    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-      this->next_id().data(), this->next_id().length(),
-      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
-      "server.Leaderboard.next_id");
-    target =
-      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
-        7, this->next_id(), target);
-  }
-
-  // optional string prev_id = 8;
-  if (this->prev_id().size() > 0) {
-    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-      this->prev_id().data(), this->prev_id().length(),
-      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
-      "server.Leaderboard.prev_id");
-    target =
-      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
-        8, this->prev_id(), target);
-  }
-
   // @@protoc_insertion_point(serialize_to_array_end:server.Leaderboard)
   return target;
 }
@@ -56142,20 +56055,6 @@ size_t Leaderboard::ByteSizeLong() const {
     total_size += 1 +
       ::google::protobuf::internal::WireFormatLite::StringSize(
         this->metadata());
-  }
-
-  // optional string next_id = 7;
-  if (this->next_id().size() > 0) {
-    total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::StringSize(
-        this->next_id());
-  }
-
-  // optional string prev_id = 8;
-  if (this->prev_id().size() > 0) {
-    total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::StringSize(
-        this->prev_id());
   }
 
   int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
@@ -56212,14 +56111,6 @@ void Leaderboard::UnsafeMergeFrom(const Leaderboard& from) {
 
     metadata_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.metadata_);
   }
-  if (from.next_id().size() > 0) {
-
-    next_id_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.next_id_);
-  }
-  if (from.prev_id().size() > 0) {
-
-    prev_id_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.prev_id_);
-  }
 }
 
 void Leaderboard::CopyFrom(const ::google::protobuf::Message& from) {
@@ -56252,8 +56143,6 @@ void Leaderboard::InternalSwap(Leaderboard* other) {
   std::swap(count_, other->count_);
   reset_schedule_.Swap(&other->reset_schedule_);
   metadata_.Swap(&other->metadata_);
-  next_id_.Swap(&other->next_id_);
-  prev_id_.Swap(&other->prev_id_);
   _internal_metadata_.Swap(&other->_internal_metadata_);
   std::swap(_cached_size_, other->_cached_size_);
 }
@@ -56441,94 +56330,6 @@ void Leaderboard::set_allocated_metadata(::std::string* metadata) {
   }
   metadata_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), metadata);
   // @@protoc_insertion_point(field_set_allocated:server.Leaderboard.metadata)
-}
-
-// optional string next_id = 7;
-void Leaderboard::clear_next_id() {
-  next_id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-}
-const ::std::string& Leaderboard::next_id() const {
-  // @@protoc_insertion_point(field_get:server.Leaderboard.next_id)
-  return next_id_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-}
-void Leaderboard::set_next_id(const ::std::string& value) {
-  
-  next_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:server.Leaderboard.next_id)
-}
-void Leaderboard::set_next_id(const char* value) {
-  
-  next_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:server.Leaderboard.next_id)
-}
-void Leaderboard::set_next_id(const char* value, size_t size) {
-  
-  next_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
-      ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:server.Leaderboard.next_id)
-}
-::std::string* Leaderboard::mutable_next_id() {
-  
-  // @@protoc_insertion_point(field_mutable:server.Leaderboard.next_id)
-  return next_id_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-}
-::std::string* Leaderboard::release_next_id() {
-  // @@protoc_insertion_point(field_release:server.Leaderboard.next_id)
-  
-  return next_id_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-}
-void Leaderboard::set_allocated_next_id(::std::string* next_id) {
-  if (next_id != NULL) {
-    
-  } else {
-    
-  }
-  next_id_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), next_id);
-  // @@protoc_insertion_point(field_set_allocated:server.Leaderboard.next_id)
-}
-
-// optional string prev_id = 8;
-void Leaderboard::clear_prev_id() {
-  prev_id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-}
-const ::std::string& Leaderboard::prev_id() const {
-  // @@protoc_insertion_point(field_get:server.Leaderboard.prev_id)
-  return prev_id_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-}
-void Leaderboard::set_prev_id(const ::std::string& value) {
-  
-  prev_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:server.Leaderboard.prev_id)
-}
-void Leaderboard::set_prev_id(const char* value) {
-  
-  prev_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:server.Leaderboard.prev_id)
-}
-void Leaderboard::set_prev_id(const char* value, size_t size) {
-  
-  prev_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
-      ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:server.Leaderboard.prev_id)
-}
-::std::string* Leaderboard::mutable_prev_id() {
-  
-  // @@protoc_insertion_point(field_mutable:server.Leaderboard.prev_id)
-  return prev_id_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-}
-::std::string* Leaderboard::release_prev_id() {
-  // @@protoc_insertion_point(field_release:server.Leaderboard.prev_id)
-  
-  return prev_id_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-}
-void Leaderboard::set_allocated_prev_id(::std::string* prev_id) {
-  if (prev_id != NULL) {
-    
-  } else {
-    
-  }
-  prev_id_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), prev_id);
-  // @@protoc_insertion_point(field_set_allocated:server.Leaderboard.prev_id)
 }
 
 inline const Leaderboard* Leaderboard::internal_default_instance() {

@@ -34,8 +34,6 @@ namespace Nakama {
 			count = message.count();
 			resetSchedule = message.reset_schedule();
 			metadata = message.metadata();
-			nextId = message.next_id();
-			prevId = message.prev_id();
 		}
 
 		~NLeaderboard() {}
@@ -46,8 +44,6 @@ namespace Nakama {
 		int64_t GetCount() { return count; }
 		std::string GetResetSchedule() { return resetSchedule; }
 		std::string GetMetadata() { return metadata; }
-		std::string GetNextId() { return nextId; }
-		std::string GetPrevId() { return prevId; }
 
 
 	private:
@@ -57,7 +53,5 @@ namespace Nakama {
 		int64_t count;
 		std::string resetSchedule;
 		std::string metadata;
-		std::string nextId;
-		std::string prevId;
 	};
 }

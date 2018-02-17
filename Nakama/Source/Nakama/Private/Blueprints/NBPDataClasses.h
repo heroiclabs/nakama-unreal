@@ -754,12 +754,6 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Leaderboard")
 		FString GetMetadata() { return UTF8_TO_TCHAR(Wrapped.GetMetadata().c_str()); }
 
-	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Leaderboard")
-		FString GetNextId() { return UTF8_TO_TCHAR(Wrapped.GetNextId().c_str()); }
-
-	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Leaderboard")
-		FString GetPrevId() { return UTF8_TO_TCHAR(Wrapped.GetPrevId().c_str()); }
-
 private:
 	NLeaderboard Wrapped;
 };
