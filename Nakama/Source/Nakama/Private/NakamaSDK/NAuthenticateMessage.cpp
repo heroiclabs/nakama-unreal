@@ -54,7 +54,7 @@ namespace Nakama {
 	NAuthenticateMessage NAuthenticateMessage::Facebook(std::string oauthToken)
 	{
 		AuthenticateRequest* payload = new AuthenticateRequest();
-		payload->set_device(oauthToken);
+		payload->set_facebook(oauthToken);
 		return NAuthenticateMessage(payload);
 	}
 
