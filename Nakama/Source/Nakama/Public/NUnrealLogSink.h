@@ -1,60 +1,88 @@
-/**
-* Copyright 2017 The Nakama Authors
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
-#ifdef __UNREAL__
+/*
+ * Copyright 2019 The Nakama Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 #pragma once
 
-#include "Defines.h"
-#include "INLogSink.h"
-#include "NLogLevel.h"
+#ifdef __UNREAL__
+
+#include "nakama-cpp/log/NLogSinkInterface.h"
+
+DECLARE_LOG_CATEGORY_EXTERN(LogNakama, Log, All);
 
 namespace Nakama {
 
-	class NAKAMA_API NUnrealLogSink : public INLogSink {
-
+	class NAKAMA_API NUnrealLogSink : public NLogSinkInterface
+	{
 	public:
 		~NUnrealLogSink() {}
 
-		void Log(const NLogMessage& msg) {
-			switch (msg.level) {
-			case NLogLevel::Trace:
-				UE_LOG(LogNakama, VeryVerbose, TEXT("%s"), UTF8_TO_TCHAR(msg.message.c_str()));
-				break;
+		void log(NLogLevel level, const std::string& message, const char* func) override
+		{
+			std::string tmp;
+
+			if (func && func[0])
+			{
+				tmp.append("[").append(func).append("] ");
+			}
+
+			tmp.append(message);
+
+			TCHAR* tcharStr = UTF8_TO_TCHAR(tmp.c_str());
+			
+			switch (level)
+			{
+				case NLogLevel::Debug:
+					UE_LOG(LogTemp, Warning, TEXT("%s"), tcharStr);
+					break;
+				case NLogLevel::Info:
+					UE_LOG(LogTemp, Warning, TEXT("%s"), tcharStr);
+					break;
+				case NLogLevel::Warn:
+					UE_LOG(LogTemp, Warning, TEXT("%s"), tcharStr);
+					break;
+				case NLogLevel::Error:
+					UE_LOG(LogTemp, Error, TEXT("%s"), tcharStr);
+					break;
+				case NLogLevel::Fatal:
+					UE_LOG(LogTemp, Fatal, TEXT("%s"), tcharStr);
+					break;
+			}
+
+			/*switch (level)
+			{
 			case NLogLevel::Debug:
-				UE_LOG(LogNakama, Verbose, TEXT("%s"), UTF8_TO_TCHAR(msg.message.c_str()));
+				UE_LOG(LogTemp, Verbose, TEXT("%s"), UTF8_TO_TCHAR(tmp.c_str()));
 				break;
 			case NLogLevel::Info:
-				UE_LOG(LogNakama, Log, TEXT("%s"), UTF8_TO_TCHAR(msg.message.c_str()));
+				UE_LOG(LogTemp, Log, TEXT("%s"), UTF8_TO_TCHAR(tmp.c_str()));
 				break;
 			case NLogLevel::Warn:
-				UE_LOG(LogNakama, Warning, TEXT("%s"), UTF8_TO_TCHAR(msg.message.c_str()));
+				UE_LOG(LogTemp, Warning, TEXT("%s"), UTF8_TO_TCHAR(tmp.c_str()));
 				break;
 			case NLogLevel::Error:
-				UE_LOG(LogNakama, Error, TEXT("%s"), UTF8_TO_TCHAR(msg.message.c_str()));
+				UE_LOG(LogTemp, Error, TEXT("%s"), UTF8_TO_TCHAR(tmp.c_str()));
 				break;
 			case NLogLevel::Fatal:
-				UE_LOG(LogNakama, Fatal, TEXT("%s"), UTF8_TO_TCHAR(msg.message.c_str()));
+				UE_LOG(LogTemp, Fatal, TEXT("%s"), UTF8_TO_TCHAR(tmp.c_str()));
 				break;
-			}
+			}*/
 		}
 
-		void Flush() override {}
-
-	private:
+		void flush() override {}
 	};
 }
 
-#endif
+#endif // __UNREAL__

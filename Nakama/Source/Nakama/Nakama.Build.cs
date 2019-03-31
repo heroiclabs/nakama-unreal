@@ -1,18 +1,19 @@
-/**
-* Copyright 2017 The Nakama Authors
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+/*
+ * Copyright 2019 The Nakama Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 using System;
 using System.IO;
 using UnrealBuildTool;
@@ -21,121 +22,82 @@ public class Nakama : ModuleRules
 {
 	public Nakama(ReadOnlyTargetRules Target) : base(Target)
 	{
-        PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
+		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
+		
+		PublicIncludePaths.AddRange(
+			new string[] {
+				Path.Combine(ModulePath, "..", "ThirdParty")
+			});
 
-        PublicDependencyModuleNames.AddRange(
-            new string[] {
-                "Core",
-                "CoreUObject",
-                "Engine"
-            }
-        );
+		PublicDependencyModuleNames.AddRange(
+			new string[]
+			{
+				"Core",
+				"Projects"
+				// ... add other public dependencies that you statically link with here ...
+			});
 
-        PrivateDependencyModuleNames.AddRange(
-            new string[] {
-                "HTTP",
-                "libWebSockets"
-            }
-        );
+		string libsPath;
+		
+		switch (Target.Platform)
+		{
+			case UnrealTargetPlatform.Win32:
+				libsPath = Path.Combine(LibsPath, "win32", "v" + Target.WindowsPlatform.GetVisualStudioCompilerVersionName());
+				break;
 
-        AddEngineThirdPartyPrivateStaticDependencies(Target, "OpenSSL", "libWebSockets", "zlib");
+			case UnrealTargetPlatform.Win64:
+				libsPath = Path.Combine(LibsPath, "win64", "v" + Target.WindowsPlatform.GetVisualStudioCompilerVersionName());
+				break;
 
-        PublicIncludePaths.AddRange(new string[] {
-            Path.Combine(ThirdPartyPath, "include")
-        });
+			case UnrealTargetPlatform.Linux:
+				libsPath = Path.Combine(LibsPath, "linux");
+				break;
 
-        PrivateIncludePaths.AddRange(new string[] {
-            Path.Combine(ThirdPartyPath, "src")
-        });
+			case UnrealTargetPlatform.Mac:
+				libsPath = Path.Combine(LibsPath, "mac");
+				break;
 
-        switch (Target.Platform)
-        {
-            case UnrealTargetPlatform.Win32:
-            case UnrealTargetPlatform.Linux:
-            case UnrealTargetPlatform.Win64:
-                PrivateDependencyModuleNames.Add("SSL");
-                break;
-            case UnrealTargetPlatform.Mac:
-                break;
-            case UnrealTargetPlatform.Android:
-            case UnrealTargetPlatform.IOS:
-            case UnrealTargetPlatform.PS4:
-            case UnrealTargetPlatform.XboxOne:
-            case UnrealTargetPlatform.HTML5:
-            default:
-                throw new NotImplementedException("Nakama Unreal client does not currently support platform: " + Target.Platform.ToString());
-        }
+			case UnrealTargetPlatform.IOS:
+				libsPath = Path.Combine(LibsPath, "ios");
+				break;
 
-        // Still need to add our libs
-        LoadProtobufLib(Target);
-    }
+			case UnrealTargetPlatform.Android:
+				libsPath = Path.Combine(LibsPath, "android");
+				break;
 
-    private bool LoadProtobufLib(ReadOnlyTargetRules Target)
-    {
-        Definitions.AddRange(
-                new string[]
-                {
-                    "GOOGLE_PROTOBUF_NO_RTTI",
-                    "NDEBUG",
-                    "GOOGLE_PROTOBUF_CMAKE_BUILD",
-                    "PROTOBUF_INLINE_NOT_IN_HEADERS=0"
-                });
+			case UnrealTargetPlatform.PS4:
+			case UnrealTargetPlatform.XboxOne:
+			case UnrealTargetPlatform.HTML5:
+			default:
+				throw new NotImplementedException("Nakama Unreal client does not currently support platform: " + Target.Platform.ToString());
+		}
 
-        bool isLibrarySupported = false;
+		PublicLibraryPaths.Add(libsPath);
 
-        if ((Target.Platform == UnrealTargetPlatform.Win32) || (Target.Platform == UnrealTargetPlatform.Win64))
-        {
-            isLibrarySupported = true;
-
-            string vs_path = "vs"
-                + WindowsPlatform.GetVisualStudioCompilerVersionName()
-                + ((Target.Platform == UnrealTargetPlatform.Win64) ? "win64" : "");
-            string protobuf_lib_directory_full_path = System.IO.Path.Combine(ThirdPartyPath, "lib", vs_path);
-
-            PublicLibraryPaths.Add(protobuf_lib_directory_full_path);
-
-            PublicAdditionalLibraries.Add("libprotobuf.lib");
-
-            Definitions.Add("_WINDOWS");
-            if (Target.Platform == UnrealTargetPlatform.Win64)
-                Definitions.Add("__x86_64__");
-
-        }
-        else if (Target.Platform == UnrealTargetPlatform.Mac)
-        {
-            isLibrarySupported = true;
-
-            string bin_path = "osxx64";
-            string protobuf_lib_directory_full_path = System.IO.Path.Combine(ThirdPartyPath, "lib", bin_path);
-
-            PublicLibraryPaths.Add(protobuf_lib_directory_full_path);
-
+		if (Target.Platform == UnrealTargetPlatform.Win32 || Target.Platform == UnrealTargetPlatform.Win64)
+		{
+		}
+		else
+		{
             // XXX: For some reason, we have to add the full path to the .a file here or it is not found :(
-            PublicAdditionalLibraries.Add(protobuf_lib_directory_full_path + "/libprotobuf.a");
+			PublicAdditionalLibraries.Add(Path.Combine(libsPath, "libnakama-cpp.a"));
+			PublicAdditionalLibraries.Add(Path.Combine(libsPath, "libprotobuf.a"));
+			PublicAdditionalLibraries.Add(Path.Combine(libsPath, "libaddress_sorting.a"));
+			PublicAdditionalLibraries.Add(Path.Combine(libsPath, "libcares.a"));
+			PublicAdditionalLibraries.Add(Path.Combine(libsPath, "libgpr.a"));
+			PublicAdditionalLibraries.Add(Path.Combine(libsPath, "libgrpc++.a"));
+			PublicAdditionalLibraries.Add(Path.Combine(libsPath, "libgrpc.a"));
+			PublicAdditionalLibraries.Add(Path.Combine(libsPath, "libz.a"));
+		}
+	}
 
-            Definitions.AddRange(
-                new string[]
-                {
-                    "_MAC",
-                    "__x86_64__",
-                });
+	private string ModulePath
+	{
+		get { return ModuleDirectory; }
+	}
 
-        }
-
-        // TODO: Other platforms...
-
-        Definitions.Add(string.Format("WITH_GOOGLE_PROTOBUF_BINDING={0}", isLibrarySupported ? 1 : 0));
-
-        return isLibrarySupported;
-    }
-
-    private string ModulePath
-    {
-        get { return ModuleDirectory; }
-    }
-
-    private string ThirdPartyPath
-    {
-        get { return Path.GetFullPath(Path.Combine(ModulePath, "..", "ThirdParty")); }
-    }
+	private string LibsPath
+	{
+		get { return Path.Combine(ModulePath, "Private", "libs"); }
+	}
 }
