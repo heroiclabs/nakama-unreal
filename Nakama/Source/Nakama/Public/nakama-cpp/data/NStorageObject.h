@@ -17,6 +17,7 @@
 #pragma once
 
 #include "nakama-cpp/NTypes.h"
+#include "nakama-cpp/data/NStoragePermissions.h"
 #include <vector>
 
 namespace Nakama {
@@ -24,15 +25,17 @@ namespace Nakama {
     /// An object within the storage engine.
     struct NAKAMA_API NStorageObject
     {
-        std::string collection;                ///< The collection which stores the object.
-        std::string key;                       ///< The key of the object within the collection.
-        std::string userId;                    ///< The user owner of the object.
-        std::string value;                     ///< The value of the object.
-        std::string version;                   ///< The version hash of the object.
-        int32_t permissionRead = 0;            ///< The read access permissions for the object.
-        int32_t permissionWrite = 0;           ///< The write access permissions for the object.
-        NTimestamp createTime = 0;             ///< The UNIX time when the object was created.
-        NTimestamp updateTime = 0;             ///< The UNIX time when the object was last updated.
+        std::string collection;                    ///< The collection which stores the object.
+        std::string key;                           ///< The key of the object within the collection.
+        std::string userId;                        ///< The user owner of the object.
+        std::string value;                         ///< The value of the object.
+        std::string version;                       ///< The version hash of the object.
+        NStoragePermissionRead permissionRead
+            = NStoragePermissionRead::NO_READ;     ///< The read access permissions for the object.
+        NStoragePermissionWrite permissionWrite
+            = NStoragePermissionWrite::NO_WRITE;   ///< The write access permissions for the object.
+        NTimestamp createTime = 0;                 ///< The UNIX time when the object was created.
+        NTimestamp updateTime = 0;                 ///< The UNIX time when the object was last updated.
     };
 
     using NStorageObjects = std::vector<NStorageObject>;

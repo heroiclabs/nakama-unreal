@@ -40,28 +40,7 @@ namespace Nakama {
 
 			tmp.append(message);
 
-			TCHAR* tcharStr = UTF8_TO_TCHAR(tmp.c_str());
-			
 			switch (level)
-			{
-				case NLogLevel::Debug:
-					UE_LOG(LogTemp, Warning, TEXT("%s"), tcharStr);
-					break;
-				case NLogLevel::Info:
-					UE_LOG(LogTemp, Warning, TEXT("%s"), tcharStr);
-					break;
-				case NLogLevel::Warn:
-					UE_LOG(LogTemp, Warning, TEXT("%s"), tcharStr);
-					break;
-				case NLogLevel::Error:
-					UE_LOG(LogTemp, Error, TEXT("%s"), tcharStr);
-					break;
-				case NLogLevel::Fatal:
-					UE_LOG(LogTemp, Fatal, TEXT("%s"), tcharStr);
-					break;
-			}
-
-			/*switch (level)
 			{
 			case NLogLevel::Debug:
 				UE_LOG(LogTemp, Verbose, TEXT("%s"), UTF8_TO_TCHAR(tmp.c_str()));
@@ -78,7 +57,7 @@ namespace Nakama {
 			case NLogLevel::Fatal:
 				UE_LOG(LogTemp, Fatal, TEXT("%s"), UTF8_TO_TCHAR(tmp.c_str()));
 				break;
-			}*/
+			}
 		}
 
 		void flush() override {}

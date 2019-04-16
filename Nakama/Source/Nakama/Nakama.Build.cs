@@ -38,6 +38,7 @@ public class Nakama : ModuleRules
 			});
 
 		string libsPath;
+        bool addIxwebsocket = false;
 		
 		switch (Target.Platform)
 		{
@@ -55,14 +56,17 @@ public class Nakama : ModuleRules
 
 			case UnrealTargetPlatform.Mac:
 				libsPath = Path.Combine(LibsPath, "mac");
+                addIxwebsocket = true;
 				break;
 
 			case UnrealTargetPlatform.IOS:
 				libsPath = Path.Combine(LibsPath, "ios");
+                addIxwebsocket = true;
 				break;
 
 			case UnrealTargetPlatform.Android:
 				libsPath = Path.Combine(LibsPath, "android");
+                addIxwebsocket = true;
 				break;
 
 			case UnrealTargetPlatform.PS4:
@@ -88,7 +92,14 @@ public class Nakama : ModuleRules
 			PublicAdditionalLibraries.Add(Path.Combine(libsPath, "libgrpc++.a"));
 			PublicAdditionalLibraries.Add(Path.Combine(libsPath, "libgrpc.a"));
 			PublicAdditionalLibraries.Add(Path.Combine(libsPath, "libz.a"));
+            PublicAdditionalLibraries.Add(Path.Combine(libsPath, "libssl.a"));
+            PublicAdditionalLibraries.Add(Path.Combine(libsPath, "libcrypto.a"));
 		}
+
+        if (addIxwebsocket)
+        {
+            PublicAdditionalLibraries.Add(Path.Combine(libsPath, "libixwebsocket.a"));
+        }
 	}
 
 	private string ModulePath
