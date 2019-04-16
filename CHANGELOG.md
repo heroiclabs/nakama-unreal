@@ -3,6 +3,10 @@ All notable changes to this project are documented below.
 
 The format is based on [keep a changelog](http://keepachangelog.com/) and this project uses [semantic versioning](http://semver.org/).
 
+## [2.0.2] - 2019-04-16
+### Changed
+- Now targeting nakama 2.x on Mac and iOS
+
 ## [0.10.1] - 2018-02-16
 ### Changed
 - Now targeting nakama 1.4.0

@@ -52,12 +52,28 @@ public class MyUnrealProject : ModuleRules
 
 At this point, you are done.  Restart Unreal.  After it compiles things, open Edit->Plugins and scroll to the bottom.  If all went well, you should see HeroicLabs.Nakama listed as a plugin.
 
-#### Server connect
+## Usage
 
-To create a client and connect to the Nakama server with the default settings:
+The client object has many methods to execute various features in the server or open realtime socket connections with the server.
 
-```c++
-#include "NClient.h"
+Include nakama header.
 
-NClient client = NClient::Default("defaultkey");
+```cpp
+#include "nakama-cpp/Nakama.h"
+```
+
+Use nakama namespace.
+
+```cpp
+using namespace Nakama;
+```
+
+Use the connection credentials to build a client object.
+
+```cpp
+DefaultClientParameters parameters;
+parameters.serverKey = "defaultkey";
+parameters.host = "127.0.0.1";
+parameters.port = 7349;
+NClientPtr client = createDefaultClient(parameters);
 ```
