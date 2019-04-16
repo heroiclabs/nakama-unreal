@@ -38,7 +38,7 @@ public class Nakama : ModuleRules
 			});
 
 		string libsPath;
-        bool addIxwebsocket = false;
+		bool addIxwebsocket = false;
 		
 		switch (Target.Platform)
 		{
@@ -56,17 +56,17 @@ public class Nakama : ModuleRules
 
 			case UnrealTargetPlatform.Mac:
 				libsPath = Path.Combine(LibsPath, "mac");
-                addIxwebsocket = true;
+				addIxwebsocket = true;
 				break;
 
 			case UnrealTargetPlatform.IOS:
 				libsPath = Path.Combine(LibsPath, "ios");
-                addIxwebsocket = true;
+				addIxwebsocket = true;
 				break;
 
 			case UnrealTargetPlatform.Android:
 				libsPath = Path.Combine(LibsPath, "android");
-                addIxwebsocket = true;
+				addIxwebsocket = true;
 				break;
 
 			case UnrealTargetPlatform.PS4:
@@ -83,7 +83,7 @@ public class Nakama : ModuleRules
 		}
 		else
 		{
-            // XXX: For some reason, we have to add the full path to the .a file here or it is not found :(
+			// XXX: For some reason, we have to add the full path to the .a file here or it is not found :(
 			PublicAdditionalLibraries.Add(Path.Combine(libsPath, "libnakama-cpp.a"));
 			PublicAdditionalLibraries.Add(Path.Combine(libsPath, "libprotobuf.a"));
 			PublicAdditionalLibraries.Add(Path.Combine(libsPath, "libaddress_sorting.a"));
@@ -92,14 +92,14 @@ public class Nakama : ModuleRules
 			PublicAdditionalLibraries.Add(Path.Combine(libsPath, "libgrpc++.a"));
 			PublicAdditionalLibraries.Add(Path.Combine(libsPath, "libgrpc.a"));
 			PublicAdditionalLibraries.Add(Path.Combine(libsPath, "libz.a"));
-            PublicAdditionalLibraries.Add(Path.Combine(libsPath, "libssl.a"));
-            PublicAdditionalLibraries.Add(Path.Combine(libsPath, "libcrypto.a"));
+			PublicAdditionalLibraries.Add(Path.Combine(libsPath, "libssl.a"));
+			PublicAdditionalLibraries.Add(Path.Combine(libsPath, "libcrypto.a"));
 		}
 
-        if (addIxwebsocket)
-        {
-            PublicAdditionalLibraries.Add(Path.Combine(libsPath, "libixwebsocket.a"));
-        }
+		if (addIxwebsocket)
+		{
+			PublicAdditionalLibraries.Add(Path.Combine(libsPath, "libixwebsocket.a"));
+		}
 	}
 
 	private string ModulePath
