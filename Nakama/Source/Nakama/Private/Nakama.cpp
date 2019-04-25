@@ -3,7 +3,7 @@
 #include "Nakama.h"
 #include "Core.h"
 #include "Modules/ModuleManager.h"
-#include "Interfaces/IPluginManager.h"
+//#include "Interfaces/IPluginManager.h" // "Projects" module required
 #include "nakama-cpp/Nakama.h"
 #include "NUnrealLogSink.h"
 
