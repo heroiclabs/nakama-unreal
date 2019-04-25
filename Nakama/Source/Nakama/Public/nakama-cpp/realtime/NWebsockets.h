@@ -16,12 +16,30 @@
 
 #pragma once
 
-#include "nakama-cpp/DefaultClient.h"
-#include "nakama-cpp/realtime/NRtDefaultClientListener.h"
-#include "nakama-cpp/log/NLogger.h"
+#include "nakama-cpp/realtime/NRtTransportInterface.h"
 
 namespace Nakama {
 
-    NAKAMA_API const char* getNakamaSdkVersion();
+    /**
+     * Create default websocket transport.
+     *
+     * Creates Websocketpp or IXWebSocket transport depending on platform.
+     * Check out README for supported platforms.
+     */
+    NAKAMA_API NRtTransportPtr createDefaultWebsocket();
+    
+    /**
+     * Create Websocketpp transport.
+     * 
+     * Check out README for supported platforms.
+     */
+    NAKAMA_API NRtTransportPtr createWebsocketpp();
+    
+    /**
+     * Create IXWebSocket transport.
+     * 
+     * Check out README for supported platforms.
+     */
+    NAKAMA_API NRtTransportPtr createIXWebSocket();
 
 }

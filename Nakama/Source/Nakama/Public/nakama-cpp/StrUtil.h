@@ -16,6 +16,7 @@
 
 #pragma once
 
+#include "nakama-cpp/NExport.h"
 #include <string>
 
 namespace Nakama {
@@ -28,7 +29,7 @@ namespace Nakama {
      * @param buffer byte buffer to encode
      * @return std::string encoded `base64` string
      */
-    std::string base64Encode(const Base64Buffer& buffer);
+    NAKAMA_API std::string base64Encode(const Base64Buffer& buffer);
 
     /**
      * Decode `base64` string
@@ -36,7 +37,7 @@ namespace Nakama {
      * @param base64str `base64` string
      * @return Base64Buffer byte buffer
      */
-    Base64Buffer base64Decode(const std::string& base64str);
+    NAKAMA_API Base64Buffer base64Decode(const std::string& base64str);
 
     /**
      * Get the field value from json string
@@ -47,7 +48,7 @@ namespace Nakama {
      * @param field_name name of field
      * @return std::string value of specified field
      */
-    std::string getJsonFieldValue(const std::string& json, const std::string& field_name);
+    NAKAMA_API std::string getJsonFieldValue(const std::string& json, const std::string& field_name);
 
     /**
      * Encode string to allow use it in an URL
@@ -55,6 +56,6 @@ namespace Nakama {
      * @param str string to encode
      * @return std::string encoded string
      */
-    std::string urlEncode(const std::string& str);
+    NAKAMA_API std::string urlEncode(const std::string& str);
 
 } // namespace Nakama

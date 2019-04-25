@@ -22,8 +22,10 @@
 
 namespace Nakama {
 
+    EXPORT_VECTOR(NUserPresence);
+
     /// A realtime chat channel.
-    struct NChannel
+    struct NAKAMA_API NChannel
     {
         std::string id;                           ///< The ID of the channel.
         std::vector<NUserPresence> presences;     ///< The users currently in the channel.

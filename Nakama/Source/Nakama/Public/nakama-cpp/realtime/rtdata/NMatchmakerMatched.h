@@ -23,15 +23,17 @@
 
 namespace Nakama {
 
-    struct NMatchmakerUser
+    struct NAKAMA_API NMatchmakerUser
     {
         NUserPresence presence;                  ///< User info.
         NStringMap stringProperties;             ///< String properties.
         NStringDoubleMap numericProperties;      ///< Numeric properties.
     };
 
+    EXPORT_VECTOR(NMatchmakerUser);
+
     /// A successful matchmaking result.
-    struct NMatchmakerMatched
+    struct NAKAMA_API NMatchmakerMatched
     {
         std::string ticket;                  ///< The matchmaking ticket that has completed.
                                              ///< The match token or match ID to join.

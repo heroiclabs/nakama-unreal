@@ -21,8 +21,10 @@
 
 namespace Nakama {
 
+    EXPORT_VECTOR(NUserPresence);
+
     /// A snapshot of statuses for some set of users.
-    struct NStatus
+    struct NAKAMA_API NStatus
     {
         std::vector<NUserPresence> presences;   ///< User statuses.
     };

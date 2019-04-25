@@ -22,7 +22,7 @@
 namespace Nakama {
 
     /// A data message delivered over a stream.
-    struct NStreamData
+    struct NAKAMA_API NStreamData
     {
         NStream stream;          ///< The stream this data message relates to.
         NUserPresence sender;    ///< The sender, if any.

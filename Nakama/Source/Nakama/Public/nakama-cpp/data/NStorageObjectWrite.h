@@ -17,6 +17,7 @@
 #pragma once
 
 #include "nakama-cpp/NTypes.h"
+#include "nakama-cpp/data/NStoragePermissions.h"
 #include <string>
 
 namespace Nakama {
@@ -24,12 +25,12 @@ namespace Nakama {
     /// The object to store.
     struct NAKAMA_API NStorageObjectWrite
     {
-        std::string collection;                   ///< The collection which stores the object.
-        std::string key;                          ///< The key of the object within the collection.
-        std::string value;                        ///< The value of the object. Must be JSON
-        std::string version;                      ///< The version hash of the object to check. Possible values are: ["", "*", "#hash#"].
-        opt::optional<int32_t> permissionRead;    ///< The read access permissions for the object.
-        opt::optional<int32_t> permissionWrite;   ///< The write access permissions for the object.
+        std::string collection;                                   ///< The collection which stores the object.
+        std::string key;                                          ///< The key of the object within the collection.
+        std::string value;                                        ///< The value of the object. Must be JSON
+        std::string version;                                      ///< The version hash of the object to check. Possible values are: ["", "*", "#hash#"].
+        opt::optional<NStoragePermissionRead> permissionRead;     ///< The read access permissions for the object.
+        opt::optional<NStoragePermissionWrite> permissionWrite;   ///< The write access permissions for the object.
     };
 
 }

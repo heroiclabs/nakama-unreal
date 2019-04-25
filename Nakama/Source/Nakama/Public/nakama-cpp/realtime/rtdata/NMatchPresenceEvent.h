@@ -21,8 +21,10 @@
 
 namespace Nakama {
 
+    EXPORT_VECTOR(NUserPresence);
+
     /// A set of joins and leaves on a particular realtime match.
-    struct NMatchPresenceEvent
+    struct NAKAMA_API NMatchPresenceEvent
     {
         std::string matchId;                 /// The match unique ID.
         std::vector<NUserPresence> joins;    /// User presences that have just joined the match.

@@ -21,6 +21,8 @@
 
 namespace Nakama {
 
+    EXPORT_VECTOR(NUser);
+
     /// A collection of zero or more users.
     struct NAKAMA_API NUsers
     {

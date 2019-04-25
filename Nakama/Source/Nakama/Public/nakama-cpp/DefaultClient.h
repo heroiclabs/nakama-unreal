@@ -20,7 +20,7 @@
 
 namespace Nakama {
 
-    struct DefaultClientParameters
+    struct NAKAMA_API DefaultClientParameters
     {
         /// The key used to authenticate with the server without a session. Defaults to "defaultkey".
         std::string serverKey = "defaultkey";
@@ -44,6 +44,6 @@ namespace Nakama {
      * 
      * @param parameters the client parameters
      */
-    NClientPtr createDefaultClient(const DefaultClientParameters& parameters);
+    NAKAMA_API NClientPtr createDefaultClient(const DefaultClientParameters& parameters);
 
 }

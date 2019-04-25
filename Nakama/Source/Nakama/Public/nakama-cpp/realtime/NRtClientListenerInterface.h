@@ -32,7 +32,7 @@ namespace Nakama {
     /**
      * A listener for receiving <c>NRtClientInterface</c> events.
      */
-    class NRtClientListenerInterface
+    class NAKAMA_API NRtClientListenerInterface
     {
     public:
         virtual ~NRtClientListenerInterface() {}

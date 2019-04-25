@@ -16,12 +16,21 @@
 
 #pragma once
 
-#include "nakama-cpp/DefaultClient.h"
-#include "nakama-cpp/realtime/NRtDefaultClientListener.h"
-#include "nakama-cpp/log/NLogger.h"
-
 namespace Nakama {
 
-    NAKAMA_API const char* getNakamaSdkVersion();
+    /// The read access permissions.
+    enum class NAKAMA_API NStoragePermissionRead
+    {
+        NO_READ     = 0,  ///< The object is only readable by server runtime.
+        OWNER_READ  = 1,  ///< Only the user who owns it may access.
+        PUBLIC_READ = 2   ///< Any user can read the object.
+    };
+
+    /// The write access permissions.
+    enum class NAKAMA_API NStoragePermissionWrite
+    {
+        NO_WRITE    = 0,  ///< The object is only writable by server runtime.
+        OWNER_WRITE = 1   ///< Only the user who owns it may write.
+    };
 
 }

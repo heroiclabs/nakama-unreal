@@ -22,6 +22,8 @@
 
 namespace Nakama {
 
+    EXPORT_VECTOR(NUserGroup);
+
     /// A list of groups belonging to a user, along with the user's role in each group.
     struct NAKAMA_API NUserGroupList
     {

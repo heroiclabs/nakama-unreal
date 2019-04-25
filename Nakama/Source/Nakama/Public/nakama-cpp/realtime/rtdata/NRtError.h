@@ -21,8 +21,13 @@
 namespace Nakama {
 
     /// The selection of possible error codes.
-    enum class RtErrorCode
+    enum class NAKAMA_API RtErrorCode
     {
+        // client side errors
+        CONNECT_ERROR                 = -1,           ///< Connect has failed.
+        TRANSPORT_ERROR               = -2,           ///< Transport error.
+        
+        // server side errors
         RUNTIME_EXCEPTION             = 0,            ///< An unexpected result from the server.
         UNRECOGNIZED_PAYLOAD          = 1,            ///< The server received a message which is not recognised.
         MISSING_PAYLOAD               = 2,            ///< A message was expected but contains no content.
@@ -34,13 +39,13 @@ namespace Nakama {
     };
 
     /// A logical error which may occur on the server.
-    struct NRtError
+    struct NAKAMA_API NRtError
     {
         RtErrorCode code;                             ///< The error code
         std::string message;                          ///< A message in English to help developers debug the response.
         NStringMap context;                           ///< Additional error details which may be different for each response.
     };
 
-    const char* toString(RtErrorCode code);
-    std::string toString(const NRtError& error);
+    NAKAMA_API const char* toString(RtErrorCode code);
+    NAKAMA_API std::string toString(const NRtError& error);
 }

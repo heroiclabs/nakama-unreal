@@ -21,8 +21,10 @@
 
 namespace Nakama {
 
+    EXPORT_VECTOR(NUserPresence);
+
     /// A batch of status updates for a given user.
-    struct NStatusPresenceEvent
+    struct NAKAMA_API NStatusPresenceEvent
     {
         std::vector<NUserPresence> joins;    ///< New statuses for the user.
         std::vector<NUserPresence> leaves;   ///< Previous statuses for the user.

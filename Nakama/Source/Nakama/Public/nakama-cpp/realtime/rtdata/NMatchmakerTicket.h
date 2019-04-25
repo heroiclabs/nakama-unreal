@@ -21,7 +21,7 @@
 namespace Nakama {
 
     /// A ticket representing a new matchmaking process.
-    struct NMatchmakerTicket
+    struct NAKAMA_API NMatchmakerTicket
     {
         std::string ticket;      ///< The ticket that can be used to cancel matchmaking.
     };

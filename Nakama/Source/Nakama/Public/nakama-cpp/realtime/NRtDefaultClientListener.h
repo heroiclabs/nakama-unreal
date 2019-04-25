@@ -25,7 +25,7 @@ namespace Nakama {
      * A default listener for receiving <c>NRtClientInterface</c> events.
      * It allows to set callbacks for needed events without creating own class.
      */
-    class NRtDefaultClientListener : public NRtClientListenerInterface
+    class NAKAMA_API NRtDefaultClientListener : public NRtClientListenerInterface
     {
     public:
         using ConnectCallback = std::function<void()>;

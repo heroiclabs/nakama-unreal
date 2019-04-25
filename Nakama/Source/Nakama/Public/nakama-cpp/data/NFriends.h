@@ -22,6 +22,8 @@
 
 namespace Nakama {
 
+    EXPORT_VECTOR(NFriend);
+
     ///< A collection of zero or more friends of the user.
     struct NAKAMA_API NFriends
     {

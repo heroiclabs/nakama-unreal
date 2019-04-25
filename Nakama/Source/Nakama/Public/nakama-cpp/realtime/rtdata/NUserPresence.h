@@ -21,7 +21,7 @@
 namespace Nakama {
 
     /// A user session associated to a stream, usually through a list operation or a join/leave event.
-    struct NUserPresence
+    struct NAKAMA_API NUserPresence
     {
         std::string userId;             ///< The user this presence belongs to.
         std::string sessionId;          ///< A unique session ID identifying the particular connection, because the user may have many.

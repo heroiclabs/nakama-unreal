@@ -21,7 +21,7 @@
 namespace Nakama {
 
     /// Error codes
-    enum class ErrorCode
+    enum class NAKAMA_API ErrorCode
     {
         /// Unknown error
         Unknown                  = 0,
@@ -65,7 +65,7 @@ namespace Nakama {
         ErrorCode code = ErrorCode::Unknown;
     };
 
-    const char* toString(ErrorCode code);
-    std::string toString(const NError& error);
+    NAKAMA_API const char* toString(ErrorCode code);
+    NAKAMA_API std::string toString(const NError& error);
 
 }
