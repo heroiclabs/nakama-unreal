@@ -82,7 +82,9 @@ public class Nakama : ModuleRules
 				case WindowsCompiler.VisualStudio2015: libsPath = Path.Combine(libsPath, "v140"); break;
 				#endif
 				case WindowsCompiler.VisualStudio2017: libsPath = Path.Combine(libsPath, "v141"); break;
+				#if UE_4_22_OR_LATER
 				case WindowsCompiler.VisualStudio2019: libsPath = Path.Combine(libsPath, "v142"); break;
+				#endif
 				default:
 					throw new NotImplementedException("Nakama Unreal client does not currently support compiler: " + Target.WindowsPlatform.GetVisualStudioCompilerVersionName());
 			}
@@ -123,7 +125,6 @@ public class Nakama : ModuleRules
 	private void CopyToBinaries(string Filepath, ReadOnlyTargetRules Target)
 	{
 		string binariesDir = Path.Combine(ProjectBinariesPath, Target.Platform.ToString());
-		//throw new NotImplementedException("binariesDir: " + binariesDir);
 		string filename = Path.GetFileName(Filepath);
 
 		if (!Directory.Exists(binariesDir))
