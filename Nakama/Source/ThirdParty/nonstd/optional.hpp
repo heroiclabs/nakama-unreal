@@ -1195,16 +1195,14 @@ public:
 
     optional_constexpr14 value_type const & value() const optional_ref_qual
     {
-        if ( ! has_value() )
-            throw bad_optional_access();
+        assert( has_value() );
 
         return contained.value();
     }
 
     optional_constexpr14 value_type & value() optional_ref_qual
     {
-        if ( ! has_value() )
-            throw bad_optional_access();
+        assert( has_value() );
 
         return contained.value();
     }
