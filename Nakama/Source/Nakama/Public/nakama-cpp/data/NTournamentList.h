@@ -22,8 +22,6 @@
 
 namespace Nakama {
 
-    EXPORT_VECTOR(NTournament);
-
     /// A list of tournaments.
     struct NAKAMA_API NTournamentList
     {

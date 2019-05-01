@@ -21,8 +21,6 @@
 
 namespace Nakama {
 
-    EXPORT_VECTOR(NUserPresence);
-
     /// A set of joins and leaves on a particular realtime match.
     struct NAKAMA_API NMatchPresenceEvent
     {

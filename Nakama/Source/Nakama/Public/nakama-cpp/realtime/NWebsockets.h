@@ -16,18 +16,30 @@
 
 #pragma once
 
-#include "nakama-cpp/data/NStorageObject.h"
-#include <vector>
-#include <memory>
+#include "nakama-cpp/realtime/NRtTransportInterface.h"
 
 namespace Nakama {
 
-    /// List of storage objects.
-    struct NAKAMA_API NStorageObjectList
-    {
-        std::vector<NStorageObject> objects;  ///< The list of storage objects.
-        std::string cursor;                   ///< The cursor associated with the query a page of results.
-    };
+    /**
+     * Create default websocket transport.
+     *
+     * Creates Websocketpp or IXWebSocket transport depending on platform.
+     * Check out README for supported platforms.
+     */
+    NAKAMA_API NRtTransportPtr createDefaultWebsocket();
+    
+    /**
+     * Create Websocketpp transport.
+     * 
+     * Check out README for supported platforms.
+     */
+    NAKAMA_API NRtTransportPtr createWebsocketpp();
+    
+    /**
+     * Create IXWebSocket transport.
+     * 
+     * Check out README for supported platforms.
+     */
+    NAKAMA_API NRtTransportPtr createIXWebSocket();
 
-    using NStorageObjectListPtr = std::shared_ptr<NStorageObjectList>;
 }

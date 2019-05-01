@@ -22,8 +22,6 @@
 
 namespace Nakama {
 
-    EXPORT_VECTOR(NUserPresence);
-
     /// A realtime chat channel.
     struct NAKAMA_API NChannel
     {

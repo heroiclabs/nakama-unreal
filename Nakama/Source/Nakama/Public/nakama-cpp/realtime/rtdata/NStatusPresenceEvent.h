@@ -21,8 +21,6 @@
 
 namespace Nakama {
 
-    EXPORT_VECTOR(NUserPresence);
-
     /// A batch of status updates for a given user.
     struct NAKAMA_API NStatusPresenceEvent
     {

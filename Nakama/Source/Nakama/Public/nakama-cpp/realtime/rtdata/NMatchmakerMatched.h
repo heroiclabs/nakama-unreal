@@ -30,8 +30,6 @@ namespace Nakama {
         NStringDoubleMap numericProperties;      ///< Numeric properties.
     };
 
-    EXPORT_VECTOR(NMatchmakerUser);
-
     /// A successful matchmaking result.
     struct NAKAMA_API NMatchmakerMatched
     {

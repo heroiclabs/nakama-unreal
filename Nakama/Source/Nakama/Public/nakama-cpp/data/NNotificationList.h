@@ -22,8 +22,6 @@
 
 namespace Nakama {
 
-    EXPORT_VECTOR(NNotification);
-
     /// A collection of zero or more notifications.
     struct NAKAMA_API NNotificationList
     {

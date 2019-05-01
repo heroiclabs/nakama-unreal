@@ -39,5 +39,3 @@
 #else
     #define NAKAMA_API
 #endif
-
-#define EXPORT_VECTOR(T)

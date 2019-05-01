@@ -21,8 +21,6 @@
 
 namespace Nakama {
 
-    EXPORT_VECTOR(NUserPresence);
-
     /// A set of joins and leaves on a particular channel.
     struct NAKAMA_API NChannelPresenceEvent
     {

@@ -22,8 +22,6 @@
 
 namespace Nakama {
 
-    EXPORT_VECTOR(NChannelMessage);
-
     /// A list of channel messages, usually a result of a list operation.
     struct NAKAMA_API NChannelMessageList
     {

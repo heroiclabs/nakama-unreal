@@ -22,8 +22,6 @@
 
 namespace Nakama {
 
-    EXPORT_VECTOR(NGroup);
-
     /// One or more groups returned from a listing operation.
     struct NAKAMA_API NGroupList
     {

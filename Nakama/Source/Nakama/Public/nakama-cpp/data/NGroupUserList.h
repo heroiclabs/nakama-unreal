@@ -22,8 +22,6 @@
 
 namespace Nakama {
 
-    EXPORT_VECTOR(NGroupUser);
-
     /// A list of users belonging to a group, along with their role.
     struct NAKAMA_API NGroupUserList
     {
