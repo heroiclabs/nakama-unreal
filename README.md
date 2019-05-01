@@ -18,7 +18,7 @@ You'll need to setup the server and database before you can connect with the cli
 To get started using Nakama in Unreal, you will need the following:
 
 1. Install and run the servers. Follow these [instructions](https://heroiclabs.com/docs/install-docker-quickstart).
-1. [Unreal Engine](https://www.unrealengine.com/dashboard) 4.15 or greater.
+1. [Unreal Engine](https://www.unrealengine.com/dashboard) 4.21 or greater.
 1. A compiler for the platform you are developing on, such as [Visual Studio](https://www.visualstudio.com/vs/community/) on Windows or [XCode](https://developer.apple.com/xcode/download/) on OSX.
 1. [nakama-unreal](https://github.com/heroiclabs/nakama-unreal/releases)
 
@@ -38,8 +38,6 @@ To use nakama-unreal in your Unreal project, you'll need to copy the nakama-unre
 So, you might end up with the file that looks something like this:
 
 ```c#
-// Fill out your copyright notice in the Description page of Project Settings.
-
 using UnrealBuildTool;
 
 public class MyUnrealProject : ModuleRules
@@ -142,7 +140,8 @@ It is recommended to store the auth token from the session and check at startup 
 ```cpp
 string authtoken = "restored from somewhere";
 NSessionPtr session = restoreSession(authtoken);
-if (session->isExpired()) {
+if (session->isExpired())
+{
     UE_LOG(LogActor, Warning, TEXT("Session has expired. Must reauthenticate!"));
 }
 ```
