@@ -22,7 +22,7 @@
 namespace Nakama {
 
     /// Realtime match data received from the server.
-    struct NMatchData
+    struct NAKAMA_API NMatchData
     {
         std::string matchId;       ///< The match unique ID.
         NUserPresence presence;    ///< A reference to the user presence that sent this data, if any.

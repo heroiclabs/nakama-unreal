@@ -16,30 +16,19 @@
 
 #pragma once
 
-#include "nakama-cpp/realtime/NRtTransportInterface.h"
+#include "nakama-cpp/log/NLogSinkInterface.h"
 
 namespace Nakama {
 
-    /**
-     * Create default websocket transport.
-     *
-     * Creates Websocketpp or IXWebSocket transport depending on platform.
-     * Check out README for supported platforms.
-     */
-    NRtTransportPtr createDefaultWebsocket();
-    
-    /**
-     * Create Websocketpp transport.
-     * 
-     * Check out README for supported platforms.
-     */
-    NRtTransportPtr createWebsocketpp();
-    
-    /**
-     * Create IXWebSocket transport.
-     * 
-     * Check out README for supported platforms.
-     */
-    NRtTransportPtr createIXWebSocket();
+    /// Writes logs to console output
+    class NAKAMA_API NConsoleLogSink : public NLogSinkInterface
+    {
+    public:
+        ~NConsoleLogSink() {}
+
+        void log(NLogLevel level, const std::string& message, const char* func) override;
+
+        void flush() override;
+    };
 
 }

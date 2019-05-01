@@ -49,7 +49,7 @@ namespace Nakama {
     /**
      * A client interface to interact with Nakama server.
      */
-    class NClientInterface
+    class NAKAMA_API NClientInterface
     {
     public:
         virtual ~NClientInterface() {}

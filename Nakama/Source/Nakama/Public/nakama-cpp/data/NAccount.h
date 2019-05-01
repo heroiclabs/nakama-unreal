@@ -24,6 +24,8 @@
 
 namespace Nakama {
 
+    EXPORT_VECTOR(NAccountDevice);
+
     /// A user with additional account details. Always the current user.
     struct NAKAMA_API NAccount {
         NUser user;                                ///< The user object.

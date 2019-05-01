@@ -23,7 +23,7 @@
 namespace Nakama {
 
     /// A set of joins and leaves on a particular stream.
-    struct NStreamPresenceEvent
+    struct NAKAMA_API NStreamPresenceEvent
     {
         NStream stream;                      ///< The stream this event relates to.
         std::vector<NUserPresence> joins;    ///< Presences joining the stream as part of this event, if any.

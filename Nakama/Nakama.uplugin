@@ -8,14 +8,24 @@
 	"CreatedBy": "Heroic Labs",
 	"CreatedByURL": "http://heroiclabs.com/",
 	"DocsURL": "https://heroiclabs.com/docs/",
-	"EnabledByDefault" : true,
+	"MarketplaceURL": "",
+	"SupportURL": "",
+	"EnabledByDefault": true,
 	"CanContainContent": true,
+	"IsBetaVersion": false,
+	"Installed": false,
 	"Modules": [
 		{
 			"Name": "Nakama",
-			"Type" : "Runtime",
-			"WhitelistPlatforms" : [ "Win32", "Win64", "Mac", "IOS", "Linux" ],
-			"LoadingPhase" : "PreDefault"
+			"Type": "Runtime",
+			"LoadingPhase": "PreDefault",
+			"WhitelistPlatforms": [
+				"Win32",
+				"Win64",
+				"Mac",
+				"IOS",
+				"Linux"
+			]
 		}
 	]
 }

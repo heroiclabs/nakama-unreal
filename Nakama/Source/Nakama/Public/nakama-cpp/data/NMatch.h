@@ -21,6 +21,8 @@
 
 namespace Nakama {
 
+    EXPORT_VECTOR(NUserPresence);
+
     /// Represents a realtime match.
     struct NAKAMA_API NMatch
     {

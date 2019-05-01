@@ -22,7 +22,7 @@
 namespace Nakama {
 
     /// A receipt reply from a channel message send operation.
-    struct NChannelMessageAck
+    struct NAKAMA_API NChannelMessageAck
     {
         std::string channelId;          ///< The channel the message was sent to.
         std::string messageId;          ///< The unique ID assigned to the message.

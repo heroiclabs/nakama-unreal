@@ -23,6 +23,8 @@
 
 namespace Nakama {
 
+    EXPORT_VECTOR(NLeaderboardRecord);
+
     /// A set of leaderboard records, may be part of a leaderboard records page or a batch of individual records.
     struct NAKAMA_API NLeaderboardRecordList
     {

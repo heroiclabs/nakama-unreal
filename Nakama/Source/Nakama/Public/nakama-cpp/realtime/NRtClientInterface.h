@@ -35,7 +35,7 @@ namespace Nakama {
 
     using RtErrorCallback = std::function<void(const NRtError&)>;
     
-    struct RtClientParameters
+    struct NAKAMA_API RtClientParameters
     {
         /// The host address of the server. Defaults to "127.0.0.1".
         std::string host = "127.0.0.1";
@@ -51,7 +51,7 @@ namespace Nakama {
         bool ssl = false;
     };
 
-    enum class NRtClientProtocol
+    enum class NAKAMA_API NRtClientProtocol
     {
         /// Protobuf binary protocol. It is recommented to use for production
         /// as it's faster and uses less traffic for communication.
@@ -65,7 +65,7 @@ namespace Nakama {
     /**
      * A real-time client interface to interact with Nakama server.
      */
-    class NRtClientInterface
+    class NAKAMA_API NRtClientInterface
     {
     public:
         virtual ~NRtClientInterface() {}

@@ -21,7 +21,7 @@
 namespace Nakama {
 
     /// Represents identifying information for a stream.
-    struct NStream
+    struct NAKAMA_API NStream
     {
         int32_t mode = 0;               ///< Mode identifies the type of stream.
         std::string subject;            ///< Subject is the primary identifier, if any.

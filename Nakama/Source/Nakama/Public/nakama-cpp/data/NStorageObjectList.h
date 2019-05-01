@@ -22,6 +22,8 @@
 
 namespace Nakama {
 
+    EXPORT_VECTOR(NStorageObject);
+
     /// List of storage objects.
     struct NAKAMA_API NStorageObjectList
     {

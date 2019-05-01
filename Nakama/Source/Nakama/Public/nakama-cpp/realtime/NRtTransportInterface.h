@@ -23,7 +23,7 @@
 
 namespace Nakama {
 
-    enum class NRtTransportType
+    enum class NAKAMA_API NRtTransportType
     {
         Binary,  ///< used by `Protobuf` protocol
         Text     ///< used by `Json` protocol
@@ -32,7 +32,7 @@ namespace Nakama {
     /**
      * A real-time transport interface to send and receive data.
      */
-    class NRtTransportInterface
+    class NAKAMA_API NRtTransportInterface
     {
     public:
         virtual ~NRtTransportInterface() {}

@@ -19,7 +19,7 @@
 namespace Nakama {
 
     /// The read access permissions.
-    enum class NStoragePermissionRead
+    enum class NAKAMA_API NStoragePermissionRead
     {
         NO_READ     = 0,  ///< The object is only readable by server runtime.
         OWNER_READ  = 1,  ///< Only the user who owns it may access.
@@ -27,7 +27,7 @@ namespace Nakama {
     };
 
     /// The write access permissions.
-    enum class NStoragePermissionWrite
+    enum class NAKAMA_API NStoragePermissionWrite
     {
         NO_WRITE    = 0,  ///< The object is only writable by server runtime.
         OWNER_WRITE = 1   ///< Only the user who owns it may write.

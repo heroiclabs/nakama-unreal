@@ -27,6 +27,6 @@ namespace Nakama {
      * 
      * @return UNIX time in milliseconds.
      */
-    NTimestamp getUnixTimestampMs();
+    NAKAMA_API NTimestamp getUnixTimestampMs();
 
 } // namespace Nakama

@@ -16,12 +16,28 @@
 
 #pragma once
 
-#include "nakama-cpp/DefaultClient.h"
-#include "nakama-cpp/realtime/NRtDefaultClientListener.h"
-#include "nakama-cpp/log/NLogger.h"
+#undef NAKAMA_API
 
-namespace Nakama {
+#ifdef NAKAMA_SHARED_LIBRARY
 
-    NAKAMA_API const char* getNakamaSdkVersion();
+#if defined _WIN32 || defined __CYGWIN__
+    #ifdef NAKAMA_SHARED_LIBRARY_EXPORTS
+        #define NAKAMA_API __declspec(dllexport)
+    #else
+        #define NAKAMA_API __declspec(dllimport)
+    #endif
+#elif __GNUC__ >= 4
+    #ifdef NAKAMA_SHARED_LIBRARY_EXPORTS
+        #define NAKAMA_API __attribute__((visibility("default")))
+    #else
+        #define NAKAMA_API
+    #endif
+#else
+    #error "Not supported compiler"
+#endif
 
-}
+#else
+    #define NAKAMA_API
+#endif
+
+#define EXPORT_VECTOR(T)

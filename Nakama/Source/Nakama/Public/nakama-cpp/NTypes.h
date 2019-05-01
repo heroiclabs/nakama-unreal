@@ -16,19 +16,17 @@
 
 #pragma once
 
+#include "nakama-cpp/NExport.h"
 #include "nonstd/optional.hpp"
 #include <cstdint>
 #include <string>
+#include <vector>
 #include <map>
-
-#if !defined(NAKAMA_API)
-    #define NAKAMA_API
-#endif
 
 namespace Nakama {
 
     /// The group role status.
-    enum class NUserGroupState
+    enum class NAKAMA_API NUserGroupState
     {
         SUPERADMIN       = 0,   ///< The user is a superadmin with full control of the group.
         ADMIN            = 1,   ///< The user is an admin with additional privileges.
@@ -37,7 +35,7 @@ namespace Nakama {
     };
 
     /// The available channel types on the server.
-    enum class NChannelType
+    enum class NAKAMA_API NChannelType
     {
         ROOM             = 0,   ///< A chat room which can be created dynamically with a name.
         DIRECT_MESSAGE   = 1,   ///< A private chat between two users.
@@ -54,4 +52,5 @@ namespace Nakama {
     using NStringMap = std::map<std::string, std::string>;
     using NStringDoubleMap = std::map<std::string, double>;
     namespace opt = nonstd;
+
 }

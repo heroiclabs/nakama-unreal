@@ -22,6 +22,8 @@
 
 namespace Nakama {
 
+    EXPORT_VECTOR(NMatch);
+
     /// A list of realtime matches.
     struct NAKAMA_API NMatchList
     {

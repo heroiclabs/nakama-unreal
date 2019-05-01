@@ -24,7 +24,7 @@ DECLARE_LOG_CATEGORY_EXTERN(LogNakama, Log, All);
 
 namespace Nakama {
 
-	class NAKAMA_API NUnrealLogSink : public NLogSinkInterface
+	class NUnrealLogSink : public NLogSinkInterface
 	{
 	public:
 		~NUnrealLogSink() {}
