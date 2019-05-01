@@ -20,8 +20,6 @@ using UnrealBuildTool;
 
 public class Nakama : ModuleRules
 {
-	private string m_libSuffix;
-
 	public Nakama(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
@@ -39,8 +37,6 @@ public class Nakama : ModuleRules
 				// ... add other public dependencies that you statically link with here ...
 			});
 
-		string libsPath = CommonSharedLibsPath;
-		
 		switch (Target.Platform)
 		{
 			case UnrealTargetPlatform.Win32:
@@ -103,22 +99,24 @@ public class Nakama : ModuleRules
 				throw new NotImplementedException("Nakama Unreal client does not currently support compiler: " + Target.WindowsPlatform.GetVisualStudioCompilerVersionName());
 		}
 
-		//if (Target.Configuration == UnrealTargetConfiguration.DebugGame || Target.Configuration == UnrealTargetConfiguration.DebugGameEditor)
-		/*{
+		string libSuffix;
+
+		/*if (Target.Configuration == UnrealTargetConfiguration.DebugGame || Target.Configuration == UnrealTargetConfiguration.DebugGameEditor)
+		{
 			libsPath = Path.Combine(libsPath, "Debug");
-			m_libSuffix = "d";
+			libSuffix = "d";
 		}
 		else*/
 		{
 			libsPath = Path.Combine(libsPath, "Release");
-			m_libSuffix = "";
+			libSuffix = "";
 		}
 		
 		PublicLibraryPaths.Add(libsPath);
 		
-		PublicAdditionalLibraries.Add("nakama-cpp" + m_libSuffix + ".lib");
-		CopyToBinaries(Path.Combine(libsPath, "nakama-cpp" + m_libSuffix + ".dll"), Target);
-		PublicDelayLoadDLLs.AddRange(new string[] { "nakama-cpp" + m_libSuffix + ".dll" });
+		PublicAdditionalLibraries.Add("nakama-cpp" + libSuffix + ".lib");
+		CopyToBinaries(Path.Combine(libsPath, "nakama-cpp" + libSuffix + ".dll"), Target);
+		PublicDelayLoadDLLs.AddRange(new string[] { "nakama-cpp" + libSuffix + ".dll" });
 	}
 
 	private void HandleAndroid(ReadOnlyTargetRules Target)
@@ -161,7 +159,7 @@ public class Nakama : ModuleRules
 		
 		PublicLibraryPaths.Add(libsPath);
 		
-		// XXX: For some reason, we have to add the full path to the .a file here or it is not found :(
+		// For some reason, we have to add the full path to the .a file here or it is not found :(
 		PublicAdditionalLibraries.Add(Path.Combine(libsPath, "libnakama-cpp.so"));
 	}
 
@@ -173,7 +171,6 @@ public class Nakama : ModuleRules
 		if (!Directory.Exists(binariesDir))
 			Directory.CreateDirectory(binariesDir);
 
-		//File.Copy(Filepath, Path.Combine(binariesDir, filename), false);
 		CopyFile(Filepath, Path.Combine(binariesDir, filename));
 	}
 
