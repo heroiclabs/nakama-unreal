@@ -3,6 +3,13 @@ All notable changes to this project are documented below.
 
 The format is based on [keep a changelog](http://keepachangelog.com/) and this project uses [semantic versioning](http://semver.org/).
 
+## [2.0.3] - 2019-05-01
+### Added
+- support Windows (VS 2015, 2017, 2019).
+
+### Fixed
+- enable SSL for IXWebsocket.
+
 ## [2.0.2] - 2019-04-16
 ### Changed
 - Now targeting nakama 2.x on Mac and iOS
