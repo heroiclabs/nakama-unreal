@@ -53,4 +53,8 @@ namespace Nakama {
     using NStringDoubleMap = std::map<std::string, double>;
     namespace opt = nonstd;
 
+    /// Constant for defaut port.
+    /// This is not valid port, actual port will be selected automatically.
+    static const int32_t DEFAULT_PORT = -1;
+
 }

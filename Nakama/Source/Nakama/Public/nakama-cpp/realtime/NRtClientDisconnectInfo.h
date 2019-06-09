@@ -16,30 +16,21 @@
 
 #pragma once
 
-#include "nakama-cpp/realtime/NRtTransportInterface.h"
+#include "nakama-cpp/NTypes.h"
 
 namespace Nakama {
 
-    /**
-     * Create default websocket transport.
-     *
-     * Creates Websocketpp or IXWebSocket transport depending on platform.
-     * Check out README for supported platforms.
-     */
-    NAKAMA_API NRtTransportPtr createDefaultWebsocket();
-    
-    /**
-     * Create Websocketpp transport.
-     * 
-     * Check out README for supported platforms.
-     */
-    NAKAMA_API NRtTransportPtr createWebsocketpp();
-    
-    /**
-     * Create IXWebSocket transport.
-     * 
-     * Check out README for supported platforms.
-     */
-    NAKAMA_API NRtTransportPtr createIXWebSocket();
+    struct NAKAMA_API NRtClientDisconnectInfo
+    {
+        /// close code.
+        /// https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent
+        uint16_t code = 0;
+
+        /// close reason. Optional.
+        std::string reason;
+
+        /// true if close was initiated by server.
+        bool remote = false;
+    };
 
 }

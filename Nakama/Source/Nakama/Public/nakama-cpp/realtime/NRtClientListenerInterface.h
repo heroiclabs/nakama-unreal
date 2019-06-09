@@ -26,6 +26,7 @@
 #include "nakama-cpp/realtime/rtdata/NStatusPresenceEvent.h"
 #include "nakama-cpp/realtime/rtdata/NStreamPresenceEvent.h"
 #include "nakama-cpp/realtime/rtdata/NStreamData.h"
+#include "nakama-cpp/realtime/NRtClientDisconnectInfo.h"
 
 namespace Nakama {
 
@@ -44,8 +45,10 @@ namespace Nakama {
 
         /**
         * Called when the client socket disconnects.
+        *
+        * @param info The <c>NRtClientDisconnectInfo</c>.
         */
-        virtual void onDisconnect() {}
+        virtual void onDisconnect(const NRtClientDisconnectInfo& info) { (void)info; }
 
         /**
         * Called when the client receives an error.

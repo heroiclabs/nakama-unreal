@@ -40,8 +40,9 @@ namespace Nakama {
         /// The host address of the server. Defaults to "127.0.0.1".
         std::string host = "127.0.0.1";
 
-        /// The port number of the server. Defaults to 7350.
-        int port = 7350;
+        /// The port number of the server.
+        /// Default is 7350 for non-SSL connection, 443 for SSL.
+        int32_t port = DEFAULT_PORT;
 
         /// Set connection strings to use the secure mode with the server. Defaults to false.
         /// The server must be configured to make use of this option. With HTTP, GRPC, and WebSockets the server must
@@ -101,6 +102,11 @@ namespace Nakama {
          * Close the connection with the server.
          */
         virtual void disconnect() = 0;
+
+        /**
+         * Get websocket transport which RtClient uses.
+         */
+        virtual NRtTransportPtr getTransport() const = 0;
 
         /**
         * Join a chat channel on the server.

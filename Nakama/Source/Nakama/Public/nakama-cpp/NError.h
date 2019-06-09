@@ -60,6 +60,8 @@ namespace Nakama {
         NError() {}
         explicit NError(const std::string& message, ErrorCode code = ErrorCode::Unknown) :
             message(message), code(code) {}
+        explicit NError(std::string&& message, ErrorCode code = ErrorCode::Unknown) :
+            message(std::move(message)), code(code) {}
 
         std::string message;
         ErrorCode code = ErrorCode::Unknown;

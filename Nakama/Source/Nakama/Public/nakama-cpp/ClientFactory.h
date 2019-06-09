@@ -17,10 +17,11 @@
 #pragma once
 
 #include "nakama-cpp/NClientInterface.h"
+#include "nakama-cpp/NHttpTransportInterface.h"
 
 namespace Nakama {
 
-    struct NAKAMA_API DefaultClientParameters
+    struct NAKAMA_API NClientParameters
     {
         /// The key used to authenticate with the server without a session. Defaults to "defaultkey".
         std::string serverKey = "defaultkey";
@@ -28,8 +29,12 @@ namespace Nakama {
         /// The host address of the server. Defaults to "127.0.0.1".
         std::string host = "127.0.0.1";
 
-        /// The port number of the server. Defaults to 7349.
-        int port = 7349;
+        /// The port number of the server.
+        /// Default server ports (can be changed in the server config):
+        /// 7349 - gRPC API
+        /// 7350 - HTTP API
+        /// 443  - gRPC & HTTP API if SSL is enabled
+        int32_t port = DEFAULT_PORT;
 
         /// Set connection strings to use the secure mode with the server. Defaults to false.
         /// The server must be configured to make use of this option. With HTTP, GRPC, and WebSockets the server must
@@ -39,11 +44,34 @@ namespace Nakama {
         bool ssl = false;
     };
 
+    /// DefaultClientParameters is deprectaed, use NClientParameters instead
+    using DefaultClientParameters = NClientParameters;
+
     /**
      * Creates a default client to interact with Nakama server.
      * 
      * @param parameters the client parameters
      */
-    NAKAMA_API NClientPtr createDefaultClient(const DefaultClientParameters& parameters);
+    NAKAMA_API NClientPtr createDefaultClient(const NClientParameters& parameters);
+
+    /**
+     * Creates the gRPC client to interact with Nakama server.
+     *
+     * @param parameters the client parameters
+     */
+    NAKAMA_API NClientPtr createGrpcClient(const NClientParameters& parameters);
+
+    /**
+     * Creates the REST client (HTTP/1.1) to interact with Nakama server.
+     *
+     * @param parameters the client parameters
+     * @param httpTransport optional, the HTTP client. If not set then default HTTP transport will be used.
+     */
+    NAKAMA_API NClientPtr createRestClient(const NClientParameters& parameters, NHttpTransportPtr httpTransport = nullptr);
+
+    /**
+     * Creates default HTTP transport using C++ REST SDK.
+     */
+    NAKAMA_API NHttpTransportPtr createDefaultHttpTransport();
 
 }

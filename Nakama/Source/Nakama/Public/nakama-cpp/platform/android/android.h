@@ -14,9 +14,22 @@
  * limitations under the License.
  */
 
-#pragma once
+#ifdef __ANDROID__
 
-#include "nakama-cpp/ClientFactory.h"
-#include "nakama-cpp/realtime/NRtDefaultClientListener.h"
-#include "nakama-cpp/log/NLogger.h"
-#include "nakama-cpp/NakamaVersion.h"
+#include "nakama-cpp/NExport.h"
+#include <jni.h>
+
+namespace Nakama {
+
+    /*
+     * Initialize SDK with JVM (on Android only)
+     * 
+     * @param vm the pointer Java Virtual Machine
+     *
+     * Note: If you do not do this, your application will terminate upon attempting to create a Client.
+     */
+    NAKAMA_API void init(JavaVM* vm);
+
+}
+
+#endif // __ANDROID__

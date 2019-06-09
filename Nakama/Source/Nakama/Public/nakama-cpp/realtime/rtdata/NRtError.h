@@ -41,6 +41,10 @@ namespace Nakama {
     /// A logical error which may occur on the server.
     struct NAKAMA_API NRtError
     {
+        NRtError() {}
+        NRtError(RtErrorCode code, const std::string& message) : code(code), message(message) {}
+        NRtError(RtErrorCode code, std::string&& message) : code(code), message(std::move(message)) {}
+
         RtErrorCode code;                             ///< The error code
         std::string message;                          ///< A message in English to help developers debug the response.
         NStringMap context;                           ///< Additional error details which may be different for each response.

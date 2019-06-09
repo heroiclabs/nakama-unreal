@@ -29,7 +29,7 @@ namespace Nakama {
     {
     public:
         using ConnectCallback = std::function<void()>;
-        using DisconnectCallback = std::function<void()>;
+        using DisconnectCallback = std::function<void(const NRtClientDisconnectInfo& info)>;
         using ErrorCallback = std::function<void(const NRtError&)>;
         using ChannelMessageCallback = std::function<void(const NChannelMessage&)>;
         using ChannelPresenceCallback = std::function<void(const NChannelPresenceEvent&)>;
@@ -56,7 +56,7 @@ namespace Nakama {
 
     protected:
         void onConnect() override;
-        void onDisconnect() override;
+        void onDisconnect(const NRtClientDisconnectInfo& info) override;
         void onError(const NRtError& error) override;
         void onChannelMessage(const NChannelMessage& message) override;
         void onChannelPresence(const NChannelPresenceEvent& presence) override;

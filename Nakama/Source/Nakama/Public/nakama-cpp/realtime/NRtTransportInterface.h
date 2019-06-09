@@ -17,6 +17,7 @@
 #pragma once
 
 #include "nakama-cpp/NTypes.h"
+#include "nakama-cpp/realtime/NRtClientDisconnectInfo.h"
 #include <functional>
 #include <memory>
 #include <vector>
@@ -38,7 +39,7 @@ namespace Nakama {
         virtual ~NRtTransportInterface() {}
 
         using ConnectCallback = std::function<void()>;
-        using DisconnectCallback = std::function<void()>;
+        using DisconnectCallback = std::function<void(const NRtClientDisconnectInfo& info)>;
         using ErrorCallback = std::function<void(const std::string&)>;
         using MessageCallback = std::function<void(const NBytes&)>;
 
@@ -46,6 +47,20 @@ namespace Nakama {
         void setDisconnectCallback(DisconnectCallback callback) { _disconnectCallback = callback; }
         void setErrorCallback(ErrorCallback callback) { _errorCallback = callback; }
         void setMessageCallback(MessageCallback callback) { _messageCallback = callback; }
+
+        /**
+         * Set activity timeout, milliseconds.
+         *
+         * If no any message (including ping) received from server during activity timeout
+         * then connection will be closed.
+         * Set 0 to disable (default value).
+         */
+        virtual void setActivityTimeout(uint32_t timeoutMs) = 0;
+
+        /**
+         * Get activity timeout, milliseconds.
+         */
+        virtual uint32_t getActivityTimeout() const = 0;
 
         /**
          * Pumps requests queue in your thread.
@@ -75,14 +90,15 @@ namespace Nakama {
         * Send bytes data to the server.
         *
         * @param data The byte data to send.
+        * @return True if sent successfully.
         */
-        virtual void send(const NBytes& data) = 0;
+        virtual bool send(const NBytes& data) = 0;
 
     protected:
-        void onConnected() { _connected = true; if (_connectCallback) _connectCallback(); }
-        void onDisconnected() { _connected = false; if (_disconnectCallback) _disconnectCallback(); }
-        void onError(const std::string& description) { if (_errorCallback) _errorCallback(description); }
-        void onMessage(const NBytes& data) { if (_messageCallback) _messageCallback(data); }
+        void fireOnConnected() { _connected = true; if (_connectCallback) _connectCallback(); }
+        void fireOnDisconnected(const NRtClientDisconnectInfo& info) { _connected = false; if (_disconnectCallback) _disconnectCallback(info); }
+        void fireOnError(const std::string& description) { if (_errorCallback) _errorCallback(description); }
+        void fireOnMessage(const NBytes& data) { if (_messageCallback) _messageCallback(data); }
 
     protected:
         ConnectCallback _connectCallback;

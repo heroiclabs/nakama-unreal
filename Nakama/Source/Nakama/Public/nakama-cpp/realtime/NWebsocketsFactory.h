@@ -16,7 +16,23 @@
 
 #pragma once
 
-#include "nakama-cpp/ClientFactory.h"
-#include "nakama-cpp/realtime/NRtDefaultClientListener.h"
-#include "nakama-cpp/log/NLogger.h"
-#include "nakama-cpp/NakamaVersion.h"
+#include "nakama-cpp/realtime/NRtTransportInterface.h"
+
+namespace Nakama {
+
+    /**
+     * Create default websocket transport.
+     *
+     * Creates WebsocketCppRest transport as currently
+     * only it's used on all platforms.
+     */
+    NAKAMA_API NRtTransportPtr createDefaultWebsocket();
+    
+    /**
+     * Create Websocket transport using cpprest SDK.
+     * 
+     * Check out README for supported platforms.
+     */
+    NAKAMA_API NRtTransportPtr createWebsocketCppRest();
+
+}
