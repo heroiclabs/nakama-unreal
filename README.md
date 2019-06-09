@@ -78,10 +78,10 @@ using namespace Nakama;
 Use the connection credentials to build a client object.
 
 ```cpp
-DefaultClientParameters parameters;
+NClientParameters parameters;
 parameters.serverKey = "defaultkey";
 parameters.host = "127.0.0.1";
-parameters.port = 7349;
+parameters.port = DEFAULT_PORT;
 NClientPtr client = createDefaultClient(parameters);
 ```
 
@@ -168,10 +168,9 @@ client->getAccount(session, successCallback, errorCallback);
 The client can create one or more realtime clients with the server. Each realtime client can have it's own events listener registered for responses received from the server.
 
 ```cpp
-int port = 7350; // different port to the main API port
 bool createStatus = true; // if the socket should show the user as online to others.
 // define realtime client in your class as NRtClientPtr rtClient;
-rtClient = client->createRtClient(port);
+rtClient = client->createRtClient(DEFAULT_PORT);
 // define listener in your class as NRtDefaultClientListener listener;
 listener.setConnectCallback([]()
 {
