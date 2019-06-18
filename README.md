@@ -85,6 +85,8 @@ parameters.port = DEFAULT_PORT;
 NClientPtr client = createDefaultClient(parameters);
 ```
 
+The `createDefaultClient` will create HTTP/1.1 client to use REST API.
+
 ## Tick
 
 The `tick` method pumps requests queue and executes callbacks in your thread. You must call it periodically, the `Tick` method of actor is good place for this.

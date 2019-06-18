@@ -3,6 +3,19 @@ All notable changes to this project are documented below.
 
 The format is based on [keep a changelog](http://keepachangelog.com/) and this project uses [semantic versioning](http://semver.org/).
 
+## [2.1.0] - 2019-06-19
+### Added
+- REST client (HTTP/1.1).
+- Add tournament start active time to the API response.
+- Add "Activity timeout" to Websocket.
+
+### Changed
+- Now we use one C++ REST library for all platforms instead of Websocketpp and IXWebsocket.
+- gRPC client is off.
+
+### Fixed
+- Fixed loading dynamic library on Mac.
+
 ## [2.0.3] - 2019-05-01
 ### Added
 - support Windows (VS 2015, 2017, 2019).
