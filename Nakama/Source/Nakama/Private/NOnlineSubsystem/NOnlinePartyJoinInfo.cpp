@@ -2,6 +2,12 @@
 
 namespace Nakama {
 
+    NOnlinePartyJoinInfo::NOnlinePartyJoinInfo()
+        : m_onlinePartyId(MakeShared<const NOnlinePartyId>())
+        , m_uniqueNetId(MakeShared<const NUniqueNetId>())
+    {
+    }
+
     bool NOnlinePartyJoinInfo::IsValid() const
     {
         return false;
@@ -9,7 +15,7 @@ namespace Nakama {
 
     const TSharedRef<const FOnlinePartyId>& NOnlinePartyJoinInfo::GetPartyId() const
     {
-        return MakeShared<const FOnlinePartyId>();
+        return m_onlinePartyId;
     }
 
     const FOnlinePartyTypeId NOnlinePartyJoinInfo::GetPartyTypeId() const
@@ -19,7 +25,7 @@ namespace Nakama {
 
     const TSharedRef<const FUniqueNetId>& NOnlinePartyJoinInfo::GetSourceUserId() const
     {
-        return MakeShared<const FUniqueNetId>();
+        return m_uniqueNetId;
     }
 
     const FString & NOnlinePartyJoinInfo::GetSourceDisplayName() const

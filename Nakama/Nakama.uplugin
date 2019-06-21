@@ -1,32 +1,37 @@
 {
-	"FileVersion": 3,
-	"Version": 2220,
-	"VersionName": "2.2.2",
-	"FriendlyName": "Nakama client",
-	"Description": "A UE4 client for the Nakama server.",
-	"Category": "HeroicLabs.Nakama",
-	"CreatedBy": "Heroic Labs",
-	"CreatedByURL": "http://heroiclabs.com/",
-	"DocsURL": "https://heroiclabs.com/docs/",
-	"MarketplaceURL": "",
-	"SupportURL": "",
-	"EnabledByDefault": true,
-	"CanContainContent": true,
-	"IsBetaVersion": false,
-	"Installed": false,
-	"Modules": [
-		{
-			"Name": "Nakama",
-			"Type": "Runtime",
-			"LoadingPhase": "PreDefault",
-			"WhitelistPlatforms": [
-				"Win32",
-				"Win64",
-				"Mac",
-				"IOS",
-				"Linux",
-				"Android"
-			]
-		}
-	]
+  "FileVersion": 3,
+  "Version": 2220,
+  "VersionName": "2.2.2",
+  "FriendlyName": "Nakama client",
+  "Description": "A UE4 client for the Nakama server.",
+  "Category": "HeroicLabs.Nakama",
+  "CreatedBy": "Heroic Labs",
+  "CreatedByURL": "http://heroiclabs.com/",
+  "DocsURL": "https://heroiclabs.com/docs/",
+  "MarketplaceURL": "",
+  "SupportURL": "",
+  "EnabledByDefault": true,
+  "CanContainContent": true,
+  "IsBetaVersion": false,
+  "Installed": false,
+  "Modules": [
+    {
+      "Name": "Nakama",
+      "Type": "Runtime",
+      "LoadingPhase": "PreDefault",
+      "WhitelistPlatforms": [
+        "Win32",
+        "Win64",
+        "Mac",
+        "IOS",
+        "Linux"
+      ]
+    }
+  ],
+  "Plugins": [
+    {
+      "Name": "OnlineSubsystem",
+      "Enabled": true
+    }
+  ]
 }
