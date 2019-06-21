@@ -1,6 +1,8 @@
 #pragma once
 
 #include "OnlinePartyInterface.h"
+#include "NOnlineSubsystem/NOnlinePartyId.h"
+#include "NOnlineSubsystem/NUniqueNetId.h"
 
 namespace Nakama {
 
@@ -10,6 +12,7 @@ namespace Nakama {
     class NOnlinePartyJoinInfo : public IOnlinePartyJoinInfo
     {
     public:
+        NOnlinePartyJoinInfo();
 
         bool IsValid() const override;
 
@@ -93,6 +96,8 @@ namespace Nakama {
         FString m_sourcePlatform;
         FString m_appId;
         FString m_buildId;
+        TSharedRef<const FOnlinePartyId> m_onlinePartyId;
+        TSharedRef<const FUniqueNetId> m_uniqueNetId;
     };
 
 }
