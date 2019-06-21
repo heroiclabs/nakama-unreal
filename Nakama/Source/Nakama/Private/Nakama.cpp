@@ -9,7 +9,7 @@
 
 #define LOCTEXT_NAMESPACE "FNakamaModule"
 
-DEFINE_LOG_CATEGORY(LogNakama);
+//DEFINE_LOG_CATEGORY(LogNakama);
 
 using namespace Nakama;
 

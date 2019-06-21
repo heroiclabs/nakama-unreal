@@ -20,7 +20,7 @@
 
 #include "nakama-cpp/log/NLogSinkInterface.h"
 
-DECLARE_LOG_CATEGORY_EXTERN(LogNakama, Log, All);
+//DECLARE_LOG_CATEGORY_EXTERN(LogNakama, Log, All);
 
 namespace Nakama {
 
