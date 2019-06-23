@@ -16,8 +16,14 @@
 
 #include "NOnlineSubsystem/NOnlinePartySystem.h"
 #include "NOnlineSubsystem/NOnlinePartyJoinInfo.h"
+#include "NOnlineSubsystem/NOnlinePartyId.h"
 
 namespace Nakama {
+
+    NOnlinePartySystem::NOnlinePartySystem(NClientPtr client, NRtClientPtr rtClient, NSessionPtr session)
+        : _client(client), _rtClient(rtClient), _session(session)
+    {
+    }
 
     bool NOnlinePartySystem::CreateParty(const FUniqueNetId & LocalUserId, const FOnlinePartyTypeId PartyTypeId, const FPartyConfiguration & PartyConfig, const FOnCreatePartyComplete & Delegate)
     {

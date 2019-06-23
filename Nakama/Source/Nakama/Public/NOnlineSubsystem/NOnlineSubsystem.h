@@ -18,9 +18,12 @@
 
 //#include "OnlineSubsystem.h"
 #include "OnlinePartyInterface.h"
+#include "nakama-cpp/Nakama.h"
 
 namespace Nakama {
 
-    TSharedPtr<IOnlinePartySystem> createOnlinePartySystem();
+    TSharedPtr<IOnlinePartySystem> createOnlinePartySystem(NClientPtr client, NRtClientPtr rtClient, NSessionPtr session);
+
+    TSharedRef<const FUniqueNetId> getNetId(NSessionPtr session);
 
 }
