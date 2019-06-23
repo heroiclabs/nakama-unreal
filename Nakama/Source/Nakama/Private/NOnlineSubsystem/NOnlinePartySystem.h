@@ -16,18 +16,20 @@
 
 #pragma once
 
-//#include "NOnlineSubsystem/NOnlineSubsystem.h"
+#include "nakama-cpp/Nakama.h"
 #include "OnlinePartyInterface.h"
 
 namespace Nakama {
 
-    ///
-    /// Interface definition for the online party services.
-    /// Allows for forming a party and communicating with party members.
-    ///
+    /**
+     * Interface definition for the online party services
+     * Allows for forming a party and communicating with party members
+     */
     class NOnlinePartySystem : public IOnlinePartySystem
     {
     public:
+        NOnlinePartySystem(NClientPtr client, NRtClientPtr rtClient, NSessionPtr session);
+
         /**
          * Create a new party
          *
@@ -455,6 +457,10 @@ namespace Nakama {
          */
         void DumpPartyState() override;
 
+    protected:
+        NClientPtr _client;
+        NRtClientPtr _rtClient;
+        NSessionPtr _session;
     };
 
 }
