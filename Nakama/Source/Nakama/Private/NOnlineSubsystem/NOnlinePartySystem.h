@@ -18,6 +18,11 @@
 
 #include "nakama-cpp/Nakama.h"
 #include "OnlinePartyInterface.h"
+#include "Runtime/Launch/Resources/Version.h"
+
+#if (ENGINE_MAJOR_VERSION > 4) || (ENGINE_MAJOR_VERSION == 4 && ENGINE_MINOR_VERSION >= 22)
+    #define N_ENABLE_JIP
+#endif
 
 namespace Nakama {
 
@@ -64,16 +69,18 @@ namespace Nakama {
          */
         bool JoinParty(const FUniqueNetId& LocalUserId, const IOnlinePartyJoinInfo& OnlinePartyJoinInfo, const FOnJoinPartyComplete& Delegate = FOnJoinPartyComplete()) override;
 
+#ifdef N_ENABLE_JIP
         /**
-        * Join an existing game session from within a party
-        *
-        * @param LocalUserId - user making the request
-        * @param OnlinePartyJoinInfo - join information containing data such as party id, leader id
-        * @param Delegate - called on completion
-        *
-        * @return true if task was started
-        */
+         * Join an existing game session from within a party
+         *
+         * @param LocalUserId - user making the request
+         * @param OnlinePartyJoinInfo - join information containing data such as party id, leader id
+         * @param Delegate - called on completion
+         *
+         * @return true if task was started
+         */
         bool JIPFromWithinParty(const FUniqueNetId& LocalUserId, const FOnlinePartyId& PartyId, const FUniqueNetId& PartyLeaderId) override;
+#endif
 
         /**
          * Query a party to check it's current joinability
@@ -112,30 +119,32 @@ namespace Nakama {
         bool LeaveParty(const FUniqueNetId& LocalUserId, const FOnlinePartyId& PartyId, const FOnLeavePartyComplete& Delegate = FOnLeavePartyComplete()) override;
 
         /**
-        * Approve a request to join a party
-        *
-        * @param LocalUserId - user making the request
-        * @param PartyId - id of an existing party
-        * @param RecipientId - id of the user being invited
-        * @param bIsApproved - whether the join request was approved or not
-        * @param DeniedResultCode - used when bIsApproved is false - client defined value to return when leader denies approval
-        *
-        * @return true if task was started
-        */
+         * Approve a request to join a party
+         *
+         * @param LocalUserId - user making the request
+         * @param PartyId - id of an existing party
+         * @param RecipientId - id of the user being invited
+         * @param bIsApproved - whether the join request was approved or not
+         * @param DeniedResultCode - used when bIsApproved is false - client defined value to return when leader denies approval
+         *
+         * @return true if task was started
+         */
         bool ApproveJoinRequest(const FUniqueNetId& LocalUserId, const FOnlinePartyId& PartyId, const FUniqueNetId& RecipientId, bool bIsApproved, int32 DeniedResultCode = 0) override;
 
+#ifdef N_ENABLE_JIP
         /**
-        * Approve a request to join the JIP match a party is in.
-        *
-        * @param LocalUserId - user making the request
-        * @param PartyId - id of an existing party
-        * @param RecipientId - id of the user being invited
-        * @param bIsApproved - whether the join request was approved or not
-        * @param DeniedResultCode - used when bIsApproved is false - client defined value to return when leader denies approval
-        *
-        * @return true if task was started
-        */
+         * Approve a request to join the JIP match a party is in.
+         *
+         * @param LocalUserId - user making the request
+         * @param PartyId - id of an existing party
+         * @param RecipientId - id of the user being invited
+         * @param bIsApproved - whether the join request was approved or not
+         * @param DeniedResultCode - used when bIsApproved is false - client defined value to return when leader denies approval
+         *
+         * @return true if task was started
+         */
         bool ApproveJIPRequest(const FUniqueNetId& LocalUserId, const FOnlinePartyId& PartyId, const FUniqueNetId& RecipientId, bool bIsApproved, int32 DeniedResultCode = 0) override;
+#endif
 
         /**
          * Respond to a query joinability request.  This reflects the current party's joinability state and can change from moment to moment, and therefore does not guarantee a successful join.

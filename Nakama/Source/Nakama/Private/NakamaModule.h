@@ -16,12 +16,15 @@
 
 #pragma once
 
-#include "Modules/ModuleManager.h"
+#include "INakamaModule.h"
 
-class FNakamaModule : public IModuleInterface
+class FNakamaModule : public INakamaModule
 {
 public:
 	/** IModuleInterface implementation */
 	virtual void StartupModule() override;
 	virtual void ShutdownModule() override;
+
+    TSharedPtr<IOnlinePartySystem> createOnlinePartySystem(Nakama::NClientPtr client, Nakama::NRtClientPtr rtClient, Nakama::NSessionPtr session) override;
+    TSharedRef<const FUniqueNetId> getNetId(Nakama::NSessionPtr session) override;
 };

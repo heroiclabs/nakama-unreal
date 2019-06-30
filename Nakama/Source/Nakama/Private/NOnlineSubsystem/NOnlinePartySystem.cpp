@@ -27,7 +27,49 @@ namespace Nakama {
 
     bool NOnlinePartySystem::CreateParty(const FUniqueNetId & LocalUserId, const FOnlinePartyTypeId PartyTypeId, const FPartyConfiguration & PartyConfig, const FOnCreatePartyComplete & Delegate)
     {
-        return false;
+        auto LocalUserIdPtr = LocalUserId.AsShared();
+
+        auto successCallback = [LocalUserIdPtr, Delegate](const NGroup& group)
+        {
+            auto partyId = MakeShared<NOnlinePartyId>();
+
+            Delegate.ExecuteIfBound(*LocalUserIdPtr, partyId, ECreatePartyCompletionResult::Succeeded);
+        };
+
+        auto errorCallback = [LocalUserIdPtr, Delegate](const NError& error)
+        {
+            ECreatePartyCompletionResult partyResult;
+
+            switch (error.code)
+            {
+            default:
+            case ErrorCode::Unknown:          partyResult = ECreatePartyCompletionResult::UnknownClientFailure; break;
+            case ErrorCode::NotFound:         partyResult = ECreatePartyCompletionResult::UnknownInternalFailure; break;
+            case ErrorCode::AlreadyExists:    partyResult = ECreatePartyCompletionResult::AlreadyCreatingParty; break;
+            case ErrorCode::InvalidArgument:  partyResult = ECreatePartyCompletionResult::UnknownClientFailure; break;
+            case ErrorCode::Unauthenticated:  partyResult = ECreatePartyCompletionResult::LoggedOut; break;
+            case ErrorCode::PermissionDenied: partyResult = ECreatePartyCompletionResult::UnknownClientFailure; break;
+            case ErrorCode::ConnectionError:  partyResult = ECreatePartyCompletionResult::UnknownClientFailure; break;
+            case ErrorCode::InternalError:    partyResult = ECreatePartyCompletionResult::UnknownInternalFailure; break;
+            }
+
+            auto partyId = MakeShared<NOnlinePartyId>();
+
+            Delegate.ExecuteIfBound(*LocalUserIdPtr, partyId, partyResult);
+        };
+
+        //_client->listGroups(_session);
+        _client->createGroup(
+            _session,
+            TCHAR_TO_UTF8(*PartyConfig.Nickname), // name
+            TCHAR_TO_UTF8(*PartyConfig.Description), // description
+            "",
+            "",
+            false,
+            successCallback,
+            errorCallback);
+
+        return true;
     }
 
     bool NOnlinePartySystem::UpdateParty(const FUniqueNetId & LocalUserId, const FOnlinePartyId & PartyId, const FPartyConfiguration & PartyConfig, bool bShouldRegenerateReservationKey, const FOnUpdatePartyComplete & Delegate)
@@ -40,10 +82,12 @@ namespace Nakama {
         return false;
     }
 
+#ifdef N_ENABLE_JIP
     bool NOnlinePartySystem::JIPFromWithinParty(const FUniqueNetId & LocalUserId, const FOnlinePartyId & PartyId, const FUniqueNetId & PartyLeaderId)
     {
         return false;
     }
+#endif
 
     void NOnlinePartySystem::QueryPartyJoinability(const FUniqueNetId & LocalUserId, const IOnlinePartyJoinInfo & OnlinePartyJoinInfo, const FOnQueryPartyJoinabilityComplete & Delegate)
     {
@@ -64,10 +108,12 @@ namespace Nakama {
         return false;
     }
 
+#ifdef N_ENABLE_JIP
     bool NOnlinePartySystem::ApproveJIPRequest(const FUniqueNetId & LocalUserId, const FOnlinePartyId & PartyId, const FUniqueNetId & RecipientId, bool bIsApproved, int32 DeniedResultCode)
     {
         return false;
     }
+#endif
 
     void NOnlinePartySystem::RespondToQueryJoinability(const FUniqueNetId & LocalUserId, const FOnlinePartyId & PartyId, const FUniqueNetId & RecipientId, bool bCanJoin, int32 DeniedResultCode)
     {
