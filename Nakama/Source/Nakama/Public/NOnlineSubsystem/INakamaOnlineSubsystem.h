@@ -29,6 +29,8 @@ namespace Nakama {
 
         virtual TSharedRef<const FUniqueNetId> getPlayerId(NSessionPtr session) = 0;
 
+        virtual TSharedRef<const FOnlinePartyId> getPartyId(FString partyId) = 0;
+
         virtual TSharedPtr<INakamaOnlinePartyJoinInfo> createPartyJoinInfo() = 0;
     };
 

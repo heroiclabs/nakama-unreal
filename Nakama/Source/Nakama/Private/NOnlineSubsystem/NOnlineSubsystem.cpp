@@ -17,6 +17,7 @@
 #include "NOnlineSubsystem/NOnlineSubsystem.h"
 #include "NOnlineSubsystem/NOnlinePartySystem.h"
 #include "NOnlineSubsystem/NUniqueNetId.h"
+#include "NOnlineSubsystem/NOnlinePartyId.h"
 #include "NOnlineSubsystem/NOnlinePartyJoinInfo.h"
 
 namespace Nakama {
@@ -29,6 +30,11 @@ namespace Nakama {
     TSharedRef<const FUniqueNetId> NOnlineSubsystem::getPlayerId(NSessionPtr session)
     {
         return TSharedRef<const FUniqueNetId>(new NUniqueNetId(session->getUserId().c_str()));
+    }
+
+    TSharedRef<const FOnlinePartyId> NOnlineSubsystem::getPartyId(FString partyId)
+    {
+        return TSharedRef<const FOnlinePartyId>(new NOnlinePartyId(partyId));
     }
 
     TSharedPtr<INakamaOnlinePartyJoinInfo> NOnlineSubsystem::createPartyJoinInfo()

@@ -223,7 +223,60 @@ namespace Nakama {
 
     bool NOnlinePartySystem::LeaveParty(const FUniqueNetId & LocalUserId, const FOnlinePartyId & PartyId, const FOnLeavePartyComplete & Delegate)
     {
-        return false;
+        if (!_rtClient->isConnected())
+        {
+            NLOG_ERROR("RtClient is not connected");
+            return false;
+        }
+
+        auto LocalUserIdPtr = LocalUserId.AsShared();
+        auto PartyIdPtr = PartyId.AsShared();
+
+        auto successCallback = [LocalUserIdPtr, PartyIdPtr, Delegate](const NRpc& rpc)
+        {
+            ELeavePartyCompletionResult result = ELeavePartyCompletionResult::UnknownClientFailure;
+            rapidjson::Document document;
+
+            if (document.Parse(rpc.payload).HasParseError())
+            {
+                NLOG_ERROR("Failed parse json: " + rpc.payload);
+            }
+            else
+            {
+                auto& jsonResult = document["leave_party_completion_result"];
+
+                if (jsonResult.IsNumber())
+                {
+                    result = (ELeavePartyCompletionResult)jsonResult.GetInt();
+                }
+                else
+                {
+                    NLOG_ERROR("No required fields in json: " + rpc.payload);
+                }
+            }
+
+            Delegate.ExecuteIfBound(*LocalUserIdPtr, *PartyIdPtr, result);
+        };
+
+        auto errorCallback = [LocalUserIdPtr, Delegate, PartyIdPtr](const NRtError& error)
+        {
+            Delegate.ExecuteIfBound(*LocalUserIdPtr, *PartyIdPtr, ELeavePartyCompletionResult::UnknownClientFailure);
+        };
+
+        rapidjson::Document document;
+        document.SetObject();
+
+        document.AddMember("party_id", toStdString(PartyId.ToString()), document.GetAllocator());
+
+        std::string payload(jsonDocToStdStr(document));
+
+        _rtClient->rpc(
+            "onlinepartysystem-leaveparty",
+            payload,
+            successCallback,
+            errorCallback);
+
+        return true;
     }
 
     bool NOnlinePartySystem::ApproveJoinRequest(const FUniqueNetId & LocalUserId, const FOnlinePartyId & PartyId, const FUniqueNetId & RecipientId, bool bIsApproved, int32 DeniedResultCode)
@@ -393,7 +446,7 @@ namespace Nakama {
 
         if (document.Parse(content).HasParseError())
         {
-            NLOG_ERROR("Parse json error");
+            NLOG_ERROR("Failed parse json: " + content);
         }
         else
         {
