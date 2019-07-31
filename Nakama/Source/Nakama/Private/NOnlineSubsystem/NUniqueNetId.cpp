@@ -18,29 +18,51 @@
 
 namespace Nakama {
 
+    NUniqueNetId::NUniqueNetId()
+    {
+    }
+
+    NUniqueNetId::NUniqueNetId(const FString & id) : _id(id)
+    {
+    }
+
+    NUniqueNetId::NUniqueNetId(FString && id) : _id(std::move(id))
+    {
+    }
+
     const uint8 * NUniqueNetId::GetBytes() const
     {
-        return nullptr;
+        return (const uint8 *)_id.GetCharArray().GetData();
     }
 
     int32 NUniqueNetId::GetSize() const
     {
-        return int32();
+        return _id.Len();
     }
 
     bool NUniqueNetId::IsValid() const
     {
-        return false;
+        return !_id.IsEmpty();
     }
 
     FString NUniqueNetId::ToString() const
     {
-        return FString();
+        return _id;
     }
 
     FString NUniqueNetId::ToDebugString() const
     {
-        return FString();
+        return _id;
+    }
+
+    void NUniqueNetId::SetId(const FString & id)
+    {
+        _id = id;
+    }
+
+    void NUniqueNetId::SetId(FString && id)
+    {
+        _id = std::move(id);
     }
 
 }

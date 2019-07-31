@@ -16,18 +16,17 @@
 
 #pragma once
 
-#include "INakamaModule.h"
-#include "NOnlineSubsystem/NOnlineSubsystem.h"
+#include "OnlinePartyInterface.h"
 
-class FNakamaModule : public INakamaModule
-{
-public:
-	/** IModuleInterface implementation */
-	virtual void StartupModule() override;
-	virtual void ShutdownModule() override;
+namespace Nakama {
 
-    Nakama::INakamaOnlineSubsystem& getOnlineSubsystem() override;
+    /**
+     * Info needed to join a party
+     */
+    class INakamaOnlinePartyJoinInfo : public IOnlinePartyJoinInfo
+    {
+    public:
+        virtual void SetPartyId(FString partyId) = 0;
+    };
 
-protected:
-    Nakama::NOnlineSubsystem _onlineSubsystem;
-};
+}

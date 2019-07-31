@@ -26,6 +26,10 @@ namespace Nakama {
     class NOnlinePartyId : public FOnlinePartyId
     {
     public:
+        NOnlinePartyId();
+        NOnlinePartyId(const FString& id);
+        NOnlinePartyId(FString&& id);
+
         /**
          * Get the raw byte representation of this opaque data
          * This data is platform dependent and shouldn't be manipulated directly
@@ -62,6 +66,12 @@ namespace Nakama {
          * @return data in string form
          */
         FString ToDebugString() const override;
+
+        void SetId(const FString& id);
+        void SetId(FString&& id);
+
+    protected:
+        FString _id;
     };
 
 }

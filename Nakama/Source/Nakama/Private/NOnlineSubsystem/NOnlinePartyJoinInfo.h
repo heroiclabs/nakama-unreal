@@ -16,16 +16,14 @@
 
 #pragma once
 
-#include "OnlinePartyInterface.h"
-#include "NOnlineSubsystem/NOnlinePartyId.h"
-#include "NOnlineSubsystem/NUniqueNetId.h"
+#include "NOnlineSubsystem/INakamaOnlinePartyJoinInfo.h"
 
 namespace Nakama {
 
     /**
      * Info needed to join a party
      */
-    class NOnlinePartyJoinInfo : public IOnlinePartyJoinInfo
+    class NOnlinePartyJoinInfo : public INakamaOnlinePartyJoinInfo
     {
     public:
         NOnlinePartyJoinInfo();
@@ -107,13 +105,15 @@ namespace Nakama {
          */
         bool CanRequestAnInvite() const override;
 
+        void SetPartyId(FString partyId) override;
+
     protected:
         FString m_sourceDisplayName;
         FString m_sourcePlatform;
         FString m_appId;
         FString m_buildId;
-        TSharedRef<const FOnlinePartyId> m_onlinePartyId;
-        TSharedRef<const FUniqueNetId> m_uniqueNetId;
+        TSharedRef<const FOnlinePartyId>  m_partyId;
+        TSharedRef<const FUniqueNetId> m_sourceUserId;
     };
 
 }

@@ -65,6 +65,7 @@ public class Nakama : ModuleRules
 		}
 
 		PrivateDefinitions.Add("NAKAMA_SHARED_LIBRARY=1");
+		PrivateDefinitions.Add("NLOGS_ENABLED=1");
 	}
 
 	private void HandleWindows(ReadOnlyTargetRules Target)

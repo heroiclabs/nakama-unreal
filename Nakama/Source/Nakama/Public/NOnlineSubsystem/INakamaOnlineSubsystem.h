@@ -16,14 +16,20 @@
 
 #pragma once
 
-//#include "OnlineSubsystem.h"
 #include "OnlinePartyInterface.h"
+#include "NOnlineSubsystem/INakamaOnlinePartyJoinInfo.h"
 #include "nakama-cpp/Nakama.h"
 
 namespace Nakama {
 
-    TSharedPtr<IOnlinePartySystem> createOnlinePartySystem(NClientPtr client, NRtClientPtr rtClient, NSessionPtr session);
+    class INakamaOnlineSubsystem
+    {
+    public:
+        virtual TSharedPtr<IOnlinePartySystem> createOnlinePartySystem(NClientPtr client, NRtClientPtr rtClient, NSessionPtr session) = 0;
 
-    TSharedRef<const FUniqueNetId> getNetId(NSessionPtr session);
+        virtual TSharedRef<const FUniqueNetId> getPlayerId(NSessionPtr session) = 0;
+
+        virtual TSharedPtr<INakamaOnlinePartyJoinInfo> createPartyJoinInfo() = 0;
+    };
 
 }

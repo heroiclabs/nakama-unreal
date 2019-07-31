@@ -26,14 +26,9 @@ void FNakamaModule::ShutdownModule()
 	// we call this function before unloading the module.
 }
 
-TSharedPtr<IOnlinePartySystem> FNakamaModule::createOnlinePartySystem(NClientPtr client, NRtClientPtr rtClient, NSessionPtr session)
+Nakama::INakamaOnlineSubsystem& FNakamaModule::getOnlineSubsystem()
 {
-    return Nakama::createOnlinePartySystem(client, rtClient, session);
-}
-
-TSharedRef<const FUniqueNetId> FNakamaModule::getNetId(NSessionPtr session)
-{
-    return Nakama::getNetId(session);
+    return _onlineSubsystem;
 }
 
 #undef LOCTEXT_NAMESPACE

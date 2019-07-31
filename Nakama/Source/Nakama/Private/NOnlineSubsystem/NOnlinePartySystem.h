@@ -467,9 +467,21 @@ namespace Nakama {
         void DumpPartyState() override;
 
     protected:
+        struct JoinPartyInfo
+        {
+            TSharedPtr<FUniqueNetId const> localUserId;
+            FOnJoinPartyComplete delegate;
+        };
+
+        void handleJoinPartyResponse(const std::string& content);
+        void joinPartyResult(const std::string& partyId, EJoinPartyCompletionResult result);
+
+    protected:
         NClientPtr _client;
         NRtClientPtr _rtClient;
+        NRtDefaultClientListener _listener;
         NSessionPtr _session;
+        std::map<std::string/*partyId*/, JoinPartyInfo> _joinInfo;
     };
 
 }
