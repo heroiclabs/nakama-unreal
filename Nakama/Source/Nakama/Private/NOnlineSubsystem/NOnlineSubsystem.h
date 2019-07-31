@@ -29,6 +29,8 @@ namespace Nakama {
 
         TSharedRef<const FUniqueNetId> getPlayerId(NSessionPtr session) override;
 
+        TSharedRef<const FOnlinePartyId> getPartyId(FString partyId) override;
+
         TSharedPtr<INakamaOnlinePartyJoinInfo> createPartyJoinInfo() override;
     };
 
