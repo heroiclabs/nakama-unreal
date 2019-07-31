@@ -16,18 +16,20 @@
 
 #pragma once
 
-#include "INakamaModule.h"
-#include "NOnlineSubsystem/NOnlineSubsystem.h"
+#include "OnlinePartyInterface.h"
+#include "NOnlineSubsystem/INakamaOnlineSubsystem.h"
+#include "nakama-cpp/Nakama.h"
 
-class FNakamaModule : public INakamaModule
-{
-public:
-	/** IModuleInterface implementation */
-	virtual void StartupModule() override;
-	virtual void ShutdownModule() override;
+namespace Nakama {
 
-    Nakama::INakamaOnlineSubsystem& getOnlineSubsystem() override;
+    class NOnlineSubsystem : public INakamaOnlineSubsystem
+    {
+    public:
+        TSharedPtr<IOnlinePartySystem> createOnlinePartySystem(NClientPtr client, NRtClientPtr rtClient, NSessionPtr session) override;
 
-protected:
-    Nakama::NOnlineSubsystem _onlineSubsystem;
-};
+        TSharedRef<const FUniqueNetId> getPlayerId(NSessionPtr session) override;
+
+        TSharedPtr<INakamaOnlinePartyJoinInfo> createPartyJoinInfo() override;
+    };
+
+}

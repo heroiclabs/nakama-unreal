@@ -18,29 +18,51 @@
 
 namespace Nakama {
 
+    NOnlinePartyId::NOnlinePartyId()
+    {
+    }
+
+    NOnlinePartyId::NOnlinePartyId(const FString& id) : _id(id)
+    {
+    }
+
+    NOnlinePartyId::NOnlinePartyId(FString && id) : _id(std::move(id))
+    {
+    }
+
     const uint8 * NOnlinePartyId::GetBytes() const
     {
-        return nullptr;
+        return (const uint8 *)_id.GetCharArray().GetData();
     }
 
     int32 NOnlinePartyId::GetSize() const
     {
-        return int32();
+        return _id.Len();
     }
 
     bool NOnlinePartyId::IsValid() const
     {
-        return false;
+        return !_id.IsEmpty();
     }
 
     FString NOnlinePartyId::ToString() const
     {
-        return FString();
+        return _id;
     }
 
     FString NOnlinePartyId::ToDebugString() const
     {
-        return FString();
+        return _id;
+    }
+
+    void NOnlinePartyId::SetId(const FString & id)
+    {
+        _id = id;
+    }
+
+    void NOnlinePartyId::SetId(FString && id)
+    {
+        _id = std::move(id);
     }
 
 }

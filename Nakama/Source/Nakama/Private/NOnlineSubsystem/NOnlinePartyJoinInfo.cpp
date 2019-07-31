@@ -15,23 +15,25 @@
  */
 
 #include "NOnlineSubsystem/NOnlinePartyJoinInfo.h"
+#include "NOnlineSubsystem/NOnlinePartyId.h"
+#include "NOnlineSubsystem/NUniqueNetId.h"
 
 namespace Nakama {
 
     NOnlinePartyJoinInfo::NOnlinePartyJoinInfo()
-        : m_onlinePartyId(MakeShared<const NOnlinePartyId>())
-        , m_uniqueNetId(MakeShared<const NUniqueNetId>())
+        : m_partyId(MakeShared<const NOnlinePartyId>())
+        , m_sourceUserId(MakeShared<const NUniqueNetId>())
     {
     }
 
     bool NOnlinePartyJoinInfo::IsValid() const
     {
-        return false;
+        return m_partyId->IsValid();
     }
 
     const TSharedRef<const FOnlinePartyId>& NOnlinePartyJoinInfo::GetPartyId() const
     {
-        return m_onlinePartyId;
+        return m_partyId;
     }
 
     const FOnlinePartyTypeId NOnlinePartyJoinInfo::GetPartyTypeId() const
@@ -41,7 +43,7 @@ namespace Nakama {
 
     const TSharedRef<const FUniqueNetId>& NOnlinePartyJoinInfo::GetSourceUserId() const
     {
-        return m_uniqueNetId;
+        return m_sourceUserId;
     }
 
     const FString & NOnlinePartyJoinInfo::GetSourceDisplayName() const
@@ -102,6 +104,11 @@ namespace Nakama {
     bool NOnlinePartyJoinInfo::CanRequestAnInvite() const
     {
         return false;
+    }
+
+    void NOnlinePartyJoinInfo::SetPartyId(FString partyId)
+    {
+        m_partyId = MakeShared<const NOnlinePartyId>(partyId);
     }
 
 }
