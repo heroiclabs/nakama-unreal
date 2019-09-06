@@ -259,7 +259,12 @@ func (p PartyMatch) MatchLoop(ctx context.Context, logger runtime.Logger, db *sq
 				delete(s.joinRequests, string(message.GetData()))
 
 				// Add the user to the match stream. This will lead to MatchJoin being triggered.
-				if _, err := nk.StreamUserJoin(6, strings.SplitN(ctx.Value(runtime.RUNTIME_CTX_MATCH_ID).(string), ".", 2)[0], "", "", presence.GetUserId(), presence.GetSessionId(), false, false, ""); err != nil {
+				matchIdComponents := strings.SplitN(ctx.Value(runtime.RUNTIME_CTX_MATCH_ID).(string), ".", 2)
+				if len(matchIdComponents) != 2 {
+					logger.Error("Error parsing match ID into components")
+					continue
+				}
+				if _, err := nk.StreamUserJoin(6, matchIdComponents[0], "", matchIdComponents[1], presence.GetUserId(), presence.GetSessionId(), false, false, ""); err != nil {
 					logger.Warn("Error adding user to match stream after party join request approved: %v", err)
 				}
 			}
