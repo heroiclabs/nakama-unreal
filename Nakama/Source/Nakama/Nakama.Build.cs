@@ -37,37 +37,29 @@ public class Nakama : ModuleRules
 				// ... add other public dependencies that you statically link with here ...
 			});
 
-		switch (Target.Platform)
+		if (UnrealTargetPlatform.Win32 == Target.Platform || UnrealTargetPlatform.Win64 == Target.Platform)
 		{
-			case UnrealTargetPlatform.Win32:
-				HandleWindows(Target);
-				break;
-
-			case UnrealTargetPlatform.Win64:
-				HandleWindows(Target);
-				break;
-
-			case UnrealTargetPlatform.Linux:
-				HandleLinux(Target);
-				break;
-
-			case UnrealTargetPlatform.Mac:
-				HandleMac(Target);
-				break;
-
-			case UnrealTargetPlatform.IOS:
-				HandleIOS(Target);
-				break;
-
-			case UnrealTargetPlatform.Android:
-				HandleAndroid(Target);
-				break;
-
-			case UnrealTargetPlatform.PS4:
-			case UnrealTargetPlatform.XboxOne:
-			case UnrealTargetPlatform.HTML5:
-			default:
-				throw new NotImplementedException("Nakama Unreal client does not currently support platform: " + Target.Platform.ToString());
+			HandleWindows(Target);
+		}
+		else if (UnrealTargetPlatform.Linux == Target.Platform)
+		{
+			HandleLinux(Target);
+		}
+		else if (UnrealTargetPlatform.Mac == Target.Platform)
+		{
+			HandleMac(Target);
+		}
+		else if (UnrealTargetPlatform.IOS == Target.Platform)
+		{
+			HandleIOS(Target);
+		}
+		else if (UnrealTargetPlatform.Android == Target.Platform)
+		{
+			HandleAndroid(Target);
+		}
+		else
+		{
+			throw new NotImplementedException("Nakama Unreal client does not currently support platform: " + Target.Platform.ToString());
 		}
 
 		PrivateDefinitions.Add("NAKAMA_SHARED_LIBRARY=1");
