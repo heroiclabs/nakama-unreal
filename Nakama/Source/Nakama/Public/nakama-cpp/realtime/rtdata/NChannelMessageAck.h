@@ -31,5 +31,9 @@ namespace Nakama {
         NTimestamp createTime = 0;      ///< The UNIX time when the message was created.
         NTimestamp updateTime = 0;      ///< The UNIX time when the message was last updated.
         bool persistent = false;        ///< True if the message was persisted to the channel's history, false otherwise.
+        std::string roomName;           ///< The name of the chat room, or an empty string if this message was not sent through a chat room.
+        std::string groupId;            ///< The ID of the group, or an empty string if this message was not sent through a group channel.
+        std::string userIdOne;          ///< The ID of the first DM user, or an empty string if this message was not sent through a DM chat.
+        std::string userIdTwo;          ///< The ID of the second DM user, or an empty string if this message was not sent through a DM chat.
     };
 }

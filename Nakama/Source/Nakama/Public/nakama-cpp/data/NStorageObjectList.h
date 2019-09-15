@@ -26,7 +26,7 @@ namespace Nakama {
     struct NAKAMA_API NStorageObjectList
     {
         std::vector<NStorageObject> objects;  ///< The list of storage objects.
-        std::string cursor;                   ///< The cursor associated with the query a page of results.
+        std::string cursor;                   ///< The cursor for the next page of results, if any.
     };
 
     using NStorageObjectListPtr = std::shared_ptr<NStorageObjectList>;

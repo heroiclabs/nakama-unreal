@@ -29,7 +29,7 @@
 #include "nakama-cpp/data/NGroupUserList.h"
 #include "nakama-cpp/data/NUsers.h"
 #include "nakama-cpp/data/NUserGroupList.h"
-#include "nakama-cpp/data/NFriends.h"
+#include "nakama-cpp/data/NFriendList.h"
 #include "nakama-cpp/data/NLeaderboardRecordList.h"
 #include "nakama-cpp/data/NMatchList.h"
 #include "nakama-cpp/data/NNotificationList.h"
@@ -99,11 +99,13 @@ namespace Nakama {
          * @param id A device identifier usually obtained from a platform API.
          * @param username A username used to create the user. Defaults to empty string.
          * @param create True if the user should be created when authenticated. Defaults to false.
+         * @param vars Extra information that will be bundled in the session token.
          */
         virtual void authenticateDevice(
             const std::string& id,
             const opt::optional<std::string>& username = opt::nullopt,
             const opt::optional<bool>& create = opt::nullopt,
+            const NStringMap& vars = {},
             std::function<void (NSessionPtr)> successCallback = nullptr,
             ErrorCallback errorCallback = nullptr
         ) = 0;
@@ -115,12 +117,14 @@ namespace Nakama {
         * @param password The password for the user.
         * @param username A username used to create the user.
         * @param create True if the user should be created when authenticated.
+        * @param vars Extra information that will be bundled in the session token.
         */
         virtual void authenticateEmail(
             const std::string& email,
             const std::string& password,
             const std::string& username = std::string(),
             bool create = false,
+            const NStringMap& vars = {},
             std::function<void(NSessionPtr)> successCallback = nullptr,
             ErrorCallback errorCallback = nullptr
         ) = 0;
@@ -132,12 +136,14 @@ namespace Nakama {
         * @param username A username used to create the user.
         * @param create True if the user should be created when authenticated.
         * @param importFriends True if the Facebook friends should be imported.
+        * @param vars Extra information that will be bundled in the session token.
         */
         virtual void authenticateFacebook(
             const std::string& accessToken,
             const std::string& username = std::string(),
             bool create = false,
             bool importFriends = false,
+            const NStringMap& vars = {},
             std::function<void(NSessionPtr)> successCallback = nullptr,
             ErrorCallback errorCallback = nullptr
         ) = 0;
@@ -148,11 +154,13 @@ namespace Nakama {
         * @param accessToken An OAuth access token from the Google SDK.
         * @param username A username used to create the user.
         * @param create True if the user should be created when authenticated.
+        * @param vars Extra information that will be bundled in the session token.
         */
         virtual void authenticateGoogle(
             const std::string& accessToken,
             const std::string& username = std::string(),
             bool create = false,
+            const NStringMap& vars = {},
             std::function<void(NSessionPtr)> successCallback = nullptr,
             ErrorCallback errorCallback = nullptr
         ) = 0;
@@ -168,6 +176,7 @@ namespace Nakama {
          * @param publicKeyUrl The URL for the public encryption key.
          * @param create True if the user should be created when authenticated.
          * @param username A username used to create the user.
+         * @param vars Extra information that will be bundled in the session token.
          */
         virtual void authenticateGameCenter(
             const std::string& playerId,
@@ -178,6 +187,7 @@ namespace Nakama {
             const std::string& publicKeyUrl,
             const std::string& username = std::string(),
             bool create = false,
+            const NStringMap& vars = {},
             std::function<void(NSessionPtr)> successCallback = nullptr,
             ErrorCallback errorCallback = nullptr
         ) = 0;
@@ -188,11 +198,13 @@ namespace Nakama {
          * @param id A custom identifier usually obtained from an external authentication service.
          * @param username A username used to create the user.
          * @param create True if the user should be created when authenticated.
+         * @param vars Extra information that will be bundled in the session token.
          */
         virtual void authenticateCustom(
             const std::string& id,
             const std::string& username = std::string(),
             bool create = false,
+            const NStringMap& vars = {},
             std::function<void(NSessionPtr)> successCallback = nullptr,
             ErrorCallback errorCallback = nullptr
         ) = 0;
@@ -203,11 +215,13 @@ namespace Nakama {
          * @param token An authentication token from the Steam network.
          * @param username A username used to create the user.
          * @param create True if the user should be created when authenticated.
+         * @param vars Extra information that will be bundled in the session token.
          */
         virtual void authenticateSteam(
             const std::string& token,
             const std::string& username = std::string(),
             bool create = false,
+            const NStringMap& vars = {},
             std::function<void(NSessionPtr)> successCallback = nullptr,
             ErrorCallback errorCallback = nullptr
         ) = 0;
@@ -473,13 +487,13 @@ namespace Nakama {
         ) = 0;
 
         /**
-        * Fetch one or more users by id, usernames, and Facebook ids.
-        *
-        * @param session The session of the user.
-        * @param ids List of user IDs.
-        * @param usernames List of usernames.
-        * @param facebookIds List of Facebook IDs.
-        */
+         * Fetch one or more users by id, usernames, and Facebook ids.
+         *
+         * @param session The session of the user.
+         * @param ids List of user IDs.
+         * @param usernames List of usernames.
+         * @param facebookIds List of Facebook IDs.
+         */
         virtual void getUsers(
             NSessionPtr session,
             const std::vector<std::string>& ids,
@@ -535,13 +549,19 @@ namespace Nakama {
         ) = 0;
 
         /**
-        * List of friends of the current user.
-        *
-        * @param session The session of the user.
-        */
+         * List of friends of the current user.
+         *
+         * @param session The session of the user.
+         * @param limit The max number of records to return. Between 1 and 100.
+         * @param state The friend state to list.
+         * @param cursor An optional next page cursor.
+         */
         virtual void listFriends(
             NSessionPtr session,
-            std::function<void(NFriendsPtr)> successCallback = nullptr,
+            const opt::optional<int32_t>& limit,
+            const opt::optional<NFriend::State>& state,
+            const std::string& cursor = "",
+            std::function<void(NFriendListPtr)> successCallback = nullptr,
             ErrorCallback errorCallback = nullptr
         ) = 0;
 
@@ -554,6 +574,7 @@ namespace Nakama {
          * @param avatarUrl An avatar url for the group.
          * @param langTag A language tag in BCP-47 format for the group.
          * @param open True if the group should have open membership.
+         * @param maxCount Maximum number of group members.
          */
         virtual void createGroup(
             NSessionPtr session,
@@ -562,6 +583,7 @@ namespace Nakama {
             const std::string& avatarUrl = "",
             const std::string& langTag = "",
             bool open = false,
+            const opt::optional<int32_t>& maxCount = {},
             std::function<void(const NGroup&)> successCallback = nullptr,
             ErrorCallback errorCallback = nullptr
         ) = 0;
@@ -599,10 +621,16 @@ namespace Nakama {
         *
         * @param session The session of the user.
         * @param groupId The id of the group.
+        * @param limit The max number of records to return. Between 1 and 100.
+        * @param state The friend state to list.
+        * @param cursor An optional next page cursor.
         */
         virtual void listGroupUsers(
             NSessionPtr session,
             const std::string& groupId,
+            const opt::optional<int32_t>& limit,
+            const opt::optional<NFriend::State>& state,
+            const std::string& cursor = "",
             std::function<void(NGroupUserListPtr)> successCallback = nullptr,
             ErrorCallback errorCallback = nullptr
         ) = 0;
@@ -669,9 +697,15 @@ namespace Nakama {
          * List of groups the current user is a member of.
          *
          * @param session The session of the user.
+         * @param limit The max number of records to return. Between 1 and 100.
+         * @param state The friend state to list.
+         * @param cursor An optional next page cursor.
          */
         virtual void listUserGroups(
             NSessionPtr session,
+            const opt::optional<int32_t>& limit,
+            const opt::optional<NFriend::State>& state,
+            const std::string& cursor = "",
             std::function<void(NUserGroupListPtr)> successCallback = nullptr,
             ErrorCallback errorCallback = nullptr
         ) = 0;
@@ -681,10 +715,16 @@ namespace Nakama {
          *
          * @param session The session of the user.
          * @param userId The id of the user whose groups to list.
+         * @param limit The max number of records to return. Between 1 and 100.
+         * @param state The friend state to list.
+         * @param cursor An optional next page cursor.
          */
         virtual void listUserGroups(
             NSessionPtr session,
             const std::string& userId,
+            const opt::optional<int32_t>& limit,
+            const opt::optional<NFriend::State>& state,
+            const std::string& cursor = "",
             std::function<void(NUserGroupListPtr)> successCallback = nullptr,
             ErrorCallback errorCallback = nullptr
         ) = 0;

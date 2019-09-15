@@ -23,10 +23,11 @@
 namespace Nakama {
 
     ///< A collection of zero or more friends of the user.
-    struct NAKAMA_API NFriends
+    struct NAKAMA_API NFriendList
     {
-        std::vector<NFriend> friends;
+        std::vector<NFriend> friends;     ///< The Friend objects.
+        std::string cursor;               ///< Cursor for the next page of results, if any.
     };
 
-    using NFriendsPtr = std::shared_ptr<NFriends>;
+    using NFriendListPtr = std::shared_ptr<NFriendList>;
 }

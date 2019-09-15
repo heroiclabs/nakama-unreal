@@ -27,5 +27,9 @@ namespace Nakama {
         std::string channelId;                   ///< The channel identifier this event is for.
         std::vector<NUserPresence> joins;        ///< Presences joining the channel as part of this event, if any.
         std::vector<NUserPresence> leaves;       ///< Presences leaving the channel as part of this event, if any.
+        std::string roomName;                    ///< The name of the chat room, or an empty string if this message was not sent through a chat room.
+        std::string groupId;                     ///< The ID of the group, or an empty string if this message was not sent through a group channel.
+        std::string userIdOne;                   ///< The ID of the first DM user, or an empty string if this message was not sent through a DM chat.
+        std::string userIdTwo;                   ///< The ID of the second DM user, or an empty string if this message was not sent through a DM chat.
     };
 }

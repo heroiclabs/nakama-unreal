@@ -25,7 +25,8 @@ namespace Nakama {
     /// A list of groups belonging to a user, along with the user's role in each group.
     struct NAKAMA_API NUserGroupList
     {
-        std::vector<NUserGroup> userGroups;
+        std::vector<NUserGroup> userGroups;     ///< Group-role pairs for a user.
+        std::string cursor;                     ///< Cursor for the next page of results, if any.
     };
 
     using NUserGroupListPtr = std::shared_ptr<NUserGroupList>;

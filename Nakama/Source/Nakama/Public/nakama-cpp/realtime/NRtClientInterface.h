@@ -192,6 +192,7 @@ namespace Nakama {
         */
         virtual void joinMatch(
             const std::string& matchId,
+            const NStringMap& metadata,
             std::function<void(const NMatch&)> successCallback,
             RtErrorCallback errorCallback = nullptr
         ) = 0;

@@ -27,8 +27,8 @@ namespace Nakama {
     struct NAKAMA_API NLeaderboardRecordList
     {
         std::vector<NLeaderboardRecord> records;           ///< A list of leaderboard records.
-        std::vector<NLeaderboardRecord> ownerRecords;      ///< A batched set of leaderobard records belonging to specified owners.
-        std::string nextCursor;                            ///< The cursor to send when retireving the next page, if any.
+        std::vector<NLeaderboardRecord> ownerRecords;      ///< A batched set of leaderboard records belonging to specified owners.
+        std::string nextCursor;                            ///< The cursor to send when retrieving the next page, if any.
         std::string prevCursor;                            ///< The cursor to send when retrieving the previous page, if any.
     };
 

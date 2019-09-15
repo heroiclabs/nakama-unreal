@@ -23,6 +23,7 @@ namespace Nakama {
     /// Used with authenticate/link/unlink and user.
     struct NAKAMA_API NAccountDevice {
         std::string id;   ///< A device identifier. Should be obtained by a platform-specific device API.
+        NStringMap vars;  ///< Extra information that will be bundled in the session token.
     };
 
 }
