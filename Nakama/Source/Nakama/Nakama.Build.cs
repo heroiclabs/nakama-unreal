@@ -108,7 +108,7 @@ public class Nakama : ModuleRules
 		
 		PublicAdditionalLibraries.Add("nakama-cpp" + libSuffix + ".lib");
 		CopyToBinaries(Path.Combine(libsPath, "nakama-cpp" + libSuffix + ".dll"), Target);
-		PublicDelayLoadDLLs.AddRange(new string[] { "nakama-cpp" + libSuffix + ".dll" });
+		PublicDelayLoadDLLs.Add("nakama-cpp" + libSuffix + ".dll");
 	}
 
 	private void HandleAndroid(ReadOnlyTargetRules Target)
@@ -130,10 +130,10 @@ public class Nakama : ModuleRules
 	private void HandleMac(ReadOnlyTargetRules Target)
 	{
 		string libsPath = Path.Combine(CommonSharedLibsPath, "mac");
-		
-		PublicLibraryPaths.Add(libsPath);
-		
-		PublicAdditionalLibraries.Add(Path.Combine(libsPath, "libnakama-cpp.dylib"));
+		string nakamaDylibPath = Path.Combine(libsPath, "libnakama-cpp.dylib");
+
+		PublicDelayLoadDLLs.Add(nakamaDylibPath);
+		RuntimeDependencies.Add(nakamaDylibPath);
 	}
 
 	private void HandleIOS(ReadOnlyTargetRules Target)
@@ -191,6 +191,7 @@ public class Nakama : ModuleRules
 		catch (System.Exception ex)
 		{
 			System.Console.WriteLine("Failed to copy file: {0}", ex.Message);
+			throw new Exception("Failed to copy file: " + ex.Message);
 		}
 	}
 
