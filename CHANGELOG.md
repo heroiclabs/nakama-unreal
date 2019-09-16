@@ -3,6 +3,32 @@ All notable changes to this project are documented below.
 
 The format is based on [keep a changelog](http://keepachangelog.com/) and this project uses [semantic versioning](http://semver.org/).
 
+## [2.2.0] - 2019-09-16
+### Added
+- Support server 2.7
+- Support UE 4.23
+
+### Changed
+- Following client API has been added/changed to support server 2.7:
+  - NSessionInterface
+    - getVariables
+    - getVariable
+  - NClientInterface
+    - authenticateDevice
+    - authenticateEmail
+    - authenticateFacebook
+    - authenticateGoogle
+    - authenticateGameCenter
+    - authenticateCustom
+    - authenticateSteam
+    - listFriends
+    - createGroup
+    - listGroupUsers
+    - listUserGroups
+  - NRtClientInterface
+    - joinMatch
+- Updated optional lib to v.3.2.0
+
 ## [2.1.0] - 2019-06-19
 ### Added
 - REST client (HTTP/1.1).
