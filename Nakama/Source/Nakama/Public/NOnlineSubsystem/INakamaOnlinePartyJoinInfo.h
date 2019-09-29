@@ -18,7 +18,7 @@
 
 #include "OnlinePartyInterface.h"
 
-namespace Nakama {
+NAKAMA_NAMESPACE_BEGIN
 
     /**
      * Info needed to join a party
@@ -29,4 +29,4 @@ namespace Nakama {
         virtual void SetPartyId(FString partyId) = 0;
     };
 
-}
+NAKAMA_NAMESPACE_END

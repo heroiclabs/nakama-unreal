@@ -31,7 +31,7 @@
 #undef NMODULE_NAME
 #define NMODULE_NAME "NOnlinePartySystem"
 
-namespace Nakama {
+NAKAMA_NAMESPACE_BEGIN
 
     template <typename T>
     std::string toStdString(const T& value)
@@ -482,4 +482,4 @@ namespace Nakama {
         }
     }
 
-}
+NAKAMA_NAMESPACE_END

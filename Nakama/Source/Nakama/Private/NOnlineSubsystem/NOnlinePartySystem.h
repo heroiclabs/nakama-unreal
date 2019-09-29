@@ -16,7 +16,7 @@
 
 #pragma once
 
-#include "nakama-cpp/Nakama.h"
+#include "NakamaUnreal.h"
 #include "OnlinePartyInterface.h"
 #include "Runtime/Launch/Resources/Version.h"
 
@@ -24,7 +24,7 @@
     #define N_ENABLE_JIP
 #endif
 
-namespace Nakama {
+NAKAMA_NAMESPACE_BEGIN
 
     /**
      * Interface definition for the online party services
@@ -484,4 +484,4 @@ namespace Nakama {
         std::map<std::string/*partyId*/, JoinPartyInfo> _joinInfo;
     };
 
-}
+NAKAMA_NAMESPACE_END

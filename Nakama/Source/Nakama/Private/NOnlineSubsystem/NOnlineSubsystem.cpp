@@ -20,7 +20,7 @@
 #include "NOnlineSubsystem/NOnlinePartyId.h"
 #include "NOnlineSubsystem/NOnlinePartyJoinInfo.h"
 
-namespace Nakama {
+NAKAMA_NAMESPACE_BEGIN
 
     TSharedPtr<IOnlinePartySystem> NOnlineSubsystem::createOnlinePartySystem(NClientPtr client, NRtClientPtr rtClient, NSessionPtr session)
     {
@@ -42,4 +42,4 @@ namespace Nakama {
         return TSharedRef<INakamaOnlinePartyJoinInfo>(new NOnlinePartyJoinInfo());
     }
 
-}
+NAKAMA_NAMESPACE_END

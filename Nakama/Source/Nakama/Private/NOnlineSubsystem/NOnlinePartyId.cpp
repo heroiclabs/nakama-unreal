@@ -16,7 +16,7 @@
 
 #include "NOnlineSubsystem/NOnlinePartyId.h"
 
-namespace Nakama {
+NAKAMA_NAMESPACE_BEGIN
 
     NOnlinePartyId::NOnlinePartyId()
     {
@@ -65,4 +65,4 @@ namespace Nakama {
         _id = std::move(id);
     }
 
-}
+NAKAMA_NAMESPACE_END

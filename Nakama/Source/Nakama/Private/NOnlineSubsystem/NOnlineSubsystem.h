@@ -18,9 +18,9 @@
 
 #include "OnlinePartyInterface.h"
 #include "NOnlineSubsystem/INakamaOnlineSubsystem.h"
-#include "nakama-cpp/Nakama.h"
+#include "NakamaUnreal.h"
 
-namespace Nakama {
+NAKAMA_NAMESPACE_BEGIN
 
     class NOnlineSubsystem : public INakamaOnlineSubsystem
     {
@@ -34,4 +34,4 @@ namespace Nakama {
         TSharedPtr<INakamaOnlinePartyJoinInfo> createPartyJoinInfo() override;
     };
 
-}
+NAKAMA_NAMESPACE_END
