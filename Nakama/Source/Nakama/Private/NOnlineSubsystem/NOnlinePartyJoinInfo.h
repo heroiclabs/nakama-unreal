@@ -34,17 +34,17 @@ NAKAMA_NAMESPACE_BEGIN
         /**
          * @return party id of party associated with this join invite
          */
-        const TSharedRef<const FOnlinePartyId>& GetPartyId() const override;
+        TSharedRef<const FOnlinePartyId> GetPartyId() const override;
 
         /**
          * @return party id of party associated with this join invite
          */
-        const FOnlinePartyTypeId GetPartyTypeId() const override;
+        FOnlinePartyTypeId GetPartyTypeId() const override;
 
         /**
          * @return user id of where this join info came from
          */
-        const TSharedRef<const FUniqueNetId>& GetSourceUserId() const override;
+        TSharedRef<const FUniqueNetId> GetSourceUserId() const override;
 
         /**
          * @return user id of where this join info came from

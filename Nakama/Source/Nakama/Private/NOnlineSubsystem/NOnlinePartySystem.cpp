@@ -71,6 +71,14 @@ NAKAMA_NAMESPACE_BEGIN
         });
     }
 
+    void NOnlinePartySystem::RestoreParties(const FUniqueNetId & LocalUserId, const FOnRestorePartiesComplete & CompletionDelegate)
+    {
+    }
+
+    void NOnlinePartySystem::CleanupParties(const FUniqueNetId & LocalUserId, const FOnCleanupPartiesComplete & CompletionDelegate)
+    {
+    }
+
     std::string PartyConfigurationToJson(const FPartyConfiguration & PartyConfig)
     {
         rapidjson::Document document;
@@ -300,29 +308,12 @@ NAKAMA_NAMESPACE_BEGIN
         return false;
     }
 
-    bool NOnlinePartySystem::AcceptInvitation(const FUniqueNetId & LocalUserId, const FUniqueNetId & SenderId)
-    {
-        return false;
-    }
-
     bool NOnlinePartySystem::RejectInvitation(const FUniqueNetId & LocalUserId, const FUniqueNetId & SenderId)
     {
         return false;
     }
 
     void NOnlinePartySystem::ClearInvitations(const FUniqueNetId & LocalUserId, const FUniqueNetId & SenderId, const FOnlinePartyId * PartyId)
-    {
-    }
-
-    void NOnlinePartySystem::ApproveUserForRejoin(const FUniqueNetId & LocalUserId, const FOnlinePartyId & PartyId, const FUniqueNetId & ApprovedUserId)
-    {
-    }
-
-    void NOnlinePartySystem::RemoveUserForRejoin(const FUniqueNetId & LocalUserId, const FOnlinePartyId & PartyId, const FUniqueNetId & RemovedUserId)
-    {
-    }
-
-    void NOnlinePartySystem::GetUsersApprovedForRejoin(const FUniqueNetId & LocalUserId, const FOnlinePartyId & PartyId, TArray<TSharedRef<const FUniqueNetId>>& OutApprovedUserIds)
     {
     }
 
@@ -366,24 +357,24 @@ NAKAMA_NAMESPACE_BEGIN
         return TSharedPtr<const FOnlineParty>();
     }
 
-    TSharedPtr<FOnlinePartyMember> NOnlinePartySystem::GetPartyMember(const FUniqueNetId & LocalUserId, const FOnlinePartyId & PartyId, const FUniqueNetId & MemberId) const
+    FOnlinePartyMemberConstPtr NOnlinePartySystem::GetPartyMember(const FUniqueNetId & LocalUserId, const FOnlinePartyId & PartyId, const FUniqueNetId & MemberId) const
     {
-        return TSharedPtr<FOnlinePartyMember>();
+        return FOnlinePartyMemberConstPtr();
     }
 
-    TSharedPtr<FOnlinePartyData> NOnlinePartySystem::GetPartyData(const FUniqueNetId & LocalUserId, const FOnlinePartyId & PartyId) const
+    FOnlinePartyDataConstPtr NOnlinePartySystem::GetPartyData(const FUniqueNetId & LocalUserId, const FOnlinePartyId & PartyId) const
     {
-        return TSharedPtr<FOnlinePartyData>();
+        return FOnlinePartyDataConstPtr();
     }
 
-    TSharedPtr<FOnlinePartyData> NOnlinePartySystem::GetPartyMemberData(const FUniqueNetId & LocalUserId, const FOnlinePartyId & PartyId, const FUniqueNetId & MemberId) const
+    FOnlinePartyDataConstPtr NOnlinePartySystem::GetPartyMemberData(const FUniqueNetId & LocalUserId, const FOnlinePartyId & PartyId, const FUniqueNetId & MemberId) const
     {
-        return TSharedPtr<FOnlinePartyData>();
+        return FOnlinePartyDataConstPtr();
     }
 
-    TSharedPtr<IOnlinePartyJoinInfo> NOnlinePartySystem::GetAdvertisedParty(const FUniqueNetId & LocalUserId, const FUniqueNetId & UserId, const FOnlinePartyTypeId PartyTypeId) const
+    IOnlinePartyJoinInfoConstPtr NOnlinePartySystem::GetAdvertisedParty(const FUniqueNetId & LocalUserId, const FUniqueNetId & UserId, const FOnlinePartyTypeId PartyTypeId) const
     {
-        return TSharedPtr<IOnlinePartyJoinInfo>();
+        return IOnlinePartyJoinInfoConstPtr();
     }
 
     bool NOnlinePartySystem::GetJoinedParties(const FUniqueNetId & LocalUserId, TArray<TSharedRef<const FOnlinePartyId>>& OutPartyIdArray) const
@@ -391,17 +382,17 @@ NAKAMA_NAMESPACE_BEGIN
         return false;
     }
 
-    bool NOnlinePartySystem::GetPartyMembers(const FUniqueNetId & LocalUserId, const FOnlinePartyId & PartyId, TArray<TSharedRef<FOnlinePartyMember>>& OutPartyMembersArray) const
+    bool NOnlinePartySystem::GetPartyMembers(const FUniqueNetId & LocalUserId, const FOnlinePartyId & PartyId, TArray<FOnlinePartyMemberConstRef>& OutPartyMembersArray) const
     {
         return false;
     }
 
-    bool NOnlinePartySystem::GetPendingInvites(const FUniqueNetId & LocalUserId, TArray<TSharedRef<IOnlinePartyJoinInfo>>& OutPendingInvitesArray) const
+    bool NOnlinePartySystem::GetPendingInvites(const FUniqueNetId & LocalUserId, TArray<IOnlinePartyJoinInfoConstRef>& OutPendingInvitesArray) const
     {
         return false;
     }
 
-    bool NOnlinePartySystem::GetPendingJoinRequests(const FUniqueNetId & LocalUserId, const FOnlinePartyId & PartyId, TArray<TSharedRef<IOnlinePartyPendingJoinRequestInfo>>& OutPendingJoinRequestArray) const
+    bool NOnlinePartySystem::GetPendingJoinRequests(const FUniqueNetId & LocalUserId, const FOnlinePartyId & PartyId, TArray<IOnlinePartyPendingJoinRequestInfoConstRef>& OutPendingJoinRequestArray) const
     {
         return false;
     }
@@ -416,9 +407,9 @@ NAKAMA_NAMESPACE_BEGIN
         return FString();
     }
 
-    TSharedPtr<IOnlinePartyJoinInfo> NOnlinePartySystem::MakeJoinInfoFromJson(const FString & JoinInfoJson)
+    IOnlinePartyJoinInfoConstPtr NOnlinePartySystem::MakeJoinInfoFromJson(const FString & JoinInfoJson)
     {
-        return TSharedPtr<IOnlinePartyJoinInfo>();
+        return IOnlinePartyJoinInfoConstPtr();
     }
 
     FString NOnlinePartySystem::MakeTokenFromJoinInfo(const IOnlinePartyJoinInfo & JoinInfo) const
@@ -426,14 +417,14 @@ NAKAMA_NAMESPACE_BEGIN
         return FString();
     }
 
-    TSharedRef<IOnlinePartyJoinInfo> NOnlinePartySystem::MakeJoinInfoFromToken(const FString & Token) const
+    IOnlinePartyJoinInfoConstPtr NOnlinePartySystem::MakeJoinInfoFromToken(const FString & Token) const
     {
-        return MakeShared<NOnlinePartyJoinInfo>();
+        return IOnlinePartyJoinInfoConstPtr();
     }
 
-    TSharedPtr<IOnlinePartyJoinInfo> NOnlinePartySystem::ConsumePendingCommandLineInvite()
+    IOnlinePartyJoinInfoConstPtr NOnlinePartySystem::ConsumePendingCommandLineInvite()
     {
-        return MakeShared<NOnlinePartyJoinInfo>();
+        return IOnlinePartyJoinInfoConstPtr();
     }
 
     void NOnlinePartySystem::DumpPartyState()

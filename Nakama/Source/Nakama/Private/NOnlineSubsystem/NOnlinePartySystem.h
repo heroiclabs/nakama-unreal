@@ -36,6 +36,22 @@ NAKAMA_NAMESPACE_BEGIN
         NOnlinePartySystem(NClientPtr client, NRtClientPtr rtClient, NSessionPtr session);
 
         /**
+         * Restore party memberships. Intended to be called once during login to restore state from other running instances.
+         *
+         * @param LocalUserId the user to restore the party membership for
+         * @param CompletionDelegate the delegate to trigger on completion
+         */
+        void RestoreParties(const FUniqueNetId& LocalUserId, const FOnRestorePartiesComplete& CompletionDelegate) override;
+
+        /**
+         * Cleanup party state. This will cleanup the local party state and attempt to cleanup party memberships on an external service if possible.  Intended to be called for development purposes.
+         *
+         * @param LocalUserId the user to cleanup the parties for
+         * @param CompletionDelegate the delegate to trigger on completion
+         */
+        void CleanupParties(const FUniqueNetId& LocalUserId, const FOnCleanupPartiesComplete& CompletionDelegate) override;
+
+        /**
          * Create a new party
          *
          * @param LocalUserId - user making the request
@@ -171,16 +187,6 @@ NAKAMA_NAMESPACE_BEGIN
         bool SendInvitation(const FUniqueNetId& LocalUserId, const FOnlinePartyId& PartyId, const FPartyInvitationRecipient& Recipient, const FOnSendPartyInvitationComplete& Delegate = FOnSendPartyInvitationComplete()) override;
 
         /**
-         * Accept an invite to a party. NOTE this does not initiate a join.
-         *
-         * @param LocalUserId - user making the request
-         * @param SenderId - id of the sender
-         *
-         * @return true if task was started
-         */
-        bool AcceptInvitation(const FUniqueNetId& LocalUserId, const FUniqueNetId& SenderId) override;
-
-        /**
          * Reject an invite to a party
          *
          * @param LocalUserId - user making the request
@@ -200,33 +206,6 @@ NAKAMA_NAMESPACE_BEGIN
          * @return true if task was started
          */
         void ClearInvitations(const FUniqueNetId& LocalUserId, const FUniqueNetId& SenderId, const FOnlinePartyId* PartyId = nullptr) override;
-
-        /**
-         * Mark a user as approved to attempt to rejoin our party
-         *
-         * @param LocalUserId - user making the request
-         * @param PartyId - party the player is approved to rejoin the party
-         * @param ApprovedUserId - the user that has been approved to attempt to rejoin the party (does not need to be in the party now)
-         */
-        void ApproveUserForRejoin(const FUniqueNetId& LocalUserId, const FOnlinePartyId& PartyId, const FUniqueNetId& ApprovedUserId) override;
-
-        /**
-         * Unmark a user as approved to attempt to rejoin our party
-         *
-         * @param LocalUserId - user making the request
-         * @param PartyId - party the player is approved to rejoin the party
-         * @param RemovedUserId - the user that has lost approval to attempt to rejoin the party
-         */
-        void RemoveUserForRejoin(const FUniqueNetId& LocalUserId, const FOnlinePartyId& PartyId, const FUniqueNetId& RemovedUserId) override;
-
-        /**
-         * Get a list of users that have been approved for rejoining
-         *
-         * @param LocalUserId - user making the request
-         * @param PartyId - party the player is approved to rejoin the party
-         * @param OutApprovedUserIds - list of users that have been approved
-         */
-        void GetUsersApprovedForRejoin(const FUniqueNetId& LocalUserId, const FOnlinePartyId& PartyId, TArray<TSharedRef<const FUniqueNetId>>& OutApprovedUserIds) override;
 
         /**
          * Kick a user from an existing party
@@ -330,7 +309,7 @@ NAKAMA_NAMESPACE_BEGIN
          *
          * @return party member info or nullptr if not found
          */
-        TSharedPtr<FOnlinePartyMember> GetPartyMember(const FUniqueNetId& LocalUserId, const FOnlinePartyId& PartyId, const FUniqueNetId& MemberId) const override;
+        FOnlinePartyMemberConstPtr GetPartyMember(const FUniqueNetId& LocalUserId, const FOnlinePartyId& PartyId, const FUniqueNetId& MemberId) const override;
 
         /**
          * Get current cached data associated with a party
@@ -341,7 +320,7 @@ NAKAMA_NAMESPACE_BEGIN
          *
          * @return party data or nullptr if not found
          */
-        TSharedPtr<FOnlinePartyData> GetPartyData(const FUniqueNetId& LocalUserId, const FOnlinePartyId& PartyId) const override;
+        FOnlinePartyDataConstPtr GetPartyData(const FUniqueNetId& LocalUserId, const FOnlinePartyId& PartyId) const override;
 
         /**
          * Get current cached data associated with a party member
@@ -353,7 +332,7 @@ NAKAMA_NAMESPACE_BEGIN
          *
          * @return party member data or nullptr if not found
          */
-        TSharedPtr<FOnlinePartyData> GetPartyMemberData(const FUniqueNetId& LocalUserId, const FOnlinePartyId& PartyId, const FUniqueNetId& MemberId) const override;
+        FOnlinePartyDataConstPtr GetPartyMemberData(const FUniqueNetId& LocalUserId, const FOnlinePartyId& PartyId, const FUniqueNetId& MemberId) const override;
 
         /**
          * Get the join info of the specified user and party type
@@ -364,7 +343,7 @@ NAKAMA_NAMESPACE_BEGIN
          *
          * @return shared pointer to the join info if the user is advertising for that party type
          */
-        TSharedPtr<IOnlinePartyJoinInfo> GetAdvertisedParty(const FUniqueNetId& LocalUserId, const FUniqueNetId& UserId, const FOnlinePartyTypeId PartyTypeId) const override;
+        IOnlinePartyJoinInfoConstPtr GetAdvertisedParty(const FUniqueNetId& LocalUserId, const FUniqueNetId& UserId, const FOnlinePartyTypeId PartyTypeId) const override;
 
         /**
          * Get a list of currently joined parties for the user
@@ -385,7 +364,7 @@ NAKAMA_NAMESPACE_BEGIN
          *
          * @return true if entries found
          */
-        bool GetPartyMembers(const FUniqueNetId& LocalUserId, const FOnlinePartyId& PartyId, TArray<TSharedRef<FOnlinePartyMember>>& OutPartyMembersArray) const override;
+        bool GetPartyMembers(const FUniqueNetId& LocalUserId, const FOnlinePartyId& PartyId, TArray<FOnlinePartyMemberConstRef>& OutPartyMembersArray) const override;
 
         /**
          * Get a list of parties the user has been invited to
@@ -395,7 +374,7 @@ NAKAMA_NAMESPACE_BEGIN
          *
          * @return true if entries found
          */
-        bool GetPendingInvites(const FUniqueNetId& LocalUserId, TArray<TSharedRef<IOnlinePartyJoinInfo>>& OutPendingInvitesArray) const override;
+        bool GetPendingInvites(const FUniqueNetId& LocalUserId, TArray<IOnlinePartyJoinInfoConstRef>& OutPendingInvitesArray) const override;
 
         /**
          * Get list of users requesting to join the party
@@ -406,7 +385,7 @@ NAKAMA_NAMESPACE_BEGIN
          *
          * @return true if entries found
          */
-        bool GetPendingJoinRequests(const FUniqueNetId& LocalUserId, const FOnlinePartyId& PartyId, TArray<TSharedRef<IOnlinePartyPendingJoinRequestInfo>>& OutPendingJoinRequestArray) const override;
+        bool GetPendingJoinRequests(const FUniqueNetId& LocalUserId, const FOnlinePartyId& PartyId, TArray<IOnlinePartyPendingJoinRequestInfoConstRef>& OutPendingJoinRequestArray) const override;
 
         /**
          * Get list of users invited to a party that have not yet responded
@@ -434,7 +413,7 @@ NAKAMA_NAMESPACE_BEGIN
          * @param JoinInfoJson       - json blob to convert
          *
          */
-        TSharedPtr<IOnlinePartyJoinInfo> MakeJoinInfoFromJson(const FString& JoinInfoJson) override;
+        IOnlinePartyJoinInfoConstPtr MakeJoinInfoFromJson(const FString& JoinInfoJson) override;
 
         /**
          * Creates a command line token from a IOnlinePartyJoinInfo object
@@ -452,14 +431,14 @@ NAKAMA_NAMESPACE_BEGIN
          *
          * return the new IOnlinePartyJoinInfo object
          */
-        TSharedRef<IOnlinePartyJoinInfo> MakeJoinInfoFromToken(const FString& Token) const override;
+        IOnlinePartyJoinInfoConstPtr MakeJoinInfoFromToken(const FString& Token) const override;
 
         /**
          * Checks to see if there is a pending command line invite and consumes it
          *
          * return the pending IOnlinePartyJoinInfo object
          */
-        TSharedPtr<IOnlinePartyJoinInfo> ConsumePendingCommandLineInvite() override;
+        IOnlinePartyJoinInfoConstPtr ConsumePendingCommandLineInvite() override;
 
         /**
          * Dump out party state for all known parties

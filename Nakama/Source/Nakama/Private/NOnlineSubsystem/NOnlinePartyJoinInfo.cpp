@@ -31,17 +31,17 @@ NAKAMA_NAMESPACE_BEGIN
         return m_partyId->IsValid();
     }
 
-    const TSharedRef<const FOnlinePartyId>& NOnlinePartyJoinInfo::GetPartyId() const
+    TSharedRef<const FOnlinePartyId> NOnlinePartyJoinInfo::GetPartyId() const
     {
         return m_partyId;
     }
 
-    const FOnlinePartyTypeId NOnlinePartyJoinInfo::GetPartyTypeId() const
+    FOnlinePartyTypeId NOnlinePartyJoinInfo::GetPartyTypeId() const
     {
         return FOnlinePartyTypeId();
     }
 
-    const TSharedRef<const FUniqueNetId>& NOnlinePartyJoinInfo::GetSourceUserId() const
+    TSharedRef<const FUniqueNetId> NOnlinePartyJoinInfo::GetSourceUserId() const
     {
         return m_sourceUserId;
     }
