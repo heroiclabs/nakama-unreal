@@ -20,7 +20,7 @@
 #include <vector>
 #include <memory>
 
-namespace Nakama {
+NAKAMA_NAMESPACE_BEGIN
 
     /// A list of groups belonging to a user, along with the user's role in each group.
     struct NAKAMA_API NUserGroupList
@@ -30,4 +30,5 @@ namespace Nakama {
     };
 
     using NUserGroupListPtr = std::shared_ptr<NUserGroupList>;
-}
+
+NAKAMA_NAMESPACE_END

@@ -20,7 +20,7 @@
 #include <vector>
 #include <memory>
 
-namespace Nakama {
+NAKAMA_NAMESPACE_BEGIN
 
     /// A list of tournaments.
     struct NAKAMA_API NTournamentList
@@ -30,4 +30,5 @@ namespace Nakama {
     };
 
     using NTournamentListPtr = std::shared_ptr<NTournamentList>;
-}
+
+NAKAMA_NAMESPACE_END

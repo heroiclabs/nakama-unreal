@@ -18,7 +18,7 @@
 
 #include "nakama-cpp/NTypes.h"
 
-namespace Nakama {
+NAKAMA_NAMESPACE_BEGIN
 
     /// Used with authenticate/link/unlink and user.
     struct NAKAMA_API NAccountDevice {
@@ -26,4 +26,4 @@ namespace Nakama {
         NStringMap vars;  ///< Extra information that will be bundled in the session token.
     };
 
-}
+NAKAMA_NAMESPACE_END

@@ -20,7 +20,7 @@
 #include <vector>
 #include <memory>
 
-namespace Nakama {
+NAKAMA_NAMESPACE_BEGIN
 
     /// A list of channel messages, usually a result of a list operation.
     struct NAKAMA_API NChannelMessageList
@@ -31,4 +31,5 @@ namespace Nakama {
     };
 
     using NChannelMessageListPtr = std::shared_ptr<NChannelMessageList>;
-}
+
+NAKAMA_NAMESPACE_END

@@ -19,7 +19,7 @@
 #include "nakama-cpp/NTypes.h"
 #include <string>
 
-namespace Nakama {
+NAKAMA_NAMESPACE_BEGIN
 
     /// A tournament on the server.
     struct NAKAMA_API NTournament
@@ -43,4 +43,4 @@ namespace Nakama {
         std::string metadata;          ///< Additional information stored as a JSON object.
     };
 
-}
+NAKAMA_NAMESPACE_END

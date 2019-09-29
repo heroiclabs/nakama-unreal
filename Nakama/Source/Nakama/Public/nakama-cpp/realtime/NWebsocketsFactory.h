@@ -18,7 +18,7 @@
 
 #include "nakama-cpp/realtime/NRtTransportInterface.h"
 
-namespace Nakama {
+NAKAMA_NAMESPACE_BEGIN
 
     /**
      * Create default websocket transport.
@@ -35,4 +35,4 @@ namespace Nakama {
      */
     NAKAMA_API NRtTransportPtr createWebsocketCppRest();
 
-}
+NAKAMA_NAMESPACE_END

@@ -16,10 +16,10 @@
 
 #pragma once
 
-#include "nakama-cpp/NExport.h"
+#include "nakama-cpp/NTypes.h"
 
-namespace Nakama {
+NAKAMA_NAMESPACE_BEGIN
 
     NAKAMA_API const char* getNakamaSdkVersion();
 
-}
+NAKAMA_NAMESPACE_END

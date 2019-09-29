@@ -19,7 +19,7 @@
 #include "nakama-cpp/data/NUser.h"
 #include <vector>
 
-namespace Nakama {
+NAKAMA_NAMESPACE_BEGIN
 
     /// A collection of zero or more users.
     struct NAKAMA_API NUsers
@@ -27,4 +27,4 @@ namespace Nakama {
         std::vector<NUser> users;
     };
 
-}
+NAKAMA_NAMESPACE_END

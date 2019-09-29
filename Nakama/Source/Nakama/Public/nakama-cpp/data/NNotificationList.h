@@ -20,7 +20,7 @@
 #include <vector>
 #include <memory>
 
-namespace Nakama {
+NAKAMA_NAMESPACE_BEGIN
 
     /// A collection of zero or more notifications.
     struct NAKAMA_API NNotificationList
@@ -30,4 +30,5 @@ namespace Nakama {
     };
 
     using NNotificationListPtr = std::shared_ptr<NNotificationList>;
-}
+
+NAKAMA_NAMESPACE_END

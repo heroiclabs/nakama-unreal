@@ -28,7 +28,7 @@
 #include "nakama-cpp/realtime/rtdata/NStreamData.h"
 #include "nakama-cpp/realtime/NRtClientDisconnectInfo.h"
 
-namespace Nakama {
+NAKAMA_NAMESPACE_BEGIN
 
     /**
      * A listener for receiving <c>NRtClientInterface</c> events.
@@ -39,87 +39,88 @@ namespace Nakama {
         virtual ~NRtClientListenerInterface() {}
 
         /**
-        * Called when the client socket has been connected.
-        */
+         * Called when the client socket has been connected.
+         */
         virtual void onConnect() {}
 
         /**
-        * Called when the client socket disconnects.
-        *
-        * @param info The <c>NRtClientDisconnectInfo</c>.
-        */
+         * Called when the client socket disconnects.
+         *
+         * @param info The <c>NRtClientDisconnectInfo</c>.
+         */
         virtual void onDisconnect(const NRtClientDisconnectInfo& info) { (void)info; }
 
         /**
-        * Called when the client receives an error.
-        *
-        * @param error The <c>NRtError</c> received.
-        */
+         * Called when the client receives an error.
+         *
+         * @param error The <c>NRtError</c> received.
+         */
         virtual void onError(const NRtError& error) { (void)error; }
 
         /**
-        * Called when a new channel message has been received.
-        *
-        * @param message The <c>NChannelMessage</c> received.
-        */
+         * Called when a new channel message has been received.
+         *
+         * @param message The <c>NChannelMessage</c> received.
+         */
         virtual void onChannelMessage(const NChannelMessage& message) { (void)message; }
 
         /**
-        * Called when a new channel presence update has been received.
-        *
-        * @param presence The <c>NChannelPresenceEvent</c> received.
-        */
+         * Called when a new channel presence update has been received.
+         *
+         * @param presence The <c>NChannelPresenceEvent</c> received.
+         */
         virtual void onChannelPresence(const NChannelPresenceEvent& presence) { (void)presence; }
 
         /**
-        * Called when a matchmaking has found a match.
-        *
-        * @param matched The <c>NMatchmakerMatched</c> received.
-        */
+         * Called when a matchmaking has found a match.
+         *
+         * @param matched The <c>NMatchmakerMatched</c> received.
+         */
         virtual void onMatchmakerMatched(NMatchmakerMatchedPtr matched) { (void)matched; }
 
         /**
-        * Called when a new match data is received.
-        *
-        * @param matchData The <c>NMatchData</c> received.
-        */
+         * Called when a new match data is received.
+         *
+         * @param matchData The <c>NMatchData</c> received.
+         */
         virtual void onMatchData(const NMatchData& matchData) { (void)matchData; }
 
         /**
-        * Called when a new match presence update is received.
-        *
-        * @param matchPresence The <c>NMatchPresenceEvent</c> received.
-        */
+         * Called when a new match presence update is received.
+         *
+         * @param matchPresence The <c>NMatchPresenceEvent</c> received.
+         */
         virtual void onMatchPresence(const NMatchPresenceEvent& matchPresence) { (void)matchPresence; }
 
         /**
-        * Called when the client receives new notifications.
-        *
-        * @param notifications The list of <c>NNotification</c> received.
-        */
+         * Called when the client receives new notifications.
+         *
+         * @param notifications The list of <c>NNotification</c> received.
+         */
         virtual void onNotifications(const NNotificationList& notifications) { (void)notifications; }
 
         /**
-        * Called when the client receives status presence updates.
-        *
-        * @param presence Updated <c>NStatusPresenceEvent</c> presence.
-        */
+         * Called when the client receives status presence updates.
+         *
+         * @param presence Updated <c>NStatusPresenceEvent</c> presence.
+         */
         virtual void onStatusPresence(const NStatusPresenceEvent& presence) { (void)presence; }
 
         /**
-        * Called when the client receives stream presence updates.
-        *
-        * @param presence Updated <c>NStreamPresenceEvent</c> presence.
-        */
+         * Called when the client receives stream presence updates.
+         *
+         * @param presence Updated <c>NStreamPresenceEvent</c> presence.
+         */
         virtual void onStreamPresence(const NStreamPresenceEvent& presence) { (void)presence; }
 
         /**
-        * Called when the client receives stream data.
-        *
-        * @param data Stream <c>NStreamData</c> data received.
-        */
+         * Called when the client receives stream data.
+         *
+         * @param data Stream <c>NStreamData</c> data received.
+         */
         virtual void onStreamData(const NStreamData& data) { (void)data; }
     };
 
     using NRtClientListenerPtr = std::shared_ptr<NRtClientListenerInterface>;
-}
+
+NAKAMA_NAMESPACE_END

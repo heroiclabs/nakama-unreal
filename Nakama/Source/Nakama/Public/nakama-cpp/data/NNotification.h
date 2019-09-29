@@ -18,7 +18,7 @@
 
 #include "nakama-cpp/NTypes.h"
 
-namespace Nakama {
+NAKAMA_NAMESPACE_BEGIN
 
     /// A notification in the server.
     struct NAKAMA_API NNotification
@@ -32,4 +32,4 @@ namespace Nakama {
         bool persistent = false;         ///< True if this notification was persisted to the database.
     };
 
-}
+NAKAMA_NAMESPACE_END

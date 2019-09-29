@@ -19,7 +19,7 @@
 #include "nakama-cpp/NTypes.h"
 #include "nakama-cpp/realtime/rtdata/NUserPresence.h"
 
-namespace Nakama {
+NAKAMA_NAMESPACE_BEGIN
 
     /// Represents a realtime match.
     struct NAKAMA_API NMatch
@@ -32,4 +32,4 @@ namespace Nakama {
         NUserPresence self;                      ///< A reference to the current user's presence in the match.
     };
 
-}
+NAKAMA_NAMESPACE_END

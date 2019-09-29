@@ -18,7 +18,7 @@
 
 #include "nakama-cpp/NTypes.h"
 
-namespace Nakama {
+NAKAMA_NAMESPACE_BEGIN
 
     /// A message sent on a channel.
     struct NAKAMA_API NChannelMessage
@@ -38,4 +38,4 @@ namespace Nakama {
         std::string userIdTwo;         ///< The ID of the second DM user, or an empty string if this message was not sent through a DM chat.
     };
 
-}
+NAKAMA_NAMESPACE_END

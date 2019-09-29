@@ -19,7 +19,7 @@
 #include "nakama-cpp/NTypes.h"
 #include <vector>
 
-namespace Nakama {
+NAKAMA_NAMESPACE_BEGIN
 
     /// A storage acknowledgement.
     struct NAKAMA_API NStorageObjectAck
@@ -32,4 +32,5 @@ namespace Nakama {
 
     /// Batch of acknowledgements.
     using NStorageObjectAcks = std::vector<NStorageObjectAck>;
-}
+
+NAKAMA_NAMESPACE_END

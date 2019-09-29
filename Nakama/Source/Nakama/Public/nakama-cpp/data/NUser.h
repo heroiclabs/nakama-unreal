@@ -19,7 +19,7 @@
 #include "nakama-cpp/NTypes.h"
 #include <string>
 
-namespace Nakama {
+NAKAMA_NAMESPACE_BEGIN
 
     /// A user in the server.
     struct NAKAMA_API NUser
@@ -42,4 +42,4 @@ namespace Nakama {
         NTimestamp updatedAt = 0;  ///< The UNIX time when the user was last updated.
     };
 
-}
+NAKAMA_NAMESPACE_END

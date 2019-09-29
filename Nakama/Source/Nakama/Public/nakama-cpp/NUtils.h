@@ -18,7 +18,7 @@
 
 #include "nakama-cpp/NTypes.h"
 
-namespace Nakama {
+NAKAMA_NAMESPACE_BEGIN
 
     /**
      * Get current UNIX time in milliseconds.
@@ -29,4 +29,4 @@ namespace Nakama {
      */
     NAKAMA_API NTimestamp getUnixTimestampMs();
 
-} // namespace Nakama
+NAKAMA_NAMESPACE_END

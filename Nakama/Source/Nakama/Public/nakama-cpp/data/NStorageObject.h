@@ -20,7 +20,7 @@
 #include "nakama-cpp/data/NStoragePermissions.h"
 #include <vector>
 
-namespace Nakama {
+NAKAMA_NAMESPACE_BEGIN
 
     /// An object within the storage engine.
     struct NAKAMA_API NStorageObject
@@ -39,4 +39,5 @@ namespace Nakama {
     };
 
     using NStorageObjects = std::vector<NStorageObject>;
-}
+
+NAKAMA_NAMESPACE_END

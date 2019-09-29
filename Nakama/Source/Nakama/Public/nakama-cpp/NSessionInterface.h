@@ -20,7 +20,7 @@
 #include <string>
 #include <memory>
 
-namespace Nakama {
+NAKAMA_NAMESPACE_BEGIN
 
     class NAKAMA_API NSessionInterface
     {
@@ -96,4 +96,4 @@ namespace Nakama {
      */
     NAKAMA_API NSessionPtr restoreSession(const std::string& token);
 
-}
+NAKAMA_NAMESPACE_END

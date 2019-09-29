@@ -22,7 +22,7 @@
 #include <memory>
 #include <vector>
 
-namespace Nakama {
+NAKAMA_NAMESPACE_BEGIN
 
     /// A user with additional account details. Always the current user.
     struct NAKAMA_API NAccount {
@@ -36,4 +36,4 @@ namespace Nakama {
 
     using NAccountPtr = std::shared_ptr<NAccount>;
 
-}
+NAKAMA_NAMESPACE_END
