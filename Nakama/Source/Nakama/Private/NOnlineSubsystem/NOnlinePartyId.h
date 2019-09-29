@@ -18,7 +18,7 @@
 
 #include "OnlineSubsystemTypes.h"
 
-namespace Nakama {
+NAKAMA_NAMESPACE_BEGIN
 
     /**
      * Id of a party instance
@@ -74,4 +74,4 @@ namespace Nakama {
         FString _id;
     };
 
-}
+NAKAMA_NAMESPACE_END

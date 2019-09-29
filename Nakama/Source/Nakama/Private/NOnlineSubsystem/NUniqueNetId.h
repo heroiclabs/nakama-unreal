@@ -18,7 +18,7 @@
 
 #include "CoreOnline.h"
 
-namespace Nakama {
+NAKAMA_NAMESPACE_BEGIN
 
     /**
      * Abstraction of a profile service online Id
@@ -75,4 +75,4 @@ namespace Nakama {
         FString _id;
     };
 
-}
+NAKAMA_NAMESPACE_END

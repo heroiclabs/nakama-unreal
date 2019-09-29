@@ -17,8 +17,9 @@
 #pragma once
 
 #include "NOnlineSubsystem/INakamaOnlinePartyJoinInfo.h"
+#include "NakamaUnreal.h"
 
-namespace Nakama {
+NAKAMA_NAMESPACE_BEGIN
 
     /**
      * Info needed to join a party
@@ -116,4 +117,4 @@ namespace Nakama {
         TSharedRef<const FUniqueNetId> m_sourceUserId;
     };
 
-}
+NAKAMA_NAMESPACE_END

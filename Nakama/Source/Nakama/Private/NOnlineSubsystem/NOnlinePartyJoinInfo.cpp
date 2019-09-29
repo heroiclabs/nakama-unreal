@@ -18,7 +18,7 @@
 #include "NOnlineSubsystem/NOnlinePartyId.h"
 #include "NOnlineSubsystem/NUniqueNetId.h"
 
-namespace Nakama {
+NAKAMA_NAMESPACE_BEGIN
 
     NOnlinePartyJoinInfo::NOnlinePartyJoinInfo()
         : m_partyId(MakeShared<const NOnlinePartyId>())
@@ -111,4 +111,4 @@ namespace Nakama {
         m_partyId = MakeShared<const NOnlinePartyId>(partyId);
     }
 
-}
+NAKAMA_NAMESPACE_END
