@@ -26,8 +26,8 @@ public:
 	virtual void StartupModule() override;
 	virtual void ShutdownModule() override;
 
-    Nakama::INakamaOnlineSubsystem& getOnlineSubsystem() override;
+    NAKAMA_NAMESPACE::INakamaOnlineSubsystem& getOnlineSubsystem() override;
 
 protected:
-    Nakama::NOnlineSubsystem _onlineSubsystem;
+    NAKAMA_NAMESPACE::NOnlineSubsystem _onlineSubsystem;
 };

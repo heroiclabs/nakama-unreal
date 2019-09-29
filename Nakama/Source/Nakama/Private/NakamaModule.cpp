@@ -6,6 +6,7 @@
 //#include "Interfaces/IPluginManager.h" // "Projects" module required
 #include "NUnrealLogSink.h"
 #include "NOnlineSubsystem/NOnlineSubsystem.h"
+#include "nakama-cpp-c-wrapper/NakamaWrapperImpl.h"
 
 #define LOCTEXT_NAMESPACE "FNakamaModule"
 
@@ -26,7 +27,7 @@ void FNakamaModule::ShutdownModule()
 	// we call this function before unloading the module.
 }
 
-Nakama::INakamaOnlineSubsystem& FNakamaModule::getOnlineSubsystem()
+NAKAMA_NAMESPACE::INakamaOnlineSubsystem& FNakamaModule::getOnlineSubsystem()
 {
     return _onlineSubsystem;
 }
