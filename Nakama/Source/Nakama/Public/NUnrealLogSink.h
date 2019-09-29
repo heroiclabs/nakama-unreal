@@ -16,13 +16,11 @@
 
 #pragma once
 
-#ifdef __UNREAL__
-
 #include "nakama-cpp/log/NLogSinkInterface.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(LogNakama, Log, All);
 
-namespace Nakama {
+NAKAMA_NAMESPACE_BEGIN
 
 	class NUnrealLogSink : public NLogSinkInterface
 	{
@@ -62,6 +60,5 @@ namespace Nakama {
 
 		void flush() override {}
 	};
-}
 
-#endif // __UNREAL__
+NAKAMA_NAMESPACE_END

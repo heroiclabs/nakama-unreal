@@ -4,14 +4,14 @@
 #include "Core.h"
 #include "Modules/ModuleManager.h"
 //#include "Interfaces/IPluginManager.h" // "Projects" module required
-#include "nakama-cpp/Nakama.h"
+#include "nakama-cpp-c-wrapper/NakamaWrapperImpl.h"
 #include "NUnrealLogSink.h"
 
 #define LOCTEXT_NAMESPACE "FNakamaModule"
 
-DEFINE_LOG_CATEGORY(LogNakama);
+//DEFINE_LOG_CATEGORY(LogNakama);
 
-using namespace Nakama;
+using namespace NAKAMA_NAMESPACE;
 
 void FNakamaModule::StartupModule()
 {
