@@ -4,15 +4,15 @@
 #include "Core.h"
 #include "Modules/ModuleManager.h"
 //#include "Interfaces/IPluginManager.h" // "Projects" module required
-#include "nakama-cpp/Nakama.h"
 #include "NUnrealLogSink.h"
 #include "NOnlineSubsystem/NOnlineSubsystem.h"
+#include "nakama-cpp-c-wrapper/NakamaWrapperImpl.h"
 
 #define LOCTEXT_NAMESPACE "FNakamaModule"
 
 //DEFINE_LOG_CATEGORY(LogNakama);
 
-using namespace Nakama;
+using namespace NAKAMA_NAMESPACE;
 
 void FNakamaModule::StartupModule()
 {
@@ -29,7 +29,7 @@ void FNakamaModule::ShutdownModule()
 	// we call this function before unloading the module.
 }
 
-Nakama::INakamaOnlineSubsystem& FNakamaModule::getOnlineSubsystem()
+NAKAMA_NAMESPACE::INakamaOnlineSubsystem& FNakamaModule::getOnlineSubsystem()
 {
     return _onlineSubsystem;
 }

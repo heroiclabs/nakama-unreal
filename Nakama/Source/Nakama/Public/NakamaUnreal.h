@@ -16,18 +16,4 @@
 
 #pragma once
 
-#include "INakamaModule.h"
-#include "NOnlineSubsystem/NOnlineSubsystem.h"
-
-class FNakamaModule : public INakamaModule
-{
-public:
-	/** IModuleInterface implementation */
-	virtual void StartupModule() override;
-	virtual void ShutdownModule() override;
-
-    NAKAMA_NAMESPACE::INakamaOnlineSubsystem& getOnlineSubsystem() override;
-
-protected:
-    NAKAMA_NAMESPACE::NOnlineSubsystem _onlineSubsystem;
-};
+#include "nakama-cpp-c-wrapper/NakamaWrapper.h"

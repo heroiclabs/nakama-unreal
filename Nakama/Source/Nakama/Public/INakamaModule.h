@@ -17,11 +17,11 @@
 #pragma once
 
 #include "Modules/ModuleManager.h"
-#include "nakama-cpp/Nakama.h"
+#include "NakamaUnreal.h"
 
-namespace Nakama {
+NAKAMA_NAMESPACE_BEGIN
     class INakamaOnlineSubsystem;
-}
+NAKAMA_NAMESPACE_END
 
 class INakamaModule : public IModuleInterface
 {
@@ -47,5 +47,5 @@ public:
         return FModuleManager::Get().IsModuleLoaded("Nakama");
     }
 
-    virtual Nakama::INakamaOnlineSubsystem& getOnlineSubsystem() = 0;
+    virtual NAKAMA_NAMESPACE::INakamaOnlineSubsystem& getOnlineSubsystem() = 0;
 };
