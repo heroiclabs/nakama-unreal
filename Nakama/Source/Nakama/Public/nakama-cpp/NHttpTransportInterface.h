@@ -22,7 +22,7 @@
 #include <map>
 #include <memory>
 
-namespace Nakama {
+NAKAMA_NAMESPACE_BEGIN
 
     using NHttpHeaders = std::map<std::string, std::string>;
     using NHttpQueryArgs = std::multimap<std::string, std::string>;
@@ -80,4 +80,4 @@ namespace Nakama {
 
     using NHttpTransportPtr = std::shared_ptr<NHttpTransportInterface>;
 
-}
+NAKAMA_NAMESPACE_END

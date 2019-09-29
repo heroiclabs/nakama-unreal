@@ -18,7 +18,7 @@
 
 #include "nakama-cpp/NTypes.h"
 
-namespace Nakama {
+NAKAMA_NAMESPACE_BEGIN
 
     /// Execute an Lua function on the server.
     struct NAKAMA_API NRpc
@@ -28,4 +28,4 @@ namespace Nakama {
         std::string httpKey;       ///< The authentication key used when executed as a non-client HTTP request.
     };
 
-}
+NAKAMA_NAMESPACE_END

@@ -18,7 +18,7 @@
 
 #include "nakama-cpp/NTypes.h"
 
-namespace Nakama {
+NAKAMA_NAMESPACE_BEGIN
 
     /// Storage objects to get.
     struct NAKAMA_API NReadStorageObjectId
@@ -35,4 +35,5 @@ namespace Nakama {
         std::string key;            ///< The key of the object within the collection.
         std::string version;        ///< The version hash of the object.
     };
-}
+
+NAKAMA_NAMESPACE_END

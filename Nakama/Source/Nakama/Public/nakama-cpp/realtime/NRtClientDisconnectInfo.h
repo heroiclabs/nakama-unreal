@@ -18,7 +18,7 @@
 
 #include "nakama-cpp/NTypes.h"
 
-namespace Nakama {
+NAKAMA_NAMESPACE_BEGIN
 
     struct NAKAMA_API NRtClientDisconnectInfo
     {
@@ -33,4 +33,4 @@ namespace Nakama {
         bool remote = false;
     };
 
-}
+NAKAMA_NAMESPACE_END

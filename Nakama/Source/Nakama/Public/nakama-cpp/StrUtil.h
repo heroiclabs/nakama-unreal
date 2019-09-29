@@ -16,10 +16,10 @@
 
 #pragma once
 
-#include "nakama-cpp/NExport.h"
+#include "nakama-cpp/NTypes.h"
 #include <string>
 
-namespace Nakama {
+NAKAMA_NAMESPACE_BEGIN
 
     typedef std::string Base64Buffer;
 
@@ -56,4 +56,4 @@ namespace Nakama {
      */
     NAKAMA_API bool isStringStartsWith(const std::string& str, const std::string& prefix);
 
-} // namespace Nakama
+    NAKAMA_NAMESPACE_END

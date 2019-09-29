@@ -20,7 +20,7 @@
 #include <string>
 #include <memory>
 
-namespace Nakama {
+NAKAMA_NAMESPACE_BEGIN
 
     /// Represents a complete leaderboard record with all scores and associated metadata.
     struct NAKAMA_API NLeaderboardRecord
@@ -38,4 +38,5 @@ namespace Nakama {
         NTimestamp expiryTime = 0;      ///< The UNIX time when the leaderboard record expires.
         int64_t rank = 0;               ///< The rank of this record.
     };
-}
+
+NAKAMA_NAMESPACE_END

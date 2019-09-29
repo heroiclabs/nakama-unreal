@@ -23,7 +23,13 @@
 #include <vector>
 #include <map>
 
-namespace Nakama {
+#ifndef NAKAMA_NAMESPACE
+    #define NAKAMA_NAMESPACE        Nakama
+    #define NAKAMA_NAMESPACE_BEGIN  namespace NAKAMA_NAMESPACE {
+    #define NAKAMA_NAMESPACE_END    }
+#endif
+
+NAKAMA_NAMESPACE_BEGIN
 
     /// The group role status.
     enum class NAKAMA_API NUserGroupState
@@ -57,4 +63,4 @@ namespace Nakama {
     /// This is not valid port, actual port will be selected automatically.
     static const int32_t DEFAULT_PORT = -1;
 
-}
+NAKAMA_NAMESPACE_END

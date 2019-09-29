@@ -19,7 +19,7 @@
 #include "nakama-cpp/NClientInterface.h"
 #include "nakama-cpp/NHttpTransportInterface.h"
 
-namespace Nakama {
+NAKAMA_NAMESPACE_BEGIN
 
     struct NAKAMA_API NClientParameters
     {
@@ -74,4 +74,4 @@ namespace Nakama {
      */
     NAKAMA_API NHttpTransportPtr createDefaultHttpTransport();
 
-}
+NAKAMA_NAMESPACE_END

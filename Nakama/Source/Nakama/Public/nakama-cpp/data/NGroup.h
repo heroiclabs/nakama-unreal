@@ -18,7 +18,7 @@
 
 #include "nakama-cpp/NTypes.h"
 
-namespace Nakama {
+NAKAMA_NAMESPACE_BEGIN
 
     /// A group in the server.
     struct NAKAMA_API NGroup
@@ -37,4 +37,4 @@ namespace Nakama {
         NTimestamp updateTime = 0;   ///< The UNIX time when the group was last updated.
     };
 
-}
+NAKAMA_NAMESPACE_END

@@ -20,7 +20,7 @@
 #include <vector>
 #include <memory>
 
-namespace Nakama {
+NAKAMA_NAMESPACE_BEGIN
 
     ///< A collection of zero or more friends of the user.
     struct NAKAMA_API NFriendList
@@ -30,4 +30,5 @@ namespace Nakama {
     };
 
     using NFriendListPtr = std::shared_ptr<NFriendList>;
-}
+
+NAKAMA_NAMESPACE_END

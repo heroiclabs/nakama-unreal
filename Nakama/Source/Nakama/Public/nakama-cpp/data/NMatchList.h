@@ -20,7 +20,7 @@
 #include <vector>
 #include <memory>
 
-namespace Nakama {
+NAKAMA_NAMESPACE_BEGIN
 
     /// A list of realtime matches.
     struct NAKAMA_API NMatchList
@@ -29,4 +29,5 @@ namespace Nakama {
     };
 
     using NMatchListPtr = std::shared_ptr<NMatchList>;
-}
+
+NAKAMA_NAMESPACE_END

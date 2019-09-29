@@ -42,7 +42,7 @@
 #include "nakama-cpp/data/NStorageObjectId.h"
 #include "nakama-cpp/data/NRpc.h"
 
-namespace Nakama {
+NAKAMA_NAMESPACE_BEGIN
 
     using ErrorCallback = std::function<void(const NError&)>;
 
@@ -62,6 +62,22 @@ namespace Nakama {
          * @param errorCallback The error callback.
          */
         virtual void setErrorCallback(ErrorCallback errorCallback) = 0;
+
+        /**
+         * Set user data.
+         *
+         * Client just holds this data so you can receive it later when you need it.
+         *
+         * @param userData The user data.
+         */
+        virtual void setUserData(void* userData) = 0;
+
+        /**
+         * Get user data.
+         *
+         * @return The user data.
+         */
+        virtual void* getUserData() const = 0;
 
         /**
          * Disconnects the client. This function kills all outgoing exchanges immediately without waiting.
@@ -111,14 +127,14 @@ namespace Nakama {
         ) = 0;
 
         /**
-        * Authenticate a user with an email and password.
-        *
-        * @param email The email address of the user.
-        * @param password The password for the user.
-        * @param username A username used to create the user.
-        * @param create True if the user should be created when authenticated.
-        * @param vars Extra information that will be bundled in the session token.
-        */
+         * Authenticate a user with an email and password.
+         *
+         * @param email The email address of the user.
+         * @param password The password for the user.
+         * @param username A username used to create the user.
+         * @param create True if the user should be created when authenticated.
+         * @param vars Extra information that will be bundled in the session token.
+         */
         virtual void authenticateEmail(
             const std::string& email,
             const std::string& password,
@@ -130,14 +146,14 @@ namespace Nakama {
         ) = 0;
 
         /**
-        * Authenticate a user with a Facebook auth token.
-        *
-        * @param accessToken An OAuth access token from the Facebook SDK.
-        * @param username A username used to create the user.
-        * @param create True if the user should be created when authenticated.
-        * @param importFriends True if the Facebook friends should be imported.
-        * @param vars Extra information that will be bundled in the session token.
-        */
+         * Authenticate a user with a Facebook auth token.
+         *
+         * @param accessToken An OAuth access token from the Facebook SDK.
+         * @param username A username used to create the user.
+         * @param create True if the user should be created when authenticated.
+         * @param importFriends True if the Facebook friends should be imported.
+         * @param vars Extra information that will be bundled in the session token.
+         */
         virtual void authenticateFacebook(
             const std::string& accessToken,
             const std::string& username = std::string(),
@@ -149,13 +165,13 @@ namespace Nakama {
         ) = 0;
 
         /**
-        * Authenticate a user with a Google auth token.
-        *
-        * @param accessToken An OAuth access token from the Google SDK.
-        * @param username A username used to create the user.
-        * @param create True if the user should be created when authenticated.
-        * @param vars Extra information that will be bundled in the session token.
-        */
+         * Authenticate a user with a Google auth token.
+         *
+         * @param accessToken An OAuth access token from the Google SDK.
+         * @param username A username used to create the user.
+         * @param create True if the user should be created when authenticated.
+         * @param vars Extra information that will be bundled in the session token.
+         */
         virtual void authenticateGoogle(
             const std::string& accessToken,
             const std::string& username = std::string(),
@@ -617,14 +633,14 @@ namespace Nakama {
         ) = 0;
 
         /**
-        * List all users part of the group.
-        *
-        * @param session The session of the user.
-        * @param groupId The id of the group.
-        * @param limit The max number of records to return. Between 1 and 100.
-        * @param state The friend state to list.
-        * @param cursor An optional next page cursor.
-        */
+         * List all users part of the group.
+         *
+         * @param session The session of the user.
+         * @param groupId The id of the group.
+         * @param limit The max number of records to return. Between 1 and 100.
+         * @param state The friend state to list.
+         * @param cursor An optional next page cursor.
+         */
         virtual void listGroupUsers(
             NSessionPtr session,
             const std::string& groupId,
@@ -636,12 +652,12 @@ namespace Nakama {
         ) = 0;
 
         /**
-        * Kick one or more users from the group.
-        *
-        * @param session The session of the user.
-        * @param groupId The id of the group.
-        * @param ids The ids of the users to kick.
-        */
+         * Kick one or more users from the group.
+         *
+         * @param session The session of the user.
+         * @param groupId The id of the group.
+         * @param ids The ids of the users to kick.
+         */
         virtual void kickGroupUsers(
             NSessionPtr session,
             const std::string& groupId,
@@ -651,11 +667,11 @@ namespace Nakama {
         ) = 0;
 
         /**
-        * Join a group if it has open membership or request to join it.
-        *
-        * @param session The session of the user.
-        * @param groupId The id of the group to join.
-        */
+         * Join a group if it has open membership or request to join it.
+         *
+         * @param session The session of the user.
+         * @param groupId The id of the group to join.
+         */
         virtual void joinGroup(
             NSessionPtr session,
             const std::string& groupId,
@@ -664,11 +680,11 @@ namespace Nakama {
         ) = 0;
 
         /**
-        * Leave a group by id.
-        *
-        * @param session The session of the user.
-        * @param groupId The id of the group to leave.
-        */
+         * Leave a group by id.
+         *
+         * @param session The session of the user.
+         * @param groupId The id of the group to leave.
+         */
         virtual void leaveGroup(
             NSessionPtr session,
             const std::string& groupId,
@@ -677,13 +693,13 @@ namespace Nakama {
         ) = 0;
 
         /**
-        * List groups on the server.
-        *
-        * @param session The session of the user.
-        * @param name The name filter to apply to the group list.
-        * @param limit The number of groups to list.
-        * @param cursor A cursor for the current position in the groups to list.
-        */
+         * List groups on the server.
+         *
+         * @param session The session of the user.
+         * @param name The name filter to apply to the group list.
+         * @param limit The number of groups to list.
+         * @param cursor A cursor for the current position in the groups to list.
+         */
         virtual void listGroups(
             NSessionPtr session,
             const std::string& name,
@@ -789,13 +805,13 @@ namespace Nakama {
         ) = 0;
 
         /**
-        * List leaderboard records from a given leaderboard around the owner.
-        *
-        * @param session The session of the user.
-        * @param leaderboardId The id of the leaderboard to list.
-        * @param ownerId The owner to retrieve records around.
-        * @param limit Max number of records to return. Between 1 and 100.
-        */
+         * List leaderboard records from a given leaderboard around the owner.
+         *
+         * @param session The session of the user.
+         * @param leaderboardId The id of the leaderboard to list.
+         * @param ownerId The owner to retrieve records around.
+         * @param limit Max number of records to return. Between 1 and 100.
+         */
         virtual void listLeaderboardRecordsAroundOwner(
             NSessionPtr session,
             const std::string& leaderboardId,
@@ -806,14 +822,14 @@ namespace Nakama {
         ) = 0;
 
         /**
-        * Write a record to a leaderboard.
-        *
-        * @param session The session for the user.
-        * @param leaderboardId The id of the leaderboard to write.
-        * @param score The score for the leaderboard record.
-        * @param subscore The subscore for the leaderboard record.
-        * @param metadata The metadata for the leaderboard record.
-        */
+         * Write a record to a leaderboard.
+         *
+         * @param session The session for the user.
+         * @param leaderboardId The id of the leaderboard to write.
+         * @param score The score for the leaderboard record.
+         * @param subscore The subscore for the leaderboard record.
+         * @param metadata The metadata for the leaderboard record.
+         */
         virtual void writeLeaderboardRecord(
             NSessionPtr session,
             const std::string& leaderboardId,
@@ -825,14 +841,14 @@ namespace Nakama {
         ) = 0;
 
         /**
-        * A request to submit a score to a tournament.
-        *
-        * @param session The session for the user.
-        * @param tournamentId The tournament ID to write the record for.
-        * @param score The score value to submit.
-        * @param subscore  An optional secondary value.
-        * @param metadata A JSON object of additional properties.
-        */
+         * A request to submit a score to a tournament.
+         *
+         * @param session The session for the user.
+         * @param tournamentId The tournament ID to write the record for.
+         * @param score The score value to submit.
+         * @param subscore  An optional secondary value.
+         * @param metadata A JSON object of additional properties.
+         */
         virtual void writeTournamentRecord(
             NSessionPtr session,
             const std::string& tournamentId,
@@ -844,11 +860,11 @@ namespace Nakama {
         ) = 0;
 
         /**
-        * Delete a leaderboard record.
-        *
-        * @param session The session of the user.
-        * @param leaderboardId The id of the leaderboard with the record to be deleted.
-        */
+         * Delete a leaderboard record.
+         *
+         * @param session The session of the user.
+         * @param leaderboardId The id of the leaderboard with the record to be deleted.
+         */
         virtual void deleteLeaderboardRecord(
             NSessionPtr session,
             const std::string& leaderboardId,
@@ -857,15 +873,15 @@ namespace Nakama {
         ) = 0;
 
         /**
-        * Fetch a list of matches active on the server.
-        *
-        * @param session The session of the user.
-        * @param min_size The minimum number of match participants.
-        * @param max_size The maximum number of match participants.
-        * @param limit The number of matches to list.
-        * @param label The label to filter the match list on.
-        * @param authoritative <c>true</c> to include authoritative matches.
-        */
+         * Fetch a list of matches active on the server.
+         *
+         * @param session The session of the user.
+         * @param min_size The minimum number of match participants.
+         * @param max_size The maximum number of match participants.
+         * @param limit The number of matches to list.
+         * @param label The label to filter the match list on.
+         * @param authoritative <c>true</c> to include authoritative matches.
+         */
         virtual void listMatches(
             NSessionPtr session,
             const opt::optional<int32_t>& min_size = opt::nullopt,
@@ -878,12 +894,12 @@ namespace Nakama {
         ) = 0;
 
         /**
-        * List notifications for the user with an optional cursor.
-        *
-        * @param session The session of the user.
-        * @param limit The number of notifications to list.
-        * @param cacheableCursor A cursor for the current position in notifications to list.
-        */
+         * List notifications for the user with an optional cursor.
+         *
+         * @param session The session of the user.
+         * @param limit The number of notifications to list.
+         * @param cacheableCursor A cursor for the current position in notifications to list.
+         */
         virtual void listNotifications(
             NSessionPtr session,
             const opt::optional<int32_t>& limit = opt::nullopt,
@@ -893,11 +909,11 @@ namespace Nakama {
         ) = 0;
 
         /**
-        * Delete one or more notifications by id.
-        *
-        * @param session The session of the user.
-        * @param notificationIds The notification ids to remove.
-        */
+         * Delete one or more notifications by id.
+         *
+         * @param session The session of the user.
+         * @param notificationIds The notification ids to remove.
+         */
         virtual void deleteNotifications(
             NSessionPtr session,
             const std::vector<std::string>& notificationIds,
@@ -906,14 +922,14 @@ namespace Nakama {
         ) = 0;
 
         /**
-        * List messages from a chat channel.
-        *
-        * @param session The session of the user.
-        * @param channelId A channel identifier.
-        * @param limit The number of chat messages to list.
-        * @param cursor A cursor for the current position in the messages history to list.
-        * @param forward Fetch messages forward from the current cursor (or the start).
-        */
+         * List messages from a chat channel.
+         *
+         * @param session The session of the user.
+         * @param channelId A channel identifier.
+         * @param limit The number of chat messages to list.
+         * @param cursor A cursor for the current position in the messages history to list.
+         * @param forward Fetch messages forward from the current cursor (or the start).
+         */
         virtual void listChannelMessages(
             NSessionPtr session,
             const std::string& channelId,
@@ -925,16 +941,16 @@ namespace Nakama {
         ) = 0;
 
         /**
-        * List active/upcoming tournaments based on given filters.
-        *
-        * @param session The session of the user.
-        * @param categoryStart The start of the categories to include. Defaults to 0.
-        * @param categoryEnd The end of the categories to include. Defaults to 128.
-        * @param startTime The start time for tournaments. Defaults to current Unix time.
-        * @param endTime The end time for tournaments. Defaults to +1 year from current Unix time.
-        * @param limit Max number of records to return. Between 1 and 100.
-        * @param cursor A next page cursor for listings.
-        */
+         * List active/upcoming tournaments based on given filters.
+         *
+         * @param session The session of the user.
+         * @param categoryStart The start of the categories to include. Defaults to 0.
+         * @param categoryEnd The end of the categories to include. Defaults to 128.
+         * @param startTime The start time for tournaments. Defaults to current Unix time.
+         * @param endTime The end time for tournaments. Defaults to +1 year from current Unix time.
+         * @param limit Max number of records to return. Between 1 and 100.
+         * @param cursor A next page cursor for listings.
+         */
         virtual void listTournaments(
             NSessionPtr session,
             const opt::optional<uint32_t>& categoryStart = opt::nullopt,
@@ -1088,4 +1104,5 @@ namespace Nakama {
     };
 
     using NClientPtr = std::shared_ptr<NClientInterface>;
-}
+
+NAKAMA_NAMESPACE_END

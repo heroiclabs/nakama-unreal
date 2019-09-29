@@ -20,7 +20,7 @@
 #include <vector>
 #include <memory>
 
-namespace Nakama {
+NAKAMA_NAMESPACE_BEGIN
 
     /// List of storage objects.
     struct NAKAMA_API NStorageObjectList
@@ -30,4 +30,5 @@ namespace Nakama {
     };
 
     using NStorageObjectListPtr = std::shared_ptr<NStorageObjectList>;
-}
+
+NAKAMA_NAMESPACE_END

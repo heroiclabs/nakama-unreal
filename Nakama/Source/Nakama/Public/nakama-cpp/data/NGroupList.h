@@ -20,7 +20,7 @@
 #include <vector>
 #include <memory>
 
-namespace Nakama {
+NAKAMA_NAMESPACE_BEGIN
 
     /// One or more groups returned from a listing operation.
     struct NAKAMA_API NGroupList
@@ -30,4 +30,5 @@ namespace Nakama {
     };
 
     using NGroupListPtr = std::shared_ptr<NGroupList>;
-}
+
+NAKAMA_NAMESPACE_END

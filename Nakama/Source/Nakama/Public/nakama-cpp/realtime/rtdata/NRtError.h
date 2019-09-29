@@ -18,7 +18,7 @@
 
 #include "nakama-cpp/NTypes.h"
 
-namespace Nakama {
+NAKAMA_NAMESPACE_BEGIN
 
     /// The selection of possible error codes.
     enum class NAKAMA_API RtErrorCode
@@ -52,4 +52,5 @@ namespace Nakama {
 
     NAKAMA_API const char* toString(RtErrorCode code);
     NAKAMA_API std::string toString(const NRtError& error);
-}
+
+NAKAMA_NAMESPACE_END

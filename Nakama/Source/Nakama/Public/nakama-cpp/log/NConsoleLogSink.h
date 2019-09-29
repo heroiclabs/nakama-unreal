@@ -18,7 +18,7 @@
 
 #include "nakama-cpp/log/NLogSinkInterface.h"
 
-namespace Nakama {
+NAKAMA_NAMESPACE_BEGIN
 
     /// Writes logs to console output
     class NAKAMA_API NConsoleLogSink : public NLogSinkInterface
@@ -31,4 +31,4 @@ namespace Nakama {
         void flush() override;
     };
 
-}
+NAKAMA_NAMESPACE_END

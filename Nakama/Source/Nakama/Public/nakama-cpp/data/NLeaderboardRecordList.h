@@ -21,7 +21,7 @@
 #include <string>
 #include <memory>
 
-namespace Nakama {
+NAKAMA_NAMESPACE_BEGIN
 
     /// A set of leaderboard records, may be part of a leaderboard records page or a batch of individual records.
     struct NAKAMA_API NLeaderboardRecordList
@@ -33,4 +33,5 @@ namespace Nakama {
     };
 
     using NLeaderboardRecordListPtr = std::shared_ptr<NLeaderboardRecordList>;
-}
+
+NAKAMA_NAMESPACE_END

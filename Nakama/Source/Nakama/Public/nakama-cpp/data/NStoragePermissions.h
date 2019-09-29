@@ -16,7 +16,7 @@
 
 #pragma once
 
-namespace Nakama {
+NAKAMA_NAMESPACE_BEGIN
 
     /// The read access permissions.
     enum class NAKAMA_API NStoragePermissionRead
@@ -33,4 +33,4 @@ namespace Nakama {
         OWNER_WRITE = 1   ///< Only the user who owns it may write.
     };
 
-}
+NAKAMA_NAMESPACE_END

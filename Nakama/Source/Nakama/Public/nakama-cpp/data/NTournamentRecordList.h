@@ -21,7 +21,7 @@
 #include <string>
 #include <memory>
 
-namespace Nakama {
+NAKAMA_NAMESPACE_BEGIN
 
     /// A set of tournament records which may be part of a tournament records page or a batch of individual records.
     struct NAKAMA_API NTournamentRecordList
@@ -33,4 +33,5 @@ namespace Nakama {
     };
 
     using NTournamentRecordListPtr = std::shared_ptr<NTournamentRecordList>;
-}
+
+NAKAMA_NAMESPACE_END

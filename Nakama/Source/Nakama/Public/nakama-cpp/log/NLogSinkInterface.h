@@ -19,7 +19,7 @@
 #include "nakama-cpp/NTypes.h"
 #include <memory>
 
-namespace Nakama {
+NAKAMA_NAMESPACE_BEGIN
 
     enum class NAKAMA_API NLogLevel
     {
@@ -71,4 +71,4 @@ namespace Nakama {
 
     using NLogSinkPtr = std::shared_ptr<NLogSinkInterface>;
 
-}
+NAKAMA_NAMESPACE_END

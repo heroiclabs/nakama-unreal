@@ -20,7 +20,7 @@
 #include "nakama-cpp/data/NStoragePermissions.h"
 #include <string>
 
-namespace Nakama {
+NAKAMA_NAMESPACE_BEGIN
 
     /// The object to store.
     struct NAKAMA_API NStorageObjectWrite
@@ -33,4 +33,4 @@ namespace Nakama {
         opt::optional<NStoragePermissionWrite> permissionWrite;   ///< The write access permissions for the object.
     };
 
-}
+NAKAMA_NAMESPACE_END

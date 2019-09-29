@@ -18,7 +18,7 @@
 
 #include "nakama-cpp/data/NUser.h"
 
-namespace Nakama {
+NAKAMA_NAMESPACE_BEGIN
 
     /// A friend of a user.
     struct NAKAMA_API NFriend
@@ -35,4 +35,4 @@ namespace Nakama {
         State state;   ///< The friend status.
     };
 
-}
+NAKAMA_NAMESPACE_END

@@ -19,7 +19,7 @@
 #include "nakama-cpp/data/NGroup.h"
 #include "nakama-cpp/NTypes.h"
 
-namespace Nakama {
+NAKAMA_NAMESPACE_BEGIN
 
     /// A single group-role pair.
     struct NAKAMA_API NUserGroup
@@ -28,4 +28,4 @@ namespace Nakama {
         NUserGroupState state; ///< The user's relationship to the group.
     };
 
-}
+NAKAMA_NAMESPACE_END
