@@ -53,6 +53,13 @@ public class MyUnrealProject : ModuleRules
 }
 ```
 
+Include following header only once in some source file e.g. in `NProject.cpp`:
+```cpp
+#include "nakama-cpp-c-wrapper/NakamaWrapperImpl.h"
+```
+
+This header includes implementation of Nakama C++ wrapper. It uses C interface to communicate with Nakama shared library (DLL).
+
 At this point, you are done.  Restart Unreal.  After it compiles things, open Edit->Plugins and scroll to the bottom. If all went well, you should see HeroicLabs.Nakama listed as a plugin.
 
 ## Threading model
@@ -66,13 +73,13 @@ The client object has many methods to execute various features in the server or 
 Include nakama header.
 
 ```cpp
-#include "nakama-cpp/Nakama.h"
+#include "NakamaUnreal.h"
 ```
 
 Use nakama namespace.
 
 ```cpp
-using namespace Nakama;
+using namespace NAKAMA_NAMESPACE;
 ```
 
 Use the connection credentials to build a client object.
