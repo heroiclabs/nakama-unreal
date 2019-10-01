@@ -4,7 +4,6 @@
 #include "Core.h"
 #include "Modules/ModuleManager.h"
 //#include "Interfaces/IPluginManager.h" // "Projects" module required
-#include "nakama-cpp-c-wrapper/NakamaWrapperImpl.h"
 #include "NUnrealLogSink.h"
 
 #define LOCTEXT_NAMESPACE "FNakamaModule"
@@ -18,8 +17,6 @@ void FNakamaModule::StartupModule()
 	// This code will execute after your module is loaded into memory; the exact timing is specified in the .uplugin file per-module
 
 	UE_LOG(LogTemp, Log, TEXT("Nakama module loaded"));
-
-	NLogger::init(std::make_shared<NUnrealLogSink>(), NLogLevel::Debug);
 }
 
 void FNakamaModule::ShutdownModule()
