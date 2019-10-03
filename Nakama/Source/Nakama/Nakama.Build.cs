@@ -145,10 +145,17 @@ public class Nakama : ModuleRules
 		PublicAdditionalLibraries.Add(Path.Combine(libsPath, "libnakama-cpp.dylib"));
 	}
 
+	private bool isArch_x64(ReadOnlyTargetRules Target)
+	{
+		System.Console.WriteLine("ARCH: {0}", Target.Architecture);
+
+		return Target.Architecture.StartsWith("x86_64") || Target.Architecture.StartsWith("x64");
+	}
+
 	private void HandleLinux(ReadOnlyTargetRules Target)
 	{
-		string libsPath = Path.Combine(CommonSharedLibsPath, "linux");
-		
+		string libsPath = Path.Combine(CommonSharedLibsPath, "linux", isArch_x64(Target) ? "x64" : "x86");
+
 		PublicLibraryPaths.Add(libsPath);
 		
 		// For some reason, we have to add the full path to the .a file here or it is not found :(
