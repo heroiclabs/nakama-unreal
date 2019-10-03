@@ -23,7 +23,7 @@ import shutil
 _7zip_path = 'c:\\Program Files\\7-Zip\\7z.exe'
 sdk_path = './Nakama'
 tmp_path = './_tmp'
-platforms = ['win64', 'mac', 'ios', 'android']
+platforms = ['win64', 'mac', 'ios', 'android', 'linux']
 libs_path = os.path.join(sdk_path, 'libs')
 shared_libs_path = os.path.join(sdk_path, 'Source', 'Nakama', 'Private', 'shared-libs')
 tmp_shared_libs_path = os.path.join(tmp_path, 'shared-libs')
@@ -89,6 +89,10 @@ def detect_sdk_version():
 version = detect_sdk_version()
 
 print('releasing sdk version:', version)
+
+shutil.copy('CHANGELOG.md', sdk_path)
+shutil.copy('README.md', sdk_path)
+shutil.copy('LICENSE', sdk_path)
 
 for platform in platforms:
     move_all_to_temp()
