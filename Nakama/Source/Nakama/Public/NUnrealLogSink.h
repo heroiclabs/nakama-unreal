@@ -22,43 +22,43 @@
 
 NAKAMA_NAMESPACE_BEGIN
 
-	class NUnrealLogSink : public NLogSinkInterface
-	{
-	public:
-		~NUnrealLogSink() {}
+    class NUnrealLogSink : public NLogSinkInterface
+    {
+    public:
+        ~NUnrealLogSink() {}
 
-		void log(NLogLevel level, const std::string& message, const char* func) override
-		{
-			std::string tmp;
+        void log(NLogLevel level, const std::string& message, const char* func) override
+        {
+            std::string tmp;
 
-			if (func && func[0])
-			{
-				tmp.append("[").append(func).append("] ");
-			}
+            if (func && func[0])
+            {
+                tmp.append("[").append(func).append("] ");
+            }
 
-			tmp.append(message);
+            tmp.append(message);
 
-			switch (level)
-			{
-			case NLogLevel::Debug:
-				UE_LOG(LogTemp, Verbose, TEXT("%s"), UTF8_TO_TCHAR(tmp.c_str()));
-				break;
-			case NLogLevel::Info:
-				UE_LOG(LogTemp, Log, TEXT("%s"), UTF8_TO_TCHAR(tmp.c_str()));
-				break;
-			case NLogLevel::Warn:
-				UE_LOG(LogTemp, Warning, TEXT("%s"), UTF8_TO_TCHAR(tmp.c_str()));
-				break;
-			case NLogLevel::Error:
-				UE_LOG(LogTemp, Error, TEXT("%s"), UTF8_TO_TCHAR(tmp.c_str()));
-				break;
-			case NLogLevel::Fatal:
-				UE_LOG(LogTemp, Fatal, TEXT("%s"), UTF8_TO_TCHAR(tmp.c_str()));
-				break;
-			}
-		}
+            switch (level)
+            {
+            case NLogLevel::Debug:
+                UE_LOG(LogTemp, Verbose, TEXT("%s"), UTF8_TO_TCHAR(tmp.c_str()));
+                break;
+            case NLogLevel::Info:
+                UE_LOG(LogTemp, Log, TEXT("%s"), UTF8_TO_TCHAR(tmp.c_str()));
+                break;
+            case NLogLevel::Warn:
+                UE_LOG(LogTemp, Warning, TEXT("%s"), UTF8_TO_TCHAR(tmp.c_str()));
+                break;
+            case NLogLevel::Error:
+                UE_LOG(LogTemp, Error, TEXT("%s"), UTF8_TO_TCHAR(tmp.c_str()));
+                break;
+            case NLogLevel::Fatal:
+                UE_LOG(LogTemp, Fatal, TEXT("%s"), UTF8_TO_TCHAR(tmp.c_str()));
+                break;
+            }
+        }
 
-		void flush() override {}
-	};
+        void flush() override {}
+    };
 
 NAKAMA_NAMESPACE_END

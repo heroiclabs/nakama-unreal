@@ -22,9 +22,9 @@
 class FNakamaModule : public INakamaModule
 {
 public:
-	/** IModuleInterface implementation */
-	virtual void StartupModule() override;
-	virtual void ShutdownModule() override;
+    /** IModuleInterface implementation */
+    virtual void StartupModule() override;
+    virtual void ShutdownModule() override;
 
     NAKAMA_NAMESPACE::INakamaOnlineSubsystem& getOnlineSubsystem() override;
 
