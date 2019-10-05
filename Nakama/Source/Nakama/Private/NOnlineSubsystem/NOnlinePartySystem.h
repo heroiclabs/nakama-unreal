@@ -459,7 +459,7 @@ NAKAMA_NAMESPACE_BEGIN
         };
 
         void handleJoinPartyResponse(const std::string& content);
-        void joinPartyResult(const std::string& partyId, EJoinPartyCompletionResult result);
+        void joinPartyResult(TSharedRef<const FOnlinePartyId> partyId, EJoinPartyCompletionResult result);
 
     protected:
         NClientPtr _client;

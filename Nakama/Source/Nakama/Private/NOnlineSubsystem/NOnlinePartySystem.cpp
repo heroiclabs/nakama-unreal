@@ -99,16 +99,6 @@ NAKAMA_NAMESPACE_BEGIN
         return jsonDocToStdStr(document);
     }
 
-    std::string OnlinePartyJoinInfoToJson(const IOnlinePartyJoinInfo & OnlinePartyJoinInfo)
-    {
-        rapidjson::Document document;
-        document.SetObject();
-
-        document.AddMember("party_id", toStdString(OnlinePartyJoinInfo.GetPartyId().Get().ToString()), document.GetAllocator());
-
-        return jsonDocToStdStr(document);
-    }
-
     bool NOnlinePartySystem::CreateParty(const FUniqueNetId & LocalUserId, const FOnlinePartyTypeId PartyTypeId, const FPartyConfiguration & PartyConfig, const FOnCreatePartyComplete & Delegate)
     {
         if (!_rtClient->isConnected())
@@ -186,8 +176,8 @@ NAKAMA_NAMESPACE_BEGIN
             return false;
         }
 
-        std::string partyId = toStdString(OnlinePartyJoinInfo.GetPartyId().Get().ToString());
-        JoinPartyInfo& joinPartyInfo = _joinInfo[partyId];
+        auto PartyIdPtr = OnlinePartyJoinInfo.GetPartyId();
+        JoinPartyInfo& joinPartyInfo = _joinInfo[toStdString(PartyIdPtr->ToString())];
 
         joinPartyInfo.delegate = Delegate;
         joinPartyInfo.localUserId = LocalUserId.AsShared();
@@ -197,16 +187,16 @@ NAKAMA_NAMESPACE_BEGIN
             handleJoinPartyResponse(rpc.payload);
         };
 
-        auto errorCallback = [this, partyId](const NRtError& error)
+        auto errorCallback = [this, PartyIdPtr](const NRtError& error)
         {
-            joinPartyResult(partyId, EJoinPartyCompletionResult::UnknownClientFailure);
+            joinPartyResult(PartyIdPtr, EJoinPartyCompletionResult::UnknownClientFailure);
         };
 
-        std::string payload(OnlinePartyJoinInfoToJson(OnlinePartyJoinInfo));
+        FString payload(MakeJoinInfoJson(LocalUserId, OnlinePartyJoinInfo.GetPartyId().Get()));
 
         _rtClient->rpc(
             "onlinepartysystem-joinparty",
-            payload,
+            toStdString(payload),
             successCallback,
             errorCallback);
 
@@ -409,7 +399,12 @@ NAKAMA_NAMESPACE_BEGIN
 
     FString NOnlinePartySystem::MakeJoinInfoJson(const FUniqueNetId & LocalUserId, const FOnlinePartyId & PartyId)
     {
-        return FString();
+        rapidjson::Document document;
+        document.SetObject();
+
+        document.AddMember("party_id", toStdString(PartyId.ToString()), document.GetAllocator());
+
+        return FString(jsonDocToStdStr(document).c_str());
     }
 
     IOnlinePartyJoinInfoConstPtr NOnlinePartySystem::MakeJoinInfoFromJson(const FString & JoinInfoJson)
@@ -452,7 +447,9 @@ NAKAMA_NAMESPACE_BEGIN
 
             if (jsonPartyId.IsString() && jsonResult.IsNumber())
             {
-                joinPartyResult(jsonPartyId.GetString(), (EJoinPartyCompletionResult)jsonResult.GetInt());
+                NOnlinePartyId partyId(jsonPartyId.GetString());
+
+                joinPartyResult(partyId.AsShared(), (EJoinPartyCompletionResult)jsonResult.GetInt());
             }
             else
             {
@@ -461,21 +458,20 @@ NAKAMA_NAMESPACE_BEGIN
         }
     }
 
-    void NOnlinePartySystem::joinPartyResult(const std::string & partyId, EJoinPartyCompletionResult result)
+    void NOnlinePartySystem::joinPartyResult(TSharedRef<const FOnlinePartyId> partyId, EJoinPartyCompletionResult result)
     {
-        auto it = _joinInfo.find(partyId);
+        auto it = _joinInfo.find(toStdString(partyId->ToString()));
         if (it != _joinInfo.end())
         {
             JoinPartyInfo& joinPartyInfo = it->second;
-            NOnlinePartyId onlinePartyId(partyId.c_str());
 
-            joinPartyInfo.delegate.ExecuteIfBound(*joinPartyInfo.localUserId, onlinePartyId, result, 0);
+            joinPartyInfo.delegate.ExecuteIfBound(*joinPartyInfo.localUserId, *partyId, result, 0);
 
             _joinInfo.erase(it);
         }
         else
         {
-            NLOG_ERROR("Join info not found by party id: " + partyId);
+            NLOG_ERROR("Join info not found by party id: " + toStdString(partyId->ToString()));
         }
     }
 
