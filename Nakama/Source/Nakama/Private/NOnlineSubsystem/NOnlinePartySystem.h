@@ -234,6 +234,7 @@ NAKAMA_NAMESPACE_BEGIN
         bool PromoteMember(const FUniqueNetId& LocalUserId, const FOnlinePartyId& PartyId, const FUniqueNetId& TargetMemberId, const FOnPromotePartyMemberComplete& Delegate = FOnPromotePartyMemberComplete()) override;
 
         /**
+         * [Not implemented]
          * Set party data and broadcast to all members
          * Only current data can be set and no history of past party data is preserved
          * Party members notified of new data (see FOnPartyDataReceived)
@@ -248,6 +249,7 @@ NAKAMA_NAMESPACE_BEGIN
         bool UpdatePartyData(const FUniqueNetId& LocalUserId, const FOnlinePartyId& PartyId, const FOnlinePartyData& PartyData) override;
 
         /**
+         * [Not implemented]
          * Set party data for a single party member and broadcast to all members
          * Only current data can be set and no history of past party member data is preserved
          * Party members notified of new data (see FOnPartyMemberDataReceived)
@@ -335,6 +337,7 @@ NAKAMA_NAMESPACE_BEGIN
         FOnlinePartyDataConstPtr GetPartyMemberData(const FUniqueNetId& LocalUserId, const FOnlinePartyId& PartyId, const FUniqueNetId& MemberId) const override;
 
         /**
+         * [Not implemented]
          * Get the join info of the specified user and party type
          *
          * @param LocalUserId       - user making the request
@@ -377,6 +380,7 @@ NAKAMA_NAMESPACE_BEGIN
         bool GetPendingInvites(const FUniqueNetId& LocalUserId, TArray<IOnlinePartyJoinInfoConstRef>& OutPendingInvitesArray) const override;
 
         /**
+         * [Not implemented]
          * Get list of users requesting to join the party
          *
          * @param LocalUserId           - user making the request
@@ -388,6 +392,7 @@ NAKAMA_NAMESPACE_BEGIN
         bool GetPendingJoinRequests(const FUniqueNetId& LocalUserId, const FOnlinePartyId& PartyId, TArray<IOnlinePartyPendingJoinRequestInfoConstRef>& OutPendingJoinRequestArray) const override;
 
         /**
+         * [Not implemented]
          * Get list of users invited to a party that have not yet responded
          *
          * @param LocalUserId                - user making the request
@@ -434,6 +439,7 @@ NAKAMA_NAMESPACE_BEGIN
         IOnlinePartyJoinInfoConstPtr MakeJoinInfoFromToken(const FString& Token) const override;
 
         /**
+         * [Not implemented]
          * Checks to see if there is a pending command line invite and consumes it
          *
          * return the pending IOnlinePartyJoinInfo object

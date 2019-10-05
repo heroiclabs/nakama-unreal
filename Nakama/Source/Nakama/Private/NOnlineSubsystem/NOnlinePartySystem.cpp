@@ -329,11 +329,13 @@ NAKAMA_NAMESPACE_BEGIN
 
     bool NOnlinePartySystem::UpdatePartyData(const FUniqueNetId & LocalUserId, const FOnlinePartyId & PartyId, const FOnlinePartyData & PartyData)
     {
+        // Not implemented
         return false;
     }
 
     bool NOnlinePartySystem::UpdatePartyMemberData(const FUniqueNetId & LocalUserId, const FOnlinePartyId & PartyId, const FOnlinePartyData & PartyMemberData)
     {
+        // Not implemented
         return false;
     }
 
@@ -374,6 +376,7 @@ NAKAMA_NAMESPACE_BEGIN
 
     IOnlinePartyJoinInfoConstPtr NOnlinePartySystem::GetAdvertisedParty(const FUniqueNetId & LocalUserId, const FUniqueNetId & UserId, const FOnlinePartyTypeId PartyTypeId) const
     {
+        // Not implemented
         return IOnlinePartyJoinInfoConstPtr();
     }
 
@@ -394,11 +397,13 @@ NAKAMA_NAMESPACE_BEGIN
 
     bool NOnlinePartySystem::GetPendingJoinRequests(const FUniqueNetId & LocalUserId, const FOnlinePartyId & PartyId, TArray<IOnlinePartyPendingJoinRequestInfoConstRef>& OutPendingJoinRequestArray) const
     {
+        // Not implemented
         return false;
     }
 
     bool NOnlinePartySystem::GetPendingInvitedUsers(const FUniqueNetId & LocalUserId, const FOnlinePartyId & PartyId, TArray<TSharedRef<const FUniqueNetId>>& OutPendingInvitedUserArray) const
     {
+        // Not implemented
         return false;
     }
 
@@ -424,6 +429,7 @@ NAKAMA_NAMESPACE_BEGIN
 
     IOnlinePartyJoinInfoConstPtr NOnlinePartySystem::ConsumePendingCommandLineInvite()
     {
+        // Not implemented
         return IOnlinePartyJoinInfoConstPtr();
     }
 
