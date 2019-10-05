@@ -4,8 +4,6 @@
 #include "Core.h"
 #include "Modules/ModuleManager.h"
 //#include "Interfaces/IPluginManager.h" // "Projects" module required
-#include "NUnrealLogSink.h"
-#include "NOnlineSubsystem/NOnlineSubsystem.h"
 #include "nakama-cpp-c-wrapper/NakamaWrapperImpl.h"
 
 #define LOCTEXT_NAMESPACE "FNakamaModule"
