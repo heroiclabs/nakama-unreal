@@ -18,7 +18,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"github.com/heroiclabs/nakama/runtime"
+	"github.com/heroiclabs/nakama-common/runtime"
 )
 
 const (

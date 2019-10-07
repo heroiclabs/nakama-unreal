@@ -18,18 +18,18 @@ import (
 	"context"
 	"database/sql"
 	"encoding/json"
-	"github.com/heroiclabs/nakama/runtime"
+	"github.com/heroiclabs/nakama-common/runtime"
 	"strings"
 )
 
 const (
-	TickRate = 1
+	TickRate         = 1
 	InitialJoinTicks = 60
 )
 
 const (
-	OpCodeTerminate = iota // Server -> client when the party is being terminated by the server.
-	OpCodeJoinRequest      // Server -> client when a user requests to join the party.
+	OpCodeTerminate   = iota // Server -> client when the party is being terminated by the server.
+	OpCodeJoinRequest        // Server -> client when a user requests to join the party.
 
 	OpCodeApproveForRejoin
 	OpCodeApproveJoinRequest
@@ -50,8 +50,8 @@ const (
 )
 
 type PartyMatchLabel struct {
-	OnlinePartyTypeId  int64    `json:"type_id,omitempty"`
-	Members            []string `json:"members,omitempty"`
+	OnlinePartyTypeId int64    `json:"type_id,omitempty"`
+	Members           []string `json:"members,omitempty"`
 }
 
 type PartyMatchState struct {
@@ -68,7 +68,7 @@ type PartyMatchState struct {
 	initialEmptyTicks int              // Number of ticks the party has been empty on creation, to ensure parties are cleaned up if their creator never joins.
 }
 
-type PartyMatch struct {}
+type PartyMatch struct{}
 
 func (p PartyMatch) MatchInit(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runtime.NakamaModule, params map[string]interface{}) (interface{}, int, string) {
 	creator, ok := params["creator"].(string)
@@ -145,7 +145,7 @@ func (p PartyMatch) MatchJoinAttempt(ctx context.Context, logger runtime.Logger,
 
 	// Everyone else must be approved by the party leader.
 	s.joinRequests[presence.GetUserId()] = presence
-	if err := dispatcher.BroadcastMessage(OpCodeJoinRequest, nil, []runtime.Presence{s.leader}, presence); err != nil {
+	if err := dispatcher.BroadcastMessage(OpCodeJoinRequest, nil, []runtime.Presence{s.leader}, presence, true); err != nil {
 		logger.Warn("Error broadcasting join request to party leader: %v", err)
 	}
 	return s, false, "Join request sent"
@@ -198,7 +198,7 @@ func (p PartyMatch) MatchLeave(ctx context.Context, logger runtime.Logger, db *s
 				if userId != leftUserId {
 					s.leader = remainingPresence
 					// Notify the party about the new leader.
-					if err := dispatcher.BroadcastMessage(OpCodePromoteMember, nil, nil, remainingPresence); err != nil {
+					if err := dispatcher.BroadcastMessage(OpCodePromoteMember, nil, nil, remainingPresence, true); err != nil {
 						logger.Warn("Error broadcasting member promotion: %v", err)
 					}
 					break
@@ -276,12 +276,12 @@ func (p PartyMatch) MatchLoop(ctx context.Context, logger runtime.Logger, db *sq
 
 			s.invitations = make(map[string]struct{})
 		case OpCodeGetPartyData:
-			if err := dispatcher.BroadcastMessage(OpCodeGetPartyData, s.partyData, []runtime.Presence{message}, nil); err != nil {
+			if err := dispatcher.BroadcastMessage(OpCodeGetPartyData, s.partyData, []runtime.Presence{message}, nil, true); err != nil {
 				logger.Warn("Error broadcasting party data: %v", err)
 			}
 		case OpCodeGetPartyMemberData:
 			// Expects message data payload to be a user ID string to retrieve party member data for.
-			if err := dispatcher.BroadcastMessage(OpCodeGetPartyMemberData, s.partyMemberData[string(message.GetData())], []runtime.Presence{message}, nil); err != nil {
+			if err := dispatcher.BroadcastMessage(OpCodeGetPartyMemberData, s.partyMemberData[string(message.GetData())], []runtime.Presence{message}, nil, true); err != nil {
 				logger.Warn("Error broadcasting party member data: %v", err)
 			}
 		case OpCodeGetPendingInvitedUsers:
@@ -297,7 +297,7 @@ func (p PartyMatch) MatchLoop(ctx context.Context, logger runtime.Logger, db *sq
 			}
 
 			// Outgoing data payload will be a JSON array of user IDs.
-			if err := dispatcher.BroadcastMessage(OpCodeGetPendingInvitedUsers, data, []runtime.Presence{message}, nil); err != nil {
+			if err := dispatcher.BroadcastMessage(OpCodeGetPendingInvitedUsers, data, []runtime.Presence{message}, nil, true); err != nil {
 				logger.Warn("Error broadcasting pending invited users: %v", err)
 			}
 		case OpCodeGetPendingJoinRequests:
@@ -313,7 +313,7 @@ func (p PartyMatch) MatchLoop(ctx context.Context, logger runtime.Logger, db *sq
 			}
 
 			// Outgoing data payload will be a JSON array of user IDs.
-			if err := dispatcher.BroadcastMessage(OpCodeGetPendingJoinRequests, data, []runtime.Presence{message}, nil); err != nil {
+			if err := dispatcher.BroadcastMessage(OpCodeGetPendingJoinRequests, data, []runtime.Presence{message}, nil, true); err != nil {
 				logger.Warn("Error broadcasting pending join requests: %v", err)
 			}
 		case OpCodeGetUsersApprovedForRejoin:
@@ -329,7 +329,7 @@ func (p PartyMatch) MatchLoop(ctx context.Context, logger runtime.Logger, db *sq
 			}
 
 			// Outgoing data payload will be a JSON array of user IDs.
-			if err := dispatcher.BroadcastMessage(OpCodeGetUsersApprovedForRejoin, data, []runtime.Presence{message}, nil); err != nil {
+			if err := dispatcher.BroadcastMessage(OpCodeGetUsersApprovedForRejoin, data, []runtime.Presence{message}, nil, true); err != nil {
 				logger.Warn("Error broadcasting users approved for rejoin: %v", err)
 			}
 		case OpCodeIsMemberLeader:
@@ -340,7 +340,7 @@ func (p PartyMatch) MatchLoop(ctx context.Context, logger runtime.Logger, db *sq
 			}
 
 			// Outgoing data payload will contain the strings "true" or "false".
-			if err := dispatcher.BroadcastMessage(OpCodeIsMemberLeader, []byte(isPartyLeader), []runtime.Presence{message}, nil); err != nil {
+			if err := dispatcher.BroadcastMessage(OpCodeIsMemberLeader, []byte(isPartyLeader), []runtime.Presence{message}, nil, true); err != nil {
 				logger.Warn("Error broadcasting is member leader: %v", err)
 			}
 		case OpCodeKickMember:
@@ -351,7 +351,7 @@ func (p PartyMatch) MatchLoop(ctx context.Context, logger runtime.Logger, db *sq
 
 			// Expects message data payload to be a user ID string to be kicked.
 			if presence, ok := s.presences[string(message.GetData())]; ok {
-				if err := dispatcher.BroadcastMessage(OpCodeKickMember, nil, nil, presence); err != nil {
+				if err := dispatcher.BroadcastMessage(OpCodeKickMember, nil, nil, presence, true); err != nil {
 					logger.Warn("Error broadcasting party member kicked: %v", err)
 				}
 				if err := dispatcher.MatchKick([]runtime.Presence{presence}); err != nil {
@@ -370,7 +370,7 @@ func (p PartyMatch) MatchLoop(ctx context.Context, logger runtime.Logger, db *sq
 
 			// Expects message data payload to be a user ID string to be promoted.
 			if presence, ok := s.presences[string(message.GetData())]; ok {
-				if err := dispatcher.BroadcastMessage(OpCodePromoteMember, nil, nil, presence); err != nil {
+				if err := dispatcher.BroadcastMessage(OpCodePromoteMember, nil, nil, presence, true); err != nil {
 					logger.Warn("Error broadcasting party member promote: %v", err)
 				}
 
@@ -412,14 +412,14 @@ func (p PartyMatch) MatchLoop(ctx context.Context, logger runtime.Logger, db *sq
 
 			s.partyData = message.GetData()
 
-			if err := dispatcher.BroadcastMessage(OpCodeUpdatePartyData,  message.GetData(), nil, nil); err != nil {
+			if err := dispatcher.BroadcastMessage(OpCodeUpdatePartyData, message.GetData(), nil, nil, true); err != nil {
 				logger.Warn("Error broadcasting party data update: %v", err)
 			}
 		case OpCodeUpdatePartyMemberData:
 			// Users are allowed to change their own party member data at will.
 			s.partyMemberData[message.GetUserId()] = message.GetData()
 
-			if err := dispatcher.BroadcastMessage(OpCodeUpdatePartyMemberData,  message.GetData(), nil, message); err != nil {
+			if err := dispatcher.BroadcastMessage(OpCodeUpdatePartyMemberData, message.GetData(), nil, message, true); err != nil {
 				logger.Warn("Error broadcasting party data update: %v", err)
 			}
 		default:
@@ -433,7 +433,7 @@ func (p PartyMatch) MatchLoop(ctx context.Context, logger runtime.Logger, db *sq
 
 func (p PartyMatch) MatchTerminate(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runtime.NakamaModule, dispatcher runtime.MatchDispatcher, tick int64, state interface{}, graceSeconds int) interface{} {
 	// Termination has been requested by the server, usually because it's shutting down.
-	if err := dispatcher.BroadcastMessage(OpCodeTerminate, nil, nil, nil); err != nil {
+	if err := dispatcher.BroadcastMessage(OpCodeTerminate, nil, nil, nil, true); err != nil {
 		logger.Warn("Error broadcasting party terminate message: %v", err)
 	}
 	return nil

@@ -19,7 +19,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
-	"github.com/heroiclabs/nakama/runtime"
+	"github.com/heroiclabs/nakama-common/runtime"
 )
 
 var (
