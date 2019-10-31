@@ -18,8 +18,9 @@ import (
 	"context"
 	"database/sql"
 	"encoding/json"
-	"github.com/heroiclabs/nakama-common/runtime"
 	"strings"
+
+	"github.com/heroiclabs/nakama-common/runtime"
 )
 
 const (
@@ -68,7 +69,13 @@ type PartyMatchState struct {
 	initialEmptyTicks int              // Number of ticks the party has been empty on creation, to ensure parties are cleaned up if their creator never joins.
 }
 
-type PartyMatch struct{}
+type PartyConfig struct {
+	MaxSize int // Maximum number of members allowed in party
+}
+
+type PartyMatch struct {
+	config PartyConfig
+}
 
 func (p PartyMatch) MatchInit(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runtime.NakamaModule, params map[string]interface{}) (interface{}, int, string) {
 	creator, ok := params["creator"].(string)
@@ -129,6 +136,11 @@ func (p PartyMatch) MatchJoinAttempt(ctx context.Context, logger runtime.Logger,
 		s.creator = ""
 		s.initialEmptyTicks = 0
 		return s, true, ""
+	}
+
+	// Reject any joins that would exceed party size
+	if p.config.MaxSize > 0 && len(s.presences) >= p.config.MaxSize {
+		return s, false, "Party is full"
 	}
 
 	// Allow approved rejoins.
@@ -281,8 +293,10 @@ func (p PartyMatch) MatchLoop(ctx context.Context, logger runtime.Logger, db *sq
 			}
 		case OpCodeGetPartyMemberData:
 			// Expects message data payload to be a user ID string to retrieve party member data for.
-			if err := dispatcher.BroadcastMessage(OpCodeGetPartyMemberData, s.partyMemberData[string(message.GetData())], []runtime.Presence{message}, nil, true); err != nil {
-				logger.Warn("Error broadcasting party member data: %v", err)
+			if presence, ok := s.presences[string(message.GetData())]; ok {
+				if err := dispatcher.BroadcastMessage(OpCodeGetPartyMemberData, s.partyMemberData[string(message.GetData())], []runtime.Presence{message}, presence, true); err != nil {
+					logger.Warn("Error broadcasting party member data: %v", err)
+				}
 			}
 		case OpCodeGetPendingInvitedUsers:
 			invitations := make([]string, 0, len(s.invitations))

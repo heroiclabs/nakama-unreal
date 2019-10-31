@@ -18,6 +18,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+
 	"github.com/heroiclabs/nakama-common/runtime"
 )
 
@@ -26,7 +27,12 @@ const (
 )
 
 // Registers the collection of functions with Nakama required to provide an OnlinePartyService from Unreal Engine.
-func Register(initializer runtime.Initializer) error {
+func Register(initializer runtime.Initializer, config PartyConfig) error {
+	createPartyMatch := func(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runtime.NakamaModule) (runtime.Match, error) {
+		return &PartyMatch{
+			config: config,
+		}, nil
+	}
 	if err := initializer.RegisterMatch(fmt.Sprintf("%s-%s", serviceName, "Party"), createPartyMatch); err != nil {
 		return err
 	}
@@ -37,8 +43,4 @@ func Register(initializer runtime.Initializer) error {
 		return err
 	}
 	return nil
-}
-
-func createPartyMatch(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runtime.NakamaModule) (runtime.Match, error) {
-	return &PartyMatch{}, nil
 }
