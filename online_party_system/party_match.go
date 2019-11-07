@@ -53,10 +53,10 @@ const (
 )
 
 const (
-	FailureReasonNotPartyLeader = "not party leader"
-	FailureReasonBadRequest     = "bad request"
-	FailureReasonInternalError  = "internal error"
-	FailureReasonUserOffline    = "user offline"
+	FailureReasonNotPartyLeader = iota
+	FailureReasonBadRequest
+	FailureReasonInternalError
+	FailureReasonUserOffline
 )
 
 type PartyMatchMessage struct {
@@ -65,8 +65,8 @@ type PartyMatchMessage struct {
 }
 
 type PartyMessageFailure struct {
-	Id     int64  `json:"id"`
-	Reason string `json:"reason"`
+	Id     int64 `json:"id"`
+	Reason int64 `json:"reason"`
 }
 
 type PartyMatchLabel struct {
@@ -524,7 +524,7 @@ func (p PartyMatch) MatchTerminate(ctx context.Context, logger runtime.Logger, d
 	return nil
 }
 
-func SendFailure(partyMsg PartyMatchMessage, reason string, to []runtime.Presence, logger runtime.Logger, dispatcher runtime.MatchDispatcher) {
+func SendFailure(partyMsg PartyMatchMessage, reason int64, to []runtime.Presence, logger runtime.Logger, dispatcher runtime.MatchDispatcher) {
 	// Only send a failure message if party message ID is set
 	if partyMsg.Id > 0 {
 		failure := PartyMessageFailure{
