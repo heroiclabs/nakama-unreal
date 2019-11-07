@@ -335,7 +335,7 @@ func (p PartyMatch) MatchLoop(ctx context.Context, logger runtime.Logger, db *sq
 			}
 
 			if err := dispatcher.BroadcastMessage(OpCodeGetPartyMemberData, s.partyMemberData[string(partyMsg.Data)], []runtime.Presence{message}, presence, true); err != nil {
-				logger.Warn("Error broadcasting party member data: %v", err)
+					logger.Warn("Error broadcasting party member data: %v", err)
 				SendFailure(partyMsg, FailureReasonInternalError, []runtime.Presence{message}, logger, dispatcher)
 			}
 		case OpCodeGetPendingInvitedUsers:
