@@ -49,14 +49,15 @@ const (
 	OpCodeUpdatePartyData
 	OpCodeUpdatePartyMemberData
 
-	OpCodePartyMessageFailure
+	OpCodePartyMessageResponse
 )
 
 const (
-	FailureReasonNotPartyLeader = iota
-	FailureReasonBadRequest
-	FailureReasonInternalError
-	FailureReasonUserOffline
+	ErrorCodeNone = iota
+	ErrorCodeNotPartyLeader
+	ErrorCodeBadRequest
+	ErrorCodeInternalError
+	ErrorCodeUserOffline
 )
 
 type PartyMatchMessage struct {
@@ -64,9 +65,9 @@ type PartyMatchMessage struct {
 	Data []byte `json"data"`
 }
 
-type PartyMessageFailure struct {
-	Id     int64 `json:"id"`
-	Reason int64 `json:"reason"`
+type PartyMessageResponse struct {
+	Id        int64 `json:"id"`
+	ErrorCode int64 `json:"error_code"`
 }
 
 type PartyMatchLabel struct {
@@ -284,7 +285,7 @@ func (p PartyMatch) MatchLoop(ctx context.Context, logger runtime.Logger, db *sq
 		case OpCodeApproveForRejoin:
 			// Leader only action.
 			if s.leader.GetUserId() != message.GetUserId() {
-				SendFailure(partyMsg, FailureReasonNotPartyLeader, []runtime.Presence{message}, logger, dispatcher)
+				SendResponse(partyMsg, ErrorCodeNotPartyLeader, []runtime.Presence{message}, logger, dispatcher)
 				continue
 			}
 
@@ -293,7 +294,7 @@ func (p PartyMatch) MatchLoop(ctx context.Context, logger runtime.Logger, db *sq
 		case OpCodeApproveJoinRequest:
 			// Leader only action.
 			if s.leader.GetUserId() != message.GetUserId() {
-				SendFailure(partyMsg, FailureReasonNotPartyLeader, []runtime.Presence{message}, logger, dispatcher)
+				SendResponse(partyMsg, ErrorCodeNotPartyLeader, []runtime.Presence{message}, logger, dispatcher)
 				continue
 			}
 
@@ -305,18 +306,19 @@ func (p PartyMatch) MatchLoop(ctx context.Context, logger runtime.Logger, db *sq
 				matchIdComponents := strings.SplitN(ctx.Value(runtime.RUNTIME_CTX_MATCH_ID).(string), ".", 2)
 				if len(matchIdComponents) != 2 {
 					logger.Error("Error parsing match ID into components")
-					SendFailure(partyMsg, FailureReasonInternalError, []runtime.Presence{message}, logger, dispatcher)
+					SendResponse(partyMsg, ErrorCodeInternalError, []runtime.Presence{message}, logger, dispatcher)
 					continue
 				}
 				if _, err := nk.StreamUserJoin(6, matchIdComponents[0], "", matchIdComponents[1], presence.GetUserId(), presence.GetSessionId(), false, false, ""); err != nil {
 					logger.Warn("Error adding user to match stream after party join request approved: %v", err)
-					SendFailure(partyMsg, FailureReasonInternalError, []runtime.Presence{message}, logger, dispatcher)
+					SendResponse(partyMsg, ErrorCodeInternalError, []runtime.Presence{message}, logger, dispatcher)
+					continue
 				}
 			}
 		case OpCodeClearInvitations:
 			// Leader only action.
 			if s.leader.GetUserId() != message.GetUserId() {
-				SendFailure(partyMsg, FailureReasonNotPartyLeader, []runtime.Presence{message}, logger, dispatcher)
+				SendResponse(partyMsg, ErrorCodeNotPartyLeader, []runtime.Presence{message}, logger, dispatcher)
 				continue
 			}
 
@@ -324,19 +326,21 @@ func (p PartyMatch) MatchLoop(ctx context.Context, logger runtime.Logger, db *sq
 		case OpCodeGetPartyData:
 			if err := dispatcher.BroadcastMessage(OpCodeGetPartyData, s.partyData, []runtime.Presence{message}, nil, true); err != nil {
 				logger.Warn("Error broadcasting party data: %v", err)
-				SendFailure(partyMsg, FailureReasonInternalError, []runtime.Presence{message}, logger, dispatcher)
+				SendResponse(partyMsg, ErrorCodeInternalError, []runtime.Presence{message}, logger, dispatcher)
+				continue
 			}
 		case OpCodeGetPartyMemberData:
 			// Expects message data payload to be a user ID string to retrieve party member data for.
 			presence, ok := s.presences[string(partyMsg.Data)]
 			if !ok {
-				SendFailure(partyMsg, FailureReasonBadRequest, []runtime.Presence{message}, logger, dispatcher)
+				SendResponse(partyMsg, ErrorCodeBadRequest, []runtime.Presence{message}, logger, dispatcher)
 				continue
 			}
 
 			if err := dispatcher.BroadcastMessage(OpCodeGetPartyMemberData, s.partyMemberData[string(partyMsg.Data)], []runtime.Presence{message}, presence, true); err != nil {
-					logger.Warn("Error broadcasting party member data: %v", err)
-				SendFailure(partyMsg, FailureReasonInternalError, []runtime.Presence{message}, logger, dispatcher)
+				logger.Warn("Error broadcasting party member data: %v", err)
+				SendResponse(partyMsg, ErrorCodeInternalError, []runtime.Presence{message}, logger, dispatcher)
+				continue
 			}
 		case OpCodeGetPendingInvitedUsers:
 			invitations := make([]string, 0, len(s.invitations))
@@ -347,14 +351,15 @@ func (p PartyMatch) MatchLoop(ctx context.Context, logger runtime.Logger, db *sq
 			data, err := json.Marshal(invitations)
 			if err != nil {
 				logger.Warn("Error encoding invitations: %v", err)
-				SendFailure(partyMsg, FailureReasonInternalError, []runtime.Presence{message}, logger, dispatcher)
+				SendResponse(partyMsg, ErrorCodeInternalError, []runtime.Presence{message}, logger, dispatcher)
 				continue
 			}
 
 			// Outgoing data payload will be a JSON array of user IDs.
 			if err := dispatcher.BroadcastMessage(OpCodeGetPendingInvitedUsers, data, []runtime.Presence{message}, nil, true); err != nil {
 				logger.Warn("Error broadcasting pending invited users: %v", err)
-				SendFailure(partyMsg, FailureReasonInternalError, []runtime.Presence{message}, logger, dispatcher)
+				SendResponse(partyMsg, ErrorCodeInternalError, []runtime.Presence{message}, logger, dispatcher)
+				continue
 			}
 		case OpCodeGetPendingJoinRequests:
 			joinRequests := make([]string, 0, len(s.invitations))
@@ -365,14 +370,15 @@ func (p PartyMatch) MatchLoop(ctx context.Context, logger runtime.Logger, db *sq
 			data, err := json.Marshal(joinRequests)
 			if err != nil {
 				logger.Warn("Error encoding join requests: %v", err)
-				SendFailure(partyMsg, FailureReasonInternalError, []runtime.Presence{message}, logger, dispatcher)
+				SendResponse(partyMsg, ErrorCodeInternalError, []runtime.Presence{message}, logger, dispatcher)
 				continue
 			}
 
 			// Outgoing data payload will be a JSON array of user IDs.
 			if err := dispatcher.BroadcastMessage(OpCodeGetPendingJoinRequests, data, []runtime.Presence{message}, nil, true); err != nil {
 				logger.Warn("Error broadcasting pending join requests: %v", err)
-				SendFailure(partyMsg, FailureReasonInternalError, []runtime.Presence{message}, logger, dispatcher)
+				SendResponse(partyMsg, ErrorCodeInternalError, []runtime.Presence{message}, logger, dispatcher)
+				continue
 			}
 		case OpCodeGetUsersApprovedForRejoin:
 			approvedRejoins := make([]string, 0, len(s.invitations))
@@ -383,14 +389,15 @@ func (p PartyMatch) MatchLoop(ctx context.Context, logger runtime.Logger, db *sq
 			data, err := json.Marshal(approvedRejoins)
 			if err != nil {
 				logger.Warn("Error encoding approved for rejoin: %v", err)
-				SendFailure(partyMsg, FailureReasonInternalError, []runtime.Presence{message}, logger, dispatcher)
+				SendResponse(partyMsg, ErrorCodeInternalError, []runtime.Presence{message}, logger, dispatcher)
 				continue
 			}
 
 			// Outgoing data payload will be a JSON array of user IDs.
 			if err := dispatcher.BroadcastMessage(OpCodeGetUsersApprovedForRejoin, data, []runtime.Presence{message}, nil, true); err != nil {
 				logger.Warn("Error broadcasting users approved for rejoin: %v", err)
-				SendFailure(partyMsg, FailureReasonInternalError, []runtime.Presence{message}, logger, dispatcher)
+				SendResponse(partyMsg, ErrorCodeInternalError, []runtime.Presence{message}, logger, dispatcher)
+				continue
 			}
 		case OpCodeIsMemberLeader:
 			// Expects message data payload to be a user ID string to check if it's the party leader.
@@ -402,12 +409,13 @@ func (p PartyMatch) MatchLoop(ctx context.Context, logger runtime.Logger, db *sq
 			// Outgoing data payload will contain the strings "true" or "false".
 			if err := dispatcher.BroadcastMessage(OpCodeIsMemberLeader, []byte(isPartyLeader), []runtime.Presence{message}, nil, true); err != nil {
 				logger.Warn("Error broadcasting is member leader: %v", err)
-				SendFailure(partyMsg, FailureReasonInternalError, []runtime.Presence{message}, logger, dispatcher)
+				SendResponse(partyMsg, ErrorCodeInternalError, []runtime.Presence{message}, logger, dispatcher)
+				continue
 			}
 		case OpCodeKickMember:
 			// Leader only action.
 			if s.leader.GetUserId() != message.GetUserId() {
-				SendFailure(partyMsg, FailureReasonNotPartyLeader, []runtime.Presence{message}, logger, dispatcher)
+				SendResponse(partyMsg, ErrorCodeNotPartyLeader, []runtime.Presence{message}, logger, dispatcher)
 				continue
 			}
 
@@ -418,7 +426,7 @@ func (p PartyMatch) MatchLoop(ctx context.Context, logger runtime.Logger, db *sq
 				}
 				if err := dispatcher.MatchKick([]runtime.Presence{presence}); err != nil {
 					logger.Warn("Error kicking party member: %v", err)
-					SendFailure(partyMsg, FailureReasonInternalError, []runtime.Presence{message}, logger, dispatcher)
+					SendResponse(partyMsg, ErrorCodeInternalError, []runtime.Presence{message}, logger, dispatcher)
 					continue
 				}
 
@@ -428,7 +436,7 @@ func (p PartyMatch) MatchLoop(ctx context.Context, logger runtime.Logger, db *sq
 		case OpCodePromoteMember:
 			// Leader only action.
 			if s.leader.GetUserId() != message.GetUserId() {
-				SendFailure(partyMsg, FailureReasonNotPartyLeader, []runtime.Presence{message}, logger, dispatcher)
+				SendResponse(partyMsg, ErrorCodeNotPartyLeader, []runtime.Presence{message}, logger, dispatcher)
 				continue
 			}
 
@@ -443,7 +451,7 @@ func (p PartyMatch) MatchLoop(ctx context.Context, logger runtime.Logger, db *sq
 		case OpCodeRemoveUserForRejoin:
 			// Leader only action.
 			if s.leader.GetUserId() != message.GetUserId() {
-				SendFailure(partyMsg, FailureReasonNotPartyLeader, []runtime.Presence{message}, logger, dispatcher)
+				SendResponse(partyMsg, ErrorCodeNotPartyLeader, []runtime.Presence{message}, logger, dispatcher)
 				continue
 			}
 
@@ -452,7 +460,7 @@ func (p PartyMatch) MatchLoop(ctx context.Context, logger runtime.Logger, db *sq
 		case OpCodeSendInvitation:
 			// Leader only action.
 			if s.leader.GetUserId() != message.GetUserId() {
-				SendFailure(partyMsg, FailureReasonNotPartyLeader, []runtime.Presence{message}, logger, dispatcher)
+				SendResponse(partyMsg, ErrorCodeNotPartyLeader, []runtime.Presence{message}, logger, dispatcher)
 				continue
 			}
 
@@ -461,26 +469,26 @@ func (p PartyMatch) MatchLoop(ctx context.Context, logger runtime.Logger, db *sq
 			count, err := nk.StreamCount(0, userId, "", "")
 			if err != nil {
 				logger.Warn("Error counting stream presences during party invitation: %v", err)
-				SendFailure(partyMsg, FailureReasonInternalError, []runtime.Presence{message}, logger, dispatcher)
+				SendResponse(partyMsg, ErrorCodeInternalError, []runtime.Presence{message}, logger, dispatcher)
 				continue
 			}
 			if count <= 0 {
 				// User is not online. It's possible this user is not valid
-				SendFailure(partyMsg, FailureReasonUserOffline, []runtime.Presence{message}, logger, dispatcher)
+				SendResponse(partyMsg, ErrorCodeUserOffline, []runtime.Presence{message}, logger, dispatcher)
 				continue
 			}
 
 			// Expects message data payload to be a user ID string to be invited.
 			if err := nk.NotificationSend(ctx, string(partyMsg.Data), "Party invitation", map[string]interface{}{"match_id": ctx.Value(runtime.RUNTIME_CTX_MATCH_ID)}, 1, message.GetUserId(), false); err != nil {
 				logger.Warn("Error sending party invitation: %v", err)
-				SendFailure(partyMsg, FailureReasonInternalError, []runtime.Presence{message}, logger, dispatcher)
+				SendResponse(partyMsg, ErrorCodeInternalError, []runtime.Presence{message}, logger, dispatcher)
 				continue
 			}
 			s.invitations[string(partyMsg.Data)] = struct{}{}
 		case OpCodeUpdateParty:
 			// Leader only action.
 			if s.leader.GetUserId() != message.GetUserId() {
-				SendFailure(partyMsg, FailureReasonNotPartyLeader, []runtime.Presence{message}, logger, dispatcher)
+				SendResponse(partyMsg, ErrorCodeNotPartyLeader, []runtime.Presence{message}, logger, dispatcher)
 				continue
 			}
 
@@ -489,7 +497,7 @@ func (p PartyMatch) MatchLoop(ctx context.Context, logger runtime.Logger, db *sq
 		case OpCodeUpdatePartyData:
 			// Leader only action.
 			if s.leader.GetUserId() != message.GetUserId() {
-				SendFailure(partyMsg, FailureReasonNotPartyLeader, []runtime.Presence{message}, logger, dispatcher)
+				SendResponse(partyMsg, ErrorCodeNotPartyLeader, []runtime.Presence{message}, logger, dispatcher)
 				continue
 			}
 
@@ -497,7 +505,8 @@ func (p PartyMatch) MatchLoop(ctx context.Context, logger runtime.Logger, db *sq
 
 			if err := dispatcher.BroadcastMessage(OpCodeUpdatePartyData, partyMsg.Data, nil, nil, true); err != nil {
 				logger.Warn("Error broadcasting party data update: %v", err)
-				SendFailure(partyMsg, FailureReasonInternalError, []runtime.Presence{message}, logger, dispatcher)
+				SendResponse(partyMsg, ErrorCodeInternalError, []runtime.Presence{message}, logger, dispatcher)
+				continue
 			}
 		case OpCodeUpdatePartyMemberData:
 			// Users are allowed to change their own party member data at will.
@@ -505,12 +514,15 @@ func (p PartyMatch) MatchLoop(ctx context.Context, logger runtime.Logger, db *sq
 
 			if err := dispatcher.BroadcastMessage(OpCodeUpdatePartyMemberData, partyMsg.Data, nil, message, true); err != nil {
 				logger.Warn("Error broadcasting party data update: %v", err)
-				SendFailure(partyMsg, FailureReasonInternalError, []runtime.Presence{message}, logger, dispatcher)
+				SendResponse(partyMsg, ErrorCodeInternalError, []runtime.Presence{message}, logger, dispatcher)
+				continue
 			}
 		default:
-			SendFailure(partyMsg, FailureReasonBadRequest, []runtime.Presence{message}, logger, dispatcher)
+			SendResponse(partyMsg, ErrorCodeBadRequest, []runtime.Presence{message}, logger, dispatcher)
 			continue
 		}
+
+		SendResponse(partyMsg, ErrorCodeNone, []runtime.Presence{message}, logger, dispatcher)
 	}
 
 	return s
@@ -524,20 +536,20 @@ func (p PartyMatch) MatchTerminate(ctx context.Context, logger runtime.Logger, d
 	return nil
 }
 
-func SendFailure(partyMsg PartyMatchMessage, reason int64, to []runtime.Presence, logger runtime.Logger, dispatcher runtime.MatchDispatcher) {
-	// Only send a failure message if party message ID is set
+func SendResponse(partyMsg PartyMatchMessage, errorCode int64, to []runtime.Presence, logger runtime.Logger, dispatcher runtime.MatchDispatcher) {
+	// Only send a response if party message ID is set
 	if partyMsg.Id > 0 {
-		failure := PartyMessageFailure{
-			Id:     partyMsg.Id,
-			Reason: reason,
+		response := PartyMessageResponse{
+			Id:        partyMsg.Id,
+			ErrorCode: errorCode,
 		}
-		failureBytes, err := json.Marshal(failure)
+		responseBytes, err := json.Marshal(response)
 		if err != nil {
-			logger.Error("Error marshalling party message rejection: %v", err)
+			logger.Error("Error marshalling party message response: %v", err)
 			return
 		}
-		if err := dispatcher.BroadcastMessage(OpCodePartyMessageFailure, failureBytes, to, nil, true); err != nil {
-			logger.Error("Error broadcasting party message rejection: %v", err)
+		if err := dispatcher.BroadcastMessage(OpCodePartyMessageResponse, responseBytes, to, nil, true); err != nil {
+			logger.Error("Error broadcasting party message response: %v", err)
 		}
 	}
 }
