@@ -19,6 +19,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"strings"
+	"time"
 
 	"github.com/heroiclabs/nakama-common/runtime"
 )
@@ -43,6 +44,7 @@ const (
 	OpCodeIsMemberLeader
 	OpCodeKickMember
 	OpCodePromoteMember
+	OpCodeRejectInvitation
 	OpCodeRemoveUserForRejoin
 	OpCodeSendInvitation
 	OpCodeUpdateParty
@@ -58,6 +60,9 @@ const (
 	ResponseCodeBadRequest
 	ResponseCodeInternalError
 	ResponseCodeUserOffline
+	ResponseCodePresenceError
+	ResponseCodeInvitePending
+	ResponseCodeNoInvitePending
 )
 
 type PartyMatchMessage struct {
@@ -81,7 +86,7 @@ type PartyMatchState struct {
 	partyData         []byte                      // Arbitrary party data.
 	partyMemberData   map[string][]byte           // Arbitrary party member data.
 	approvedForRejoin map[string]struct{}         // User IDs approved for rejoin.
-	invitations       map[string]struct{}         // User IDs that have been invited.
+	invitations       map[string]time.Time        // User IDs to expiration time for users that have been invited.
 	joinRequests      map[string]runtime.Presence // User IDs that have requested to join the party.
 
 	label             *PartyMatchLabel // Label exposed to Nakama's match listing system.
@@ -90,11 +95,47 @@ type PartyMatchState struct {
 }
 
 type PartyConfig struct {
-	MaxSize int // Maximum number of members allowed in party
+	MaxSize        int           // Maximum number of members allowed in party
+	InviteDuration time.Duration // Duration an invite should last before expiring. default 0 = no expiration
 }
 
 type PartyMatch struct {
 	config PartyConfig
+}
+
+func (p PartyMatch) cleanupExpiredInvitations(ctx context.Context, nk runtime.NakamaModule, s *PartyMatchState) error {
+	if p.config.InviteDuration.Nanoseconds() > 0 {
+		for memberId, expiration := range s.invitations {
+			if time.Now().After(expiration) {
+				delete(s.invitations, memberId)
+				content := map[string]interface{}{
+					"party_id":  ctx.Value(runtime.RUNTIME_CTX_MATCH_ID).(string),
+					"member_id": memberId,
+				}
+				if err := p.sendPartyNotification(ctx, nk, s, "Party expired invitation", content); err != nil {
+					return err
+				}
+			}
+		}
+	}
+	return nil
+}
+
+func (p PartyMatch) sendPartyNotification(ctx context.Context, nk runtime.NakamaModule, s *PartyMatchState, subject string, content map[string]interface{}) error {
+	//Prepare notification for each presence
+	notifications := make([]*runtime.NotificationSend, 0, len(s.presences))
+	for _, presence := range s.presences {
+		notification := &runtime.NotificationSend{
+			UserID:     presence.GetUserId(),
+			Subject:    subject,
+			Content:    content,
+			Code:       1,
+			Persistent: false,
+		}
+		notifications = append(notifications, notification)
+	}
+
+	return nk.NotificationsSend(ctx, notifications)
 }
 
 func (p PartyMatch) MatchInit(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runtime.NakamaModule, params map[string]interface{}) (interface{}, int, string) {
@@ -130,7 +171,7 @@ func (p PartyMatch) MatchInit(ctx context.Context, logger runtime.Logger, db *sq
 		partyData:         nil,
 		partyMemberData:   make(map[string][]byte),
 		approvedForRejoin: make(map[string]struct{}),
-		invitations:       make(map[string]struct{}),
+		invitations:       make(map[string]time.Time),
 		joinRequests:      make(map[string]runtime.Presence),
 
 		label:             label,
@@ -169,7 +210,10 @@ func (p PartyMatch) MatchJoinAttempt(ctx context.Context, logger runtime.Logger,
 		return s, true, ""
 	}
 
-	// Allow users that have been invited.
+	// Allow users that have an unexpired invitation
+	if err := p.cleanupExpiredInvitations(ctx, nk, s); err != nil {
+		logger.Warn("Error sending expired invitation notifs: %v", err)
+	}
 	if _, ok := s.invitations[presence.GetUserId()]; ok {
 		delete(s.invitations, presence.GetUserId())
 		return s, true, ""
@@ -268,6 +312,11 @@ func (p PartyMatch) MatchLoop(ctx context.Context, logger runtime.Logger, db *sq
 		}
 	}
 
+	// Cleanup expired party invitations
+	if err := p.cleanupExpiredInvitations(ctx, nk, s); err != nil {
+		logger.Warn("Error sending expired invitation notifs: %v", err)
+	}
+
 	// Process messages one by one.
 	// Currently any unknown, malformed, or unexpected messages are just ignored.
 	for _, message := range messages {
@@ -322,7 +371,7 @@ func (p PartyMatch) MatchLoop(ctx context.Context, logger runtime.Logger, db *sq
 				continue
 			}
 
-			s.invitations = make(map[string]struct{})
+			s.invitations = make(map[string]time.Time)
 		case OpCodeGetPartyData:
 			if err := dispatcher.BroadcastMessage(OpCodeGetPartyData, s.partyData, []runtime.Presence{message}, nil, true); err != nil {
 				logger.Warn("Error broadcasting party data: %v", err)
@@ -362,7 +411,7 @@ func (p PartyMatch) MatchLoop(ctx context.Context, logger runtime.Logger, db *sq
 				continue
 			}
 		case OpCodeGetPendingJoinRequests:
-			joinRequests := make([]string, 0, len(s.invitations))
+			joinRequests := make([]string, 0, len(s.joinRequests))
 			for userId, _ := range s.joinRequests {
 				joinRequests = append(joinRequests, userId)
 			}
@@ -381,7 +430,7 @@ func (p PartyMatch) MatchLoop(ctx context.Context, logger runtime.Logger, db *sq
 				continue
 			}
 		case OpCodeGetUsersApprovedForRejoin:
-			approvedRejoins := make([]string, 0, len(s.invitations))
+			approvedRejoins := make([]string, 0, len(s.approvedForRejoin))
 			for userId, _ := range s.approvedForRejoin {
 				approvedRejoins = append(approvedRejoins, userId)
 			}
@@ -423,6 +472,8 @@ func (p PartyMatch) MatchLoop(ctx context.Context, logger runtime.Logger, db *sq
 			if presence, ok := s.presences[string(partyMsg.Data)]; ok {
 				if err := dispatcher.BroadcastMessage(OpCodeKickMember, nil, nil, presence, true); err != nil {
 					logger.Warn("Error broadcasting party member kicked: %v", err)
+					SendResponse(partyMsg, ResponseCodeInternalError, []runtime.Presence{message}, logger, dispatcher)
+					continue
 				}
 				if err := dispatcher.MatchKick([]runtime.Presence{presence}); err != nil {
 					logger.Warn("Error kicking party member: %v", err)
@@ -432,6 +483,10 @@ func (p PartyMatch) MatchLoop(ctx context.Context, logger runtime.Logger, db *sq
 
 				delete(s.presences, presence.GetUserId())
 				delete(s.partyMemberData, presence.GetUserId())
+			} else {
+				logger.Warn("Error getting presence for kick: %s", string(partyMsg.Data))
+				SendResponse(partyMsg, ResponseCodePresenceError, []runtime.Presence{message}, logger, dispatcher)
+				continue
 			}
 		case OpCodePromoteMember:
 			// Leader only action.
@@ -448,6 +503,20 @@ func (p PartyMatch) MatchLoop(ctx context.Context, logger runtime.Logger, db *sq
 
 				s.leader = presence
 			}
+		case OpCodeRejectInvitation:
+			// Leader only action.
+			if s.leader.GetUserId() != message.GetUserId() {
+				SendResponse(partyMsg, ResponseCodeNotPartyLeader, []runtime.Presence{message}, logger, dispatcher)
+				continue
+			}
+
+			userId := string(partyMsg.Data)
+			if _, ok := s.invitations[userId]; !ok {
+				// No invite to reject
+				SendResponse(partyMsg, ResponseCodeNoInvitePending, []runtime.Presence{message}, logger, dispatcher)
+				continue
+			}
+			delete(s.invitations, userId)
 		case OpCodeRemoveUserForRejoin:
 			// Leader only action.
 			if s.leader.GetUserId() != message.GetUserId() {
@@ -464,8 +533,20 @@ func (p PartyMatch) MatchLoop(ctx context.Context, logger runtime.Logger, db *sq
 				continue
 			}
 
-			// Check if user is online in the notification stream
 			var userId = string(partyMsg.Data)
+			if s.leader.GetUserId() == userId {
+				// Leader inviting itself, already ok to join, do not send notification
+				SendResponse(partyMsg, ResponseCodeInternalError, []runtime.Presence{message}, logger, dispatcher)
+				continue
+			}
+
+			if _, ok := s.invitations[userId]; ok {
+				// Invite is already pending
+				SendResponse(partyMsg, ResponseCodeInvitePending, []runtime.Presence{message}, logger, dispatcher)
+				continue
+			}
+
+			// Check if user is online in the notification stream
 			count, err := nk.StreamCount(0, userId, "", "")
 			if err != nil {
 				logger.Warn("Error counting stream presences during party invitation: %v", err)
@@ -484,7 +565,7 @@ func (p PartyMatch) MatchLoop(ctx context.Context, logger runtime.Logger, db *sq
 				SendResponse(partyMsg, ResponseCodeInternalError, []runtime.Presence{message}, logger, dispatcher)
 				continue
 			}
-			s.invitations[string(partyMsg.Data)] = struct{}{}
+			s.invitations[string(partyMsg.Data)] = time.Now().Add(p.config.InviteDuration)
 		case OpCodeUpdateParty:
 			// Leader only action.
 			if s.leader.GetUserId() != message.GetUserId() {
