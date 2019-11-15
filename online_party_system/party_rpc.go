@@ -183,6 +183,7 @@ func rpcGetAdvertisedParty(ctx context.Context, logger runtime.Logger, db *sql.D
 
 type RejectPartyInviteRequest struct {
 	PartyId string `json:"party_id"`
+	Reason  string `json:"reason"`
 }
 
 func rpcRejectPartyInvite(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runtime.NakamaModule, payload string) (string, error) {
@@ -217,6 +218,7 @@ func rpcRejectPartyInvite(ctx context.Context, logger runtime.Logger, db *sql.DB
 	content := map[string]interface{}{
 		"party_id":  req.PartyId,
 		"member_id": session.UserID,
+		"reason":    req.Reason,
 	}
 	for _, presence := range presences {
 		notification := &runtime.NotificationSend{

@@ -81,6 +81,7 @@ type PartyMatchLabel struct {
 }
 
 type PartyMatchState struct {
+	version           string                      // Party version, all join requests must match if set or they'll be rejected
 	leader            runtime.Presence            // Identity of the current party leader. May change over the lifetime of the party.
 	presences         map[string]runtime.Presence // Map of user IDs to presences. Keyed on user ID because multiple devices per user per party are not allowed.
 	partyData         []byte                      // Arbitrary party data.
@@ -196,7 +197,21 @@ func (p PartyMatch) MatchJoinAttempt(ctx context.Context, logger runtime.Logger,
 		s.leader = presence
 		s.creator = ""
 		s.initialEmptyTicks = 0
+
+		// Party leader determines the party version
+		if version, ok := metadata["version"]; ok {
+			s.version = version
+		}
+
 		return s, true, ""
+	}
+
+	// Reject any joins that have a version mismatch
+	if s.version != "" {
+		version, ok := metadata["version"]
+		if !ok || version != s.version {
+			return s, false, "Bad version"
+		}
 	}
 
 	// Reject any joins that would exceed party size
@@ -560,7 +575,11 @@ func (p PartyMatch) MatchLoop(ctx context.Context, logger runtime.Logger, db *sq
 			}
 
 			// Expects message data payload to be a user ID string to be invited.
-			if err := nk.NotificationSend(ctx, string(partyMsg.Data), "Party invitation", map[string]interface{}{"match_id": ctx.Value(runtime.RUNTIME_CTX_MATCH_ID)}, 1, message.GetUserId(), false); err != nil {
+			content := map[string]interface{}{
+				"match_id": ctx.Value(runtime.RUNTIME_CTX_MATCH_ID),
+				"version":  s.version,
+			}
+			if err := nk.NotificationSend(ctx, string(partyMsg.Data), "Party invitation", content, 1, message.GetUserId(), false); err != nil {
 				logger.Warn("Error sending party invitation: %v", err)
 				SendResponse(partyMsg, ResponseCodeInternalError, []runtime.Presence{message}, logger, dispatcher)
 				continue
