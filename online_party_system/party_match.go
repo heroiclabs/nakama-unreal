@@ -106,8 +106,9 @@ type PartyMatch struct {
 
 func (p PartyMatch) cleanupExpiredInvitations(ctx context.Context, nk runtime.NakamaModule, s *PartyMatchState) error {
 	if p.config.InviteDuration.Nanoseconds() > 0 {
+		now := time.Now()
 		for memberId, expiration := range s.invitations {
-			if time.Now().After(expiration) {
+			if now.After(expiration) {
 				delete(s.invitations, memberId)
 				content := map[string]interface{}{
 					"party_id":  ctx.Value(runtime.RUNTIME_CTX_MATCH_ID).(string),
@@ -238,6 +239,7 @@ func (p PartyMatch) MatchJoinAttempt(ctx context.Context, logger runtime.Logger,
 	s.joinRequests[presence.GetUserId()] = presence
 	if err := dispatcher.BroadcastMessage(OpCodeJoinRequest, nil, []runtime.Presence{s.leader}, presence, true); err != nil {
 		logger.Warn("Error broadcasting join request to party leader: %v", err)
+		return s, false, "Failed sending join request to leader"
 	}
 	return s, false, "Join request sent"
 }
