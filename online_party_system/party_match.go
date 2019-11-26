@@ -66,7 +66,7 @@ const (
 )
 
 type PartyMatchMessage struct {
-	Id   int64  `json:"id"`
+	Id   *int64 `json:"id"`
 	Data []byte `json"data"`
 }
 
@@ -338,14 +338,12 @@ func (p PartyMatch) MatchLoop(ctx context.Context, logger runtime.Logger, db *sq
 	// Currently any unknown, malformed, or unexpected messages are just ignored.
 	for _, message := range messages {
 
-		// Valid message data is either
-		// 1) PartyMatchMessage
-		// 2) []byte
-		partyMsg := PartyMatchMessage{
-			Id:   0,
-			Data: message.GetData(), // Case: []byte
+		var partyMsg PartyMatchMessage
+		err := json.Unmarshal(message.GetData(), &partyMsg)
+		if err != nil {
+			logger.Warn("Unable to unmarshal PartyMatchMessage: %v", err)
+			continue
 		}
-		json.Unmarshal(message.GetData(), &partyMsg) // Case: PartyMatchMessage
 
 		switch message.GetOpCode() {
 		case OpCodeApproveForRejoin:
@@ -639,17 +637,18 @@ func (p PartyMatch) MatchTerminate(ctx context.Context, logger runtime.Logger, d
 }
 
 func SendResponse(partyMsg PartyMatchMessage, responseCode int64, to []runtime.Presence, logger runtime.Logger, dispatcher runtime.MatchDispatcher) {
-	// Only send a response if party message ID is set
-	if partyMsg.Id > 0 {
+	if partyMsg.Id != nil {
 		response := PartyMessageResponse{
-			Id:           partyMsg.Id,
+			Id:           *partyMsg.Id,
 			ResponseCode: responseCode,
 		}
+
 		responseBytes, err := json.Marshal(response)
 		if err != nil {
 			logger.Error("Error marshalling party message response: %v", err)
 			return
 		}
+
 		if err := dispatcher.BroadcastMessage(OpCodePartyMessageResponse, responseBytes, to, nil, true); err != nil {
 			logger.Error("Error broadcasting party message response: %v", err)
 		}
