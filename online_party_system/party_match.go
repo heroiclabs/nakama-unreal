@@ -19,6 +19,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"strings"
+	"time"
 
 	"github.com/heroiclabs/nakama-common/runtime"
 )
@@ -43,12 +44,36 @@ const (
 	OpCodeIsMemberLeader
 	OpCodeKickMember
 	OpCodePromoteMember
+	OpCodeRejectInvitation
 	OpCodeRemoveUserForRejoin
 	OpCodeSendInvitation
 	OpCodeUpdateParty
 	OpCodeUpdatePartyData
 	OpCodeUpdatePartyMemberData
+
+	OpCodePartyMessageResponse
 )
+
+const (
+	ResponseCodeSuccess = iota
+	ResponseCodeNotPartyLeader
+	ResponseCodeBadRequest
+	ResponseCodeInternalError
+	ResponseCodeUserOffline
+	ResponseCodePresenceError
+	ResponseCodeInvitePending
+	ResponseCodeNoInvitePending
+)
+
+type PartyMatchMessage struct {
+	Id   *int64 `json:"id"`
+	Data []byte `json"data"`
+}
+
+type PartyMessageResponse struct {
+	Id           int64 `json:"id"`
+	ResponseCode int64 `json:"response_code"`
+}
 
 type PartyMatchLabel struct {
 	OnlinePartyTypeId int64    `json:"type_id,omitempty"`
@@ -56,12 +81,13 @@ type PartyMatchLabel struct {
 }
 
 type PartyMatchState struct {
+	version           string                      // Party version, all join requests must match if set or they'll be rejected
 	leader            runtime.Presence            // Identity of the current party leader. May change over the lifetime of the party.
 	presences         map[string]runtime.Presence // Map of user IDs to presences. Keyed on user ID because multiple devices per user per party are not allowed.
 	partyData         []byte                      // Arbitrary party data.
 	partyMemberData   map[string][]byte           // Arbitrary party member data.
 	approvedForRejoin map[string]struct{}         // User IDs approved for rejoin.
-	invitations       map[string]struct{}         // User IDs that have been invited.
+	invitations       map[string]time.Time        // User IDs to expiration time for users that have been invited.
 	joinRequests      map[string]runtime.Presence // User IDs that have requested to join the party.
 
 	label             *PartyMatchLabel // Label exposed to Nakama's match listing system.
@@ -70,11 +96,48 @@ type PartyMatchState struct {
 }
 
 type PartyConfig struct {
-	MaxSize int // Maximum number of members allowed in party
+	MaxSize        int           // Maximum number of members allowed in party
+	InviteDuration time.Duration // Duration an invite should last before expiring. default 0 = no expiration
 }
 
 type PartyMatch struct {
 	config PartyConfig
+}
+
+func (p PartyMatch) cleanupExpiredInvitations(ctx context.Context, nk runtime.NakamaModule, s *PartyMatchState) error {
+	if p.config.InviteDuration.Nanoseconds() > 0 {
+		now := time.Now()
+		for memberId, expiration := range s.invitations {
+			if now.After(expiration) {
+				delete(s.invitations, memberId)
+				content := map[string]interface{}{
+					"party_id":  ctx.Value(runtime.RUNTIME_CTX_MATCH_ID).(string),
+					"member_id": memberId,
+				}
+				if err := p.sendPartyNotification(ctx, nk, s, "Party expired invitation", content); err != nil {
+					return err
+				}
+			}
+		}
+	}
+	return nil
+}
+
+func (p PartyMatch) sendPartyNotification(ctx context.Context, nk runtime.NakamaModule, s *PartyMatchState, subject string, content map[string]interface{}) error {
+	//Prepare notification for each presence
+	notifications := make([]*runtime.NotificationSend, 0, len(s.presences))
+	for _, presence := range s.presences {
+		notification := &runtime.NotificationSend{
+			UserID:     presence.GetUserId(),
+			Subject:    subject,
+			Content:    content,
+			Code:       1,
+			Persistent: false,
+		}
+		notifications = append(notifications, notification)
+	}
+
+	return nk.NotificationsSend(ctx, notifications)
 }
 
 func (p PartyMatch) MatchInit(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runtime.NakamaModule, params map[string]interface{}) (interface{}, int, string) {
@@ -110,7 +173,7 @@ func (p PartyMatch) MatchInit(ctx context.Context, logger runtime.Logger, db *sq
 		partyData:         nil,
 		partyMemberData:   make(map[string][]byte),
 		approvedForRejoin: make(map[string]struct{}),
-		invitations:       make(map[string]struct{}),
+		invitations:       make(map[string]time.Time),
 		joinRequests:      make(map[string]runtime.Presence),
 
 		label:             label,
@@ -135,7 +198,21 @@ func (p PartyMatch) MatchJoinAttempt(ctx context.Context, logger runtime.Logger,
 		s.leader = presence
 		s.creator = ""
 		s.initialEmptyTicks = 0
+
+		// Party leader determines the party version
+		if version, ok := metadata["version"]; ok {
+			s.version = version
+		}
+
 		return s, true, ""
+	}
+
+	// Reject any joins that have a version mismatch
+	if s.version != "" {
+		version, ok := metadata["version"]
+		if !ok || version != s.version {
+			return s, false, "Bad version"
+		}
 	}
 
 	// Reject any joins that would exceed party size
@@ -149,7 +226,10 @@ func (p PartyMatch) MatchJoinAttempt(ctx context.Context, logger runtime.Logger,
 		return s, true, ""
 	}
 
-	// Allow users that have been invited.
+	// Allow users that have an unexpired invitation
+	if err := p.cleanupExpiredInvitations(ctx, nk, s); err != nil {
+		logger.Warn("Error sending expired invitation notifs: %v", err)
+	}
 	if _, ok := s.invitations[presence.GetUserId()]; ok {
 		delete(s.invitations, presence.GetUserId())
 		return s, true, ""
@@ -159,6 +239,7 @@ func (p PartyMatch) MatchJoinAttempt(ctx context.Context, logger runtime.Logger,
 	s.joinRequests[presence.GetUserId()] = presence
 	if err := dispatcher.BroadcastMessage(OpCodeJoinRequest, nil, []runtime.Presence{s.leader}, presence, true); err != nil {
 		logger.Warn("Error broadcasting join request to party leader: %v", err)
+		return s, false, "Failed sending join request to leader"
 	}
 	return s, false, "Join request sent"
 }
@@ -248,55 +329,82 @@ func (p PartyMatch) MatchLoop(ctx context.Context, logger runtime.Logger, db *sq
 		}
 	}
 
+	// Cleanup expired party invitations
+	if err := p.cleanupExpiredInvitations(ctx, nk, s); err != nil {
+		logger.Warn("Error sending expired invitation notifs: %v", err)
+	}
+
 	// Process messages one by one.
 	// Currently any unknown, malformed, or unexpected messages are just ignored.
 	for _, message := range messages {
+
+		var partyMsg PartyMatchMessage
+		err := json.Unmarshal(message.GetData(), &partyMsg)
+		if err != nil {
+			logger.Warn("Unable to unmarshal PartyMatchMessage: %v", err)
+			continue
+		}
+
 		switch message.GetOpCode() {
 		case OpCodeApproveForRejoin:
 			// Leader only action.
 			if s.leader.GetUserId() != message.GetUserId() {
+				SendResponse(partyMsg, ResponseCodeNotPartyLeader, []runtime.Presence{message}, logger, dispatcher)
 				continue
 			}
 
 			// Expects message data payload to be a user ID string to be approved for rejoin.
-			s.approvedForRejoin[string(message.GetData())] = struct{}{}
+			s.approvedForRejoin[string(partyMsg.Data)] = struct{}{}
 		case OpCodeApproveJoinRequest:
 			// Leader only action.
 			if s.leader.GetUserId() != message.GetUserId() {
+				SendResponse(partyMsg, ResponseCodeNotPartyLeader, []runtime.Presence{message}, logger, dispatcher)
 				continue
 			}
 
 			// Expects message data payload to be a user ID string to be approved for join.
-			if presence, ok := s.joinRequests[string(message.GetData())]; ok {
-				delete(s.joinRequests, string(message.GetData()))
+			if presence, ok := s.joinRequests[string(partyMsg.Data)]; ok {
+				delete(s.joinRequests, string(partyMsg.Data))
 
 				// Add the user to the match stream. This will lead to MatchJoin being triggered.
 				matchIdComponents := strings.SplitN(ctx.Value(runtime.RUNTIME_CTX_MATCH_ID).(string), ".", 2)
 				if len(matchIdComponents) != 2 {
 					logger.Error("Error parsing match ID into components")
+					SendResponse(partyMsg, ResponseCodeInternalError, []runtime.Presence{message}, logger, dispatcher)
 					continue
 				}
 				if _, err := nk.StreamUserJoin(6, matchIdComponents[0], "", matchIdComponents[1], presence.GetUserId(), presence.GetSessionId(), false, false, ""); err != nil {
 					logger.Warn("Error adding user to match stream after party join request approved: %v", err)
+					SendResponse(partyMsg, ResponseCodeInternalError, []runtime.Presence{message}, logger, dispatcher)
+					continue
 				}
 			}
 		case OpCodeClearInvitations:
 			// Leader only action.
 			if s.leader.GetUserId() != message.GetUserId() {
+				SendResponse(partyMsg, ResponseCodeNotPartyLeader, []runtime.Presence{message}, logger, dispatcher)
 				continue
 			}
 
-			s.invitations = make(map[string]struct{})
+			s.invitations = make(map[string]time.Time)
 		case OpCodeGetPartyData:
 			if err := dispatcher.BroadcastMessage(OpCodeGetPartyData, s.partyData, []runtime.Presence{message}, nil, true); err != nil {
 				logger.Warn("Error broadcasting party data: %v", err)
+				SendResponse(partyMsg, ResponseCodeInternalError, []runtime.Presence{message}, logger, dispatcher)
+				continue
 			}
 		case OpCodeGetPartyMemberData:
 			// Expects message data payload to be a user ID string to retrieve party member data for.
-			if presence, ok := s.presences[string(message.GetData())]; ok {
-				if err := dispatcher.BroadcastMessage(OpCodeGetPartyMemberData, s.partyMemberData[string(message.GetData())], []runtime.Presence{message}, presence, true); err != nil {
-					logger.Warn("Error broadcasting party member data: %v", err)
-				}
+			presence, ok := s.presences[string(partyMsg.Data)]
+			if !ok {
+				SendResponse(partyMsg, ResponseCodeBadRequest, []runtime.Presence{message}, logger, dispatcher)
+				continue
+			}
+
+			if err := dispatcher.BroadcastMessage(OpCodeGetPartyMemberData, s.partyMemberData[string(partyMsg.Data)], []runtime.Presence{message}, presence, true); err != nil {
+				logger.Warn("Error broadcasting party member data: %v", err)
+				SendResponse(partyMsg, ResponseCodeInternalError, []runtime.Presence{message}, logger, dispatcher)
+				continue
 			}
 		case OpCodeGetPendingInvitedUsers:
 			invitations := make([]string, 0, len(s.invitations))
@@ -307,15 +415,18 @@ func (p PartyMatch) MatchLoop(ctx context.Context, logger runtime.Logger, db *sq
 			data, err := json.Marshal(invitations)
 			if err != nil {
 				logger.Warn("Error encoding invitations: %v", err)
+				SendResponse(partyMsg, ResponseCodeInternalError, []runtime.Presence{message}, logger, dispatcher)
 				continue
 			}
 
 			// Outgoing data payload will be a JSON array of user IDs.
 			if err := dispatcher.BroadcastMessage(OpCodeGetPendingInvitedUsers, data, []runtime.Presence{message}, nil, true); err != nil {
 				logger.Warn("Error broadcasting pending invited users: %v", err)
+				SendResponse(partyMsg, ResponseCodeInternalError, []runtime.Presence{message}, logger, dispatcher)
+				continue
 			}
 		case OpCodeGetPendingJoinRequests:
-			joinRequests := make([]string, 0, len(s.invitations))
+			joinRequests := make([]string, 0, len(s.joinRequests))
 			for userId, _ := range s.joinRequests {
 				joinRequests = append(joinRequests, userId)
 			}
@@ -323,15 +434,18 @@ func (p PartyMatch) MatchLoop(ctx context.Context, logger runtime.Logger, db *sq
 			data, err := json.Marshal(joinRequests)
 			if err != nil {
 				logger.Warn("Error encoding join requests: %v", err)
+				SendResponse(partyMsg, ResponseCodeInternalError, []runtime.Presence{message}, logger, dispatcher)
 				continue
 			}
 
 			// Outgoing data payload will be a JSON array of user IDs.
 			if err := dispatcher.BroadcastMessage(OpCodeGetPendingJoinRequests, data, []runtime.Presence{message}, nil, true); err != nil {
 				logger.Warn("Error broadcasting pending join requests: %v", err)
+				SendResponse(partyMsg, ResponseCodeInternalError, []runtime.Presence{message}, logger, dispatcher)
+				continue
 			}
 		case OpCodeGetUsersApprovedForRejoin:
-			approvedRejoins := make([]string, 0, len(s.invitations))
+			approvedRejoins := make([]string, 0, len(s.approvedForRejoin))
 			for userId, _ := range s.approvedForRejoin {
 				approvedRejoins = append(approvedRejoins, userId)
 			}
@@ -339,80 +453,142 @@ func (p PartyMatch) MatchLoop(ctx context.Context, logger runtime.Logger, db *sq
 			data, err := json.Marshal(approvedRejoins)
 			if err != nil {
 				logger.Warn("Error encoding approved for rejoin: %v", err)
+				SendResponse(partyMsg, ResponseCodeInternalError, []runtime.Presence{message}, logger, dispatcher)
 				continue
 			}
 
 			// Outgoing data payload will be a JSON array of user IDs.
 			if err := dispatcher.BroadcastMessage(OpCodeGetUsersApprovedForRejoin, data, []runtime.Presence{message}, nil, true); err != nil {
 				logger.Warn("Error broadcasting users approved for rejoin: %v", err)
+				SendResponse(partyMsg, ResponseCodeInternalError, []runtime.Presence{message}, logger, dispatcher)
+				continue
 			}
 		case OpCodeIsMemberLeader:
 			// Expects message data payload to be a user ID string to check if it's the party leader.
 			isPartyLeader := "false"
-			if s.leader.GetUserId() == string(message.GetData()) {
+			if s.leader.GetUserId() == string(partyMsg.Data) {
 				isPartyLeader = "true"
 			}
 
 			// Outgoing data payload will contain the strings "true" or "false".
 			if err := dispatcher.BroadcastMessage(OpCodeIsMemberLeader, []byte(isPartyLeader), []runtime.Presence{message}, nil, true); err != nil {
 				logger.Warn("Error broadcasting is member leader: %v", err)
+				SendResponse(partyMsg, ResponseCodeInternalError, []runtime.Presence{message}, logger, dispatcher)
+				continue
 			}
 		case OpCodeKickMember:
 			// Leader only action.
 			if s.leader.GetUserId() != message.GetUserId() {
+				SendResponse(partyMsg, ResponseCodeNotPartyLeader, []runtime.Presence{message}, logger, dispatcher)
 				continue
 			}
 
 			// Expects message data payload to be a user ID string to be kicked.
-			if presence, ok := s.presences[string(message.GetData())]; ok {
+			if presence, ok := s.presences[string(partyMsg.Data)]; ok {
 				if err := dispatcher.BroadcastMessage(OpCodeKickMember, nil, nil, presence, true); err != nil {
 					logger.Warn("Error broadcasting party member kicked: %v", err)
+					SendResponse(partyMsg, ResponseCodeInternalError, []runtime.Presence{message}, logger, dispatcher)
+					continue
 				}
 				if err := dispatcher.MatchKick([]runtime.Presence{presence}); err != nil {
 					logger.Warn("Error kicking party member: %v", err)
+					SendResponse(partyMsg, ResponseCodeInternalError, []runtime.Presence{message}, logger, dispatcher)
 					continue
 				}
 
 				delete(s.presences, presence.GetUserId())
 				delete(s.partyMemberData, presence.GetUserId())
+			} else {
+				logger.Warn("Error getting presence for kick: %s", string(partyMsg.Data))
+				SendResponse(partyMsg, ResponseCodePresenceError, []runtime.Presence{message}, logger, dispatcher)
+				continue
 			}
 		case OpCodePromoteMember:
 			// Leader only action.
 			if s.leader.GetUserId() != message.GetUserId() {
+				SendResponse(partyMsg, ResponseCodeNotPartyLeader, []runtime.Presence{message}, logger, dispatcher)
 				continue
 			}
 
 			// Expects message data payload to be a user ID string to be promoted.
-			if presence, ok := s.presences[string(message.GetData())]; ok {
+			if presence, ok := s.presences[string(partyMsg.Data)]; ok {
 				if err := dispatcher.BroadcastMessage(OpCodePromoteMember, nil, nil, presence, true); err != nil {
 					logger.Warn("Error broadcasting party member promote: %v", err)
 				}
 
 				s.leader = presence
 			}
+		case OpCodeRejectInvitation:
+			// Leader only action.
+			if s.leader.GetUserId() != message.GetUserId() {
+				SendResponse(partyMsg, ResponseCodeNotPartyLeader, []runtime.Presence{message}, logger, dispatcher)
+				continue
+			}
+
+			userId := string(partyMsg.Data)
+			if _, ok := s.invitations[userId]; !ok {
+				// No invite to reject
+				SendResponse(partyMsg, ResponseCodeNoInvitePending, []runtime.Presence{message}, logger, dispatcher)
+				continue
+			}
+			delete(s.invitations, userId)
 		case OpCodeRemoveUserForRejoin:
 			// Leader only action.
 			if s.leader.GetUserId() != message.GetUserId() {
+				SendResponse(partyMsg, ResponseCodeNotPartyLeader, []runtime.Presence{message}, logger, dispatcher)
 				continue
 			}
 
 			// Expects message data payload to be a user ID string to be removed for rejoin.
-			delete(s.approvedForRejoin, string(message.GetData()))
+			delete(s.approvedForRejoin, string(partyMsg.Data))
 		case OpCodeSendInvitation:
 			// Leader only action.
 			if s.leader.GetUserId() != message.GetUserId() {
+				SendResponse(partyMsg, ResponseCodeNotPartyLeader, []runtime.Presence{message}, logger, dispatcher)
+				continue
+			}
+
+			var userId = string(partyMsg.Data)
+			if s.leader.GetUserId() == userId {
+				// Leader inviting itself, already ok to join, do not send notification
+				SendResponse(partyMsg, ResponseCodeInternalError, []runtime.Presence{message}, logger, dispatcher)
+				continue
+			}
+
+			if _, ok := s.invitations[userId]; ok {
+				// Invite is already pending
+				SendResponse(partyMsg, ResponseCodeInvitePending, []runtime.Presence{message}, logger, dispatcher)
+				continue
+			}
+
+			// Check if user is online in the notification stream
+			count, err := nk.StreamCount(0, userId, "", "")
+			if err != nil {
+				logger.Warn("Error counting stream presences during party invitation: %v", err)
+				SendResponse(partyMsg, ResponseCodeInternalError, []runtime.Presence{message}, logger, dispatcher)
+				continue
+			}
+			if count <= 0 {
+				// User is not online. It's possible this user is not valid
+				SendResponse(partyMsg, ResponseCodeUserOffline, []runtime.Presence{message}, logger, dispatcher)
 				continue
 			}
 
 			// Expects message data payload to be a user ID string to be invited.
-			if err := nk.NotificationSend(ctx, string(message.GetData()), "Party invitation", map[string]interface{}{"match_id": ctx.Value(runtime.RUNTIME_CTX_MATCH_ID)}, 1, message.GetUserId(), false); err != nil {
+			content := map[string]interface{}{
+				"match_id": ctx.Value(runtime.RUNTIME_CTX_MATCH_ID),
+				"version":  s.version,
+			}
+			if err := nk.NotificationSend(ctx, string(partyMsg.Data), "Party invitation", content, 1, message.GetUserId(), false); err != nil {
 				logger.Warn("Error sending party invitation: %v", err)
+				SendResponse(partyMsg, ResponseCodeInternalError, []runtime.Presence{message}, logger, dispatcher)
 				continue
 			}
-			s.invitations[string(message.GetData())] = struct{}{}
+			s.invitations[string(partyMsg.Data)] = time.Now().Add(p.config.InviteDuration)
 		case OpCodeUpdateParty:
 			// Leader only action.
 			if s.leader.GetUserId() != message.GetUserId() {
+				SendResponse(partyMsg, ResponseCodeNotPartyLeader, []runtime.Presence{message}, logger, dispatcher)
 				continue
 			}
 
@@ -421,25 +597,32 @@ func (p PartyMatch) MatchLoop(ctx context.Context, logger runtime.Logger, db *sq
 		case OpCodeUpdatePartyData:
 			// Leader only action.
 			if s.leader.GetUserId() != message.GetUserId() {
+				SendResponse(partyMsg, ResponseCodeNotPartyLeader, []runtime.Presence{message}, logger, dispatcher)
 				continue
 			}
 
-			s.partyData = message.GetData()
+			s.partyData = partyMsg.Data
 
-			if err := dispatcher.BroadcastMessage(OpCodeUpdatePartyData, message.GetData(), nil, nil, true); err != nil {
+			if err := dispatcher.BroadcastMessage(OpCodeUpdatePartyData, partyMsg.Data, nil, nil, true); err != nil {
 				logger.Warn("Error broadcasting party data update: %v", err)
+				SendResponse(partyMsg, ResponseCodeInternalError, []runtime.Presence{message}, logger, dispatcher)
+				continue
 			}
 		case OpCodeUpdatePartyMemberData:
 			// Users are allowed to change their own party member data at will.
-			s.partyMemberData[message.GetUserId()] = message.GetData()
+			s.partyMemberData[message.GetUserId()] = partyMsg.Data
 
-			if err := dispatcher.BroadcastMessage(OpCodeUpdatePartyMemberData, message.GetData(), nil, message, true); err != nil {
+			if err := dispatcher.BroadcastMessage(OpCodeUpdatePartyMemberData, partyMsg.Data, nil, message, true); err != nil {
 				logger.Warn("Error broadcasting party data update: %v", err)
+				SendResponse(partyMsg, ResponseCodeInternalError, []runtime.Presence{message}, logger, dispatcher)
+				continue
 			}
 		default:
-			// Unknown messages may be handled differently later.
+			SendResponse(partyMsg, ResponseCodeBadRequest, []runtime.Presence{message}, logger, dispatcher)
 			continue
 		}
+
+		SendResponse(partyMsg, ResponseCodeSuccess, []runtime.Presence{message}, logger, dispatcher)
 	}
 
 	return s
@@ -451,4 +634,23 @@ func (p PartyMatch) MatchTerminate(ctx context.Context, logger runtime.Logger, d
 		logger.Warn("Error broadcasting party terminate message: %v", err)
 	}
 	return nil
+}
+
+func SendResponse(partyMsg PartyMatchMessage, responseCode int64, to []runtime.Presence, logger runtime.Logger, dispatcher runtime.MatchDispatcher) {
+	if partyMsg.Id != nil {
+		response := PartyMessageResponse{
+			Id:           *partyMsg.Id,
+			ResponseCode: responseCode,
+		}
+
+		responseBytes, err := json.Marshal(response)
+		if err != nil {
+			logger.Error("Error marshalling party message response: %v", err)
+			return
+		}
+
+		if err := dispatcher.BroadcastMessage(OpCodePartyMessageResponse, responseBytes, to, nil, true); err != nil {
+			logger.Error("Error broadcasting party message response: %v", err)
+		}
+	}
 }

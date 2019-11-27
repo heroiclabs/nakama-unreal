@@ -19,6 +19,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	"github.com/heroiclabs/nakama-common/runtime"
 )
@@ -178,6 +179,66 @@ func rpcGetAdvertisedParty(ctx context.Context, logger runtime.Logger, db *sql.D
 		return "", ErrJsonMarshal
 	}
 	return string(responseBytes), nil
+}
+
+type RejectPartyInviteRequest struct {
+	PartyId string `json:"party_id"`
+	Reason  string `json:"reason"`
+}
+
+func rpcRejectPartyInvite(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runtime.NakamaModule, payload string) (string, error) {
+	var session *SessionContext
+	var err error
+	if session, err = unpackContext(ctx); err != nil {
+		logger.Error("unpack context failed: %v", err)
+		return "", ErrBadContext
+	}
+
+	req := RejectPartyInviteRequest{}
+	if err := json.Unmarshal([]byte(payload), &req); err != nil {
+		logger.Error("Failed to unmarshal json: %v", err)
+		return "", ErrJsonUnmarshal
+	}
+
+	//Get stream ID from party match ID
+	matchIdComponents := strings.SplitN(req.PartyId, ".", 2)
+	if len(matchIdComponents) != 2 {
+		return "", runtime.NewError("Error parsing match ID into components", 3)
+	}
+
+	//List users in party stream
+	presences, err := nk.StreamUserList(6, matchIdComponents[0], "", matchIdComponents[1], true, true)
+	if err != nil {
+		logger.Error("Stream user list failed: %v", err)
+		return "", err
+	}
+
+	//Prepare notification for each user in stream
+	notifications := make([]*runtime.NotificationSend, 0, len(presences))
+	content := map[string]interface{}{
+		"party_id":  req.PartyId,
+		"member_id": session.UserID,
+		"reason":    req.Reason,
+	}
+	for _, presence := range presences {
+		notification := &runtime.NotificationSend{
+			UserID:     presence.GetUserId(),
+			Subject:    "Party reject invitation",
+			Content:    content,
+			Code:       1,
+			Persistent: false,
+		}
+		notifications = append(notifications, notification)
+	}
+
+	//Send reject notifications
+	err = nk.NotificationsSend(ctx, notifications)
+	if err != nil {
+		logger.Error("Error sending reject party invite: %v", err)
+		return "", err
+	}
+
+	return "", nil
 }
 
 type SessionContext struct {

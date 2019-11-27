@@ -42,5 +42,8 @@ func Register(initializer runtime.Initializer, config PartyConfig) error {
 	if err := initializer.RegisterRpc(fmt.Sprintf("%s-%s", serviceName, "GetAdvertisedParty"), rpcGetAdvertisedParty); err != nil {
 		return err
 	}
+	if err := initializer.RegisterRpc(fmt.Sprintf("%s-%s", serviceName, "RejectPartyInvite"), rpcRejectPartyInvite); err != nil {
+		return err
+	}
 	return nil
 }
