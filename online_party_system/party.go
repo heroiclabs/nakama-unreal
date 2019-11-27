@@ -26,13 +26,25 @@ const (
 	serviceName = "OnlinePartySystem"
 )
 
+// Allow implementation-specific filtering of parameters received from clients in party join attempts.
+type MatchJoinMetadataFilter func (metadata map[string]string) map[string]string
+
+func noopMatchJoinMetadataFilter(metadata map[string]string) map[string]string {
+	return metadata
+}
+
 // Registers the collection of functions with Nakama required to provide an OnlinePartyService from Unreal Engine.
-func Register(initializer runtime.Initializer, config PartyConfig) error {
+func Register(initializer runtime.Initializer, config PartyConfig, matchJoinMetadataFilter MatchJoinMetadataFilter) error {
+	if matchJoinMetadataFilter == nil {
+		matchJoinMetadataFilter = noopMatchJoinMetadataFilter
+	}
 	createPartyMatch := func(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runtime.NakamaModule) (runtime.Match, error) {
 		return &PartyMatch{
-			config: config,
+			config:                  config,
+			matchJoinMetadataFilter: matchJoinMetadataFilter,
 		}, nil
 	}
+
 	if err := initializer.RegisterMatch(fmt.Sprintf("%s-%s", serviceName, "Party"), createPartyMatch); err != nil {
 		return err
 	}

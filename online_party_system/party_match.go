@@ -67,7 +67,7 @@ const (
 
 type PartyMatchMessage struct {
 	Id   *int64 `json:"id"`
-	Data []byte `json"data"`
+	Data []byte `json:"data"`
 }
 
 type PartyMessageResponse struct {
@@ -76,19 +76,21 @@ type PartyMessageResponse struct {
 }
 
 type PartyMatchLabel struct {
-	OnlinePartyTypeId int64    `json:"type_id,omitempty"`
-	Members           []string `json:"members,omitempty"`
+	OnlinePartyTypeId int64                        `json:"type_id,omitempty"`
+	Members           []string                     `json:"members,omitempty"`
+	Metadata          map[string]map[string]string `json:"metadata,omitempty"`
 }
 
 type PartyMatchState struct {
-	version           string                      // Party version, all join requests must match if set or they'll be rejected
-	leader            runtime.Presence            // Identity of the current party leader. May change over the lifetime of the party.
-	presences         map[string]runtime.Presence // Map of user IDs to presences. Keyed on user ID because multiple devices per user per party are not allowed.
-	partyData         []byte                      // Arbitrary party data.
-	partyMemberData   map[string][]byte           // Arbitrary party member data.
-	approvedForRejoin map[string]struct{}         // User IDs approved for rejoin.
-	invitations       map[string]time.Time        // User IDs to expiration time for users that have been invited.
-	joinRequests      map[string]runtime.Presence // User IDs that have requested to join the party.
+	version           string                        // Party version, all join requests must match if set or they'll be rejected
+	leader            runtime.Presence              // Identity of the current party leader. May change over the lifetime of the party.
+	presences         map[string]runtime.Presence   // Map of user IDs to presences. Keyed on user ID because multiple devices per user per party are not allowed.
+	partyData         []byte                        // Arbitrary party data.
+	partyMemberData   map[string][]byte             // Arbitrary party member data.
+	approvedForRejoin map[string]struct{}           // User IDs approved for rejoin.
+	invitations       map[string]time.Time          // User IDs to expiration time for users that have been invited.
+	joinRequests      map[string]runtime.Presence   // User IDs that have requested to join the party.
+	joinMetadata      map[string]map[string]string  // User IDs to metadata mapping.
 
 	label             *PartyMatchLabel // Label exposed to Nakama's match listing system.
 	creator           string           // Party creator user ID, used to allow the user to automatically join when they create.
@@ -101,10 +103,11 @@ type PartyConfig struct {
 }
 
 type PartyMatch struct {
-	config PartyConfig
+	config                  PartyConfig
+	matchJoinMetadataFilter MatchJoinMetadataFilter
 }
 
-func (p PartyMatch) cleanupExpiredInvitations(ctx context.Context, nk runtime.NakamaModule, s *PartyMatchState) error {
+func (p *PartyMatch) cleanupExpiredInvitations(ctx context.Context, nk runtime.NakamaModule, s *PartyMatchState) error {
 	if p.config.InviteDuration.Nanoseconds() > 0 {
 		now := time.Now()
 		for memberId, expiration := range s.invitations {
@@ -123,7 +126,7 @@ func (p PartyMatch) cleanupExpiredInvitations(ctx context.Context, nk runtime.Na
 	return nil
 }
 
-func (p PartyMatch) sendPartyNotification(ctx context.Context, nk runtime.NakamaModule, s *PartyMatchState, subject string, content map[string]interface{}) error {
+func (p *PartyMatch) sendPartyNotification(ctx context.Context, nk runtime.NakamaModule, s *PartyMatchState, subject string, content map[string]interface{}) error {
 	//Prepare notification for each presence
 	notifications := make([]*runtime.NotificationSend, 0, len(s.presences))
 	for _, presence := range s.presences {
@@ -140,7 +143,7 @@ func (p PartyMatch) sendPartyNotification(ctx context.Context, nk runtime.Nakama
 	return nk.NotificationsSend(ctx, notifications)
 }
 
-func (p PartyMatch) MatchInit(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runtime.NakamaModule, params map[string]interface{}) (interface{}, int, string) {
+func (p *PartyMatch) MatchInit(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runtime.NakamaModule, params map[string]interface{}) (interface{}, int, string) {
 	creator, ok := params["creator"].(string)
 	if !ok {
 		logger.Error("Error creating party, no creator in params")
@@ -184,7 +187,7 @@ func (p PartyMatch) MatchInit(ctx context.Context, logger runtime.Logger, db *sq
 	return state, TickRate, string(labelBytes)
 }
 
-func (p PartyMatch) MatchJoinAttempt(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runtime.NakamaModule, dispatcher runtime.MatchDispatcher, tick int64, state interface{}, presence runtime.Presence, metadata map[string]string) (interface{}, bool, string) {
+func (p *PartyMatch) MatchJoinAttempt(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runtime.NakamaModule, dispatcher runtime.MatchDispatcher, tick int64, state interface{}, presence runtime.Presence, metadata map[string]string) (interface{}, bool, string) {
 	s := state.(*PartyMatchState)
 
 	// Ensure users can only join each party once concurrently.
@@ -198,6 +201,8 @@ func (p PartyMatch) MatchJoinAttempt(ctx context.Context, logger runtime.Logger,
 		s.leader = presence
 		s.creator = ""
 		s.initialEmptyTicks = 0
+
+		s.joinMetadata[presence.GetUserId()] = p.matchJoinMetadataFilter(metadata)
 
 		// Party leader determines the party version
 		if version, ok := metadata["version"]; ok {
@@ -219,6 +224,9 @@ func (p PartyMatch) MatchJoinAttempt(ctx context.Context, logger runtime.Logger,
 	if p.config.MaxSize > 0 && len(s.presences) >= p.config.MaxSize {
 		return s, false, "Party is full"
 	}
+
+	// Ensure join metadata is stored to be used in MatchJoin callback.
+	s.joinMetadata[presence.GetUserId()] = p.matchJoinMetadataFilter(metadata)
 
 	// Allow approved rejoins.
 	if _, ok := s.approvedForRejoin[presence.GetUserId()]; ok {
@@ -244,14 +252,18 @@ func (p PartyMatch) MatchJoinAttempt(ctx context.Context, logger runtime.Logger,
 	return s, false, "Join request sent"
 }
 
-func (p PartyMatch) MatchJoin(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runtime.NakamaModule, dispatcher runtime.MatchDispatcher, tick int64, state interface{}, presences []runtime.Presence) interface{} {
+func (p *PartyMatch) MatchJoin(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runtime.NakamaModule, dispatcher runtime.MatchDispatcher, tick int64, state interface{}, presences []runtime.Presence) interface{} {
 	s := state.(*PartyMatchState)
 
 	// Reaching this stage means the party member join was either approved by the leader or implicitly by the rejoin list.
 	for _, presence := range presences {
-		s.presences[presence.GetUserId()] = presence
+		userId := presence.GetUserId()
+		s.presences[userId] = presence
 
-		s.label.Members = append(s.label.Members, presence.GetUserId())
+		s.label.Members = append(s.label.Members, userId)
+		s.label.Metadata[userId] = s.joinMetadata[userId]
+
+		delete(s.joinMetadata, userId)
 	}
 
 	// Update the match label.
@@ -269,26 +281,28 @@ func (p PartyMatch) MatchJoin(ctx context.Context, logger runtime.Logger, db *sq
 	return s
 }
 
-func (p PartyMatch) MatchLeave(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runtime.NakamaModule, dispatcher runtime.MatchDispatcher, tick int64, state interface{}, presences []runtime.Presence) interface{} {
+func (p *PartyMatch) MatchLeave(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runtime.NakamaModule, dispatcher runtime.MatchDispatcher, tick int64, state interface{}, presences []runtime.Presence) interface{} {
 	s := state.(*PartyMatchState)
 
 	// User has either left voluntarily or disconnected.
 	for _, presence := range presences {
-		delete(s.presences, presence.GetUserId())
-		delete(s.partyMemberData, presence.GetUserId())
+		leftUserId := presence.GetUserId()
+		delete(s.presences, leftUserId)
+		delete(s.partyMemberData, leftUserId)
 
 		for i := 0; i < len(s.label.Members); i++ {
-			if s.label.Members[i] == presence.GetUserId() {
+			if s.label.Members[i] == leftUserId {
 				s.label.Members[i] = s.label.Members[len(s.label.Members)-1]
 				s.label.Members = s.label.Members[:len(s.label.Members)-1]
 				break
 			}
 		}
+		delete(s.label.Metadata, leftUserId)
 
 		// If this was the party leader elect a new one randomly.
-		if leftUserId := presence.GetUserId(); leftUserId == s.leader.GetUserId() {
-			for userId, remainingPresence := range s.presences {
-				if userId != leftUserId {
+		if leftUserId == s.leader.GetUserId() {
+			for remainingUserId, remainingPresence := range s.presences {
+				if remainingUserId != leftUserId {
 					s.leader = remainingPresence
 					// Notify the party about the new leader.
 					if err := dispatcher.BroadcastMessage(OpCodePromoteMember, nil, nil, remainingPresence, true); err != nil {
@@ -318,7 +332,7 @@ func (p PartyMatch) MatchLeave(ctx context.Context, logger runtime.Logger, db *s
 	return s
 }
 
-func (p PartyMatch) MatchLoop(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runtime.NakamaModule, dispatcher runtime.MatchDispatcher, tick int64, state interface{}, messages []runtime.MatchData) interface{} {
+func (p *PartyMatch) MatchLoop(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runtime.NakamaModule, dispatcher runtime.MatchDispatcher, tick int64, state interface{}, messages []runtime.MatchData) interface{} {
 	s := state.(*PartyMatchState)
 
 	// Check if the party has been sitting empty since creation.
@@ -365,6 +379,7 @@ func (p PartyMatch) MatchLoop(ctx context.Context, logger runtime.Logger, db *sq
 			// Expects message data payload to be a user ID string to be approved for join.
 			if presence, ok := s.joinRequests[string(partyMsg.Data)]; ok {
 				delete(s.joinRequests, string(partyMsg.Data))
+				// Note: do not remove entry from joinMetadata, it will be cleaned up when the join completes.
 
 				// Add the user to the match stream. This will lead to MatchJoin being triggered.
 				matchIdComponents := strings.SplitN(ctx.Value(runtime.RUNTIME_CTX_MATCH_ID).(string), ".", 2)
@@ -628,7 +643,7 @@ func (p PartyMatch) MatchLoop(ctx context.Context, logger runtime.Logger, db *sq
 	return s
 }
 
-func (p PartyMatch) MatchTerminate(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runtime.NakamaModule, dispatcher runtime.MatchDispatcher, tick int64, state interface{}, graceSeconds int) interface{} {
+func (p *PartyMatch) MatchTerminate(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runtime.NakamaModule, dispatcher runtime.MatchDispatcher, tick int64, state interface{}, graceSeconds int) interface{} {
 	// Termination has been requested by the server, usually because it's shutting down.
 	if err := dispatcher.BroadcastMessage(OpCodeTerminate, nil, nil, nil, true); err != nil {
 		logger.Warn("Error broadcasting party terminate message: %v", err)
