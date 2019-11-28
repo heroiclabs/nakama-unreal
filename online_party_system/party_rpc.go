@@ -163,7 +163,7 @@ func rpcGetAdvertisedParty(ctx context.Context, logger runtime.Logger, db *sql.D
 
 	// List matches looking for the appropriate one.
 	query := fmt.Sprintf("+label.type_id:%v +label.members:%v", request.PartyTypeId, request.UserId)
-	matches, err := nk.MatchList(ctx, 1, true, "", 0, 999, query)
+	matches, err := nk.MatchList(ctx, 1, true, "", nil, nil, query)
 	if err != nil {
 		logger.Error("match list failed: %v", err)
 		return "", ErrBadContext
