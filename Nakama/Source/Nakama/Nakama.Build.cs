@@ -103,12 +103,14 @@ public class Nakama : ModuleRules
 			libsPath = Path.Combine(libsPath, "Release");
 			libSuffix = "";
 		}
+
+		string libName = "nakama-cpp" + libSuffix;
 		
 		PublicLibraryPaths.Add(libsPath);
 		
-		PublicAdditionalLibraries.Add("nakama-cpp" + libSuffix + ".lib");
-		CopyToBinaries(Path.Combine(libsPath, "nakama-cpp" + libSuffix + ".dll"), Target);
-		PublicDelayLoadDLLs.Add("nakama-cpp" + libSuffix + ".dll");
+		PublicAdditionalLibraries.Add(libName + ".lib");
+		string binDll = CopyToBinaries(Path.Combine(libsPath, libName + ".dll"), Target);
+		RuntimeDependencies.Add(binDll);
 	}
 
 	private void HandleAndroid(ReadOnlyTargetRules Target)
@@ -164,20 +166,22 @@ public class Nakama : ModuleRules
 		PublicAdditionalLibraries.Add(binLibPath);
 	}
 
-	private void CopyTo(string Filepath, string toPath)
+	private string CopyTo(string Filepath, string toPath)
 	{
 		string filename = Path.GetFileName(Filepath);
+		string toFilePath = Path.Combine(toPath, filename);
 
 		if (!Directory.Exists(toPath))
 			Directory.CreateDirectory(toPath);
 
-		CopyFile(Filepath, Path.Combine(toPath, filename));
+		CopyFile(Filepath, toFilePath);
+		return toFilePath;
 	}
 
-	private void CopyToBinaries(string Filepath, ReadOnlyTargetRules Target)
+	private string CopyToBinaries(string Filepath, ReadOnlyTargetRules Target)
 	{
 		string binariesDir = GetTargetProjectPlatformBinariesPath(Target);
-		CopyTo(Filepath, binariesDir);
+		return CopyTo(Filepath, binariesDir);
 	}
 
 	private string GetTargetProjectPath(ReadOnlyTargetRules Target)
@@ -206,7 +210,9 @@ public class Nakama : ModuleRules
 		catch (System.Exception ex)
 		{
 			System.Console.WriteLine("Failed to copy file: {0}", ex.Message);
-			throw new Exception("Failed to copy file: " + ex.Message);
+
+			if (!System.IO.File.Exists(dest))
+				throw new Exception("Failed to copy file: " + ex.Message);
 		}
 	}
 
