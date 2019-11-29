@@ -155,33 +155,41 @@ public class Nakama : ModuleRules
 	private void HandleLinux(ReadOnlyTargetRules Target)
 	{
 		string libsPath = Path.Combine(CommonSharedLibsPath, "linux", isArch_x64(Target) ? "x64" : "x86");
+		string libName = "libnakama-cpp.so";
+		string binLibPath = Path.Combine(libsPath, libName);
 
-		PublicLibraryPaths.Add(libsPath);
-		
-		// For some reason, we have to add the full path to the .a file here or it is not found :(
-		PublicAdditionalLibraries.Add(Path.Combine(libsPath, "libnakama-cpp.so"));
+		RuntimeDependencies.Add(binLibPath);
+
+		// For some reason, we have to add the full path here or it is not found :(
+		PublicAdditionalLibraries.Add(binLibPath);
+	}
+
+	private void CopyTo(string Filepath, string toPath)
+	{
+		string filename = Path.GetFileName(Filepath);
+
+		if (!Directory.Exists(toPath))
+			Directory.CreateDirectory(toPath);
+
+		CopyFile(Filepath, Path.Combine(toPath, filename));
 	}
 
 	private void CopyToBinaries(string Filepath, ReadOnlyTargetRules Target)
 	{
-		string binariesDir = Path.Combine(ProjectBinariesPath, Target.Platform.ToString());
-		string filename = Path.GetFileName(Filepath);
-
-		if (!Directory.Exists(binariesDir))
-			Directory.CreateDirectory(binariesDir);
-
-		CopyFile(Filepath, Path.Combine(binariesDir, filename));
+		string binariesDir = GetTargetProjectPlatformBinariesPath(Target);
+		CopyTo(Filepath, binariesDir);
 	}
 
-	private string ProjectBinariesPath
+	private string GetTargetProjectPath(ReadOnlyTargetRules Target)
 	{
-		get
-		{
-			var basePath = Path.GetDirectoryName(RulesCompiler.GetFileNameFromType(GetType()));
-			return Path.Combine(basePath, "..", "..", "..", "..", "Binaries");
-			//return Path.Combine(
-			//	  Directory.GetParent(ModulePath).Parent.Parent.ToString(), "Binaries");
-		}
+		return Path.GetDirectoryName(Target.ProjectFile.ToString());
+	}
+
+	private string GetTargetProjectPlatformBinariesPath(ReadOnlyTargetRules Target)
+	{
+		string projectPath = GetTargetProjectPath(Target);
+		string binariesDir = Path.Combine(projectPath, "Binaries", Target.Platform.ToString());
+		return binariesDir;
 	}
 
 	private void CopyFile(string source, string dest)
