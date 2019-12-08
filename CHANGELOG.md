@@ -7,6 +7,8 @@ The format is based on [keep a changelog](http://keepachangelog.com/) and this p
 ### Fixed
 - fix uint16_t is too small for our match data (#25)
 - fix getUsername and getUserId in session wrapper
+- RPC call fails when body is empty
+- RPC payload differences between Rest and RT clients
 
 ## [2.2.2] - 2019-10-03
 ### Added
