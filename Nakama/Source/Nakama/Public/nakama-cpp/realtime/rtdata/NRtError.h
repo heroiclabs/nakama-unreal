@@ -23,6 +23,8 @@ NAKAMA_NAMESPACE_BEGIN
     /// The selection of possible error codes.
     enum class NAKAMA_API RtErrorCode
     {
+        UNKNOWN                       = -100,
+
         // client side errors
         CONNECT_ERROR                 = -1,           ///< Connect has failed.
         TRANSPORT_ERROR               = -2,           ///< Transport error.
@@ -45,7 +47,7 @@ NAKAMA_NAMESPACE_BEGIN
         NRtError(RtErrorCode code, const std::string& message) : code(code), message(message) {}
         NRtError(RtErrorCode code, std::string&& message) : code(code), message(std::move(message)) {}
 
-        RtErrorCode code;                             ///< The error code
+        RtErrorCode code = RtErrorCode::UNKNOWN;      ///< The error code
         std::string message;                          ///< A message in English to help developers debug the response.
         NStringMap context;                           ///< Additional error details which may be different for each response.
     };

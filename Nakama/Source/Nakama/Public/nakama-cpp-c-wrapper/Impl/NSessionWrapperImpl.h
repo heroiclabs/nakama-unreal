@@ -43,12 +43,15 @@ NAKAMA_NAMESPACE_BEGIN
 
         const std::string& getUsername() const override
         {
-            return _authToken;
+            if (_username.empty())
+                _username = NSession_getUsername(_cSession);
+
+            return _username;
         }
 
         const std::string& getUserId() const override
         {
-            if (!_userId.empty())
+            if (_userId.empty())
                 _userId = NSession_getUserId(_cSession);
 
             return _userId;
@@ -115,6 +118,7 @@ NAKAMA_NAMESPACE_BEGIN
         ::NSession _cSession;
         mutable std::string _authToken;
         mutable std::string _userId;
+        mutable std::string _username;
         mutable NStringMap _variables;
     };
 

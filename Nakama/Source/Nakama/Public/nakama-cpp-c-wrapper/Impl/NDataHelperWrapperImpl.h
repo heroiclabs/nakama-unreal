@@ -130,7 +130,7 @@ NStringDoubleMap toCppNStringDoubleMap(::NStringDoubleMap map)
 void assign(sNBytes& cData, const NBytes& data)
 {
     cData.bytes = (uint8_t*)data.data();
-    cData.size = (uint16_t)data.size();
+    cData.size = (uint32_t)data.size();
 }
 
 void assign(NBytes& data, const sNBytes* cData)

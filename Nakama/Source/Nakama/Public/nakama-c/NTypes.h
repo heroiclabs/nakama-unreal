@@ -55,7 +55,7 @@ typedef uint64_t NTimestamp;
 typedef struct NBytes
 {
     uint8_t* bytes;
-    uint16_t size;
+    uint32_t size;
 } sNBytes;
 
 /// Constant for defaut port.
