@@ -1,7 +1,7 @@
 {
 	"FileVersion": 3,
 	"Version": 2220,
-	"VersionName": "2.2.2",
+	"VersionName": "2.2.4",
 	"FriendlyName": "Nakama client",
 	"Description": "A UE4 client for the Nakama server.",
 	"Category": "HeroicLabs.Nakama",
@@ -20,7 +20,6 @@
 			"Type": "Runtime",
 			"LoadingPhase": "PreDefault",
 			"WhitelistPlatforms": [
-				"Win32",
 				"Win64",
 				"Mac",
 				"IOS",

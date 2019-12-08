@@ -3,6 +3,11 @@ All notable changes to this project are documented below.
 
 The format is based on [keep a changelog](http://keepachangelog.com/) and this project uses [semantic versioning](http://semver.org/).
 
+## [2.2.4] - 2019-12-08
+### Fixed
+- fix uint16_t is too small for our match data (#25)
+- fix getUsername and getUserId in session wrapper
+
 ## [2.2.2] - 2019-10-03
 ### Added
 - Support Linux
