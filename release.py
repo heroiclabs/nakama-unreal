@@ -89,6 +89,9 @@ def detect_sdk_version():
 version = detect_sdk_version()
 
 print('releasing sdk version:', version)
+c = raw_input('continue? (y/n): ')
+if c != '' and c.lower() != 'y':
+    sys.exit()
 
 shutil.copy('CHANGELOG.md', sdk_path)
 shutil.copy('README.md', sdk_path)
