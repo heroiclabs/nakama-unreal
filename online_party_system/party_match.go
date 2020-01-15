@@ -82,15 +82,15 @@ type PartyMatchLabel struct {
 }
 
 type PartyMatchState struct {
-	version           string                        // Party version, all join requests must match if set or they'll be rejected
-	leader            runtime.Presence              // Identity of the current party leader. May change over the lifetime of the party.
-	presences         map[string]runtime.Presence   // Map of user IDs to presences. Keyed on user ID because multiple devices per user per party are not allowed.
-	partyData         []byte                        // Arbitrary party data.
-	partyMemberData   map[string][]byte             // Arbitrary party member data.
-	approvedForRejoin map[string]struct{}           // User IDs approved for rejoin.
-	invitations       map[string]time.Time          // User IDs to expiration time for users that have been invited.
-	joinRequests      map[string]runtime.Presence   // User IDs that have requested to join the party.
-	joinMetadata      map[string]map[string]string  // User IDs to metadata mapping.
+	version           string                       // Party version, all join requests must match if set or they'll be rejected
+	leader            runtime.Presence             // Identity of the current party leader. May change over the lifetime of the party.
+	presences         map[string]runtime.Presence  // Map of user IDs to presences. Keyed on user ID because multiple devices per user per party are not allowed.
+	partyData         []byte                       // Arbitrary party data.
+	partyMemberData   map[string][]byte            // Arbitrary party member data.
+	approvedForRejoin map[string]struct{}          // User IDs approved for rejoin.
+	invitations       map[string]time.Time         // User IDs to expiration time for users that have been invited.
+	joinRequests      map[string]runtime.Presence  // User IDs that have requested to join the party.
+	joinMetadata      map[string]map[string]string // User IDs to metadata mapping.
 
 	label             *PartyMatchLabel // Label exposed to Nakama's match listing system.
 	creator           string           // Party creator user ID, used to allow the user to automatically join when they create.
@@ -178,6 +178,7 @@ func (p *PartyMatch) MatchInit(ctx context.Context, logger runtime.Logger, db *s
 		approvedForRejoin: make(map[string]struct{}),
 		invitations:       make(map[string]time.Time),
 		joinRequests:      make(map[string]runtime.Presence),
+		joinMetadata:      make(map[string]map[string]string),
 
 		label:             label,
 		creator:           creator,
@@ -261,6 +262,9 @@ func (p *PartyMatch) MatchJoin(ctx context.Context, logger runtime.Logger, db *s
 		s.presences[userId] = presence
 
 		s.label.Members = append(s.label.Members, userId)
+		if s.label.Metadata == nil {
+			s.label.Metadata = make(map[string]map[string]string)
+		}
 		s.label.Metadata[userId] = s.joinMetadata[userId]
 
 		delete(s.joinMetadata, userId)
