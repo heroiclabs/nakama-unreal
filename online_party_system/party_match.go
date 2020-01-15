@@ -262,6 +262,9 @@ func (p *PartyMatch) MatchJoin(ctx context.Context, logger runtime.Logger, db *s
 		s.presences[userId] = presence
 
 		s.label.Members = append(s.label.Members, userId)
+		if s.label.Metadata == nil {
+			s.label.Metadata = make(map[string]map[string]string)
+		}
 		s.label.Metadata[userId] = s.joinMetadata[userId]
 
 		delete(s.joinMetadata, userId)
