@@ -73,13 +73,13 @@ The client object has many methods to execute various features in the server or 
 Include nakama header.
 
 ```cpp
-#include "NakamaUnreal.h"
+#include "nakama-cpp/Nakama.h"
 ```
 
 Use nakama namespace.
 
 ```cpp
-using namespace NAKAMA_NAMESPACE;
+using namespace Nakama;
 ```
 
 Use the connection credentials to build a client object.
