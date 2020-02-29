@@ -21,7 +21,7 @@ import subprocess
 import shutil
 
 _7zip_path = 'c:\\Program Files\\7-Zip\\7z.exe'
-sdk_path = './Nakama'
+sdk_path = '../Nakama'
 tmp_path = './_tmp'
 platforms = ['win64', 'mac', 'ios', 'android', 'linux']
 libs_path = os.path.join(sdk_path, 'libs')
@@ -93,9 +93,9 @@ c = input('continue? (y/n): ')
 if c != '' and c.lower() != 'y':
     sys.exit()
 
-shutil.copy('CHANGELOG.md', sdk_path)
-shutil.copy('README.md', sdk_path)
-shutil.copy('LICENSE', sdk_path)
+shutil.copy('../CHANGELOG.md', sdk_path)
+shutil.copy('../README.md', sdk_path)
+shutil.copy('../LICENSE', sdk_path)
 
 for platform in platforms:
     move_all_to_temp()
