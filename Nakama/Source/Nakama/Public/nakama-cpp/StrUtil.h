@@ -56,4 +56,4 @@ NAKAMA_NAMESPACE_BEGIN
      */
     NAKAMA_API bool isStringStartsWith(const std::string& str, const std::string& prefix);
 
-    NAKAMA_NAMESPACE_END
+NAKAMA_NAMESPACE_END

@@ -52,7 +52,10 @@ NAKAMA_NAMESPACE_BEGIN
 
         /// Internal errors. Means some invariants expected by underlying System has
         /// been broken. If you see one of these errors, Something is very broken.
-        InternalError            = -2
+        InternalError            = -2,
+
+        /// The request has been cancelled by user.
+        CancelledByUser          = -3
     };
 
     struct NAKAMA_API NError

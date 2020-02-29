@@ -54,7 +54,10 @@ extern "C" {
 
         /// Internal errors. Means some invariants expected by underlying System has
         /// been broken. If you see one of these errors, Something is very broken.
-        NErrorCode_InternalError            = -2
+        NErrorCode_InternalError            = -2,
+
+        /// The request has been cancelled by user.
+        NErrorCode_CancelledByUser          = -3
     } tNErrorCode;
 
     typedef struct NAKAMA_API NError
