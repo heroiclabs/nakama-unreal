@@ -56,8 +56,9 @@ NAKAMA_NAMESPACE_BEGIN
 
     namespace InternalStatusCodes
     {
-        static const int CONNECTION_ERROR = 600;            /// This indicates a general connection error
+        static const int CONNECTION_ERROR = 600;            /// this indicates a general connection error
         static const int NOT_INITIALIZED_ERROR = 601;       /// HTTP client is not initialized properly
+        static const int CANCELLED_BY_USER = 602;           /// cancelled by user
     }
 
     /**
@@ -76,6 +77,14 @@ NAKAMA_NAMESPACE_BEGIN
          * Invoke HTTP request
          */
         virtual void request(const NHttpRequest& req, const NHttpResponseCallback& callback = nullptr) = 0;
+
+        /**
+         * Cancel all requests
+         *
+         * Note: this doesn't guarantee server will not receive or not received
+         * any currently pending request
+         */
+        virtual void cancelAllRequests() = 0;
     };
 
     using NHttpTransportPtr = std::shared_ptr<NHttpTransportInterface>;

@@ -3,6 +3,10 @@ All notable changes to this project are documented below.
 
 The format is based on [keep a changelog](http://keepachangelog.com/) and this project uses [semantic versioning](http://semver.org/).
 
+## [2.3.0] - [2020-02-29]
+### Fixed
+- fix crash when response is received after NClient was deleted
+
 ## [2.2.4] - 2019-12-08
 ### Fixed
 - fix uint16_t is too small for our match data (#25)
