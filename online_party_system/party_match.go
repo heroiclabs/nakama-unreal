@@ -106,6 +106,7 @@ type PartyConfig struct {
 type PartyMatch struct {
 	config                  PartyConfig
 	matchJoinMetadataFilter MatchJoinMetadataFilter
+	matchTerminateHook      MatchTerminateHook
 }
 
 func (p *PartyMatch) cleanupExpiredInvitations(ctx context.Context, nk runtime.NakamaModule, s *PartyMatchState) error {
@@ -345,6 +346,10 @@ func (p *PartyMatch) MatchLoop(ctx context.Context, logger runtime.Logger, db *s
 	if s.creator != "" && len(s.presences) == 0 {
 		s.initialEmptyTicks++
 		if s.initialEmptyTicks >= InitialJoinTicks {
+			if p.matchTerminateHook != nil {
+				matchID := ctx.Value(runtime.RUNTIME_CTX_MATCH_ID).(string)
+				p.matchTerminateHook(matchID, p.config)
+			}
 			return nil
 		}
 	}
