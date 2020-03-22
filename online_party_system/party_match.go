@@ -79,6 +79,7 @@ type PartyMatchLabel struct {
 	OnlinePartyTypeId int64                        `json:"type_id,omitempty"`
 	Members           []string                     `json:"members,omitempty"`
 	Metadata          map[string]map[string]string `json:"metadata,omitempty"`
+	Config            string                       `json:"config,omitempty"`
 }
 
 type PartyMatchState struct {
@@ -105,6 +106,8 @@ type PartyConfig struct {
 type PartyMatch struct {
 	config                  PartyConfig
 	matchJoinMetadataFilter MatchJoinMetadataFilter
+	matchTerminateHook      MatchEndHook
+	matchInitHook           MatchInitHook
 }
 
 func (p *PartyMatch) cleanupExpiredInvitations(ctx context.Context, nk runtime.NakamaModule, s *PartyMatchState) error {
@@ -154,7 +157,7 @@ func (p *PartyMatch) MatchInit(ctx context.Context, logger runtime.Logger, db *s
 		logger.Error("Error creating party, no type_id in params")
 		return nil, 0, ""
 	}
-	_, ok = params["config"].(string)
+	config, ok := params["config"].(string)
 	if !ok {
 		logger.Error("Error creating party, no config in params")
 		return nil, 0, ""
@@ -163,6 +166,7 @@ func (p *PartyMatch) MatchInit(ctx context.Context, logger runtime.Logger, db *s
 	label := &PartyMatchLabel{
 		OnlinePartyTypeId: typeId,
 		Members:           make([]string, 0, 5),
+		Config:            config,
 	}
 	labelBytes, err := json.Marshal(label)
 	if err != nil {
@@ -184,7 +188,10 @@ func (p *PartyMatch) MatchInit(ctx context.Context, logger runtime.Logger, db *s
 		creator:           creator,
 		initialEmptyTicks: 0,
 	}
-
+	if p.matchInitHook != nil {
+		matchID := ctx.Value(runtime.RUNTIME_CTX_MATCH_ID).(string)
+		p.matchInitHook(matchID, p.config, label)
+	}
 	return state, TickRate, string(labelBytes)
 }
 
@@ -343,6 +350,10 @@ func (p *PartyMatch) MatchLoop(ctx context.Context, logger runtime.Logger, db *s
 	if s.creator != "" && len(s.presences) == 0 {
 		s.initialEmptyTicks++
 		if s.initialEmptyTicks >= InitialJoinTicks {
+			if p.matchTerminateHook != nil {
+				matchID := ctx.Value(runtime.RUNTIME_CTX_MATCH_ID).(string)
+				p.matchTerminateHook(matchID, p.config, s.label)
+			}
 			return nil
 		}
 	}
