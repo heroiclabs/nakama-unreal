@@ -106,7 +106,7 @@ type PartyConfig struct {
 type PartyMatch struct {
 	config                  PartyConfig
 	matchJoinMetadataFilter MatchJoinMetadataFilter
-	matchTerminateHook      MatchTerminateHook
+	matchTerminateHook      MatchEndHook
 	matchInitHook           MatchInitHook
 }
 

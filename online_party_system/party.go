@@ -29,8 +29,8 @@ const (
 // Allow implementation-specific filtering of parameters received from clients in party join attempts.
 type MatchJoinMetadataFilter func(metadata map[string]string) map[string]string
 
-// MatchTerminateHook allows implementation-specific logic to run when a match terminates.
-type MatchTerminateHook func(matchID string, config PartyConfig, label *PartyMatchLabel)
+// MatchEndHook allows implementation-specific logic to run when a match ends.
+type MatchEndHook func(matchID string, config PartyConfig, label *PartyMatchLabel)
 
 // MatchInitHook allows implementation-specific logic to run when a match is initialized.
 type MatchInitHook func(matchID string, config PartyConfig, label *PartyMatchLabel)
@@ -40,7 +40,7 @@ func noopMatchJoinMetadataFilter(metadata map[string]string) map[string]string {
 }
 
 // Registers the collection of functions with Nakama required to provide an OnlinePartyService from Unreal Engine.
-func Register(initializer runtime.Initializer, config PartyConfig, matchJoinMetadataFilter MatchJoinMetadataFilter, matchTerminateHook MatchTerminateHook, matchInitHook MatchInitHook) error {
+func Register(initializer runtime.Initializer, config PartyConfig, matchJoinMetadataFilter MatchJoinMetadataFilter, matchTerminateHook MatchEndHook, matchInitHook MatchInitHook) error {
 	if matchJoinMetadataFilter == nil {
 		matchJoinMetadataFilter = noopMatchJoinMetadataFilter
 	}
