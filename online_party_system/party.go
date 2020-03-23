@@ -48,7 +48,7 @@ func Register(initializer runtime.Initializer, config PartyConfig, matchJoinMeta
 		return &PartyMatch{
 			config:                  config,
 			matchJoinMetadataFilter: matchJoinMetadataFilter,
-			matchTerminateHook:      matchTerminateHook,
+			matchEndHook:            matchTerminateHook,
 			matchInitHook:           matchInitHook,
 		}, nil
 	}
