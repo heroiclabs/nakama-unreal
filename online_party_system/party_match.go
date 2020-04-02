@@ -106,8 +106,9 @@ type PartyConfig struct {
 type PartyMatch struct {
 	config                  PartyConfig
 	matchJoinMetadataFilter MatchJoinMetadataFilter
-	matchTerminateHook      MatchEndHook
+	matchEndHook            MatchEndHook
 	matchInitHook           MatchInitHook
+	matchJoinAttemptHook    MatchJoinAttemptHook
 }
 
 func (p *PartyMatch) cleanupExpiredInvitations(ctx context.Context, nk runtime.NakamaModule, s *PartyMatchState) error {
@@ -257,6 +258,11 @@ func (p *PartyMatch) MatchJoinAttempt(ctx context.Context, logger runtime.Logger
 		logger.Warn("Error broadcasting join request to party leader: %v", err)
 		return s, false, "Failed sending join request to leader"
 	}
+	if p.matchJoinAttemptHook != nil {
+		matchID := ctx.Value(runtime.RUNTIME_CTX_MATCH_ID).(string)
+		allow, msg := p.matchJoinAttemptHook(matchID, presence, metadata)
+		return s, allow, msg
+	}
 	return s, false, "Join request sent"
 }
 
@@ -350,9 +356,9 @@ func (p *PartyMatch) MatchLoop(ctx context.Context, logger runtime.Logger, db *s
 	if s.creator != "" && len(s.presences) == 0 {
 		s.initialEmptyTicks++
 		if s.initialEmptyTicks >= InitialJoinTicks {
-			if p.matchTerminateHook != nil {
+			if p.matchEndHook != nil {
 				matchID := ctx.Value(runtime.RUNTIME_CTX_MATCH_ID).(string)
-				p.matchTerminateHook(matchID, p.config, s.label)
+				p.matchEndHook(matchID, p.config, s.label)
 			}
 			return nil
 		}

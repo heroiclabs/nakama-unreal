@@ -23,7 +23,7 @@ import (
 )
 
 func InitModule(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runtime.NakamaModule, initializer runtime.Initializer) error {
-	if err := online_party_system.Register(initializer, online_party_system.PartyConfig{}, nil, nil, nil); err != nil {
+	if err := online_party_system.Register(initializer, online_party_system.PartyConfig{}, nil, nil, nil, nil); err != nil {
 		return err
 	}
 	return nil
