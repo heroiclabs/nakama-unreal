@@ -35,12 +35,14 @@ type MatchEndHook func(matchID string, config PartyConfig, label *PartyMatchLabe
 // MatchInitHook allows implementation-specific logic to run when a match is initialized.
 type MatchInitHook func(matchID string, config PartyConfig, label *PartyMatchLabel)
 
+type MatchJoinAttemptHook func(matchID string, presence runtime.Presence, meta map[string]string) (bool, string)
+
 func noopMatchJoinMetadataFilter(metadata map[string]string) map[string]string {
 	return metadata
 }
 
 // Registers the collection of functions with Nakama required to provide an OnlinePartyService from Unreal Engine.
-func Register(initializer runtime.Initializer, config PartyConfig, matchJoinMetadataFilter MatchJoinMetadataFilter, matchTerminateHook MatchEndHook, matchInitHook MatchInitHook) error {
+func Register(initializer runtime.Initializer, config PartyConfig, matchJoinMetadataFilter MatchJoinMetadataFilter, matchTerminateHook MatchEndHook, matchInitHook MatchInitHook, matchJoinAttemptHook MatchJoinAttemptHook) error {
 	if matchJoinMetadataFilter == nil {
 		matchJoinMetadataFilter = noopMatchJoinMetadataFilter
 	}
@@ -50,6 +52,7 @@ func Register(initializer runtime.Initializer, config PartyConfig, matchJoinMeta
 			matchJoinMetadataFilter: matchJoinMetadataFilter,
 			matchEndHook:            matchTerminateHook,
 			matchInitHook:           matchInitHook,
+			matchJoinAttemptHook:    matchJoinAttemptHook,
 		}, nil
 	}
 
