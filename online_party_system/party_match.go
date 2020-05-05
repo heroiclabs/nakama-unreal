@@ -114,6 +114,7 @@ type PartyMatch struct {
 func (p *PartyMatch) cleanupExpiredInvitations(ctx context.Context, nk runtime.NakamaModule, s *PartyMatchState) error {
 	if p.config.InviteDuration.Nanoseconds() > 0 {
 		now := time.Now()
+		subject := "Party expired invitation"
 		for memberId, expiration := range s.invitations {
 			if now.After(expiration) {
 				delete(s.invitations, memberId)
@@ -121,7 +122,10 @@ func (p *PartyMatch) cleanupExpiredInvitations(ctx context.Context, nk runtime.N
 					"party_id":  ctx.Value(runtime.RUNTIME_CTX_MATCH_ID).(string),
 					"member_id": memberId,
 				}
-				if err := p.sendPartyNotification(ctx, nk, s, "Party expired invitation", content); err != nil {
+				if err := p.sendPartyNotification(ctx, nk, s, subject, content); err != nil {
+					return err
+				}
+				if err := nk.NotificationSend(ctx, memberId, subject, content, 1, "", false); err != nil {
 					return err
 				}
 			}
