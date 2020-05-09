@@ -77,24 +77,8 @@ public class Nakama : ModuleRules
 		{
 			libsPath = Path.Combine(libsPath, "win64");
 		}
-		
-		switch (Target.WindowsPlatform.Compiler)
-		{
-		#if !UE_4_22_OR_LATER
-			case WindowsCompiler.VisualStudio2015: libsPath = Path.Combine(libsPath, "v140"); break;
-		#endif
-			case WindowsCompiler.VisualStudio2017: libsPath = Path.Combine(libsPath, "v141"); break;
-		#if UE_4_22_OR_LATER
-			case WindowsCompiler.VisualStudio2019: libsPath = Path.Combine(libsPath, "v142"); break;
-		#endif
-			default:
-				throw new NotImplementedException("Nakama Unreal client does not currently support compiler: " + Target.WindowsPlatform.GetVisualStudioCompilerVersionName());
-		}
-
-		libsPath = Path.Combine(libsPath, "Release");
 
 		string libName = "nakama-cpp";
-		
 		PublicAdditionalLibraries.Add(Path.Combine(libsPath, libName + ".lib"));
 
 		string binDll = CopyToBinaries(Path.Combine(libsPath, libName + ".dll"), Target);
@@ -212,10 +196,5 @@ public class Nakama : ModuleRules
 	private string CommonSharedLibsPath
 	{
 		get { return Path.Combine(ModulePath, "Private", "shared-libs"); }
-	}
-
-	private string CommonStaticLibsPath
-	{
-		get { return Path.Combine(ModulePath, "Private", "libs"); }
 	}
 }
