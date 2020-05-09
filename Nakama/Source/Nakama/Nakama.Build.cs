@@ -91,24 +91,12 @@ public class Nakama : ModuleRules
 				throw new NotImplementedException("Nakama Unreal client does not currently support compiler: " + Target.WindowsPlatform.GetVisualStudioCompilerVersionName());
 		}
 
-		string libSuffix;
+		libsPath = Path.Combine(libsPath, "Release");
 
-		/*if (Target.Configuration == UnrealTargetConfiguration.DebugGame || Target.Configuration == UnrealTargetConfiguration.DebugGameEditor)
-		{
-			libsPath = Path.Combine(libsPath, "Debug");
-			libSuffix = "d";
-		}
-		else*/
-		{
-			libsPath = Path.Combine(libsPath, "Release");
-			libSuffix = "";
-		}
+		string libName = "nakama-cpp";
+		
+		PublicAdditionalLibraries.Add(Path.Combine(libsPath, libName + ".lib"));
 
-		string libName = "nakama-cpp" + libSuffix;
-		
-		PublicLibraryPaths.Add(libsPath);
-		
-		PublicAdditionalLibraries.Add(libName + ".lib");
 		string binDll = CopyToBinaries(Path.Combine(libsPath, libName + ".dll"), Target);
 		RuntimeDependencies.Add(binDll);
 	}
