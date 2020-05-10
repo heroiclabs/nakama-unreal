@@ -89,15 +89,14 @@ public class Nakama : ModuleRules
 	{
 		string libsPath = Path.Combine(CommonSharedLibsPath, "android");
 		
-		PublicLibraryPaths.Add(Path.Combine(libsPath, "arm64-v8a"));
-		PublicLibraryPaths.Add(Path.Combine(libsPath, "armeabi-v7a"));
-		PublicLibraryPaths.Add(Path.Combine(libsPath, "x86"));
-		PublicLibraryPaths.Add(Path.Combine(libsPath, "x86_64"));
-		
-		PublicAdditionalLibraries.Add("nakama-cpp");
+		PublicSystemLibraryPaths.Add(Path.Combine(libsPath, "arm64-v8a"));
+		PublicSystemLibraryPaths.Add(Path.Combine(libsPath, "armeabi-v7a"));
+		PublicSystemLibraryPaths.Add(Path.Combine(libsPath, "x86"));
+		PublicSystemLibraryPaths.Add(Path.Combine(libsPath, "x86_64"));
+
+		PublicSystemLibraries.Add("nakama-cpp");
 		
 		string relAPLPath = Utils.MakePathRelativeTo(Path.Combine(ModulePath, "Nakama_APL.xml"), Target.RelativeEnginePath);
-		//AdditionalPropertiesForReceipt.Add(new ReceiptProperty("AndroidPlugin", relAPLPath));
 		AdditionalPropertiesForReceipt.Add("AndroidPlugin", relAPLPath);
 	}
 
