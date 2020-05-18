@@ -109,6 +109,8 @@ type PartyMatch struct {
 	matchEndHook            MatchEndHook
 	matchInitHook           MatchInitHook
 	matchJoinAttemptHook    MatchJoinAttemptHook
+	matchKickHook 			MatchKickHook
+	matchLeaveHook 			MatchLeaveHook
 }
 
 func (p *PartyMatch) cleanupExpiredInvitations(ctx context.Context, nk runtime.NakamaModule, s *PartyMatchState) error {
@@ -333,10 +335,19 @@ func (p *PartyMatch) MatchLeave(ctx context.Context, logger runtime.Logger, db *
 				}
 			}
 		}
+
+		if p.matchLeaveHook != nil {
+			matchID := ctx.Value(runtime.RUNTIME_CTX_MATCH_ID).(string)
+			p.matchLeaveHook(matchID, leftUserId)
+		}
 	}
 
 	// If the party is now empty stop it now.
 	if len(s.presences) == 0 {
+		if p.matchEndHook != nil {
+			matchID := ctx.Value(runtime.RUNTIME_CTX_MATCH_ID).(string)
+			p.matchEndHook(matchID, p.config, s.label)
+		}
 		return nil
 	}
 
@@ -538,6 +549,11 @@ func (p *PartyMatch) MatchLoop(ctx context.Context, logger runtime.Logger, db *s
 
 				delete(s.presences, presence.GetUserId())
 				delete(s.partyMemberData, presence.GetUserId())
+
+				if p.matchKickHook != nil {
+					matchID := ctx.Value(runtime.RUNTIME_CTX_MATCH_ID).(string)
+					p.matchKickHook(matchID, presence.GetUserId())
+				}
 			} else {
 				logger.Warn("Error getting presence for kick: %s", string(partyMsg.Data))
 				SendResponse(partyMsg, ResponseCodePresenceError, []runtime.Presence{message}, logger, dispatcher)
