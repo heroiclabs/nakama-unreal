@@ -99,18 +99,18 @@ type PartyMatchState struct {
 }
 
 type PartyConfig struct {
-	MaxSize        int           // Maximum number of members allowed in party
-	InviteDuration time.Duration // Duration an invite should last before expiring. default 0 = no expiration
+	MaxSize        			int           			// Maximum number of members allowed in party
+	InviteDuration 			time.Duration 			// Duration an invite should last before expiring. default 0 = no expiration
+	MatchJoinMetadataFilter MatchJoinMetadataFilter	// 
+	MatchEndHook            MatchEndHook			// Called when the party match is over
+	MatchInitHook           MatchInitHook			// Called when the party match is initialized
+	MatchJoinAttemptHook    MatchJoinAttemptHook	// Called when a user attempts to join the party
+	MatchKickHook 			MatchKickHook			// Called when a party member is kicked from the party
+	MatchLeaveHook 			MatchLeaveHook			// Called when a party member leaves the party
 }
 
 type PartyMatch struct {
 	config                  PartyConfig
-	matchJoinMetadataFilter MatchJoinMetadataFilter
-	matchEndHook            MatchEndHook
-	matchInitHook           MatchInitHook
-	matchJoinAttemptHook    MatchJoinAttemptHook
-	matchKickHook 			MatchKickHook
-	matchLeaveHook 			MatchLeaveHook
 }
 
 func (p *PartyMatch) cleanupExpiredInvitations(ctx context.Context, nk runtime.NakamaModule, s *PartyMatchState) error {
@@ -195,9 +195,9 @@ func (p *PartyMatch) MatchInit(ctx context.Context, logger runtime.Logger, db *s
 		creator:           creator,
 		initialEmptyTicks: 0,
 	}
-	if p.matchInitHook != nil {
+	if p.config.MatchInitHook != nil {
 		matchID := ctx.Value(runtime.RUNTIME_CTX_MATCH_ID).(string)
-		p.matchInitHook(matchID, p.config, label)
+		p.config.MatchInitHook(matchID, p.config, label)
 	}
 	return state, TickRate, string(labelBytes)
 }
@@ -217,7 +217,7 @@ func (p *PartyMatch) MatchJoinAttempt(ctx context.Context, logger runtime.Logger
 		s.creator = ""
 		s.initialEmptyTicks = 0
 
-		s.joinMetadata[presence.GetUserId()] = p.matchJoinMetadataFilter(metadata)
+		s.joinMetadata[presence.GetUserId()] = p.config.MatchJoinMetadataFilter(metadata)
 
 		// Party leader determines the party version
 		if version, ok := metadata["version"]; ok {
@@ -241,7 +241,7 @@ func (p *PartyMatch) MatchJoinAttempt(ctx context.Context, logger runtime.Logger
 	}
 
 	// Ensure join metadata is stored to be used in MatchJoin callback.
-	s.joinMetadata[presence.GetUserId()] = p.matchJoinMetadataFilter(metadata)
+	s.joinMetadata[presence.GetUserId()] = p.config.MatchJoinMetadataFilter(metadata)
 
 	// Allow approved rejoins.
 	if _, ok := s.approvedForRejoin[presence.GetUserId()]; ok {
@@ -264,9 +264,9 @@ func (p *PartyMatch) MatchJoinAttempt(ctx context.Context, logger runtime.Logger
 		logger.Warn("Error broadcasting join request to party leader: %v", err)
 		return s, false, "Failed sending join request to leader"
 	}
-	if p.matchJoinAttemptHook != nil {
+	if p.config.MatchJoinAttemptHook != nil {
 		matchID := ctx.Value(runtime.RUNTIME_CTX_MATCH_ID).(string)
-		allow, msg := p.matchJoinAttemptHook(matchID, presence, metadata)
+		allow, msg := p.config.MatchJoinAttemptHook(matchID, presence, metadata)
 		return s, allow, msg
 	}
 	return s, false, "Join request sent"
@@ -336,17 +336,17 @@ func (p *PartyMatch) MatchLeave(ctx context.Context, logger runtime.Logger, db *
 			}
 		}
 
-		if p.matchLeaveHook != nil {
+		if p.config.MatchLeaveHook != nil {
 			matchID := ctx.Value(runtime.RUNTIME_CTX_MATCH_ID).(string)
-			p.matchLeaveHook(matchID, leftUserId)
+			p.config.MatchLeaveHook(matchID, leftUserId)
 		}
 	}
 
 	// If the party is now empty stop it now.
 	if len(s.presences) == 0 {
-		if p.matchEndHook != nil {
+		if p.config.MatchEndHook != nil {
 			matchID := ctx.Value(runtime.RUNTIME_CTX_MATCH_ID).(string)
-			p.matchEndHook(matchID, p.config, s.label)
+			p.config.MatchEndHook(matchID, p.config, s.label)
 		}
 		return nil
 	}
@@ -371,9 +371,9 @@ func (p *PartyMatch) MatchLoop(ctx context.Context, logger runtime.Logger, db *s
 	if s.creator != "" && len(s.presences) == 0 {
 		s.initialEmptyTicks++
 		if s.initialEmptyTicks >= InitialJoinTicks {
-			if p.matchEndHook != nil {
+			if p.config.MatchEndHook != nil {
 				matchID := ctx.Value(runtime.RUNTIME_CTX_MATCH_ID).(string)
-				p.matchEndHook(matchID, p.config, s.label)
+				p.config.MatchEndHook(matchID, p.config, s.label)
 			}
 			return nil
 		}
@@ -550,9 +550,9 @@ func (p *PartyMatch) MatchLoop(ctx context.Context, logger runtime.Logger, db *s
 				delete(s.presences, presence.GetUserId())
 				delete(s.partyMemberData, presence.GetUserId())
 
-				if p.matchKickHook != nil {
+				if p.config.MatchKickHook != nil {
 					matchID := ctx.Value(runtime.RUNTIME_CTX_MATCH_ID).(string)
-					p.matchKickHook(matchID, presence.GetUserId())
+					p.config.MatchKickHook(matchID, presence.GetUserId())
 				}
 			} else {
 				logger.Warn("Error getting presence for kick: %s", string(partyMsg.Data))

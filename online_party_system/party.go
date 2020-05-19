@@ -46,19 +46,13 @@ func noopMatchJoinMetadataFilter(metadata map[string]string) map[string]string {
 }
 
 // Registers the collection of functions with Nakama required to provide an OnlinePartyService from Unreal Engine.
-func Register(initializer runtime.Initializer, config PartyConfig, matchJoinMetadataFilter MatchJoinMetadataFilter, matchTerminateHook MatchEndHook, matchInitHook MatchInitHook, matchJoinAttemptHook MatchJoinAttemptHook, matchLeaveHook MatchLeaveHook, matchKickHook MatchKickHook) error {
-	if matchJoinMetadataFilter == nil {
-		matchJoinMetadataFilter = noopMatchJoinMetadataFilter
+func Register(initializer runtime.Initializer, config PartyConfig) error {
+	if config.MatchJoinMetadataFilter == nil {
+		config.MatchJoinMetadataFilter = noopMatchJoinMetadataFilter
 	}
 	createPartyMatch := func(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runtime.NakamaModule) (runtime.Match, error) {
 		return &PartyMatch{
-			config:                  	config,
-			matchJoinMetadataFilter: 	matchJoinMetadataFilter,
-			matchEndHook:            	matchTerminateHook,
-			matchInitHook:           	matchInitHook,
-			matchJoinAttemptHook:    	matchJoinAttemptHook,
-			matchLeaveHook:    			matchLeaveHook,
-			matchKickHook:    			matchKickHook,
+			config: config,
 		}, nil
 	}
 
