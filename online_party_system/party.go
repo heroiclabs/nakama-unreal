@@ -37,22 +37,22 @@ type MatchInitHook func(matchID string, config PartyConfig, label *PartyMatchLab
 
 type MatchJoinAttemptHook func(matchID string, presence runtime.Presence, meta map[string]string) (bool, string)
 
+type MatchLeaveHook func(matchID string, userId string)
+
+type MatchKickHook func(matchID string, userId string)
+
 func noopMatchJoinMetadataFilter(metadata map[string]string) map[string]string {
 	return metadata
 }
 
 // Registers the collection of functions with Nakama required to provide an OnlinePartyService from Unreal Engine.
-func Register(initializer runtime.Initializer, config PartyConfig, matchJoinMetadataFilter MatchJoinMetadataFilter, matchTerminateHook MatchEndHook, matchInitHook MatchInitHook, matchJoinAttemptHook MatchJoinAttemptHook) error {
-	if matchJoinMetadataFilter == nil {
-		matchJoinMetadataFilter = noopMatchJoinMetadataFilter
+func Register(initializer runtime.Initializer, config PartyConfig) error {
+	if config.MatchJoinMetadataFilter == nil {
+		config.MatchJoinMetadataFilter = noopMatchJoinMetadataFilter
 	}
 	createPartyMatch := func(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runtime.NakamaModule) (runtime.Match, error) {
 		return &PartyMatch{
-			config:                  config,
-			matchJoinMetadataFilter: matchJoinMetadataFilter,
-			matchEndHook:            matchTerminateHook,
-			matchInitHook:           matchInitHook,
-			matchJoinAttemptHook:    matchJoinAttemptHook,
+			config: config,
 		}, nil
 	}
 
