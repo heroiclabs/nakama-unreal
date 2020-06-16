@@ -1,6 +1,12 @@
 Nakama Unreal
 =============
 
+[![GitHub release](https://img.shields.io/github/release/heroiclabs/nakama-unreal.svg)](https://github.com/heroiclabs/nakama-unreal/releases/latest)
+[![Forum](https://img.shields.io/badge/forum-online-success.svg)](https://forum.heroiclabs.com)
+[![Client guide](https://img.shields.io/badge/client_guide-online-brightgreen)](https://heroiclabs.com/docs/unreal-client-guide)
+[![Reference](https://img.shields.io/badge/reference-online-brightgreen)](https://heroiclabs.github.io/nakama-cpp/html/index.html)
+[![License](https://img.shields.io/github/license/heroiclabs/nakama.svg)](https://github.com/heroiclabs/nakama/blob/master/LICENSE)
+
 > Unreal Editor 4 client for Nakama server.
 
 [Nakama](https://github.com/heroiclabs/nakama) is an open-source server designed to power modern games and apps. Features include user accounts, chat, social, matchmaker, realtime multiplayer, and much [more](https://heroiclabs.com).
@@ -10,6 +16,9 @@ This client implements the full API and socket options with the server. It's wri
 If you experience any issues with the client, it can be useful to enable debug logs (see [Logging](#logging) section) and [open an issue](https://github.com/heroiclabs/nakama-cpp/issues).
 
 Full documentation is online - https://heroiclabs.com/docs
+
+## Notice
+**DO NOT** download source code from this repo **if you are not intended to create pull request**. This is not for end users.
 
 ## Getting Started
 
