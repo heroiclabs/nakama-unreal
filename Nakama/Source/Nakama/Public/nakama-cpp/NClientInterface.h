@@ -190,8 +190,8 @@ NAKAMA_NAMESPACE_BEGIN
          * @param salt A random <c>NSString</c> used to compute the hash and keep it randomized.
          * @param signature The verification signature data generated.
          * @param publicKeyUrl The URL for the public encryption key.
-         * @param create True if the user should be created when authenticated.
          * @param username A username used to create the user.
+         * @param create True if the user should be created when authenticated.
          * @param vars Extra information that will be bundled in the session token.
          */
         virtual void authenticateGameCenter(
@@ -201,6 +201,23 @@ NAKAMA_NAMESPACE_BEGIN
             const std::string& salt,
             const std::string& signature,
             const std::string& publicKeyUrl,
+            const std::string& username = std::string(),
+            bool create = false,
+            const NStringMap& vars = {},
+            std::function<void(NSessionPtr)> successCallback = nullptr,
+            ErrorCallback errorCallback = nullptr
+        ) = 0;
+
+        /**
+         * Authenticate a user with Apple Sign In.
+         *
+         * @param token The ID token received from Apple to validate.
+         * @param username A username used to create the user.
+         * @param create True if the user should be created when authenticated.
+         * @param vars Extra information that will be bundled in the session token.
+         */
+        virtual void authenticateApple(
+            const std::string& token,
             const std::string& username = std::string(),
             bool create = false,
             const NStringMap& vars = {},
@@ -322,6 +339,19 @@ NAKAMA_NAMESPACE_BEGIN
         ) = 0;
 
         /**
+         * Link an Apple ID to the social profiles on the current user's account.
+         *
+         * @param session The session of the user.
+         * @param token The ID token received from Apple.
+         */
+        virtual void linkApple(
+            NSessionPtr session,
+            const std::string& token,
+            std::function<void()> successCallback = nullptr,
+            ErrorCallback errorCallback = nullptr
+        ) = 0;
+
+        /**
          * Link a Steam profile to a user account.
          *
          * @param session The session of the user.
@@ -407,6 +437,19 @@ NAKAMA_NAMESPACE_BEGIN
             const std::string& salt,
             const std::string& signature,
             const std::string& publicKeyUrl,
+            std::function<void()> successCallback = nullptr,
+            ErrorCallback errorCallback = nullptr
+        ) = 0;
+
+        /**
+         * Unlink a Apple profile from the user account owned by the session.
+         *
+         * @param session The session of the user.
+         * @param token An Apple authentication token.
+         */
+        virtual void unlinkApple(
+            NSessionPtr session,
+            const std::string& token,
             std::function<void()> successCallback = nullptr,
             ErrorCallback errorCallback = nullptr
         ) = 0;
@@ -746,13 +789,28 @@ NAKAMA_NAMESPACE_BEGIN
         ) = 0;
 
         /**
-         * Promote one or more users in the group.
+         * Promote a set of users in a group to the next role up.
          *
          * @param session The session of the user.
-         * @param groupId The id of the group to promote users into.
+         * @param groupId The group ID to promote in.
          * @param ids The ids of the users to promote.
          */
         virtual void promoteGroupUsers(
+            NSessionPtr session,
+            const std::string& groupId,
+            const std::vector<std::string>& ids,
+            std::function<void()> successCallback = nullptr,
+            ErrorCallback errorCallback = nullptr
+        ) = 0;
+
+        /**
+         * Demote a set of users in a group to the next role down.
+         *
+         * @param session The session of the user.
+         * @param groupId The group ID to demote in.
+         * @param ids The ids of the users to demote.
+         */
+        virtual void demoteGroupUsers(
             NSessionPtr session,
             const std::string& groupId,
             const std::vector<std::string>& ids,
@@ -1096,6 +1154,21 @@ NAKAMA_NAMESPACE_BEGIN
          */
         virtual void rpc(
             NSessionPtr session,
+            const std::string& id,
+            const opt::optional<std::string>& payload = opt::nullopt,
+            std::function<void(const NRpc&)> successCallback = nullptr,
+            ErrorCallback errorCallback = nullptr
+        ) = 0;
+
+        /**
+         * Execute a Lua function with an input payload on the server.
+         *
+         * @param http_key The server's runtime HTTP key.
+         * @param id The id of the function to execute on the server.
+         * @param payload The payload to send with the function call.
+         */
+        virtual void rpc(
+            const std::string& http_key,
             const std::string& id,
             const opt::optional<std::string>& payload = opt::nullopt,
             std::function<void(const NRpc&)> successCallback = nullptr,

@@ -24,17 +24,18 @@ extern "C" {
 
 /// The friendship status.
 typedef enum FriendState {
-    STATE_FRIEND = 0,   ///< The user is a friend of the current user.
-    STATE_INVITE_SENT = 1,   ///< The current user has sent an invite to the user.
-    STATE_INVITE_RECEIVED = 2,   ///< The current user has received an invite from this user.
-    STATE_BLOCKED = 3    ///< The current user has blocked this user.
+    STATE_FRIEND = 0,                 ///< The user is a friend of the current user.
+    STATE_INVITE_SENT = 1,            ///< The current user has sent an invite to the user.
+    STATE_INVITE_RECEIVED = 2,        ///< The current user has received an invite from this user.
+    STATE_BLOCKED = 3                 ///< The current user has blocked this user.
 } eFriendState;
 
 /// A friend of a user.
 typedef struct NAKAMA_API NFriend
 {
-    sNUser user;          ///< The user object.
-    eFriendState state;   ///< The friend status.
+    sNUser user;                      ///< The user object.
+    eFriendState state;               ///< The friend status.
+    NTimestamp updateTime;            ///< Time of the latest relationship update.
 } sNFriend;
 
 #ifdef __cplusplus

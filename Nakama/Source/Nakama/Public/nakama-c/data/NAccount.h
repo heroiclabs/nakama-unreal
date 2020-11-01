@@ -31,8 +31,9 @@ typedef struct NAKAMA_API NAccount {
     const char* email;                         ///< The email address of the user.
     sNAccountDevice* devices;                  ///< The devices which belong to the user's account.
     uint16_t devicesCount;                     ///< The devices count.
-    const char* custom_id;                     ///< The custom id in the user's account.
+    const char* customId;                      ///< The custom id in the user's account.
     NTimestamp verifyTime;                     ///< The UNIX time when the user's email was verified.
+    NTimestamp disableTime;                    ///< The UNIX time when the user's account was disabled/banned.
 } sNAccount;
 
 #ifdef __cplusplus

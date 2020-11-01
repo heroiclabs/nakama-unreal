@@ -31,8 +31,9 @@ NAKAMA_NAMESPACE_BEGIN
             BLOCKED         = 3    ///< The current user has blocked this user.
         };
 
-        NUser user;    ///< The user object.
-        State state;   ///< The friend status.
+        NUser user;                           ///< The user object.
+        State state;                          ///< The friend status.
+        NTimestamp updateTime = 0;            ///< Time of the latest relationship update.
     };
 
 NAKAMA_NAMESPACE_END

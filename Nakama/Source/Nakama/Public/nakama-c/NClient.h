@@ -211,7 +211,26 @@ extern "C" {
         NClientErrorCallback errorCallback // optional, pass NULL
     );
 
-	/**
+    /**
+     * Authenticate a user with Apple Sign In.
+     *
+     * @param token The ID token received from Apple to validate.
+     * @param username A username used to create the user.
+     * @param create True if the user should be created when authenticated.
+     * @param vars Extra information that will be bundled in the session token.
+     */
+    NAKAMA_API void NClient_authenticateApple(
+        NClient client,
+        const char* token,
+        const char* username,              // optional, pass NULL
+        bool create,
+        NStringMap vars,                   // optional, pass NULL
+        NClientReqData reqData,            // optional, pass NULL
+        NSessionCallback successCallback,  // optional, pass NULL
+        NClientErrorCallback errorCallback // optional, pass NULL
+    );
+
+    /**
      * Authenticate a user with a custom id.
      *
      * @param id A custom identifier usually obtained from an external authentication service.
@@ -337,6 +356,21 @@ extern "C" {
     );
 
     /**
+     * Link an Apple ID to the social profiles on the current user's account.
+     *
+     * @param session The session of the user.
+     * @param token The ID token received from Apple.
+     */
+    NAKAMA_API void NClient_linkApple(
+        NClient client,
+        NSession session,
+        const char* token,
+        NClientReqData reqData,            // optional, pass NULL
+        void (*successCallback)(NClient, NClientReqData), // optional, pass NULL
+        NClientErrorCallback errorCallback // optional, pass NULL
+    );
+
+    /**
      * Link a Steam profile to a user account.
      *
      * @param session The session of the user.
@@ -433,6 +467,21 @@ extern "C" {
         const char* salt,
         const char* signature,
         const char* publicKeyUrl,
+        NClientReqData reqData,            // optional, pass NULL
+        void (*successCallback)(NClient, NClientReqData), // optional, pass NULL
+        NClientErrorCallback errorCallback // optional, pass NULL
+    );
+
+    /**
+     * Unlink an Apple profile from the user account owned by the session.
+     *
+     * @param session The session of the user.
+     * @param token An Apple authentication token.
+     */
+    NAKAMA_API void NClient_unlinkApple(
+        NClient client,
+        NSession session,
+        const char* token,
         NClientReqData reqData,            // optional, pass NULL
         void (*successCallback)(NClient, NClientReqData), // optional, pass NULL
         NClientErrorCallback errorCallback // optional, pass NULL
@@ -831,6 +880,24 @@ extern "C" {
     );
 
     /**
+     * Demote a set of users in a group to the next role down.
+     *
+     * @param session The session of the user.
+     * @param groupId The group ID to demote in.
+     * @param ids The ids of the users to demote.
+     */
+    NAKAMA_API void NClient_demoteGroupUsers(
+        NClient client,
+        NSession session,
+        const char* groupId,
+        const char** ids,
+        uint16_t idsCount,
+        NClientReqData reqData,            // optional, pass NULL
+        void (*successCallback)(NClient, NClientReqData), // optional, pass NULL
+        NClientErrorCallback errorCallback // optional, pass NULL
+    );
+
+    /**
      * Update a group.
      *
      * The user must have the correct access permissions for the group.
@@ -1211,6 +1278,23 @@ extern "C" {
     NAKAMA_API void NClient_rpc(
         NClient client,
         NSession session,
+        const char* id,
+        const char* payload,               // optional, pass NULL
+        NClientReqData reqData,            // optional, pass NULL
+        void (*successCallback)(NClient, NClientReqData, const sNRpc*),
+        NClientErrorCallback errorCallback // optional, pass NULL
+    );
+
+    /**
+     * Execute a Lua function with an input payload on the server.
+     *
+     * @param http_key The server's runtime HTTP key.
+     * @param id The id of the function to execute on the server.
+     * @param payload The payload to send with the function call.
+     */
+    NAKAMA_API void NClient_rpc_with_http_key(
+        NClient client,
+        const char* http_key,
         const char* id,
         const char* payload,               // optional, pass NULL
         NClientReqData reqData,            // optional, pass NULL

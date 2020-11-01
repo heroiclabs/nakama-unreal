@@ -353,6 +353,38 @@ NAKAMA_NAMESPACE_BEGIN
             ::NStringMap_destroy(cVars);
         }
 
+        void authenticateApple(
+            const std::string& token,
+            const std::string& username,
+            bool create,
+            const NStringMap& vars,
+            std::function<void(NSessionPtr)> successCallback,
+            ErrorCallback errorCallback
+        ) override
+        {
+            NClientReqData reqId = INVALID_REQ_ID;
+
+            if (successCallback || errorCallback)
+            {
+                reqId = getNextReqId();
+                if (successCallback) _authSuccessCallbacks.emplace(reqId, successCallback);
+                if (errorCallback) _reqErrorCallbacks.emplace(reqId, errorCallback);
+            }
+
+            ::NStringMap cVars = toCNStringMap(vars);
+
+            ::NClient_authenticateApple(_cClient,
+                token.c_str(),
+                !username.empty() ? username.c_str() : nullptr,
+                create,
+                cVars,
+                reqId,
+                &NClientWrapper::authenticateOkStatic,
+                &NClientWrapper::reqErrorStatic);
+
+            ::NStringMap_destroy(cVars);
+        }
+
         void authenticateCustom(
             const std::string& id,
             const std::string& username,
@@ -551,6 +583,30 @@ NAKAMA_NAMESPACE_BEGIN
                 &NClientWrapper::reqErrorStatic);
         }
 
+        void linkApple(
+            NSessionPtr session,
+            const std::string& token,
+            std::function<void()> successCallback,
+            ErrorCallback errorCallback
+        ) override
+        {
+            NClientReqData reqId = INVALID_REQ_ID;
+
+            if (successCallback || errorCallback)
+            {
+                reqId = getNextReqId();
+                if (successCallback) _reqOkEmptyCallbacks.emplace(reqId, successCallback);
+                if (errorCallback) _reqErrorCallbacks.emplace(reqId, errorCallback);
+            }
+
+            ::NClient_linkApple(_cClient,
+                getCSession(session),
+                token.c_str(),
+                reqId,
+                &NClientWrapper::reqOkEmptyStatic,
+                &NClientWrapper::reqErrorStatic);
+        }
+
         void linkSteam(
             NSessionPtr session,
             const std::string& token,
@@ -702,6 +758,30 @@ NAKAMA_NAMESPACE_BEGIN
                 salt.c_str(),
                 signature.c_str(),
                 publicKeyUrl.c_str(),
+                reqId,
+                &NClientWrapper::reqOkEmptyStatic,
+                &NClientWrapper::reqErrorStatic);
+        }
+
+        void unlinkApple(
+            NSessionPtr session,
+            const std::string& token,
+            std::function<void()> successCallback,
+            ErrorCallback errorCallback
+        ) override
+        {
+            NClientReqData reqId = INVALID_REQ_ID;
+
+            if (successCallback || errorCallback)
+            {
+                reqId = getNextReqId();
+                if (successCallback) _reqOkEmptyCallbacks.emplace(reqId, successCallback);
+                if (errorCallback) _reqErrorCallbacks.emplace(reqId, errorCallback);
+            }
+
+            ::NClient_unlinkApple(_cClient,
+                getCSession(session),
+                token.c_str(),
                 reqId,
                 &NClientWrapper::reqOkEmptyStatic,
                 &NClientWrapper::reqErrorStatic);
@@ -1589,6 +1669,47 @@ NAKAMA_NAMESPACE_BEGIN
             delete[] idsArray;
         }
 
+        void demoteGroupUsers(
+            NSessionPtr session,
+            const std::string& groupId,
+            const std::vector<std::string>& ids,
+            std::function<void()> successCallback,
+            ErrorCallback errorCallback
+        ) override
+        {
+            NClientReqData reqId = INVALID_REQ_ID;
+
+            if (successCallback || errorCallback)
+            {
+                reqId = getNextReqId();
+                if (successCallback) _reqOkEmptyCallbacks.emplace(reqId, successCallback);
+                if (errorCallback) _reqErrorCallbacks.emplace(reqId, errorCallback);
+            }
+
+            const char** idsArray = nullptr;
+
+            if (ids.size() > 0)
+            {
+                idsArray = new const char* [ids.size()];
+
+                for (size_t i = 0; i < ids.size(); ++i)
+                {
+                    idsArray[i] = ids[i].c_str();
+                }
+            }
+
+            ::NClient_demoteGroupUsers(_cClient,
+                getCSession(session),
+                groupId.c_str(),
+                idsArray,
+                (uint16_t)ids.size(),
+                reqId,
+                &NClientWrapper::reqOkEmptyStatic,
+                &NClientWrapper::reqErrorStatic);
+
+            delete[] idsArray;
+        }
+
         void updateGroup(
             NSessionPtr session,
             const std::string& groupId,
@@ -2439,6 +2560,31 @@ NAKAMA_NAMESPACE_BEGIN
 
             ::NClient_rpc(_cClient,
                 getCSession(session),
+                id.c_str(),
+                payload ? payload.value().c_str() : nullptr,
+                reqId,
+                &NClientWrapper::reqOkRpcStatic,
+                &NClientWrapper::reqErrorStatic);
+        }
+
+        void rpc(
+            const std::string& http_key,
+            const std::string& id,
+            const opt::optional<std::string>& payload,
+            std::function<void(const NRpc&)> successCallback,
+            ErrorCallback errorCallback) override
+        {
+            NClientReqData reqId = INVALID_REQ_ID;
+
+            if (successCallback || errorCallback)
+            {
+                reqId = getNextReqId();
+                if (successCallback) _reqOkRpcCallbacks.emplace(reqId, successCallback);
+                if (errorCallback) _reqErrorCallbacks.emplace(reqId, errorCallback);
+            }
+
+            ::NClient_rpc_with_http_key(_cClient,
+                http_key.c_str(),
                 id.c_str(),
                 payload ? payload.value().c_str() : nullptr,
                 reqId,

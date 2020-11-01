@@ -36,6 +36,7 @@ typedef struct NAKAMA_API NUser
     const char* facebookId;    ///< The Facebook id in the user's account.
     const char* googleId;      ///< The Google id in the user's account.
     const char* gameCenterId;  ///< The Apple Game Center in of the user's account.
+    const char* appleId;       ///< The Apple Sign In ID in the user's account.
     const char* steamId;       ///< The Steam id in the user's account.
     bool online;               ///< Indicates whether the user is currently online.
     int32_t edgeCount;         ///< Number of related edges to this user (friends).

@@ -182,6 +182,7 @@ void assign(NUser& user, const sNUser* cUser)
     user.facebookId   = cUser->facebookId;
     user.googleId     = cUser->googleId;
     user.gameCenterId = cUser->gameCenterId;
+    user.appleId      = cUser->appleId;
     user.steamId      = cUser->steamId;
     user.online       = cUser->online;
     user.edgeCount    = cUser->edgeCount;
@@ -195,8 +196,9 @@ void assign(NAccount& account, const sNAccount* cAccount)
     account.wallet = cAccount->wallet;
     account.email = cAccount->email;
     assign(account.devices, cAccount->devices, cAccount->devicesCount);
-    account.custom_id = cAccount->custom_id;
+    account.customId = cAccount->customId;
     account.verifyTime = cAccount->verifyTime;
+    account.disableTime = cAccount->disableTime;
 }
 
 void assign(NUsers& users, const sNUsers* cUsers)
@@ -212,6 +214,7 @@ void assign(NUsers& users, const sNUsers* cUsers)
 void assign(NFriend& aFriend, const sNFriend* cFriend)
 {
     aFriend.state = (NFriend::State)cFriend->state;
+    aFriend.updateTime = cFriend->updateTime;
     assign(aFriend.user, &cFriend->user);
 }
 
