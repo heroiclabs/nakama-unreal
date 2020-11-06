@@ -93,7 +93,7 @@ type PartyMatchState struct {
 	joinRequests      map[string]runtime.Presence  // User IDs that have requested to join the party.
 	joinMetadata      map[string]map[string]string // User IDs to metadata mapping.
 
-	blockedUsers      map[string]struct{} // Set of users that are blocked from joining (added on invites)
+	blockedUsers      map[string]struct{} // Set of users that are blocked from joining (this set is created from users blocked friends as they are invited)
 	blockedUsersDirty bool                // Do we need to re-build the blocked-list (happens when user leaves)
 
 	label             *PartyMatchLabel // Label exposed to Nakama's match listing system.
@@ -117,7 +117,7 @@ type PartyMatch struct {
 }
 
 func addUsersBlockedFriendsToBlockedSet(ctx context.Context, logger runtime.Logger, nk runtime.NakamaModule, userID string, blockedUsers map[string]struct{}) {
-	friendLimit := 100 // FriendsList will fail is the max
+	friendLimit := 100 // FriendsList will fail if we ask for > 100
 	friendState := 3   // 3 is Friend_BLOCKED
 	cursor := ""       // no cursor
 
