@@ -63,6 +63,7 @@ const (
 	ResponseCodePresenceError
 	ResponseCodeInvitePending
 	ResponseCodeNoInvitePending
+	ResponseCodeUserBlocked
 )
 
 type PartyMatchMessage struct {
@@ -93,8 +94,9 @@ type PartyMatchState struct {
 	joinRequests      map[string]runtime.Presence  // User IDs that have requested to join the party.
 	joinMetadata      map[string]map[string]string // User IDs to metadata mapping.
 
-	blockedUsers      map[string]struct{} // Set of users that are blocked from joining (this set is created from users blocked friends as they are invited)
-	blockedUsersDirty bool                // Do we need to re-build the blocked-list (happens when user leaves)
+	blockedUsersCache map[string][]string // for each user a list of blocked users. Used to create the blockedUsersSet set below
+	blockedUsersSet   map[string]struct{} // Set of users that are blocked from joining (this set is created from users blocked friends as they are invited)
+	blockedUsersDirty bool                // Do we need to re-build the blocked-list (happens when a user leaves)
 
 	label             *PartyMatchLabel // Label exposed to Nakama's match listing system.
 	creator           string           // Party creator user ID, used to allow the user to automatically join when they create.
@@ -116,63 +118,102 @@ type PartyMatch struct {
 	config PartyConfig
 }
 
-func addUsersBlockedFriendsToBlockedSet(ctx context.Context, logger runtime.Logger, nk runtime.NakamaModule, userID string, blockedUsers map[string]struct{}) {
-	friendLimit := 100 // FriendsList will fail if we ask for > 100
-	friendState := 3   // 3 is Friend_BLOCKED
-	cursor := ""       // no cursor
+func getBlockedFriendsWithCache(ctx context.Context, logger runtime.Logger, nk runtime.NakamaModule, userID string, cache map[string][]string) []string {
+
+	cached, ok := cache[userID]
+	if ok {
+		return cached
+	}
+
+	friendLimit := 100
+	friendState := 3 // 3 is Friend_BLOCKED
+	cursor := ""     // no cursor
 
 	friendsPtrArray, cursor, err := nk.FriendsList(ctx, userID, friendLimit, &friendState, cursor)
 	if err != nil {
 		logger.Error("Error getting FriendsList: %v", err)
-		return
+		return nil
 	}
 
+	blockedFriends := make([]string, 0, len(friendsPtrArray))
+
 	for _, friendPtr := range friendsPtrArray {
-		if friendPtr != nil {
-			friend := *friendPtr
-			user := friend.User
-			if user != nil {
-				userID := user.Id
-				blockedUsers[userID] = struct{}{}
+		friend := *friendPtr
+		user := friend.User
+		userID := user.Id
+		blockedFriends = append(blockedFriends, userID)
+	}
+
+	// store in cache
+	cache[userID] = blockedFriends
+	return blockedFriends
+}
+
+// a relevant user is someone 1. in the party or, 2. invited to the party or 3. approved for rejoin
+func getRelevantUsers(s *PartyMatchState) map[string]struct{} {
+	relevantUsers := make(map[string]struct{})
+	for userID := range s.presences {
+		relevantUsers[userID] = struct{}{}
+	}
+
+	for userID := range s.invitations {
+		relevantUsers[userID] = struct{}{}
+	}
+
+	for userID := range s.approvedForRejoin {
+		relevantUsers[userID] = struct{}{}
+	}
+
+	return relevantUsers
+}
+
+func isUnblocked(ctx context.Context, logger runtime.Logger, nk runtime.NakamaModule, userID string, s *PartyMatchState) (bool, string) {
+
+	var relevantUsers map[string]struct{}
+
+	// rebuild if dirty
+	if s.blockedUsersDirty {
+		s.blockedUsersDirty = false
+
+		// re-set blockedUsers
+		s.blockedUsersSet = make(map[string]struct{})
+
+		// collect all users whose blocked-list should be considered (new users were invited or some left) (this is reused below if needed)
+		relevantUsers = getRelevantUsers(s)
+		for relevantUserID := range relevantUsers {
+			blockedListFromRelevantUser := getBlockedFriendsWithCache(ctx, logger, nk, relevantUserID, s.blockedUsersCache)
+
+			for _, blockedUser := range blockedListFromRelevantUser {
+				s.blockedUsersSet[blockedUser] = struct{}{}
 			}
 		}
 	}
-}
 
-func getUsersBlockedFriends(ctx context.Context, logger runtime.Logger, nk runtime.NakamaModule, userID string) map[string]struct{} {
+	// Test if anyone "in" the party has blocked this user
+	if _, ok := s.blockedUsersSet[userID]; ok {
+		return false, "Someone in this party blocked you (re-phrase this)"
+	}
+
+	// Test if this user has blocked anyone invited to this party
+	blockedListFromUser := getBlockedFriendsWithCache(ctx, logger, nk, userID, s.blockedUsersCache)
+
+	// local set created from the list
 	blockedSet := make(map[string]struct{})
-	addUsersBlockedFriendsToBlockedSet(ctx, logger, nk, userID, blockedSet)
-	return blockedSet
-}
-
-func rebuildBlockedUsersIfNeeded(ctx context.Context, logger runtime.Logger, nk runtime.NakamaModule, s *PartyMatchState) {
-	if !s.blockedUsersDirty {
-		return
+	for _, userID := range blockedListFromUser {
+		blockedSet[userID] = struct{}{}
 	}
 
-	s.blockedUsersDirty = false
-
-	// collect all users whose blocked-list should be considered
-	usersInParty := make(map[string]struct{})
-	for _, presence := range s.presences {
-		usersInParty[presence.GetUserId()] = struct{}{}
+	if relevantUsers == nil {
+		relevantUsers = getRelevantUsers(s)
 	}
 
-	for userID, _ := range s.approvedForRejoin {
-		usersInParty[userID] = struct{}{}
+	for userID := range relevantUsers {
+		if _, ok := blockedSet[userID]; ok {
+			return false, "You have blocked someone in (or invited to) this party (re-phrase this)"
+		}
 	}
 
-	for userID, _ := range s.invitations {
-		usersInParty[userID] = struct{}{}
-	}
-
-	// re-set blockedUsers
-	s.blockedUsers = make(map[string]struct{})
-
-	// merge all the blocked-list
-	for userID, _ := range usersInParty {
-		addUsersBlockedFriendsToBlockedSet(ctx, logger, nk, userID, s.blockedUsers)
-	}
+	return true, ""
 }
 
 func (p *PartyMatch) cleanupExpiredInvitations(ctx context.Context, nk runtime.NakamaModule, s *PartyMatchState) error {
@@ -252,7 +293,8 @@ func (p *PartyMatch) MatchInit(ctx context.Context, logger runtime.Logger, db *s
 		invitations:       make(map[string]time.Time),
 		joinRequests:      make(map[string]runtime.Presence),
 		joinMetadata:      make(map[string]map[string]string),
-		blockedUsers:      make(map[string]struct{}),
+		blockedUsersCache: make(map[string][]string),
+		blockedUsersSet:   make(map[string]struct{}),
 		blockedUsersDirty: false,
 
 		label:             label,
@@ -272,7 +314,6 @@ func (p *PartyMatch) MatchJoinAttempt(ctx context.Context, logger runtime.Logger
 	// Ensure users can only join each party once concurrently.
 	// This prevents concurrent joins from multiple devices, for example.
 	if _, ok := s.presences[presence.GetUserId()]; ok {
-		logger.Warn("DUMMY HACK 3: Party already joined")
 		return s, false, "Party already joined"
 	}
 
@@ -290,7 +331,8 @@ func (p *PartyMatch) MatchJoinAttempt(ctx context.Context, logger runtime.Logger
 		}
 
 		// creator adds their blocked users to the party
-		addUsersBlockedFriendsToBlockedSet(ctx, logger, nk, presence.GetUserId(), s.blockedUsers)
+		getBlockedFriendsWithCache(ctx, logger, nk, presence.GetUserId(), s.blockedUsersCache)
+		s.blockedUsersDirty = true
 		return s, true, ""
 	}
 
@@ -310,26 +352,9 @@ func (p *PartyMatch) MatchJoinAttempt(ctx context.Context, logger runtime.Logger
 	// Ensure join metadata is stored to be used in MatchJoin callback.
 	s.joinMetadata[presence.GetUserId()] = p.config.MatchJoinMetadataFilter(metadata)
 
-	rebuildBlockedUsersIfNeeded(ctx, logger, nk, s)
-
-	// Test if anyone "in" the party has blocked this user
-	if _, ok := s.blockedUsers[presence.GetUserId()]; ok {
-		return s, false, "Someone in this party blocked you (re-phrase this)"
-	}
-
-	// Test if this user has blocked anyone invited to this party
-	blockedSetFromUser := getUsersBlockedFriends(ctx, logger, nk, presence.GetUserId())
-	for userId, _ := range s.invitations {
-		if _, ok := blockedSetFromUser[userId]; ok {
-			return s, false, "You have blocked someone in this party (invited) (re-phrase this)"
-		}
-	}
-
-	// Test if this user has blocked anyone in this party
-	for userId, _ := range s.presences {
-		if _, ok := blockedSetFromUser[userId]; ok {
-			return s, false, "You have blocked someone in this party (member) (re-phrase this)"
-		}
+	unblocked, blockedReason := isUnblocked(ctx, logger, nk, presence.GetUserId(), s)
+	if !unblocked {
+		return s, false, blockedReason
 	}
 
 	// Allow approved rejoins.
@@ -495,8 +520,17 @@ func (p *PartyMatch) MatchLoop(ctx context.Context, logger runtime.Logger, db *s
 				continue
 			}
 
+			// can not approve a blocked user
+			unblocked, _ := isUnblocked(ctx, logger, nk, string(partyMsg.Data), s)
+			if !unblocked {
+				SendResponse(partyMsg, ResponseCodeUserBlocked, []runtime.Presence{message}, logger, dispatcher)
+				continue
+			}
+
 			// Expects message data payload to be a user ID string to be approved for rejoin.
 			s.approvedForRejoin[string(partyMsg.Data)] = struct{}{}
+			s.blockedUsersDirty = true
+
 		case OpCodeApproveJoinRequest:
 			// Leader only action.
 			if s.leader.GetUserId() != message.GetUserId() {
@@ -530,6 +564,7 @@ func (p *PartyMatch) MatchLoop(ctx context.Context, logger runtime.Logger, db *s
 			}
 
 			s.invitations = make(map[string]time.Time)
+			s.blockedUsersDirty = true
 		case OpCodeGetPartyData:
 			if err := dispatcher.BroadcastMessage(OpCodeGetPartyData, s.partyData, []runtime.Presence{message}, nil, true); err != nil {
 				logger.Warn("Error broadcasting party data: %v", err)
@@ -689,6 +724,7 @@ func (p *PartyMatch) MatchLoop(ctx context.Context, logger runtime.Logger, db *s
 
 			// Expects message data payload to be a user ID string to be removed for rejoin.
 			delete(s.approvedForRejoin, string(partyMsg.Data))
+			s.blockedUsersDirty = true
 		case OpCodeSendInvitation:
 			// Leader only action.
 			if s.leader.GetUserId() != message.GetUserId() {
@@ -722,6 +758,13 @@ func (p *PartyMatch) MatchLoop(ctx context.Context, logger runtime.Logger, db *s
 				continue
 			}
 
+			// can not invite if have been blocked
+			unblocked, _ := isUnblocked(ctx, logger, nk, invitedUserId, s)
+			if !unblocked {
+				SendResponse(partyMsg, ResponseCodeUserBlocked, []runtime.Presence{message}, logger, dispatcher)
+				continue
+			}
+
 			// Expects message data payload to be a user ID string to be invited.
 			content := map[string]interface{}{
 				"match_id": ctx.Value(runtime.RUNTIME_CTX_MATCH_ID),
@@ -736,7 +779,9 @@ func (p *PartyMatch) MatchLoop(ctx context.Context, logger runtime.Logger, db *s
 
 			s.invitations[invitedUserId] = time.Now().Add(p.config.InviteDuration)
 
-			addUsersBlockedFriendsToBlockedSet(ctx, logger, nk, invitedUserId, s.blockedUsers)
+			// add to blocked-friends cache
+			getBlockedFriendsWithCache(ctx, logger, nk, invitedUserId, s.blockedUsersCache)
+			s.blockedUsersDirty = true
 
 		case OpCodeUpdateParty:
 			// Leader only action.
