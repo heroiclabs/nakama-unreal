@@ -21,6 +21,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/heroiclabs/nakama-common/api"
 	"github.com/heroiclabs/nakama-common/runtime"
 )
 
@@ -129,19 +130,25 @@ func getBlockedFriendsWithCache(ctx context.Context, logger runtime.Logger, nk r
 	friendState := 3 // 3 is Friend_BLOCKED
 	cursor := ""     // no cursor
 
-	friendsPtrArray, cursor, err := nk.FriendsList(ctx, userID, friendLimit, &friendState, cursor)
-	if err != nil {
-		logger.Error("Error getting FriendsList: %v", err)
-		return nil
-	}
+	var blockedFriends []string
 
-	blockedFriends := make([]string, 0, len(friendsPtrArray))
+	for {
+		var friendsArray []*api.Friend
+		var err error
+		friendsArray, cursor, err = nk.FriendsList(ctx, userID, friendLimit, &friendState, cursor)
+		if err != nil {
+			logger.Error("Error getting FriendsList: %v", err)
+			return nil
+		}
 
-	for _, friendPtr := range friendsPtrArray {
-		friend := *friendPtr
-		user := friend.User
-		userID := user.Id
-		blockedFriends = append(blockedFriends, userID)
+		for _, friend := range friendsArray {
+			blockedFriends = append(blockedFriends, friend.User.Id)
+		}
+
+		if cursor == "" {
+			// reached the end of pagination
+			break
+		}
 	}
 
 	// store in cache
@@ -191,7 +198,7 @@ func isUnblocked(ctx context.Context, logger runtime.Logger, nk runtime.NakamaMo
 
 	// Test if anyone "in" the party has blocked this user
 	if _, ok := s.blockedUsersSet[userID]; ok {
-		return false, "Someone in this party blocked you (re-phrase this)"
+		return false, "Someone in this party has blocked you"
 	}
 
 	// Test if this user has blocked anyone invited to this party
@@ -209,7 +216,7 @@ func isUnblocked(ctx context.Context, logger runtime.Logger, nk runtime.NakamaMo
 
 	for userID := range relevantUsers {
 		if _, ok := blockedSet[userID]; ok {
-			return false, "You have blocked someone in (or invited to) this party (re-phrase this)"
+			return false, "You have blocked someone in this party"
 		}
 	}
 
