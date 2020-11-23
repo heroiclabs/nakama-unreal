@@ -133,22 +133,20 @@ func getBlockedFriendsWithCache(ctx context.Context, logger runtime.Logger, nk r
 	var blockedFriends []string
 
 	for {
-		var friendsPtrArray []*api.Friend
+		var friendsArray []*api.Friend
 		var err error
-		friendsPtrArray, cursor, err = nk.FriendsList(ctx, userID, friendLimit, &friendState, cursor)
+		friendsArray, cursor, err = nk.FriendsList(ctx, userID, friendLimit, &friendState, cursor)
 		if err != nil {
 			logger.Error("Error getting FriendsList: %v", err)
 			return nil
 		}
 
-		for _, friendPtr := range friendsPtrArray {
-			friend := *friendPtr
-			user := friend.User
-			userID := user.Id
-			blockedFriends = append(blockedFriends, userID)
+		for _, friend := range friendsArray {
+			blockedFriends = append(blockedFriends, friend.User.Id)
 		}
 
-		if len(friendsPtrArray) < friendLimit {
+		if cursor == "" {
+			// reached the end of pagination
 			break
 		}
 	}
