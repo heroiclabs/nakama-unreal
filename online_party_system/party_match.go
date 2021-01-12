@@ -231,7 +231,7 @@ func isUnblocked(ctx context.Context, logger runtime.Logger, nk runtime.NakamaMo
 }
 
 func (p *PartyMatch) cleanupExpiredInvitations(ctx context.Context, nk runtime.NakamaModule, s *PartyMatchState) error {
-	if p.config.InviteDuration.Nanoseconds() > 0 {
+	if p.config.InviteDuration > 0 {
 		now := time.Now()
 		subject := "Party expired invitation"
 		for memberId, expiration := range s.invitations {
@@ -254,7 +254,7 @@ func (p *PartyMatch) cleanupExpiredInvitations(ctx context.Context, nk runtime.N
 }
 
 func (p *PartyMatch) cleanupExpiredJoinRequests(ctx context.Context, nk runtime.NakamaModule, s *PartyMatchState) error {
-	if p.config.JoinRequestDuration.Nanoseconds() > 0 {
+	if p.config.JoinRequestDuration > 0 {
 		now := time.Now()
 		subject := "Party expired Join Request"
 		for memberId, expiration := range s.joinRequests {
@@ -443,7 +443,6 @@ func (p *PartyMatch) MatchJoinAttempt(ctx context.Context, logger runtime.Logger
 	// Everyone else must be approved by the party leader (in a timely manner)
 	s.joinRequests[presence.GetUserId()] = time.Now().Add(p.config.JoinRequestDuration)
 
-	//
 	if err := dispatcher.BroadcastMessage(OpCodeJoinRequest, nil, []runtime.Presence{s.leader}, presence, true); err != nil {
 		logger.Warn("Error broadcasting join request to party leader: %v", err)
 		return s, false, "Failed sending join request to leader"
