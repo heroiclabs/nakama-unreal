@@ -91,9 +91,9 @@ type PartyMatchState struct {
 	partyData            []byte                      // Arbitrary party data.
 	partyMemberData      map[string][]byte           // Arbitrary party member data.
 	approvedForRejoin    map[string]struct{}         // User IDs approved for rejoin.
-	invitations          map[string]int              // User IDs to expiration tick for users that have been invited.
-	joinRequests         map[string]int              // User IDs that have requested to join the party (will time out at tick)
-	approvedJoinRequests map[string]int              // User IDs to expiration tick for users that have been invited (join-request approved).
+	invitations          map[string]int64            // User IDs to expiration tick for users that have been invited.
+	joinRequests         map[string]int64            // User IDs to expiration tick for users that have requested to join the party.
+	approvedJoinRequests map[string]int64            // User IDs to expiration tick for users that have been invited (join-request approved).
 
 	joinMetadata map[string]map[string]string // User IDs to metadata mapping.
 
@@ -104,7 +104,6 @@ type PartyMatchState struct {
 	label             *PartyMatchLabel // Label exposed to Nakama's match listing system.
 	creator           string           // Party creator user ID, used to allow the user to automatically join when they create.
 	initialEmptyTicks int              // Number of ticks the party has been empty on creation, to ensure parties are cleaned up if their creator never joins.
-	ticks             int              // Number of ticks the this party has existed, this is to limit calls to "time"
 }
 
 type PartyConfig struct {
@@ -231,12 +230,11 @@ func isUnblocked(ctx context.Context, logger runtime.Logger, nk runtime.NakamaMo
 	return true, ""
 }
 
-func (p *PartyMatch) cleanupExpiredInvitations(ctx context.Context, nk runtime.NakamaModule, s *PartyMatchState) error {
+func (p *PartyMatch) cleanupExpiredInvitations(ctx context.Context, nk runtime.NakamaModule, s *PartyMatchState, tick int64) error {
 	if p.config.InviteDuration > 0 {
-		now := s.ticks
 		subject := "Party expired invitation"
 		for memberId, expiration := range s.invitations {
-			if now > expiration {
+			if tick > expiration {
 				delete(s.invitations, memberId)
 				content := map[string]interface{}{
 					"party_id":  ctx.Value(runtime.RUNTIME_CTX_MATCH_ID).(string),
@@ -254,12 +252,11 @@ func (p *PartyMatch) cleanupExpiredInvitations(ctx context.Context, nk runtime.N
 	return nil
 }
 
-func (p *PartyMatch) cleanupExpiredJoinRequests(ctx context.Context, nk runtime.NakamaModule, s *PartyMatchState) error {
+func (p *PartyMatch) cleanupExpiredJoinRequests(ctx context.Context, nk runtime.NakamaModule, s *PartyMatchState, tick int64) error {
 	if p.config.JoinRequestDuration > 0 {
-		now := s.ticks
 		subject := "Party expired Join Request"
 		for memberId, expiration := range s.joinRequests {
-			if now > expiration {
+			if tick > expiration {
 				delete(s.joinRequests, memberId)
 				content := map[string]interface{}{
 					"party_id":  ctx.Value(runtime.RUNTIME_CTX_MATCH_ID).(string),
@@ -276,11 +273,10 @@ func (p *PartyMatch) cleanupExpiredJoinRequests(ctx context.Context, nk runtime.
 	}
 	return nil
 }
-func (p *PartyMatch) cleanupExpiredApprovedJoinRequests(ctx context.Context, nk runtime.NakamaModule, s *PartyMatchState) error {
-	now := s.ticks
+func (p *PartyMatch) cleanupExpiredApprovedJoinRequests(ctx context.Context, nk runtime.NakamaModule, s *PartyMatchState, tick int64) error {
 	subject := "Party expired Approved Join Request"
 	for memberId, expiration := range s.approvedJoinRequests {
-		if now > expiration {
+		if tick > expiration {
 			delete(s.approvedJoinRequests, memberId)
 			content := map[string]interface{}{
 				"party_id":  ctx.Value(runtime.RUNTIME_CTX_MATCH_ID).(string),
@@ -348,9 +344,9 @@ func (p *PartyMatch) MatchInit(ctx context.Context, logger runtime.Logger, db *s
 		partyData:            nil,
 		partyMemberData:      make(map[string][]byte),
 		approvedForRejoin:    make(map[string]struct{}),
-		invitations:          make(map[string]int),
-		joinRequests:         make(map[string]int),
-		approvedJoinRequests: make(map[string]int),
+		invitations:          make(map[string]int64),
+		joinRequests:         make(map[string]int64),
+		approvedJoinRequests: make(map[string]int64),
 		joinMetadata:         make(map[string]map[string]string),
 		blockedUsersCache:    make(map[string][]string),
 		blockedUsersSet:      make(map[string]struct{}),
@@ -359,7 +355,6 @@ func (p *PartyMatch) MatchInit(ctx context.Context, logger runtime.Logger, db *s
 		label:             label,
 		creator:           creator,
 		initialEmptyTicks: 0,
-		ticks:             0,
 	}
 
 	if p.config.MatchInitHook != nil {
@@ -425,7 +420,7 @@ func (p *PartyMatch) MatchJoinAttempt(ctx context.Context, logger runtime.Logger
 	}
 
 	// Allow users that have an unexpired invitation
-	if err := p.cleanupExpiredInvitations(ctx, nk, s); err != nil {
+	if err := p.cleanupExpiredInvitations(ctx, nk, s, tick); err != nil {
 		logger.Warn("Error sending expired invitation notifs: %v", err)
 	}
 	if _, ok := s.invitations[presence.GetUserId()]; ok {
@@ -434,7 +429,7 @@ func (p *PartyMatch) MatchJoinAttempt(ctx context.Context, logger runtime.Logger
 	}
 
 	// Allow users that have an unexpired approved-join-request
-	if err := p.cleanupExpiredApprovedJoinRequests(ctx, nk, s); err != nil {
+	if err := p.cleanupExpiredApprovedJoinRequests(ctx, nk, s, tick); err != nil {
 		logger.Warn("Error sending expired approved join request notifs: %v", err)
 	}
 
@@ -444,7 +439,7 @@ func (p *PartyMatch) MatchJoinAttempt(ctx context.Context, logger runtime.Logger
 	}
 
 	// Everyone else must be approved by the party leader (in a timely manner)
-	s.joinRequests[presence.GetUserId()] = s.ticks + (int)(p.config.JoinRequestDuration.Seconds()*TickRate)
+	s.joinRequests[presence.GetUserId()] = tick + (int64)(p.config.JoinRequestDuration.Seconds()*TickRate)
 
 	if err := dispatcher.BroadcastMessage(OpCodeJoinRequest, nil, []runtime.Presence{s.leader}, presence, true); err != nil {
 		logger.Warn("Error broadcasting join request to party leader: %v", err)
@@ -556,9 +551,6 @@ func (p *PartyMatch) MatchLeave(ctx context.Context, logger runtime.Logger, db *
 func (p *PartyMatch) MatchLoop(ctx context.Context, logger runtime.Logger, db *sql.DB, nk runtime.NakamaModule, dispatcher runtime.MatchDispatcher, tick int64, state interface{}, messages []runtime.MatchData) interface{} {
 	s := state.(*PartyMatchState)
 
-	// count up ticks, this is used as a timer to avoid calling time.now
-	s.ticks++
-
 	// Check if the party has been sitting empty since creation.
 	if s.creator != "" && len(s.presences) == 0 {
 		s.initialEmptyTicks++
@@ -572,15 +564,15 @@ func (p *PartyMatch) MatchLoop(ctx context.Context, logger runtime.Logger, db *s
 	}
 
 	// Cleanup expired party invitations
-	if err := p.cleanupExpiredInvitations(ctx, nk, s); err != nil {
+	if err := p.cleanupExpiredInvitations(ctx, nk, s, tick); err != nil {
 		logger.Warn("Error sending expired invitation notifs: %v", err)
 	}
 
-	if err := p.cleanupExpiredJoinRequests(ctx, nk, s); err != nil {
+	if err := p.cleanupExpiredJoinRequests(ctx, nk, s, tick); err != nil {
 		logger.Warn("Error sending expired join request notifs: %v", err)
 	}
 
-	if err := p.cleanupExpiredApprovedJoinRequests(ctx, nk, s); err != nil {
+	if err := p.cleanupExpiredApprovedJoinRequests(ctx, nk, s, tick); err != nil {
 		logger.Warn("Error sending expired approved join request notifs: %v", err)
 	}
 
@@ -692,7 +684,7 @@ func (p *PartyMatch) MatchLoop(ctx context.Context, logger runtime.Logger, db *s
 
 			// move from joinRequests, to approved, hard-coded time for these, since they do not require human interaction
 			delete(s.joinRequests, approvedUserId)
-			s.approvedJoinRequests[approvedUserId] = s.ticks + (30 * TickRate)
+			s.approvedJoinRequests[approvedUserId] = tick + (30 * TickRate)
 
 			// add to blocked-friends cache
 			getBlockedFriendsWithCache(ctx, logger, nk, approvedUserId, s.blockedUsersCache)
@@ -705,7 +697,7 @@ func (p *PartyMatch) MatchLoop(ctx context.Context, logger runtime.Logger, db *s
 				continue
 			}
 
-			s.invitations = make(map[string]int)
+			s.invitations = make(map[string]int64)
 			s.blockedUsersDirty = true
 		case OpCodeGetPartyData:
 			if err := dispatcher.BroadcastMessage(OpCodeGetPartyData, s.partyData, []runtime.Presence{message}, nil, true); err != nil {
@@ -919,7 +911,7 @@ func (p *PartyMatch) MatchLoop(ctx context.Context, logger runtime.Logger, db *s
 				continue
 			}
 
-			s.invitations[invitedUserId] = s.ticks + (int)(p.config.InviteDuration.Seconds()*TickRate)
+			s.invitations[invitedUserId] = tick + (int64)(p.config.InviteDuration.Seconds()*TickRate)
 
 			// add to blocked-friends cache
 			getBlockedFriendsWithCache(ctx, logger, nk, invitedUserId, s.blockedUsersCache)
