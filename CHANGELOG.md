@@ -3,6 +3,13 @@ All notable changes to this project are documented below.
 
 The format is based on [keep a changelog](http://keepachangelog.com/) and this project uses [semantic versioning](http://semver.org/).
 
+### [2.5.0] - [2021-09-13]
+### Added
+- Added realtime parties support.
+
+### Fixed
+- Fixed assignment of cursor in listing of storage objects.
+
 ## [2.4.0] - [2020-11-01]
 ### Added
 - Support server 2.13.0
@@ -95,7 +102,7 @@ The format is based on [keep a changelog](http://keepachangelog.com/) and this p
 
 ## [0.9.0] - 2017-12-03
 ### Added
-- Advanced Matchmaking with custom filters and user properties. 
+- Advanced Matchmaking with custom filters and user properties.
 - Expose Collation ID when client operations result in an error.
 
 ### Changed
@@ -120,7 +127,7 @@ The format is based on [keep a changelog](http://keepachangelog.com/) and this p
 ## [0.7.0] - 2017-09-26
 ### Added
 - Add new In-App Notification feature.
-- Add new In-App Purchase Validation feature.   
+- Add new In-App Purchase Validation feature.
 
 ### Changed
 - Update Client to support the new batching API.
