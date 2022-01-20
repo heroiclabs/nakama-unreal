@@ -38,6 +38,13 @@
 #include "nakama-c/realtime/rtdata/NStreamData.h"
 #include "nakama-c/realtime/NRtClientDisconnectInfo.h"
 #include "nakama-c/NStringDoubleMap.h"
+#include "nakama-c/realtime/rtdata/NParty.h"
+#include "nakama-c/realtime/rtdata/NPartyClose.h"
+#include "nakama-c/realtime/rtdata/NPartyData.h"
+#include "nakama-c/realtime/rtdata/NPartyJoinRequest.h"
+#include "nakama-c/realtime/rtdata/NPartyLeader.h"
+#include "nakama-c/realtime/rtdata/NPartyMatchmakerTicket.h"
+#include "nakama-c/realtime/rtdata/NPartyPresenceEvent.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -46,7 +53,7 @@ extern "C" {
     typedef struct NAKAMA_API NRtClient_ { char c; }* NRtClient;
     typedef void* NRtClientReqData;
     typedef void (*NRtClientErrorCallback)(NRtClient client, NRtClientReqData reqData, const sNRtError*);
-    
+
     typedef struct NAKAMA_API RtClientParameters
     {
         /// The host address of the server. Use "127.0.0.1" for local server.
@@ -349,6 +356,164 @@ extern "C" {
     );
 
     /**
+     * Update the user's status online.
+     *
+     * @param status The new status of the user.
+     */
+    NAKAMA_API void NRtClient_updateStatus(
+        NRtClient client,
+        const char* status,
+        NRtClientReqData reqData,
+        void (*successCallback)(NRtClient, NRtClientReqData), // optional, pass NULL
+        NRtClientErrorCallback errorCallback
+    );
+
+    /**
+     * Accept a party member's request to join the party.
+     *
+     * @param partyId The party ID to accept the join request for.
+     * @param presence The presence to accept as a party member.
+     */
+    NAKAMA_API void NRtClient_acceptPartyMember(
+        NRtClient client,
+        const char* partyId,
+        const sNUserPresence presence,
+        NRtClientReqData reqData,
+        void (*successCallback)(NRtClient, NRtClientReqData),
+        NRtClientErrorCallback errorCallback);
+
+    /**
+     * Begin matchmaking as a party.
+     * @param partyId Party ID.
+     * @param query Filter query used to identify suitable users.
+     * @param minCount Minimum total user count to match together.
+     * @param maxCount Maximum total user count to match together.
+     * @param stringProperties String properties.
+     * @param numericProperties Numeric properties.
+     */
+    NAKAMA_API void NRtClient_addMatchmakerParty(
+        NRtClient client,
+        const char* partyId,
+        const char* query,
+        int32_t minCount,
+        int32_t maxCount,
+        const NStringMap stringProperties,
+        const NStringDoubleMap numericProperties,
+        NRtClientReqData reqData,
+        void (*successCallback)(NRtClient, NRtClientReqData, const sNPartyMatchmakerTicket*),
+        NRtClientErrorCallback errorCallback);
+
+    /**
+     * End a party, kicking all party members and closing it.
+     * @param partyId The ID of the party.
+     */
+    NAKAMA_API void NRtClient_closeParty(
+        NRtClient client,
+        const char* partyId,
+        NRtClientReqData reqData,
+        void (*successCallback)(NRtClient, NRtClientReqData),
+        NRtClientErrorCallback errorCallback);
+
+    /**
+     * Create a party.
+     * @param open Whether or not the party will require join requests to be approved by the party leader.
+     * @param maxSize Maximum number of party members.
+     */
+    NAKAMA_API void NRtClient_createParty(
+        NRtClient client,
+        bool open,
+        int32_t maxSize,
+        NRtClientReqData reqData,
+        void (*successCallback)(NRtClient, NRtClientReqData, const sNParty* party),
+        NRtClientErrorCallback errorCallback);
+
+    /**
+     * Join a party.
+     * @param partyId Party ID.
+     */
+    NAKAMA_API void NRtClient_joinParty(
+        NRtClient client,
+        const char* partyId,
+        NRtClientReqData reqData,
+        void (*successCallback)(NRtClient, NRtClientReqData),
+        NRtClientErrorCallback errorCallback);
+
+    /**
+     * Leave the party.
+     * @param partyId Party ID.
+    */
+    NAKAMA_API void NRtClient_leaveParty(
+        NRtClient client,
+        const char* partyId,
+        NRtClientReqData reqData,
+        void (*successCallback)(NRtClient, NRtClientReqData),
+        NRtClientErrorCallback errorCallback);
+
+    /**
+     * Request a list of pending join requests for a party.
+     * @param partyId Party ID.
+     */
+    NAKAMA_API void NRtClient_listPartyJoinRequests(
+        NRtClient client,
+        const char* partyId,
+        NRtClientReqData reqData,
+        void (*successCallback)(NRtClient, NRtClientReqData, const sNPartyJoinRequest* req),  // optional, pass NULL
+        NRtClientErrorCallback errorCallback);
+
+    /**
+     * Promote a new party leader.
+     * @param partyId Party ID.
+     * @param partyMember The presence of an existing party member to promote as the new leader.
+     */
+    NAKAMA_API void NRtClient_promotePartyMember(
+        NRtClient client,
+        const char* partyId,
+        sNUserPresence partyMember,
+        NRtClientReqData reqData,
+        void (*successCallback)(NRtClient, NRtClientReqData),  // optional, pass NULL
+        NRtClientErrorCallback errorCallback
+    );
+
+    /**
+     * Cancel a party matchmaking process using a ticket.
+     * @param partyId Party ID.
+     * @param ticket The ticket to cancel.
+     */
+    NAKAMA_API void NRtClient_removeMatchmakerParty(
+        NRtClient client,
+        const char* ticket,
+        NRtClientReqData reqData,
+        void (*successCallback)(NRtClient, NRtClientReqData),  // optional, pass NULL,
+        NRtClientErrorCallback errorCallback
+    );
+
+    /**
+     * Kick a party member, or decline a request to join.
+     * @param partyId Party ID to remove/reject from.
+     * @param presence The presence to remove or reject.
+     */
+    NAKAMA_API void NRtClient_removePartyMember(
+        NRtClient client,
+        const char* partyId,
+        sNUserPresence presence,
+        NRtClientReqData reqData,
+        void (*successCallback)(NRtClient, NRtClientReqData),  // optional, pass NULL,
+        NRtClientErrorCallback errorCallback
+    );
+
+    /**
+     * Send data to a party.
+     * @param partyId Party ID to send to.
+     * @param opCode Op code value.
+     * @param data The input data to send from the byte buffer, if any.
+     */
+    NAKAMA_API void NRtClient_sendPartyData(
+        NRtClient client,
+        const char* partyId,
+        uint16_t opCode,
+        const sNBytes* data);
+
+    /**
      * Send an RPC message to the server.
      *
      * @param id The ID of the function to execute.
@@ -407,6 +572,43 @@ extern "C" {
      * Called when the client receives new notifications.
      */
     NAKAMA_API void NRtClient_setNotificationsCallback(NRtClient client, void (*callback)(NRtClient, const sNNotificationList* notifications));
+
+    /**
+     * Called when the current user's invitation request is accepted
+     * by the party leader of a closed party.
+     */
+    NAKAMA_API void NRtClient_setPartyCallback(NRtClient client, void (*callback)(NRtClient, const sNParty* party));
+
+    /**
+     * Called when either the user's party closes or the user is removed from the party.
+     */
+    NAKAMA_API void NRtClient_setPartyCloseCallback(NRtClient client, void (*callback)(NRtClient));
+
+    /**
+     * Called when the user receives custom party data.
+     */
+    NAKAMA_API void NRtClient_setPartyDataCallback(NRtClient client, void (*callback)(NRtClient, const sNPartyData* partyData));
+
+    /**
+     * Called when the user receives a request to join the party.
+     */
+    NAKAMA_API void NRtClient_setPartyJoinRequestCallback(NRtClient client, void (*callback)(NRtClient, const sNPartyJoinRequest* joinRequest));
+
+    /**
+     * Called when the user's party leader has changed.
+     */
+    NAKAMA_API void NRtClient_setPartyLeaderCallback(NRtClient client, void (*callback)(NRtClient, const sNPartyLeader* newLeader));
+
+    /**
+     * Called when the user receives a new party matchmaker ticket.
+     */
+    NAKAMA_API void NRtClient_setPartyMatchmakerTicketCallback(NRtClient client, void (*callback)(NRtClient, const sNPartyMatchmakerTicket* newTicket));
+
+    /**
+     * Called when a presence event occurs within the party.
+     * Received a new presence event in the party.
+     */
+    NAKAMA_API void NRtClient_setPartyPresenceCallback(NRtClient client, void (*callback)(NRtClient, const sNPartyPresenceEvent* sNPartyPresenceEvent));
 
     /**
      * Called when the client receives status presence updates.

@@ -36,6 +36,13 @@
 #include "nakama-c/data/NStorageObjectWrite.h"
 #include "nakama-c/data/NStorageObjectId.h"
 #include "nakama-c/data/NRpc.h"
+#include "nakama-c/realtime/rtdata/NParty.h"
+#include "nakama-c/realtime/rtdata/NPartyClose.h"
+#include "nakama-c/realtime/rtdata/NPartyData.h"
+#include "nakama-c/realtime/rtdata/NPartyJoinRequest.h"
+#include "nakama-c/realtime/rtdata/NPartyLeader.h"
+#include "nakama-c/realtime/rtdata/NPartyMatchmakerTicket.h"
+#include "nakama-c/realtime/rtdata/NPartyPresenceEvent.h"
 
 NAKAMA_NAMESPACE_BEGIN
 
@@ -745,6 +752,46 @@ void assign(NStreamData& data, const sNStreamData* cData)
     assign(data.stream, &cData->stream);
     assign(data.sender, &cData->sender);
     data.data = cData->data;
+}
+
+void assign(NParty& party, const sNParty* cParty)
+{
+    party.id = cParty->id;
+    assign(party.leader, &cParty->leader);
+    party.maxSize = cParty->maxSize;
+    party.open = cParty->open;
+    assign(party.presences, cParty->presences, cParty->presencesCount);
+    assign(party.self, &cParty->self);
+}
+
+void assign(NPartyClose& party, const sNPartyClose* cParty)
+{
+    party.id = cParty->id;
+}
+
+void assign(NPartyData& partyData, const sNPartyData* cPartyData)
+{
+    assign(partyData.data, &cPartyData->data);
+    partyData.opCode = cPartyData->opCode;
+    partyData.partyId = cPartyData->partyId;
+    assign(partyData.presence, &cPartyData->presence);
+}
+
+void assign(NPartyJoinRequest& partyJoinRequest, const sNPartyJoinRequest* cPartyJoinRequest)
+{
+    partyJoinRequest.partyId = cPartyJoinRequest->partyId;
+    assign(partyJoinRequest.presences, cPartyJoinRequest->presences, cPartyJoinRequest->presencesCount);
+}
+
+void assign(NPartyLeader& partyLeader, const sNPartyLeader* cPartyLeader)
+{
+    partyLeader.partyId = cPartyLeader->partyId;
+    assign(partyLeader.presence, &cPartyLeader->presence);
+}
+
+void assign(NPartyMatchmakerTicket& partyTicket, const sNPartyMatchmakerTicket* cPartyTicket)
+{
+    partyTicket.ticket = cPartyTicket->ticket;
 }
 
 void NReadStorageObjectId_free(sNReadStorageObjectId* objectIdsArray)

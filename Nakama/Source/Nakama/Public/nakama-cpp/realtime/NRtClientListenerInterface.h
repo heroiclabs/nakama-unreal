@@ -23,6 +23,13 @@
 #include "nakama-cpp/realtime/rtdata/NMatchmakerMatched.h"
 #include "nakama-cpp/realtime/rtdata/NMatchData.h"
 #include "nakama-cpp/realtime/rtdata/NMatchPresenceEvent.h"
+#include "nakama-cpp/realtime/rtdata/NParty.h"
+#include "nakama-cpp/realtime/rtdata/NPartyClose.h"
+#include "nakama-cpp/realtime/rtdata/NPartyData.h"
+#include "nakama-cpp/realtime/rtdata/NPartyJoinRequest.h"
+#include "nakama-cpp/realtime/rtdata/NPartyLeader.h"
+#include "nakama-cpp/realtime/rtdata/NPartyMatchmakerTicket.h"
+#include "nakama-cpp/realtime/rtdata/NPartyPresenceEvent.h"
 #include "nakama-cpp/realtime/rtdata/NStatusPresenceEvent.h"
 #include "nakama-cpp/realtime/rtdata/NStreamPresenceEvent.h"
 #include "nakama-cpp/realtime/rtdata/NStreamData.h"
@@ -98,6 +105,57 @@ NAKAMA_NAMESPACE_BEGIN
          * @param notifications The list of <c>NNotification</c> received.
          */
         virtual void onNotifications(const NNotificationList& notifications) { (void)notifications; }
+
+        /**
+         * Called when occur when the current user's invitation request is accepted
+         * by the party leader of a closed party.
+         *
+         * @param party the <c>NParty</c> joined by the user.
+         */
+        virtual void onParty(const NParty& party) { (void) party; }
+
+        /**
+         * Called when either the user's party closes or the user is removed from the party.
+         *
+         * @param partyClosedEvent The <c>NPartyClose</c> received.
+         */
+        virtual void onPartyClosed(const NPartyClose& partyCloseEvent) { (void) partyCloseEvent; };
+
+        /**
+         * Called when the user receives custom party data.
+         *
+         * @param partyData The <c>NPartyData</c> received.
+         */
+        virtual void onPartyData(const NPartyData& partyData) { (void) partyData; };
+
+        /**
+         * Called when the user receives a request to join the party.
+         *
+         * @param party The <c>NPartyJoinRequest</c> received.
+         */
+        virtual void onPartyJoinRequest(const NPartyJoinRequest& partyJoinRequest) { (void) partyJoinRequest; };
+
+        /**
+         * Called when the user's party leader has changed.
+         *
+         * @param partyLeader the new <c>NPartyLeader</c>.
+         */
+        virtual void onPartyLeader(const NPartyLeader& partyLeader) { (void) partyLeader; };
+
+        /**
+         * Called when the user receives a new party matchmaker ticket.
+         *
+         * @param ticket the <c>NPartyMatchmakerTicket</c> received upon entering the matchmaking system.
+         */
+        virtual void onPartyMatchmakerTicket(const NPartyMatchmakerTicket& ticket) { (void) ticket; };
+
+        /**
+         * Called when a presence event occurs within the party.
+         * Received a new presence event in the party.
+         *
+         * @param presenceEvent the <c>NPNPartyPresenceEvent</c> received.
+         */
+        virtual void onPartyPresence(const NPartyPresenceEvent& presenceEvent) { (void) presenceEvent; };
 
         /**
          * Called when the client receives status presence updates.

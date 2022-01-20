@@ -36,9 +36,10 @@ typedef enum NAKAMA_API NUserGroupState
 /// The available channel types on the server.
 typedef enum NAKAMA_API NChannelType
 {
-    NChannelType_ROOM             = 0,   ///< A chat room which can be created dynamically with a name.
-    NChannelType_DIRECT_MESSAGE   = 1,   ///< A private chat between two users.
-    NChannelType_GROUP            = 2    ///< A chat within a group on the server.
+    NChannelType_TYPE_UNSPECIFIED = 0,   ///< Default case. Assumed as ROOM type.
+    NChannelType_ROOM             = 1,   ///< A chat room which can be created dynamically with a name.
+    NChannelType_DIRECT_MESSAGE   = 2,   ///< A private chat between two users.
+    NChannelType_GROUP            = 3    ///< A chat within a group on the server.
 } eNChannelType;
 
 /// UNIX time in milliseconds.
