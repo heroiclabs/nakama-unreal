@@ -43,9 +43,10 @@ NAKAMA_NAMESPACE_BEGIN
     /// The available channel types on the server.
     enum class NAKAMA_API NChannelType
     {
-        ROOM             = 0,   ///< A chat room which can be created dynamically with a name.
-        DIRECT_MESSAGE   = 1,   ///< A private chat between two users.
-        GROUP            = 2    ///< A chat within a group on the server.
+        TYPE_UNSPECIFIED = 0,   ///< Default case. Assumed as ROOM type.
+        ROOM             = 1,   ///< A chat room which can be created dynamically with a name.
+        DIRECT_MESSAGE   = 2,   ///< A private chat between two users.
+        GROUP            = 3    ///< A chat within a group on the server.
     };
 
     /// UNIX time in milliseconds.

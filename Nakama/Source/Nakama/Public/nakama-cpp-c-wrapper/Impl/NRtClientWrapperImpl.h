@@ -30,9 +30,11 @@
 #include "nakama-cpp/realtime/rtdata/NMatchmakerTicket.h"
 #include "nakama-cpp/realtime/rtdata/NUserPresence.h"
 #include "nakama-cpp/realtime/rtdata/NStatus.h"
+#include "nakama-cpp/realtime/rtdata/NPartyMatchmakerTicket.h"
 #include "nakama-c/realtime/NRtClient.h"
 #include "nakama-cpp-c-wrapper/Impl/NSessionWrapperImpl.h"
 #include "nakama-cpp-c-wrapper/Impl/NDataHelperWrapperImpl.h"
+
 
 NAKAMA_NAMESPACE_BEGIN
 
@@ -162,6 +164,74 @@ NAKAMA_NAMESPACE_BEGIN
                 wrapper->_listener->onNotifications(notifications);
             }
         }
+
+        static void partyCallback(NRtClient cClient, const sNParty* cParty)
+        {
+            auto wrapper = getWrapper(cClient);
+            if (wrapper->_listener)
+            {
+                NParty party;
+                assign(party, cParty);
+                wrapper->_listener->onParty(party);
+            }
+        }
+
+        static void partyClosedCallback(NRtClient cClient, const sNPartyClose* cPartyClose)
+        {
+            auto wrapper = getWrapper(cClient);
+            if (wrapper->_listener)
+            {
+                NPartyClose partyClose;
+                assign(partyClose, cPartyClose);
+                wrapper->_listener->onPartyClosed(partyClose);
+            }
+        }
+
+        static void partyDataCallback(NRtClient cClient, const sNPartyData* cPartyData)
+        {
+            auto wrapper = getWrapper(cClient);
+            if (wrapper->_listener)
+            {
+                NPartyData partyData;
+                assign(partyData, cPartyData);
+                wrapper->_listener->onPartyData(partyData);
+            }
+        }
+
+        static void partyJoinRequestCallback(NRtClient cClient, const sNPartyJoinRequest* cPartyJoinRequest)
+        {
+            auto wrapper = getWrapper(cClient);
+            if (wrapper->_listener)
+            {
+                NPartyJoinRequest partyJoinRequest;
+                assign(partyJoinRequest, cPartyJoinRequest);
+                wrapper->_listener->onPartyJoinRequest(partyJoinRequest);
+            }
+        }
+
+        static void partyLeaderRequestCallback(NRtClient cClient, const sNPartyLeader* cPartyLeader)
+        {
+            auto wrapper = getWrapper(cClient);
+            if (wrapper->_listener)
+            {
+                NPartyLeader partyLeader;
+                assign(partyLeader, cPartyLeader);
+                wrapper->_listener->onPartyLeader(partyLeader);
+            }
+        }
+
+        static void partyMatchmakerTicketCallback(NRtClient cClient, const sNPartyMatchmakerTicket* cPartyTicket)
+        {
+            auto wrapper = getWrapper(cClient);
+            if (wrapper->_listener)
+            {
+                NPartyMatchmakerTicket partyTicket;
+                assign(partyTicket, cPartyTicket);
+                wrapper->_listener->onPartyMatchmakerTicket(partyTicket);
+            }
+        }
+
+
 
         static void statusPresenceCallback(NRtClient cClient, const sNStatusPresenceEvent* cPresence)
         {
@@ -672,26 +742,6 @@ NAKAMA_NAMESPACE_BEGIN
             delete[] presenceArray;
         }
 
-        static void reqOkStatusStatic(::NRtClient cClient, ::NRtClientReqData reqData, const ::sNStatus* cStatus)
-        {
-            getWrapper(cClient)->reqOkStatus(reqData, cStatus);
-        }
-
-        void reqOkStatus(::NRtClientReqData reqData, const ::sNStatus* cStatus)
-        {
-            if (reqData != INVALID_REQ_ID)
-            {
-                auto it = _reqOkStatusCallbacks.find(reqData);
-                if (it != _reqOkStatusCallbacks.end())
-                {
-                    NStatus status;
-                    assign(status, cStatus);
-                    it->second(status);
-                    _reqOkStatusCallbacks.erase(it);
-                }
-            }
-        }
-
         void followUsers(
             const std::vector<std::string>& userIds,
             std::function<void(const NStatus&)> successCallback = nullptr,
@@ -788,6 +838,26 @@ NAKAMA_NAMESPACE_BEGIN
                 &NRtClientWrapper::reqErrorStatic);
         }
 
+        static void reqOkStatusStatic(::NRtClient cClient, ::NRtClientReqData reqData, const ::sNStatus* cStatus)
+        {
+            getWrapper(cClient)->reqOkStatus(reqData, cStatus);
+        }
+
+        void reqOkStatus(::NRtClientReqData reqData, const ::sNStatus* cStatus)
+        {
+            if (reqData != INVALID_REQ_ID)
+            {
+                auto it = _reqOkStatusCallbacks.find(reqData);
+                if (it != _reqOkStatusCallbacks.end())
+                {
+                    NStatus status;
+                    assign(status, cStatus);
+                    it->second(status);
+                    _reqOkStatusCallbacks.erase(it);
+                }
+            }
+        }
+
         static void reqOkRpcStatic(::NRtClient cClient, ::NRtClientReqData reqData, const ::sNRpc* cRpc)
         {
             getWrapper(cClient)->reqOkRpc(reqData, cRpc);
@@ -832,6 +902,292 @@ NAKAMA_NAMESPACE_BEGIN
                 &NRtClientWrapper::reqErrorStatic);
         }
 
+        void acceptPartyMember(const std::string& partyId, NUserPresence& presence, std::function<void()> successCallback = nullptr, RtErrorCallback errorCallback = nullptr)
+        {
+            NRtClientReqData reqId = INVALID_REQ_ID;
+
+            if (successCallback || errorCallback)
+            {
+                reqId = getNextReqId();
+                if (successCallback) _reqOkEmptyCallbacks.emplace(reqId, successCallback);
+                if (errorCallback) _reqErrorCallbacks.emplace(reqId, errorCallback);
+            }
+
+            sNUserPresence cPresence;
+            assign(presence, &cPresence);
+
+            ::NRtClient_acceptPartyMember(_cClient,
+                partyId.c_str(),
+                cPresence,
+                reqId,
+                &NRtClientWrapper::reqOkEmptyStatic,
+                &NRtClientWrapper::reqErrorStatic);
+        }
+
+
+        void addMatchmakerParty(const std::string& partyId, const std::string& query, int32_t minCount, int32_t maxCount,
+            const NStringMap stringProperties = {}, const NStringDoubleMap numericProperties = {}, std::function<void(const NPartyMatchmakerTicket&)> successCallback = nullptr, RtErrorCallback errorCallback = nullptr)
+        {
+            NRtClientReqData reqId = INVALID_REQ_ID;
+
+            if (successCallback || errorCallback)
+            {
+                reqId = getNextReqId();
+                if (successCallback) _reqOkMatchmakerPartyTicketCallbacks.emplace(reqId, successCallback);
+                if (errorCallback) _reqErrorCallbacks.emplace(reqId, errorCallback);
+            }
+
+            ::NStringMap cStringProperties = toCNStringMap(stringProperties);
+            ::NStringDoubleMap cNumericProperties = toCNStringDoubleMap(numericProperties);
+
+            ::NRtClient_addMatchmakerParty(_cClient,
+                partyId.c_str(),
+                query.c_str(),
+                minCount,
+                maxCount,
+                cStringProperties,
+                cNumericProperties,
+                reqId,
+                &NRtClientWrapper::reqOkMatchmakerPartyTicketStatic,
+                &NRtClientWrapper::reqErrorStatic);
+
+            NStringMap_destroy(cStringProperties);
+            NStringDoubleMap_destroy(cNumericProperties);
+        }
+
+        static void reqOkMatchmakerPartyTicketStatic(::NRtClient cClient, ::NRtClientReqData reqData, const sNPartyMatchmakerTicket* cTicket)
+        {
+            getWrapper(cClient)->reqOkMatchmakerPartyTicket(reqData, cTicket);
+        }
+
+        void reqOkMatchmakerPartyTicket(::NClientReqData reqData, const sNPartyMatchmakerTicket* cTicket)
+        {
+            if (reqData != INVALID_REQ_ID)
+            {
+                auto it = _reqOkMatchmakerPartyTicketCallbacks.find(reqData);
+                if (it != _reqOkMatchmakerPartyTicketCallbacks.end())
+                {
+                    NPartyMatchmakerTicket ticket;
+                    assign(ticket, cTicket);
+                    it->second(ticket);
+                    _reqOkMatchmakerPartyTicketCallbacks.erase(it);
+                }
+            }
+        }
+
+        void closeParty(const std::string& partyId, std::function<void()> successCallback = nullptr, RtErrorCallback errorCallback = nullptr)
+        {
+            NRtClientReqData reqId = INVALID_REQ_ID;
+
+            if (successCallback || errorCallback)
+            {
+                reqId = getNextReqId();
+                if (successCallback) _reqOkEmptyCallbacks.emplace(reqId, successCallback);
+                if (errorCallback) _reqErrorCallbacks.emplace(reqId, errorCallback);
+            }
+
+            ::NRtClient_closeParty(_cClient,
+                partyId.c_str(),
+                reqId,
+                &NRtClientWrapper::reqOkEmptyStatic,
+                &NRtClientWrapper::reqErrorStatic);
+        }
+
+        void createParty(bool open, int32_t maxSize, std::function<void(const NParty&)> successCallback = nullptr, RtErrorCallback errorCallback = nullptr)
+        {
+            NRtClientReqData reqId = INVALID_REQ_ID;
+
+            if (successCallback || errorCallback)
+            {
+                reqId = getNextReqId();
+                if (successCallback) _reqOkPartyCallbacks.emplace(reqId, successCallback);
+                if (errorCallback) _reqErrorCallbacks.emplace(reqId, errorCallback);
+            }
+
+            ::NRtClient_createParty(
+                _cClient,
+                open,
+                maxSize,
+                reqId,
+                &NRtClientWrapper::reqOkPartyStatic,
+                &NRtClientWrapper::reqErrorStatic);
+        }
+
+
+        static void reqOkPartyStatic(::NRtClient cClient, ::NRtClientReqData reqData, const sNParty* party)
+        {
+            getWrapper(cClient)->reqOkParty(reqData, party);
+        }
+
+        void reqOkParty(::NClientReqData reqData, const sNParty* cParty)
+        {
+            if (reqData != INVALID_REQ_ID)
+            {
+                auto it = _reqOkPartyCallbacks.find(reqData);
+                if (it != _reqOkPartyCallbacks.end())
+                {
+                    NParty party;
+                    assign(party, cParty);
+                    it->second(party);
+                    _reqOkPartyCallbacks.erase(it);
+                }
+            }
+        }
+
+        void joinParty(const std::string& partyId, std::function<void()> successCallback = nullptr, RtErrorCallback errorCallback = nullptr)
+        {
+            NRtClientReqData reqId = INVALID_REQ_ID;
+
+            if (successCallback || errorCallback)
+            {
+                reqId = getNextReqId();
+                if (successCallback) _reqOkEmptyCallbacks.emplace(reqId, successCallback);
+                if (errorCallback) _reqErrorCallbacks.emplace(reqId, errorCallback);
+            }
+
+            ::NRtClient_joinParty(
+                _cClient,
+                partyId.c_str(),
+                reqId,
+                &NRtClientWrapper::reqOkEmptyStatic,
+                &NRtClientWrapper::reqErrorStatic);
+        }
+
+        void leaveParty(const std::string& partyId, std::function<void()> successCallback = nullptr, RtErrorCallback errorCallback = nullptr)
+        {
+            NRtClientReqData reqId = INVALID_REQ_ID;
+
+            if (successCallback || errorCallback)
+            {
+                reqId = getNextReqId();
+                if (successCallback) _reqOkEmptyCallbacks.emplace(reqId, successCallback);
+                if (errorCallback) _reqErrorCallbacks.emplace(reqId, errorCallback);
+            }
+
+            ::NRtClient_leaveParty(
+                _cClient,
+                partyId.c_str(),
+                reqId,
+                &NRtClientWrapper::reqOkEmptyStatic,
+                &NRtClientWrapper::reqErrorStatic);
+        }
+
+        void listPartyJoinRequests(const std::string& partyId, std::function<void(const NPartyJoinRequest&)> successCallback = nullptr, RtErrorCallback errorCallback = nullptr)
+        {
+            NRtClientReqData reqId = INVALID_REQ_ID;
+
+            if (successCallback || errorCallback)
+            {
+                reqId = getNextReqId();
+                if (successCallback) _reqOkPartyJoinRequestCallbacks.emplace(reqId, successCallback);
+                if (errorCallback) _reqErrorCallbacks.emplace(reqId, errorCallback);
+            }
+
+            ::NRtClient_listPartyJoinRequests(
+                _cClient,
+                partyId.c_str(),
+                reqId,
+                &NRtClientWrapper::reqOkPartyJoinRequestStatic,
+                &NRtClientWrapper::reqErrorStatic);
+        }
+
+        static void reqOkPartyJoinRequestStatic(::NRtClient cClient, ::NRtClientReqData reqData, const sNPartyJoinRequest* cPartyJoinRequest)
+        {
+            getWrapper(cClient)->reqOkPartyJoinRequest(reqData, cPartyJoinRequest);
+        }
+
+        void reqOkPartyJoinRequest(::NClientReqData reqData, const sNPartyJoinRequest* cPartyJoinRequest)
+        {
+            if (reqData != INVALID_REQ_ID)
+            {
+                auto it = _reqOkPartyJoinRequestCallbacks.find(reqData);
+                if (it != _reqOkPartyJoinRequestCallbacks.end())
+                {
+                    NPartyJoinRequest partyJoinRequest;
+                    assign(partyJoinRequest, cPartyJoinRequest);
+                    it->second(partyJoinRequest);
+                    _reqOkPartyJoinRequestCallbacks.erase(it);
+                }
+            }
+        }
+
+        void promotePartyMember(const std::string& partyId, NUserPresence& partyMember, std::function<void()> successCallback = nullptr, RtErrorCallback errorCallback = nullptr)
+        {
+            NRtClientReqData reqId = INVALID_REQ_ID;
+
+            if (successCallback || errorCallback)
+            {
+                reqId = getNextReqId();
+                if (successCallback) _reqOkEmptyCallbacks.emplace(reqId, successCallback);
+                if (errorCallback) _reqErrorCallbacks.emplace(reqId, errorCallback);
+            }
+
+            sNUserPresence cPartyMember;
+            assign(partyMember, &cPartyMember);
+
+            ::NRtClient_promotePartyMember(
+                _cClient,
+                partyId.c_str(),
+                cPartyMember,
+                reqId,
+                &NRtClientWrapper::reqOkEmptyStatic,
+                &NRtClientWrapper::reqErrorStatic);
+        }
+
+        void removeMatchmakerParty(const std::string& ticket, std::function<void()> successCallback = nullptr, RtErrorCallback errorCallback = nullptr)
+        {
+            NRtClientReqData reqId = INVALID_REQ_ID;
+
+            if (successCallback || errorCallback)
+            {
+                reqId = getNextReqId();
+                if (successCallback) _reqOkEmptyCallbacks.emplace(reqId, successCallback);
+                if (errorCallback) _reqErrorCallbacks.emplace(reqId, errorCallback);
+            }
+
+            ::NRtClient_removeMatchmakerParty(
+                _cClient,
+                ticket.c_str(),
+                reqId,
+                &NRtClientWrapper::reqOkEmptyStatic,
+                &NRtClientWrapper::reqErrorStatic);
+        }
+
+        void removePartyMember(const std::string& partyId, NUserPresence& presence, std::function<void()> successCallback = nullptr, RtErrorCallback errorCallback = nullptr)
+        {
+            NRtClientReqData reqId = INVALID_REQ_ID;
+
+            if (successCallback || errorCallback)
+            {
+                reqId = getNextReqId();
+                if (successCallback) _reqOkEmptyCallbacks.emplace(reqId, successCallback);
+                if (errorCallback) _reqErrorCallbacks.emplace(reqId, errorCallback);
+            }
+
+            sNUserPresence cPartyMember;
+            assign(presence, &cPartyMember);
+
+            ::NRtClient_removePartyMember(
+                _cClient,
+                partyId.c_str(),
+                cPartyMember,
+                reqId,
+                &NRtClientWrapper::reqOkEmptyStatic,
+                &NRtClientWrapper::reqErrorStatic);
+        }
+
+        void sendPartyData(const std::string& partyId, long opCode, NBytes& data)
+        {
+            sNBytes cData;
+
+            assign(cData, data);
+
+            ::NRtClient_sendPartyData(_cClient,
+                partyId.c_str(),
+                opCode,
+                &cData);
+        }
+
     protected:
         NRtClient _cClient = nullptr;
         uintptr_t _curReqId = (uintptr_t)INVALID_REQ_ID;
@@ -844,6 +1200,9 @@ NAKAMA_NAMESPACE_BEGIN
         std::map<NRtClientReqData, std::function<void(const NChannelMessageAck&)>> _reqOkChannelMessageAckCallbacks;
         std::map<NRtClientReqData, std::function<void(const NMatch&)>> _reqOkMatchCallbacks;
         std::map<NRtClientReqData, std::function<void(const NMatchmakerTicket&)>> _reqOkMatchmakerTicketCallbacks;
+        std::map<NRtClientReqData, std::function<void(const NPartyMatchmakerTicket&)>> _reqOkMatchmakerPartyTicketCallbacks;
+        std::map<NRtClientReqData, std::function<void(const NParty&)>> _reqOkPartyCallbacks;
+        std::map<NRtClientReqData, std::function<void(const NPartyJoinRequest&)>> _reqOkPartyJoinRequestCallbacks;
     };
 
 NAKAMA_NAMESPACE_END

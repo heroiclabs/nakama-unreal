@@ -37,6 +37,13 @@ NAKAMA_NAMESPACE_BEGIN
         using MatchDataCallback = std::function<void(const NMatchData&)>;
         using MatchPresenceCallback = std::function<void(const NMatchPresenceEvent&)>;
         using NotificationsCallback = std::function<void(const NNotificationList&)>;
+        using PartyCallback = std::function<void(const NParty&)>;
+        using PartyClosedCallback = std::function<void(const NPartyClose&)>;
+        using PartyDataCallback = std::function<void(const NPartyData&)>;
+        using PartyJoinRequestCallback = std::function<void(const NPartyJoinRequest&)>;
+        using PartyLeaderCallback = std::function<void(const NPartyLeader&)>;
+        using PartyMatchmakerTicketCallback = std::function<void(const NPartyMatchmakerTicket&)>;
+        using PartyPresenceCallback = std::function<void(const NPartyPresenceEvent&)>;
         using StatusPresenceCallback = std::function<void(const NStatusPresenceEvent&)>;
         using StreamPresenceCallback = std::function<void(const NStreamPresenceEvent&)>;
         using StreamDataCallback = std::function<void(const NStreamData&)>;
@@ -50,6 +57,13 @@ NAKAMA_NAMESPACE_BEGIN
         void setMatchDataCallback(MatchDataCallback callback) { _matchDataCallback = callback; }
         void setMatchPresenceCallback(MatchPresenceCallback callback) { _matchPresenceCallback = callback; }
         void setNotificationsCallback(NotificationsCallback callback) { _notificationsCallback = callback; }
+        void setPartyCallback(PartyCallback callback) { _partyCallback = callback; }
+        void setPartyCloseCallback(PartyClosedCallback callback) { _partyClosedCallback = callback; }
+        void setPartyDataCallback(PartyDataCallback callback) { _partyDataCallback = callback; }
+        void setPartyJoinRequestCallback(PartyJoinRequestCallback callback) { _partyJoinRequestCallback = callback; }
+        void setPartyLeaderCallback(PartyLeaderCallback callback) { _partyLeaderCallback = callback; }
+        void setPartyMatchmakerTicketCallback(PartyMatchmakerTicketCallback callback) { _partyMatchmakerTicketCallback = callback; }
+        void setPartyPresenceCallback(PartyPresenceCallback callback) { _partyPresenceCallback = callback; }
         void setStatusPresenceCallback(StatusPresenceCallback callback) { _statusPresenceCallback = callback; }
         void setStreamPresenceCallback(StreamPresenceCallback callback) { _streamPresenceCallback = callback; }
         void setStreamDataCallback(StreamDataCallback callback) { _streamDataCallback = callback; }
@@ -64,6 +78,13 @@ NAKAMA_NAMESPACE_BEGIN
         void onMatchData(const NMatchData& matchData) override { if (_matchDataCallback) _matchDataCallback(matchData); }
         void onMatchPresence(const NMatchPresenceEvent& matchPresence) override { if (_matchPresenceCallback) _matchPresenceCallback(matchPresence); }
         void onNotifications(const NNotificationList& notifications) override { if (_notificationsCallback) _notificationsCallback(notifications); }
+        void onParty(const NParty& party) override { if (_partyCallback) _partyCallback(party); }
+        void onPartyClosed(const NPartyClose& partyClosed) override { if (_partyClosedCallback) _partyClosedCallback(partyClosed); }
+        void onPartyData(const NPartyData& partyData) override { if (_partyDataCallback) _partyDataCallback(partyData); }
+        void onPartyJoinRequest(const NPartyJoinRequest& partyJoinRequest) override { if (_partyJoinRequestCallback) _partyJoinRequestCallback(partyJoinRequest); }
+        void onPartyLeader(const NPartyLeader& partyLeader) override { if (_partyLeaderCallback) _partyLeaderCallback(partyLeader); }
+        void onPartyMatchmakerTicket(const NPartyMatchmakerTicket& partyMatchmakerTicket) override { if (_partyMatchmakerTicketCallback) _partyMatchmakerTicketCallback(partyMatchmakerTicket); }
+        void onPartyPresence(const NPartyPresenceEvent& partyPresence) override { if (_partyPresenceCallback) _partyPresenceCallback(partyPresence); }
         void onStatusPresence(const NStatusPresenceEvent& presence) override { if (_statusPresenceCallback) _statusPresenceCallback(presence); }
         void onStreamPresence(const NStreamPresenceEvent& presence) override { if (_streamPresenceCallback) _streamPresenceCallback(presence); }
         void onStreamData(const NStreamData& data) override { if (_streamDataCallback) _streamDataCallback(data); }
@@ -78,6 +99,13 @@ NAKAMA_NAMESPACE_BEGIN
         MatchDataCallback _matchDataCallback;
         MatchPresenceCallback _matchPresenceCallback;
         NotificationsCallback _notificationsCallback;
+        PartyCallback _partyCallback;
+        PartyClosedCallback _partyClosedCallback;
+        PartyDataCallback _partyDataCallback;
+        PartyJoinRequestCallback _partyJoinRequestCallback;
+        PartyLeaderCallback _partyLeaderCallback;
+        PartyMatchmakerTicketCallback _partyMatchmakerTicketCallback;
+        PartyPresenceCallback _partyPresenceCallback;
         StatusPresenceCallback _statusPresenceCallback;
         StreamPresenceCallback _streamPresenceCallback;
         StreamDataCallback _streamDataCallback;
