@@ -18,7 +18,6 @@ import (
 	"context"
 	"database/sql"
 	"encoding/json"
-	"strings"
 	"time"
 
 	"github.com/heroiclabs/nakama-common/api"
@@ -32,10 +31,10 @@ const (
 
 const (
 	OpCodeTerminate   = iota // Server -> client when the party is being terminated by the server.
-	OpCodeJoinRequest        // Server -> client when a user requests to join the party.
+	OpCodeJoinRequest        // From Leader -> Server when a Client wants to Join
 
 	OpCodeApproveForRejoin
-	OpCodeApproveJoinRequest
+	OpCodeApproveJoinRequest // Leader -> Server to approve join-request, Server -> Client to let them know they should join
 	OpCodeClearInvitations
 	OpCodeGetPartyData
 	OpCodeGetPartyMemberData
@@ -51,8 +50,8 @@ const (
 	OpCodeUpdateParty
 	OpCodeUpdatePartyData
 	OpCodeUpdatePartyMemberData
-
 	OpCodePartyMessageResponse
+	OpCodeRejectJoinRequest
 )
 
 const (
@@ -65,6 +64,7 @@ const (
 	ResponseCodeInvitePending
 	ResponseCodeNoInvitePending
 	ResponseCodeUserBlocked
+	ResponseCodeApprovedJoinRequestPending
 )
 
 type PartyMatchMessage struct {
@@ -85,15 +85,17 @@ type PartyMatchLabel struct {
 }
 
 type PartyMatchState struct {
-	version           string                       // Party version, all join requests must match if set or they'll be rejected
-	leader            runtime.Presence             // Identity of the current party leader. May change over the lifetime of the party.
-	presences         map[string]runtime.Presence  // Map of user IDs to presences. Keyed on user ID because multiple devices per user per party are not allowed.
-	partyData         []byte                       // Arbitrary party data.
-	partyMemberData   map[string][]byte            // Arbitrary party member data.
-	approvedForRejoin map[string]struct{}          // User IDs approved for rejoin.
-	invitations       map[string]time.Time         // User IDs to expiration time for users that have been invited.
-	joinRequests      map[string]runtime.Presence  // User IDs that have requested to join the party.
-	joinMetadata      map[string]map[string]string // User IDs to metadata mapping.
+	version              string                      // Party version, all join requests must match if set or they'll be rejected
+	leader               runtime.Presence            // Identity of the current party leader. May change over the lifetime of the party.
+	presences            map[string]runtime.Presence // Map of user IDs to presences. Keyed on user ID because multiple devices per user per party are not allowed.
+	partyData            []byte                      // Arbitrary party data.
+	partyMemberData      map[string][]byte           // Arbitrary party member data.
+	approvedForRejoin    map[string]struct{}         // User IDs approved for rejoin.
+	invitations          map[string]int64            // User IDs to expiration tick for users that have been invited.
+	joinRequests         map[string]int64            // User IDs to expiration tick for users that have requested to join the party.
+	approvedJoinRequests map[string]int64            // User IDs to expiration tick for users that have been invited (join-request approved).
+
+	joinMetadata map[string]map[string]string // User IDs to metadata mapping.
 
 	blockedUsersCache map[string][]string // for each user a list of blocked users. Used to create the blockedUsersSet set below
 	blockedUsersSet   map[string]struct{} // Set of users that are blocked from joining (this set is created from users blocked friends as they are invited)
@@ -107,6 +109,7 @@ type PartyMatchState struct {
 type PartyConfig struct {
 	MaxSize                 int                     // Maximum number of members allowed in party
 	InviteDuration          time.Duration           // Duration an invite should last before expiring. default 0 = no expiration
+	JoinRequestDuration     time.Duration           // Duration a join-request should last before expiring. default 20 seconds
 	MatchJoinMetadataFilter MatchJoinMetadataFilter //
 	MatchEndHook            MatchEndHook            // Called when the party match is over
 	MatchInitHook           MatchInitHook           // Called when the party match is initialized
@@ -171,6 +174,10 @@ func getRelevantUsers(s *PartyMatchState) map[string]struct{} {
 		relevantUsers[userID] = struct{}{}
 	}
 
+	for userID := range s.approvedJoinRequests {
+		relevantUsers[userID] = struct{}{}
+	}
+
 	return relevantUsers
 }
 
@@ -223,12 +230,11 @@ func isUnblocked(ctx context.Context, logger runtime.Logger, nk runtime.NakamaMo
 	return true, ""
 }
 
-func (p *PartyMatch) cleanupExpiredInvitations(ctx context.Context, nk runtime.NakamaModule, s *PartyMatchState) error {
-	if p.config.InviteDuration.Nanoseconds() > 0 {
-		now := time.Now()
+func (p *PartyMatch) cleanupExpiredInvitations(ctx context.Context, nk runtime.NakamaModule, s *PartyMatchState, tick int64) error {
+	if p.config.InviteDuration > 0 {
 		subject := "Party expired invitation"
 		for memberId, expiration := range s.invitations {
-			if now.After(expiration) {
+			if tick > expiration {
 				delete(s.invitations, memberId)
 				content := map[string]interface{}{
 					"party_id":  ctx.Value(runtime.RUNTIME_CTX_MATCH_ID).(string),
@@ -240,6 +246,47 @@ func (p *PartyMatch) cleanupExpiredInvitations(ctx context.Context, nk runtime.N
 				if err := nk.NotificationSend(ctx, memberId, subject, content, 1, "", false); err != nil {
 					return err
 				}
+			}
+		}
+	}
+	return nil
+}
+
+func (p *PartyMatch) cleanupExpiredJoinRequests(ctx context.Context, nk runtime.NakamaModule, s *PartyMatchState, tick int64) error {
+	if p.config.JoinRequestDuration > 0 {
+		subject := "Party expired Join Request"
+		for memberId, expiration := range s.joinRequests {
+			if tick > expiration {
+				delete(s.joinRequests, memberId)
+				content := map[string]interface{}{
+					"party_id":  ctx.Value(runtime.RUNTIME_CTX_MATCH_ID).(string),
+					"member_id": memberId,
+				}
+				if err := p.sendPartyNotification(ctx, nk, s, subject, content); err != nil {
+					return err
+				}
+				if err := nk.NotificationSend(ctx, memberId, subject, content, 1, "", false); err != nil {
+					return err
+				}
+			}
+		}
+	}
+	return nil
+}
+func (p *PartyMatch) cleanupExpiredApprovedJoinRequests(ctx context.Context, nk runtime.NakamaModule, s *PartyMatchState, tick int64) error {
+	subject := "Party expired Approved Join Request"
+	for memberId, expiration := range s.approvedJoinRequests {
+		if tick > expiration {
+			delete(s.approvedJoinRequests, memberId)
+			content := map[string]interface{}{
+				"party_id":  ctx.Value(runtime.RUNTIME_CTX_MATCH_ID).(string),
+				"member_id": memberId,
+			}
+			if err := p.sendPartyNotification(ctx, nk, s, subject, content); err != nil {
+				return err
+			}
+			if err := nk.NotificationSend(ctx, memberId, subject, content, 1, "", false); err != nil {
+				return err
 			}
 		}
 	}
@@ -292,22 +339,24 @@ func (p *PartyMatch) MatchInit(ctx context.Context, logger runtime.Logger, db *s
 	}
 
 	state := &PartyMatchState{
-		leader:            nil,
-		presences:         make(map[string]runtime.Presence),
-		partyData:         nil,
-		partyMemberData:   make(map[string][]byte),
-		approvedForRejoin: make(map[string]struct{}),
-		invitations:       make(map[string]time.Time),
-		joinRequests:      make(map[string]runtime.Presence),
-		joinMetadata:      make(map[string]map[string]string),
-		blockedUsersCache: make(map[string][]string),
-		blockedUsersSet:   make(map[string]struct{}),
-		blockedUsersDirty: false,
+		leader:               nil,
+		presences:            make(map[string]runtime.Presence),
+		partyData:            nil,
+		partyMemberData:      make(map[string][]byte),
+		approvedForRejoin:    make(map[string]struct{}),
+		invitations:          make(map[string]int64),
+		joinRequests:         make(map[string]int64),
+		approvedJoinRequests: make(map[string]int64),
+		joinMetadata:         make(map[string]map[string]string),
+		blockedUsersCache:    make(map[string][]string),
+		blockedUsersSet:      make(map[string]struct{}),
+		blockedUsersDirty:    false,
 
 		label:             label,
 		creator:           creator,
 		initialEmptyTicks: 0,
 	}
+
 	if p.config.MatchInitHook != nil {
 		matchID := ctx.Value(runtime.RUNTIME_CTX_MATCH_ID).(string)
 		p.config.MatchInitHook(matchID, p.config, label)
@@ -371,7 +420,7 @@ func (p *PartyMatch) MatchJoinAttempt(ctx context.Context, logger runtime.Logger
 	}
 
 	// Allow users that have an unexpired invitation
-	if err := p.cleanupExpiredInvitations(ctx, nk, s); err != nil {
+	if err := p.cleanupExpiredInvitations(ctx, nk, s, tick); err != nil {
 		logger.Warn("Error sending expired invitation notifs: %v", err)
 	}
 	if _, ok := s.invitations[presence.GetUserId()]; ok {
@@ -379,8 +428,19 @@ func (p *PartyMatch) MatchJoinAttempt(ctx context.Context, logger runtime.Logger
 		return s, true, ""
 	}
 
-	// Everyone else must be approved by the party leader.
-	s.joinRequests[presence.GetUserId()] = presence
+	// Allow users that have an unexpired approved-join-request
+	if err := p.cleanupExpiredApprovedJoinRequests(ctx, nk, s, tick); err != nil {
+		logger.Warn("Error sending expired approved join request notifs: %v", err)
+	}
+
+	if _, ok := s.approvedJoinRequests[presence.GetUserId()]; ok {
+		delete(s.approvedJoinRequests, presence.GetUserId())
+		return s, true, ""
+	}
+
+	// Everyone else must be approved by the party leader (in a timely manner)
+	s.joinRequests[presence.GetUserId()] = tick + (int64)(p.config.JoinRequestDuration.Seconds()*TickRate)
+
 	if err := dispatcher.BroadcastMessage(OpCodeJoinRequest, nil, []runtime.Presence{s.leader}, presence, true); err != nil {
 		logger.Warn("Error broadcasting join request to party leader: %v", err)
 		return s, false, "Failed sending join request to leader"
@@ -504,8 +564,16 @@ func (p *PartyMatch) MatchLoop(ctx context.Context, logger runtime.Logger, db *s
 	}
 
 	// Cleanup expired party invitations
-	if err := p.cleanupExpiredInvitations(ctx, nk, s); err != nil {
+	if err := p.cleanupExpiredInvitations(ctx, nk, s, tick); err != nil {
 		logger.Warn("Error sending expired invitation notifs: %v", err)
+	}
+
+	if err := p.cleanupExpiredJoinRequests(ctx, nk, s, tick); err != nil {
+		logger.Warn("Error sending expired join request notifs: %v", err)
+	}
+
+	if err := p.cleanupExpiredApprovedJoinRequests(ctx, nk, s, tick); err != nil {
+		logger.Warn("Error sending expired approved join request notifs: %v", err)
 	}
 
 	// Process messages one by one.
@@ -538,31 +606,90 @@ func (p *PartyMatch) MatchLoop(ctx context.Context, logger runtime.Logger, db *s
 			s.approvedForRejoin[string(partyMsg.Data)] = struct{}{}
 			s.blockedUsersDirty = true
 
+		case OpCodeRejectJoinRequest:
+
+			// Expects message data payload to be a user ID string to be invited.
+			content := map[string]interface{}{
+				"party_id": ctx.Value(runtime.RUNTIME_CTX_MATCH_ID),
+				"version":  s.version,
+			}
+
+			var rejectedUserId = string(partyMsg.Data)
+
+			// send notification to approved user
+			if err := nk.NotificationSend(ctx, rejectedUserId, "Party Rejected Join Request", content, 1, message.GetUserId(), false); err != nil {
+				logger.Warn("Error sending party rejected join request: %v", err)
+				SendResponse(partyMsg, ResponseCodeInternalError, []runtime.Presence{message}, logger, dispatcher)
+				continue
+			}
+
+			// remove from joinRequests
+			delete(s.joinRequests, rejectedUserId)
+
 		case OpCodeApproveJoinRequest:
+
+			// this is analogous to being invited
 			// Leader only action.
 			if s.leader.GetUserId() != message.GetUserId() {
+				logger.Warn("OpCodeApproveJoinRequest Leader only action")
 				SendResponse(partyMsg, ResponseCodeNotPartyLeader, []runtime.Presence{message}, logger, dispatcher)
 				continue
 			}
 
-			// Expects message data payload to be a user ID string to be approved for join.
-			if presence, ok := s.joinRequests[string(partyMsg.Data)]; ok {
-				delete(s.joinRequests, string(partyMsg.Data))
-				// Note: do not remove entry from joinMetadata, it will be cleaned up when the join completes.
-
-				// Add the user to the match stream. This will lead to MatchJoin being triggered.
-				matchIdComponents := strings.SplitN(ctx.Value(runtime.RUNTIME_CTX_MATCH_ID).(string), ".", 2)
-				if len(matchIdComponents) != 2 {
-					logger.Error("Error parsing match ID into components")
-					SendResponse(partyMsg, ResponseCodeInternalError, []runtime.Presence{message}, logger, dispatcher)
-					continue
-				}
-				if _, err := nk.StreamUserJoin(6, matchIdComponents[0], "", matchIdComponents[1], presence.GetUserId(), presence.GetSessionId(), false, false, ""); err != nil {
-					logger.Warn("Error adding user to match stream after party join request approved: %v", err)
-					SendResponse(partyMsg, ResponseCodeInternalError, []runtime.Presence{message}, logger, dispatcher)
-					continue
-				}
+			var approvedUserId = string(partyMsg.Data)
+			if s.leader.GetUserId() == approvedUserId {
+				// Leader approving itself, already ok to join, do not send notification
+				SendResponse(partyMsg, ResponseCodeInternalError, []runtime.Presence{message}, logger, dispatcher)
+				continue
 			}
+
+			if _, ok := s.approvedJoinRequests[approvedUserId]; ok {
+				// Approval is already pending
+				SendResponse(partyMsg, ResponseCodeApprovedJoinRequestPending, []runtime.Presence{message}, logger, dispatcher)
+				continue
+			}
+
+			// Check if user is online in the notification stream
+			count, err := nk.StreamCount(0, approvedUserId, "", "")
+			if err != nil {
+				logger.Warn("Error counting stream presences during party approved join request: %v", err)
+				SendResponse(partyMsg, ResponseCodeInternalError, []runtime.Presence{message}, logger, dispatcher)
+				continue
+			}
+			if count <= 0 {
+				// User is not online. It's possible this user is not valid
+				SendResponse(partyMsg, ResponseCodeUserOffline, []runtime.Presence{message}, logger, dispatcher)
+				continue
+			}
+
+			// can not invite if have been blocked
+			unblocked, _ := isUnblocked(ctx, logger, nk, approvedUserId, s)
+			if !unblocked {
+				SendResponse(partyMsg, ResponseCodeUserBlocked, []runtime.Presence{message}, logger, dispatcher)
+				continue
+			}
+
+			// Expects message data payload to be a user ID string to be invited.
+			content := map[string]interface{}{
+				"party_id": ctx.Value(runtime.RUNTIME_CTX_MATCH_ID),
+				"version":  s.version,
+			}
+
+			// send notification to approved user
+			if err := nk.NotificationSend(ctx, approvedUserId, "Party Approved Join Request", content, 1, message.GetUserId(), false); err != nil {
+				logger.Warn("Error sending party approved join request: %v", err)
+				SendResponse(partyMsg, ResponseCodeInternalError, []runtime.Presence{message}, logger, dispatcher)
+				continue
+			}
+
+			// move from joinRequests, to approved, hard-coded time for these, since they do not require human interaction
+			delete(s.joinRequests, approvedUserId)
+			s.approvedJoinRequests[approvedUserId] = tick + (30 * TickRate)
+
+			// add to blocked-friends cache
+			getBlockedFriendsWithCache(ctx, logger, nk, approvedUserId, s.blockedUsersCache)
+			s.blockedUsersDirty = true
+
 		case OpCodeClearInvitations:
 			// Leader only action.
 			if s.leader.GetUserId() != message.GetUserId() {
@@ -570,7 +697,7 @@ func (p *PartyMatch) MatchLoop(ctx context.Context, logger runtime.Logger, db *s
 				continue
 			}
 
-			s.invitations = make(map[string]time.Time)
+			s.invitations = make(map[string]int64)
 			s.blockedUsersDirty = true
 		case OpCodeGetPartyData:
 			if err := dispatcher.BroadcastMessage(OpCodeGetPartyData, s.partyData, []runtime.Presence{message}, nil, true); err != nil {
@@ -774,7 +901,7 @@ func (p *PartyMatch) MatchLoop(ctx context.Context, logger runtime.Logger, db *s
 
 			// Expects message data payload to be a user ID string to be invited.
 			content := map[string]interface{}{
-				"match_id": ctx.Value(runtime.RUNTIME_CTX_MATCH_ID),
+				"party_id": ctx.Value(runtime.RUNTIME_CTX_MATCH_ID),
 				"version":  s.version,
 			}
 
@@ -784,7 +911,7 @@ func (p *PartyMatch) MatchLoop(ctx context.Context, logger runtime.Logger, db *s
 				continue
 			}
 
-			s.invitations[invitedUserId] = time.Now().Add(p.config.InviteDuration)
+			s.invitations[invitedUserId] = tick + (int64)(p.config.InviteDuration.Seconds()*TickRate)
 
 			// add to blocked-friends cache
 			getBlockedFriendsWithCache(ctx, logger, nk, invitedUserId, s.blockedUsersCache)
