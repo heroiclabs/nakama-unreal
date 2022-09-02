@@ -1,0 +1,35 @@
+{
+	"FileVersion": 3,
+	"Version": 2400,
+	"VersionName": "2.5.0",
+	"FriendlyName": "Nakama client",
+	"Description": "A UE4 and UE5 client for the Nakama server.",
+	"Category": "HeroicLabs.Nakama",
+	"CreatedBy": "Heroic Labs",
+	"CreatedByURL": "http://heroiclabs.com/",
+	"DocsURL": "https://heroiclabs.com/docs/",
+	"MarketplaceURL": "",
+	"SupportURL": "",
+	"EnabledByDefault": true,
+	"CanContainContent": true,
+	"IsBetaVersion": false,
+	"Installed": false,
+	"Modules": [
+		{
+			"Name": "Nakama",
+			"Type": "Runtime",
+			"LoadingPhase": "PreDefault",
+			"WhitelistPlatforms": [
+				"Win64",
+				"Linux",
+				"PS4",
+				"PS5",
+				"XboxOne",
+				"XboxOneGDK",
+				"XSX",
+				"IOS",
+				"Mac"
+			]
+		}
+	]
+}

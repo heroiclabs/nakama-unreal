@@ -42,19 +42,19 @@ NAKAMA_NAMESPACE_BEGIN
 			switch (level)
 			{
 			case NLogLevel::Debug:
-				UE_LOG(LogNakama, Verbose, TEXT("%s"), UTF8_TO_TCHAR(tmp.c_str()));
+				UE_LOG(LogTemp, Verbose, TEXT("%s"), UTF8_TO_TCHAR(tmp.c_str()));
 				break;
 			case NLogLevel::Info:
-				UE_LOG(LogNakama, Log, TEXT("%s"), UTF8_TO_TCHAR(tmp.c_str()));
+				UE_LOG(LogTemp, Log, TEXT("%s"), UTF8_TO_TCHAR(tmp.c_str()));
 				break;
 			case NLogLevel::Warn:
-				UE_LOG(LogNakama, Warning, TEXT("%s"), UTF8_TO_TCHAR(tmp.c_str()));
+				UE_LOG(LogTemp, Warning, TEXT("%s"), UTF8_TO_TCHAR(tmp.c_str()));
 				break;
 			case NLogLevel::Error:
-				UE_LOG(LogNakama, Error, TEXT("%s"), UTF8_TO_TCHAR(tmp.c_str()));
+				UE_LOG(LogTemp, Error, TEXT("%s"), UTF8_TO_TCHAR(tmp.c_str()));
 				break;
 			case NLogLevel::Fatal:
-				UE_LOG(LogNakama, Fatal, TEXT("%s"), UTF8_TO_TCHAR(tmp.c_str()));
+				UE_LOG(LogTemp, Fatal, TEXT("%s"), UTF8_TO_TCHAR(tmp.c_str()));
 				break;
 			}
 		}
