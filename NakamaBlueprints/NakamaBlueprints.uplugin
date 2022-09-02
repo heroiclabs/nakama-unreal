@@ -1,0 +1,41 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "1.0",
+	"FriendlyName": "Nakama Blueprints",
+	"Description": "Full Blueprint Support",
+	"Category": "Other",
+	"CreatedBy": "Heroic Labs",
+	"CreatedByURL": "",
+	"DocsURL": "",
+	"MarketplaceURL": "",
+	"SupportURL": "",
+	"CanContainContent": true,
+	"IsBetaVersion": false,
+	"IsExperimentalVersion": false,
+	"Installed": false,
+	"Modules": [
+		{
+			"Name": "NakamaBlueprints",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		}
+	],
+	"Plugins": [
+		{
+			"Name": "Nakama",
+			"Enabled": true
+		}
+	],
+	"WhitelistPlatforms": [
+		"Win64",
+		"Linux",
+		"PS4",
+		"PS5",
+		"XboxOne",
+		"XboxOneGDK",
+		"XSX",
+		"IOS",
+		"Mac"
+	]
+}

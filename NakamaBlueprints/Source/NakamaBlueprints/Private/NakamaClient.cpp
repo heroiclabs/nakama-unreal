@@ -1,0 +1,2108 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+
+#include "NakamaClient.h"
+#include "NakamaUtils.h"
+#include "NakamaRealtimeClient.h"
+#include "nakama-cpp/ClientFactory.h"
+#include "nakama-cpp/log/NConsoleLogSink.h"
+#include "nakama-cpp/log/NLogger.h"
+#include "NakamaSession.h"
+
+void UNakamaClient::Tick( float DeltaTime )
+{
+	
+	
+	if ( LastFrameNumberWeTicked == GFrameCounter )
+		return;
+
+	// Do the tick
+	// ...
+
+	timer += DeltaTime;
+	
+	if(timer >= _tickInterval)
+	{
+		if(Client && bIsActive)
+		{
+			Client->tick();
+
+			// Use this for print to screen about tick
+			if (GEngine)
+			{
+				//GEngine->AddOnScreenDebugMessage(2,1, FColor::Green, TEXT("UNakamaClient::Tick"));
+				//GEngine->AddOnScreenDebugMessage(-1,200,FColor::Green,FString::Printf(TEXT("UNakamaClient::Tick: %s"), *DisplayName));
+			}
+		}
+		timer = 0.0f;
+	}
+	
+	LastFrameNumberWeTicked = GFrameCounter;
+}
+
+
+void UNakamaClient::InitializeSystem(const FString& ServerKey, const FString& Host, int32 Port, bool UseSSL,
+	bool EnableDebug, ENakamaClientType Type,  float TickInterval, const FString& DisplayName)
+{
+	//if(Client)
+		//return;
+	
+	NClientParameters parameters;
+	parameters.serverKey = FNakamaUtils::UEStringToStdString(ServerKey);
+	parameters.host = FNakamaUtils::UEStringToStdString(Host);
+	parameters.port = Port;
+	parameters.ssl = UseSSL;
+
+	_displayName = DisplayName;
+	_tickInterval = TickInterval;
+
+	switch (Type)
+	{
+	case ENakamaClientType::DEFAULT:
+		Client = createDefaultClient(parameters);
+		break;
+	case ENakamaClientType::GRPC:
+		Client = createGrpcClient(parameters);
+		break;;
+	case ENakamaClientType::REST:
+		Client = createRestClient(parameters);
+		break;;
+	}
+	
+	if (EnableDebug)
+	{
+		bEnableDebug = true;
+		//NLogger::init(std::make_shared<NUnrealLogSink>(), NLogLevel::Debug);
+
+	}
+	
+	bIsActive = true;
+	
+}
+
+void UNakamaClient::Disconnect()
+{
+	if(Client)
+	{
+		Client->disconnect();
+	}
+}
+
+void UNakamaClient::Destroy()
+{
+	bIsActive = false;
+
+	if(Client)
+	{
+		Client->disconnect();
+		Client = nullptr;
+	}
+	
+	ConditionalBeginDestroy();
+}
+
+void UNakamaClient::BeginDestroy()
+{
+	UObject::BeginDestroy();
+	
+	bIsActive = false;
+
+	if(Client)
+	{
+		Client->disconnect();
+		Client = nullptr;
+	}
+	
+}
+
+/**
+ * Authentication
+ */
+
+void UNakamaClient::AuthenticateCustom(FString UserID, FString Username, bool CreateAccount,
+                                       TMap<FString, FString> Vars, const FOnAuthUpdate& Success, const FOnError& Error)
+{
+	if (!Client)
+		return;
+
+	auto successCallback = [this, Success](NSessionPtr session)
+	{
+		UNakamaSession *ResultSession = NewObject<UNakamaSession>();
+		ResultSession->UserSession = session; // Reference for C++ code
+		ResultSession->SessionData = session; // Reference for Blueprints
+
+		Success.ExecuteIfBound(ResultSession);
+	};
+
+	auto errorCallback = [this, Error](const NError& error)
+	{
+		const FNakamaError NakamaError = error;
+		Error.ExecuteIfBound(NakamaError);
+	};
+
+	// A custom identifier must contain alphanumeric 
+	// characters with dashesand be between 6 and 128 bytes.
+
+	NStringMap Variables = FNakamaUtils::TMapToFStringMap(Vars);
+	
+	Client->authenticateCustom(FNakamaUtils::UEStringToStdString(UserID), FNakamaUtils::UEStringToStdString(Username), CreateAccount, Variables, successCallback, errorCallback);
+}
+
+void UNakamaClient::AuthenticateEmail(FString Email, FString Password, FString Username, bool CreateAccount,
+	TMap<FString, FString> Vars, const FOnAuthUpdate& Success, const FOnError& Error)
+{
+	if (!Client)
+		return;
+
+	auto successCallback = [this, Success](NSessionPtr session)
+	{
+		UNakamaSession *ResultSession = NewObject<UNakamaSession>();
+		ResultSession->UserSession = session; // Reference for C++ code
+		ResultSession->SessionData = session; // Reference for Blueprints
+		
+		Success.ExecuteIfBound(ResultSession);
+	};
+
+	auto errorCallback = [this, Error](const NError& error)
+	{
+		const FNakamaError NakamaError = error;
+		Error.ExecuteIfBound(NakamaError);
+	};
+
+	// An email address must be valid as defined by RFC-5322 and passwords must be at least 8 characters.
+
+	const NStringMap Variables = FNakamaUtils::TMapToFStringMap(Vars);
+	
+	Client->authenticateEmail(FNakamaUtils::UEStringToStdString(Email), FNakamaUtils::UEStringToStdString(Password), FNakamaUtils::UEStringToStdString(Username), CreateAccount, Variables, successCallback, errorCallback);
+}
+
+void UNakamaClient::AuthenticateDevice(FString DeviceID, FString Username, bool CreateAccount,
+	TMap<FString, FString> Vars, const FOnAuthUpdate& Success, const FOnError& Error)
+{
+	if (!Client)
+		return;
+
+	auto successCallback = [this, Success](NSessionPtr session)
+	{
+		UNakamaSession *ResultSession = NewObject<UNakamaSession>();
+		ResultSession->UserSession = session; // Reference for C++ code
+		ResultSession->SessionData = session; // Reference for Blueprints
+		
+		Success.ExecuteIfBound(ResultSession);
+	};
+
+	auto errorCallback = [this, Error](const NError& error)
+	{
+		const FNakamaError NakamaError = error;
+		Error.ExecuteIfBound(NakamaError);
+	};
+	
+	//  A device identifier must contain alphanumeric characters with dashes and be between 10 and 128 bytes.
+
+	NStringMap Variables = FNakamaUtils::TMapToFStringMap(Vars);
+	
+	Client->authenticateDevice(
+		FNakamaUtils::UEStringToStdString(DeviceID),
+		FNakamaUtils::UEStringToStdString(Username), // Optional
+		CreateAccount,
+		Variables, // Optional
+		successCallback,
+		errorCallback);
+}
+
+void UNakamaClient::AuthenticateSteam(FString SteamToken, FString Username, bool CreateAccount,
+	TMap<FString, FString> Vars, const FOnAuthUpdate& Success, const FOnError& Error)
+{
+	if (!Client)
+		return;
+
+	auto successCallback = [this, Success](NSessionPtr session)
+	{
+		UNakamaSession *ResultSession = NewObject<UNakamaSession>();
+		ResultSession->UserSession = session; // Reference for C++ code
+		ResultSession->SessionData = session; // Reference for Blueprints
+		
+		Success.ExecuteIfBound(ResultSession);
+
+	};
+
+	auto errorCallback = [this, Error](const NError& error)
+	{
+		const FNakamaError NakamaError = error;
+		Error.ExecuteIfBound(NakamaError);
+	};
+
+	
+	NStringMap Variables = FNakamaUtils::TMapToFStringMap(Vars);
+
+	Client->authenticateSteam(FNakamaUtils::UEStringToStdString(SteamToken), FNakamaUtils::UEStringToStdString(Username), CreateAccount, Variables, successCallback, errorCallback);
+}
+
+void UNakamaClient::AuthenticateGoogle(FString AccessToken, FString Username, bool CreateAccount,
+	TMap<FString, FString> Vars, const FOnAuthUpdate& Success, const FOnError& Error)
+{
+	if (!Client)
+		return;
+
+	auto successCallback = [this, Success](NSessionPtr session)
+	{
+		UNakamaSession *ResultSession = NewObject<UNakamaSession>();
+		ResultSession->UserSession = session; // Reference for C++ code
+		ResultSession->SessionData = session; // Reference for Blueprints
+		
+		Success.ExecuteIfBound(ResultSession);
+	};
+
+	auto errorCallback = [this, Error](const NError& error)
+	{
+		const FNakamaError NakamaError = error;
+		Error.ExecuteIfBound(NakamaError);
+	};
+
+	NStringMap Variables = FNakamaUtils::TMapToFStringMap(Vars);
+	
+	Client->authenticateGoogle(FNakamaUtils::UEStringToStdString(AccessToken), FNakamaUtils::UEStringToStdString(Username), CreateAccount, Variables, successCallback, errorCallback);
+}
+
+void UNakamaClient::AuthenticateGameCenter(FString PlayerId, FString BundleId, int64 TimeStampSeconds, FString Salt,
+	FString Signature, FString PublicKeyUrl, FString Username, bool CreateAccount, TMap<FString, FString> Vars,
+	const FOnAuthUpdate& Success, const FOnError& Error)
+{
+	if (!Client)
+		return;
+
+	auto successCallback = [this, Success](NSessionPtr session)
+	{
+		UNakamaSession *ResultSession = NewObject<UNakamaSession>();
+		ResultSession->UserSession = session; // Reference for C++ code
+		ResultSession->SessionData = session; // Reference for Blueprints
+		
+		Success.ExecuteIfBound(ResultSession);
+	};
+
+	auto errorCallback = [this, Error](const NError& error)
+	{
+		FNakamaError NakamaError = error;
+		Error.ExecuteIfBound(NakamaError);
+	};
+
+	NTimestamp timestampSeconds = TimeStampSeconds;
+
+	NStringMap Variables = FNakamaUtils::TMapToFStringMap(Vars);
+
+	Client->authenticateGameCenter(
+		FNakamaUtils::UEStringToStdString(PlayerId),
+		FNakamaUtils::UEStringToStdString(BundleId),
+		timestampSeconds,
+		FNakamaUtils::UEStringToStdString(Salt),
+		FNakamaUtils::UEStringToStdString(Signature),
+		FNakamaUtils::UEStringToStdString(PublicKeyUrl),
+		FNakamaUtils::UEStringToStdString(Username),
+		CreateAccount,
+		Variables,
+		successCallback,
+		errorCallback);
+}
+
+void UNakamaClient::AuthenticateFacebook(FString AccessToken, FString Username, bool CreateAccount, bool ImportFriends,
+	TMap<FString, FString> Vars, const FOnAuthUpdate& Success, const FOnError& Error)
+{
+	if (!Client)
+		return;
+
+	auto successCallback = [this, Success](NSessionPtr session)
+	{
+		UNakamaSession *ResultSession = NewObject<UNakamaSession>();
+		ResultSession->UserSession = session; // Reference for C++ code
+		ResultSession->SessionData = session; // Reference for Blueprints
+		Success.ExecuteIfBound(ResultSession);
+	};
+
+	auto errorCallback = [this, Error](const NError& error)
+	{
+		FNakamaError NakamaError = error;
+		Error.ExecuteIfBound(NakamaError);
+	};
+
+	NStringMap Variables = FNakamaUtils::TMapToFStringMap(Vars);
+	
+	Client->authenticateFacebook(
+		FNakamaUtils::UEStringToStdString(AccessToken),
+		FNakamaUtils::UEStringToStdString(Username),
+		CreateAccount,
+		ImportFriends,
+		Variables,
+		successCallback,
+		errorCallback);
+}
+
+void UNakamaClient::AuthenticateApple(FString Token, FString Username, bool CreateAccount, TMap<FString, FString> Vars,
+	const FOnAuthUpdate& Success, const FOnError& Error)
+{
+	if (!Client)
+		return;
+
+	auto successCallback = [this, Success](NSessionPtr session)
+	{
+		UNakamaSession *ResultSession = NewObject<UNakamaSession>();
+		ResultSession->UserSession = session; // Reference for C++ code
+		ResultSession->SessionData = session; // Reference for Blueprints
+		Success.ExecuteIfBound(ResultSession);
+	};
+
+	auto errorCallback = [this, Error](const NError& error)
+	{
+		const FNakamaError NakamaError = error;
+		Error.ExecuteIfBound(NakamaError);
+	};
+
+	NStringMap Variables = FNakamaUtils::TMapToFStringMap(Vars);
+	
+	Client->authenticateApple(FNakamaUtils::UEStringToStdString(Token), FNakamaUtils::UEStringToStdString(Username), CreateAccount, Variables, successCallback, errorCallback);
+}
+
+/**
+ * Sessions
+ */
+
+void UNakamaClient::RestoreSession(FString Token, FString RefreshToken, UNakamaSession*& RestoredSession)
+{
+	UNakamaSession* Session = NewObject<UNakamaSession>();
+	Session->UserSession = restoreSession(FNakamaUtils::UEStringToStdString(Token), FNakamaUtils::UEStringToStdString(RefreshToken));
+	Session->SessionData = Session->UserSession; // Blueprint Exposed
+	RestoredSession = Session;
+}
+
+/**
+ * Linking Accounts
+ */
+
+void UNakamaClient::LinkCustom(UNakamaSession* Session, FString CustomId, const FOnLinkSuccess& Success, const FOnError& Error)
+{
+	if (!Client || !Session)
+		return;
+
+	auto errorCallback = [this, Error](const NError& error)
+	{
+		const FNakamaError NakamaError = error;
+		Error.ExecuteIfBound(NakamaError);
+	};
+
+	auto linkSucceededCallback = [this, Success]()
+	{
+		Success.ExecuteIfBound();
+	};
+
+	Client->linkCustom(Session->UserSession, FNakamaUtils::UEStringToStdString(CustomId), linkSucceededCallback, errorCallback);
+}
+
+void UNakamaClient::LinkDevice(UNakamaSession* Session, FString DeviceId, const FOnLinkSuccess& Success, const FOnError& Error)
+{
+	if (!Client || !Session)
+		return;
+
+	auto errorCallback = [this, Error](const NError& error)
+	{
+		const FNakamaError NakamaError = error;
+		Error.ExecuteIfBound(NakamaError);
+	};
+
+	auto linkSucceededCallback = [this, Success]()
+	{
+		Success.ExecuteIfBound();
+	};
+
+	Client->linkDevice(Session->UserSession, FNakamaUtils::UEStringToStdString(DeviceId), linkSucceededCallback, errorCallback);
+}
+
+void UNakamaClient::LinkEmail(UNakamaSession* Session, FString Email, FString Password, const FOnLinkSuccess& Success, const FOnError& Error)
+{
+	if (!Client || !Session)
+		return;
+
+	auto errorCallback = [this, Error](const NError& error)
+	{
+		const FNakamaError NakamaError = error;
+		Error.ExecuteIfBound(NakamaError);
+	};
+
+	auto linkSucceededCallback = [this, Success]()
+	{
+		Success.ExecuteIfBound();
+	};
+
+	Client->linkEmail(Session->UserSession, FNakamaUtils::UEStringToStdString(Email), FNakamaUtils::UEStringToStdString(Password), linkSucceededCallback, errorCallback);
+}
+
+void UNakamaClient::LinkFacebook(UNakamaSession* Session, FString AccessToken, bool ImportFriends, const FOnLinkSuccess& Success,
+	const FOnError& Error)
+{
+	if (!Client || !Session)
+		return;
+
+	auto errorCallback = [this, Error](const NError& error)
+	{
+		const FNakamaError NakamaError = error;
+		Error.ExecuteIfBound(NakamaError);
+	};
+
+	auto linkSucceededCallback = [this, Success]()
+	{
+		Success.ExecuteIfBound();
+	};
+
+	Client->linkFacebook(Session->UserSession, FNakamaUtils::UEStringToStdString(AccessToken), ImportFriends, linkSucceededCallback, errorCallback);
+}
+
+void UNakamaClient::LinkGameCenter(UNakamaSession* Session, FString PlayerId, FString BundleId, int64 TimeStampSeconds, FString Salt,
+	FString Signature, FString PublicKeyUrl, const FOnLinkSuccess& Success, const FOnError& Error)
+{
+	if (!Client || !Session)
+		return;
+
+	auto errorCallback = [this, Error](const NError& error)
+	{
+		const FNakamaError NakamaError = error;
+		Error.ExecuteIfBound(NakamaError);
+	};
+
+	auto linkSucceededCallback = [this, Success]()
+	{
+		Success.ExecuteIfBound();
+	};
+	
+	NTimestamp timestampSeconds = TimeStampSeconds;
+
+	Client->linkGameCenter(
+		Session->UserSession,
+		FNakamaUtils::UEStringToStdString(PlayerId),
+		FNakamaUtils::UEStringToStdString(BundleId),
+		TimeStampSeconds,
+		FNakamaUtils::UEStringToStdString(Salt),
+		FNakamaUtils::UEStringToStdString(Signature),
+		FNakamaUtils::UEStringToStdString(PublicKeyUrl),
+		linkSucceededCallback,
+		errorCallback);
+}
+
+void UNakamaClient::LinkGoogle(UNakamaSession* Session, FString AccessToken, const FOnLinkSuccess& Success, const FOnError& Error)
+{
+	if (!Client || !Session)
+		return;
+
+	auto errorCallback = [this, Error](const NError& error)
+	{
+		const FNakamaError NakamaError = error;
+		Error.ExecuteIfBound(NakamaError);
+	};
+
+	auto linkSucceededCallback = [this, Success]()
+	{
+		Success.ExecuteIfBound();
+	};
+
+	Client->linkGoogle(Session->UserSession, FNakamaUtils::UEStringToStdString(AccessToken), linkSucceededCallback, errorCallback);
+}
+
+void UNakamaClient::LinkSteam(UNakamaSession* Session, FString SteamToken, const FOnLinkSuccess& Success, const FOnError& Error)
+{
+	if (!Client || !Session)
+		return;
+
+	auto errorCallback = [this, Error](const NError& error)
+	{
+		const FNakamaError NakamaError = error;
+		Error.ExecuteIfBound(NakamaError);
+	};
+
+	auto linkSucceededCallback = [this, Success]()
+	{
+		Success.ExecuteIfBound();
+	};
+	
+	Client->linkSteam(Session->UserSession, FNakamaUtils::UEStringToStdString(SteamToken), linkSucceededCallback, errorCallback);
+}
+
+void UNakamaClient::LinkApple(UNakamaSession* Session, FString Token, const FOnLinkSuccess& Success, const FOnError& Error)
+{
+	if (!Client || !Session)
+		return;
+
+	auto errorCallback = [this, Error](const NError& error)
+	{
+		const FNakamaError NakamaError = error;
+		Error.ExecuteIfBound(NakamaError);
+	};
+
+	auto linkSucceededCallback = [this, Success]()
+	{
+		Success.ExecuteIfBound();
+	};
+	
+	Client->linkApple(Session->UserSession, FNakamaUtils::UEStringToStdString(Token), linkSucceededCallback, errorCallback);
+}
+
+/**
+ * Unlinking Account
+ */
+
+void UNakamaClient::UnLinkCustom(UNakamaSession* Session, FString CustomId, const FOnLinkSuccess& Success,
+	const FOnError& Error)
+{
+	if (!Client || !Session)
+		return;
+
+	auto errorCallback = [this, Error](const NError& error)
+	{
+		const FNakamaError NakamaError = error;
+		Error.ExecuteIfBound(NakamaError);
+	};
+
+	auto linkSucceededCallback = [this, Success]()
+	{
+		Success.ExecuteIfBound();
+	};
+
+	Client->unlinkCustom(Session->UserSession, FNakamaUtils::UEStringToStdString(CustomId), linkSucceededCallback, errorCallback);
+}
+
+void UNakamaClient::UnLinkDevice(UNakamaSession* Session, FString DeviceId, const FOnLinkSuccess& Success,
+	const FOnError& Error)
+{
+	if (!Client || !Session)
+		return;
+
+	auto errorCallback = [this, Error](const NError& error)
+	{
+		const FNakamaError NakamaError = error;
+		Error.ExecuteIfBound(NakamaError);
+	};
+
+	auto linkSucceededCallback = [this, Success]()
+	{
+		Success.ExecuteIfBound();
+	};
+
+	Client->unlinkDevice(Session->UserSession, FNakamaUtils::UEStringToStdString(DeviceId), linkSucceededCallback, errorCallback);
+}
+
+void UNakamaClient::UnLinkEmail(UNakamaSession* Session, FString Email, FString Password, const FOnLinkSuccess& Success,
+	const FOnError& Error)
+{
+	if (!Client || !Session)
+		return;
+
+	auto errorCallback = [this, Error](const NError& error)
+	{
+		const FNakamaError NakamaError = error;
+		Error.ExecuteIfBound(NakamaError);
+	};
+
+	auto linkSucceededCallback = [this, Success]()
+	{
+		Success.ExecuteIfBound();
+	};
+	
+	Client->unlinkEmail(Session->UserSession,
+		FNakamaUtils::UEStringToStdString(Email),
+		FNakamaUtils::UEStringToStdString(Password),
+		linkSucceededCallback, errorCallback);
+}
+
+void UNakamaClient::UnLinkFacebook(UNakamaSession* Session, FString AccessToken, const FOnLinkSuccess& Success,
+	const FOnError& Error)
+{
+	if (!Client || !Session)
+		return;
+
+	auto errorCallback = [this, Error](const NError& error)
+	{
+		const FNakamaError NakamaError = error;
+		Error.ExecuteIfBound(NakamaError);
+	};
+
+	auto linkSucceededCallback = [this, Success]()
+	{
+		Success.ExecuteIfBound();
+	};
+
+	Client->unlinkFacebook(Session->UserSession, FNakamaUtils::UEStringToStdString(AccessToken), linkSucceededCallback, errorCallback);
+}
+
+void UNakamaClient::UnLinkGameCenter(UNakamaSession* Session, FString PlayerId, FString BundleId,
+	int64 TimeStampSeconds, FString Salt, FString Signature, FString PublicKeyUrl, const FOnLinkSuccess& Success,
+	const FOnError& Error)
+{
+	if (!Client || !Session)
+		return;
+
+	auto errorCallback = [this, Error](const NError& error)
+	{
+		const FNakamaError NakamaError = error;
+		Error.ExecuteIfBound(NakamaError);
+	};
+
+	auto linkSucceededCallback = [this, Success]()
+	{
+		Success.ExecuteIfBound();
+	};
+	
+
+	Client->unlinkGameCenter(
+		Session->UserSession,
+		FNakamaUtils::UEStringToStdString(PlayerId),
+		FNakamaUtils::UEStringToStdString(BundleId),
+		TimeStampSeconds,
+		FNakamaUtils::UEStringToStdString(Salt),
+		FNakamaUtils::UEStringToStdString(Signature),
+		FNakamaUtils::UEStringToStdString(PublicKeyUrl),
+		linkSucceededCallback,
+		errorCallback);
+}
+
+void UNakamaClient::UnLinkGoogle(UNakamaSession* Session, FString AccessToken, const FOnLinkSuccess& Success,
+	const FOnError& Error)
+{
+	if (!Client || !Session)
+		return;
+
+	auto errorCallback = [this, Error](const NError& error)
+	{
+		const FNakamaError NakamaError = error;
+		Error.ExecuteIfBound(NakamaError);
+	};
+
+	auto linkSucceededCallback = [this, Success]()
+	{
+		Success.ExecuteIfBound();
+	};
+
+	Client->unlinkGoogle(Session->UserSession, FNakamaUtils::UEStringToStdString(AccessToken), linkSucceededCallback, errorCallback);
+}
+
+void UNakamaClient::UnLinkSteam(UNakamaSession* Session, FString SteamToken, const FOnLinkSuccess& Success,
+	const FOnError& Error)
+{
+	if (!Client || !Session)
+		return;
+
+	auto errorCallback = [this, Error](const NError& error)
+	{
+		FNakamaError NakamaError = error;
+		Error.ExecuteIfBound(NakamaError);
+	};
+
+	auto linkSucceededCallback = [this, Success]()
+	{
+		Success.ExecuteIfBound();
+	};
+	
+	Client->unlinkSteam(Session->UserSession, FNakamaUtils::UEStringToStdString(SteamToken), linkSucceededCallback, errorCallback);
+}
+
+void UNakamaClient::UnLinkApple(UNakamaSession* Session, FString Token, const FOnLinkSuccess& Success,
+	const FOnError& Error)
+{
+	if (!Client || !Session)
+		return;
+
+	auto errorCallback = [this, Error](const NError& error)
+	{
+		FNakamaError NakamaError = error;
+		Error.ExecuteIfBound(NakamaError);
+	};
+
+	auto linkSucceededCallback = [this, Success]()
+	{
+		Success.ExecuteIfBound();
+	};
+	
+	Client->unlinkApple(Session->UserSession, FNakamaUtils::UEStringToStdString(Token), linkSucceededCallback, errorCallback);
+}
+
+/**
+ * Refresh Session
+ */
+
+void UNakamaClient::RefreshSession(UNakamaSession* Session, const FOnAuthRefresh& Success,
+	const FOnAuthRefreshError& Error)
+{
+	if(!Client || !Session)
+		return;
+
+	auto errorCallback = [this, Error](const NError& error)
+	{
+		FNakamaError NakamaError = error;
+		Error.ExecuteIfBound(NakamaError);
+	};
+
+	auto successCallback = [this, Success](NSessionPtr session)
+	{
+		UNakamaSession *ResultSession = NewObject<UNakamaSession>();
+		ResultSession->UserSession = session; // Reference for C++ code
+		ResultSession->SessionData = session; // Reference for Blueprints
+		
+		Success.ExecuteIfBound(ResultSession);
+	};
+	
+	Client->authenticateRefresh(Session->UserSession, successCallback, errorCallback);
+}
+
+/**
+ * Import Facebook Friends
+ */
+
+void UNakamaClient::ImportFacebookFriends(UNakamaSession* Session, FString Token, bool Reset, const FOnImportFacebookFriends& Success, const FOnError& Error)
+{
+	if (!Client || !Session)
+		return;
+
+	auto successCallback = [this, Success]()
+	{
+		Success.ExecuteIfBound();
+	};
+
+	auto errorCallback = [this, Error](const NError& error)
+	{
+		FNakamaError NakamaError = error;
+		Error.ExecuteIfBound(NakamaError);
+	};
+
+	Client->importFacebookFriends(Session->UserSession, FNakamaUtils::UEStringToStdString(Token), Reset, successCallback, errorCallback);
+}
+
+/**
+ * Get Account Info
+ */
+
+void UNakamaClient::GetUserAccount(UNakamaSession* Session, const FOnUserAccountInfo& Success,
+	const FOnError& Error)
+{
+	if (!Client || !Session)
+		return;
+
+	auto successCallback = [this, Success](const NAccount& account)
+	{
+		FNakamaAccount MyAccount = account; // This already does all convertions
+
+		Success.ExecuteIfBound(MyAccount);
+	};
+
+	auto errorCallback = [this, Error](const NError& error)
+	{
+		FNakamaError NakamaError = error;
+		Error.ExecuteIfBound(NakamaError);
+	};
+
+	Client->getAccount(Session->UserSession, successCallback, errorCallback);
+}
+
+/**
+ * Get Get Users
+ */
+
+void UNakamaClient::GetUsers(UNakamaSession* Session, TArray<FString> UserIds, TArray<FString> Usernames,
+	TArray<FString> FacebookIds, const FOnGetUsers& Success, const FOnError& Error)
+{
+	if (!Client || !Session)
+		return;
+
+	auto successCallback = [this, Success](const NUsers& users)
+	{
+		TArray<FNakamaUser> Users;
+
+		for (auto& user : users.users)
+		{
+			FNakamaUser FoundUser = user; // Handles conversion
+			Users.Add(FoundUser);
+		}
+
+		Success.ExecuteIfBound(Users);
+
+	};
+
+	auto errorCallback = [this, Error](const NError& error)
+	{
+		const FNakamaError NakamaError = error;
+		Error.ExecuteIfBound(NakamaError);
+	};
+
+	// Local arrays
+	std::vector<std::string> userIds;
+	std::vector<std::string> usernames;
+	std::vector<std::string> facebookIds;
+
+	// UserIds 
+	if (UserIds.Num() > 0) {
+
+		for (int32 i = 0; i < UserIds.Num(); i++)
+		{
+			FString FriendName = UserIds[i];
+			userIds.push_back(TCHAR_TO_UTF8(*FriendName));
+		}
+	}
+
+	// Usernames 
+	if (Usernames.Num() > 0) {
+
+		for (int32 i = 0; i < Usernames.Num(); i++)
+		{
+			FString FriendName = Usernames[i];
+			usernames.push_back(TCHAR_TO_UTF8(*FriendName));
+		}
+	}
+
+	// FacebookIds 
+	if (FacebookIds.Num() > 0) {
+
+		for (int32 i = 0; i < FacebookIds.Num(); i++)
+		{
+			FString FriendName = FacebookIds[i];
+			facebookIds.push_back(TCHAR_TO_UTF8(*FriendName));
+		}
+	}
+
+	Client->getUsers(Session->UserSession, userIds, usernames, facebookIds, successCallback, errorCallback);
+}
+
+void UNakamaClient::UpdateAccount(UNakamaSession* Session, FString Username, FString DisplayName, FString AvatarUrl,
+	FString LanguageTag, FString Location, FString Timezone, const FOnUpdateAccount& Success, const FOnError& Error)
+{
+	if (!Client || !Session)
+		return;
+
+	// Do not update if all fields are empty
+	if(Username == "" && DisplayName == "" && AvatarUrl == "" && LanguageTag == "" && Location == "" && Location == "" && Timezone == "")
+		return;
+
+	auto errorCallback = [this, Error](const NError& error)
+	{
+		const FNakamaError NakamaError = error;
+		Error.ExecuteIfBound(NakamaError);
+	};
+
+	auto successCallback = [this, Success]()
+	{
+		Success.ExecuteIfBound();
+
+	};
+	
+	Client->updateAccount(Session->UserSession,
+		FNakamaUtils::UEStringToStdString(Username),
+		FNakamaUtils::UEStringToStdString(DisplayName), // Sisplay name
+		FNakamaUtils::UEStringToStdString(AvatarUrl), // Avatar URL
+		FNakamaUtils::UEStringToStdString(LanguageTag),
+		FNakamaUtils::UEStringToStdString(Location),
+		FNakamaUtils::UEStringToStdString(Timezone),
+		successCallback,
+		errorCallback
+	);
+}
+
+/**
+ * Setup Realtime Client (rtClient = Socket)
+ */
+
+UNakamaRealtimeClient* UNakamaClient::SetupRealtimeClient(UNakamaSession* Session, bool ShowAsOnline, int32 Port,
+	ENakamaRealtimeClientProtocol Protocol, float TickInterval, FString DisplayName)
+{
+	UNakamaRealtimeClient* NewClient = NewObject<UNakamaRealtimeClient>(); // Function returns this as a object
+	NewClient->RtClient = Client->createRtClient(Port);
+	NewClient->TickInterval = TickInterval;
+	NewClient->_displayName = DisplayName;
+	NewClient->Session = Session;
+	NewClient->bShowAsOnline = ShowAsOnline;
+	NewClient->Protocol = Protocol;
+	NewClient->bIsActive = true;
+
+	//const NRtClientProtocol SelectedProtocol = static_cast<NRtClientProtocol>(Protocol);
+	NewClient->RtClient->setListener(&NewClient->Listener);
+
+	return NewClient;
+}
+
+
+/*
+void UNakamaClient::SetupRealtimeClient(UNakamaSession *Session, bool ShowAsOnline, int32 Port, ENakamaRealtimeClientProtocol Protocol, float TickInterval, FString DisplayName,
+	const FOnRealtimeClientConnected& Success, const FOnRealtimeClientError& Error) // Return a RealTime Client UObject..
+{
+	UNakamaRealtimeClient* NewClient = NewObject<UNakamaRealtimeClient>(); // Function returns this as a object
+	NewClient->RtClient = Client->createRtClient(Port);
+	NewClient->TickInterval = TickInterval;
+	NewClient->_displayName = DisplayName;
+	NewClient->bIsActive = true;
+
+	// Connect Callback
+	NewClient->Listener.setConnectCallback([this, NewClient, Success]()
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Nakama Realtime Client Setup: Socket connected"));
+		Success.ExecuteIfBound(NewClient);
+	});
+
+	NewClient->Listener.setErrorCallback([this, Error](const NRtError& Err)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Nakama Realtime Client Setup: Socket Connect Error"));
+		Error.ExecuteIfBound();
+
+	});
+
+	const NRtClientProtocol SelectedProtocol = static_cast<NRtClientProtocol>(Protocol);
+
+	NewClient->RtClient->setListener(&NewClient->Listener);
+	NewClient->RtClient->connect(Session->UserSession, ShowAsOnline, SelectedProtocol);
+}*/
+
+void UNakamaClient::ListMatches(UNakamaSession* Session, int32 MinSize, int32 MaxSize, int32 Limit, FString Label,
+	bool Authoritative, const FOnMatchlist& Success, const FOnError& Error)
+{
+	if (!Client || !Session)
+		return;
+
+	auto successCallback = [this, Success](NMatchListPtr list)
+	{
+		const FNakamaMatchList MatchList = *list;
+		Success.ExecuteIfBound(MatchList);
+		
+	};
+
+	auto errorCallback = [this, Error](const NError& error)
+	{
+		const FNakamaError NakamaError = error;
+		Error.ExecuteIfBound(NakamaError);
+	};
+
+	if(Label.IsEmpty())
+	{
+		Client->listMatches(
+		Session->UserSession,
+		MinSize,
+		MaxSize,
+		Limit,
+		{},
+		Authoritative,
+		successCallback,
+		errorCallback);
+	}
+	else
+	{
+		Client->listMatches(
+		Session->UserSession,
+		MinSize,
+		MaxSize,
+		Limit,
+		FNakamaUtils::UEStringToStdString(Label),
+		Authoritative,
+		successCallback,
+		errorCallback);
+	}
+	
+}
+
+
+/**
+ * Friends System
+ */
+
+void UNakamaClient::GetFriends(UNakamaSession* Session, int32 Limit, ENakamaFriendState State, FString Cursor, const FOnFriendsList& Success,
+	const FOnError& Error)
+{
+	if (!Client || !Session)
+		return;
+
+	auto successCallback = [this, Success](NFriendListPtr friends) // Docs are wrong, says "NFriendsPtr"
+	{
+		const FNakamaFriendList FriendsList = *friends; // Handles array etc..
+
+		// Follow Friends - do it here
+		/*
+		if (FriendsList.NakamaUsers.Num() > 0)
+		{
+			for(auto& Friend : FriendsList.NakamaUsers)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Got Friend: %s"), *Friend.NakamaUser.Username);
+			}
+		}*/
+
+		Success.ExecuteIfBound(FriendsList);
+		
+	};
+
+	auto errorCallback = [this, Error](const NError& error)
+	{
+		const FNakamaError NakamaError = error;
+		Error.ExecuteIfBound(NakamaError);
+	};
+
+	NFriend::State FriendState = static_cast<NFriend::State>(State);
+	
+	if(State == ENakamaFriendState::ALL) // If "All" Friend States are requested, we return an empty Enum Object
+	{
+		Client->listFriends(Session->UserSession, Limit, {}, FNakamaUtils::UEStringToStdString(Cursor), successCallback, errorCallback);
+	}
+	else
+	{
+		Client->listFriends(Session->UserSession, Limit, FriendState, FNakamaUtils::UEStringToStdString(Cursor), successCallback, errorCallback);
+	}
+
+	
+}
+
+void UNakamaClient::AddFriends(UNakamaSession* Session, TArray<FString> Ids, TArray<FString> Usernames,
+	const FOnAddedFriend& Success, const FOnError& Error)
+{
+	if (!Client || !Session)
+		return;
+
+	auto successCallback = [this, Success]()
+	{
+		Success.ExecuteIfBound();
+	};
+
+	auto errorCallback = [this, Error](const NError& error)
+	{
+		const FNakamaError NakamaError = error;
+		Error.ExecuteIfBound(NakamaError);
+	};
+
+	if (Ids.Num() > 0 || Usernames.Num() > 0) { // Are there any Friends?
+
+		std::vector<std::string> LocalIds;
+		std::vector<std::string> LocalUsernames;
+
+		// IDs
+		if(Ids.Num() > 0)
+		{
+			for (int32 i = 0; i < Ids.Num(); i++)
+			{
+				FString FriendName = Ids[i];
+				LocalIds.push_back(FNakamaUtils::UEStringToStdString(FriendName));
+			}
+		}
+		
+		// Usernames
+		if(Usernames.Num() > 0)
+		{
+			for (int32 i = 0; i < Usernames.Num(); i++)
+			{
+				FString FriendName = Usernames[i];
+				LocalUsernames.push_back(FNakamaUtils::UEStringToStdString(FriendName));
+			}
+		}
+		
+		Client->addFriends(Session->UserSession, LocalIds, LocalUsernames, successCallback, errorCallback);
+		UE_LOG(LogTemp, Warning, TEXT("Trying to add a friend(s)"));
+	}
+}
+
+void UNakamaClient::RemoveFriends(UNakamaSession* Session, TArray<FString> Ids, TArray<FString> Usernames,
+	const FOnRemovedFriends& Success, const FOnError& Error)
+{
+	if (!Client || !Session)
+		return;
+
+	auto successCallback = [this, Success]()
+	{
+		Success.ExecuteIfBound();
+	};
+
+	auto errorCallback = [this, Error](const NError& error)
+	{
+		FNakamaError NakamaError = error;
+		Error.ExecuteIfBound(NakamaError);
+	};
+
+	if (Ids.Num() > 0 || Usernames.Num() > 0) {
+
+		std::vector<std::string> LocalIds;
+		std::vector<std::string> LocalUsernames;
+
+		// IDs
+		if(Ids.Num() > 0)
+		{
+			for (int32 i = 0; i < Ids.Num(); i++)
+			{
+				FString FriendName = Ids[i];
+				LocalIds.push_back(FNakamaUtils::UEStringToStdString(FriendName));
+			}
+		}
+		
+		// Usernames
+		if(Usernames.Num() > 0)
+		{
+			for (int32 i = 0; i < Usernames.Num(); i++)
+			{
+				FString FriendName = Usernames[i];
+				LocalUsernames.push_back(FNakamaUtils::UEStringToStdString(FriendName));
+			}
+		}
+		
+		Client->deleteFriends(Session->UserSession, LocalIds, LocalUsernames, successCallback, errorCallback);
+		
+	}
+}
+
+void UNakamaClient::BlockFriends(UNakamaSession* Session, TArray<FString> Ids, TArray<FString> Usernames,
+	const FOnBlockedFriends& Success, const FOnError& Error)
+{
+	if (!Client || !Session)
+		return;
+
+	auto successCallback = [this, Success]()
+	{
+		Success.ExecuteIfBound();
+	};
+
+	auto errorCallback = [this, Error](const NError& error)
+	{
+		FNakamaError NakamaError = error;
+		Error.ExecuteIfBound(NakamaError);
+	};
+
+	if (Ids.Num() > 0 || Usernames.Num() > 0) {
+
+		std::vector<std::string> LocalIds;
+		std::vector<std::string> LocalUsernames;
+
+		// IDs
+		if(Ids.Num() > 0)
+		{
+			for (int32 i = 0; i < Ids.Num(); i++)
+			{
+				FString FriendName = Ids[i];
+				LocalIds.push_back(FNakamaUtils::UEStringToStdString(FriendName));
+			}
+		}
+		
+		// Usernames
+		if(Usernames.Num() > 0)
+		{
+			for (int32 i = 0; i < Usernames.Num(); i++)
+			{
+				FString FriendName = Usernames[i];
+				LocalUsernames.push_back(FNakamaUtils::UEStringToStdString(FriendName));
+			}
+		}
+		
+		Client->blockFriends(Session->UserSession, LocalIds, LocalUsernames, successCallback, errorCallback);
+	}
+}
+
+/**
+ * Group System
+ */
+
+
+void UNakamaClient::CreateGroup(UNakamaSession* Session, FString GroupName, FString Description, FString AvatarUrl,
+	FString LanguageTag, bool Open, int32 MaxMembers, const FOnCreateGroup& Success, const FOnError& Error)
+{
+	if (!Client || !Session)
+		return;
+
+	auto successCallback = [this, Success](const NGroup& group)
+	{
+		const FNakamaGroup Group = group;
+		UE_LOG(LogTemp, Warning, TEXT("New group ID: %s"), *Group.Id);
+		Success.Execute(Group);
+	};
+
+	auto errorCallback = [this, Error](const NError& error)
+	{
+		FNakamaError NakamaError = error;
+		Error.ExecuteIfBound(NakamaError);
+	};
+	
+	Client->createGroup(Session->UserSession,
+		FNakamaUtils::UEStringToStdString(GroupName),
+		FNakamaUtils::UEStringToStdString(Description),
+		FNakamaUtils::UEStringToStdString(AvatarUrl),
+		FNakamaUtils::UEStringToStdString(LanguageTag), // Example: en_US
+		Open,
+		MaxMembers,
+		successCallback,
+		errorCallback);
+}
+
+void UNakamaClient::ListGroups(UNakamaSession* Session, FString GroupNameFilter, int32 Limit, FString Cursor,
+	const FOnGroupsList& Success, const FOnError& Error)
+{
+	if (!Client || !Session)
+		return;
+
+	auto successCallback = [this, Success](NGroupListPtr list)
+	{
+		const FNakamaGroupList AllGroups = *list; // Contains an array of listed groups and a cursor for next pages
+		Success.ExecuteIfBound(AllGroups);
+
+	};
+
+	auto errorCallback = [this, Error](const NError& error)
+	{
+		const FNakamaError NakamaError = error;
+		Error.ExecuteIfBound(NakamaError);
+	};
+
+	Client->listGroups(
+		Session->UserSession,
+		FNakamaUtils::UEStringToStdString(GroupNameFilter), // Filter for group names which start with "heroes" "heroes%
+		Limit,
+		FNakamaUtils::UEStringToStdString(Cursor),
+		successCallback,
+		errorCallback);
+}
+
+void UNakamaClient::JoinGroup(UNakamaSession* Session, FString GroupId, const FOnJoinedGroup& Success,
+	const FOnError& Error)
+{
+	if (!Client || !Session)
+		return;
+
+	auto successCallback = [this, Success]()
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Sent group join request"));
+		Success.ExecuteIfBound();
+	};
+
+	auto errorCallback = [this, Error](const NError& error)
+	{
+		const FNakamaError NakamaError = error;
+		Error.ExecuteIfBound(NakamaError);
+	};
+	
+	Client->joinGroup(Session->UserSession, FNakamaUtils::UEStringToStdString(GroupId), successCallback, errorCallback);
+}
+
+// Note: Does not get members!
+void UNakamaClient::ListUserGroups(UNakamaSession* Session, FString UserId, int32 Limit, ENakamaFriendState State,
+	FString Cursor, const FOnUserGroups& Success, const FOnError& Error)
+{
+	if (!Client || !Session)
+		return;
+
+	auto successCallback = [this, Success, UserId](NUserGroupListPtr list)
+	{
+		const FNakamaUserGroupList AllUserGroups = *list;
+
+		Success.ExecuteIfBound(AllUserGroups);
+
+	};
+
+	auto errorCallback = [this, Error](const NError& error)
+	{
+		const FNakamaError NakamaError = error;
+		Error.ExecuteIfBound(NakamaError);
+	};
+
+	NFriend::State FriendState = static_cast<NFriend::State>(State);
+
+	if(State == ENakamaFriendState::ALL)
+	{
+		Client->listUserGroups(Session->UserSession, FNakamaUtils::UEStringToStdString(UserId), Limit, {}, FNakamaUtils::UEStringToStdString(Cursor), successCallback, errorCallback);
+	}
+	else
+	{
+		Client->listUserGroups(Session->UserSession, FNakamaUtils::UEStringToStdString(UserId), Limit, FriendState, FNakamaUtils::UEStringToStdString(Cursor), successCallback, errorCallback);
+	}
+	
+	
+}
+
+void UNakamaClient::ListGroupUsers(UNakamaSession* Session, FString GroupId, int32 Limit, ENakamaFriendState State,
+	FString Cursor, const FOnListGroupMembers& Success, const FOnError& Error)
+{
+	if (!Client || !Session)
+		return;
+
+	auto successCallback = [this, GroupId, Success](NGroupUserListPtr list)
+	{
+		const FNakamaGroupUsersList ReturnedGroup = *list;
+		UE_LOG(LogTemp, Warning, TEXT("Users in Group %i"), ReturnedGroup.GroupUsers.Num());
+		Success.ExecuteIfBound(ReturnedGroup);
+	};
+
+	auto errorCallback = [this, Error](const NError& error)
+	{
+		const FNakamaError NakamaError = error;
+		Error.ExecuteIfBound(NakamaError);
+	};
+	
+	NFriend::State FriendState = static_cast<NFriend::State>(State);
+
+	if(State == ENakamaFriendState::ALL)
+	{
+		Client->listGroupUsers(Session->UserSession, FNakamaUtils::UEStringToStdString(GroupId), Limit, {}, FNakamaUtils::UEStringToStdString(Cursor), successCallback, errorCallback);
+	}
+	else
+	{
+		Client->listGroupUsers(Session->UserSession, FNakamaUtils::UEStringToStdString(GroupId), Limit, FriendState, FNakamaUtils::UEStringToStdString(Cursor), successCallback, errorCallback);
+	}
+	
+}
+
+void UNakamaClient::UpdateGroup(UNakamaSession* Session, FString GroupId, FString Name, FString Description,
+	FString AvatarUrl, FString LanguageTag, bool Open, const FOnUpdateGroup& Success, const FOnError& Error)
+{
+	if (!Client || !Session)
+		return;
+
+	auto successCallback = [this, Success]()
+	{
+		Success.ExecuteIfBound();
+	};
+
+	auto errorCallback = [this, Error](const NError& error)
+	{
+		FNakamaError NakamaError = error;
+		Error.ExecuteIfBound(NakamaError);
+	};
+	
+	Client->updateGroup(Session->UserSession,
+		FNakamaUtils::UEStringToStdString(GroupId),
+		FNakamaUtils::UEStringToStdString(Name),
+		FNakamaUtils::UEStringToStdString(Description),
+		FNakamaUtils::UEStringToStdString(AvatarUrl),
+		FNakamaUtils::UEStringToStdString(LanguageTag), // Example: en_US
+		Open,
+		successCallback,
+		errorCallback);
+}
+
+void UNakamaClient::LeaveGroup(UNakamaSession* Session, FString GroupId, const FOnLeaveGroup& Success,
+	const FOnError& Error)
+{
+	if (!Client || !Session)
+		return;
+
+	auto successCallback = [this, Success]()
+	{
+		Success.ExecuteIfBound();
+	};
+
+	auto errorCallback = [this, Error](const NError& error)
+	{
+		FNakamaError NakamaError = error;
+		Error.ExecuteIfBound(NakamaError);
+	};
+
+	Client->leaveGroup(Session->UserSession, FNakamaUtils::UEStringToStdString(GroupId), successCallback, errorCallback);
+}
+
+void UNakamaClient::AddGroupUsers(UNakamaSession* Session, FString GroupId, TArray<FString> UserIds,
+	const FOnAddGroupUsers& Success, const FOnError& Error)
+{
+	if (!Client || !Session)
+		return;
+
+	auto successCallback = [this, Success]()
+	{
+		Success.ExecuteIfBound();
+	};
+
+	auto errorCallback = [this, Error](const NError& error)
+	{
+		const FNakamaError NakamaError = error;
+		Error.ExecuteIfBound(NakamaError);
+	};
+
+	std::vector<std::string> UsersToAdd;
+
+	for (auto & User : UserIds)
+	{
+		UsersToAdd.push_back(FNakamaUtils::UEStringToStdString(User));
+	}
+
+	// Accept new members to a group (if private/not open)
+	// Only accessible by admins or superadmins
+	if (UsersToAdd.size() > 0)
+	{
+		Client->addGroupUsers(Session->UserSession, FNakamaUtils::UEStringToStdString(GroupId), UsersToAdd, successCallback, errorCallback);
+	}	
+}
+
+void UNakamaClient::PromoteGroupUsers(UNakamaSession* Session, FString GroupId, TArray<FString> UserIds,
+	const FOnPromoteGroupUsers& Success, const FOnError& Error)
+{
+	if (!Client || !Session)
+		return;
+
+	auto successCallback = [this, Success]()
+	{
+		Success.ExecuteIfBound();
+	};
+
+	auto errorCallback = [this, Error](const NError& error)
+	{
+		const FNakamaError NakamaError = error;
+		Error.ExecuteIfBound(NakamaError);
+	};
+	
+	std::vector<std::string> UsersToPromote;
+	for (auto & User : UserIds)
+	{
+		UsersToPromote.push_back(FNakamaUtils::UEStringToStdString(User));
+	}
+
+	if (UsersToPromote.size() > 0) {
+		// Promote user to Admin
+		// Only accessible by admins or superadmins
+		// A group can have more admins
+		Client->promoteGroupUsers(Session->UserSession, FNakamaUtils::UEStringToStdString(GroupId), UsersToPromote, successCallback, errorCallback);
+	}
+}
+
+void UNakamaClient::KickGroupUsers(UNakamaSession* Session, FString GroupId, TArray<FString> UserIds,
+                                   const FOnKickGroupUsers& Success, const FOnError& Error)
+{
+	if (!Client || !Session)
+		return;
+
+	auto successCallback = [this, Success]()
+	{
+		Success.ExecuteIfBound();
+	};
+
+	auto errorCallback = [this, Error](const NError& error)
+	{
+		const FNakamaError NakamaError = error;
+		Error.ExecuteIfBound(NakamaError);
+	};
+
+
+	std::vector<std::string> UsersToKick;
+	for (auto & User : UserIds)
+	{
+		UsersToKick.push_back(FNakamaUtils::UEStringToStdString(User));
+	}
+
+	if (UsersToKick.size() > 0) {
+		// Kick user from group
+		// Only accessible by admins or superadmins
+		// Kicked user can re-join if group is not private, but needs to be accepted again by admin
+		// Kicked user can still join other groups
+		Client->kickGroupUsers(Session->UserSession, FNakamaUtils::UEStringToStdString(GroupId), UsersToKick, successCallback, errorCallback);
+	}
+}
+
+void UNakamaClient::DemoteGroupUsers(UNakamaSession* Session, FString GroupId, TArray<FString> UserIds,
+	const FOnDemoteGroupUsers& Success, const FOnError& Error)
+{
+	if (!Client || !Session)
+		return;
+
+	auto successCallback = [this, Success]()
+	{
+		Success.ExecuteIfBound();
+	};
+
+	auto errorCallback = [this, Error](const NError& error)
+	{
+		const FNakamaError NakamaError = error;
+		Error.ExecuteIfBound(NakamaError);
+	};
+
+	std::vector<std::string> UsersToDemote;
+	for (auto & User : UserIds)
+	{
+		UsersToDemote.push_back(FNakamaUtils::UEStringToStdString(User));
+	}
+
+	if (UsersToDemote.size() > 0) {
+		Client->demoteGroupUsers(Session->UserSession, FNakamaUtils::UEStringToStdString(GroupId), UsersToDemote, successCallback, errorCallback);
+	}
+}
+
+void UNakamaClient::DeleteGroup(UNakamaSession* Session, FString GroupId, const FOnRemoveGroup& Success,
+	const FOnError& Error)
+{
+	if (!Client || !Session)
+		return;
+
+	auto successCallback = [this, Success]()
+	{
+		Success.ExecuteIfBound();
+	};
+
+	auto errorCallback = [this, Error](const NError& error)
+	{
+		const FNakamaError NakamaError = error;
+		Error.ExecuteIfBound(NakamaError);
+	};
+	
+	Client->deleteGroup(Session->UserSession, FNakamaUtils::UEStringToStdString(GroupId), successCallback);
+}
+
+/**
+ * Notification System
+ */
+
+void UNakamaClient::ListNotifications(UNakamaSession* Session, int32 Limit, FString Cursor,
+	const FOnListNotifications& Success, const FOnError& Error)
+{
+	if (!Client || !Session)
+		return;
+
+	auto errorCallback = [this, Error](const NError& error)
+	{
+		const FNakamaError NakamaError = error;
+		Error.ExecuteIfBound(NakamaError);
+	};
+
+	auto successCallback = [this, Success](NNotificationListPtr list)
+	{
+		FNakamaNotificationList NotificationList = *list;
+		Success.ExecuteIfBound(NotificationList);
+
+	};
+	
+	Client->listNotifications(Session->UserSession, Limit, FNakamaUtils::UEStringToStdString(Cursor), successCallback, errorCallback);
+}
+
+void UNakamaClient::DeleteNotifications(UNakamaSession* Session, TArray<FString> NotificationIds,
+	const FOnDeleteNotifications& Success, const FOnError& Error)
+{
+	if (!Client || !Session)
+		return;
+
+	auto errorCallback = [this, Error](const NError& error)
+	{
+		FNakamaError NakamaError = error;
+		Error.ExecuteIfBound(NakamaError);
+	};
+
+	auto successCallback = [this, Success]()
+	{
+		Success.ExecuteIfBound();
+	};
+
+	std::vector<std::string> NotificationsList;
+	
+	for (auto& Str : NotificationIds)
+	{
+		NotificationsList.push_back(FNakamaUtils::UEStringToStdString(Str));
+	}
+
+	Client->deleteNotifications(Session->UserSession, NotificationsList, successCallback, errorCallback);
+}
+
+/**
+ * Storage System
+ */
+
+void UNakamaClient::WriteStorageObjects(UNakamaSession* Session, TArray<FNakamaStoreObjectWrite> StorageObjectsData,
+	const FOnStorageObjectAcks& Success, const FOnError& Error)
+{
+	if (!Client || !Session)
+		return;
+
+	auto successCallback = [this, Success](const NStorageObjectAcks& acks)
+	{
+		const FNakamaStoreObjectAcks StorageObjectsAcks = acks;
+
+		UE_LOG(LogTemp, Warning, TEXT("Successfully stored objects: %i"), StorageObjectsAcks.StorageObjects.Num());
+		Success.ExecuteIfBound(StorageObjectsAcks);
+	};
+
+	auto errorCallback = [this, Error](const NError& error)
+	{
+		const FNakamaError NakamaError = error;
+		Error.ExecuteIfBound(NakamaError);
+	};
+	
+	std::vector<NStorageObjectWrite> Objects;
+
+	for (FNakamaStoreObjectWrite dataObject : StorageObjectsData)
+	{
+		NStorageObjectWrite SavesObject;
+		
+		// Data Object
+		SavesObject.collection = FNakamaUtils::UEStringToStdString(dataObject.Collection);
+		SavesObject.key = FNakamaUtils::UEStringToStdString(dataObject.Key);
+		SavesObject.value = FNakamaUtils::UEStringToStdString(dataObject.Value);
+		SavesObject.version = FNakamaUtils::UEStringToStdString(dataObject.Version); // Use "*" to write only once (No Overrides)
+
+		// Set Read Permissions
+		NStoragePermissionRead PermissionRead = static_cast<NStoragePermissionRead>(dataObject.PermissionRead);
+		SavesObject.permissionRead = PermissionRead;
+
+		// Set Write Permissions
+		NStoragePermissionWrite PermissionWrite = static_cast<NStoragePermissionWrite>(dataObject.PermissionWrite);
+		SavesObject.permissionWrite = PermissionWrite;
+
+		// Add to array
+		Objects.push_back(SavesObject);
+	}
+	
+	Client->writeStorageObjects(Session->UserSession, Objects, successCallback, errorCallback);
+}
+
+void UNakamaClient::ReadStorageObjects(UNakamaSession* Session, TArray<FNakamaReadStorageObjectId> StorageObjectsData,
+	const FOnStorageObjectsRead& Success, const FOnError& Error)
+{
+	if (!Client || !Session)
+		return;
+
+	auto successCallback = [this, Success](const NStorageObjects& objects)
+	{
+		TArray <FNakamaStoreObjectData> ObjectsResult;
+
+		for (auto& object : objects)
+		{
+			FNakamaStoreObjectData StorageObject = object; // Converts
+			
+			// Add to array
+			ObjectsResult.Add(StorageObject);
+		}
+
+		Success.ExecuteIfBound(ObjectsResult);
+	};
+
+	auto errorCallback = [this, Error](const NError& error)
+	{
+		FNakamaError NakamaError = error;
+		Error.ExecuteIfBound(NakamaError);
+	};
+
+	std::vector<NReadStorageObjectId> ObjectIds;
+
+	for (FNakamaReadStorageObjectId dataObject : StorageObjectsData)
+	{
+		NReadStorageObjectId ObjectId;
+		ObjectId.collection = FNakamaUtils::UEStringToStdString(dataObject.Collection);
+		ObjectId.key = FNakamaUtils::UEStringToStdString(dataObject.Key);
+		ObjectId.userId = FNakamaUtils::UEStringToStdString(dataObject.UserId);
+		
+		// Add to array
+		ObjectIds.push_back(ObjectId);
+	}
+	
+	Client->readStorageObjects(Session->UserSession, ObjectIds, successCallback, errorCallback);
+}
+
+void UNakamaClient::ListStorageObjects(UNakamaSession* Session, FString Collection, FString UserId, int32 Limit,
+	FString Cursor, const FOnStorageObjectsListed& Success, const FOnError& Error)
+{
+	if (!Client || !Session)
+		return;
+
+	auto successCallback = [this, Success](NStorageObjectListPtr list)
+	{
+		FNakamaStorageObjectList StorageObjects;
+
+		for (auto& object : list->objects)
+		{
+			FNakamaStoreObjectData Object = object; // Converts
+
+			// Add to array
+			StorageObjects.Objects.Add(Object);
+		}
+
+		Success.ExecuteIfBound(StorageObjects);
+	};
+
+	auto errorCallback = [this, Error](const NError& error)
+	{
+		const FNakamaError NakamaError = error;
+		Error.ExecuteIfBound(NakamaError);
+	};
+
+	Client->listUsersStorageObjects(Session->UserSession,
+		FNakamaUtils::UEStringToStdString(Collection),
+		FNakamaUtils::UEStringToStdString(UserId),
+		Limit,
+		FNakamaUtils::UEStringToStdString(Cursor),
+		successCallback,
+		errorCallback);
+}
+
+void UNakamaClient::RemoveStorageObjects(UNakamaSession* Session,
+	TArray<FNakamaDeleteStorageObjectId> StorageObjectsData, const FOnRemovedStorageObjects& Success,
+	const FOnError& Error)
+{
+	if (!Client || !Session)
+		return;
+
+	auto errorCallback = [this, Error](const NError& error)
+	{
+		const FNakamaError NakamaError = error;
+		Error.ExecuteIfBound(NakamaError);
+	};
+
+	auto successCallback = [this, Success]()
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Successfully deleted storage objects:"));
+		Success.ExecuteIfBound();
+	};
+
+	std::vector<NDeleteStorageObjectId> ObjectIds;
+
+	// Parse Inputs
+	for (FNakamaDeleteStorageObjectId dataObject : StorageObjectsData)
+	{
+		NDeleteStorageObjectId ObjectId;
+		ObjectId.collection = FNakamaUtils::UEStringToStdString(dataObject.Collection);
+		ObjectId.key = FNakamaUtils::UEStringToStdString(dataObject.Key);
+		ObjectId.version = FNakamaUtils::UEStringToStdString(dataObject.Version);
+		ObjectIds.push_back(ObjectId);
+	}
+
+	Client->deleteStorageObjects(Session->UserSession, ObjectIds, successCallback, errorCallback);
+}
+
+/**
+ * RPC
+ */
+
+void UNakamaClient::RPC(UNakamaSession* Session, FString FunctionId, FString Payload, const FOnRPC& Success, const FOnError& Error)
+{
+	if (!Client || !Session)
+		return;
+
+	auto errorCallback = [this, Error](const NError& error)
+	{
+		const FNakamaError NakamaError = error;
+		Error.ExecuteIfBound(NakamaError);
+	};
+
+	auto successCallback = [this, Success](const NRpc rpc)
+	{
+		const FNakamaRPC RpcCallback = rpc; // Converts
+
+		UE_LOG(LogTemp, Warning, TEXT("RPC Success with ID: %s"), *RpcCallback.Id);
+		
+		Success.ExecuteIfBound(RpcCallback);
+	};
+	
+	Client->rpc(Session->UserSession, FNakamaUtils::UEStringToStdString(FunctionId), FNakamaUtils::UEStringToStdString(Payload), successCallback, errorCallback);
+}
+
+/**
+ * List Channel Messages
+ */
+
+void UNakamaClient::ListChannelMessages(UNakamaSession* Session, FString ChannelId, int32 Limit, FString Cursor, bool Forward,
+	const FOnListChannelMessages& Success, const FOnError& Error)
+{
+	if (!Client || !Session)
+		return;
+
+	auto errorCallback = [this, Error](const NError& error)
+	{
+		const FNakamaError NakamaError = error;
+		Error.ExecuteIfBound(NakamaError);
+	};
+
+	auto successCallback = [this, Success](NChannelMessageListPtr list)
+	{
+		FNakamaChannelMessageList ChannelMessageList = *list;
+
+		for(auto &Message : ChannelMessageList.Messages)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("List Channel Messages Content: %s"), *Message.Content);
+		}
+
+		if(ChannelMessageList.NextCursor != "")
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Get the next page of messages with the cursor: %s"), *ChannelMessageList.NextCursor);
+		}
+
+		if(ChannelMessageList.PrevCursor != "")
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Get the previous page of messages with the cursor: %s"), *ChannelMessageList.PrevCursor);
+		}
+		
+		Success.ExecuteIfBound(ChannelMessageList);
+
+	};
+	
+	Client->listChannelMessages(Session->UserSession,
+		FNakamaUtils::UEStringToStdString(ChannelId),
+		Limit,
+		FNakamaUtils::UEStringToStdString(Cursor),
+		Forward, // Fetch messages forward from the current cursor (or the start).
+		successCallback,
+		errorCallback);
+}
+
+/**
+ * Leaderboards System
+ */
+
+void UNakamaClient::WriteLeaderboardRecord(UNakamaSession* Session, FString LeaderboardId, int64 Score, int64 SubScore,
+	FString Metadata, const FOnWriteLeaderboardRecord& Success, const FOnError& Error)
+{
+	if (!Client || !Session)
+		return;
+
+	auto errorCallback = [this, Error](const NError& error)
+	{
+		const FNakamaError NakamaError = error;
+		Error.ExecuteIfBound(NakamaError);
+	};
+
+	auto successCallback = [this, Success](const NLeaderboardRecord& record)
+	{
+		const FNakamaLeaderboardRecord LeaderboardRecord = record;
+
+		UE_LOG(LogTemp, Warning, TEXT("New leaderboard record with score %lld"), LeaderboardRecord.Score);
+		Success.ExecuteIfBound(LeaderboardRecord);
+	};
+	
+	Client->writeLeaderboardRecord(
+		Session->UserSession,
+		FNakamaUtils::UEStringToStdString(LeaderboardId),
+		Score,
+		SubScore, // (Optional)
+		FNakamaUtils::UEStringToStdString(Metadata),
+		successCallback,
+		errorCallback
+	);
+}
+
+void UNakamaClient::ListLeaderboardRecords(UNakamaSession* Session, FString LeaderboardId, TArray<FString> OwnerIds,
+	int32 Limit, FString Cursor, ENakamaLeaderboardListBy ListBy, const FOnListLeaderboardRecords& Success,
+	const FOnError& Error)
+{
+	if (!Client || !Session)
+    		return;
+    
+    	auto errorCallback = [this, Error](const NError& error)
+    	{
+    		const FNakamaError NakamaError = error;
+    		Error.ExecuteIfBound(NakamaError);
+    	};
+    
+    	auto successCallback = [this, Success, LeaderboardId](NLeaderboardRecordListPtr recordsList)
+    	{
+    		FNakamaLeaderboardRecordList RecordsList = *recordsList;
+    
+    		Success.ExecuteIfBound(RecordsList);
+    	};
+	
+    	// Get Friends from Blueprint Node
+    	std::vector<std::string> Friends;
+    	for (int i = 0; i < OwnerIds.Num(); i++) {
+    		Friends.push_back(FNakamaUtils::UEStringToStdString(OwnerIds[i]));
+    	}
+    
+    	// List By Score or Friends
+    	if (ListBy == ENakamaLeaderboardListBy::BY_SCORE)
+    	{
+    		Client->listLeaderboardRecords(Session->UserSession,
+    			FNakamaUtils::UEStringToStdString(LeaderboardId),
+    			{}, //None because of listing by score
+    			Limit, //Limit, Optional 
+    			FNakamaUtils::UEStringToStdString(Cursor),
+    			successCallback,
+    			errorCallback
+    		);
+    	}
+    	else if (ListBy == ENakamaLeaderboardListBy::BY_FRIENDS) {
+    		Client->listLeaderboardRecords(Session->UserSession,
+    			FNakamaUtils::UEStringToStdString(LeaderboardId),
+    			Friends, //OwnerIds, Can be empty
+    			Limit, //Limit, Optional 
+    			FNakamaUtils::UEStringToStdString(Cursor),
+    			successCallback,
+    			errorCallback
+    		);
+    	}
+}
+
+void UNakamaClient::ListLeaderboardRecordsAroundOwner(UNakamaSession* Session, FString LeaderboardId, FString OwnerId,
+	int32 Limit, const FOnListLeaderboardRecords& Success, const FOnError& Error)
+{
+	if (!Client || !Session)
+		return;
+
+	auto errorCallback = [this, Error](const NError& error)
+	{
+		const FNakamaError NakamaError = error;
+		Error.ExecuteIfBound(NakamaError);
+	};
+
+	auto successCallback = [this, Success, LeaderboardId](NLeaderboardRecordListPtr recordsList)
+	{
+		FNakamaLeaderboardRecordList RecordsList = *recordsList; // Convert
+
+		Success.ExecuteIfBound(RecordsList);
+	};
+
+
+	Client->listLeaderboardRecordsAroundOwner(Session->UserSession,
+		FNakamaUtils::UEStringToStdString(LeaderboardId),
+		FNakamaUtils::UEStringToStdString(OwnerId),
+		Limit,
+		successCallback,
+		errorCallback
+	);
+}
+
+void UNakamaClient::DeleteLeaderboardRecord(UNakamaSession* Session, FString LeaderboardId,
+	const FOnDeletedLeaderboardRecord& Success, const FOnError& Error)
+{
+	if (!Client || !Session)
+		return;
+
+	auto errorCallback = [this, Error](const NError& error)
+	{
+		const FNakamaError NakamaError = error;
+		Error.ExecuteIfBound(NakamaError);
+	};
+
+	auto successCallback = [this, Success]()
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Deleted Leaderboard Record"));
+		Success.ExecuteIfBound();
+	};
+	
+	Client->deleteLeaderboardRecord(Session->UserSession, FNakamaUtils::UEStringToStdString(LeaderboardId), successCallback, errorCallback);
+}
+
+/**
+ * Tournaments System
+ */
+
+void UNakamaClient::WriteTournamentRecord(UNakamaSession* Session, FString TournamentId, int64 Score, int64 SubScore,
+	FString Metadata, const FOnWriteLeaderboardRecord& Success, const FOnError& Error)
+{
+	if (!Client || !Session)
+		return;
+
+	auto errorCallback = [this, Error](const NError& error)
+	{
+		const FNakamaError NakamaError = error;
+		Error.ExecuteIfBound(NakamaError);
+	};
+
+	auto successCallback = [this, Success](const NLeaderboardRecord& record)
+	{
+		const FNakamaLeaderboardRecord LeaderboardRecord = record;
+		UE_LOG(LogTemp, Warning, TEXT("New Tournament record with score %lld"), LeaderboardRecord.Score);
+		Success.ExecuteIfBound(LeaderboardRecord);
+	};
+	
+	Client->writeTournamentRecord(Session->UserSession,
+		FNakamaUtils::UEStringToStdString(TournamentId),
+		Score,
+		SubScore,
+		FNakamaUtils::UEStringToStdString(Metadata),
+		successCallback,
+		errorCallback);
+}
+
+void UNakamaClient::ListTournamentRecords(UNakamaSession* Session, FString TournamentId, int32 Limit, FString Cursor,
+	TArray<FString> OwnerIds, ENakamaLeaderboardListBy ListBy, const FOnListTournamentRecords& Success,
+	const FOnError& Error)
+{
+	if (!Client || !Session)
+		return;
+
+	auto errorCallback = [this, Error](const NError& error)
+	{
+		const FNakamaError NakamaError = error;
+		Error.ExecuteIfBound(NakamaError);
+	};
+
+	auto successCallback = [this, Success](NTournamentRecordListPtr list)
+	{
+		FNakamaTournamentRecordList TournamentList = *list;
+
+		Success.ExecuteIfBound(TournamentList);
+	};
+
+	// Get "Friends" from Blueprint Node
+	std::vector<std::string> Friends;
+	for (int i = 0; i < OwnerIds.Num(); i++) {
+		Friends.push_back(FNakamaUtils::UEStringToStdString(OwnerIds[i]));
+	}
+
+	Client->listTournamentRecords(Session->UserSession,
+		FNakamaUtils::UEStringToStdString(TournamentId),
+		Limit,
+		FNakamaUtils::UEStringToStdString(Cursor),
+		Friends,
+		successCallback,
+		errorCallback);
+}
+
+void UNakamaClient::ListTournamentRecordsAroundOwner(UNakamaSession* Session, FString TournamentId, FString OwnerId,
+	int32 Limit, const FOnListTournamentRecords& Success, const FOnError& Error)
+{
+	if (!Client || !Session)
+		return;
+	
+	auto errorCallback = [this, Error](const NError& error)
+	{
+		const FNakamaError NakamaError = error;
+		Error.ExecuteIfBound(NakamaError);
+	};
+
+	auto successCallback = [this, Success](NTournamentRecordListPtr list)
+	{
+		const FNakamaTournamentRecordList TournamentList = *list;
+
+		Success.ExecuteIfBound(TournamentList);
+	};
+
+	Client->listTournamentRecordsAroundOwner(Session->UserSession,
+		FNakamaUtils::UEStringToStdString(TournamentId),
+		FNakamaUtils::UEStringToStdString(OwnerId),
+		Limit,
+		successCallback,
+		errorCallback);
+}
+
+void UNakamaClient::JoinTournament(UNakamaSession* Session, FString TournamentId, const FOnJoinedTournament& Success,
+	const FOnError& Error)
+{
+	if (!Client || !Session)
+		return;
+
+	auto errorCallback = [this, Error](const NError& error)
+	{
+		const FNakamaError NakamaError = error;
+		Error.ExecuteIfBound(NakamaError);
+	};
+
+	auto successCallback = [this, TournamentId, Success]()
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Joined Tournament with Id: %s"), *TournamentId);
+		Success.ExecuteIfBound();
+	};
+	
+	Client->joinTournament(Session->UserSession, FNakamaUtils::UEStringToStdString(TournamentId), successCallback);
+}
+
+void UNakamaClient::ListTournaments(UNakamaSession* Session, int32 CategoryStart, int32 CategoryEnd, int32 StartTime,
+	int32 EndTime, int32 Limit, FString Cursor, const FOnListTournaments& Success, const FOnError& Error)
+{
+	if (!Client || !Session)
+		return;
+
+	auto errorCallback = [this, Error](const NError& error)
+	{
+		FNakamaError NakamaError = error;
+		Error.ExecuteIfBound(NakamaError);
+	};
+
+	auto successCallback = [this, Success](NTournamentListPtr list)
+	{
+		const FNakamaTournamentList TournamentList = *list; // Converts
+		UE_LOG(LogTemp, Warning, TEXT("Got Tournaments: %llu"), list->tournaments.size());
+		Success.ExecuteIfBound(TournamentList);
+	};
+
+	//int32 CategoryStart = 1, int32 CategoryEnd = 2, int32 StartTime = 1538147711, int32 EndTime = -1, int32 Limit = 100, FString Cursor,
+
+	Client->listTournaments(Session->UserSession,
+		CategoryStart,
+		CategoryEnd,
+		StartTime,
+		EndTime,
+		Limit,
+		FNakamaUtils::UEStringToStdString(Cursor),
+		successCallback,
+		errorCallback
+	);
+	
+}
+
