@@ -210,6 +210,20 @@ To enable logs output to console with debug logging level:
 NLogger::init(std::make_shared<NUnrealLogSink>(), NLogLevel::Debug);
 ```
 
+### Development
+
+To check verify that the Nakama plugin builds on Windows:
+
+`& "${env:UnrealEngine}\Engine\Build\BatchFiles\RunUAT.bat" BuildPlugin -Plugin="${env:nakama-unreal}\Nakama\Nakama.uplugin" -TargetPlatforms=Win64 -Package="${env:nakama-unreal}/Nakama"`
+
+On Mac:
+
+`"${UNREAL_ENGINE}\Engine\Build\BatchFiles\RunUAT.sh" BuildPlugin -Plugin="${NAKAMA_UNREAL}\Nakama\Nakama.uplugin" -TargetPlatforms=Mac -Package="${NAKAMA_UNREAL}/Nakama"`
+
+You can include the flag `-Rocket` after the `BuildPlugin` command if you'd like to test the plugin building in a packaged (i.e., not-source) distribution of Unreal.
+
+Additionally, you can compile our Unreal test project using our Unreal Nakama module. Run following from the `./test/unreal` directory:
+
 ## Contribute
 
 The development roadmap is managed as GitHub issues and pull requests are welcome. If you're interested to enhance the code please open an issue to discuss the changes or drop in and discuss it in the [community forum](https://forum.heroiclabs.com).
