@@ -12,8 +12,6 @@ public class Nakama : ModuleRules
 		{
 			{UnrealTargetPlatform.Win64, Tuple.Create(Path.Combine("win-x64", "nakama-sdk.lib"), Path.Combine("win-x64", "nakama-sdk.dll"))},
 			{UnrealTargetPlatform.Linux, Tuple.Create(Path.Combine("linux-amd64", "libnakama-sdk.so"), Path.Combine("linux-amd64", "libnakama-sdk.so"))},
-			{UnrealTargetPlatform.IOS, Tuple.Create(Path.Combine("ios-arm64", "libnakama-sdk.dylib"), Path.Combine("ios-arm64", "libnakama-sdk.dylib"))},
-			{UnrealTargetPlatform.Mac, Tuple.Create(Path.Combine("osx-universal", "libnakama-sdk.dylib"), Path.Combine("osx-universal, libnakama-sdk.dylib"))}
 		};
 
 #if PLATFORM_PS4
@@ -36,16 +34,34 @@ public class Nakama : ModuleRules
 		libs[UnrealTargetPlatform.XSX] = Tuple.Create(Path.Combine("gdk-xbox-scarlett", "nakama-sdk.lib"), Path.Combine("gdk-xbox-scarlett", "nakama-sdk.dll"));
 #endif
 
-		if (!libs.ContainsKey(Target.Platform))
+        if (Target.Platform == UnrealTargetPlatform.Mac)
 		{
-			throw new BuildException("Unsupported platform");
+		    var frameworkDir = Path.Combine(ModuleDirectory, "libnakama", "macosx-universal", "nakama-sdk.framework");
+            PublicFrameworks.Add(frameworkDir);
+
+            // Currently headers prefix doesn't match framework name (nakama-cpp != nakama-sdk)
+            // so Clang can't find include path automatically and needs some help
+            PublicIncludePaths.Add(Path.Combine(frameworkDir, "Headers"));
 		}
+		else if (Target.Platform == UnrealTargetPlatform.IOS)
+		{
+		    var frameworkDir = Path.Combine(ModuleDirectory, "libnakama", "ios-universal", "nakama-sdk.framework");
+            PublicFrameworks.Add(frameworkDir);
+            PublicIncludePaths.Add(Path.Combine(frameworkDir, "Headers"));
+		}
+		else
+        {
+            if (!libs.ContainsKey(Target.Platform))
+            {
+                throw new BuildException("Unsupported platform");
+            }
 
-		var libFiles = libs[Target.Platform];
+            var libFiles = libs[Target.Platform];
 
-		PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "libnakama", libFiles.Item1));
-		RuntimeDependencies.Add(Path.Combine(ModuleDirectory, "libnakama", libFiles.Item2));
-		PublicIncludePaths.Add(Path.Combine(ModuleDirectory, "libnakama", "include"));
+            PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "libnakama", libFiles.Item1));
+            RuntimeDependencies.Add(Path.Combine(ModuleDirectory, "libnakama", libFiles.Item2));
+            PublicIncludePaths.Add(Path.Combine(ModuleDirectory, "libnakama", "include"));
+        }
 
 		PrivateDependencyModuleNames.AddRange(new string[]{ "Core", "HTTP", "WebSockets" });
 	}
