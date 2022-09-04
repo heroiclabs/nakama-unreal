@@ -17,9 +17,6 @@ If you experience any issues with the client, it can be useful to enable debug l
 
 Full documentation is online - https://heroiclabs.com/docs
 
-## Notice
-**DO NOT** download source code from this repo **if you are not intended to create pull request**. This is not for end users.
-
 ## Getting Started
 
 You'll need to setup the server and database before you can connect with the client. The simplest way is to use Docker but have a look at the [server documentation](https://github.com/heroiclabs/nakama#getting-started) for other options.
