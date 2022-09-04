@@ -218,7 +218,7 @@ To check verify that the Nakama plugin builds on Windows:
 
 On Mac:
 
-`"${UNREAL_ENGINE}\Engine\Build\BatchFiles\RunUAT.sh" BuildPlugin -Plugin="${NAKAMA_UNREAL}\Nakama\Nakama.uplugin" -TargetPlatforms=Mac -Package="${NAKAMA_UNREAL}/Nakama"`
+`"${UNREAL_ENGINE}/Engine/Build/BatchFiles/RunUAT.sh" BuildPlugin -Plugin="${NAKAMA_UNREAL}/Nakama/Nakama.uplugin" -TargetPlatforms=Mac -Package="${NAKAMA_UNREAL}/Nakama"`
 
 You can include the flag `-Rocket` after the `BuildPlugin` command if you'd like to test the plugin building in a packaged (i.e., not-source) distribution of Unreal.
 
