@@ -3,6 +3,7 @@
 #include <nakama-cpp/NTypes.h>
 #include <nakama-cpp/realtime/NRtTransportInterface.h>
 
+#include "Containers/Queue.h"
 #include "IWebSocket.h"
 
 namespace Nakama {
@@ -20,7 +21,7 @@ enum class CallbackDispatch {
 {
 public:
 	~UnrealWsTransport() override { disconnect(); }
-	
+
    // These 2 are now absolette and should be removed from the interface
    void setActivityTimeout(uint32_t timeoutMs) override {};
    uint32_t getActivityTimeout() const override { return 0; };
