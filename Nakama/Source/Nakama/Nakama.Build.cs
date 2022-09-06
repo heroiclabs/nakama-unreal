@@ -4,7 +4,7 @@ using UnrealBuildTool;
 
 public class Nakama : ModuleRules
 {
-	public NakamaBlueprints(ReadOnlyTargetRules Target) : base(Target)
+	public Nakama(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 

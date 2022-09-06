@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using UnrealBuildTool;
 
-public class Nakama : ModuleRules
+public class NakamaCore : ModuleRules
 {
-	public Nakama(ReadOnlyTargetRules target) : base(target)
+	public NakamaCore(ReadOnlyTargetRules target) : base(target)
 	{
 		// Platform -> (buildLib, runtimeLib)
 		var libs = new Dictionary<UnrealTargetPlatform, Tuple<string,string>>()
