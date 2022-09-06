@@ -9,7 +9,7 @@
 
 
 /**
- * 
+ *
  */
 UCLASS()
 class NAKAMABLUEPRINTS_API UNakamaLibrary : public UBlueprintFunctionLibrary
@@ -29,7 +29,7 @@ public:
 	 * @param TickInterval How often Tick Event should happen on the client (0 = every frame).
 	 * @param DisplayName (Optional) Name to identify the client
 	 */
-	UFUNCTION(BlueprintCallable, BlueprintPure=false)
+	UFUNCTION(BlueprintCallable, BlueprintPure=false, Category = "Nakama|Client")
 	static UNakamaClient* CreateDefaultClient(const FString& ServerKey = "defaultkey", const FString& Host = "localhost", int32 Port = 7350, bool UseSSL = false, bool EnableDebug = true, ENakamaClientType Type = ENakamaClientType::DEFAULT, float TickInterval = 0.0f, const FString& DisplayName = "");
 
 	//UFUNCTION(BlueprintCallable, BlueprintPure=false, Category = "Nakama|Realtime")
@@ -40,6 +40,6 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Utilities")
 	static FString ChatMessageStructToJson(FNakamaChatMessage MessageStruct);
-	
-	
+
+
 };

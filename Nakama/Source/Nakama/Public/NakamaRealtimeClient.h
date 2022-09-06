@@ -87,7 +87,7 @@ enum class ENakamaRealtimeClientProtocol : uint8
 };
 
 /**
- * 
+ *
  */
 UCLASS(Blueprintable, BlueprintType,  meta=(BlueprintSpawnableComponent))
 class NAKAMABLUEPRINTS_API UNakamaRealtimeClient : public UObject, public FTickableGameObject
@@ -96,16 +96,16 @@ class NAKAMABLUEPRINTS_API UNakamaRealtimeClient : public UObject, public FTicka
 
 private:
 	// The last frame number we were ticked.
-	// We don't want to tick multiple times per frame 
+	// We don't want to tick multiple times per frame
 	uint32 LastFrameNumberWeTicked = INDEX_NONE;
 
 	float timer;
-	
+
 public:
 
 	UPROPERTY()
 	UNakamaSession* Session;
-	
+
 	UPROPERTY()
 	bool bIsActive;
 
@@ -117,7 +117,7 @@ public:
 
 	UPROPERTY()
 	float TickInterval = 0.0f;
-	
+
 	// FTickableGameObject Begin
 	virtual void Tick( float DeltaTime ) override;
 	virtual ETickableTickType GetTickableTickType() const override
@@ -139,12 +139,12 @@ public:
 	// FTickableGameObject End
 
 public:
-	
+
 	NRtClientPtr RtClient;
 	NRtDefaultClientListener Listener; // Turn this into a UObject
 
 	// (Optional) Name to identify the client
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Meta = (DisplayName = "DisplayName"))
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Meta = (DisplayName = "DisplayName"), Category = "Nakama|Realtime")
 	FString _displayName;
 
 	/**
@@ -152,7 +152,7 @@ public:
 	 */
 	UFUNCTION(Category = "Nakama|Realtime")
 	void Connect(const FOnRealtimeClientConnected& Success, const FOnRealtimeClientError& Error);
-	
+
 	/**
 	 * Disconnects the client. This function kills all outgoing exchanges immediately without waiting.
 	 */
@@ -162,7 +162,7 @@ public:
 	// Events (bindable from blueprints or c++)
 	UPROPERTY(BlueprintAssignable, Category = "Nakama|Events")
 	FOnConnect ConnectedEvent;
-	
+
 	UPROPERTY(BlueprintAssignable, Category = "Nakama|Events")
 	FOnDisconnected DisconnectedEvent;
 
@@ -219,12 +219,12 @@ public:
 
 	// Functionaliy Events
 	FOnWriteChatMessage ChannelMessageWrite;
-	
+
 
 	// Listeners
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Realtime|Listeners")
 	void SetListenerAllCallbacks();
-	
+
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Realtime|Listeners")
 	void SetListenerConnectCallback();
 
@@ -293,7 +293,7 @@ public:
 
 
 	// Functionality
-	
+
 	/// <summary>
 	/// Messaging (Were split up into direct and channel based)
 	/// </summary>
@@ -474,7 +474,7 @@ public:
 	 */
 	UFUNCTION(Category = "Nakama|Realtime|Parties")
     void LeaveParty (FString PartyId, const FOnLeaveParty& Success, const FOnRtError& Error);
-	
+
 	/**
 	 * Request a list of pending join requests for a party.
 	 * @param PartyId Party ID.
@@ -545,5 +545,5 @@ public:
 	 */
 	UFUNCTION(Category = "Nakama|Realtime|Parties")
 	void CloseParty(FString PartyId, const FOnCloseParty& Success, const FOnRtError& Error);
-	
+
 };

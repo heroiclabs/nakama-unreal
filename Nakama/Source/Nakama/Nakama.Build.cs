@@ -36,8 +36,6 @@ public class Nakama : ModuleRules
 			{
 				"CoreUObject",
 				"Engine",
-				"Slate",
-				"SlateCore",
 				"NakamaCore",
 				"Engine",
 				"JsonUtilities",

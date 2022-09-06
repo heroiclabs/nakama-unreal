@@ -83,7 +83,7 @@ DECLARE_DYNAMIC_DELEGATE(FOnImportFacebookFriends);
 
 
 /**
- * 
+ *
  */
 UCLASS(Blueprintable, BlueprintType,  meta=(BlueprintSpawnableComponent))
 class NAKAMABLUEPRINTS_API UNakamaClient : public UObject, public FTickableGameObject
@@ -91,7 +91,7 @@ class NAKAMABLUEPRINTS_API UNakamaClient : public UObject, public FTickableGameO
 	GENERATED_BODY()
 
 private:
-	
+
 	// The last frame number we were ticked.
 	// We don't want to tick multiple times per frame 0
 	uint32 LastFrameNumberWeTicked = INDEX_NONE;
@@ -100,7 +100,7 @@ private:
 
 	UPROPERTY()
 	float _tickInterval = 0.0f;
-	
+
 public:
 
 	NClientPtr Client;
@@ -109,14 +109,14 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category = "Nakama|Events")
 	FOnDisconnected DisconnectedEvent;
-	
+
 	// (Optional) Name to identify the client
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Meta = (DisplayName = "DisplayName"))
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Meta = (DisplayName = "DisplayName"), Category = "Nakama|Client")
 	FString _displayName;
 
 	UPROPERTY()
 	bool bIsActive;
-	
+
 	/** FTickableGameObject implementation */
 	virtual TStatId GetStatId() const override
 	{ RETURN_QUICK_DECLARE_CYCLE_STAT(FNakamaBP, STATGROUP_Tickables); };
@@ -124,7 +124,7 @@ public:
 	virtual bool IsTickableInEditor() const override { return true; };
 	virtual bool IsTickableWhenPaused() const override { return false; };
 	virtual void Tick(float DeltaTime) override;
-	
+
 	// Initialize System, this has to be called first, done via the Library Action instead (removed BlueprintCallable)
 	UFUNCTION(Category = "Nakama|Initialize")
 	void InitializeSystem(const FString& ServerKey, const FString& Host, int32 Port, bool UseSSL, bool EnableDebug, ENakamaClientType Type, float TickInterval, const FString& DisplayName);
@@ -148,7 +148,7 @@ public:
 	/// <summary>
 	/// Authentication
 	/// </summary>
-	
+
 	/**
 	 * Authenticate a user with a custom id.
 	 *
@@ -245,7 +245,7 @@ public:
 	 */
 	UFUNCTION(Category = "Nakama|Authentication")
 	void AuthenticateApple(FString Token, FString Username, bool CreateAccount, TMap<FString, FString> Vars, const FOnAuthUpdate& Success, const FOnError& Error);
-	
+
 	/// <summary>
 	/// Restore Session
 	/// </summary>
@@ -259,7 +259,7 @@ public:
 	 */
 	UFUNCTION(Category = "Nakama|Authentication")
 	void RestoreSession(FString Token, FString RefreshToken, UNakamaSession*& RestoredSession);
-	
+
 	/// <summary>
 	/// Link Account
 	/// </summary>
@@ -489,7 +489,7 @@ public:
 	/// <summary>
 	/// Realtime Client
 	/// </summary>
-	
+
 	/**
 	 * Connect to the server.
 	 *
@@ -505,8 +505,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Realtime") // Used for both Blueprints and C++
 	UNakamaRealtimeClient* SetupRealtimeClient(UNakamaSession *Session, bool ShowAsOnline = true, int32 Port = 7350, ENakamaRealtimeClientProtocol Protocol = ENakamaRealtimeClientProtocol::Protobuf, float TickInterval = 0.0f, FString DisplayName = "");
 	//void SetupRealtimeClient(UNakamaSession *Session, bool ShowAsOnline, int32 Port = 7350, ENakamaRealtimeClientProtocol Protocol = ENakamaRealtimeClientProtocol::Protobuf, float TickInterval = 0.0f, FString DisplayName = "", const FOnRealtimeClientConnected& Success = {}, const FOnRealtimeClientError& Error = {});
-	
-	
+
+
 	/**
 	 * Fetch a list of matches active on the server.
 	 *
@@ -519,8 +519,8 @@ public:
 	 */
 	UFUNCTION(Category = "Nakama|Realtime")
 	void ListMatches(UNakamaSession *Session, int32 MinSize, int32 MaxSize, int32 Limit, FString Label, bool Authoritative, const FOnMatchlist& Success, const FOnError& Error);
-	
-	
+
+
 	/// <summary>
 	/// Friend System
 	/// </summary>
@@ -850,7 +850,7 @@ public:
 	/// <summary>
 	/// Tournaments
 	/// </summary>
-	
+
 	/**
 	 * A request to submit a score to a tournament.
 	 *
@@ -909,9 +909,9 @@ public:
 	 */
 	UFUNCTION(Category = "Nakama|Tournaments")
 	void ListTournaments(UNakamaSession* Session, int32 CategoryStart, int32 CategoryEnd, int32 StartTime, int32 EndTime, int32 Limit, FString Cursor, const FOnListTournaments& Success, const FOnError& Error);
-	
 
-	
+
+
 };
 
 
