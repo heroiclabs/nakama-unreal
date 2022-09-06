@@ -30,6 +30,38 @@
 				"IOS",
 				"Mac"
 			]
+		},
+        {
+			"Name": "NakamaBlueprints",
+			"Type": "Runtime",
+			"LoadingPhase": "PreDefault",
+			"WhitelistPlatforms": [
+				"Win64",
+				"Linux",
+				"PS4",
+				"PS5",
+				"XboxOne",
+				"XboxOneGDK",
+				"XSX",
+				"IOS",
+				"Mac"
+			]
+		},
+        {
+			"Name": "NakamaCore",
+			"Type": "Runtime",
+			"LoadingPhase": "PreDefault",
+			"WhitelistPlatforms": [
+				"Win64",
+				"Linux",
+				"PS4",
+				"PS5",
+				"XboxOne",
+				"XboxOneGDK",
+				"XSX",
+				"IOS",
+				"Mac"
+			]
 		}
 	]
 }
