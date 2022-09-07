@@ -27,6 +27,7 @@ public class Nakama : ModuleRules
 			new string[]
 			{
 				"Core",
+				"NakamaCore"
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);
@@ -36,8 +37,6 @@ public class Nakama : ModuleRules
 			new string[]
 			{
 				"CoreUObject",
-				"Engine",
-				"NakamaCore",
 				"Engine",
 				"JsonUtilities",
 				"Json"
