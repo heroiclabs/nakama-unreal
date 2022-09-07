@@ -2,9 +2,37 @@
 
 
 #include "NakamaClientRequests.h"
-
+#include "NakamaUserSession.h"
+#include "NakamaStorageObject.h"
 #include "NakamaUtils.h"
+#include "NakamaError.h"
+#include "NakamaGroup.h"
+#include "NakamaClient.h"
+#include "NakamaMatch.h"
+#include "NakamaFriend.h"
+#include "NakamaNotification.h"
+#include "NakamaStorageObject.h"
+#include "NakamaRPC.h"
+#include "NakamaChannelTypes.h"
+#include "NakamaLeaderboard.h"
+#include "NakamaTournament.h"
 
+
+#include "nakama-cpp/data/NAccount.h"
+#include "nakama-cpp/data/NUsers.h"
+#include "nakama-cpp/data/NMatchList.h"
+#include "nakama-cpp/data/NFriend.h"
+#include "nakama-cpp/data/NGroup.h"
+#include "nakama-cpp/data/NGroupList.h"
+#include "nakama-cpp/data/NNotificationList.h"
+#include "nakama-cpp/data/NStorageObject.h"
+#include "nakama-cpp/data/NStorageObjectList.h"
+#include "nakama-cpp/data/NRpc.h"
+#include "nakama-cpp/data/NChannelMessageList.h"
+#include "nakama-cpp/data/NLeaderboardRecord.h"
+#include "nakama-cpp/data/NLeaderboardRecordList.h"
+#include "nakama-cpp/data/NTournamentRecord.h"
+#include "nakama-cpp/data/NTournamentRecordList.h"
 
 UNakamaClientAuthenticateCustom* UNakamaClientAuthenticateCustom::AuthenticateCustom(UNakamaClient* Client,
 	FString UserID, FString Username, bool CreateAccount, TMap<FString, FString> Vars)
@@ -1603,7 +1631,7 @@ void UNakamaClientJoinGroup::Activate()
 }
 
 UNakamaClientListUserGroups* UNakamaClientListUserGroups::ListUserGroups(UNakamaClient* Client, UNakamaSession* Session,
-	FString UserId, int32 Limit, ENakamaFriendState State, FString Cursor)
+	FString UserId, int32 Limit, ENakamaGroupState State, FString Cursor)
 {
 	if(Client != nullptr && Session != nullptr)
 	{
@@ -1648,21 +1676,12 @@ void UNakamaClientListUserGroups::Activate()
 		SetReadyToDestroy();
 	};
 
-	NFriend::State FriendState = static_cast<NFriend::State>(State);
-
-	if(State == ENakamaFriendState::ALL)
-	{
-		NakamaClient->Client->listUserGroups(UserSession->UserSession, FNakamaUtils::UEStringToStdString(UserId), Limit, {}, FNakamaUtils::UEStringToStdString(Cursor), successCallback, errorCallback);
-	}
-	else
-	{
-		NakamaClient->Client->listUserGroups(UserSession->UserSession, FNakamaUtils::UEStringToStdString(UserId), Limit, FriendState, FNakamaUtils::UEStringToStdString(Cursor), successCallback, errorCallback);
-	}
-
+	NUserGroupState GroupState = static_cast<NUserGroupState>(State);
+    NakamaClient->Client->listUserGroups(UserSession->UserSession, FNakamaUtils::UEStringToStdString(UserId), Limit, GroupState, FNakamaUtils::UEStringToStdString(Cursor), successCallback, errorCallback);
 }
 
 UNakamaClientListListGroupUsers* UNakamaClientListListGroupUsers::ListGroupUsers(UNakamaClient* Client,
-	UNakamaSession* Session, FString GroupId, int32 Limit, ENakamaFriendState State, FString Cursor)
+	UNakamaSession* Session, FString GroupId, int32 Limit, ENakamaGroupState State, FString Cursor)
 {
 	if(Client != nullptr && Session != nullptr)
 	{
@@ -1706,7 +1725,7 @@ void UNakamaClientListListGroupUsers::Activate()
 		SetReadyToDestroy();
 	};
 
-	NGroup::State GroupState = static_cast<NGroup::State>(State);
+	NUserGroupState GroupState = static_cast<NUserGroupState>(State);
 
     NakamaClient->Client->listGroupUsers(UserSession->UserSession, FNakamaUtils::UEStringToStdString(GroupId), Limit, GroupState, FNakamaUtils::UEStringToStdString(Cursor), successCallback, errorCallback);
 }

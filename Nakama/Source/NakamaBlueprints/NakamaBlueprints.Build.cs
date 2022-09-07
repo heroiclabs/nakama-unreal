@@ -26,6 +26,7 @@ public class NakamaBlueprints : ModuleRules
 			new string[]
 			{
 				"Core",
+				"Nakama"
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);
@@ -38,7 +39,6 @@ public class NakamaBlueprints : ModuleRules
 				"Engine",
 				"Slate",
 				"SlateCore",
-				"Nakama",
 				"Engine",
 				"JsonUtilities",
 				"Json"

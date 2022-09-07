@@ -2,8 +2,19 @@
 
 
 #include "NakamaRealtimeClientRequests.h"
-
 #include "NakamaUtils.h"
+#include "NakamaChannelTypes.h"
+#include "NakamaMatch.h"
+#include "NakamaMatchTypes.h"
+#include "NakamaNotification.h"
+#include "NakamaParty.h"
+#include "NakamaPresence.h"
+#include "NakamaStatus.h"
+#include "NakamaStreams.h"
+#include "NakamaChat.h"
+
+#include "nakama-cpp/realtime/rtdata/NRtError.h"
+
 
 UNakamaRealtimeClientConnect* UNakamaRealtimeClientConnect::Connect(UNakamaRealtimeClient* RealtimeClient)
 {
@@ -13,7 +24,7 @@ UNakamaRealtimeClientConnect* UNakamaRealtimeClientConnect::Connect(UNakamaRealt
 		Node->RealtimeClient = RealtimeClient;
 		return Node;
 	}
-	
+
 	return nullptr;
 }
 
@@ -21,33 +32,33 @@ void UNakamaRealtimeClientConnect::Activate()
 {
 	if (!RealtimeClient)
 		return;
-	
+
 	const NRtClientProtocol SelectedProtocol = static_cast<NRtClientProtocol>(RealtimeClient->Protocol);
-	
+
 	// Connect Callback
 	RealtimeClient->Listener.setConnectCallback([this]()
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
 			return;
-		
+
 		UE_LOG(LogTemp, Warning, TEXT("Nakama Realtime Client Setup: Socket connected"));
 		OnSuccess.Broadcast();
-		SetReadyToDestroy();	
+		SetReadyToDestroy();
 	});
 
 	RealtimeClient->Listener.setErrorCallback([this](const NRtError& Err)
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
 			return;
-		
+
 		UE_LOG(LogTemp, Warning, TEXT("Nakama Realtime Client Setup: Socket Connect Error"));
 
 		FNakamaRtError NakamaError = Err;
 		OnError.Broadcast(NakamaError);
 		SetReadyToDestroy();
-		
+
 	});
-	
+
 	RealtimeClient->RtClient->connect(RealtimeClient->Session->UserSession, RealtimeClient->bShowAsOnline, SelectedProtocol);
 }
 
@@ -60,10 +71,10 @@ UNakamaRealtimeClientSendMessage* UNakamaRealtimeClientSendMessage::SendMessage(
 		Node->RealtimeClient = RealtimeClient;
 		Node->ChannelId = ChannelId;
 		Node->Content = Content;
-		
+
 		return Node;
 	}
-	
+
 	return nullptr;
 }
 
@@ -77,7 +88,7 @@ void UNakamaRealtimeClientSendMessage::Activate()
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
 			return;
-		
+
 		const FNakamaChannelMessageAck MessageAck = ack;
 		UE_LOG(LogTemp, Warning, TEXT("Sent Channel Message with Id: %s"), *MessageAck.MessageId);
 		OnSuccess.Broadcast({}, MessageAck);
@@ -88,12 +99,12 @@ void UNakamaRealtimeClientSendMessage::Activate()
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
 			return;
-		
+
 		FNakamaRtError NakamaError = error;
 		OnError.Broadcast(NakamaError, {});
 		SetReadyToDestroy();
 	};
-	
+
 	// std::string data = "{ \"some\": \"data\" }"; // Example
 
 	RealtimeClient->RtClient->writeChatMessage(FNakamaUtils::UEStringToStdString(ChannelId), FNakamaUtils::UEStringToStdString(Content), successCallback, errorCallback);
@@ -108,10 +119,10 @@ UNakamaRealtimeClientSendDirectMessage* UNakamaRealtimeClientSendDirectMessage::
 		Node->RealtimeClient = RealtimeClient;
 		Node->UserID = UserID;
 		Node->Content = Content;
-		
+
 		return Node;
 	}
-	
+
 	return nullptr;
 }
 
@@ -125,7 +136,7 @@ void UNakamaRealtimeClientSendDirectMessage::Activate()
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
 			return;
-		
+
 		const FNakamaChannelMessageAck MessageAck = ack;
 		UE_LOG(LogTemp, Warning, TEXT("Sent Direct Channel Message with Id: %s"), *MessageAck.MessageId);
 		OnSuccess.Broadcast({}, MessageAck);
@@ -136,12 +147,12 @@ void UNakamaRealtimeClientSendDirectMessage::Activate()
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
 			return;
-		
+
 		FNakamaRtError NakamaError = error;
 		OnError.Broadcast(NakamaError, {});
 		SetReadyToDestroy();
 	};
-	
+
 	// std::string data = "{ \"some\": \"data\" }"; // Example
 
 	RealtimeClient->RtClient->writeChatMessage(FNakamaUtils::UEStringToStdString(UserID), FNakamaUtils::UEStringToStdString(Content), successCallback, errorCallback);
@@ -158,10 +169,10 @@ UNakamaRealtimeClientJoinChat* UNakamaRealtimeClientJoinChat::JoinChat(UNakamaRe
 		Node->ChannelType = ChannelType;
 		Node->Persistence = Persistence;
 		Node->Hidden = Hidden;
-		
+
 		return Node;
 	}
-	
+
 	return nullptr;
 }
 
@@ -174,7 +185,7 @@ void UNakamaRealtimeClientJoinChat::Activate()
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
 			return;
-		
+
 		const FNakamaRtError NakamaError = error;
 		OnError.Broadcast(NakamaError, {});
 		SetReadyToDestroy();
@@ -184,7 +195,7 @@ void UNakamaRealtimeClientJoinChat::Activate()
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
 			return;
-		
+
 		const FNakamaChannel JoinedChannel = *channel;
 		UE_LOG(LogTemp, Warning, TEXT("You can now send messages to channel Id: %s"), *JoinedChannel.Id);
 		OnSuccess.Broadcast({}, JoinedChannel);
@@ -192,7 +203,7 @@ void UNakamaRealtimeClientJoinChat::Activate()
 	};
 
 	const NChannelType Type = static_cast<NChannelType>(ChannelType);
-	
+
 	RealtimeClient->RtClient->joinChat(
 		FNakamaUtils::UEStringToStdString(ChatId),
 		Type,
@@ -211,10 +222,10 @@ UNakamaRealtimeClientLeaveChat* UNakamaRealtimeClientLeaveChat::LeaveChat(UNakam
 		UNakamaRealtimeClientLeaveChat* Node = NewObject<UNakamaRealtimeClientLeaveChat>();
 		Node->RealtimeClient = RealtimeClient;
 		Node->ChannelId = ChannelId;
-		
+
 		return Node;
 	}
-	
+
 	return nullptr;
 }
 
@@ -227,7 +238,7 @@ void UNakamaRealtimeClientLeaveChat::Activate()
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
 			return;
-		
+
 		const FNakamaRtError NakamaError = error;
 		OnError.Broadcast(NakamaError, {});
 		SetReadyToDestroy();
@@ -237,12 +248,12 @@ void UNakamaRealtimeClientLeaveChat::Activate()
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
 			return;
-		
+
 		UE_LOG(LogTemp, Warning, TEXT("Left Chat: %s"), *ChannelId);
 		OnSuccess.Broadcast({}, ChannelId);
 		SetReadyToDestroy();
 	};
-	
+
 	RealtimeClient->RtClient->leaveChat(FNakamaUtils::UEStringToStdString(ChannelId), successCallback, errorCallback);
 }
 
@@ -262,10 +273,10 @@ UNakamaRealtimeClientAddMatchmaker* UNakamaRealtimeClientAddMatchmaker::AddMatch
 		Node->NumericProperties = NumericProperties;
 		Node->CountMultiple = CountMultiple;
 		Node->IgnoreCountMultiple = IgnoreCountMultiple;
-		
+
 		return Node;
 	}
-	
+
 	return nullptr;
 }
 
@@ -278,22 +289,22 @@ void UNakamaRealtimeClientAddMatchmaker::Activate()
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
 			return;
-		
+
 		const FNakamaMatchmakerTicket Ticket = ticket; // Sets the Ticket Object (can be used later to add more info)
 		OnSuccess.Broadcast({}, Ticket);
 		SetReadyToDestroy();
 	};
-	
+
 	auto errorCallback = [&](const NRtError& error)
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
 			return;
-		
+
 		const FNakamaRtError NakamaError = error;
 		OnError.Broadcast(NakamaError, {});
 		SetReadyToDestroy();
 	};
-	
+
 	// Properties (Converted)
 	NStringMap stringProperties = FNakamaUtils::TMapToFStringMap(StringProperties);
 	NStringDoubleMap numericProperties = FNakamaUtils::TMapToNumericMap(NumericProperties);
@@ -333,10 +344,10 @@ UNakamaRealtimeClientLeaveMatchmaker* UNakamaRealtimeClientLeaveMatchmaker::Leav
 		UNakamaRealtimeClientLeaveMatchmaker* Node = NewObject<UNakamaRealtimeClientLeaveMatchmaker>();
 		Node->RealtimeClient = RealtimeClient;
 		Node->Ticket = Ticket;
-		
+
 		return Node;
 	}
-	
+
 	return nullptr;
 }
 
@@ -349,7 +360,7 @@ void UNakamaRealtimeClientLeaveMatchmaker::Activate()
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
 			return;
-		
+
 		const FNakamaRtError NakamaError = error;
 		OnError.Broadcast(NakamaError, {});
 		SetReadyToDestroy();
@@ -359,7 +370,7 @@ void UNakamaRealtimeClientLeaveMatchmaker::Activate()
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
 			return;
-		
+
 		UE_LOG(LogTemp, Warning, TEXT("Matchmaker Removed Ticket: %s"), *Ticket);
 		OnSuccess.Broadcast({}, Ticket);
 		SetReadyToDestroy();
@@ -376,10 +387,10 @@ UNakamaRealtimeClientUpdateStatus* UNakamaRealtimeClientUpdateStatus::UpdateStat
 		UNakamaRealtimeClientUpdateStatus* Node = NewObject<UNakamaRealtimeClientUpdateStatus>();
 		Node->RealtimeClient = RealtimeClient;
 		Node->StatusMessage = StatusMessage;
-		
+
 		return Node;
 	}
-	
+
 	return nullptr;
 }
 
@@ -392,7 +403,7 @@ void UNakamaRealtimeClientUpdateStatus::Activate()
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
 			return;
-		
+
 		const FNakamaRtError NakamaError = error;
 		OnError.Broadcast(NakamaError);
 		SetReadyToDestroy();
@@ -402,7 +413,7 @@ void UNakamaRealtimeClientUpdateStatus::Activate()
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
 			return;
-		
+
 		OnSuccess.Broadcast();
 		SetReadyToDestroy();
 	};
@@ -417,10 +428,10 @@ UNakamaRealtimeClientSetAppearOffline* UNakamaRealtimeClientSetAppearOffline::Se
 	{
 		UNakamaRealtimeClientSetAppearOffline* Node = NewObject<UNakamaRealtimeClientSetAppearOffline>();
 		Node->RealtimeClient = RealtimeClient;
-		
+
 		return Node;
 	}
-	
+
 	return nullptr;
 }
 
@@ -433,7 +444,7 @@ void UNakamaRealtimeClientSetAppearOffline::Activate()
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
 			return;
-		
+
 		FNakamaRtError NakamaError = error;
 		OnError.Broadcast(NakamaError);
 		SetReadyToDestroy();
@@ -443,7 +454,7 @@ void UNakamaRealtimeClientSetAppearOffline::Activate()
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
 			return;
-		
+
 		OnSuccess.Broadcast();
 		SetReadyToDestroy();
 	};
@@ -459,10 +470,10 @@ UNakamaRealtimeClientFollowUsers* UNakamaRealtimeClientFollowUsers::FollowUsers(
 		UNakamaRealtimeClientFollowUsers* Node = NewObject<UNakamaRealtimeClientFollowUsers>();
 		Node->RealtimeClient = RealtimeClient;
 		Node->UserIds = UserIds;
-		
+
 		return Node;
 	}
-	
+
 	return nullptr;
 }
 
@@ -470,12 +481,12 @@ void UNakamaRealtimeClientFollowUsers::Activate()
 {
 	if (!RealtimeClient)
 		return;
-	
+
 	auto errorCallback = [&](const NRtError& error)
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
 			return;
-		
+
 		const FNakamaRtError NakamaError = error;
 		OnError.Broadcast(NakamaError, {});
 		SetReadyToDestroy();
@@ -485,7 +496,7 @@ void UNakamaRealtimeClientFollowUsers::Activate()
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
 			return;
-		
+
 		const FNakamaStatus Status = status; // Converts and adds all Presences
 		OnSuccess.Broadcast({}, Status);
 		SetReadyToDestroy();
@@ -496,7 +507,7 @@ void UNakamaRealtimeClientFollowUsers::Activate()
 	{
 		UsersToFollow.push_back(FNakamaUtils::UEStringToStdString(UserToFollow));
 	}
-	
+
 	if (UsersToFollow.size() > 0)
 	{
 		RealtimeClient->RtClient->followUsers(UsersToFollow, successCallback, errorCallback);
@@ -511,10 +522,10 @@ UNakamaRealtimeClientUnFollowUsers* UNakamaRealtimeClientUnFollowUsers::UnFollow
 		UNakamaRealtimeClientUnFollowUsers* Node = NewObject<UNakamaRealtimeClientUnFollowUsers>();
 		Node->RealtimeClient = RealtimeClient;
 		Node->UserIds = UserIds;
-		
+
 		return Node;
 	}
-	
+
 	return nullptr;
 }
 
@@ -527,7 +538,7 @@ void UNakamaRealtimeClientUnFollowUsers::Activate()
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
 			return;
-		
+
 		const FNakamaRtError NakamaError = error;
 		OnError.Broadcast(NakamaError);
 		SetReadyToDestroy();
@@ -537,11 +548,11 @@ void UNakamaRealtimeClientUnFollowUsers::Activate()
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
 			return;
-		
+
 		OnSuccess.Broadcast();
 		SetReadyToDestroy();
 	};
-	
+
 	std::vector<std::string> UsersToUnFollow;
 	for(FString UserToUnFollow : UserIds)
 	{
@@ -559,10 +570,10 @@ UNakamaRealtimeClientCreateMatch* UNakamaRealtimeClientCreateMatch::CreateMatch(
 	{
 		UNakamaRealtimeClientCreateMatch* Node = NewObject<UNakamaRealtimeClientCreateMatch>();
 		Node->RealtimeClient = RealtimeClient;
-		
+
 		return Node;
 	}
-	
+
 	return nullptr;
 }
 
@@ -575,7 +586,7 @@ void UNakamaRealtimeClientCreateMatch::Activate()
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
 			return;
-		
+
 		const FNakamaRtError NakamaError = error;
 		OnError.Broadcast(NakamaError, {});
 		SetReadyToDestroy();
@@ -585,13 +596,13 @@ void UNakamaRealtimeClientCreateMatch::Activate()
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
 			return;
-		
+
 		const FNakamaMatch Match = match; // Converts via constructor
 		UE_LOG(LogTemp, Warning, TEXT("Created Match with MatchId: %s"), *Match.MatchId);
 		OnSuccess.Broadcast({}, Match);
 		SetReadyToDestroy();
 	};
-	
+
 	RealtimeClient->RtClient->createMatch(successCallback, errorCallback);
 }
 
@@ -604,12 +615,12 @@ UNakamaRealtimeClientJoinMatch* UNakamaRealtimeClientJoinMatch::JoinMatch(UNakam
 		Node->RealtimeClient = RealtimeClient;
 		Node->MatchId = MatchId;
 		Node->MetaData = MetaData;
-		
+
 		return Node;
 	}
-	
+
 	return nullptr;
-	
+
 }
 
 void UNakamaRealtimeClientJoinMatch::Activate()
@@ -621,7 +632,7 @@ void UNakamaRealtimeClientJoinMatch::Activate()
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
 			return;
-		
+
 		const FNakamaRtError NakamaError = error;
 		OnError.Broadcast(NakamaError, {});
 		SetReadyToDestroy();
@@ -631,7 +642,7 @@ void UNakamaRealtimeClientJoinMatch::Activate()
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
 			return;
-		
+
 		const FNakamaMatch Match = match; // Converts via constructor
 		UE_LOG(LogTemp, Warning, TEXT("Joined Match with MatchId: %s"), *Match.MatchId);
 		OnSuccess.Broadcast({}, Match);
@@ -651,10 +662,10 @@ UNakamaRealtimeClientJoinMatchByToken* UNakamaRealtimeClientJoinMatchByToken::Jo
 		UNakamaRealtimeClientJoinMatchByToken* Node = NewObject<UNakamaRealtimeClientJoinMatchByToken>();
 		Node->RealtimeClient = RealtimeClient;
 		Node->Token = Token;
-		
+
 		return Node;
 	}
-	
+
 	return nullptr;
 }
 
@@ -667,7 +678,7 @@ void UNakamaRealtimeClientJoinMatchByToken::Activate()
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
 			return;
-		
+
 		const FNakamaRtError NakamaError = error;
 		OnError.Broadcast(NakamaError, {});
 		SetReadyToDestroy();
@@ -677,13 +688,13 @@ void UNakamaRealtimeClientJoinMatchByToken::Activate()
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
 			return;
-		
+
 		const FNakamaMatch Match = match; // Converts via constructor
 		UE_LOG(LogTemp, Warning, TEXT("Joined Match with MatchId: %s"), *Match.MatchId);
 		OnSuccess.Broadcast({}, Match);
 		SetReadyToDestroy();
 	};
-	
+
 	RealtimeClient->RtClient->joinMatchByToken(FNakamaUtils::UEStringToStdString(Token), successCallback, errorCallback);
 }
 
@@ -697,10 +708,10 @@ UNakamaRealtimeClientLeaveMatch* UNakamaRealtimeClientLeaveMatch::LeaveMatch(UNa
 		UNakamaRealtimeClientLeaveMatch* Node = NewObject<UNakamaRealtimeClientLeaveMatch>();
 		Node->RealtimeClient = RealtimeClient;
 		Node->MatchId = MatchId;
-		
+
 		return Node;
 	}
-	
+
 	return nullptr;
 }
 
@@ -713,7 +724,7 @@ void UNakamaRealtimeClientLeaveMatch::Activate()
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
 			return;
-		
+
 		const FNakamaRtError NakamaError = error;
 		OnError.Broadcast(NakamaError, {});
 		SetReadyToDestroy();
@@ -723,12 +734,12 @@ void UNakamaRealtimeClientLeaveMatch::Activate()
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
 			return;
-		
+
 		UE_LOG(LogTemp, Warning, TEXT("Left Match %s"), *MatchId);
 		OnSuccess.Broadcast({}, MatchId);
 		SetReadyToDestroy();
 	};
-	
+
 	RealtimeClient->RtClient->leaveMatch(FNakamaUtils::UEStringToStdString(MatchId), successCallback, errorCallback);
 }
 
@@ -741,10 +752,10 @@ UNakamaRealtimeClientCreateParty* UNakamaRealtimeClientCreateParty::CreateParty(
 		Node->RealtimeClient = RealtimeClient;
 		Node->Open = Open;
 		Node->MaxSize = MaxSize;
-		
+
 		return Node;
 	}
-	
+
 	return nullptr;
 }
 
@@ -757,7 +768,7 @@ void UNakamaRealtimeClientCreateParty::Activate()
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
 			return;
-		
+
 		const FNakamaRtError NakamaError = error;
 		OnError.Broadcast(NakamaError, {});
 		SetReadyToDestroy();
@@ -767,7 +778,7 @@ void UNakamaRealtimeClientCreateParty::Activate()
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
 			return;
-		
+
 		const FNakamaParty NakamaParty = party;
 		OnSuccess.Broadcast({}, NakamaParty);
 		SetReadyToDestroy();
@@ -783,10 +794,10 @@ UNakamaRealtimeClientJoinParty* UNakamaRealtimeClientJoinParty::JoinParty(UNakam
 		UNakamaRealtimeClientJoinParty* Node = NewObject<UNakamaRealtimeClientJoinParty>();
 		Node->RealtimeClient = RealtimeClient;
 		Node->PartyId = PartyId;
-		
+
 		return Node;
 	}
-	
+
 	return nullptr;
 }
 
@@ -799,7 +810,7 @@ void UNakamaRealtimeClientJoinParty::Activate()
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
 			return;
-		
+
 		const FNakamaRtError NakamaError = error;
 		OnError.Broadcast(NakamaError, {});
 		SetReadyToDestroy();
@@ -809,7 +820,7 @@ void UNakamaRealtimeClientJoinParty::Activate()
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
 			return;
-		
+
 		OnSuccess.Broadcast({}, PartyId);
 		SetReadyToDestroy();
 	};
@@ -824,10 +835,10 @@ UNakamaRealtimeClientLeaveParty* UNakamaRealtimeClientLeaveParty::LeaveParty(UNa
 		UNakamaRealtimeClientLeaveParty* Node = NewObject<UNakamaRealtimeClientLeaveParty>();
 		Node->RealtimeClient = RealtimeClient;
 		Node->PartyId = PartyId;
-		
+
 		return Node;
 	}
-	
+
 	return nullptr;
 }
 
@@ -840,7 +851,7 @@ void UNakamaRealtimeClientLeaveParty::Activate()
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
 			return;
-		
+
 		const FNakamaRtError NakamaError = error;
 		OnError.Broadcast(NakamaError, {});
 		SetReadyToDestroy();
@@ -850,7 +861,7 @@ void UNakamaRealtimeClientLeaveParty::Activate()
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
 			return;
-		
+
 		OnSuccess.Broadcast({}, PartyId);
 		SetReadyToDestroy();
 	};
@@ -866,10 +877,10 @@ UNakamaRealtimeClientListPartyJoinRequests* UNakamaRealtimeClientListPartyJoinRe
 		UNakamaRealtimeClientListPartyJoinRequests* Node = NewObject<UNakamaRealtimeClientListPartyJoinRequests>();
 		Node->RealtimeClient = RealtimeClient;
 		Node->PartyId = PartyId;
-		
+
 		return Node;
 	}
-	
+
 	return nullptr;
 }
 
@@ -882,7 +893,7 @@ void UNakamaRealtimeClientListPartyJoinRequests::Activate()
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
 			return;
-		
+
 		const FNakamaRtError NakamaError = error;
 		OnError.Broadcast(NakamaError, {});
 		SetReadyToDestroy();
@@ -892,7 +903,7 @@ void UNakamaRealtimeClientListPartyJoinRequests::Activate()
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
 			return;
-		
+
 		OnSuccess.Broadcast({}, JoinRequest);
 		SetReadyToDestroy();
 	};
@@ -909,10 +920,10 @@ UNakamaRealtimeClientPromotePartyMember* UNakamaRealtimeClientPromotePartyMember
 		Node->RealtimeClient = RealtimeClient;
 		Node->PartyId = PartyId;
 		Node->PartyMember = PartyMember;
-		
+
 		return Node;
 	}
-	
+
 	return nullptr;
 }
 
@@ -925,7 +936,7 @@ void UNakamaRealtimeClientPromotePartyMember::Activate()
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
 			return;
-		
+
 		OnError.Broadcast(error);
 		SetReadyToDestroy();
 	};
@@ -934,7 +945,7 @@ void UNakamaRealtimeClientPromotePartyMember::Activate()
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
 			return;
-		
+
 		OnSuccess.Broadcast();
 		SetReadyToDestroy();
 	};
@@ -953,10 +964,10 @@ UNakamaRealtimeClientRemoveMatchmakerParty* UNakamaRealtimeClientRemoveMatchmake
 		Node->RealtimeClient = RealtimeClient;
 		Node->PartyId = PartyId;
 		Node->Ticket = Ticket;
-		
+
 		return Node;
 	}
-	
+
 	return nullptr;
 }
 
@@ -969,7 +980,7 @@ void UNakamaRealtimeClientRemoveMatchmakerParty::Activate()
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
 			return;
-		
+
 		const FNakamaRtError NakamaError = error;
 		OnError.Broadcast(NakamaError, {});
 		SetReadyToDestroy();
@@ -979,7 +990,7 @@ void UNakamaRealtimeClientRemoveMatchmakerParty::Activate()
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
 			return;
-		
+
 		OnSuccess.Broadcast({}, Ticket);
 		SetReadyToDestroy();
 	};
@@ -996,10 +1007,10 @@ UNakamaRealtimeClientRemovePartyMember* UNakamaRealtimeClientRemovePartyMember::
 		Node->RealtimeClient = RealtimeClient;
 		Node->PartyId = PartyId;
 		Node->Presence = Presence;
-		
+
 		return Node;
 	}
-	
+
 	return nullptr;
 }
 
@@ -1012,7 +1023,7 @@ void UNakamaRealtimeClientRemovePartyMember::Activate()
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
 			return;
-		
+
 		const FNakamaRtError NakamaError = error;
 		OnError.Broadcast(NakamaError);
 		SetReadyToDestroy();
@@ -1022,13 +1033,13 @@ void UNakamaRealtimeClientRemovePartyMember::Activate()
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
 			return;
-		
+
 		OnSuccess.Broadcast();
 		SetReadyToDestroy();
 	};
 
 	NUserPresence UserPresence = FNakamaUtils::ConvertUserPresence(Presence);
-	
+
 	RealtimeClient->RtClient->removePartyMember(FNakamaUtils::UEStringToStdString(PartyId), UserPresence, successCallback, errorCallback);
 }
 
@@ -1042,10 +1053,10 @@ UNakamaRealtimeClientAcceptPartyMember* UNakamaRealtimeClientAcceptPartyMember::
 		Node->RealtimeClient = RealtimeClient;
 		Node->PartyId = PartyId;
 		Node->Presence = Presence;
-		
+
 		return Node;
 	}
-	
+
 	return nullptr;
 }
 
@@ -1058,7 +1069,7 @@ void UNakamaRealtimeClientAcceptPartyMember::Activate()
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
 			return;
-		
+
 		const FNakamaRtError NakamaError = error;
 		OnError.Broadcast(NakamaError);
 		SetReadyToDestroy();
@@ -1068,7 +1079,7 @@ void UNakamaRealtimeClientAcceptPartyMember::Activate()
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
 			return;
-		
+
 		OnSuccess.Broadcast();
 		SetReadyToDestroy();
 	};
@@ -1095,10 +1106,10 @@ UNakamaRealtimeClientAddMatchmakerParty* UNakamaRealtimeClientAddMatchmakerParty
 		Node->NumericProperties = NumericProperties;
 		Node->CountMultiple = CountMultiple;
 		Node->IgnoreCountMultiple = IgnoreCountMultiple;
-		
+
 		return Node;
 	}
-	
+
 	return nullptr;
 }
 
@@ -1111,7 +1122,7 @@ void UNakamaRealtimeClientAddMatchmakerParty::Activate()
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
 			return;
-		
+
 		const FNakamaRtError NakamaError = error;
 		OnError.Broadcast(NakamaError, {});
 		SetReadyToDestroy();
@@ -1121,13 +1132,13 @@ void UNakamaRealtimeClientAddMatchmakerParty::Activate()
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
 			return;
-		
+
 		FNakamaPartyMatchmakerTicket Ticket = ticket; // Auto Convert
 		OnSuccess.Broadcast({}, Ticket);
 		SetReadyToDestroy();
 	};
-	
-	
+
+
 	// Properties
 	NStringMap stringProperties = FNakamaUtils::TMapToFStringMap(StringProperties);
 	NStringDoubleMap numericProperties = FNakamaUtils::TMapToNumericMap(NumericProperties);
@@ -1170,14 +1181,14 @@ UNakamaRealtimeClientCloseParty* UNakamaRealtimeClientCloseParty::CloseParty(UNa
 		UNakamaRealtimeClientCloseParty* Node = NewObject<UNakamaRealtimeClientCloseParty>();
 		Node->RealtimeClient = RealtimeClient;
 		Node->PartyId = PartyId;
-		
+
 		return Node;
 	}
-	
+
 	return nullptr;
 }
 
-void UNakamaRealtimeClientCloseParty::Activate()	
+void UNakamaRealtimeClientCloseParty::Activate()
 {
 	if (!RealtimeClient)
 		return;
@@ -1186,7 +1197,7 @@ void UNakamaRealtimeClientCloseParty::Activate()
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
 			return;
-		
+
 		const FNakamaRtError NakamaError = error;
 		OnError.Broadcast(NakamaError);
 		SetReadyToDestroy();
@@ -1196,7 +1207,7 @@ void UNakamaRealtimeClientCloseParty::Activate()
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
 			return;
-		
+
 		OnSuccess.Broadcast();
 		SetReadyToDestroy();
 	};
