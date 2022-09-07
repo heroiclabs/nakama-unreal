@@ -11,7 +11,7 @@ using namespace Nakama;
 
 // A snapshot of statuses for some set of users.
 USTRUCT(BlueprintType)
-struct NAKAMABLUEPRINTS_API FNakamaStatus
+struct NAKAMA_API FNakamaStatus
 {
 	GENERATED_BODY()
 
@@ -25,7 +25,7 @@ struct NAKAMABLUEPRINTS_API FNakamaStatus
 
 // A batch of status updates for a given user.
 USTRUCT(BlueprintType)
-struct NAKAMABLUEPRINTS_API FNakamaStatusPresenceEvent
+struct NAKAMA_API FNakamaStatusPresenceEvent
 {
 	GENERATED_BODY()
 
@@ -36,7 +36,7 @@ struct NAKAMABLUEPRINTS_API FNakamaStatusPresenceEvent
 	// Previous statuses for the user.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|User|Presence")
 	TArray<FNakamaUserPresence> Leaves;
-	
+
 	FNakamaStatusPresenceEvent(const NStatusPresenceEvent& NakamaNativeStatusPresenceEvent);
 	FNakamaStatusPresenceEvent();
 };

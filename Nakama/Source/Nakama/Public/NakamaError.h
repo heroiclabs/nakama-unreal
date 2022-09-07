@@ -24,10 +24,10 @@ enum class ENakamaErrorCode : uint8
 };
 
 USTRUCT(BlueprintType)
-struct NAKAMABLUEPRINTS_API FNakamaError
+struct NAKAMA_API FNakamaError
 {
 	GENERATED_BODY()
-	
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama Error")
 	FString Message;
 
@@ -37,7 +37,7 @@ struct NAKAMABLUEPRINTS_API FNakamaError
 	FNakamaError(const NError& NativeError);
 	FNakamaError(): Code(ENakamaErrorCode::Unknown)
 	{
-		
+
 	}
 
 };

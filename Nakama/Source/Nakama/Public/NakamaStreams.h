@@ -10,7 +10,7 @@ using namespace Nakama;
 
 // Represents identifying information for a stream.
 USTRUCT(BlueprintType)
-struct NAKAMABLUEPRINTS_API FNakamaStream
+struct NAKAMA_API FNakamaStream
 {
 	GENERATED_BODY()
 
@@ -36,7 +36,7 @@ struct NAKAMABLUEPRINTS_API FNakamaStream
 
 // A data message delivered over a stream.
 USTRUCT(BlueprintType)
-struct NAKAMABLUEPRINTS_API FNakamaStreamData
+struct NAKAMA_API FNakamaStreamData
 {
 	GENERATED_BODY()
 
@@ -51,14 +51,14 @@ struct NAKAMABLUEPRINTS_API FNakamaStreamData
 	// Arbitrary contents of the data message.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Streams")
 	FString Data;
-	
+
 	FNakamaStreamData(const NStreamData& NakamaNativeStreamData);
 	FNakamaStreamData();
 };
 
 // A set of joins and leaves on a particular stream.
 USTRUCT(BlueprintType)
-struct NAKAMABLUEPRINTS_API FNakamaStreamPresenceEvent
+struct NAKAMA_API FNakamaStreamPresenceEvent
 {
 	GENERATED_BODY()
 

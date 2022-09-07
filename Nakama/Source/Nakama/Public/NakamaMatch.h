@@ -13,7 +13,7 @@
 using namespace Nakama;
 
 USTRUCT(BlueprintType)
-struct NAKAMABLUEPRINTS_API FNakamaMatch
+struct NAKAMA_API FNakamaMatch
 {
 	GENERATED_BODY() // NMatchmakerMatched
 
@@ -51,7 +51,7 @@ struct NAKAMABLUEPRINTS_API FNakamaMatch
 };
 
 USTRUCT(BlueprintType)
-struct NAKAMABLUEPRINTS_API FNakamaMatchData
+struct NAKAMA_API FNakamaMatchData
 {
 	GENERATED_BODY()
 
@@ -77,7 +77,7 @@ struct NAKAMABLUEPRINTS_API FNakamaMatchData
 
 // A list of realtime matches.
 USTRUCT(BlueprintType)
-struct NAKAMABLUEPRINTS_API FNakamaMatchList
+struct NAKAMA_API FNakamaMatchList
 {
 	GENERATED_BODY()
 

@@ -25,7 +25,7 @@ enum class ENakamaFriendState : uint8
 
 // A friend of a user.
 USTRUCT(BlueprintType)
-struct NAKAMABLUEPRINTS_API FNakamaFriend
+struct NAKAMA_API FNakamaFriend
 {
 	GENERATED_BODY()
 
@@ -46,10 +46,10 @@ struct NAKAMABLUEPRINTS_API FNakamaFriend
 };
 
 USTRUCT(BlueprintType) // Internal Unreal Class (No Need to Convert)
-struct NAKAMABLUEPRINTS_API FNakamaFriendChat
+struct NAKAMA_API FNakamaFriendChat
 {
 	GENERATED_BODY()
-	
+
 	// User
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Friend")
 	FNakamaUser NakamaUser;
@@ -62,7 +62,7 @@ struct NAKAMABLUEPRINTS_API FNakamaFriendChat
 
 // A collection of zero or more friends of the user.
 USTRUCT(BlueprintType)
-struct NAKAMABLUEPRINTS_API FNakamaFriendList
+struct NAKAMA_API FNakamaFriendList
 {
 	GENERATED_BODY()
 

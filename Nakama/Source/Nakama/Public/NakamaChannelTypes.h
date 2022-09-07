@@ -29,7 +29,7 @@ enum class ENakamaChannelType : uint8
 
 // A message sent on a channel.
 USTRUCT(BlueprintType)
-struct NAKAMABLUEPRINTS_API FNakamaChannelMessage
+struct NAKAMA_API FNakamaChannelMessage
 {
 	GENERATED_BODY()
 
@@ -91,7 +91,7 @@ struct NAKAMABLUEPRINTS_API FNakamaChannelMessage
 
 // A receipt reply from a channel message send operation.
 USTRUCT(BlueprintType)
-struct NAKAMABLUEPRINTS_API FNakamaChannelMessageAck
+struct NAKAMA_API FNakamaChannelMessageAck
 {
 	GENERATED_BODY()
 
@@ -113,11 +113,11 @@ struct NAKAMABLUEPRINTS_API FNakamaChannelMessageAck
 
 	// The UNIX time when the message was created.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Chat|Channel")
-	FDateTime CreateTime = 0; 
+	FDateTime CreateTime = 0;
 
 	// The UNIX time when the message was last updated.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Chat|Channel")
-	FDateTime UpdateTime = 0; 
+	FDateTime UpdateTime = 0;
 
 	// True if the message was persisted to the channel's history, false otherwise.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Chat|Channel")
@@ -135,7 +135,7 @@ struct NAKAMABLUEPRINTS_API FNakamaChannelMessageAck
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Chat|Channel")
 	FString UserIdOne;
 
-	// 
+	//
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Chat|Channel")
 	FString UserIdTwo;
 
@@ -145,13 +145,13 @@ struct NAKAMABLUEPRINTS_API FNakamaChannelMessageAck
 
 // A list of channel messages, usually a result of a list operation.
 USTRUCT(BlueprintType)
-struct NAKAMABLUEPRINTS_API FNakamaChannelMessageList
+struct NAKAMA_API FNakamaChannelMessageList
 {
 	GENERATED_BODY()
 
 	// A list of messages.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Chat|Channel")
-	TArray<FNakamaChannelMessage> Messages; 
+	TArray<FNakamaChannelMessage> Messages;
 
 	// The cursor to send when retireving the next page, if any.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Chat|Channel")
@@ -163,11 +163,11 @@ struct NAKAMABLUEPRINTS_API FNakamaChannelMessageList
 
 	FNakamaChannelMessageList(const NChannelMessageList& NakamaNativeChannelMessageList);
 	FNakamaChannelMessageList();
-	
+
 };
 
 USTRUCT(BlueprintType)
-struct NAKAMABLUEPRINTS_API FNakamaChannelPresenceEvent
+struct NAKAMA_API FNakamaChannelPresenceEvent
 {
 	GENERATED_BODY()
 

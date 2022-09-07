@@ -10,7 +10,7 @@
 using namespace Nakama;
 
 USTRUCT(BlueprintType)
-struct NAKAMABLUEPRINTS_API FNakamaUser
+struct NAKAMA_API FNakamaUser
 {
 	GENERATED_BODY()
 
@@ -93,7 +93,7 @@ struct NAKAMABLUEPRINTS_API FNakamaUser
 
 
 USTRUCT(BlueprintType)
-struct NAKAMABLUEPRINTS_API FNakamaUserList
+struct NAKAMA_API FNakamaUserList
 {
 	GENERATED_BODY()
 

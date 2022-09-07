@@ -10,7 +10,7 @@
 using namespace Nakama;
 
 USTRUCT(BlueprintType)
-struct NAKAMABLUEPRINTS_API FNakamaUserSession
+struct NAKAMA_API FNakamaUserSession
 {
 	GENERATED_BODY()
 

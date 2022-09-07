@@ -8,7 +8,7 @@ using namespace Nakama;
 
 // RPC
 USTRUCT(BlueprintType)
-struct NAKAMABLUEPRINTS_API FNakamaRPC
+struct NAKAMA_API FNakamaRPC
 {
 	GENERATED_BODY()
 

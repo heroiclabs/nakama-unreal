@@ -12,7 +12,7 @@ using namespace Nakama;
 
 // An object within the storage engine.
 USTRUCT(BlueprintType)
-struct NAKAMABLUEPRINTS_API FNakamaStoreObjectData
+struct NAKAMA_API FNakamaStoreObjectData
 {
 	GENERATED_BODY()
 
@@ -58,7 +58,7 @@ struct NAKAMABLUEPRINTS_API FNakamaStoreObjectData
 
 // The object to store.
 USTRUCT(BlueprintType)
-struct NAKAMABLUEPRINTS_API FNakamaStoreObjectWrite
+struct NAKAMA_API FNakamaStoreObjectWrite
 {
 	GENERATED_BODY()
 
@@ -86,7 +86,7 @@ struct NAKAMABLUEPRINTS_API FNakamaStoreObjectWrite
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Nakama|Storage") //BlueprintReadOnly
 	ENakamaStoragePermissionWrite PermissionWrite; //NO_WRITE
 
-	
+
 	FNakamaStoreObjectWrite(const NStorageObjectWrite& NakamaNativeStorageWrite);
 	FNakamaStoreObjectWrite();
 };
@@ -97,7 +97,7 @@ struct NAKAMABLUEPRINTS_API FNakamaStoreObjectWrite
 
 // Storage objects to get (from reading)
 USTRUCT(BlueprintType)
-struct NAKAMABLUEPRINTS_API FNakamaReadStorageObjectId
+struct NAKAMA_API FNakamaReadStorageObjectId
 {
 	GENERATED_BODY()
 
@@ -120,7 +120,7 @@ struct NAKAMABLUEPRINTS_API FNakamaReadStorageObjectId
 
 // Storage objects to delete.
 USTRUCT(BlueprintType) // For deleting from storage
-struct NAKAMABLUEPRINTS_API FNakamaDeleteStorageObjectId
+struct NAKAMA_API FNakamaDeleteStorageObjectId
 {
 	GENERATED_BODY()
 
@@ -143,7 +143,7 @@ struct NAKAMABLUEPRINTS_API FNakamaDeleteStorageObjectId
 
 // A storage acknowledgement.
 USTRUCT(BlueprintType)
-struct NAKAMABLUEPRINTS_API FNakamaStoreObjectAck
+struct NAKAMA_API FNakamaStoreObjectAck
 {
 	GENERATED_BODY()
 
@@ -170,7 +170,7 @@ struct NAKAMABLUEPRINTS_API FNakamaStoreObjectAck
 
 // Batch of acknowledgements.
 USTRUCT(BlueprintType)
-struct NAKAMABLUEPRINTS_API FNakamaStoreObjectAcks
+struct NAKAMA_API FNakamaStoreObjectAcks
 {
 	GENERATED_BODY()
 
@@ -184,7 +184,7 @@ struct NAKAMABLUEPRINTS_API FNakamaStoreObjectAcks
 
 // List of storage objects.
 USTRUCT(BlueprintType)
-struct NAKAMABLUEPRINTS_API FNakamaStorageObjectList
+struct NAKAMA_API FNakamaStorageObjectList
 {
 	GENERATED_BODY()
 

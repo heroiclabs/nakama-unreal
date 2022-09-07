@@ -8,7 +8,7 @@ using namespace Nakama;
 
 // Leaderboardss
 USTRUCT(BlueprintType)
-struct NAKAMABLUEPRINTS_API FNakamaLeaderboardRecord
+struct NAKAMA_API FNakamaLeaderboardRecord
 {
 	GENERATED_BODY()
 
@@ -78,7 +78,7 @@ enum class ENakamaLeaderboardListBy : uint8
 
 
 USTRUCT(BlueprintType)
-struct NAKAMABLUEPRINTS_API FNakamaLeaderboardRecordList
+struct NAKAMA_API FNakamaLeaderboardRecordList
 {
 	GENERATED_BODY()
 

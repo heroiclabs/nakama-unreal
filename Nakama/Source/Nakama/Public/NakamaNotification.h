@@ -9,7 +9,7 @@ using namespace Nakama;
 
 // A notification in the server.
 USTRUCT(BlueprintType)
-struct NAKAMABLUEPRINTS_API FNakamaNotification
+struct NAKAMA_API FNakamaNotification
 {
 	GENERATED_BODY()
 
@@ -40,14 +40,14 @@ struct NAKAMABLUEPRINTS_API FNakamaNotification
 	// True if this notification was persisted to the database.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Notification")
 	bool Persistent = false;
-	
+
 	FNakamaNotification(const NNotification& NakamaNativeNotification);
 	FNakamaNotification();
 };
 
 // A collection of zero or more notifications.
 USTRUCT(BlueprintType)
-struct NAKAMABLUEPRINTS_API FNakamaNotificationList
+struct NAKAMA_API FNakamaNotificationList
 {
 	GENERATED_BODY()
 
@@ -62,5 +62,5 @@ struct NAKAMABLUEPRINTS_API FNakamaNotificationList
 	FNakamaNotificationList(const NNotificationList& NakamaNativeNotificationList);
 	FNakamaNotificationList();
 
-	
+
 };

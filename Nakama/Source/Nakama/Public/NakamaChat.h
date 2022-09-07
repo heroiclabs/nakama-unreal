@@ -14,8 +14,8 @@ namespace Nakama
 }
 
 // For sending messages (Internal to plugin, no need to convert)
-USTRUCT(BlueprintType) 
-struct NAKAMABLUEPRINTS_API FNakamaChatMessage
+USTRUCT(BlueprintType)
+struct NAKAMA_API FNakamaChatMessage
 {
 	GENERATED_BODY()
 
@@ -36,7 +36,7 @@ struct NAKAMABLUEPRINTS_API FNakamaChatMessage
 
 // Channels
 USTRUCT(BlueprintType)
-struct NAKAMABLUEPRINTS_API FNakamaChannel
+struct NAKAMA_API FNakamaChannel
 {
 	GENERATED_BODY()
 
@@ -70,12 +70,12 @@ struct NAKAMABLUEPRINTS_API FNakamaChannel
 
 	FNakamaChannel(const NChannel& NakamaNativeChannel);
 	FNakamaChannel();
-	
+
 };
 
 // For sending messages (Internal to plugin, no need to convert)
 USTRUCT(BlueprintType)
-struct NAKAMABLUEPRINTS_API FNakamaPrivateChat
+struct NAKAMA_API FNakamaPrivateChat
 {
 	GENERATED_BODY()
 

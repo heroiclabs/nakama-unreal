@@ -11,7 +11,7 @@ using namespace Nakama;
 
 // Parties
 USTRUCT(BlueprintType)
-struct NAKAMABLUEPRINTS_API FNakamaParty
+struct NAKAMA_API FNakamaParty
 {
 	GENERATED_BODY()
 
@@ -38,17 +38,17 @@ struct NAKAMABLUEPRINTS_API FNakamaParty
 	// All members currently in the party.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Parties")
 	TArray<FNakamaUserPresence> Presences;
-	
+
 	FNakamaParty(const NParty& NakamaNativeParty);
 	FNakamaParty(); // Default Constructor
 
-	
-	
+
+
 };
 
 // Incoming notification for one or more new presences attempting to join the party.
 USTRUCT(BlueprintType)
-struct NAKAMABLUEPRINTS_API FNakamaPartyJoinRequest
+struct NAKAMA_API FNakamaPartyJoinRequest
 {
 	GENERATED_BODY()
 
@@ -66,7 +66,7 @@ struct NAKAMABLUEPRINTS_API FNakamaPartyJoinRequest
 
 // Incoming notification for one or more new presences attempting to join the party.
 USTRUCT(BlueprintType)
-struct NAKAMABLUEPRINTS_API FNakamaPartyMatchmakerTicket
+struct NAKAMA_API FNakamaPartyMatchmakerTicket
 {
 	GENERATED_BODY()
 
@@ -84,21 +84,21 @@ struct NAKAMABLUEPRINTS_API FNakamaPartyMatchmakerTicket
 
 // Information about a party close event.
 USTRUCT(BlueprintType)
-struct NAKAMABLUEPRINTS_API FNakamaPartyClose
+struct NAKAMA_API FNakamaPartyClose
 {
 	GENERATED_BODY()
 
 	// The unique party identifier of the closing party.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Parties")
 	FString Id;
-	
+
 	FNakamaPartyClose(const NPartyClose& NakamaNativePartyClose);
 	FNakamaPartyClose();
 };
 
 // Incoming party data delivered from the server.
 USTRUCT(BlueprintType)
-struct NAKAMABLUEPRINTS_API FNakamaPartyData
+struct NAKAMA_API FNakamaPartyData
 {
 	GENERATED_BODY()
 
@@ -117,7 +117,7 @@ struct NAKAMABLUEPRINTS_API FNakamaPartyData
 	// A reference to the user presence that sent this data, if any.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Parties")
 	FString Data; // NBytes
-	
+
 	FNakamaPartyData(const NPartyData& NakamaNativePartyData);
 	FNakamaPartyData();
 };
@@ -125,7 +125,7 @@ struct NAKAMABLUEPRINTS_API FNakamaPartyData
 
 // Announcement of a new party leader.
 USTRUCT(BlueprintType)
-struct NAKAMABLUEPRINTS_API FNakamaPartyLeader
+struct NAKAMA_API FNakamaPartyLeader
 {
 	GENERATED_BODY()
 
@@ -136,7 +136,7 @@ struct NAKAMABLUEPRINTS_API FNakamaPartyLeader
 	// The presence of the new party leader.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Parties")
 	FNakamaUserPresence Presence;
-	
+
 	FNakamaPartyLeader(const NPartyLeader& NakamaNativePartyLeader);
 	FNakamaPartyLeader();
 };
@@ -144,7 +144,7 @@ struct NAKAMABLUEPRINTS_API FNakamaPartyLeader
 
 // Presence update for a particular party.
 USTRUCT(BlueprintType)
-struct NAKAMABLUEPRINTS_API FNakamaPartyPresenceEvent
+struct NAKAMA_API FNakamaPartyPresenceEvent
 {
 	GENERATED_BODY()
 

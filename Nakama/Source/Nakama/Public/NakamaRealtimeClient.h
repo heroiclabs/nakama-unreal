@@ -90,7 +90,7 @@ enum class ENakamaRealtimeClientProtocol : uint8
  *
  */
 UCLASS(Blueprintable, BlueprintType,  meta=(BlueprintSpawnableComponent))
-class NAKAMABLUEPRINTS_API UNakamaRealtimeClient : public UObject, public FTickableGameObject
+class NAKAMA_API UNakamaRealtimeClient : public UObject, public FTickableGameObject
 {
 	GENERATED_BODY()
 

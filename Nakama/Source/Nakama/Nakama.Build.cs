@@ -1,6 +1,7 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 using UnrealBuildTool;
+using System.IO;
 
 public class Nakama : ModuleRules
 {
@@ -51,5 +52,7 @@ public class Nakama : ModuleRules
 				// ... add any modules that your module loads dynamically here ...
 			}
 			);
-	}
+
+        PrivateIncludePaths.Add(Path.Combine(ModuleDirectory, "Public"));
+    }
 }

@@ -16,7 +16,7 @@ namespace Nakama
 }
 
 USTRUCT(BlueprintType)
-struct NAKAMABLUEPRINTS_API FNakamaAccount
+struct NAKAMA_API FNakamaAccount
 {
 	GENERATED_BODY()
 

@@ -11,7 +11,7 @@ using namespace Nakama;
 
 // Used with authenticate/link/unlink and user.
 USTRUCT(BlueprintType)
-struct NAKAMABLUEPRINTS_API FNakamaAccountDevice
+struct NAKAMA_API FNakamaAccountDevice
 {
 	GENERATED_BODY()
 

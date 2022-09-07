@@ -8,7 +8,7 @@
 using namespace Nakama;
 
 USTRUCT(BlueprintType)
-struct NAKAMABLUEPRINTS_API FNakamaTournament
+struct NAKAMA_API FNakamaTournament
 {
 	GENERATED_BODY()
 
@@ -82,13 +82,13 @@ struct NAKAMABLUEPRINTS_API FNakamaTournament
 
 	FNakamaTournament(const NTournament& NakamaNativeTournament);
 	FNakamaTournament();
-	
+
 };
 
 
 
 USTRUCT(BlueprintType)
-struct NAKAMABLUEPRINTS_API FNakamaTournamentRecordList
+struct NAKAMA_API FNakamaTournamentRecordList
 {
 	GENERATED_BODY()
 
@@ -114,7 +114,7 @@ struct NAKAMABLUEPRINTS_API FNakamaTournamentRecordList
 };
 
 USTRUCT(BlueprintType)
-struct NAKAMABLUEPRINTS_API FNakamaTournamentList
+struct NAKAMA_API FNakamaTournamentList
 {
 	GENERATED_BODY()
 

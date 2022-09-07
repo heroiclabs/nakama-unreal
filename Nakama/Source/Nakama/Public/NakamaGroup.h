@@ -25,7 +25,7 @@ enum class ENakamaUserGroupState : uint8
 
 // A group in the server.
 USTRUCT(BlueprintType)
-struct NAKAMABLUEPRINTS_API FNakamaGroup
+struct NAKAMA_API FNakamaGroup
 {
 	GENERATED_BODY()
 
@@ -75,11 +75,11 @@ struct NAKAMABLUEPRINTS_API FNakamaGroup
 	// The UNIX time when the group was last updated.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Groups")
 	FDateTime UpdateTime = 0;
-	
+
 	FNakamaGroup(const NGroup& NakamaNativeGroup);
 	FNakamaGroup()
 	{
-		
+
 	}
 };
 
@@ -94,8 +94,8 @@ enum class ENakamaGroupState : uint8
 };
 
 // Group User
-USTRUCT(BlueprintType) 
-struct NAKAMABLUEPRINTS_API FNakamaGroupUser
+USTRUCT(BlueprintType)
+struct NAKAMA_API FNakamaGroupUser
 {
 	GENERATED_BODY()
 
@@ -115,7 +115,7 @@ struct NAKAMABLUEPRINTS_API FNakamaGroupUser
 // Group Users list (Members)
 // A list of users belonging to a group, along with their role.
 USTRUCT(BlueprintType)
-struct NAKAMABLUEPRINTS_API FNakamaGroupUsersList
+struct NAKAMA_API FNakamaGroupUsersList
 {
 	GENERATED_BODY()
 
@@ -130,14 +130,14 @@ struct NAKAMABLUEPRINTS_API FNakamaGroupUsersList
 	FNakamaGroupUsersList(const NGroupUserList& NakamaNativeGroupUsersList);
 	FNakamaGroupUsersList()
 	{
-		
+
 	}
-	
+
 };
 
 // One or more groups returned from a listing operation.
 USTRUCT(BlueprintType)
-struct NAKAMABLUEPRINTS_API FNakamaGroupList 
+struct NAKAMA_API FNakamaGroupList
 {
 	GENERATED_BODY()
 
@@ -152,13 +152,13 @@ struct NAKAMABLUEPRINTS_API FNakamaGroupList
 	FNakamaGroupList(const NGroupList& NakamaNativeGroupList);
 	FNakamaGroupList()
 	{
-		
+
 	}
 };
 
 // Owned by a player (I am member of..)
 USTRUCT(BlueprintType)
-struct NAKAMABLUEPRINTS_API FNakamaUserGroup
+struct NAKAMA_API FNakamaUserGroup
 {
 	GENERATED_BODY()
 
@@ -176,7 +176,7 @@ struct NAKAMABLUEPRINTS_API FNakamaUserGroup
 
 // A list of groups belonging to a user, along with the user's role in each group.
 USTRUCT(BlueprintType)
-struct NAKAMABLUEPRINTS_API FNakamaUserGroupList
+struct NAKAMA_API FNakamaUserGroupList
 {
 	GENERATED_BODY()
 
@@ -190,5 +190,5 @@ struct NAKAMABLUEPRINTS_API FNakamaUserGroupList
 
 	FNakamaUserGroupList(const NUserGroupList& NakamaNativeUserGroupList);
 	FNakamaUserGroupList();
-	
+
 };

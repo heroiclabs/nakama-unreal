@@ -50,10 +50,10 @@ enum class ENakamaRtErrorCode : uint8
 
 // A logical error which may occur on the server.
 USTRUCT(BlueprintType)
-struct NAKAMABLUEPRINTS_API FNakamaRtError
+struct NAKAMA_API FNakamaRtError
 {
 	GENERATED_BODY()
-	
+
 	// A message in English to help developers debug the response.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|RtError")
 	FString Message;
@@ -69,13 +69,13 @@ struct NAKAMABLUEPRINTS_API FNakamaRtError
 	FNakamaRtError(const NRtError& NativeError);
 	FNakamaRtError(): Code(ENakamaRtErrorCode::UNKNOWN)
 	{
-		
+
 	}
 
 };
 
 USTRUCT(BlueprintType)
-struct NAKAMABLUEPRINTS_API FNakamaDisconnectInfo
+struct NAKAMA_API FNakamaDisconnectInfo
 {
 	GENERATED_BODY()
 

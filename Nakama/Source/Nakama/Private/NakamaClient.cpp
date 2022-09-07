@@ -1272,7 +1272,7 @@ void UNakamaClient::JoinGroup(UNakamaSession* Session, FString GroupId, const FO
 }
 
 // Note: Does not get members!
-void UNakamaClient::ListUserGroups(UNakamaSession* Session, FString UserId, int32 Limit, ENakamaFriendState State,
+void UNakamaClient::ListUserGroups(UNakamaSession* Session, FString UserId, int32 Limit, ENakamaGroupState State,
 	FString Cursor, const FOnUserGroups& Success, const FOnError& Error)
 {
 	if (!Client || !Session)

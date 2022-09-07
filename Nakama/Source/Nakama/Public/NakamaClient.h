@@ -86,7 +86,7 @@ DECLARE_DYNAMIC_DELEGATE(FOnImportFacebookFriends);
  *
  */
 UCLASS(Blueprintable, BlueprintType,  meta=(BlueprintSpawnableComponent))
-class NAKAMABLUEPRINTS_API UNakamaClient : public UObject, public FTickableGameObject
+class NAKAMA_API UNakamaClient : public UObject, public FTickableGameObject
 {
 	GENERATED_BODY()
 
@@ -608,24 +608,24 @@ public:
 	 * List of groups the current user is a member of.
 	 * @param UserId The id of the user whose groups to list.
 	 * @param Limit The max number of records to return. Between 1 and 100.
-	 * @param State The friend state to list.
+	 * @param State The group state to list.
 	 * @param Cursor An optional next page cursor.
 	 * @param Session The session of the user.
 	 */
 	UFUNCTION(Category = "Nakama|Groups")
-	void ListUserGroups(UNakamaSession* Session, FString UserId, int32 Limit, ENakamaFriendState State, FString Cursor, const FOnUserGroups& Success, const FOnError& Error);
+	void ListUserGroups(UNakamaSession* Session, FString UserId, int32 Limit, ENakamaGroupState State, FString Cursor, const FOnUserGroups& Success, const FOnError& Error);
 
 	/**
 	 * List all users part of the group.
 	 *
 	 * @param GroupId The id of the group.
 	 * @param Limit The max number of records to return. Between 1 and 100.
-	 * @param State The friend state to list.
+	 * @param State The group state to list.
 	 * @param Cursor An optional next page cursor.
 	 * @param Session The session of the user.
 	 */
 	UFUNCTION(Category = "Nakama|Groups")
-	void ListGroupUsers(UNakamaSession* Session, FString GroupId, int32 Limit, ENakamaFriendState State, FString Cursor, const FOnListGroupMembers& Success, const FOnError& Error);
+	void ListGroupUsers(UNakamaSession* Session, FString GroupId, int32 Limit, ENakamaGroupState State, FString Cursor, const FOnListGroupMembers& Success, const FOnError& Error);
 
 	/**
 	 * Update a group.

@@ -11,10 +11,10 @@
 using namespace Nakama;
 
 /**
- * 
+ *
  */
 UCLASS(Blueprintable, BlueprintType)
-class NAKAMABLUEPRINTS_API UNakamaSession : public UObject
+class NAKAMA_API UNakamaSession : public UObject
 {
 	GENERATED_BODY()
 
@@ -31,7 +31,7 @@ public:
 	 * Restore User Session
 	 *
 	 * @param Token Authentication Token from Session
-	 * @param RefreshToken RefreshToken retrieved from Session 
+	 * @param RefreshToken RefreshToken retrieved from Session
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Session")
 	void RestoreSession(FString Token, FString RefreshToken);

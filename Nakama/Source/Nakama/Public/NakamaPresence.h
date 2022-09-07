@@ -19,10 +19,10 @@ enum class ENakamaPresenceEvent : uint8
 
 
 USTRUCT(BlueprintType)
-struct NAKAMABLUEPRINTS_API FNakamaUserPresence
+struct NAKAMA_API FNakamaUserPresence
 {
 	GENERATED_BODY()
-	
+
 	// The user this presence belongs to.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|User|Presence")
 	FString UserID;
@@ -45,5 +45,5 @@ struct NAKAMABLUEPRINTS_API FNakamaUserPresence
 
 	FNakamaUserPresence(const NUserPresence& NativeUserPresence);
 	FNakamaUserPresence();
-	
+
 };

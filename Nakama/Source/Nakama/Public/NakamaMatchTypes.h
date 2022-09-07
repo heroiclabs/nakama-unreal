@@ -14,7 +14,7 @@
 using namespace Nakama;
 
 USTRUCT(BlueprintType)
-struct NAKAMABLUEPRINTS_API FNakamaMatchmakerUser
+struct NAKAMA_API FNakamaMatchmakerUser
 {
 	GENERATED_BODY()
 
@@ -35,7 +35,7 @@ struct NAKAMABLUEPRINTS_API FNakamaMatchmakerUser
 };
 
 USTRUCT(BlueprintType)
-struct NAKAMABLUEPRINTS_API FNakamaMatchmakerMatched
+struct NAKAMA_API FNakamaMatchmakerMatched
 {
 	GENERATED_BODY()
 
@@ -60,13 +60,13 @@ struct NAKAMABLUEPRINTS_API FNakamaMatchmakerMatched
 	FNakamaMatchmakerUser Me;
 
 	FNakamaMatchmakerMatched();
-	
+
 	FNakamaMatchmakerMatched(const NMatchmakerMatched& NakamaNativeMatchmakerMatched);
-	
+
 };
 
 USTRUCT(BlueprintType)
-struct NAKAMABLUEPRINTS_API FNakamaMatchPresenceEvent
+struct NAKAMA_API FNakamaMatchPresenceEvent
 {
 	GENERATED_BODY() //NMatchmakerMatched
 
@@ -87,7 +87,7 @@ struct NAKAMABLUEPRINTS_API FNakamaMatchPresenceEvent
 };
 
 USTRUCT(BlueprintType)
-struct NAKAMABLUEPRINTS_API FNakamaMatchmakerTicket
+struct NAKAMA_API FNakamaMatchmakerTicket
 {
 	GENERATED_BODY()
 
@@ -95,8 +95,8 @@ struct NAKAMABLUEPRINTS_API FNakamaMatchmakerTicket
 	FString TicketId;
 
 	// Might want more properties here later.
-	
+
 	FNakamaMatchmakerTicket(const NMatchmakerTicket& NakamaNativeMatchmakerTicket);
 	FNakamaMatchmakerTicket();
-	
+
 };
