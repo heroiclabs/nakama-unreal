@@ -34,13 +34,13 @@ public:
 
 	UPROPERTY()
 	UNakamaClient *NakamaClient;
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FOnAuthenticateCustom OnSuccess;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnAuthenticateCustom OnError;
-	
+
 	/**
 	 * Authenticate a user with a custom id.
 	 * @param Client The Client to use.
@@ -51,16 +51,16 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Authentication", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaClientAuthenticateCustom* AuthenticateCustom(UNakamaClient *Client, FString UserID, FString Username, bool CreateAccount, TMap<FString, FString> Vars);
-	
+
 	virtual void Activate() override;
 
 private:
-	
+
 	FString UserID;
 	FString Username;
 	bool bCreateAccount;
 	TMap<FString, FString> Vars;
-	
+
 };
 
 
@@ -81,13 +81,13 @@ public:
 
 	UPROPERTY()
 	UNakamaClient *NakamaClient;
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FOnAuthenticateEmail OnSuccess;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnAuthenticateEmail OnError;
-	
+
 
 	/**
 	 * Authenticate a user with an email and password.
@@ -101,17 +101,17 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Authentication", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaClientAuthenticateEmail* AuthenticateEmail(UNakamaClient *Client, FString Email, FString Password, FString Username, bool CreateAccount, TMap<FString, FString> Vars);
-	
+
 	virtual void Activate() override;
 
 private:
-	
+
 	FString Email;
 	FString Password;
 	FString Username;
 	bool bCreateAccount;
 	TMap<FString, FString> Vars;
-	
+
 };
 
 /**
@@ -129,7 +129,7 @@ public:
 
 	UPROPERTY()
 	UNakamaClient *NakamaClient;
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FOnAuthenticateDevice OnSuccess;
 
@@ -138,7 +138,7 @@ public:
 
 	/**
 	 * Authenticate a user with a device id.
-	 * 
+	 *
 	 * @param Client The Client to use.
 	 * @param DeviceID A device identifier usually obtained from a platform API.
 	 * @param Username A username used to create the user. Defaults to empty string.
@@ -147,16 +147,16 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Authentication", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaClientAuthenticateDevice* AuthenticateDevice(UNakamaClient *Client, FString DeviceID, FString Username, bool CreateAccount, TMap<FString, FString> Vars);
-	
+
 	virtual void Activate() override;
 
 private:
-	
+
 	FString DeviceID;
 	FString Username;
 	bool bCreateAccount;
 	TMap<FString, FString> Vars;
-	
+
 };
 
 
@@ -175,7 +175,7 @@ public:
 
 	UPROPERTY()
 	UNakamaClient *NakamaClient;
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FOnAuthenticateSteam OnSuccess;
 
@@ -193,16 +193,16 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Authentication", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaClientAuthenticateSteam* AuthenticateSteam(UNakamaClient *Client, FString SteamToken, FString Username, bool CreateAccount, TMap<FString, FString> Vars);
-	
+
 	virtual void Activate() override;
 
 private:
-	
+
 	FString SteamToken;
 	FString Username;
 	bool bCreateAccount;
 	TMap<FString, FString> Vars;
-	
+
 };
 
 
@@ -221,7 +221,7 @@ public:
 
 	UPROPERTY()
 	UNakamaClient *NakamaClient;
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FOnAuthenticateGoogle OnSuccess;
 
@@ -239,16 +239,16 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Authentication", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaClientAuthenticateGoogle* AuthenticateGoogle(UNakamaClient *Client, FString AccessToken, FString Username, bool CreateAccount, TMap<FString, FString> Vars);
-	
+
 	virtual void Activate() override;
 
 private:
-	
+
 	FString AccessToken;
 	FString Username;
 	bool bCreateAccount;
 	TMap<FString, FString> Vars;
-	
+
 };
 
 
@@ -267,7 +267,7 @@ public:
 
 	UPROPERTY()
 	UNakamaClient *NakamaClient;
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FOnAuthenticateGameCenter OnSuccess;
 
@@ -290,11 +290,11 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Authentication", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaClientAuthenticateGameCenter* AuthenticateGameCenter(UNakamaClient *Client, FString PlayerId, FString BundleId, int64 TimeStampSeconds, FString Salt, FString Signature, FString PublicKeyUrl, FString Username, bool CreateAccount, TMap<FString, FString> Vars);
-	
+
 	virtual void Activate() override;
 
 private:
-	
+
 	FString PlayerId;
 	FString BundleId;
 	int64 TimeStampSeconds;
@@ -304,7 +304,7 @@ private:
 	FString Username;
 	bool bCreateAccount;
 	TMap<FString, FString> Vars;
-	
+
 };
 
 
@@ -323,7 +323,7 @@ public:
 
 	UPROPERTY()
 	UNakamaClient *NakamaClient;
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FOnAuthenticateFacebook OnSuccess;
 
@@ -342,17 +342,17 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Authentication", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaClientAuthenticateFacebook* AuthenticateFacebook(UNakamaClient *Client, FString AccessToken, FString Username, bool CreateAccount, bool ImportFriends, TMap<FString, FString> Vars);
-	
+
 	virtual void Activate() override;
 
 private:
-	
+
 	FString AccessToken;
 	FString Username;
 	bool ImportFriends;
 	bool bCreateAccount;
 	TMap<FString, FString> Vars;
-	
+
 };
 
 
@@ -371,7 +371,7 @@ public:
 
 	UPROPERTY()
 	UNakamaClient *NakamaClient;
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FOnAuthenticateApple OnSuccess;
 
@@ -389,17 +389,17 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Authentication", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaClientAuthenticateApple* AuthenticateApple(UNakamaClient *Client, FString Token, FString Username, bool CreateAccount, TMap<FString, FString> Vars);
-	
+
 	virtual void Activate() override;
 
 private:
-	
+
 	FString Token;
 	FString Username;
 	bool ImportFriends;
 	bool bCreateAccount;
 	TMap<FString, FString> Vars;
-	
+
 };
 
 
@@ -426,7 +426,7 @@ class NAKAMABLUEPRINTS_API UNakamaClientLinkCustom: public UBlueprintAsyncAction
 
 public:
 
-	UPROPERTY()	
+	UPROPERTY()
 	UNakamaClient *NakamaClient;
 
 	UPROPERTY()
@@ -434,7 +434,7 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnLinkError OnError;
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FOnLinkSuccessful OnSuccess;
 
@@ -448,13 +448,13 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Authentication|Link", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaClientLinkCustom* LinkCustom(UNakamaClient *Client, UNakamaSession *Session, FString CustomId);
-	
+
 	virtual void Activate() override;
 
 private:
-	
+
 	FString CustomId;
-	
+
 };
 
 /**
@@ -468,7 +468,7 @@ class NAKAMABLUEPRINTS_API UNakamaClientLinkDevice: public UBlueprintAsyncAction
 
 public:
 
-	UPROPERTY()	
+	UPROPERTY()
 	UNakamaClient *NakamaClient;
 
 	UPROPERTY()
@@ -476,7 +476,7 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnLinkError OnError;
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FOnLinkSuccessful OnSuccess;
 
@@ -489,13 +489,13 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Authentication|Link", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaClientLinkDevice* LinkDevice(UNakamaClient *Client, UNakamaSession *Session, FString DeviceId);
-	
+
 	virtual void Activate() override;
 
 private:
-	
+
 	FString DeviceId;
-	
+
 };
 
 /**
@@ -509,7 +509,7 @@ class NAKAMABLUEPRINTS_API UNakamaClientLinkEmail: public UBlueprintAsyncActionB
 
 public:
 
-	UPROPERTY()	
+	UPROPERTY()
 	UNakamaClient *NakamaClient;
 
 	UPROPERTY()
@@ -517,7 +517,7 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnLinkError OnError;
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FOnLinkSuccessful OnSuccess;
 
@@ -531,14 +531,14 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Authentication|Link", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaClientLinkEmail* LinkEmail(UNakamaClient *Client, UNakamaSession *Session, FString Email, FString Password);
-	
+
 	virtual void Activate() override;
 
 private:
-	
+
 	FString Email;
 	FString Password;
-	
+
 };
 
 
@@ -553,7 +553,7 @@ class NAKAMABLUEPRINTS_API UNakamaClientLinkFacebook: public UBlueprintAsyncActi
 
 public:
 
-	UPROPERTY()	
+	UPROPERTY()
 	UNakamaClient *NakamaClient;
 
 	UPROPERTY()
@@ -561,7 +561,7 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnLinkError OnError;
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FOnLinkSuccessful OnSuccess;
 
@@ -575,14 +575,14 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Authentication|Link", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaClientLinkFacebook* LinkFacebook(UNakamaClient *Client, UNakamaSession *Session, FString AccessToken, bool ImportFriends);
-	
+
 	virtual void Activate() override;
 
 private:
-	
+
 	FString AccessToken;
 	bool ImportFriends;
-	
+
 };
 
 
@@ -597,7 +597,7 @@ class NAKAMABLUEPRINTS_API UNakamaClientLinkGameCenter : public UBlueprintAsyncA
 
 public:
 
-	UPROPERTY()	
+	UPROPERTY()
 	UNakamaClient *NakamaClient;
 
 	UPROPERTY()
@@ -605,7 +605,7 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnLinkError OnError;
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FOnLinkSuccessful OnSuccess;
 
@@ -623,18 +623,18 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Authentication|Link", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaClientLinkGameCenter* LinkGameCenter(UNakamaClient *Client, UNakamaSession *Session, FString PlayerId, FString BundleId, int64 TimeStampSeconds, FString Salt, FString Signature, FString PublicKeyUrl);
-	
+
 	virtual void Activate() override;
 
 private:
-	
+
 	FString PlayerId;
 	FString BundleId;
 	int64 TimeStampSeconds;
 	FString Salt;
 	FString Signature;
 	FString PublicKeyUrl;
-	
+
 };
 
 
@@ -649,7 +649,7 @@ class NAKAMABLUEPRINTS_API UNakamaClientLinkGoogle: public UBlueprintAsyncAction
 
 public:
 
-	UPROPERTY()	
+	UPROPERTY()
 	UNakamaClient *NakamaClient;
 
 	UPROPERTY()
@@ -657,7 +657,7 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnLinkError OnError;
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FOnLinkSuccessful OnSuccess;
 
@@ -670,13 +670,13 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Authentication|Link", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaClientLinkGoogle* LinkGoogle(UNakamaClient *Client, UNakamaSession *Session, FString AccessToken);
-	
+
 	virtual void Activate() override;
 
 private:
-	
+
 	FString AccessToken;
-	
+
 };
 
 
@@ -691,7 +691,7 @@ class NAKAMABLUEPRINTS_API UNakamaClientLinkSteam: public UBlueprintAsyncActionB
 
 public:
 
-	UPROPERTY()	
+	UPROPERTY()
 	UNakamaClient *NakamaClient;
 
 	UPROPERTY()
@@ -699,7 +699,7 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnLinkError OnError;
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FOnLinkSuccessful OnSuccess;
 
@@ -712,13 +712,13 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Authentication|Link", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaClientLinkSteam* LinkSteam(UNakamaClient *Client, UNakamaSession *Session, FString SteamToken);
-	
+
 	virtual void Activate() override;
 
 private:
-	
+
 	FString SteamToken;
-	
+
 };
 
 
@@ -733,7 +733,7 @@ class NAKAMABLUEPRINTS_API UNakamaClientLinkApple: public UBlueprintAsyncActionB
 
 public:
 
-	UPROPERTY()	
+	UPROPERTY()
 	UNakamaClient *NakamaClient;
 
 	UPROPERTY()
@@ -741,7 +741,7 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnLinkError OnError;
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FOnLinkSuccessful OnSuccess;
 
@@ -754,13 +754,13 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Authentication|Link", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaClientLinkApple* LinkApple(UNakamaClient *Client, UNakamaSession *Session, FString Token);
-	
+
 	virtual void Activate() override;
 
 private:
-	
+
 	FString Token;
-	
+
 };
 
 /// <summary>
@@ -782,7 +782,7 @@ class NAKAMABLUEPRINTS_API UNakamaClientUnLinkCustom: public UBlueprintAsyncActi
 
 public:
 
-	UPROPERTY()	
+	UPROPERTY()
 	UNakamaClient *NakamaClient;
 
 	UPROPERTY()
@@ -790,7 +790,7 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnLinkError OnError;
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FOnLinkSuccessful OnSuccess;
 
@@ -801,16 +801,16 @@ public:
 	 * @param CustomId A custom identifier usually obtained from an external authentication service.
 	 * @param Session The session of the user.
 	 */
-	
+
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Authentication|UnLink", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaClientUnLinkCustom* UnLinkCustom(UNakamaClient *Client, UNakamaSession *Session, FString CustomId);
-	
+
 	virtual void Activate() override;
 
 private:
-	
+
 	FString CustomId;
-	
+
 };
 
 /**
@@ -824,7 +824,7 @@ class NAKAMABLUEPRINTS_API UNakamaClientUnLinkDevice: public UBlueprintAsyncActi
 
 public:
 
-	UPROPERTY()	
+	UPROPERTY()
 	UNakamaClient *NakamaClient;
 
 	UPROPERTY()
@@ -832,7 +832,7 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnLinkError OnError;
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FOnLinkSuccessful OnSuccess;
 
@@ -845,13 +845,13 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Authentication|UnLink", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaClientUnLinkDevice* UnLinkDevice(UNakamaClient *Client, UNakamaSession *Session, FString DeviceId);
-	
+
 	virtual void Activate() override;
 
 private:
-	
+
 	FString DeviceId;
-	
+
 };
 
 /**
@@ -865,7 +865,7 @@ class NAKAMABLUEPRINTS_API UNakamaClientUnLinkEmail: public UBlueprintAsyncActio
 
 public:
 
-	UPROPERTY()	
+	UPROPERTY()
 	UNakamaClient *NakamaClient;
 
 	UPROPERTY()
@@ -873,7 +873,7 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnLinkError OnError;
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FOnLinkSuccessful OnSuccess;
 
@@ -887,14 +887,14 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Authentication|UnLink", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaClientUnLinkEmail* UnLinkEmail(UNakamaClient *Client, UNakamaSession *Session, FString Email, FString Password);
-	
+
 	virtual void Activate() override;
 
 private:
-	
+
 	FString Email;
 	FString Password;
-	
+
 };
 
 
@@ -909,7 +909,7 @@ class NAKAMABLUEPRINTS_API UNakamaClientUnLinkFacebook: public UBlueprintAsyncAc
 
 public:
 
-	UPROPERTY()	
+	UPROPERTY()
 	UNakamaClient *NakamaClient;
 
 	UPROPERTY()
@@ -917,7 +917,7 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnLinkError OnError;
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FOnLinkSuccessful OnSuccess;
 
@@ -930,13 +930,13 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Authentication|UnLink", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaClientUnLinkFacebook* UnLinkFacebook(UNakamaClient *Client, UNakamaSession *Session, FString AccessToken);
-	
+
 	virtual void Activate() override;
 
 private:
-	
+
 	FString AccessToken;
-	
+
 };
 
 
@@ -951,7 +951,7 @@ class NAKAMABLUEPRINTS_API UNakamaClientUnLinkGameCenter : public UBlueprintAsyn
 
 public:
 
-	UPROPERTY()	
+	UPROPERTY()
 	UNakamaClient *NakamaClient;
 
 	UPROPERTY()
@@ -959,7 +959,7 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnLinkError OnError;
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FOnLinkSuccessful OnSuccess;
 
@@ -977,18 +977,18 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Authentication|UnLink", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaClientUnLinkGameCenter* UnLinkGameCenter(UNakamaClient *Client, UNakamaSession *Session, FString PlayerId, FString BundleId, int64 TimeStampSeconds, FString Salt, FString Signature, FString PublicKeyUrl);
-	
+
 	virtual void Activate() override;
 
 private:
-	
+
 	FString PlayerId;
 	FString BundleId;
 	int64 TimeStampSeconds;
 	FString Salt;
 	FString Signature;
 	FString PublicKeyUrl;
-	
+
 };
 
 
@@ -1003,7 +1003,7 @@ class NAKAMABLUEPRINTS_API UNakamaClientUnLinkGoogle: public UBlueprintAsyncActi
 
 public:
 
-	UPROPERTY()	
+	UPROPERTY()
 	UNakamaClient *NakamaClient;
 
 	UPROPERTY()
@@ -1011,7 +1011,7 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnLinkError OnError;
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FOnLinkSuccessful OnSuccess;
 
@@ -1024,13 +1024,13 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Authentication|UnLink", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaClientUnLinkGoogle* UnLinkGoogle(UNakamaClient *Client, UNakamaSession *Session, FString AccessToken);
-	
+
 	virtual void Activate() override;
 
 private:
-	
+
 	FString AccessToken;
-	
+
 };
 
 
@@ -1045,7 +1045,7 @@ class NAKAMABLUEPRINTS_API UNakamaClientUnLinkSteam: public UBlueprintAsyncActio
 
 public:
 
-	UPROPERTY()	
+	UPROPERTY()
 	UNakamaClient *NakamaClient;
 
 	UPROPERTY()
@@ -1053,7 +1053,7 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnLinkError OnError;
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FOnLinkSuccessful OnSuccess;
 
@@ -1066,13 +1066,13 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Authentication|UnLink", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaClientUnLinkSteam* UnLinkSteam(UNakamaClient *Client, UNakamaSession *Session, FString SteamToken);
-	
+
 	virtual void Activate() override;
 
 private:
-	
+
 	FString SteamToken;
-	
+
 };
 
 
@@ -1087,7 +1087,7 @@ class NAKAMABLUEPRINTS_API UNakamaClientUnLinkApple: public UBlueprintAsyncActio
 
 public:
 
-	UPROPERTY()	
+	UPROPERTY()
 	UNakamaClient *NakamaClient;
 
 	UPROPERTY()
@@ -1095,7 +1095,7 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnLinkError OnError;
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FOnLinkSuccessful OnSuccess;
 
@@ -1108,13 +1108,13 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Authentication|UnLink", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaClientUnLinkApple* UnLinkApple(UNakamaClient *Client, UNakamaSession *Session, FString Token);
-	
+
 	virtual void Activate() override;
 
 private:
-	
+
 	FString Token;
-	
+
 };
 
 /// <summary>
@@ -1134,7 +1134,7 @@ class NAKAMABLUEPRINTS_API UNakamaClientRefreshSession : public UBlueprintAsyncA
 
 public:
 
-	UPROPERTY()	
+	UPROPERTY()
 	UNakamaClient *NakamaClient;
 
 	UPROPERTY()
@@ -1142,7 +1142,7 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnRefreshSession OnError;
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FOnRefreshSession OnSuccess;
 
@@ -1153,13 +1153,13 @@ public:
 	**/
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Authentication|Refresh", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaClientRefreshSession* RefreshSession(UNakamaClient *Client, UNakamaSession *Session);
-	
+
 	virtual void Activate() override;
 
 private:
-	
+
 	FString Token;
-	
+
 };
 
 /**
@@ -1173,7 +1173,7 @@ class NAKAMABLUEPRINTS_API UNakamaClientImportFacebookFriends : public UBlueprin
 
 public:
 
-	UPROPERTY()	
+	UPROPERTY()
 	UNakamaClient *NakamaClient;
 
 	UPROPERTY()
@@ -1181,7 +1181,7 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnAnyError OnError;
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FOnSuccessful OnSuccess;
 
@@ -1198,14 +1198,14 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Authentication|UnLink", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaClientImportFacebookFriends* ImportFacebookFriends(UNakamaClient *Client, UNakamaSession *Session, FString Token, bool Reset);
-	
+
 	virtual void Activate() override;
 
 private:
-	
+
 	FString Token;
 	bool Reset;
-	
+
 };
 
 
@@ -1226,7 +1226,7 @@ class NAKAMABLUEPRINTS_API UNakamaClientGetUserAccount : public UBlueprintAsyncA
 
 public:
 
-	UPROPERTY()	
+	UPROPERTY()
 	UNakamaClient *NakamaClient;
 
 	UPROPERTY()
@@ -1234,25 +1234,25 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnGetUserAccount OnError;
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FOnGetUserAccount OnSuccess;
 
 	/**
 	 * Fetch the user account owned by the session.
-	 * 
+	 *
 	 * @param Client The Client to use.
 	 * @param Session The session of the user.
 	 */
-	
+
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Users", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaClientGetUserAccount* GetUserAccount(UNakamaClient *Client, UNakamaSession *Session);
-	
+
 	virtual void Activate() override;
 
 
 
-	
+
 };
 
 
@@ -1269,7 +1269,7 @@ class NAKAMABLUEPRINTS_API UNakamaClientGetUsers : public UBlueprintAsyncActionB
 
 public:
 
-	UPROPERTY()	
+	UPROPERTY()
 	UNakamaClient *NakamaClient;
 
 	UPROPERTY()
@@ -1277,10 +1277,10 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FGetUsers OnSuccess;
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FGetUsers OnError;
-	
+
 
 	/**
 	 * Fetch one or more users by id, usernames, and Facebook ids.
@@ -1293,11 +1293,11 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Users", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaClientGetUsers* GetUsers(UNakamaClient *Client, UNakamaSession *Session, TArray<FString> UserIds, TArray<FString> Usernames, TArray<FString> FacebookIds);
-	
+
 	virtual void Activate() override;
 
 private:
-	
+
 	TArray<FString> UserIds;
 	TArray<FString> Usernames;
 	TArray<FString> FacebookIds;
@@ -1317,7 +1317,7 @@ class NAKAMABLUEPRINTS_API UNakamaClientUpdateAccount : public UBlueprintAsyncAc
 
 public:
 
-	UPROPERTY()	
+	UPROPERTY()
 	UNakamaClient *NakamaClient;
 
 	UPROPERTY()
@@ -1325,7 +1325,7 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnAnyError OnError;
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FOnSuccessful OnSuccess;
 
@@ -1343,11 +1343,11 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Users", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaClientUpdateAccount* UpdateAccount(UNakamaClient *Client, UNakamaSession *Session, FString Username, FString DisplayName, FString AvatarUrl, FString LanguageTag, FString Location, FString Timezone);
-	
+
 	virtual void Activate() override;
 
 private:
-	
+
 	FString Username;
 	FString DisplayName;
 	FString AvatarUrl;
@@ -1374,7 +1374,7 @@ public:
 
 	UPROPERTY()
 	UNakamaSession *UserSession;
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FOnListMatches OnSuccess;
 
@@ -1394,17 +1394,17 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Realtime", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaClientListMatches* ListMatches(UNakamaClient* Client, UNakamaSession *Session, int32 MinSize, int32 MaxSize, int32 Limit, FString Label, bool Authoritative);
-	
+
 	virtual void Activate() override;
 
 private:
-	
+
 	int32 MinSize;
 	int32 MaxSize;
 	int32 Limit;
 	FString Label;
 	bool Authoritative;
-	
+
 };
 
 /// <summary>
@@ -1429,7 +1429,7 @@ public:
 
 	UPROPERTY()
 	UNakamaSession *UserSession;
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FOnListFriends OnSuccess;
 
@@ -1447,14 +1447,14 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Friends", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaClientGetFriends* GetFriends(UNakamaClient* Client, UNakamaSession *Session, int32 Limit, ENakamaFriendState State, FString Cursor);
-	
+
 	virtual void Activate() override;
 
 private:
 	int32 Limit;
 	ENakamaFriendState State;
 	FString Cursor;
-	
+
 };
 
 
@@ -1477,7 +1477,7 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnAnyError OnError;
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FOnSuccessful OnSuccess;
 
@@ -1491,7 +1491,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Friends", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaClientAddFriends* AddFriends(UNakamaClient* Client, UNakamaSession *Session, TArray<FString> Ids, TArray<FString> Usernames);
-	
+
 	virtual void Activate() override;
 
 private:
@@ -1520,10 +1520,10 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnAnyError OnError;
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FOnSuccessful OnSuccess;
-	
+
 
 	/**
 	 * Delete one more or users by id or username from friends.
@@ -1533,10 +1533,10 @@ public:
 	 * @param Session The session of the user.
 	 * @param Client The Client to use.
 	 */
-	
+
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Friends", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaClientRemoveFriends* RemoveFriends(UNakamaClient* Client, UNakamaSession *Session, TArray<FString> Ids, TArray<FString> Usernames);
-	
+
 	virtual void Activate() override;
 
 private:
@@ -1563,10 +1563,10 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnAnyError OnError;
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FOnSuccessful OnSuccess;
-	
+
 
 	/**
 	 * Block one or more friends by id.
@@ -1578,7 +1578,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Friends", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaClientBlockFriends* BlockFriends(UNakamaClient* Client, UNakamaSession *Session, TArray<FString> Ids, TArray<FString> Usernames);
-	
+
 	virtual void Activate() override;
 
 private:
@@ -1609,7 +1609,7 @@ public:
 
 	UPROPERTY()
 	UNakamaSession *UserSession;
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FCreateGroup OnSuccess;
 
@@ -1630,7 +1630,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Groups", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaClientCreateGroup* CreateGroup(UNakamaClient* Client, UNakamaSession *Session, FString GroupName, FString Description, FString AvatarUrl, FString LanguageTag, bool Open, int32 MaxMembers);
-	
+
 	virtual void Activate() override;
 
 private:
@@ -1661,7 +1661,7 @@ public:
 
 	UPROPERTY()
 	UNakamaSession *UserSession;
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FOnListGroups OnSuccess;
 
@@ -1679,14 +1679,14 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Groups", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaClientListGroups* ListGroups(UNakamaClient* Client, UNakamaSession *Session, FString GroupNameFilter, int32 Limit, FString Cursor);
-	
+
 	virtual void Activate() override;
 
 private:
 	FString GroupNameFilter;
 	int32 Limit;
 	FString Cursor;
-	
+
 };
 
 
@@ -1715,7 +1715,7 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FOnSuccessful OnSuccess;
 
-	
+
 
 	/**
 	 * Join a group if it has open membership or request to join it.
@@ -1726,12 +1726,12 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Groups", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaClientJoinGroup* JoinGroup(UNakamaClient* Client, UNakamaSession *Session, FString GroupId);
-	
+
 	virtual void Activate() override;
 
 private:
 	FString GroupId;
-	
+
 };
 
 
@@ -1753,7 +1753,7 @@ public:
 
 	UPROPERTY()
 	UNakamaSession *UserSession;
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FOnListUserGroups OnSuccess;
 
@@ -1770,16 +1770,16 @@ public:
 	 * @param Client The Client to use.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Groups", meta = (BlueprintInternalUseOnly = "true"))
-	static UNakamaClientListUserGroups* ListUserGroups(UNakamaClient* Client, UNakamaSession *Session, FString UserId, int32 Limit, ENakamaFriendState State, FString Cursor);
-	
+	static UNakamaClientListUserGroups* ListUserGroups(UNakamaClient* Client, UNakamaSession *Session, FString UserId, int32 Limit, ENakamaGroupState State, FString Cursor);
+
 	virtual void Activate() override;
 
 private:
 	FString UserId;
 	int32 Limit;
-	ENakamaFriendState State;
+	ENakamaGroupState State;
 	FString Cursor;
-	
+
 };
 
 /**
@@ -1800,7 +1800,7 @@ public:
 
 	UPROPERTY()
 	UNakamaSession *UserSession;
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FOnListListGroupUsers OnSuccess;
 
@@ -1818,16 +1818,16 @@ public:
 	 * @param Client The Client to use.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Groups", meta = (BlueprintInternalUseOnly = "true"))
-	static UNakamaClientListListGroupUsers* ListGroupUsers(UNakamaClient* Client, UNakamaSession *Session, FString GroupId, int32 Limit, ENakamaFriendState State, FString Cursor);
-	
+	static UNakamaClientListListGroupUsers* ListGroupUsers(UNakamaClient* Client, UNakamaSession *Session, FString GroupId, int32 Limit, ENakamaGroupState State, FString Cursor);
+
 	virtual void Activate() override;
 
 private:
 	FString GroupId;
 	int32 Limit;
-	ENakamaFriendState State;
+	ENakamaGroupState State;
 	FString Cursor;
-	
+
 };
 
 /**
@@ -1849,11 +1849,11 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnAnyError OnError;
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FOnSuccessful OnSuccess;
 
-	
+
 
 	/**
      * Update a group.
@@ -1871,7 +1871,7 @@ public:
      */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Groups", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaClientUpdateGroup* UpdateGroup(UNakamaClient* Client, UNakamaSession *Session, FString GroupId, FString Name, FString Description, FString AvatarUrl, FString LanguageTag, bool Open);
-	
+
 	virtual void Activate() override;
 
 private:
@@ -1881,7 +1881,7 @@ private:
 	FString AvatarUrl;
 	FString LanguageTag;
 	bool Open;
-	
+
 };
 
 
@@ -1904,11 +1904,11 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnAnyError OnError;
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FOnSuccessful OnSuccess;
 
-	
+
 
 	/**
 	 * Leave a group by id.
@@ -1919,12 +1919,12 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Groups", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaClientLeaveGroup* LeaveGroup(UNakamaClient* Client, UNakamaSession *Session, FString GroupId);
-	
+
 	virtual void Activate() override;
 
 private:
 	FString GroupId;
-	
+
 };
 
 /**
@@ -1946,11 +1946,11 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnAnyError OnError;
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FOnSuccessful OnSuccess;
 
-	
+
 
 	/**
 	 * Add one or more users to the group.
@@ -1962,13 +1962,13 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Groups", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaClientAddGroupUsers* AddGroupUsers(UNakamaClient* Client, UNakamaSession *Session, FString GroupId, TArray<FString> UserIds);
-	
+
 	virtual void Activate() override;
 
 private:
 	FString GroupId;
 	TArray<FString> UserIds;
-	
+
 };
 
 /**
@@ -1990,10 +1990,10 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnAnyError OnError;
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FOnSuccessful OnSuccess;
-	
+
 
 	/**
 	 * Promote a set of users in a group to the next role up.
@@ -2005,13 +2005,13 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Groups", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaClientPromoteGroupUsers* PromoteGroupUsers(UNakamaClient* Client, UNakamaSession *Session, FString GroupId, TArray<FString> UserIds);
-	
+
 	virtual void Activate() override;
 
 private:
 	FString GroupId;
 	TArray<FString> UserIds;
-	
+
 };
 
 
@@ -2034,11 +2034,11 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnAnyError OnError;
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FOnSuccessful OnSuccess;
 
-	
+
 
 	/**
 	 * Kick one or more users from the group.
@@ -2050,13 +2050,13 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Groups", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaClientKickGroupUsers* KickGroupUsers(UNakamaClient* Client, UNakamaSession *Session, FString GroupId, TArray<FString> UserIds);
-	
+
 	virtual void Activate() override;
 
 private:
 	FString GroupId;
 	TArray<FString> UserIds;
-	
+
 };
 
 /**
@@ -2078,11 +2078,11 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnAnyError OnError;
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FOnSuccessful OnSuccess;
 
-	
+
 
 	/**
 	 * Demote a set of users in a group to the next role down.
@@ -2094,13 +2094,13 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Groups", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaClientDemoteGroupUsers* DemoteGroupUsers(UNakamaClient* Client, UNakamaSession *Session, FString GroupId, TArray<FString> UserIds);
-	
+
 	virtual void Activate() override;
 
 private:
 	FString GroupId;
 	TArray<FString> UserIds;
-	
+
 };
 
 /**
@@ -2122,7 +2122,7 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnAnyError OnError;
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FOnSuccessful OnSuccess;
 
@@ -2135,12 +2135,12 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Groups", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaClientDeleteGroup* DeleteGroup(UNakamaClient* Client, UNakamaSession *Session, FString GroupId);
-	
+
 	virtual void Activate() override;
 
 private:
 	FString GroupId;
-	
+
 };
 
 
@@ -2167,7 +2167,7 @@ public:
 
 	UPROPERTY()
 	UNakamaSession *UserSession;
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FListNotifications OnSuccess;
 
@@ -2184,13 +2184,13 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Notifications", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaClientListNotifications* ListNotifications(UNakamaClient* Client, UNakamaSession *Session,  int32 Limit, FString Cursor);
-	
+
 	virtual void Activate() override;
 
 private:
 	int32 Limit;
 	FString Cursor;
-	
+
 };
 
 
@@ -2213,10 +2213,10 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnAnyError OnError;
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FOnSuccessful OnSuccess;
-	
+
 
 	/**
 	 * Delete one or more notifications by id.
@@ -2227,12 +2227,12 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Notifications", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaClientDeleteNotifications* DeleteNotifications(UNakamaClient* Client, UNakamaSession *Session,  TArray<FString> NotificationIds);
-	
+
 	virtual void Activate() override;
 
 private:
 	TArray<FString> NotificationIds;
-	
+
 };
 
 
@@ -2258,7 +2258,7 @@ public:
 
 	UPROPERTY()
 	UNakamaSession *UserSession;
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FOnWriteStorageObjects OnSuccess;
 
@@ -2274,7 +2274,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Storage", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaClientWriteStorageObjects* WriteStorageObjects(UNakamaClient* Client, UNakamaSession *Session,  TArray<FNakamaStoreObjectWrite> StorageObjectsData);
-	
+
 	virtual void Activate() override;
 
 private:
@@ -2299,7 +2299,7 @@ public:
 
 	UPROPERTY()
 	UNakamaSession *UserSession;
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FOnReadStorageObjects OnSuccess;
 
@@ -2315,7 +2315,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Storage", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaClientReadStorageObjects* ReadStorageObjects(UNakamaClient* Client, UNakamaSession *Session,  TArray<FNakamaReadStorageObjectId> StorageObjectsData);
-	
+
 	virtual void Activate() override;
 
 private:
@@ -2340,7 +2340,7 @@ public:
 
 	UPROPERTY()
 	UNakamaSession *UserSession;
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FOnListStorageObjects OnSuccess;
 
@@ -2359,7 +2359,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Storage", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaClientListtorageObjects* ListStorageObjects(UNakamaClient* Client, UNakamaSession *Session, FString Collection, FString UserId, int32 Limit, FString Cursor);
-	
+
 	virtual void Activate() override;
 
 private:
@@ -2368,7 +2368,7 @@ private:
 	FString UserId;
 	int32 Limit;
 	FString Cursor;
-	
+
 };
 
 
@@ -2391,10 +2391,10 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnAnyError OnError;
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FOnSuccessful OnSuccess;
-	
+
 
 	/**
 	 * Delete one or more storage objects.
@@ -2405,13 +2405,13 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Storage", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaClientRemoveStorageObjects* RemoveStorageObjects(UNakamaClient* Client, UNakamaSession *Session, TArray<FNakamaDeleteStorageObjectId> StorageObjectsData);
-	
+
 	virtual void Activate() override;
 
 private:
 
 	TArray<FNakamaDeleteStorageObjectId> StorageObjectsData;
-	
+
 };
 
 
@@ -2437,7 +2437,7 @@ public:
 
 	UPROPERTY()
 	UNakamaSession *UserSession;
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FOnRPCResponse OnSuccess;
 
@@ -2454,7 +2454,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Realtime|RPC", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaClientRPC* RPC(UNakamaClient* Client, UNakamaSession *Session, FString FunctionId, FString Payload);
-	
+
 	virtual void Activate() override;
 
 private:
@@ -2486,7 +2486,7 @@ public:
 
 	UPROPERTY()
 	UNakamaSession *UserSession;
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FOnChannelMessagesListed OnSuccess;
 
@@ -2504,7 +2504,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Chat", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaClientListChannelMessages* ListChannelMessages(UNakamaClient* Client, UNakamaSession *Session, FString ChannelId, int32 Limit, FString Cursor, bool Forward);
-	
+
 	virtual void Activate() override;
 
 private:
@@ -2539,7 +2539,7 @@ public:
 
 	UPROPERTY()
 	UNakamaSession *UserSession;
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FWriteLeaderboardRecord OnSuccess;
 
@@ -2558,7 +2558,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Leaderboards", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaClientWriteLeaderboardRecord* WriteLeaderboardRecord(UNakamaClient* Client, UNakamaSession *Session, FString LeaderboardId, int64 Score, int64 SubScore, FString Metadata);
-	
+
 	virtual void Activate() override;
 
 private:
@@ -2587,7 +2587,7 @@ public:
 
 	UPROPERTY()
 	UNakamaSession *UserSession;
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FListLeaderboardRecords OnSuccess;
 
@@ -2607,7 +2607,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Leaderboards", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaClientListLeaderboardRecords* ListLeaderboardRecords(UNakamaClient* Client, UNakamaSession *Session, FString LeaderboardId, TArray<FString> OwnerIds, int32 Limit, FString Cursor, ENakamaLeaderboardListBy ListBy);
-	
+
 	virtual void Activate() override;
 
 private:
@@ -2636,7 +2636,7 @@ public:
 
 	UPROPERTY()
 	UNakamaSession *UserSession;
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FListLeaderboardRecords OnSuccess;
 
@@ -2654,7 +2654,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Leaderboards", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaClientListLeaderboardRecordsAroundOwner* ListLeaderboardRecordsAroundOwner(UNakamaClient* Client, UNakamaSession *Session, FString LeaderboardId, FString OwnerId, int32 Limit);
-	
+
 	virtual void Activate() override;
 
 private:
@@ -2683,10 +2683,10 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnAnyError OnError;
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FOnSuccessful OnSuccess;
-	
+
 
 	/**
 	 * Delete a leaderboard record.
@@ -2697,7 +2697,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Leaderboards", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaClientDeleteLeaderboardRecord* DeleteLeaderboardRecord(UNakamaClient* Client, UNakamaSession *Session, FString LeaderboardId);
-	
+
 	virtual void Activate() override;
 
 private:
@@ -2727,7 +2727,7 @@ public:
 
 	UPROPERTY()
 	UNakamaSession *UserSession;
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FWriteLeaderboardRecord OnSuccess;
 
@@ -2746,7 +2746,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Tournaments", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaClientWriteTournamentRecord* WriteTournamentRecord(UNakamaClient* Client, UNakamaSession *Session, FString TournamentId, int64 Score, int64 SubScore, FString Metadata);
-	
+
 	virtual void Activate() override;
 
 private:
@@ -2776,7 +2776,7 @@ public:
 
 	UPROPERTY()
 	UNakamaSession *UserSession;
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FListTournamentRecords OnSuccess;
 
@@ -2796,7 +2796,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Tournaments", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaClientListTournamentRecords* ListTournamentRecords(UNakamaClient* Client, UNakamaSession *Session, FString TournamentId, TArray<FString> OwnerIds, int32 Limit, FString Cursor, ENakamaLeaderboardListBy ListBy);
-	
+
 	virtual void Activate() override;
 
 private:
@@ -2825,7 +2825,7 @@ public:
 
 	UPROPERTY()
 	UNakamaSession *UserSession;
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FListTournamentRecords OnSuccess;
 
@@ -2843,7 +2843,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Tournaments", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaClientListTournamentRecordsAroundOwner* ListTournamentRecordsAroundOwner(UNakamaClient* Client, UNakamaSession *Session, FString TournamentId, FString OwnerId, int32 Limit);
-	
+
 	virtual void Activate() override;
 
 private:
@@ -2871,7 +2871,7 @@ public:
 
 	UPROPERTY()
 	UNakamaSession *UserSession;
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FOnJoinTournament OnSuccess;
 
@@ -2887,7 +2887,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Tournaments", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaClientJoinTournament* JoinTournament(UNakamaClient* Client, UNakamaSession *Session, FString TournamentId);
-	
+
 	virtual void Activate() override;
 
 private:
@@ -2914,7 +2914,7 @@ public:
 
 	UPROPERTY()
 	UNakamaSession *UserSession;
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FListTournaments OnSuccess;
 
@@ -2935,7 +2935,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Tournaments", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaClientListTournaments* ListTournaments(UNakamaClient* Client, UNakamaSession *Session, int32 CategoryStart, int32 CategoryEnd, int32 StartTime, int32 EndTime, int32 Limit, FString Cursor);
-	
+
 	virtual void Activate() override;
 
 private:
@@ -2945,5 +2945,5 @@ private:
 	int32 EndTime;
 	int32 Limit;
 	FString Cursor;
-	
+
 };

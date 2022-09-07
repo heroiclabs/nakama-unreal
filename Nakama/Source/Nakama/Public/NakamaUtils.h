@@ -15,11 +15,9 @@
 #include "NakamaMatchTypes.h"
 #include "NakamaUserSession.h"
 
-typedef uint64_t NTimestamp;
-
 namespace NakamaUtils
 {
-	
+
 }
 
 class FNakamaUtils
@@ -75,6 +73,6 @@ public:
 	{
 		return IsValid(RealtimeClient) && RealtimeClient->bIsActive == true;
 	}
-	
-	
+
+
 };
