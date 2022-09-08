@@ -4,14 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
-#include "NakamaBlueprintDemoGameModeBase.generated.h"
+#include "NakamaBlueprintsDemoGameModeBase.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS()
-class NAKAMABLUEPRINTDEMO_API ANakamaBlueprintDemoGameModeBase : public AGameModeBase
+class NakamaBlueprintsDemo_API ANakamaBlueprintsDemoGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
-	
+
 };
