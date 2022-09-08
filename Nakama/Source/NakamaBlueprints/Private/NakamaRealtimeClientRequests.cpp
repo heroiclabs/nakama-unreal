@@ -12,9 +12,7 @@
 #include "NakamaStatus.h"
 #include "NakamaStreams.h"
 #include "NakamaChat.h"
-
 #include "nakama-cpp/realtime/rtdata/NRtError.h"
-
 
 UNakamaRealtimeClientConnect* UNakamaRealtimeClientConnect::Connect(UNakamaRealtimeClient* RealtimeClient)
 {

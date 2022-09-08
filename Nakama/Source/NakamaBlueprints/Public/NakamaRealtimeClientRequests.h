@@ -7,16 +7,24 @@
 #include "Kismet/BlueprintAsyncActionBase.h"
 #include "NakamaStatus.h"
 #include "NakamaRtError.h"
+#include "NakamaChannelTypes.h"
+#include "NakamaMatch.h"
+#include "NakamaMatchTypes.h"
+#include "NakamaNotification.h"
+#include "NakamaParty.h"
+#include "NakamaPresence.h"
+#include "NakamaStreams.h"
+#include "NakamaChat.h"
 #include "NakamaRealtimeClientRequests.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS()
 class NAKAMABLUEPRINTS_API UNakamaRealtimeClientRequests : public UBlueprintAsyncActionBase
 {
 	GENERATED_BODY()
-	
+
 };
 
 
@@ -45,10 +53,10 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnRealtimeClientConnectError OnError;
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FOnRealtimeClientConnect OnSuccess;
-	
+
 	/**
 	 * Connect to the Server.
 	 *
@@ -56,14 +64,14 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Setup", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaRealtimeClientConnect* Connect(UNakamaRealtimeClient *RealtimeClient);
-	
+
 	virtual void Activate() override;
 
 private:
 
 	UPROPERTY()
 	UNakamaRealtimeClient *RealtimeClient;
-	
+
 };
 
 
@@ -79,13 +87,13 @@ class NAKAMABLUEPRINTS_API UNakamaRealtimeClientSendMessage : public UBlueprintA
 	GENERATED_BODY()
 
 public:
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FOnWriteChannelMessage OnSuccess;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnWriteChannelMessage OnError;
-	
+
 	/**
 	 * Send a chat message to a channel on the server.
 	 *
@@ -95,17 +103,17 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Chat|Messaging", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaRealtimeClientSendMessage* SendMessage(UNakamaRealtimeClient *RealtimeClient, FString ChannelId, FString Content);
-	
+
 	virtual void Activate() override;
 
 private:
 
 	UPROPERTY()
 	UNakamaRealtimeClient *RealtimeClient;
-	
+
 	FString ChannelId;
 	FString Content;
-	
+
 };
 
 
@@ -120,13 +128,13 @@ class NAKAMABLUEPRINTS_API UNakamaRealtimeClientSendDirectMessage : public UBlue
 	GENERATED_BODY()
 
 public:
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FOnWriteChannelMessage OnSuccess;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnWriteChannelMessage OnError;
-	
+
 	/**
 	 * Send a direct chat message to another user.
 	 *
@@ -136,17 +144,17 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Chat|Messaging", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaRealtimeClientSendDirectMessage* SendDirectMessage(UNakamaRealtimeClient *RealtimeClient, FString UserID, FString Content);
-	
+
 	virtual void Activate() override;
 
 private:
 
 	UPROPERTY()
 	UNakamaRealtimeClient *RealtimeClient;
-	
+
 	FString UserID;
 	FString Content;
-	
+
 };
 
 /// <summary>
@@ -166,13 +174,13 @@ class NAKAMABLUEPRINTS_API UNakamaRealtimeClientJoinChat : public UBlueprintAsyn
 	GENERATED_BODY()
 
 public:
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FJoinChat OnSuccess;
 
 	UPROPERTY(BlueprintAssignable)
 	FJoinChat OnError;
-	
+
 	/**
 	 * Join a chat channel on the server.
 	 *
@@ -184,14 +192,14 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Chat", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaRealtimeClientJoinChat* JoinChat(UNakamaRealtimeClient *RealtimeClient, FString ChatId, ENakamaChannelType ChannelType, bool Persistence, bool Hidden);
-	
+
 	virtual void Activate() override;
 
 private:
 
 	UPROPERTY()
 	UNakamaRealtimeClient *RealtimeClient;
-	
+
 	FString ChatId;
 	ENakamaChannelType ChannelType;
 	bool Persistence;
@@ -212,13 +220,13 @@ class NAKAMABLUEPRINTS_API UNakamaRealtimeClientLeaveChat : public UBlueprintAsy
 	GENERATED_BODY()
 
 public:
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FLeaveChat OnSuccess;
 
 	UPROPERTY(BlueprintAssignable)
 	FLeaveChat OnError;
-	
+
 	/**
 	* Leave a chat channel on the server.
 	*
@@ -227,14 +235,14 @@ public:
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Chat", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaRealtimeClientLeaveChat* LeaveChat(UNakamaRealtimeClient *RealtimeClient, FString ChannelId);
-	
+
 	virtual void Activate() override;
 
 private:
 
 	UPROPERTY()
 	UNakamaRealtimeClient *RealtimeClient;
-	
+
 	FString ChannelId;
 };
 
@@ -255,13 +263,13 @@ class NAKAMABLUEPRINTS_API UNakamaRealtimeClientAddMatchmaker : public UBlueprin
 	GENERATED_BODY()
 
 public:
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FAddMatchmaker OnSuccess;
 
 	UPROPERTY(BlueprintAssignable)
 	FAddMatchmaker OnError;
-	
+
 	/**
 	 * Join the matchmaker pool and search for opponents on the server.
 	 *
@@ -276,7 +284,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Matchmaker", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaRealtimeClientAddMatchmaker* AddMatchmaker(UNakamaRealtimeClient *RealtimeClient, int32 MinCount, int32 MaxCount, FString Query, TMap<FString, FString> StringProperties, TMap<FString, int32> NumericProperties, int32 CountMultiple, bool IgnoreCountMultiple);
-	
+
 	virtual void Activate() override;
 
 private:
@@ -291,8 +299,8 @@ private:
 	TMap<FString, int32> NumericProperties;
 	int32 CountMultiple;
 	bool IgnoreCountMultiple;
-	
-	
+
+
 };
 
 
@@ -308,13 +316,13 @@ class NAKAMABLUEPRINTS_API UNakamaRealtimeClientLeaveMatchmaker : public UBluepr
 	GENERATED_BODY()
 
 public:
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FLeaveMatchmaker OnSuccess;
 
 	UPROPERTY(BlueprintAssignable)
 	FLeaveMatchmaker OnError;
-	
+
 	/**
 	 * Leave the matchmaker pool by ticket.
 	 *
@@ -323,7 +331,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Matchmaker", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaRealtimeClientLeaveMatchmaker* LeaveMatchmaker(UNakamaRealtimeClient *RealtimeClient, FString Ticket);
-	
+
 	virtual void Activate() override;
 
 private:
@@ -332,7 +340,7 @@ private:
 	UNakamaRealtimeClient *RealtimeClient;
 
 	FString Ticket;
-	
+
 };
 
 
@@ -354,10 +362,10 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnAnyRtError OnError;
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FOnRealtimeSuccessful OnSuccess;
-	
+
 	/**
 	 * Update the user's status online.
 	 *
@@ -366,7 +374,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Status", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaRealtimeClientUpdateStatus* UpdateStatus(UNakamaRealtimeClient *RealtimeClient, FString StatusMessage);
-	
+
 	virtual void Activate() override;
 
 private:
@@ -375,7 +383,7 @@ private:
 	UNakamaRealtimeClient *RealtimeClient;
 
 	FString StatusMessage;
-	
+
 };
 
 
@@ -392,10 +400,10 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnAnyRtError OnError;
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FOnRealtimeSuccessful OnSuccess;
-	
+
 	/**
 	 * Update the user's status to offline, appearing invisible to others.
 	 *
@@ -403,7 +411,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Status", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaRealtimeClientSetAppearOffline* SetAppearOffline(UNakamaRealtimeClient *RealtimeClient);
-	
+
 	virtual void Activate() override;
 
 private:
@@ -412,7 +420,7 @@ private:
 	UNakamaRealtimeClient *RealtimeClient;
 
 	FString StatusMessage;
-	
+
 };
 
 
@@ -428,13 +436,13 @@ class NAKAMABLUEPRINTS_API UNakamaRealtimeClientFollowUsers : public UBlueprintA
 	GENERATED_BODY()
 
 public:
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FFollowUsers OnSuccess;
 
 	UPROPERTY(BlueprintAssignable)
 	FFollowUsers OnError;
-	
+
 	/**
 	 * Follow one or more users for status updates.
 	 *
@@ -443,7 +451,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Status", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaRealtimeClientFollowUsers* FollowUsers(UNakamaRealtimeClient *RealtimeClient, TArray<FString> UserIds);
-	
+
 	virtual void Activate() override;
 
 private:
@@ -452,7 +460,7 @@ private:
 	UNakamaRealtimeClient *RealtimeClient;
 
 	TArray<FString> UserIds;
-	
+
 };
 
 
@@ -471,11 +479,11 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnAnyRtError OnError;
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FOnRealtimeSuccessful OnSuccess;
-	
-	
+
+
 	/**
 	 * Unfollow status updates for one or more users.
 	 *
@@ -484,7 +492,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Status", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaRealtimeClientUnFollowUsers* UnFollowUsers(UNakamaRealtimeClient *RealtimeClient, TArray<FString> UserIds);
-	
+
 	virtual void Activate() override;
 
 private:
@@ -493,7 +501,7 @@ private:
 	UNakamaRealtimeClient *RealtimeClient;
 
 	TArray<FString> UserIds;
-	
+
 };
 
 /// <summary>
@@ -512,27 +520,27 @@ class NAKAMABLUEPRINTS_API UNakamaRealtimeClientCreateMatch : public UBlueprintA
 	GENERATED_BODY()
 
 public:
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FCreateMatch OnSuccess;
 
 	UPROPERTY(BlueprintAssignable)
 	FCreateMatch OnError;
-	
+
 	/**
 	 * Create a multiplayer match on the server.
 	 * @param RealtimeClient The Realtime Client (Socket) to use.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Realtime|Match", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaRealtimeClientCreateMatch* CreateMatch(UNakamaRealtimeClient *RealtimeClient);
-	
+
 	virtual void Activate() override;
 
 private:
 
 	UPROPERTY()
 	UNakamaRealtimeClient *RealtimeClient;
-	
+
 };
 
 
@@ -548,13 +556,13 @@ class NAKAMABLUEPRINTS_API UNakamaRealtimeClientJoinMatch : public UBlueprintAsy
 	GENERATED_BODY()
 
 public:
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FJoinMatch OnSuccess;
 
 	UPROPERTY(BlueprintAssignable)
 	FJoinMatch OnError;
-	
+
 	/**
 	 * Join a multiplayer match by ID.
 	 *
@@ -564,7 +572,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Realtime|Match", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaRealtimeClientJoinMatch* JoinMatch(UNakamaRealtimeClient *RealtimeClient, FString MatchId, TMap<FString, FString> MetaData);
-	
+
 	virtual void Activate() override;
 
 private:
@@ -587,13 +595,13 @@ class NAKAMABLUEPRINTS_API UNakamaRealtimeClientJoinMatchByToken : public UBluep
 	GENERATED_BODY()
 
 public:
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FJoinMatch OnSuccess;
 
 	UPROPERTY(BlueprintAssignable)
 	FJoinMatch OnError;
-	
+
 	/**
 	* Join a multiplayer match with a matchmaker.
 	*
@@ -602,7 +610,7 @@ public:
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Realtime|Match", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaRealtimeClientJoinMatchByToken* JoinMatchByToken(UNakamaRealtimeClient *RealtimeClient, FString Token);
-	
+
 	virtual void Activate() override;
 
 private:
@@ -626,13 +634,13 @@ class NAKAMABLUEPRINTS_API UNakamaRealtimeClientLeaveMatch : public UBlueprintAs
 	GENERATED_BODY()
 
 public:
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FLeaveMatch OnSuccess;
 
 	UPROPERTY(BlueprintAssignable)
 	FLeaveMatch OnError;
-	
+
 	/**
 	* Leave a match on the server.
 	*
@@ -641,7 +649,7 @@ public:
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Realtime|Match", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaRealtimeClientLeaveMatch* LeaveMatch(UNakamaRealtimeClient *RealtimeClient, FString MatchId);
-	
+
 	virtual void Activate() override;
 
 private:
@@ -669,23 +677,23 @@ class NAKAMABLUEPRINTS_API UNakamaRealtimeClientCreateParty : public UBlueprintA
 	GENERATED_BODY()
 
 public:
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FCreateParty OnSuccess;
 
 	UPROPERTY(BlueprintAssignable)
 	FCreateParty OnError;
-	
+
 	/**
 	 * Create a party.
-	 * 
+	 *
 	 * @param Open Whether or not the party will require join requests to be approved by the party leader.
 	 * @param MaxSize Maximum number of party members.
 	 * @param RealtimeClient The Realtime Client (Socket) to use.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Realtime|Parties", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaRealtimeClientCreateParty* CreateParty(UNakamaRealtimeClient *RealtimeClient, bool Open, int32 MaxSize);
-	
+
 	virtual void Activate() override;
 
 private:
@@ -710,22 +718,22 @@ class NAKAMABLUEPRINTS_API UNakamaRealtimeClientJoinParty : public UBlueprintAsy
 	GENERATED_BODY()
 
 public:
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FJoinParty OnSuccess;
 
 	UPROPERTY(BlueprintAssignable)
 	FJoinParty OnError;
-	
+
 	/**
 	 * Join a party.
-	 * 
+	 *
 	 * @param PartyId Party ID.
 	 * @param RealtimeClient The Realtime Client (Socket) to use.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Realtime|Parties", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaRealtimeClientJoinParty* JoinParty(UNakamaRealtimeClient *RealtimeClient, FString PartyId);
-	
+
 	virtual void Activate() override;
 
 private:
@@ -750,22 +758,22 @@ class NAKAMABLUEPRINTS_API UNakamaRealtimeClientLeaveParty : public UBlueprintAs
 	GENERATED_BODY()
 
 public:
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FLeaveParty OnSuccess;
 
 	UPROPERTY(BlueprintAssignable)
 	FLeaveParty OnError;
-	
+
 	/**
 	 * Leave the party.
-	 * 
+	 *
 	 * @param PartyId Party ID.
 	 * @param RealtimeClient The Realtime Client (Socket) to use.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Realtime|Parties", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaRealtimeClientLeaveParty* LeaveParty(UNakamaRealtimeClient *RealtimeClient, FString PartyId);
-	
+
 	virtual void Activate() override;
 
 private:
@@ -791,22 +799,22 @@ class NAKAMABLUEPRINTS_API UNakamaRealtimeClientListPartyJoinRequests : public U
 	GENERATED_BODY()
 
 public:
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FListPartyJoinRequests OnSuccess;
 
 	UPROPERTY(BlueprintAssignable)
 	FListPartyJoinRequests OnError;
-	
+
 	/**
 	 * Request a list of pending join requests for a party.
-	 * 
+	 *
 	 * @param PartyId Party ID.
 	 * @param RealtimeClient The Realtime Client (Socket) to use.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Realtime|Parties", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaRealtimeClientListPartyJoinRequests* ListPartyJoinRequests(UNakamaRealtimeClient *RealtimeClient, FString PartyId);
-	
+
 	virtual void Activate() override;
 
 private:
@@ -831,10 +839,10 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnAnyRtError OnError;
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FOnRealtimeSuccessful OnSuccess;
-	
+
 	/**
 	 * Promote a new party leader.
 	 * @param PartyId Party ID.
@@ -843,7 +851,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Realtime|Parties", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaRealtimeClientPromotePartyMember* PromotePartyMember(UNakamaRealtimeClient *RealtimeClient, FString PartyId, FNakamaUserPresence PartyMember);
-	
+
 	virtual void Activate() override;
 
 private:
@@ -869,13 +877,13 @@ class NAKAMABLUEPRINTS_API UNakamaRealtimeClientRemoveMatchmakerParty : public U
 	GENERATED_BODY()
 
 public:
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FRemoveMatchmakerParty OnSuccess;
 
 	UPROPERTY(BlueprintAssignable)
 	FRemoveMatchmakerParty OnError;
-	
+
 	/**
 	 * Cancel a party matchmaking process using a ticket.
 	 * @param PartyId Party ID.
@@ -884,7 +892,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Realtime|Parties", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaRealtimeClientRemoveMatchmakerParty* RemoveMatchmakerParty(UNakamaRealtimeClient *RealtimeClient, FString PartyId, FString Ticket);
-	
+
 	virtual void Activate() override;
 
 private:
@@ -910,11 +918,11 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnAnyRtError OnError;
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FOnRealtimeSuccessful OnSuccess;
-	
-	
+
+
 	/**
 	 * Kick a party member, or decline a request to join.
 	 * @param PartyId Party ID to remove/reject from.
@@ -923,7 +931,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Realtime|Parties", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaRealtimeClientRemovePartyMember* RemovePartyMember(UNakamaRealtimeClient *RealtimeClient, FString PartyId, FNakamaUserPresence Presence);
-	
+
 	virtual void Activate() override;
 
 private:
@@ -950,11 +958,11 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnAnyRtError OnError;
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FOnRealtimeSuccessful OnSuccess;
-	
-	
+
+
 	/**
 	 * Accept a party member's request to join the party.
 	 *
@@ -964,7 +972,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Realtime|Parties", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaRealtimeClientAcceptPartyMember* AcceptPartyMember(UNakamaRealtimeClient *RealtimeClient, FString PartyId, FNakamaUserPresence Presence);
-	
+
 	virtual void Activate() override;
 
 private:
@@ -990,16 +998,16 @@ class NAKAMABLUEPRINTS_API UNakamaRealtimeClientAddMatchmakerParty : public UBlu
 	GENERATED_BODY()
 
 public:
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FAddMatchmakerParty OnSuccess;
 
 	UPROPERTY(BlueprintAssignable)
 	FAddMatchmakerParty OnError;
-	
+
 	/**
 	 * Begin matchmaking as a party.
-	 * 
+	 *
 	 * @param PartyId Party ID.
 	 * @param Query Filter query used to identify suitable users.
 	 * @param MinCount Minimum total user count to match together.
@@ -1010,7 +1018,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Matchmaker", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaRealtimeClientAddMatchmakerParty* AddMatchmakerParty(UNakamaRealtimeClient *RealtimeClient, FString PartyId, int32 MinCount, int32 MaxCount, FString Query, TMap<FString, FString> StringProperties, TMap<FString, int32> NumericProperties, int32 CountMultiple, bool IgnoreCountMultiple);
-	
+
 	virtual void Activate() override;
 
 private:
@@ -1026,8 +1034,8 @@ private:
 	TMap<FString, int32> NumericProperties;
 	int32 CountMultiple;
 	bool IgnoreCountMultiple;
-	
-	
+
+
 };
 
 /**
@@ -1043,10 +1051,10 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnAnyRtError OnError;
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FOnRealtimeSuccessful OnSuccess;
-	
+
 	/**
 	 * End a party, kicking all party members and closing it.
 	 * @param PartyId The ID of the party.
@@ -1054,7 +1062,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Realtime|Parties", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaRealtimeClientCloseParty* CloseParty(UNakamaRealtimeClient *RealtimeClient, FString PartyId);
-	
+
 	virtual void Activate() override;
 
 private:

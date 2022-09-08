@@ -9,6 +9,7 @@
 #include "NakamaGroup.h"
 #include "NakamaClient.h"
 #include "NakamaMatch.h"
+#include "NakamaMatchTypes.h"
 #include "NakamaFriend.h"
 #include "NakamaNotification.h"
 #include "NakamaStorageObject.h"
@@ -16,7 +17,6 @@
 #include "NakamaChannelTypes.h"
 #include "NakamaLeaderboard.h"
 #include "NakamaTournament.h"
-
 
 #include "nakama-cpp/data/NAccount.h"
 #include "nakama-cpp/data/NUsers.h"
@@ -31,8 +31,8 @@
 #include "nakama-cpp/data/NChannelMessageList.h"
 #include "nakama-cpp/data/NLeaderboardRecord.h"
 #include "nakama-cpp/data/NLeaderboardRecordList.h"
-#include "nakama-cpp/data/NTournamentRecord.h"
 #include "nakama-cpp/data/NTournamentRecordList.h"
+#include "nakama-cpp/data/NTournament.h"
 
 UNakamaClientAuthenticateCustom* UNakamaClientAuthenticateCustom::AuthenticateCustom(UNakamaClient* Client,
 	FString UserID, FString Username, bool CreateAccount, TMap<FString, FString> Vars)

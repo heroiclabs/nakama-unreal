@@ -15,7 +15,6 @@
  */
 
 #include "NakamaUnreal.h"
-#include "Core.h"
 #include "Modules/ModuleManager.h"
 #include "UnrealLogSink.h"
 
@@ -25,10 +24,6 @@ using namespace NAKAMA_NAMESPACE;
 
 void FNakamaModule::StartupModule()
 {
-#if defined(PLATFORM_PS4) || defined(PLATFORM_PS5)
-	FPlatformProcess::GetDllHandle(TEXT("nakama-sdk.prx"));
-#endif
-
 	// This code will execute after your module is loaded into memory; the exact timing is specified in the .uplugin file per-module
 	UE_LOG(LogNakama, Log, TEXT("Nakama module loaded"));
 }

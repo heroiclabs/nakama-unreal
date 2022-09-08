@@ -18,7 +18,7 @@
 		{
 			"Name": "Nakama",
 			"Type": "Runtime",
-			"LoadingPhase": "PreDefault",
+			"LoadingPhase": "Default",
 			"WhitelistPlatforms": [
 				"Win64",
 				"Linux",
@@ -34,7 +34,7 @@
         {
 			"Name": "NakamaBlueprints",
 			"Type": "Runtime",
-			"LoadingPhase": "PreDefault",
+			"LoadingPhase": "Default",
 			"WhitelistPlatforms": [
 				"Win64",
 				"Linux",

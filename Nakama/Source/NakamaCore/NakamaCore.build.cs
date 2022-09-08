@@ -7,32 +7,14 @@ public class NakamaCore : ModuleRules
 {
 	public NakamaCore(ReadOnlyTargetRules target) : base(target)
 	{
+		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
+
 		// Platform -> (buildLib, runtimeLib)
 		var libs = new Dictionary<UnrealTargetPlatform, Tuple<string,string>>()
 		{
 			{UnrealTargetPlatform.Win64, Tuple.Create(Path.Combine("win-x64", "nakama-sdk.lib"), Path.Combine("win-x64", "nakama-sdk.dll"))},
 			{UnrealTargetPlatform.Linux, Tuple.Create(Path.Combine("linux-amd64", "libnakama-sdk.so"), Path.Combine("linux-amd64", "libnakama-sdk.so"))},
 		};
-
-#if PLATFORM_PS4
-		libs[UnrealTargetPlatform.PS4] = Tuple.Create(Path.Combine("ps4", "nakama-sdk_stub_weak.a"), (Path.Combine("ps4", "nakama-sdk.prx")));
-#endif
-
-#if PLATFORM_PS5
-		libs[UnrealTargetPlatform.PS5] = Tuple.Create(Path.Combine("ps5", "nakama-sdk_stub_weak.a"), Path.Combine("ps5", "nakama-sdk.prx"));
-#endif
-
-#if PLATFORM_XBOX_ONE
-		libs[UnrealTargetPlatform.XboxOne] = Tuple.Create(Path.Combine("xdk", "nakama-sdk.lib"), Path.Combine("xdk", "nakama-sdk.dll"));
-#endif
-
-#if PLATFORM_XBOXONEGDK
-		libs[UnrealTargetPlatform.XboxOneGDK] = Tuple.Create(Path.Combine("gdk-xbox-one", "nakama-sdk.lib"), Path.Combine("gdk-xbox-one", "nakama-sdk.dll"));
-#endif
-
-#if PLATFORM_XSX
-		libs[UnrealTargetPlatform.XSX] = Tuple.Create(Path.Combine("gdk-xbox-scarlett", "nakama-sdk.lib"), Path.Combine("gdk-xbox-scarlett", "nakama-sdk.dll"));
-#endif
 
         if (Target.Platform == UnrealTargetPlatform.Mac)
 		{
