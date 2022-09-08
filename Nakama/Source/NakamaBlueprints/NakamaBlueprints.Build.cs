@@ -41,7 +41,8 @@ public class NakamaBlueprints : ModuleRules
 				"SlateCore",
 				"Engine",
 				"JsonUtilities",
-				"Json"
+				"Json",
+
 				// ... private dependencies that you statically link with here ...
 			}
 			);

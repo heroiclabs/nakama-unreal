@@ -15,11 +15,6 @@
 #include "NakamaMatchTypes.h"
 #include "NakamaUserSession.h"
 
-namespace NakamaUtils
-{
-
-}
-
 class FNakamaUtils
 {
 public:
@@ -46,13 +41,40 @@ public:
 
 	// Map Helpers
 	static TMap<FString, FString> NStringMapToTMap(NStringMap InNStringMap);
-	static NStringMap TMapToFStringMap(TMap<FString, FString> InTMap);
+	static NStringMap TMapToFStringMap(TMap<FString, FString> InTMap)
+    {
+        NStringMap Variables;
+        for (const auto& Variable : InTMap)
+        {
+            Variables.emplace(UEStringToStdString(Variable.Key), UEStringToStdString(Variable.Value));
+        }
+        return Variables;
+    }
 
 	static TMap<FString, int32> NNumericMapToTMap(NStringDoubleMap InNumericMap);
-	static NStringDoubleMap TMapToNumericMap(TMap<FString, int32> InTMap);
+	static NStringDoubleMap TMapToNumericMap(TMap<FString, int32> InTMap)
+    {
+        NStringDoubleMap Variables;
+        for (const auto& Variable : InTMap)
+        {
+            Variables.emplace(UEStringToStdString(Variable.Key), Variable.Value);
+        }
+        return Variables;
+    }
 
 	// Convert To Nakama Types
-	static NUserPresence ConvertUserPresence(FNakamaUserPresence UserPresence);
+	static NUserPresence ConvertUserPresence(FNakamaUserPresence UserPresence)
+    {
+        NUserPresence Presence;
+        Presence.userId = UEStringToStdString(UserPresence.UserID);
+        Presence.sessionId = UEStringToStdString(UserPresence.SessionID);
+        Presence.username = UEStringToStdString(UserPresence.Username);
+        Presence.persistence = UserPresence.Persistence;
+        Presence.status = UEStringToStdString(UserPresence.Status);
+
+        return Presence;
+    }
+
 	static NSessionPtr ConvertSession(FNakamaUserSession session); // Does a restore session.
 
 	// Convert Arrays

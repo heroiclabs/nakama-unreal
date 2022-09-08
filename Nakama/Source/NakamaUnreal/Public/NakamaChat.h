@@ -6,8 +6,6 @@
 #include "NakamaPresence.h"
 #include "NakamaChat.generated.h"
 
-//struct FNakamaUserPresence; // Forward Declare
-
 namespace Nakama
 {
 	struct NChannel;

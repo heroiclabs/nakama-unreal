@@ -1,11 +1,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "NakamaPresence.h"
 #include "nakama-cpp/realtime/rtdata/NStatus.h"
 #include "nakama-cpp/realtime/rtdata/NStatusPresenceEvent.h"
 #include "NakamaStatus.generated.h"
-
-struct FNakamaUserPresence; // Forward Declare
 
 using namespace Nakama;
 

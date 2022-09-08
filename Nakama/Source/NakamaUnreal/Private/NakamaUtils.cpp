@@ -3,6 +3,8 @@
 
 #include "Misc/DefaultValueHelper.h"
 #include "NakamaUser.h"
+#include "nakama-cpp/realtime/rtdata/NUserPresence.h"
+#include "nakama-cpp/NTypes.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogNakamaUtils, Log, Log);
 
@@ -91,7 +93,7 @@ FDateTime FNakamaUtils::ParseDateString(const FString& DateStr)
 	auto ParseTime = [](const FString& TimeStr, int32& Hour, int32& Minute) -> bool
 	{
 		FString Cycle = TimeStr.Right(2);
-		
+
 		if (!ensure(Cycle == "PM" || Cycle == "AM"))
 		{
 			return false;
@@ -101,7 +103,7 @@ FDateTime FNakamaUtils::ParseDateString(const FString& DateStr)
 
 		// split up on a single delimiter
 		int32 NumTokens = TimeStr.LeftChop(2).ParseIntoArray(Tokens, TEXT(":"), true);
-	
+
 		if (NumTokens == 2)
 		{
 			Hour = FCString::Atoi(*Tokens[0]);
@@ -113,7 +115,7 @@ FDateTime FNakamaUtils::ParseDateString(const FString& DateStr)
 
 		return false;
 	};
-	
+
 	TArray<FString> Tokens;
 
 	// Assumes format: 'Jun 25 2019  8:45AM'
@@ -132,13 +134,13 @@ FDateTime FNakamaUtils::ParseDateString(const FString& DateStr)
 		Day = FCString::Atoi(*Tokens[1]);
 		Year = FCString::Atoi(*Tokens[2]);
 		ParseTime(Tokens[3], Hour, Minute);
-		
+
 		if (FDateTime::Validate(Year, Month, Day, Hour, Minute, 0, 0))
 		{
 			return FDateTime(Year, Month, Day, Hour, Minute, 0, 0);
 		}
 	}
-	
+
 	return FDateTime(0);
 }
 
@@ -147,20 +149,10 @@ TMap<FString, FString> FNakamaUtils::NStringMapToTMap(NStringMap InNStringMap)
 	TMap<FString, FString> Unreal;
 	for (const auto& Variable : InNStringMap)
 	{
-		
+
 		Unreal.Add(StdStringToUEString(Variable.first), StdStringToUEString(Variable.second));
 	}
 	return Unreal;
-}
-
-NStringMap FNakamaUtils::TMapToFStringMap(TMap<FString, FString> InTMap)
-{
-	NStringMap Variables;
-	for (const auto& Variable : InTMap)
-	{
-		Variables.emplace(UEStringToStdString(Variable.Key), UEStringToStdString(Variable.Value));
-	}
-	return Variables;
 }
 
 TMap<FString, int32> FNakamaUtils::NNumericMapToTMap(NStringDoubleMap InNumericMap)
@@ -168,38 +160,16 @@ TMap<FString, int32> FNakamaUtils::NNumericMapToTMap(NStringDoubleMap InNumericM
 	TMap<FString, int32> Unreal;
 	for (const auto& Variable : InNumericMap)
 	{
-		
+
 		Unreal.Add(StdStringToUEString(Variable.first), Variable.second);
 	}
 	return Unreal;
 }
 
-NStringDoubleMap FNakamaUtils::TMapToNumericMap(TMap<FString, int32> InTMap)
-{
-	NStringDoubleMap Variables;
-	for (const auto& Variable : InTMap)
-	{
-		Variables.emplace(UEStringToStdString(Variable.Key), Variable.Value);
-	}
-	return Variables;
-}
-
-NUserPresence FNakamaUtils::ConvertUserPresence(FNakamaUserPresence UserPresence)
-{
-	NUserPresence Presence;
-	Presence.userId = UEStringToStdString(UserPresence.UserID);
-	Presence.sessionId = UEStringToStdString(UserPresence.SessionID);
-	Presence.username = UEStringToStdString(UserPresence.Username);
-	Presence.persistence = UserPresence.Persistence;
-	Presence.status = UEStringToStdString(UserPresence.Status);
-
-	return Presence;
-}
-
 NSessionPtr FNakamaUtils::ConvertSession(FNakamaUserSession session)
 {
 	NSessionPtr SessionResult = restoreSession(UEStringToStdString(session.AuthToken), UEStringToStdString(session.RefreshToken)); // Idea: Store Sessions in Memory somewhere?
-	
+
 	return SessionResult;
 }
 
@@ -245,6 +215,6 @@ bool FNakamaUtils::IsErrorEmpty(std::string errorMessage)
 	{
 		return true;
 	}
-	
+
 	return false;
 }
