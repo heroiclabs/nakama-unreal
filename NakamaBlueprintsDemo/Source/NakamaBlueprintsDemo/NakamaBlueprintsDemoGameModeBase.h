@@ -10,7 +10,7 @@
  *
  */
 UCLASS()
-class NakamaBlueprintsDemo_API ANakamaBlueprintsDemoGameModeBase : public AGameModeBase
+class NAKAMABLUEPRINTSDEMO_API ANakamaBlueprintsDemoGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
 
