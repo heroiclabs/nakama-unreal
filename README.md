@@ -37,7 +37,7 @@ To use nakama-unreal in your Unreal project, you'll need to copy the nakama-unre
 1. Copy the `Nakama` folder from the nakama-unreal release you downloaded, into this `Plugins` folder.
 1. Now, edit your project's `.Build.cs` file, located in the project folder under `Source\\[ProjectFolder]` (for example, `D:\\MyUnrealProject\\Source\\MyUnrealProject\\MyUnrealProject.Build.cs`). Add this line to the constructor:
 
-`PrivateDependencyModuleNames.AddRange(new string[] { "Nakama" });`
+`PrivateDependencyModuleNames.AddRange(new string[] { "NakamaCore" });`
 
 So, you might end up with the file that looks something like this:
 
@@ -52,19 +52,10 @@ public class MyUnrealProject : ModuleRules
 
 		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore" });
 
-		PrivateDependencyModuleNames.AddRange(new string[] { "Nakama" });
+		PrivateDependencyModuleNames.AddRange(new string[] { "NakamaCore" });
 	}
 }
 ```
-
-Include following header only once in some source file e.g. in `NProject.cpp`:
-```cpp
-#include "nakama-cpp-c-wrapper/NakamaWrapperImpl.h"
-```
-
-This header includes implementation of Nakama C++ wrapper. It uses C interface to communicate with Nakama shared library (DLL).
-
-At this point, you are done.  Restart Unreal.  After it compiles things, open Edit->Plugins and scroll to the bottom. If all went well, you should see HeroicLabs.Nakama listed as a plugin.
 
 ## Threading model
 
@@ -77,7 +68,7 @@ The client object has many methods to execute various features in the server or 
 Include nakama header.
 
 ```cpp
-#include "NakamaUnreal.h"
+#include "NakamaCore.h"
 ```
 
 Use nakama namespace.
