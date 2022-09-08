@@ -1,13 +1,19 @@
 {
 	"FileVersion": 3,
-	"EngineAssociation": "{CA5C7192-41DD-84CE-DE25-15B1710A6219}",
+	"EngineAssociation": "5.0",
 	"Category": "",
 	"Description": "",
 	"Modules": [
 		{
-			"Name": "NakamaBlueprintDemo",
+			"Name": "NakamaBlueprintsDemo",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
+		}
+	],
+	"Plugins": [
+		{
+			"Name": "Nakama",
+			"Enabled": true
 		}
 	]
 }
