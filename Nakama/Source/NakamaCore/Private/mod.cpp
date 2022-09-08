@@ -1,5 +1,5 @@
 #include "UnrealLogSink.h"
-#include "NakamaUnreal.h"
+#include "NakamaCore.h"
 #include "http.h"
 #include "websocket.h"
 
@@ -9,7 +9,7 @@ DEFINE_LOG_CATEGORY(LogNakama);
 
 namespace Nakama {
 namespace Unreal {
-   
+
 void initLogging(NLogLevel level)
 {
    Nakama::NLogger::init(std::make_shared<NUnrealLogSink>(), level);
@@ -20,7 +20,7 @@ NClientPtr createNakamaClient(const NClientParameters& parameters, NLogLevel lev
    initLogging(level);
    return Nakama::createRestClient(parameters, NHttpTransportPtr(new UnrealHttpTransport()));
 }
-   
+
 NRtClientPtr createNakamaRtClient(const NClientPtr& client, int32_t port)
 {
    return client->createRtClient(port, NRtTransportPtr(new UnrealWsTransport()));

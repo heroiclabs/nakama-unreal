@@ -5,7 +5,7 @@ using System.IO;
 
 public class NakamaUnreal : ModuleRules
 {
-	public Nakama(ReadOnlyTargetRules Target) : base(Target)
+	public NakamaUnreal(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 

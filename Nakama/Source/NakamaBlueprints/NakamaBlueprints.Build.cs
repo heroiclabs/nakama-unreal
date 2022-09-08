@@ -26,7 +26,7 @@ public class NakamaBlueprints : ModuleRules
 			new string[]
 			{
 				"Core",
-				"Nakama"
+				"NakamaUnreal"
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);

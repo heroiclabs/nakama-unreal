@@ -1,4 +1,4 @@
-#include "Nakama.h"
+#include "NakamaUnreal.h"
 
 void FNakamaUnrealModule::StartupModule()
 {
@@ -16,4 +16,4 @@ void FNakamaUnrealModule::ShutdownModule()
 
 #undef LOCTEXT_NAMESPACE
 
-IMPLEMENT_MODULE(FNakamaModule, Nakama)
+IMPLEMENT_MODULE(FNakamaUnrealModule, NakamaUnreal)
