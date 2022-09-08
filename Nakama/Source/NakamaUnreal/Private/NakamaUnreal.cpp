@@ -1,4 +1,5 @@
 #include "NakamaUnreal.h"
+#include "Modules/ModuleManager.h"
 
 void FNakamaUnrealModule::StartupModule()
 {

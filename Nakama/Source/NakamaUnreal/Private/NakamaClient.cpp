@@ -26,13 +26,6 @@ void UNakamaClient::Tick( float DeltaTime )
 		if(Client && bIsActive)
 		{
 			Client->tick();
-
-			// Use this for print to screen about tick
-			if (GEngine)
-			{
-				//GEngine->AddOnScreenDebugMessage(2,1, FColor::Green, TEXT("UNakamaClient::Tick"));
-				//GEngine->AddOnScreenDebugMessage(-1,200,FColor::Green,FString::Printf(TEXT("UNakamaClient::Tick: %s"), *DisplayName));
-			}
 		}
 		timer = 0.0f;
 	}

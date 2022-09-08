@@ -18,6 +18,8 @@
 #include "NakamaChat.h"
 //#include "NakamaClient.h"
 #include "NakamaSession.h"
+#include "Tickable.h"
+
 
 #include "NakamaRealtimeClient.generated.h"
 

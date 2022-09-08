@@ -32,25 +32,19 @@ void UNakamaRealtimeClient::Tick( float DeltaTime )
 		if(RtClient && bIsActive)
 		{
 			RtClient->tick();
-
-			// Use this to display tick on screen
-			if (GEngine)
-			{
-				//GEngine->AddOnScreenDebugMessage(1,1, FColor::Green, TEXT("UNakamaRealtimeClient::Tick"));
-			}
 		}
 		timer = 0.0f;
 	}
 
-	
+
 	LastFrameNumberWeTicked = GFrameCounter;
-	
+
 }
 
 void UNakamaRealtimeClient::Connect(const FOnRealtimeClientConnected& Success, const FOnRealtimeClientError& Error)
 {
 	const NRtClientProtocol SelectedProtocol = static_cast<NRtClientProtocol>(Protocol);
-	
+
 	// Connect Callback
 	Listener.setConnectCallback([this, Success]()
 	{
@@ -63,7 +57,7 @@ void UNakamaRealtimeClient::Connect(const FOnRealtimeClientConnected& Success, c
 		UE_LOG(LogTemp, Warning, TEXT("Nakama Realtime Client Setup: Socket Connect Error"));
 		Error.ExecuteIfBound();
 	});
-	
+
 	RtClient->connect(Session->UserSession, bShowAsOnline, SelectedProtocol);
 }
 
@@ -73,7 +67,7 @@ void UNakamaRealtimeClient::Disconnect()
 	{
 		RtClient->disconnect();
 	}
-	
+
 }
 
 /**
@@ -173,7 +167,7 @@ void UNakamaRealtimeClient::SetListenerMatchDataCallback()
 	{
 		const FNakamaMatchData MatchData = data;
 		UE_LOG(LogTemp, Warning, TEXT("User %s sent %s"), *MatchData.Presence.UserID, *MatchData.Data);
-		
+
 		MatchDataCallback.Broadcast(MatchData);
 	});
 }
@@ -192,7 +186,7 @@ void UNakamaRealtimeClient::SetListenerMatchPresenceCallback()
 			{
 				UE_LOG(LogTemp, Warning, TEXT("Match - User Joined: %s"), *Presence.Username);
 			}
-			
+
 			MatchmakerPresenceCallback.Broadcast(EventJoins);
 		}
 
@@ -206,7 +200,7 @@ void UNakamaRealtimeClient::SetListenerMatchPresenceCallback()
 			{
 				UE_LOG(LogTemp, Warning, TEXT("Match - User Left: %s"), *Presence.Username);
 			}
-			
+
 			MatchmakerPresenceCallback.Broadcast(EventLeaves);
 		}
 	});
@@ -221,9 +215,9 @@ void UNakamaRealtimeClient::SetListenerNotificationsCallback()
 		for (auto& notification : notifications.notifications)
 		{
 			FNakamaNotification NotificationData = notification;
-			
+
 			NotificationList.Notifications.Add(NotificationData);
-		} 
+		}
 		NotificationList.CacheableCursor = StdStringToUEString(notifications.cacheableCursor);
 		*/
 		NotificationReceived.Broadcast(NotificationList);
@@ -238,7 +232,7 @@ void UNakamaRealtimeClient::SetListenerPartyCallback()
 		const FNakamaParty Party = party; // Automatic Conversion
 		PartyReceived.Broadcast(Party);
 	});
-	
+
 }
 
 void UNakamaRealtimeClient::SetListenerPartyCloseCallback()
@@ -297,7 +291,7 @@ void UNakamaRealtimeClient::SetListenerPartyPresenceCallback()
 		{
 			FNakamaUserPresence UserPresence = presence;
 			//UserPresence.PresenceEvent = ENakamaPresenceEvent::LEAVES;
-			
+
 			UE_LOG(LogTemp, Warning, TEXT("Party Presence: User %s now longer has status %s"), *UserPresence.Username, *UserPresence.Status);
 			//PresenceStatusReceived.Broadcast(UserPresence);
 		}
@@ -312,7 +306,7 @@ void UNakamaRealtimeClient::SetListenerPartyPresenceCallback()
 		}
 
 		PartyPresenceReceived.Broadcast(Event);
-		
+
 	});
 }
 
@@ -324,7 +318,7 @@ void UNakamaRealtimeClient::SetListenerStatusPresenceCallback()
 		{
 			FNakamaUserPresence UserPresence = presence;
 			//UserPresence.PresenceEvent = ENakamaPresenceEvent::LEAVES;
-			
+
 			UE_LOG(LogTemp, Warning, TEXT("User %s now longer has status %s"), *UserPresence.Username, *UserPresence.Status);
 			//PresenceStatusReceived.Broadcast(UserPresence);
 		}
@@ -337,9 +331,9 @@ void UNakamaRealtimeClient::SetListenerStatusPresenceCallback()
 			UE_LOG(LogTemp, Warning, TEXT("User %s now has status %s"), *UserPresence.Username, *UserPresence.Status);
 			//PresenceStatusReceived.Broadcast(UserPresence);
 		}
-		
+
 		PresenceStatusReceived.Broadcast(event); // Contains all presences, converts auto-magically
-		
+
 	});
 }
 
@@ -364,7 +358,7 @@ void UNakamaRealtimeClient::SetListenerStreamPresenceCallback()
 		}
 
 		StreamPresenceEventReceived.Broadcast(Stream);
-		
+
 	});
 }
 
@@ -377,21 +371,21 @@ void UNakamaRealtimeClient::SetListenerStreamDataCallback()
 		UE_LOG(LogTemp, Warning, TEXT("Data content: %s"), *StreamData.Data);
 
 		StreamPresenceDataReceived.Broadcast(StreamData);
-		
+
 	});
-	
+
 }
 
 void UNakamaRealtimeClient::Destroy()
 {
 	bIsActive = false;
-	
+
 	if(RtClient)
 	{
 		RtClient->disconnect();
 		RtClient = nullptr;
 	}
-	
+
 	ConditionalBeginDestroy();
 }
 
@@ -406,7 +400,7 @@ void UNakamaRealtimeClient::BeginDestroy()
 		RtClient->disconnect();
 		RtClient = nullptr;
 	}
-	
+
 }
 
 /**
@@ -432,7 +426,7 @@ void UNakamaRealtimeClient::SendMessage(FString ChannelId, FString Content, cons
 		FNakamaRtError NakamaError = error;
 		Error.ExecuteIfBound(NakamaError);
 	};
-	
+
 	// std::string data = "{ \"some\": \"data\" }"; // Example
 
 	RtClient->writeChatMessage(FNakamaUtils::UEStringToStdString(ChannelId), FNakamaUtils::UEStringToStdString(Content), successCallback, errorCallback);
@@ -457,7 +451,7 @@ void UNakamaRealtimeClient::SendDirectMessage(FString UserID, FString Content, c
 		FNakamaRtError NakamaError = error;
 		Error.ExecuteIfBound(NakamaError);
 	};
-	
+
 	// std::string data = "{ \"some\": \"data\" }"; // Example
 
 	RtClient->writeChatMessage(FNakamaUtils::UEStringToStdString(UserID), FNakamaUtils::UEStringToStdString(Content), successCallback, errorCallback);
@@ -487,7 +481,7 @@ void UNakamaRealtimeClient::JoinChat(FString ChatId, ENakamaChannelType ChannelT
 	};
 
 	const NChannelType Type = static_cast<NChannelType>(ChannelType);
-	
+
 	RtClient->joinChat(
 		FNakamaUtils::UEStringToStdString(ChatId),
 		Type,
@@ -514,7 +508,7 @@ void UNakamaRealtimeClient::LeaveChat(FString ChannelId, const FOnLeaveChat& Suc
 		UE_LOG(LogTemp, Warning, TEXT("Left Chat: %s"), *ChannelId);
 		Success.ExecuteIfBound();
 	};
-	
+
 	RtClient->leaveChat(FNakamaUtils::UEStringToStdString(ChannelId), successCallback, errorCallback);
 }
 
@@ -534,13 +528,13 @@ void UNakamaRealtimeClient::AddMatchmaker(int32 MinCount, int32 MaxCount, FStrin
 		const FNakamaMatchmakerTicket Ticket = ticket; // Sets the Ticket Object (can be used later to add more info)
 		Success.ExecuteIfBound(Ticket.TicketId);
 	};
-	
+
 	auto errorCallback = [this, Error](const NRtError& error)
 	{
 		const FNakamaRtError NakamaError = error;
 		Error.ExecuteIfBound(NakamaError);
 	};
-	
+
 	// Properties (Converted)
 	NStringMap stringProperties = FNakamaUtils::TMapToFStringMap(StringProperties);
 	NStringDoubleMap numericProperties = FNakamaUtils::TMapToNumericMap(NumericProperties);
@@ -570,7 +564,7 @@ void UNakamaRealtimeClient::AddMatchmaker(int32 MinCount, int32 MaxCount, FStrin
 		errorCallback);
 	}
 
-	
+
 }
 
 void UNakamaRealtimeClient::LeaveMatchmaker(FString Ticket, const FOnRemovedMatchmakerTicket& Success,
@@ -640,7 +634,7 @@ void UNakamaRealtimeClient::FollowUsers(TArray<FString> UserIds, const FOnFollow
 {
 	if (!RtClient)
 		return;
-	
+
 	auto errorCallback = [this, Error](const NRtError& error)
 	{
 		const FNakamaRtError NakamaError = error;
@@ -658,7 +652,7 @@ void UNakamaRealtimeClient::FollowUsers(TArray<FString> UserIds, const FOnFollow
 	{
 		UsersToFollow.push_back(FNakamaUtils::UEStringToStdString(UserToFollow));
 	}
-	
+
 	if (UsersToFollow.size() > 0)
 	{
 		RtClient->followUsers(UsersToFollow, successCallback, errorCallback);
@@ -681,7 +675,7 @@ void UNakamaRealtimeClient::UnFollowUsers(TArray<FString> UserIds, const FOnUnFo
 	{
 		Success.ExecuteIfBound();
 	};
-	
+
 	std::vector<std::string> UsersToUnFollow;
 	for(FString UserToUnFollow : UserIds)
 	{
@@ -715,7 +709,7 @@ void UNakamaRealtimeClient::CreateMatch(const FOnCreateMatch& Success, const FOn
 		UE_LOG(LogTemp, Warning, TEXT("Created Match with MatchId: %s"), *Match.MatchId);
 		Success.ExecuteIfBound(Match);
 	};
-	
+
 	RtClient->createMatch(successCallback, errorCallback);
 }
 
@@ -760,7 +754,7 @@ void UNakamaRealtimeClient::JoinMatchByToken(FString Token, const FOnCreateMatch
 		UE_LOG(LogTemp, Warning, TEXT("Joined Match with MatchId: %s"), *Match.MatchId);
 		Success.ExecuteIfBound(Match);
 	};
-	
+
 	RtClient->joinMatchByToken(FNakamaUtils::UEStringToStdString(Token), successCallback, errorCallback);
 }
 
@@ -797,7 +791,7 @@ void UNakamaRealtimeClient::LeaveMatch(FString MatchId, const FOnLeaveMatch& Suc
 		UE_LOG(LogTemp, Warning, TEXT("Left Match %s"), *MatchId);
 		Success.ExecuteIfBound();
 	};
-	
+
 	RtClient->leaveMatch(FNakamaUtils::UEStringToStdString(MatchId), successCallback, errorCallback);
 }
 
@@ -821,7 +815,7 @@ void UNakamaRealtimeClient::CreateParty(bool Open, int32 MaxSize, const FOnCreat
 	auto successCallback = [this, Success](NParty party)
 	{
 		const FNakamaParty NakamaParty = party;
-		Success.ExecuteIfBound(NakamaParty); 
+		Success.ExecuteIfBound(NakamaParty);
 	};
 
 	RtClient->createParty(Open, MaxSize, successCallback, errorCallback);
@@ -945,7 +939,7 @@ void UNakamaRealtimeClient::RemovePartyMember(FString PartyId, FNakamaUserPresen
 	};
 
 	NUserPresence UserPresence = FNakamaUtils::ConvertUserPresence(Presence);
-	
+
 	RtClient->removePartyMember(FNakamaUtils::UEStringToStdString(PartyId), UserPresence, successCallback, errorCallback);
 }
 
@@ -998,8 +992,8 @@ void UNakamaRealtimeClient::AddMatchmakerParty(FString PartyId, FString Query, i
 		FNakamaPartyMatchmakerTicket Ticket = ticket; // Auto Convert
 		Success.ExecuteIfBound(Ticket);
 	};
-	
-	
+
+
 	// Properties
 	NStringMap stringProperties = FNakamaUtils::TMapToFStringMap(StringProperties);
 	NStringDoubleMap numericProperties = FNakamaUtils::TMapToNumericMap(NumericProperties);
@@ -1032,10 +1026,10 @@ void UNakamaRealtimeClient::AddMatchmakerParty(FString PartyId, FString Query, i
 				errorCallback
 		);
 	}
-	
-	
 
-	
+
+
+
 }
 
 void UNakamaRealtimeClient::CloseParty(FString PartyId, const FOnCloseParty& Success, const FOnRtError& Error)

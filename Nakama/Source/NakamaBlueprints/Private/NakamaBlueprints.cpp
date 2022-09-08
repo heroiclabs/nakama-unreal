@@ -3,9 +3,8 @@
 
 
 #include "NakamaBlueprints.h"
-
 #include "nakama-cpp/log/NLogger.h"
-
+#include "Modules/ModuleManager.h"
 
 #define LOCTEXT_NAMESPACE "FNakamaBlueprintsModule"
 
@@ -17,7 +16,7 @@ void FNakamaBlueprintsModule::StartupModule()
 	// This code will execute after your module is loaded into memory; the exact timing is specified in the .uplugin file per-module
 
 	//NLogger::init(std::make_shared<NUnrealLogSink>(), NLogLevel::Debug);
-	
+
 }
 
 void FNakamaBlueprintsModule::ShutdownModule()
@@ -27,5 +26,5 @@ void FNakamaBlueprintsModule::ShutdownModule()
 }
 
 #undef LOCTEXT_NAMESPACE
-	
+
 IMPLEMENT_MODULE(FNakamaBlueprintsModule, NakamaBlueprints)
