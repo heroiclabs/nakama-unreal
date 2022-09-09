@@ -557,3 +557,9 @@ __pycache__/
 *.xsd.cs
 
 # End of https://www.gitignore.io/api/unrealengine,c++,c,windows,linux,macos,intellij+iml,visualstudio,visualstudiocode,xcode,gradle
+
+Out/
+NakamaBlueprintsDemo/Plugins/Nakama
+NakamaBlueprintsDemo/Intermediate
+NakamaBlueprintsDemo/Saved
+NakamaBlueprintsDemo/Binaries

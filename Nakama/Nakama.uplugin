@@ -3,7 +3,7 @@
 	"Version": 2400,
 	"VersionName": "2.5.0",
 	"FriendlyName": "Nakama client",
-	"Description": "A UE4 client for the Nakama server.",
+	"Description": "A UE4 and UE5 client for the Nakama server.",
 	"Category": "HeroicLabs.Nakama",
 	"CreatedBy": "Heroic Labs",
 	"CreatedByURL": "http://heroiclabs.com/",
@@ -16,12 +16,51 @@
 	"Installed": false,
 	"Modules": [
 		{
-			"Name": "Nakama",
+			"Name": "NakamaUnreal",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"WhitelistPlatforms": [
+				"Win64",
+				"Linux",
+				"PS4",
+				"PS5",
+				"XboxOne",
+				"XboxOneGDK",
+				"XSX",
+				"IOS",
+				"Mac"
+			]
+		},
+        {
+			"Name": "NakamaBlueprints",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"WhitelistPlatforms": [
+				"Win64",
+				"Linux",
+				"PS4",
+				"PS5",
+				"XboxOne",
+				"XboxOneGDK",
+				"XSX",
+				"IOS",
+				"Mac"
+			]
+		},
+        {
+			"Name": "NakamaCore",
 			"Type": "Runtime",
 			"LoadingPhase": "PreDefault",
 			"WhitelistPlatforms": [
 				"Win64",
 				"Linux",
+				"PS4",
+				"PS5",
+				"XboxOne",
+				"XboxOneGDK",
+				"XSX",
+				"IOS",
+				"Mac"
 			]
 		}
 	]
