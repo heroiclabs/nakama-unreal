@@ -1,9 +1,9 @@
-# Nakama Demo Project - Work In Progress
+# Nakama Demo Project
 This is an example Unreal Engine project showcasing the core features of Nakama, made using only the plugins and 100% Blueprints.
 
 This documentation is NOT Final and subject to change.
 
-This repository includes both the Nakama Unreal Core Plugin and the Nakama Blueprints Plugin within the `Plugins` folder.
+This repository includes the Nakama plugin within the `Plugins` folder.
 
 It is primarily tested on Unreal Engine 4.27 but should work on UE5 as well.
 
@@ -21,3 +21,7 @@ These are the steps to get started with the project.
 Follow these instructions to package the example project:
 
 https://docs.unrealengine.com/4.27/en-US/Basics/Projects/Packaging/
+
+To package it from the command line, run:
+
+```& "${env:UnrealEngine}\Engine\Build\BatchFiles\RunUAT.bat" BuildCookRun -Platform=Win64 -Project="D:\heroic\src\nakama-unreal\NakamaBlueprintsDemo\NakamaBlueprintsDemo.uproject" -ClientConfig=Development -Cook -Build```

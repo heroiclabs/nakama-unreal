@@ -37,7 +37,7 @@ To use nakama-unreal in your Unreal project, you'll need to copy the nakama-unre
 1. Copy the `Nakama` folder from the nakama-unreal release you downloaded, into this `Plugins` folder.
 1. Now, edit your project's `.Build.cs` file, located in the project folder under `Source\\[ProjectFolder]` (for example, `D:\\MyUnrealProject\\Source\\MyUnrealProject\\MyUnrealProject.Build.cs`). Add this line to the constructor:
 
-`PrivateDependencyModuleNames.AddRange(new string[] { "NakamaCore" });`
+`PrivateDependencyModuleNames.AddRange(new string[] { "NakamaUnreal" });`
 
 So, you might end up with the file that looks something like this:
 
@@ -52,7 +52,7 @@ public class MyUnrealProject : ModuleRules
 
 		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore" });
 
-		PrivateDependencyModuleNames.AddRange(new string[] { "NakamaCore" });
+		PrivateDependencyModuleNames.AddRange(new string[] { "NakamaUnreal" });
 	}
 }
 ```
@@ -60,143 +60,6 @@ public class MyUnrealProject : ModuleRules
 ## Threading model
 
 Nakama C++ is designed to use in one thread only.
-
-## Usage
-
-The client object has many methods to execute various features in the server or open realtime socket connections with the server.
-
-Include nakama header.
-
-```cpp
-#include "NakamaCore.h"
-```
-
-Use nakama namespace.
-
-```cpp
-using namespace NAKAMA_NAMESPACE;
-```
-
-Use the connection credentials to build a client object.
-
-```cpp
-NClientParameters parameters;
-parameters.serverKey = "defaultkey";
-parameters.host = "127.0.0.1";
-parameters.port = DEFAULT_PORT;
-NClientPtr client = createDefaultClient(parameters);
-```
-
-The `createDefaultClient` will create HTTP/1.1 client to use REST API.
-
-## Tick
-
-The `tick` method pumps requests queue and executes callbacks in your thread. You must call it periodically, the `Tick` method of actor is good place for this.
-
-```cpp
-// Called every frame
-void AMyActor::Tick(float DeltaTime)
-{
-    Super::Tick(DeltaTime);
-
-    client->tick();
-    if (rtClient) rtClient->tick();
-}
-```
-
-Without this the default client and realtime client will not work, and you will not receive responses from the server.
-
-### Authenticate
-
-There's a variety of ways to [authenticate](https://heroiclabs.com/docs/authentication) with the server. Authentication can create a user if they don't already exist with those credentials. It's also easy to authenticate with a social profile from Google Play Games, Facebook, Game Center, etc.
-
-```cpp
-string email = "super@heroes.com";
-string password = "batsignal";
-
-auto successCallback = [](NSessionPtr session)
-{
-    UE_LOG(LogActor, Warning, TEXT("session token: %s"), session->getAuthToken().c_str());
-};
-
-auto errorCallback = [](const NError& error)
-{
-};
-
-client->authenticateEmail(email, password, "", false, {}, successCallback, errorCallback);
-```
-
-### Sessions
-
-When authenticated the server responds with an auth token (JWT) which contains useful properties and gets deserialized into a `NSession` object.
-
-```cpp
-UE_LOG(LogActor, Warning, TEXT("%s"), session->getAuthToken().c_str()); // raw JWT token
-UE_LOG(LogActor, Warning, TEXT("%s"), session->getUserId().c_str());
-UE_LOG(LogActor, Warning, TEXT("%s"), session->getUsername().c_str());
-UE_LOG(LogActor, Warning, TEXT("Session has expired: %s"), session->isExpired() ? "yes" : "no");
-UE_LOG(LogActor, Warning, TEXT("Session expires at: %llu"), session->getExpireTime());
-UE_LOG(LogActor, Warning, TEXT("Session created at: %llu"), session->getCreateTime());
-```
-
-It is recommended to store the auth token from the session and check at startup if it has expired. If the token has expired you must reauthenticate. The expiry time of the token can be changed as a setting in the server.
-
-```cpp
-string authtoken = "restored from somewhere";
-NSessionPtr session = restoreSession(authtoken);
-if (session->isExpired())
-{
-    UE_LOG(LogActor, Warning, TEXT("Session has expired. Must reauthenticate!"));
-}
-```
-
-### Requests
-
-The client includes lots of builtin APIs for various features of the game server. These can be accessed with the async methods. It can also call custom logic as RPC functions on the server. These can also be executed with a socket object.
-
-All requests are sent with a session object which authorizes the client.
-
-```cpp
-auto successCallback = [](const NAccount& account)
-{
-    UE_LOG(LogActor, Warning, TEXT("user id : %s"), account.user.id.c_str());
-    UE_LOG(LogActor, Warning, TEXT("username: %s"), account.user.username.c_str());
-    UE_LOG(LogActor, Warning, TEXT("wallet  : %s"), account.wallet.c_str());
-};
-
-client->getAccount(session, successCallback, errorCallback);
-```
-
-### Realtime client
-
-The client can create one or more realtime clients with the server. Each realtime client can have it's own events listener registered for responses received from the server.
-
-```cpp
-bool createStatus = true; // if the socket should show the user as online to others.
-// define realtime client in your class as NRtClientPtr rtClient;
-rtClient = client->createRtClient(DEFAULT_PORT);
-// define listener in your class as NRtDefaultClientListener listener;
-listener.setConnectCallback([]()
-{
-    UE_LOG(LogActor, Warning, TEXT("Socket connected"));
-});
-rtClient->setListener(&listener);
-rtClient->connect(session, createStatus);
-```
-
-Don't forget to call `tick` method. See [Tick](#tick) section for details.
-
-### Logging
-
-Client logging is off by default.
-
-To enable logs output to console with debug logging level:
-
-```cpp
-#include "NUnrealLogSink.h"
-
-NLogger::init(std::make_shared<NUnrealLogSink>(), NLogLevel::Debug);
-```
 
 ### Development
 
@@ -209,8 +72,6 @@ On Mac:
 `"${UNREAL_ENGINE}/Engine/Build/BatchFiles/RunUAT.sh" BuildPlugin -Plugin="${NAKAMA_UNREAL}/Nakama/Nakama.uplugin" -TargetPlatforms=Mac -Package="${NAKAMA_UNREAL}/Out"`
 
 You can include the flag `-Rocket` after the `BuildPlugin` command if you'd like to test the plugin building in a packaged (i.e., not-source) distribution of Unreal.
-
-Additionally, you can compile our Unreal test project using our Unreal Nakama module. Run following from the `./test/unreal` directory:
 
 ## Contribute
 
