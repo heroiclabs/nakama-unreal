@@ -49,13 +49,13 @@ void UNakamaRealtimeClient::Connect(const FOnRealtimeClientConnected& Success, c
 	Listener.setConnectCallback([this, Success]()
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Nakama Realtime Client Setup: Socket connected"));
-		Success.ExecuteIfBound();
+		Success.Broadcast();
 	});
 
 	Listener.setErrorCallback([this, Error](const NRtError& Err)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Nakama Realtime Client Setup: Socket Connect Error"));
-		Error.ExecuteIfBound();
+		Error.Broadcast();
 	});
 
 	RtClient->connect(Session->UserSession, bShowAsOnline, SelectedProtocol);
@@ -416,15 +416,21 @@ void UNakamaRealtimeClient::SendMessage(FString ChannelId, FString Content, cons
 
 	auto successCallback = [this, Success](const NChannelMessageAck& ack)
 	{
+		if(!FNakamaUtils::IsRealtimeClientActive(this))
+			return;
+		
 		const FNakamaChannelMessageAck MessageAck = ack;
 		UE_LOG(LogTemp, Warning, TEXT("Sent Channel Message with Id: %s"), *MessageAck.MessageId);
-		Success.ExecuteIfBound(MessageAck);
+		Success.Broadcast(MessageAck);
 	};
 
 	auto errorCallback = [this, Error](const NRtError& error)
 	{
+		if(!FNakamaUtils::IsRealtimeClientActive(this))
+			return;
+		
 		FNakamaRtError NakamaError = error;
-		Error.ExecuteIfBound(NakamaError);
+		Error.Broadcast(NakamaError);
 	};
 
 	// std::string data = "{ \"some\": \"data\" }"; // Example
@@ -441,15 +447,21 @@ void UNakamaRealtimeClient::SendDirectMessage(FString UserID, FString Content, c
 
 	auto successCallback = [this, Success](const NChannelMessageAck& ack)
 	{
+		if(!FNakamaUtils::IsRealtimeClientActive(this))
+			return;
+		
 		const FNakamaChannelMessageAck MessageAck = ack;
 		UE_LOG(LogTemp, Warning, TEXT("Sent Direct Channel Message with Id: %s"), *MessageAck.MessageId);
-		Success.ExecuteIfBound(MessageAck);
+		Success.Broadcast(MessageAck);
 	};
 
 	auto errorCallback = [this, Error](const NRtError& error)
 	{
+		if(!FNakamaUtils::IsRealtimeClientActive(this))
+			return;
+		
 		FNakamaRtError NakamaError = error;
-		Error.ExecuteIfBound(NakamaError);
+		Error.Broadcast(NakamaError);
 	};
 
 	// std::string data = "{ \"some\": \"data\" }"; // Example
@@ -469,15 +481,21 @@ void UNakamaRealtimeClient::JoinChat(FString ChatId, ENakamaChannelType ChannelT
 
 	auto errorCallback = [this, Error](const NRtError& error)
 	{
+		if(!FNakamaUtils::IsRealtimeClientActive(this))
+			return;
+		
 		const FNakamaRtError NakamaError = error;
-		Error.ExecuteIfBound(NakamaError);
+		Error.Broadcast(NakamaError);
 	};
 
 	auto successCallback = [this, Success](NChannelPtr channel)
 	{
+		if(!FNakamaUtils::IsRealtimeClientActive(this))
+			return;
+		
 		const FNakamaChannel JoinedChannel = *channel;
 		UE_LOG(LogTemp, Warning, TEXT("You can now send messages to channel Id: %s"), *JoinedChannel.Id);
-		Success.ExecuteIfBound(JoinedChannel);
+		Success.Broadcast(JoinedChannel);
 	};
 
 	const NChannelType Type = static_cast<NChannelType>(ChannelType);
@@ -499,14 +517,20 @@ void UNakamaRealtimeClient::LeaveChat(FString ChannelId, const FOnLeaveChat& Suc
 
 	auto errorCallback = [this, Error](const NRtError& error)
 	{
+		if(!FNakamaUtils::IsRealtimeClientActive(this))
+			return;
+		
 		const FNakamaRtError NakamaError = error;
-		Error.ExecuteIfBound(NakamaError);
+		Error.Broadcast(NakamaError);
 	};
 
 	auto successCallback = [this, Success, ChannelId]()
 	{
+		if(!FNakamaUtils::IsRealtimeClientActive(this))
+			return;
+		
 		UE_LOG(LogTemp, Warning, TEXT("Left Chat: %s"), *ChannelId);
-		Success.ExecuteIfBound();
+		Success.Broadcast();
 	};
 
 	RtClient->leaveChat(FNakamaUtils::UEStringToStdString(ChannelId), successCallback, errorCallback);
@@ -525,14 +549,20 @@ void UNakamaRealtimeClient::AddMatchmaker(int32 MinCount, int32 MaxCount, FStrin
 
 	auto successCallback = [this, Success](const NMatchmakerTicket& ticket)
 	{
+		if(!FNakamaUtils::IsRealtimeClientActive(this))
+			return;
+		
 		const FNakamaMatchmakerTicket Ticket = ticket; // Sets the Ticket Object (can be used later to add more info)
-		Success.ExecuteIfBound(Ticket.TicketId);
+		Success.Broadcast(Ticket.TicketId);
 	};
 
 	auto errorCallback = [this, Error](const NRtError& error)
 	{
+		if(!FNakamaUtils::IsRealtimeClientActive(this))
+			return;
+		
 		const FNakamaRtError NakamaError = error;
-		Error.ExecuteIfBound(NakamaError);
+		Error.Broadcast(NakamaError);
 	};
 
 	// Properties (Converted)
@@ -575,14 +605,20 @@ void UNakamaRealtimeClient::LeaveMatchmaker(FString Ticket, const FOnRemovedMatc
 
 	auto errorCallback = [this, Error](const NRtError& error)
 	{
+		if(!FNakamaUtils::IsRealtimeClientActive(this))
+			return;
+		
 		const FNakamaRtError NakamaError = error;
-		Error.ExecuteIfBound(NakamaError);
+		Error.Broadcast(NakamaError);
 	};
 
 	auto successCallback = [this, Success, Ticket]()
 	{
+		if(!FNakamaUtils::IsRealtimeClientActive(this))
+			return;
+		
 		UE_LOG(LogTemp, Warning, TEXT("Matchmaker Removed Ticket: %s"), *Ticket);
-		Success.ExecuteIfBound(Ticket);
+		Success.Broadcast(Ticket);
 	};
 
 	RtClient->removeMatchmaker(FNakamaUtils::UEStringToStdString(Ticket), successCallback, errorCallback);
@@ -599,13 +635,19 @@ void UNakamaRealtimeClient::UpdateStatus(FString StatusMessage, const FOnSetStat
 
 	auto errorCallback = [this, Error](const NRtError& error)
 	{
+		if(!FNakamaUtils::IsRealtimeClientActive(this))
+			return;
+		
 		const FNakamaRtError NakamaError = error;
-		Error.ExecuteIfBound(NakamaError);
+		Error.Broadcast(NakamaError);
 	};
 
 	auto successCallback = [this, Success]()
 	{
-		Success.ExecuteIfBound();
+		if(!FNakamaUtils::IsRealtimeClientActive(this))
+			
+			return;
+		Success.Broadcast();
 	};
 
 	RtClient->updateStatus(FNakamaUtils::UEStringToStdString(StatusMessage), successCallback, errorCallback);
@@ -618,13 +660,19 @@ void UNakamaRealtimeClient::SetAppearOffline(const FOnSetStatus& Success, const 
 
 	auto errorCallback = [this, Error](const NRtError& error)
 	{
+		if(!FNakamaUtils::IsRealtimeClientActive(this))
+			return;
+		
 		FNakamaRtError NakamaError = error;
-		Error.ExecuteIfBound(NakamaError);
+		Error.Broadcast(NakamaError);
 	};
 
 	auto successCallback = [this, Success]()
 	{
-		Success.ExecuteIfBound();
+		if(!FNakamaUtils::IsRealtimeClientActive(this))
+			return;
+		
+		Success.Broadcast();
 	};
 
 	RtClient->updateStatus((""), successCallback, errorCallback); // "Invisible" Status
@@ -637,14 +685,20 @@ void UNakamaRealtimeClient::FollowUsers(TArray<FString> UserIds, const FOnFollow
 
 	auto errorCallback = [this, Error](const NRtError& error)
 	{
+		if(!FNakamaUtils::IsRealtimeClientActive(this))
+			return;
+		
 		const FNakamaRtError NakamaError = error;
-		Error.ExecuteIfBound(NakamaError);
+		Error.Broadcast(NakamaError);
 	};
 
 	auto successCallback = [this, Success](const NStatus& status)
 	{
+		if(!FNakamaUtils::IsRealtimeClientActive(this))
+			return;
+		
 		const FNakamaStatus Status = status; // Converts and adds all Presences
-		Success.ExecuteIfBound(Status);
+		Success.Broadcast(Status);
 	};
 
 	std::vector<std::string> UsersToFollow;
@@ -667,13 +721,18 @@ void UNakamaRealtimeClient::UnFollowUsers(TArray<FString> UserIds, const FOnUnFo
 
 	auto errorCallback = [this, Error](const NRtError& error)
 	{
+		if(!FNakamaUtils::IsRealtimeClientActive(this))
+			return;
+		
 		const FNakamaRtError NakamaError = error;
-		Error.ExecuteIfBound(NakamaError);
+		Error.Broadcast(NakamaError);
 	};
 
-	auto successCallback = [Success]()
+	auto successCallback = [this, Success]()
 	{
-		Success.ExecuteIfBound();
+		if(!FNakamaUtils::IsRealtimeClientActive(this))
+			return;
+		Success.Broadcast();
 	};
 
 	std::vector<std::string> UsersToUnFollow;
@@ -699,15 +758,21 @@ void UNakamaRealtimeClient::CreateMatch(const FOnCreateMatch& Success, const FOn
 
 	auto errorCallback = [this, Error](const NRtError& error)
 	{
+		if(!FNakamaUtils::IsRealtimeClientActive(this))
+			return;
+		
 		const FNakamaRtError NakamaError = error;
-		Error.ExecuteIfBound(NakamaError);
+		Error.Broadcast(NakamaError);
 	};
 
 	auto successCallback = [this, Success](const NMatch& match)
 	{
+		if(!FNakamaUtils::IsRealtimeClientActive(this))
+			return;
+		
 		const FNakamaMatch Match = match; // Converts via constructor
 		UE_LOG(LogTemp, Warning, TEXT("Created Match with MatchId: %s"), *Match.MatchId);
-		Success.ExecuteIfBound(Match);
+		Success.Broadcast(Match);
 	};
 
 	RtClient->createMatch(successCallback, errorCallback);
@@ -721,15 +786,21 @@ void UNakamaRealtimeClient::JoinMatch(FString MatchId, TMap<FString, FString> Me
 
 	auto errorCallback = [this, Error](const NRtError& error)
 	{
+		if(!FNakamaUtils::IsRealtimeClientActive(this))
+			return;
+		
 		const FNakamaRtError NakamaError = error;
-		Error.ExecuteIfBound(NakamaError);
+		Error.Broadcast(NakamaError);
 	};
 
 	auto successCallback = [this, Success](const NMatch& match)
 	{
+		if(!FNakamaUtils::IsRealtimeClientActive(this))
+			return;
+		
 		const FNakamaMatch Match = match; // Converts via constructor
 		UE_LOG(LogTemp, Warning, TEXT("Joined Match with MatchId: %s"), *Match.MatchId);
-		Success.ExecuteIfBound(Match);
+		Success.Broadcast(Match);
 	};
 
 	NStringMap metaData = FNakamaUtils::TMapToFStringMap(MetaData);
@@ -744,15 +815,21 @@ void UNakamaRealtimeClient::JoinMatchByToken(FString Token, const FOnCreateMatch
 
 	auto errorCallback = [this, Error](const NRtError& error)
 	{
+		if(!FNakamaUtils::IsRealtimeClientActive(this))
+			return;
+		
 		const FNakamaRtError NakamaError = error;
-		Error.ExecuteIfBound(NakamaError);
+		Error.Broadcast(NakamaError);
 	};
 
 	auto successCallback = [this, Success](const NMatch& match)
 	{
+		if(!FNakamaUtils::IsRealtimeClientActive(this))
+			return;
+		
 		const FNakamaMatch Match = match; // Converts via constructor
 		UE_LOG(LogTemp, Warning, TEXT("Joined Match with MatchId: %s"), *Match.MatchId);
-		Success.ExecuteIfBound(Match);
+		Success.Broadcast(Match);
 	};
 
 	RtClient->joinMatchByToken(FNakamaUtils::UEStringToStdString(Token), successCallback, errorCallback);
@@ -782,14 +859,20 @@ void UNakamaRealtimeClient::LeaveMatch(FString MatchId, const FOnLeaveMatch& Suc
 
 	auto errorCallback = [this, Error](const NRtError& error)
 	{
+		if(!FNakamaUtils::IsRealtimeClientActive(this))
+			return;
+		
 		const FNakamaRtError NakamaError = error;
-		Error.ExecuteIfBound(NakamaError);
+		Error.Broadcast(NakamaError);
 	};
 
 	auto successCallback = [this, MatchId, Success]()
 	{
+		if(!FNakamaUtils::IsRealtimeClientActive(this))
+			return;
+		
 		UE_LOG(LogTemp, Warning, TEXT("Left Match %s"), *MatchId);
-		Success.ExecuteIfBound();
+		Success.Broadcast();
 	};
 
 	RtClient->leaveMatch(FNakamaUtils::UEStringToStdString(MatchId), successCallback, errorCallback);
@@ -808,14 +891,20 @@ void UNakamaRealtimeClient::CreateParty(bool Open, int32 MaxSize, const FOnCreat
 
 	auto errorCallback = [this, Error](const NRtError& error)
 	{
+		if(!FNakamaUtils::IsRealtimeClientActive(this))
+			return;
+		
 		const FNakamaRtError NakamaError = error;
-		Error.ExecuteIfBound(NakamaError);
+		Error.Broadcast(NakamaError);
 	};
 
 	auto successCallback = [this, Success](NParty party)
 	{
+		if(!FNakamaUtils::IsRealtimeClientActive(this))
+			return;
+		
 		const FNakamaParty NakamaParty = party;
-		Success.ExecuteIfBound(NakamaParty);
+		Success.Broadcast(NakamaParty);
 	};
 
 	RtClient->createParty(Open, MaxSize, successCallback, errorCallback);
@@ -828,13 +917,19 @@ void UNakamaRealtimeClient::JoinParty(FString PartyId, const FOnJoinParty& Succe
 
 	auto errorCallback = [this, Error](const NRtError& error)
 	{
+		if(!FNakamaUtils::IsRealtimeClientActive(this))
+			return;
+		
 		const FNakamaRtError NakamaError = error;
-		Error.ExecuteIfBound(NakamaError);
+		Error.Broadcast(NakamaError);
 	};
 
 	auto successCallback = [this, PartyId, Success]()
 	{
-		Success.ExecuteIfBound(PartyId);
+		if(!FNakamaUtils::IsRealtimeClientActive(this))
+			return;
+		
+		Success.Broadcast(PartyId);
 	};
 
 	RtClient->joinParty(FNakamaUtils::UEStringToStdString(PartyId), successCallback, errorCallback);
@@ -847,13 +942,19 @@ void UNakamaRealtimeClient::LeaveParty(FString PartyId, const FOnLeaveParty& Suc
 
 	auto errorCallback = [this, Error](const NRtError& error)
 	{
+		if(!FNakamaUtils::IsRealtimeClientActive(this))
+			return;
+		
 		const FNakamaRtError NakamaError = error;
-		Error.ExecuteIfBound(NakamaError);
+		Error.Broadcast(NakamaError);
 	};
 
 	auto successCallback = [this, Success]()
 	{
-		Success.ExecuteIfBound();
+		if(!FNakamaUtils::IsRealtimeClientActive(this))
+			return;
+		
+		Success.Broadcast();
 	};
 
 	RtClient->leaveParty(FNakamaUtils::UEStringToStdString(PartyId), successCallback, errorCallback);
@@ -867,13 +968,19 @@ void UNakamaRealtimeClient::ListPartyJoinRequests(FString PartyId, const FOnList
 
 	auto errorCallback = [this, Error](const NRtError& error)
 	{
+		if(!FNakamaUtils::IsRealtimeClientActive(this))
+			return;
+		
 		const FNakamaRtError NakamaError = error;
-		Error.ExecuteIfBound(NakamaError);
+		Error.Broadcast(NakamaError);
 	};
 
 	auto successCallback = [this, Success](NPartyJoinRequest JoinRequest)
 	{
-		Success.ExecuteIfBound(JoinRequest);
+		if(!FNakamaUtils::IsRealtimeClientActive(this))
+			return;
+		
+		Success.Broadcast(JoinRequest);
 	};
 
 	RtClient->listPartyJoinRequests(FNakamaUtils::UEStringToStdString(PartyId), successCallback, errorCallback);
@@ -887,13 +994,19 @@ void UNakamaRealtimeClient::PromotePartyMember(FString PartyId, FNakamaUserPrese
 
 	auto errorCallback = [this, Error](const NRtError& error)
 	{
+		if(!FNakamaUtils::IsRealtimeClientActive(this))
+			return;
+		
 		const FNakamaRtError NakamaError = error;
-		Error.ExecuteIfBound(NakamaError);
+		Error.Broadcast(NakamaError);
 	};
 
 	auto successCallback = [this, Success]()
 	{
-		Success.ExecuteIfBound();
+		if(!FNakamaUtils::IsRealtimeClientActive(this))
+			return;
+		
+		Success.Broadcast();
 	};
 
 	NUserPresence UserPresence = FNakamaUtils::ConvertUserPresence(PartyMember);
@@ -909,13 +1022,19 @@ void UNakamaRealtimeClient::RemoveMatchMakerParty(FString PartyId, FString Ticke
 
 	auto errorCallback = [this, Error](const NRtError& error)
 	{
+		if(!FNakamaUtils::IsRealtimeClientActive(this))
+			return;
+		
 		const FNakamaRtError NakamaError = error;
-		Error.ExecuteIfBound(NakamaError);
+		Error.Broadcast(NakamaError);
 	};
 
 	auto successCallback = [this, Ticket, Success]()
 	{
-		Success.ExecuteIfBound(Ticket);
+		if(!FNakamaUtils::IsRealtimeClientActive(this))
+			return;
+		
+		Success.Broadcast(Ticket);
 	};
 
 	RtClient->removeMatchmakerParty(FNakamaUtils::UEStringToStdString(PartyId), FNakamaUtils::UEStringToStdString(Ticket), successCallback, errorCallback);
@@ -929,13 +1048,19 @@ void UNakamaRealtimeClient::RemovePartyMember(FString PartyId, FNakamaUserPresen
 
 	auto errorCallback = [this, Error](const NRtError& error)
 	{
+		if(!FNakamaUtils::IsRealtimeClientActive(this))
+			return;
+		
 		const FNakamaRtError NakamaError = error;
-		Error.ExecuteIfBound(NakamaError);
+		Error.Broadcast(NakamaError);
 	};
 
 	auto successCallback = [this, Success]()
 	{
-		Success.ExecuteIfBound();
+		if(!FNakamaUtils::IsRealtimeClientActive(this))
+			return;
+		
+		Success.Broadcast();
 	};
 
 	NUserPresence UserPresence = FNakamaUtils::ConvertUserPresence(Presence);
@@ -960,13 +1085,19 @@ void UNakamaRealtimeClient::AcceptPartyMember(FString PartyId, FNakamaUserPresen
 
 	auto errorCallback = [this, Error](const NRtError& error)
 	{
+		if(!FNakamaUtils::IsRealtimeClientActive(this))
+			return;
+		
 		const FNakamaRtError NakamaError = error;
-		Error.ExecuteIfBound(NakamaError);
+		Error.Broadcast(NakamaError);
 	};
 
 	auto successCallback = [this, Success]()
 	{
-		Success.ExecuteIfBound();
+		if(!FNakamaUtils::IsRealtimeClientActive(this))
+			return;
+		
+		Success.Broadcast();
 	};
 
 	NUserPresence UserPresence = FNakamaUtils::ConvertUserPresence(Presence);
@@ -983,14 +1114,20 @@ void UNakamaRealtimeClient::AddMatchmakerParty(FString PartyId, FString Query, i
 
 	auto errorCallback = [this, Error](const NRtError& error)
 	{
+		if(!FNakamaUtils::IsRealtimeClientActive(this))
+			return;
+		
 		const FNakamaRtError NakamaError = error;
-		Error.ExecuteIfBound(NakamaError);
+		Error.Broadcast(NakamaError);
 	};
 
 	auto successCallback = [this, Success](const NPartyMatchmakerTicket& ticket)
 	{
+		if(!FNakamaUtils::IsRealtimeClientActive(this))
+			return;
+		
 		FNakamaPartyMatchmakerTicket Ticket = ticket; // Auto Convert
-		Success.ExecuteIfBound(Ticket);
+		Success.Broadcast(Ticket);
 	};
 
 
@@ -1039,17 +1176,20 @@ void UNakamaRealtimeClient::CloseParty(FString PartyId, const FOnCloseParty& Suc
 
 	auto errorCallback = [this, Error](const NRtError& error)
 	{
+		if(!FNakamaUtils::IsRealtimeClientActive(this))
+			return;
+		
 		const FNakamaRtError NakamaError = error;
-		Error.ExecuteIfBound(NakamaError);
+		Error.Broadcast(NakamaError);
 	};
 
 	auto successCallback = [this, Success]()
 	{
-		Success.ExecuteIfBound();
+		if(!FNakamaUtils::IsRealtimeClientActive(this))
+			return;
+		
+		Success.Broadcast();
 	};
 
 	RtClient->closeParty(FNakamaUtils::UEStringToStdString(PartyId), successCallback, errorCallback);
 }
-
-
-

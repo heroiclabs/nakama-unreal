@@ -47,34 +47,34 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnReceivedPartyMatchmakerTicket, co
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnReceivedPartyPresence, const FNakamaPartyPresenceEvent&, Presences);
 
 // Functionality Delegates
-DECLARE_DYNAMIC_DELEGATE_OneParam(FOnRtError, const FNakamaRtError&, ErrorData);
-DECLARE_DYNAMIC_DELEGATE_OneParam(FOnJoinChat, FNakamaChannel, Channel);
-DECLARE_DYNAMIC_DELEGATE_OneParam(FOnWriteChatMessage, FNakamaChannelMessageAck, ChannelMessage);
-DECLARE_DYNAMIC_DELEGATE(FOnLeaveChat);
-DECLARE_DYNAMIC_DELEGATE_OneParam(FOnMatchmakerTicket, FString, ticket);
-//DECLARE_DYNAMIC_DELEGATE(FOnRemovedMatchmakerTicket); // Did originally not include TicketId
-DECLARE_DYNAMIC_DELEGATE_OneParam(FOnRemovedMatchmakerTicket, FString, ticket); // Did originally not include TicketId
-DECLARE_DYNAMIC_DELEGATE(FOnSetStatus);
-DECLARE_DYNAMIC_DELEGATE(FOnUnFollowUsers);
-DECLARE_DYNAMIC_DELEGATE_OneParam(FOnFollowUsers, const FNakamaStatus&, Status);
-DECLARE_DYNAMIC_DELEGATE_OneParam(FOnCreateMatch, FNakamaMatch, Match);
-DECLARE_DYNAMIC_DELEGATE(FOnLeaveMatch);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnRtError, const FNakamaRtError&, ErrorData);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnJoinChat, FNakamaChannel, Channel);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnWriteChatMessage, FNakamaChannelMessageAck, ChannelMessage);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnLeaveChat);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMatchmakerTicket, FString, ticket);
+//DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnRemovedMatchmakerTicket); // Did originally not include TicketId
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnRemovedMatchmakerTicket, FString, ticket); // Did originally not include TicketId
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSetStatus);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnUnFollowUsers);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnFollowUsers, const FNakamaStatus&, Status);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCreateMatch, FNakamaMatch, Match);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnLeaveMatch);
 
 // Functionality Delegates - Parties
-DECLARE_DYNAMIC_DELEGATE_OneParam(FOnCreateParty, FNakamaParty, Party);
-DECLARE_DYNAMIC_DELEGATE_OneParam(FOnJoinParty, FString, PartyId);
-//DECLARE_DYNAMIC_DELEGATE(FOnJoinParty); // Did originally not include Party
-DECLARE_DYNAMIC_DELEGATE(FOnLeaveParty);
-DECLARE_DYNAMIC_DELEGATE_OneParam(FOnListPartyJoinRequests, FNakamaPartyJoinRequest, JoinRequest);
-DECLARE_DYNAMIC_DELEGATE(FOnPromotePartyMember);
-//DECLARE_DYNAMIC_DELEGATE(FOnRemoveMatchmakerParty); // Did originally not include TickedId
-DECLARE_DYNAMIC_DELEGATE_OneParam(FOnRemoveMatchmakerParty, FString, ticket);
-DECLARE_DYNAMIC_DELEGATE(FOnRemovePartyMember);
-DECLARE_DYNAMIC_DELEGATE(FOnAcceptPartyMember);
-DECLARE_DYNAMIC_DELEGATE_OneParam(FOnAddMatchmakerParty, FNakamaPartyMatchmakerTicket, Ticket);
-DECLARE_DYNAMIC_DELEGATE(FOnCloseParty);
-DECLARE_DYNAMIC_DELEGATE(FOnRealtimeClientConnected);
-DECLARE_DYNAMIC_DELEGATE(FOnRealtimeClientError);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCreateParty, FNakamaParty, Party);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnJoinParty, FString, PartyId);
+//DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnJoinParty); // Did originally not include Party
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnLeaveParty);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnListPartyJoinRequests, FNakamaPartyJoinRequest, JoinRequest);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPromotePartyMember);
+//DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnRemoveMatchmakerParty); // Did originally not include TickedId
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnRemoveMatchmakerParty, FString, ticket);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnRemovePartyMember);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnAcceptPartyMember);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAddMatchmakerParty, FNakamaPartyMatchmakerTicket, Ticket);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCloseParty);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnRealtimeClientConnected);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnRealtimeClientError);
 
 UENUM(BlueprintType)
 enum class ENakamaRealtimeClientProtocol : uint8

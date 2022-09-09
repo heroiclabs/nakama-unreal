@@ -5,14 +5,6 @@
 
 #include "JsonObjectConverter.h"
 
-UNakamaClient* UNakamaLibrary::CreateDefaultClient(const FString& ServerKey, const FString& Host, int32 Port,
-                                                   bool UseSSL, bool EnableDebug, ENakamaClientType Type, float TickInterval, const FString& DisplayName)
-{
-	UNakamaClient* NewClient = NewObject<UNakamaClient>();
-	NewClient->InitializeSystem(ServerKey, Host, Port, UseSSL, EnableDebug, Type, TickInterval, DisplayName);
-	return NewClient;
-}
-
 FNakamaChatMessage UNakamaLibrary::ChatMessageJsonToStruct(FString JsonMessage)
 {
 	FNakamaChatMessage parsedStruct;
