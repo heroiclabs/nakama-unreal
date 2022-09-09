@@ -3,6 +3,12 @@ All notable changes to this project are documented below.
 
 The format is based on [keep a changelog](http://keepachangelog.com/) and this project uses [semantic versioning](http://semver.org/).
 
+### [2.6.0] - [2022-09-09]
+### Added
+- Added support for Unreal native types. Use the `NakamaUnreal` module and see the README for details on how to use it.
+- Added support for Blueprints. Use the `NakamaBlueprints` module if you are interested and see the README for details on how to use it.
+- Old functionality exposed in previous releases has been moved to `NakamaCore`. The other modules depend on `NakamaCore`.
+
 ### [2.5.0] - [2021-09-13]
 ### Added
 - Added realtime parties support.
