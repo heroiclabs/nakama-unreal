@@ -34,52 +34,52 @@ enum class ENakamaClientType : uint8
 };
 
 // Delegates
-DECLARE_DYNAMIC_DELEGATE_OneParam(FOnAuthUpdate, UNakamaSession*, LoginData);
-DECLARE_DYNAMIC_DELEGATE_OneParam(FOnError, const FNakamaError&, ErrorData);
-DECLARE_DYNAMIC_DELEGATE(FOnLinkSuccess);
-DECLARE_DYNAMIC_DELEGATE(FOnUnLinkSuccess);
-DECLARE_DYNAMIC_DELEGATE_OneParam(FOnAuthRefresh, const UNakamaSession*, Session);
-DECLARE_DYNAMIC_DELEGATE_OneParam(FOnAuthRefreshError, const FNakamaError&, ErrorData);
-DECLARE_DYNAMIC_DELEGATE_OneParam(FOnUserAccountInfo, const FNakamaAccount&, AccountData);
-DECLARE_DYNAMIC_DELEGATE_OneParam(FOnGetUsers, const TArray <FNakamaUser>&, Users);
-DECLARE_DYNAMIC_DELEGATE(FOnUpdateAccount);
-//DECLARE_DYNAMIC_DELEGATE_OneParam(FOnRealtimeClientConnected, UNakamaRealtimeClient*, RealtimeClient);
-//DECLARE_DYNAMIC_DELEGATE(FOnRealtimeClientError);
-DECLARE_DYNAMIC_DELEGATE_OneParam(FOnFriendsList, FNakamaFriendList, Friends);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAuthUpdate, UNakamaSession*, LoginData);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnError, const FNakamaError&, ErrorData);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnLinkSuccess);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnUnLinkSuccess);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAuthRefresh, const UNakamaSession*, Session);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAuthRefreshError, const FNakamaError&, ErrorData);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnUserAccountInfo, const FNakamaAccount&, AccountData);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnGetUsers, const TArray <FNakamaUser>&, Users);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnUpdateAccount);
+//DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnRealtimeClientConnected, UNakamaRealtimeClient*, RealtimeClient);
+//DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnRealtimeClientError);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnFriendsList, FNakamaFriendList, Friends);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnReceivedFriendsList, FNakamaFriendList, list);
-DECLARE_DYNAMIC_DELEGATE(FOnAddedFriend); //Add 's here
-DECLARE_DYNAMIC_DELEGATE(FOnRemovedFriends);
-DECLARE_DYNAMIC_DELEGATE(FOnBlockedFriends);
-DECLARE_DYNAMIC_DELEGATE(FOnJoinGroup);
-DECLARE_DYNAMIC_DELEGATE(FOnRemoveGroup);
-DECLARE_DYNAMIC_DELEGATE_OneParam(FOnListGroupMembers, const FNakamaGroupUsersList&, members);
-DECLARE_DYNAMIC_DELEGATE(FOnUpdateGroup);
-DECLARE_DYNAMIC_DELEGATE(FOnLeaveGroup);
-DECLARE_DYNAMIC_DELEGATE(FOnAddGroupUsers);
-DECLARE_DYNAMIC_DELEGATE(FOnPromoteGroupUsers);
-DECLARE_DYNAMIC_DELEGATE(FOnDemoteGroupUsers);
-DECLARE_DYNAMIC_DELEGATE(FOnKickGroupUsers);
-DECLARE_DYNAMIC_DELEGATE(FOnBanGroupUsers);
-DECLARE_DYNAMIC_DELEGATE_OneParam(FOnUserGroups, const FNakamaUserGroupList&, UserGroups);
-DECLARE_DYNAMIC_DELEGATE_OneParam(FOnGroupsList, const FNakamaGroupList&, Groups);
-DECLARE_DYNAMIC_DELEGATE_OneParam(FOnCreateGroup, FNakamaGroup, Group); //FOnStorageObjectAcks
-DECLARE_DYNAMIC_DELEGATE(FOnJoinedGroup);
-DECLARE_DYNAMIC_DELEGATE_OneParam(FOnListNotifications, FNakamaNotificationList, NotificationList);
-DECLARE_DYNAMIC_DELEGATE(FOnDeleteNotifications);
-DECLARE_DYNAMIC_DELEGATE_OneParam(FOnStorageObjectAcks, const FNakamaStoreObjectAcks&, StorageObjectsAcks);
-DECLARE_DYNAMIC_DELEGATE_OneParam(FOnStorageObjectsRead, const TArray <FNakamaStoreObjectData>&, StorageObjects);
-DECLARE_DYNAMIC_DELEGATE_OneParam(FOnStorageObjectsListed, const FNakamaStorageObjectList&, StorageObjects);
-DECLARE_DYNAMIC_DELEGATE(FOnRemovedStorageObjects);
-DECLARE_DYNAMIC_DELEGATE_OneParam(FOnRPC, const FNakamaRPC&, rpc);
-DECLARE_DYNAMIC_DELEGATE_OneParam(FOnListChannelMessages, const FNakamaChannelMessageList&, MessageList);
-DECLARE_DYNAMIC_DELEGATE_OneParam(FOnWriteLeaderboardRecord, const FNakamaLeaderboardRecord&, Record);
-DECLARE_DYNAMIC_DELEGATE_OneParam(FOnListLeaderboardRecords, const FNakamaLeaderboardRecordList&, RecordsList); //FNakamaTournamentRecordList
-DECLARE_DYNAMIC_DELEGATE(FOnDeletedLeaderboardRecord);
-DECLARE_DYNAMIC_DELEGATE_OneParam(FOnListTournamentRecords, const FNakamaTournamentRecordList&, RecordsList);
-DECLARE_DYNAMIC_DELEGATE_OneParam(FOnListTournaments, const FNakamaTournamentList&, Tournaments);
-DECLARE_DYNAMIC_DELEGATE(FOnJoinedTournament);
-DECLARE_DYNAMIC_DELEGATE_OneParam(FOnMatchlist, const FNakamaMatchList&, MatchList);
-DECLARE_DYNAMIC_DELEGATE(FOnImportFacebookFriends);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnAddedFriend); //Add 's here
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnRemovedFriends);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnBlockedFriends);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnJoinGroup);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnRemoveGroup);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnListGroupMembers, const FNakamaGroupUsersList&, members);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnUpdateGroup);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnLeaveGroup);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnAddGroupUsers);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPromoteGroupUsers);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDemoteGroupUsers);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnKickGroupUsers);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnBanGroupUsers);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnUserGroups, const FNakamaUserGroupList&, UserGroups);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnGroupsList, const FNakamaGroupList&, Groups);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCreateGroup, FNakamaGroup, Group); //FOnStorageObjectAcks
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnJoinedGroup);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnListNotifications, FNakamaNotificationList, NotificationList);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDeleteNotifications);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnStorageObjectAcks, const FNakamaStoreObjectAcks&, StorageObjectsAcks);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnStorageObjectsRead, const TArray <FNakamaStoreObjectData>&, StorageObjects);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnStorageObjectsListed, const FNakamaStorageObjectList&, StorageObjects);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnRemovedStorageObjects);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnRPC, const FNakamaRPC&, rpc);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnListChannelMessages, const FNakamaChannelMessageList&, MessageList);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnWriteLeaderboardRecord, const FNakamaLeaderboardRecord&, Record);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnListLeaderboardRecords, const FNakamaLeaderboardRecordList&, RecordsList); //FNakamaTournamentRecordList
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDeletedLeaderboardRecord);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnListTournamentRecords, const FNakamaTournamentRecordList&, RecordsList);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnListTournaments, const FNakamaTournamentList&, Tournaments);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnJoinedTournament);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMatchlist, const FNakamaMatchList&, MatchList);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnImportFacebookFriends);
 
 
 /**
@@ -144,6 +144,20 @@ public:
 	// Event that is called on cleanup
 	virtual void BeginDestroy() override;
 
+	/**
+	 * Creates a default client to interact with Nakama server.
+	 *
+	 * @param ServerKey Server key should match the one on the Nakama Server.
+	 * @param Host The endpoint host name.
+	 * @param Port The port to use, default is 7350.
+	 * @param UseSSL Use "https" scheme if you've setup SSL.
+	 * @param EnableDebug To enable logs output to console with debug logging level.
+	 * @param Type Client type you wish to create.
+	 * @param TickInterval How often Tick Event should happen on the client (0 = every frame).
+	 * @param DisplayName (Optional) Name to identify the client
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintPure=false, Category = "Nakama|Client")
+	static UNakamaClient* CreateDefaultClient(const FString& ServerKey = "defaultkey", const FString& Host = "localhost", int32 Port = 7350, bool UseSSL = false, bool EnableDebug = true, ENakamaClientType Type = ENakamaClientType::DEFAULT, float TickInterval = 0.0f, const FString& DisplayName = "");
 
 	/// <summary>
 	/// Authentication
