@@ -28,7 +28,7 @@ You'll need to setup the server and database before you can connect with the cli
 To get started using Nakama in Unreal you will need the following:
 
 1. Install and run the servers. Follow these [instructions](https://heroiclabs.com/docs/install-docker-quickstart).
-1. A copy of the core [Nakama Unreal ](https://github.com/heroiclabs/nakama-unreal) plugin
+1. A copy of the core [Nakama Unreal](https://github.com/heroiclabs/nakama-unreal) plugin
 1. [Unreal Engine](https://www.unrealengine.com) 4.25 or greater (Unreal Engine 5 support is tentative).
 1. A compiler for the platform you are developing on, such as [Visual Studio](https://www.visualstudio.com/vs/community/) on Windows or [XCode](https://developer.apple.com/xcode/download/) on OSX.
 
@@ -41,8 +41,6 @@ To use Nakama in your Unreal project, you'll need to download our plugin from th
 1. Open your Unreal project folder (for example, `C:\\MyUnrealProject\\`) in Explorer or Finder.
 2. If one does not already exist, create a `Plugins` folder here.
 3. Copy the `Nakama` folder from [nakama-unreal](https://github.com/heroiclabs/nakama-unreal/releases) and put it in the `Plugins` folder
-4. Copy the `NakamaBlueprints` folder from this repository, containig the NakamaBlueprints.uplugin from the nakama-unreal release you downloaded, into this `Plugins` folder.
-5. You should now have `Nakama` in your Plugins folder
 
 **Optionally:** you can put the plugins inside your Unreal Engine plugin folder (for example, `C:\Program Files\Epic Games\UE_4.26\Engine\Plugins\Marketplace`) to use the plugin on multiple projects.
 
@@ -111,10 +109,10 @@ void AMyActor::BeginPlay()
 	// Default Client Parameters
 	FString ServerKey = FString(TEXT("defaultkey"));
 	FString Host = FString(TEXT("localhost"));
-	FString ClientName = FString(TEXT("Main")); 
+	FString ClientName = FString(TEXT("Main"));
 
 	// Setup Default Client
-	NakamaClient = UNakamaLibrary::CreateDefaultClient(ServerKey, Host, 7350, false, true, ENakamaClientType::DEFAULT, 0.05f, ClientName);
+	NakamaClient = UNakamaClient::CreateDefaultClient(ServerKey, Host, 7350, false, true, ENakamaClientType::DEFAULT, 0.05f, ClientName);
 
 	// Authentication Parameters
 	FString Email = FString(TEXT("debug@mail.com"));
@@ -125,7 +123,7 @@ void AMyActor::BeginPlay()
 	// Setup Delegates of same type and bind them to local functions
 	FOnAuthUpdate AuthenticationSuccessDelegate;
 	AuthenticationSuccessDelegate.AddDyanmic(this, &AMyActor::OnAuthenticationSuccess);
-	
+
 	FOnError AuthenticationErrorDelegate;
 	AuthenticationErrorDelegate.AddDyanmic(this, &AMyActor::OnAuthenticationError);
 
@@ -145,7 +143,7 @@ void AMyActor::OnAuthenticationSuccess(UNakamaSession* LoginData)
 	// Setup Delegates of same type and bind them to local functions
 	FOnRealtimeClientConnected ConnectionSuccessDelegate;
 	ConnectionSuccessDelegate.AddDyanmic(this, &AMyActor::OnRealtimeClientConnectSuccess);
-	
+
 	FOnRealtimeClientError ConnectionErrorDelegate;
 	ConnectionErrorDelegate.AddDyanmic(this, &AMyActor::OnRealtimeClientConnectError);
 
@@ -154,7 +152,7 @@ void AMyActor::OnAuthenticationSuccess(UNakamaSession* LoginData)
 
 	// Remember to Connect
 	NakamaRealtimeClient->Connect(ConnectionSuccessDelegate, ConnectionErrorDelegate);
-		
+
 }
 
 void AMyActor::OnAuthenticationError(const FNakamaError& Error)
@@ -172,7 +170,7 @@ void AMyActor::OnRealtimeClientConnectSuccess()
 
 	// Example of Joining Chat without callbacks
 	NakamaRealtimeClient->JoinChat("Heroes", ENakamaChannelType::ROOM, true, false, {}, {});
-	
+
 }
 
 void AMyActor::OnRealtimeClientConnectError()
@@ -227,7 +225,7 @@ Before you bind to event callbacks you need to setup the listener first, drag ou
 
 ![image binding-1](./images/Bindings-1.png)
 
-After setting up your specific listeners you are ready to bind to the callbacks. 
+After setting up your specific listeners you are ready to bind to the callbacks.
 
 ![image binding-2](./images/Bindings-2.png)
 
@@ -235,7 +233,7 @@ Create a custom event and give it a meaningful name.
 
 ![image binding-3](./images/Bindings-3.png)
 
- In the example below, we setup a listener for notifications, then we bind to the event, loop over notifications and print them as debug strings on the screen. 
+ In the example below, we setup a listener for notifications, then we bind to the event, loop over notifications and print them as debug strings on the screen.
 
  ![image binding-4](./images/Bindings-4.png)
 
