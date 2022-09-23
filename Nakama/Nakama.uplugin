@@ -22,11 +22,6 @@
 			"WhitelistPlatforms": [
 				"Win64",
 				"Linux",
-				"PS4",
-				"PS5",
-				"XboxOne",
-				"XboxOneGDK",
-				"XSX",
 				"IOS",
 				"Mac"
 			]
@@ -38,11 +33,6 @@
 			"WhitelistPlatforms": [
 				"Win64",
 				"Linux",
-				"PS4",
-				"PS5",
-				"XboxOne",
-				"XboxOneGDK",
-				"XSX",
 				"IOS",
 				"Mac"
 			]
@@ -54,11 +44,6 @@
 			"WhitelistPlatforms": [
 				"Win64",
 				"Linux",
-				"PS4",
-				"PS5",
-				"XboxOne",
-				"XboxOneGDK",
-				"XSX",
 				"IOS",
 				"Mac"
 			]

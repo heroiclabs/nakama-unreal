@@ -23,14 +23,14 @@ void UnrealWsTransport::connect(const std::string& url, NRtTransportType type)
 	WSConnection->OnConnectionError().AddLambda([this](const FString& Error)
 	{
 		UE_LOG(NakamaWebsocket, Verbose, TEXT("Enqueue fireOnError"))
-		EventsQueue.Enqueue(MakeTuple(CallbackDispatch::OnError, std::string(FTCHARToUTF8(Error).Get()), NRtClientDisconnectInfo{}));
+		EventsQueue.Enqueue(MakeTuple(CallbackDispatch::OnError, std::string(TCHAR_TO_UTF8(*Error)), NRtClientDisconnectInfo{}));
 	});
 
 	WSConnection->OnClosed().AddLambda([this](int32 StatusCode, const FString& Reason, bool bWasClean)
 	{
 		NRtClientDisconnectInfo info{
 			static_cast<uint16_t>(StatusCode),
-			FTCHARToUTF8(Reason).Get(),
+			TCHAR_TO_UTF8(*Reason),
 			bWasClean
 		};
 		UE_LOG(NakamaWebsocket, Verbose, TEXT("Enqueue fireOnDisconnected"))
@@ -45,8 +45,7 @@ void UnrealWsTransport::connect(const std::string& url, NRtTransportType type)
 		WSConnection->OnMessage().AddLambda([this](const FString& MessageString)
 		{
 			UE_LOG(NakamaWebsocket, Verbose, TEXT("Enqueue fireOnMessage"));
-			FTCHARToUTF8 Convert(MessageString);
-			EventsQueue.Enqueue(MakeTuple(CallbackDispatch::OnMessage, std::string(Convert.Get(), Convert.Length()), NRtClientDisconnectInfo{}));
+			EventsQueue.Enqueue(MakeTuple(CallbackDispatch::OnMessage, std::string(TCHAR_TO_UTF8(*MessageString)), NRtClientDisconnectInfo{}));
 		});
 	} else
 	{
@@ -61,10 +60,10 @@ void UnrealWsTransport::connect(const std::string& url, NRtTransportType type)
             }
 		});
 	}
-	
+
 	WSConnection->Connect();
 }
-	
+
 void UnrealWsTransport::disconnect()
 {
 	// We don't want any more callbacks
@@ -77,7 +76,7 @@ void UnrealWsTransport::disconnect()
 	WSConnection->Close();
 	_connected = false;
 }
-	
+
 void UnrealWsTransport::tick()
 {
 	TTuple<CallbackDispatch, std::string, NRtClientDisconnectInfo> ev;
@@ -89,15 +88,15 @@ void UnrealWsTransport::tick()
 		case CallbackDispatch::OnError: fireOnError(ev.Get<1>()); break;
 		case CallbackDispatch::OnDisconnected: fireOnDisconnected(ev.Get<2>()); break;
 		case CallbackDispatch::OnMessage: fireOnMessage(ev.Get<1>()); break;
-		default: checkNoEntry(); 
+		default: checkNoEntry();
 		}
 	}
 }
-	
+
 bool UnrealWsTransport::send(const NBytes& buf)
 {
 	if (!_connected) return false;
-	
+
 	WSConnection->Send(buf.data(), buf.length(), TransportType == NRtTransportType::Binary);
 	return true;
 };
