@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- init section is always evaluated once per architecture -->
+    <init>
+        <log text="Nakama APL init (shipping build)"/>
+        <setBool result="bSupported" value="false"/>
+        <isArch arch="armeabi-v7a">
+            <setBool result="bSupported" value="true"/>
+        </isArch>
+        <isArch arch="arm64-v8a">
+            <setBool result="bSupported" value="true"/>
+        </isArch>
+        <isArch arch="x86_64">
+            <setBool result="bSupported" value="true"/>
+        </isArch>
+        <if condition="bSupported">
+            <false>
+                <log text="nakama-sdk unsupported architecture: $S(Architecture)"/>
+            </false>
+        </if>
+    </init>
+    
+    <resourceCopies>
+        <copyFile src="$S(PluginDir)/libnakama/android/libs/$S(Architecture)/libnakama-sdk.so"
+                  dst="$S(BuildDir)/libs/$S(Architecture)/libnakama-sdk.so" />
+    </resourceCopies>
+
+    <androidManifestUpdates>
+        <addPermission android:name="android.permission.INTERNET"/>
+        <addPermission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    </androidManifestUpdates>
+ 
+    <soLoadLibrary>
+        <loadLibrary name="nakama-sdk" failmsg="Failed to load nakama-sdk library!" />
+    </soLoadLibrary>
+</root>

@@ -13,8 +13,20 @@ namespace Unreal {
 
 void UnrealWsTransport::connect(const std::string& url, NRtTransportType type)
 {
+	FWebSocketsModule* WebSocketsModule = &FModuleManager::LoadModuleChecked<FWebSocketsModule>(TEXT("WebSockets"));
+	if (!WebSocketsModule)
+	{
+		UE_LOG(NakamaWebsocket, Verbose, TEXT("Load WebSocketsModule failed!"));
+		return;
+	}
+
 	TransportType = type;
-	WSConnection = FWebSocketsModule::Get().CreateWebSocket(UTF8_TO_TCHAR(url.c_str()));
+	WSConnection = WebSocketsModule->CreateWebSocket(UTF8_TO_TCHAR(url.c_str()));
+	if(!WSConnection.IsValid())
+	{
+		UE_LOG(NakamaWebsocket,Verbose,TEXT("Create Websockets failed!"));
+	}
+	
 	WSConnection->OnConnected().AddLambda([this]()
 	{
 		UE_LOG(NakamaWebsocket, Verbose, TEXT("Enqueue fireOnConnected"))
