@@ -27,7 +27,7 @@ public class NakamaCore : ModuleRules
 		}
 		else if (Target.Platform == UnrealTargetPlatform.IOS)
 		{
-		    var frameworkDir = Path.Combine(ModuleDirectory, "libnakama", "ios-universal", "nakama-sdk.framework");
+		    var frameworkDir = Path.Combine(ModuleDirectory, "libnakama", "ios-arm64", "nakama-sdk.framework");
             PublicFrameworks.Add(frameworkDir);
             PublicIncludePaths.Add(Path.Combine(frameworkDir, "Headers"));
 		}
