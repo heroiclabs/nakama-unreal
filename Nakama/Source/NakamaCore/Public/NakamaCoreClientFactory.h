@@ -2,7 +2,7 @@
 
 #include <nakama-cpp/Nakama.h>
 
-class NAKAMACORE_API NakamaUnrealClientFactory {
+class NAKAMACORE_API NakamaCoreClientFactory {
 
 public:
 	static void initLogging(Nakama::NLogLevel level);
