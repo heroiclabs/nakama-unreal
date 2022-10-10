@@ -318,6 +318,17 @@ public:
 	UFUNCTION(Category = "Nakama|Chat|Messaging")
 	void SendDirectMessage(FString UserID, FString Content, const FOnWriteChatMessage& Success, const FOnRtError& Error);
 
+	/**
+	 * Update a chat message to a channel on the server.
+	 *
+	 * @param ChannelId The ID of the chat channel with the message.
+	 * @param MessageId The ID of the message to update.
+	 * @param Content The content update for the message. Must be a JSON object.
+	 */
+	UFUNCTION(Category = "Nakama|Chat|Messaging")
+	void UpdateChatMessage(FString ChannelId, FString MessageId, FString Content, const FOnWriteChatMessage& Success, const FOnRtError& Error);
+
+
 	/// <summary>
 	/// Chat
 	/// </summary>

@@ -156,6 +156,56 @@ void UNakamaRealtimeClientSendDirectMessage::Activate()
 	RealtimeClient->RtClient->writeChatMessage(FNakamaUtils::UEStringToStdString(UserID), FNakamaUtils::UEStringToStdString(Content), successCallback, errorCallback);
 }
 
+UNakamaRealtimeClientUpdateChatMessage* UNakamaRealtimeClientUpdateChatMessage::UpdateChatMessage(
+	UNakamaRealtimeClient* RealtimeClient, FString ChannelId, FString MessageId, FString Content)
+{
+	if(RealtimeClient != nullptr)
+	{
+		UNakamaRealtimeClientUpdateChatMessage* Node = NewObject<UNakamaRealtimeClientUpdateChatMessage>();
+		Node->RealtimeClient = RealtimeClient;
+		Node->ChannelId = ChannelId;
+		Node->MessageId = MessageId;
+		Node->Content = Content;
+
+		return Node;
+	}
+
+	return nullptr;
+}
+
+void UNakamaRealtimeClientUpdateChatMessage::Activate()
+{
+	if (!RealtimeClient)
+		return;
+
+	auto successCallback = [&](const NChannelMessageAck& ack)
+	{
+		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+			return;
+		
+		const FNakamaChannelMessageAck MessageAck = ack;
+		UE_LOG(LogTemp, Warning, TEXT("Updated Channel Message with Id: %s"), *MessageAck.MessageId);
+		OnSuccess.Broadcast({}, MessageAck);
+		SetReadyToDestroy();
+	};
+
+	auto errorCallback = [&](const NRtError& error)
+	{
+		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+			return;
+		
+		FNakamaRtError NakamaError = error;
+		OnError.Broadcast(NakamaError, {});
+		SetReadyToDestroy();
+	};
+
+	RealtimeClient->RtClient->updateChatMessage(
+		FNakamaUtils::UEStringToStdString(ChannelId),
+		FNakamaUtils::UEStringToStdString(MessageId),
+		FNakamaUtils::UEStringToStdString(Content),
+		successCallback, errorCallback);
+}
+
 UNakamaRealtimeClientJoinChat* UNakamaRealtimeClientJoinChat::JoinChat(UNakamaRealtimeClient* RealtimeClient,
 	FString ChatId, ENakamaChannelType ChannelType, bool Persistence, bool Hidden)
 {
