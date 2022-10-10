@@ -15,9 +15,9 @@ This plugin can also be used for programmers who like C++ or Blueprints. All var
 
 The plugin is divided into three modules which can be pulled in depending on your needs.
 
-- `NakamaUnreal` The recommended C++ based module for using Nakama in UnrealEngine. This integrates with Unreal's native types and UObjects.
-- `NakamaBlueprints` For users who would prefer to use Blueprints in their project.
-- `NakamaCore` For users who are migrating from our old Unreal client and want to make minimal changes, or use our lower-level C++ API without Unreal types: (https://github.com/heroiclabs/nakama-cpp)
+NakamaUnreal - The recommended C++ based module for using Nakama in UnrealEngine. This integrates with Unreal's native types and UObjects.
+NakamaBlueprints - For users who would prefer to use Blueprints in their project.
+NakamaCore - For users who are migrating from our old Unreal client and want to make minimal changes, or use our lower-level C++ API without Unreal types: (https://github.com/heroiclabs/nakama-cpp)
 
 Clients are referred in this documentation as **Realtime Client** and **Default Client** in which the realtime client is the socket and the default client is using REST API to communicate with Nakama.
 
@@ -28,9 +28,9 @@ You'll need to setup the server and database before you can connect with the cli
 To get started using Nakama in Unreal you will need the following:
 
 1. Install and run the servers. Follow these [instructions](https://heroiclabs.com/docs/install-docker-quickstart).
-2. A copy of the core [Nakama Unreal](https://github.com/heroiclabs/nakama-unreal) plugin
-3. [Unreal Engine](https://www.unrealengine.com) 4.25 or greater (Unreal Engine 5 support is tentative).
-4. A compiler for the platform you are developing on, such as [Visual Studio](https://www.visualstudio.com/vs/community/) on Windows or [XCode](https://developer.apple.com/xcode/download/) on OSX.
+1. A copy of the core [Nakama Unreal](https://github.com/heroiclabs/nakama-unreal) plugin
+1. [Unreal Engine](https://www.unrealengine.com) 4.25 or greater (Unreal Engine 5 support is tentative).
+1. A compiler for the platform you are developing on, such as [Visual Studio](https://www.visualstudio.com/vs/community/) on Windows or [XCode](https://developer.apple.com/xcode/download/) on OSX.
 
 Also, please ensure your Unreal project is a C++ project.  If it is Blueprint only, you can add a new C++ file to your project in Unreal Editor via "File -> New C++ Class".  Set it private and name it whatever you like.  Having this file in your project lets Unreal compile the plugin.
 

@@ -10,7 +10,7 @@ DEFINE_LOG_CATEGORY_STATIC(NakamaHttp, Warning, Warning);
 
 namespace Nakama {
 namespace Unreal {
-
+	
 UnrealHttpTransport::UnrealHttpTransport() {}
 
 FString NHttpMethodToFString(NHttpReqMethod m)
@@ -35,8 +35,7 @@ void UnrealHttpTransport::request(const NHttpRequest& req, const NHttpResponseCa
 		if (bSuccess)
 		{
 			NResponse.statusCode = Response->GetResponseCode();
-			auto& Content = Response->GetContent();
-			if (Content.Num() != 0)
+			if (auto& Content = Response->GetContent(); !Content.IsEmpty())
 			{
 				 NResponse.body = std::string(reinterpret_cast<const char*>(Content.GetData()), Content.Num());
 			}
@@ -45,12 +44,12 @@ void UnrealHttpTransport::request(const NHttpRequest& req, const NHttpResponseCa
 			NResponse.statusCode = InternalStatusCodes::CONNECTION_ERROR;
 			NResponse.errorMessage = "Connection failed";
 		}
-
+		
 		CompletedRequestsCS.Lock();
 		ON_SCOPE_EXIT { CompletedRequestsCS.Unlock(); };
 		CompletedRequests.Emplace(std::move(Request), std::move(NResponse));
 	});
-
+	
 	if (callback) RegisterRequest(HttpRequest, callback);
 	HttpRequest->ProcessRequest();
 }
@@ -102,7 +101,7 @@ void UnrealHttpTransport::tick()
 	for (const auto& item: CompletedRequests)
 	{
 		NHttpResponseCallback callback = nullptr;
-
+		
 		{
 			PendingRequestsCS.Lock();
 			ON_SCOPE_EXIT { PendingRequestsCS.Unlock(); };
@@ -126,13 +125,13 @@ void UnrealHttpTransport::cancelAllRequests()
 		auto Request = p.Key.Get();
 		Request->OnProcessRequestComplete().Unbind();
 		Request->CancelRequest();
-
+		
 		NHttpResponsePtr responsePtr(new NHttpResponse{InternalStatusCodes::CANCELLED_BY_USER, std::string() , std::string()});
 		(p.Value)(std::move(responsePtr));
 	}
 	PendingRequests.Reset();
 }
 
-
+	
 }
 }
