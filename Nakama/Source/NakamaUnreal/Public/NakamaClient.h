@@ -260,6 +260,13 @@ public:
 	UFUNCTION(Category = "Nakama|Authentication")
 	void AuthenticateApple(FString Token, FString Username, bool CreateAccount, TMap<FString, FString> Vars, const FOnAuthUpdate& Success, const FOnError& Error);
 
+	/**
+	 * Refresh a user's session using a refresh token retrieved from a previous authentication request.
+	 * @param Session The session of the user.
+	**/
+	UFUNCTION(Category = "Nakama|Authentication")
+	void AuthenticateRefresh(UNakamaSession* Session, const FOnAuthUpdate& Success, const FOnError& Error);
+
 	/// <summary>
 	/// Restore Session
 	/// </summary>

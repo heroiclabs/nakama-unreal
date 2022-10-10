@@ -414,6 +414,43 @@ private:
 
 };
 
+/**
+ * Authenticate Refresh (using session refresh token)
+ */
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnAuthenticateRefresh, FNakamaError, Error, UNakamaSession*, Session);
+
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientAuthenticateRefresh: public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY()
+	UNakamaClient *NakamaClient;
+
+	UPROPERTY()
+	UNakamaSession *UserSession;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnAuthenticateRefresh OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnAuthenticateRefresh OnError;
+
+	/**
+	 * Refresh a user's session using a refresh token retrieved from a previous authentication request.
+	 * @param Client The Client to use.
+	 * @param Session The session of the user.
+	**/
+	UFUNCTION(BlueprintCallable, Category = "Nakama|Authentication", meta = (BlueprintInternalUseOnly = "true"))
+	static UNakamaClientAuthenticateRefresh* AuthenticateRefresh(UNakamaClient *Client, UNakamaSession* Session);
+
+	virtual void Activate() override;
+	
+};
+
 
 /// <summary>
 /// Restore Session

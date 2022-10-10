@@ -411,6 +411,34 @@ void UNakamaClient::AuthenticateApple(FString Token, FString Username, bool Crea
 	Client->authenticateApple(FNakamaUtils::UEStringToStdString(Token), FNakamaUtils::UEStringToStdString(Username), CreateAccount, Variables, successCallback, errorCallback);
 }
 
+void UNakamaClient::AuthenticateRefresh(UNakamaSession* Session, const FOnAuthUpdate& Success, const FOnError& Error)
+{
+	if (!Client)
+		return;
+
+	auto successCallback = [this, Success](NSessionPtr session)
+	{
+		if(!FNakamaUtils::IsClientActive(this))
+			return;
+		
+		UNakamaSession *ResultSession = NewObject<UNakamaSession>();
+		ResultSession->UserSession = session; // Reference for C++ code
+		ResultSession->SessionData = session; // Reference for Blueprints
+		Success.Broadcast(ResultSession);
+	};
+
+	auto errorCallback = [this, Error](const NError& error)
+	{
+		if(!FNakamaUtils::IsClientActive(this))
+			return;
+		
+		const FNakamaError NakamaError = error;
+		Error.Broadcast(NakamaError);
+	};
+
+	Client->authenticateRefresh(Session->UserSession, successCallback, errorCallback);
+}
+
 /**
  * Sessions
  */
@@ -1096,37 +1124,6 @@ UNakamaRealtimeClient* UNakamaClient::SetupRealtimeClient(UNakamaSession* Sessio
 
 	return NewClient;
 }
-
-
-/*
-void UNakamaClient::SetupRealtimeClient(UNakamaSession *Session, bool ShowAsOnline, int32 Port, ENakamaRealtimeClientProtocol Protocol, float TickInterval, FString DisplayName,
-	const FOnRealtimeClientConnected& Success, const FOnRealtimeClientError& Error) // Return a RealTime Client UObject..
-{
-	UNakamaRealtimeClient* NewClient = NewObject<UNakamaRealtimeClient>(); // Function returns this as a object
-	NewClient->RtClient = Client->createRtClient(Port);
-	NewClient->TickInterval = TickInterval;
-	NewClient->_displayName = DisplayName;
-	NewClient->bIsActive = true;
-
-	// Connect Callback
-	NewClient->Listener.setConnectCallback([this, NewClient, Success]()
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Nakama Realtime Client Setup: Socket connected"));
-		Success.Broadcast(NewClient);
-	});
-
-	NewClient->Listener.setErrorCallback([this, Error](const NRtError& Err)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Nakama Realtime Client Setup: Socket Connect Error"));
-		Error.Broadcast();
-
-	});
-
-	const NRtClientProtocol SelectedProtocol = static_cast<NRtClientProtocol>(Protocol);
-
-	NewClient->RtClient->setListener(&NewClient->Listener);
-	NewClient->RtClient->connect(Session->UserSession, ShowAsOnline, SelectedProtocol);
-}*/
 
 void UNakamaClient::ListMatches(UNakamaSession* Session, int32 MinSize, int32 MaxSize, int32 Limit, FString Label,
 	bool Authoritative, const FOnMatchlist& Success, const FOnError& Error)

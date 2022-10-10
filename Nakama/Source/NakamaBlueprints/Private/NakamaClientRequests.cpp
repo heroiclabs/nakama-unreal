@@ -130,7 +130,7 @@ void UNakamaClientAuthenticateEmail::Activate()
 			return;
 
 		const FNakamaError NakamaError = error;
-		OnError.Broadcast(NakamaError, nullptr);
+		OnError.Broadcast(NakamaError, {});
 		SetReadyToDestroy();
 	};
 
@@ -454,6 +454,53 @@ void UNakamaClientAuthenticateApple::Activate()
 
 	const NStringMap Variables = FNakamaUtils::TMapToFStringMap(Vars);
 	NakamaClient->Client->authenticateApple(FNakamaUtils::UEStringToStdString(Token), FNakamaUtils::UEStringToStdString(Username), bCreateAccount, Variables, successCallback, errorCallback);
+}
+
+UNakamaClientAuthenticateRefresh* UNakamaClientAuthenticateRefresh::AuthenticateRefresh(UNakamaClient* Client,
+	UNakamaSession* Session)
+{
+	if(Client != nullptr)
+	{
+		UNakamaClientAuthenticateRefresh* Node = NewObject<UNakamaClientAuthenticateRefresh>();
+		Node->NakamaClient = Client;
+		Node->UserSession = Session;
+
+		return Node;
+	}
+
+	return nullptr;
+}
+
+void UNakamaClientAuthenticateRefresh::Activate()
+{
+	if(!NakamaClient)
+		return;
+
+	auto successCallback = [&](NSessionPtr session)
+	{
+		if(!FNakamaUtils::IsClientActive(NakamaClient))
+			return;
+
+		UNakamaSession *ResultSession = NewObject<UNakamaSession>();
+		ResultSession->UserSession = session; // Reference for C++ code
+		ResultSession->SessionData = session; // Reference for Blueprints
+
+		OnSuccess.Broadcast({}, ResultSession);
+		SetReadyToDestroy();
+	};
+
+	auto errorCallback = [&](const NError& error)
+	{
+		if(!FNakamaUtils::IsClientActive(NakamaClient))
+			return;
+
+		const FNakamaError NakamaError = error;
+		OnError.Broadcast(NakamaError, {});
+		SetReadyToDestroy();
+
+	};
+	
+	NakamaClient->Client->authenticateRefresh(UserSession->UserSession, successCallback, errorCallback);
 }
 
 UNakamaClientLinkCustom* UNakamaClientLinkCustom::LinkCustom(UNakamaClient* Client, UNakamaSession* Session,
@@ -2471,7 +2518,7 @@ void UNakamaClientRPC::Activate()
 
 		const FNakamaError NakamaError = error;
 
-		OnSuccess.Broadcast(NakamaError, {});
+		OnError.Broadcast(NakamaError, {});
 		SetReadyToDestroy();
 	};
 

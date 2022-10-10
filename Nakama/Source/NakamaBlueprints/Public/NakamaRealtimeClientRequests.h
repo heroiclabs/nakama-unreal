@@ -157,6 +157,49 @@ private:
 
 };
 
+/**
+ * Update Chat Message
+ */
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnUpdateChatMessage, FNakamaRtError, Error, FNakamaChannelMessageAck, MessageAck);
+
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaRealtimeClientUpdateChatMessage : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY(BlueprintAssignable)
+	FOnUpdateChatMessage OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnWriteChannelMessage OnError;
+
+	/**
+	 * Update a chat message to a channel on the server.
+	 *
+	 * @param ChannelId The ID of the chat channel with the message.
+	 * @param MessageId The ID of the message to update.
+	 * @param Content The content update for the message. Must be a JSON object.
+	 * @param RealtimeClient The Realtime Client (Socket) to use.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Nakama|Chat|Messaging", meta = (BlueprintInternalUseOnly = "true"))
+	static UNakamaRealtimeClientUpdateChatMessage* UpdateChatMessage(UNakamaRealtimeClient *RealtimeClient, FString ChannelId, FString MessageId, FString Content);
+
+	virtual void Activate() override;
+
+private:
+
+	UPROPERTY()
+	UNakamaRealtimeClient *RealtimeClient;
+
+	FString ChannelId;
+	FString Content;
+	FString MessageId;
+
+};
+
 /// <summary>
 /// Chat
 /// </summary>
