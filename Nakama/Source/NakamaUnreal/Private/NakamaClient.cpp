@@ -8,6 +8,7 @@
 #include "nakama-cpp/log/NConsoleLogSink.h"
 #include "nakama-cpp/log/NLogger.h"
 #include "NakamaSession.h"
+#include "NakamaCoreClientFactory.h"
 
 void UNakamaClient::Tick( float DeltaTime )
 {
@@ -52,13 +53,13 @@ void UNakamaClient::InitializeSystem(const FString& ServerKey, const FString& Ho
 	switch (Type)
 	{
 	case ENakamaClientType::DEFAULT:
-		Client = createDefaultClient(parameters);
+		Client = NakamaCoreClientFactory::createNakamaClient(parameters,NLogLevel::Info);
 		break;
 	case ENakamaClientType::GRPC:
 		Client = createGrpcClient(parameters);
 		break;;
 	case ENakamaClientType::REST:
-		Client = createRestClient(parameters);
+		Client = NakamaCoreClientFactory::createNakamaClient(parameters,NLogLevel::Info);
 		break;;
 	}
 
@@ -1082,7 +1083,7 @@ UNakamaRealtimeClient* UNakamaClient::SetupRealtimeClient(UNakamaSession* Sessio
 	ENakamaRealtimeClientProtocol Protocol, float TickInterval, FString DisplayName)
 {
 	UNakamaRealtimeClient* NewClient = NewObject<UNakamaRealtimeClient>(); // Function returns this as a object
-	NewClient->RtClient = Client->createRtClient(Port);
+	NewClient->RtClient = NakamaCoreClientFactory::createNakamaRtClient(Client,Port);
 	NewClient->TickInterval = TickInterval;
 	NewClient->_displayName = DisplayName;
 	NewClient->Session = Session;
