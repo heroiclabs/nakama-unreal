@@ -469,6 +469,39 @@ void UNakamaRealtimeClient::SendDirectMessage(FString UserID, FString Content, c
 	RtClient->writeChatMessage(FNakamaUtils::UEStringToStdString(UserID), FNakamaUtils::UEStringToStdString(Content), successCallback, errorCallback);
 }
 
+void UNakamaRealtimeClient::UpdateChatMessage(FString ChannelId, FString MessageId, FString Content, const FOnWriteChatMessage& Success,
+	const FOnRtError& Error)
+{
+	if (!RtClient)
+		return;
+
+	auto successCallback = [this, Success](const NChannelMessageAck& ack)
+	{
+		if(!FNakamaUtils::IsRealtimeClientActive(this))
+			return;
+		
+		const FNakamaChannelMessageAck MessageAck = ack;
+		UE_LOG(LogTemp, Warning, TEXT("Updated Channel Message with Id: %s"), *MessageAck.MessageId);
+		Success.Broadcast(MessageAck);
+	};
+
+	auto errorCallback = [this, Error](const NRtError& error)
+	{
+		if(!FNakamaUtils::IsRealtimeClientActive(this))
+			return;
+		
+		FNakamaRtError NakamaError = error;
+		Error.Broadcast(NakamaError);
+	};
+
+	RtClient->updateChatMessage(
+		FNakamaUtils::UEStringToStdString(ChannelId),
+		FNakamaUtils::UEStringToStdString(MessageId),
+		FNakamaUtils::UEStringToStdString(Content),
+		successCallback, errorCallback);
+}
+
+
 /**
  * Chat System
  */
