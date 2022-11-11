@@ -65,6 +65,7 @@ FNakamaDeleteStorageObjectId::FNakamaDeleteStorageObjectId()
 FNakamaStoreObjectAck::FNakamaStoreObjectAck(const NStorageObjectAck& NakamaNativeStorageObjectAck)
 	: Collection(FNakamaUtils::StdStringToUEString(NakamaNativeStorageObjectAck.collection))
 	, Key(FNakamaUtils::StdStringToUEString(NakamaNativeStorageObjectAck.key))
+	, Version(FNakamaUtils::StdStringToUEString(NakamaNativeStorageObjectAck.version))
 	, UserId(FNakamaUtils::StdStringToUEString(NakamaNativeStorageObjectAck.userId))
 {
 	
