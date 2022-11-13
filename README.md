@@ -3,7 +3,7 @@
 
 [Nakama](https://github.com/heroiclabs/nakama) is an open-source server designed to power modern games and apps. Features include user accounts, chat, social, matchmaker, realtime multiplayer, and much [more](https://heroiclabs.com).
 
-This client implements the full API and socket options with the server. It's written in C++ with minimal dependencies to support Unreal, unreal and other custom engines and frameworks.
+This client implements the full API and socket options with the server. It's written in C++ with minimal dependencies to support Unreal 4 and 5.
 
 If you experience any issues with the client, it can be useful to enable debug logs and [open an issue](https://github.com/heroiclabs/nakama-cpp/issues).
 
@@ -29,7 +29,7 @@ To get started using Nakama in Unreal you will need the following:
 
 1. Install and run the servers. Follow these [instructions](https://heroiclabs.com/docs/install-docker-quickstart).
 2. A copy of the core [Nakama Unreal](https://github.com/heroiclabs/nakama-unreal) plugin
-3. [Unreal Engine](https://www.unrealengine.com) 4.25 or greater (Unreal Engine 5 support is tentative).
+3. [Unreal Engine](https://www.unrealengine.com) 4.25 or greater or 5.
 4. A compiler for the platform you are developing on, such as [Visual Studio](https://www.visualstudio.com/vs/community/) on Windows or [XCode](https://developer.apple.com/xcode/download/) on OSX.
 
 Also, please ensure your Unreal project is a C++ project.  If it is Blueprint only, you can add a new C++ file to your project in Unreal Editor via "File -> New C++ Class".  Set it private and name it whatever you like.  Having this file in your project lets Unreal compile the plugin.
