@@ -876,7 +876,7 @@ void UNakamaRealtimeClient::SendMatchData(FString MatchId, int64 OpCode, FString
 
 	std::vector<NUserPresence> UserPresences;
 
-	for (const FNakamaUserPresence UserPresence : Presences)
+	for (const FNakamaUserPresence& UserPresence : Presences)
 	{
 		NUserPresence Presence = FNakamaUtils::ConvertUserPresence(UserPresence);
 		UserPresences.push_back(Presence);
