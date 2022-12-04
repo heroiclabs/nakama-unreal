@@ -2334,7 +2334,7 @@ private:
  * Read Storage Objects
  */
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnReadStorageObjects, FNakamaError, Error, TArray <FNakamaStoreObjectData>, StorageObjects);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnReadStorageObjects, FNakamaError, Error, const TArray <FNakamaStoreObjectData>&, StorageObjects);
 
 UCLASS()
 class NAKAMABLUEPRINTS_API UNakamaClientReadStorageObjects : public UBlueprintAsyncActionBase

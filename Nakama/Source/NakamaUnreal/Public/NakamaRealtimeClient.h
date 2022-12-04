@@ -161,6 +161,31 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Authentication|Disconnect")
 	void Disconnect();
 
+	/**
+	 * @return True if connected to server.
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Realtime")
+	bool IsConnected();
+
+	/**
+	 * Get heartbeat interval in milliseconds.
+	 *
+	 * @return heartbeat interval value or opt::nullopt if disabled
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Nakama|Realtime")
+	int32 GetHeartbeatIntervalMs();
+
+	/**
+	 * Set heartbeat interval in milliseconds. Disconnect event will be
+	 * detected in at most 2 x interval.
+	 *
+	 * Default is 5 seconds.
+	 *
+	 * @param IntervalMs interval in ms send heartbeats in. Passing opt::nullopt disables heartbeats.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Nakama|Realtime")
+	void SetHeartbeatIntervalMs(int32 IntervalMs);
+
 	// Events (bindable from blueprints or c++)
 	UPROPERTY(BlueprintAssignable, Category = "Nakama|Events")
 	FOnConnect ConnectedEvent;

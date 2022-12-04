@@ -1521,7 +1521,16 @@ void UNakamaClient::ListUserGroups(UNakamaSession* Session, FString UserId, int3
 
 	NUserGroupState GroupState = static_cast<NUserGroupState>(State);
 
-    Client->listUserGroups(Session->UserSession, FNakamaUtils::UEStringToStdString(UserId), Limit, GroupState, FNakamaUtils::UEStringToStdString(Cursor), successCallback, errorCallback);
+	if(State == ENakamaGroupState::ALL)
+	{
+		Client->listUserGroups(Session->UserSession, FNakamaUtils::UEStringToStdString(UserId), Limit, {}, FNakamaUtils::UEStringToStdString(Cursor), successCallback, errorCallback);
+	}
+	else
+	{
+		Client->listUserGroups(Session->UserSession, FNakamaUtils::UEStringToStdString(UserId), Limit, GroupState, FNakamaUtils::UEStringToStdString(Cursor), successCallback, errorCallback);
+	}
+
+    
 }
 
 void UNakamaClient::ListGroupUsers(UNakamaSession* Session, FString GroupId, int32 Limit, ENakamaGroupState State,
@@ -1551,7 +1560,14 @@ void UNakamaClient::ListGroupUsers(UNakamaSession* Session, FString GroupId, int
 
 	NUserGroupState GroupState = static_cast<NUserGroupState>(State);
 
-    Client->listGroupUsers(Session->UserSession, FNakamaUtils::UEStringToStdString(GroupId), Limit, GroupState, FNakamaUtils::UEStringToStdString(Cursor), successCallback, errorCallback);
+	if(State == ENakamaGroupState::ALL)
+	{
+		Client->listGroupUsers(Session->UserSession, FNakamaUtils::UEStringToStdString(GroupId), Limit, {}, FNakamaUtils::UEStringToStdString(Cursor), successCallback, errorCallback);
+	}
+	else
+	{
+		Client->listGroupUsers(Session->UserSession, FNakamaUtils::UEStringToStdString(GroupId), Limit, GroupState, FNakamaUtils::UEStringToStdString(Cursor), successCallback, errorCallback);
+	}
 }
 
 void UNakamaClient::UpdateGroup(UNakamaSession* Session, FString GroupId, FString Name, FString Description,

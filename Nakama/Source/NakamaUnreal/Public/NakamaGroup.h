@@ -91,6 +91,7 @@ enum class ENakamaGroupState : uint8
 	ADMIN UMETA(DisplayName = "Admin"),
 	MEMBER UMETA(DisplayName = "Member"),
 	JOIN_REQUEST UMETA(DisplayName = "Join Request"),
+	ALL UMETA(DisplayName = "All"),
 };
 
 // Group User

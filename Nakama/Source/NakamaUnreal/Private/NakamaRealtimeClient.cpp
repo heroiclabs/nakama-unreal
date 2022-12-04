@@ -70,6 +70,31 @@ void UNakamaRealtimeClient::Disconnect()
 
 }
 
+bool UNakamaRealtimeClient::IsConnected()
+{
+	if(!FNakamaUtils::IsRealtimeClientActive(this))
+		return false;
+
+	return RtClient->isConnected();
+}
+
+int32 UNakamaRealtimeClient::GetHeartbeatIntervalMs()
+{
+	if(!FNakamaUtils::IsRealtimeClientActive(this))
+		return 0;
+
+	return RtClient->getHeartbeatIntervalMs().value();
+}
+
+void UNakamaRealtimeClient::SetHeartbeatIntervalMs(int32 IntervalMs)
+{
+	if(!FNakamaUtils::IsRealtimeClientActive(this))
+		return ;
+
+	RtClient->setHeartbeatIntervalMs(IntervalMs);
+	
+}
+
 /**
  * Listen on All Events
  */
