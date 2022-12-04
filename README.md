@@ -122,10 +122,10 @@ void AMyActor::BeginPlay()
 
 	// Setup Delegates of same type and bind them to local functions
 	FOnAuthUpdate AuthenticationSuccessDelegate;
-	AuthenticationSuccessDelegate.AddDyanmic(this, &AMyActor::OnAuthenticationSuccess);
+	AuthenticationSuccessDelegate.AddDynamic(this, &AMyActor::OnAuthenticationSuccess);
 
 	FOnError AuthenticationErrorDelegate;
-	AuthenticationErrorDelegate.AddDyanmic(this, &AMyActor::OnAuthenticationError);
+	AuthenticationErrorDelegate.AddDynamic(this, &AMyActor::OnAuthenticationError);
 
 	NakamaClient->AuthenticateEmail(Email, Password, Username, true, Variables, AuthenticationSuccessDelegate, AuthenticationErrorDelegate);
 }
