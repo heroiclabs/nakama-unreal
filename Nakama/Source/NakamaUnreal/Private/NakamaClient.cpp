@@ -2091,6 +2091,39 @@ void UNakamaClient::RPC(UNakamaSession* Session, FString FunctionId, FString Pay
 }
 
 /**
+ * RPCHttpKey
+ */
+
+void UNakamaClient::RPCHttpKey(FString HttpKey, FString FunctionId, FString Payload, const FOnRPC& Success, const FOnError& Error)
+{
+	if (!Client)
+		return;
+
+	auto errorCallback = [this, Error](const NError& error)
+	{
+		if(!FNakamaUtils::IsClientActive(this))
+			return;
+		
+		const FNakamaError NakamaError = error;
+		Error.Broadcast(NakamaError);
+	};
+
+	auto successCallback = [this, Success](const NRpc rpc)
+	{
+		if(!FNakamaUtils::IsClientActive(this))
+			return;
+		
+		const FNakamaRPC RpcCallback = rpc; // Converts
+
+		UE_LOG(LogTemp, Warning, TEXT("RPC Success with ID: %s"), *RpcCallback.Id);
+
+		Success.Broadcast(RpcCallback);
+	};
+
+	Client->rpc(FNakamaUtils::UEStringToStdString(HttpKey), FNakamaUtils::UEStringToStdString(FunctionId), FNakamaUtils::UEStringToStdString(Payload), successCallback, errorCallback);
+}
+
+/**
  * List Channel Messages
  */
 

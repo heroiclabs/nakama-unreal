@@ -804,6 +804,22 @@ public:
 	void RPC(UNakamaSession* Session, FString FunctionId, FString Payload, const FOnRPC& Success, const FOnError& Error);
 
 	/// <summary>
+	/// RPCHttpKey
+	/// </summary>
+
+	/**
+	 * Send an RPC message to the server using HTTP key.
+	 *
+	 * @param HttpKey The HTTP key for the server.
+	 * @param FunctionId The ID of the function to execute.
+	 * @param Payload The string content to send to the server.
+	 * @param Session The session of the user.
+	 */
+	UFUNCTION(Category = "Nakama|Realtime|RPC")
+	void RPCHttpKey(FString HttpKey, FString FunctionId, FString Payload, const FOnRPC& Success, const FOnError& Error);
+
+
+	/// <summary>
 	/// List Channel Messages
 	/// </summary>
 
