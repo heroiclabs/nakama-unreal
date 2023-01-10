@@ -3,6 +3,26 @@ All notable changes to this project are documented below.
 
 The format is based on [keep a changelog](http://keepachangelog.com/) and this project uses [semantic versioning](http://semver.org/).
 
+### [2.7.0] - [2023-01-10]
+### Added
+- Added Android support.
+- Added Authentication Refresh node for Blueprints.
+- Added Update Chat Message node for Blueprints.
+- Added `IsConnected` function to Realtime Client.
+- Added `GetHeartbeatIntervalMs` function to Realtime Client.
+- Added `SetHeartbeatIntervalMs` function to Realtime Client.
+- Added `ALL` to `ENakamaGroupState` enum.
+- Added `RPCHttpKey` function to Client for calling an RPC via HTTP key.
+
+### Changed
+- Updated transport logic for UE4 support.
+- Various improvements to client logic.
+
+### Fixed
+- Fixed issue with create client node in demo project.
+- Version property now copied correctly in `FNakamaStoreObjectAck` constructor.
+- Fixed compilation issue on Linux.
+
 ### [2.6.0] - [2022-09-09]
 ### Added
 - Added support for Unreal native types. Use the `NakamaUnreal` module and see the README for details on how to use it.
