@@ -1986,16 +1986,7 @@ void UNakamaClient::ListStorageObjects(UNakamaSession* Session, FString Collecti
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
 		
-		FNakamaStorageObjectList StorageObjects;
-
-		for (auto& object : list->objects)
-		{
-			FNakamaStoreObjectData Object = object; // Converts
-
-			// Add to array
-			StorageObjects.Objects.Add(Object);
-		}
-
+		FNakamaStorageObjectList StorageObjects = *list;
 		Success.Broadcast(StorageObjects);
 	};
 
