@@ -142,10 +142,10 @@ void AMyActor::OnAuthenticationSuccess(UNakamaSession* LoginData)
 
 	// Setup Delegates of same type and bind them to local functions
 	FOnRealtimeClientConnected ConnectionSuccessDelegate;
-	ConnectionSuccessDelegate.AddDyanmic(this, &AMyActor::OnRealtimeClientConnectSuccess);
+	ConnectionSuccessDelegate.AddDynamic(this, &AMyActor::OnRealtimeClientConnectSuccess);
 
 	FOnRealtimeClientError ConnectionErrorDelegate;
-	ConnectionErrorDelegate.AddDyanmic(this, &AMyActor::OnRealtimeClientConnectError);
+	ConnectionErrorDelegate.AddDynamic(this, &AMyActor::OnRealtimeClientConnectError);
 
 	// This is our realtime client (socket) ready to use
 	NakamaRealtimeClient = NakamaClient->SetupRealtimeClient(UserSession, true, 7350, ENakamaRealtimeClientProtocol::Protobuf, 0.05f, "");
