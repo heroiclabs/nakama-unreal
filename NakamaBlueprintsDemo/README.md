@@ -22,6 +22,10 @@ Follow these instructions to package the example project:
 
 https://docs.unrealengine.com/4.27/en-US/Basics/Projects/Packaging/
 
-To package it from the command line, run:
+To package it from the command line on Windows run:
 
-```& "${env:UnrealEngine}\Engine\Build\BatchFiles\RunUAT.bat" BuildCookRun -Platform=Win64 -Project="D:\heroic\src\nakama-unreal\NakamaBlueprintsDemo\NakamaBlueprintsDemo.uproject" -ClientConfig=Development -Cook -Build```
+```& "${env:UnrealEngine}\Engine\Build\BatchFiles\RunUAT.bat" BuildCookRun -Platform=Win64 -Project="${env:NakamaUnreal}\NakamaBlueprintsDemo\NakamaBlueprintsDemo.uproject" -ClientConfig=Development -Cook -Build```
+
+On Mac:
+
+```"$UNREAL_ENGINE/Engine/Build/BatchFiles/RunUAT.sh" BuildCookRun -Platform=Mac -Project="${NAKAMA_UNREAL}/NakamaBlueprintsDemo/NakamaBlueprintsDemo.uproject" -ClientConfig=Development -Cook -Build```
