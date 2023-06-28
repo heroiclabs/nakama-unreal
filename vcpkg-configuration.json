@@ -1,0 +1,17 @@
+{
+    "registries":
+    [
+        {
+            "kind": "builtin",
+            "baseline": "62d01b70df227850b728f5050418b917ad6d2b32",
+            "packages": []
+        },
+        {
+            "kind": "git",
+            "repository": "https://github.com/heroiclabs/nakama-vcpkg-registry",
+            "baseline": "8a2ffdb6efaa54399ad1124092f5318fa8cc8ad6",
+            "reference": "master",
+            "packages": ["nakama-sdk"]
+        }
+    ]
+}

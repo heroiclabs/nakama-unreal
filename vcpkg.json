@@ -1,0 +1,15 @@
+{
+    "name": "nakama-sdk-cocos2d-x",
+    "version": "2.7.0",
+    "dependencies": [
+        {
+            "name": "nakama-sdk",
+            "version>=": "2.8.0#6"
+        }
+    ],
+    "default-features": [],
+    "builtin-baseline": "62d01b70df227850b728f5050418b917ad6d2b32",
+    "overrides": [
+        { "name": "curl", "version": "8.0.1" }
+    ]
+}

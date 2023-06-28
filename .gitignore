@@ -551,3 +551,5 @@ NakamaBlueprintsDemo/Plugins/Nakama
 NakamaBlueprintsDemo/Intermediate
 NakamaBlueprintsDemo/Saved
 NakamaBlueprintsDemo/Binaries
+
+vcpkg_installed/

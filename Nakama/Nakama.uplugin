@@ -1,52 +1,55 @@
 {
-	"FileVersion": 3,
-	"Version": 2400,
-	"VersionName": "2.5.0",
-	"FriendlyName": "Nakama client",
-	"Description": "A UE4 and UE5 client for the Nakama server.",
-	"Category": "HeroicLabs.Nakama",
-	"CreatedBy": "Heroic Labs",
-	"CreatedByURL": "http://heroiclabs.com/",
-	"DocsURL": "https://heroiclabs.com/docs/",
-	"MarketplaceURL": "",
-	"SupportURL": "",
-	"EnabledByDefault": true,
-	"CanContainContent": true,
-	"IsBetaVersion": false,
-	"Installed": false,
-	"Modules": [
-		{
-			"Name": "NakamaUnreal",
-			"Type": "Runtime",
-			"LoadingPhase": "Default",
-			"WhitelistPlatforms": [
-				"Win64",
-				"Linux",
-				"IOS",
-				"Mac"
-			]
-		},
+    "FileVersion": 3,
+    "Version": 2400,
+    "VersionName": "2.5.0",
+    "FriendlyName": "Nakama client",
+    "Description": "A UE4 and UE5 client for the Nakama server.",
+    "Category": "HeroicLabs.Nakama",
+    "CreatedBy": "Heroic Labs",
+    "CreatedByURL": "http://heroiclabs.com/",
+    "DocsURL": "https://heroiclabs.com/docs/",
+    "MarketplaceURL": "",
+    "SupportURL": "",
+    "EnabledByDefault": false,
+    "CanContainContent": true,
+    "IsBetaVersion": false,
+    "Installed": false,
+    "Modules": [
         {
-			"Name": "NakamaBlueprints",
-			"Type": "Runtime",
-			"LoadingPhase": "Default",
-			"WhitelistPlatforms": [
-				"Win64",
-				"Linux",
-				"IOS",
-				"Mac"
-			]
-		},
+            "Name": "NakamaUnreal",
+            "Type": "Runtime",
+            "LoadingPhase": "Default",
+            "WhitelistPlatforms": [
+                "Win64",
+                "Linux",
+                "IOS",
+                "Mac",
+                "Android
+            ]
+        },
         {
-			"Name": "NakamaCore",
-			"Type": "Runtime",
-			"LoadingPhase": "PreDefault",
-			"WhitelistPlatforms": [
-				"Win64",
-				"Linux",
-				"IOS",
-				"Mac"
-			]
-		}
-	]
+            "Name": "NakamaBlueprints",
+            "Type": "Runtime",
+            "LoadingPhase": "Default",
+            "WhitelistPlatforms": [
+                "Win64",
+                "Linux",
+                "IOS",
+                "Mac",
+                "Android",
+            ]
+        },
+        {
+            "Name": "NakamaCore",
+            "Type": "Runtime",
+            "LoadingPhase": "PreDefault",
+            "WhitelistPlatforms": [
+                "Win64",
+                "Linux",
+                "IOS",
+                "Mac",
+                "Android"
+            ]
+        }
+    ]
 }

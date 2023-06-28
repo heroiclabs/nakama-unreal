@@ -312,6 +312,13 @@ The development roadmap is managed as GitHub issues and pull requests are welcom
 
 The Unreal module is based on [General C++ SDK](https://github.com/heroiclabs/nakama-cpp)
 
+We use vcpkg to install nakama-sdk for any given toolchain before placing it in the `NakamaCore/libnakama` directory.
+
+For example:
+vcpkg install --overlay-triplets=./triplets --triplet=arm64-osx-release
+
+Then copy the library from vcpkg_installed into the libnakama directory.
+
 ### Nakama Unreal Client guide
 
 You can find Nakama Unreal Client guide [here](https://heroiclabs.com/docs/unreal-client-guide/).
