@@ -50,7 +50,7 @@ NAKAMA_NAMESPACE_BEGIN
     {
         int statusCode = 0;            /// HTTP status code, 200 - OK
         std::string body;              /// response body
-        std::string errorMessage;      /// error message string
+        std::string errorMessage;      /// error message string, intended for use if a local failure (i.e., no error body returned from server)
     };
 
     using NHttpResponsePtr = std::shared_ptr<NHttpResponse>;

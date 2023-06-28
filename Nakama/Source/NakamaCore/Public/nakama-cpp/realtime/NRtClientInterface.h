@@ -20,7 +20,7 @@
 #include <functional>
 #include <memory>
 #include <vector>
-
+#include <future>
 #include <nakama-cpp/NTypes.h>
 #include <nakama-cpp/NExport.h>
 #include <nakama-cpp/NSessionInterface.h>
@@ -89,6 +89,11 @@ NAKAMA_NAMESPACE_BEGIN
         virtual void tick() = 0;
 
         /**
+         * Get websocket transport which RtClient uses.
+         */
+        virtual NRtTransportPtr getTransport() const = 0;
+
+        /**
          * Set events listener
          *
          * @param listener The listener of client events.
@@ -138,6 +143,15 @@ NAKAMA_NAMESPACE_BEGIN
         virtual void connect(NSessionPtr session, bool createStatus, NRtClientProtocol protocol = NRtClientProtocol::Protobuf) = 0;
 
         /**
+         * Connect to the server.
+         *
+         * @param session The session of the user.
+         * @param createStatus True if the socket should show the user as online to others.
+         * @param protocol Communication protocol. Default is Protobuf.
+         */
+        virtual std::future<void> connectAsync(NSessionPtr session, bool createStatus, NRtClientProtocol protocol = NRtClientProtocol::Protobuf) = 0;
+
+        /**
          * @return True if connected to server.
          */
         virtual bool isConnected() const = 0;
@@ -146,6 +160,11 @@ NAKAMA_NAMESPACE_BEGIN
          * Close the connection with the server.
          */
         virtual void disconnect() = 0;
+
+        /**
+         * Close the connection with the server.
+         */
+        virtual std::future<void> disconnectAsync() = 0;
 
         /**
          * Join a chat channel on the server.
@@ -302,7 +321,7 @@ NAKAMA_NAMESPACE_BEGIN
          */
         virtual void sendMatchData(
             const std::string& matchId,
-            int64_t opCode,
+            std::int64_t opCode,
             const NBytes& data,
             const std::vector<NUserPresence>& presences = {}
         ) = 0;
@@ -435,6 +454,263 @@ NAKAMA_NAMESPACE_BEGIN
          * @param data The input data to send from the byte buffer, if any.
          */
         virtual void sendPartyData(const std::string& partyId, long opCode, NBytes& data) = 0;
+
+        /**
+         * Join a chat channel on the server.
+         *
+         * @param target The target channel to join.
+         * @param type The type of channel to join.
+         * @param persistence True if chat messages should be stored.
+         * @param hidden True if the user should be hidden on the channel.
+         */
+        virtual std::future<NChannelPtr> joinChatAsync(
+            const std::string& target,
+            NChannelType type,
+            const opt::optional<bool>& persistence = opt::nullopt,
+            const opt::optional<bool>& hidden = opt::nullopt
+        ) = 0;
+
+        /**
+         * Leave a chat channel on the server.
+         *
+         * @param channelId The channel to leave.
+         */
+        virtual std::future<void> leaveChatAsync(
+            const std::string& channelId
+        ) = 0;
+
+        /**
+         * Send a chat message to a channel on the server.
+         *
+         * @param channelId The channel to send on.
+         * @param content The content of the chat message. Must be a JSON object.
+         */
+        virtual std::future<NChannelMessageAck> writeChatMessageAsync(
+            const std::string& channelId,
+            const std::string& content
+        ) = 0;
+
+        /**
+         * Update a chat message to a channel on the server.
+         *
+         * @param channelId The ID of the chat channel with the message.
+         * @param messageId The ID of the message to update.
+         * @param content The content update for the message. Must be a JSON object.
+         */
+        virtual std::future<NChannelMessageAck> updateChatMessageAsync(
+            const std::string& channelId,
+            const std::string& messageId,
+            const std::string& content
+        ) = 0;
+
+        /**
+         * Remove a chat message from a channel on the server.
+         *
+         * @param channelId The chat channel with the message.
+         * @param messageId The ID of a chat message to remove.
+         */
+        virtual std::future<void> removeChatMessageAsync(
+            const std::string& channelId,
+            const std::string& messageId
+        ) = 0;
+
+        /**
+         * Create a multiplayer match on the server.
+         */
+        virtual std::future<NMatch> createMatchAsync() = 0;
+
+        /**
+         * Join a multiplayer match by ID.
+         *
+         * @param matchId A match ID.
+         */
+        virtual std::future<NMatch> joinMatchAsync(
+            const std::string& matchId,
+            const NStringMap& metadata
+        ) = 0;
+
+        /**
+         * Join a multiplayer match with a matchmaker.
+         *
+         * @param token A matchmaker ticket result object.
+         */
+        virtual std::future<NMatch> joinMatchByTokenAsync(
+            const std::string& token
+        ) = 0;
+
+        /**
+         * Leave a match on the server.
+         *
+         * @param matchId The match to leave.
+         */
+        virtual std::future<void> leaveMatchAsync(
+            const std::string& matchId
+        ) = 0;
+
+        /**
+         * Join the matchmaker pool and search for opponents on the server.
+         *
+         * @param minCount The minimum number of players to compete against.
+         * @param maxCount The maximum number of players to compete against.
+         * @param query A matchmaker query to search for opponents.
+         * @param stringProperties A set of k/v properties to provide in searches.
+         * @param numericProperties A set of k/v numeric properties to provide in searches.
+         * @param countMultiple An optional multiple of the matched count that must be satisfied.
+         */
+        virtual std::future<NMatchmakerTicket> addMatchmakerAsync(
+            const opt::optional<int32_t>& minCount = opt::nullopt,
+            const opt::optional<int32_t>& maxCount = opt::nullopt,
+            const opt::optional<std::string>& query = opt::nullopt,
+            const NStringMap& stringProperties = {},
+            const NStringDoubleMap& numericProperties = {},
+            const opt::optional<int32_t>& countMultiple = opt::nullopt
+        ) = 0;
+
+        /**
+         * Leave the matchmaker pool by ticket.
+         *
+         * @param ticket The ticket returned by the matchmaker on join. See <c>NMatchmakerTicket.ticket</c>.
+         */
+        virtual std::future<void> removeMatchmakerAsync(
+            const std::string& ticket
+        ) = 0;
+
+        /**
+         * Send a state change to a match on the server.
+         *
+         * When no presences are supplied the new match state will be sent to all presences.
+         *
+         * @param matchId The Id of the match.
+         * @param opCode An operation code for the match state.
+         * @param data The new state to send to the match.
+         * @param presences The presences in the match to send the state.
+         */
+        virtual std::future<void> sendMatchDataAsync(
+            const std::string& matchId,
+            std::int64_t opCode,
+            const NBytes& data,
+            const std::vector<NUserPresence>& presences = {}
+        ) = 0;
+
+        /**
+         * Follow one or more users for status updates.
+         *
+         * @param userIds The user Ids to follow.
+         */
+        virtual std::future<NStatus> followUsersAsync(
+            const std::vector<std::string>& userIds
+        ) = 0;
+
+        /**
+         * Unfollow status updates for one or more users.
+         *
+         * @param userIds The ids of users to unfollow.
+         */
+        virtual std::future<void> unfollowUsersAsync(
+            const std::vector<std::string>& userIds
+        ) = 0;
+
+        /**
+         * Update the user's status online.
+         *
+         * @param status The new status of the user.
+         */
+        virtual std::future<void> updateStatusAsync(
+            const std::string& status
+        ) = 0;
+
+        /**
+         * Send an RPC message to the server.
+         *
+         * @param id The ID of the function to execute.
+         * @param payload The string content to send to the server.
+         */
+        virtual std::future<NRpc> rpcAsync(
+            const std::string& id,
+            const opt::optional<std::string>& payload = opt::nullopt
+        ) = 0;
+
+        /**
+         * Accept a party member's request to join the party.
+         *
+         * @param partyId The party ID to accept the join request for.
+         * @param presence The presence to accept as a party member.
+         */
+        virtual std::future<void> acceptPartyMemberAsync(const std::string& partyId, NUserPresence& presence) = 0;
+
+        /**
+         * Begin matchmaking as a party.
+         * @param partyId Party ID.
+         * @param query Filter query used to identify suitable users.
+         * @param minCount Minimum total user count to match together.
+         * @param maxCount Maximum total user count to match together.
+         * @param stringProperties String properties.
+         * @param numericProperties Numeric properties.
+         * @param countMultiple An optional multiple of the matched count that must be satisfied.
+         */
+        virtual std::future<NPartyMatchmakerTicket> addMatchmakerPartyAsync(const std::string& partyId, const std::string& query, int32_t minCount, int32_t maxCount,
+            const NStringMap& stringProperties = {}, const NStringDoubleMap& numericProperties = {},
+            const opt::optional<int32_t>& countMultiple = opt::nullopt) = 0;
+
+        /**
+         * End a party, kicking all party members and closing it.
+         * @param partyId The ID of the party.
+         */
+        virtual std::future<void> closePartyAsync(const std::string& partyId) = 0;
+
+        /**
+         * Create a party.
+         * @param open Whether or not the party will require join requests to be approved by the party leader.
+         * @param maxSize Maximum number of party members.
+         */
+        virtual std::future<NParty> createPartyAsync(bool open, int maxSize) = 0;
+
+        /**
+         * Join a party.
+         * @param partyId Party ID.
+         */
+        virtual std::future<void> joinPartyAsync(const std::string& partyId) = 0;
+
+        /**
+         * Leave the party.
+         * @param partyId Party ID.
+         */
+        virtual std::future<void> leavePartyAsync(const std::string& partyId) = 0;
+
+        /**
+         * Request a list of pending join requests for a party.
+         * @param partyId Party ID.
+         */
+        virtual std::future<NPartyJoinRequest> listPartyJoinRequestsAsync(const std::string& partyId) = 0;
+
+        /**
+         * Promote a new party leader.
+         * @param partyId Party ID.
+         * @param partyMember The presence of an existing party member to promote as the new leader.
+         */
+        virtual std::future<void> promotePartyMemberAsync(const std::string& partyId, NUserPresence& partyMember) = 0;
+
+        /**
+         * Cancel a party matchmaking process using a ticket.
+         * @param partyId Party ID.
+         * @param ticket The ticket to cancel.
+         */
+        virtual std::future<void> removeMatchmakerPartyAsync(const std::string& partyId, const std::string& ticket) = 0;
+
+        /**
+         * Kick a party member, or decline a request to join.
+         * @param partyId Party ID to remove/reject from.
+         * @param presence The presence to remove or reject.
+         */
+        virtual std::future<void> removePartyMemberAsync(const std::string& partyId, NUserPresence& presence) = 0;
+
+        /**
+         * Send data to a party.
+         * @param partyId Party ID to send to.
+         * @param opCode Op code value.
+         * @param data The input data to send from the byte buffer, if any.
+         */
+        virtual std::future<void> sendPartyDataAsync(const std::string& partyId, long opCode, NBytes& data) = 0;
     };
 
     using NRtClientPtr = std::shared_ptr<NRtClientInterface>;

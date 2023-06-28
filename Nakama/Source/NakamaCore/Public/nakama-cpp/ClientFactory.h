@@ -54,22 +54,27 @@ NAKAMA_NAMESPACE_BEGIN
 #endif
     };
 
+
     /// DefaultClientParameters is deprectaed, use NClientParameters instead
     using DefaultClientParameters = NClientParameters;
 
     /**
      * Creates a default client to interact with Nakama server.
-     * 
+     *
      * @param parameters the client parameters
      */
+#if !defined(WITH_EXTERNAL_HTTP) || defined(BUILD_GRPC_CLIENT)
     NAKAMA_API NClientPtr createDefaultClient(const NClientParameters& parameters);
+#endif
 
+#ifdef BUILD_GRPC_CLIENT
     /**
      * Creates the gRPC client to interact with Nakama server.
      *
      * @param parameters the client parameters
      */
     NAKAMA_API NClientPtr createGrpcClient(const NClientParameters& parameters);
+#endif
 
     /**
      * Creates the REST client (HTTP/1.1) to interact with Nakama server.
@@ -82,6 +87,8 @@ NAKAMA_NAMESPACE_BEGIN
     /**
      * Creates default HTTP transport using C++ REST SDK.
      */
+#ifndef WITH_EXTERNAL_HTTP
     NAKAMA_API NHttpTransportPtr createDefaultHttpTransport(const NPlatformParameters& platformParams);
+#endif
 
 NAKAMA_NAMESPACE_END

@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 The Nakama Authors
+ * Copyright 2023 The Nakama Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,15 @@
 
 #pragma once
 
-#include <nakama-cpp/NTypes.h>
+#include "NError.h"
 
-#ifdef __ANDROID__
-#include "jni.h"
-#endif
+namespace Nakama
+{
+    class NException : public std::runtime_error {
+    public:
+        NException(const NError& error)
+            : std::runtime_error(error.message), error(error) {}
 
-NAKAMA_NAMESPACE_BEGIN
-
-// Keeping for API stability in the case that we need to add platform-specific features.
-struct NPlatformParameters {};
-
-NAKAMA_NAMESPACE_END
+        const NError error;
+    };
+}

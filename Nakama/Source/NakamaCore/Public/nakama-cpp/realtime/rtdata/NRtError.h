@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 The Nakama Authors
+ * Copyright 2023 The Nakama Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ NAKAMA_NAMESPACE_BEGIN
         CONNECT_ERROR                 = -1,           ///< Connect has failed.
         TRANSPORT_ERROR               = -2,           ///< Transport error.
         DISCONNECTED                  = -3,           ///< Request cancelled due to transport disconnect
-        
+
         // server side errors
         RUNTIME_EXCEPTION             = 0,            ///< An unexpected result from the server.
         UNRECOGNIZED_PAYLOAD          = 1,            ///< The server received a message which is not recognised.

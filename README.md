@@ -317,7 +317,18 @@ We use vcpkg to install nakama-sdk for any given toolchain before placing it in 
 For example:
 vcpkg install --overlay-triplets=./triplets --triplet=arm64-osx-release
 
-Then copy the library from vcpkg_installed into the libnakama directory.
+Then copy the library from vcpkg_installed into the libnakama directory and the headers to `NakamaCore/Public/nakama-cpp`.
+
+You can then compile the plugin from the command line, passing the `-Rocket` flag if you intalled the editor through
+the Epic launcher. However, using an Epic launcher distribution is not recommended at least for running the command line.
+
+On Windows:
+
+```${env:UnrealEngine}\Engine\Build\BatchFiles\RunUAT.bat BuildPlugin -plugin="${env:NakamaUnreal}\Nakama\Nakama.uplugin -TargetPlatforms=Win64 -package=${env:NakamaUnreal}/Out/Nakama```
+
+And on Mac:
+
+```${UNREAL_ENGINE}/Engine/Build/BatchFiles/RunUAT.sh BuildPlugin -plugin="${NAKAMA_UNREAL}/Nakama/Nakama.uplugin" -TargetPlatforms=Mac -package=${NAKAMA_UNREAL}/Out/Nakama -Architecture_Mac=arm64```
 
 ### Nakama Unreal Client guide
 

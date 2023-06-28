@@ -37,7 +37,8 @@ NAKAMA_NAMESPACE_BEGIN
             INTERNAL_SERVER_ERROR = 1011,
             TLS_HANDSHAKE = 1015,
 
-            HEARTBEAT_FAILURE = 4000
+            HEARTBEAT_FAILURE = 4000,
+            TRANSPORT_ERROR = 4001
         };
 
         /// close code.

@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 The Nakama Authors
+ * Copyright 2023 The Nakama Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,15 @@
 
 #pragma once
 
-#include <nakama-cpp/NTypes.h>
+#include <string>
+#include <nonstd/optional.hpp>
 
-#ifdef __ANDROID__
-#include "jni.h"
-#endif
-
-NAKAMA_NAMESPACE_BEGIN
-
-// Keeping for API stability in the case that we need to add platform-specific features.
-struct NPlatformParameters {};
-
-NAKAMA_NAMESPACE_END
+namespace Nakama {
+    struct URLParts {
+        std::string scheme;
+        std::string host;
+        opt::optional<uint16_t> port;
+        std::string pathAndArgs;
+        std::string url;
+    };
+}

@@ -21,14 +21,9 @@ NClientPtr createNakamaClient(const NClientParameters& parameters, NLogLevel lev
    return Nakama::createRestClient(parameters, NHttpTransportPtr(new UnrealHttpTransport()));
 }
 
-NRtClientPtr createNakamaRtClient(const NClientPtr& client, int32_t port)
+NRtClientPtr createNakamaRtClient(const NClientPtr& client)
 {
-   return client->createRtClient(port, NRtTransportPtr(new UnrealWsTransport()));
-}
-
-NRtClientPtr createNakamaRtClient(const NClientPtr& client, const RtClientParameters& params)
-{
-   return client->createRtClient(params, NRtTransportPtr(new UnrealWsTransport()));
+   return client->createRtClient(NRtTransportPtr(new UnrealWsTransport()));
 }
 
 }

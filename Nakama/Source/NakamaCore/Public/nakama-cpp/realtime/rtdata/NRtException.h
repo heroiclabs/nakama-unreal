@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 The Nakama Authors
+ * Copyright 2023 The Nakama Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,23 +14,17 @@
  * limitations under the License.
  */
 
-#ifdef __ANDROID__
+#pragma once
 
-#include <nakama-cpp/NTypes.h>
-#include <nakama-cpp/NExport.h>
-#include <jni.h>
+#include "NRtError.h"
 
-NAKAMA_NAMESPACE_BEGIN
+namespace Nakama
+{
+    class NRtException : public std::runtime_error {
+    public:
+        NRtException(const NRtError& error)
+            : std::runtime_error(error.message), error(error) {}
 
-    /*
-     * Initialize SDK with JVM (on Android only)
-     * 
-     * @param vm the pointer Java Virtual Machine
-     *
-     * Note: If you do not do this, your application will terminate upon attempting to create a Client.
-     */
-    NAKAMA_API void init(JavaVM* vm);
-
-NAKAMA_NAMESPACE_END
-
-#endif // __ANDROID__
+        const NRtError error;
+    };
+}
