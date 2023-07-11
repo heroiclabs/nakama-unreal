@@ -448,7 +448,7 @@ public:
 	static UNakamaClientAuthenticateRefresh* AuthenticateRefresh(UNakamaClient *Client, UNakamaSession* Session);
 
 	virtual void Activate() override;
-	
+
 };
 
 
@@ -1440,9 +1440,10 @@ public:
 	 * @param Limit The number of matches to list.
 	 * @param Label The label to filter the match list on.
 	 * @param Authoritative True to include authoritative matches.
+	 * @param Query A query for the matches to filter.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Realtime", meta = (BlueprintInternalUseOnly = "true"))
-	static UNakamaClientListMatches* ListMatches(UNakamaClient* Client, UNakamaSession *Session, int32 MinSize, int32 MaxSize, int32 Limit, FString Label, bool Authoritative);
+	static UNakamaClientListMatches* ListMatches(UNakamaClient* Client, UNakamaSession *Session, int32 MinSize, int32 MaxSize, int32 Limit, FString Label, FString Query, bool Authoritative);
 
 	virtual void Activate() override;
 
@@ -1451,6 +1452,7 @@ private:
 	int32 MinSize;
 	int32 MaxSize;
 	int32 Limit;
+	FString Query;
 	FString Label;
 	bool Authoritative;
 

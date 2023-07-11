@@ -499,7 +499,7 @@ void UNakamaClientAuthenticateRefresh::Activate()
 		SetReadyToDestroy();
 
 	};
-	
+
 	NakamaClient->Client->authenticateRefresh(UserSession->UserSession, successCallback, errorCallback);
 }
 
@@ -1185,7 +1185,7 @@ void UNakamaClientUpdateAccount::Activate()
 }
 
 UNakamaClientListMatches* UNakamaClientListMatches::ListMatches(UNakamaClient* Client, UNakamaSession* Session,
-	int32 MinSize, int32 MaxSize, int32 Limit, FString Label, bool Authoritative)
+	int32 MinSize, int32 MaxSize, int32 Limit, FString Label, FString Query, bool Authoritative)
 {
 	if(Client != nullptr && Session != nullptr)
 	{
@@ -1196,8 +1196,8 @@ UNakamaClientListMatches* UNakamaClientListMatches::ListMatches(UNakamaClient* C
 		Node->MaxSize = MaxSize;
 		Node->Limit = Limit;
 		Node->Label = Label;
+		Node->Query = Query;
 		Node->Authoritative = Authoritative;
-
 		return Node;
 	}
 
@@ -1238,6 +1238,7 @@ void UNakamaClientListMatches::Activate()
 		MaxSize,
 		Limit,
 		{},
+		FNakamaUtils::UEStringToStdString(Query),
 		Authoritative,
 		successCallback,
 		errorCallback);
@@ -1250,6 +1251,7 @@ void UNakamaClientListMatches::Activate()
 		MaxSize,
 		Limit,
 		FNakamaUtils::UEStringToStdString(Label),
+		FNakamaUtils::UEStringToStdString(Query),
 		Authoritative,
 		successCallback,
 		errorCallback);
@@ -1792,7 +1794,7 @@ void UNakamaClientListListGroupUsers::Activate()
 		NakamaClient->Client->listGroupUsers(UserSession->UserSession, FNakamaUtils::UEStringToStdString(GroupId), Limit, GroupState, FNakamaUtils::UEStringToStdString(Cursor), successCallback, errorCallback);
 	}
 
-    
+
 }
 
 UNakamaClientUpdateGroup* UNakamaClientUpdateGroup::UpdateGroup(UNakamaClient* Client, UNakamaSession* Session,

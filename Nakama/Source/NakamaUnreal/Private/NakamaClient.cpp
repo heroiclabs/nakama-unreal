@@ -55,9 +55,6 @@ void UNakamaClient::InitializeSystem(const FString& ServerKey, const FString& Ho
 	case ENakamaClientType::DEFAULT:
 		Client = NakamaCoreClientFactory::createNakamaClient(parameters,NLogLevel::Info);
 		break;
-	case ENakamaClientType::GRPC:
-		Client = createGrpcClient(parameters);
-		break;;
 	case ENakamaClientType::REST:
 		Client = NakamaCoreClientFactory::createNakamaClient(parameters,NLogLevel::Info);
 		break;;
@@ -1125,7 +1122,7 @@ UNakamaRealtimeClient* UNakamaClient::SetupRealtimeClient(UNakamaSession* Sessio
 	return NewClient;
 }
 
-void UNakamaClient::ListMatches(UNakamaSession* Session, int32 MinSize, int32 MaxSize, int32 Limit, FString Label,
+void UNakamaClient::ListMatches(UNakamaSession* Session, int32 MinSize, int32 MaxSize, int32 Limit, FString Label, FString Query,
 	bool Authoritative, const FOnMatchlist& Success, const FOnError& Error)
 {
 	if (!Client || !Session)
@@ -1158,6 +1155,7 @@ void UNakamaClient::ListMatches(UNakamaSession* Session, int32 MinSize, int32 Ma
 		MaxSize,
 		Limit,
 		{},
+		FNakamaUtils::UEStringToStdString(Query),
 		Authoritative,
 		successCallback,
 		errorCallback);
@@ -1170,6 +1168,7 @@ void UNakamaClient::ListMatches(UNakamaSession* Session, int32 MinSize, int32 Ma
 		MaxSize,
 		Limit,
 		FNakamaUtils::UEStringToStdString(Label),
+		FNakamaUtils::UEStringToStdString(Query),
 		Authoritative,
 		successCallback,
 		errorCallback);

@@ -18,21 +18,20 @@ public class NakamaCore : ModuleRules
 
         if (Target.Platform == UnrealTargetPlatform.Mac)
         {
-            var arm64 = Path.Combine(ModuleDirectory, "libnakama", "macosx-arm64", "nakama-sdk.framework");
-            var x86 = Path.Combine(ModuleDirectory, "libnakama", "macosx-x86", "nakama-sdk.framework");
-
-            PublicFrameworks.Add(arm64);
-            PublicFrameworks.Add(x86);
+            var arm64 = Path.Combine(ModuleDirectory, "libnakama", "macosx-arm64");
+            var x64 = Path.Combine(ModuleDirectory, "libnakama", "macosx-x64");
+            PublicAdditionalFrameworks.Add(new Framework("nakama-sdk", arm64));
+            PublicAdditionalFrameworks.Add(new Framework("nakama-sdk", x64));
 
             // Currently headers prefix doesn't match framework name (nakama-cpp != nakama-sdk)
             // so Clang can't find include path automatically and needs some help
-            PublicIncludePaths.Add(Path.Combine(arm64, "Headers"));
+            PublicIncludePaths.Add(Path.Combine(arm64, "nakama-sdk.framework", "Headers"));
         }
         else if (Target.Platform == UnrealTargetPlatform.IOS)
         {
-            var frameworkDir = Path.Combine(ModuleDirectory, "libnakama", "ios-arm64", "nakama-sdk.framework");
-            PublicFrameworks.Add(frameworkDir);
-            PublicIncludePaths.Add(Path.Combine(frameworkDir, "Headers"));
+            var frameworkDir = Path.Combine(ModuleDirectory, "libnakama", "ios-arm64");
+            PublicAdditionalFrameworks.Add(new Framework("nakama-sdk", frameworkDir));
+            PublicIncludePaths.Add(Path.Combine(frameworkDir, "nakama-sdk.framework", "Headers"));
         }
         else if (Target.Platform == UnrealTargetPlatform.Android)
         {
