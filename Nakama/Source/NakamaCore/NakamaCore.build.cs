@@ -18,21 +18,28 @@ public class NakamaCore : ModuleRules
 
         if (Target.Platform == UnrealTargetPlatform.Mac)
         {
-            var arm64 = Path.Combine(ModuleDirectory, "libnakama", "macosx-arm64", "nakama-sdk.framework");
-   //         var x64 = Path.Combine(ModuleDirectory, "libnakama", "macosx-x64", "nakama-sdk.framework");
+			string dylibPath;
+            if (Target.Architecture == UnrealArch.Arm64)
+            {
+                dylibPath = Path.Combine(ModuleDirectory, "libnakama", "macosx-arm64", "nakama-sdk.dylib");
+            }
+            else if (Target.Architecture == UnrealArch.X64)
+            {
+                dylibPath = Path.Combine(ModuleDirectory, "libnakama", "macosx-x64", "nakama-sdk.dylib");
+            }
+            else
+            {
+                throw new InvalidOperationException("Unrecognized OSX architecture");
+            }
 
-            PublicFrameworks.Add(arm64);
-///            PublicFrameworks.Add(x64);
-
-            // Currently headers prefix doesn't match framework name (nakama-cpp != nakama-sdk)
-            // so Clang can't find include path automatically and needs some help
-            PublicIncludePaths.Add(Path.Combine(arm64, "Headers"));
+			PublicDelayLoadDLLs.Add(dylibPath);
+			RuntimeDependencies.Add(dylibPath);
         }
         else if (Target.Platform == UnrealTargetPlatform.IOS)
         {
-            var frameworkDir = Path.Combine(ModuleDirectory, "libnakama", "ios-arm64", "nakama-sdk.framework");
-            PublicFrameworks.Add(frameworkDir);
-            PublicIncludePaths.Add(Path.Combine(frameworkDir, "Headers"));
+            var dylibPath = Path.Combine(ModuleDirectory, "libnakama", "ios-arm64", "nakama-sdk.dylib");
+			PublicDelayLoadDLLs.Add(dylibPath);
+			RuntimeDependencies.Add(dylibPath);
         }
         else if (Target.Platform == UnrealTargetPlatform.Android)
         {
