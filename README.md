@@ -324,7 +324,7 @@ the Epic launcher. However, using an Epic launcher distribution is not recommend
 
 On Windows:
 
-```${env:UnrealEngine}\Engine\Build\BatchFiles\RunUAT.bat BuildPlugin -plugin="${env:NakamaUnreal}\Nakama\Nakama.uplugin -TargetPlatforms=Win64 -package=${env:NakamaUnreal}/Out/Nakama```
+```${env:UNREAL_ENGINE}\Engine\Build\BatchFiles\RunUAT.bat BuildPlugin -plugin="${env:NAKAMA_UNREAL}\Nakama\Nakama.uplugin -TargetPlatforms=Win64 -package=${env:NAKAMA_UNREAL}/Out/Nakama```
 
 And on Mac:
 
