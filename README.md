@@ -328,9 +328,19 @@ On Windows:
 
 And on Mac:
 
-```${UNREAL_ENGINE}/Engine/Build/BatchFiles/RunUAT.sh BuildPlugin -plugin="${NAKAMA_UNREAL}/Nakama/Nakama.uplugin" -TargetPlatforms=Mac -package=${NAKAMA_UNREAL}/Out/Nakama -Architecture_Mac=arm64```
+```${UNREAL_ENGINE}/Engine/Build/BatchFiles/RunUAT.sh BuildPlugin -NoHostPlatform -Plugin="${NAKAMA_UNREAL}/Nakama/Nakama.uplugin" -TargetPlatforms=Mac -package=${NAKAMA_UNREAL}/Out/Nakama -Architecture_Mac=arm64```
 
 For iOS, pass `iOS` to `TargetPlatforms`.
+
+
+To view the full list of automation commands, run:
+
+`${UNREAL_ENGINE}/Engine/Build/BatchFiles/RunUAT.sh -List`
+
+
+## Testing
+
+ $UNREAL_ENGINE/Engine/Build/BatchFiles/RunUAT.sh RunTests -plugin="/path/to/YourPlugin.uplugin" -platform=Mac -configuration=Development
 
 ### Nakama Unreal Client guide
 
@@ -339,3 +349,4 @@ You can find Nakama Unreal Client guide [here](https://heroiclabs.com/docs/unrea
 ## License
 
 This project is licensed under the [Apache-2 License](https://github.com/heroiclabs/nakama-dotnet/blob/master/LICENSE).
+

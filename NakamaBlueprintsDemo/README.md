@@ -28,4 +28,4 @@ To package it from the command line on Windows run:
 
 On Mac:
 
-```"$UNREAL_ENGINE/Engine/Build/BatchFiles/RunUAT.sh" BuildCookRun -Platform=Mac -Project="${NAKAMA_UNREAL}/NakamaBlueprintsDemo/NakamaBlueprintsDemo.uproject" -ClientConfig=Development -Cook -Build```
+```"$UNREAL_ENGINE/Engine/Build/BatchFiles/RunUAT.sh" BuildCookRun -Platform=Mac -Project="${NAKAMA_UNREAL}/NakamaBlueprintsDemo/NakamaBlueprintsDemo.uproject" -ClientConfig=Development -Cook -Build -Architecture_Mac=arm64```
