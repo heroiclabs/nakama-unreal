@@ -552,4 +552,9 @@ NakamaBlueprintsDemo/Intermediate
 NakamaBlueprintsDemo/Saved
 NakamaBlueprintsDemo/Binaries
 
+NakamaTest/Plugins/Nakama
+NakamaTest/Intermediate
+NakamaTest/Saved
+NakamaTest/Binaries
+
 vcpkg_installed/
