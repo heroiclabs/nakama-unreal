@@ -1,6 +1,6 @@
 {
 	"FileVersion": 3,
-	"EngineAssociation": "5.2",
+	"EngineAssociation": "{E57FF11F-B44B-9253-0085-D280C3C4943D}",
 	"Category": "",
 	"Description": "",
 	"Modules": [
@@ -9,7 +9,6 @@
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
 		}
-
 	],
 	"Plugins": [
 		{
