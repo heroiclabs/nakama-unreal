@@ -8,7 +8,11 @@
             "features": [
                 "apple-dylib"
             ]
-        }
+        },
+		{
+			"name": "nakama-test",
+			"version>=": "0.0.0#9"
+		}
     ],
     "default-features": [],
     "builtin-baseline": "62d01b70df227850b728f5050418b917ad6d2b32",

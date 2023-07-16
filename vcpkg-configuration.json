@@ -11,7 +11,7 @@
             "repository": "https://github.com/heroiclabs/nakama-vcpkg-registry",
             "baseline": "1b25868b6329cc618e6d09d4b06ab5a65cbbcd30",
             "reference": "master",
-            "packages": ["nakama-sdk"]
+            "packages": ["nakama-sdk", "nakama-test"]
         }
     ]
 }

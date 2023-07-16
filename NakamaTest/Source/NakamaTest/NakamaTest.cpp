@@ -1,6 +1,6 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+// Copyright 2023 The Nakama Authors.
 
 #include "NakamaTest.h"
-#include "Modules/ModuleManager.h"
+#include "CoreMinimal.h"
 
-IMPLEMENT_PRIMARY_GAME_MODULE( FDefaultGameModuleImpl, NakamaTest, "NakamaTest" );
+IMPLEMENT_PRIMARY_GAME_MODULE(FDefaultGameModuleImpl, NakamaTest, "NakamaTest");
