@@ -25,6 +25,6 @@ To build the test, run:
 
 To run the test, run:
 
-`./NakamaTest/Binaries/Mac/NakamaTest-Mac-Test.app/Contents/MacOS/NakamaTest-Mac-Test -nullrhi  -stdout -forcelogflush -ExecCmds="Automation RunTests NakamaTest.Core"`
+`./NakamaTest/Binaries/Mac/NakamaTest-Mac-Test.app/Contents/MacOS/NakamaTest-Mac-Test -nullrhi -stdout -forcelogflush -ExecCmds="Automation RunTests NakamaTest.Core"`
 
 You can pass `List` instead to teh `Automation` command to view all tests. It will include engine tests.
