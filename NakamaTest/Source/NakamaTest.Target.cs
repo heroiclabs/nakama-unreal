@@ -10,5 +10,7 @@ public class NakamaTestTarget : TargetRules
 		Type = TargetType.Game;
 		DefaultBuildSettings = BuildSettingsVersion.V2;
 		ExtraModuleNames.AddRange( new string[] { "NakamaTest" } );
+		bUseLoggingInShipping = true;
+        bUseChecksInShipping = true;
 	}
 }

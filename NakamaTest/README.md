@@ -21,8 +21,10 @@ To package it from the command line on Windows run:
 
 To build the test, run:
 
-`$UNREAL_ENGINE/Engine/Build/BatchFiles/RunUAT.sh BuildCookRun -project="$NAKAMA_UNREAL/NakamaTest/NakamaTest.uproject" -noP4 -platform=Mac -clientconfig=Development -installed -unrealexe=UnrealEditor -utf8output -build -cook -stage -package`
+`$UNREAL_ENGINE/Engine/Build/BatchFiles/RunUAT.sh BuildCookRun -project="$NAKAMA_UNREAL/NakamaTest/NakamaTest.uproject" -clientconfig=Test -noP4 -platform=Mac -clientconfig=Development -installed -unrealexe=UnrealEditor -utf8output -build -cook -stage -package`
 
 To run the test, run:
 
-`./NakamaTest/Binaries/Mac/NakamaTest.app/Contents/MacOS/NakamaTest -nullrhi  -stdout -forcelogflush -ExecCmds="Automation RunTests NakamaTest.NakamaCoreTest"`
+`./NakamaTest/Binaries/Mac/NakamaTest-Mac-Test.app/Contents/MacOS/NakamaTest-Mac-Test -nullrhi  -stdout -forcelogflush -ExecCmds="Automation RunTests NakamaTest.Core"`
+
+You can pass `List` instead to teh `Automation` command to view all tests. It will include engine tests.
