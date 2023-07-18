@@ -4,7 +4,7 @@
     "dependencies": [
         {
             "name": "nakama-sdk",
-            "version>=": "2.8.0#8",
+            "version>=": "2.8.0#9",
             "features": [
                 "apple-dylib"
             ]

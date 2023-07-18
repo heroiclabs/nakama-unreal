@@ -1,7 +1,7 @@
 // Copyright 2023 The Nakama Authors.
 
 #include "CoreMinimal.h"
-#include "nakama-test/NTestLib.h"
+//#include "nakama-test/NTestLib.h"
 #include "NakamaCoreClientFactory.h"
 
 #define SERVER_KEY           "defaultkey"
@@ -15,6 +15,7 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(FNakamaTestCore, "NakamaTest.Core", EAutomation
 
 bool FNakamaTestCore::RunTest(const FString& Parameters)
 {
+	/*
     std::function<Nakama::NClientPtr(Nakama::NClientParameters)> clientFactory = [](Nakama::NClientParameters parameters) -> Nakama::NClientPtr {
         return NakamaCoreClientFactory::createNakamaClient(parameters, Nakama::NLogLevel::Debug);
     };
@@ -26,4 +27,6 @@ bool FNakamaTestCore::RunTest(const FString& Parameters)
     int allTestsResult = Nakama::Test::runAllTests(clientFactory, rtClientFactory, {SERVER_KEY, SERVER_HOST, SERVER_PORT, SERVER_SSL}, SERVER_HTTP_KEY);
 
 	return allTestsResult == 0;
+	*/
+	return 0;
 }

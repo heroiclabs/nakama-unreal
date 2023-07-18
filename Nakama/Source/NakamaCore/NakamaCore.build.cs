@@ -21,11 +21,11 @@ public class NakamaCore : ModuleRules
 			string dylibPath;
             if (Target.Architecture == UnrealArch.Arm64)
             {
-                dylibPath = Path.Combine(ModuleDirectory, "libnakama", "macosx-arm64", "nakama-sdk.dylib");
+                dylibPath = Path.Combine(ModuleDirectory, "libnakama", "macosx-arm64", "libnakama-sdk.dylib");
             }
             else if (Target.Architecture == UnrealArch.X64)
             {
-                dylibPath = Path.Combine(ModuleDirectory, "libnakama", "macosx-x64", "nakama-sdk.dylib");
+                dylibPath = Path.Combine(ModuleDirectory, "libnakama", "macosx-x64", "libnakama-sdk.dylib");
             }
             else
             {
@@ -37,7 +37,7 @@ public class NakamaCore : ModuleRules
         }
         else if (Target.Platform == UnrealTargetPlatform.IOS)
         {
-            var dylibPath = Path.Combine(ModuleDirectory, "libnakama", "ios-arm64", "nakama-sdk.dylib");
+            var dylibPath = Path.Combine(ModuleDirectory, "libnakama", "ios-arm64", "libnakama-sdk.dylib");
 			PublicDelayLoadDLLs.Add(dylibPath);
 			RuntimeDependencies.Add(dylibPath);
         }

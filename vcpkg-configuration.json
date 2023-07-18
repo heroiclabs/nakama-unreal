@@ -9,7 +9,7 @@
         {
             "kind": "git",
             "repository": "https://github.com/heroiclabs/nakama-vcpkg-registry",
-            "baseline": "1b25868b6329cc618e6d09d4b06ab5a65cbbcd30",
+            "baseline": "228546ebbf01dad5f1e623e186b7d75101663a49",
             "reference": "master",
             "packages": ["nakama-sdk", "nakama-test"]
         }

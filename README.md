@@ -332,11 +332,9 @@ And on Mac:
 
 For iOS, pass `iOS` to `TargetPlatforms`.
 
-
 To view the full list of automation commands, run:
 
-`${UNREAL_ENGINE}/Engine/Build/BatchFiles/RunUAT.sh -List`
-
+`${UNREAL_ENGINE}/Engine/Build/BatchFiles/RunUAT.sh -List`s
 
 ## Testing
 
