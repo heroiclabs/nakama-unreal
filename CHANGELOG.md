@@ -2,6 +2,19 @@
 All notable changes to this project are documented below.
 
 The format is based on [keep a changelog](http://keepachangelog.com/) and this project uses [semantic versioning](http://semver.org/).
+### Unreleased
+
+### Added
+
+### Changed
+- Updated to nakama-cpp 2.8.0.
+- Refactored Nakama Core test suite to run on target devices rather than editor host.
+- Updated how nakama-cpp is pulled into nakama-unreal. It is now done using vcpkg rather than via custom builds from within nakama-cpp.
+
+### Fixed
+- Fixed Unreal Websocket transport throwing an exception if going out of scope without being explictly disconnected.
+- Added ability to pass WebSocketModule to the Nakama Unreal websocket factory. This is useful if you want to connect/run the socket
+on a thread that is different from the game thread.
 
 ### [2.7.0] - [2023-01-10]
 ### Added

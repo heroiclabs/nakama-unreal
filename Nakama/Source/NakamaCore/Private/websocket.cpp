@@ -11,22 +11,35 @@ DEFINE_LOG_CATEGORY_STATIC(NakamaWebsocket, Warning, Warning)
 namespace Nakama {
 namespace Unreal {
 
+UnrealWsTransport::UnrealWsTransport()
+{
+}
+
+UnrealWsTransport::UnrealWsTransport(FWebSocketsModule* websocketsModule)
+{
+	this->WebSocketsModule = websocketsModule;
+}
+
 void UnrealWsTransport::connect(const std::string& url, NRtTransportType type)
 {
-	FWebSocketsModule* WebSocketsModule = &FModuleManager::LoadModuleChecked<FWebSocketsModule>(TEXT("WebSockets"));
 	if (!WebSocketsModule)
 	{
-		UE_LOG(NakamaWebsocket, Verbose, TEXT("Load WebSocketsModule failed!"));
-		return;
+		this->WebSocketsModule = &FModuleManager::LoadModuleChecked<FWebSocketsModule>(TEXT("WebSockets"));
+		if (!WebSocketsModule)
+		{
+			UE_LOG(NakamaWebsocket, Verbose, TEXT("Load WebSocketsModule failed!"));
+			return;
+		}
 	}
 
-	TransportType = type;
 	WSConnection = WebSocketsModule->CreateWebSocket(UTF8_TO_TCHAR(url.c_str()));
 	if(!WSConnection.IsValid())
 	{
 		UE_LOG(NakamaWebsocket,Verbose,TEXT("Create Websockets failed!"));
 	}
-	
+
+	TransportType = type;
+
 	WSConnection->OnConnected().AddLambda([this]()
 	{
 		UE_LOG(NakamaWebsocket, Verbose, TEXT("Enqueue fireOnConnected"))
@@ -78,6 +91,11 @@ void UnrealWsTransport::connect(const std::string& url, NRtTransportType type)
 
 void UnrealWsTransport::disconnect()
 {
+	if (!WSConnection.IsValid())
+	{
+		return;
+	}
+
 	// We don't want any more callbacks
 	WSConnection->OnClosed().Clear();
 	WSConnection->OnConnectionError().Clear();

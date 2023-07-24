@@ -1,1 +1,6 @@
+#pragma once
+
 #define optional_CONFIG_SELECT_OPTIONAL optional_OPTIONAL_NONSTD
+#define WITH_EXTERNAL_HTTP
+#define WITH_EXTERNAL_WS
+#define WITH_EXTERNAL_WS_IO

@@ -334,11 +334,7 @@ For iOS, pass `iOS` to `TargetPlatforms`.
 
 To view the full list of automation commands, run:
 
-`${UNREAL_ENGINE}/Engine/Build/BatchFiles/RunUAT.sh -List`s
-
-## Testing
-
- $UNREAL_ENGINE/Engine/Build/BatchFiles/RunUAT.sh RunTests -plugin="/path/to/YourPlugin.uplugin" -platform=Mac -configuration=Development
+`${UNREAL_ENGINE}/Engine/Build/BatchFiles/RunUAT.sh -List`
 
 ### Nakama Unreal Client guide
 

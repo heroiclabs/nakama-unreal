@@ -66,6 +66,7 @@ public class NakamaCore : ModuleRules
             RuntimeDependencies.Add(Path.Combine("$(BinaryOutputDir)", Path.GetFileName(libFiles.Item2)), Path.Combine(ModuleDirectory, "libnakama", libFiles.Item2));
         }
 
-        PrivateDependencyModuleNames.AddRange(new string[]{ "Core", "HTTP", "WebSockets" });
-    }
+        PrivateDependencyModuleNames.AddRange(new string[]{ "Core", "HTTP" });
+		PublicDependencyModuleNames.AddRange(new string[]{ "WebSockets" });
+	}
 }
