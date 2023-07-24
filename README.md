@@ -314,8 +314,11 @@ The Unreal module is based on [General C++ SDK](https://github.com/heroiclabs/na
 
 We use vcpkg to install nakama-sdk for any given toolchain before placing it in the `NakamaCore/libnakama` directory.
 
-For example:
-vcpkg install --overlay-triplets=./triplets --triplet=arm64-osx-release
+For Mac arm64:
+`vcpkg install --overlay-triplets=./triplets --host-triplet=arm64-osx-release-heroic --triplet=arm64-osx-release-heroic`
+
+For Windows:
+`vcpkg install --overlay-triplets=./triplets --host-triplet=x64-windows-release-heroic --triplet=x64-windows-release-heroic`
 
 Then copy the library from vcpkg_installed into the libnakama directory and the headers to `NakamaCore/Public/nakama-cpp`.
 
@@ -334,7 +337,7 @@ For iOS, pass `iOS` to `TargetPlatforms`.
 
 To view the full list of automation commands, run:
 
-`${UNREAL_ENGINE}/Engine/Build/BatchFiles/RunUAT.sh -List`s
+`${UNREAL_ENGINE}/Engine/Build/BatchFiles/RunUAT.sh -List`
 
 ## Testing
 

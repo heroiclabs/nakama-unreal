@@ -11,6 +11,5 @@ public class NakamaTestTarget : TargetRules
 		DefaultBuildSettings = BuildSettingsVersion.V2;
 		ExtraModuleNames.AddRange( new string[] { "NakamaTest" } );
 		bUseLoggingInShipping = true;
-        bUseChecksInShipping = true;
 	}
 }

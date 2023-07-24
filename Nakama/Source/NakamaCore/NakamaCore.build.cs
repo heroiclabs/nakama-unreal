@@ -53,6 +53,11 @@ public class NakamaCore : ModuleRules
             string relAPLPath = Utils.MakePathRelativeTo(Path.Combine(ModuleDirectory, "Nakama_APL.xml"), Target.RelativeEnginePath);
             AdditionalPropertiesForReceipt.Add("AndroidPlugin", relAPLPath);
         }
+        else if (Target.Platform == UnrealTargetPlatform.Switch)
+        {
+            PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "libnakama", "switch", "nakama-sdk.nrs"));
+			RuntimeDependencies.Add(Path.Combine("$(BinaryOutputDir)", Path.GetFileName("nakama-sdk.nro")), Path.Combine(ModuleDirectory, "libnakama", "switch", "nakama-sdk.nro"));
+        }
         else
         {
             if (!libs.ContainsKey(Target.Platform))
@@ -65,6 +70,10 @@ public class NakamaCore : ModuleRules
             PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "libnakama", libFiles.Item1));
             RuntimeDependencies.Add(Path.Combine("$(BinaryOutputDir)", Path.GetFileName(libFiles.Item2)), Path.Combine(ModuleDirectory, "libnakama", libFiles.Item2));
         }
+
+#if PLATFORM_SWITCH
+        libs[UnrealTargetPlatform.Switch] = Tuple.Create("", Path.Combine("switch", "nakama-sdk.nrs"));
+#endif
 
         PrivateDependencyModuleNames.AddRange(new string[]{ "Core", "HTTP", "WebSockets" });
     }

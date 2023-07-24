@@ -12,6 +12,16 @@ Follow these instructions to package the test project:
 
 https://docs.unrealengine.com/4.27/en-US/Basics/Projects/Packaging/
 
+### Windows
+
+To build the test, run:
+
+`$UNREAL_ENGINE/Engine/Build/BatchFiles/RunUAT.sh BuildCookRun -project="$NAKAMA_UNREAL/NakamaTest/NakamaTest.uproject" -clientconfig=Test -noP4 -platform=Win64 -clientconfig=Test -installed -utf8output -build -cook -stage -package -verbose`
+
+To run the test, run:
+
+`./NakamaTest/Binaries/Win64/NakamaTest-Win64-Test.exe -nullrhi -stdout -forcelogflush -ExecCmds="Automation RunTests NakamaTest.Core"`
+
 ### Mac
 
 To build the test, run:
@@ -20,6 +30,18 @@ To build the test, run:
 
 To run the test, run:
 
-`./NakamaTest/Binaries/Mac/NakamaTest-Mac-Test.app/Contents/MacOS/NakamaTest-Mac-Test -nullrhi -stdout -forcelogflush -ExecCmds="Automation RunTests NakamaTest.Core"`
+`./NakamaTest/Binaries/Win64/NakamaTest-Win64-Test.exe -nullrhi -stdout -forcelogflush -ExecCmds="Automation RunTests NakamaTest.Core"`
 
 You can pass `List` instead to the `Automation` command to view all tests. It will include engine tests.
+
+### Switch
+
+TODO MOVE THIS:
+
+To build the test, run:
+
+`$UNREAL_ENGINE/Engine/Build/BatchFiles/RunUAT.sh BuildCookRun -project="$NAKAMA_UNREAL/NakamaTest/NakamaTest.uproject" -clientconfig=Test -noP4 -platform=Switch -clientconfig=Test -installed -utf8output -build -cook -stage -package -verbose`
+
+To run the test:
+
+`$NINTENDO_SDK_ROOT/Tools/CommandLineTools/RunOnTarget.exe NakamaTest/Binaries/Switch/NakamaTest-Switch-Test.nsp -- -stdout -forcelogflush -ExecCmds="Automation RunTests NakamaTest.Core"`

@@ -1,7 +1,7 @@
 // Copyright 2023 The Nakama Authors.
 
 #include "CoreMinimal.h"
-//#include "nakama-test/NTestLib.h"
+#include "nakama-test/NTestLib.h"
 #include "NakamaCoreClientFactory.h"
 
 #define SERVER_KEY           "defaultkey"
