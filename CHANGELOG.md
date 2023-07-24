@@ -15,6 +15,7 @@ The format is based on [keep a changelog](http://keepachangelog.com/) and this p
 - Fixed Unreal Websocket transport throwing an exception if going out of scope without being explictly disconnected.
 - Added ability to pass WebSocketModule to the Nakama Unreal websocket factory. This is useful if you want to connect/run the socket
 on a thread that is different from the game thread.
+- Fixed how Unreal Engine finds and loads the Nakama Linux shared object library.
 
 ### [2.7.0] - [2023-01-10]
 ### Added

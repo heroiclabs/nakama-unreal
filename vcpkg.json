@@ -9,16 +9,16 @@
                 "apple-dylib"
             ]
         },
-		{
-			"name": "nakama-test",
-			"features": [
-            ],
-			"version>=": "0.0.0#12"
-		}
+        {
+            "name": "nakama-test",
+            "features": [],
+            "version>=": "0.0.0#12"
+        },
+        {
+            "name": "libcxx",
+            "platform": "linux"
+        }
     ],
     "default-features": [],
-    "builtin-baseline": "62d01b70df227850b728f5050418b917ad6d2b32",
-    "overrides": [
-        { "name": "curl", "version": "8.0.1" }
-    ]
+    "builtin-baseline": "62d01b70df227850b728f5050418b917ad6d2b32"
 }
