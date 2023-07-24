@@ -2,6 +2,7 @@
 #include "UnrealLogSink.h"
 #include "http.h"
 #include "websocket.h"
+#include "WebSocketsModule.h"
 
 void NakamaCoreClientFactory::initLogging(Nakama::NLogLevel level)
 {
@@ -18,3 +19,9 @@ Nakama::NRtClientPtr NakamaCoreClientFactory::createNakamaRtClient(const Nakama:
 {
 	return client->createRtClient(Nakama::NRtTransportPtr(new Nakama::Unreal::UnrealWsTransport()));
 }
+
+Nakama::NRtClientPtr NakamaCoreClientFactory::createNakamaRtClient(const Nakama::NClientPtr& client, FWebSocketsModule* websocketsModule)
+{
+	return client->createRtClient(Nakama::NRtTransportPtr(new Nakama::Unreal::UnrealWsTransport(websocketsModule)));
+}
+

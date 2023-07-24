@@ -339,10 +339,6 @@ To view the full list of automation commands, run:
 
 `${UNREAL_ENGINE}/Engine/Build/BatchFiles/RunUAT.sh -List`
 
-## Testing
-
- $UNREAL_ENGINE/Engine/Build/BatchFiles/RunUAT.sh RunTests -plugin="/path/to/YourPlugin.uplugin" -platform=Mac -configuration=Development
-
 ### Nakama Unreal Client guide
 
 You can find Nakama Unreal Client guide [here](https://heroiclabs.com/docs/unreal-client-guide/).
@@ -350,4 +346,3 @@ You can find Nakama Unreal Client guide [here](https://heroiclabs.com/docs/unrea
 ## License
 
 This project is licensed under the [Apache-2 License](https://github.com/heroiclabs/nakama-dotnet/blob/master/LICENSE).
-

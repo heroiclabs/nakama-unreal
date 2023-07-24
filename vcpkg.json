@@ -4,14 +4,16 @@
     "dependencies": [
         {
             "name": "nakama-sdk",
-            "version>=": "2.8.0#9",
+            "version>=": "2.8.0#13",
             "features": [
                 "apple-dylib"
             ]
         },
 		{
 			"name": "nakama-test",
-			"version>=": "0.0.0#9"
+			"features": [
+            ],
+			"version>=": "0.0.0#12"
 		}
     ],
     "default-features": [],

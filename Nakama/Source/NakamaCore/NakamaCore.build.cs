@@ -71,10 +71,7 @@ public class NakamaCore : ModuleRules
             RuntimeDependencies.Add(Path.Combine("$(BinaryOutputDir)", Path.GetFileName(libFiles.Item2)), Path.Combine(ModuleDirectory, "libnakama", libFiles.Item2));
         }
 
-#if PLATFORM_SWITCH
-        libs[UnrealTargetPlatform.Switch] = Tuple.Create("", Path.Combine("switch", "nakama-sdk.nrs"));
-#endif
-
-        PrivateDependencyModuleNames.AddRange(new string[]{ "Core", "HTTP", "WebSockets" });
-    }
+        PrivateDependencyModuleNames.AddRange(new string[]{ "Core", "HTTP" });
+		PublicDependencyModuleNames.AddRange(new string[]{ "WebSockets" });
+	}
 }

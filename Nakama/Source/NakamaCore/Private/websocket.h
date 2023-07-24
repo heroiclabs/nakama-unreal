@@ -5,6 +5,7 @@
 
 #include "Containers/Queue.h"
 #include "IWebSocket.h"
+#include "WebSocketsModule.h"
 
 namespace Nakama {
 namespace Unreal {
@@ -17,9 +18,11 @@ enum class CallbackDispatch {
 };
 
 
-    class UnrealWsTransport : public NRtTransportInterface
+class UnrealWsTransport : public NRtTransportInterface
 {
 public:
+	UnrealWsTransport();
+	UnrealWsTransport(FWebSocketsModule* webSocketsModule);
 	~UnrealWsTransport() override { disconnect(); }
 
    // These 2 are now absolette and should be removed from the interface
@@ -50,6 +53,7 @@ private:
 	// 0 indexed: fireOnConnected, fireOnerror, fireOnDisconnected, fireOnMessage
 	TQueue<TTuple<CallbackDispatch, std::string, NRtClientDisconnectInfo>> EventsQueue;
     TArray<char> MessageBuffer;
+	FWebSocketsModule* WebSocketsModule;
 };
 }
 }

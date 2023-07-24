@@ -28,6 +28,7 @@ To build the test, run:
 
 `$UNREAL_ENGINE/Engine/Build/BatchFiles/RunUAT.sh BuildCookRun -project="$NAKAMA_UNREAL/NakamaTest/NakamaTest.uproject" -clientconfig=Test -noP4 -platform=Mac -Architecture_Mac=arm64 -clientconfig=Test -installed -unrealexe=UnrealEditor -utf8output -build -cook -stage -package -verbose`
 
+
 To run the test, run:
 
 `./NakamaTest/Binaries/Win64/NakamaTest-Win64-Test.exe -nullrhi -stdout -forcelogflush -ExecCmds="Automation RunTests NakamaTest.Core"`
@@ -45,3 +46,13 @@ To build the test, run:
 To run the test:
 
 `$NINTENDO_SDK_ROOT/Tools/CommandLineTools/RunOnTarget.exe NakamaTest/Binaries/Switch/NakamaTest-Switch-Test.nsp -- -stdout -forcelogflush -ExecCmds="Automation RunTests NakamaTest.Core"`
+
+To debug with LLDB on Mac:
+
+`lldb ${NAKAMA_UNREAL}/NakamaTest/Binaries/Mac/NakamaTest-Mac-Test.app/Contents/MacOS/NakamaTest-Mac-Test`
+
+Set the startup args inside the lldb shell:
+
+`settings set -- target.run-args -nullrhi -stdout -forcelogflush -ExecCmds="Automation RunTests NakamaTest.Core"`
+
+Then call `run`.
