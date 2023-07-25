@@ -1,6 +1,6 @@
 {
-    "name": "nakama-sdk-cocos2d-x",
-    "version": "2.7.0",
+    "name": "nakama-unreal",
+    "version": "2.8.0",
     "dependencies": [
         {
             "name": "nakama-sdk",
@@ -13,10 +13,6 @@
             "name": "nakama-test",
             "features": [],
             "version>=": "0.0.0#12"
-        },
-        {
-            "name": "libcxx",
-            "platform": "linux"
         }
     ],
     "default-features": [],

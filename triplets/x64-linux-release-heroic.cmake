@@ -2,6 +2,9 @@
 # see https://forums.unrealengine.com/t/ue4-linux-use-libcxx-0-fails-to-compile/478297
 # see https://forums.unrealengine.com/t/using-bundled-libc-in-thirdparty/427863
 
+set(VCPKG_ENV_PASSTHROUGH "UNREAL_ENGINE")
+set(VCPKG_CHAINLOAD_TOOLCHAIN_FILE "${CMAKE_CURRENT_LIST_DIR}/../cmake/Toolchain-Unreal-Linux.cmake")
+
 set(VCPKG_TARGET_ARCHITECTURE x64)
 set(VCPKG_CRT_LINKAGE dynamic)
 

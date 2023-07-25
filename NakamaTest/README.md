@@ -35,6 +35,15 @@ To run the test, run:
 
 You can pass `List` instead to the `Automation` command to view all tests. It will include engine tests.
 
+### Linux
+
+To build the test, run:
+
+`$UNREAL_ENGINE/Engine/Build/BatchFiles/RunUAT.sh BuildCookRun -project="$NAKAMA_UNREAL/NakamaTest/NakamaTest.uproject" -clientconfig=Test -noP4 -platform=Linux -clientconfig=Test -installed  -utf8output -build -cook -stage -package -verbose`
+
+To run the test:
+
+`NakamaTest/Binaries/Linux/NakamaTest-Linux-Test -nullrhi -stdout -forcelogflush -ExecCmds="Automation RunTests NakamaTest.Core"`
 
 To debug with LLDB on Mac:
 

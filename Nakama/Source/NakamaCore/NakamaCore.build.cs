@@ -13,7 +13,7 @@ public class NakamaCore : ModuleRules
         var libs = new Dictionary<UnrealTargetPlatform, Tuple<string,string>>()
         {
             {UnrealTargetPlatform.Win64, Tuple.Create(Path.Combine("win-x64", "nakama-sdk.lib"), Path.Combine("win-x64", "nakama-sdk.dll"))},
-            {UnrealTargetPlatform.Linux, Tuple.Create(Path.Combine("linux-amd64", "libnakama-sdk.so"), Path.Combine("linux-amd64", "libnakama-sdk.so"))},
+            {UnrealTargetPlatform.Linux, Tuple.Create(Path.Combine("linux-x64", "libnakama-sdk.so"), Path.Combine("linux-x64", "libnakama-sdk.so"))},
         };
 
         if (Target.Platform == UnrealTargetPlatform.Mac)
