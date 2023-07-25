@@ -28,15 +28,15 @@ public class NakamaTest : ModuleRules
 			PublicDelayLoadDLLs.Add(dylibPath);
 			RuntimeDependencies.Add(dylibPath);
         }
-		else if (Target.Platform == UnrealTargetPlatform.Switch)
-		{
-            PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "libnakamatest", "switch", "nakama-test.nrs"));
-			RuntimeDependencies.Add(Path.Combine("$(BinaryOutputDir)", Path.GetFileName("nakama-test.nro")), Path.Combine(ModuleDirectory, "libnakamatest", "switch", "nakama-test.nro"));
-		}
 		else if (Target.Platform == UnrealTargetPlatform.Win64)
 		{
             PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "libnakamatest", "windows", "nakama-test.lib"));
 			RuntimeDependencies.Add(Path.Combine("$(BinaryOutputDir)", Path.GetFileName("nakama-test.dll")), Path.Combine(ModuleDirectory, "libnakamatest", "windows", "nakama-test.dll"));
+		}
+		else if (Target.Platform == UnrealTargetPlatform.Linux)
+		{
+            PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "libnakamatest", "linux", "libnakama-test.so"));
+			RuntimeDependencies.Add(Path.Combine("$(BinaryOutputDir)", Path.GetFileName("libnakama-test.so")), Path.Combine(ModuleDirectory, "libnakamatest", "linux", "libnakama-test.so"));
 		}
 		else
 		{

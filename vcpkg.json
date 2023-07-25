@@ -13,10 +13,6 @@
             "name": "nakama-test",
             "features": [],
             "version>=": "0.0.0#12"
-        },
-        {
-            "name": "libcxx",
-            "platform": "linux"
         }
     ],
     "default-features": [],

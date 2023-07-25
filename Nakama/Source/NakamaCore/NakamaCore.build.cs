@@ -13,7 +13,7 @@ public class NakamaCore : ModuleRules
         var libs = new Dictionary<UnrealTargetPlatform, Tuple<string,string>>()
         {
             {UnrealTargetPlatform.Win64, Tuple.Create(Path.Combine("win-x64", "nakama-sdk.lib"), Path.Combine("win-x64", "nakama-sdk.dll"))},
-            {UnrealTargetPlatform.Linux, Tuple.Create(Path.Combine("linux-amd64", "libnakama-sdk.so"), Path.Combine("linux-amd64", "libnakama-sdk.so"))},
+            {UnrealTargetPlatform.Linux, Tuple.Create(Path.Combine("linux-x64", "libnakama-sdk.so"), Path.Combine("linux-x64", "libnakama-sdk.so"))},
         };
 
         if (Target.Platform == UnrealTargetPlatform.Mac)
@@ -53,11 +53,7 @@ public class NakamaCore : ModuleRules
             string relAPLPath = Utils.MakePathRelativeTo(Path.Combine(ModuleDirectory, "Nakama_APL.xml"), Target.RelativeEnginePath);
             AdditionalPropertiesForReceipt.Add("AndroidPlugin", relAPLPath);
         }
-        else if (Target.Platform == UnrealTargetPlatform.Switch)
-        {
-            PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "libnakama", "switch", "nakama-sdk.nrs"));
-			RuntimeDependencies.Add(Path.Combine("$(BinaryOutputDir)", Path.GetFileName("nakama-sdk.nro")), Path.Combine(ModuleDirectory, "libnakama", "switch", "nakama-sdk.nro"));
-        }
+
         else
         {
             if (!libs.ContainsKey(Target.Platform))
