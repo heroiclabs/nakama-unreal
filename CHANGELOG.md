@@ -4,8 +4,6 @@ All notable changes to this project are documented below.
 The format is based on [keep a changelog](http://keepachangelog.com/) and this project uses [semantic versioning](http://semver.org/).
 ### Unreleased
 
-### Added
-
 ### Changed
 - Updated to nakama-cpp 2.8.0.
 - Refactored Nakama Core test suite to run on target devices rather than editor host.
