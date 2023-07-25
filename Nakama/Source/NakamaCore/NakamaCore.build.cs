@@ -53,11 +53,6 @@ public class NakamaCore : ModuleRules
             string relAPLPath = Utils.MakePathRelativeTo(Path.Combine(ModuleDirectory, "Nakama_APL.xml"), Target.RelativeEnginePath);
             AdditionalPropertiesForReceipt.Add("AndroidPlugin", relAPLPath);
         }
-        else if (Target.Platform == UnrealTargetPlatform.Switch)
-        {
-            PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "libnakama", "switch", "nakama-sdk.nrs"));
-			RuntimeDependencies.Add(Path.Combine("$(BinaryOutputDir)", Path.GetFileName("nakama-sdk.nro")), Path.Combine(ModuleDirectory, "libnakama", "switch", "nakama-sdk.nro"));
-        }
         else
         {
             if (!libs.ContainsKey(Target.Platform))
