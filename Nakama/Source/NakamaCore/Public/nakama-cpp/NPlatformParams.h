@@ -24,14 +24,7 @@
 
 NAKAMA_NAMESPACE_BEGIN
 
-#ifdef __ANDROID__
-struct NPlatformParameters {
-    JavaVM *javaVM;
-    jobject applicationContext;
-};
-#else
-#define DEFAULT_PLATFORM_PARAMS
+// Keeping for API stability in the case that we need to add platform-specific features.
 struct NPlatformParameters {};
-#endif
 
 NAKAMA_NAMESPACE_END

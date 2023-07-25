@@ -30,15 +30,15 @@ NAKAMA_NAMESPACE_BEGIN
         std::string leaderboardId;      ///< The ID of the leaderboard this score belongs to.
         std::string ownerId;            ///< The ID of the score owner, usually a user or group.
         std::string username;           ///< The username of the score owner, if the owner is a user.
-        int64_t score = 0;              ///< The score value.
-        int64_t subscore = 0;           ///< An optional subscore value.
+        std::int64_t score = 0;              ///< The score value.
+        std::int64_t subscore = 0;           ///< An optional subscore value.
         int32_t numScore = 0;           ///< The number of submissions to this score record.
         uint32_t maxNumScore = 0;       ///< The maximum number of score updates allowed by the owner.
         std::string metadata;           ///< Metadata.
         NTimestamp createTime = 0;      ///< The UNIX time when the leaderboard record was created.
         NTimestamp updateTime = 0;      ///< The UNIX time when the leaderboard record was updated.
         NTimestamp expiryTime = 0;      ///< The UNIX time when the leaderboard record expires.
-        int64_t rank = 0;               ///< The rank of this record.
+        std::int64_t rank = 0;               ///< The rank of this record.
     };
 
 NAKAMA_NAMESPACE_END

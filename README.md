@@ -312,6 +312,40 @@ The development roadmap is managed as GitHub issues and pull requests are welcom
 
 The Unreal module is based on [General C++ SDK](https://github.com/heroiclabs/nakama-cpp)
 
+We use vcpkg to install nakama-sdk for any given toolchain before placing it in the `NakamaCore/libnakama` directory:
+
+arm64-osx:
+`vcpkg install --overlay-triplets=./triplets --host-triplet=arm64-osx-release-heroic --triplet=arm64-osx-release-heroic`
+
+x64-windows:
+`vcpkg install --overlay-triplets=./triplets --host-triplet=x64-windows-release-heroic --triplet=x64-windows-release-heroic`
+
+x64-linux:
+`vcpkg install --overlay-triplets=./triplets --host-triplet=x64-linux-release-heroic --triplet=x64-linux-release-heroic`
+
+Then copy the library from vcpkg_installed into the libnakama directory and the headers to `NakamaCore/Public/nakama-cpp`.
+
+You can then compile the plugin from the command line, passing the `-Rocket` flag if you intalled the editor through
+the Epic launcher. However, using an Epic launcher distribution is not recommended at least for running the command line.
+
+Windows:
+
+```${env:UNREAL_ENGINE}\Engine\Build\BatchFiles\RunUAT.bat BuildPlugin -plugin="${env:NAKAMA_UNREAL}\Nakama\Nakama.uplugin -TargetPlatforms=Win64 -package=${env:NAKAMA_UNREAL}/Out/Nakama```
+
+Mac:
+
+```${UNREAL_ENGINE}/Engine/Build/BatchFiles/RunUAT.sh BuildPlugin -NoHostPlatform -Plugin="${NAKAMA_UNREAL}/Nakama/Nakama.uplugin" -TargetPlatforms=Mac -package=${NAKAMA_UNREAL}/Out/Nakama -Architecture_Mac=arm64```
+
+For iOS, pass `iOS` to `TargetPlatforms`.
+
+To view the full list of automation commands, run:
+
+`${UNREAL_ENGINE}/Engine/Build/BatchFiles/RunUAT.sh -List`
+
+Linux:
+
+```${UNREAL_ENGINE}/Engine/Build/BatchFiles/RunUAT.sh BuildPlugin -NoHostPlatform -Plugin="${NAKAMA_UNREAL}/Nakama/Nakama.uplugin" -TargetPlatforms=Linux -package=${NAKAMA_UNREAL}/Out/Nakama```
+
 ### Nakama Unreal Client guide
 
 You can find Nakama Unreal Client guide [here](https://heroiclabs.com/docs/unreal-client-guide/).

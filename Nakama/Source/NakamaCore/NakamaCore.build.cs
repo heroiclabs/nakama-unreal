@@ -5,45 +5,52 @@ using UnrealBuildTool;
 
 public class NakamaCore : ModuleRules
 {
-	public NakamaCore(ReadOnlyTargetRules target) : base(target)
-	{
-		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
+    public NakamaCore(ReadOnlyTargetRules target) : base(target)
+    {
+        PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 
-		// Platform -> (buildLib, runtimeLib)
-		var libs = new Dictionary<UnrealTargetPlatform, Tuple<string,string>>()
-		{
-			{UnrealTargetPlatform.Win64, Tuple.Create(Path.Combine("win-x64", "nakama-sdk.lib"), Path.Combine("win-x64", "nakama-sdk.dll"))},
-			{UnrealTargetPlatform.Linux, Tuple.Create(Path.Combine("linux-amd64", "libnakama-sdk.so"), Path.Combine("linux-amd64", "libnakama-sdk.so"))},
-		};
+        // Platform -> (buildLib, runtimeLib)
+        var libs = new Dictionary<UnrealTargetPlatform, Tuple<string,string>>()
+        {
+            {UnrealTargetPlatform.Win64, Tuple.Create(Path.Combine("win-x64", "nakama-sdk.lib"), Path.Combine("win-x64", "nakama-sdk.dll"))},
+            {UnrealTargetPlatform.Linux, Tuple.Create(Path.Combine("linux-x64", "libnakama-sdk.so"), Path.Combine("linux-x64", "libnakama-sdk.so"))},
+        };
 
         if (Target.Platform == UnrealTargetPlatform.Mac)
-		{
-		    var frameworkDir = Path.Combine(ModuleDirectory, "libnakama", "macosx-universal", "nakama-sdk.framework");
-            PublicFrameworks.Add(frameworkDir);
-
-            // Currently headers prefix doesn't match framework name (nakama-cpp != nakama-sdk)
-            // so Clang can't find include path automatically and needs some help
-            PublicIncludePaths.Add(Path.Combine(frameworkDir, "Headers"));
-		}
-		else if (Target.Platform == UnrealTargetPlatform.IOS)
-		{
-		    var frameworkDir = Path.Combine(ModuleDirectory, "libnakama", "ios-arm64", "nakama-sdk.framework");
-            PublicFrameworks.Add(frameworkDir);
-            PublicIncludePaths.Add(Path.Combine(frameworkDir, "Headers"));
-		}
-		else if (Target.Platform == UnrealTargetPlatform.Android)
         {
-	        var androidDir = Path.Combine(ModuleDirectory, "libnakama", "android");
-	        PublicIncludePaths.Add(Path.Combine(androidDir,"include"));
-	        
-	        PublicAdditionalLibraries.Add(Path.Combine(androidDir,"libs","armeabi-v7a","libnakama-sdk.so"));
-	        PublicAdditionalLibraries.Add(Path.Combine(androidDir,"libs","arm64-v8a","libnakama-sdk.so"));
-	        PublicAdditionalLibraries.Add(Path.Combine(androidDir,"libs","x86_64","libnakama-sdk.so"));
+			string dylibPath;
+            if (Target.Architecture == UnrealArch.Arm64)
+            {
+                dylibPath = Path.Combine(ModuleDirectory, "libnakama", "macosx-arm64", "libnakama-sdk.dylib");
+            }
+            else if (Target.Architecture == UnrealArch.X64)
+            {
+                dylibPath = Path.Combine(ModuleDirectory, "libnakama", "macosx-x64", "libnakama-sdk.dylib");
+            }
+            else
+            {
+                throw new InvalidOperationException("Unrecognized OSX architecture");
+            }
 
-	        string relAPLPath = Utils.MakePathRelativeTo(Path.Combine(ModuleDirectory, "Nakama_APL.xml"), Target.RelativeEnginePath);
-	        AdditionalPropertiesForReceipt.Add("AndroidPlugin", relAPLPath);
+			PublicDelayLoadDLLs.Add(dylibPath);
+			RuntimeDependencies.Add(dylibPath);
         }
-		else
+        else if (Target.Platform == UnrealTargetPlatform.IOS)
+        {
+            var dylibPath = Path.Combine(ModuleDirectory, "libnakama", "ios-arm64", "libnakama-sdk.dylib");
+			PublicDelayLoadDLLs.Add(dylibPath);
+			RuntimeDependencies.Add(dylibPath);
+        }
+        else if (Target.Platform == UnrealTargetPlatform.Android)
+        {
+            PublicAdditionalLibraries.Add(Path.Combine(androidDir,"armeabi-v7a","libnakama-sdk.so"));
+            PublicAdditionalLibraries.Add(Path.Combine(androidDir,"arm64-v8a","libnakama-sdk.so"));
+            PublicAdditionalLibraries.Add(Path.Combine(androidDir,"x86_64","libnakama-sdk.so"));
+
+            string relAPLPath = Utils.MakePathRelativeTo(Path.Combine(ModuleDirectory, "Nakama_APL.xml"), Target.RelativeEnginePath);
+            AdditionalPropertiesForReceipt.Add("AndroidPlugin", relAPLPath);
+        }
+        else
         {
             if (!libs.ContainsKey(Target.Platform))
             {
@@ -56,6 +63,7 @@ public class NakamaCore : ModuleRules
             RuntimeDependencies.Add(Path.Combine("$(BinaryOutputDir)", Path.GetFileName(libFiles.Item2)), Path.Combine(ModuleDirectory, "libnakama", libFiles.Item2));
         }
 
-		PrivateDependencyModuleNames.AddRange(new string[]{ "Core", "HTTP", "WebSockets" });
+        PrivateDependencyModuleNames.AddRange(new string[]{ "Core", "HTTP" });
+		PublicDependencyModuleNames.AddRange(new string[]{ "WebSockets" });
 	}
 }

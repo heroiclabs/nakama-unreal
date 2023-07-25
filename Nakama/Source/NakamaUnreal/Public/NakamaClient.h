@@ -29,7 +29,6 @@ UENUM(BlueprintType)
 enum class ENakamaClientType : uint8
 {
 	DEFAULT UMETA(DisplayName = "Default"), // Creates a default client to interact with Nakama server.
-	GRPC UMETA(DisplayName = "gRPC"), // Creates the gRPC client to interact with Nakama server.
 	REST UMETA(DisplayName = "REST"), // Creates the REST client (HTTP/1.1) to interact with Nakama server.
 };
 
@@ -536,10 +535,11 @@ public:
 	 * @param MaxSize The maximum number of match participants.
 	 * @param Limit The number of matches to list.
 	 * @param Label The label to filter the match list on.
+	 * @param Query A query for the matches to filter..
 	 * @param Authoritative True to include authoritative matches.
 	 */
 	UFUNCTION(Category = "Nakama|Realtime")
-	void ListMatches(UNakamaSession *Session, int32 MinSize, int32 MaxSize, int32 Limit, FString Label, bool Authoritative, const FOnMatchlist& Success, const FOnError& Error);
+	void ListMatches(UNakamaSession *Session, int32 MinSize, int32 MaxSize, int32 Limit, FString Label, FString Query, bool Authoritative, const FOnMatchlist& Success, const FOnError& Error);
 
 
 	/// <summary>

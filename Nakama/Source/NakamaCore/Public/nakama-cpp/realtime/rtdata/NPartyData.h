@@ -34,7 +34,7 @@ NAKAMA_NAMESPACE_BEGIN
         NUserPresence presence;
 
         /// The operation code the message was sent with.
-        int64_t opCode;
+        std::int64_t opCode;
 
         /// Data payload, if any.
         NBytes data;

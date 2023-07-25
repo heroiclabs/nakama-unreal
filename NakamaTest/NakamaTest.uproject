@@ -1,0 +1,19 @@
+{
+	"FileVersion": 3,
+	"EngineAssociation": "{6A3A822D-4200-E9E3-C6FA-0E9846904080}",
+	"Category": "",
+	"Description": "",
+	"Modules": [
+		{
+			"Name": "NakamaTest",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		}
+	],
+	"Plugins": [
+		{
+			"Name": "Nakama",
+			"Enabled": true
+		}
+	]
+}

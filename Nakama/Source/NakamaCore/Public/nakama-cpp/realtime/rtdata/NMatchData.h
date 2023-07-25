@@ -27,7 +27,7 @@ NAKAMA_NAMESPACE_BEGIN
     {
         std::string matchId;       ///< The match unique ID.
         NUserPresence presence;    ///< A reference to the user presence that sent this data, if any.
-        int64_t opCode;            ///< Op code value.
+        std::int64_t opCode;            ///< Op code value.
         NBytes data;               ///< Data payload, if any.
     };
 

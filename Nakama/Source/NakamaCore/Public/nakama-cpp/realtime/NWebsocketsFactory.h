@@ -21,13 +21,23 @@
 #include <nakama-cpp/realtime/NRtTransportInterface.h>
 #include <nakama-cpp/NPlatformParams.h>
 
+#if defined BUILD_WEBSOCKET_WSLAY
+#include <nakama-cpp/realtime/wslay/WslayIOInterface.h>
+#endif
+
 NAKAMA_NAMESPACE_BEGIN
 
     /**
      * Create default websocket transport.
      *
      */
+#if !defined(WITH_EXTERNAL_WS) && !defined(BUILD_IO_EXTERNAL)
     NAKAMA_API NRtTransportPtr createDefaultWebsocket(const NPlatformParameters& platformParameters);
-    
+#endif
+
+#if defined BUILD_WEBSOCKET_WSLAY
+    NAKAMA_API NRtTransportPtr createWslayWebsocket(std::unique_ptr<WslayIOInterface> io);
+#endif
+
 
 NAKAMA_NAMESPACE_END
