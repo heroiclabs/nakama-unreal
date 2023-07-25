@@ -320,7 +320,7 @@ arm64-osx:
 x64-windows:
 `vcpkg install --overlay-triplets=./triplets --host-triplet=x64-windows-release-heroic --triplet=x64-windows-release-heroic`
 
-x86-linux:
+x64-linux:
 `vcpkg install --overlay-triplets=./triplets --host-triplet=x64-linux-release-heroic --triplet=x64-linux-release-heroic`
 
 Then copy the library from vcpkg_installed into the libnakama directory and the headers to `NakamaCore/Public/nakama-cpp`.
