@@ -3,7 +3,10 @@ All notable changes to this project are documented below.
 
 The format is based on [keep a changelog](http://keepachangelog.com/) and this project uses [semantic versioning](http://semver.org/).
 ### Unreleased
+### [2.8.1] - [2023-07-26]
+- Fixed a compiler error in Android section of build script.
 
+### [2.8.0] - [2023-07-25]
 ### Changed
 - Updated to nakama-cpp 2.8.0.
 - Refactored Nakama Core test suite to run on target devices rather than editor host.

@@ -43,9 +43,9 @@ public class NakamaCore : ModuleRules
         }
         else if (Target.Platform == UnrealTargetPlatform.Android)
         {
-            PublicAdditionalLibraries.Add(Path.Combine(androidDir,"armeabi-v7a","libnakama-sdk.so"));
-            PublicAdditionalLibraries.Add(Path.Combine(androidDir,"arm64-v8a","libnakama-sdk.so"));
-            PublicAdditionalLibraries.Add(Path.Combine(androidDir,"x86_64","libnakama-sdk.so"));
+            PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "libnakama", "armeabi-v7a", "libnakama-sdk.so"));
+            PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "libnakama", "arm64-v8a", "libnakama-sdk.so"));
+            PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "libnakama", "x86_64", "libnakama-sdk.so"));
 
             string relAPLPath = Utils.MakePathRelativeTo(Path.Combine(ModuleDirectory, "Nakama_APL.xml"), Target.RelativeEnginePath);
             AdditionalPropertiesForReceipt.Add("AndroidPlugin", relAPLPath);
