@@ -333,7 +333,7 @@ the Epic launcher. However, using an Epic launcher distribution is not recommend
 
 Windows:
 
-```${env:UNREAL_ENGINE}\Engine\Build\BatchFiles\RunUAT.bat BuildPlugin -plugin="${env:NAKAMA_UNREAL}\Nakama\Nakama.uplugin -TargetPlatforms=Win64 -package=${env:NAKAMA_UNREAL}/Out/Nakama -Architecture_Win64=arm64```
+```${env:UNREAL_ENGINE}\Engine\Build\BatchFiles\RunUAT.bat BuildPlugin -plugin="${env:NAKAMA_UNREAL}\Nakama\Nakama.uplugin" -TargetPlatforms=Win64 -package=${env:NAKAMA_UNREAL}/Out/Nakama -Architecture_Win64=arm64```
 
 Mac:
 
