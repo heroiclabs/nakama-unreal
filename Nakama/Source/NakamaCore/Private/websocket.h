@@ -53,7 +53,7 @@ private:
 	// 0 indexed: fireOnConnected, fireOnerror, fireOnDisconnected, fireOnMessage
 	TQueue<TTuple<CallbackDispatch, std::string, NRtClientDisconnectInfo>> EventsQueue;
     TArray<char> MessageBuffer;
-	FWebSocketsModule* WebSocketsModule;
+	TSharedPtr<FWebSocketsModule> WebSocketsModule;
 };
 }
 }

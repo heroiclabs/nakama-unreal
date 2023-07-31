@@ -16,16 +16,16 @@ UnrealWsTransport::UnrealWsTransport()
 }
 
 UnrealWsTransport::UnrealWsTransport(FWebSocketsModule* websocketsModule)
+	:WebSocketsModule(websocketsModule)
 {
-	this->WebSocketsModule = websocketsModule;
 }
 
 void UnrealWsTransport::connect(const std::string& url, NRtTransportType type)
 {
-	if (!WebSocketsModule)
+	if (!WebSocketsModule.IsValid())
 	{
-		this->WebSocketsModule = &FModuleManager::LoadModuleChecked<FWebSocketsModule>(TEXT("WebSockets"));
-		if (!WebSocketsModule)
+		this->WebSocketsModule = MakeShared<FWebSocketsModule>(FModuleManager::LoadModuleChecked<FWebSocketsModule>(TEXT("WebSockets")));
+		if (!WebSocketsModule.IsValid())
 		{
 			UE_LOG(NakamaWebsocket, Verbose, TEXT("Load WebSocketsModule failed!"));
 			return;
