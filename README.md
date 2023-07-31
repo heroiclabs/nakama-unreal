@@ -320,6 +320,9 @@ arm64-osx:
 x64-windows:
 `vcpkg install --overlay-triplets=./triplets --host-triplet=x64-windows-release-heroic --triplet=x64-windows-release-heroic`
 
+arm64-windows:
+`vcpkg install --overlay-triplets=./triplets --host-triplet=arm64-windows-release-heroic --triplet=arm64-windows-release-heroic`
+
 x64-linux:
 `vcpkg install --overlay-triplets=./triplets --host-triplet=x64-linux-release-heroic --triplet=x64-linux-release-heroic`
 
@@ -330,7 +333,7 @@ the Epic launcher. However, using an Epic launcher distribution is not recommend
 
 Windows:
 
-```${env:UNREAL_ENGINE}\Engine\Build\BatchFiles\RunUAT.bat BuildPlugin -plugin="${env:NAKAMA_UNREAL}\Nakama\Nakama.uplugin -TargetPlatforms=Win64 -package=${env:NAKAMA_UNREAL}/Out/Nakama```
+```${env:UNREAL_ENGINE}\Engine\Build\BatchFiles\RunUAT.bat BuildPlugin -plugin="${env:NAKAMA_UNREAL}\Nakama\Nakama.uplugin -TargetPlatforms=Win64 -package=${env:NAKAMA_UNREAL}/Out/Nakama -Architecture_Win64=arm64```
 
 Mac:
 

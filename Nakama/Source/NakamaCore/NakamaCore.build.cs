@@ -12,11 +12,25 @@ public class NakamaCore : ModuleRules
         // Platform -> (buildLib, runtimeLib)
         var libs = new Dictionary<UnrealTargetPlatform, Tuple<string,string>>()
         {
-            {UnrealTargetPlatform.Win64, Tuple.Create(Path.Combine("win-x64", "nakama-sdk.lib"), Path.Combine("win-x64", "nakama-sdk.dll"))},
             {UnrealTargetPlatform.Linux, Tuple.Create(Path.Combine("linux-x64", "libnakama-sdk.so"), Path.Combine("linux-x64", "libnakama-sdk.so"))},
         };
 
-        if (Target.Platform == UnrealTargetPlatform.Mac)
+        if (target.Platform == UnrealTargetPlatform.Win64)
+        {
+            if (Target.Architecture == UnrealArch.Arm64)
+            {
+                libs[UnrealTargetPlatform.Win64] = Tuple.Create(Path.Combine("win-x64", "nakama-sdk.lib"), Path.Combine("win-x64", "nakama-sdk.dll"));
+            }
+            else if (target.Architecture == UnrealArch.X64)
+            {
+                libs[UnrealTargetPlatform.Win64] = Tuple.Create(Path.Combine("win-arm64", "nakama-sdk.lib"), Path.Combine("win-arm64", "nakama-sdk.dll"));
+            }
+            else
+            {
+                throw new InvalidOperationException("Unrecognized Windows architecture");
+            }
+        }
+        else if (Target.Platform == UnrealTargetPlatform.Mac)
         {
 			string dylibPath;
             if (Target.Architecture == UnrealArch.Arm64)
