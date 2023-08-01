@@ -17,11 +17,11 @@ public class NakamaCore : ModuleRules
 
         if (target.Platform == UnrealTargetPlatform.Win64)
         {
-            if (Target.Architecture == UnrealArch.Arm64)
+            if (Target.Architecture == UnrealArch.X64)
             {
                 libs[UnrealTargetPlatform.Win64] = Tuple.Create(Path.Combine("win-x64", "nakama-sdk.lib"), Path.Combine("win-x64", "nakama-sdk.dll"));
             }
-            else if (target.Architecture == UnrealArch.X64)
+            else if (target.Architecture == UnrealArch.Arm64)
             {
                 libs[UnrealTargetPlatform.Win64] = Tuple.Create(Path.Combine("win-arm64", "nakama-sdk.lib"), Path.Combine("win-arm64", "nakama-sdk.dll"));
             }
