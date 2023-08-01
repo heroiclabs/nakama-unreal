@@ -3,7 +3,16 @@ All notable changes to this project are documented below.
 
 The format is based on [keep a changelog](http://keepachangelog.com/) and this project uses [semantic versioning](http://semver.org/).
 ### Unreleased
+
+### [2.8.2] - [2023-08-01]
+### Fixed
+- Fixed loading of Websocket Module.
+
+### Added
+- Added Windows Arm64 support.
+
 ### [2.8.1] - [2023-07-26]
+### Fixed
 - Fixed a compiler error in Android section of build script.
 
 ### [2.8.0] - [2023-07-25]
