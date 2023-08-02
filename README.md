@@ -318,10 +318,10 @@ arm64-osx:
 `vcpkg install --overlay-triplets=./triplets --host-triplet=arm64-osx-release-heroic --triplet=arm64-osx-release-heroic`
 
 x64-windows:
-`vcpkg install --overlay-triplets=./triplets --host-triplet=x64-windows-release-heroic --triplet=x64-windows-release-heroic`
+`vcpkg install --overlay-triplets=./triplets --host-triplet=x64-windows-heroic --triplet=x64-windows-heroic`
 
 arm64-windows:
-`vcpkg install --overlay-triplets=./triplets --host-triplet=arm64-windows-release-heroic --triplet=arm64-windows-release-heroic`
+`vcpkg install --overlay-triplets=./triplets --host-triplet=arm64-windows-heroic --triplet=arm64-windows-heroic`
 
 x64-linux:
 `vcpkg install --overlay-triplets=./triplets --host-triplet=x64-linux-release-heroic --triplet=x64-linux-release-heroic`

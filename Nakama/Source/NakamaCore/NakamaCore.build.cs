@@ -17,13 +17,26 @@ public class NakamaCore : ModuleRules
 
         if (target.Platform == UnrealTargetPlatform.Win64)
         {
+            string configurationDirectory = null;
+
+            if (Target.Configuration == UnrealTargetConfiguration.Debug)
+            {
+                configurationDirectory = "Debug";
+            }
+            else
+            {
+                configurationDirectory = "Release";
+            }
+
             if (Target.Architecture == UnrealArch.X64)
             {
-                libs[UnrealTargetPlatform.Win64] = Tuple.Create(Path.Combine("win-x64", "nakama-sdk.lib"), Path.Combine("win-x64", "nakama-sdk.dll"));
+                PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "libnakama", "win-x64", configurationDirectory, "nakama-sdk.lib"));
+                RuntimeDependencies.Add(Path.Combine("$(BinaryOutputDir)", "nakama-sdk"), Path.Combine(ModuleDirectory, "libnakama", "win-x64", configurationDirectory, "nakama-sdk.dll"));
             }
             else if (target.Architecture == UnrealArch.Arm64)
             {
-                libs[UnrealTargetPlatform.Win64] = Tuple.Create(Path.Combine("win-arm64", "nakama-sdk.lib"), Path.Combine("win-arm64", "nakama-sdk.dll"));
+                PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "libnakama", "win-arm64", configurationDirectory, "nakama-sdk.lib"));
+                RuntimeDependencies.Add(Path.Combine("$(BinaryOutputDir)", "nakama-sdk"), Path.Combine(ModuleDirectory, "libnakama", "win-arm64", configurationDirectory, "nakama-sdk.dll"));
             }
             else
             {
