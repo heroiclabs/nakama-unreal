@@ -16,7 +16,7 @@ https://docs.unrealengine.com/4.27/en-US/Basics/Projects/Packaging/
 
 To build the test, run:
 
-`$UNREAL_ENGINE/Engine/Build/BatchFiles/RunUAT.sh BuildCookRun -project="$NAKAMA_UNREAL/NakamaTest/NakamaTest.uproject" -clientconfig=Test -noP4 -platform=Win64 -clientconfig=Test -installed -utf8output -build -cook -stage -package -verbose`
+`$UNREAL_ENGINE/Engine/Build/BatchFiles/RunUAT.sh BuildCookRun -project="$NAKAMA_UNREAL/NakamaTest/NakamaTest.uproject" -noP4 -installed -utf8output -build -cook -stage -package -verbose -nohostplatform`
 
 To run the test, run:
 
