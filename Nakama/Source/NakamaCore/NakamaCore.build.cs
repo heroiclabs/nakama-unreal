@@ -18,6 +18,7 @@ public class NakamaCore : ModuleRules
         if (target.Platform == UnrealTargetPlatform.Win64)
         {
             string configurationDirectory = null;
+            string arch = null;
 
             if (Target.Configuration == UnrealTargetConfiguration.Debug)
             {
@@ -30,18 +31,19 @@ public class NakamaCore : ModuleRules
 
             if (Target.Architecture == UnrealArch.X64)
             {
-                PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "libnakama", "win-x64", configurationDirectory, "nakama-sdk.lib"));
-                RuntimeDependencies.Add(Path.Combine("$(BinaryOutputDir)", "nakama-sdk"), Path.Combine(ModuleDirectory, "libnakama", "win-x64", configurationDirectory, "nakama-sdk.dll"));
+                arch = "win-x64";
             }
-            else if (target.Architecture == UnrealArch.Arm64)
+            else if (Target.Architecture == UnrealArch.Arm64)
             {
-                PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "libnakama", "win-arm64", configurationDirectory, "nakama-sdk.lib"));
-                RuntimeDependencies.Add(Path.Combine("$(BinaryOutputDir)", "nakama-sdk"), Path.Combine(ModuleDirectory, "libnakama", "win-arm64", configurationDirectory, "nakama-sdk.dll"));
+                arch = "win-arm64";
             }
             else
             {
                 throw new InvalidOperationException("Unrecognized Windows architecture");
             }
+
+            PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "libnakama", arch, configurationDirectory, "nakama-sdk.lib"));
+            RuntimeDependencies.Add(Path.Combine("$(BinaryOutputDir)", "nakama-sdk.dll"), Path.Combine(ModuleDirectory, "libnakama", arch, configurationDirectory, "nakama-sdk.dll"));
         }
         else if (Target.Platform == UnrealTargetPlatform.Mac)
         {
