@@ -16,22 +16,19 @@ https://docs.unrealengine.com/4.27/en-US/Basics/Projects/Packaging/
 
 To build the test, run:
 
-`$UNREAL_ENGINE/Engine/Build/BatchFiles/RunUAT.sh BuildCookRun -project="$NAKAMA_UNREAL/NakamaTest/NakamaTest.uproject" -noP4 -installed -utf8output -build -cook -stage -package -verbose -nohostplatform`
+`$UNREAL_ENGINE/Engine/Build/BatchFiles/RunUAT.sh BuildCookRun -clientconfig=Test -project="$NAKAMA_UNREAL/NakamaTest/NakamaTest.uproject" -noP4 -installed -utf8output -build -cook -stage -package -verbose -nohostplatform`
 
 To run the test, run:
 
-`./NakamaTest/Binaries/Win64/NakamaTest-Win64-Test.exe -nullrhi -stdout -forcelogflush -ExecCmds="Automation RunTests NakamaTest.Core"`
-
+```bash
+./NakamaTest/Binaries/Win64/NakamaTest.exe -nullrhi -stdout -forcelogflush -ExecCmds="Automation RunTests NakamaTest.Core" > ./NakamaTest/Saved/Logs/Log.txt 2>&1
+```
 ### Mac
 
 To build the test, run:
 
 `$UNREAL_ENGINE/Engine/Build/BatchFiles/RunUAT.sh BuildCookRun -project="$NAKAMA_UNREAL/NakamaTest/NakamaTest.uproject" -clientconfig=Test -noP4 -platform=Mac -Architecture_Mac=arm64 -clientconfig=Test -installed -unrealexe=UnrealEditor -utf8output -build -cook -stage -package -verbose`
 
-
-To run the test, run:
-
-`./NakamaTest/Binaries/Win64/NakamaTest-Win64-Test.exe -nullrhi -stdout -forcelogflush -ExecCmds="Automation RunTests NakamaTest.Core"`
 
 You can pass `List` instead to the `Automation` command to view all tests. It will include engine tests.
 
