@@ -20,8 +20,10 @@ To build the test, run:
 
 To run the test, run:
 
+https://dev.epicgames.com/community/learning/tutorials/nZ2e/command-line-rendering-with-unreal-engine-movie-render-queue
+
 ```bash
-./NakamaTest/Binaries/Win64/NakamaTest.exe -nullrhi -stdout -forcelogflush -ExecCmds="Automation RunTests NakamaTest.Core" > ./NakamaTest/Saved/Logs/Log.txt 2>&1
+./NakamaTest/Binaries/Win64/NakamaTest.exe -nullrhi  -Log -StdOut -allowStdOutLogVerbosity -Unattended -ExecCmds="Automation RunTests NakamaTest.Core"
 ```
 ### Mac
 
