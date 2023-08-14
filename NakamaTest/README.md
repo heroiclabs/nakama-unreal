@@ -28,12 +28,13 @@ To build the test, run:
 
 `$UNREAL_ENGINE/Engine/Build/BatchFiles/RunUAT.sh BuildCookRun -project="$NAKAMA_UNREAL/NakamaTest/NakamaTest.uproject" -targetConfig=Debug -noP4 -platform=Mac -Architecture_Mac=arm64 -targetconfig=Debug -installed -unrealexe=UnrealEditor -utf8output -build -cook -stage -package -verbose`
 
-
 To run the test, run:
 
-`./NakamaTest/Binaries/Mac/NakamaTest-Mac-Test.app/Contents/MacOS/NakamaTest-Mac-Test -nullrhi -stdout -forcelogflush -ExecCmds="Automation RunTests NakamaTest.Core"`
+`./NakamaTest/Binaries/Mac/NakamaTest.app/Contents/MacOS/NakamaTest -nullrhi -stdout -forcelogflush -ExecCmds="Automation RunTests NakamaTest.Core"`
 
 You can pass `List` instead to the `Automation` command to view all tests. It will include engine tests.
+
+You can also pass `-LogCmds="<LogCategory> verbose"` where `<LogCategory>` is one of those defined by `DEFINE_LOG_CATEGORY`.
 
 ### Linux
 

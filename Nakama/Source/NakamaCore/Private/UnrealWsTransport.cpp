@@ -1,4 +1,4 @@
-#include "websocket.h"
+#include "UnrealWsTransport.h"
 
 #include <nakama-cpp/NTypes.h>
 #include <nakama-cpp/realtime/NRtTransportInterface.h>
@@ -6,7 +6,7 @@
 #include "Containers/StringConv.h"
 #include "WebSocketsModule.h"
 
-DEFINE_LOG_CATEGORY_STATIC(NakamaWebsocket, Warning, Warning)
+DEFINE_LOG_CATEGORY_STATIC(NakamaWebsocket, All, All)
 
 namespace Nakama {
 namespace Unreal {
@@ -15,39 +15,24 @@ UnrealWsTransport::UnrealWsTransport()
 {
 }
 
-UnrealWsTransport::UnrealWsTransport(FWebSocketsModule* websocketsModule)
-	:WebSocketsModule(websocketsModule)
-{
-}
-
 void UnrealWsTransport::connect(const std::string& url, NRtTransportType type)
 {
-	if (!WebSocketsModule.IsValid())
-	{
-		this->WebSocketsModule = MakeShared<FWebSocketsModule>(FModuleManager::LoadModuleChecked<FWebSocketsModule>(TEXT("WebSockets")));
-		if (!WebSocketsModule.IsValid())
-		{
-			UE_LOG(NakamaWebsocket, Verbose, TEXT("Load WebSocketsModule failed!"));
-			return;
-		}
-	}
+	FWebSocketsModule& websocketsModule = FModuleManager::LoadModuleChecked<FWebSocketsModule>(TEXT("WebSockets"));
 
-	WSConnection = WebSocketsModule->CreateWebSocket(UTF8_TO_TCHAR(url.c_str()));
+	WSConnection = websocketsModule.CreateWebSocket(UTF8_TO_TCHAR(url.c_str()));
 	if(!WSConnection.IsValid())
 	{
-		UE_LOG(NakamaWebsocket,Verbose,TEXT("Create Websockets failed!"));
+		UE_LOG(NakamaWebsocket, Error, TEXT("Create Websockets failed!"));
 	}
 
 	TransportType = type;
 
 	WSConnection->OnConnected().AddLambda([this]()
 	{
-		UE_LOG(NakamaWebsocket, Verbose, TEXT("Enqueue fireOnConnected"))
 		EventsQueue.Enqueue(MakeTuple(CallbackDispatch::OnConnected, std::string(""), NRtClientDisconnectInfo{}));
 	});
 	WSConnection->OnConnectionError().AddLambda([this](const FString& Error)
 	{
-		UE_LOG(NakamaWebsocket, Verbose, TEXT("Enqueue fireOnError"))
 		EventsQueue.Enqueue(MakeTuple(CallbackDispatch::OnError, std::string(TCHAR_TO_UTF8(*Error)), NRtClientDisconnectInfo{}));
 	});
 
@@ -58,7 +43,6 @@ void UnrealWsTransport::connect(const std::string& url, NRtTransportType type)
 			TCHAR_TO_UTF8(*Reason),
 			bWasClean
 		};
-		UE_LOG(NakamaWebsocket, Verbose, TEXT("Enqueue fireOnDisconnected"))
 		EventsQueue.Enqueue(MakeTuple(CallbackDispatch::OnDisconnected, std::string(""), std::move(info)));
 	});
 
@@ -69,7 +53,6 @@ void UnrealWsTransport::connect(const std::string& url, NRtTransportType type)
 	{
 		WSConnection->OnMessage().AddLambda([this](const FString& MessageString)
 		{
-			UE_LOG(NakamaWebsocket, Verbose, TEXT("Enqueue fireOnMessage"));
 			EventsQueue.Enqueue(MakeTuple(CallbackDispatch::OnMessage, std::string(TCHAR_TO_UTF8(*MessageString)), NRtClientDisconnectInfo{}));
 		});
 	} else
@@ -79,7 +62,6 @@ void UnrealWsTransport::connect(const std::string& url, NRtTransportType type)
             MessageBuffer.Append(static_cast<const char*>(Data), Size);
             if (BytesRemaining == 0)
             {
-                UE_LOG(NakamaWebsocket, Verbose, TEXT("Enqueue fireOnMessage"));
                 EventsQueue.Enqueue(MakeTuple(CallbackDispatch::OnMessage, std::string(MessageBuffer.GetData(), MessageBuffer.Num()), NRtClientDisconnectInfo{}));
                 MessageBuffer.Reset();
             }
