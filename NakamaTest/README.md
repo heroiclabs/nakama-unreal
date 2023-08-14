@@ -16,11 +16,15 @@ https://docs.unrealengine.com/4.27/en-US/Basics/Projects/Packaging/
 
 To build the test, run:
 
-`$UNREAL_ENGINE/Engine/Build/BatchFiles/RunUAT.sh BuildCookRun -project="$NAKAMA_UNREAL/NakamaTest/NakamaTest.uproject" -clientconfig=Test -noP4 -platform=Win64 -clientconfig=Test -installed -utf8output -build -cook -stage -package -verbose`
+`$UNREAL_ENGINE/Engine/Build/BatchFiles/RunUAT.sh BuildCookRun -targetconfig=Debug -project="$NAKAMA_UNREAL/NakamaTest/NakamaTest.uproject" -noP4 -installed -utf8output -build -cook -stage -package -verbose -stdout -nohostplatform -useshellexecute`
 
 To run the test, run:
 
-`./NakamaTest/Binaries/Win64/NakamaTest-Win64-Test.exe -nullrhi -stdout -forcelogflush -ExecCmds="Automation RunTests NakamaTest.Core"`
+```bash
+./NakamaTest/Saved/StagedBuilds/Windows/NakamaTest.exe -nullrhi -verbose -ExecCmds="Automation RunTests NakamaTest.Core"
+```
+
+There appears to be a problem with logging to stdout on Windows, so you'll need to obtain the test logs from `NakamaTest\Saved\StagedBuilds\Windows\NakamaTest\Saved\Logs\NakamaTest.log`.
 
 ### Mac
 

@@ -318,10 +318,10 @@ arm64-osx:
 `vcpkg install --overlay-triplets=./triplets --host-triplet=arm64-osx-release-heroic --triplet=arm64-osx-release-heroic`
 
 x64-windows:
-`vcpkg install --overlay-triplets=./triplets --host-triplet=x64-windows-release-heroic --triplet=x64-windows-release-heroic`
+`vcpkg install --overlay-triplets=./triplets --host-triplet=x64-windows-heroic --triplet=x64-windows-heroic`
 
 arm64-windows:
-`vcpkg install --overlay-triplets=./triplets --host-triplet=arm64-windows-release-heroic --triplet=arm64-windows-release-heroic`
+`vcpkg install --overlay-triplets=./triplets --host-triplet=arm64-windows-heroic --triplet=arm64-windows-heroic`
 
 x64-linux:
 `vcpkg install --overlay-triplets=./triplets --host-triplet=x64-linux-release-heroic --triplet=x64-linux-release-heroic`
@@ -333,11 +333,15 @@ the Epic launcher. However, using an Epic launcher distribution is not recommend
 
 Windows:
 
-```${env:UNREAL_ENGINE}\Engine\Build\BatchFiles\RunUAT.bat BuildPlugin -plugin="${env:NAKAMA_UNREAL}\Nakama\Nakama.uplugin -TargetPlatforms=Win64 -package=${env:NAKAMA_UNREAL}/Out/Nakama -Architecture_Win64=arm64```
+```bash
+${UNREAL_ENGINE}/Engine/Build/BatchFiles/RunUAT.sh BuildPlugin -NoHostPlatform -Plugin="${NAKAMA_UNREAL}/Nakama/Nakama.uplugin" -TargetPlatforms=Win64 -package=${NAKAMA_UNREAL}/Out/Nakama
+```
 
 Mac:
 
-```${UNREAL_ENGINE}/Engine/Build/BatchFiles/RunUAT.sh BuildPlugin -NoHostPlatform -Plugin="${NAKAMA_UNREAL}/Nakama/Nakama.uplugin" -TargetPlatforms=Mac -package=${NAKAMA_UNREAL}/Out/Nakama -Architecture_Mac=arm64```
+```bash
+${UNREAL_ENGINE}/Engine/Build/BatchFiles/RunUAT.sh BuildPlugin -NoHostPlatform -Plugin="${NAKAMA_UNREAL}/Nakama/Nakama.uplugin" -TargetPlatforms=Mac -package=${NAKAMA_UNREAL}/Out/Nakama -Architecture_Mac=arm64
+```
 
 For iOS, pass `iOS` to `TargetPlatforms`.
 

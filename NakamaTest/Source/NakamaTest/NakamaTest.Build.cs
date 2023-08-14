@@ -29,8 +29,33 @@ public class NakamaTest : ModuleRules
         }
 		else if (Target.Platform == UnrealTargetPlatform.Win64)
 		{
-            PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "libnakamatest", "windows", "nakama-test.lib"));
-			RuntimeDependencies.Add(Path.Combine("$(BinaryOutputDir)", Path.GetFileName("nakama-test.dll")), Path.Combine(ModuleDirectory, "libnakamatest", "windows", "nakama-test.dll"));
+            string configurationDirectory = null;
+            string arch = null;
+
+            if (Target.Configuration == UnrealTargetConfiguration.Debug)
+            {
+                configurationDirectory = "Debug";
+            }
+            else
+            {
+                configurationDirectory = "Release";
+            }
+
+            if (Target.Architecture == UnrealArch.X64)
+            {
+                arch = "win-x64";
+            }
+            else if (Target.Architecture == UnrealArch.Arm64)
+            {
+                arch = "win-arm64";
+            }
+            else
+            {
+                throw new InvalidOperationException("Unrecognized Windows architecture");
+            }
+
+            PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "libnakamatest", arch, configurationDirectory, "nakama-test.lib"));
+            RuntimeDependencies.Add(Path.Combine("$(BinaryOutputDir)", "nakama-test.dll"), Path.Combine(ModuleDirectory, "libnakamatest", arch, configurationDirectory, "nakama-test.dll"));
 		}
 		else if (Target.Platform == UnrealTargetPlatform.Linux)
 		{

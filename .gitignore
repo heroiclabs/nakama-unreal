@@ -31,7 +31,6 @@
 *.dSYM/
 *.su
 *.idb
-*.pdb
 
 # Kernel Module Compile Results
 *.mod*
@@ -278,17 +277,6 @@ gradle-app.setting
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
-
-# Build results
-[Dd]ebug/
-[Dd]ebugPublic/
-[Rr]eleases/
-x64/
-x86/
-bld/
-[Bb]in/
-[Oo]bj/
-#[Ll]og/
 
 # Visual Studio 2015 cache/options directory
 # Uncomment if you have tasks that create the project's static files in wwwroot
