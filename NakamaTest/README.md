@@ -26,12 +26,12 @@ To run the test, run:
 
 To build the test, run:
 
-`$UNREAL_ENGINE/Engine/Build/BatchFiles/RunUAT.sh BuildCookRun -project="$NAKAMA_UNREAL/NakamaTest/NakamaTest.uproject" -clientconfig=Test -noP4 -platform=Mac -Architecture_Mac=arm64 -clientconfig=Test -installed -unrealexe=UnrealEditor -utf8output -build -cook -stage -package -verbose`
+`$UNREAL_ENGINE/Engine/Build/BatchFiles/RunUAT.sh BuildCookRun -project="$NAKAMA_UNREAL/NakamaTest/NakamaTest.uproject" -clientconfig=Test -noP4 -platform=Mac -Architecture_Mac=arm64 -targetconfig=Debug -installed -unrealexe=UnrealEditor -utf8output -build -cook -stage -package -verbose`
 
 
 To run the test, run:
 
-`./NakamaTest/Binaries/Win64/NakamaTest-Win64-Test.exe -nullrhi -stdout -forcelogflush -ExecCmds="Automation RunTests NakamaTest.Core"`
+`.NakamaTest/Binaries/Mac/NakamaTest-Mac-Test.app/Contents/MacOS/NakamaTest-Mac-Test -nullrhi -stdout -forcelogflush -ExecCmds="Automation RunTests NakamaTest.Core"`
 
 You can pass `List` instead to the `Automation` command to view all tests. It will include engine tests.
 
@@ -39,7 +39,7 @@ You can pass `List` instead to the `Automation` command to view all tests. It wi
 
 To build the test, run:
 
-`$UNREAL_ENGINE/Engine/Build/BatchFiles/RunUAT.sh BuildCookRun -project="$NAKAMA_UNREAL/NakamaTest/NakamaTest.uproject" -clientconfig=Test -noP4 -platform=Linux -clientconfig=Test -installed  -utf8output -build -cook -stage -package -verbose`
+`$UNREAL_ENGINE/Engine/Build/BatchFiles/RunUAT.sh BuildCookRun -project="$NAKAMA_UNREAL/NakamaTest/NakamaTest.uproject" -clientconfig=Test -noP4 -platform=Linux -targetconfig=Debug -installed  -utf8output -build -cook -stage -package -verbose`
 
 To run the test:
 

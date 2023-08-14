@@ -24,7 +24,6 @@ public class NakamaTest : ModuleRules
                 throw new InvalidOperationException("Unrecognized OSX architecture");
             }
 
-			System.Console.WriteLine("DYLIB PATH IS " + dylibPath);
 			PublicDelayLoadDLLs.Add(dylibPath);
 			RuntimeDependencies.Add(dylibPath);
         }
