@@ -20,15 +20,6 @@ public class NakamaCore : ModuleRules
             string configurationDirectory = null;
             string arch = null;
 
-            if (Target.Configuration == UnrealTargetConfiguration.Debug)
-            {
-                configurationDirectory = "Debug";
-            }
-            else
-            {
-                configurationDirectory = "Release";
-            }
-
             if (Target.Architecture == UnrealArch.X64)
             {
                 arch = "win-x64";
@@ -40,6 +31,16 @@ public class NakamaCore : ModuleRules
             else
             {
                 throw new InvalidOperationException("Unrecognized Windows architecture");
+            }
+
+            if (Target.Configuration == UnrealTargetConfiguration.Debug && Target.bDebugBuildsActuallyUseDebugCRT)
+            {
+                configurationDirectory = "Debug";
+                RuntimeDependencies.Add(Path.Combine("$(BinaryOutputDir)", "nakama-sdk.pdb"), Path.Combine(ModuleDirectory, "libnakama", arch, configurationDirectory, "nakama-sdk.pdb"));
+            }
+            else
+            {
+                configurationDirectory = "Release";
             }
 
             PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "libnakama", arch, configurationDirectory, "nakama-sdk.lib"));
