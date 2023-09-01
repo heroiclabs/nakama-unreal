@@ -16,30 +16,35 @@ https://docs.unrealengine.com/4.27/en-US/Basics/Projects/Packaging/
 
 To build the test, run:
 
-`$UNREAL_ENGINE/Engine/Build/BatchFiles/RunUAT.sh BuildCookRun -project="$NAKAMA_UNREAL/NakamaTest/NakamaTest.uproject" -clientconfig=Test -noP4 -platform=Win64 -clientconfig=Test -installed -utf8output -build -cook -stage -package -verbose`
+`$UNREAL_ENGINE/Engine/Build/BatchFiles/RunUAT.sh BuildCookRun -targetconfig=Debug -project="$NAKAMA_UNREAL/NakamaTest/NakamaTest.uproject" -noP4 -installed -utf8output -build -cook -stage -package -verbose -stdout -nohostplatform -useshellexecute`
 
 To run the test, run:
 
-`./NakamaTest/Binaries/Win64/NakamaTest-Win64-Test.exe -nullrhi -stdout -forcelogflush -ExecCmds="Automation RunTests NakamaTest.Core"`
+```bash
+./NakamaTest/Saved/StagedBuilds/Windows/NakamaTest.exe -nullrhi -verbose -ExecCmds="Automation RunTests NakamaTest.Core"
+```
+
+There appears to be a problem with logging to stdout on Windows, so you'll need to obtain the test logs from `NakamaTest\Saved\StagedBuilds\Windows\NakamaTest\Saved\Logs\NakamaTest.log`.
 
 ### Mac
 
 To build the test, run:
 
-`$UNREAL_ENGINE/Engine/Build/BatchFiles/RunUAT.sh BuildCookRun -project="$NAKAMA_UNREAL/NakamaTest/NakamaTest.uproject" -clientconfig=Test -noP4 -platform=Mac -Architecture_Mac=arm64 -clientconfig=Test -installed -unrealexe=UnrealEditor -utf8output -build -cook -stage -package -verbose`
-
+`$UNREAL_ENGINE/Engine/Build/BatchFiles/RunUAT.sh BuildCookRun -project="$NAKAMA_UNREAL/NakamaTest/NakamaTest.uproject" -targetConfig=Debug -noP4 -platform=Mac -Architecture_Mac=arm64 -targetconfig=Debug -installed -unrealexe=UnrealEditor -utf8output -build -cook -stage -package -verbose`
 
 To run the test, run:
 
-`./NakamaTest/Binaries/Win64/NakamaTest-Win64-Test.exe -nullrhi -stdout -forcelogflush -ExecCmds="Automation RunTests NakamaTest.Core"`
+`./NakamaTest/Binaries/Mac/NakamaTest.app/Contents/MacOS/NakamaTest -nullrhi -stdout -forcelogflush -ExecCmds="Automation RunTests NakamaTest.Core"`
 
 You can pass `List` instead to the `Automation` command to view all tests. It will include engine tests.
+
+You can also pass `-LogCmds="<LogCategory> verbose"` where `<LogCategory>` is one of those defined by `DEFINE_LOG_CATEGORY`.
 
 ### Linux
 
 To build the test, run:
 
-`$UNREAL_ENGINE/Engine/Build/BatchFiles/RunUAT.sh BuildCookRun -project="$NAKAMA_UNREAL/NakamaTest/NakamaTest.uproject" -clientconfig=Test -noP4 -platform=Linux -clientconfig=Test -installed  -utf8output -build -cook -stage -package -verbose`
+`$UNREAL_ENGINE/Engine/Build/BatchFiles/RunUAT.sh BuildCookRun -project="$NAKAMA_UNREAL/NakamaTest/NakamaTest.uproject" -clientconfig=Test -noP4 -platform=Linux -targetconfig=Debug -installed  -utf8output -build -cook -stage -package -verbose`
 
 To run the test:
 

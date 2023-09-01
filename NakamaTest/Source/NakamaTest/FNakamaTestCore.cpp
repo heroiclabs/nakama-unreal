@@ -12,27 +12,26 @@
 #define SERVER_SSL false
 #define SERVER_PORT SERVER_HTTP_PORT
 
+DEFINE_LOG_CATEGORY_STATIC(NakamaTestLog, All, Log)
+
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FNakamaTestCore, "NakamaTest.Core", EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 bool FNakamaTestCore::RunTest(const FString &Parameters)
 {
-	FWebSocketsModule* WebSocketsModule = &FModuleManager::LoadModuleChecked<FWebSocketsModule>(TEXT("WebSockets"));
-	if (!WebSocketsModule)
-	{
-		return false;
-	}
+	UE_LOG(LogTemp, Log, TEXT("%s"), "Running tests");
 
 	// enqueue the test to run in a separate thread so it doesn't block the game thread, where requests come in on.
-	FAutomationTestFramework::Get().EnqueueLatentCommand(MakeShareable(new FThreadedAutomationLatentCommand([WebSocketsModule]()
+	FAutomationTestFramework::Get().EnqueueLatentCommand(MakeShareable(new FThreadedAutomationLatentCommand([]()
 	{
+
 		Nakama::Test::runAllTests(
 			[](Nakama::NClientParameters parameters) -> Nakama::NClientPtr
 			{
 				return NakamaCoreClientFactory::createNakamaClient(parameters, Nakama::NLogLevel::Debug);
 			},
-			[WebSocketsModule](Nakama::NClientPtr client) -> Nakama::NRtClientPtr
+			[](Nakama::NClientPtr client) -> Nakama::NRtClientPtr
 			{
-				return NakamaCoreClientFactory::createNakamaRtClient(client, WebSocketsModule);
+				return NakamaCoreClientFactory::createNakamaRtClient(client);
 			},
 			{SERVER_KEY, SERVER_HOST, SERVER_PORT, SERVER_SSL}, SERVER_HTTP_KEY);
 	})));

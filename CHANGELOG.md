@@ -3,7 +3,18 @@ All notable changes to this project are documented below.
 
 The format is based on [keep a changelog](http://keepachangelog.com/) and this project uses [semantic versioning](http://semver.org/).
 ### Unreleased
+
+### [2.8.2] - [2023-08-01]
+### Fixed
+- Fixed loading of Websocket Module.
+
+### Added
+- Added Windows Arm64 support to the NakamaCore module.
+- Added Windows arm64/x64 debug support to the NakamaCore module.
+- Fixed architecture detection code on pre-5.2.0 versions of Unreal.
+
 ### [2.8.1] - [2023-07-26]
+### Fixed
 - Fixed a compiler error in Android section of build script.
 
 ### [2.8.0] - [2023-07-25]
@@ -14,8 +25,6 @@ The format is based on [keep a changelog](http://keepachangelog.com/) and this p
 
 ### Fixed
 - Fixed Unreal Websocket transport throwing an exception if going out of scope without being explictly disconnected.
-- Added ability to pass WebSocketModule to the Nakama Unreal websocket factory. This is useful if you want to connect/run the socket
-on a thread that is different from the game thread.
 - Fixed how Unreal Engine finds and loads the Nakama Linux shared object library.
 
 ### [2.7.0] - [2023-01-10]

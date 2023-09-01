@@ -12,24 +12,46 @@ public class NakamaCore : ModuleRules
         // Platform -> (buildLib, runtimeLib)
         var libs = new Dictionary<UnrealTargetPlatform, Tuple<string,string>>()
         {
-            {UnrealTargetPlatform.Win64, Tuple.Create(Path.Combine("win-x64", "nakama-sdk.lib"), Path.Combine("win-x64", "nakama-sdk.dll"))},
             {UnrealTargetPlatform.Linux, Tuple.Create(Path.Combine("linux-x64", "libnakama-sdk.so"), Path.Combine("linux-x64", "libnakama-sdk.so"))},
         };
 
-        if (Target.Platform == UnrealTargetPlatform.Mac)
+        if (target.Platform == UnrealTargetPlatform.Win64)
+        {
+            string configurationDirectory = null;
+            string arch = null;
+
+            if (IsX64Arch())
+            {
+                arch = "win-x64";
+            }
+            else
+            {
+                arch = "win-arm64";
+            }
+
+            if (Target.Configuration == UnrealTargetConfiguration.Debug && Target.bDebugBuildsActuallyUseDebugCRT)
+            {
+                configurationDirectory = "Debug";
+                RuntimeDependencies.Add(Path.Combine("$(BinaryOutputDir)", "nakama-sdk.pdb"), Path.Combine(ModuleDirectory, "libnakama", arch, configurationDirectory, "nakama-sdk.pdb"));
+            }
+            else
+            {
+                configurationDirectory = "Release";
+            }
+
+            PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "libnakama", arch, configurationDirectory, "nakama-sdk.lib"));
+            RuntimeDependencies.Add(Path.Combine("$(BinaryOutputDir)", "nakama-sdk.dll"), Path.Combine(ModuleDirectory, "libnakama", arch, configurationDirectory, "nakama-sdk.dll"));
+        }
+        else if (Target.Platform == UnrealTargetPlatform.Mac)
         {
 			string dylibPath;
-            if (Target.Architecture == UnrealArch.Arm64)
-            {
-                dylibPath = Path.Combine(ModuleDirectory, "libnakama", "macosx-arm64", "libnakama-sdk.dylib");
-            }
-            else if (Target.Architecture == UnrealArch.X64)
+            if (IsX64Arch())
             {
                 dylibPath = Path.Combine(ModuleDirectory, "libnakama", "macosx-x64", "libnakama-sdk.dylib");
             }
             else
             {
-                throw new InvalidOperationException("Unrecognized OSX architecture");
+                dylibPath = Path.Combine(ModuleDirectory, "libnakama", "macosx-arm64", "libnakama-sdk.dylib");
             }
 
 			PublicDelayLoadDLLs.Add(dylibPath);
@@ -65,5 +87,14 @@ public class NakamaCore : ModuleRules
 
         PrivateDependencyModuleNames.AddRange(new string[]{ "Core", "HTTP" });
 		PublicDependencyModuleNames.AddRange(new string[]{ "WebSockets" });
+	}
+
+	private bool IsX64Arch()
+	{
+#if UE_5_2_OR_LATER
+		return Target.Architecture == UnrealArch.X64;
+#else
+		return Target.Architecture.StartsWith("x86_64") || Target.Architecture.StartsWith("x64");
+#endif
 	}
 }

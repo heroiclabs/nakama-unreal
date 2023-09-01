@@ -1,7 +1,7 @@
 #include "UnrealLogSink.h"
 #include "NakamaCore.h"
 #include "http.h"
-#include "websocket.h"
+#include "UnrealWsTransport.h"
 
 #include "CoreMinimal.h"
 
