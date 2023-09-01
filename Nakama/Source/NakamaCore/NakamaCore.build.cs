@@ -20,17 +20,13 @@ public class NakamaCore : ModuleRules
             string configurationDirectory = null;
             string arch = null;
 
-            if (Target.Architecture == UnrealArch.X64)
+            if (IsX64Arch())
             {
                 arch = "win-x64";
             }
-            else if (Target.Architecture == UnrealArch.Arm64)
-            {
-                arch = "win-arm64";
-            }
             else
             {
-                throw new InvalidOperationException("Unrecognized Windows architecture");
+                arch = "win-arm64";
             }
 
             if (Target.Configuration == UnrealTargetConfiguration.Debug && Target.bDebugBuildsActuallyUseDebugCRT)
@@ -49,17 +45,13 @@ public class NakamaCore : ModuleRules
         else if (Target.Platform == UnrealTargetPlatform.Mac)
         {
 			string dylibPath;
-            if (Target.Architecture == UnrealArch.Arm64)
-            {
-                dylibPath = Path.Combine(ModuleDirectory, "libnakama", "macosx-arm64", "libnakama-sdk.dylib");
-            }
-            else if (Target.Architecture == UnrealArch.X64)
+            if (IsX64Arch())
             {
                 dylibPath = Path.Combine(ModuleDirectory, "libnakama", "macosx-x64", "libnakama-sdk.dylib");
             }
             else
             {
-                throw new InvalidOperationException("Unrecognized OSX architecture");
+                dylibPath = Path.Combine(ModuleDirectory, "libnakama", "macosx-arm64", "libnakama-sdk.dylib");
             }
 
 			PublicDelayLoadDLLs.Add(dylibPath);
@@ -95,5 +87,14 @@ public class NakamaCore : ModuleRules
 
         PrivateDependencyModuleNames.AddRange(new string[]{ "Core", "HTTP" });
 		PublicDependencyModuleNames.AddRange(new string[]{ "WebSockets" });
+	}
+
+	private bool IsX64Arch()
+	{
+#if UE_5_2_OR_LATER
+		return Target.Architecture == UnrealArch.X64;
+#else
+		return Target.Architecture.StartsWith("x86_64") || Target.Architecture.StartsWith("x64");
+#endif
 	}
 }

@@ -9,7 +9,9 @@ The format is based on [keep a changelog](http://keepachangelog.com/) and this p
 - Fixed loading of Websocket Module.
 
 ### Added
-- Added Windows Arm64 support.
+- Added Windows Arm64 support to the NakamaCore module.
+- Added Windows arm64/x64 debug support to the NakamaCore module.
+- Fixed architecture detection code on pre-5.2.0 versions of Unreal.
 
 ### [2.8.1] - [2023-07-26]
 ### Fixed
