@@ -3,15 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "nakama-cpp/realtime/rtdata/NMatchmakerMatched.h"
-#include "nakama-cpp/realtime/rtdata/NMatchmakerTicket.h"
-#include "nakama-cpp/realtime/rtdata/NMatchPresenceEvent.h"
-
 #include "NakamaPresence.h"
-
 #include "NakamaMatchTypes.generated.h"
-
-using namespace Nakama;
 
 USTRUCT(BlueprintType)
 struct NAKAMAUNREAL_API FNakamaMatchmakerUser
@@ -30,8 +23,8 @@ struct NAKAMAUNREAL_API FNakamaMatchmakerUser
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Matchmaker")
 	TMap<FString, int32> NumericProperties;
 
+	FNakamaMatchmakerUser(const FString& JsonString);
 	FNakamaMatchmakerUser();
-	FNakamaMatchmakerUser(NMatchmakerUser NakamaNativeMatchmakerUser);
 };
 
 USTRUCT(BlueprintType)
@@ -59,9 +52,8 @@ struct NAKAMAUNREAL_API FNakamaMatchmakerMatched
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Matchmaker")
 	FNakamaMatchmakerUser Me;
 
+	FNakamaMatchmakerMatched(const FString& JsonString);
 	FNakamaMatchmakerMatched();
-
-	FNakamaMatchmakerMatched(const NMatchmakerMatched& NakamaNativeMatchmakerMatched);
 
 };
 
@@ -82,7 +74,7 @@ struct NAKAMAUNREAL_API FNakamaMatchPresenceEvent
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Realtime")
 	TArray<FNakamaUserPresence> Leaves;
 
-	FNakamaMatchPresenceEvent(const NMatchPresenceEvent& NakamaNativeMatchPresenceEvent);
+	FNakamaMatchPresenceEvent(const FString& JsonString);
 	FNakamaMatchPresenceEvent();
 };
 
@@ -96,7 +88,7 @@ struct NAKAMAUNREAL_API FNakamaMatchmakerTicket
 
 	// Might want more properties here later.
 
-	FNakamaMatchmakerTicket(const NMatchmakerTicket& NakamaNativeMatchmakerTicket);
+	FNakamaMatchmakerTicket(const FString& JsonString);
 	FNakamaMatchmakerTicket();
 
 };

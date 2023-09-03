@@ -23,11 +23,11 @@ public class NakamaUnreal : ModuleRules
 			);
 
 
+		// NakamaUnreal no longer depends on NakamaCore
 		PublicDependencyModuleNames.AddRange(
 			new string[]
 			{
-				"Core",
-				"NakamaCore"
+				"Core", "HTTP", "WebSockets", "JsonUtilities"
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);
@@ -42,7 +42,8 @@ public class NakamaUnreal : ModuleRules
 				"SlateCore",
 				"Engine",
 				"JsonUtilities",
-				"Json"
+				"Json",
+				"HTTP"
 				// ... add private dependencies that you statically link with here ...
 			}
 			);

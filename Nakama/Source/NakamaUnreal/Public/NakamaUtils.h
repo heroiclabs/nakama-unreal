@@ -4,85 +4,65 @@
 
 #include "CoreMinimal.h"
 
-#include <string>
-
 #include "NakamaClient.h"
-#include "nakama-cpp/NSessionInterface.h"
-#include "nakama-cpp/NTypes.h"
-#include "nakama-cpp/realtime/rtdata/NUserPresence.h"
-#include "NakamaPresence.h"
-#include "NakamaUser.h"
-#include "NakamaMatchTypes.h"
-#include "NakamaUserSession.h"
+#include "Templates/SharedPointer.h"
+#include "NakamaLogger.h"
+#include "NakamaLoggingMacros.h"
 
 class FNakamaUtils
 {
+	
 public:
-
-	// Convenience string conversion
-	static std::string UEStringToStdString(const FString& String)
+	
+	// Handle Request Methods for REST API
+	static FString ENakamaRequesMethodToFString(ENakamaRequestMethod Verb)
 	{
-		// std::string cstr(TCHAR_TO_UTF8(*String));
-		return TCHAR_TO_UTF8(*String);
+		switch (Verb)
+		{
+		case ENakamaRequestMethod::GET:
+			return TEXT("GET");
+		case ENakamaRequestMethod::POST:
+			return TEXT("POST");
+		case ENakamaRequestMethod::PUT:
+			return TEXT("PUT");
+		case ENakamaRequestMethod::DELETE:
+			return TEXT("DELETE");
+		default:
+			// Handle unrecognized verb if needed
+			break;
+		}
+
+		// Return an empty string for unrecognized verbs
+		return FString();
 	}
-	static FString StdStringToUEString(std::string string)
+
+	// Bool to String Helper
+	static FString BoolToString(bool Value)
 	{
-		return UTF8_TO_TCHAR(string.c_str());
+		return Value ? TEXT("true") : TEXT("false");
 	}
 
-	// Convenience Date Conversions
-	static FDateTime UnixStringToDateTime(const FString& NTimestampStr);
+	// Build Query String
+	static FString BuildQueryString(const TMultiMap<FString, FString>& QueryParams)
+	{
+		FString QueryString;
 
-	static FDateTime UnixTimeToDateTimeFast(NTimestamp UnixTime);
-	static FDateTime UnixTimeToDateTime(NTimestamp UnixTime);
+		for (const auto& Param : QueryParams)
+		{
+			if (!QueryString.IsEmpty())
+			{
+				QueryString += "&";
+			}
 
-	// Convert String Date Format
-	static FDateTime ParseDateString(const FString& DateStr);
+			// Only specific inputs needs to be encoded
+			//FString EncodedKey = FGenericPlatformHttp::UrlEncode(Param.Key);
+			//FString EncodedValue = FGenericPlatformHttp::UrlEncode(Param.Value);
 
-	// Map Helpers
-	static TMap<FString, FString> NStringMapToTMap(NStringMap InNStringMap);
-	static NStringMap TMapToFStringMap(TMap<FString, FString> InTMap)
-    {
-        NStringMap Variables;
-        for (const auto& Variable : InTMap)
-        {
-            Variables.emplace(UEStringToStdString(Variable.Key), UEStringToStdString(Variable.Value));
-        }
-        return Variables;
-    }
+			QueryString += Param.Key + "=" + Param.Value;
+		}
 
-	static TMap<FString, int32> NNumericMapToTMap(NStringDoubleMap InNumericMap);
-	static NStringDoubleMap TMapToNumericMap(TMap<FString, int32> InTMap)
-    {
-        NStringDoubleMap Variables;
-        for (const auto& Variable : InTMap)
-        {
-            Variables.emplace(UEStringToStdString(Variable.Key), Variable.Value);
-        }
-        return Variables;
-    }
-
-	// Convert To Nakama Types
-	static NUserPresence ConvertUserPresence(FNakamaUserPresence UserPresence)
-    {
-        NUserPresence Presence;
-        Presence.userId = UEStringToStdString(UserPresence.UserID);
-        Presence.sessionId = UEStringToStdString(UserPresence.SessionID);
-        Presence.username = UEStringToStdString(UserPresence.Username);
-        Presence.persistence = UserPresence.Persistence;
-        Presence.status = UEStringToStdString(UserPresence.Status);
-
-        return Presence;
-    }
-
-	static NSessionPtr ConvertSession(FNakamaUserSession session); // Does a restore session.
-
-	// Convert Arrays
-	static TArray<FNakamaUserPresence> ConvertUserPresences(std::vector<NUserPresence> userPresences);
-	static TArray<FNakamaUser> ConvertUsers(std::vector<NUser> users);
-	static TArray<FNakamaMatchmakerUser> ConvertMatchmakerUsers(std::vector<NMatchmakerUser> users);
-
-	static bool IsErrorEmpty(std::string errorMessage);
+		return QueryString;
+	}
 
 	// Extra client checks for lambdas in requests
 	static bool IsClientActive(const UNakamaClient *Client)
@@ -96,5 +76,95 @@ public:
 		return IsValid(RealtimeClient) && RealtimeClient->bIsActive == true;
 	}
 
+	// Json helpers
+	static FString EncodeJson(TSharedPtr<FJsonObject> JsonObject)
+	{
+		FString OutputString;
+		const TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&OutputString);
+		FJsonSerializer::Serialize(JsonObject.ToSharedRef(), Writer);
+		return OutputString;
+	}
 
+	// Enum as integer string
+	template<typename TEnum>
+	static FString GetEnumValueAsIntString(TEnum EnumValue)
+	{
+		const int32 IntValue = static_cast<int32>(EnumValue);
+		return FString::FromInt(IntValue);
+	}
+
+	// Error handling
+	static FNakamaError HandleInvalidClient()
+	{
+		FNakamaError Error;
+		Error.Message = FString(TEXT("Client Missing"));
+		Error.Code = ENakamaErrorCode::InvalidArgument;
+		
+		NAKAMA_LOG_ERROR(Error.Message);
+		
+		return Error;
+	}
+
+	static FNakamaError HandleInvalidSession()
+	{
+		FNakamaError Error;
+		Error.Message = FString(TEXT("Session Missing"));
+		Error.Code = ENakamaErrorCode::InvalidArgument;
+		
+		NAKAMA_LOG_ERROR(Error.Message);
+		
+		return Error;
+	}
+
+	static FNakamaError HandleInvalidClientAndSession()
+	{
+		FNakamaError Error;
+		Error.Message = FString(TEXT("Client and Session Missing"));
+		Error.Code = ENakamaErrorCode::InvalidArgument;
+		
+		NAKAMA_LOG_ERROR(Error.Message);
+		
+		return Error;
+	}
+
+	static FNakamaRtError HandleInvalidRealtimeClient()
+	{
+		FNakamaRtError Error;
+		Error.Message = FString(TEXT("Realtime Client Missing"));
+		Error.Code = ENakamaRtErrorCode::UNKNOWN; // Do bad input?
+
+		NAKAMA_LOG_ERROR(Error.Message);
+
+		return Error;
+	}
+
+	// Base64 Encode/Decode
+	static FString Base64Encode(const FString& Source)
+	{
+		TArray<uint8> ByteArray;
+		FTCHARToUTF8 StringSrc = FTCHARToUTF8(Source.GetCharArray().GetData());
+		ByteArray.Append((uint8*)StringSrc.Get(), StringSrc.Length());
+
+		return FBase64::Encode(ByteArray);
+	}
+	
+	static bool Base64Decode(const FString& Source, FString& Dest)
+	{
+		TArray<uint8> ByteArray;
+		bool Success = FBase64::Decode(Source, ByteArray);
+
+		FUTF8ToTCHAR StringSrc = FUTF8ToTCHAR((const ANSICHAR*)ByteArray.GetData(), ByteArray.Num());
+		Dest.AppendChars(StringSrc.Get(), StringSrc.Length());
+
+		return Success;
+	}
+
+	// Working with Optionals (mainly from Blueprints)
+
+	template <typename T>
+	static TOptional<T> CreateOptional(const T& value, const T& defaultValue)
+	{
+		return value != defaultValue ? TOptional<T>(value) : TOptional<T>();
+	}
+	
 };

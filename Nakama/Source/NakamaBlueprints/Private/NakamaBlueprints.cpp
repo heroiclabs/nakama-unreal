@@ -3,7 +3,6 @@
 
 
 #include "NakamaBlueprints.h"
-#include "nakama-cpp/log/NLogger.h"
 #include "Modules/ModuleManager.h"
 
 #define LOCTEXT_NAMESPACE "FNakamaBlueprintsModule"

@@ -3,23 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "nakama-cpp/Nakama.h"
-
 #include "NakamaUser.generated.h"
-
-using namespace Nakama;
 
 USTRUCT(BlueprintType)
 struct NAKAMAUNREAL_API FNakamaUser
 {
 	GENERATED_BODY()
-
-	FNakamaUser(): EdgeCount(0), CreatedAt(0), updatedAt(0)
-	{
-	}
-
-	FNakamaUser(const NUser& NakamaNativeUser);
-
+	
 	// The id of the user's account.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|User")
 	FString Id;
@@ -88,6 +78,8 @@ struct NAKAMAUNREAL_API FNakamaUser
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|User")
 	FDateTime updatedAt;
 
+	FNakamaUser(const FString& JsonString);
+	FNakamaUser(): EdgeCount(0), CreatedAt(0), updatedAt(0) { }
 
 };
 
@@ -100,4 +92,7 @@ struct NAKAMAUNREAL_API FNakamaUserList
 	// List of Users
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|User")
 	TArray<FNakamaUser> Users;
+
+	FNakamaUserList(const FString& JsonString);
+	FNakamaUserList() { }
 };

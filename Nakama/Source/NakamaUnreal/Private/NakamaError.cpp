@@ -1,42 +1,62 @@
 ﻿#include "NakamaError.h"
 #include "NakamaUtils.h"
-#include "nakama-cpp/Nakama.h"
 
-ENakamaErrorCode ConvertNativeErrorCode(ErrorCode NativeErrorCode)
+ENakamaErrorCode FNakamaError::ConvertNakamaErrorCode(int32 CodeValue)
 {
-	//return  static_cast<ENakamaErrorCode>(NativeErrorCode);
-	switch (NativeErrorCode) {
-	case ErrorCode::Unknown: return ENakamaErrorCode::Unknown;
-	case ErrorCode::NotFound: return ENakamaErrorCode::NotFound;
-	case ErrorCode::AlreadyExists: return ENakamaErrorCode::AlreadyExists;
-	case ErrorCode::InvalidArgument: return ENakamaErrorCode::InvalidArgument;
-	case ErrorCode::Unauthenticated: return ENakamaErrorCode::Unauthenticated;
-	case ErrorCode::PermissionDenied: return ENakamaErrorCode::PermissionDenied;
-	case ErrorCode::ConnectionError: return ENakamaErrorCode::ConnectionError;
-	case ErrorCode::InternalError: return ENakamaErrorCode::InternalError;
-	case ErrorCode::CancelledByUser: return ENakamaErrorCode::CancelledByUser;
+	switch (CodeValue)
+	{
+	case 0:
+		return ENakamaErrorCode::Unknown;
+	case 1:
+		return ENakamaErrorCode::NotFound;
+	case 2:
+		return ENakamaErrorCode::AlreadyExists;
+	case 3:
+		return ENakamaErrorCode::InvalidArgument;
+	case 4:
+		return ENakamaErrorCode::Unauthenticated;
+	case 5:
+		return ENakamaErrorCode::PermissionDenied;
+	case -1:
+		return ENakamaErrorCode::ConnectionError;
+	case -2:
+		return ENakamaErrorCode::InternalError;
+	case -3:
+		return ENakamaErrorCode::CancelledByUser;
 	default:
 		return ENakamaErrorCode::Unknown;
 	}
 }
 
-
-
-FNakamaError::FNakamaError(const NError& NativeError)
-	: Message(FNakamaUtils::StdStringToUEString(NativeError.message))
+FNakamaError::FNakamaError(const FString& JsonString)
 {
-	Code = ConvertNativeErrorCode(NativeError.code);
-}
+	TSharedPtr<FJsonObject> JsonObject;
+	const TSharedRef<TJsonReader<>> JsonReader = TJsonReaderFactory<>::Create(JsonString);
+	if (FJsonSerializer::Deserialize(JsonReader, JsonObject))
+	{
+		if (JsonObject->HasField("message"))
+		{
+			Message = JsonObject->GetStringField("message");
+		}
+		else
+		{
+			Message = TEXT("Invalid or missing 'message' field");
+		}
 
-FNakamaDisconnectInfo::FNakamaDisconnectInfo(const NRtClientDisconnectInfo& NakamaNativeDisconnectInfo)
-	: Code(NakamaNativeDisconnectInfo.code)
-	, Reason(FNakamaUtils::StdStringToUEString(NakamaNativeDisconnectInfo.reason))
-	, Remote(NakamaNativeDisconnectInfo.remote)
-{
-	
-}
-
-FNakamaDisconnectInfo::FNakamaDisconnectInfo(): Code(0), Remote(false)
-{
-	
+		int32 CodeValue;
+		if (JsonObject->TryGetNumberField("code", CodeValue))
+		{
+			//Code = static_cast<ENakamaErrorCode>(CodeValue);
+			Code = ConvertNakamaErrorCode(CodeValue);
+		}
+		else
+		{
+			Code = ENakamaErrorCode::Unknown;
+		}
+	}
+	else
+	{
+		Message = TEXT("Failed to parse JSON");
+		Code = ENakamaErrorCode::Unknown;
+	}
 }

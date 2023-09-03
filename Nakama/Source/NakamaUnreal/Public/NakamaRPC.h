@@ -1,10 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "nakama-cpp/Nakama.h"
 #include "NakamaRPC.generated.h"
-
-using namespace Nakama;
 
 // RPC
 USTRUCT(BlueprintType)
@@ -24,6 +21,6 @@ struct NAKAMAUNREAL_API FNakamaRPC
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|RPC")
 	FString HttpKey;
 
-	FNakamaRPC(const NRpc& NakamaNativeRpc);
+	FNakamaRPC(const FString& JsonString);
 	FNakamaRPC();
 };

@@ -201,10 +201,11 @@ public:
 	 * @param SteamToken An authentication token from the Steam network.
 	 * @param Username A username used to create the user.
 	 * @param CreateAccount True if the user should be created when authenticated.
+	 * @param ImportFriends True if the Steam friends should be imported.
 	 * @param Vars Extra information that will be bundled in the session token.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Authentication", meta = (BlueprintInternalUseOnly = "true"))
-	static UNakamaClientAuthenticateSteam* AuthenticateSteam(UNakamaClient *Client, FString SteamToken, FString Username, bool CreateAccount, TMap<FString, FString> Vars);
+	static UNakamaClientAuthenticateSteam* AuthenticateSteam(UNakamaClient *Client, FString SteamToken, FString Username, bool CreateAccount, bool ImportFriends, TMap<FString, FString> Vars);
 
 	virtual void Activate() override;
 
@@ -213,6 +214,7 @@ private:
 	FString SteamToken;
 	FString Username;
 	bool bCreateAccount;
+	bool bImportFriends;
 	TMap<FString, FString> Vars;
 
 };
@@ -448,7 +450,7 @@ public:
 	static UNakamaClientAuthenticateRefresh* AuthenticateRefresh(UNakamaClient *Client, UNakamaSession* Session);
 
 	virtual void Activate() override;
-
+	
 };
 
 
@@ -1245,7 +1247,7 @@ public:
 	 * @param Token An OAuth access token from the Facebook SDK.
 	 * @param Reset True if the Facebook friend import for the user should be reset.
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Nakama|Authentication|UnLink", meta = (BlueprintInternalUseOnly = "true"))
+	UFUNCTION(BlueprintCallable, Category = "Nakama|Friends", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaClientImportFacebookFriends* ImportFacebookFriends(UNakamaClient *Client, UNakamaSession *Session, FString Token, bool Reset);
 
 	virtual void Activate() override;
@@ -1253,6 +1255,51 @@ public:
 private:
 
 	FString Token;
+	bool Reset;
+
+};
+
+/**
+ * Import Steam Friends
+ */
+
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientImportSteamFriends : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY()
+	UNakamaClient *NakamaClient;
+
+	UPROPERTY()
+	UNakamaSession *UserSession;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnAnyError OnError;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnSuccessful OnSuccess;
+
+	/**
+	 * Import Steam friends and add them to the user's account.
+	 *
+	 * The server will import friends when the user authenticates with Steam. This function can be used to be
+	 * explicit with the import operation.
+	 *
+	 * @param Session The session of the user.
+	 * @param SteamId The Steam Id to use.
+	 * @param Reset True if the Steam friend import for the user should be reset.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Nakama|Friends", meta = (BlueprintInternalUseOnly = "true"))
+	static UNakamaClientImportSteamFriends* ImportSteamFriends(UNakamaClient *Client, UNakamaSession *Session, FString SteamId, bool Reset);
+
+	virtual void Activate() override;
+
+private:
+
+	FString SteamId;
 	bool Reset;
 
 };
@@ -1298,10 +1345,6 @@ public:
 	static UNakamaClientGetUserAccount* GetUserAccount(UNakamaClient *Client, UNakamaSession *Session);
 
 	virtual void Activate() override;
-
-
-
-
 };
 
 
@@ -1439,8 +1482,8 @@ public:
 	 * @param MaxSize The maximum number of match participants.
 	 * @param Limit The number of matches to list.
 	 * @param Label The label to filter the match list on.
+	 * @param Query The query to the match listing.
 	 * @param Authoritative True to include authoritative matches.
-	 * @param Query A query for the matches to filter.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Realtime", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaClientListMatches* ListMatches(UNakamaClient* Client, UNakamaSession *Session, int32 MinSize, int32 MaxSize, int32 Limit, FString Label, FString Query, bool Authoritative);
@@ -1452,8 +1495,8 @@ private:
 	int32 MinSize;
 	int32 MaxSize;
 	int32 Limit;
-	FString Query;
 	FString Label;
+	FString Query;
 	bool Authoritative;
 
 };
@@ -2336,7 +2379,7 @@ private:
  * Read Storage Objects
  */
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnReadStorageObjects, FNakamaError, Error, const TArray <FNakamaStoreObjectData>&, StorageObjects);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnReadStorageObjects, FNakamaError, Error, const FNakamaStorageObjectList&, StorageObjects);
 
 UCLASS()
 class NAKAMABLUEPRINTS_API UNakamaClientReadStorageObjects : public UBlueprintAsyncActionBase
@@ -2510,6 +2553,47 @@ public:
 
 private:
 
+	FString FunctionId;
+	FString Payload;
+};
+
+/**
+ * RPC HttpKey
+ */
+
+//DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnRPCResponse, FNakamaError, Error, FNakamaRPC, RPCResponse);
+
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientRPCHttpKey : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY()
+	UNakamaClient *NakamaClient;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnRPCResponse OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnRPCResponse OnError;
+
+	/**
+	 * Send an RPC message to the server.
+	 *
+	 * @param HttpKey The HTTP key for the server.
+	 * @param FunctionId The ID of the function to execute.
+	 * @param Payload The string content to send to the server.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Nakama|Realtime|RPC", meta = (BlueprintInternalUseOnly = "true"))
+	static UNakamaClientRPCHttpKey* RPCHttpKey(UNakamaClient* Client, FString HttpKey, FString FunctionId, FString Payload);
+
+	virtual void Activate() override;
+
+private:
+	
+	FString HttpKey;
 	FString FunctionId;
 	FString Payload;
 };

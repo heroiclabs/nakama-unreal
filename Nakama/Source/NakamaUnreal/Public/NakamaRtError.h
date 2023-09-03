@@ -3,21 +3,20 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "nakama-cpp/Nakama.h"
 #include "NakamaRtError.generated.h"
 
-using namespace Nakama;
 
 //Error Data
 UENUM(BlueprintType)
 enum class ENakamaRtErrorCode : uint8
 {
-	//Client Side Errors
+	// Client Side Errors
 	UNKNOWN = 8 UMETA(DisplayName = "UNKNOWN"), // -100
-	CONNECT_ERROR = 9 UMETA(DisplayName = "CONNECT_ERROR"), //-1
-	TRANSPORT_ERROR = 10 UMETA(DisplayName = "TRANSPORT_ERROR"), //-2
+	CONNECT_ERROR = 9 UMETA(DisplayName = "CONNECT_ERROR"), // -1
+	TRANSPORT_ERROR = 10 UMETA(DisplayName = "TRANSPORT_ERROR"), // -2
+	DISCONNECTED = 11 UMETA(DisplayName = "DISCONNECTED"), // -3
 
-	//Server Side Errors
+	// Server Side Errors
 	RUNTIME_EXCEPTION = 0 UMETA(DisplayName = "RUNTIME_EXCEPTION"),
 	UNRECOGNIZED_PAYLOAD = 1 UMETA(DisplayName = "UNRECOGNIZED_PAYLOAD"),
 	MISSING_PAYLOAD = 2 UMETA(DisplayName = "MISSING_PAYLOAD"),
@@ -34,6 +33,7 @@ enum class ENakamaRtErrorCode : uint8
 	// client side errors
 	CONNECT_ERROR                 = -1,           ///< Connect has failed.
 	TRANSPORT_ERROR               = -2,           ///< Transport error.
+	DISCONNECTED                  = -3,           ///< Request cancelled due to transport disconnect
 
 	// server side errors
 	RUNTIME_EXCEPTION             = 0,            ///< An unexpected result from the server.
@@ -47,6 +47,27 @@ enum class ENakamaRtErrorCode : uint8
 	*/
 
 };
+
+UENUM(BlueprintType)
+enum class ENakamaDisconnectCode : uint8
+{
+	NORMAL_CLOSURE = 0, // 1000
+	GOING_AWAY = 1, // 1001
+	PROTOCOL_ERROR = 2, // 1002
+	UNSUPPORTED_DATA = 3, // 1003
+	NO_STATUS_RCVD = 5, // 1005
+	ABNORMAL_CLOSURE = 6, // 1006
+	INVALID_FRAME_PAYLOAD_DATA = 7, // 1007 
+	POLICY_VIOLATION = 8, // 1008
+	MESSAGE_TOO_BIG = 9, // 1009
+	MANDATORY_EXT = 10, // 1010
+	INTERNAL_SERVER_ERROR = 11, // 1011
+	TLS_HANDSHAKE = 15, // 1015
+
+	HEARTBEAT_FAILURE = 40, // 4000
+	TRANSPORT_ERROR = 41, // 4001
+};
+
 
 // A logical error which may occur on the server.
 USTRUCT(BlueprintType)
@@ -66,11 +87,8 @@ struct NAKAMAUNREAL_API FNakamaRtError
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|RtError")
 	TMap<FString, FString> Context;
 
-	FNakamaRtError(const NRtError& NativeError);
-	FNakamaRtError(): Code(ENakamaRtErrorCode::UNKNOWN)
-	{
-
-	}
+	FNakamaRtError(const FString& JsonString);
+	FNakamaRtError(): Code(ENakamaRtErrorCode::UNKNOWN) { }
 
 };
 
@@ -78,10 +96,10 @@ USTRUCT(BlueprintType)
 struct NAKAMAUNREAL_API FNakamaDisconnectInfo
 {
 	GENERATED_BODY()
-
+	
 	// Close Code - https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Info")
-	int32 Code;
+	ENakamaDisconnectCode Code;
 
 	// Close reason. Optional.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Info")
@@ -90,8 +108,8 @@ struct NAKAMAUNREAL_API FNakamaDisconnectInfo
 	// true if close was initiated by server.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Info")
 	bool Remote;
+	
+	FNakamaDisconnectInfo(): Code(), Remote(false) { }
 
-	FNakamaDisconnectInfo(const NRtClientDisconnectInfo& NakamaNativeDisconnectInfo);
-	FNakamaDisconnectInfo();
-
+	ENakamaDisconnectCode ConvertIntToDisconnectCode(int32 Value);
 };

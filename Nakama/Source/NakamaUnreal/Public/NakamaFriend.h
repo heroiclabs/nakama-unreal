@@ -3,13 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "nakama-cpp/data/NFriend.h"
-#include "nakama-cpp/data/NFriendList.h"
 #include "NakamaUser.h"
-
 #include "NakamaFriend.generated.h"
-
-using namespace Nakama;
 
 // The friendship status.
 UENUM(BlueprintType)
@@ -41,8 +36,10 @@ struct NAKAMAUNREAL_API FNakamaFriend
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|User")
 	FDateTime UpdateTime;
 
-	FNakamaFriend(const NFriend& NakamaNativeFriend);
+	FNakamaFriend(const FString& JsonString);
 	FNakamaFriend();
+
+	static ENakamaFriendState GetFriendStateFromString(const FString& StateString);
 };
 
 USTRUCT(BlueprintType) // Internal Unreal Class (No Need to Convert)
@@ -74,6 +71,6 @@ struct NAKAMAUNREAL_API FNakamaFriendList
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Friend")
 	FString Cursor;
 
-	FNakamaFriendList(const NFriendList& NakamaNativeFriendList);
+	FNakamaFriendList(const FString& JsonString);
 	FNakamaFriendList();
 };

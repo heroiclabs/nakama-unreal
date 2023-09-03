@@ -3,26 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "nakama-cpp/data/NMatchList.h"
-#include "nakama-cpp/realtime/rtdata/NMatchData.h"
-
 #include "NakamaPresence.h"
-
 #include "NakamaMatch.generated.h"
-
-using namespace Nakama;
 
 USTRUCT(BlueprintType)
 struct NAKAMAUNREAL_API FNakamaMatch
 {
 	GENERATED_BODY() // NMatchmakerMatched
-
-	FNakamaMatch()
-		: Authoritative(false), Size(0)
-	{
-	}
-
-	FNakamaMatch(const NMatch& NativeMatch);
 
 	// The ID of the match, can be used to join.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Realtime")
@@ -42,11 +29,14 @@ struct NAKAMAUNREAL_API FNakamaMatch
 
 	// The users currently in the match.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Realtime")
-	TArray<FNakamaUserPresence> Pressences;
+	TArray<FNakamaUserPresence> Pressences; // Typo
 
 	// A reference to the current user's presence in the match.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, DisplayName = "Self", Category = "Nakama|Realtime")
 	FNakamaUserPresence Me;
+
+	FNakamaMatch(const FString& JsonString);
+	FNakamaMatch() : Authoritative(false), Size(0) { }
 
 };
 
@@ -71,7 +61,7 @@ struct NAKAMAUNREAL_API FNakamaMatchData
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Realtime")
 	FString Data;
 
-	FNakamaMatchData(const NMatchData& NativeMatchData);
+	FNakamaMatchData(const FString& JsonString);
 	FNakamaMatchData();
 };
 
@@ -85,6 +75,6 @@ struct NAKAMAUNREAL_API FNakamaMatchList
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Realtime")
 	TArray<FNakamaMatch> Matches;
 
-	FNakamaMatchList(const NMatchList& NakamaNativeMatchList);
+	FNakamaMatchList(const FString& JsonString);
 	FNakamaMatchList();
 };

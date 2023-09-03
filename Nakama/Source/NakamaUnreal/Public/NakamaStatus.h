@@ -2,11 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "NakamaPresence.h"
-#include "nakama-cpp/realtime/rtdata/NStatus.h"
-#include "nakama-cpp/realtime/rtdata/NStatusPresenceEvent.h"
 #include "NakamaStatus.generated.h"
-
-using namespace Nakama;
 
 // A snapshot of statuses for some set of users.
 USTRUCT(BlueprintType)
@@ -18,7 +14,7 @@ struct NAKAMAUNREAL_API FNakamaStatus
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|User|Presence")
 	TArray<FNakamaUserPresence> Presences;
 
-	FNakamaStatus(const NStatus& NakamaNativeStatus);
+	FNakamaStatus(const FString& JsonString);
 	FNakamaStatus();
 };
 
@@ -36,6 +32,6 @@ struct NAKAMAUNREAL_API FNakamaStatusPresenceEvent
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|User|Presence")
 	TArray<FNakamaUserPresence> Leaves;
 
-	FNakamaStatusPresenceEvent(const NStatusPresenceEvent& NakamaNativeStatusPresenceEvent);
+	FNakamaStatusPresenceEvent(const FString& JsonString);
 	FNakamaStatusPresenceEvent();
 };

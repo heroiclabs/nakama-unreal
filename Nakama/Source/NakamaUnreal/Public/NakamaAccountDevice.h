@@ -3,11 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "nakama-cpp/Nakama.h"
-
 #include "NakamaAccountDevice.generated.h"
 
-using namespace Nakama;
 
 // Used with authenticate/link/unlink and user.
 USTRUCT(BlueprintType)
@@ -23,6 +20,6 @@ struct NAKAMAUNREAL_API FNakamaAccountDevice
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Account")
 	TMap<FString, FString> Vars;
 
-	FNakamaAccountDevice(const NAccountDevice& NakamaNativeAccountDevice);
+	FNakamaAccountDevice(const FString& JsonString);
 	FNakamaAccountDevice();
 };

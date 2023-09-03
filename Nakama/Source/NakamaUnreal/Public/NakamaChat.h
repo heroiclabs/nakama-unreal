@@ -2,7 +2,6 @@
 
 #include "CoreMinimal.h"
 #include "NakamaChannelTypes.h"
-#include "nakama-cpp/realtime/rtdata/NChannel.h"
 #include "NakamaPresence.h"
 #include "NakamaChat.generated.h"
 
@@ -29,6 +28,8 @@ struct NAKAMAUNREAL_API FNakamaChatMessage
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Nakama Chat")
 	FString GroupName;
 
+	FNakamaChatMessage() : ChatMessage(TEXT("")), MessageType(ENakamaChannelType::DIRECT_MESSAGE), GroupName(TEXT(""))
+	{ }
 };
 
 
@@ -51,24 +52,24 @@ struct NAKAMAUNREAL_API FNakamaChannel
 	FNakamaUserPresence Me;
 
 	// The name of the chat room, or an empty string if this message was not sent through a chat room.
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama Chat")
+	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama Chat")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama Chat", meta = (JsonProperty = "room_name"))
 	FString RoomName;
 
 	// The ID of the group, or an empty string if this message was not sent through a group channel.
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama Chat")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama Chat", meta = (JsonProperty = "group_id"))
 	FString GroupId;
 
 	// The ID of the first DM user, or an empty string if this message was not sent through a DM chat.
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama Chat")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama Chat", meta = (JsonProperty = "user_id_one"))
 	FString UserIdOne;
 
 	// The ID of the second DM user, or an empty string if this message was not sent through a DM chat.
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama Chat")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama Chat", meta = (JsonProperty = "user_id_two"))
 	FString UserIdTwo;
 
-	FNakamaChannel(const NChannel& NakamaNativeChannel);
+	FNakamaChannel(const FString& JsonString);
 	FNakamaChannel();
-
 };
 
 // For sending messages (Internal to plugin, no need to convert)

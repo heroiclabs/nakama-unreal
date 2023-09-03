@@ -107,17 +107,19 @@ void AMyActor::BeginPlay()
 	Super::BeginPlay();
 
 	// Default Client Parameters
-	FString ServerKey = FString(TEXT("defaultkey"));
-	FString Host = FString(TEXT("localhost"));
-	FString ClientName = FString(TEXT("Main"));
+	FString ServerKey = TEXT("defaultkey");
+	FString Host = TEXT("127.0.0.1");
+	int32 Port = 7350;
+	bool bUseSSL = false;
+	bool bEnableDebug = true;
 
 	// Setup Default Client
-	NakamaClient = UNakamaClient::CreateDefaultClient(ServerKey, Host, 7350, false, true, ENakamaClientType::DEFAULT, 0.05f, ClientName);
+	NakamaClient = UNakamaClient::CreateDefaultClient(ServerKey, Host, Port, bUseSSL, bEnableDebug);
 
 	// Authentication Parameters
-	FString Email = FString(TEXT("debug@mail.com"));
-	FString Password = FString(TEXT("verysecretpassword"));
-	FString Username = FString(TEXT("debug-user"));
+	FString Email = TEXT("debug@mail.com");
+	FString Password = TEXT("verysecretpassword");
+	FString Username = TEXT("debug-user");
 	TMap<FString, FString> Variables;
 
 	// Setup Delegates of same type and bind them to local functions
@@ -148,10 +150,11 @@ void AMyActor::OnAuthenticationSuccess(UNakamaSession* LoginData)
 	ConnectionErrorDelegate.AddDynamic(this, &AMyActor::OnRealtimeClientConnectError);
 
 	// This is our realtime client (socket) ready to use
-	NakamaRealtimeClient = NakamaClient->SetupRealtimeClient(UserSession, true, 7350, ENakamaRealtimeClientProtocol::Protobuf, 0.05f, "");
+	NakamaRealtimeClient = NakamaClient->SetupRealtimeClient();
 
 	// Remember to Connect
-	NakamaRealtimeClient->Connect(ConnectionSuccessDelegate, ConnectionErrorDelegate);
+	bool bCreateStatus = true;
+	NakamaRealtimeClient->Connect(UserSession, bCreateStatus, ConnectionSuccessDelegate, ConnectionErrorDelegate);
 
 }
 
@@ -250,17 +253,10 @@ The session object contains the actual session reference and also a structure wi
 
 ![image sessions-1](./images/Sessions-1.png)
 
-Right click the structure to split or break the struct to see the values
+There are also some additional session management methods like restoring the session and checking if the session has expired
 
 ![image sessions-2](./images/Sessions-2.png)
 
-Here are all the values contained within the session
-
-![image sessions-3](./images/Sessions-3.png)
-
-There are also some additional session management methods like restoring the session and checking if the session has expired
-
-![image sessions-4](./images/Sessions-4.png)
 
 It is recommended to store the auth token from the session and check at startup if it has expired. If the token has expired you must reauthenticate. The expiry time of the token can be changed as a setting in the server.
 
