@@ -4,7 +4,6 @@
 #include "NakamaUtils.h"
 #include "NakamaRealtimeClient.h"
 #include "NakamaSession.h"
-#include "NakamaRealtimeClientListener.h"
 #include "NakamaLogger.h"
 #include "GenericPlatform/GenericPlatformHttp.h"
 #include "Interfaces/IHttpResponse.h"
@@ -60,8 +59,12 @@ void UNakamaClient::BeginDestroy()
 	bIsActive = false;
 }
 
-UNakamaClient* UNakamaClient::CreateDefaultClient(const FString& ServerKey, const FString& Host, int32 Port,
-                                                   bool UseSSL, bool EnableDebug)
+UNakamaClient* UNakamaClient::CreateDefaultClient(
+	const FString& ServerKey,
+	const FString& Host,
+	int32 Port,
+	bool UseSSL,
+	bool EnableDebug)
 {
 	UNakamaClient* NewClient = NewObject<UNakamaClient>();
 	NewClient->InitializeSystem(ServerKey, Host, Port, UseSSL, EnableDebug);
@@ -79,8 +82,12 @@ UNakamaClient* UNakamaClient::CreateDefaultClient(const FString& ServerKey, cons
  * Authentication
  */
 
-void UNakamaClient::AuthenticateCustom(FString UserID, FString Username, bool CreateAccount,
-                                       TMap<FString, FString> Vars, const FOnAuthUpdate& Success, const FOnError& Error)
+void UNakamaClient::AuthenticateCustom(const FString& UserID,
+	const FString& Username,
+	bool CreateAccount,
+	const TMap<FString, FString>& Vars,
+	FOnAuthUpdate Success,
+	FOnError Error)
 {
 	auto successCallback = [this, Success](UNakamaSession* session)
 	{
@@ -104,8 +111,14 @@ void UNakamaClient::AuthenticateCustom(FString UserID, FString Username, bool Cr
 	AuthenticateCustom(UserID, Username, CreateAccount, Vars, successCallback, errorCallback);
 }
 
-void UNakamaClient::AuthenticateEmail(FString Email, FString Password, FString Username, bool CreateAccount,
-	TMap<FString, FString> Vars, const FOnAuthUpdate& Success, const FOnError& Error)
+void UNakamaClient::AuthenticateEmail(
+	const FString& Email,
+	const FString& Password,
+	const FString& Username,
+	bool CreateAccount,
+	const TMap<FString,FString>& Vars,
+	FOnAuthUpdate Success,
+	FOnError Error)
 {
 	auto successCallback = [this, Success](UNakamaSession* session)
 	{
@@ -129,10 +142,10 @@ void UNakamaClient::AuthenticateEmail(FString Email, FString Password, FString U
 }
 
 void UNakamaClient::AuthenticateDevice(
-	FString DeviceID,
-	FString Username,
+	const FString& DeviceID,
+	const FString& Username,
 	bool CreateAccount,
-	TMap<FString, FString> Vars,
+	const TMap<FString, FString>& Vars,
 	const FOnAuthUpdate& Success,
 	const FOnError& Error)
 {
@@ -159,8 +172,14 @@ void UNakamaClient::AuthenticateDevice(
 	AuthenticateDevice(DeviceID, CreateAccount, OptUsername, Vars, successCallback, errorCallback);
 }
 
-void UNakamaClient::AuthenticateSteam(FString SteamToken, FString Username, bool CreateAccount, bool ImportFriends,
-	TMap<FString, FString> Vars, const FOnAuthUpdate& Success, const FOnError& Error)
+void UNakamaClient::AuthenticateSteam(
+	const FString& SteamToken,
+	const FString& Username,
+	bool CreateAccount,
+	bool ImportFriends,
+	const TMap<FString, FString>& Vars,
+	FOnAuthUpdate Success,
+	FOnError Error)
 {
 	auto successCallback = [this, Success](UNakamaSession* session)
 	{
@@ -181,8 +200,13 @@ void UNakamaClient::AuthenticateSteam(FString SteamToken, FString Username, bool
 	AuthenticateSteam(SteamToken, Username, CreateAccount, ImportFriends, Vars, successCallback, errorCallback);
 }
 
-void UNakamaClient::AuthenticateGoogle(FString AccessToken, FString Username, bool CreateAccount,
-	TMap<FString, FString> Vars, const FOnAuthUpdate& Success, const FOnError& Error)
+void UNakamaClient::AuthenticateGoogle(
+	const FString& AccessToken,
+	const FString& Username,
+	bool CreateAccount,
+	const TMap<FString,FString>& Vars,
+	FOnAuthUpdate Success,
+	FOnError Error)
 {
 
 	auto successCallback = [this, Success](UNakamaSession* session)
@@ -204,9 +228,18 @@ void UNakamaClient::AuthenticateGoogle(FString AccessToken, FString Username, bo
 	AuthenticateGoogle(AccessToken, Username, CreateAccount, Vars, successCallback, errorCallback);
 }
 
-void UNakamaClient::AuthenticateGameCenter(FString PlayerId, FString BundleId, int64 TimeStampSeconds, FString Salt,
-	FString Signature, FString PublicKeyUrl, FString Username, bool CreateAccount, TMap<FString, FString> Vars,
-	const FOnAuthUpdate& Success, const FOnError& Error)
+void UNakamaClient::AuthenticateGameCenter(
+	const FString& PlayerId,
+	const FString& BundleId,
+	int64 TimeStampSeconds,
+	const FString& Salt,
+	const FString& Signature,
+	const FString& PublicKeyUrl,
+	const FString& Username,
+	bool CreateAccount,
+	const TMap<FString, FString>& Vars,
+	FOnAuthUpdate Success,
+	FOnError Error)
 {
 	auto successCallback = [this, Success](UNakamaSession* session)
 	{
@@ -239,8 +272,14 @@ void UNakamaClient::AuthenticateGameCenter(FString PlayerId, FString BundleId, i
 	);
 }
 
-void UNakamaClient::AuthenticateFacebook(FString AccessToken, FString Username, bool CreateAccount, bool ImportFriends,
-	TMap<FString, FString> Vars, const FOnAuthUpdate& Success, const FOnError& Error)
+void UNakamaClient::AuthenticateFacebook(
+	const FString& AccessToken,
+	const FString& Username,
+	bool CreateAccount,
+	bool ImportFriends,
+	const TMap<FString, FString>& Vars,
+	FOnAuthUpdate Success,
+	FOnError Error)
 {
 	auto successCallback = [this, Success](UNakamaSession* session)
 	{
@@ -261,8 +300,13 @@ void UNakamaClient::AuthenticateFacebook(FString AccessToken, FString Username, 
 	AuthenticateFacebook(AccessToken, Username, CreateAccount, ImportFriends, Vars, successCallback, errorCallback);
 }
 
-void UNakamaClient::AuthenticateApple(FString Token, FString Username, bool CreateAccount, TMap<FString, FString> Vars,
-	const FOnAuthUpdate& Success, const FOnError& Error)
+void UNakamaClient::AuthenticateApple(
+	const FString& Token,
+	const FString& Username,
+	bool CreateAccount,
+	const TMap<FString, FString>& Vars,
+	FOnAuthUpdate Success,
+	FOnError Error)
 {
 	auto successCallback = [this, Success](UNakamaSession* session)
 	{
@@ -283,7 +327,10 @@ void UNakamaClient::AuthenticateApple(FString Token, FString Username, bool Crea
 	AuthenticateApple(Token, Username, CreateAccount, Vars, successCallback, errorCallback);
 }
 
-void UNakamaClient::AuthenticateRefresh(UNakamaSession* Session, const FOnAuthUpdate& Success, const FOnError& Error)
+void UNakamaClient::AuthenticateRefresh(
+	UNakamaSession* Session,
+	FOnAuthUpdate Success,
+	FOnError Error)
 {
 	auto successCallback = [this, Success](UNakamaSession* session)
 	{
@@ -308,7 +355,10 @@ void UNakamaClient::AuthenticateRefresh(UNakamaSession* Session, const FOnAuthUp
  * Sessions
  */
 
-void UNakamaClient::RestoreSession(FString Token, FString RefreshToken, UNakamaSession*& RestoredSession)
+void UNakamaClient::RestoreSession(
+	const FString& Token,
+	const FString& RefreshToken,
+	UNakamaSession*& RestoredSession)
 {
 	UNakamaSession* Session = UNakamaSession::RestoreSession(Token, RefreshToken);
 	RestoredSession = Session;
@@ -318,7 +368,11 @@ void UNakamaClient::RestoreSession(FString Token, FString RefreshToken, UNakamaS
  * Linking Accounts
  */
 
-void UNakamaClient::LinkCustom(UNakamaSession* Session, FString CustomId, const FOnLinkSuccess& Success, const FOnError& Error)
+void UNakamaClient::LinkCustom(
+	UNakamaSession *Session,
+	const FString& CustomId,
+	FOnLinkSuccess Success,
+	FOnError Error)
 {
 	auto successCallback = [this, Success]()
 	{
@@ -339,7 +393,11 @@ void UNakamaClient::LinkCustom(UNakamaSession* Session, FString CustomId, const 
 	LinkCustom(Session, CustomId, successCallback, errorCallback);
 }
 
-void UNakamaClient::LinkDevice(UNakamaSession* Session, FString DeviceId, const FOnLinkSuccess& Success, const FOnError& Error)
+void UNakamaClient::LinkDevice(
+	UNakamaSession *Session,
+	const FString& DeviceId,
+	FOnLinkSuccess Success,
+	FOnError Error)
 {
 	auto successCallback = [this, Success]()
 	{
@@ -360,7 +418,12 @@ void UNakamaClient::LinkDevice(UNakamaSession* Session, FString DeviceId, const 
 	LinkDevice(Session, DeviceId, successCallback, errorCallback);
 }
 
-void UNakamaClient::LinkEmail(UNakamaSession* Session, FString Email, FString Password, const FOnLinkSuccess& Success, const FOnError& Error)
+void UNakamaClient::LinkEmail(
+	UNakamaSession *Session,
+	const FString& Email,
+	const FString& Password,
+	FOnLinkSuccess Success,
+	FOnError Error)
 {
 	auto successCallback = [this, Success]()
 	{
@@ -381,8 +444,12 @@ void UNakamaClient::LinkEmail(UNakamaSession* Session, FString Email, FString Pa
 	LinkEmail(Session, Email, Password, successCallback, errorCallback);
 }
 
-void UNakamaClient::LinkFacebook(UNakamaSession* Session, FString AccessToken, bool ImportFriends, const FOnLinkSuccess& Success,
-	const FOnError& Error)
+void UNakamaClient::LinkFacebook(
+	UNakamaSession *Session,
+	const FString& AccessToken,
+	bool ImportFriends,
+	FOnLinkSuccess Success,
+	FOnError Error)
 {
 	auto successCallback = [this, Success]()
 	{
@@ -403,8 +470,16 @@ void UNakamaClient::LinkFacebook(UNakamaSession* Session, FString AccessToken, b
 	LinkFacebook(Session, AccessToken, ImportFriends, successCallback, errorCallback);
 }
 
-void UNakamaClient::LinkGameCenter(UNakamaSession* Session, FString PlayerId, FString BundleId, int64 TimeStampSeconds, FString Salt,
-	FString Signature, FString PublicKeyUrl, const FOnLinkSuccess& Success, const FOnError& Error)
+void UNakamaClient::LinkGameCenter(
+	UNakamaSession *Session,
+	const FString& PlayerId,
+	const FString& BundleId,
+	int64 TimeStampSeconds,
+	const FString& Salt,
+	const FString& Signature,
+	const FString& PublicKeyUrl,
+	FOnLinkSuccess Success,
+	FOnError Error)
 {
 	auto successCallback = [this, Success]()
 	{
@@ -435,7 +510,11 @@ void UNakamaClient::LinkGameCenter(UNakamaSession* Session, FString PlayerId, FS
 	);
 }
 
-void UNakamaClient::LinkGoogle(UNakamaSession* Session, FString AccessToken, const FOnLinkSuccess& Success, const FOnError& Error)
+void UNakamaClient::LinkGoogle(
+	UNakamaSession *Session,
+	const FString& AccessToken,
+	FOnLinkSuccess Success,
+	FOnError Error)
 {
 	auto successCallback = [this, Success]()
 	{
@@ -456,7 +535,11 @@ void UNakamaClient::LinkGoogle(UNakamaSession* Session, FString AccessToken, con
 	LinkGoogle(Session, AccessToken, successCallback, errorCallback);
 }
 
-void UNakamaClient::LinkSteam(UNakamaSession* Session, FString SteamToken, const FOnLinkSuccess& Success, const FOnError& Error)
+void UNakamaClient::LinkSteam(
+	UNakamaSession *Session,
+	const FString& SteamToken,
+	FOnLinkSuccess Success,
+	FOnError Error)
 {
 	auto successCallback = [this, Success]()
 	{
@@ -477,7 +560,11 @@ void UNakamaClient::LinkSteam(UNakamaSession* Session, FString SteamToken, const
 	LinkSteam(Session, SteamToken, successCallback, errorCallback);
 }
 
-void UNakamaClient::LinkApple(UNakamaSession* Session, FString Token, const FOnLinkSuccess& Success, const FOnError& Error)
+void UNakamaClient::LinkApple(
+	UNakamaSession *Session,
+	const FString& Token,
+	FOnLinkSuccess Success,
+	FOnError Error)
 {
 	auto successCallback = [this, Success]()
 	{
@@ -502,8 +589,11 @@ void UNakamaClient::LinkApple(UNakamaSession* Session, FString Token, const FOnL
  * Unlinking Account
  */
 
-void UNakamaClient::UnLinkCustom(UNakamaSession* Session, FString CustomId, const FOnLinkSuccess& Success,
-	const FOnError& Error)
+void UNakamaClient::UnLinkCustom(
+	UNakamaSession *Session,
+	const FString& CustomId,
+	FOnLinkSuccess Success,
+	FOnError Error)
 {
 	auto successCallback = [this, Success]()
 	{
@@ -524,8 +614,11 @@ void UNakamaClient::UnLinkCustom(UNakamaSession* Session, FString CustomId, cons
 	UnLinkCustom(Session, CustomId, successCallback, errorCallback);
 }
 
-void UNakamaClient::UnLinkDevice(UNakamaSession* Session, FString DeviceId, const FOnLinkSuccess& Success,
-	const FOnError& Error)
+void UNakamaClient::UnLinkDevice(
+	UNakamaSession *Session,
+	const FString& DeviceId,
+	FOnLinkSuccess Success,
+	FOnError Error)
 {
 	auto successCallback = [this, Success]()
 	{
@@ -546,8 +639,12 @@ void UNakamaClient::UnLinkDevice(UNakamaSession* Session, FString DeviceId, cons
 	UnLinkDevice(Session, DeviceId, successCallback, errorCallback);
 }
 
-void UNakamaClient::UnLinkEmail(UNakamaSession* Session, FString Email, FString Password, const FOnLinkSuccess& Success,
-	const FOnError& Error)
+void UNakamaClient::UnLinkEmail(
+	UNakamaSession *Session,
+	const FString& Email,
+	const FString& Password,
+	FOnLinkSuccess Success,
+	FOnError Error)
 {
 	auto successCallback = [this, Success]()
 	{
@@ -568,8 +665,11 @@ void UNakamaClient::UnLinkEmail(UNakamaSession* Session, FString Email, FString 
 	UnLinkEmail(Session, Email, Password, successCallback, errorCallback);
 }
 
-void UNakamaClient::UnLinkFacebook(UNakamaSession* Session, FString AccessToken, const FOnLinkSuccess& Success,
-	const FOnError& Error)
+void UNakamaClient::UnLinkFacebook(
+	UNakamaSession *Session,
+	const FString& AccessToken,
+	FOnLinkSuccess Success,
+	FOnError Error)
 {
 	auto successCallback = [this, Success]()
 	{
@@ -590,9 +690,16 @@ void UNakamaClient::UnLinkFacebook(UNakamaSession* Session, FString AccessToken,
 	UnLinkFacebook(Session, AccessToken, successCallback, errorCallback);
 }
 
-void UNakamaClient::UnLinkGameCenter(UNakamaSession* Session, FString PlayerId, FString BundleId,
-	int64 TimeStampSeconds, FString Salt, FString Signature, FString PublicKeyUrl, const FOnLinkSuccess& Success,
-	const FOnError& Error)
+void UNakamaClient::UnLinkGameCenter(
+	UNakamaSession *Session,
+	const FString& PlayerId,
+	const FString& BundleId,
+	int64 TimeStampSeconds,
+	const FString& Salt,
+	const FString& Signature,
+	const FString& PublicKeyUrl,
+	FOnLinkSuccess Success,
+	FOnError Error)
 {
 	auto successCallback = [this, Success]()
 	{
@@ -623,8 +730,11 @@ void UNakamaClient::UnLinkGameCenter(UNakamaSession* Session, FString PlayerId, 
 	);
 }
 
-void UNakamaClient::UnLinkGoogle(UNakamaSession* Session, FString AccessToken, const FOnLinkSuccess& Success,
-	const FOnError& Error)
+void UNakamaClient::UnLinkGoogle(
+	UNakamaSession *Session,
+	const FString& AccessToken,
+	FOnLinkSuccess Success,
+	FOnError Error)
 {
 	auto successCallback = [this, Success]()
 	{
@@ -645,8 +755,11 @@ void UNakamaClient::UnLinkGoogle(UNakamaSession* Session, FString AccessToken, c
 	UnLinkGoogle(Session, AccessToken, successCallback, errorCallback);
 }
 
-void UNakamaClient::UnLinkSteam(UNakamaSession* Session, FString SteamToken, const FOnLinkSuccess& Success,
-	const FOnError& Error)
+void UNakamaClient::UnLinkSteam(
+	UNakamaSession *Session,
+	const FString& SteamToken,
+	FOnLinkSuccess Success,
+	FOnError Error)
 {
 	auto successCallback = [this, Success]()
 	{
@@ -667,8 +780,11 @@ void UNakamaClient::UnLinkSteam(UNakamaSession* Session, FString SteamToken, con
 	UnLinkSteam(Session, SteamToken, successCallback, errorCallback);
 }
 
-void UNakamaClient::UnLinkApple(UNakamaSession* Session, FString Token, const FOnLinkSuccess& Success,
-	const FOnError& Error)
+void UNakamaClient::UnLinkApple(
+	UNakamaSession *Session,
+	const FString& Token,
+	FOnLinkSuccess Success,
+	FOnError Error)
 {
 	auto successCallback = [this, Success]()
 	{
@@ -693,10 +809,12 @@ void UNakamaClient::UnLinkApple(UNakamaSession* Session, FString Token, const FO
  * Refresh Session
  */
 
-void UNakamaClient::RefreshSession(UNakamaSession* Session, const FOnAuthRefresh& Success,
-	const FOnAuthRefreshError& Error)
+void UNakamaClient::RefreshSession(
+	UNakamaSession *Session,
+	FOnAuthRefresh Success,
+	FOnAuthRefreshError Error)
 {
-	auto successCallback = [this, Success](UNakamaSession* Session)
+	auto successCallback = [this, Success](const UNakamaSession* Session)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
@@ -719,7 +837,12 @@ void UNakamaClient::RefreshSession(UNakamaSession* Session, const FOnAuthRefresh
  * Import Facebook Friends
  */
 
-void UNakamaClient::ImportFacebookFriends(UNakamaSession* Session, FString Token, bool Reset, const FOnImportFacebookFriends& Success, const FOnError& Error)
+void UNakamaClient::ImportFacebookFriends(
+	UNakamaSession* Session,
+	const FString& Token,
+	bool Reset,
+	FOnImportFacebookFriends Success,
+	FOnError Error)
 {
 	auto successCallback = [this, Success]()
 	{
@@ -744,7 +867,12 @@ void UNakamaClient::ImportFacebookFriends(UNakamaSession* Session, FString Token
  * Import Steam Friends
  */
 
-void UNakamaClient::ImportSteamFriends(UNakamaSession* Session, FString SteamId, bool Reset, const FOnImportSteamFriends& Success, const FOnError& Error)
+void UNakamaClient::ImportSteamFriends(
+	UNakamaSession* Session,
+	const FString& SteamId,
+	bool Reset,
+	FOnImportSteamFriends Success,
+	FOnError Error)
 {
 	auto successCallback = [this, Success]()
 	{
@@ -769,8 +897,18 @@ void UNakamaClient::ImportSteamFriends(UNakamaSession* Session, FString SteamId,
  * Get Account Info
  */
 
-void UNakamaClient::GetUserAccount(UNakamaSession* Session, const FOnUserAccountInfo& Success,
-	const FOnError& Error)
+void UNakamaClient::GetUserAccount(
+	UNakamaSession *Session,
+	FOnUserAccountInfo Success,
+	FOnError Error)
+{
+	GetAccount(Session, Success, Error);
+}
+
+void UNakamaClient::GetAccount(
+	UNakamaSession *Session,
+	FOnUserAccountInfo Success,
+	FOnError Error)
 {
 	auto successCallback = [this, Success](const FNakamaAccount& account)
 	{
@@ -788,15 +926,20 @@ void UNakamaClient::GetUserAccount(UNakamaSession* Session, const FOnUserAccount
 		Error.Broadcast(error);
 	};
 
-	GetUserAccount(Session, successCallback, errorCallback);
+	GetAccount(Session, successCallback, errorCallback);
 }
 
 /**
  * Get Get Users
  */
 
-void UNakamaClient::GetUsers(UNakamaSession* Session, TArray<FString> UserIds, TArray<FString> Usernames,
-	TArray<FString> FacebookIds, const FOnGetUsers& Success, const FOnError& Error)
+void UNakamaClient::GetUsers(
+	UNakamaSession *Session,
+	const TArray<FString>& UserIds,
+	const TArray<FString>& Usernames,
+	const TArray<FString>& FacebookIds,
+	FOnGetUsers Success,
+	FOnError Error)
 {
 	auto successCallback = [this, Success](const FNakamaUserList& UserList)
 	{
@@ -817,8 +960,16 @@ void UNakamaClient::GetUsers(UNakamaSession* Session, TArray<FString> UserIds, T
 	GetUsers(Session, UserIds, Usernames, FacebookIds,  successCallback, errorCallback);
 }
 
-void UNakamaClient::UpdateAccount(UNakamaSession* Session, FString Username, FString DisplayName, FString AvatarUrl,
-	FString LanguageTag, FString Location, FString Timezone, const FOnUpdateAccount& Success, const FOnError& Error)
+void UNakamaClient::UpdateAccount(
+	UNakamaSession *Session,
+	const FString& Username,
+	const FString& DisplayName,
+	const FString& AvatarUrl,
+	const FString& LanguageTag,
+	const FString& Location,
+	const FString& Timezone,
+	FOnUpdateAccount Success,
+	FOnError Error)
 {
 	auto successCallback = [this, Success]()
 	{
@@ -859,17 +1010,19 @@ UNakamaRealtimeClient* UNakamaClient::SetupRealtimeClient()
 	NewClient->Initialize(Hostname, Port, bUseSSL);
 	NewClient->bIsActive = true;
 
-	// Note: Here we setup default listener for the NewClient for backwards compatibility
-	// Developers can override this listener by instantiating and calling SetListener() on the NewClient
-	UNakamaRealtimeClientListener* RealtimeListener = UNakamaRealtimeClientListener::CreateRealtimeClientListener();
-	NewClient->SetListener(RealtimeListener);
-	NewClient->ClientListener = RealtimeListener;
-
 	return NewClient;
 }
 
-void UNakamaClient::ListMatches(UNakamaSession* Session, int32 MinSize, int32 MaxSize, int32 Limit, FString Label, FString Query,
-	bool Authoritative, const FOnMatchlist& Success, const FOnError& Error)
+void UNakamaClient::ListMatches(
+	UNakamaSession *Session,
+	int32 MinSize,
+	int32 MaxSize,
+	int32 Limit,
+	const FString& Label,
+	const FString& Query,
+	bool Authoritative,
+	FOnMatchlist Success,
+	FOnError Error)
 {
 	auto successCallback = [this, Success](const FNakamaMatchList& MatchList)
 	{
@@ -912,8 +1065,25 @@ void UNakamaClient::ListMatches(UNakamaSession* Session, int32 MinSize, int32 Ma
  * Friends System
  */
 
-void UNakamaClient::GetFriends(UNakamaSession* Session, int32 Limit, ENakamaFriendState State, FString Cursor, const FOnFriendsList& Success,
-	const FOnError& Error)
+void UNakamaClient::GetFriends(
+	UNakamaSession* Session,
+	int32 Limit,
+	ENakamaFriendState State,
+	const FString& Cursor,
+	FOnFriendsList Success,
+	FOnError Error)
+{
+	ListFriends(Session, Limit, State, Cursor, Success, Error);
+
+}
+
+void UNakamaClient::ListFriends(
+	UNakamaSession* Session,
+	int32 Limit,
+	ENakamaFriendState State,
+	const FString& Cursor,
+	FOnFriendsList Success,
+	FOnError Error)
 {
 	auto successCallback = [this, Success](const FNakamaFriendList&  Friends)
 	{
@@ -936,17 +1106,20 @@ void UNakamaClient::GetFriends(UNakamaSession* Session, int32 Limit, ENakamaFrie
 	// If "All" Friend States are requested, we return an empty Enum Object
 	if(State == ENakamaFriendState::ALL)
 	{
-		GetFriends(Session, OptLimit, {}, Cursor, successCallback, errorCallback);
+		ListFriends(Session, OptLimit, {}, Cursor, successCallback, errorCallback);
 	}
 	else
 	{
-		GetFriends(Session, OptLimit, State, Cursor, successCallback, errorCallback);
+		ListFriends(Session, OptLimit, State, Cursor, successCallback, errorCallback);
 	}
-
 }
 
-void UNakamaClient::AddFriends(UNakamaSession* Session, TArray<FString> Ids, TArray<FString> Usernames,
-	const FOnAddedFriend& Success, const FOnError& Error)
+void UNakamaClient::AddFriends(
+	UNakamaSession* Session,
+	const TArray<FString>& Ids,
+	const TArray<FString>& Usernames,
+	FOnAddedFriend Success,
+	FOnError Error)
 {
 	auto successCallback = [this, Success]()
 	{
@@ -967,8 +1140,22 @@ void UNakamaClient::AddFriends(UNakamaSession* Session, TArray<FString> Ids, TAr
 	AddFriends(Session, Ids, Usernames,  successCallback, errorCallback);
 }
 
-void UNakamaClient::RemoveFriends(UNakamaSession* Session, TArray<FString> Ids, TArray<FString> Usernames,
-	const FOnRemovedFriends& Success, const FOnError& Error)
+void UNakamaClient::RemoveFriends(
+	UNakamaSession* Session,
+	const TArray<FString>& Ids,
+	const TArray<FString>& Usernames,
+	FOnRemovedFriends Success,
+	FOnError Error)
+{
+	DeleteFriends(Session, Ids, Usernames, Success, Error);
+}
+
+void UNakamaClient::DeleteFriends(
+	UNakamaSession* Session,
+	const TArray<FString>& Ids,
+	const TArray<FString>& Usernames,
+	FOnRemovedFriends Success,
+	FOnError Error)
 {
 	auto successCallback = [this, Success]()
 	{
@@ -986,11 +1173,15 @@ void UNakamaClient::RemoveFriends(UNakamaSession* Session, TArray<FString> Ids, 
 		Error.Broadcast(error);
 	};
 
-	RemoveFriends(Session, Ids, Usernames,  successCallback, errorCallback);
+	DeleteFriends(Session, Ids, Usernames,  successCallback, errorCallback);
 }
 
-void UNakamaClient::BlockFriends(UNakamaSession* Session, TArray<FString> Ids, TArray<FString> Usernames,
-	const FOnBlockedFriends& Success, const FOnError& Error)
+void UNakamaClient::BlockFriends(
+	UNakamaSession* Session,
+	const TArray<FString>& Ids,
+	const TArray<FString>& Usernames,
+	FOnBlockedFriends Success,
+	FOnError Error)
 {
 	auto successCallback = [this, Success]()
 	{
@@ -1016,8 +1207,16 @@ void UNakamaClient::BlockFriends(UNakamaSession* Session, TArray<FString> Ids, T
  */
 
 
-void UNakamaClient::CreateGroup(UNakamaSession* Session, FString GroupName, FString Description, FString AvatarUrl,
-	FString LanguageTag, bool Open, int32 MaxMembers, const FOnCreateGroup& Success, const FOnError& Error)
+void UNakamaClient::CreateGroup(
+	UNakamaSession* Session,
+	const FString& GroupName,
+	const FString& Description,
+	const FString& AvatarUrl,
+	const FString& LanguageTag,
+	bool Open,
+	int32 MaxMembers,
+	FOnCreateGroup Success,
+	FOnError Error)
 {
 	auto successCallback = [this, Success](const FNakamaGroup& Group)
 	{
@@ -1050,8 +1249,13 @@ void UNakamaClient::CreateGroup(UNakamaSession* Session, FString GroupName, FStr
 	);
 }
 
-void UNakamaClient::ListGroups(UNakamaSession* Session, FString GroupNameFilter, int32 Limit, FString Cursor,
-	const FOnGroupsList& Success, const FOnError& Error)
+void UNakamaClient::ListGroups(
+	UNakamaSession* Session,
+	const FString& GroupNameFilter,
+	int32 Limit,
+	const FString& Cursor,
+	FOnGroupsList Success,
+	FOnError Error)
 {
 	auto successCallback = [this, Success](const FNakamaGroupList& Groups)
 	{
@@ -1072,8 +1276,11 @@ void UNakamaClient::ListGroups(UNakamaSession* Session, FString GroupNameFilter,
 	ListGroups(Session, GroupNameFilter, Limit, Cursor, successCallback, errorCallback);
 }
 
-void UNakamaClient::JoinGroup(UNakamaSession* Session, FString GroupId, const FOnJoinedGroup& Success,
-	const FOnError& Error)
+void UNakamaClient::JoinGroup(
+	UNakamaSession* Session,
+	const FString& GroupId,
+	FOnJoinedGroup Success,
+	FOnError Error)
 {
 	auto successCallback = [this, Success]()
 	{
@@ -1095,8 +1302,14 @@ void UNakamaClient::JoinGroup(UNakamaSession* Session, FString GroupId, const FO
 }
 
 // Note: Does not get members!
-void UNakamaClient::ListUserGroups(UNakamaSession* Session, FString UserId, int32 Limit, ENakamaGroupState State,
-	FString Cursor, const FOnUserGroups& Success, const FOnError& Error)
+void UNakamaClient::ListUserGroups(
+	UNakamaSession* Session,
+	const FString& UserId,
+	int32 Limit,
+	ENakamaGroupState State,
+	const FString& Cursor,
+	FOnUserGroups Success,
+	FOnError Error)
 {
 	auto successCallback = [this, Success](const FNakamaUserGroupList&  UserGroupList)
 	{
@@ -1127,8 +1340,14 @@ void UNakamaClient::ListUserGroups(UNakamaSession* Session, FString UserId, int3
 	}
 }
 
-void UNakamaClient::ListGroupUsers(UNakamaSession* Session, FString GroupId, int32 Limit, ENakamaGroupState State,
-	FString Cursor, const FOnListGroupMembers& Success, const FOnError& Error)
+void UNakamaClient::ListGroupUsers(
+	UNakamaSession* Session,
+	const FString& GroupId,
+	int32 Limit,
+	ENakamaGroupState State,
+	const FString& Cursor,
+	FOnListGroupMembers Success,
+	FOnError Error)
 {
 	auto successCallback = [this, Success](const FNakamaGroupUsersList&  GroupUsersList)
 	{
@@ -1160,8 +1379,16 @@ void UNakamaClient::ListGroupUsers(UNakamaSession* Session, FString GroupId, int
 
 }
 
-void UNakamaClient::UpdateGroup(UNakamaSession* Session, FString GroupId, FString Name, FString Description,
-	FString AvatarUrl, FString LanguageTag, bool Open, const FOnUpdateGroup& Success, const FOnError& Error)
+void UNakamaClient::UpdateGroup(
+	UNakamaSession* Session,
+	const FString& GroupId,
+	const FString& Name,
+	const FString& Description,
+	const FString& AvatarUrl,
+	const FString& LanguageTag,
+	bool Open,
+	FOnUpdateGroup Success,
+	FOnError Error)
 {
 	auto successCallback = [this, Success]()
 	{
@@ -1197,8 +1424,11 @@ void UNakamaClient::UpdateGroup(UNakamaSession* Session, FString GroupId, FStrin
 	);
 }
 
-void UNakamaClient::LeaveGroup(UNakamaSession* Session, FString GroupId, const FOnLeaveGroup& Success,
-	const FOnError& Error)
+void UNakamaClient::LeaveGroup(
+	UNakamaSession* Session,
+	const FString& GroupId,
+	FOnLeaveGroup Success,
+	FOnError Error)
 {
 	auto successCallback = [this, Success]()
 	{
@@ -1219,8 +1449,12 @@ void UNakamaClient::LeaveGroup(UNakamaSession* Session, FString GroupId, const F
 	LeaveGroup(Session, GroupId, successCallback, errorCallback);
 }
 
-void UNakamaClient::AddGroupUsers(UNakamaSession* Session, FString GroupId, TArray<FString> UserIds,
-	const FOnAddGroupUsers& Success, const FOnError& Error)
+void UNakamaClient::AddGroupUsers(
+	UNakamaSession* Session,
+	const FString& GroupId,
+	const TArray<FString>& UserIds,
+	FOnAddGroupUsers Success,
+	FOnError Error)
 {
 	auto successCallback = [this, Success]()
 	{
@@ -1241,8 +1475,12 @@ void UNakamaClient::AddGroupUsers(UNakamaSession* Session, FString GroupId, TArr
 	AddGroupUsers(Session, GroupId, UserIds, successCallback, errorCallback);
 }
 
-void UNakamaClient::PromoteGroupUsers(UNakamaSession* Session, FString GroupId, TArray<FString> UserIds,
-	const FOnPromoteGroupUsers& Success, const FOnError& Error)
+void UNakamaClient::PromoteGroupUsers(
+	UNakamaSession* Session,
+	const FString& GroupId,
+	const TArray<FString>& UserIds,
+	FOnPromoteGroupUsers Success,
+	FOnError Error)
 {
 	auto successCallback = [this, Success]()
 	{
@@ -1263,8 +1501,12 @@ void UNakamaClient::PromoteGroupUsers(UNakamaSession* Session, FString GroupId, 
 	PromoteGroupUsers(Session, GroupId, UserIds, successCallback, errorCallback);
 }
 
-void UNakamaClient::KickGroupUsers(UNakamaSession* Session, FString GroupId, TArray<FString> UserIds,
-                                   const FOnKickGroupUsers& Success, const FOnError& Error)
+void UNakamaClient::KickGroupUsers(
+	UNakamaSession* Session,
+	const FString& GroupId,
+	const TArray<FString>& UserIds,
+	FOnKickGroupUsers Success,
+	FOnError Error)
 {
 	auto successCallback = [this, Success]()
 	{
@@ -1285,8 +1527,12 @@ void UNakamaClient::KickGroupUsers(UNakamaSession* Session, FString GroupId, TAr
 	KickGroupUsers(Session, GroupId, UserIds, successCallback, errorCallback);
 }
 
-void UNakamaClient::DemoteGroupUsers(UNakamaSession* Session, FString GroupId, TArray<FString> UserIds,
-	const FOnDemoteGroupUsers& Success, const FOnError& Error)
+void UNakamaClient::DemoteGroupUsers(
+	UNakamaSession* Session,
+	const FString& GroupId,
+	const TArray<FString>& UserIds,
+	FOnDemoteGroupUsers Success,
+	FOnError Error)
 {
 	auto successCallback = [this, Success]()
 	{
@@ -1307,8 +1553,11 @@ void UNakamaClient::DemoteGroupUsers(UNakamaSession* Session, FString GroupId, T
 	DemoteGroupUsers(Session, GroupId, UserIds, successCallback, errorCallback);
 }
 
-void UNakamaClient::DeleteGroup(UNakamaSession* Session, FString GroupId, const FOnRemoveGroup& Success,
-	const FOnError& Error)
+void UNakamaClient::DeleteGroup(
+	UNakamaSession* Session,
+	const FString& GroupId,
+	FOnRemoveGroup Success,
+	FOnError Error)
 {
 	auto successCallback = [this, Success]()
 	{
@@ -1333,8 +1582,12 @@ void UNakamaClient::DeleteGroup(UNakamaSession* Session, FString GroupId, const 
  * Notification System
  */
 
-void UNakamaClient::ListNotifications(UNakamaSession* Session, int32 Limit, FString Cursor,
-	const FOnListNotifications& Success, const FOnError& Error)
+void UNakamaClient::ListNotifications(
+	UNakamaSession* Session,
+	int32 Limit,
+	const FString& Cursor,
+	FOnListNotifications Success,
+	FOnError Error)
 {
 	auto successCallback = [this, Success](const FNakamaNotificationList& NotificationList)
 	{
@@ -1359,8 +1612,11 @@ void UNakamaClient::ListNotifications(UNakamaSession* Session, int32 Limit, FStr
 	ListNotifications(Session, OptLimit, OptCacheableCursor, successCallback, errorCallback);
 }
 
-void UNakamaClient::DeleteNotifications(UNakamaSession* Session, TArray<FString> NotificationIds,
-	const FOnDeleteNotifications& Success, const FOnError& Error)
+void UNakamaClient::DeleteNotifications(
+	UNakamaSession* Session,
+	const TArray<FString>& NotificationIds,
+	FOnDeleteNotifications Success,
+	FOnError Error)
 {
 	auto successCallback = [this, Success]()
 	{
@@ -1385,8 +1641,11 @@ void UNakamaClient::DeleteNotifications(UNakamaSession* Session, TArray<FString>
  * Storage System
  */
 
-void UNakamaClient::WriteStorageObjects(UNakamaSession* Session, TArray<FNakamaStoreObjectWrite> StorageObjectsData,
-	const FOnStorageObjectAcks& Success, const FOnError& Error)
+void UNakamaClient::WriteStorageObjects(
+	UNakamaSession* Session,
+	const TArray<FNakamaStoreObjectWrite>& StorageObjectsData,
+	FOnStorageObjectAcks Success,
+	FOnError Error)
 {
 	auto successCallback = [this, Success](const FNakamaStoreObjectAcks& StorageObjectAcks)
 	{
@@ -1407,8 +1666,11 @@ void UNakamaClient::WriteStorageObjects(UNakamaSession* Session, TArray<FNakamaS
 	WriteStorageObjects(Session, StorageObjectsData, successCallback, errorCallback);
 }
 
-void UNakamaClient::ReadStorageObjects(UNakamaSession* Session, TArray<FNakamaReadStorageObjectId> StorageObjectsData,
-	const FOnStorageObjectsRead& Success, const FOnError& Error)
+void UNakamaClient::ReadStorageObjects(
+	UNakamaSession* Session,
+	const TArray<FNakamaReadStorageObjectId>& StorageObjectsData,
+	FOnStorageObjectsRead Success,
+	FOnError Error)
 {
 	auto successCallback = [this, Success](const FNakamaStorageObjectList& StorageObjectList)
 	{
@@ -1429,8 +1691,14 @@ void UNakamaClient::ReadStorageObjects(UNakamaSession* Session, TArray<FNakamaRe
 	ReadStorageObjects(Session, StorageObjectsData, successCallback, errorCallback);
 }
 
-void UNakamaClient::ListStorageObjects(UNakamaSession* Session, FString Collection, FString UserId, int32 Limit,
-	FString Cursor, const FOnStorageObjectsListed& Success, const FOnError& Error)
+void UNakamaClient::ListStorageObjects(
+	UNakamaSession* Session,
+	const FString& Collection,
+	const FString& UserId,
+	int32 Limit,
+	const FString& Cursor,
+	FOnStorageObjectsListed Success,
+	FOnError Error)
 {
 	auto successCallback = [this, Success](const FNakamaStorageObjectList& StorageObjectList)
 	{
@@ -1461,9 +1729,20 @@ void UNakamaClient::ListStorageObjects(UNakamaSession* Session, FString Collecti
 	}
 }
 
-void UNakamaClient::RemoveStorageObjects(UNakamaSession* Session,
-	TArray<FNakamaDeleteStorageObjectId> StorageObjectsData, const FOnRemovedStorageObjects& Success,
-	const FOnError& Error)
+void UNakamaClient::RemoveStorageObjects(
+	UNakamaSession* Session,
+	const TArray<FNakamaDeleteStorageObjectId>& StorageObjectsData,
+	FOnRemovedStorageObjects Success,
+	FOnError Error)
+{
+	DeleteStorageObjects(Session, StorageObjectsData, Success, Error);
+}
+
+void UNakamaClient::DeleteStorageObjects(
+	UNakamaSession* Session,
+	const TArray<FNakamaDeleteStorageObjectId>& StorageObjectsData,
+	FOnRemovedStorageObjects Success,
+	FOnError Error)
 {
 	auto successCallback = [this, Success]()
 	{
@@ -1481,14 +1760,19 @@ void UNakamaClient::RemoveStorageObjects(UNakamaSession* Session,
 		Error.Broadcast(error);
 	};
 	
-	RemoveStorageObjects(Session, StorageObjectsData, successCallback, errorCallback);
+	DeleteStorageObjects(Session, StorageObjectsData, successCallback, errorCallback);
 }
 
 /**
  * RPC
  */
 
-void UNakamaClient::RPC(UNakamaSession* Session, FString FunctionId, FString Payload, const FOnRPC& Success, const FOnError& Error)
+void UNakamaClient::RPC(
+	UNakamaSession* Session,
+	const FString& FunctionId,
+	const FString& Payload,
+	FOnRPC Success,
+	FOnError Error)
 {
 	auto successCallback = [this, Success](const FNakamaRPC& Rpc)
 	{
@@ -1513,7 +1797,12 @@ void UNakamaClient::RPC(UNakamaSession* Session, FString FunctionId, FString Pay
  * RPCHttpKey
  */
 
-void UNakamaClient::RPCHttpKey(FString HttpKey, FString FunctionId, FString Payload, const FOnRPC& Success, const FOnError& Error)
+void UNakamaClient::RPCHttpKey(
+	const FString& HttpKey,
+	const FString& FunctionId,
+	const FString& Payload,
+	FOnRPC Success,
+	FOnError Error)
 {
 	auto successCallback = [this, Success](const FNakamaRPC& Rpc)
 	{
@@ -1538,8 +1827,14 @@ void UNakamaClient::RPCHttpKey(FString HttpKey, FString FunctionId, FString Payl
  * List Channel Messages
  */
 
-void UNakamaClient::ListChannelMessages(UNakamaSession* Session, FString ChannelId, int32 Limit, FString Cursor, bool Forward,
-	const FOnListChannelMessages& Success, const FOnError& Error)
+void UNakamaClient::ListChannelMessages(
+	UNakamaSession* Session,
+	const FString& ChannelId,
+	int32 Limit,
+	const FString& Cursor,
+	bool Forward,
+	FOnListChannelMessages Success,
+	FOnError Error)
 {
 	auto successCallback = [this, Success](const FNakamaChannelMessageList& ChannelMessageList)
 	{
@@ -1567,8 +1862,14 @@ void UNakamaClient::ListChannelMessages(UNakamaSession* Session, FString Channel
  * Leaderboards System
  */
 
-void UNakamaClient::WriteLeaderboardRecord(UNakamaSession* Session, FString LeaderboardId, int64 Score, int64 SubScore,
-	FString Metadata, const FOnWriteLeaderboardRecord& Success, const FOnError& Error)
+void UNakamaClient::WriteLeaderboardRecord(
+	UNakamaSession* Session,
+	const FString& LeaderboardId,
+	int64 Score,
+	int64 SubScore,
+	const FString& Metadata,
+	FOnWriteLeaderboardRecord Success,
+	FOnError Error)
 {
 	auto successCallback = [this, Success](const FNakamaLeaderboardRecord& LeaderboardRecord)
 	{
@@ -1600,9 +1901,15 @@ void UNakamaClient::WriteLeaderboardRecord(UNakamaSession* Session, FString Lead
 	);
 }
 
-void UNakamaClient::ListLeaderboardRecords(UNakamaSession* Session, FString LeaderboardId, TArray<FString> OwnerIds,
-	int32 Limit, FString Cursor, ENakamaLeaderboardListBy ListBy, const FOnListLeaderboardRecords& Success,
-	const FOnError& Error)
+void UNakamaClient::ListLeaderboardRecords(
+	UNakamaSession* Session,
+	const FString& LeaderboardId,
+	const TArray<FString>& OwnerIds,
+	int32 Limit,
+	const FString& Cursor,
+	ENakamaLeaderboardListBy ListBy,
+	FOnListLeaderboardRecords Success,
+	FOnError Error)
 {
 	auto successCallback = [this, Success](const FNakamaLeaderboardRecordList& LeaderboardRecords)
 	{
@@ -1649,8 +1956,13 @@ void UNakamaClient::ListLeaderboardRecords(UNakamaSession* Session, FString Lead
 	}
 }
 
-void UNakamaClient::ListLeaderboardRecordsAroundOwner(UNakamaSession* Session, FString LeaderboardId, FString OwnerId,
-	int32 Limit, const FOnListLeaderboardRecords& Success, const FOnError& Error)
+void UNakamaClient::ListLeaderboardRecordsAroundOwner(
+	UNakamaSession* Session,
+	const FString& LeaderboardId,
+	const FString& OwnerId,
+	int32 Limit,
+	FOnListLeaderboardRecords Success,
+	FOnError Error)
 {
 	auto successCallback = [this, Success](const FNakamaLeaderboardRecordList& LeaderboardRecords)
 	{
@@ -1673,8 +1985,11 @@ void UNakamaClient::ListLeaderboardRecordsAroundOwner(UNakamaSession* Session, F
 	ListLeaderboardRecordsAroundOwner(Session, LeaderboardId, OwnerId, OptLimit, successCallback, errorCallback);
 }
 
-void UNakamaClient::DeleteLeaderboardRecord(UNakamaSession* Session, FString LeaderboardId,
-	const FOnDeletedLeaderboardRecord& Success, const FOnError& Error)
+void UNakamaClient::DeleteLeaderboardRecord(
+	UNakamaSession* Session,
+	const FString& LeaderboardId,
+	FOnDeletedLeaderboardRecord Success,
+	FOnError Error)
 {
 	auto successCallback = [this, Success]()
 	{
@@ -1699,8 +2014,14 @@ void UNakamaClient::DeleteLeaderboardRecord(UNakamaSession* Session, FString Lea
  * Tournaments System
  */
 
-void UNakamaClient::WriteTournamentRecord(UNakamaSession* Session, FString TournamentId, int64 Score, int64 SubScore,
-	FString Metadata, const FOnWriteLeaderboardRecord& Success, const FOnError& Error)
+void UNakamaClient::WriteTournamentRecord(
+	UNakamaSession* Session,
+	const FString& TournamentId,
+	int64 Score,
+	int64 SubScore,
+	const FString& Metadata,
+	FOnWriteLeaderboardRecord Success,
+	FOnError Error)
 {
 	auto successCallback = [this, Success](const FNakamaLeaderboardRecord& LeaderboardRecord)
 	{
@@ -1724,9 +2045,15 @@ void UNakamaClient::WriteTournamentRecord(UNakamaSession* Session, FString Tourn
 	WriteTournamentRecord(Session, TournamentId, Score, OptSubScore, OptMetadata, successCallback, errorCallback);
 }
 
-void UNakamaClient::ListTournamentRecords(UNakamaSession* Session, FString TournamentId, int32 Limit, FString Cursor,
-	TArray<FString> OwnerIds, ENakamaLeaderboardListBy ListBy, const FOnListTournamentRecords& Success,
-	const FOnError& Error)
+void UNakamaClient::ListTournamentRecords(
+	UNakamaSession* Session,
+	const FString& TournamentId,
+	int32 Limit,
+	const FString& Cursor,
+	const TArray<FString>& OwnerIds,
+	ENakamaLeaderboardListBy ListBy,
+	FOnListTournamentRecords Success,
+	FOnError Error)
 {
 	auto successCallback = [this, Success](const FNakamaTournamentRecordList& TournamentRecordList)
 	{
@@ -1758,8 +2085,13 @@ void UNakamaClient::ListTournamentRecords(UNakamaSession* Session, FString Tourn
 	);
 }
 
-void UNakamaClient::ListTournamentRecordsAroundOwner(UNakamaSession* Session, FString TournamentId, FString OwnerId,
-	int32 Limit, const FOnListTournamentRecords& Success, const FOnError& Error)
+void UNakamaClient::ListTournamentRecordsAroundOwner(
+	UNakamaSession* Session,
+	const FString& TournamentId,
+	const FString& OwnerId,
+	int32 Limit,
+	FOnListTournamentRecords Success,
+	FOnError Error)
 {
 	auto successCallback = [this, Success](const FNakamaTournamentRecordList& TournamentRecordList)
 	{
@@ -1789,8 +2121,11 @@ void UNakamaClient::ListTournamentRecordsAroundOwner(UNakamaSession* Session, FS
 	);
 }
 
-void UNakamaClient::JoinTournament(UNakamaSession* Session, FString TournamentId, const FOnJoinedTournament& Success,
-	const FOnError& Error)
+void UNakamaClient::JoinTournament(
+	UNakamaSession* Session,
+	const FString& TournamentId,
+	FOnJoinedTournament Success,
+	FOnError Error)
 {
 	auto successCallback = [this, Success]()
 	{
@@ -1811,8 +2146,16 @@ void UNakamaClient::JoinTournament(UNakamaSession* Session, FString TournamentId
 	JoinTournament(Session, TournamentId, successCallback, errorCallback);
 }
 
-void UNakamaClient::ListTournaments(UNakamaSession* Session, int32 CategoryStart, int32 CategoryEnd, int32 StartTime,
-	int32 EndTime, int32 Limit, FString Cursor, const FOnListTournaments& Success, const FOnError& Error)
+void UNakamaClient::ListTournaments(
+	UNakamaSession* Session,
+	int32 CategoryStart,
+	int32 CategoryEnd,
+	int32 StartTime,
+	int32 EndTime,
+	int32 Limit,
+	const FString& Cursor,
+	FOnListTournaments Success,
+	FOnError Error)
 {
 	auto successCallback = [this, Success](const FNakamaTournamentList& TournamentList)
 	{
@@ -4488,7 +4831,7 @@ void UNakamaClient::ImportSteamFriends(
 }
 
 
-void UNakamaClient::GetUserAccount(
+void UNakamaClient::GetAccount(
     UNakamaSession* Session,
     TFunction<void(const FNakamaAccount& Account)> SuccessCallback,
     TFunction<void(const FNakamaError& Error)> ErrorCallback)
@@ -4892,7 +5235,7 @@ void UNakamaClient::AddFriends(
     HttpRequest->ProcessRequest();
 }
 
-void UNakamaClient::RemoveFriends(
+void UNakamaClient::DeleteFriends(
     UNakamaSession* Session,
     const TArray<FString>& UserIds,
     const TArray<FString>& Usernames,
@@ -5088,7 +5431,7 @@ void UNakamaClient::BlockFriends(
     HttpRequest->ProcessRequest();
 }
 
-void UNakamaClient::GetFriends(
+void UNakamaClient::ListFriends(
     UNakamaSession* Session,
     const TOptional<int32>& Limit,
     TOptional<ENakamaFriendState> State,
@@ -6847,7 +7190,7 @@ void UNakamaClient::ListNotifications(UNakamaSession* Session,
     if (CacheableCursor.IsSet())
     {
         const FString EncodedCursor = FGenericPlatformHttp::UrlEncode(CacheableCursor.GetValue());
-        QueryParams.Add(TEXT("cursor"), EncodedCursor);
+        QueryParams.Add(TEXT("cacheable_cursor"), EncodedCursor);
     }
 
     // Make the request
@@ -7989,7 +8332,7 @@ void UNakamaClient::ReadStorageObjects(
     HttpRequest->ProcessRequest();
 }
 
-    void UNakamaClient::RemoveStorageObjects(
+void UNakamaClient::DeleteStorageObjects(
     UNakamaSession* Session,
     const TArray<FNakamaDeleteStorageObjectId>& ObjectIds,
     TFunction<void()> SuccessCallback,
@@ -8183,7 +8526,7 @@ TSharedRef<IHttpRequest, ESPMode::ThreadSafe> UNakamaClient::MakeRequest(const F
 		HttpRequest->SetHeader(TEXT("Authorization"), AuthorizationHeader);
 	}
 
-	NAKAMA_LOG_INFO(TEXT("..."));
+	//NAKAMA_LOG_INFO(TEXT("..."));
 	//NAKAMA_LOG_INFO(FString::Printf(TEXT("Making Request to %s"), *Endpoint));
 	NAKAMA_LOG_INFO(FString::Printf(TEXT("Making %s request to %s with content: %s"), *VerbString, *URL, *Content));
 	return HttpRequest;

@@ -10,10 +10,8 @@
 #include "NakamaChannelTypes.h"
 #include "NakamaMatch.h"
 #include "NakamaMatchTypes.h"
-#include "NakamaNotification.h"
 #include "NakamaParty.h"
 #include "NakamaPresence.h"
-#include "NakamaStreams.h"
 #include "NakamaChat.h"
 #include "NakamaRealtimeClientRequests.generated.h"
 
@@ -28,10 +26,7 @@ class NAKAMABLUEPRINTS_API UNakamaRealtimeClientRequests : public UBlueprintAsyn
 };
 
 
-
-/// <summary>
-/// Messaging (Were split up into direct and channel based)
-/// </summary>
+// --- Messaging --- //
 
 // Global Delegates for empty success / error
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAnyRtError, FNakamaRtError, Error);
@@ -108,7 +103,7 @@ public:
 	 * @param Content The content of the chat message. Must be a JSON object.
 	 * @param RealtimeClient The Realtime Client (Socket) to use.
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Nakama|Chat|Messaging", meta = (BlueprintInternalUseOnly = "true"))
+	UFUNCTION(BlueprintCallable, Category = "Nakama|Chat|Messaging", meta = (BlueprintInternalUseOnly = "true", DisplayName = "Write Chat Message"))
 	static UNakamaRealtimeClientSendMessage* SendMessage(UNakamaRealtimeClient *RealtimeClient, FString ChannelId, FString Content);
 
 	virtual void Activate() override;
@@ -247,9 +242,7 @@ private:
 	FString MessageId;
 };
 
-/// <summary>
-/// Chat
-/// </summary>
+// --- Chat --- //
 
 
 /**
@@ -337,9 +330,7 @@ private:
 };
 
 
-/// <summary>
-/// Matchmaker System
-/// </summary>
+// --- Matchmaker --- //
 
 /**
  * Join Matchmaker
@@ -373,7 +364,7 @@ public:
 	 * @param RealtimeClient The Realtime Client (Socket) to use.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Matchmaker", meta = (BlueprintInternalUseOnly = "true"))
-	static UNakamaRealtimeClientAddMatchmaker* AddMatchmaker(UNakamaRealtimeClient *RealtimeClient, int32 MinCount, int32 MaxCount, FString Query, TMap<FString, FString> StringProperties, TMap<FString, double> NumericProperties, int32 CountMultiple, bool IgnoreCountMultiple);
+	static UNakamaRealtimeClientAddMatchmaker* AddMatchmaker(UNakamaRealtimeClient *RealtimeClient, int32 MinCount, int32 MaxCount, FString Query, TMap<FString, FString> StringProperties, TMap<FString, float> NumericProperties, int32 CountMultiple, bool IgnoreCountMultiple);
 
 	virtual void Activate() override;
 
@@ -386,7 +377,7 @@ private:
 	int32 MaxCount;
 	FString Query;
 	TMap<FString, FString> StringProperties;
-	TMap<FString, double> NumericProperties;
+	TMap<FString, float> NumericProperties;
 	int32 CountMultiple;
 	bool IgnoreCountMultiple;
 
@@ -419,7 +410,7 @@ public:
 	 * @param Ticket The ticket returned by the matchmaker on join. See <c>NMatchmakerTicket.ticket</c>.
 	 * @param RealtimeClient The Realtime Client (Socket) to use.
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Nakama|Matchmaker", meta = (BlueprintInternalUseOnly = "true"))
+	UFUNCTION(BlueprintCallable, Category = "Nakama|Matchmaker", meta = (BlueprintInternalUseOnly = "true", DisplayName = "Remove Matchmaker"))
 	static UNakamaRealtimeClientLeaveMatchmaker* LeaveMatchmaker(UNakamaRealtimeClient *RealtimeClient, FString Ticket);
 
 	virtual void Activate() override;
@@ -434,9 +425,8 @@ private:
 };
 
 
-/// <summary>
-/// Statuses
-/// </summary>
+// --- Statuses --- //
+
 
 /**
  * Update Status
@@ -594,9 +584,8 @@ private:
 
 };
 
-/// <summary>
-/// Realtime and Match (To send RPC, please use normal Client)
-/// </summary>
+// --- Realtime and Match (To send RPC, please use normal Client) --- //
+
 
 /**
  * Create Match
@@ -751,9 +740,7 @@ private:
 };
 
 
-/// <summary>
-/// Parties
-/// </summary>
+// --- Parties --- //
 
 /**
  * Create Party
@@ -1107,7 +1094,7 @@ public:
 	 * @param CountMultiple An optional multiple of the matched count that must be satisfied.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Matchmaker", meta = (BlueprintInternalUseOnly = "true"))
-	static UNakamaRealtimeClientAddMatchmakerParty* AddMatchmakerParty(UNakamaRealtimeClient *RealtimeClient, FString PartyId, int32 MinCount, int32 MaxCount, FString Query, TMap<FString, FString> StringProperties, TMap<FString, double> NumericProperties, int32 CountMultiple, bool IgnoreCountMultiple);
+	static UNakamaRealtimeClientAddMatchmakerParty* AddMatchmakerParty(UNakamaRealtimeClient *RealtimeClient, FString PartyId, int32 MinCount, int32 MaxCount, FString Query, TMap<FString, FString> StringProperties, TMap<FString, float> NumericProperties, int32 CountMultiple, bool IgnoreCountMultiple);
 
 	virtual void Activate() override;
 
@@ -1121,7 +1108,7 @@ private:
 	int32 MaxCount;
 	FString Query;
 	TMap<FString, FString> StringProperties;
-	TMap<FString, double> NumericProperties;
+	TMap<FString, float> NumericProperties;
 	int32 CountMultiple;
 	bool IgnoreCountMultiple;
 
@@ -1205,13 +1192,3 @@ private:
 	FString FunctionId;
 	FString Payload;
 };
-
-
-
-/// <summary>
-/// Get/Set UserData
-/// GetTransport
-/// IsConnected
-/// Connect
-/// Rpc
-/// </summary>

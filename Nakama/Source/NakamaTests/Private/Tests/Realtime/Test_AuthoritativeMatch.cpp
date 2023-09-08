@@ -1,7 +1,6 @@
 ﻿#include "Tests/Realtime/Test_AuthoritativeMatch.h"
 
 #include "NakamaLoggingMacros.h"
-#include "NakamaRealtimeClientListener.h"
 
 IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(AuthoritativeMatch, FNakamaAuthoritativeMatchTestBase, "Nakama.Base.Realtime.Matches.AuthoritativeMatch", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
 inline bool AuthoritativeMatch::RunTest(const FString& Parameters)
@@ -17,9 +16,8 @@ inline bool AuthoritativeMatch::RunTest(const FString& Parameters)
 		
 		// Setup socket:
 		Socket = Client->SetupRealtimeClient();
-		Listener = UNakamaRealtimeClientListener::CreateRealtimeClientListener();
 
-		Listener->SetConnectCallback([this]()
+		Socket->SetConnectCallback([this]()
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Test Socket 1 Connected"));
 
@@ -32,9 +30,8 @@ inline bool AuthoritativeMatch::RunTest(const FString& Parameters)
 				Session2 = Client2Session;
 
 				Socket2 = Client2->SetupRealtimeClient();
-				Listener2 = UNakamaRealtimeClientListener::CreateRealtimeClientListener();
 
-				Listener2->SetConnectCallback([this]()
+				Socket2->SetConnectCallback([this]()
 				{
 					UE_LOG(LogTemp, Warning, TEXT("Test Socket 2 Connected"));
 
@@ -77,9 +74,8 @@ inline bool AuthoritativeMatch::RunTest(const FString& Parameters)
 					const FString JsonPayload = "{\"debug\": true, \"label\": \"TestAuthoritativeMatch\"}";
 					Socket->RPC("clientrpc.create_authoritative_match", JsonPayload, RpcSuccessCallback, RpcErrorCallback);
 				});
-
-				Socket2->SetListener(Listener2);
-				Socket2->Connect(Session, true, {}, {} );
+				
+				Socket2->Connect(Session, true);
 			};
 
 			auto Client2AuthenticateError = [this](const FNakamaError& Error)
@@ -92,9 +88,8 @@ inline bool AuthoritativeMatch::RunTest(const FString& Parameters)
 			Client2->AuthenticateCustom(FGuid::NewGuid().ToString(), "", true, {}, Client2AuthenticateSuccess, Client2AuthenticateError);
 			
 		});
-
-		Socket->SetListener(Listener);
-		Socket->Connect(Session, true, {}, {} );
+		
+		Socket->Connect(Session, true);
 	};
 
 	// Define error callback

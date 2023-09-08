@@ -151,7 +151,7 @@ inline bool RestoreSession2::RunTest(const FString& Parameters)
 				StopTest();
 			};
 			
-			Client->GetUserAccount(RestoredSession, GetAccountSuccessCallback, GetAccountErrorCallback);
+			Client->GetAccount(RestoredSession, GetAccountSuccessCallback, GetAccountErrorCallback);
 		}
 	};
 

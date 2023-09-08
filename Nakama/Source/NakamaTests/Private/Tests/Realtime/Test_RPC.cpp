@@ -1,5 +1,4 @@
-﻿#include "NakamaRealtimeClientListener.h"
-#include "NakamaTestBase.h"
+﻿#include "NakamaTestBase.h"
 
 IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(RPCWithHttpKey, FNakamaTestBase, "Nakama.Base.Realtime.RPC.RPCWithHttpKey", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
 inline bool RPCWithHttpKey::RunTest(const FString& Parameters)
@@ -15,10 +14,10 @@ inline bool RPCWithHttpKey::RunTest(const FString& Parameters)
 
 		UE_LOG(LogTemp, Warning, TEXT("Session Token: %s"), *Session->GetAuthToken());
 
-		// Create Listener
-		Listener = UNakamaRealtimeClientListener::CreateRealtimeClientListener();
+		// Setup socket:
+		Socket = Client->SetupRealtimeClient();
 
-		Listener->SetConnectCallback([this]()
+		Socket->SetConnectCallback([this]()
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Socket connected"));
 
@@ -58,10 +57,8 @@ inline bool RPCWithHttpKey::RunTest(const FString& Parameters)
 			//Client->RPC(ServerHttpKey, FunctionId, {}, RPCSuccessCallback, RPCErrorCallback);
 		});
 		
-		// Setup socket:
-		Socket = Client->SetupRealtimeClient();
-		Socket->SetListener(Listener);
-		Socket->Connect(Session, true, {}, {});
+		// Connect with Socket
+		Socket->Connect(Session, true);
 	};
 
 	// Define error callback
@@ -94,13 +91,12 @@ inline bool RPCWithHttpKey2::RunTest(const FString& Parameters)
 	{
 		// Set the session for later use
 		Session = session;
-
 		UE_LOG(LogTemp, Warning, TEXT("Session Token: %s"), *Session->GetAuthToken());
 
-		// Create Listener
-		Listener = UNakamaRealtimeClientListener::CreateRealtimeClientListener();
+		// Setup socket:
+		Socket = Client->SetupRealtimeClient();
 
-		Listener->SetConnectCallback([this]()
+		Socket->SetConnectCallback([this]()
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Socket connected"));
 
@@ -141,10 +137,8 @@ inline bool RPCWithHttpKey2::RunTest(const FString& Parameters)
 			Client->RPC(ServerHttpKey, FunctionId, {}, RPCSuccessCallback, RPCErrorCallback);
 		});
 		
-		// Setup socket:
-		Socket = Client->SetupRealtimeClient();
-		Socket->SetListener(Listener);
-		Socket->Connect(Session, true, {}, {} );
+		// Connect with Socket
+		Socket->Connect(Session, true);
 	};
 
 	// Define error callback

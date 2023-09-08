@@ -66,11 +66,11 @@ inline bool ListFriends::RunTest(const FString& Parameters)
 							};
 
 							// Passing cursor into function
-							Client->GetFriends(Session, ListFriendsLimit, ENakamaFriendState::INVITE_SENT, InvitedList.Cursor, ListFriends2Success, ListFriends2Error);
+							Client->ListFriends(Session, ListFriendsLimit, ENakamaFriendState::INVITE_SENT, InvitedList.Cursor, ListFriends2Success, ListFriends2Error);
 							
 						};
 						
-						Client->GetFriends(Session, ListFriendsLimit, ENakamaFriendState::INVITE_SENT, "", ListFriendsSuccess, {});
+						Client->ListFriends(Session, ListFriendsLimit, ENakamaFriendState::INVITE_SENT, "", ListFriendsSuccess, {});
 						
 					};
 					

@@ -66,7 +66,7 @@ inline bool GetAccount::RunTest(const FString& Parameters)
 			StopTest();
 		};
 
-		Client->GetUserAccount(Session, successCallback, errorCallback);
+		Client->GetAccount(Session, successCallback, errorCallback);
 		
 	};
 

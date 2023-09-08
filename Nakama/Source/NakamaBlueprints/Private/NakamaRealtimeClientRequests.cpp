@@ -10,7 +10,6 @@
 #include "NakamaPresence.h"
 #include "NakamaStatus.h"
 #include "NakamaChat.h"
-#include "NakamaRealtimeClientListener.h"
 
 UNakamaRealtimeClientConnect* UNakamaRealtimeClientConnect::Connect(UNakamaRealtimeClient *RealtimeClient, UNakamaSession *Session, bool bInShowAsOnline)
 {
@@ -59,26 +58,27 @@ void UNakamaRealtimeClientConnect::Activate()
 	}
 
 	// Connect Callback
-	RealtimeClient->ClientListener->SetConnectCallback([this]()
+	auto connectSuccessCallback = [this]()
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
 			return;
 		
 		OnSuccess.Broadcast();
 		SetReadyToDestroy();
-	});
+	};
 
 	// Connection error Callback
-	RealtimeClient->ClientListener->SetConnectionErrorCallback([this](const FNakamaRtError& Error)
-	{
+	auto connectErrorCallback = [this](const FNakamaRtError& Error)
+    {
 		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
 			return;
 		
 		OnError.Broadcast(Error);
 		SetReadyToDestroy();
-	});
-	
-	RealtimeClient->Connect(UserSession, bShowAsOnline, {}, {});
+    };
+
+	// NOTE: Uses lambdas here
+	RealtimeClient->Connect(UserSession, bShowAsOnline,connectSuccessCallback, connectErrorCallback);
 }
 
 UNakamaRealtimeClientSendMessage* UNakamaRealtimeClientSendMessage::SendMessage(UNakamaRealtimeClient* RealtimeClient,
@@ -120,7 +120,7 @@ void UNakamaRealtimeClientSendMessage::Activate()
 		SetReadyToDestroy();
 	};
 
-	RealtimeClient->SendMessage(ChannelId, Content, successCallback, errorCallback);
+	RealtimeClient->WriteChatMessage(ChannelId, Content, successCallback, errorCallback);
 }
 
 UNakamaRealtimeClientSendDirectMessage* UNakamaRealtimeClientSendDirectMessage::SendDirectMessage(
@@ -162,7 +162,7 @@ void UNakamaRealtimeClientSendDirectMessage::Activate()
 		SetReadyToDestroy();
 	};
 	
-	RealtimeClient->SendMessage(UserID, Content, successCallback, errorCallback);
+	RealtimeClient->WriteChatMessage(UserID, Content, successCallback, errorCallback);
 }
 
 UNakamaRealtimeClientUpdateChatMessage* UNakamaRealtimeClientUpdateChatMessage::UpdateChatMessage(
@@ -337,7 +337,7 @@ void UNakamaRealtimeClientLeaveChat::Activate()
 
 UNakamaRealtimeClientAddMatchmaker* UNakamaRealtimeClientAddMatchmaker::AddMatchmaker(
 	UNakamaRealtimeClient* RealtimeClient, int32 MinCount, int32 MaxCount, FString Query,
-	TMap<FString, FString> StringProperties, TMap<FString, double> NumericProperties, int32 CountMultiple,
+	TMap<FString, FString> StringProperties, TMap<FString, float> NumericProperties, int32 CountMultiple,
 	bool IgnoreCountMultiple)
 {
 	UNakamaRealtimeClientAddMatchmaker* Node = NewObject<UNakamaRealtimeClientAddMatchmaker>();
@@ -385,13 +385,16 @@ void UNakamaRealtimeClientAddMatchmaker::Activate()
 	auto OptMaxCount = FNakamaUtils::CreateOptional(MaxCount, 0);
 	const auto OptQuery = FNakamaUtils::CreateOptional(Query, FString());
 	const auto OptCountMultiple = FNakamaUtils::CreateOptional(CountMultiple, 0);
+
+	// NOTE: Unreal 4.27 Blueprints does not support TMap with Double so we use float for Blueprints instead
+	const TMap<FString, double> NumericPropertiesDouble = FNakamaUtils::ConvertFloatMapToDouble(NumericProperties);
 	
 	RealtimeClient->AddMatchmaker(
 		OptMinCount,
 		OptMaxCount,
 		OptQuery,
 		StringProperties,
-		NumericProperties,
+		NumericPropertiesDouble,
 		OptCountMultiple,
 		successCallback,
 		errorCallback
@@ -436,7 +439,7 @@ void UNakamaRealtimeClientLeaveMatchmaker::Activate()
 		SetReadyToDestroy();
 	};
 	
-	RealtimeClient->LeaveMatchmaker(Ticket, successCallback, errorCallback);
+	RealtimeClient->RemoveMatchmaker(Ticket, successCallback, errorCallback);
 }
 
 UNakamaRealtimeClientUpdateStatus* UNakamaRealtimeClientUpdateStatus::UpdateStatus(
@@ -1101,7 +1104,7 @@ void UNakamaRealtimeClientAcceptPartyMember::Activate()
 
 UNakamaRealtimeClientAddMatchmakerParty* UNakamaRealtimeClientAddMatchmakerParty::AddMatchmakerParty(
 	UNakamaRealtimeClient* RealtimeClient, FString PartyId, int32 MinCount, int32 MaxCount, FString Query,
-	TMap<FString, FString> StringProperties, TMap<FString, double> NumericProperties, int32 CountMultiple,
+	TMap<FString, FString> StringProperties, TMap<FString, float> NumericProperties, int32 CountMultiple,
 	bool IgnoreCountMultiple)
 {
 	UNakamaRealtimeClientAddMatchmakerParty* Node = NewObject<UNakamaRealtimeClientAddMatchmakerParty>();
@@ -1150,6 +1153,9 @@ void UNakamaRealtimeClientAddMatchmakerParty::Activate()
 	auto OptMaxCount = FNakamaUtils::CreateOptional(MaxCount, 0);
 	const auto OptQuery = FNakamaUtils::CreateOptional(Query, FString());
 	const auto OptCountMultiple = FNakamaUtils::CreateOptional(CountMultiple, 0);
+
+	// NOTE: Unreal 4.27 Blueprints does not support TMap with Double so we use float for Blueprints instead
+	const TMap<FString, double> NumericPropertiesDouble = FNakamaUtils::ConvertFloatMapToDouble(NumericProperties);
 	
 	RealtimeClient->AddMatchmakerParty(
 		PartyId,
@@ -1157,7 +1163,7 @@ void UNakamaRealtimeClientAddMatchmakerParty::Activate()
 		OptMaxCount,
 		OptQuery,
 		StringProperties,
-		NumericProperties,
+		NumericPropertiesDouble,
 		OptCountMultiple,
 		successCallback,
 		errorCallback

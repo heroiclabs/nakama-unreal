@@ -1227,7 +1227,7 @@ void UNakamaClientGetUserAccount::Activate()
 		SetReadyToDestroy();
 	};
 	
-	NakamaClient->GetUserAccount(UserSession, successCallback, errorCallback);
+	NakamaClient->GetAccount(UserSession, successCallback, errorCallback);
 }
 
 UNakamaClientGetUsers* UNakamaClientGetUsers::GetUsers(UNakamaClient* Client, UNakamaSession* Session,
@@ -1509,11 +1509,11 @@ void UNakamaClientGetFriends::Activate()
 	// If "All" Friend States are requested, we return an empty Enum Object
 	if(State == ENakamaFriendState::ALL)
 	{
-		NakamaClient->GetFriends(UserSession, OptLimit, {}, Cursor, successCallback, errorCallback);
+		NakamaClient->ListFriends(UserSession, OptLimit, {}, Cursor, successCallback, errorCallback);
 	}
 	else
 	{
-		NakamaClient->GetFriends(UserSession, OptLimit, State, Cursor, successCallback, errorCallback);
+		NakamaClient->ListFriends(UserSession, OptLimit, State, Cursor, successCallback, errorCallback);
 	}
 }
 
@@ -1635,7 +1635,7 @@ void UNakamaClientRemoveFriends::Activate()
 		SetReadyToDestroy();
 	};
 	
-	NakamaClient->RemoveFriends(UserSession, Ids, Usernames, successCallback, errorCallback);
+	NakamaClient->DeleteFriends(UserSession, Ids, Usernames, successCallback, errorCallback);
 }
 
 UNakamaClientBlockFriends* UNakamaClientBlockFriends::BlockFriends(UNakamaClient* Client, UNakamaSession* Session,
@@ -2845,7 +2845,7 @@ void UNakamaClientRemoveStorageObjects::Activate()
 		SetReadyToDestroy();
 	};
 	
-	NakamaClient->RemoveStorageObjects(UserSession, StorageObjectsData, successCallback, errorCallback);
+	NakamaClient->DeleteStorageObjects(UserSession, StorageObjectsData, successCallback, errorCallback);
 }
 
 UNakamaClientRPC* UNakamaClientRPC::RPC(UNakamaClient* Client, UNakamaSession* Session, FString FunctionId,

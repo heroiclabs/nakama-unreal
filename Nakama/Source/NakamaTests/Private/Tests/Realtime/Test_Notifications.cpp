@@ -1,5 +1,4 @@
-﻿#include "NakamaRealtimeClientListener.h"
-#include "NakamaTestBase.h"
+﻿#include "NakamaTestBase.h"
 
 // Send Notification to self from RPC and receive it
 IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(NotificationsCreateReceive, FNakamaTestBase, "Nakama.Base.Realtime.Notifications.CreateReceive", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
@@ -14,10 +13,10 @@ inline bool NotificationsCreateReceive::RunTest(const FString& Parameters)
 		// Set the session for later use
 		Session = session;
 
-		// Create Listener
-		Listener = UNakamaRealtimeClientListener::CreateRealtimeClientListener();
+		// Setup socket:
+		Socket = Client->SetupRealtimeClient();
 
-		Listener->SetConnectCallback([this]()
+		Socket->SetConnectCallback([this]()
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Socket connected"));
 
@@ -39,7 +38,7 @@ inline bool NotificationsCreateReceive::RunTest(const FString& Parameters)
 			Socket->RPC("clientrpc.send_notification", Payload, RPCSuccessCallback, RPCErrorCallback);
 		});
 
-		Listener->SetNotificationsCallback( [&](const FNakamaNotificationList& NotificationList)
+		Socket->SetNotificationsCallback( [&](const FNakamaNotificationList& NotificationList)
 		{
 			UE_LOG (LogTemp, Warning, TEXT("Notification Received: %d"), NotificationList.Notifications.Num());
 
@@ -58,10 +57,8 @@ inline bool NotificationsCreateReceive::RunTest(const FString& Parameters)
 			StopTest();
 		});
 		
-		// Setup socket:
-		Socket = Client->SetupRealtimeClient();
-		Socket->SetListener(Listener);
-		Socket->Connect(Session, true, {}, {} );
+		// Connect with Socket
+		Socket->Connect(Session, true);
 	};
 
 	// Define error callback
@@ -97,10 +94,10 @@ inline bool NotificationsCreateListDelete::RunTest(const FString& Parameters)
 		// Set the session for later use
 		Session = session;
 
-		// Create Listener
-		Listener = UNakamaRealtimeClientListener::CreateRealtimeClientListener();
+		// Setup socket:
+		Socket = Client->SetupRealtimeClient();
 
-		Listener->SetConnectCallback([this]()
+		Socket->SetConnectCallback([this]()
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Socket connected"));
 
@@ -168,10 +165,8 @@ inline bool NotificationsCreateListDelete::RunTest(const FString& Parameters)
 			Socket->RPC("clientrpc.send_notification", Payload, RPCSuccessCallback, RPCErrorCallback);
 		});
 		
-		// Setup socket:
-		Socket = Client->SetupRealtimeClient();
-		Socket->SetListener(Listener);
-		Socket->Connect(Session, true, {}, {} );
+		// Connect with Socket
+		Socket->Connect(Session, true);
 	};
 
 	// Define error callback

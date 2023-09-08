@@ -58,7 +58,7 @@ FNakamaNotificationList::FNakamaNotificationList(const FString& JsonString)
 			}
 		}
 		
-		JsonObject->TryGetStringField("cursor", CacheableCursor);
+		JsonObject->TryGetStringField("cacheable_cursor", CacheableCursor);
 	}
 }
 

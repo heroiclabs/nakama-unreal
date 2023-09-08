@@ -40,7 +40,7 @@ public:
 
 	static UNakamaClient* CreateClient()
 	{
-		return UNakamaClient::CreateDefaultClient(TEXT("defaultkey"), TEXT("127.0.0.1"), 7350, false);
+		return UNakamaClient::CreateDefaultClient(TEXT("defaultkey"), TEXT("127.0.0.1"), 7350, false, true);
 	}
 
 	const FString ServerHttpKey = TEXT("defaulthttpkey");

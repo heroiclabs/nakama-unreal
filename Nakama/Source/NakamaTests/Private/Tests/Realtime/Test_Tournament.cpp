@@ -1,5 +1,4 @@
 ﻿#include "Tests/Realtime/Test_Tournament.h"
-#include "NakamaRealtimeClientListener.h"
 
 IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(Tournament, FNakamaTournamentTestBase, "Nakama.Base.Realtime.Tournament", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
 inline bool Tournament::RunTest(const FString& Parameters)
@@ -16,9 +15,7 @@ inline bool Tournament::RunTest(const FString& Parameters)
 		// Setup socket:
 		Socket = Client->SetupRealtimeClient();
 
-		Listener = UNakamaRealtimeClientListener::CreateRealtimeClientListener();
-
-		Listener->SetConnectCallback([this]()
+		Socket->SetConnectCallback([this]()
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Test Socket connected"));
 
@@ -87,8 +84,7 @@ inline bool Tournament::RunTest(const FString& Parameters)
 		});
 		
 		// In this test we use a custom external listener, instead of the one provided with the Realtime Client
-		Socket->SetListener(Listener);
-		Socket->Connect(Session, true, {}, {} );
+		Socket->Connect(Session, true);
 	};
 
 	// Define error callback

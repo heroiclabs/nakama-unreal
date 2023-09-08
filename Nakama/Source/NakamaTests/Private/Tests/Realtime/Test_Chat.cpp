@@ -1,5 +1,4 @@
-﻿#include "NakamaRealtimeClientListener.h"
-#include "NakamaTestBase.h"
+﻿#include "NakamaTestBase.h"
 #include "Misc/AutomationTest.h"
 
 // Join Chat
@@ -17,9 +16,8 @@ inline bool JoinChat::RunTest(const FString& Parameters)
 		
 		// Setup socket:
 		Socket = Client->SetupRealtimeClient();
-		Listener = UNakamaRealtimeClientListener::CreateRealtimeClientListener();
 
-		Listener->SetConnectCallback([this]()
+		Socket->SetConnectCallback([this]()
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Test Socket connected"));
 
@@ -42,14 +40,13 @@ inline bool JoinChat::RunTest(const FString& Parameters)
 			Socket->JoinChat(TEXT("General"), ENakamaChannelType::ROOM, true, false, successCallback, errorCallback);
 		});
 
-		Listener->SetDisconnectCallback( [](const FNakamaDisconnectInfo& DisconnectInfo)
+		Socket->SetDisconnectCallback( [](const FNakamaDisconnectInfo& DisconnectInfo)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Socket disconnected!"));
 			UE_LOG(LogTemp, Warning, TEXT("Socket disconnected: %s"), *DisconnectInfo.Reason);
 		});
-
-		Socket->SetListener(Listener);
-		Socket->Connect(Session, true, {}, {} );
+		
+		Socket->Connect(Session, true);
 	};
 
 	// Define error callback
@@ -87,9 +84,8 @@ inline bool JoinChatWriteMessage::RunTest(const FString& Parameters)
 		
 		// Setup socket:
 		Socket = Client->SetupRealtimeClient();
-		Listener = UNakamaRealtimeClientListener::CreateRealtimeClientListener();
 
-		Listener->SetConnectCallback([this]()
+		Socket->SetConnectCallback([this]()
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Test Socket connected"));
 
@@ -111,7 +107,7 @@ inline bool JoinChatWriteMessage::RunTest(const FString& Parameters)
 					StopTest();
 				};
 				
-				Socket->SendMessage( Channel.Id, TEXT("{ \"Hello\" : \"World\" }"), writeChatMessageSuccessCallback, writechatMessageErrorCallback );
+				Socket->WriteChatMessage( Channel.Id, TEXT("{ \"Hello\" : \"World\" }"), writeChatMessageSuccessCallback, writechatMessageErrorCallback );
 			};
 
 			auto errorCallback = [this](const FNakamaRtError& Error)
@@ -124,18 +120,18 @@ inline bool JoinChatWriteMessage::RunTest(const FString& Parameters)
 			Socket->JoinChat(TEXT("General"), ENakamaChannelType::ROOM, true, false, successCallback, errorCallback);
 		});
 
-		Listener->SetDisconnectCallback( [](const FNakamaDisconnectInfo& DisconnectInfo)
+		Socket->SetDisconnectCallback( [](const FNakamaDisconnectInfo& DisconnectInfo)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Socket disconnected!"));
 			UE_LOG(LogTemp, Warning, TEXT("Socket disconnected: %s"), *DisconnectInfo.Reason);
 		});
 		
-		Listener->SetChannelMessageCallback( [](const FNakamaChannelMessage& ChannelMessage)
+		Socket->SetChannelMessageCallback( [](const FNakamaChannelMessage& ChannelMessage)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Channel Message: %s"), *ChannelMessage.Content);
 		});
 
-		Listener->SetNotificationsCallback( [](const FNakamaNotificationList& NotificationList)
+		Socket->SetNotificationsCallback( [](const FNakamaNotificationList& NotificationList)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Notifications: %d"), NotificationList.Notifications.Num());
 			for (auto& Notification : NotificationList.Notifications)
@@ -144,7 +140,7 @@ inline bool JoinChatWriteMessage::RunTest(const FString& Parameters)
 			}
 		});
 
-		Listener->SetStatusPresenceCallback( [](const FNakamaStatusPresenceEvent& StatusPresenceEvent)
+		Socket->SetStatusPresenceCallback( [](const FNakamaStatusPresenceEvent& StatusPresenceEvent)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Status Presences: %d"), StatusPresenceEvent.Joins.Num());
 			for (auto& Presence : StatusPresenceEvent.Joins)
@@ -152,9 +148,8 @@ inline bool JoinChatWriteMessage::RunTest(const FString& Parameters)
 				UE_LOG(LogTemp, Warning, TEXT("Joined Presence: %s"), *Presence.UserID);
 			}
 		});
-
-		Socket->SetListener(Listener);
-		Socket->Connect(Session, true, {}, {} );
+		
+		Socket->Connect(Session, true);
 	};
 
 	// Define error callback
@@ -192,9 +187,7 @@ inline bool JoinGroupChat::RunTest(const FString& Parameters)
 		// Setup socket:S
 		Socket = Client->SetupRealtimeClient();
 
-		Listener = UNakamaRealtimeClientListener::CreateRealtimeClientListener();
-
-		Listener->SetConnectCallback([this]()
+		Socket->SetConnectCallback([this]()
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Test Socket connected"));
 
@@ -231,12 +224,8 @@ inline bool JoinGroupChat::RunTest(const FString& Parameters)
 			FString GroupName = FString::Printf(TEXT("Group chat %s"), *Session->GetAuthToken());
 			Client->CreateGroup(Session, GroupName, TEXT("A group for chatting"), {}, {}, false, {}, CreateGroupSuccessCallback, CreateGroupErrorCallback);
 		});
-
-		// In this test we use a custom external listener,
-		// instead of the one provided with the Realtime Client
-		Socket->SetListener(Listener);
 		
-		Socket->Connect(Session, true, {}, {} );
+		Socket->Connect(Session, true);
 	};
 
 	// Define error callback

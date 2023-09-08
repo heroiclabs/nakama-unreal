@@ -12,7 +12,6 @@
 #include "NakamaParty.h"
 #include "NakamaStatus.h"
 #include "NakamaStreams.h"
-#include "NakamaRealtimeClientListener.h"
 #include "WebSocketsModule.h"
 #include "GenericPlatform/GenericPlatformHttp.h"
 
@@ -26,8 +25,88 @@ void UNakamaRealtimeClient::Initialize(const FString& InHost, int32 InPort, bool
 	NAKAMA_LOG_INFO(FString::Printf(TEXT("Nakama Realtime Client Created on Port: %d"), InPort));
 }
 
-void UNakamaRealtimeClient::Connect(UNakamaSession* Session, bool bCreateStatus, const FOnRealtimeClientConnected& Success, const FOnRealtimeClientConnectionError& ConnectionError)
+void UNakamaRealtimeClient::Connect(
+	UNakamaSession* Session,
+	bool bCreateStatus,
+	const FOnRealtimeClientConnected& Success,
+	const FOnRealtimeClientConnectionError& ConnectionError)
 {
+	auto successCallback = [this, Success]()
+	{
+		if(!FNakamaUtils::IsRealtimeClientActive(this))
+			return;
+		
+		Success.Broadcast();
+	};
+
+	auto errorCallback = [this, ConnectionError](const FNakamaRtError& error)
+	{
+		if(!FNakamaUtils::IsRealtimeClientActive(this))
+			return;
+		
+		ConnectionError.Broadcast(error);
+	};
+
+	Connect(Session, bCreateStatus, successCallback, errorCallback);
+}
+
+void UNakamaRealtimeClient::Connect(
+	UNakamaSession* Session,
+	bool bCreateStatus,
+	TFunction<void()> Success,
+	TFunction<void(const FNakamaRtError& Error)> ConnectionError)
+{
+	// Start by checking session validity
+	if (!Session || !Session->IsValidLowLevel())
+	{
+		NAKAMA_LOG_WARN(TEXT("Session is invalid. Aborting connection attempt."));
+
+		FNakamaRtError InvalidSessionError;
+		InvalidSessionError.Message = TEXT("Realtime Client Connect. Session is invalid.");
+		InvalidSessionError.Code = ENakamaRtErrorCode::BAD_INPUT;
+
+		// Execute the provided error callback
+		if(ConnectionError)
+		{
+			ConnectionError(InvalidSessionError);
+		}
+
+		// Broadcast Multicast Delegate Event
+		if(ConnectionErrorEvent.IsBound())
+		{
+			ConnectionErrorEvent.Broadcast(InvalidSessionError);
+		}
+
+		return;
+	}
+	
+	// Check if connetion is ongoing
+	// remove this block if you want to create a new socket connection while one is already active
+	if (ConnectionState != EConnectionState::Disconnected)
+	{
+		NAKAMA_LOG_WARN(TEXT("A connection process is currently active. Aborting new connection attempt."));
+
+		FNakamaRtError ExistingConnectionError;
+		ExistingConnectionError.Message = TEXT("A connection process is already active.");
+		ExistingConnectionError.Code = ENakamaRtErrorCode::CONNECT_ERROR;
+
+		// Execute Lambda
+		if(ConnectionError)
+		{
+			ConnectionError(ExistingConnectionError);
+		}
+
+		// Broadcast Multicast Delegate Event
+		if(ConnectionErrorEvent.IsBound())
+		{
+			ConnectionErrorEvent.Broadcast(ExistingConnectionError);
+		}
+		
+		return;
+	}
+
+	ConnectionState = EConnectionState::Connecting;
+	
 	FString Url;
 
 	if (bUseSSL)
@@ -48,29 +127,43 @@ void UNakamaRealtimeClient::Connect(UNakamaSession* Session, bool bCreateStatus,
 	{
 		FModuleManager::Get().LoadModule("WebSockets");
 	}
+	
+	// Check if a previous WebSocket object exists (safety check)
+	if (WebSocket)
+	{
+		CancelAllRequests(ENakamaRtErrorCode::DISCONNECTED);
+		CleanupWebSocket();
+	}
 
 	WebSocket = FWebSocketsModule::Get().CreateWebSocket(Url);
 
 	WebSocket->OnConnected().AddLambda([this, Success]()
 	{
 		NAKAMA_LOG_INFO(TEXT("Realtime Client Connected"));
-		if(_Listener && IsValidLowLevel() && _Listener->IsValidLowLevel())
-		{
-			if(_Listener->OnConnect)
-			{
-				_Listener->OnConnect();
-			}
-		}
-
-		// Broadcast connected event on this function
+		
+		ConnectionState = EConnectionState::Connected;
+		
+		// Handle callbacks
 		if(FNakamaUtils::IsRealtimeClientActive(this))
 		{
-			if(Success.IsBound())
+			// This function (Connect)
+			if(Success)
 			{
-				Success.Broadcast();
+				Success();
+			}
+
+			// Call Lambda
+			if(OnConnect)
+			{
+				OnConnect();
+			}
+
+			// Broadcast Event Multicast Delegate
+			if(ConnectedEvent.IsBound())
+			{
+				ConnectedEvent.Broadcast();
 			}
 		}
-		
 	});
 
 	WebSocket->OnConnectionError().AddLambda([this, ConnectionError](const FString& Error)
@@ -79,24 +172,31 @@ void UNakamaRealtimeClient::Connect(UNakamaSession* Session, bool bCreateStatus,
 		// Call connection error callback if listener is set and OnConnectionError is bound
 		// Checking validity is important here
 
+		ConnectionState = EConnectionState::Disconnected;
+
 		FNakamaRtError ConnectionRtError;
 		ConnectionRtError.Message = Error;
 		ConnectionRtError.Code = ENakamaRtErrorCode::CONNECT_ERROR;
-		
-		if(_Listener != nullptr && IsValidLowLevel() && _Listener->IsValidLowLevel())
-		{
-			if(_Listener->OnConnectionError)
-			{
-				_Listener->OnConnectionError(ConnectionRtError);
-			}
-		}
 
-		// Broadcast connection error event on this function
+		// Handle Callbacks
 		if(FNakamaUtils::IsRealtimeClientActive(this))
 		{
-			if(ConnectionError.IsBound())
+			// This function (Connect)
+			if(ConnectionError)
 			{
-				ConnectionError.Broadcast(ConnectionRtError);
+				ConnectionError(ConnectionRtError);
+			}
+
+			// Call Lambda
+			if(OnConnectionError)
+			{
+				OnConnectionError(ConnectionRtError);
+			}
+
+			// Broadcast Event Multicast Delegate
+			if(ConnectionErrorEvent.IsBound())
+			{
+				ConnectionErrorEvent.Broadcast(ConnectionRtError);
 			}
 		}
 	});
@@ -104,12 +204,14 @@ void UNakamaRealtimeClient::Connect(UNakamaSession* Session, bool bCreateStatus,
 	WebSocket->OnClosed().AddLambda([this](int32 StatusCode, const FString& Reason, bool bWasClean)
 	{
 		NAKAMA_LOG_INFO(FString::Printf(TEXT("Realtime Client Connection closed with status code: %d, reason: %s, was clean: %d"), StatusCode, *Reason, bWasClean));
+
+		ConnectionState = EConnectionState::Disconnected;
 		
 		CancelAllRequests(ENakamaRtErrorCode::DISCONNECTED);
 
-		// Call disconnect callback if listener is set and OnDisconnect is bound
-		// These validity checks are important
-		if(_Listener != nullptr && IsValidLowLevel() && _Listener->IsValidLowLevel())
+		// Call disconnect callback if OnDisconnect is bound and DisconnectedEvent is bound
+		// This validity check is important
+		if(IsValidLowLevel())
 		{
 			FNakamaDisconnectInfo DisconnectInfo;
 			DisconnectInfo.Code = DisconnectInfo.ConvertIntToDisconnectCode(StatusCode);
@@ -126,9 +228,16 @@ void UNakamaRealtimeClient::Connect(UNakamaSession* Session, bool bCreateStatus,
 				bLocalDisconnectInitiated = false;  // Reset for future use
 			}
 
-			if(_Listener->OnDisconnect)
+			// Call Lambda
+			if(OnConnectionError)
 			{
-				_Listener->OnDisconnect(DisconnectInfo);
+				OnDisconnect(DisconnectInfo);
+			}
+
+			// Broadcast Event Multicast Delegate
+			if(DisconnectedEvent.IsBound())
+			{
+				DisconnectedEvent.Broadcast(DisconnectInfo);
 			}
 		}
 	});
@@ -151,11 +260,13 @@ void UNakamaRealtimeClient::Connect(UNakamaSession* Session, bool bCreateStatus,
 		{
 			if (!JsonObject->HasField("ping"))
 			{
-				NAKAMA_LOG_INFO(TEXT("..."));
+				//NAKAMA_LOG_INFO(TEXT("..."));
 				NAKAMA_LOG_DEBUG(FString::Printf(TEXT("Realtime Client: Sent Message: %s"), *MessageString));
 			}
 		}
 	});
+
+	bIsActive = true;
 	
 	WebSocket->Connect();
 }
@@ -167,25 +278,7 @@ void UNakamaRealtimeClient::Connect(UNakamaSession* Session, bool bCreateStatus,
 
 void UNakamaRealtimeClient::SetListenerAllCallbacks()
 {
-	SetListenerConnectCallback();
-	SetListenerDisconnectCallback();
-	SetListenerErrorCallback();
-	SetListenerChannelMessageCallback();
-	SetListenerChannelPresenceCallback();
-	SetListenerMatchmakerMatchedCallback();
-	SetListenerMatchDataCallback();
-	SetListenerMatchPresenceCallback();
-	SetListenerNotificationsCallback();
-	SetListenerPartyCallback();
-	SetListenerPartyCloseCallback();
-	SetListenerPartyDataCallback();
-	SetListenerPartyJoinRequestCallback();
-	SetListenerPartyLeaderCallback();
-	SetListenerPartyMatchmakerTicketCallback();
-	SetListenerPartyPresenceCallback();
-	SetListenerStatusPresenceCallback();
-	SetListenerStreamPresenceCallback();
-	SetListenerStreamDataCallback();
+	NAKAMA_LOG_DEBUG(TEXT("You no longer need to call 'SetListenerAllCallbacks()' bind directly to the events instead"));
 }
 
 /**
@@ -194,222 +287,102 @@ void UNakamaRealtimeClient::SetListenerAllCallbacks()
 
 void UNakamaRealtimeClient::SetListenerConnectCallback()
 {
-	ClientListener->SetConnectCallback([this]()
-	{
-		if(ConnectedEvent.IsBound())
-		{
-			ConnectedEvent.Broadcast();
-		}
-	});
+	NAKAMA_LOG_DEBUG(TEXT("You no longer need to call 'SetListenerConnectCallback()' bind directly to the 'ConnectedEvent' event instead"));
 }
 
 void UNakamaRealtimeClient::SetListenerConnectionErrorCallback()
 {
-	ClientListener->SetConnectionErrorCallback([this](const FNakamaRtError& error)
-	{
-		if(ConnectionErrorEvent.IsBound())
-		{
-			ConnectionErrorEvent.Broadcast(error);
-		}
-	});
+	NAKAMA_LOG_DEBUG(TEXT("You no longer need to call 'SetListenerConnectionErrorCallback()' bind to the 'ConnectionErrorEvent' event instead"));
 }
 
 void UNakamaRealtimeClient::SetListenerDisconnectCallback()
 {
-	ClientListener->SetDisconnectCallback([this](const FNakamaDisconnectInfo& message)
-	{
-		if(DisconnectedEvent.IsBound())
-		{
-			DisconnectedEvent.Broadcast(message);
-		}
-	});
+	NAKAMA_LOG_DEBUG(TEXT("You no longer need to call 'SetListenerDisconnectCallback()' bind to the 'DisconnectedEvent' event instead"));
 }
 
 void UNakamaRealtimeClient::SetListenerErrorCallback()
 {
-	ClientListener->SetErrorCallback([this](const FNakamaRtError& error)
-	{
-		if(ErrorEvent.IsBound())
-		{
-			ErrorEvent.Broadcast(error);
-		}
-	});
+	NAKAMA_LOG_DEBUG(TEXT("You no longer need to call 'SetListenerErrorCallback()' bind to the 'ErrorEvent' event instead"));
 }
 
 void UNakamaRealtimeClient::SetListenerChannelMessageCallback()
 {
-	ClientListener->SetChannelMessageCallback([this](const FNakamaChannelMessage& channelMessage)
-	{
-		if(ChannelMessageReceived.IsBound())
-		{
-			ChannelMessageReceived.Broadcast(channelMessage);
-		}
-	});
+	NAKAMA_LOG_DEBUG(TEXT("You no longer need to call 'SetListenerChannelMessageCallback()' bind to the 'ChannelMessageReceived' event instead"));
 }
 
 void UNakamaRealtimeClient::SetListenerChannelPresenceCallback()
 {
-	ClientListener->SetChannelPresenceCallback([this](const FNakamaChannelPresenceEvent& channelMessage)
-	{
-		if(ChannelPresenceEventReceived.IsBound())
-		{
-			ChannelPresenceEventReceived.Broadcast(channelMessage);
-		}
-	});
+	NAKAMA_LOG_DEBUG(TEXT("You no longer need to call 'SetListenerChannelPresenceCallback()' bind to the 'ChannelPresenceEventReceived' event instead"));
 }
 
 void UNakamaRealtimeClient::SetListenerMatchmakerMatchedCallback()
 {
-	ClientListener->SetMatchmakerMatchedCallback([this](const FNakamaMatchmakerMatched& matched)
-	{
-		if(MatchmakerMatchMatched.IsBound())
-		{
-			MatchmakerMatchMatched.Broadcast(matched);
-		}
-	});
+	NAKAMA_LOG_DEBUG(TEXT("You no longer need to call 'SetListenerMatchmakerMatchedCallback()' bind to the 'MatchmakerMatchMatched' event instead"));
 }
 
 void UNakamaRealtimeClient::SetListenerMatchDataCallback()
 {
-	ClientListener->SetMatchDataCallback([this](const FNakamaMatchData& matchData)
-	{
-		if(MatchDataCallback.IsBound())
-		{
-			MatchDataCallback.Broadcast(matchData);
-		}
-	});
+	NAKAMA_LOG_DEBUG(TEXT("You no longer need to call 'SetListenerMatchDataCallback()' bind to the 'MatchDataCallback' event instead"));
 }
 
 void UNakamaRealtimeClient::SetListenerMatchPresenceCallback()
 {
-	ClientListener->SetMatchPresenceCallback([this](const FNakamaMatchPresenceEvent& MatchPresenceEvent)
-	{
-		if(MatchmakerPresenceCallback.IsBound())
-		{
-			MatchmakerPresenceCallback.Broadcast(MatchPresenceEvent);
-		}
-	});
+	NAKAMA_LOG_DEBUG(TEXT("You no longer need to call 'SetListenerMatchPresenceCallback()' bind to the 'MatchmakerPresenceCallback' event instead"));
 }
 
 void UNakamaRealtimeClient::SetListenerNotificationsCallback()
 {
-	ClientListener->SetNotificationsCallback([this](const FNakamaNotificationList& notificationList)
-	{
-		if(NotificationReceived.IsBound())
-		{
-			NotificationReceived.Broadcast(notificationList);
-		}
-	});
+	NAKAMA_LOG_DEBUG(TEXT("You no longer need to call 'SetListenerNotificationsCallback()' bind to the 'NotificationReceived' event instead"));
 }
 
 void UNakamaRealtimeClient::SetListenerPartyCallback()
 {
-	ClientListener->SetPartyCallback([this](const FNakamaParty& party)
-	{
-		if(PartyReceived.IsBound())
-		{
-			PartyReceived.Broadcast(party);
-		}
-	});
+	NAKAMA_LOG_DEBUG(TEXT("You no longer need to call 'SetListenerPartyCallback()' bind to the 'PartyReceived' event instead"));
 }
 
 void UNakamaRealtimeClient::SetListenerPartyCloseCallback()
 {
-	ClientListener->SetPartyCloseCallback([this](const FNakamaPartyClose& partyClose)
-	{
-		if(PartyCloseReceived.IsBound())
-		{
-			PartyCloseReceived.Broadcast(partyClose);
-		}
-	});
+	NAKAMA_LOG_DEBUG(TEXT("You no longer need to call 'SetListenerPartyCloseCallback()' bind to the 'PartyCloseReceived' event instead"));
 }
 
 void UNakamaRealtimeClient::SetListenerPartyDataCallback()
 {
-	ClientListener->SetPartyDataCallback([this](const FNakamaPartyData& partyData)
-	{
-		if(PartyDataReceived.IsBound())
-		{
-			PartyDataReceived.Broadcast(partyData);
-		}
-	});
+	NAKAMA_LOG_DEBUG(TEXT("You no longer need to call 'SetListenerPartyDataCallback()' bind to the 'PartyDataReceived' event instead"));
 }
 
 void UNakamaRealtimeClient::SetListenerPartyJoinRequestCallback()
 {
-	ClientListener->SetPartyJoinRequestCallback([this](const FNakamaPartyJoinRequest& partyJoinRequest)
-	{
-		if(PartyJoinRequestReceived.IsBound())
-		{
-			PartyJoinRequestReceived.Broadcast(partyJoinRequest);
-		}
-	});
+	NAKAMA_LOG_DEBUG(TEXT("You no longer need to call 'SetListenerPartyJoinRequestCallback()' bind to the 'PartyJoinRequestReceived' event instead"));
 }
 
 void UNakamaRealtimeClient::SetListenerPartyLeaderCallback()
 {
-	ClientListener->SetPartyLeaderCallback([this](const FNakamaPartyLeader& partyLeader)
-	{
-		if(PartyLeaderReceived.IsBound())
-		{
-			PartyLeaderReceived.Broadcast(partyLeader);
-		}
-	});
+	NAKAMA_LOG_DEBUG(TEXT("You no longer need to call 'SetListenerPartyLeaderCallback()' bind to the 'PartyLeaderReceived' event instead"));
 }
 
 void UNakamaRealtimeClient::SetListenerPartyMatchmakerTicketCallback()
 {
-	ClientListener->SetPartyMatchmakerTicketCallback([this](const FNakamaPartyMatchmakerTicket& partyMatchmakerTicket)
-	{
-		if(PartyMatchmakerTicketReceived.IsBound())
-		{
-			PartyMatchmakerTicketReceived.Broadcast(partyMatchmakerTicket);
-		}
-	});
+	NAKAMA_LOG_DEBUG(TEXT("You no longer need to call 'SetListenerPartyMatchmakerTicketCallback()' bind to the 'PartyMatchmakerTicketReceived' event instead"));
 }
 
 void UNakamaRealtimeClient::SetListenerPartyPresenceCallback()
 {
-	ClientListener->SetPartyPresenceCallback([this](const FNakamaPartyPresenceEvent& partyMatchmakerTicket)
-	{
-		if(PartyPresenceReceived.IsBound())
-		{
-			PartyPresenceReceived.Broadcast(partyMatchmakerTicket);
-		}
-	});
+	NAKAMA_LOG_DEBUG(TEXT("You no longer need to call 'SetListenerPartyPresenceCallback()' bind to the 'PartyPresenceReceived' event instead"));
 }
 
 void UNakamaRealtimeClient::SetListenerStatusPresenceCallback()
 {
-	ClientListener->SetStatusPresenceCallback([this](const FNakamaStatusPresenceEvent& statusPresenceEvent)
-	{
-		if(PresenceStatusReceived.IsBound())
-		{
-			PresenceStatusReceived.Broadcast(statusPresenceEvent);
-		}
-	});
+	NAKAMA_LOG_DEBUG(TEXT("You no longer need to call 'SetListenerStatusPresenceCallback()' bind to the 'PresenceStatusReceived' event instead"));
 }
 
 void UNakamaRealtimeClient::SetListenerStreamPresenceCallback()
 {
-	ClientListener->SetStreamPresenceCallback([this](const FNakamaStreamPresenceEvent& streamPresenceEvent)
-	{
-		if(StreamPresenceEventReceived.IsBound())
-		{
-			StreamPresenceEventReceived.Broadcast(streamPresenceEvent);
-		}
-	});
+	NAKAMA_LOG_DEBUG(TEXT("You no longer need to call 'SetListenerStreamPresenceCallback()' bind to the 'StreamPresenceEventReceived' event instead"));
 }
 
 void UNakamaRealtimeClient::SetListenerStreamDataCallback()
 {
-	ClientListener->SetStreamDataCallback([this](const FNakamaStreamData& steamData)
-	{
-		if(StreamPresenceDataReceived.IsBound())
-		{
-			StreamPresenceDataReceived.Broadcast(steamData);
-		}
-	});
+	NAKAMA_LOG_DEBUG(TEXT("You no longer need to call 'SetListenerStreamDataCallback()' bind to the 'StreamPresenceDataReceived' event instead"));
 }
 
 void UNakamaRealtimeClient::Destroy()
@@ -422,67 +395,64 @@ void UNakamaRealtimeClient::BeginDestroy()
 {
 	bIsActive = false;
 
-	if (WebSocket.IsValid())
-	{
-		// Indicate that the disconnect was initiated locally.
-		bLocalDisconnectInitiated = true;
-
-		// If the WebSocket is still connected, close the connection.
-		if (WebSocket->IsConnected())
-		{
-			WebSocket->Close();
-		}
-
-		// Clear all bound event delegates to ensure no callbacks are made after this point.
-		WebSocket->OnClosed().Clear();
-		WebSocket->OnConnectionError().Clear();
-		WebSocket->OnRawMessage().Clear();
-		WebSocket->OnConnected().Clear();
-		WebSocket->OnMessage().Clear();
-		WebSocket->OnMessageSent().Clear();
-
-		// Reset the WebSocket pointer.
-		WebSocket.Reset();
-	}
-
 	// Clear the request contexts in a thread-safe manner.
-	{
-		FScopeLock Lock(&ReqContextsLock);
-		ReqContexts.Empty();
-	}
+	CancelAllRequests(ENakamaRtErrorCode::DISCONNECTED);
+	
+	CleanupWebSocket();
 
 	Super::BeginDestroy();
 }
 
-void UNakamaRealtimeClient::SetListener(UNakamaRealtimeClientListener* Listener)
-{
-	_Listener = Listener;
-}
-
 void UNakamaRealtimeClient::Disconnect()
 {
+	if (ConnectionState != EConnectionState::Connected)
+	{
+		NAKAMA_LOG_WARN(TEXT("Not currently connected. Aborting disconnect attempt."));
+		return;
+	}
+
+	ConnectionState = EConnectionState::Disconnecting;
+	
 	if(!WebSocket.IsValid())
 	{
 		return;
 	}
 	
 	bLocalDisconnectInitiated = true;
-	
-	WebSocket->OnClosed().Clear();
+
+	// NOTE: We do NOT clear binding for 'OnClosed' because it will clean up the Socket Connection
 	WebSocket->OnConnectionError().Clear();
 	WebSocket->OnRawMessage().Clear();
 	WebSocket->OnConnected().Clear();
 	WebSocket->OnMessage().Clear();
 	WebSocket->OnMessageSent().Clear();
 	WebSocket->Close();
+
+	// TODO: We could also set 'ConnectionState' to 'Disconnected' here instead of waiting for the 'OnClosed' callback
+	// if you want that behaviour move the code from 'OnClosed' to here
+	//ConnectionState = EConnectionState::Disconnected;
+	//CancelAllRequests(ENakamaRtErrorCode::DISCONNECTED);
+	// Then broadcast Disconnected Lambda/Multicast Delegate
 }
 
 /**
  * Messaging
  */
 
-void UNakamaRealtimeClient::SendMessage(FString ChannelId, FString Content, const FOnWriteChatMessage& Success,
-	const FOnRtError& Error)
+void UNakamaRealtimeClient::SendMessage(
+	const FString& ChannelId,
+	const FString& Content,
+	FOnWriteChatMessage Success,
+	FOnRtError Error)
+{
+	WriteChatMessage(ChannelId, Content, Success, Error);
+}
+
+void UNakamaRealtimeClient::WriteChatMessage(
+	const FString& ChannelId,
+	const FString& Content,
+	FOnWriteChatMessage Success,
+	FOnRtError Error)
 {
 	auto successCallback = [this, Success](const FNakamaChannelMessageAck& ChannelMessageAck)
 	{
@@ -500,11 +470,14 @@ void UNakamaRealtimeClient::SendMessage(FString ChannelId, FString Content, cons
 		Error.Broadcast(error);
 	};
 
-	SendMessage(ChannelId, Content, successCallback, errorCallback);
+	WriteChatMessage(ChannelId, Content, successCallback, errorCallback);
 }
 
-void UNakamaRealtimeClient::SendDirectMessage(FString UserID, FString Content, const FOnWriteChatMessage& Success,
-	const FOnRtError& Error)
+void UNakamaRealtimeClient::SendDirectMessage(
+	const FString& UserID,
+	const FString& Content,
+	FOnWriteChatMessage Success,
+	FOnRtError Error)
 {
 	auto successCallback = [this, Success](const FNakamaChannelMessageAck& ChannelMessageAck)
 	{
@@ -522,11 +495,15 @@ void UNakamaRealtimeClient::SendDirectMessage(FString UserID, FString Content, c
 		Error.Broadcast(error);
 	};
 
-	SendMessage(UserID, Content, successCallback, errorCallback);
+	WriteChatMessage(UserID, Content, successCallback, errorCallback);
 }
 
-void UNakamaRealtimeClient::UpdateChatMessage(FString ChannelId, FString MessageId, FString Content, const FOnWriteChatMessage& Success,
-	const FOnRtError& Error)
+void UNakamaRealtimeClient::UpdateChatMessage(
+	const FString& ChannelId,
+	const FString& MessageId,
+	const FString& Content,
+	FOnWriteChatMessage Success,
+	FOnRtError Error)
 {
 	auto successCallback = [this, Success](const FNakamaChannelMessageAck& ChannelMessageAck)
 	{
@@ -547,8 +524,11 @@ void UNakamaRealtimeClient::UpdateChatMessage(FString ChannelId, FString Message
 	UpdateChatMessage(ChannelId, MessageId, Content, successCallback, errorCallback);
 }
 
-void UNakamaRealtimeClient::RemoveChatMessage(FString ChannelId, FString MessageId, const FOnWriteChatMessage& Success,
-	const FOnRtError& Error)
+void UNakamaRealtimeClient::RemoveChatMessage(
+	const FString& ChannelId,
+	const FString& MessageId,
+	FOnWriteChatMessage Success,
+	FOnRtError Error)
 {
 	auto successCallback = [this, Success](const FNakamaChannelMessageAck& ChannelMessageAck)
 	{
@@ -574,8 +554,13 @@ void UNakamaRealtimeClient::RemoveChatMessage(FString ChannelId, FString Message
  * Chat System
  */
 
-void UNakamaRealtimeClient::JoinChat(FString ChatId, ENakamaChannelType ChannelType, bool Persistence, bool Hidden,
-	const FOnJoinChat& Success, const FOnRtError& Error)
+void UNakamaRealtimeClient::JoinChat(
+	const FString& ChatId,
+	ENakamaChannelType ChannelType,
+	bool Persistence,
+	bool Hidden,
+	FOnJoinChat Success,
+	FOnRtError Error)
 {
 	auto successCallback = [this, Success](const FNakamaChannel& Channel)
 	{
@@ -596,7 +581,10 @@ void UNakamaRealtimeClient::JoinChat(FString ChatId, ENakamaChannelType ChannelT
 	JoinChat(ChatId, ChannelType, Persistence, Hidden, successCallback, errorCallback);
 }
 
-void UNakamaRealtimeClient::LeaveChat(FString ChannelId, const FOnLeaveChat& Success, const FOnRtError& Error)
+void UNakamaRealtimeClient::LeaveChat(
+	const FString& ChannelId,
+	FOnLeaveChat Success,
+	FOnRtError Error)
 {
 	auto successCallback = [this, Success]()
 	{
@@ -621,9 +609,16 @@ void UNakamaRealtimeClient::LeaveChat(FString ChannelId, const FOnLeaveChat& Suc
  * Matchmaking System
  */
 
-void UNakamaRealtimeClient::AddMatchmaker(int32 MinCount, int32 MaxCount, FString Query,
-	TMap<FString, FString> StringProperties, TMap<FString, double> NumericProperties, int32 CountMultiple, bool IgnoreCountMultiple,
-	const FOnMatchmakerTicket& Success, const FOnRtError& Error)
+void UNakamaRealtimeClient::AddMatchmaker(
+	int32 MinCount,
+	int32 MaxCount,
+	const FString& Query,
+	const TMap<FString, FString>& StringProperties,
+	const TMap<FString, double>& NumericProperties,
+	int32 CountMultiple,
+	bool IgnoreCountMultiple,
+	FOnMatchmakerTicket Success,
+	FOnRtError Error)
 {
 	auto successCallback = [this, Success](const FNakamaMatchmakerTicket& MatchmakerTicket)
 	{
@@ -658,33 +653,46 @@ void UNakamaRealtimeClient::AddMatchmaker(int32 MinCount, int32 MaxCount, FStrin
 	);
 }
 
-void UNakamaRealtimeClient::LeaveMatchmaker(FString Ticket, const FOnRemovedMatchmakerTicket& Success,
-	const FOnRtError& Error)
+void UNakamaRealtimeClient::LeaveMatchmaker(
+	const FString& Ticket,
+	FOnRemovedMatchmakerTicket Success,
+	FOnRtError Error)
+{
+	RemoveMatchmaker(Ticket, Success, Error);
+}
+
+void UNakamaRealtimeClient::RemoveMatchmaker(
+	const FString& Ticket,
+	FOnRemovedMatchmakerTicket Success,
+	FOnRtError Error)
 {
 	auto successCallback = [this, Success, Ticket]()
-	{
-		if(!FNakamaUtils::IsRealtimeClientActive(this))
-			return;
-		
-		Success.Broadcast(Ticket); // Deviation from the C++ SDK by returning the ticket
-	};
+    {
+    	if(!FNakamaUtils::IsRealtimeClientActive(this))
+    		return;
+    	
+    	Success.Broadcast(Ticket); // Deviation from the C++ SDK by returning the ticket
+    };
 
-	auto errorCallback = [this, Error](const FNakamaRtError& error)
-	{
-		if(!FNakamaUtils::IsRealtimeClientActive(this))
-			return;
-		
-		Error.Broadcast(error);
-	};
+    auto errorCallback = [this, Error](const FNakamaRtError& error)
+    {
+    	if(!FNakamaUtils::IsRealtimeClientActive(this))
+    		return;
+    	
+    	Error.Broadcast(error);
+    };
 
-	LeaveMatchmaker(Ticket, successCallback, errorCallback);
+    RemoveMatchmaker(Ticket, successCallback, errorCallback);
 }
 
 /**
  * Status System
  */
 
-void UNakamaRealtimeClient::UpdateStatus(FString StatusMessage, const FOnSetStatus& Success, const FOnRtError& Error)
+void UNakamaRealtimeClient::UpdateStatus(
+	const FString& StatusMessage,
+	FOnSetStatus Success,
+	FOnRtError Error)
 {
 	auto successCallback = [this, Success]()
 	{
@@ -705,7 +713,9 @@ void UNakamaRealtimeClient::UpdateStatus(FString StatusMessage, const FOnSetStat
 	UpdateStatus(StatusMessage, successCallback, errorCallback);
 }
 
-void UNakamaRealtimeClient::SetAppearOffline(const FOnSetStatus& Success, const FOnRtError& Error)
+void UNakamaRealtimeClient::SetAppearOffline(
+	FOnSetStatus Success,
+	FOnRtError Error)
 {
 	auto successCallback = [this, Success]()
 	{
@@ -726,7 +736,10 @@ void UNakamaRealtimeClient::SetAppearOffline(const FOnSetStatus& Success, const 
 	UpdateStatus("", successCallback, errorCallback); // "Invisible" Status
 }
 
-void UNakamaRealtimeClient::FollowUsers(TArray<FString> UserIds, const FOnFollowUsers& Success, const FOnRtError& Error)
+void UNakamaRealtimeClient::FollowUsers(
+	const TArray<FString>& UserIds,
+	FOnFollowUsers Success,
+	FOnRtError Error)
 {
 	auto successCallback = [this, Success](const FNakamaStatus& Status)
 	{
@@ -747,8 +760,10 @@ void UNakamaRealtimeClient::FollowUsers(TArray<FString> UserIds, const FOnFollow
 	FollowUsers(UserIds, successCallback, errorCallback);
 }
 
-void UNakamaRealtimeClient::UnFollowUsers(TArray<FString> UserIds, const FOnUnFollowUsers& Success,
-	const FOnRtError& Error)
+void UNakamaRealtimeClient::UnFollowUsers(
+	const TArray<FString>& UserIds,
+	FOnUnFollowUsers Success,
+	FOnRtError Error)
 {
 	auto successCallback = [this, Success]()
 	{
@@ -773,8 +788,9 @@ void UNakamaRealtimeClient::UnFollowUsers(TArray<FString> UserIds, const FOnUnFo
  * Match System
  */
 
-
-void UNakamaRealtimeClient::CreateMatch(const FOnCreateMatch& Success, const FOnRtError& Error)
+void UNakamaRealtimeClient::CreateMatch(
+	FOnCreateMatch Success,
+	FOnRtError Error)
 {
 	auto successCallback = [this, Success](const FNakamaMatch& Match)
 	{
@@ -795,8 +811,11 @@ void UNakamaRealtimeClient::CreateMatch(const FOnCreateMatch& Success, const FOn
 	CreateMatch(successCallback, errorCallback);
 }
 
-void UNakamaRealtimeClient::JoinMatch(FString MatchId, TMap<FString, FString> MetaData, const FOnCreateMatch& Success,
-	const FOnRtError& Error)
+void UNakamaRealtimeClient::JoinMatch(
+	const FString& MatchId,
+	const TMap<FString, FString>& MetaData,
+	FOnCreateMatch Success,
+	FOnRtError Error)
 {
 	auto successCallback = [this, Success](const FNakamaMatch& Match)
 	{
@@ -817,7 +836,10 @@ void UNakamaRealtimeClient::JoinMatch(FString MatchId, TMap<FString, FString> Me
 	JoinMatch(MatchId, MetaData, successCallback, errorCallback);
 }
 
-void UNakamaRealtimeClient::JoinMatchByToken(FString Token, const FOnCreateMatch& Success, const FOnRtError& Error)
+void UNakamaRealtimeClient::JoinMatchByToken(
+	const FString& Token,
+	FOnCreateMatch Success,
+	FOnRtError Error)
 {
 	auto successCallback = [this, Success](const FNakamaMatch& Match)
 	{
@@ -838,8 +860,11 @@ void UNakamaRealtimeClient::JoinMatchByToken(FString Token, const FOnCreateMatch
 	JoinMatchByToken(Token, successCallback, errorCallback);
 }
 
-void UNakamaRealtimeClient::SendMatchData(FString MatchId, int64 OpCode, FString Data,
-	TArray<FNakamaUserPresence> Presences)
+void UNakamaRealtimeClient::SendMatchData(
+	const FString& MatchId,
+	int64 OpCode,
+	const FString& Data,
+	const TArray<FNakamaUserPresence>& Presences)
 {
 	// Setup the json object
 	const TSharedPtr<FJsonObject> MatchDataSend = MakeShareable(new FJsonObject());
@@ -885,7 +910,10 @@ void UNakamaRealtimeClient::SendMatchData(FString MatchId, int64 OpCode, FString
 	SendMessageWithEnvelope(TEXT("match_data_send"), MatchDataSend, {}, {});
 }
 
-void UNakamaRealtimeClient::LeaveMatch(FString MatchId, const FOnLeaveMatch& Success, const FOnRtError& Error)
+void UNakamaRealtimeClient::LeaveMatch(
+	const FString& MatchId,
+	FOnLeaveMatch Success,
+	FOnRtError Error)
 {
 	auto successCallback = [this, Success]()
 	{
@@ -911,8 +939,11 @@ void UNakamaRealtimeClient::LeaveMatch(FString MatchId, const FOnLeaveMatch& Suc
  */
 
 
-void UNakamaRealtimeClient::CreateParty(bool Open, int32 MaxSize, const FOnCreateParty& Success,
-	const FOnRtError& Error)
+void UNakamaRealtimeClient::CreateParty(
+	bool Open,
+	int32 MaxSize,
+	FOnCreateParty Success,
+	FOnRtError Error)
 {
 	auto successCallback = [this, Success](const FNakamaParty& Party)
 	{
@@ -933,7 +964,10 @@ void UNakamaRealtimeClient::CreateParty(bool Open, int32 MaxSize, const FOnCreat
 	CreateParty(Open, MaxSize, successCallback, errorCallback);
 }
 
-void UNakamaRealtimeClient::JoinParty(FString PartyId, const FOnJoinParty& Success, const FOnRtError& Error)
+void UNakamaRealtimeClient::JoinParty(
+	const FString& PartyId,
+	FOnJoinParty Success,
+	FOnRtError Error)
 {
 	auto successCallback = [this, Success, PartyId]()
 	{
@@ -954,7 +988,10 @@ void UNakamaRealtimeClient::JoinParty(FString PartyId, const FOnJoinParty& Succe
 	JoinParty(PartyId, successCallback, errorCallback);
 }
 
-void UNakamaRealtimeClient::LeaveParty(FString PartyId, const FOnLeaveParty& Success, const FOnRtError& Error)
+void UNakamaRealtimeClient::LeaveParty(
+	const FString& PartyId,
+	FOnLeaveParty Success,
+	FOnRtError Error)
 {
 	auto successCallback = [this, Success]()
 	{
@@ -975,8 +1012,10 @@ void UNakamaRealtimeClient::LeaveParty(FString PartyId, const FOnLeaveParty& Suc
 	LeaveParty(PartyId, successCallback, errorCallback);
 }
 
-void UNakamaRealtimeClient::ListPartyJoinRequests(FString PartyId, const FOnListPartyJoinRequests& Success,
-	const FOnRtError& Error)
+void UNakamaRealtimeClient::ListPartyJoinRequests(
+	const FString& PartyId,
+	FOnListPartyJoinRequests Success,
+	FOnRtError Error)
 {
 	auto successCallback = [this, Success](const FNakamaPartyJoinRequest& PartyJoinRequest)
 	{
@@ -997,8 +1036,11 @@ void UNakamaRealtimeClient::ListPartyJoinRequests(FString PartyId, const FOnList
 	ListPartyJoinRequests(PartyId, successCallback, errorCallback);
 }
 
-void UNakamaRealtimeClient::PromotePartyMember(FString PartyId, FNakamaUserPresence PartyMember,
-	const FOnPromotePartyMember& Success, const FOnRtError& Error)
+void UNakamaRealtimeClient::PromotePartyMember(
+	const FString& PartyId,
+	const FNakamaUserPresence& PartyMember,
+	FOnPromotePartyMember Success,
+	FOnRtError Error)
 {
 	auto successCallback = [this, Success]()
 	{
@@ -1019,8 +1061,11 @@ void UNakamaRealtimeClient::PromotePartyMember(FString PartyId, FNakamaUserPrese
 	PromotePartyMember(PartyId, PartyMember, successCallback, errorCallback);
 }
 
-void UNakamaRealtimeClient::RemoveMatchMakerParty(FString PartyId, FString Ticket,
-	const FOnRemoveMatchmakerParty& Success, const FOnRtError& Error)
+void UNakamaRealtimeClient::RemoveMatchMakerParty(
+	const FString& PartyId,
+	const FString& Ticket,
+	FOnRemoveMatchmakerParty Success,
+	FOnRtError Error)
 {
 	auto successCallback = [this, Success, Ticket]()
 	{
@@ -1041,8 +1086,11 @@ void UNakamaRealtimeClient::RemoveMatchMakerParty(FString PartyId, FString Ticke
 	RemoveMatchmakerParty(PartyId, Ticket, successCallback, errorCallback);
 }
 
-void UNakamaRealtimeClient::RemovePartyMember(FString PartyId, FNakamaUserPresence Presence,
-	const FOnRemovePartyMember& Success, const FOnRtError& Error)
+void UNakamaRealtimeClient::RemovePartyMember(
+	const FString& PartyId,
+	const FNakamaUserPresence& Presence,
+	FOnRemovePartyMember Success,
+	FOnRtError Error)
 {
 	auto successCallback = [this, Success]()
 	{
@@ -1063,8 +1111,11 @@ void UNakamaRealtimeClient::RemovePartyMember(FString PartyId, FNakamaUserPresen
 	RemovePartyMember(PartyId, Presence, successCallback, errorCallback);
 }
 
-void UNakamaRealtimeClient::AcceptPartyMember(FString PartyId, FNakamaUserPresence Presence,
-	const FOnAcceptPartyMember& Success, const FOnRtError& Error)
+void UNakamaRealtimeClient::AcceptPartyMember(
+	const FString& PartyId,
+	const FNakamaUserPresence& Presence,
+	FOnAcceptPartyMember Success,
+	FOnRtError Error)
 {
 	auto successCallback = [this, Success]()
 	{
@@ -1085,9 +1136,17 @@ void UNakamaRealtimeClient::AcceptPartyMember(FString PartyId, FNakamaUserPresen
 	AcceptPartyMember(PartyId, Presence, successCallback, errorCallback);
 }
 
-void UNakamaRealtimeClient::AddMatchmakerParty(FString PartyId, FString Query, int32 MinCount, int32 MaxCount,
-	TMap<FString, FString> StringProperties, TMap<FString, double> NumericProperties, int32 CountMultiple, bool IgnoreCountMultiple,
-	const FOnAddMatchmakerParty& Success, const FOnRtError& Error)
+void UNakamaRealtimeClient::AddMatchmakerParty(
+	const FString& PartyId,
+	const FString& Query,
+	int32 MinCount,
+	int32 MaxCount,
+	const TMap<FString, FString>& StringProperties,
+	const TMap<FString, double>& NumericProperties,
+	int32 CountMultiple,
+	bool IgnoreCountMultiple,
+	FOnAddMatchmakerParty Success,
+	FOnRtError Error)
 {
 	auto successCallback = [this, Success](const FNakamaPartyMatchmakerTicket& MatchmakerTicket)
 	{
@@ -1123,7 +1182,10 @@ void UNakamaRealtimeClient::AddMatchmakerParty(FString PartyId, FString Query, i
 	);
 }
 
-void UNakamaRealtimeClient::CloseParty(FString PartyId, const FOnCloseParty& Success, const FOnRtError& Error)
+void UNakamaRealtimeClient::CloseParty(
+	const FString& PartyId,
+	FOnCloseParty Success,
+	FOnRtError Error)
 {
 	auto successCallback = [this, Success]()
 	{
@@ -1144,8 +1206,7 @@ void UNakamaRealtimeClient::CloseParty(FString PartyId, const FOnCloseParty& Suc
 	CloseParty(PartyId, successCallback, errorCallback);
 }
 
-void UNakamaRealtimeClient::RPC(const FString& FunctionId, const FString& Payload, const FOnRtRPC& Success,
-	const FOnRtError& Error)
+void UNakamaRealtimeClient::RPC(const FString& FunctionId, const FString& Payload, FOnRtRPC Success, FOnRtError Error)
 {
 	auto successCallback = [this, Success](const FNakamaRPC& rpc)
 	{
@@ -1234,7 +1295,7 @@ void UNakamaRealtimeClient::LeaveChat(
 	);
 }
 
-void UNakamaRealtimeClient::SendMessage(
+void UNakamaRealtimeClient::WriteChatMessage(
 	const FString& ChannelId,
 	const FString& Content,
 	TFunction<void(const FNakamaChannelMessageAck& ChannelMessageAck)> SuccessCallback,
@@ -1511,7 +1572,7 @@ void UNakamaRealtimeClient::AddMatchmaker(
 	);
 }
 
-void UNakamaRealtimeClient::LeaveMatchmaker(
+void UNakamaRealtimeClient::RemoveMatchmaker(
 	const FString& Ticket,
 	TFunction<void()> SuccessCallback,
 	TFunction<void(const FNakamaRtError& Error)> ErrorCallback)
@@ -2193,6 +2254,32 @@ void UNakamaRealtimeClient::SendDataWithEnvelope(const FString& FieldName, const
 	NAKAMA_LOG_DEBUG(FString::Printf(TEXT("%s request sent with CID=%d"), *FieldName, ReqContext->CID));
 }
 
+void UNakamaRealtimeClient::CleanupWebSocket()
+{
+	if (!WebSocket.IsValid())
+		return;
+
+	// Indicate that the disconnect was initiated locally.
+	bLocalDisconnectInitiated = true;
+
+	// If the WebSocket is still connected, close the connection.
+	if (WebSocket->IsConnected())
+	{
+		WebSocket->Close();
+	}
+
+	// Clear all bound event delegates to ensure no callbacks are made after this point.
+	WebSocket->OnClosed().Clear();
+	WebSocket->OnConnectionError().Clear();
+	WebSocket->OnRawMessage().Clear();
+	WebSocket->OnConnected().Clear();
+	WebSocket->OnMessage().Clear();
+	WebSocket->OnMessageSent().Clear();
+
+	// Reset the WebSocket pointer.
+	WebSocket.Reset();
+}
+
 void UNakamaRealtimeClient::SendPing()
 {
 	TSharedPtr<FJsonObject> PingRequest = MakeShareable(new FJsonObject());
@@ -2242,346 +2329,416 @@ void UNakamaRealtimeClient::HandleReceivedMessage(const FString& Data)
     	NAKAMA_LOG_DEBUG(FString::Printf(TEXT("Received message with no CID: %s"), *Data));
 
     	// Handle Events here
-    	if(_Listener && IsValidLowLevel() && _Listener->IsValidLowLevel())
+    	if(FNakamaUtils::IsRealtimeClientActive(this))
     	{
     		if (JsonObject->HasField("error"))
     		{
-    			if(_Listener->OnError)
+    			FString JsonString;
+    			if (SerializeJsonObject(JsonObject->GetObjectField("error"), JsonString))
     			{
-    				FString JsonString;
-    				if (SerializeJsonObject(JsonObject->GetObjectField("error"), JsonString))
+    				// TODO: Look into if we need to get Error from JsonString (using ReturnedError) or use 'Error' from above
+    				FNakamaRtError ReturnedError = FNakamaRtError(JsonString);
+    				
+    				// Handle Lambda Callback
+    				if(OnError)
     				{
-    					_Listener->OnError(Error);
+    					OnError(ReturnedError);
     				}
-    				else
+
+    				// Handle Multicast Delegate
+    				if(ErrorEvent.IsBound())
     				{
-    					NAKAMA_LOG_ERROR("Realtime Client Listener - Failed to serialize 'error' as JSON string.");
-    				}
-    			}
-                else
-                {
-                	NAKAMA_LOG_INFO("Realtime Client Listener - 'OnError' is not bound.");
-                }
-    		}
-    		else if (JsonObject->HasField("channel_message"))
-    		{
-    			if(_Listener->OnChannelMessage)
-    			{
-    				FString JsonString;
-    				if (SerializeJsonObject(JsonObject->GetObjectField("channel_message"), JsonString))
-    				{
-    					FNakamaChannelMessage ChannelMessage = FNakamaChannelMessage(JsonString);
-    					_Listener->OnChannelMessage(ChannelMessage);
-    				}
-    				else
-    				{
-    					NAKAMA_LOG_ERROR("Realtime Client Listener - Failed to serialize 'channel_message' as JSON string.");
-    				}
-    			}
-                else
-                {
-                	NAKAMA_LOG_INFO("Realtime Client Listener - 'OnChannelMessage' is not bound.");
-                }
-    		}
-    		else if (JsonObject->HasField("channel_presence_event"))
-    		{
-    			if(_Listener->OnChannelPresenceEvent)
-    			{
-    				FString JsonString;
-    				if (SerializeJsonObject(JsonObject->GetObjectField("channel_presence_event"), JsonString))
-    				{
-    					FNakamaChannelPresenceEvent ChannelPresenceEvent = FNakamaChannelPresenceEvent(JsonString);
-    					_Listener->OnChannelPresenceEvent(ChannelPresenceEvent);
-    				}
-    				else
-    				{
-    					NAKAMA_LOG_ERROR("Realtime Client Listener - Failed to serialize 'channel_presence_event' as JSON string.");
+    					ErrorEvent.Broadcast(ReturnedError);
     				}
     			}
     			else
     			{
-    				NAKAMA_LOG_INFO("Realtime Client Listener - 'OnChannelPresenceEvent' is not bound.");
+    				NAKAMA_LOG_ERROR("Realtime Client - Failed to deserialize 'error' from JSON string.");
+    			}
+    		}
+    		else if (JsonObject->HasField("channel_message"))
+    		{
+    			FString JsonString;
+    			if (SerializeJsonObject(JsonObject->GetObjectField("channel_message"), JsonString))
+    			{
+    				FNakamaChannelMessage ChannelMessage = FNakamaChannelMessage(JsonString);
+    				
+    				// Handle Lambda Callback
+    				if(OnChannelMessage)
+    				{
+    					OnChannelMessage(ChannelMessage);
+    				}
+
+    				// Handle Multicast Delegate
+    				if(ChannelMessageReceived.IsBound())
+    				{
+    					ChannelMessageReceived.Broadcast(ChannelMessage);
+    				}
+    			}
+    			else
+    			{
+    				NAKAMA_LOG_ERROR("Realtime Client - Failed to deserialize 'channel_message' from JSON string.");
+    			}
+    		}
+    		else if (JsonObject->HasField("channel_presence_event"))
+    		{
+    			FString JsonString;
+    			if (SerializeJsonObject(JsonObject->GetObjectField("channel_presence_event"), JsonString))
+    			{
+    				FNakamaChannelPresenceEvent ChannelPresenceEvent = FNakamaChannelPresenceEvent(JsonString);
+    				
+    				// Handle Lambda Callback
+    				if(OnChannelPresenceEvent)
+    				{
+    					OnChannelPresenceEvent(ChannelPresenceEvent);
+    				}
+
+    				// Handle Multicast Delegate
+    				if(ChannelPresenceEventReceived.IsBound())
+    				{
+    					ChannelPresenceEventReceived.Broadcast(ChannelPresenceEvent);
+    				}
+    			}
+    			else
+    			{
+    				NAKAMA_LOG_ERROR("Realtime Client - Failed to deserialize 'channel_presence_event' from JSON string.");
     			}
     		}
     		else if (JsonObject->HasField("match_data"))
     		{
-    			if(_Listener->OnMatchData)
+    			FString JsonString;
+    			if (SerializeJsonObject(JsonObject->GetObjectField("match_data"), JsonString))
     			{
-    				FString JsonString;
-    				if (SerializeJsonObject(JsonObject->GetObjectField("match_data"), JsonString))
+    				FNakamaMatchData MatchData = FNakamaMatchData(JsonString);
+    				
+    				// Handle Lambda Callback
+    				if(OnMatchData)
     				{
-    					FNakamaMatchData MatchData = FNakamaMatchData(JsonString);
-    					_Listener->OnMatchData(MatchData);
+    					OnMatchData(MatchData);
     				}
-    				else
+
+    				// Handle Multicast Delegate
+    				if(MatchDataCallback.IsBound())
     				{
-    					NAKAMA_LOG_ERROR("Realtime Client Listener - Failed to serialize 'match_data' as JSON string.");
+    					MatchDataCallback.Broadcast(MatchData);
     				}
     			}
     			else
     			{
-    				NAKAMA_LOG_INFO("Realtime Client Listener - 'OnMatchData' is not bound.");
+    				NAKAMA_LOG_ERROR("Realtime Client - Failed to deserialize 'match_data' from JSON string.");
     			}
     		}
     		else if (JsonObject->HasField("match_presence_event"))
     		{
-    			if(_Listener->OnMatchPresenceEvent)
+    			FString JsonString;
+    			if (SerializeJsonObject(JsonObject->GetObjectField("match_presence_event"), JsonString))
     			{
-    				FString JsonString;
-    				if (SerializeJsonObject(JsonObject->GetObjectField("match_presence_event"), JsonString))
+    				FNakamaMatchPresenceEvent MatchPresenceEvent = FNakamaMatchPresenceEvent(JsonString);
+    				
+    				// Handle Lambda Callback
+    				if(OnMatchPresenceEvent)
     				{
-    					FNakamaMatchPresenceEvent MatchPresenceEvent = FNakamaMatchPresenceEvent(JsonString);
-    					_Listener->OnMatchPresenceEvent(MatchPresenceEvent);
+    					OnMatchPresenceEvent(MatchPresenceEvent);
     				}
-    				else
+
+    				// Handle Multicast Delegate
+    				if(MatchmakerPresenceCallback.IsBound())
     				{
-    					NAKAMA_LOG_ERROR("Realtime Client Listener - Failed to serialize 'match_presence_event' as JSON string.");
-    				}
-    			}
-                else
-                {
-                	NAKAMA_LOG_INFO("Realtime Client Listener - 'OnMatchPresenceEvent' is not bound.");
-                }
-    		}
-    		else if (JsonObject->HasField("matchmaker_matched"))
-    		{
-    			if(_Listener->OnMatchmakerMatched)
-    			{
-    				FString JsonString;
-    				if (SerializeJsonObject(JsonObject->GetObjectField("matchmaker_matched"), JsonString))
-    				{
-    					FNakamaMatchmakerMatched MatchmakerMatched = FNakamaMatchmakerMatched(JsonString);
-    					_Listener->OnMatchmakerMatched(MatchmakerMatched);
-    				}
-    				else
-    				{
-    					NAKAMA_LOG_ERROR("Realtime Client Listener - Failed to serialize 'matchmaker_matched' as JSON string.");
-    				}
-    			}
-                else
-                {
-                	NAKAMA_LOG_INFO("Realtime Client Listener - 'OnMatchmakerMatched' is not bound.");
-                }
-    		}
-    		else if (JsonObject->HasField("notifications"))
-    		{
-    			if(_Listener->OnNotifications)
-    			{
-    				FString JsonString;
-    				if (SerializeJsonObject(JsonObject->GetObjectField("notifications"), JsonString))
-    				{
-    					FNakamaNotificationList NotificationList = FNakamaNotificationList(JsonString);
-    					_Listener->OnNotifications(NotificationList);
-    				}
-    				else
-    				{
-    					NAKAMA_LOG_ERROR("Realtime Client Listener - Failed to serialize 'notifications' as JSON string.");
+    					MatchmakerPresenceCallback.Broadcast(MatchPresenceEvent);
     				}
     			}
     			else
     			{
-    				NAKAMA_LOG_INFO("Realtime Client Listener - 'OnNotifications' is not bound.");
+    				NAKAMA_LOG_ERROR("Realtime Client - Failed to deserialize 'match_presence_event' from JSON string.");
+    			}
+    		}
+    		else if (JsonObject->HasField("matchmaker_matched"))
+    		{
+    			FString JsonString;
+    			if (SerializeJsonObject(JsonObject->GetObjectField("matchmaker_matched"), JsonString))
+    			{
+    				FNakamaMatchmakerMatched MatchmakerMatched = FNakamaMatchmakerMatched(JsonString);
+    				
+    				// Handle Lambda Callback
+    				if(OnMatchmakerMatched)
+    				{
+    					OnMatchmakerMatched(MatchmakerMatched);
+    				}
+
+    				// Handle Multicast Delegate
+    				if(MatchmakerMatchMatched.IsBound())
+    				{
+    					MatchmakerMatchMatched.Broadcast(MatchmakerMatched);
+    				}
+    			}
+    			else
+    			{
+    				NAKAMA_LOG_ERROR("Realtime Client - Failed to deserialize 'matchmaker_matched' from JSON string.");
+    			}
+    		}
+    		else if (JsonObject->HasField("notifications"))
+    		{
+    			FString JsonString;
+    			if (SerializeJsonObject(JsonObject->GetObjectField("notifications"), JsonString))
+    			{
+    				FNakamaNotificationList NotificationList = FNakamaNotificationList(JsonString);
+    				
+    				// Handle Lambda Callback
+    				if(OnNotifications)
+    				{
+    					OnNotifications(NotificationList);
+    				}
+
+    				// Handle Multicast Delegate
+    				if(NotificationReceived.IsBound())
+    				{
+    					NotificationReceived.Broadcast(NotificationList);
+    				}
+    			}
+    			else
+    			{
+    				NAKAMA_LOG_ERROR("Realtime Client - Failed to deserialize 'notifications' from JSON string.");
     			}
     		}
     		else if (JsonObject->HasField("status_presence_event"))
     		{
-    			if (_Listener->OnStatusPresenceEvent)
+    			FString JsonString;
+    			if (SerializeJsonObject(JsonObject->GetObjectField("status_presence_event"), JsonString))
     			{
-    				FString JsonString;
-    				if (SerializeJsonObject(JsonObject->GetObjectField("status_presence_event"), JsonString))
+    				FNakamaStatusPresenceEvent StatusPresenceEvent = FNakamaStatusPresenceEvent(JsonString);
+    				
+    				// Handle Lambda Callback
+    				if(OnStatusPresenceEvent)
     				{
-    					FNakamaStatusPresenceEvent StatusPresenceEvent = FNakamaStatusPresenceEvent(JsonString);
-    					_Listener->OnStatusPresenceEvent(StatusPresenceEvent);
+    					OnStatusPresenceEvent(StatusPresenceEvent);
     				}
-    				else
+
+    				// Handle Multicast Delegate
+    				if(PresenceStatusReceived.IsBound())
     				{
-    					NAKAMA_LOG_ERROR("Realtime Client Listener - Failed to serialize 'status_presence_event' as JSON string.");
+    					PresenceStatusReceived.Broadcast(StatusPresenceEvent);
     				}
     			}
     			else
     			{
-    				NAKAMA_LOG_INFO("Realtime Client Listener - 'OnStatusPresenceEvent' is not bound.");
+    				NAKAMA_LOG_ERROR("Realtime Client - Failed to deserialize 'status_presence_event' from JSON string.");
     			}
     		}
     		else if (JsonObject->HasField("stream_data"))
     		{
-    			if(_Listener->OnStreamData)
+    			FString JsonString;
+    			if (SerializeJsonObject(JsonObject->GetObjectField("stream_data"), JsonString))
     			{
-    				FString JsonString;
-    				if (SerializeJsonObject(JsonObject->GetObjectField("stream_data"), JsonString))
+    				FNakamaStreamData StreamData = FNakamaStreamData(JsonString);
+    				
+    				// Handle Lambda Callback
+    				if(OnStreamData)
     				{
-    					FNakamaStreamData StreamData = FNakamaStreamData(JsonString);
-    					_Listener->OnStreamData(StreamData);
+    					OnStreamData(StreamData);
     				}
-    				else
+
+    				// Handle Multicast Delegate
+    				if(StreamPresenceDataReceived.IsBound())
     				{
-    					NAKAMA_LOG_ERROR("Realtime Client Listener - Failed to serialize 'stream_data' as JSON string.");
-    				}
-    			}
-                else
-                {
-                	NAKAMA_LOG_INFO("Realtime Client Listener - 'OnStreamData' is not bound.");
-                }
-    		}
-    		else if (JsonObject->HasField("stream_presence_event"))
-    		{
-    			if(_Listener->OnStreamPresenceEvent)
-    			{
-    				FString JsonString;
-    				if (SerializeJsonObject(JsonObject->GetObjectField("stream_presence_event"), JsonString))
-    				{
-    					FNakamaStreamPresenceEvent StreamPresenceEvent = FNakamaStreamPresenceEvent(JsonString);
-    					_Listener->OnStreamPresenceEvent(StreamPresenceEvent);
-    				}
-    				else
-    				{
-    					NAKAMA_LOG_ERROR("Realtime Client Listener - Failed to serialize 'stream_presence_event' as JSON string.");
-    				}
-    			}
-                else
-                {
-                	NAKAMA_LOG_INFO("Realtime Client Listener - 'OnStreamPresenceEvent' is not bound.");
-                }
-    		}
-    		else if (JsonObject->HasField("party"))
-    		{
-    			if(_Listener->OnParty)
-    			{
-    				FString JsonString;
-    				if (SerializeJsonObject(JsonObject->GetObjectField("party"), JsonString))
-    				{
-    					FNakamaParty Party = FNakamaParty(JsonString);
-    					_Listener->OnParty(Party);
-    				}
-    				else
-    				{
-    					NAKAMA_LOG_ERROR("Realtime Client Listener - Failed to serialize 'party' as JSON string.");
-    				}
-    			}
-                else
-                {
-                	NAKAMA_LOG_INFO("Realtime Client Listener - 'OnParty' is not bound.");
-                }
-    		}
-    		else if (JsonObject->HasField("party_close"))
-    		{
-    			if(_Listener->OnPartyClose)
-    			{
-    				FString JsonString;
-    				if (SerializeJsonObject(JsonObject->GetObjectField("party_close"), JsonString))
-    				{
-    					FNakamaPartyClose PartyClose = FNakamaPartyClose(JsonString);
-    					_Listener->OnPartyClose(PartyClose);
-    				}
-    				else
-    				{
-    					NAKAMA_LOG_ERROR("Realtime Client Listener - Failed to serialize 'party_close' as JSON string.");
-    				}
-    			}
-                else
-                {
-                	NAKAMA_LOG_INFO("Realtime Client Listener - 'OnPartyClose' is not bound.");
-                }
-    		}
-    		else if (JsonObject->HasField("party_data"))
-    		{
-    			if(_Listener->OnPartyData)
-    			{
-    				FString JsonString;
-    				if (SerializeJsonObject(JsonObject->GetObjectField("party_data"), JsonString))
-    				{
-    					FNakamaPartyData PartyData = FNakamaPartyData(JsonString);
-    					_Listener->OnPartyData(PartyData);
-    				}
-    				else
-    				{
-    					NAKAMA_LOG_ERROR("Realtime Client Listener - Failed to serialize 'party_data' as JSON string.");
-    				}
-    			}
-                else
-                {
-                	NAKAMA_LOG_INFO("Realtime Client Listener - 'OnPartyData' is not bound.");
-                }
-    		}
-    		else if (JsonObject->HasField("party_join_request"))
-    		{
-    			if(_Listener->OnPartyJoinRequest)
-    			{
-    				FString JsonString;
-    				if (SerializeJsonObject(JsonObject->GetObjectField("party_join_request"), JsonString))
-    				{
-    					FNakamaPartyJoinRequest PartyJoinRequest = FNakamaPartyJoinRequest(JsonString);
-    					_Listener->OnPartyJoinRequest(PartyJoinRequest);
-    				}
-    				else
-    				{
-    					NAKAMA_LOG_ERROR("Realtime Client Listener - Failed to serialize 'party_join_request' as JSON string.");
-    				}
-    			}
-                else
-                {
-                	NAKAMA_LOG_INFO("Realtime Client Listener - 'OnPartyJoinRequest' is not bound.");
-                }
-    		}
-    		else if (JsonObject->HasField("party_leader"))
-    		{
-    			if(_Listener->OnPartyLeader)
-    			{
-    				FString JsonString;
-    				if (SerializeJsonObject(JsonObject->GetObjectField("party_leader"), JsonString))
-    				{
-    					FNakamaPartyLeader PartyLeader = FNakamaPartyLeader(JsonString);
-    					_Listener->OnPartyLeader(PartyLeader);
-    				}
-    				else
-    				{
-    					NAKAMA_LOG_ERROR("Realtime Client Listener - Failed to serialize 'party_leader' as JSON string.");
-    				}
-    			}
-                else
-                {
-                	NAKAMA_LOG_INFO("Realtime Client Listener - 'OnPartyLeader' is not bound.");
-                }
-    		}
-    		else if (JsonObject->HasField("party_matchmaker_ticket"))
-    		{
-    			if(_Listener->OnPartyMatchmakerTicket)
-    			{
-    				FString JsonString;
-    				if (SerializeJsonObject(JsonObject->GetObjectField("party_matchmaker_ticket"), JsonString))
-    				{
-    					FNakamaPartyMatchmakerTicket PartyMatchmakerTicket = FNakamaPartyMatchmakerTicket(JsonString);
-    					_Listener->OnPartyMatchmakerTicket(PartyMatchmakerTicket);
-    				}
-    				else
-    				{
-    					NAKAMA_LOG_ERROR("Realtime Client Listener - Failed to serialize 'party_matchmaker_ticket' as JSON string.");
-    				}
-    			}
-                else
-                {
-                	NAKAMA_LOG_INFO("Realtime Client Listener - 'OnPartyMatchmakerTicket' is not bound.");
-                }
-    		}
-    		else if (JsonObject->HasField("party_presence_event"))
-    		{
-    			if(_Listener->OnPartyPresenceEvent)
-    			{
-    				FString JsonString;
-    				if (SerializeJsonObject(JsonObject->GetObjectField("party_presence_event"), JsonString))
-    				{
-    					FNakamaPartyPresenceEvent PartyPresenceEvent = FNakamaPartyPresenceEvent(JsonString);
-    					_Listener->OnPartyPresenceEvent(PartyPresenceEvent);
-    				}
-    				else
-    				{
-    					NAKAMA_LOG_ERROR("Realtime Client Listener - Failed to serialize 'party_presence_event' as JSON string.");
+    					StreamPresenceDataReceived.Broadcast(StreamData);
     				}
     			}
     			else
-				{
-    				NAKAMA_LOG_INFO("Realtime Client Listener - 'OnPartyPresenceEvent' is not bound.");
-				}
+    			{
+    				NAKAMA_LOG_ERROR("Realtime Client - Failed to deserialize 'stream_data' from JSON string.");
+    			}
+    		}
+    		else if (JsonObject->HasField("stream_presence_event"))
+    		{
+    			FString JsonString;
+    			if (SerializeJsonObject(JsonObject->GetObjectField("stream_presence_event"), JsonString))
+    			{
+    				FNakamaStreamPresenceEvent StreamPresenceEvent = FNakamaStreamPresenceEvent(JsonString);
+    				
+    				// Handle Lambda Callback
+    				if(OnStreamPresenceEvent)
+    				{
+    					OnStreamPresenceEvent(StreamPresenceEvent);
+    				}
+
+    				// Handle Multicast Delegate
+    				if(StreamPresenceEventReceived.IsBound())
+    				{
+    					StreamPresenceEventReceived.Broadcast(StreamPresenceEvent);
+    				}
+    			}
+    			else
+    			{
+    				NAKAMA_LOG_ERROR("Realtime Client - Failed to deserialize 'stream_presence_event' from JSON string.");
+    			}
+    		}
+    		else if (JsonObject->HasField("party"))
+    		{
+    			FString JsonString;
+    			if (SerializeJsonObject(JsonObject->GetObjectField("party"), JsonString))
+    			{
+    				FNakamaParty Party = FNakamaParty(JsonString);
+    				
+    				// Handle Lambda Callback
+    				if(OnParty)
+    				{
+    					OnParty(Party);
+    				}
+
+    				// Handle Multicast Delegate
+    				if(PartyReceived.IsBound())
+    				{
+    					PartyReceived.Broadcast(Party);
+    				}
+    			}
+    			else
+    			{
+    				NAKAMA_LOG_ERROR("Realtime Client - Failed to deserialize 'party' from JSON string.");
+    			}
+    		}
+    		else if (JsonObject->HasField("party_close"))
+    		{
+    			FString JsonString;
+    			if (SerializeJsonObject(JsonObject->GetObjectField("party_close"), JsonString))
+    			{
+    				FNakamaPartyClose PartyClose = FNakamaPartyClose(JsonString);
+    				
+    				// Handle Lambda Callback
+    				if(OnPartyClose)
+    				{
+    					OnPartyClose(PartyClose);
+    				}
+
+    				// Handle Multicast Delegate
+    				if(PartyCloseReceived.IsBound())
+    				{
+    					PartyCloseReceived.Broadcast(PartyClose);
+    				}
+    			}
+    			else
+    			{
+    				NAKAMA_LOG_ERROR("Realtime Client - Failed to deserialize 'party_close' from JSON string.");
+    			}
+    		}
+    		else if (JsonObject->HasField("party_data"))
+    		{
+    			FString JsonString;
+    			if (SerializeJsonObject(JsonObject->GetObjectField("party_data"), JsonString))
+    			{
+    				FNakamaPartyData PartyData = FNakamaPartyData(JsonString);
+    				
+    				// Handle Lambda Callback
+    				if(OnPartyData)
+    				{
+    					OnPartyData(PartyData);
+    				}
+
+    				// Handle Multicast Delegate
+    				if(PartyDataReceived.IsBound())
+    				{
+    					PartyDataReceived.Broadcast(PartyData);
+    				}
+    			}
+    			else
+    			{
+    				NAKAMA_LOG_ERROR("Realtime Client - Failed to deserialize 'party_data' from JSON string.");
+    			}
+    		}
+    		else if (JsonObject->HasField("party_join_request"))
+    		{
+    			FString JsonString;
+    			if (SerializeJsonObject(JsonObject->GetObjectField("party_join_request"), JsonString))
+    			{
+    				FNakamaPartyJoinRequest PartyJoinRequest = FNakamaPartyJoinRequest(JsonString);
+    				
+    				// Handle Lambda Callback
+    				if(OnPartyJoinRequest)
+    				{
+    					OnPartyJoinRequest(PartyJoinRequest);
+    				}
+
+    				// Handle Multicast Delegate
+    				if(PartyJoinRequestReceived.IsBound())
+    				{
+    					PartyJoinRequestReceived.Broadcast(PartyJoinRequest);
+    				}
+    			}
+    			else
+    			{
+    				NAKAMA_LOG_ERROR("Realtime Client - Failed to deserialize 'party_join_request' from JSON string.");
+    			}
+    		}
+    		else if (JsonObject->HasField("party_leader"))
+    		{
+    			FString JsonString;
+    			if (SerializeJsonObject(JsonObject->GetObjectField("party_leader"), JsonString))
+    			{
+    				FNakamaPartyLeader PartyLeader = FNakamaPartyLeader(JsonString);
+    				
+    				// Handle Lambda Callback
+    				if(OnPartyLeader)
+    				{
+    					OnPartyLeader(PartyLeader);
+    				}
+
+    				// Handle Multicast Delegate
+    				if(PartyLeaderReceived.IsBound())
+    				{
+    					PartyLeaderReceived.Broadcast(PartyLeader);
+    				}
+    			}
+    			else
+    			{
+    				NAKAMA_LOG_ERROR("Realtime Client - Failed to deserialize 'party_leader' from JSON string.");
+    			}
+    		}
+    		else if (JsonObject->HasField("party_matchmaker_ticket"))
+    		{
+    			FString JsonString;
+    			if (SerializeJsonObject(JsonObject->GetObjectField("party_matchmaker_ticket"), JsonString))
+    			{
+    				FNakamaPartyMatchmakerTicket PartyMatchmakerTicket = FNakamaPartyMatchmakerTicket(JsonString);
+    				
+    				// Handle Lambda Callback
+    				if(OnPartyMatchmakerTicket)
+    				{
+    					OnPartyMatchmakerTicket(PartyMatchmakerTicket);
+    				}
+
+    				// Handle Multicast Delegate
+    				if(PartyMatchmakerTicketReceived.IsBound())
+    				{
+    					PartyMatchmakerTicketReceived.Broadcast(PartyMatchmakerTicket);
+    				}
+    			}
+    			else
+    			{
+    				NAKAMA_LOG_ERROR("Realtime Client - Failed to deserialize 'party_matchmaker_ticket' from JSON string.");
+    			}
+    		}
+    		else if (JsonObject->HasField("party_presence_event"))
+    		{
+    			FString JsonString;
+    			if (SerializeJsonObject(JsonObject->GetObjectField("party_presence_event"), JsonString))
+    			{
+    				FNakamaPartyPresenceEvent PartyPresenceEvent = FNakamaPartyPresenceEvent(JsonString);
+    				
+    				// Handle Lambda Callback
+    				if(OnPartyPresenceEvent)
+    				{
+    					OnPartyPresenceEvent(PartyPresenceEvent);
+    				}
+
+    				// Handle Multicast Delegate
+    				if(PartyPresenceReceived.IsBound())
+    				{
+    					PartyPresenceReceived.Broadcast(PartyPresenceEvent);
+    				}
+    			}
+    			else
+    			{
+    				NAKAMA_LOG_ERROR("Realtime Client - Failed to deserialize 'party_presence_event' from JSON string.");
+    			}
     		}
             else
             {
@@ -2590,7 +2747,7 @@ void UNakamaRealtimeClient::HandleReceivedMessage(const FString& Data)
     	}
     	else
     	{
-    		NAKAMA_LOG_ERROR(TEXT("Realtime Client - No listener. Received message has been ignored."));
+    		NAKAMA_LOG_ERROR(TEXT("Realtime Client - Realtime Client was not available to handle event message."));
     	}
     	// End of Events!
     }
@@ -2632,12 +2789,23 @@ void UNakamaRealtimeClient::HandleReceivedMessage(const FString& Data)
     			{
     				ErrorCallback.Execute(Error);
     			}
-    			else if (_Listener)
+    			else if (OnError || ErrorEvent.IsBound()) // Checks if Error is bound (means it is handled)
     			{
-    				_Listener->OnError(Error);
+    				// Lambda Callback
+    				if(OnError)
+    				{
+    					OnError(Error);
+    				}
+
+    				// Multicast Delegate
+    				if(ErrorEvent.IsBound())
+    				{
+    					ErrorEvent.Broadcast(Error);
+    				}
     			}
     			else
     			{
+    				// Error was not handled
     				NAKAMA_LOG_WARN(TEXT("Error not handled."));
     			}
     		}
@@ -2763,13 +2931,20 @@ void UNakamaRealtimeClient::OnTransportError(const FString& Description)
 	NAKAMA_LOG_ERROR(FString::Printf(TEXT("Realtime Client Transport Error (Code: %s): %s"), 
 		WebSocket->IsConnected() ? TEXT("TRANSPORT_ERROR") : TEXT("CONNECT_ERROR"), *Description));
 
-	if(_Listener && IsValid(_Listener))
+	// Handle Callbacks
+	if(FNakamaUtils::IsRealtimeClientActive(this))
 	{
-		_Listener->OnError(Error);
-	}
-	else
-	{
-		NAKAMA_LOG_WARN(TEXT("Listener is null or OnError is not bound."));
+		// Lambda Callback
+		if(OnError)
+		{
+			OnError(Error);
+		}
+
+		// Multicast Delegate
+		if(ErrorEvent.IsBound())
+		{
+			ErrorEvent.Broadcast(Error);
+		}
 	}
 }
 

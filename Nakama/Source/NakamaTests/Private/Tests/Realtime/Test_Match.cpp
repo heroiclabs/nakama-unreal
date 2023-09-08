@@ -1,7 +1,6 @@
 ﻿#include "Tests/Realtime/Test_Match.h"
 #include "NakamaTestBase.h"
 #include "Misc/AutomationTest.h"
-#include "NakamaRealtimeClientListener.h"
 
 // Create Match
 IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(CreateMatch, FNakamaTestBase, "Nakama.Base.Realtime.Matches.Match", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
@@ -19,9 +18,7 @@ inline bool CreateMatch::RunTest(const FString& Parameters)
 		// Setup socket:
 		Socket = Client->SetupRealtimeClient();
 
-		Listener = UNakamaRealtimeClientListener::CreateRealtimeClientListener();
-
-		Listener->SetConnectCallback([this]()
+		Socket->SetConnectCallback([this]()
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Test Socket connected"));
 
@@ -43,9 +40,8 @@ inline bool CreateMatch::RunTest(const FString& Parameters)
 
 			Socket->CreateMatch(successCallback, errorCallback);
 		});
-
-		Socket->SetListener(Listener);
-		Socket->Connect(Session, true, {}, {} );
+		
+		Socket->Connect(Session, true);
 	};
 
 	// Define error callback
@@ -80,10 +76,10 @@ inline bool AddMatchmaker::RunTest(const FString& Parameters)
 		// Set the session for later use
 		Session = session;
 
-		// Create Listener
-		Listener = UNakamaRealtimeClientListener::CreateRealtimeClientListener();
+		// Setup socket:
+		Socket = Client->SetupRealtimeClient();
 
-		Listener->SetConnectCallback([&]()
+		Socket->SetConnectCallback([&]()
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Socket connected"));
 
@@ -118,17 +114,15 @@ inline bool AddMatchmaker::RunTest(const FString& Parameters)
 			Socket->AddMatchmaker(MinCount, MaxCount, Query, StringProperties, NumericProperties, CountMultiple, successCallback, errorCallback);
 		});
 
-		Listener->SetDisconnectCallback( [&](const FNakamaDisconnectInfo& DisconnectInfo)
+		Socket->SetDisconnectCallback( [&](const FNakamaDisconnectInfo& DisconnectInfo)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Socket disconnected: %s"), *DisconnectInfo.Reason);
 			TestFalse("Add Matchmaker Test error, socket disconnected", true);
 			StopTest();
 		});
 		
-		// Setup socket:
-		Socket = Client->SetupRealtimeClient();
-		Socket->SetListener(Listener);
-		Socket->Connect(Session, true, {}, {} );
+		// Connect to Socket
+		Socket->Connect(Session, true);
 	};
 
 	// Define error callback
@@ -164,10 +158,10 @@ inline bool MatchmakerJoinMatch::RunTest(const FString& Parameters)
 		// Set the session for later use
 		Session = session;
 
-		// Create Listener
-		Listener = UNakamaRealtimeClientListener::CreateRealtimeClientListener();
+		// Setup socket:
+		Socket = Client->SetupRealtimeClient();
 
-		Listener->SetConnectCallback([this]()
+		Socket->SetConnectCallback([this]()
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Socket connected"));
 
@@ -192,7 +186,7 @@ inline bool MatchmakerJoinMatch::RunTest(const FString& Parameters)
 			Socket->AddMatchmaker(MinCount, MaxCount, Query, StringProperties, NumericProperties, CountMultiple, successCallback, errorCallback);
 		});
 
-		Listener->SetMatchmakerMatchedCallback( [&](const FNakamaMatchmakerMatched& MatchmakerMatched)
+		Socket->SetMatchmakerMatchedCallback( [&](const FNakamaMatchmakerMatched& MatchmakerMatched)
 		{
 			// Join Match by Token
 			UE_LOG( LogTemp, Warning, TEXT( "Socket Matchmaker Matched" ) );
@@ -214,10 +208,8 @@ inline bool MatchmakerJoinMatch::RunTest(const FString& Parameters)
 			Socket->JoinMatchByToken(MatchmakerMatched.Token, JoinMatchSuccessCallback, JoinMatchErrorCallback);
 		});
 		
-		// Setup socket:
-		Socket = Client->SetupRealtimeClient();
-		Socket->SetListener(Listener);
-		Socket->Connect(Session, true, {}, {} );
+		// Connect with Socket
+		Socket->Connect(Session, true);
 	};
 
 	// Define error callback
@@ -238,10 +230,10 @@ inline bool MatchmakerJoinMatch::RunTest(const FString& Parameters)
 		// Set the session for later use
 		Session2 = session;
 
-		// Create Listener
-		Listener2 = UNakamaRealtimeClientListener::CreateRealtimeClientListener();
+		// Setup socket:
+		Socket2 = Client2->SetupRealtimeClient();
 
-		Listener2->SetConnectCallback([this]()
+		Socket2->SetConnectCallback([this]()
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Socket 2 connected"));
 
@@ -265,7 +257,7 @@ inline bool MatchmakerJoinMatch::RunTest(const FString& Parameters)
 			Socket2->AddMatchmaker(MinCount, MaxCount, Query, StringProperties, NumericProperties, CountMultiple, successCallback, errorCallback);
 		});
 
-		Listener2->SetMatchmakerMatchedCallback( [&](const FNakamaMatchmakerMatched& MatchmakerMatched)
+		Socket2->SetMatchmakerMatchedCallback( [&](const FNakamaMatchmakerMatched& MatchmakerMatched)
 		{
 			UE_LOG( LogTemp, Warning, TEXT( "Socket 2 Matchmaker Matched" ) );
 			// Join Match by Token
@@ -287,10 +279,8 @@ inline bool MatchmakerJoinMatch::RunTest(const FString& Parameters)
 			Socket2->JoinMatchByToken(MatchmakerMatched.Token, JoinMatchSuccessCallback, JoinMatchErrorCallback);
 		});
 		
-		// Setup socket:
-		Socket2 = Client2->SetupRealtimeClient();
-		Socket2->SetListener(Listener2);
-		Socket2->Connect(Session, true, {}, {} );
+		// Connect with Socket
+		Socket2->Connect(Session2, true); // NOTE: This must use Session2
 	};
 
 	auto Client2AuthErrorCallback = [&](const FNakamaError& Error)

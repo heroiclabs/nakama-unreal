@@ -166,5 +166,17 @@ public:
 	{
 		return value != defaultValue ? TOptional<T>(value) : TOptional<T>();
 	}
+
+	// Conversion
+
+	static TMap<FString, double> ConvertFloatMapToDouble(const TMap<FString, float>& FloatMap)
+	{
+		TMap<FString, double> DoubleMap;
+		for (const auto& Pair : FloatMap)
+		{
+			DoubleMap.Add(Pair.Key, static_cast<double>(Pair.Value));
+		}
+		return DoubleMap;
+	}
 	
 };

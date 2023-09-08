@@ -70,7 +70,8 @@ PrivateDependencyModuleNames.AddRange(new string[] { "NakamaUnreal", "NakamaCore
 
 ```
 
-Starting with the headers public variables, we are using a blank actor that will be placed in the scene in this example.
+Starting with the headers public variables, we are using a blank actor that will be placed in the scene in this example. Unreal Engine uses a reflection system that provides metadata about its classes and allows for advanced features like Blueprint/C++ communication, serialization, and more.
+When working with Nakama objects, or any UObject-derived class, it's crucial to mark them using the Unreal reflection system. This is done using macros such as UFUNCTION(), and UPROPERTY(). 
 
 ```cpp
 UPROPERTY()
@@ -97,6 +98,15 @@ void OnRealtimeClientConnectError();
 // Initialize client and authenticate here
 virtual void BeginPlay() override;
 ```
+
+For instance, if you want a Nakama object to be available for manipulation within the Blueprint Editor, you'd mark it with UPROPERTY().
+
+```cpp
+UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Nakama")
+UNakamaClient* NakamaClientInstance;
+```
+
+By using the BlueprintReadWrite specifier, the NakamaClientInstance variable becomes both readable and writable in Blueprints.
 
 Then inside the Begin Play we setup default client, authenticate and bind delegates.
 
@@ -184,6 +194,97 @@ void AMyActor::OnRealtimeClientConnectError()
 
 If you setup everything correctly, create a blueprint version of this actor and place it in the level you will see on-screen messages saying you authenticated, your username and then socket connected message.
 
+# Delegates and Lambdas in Nakama Unreal
+
+The latest Nakama Unreal release offers the flexibility to use either `Dynamic Multicast Delegates` or `Lambdas (TFunctions)` for handling functions and events. Here's a brief comparison and guidelines on how to use them:
+
+## Dynamic Multicast Delegates:
+- **Binding**: Bound using `AddDynamic`.
+- **Usage**: Suited for scenarios where multiple bindings are needed.
+
+## Lambdas (TFunctions):
+- **Binding**: Defined in-line and don't require an external function.
+- **Usage**: Convenient for one-off or temporary handlers. Note that a lambda can only be bound to one place at a time.
+
+### How to Choose?
+Provide your preferred callback type (either a `delegate` or a `lambda`) into the `Success` and `Error` parameters of the relevant Nakama function.
+
+---
+
+## Example: Using Lambdas
+
+Here's a demonstration of using `lambdas` as an alternative to `delegates`:
+
+```cpp
+// Define success callback with a lambda
+auto successCallback = [&](UNakamaSession* session)
+{	
+	UE_LOG(LogTemp, Warning, TEXT("Session Token: %s"), *Session->GetAuthToken());
+	UE_LOG(LogTemp, Warning, TEXT("Username: %s"), *Session->GetUsername());
+};
+
+// Define error callback with a lambda
+auto errorCallback = [&](const FNakamaError& Error)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Error Code: %d"), Error.Code);
+};
+
+// Execute the AuthenticateEmail function with lambdas
+Client->AuthenticateEmail(TEXT("debug@mail.com"), TEXT("verysecretpassword"), TEXT("debug-user"), true, {}, successCallback, errorCallback);
+```
+
+
+
+# Working with Realtime Events
+
+Upon initializing your Realtime Client, it's essential to establish event listeners for critical in-game events, ranging from channel messages and notifications to party interactions. Nakama Unreal provides flexibility by allowing both lambdas and delegates for this purpose. 
+
+```cpp
+// Start by creating a Realtime Client:
+UNakamaRealtimeClient* Socket = NakamaClient->SetupRealtimeClient();
+
+// When using delegates, you need to declare functions that match the delegate's signature:
+Socket->ChannelMessageReceived.AddDynamic(this, &ANakamaActor::OnChannelMessageReceived);
+Socket->NotificationReceived.AddDynamic(this, &ANakamaActor::OnNotificationReceived);
+
+// Lambdas offer a concise way to define event handlers directly in-line:
+// Note: A lambda can be bound only once.
+Socket->SetChannelMessageCallback( [](const FNakamaChannelMessage& ChannelMessage)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Channel Message: %s"), *ChannelMessage.Content);
+});
+
+Socket->SetNotificationsCallback( [](const FNakamaNotificationList& NotificationList)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Notifications: %d"), NotificationList.Notifications.Num());
+	for (auto& Notification : NotificationList.Notifications)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Notification: %s"), *Notification.Content);
+	}
+});
+
+// Establish a connection to start receiving events. 
+// Optional success and error callbacks (either lambdas or delegates) can be provided:
+Socket->Connect(Session, true);
+```
+Function implementations might look something like this:
+
+
+```cpp
+void ANakamaActor::OnChannelMessageReceived(const FNakamaChannelMessage& ChannelMessage)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Channel Message: %s"), *ChannelMessage.Content);
+}
+
+void ANakamaActor::OnNotificationReceived(const FNakamaNotificationList& Notifications)
+{
+	for (auto NotificationData : Notifications.Notifications)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Notification: %s"), *NotificationData.Content);
+	}
+}
+```
+
 # Getting Started with `NakamaBlueprints`
 
 In this section you will learn how to manually create and manage Nakama clients that are provided by this plugin, entirely in blueprints.
@@ -224,7 +325,7 @@ Remember to provide the user session from the successful authentication earlier,
 
 # Setting up Listeners and Binding to Events
 
-Before you bind to event callbacks you need to setup the listener first, drag out from the realtime client and type `Listener`, you will be provided a list over different events you can listen to, there is also a `Listen to All Callbacks` which will open up all listeners.
+After creating your Realtime Client you are ready to bind to its' events
 
 ![image binding-1](./images/Bindings-1.png)
 
@@ -279,6 +380,10 @@ Moving forward, you should be ready to use all functionality of Nakama to power 
 Cursors are used to add paging functionality to certain nodes, like friends list and leaderboard records. When there is more data to be retrieved, a cursor string will be returned in the Success callback. You can store this cursor as a string and use it later, like when a person clicks a "more" button or use it immediately to fetch more data. Look at the example below.
 
 ![image cursors](./images/Cursors.png)
+
+# Working with Logs
+
+TODO
 
 # Additional Information
 

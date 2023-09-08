@@ -5,17 +5,12 @@
 #include "CoreMinimal.h"
 #include "NakamaClient.h"
 #include "Kismet/BlueprintAsyncActionBase.h"
-#include "NakamaUserSession.h"
 #include "NakamaStorageObject.h"
-#include "NakamaUtils.h"
 #include "NakamaError.h"
 #include "NakamaGroup.h"
-#include "NakamaClient.h"
 #include "NakamaMatch.h"
-#include "NakamaMatchTypes.h"
 #include "NakamaFriend.h"
 #include "NakamaNotification.h"
-#include "NakamaStorageObject.h"
 #include "NakamaRPC.h"
 #include "NakamaChannelTypes.h"
 #include "NakamaLeaderboard.h"
@@ -27,9 +22,7 @@
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAnyError, FNakamaError, Error);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSuccessful);
 
-/// <summary>
-/// Authentication
-/// </summary>
+// --- Authentication --- //
 
 /**
  * Authenticate Custom
@@ -82,9 +75,8 @@ private:
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnAuthenticateEmail, FNakamaError, Error, UNakamaSession*, Session);
 
-
-//UCLASS()
-UCLASS(meta=(BlueprintThreadSafe))
+//UCLASS(meta=(BlueprintThreadSafe))
+UCLASS()
 class NAKAMABLUEPRINTS_API UNakamaClientAuthenticateEmail : public UBlueprintAsyncActionBase
 {
 	GENERATED_BODY()
@@ -454,13 +446,7 @@ public:
 };
 
 
-/// <summary>
-/// Restore Session
-/// </summary>
-
-/// <summary>
-/// Link Account
-/// </summary>
+// --- Linking --- //
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnLinkError, FNakamaError, Error);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnLinkSuccessful); // Renamed
@@ -814,12 +800,9 @@ private:
 
 };
 
-/// <summary>
-/// Unlink Account
-/// </summary>
 
-//DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnUnLinkError, FNakamaError, Error);
-//DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnUnLinkSuccessful); // Renamed
+// --- Unlinking --- //
+
 
 /**
  * UnLink Custom
@@ -1168,9 +1151,7 @@ private:
 
 };
 
-/// <summary>
-/// Functions
-/// </summary>
+// --- Functions --- //
 
 /**
  * Refresh Session
@@ -1288,6 +1269,7 @@ public:
 	 * The server will import friends when the user authenticates with Steam. This function can be used to be
 	 * explicit with the import operation.
 	 *
+	 * @param Client The Client to use.
 	 * @param Session The session of the user.
 	 * @param SteamId The Steam Id to use.
 	 * @param Reset True if the Steam friend import for the user should be reset.
@@ -1305,9 +1287,7 @@ private:
 };
 
 
-/// <summary>
-/// Get Account and User Info
-/// </summary>
+// --- Account and User Info --- //
 
 /**
  * Get User Account
@@ -1341,7 +1321,7 @@ public:
 	 * @param Session The session of the user.
 	 */
 
-	UFUNCTION(BlueprintCallable, Category = "Nakama|Users", meta = (BlueprintInternalUseOnly = "true"))
+	UFUNCTION(BlueprintCallable, Category = "Nakama|Users", meta = (BlueprintInternalUseOnly = "true", DisplayName = "Get Account"))
 	static UNakamaClientGetUserAccount* GetUserAccount(UNakamaClient *Client, UNakamaSession *Session);
 
 	virtual void Activate() override;
@@ -1501,9 +1481,7 @@ private:
 
 };
 
-/// <summary>
-/// Friend System
-/// </summary>
+// --- Friends --- //
 
 /**
  * Get Friends
@@ -1539,7 +1517,7 @@ public:
 	 * @param Session The session of the user.
 	 * @param Client The Client to use.
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Nakama|Friends", meta = (BlueprintInternalUseOnly = "true"))
+	UFUNCTION(BlueprintCallable, Category = "Nakama|Friends", meta = (BlueprintInternalUseOnly = "true", DisplayName = "List Friends"))
 	static UNakamaClientGetFriends* GetFriends(UNakamaClient* Client, UNakamaSession *Session, int32 Limit, ENakamaFriendState State, FString Cursor);
 
 	virtual void Activate() override;
@@ -1628,7 +1606,7 @@ public:
 	 * @param Client The Client to use.
 	 */
 
-	UFUNCTION(BlueprintCallable, Category = "Nakama|Friends", meta = (BlueprintInternalUseOnly = "true"))
+	UFUNCTION(BlueprintCallable, Category = "Nakama|Friends", meta = (BlueprintInternalUseOnly = "true", DisplayName = "Delete Friends"))
 	static UNakamaClientRemoveFriends* RemoveFriends(UNakamaClient* Client, UNakamaSession *Session, TArray<FString> Ids, TArray<FString> Usernames);
 
 	virtual void Activate() override;
@@ -1681,9 +1659,7 @@ private:
 };
 
 
-/// <summary>
-/// Group System
-/// </summary>
+// --- Groups --- //
 
 /**
  * Create Group
@@ -2238,9 +2214,7 @@ private:
 };
 
 
-/// <summary>
-/// Notifications
-/// </summary>
+// --- Notifications --- //
 
 
 /**
@@ -2330,9 +2304,7 @@ private:
 };
 
 
-/// <summary>
-/// Storage System
-/// </summary>
+// --- Storage --- //
 
 /**
  * Write Storage Objects
@@ -2497,7 +2469,7 @@ public:
 	 * @param Session The session of the user.
 	 * @param Client The Client to use.
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Nakama|Storage", meta = (BlueprintInternalUseOnly = "true"))
+	UFUNCTION(BlueprintCallable, Category = "Nakama|Storage", meta = (BlueprintInternalUseOnly = "true", DisplayName = "Delete Storage Objects"))
 	static UNakamaClientRemoveStorageObjects* RemoveStorageObjects(UNakamaClient* Client, UNakamaSession *Session, TArray<FNakamaDeleteStorageObjectId> StorageObjectsData);
 
 	virtual void Activate() override;
@@ -2509,9 +2481,7 @@ private:
 };
 
 
-/// <summary>
-/// RPC
-/// </summary>
+// --- RPC --- //
 
 /**
  * RPC
@@ -2582,6 +2552,7 @@ public:
 	/**
 	 * Send an RPC message to the server.
 	 *
+	 * @param Client The Client to use.
 	 * @param HttpKey The HTTP key for the server.
 	 * @param FunctionId The ID of the function to execute.
 	 * @param Payload The string content to send to the server.
@@ -2599,9 +2570,7 @@ private:
 };
 
 
-/// <summary>
-/// List Channel Messages
-/// </summary>
+// --- Chat --- //
 
 /**
  * List Channel Messages
@@ -2631,6 +2600,7 @@ public:
 	/**
 	 * List messages from a chat channel.
 	 *
+	 * @param Client The Client to use.
 	 * @param Session The session of the user.
 	 * @param ChannelId A channel identifier.
 	 * @param Limit The number of chat messages to list.
@@ -2651,9 +2621,7 @@ private:
 };
 
 
-/// <summary>
-/// Leaderboards
-/// </summary>
+// --- Leaderboards --- //
 
 
 /**
@@ -2841,10 +2809,7 @@ private:
 
 };
 
-
-/// <summary>
-/// Tournaments
-/// </summary>
+// --- Tournaments --- //
 
 /**
  * Write Tournament Record

@@ -7,6 +7,7 @@
 IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(WriteStorageInvalidArgument, FNakamaTestBase, "Nakama.Base.Storage.InvalidArgument", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
 inline bool WriteStorageInvalidArgument::RunTest(const FString& Parameters)
 {
+	// TODO: This test ends up being quite slow
 	// Initiates the test
 	InitiateTest();
 	

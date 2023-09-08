@@ -1,7 +1,5 @@
 ﻿#include "Tests/Realtime/Test_Parties.h"
 
-#include "NakamaRealtimeClientListener.h"
-
 // Create Party and Join Party Test Case
 IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(CreateParty, FNakamaPartiesTestBase, "Nakama.Base.Realtime.Parties.CreateParty", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
 inline bool CreateParty::RunTest(const FString& Parameters)
@@ -15,10 +13,10 @@ inline bool CreateParty::RunTest(const FString& Parameters)
 		// Set the session for later use
 		Session = session;
 
-		// Create Listener
-		Listener = UNakamaRealtimeClientListener::CreateRealtimeClientListener();
+		// Setup socket:
+		Socket = Client->SetupRealtimeClient();
 
-		Listener->SetConnectCallback([this]()
+		Socket->SetConnectCallback([this]()
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Socket 1 connected"));
 
@@ -38,15 +36,13 @@ inline bool CreateParty::RunTest(const FString& Parameters)
 			Socket->CreateParty(true, 2, CreatePartySuccessCallback, CreatePartyErrorCallback);
 		});
 
-		Listener->SetPartyDataCallback( [&](const FNakamaPartyData& PartyData)
+		Socket->SetPartyDataCallback( [&](const FNakamaPartyData& PartyData)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Party Data Callback. Data: %s"), *PartyData.Data);
 		});
 		
-		// Setup socket:
-		Socket = Client->SetupRealtimeClient();
-		Socket->SetListener(Listener);
-		Socket->Connect(Session, true, {}, {} );
+		// Connect with Socket
+		Socket->Connect(Session, true);
 	};
 
 	// Define error callback
@@ -77,10 +73,10 @@ void FNakamaPartiesTestBase::SetupClient2AndJoinParty()
 		// Set the session for later use
 		Session2 = session;
 
-		// Create Listener
-		Listener2 = UNakamaRealtimeClientListener::CreateRealtimeClientListener();
+		// Setup socket:
+		Socket2 = Client2->SetupRealtimeClient();
 
-		Listener2->SetConnectCallback([this]()
+		Socket2->SetConnectCallback([this]()
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Socket 2 connected"));
 
@@ -104,7 +100,7 @@ void FNakamaPartiesTestBase::SetupClient2AndJoinParty()
 			Socket2->JoinParty(Party.Id, JoinPartySuccessCallback, JoinPartyErrorCallback);
 		});
 
-		Listener2->SetPartyCallback( [&](const FNakamaParty& MyParty)
+		Socket2->SetPartyCallback( [&](const FNakamaParty& MyParty)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Party Callback. PartyId: %s"), *MyParty.Id);
 			for (auto& Presence : MyParty.Presences)
@@ -113,10 +109,8 @@ void FNakamaPartiesTestBase::SetupClient2AndJoinParty()
 			}
 		});
 		
-		// Setup socket:
-		Socket2 = Client2->SetupRealtimeClient();
-		Socket2->SetListener(Listener2);
-		Socket2->Connect(Session, true, {}, {} );
+		// Connect with Socket
+		Socket2->Connect(Session2, true);
 	};
 
 	auto Client2AuthErrorCallback = [&](const FNakamaError& Error)
@@ -142,10 +136,10 @@ inline bool PartyMatchmaker::RunTest(const FString& Parameters)
 		// Set the session for later use
 		Session = session;
 
-		// Create Listener
-		Listener = UNakamaRealtimeClientListener::CreateRealtimeClientListener();
+		// Setup socket:
+		Socket = Client->SetupRealtimeClient();
 
-		Listener->SetConnectCallback([this]()
+		Socket->SetConnectCallback([this]()
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Socket 1 connected"));
 
@@ -184,15 +178,13 @@ inline bool PartyMatchmaker::RunTest(const FString& Parameters)
 			Socket->CreateParty(false, 1, CreatePartySuccessCallback, CreatePartyErrorCallback);
 		});
 
-		Listener->SetPartyDataCallback( [&](const FNakamaPartyData& PartyData)
+		Socket->SetPartyDataCallback( [&](const FNakamaPartyData& PartyData)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Party Data Callback. Data: %s"), *PartyData.Data);
 		});
 		
-		// Setup socket:
-		Socket = Client->SetupRealtimeClient();
-		Socket->SetListener(Listener);
-		Socket->Connect(Session, true, {}, {} );
+		// Connect with Socket
+		Socket->Connect(Session, true);
 	};
 
 	// Define error callback

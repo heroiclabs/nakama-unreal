@@ -219,8 +219,8 @@ bool UNakamaSession::ParseJwtPayload(const FString& jwt, TSharedPtr<FJsonObject>
 	// Ensure null termination
 	decodedBytes.Add(0);
 
-	// Convert UTF-8 bytes to FString
-	FString decodedPayloadString = FString(FUTF8ToTCHAR(reinterpret_cast<const ANSICHAR*>(decodedBytes.GetData()))); 
+	// Convert UTF-8 bytes to FString to handle special characters
+	FString decodedPayloadString = FString(UTF8_TO_TCHAR(reinterpret_cast<const ANSICHAR*>(decodedBytes.GetData())));
 
 	// Parse the decoded payload as a JSON object
 	TSharedRef<TJsonReader<>> reader = TJsonReaderFactory<>::Create(decodedPayloadString);
