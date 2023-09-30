@@ -381,9 +381,100 @@ Cursors are used to add paging functionality to certain nodes, like friends list
 
 ![image cursors](./images/Cursors.png)
 
-# Working with Logs
+# Logging
+By default, logging is disabled. However, when creating a Client, you have the option to `Enable Debug`, allowing logs to be written using the debug log category. You can also manually control logging.
 
-TODO
+**Enabling Logging from Blueprints:**
+![image logging](./images/Logging.png)
+
+**Enabling Logging from C++**
+
+To enable logging through C++, include the following header file:
+
+```cpp
+#include "NakamaLogger.h"
+```
+Subsequently, to toggle logging, use:
+
+```cpp
+UNakamaLogger::EnableLogging(true);
+```
+To set the log level, use:
+
+
+```cpp
+UNakamaLogger::SetLogLevel(ENakamaLogLevel::Debug);
+```
+
+Log categories are as follows:
+
+- `Debug` writes all logs.
+
+- `Info` writes logs with `Info`, `Warn`, `Error` and `Fatal` logging level.
+
+- `Warn` writes logs with `Warn`, `Error` and `Fatal` logging level.
+
+- `Error` writes logs with `Error` and `Fatal` logging level.
+
+- `Fatal` writes only logs with `Fatal` logging level.
+
+# Running Tests
+This repository includes a test-suite to test the various features of Nakama for Unreal, tests can be run in the Editor, from Command-Line and there is eve a `BlueprintsTest` project with separate documentation if you would like to run the same tests in Blueprints.
+
+
+## Using the Editor
+- Create a blank C++ Project
+- Add `Nakama` plugin to `Plugins` directory within the project
+- Build and open the project in the Unreal Editor
+- Be sure to enable the `Functional Testing Editor` Plugin in Unreal under `Edit -> Plugins` then restart the editor
+- Navigate to `Tool -> TestAutomation`
+- Select your device on the left hand side, navigate to the Automation tab then choose which Nakama Tests you would like to run and click `Start Tests`
+- Logs will be provided with the result of the tests
+
+![image testing](./images/Testing-1.png)
+
+## Using Command-Line:
+
+The tests can be run in both packaged and using the command-line version of the Unreal Editor.
+
+For all Command-Line based tests start by doing these steps:
+- Create a blank C++ Unreal Engine Project with your desired editor version, this documentation focuses on Unreal Engine 5.0+
+- Place the `Nakama` plugin in the `Plugins` directory within the project
+- Enable the `Nakama` Plugin for the project
+- You can either build the project like normal, or use the build commands below
+
+**Windows - Editor:**
+
+To build the test, run:
+```bash
+"<Path_To_Unreal_Engine>\Engine\Build\BatchFiles\Build.bat" <YourProjectName>Editor Win64 Development -Project="<Path_To_Your_Project>\<YourProjectName>.uproject"
+```
+To run the test, run:
+```bash
+"<Path_To_Unreal_Engine>\Engine\Binaries\Win64\UnrealEditor-Cmd.exe" "<Path_To_Your_Project>\<YourProjectName>.uproject" -ExecCmds="Automation RunTests <YourTestName>" -log -NullRHI -verbose -unattended -ReportOutputPath="<Path_To_Store_Report>"
+```
+
+If you want to run all tests replace `<YourTestName>` with `Nakama.Base`, if you specify `ReportOutputPath` you will receive an overview json logfile, logs will be stored within the `Saved/Logs` directory.
+
+**Windows - Packaged:**
+
+To build the test, run:
+```bash
+"<Path_To_Unreal_Engine>/Engine/Build/BatchFiles/RunUAT.sh" BuildCookRun -targetconfig=Debug -project="<Path_To_Your_Project>\<YourProjectName>.uproject" -noP4 -installed -utf8output -build -cook -stage -package -verbose -stdout -nohostplatform -useshellexecute
+```
+To run the test, run:
+```bash
+./NakamaTest/Saved/StagedBuilds/Windows/NakamaTest.exe -nullrhi -verbose -ExecCmds="Automation RunTests Nakama.Base" -log
+```
+
+
+**Passing Parameters**
+
+Parameters such as hostname, port and server key can be passed as command-line arguments, here is an example:
+
+```bash
+-hostname="127.0.0.1" -port=7350 -serverkey="defaultkey" -serverhttpkey="defaulthttpkey" -timeout=45 -useSSL
+```
 
 # Additional Information
 

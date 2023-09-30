@@ -14,18 +14,16 @@ bool Test_Internals::RunTest(const FString& Parameters)
 
 	if( EncodedString != Expected )
 	{
-		UE_LOG(LogTemp, Warning, TEXT("EncodedString: %s"), *EncodedString);
-		UE_LOG(LogTemp, Warning, TEXT("Expected: %s"), *Expected);
+		UE_LOG(LogTemp, Display, TEXT("EncodedString: %s"), *EncodedString);
+		UE_LOG(LogTemp, Display, TEXT("Expected: %s"), *Expected);
 		TestFalse("UriEncode Test Failed", true);
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("EncodedString: %s"), *EncodedString);
-		UE_LOG(LogTemp, Warning, TEXT("Expected: %s"), *Expected);
+		UE_LOG(LogTemp, Display, TEXT("EncodedString: %s"), *EncodedString);
+		UE_LOG(LogTemp, Display, TEXT("Expected: %s"), *Expected);
 		TestTrue("UriEncode Test Passed", true);
 	}
-	
-	//FGenericPlatformHttp::UrlEncode
 	
 	// Make the test pass by returning true, or fail by returning false.
 	return true;

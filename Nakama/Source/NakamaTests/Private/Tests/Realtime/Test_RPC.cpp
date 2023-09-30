@@ -74,7 +74,6 @@ inline bool RPCWithHttpKey::RunTest(const FString& Parameters)
 
 	// Wait for authentication to complete
 	ADD_LATENT_AUTOMATION_COMMAND(FWaitForAsyncQueries(this));
-	//ADD_LATENT_AUTOMATION_COMMAND(FWaitForAsyncQueriesWithTimeout(this, 6.0f));
 
 	// Return true to indicate the test is complete
 	return true;
@@ -154,7 +153,6 @@ inline bool RPCWithHttpKey2::RunTest(const FString& Parameters)
 
 	// Wait for authentication to complete
 	ADD_LATENT_AUTOMATION_COMMAND(FWaitForAsyncQueries(this));
-	//ADD_LATENT_AUTOMATION_COMMAND(FWaitForAsyncQueriesWithTimeout(this, 6.0f));
 
 	// Return true to indicate the test is complete
 	return true;
@@ -218,7 +216,6 @@ inline bool RPCWithAuth1::RunTest(const FString& Parameters)
 
 	// Wait for authentication to complete
 	ADD_LATENT_AUTOMATION_COMMAND(FWaitForAsyncQueries(this));
-	//ADD_LATENT_AUTOMATION_COMMAND(FWaitForAsyncQueriesWithTimeout(this, 6.0f));
 
 	// Return true to indicate the test is complete
 	return true;
@@ -284,7 +281,6 @@ inline bool RPCWithAuth2::RunTest(const FString& Parameters)
 
 	// Wait for authentication to complete
 	ADD_LATENT_AUTOMATION_COMMAND(FWaitForAsyncQueries(this));
-	//ADD_LATENT_AUTOMATION_COMMAND(FWaitForAsyncQueriesWithTimeout(this, 6.0f));
 
 	// Return true to indicate the test is complete
 	return true;
@@ -349,7 +345,6 @@ inline bool RPCWithAuth4::RunTest(const FString& Parameters)
 
 	// Wait for authentication to complete
 	ADD_LATENT_AUTOMATION_COMMAND(FWaitForAsyncQueries(this));
-	//ADD_LATENT_AUTOMATION_COMMAND(FWaitForAsyncQueriesWithTimeout(this, 6.0f));
 
 	// Return true to indicate the test is complete
 	return true;
@@ -414,7 +409,6 @@ inline bool RPCWithAuth5::RunTest(const FString& Parameters)
 
 	// Wait for authentication to complete
 	ADD_LATENT_AUTOMATION_COMMAND(FWaitForAsyncQueries(this));
-	//ADD_LATENT_AUTOMATION_COMMAND(FWaitForAsyncQueriesWithTimeout(this, 6.0f));
 
 	// Return true to indicate the test is complete
 	return true;

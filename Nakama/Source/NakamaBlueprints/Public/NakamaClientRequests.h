@@ -75,7 +75,6 @@ private:
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnAuthenticateEmail, FNakamaError, Error, UNakamaSession*, Session);
 
-//UCLASS(meta=(BlueprintThreadSafe))
 UCLASS()
 class NAKAMABLUEPRINTS_API UNakamaClientAuthenticateEmail : public UBlueprintAsyncActionBase
 {

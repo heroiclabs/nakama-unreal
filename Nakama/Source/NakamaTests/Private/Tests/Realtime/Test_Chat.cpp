@@ -62,7 +62,6 @@ inline bool JoinChat::RunTest(const FString& Parameters)
 
 	// Wait for authentication to complete
 	ADD_LATENT_AUTOMATION_COMMAND(FWaitForAsyncQueries(this));
-	//ADD_LATENT_AUTOMATION_COMMAND(FWaitForAsyncQueriesWithTimeout(this, 6.0f));
 
 	// Return true to indicate the test is complete
 	return true;
@@ -165,7 +164,6 @@ inline bool JoinChatWriteMessage::RunTest(const FString& Parameters)
 
 	// Wait for authentication to complete
 	ADD_LATENT_AUTOMATION_COMMAND(FWaitForAsyncQueries(this));
-	//ADD_LATENT_AUTOMATION_COMMAND(FWaitForAsyncQueriesWithTimeout(this, 6.0f));
 
 	// Return true to indicate the test is complete
 	return true;
@@ -241,7 +239,6 @@ inline bool JoinGroupChat::RunTest(const FString& Parameters)
 
 	// Wait for authentication to complete
 	ADD_LATENT_AUTOMATION_COMMAND(FWaitForAsyncQueries(this));
-	//ADD_LATENT_AUTOMATION_COMMAND(FWaitForAsyncQueriesWithTimeout(this, 6.0f));
 
 	// Return true to indicate the test is complete
 	return true;

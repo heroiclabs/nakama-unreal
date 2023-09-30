@@ -168,9 +168,7 @@ inline bool MatchmakerJoinMatch::RunTest(const FString& Parameters)
 			// Add Matchmaker Callbacks
 			auto successCallback = [&](const FNakamaMatchmakerTicket& Ticket)
 			{
-				//UE_LOG(LogTemp, Display, TEXT("Added Matchmaker with Ticket: %s"), *Ticket.TicketId);
-				//TestTrue("Add Matchmaker Test Passed", !Ticket.TicketId.IsEmpty());
-				//StopTest();
+				UE_LOG(LogTemp, Display, TEXT("Added Matchmaker with Ticket: %s"), *Ticket.TicketId);
 			};
 
 			auto errorCallback = [&](const FNakamaRtError& Error)
@@ -179,10 +177,7 @@ inline bool MatchmakerJoinMatch::RunTest(const FString& Parameters)
 				TestFalse("Add Matchmaker Test error.", true);
 				StopTest();
 			};
-
-			// Matchmaker Params
 			
-
 			Socket->AddMatchmaker(MinCount, MaxCount, Query, StringProperties, NumericProperties, CountMultiple, successCallback, errorCallback);
 		});
 
@@ -240,9 +235,7 @@ inline bool MatchmakerJoinMatch::RunTest(const FString& Parameters)
 			// Add Matchmaker Callbacks
 			auto successCallback = [&](const FNakamaMatchmakerTicket& Ticket)
 			{
-				//UE_LOG(LogTemp, Display, TEXT("Added Matchmaker with Ticket: %s"), *Ticket.TicketId);
-				//TestTrue("Add Matchmaker Test Passed", !Ticket.TicketId.IsEmpty());
-				//StopTest();
+				UE_LOG(LogTemp, Display, TEXT("Added Matchmaker with Ticket: %s"), *Ticket.TicketId);
 			};
 
 			auto errorCallback = [&](const FNakamaRtError& Error)
@@ -292,7 +285,6 @@ inline bool MatchmakerJoinMatch::RunTest(const FString& Parameters)
 	Client2->AuthenticateCustom(FGuid::NewGuid().ToString(), "", true, {}, Client2AuthSuccessCallback, Client2AuthErrorCallback);
 
 	// Wait for authentication to complete
-	//ADD_LATENT_AUTOMATION_COMMAND(FWaitForAsyncQueriesWithTimeout(this, 45.0f));
 	ADD_LATENT_AUTOMATION_COMMAND(FWaitForAsyncQueries(this));
 	
 	// Return true to indicate the test is complete

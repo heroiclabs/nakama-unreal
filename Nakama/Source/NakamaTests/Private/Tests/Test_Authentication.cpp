@@ -1,7 +1,6 @@
 ﻿#include "NakamaTestBase.h"
 #include "NakamaUtils.h"
 #include "Misc/AutomationTest.h"
-#include "Tests/AutomationCommon.h"
 
 // Authenticate Email
 IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(AuthenticateEmail, FNakamaTestBase, "Nakama.Base.Authenticate.Email", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)

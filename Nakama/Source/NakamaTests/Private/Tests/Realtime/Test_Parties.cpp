@@ -57,7 +57,6 @@ inline bool CreateParty::RunTest(const FString& Parameters)
 	Client->AuthenticateCustom(FGuid::NewGuid().ToString(), "", true, {}, successCallback, errorCallback);
 
 	// Wait for authentication to complete
-	//ADD_LATENT_AUTOMATION_COMMAND(FWaitForAsyncQueriesWithTimeout(this, 45.0f));
 	ADD_LATENT_AUTOMATION_COMMAND(FWaitForAsyncQueries(this));
 	
 	// Return true to indicate the test is complete
@@ -199,7 +198,6 @@ inline bool PartyMatchmaker::RunTest(const FString& Parameters)
 	Client->AuthenticateCustom(FGuid::NewGuid().ToString(), "", true, {}, successCallback, errorCallback);
 
 	// Wait for authentication to complete
-	//ADD_LATENT_AUTOMATION_COMMAND(FWaitForAsyncQueriesWithTimeout(this, 45.0f));
 	ADD_LATENT_AUTOMATION_COMMAND(FWaitForAsyncQueries(this));
 	
 	// Return true to indicate the test is complete

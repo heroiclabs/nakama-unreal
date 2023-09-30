@@ -11,6 +11,43 @@ public:
 	FNakamaTestBase (const FString& InName, const bool bInComplexTask) : FAutomationTestBase(InName, bInComplexTask), Client(nullptr), Socket(nullptr), Session(nullptr)
 	{
 		bHasFinished = false;
+		
+		FString GetHostName;
+		if (FParse::Value(FCommandLine::Get(), TEXT("-hostname="), GetHostName)) 
+		{
+			Hostname = GetHostName;
+		}
+
+		FString GetServerKey;
+		if (FParse::Value(FCommandLine::Get(), TEXT("-serverkey="), GetServerKey))
+		{
+			ServerKey = GetServerKey;
+		}
+
+		int32 GetPort;
+		if (FParse::Value(FCommandLine::Get(), TEXT("-port="), GetPort)) 
+		{
+			Port = GetPort;
+		}
+
+		bool GetUseSSL;
+		if (FParse::Bool(FCommandLine::Get(), TEXT("-useSSL"), GetUseSSL))
+		{
+			UseSSL = true;
+		}
+
+		FString GetServerHttpKey;
+		if (FParse::Value(FCommandLine::Get(), TEXT("-serverhttpkey="), GetServerHttpKey)) 
+		{
+			ServerHttpKey = GetServerHttpKey;
+		}
+
+		double GetTimeout;
+		if (FParse::Value(FCommandLine::Get(), TEXT("-timeout="), GetTimeout))
+		{
+			Timeout = GetTimeout;
+		}
+		
 	}
 
 	virtual bool SuppressLogWarnings() override { return true; } // Toggle this to see warnings!
@@ -26,6 +63,9 @@ public:
 	}
 	double StartTestTime = 0;
 
+	// Set Timeout accordingly
+	double Timeout = 60.0;
+
 	UPROPERTY()
 	UNakamaClient *Client;
 
@@ -38,12 +78,17 @@ public:
 	UPROPERTY()
 	UNakamaRealtimeClientListener* Listener;
 
-	static UNakamaClient* CreateClient()
+	UNakamaClient* CreateClient() const
 	{
-		return UNakamaClient::CreateDefaultClient(TEXT("defaultkey"), TEXT("127.0.0.1"), 7350, false, true);
+		return UNakamaClient::CreateDefaultClient(ServerKey, Hostname, Port, UseSSL, true);
 	}
 
-	const FString ServerHttpKey = TEXT("defaulthttpkey");
+	// Parameters
+	FString ServerKey = TEXT("defaultkey");
+	FString Hostname = TEXT("127.0.0.1");
+	int32 Port = 7350;
+	bool UseSSL = false;
+	FString ServerHttpKey = TEXT("defaulthttpkey");
 	
 private:
 	bool bHasFinished = false;
@@ -52,13 +97,6 @@ private:
 // Helper class to wait for async queries to complete (will wait forever)
 DEFINE_LATENT_AUTOMATION_COMMAND_ONE_PARAMETER(FWaitForAsyncQueries, FNakamaTestBase*, Base);
 inline bool FWaitForAsyncQueries::Update()
-{
-	return Base->IsFinished();
-}
-
-// Helper class to wait for async queries to complete with timeout
-DEFINE_LATENT_AUTOMATION_COMMAND_TWO_PARAMETER(FWaitForAsyncQueriesWithTimeout, FNakamaTestBase*, Base, float, Timeout);
-inline bool FWaitForAsyncQueriesWithTimeout::Update()
 {
 	// Check if the timer has been initialized
 	if (Base->StartTestTime == 0)
@@ -73,8 +111,8 @@ inline bool FWaitForAsyncQueriesWithTimeout::Update()
 	// Calculate elapsed time since the timer was started
 	double ElapsedTime = CurrentTime - Base->StartTestTime;
 
-	// If 5 seconds have passed, end the test
-	if (ElapsedTime >= 5.0)
+	// If X seconds have passed, end the test
+	if (ElapsedTime >= Base->Timeout)
 	{
 		Base->StopTest();
 	}
