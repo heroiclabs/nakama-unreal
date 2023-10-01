@@ -487,7 +487,7 @@ To build the test, run:
 ```
 To run the test, run:
 ```bash
-./<YourProjectName>/Binaries/Mac/<YourProjectName>.app/Contents/MacOS/<YourProjectName> -nullrhi -stdout -forcelogflush -ExecCmds="Automation RunTests Nakama.Base" -log
+./<YourProjectName>/Binaries/Linux/<YourProjectName> -nullrhi -stdout -forcelogflush -ExecCmds="Automation RunTests Nakama.Base" -log
 ```
 
 **Passing Parameters**
