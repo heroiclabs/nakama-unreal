@@ -11,43 +11,6 @@ public:
 	FNakamaTestBase (const FString& InName, const bool bInComplexTask) : FAutomationTestBase(InName, bInComplexTask), Client(nullptr), Socket(nullptr), Session(nullptr)
 	{
 		bHasFinished = false;
-		
-		FString GetHostName;
-		if (FParse::Value(FCommandLine::Get(), TEXT("-hostname="), GetHostName)) 
-		{
-			Hostname = GetHostName;
-		}
-
-		FString GetServerKey;
-		if (FParse::Value(FCommandLine::Get(), TEXT("-serverkey="), GetServerKey))
-		{
-			ServerKey = GetServerKey;
-		}
-
-		int32 GetPort;
-		if (FParse::Value(FCommandLine::Get(), TEXT("-port="), GetPort)) 
-		{
-			Port = GetPort;
-		}
-
-		bool GetUseSSL;
-		if (FParse::Bool(FCommandLine::Get(), TEXT("-useSSL"), GetUseSSL))
-		{
-			UseSSL = true;
-		}
-
-		FString GetServerHttpKey;
-		if (FParse::Value(FCommandLine::Get(), TEXT("-serverhttpkey="), GetServerHttpKey)) 
-		{
-			ServerHttpKey = GetServerHttpKey;
-		}
-
-		double GetTimeout;
-		if (FParse::Value(FCommandLine::Get(), TEXT("-timeout="), GetTimeout))
-		{
-			Timeout = GetTimeout;
-		}
-		
 	}
 
 	virtual bool SuppressLogWarnings() override { return true; } // Toggle this to see warnings!
@@ -55,6 +18,49 @@ public:
 	bool IsFinished() const { return bHasFinished; }
 	void InitiateTest()
 	{
+		if(FCommandLine::IsInitialized())
+		{
+			FString GetHostName;
+			if (FParse::Value(FCommandLine::Get(), TEXT("hostname="), GetHostName)) 
+			{
+				Hostname = GetHostName;
+			}
+
+			FString GetServerKey;
+			if (FParse::Value(FCommandLine::Get(), TEXT("serverkey="), GetServerKey))
+			{
+				ServerKey = GetServerKey;
+			}
+
+			int32 GetPort;
+			if (FParse::Value(FCommandLine::Get(), TEXT("port="), GetPort)) 
+			{
+				Port = GetPort;
+			}
+
+			bool GetUseSSL;
+			if (FParse::Bool(FCommandLine::Get(), TEXT("useSSL"), GetUseSSL))
+			{
+				UseSSL = true;
+			}
+
+			FString GetServerHttpKey;
+			if (FParse::Value(FCommandLine::Get(), TEXT("serverhttpkey="), GetServerHttpKey)) 
+			{
+				ServerHttpKey = GetServerHttpKey;
+			}
+
+			double GetTimeout;
+			if (FParse::Value(FCommandLine::Get(), TEXT("timeout="), GetTimeout))
+			{
+				Timeout = GetTimeout;
+			}
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Command Line is not initialized!"));
+		}
+		
 		bHasFinished = false;
 		Client = CreateClient();
 
@@ -74,9 +80,6 @@ public:
 
 	UPROPERTY()
 	UNakamaSession *Session;
-
-	UPROPERTY()
-	UNakamaRealtimeClientListener* Listener;
 
 	UNakamaClient* CreateClient() const
 	{

@@ -7,7 +7,7 @@
 class FNakamaAuthoritativeMatchTestBase : public FNakamaTestBase
 {
 public:
-	FNakamaAuthoritativeMatchTestBase(const FString& InName, bool bInComplexTask) : FNakamaTestBase(InName, bInComplexTask), Client2(nullptr), Socket2(nullptr), Listener2(nullptr), Session2(nullptr)
+	FNakamaAuthoritativeMatchTestBase(const FString& InName, bool bInComplexTask) : FNakamaTestBase(InName, bInComplexTask), Client2(nullptr), Socket2(nullptr), Session2(nullptr)
 	{
 		
 	}
@@ -16,7 +16,6 @@ public:
 	
 	UNakamaClient* Client2;
 	UNakamaRealtimeClient* Socket2;
-	UNakamaRealtimeClientListener* Listener2;
 	UNakamaSession* Session2;
 
 	FString GetMatchIdFromJsonString(const FString& JsonString) const;

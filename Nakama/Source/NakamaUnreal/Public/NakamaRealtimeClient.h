@@ -18,11 +18,7 @@
 #include "NakamaRealtimeRequestContext.h"
 #include "NakamaRPC.h"
 
-
 #include "NakamaRealtimeClient.generated.h"
-
-
-class UNakamaRealtimeClientListener;
 
 // --- Bindable Delegates --- //
 

@@ -464,9 +464,31 @@ To build the test, run:
 ```
 To run the test, run:
 ```bash
-./NakamaTest/Saved/StagedBuilds/Windows/NakamaTest.exe -nullrhi -verbose -ExecCmds="Automation RunTests Nakama.Base" -log
+./<YourProjectName>/Saved/StagedBuilds/Windows/<YourProjectName>.exe -nullrhi -verbose -ExecCmds="Automation RunTests Nakama.Base" -log
 ```
 
+**Mac - Packaged:**
+
+To build the test, run:
+```bash
+"<Path_To_Unreal_Engine>/Engine/Build/BatchFiles/RunUAT.sh" BuildCookRun -project="<Path_To_Your_Project>\<YourProjectName>.uproject" -targetConfig=Debug -noP4 -platform=Mac -Architecture_Mac=arm64 -targetconfig=Debug -installed -unrealexe=UnrealEditor -utf8output -build -cook -stage -package -verbose
+```
+
+To run the test, run:
+```bash
+./<YourProjectName>/Binaries/Mac/<YourProjectName>.app/Contents/MacOS/<YourProjectName> -nullrhi -stdout -forcelogflush -ExecCmds="Automation RunTests Nakama.Base" -log
+```
+
+**Linux - Packaged:**
+
+To build the test, run:
+```bash
+"<Path_To_Unreal_Engine>/Engine/Build/BatchFiles/RunUAT.sh" BuildCookRun -project="<Path_To_Your_Project>\<YourProjectName>.uproject" -clientconfig=Test -noP4 -platform=Linux -targetconfig=Debug -installed  -utf8output -build -cook -stage -package -verbose
+```
+To run the test, run:
+```bash
+./<YourProjectName>/Binaries/Mac/<YourProjectName>.app/Contents/MacOS/<YourProjectName> -nullrhi -stdout -forcelogflush -ExecCmds="Automation RunTests Nakama.Base" -log
+```
 
 **Passing Parameters**
 
@@ -474,7 +496,7 @@ Parameters such as hostname, port and server key can be passed as command-line a
 
 ```bash
 -hostname="127.0.0.1" -port=7350 -serverkey="defaultkey" -serverhttpkey="defaulthttpkey" -timeout=45 -useSSL
-```
+``` 
 
 # Additional Information
 

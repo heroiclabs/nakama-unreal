@@ -14,11 +14,7 @@ public:
 	virtual bool SuppressLogWarnings() override { return true; }
 	
 	UNakamaClient* Client2;
-	
 	UNakamaRealtimeClient* Socket2;
-	
-	UNakamaRealtimeClientListener* Listener2;
-	
 	UNakamaSession* Session2;
 	
 	TOptional<int32> MinCount = 2;
