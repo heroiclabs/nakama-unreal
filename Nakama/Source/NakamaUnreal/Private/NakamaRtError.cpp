@@ -1,33 +1,65 @@
 ﻿#include "NakamaRtError.h"
 #include "NakamaUtils.h"
 
-ENakamaRtErrorCode ConvertNativeErrorCode(RtErrorCode NativeErrorCode)
+FNakamaRtError::FNakamaRtError(const FString& JsonString)
 {
-	//return  static_cast<ENakamaRtErrorCode>(NativeErrorCode);
-	switch (NativeErrorCode) {
-	case RtErrorCode::UNKNOWN: return ENakamaRtErrorCode::UNKNOWN;
-	case RtErrorCode::CONNECT_ERROR: return ENakamaRtErrorCode::CONNECT_ERROR;
-	case RtErrorCode::TRANSPORT_ERROR: return ENakamaRtErrorCode::TRANSPORT_ERROR;
-	case RtErrorCode::RUNTIME_EXCEPTION: return ENakamaRtErrorCode::RUNTIME_EXCEPTION;
-	case RtErrorCode::UNRECOGNIZED_PAYLOAD: return ENakamaRtErrorCode::UNRECOGNIZED_PAYLOAD;
-	case RtErrorCode::MISSING_PAYLOAD: return ENakamaRtErrorCode::MISSING_PAYLOAD;
-	case RtErrorCode::BAD_INPUT: return ENakamaRtErrorCode::BAD_INPUT;
-	case RtErrorCode::MATCH_NOT_FOUND: return ENakamaRtErrorCode::MATCH_NOT_FOUND;
-	case RtErrorCode::MATCH_JOIN_REJECTED: return ENakamaRtErrorCode::MATCH_JOIN_REJECTED;
-	case RtErrorCode::RUNTIME_FUNCTION_NOT_FOUND: return ENakamaRtErrorCode::RUNTIME_FUNCTION_NOT_FOUND;
-	case RtErrorCode::RUNTIME_FUNCTION_EXCEPTION: return ENakamaRtErrorCode::RUNTIME_FUNCTION_EXCEPTION;
-	default:
-		return ENakamaRtErrorCode::UNKNOWN;
-	}
-}
+	TSharedPtr<FJsonObject> JsonObject;
+	const TSharedRef<TJsonReader<>> JsonReader = TJsonReaderFactory<>::Create(JsonString);
 
-FNakamaRtError::FNakamaRtError(const NRtError& NativeError)
-	: Message(FNakamaUtils::StdStringToUEString(NativeError.message))
-{
-	Code = ConvertNativeErrorCode(NativeError.code);
-	for (auto const& x : NativeError.context)
+	if (FJsonSerializer::Deserialize(JsonReader, JsonObject) && JsonObject.IsValid())
 	{
-		Context.Add(FNakamaUtils::StdStringToUEString(x.first), FNakamaUtils::StdStringToUEString(x.second));
+		JsonObject->TryGetStringField("message", Message);
+
+		int32 CodeValue;
+		if (JsonObject->TryGetNumberField("code", CodeValue))
+		{
+			Code = static_cast<ENakamaRtErrorCode>(CodeValue);
+		}
+
+		const TSharedPtr<FJsonObject>* ContextJsonObject;
+		if (JsonObject->TryGetObjectField("context", ContextJsonObject))
+		{
+			for (auto& Pair : (*ContextJsonObject)->Values)
+			{
+				Context.Add(Pair.Key, Pair.Value->AsString());
+			}
+		}
 	}
 }
 
+ENakamaDisconnectCode FNakamaDisconnectInfo::ConvertIntToDisconnectCode(int32 Value)
+{
+	switch (Value)
+	{
+	case 1000:
+		return ENakamaDisconnectCode::NORMAL_CLOSURE;
+	case 1001:
+		return ENakamaDisconnectCode::GOING_AWAY;
+	case 1002:
+		return ENakamaDisconnectCode::PROTOCOL_ERROR;
+	case 1003:
+		return ENakamaDisconnectCode::UNSUPPORTED_DATA;
+	case 1005:
+		return ENakamaDisconnectCode::NO_STATUS_RCVD;
+	case 1006:
+		return ENakamaDisconnectCode::ABNORMAL_CLOSURE;
+	case 1007:
+		return ENakamaDisconnectCode::INVALID_FRAME_PAYLOAD_DATA;
+	case 1008:
+		return ENakamaDisconnectCode::POLICY_VIOLATION;
+	case 1009:
+		return ENakamaDisconnectCode::MESSAGE_TOO_BIG;
+	case 1010:
+		return ENakamaDisconnectCode::MANDATORY_EXT;
+	case 1011:
+		return ENakamaDisconnectCode::INTERNAL_SERVER_ERROR;
+	case 1015:
+		return ENakamaDisconnectCode::TLS_HANDSHAKE;
+	case 4000:
+		return ENakamaDisconnectCode::HEARTBEAT_FAILURE;
+	case 4001:
+		return ENakamaDisconnectCode::TRANSPORT_ERROR;
+	default:
+		return ENakamaDisconnectCode::NORMAL_CLOSURE;
+	}
+}

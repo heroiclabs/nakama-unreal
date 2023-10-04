@@ -5,17 +5,12 @@
 #include "CoreMinimal.h"
 #include "NakamaClient.h"
 #include "Kismet/BlueprintAsyncActionBase.h"
-#include "NakamaUserSession.h"
 #include "NakamaStorageObject.h"
-#include "NakamaUtils.h"
 #include "NakamaError.h"
 #include "NakamaGroup.h"
-#include "NakamaClient.h"
 #include "NakamaMatch.h"
-#include "NakamaMatchTypes.h"
 #include "NakamaFriend.h"
 #include "NakamaNotification.h"
-#include "NakamaStorageObject.h"
 #include "NakamaRPC.h"
 #include "NakamaChannelTypes.h"
 #include "NakamaLeaderboard.h"
@@ -27,9 +22,7 @@
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAnyError, FNakamaError, Error);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSuccessful);
 
-/// <summary>
-/// Authentication
-/// </summary>
+// --- Authentication --- //
 
 /**
  * Authenticate Custom
@@ -82,9 +75,7 @@ private:
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnAuthenticateEmail, FNakamaError, Error, UNakamaSession*, Session);
 
-
-//UCLASS()
-UCLASS(meta=(BlueprintThreadSafe))
+UCLASS()
 class NAKAMABLUEPRINTS_API UNakamaClientAuthenticateEmail : public UBlueprintAsyncActionBase
 {
 	GENERATED_BODY()
@@ -201,10 +192,11 @@ public:
 	 * @param SteamToken An authentication token from the Steam network.
 	 * @param Username A username used to create the user.
 	 * @param CreateAccount True if the user should be created when authenticated.
+	 * @param ImportFriends True if the Steam friends should be imported.
 	 * @param Vars Extra information that will be bundled in the session token.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Authentication", meta = (BlueprintInternalUseOnly = "true"))
-	static UNakamaClientAuthenticateSteam* AuthenticateSteam(UNakamaClient *Client, FString SteamToken, FString Username, bool CreateAccount, TMap<FString, FString> Vars);
+	static UNakamaClientAuthenticateSteam* AuthenticateSteam(UNakamaClient *Client, FString SteamToken, FString Username, bool CreateAccount, bool ImportFriends, TMap<FString, FString> Vars);
 
 	virtual void Activate() override;
 
@@ -213,6 +205,7 @@ private:
 	FString SteamToken;
 	FString Username;
 	bool bCreateAccount;
+	bool bImportFriends;
 	TMap<FString, FString> Vars;
 
 };
@@ -448,17 +441,11 @@ public:
 	static UNakamaClientAuthenticateRefresh* AuthenticateRefresh(UNakamaClient *Client, UNakamaSession* Session);
 
 	virtual void Activate() override;
-
+	
 };
 
 
-/// <summary>
-/// Restore Session
-/// </summary>
-
-/// <summary>
-/// Link Account
-/// </summary>
+// --- Linking --- //
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnLinkError, FNakamaError, Error);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnLinkSuccessful); // Renamed
@@ -812,12 +799,9 @@ private:
 
 };
 
-/// <summary>
-/// Unlink Account
-/// </summary>
 
-//DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnUnLinkError, FNakamaError, Error);
-//DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnUnLinkSuccessful); // Renamed
+// --- Unlinking --- //
+
 
 /**
  * UnLink Custom
@@ -1166,9 +1150,7 @@ private:
 
 };
 
-/// <summary>
-/// Functions
-/// </summary>
+// --- Functions --- //
 
 /**
  * Refresh Session
@@ -1245,7 +1227,7 @@ public:
 	 * @param Token An OAuth access token from the Facebook SDK.
 	 * @param Reset True if the Facebook friend import for the user should be reset.
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Nakama|Authentication|UnLink", meta = (BlueprintInternalUseOnly = "true"))
+	UFUNCTION(BlueprintCallable, Category = "Nakama|Friends", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaClientImportFacebookFriends* ImportFacebookFriends(UNakamaClient *Client, UNakamaSession *Session, FString Token, bool Reset);
 
 	virtual void Activate() override;
@@ -1257,10 +1239,54 @@ private:
 
 };
 
+/**
+ * Import Steam Friends
+ */
 
-/// <summary>
-/// Get Account and User Info
-/// </summary>
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientImportSteamFriends : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY()
+	UNakamaClient *NakamaClient;
+
+	UPROPERTY()
+	UNakamaSession *UserSession;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnAnyError OnError;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnSuccessful OnSuccess;
+
+	/**
+	 * Import Steam friends and add them to the user's account.
+	 *
+	 * The server will import friends when the user authenticates with Steam. This function can be used to be
+	 * explicit with the import operation.
+	 *
+	 * @param Client The Client to use.
+	 * @param Session The session of the user.
+	 * @param SteamId The Steam Id to use.
+	 * @param Reset True if the Steam friend import for the user should be reset.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Nakama|Friends", meta = (BlueprintInternalUseOnly = "true"))
+	static UNakamaClientImportSteamFriends* ImportSteamFriends(UNakamaClient *Client, UNakamaSession *Session, FString SteamId, bool Reset);
+
+	virtual void Activate() override;
+
+private:
+
+	FString SteamId;
+	bool Reset;
+
+};
+
+
+// --- Account and User Info --- //
 
 /**
  * Get User Account
@@ -1294,14 +1320,10 @@ public:
 	 * @param Session The session of the user.
 	 */
 
-	UFUNCTION(BlueprintCallable, Category = "Nakama|Users", meta = (BlueprintInternalUseOnly = "true"))
+	UFUNCTION(BlueprintCallable, Category = "Nakama|Users", meta = (BlueprintInternalUseOnly = "true", DisplayName = "Get Account"))
 	static UNakamaClientGetUserAccount* GetUserAccount(UNakamaClient *Client, UNakamaSession *Session);
 
 	virtual void Activate() override;
-
-
-
-
 };
 
 
@@ -1439,8 +1461,8 @@ public:
 	 * @param MaxSize The maximum number of match participants.
 	 * @param Limit The number of matches to list.
 	 * @param Label The label to filter the match list on.
+	 * @param Query The query to the match listing.
 	 * @param Authoritative True to include authoritative matches.
-	 * @param Query A query for the matches to filter.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Realtime", meta = (BlueprintInternalUseOnly = "true"))
 	static UNakamaClientListMatches* ListMatches(UNakamaClient* Client, UNakamaSession *Session, int32 MinSize, int32 MaxSize, int32 Limit, FString Label, FString Query, bool Authoritative);
@@ -1452,15 +1474,13 @@ private:
 	int32 MinSize;
 	int32 MaxSize;
 	int32 Limit;
-	FString Query;
 	FString Label;
+	FString Query;
 	bool Authoritative;
 
 };
 
-/// <summary>
-/// Friend System
-/// </summary>
+// --- Friends --- //
 
 /**
  * Get Friends
@@ -1496,7 +1516,7 @@ public:
 	 * @param Session The session of the user.
 	 * @param Client The Client to use.
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Nakama|Friends", meta = (BlueprintInternalUseOnly = "true"))
+	UFUNCTION(BlueprintCallable, Category = "Nakama|Friends", meta = (BlueprintInternalUseOnly = "true", DisplayName = "List Friends"))
 	static UNakamaClientGetFriends* GetFriends(UNakamaClient* Client, UNakamaSession *Session, int32 Limit, ENakamaFriendState State, FString Cursor);
 
 	virtual void Activate() override;
@@ -1585,7 +1605,7 @@ public:
 	 * @param Client The Client to use.
 	 */
 
-	UFUNCTION(BlueprintCallable, Category = "Nakama|Friends", meta = (BlueprintInternalUseOnly = "true"))
+	UFUNCTION(BlueprintCallable, Category = "Nakama|Friends", meta = (BlueprintInternalUseOnly = "true", DisplayName = "Delete Friends"))
 	static UNakamaClientRemoveFriends* RemoveFriends(UNakamaClient* Client, UNakamaSession *Session, TArray<FString> Ids, TArray<FString> Usernames);
 
 	virtual void Activate() override;
@@ -1638,9 +1658,7 @@ private:
 };
 
 
-/// <summary>
-/// Group System
-/// </summary>
+// --- Groups --- //
 
 /**
  * Create Group
@@ -2195,9 +2213,7 @@ private:
 };
 
 
-/// <summary>
-/// Notifications
-/// </summary>
+// --- Notifications --- //
 
 
 /**
@@ -2287,9 +2303,7 @@ private:
 };
 
 
-/// <summary>
-/// Storage System
-/// </summary>
+// --- Storage --- //
 
 /**
  * Write Storage Objects
@@ -2336,7 +2350,7 @@ private:
  * Read Storage Objects
  */
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnReadStorageObjects, FNakamaError, Error, const TArray <FNakamaStoreObjectData>&, StorageObjects);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnReadStorageObjects, FNakamaError, Error, const FNakamaStorageObjectList&, StorageObjects);
 
 UCLASS()
 class NAKAMABLUEPRINTS_API UNakamaClientReadStorageObjects : public UBlueprintAsyncActionBase
@@ -2454,7 +2468,7 @@ public:
 	 * @param Session The session of the user.
 	 * @param Client The Client to use.
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Nakama|Storage", meta = (BlueprintInternalUseOnly = "true"))
+	UFUNCTION(BlueprintCallable, Category = "Nakama|Storage", meta = (BlueprintInternalUseOnly = "true", DisplayName = "Delete Storage Objects"))
 	static UNakamaClientRemoveStorageObjects* RemoveStorageObjects(UNakamaClient* Client, UNakamaSession *Session, TArray<FNakamaDeleteStorageObjectId> StorageObjectsData);
 
 	virtual void Activate() override;
@@ -2466,9 +2480,7 @@ private:
 };
 
 
-/// <summary>
-/// RPC
-/// </summary>
+// --- RPC --- //
 
 /**
  * RPC
@@ -2514,10 +2526,50 @@ private:
 	FString Payload;
 };
 
+/**
+ * RPC HttpKey
+ */
 
-/// <summary>
-/// List Channel Messages
-/// </summary>
+//DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnRPCResponse, FNakamaError, Error, FNakamaRPC, RPCResponse);
+
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientRPCHttpKey : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY()
+	UNakamaClient *NakamaClient;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnRPCResponse OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnRPCResponse OnError;
+
+	/**
+	 * Send an RPC message to the server.
+	 *
+	 * @param Client The Client to use.
+	 * @param HttpKey The HTTP key for the server.
+	 * @param FunctionId The ID of the function to execute.
+	 * @param Payload The string content to send to the server.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Nakama|Realtime|RPC", meta = (BlueprintInternalUseOnly = "true"))
+	static UNakamaClientRPCHttpKey* RPCHttpKey(UNakamaClient* Client, FString HttpKey, FString FunctionId, FString Payload);
+
+	virtual void Activate() override;
+
+private:
+	
+	FString HttpKey;
+	FString FunctionId;
+	FString Payload;
+};
+
+
+// --- Chat --- //
 
 /**
  * List Channel Messages
@@ -2547,6 +2599,7 @@ public:
 	/**
 	 * List messages from a chat channel.
 	 *
+	 * @param Client The Client to use.
 	 * @param Session The session of the user.
 	 * @param ChannelId A channel identifier.
 	 * @param Limit The number of chat messages to list.
@@ -2567,9 +2620,7 @@ private:
 };
 
 
-/// <summary>
-/// Leaderboards
-/// </summary>
+// --- Leaderboards --- //
 
 
 /**
@@ -2757,10 +2808,7 @@ private:
 
 };
 
-
-/// <summary>
-/// Tournaments
-/// </summary>
+// --- Tournaments --- //
 
 /**
  * Write Tournament Record

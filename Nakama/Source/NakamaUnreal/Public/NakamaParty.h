@@ -1,12 +1,8 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
-#include "nakama-cpp/Nakama.h"
 #include "NakamaPresence.h"
 #include "NakamaParty.generated.h"
-
-using namespace Nakama;
-
 
 
 // Parties
@@ -39,11 +35,8 @@ struct NAKAMAUNREAL_API FNakamaParty
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Parties")
 	TArray<FNakamaUserPresence> Presences;
 
-	FNakamaParty(const NParty& NakamaNativeParty);
+	FNakamaParty(const FString& JsonString);
 	FNakamaParty(); // Default Constructor
-
-
-
 };
 
 // Incoming notification for one or more new presences attempting to join the party.
@@ -60,7 +53,7 @@ struct NAKAMAUNREAL_API FNakamaPartyJoinRequest
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Parties")
 	TArray<FNakamaUserPresence> Presences;
 
-	FNakamaPartyJoinRequest(const NPartyJoinRequest& NakamaNativePartyJoinRequest);
+	FNakamaPartyJoinRequest(const FString& JsonString);
 	FNakamaPartyJoinRequest(); // Default Constructor
 };
 
@@ -78,7 +71,7 @@ struct NAKAMAUNREAL_API FNakamaPartyMatchmakerTicket
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Parties")
 	FString Ticket;
 
-	FNakamaPartyMatchmakerTicket(NPartyMatchmakerTicket NakamaNativePartyMatchmakerTicket);
+	FNakamaPartyMatchmakerTicket(const FString& JsonString);
 	FNakamaPartyMatchmakerTicket();
 };
 
@@ -92,7 +85,7 @@ struct NAKAMAUNREAL_API FNakamaPartyClose
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Parties")
 	FString Id;
 
-	FNakamaPartyClose(const NPartyClose& NakamaNativePartyClose);
+	FNakamaPartyClose(const FString& JsonString);
 	FNakamaPartyClose();
 };
 
@@ -118,7 +111,7 @@ struct NAKAMAUNREAL_API FNakamaPartyData
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Parties")
 	FString Data; // NBytes
 
-	FNakamaPartyData(const NPartyData& NakamaNativePartyData);
+	FNakamaPartyData(const FString& JsonString);
 	FNakamaPartyData();
 };
 
@@ -137,7 +130,7 @@ struct NAKAMAUNREAL_API FNakamaPartyLeader
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Parties")
 	FNakamaUserPresence Presence;
 
-	FNakamaPartyLeader(const NPartyLeader& NakamaNativePartyLeader);
+	FNakamaPartyLeader(const FString& JsonString);
 	FNakamaPartyLeader();
 };
 
@@ -160,6 +153,6 @@ struct NAKAMAUNREAL_API FNakamaPartyPresenceEvent
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Parties")
 	TArray<FNakamaUserPresence> Leaves;
 
-	FNakamaPartyPresenceEvent(const NPartyPresenceEvent& NakamaNativePartyPresenceEvent);
+	FNakamaPartyPresenceEvent(const FString& JsonString);
 	FNakamaPartyPresenceEvent();
 };

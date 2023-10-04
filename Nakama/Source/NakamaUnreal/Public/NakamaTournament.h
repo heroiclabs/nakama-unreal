@@ -2,10 +2,8 @@
 
 #include "CoreMinimal.h"
 #include "NakamaLeaderboard.h"
-#include "nakama-cpp/Nakama.h"
 #include "NakamaTournament.generated.h"
 
-using namespace Nakama;
 
 USTRUCT(BlueprintType)
 struct NAKAMAUNREAL_API FNakamaTournament
@@ -80,13 +78,12 @@ struct NAKAMAUNREAL_API FNakamaTournament
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Tournaments")
 	FString Metadata;
 
-	FNakamaTournament(const NTournament& NakamaNativeTournament);
+	FNakamaTournament(const FString& JsonString);
 	FNakamaTournament();
-
+	
 };
 
-
-
+// A set of tournament records which may be part of a tournament records page or a batch of individual records.
 USTRUCT(BlueprintType)
 struct NAKAMAUNREAL_API FNakamaTournamentRecordList
 {
@@ -108,11 +105,12 @@ struct NAKAMAUNREAL_API FNakamaTournamentRecordList
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Tournaments")
 	FString PrevCursor;
 
-	FNakamaTournamentRecordList(const NTournamentRecordList& NakamaNativeTournamentRecordList);
+	FNakamaTournamentRecordList(const FString& JsonString);
 	FNakamaTournamentRecordList();
 
 };
 
+// A list of tournaments.
 USTRUCT(BlueprintType)
 struct NAKAMAUNREAL_API FNakamaTournamentList
 {
@@ -126,7 +124,7 @@ struct NAKAMAUNREAL_API FNakamaTournamentList
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Tournaments")
 	FString Cursor;
 
-	FNakamaTournamentList(const NTournamentList& NakamaNativeTournamentList);
+	FNakamaTournamentList(const FString& JsonString);
 	FNakamaTournamentList();
 
 };

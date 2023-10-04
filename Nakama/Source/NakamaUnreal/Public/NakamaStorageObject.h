@@ -4,11 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "NakamaStorageTypes.h"
-#include "nakama-cpp/Nakama.h"
-
 #include "NakamaStorageObject.generated.h"
-
-using namespace Nakama;
 
 // An object within the storage engine.
 USTRUCT(BlueprintType)
@@ -52,7 +48,7 @@ struct NAKAMAUNREAL_API FNakamaStoreObjectData
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Storage")
 	FDateTime UpdateTime = 0;
 
-	FNakamaStoreObjectData(const NStorageObject& NakamaNativeStorageObject);
+	FNakamaStoreObjectData(const FString& JsonString);
 	FNakamaStoreObjectData();
 };
 
@@ -80,14 +76,13 @@ struct NAKAMAUNREAL_API FNakamaStoreObjectWrite
 
 	// The read access permissions for the object.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Nakama|Storage") //BlueprintReadOnly
-	ENakamaStoragePermissionRead PermissionRead; //NO_READ
+	ENakamaStoragePermissionRead PermissionRead; // NO_READ
 
 	// The write access permissions for the object.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Nakama|Storage") //BlueprintReadOnly
-	ENakamaStoragePermissionWrite PermissionWrite; //NO_WRITE
-
-
-	FNakamaStoreObjectWrite(const NStorageObjectWrite& NakamaNativeStorageWrite);
+	ENakamaStoragePermissionWrite PermissionWrite; // NO_WRITE
+	
+	FNakamaStoreObjectWrite(const FString& JsonString);
 	FNakamaStoreObjectWrite();
 };
 
@@ -113,7 +108,7 @@ struct NAKAMAUNREAL_API FNakamaReadStorageObjectId
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Nakama|Storage")
 	FString UserId;
 
-	FNakamaReadStorageObjectId(const NReadStorageObjectId& NakamaNativeReadStorageObjectId);
+	FNakamaReadStorageObjectId(const FString& JsonString);
 	FNakamaReadStorageObjectId();
 };
 
@@ -136,7 +131,7 @@ struct NAKAMAUNREAL_API FNakamaDeleteStorageObjectId
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Nakama|Storage")
 	FString Version;
 
-	FNakamaDeleteStorageObjectId(const NDeleteStorageObjectId& NakamaNativeDeleteStorageObjectId);
+	FNakamaDeleteStorageObjectId(const FString& JsonString);
 	FNakamaDeleteStorageObjectId();
 };
 
@@ -163,7 +158,7 @@ struct NAKAMAUNREAL_API FNakamaStoreObjectAck
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Storage")
 	FString UserId;
 
-	FNakamaStoreObjectAck(const NStorageObjectAck& NakamaNativeStorageObjectAck);
+	FNakamaStoreObjectAck(const FString& JsonString);
 	FNakamaStoreObjectAck();
 
 };
@@ -177,7 +172,7 @@ struct NAKAMAUNREAL_API FNakamaStoreObjectAcks
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Storage")
 	TArray<FNakamaStoreObjectAck> StorageObjects;
 
-	FNakamaStoreObjectAcks(const NStorageObjectAcks& NakamaNativeStorageObjectAcks);
+	FNakamaStoreObjectAcks(const FString& JsonString);
 	FNakamaStoreObjectAcks();
 
 };
@@ -196,7 +191,7 @@ struct NAKAMAUNREAL_API FNakamaStorageObjectList
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Storage")
 	FString Cursor;
 
-	FNakamaStorageObjectList(const NStorageObjectList& NakamaNativeStorageObjectList);
+	FNakamaStorageObjectList(const FString& JsonString);
 	FNakamaStorageObjectList();
 
 };

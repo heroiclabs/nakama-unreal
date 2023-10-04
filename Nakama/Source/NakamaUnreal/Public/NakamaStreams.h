@@ -1,12 +1,8 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
-#include "nakama-cpp/Nakama.h"
 #include "NakamaPresence.h"
-
 #include "NakamaStreams.generated.h"
-
-using namespace Nakama;
 
 // Represents identifying information for a stream.
 USTRUCT(BlueprintType)
@@ -30,7 +26,7 @@ struct NAKAMAUNREAL_API FNakamaStream
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Streams")
 	FString Label;
 
-	FNakamaStream(const NStream& NakamaNativeStream);
+	FNakamaStream(const FString& JsonString);
 	FNakamaStream();
 };
 
@@ -52,7 +48,7 @@ struct NAKAMAUNREAL_API FNakamaStreamData
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Streams")
 	FString Data;
 
-	FNakamaStreamData(const NStreamData& NakamaNativeStreamData);
+	FNakamaStreamData(const FString& JsonString);
 	FNakamaStreamData();
 };
 
@@ -74,6 +70,6 @@ struct NAKAMAUNREAL_API FNakamaStreamPresenceEvent
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Streams")
 	TArray<FNakamaUserPresence> Leaves;
 
-	FNakamaStreamPresenceEvent(NStreamPresenceEvent NakamaNativeStreamData);
+	FNakamaStreamPresenceEvent(const FString& JsonString);
 	FNakamaStreamPresenceEvent();
 };

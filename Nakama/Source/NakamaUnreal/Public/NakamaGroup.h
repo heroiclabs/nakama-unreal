@@ -1,16 +1,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "nakama-cpp/data/NGroupList.h"
-#include "nakama-cpp/data/NGroupUserList.h"
-#include "nakama-cpp/data/NUserGroup.h"
-#include "nakama-cpp/data/NUserGroupList.h"
 #include "NakamaUser.h"
-
 #include "NakamaGroup.generated.h"
-
-using namespace Nakama;
-
 
 // The group role status.
 UENUM(BlueprintType)
@@ -22,6 +14,9 @@ enum class ENakamaUserGroupState : uint8
 	JOIN_REQUEST UMETA(DisplayName = "Join Request"), // The user has requested to join the group
 	ALL UMETA(DisplayName = "All"), // All group states
 };
+
+static ENakamaGroupState GetGroupStateFromString(const FString& StateString);
+
 
 // A group in the server.
 USTRUCT(BlueprintType)
@@ -76,11 +71,8 @@ struct NAKAMAUNREAL_API FNakamaGroup
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Groups")
 	FDateTime UpdateTime = 0;
 
-	FNakamaGroup(const NGroup& NakamaNativeGroup);
-	FNakamaGroup()
-	{
-
-	}
+	FNakamaGroup(const FString& JsonString);
+	FNakamaGroup() { }
 };
 
 // Group States
@@ -108,9 +100,8 @@ struct NAKAMAUNREAL_API FNakamaGroupUser
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Groups")
 	ENakamaGroupState State;
 
-	FNakamaGroupUser(const NGroupUser& NakamaNativeGroupUser);
+	FNakamaGroupUser(const FString& JsonString);
 	FNakamaGroupUser();
-
 };
 
 // Group Users list (Members)
@@ -128,11 +119,8 @@ struct NAKAMAUNREAL_API FNakamaGroupUsersList
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Groups")
 	FString Cursor;
 
-	FNakamaGroupUsersList(const NGroupUserList& NakamaNativeGroupUsersList);
-	FNakamaGroupUsersList()
-	{
-
-	}
+	FNakamaGroupUsersList(const FString& JsonString);
+	FNakamaGroupUsersList() { }
 
 };
 
@@ -150,11 +138,8 @@ struct NAKAMAUNREAL_API FNakamaGroupList
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Groups")
 	FString Cursor;
 
-	FNakamaGroupList(const NGroupList& NakamaNativeGroupList);
-	FNakamaGroupList()
-	{
-
-	}
+	FNakamaGroupList(const FString& JsonString);
+	FNakamaGroupList() { }
 };
 
 // Owned by a player (I am member of..)
@@ -171,7 +156,7 @@ struct NAKAMAUNREAL_API FNakamaUserGroup
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Nakama|Groups") //BlueprintReadOnly
 	ENakamaGroupState State;
 
-	FNakamaUserGroup(const NUserGroup& NakamaNativeUserGroup);
+	FNakamaUserGroup(const FString& JsonString);
 	FNakamaUserGroup();
 };
 
@@ -189,7 +174,7 @@ struct NAKAMAUNREAL_API FNakamaUserGroupList
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Groups")
 	FString Cursor;
 
-	FNakamaUserGroupList(const NUserGroupList& NakamaNativeUserGroupList);
+	FNakamaUserGroupList(const FString& JsonString);
 	FNakamaUserGroupList();
 
 };

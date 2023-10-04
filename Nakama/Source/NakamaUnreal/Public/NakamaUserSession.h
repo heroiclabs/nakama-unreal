@@ -3,11 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "nakama-cpp/NSessionInterface.h"
-
 #include "NakamaUserSession.generated.h"
-
-using namespace Nakama;
 
 USTRUCT(BlueprintType)
 struct NAKAMAUNREAL_API FNakamaUserSession
@@ -42,6 +38,10 @@ struct NAKAMAUNREAL_API FNakamaUserSession
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Session")
 	FDateTime ExpireTime;
 
+	// The timestamp in milliseconds when this session will expire.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Session")
+	FDateTime RefreshExpireTime;
+
 	// True if the session has expired against the current time.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Session")
 	bool IsExpired;
@@ -52,7 +52,6 @@ struct NAKAMAUNREAL_API FNakamaUserSession
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Session")
 	TMap<FString, FString> Variables;
-
-	FNakamaUserSession(const NSessionPtr& NakamaNativeSession);
+	
 	FNakamaUserSession(); // Default Constructor
 };

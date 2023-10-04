@@ -3,15 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "nakama-cpp/data/NChannelMessage.h"
-#include "nakama-cpp/data/NChannelMessageList.h"
-#include "nakama-cpp/realtime/rtdata/NChannelMessageAck.h"
-#include "nakama-cpp/realtime/rtdata/NChannelPresenceEvent.h"
 #include "NakamaPresence.h"
 
 #include "NakamaChannelTypes.generated.h"
-
-using namespace Nakama;
 
 //Chat Category//
 UENUM(BlueprintType)
@@ -85,7 +79,7 @@ struct NAKAMAUNREAL_API FNakamaChannelMessage
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Chat|Channel")
 	FString UserIdTwo;
 
-	FNakamaChannelMessage(const NChannelMessage& NakamaNativeChannelMessage);
+	FNakamaChannelMessage(const FString& JsonString);
 	FNakamaChannelMessage(); // Default Constructor
 };
 
@@ -139,7 +133,7 @@ struct NAKAMAUNREAL_API FNakamaChannelMessageAck
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Chat|Channel")
 	FString UserIdTwo;
 
-	FNakamaChannelMessageAck(const NChannelMessageAck& NakamaNativeChannelMessageAck);
+	FNakamaChannelMessageAck(const FString& JsonString);
 	FNakamaChannelMessageAck(); // Default Constructor
 };
 
@@ -161,7 +155,7 @@ struct NAKAMAUNREAL_API FNakamaChannelMessageList
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Chat|Channel")
 	FString PrevCursor;
 
-	FNakamaChannelMessageList(const NChannelMessageList& NakamaNativeChannelMessageList);
+	FNakamaChannelMessageList(const FString& JsonString);
 	FNakamaChannelMessageList();
 
 };
@@ -199,6 +193,6 @@ struct NAKAMAUNREAL_API FNakamaChannelPresenceEvent
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Chat|Channel")
 	FString UserIdTwo;
 
-	FNakamaChannelPresenceEvent(const NChannelPresenceEvent& NakamaNativeChannelPresenceEvent);
+	FNakamaChannelPresenceEvent(const FString& JsonString);
 	FNakamaChannelPresenceEvent(); // Default Constructor
 };

@@ -70,7 +70,8 @@ PrivateDependencyModuleNames.AddRange(new string[] { "NakamaUnreal", "NakamaCore
 
 ```
 
-Starting with the headers public variables, we are using a blank actor that will be placed in the scene in this example.
+Starting with the headers public variables, we are using a blank actor that will be placed in the scene in this example. Unreal Engine uses a reflection system that provides metadata about its classes and allows for advanced features like Blueprint/C++ communication, serialization, and more.
+When working with Nakama objects, or any UObject-derived class, it's crucial to mark them using the Unreal reflection system. This is done using macros such as UFUNCTION(), and UPROPERTY(). 
 
 ```cpp
 UPROPERTY()
@@ -98,6 +99,15 @@ void OnRealtimeClientConnectError();
 virtual void BeginPlay() override;
 ```
 
+For instance, if you want a Nakama object to be available for manipulation within the Blueprint Editor, you'd mark it with UPROPERTY().
+
+```cpp
+UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Nakama")
+UNakamaClient* NakamaClientInstance;
+```
+
+By using the BlueprintReadWrite specifier, the NakamaClientInstance variable becomes both readable and writable in Blueprints.
+
 Then inside the Begin Play we setup default client, authenticate and bind delegates.
 
 ```cpp
@@ -107,17 +117,19 @@ void AMyActor::BeginPlay()
 	Super::BeginPlay();
 
 	// Default Client Parameters
-	FString ServerKey = FString(TEXT("defaultkey"));
-	FString Host = FString(TEXT("localhost"));
-	FString ClientName = FString(TEXT("Main"));
+	FString ServerKey = TEXT("defaultkey");
+	FString Host = TEXT("127.0.0.1");
+	int32 Port = 7350;
+	bool bUseSSL = false;
+	bool bEnableDebug = true;
 
 	// Setup Default Client
-	NakamaClient = UNakamaClient::CreateDefaultClient(ServerKey, Host, 7350, false, true, ENakamaClientType::DEFAULT, 0.05f, ClientName);
+	NakamaClient = UNakamaClient::CreateDefaultClient(ServerKey, Host, Port, bUseSSL, bEnableDebug);
 
 	// Authentication Parameters
-	FString Email = FString(TEXT("debug@mail.com"));
-	FString Password = FString(TEXT("verysecretpassword"));
-	FString Username = FString(TEXT("debug-user"));
+	FString Email = TEXT("debug@mail.com");
+	FString Password = TEXT("verysecretpassword");
+	FString Username = TEXT("debug-user");
 	TMap<FString, FString> Variables;
 
 	// Setup Delegates of same type and bind them to local functions
@@ -148,10 +160,11 @@ void AMyActor::OnAuthenticationSuccess(UNakamaSession* LoginData)
 	ConnectionErrorDelegate.AddDynamic(this, &AMyActor::OnRealtimeClientConnectError);
 
 	// This is our realtime client (socket) ready to use
-	NakamaRealtimeClient = NakamaClient->SetupRealtimeClient(UserSession, true, 7350, ENakamaRealtimeClientProtocol::Protobuf, 0.05f, "");
+	NakamaRealtimeClient = NakamaClient->SetupRealtimeClient();
 
 	// Remember to Connect
-	NakamaRealtimeClient->Connect(ConnectionSuccessDelegate, ConnectionErrorDelegate);
+	bool bCreateStatus = true;
+	NakamaRealtimeClient->Connect(UserSession, bCreateStatus, ConnectionSuccessDelegate, ConnectionErrorDelegate);
 
 }
 
@@ -180,6 +193,97 @@ void AMyActor::OnRealtimeClientConnectError()
 ```
 
 If you setup everything correctly, create a blueprint version of this actor and place it in the level you will see on-screen messages saying you authenticated, your username and then socket connected message.
+
+# Delegates and Lambdas in Nakama Unreal
+
+The latest Nakama Unreal release offers the flexibility to use either `Dynamic Multicast Delegates` or `Lambdas (TFunctions)` for handling functions and events. Here's a brief comparison and guidelines on how to use them:
+
+## Dynamic Multicast Delegates:
+- **Binding**: Bound using `AddDynamic`.
+- **Usage**: Suited for scenarios where multiple bindings are needed.
+
+## Lambdas (TFunctions):
+- **Binding**: Defined in-line and don't require an external function.
+- **Usage**: Convenient for one-off or temporary handlers. Note that a lambda can only be bound to one place at a time.
+
+### How to Choose?
+Provide your preferred callback type (either a `delegate` or a `lambda`) into the `Success` and `Error` parameters of the relevant Nakama function.
+
+---
+
+## Example: Using Lambdas
+
+Here's a demonstration of using `lambdas` as an alternative to `delegates`:
+
+```cpp
+// Define success callback with a lambda
+auto successCallback = [&](UNakamaSession* session)
+{	
+	UE_LOG(LogTemp, Warning, TEXT("Session Token: %s"), *Session->GetAuthToken());
+	UE_LOG(LogTemp, Warning, TEXT("Username: %s"), *Session->GetUsername());
+};
+
+// Define error callback with a lambda
+auto errorCallback = [&](const FNakamaError& Error)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Error Code: %d"), Error.Code);
+};
+
+// Execute the AuthenticateEmail function with lambdas
+Client->AuthenticateEmail(TEXT("debug@mail.com"), TEXT("verysecretpassword"), TEXT("debug-user"), true, {}, successCallback, errorCallback);
+```
+
+
+
+# Working with Realtime Events
+
+Upon initializing your Realtime Client, it's essential to establish event listeners for critical in-game events, ranging from channel messages and notifications to party interactions. Nakama Unreal provides flexibility by allowing both lambdas and delegates for this purpose. 
+
+```cpp
+// Start by creating a Realtime Client:
+UNakamaRealtimeClient* Socket = NakamaClient->SetupRealtimeClient();
+
+// When using delegates, you need to declare functions that match the delegate's signature:
+Socket->ChannelMessageReceived.AddDynamic(this, &ANakamaActor::OnChannelMessageReceived);
+Socket->NotificationReceived.AddDynamic(this, &ANakamaActor::OnNotificationReceived);
+
+// Lambdas offer a concise way to define event handlers directly in-line:
+// Note: A lambda can be bound only once.
+Socket->SetChannelMessageCallback( [](const FNakamaChannelMessage& ChannelMessage)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Channel Message: %s"), *ChannelMessage.Content);
+});
+
+Socket->SetNotificationsCallback( [](const FNakamaNotificationList& NotificationList)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Notifications: %d"), NotificationList.Notifications.Num());
+	for (auto& Notification : NotificationList.Notifications)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Notification: %s"), *Notification.Content);
+	}
+});
+
+// Establish a connection to start receiving events. 
+// Optional success and error callbacks (either lambdas or delegates) can be provided:
+Socket->Connect(Session, true);
+```
+Function implementations might look something like this:
+
+
+```cpp
+void ANakamaActor::OnChannelMessageReceived(const FNakamaChannelMessage& ChannelMessage)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Channel Message: %s"), *ChannelMessage.Content);
+}
+
+void ANakamaActor::OnNotificationReceived(const FNakamaNotificationList& Notifications)
+{
+	for (auto NotificationData : Notifications.Notifications)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Notification: %s"), *NotificationData.Content);
+	}
+}
+```
 
 # Getting Started with `NakamaBlueprints`
 
@@ -221,7 +325,7 @@ Remember to provide the user session from the successful authentication earlier,
 
 # Setting up Listeners and Binding to Events
 
-Before you bind to event callbacks you need to setup the listener first, drag out from the realtime client and type `Listener`, you will be provided a list over different events you can listen to, there is also a `Listen to All Callbacks` which will open up all listeners.
+After creating your Realtime Client you are ready to bind to its' events
 
 ![image binding-1](./images/Bindings-1.png)
 
@@ -250,17 +354,10 @@ The session object contains the actual session reference and also a structure wi
 
 ![image sessions-1](./images/Sessions-1.png)
 
-Right click the structure to split or break the struct to see the values
+There are also some additional session management methods like restoring the session and checking if the session has expired
 
 ![image sessions-2](./images/Sessions-2.png)
 
-Here are all the values contained within the session
-
-![image sessions-3](./images/Sessions-3.png)
-
-There are also some additional session management methods like restoring the session and checking if the session has expired
-
-![image sessions-4](./images/Sessions-4.png)
 
 It is recommended to store the auth token from the session and check at startup if it has expired. If the token has expired you must reauthenticate. The expiry time of the token can be changed as a setting in the server.
 
@@ -283,6 +380,123 @@ Moving forward, you should be ready to use all functionality of Nakama to power 
 Cursors are used to add paging functionality to certain nodes, like friends list and leaderboard records. When there is more data to be retrieved, a cursor string will be returned in the Success callback. You can store this cursor as a string and use it later, like when a person clicks a "more" button or use it immediately to fetch more data. Look at the example below.
 
 ![image cursors](./images/Cursors.png)
+
+# Logging
+By default, logging is disabled. However, when creating a Client, you have the option to `Enable Debug`, allowing logs to be written using the debug log category. You can also manually control logging.
+
+**Enabling Logging from Blueprints:**
+![image logging](./images/Logging.png)
+
+**Enabling Logging from C++**
+
+To enable logging through C++, include the following header file:
+
+```cpp
+#include "NakamaLogger.h"
+```
+Subsequently, to toggle logging, use:
+
+```cpp
+UNakamaLogger::EnableLogging(true);
+```
+To set the log level, use:
+
+
+```cpp
+UNakamaLogger::SetLogLevel(ENakamaLogLevel::Debug);
+```
+
+Log categories are as follows:
+
+- `Debug` writes all logs.
+
+- `Info` writes logs with `Info`, `Warn`, `Error` and `Fatal` logging level.
+
+- `Warn` writes logs with `Warn`, `Error` and `Fatal` logging level.
+
+- `Error` writes logs with `Error` and `Fatal` logging level.
+
+- `Fatal` writes only logs with `Fatal` logging level.
+
+# Running Tests
+This repository includes a test-suite to test the various features of Nakama for Unreal, tests can be run in the Editor, from Command-Line and there is eve a `BlueprintsTest` project with separate documentation if you would like to run the same tests in Blueprints.
+
+
+## Using the Editor
+- Create a blank C++ Project
+- Add `Nakama` plugin to `Plugins` directory within the project
+- Build and open the project in the Unreal Editor
+- Be sure to enable the `Functional Testing Editor` Plugin in Unreal under `Edit -> Plugins` then restart the editor
+- Navigate to `Tool -> TestAutomation`
+- Select your device on the left hand side, navigate to the Automation tab then choose which Nakama Tests you would like to run and click `Start Tests`
+- Logs will be provided with the result of the tests
+
+![image testing](./images/Testing-1.png)
+
+## Using Command-Line:
+
+The tests can be run in both packaged and using the command-line version of the Unreal Editor.
+
+For all Command-Line based tests start by doing these steps:
+- Create a blank C++ Unreal Engine Project with your desired editor version, this documentation focuses on Unreal Engine 5.0+
+- Place the `Nakama` plugin in the `Plugins` directory within the project
+- Enable the `Nakama` Plugin for the project
+- You can either build the project like normal, or use the build commands below
+
+**Windows - Editor:**
+
+To build the test, run:
+```bash
+"<Path_To_Unreal_Engine>\Engine\Build\BatchFiles\Build.bat" <YourProjectName>Editor Win64 Development -Project="<Path_To_Your_Project>\<YourProjectName>.uproject"
+```
+To run the test, run:
+```bash
+"<Path_To_Unreal_Engine>\Engine\Binaries\Win64\UnrealEditor-Cmd.exe" "<Path_To_Your_Project>\<YourProjectName>.uproject" -ExecCmds="Automation RunTests <YourTestName>" -log -NullRHI -verbose -unattended -ReportOutputPath="<Path_To_Store_Report>"
+```
+
+If you want to run all tests replace `<YourTestName>` with `Nakama.Base`, if you specify `ReportOutputPath` you will receive an overview json logfile, logs will be stored within the `Saved/Logs` directory.
+
+**Windows - Packaged:**
+
+To build the test, run:
+```bash
+"<Path_To_Unreal_Engine>/Engine/Build/BatchFiles/RunUAT.sh" BuildCookRun -targetconfig=Debug -project="<Path_To_Your_Project>\<YourProjectName>.uproject" -noP4 -installed -utf8output -build -cook -stage -package -verbose -stdout -nohostplatform -useshellexecute
+```
+To run the test, run:
+```bash
+./<YourProjectName>/Saved/StagedBuilds/Windows/<YourProjectName>.exe -nullrhi -verbose -ExecCmds="Automation RunTests Nakama.Base" -log
+```
+
+**Mac - Packaged:**
+
+To build the test, run:
+```bash
+"<Path_To_Unreal_Engine>/Engine/Build/BatchFiles/RunUAT.sh" BuildCookRun -project="<Path_To_Your_Project>\<YourProjectName>.uproject" -targetConfig=Debug -noP4 -platform=Mac -Architecture_Mac=arm64 -targetconfig=Debug -installed -unrealexe=UnrealEditor -utf8output -build -cook -stage -package -verbose
+```
+
+To run the test, run:
+```bash
+./<YourProjectName>/Binaries/Mac/<YourProjectName>.app/Contents/MacOS/<YourProjectName> -nullrhi -stdout -forcelogflush -ExecCmds="Automation RunTests Nakama.Base" -log
+```
+
+**Linux - Packaged:**
+
+To build the test, run:
+```bash
+"<Path_To_Unreal_Engine>/Engine/Build/BatchFiles/RunUAT.sh" BuildCookRun -project="<Path_To_Your_Project>\<YourProjectName>.uproject" -clientconfig=Test -noP4 -platform=Linux -targetconfig=Debug -installed  -utf8output -build -cook -stage -package -verbose
+```
+To run the test, run:
+```bash
+./<YourProjectName>/Binaries/Linux/<YourProjectName> -nullrhi -stdout -forcelogflush -ExecCmds="Automation RunTests Nakama.Base" -log
+```
+
+**Passing Parameters**
+
+Parameters such as hostname, port and server key can be passed as command-line arguments, here is an example:
+
+```bash
+-hostname="127.0.0.1" -port=7350 -serverkey="defaultkey" -serverhttpkey="defaulthttpkey" -timeout=45 -useSSL
+``` 
 
 # Additional Information
 

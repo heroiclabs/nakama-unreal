@@ -1,116 +1,80 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "NakamaClient.h"
 #include "NakamaUtils.h"
 #include "NakamaRealtimeClient.h"
-#include "nakama-cpp/ClientFactory.h"
-#include "nakama-cpp/log/NConsoleLogSink.h"
-#include "nakama-cpp/log/NLogger.h"
 #include "NakamaSession.h"
-#include "NakamaCoreClientFactory.h"
+#include "NakamaLogger.h"
+#include "GenericPlatform/GenericPlatformHttp.h"
+#include "Interfaces/IHttpResponse.h"
 
-void UNakamaClient::Tick( float DeltaTime )
+void UNakamaClient::InitializeClient(const FString& InHostname, int32 InPort, const FString& InServerKey,
+	bool bInUseSSL)
 {
-
-
-	if ( LastFrameNumberWeTicked == GFrameCounter )
-		return;
-
-	// Do the tick
-	// ...
-
-	timer += DeltaTime;
-
-	if(timer >= _tickInterval)
-	{
-		if(Client && bIsActive)
-		{
-			Client->tick();
-		}
-		timer = 0.0f;
-	}
-
-	LastFrameNumberWeTicked = GFrameCounter;
+	Hostname = InHostname;
+	Port = InPort;
+	ServerKey = InServerKey;
+	bUseSSL = bInUseSSL;
 }
 
-
-void UNakamaClient::InitializeSystem(const FString& ServerKey, const FString& Host, int32 Port, bool UseSSL,
-	bool EnableDebug, ENakamaClientType Type,  float TickInterval, const FString& DisplayName)
+void UNakamaClient::InitializeSystem(const FString& InServerKey, const FString& Host, int32 InPort, bool UseSSL,
+                                     bool EnableDebug)
 {
-	//if(Client)
-		//return;
-
-	NClientParameters parameters;
-	parameters.serverKey = FNakamaUtils::UEStringToStdString(ServerKey);
-	parameters.host = FNakamaUtils::UEStringToStdString(Host);
-	parameters.port = Port;
-	parameters.ssl = UseSSL;
-
-	_displayName = DisplayName;
-	_tickInterval = TickInterval;
-
-	switch (Type)
-	{
-	case ENakamaClientType::DEFAULT:
-		Client = NakamaCoreClientFactory::createNakamaClient(parameters,NLogLevel::Info);
-		break;
-	case ENakamaClientType::REST:
-		Client = NakamaCoreClientFactory::createNakamaClient(parameters,NLogLevel::Info);
-		break;;
-	}
-
 	if (EnableDebug)
 	{
 		bEnableDebug = true;
-		//NLogger::init(std::make_shared<NUnrealLogSink>(), NLogLevel::Debug);
-
 	}
-
+	
+	InitializeClient(Host, InPort, InServerKey, UseSSL);
 	bIsActive = true;
-
 }
 
 void UNakamaClient::Disconnect()
 {
-	if(Client)
+	if(IsValidLowLevel())
 	{
-		Client->disconnect();
+		CancelAllRequests();
 	}
 }
 
 void UNakamaClient::Destroy()
 {
 	bIsActive = false;
-
-	if(Client)
-	{
-		Client->disconnect();
-		Client = nullptr;
-	}
-
 	ConditionalBeginDestroy();
+}
+
+void UNakamaClient::SetTimeout(float InTimeout)
+{
+	Timeout = InTimeout;
+}
+
+float UNakamaClient::GetTimeout()
+{
+	return Timeout;
 }
 
 void UNakamaClient::BeginDestroy()
 {
 	UObject::BeginDestroy();
-
 	bIsActive = false;
-
-	if(Client)
-	{
-		Client->disconnect();
-		Client = nullptr;
-	}
-
 }
 
-UNakamaClient* UNakamaClient::CreateDefaultClient(const FString& ServerKey, const FString& Host, int32 Port,
-                                                   bool UseSSL, bool EnableDebug, ENakamaClientType Type, float TickInterval, const FString& DisplayName)
+UNakamaClient* UNakamaClient::CreateDefaultClient(
+	const FString& ServerKey,
+	const FString& Host,
+	int32 Port,
+	bool UseSSL,
+	bool EnableDebug)
 {
 	UNakamaClient* NewClient = NewObject<UNakamaClient>();
-	NewClient->InitializeSystem(ServerKey, Host, Port, UseSSL, EnableDebug, Type, TickInterval, DisplayName);
+	NewClient->InitializeSystem(ServerKey, Host, Port, UseSSL, EnableDebug);
+
+	if (EnableDebug)
+	{
+		UNakamaLogger::EnableLogging(true);
+		UNakamaLogger::SetLogLevel(ENakamaLogLevel::Debug);
+	}
+	
 	return NewClient;
 }
 
@@ -118,333 +82,285 @@ UNakamaClient* UNakamaClient::CreateDefaultClient(const FString& ServerKey, cons
  * Authentication
  */
 
-void UNakamaClient::AuthenticateCustom(FString UserID, FString Username, bool CreateAccount,
-                                       TMap<FString, FString> Vars, const FOnAuthUpdate& Success, const FOnError& Error)
+void UNakamaClient::AuthenticateCustom(const FString& UserID,
+	const FString& Username,
+	bool CreateAccount,
+	const TMap<FString, FString>& Vars,
+	FOnAuthUpdate Success,
+	FOnError Error)
 {
-	if (!Client)
-		return;
-
-	auto successCallback = [this, Success](NSessionPtr session)
+	auto successCallback = [this, Success](UNakamaSession* session)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
-		UNakamaSession *ResultSession = NewObject<UNakamaSession>();
-		ResultSession->UserSession = session; // Reference for C++ code
-		ResultSession->SessionData = session; // Reference for Blueprints
-
-		Success.Broadcast(ResultSession);
+		
+		Success.Broadcast(session);
 	};
-
-	auto errorCallback = [this, Error](const NError& error)
+	
+	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
-		const FNakamaError NakamaError = error;
-		Error.Broadcast(NakamaError);
+		
+		Error.Broadcast(error);
 	};
 
 	// A custom identifier must contain alphanumeric
 	// characters with dashesand be between 6 and 128 bytes.
-
-	NStringMap Variables = FNakamaUtils::TMapToFStringMap(Vars);
-
-	Client->authenticateCustom(FNakamaUtils::UEStringToStdString(UserID), FNakamaUtils::UEStringToStdString(Username), CreateAccount, Variables, successCallback, errorCallback);
+	
+	AuthenticateCustom(UserID, Username, CreateAccount, Vars, successCallback, errorCallback);
 }
 
-void UNakamaClient::AuthenticateEmail(FString Email, FString Password, FString Username, bool CreateAccount,
-	TMap<FString, FString> Vars, const FOnAuthUpdate& Success, const FOnError& Error)
+void UNakamaClient::AuthenticateEmail(
+	const FString& Email,
+	const FString& Password,
+	const FString& Username,
+	bool CreateAccount,
+	const TMap<FString,FString>& Vars,
+	FOnAuthUpdate Success,
+	FOnError Error)
 {
-	if (!Client)
-		return;
-
-	auto successCallback = [this, Success](NSessionPtr session)
+	auto successCallback = [this, Success](UNakamaSession* session)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
-		UNakamaSession *ResultSession = NewObject<UNakamaSession>();
-		ResultSession->UserSession = session; // Reference for C++ code
-		ResultSession->SessionData = session; // Reference for Blueprints
-
-		Success.Broadcast(ResultSession);
+		
+		Success.Broadcast(session);
 	};
-
-	auto errorCallback = [this, Error](const NError& error)
+	
+	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
-		const FNakamaError NakamaError = error;
-		Error.Broadcast(NakamaError);
+		
+		Error.Broadcast(error);
 	};
 
 	// An email address must be valid as defined by RFC-5322 and passwords must be at least 8 characters.
-
-	const NStringMap Variables = FNakamaUtils::TMapToFStringMap(Vars);
-
-	Client->authenticateEmail(FNakamaUtils::UEStringToStdString(Email), FNakamaUtils::UEStringToStdString(Password), FNakamaUtils::UEStringToStdString(Username), CreateAccount, Variables, successCallback, errorCallback);
+	
+	AuthenticateEmail(Email, Password, Username, CreateAccount, Vars, successCallback, errorCallback);
 }
 
-void UNakamaClient::AuthenticateDevice(FString DeviceID, FString Username, bool CreateAccount,
-	TMap<FString, FString> Vars, const FOnAuthUpdate& Success, const FOnError& Error)
+void UNakamaClient::AuthenticateDevice(
+	const FString& DeviceID,
+	const FString& Username,
+	bool CreateAccount,
+	const TMap<FString, FString>& Vars,
+	const FOnAuthUpdate& Success,
+	const FOnError& Error)
 {
-	if (!Client)
-		return;
-
-	auto successCallback = [this, Success](NSessionPtr session)
+	auto successCallback = [this, Success](UNakamaSession* session)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
-		UNakamaSession *ResultSession = NewObject<UNakamaSession>();
-		ResultSession->UserSession = session; // Reference for C++ code
-		ResultSession->SessionData = session; // Reference for Blueprints
-
-		Success.Broadcast(ResultSession);
+		
+		Success.Broadcast(session);
 	};
-
-	auto errorCallback = [this, Error](const NError& error)
+	
+	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
-		const FNakamaError NakamaError = error;
-		Error.Broadcast(NakamaError);
+		
+		Error.Broadcast(error);
 	};
 
-	//  A device identifier must contain alphanumeric characters with dashes and be between 10 and 128 bytes.
+	// A device identifier must contain alphanumeric characters with dashes and be between 10 and 128 bytes.
 
-	NStringMap Variables = FNakamaUtils::TMapToFStringMap(Vars);
+	const auto OptUsername = FNakamaUtils::CreateOptional(Username, FString());
 
-	Client->authenticateDevice(
-		FNakamaUtils::UEStringToStdString(DeviceID),
-		FNakamaUtils::UEStringToStdString(Username), // Optional
+	AuthenticateDevice(DeviceID, CreateAccount, OptUsername, Vars, successCallback, errorCallback);
+}
+
+void UNakamaClient::AuthenticateSteam(
+	const FString& SteamToken,
+	const FString& Username,
+	bool CreateAccount,
+	bool ImportFriends,
+	const TMap<FString, FString>& Vars,
+	FOnAuthUpdate Success,
+	FOnError Error)
+{
+	auto successCallback = [this, Success](UNakamaSession* session)
+	{
+		if(!FNakamaUtils::IsClientActive(this))
+			return;
+		
+		Success.Broadcast(session);
+	};
+	
+	auto errorCallback = [this, Error](const FNakamaError& error)
+	{
+		if(!FNakamaUtils::IsClientActive(this))
+			return;
+		
+		Error.Broadcast(error);
+	};
+
+	AuthenticateSteam(SteamToken, Username, CreateAccount, ImportFriends, Vars, successCallback, errorCallback);
+}
+
+void UNakamaClient::AuthenticateGoogle(
+	const FString& AccessToken,
+	const FString& Username,
+	bool CreateAccount,
+	const TMap<FString,FString>& Vars,
+	FOnAuthUpdate Success,
+	FOnError Error)
+{
+
+	auto successCallback = [this, Success](UNakamaSession* session)
+	{
+		if(!FNakamaUtils::IsClientActive(this))
+			return;
+		
+		Success.Broadcast(session);
+	};
+	
+	auto errorCallback = [this, Error](const FNakamaError& error)
+	{
+		if(!FNakamaUtils::IsClientActive(this))
+			return;
+		
+		Error.Broadcast(error);
+	};
+
+	AuthenticateGoogle(AccessToken, Username, CreateAccount, Vars, successCallback, errorCallback);
+}
+
+void UNakamaClient::AuthenticateGameCenter(
+	const FString& PlayerId,
+	const FString& BundleId,
+	int64 TimeStampSeconds,
+	const FString& Salt,
+	const FString& Signature,
+	const FString& PublicKeyUrl,
+	const FString& Username,
+	bool CreateAccount,
+	const TMap<FString, FString>& Vars,
+	FOnAuthUpdate Success,
+	FOnError Error)
+{
+	auto successCallback = [this, Success](UNakamaSession* session)
+	{
+		if(!FNakamaUtils::IsClientActive(this))
+			return;
+		
+		Success.Broadcast(session);
+	};
+	
+	auto errorCallback = [this, Error](const FNakamaError& error)
+	{
+		if(!FNakamaUtils::IsClientActive(this))
+			return;
+		
+		Error.Broadcast(error);
+	};
+
+	AuthenticateGameCenter(
+		PlayerId,
+		BundleId,
+		TimeStampSeconds,
+		Salt,
+		Signature,
+		PublicKeyUrl,
+		Username,
 		CreateAccount,
-		Variables, // Optional
+		Vars,
 		successCallback,
-		errorCallback);
+		errorCallback
+	);
 }
 
-void UNakamaClient::AuthenticateSteam(FString SteamToken, FString Username, bool CreateAccount,
-	TMap<FString, FString> Vars, const FOnAuthUpdate& Success, const FOnError& Error)
+void UNakamaClient::AuthenticateFacebook(
+	const FString& AccessToken,
+	const FString& Username,
+	bool CreateAccount,
+	bool ImportFriends,
+	const TMap<FString, FString>& Vars,
+	FOnAuthUpdate Success,
+	FOnError Error)
 {
-	if (!Client)
-		return;
-
-	auto successCallback = [this, Success](NSessionPtr session)
+	auto successCallback = [this, Success](UNakamaSession* session)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
-		UNakamaSession *ResultSession = NewObject<UNakamaSession>();
-		ResultSession->UserSession = session; // Reference for C++ code
-		ResultSession->SessionData = session; // Reference for Blueprints
-
-		Success.Broadcast(ResultSession);
-
+		
+		Success.Broadcast(session);
 	};
-
-	auto errorCallback = [this, Error](const NError& error)
+	
+	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
-		const FNakamaError NakamaError = error;
-		Error.Broadcast(NakamaError);
+		
+		Error.Broadcast(error);
 	};
 
-
-	NStringMap Variables = FNakamaUtils::TMapToFStringMap(Vars);
-
-	Client->authenticateSteam(FNakamaUtils::UEStringToStdString(SteamToken), FNakamaUtils::UEStringToStdString(Username), CreateAccount, Variables, successCallback, errorCallback);
+	AuthenticateFacebook(AccessToken, Username, CreateAccount, ImportFriends, Vars, successCallback, errorCallback);
 }
 
-void UNakamaClient::AuthenticateGoogle(FString AccessToken, FString Username, bool CreateAccount,
-	TMap<FString, FString> Vars, const FOnAuthUpdate& Success, const FOnError& Error)
+void UNakamaClient::AuthenticateApple(
+	const FString& Token,
+	const FString& Username,
+	bool CreateAccount,
+	const TMap<FString, FString>& Vars,
+	FOnAuthUpdate Success,
+	FOnError Error)
 {
-	if (!Client)
-		return;
-
-	auto successCallback = [this, Success](NSessionPtr session)
+	auto successCallback = [this, Success](UNakamaSession* session)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
-		UNakamaSession *ResultSession = NewObject<UNakamaSession>();
-		ResultSession->UserSession = session; // Reference for C++ code
-		ResultSession->SessionData = session; // Reference for Blueprints
-
-		Success.Broadcast(ResultSession);
+		
+		Success.Broadcast(session);
 	};
-
-	auto errorCallback = [this, Error](const NError& error)
+	
+	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
-		const FNakamaError NakamaError = error;
-		Error.Broadcast(NakamaError);
+		
+		Error.Broadcast(error);
 	};
 
-	NStringMap Variables = FNakamaUtils::TMapToFStringMap(Vars);
-
-	Client->authenticateGoogle(FNakamaUtils::UEStringToStdString(AccessToken), FNakamaUtils::UEStringToStdString(Username), CreateAccount, Variables, successCallback, errorCallback);
+	AuthenticateApple(Token, Username, CreateAccount, Vars, successCallback, errorCallback);
 }
 
-void UNakamaClient::AuthenticateGameCenter(FString PlayerId, FString BundleId, int64 TimeStampSeconds, FString Salt,
-	FString Signature, FString PublicKeyUrl, FString Username, bool CreateAccount, TMap<FString, FString> Vars,
-	const FOnAuthUpdate& Success, const FOnError& Error)
+void UNakamaClient::AuthenticateRefresh(
+	UNakamaSession* Session,
+	FOnAuthUpdate Success,
+	FOnError Error)
 {
-	if (!Client)
-		return;
-
-	auto successCallback = [this, Success](NSessionPtr session)
+	auto successCallback = [this, Success](UNakamaSession* session)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
-		UNakamaSession *ResultSession = NewObject<UNakamaSession>();
-		ResultSession->UserSession = session; // Reference for C++ code
-		ResultSession->SessionData = session; // Reference for Blueprints
-
-		Success.Broadcast(ResultSession);
+		
+		Success.Broadcast(session);
 	};
-
-	auto errorCallback = [this, Error](const NError& error)
+	
+	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
-		FNakamaError NakamaError = error;
-		Error.Broadcast(NakamaError);
+		
+		Error.Broadcast(error);
 	};
 
-	NTimestamp timestampSeconds = TimeStampSeconds;
-
-	NStringMap Variables = FNakamaUtils::TMapToFStringMap(Vars);
-
-	Client->authenticateGameCenter(
-		FNakamaUtils::UEStringToStdString(PlayerId),
-		FNakamaUtils::UEStringToStdString(BundleId),
-		timestampSeconds,
-		FNakamaUtils::UEStringToStdString(Salt),
-		FNakamaUtils::UEStringToStdString(Signature),
-		FNakamaUtils::UEStringToStdString(PublicKeyUrl),
-		FNakamaUtils::UEStringToStdString(Username),
-		CreateAccount,
-		Variables,
-		successCallback,
-		errorCallback);
-}
-
-void UNakamaClient::AuthenticateFacebook(FString AccessToken, FString Username, bool CreateAccount, bool ImportFriends,
-	TMap<FString, FString> Vars, const FOnAuthUpdate& Success, const FOnError& Error)
-{
-	if (!Client)
-		return;
-
-	auto successCallback = [this, Success](NSessionPtr session)
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-			return;
-
-		UNakamaSession *ResultSession = NewObject<UNakamaSession>();
-		ResultSession->UserSession = session; // Reference for C++ code
-		ResultSession->SessionData = session; // Reference for Blueprints
-		Success.Broadcast(ResultSession);
-	};
-
-	auto errorCallback = [this, Error](const NError& error)
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-			return;
-
-		FNakamaError NakamaError = error;
-		Error.Broadcast(NakamaError);
-	};
-
-	NStringMap Variables = FNakamaUtils::TMapToFStringMap(Vars);
-
-	Client->authenticateFacebook(
-		FNakamaUtils::UEStringToStdString(AccessToken),
-		FNakamaUtils::UEStringToStdString(Username),
-		CreateAccount,
-		ImportFriends,
-		Variables,
-		successCallback,
-		errorCallback);
-}
-
-void UNakamaClient::AuthenticateApple(FString Token, FString Username, bool CreateAccount, TMap<FString, FString> Vars,
-	const FOnAuthUpdate& Success, const FOnError& Error)
-{
-	if (!Client)
-		return;
-
-	auto successCallback = [this, Success](NSessionPtr session)
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-			return;
-
-		UNakamaSession *ResultSession = NewObject<UNakamaSession>();
-		ResultSession->UserSession = session; // Reference for C++ code
-		ResultSession->SessionData = session; // Reference for Blueprints
-		Success.Broadcast(ResultSession);
-	};
-
-	auto errorCallback = [this, Error](const NError& error)
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-			return;
-
-		const FNakamaError NakamaError = error;
-		Error.Broadcast(NakamaError);
-	};
-
-	NStringMap Variables = FNakamaUtils::TMapToFStringMap(Vars);
-
-	Client->authenticateApple(FNakamaUtils::UEStringToStdString(Token), FNakamaUtils::UEStringToStdString(Username), CreateAccount, Variables, successCallback, errorCallback);
-}
-
-void UNakamaClient::AuthenticateRefresh(UNakamaSession* Session, const FOnAuthUpdate& Success, const FOnError& Error)
-{
-	if (!Client)
-		return;
-
-	auto successCallback = [this, Success](NSessionPtr session)
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-			return;
-
-		UNakamaSession *ResultSession = NewObject<UNakamaSession>();
-		ResultSession->UserSession = session; // Reference for C++ code
-		ResultSession->SessionData = session; // Reference for Blueprints
-		Success.Broadcast(ResultSession);
-	};
-
-	auto errorCallback = [this, Error](const NError& error)
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-			return;
-
-		const FNakamaError NakamaError = error;
-		Error.Broadcast(NakamaError);
-	};
-
-	Client->authenticateRefresh(Session->UserSession, successCallback, errorCallback);
+	AuthenticateRefresh(Session, successCallback, errorCallback);
 }
 
 /**
  * Sessions
  */
 
-void UNakamaClient::RestoreSession(FString Token, FString RefreshToken, UNakamaSession*& RestoredSession)
+void UNakamaClient::RestoreSession(
+	const FString& Token,
+	const FString& RefreshToken,
+	UNakamaSession*& RestoredSession)
 {
-	UNakamaSession* Session = NewObject<UNakamaSession>();
-	Session->UserSession = restoreSession(FNakamaUtils::UEStringToStdString(Token), FNakamaUtils::UEStringToStdString(RefreshToken));
-	Session->SessionData = Session->UserSession; // Blueprint Exposed
+	UNakamaSession* Session = UNakamaSession::RestoreSession(Token, RefreshToken);
 	RestoredSession = Session;
 }
 
@@ -452,649 +368,633 @@ void UNakamaClient::RestoreSession(FString Token, FString RefreshToken, UNakamaS
  * Linking Accounts
  */
 
-void UNakamaClient::LinkCustom(UNakamaSession* Session, FString CustomId, const FOnLinkSuccess& Success, const FOnError& Error)
+void UNakamaClient::LinkCustom(
+	UNakamaSession *Session,
+	const FString& CustomId,
+	FOnLinkSuccess Success,
+	FOnError Error)
 {
-	if (!Client || !Session)
-		return;
-
-	auto errorCallback = [this, Error](const NError& error)
+	auto successCallback = [this, Success]()
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
-		const FNakamaError NakamaError = error;
-		Error.Broadcast(NakamaError);
-	};
-
-	auto linkSucceededCallback = [this, Success]()
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-			return;
-
+		
 		Success.Broadcast();
 	};
+	
+	auto errorCallback = [this, Error](const FNakamaError& error)
+	{
+		if(!FNakamaUtils::IsClientActive(this))
+			return;
+		
+		Error.Broadcast(error);
+	};
 
-	Client->linkCustom(Session->UserSession, FNakamaUtils::UEStringToStdString(CustomId), linkSucceededCallback, errorCallback);
+	LinkCustom(Session, CustomId, successCallback, errorCallback);
 }
 
-void UNakamaClient::LinkDevice(UNakamaSession* Session, FString DeviceId, const FOnLinkSuccess& Success, const FOnError& Error)
+void UNakamaClient::LinkDevice(
+	UNakamaSession *Session,
+	const FString& DeviceId,
+	FOnLinkSuccess Success,
+	FOnError Error)
 {
-	if (!Client || !Session)
-		return;
-
-	auto errorCallback = [this, Error](const NError& error)
+	auto successCallback = [this, Success]()
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
-		const FNakamaError NakamaError = error;
-		Error.Broadcast(NakamaError);
-	};
-
-	auto linkSucceededCallback = [this, Success]()
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-			return;
-
+		
 		Success.Broadcast();
 	};
+	
+	auto errorCallback = [this, Error](const FNakamaError& error)
+	{
+		if(!FNakamaUtils::IsClientActive(this))
+			return;
+		
+		Error.Broadcast(error);
+	};
 
-	Client->linkDevice(Session->UserSession, FNakamaUtils::UEStringToStdString(DeviceId), linkSucceededCallback, errorCallback);
+	LinkDevice(Session, DeviceId, successCallback, errorCallback);
 }
 
-void UNakamaClient::LinkEmail(UNakamaSession* Session, FString Email, FString Password, const FOnLinkSuccess& Success, const FOnError& Error)
+void UNakamaClient::LinkEmail(
+	UNakamaSession *Session,
+	const FString& Email,
+	const FString& Password,
+	FOnLinkSuccess Success,
+	FOnError Error)
 {
-	if (!Client || !Session)
-		return;
-
-	auto errorCallback = [this, Error](const NError& error)
+	auto successCallback = [this, Success]()
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
-		const FNakamaError NakamaError = error;
-		Error.Broadcast(NakamaError);
-	};
-
-	auto linkSucceededCallback = [this, Success]()
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-			return;
-
+		
 		Success.Broadcast();
 	};
+	
+	auto errorCallback = [this, Error](const FNakamaError& error)
+	{
+		if(!FNakamaUtils::IsClientActive(this))
+			return;
+		
+		Error.Broadcast(error);
+	};
 
-	Client->linkEmail(Session->UserSession, FNakamaUtils::UEStringToStdString(Email), FNakamaUtils::UEStringToStdString(Password), linkSucceededCallback, errorCallback);
+	LinkEmail(Session, Email, Password, successCallback, errorCallback);
 }
 
-void UNakamaClient::LinkFacebook(UNakamaSession* Session, FString AccessToken, bool ImportFriends, const FOnLinkSuccess& Success,
-	const FOnError& Error)
+void UNakamaClient::LinkFacebook(
+	UNakamaSession *Session,
+	const FString& AccessToken,
+	bool ImportFriends,
+	FOnLinkSuccess Success,
+	FOnError Error)
 {
-	if (!Client || !Session)
-		return;
-
-	auto errorCallback = [this, Error](const NError& error)
+	auto successCallback = [this, Success]()
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
-		const FNakamaError NakamaError = error;
-		Error.Broadcast(NakamaError);
-	};
-
-	auto linkSucceededCallback = [this, Success]()
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-			return;
-
+		
 		Success.Broadcast();
 	};
+	
+	auto errorCallback = [this, Error](const FNakamaError& error)
+	{
+		if(!FNakamaUtils::IsClientActive(this))
+			return;
+		
+		Error.Broadcast(error);
+	};
 
-	Client->linkFacebook(Session->UserSession, FNakamaUtils::UEStringToStdString(AccessToken), ImportFriends, linkSucceededCallback, errorCallback);
+	LinkFacebook(Session, AccessToken, ImportFriends, successCallback, errorCallback);
 }
 
-void UNakamaClient::LinkGameCenter(UNakamaSession* Session, FString PlayerId, FString BundleId, int64 TimeStampSeconds, FString Salt,
-	FString Signature, FString PublicKeyUrl, const FOnLinkSuccess& Success, const FOnError& Error)
+void UNakamaClient::LinkGameCenter(
+	UNakamaSession *Session,
+	const FString& PlayerId,
+	const FString& BundleId,
+	int64 TimeStampSeconds,
+	const FString& Salt,
+	const FString& Signature,
+	const FString& PublicKeyUrl,
+	FOnLinkSuccess Success,
+	FOnError Error)
 {
-	if (!Client || !Session)
-		return;
-
-	auto errorCallback = [this, Error](const NError& error)
+	auto successCallback = [this, Success]()
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
-		const FNakamaError NakamaError = error;
-		Error.Broadcast(NakamaError);
-	};
-
-	auto linkSucceededCallback = [this, Success]()
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-			return;
-
+		
 		Success.Broadcast();
 	};
+	
+	auto errorCallback = [this, Error](const FNakamaError& error)
+	{
+		if(!FNakamaUtils::IsClientActive(this))
+			return;
+		
+		Error.Broadcast(error);
+	};
 
-	NTimestamp timestampSeconds = TimeStampSeconds;
-
-	Client->linkGameCenter(
-		Session->UserSession,
-		FNakamaUtils::UEStringToStdString(PlayerId),
-		FNakamaUtils::UEStringToStdString(BundleId),
+	LinkGameCenter(
+		Session,
+		PlayerId,
+		BundleId,
 		TimeStampSeconds,
-		FNakamaUtils::UEStringToStdString(Salt),
-		FNakamaUtils::UEStringToStdString(Signature),
-		FNakamaUtils::UEStringToStdString(PublicKeyUrl),
-		linkSucceededCallback,
-		errorCallback);
+		Salt,
+		Signature,
+		PublicKeyUrl,
+		successCallback,
+		errorCallback
+	);
 }
 
-void UNakamaClient::LinkGoogle(UNakamaSession* Session, FString AccessToken, const FOnLinkSuccess& Success, const FOnError& Error)
+void UNakamaClient::LinkGoogle(
+	UNakamaSession *Session,
+	const FString& AccessToken,
+	FOnLinkSuccess Success,
+	FOnError Error)
 {
-	if (!Client || !Session)
-		return;
-
-	auto errorCallback = [this, Error](const NError& error)
+	auto successCallback = [this, Success]()
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
-		const FNakamaError NakamaError = error;
-		Error.Broadcast(NakamaError);
-	};
-
-	auto linkSucceededCallback = [this, Success]()
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-			return;
-
+		
 		Success.Broadcast();
 	};
+	
+	auto errorCallback = [this, Error](const FNakamaError& error)
+	{
+		if(!FNakamaUtils::IsClientActive(this))
+			return;
+		
+		Error.Broadcast(error);
+	};
 
-	Client->linkGoogle(Session->UserSession, FNakamaUtils::UEStringToStdString(AccessToken), linkSucceededCallback, errorCallback);
+	LinkGoogle(Session, AccessToken, successCallback, errorCallback);
 }
 
-void UNakamaClient::LinkSteam(UNakamaSession* Session, FString SteamToken, const FOnLinkSuccess& Success, const FOnError& Error)
+void UNakamaClient::LinkSteam(
+	UNakamaSession *Session,
+	const FString& SteamToken,
+	FOnLinkSuccess Success,
+	FOnError Error)
 {
-	if (!Client || !Session)
-		return;
-
-	auto errorCallback = [this, Error](const NError& error)
+	auto successCallback = [this, Success]()
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
-		const FNakamaError NakamaError = error;
-		Error.Broadcast(NakamaError);
-	};
-
-	auto linkSucceededCallback = [this, Success]()
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-			return;
-
+		
 		Success.Broadcast();
 	};
+	
+	auto errorCallback = [this, Error](const FNakamaError& error)
+	{
+		if(!FNakamaUtils::IsClientActive(this))
+			return;
+		
+		Error.Broadcast(error);
+	};
 
-	Client->linkSteam(Session->UserSession, FNakamaUtils::UEStringToStdString(SteamToken), linkSucceededCallback, errorCallback);
+	LinkSteam(Session, SteamToken, successCallback, errorCallback);
 }
 
-void UNakamaClient::LinkApple(UNakamaSession* Session, FString Token, const FOnLinkSuccess& Success, const FOnError& Error)
+void UNakamaClient::LinkApple(
+	UNakamaSession *Session,
+	const FString& Token,
+	FOnLinkSuccess Success,
+	FOnError Error)
 {
-	if (!Client || !Session)
-		return;
-
-	auto errorCallback = [this, Error](const NError& error)
+	auto successCallback = [this, Success]()
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
-		const FNakamaError NakamaError = error;
-		Error.Broadcast(NakamaError);
-	};
-
-	auto linkSucceededCallback = [this, Success]()
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-			return;
-
+		
 		Success.Broadcast();
 	};
+	
+	auto errorCallback = [this, Error](const FNakamaError& error)
+	{
+		if(!FNakamaUtils::IsClientActive(this))
+			return;
+		
+		Error.Broadcast(error);
+	};
 
-	Client->linkApple(Session->UserSession, FNakamaUtils::UEStringToStdString(Token), linkSucceededCallback, errorCallback);
+	LinkApple(Session, Token, successCallback, errorCallback);
 }
 
 /**
  * Unlinking Account
  */
 
-void UNakamaClient::UnLinkCustom(UNakamaSession* Session, FString CustomId, const FOnLinkSuccess& Success,
-	const FOnError& Error)
+void UNakamaClient::UnLinkCustom(
+	UNakamaSession *Session,
+	const FString& CustomId,
+	FOnLinkSuccess Success,
+	FOnError Error)
 {
-	if (!Client || !Session)
-		return;
-
-	auto errorCallback = [this, Error](const NError& error)
+	auto successCallback = [this, Success]()
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
-		const FNakamaError NakamaError = error;
-		Error.Broadcast(NakamaError);
-	};
-
-	auto linkSucceededCallback = [this, Success]()
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-			return;
-
+		
 		Success.Broadcast();
 	};
+	
+	auto errorCallback = [this, Error](const FNakamaError& error)
+	{
+		if(!FNakamaUtils::IsClientActive(this))
+			return;
+		
+		Error.Broadcast(error);
+	};
 
-	Client->unlinkCustom(Session->UserSession, FNakamaUtils::UEStringToStdString(CustomId), linkSucceededCallback, errorCallback);
+	UnLinkCustom(Session, CustomId, successCallback, errorCallback);
 }
 
-void UNakamaClient::UnLinkDevice(UNakamaSession* Session, FString DeviceId, const FOnLinkSuccess& Success,
-	const FOnError& Error)
+void UNakamaClient::UnLinkDevice(
+	UNakamaSession *Session,
+	const FString& DeviceId,
+	FOnLinkSuccess Success,
+	FOnError Error)
 {
-	if (!Client || !Session)
-		return;
-
-	auto errorCallback = [this, Error](const NError& error)
+	auto successCallback = [this, Success]()
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
-		const FNakamaError NakamaError = error;
-		Error.Broadcast(NakamaError);
-	};
-
-	auto linkSucceededCallback = [this, Success]()
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-			return;
-
+		
 		Success.Broadcast();
 	};
+	
+	auto errorCallback = [this, Error](const FNakamaError& error)
+	{
+		if(!FNakamaUtils::IsClientActive(this))
+			return;
+		
+		Error.Broadcast(error);
+	};
 
-	Client->unlinkDevice(Session->UserSession, FNakamaUtils::UEStringToStdString(DeviceId), linkSucceededCallback, errorCallback);
+	UnLinkDevice(Session, DeviceId, successCallback, errorCallback);
 }
 
-void UNakamaClient::UnLinkEmail(UNakamaSession* Session, FString Email, FString Password, const FOnLinkSuccess& Success,
-	const FOnError& Error)
+void UNakamaClient::UnLinkEmail(
+	UNakamaSession *Session,
+	const FString& Email,
+	const FString& Password,
+	FOnLinkSuccess Success,
+	FOnError Error)
 {
-	if (!Client || !Session)
-		return;
-
-	auto errorCallback = [this, Error](const NError& error)
+	auto successCallback = [this, Success]()
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
-		const FNakamaError NakamaError = error;
-		Error.Broadcast(NakamaError);
-	};
-
-	auto linkSucceededCallback = [this, Success]()
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-			return;
-
+		
 		Success.Broadcast();
 	};
+	
+	auto errorCallback = [this, Error](const FNakamaError& error)
+	{
+		if(!FNakamaUtils::IsClientActive(this))
+			return;
+		
+		Error.Broadcast(error);
+	};
 
-	Client->unlinkEmail(Session->UserSession,
-		FNakamaUtils::UEStringToStdString(Email),
-		FNakamaUtils::UEStringToStdString(Password),
-		linkSucceededCallback, errorCallback);
+	UnLinkEmail(Session, Email, Password, successCallback, errorCallback);
 }
 
-void UNakamaClient::UnLinkFacebook(UNakamaSession* Session, FString AccessToken, const FOnLinkSuccess& Success,
-	const FOnError& Error)
+void UNakamaClient::UnLinkFacebook(
+	UNakamaSession *Session,
+	const FString& AccessToken,
+	FOnLinkSuccess Success,
+	FOnError Error)
 {
-	if (!Client || !Session)
-		return;
-
-	auto errorCallback = [this, Error](const NError& error)
+	auto successCallback = [this, Success]()
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
-		const FNakamaError NakamaError = error;
-		Error.Broadcast(NakamaError);
-	};
-
-	auto linkSucceededCallback = [this, Success]()
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-			return;
-
+		
 		Success.Broadcast();
 	};
+	
+	auto errorCallback = [this, Error](const FNakamaError& error)
+	{
+		if(!FNakamaUtils::IsClientActive(this))
+			return;
+		
+		Error.Broadcast(error);
+	};
 
-	Client->unlinkFacebook(Session->UserSession, FNakamaUtils::UEStringToStdString(AccessToken), linkSucceededCallback, errorCallback);
+	UnLinkFacebook(Session, AccessToken, successCallback, errorCallback);
 }
 
-void UNakamaClient::UnLinkGameCenter(UNakamaSession* Session, FString PlayerId, FString BundleId,
-	int64 TimeStampSeconds, FString Salt, FString Signature, FString PublicKeyUrl, const FOnLinkSuccess& Success,
-	const FOnError& Error)
+void UNakamaClient::UnLinkGameCenter(
+	UNakamaSession *Session,
+	const FString& PlayerId,
+	const FString& BundleId,
+	int64 TimeStampSeconds,
+	const FString& Salt,
+	const FString& Signature,
+	const FString& PublicKeyUrl,
+	FOnLinkSuccess Success,
+	FOnError Error)
 {
-	if (!Client || !Session)
-		return;
-
-	auto errorCallback = [this, Error](const NError& error)
+	auto successCallback = [this, Success]()
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
-		const FNakamaError NakamaError = error;
-		Error.Broadcast(NakamaError);
-	};
-
-	auto linkSucceededCallback = [this, Success]()
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-			return;
-
+		
 		Success.Broadcast();
 	};
+	
+	auto errorCallback = [this, Error](const FNakamaError& error)
+	{
+		if(!FNakamaUtils::IsClientActive(this))
+			return;
+		
+		Error.Broadcast(error);
+	};
 
-
-	Client->unlinkGameCenter(
-		Session->UserSession,
-		FNakamaUtils::UEStringToStdString(PlayerId),
-		FNakamaUtils::UEStringToStdString(BundleId),
+	UnLinkGameCenter(
+		Session,
+		PlayerId,
+		BundleId,
 		TimeStampSeconds,
-		FNakamaUtils::UEStringToStdString(Salt),
-		FNakamaUtils::UEStringToStdString(Signature),
-		FNakamaUtils::UEStringToStdString(PublicKeyUrl),
-		linkSucceededCallback,
-		errorCallback);
+		Salt,
+		Signature,
+		PublicKeyUrl,
+		successCallback,
+		errorCallback
+	);
 }
 
-void UNakamaClient::UnLinkGoogle(UNakamaSession* Session, FString AccessToken, const FOnLinkSuccess& Success,
-	const FOnError& Error)
+void UNakamaClient::UnLinkGoogle(
+	UNakamaSession *Session,
+	const FString& AccessToken,
+	FOnLinkSuccess Success,
+	FOnError Error)
 {
-	if (!Client || !Session)
-		return;
-
-	auto errorCallback = [this, Error](const NError& error)
+	auto successCallback = [this, Success]()
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
-		const FNakamaError NakamaError = error;
-		Error.Broadcast(NakamaError);
-	};
-
-	auto linkSucceededCallback = [this, Success]()
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-			return;
-
+		
 		Success.Broadcast();
 	};
+	
+	auto errorCallback = [this, Error](const FNakamaError& error)
+	{
+		if(!FNakamaUtils::IsClientActive(this))
+			return;
+		
+		Error.Broadcast(error);
+	};
 
-	Client->unlinkGoogle(Session->UserSession, FNakamaUtils::UEStringToStdString(AccessToken), linkSucceededCallback, errorCallback);
+	UnLinkGoogle(Session, AccessToken, successCallback, errorCallback);
 }
 
-void UNakamaClient::UnLinkSteam(UNakamaSession* Session, FString SteamToken, const FOnLinkSuccess& Success,
-	const FOnError& Error)
+void UNakamaClient::UnLinkSteam(
+	UNakamaSession *Session,
+	const FString& SteamToken,
+	FOnLinkSuccess Success,
+	FOnError Error)
 {
-	if (!Client || !Session)
-		return;
-
-	auto errorCallback = [this, Error](const NError& error)
+	auto successCallback = [this, Success]()
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
-		FNakamaError NakamaError = error;
-		Error.Broadcast(NakamaError);
-	};
-
-	auto linkSucceededCallback = [this, Success]()
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-			return;
-
+		
 		Success.Broadcast();
 	};
+	
+	auto errorCallback = [this, Error](const FNakamaError& error)
+	{
+		if(!FNakamaUtils::IsClientActive(this))
+			return;
+		
+		Error.Broadcast(error);
+	};
 
-	Client->unlinkSteam(Session->UserSession, FNakamaUtils::UEStringToStdString(SteamToken), linkSucceededCallback, errorCallback);
+	UnLinkSteam(Session, SteamToken, successCallback, errorCallback);
 }
 
-void UNakamaClient::UnLinkApple(UNakamaSession* Session, FString Token, const FOnLinkSuccess& Success,
-	const FOnError& Error)
+void UNakamaClient::UnLinkApple(
+	UNakamaSession *Session,
+	const FString& Token,
+	FOnLinkSuccess Success,
+	FOnError Error)
 {
-	if (!Client || !Session)
-		return;
-
-	auto errorCallback = [this, Error](const NError& error)
+	auto successCallback = [this, Success]()
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
-		FNakamaError NakamaError = error;
-		Error.Broadcast(NakamaError);
-	};
-
-	auto linkSucceededCallback = [this, Success]()
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-			return;
-
+		
 		Success.Broadcast();
 	};
+	
+	auto errorCallback = [this, Error](const FNakamaError& error)
+	{
+		if(!FNakamaUtils::IsClientActive(this))
+			return;
+		
+		Error.Broadcast(error);
+	};
 
-	Client->unlinkApple(Session->UserSession, FNakamaUtils::UEStringToStdString(Token), linkSucceededCallback, errorCallback);
+	UnLinkApple(Session, Token, successCallback, errorCallback);
 }
 
 /**
  * Refresh Session
  */
 
-void UNakamaClient::RefreshSession(UNakamaSession* Session, const FOnAuthRefresh& Success,
-	const FOnAuthRefreshError& Error)
+void UNakamaClient::RefreshSession(
+	UNakamaSession *Session,
+	FOnAuthRefresh Success,
+	FOnAuthRefreshError Error)
 {
-	if(!Client || !Session)
-		return;
-
-	auto errorCallback = [this, Error](const NError& error)
+	auto successCallback = [this, Success](const UNakamaSession* Session)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
-		FNakamaError NakamaError = error;
-		Error.Broadcast(NakamaError);
+		
+		Success.Broadcast(Session);
 	};
-
-	auto successCallback = [this, Success](NSessionPtr session)
+	
+	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
-		UNakamaSession *ResultSession = NewObject<UNakamaSession>();
-		ResultSession->UserSession = session; // Reference for C++ code
-		ResultSession->SessionData = session; // Reference for Blueprints
-
-		Success.Broadcast(ResultSession);
+		
+		Error.Broadcast(error);
 	};
 
-	Client->authenticateRefresh(Session->UserSession, successCallback, errorCallback);
+	AuthenticateRefresh(Session, successCallback, errorCallback);
 }
 
 /**
  * Import Facebook Friends
  */
 
-void UNakamaClient::ImportFacebookFriends(UNakamaSession* Session, FString Token, bool Reset, const FOnImportFacebookFriends& Success, const FOnError& Error)
+void UNakamaClient::ImportFacebookFriends(
+	UNakamaSession* Session,
+	const FString& Token,
+	bool Reset,
+	FOnImportFacebookFriends Success,
+	FOnError Error)
 {
-	if (!Client || !Session)
-		return;
-
 	auto successCallback = [this, Success]()
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
+		
 		Success.Broadcast();
 	};
-
-	auto errorCallback = [this, Error](const NError& error)
+	
+	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
-		FNakamaError NakamaError = error;
-		Error.Broadcast(NakamaError);
+		
+		Error.Broadcast(error);
 	};
 
-	Client->importFacebookFriends(Session->UserSession, FNakamaUtils::UEStringToStdString(Token), Reset, successCallback, errorCallback);
+	ImportFacebookFriends(Session, Token, Reset, successCallback, errorCallback);
+}
+
+/**
+ * Import Steam Friends
+ */
+
+void UNakamaClient::ImportSteamFriends(
+	UNakamaSession* Session,
+	const FString& SteamId,
+	bool Reset,
+	FOnImportSteamFriends Success,
+	FOnError Error)
+{
+	auto successCallback = [this, Success]()
+	{
+		if(!FNakamaUtils::IsClientActive(this))
+			return;
+		
+		Success.Broadcast();
+	};
+	
+	auto errorCallback = [this, Error](const FNakamaError& error)
+	{
+		if(!FNakamaUtils::IsClientActive(this))
+			return;
+		
+		Error.Broadcast(error);
+	};
+
+	ImportSteamFriends(Session, SteamId, Reset, successCallback, errorCallback);
 }
 
 /**
  * Get Account Info
  */
 
-void UNakamaClient::GetUserAccount(UNakamaSession* Session, const FOnUserAccountInfo& Success,
-	const FOnError& Error)
+void UNakamaClient::GetUserAccount(
+	UNakamaSession *Session,
+	FOnUserAccountInfo Success,
+	FOnError Error)
 {
-	if (!Client || !Session)
-		return;
+	GetAccount(Session, Success, Error);
+}
 
-	auto successCallback = [this, Success](const NAccount& account)
+void UNakamaClient::GetAccount(
+	UNakamaSession *Session,
+	FOnUserAccountInfo Success,
+	FOnError Error)
+{
+	auto successCallback = [this, Success](const FNakamaAccount& account)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
-		FNakamaAccount MyAccount = account; // This already does all convertions
-
-		Success.Broadcast(MyAccount);
+		
+		Success.Broadcast(account);
 	};
-
-	auto errorCallback = [this, Error](const NError& error)
+	
+	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
-		FNakamaError NakamaError = error;
-		Error.Broadcast(NakamaError);
+		
+		Error.Broadcast(error);
 	};
 
-	Client->getAccount(Session->UserSession, successCallback, errorCallback);
+	GetAccount(Session, successCallback, errorCallback);
 }
 
 /**
  * Get Get Users
  */
 
-void UNakamaClient::GetUsers(UNakamaSession* Session, TArray<FString> UserIds, TArray<FString> Usernames,
-	TArray<FString> FacebookIds, const FOnGetUsers& Success, const FOnError& Error)
+void UNakamaClient::GetUsers(
+	UNakamaSession *Session,
+	const TArray<FString>& UserIds,
+	const TArray<FString>& Usernames,
+	const TArray<FString>& FacebookIds,
+	FOnGetUsers Success,
+	FOnError Error)
 {
-	if (!Client || !Session)
-		return;
-
-	auto successCallback = [this, Success](const NUsers& users)
+	auto successCallback = [this, Success](const FNakamaUserList& UserList)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
-		TArray<FNakamaUser> Users;
-
-		for (auto& user : users.users)
-		{
-			FNakamaUser FoundUser = user; // Handles conversion
-			Users.Add(FoundUser);
-		}
-
-		Success.Broadcast(Users);
-
+		
+		Success.Broadcast(UserList.Users);
 	};
-
-	auto errorCallback = [this, Error](const NError& error)
+	
+	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
-		const FNakamaError NakamaError = error;
-		Error.Broadcast(NakamaError);
+		
+		Error.Broadcast(error);
 	};
 
-	// Local arrays
-	std::vector<std::string> userIds;
-	std::vector<std::string> usernames;
-	std::vector<std::string> facebookIds;
-
-	// UserIds
-	if (UserIds.Num() > 0) {
-
-		for (int32 i = 0; i < UserIds.Num(); i++)
-		{
-			FString FriendName = UserIds[i];
-			userIds.push_back(TCHAR_TO_UTF8(*FriendName));
-		}
-	}
-
-	// Usernames
-	if (Usernames.Num() > 0) {
-
-		for (int32 i = 0; i < Usernames.Num(); i++)
-		{
-			FString FriendName = Usernames[i];
-			usernames.push_back(TCHAR_TO_UTF8(*FriendName));
-		}
-	}
-
-	// FacebookIds
-	if (FacebookIds.Num() > 0) {
-
-		for (int32 i = 0; i < FacebookIds.Num(); i++)
-		{
-			FString FriendName = FacebookIds[i];
-			facebookIds.push_back(TCHAR_TO_UTF8(*FriendName));
-		}
-	}
-
-	Client->getUsers(Session->UserSession, userIds, usernames, facebookIds, successCallback, errorCallback);
+	GetUsers(Session, UserIds, Usernames, FacebookIds,  successCallback, errorCallback);
 }
 
-void UNakamaClient::UpdateAccount(UNakamaSession* Session, FString Username, FString DisplayName, FString AvatarUrl,
-	FString LanguageTag, FString Location, FString Timezone, const FOnUpdateAccount& Success, const FOnError& Error)
+void UNakamaClient::UpdateAccount(
+	UNakamaSession *Session,
+	const FString& Username,
+	const FString& DisplayName,
+	const FString& AvatarUrl,
+	const FString& LanguageTag,
+	const FString& Location,
+	const FString& Timezone,
+	FOnUpdateAccount Success,
+	FOnError Error)
 {
-	if (!Client || !Session)
-		return;
-
-	// Do not update if all fields are empty
-	if(Username == "" && DisplayName == "" && AvatarUrl == "" && LanguageTag == "" && Location == "" && Location == "" && Timezone == "")
-		return;
-
-	auto errorCallback = [this, Error](const NError& error)
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-			return;
-
-		const FNakamaError NakamaError = error;
-		Error.Broadcast(NakamaError);
-	};
-
 	auto successCallback = [this, Success]()
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
+		
 		Success.Broadcast();
-
 	};
-
-	Client->updateAccount(Session->UserSession,
-		FNakamaUtils::UEStringToStdString(Username),
-		FNakamaUtils::UEStringToStdString(DisplayName), // Sisplay name
-		FNakamaUtils::UEStringToStdString(AvatarUrl), // Avatar URL
-		FNakamaUtils::UEStringToStdString(LanguageTag),
-		FNakamaUtils::UEStringToStdString(Location),
-		FNakamaUtils::UEStringToStdString(Timezone),
+	
+	auto errorCallback = [this, Error](const FNakamaError& error)
+	{
+		if(!FNakamaUtils::IsClientActive(this))
+			return;
+		
+		Error.Broadcast(error);
+	};
+	
+	UpdateAccount(
+		Session,
+		Username,
+		DisplayName,
+		AvatarUrl,
+		LanguageTag,
+		Location,
+		Timezone,
 		successCallback,
 		errorCallback
 	);
@@ -1104,76 +1004,60 @@ void UNakamaClient::UpdateAccount(UNakamaSession* Session, FString Username, FSt
  * Setup Realtime Client (rtClient = Socket)
  */
 
-UNakamaRealtimeClient* UNakamaClient::SetupRealtimeClient(UNakamaSession* Session, bool ShowAsOnline, int32 Port,
-	ENakamaRealtimeClientProtocol Protocol, float TickInterval, FString DisplayName)
+UNakamaRealtimeClient* UNakamaClient::SetupRealtimeClient()
 {
-	UNakamaRealtimeClient* NewClient = NewObject<UNakamaRealtimeClient>(); // Function returns this as a object
-	NewClient->RtClient = NakamaCoreClientFactory::createNakamaRtClient(Client);
-	NewClient->TickInterval = TickInterval;
-	NewClient->_displayName = DisplayName;
-	NewClient->Session = Session;
-	NewClient->bShowAsOnline = ShowAsOnline;
-	NewClient->Protocol = Protocol;
+	UNakamaRealtimeClient* NewClient = NewObject<UNakamaRealtimeClient>();
+	NewClient->Initialize(Hostname, Port, bUseSSL);
 	NewClient->bIsActive = true;
-
-	//const NRtClientProtocol SelectedProtocol = static_cast<NRtClientProtocol>(Protocol);
-	NewClient->RtClient->setListener(&NewClient->Listener);
 
 	return NewClient;
 }
 
-void UNakamaClient::ListMatches(UNakamaSession* Session, int32 MinSize, int32 MaxSize, int32 Limit, FString Label, FString Query,
-	bool Authoritative, const FOnMatchlist& Success, const FOnError& Error)
+void UNakamaClient::ListMatches(
+	UNakamaSession *Session,
+	int32 MinSize,
+	int32 MaxSize,
+	int32 Limit,
+	const FString& Label,
+	const FString& Query,
+	bool Authoritative,
+	FOnMatchlist Success,
+	FOnError Error)
 {
-	if (!Client || !Session)
-		return;
-
-	auto successCallback = [this, Success](NMatchListPtr list)
+	auto successCallback = [this, Success](const FNakamaMatchList& MatchList)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
-		const FNakamaMatchList MatchList = *list;
+		
 		Success.Broadcast(MatchList);
-
 	};
-
-	auto errorCallback = [this, Error](const NError& error)
+	
+	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
-		const FNakamaError NakamaError = error;
-		Error.Broadcast(NakamaError);
+		
+		Error.Broadcast(error);
 	};
 
-	if(Label.IsEmpty())
-	{
-		Client->listMatches(
-		Session->UserSession,
-		MinSize,
-		MaxSize,
-		Limit,
-		{},
-		FNakamaUtils::UEStringToStdString(Query),
+	const auto OptLabel = FNakamaUtils::CreateOptional(Label, FString());
+	const auto OptQuery = FNakamaUtils::CreateOptional(Query, FString());
+	const auto OptMinSize = FNakamaUtils::CreateOptional(MinSize, 0);
+	const auto OptMaxSize = FNakamaUtils::CreateOptional(MaxSize, 0);
+	const auto OptLimit = FNakamaUtils::CreateOptional(Limit, 0);
+	//const auto OptAuthoritative = FNakamaUtils::CreateOptional(Authoritative, false);
+	
+	ListMatches(
+		Session,
+		OptMinSize,
+		OptMaxSize,
+		OptLimit,
+		OptLabel,
+		OptQuery,
 		Authoritative,
 		successCallback,
-		errorCallback);
-	}
-	else
-	{
-		Client->listMatches(
-		Session->UserSession,
-		MinSize,
-		MaxSize,
-		Limit,
-		FNakamaUtils::UEStringToStdString(Label),
-		FNakamaUtils::UEStringToStdString(Query),
-		Authoritative,
-		successCallback,
-		errorCallback);
-	}
-
+		errorCallback
+	);
 }
 
 
@@ -1181,212 +1065,141 @@ void UNakamaClient::ListMatches(UNakamaSession* Session, int32 MinSize, int32 Ma
  * Friends System
  */
 
-void UNakamaClient::GetFriends(UNakamaSession* Session, int32 Limit, ENakamaFriendState State, FString Cursor, const FOnFriendsList& Success,
-	const FOnError& Error)
+void UNakamaClient::GetFriends(
+	UNakamaSession* Session,
+	int32 Limit,
+	ENakamaFriendState State,
+	const FString& Cursor,
+	FOnFriendsList Success,
+	FOnError Error)
 {
-	if (!Client || !Session)
-		return;
+	ListFriends(Session, Limit, State, Cursor, Success, Error);
 
-	auto successCallback = [this, Success](NFriendListPtr friends) // Docs are wrong, says "NFriendsPtr"
+}
+
+void UNakamaClient::ListFriends(
+	UNakamaSession* Session,
+	int32 Limit,
+	ENakamaFriendState State,
+	const FString& Cursor,
+	FOnFriendsList Success,
+	FOnError Error)
+{
+	auto successCallback = [this, Success](const FNakamaFriendList&  Friends)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
-		const FNakamaFriendList FriendsList = *friends; // Handles array etc..
-
-		// Follow Friends - do it here
-		/*
-		if (FriendsList.NakamaUsers.Num() > 0)
-		{
-			for(auto& Friend : FriendsList.NakamaUsers)
-			{
-				UE_LOG(LogTemp, Warning, TEXT("Got Friend: %s"), *Friend.NakamaUser.Username);
-			}
-		}*/
-
-		Success.Broadcast(FriendsList);
-
+		
+		Success.Broadcast(Friends);
 	};
-
-	auto errorCallback = [this, Error](const NError& error)
+	
+	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
-		const FNakamaError NakamaError = error;
-		Error.Broadcast(NakamaError);
+		
+		Error.Broadcast(error);
 	};
 
-	NFriend::State FriendState = static_cast<NFriend::State>(State);
+	const auto OptLimit = FNakamaUtils::CreateOptional(Limit, 0);
 
-	if(State == ENakamaFriendState::ALL) // If "All" Friend States are requested, we return an empty Enum Object
+	// If "All" Friend States are requested, we return an empty Enum Object
+	if(State == ENakamaFriendState::ALL)
 	{
-		Client->listFriends(Session->UserSession, Limit, {}, FNakamaUtils::UEStringToStdString(Cursor), successCallback, errorCallback);
+		ListFriends(Session, OptLimit, {}, Cursor, successCallback, errorCallback);
 	}
 	else
 	{
-		Client->listFriends(Session->UserSession, Limit, FriendState, FNakamaUtils::UEStringToStdString(Cursor), successCallback, errorCallback);
+		ListFriends(Session, OptLimit, State, Cursor, successCallback, errorCallback);
 	}
-
-
 }
 
-void UNakamaClient::AddFriends(UNakamaSession* Session, TArray<FString> Ids, TArray<FString> Usernames,
-	const FOnAddedFriend& Success, const FOnError& Error)
+void UNakamaClient::AddFriends(
+	UNakamaSession* Session,
+	const TArray<FString>& Ids,
+	const TArray<FString>& Usernames,
+	FOnAddedFriend Success,
+	FOnError Error)
 {
-	if (!Client || !Session)
-		return;
-
 	auto successCallback = [this, Success]()
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
+		
 		Success.Broadcast();
 	};
-
-	auto errorCallback = [this, Error](const NError& error)
+	
+	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
-		const FNakamaError NakamaError = error;
-		Error.Broadcast(NakamaError);
+		
+		Error.Broadcast(error);
 	};
 
-	if (Ids.Num() > 0 || Usernames.Num() > 0) { // Are there any Friends?
-
-		std::vector<std::string> LocalIds;
-		std::vector<std::string> LocalUsernames;
-
-		// IDs
-		if(Ids.Num() > 0)
-		{
-			for (int32 i = 0; i < Ids.Num(); i++)
-			{
-				FString FriendName = Ids[i];
-				LocalIds.push_back(FNakamaUtils::UEStringToStdString(FriendName));
-			}
-		}
-
-		// Usernames
-		if(Usernames.Num() > 0)
-		{
-			for (int32 i = 0; i < Usernames.Num(); i++)
-			{
-				FString FriendName = Usernames[i];
-				LocalUsernames.push_back(FNakamaUtils::UEStringToStdString(FriendName));
-			}
-		}
-
-		Client->addFriends(Session->UserSession, LocalIds, LocalUsernames, successCallback, errorCallback);
-		UE_LOG(LogTemp, Warning, TEXT("Trying to add a friend(s)"));
-	}
+	AddFriends(Session, Ids, Usernames,  successCallback, errorCallback);
 }
 
-void UNakamaClient::RemoveFriends(UNakamaSession* Session, TArray<FString> Ids, TArray<FString> Usernames,
-	const FOnRemovedFriends& Success, const FOnError& Error)
+void UNakamaClient::RemoveFriends(
+	UNakamaSession* Session,
+	const TArray<FString>& Ids,
+	const TArray<FString>& Usernames,
+	FOnRemovedFriends Success,
+	FOnError Error)
 {
-	if (!Client || !Session)
-		return;
+	DeleteFriends(Session, Ids, Usernames, Success, Error);
+}
 
+void UNakamaClient::DeleteFriends(
+	UNakamaSession* Session,
+	const TArray<FString>& Ids,
+	const TArray<FString>& Usernames,
+	FOnRemovedFriends Success,
+	FOnError Error)
+{
 	auto successCallback = [this, Success]()
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
+		
 		Success.Broadcast();
 	};
-
-	auto errorCallback = [this, Error](const NError& error)
+	
+	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
-		FNakamaError NakamaError = error;
-		Error.Broadcast(NakamaError);
+		
+		Error.Broadcast(error);
 	};
 
-	if (Ids.Num() > 0 || Usernames.Num() > 0) {
-
-		std::vector<std::string> LocalIds;
-		std::vector<std::string> LocalUsernames;
-
-		// IDs
-		if(Ids.Num() > 0)
-		{
-			for (int32 i = 0; i < Ids.Num(); i++)
-			{
-				FString FriendName = Ids[i];
-				LocalIds.push_back(FNakamaUtils::UEStringToStdString(FriendName));
-			}
-		}
-
-		// Usernames
-		if(Usernames.Num() > 0)
-		{
-			for (int32 i = 0; i < Usernames.Num(); i++)
-			{
-				FString FriendName = Usernames[i];
-				LocalUsernames.push_back(FNakamaUtils::UEStringToStdString(FriendName));
-			}
-		}
-
-		Client->deleteFriends(Session->UserSession, LocalIds, LocalUsernames, successCallback, errorCallback);
-
-	}
+	DeleteFriends(Session, Ids, Usernames,  successCallback, errorCallback);
 }
 
-void UNakamaClient::BlockFriends(UNakamaSession* Session, TArray<FString> Ids, TArray<FString> Usernames,
-	const FOnBlockedFriends& Success, const FOnError& Error)
+void UNakamaClient::BlockFriends(
+	UNakamaSession* Session,
+	const TArray<FString>& Ids,
+	const TArray<FString>& Usernames,
+	FOnBlockedFriends Success,
+	FOnError Error)
 {
-	if (!Client || !Session)
-		return;
-
 	auto successCallback = [this, Success]()
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
+		
 		Success.Broadcast();
 	};
-
-	auto errorCallback = [this, Error](const NError& error)
+	
+	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
-		FNakamaError NakamaError = error;
-		Error.Broadcast(NakamaError);
+		
+		Error.Broadcast(error);
 	};
 
-	if (Ids.Num() > 0 || Usernames.Num() > 0) {
-
-		std::vector<std::string> LocalIds;
-		std::vector<std::string> LocalUsernames;
-
-		// IDs
-		if(Ids.Num() > 0)
-		{
-			for (int32 i = 0; i < Ids.Num(); i++)
-			{
-				FString FriendName = Ids[i];
-				LocalIds.push_back(FNakamaUtils::UEStringToStdString(FriendName));
-			}
-		}
-
-		// Usernames
-		if(Usernames.Num() > 0)
-		{
-			for (int32 i = 0; i < Usernames.Num(); i++)
-			{
-				FString FriendName = Usernames[i];
-				LocalUsernames.push_back(FNakamaUtils::UEStringToStdString(FriendName));
-			}
-		}
-
-		Client->blockFriends(Session->UserSession, LocalIds, LocalUsernames, successCallback, errorCallback);
-	}
+	BlockFriends(Session, Ids, Usernames,  successCallback, errorCallback);
 }
 
 /**
@@ -1394,1110 +1207,7567 @@ void UNakamaClient::BlockFriends(UNakamaSession* Session, TArray<FString> Ids, T
  */
 
 
-void UNakamaClient::CreateGroup(UNakamaSession* Session, FString GroupName, FString Description, FString AvatarUrl,
-	FString LanguageTag, bool Open, int32 MaxMembers, const FOnCreateGroup& Success, const FOnError& Error)
+void UNakamaClient::CreateGroup(
+	UNakamaSession* Session,
+	const FString& GroupName,
+	const FString& Description,
+	const FString& AvatarUrl,
+	const FString& LanguageTag,
+	bool Open,
+	int32 MaxMembers,
+	FOnCreateGroup Success,
+	FOnError Error)
 {
-	if (!Client || !Session)
-		return;
-
-	auto successCallback = [this, Success](const NGroup& group)
+	auto successCallback = [this, Success](const FNakamaGroup& Group)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
-		const FNakamaGroup Group = group;
-		UE_LOG(LogTemp, Warning, TEXT("New group ID: %s"), *Group.Id);
+		
 		Success.Broadcast(Group);
 	};
-
-	auto errorCallback = [this, Error](const NError& error)
+	
+	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
-		FNakamaError NakamaError = error;
-		Error.Broadcast(NakamaError);
+		
+		Error.Broadcast(error);
 	};
 
-	Client->createGroup(Session->UserSession,
-		FNakamaUtils::UEStringToStdString(GroupName),
-		FNakamaUtils::UEStringToStdString(Description),
-		FNakamaUtils::UEStringToStdString(AvatarUrl),
-		FNakamaUtils::UEStringToStdString(LanguageTag), // Example: en_US
+	const auto OptMaxCount = FNakamaUtils::CreateOptional(MaxMembers, 0);
+
+	CreateGroup(
+		Session,
+		GroupName,
+		Description,
+		AvatarUrl,
+		LanguageTag,
 		Open,
-		MaxMembers,
+		OptMaxCount,
 		successCallback,
-		errorCallback);
+		errorCallback
+	);
 }
 
-void UNakamaClient::ListGroups(UNakamaSession* Session, FString GroupNameFilter, int32 Limit, FString Cursor,
-	const FOnGroupsList& Success, const FOnError& Error)
+void UNakamaClient::ListGroups(
+	UNakamaSession* Session,
+	const FString& GroupNameFilter,
+	int32 Limit,
+	const FString& Cursor,
+	FOnGroupsList Success,
+	FOnError Error)
 {
-	if (!Client || !Session)
-		return;
-
-	auto successCallback = [this, Success](NGroupListPtr list)
+	auto successCallback = [this, Success](const FNakamaGroupList& Groups)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
-		const FNakamaGroupList AllGroups = *list; // Contains an array of listed groups and a cursor for next pages
-		Success.Broadcast(AllGroups);
-
+		
+		Success.Broadcast(Groups);
 	};
-
-	auto errorCallback = [this, Error](const NError& error)
+	
+	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
-		const FNakamaError NakamaError = error;
-		Error.Broadcast(NakamaError);
+		
+		Error.Broadcast(error);
 	};
 
-	Client->listGroups(
-		Session->UserSession,
-		FNakamaUtils::UEStringToStdString(GroupNameFilter), // Filter for group names which start with "heroes" "heroes%
-		Limit,
-		FNakamaUtils::UEStringToStdString(Cursor),
-		successCallback,
-		errorCallback);
+	ListGroups(Session, GroupNameFilter, Limit, Cursor, successCallback, errorCallback);
 }
 
-void UNakamaClient::JoinGroup(UNakamaSession* Session, FString GroupId, const FOnJoinedGroup& Success,
-	const FOnError& Error)
+void UNakamaClient::JoinGroup(
+	UNakamaSession* Session,
+	const FString& GroupId,
+	FOnJoinedGroup Success,
+	FOnError Error)
 {
-	if (!Client || !Session)
-		return;
-
 	auto successCallback = [this, Success]()
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
-		UE_LOG(LogTemp, Warning, TEXT("Sent group join request"));
+		
 		Success.Broadcast();
 	};
-
-	auto errorCallback = [this, Error](const NError& error)
+	
+	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
-		const FNakamaError NakamaError = error;
-		Error.Broadcast(NakamaError);
+		
+		Error.Broadcast(error);
 	};
 
-	Client->joinGroup(Session->UserSession, FNakamaUtils::UEStringToStdString(GroupId), successCallback, errorCallback);
+	JoinGroup(Session, GroupId, successCallback, errorCallback);
 }
 
 // Note: Does not get members!
-void UNakamaClient::ListUserGroups(UNakamaSession* Session, FString UserId, int32 Limit, ENakamaGroupState State,
-	FString Cursor, const FOnUserGroups& Success, const FOnError& Error)
+void UNakamaClient::ListUserGroups(
+	UNakamaSession* Session,
+	const FString& UserId,
+	int32 Limit,
+	ENakamaGroupState State,
+	const FString& Cursor,
+	FOnUserGroups Success,
+	FOnError Error)
 {
-	if (!Client || !Session)
-		return;
-
-	auto successCallback = [this, Success, UserId](NUserGroupListPtr list)
+	auto successCallback = [this, Success](const FNakamaUserGroupList&  UserGroupList)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
-		const FNakamaUserGroupList AllUserGroups = *list;
-
-		Success.Broadcast(AllUserGroups);
-
+		
+		Success.Broadcast(UserGroupList);
 	};
-
-	auto errorCallback = [this, Error](const NError& error)
+	
+	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
-		const FNakamaError NakamaError = error;
-		Error.Broadcast(NakamaError);
+		
+		Error.Broadcast(error);
 	};
 
-	NUserGroupState GroupState = static_cast<NUserGroupState>(State);
+	const auto OptLimit = FNakamaUtils::CreateOptional(Limit, 0);
 
+	// If "All" States are requested, we return an empty Enum Object
 	if(State == ENakamaGroupState::ALL)
 	{
-		Client->listUserGroups(Session->UserSession, FNakamaUtils::UEStringToStdString(UserId), Limit, {}, FNakamaUtils::UEStringToStdString(Cursor), successCallback, errorCallback);
+		ListUserGroups(Session, OptLimit, {}, Cursor, successCallback, errorCallback);
 	}
 	else
 	{
-		Client->listUserGroups(Session->UserSession, FNakamaUtils::UEStringToStdString(UserId), Limit, GroupState, FNakamaUtils::UEStringToStdString(Cursor), successCallback, errorCallback);
+		ListUserGroups(Session, OptLimit, State, Cursor, successCallback, errorCallback);
 	}
-
-
 }
 
-void UNakamaClient::ListGroupUsers(UNakamaSession* Session, FString GroupId, int32 Limit, ENakamaGroupState State,
-	FString Cursor, const FOnListGroupMembers& Success, const FOnError& Error)
+void UNakamaClient::ListGroupUsers(
+	UNakamaSession* Session,
+	const FString& GroupId,
+	int32 Limit,
+	ENakamaGroupState State,
+	const FString& Cursor,
+	FOnListGroupMembers Success,
+	FOnError Error)
 {
-	if (!Client || !Session)
-		return;
-
-	auto successCallback = [this, GroupId, Success](NGroupUserListPtr list)
+	auto successCallback = [this, Success](const FNakamaGroupUsersList&  GroupUsersList)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
-		const FNakamaGroupUsersList ReturnedGroup = *list;
-		UE_LOG(LogTemp, Warning, TEXT("Users in Group %i"), ReturnedGroup.GroupUsers.Num());
-		Success.Broadcast(ReturnedGroup);
+		
+		Success.Broadcast(GroupUsersList);
 	};
-
-	auto errorCallback = [this, Error](const NError& error)
+	
+	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
-		const FNakamaError NakamaError = error;
-		Error.Broadcast(NakamaError);
+		
+		Error.Broadcast(error);
 	};
 
-	NUserGroupState GroupState = static_cast<NUserGroupState>(State);
+	const auto OptLimit = FNakamaUtils::CreateOptional(Limit, 0);
 
+	// If "All" States are requested, we return an empty Enum Object
 	if(State == ENakamaGroupState::ALL)
 	{
-		Client->listGroupUsers(Session->UserSession, FNakamaUtils::UEStringToStdString(GroupId), Limit, {}, FNakamaUtils::UEStringToStdString(Cursor), successCallback, errorCallback);
+		ListGroupUsers(Session, GroupId, OptLimit, {}, Cursor, successCallback, errorCallback);
 	}
 	else
 	{
-		Client->listGroupUsers(Session->UserSession, FNakamaUtils::UEStringToStdString(GroupId), Limit, GroupState, FNakamaUtils::UEStringToStdString(Cursor), successCallback, errorCallback);
+		ListGroupUsers(Session, GroupId, OptLimit, State, Cursor, successCallback, errorCallback);
 	}
+
 }
 
-void UNakamaClient::UpdateGroup(UNakamaSession* Session, FString GroupId, FString Name, FString Description,
-	FString AvatarUrl, FString LanguageTag, bool Open, const FOnUpdateGroup& Success, const FOnError& Error)
+void UNakamaClient::UpdateGroup(
+	UNakamaSession* Session,
+	const FString& GroupId,
+	const FString& Name,
+	const FString& Description,
+	const FString& AvatarUrl,
+	const FString& LanguageTag,
+	bool Open,
+	FOnUpdateGroup Success,
+	FOnError Error)
 {
-	if (!Client || !Session)
-		return;
-
 	auto successCallback = [this, Success]()
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
+		
 		Success.Broadcast();
 	};
-
-	auto errorCallback = [this, Error](const NError& error)
+	
+	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
-		FNakamaError NakamaError = error;
-		Error.Broadcast(NakamaError);
+		
+		Error.Broadcast(error);
 	};
 
-	Client->updateGroup(Session->UserSession,
-		FNakamaUtils::UEStringToStdString(GroupId),
-		FNakamaUtils::UEStringToStdString(Name),
-		FNakamaUtils::UEStringToStdString(Description),
-		FNakamaUtils::UEStringToStdString(AvatarUrl),
-		FNakamaUtils::UEStringToStdString(LanguageTag), // Example: en_US
+	const auto OptName = FNakamaUtils::CreateOptional(Name, FString());
+	const auto OptDescription = FNakamaUtils::CreateOptional(Description, FString());
+	const auto OptAvatarUrl = FNakamaUtils::CreateOptional(AvatarUrl, FString());
+	const auto OptLanguageTag = FNakamaUtils::CreateOptional(LanguageTag, FString());
+
+	UpdateGroup(
+		Session,
+		GroupId,
+		OptName,
+		OptDescription,
+		OptAvatarUrl,
+		OptLanguageTag,
 		Open,
 		successCallback,
-		errorCallback);
+		errorCallback
+	);
 }
 
-void UNakamaClient::LeaveGroup(UNakamaSession* Session, FString GroupId, const FOnLeaveGroup& Success,
-	const FOnError& Error)
+void UNakamaClient::LeaveGroup(
+	UNakamaSession* Session,
+	const FString& GroupId,
+	FOnLeaveGroup Success,
+	FOnError Error)
 {
-	if (!Client || !Session)
-		return;
-
 	auto successCallback = [this, Success]()
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
+		
 		Success.Broadcast();
 	};
-
-	auto errorCallback = [this, Error](const NError& error)
+	
+	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
-		FNakamaError NakamaError = error;
-		Error.Broadcast(NakamaError);
+		
+		Error.Broadcast(error);
 	};
 
-	Client->leaveGroup(Session->UserSession, FNakamaUtils::UEStringToStdString(GroupId), successCallback, errorCallback);
+	LeaveGroup(Session, GroupId, successCallback, errorCallback);
 }
 
-void UNakamaClient::AddGroupUsers(UNakamaSession* Session, FString GroupId, TArray<FString> UserIds,
-	const FOnAddGroupUsers& Success, const FOnError& Error)
+void UNakamaClient::AddGroupUsers(
+	UNakamaSession* Session,
+	const FString& GroupId,
+	const TArray<FString>& UserIds,
+	FOnAddGroupUsers Success,
+	FOnError Error)
 {
-	if (!Client || !Session)
-		return;
-
 	auto successCallback = [this, Success]()
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
+		
 		Success.Broadcast();
 	};
-
-	auto errorCallback = [this, Error](const NError& error)
+	
+	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
-		const FNakamaError NakamaError = error;
-		Error.Broadcast(NakamaError);
+		
+		Error.Broadcast(error);
 	};
-
-	std::vector<std::string> UsersToAdd;
-
-	for (auto & User : UserIds)
-	{
-		UsersToAdd.push_back(FNakamaUtils::UEStringToStdString(User));
-	}
-
-	// Accept new members to a group (if private/not open)
-	// Only accessible by admins or superadmins
-	if (UsersToAdd.size() > 0)
-	{
-		Client->addGroupUsers(Session->UserSession, FNakamaUtils::UEStringToStdString(GroupId), UsersToAdd, successCallback, errorCallback);
-	}
+	
+	AddGroupUsers(Session, GroupId, UserIds, successCallback, errorCallback);
 }
 
-void UNakamaClient::PromoteGroupUsers(UNakamaSession* Session, FString GroupId, TArray<FString> UserIds,
-	const FOnPromoteGroupUsers& Success, const FOnError& Error)
+void UNakamaClient::PromoteGroupUsers(
+	UNakamaSession* Session,
+	const FString& GroupId,
+	const TArray<FString>& UserIds,
+	FOnPromoteGroupUsers Success,
+	FOnError Error)
 {
-	if (!Client || !Session)
-		return;
-
 	auto successCallback = [this, Success]()
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
+		
 		Success.Broadcast();
 	};
-
-	auto errorCallback = [this, Error](const NError& error)
+	
+	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
-		const FNakamaError NakamaError = error;
-		Error.Broadcast(NakamaError);
+		
+		Error.Broadcast(error);
 	};
-
-	std::vector<std::string> UsersToPromote;
-	for (auto & User : UserIds)
-	{
-		UsersToPromote.push_back(FNakamaUtils::UEStringToStdString(User));
-	}
-
-	if (UsersToPromote.size() > 0) {
-		// Promote user to Admin
-		// Only accessible by admins or superadmins
-		// A group can have more admins
-		Client->promoteGroupUsers(Session->UserSession, FNakamaUtils::UEStringToStdString(GroupId), UsersToPromote, successCallback, errorCallback);
-	}
+	
+	PromoteGroupUsers(Session, GroupId, UserIds, successCallback, errorCallback);
 }
 
-void UNakamaClient::KickGroupUsers(UNakamaSession* Session, FString GroupId, TArray<FString> UserIds,
-                                   const FOnKickGroupUsers& Success, const FOnError& Error)
+void UNakamaClient::KickGroupUsers(
+	UNakamaSession* Session,
+	const FString& GroupId,
+	const TArray<FString>& UserIds,
+	FOnKickGroupUsers Success,
+	FOnError Error)
 {
-	if (!Client || !Session)
-		return;
-
 	auto successCallback = [this, Success]()
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
+		
 		Success.Broadcast();
 	};
-
-	auto errorCallback = [this, Error](const NError& error)
+	
+	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
-		const FNakamaError NakamaError = error;
-		Error.Broadcast(NakamaError);
+		
+		Error.Broadcast(error);
 	};
-
-
-	std::vector<std::string> UsersToKick;
-	for (auto & User : UserIds)
-	{
-		UsersToKick.push_back(FNakamaUtils::UEStringToStdString(User));
-	}
-
-	if (UsersToKick.size() > 0) {
-		// Kick user from group
-		// Only accessible by admins or superadmins
-		// Kicked user can re-join if group is not private, but needs to be accepted again by admin
-		// Kicked user can still join other groups
-		Client->kickGroupUsers(Session->UserSession, FNakamaUtils::UEStringToStdString(GroupId), UsersToKick, successCallback, errorCallback);
-	}
+	
+	KickGroupUsers(Session, GroupId, UserIds, successCallback, errorCallback);
 }
 
-void UNakamaClient::DemoteGroupUsers(UNakamaSession* Session, FString GroupId, TArray<FString> UserIds,
-	const FOnDemoteGroupUsers& Success, const FOnError& Error)
+void UNakamaClient::DemoteGroupUsers(
+	UNakamaSession* Session,
+	const FString& GroupId,
+	const TArray<FString>& UserIds,
+	FOnDemoteGroupUsers Success,
+	FOnError Error)
 {
-	if (!Client || !Session)
-		return;
-
 	auto successCallback = [this, Success]()
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
+		
 		Success.Broadcast();
 	};
-
-	auto errorCallback = [this, Error](const NError& error)
+	
+	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
-		const FNakamaError NakamaError = error;
-		Error.Broadcast(NakamaError);
+		
+		Error.Broadcast(error);
 	};
-
-	std::vector<std::string> UsersToDemote;
-	for (auto & User : UserIds)
-	{
-		UsersToDemote.push_back(FNakamaUtils::UEStringToStdString(User));
-	}
-
-	if (UsersToDemote.size() > 0) {
-		Client->demoteGroupUsers(Session->UserSession, FNakamaUtils::UEStringToStdString(GroupId), UsersToDemote, successCallback, errorCallback);
-	}
+	
+	DemoteGroupUsers(Session, GroupId, UserIds, successCallback, errorCallback);
 }
 
-void UNakamaClient::DeleteGroup(UNakamaSession* Session, FString GroupId, const FOnRemoveGroup& Success,
-	const FOnError& Error)
+void UNakamaClient::DeleteGroup(
+	UNakamaSession* Session,
+	const FString& GroupId,
+	FOnRemoveGroup Success,
+	FOnError Error)
 {
-	if (!Client || !Session)
-		return;
-
 	auto successCallback = [this, Success]()
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
+		
 		Success.Broadcast();
 	};
-
-	auto errorCallback = [this, Error](const NError& error)
+	
+	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
-		const FNakamaError NakamaError = error;
-		Error.Broadcast(NakamaError);
+		
+		Error.Broadcast(error);
 	};
-
-	Client->deleteGroup(Session->UserSession, FNakamaUtils::UEStringToStdString(GroupId), successCallback, errorCallback);
+	
+	DeleteGroup(Session, GroupId, successCallback, errorCallback);
 }
 
 /**
  * Notification System
  */
 
-void UNakamaClient::ListNotifications(UNakamaSession* Session, int32 Limit, FString Cursor,
-	const FOnListNotifications& Success, const FOnError& Error)
+void UNakamaClient::ListNotifications(
+	UNakamaSession* Session,
+	int32 Limit,
+	const FString& Cursor,
+	FOnListNotifications Success,
+	FOnError Error)
 {
-	if (!Client || !Session)
-		return;
-
-	auto errorCallback = [this, Error](const NError& error)
+	auto successCallback = [this, Success](const FNakamaNotificationList& NotificationList)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
-		const FNakamaError NakamaError = error;
-		Error.Broadcast(NakamaError);
-	};
-
-	auto successCallback = [this, Success](NNotificationListPtr list)
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-			return;
-
-		FNakamaNotificationList NotificationList = *list;
+		
 		Success.Broadcast(NotificationList);
-
 	};
+	
+	auto errorCallback = [this, Error](const FNakamaError& error)
+	{
+		if(!FNakamaUtils::IsClientActive(this))
+			return;
+		
+		Error.Broadcast(error);
+	};
+	
 
-	Client->listNotifications(Session->UserSession, Limit, FNakamaUtils::UEStringToStdString(Cursor), successCallback, errorCallback);
+	const auto OptLimit = FNakamaUtils::CreateOptional(Limit, 0);
+	const auto OptCacheableCursor = FNakamaUtils::CreateOptional(Cursor, FString());
+	
+	ListNotifications(Session, OptLimit, OptCacheableCursor, successCallback, errorCallback);
 }
 
-void UNakamaClient::DeleteNotifications(UNakamaSession* Session, TArray<FString> NotificationIds,
-	const FOnDeleteNotifications& Success, const FOnError& Error)
+void UNakamaClient::DeleteNotifications(
+	UNakamaSession* Session,
+	const TArray<FString>& NotificationIds,
+	FOnDeleteNotifications Success,
+	FOnError Error)
 {
-	if (!Client || !Session)
-		return;
-
-	auto errorCallback = [this, Error](const NError& error)
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-			return;
-
-		FNakamaError NakamaError = error;
-		Error.Broadcast(NakamaError);
-	};
-
 	auto successCallback = [this, Success]()
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
+		
 		Success.Broadcast();
 	};
-
-	std::vector<std::string> NotificationsList;
-
-	for (auto& Str : NotificationIds)
+	
+	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
-		NotificationsList.push_back(FNakamaUtils::UEStringToStdString(Str));
-	}
-
-	Client->deleteNotifications(Session->UserSession, NotificationsList, successCallback, errorCallback);
+		if(!FNakamaUtils::IsClientActive(this))
+			return;
+		
+		Error.Broadcast(error);
+	};
+	
+	DeleteNotifications(Session, NotificationIds, successCallback, errorCallback);
 }
 
 /**
  * Storage System
  */
 
-void UNakamaClient::WriteStorageObjects(UNakamaSession* Session, TArray<FNakamaStoreObjectWrite> StorageObjectsData,
-	const FOnStorageObjectAcks& Success, const FOnError& Error)
+void UNakamaClient::WriteStorageObjects(
+	UNakamaSession* Session,
+	const TArray<FNakamaStoreObjectWrite>& StorageObjectsData,
+	FOnStorageObjectAcks Success,
+	FOnError Error)
 {
-	if (!Client || !Session)
-		return;
-
-	auto successCallback = [this, Success](const NStorageObjectAcks& acks)
+	auto successCallback = [this, Success](const FNakamaStoreObjectAcks& StorageObjectAcks)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
-		const FNakamaStoreObjectAcks StorageObjectsAcks = acks;
-
-		UE_LOG(LogTemp, Warning, TEXT("Successfully stored objects: %i"), StorageObjectsAcks.StorageObjects.Num());
-		Success.Broadcast(StorageObjectsAcks);
+		
+		Success.Broadcast(StorageObjectAcks);
 	};
-
-	auto errorCallback = [this, Error](const NError& error)
+	
+	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
-		const FNakamaError NakamaError = error;
-		Error.Broadcast(NakamaError);
+		
+		Error.Broadcast(error);
 	};
+	
+	WriteStorageObjects(Session, StorageObjectsData, successCallback, errorCallback);
+}
 
-	std::vector<NStorageObjectWrite> Objects;
-
-	for (FNakamaStoreObjectWrite dataObject : StorageObjectsData)
+void UNakamaClient::ReadStorageObjects(
+	UNakamaSession* Session,
+	const TArray<FNakamaReadStorageObjectId>& StorageObjectsData,
+	FOnStorageObjectsRead Success,
+	FOnError Error)
+{
+	auto successCallback = [this, Success](const FNakamaStorageObjectList& StorageObjectList)
 	{
-		NStorageObjectWrite SavesObject;
+		if(!FNakamaUtils::IsClientActive(this))
+			return;
+		
+		Success.Broadcast(StorageObjectList);
+	};
+	
+	auto errorCallback = [this, Error](const FNakamaError& error)
+	{
+		if(!FNakamaUtils::IsClientActive(this))
+			return;
+		
+		Error.Broadcast(error);
+	};
+	
+	ReadStorageObjects(Session, StorageObjectsData, successCallback, errorCallback);
+}
 
-		// Data Object
-		SavesObject.collection = FNakamaUtils::UEStringToStdString(dataObject.Collection);
-		SavesObject.key = FNakamaUtils::UEStringToStdString(dataObject.Key);
-		SavesObject.value = FNakamaUtils::UEStringToStdString(dataObject.Value);
-		SavesObject.version = FNakamaUtils::UEStringToStdString(dataObject.Version); // Use "*" to write only once (No Overrides)
+void UNakamaClient::ListStorageObjects(
+	UNakamaSession* Session,
+	const FString& Collection,
+	const FString& UserId,
+	int32 Limit,
+	const FString& Cursor,
+	FOnStorageObjectsListed Success,
+	FOnError Error)
+{
+	auto successCallback = [this, Success](const FNakamaStorageObjectList& StorageObjectList)
+	{
+		if(!FNakamaUtils::IsClientActive(this))
+			return;
+		
+		Success.Broadcast(StorageObjectList);
+	};
+	
+	auto errorCallback = [this, Error](const FNakamaError& error)
+	{
+		if(!FNakamaUtils::IsClientActive(this))
+			return;
+		
+		Error.Broadcast(error);
+	};
+	
+	const auto OptLimit = FNakamaUtils::CreateOptional(Limit, 0);
+	const auto OptCursor = FNakamaUtils::CreateOptional(Cursor, FString());
 
-		// Set Read Permissions
-		NStoragePermissionRead PermissionRead = static_cast<NStoragePermissionRead>(dataObject.PermissionRead);
-		SavesObject.permissionRead = PermissionRead;
-
-		// Set Write Permissions
-		NStoragePermissionWrite PermissionWrite = static_cast<NStoragePermissionWrite>(dataObject.PermissionWrite);
-		SavesObject.permissionWrite = PermissionWrite;
-
-		// Add to array
-		Objects.push_back(SavesObject);
+	if(UserId.IsEmpty())
+	{
+		ListStorageObjects(Session, Collection, OptLimit, OptCursor, successCallback, errorCallback);
 	}
-
-	Client->writeStorageObjects(Session->UserSession, Objects, successCallback, errorCallback);
-}
-
-void UNakamaClient::ReadStorageObjects(UNakamaSession* Session, TArray<FNakamaReadStorageObjectId> StorageObjectsData,
-	const FOnStorageObjectsRead& Success, const FOnError& Error)
-{
-	if (!Client || !Session)
-		return;
-
-	auto successCallback = [this, Success](const NStorageObjects& objects)
+	else
 	{
-		if(!FNakamaUtils::IsClientActive(this))
-			return;
-
-		TArray <FNakamaStoreObjectData> ObjectsResult;
-
-		for (auto& object : objects)
-		{
-			FNakamaStoreObjectData StorageObject = object; // Converts
-
-			// Add to array
-			ObjectsResult.Add(StorageObject);
-		}
-
-		Success.Broadcast(ObjectsResult);
-	};
-
-	auto errorCallback = [this, Error](const NError& error)
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-			return;
-
-		FNakamaError NakamaError = error;
-		Error.Broadcast(NakamaError);
-	};
-
-	std::vector<NReadStorageObjectId> ObjectIds;
-
-	for (FNakamaReadStorageObjectId dataObject : StorageObjectsData)
-	{
-		NReadStorageObjectId ObjectId;
-		ObjectId.collection = FNakamaUtils::UEStringToStdString(dataObject.Collection);
-		ObjectId.key = FNakamaUtils::UEStringToStdString(dataObject.Key);
-		ObjectId.userId = FNakamaUtils::UEStringToStdString(dataObject.UserId);
-
-		// Add to array
-		ObjectIds.push_back(ObjectId);
+		ListUsersStorageObjects(Session, Collection, UserId, OptLimit, OptCursor, successCallback, errorCallback);
 	}
-
-	Client->readStorageObjects(Session->UserSession, ObjectIds, successCallback, errorCallback);
 }
 
-void UNakamaClient::ListStorageObjects(UNakamaSession* Session, FString Collection, FString UserId, int32 Limit,
-	FString Cursor, const FOnStorageObjectsListed& Success, const FOnError& Error)
+void UNakamaClient::RemoveStorageObjects(
+	UNakamaSession* Session,
+	const TArray<FNakamaDeleteStorageObjectId>& StorageObjectsData,
+	FOnRemovedStorageObjects Success,
+	FOnError Error)
 {
-	if (!Client || !Session)
-		return;
-
-	auto successCallback = [this, Success](NStorageObjectListPtr list)
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-			return;
-
-		FNakamaStorageObjectList StorageObjects = *list;
-		Success.Broadcast(StorageObjects);
-	};
-
-	auto errorCallback = [this, Error](const NError& error)
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-			return;
-
-		const FNakamaError NakamaError = error;
-		Error.Broadcast(NakamaError);
-	};
-
-	Client->listUsersStorageObjects(Session->UserSession,
-		FNakamaUtils::UEStringToStdString(Collection),
-		FNakamaUtils::UEStringToStdString(UserId),
-		Limit,
-		FNakamaUtils::UEStringToStdString(Cursor),
-		successCallback,
-		errorCallback);
+	DeleteStorageObjects(Session, StorageObjectsData, Success, Error);
 }
 
-void UNakamaClient::RemoveStorageObjects(UNakamaSession* Session,
-	TArray<FNakamaDeleteStorageObjectId> StorageObjectsData, const FOnRemovedStorageObjects& Success,
-	const FOnError& Error)
+void UNakamaClient::DeleteStorageObjects(
+	UNakamaSession* Session,
+	const TArray<FNakamaDeleteStorageObjectId>& StorageObjectsData,
+	FOnRemovedStorageObjects Success,
+	FOnError Error)
 {
-	if (!Client || !Session)
-		return;
-
-	auto errorCallback = [this, Error](const NError& error)
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-			return;
-
-		const FNakamaError NakamaError = error;
-		Error.Broadcast(NakamaError);
-	};
-
 	auto successCallback = [this, Success]()
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
-		UE_LOG(LogTemp, Warning, TEXT("Successfully deleted storage objects:"));
+		
 		Success.Broadcast();
 	};
-
-	std::vector<NDeleteStorageObjectId> ObjectIds;
-
-	// Parse Inputs
-	for (FNakamaDeleteStorageObjectId dataObject : StorageObjectsData)
+	
+	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
-		NDeleteStorageObjectId ObjectId;
-		ObjectId.collection = FNakamaUtils::UEStringToStdString(dataObject.Collection);
-		ObjectId.key = FNakamaUtils::UEStringToStdString(dataObject.Key);
-		ObjectId.version = FNakamaUtils::UEStringToStdString(dataObject.Version);
-		ObjectIds.push_back(ObjectId);
-	}
-
-	Client->deleteStorageObjects(Session->UserSession, ObjectIds, successCallback, errorCallback);
+		if(!FNakamaUtils::IsClientActive(this))
+			return;
+		
+		Error.Broadcast(error);
+	};
+	
+	DeleteStorageObjects(Session, StorageObjectsData, successCallback, errorCallback);
 }
 
 /**
  * RPC
  */
 
-void UNakamaClient::RPC(UNakamaSession* Session, FString FunctionId, FString Payload, const FOnRPC& Success, const FOnError& Error)
+void UNakamaClient::RPC(
+	UNakamaSession* Session,
+	const FString& FunctionId,
+	const FString& Payload,
+	FOnRPC Success,
+	FOnError Error)
 {
-	if (!Client || !Session)
-		return;
-
-	auto errorCallback = [this, Error](const NError& error)
+	auto successCallback = [this, Success](const FNakamaRPC& Rpc)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
-		const FNakamaError NakamaError = error;
-		Error.Broadcast(NakamaError);
+		
+		Success.Broadcast(Rpc);
 	};
-
-	auto successCallback = [this, Success](const NRpc rpc)
+	
+	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
-		const FNakamaRPC RpcCallback = rpc; // Converts
-
-		UE_LOG(LogTemp, Warning, TEXT("RPC Success with ID: %s"), *RpcCallback.Id);
-
-		Success.Broadcast(RpcCallback);
+		
+		Error.Broadcast(error);
 	};
-
-	Client->rpc(Session->UserSession, FNakamaUtils::UEStringToStdString(FunctionId), FNakamaUtils::UEStringToStdString(Payload), successCallback, errorCallback);
+	
+	RPC(Session, FunctionId, Payload, successCallback, errorCallback);
 }
 
 /**
  * RPCHttpKey
  */
 
-void UNakamaClient::RPCHttpKey(FString HttpKey, FString FunctionId, FString Payload, const FOnRPC& Success, const FOnError& Error)
+void UNakamaClient::RPCHttpKey(
+	const FString& HttpKey,
+	const FString& FunctionId,
+	const FString& Payload,
+	FOnRPC Success,
+	FOnError Error)
 {
-	if (!Client)
-		return;
-
-	auto errorCallback = [this, Error](const NError& error)
+	auto successCallback = [this, Success](const FNakamaRPC& Rpc)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
-		const FNakamaError NakamaError = error;
-		Error.Broadcast(NakamaError);
+		
+		Success.Broadcast(Rpc);
 	};
-
-	auto successCallback = [this, Success](const NRpc rpc)
+	
+	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
-		const FNakamaRPC RpcCallback = rpc; // Converts
-
-		UE_LOG(LogTemp, Warning, TEXT("RPC Success with ID: %s"), *RpcCallback.Id);
-
-		Success.Broadcast(RpcCallback);
+		
+		Error.Broadcast(error);
 	};
-
-	Client->rpc(FNakamaUtils::UEStringToStdString(HttpKey), FNakamaUtils::UEStringToStdString(FunctionId), FNakamaUtils::UEStringToStdString(Payload), successCallback, errorCallback);
+	
+	RPC(HttpKey, FunctionId, Payload, successCallback, errorCallback);
 }
 
 /**
  * List Channel Messages
  */
 
-void UNakamaClient::ListChannelMessages(UNakamaSession* Session, FString ChannelId, int32 Limit, FString Cursor, bool Forward,
-	const FOnListChannelMessages& Success, const FOnError& Error)
+void UNakamaClient::ListChannelMessages(
+	UNakamaSession* Session,
+	const FString& ChannelId,
+	int32 Limit,
+	const FString& Cursor,
+	bool Forward,
+	FOnListChannelMessages Success,
+	FOnError Error)
 {
-	if (!Client || !Session)
-		return;
-
-	auto errorCallback = [this, Error](const NError& error)
+	auto successCallback = [this, Success](const FNakamaChannelMessageList& ChannelMessageList)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
-		const FNakamaError NakamaError = error;
-		Error.Broadcast(NakamaError);
-	};
-
-	auto successCallback = [this, Success](NChannelMessageListPtr list)
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-			return;
-
-		FNakamaChannelMessageList ChannelMessageList = *list;
-
-		for(auto &Message : ChannelMessageList.Messages)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("List Channel Messages Content: %s"), *Message.Content);
-		}
-
-		if(ChannelMessageList.NextCursor != "")
-		{
-			UE_LOG(LogTemp, Warning, TEXT("Get the next page of messages with the cursor: %s"), *ChannelMessageList.NextCursor);
-		}
-
-		if(ChannelMessageList.PrevCursor != "")
-		{
-			UE_LOG(LogTemp, Warning, TEXT("Get the previous page of messages with the cursor: %s"), *ChannelMessageList.PrevCursor);
-		}
-
+		
 		Success.Broadcast(ChannelMessageList);
-
 	};
-
-	Client->listChannelMessages(Session->UserSession,
-		FNakamaUtils::UEStringToStdString(ChannelId),
-		Limit,
-		FNakamaUtils::UEStringToStdString(Cursor),
-		Forward, // Fetch messages forward from the current cursor (or the start).
-		successCallback,
-		errorCallback);
+	
+	auto errorCallback = [this, Error](const FNakamaError& error)
+	{
+		if(!FNakamaUtils::IsClientActive(this))
+			return;
+		
+		Error.Broadcast(error);
+	};
+	
+	const auto OptLimit = FNakamaUtils::CreateOptional(Limit, 0);
+	const auto OptCursor = FNakamaUtils::CreateOptional(Cursor, FString());
+	
+	ListChannelMessages(Session, ChannelId, OptLimit, OptCursor, Forward, successCallback, errorCallback);
 }
 
 /**
  * Leaderboards System
  */
 
-void UNakamaClient::WriteLeaderboardRecord(UNakamaSession* Session, FString LeaderboardId, int64 Score, int64 SubScore,
-	FString Metadata, const FOnWriteLeaderboardRecord& Success, const FOnError& Error)
+void UNakamaClient::WriteLeaderboardRecord(
+	UNakamaSession* Session,
+	const FString& LeaderboardId,
+	int64 Score,
+	int64 SubScore,
+	const FString& Metadata,
+	FOnWriteLeaderboardRecord Success,
+	FOnError Error)
 {
-	if (!Client || !Session)
-		return;
-
-	auto errorCallback = [this, Error](const NError& error)
+	auto successCallback = [this, Success](const FNakamaLeaderboardRecord& LeaderboardRecord)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
-		const FNakamaError NakamaError = error;
-		Error.Broadcast(NakamaError);
-	};
-
-	auto successCallback = [this, Success](const NLeaderboardRecord& record)
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-			return;
-
-		const FNakamaLeaderboardRecord LeaderboardRecord = record;
-
-		UE_LOG(LogTemp, Warning, TEXT("New leaderboard record with score %lld"), LeaderboardRecord.Score);
+		
 		Success.Broadcast(LeaderboardRecord);
 	};
-
-	Client->writeLeaderboardRecord(
-		Session->UserSession,
-		FNakamaUtils::UEStringToStdString(LeaderboardId),
+	
+	auto errorCallback = [this, Error](const FNakamaError& error)
+	{
+		if(!FNakamaUtils::IsClientActive(this))
+			return;
+		
+		Error.Broadcast(error);
+	};
+	
+	const auto OptSubScore = FNakamaUtils::CreateOptional<int64>(SubScore, 0);
+	const auto OptMetadata = FNakamaUtils::CreateOptional(Metadata, FString());
+	
+	WriteLeaderboardRecord(
+		Session,
+		LeaderboardId,
 		Score,
-		SubScore, // (Optional)
-		FNakamaUtils::UEStringToStdString(Metadata),
+		OptSubScore,
+		OptMetadata,
 		successCallback,
 		errorCallback
 	);
 }
 
-void UNakamaClient::ListLeaderboardRecords(UNakamaSession* Session, FString LeaderboardId, TArray<FString> OwnerIds,
-	int32 Limit, FString Cursor, ENakamaLeaderboardListBy ListBy, const FOnListLeaderboardRecords& Success,
-	const FOnError& Error)
+void UNakamaClient::ListLeaderboardRecords(
+	UNakamaSession* Session,
+	const FString& LeaderboardId,
+	const TArray<FString>& OwnerIds,
+	int32 Limit,
+	const FString& Cursor,
+	ENakamaLeaderboardListBy ListBy,
+	FOnListLeaderboardRecords Success,
+	FOnError Error)
 {
-	if (!Client || !Session)
-    		return;
-
-    	auto errorCallback = [this, Error](const NError& error)
-    	{
-    		if(!FNakamaUtils::IsClientActive(this))
-    			return;
-
-    		const FNakamaError NakamaError = error;
-    		Error.Broadcast(NakamaError);
-    	};
-
-    	auto successCallback = [this, Success, LeaderboardId](NLeaderboardRecordListPtr recordsList)
-    	{
-    		if(!FNakamaUtils::IsClientActive(this))
-    			return;
-
-    		FNakamaLeaderboardRecordList RecordsList = *recordsList;
-    		Success.Broadcast(RecordsList);
-    	};
-
-    	// Get Friends from Blueprint Node
-    	std::vector<std::string> Friends;
-    	for (int i = 0; i < OwnerIds.Num(); i++) {
-    		Friends.push_back(FNakamaUtils::UEStringToStdString(OwnerIds[i]));
-    	}
-
-    	// List By Score or Friends
-    	if (ListBy == ENakamaLeaderboardListBy::BY_SCORE)
-    	{
-    		Client->listLeaderboardRecords(Session->UserSession,
-    			FNakamaUtils::UEStringToStdString(LeaderboardId),
-    			{}, //None because of listing by score
-    			Limit, //Limit, Optional
-    			FNakamaUtils::UEStringToStdString(Cursor),
-    			successCallback,
-    			errorCallback
-    		);
-    	}
-    	else if (ListBy == ENakamaLeaderboardListBy::BY_FRIENDS) {
-    		Client->listLeaderboardRecords(Session->UserSession,
-    			FNakamaUtils::UEStringToStdString(LeaderboardId),
-    			Friends, //OwnerIds, Can be empty
-    			Limit, //Limit, Optional
-    			FNakamaUtils::UEStringToStdString(Cursor),
-    			successCallback,
-    			errorCallback
-    		);
-    	}
+	auto successCallback = [this, Success](const FNakamaLeaderboardRecordList& LeaderboardRecords)
+	{
+		if(!FNakamaUtils::IsClientActive(this))
+			return;
+		
+		Success.Broadcast(LeaderboardRecords);
+	};
+	
+	auto errorCallback = [this, Error](const FNakamaError& error)
+	{
+		if(!FNakamaUtils::IsClientActive(this))
+			return;
+		
+		Error.Broadcast(error);
+	};
+	
+	const auto OptLimit = FNakamaUtils::CreateOptional(Limit, 0);
+	const auto OptCursor = FNakamaUtils::CreateOptional(Cursor, FString());
+	
+	if (ListBy == ENakamaLeaderboardListBy::BY_SCORE)
+	{
+		ListLeaderboardRecords(
+			Session,
+			LeaderboardId,
+			{},  // None because of listing by score
+			OptLimit,
+			OptCursor,
+			successCallback,
+			errorCallback
+		);
+	}
+	else if (ListBy == ENakamaLeaderboardListBy::BY_FRIENDS)
+	{
+		ListLeaderboardRecords(
+			Session,
+			LeaderboardId,
+			OwnerIds, // OwnerIds, Can be empty
+			OptLimit,
+			OptCursor,
+			successCallback,
+			errorCallback
+		);
+	}
 }
 
-void UNakamaClient::ListLeaderboardRecordsAroundOwner(UNakamaSession* Session, FString LeaderboardId, FString OwnerId,
-	int32 Limit, const FOnListLeaderboardRecords& Success, const FOnError& Error)
+void UNakamaClient::ListLeaderboardRecordsAroundOwner(
+	UNakamaSession* Session,
+	const FString& LeaderboardId,
+	const FString& OwnerId,
+	int32 Limit,
+	FOnListLeaderboardRecords Success,
+	FOnError Error)
 {
-	if (!Client || !Session)
-		return;
-
-	auto errorCallback = [this, Error](const NError& error)
+	auto successCallback = [this, Success](const FNakamaLeaderboardRecordList& LeaderboardRecords)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
-		const FNakamaError NakamaError = error;
-		Error.Broadcast(NakamaError);
+		
+		Success.Broadcast(LeaderboardRecords);
 	};
-
-	auto successCallback = [this, Success, LeaderboardId](NLeaderboardRecordListPtr recordsList)
+	
+	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
-		FNakamaLeaderboardRecordList RecordsList = *recordsList; // Convert
-		Success.Broadcast(RecordsList);
+		
+		Error.Broadcast(error);
 	};
-
-
-	Client->listLeaderboardRecordsAroundOwner(Session->UserSession,
-		FNakamaUtils::UEStringToStdString(LeaderboardId),
-		FNakamaUtils::UEStringToStdString(OwnerId),
-		Limit,
-		successCallback,
-		errorCallback
-	);
+	
+	const auto OptLimit = FNakamaUtils::CreateOptional(Limit, 0);
+	
+	ListLeaderboardRecordsAroundOwner(Session, LeaderboardId, OwnerId, OptLimit, successCallback, errorCallback);
 }
 
-void UNakamaClient::DeleteLeaderboardRecord(UNakamaSession* Session, FString LeaderboardId,
-	const FOnDeletedLeaderboardRecord& Success, const FOnError& Error)
+void UNakamaClient::DeleteLeaderboardRecord(
+	UNakamaSession* Session,
+	const FString& LeaderboardId,
+	FOnDeletedLeaderboardRecord Success,
+	FOnError Error)
 {
-	if (!Client || !Session)
-		return;
-
-	auto errorCallback = [this, Error](const NError& error)
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-			return;
-
-		const FNakamaError NakamaError = error;
-		Error.Broadcast(NakamaError);
-	};
-
 	auto successCallback = [this, Success]()
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
-		UE_LOG(LogTemp, Warning, TEXT("Deleted Leaderboard Record"));
+		
 		Success.Broadcast();
 	};
-
-	Client->deleteLeaderboardRecord(Session->UserSession, FNakamaUtils::UEStringToStdString(LeaderboardId), successCallback, errorCallback);
+	
+	auto errorCallback = [this, Error](const FNakamaError& error)
+	{
+		if(!FNakamaUtils::IsClientActive(this))
+			return;
+		
+		Error.Broadcast(error);
+	};
+	
+	DeleteLeaderboardRecord(Session, LeaderboardId, successCallback, errorCallback);
 }
 
 /**
  * Tournaments System
  */
 
-void UNakamaClient::WriteTournamentRecord(UNakamaSession* Session, FString TournamentId, int64 Score, int64 SubScore,
-	FString Metadata, const FOnWriteLeaderboardRecord& Success, const FOnError& Error)
+void UNakamaClient::WriteTournamentRecord(
+	UNakamaSession* Session,
+	const FString& TournamentId,
+	int64 Score,
+	int64 SubScore,
+	const FString& Metadata,
+	FOnWriteLeaderboardRecord Success,
+	FOnError Error)
 {
-	if (!Client || !Session)
-		return;
-
-	auto errorCallback = [this, Error](const NError& error)
+	auto successCallback = [this, Success](const FNakamaLeaderboardRecord& LeaderboardRecord)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
-		const FNakamaError NakamaError = error;
-		Error.Broadcast(NakamaError);
-	};
-
-	auto successCallback = [this, Success](const NLeaderboardRecord& record)
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-			return;
-
-		const FNakamaLeaderboardRecord LeaderboardRecord = record;
-		UE_LOG(LogTemp, Warning, TEXT("New Tournament record with score %lld"), LeaderboardRecord.Score);
+		
 		Success.Broadcast(LeaderboardRecord);
 	};
+	
+	auto errorCallback = [this, Error](const FNakamaError& error)
+	{
+		if(!FNakamaUtils::IsClientActive(this))
+			return;
+		
+		Error.Broadcast(error);
+	};
 
-	Client->writeTournamentRecord(Session->UserSession,
-		FNakamaUtils::UEStringToStdString(TournamentId),
-		Score,
-		SubScore,
-		FNakamaUtils::UEStringToStdString(Metadata),
-		successCallback,
-		errorCallback);
+	const auto OptSubScore = FNakamaUtils::CreateOptional<int64>(SubScore, 0);
+	const auto OptMetadata = FNakamaUtils::CreateOptional(Metadata, FString());
+	
+	WriteTournamentRecord(Session, TournamentId, Score, OptSubScore, OptMetadata, successCallback, errorCallback);
 }
 
-void UNakamaClient::ListTournamentRecords(UNakamaSession* Session, FString TournamentId, int32 Limit, FString Cursor,
-	TArray<FString> OwnerIds, ENakamaLeaderboardListBy ListBy, const FOnListTournamentRecords& Success,
-	const FOnError& Error)
+void UNakamaClient::ListTournamentRecords(
+	UNakamaSession* Session,
+	const FString& TournamentId,
+	int32 Limit,
+	const FString& Cursor,
+	const TArray<FString>& OwnerIds,
+	ENakamaLeaderboardListBy ListBy,
+	FOnListTournamentRecords Success,
+	FOnError Error)
 {
-	if (!Client || !Session)
-		return;
-
-	auto errorCallback = [this, Error](const NError& error)
+	auto successCallback = [this, Success](const FNakamaTournamentRecordList& TournamentRecordList)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
-		const FNakamaError NakamaError = error;
-		Error.Broadcast(NakamaError);
+		
+		Success.Broadcast(TournamentRecordList);
 	};
-
-	auto successCallback = [this, Success](NTournamentRecordListPtr list)
+	
+	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
-
-		FNakamaTournamentRecordList TournamentList = *list;
-		Success.Broadcast(TournamentList);
+		
+		Error.Broadcast(error);
 	};
 
-	// Get "Friends" from Blueprint Node
-	std::vector<std::string> Friends;
-	for (int i = 0; i < OwnerIds.Num(); i++) {
-		Friends.push_back(FNakamaUtils::UEStringToStdString(OwnerIds[i]));
-	}
+	const auto OptLimit = FNakamaUtils::CreateOptional(Limit, 0);
+	const auto OptCursor = FNakamaUtils::CreateOptional(Cursor, FString());
 
-	Client->listTournamentRecords(Session->UserSession,
-		FNakamaUtils::UEStringToStdString(TournamentId),
-		Limit,
-		FNakamaUtils::UEStringToStdString(Cursor),
-		Friends,
-		successCallback,
-		errorCallback);
-}
-
-void UNakamaClient::ListTournamentRecordsAroundOwner(UNakamaSession* Session, FString TournamentId, FString OwnerId,
-	int32 Limit, const FOnListTournamentRecords& Success, const FOnError& Error)
-{
-	if (!Client || !Session)
-		return;
-
-	auto errorCallback = [this, Error](const NError& error)
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-			return;
-
-		const FNakamaError NakamaError = error;
-		Error.Broadcast(NakamaError);
-	};
-
-	auto successCallback = [this, Success](NTournamentRecordListPtr list)
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-			return;
-
-		const FNakamaTournamentRecordList TournamentList = *list;
-		Success.Broadcast(TournamentList);
-	};
-
-	Client->listTournamentRecordsAroundOwner(Session->UserSession,
-		FNakamaUtils::UEStringToStdString(TournamentId),
-		FNakamaUtils::UEStringToStdString(OwnerId),
-		Limit,
-		successCallback,
-		errorCallback);
-}
-
-void UNakamaClient::JoinTournament(UNakamaSession* Session, FString TournamentId, const FOnJoinedTournament& Success,
-	const FOnError& Error)
-{
-	if (!Client || !Session)
-		return;
-
-	auto errorCallback = [this, Error](const NError& error)
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-			return;
-
-		const FNakamaError NakamaError = error;
-		Error.Broadcast(NakamaError);
-	};
-
-	auto successCallback = [this, TournamentId, Success]()
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-			return;
-
-		UE_LOG(LogTemp, Warning, TEXT("Joined Tournament with Id: %s"), *TournamentId);
-		Success.Broadcast();
-	};
-
-	Client->joinTournament(Session->UserSession, FNakamaUtils::UEStringToStdString(TournamentId), successCallback, errorCallback);
-}
-
-void UNakamaClient::ListTournaments(UNakamaSession* Session, int32 CategoryStart, int32 CategoryEnd, int32 StartTime,
-	int32 EndTime, int32 Limit, FString Cursor, const FOnListTournaments& Success, const FOnError& Error)
-{
-	if (!Client || !Session)
-		return;
-
-	auto errorCallback = [this, Error](const NError& error)
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-			return;
-
-		FNakamaError NakamaError = error;
-		Error.Broadcast(NakamaError);
-	};
-
-	auto successCallback = [this, Success](NTournamentListPtr list)
-	{
-		if(!FNakamaUtils::IsClientActive(this))
-			return;
-
-		const FNakamaTournamentList TournamentList = *list; // Converts
-		UE_LOG(LogTemp, Warning, TEXT("Got Tournaments: %llu"), list->tournaments.size());
-		Success.Broadcast(TournamentList);
-	};
-
-	//int32 CategoryStart = 1, int32 CategoryEnd = 2, int32 StartTime = 1538147711, int32 EndTime = -1, int32 Limit = 100, FString Cursor,
-
-	Client->listTournaments(Session->UserSession,
-		CategoryStart,
-		CategoryEnd,
-		StartTime,
-		EndTime,
-		Limit,
-		FNakamaUtils::UEStringToStdString(Cursor),
+	ListTournamentRecords(
+		Session,
+		TournamentId,
+		OptLimit,
+		OptCursor,
+		OwnerIds,
 		successCallback,
 		errorCallback
 	);
+}
 
+void UNakamaClient::ListTournamentRecordsAroundOwner(
+	UNakamaSession* Session,
+	const FString& TournamentId,
+	const FString& OwnerId,
+	int32 Limit,
+	FOnListTournamentRecords Success,
+	FOnError Error)
+{
+	auto successCallback = [this, Success](const FNakamaTournamentRecordList& TournamentRecordList)
+	{
+		if(!FNakamaUtils::IsClientActive(this))
+			return;
+		
+		Success.Broadcast(TournamentRecordList);
+	};
+	
+	auto errorCallback = [this, Error](const FNakamaError& error)
+	{
+		if(!FNakamaUtils::IsClientActive(this))
+			return;
+		
+		Error.Broadcast(error);
+	};
+
+	const auto OptLimit = FNakamaUtils::CreateOptional(Limit, 0);
+
+	ListTournamentRecordsAroundOwner(
+		Session,
+		TournamentId,
+		OwnerId,
+		OptLimit,
+		successCallback,
+		errorCallback
+	);
+}
+
+void UNakamaClient::JoinTournament(
+	UNakamaSession* Session,
+	const FString& TournamentId,
+	FOnJoinedTournament Success,
+	FOnError Error)
+{
+	auto successCallback = [this, Success]()
+	{
+		if(!FNakamaUtils::IsClientActive(this))
+			return;
+		
+		Success.Broadcast();
+	};
+	
+	auto errorCallback = [this, Error](const FNakamaError& error)
+	{
+		if(!FNakamaUtils::IsClientActive(this))
+			return;
+		
+		Error.Broadcast(error);
+	};
+
+	JoinTournament(Session, TournamentId, successCallback, errorCallback);
+}
+
+void UNakamaClient::ListTournaments(
+	UNakamaSession* Session,
+	int32 CategoryStart,
+	int32 CategoryEnd,
+	int32 StartTime,
+	int32 EndTime,
+	int32 Limit,
+	const FString& Cursor,
+	FOnListTournaments Success,
+	FOnError Error)
+{
+	auto successCallback = [this, Success](const FNakamaTournamentList& TournamentList)
+	{
+		if(!FNakamaUtils::IsClientActive(this))
+			return;
+		
+		Success.Broadcast(TournamentList);
+	};
+	
+	auto errorCallback = [this, Error](const FNakamaError& error)
+	{
+		if(!FNakamaUtils::IsClientActive(this))
+			return;
+		
+		Error.Broadcast(error);
+	};
+
+	const auto OptCategoryStart = FNakamaUtils::CreateOptional(CategoryStart, 0);
+	const auto OptCategoryEnd = FNakamaUtils::CreateOptional(CategoryEnd, 0);
+	const auto OptStartTime = FNakamaUtils::CreateOptional(StartTime, 0);
+	const auto OptEndTime = FNakamaUtils::CreateOptional(EndTime, 0);
+	const auto OptLimit = FNakamaUtils::CreateOptional(Limit, 0);
+	const auto OptCursor = FNakamaUtils::CreateOptional(Cursor, FString());
+	
+	ListTournaments(
+		Session,
+		OptCategoryStart,
+		OptCategoryEnd,
+		OptStartTime,
+		OptEndTime,
+		OptLimit,
+		OptCursor,
+		successCallback,
+		errorCallback
+	);
+}
+
+void UNakamaClient::AuthenticateDevice(
+    const FString& DeviceId,
+    const TOptional<bool> bCreate,
+    const TOptional<FString>& Username,
+    const TMap<FString, FString>& Vars,
+    TFunction<void(UNakamaSession* UserSession)> SuccessCallback,
+    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+{
+    // Setup the endpoint
+    const FString Endpoint = TEXT("/v2/account/authenticate/device");
+
+    // Setup the query parameters
+    TMultiMap<FString, FString> QueryParams;
+
+    if (bCreate.IsSet())
+    {
+        QueryParams.Add(TEXT("create"), FNakamaUtils::BoolToString(bCreate.GetValue()));
+    }
+
+    if (Username.IsSet())
+    {
+        // Encode the username
+        const FString EncodedUsername = FGenericPlatformHttp::UrlEncode(Username.GetValue());
+        QueryParams.Add(TEXT("username"), EncodedUsername);
+    }
+
+    // Setup the request content
+    const TSharedPtr<FJsonObject> ContentJson = MakeShared<FJsonObject>();
+    ContentJson->SetStringField(TEXT("id"), DeviceId);
+    AddVarsToJson(ContentJson, Vars);
+
+    // Serialize the request content
+    FString Content;
+    if (!SerializeJsonObject(ContentJson, Content))
+    {
+        // Handle JSON serialization failure
+        HandleJsonSerializationFailure(ErrorCallback);
+        return;
+    }
+
+    // Make the request
+    const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::POST, QueryParams, "");
+
+    // Set the basic authorization header
+    SetBasicAuthorizationHeader(HttpRequest);
+
+    // Lock the ActiveRequests mutex to protect concurrent access
+    FScopeLock Lock(&ActiveRequestsMutex);
+
+    // Add the HttpRequest to ActiveRequests
+    ActiveRequests.Add(HttpRequest);
+
+    // Bind the response callback and handle the response
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+
+        if (!IsValidLowLevel())
+        {
+            return;
+        }
+
+        // Lock the ActiveRequests mutex to protect concurrent access
+        FScopeLock Lock(&ActiveRequestsMutex);
+
+        if (ActiveRequests.Contains(HttpRequest))
+        {
+            if (bSuccess && Response.IsValid())
+            {
+                const FString ResponseBody = Response->GetContentAsString();
+
+                // Check if Request was successful
+                if (IsResponseSuccessful(Response->GetResponseCode()))
+                {
+                    // Check for Success Callback
+                    if (SuccessCallback)
+                    {
+                        UNakamaSession* ResultSession = NewObject<UNakamaSession>();
+                        ResultSession->SetupSession(ResponseBody);
+                        SuccessCallback(ResultSession);
+                    }
+                }
+                else
+                {
+                    // Check for Error Callback
+                    if (ErrorCallback)
+                    {
+                        const FNakamaError Error(ResponseBody);
+                        ErrorCallback(Error);
+                    }
+                }
+            }
+            else
+            {
+                // Handle Invalid Response
+                if (ErrorCallback)
+                {
+                    const FNakamaError RequestError = CreateRequestFailureError();
+                    ErrorCallback(RequestError);
+                }
+            }
+
+            // Remove the HttpRequest from ActiveRequests
+            ActiveRequests.Remove(HttpRequest);
+        }
+    });
+
+    // Process the request
+    HttpRequest->ProcessRequest();
+}
+
+void UNakamaClient::AuthenticateEmail(
+    const FString& Email,
+    const FString& Password,
+    const FString& Username,
+    bool bCreate,
+    const TMap<FString, FString>& Vars,
+    TFunction<void(UNakamaSession* UserSession)> SuccessCallback,
+    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+{
+    // Setup the endpoint
+    const FString Endpoint = TEXT("/v2/account/authenticate/email");
+
+    // Encode the username
+    const FString EncodedUsername = FGenericPlatformHttp::UrlEncode(Username);
+
+    // Setup the query parameters
+    TMultiMap<FString, FString> QueryParams;
+    QueryParams.Add(TEXT("create"), FNakamaUtils::BoolToString(bCreate));
+    QueryParams.Add(TEXT("username"), EncodedUsername);
+
+    // Setup the request content
+    const TSharedPtr<FJsonObject> ContentJson = MakeShared<FJsonObject>();
+    ContentJson->SetStringField(TEXT("email"), Email);
+    ContentJson->SetStringField(TEXT("password"), Password);
+    AddVarsToJson(ContentJson, Vars);
+
+    // Serialize the request content
+    FString Content;
+    if (!SerializeJsonObject(ContentJson, Content))
+    {
+        // Handle JSON serialization failure
+        HandleJsonSerializationFailure(ErrorCallback);
+        return;
+    }
+
+    // Make the request
+    const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::POST, QueryParams, "");
+
+    // Set the basic authorization header
+    SetBasicAuthorizationHeader(HttpRequest);
+
+    // Lock the ActiveRequests mutex to protect concurrent access
+    FScopeLock Lock(&ActiveRequestsMutex);
+
+    // Add the HttpRequest to ActiveRequests
+    ActiveRequests.Add(HttpRequest);
+
+    // Bind the response callback and handle the response
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+
+        if (!IsValidLowLevel())
+        {
+            return;
+        }
+
+        // Lock the ActiveRequests mutex to protect concurrent access
+        FScopeLock Lock(&ActiveRequestsMutex);
+
+        if (ActiveRequests.Contains(HttpRequest))
+        {
+            if (bSuccess && Response.IsValid())
+            {
+                const FString ResponseBody = Response->GetContentAsString();
+
+                // Check if Request was successful
+                if (IsResponseSuccessful(Response->GetResponseCode()))
+                {
+                    // Check for Success Callback
+                    if (SuccessCallback)
+                    {
+                        UNakamaSession* ResultSession = NewObject<UNakamaSession>();
+                        ResultSession->SetupSession(ResponseBody);
+                        SuccessCallback(ResultSession);
+                    }
+                }
+                else
+                {
+                    // Check for Error Callback
+                    if (ErrorCallback)
+                    {
+                        const FNakamaError Error(ResponseBody);
+                        ErrorCallback(Error);
+                    }
+                }
+            }
+            else
+            {
+                // Handle Invalid Response
+                if (ErrorCallback)
+                {
+                    const FNakamaError RequestError = CreateRequestFailureError();
+                    ErrorCallback(RequestError);
+                }
+            }
+
+            // Remove the HttpRequest from ActiveRequests
+            ActiveRequests.Remove(HttpRequest);
+        }
+    });
+
+    // Process the request
+    HttpRequest->ProcessRequest();
+}
+
+void UNakamaClient::AuthenticateCustom(
+    const FString& CustomId,
+    const FString& Username,
+    bool bCreate,
+    const TMap<FString, FString>& Vars,
+    TFunction<void(UNakamaSession* UserSession)> SuccessCallback,
+    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+{
+    // Setup the endpoint
+    const FString Endpoint = TEXT("/v2/account/authenticate/custom");
+
+    // Encode the username
+    const FString EncodedUsername = FGenericPlatformHttp::UrlEncode(Username);
+
+    // Setup the query parameters
+    TMultiMap<FString, FString> QueryParams;
+    QueryParams.Add(TEXT("create"), FNakamaUtils::BoolToString(bCreate));
+    QueryParams.Add(TEXT("username"), EncodedUsername);
+
+    // Setup the request content
+    const TSharedPtr<FJsonObject> ContentJson = MakeShared<FJsonObject>();
+    ContentJson->SetStringField(TEXT("id"), CustomId);
+    AddVarsToJson(ContentJson, Vars);
+
+    // Serialize the request content
+    FString Content;
+    if (!SerializeJsonObject(ContentJson, Content))
+    {
+        // Handle JSON serialization failure
+        HandleJsonSerializationFailure(ErrorCallback);
+        return;
+    }
+
+    // Make the request
+    const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::POST, QueryParams, "");
+
+    // Set the basic authorization header
+    SetBasicAuthorizationHeader(HttpRequest);
+
+    // Lock the ActiveRequests mutex to protect concurrent access
+    FScopeLock Lock(&ActiveRequestsMutex);
+
+    // Add the HttpRequest to ActiveRequests
+    ActiveRequests.Add(HttpRequest);
+
+    // Bind the response callback and handle the response
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+
+        if (!IsValidLowLevel())
+        {
+            return;
+        }
+
+        // Lock the ActiveRequests mutex to protect concurrent access
+        FScopeLock Lock(&ActiveRequestsMutex);
+
+        if (ActiveRequests.Contains(HttpRequest))
+        {
+            if (bSuccess && Response.IsValid())
+            {
+                const FString ResponseBody = Response->GetContentAsString();
+
+                // Check if Request was successful
+                if (IsResponseSuccessful(Response->GetResponseCode()))
+                {
+                    // Check for Success Callback
+                    if (SuccessCallback)
+                    {
+                        UNakamaSession* ResultSession = NewObject<UNakamaSession>();
+                        ResultSession->SetupSession(ResponseBody);
+                        SuccessCallback(ResultSession);
+                    }
+                }
+                else
+                {
+                    // Check for Error Callback
+                    if (ErrorCallback)
+                    {
+                        const FNakamaError Error(ResponseBody);
+                        ErrorCallback(Error);
+                    }
+                }
+            }
+            else
+            {
+                // Handle Invalid Response
+                if (ErrorCallback)
+                {
+                    const FNakamaError RequestError = CreateRequestFailureError();
+                    ErrorCallback(RequestError);
+                }
+            }
+
+            // Remove the HttpRequest from ActiveRequests
+            ActiveRequests.Remove(HttpRequest);
+        }
+    });
+
+    // Process the request
+    HttpRequest->ProcessRequest();
+}
+
+void UNakamaClient::AuthenticateApple(
+    const FString& Token,
+    const FString& Username,
+    bool bCreate,
+    const TMap<FString, FString>& Vars,
+    TFunction<void(UNakamaSession* UserSession)> SuccessCallback,
+    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+{
+    // Setup the endpoint
+    const FString Endpoint = TEXT("/v2/account/authenticate/apple");
+
+    // Encode the username
+    const FString EncodedUsername = FGenericPlatformHttp::UrlEncode(Username);
+
+    // Setup the query parameters
+    TMultiMap<FString, FString> QueryParams;
+    QueryParams.Add(TEXT("create"), FNakamaUtils::BoolToString(bCreate));
+    QueryParams.Add(TEXT("username"), EncodedUsername);
+
+    // Setup the request content
+    const TSharedPtr<FJsonObject> ContentJson = MakeShared<FJsonObject>();
+    ContentJson->SetStringField(TEXT("token"), Token);
+    AddVarsToJson(ContentJson, Vars);
+
+    // Serialize the request content
+    FString Content;
+    if (!SerializeJsonObject(ContentJson, Content))
+    {
+        // Handle JSON serialization failure
+        HandleJsonSerializationFailure(ErrorCallback);
+        return;
+    }
+
+    // Make the request
+    const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::POST, QueryParams, "");
+
+    // Set the basic authorization header
+    SetBasicAuthorizationHeader(HttpRequest);
+
+    // Lock the ActiveRequests mutex to protect concurrent access
+    FScopeLock Lock(&ActiveRequestsMutex);
+
+    // Add the HttpRequest to ActiveRequests
+    ActiveRequests.Add(HttpRequest);
+
+    // Bind the response callback and handle the response
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+
+        if (!IsValidLowLevel())
+        {
+            return;
+        }
+
+        // Lock the ActiveRequests mutex to protect concurrent access
+        FScopeLock Lock(&ActiveRequestsMutex);
+
+        if (ActiveRequests.Contains(HttpRequest))
+        {
+            if (bSuccess && Response.IsValid())
+            {
+                const FString ResponseBody = Response->GetContentAsString();
+
+                // Check if Request was successful
+                if (IsResponseSuccessful(Response->GetResponseCode()))
+                {
+                    // Check for Success Callback
+                    if (SuccessCallback)
+                    {
+                        UNakamaSession* ResultSession = NewObject<UNakamaSession>();
+                        ResultSession->SetupSession(ResponseBody);
+                        SuccessCallback(ResultSession);
+                    }
+                }
+                else
+                {
+                    // Check for Error Callback
+                    if (ErrorCallback)
+                    {
+                        const FNakamaError Error(ResponseBody);
+                        ErrorCallback(Error);
+                    }
+                }
+            }
+            else
+            {
+                // Handle Invalid Response
+                if (ErrorCallback)
+                {
+                    const FNakamaError RequestError = CreateRequestFailureError();
+                    ErrorCallback(RequestError);
+                }
+            }
+
+            // Remove the HttpRequest from ActiveRequests
+            ActiveRequests.Remove(HttpRequest);
+        }
+    });
+
+    // Process the request
+    HttpRequest->ProcessRequest();
+}
+
+void UNakamaClient::AuthenticateFacebook(
+    const FString& Token,
+    const FString& Username,
+    bool bCreate,
+    bool bImport,
+    const TMap<FString, FString>& Vars,
+    TFunction<void(UNakamaSession* UserSession)> SuccessCallback,
+    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+{
+    // Setup the endpoint
+    const FString Endpoint = TEXT("/v2/account/authenticate/facebook");
+    
+    // Encode the username
+    const FString EncodedUsername = FGenericPlatformHttp::UrlEncode(Username);
+
+    // Setup the query parameters
+    TMultiMap<FString, FString> QueryParams;
+    QueryParams.Add(TEXT("create"), FNakamaUtils::BoolToString(bCreate));
+    QueryParams.Add(TEXT("username"), EncodedUsername);
+    QueryParams.Add(TEXT("import"), FNakamaUtils::BoolToString(bImport));
+
+    // Setup the request content
+    const TSharedPtr<FJsonObject> ContentJson = MakeShared<FJsonObject>();
+    ContentJson->SetStringField(TEXT("token"), Token);
+    AddVarsToJson(ContentJson, Vars);
+
+    // Serialize the request content
+    FString Content;
+    if (!SerializeJsonObject(ContentJson, Content))
+    {
+        // Handle JSON serialization failure
+        HandleJsonSerializationFailure(ErrorCallback);
+        return;
+    }
+
+    // Make the request
+    const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::POST, QueryParams, "");
+
+    // Set the basic authorization header
+    SetBasicAuthorizationHeader(HttpRequest);
+
+    // Lock the ActiveRequests mutex to protect concurrent access
+    FScopeLock Lock(&ActiveRequestsMutex);
+
+    // Add the HttpRequest to ActiveRequests
+    ActiveRequests.Add(HttpRequest);
+
+    // Bind the response callback and handle the response
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+
+        if (!IsValidLowLevel())
+        {
+            return;
+        }
+
+        // Lock the ActiveRequests mutex to protect concurrent access
+        FScopeLock Lock(&ActiveRequestsMutex);
+
+        if (ActiveRequests.Contains(HttpRequest))
+        {
+            if (bSuccess && Response.IsValid())
+            {
+                const FString ResponseBody = Response->GetContentAsString();
+
+                // Check if Request was successful
+                if (IsResponseSuccessful(Response->GetResponseCode()))
+                {
+                    // Check for Success Callback
+                    if (SuccessCallback)
+                    {
+                        UNakamaSession* ResultSession = NewObject<UNakamaSession>();
+                        ResultSession->SetupSession(ResponseBody);
+                        SuccessCallback(ResultSession);
+                    }
+                }
+                else
+                {
+                    // Check for Error Callback
+                    if (ErrorCallback)
+                    {
+                        const FNakamaError Error(ResponseBody);
+                        ErrorCallback(Error);
+                    }
+                }
+            }
+            else
+            {
+                // Handle Invalid Response
+                if (ErrorCallback)
+                {
+                    const FNakamaError RequestError = CreateRequestFailureError();
+                    ErrorCallback(RequestError);
+                }
+            }
+
+            // Remove the HttpRequest from ActiveRequests
+            ActiveRequests.Remove(HttpRequest);
+        }
+    });
+
+    // Process the request
+    HttpRequest->ProcessRequest();
+}
+
+void UNakamaClient::AuthenticateGoogle(
+    const FString& Token,
+    const FString& Username,
+    bool bCreate,
+    const TMap<FString, FString>& Vars,
+    TFunction<void(UNakamaSession* UserSession)> SuccessCallback,
+    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+{
+    // Setup the endpoint
+    const FString Endpoint = TEXT("/v2/account/authenticate/google");
+
+    // Encode the username
+    const FString EncodedUsername = FGenericPlatformHttp::UrlEncode(Username);
+
+    // Setup the query parameters
+    TMultiMap<FString, FString> QueryParams;
+    QueryParams.Add(TEXT("create"), FNakamaUtils::BoolToString(bCreate));
+    QueryParams.Add(TEXT("username"), EncodedUsername);
+
+    // Setup the request content
+    const TSharedPtr<FJsonObject> ContentJson = MakeShared<FJsonObject>();
+    ContentJson->SetStringField(TEXT("token"), Token);
+    AddVarsToJson(ContentJson, Vars);
+
+    // Serialize the request content
+    FString Content;
+    if (!SerializeJsonObject(ContentJson, Content))
+    {
+        // Handle JSON serialization failure
+        HandleJsonSerializationFailure(ErrorCallback);
+        return;
+    }
+
+    // Make the request
+    const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::POST, QueryParams, "");
+
+    // Set the basic authorization header
+    SetBasicAuthorizationHeader(HttpRequest);
+
+    // Lock the ActiveRequests mutex to protect concurrent access
+    FScopeLock Lock(&ActiveRequestsMutex);
+
+    // Add the HttpRequest to ActiveRequests
+    ActiveRequests.Add(HttpRequest);
+
+    // Bind the response callback and handle the response
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+
+        if (!IsValidLowLevel())
+        {
+            return;
+        }
+
+        // Lock the ActiveRequests mutex to protect concurrent access
+        FScopeLock Lock(&ActiveRequestsMutex);
+
+        if (ActiveRequests.Contains(HttpRequest))
+        {
+            if (bSuccess && Response.IsValid())
+            {
+                const FString ResponseBody = Response->GetContentAsString();
+
+                // Check if Request was successful
+                if (IsResponseSuccessful(Response->GetResponseCode()))
+                {
+                    // Check for Success Callback
+                    if (SuccessCallback)
+                    {
+                        UNakamaSession* ResultSession = NewObject<UNakamaSession>();
+                        ResultSession->SetupSession(ResponseBody);
+                        SuccessCallback(ResultSession);
+                    }
+                }
+                else
+                {
+                    // Check for Error Callback
+                    if (ErrorCallback)
+                    {
+                        const FNakamaError Error(ResponseBody);
+                        ErrorCallback(Error);
+                    }
+                }
+            }
+            else
+            {
+                // Handle Invalid Response
+                if (ErrorCallback)
+                {
+                    const FNakamaError RequestError = CreateRequestFailureError();
+                    ErrorCallback(RequestError);
+                }
+            }
+
+            // Remove the HttpRequest from ActiveRequests
+            ActiveRequests.Remove(HttpRequest);
+        }
+    });
+
+    // Process the request
+    HttpRequest->ProcessRequest();
+}
+
+void UNakamaClient::AuthenticateGameCenter(
+    const FString& PlayerId,
+    const FString& BundleId,
+    int64 TimestampSeconds,
+    const FString& Salt,
+    const FString& Signature,
+    const FString& PublicKeyUrl,
+    const FString& Username,
+    bool bCreate,
+    const TMap<FString, FString>& Vars,
+    TFunction<void(UNakamaSession* UserSession)> SuccessCallback,
+    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+{
+    // Setup the endpoint
+    const FString Endpoint = TEXT("/v2/account/authenticate/gamecenter");
+
+    // Encode the username
+    const FString EncodedUsername = FGenericPlatformHttp::UrlEncode(Username);
+
+    // Setup the query parameters
+    TMultiMap<FString, FString> QueryParams;
+    QueryParams.Add(TEXT("create"), FNakamaUtils::BoolToString(bCreate));
+    QueryParams.Add(TEXT("username"), EncodedUsername);
+
+    // Setup the request content
+    const TSharedPtr<FJsonObject> ContentJson = MakeShared<FJsonObject>();
+    ContentJson->SetStringField(TEXT("player_id"), PlayerId);
+    ContentJson->SetStringField(TEXT("bundle_id"), BundleId);
+    ContentJson->SetNumberField(TEXT("timestamp_seconds"), TimestampSeconds);
+    ContentJson->SetStringField(TEXT("salt"), Salt);
+    ContentJson->SetStringField(TEXT("signature"), Signature);
+    ContentJson->SetStringField(TEXT("public_key_url"), PublicKeyUrl);
+    AddVarsToJson(ContentJson, Vars);
+
+    // Serialize the request content
+    FString Content;
+    if (!SerializeJsonObject(ContentJson, Content))
+    {
+        // Handle JSON serialization failure
+        HandleJsonSerializationFailure(ErrorCallback);
+        return;
+    }
+
+    // Make the request
+    const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::POST, QueryParams, "");
+
+    // Set the basic authorization header
+    SetBasicAuthorizationHeader(HttpRequest);
+
+    // Lock the ActiveRequests mutex to protect concurrent access
+    FScopeLock Lock(&ActiveRequestsMutex);
+
+    // Add the HttpRequest to ActiveRequests
+    ActiveRequests.Add(HttpRequest);
+
+    // Bind the response callback and handle the response
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+
+        if (!IsValidLowLevel())
+        {
+            return;
+        }
+
+        // Lock the ActiveRequests mutex to protect concurrent access
+        FScopeLock Lock(&ActiveRequestsMutex);
+
+        if (ActiveRequests.Contains(HttpRequest))
+        {
+            if (bSuccess && Response.IsValid())
+            {
+                const FString ResponseBody = Response->GetContentAsString();
+
+                // Check if Request was successful
+                if (IsResponseSuccessful(Response->GetResponseCode()))
+                {
+                    // Check for Success Callback
+                    if (SuccessCallback)
+                    {
+                        UNakamaSession* ResultSession = NewObject<UNakamaSession>();
+                        ResultSession->SetupSession(ResponseBody);
+                        SuccessCallback(ResultSession);
+                    }
+                }
+                else
+                {
+                    // Check for Error Callback
+                    if (ErrorCallback)
+                    {
+                        const FNakamaError Error(ResponseBody);
+                        ErrorCallback(Error);
+                    }
+                }
+            }
+            else
+            {
+                // Handle Invalid Response
+                if (ErrorCallback)
+                {
+                    const FNakamaError RequestError = CreateRequestFailureError();
+                    ErrorCallback(RequestError);
+                }
+            }
+
+            // Remove the HttpRequest from ActiveRequests
+            ActiveRequests.Remove(HttpRequest);
+        }
+    });
+
+    // Process the request
+    HttpRequest->ProcessRequest();
+}
+
+void UNakamaClient::AuthenticateSteam(
+    const FString& Token,
+    const FString& Username,
+    bool bCreate,
+    bool bImport,
+    const TMap<FString, FString>& Vars,
+    TFunction<void(UNakamaSession* UserSession)> SuccessCallback,
+    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+{
+    // Setup the endpoint
+    const FString Endpoint = TEXT("/v2/account/authenticate/steam");
+
+    // Encode the username
+    const FString EncodedUsername = FGenericPlatformHttp::UrlEncode(Username);
+
+    // Setup the query parameters
+    TMultiMap<FString, FString> QueryParams;
+    QueryParams.Add(TEXT("create"), FNakamaUtils::BoolToString(bCreate));
+    QueryParams.Add(TEXT("username"), EncodedUsername);
+    QueryParams.Add(TEXT("import"), FNakamaUtils::BoolToString(bImport));
+
+    // Setup the request content
+    const TSharedPtr<FJsonObject> ContentJson = MakeShared<FJsonObject>();
+    ContentJson->SetStringField(TEXT("token"), Token);
+    AddVarsToJson(ContentJson, Vars);
+
+    // Serialize the request content
+    FString Content;
+    if (!SerializeJsonObject(ContentJson, Content))
+    {
+        // Handle JSON serialization failure
+        HandleJsonSerializationFailure(ErrorCallback);
+        return;
+    }
+
+    // Make the request
+    const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::POST, QueryParams, "");
+
+    // Set the basic authorization header
+    SetBasicAuthorizationHeader(HttpRequest);
+
+    // Lock the ActiveRequests mutex to protect concurrent access
+    FScopeLock Lock(&ActiveRequestsMutex);
+
+    // Add the HttpRequest to ActiveRequests
+    ActiveRequests.Add(HttpRequest);
+
+    // Bind the response callback and handle the response
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+
+        if (!IsValidLowLevel())
+        {
+            return;
+        }
+
+        // Lock the ActiveRequests mutex to protect concurrent access
+        FScopeLock Lock(&ActiveRequestsMutex);
+
+        if (ActiveRequests.Contains(HttpRequest))
+        {
+            if (bSuccess && Response.IsValid())
+            {
+                const FString ResponseBody = Response->GetContentAsString();
+
+                // Check if Request was successful
+                if (IsResponseSuccessful(Response->GetResponseCode()))
+                {
+                    // Check for Success Callback
+                    if (SuccessCallback)
+                    {
+                        UNakamaSession* ResultSession = NewObject<UNakamaSession>();
+                        ResultSession->SetupSession(ResponseBody);
+                        SuccessCallback(ResultSession);
+                    }
+                }
+                else
+                {
+                    // Check for Error Callback
+                    if (ErrorCallback)
+                    {
+                        const FNakamaError Error(ResponseBody);
+                        ErrorCallback(Error);
+                    }
+                }
+            }
+            else
+            {
+                // Handle Invalid Response
+                if (ErrorCallback)
+                {
+                    const FNakamaError RequestError = CreateRequestFailureError();
+                    ErrorCallback(RequestError);
+                }
+            }
+
+            // Remove the HttpRequest from ActiveRequests
+            ActiveRequests.Remove(HttpRequest);
+        }
+    });
+
+    // Process the request
+    HttpRequest->ProcessRequest();
+}
+
+void UNakamaClient::AuthenticateRefresh(
+    UNakamaSession* Session,
+    TFunction<void(UNakamaSession* UserSession)> SuccessCallback,
+    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+{
+    // Setup the endpoint
+    // NOTE: Endpoint taken from from C++ Client - Docs say: /v2/session/refresh/
+    const FString Endpoint = TEXT("/v2/account/session/refresh");
+
+    // Setup the request content
+    const TSharedPtr<FJsonObject> ContentJson = MakeShared<FJsonObject>();
+    ContentJson->SetStringField(TEXT("token"), Session->GetRefreshToken());
+    AddVarsToJson(ContentJson, Session->GetVariables());
+
+    // Serialize the request content
+    FString Content;
+    if (!SerializeJsonObject(ContentJson, Content))
+    {
+        // Handle JSON serialization failure
+        HandleJsonSerializationFailure(ErrorCallback);
+        return;
+    }
+
+    // Make the request
+    const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::POST, TMultiMap<FString, FString>(), "");
+
+    // Set the basic authorization header
+    SetBasicAuthorizationHeader(HttpRequest);
+
+    // Lock the ActiveRequests mutex to protect concurrent access
+    FScopeLock Lock(&ActiveRequestsMutex);
+
+    // Add the HttpRequest to ActiveRequests
+    ActiveRequests.Add(HttpRequest);
+
+    // Bind the response callback and handle the response
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+
+        if (!IsValidLowLevel())
+        {
+            return;
+        }
+
+        // Lock the ActiveRequests mutex to protect concurrent access
+        FScopeLock Lock(&ActiveRequestsMutex);
+
+        if (ActiveRequests.Contains(HttpRequest))
+        {
+            if (bSuccess && Response.IsValid())
+            {
+                const FString ResponseBody = Response->GetContentAsString();
+
+                // Check if Request was successful
+                if (IsResponseSuccessful(Response->GetResponseCode()))
+                {
+                    // Check for Success Callback
+                    if (SuccessCallback)
+                    {
+                        UNakamaSession* ResultSession = NewObject<UNakamaSession>();
+                        ResultSession->SetupSession(ResponseBody);
+                        SuccessCallback(ResultSession);
+                    }
+                }
+                else
+                {
+                    // Check for Error Callback
+                    if (ErrorCallback)
+                    {
+                        const FNakamaError Error(ResponseBody);
+                        ErrorCallback(Error);
+                    }
+                }
+            }
+            else
+            {
+                // Handle Invalid Response
+                if (ErrorCallback)
+                {
+                    const FNakamaError RequestError = CreateRequestFailureError();
+                    ErrorCallback(RequestError);
+                }
+            }
+
+            // Remove the HttpRequest from ActiveRequests
+            ActiveRequests.Remove(HttpRequest);
+        }
+    });
+
+    // Process the request
+    HttpRequest->ProcessRequest();
+}
+
+void UNakamaClient::LinkDevice(
+    UNakamaSession* Session,
+    const FString& Id,
+    TFunction<void()> SuccessCallback,
+    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+{
+    // Setup the endpoint
+    const FString Endpoint = TEXT("/v2/account/link/device");
+
+    // Verify the session
+    if (!IsSessionValid(Session, ErrorCallback))
+    {
+        return;
+    }
+
+    // Setup the request content
+    const TSharedPtr<FJsonObject> ContentJson = MakeShared<FJsonObject>();
+    ContentJson->SetStringField(TEXT("id"), Id);
+
+    // Serialize the request content
+    FString Content;
+    if (!SerializeJsonObject(ContentJson, Content))
+    {
+        // Handle JSON serialization failure
+        HandleJsonSerializationFailure(ErrorCallback);
+        return;
+    }
+
+    // Make the request
+    const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::POST, TMultiMap<FString, FString>(), Session->GetAuthToken());
+
+    // Lock the ActiveRequests mutex to protect concurrent access
+    FScopeLock Lock(&ActiveRequestsMutex);
+
+    // Add the HttpRequest to ActiveRequests
+    ActiveRequests.Add(HttpRequest);
+
+    // Bind the response callback and handle the response
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+
+        if (!IsValidLowLevel())
+        {
+            return;
+        }
+
+        // Lock the ActiveRequests mutex to protect concurrent access
+        FScopeLock Lock(&ActiveRequestsMutex);
+
+        if (ActiveRequests.Contains(HttpRequest))
+        {
+            if (bSuccess && Response.IsValid())
+            {
+                const FString ResponseBody = Response->GetContentAsString();
+
+                // Check if Request was successful
+                if (IsResponseSuccessful(Response->GetResponseCode()))
+                {
+                    // Check for Success Callback
+                    if (SuccessCallback)
+                    {
+                        SuccessCallback();
+                    }
+                }
+                else
+                {
+                    // Check for Error Callback
+                    if (ErrorCallback)
+                    {
+                        const FNakamaError Error(ResponseBody);
+                        ErrorCallback(Error);
+                    }
+                }
+            }
+            else
+            {
+                // Handle Invalid Response
+                if (ErrorCallback)
+                {
+                    const FNakamaError RequestError = CreateRequestFailureError();
+                    ErrorCallback(RequestError);
+                }
+            }
+
+            // Remove the HttpRequest from ActiveRequests
+            ActiveRequests.Remove(HttpRequest);
+        }
+    });
+
+    // Process the request
+    HttpRequest->ProcessRequest();
+}
+
+void UNakamaClient::LinkEmail(
+    UNakamaSession* Session,
+    const FString& Email,
+    const FString& Password,
+    TFunction<void()> SuccessCallback,
+    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+{
+    // Setup the endpoint
+    const FString Endpoint = TEXT("/v2/account/link/email");
+
+    // Verify the session
+    if (!IsSessionValid(Session, ErrorCallback))
+    {
+        return;
+    }
+
+    // Setup the request content
+    const TSharedPtr<FJsonObject> ContentJson = MakeShared<FJsonObject>();
+    ContentJson->SetStringField(TEXT("email"), Email);
+    ContentJson->SetStringField(TEXT("password"), Password);
+
+    // Serialize the request content
+    FString Content;
+    if (!SerializeJsonObject(ContentJson, Content))
+    {
+        // Handle JSON serialization failure
+        HandleJsonSerializationFailure(ErrorCallback);
+        return;
+    }
+
+    // Make the request
+    const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::POST, TMultiMap<FString, FString>(), Session->GetAuthToken());
+
+    // Lock the ActiveRequests mutex to protect concurrent access
+        FScopeLock Lock(&ActiveRequestsMutex);
+    
+        // Add the HttpRequest to ActiveRequests
+        ActiveRequests.Add(HttpRequest);
+    
+        // Bind the response callback and handle the response
+        HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+    
+            if (!IsValidLowLevel())
+            {
+                return;
+            }
+    
+            // Lock the ActiveRequests mutex to protect concurrent access
+            FScopeLock Lock(&ActiveRequestsMutex);
+    
+            if (ActiveRequests.Contains(HttpRequest))
+            {
+                if (bSuccess && Response.IsValid())
+                {
+                    const FString ResponseBody = Response->GetContentAsString();
+    
+                    // Check if Request was successful
+                    if (IsResponseSuccessful(Response->GetResponseCode()))
+                    {
+                        // Check for Success Callback
+                        if (SuccessCallback)
+                        {
+                            SuccessCallback();
+                        }
+                    }
+                    else
+                    {
+                        // Check for Error Callback
+                        if (ErrorCallback)
+                        {
+                            const FNakamaError Error(ResponseBody);
+                            ErrorCallback(Error);
+                        }
+                    }
+                }
+                else
+                {
+                    // Handle Invalid Response
+                    if (ErrorCallback)
+                    {
+                        const FNakamaError RequestError = CreateRequestFailureError();
+                        ErrorCallback(RequestError);
+                    }
+                }
+    
+                // Remove the HttpRequest from ActiveRequests
+                ActiveRequests.Remove(HttpRequest);
+            }
+        });
+    
+        // Process the request
+        HttpRequest->ProcessRequest();
+}
+
+void UNakamaClient::LinkCustom(
+    UNakamaSession* Session,
+    const FString& Id,
+    TFunction<void()> SuccessCallback,
+    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+{
+    // Setup the endpoint
+    const FString Endpoint = TEXT("/v2/account/link/custom");
+
+    // Verify the session
+    if (!IsSessionValid(Session, ErrorCallback))
+    {
+        return;
+    }
+
+    // Setup the request content
+    const TSharedPtr<FJsonObject> ContentJson = MakeShared<FJsonObject>();
+    ContentJson->SetStringField(TEXT("id"), Id);
+
+    // Serialize the request content
+    FString Content;
+    if (!SerializeJsonObject(ContentJson, Content))
+    {
+        // Handle JSON serialization failure
+        HandleJsonSerializationFailure(ErrorCallback);
+        return;
+    }
+
+    // Make the request
+    const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::POST, TMultiMap<FString, FString>(), Session->GetAuthToken());
+
+    // Lock the ActiveRequests mutex to protect concurrent access
+    FScopeLock Lock(&ActiveRequestsMutex);
+
+    // Add the HttpRequest to ActiveRequests
+    ActiveRequests.Add(HttpRequest);
+
+    // Bind the response callback and handle the response
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+
+        if (!IsValidLowLevel())
+        {
+            return;
+        }
+
+        // Lock the ActiveRequests mutex to protect concurrent access
+        FScopeLock Lock(&ActiveRequestsMutex);
+
+        if (ActiveRequests.Contains(HttpRequest))
+        {
+            if (bSuccess && Response.IsValid())
+            {
+                const FString ResponseBody = Response->GetContentAsString();
+
+                // Check if Request was successful
+                if (IsResponseSuccessful(Response->GetResponseCode()))
+                {
+                    // Check for Success Callback
+                    if (SuccessCallback)
+                    {
+                        SuccessCallback();
+                    }
+                }
+                else
+                {
+                    // Check for Error Callback
+                    if (ErrorCallback)
+                    {
+                        const FNakamaError Error(ResponseBody);
+                        ErrorCallback(Error);
+                    }
+                }
+            }
+            else
+            {
+                // Handle Invalid Response
+                if (ErrorCallback)
+                {
+                    const FNakamaError RequestError = CreateRequestFailureError();
+                    ErrorCallback(RequestError);
+                }
+            }
+
+            // Remove the HttpRequest from ActiveRequests
+            ActiveRequests.Remove(HttpRequest);
+        }
+    });
+
+    // Process the request
+    HttpRequest->ProcessRequest();
+}
+
+void UNakamaClient::LinkApple(
+    UNakamaSession* Session,
+    const FString& Token,
+    TFunction<void()> SuccessCallback,
+    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+{
+    // Setup the endpoint
+    const FString Endpoint = TEXT("/v2/account/link/apple");
+
+    // Verify the session
+    if (!IsSessionValid(Session, ErrorCallback))
+    {
+        return;
+    }
+
+    // Setup the request content
+    const TSharedPtr<FJsonObject> ContentJson = MakeShared<FJsonObject>();
+    ContentJson->SetStringField(TEXT("token"), Token);
+
+    // Serialize the request content
+    FString Content;
+    if (!SerializeJsonObject(ContentJson, Content))
+    {
+        // Handle JSON serialization failure
+        HandleJsonSerializationFailure(ErrorCallback);
+        return;
+    }
+
+    // Make the request
+    const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::POST, TMultiMap<FString, FString>(), Session->GetAuthToken());
+
+    // Lock the ActiveRequests mutex to protect concurrent access
+    FScopeLock Lock(&ActiveRequestsMutex);
+
+    // Add the HttpRequest to ActiveRequests
+    ActiveRequests.Add(HttpRequest);
+
+    // Bind the response callback and handle the response
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+
+        if (!IsValidLowLevel())
+        {
+            return;
+        }
+
+        // Lock the ActiveRequests mutex to protect concurrent access
+        FScopeLock Lock(&ActiveRequestsMutex);
+
+        if (ActiveRequests.Contains(HttpRequest))
+        {
+            if (bSuccess && Response.IsValid())
+            {
+                const FString ResponseBody = Response->GetContentAsString();
+
+                // Check if Request was successful
+                if (IsResponseSuccessful(Response->GetResponseCode()))
+                {
+                    // Check for Success Callback
+                    if (SuccessCallback)
+                    {
+                        SuccessCallback();
+                    }
+                }
+                else
+                {
+                    // Check for Error Callback
+                    if (ErrorCallback)
+                    {
+                        const FNakamaError Error(ResponseBody);
+                        ErrorCallback(Error);
+                    }
+                }
+            }
+            else
+            {
+                // Handle Invalid Response
+                if (ErrorCallback)
+                {
+                    const FNakamaError RequestError = CreateRequestFailureError();
+                    ErrorCallback(RequestError);
+                }
+            }
+
+            // Remove the HttpRequest from ActiveRequests
+            ActiveRequests.Remove(HttpRequest);
+        }
+    });
+
+    // Process the request
+    HttpRequest->ProcessRequest();
+}
+
+void UNakamaClient::LinkFacebook(
+    UNakamaSession* Session,
+    const FString& Token,
+    TOptional<bool> bImport,
+    TFunction<void()> SuccessCallback,
+    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+{
+    // Setup the endpoint
+    const FString Endpoint = TEXT("/v2/account/link/facebook");
+
+    // Verify the session
+    if (!IsSessionValid(Session, ErrorCallback))
+    {
+        return;
+    }
+
+    // Setup the query parameters
+    TMultiMap<FString, FString> QueryParams;
+    if (bImport.IsSet())
+    {
+        QueryParams.Add(TEXT("import"), FNakamaUtils::BoolToString(bImport.GetValue()));
+    }
+
+    // Setup the request content
+    const TSharedPtr<FJsonObject> ContentJson = MakeShared<FJsonObject>();
+    ContentJson->SetStringField(TEXT("token"), Token);
+
+    // Serialize the request content
+    FString Content;
+    if (!SerializeJsonObject(ContentJson, Content))
+    {
+        // Handle JSON serialization failure
+        HandleJsonSerializationFailure(ErrorCallback);
+        return;
+    }
+
+    // Make the request
+    const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::POST, QueryParams, Session->GetAuthToken());
+
+    // Lock the ActiveRequests mutex to protect concurrent access
+    FScopeLock Lock(&ActiveRequestsMutex);
+
+    // Add the HttpRequest to ActiveRequests
+    ActiveRequests.Add(HttpRequest);
+
+    // Bind the response callback and handle the response
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+
+        if (!IsValidLowLevel())
+        {
+            return;
+        }
+
+        // Lock the ActiveRequests mutex to protect concurrent access
+        FScopeLock Lock(&ActiveRequestsMutex);
+
+        if (ActiveRequests.Contains(HttpRequest))
+        {
+            if (bSuccess && Response.IsValid())
+            {
+                const FString ResponseBody = Response->GetContentAsString();
+
+                // Check if Request was successful
+                if (IsResponseSuccessful(Response->GetResponseCode()))
+                {
+                    // Check for Success Callback
+                    if (SuccessCallback)
+                    {
+                        SuccessCallback();
+                    }
+                }
+                else
+                {
+                    // Check for Error Callback
+                    if (ErrorCallback)
+                    {
+                        const FNakamaError Error(ResponseBody);
+                        ErrorCallback(Error);
+                    }
+                }
+            }
+            else
+            {
+                // Handle Invalid Response
+                if (ErrorCallback)
+                {
+                    const FNakamaError RequestError = CreateRequestFailureError();
+                    ErrorCallback(RequestError);
+                }
+            }
+
+            // Remove the HttpRequest from ActiveRequests
+            ActiveRequests.Remove(HttpRequest);
+        }
+    });
+
+    // Process the request
+    HttpRequest->ProcessRequest();
+}
+
+void UNakamaClient::LinkGoogle(
+    UNakamaSession* Session,
+    const FString& Token,
+    TFunction<void()> SuccessCallback,
+    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+{
+    // Setup the endpoint
+    const FString Endpoint = TEXT("/v2/account/link/google");
+
+    // Verify the session
+    if (!IsSessionValid(Session, ErrorCallback))
+    {
+        return;
+    }
+
+    // Setup the request content
+    const TSharedPtr<FJsonObject> ContentJson = MakeShared<FJsonObject>();
+    ContentJson->SetStringField(TEXT("token"), Token);
+
+    // Serialize the request content
+    FString Content;
+    if (!SerializeJsonObject(ContentJson, Content))
+    {
+        // Handle JSON serialization failure
+        HandleJsonSerializationFailure(ErrorCallback);
+        return;
+    }
+
+    // Make the request
+    const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::POST, TMultiMap<FString, FString>(), Session->GetAuthToken());
+
+    // Lock the ActiveRequests mutex to protect concurrent access
+    FScopeLock Lock(&ActiveRequestsMutex);
+
+    // Add the HttpRequest to ActiveRequests
+    ActiveRequests.Add(HttpRequest);
+
+    // Bind the response callback and handle the response
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+
+        if (!IsValidLowLevel())
+        {
+            return;
+        }
+
+        // Lock the ActiveRequests mutex to protect concurrent access
+        FScopeLock Lock(&ActiveRequestsMutex);
+
+        if (ActiveRequests.Contains(HttpRequest))
+        {
+            if (bSuccess && Response.IsValid())
+            {
+                const FString ResponseBody = Response->GetContentAsString();
+
+                // Check if Request was successful
+                if (IsResponseSuccessful(Response->GetResponseCode()))
+                {
+                    // Check for Success Callback
+                    if (SuccessCallback)
+                    {
+                        SuccessCallback();
+                    }
+                }
+                else
+                {
+                    // Check for Error Callback
+                    if (ErrorCallback)
+                    {
+                        const FNakamaError Error(ResponseBody);
+                        ErrorCallback(Error);
+                    }
+                }
+            }
+            else
+            {
+                // Handle Invalid Response
+                if (ErrorCallback)
+                {
+                    const FNakamaError RequestError = CreateRequestFailureError();
+                    ErrorCallback(RequestError);
+                }
+            }
+
+            // Remove the HttpRequest from ActiveRequests
+            ActiveRequests.Remove(HttpRequest);
+        }
+    });
+
+    // Process the request
+    HttpRequest->ProcessRequest();
+}
+
+void UNakamaClient::LinkGameCenter(
+    UNakamaSession* Session,
+    const FString& PlayerId,
+    const FString& BundleId,
+    int64 TimestampSeconds,
+    const FString& Salt,
+    const FString& Signature,
+    const FString& PublicKeyUrl,
+    TFunction<void()> SuccessCallback, TFunction<void(const FNakamaError& Error)> ErrorCallback)
+{
+    // Setup the endpoint
+    const FString Endpoint = TEXT("/v2/account/link/gamecenter");
+
+    // Verify the session
+    if (!IsSessionValid(Session, ErrorCallback))
+    {
+        return;
+    }
+
+    // Setup the request content
+    const TSharedPtr<FJsonObject> ContentJson = MakeShared<FJsonObject>();
+    ContentJson->SetStringField(TEXT("player_id"), PlayerId);
+    ContentJson->SetStringField(TEXT("bundle_id"), BundleId);
+    ContentJson->SetNumberField(TEXT("timestamp_seconds"), TimestampSeconds);
+    ContentJson->SetStringField(TEXT("salt"), Salt);
+    ContentJson->SetStringField(TEXT("signature"), Signature);
+    ContentJson->SetStringField(TEXT("public_key_url"), PublicKeyUrl);
+
+    // Serialize the request content
+    FString Content;
+    if (!SerializeJsonObject(ContentJson, Content))
+    {
+        // Handle JSON serialization failure
+        HandleJsonSerializationFailure(ErrorCallback);
+        return;
+    }
+
+    // Make the request
+    const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::POST, TMultiMap<FString, FString>(), Session->GetAuthToken());
+
+    // Lock the ActiveRequests mutex to protect concurrent access
+    FScopeLock Lock(&ActiveRequestsMutex);
+
+    // Add the HttpRequest to ActiveRequests
+    ActiveRequests.Add(HttpRequest);
+
+    // Bind the response callback and handle the response
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+
+        if (!IsValidLowLevel())
+        {
+            return;
+        }
+
+        // Lock the ActiveRequests mutex to protect concurrent access
+        FScopeLock Lock(&ActiveRequestsMutex);
+
+        if (ActiveRequests.Contains(HttpRequest))
+        {
+            if (bSuccess && Response.IsValid())
+            {
+                const FString ResponseBody = Response->GetContentAsString();
+
+                // Check if Request was successful
+                if (IsResponseSuccessful(Response->GetResponseCode()))
+                {
+                    // Check for Success Callback
+                    if (SuccessCallback)
+                    {
+                        SuccessCallback();
+                    }
+                }
+                else
+                {
+                    // Check for Error Callback
+                    if (ErrorCallback)
+                    {
+                        const FNakamaError Error(ResponseBody);
+                        ErrorCallback(Error);
+                    }
+                }
+            }
+            else
+            {
+                // Handle Invalid Response
+                if (ErrorCallback)
+                {
+                    const FNakamaError RequestError = CreateRequestFailureError();
+                    ErrorCallback(RequestError);
+                }
+            }
+
+            // Remove the HttpRequest from ActiveRequests
+            ActiveRequests.Remove(HttpRequest);
+        }
+    });
+
+    // Process the request
+    HttpRequest->ProcessRequest();
+}
+
+void UNakamaClient::LinkSteam(
+    UNakamaSession* Session,
+    const FString& Token,
+    //bool bImport,
+    TFunction<void()> SuccessCallback,
+    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+{
+    // Setup the endpoint
+    const FString Endpoint = TEXT("/v2/account/link/steam");
+
+    // Verify the session
+    if (!IsSessionValid(Session, ErrorCallback))
+    {
+        return;
+    }
+
+    // Setup the request content
+    const TSharedPtr<FJsonObject> ContentJson = MakeShared<FJsonObject>();
+    ContentJson->SetStringField(TEXT("token"), Token);
+    //ContentJson->SetBoolField(TEXT("import"), bImport);
+
+    // Serialize the request content
+    FString Content;
+    if (!SerializeJsonObject(ContentJson, Content))
+    {
+        // Handle JSON serialization failure
+        HandleJsonSerializationFailure(ErrorCallback);
+        return;
+    }
+
+    // Make the request
+    const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::POST, TMultiMap<FString, FString>(), Session->GetAuthToken());
+
+    // Lock the ActiveRequests mutex to protect concurrent access
+    FScopeLock Lock(&ActiveRequestsMutex);
+
+    // Add the HttpRequest to ActiveRequests
+    ActiveRequests.Add(HttpRequest);
+
+    // Bind the response callback and handle the response
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+
+        if (!IsValidLowLevel())
+        {
+            return;
+        }
+
+        // Lock the ActiveRequests mutex to protect concurrent access
+        FScopeLock Lock(&ActiveRequestsMutex);
+
+        if (ActiveRequests.Contains(HttpRequest))
+        {
+            if (bSuccess && Response.IsValid())
+            {
+                const FString ResponseBody = Response->GetContentAsString();
+
+                // Check if Request was successful
+                if (IsResponseSuccessful(Response->GetResponseCode()))
+                {
+                    // Check for Success Callback
+                    if (SuccessCallback)
+                    {
+                        SuccessCallback();
+                    }
+                }
+                else
+                {
+                    // Check for Error Callback
+                    if (ErrorCallback)
+                    {
+                        const FNakamaError Error(ResponseBody);
+                        ErrorCallback(Error);
+                    }
+                }
+            }
+            else
+            {
+                // Handle Invalid Response
+                if (ErrorCallback)
+                {
+                    const FNakamaError RequestError = CreateRequestFailureError();
+                    ErrorCallback(RequestError);
+                }
+            }
+
+            // Remove the HttpRequest from ActiveRequests
+            ActiveRequests.Remove(HttpRequest);
+        }
+    });
+
+    // Process the request
+    HttpRequest->ProcessRequest();
+}
+
+void UNakamaClient::UnLinkDevice(
+    UNakamaSession* Session,
+    const FString& Id,
+    TFunction<void()> SuccessCallback,
+    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+{
+    // Setup the endpoint
+    const FString Endpoint = TEXT("/v2/account/unlink/device");
+
+    // Verify the session
+    if (!IsSessionValid(Session, ErrorCallback))
+    {
+        return;
+    }
+
+    // Setup the request content
+    const TSharedPtr<FJsonObject> ContentJson = MakeShared<FJsonObject>();
+    ContentJson->SetStringField(TEXT("id"), Id);
+
+    // Serialize the request content
+    FString Content;
+    if (!SerializeJsonObject(ContentJson, Content))
+    {
+        // Handle JSON serialization failure
+        HandleJsonSerializationFailure(ErrorCallback);
+        return;
+    }
+
+    // Make the request
+    const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::POST, TMultiMap<FString, FString>(), Session->GetAuthToken());
+
+    // Lock the ActiveRequests mutex to protect concurrent access
+    FScopeLock Lock(&ActiveRequestsMutex);
+
+    // Add the HttpRequest to ActiveRequests
+    ActiveRequests.Add(HttpRequest);
+
+    // Bind the response callback and handle the response
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+
+        if (!IsValidLowLevel())
+        {
+            return;
+        }
+
+        // Lock the ActiveRequests mutex to protect concurrent access
+        FScopeLock Lock(&ActiveRequestsMutex);
+
+        if (ActiveRequests.Contains(HttpRequest))
+        {
+            if (bSuccess && Response.IsValid())
+            {
+                const FString ResponseBody = Response->GetContentAsString();
+
+                // Check if Request was successful
+                if (IsResponseSuccessful(Response->GetResponseCode()))
+                {
+                    // Check for Success Callback
+                    if (SuccessCallback)
+                    {
+                        SuccessCallback();
+                    }
+                }
+                else
+                {
+                    // Check for Error Callback
+                    if (ErrorCallback)
+                    {
+                        const FNakamaError Error(ResponseBody);
+                        ErrorCallback(Error);
+                    }
+                }
+            }
+            else
+            {
+                // Handle Invalid Response
+                if (ErrorCallback)
+                {
+                    const FNakamaError RequestError = CreateRequestFailureError();
+                    ErrorCallback(RequestError);
+                }
+            }
+
+            // Remove the HttpRequest from ActiveRequests
+            ActiveRequests.Remove(HttpRequest);
+        }
+    });
+
+    // Process the request
+    HttpRequest->ProcessRequest();
+}
+
+void UNakamaClient::UnLinkEmail(
+    UNakamaSession* Session,
+    const FString& Email,
+    const FString& Password,
+    TFunction<void()> SuccessCallback,
+    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+{
+    // Setup the endpoint
+    const FString Endpoint = TEXT("/v2/account/unlink/email");
+
+    // Verify the session
+    if (!IsSessionValid(Session, ErrorCallback))
+    {
+        return;
+    }
+
+    // Setup the request content
+    const TSharedPtr<FJsonObject> ContentJson = MakeShared<FJsonObject>();
+    ContentJson->SetStringField(TEXT("email"), Email);
+    ContentJson->SetStringField(TEXT("password"), Password);
+
+    // Serialize the request content
+    FString Content;
+    if (!SerializeJsonObject(ContentJson, Content))
+    {
+        // Handle JSON serialization failure
+        HandleJsonSerializationFailure(ErrorCallback);
+        return;
+    }
+
+    // Make the request
+    const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::POST, TMultiMap<FString, FString>(), Session->GetAuthToken());
+
+    // Lock the ActiveRequests mutex to protect concurrent access
+    FScopeLock Lock(&ActiveRequestsMutex);
+
+    // Add the HttpRequest to ActiveRequests
+    ActiveRequests.Add(HttpRequest);
+
+    // Bind the response callback and handle the response
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+
+        if (!IsValidLowLevel())
+        {
+            return;
+        }
+
+        // Lock the ActiveRequests mutex to protect concurrent access
+        FScopeLock Lock(&ActiveRequestsMutex);
+
+        if (ActiveRequests.Contains(HttpRequest))
+        {
+            if (bSuccess && Response.IsValid())
+            {
+                const FString ResponseBody = Response->GetContentAsString();
+
+                // Check if Request was successful
+                if (IsResponseSuccessful(Response->GetResponseCode()))
+                {
+                    // Check for Success Callback
+                    if (SuccessCallback)
+                    {
+                        SuccessCallback();
+                    }
+                }
+                else
+                {
+                    // Check for Error Callback
+                    if (ErrorCallback)
+                    {
+                        const FNakamaError Error(ResponseBody);
+                        ErrorCallback(Error);
+                    }
+                }
+            }
+            else
+            {
+                // Handle Invalid Response
+                if (ErrorCallback)
+                {
+                    const FNakamaError RequestError = CreateRequestFailureError();
+                    ErrorCallback(RequestError);
+                }
+            }
+
+            // Remove the HttpRequest from ActiveRequests
+            ActiveRequests.Remove(HttpRequest);
+        }
+    });
+
+    // Process the request
+    HttpRequest->ProcessRequest();
+}
+
+void UNakamaClient::UnLinkCustom(
+    UNakamaSession* Session,
+    const FString& Id,
+    TFunction<void()> SuccessCallback,
+    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+{
+    // Setup the endpoint
+    const FString Endpoint = TEXT("/v2/account/unlink/custom");
+
+    // Verify the session
+    if (!IsSessionValid(Session, ErrorCallback))
+    {
+        return;
+    }
+
+    // Setup the request content
+    const TSharedPtr<FJsonObject> ContentJson = MakeShared<FJsonObject>();
+    ContentJson->SetStringField(TEXT("id"), Id);
+
+    // Serialize the request content
+    FString Content;
+    if (!SerializeJsonObject(ContentJson, Content))
+    {
+        // Handle JSON serialization failure
+        HandleJsonSerializationFailure(ErrorCallback);
+        return;
+    }
+
+    // Make the request
+    const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::POST, TMultiMap<FString, FString>(), Session->GetAuthToken());
+
+    // Lock the ActiveRequests mutex to protect concurrent access
+    FScopeLock Lock(&ActiveRequestsMutex);
+
+    // Add the HttpRequest to ActiveRequests
+    ActiveRequests.Add(HttpRequest);
+
+    // Bind the response callback and handle the response
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+
+        if (!IsValidLowLevel())
+        {
+            return;
+        }
+
+        // Lock the ActiveRequests mutex to protect concurrent access
+        FScopeLock Lock(&ActiveRequestsMutex);
+
+        if (ActiveRequests.Contains(HttpRequest))
+        {
+            if (bSuccess && Response.IsValid())
+            {
+                const FString ResponseBody = Response->GetContentAsString();
+
+                // Check if Request was successful
+                if (IsResponseSuccessful(Response->GetResponseCode()))
+                {
+                    // Check for Success Callback
+                    if (SuccessCallback)
+                    {
+                        SuccessCallback();
+                    }
+                }
+                else
+                {
+                    // Check for Error Callback
+                    if (ErrorCallback)
+                    {
+                        const FNakamaError Error(ResponseBody);
+                        ErrorCallback(Error);
+                    }
+                }
+            }
+            else
+            {
+                // Handle Invalid Response
+                if (ErrorCallback)
+                {
+                    const FNakamaError RequestError = CreateRequestFailureError();
+                    ErrorCallback(RequestError);
+                }
+            }
+
+            // Remove the HttpRequest from ActiveRequests
+            ActiveRequests.Remove(HttpRequest);
+        }
+    });
+
+    // Process the request
+    HttpRequest->ProcessRequest();
+}
+
+void UNakamaClient::UnLinkApple(
+    UNakamaSession* Session,
+    const FString& Token,
+    TFunction<void()> SuccessCallback,
+    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+{
+    // Setup the endpoint
+    const FString Endpoint = TEXT("/v2/account/unlink/apple");
+
+    // Verify the session
+    if (!IsSessionValid(Session, ErrorCallback))
+    {
+        return;
+    }
+
+    // Setup the request content
+    const TSharedPtr<FJsonObject> ContentJson = MakeShared<FJsonObject>();
+    ContentJson->SetStringField(TEXT("token"), Token);
+
+    // Serialize the request content
+    FString Content;
+    if (!SerializeJsonObject(ContentJson, Content))
+    {
+        // Handle JSON serialization failure
+        HandleJsonSerializationFailure(ErrorCallback);
+        return;
+    }
+
+    // Make the request
+    const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::POST, TMultiMap<FString, FString>(), Session->GetAuthToken());
+
+    // Lock the ActiveRequests mutex to protect concurrent access
+    FScopeLock Lock(&ActiveRequestsMutex);
+
+    // Add the HttpRequest to ActiveRequests
+    ActiveRequests.Add(HttpRequest);
+
+    // Bind the response callback and handle the response
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+
+        if (!IsValidLowLevel())
+        {
+            return;
+        }
+
+        // Lock the ActiveRequests mutex to protect concurrent access
+        FScopeLock Lock(&ActiveRequestsMutex);
+
+        if (ActiveRequests.Contains(HttpRequest))
+        {
+            if (bSuccess && Response.IsValid())
+            {
+                const FString ResponseBody = Response->GetContentAsString();
+
+                // Check if Request was successful
+                if (IsResponseSuccessful(Response->GetResponseCode()))
+                {
+                    // Check for Success Callback
+                    if (SuccessCallback)
+                    {
+                        SuccessCallback();
+                    }
+                }
+                else
+                {
+                    // Check for Error Callback
+                    if (ErrorCallback)
+                    {
+                        const FNakamaError Error(ResponseBody);
+                        ErrorCallback(Error);
+                    }
+                }
+            }
+            else
+            {
+                // Handle Invalid Response
+                if (ErrorCallback)
+                {
+                    const FNakamaError RequestError = CreateRequestFailureError();
+                    ErrorCallback(RequestError);
+                }
+            }
+
+            // Remove the HttpRequest from ActiveRequests
+            ActiveRequests.Remove(HttpRequest);
+        }
+    });
+
+    // Process the request
+    HttpRequest->ProcessRequest();
+}
+
+void UNakamaClient::UnLinkFacebook(
+    UNakamaSession* Session,
+    const FString& Token,
+    TFunction<void()> SuccessCallback,
+    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+{
+    // Setup the endpoint
+    const FString Endpoint = TEXT("/v2/account/unlink/facebook");
+
+    // Verify the session
+    if (!IsSessionValid(Session, ErrorCallback))
+    {
+        return;
+    }
+
+    // Setup the query parameters
+    TMultiMap<FString, FString> QueryParams;
+
+    // Setup the request content
+    const TSharedPtr<FJsonObject> ContentJson = MakeShared<FJsonObject>();
+    ContentJson->SetStringField(TEXT("token"), Token);
+
+    // Serialize the request content
+    FString Content;
+    if (!SerializeJsonObject(ContentJson, Content))
+    {
+        // Handle JSON serialization failure
+        HandleJsonSerializationFailure(ErrorCallback);
+        return;
+    }
+
+    // Make the request
+    const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::POST, QueryParams, Session->GetAuthToken());
+
+    // Lock the ActiveRequests mutex to protect concurrent access
+    FScopeLock Lock(&ActiveRequestsMutex);
+
+    // Add the HttpRequest to ActiveRequests
+    ActiveRequests.Add(HttpRequest);
+
+    // Bind the response callback and handle the response
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+
+        if (!IsValidLowLevel())
+        {
+            return;
+        }
+
+        // Lock the ActiveRequests mutex to protect concurrent access
+        FScopeLock Lock(&ActiveRequestsMutex);
+
+        if (ActiveRequests.Contains(HttpRequest))
+        {
+            if (bSuccess && Response.IsValid())
+            {
+                const FString ResponseBody = Response->GetContentAsString();
+
+                // Check if Request was successful
+                if (IsResponseSuccessful(Response->GetResponseCode()))
+                {
+                    // Check for Success Callback
+                    if (SuccessCallback)
+                    {
+                        SuccessCallback();
+                    }
+                }
+                else
+                {
+                    // Check for Error Callback
+                    if (ErrorCallback)
+                    {
+                        const FNakamaError Error(ResponseBody);
+                        ErrorCallback(Error);
+                    }
+                }
+            }
+            else
+            {
+                // Handle Invalid Response
+                if (ErrorCallback)
+                {
+                    const FNakamaError RequestError = CreateRequestFailureError();
+                    ErrorCallback(RequestError);
+                }
+            }
+
+            // Remove the HttpRequest from ActiveRequests
+            ActiveRequests.Remove(HttpRequest);
+        }
+    });
+
+    // Process the request
+    HttpRequest->ProcessRequest();
+}
+
+void UNakamaClient::UnLinkGoogle(
+    UNakamaSession* Session,
+    const FString& Token,
+    TFunction<void()> SuccessCallback,
+    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+{
+    // Setup the endpoint
+    const FString Endpoint = TEXT("/v2/account/unlink/google");
+
+    // Verify the session
+    if (!IsSessionValid(Session, ErrorCallback))
+    {
+        return;
+    }
+
+    // Setup the request content
+    const TSharedPtr<FJsonObject> ContentJson = MakeShared<FJsonObject>();
+    ContentJson->SetStringField(TEXT("token"), Token);
+
+    // Serialize the request content
+    FString Content;
+    if (!SerializeJsonObject(ContentJson, Content))
+    {
+        // Handle JSON serialization failure
+        HandleJsonSerializationFailure(ErrorCallback);
+        return;
+    }
+
+    // Make the request
+    const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::POST, TMultiMap<FString, FString>(), Session->GetAuthToken());
+
+    // Lock the ActiveRequests mutex to protect concurrent access
+    FScopeLock Lock(&ActiveRequestsMutex);
+
+    // Add the HttpRequest to ActiveRequests
+    ActiveRequests.Add(HttpRequest);
+
+    // Bind the response callback and handle the response
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+
+        if (!IsValidLowLevel())
+        {
+            return;
+        }
+
+        // Lock the ActiveRequests mutex to protect concurrent access
+        FScopeLock Lock(&ActiveRequestsMutex);
+
+        if (ActiveRequests.Contains(HttpRequest))
+        {
+            if (bSuccess && Response.IsValid())
+            {
+                const FString ResponseBody = Response->GetContentAsString();
+
+                // Check if Request was successful
+                if (IsResponseSuccessful(Response->GetResponseCode()))
+                {
+                    // Check for Success Callback
+                    if (SuccessCallback)
+                    {
+                        SuccessCallback();
+                    }
+                }
+                else
+                {
+                    // Check for Error Callback
+                    if (ErrorCallback)
+                    {
+                        const FNakamaError Error(ResponseBody);
+                        ErrorCallback(Error);
+                    }
+                }
+            }
+            else
+            {
+                // Handle Invalid Response
+                if (ErrorCallback)
+                {
+                    const FNakamaError RequestError = CreateRequestFailureError();
+                    ErrorCallback(RequestError);
+                }
+            }
+
+            // Remove the HttpRequest from ActiveRequests
+            ActiveRequests.Remove(HttpRequest);
+        }
+    });
+
+    // Process the request
+    HttpRequest->ProcessRequest();
+}
+
+void UNakamaClient::UnLinkGameCenter(
+    UNakamaSession* Session,
+    const FString& PlayerId,
+    const FString& BundleId,
+    int64 TimestampSeconds,
+    const FString& Salt,
+    const FString& Signature,
+    const FString& PublicKeyUrl,
+    TFunction<void()> SuccessCallback,
+    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+{
+    // Setup the endpoint
+    const FString Endpoint = TEXT("/v2/account/unlink/gamecenter");
+
+    // Verify the session
+    if (!IsSessionValid(Session, ErrorCallback))
+    {
+        return;
+    }
+
+    // Setup the request content
+    const TSharedPtr<FJsonObject> ContentJson = MakeShared<FJsonObject>();
+    ContentJson->SetStringField(TEXT("player_id"), PlayerId);
+    ContentJson->SetStringField(TEXT("bundle_id"), BundleId);
+    ContentJson->SetNumberField(TEXT("timestamp_seconds"), TimestampSeconds);
+    ContentJson->SetStringField(TEXT("salt"), Salt);
+    ContentJson->SetStringField(TEXT("signature"), Signature);
+    ContentJson->SetStringField(TEXT("public_key_url"), PublicKeyUrl);
+
+    // Serialize the request content
+    FString Content;
+    if (!SerializeJsonObject(ContentJson, Content))
+    {
+        // Handle JSON serialization failure
+        HandleJsonSerializationFailure(ErrorCallback);
+        return;
+    }
+
+    // Make the request
+    const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::POST, TMultiMap<FString, FString>(), Session->GetAuthToken());
+
+    // Lock the ActiveRequests mutex to protect concurrent access
+    FScopeLock Lock(&ActiveRequestsMutex);
+
+    // Add the HttpRequest to ActiveRequests
+    ActiveRequests.Add(HttpRequest);
+
+    // Bind the response callback and handle the response
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+
+        if (!IsValidLowLevel())
+        {
+            return;
+        }
+
+        // Lock the ActiveRequests mutex to protect concurrent access
+        FScopeLock Lock(&ActiveRequestsMutex);
+
+        if (ActiveRequests.Contains(HttpRequest))
+        {
+            if (bSuccess && Response.IsValid())
+            {
+                const FString ResponseBody = Response->GetContentAsString();
+
+                // Check if Request was successful
+                if (IsResponseSuccessful(Response->GetResponseCode()))
+                {
+                    // Check for Success Callback
+                    if (SuccessCallback)
+                    {
+                        SuccessCallback();
+                    }
+                }
+                else
+                {
+                    // Check for Error Callback
+                    if (ErrorCallback)
+                    {
+                        const FNakamaError Error(ResponseBody);
+                        ErrorCallback(Error);
+                    }
+                }
+            }
+            else
+            {
+                // Handle Invalid Response
+                if (ErrorCallback)
+                {
+                    const FNakamaError RequestError = CreateRequestFailureError();
+                    ErrorCallback(RequestError);
+                }
+            }
+
+            // Remove the HttpRequest from ActiveRequests
+            ActiveRequests.Remove(HttpRequest);
+        }
+    });
+
+    // Process the request
+    HttpRequest->ProcessRequest();
+}
+
+void UNakamaClient::UnLinkSteam(
+    UNakamaSession* Session,
+    const FString& Token,
+    TFunction<void()> SuccessCallback,
+    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+{
+    // Setup the endpoint
+    const FString Endpoint = TEXT("/v2/account/unlink/steam");
+
+    // Verify the session
+    if (!IsSessionValid(Session, ErrorCallback))
+    {
+        return;
+    }
+
+    // Setup the request content
+    const TSharedPtr<FJsonObject> ContentJson = MakeShared<FJsonObject>();
+    ContentJson->SetStringField(TEXT("token"), Token);
+
+    // Serialize the request content
+    FString Content;
+    if (!SerializeJsonObject(ContentJson, Content))
+    {
+        // Handle JSON serialization failure
+        HandleJsonSerializationFailure(ErrorCallback);
+        return;
+    }
+
+    // Make the request
+    const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::POST, TMultiMap<FString, FString>(), Session->GetAuthToken());
+
+    // Lock the ActiveRequests mutex to protect concurrent access
+    FScopeLock Lock(&ActiveRequestsMutex);
+
+    // Add the HttpRequest to ActiveRequests
+    ActiveRequests.Add(HttpRequest);
+
+    // Bind the response callback and handle the response
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+
+        if (!IsValidLowLevel())
+        {
+            return;
+        }
+
+        // Lock the ActiveRequests mutex to protect concurrent access
+        FScopeLock Lock(&ActiveRequestsMutex);
+
+        if (ActiveRequests.Contains(HttpRequest))
+        {
+            if (bSuccess && Response.IsValid())
+            {
+                const FString ResponseBody = Response->GetContentAsString();
+
+                // Check if Request was successful
+                if (IsResponseSuccessful(Response->GetResponseCode()))
+                {
+                    // Check for Success Callback
+                    if (SuccessCallback)
+                    {
+                        SuccessCallback();
+                    }
+                }
+                else
+                {
+                    // Check for Error Callback
+                    if (ErrorCallback)
+                    {
+                        const FNakamaError Error(ResponseBody);
+                        ErrorCallback(Error);
+                    }
+                }
+            }
+            else
+            {
+                // Handle Invalid Response
+                if (ErrorCallback)
+                {
+                    const FNakamaError RequestError = CreateRequestFailureError();
+                    ErrorCallback(RequestError);
+                }
+            }
+
+            // Remove the HttpRequest from ActiveRequests
+            ActiveRequests.Remove(HttpRequest);
+        }
+    });
+
+    // Process the request
+    HttpRequest->ProcessRequest();
+}
+
+void UNakamaClient::ImportFacebookFriends(
+    UNakamaSession* Session,
+    const FString& Token,
+    const TOptional<bool> bReset,
+    TFunction<void()> SuccessCallback,
+    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+{
+    // Setup the endpoint
+    const FString Endpoint = TEXT("/v2/friend/facebook");
+
+    // Verify the session
+    if (!IsSessionValid(Session, ErrorCallback))
+    {
+        return;
+    }
+
+    // NOTE: Use Query Params for Reset? Docs say json but C++ SDK uses Body/json
+
+    // Setup the request content
+    const TSharedPtr<FJsonObject> ContentJson = MakeShared<FJsonObject>();
+    ContentJson->SetStringField(TEXT("token"), Token);
+    if (bReset.IsSet())
+    {
+        ContentJson->SetBoolField(TEXT("reset"), bReset.GetValue());
+    }
+
+    // Serialize the request content
+    FString Content;
+    if (!SerializeJsonObject(ContentJson, Content))
+    {
+        // Handle JSON serialization failure
+        HandleJsonSerializationFailure(ErrorCallback);
+        return;
+    }
+
+    // Make the request
+    const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::POST, TMultiMap<FString, FString>(), Session->GetAuthToken());
+
+    // Lock the ActiveRequests mutex to protect concurrent access
+    FScopeLock Lock(&ActiveRequestsMutex);
+
+    // Add the HttpRequest to ActiveRequests
+    ActiveRequests.Add(HttpRequest);
+
+    // Bind the response callback and handle the response
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+
+        if (!IsValidLowLevel())
+        {
+            return;
+        }
+
+        // Lock the ActiveRequests mutex to protect concurrent access
+        FScopeLock Lock(&ActiveRequestsMutex);
+
+        if (ActiveRequests.Contains(HttpRequest))
+        {
+            if (bSuccess && Response.IsValid())
+            {
+                const FString ResponseBody = Response->GetContentAsString();
+
+                // Check if Request was successful
+                if (IsResponseSuccessful(Response->GetResponseCode()))
+                {
+                    // Check for Success Callback
+                    if (SuccessCallback)
+                    {
+                        SuccessCallback();
+                    }
+                }
+                else
+                {
+                    // Check for Error Callback
+                    if (ErrorCallback)
+                    {
+                        const FNakamaError Error(ResponseBody);
+                        ErrorCallback(Error);
+                    }
+                }
+            }
+            else
+            {
+                // Handle Invalid Response
+                if (ErrorCallback)
+                {
+                    const FNakamaError RequestError = CreateRequestFailureError();
+                    ErrorCallback(RequestError);
+                }
+            }
+
+            // Remove the HttpRequest from ActiveRequests
+            ActiveRequests.Remove(HttpRequest);
+        }
+    });
+
+    // Process the request
+    HttpRequest->ProcessRequest();
+}
+
+void UNakamaClient::ImportSteamFriends(
+    UNakamaSession* Session,
+    const FString& SteamId,
+    const TOptional<bool> bReset,
+    TFunction<void()> SuccessCallback,
+    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+{
+    // Setup the endpoint
+    const FString Endpoint = TEXT("/v2/friend/steam");
+
+    // Verify the session
+    if (!IsSessionValid(Session, ErrorCallback))
+    {
+        return;
+    }
+
+    // NOTE: Use Query Params for Reset? Docs say json but C++ SDK uses Body/json
+
+    // Setup the request content
+    const TSharedPtr<FJsonObject> ContentJson = MakeShared<FJsonObject>();
+    ContentJson->SetStringField(TEXT("steamId"), SteamId);
+    if (bReset.IsSet())
+    {
+        ContentJson->SetBoolField(TEXT("reset"), bReset.GetValue());
+    }
+
+    // Serialize the request content
+    FString Content;
+    if (!SerializeJsonObject(ContentJson, Content))
+    {
+        // Handle JSON serialization failure
+        HandleJsonSerializationFailure(ErrorCallback);
+        return;
+    }
+
+    // Make the request
+    const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::POST, TMultiMap<FString, FString>(), Session->GetAuthToken());
+
+    // Lock the ActiveRequests mutex to protect concurrent access
+    FScopeLock Lock(&ActiveRequestsMutex);
+
+    // Add the HttpRequest to ActiveRequests
+    ActiveRequests.Add(HttpRequest);
+
+    // Bind the response callback and handle the response
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+
+        if (!IsValidLowLevel())
+        {
+            return;
+        }
+
+        // Lock the ActiveRequests mutex to protect concurrent access
+        FScopeLock Lock(&ActiveRequestsMutex);
+
+        if (ActiveRequests.Contains(HttpRequest))
+        {
+            if (bSuccess && Response.IsValid())
+            {
+                const FString ResponseBody = Response->GetContentAsString();
+
+                // Check if Request was successful
+                if (IsResponseSuccessful(Response->GetResponseCode()))
+                {
+                    // Check for Success Callback
+                    if (SuccessCallback)
+                    {
+                        SuccessCallback();
+                    }
+                }
+                else
+                {
+                    // Check for Error Callback
+                    if (ErrorCallback)
+                    {
+                        const FNakamaError Error(ResponseBody);
+                        ErrorCallback(Error);
+                    }
+                }
+            }
+            else
+            {
+                // Handle Invalid Response
+                if (ErrorCallback)
+                {
+                    const FNakamaError RequestError = CreateRequestFailureError();
+                    ErrorCallback(RequestError);
+                }
+            }
+
+            // Remove the HttpRequest from ActiveRequests
+            ActiveRequests.Remove(HttpRequest);
+        }
+    });
+
+    // Process the request
+    HttpRequest->ProcessRequest();
+}
+
+
+void UNakamaClient::GetAccount(
+    UNakamaSession* Session,
+    TFunction<void(const FNakamaAccount& Account)> SuccessCallback,
+    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+{
+    // Setup the endpoint
+    const FString Endpoint = TEXT("/v2/account");
+
+    // Verify the session
+    if (!IsSessionValid(Session, ErrorCallback))
+    {
+        return;
+    }
+
+    // Make the request
+    const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::GET, TMultiMap<FString, FString>(), Session->SessionData.AuthToken);
+
+    // Lock the ActiveRequests mutex to protect concurrent access
+    FScopeLock Lock(&ActiveRequestsMutex);
+
+    // Add the HttpRequest to ActiveRequests
+    ActiveRequests.Add(HttpRequest);
+
+    // Bind the response callback and handle the response
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+
+        if (!IsValidLowLevel())
+        {
+            return;
+        }
+
+        // Lock the ActiveRequests mutex to protect concurrent access
+        FScopeLock Lock(&ActiveRequestsMutex);
+
+        if (ActiveRequests.Contains(HttpRequest))
+        {
+            if (bSuccess && Response.IsValid())
+            {
+                const FString ResponseBody = Response->GetContentAsString();
+
+                // Check if Request was successful
+                if (IsResponseSuccessful(Response->GetResponseCode()))
+                {
+                    // Check for Success Callback
+                    if (SuccessCallback)
+                    {
+                        const FNakamaAccount NakamaAccount = FNakamaAccount(ResponseBody);
+                        SuccessCallback(NakamaAccount);
+                    }
+                }
+                else
+                {
+                    // Check for Error Callback
+                    if (ErrorCallback)
+                    {
+                        const FNakamaError Error(ResponseBody);
+                        ErrorCallback(Error);
+                    }
+                }
+            }
+            else
+            {
+                // Handle Invalid Response
+                if (ErrorCallback)
+                {
+                    const FNakamaError RequestError = CreateRequestFailureError();
+                    ErrorCallback(RequestError);
+                }
+            }
+
+            // Remove the HttpRequest from ActiveRequests
+            ActiveRequests.Remove(HttpRequest);
+        }
+    });
+
+    // Process the request
+    HttpRequest->ProcessRequest();
+}
+
+void UNakamaClient::UpdateAccount(
+    UNakamaSession* Session,
+    const TOptional<FString>& Username,
+    const TOptional<FString>& DisplayName,
+    const TOptional<FString>& AvatarUrl,
+    const TOptional<FString>& LangTag,
+    const TOptional<FString>& Location,
+    const TOptional<FString>& TimeZone,
+    TFunction<void()> SuccessCallback,
+    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+{
+    // Setup the endpoint
+    const FString Endpoint = TEXT("/v2/account");
+
+    // Verify the session
+    if (!IsSessionValid(Session, ErrorCallback))
+    {
+        return;
+    }
+
+    // Setup the request content
+    const TSharedPtr<FJsonObject> ContentJson = MakeShared<FJsonObject>();
+    if (Username.IsSet() && !Username.GetValue().IsEmpty())
+    {
+        ContentJson->SetStringField(TEXT("username"), Username.GetValue());
+    }
+    if (DisplayName.IsSet() && !DisplayName.GetValue().IsEmpty())
+    {
+        ContentJson->SetStringField(TEXT("display_name"), DisplayName.GetValue());
+    }
+    if (AvatarUrl.IsSet() && !AvatarUrl.GetValue().IsEmpty())
+    {
+        ContentJson->SetStringField(TEXT("avatar_url"), AvatarUrl.GetValue());
+    }
+    if (LangTag.IsSet() && !LangTag.GetValue().IsEmpty())
+    {
+        ContentJson->SetStringField(TEXT("lang_tag"), LangTag.GetValue());
+    }
+    if (Location.IsSet() && !Location.GetValue().IsEmpty())
+    {
+        ContentJson->SetStringField(TEXT("location"), Location.GetValue());
+    }
+    if (TimeZone.IsSet() && !TimeZone.GetValue().IsEmpty())
+    {
+        ContentJson->SetStringField(TEXT("timezone"), TimeZone.GetValue());
+    }
+
+    // Serialize the request content
+    FString Content;
+    if (!SerializeJsonObject(ContentJson, Content))
+    {
+        // Handle JSON serialization failure
+        HandleJsonSerializationFailure(ErrorCallback);
+        return;
+    }
+
+    // Make the request
+    const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::PUT, TMultiMap<FString, FString>(), Session->SessionData.AuthToken);
+
+    // Lock the ActiveRequests mutex to protect concurrent access
+    FScopeLock Lock(&ActiveRequestsMutex);
+
+    // Add the HttpRequest to ActiveRequests
+    ActiveRequests.Add(HttpRequest);
+
+    // Bind the response callback and handle the response
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+
+        if (!IsValidLowLevel())
+        {
+            return;
+        }
+
+        // Lock the ActiveRequests mutex to protect concurrent access
+        FScopeLock Lock(&ActiveRequestsMutex);
+
+        if (ActiveRequests.Contains(HttpRequest))
+        {
+            if (bSuccess && Response.IsValid())
+            {
+                const FString ResponseBody = Response->GetContentAsString();
+
+                // Check if Request was successful
+                if (IsResponseSuccessful(Response->GetResponseCode()))
+                {
+                    // Check for Success Callback
+                    if (SuccessCallback)
+                    {
+                        SuccessCallback();
+                    }
+                }
+                else
+                {
+                    // Check for Error Callback
+                    if (ErrorCallback)
+                    {
+                        const FNakamaError Error(ResponseBody);
+                        ErrorCallback(Error);
+                    }
+                }
+            }
+            else
+            {
+                // Handle Invalid Response
+                if (ErrorCallback)
+                {
+                    const FNakamaError RequestError = CreateRequestFailureError();
+                    ErrorCallback(RequestError);
+                }
+            }
+
+            // Remove the HttpRequest from ActiveRequests
+            ActiveRequests.Remove(HttpRequest);
+        }
+    });
+
+    // Process the request
+    HttpRequest->ProcessRequest();
+}
+
+void UNakamaClient::GetUsers(
+    UNakamaSession* Session,
+    const TArray<FString>& UserIds,
+    const TArray<FString>& Usernames,
+    const TArray<FString>& FacebookIds,
+    TFunction<void(const FNakamaUserList& Users)> SuccessCallback,
+    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+{
+    // Setup the endpoint
+    const FString Endpoint = TEXT("/v2/user");
+
+    // Verify the session
+    if (!IsSessionValid(Session, ErrorCallback))
+    {
+        return;
+    }
+    
+    // Setup the query parameters
+    TMultiMap<FString, FString> QueryParams;
+    if (UserIds.Num() > 0)
+    {
+        for (const FString& UserId : UserIds)
+        {
+            QueryParams.Add(TEXT("ids"), UserId);
+        }
+    }
+    if (Usernames.Num() > 0)
+    {
+        for (const FString& Username : Usernames)
+        {
+            const FString EncodedUsername = FGenericPlatformHttp::UrlEncode(Username);
+            QueryParams.Add(TEXT("usernames"), EncodedUsername);
+        }
+    }
+    if (FacebookIds.Num() > 0)
+    {
+        for (const FString& FacebookId : FacebookIds)
+        {
+            QueryParams.Add(TEXT("facebook_ids"), FacebookId);
+        }
+    }
+
+    // Make the request
+    const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::GET, QueryParams, Session->GetAuthToken());
+
+    // Lock the ActiveRequests mutex to protect concurrent access
+    FScopeLock Lock(&ActiveRequestsMutex);
+
+    // Add the HttpRequest to ActiveRequests
+    ActiveRequests.Add(HttpRequest);
+
+    // Bind the response callback and handle the response
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+
+        if (!IsValidLowLevel())
+        {
+            return;
+        }
+
+        // Lock the ActiveRequests mutex to protect concurrent access
+        FScopeLock Lock(&ActiveRequestsMutex);
+
+        if (ActiveRequests.Contains(HttpRequest))
+        {
+            if (bSuccess && Response.IsValid())
+            {
+                const FString ResponseBody = Response->GetContentAsString();
+
+                // Check if Request was successful
+                if (IsResponseSuccessful(Response->GetResponseCode()))
+                {
+                    // Check for Success Callback
+                    if (SuccessCallback)
+                    {
+                        const FNakamaUserList UserList = FNakamaUserList(ResponseBody);
+                        SuccessCallback(UserList);
+                    }
+                }
+                else
+                {
+                    // Check for Error Callback
+                    if (ErrorCallback)
+                    {
+                        const FNakamaError Error(ResponseBody);
+                        ErrorCallback(Error);
+                    }
+                }
+            }
+            else
+            {
+                // Handle Invalid Response
+                if (ErrorCallback)
+                {
+                    const FNakamaError RequestError = CreateRequestFailureError();
+                    ErrorCallback(RequestError);
+                }
+            }
+
+            // Remove the HttpRequest from ActiveRequests
+            ActiveRequests.Remove(HttpRequest);
+        }
+    });
+
+    // Process the request
+    HttpRequest->ProcessRequest();
+}
+
+void UNakamaClient::AddFriends(
+    UNakamaSession* Session,
+    const TArray<FString>& UserIds,
+    const TArray<FString>& Usernames,
+    TFunction<void()> SuccessCallback,
+    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+{
+    // Setup the endpoint
+    const FString Endpoint = TEXT("/v2/friend");
+
+    // Verify the session
+    if (!IsSessionValid(Session, ErrorCallback))
+    {
+        return;
+    }
+    
+    // Setup the query parameters
+    TMultiMap<FString, FString> QueryParams;
+    if (UserIds.Num() > 0)
+    {
+        for (const FString& UserId : UserIds)
+        {
+            QueryParams.Add(TEXT("ids"), UserId);
+        }
+    }
+    if (Usernames.Num() > 0)
+    {
+        for (const FString& Username : Usernames)
+        {
+            const FString EncodedUsername = FGenericPlatformHttp::UrlEncode(Username);
+            QueryParams.Add(TEXT("usernames"), EncodedUsername);
+        }
+    }
+
+    // Make the request
+    const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::POST, QueryParams, Session->GetAuthToken());
+
+    // Lock the ActiveRequests mutex to protect concurrent access
+    FScopeLock Lock(&ActiveRequestsMutex);
+
+    // Add the HttpRequest to ActiveRequests
+    ActiveRequests.Add(HttpRequest);
+
+    // Bind the response callback and handle the response
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+
+        if (!IsValidLowLevel())
+        {
+            return;
+        }
+
+        // Lock the ActiveRequests mutex to protect concurrent access
+        FScopeLock Lock(&ActiveRequestsMutex);
+
+        if (ActiveRequests.Contains(HttpRequest))
+        {
+            if (bSuccess && Response.IsValid())
+            {
+                const FString ResponseBody = Response->GetContentAsString();
+
+                // Check if Request was successful
+                if (IsResponseSuccessful(Response->GetResponseCode()))
+                {
+                    // Check for Success Callback
+                    if (SuccessCallback)
+                    {
+                        SuccessCallback();
+                    }
+                }
+                else
+                {
+                    // Check for Error Callback
+                    if (ErrorCallback)
+                    {
+                        const FNakamaError Error(ResponseBody);
+                        ErrorCallback(Error);
+                    }
+                }
+            }
+            else
+            {
+                // Handle Invalid Response
+                if (ErrorCallback)
+                {
+                    const FNakamaError RequestError = CreateRequestFailureError();
+                    ErrorCallback(RequestError);
+                }
+            }
+
+            // Remove the HttpRequest from ActiveRequests
+            ActiveRequests.Remove(HttpRequest);
+        }
+    });
+
+    // Process the request
+    HttpRequest->ProcessRequest();
+}
+
+void UNakamaClient::DeleteFriends(
+    UNakamaSession* Session,
+    const TArray<FString>& UserIds,
+    const TArray<FString>& Usernames,
+    TFunction<void()> SuccessCallback,
+    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+{
+    // Setup the endpoint
+    const FString Endpoint = TEXT("/v2/friend");
+
+    // Verify the session
+    if (!IsSessionValid(Session, ErrorCallback))
+    {
+        return;
+    }
+    
+    // Setup the query parameters
+    TMultiMap<FString, FString> QueryParams;
+    if (UserIds.Num() > 0)
+    {
+        for (const FString& UserId : UserIds)
+        {
+            QueryParams.Add(TEXT("ids"), UserId);
+        }
+    }
+    if (Usernames.Num() > 0)
+    {
+        for (const FString& Username : Usernames)
+        {
+            const FString EncodedUsername = FGenericPlatformHttp::UrlEncode(Username);
+            QueryParams.Add(TEXT("usernames"), EncodedUsername);
+        }
+    }
+
+    // Make the request
+    const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::DELETE, QueryParams, Session->GetAuthToken());
+
+    // Lock the ActiveRequests mutex to protect concurrent access
+    FScopeLock Lock(&ActiveRequestsMutex);
+
+    // Add the HttpRequest to ActiveRequests
+    ActiveRequests.Add(HttpRequest);
+
+    // Bind the response callback and handle the response
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+
+        if (!IsValidLowLevel())
+        {
+            return;
+        }
+
+        // Lock the ActiveRequests mutex to protect concurrent access
+        FScopeLock Lock(&ActiveRequestsMutex);
+
+        if (ActiveRequests.Contains(HttpRequest))
+        {
+            if (bSuccess && Response.IsValid())
+            {
+                const FString ResponseBody = Response->GetContentAsString();
+
+                // Check if Request was successful
+                if (IsResponseSuccessful(Response->GetResponseCode()))
+                {
+                    // Check for Success Callback
+                    if (SuccessCallback)
+                    {
+                        SuccessCallback();
+                    }
+                }
+                else
+                {
+                    // Check for Error Callback
+                    if (ErrorCallback)
+                    {
+                        const FNakamaError Error(ResponseBody);
+                        ErrorCallback(Error);
+                    }
+                }
+            }
+            else
+            {
+                // Handle Invalid Response
+                if (ErrorCallback)
+                {
+                    const FNakamaError RequestError = CreateRequestFailureError();
+                    ErrorCallback(RequestError);
+                }
+            }
+
+            // Remove the HttpRequest from ActiveRequests
+            ActiveRequests.Remove(HttpRequest);
+        }
+    });
+
+    // Process the request
+    HttpRequest->ProcessRequest();
+}
+
+void UNakamaClient::BlockFriends(
+    UNakamaSession* Session,
+    const TArray<FString>& UserIds,
+    const TArray<FString>& Usernames,
+    TFunction<void()> SuccessCallback,
+    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+{
+    // Setup the endpoint
+    const FString Endpoint = TEXT("/v2/friend/block");
+
+    // Verify the session
+    if (!IsSessionValid(Session, ErrorCallback))
+    {
+        return;
+    }
+    
+    // Setup the query parameters
+    TMultiMap<FString, FString> QueryParams;
+    if (UserIds.Num() > 0)
+    {
+        for (const FString& UserId : UserIds)
+        {
+            QueryParams.Add(TEXT("ids"), UserId);
+        }
+    }
+    if (Usernames.Num() > 0)
+    {
+        for (const FString& Username : Usernames)
+        {
+            const FString EncodedUsername = FGenericPlatformHttp::UrlEncode(Username);
+            QueryParams.Add(TEXT("usernames"), EncodedUsername);
+        }
+    }
+
+    // Make the request
+    const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::POST, QueryParams, Session->GetAuthToken());
+
+    // Lock the ActiveRequests mutex to protect concurrent access
+    FScopeLock Lock(&ActiveRequestsMutex);
+
+    // Add the HttpRequest to ActiveRequests
+    ActiveRequests.Add(HttpRequest);
+
+    // Bind the response callback and handle the response
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+
+        if (!IsValidLowLevel())
+        {
+            return;
+        }
+
+        // Lock the ActiveRequests mutex to protect concurrent access
+        FScopeLock Lock(&ActiveRequestsMutex);
+
+        if (ActiveRequests.Contains(HttpRequest))
+        {
+            if (bSuccess && Response.IsValid())
+            {
+                const FString ResponseBody = Response->GetContentAsString();
+
+                // Check if Request was successful
+                if (IsResponseSuccessful(Response->GetResponseCode()))
+                {
+                    // Check for Success Callback
+                    if (SuccessCallback)
+                    {
+                        SuccessCallback();
+                    }
+                }
+                else
+                {
+                    // Check for Error Callback
+                    if (ErrorCallback)
+                    {
+                        const FNakamaError Error(ResponseBody);
+                        ErrorCallback(Error);
+                    }
+                }
+            }
+            else
+            {
+                // Handle Invalid Response
+                if (ErrorCallback)
+                {
+                    const FNakamaError RequestError = CreateRequestFailureError();
+                    ErrorCallback(RequestError);
+                }
+            }
+
+            // Remove the HttpRequest from ActiveRequests
+            ActiveRequests.Remove(HttpRequest);
+        }
+    });
+
+    // Process the request
+    HttpRequest->ProcessRequest();
+}
+
+void UNakamaClient::ListFriends(
+    UNakamaSession* Session,
+    const TOptional<int32>& Limit,
+    TOptional<ENakamaFriendState> State,
+    const FString& Cursor,
+    TFunction<void(const FNakamaFriendList& Friends)> SuccessCallback,
+    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+{
+    // Setup the endpoint
+    const FString Endpoint = TEXT("/v2/friend");
+
+    // Verify the session
+    if (!IsSessionValid(Session, ErrorCallback))
+    {
+        return;
+    }
+    
+    // Setup the query parameters
+    TMultiMap<FString, FString> QueryParams;
+    if (Limit.IsSet())
+    {
+        QueryParams.Add(TEXT("limit"), FString::FromInt(Limit.GetValue()));
+    }
+    if (State.IsSet())
+    {
+        const FString StateString = FNakamaUtils::GetEnumValueAsIntString(State.GetValue());
+        QueryParams.Add(TEXT("state"), StateString);
+        
+    }
+    if(!Cursor.IsEmpty())
+    {
+        const FString EncodedCursor = FGenericPlatformHttp::UrlEncode(Cursor);
+        QueryParams.Add(TEXT("cursor"), EncodedCursor);
+    }
+
+    // Make the request
+    const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::GET, QueryParams, Session->GetAuthToken());
+
+    // Lock the ActiveRequests mutex to protect concurrent access
+    FScopeLock Lock(&ActiveRequestsMutex);
+
+    // Add the HttpRequest to ActiveRequests
+    ActiveRequests.Add(HttpRequest);
+
+    // Bind the response callback and handle the response
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+
+        if (!IsValidLowLevel())
+        {
+            return;
+        }
+
+        // Lock the ActiveRequests mutex to protect concurrent access
+        FScopeLock Lock(&ActiveRequestsMutex);
+
+        if (ActiveRequests.Contains(HttpRequest))
+        {
+            if (bSuccess && Response.IsValid())
+            {
+                const FString ResponseBody = Response->GetContentAsString();
+
+                // Check if Request was successful
+                if (IsResponseSuccessful(Response->GetResponseCode()))
+                {
+                    // Check for Success Callback
+                    if (SuccessCallback)
+                    {
+                        const FNakamaFriendList FriendsList = FNakamaFriendList(ResponseBody);
+                        SuccessCallback(FriendsList);
+                    }
+                }
+                else
+                {
+                    // Check for Error Callback
+                    if (ErrorCallback)
+                    {
+                        const FNakamaError Error(ResponseBody);
+                        ErrorCallback(Error);
+                    }
+                }
+            }
+            else
+            {
+                // Handle Invalid Response
+                if (ErrorCallback)
+                {
+                    const FNakamaError RequestError = CreateRequestFailureError();
+                    ErrorCallback(RequestError);
+                }
+            }
+
+            // Remove the HttpRequest from ActiveRequests
+            ActiveRequests.Remove(HttpRequest);
+        }
+    });
+
+    // Process the request
+    HttpRequest->ProcessRequest();
+}
+
+void UNakamaClient::CreateGroup(
+    UNakamaSession *Session,
+    const FString& Name,
+    const FString& Description,
+    const FString& AvatarUrl,
+    const FString& LangTag,
+    const bool bOpen,
+    const TOptional<int32>& MaxCount,
+    TFunction<void(const FNakamaGroup& Group)> SuccessCallback,
+    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+{
+     // Setup the endpoint
+    const FString Endpoint = TEXT("/v2/group");
+
+    // Verify the session
+    if (!IsSessionValid(Session, ErrorCallback))
+    {
+        return;
+    }
+
+    // Setup the request content
+    const TSharedPtr<FJsonObject> ContentJson = MakeShared<FJsonObject>();
+    ContentJson->SetStringField(TEXT("name"), Name);
+    ContentJson->SetStringField(TEXT("description"), Description);
+    ContentJson->SetStringField(TEXT("avatar_url"), AvatarUrl);
+    ContentJson->SetStringField(TEXT("lang_tag"), LangTag);
+    ContentJson->SetBoolField(TEXT("open"), bOpen);
+    
+    if (MaxCount.IsSet())
+    {
+        ContentJson->SetNumberField(TEXT("max_count"), MaxCount.GetValue());
+    }
+
+    // Serialize the request content
+    FString Content;
+    if (!SerializeJsonObject(ContentJson, Content))
+    {
+        // Handle JSON serialization failure
+        HandleJsonSerializationFailure(ErrorCallback);
+        return;
+    }
+
+    // Make the request
+    const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::POST, TMultiMap<FString, FString>(), Session->SessionData.AuthToken);
+
+    // Lock the ActiveRequests mutex to protect concurrent access
+    FScopeLock Lock(&ActiveRequestsMutex);
+
+    // Add the HttpRequest to ActiveRequests
+    ActiveRequests.Add(HttpRequest);
+
+    // Bind the response callback and handle the response
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+
+        if (!IsValidLowLevel())
+        {
+            return;
+        }
+
+        // Lock the ActiveRequests mutex to protect concurrent access
+        FScopeLock Lock(&ActiveRequestsMutex);
+
+        if (ActiveRequests.Contains(HttpRequest))
+        {
+            if (bSuccess && Response.IsValid())
+            {
+                const FString ResponseBody = Response->GetContentAsString();
+
+                // Check if Request was successful
+                if (IsResponseSuccessful(Response->GetResponseCode()))
+                {
+                    // Check for Success Callback
+                    if (SuccessCallback)
+                    {
+                        const FNakamaGroup Group = FNakamaGroup(ResponseBody);
+                        SuccessCallback(Group);
+                    }
+                }
+                else
+                {
+                    // Check for Error Callback
+                    if (ErrorCallback)
+                    {
+                        const FNakamaError Error(ResponseBody);
+                        ErrorCallback(Error);
+                    }
+                }
+            }
+            else
+            {
+                // Handle Invalid Response
+                if (ErrorCallback)
+                {
+                    const FNakamaError RequestError = CreateRequestFailureError();
+                    ErrorCallback(RequestError);
+                }
+            }
+
+            // Remove the HttpRequest from ActiveRequests
+            ActiveRequests.Remove(HttpRequest);
+        }
+    });
+
+    // Process the request
+    HttpRequest->ProcessRequest();
+}
+
+void UNakamaClient::DeleteGroup(
+    UNakamaSession* Session,
+    const FString& GroupId,
+    TFunction<void()> SuccessCallback,
+    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+{
+    // Setup the endpoint
+    const FString Endpoint = FString::Printf(TEXT("/v2/group/%s"), *GroupId);
+
+    // Verify the session
+    if (!IsSessionValid(Session, ErrorCallback))
+    {
+        return;
+    }
+
+    // Make the request
+    const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::DELETE, TMultiMap<FString, FString>(), Session->SessionData.AuthToken);
+
+    // Lock the ActiveRequests mutex to protect concurrent access
+    FScopeLock Lock(&ActiveRequestsMutex);
+
+    // Add the HttpRequest to ActiveRequests
+    ActiveRequests.Add(HttpRequest);
+
+    // Bind the response callback and handle the response
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+
+        if (!IsValidLowLevel())
+        {
+            return;
+        }
+
+        // Lock the ActiveRequests mutex to protect concurrent access
+        FScopeLock Lock(&ActiveRequestsMutex);
+
+        if (ActiveRequests.Contains(HttpRequest))
+        {
+            if (bSuccess && Response.IsValid())
+            {
+                const FString ResponseBody = Response->GetContentAsString();
+
+                // Check if Request was successful
+                if (IsResponseSuccessful(Response->GetResponseCode()))
+                {
+                    // Check for Success Callback
+                    if (SuccessCallback)
+                    {
+                        SuccessCallback();
+                    }
+                }
+                else
+                {
+                    // Check for Error Callback
+                    if (ErrorCallback)
+                    {
+                        const FNakamaError Error(ResponseBody);
+                        ErrorCallback(Error);
+                    }
+                }
+            }
+            else
+            {
+                // Handle Invalid Response
+                if (ErrorCallback)
+                {
+                    const FNakamaError RequestError = CreateRequestFailureError();
+                    ErrorCallback(RequestError);
+                }
+            }
+
+            // Remove the HttpRequest from ActiveRequests
+            ActiveRequests.Remove(HttpRequest);
+        }
+    });
+
+    // Process the request
+    HttpRequest->ProcessRequest();
+}
+
+void UNakamaClient::AddGroupUsers(
+    UNakamaSession* Session,
+    const FString& GroupId,
+    const TArray<FString>& UserIds,
+    TFunction<void()> SuccessCallback,
+    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+{
+    // Setup the endpoint
+    const FString Endpoint = FString::Printf(TEXT("/v2/group/%s/add"), *GroupId);
+
+
+    // Verify the session
+    if (!IsSessionValid(Session, ErrorCallback))
+    {
+        return;
+    }
+    
+    // Setup the query parameters
+    TMultiMap<FString, FString> QueryParams;
+    if (UserIds.Num() > 0)
+    {
+        for (const FString& UserId : UserIds)
+        {
+            QueryParams.Add(TEXT("user_ids"), UserId);
+        }
+    }
+
+    // Make the request
+    const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::POST, QueryParams, Session->GetAuthToken());
+
+    // Lock the ActiveRequests mutex to protect concurrent access
+    FScopeLock Lock(&ActiveRequestsMutex);
+
+    // Add the HttpRequest to ActiveRequests
+    ActiveRequests.Add(HttpRequest);
+
+    // Bind the response callback and handle the response
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+
+        if (!IsValidLowLevel())
+        {
+            return;
+        }
+
+        // Lock the ActiveRequests mutex to protect concurrent access
+        FScopeLock Lock(&ActiveRequestsMutex);
+
+        if (ActiveRequests.Contains(HttpRequest))
+        {
+            if (bSuccess && Response.IsValid())
+            {
+                const FString ResponseBody = Response->GetContentAsString();
+
+                // Check if Request was successful
+                if (IsResponseSuccessful(Response->GetResponseCode()))
+                {
+                    // Check for Success Callback
+                    if (SuccessCallback)
+                    {
+                        SuccessCallback();
+                    }
+                }
+                else
+                {
+                    // Check for Error Callback
+                    if (ErrorCallback)
+                    {
+                        const FNakamaError Error(ResponseBody);
+                        ErrorCallback(Error);
+                    }
+                }
+            }
+            else
+            {
+                // Handle Invalid Response
+                if (ErrorCallback)
+                {
+                    const FNakamaError RequestError = CreateRequestFailureError();
+                    ErrorCallback(RequestError);
+                }
+            }
+
+            // Remove the HttpRequest from ActiveRequests
+            ActiveRequests.Remove(HttpRequest);
+        }
+    });
+
+    // Process the request
+    HttpRequest->ProcessRequest();
+}
+
+void UNakamaClient::ListGroupUsers(
+    UNakamaSession* Session,
+    const FString& GroupId,
+    const TOptional<int32>& Limit,
+    TOptional<ENakamaGroupState> State,
+    FString Cursor,
+    TFunction<void(const FNakamaGroupUsersList& GroupUsers)> SuccessCallback,
+    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+{
+    // Setup the endpoint
+    const FString Endpoint = FString::Printf(TEXT("/v2/group/%s/user"), *GroupId);
+
+    // Verify the session
+    if (!IsSessionValid(Session, ErrorCallback))
+    {
+        return;
+    }
+    
+    // Setup the query parameters
+    TMultiMap<FString, FString> QueryParams;
+    if (Limit.IsSet())
+    {
+        QueryParams.Add(TEXT("limit"), FString::FromInt(Limit.GetValue()));
+    }
+    if (State.IsSet())
+    {
+        const FString StateString = FNakamaUtils::GetEnumValueAsIntString(State.GetValue());
+        QueryParams.Add(TEXT("state"), StateString);
+    }
+    if(!Cursor.IsEmpty())
+    {
+        const FString EncodedCursor = FGenericPlatformHttp::UrlEncode(Cursor);
+        QueryParams.Add(TEXT("cursor"), EncodedCursor);
+    }
+
+    // Make the request
+    const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::GET, QueryParams, Session->GetAuthToken());
+
+    // Lock the ActiveRequests mutex to protect concurrent access
+    FScopeLock Lock(&ActiveRequestsMutex);
+
+    // Add the HttpRequest to ActiveRequests
+    ActiveRequests.Add(HttpRequest);
+
+    // Bind the response callback and handle the response
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+
+        if (!IsValidLowLevel())
+        {
+            return;
+        }
+
+        // Lock the ActiveRequests mutex to protect concurrent access
+        FScopeLock Lock(&ActiveRequestsMutex);
+
+        if (ActiveRequests.Contains(HttpRequest))
+        {
+            if (bSuccess && Response.IsValid())
+            {
+                const FString ResponseBody = Response->GetContentAsString();
+
+                // Check if Request was successful
+                if (IsResponseSuccessful(Response->GetResponseCode()))
+                {
+                    // Check for Success Callback
+                    if (SuccessCallback)
+                    {
+                        const FNakamaGroupUsersList GroupUsersList = FNakamaGroupUsersList(ResponseBody);
+                        SuccessCallback(GroupUsersList);
+                    }
+                }
+                else
+                {
+                    // Check for Error Callback
+                    if (ErrorCallback)
+                    {
+                        const FNakamaError Error(ResponseBody);
+                        ErrorCallback(Error);
+                    }
+                }
+            }
+            else
+            {
+                // Handle Invalid Response
+                if (ErrorCallback)
+                {
+                    const FNakamaError RequestError = CreateRequestFailureError();
+                    ErrorCallback(RequestError);
+                }
+            }
+
+            // Remove the HttpRequest from ActiveRequests
+            ActiveRequests.Remove(HttpRequest);
+        }
+    });
+
+    // Process the request
+    HttpRequest->ProcessRequest();
+}
+
+void UNakamaClient::KickGroupUsers(
+    UNakamaSession* Session,
+    const FString& GroupId,
+    const TArray<FString>& UserIds,
+    TFunction<void()> SuccessCallback,
+    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+{
+    // Setup the endpoint
+    const FString Endpoint = FString::Printf(TEXT("/v2/group/%s/kick"), *GroupId);
+
+    // Verify the session
+    if (!IsSessionValid(Session, ErrorCallback))
+    {
+        return;
+    }
+    
+    // Setup the query parameters
+    TMultiMap<FString, FString> QueryParams;
+    if (UserIds.Num() > 0)
+    {
+        for (const FString& UserId : UserIds)
+        {
+            QueryParams.Add(TEXT("user_ids"), UserId);
+        }
+    }
+
+    // Make the request
+    const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::POST, QueryParams, Session->GetAuthToken());
+
+    // Lock the ActiveRequests mutex to protect concurrent access
+    FScopeLock Lock(&ActiveRequestsMutex);
+
+    // Add the HttpRequest to ActiveRequests
+    ActiveRequests.Add(HttpRequest);
+
+    // Bind the response callback and handle the response
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+
+        if (!IsValidLowLevel())
+        {
+            return;
+        }
+
+        // Lock the ActiveRequests mutex to protect concurrent access
+        FScopeLock Lock(&ActiveRequestsMutex);
+
+        if (ActiveRequests.Contains(HttpRequest))
+        {
+            if (bSuccess && Response.IsValid())
+            {
+                const FString ResponseBody = Response->GetContentAsString();
+
+                // Check if Request was successful
+                if (IsResponseSuccessful(Response->GetResponseCode()))
+                {
+                    // Check for Success Callback
+                    if (SuccessCallback)
+                    {
+                        SuccessCallback();
+                    }
+                }
+                else
+                {
+                    // Check for Error Callback
+                    if (ErrorCallback)
+                    {
+                        const FNakamaError Error(ResponseBody);
+                        ErrorCallback(Error);
+                    }
+                }
+            }
+            else
+            {
+                // Handle Invalid Response
+                if (ErrorCallback)
+                {
+                    const FNakamaError RequestError = CreateRequestFailureError();
+                    ErrorCallback(RequestError);
+                }
+            }
+
+            // Remove the HttpRequest from ActiveRequests
+            ActiveRequests.Remove(HttpRequest);
+        }
+    });
+
+    // Process the request
+    HttpRequest->ProcessRequest();
+}
+
+void UNakamaClient::JoinGroup(
+    UNakamaSession* Session,
+    const FString& GroupId,
+    TFunction<void()> SuccessCallback,
+    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+{
+    // Setup the endpoint
+    const FString Endpoint = FString::Printf(TEXT("/v2/group/%s/join"), *GroupId);
+
+    // Verify the session
+    if (!IsSessionValid(Session, ErrorCallback))
+    {
+        return;
+    }
+
+    // Make the request
+    const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::POST, {}, Session->GetAuthToken());
+
+    // Lock the ActiveRequests mutex to protect concurrent access
+    FScopeLock Lock(&ActiveRequestsMutex);
+
+    // Add the HttpRequest to ActiveRequests
+    ActiveRequests.Add(HttpRequest);
+
+    // Bind the response callback and handle the response
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+
+        if (!IsValidLowLevel())
+        {
+            return;
+        }
+
+        // Lock the ActiveRequests mutex to protect concurrent access
+        FScopeLock Lock(&ActiveRequestsMutex);
+
+        if (ActiveRequests.Contains(HttpRequest))
+        {
+            if (bSuccess && Response.IsValid())
+            {
+                const FString ResponseBody = Response->GetContentAsString();
+
+                // Check if Request was successful
+                if (IsResponseSuccessful(Response->GetResponseCode()))
+                {
+                    // Check for Success Callback
+                    if (SuccessCallback)
+                    {
+                        SuccessCallback();
+                    }
+                }
+                else
+                {
+                    // Check for Error Callback
+                    if (ErrorCallback)
+                    {
+                        const FNakamaError Error(ResponseBody);
+                        ErrorCallback(Error);
+                    }
+                }
+            }
+            else
+            {
+                // Handle Invalid Response
+                if (ErrorCallback)
+                {
+                    const FNakamaError RequestError = CreateRequestFailureError();
+                    ErrorCallback(RequestError);
+                }
+            }
+
+            // Remove the HttpRequest from ActiveRequests
+            ActiveRequests.Remove(HttpRequest);
+        }
+    });
+
+    // Process the request
+    HttpRequest->ProcessRequest();
+}
+
+void UNakamaClient::LeaveGroup(
+    UNakamaSession* Session,
+    const FString& GroupId,
+    TFunction<void()> SuccessCallback,
+    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+{
+    // Setup the endpoint
+    const FString Endpoint = FString::Printf(TEXT("/v2/group/%s/leave"), *GroupId);
+
+    // Verify the session
+    if (!IsSessionValid(Session, ErrorCallback))
+    {
+        return;
+    }
+
+    // Make the request
+    const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::POST, {}, Session->GetAuthToken());
+
+    // Lock the ActiveRequests mutex to protect concurrent access
+    FScopeLock Lock(&ActiveRequestsMutex);
+
+    // Add the HttpRequest to ActiveRequests
+    ActiveRequests.Add(HttpRequest);
+
+    // Bind the response callback and handle the response
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+
+        if (!IsValidLowLevel())
+        {
+            return;
+        }
+
+        // Lock the ActiveRequests mutex to protect concurrent access
+        FScopeLock Lock(&ActiveRequestsMutex);
+
+        if (ActiveRequests.Contains(HttpRequest))
+        {
+            if (bSuccess && Response.IsValid())
+            {
+                const FString ResponseBody = Response->GetContentAsString();
+
+                // Check if Request was successful
+                if (IsResponseSuccessful(Response->GetResponseCode()))
+                {
+                    // Check for Success Callback
+                    if (SuccessCallback)
+                    {
+                        SuccessCallback();
+                    }
+                }
+                else
+                {
+                    // Check for Error Callback
+                    if (ErrorCallback)
+                    {
+                        const FNakamaError Error(ResponseBody);
+                        ErrorCallback(Error);
+                    }
+                }
+            }
+            else
+            {
+                // Handle Invalid Response
+                if (ErrorCallback)
+                {
+                    const FNakamaError RequestError = CreateRequestFailureError();
+                    ErrorCallback(RequestError);
+                }
+            }
+
+            // Remove the HttpRequest from ActiveRequests
+            ActiveRequests.Remove(HttpRequest);
+        }
+    });
+
+    // Process the request
+    HttpRequest->ProcessRequest();
+}
+
+void UNakamaClient::ListGroups(
+    UNakamaSession* Session,
+    const FString& Name,
+    int32 Limit,
+    const FString& Cursor,
+    TFunction<void(const FNakamaGroupList& Groups)> SuccessCallback,
+    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+{
+    // Setup the endpoint
+    const FString Endpoint = TEXT("/v2/group");
+
+    // Verify the session
+    if (!IsSessionValid(Session, ErrorCallback))
+    {
+        return;
+    }
+    
+    // Setup the query parameters
+    TMultiMap<FString, FString> QueryParams;
+    if (!Name.IsEmpty())
+    {
+        QueryParams.Add(TEXT("name"), Name);
+    }    
+    if (!Cursor.IsEmpty())
+    {
+        const FString EncodedCursor = FGenericPlatformHttp::UrlEncode(Cursor);
+        QueryParams.Add(TEXT("cursor"), EncodedCursor);
+    }
+    if (Limit > 0)
+    {
+        QueryParams.Add(TEXT("limit"), FString::FromInt(Limit));
+    }
+
+    // Make the request
+    const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::GET, QueryParams, Session->GetAuthToken());
+
+    // Lock the ActiveRequests mutex to protect concurrent access
+    FScopeLock Lock(&ActiveRequestsMutex);
+
+    // Add the HttpRequest to ActiveRequests
+    ActiveRequests.Add(HttpRequest);
+
+    // Bind the response callback and handle the response
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+
+        if (!IsValidLowLevel())
+        {
+            return;
+        }
+
+        // Lock the ActiveRequests mutex to protect concurrent access
+        FScopeLock Lock(&ActiveRequestsMutex);
+
+        if (ActiveRequests.Contains(HttpRequest))
+        {
+            if (bSuccess && Response.IsValid())
+            {
+                const FString ResponseBody = Response->GetContentAsString();
+
+                // Check if Request was successful
+                if (IsResponseSuccessful(Response->GetResponseCode()))
+                {
+                    // Check for Success Callback
+                    if (SuccessCallback)
+                    {
+                        const FNakamaGroupList GroupList = FNakamaGroupList(ResponseBody);
+                        SuccessCallback(GroupList);
+                    }
+                }
+                else
+                {
+                    // Check for Error Callback
+                    if (ErrorCallback)
+                    {
+                        const FNakamaError Error(ResponseBody);
+                        ErrorCallback(Error);
+                    }
+                }
+            }
+            else
+            {
+                // Handle Invalid Response
+                if (ErrorCallback)
+                {
+                    const FNakamaError RequestError = CreateRequestFailureError();
+                    ErrorCallback(RequestError);
+                }
+            }
+
+            // Remove the HttpRequest from ActiveRequests
+            ActiveRequests.Remove(HttpRequest);
+        }
+    });
+
+    // Process the request
+    HttpRequest->ProcessRequest();
+}
+
+// Used instead of passing in UserId, gets UserId from the Session
+void UNakamaClient::ListUserGroups(
+    UNakamaSession* Session,
+    const TOptional<int32>& Limit,
+    const TOptional<ENakamaGroupState>& State,
+    const FString& Cursor,
+    TFunction<void(const FNakamaUserGroupList& Groups)> SuccessCallback,
+    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+{
+    if(Session && Session->IsValidLowLevel())
+    {
+        ListUserGroups(Session, Session->GetUserId(), Limit, State, Cursor, SuccessCallback, ErrorCallback);
+    }
+    else
+    {
+        if (ErrorCallback)
+        {
+            FNakamaError Error;
+            Error.Code = ENakamaErrorCode::InvalidArgument;
+            Error.Message = TEXT("No session");
+            
+            ErrorCallback(Error);
+        }
+    }
+}
+
+void UNakamaClient::ListUserGroups(
+    UNakamaSession* Session,
+    const FString& UserId,
+    const TOptional<int32>& Limit,
+    const TOptional<ENakamaGroupState>& State,
+    const FString& Cursor,
+    TFunction<void(const FNakamaUserGroupList& Groups)> SuccessCallback,
+    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+{
+    // Setup the endpoint
+    const FString Endpoint = FString::Printf(TEXT("/v2/user/%s/group"), *UserId);
+
+    // Verify the session
+    if (!IsSessionValid(Session, ErrorCallback))
+    {
+        return;
+    }
+    
+    // Setup the query parameters
+    TMultiMap<FString, FString> QueryParams;
+    if (Limit.IsSet())
+    {
+        QueryParams.Add(TEXT("limit"), FString::FromInt(Limit.GetValue()));
+    }
+    if (State.IsSet())
+    {
+        const FString StateString = FNakamaUtils::GetEnumValueAsIntString(State.GetValue());
+        QueryParams.Add(TEXT("state"), StateString);
+    }
+    if (!Cursor.IsEmpty())
+    {
+        const FString EncodedCursor = FGenericPlatformHttp::UrlEncode(Cursor);
+        QueryParams.Add(TEXT("cursor"), EncodedCursor);
+    }
+
+    // Make the request
+    const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::GET, QueryParams, Session->GetAuthToken());
+
+    // Lock the ActiveRequests mutex to protect concurrent access
+    FScopeLock Lock(&ActiveRequestsMutex);
+
+    // Add the HttpRequest to ActiveRequests
+    ActiveRequests.Add(HttpRequest);
+
+    // Bind the response callback and handle the response
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+
+        if (!IsValidLowLevel())
+        {
+            return;
+        }
+
+        // Lock the ActiveRequests mutex to protect concurrent access
+        FScopeLock Lock(&ActiveRequestsMutex);
+
+        if (ActiveRequests.Contains(HttpRequest))
+        {
+            if (bSuccess && Response.IsValid())
+            {
+                const FString ResponseBody = Response->GetContentAsString();
+
+                // Check if Request was successful
+                if (IsResponseSuccessful(Response->GetResponseCode()))
+                {
+                    // Check for Success Callback
+                    if (SuccessCallback)
+                    {
+                        const FNakamaUserGroupList UserGroupList = FNakamaUserGroupList(ResponseBody);
+                        SuccessCallback(UserGroupList);
+                    }
+                }
+                else
+                {
+                    // Check for Error Callback
+                    if (ErrorCallback)
+                    {
+                        const FNakamaError Error(ResponseBody);
+                        ErrorCallback(Error);
+                    }
+                }
+            }
+            else
+            {
+                // Handle Invalid Response
+                if (ErrorCallback)
+                {
+                    const FNakamaError RequestError = CreateRequestFailureError();
+                    ErrorCallback(RequestError);
+                }
+            }
+
+            // Remove the HttpRequest from ActiveRequests
+            ActiveRequests.Remove(HttpRequest);
+        }
+    });
+
+    // Process the request
+    HttpRequest->ProcessRequest();
+}
+
+void UNakamaClient::PromoteGroupUsers(UNakamaSession* Session,
+    const FString& GroupId,
+    const TArray<FString>& UserIds,
+    TFunction<void()> SuccessCallback,
+    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+{
+    // Setup the endpoint
+    const FString Endpoint = FString::Printf(TEXT("/v2/group/%s/promote"), *GroupId);
+
+
+    // Verify the session
+    if (!IsSessionValid(Session, ErrorCallback))
+    {
+        return;
+    }
+    
+    // Setup the query parameters
+    TMultiMap<FString, FString> QueryParams;
+    if (UserIds.Num() > 0)
+    {
+        for (const FString& UserId : UserIds)
+        {
+            QueryParams.Add(TEXT("user_ids"), UserId);
+        }
+    }
+
+    // Make the request
+    const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::POST, QueryParams, Session->GetAuthToken());
+
+    // Lock the ActiveRequests mutex to protect concurrent access
+    FScopeLock Lock(&ActiveRequestsMutex);
+
+    // Add the HttpRequest to ActiveRequests
+    ActiveRequests.Add(HttpRequest);
+
+    // Bind the response callback and handle the response
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+
+        if (!IsValidLowLevel())
+        {
+            return;
+        }
+
+        // Lock the ActiveRequests mutex to protect concurrent access
+        FScopeLock Lock(&ActiveRequestsMutex);
+
+        if (ActiveRequests.Contains(HttpRequest))
+        {
+            if (bSuccess && Response.IsValid())
+            {
+                const FString ResponseBody = Response->GetContentAsString();
+
+                // Check if Request was successful
+                if (IsResponseSuccessful(Response->GetResponseCode()))
+                {
+                    // Check for Success Callback
+                    if (SuccessCallback)
+                    {
+                        SuccessCallback();
+                    }
+                }
+                else
+                {
+                    // Check for Error Callback
+                    if (ErrorCallback)
+                    {
+                        const FNakamaError Error(ResponseBody);
+                        ErrorCallback(Error);
+                    }
+                }
+            }
+            else
+            {
+                // Handle Invalid Response
+                if (ErrorCallback)
+                {
+                    const FNakamaError RequestError = CreateRequestFailureError();
+                    ErrorCallback(RequestError);
+                }
+            }
+
+            // Remove the HttpRequest from ActiveRequests
+            ActiveRequests.Remove(HttpRequest);
+        }
+    });
+
+    // Process the request
+    HttpRequest->ProcessRequest();
+}
+
+void UNakamaClient::DemoteGroupUsers(
+    UNakamaSession* Session,
+    const FString& GroupId,
+    const TArray<FString>& UserIds,
+    TFunction<void()> SuccessCallback,
+    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+{
+    // Setup the endpoint
+    const FString Endpoint = FString::Printf(TEXT("/v2/group/%s/demote"), *GroupId);
+
+    // Verify the session
+    if (!IsSessionValid(Session, ErrorCallback))
+    {
+        return;
+    }
+    
+    // Setup the query parameters
+    TMultiMap<FString, FString> QueryParams;
+    if (UserIds.Num() > 0)
+    {
+        for (const FString& UserId : UserIds)
+        {
+            QueryParams.Add(TEXT("user_ids"), UserId);
+        }
+    }
+
+    // Make the request
+    const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::POST, QueryParams, Session->GetAuthToken());
+
+    // Lock the ActiveRequests mutex to protect concurrent access
+    FScopeLock Lock(&ActiveRequestsMutex);
+
+    // Add the HttpRequest to ActiveRequests
+    ActiveRequests.Add(HttpRequest);
+
+    // Bind the response callback and handle the response
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+
+        if (!IsValidLowLevel())
+        {
+            return;
+        }
+
+        // Lock the ActiveRequests mutex to protect concurrent access
+        FScopeLock Lock(&ActiveRequestsMutex);
+
+        if (ActiveRequests.Contains(HttpRequest))
+        {
+            if (bSuccess && Response.IsValid())
+            {
+                const FString ResponseBody = Response->GetContentAsString();
+
+                // Check if Request was successful
+                if (IsResponseSuccessful(Response->GetResponseCode()))
+                {
+                    // Check for Success Callback
+                    if (SuccessCallback)
+                    {
+                        SuccessCallback();
+                    }
+                }
+                else
+                {
+                    // Check for Error Callback
+                    if (ErrorCallback)
+                    {
+                        const FNakamaError Error(ResponseBody);
+                        ErrorCallback(Error);
+                    }
+                }
+            }
+            else
+            {
+                // Handle Invalid Response
+                if (ErrorCallback)
+                {
+                    const FNakamaError RequestError = CreateRequestFailureError();
+                    ErrorCallback(RequestError);
+                }
+            }
+
+            // Remove the HttpRequest from ActiveRequests
+            ActiveRequests.Remove(HttpRequest);
+        }
+    });
+
+    // Process the request
+    HttpRequest->ProcessRequest();
+}
+
+void UNakamaClient::UpdateGroup(
+    UNakamaSession* Session,
+    const FString& GroupId,
+    const TOptional<FString>& Name,
+    const TOptional<FString>& Description,
+    const TOptional<FString>& AvatarUrl,
+    const TOptional<FString>& LangTag,
+    const TOptional<bool> bOpen,
+    TFunction<void()> SuccessCallback,
+    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+{
+    // Setup the endpoint
+    const FString Endpoint = FString::Printf(TEXT("/v2/group/%s"), *GroupId);
+
+    // Verify the session
+    if (!IsSessionValid(Session, ErrorCallback))
+    {
+        return;
+    }
+
+    // Setup the request content
+    const TSharedPtr<FJsonObject> ContentJson = MakeShared<FJsonObject>();
+    ContentJson->SetStringField(TEXT("group_id"), GroupId);
+    if (Name.IsSet())
+    {
+        ContentJson->SetStringField(TEXT("name"), Name.GetValue());
+    }
+    if (Description.IsSet())
+    {
+        ContentJson->SetStringField(TEXT("description"), Description.GetValue());
+    }
+    if (AvatarUrl.IsSet())
+    {
+        ContentJson->SetStringField(TEXT("avatar_url"), AvatarUrl.GetValue());
+    }
+    if (LangTag.IsSet())
+    {
+        ContentJson->SetStringField(TEXT("lang_tag"), AvatarUrl.GetValue());
+    }
+    if (bOpen.IsSet())
+    {
+        ContentJson->SetBoolField(TEXT("open"), bOpen.GetValue());
+    }
+
+    // Serialize the request content
+    FString Content;
+    if (!SerializeJsonObject(ContentJson, Content))
+    {
+        // Handle JSON serialization failure
+        HandleJsonSerializationFailure(ErrorCallback);
+        return;
+    }
+
+    // Make the request
+    const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::PUT, TMultiMap<FString, FString>(), Session->SessionData.AuthToken);
+
+    // Lock the ActiveRequests mutex to protect concurrent access
+    FScopeLock Lock(&ActiveRequestsMutex);
+
+    // Add the HttpRequest to ActiveRequests
+    ActiveRequests.Add(HttpRequest);
+
+    // Bind the response callback and handle the response
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+
+        if (!IsValidLowLevel())
+        {
+            return;
+        }
+
+        // Lock the ActiveRequests mutex to protect concurrent access
+        FScopeLock Lock(&ActiveRequestsMutex);
+
+        if (ActiveRequests.Contains(HttpRequest))
+        {
+            if (bSuccess && Response.IsValid())
+            {
+                const FString ResponseBody = Response->GetContentAsString();
+
+                // Check if Request was successful
+                if (IsResponseSuccessful(Response->GetResponseCode()))
+                {
+                    // Check for Success Callback
+                    if (SuccessCallback)
+                    {
+                        SuccessCallback();
+                    }
+                }
+                else
+                {
+                    // Check for Error Callback
+                    if (ErrorCallback)
+                    {
+                        const FNakamaError Error(ResponseBody);
+                        ErrorCallback(Error);
+                    }
+                }
+            }
+            else
+            {
+                // Handle Invalid Response
+                if (ErrorCallback)
+                {
+                    const FNakamaError RequestError = CreateRequestFailureError();
+                    ErrorCallback(RequestError);
+                }
+            }
+
+            // Remove the HttpRequest from ActiveRequests
+            ActiveRequests.Remove(HttpRequest);
+        }
+    });
+
+    // Process the request
+    HttpRequest->ProcessRequest();
+}
+
+void UNakamaClient::ListLeaderboardRecords(
+    UNakamaSession* Session,
+    const FString& LeaderboardId,
+    const TArray<FString>& OwnerIds,
+    const TOptional<int32>& Limit,
+    const TOptional<FString>& Cursor,
+    TFunction<void(const FNakamaLeaderboardRecordList& LeaderboardRecords)> SuccessCallback,
+    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+{
+    // Setup the endpoint
+    const FString Endpoint = FString::Printf(TEXT("/v2/leaderboard/%s"), *LeaderboardId);
+
+    // Verify the session
+    if (!IsSessionValid(Session, ErrorCallback))
+    {
+        return;
+    }
+    
+    // Setup the query parameters
+    TMultiMap<FString, FString> QueryParams;
+
+    if (OwnerIds.Num() > 0)
+    {
+        for (const FString& UserId : OwnerIds)
+        {
+            QueryParams.Add(TEXT("owner_ids"), UserId);
+        }
+    }
+    
+    if (Limit.IsSet())
+    {
+        QueryParams.Add(TEXT("limit"), FString::FromInt(Limit.GetValue()));
+    }
+    if(Cursor.IsSet())
+    {
+        const FString EncodedCursor = FGenericPlatformHttp::UrlEncode(Cursor.GetValue());
+        QueryParams.Add(TEXT("cursor"), EncodedCursor);
+    }
+
+    // Make the request
+    const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::GET, QueryParams, Session->GetAuthToken());
+
+    // Lock the ActiveRequests mutex to protect concurrent access
+    FScopeLock Lock(&ActiveRequestsMutex);
+
+    // Add the HttpRequest to ActiveRequests
+    ActiveRequests.Add(HttpRequest);
+
+    // Bind the response callback and handle the response
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+
+        if (!IsValidLowLevel())
+        {
+            return;
+        }
+
+        // Lock the ActiveRequests mutex to protect concurrent access
+        FScopeLock Lock(&ActiveRequestsMutex);
+
+        if (ActiveRequests.Contains(HttpRequest))
+        {
+            if (bSuccess && Response.IsValid())
+            {
+                const FString ResponseBody = Response->GetContentAsString();
+
+                // Check if Request was successful
+                if (IsResponseSuccessful(Response->GetResponseCode()))
+                {
+                    // Check for Success Callback
+                    if (SuccessCallback)
+                    {
+                        const FNakamaLeaderboardRecordList LeaderboardRecords = FNakamaLeaderboardRecordList(ResponseBody);
+                        SuccessCallback(LeaderboardRecords);
+                    }
+                }
+                else
+                {
+                    // Check for Error Callback
+                    if (ErrorCallback)
+                    {
+                        const FNakamaError Error(ResponseBody);
+                        ErrorCallback(Error);
+                    }
+                }
+            }
+            else
+            {
+                // Handle Invalid Response
+                if (ErrorCallback)
+                {
+                    const FNakamaError RequestError = CreateRequestFailureError();
+                    ErrorCallback(RequestError);
+                }
+            }
+
+            // Remove the HttpRequest from ActiveRequests
+            ActiveRequests.Remove(HttpRequest);
+        }
+    });
+
+    // Process the request
+    HttpRequest->ProcessRequest();
+}
+
+void UNakamaClient::ListLeaderboardRecordsAroundOwner(
+    UNakamaSession* Session,
+    const FString& LeaderboardId,
+    const FString& OwnerId,
+    const TOptional<int32>& Limit,
+    TFunction<void(const FNakamaLeaderboardRecordList& LeaderboardRecords)> SuccessCallback,
+    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+{
+    // Setup the endpoint
+    const FString Endpoint = FString::Printf(TEXT("/v2/leaderboard/%s/owner/%s"), *LeaderboardId, *OwnerId);
+
+    // Verify the session
+    if (!IsSessionValid(Session, ErrorCallback))
+    {
+        return;
+    }
+    
+    // Setup the query parameters
+    TMultiMap<FString, FString> QueryParams;
+    
+    if (Limit.IsSet())
+    {
+        QueryParams.Add(TEXT("limit"), FString::FromInt(Limit.GetValue()));
+    }
+
+    // Make the request
+    const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::GET, QueryParams, Session->GetAuthToken());
+
+    // Lock the ActiveRequests mutex to protect concurrent access
+    FScopeLock Lock(&ActiveRequestsMutex);
+
+    // Add the HttpRequest to ActiveRequests
+    ActiveRequests.Add(HttpRequest);
+
+    // Bind the response callback and handle the response
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+
+        if (!IsValidLowLevel())
+        {
+            return;
+        }
+
+        // Lock the ActiveRequests mutex to protect concurrent access
+        FScopeLock Lock(&ActiveRequestsMutex);
+
+        if (ActiveRequests.Contains(HttpRequest))
+        {
+            if (bSuccess && Response.IsValid())
+            {
+                const FString ResponseBody = Response->GetContentAsString();
+
+                // Check if Request was successful
+                if (IsResponseSuccessful(Response->GetResponseCode()))
+                {
+                    // Check for Success Callback
+                    if (SuccessCallback)
+                    {
+                        const FNakamaLeaderboardRecordList LeaderboardRecords = FNakamaLeaderboardRecordList(ResponseBody);
+                        SuccessCallback(LeaderboardRecords);
+                    }
+                }
+                else
+                {
+                    // Check for Error Callback
+                    if (ErrorCallback)
+                    {
+                        const FNakamaError Error(ResponseBody);
+                        ErrorCallback(Error);
+                    }
+                }
+            }
+            else
+            {
+                // Handle Invalid Response
+                if (ErrorCallback)
+                {
+                    const FNakamaError RequestError = CreateRequestFailureError();
+                    ErrorCallback(RequestError);
+                }
+            }
+
+            // Remove the HttpRequest from ActiveRequests
+            ActiveRequests.Remove(HttpRequest);
+        }
+    });
+
+    // Process the request
+    HttpRequest->ProcessRequest();
+}
+
+void UNakamaClient::WriteLeaderboardRecord(
+    UNakamaSession* Session,
+    const FString& LeaderboardId,
+    int64 Score,
+    const TOptional<int64>& Subscore,
+    const TOptional<FString>& Metadata,
+    TFunction<void(const FNakamaLeaderboardRecord& LeaderboardRecord)> SuccessCallback,
+    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+{
+    // Setup the endpoint
+    const FString Endpoint = FString::Printf(TEXT("/v2/leaderboard/%s"), *LeaderboardId);
+
+    // Verify the session
+    if (!IsSessionValid(Session, ErrorCallback))
+    {
+        return;
+    }
+    
+    // Setup the request content
+    TSharedPtr<FJsonObject> ContentJson = MakeShareable(new FJsonObject);
+    ContentJson->SetNumberField(TEXT("score"), Score);
+    if (Subscore.IsSet())
+    {
+        ContentJson->SetNumberField(TEXT("subscore"), Subscore.GetValue());
+    }
+    if (Metadata.IsSet())
+    {
+        ContentJson->SetStringField(TEXT("metadata"), Metadata.GetValue());
+    }
+
+    // Serialize the request content
+    FString Content;
+    if (!SerializeJsonObject(ContentJson, Content))
+    {
+        // Handle JSON serialization failure
+        HandleJsonSerializationFailure(ErrorCallback);
+        return;
+    }
+
+    // Make the request
+    const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::POST, TMultiMap<FString, FString>(), Session->GetAuthToken());
+
+    // Lock the ActiveRequests mutex to protect concurrent access
+    FScopeLock Lock(&ActiveRequestsMutex);
+
+    // Add the HttpRequest to ActiveRequests
+    ActiveRequests.Add(HttpRequest);
+
+    // Bind the response callback and handle the response
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+
+        if (!IsValidLowLevel())
+        {
+            return;
+        }
+
+        // Lock the ActiveRequests mutex to protect concurrent access
+        FScopeLock Lock(&ActiveRequestsMutex);
+
+        if (ActiveRequests.Contains(HttpRequest))
+        {
+            if (bSuccess && Response.IsValid())
+            {
+                const FString ResponseBody = Response->GetContentAsString();
+
+                // Check if Request was successful
+                if (IsResponseSuccessful(Response->GetResponseCode()))
+                {
+                    // Check for Success Callback
+                    if (SuccessCallback)
+                    {
+                        const FNakamaLeaderboardRecord LeaderboardRecord = FNakamaLeaderboardRecord(ResponseBody);
+                        SuccessCallback(LeaderboardRecord);
+                    }
+                }
+                else
+                {
+                    // Check for Error Callback
+                    if (ErrorCallback)
+                    {
+                        const FNakamaError Error(ResponseBody);
+                        ErrorCallback(Error);
+                    }
+                }
+            }
+            else
+            {
+                // Handle Invalid Response
+                if (ErrorCallback)
+                {
+                    const FNakamaError RequestError = CreateRequestFailureError();
+                    ErrorCallback(RequestError);
+                }
+            }
+
+            // Remove the HttpRequest from ActiveRequests
+            ActiveRequests.Remove(HttpRequest);
+        }
+    });
+
+    // Process the request
+    HttpRequest->ProcessRequest();
+}
+
+void UNakamaClient::DeleteLeaderboardRecord(UNakamaSession* Session,
+    const FString& LeaderboardId,
+    TFunction<void()> SuccessCallback,
+    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+{
+    // Setup the endpoint
+    const FString Endpoint = FString::Printf(TEXT("/v2/leaderboard/%s"), *LeaderboardId);
+
+    // Verify the session
+    if (!IsSessionValid(Session, ErrorCallback))
+    {
+        return;
+    }
+
+    // Make the request
+    const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::DELETE, TMultiMap<FString, FString>(), Session->GetAuthToken());
+
+    // Lock the ActiveRequests mutex to protect concurrent access
+    FScopeLock Lock(&ActiveRequestsMutex);
+
+    // Add the HttpRequest to ActiveRequests
+    ActiveRequests.Add(HttpRequest);
+
+    // Bind the response callback and handle the response
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+
+        if (!IsValidLowLevel())
+        {
+            return;
+        }
+
+        // Lock the ActiveRequests mutex to protect concurrent access
+        FScopeLock Lock(&ActiveRequestsMutex);
+
+        if (ActiveRequests.Contains(HttpRequest))
+        {
+            if (bSuccess && Response.IsValid())
+            {
+                const FString ResponseBody = Response->GetContentAsString();
+
+                // Check if Request was successful
+                if (IsResponseSuccessful(Response->GetResponseCode()))
+                {
+                    // Check for Success Callback
+                    if (SuccessCallback)
+                    {
+                        SuccessCallback();
+                    }
+                }
+                else
+                {
+                    // Check for Error Callback
+                    if (ErrorCallback)
+                    {
+                        const FNakamaError Error(ResponseBody);
+                        ErrorCallback(Error);
+                    }
+                }
+            }
+            else
+            {
+                // Handle Invalid Response
+                if (ErrorCallback)
+                {
+                    const FNakamaError RequestError = CreateRequestFailureError();
+                    ErrorCallback(RequestError);
+                }
+            }
+
+            // Remove the HttpRequest from ActiveRequests
+            ActiveRequests.Remove(HttpRequest);
+        }
+    });
+
+    // Process the request
+    HttpRequest->ProcessRequest();
+}
+
+void UNakamaClient::ListMatches(UNakamaSession* Session,
+    const TOptional<int32>& MinSize,
+    const TOptional<int32>& MaxSize,
+    const TOptional<int32>& Limit,
+    const TOptional<FString>& Label,
+    const TOptional<FString>& Query,
+    const TOptional<bool> Authoritative,
+    TFunction<void(const FNakamaMatchList& MatchList)> SuccessCallback,
+    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+{
+    // Setup the endpoint
+    const FString Endpoint = TEXT("/v2/match");
+
+    // Verify the session
+    if (!IsSessionValid(Session, ErrorCallback))
+    {
+        return;
+    }
+
+    // Setup the query parameters
+    TMultiMap<FString, FString> QueryParams;
+    if (MinSize.IsSet())
+    {
+        QueryParams.Add(TEXT("min_size"), FString::FromInt(MinSize.GetValue()));
+    }
+    if (MaxSize.IsSet())
+    {
+        QueryParams.Add(TEXT("max_size"), FString::FromInt(MaxSize.GetValue()));
+    }
+    if (Limit.IsSet())
+    {
+        QueryParams.Add(TEXT("limit"), FString::FromInt(Limit.GetValue()));
+    }
+    if (Label.IsSet())
+    {
+        const FString EncodedLabel = FGenericPlatformHttp::UrlEncode(Label.GetValue());
+        QueryParams.Add(TEXT("label"), EncodedLabel);
+    }
+    if (Query.IsSet())
+    {
+        const FString EncodedQuery = FGenericPlatformHttp::UrlEncode(Query.GetValue());
+        QueryParams.Add(TEXT("query"), EncodedQuery);
+    }
+    if (Authoritative.IsSet())
+    {
+        QueryParams.Add(TEXT("authoritative"), FNakamaUtils::BoolToString(Authoritative.GetValue()));
+    }
+
+    // Make the request
+    const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::GET, QueryParams, Session->GetAuthToken());
+
+    // Lock the ActiveRequests mutex to protect concurrent access
+    FScopeLock Lock(&ActiveRequestsMutex);
+
+    // Add the HttpRequest to ActiveRequests
+    ActiveRequests.Add(HttpRequest);
+
+    // Bind the response callback and handle the response
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+
+        if (!IsValidLowLevel())
+        {
+            return;
+        }
+
+        // Lock the ActiveRequests mutex to protect concurrent access
+        FScopeLock Lock(&ActiveRequestsMutex);
+
+        if (ActiveRequests.Contains(HttpRequest))
+        {
+            if (bSuccess && Response.IsValid())
+            {
+                const FString ResponseBody = Response->GetContentAsString();
+
+                // Check if Request was successful
+                if (IsResponseSuccessful(Response->GetResponseCode()))
+                {
+                    // Check for Success Callback
+                    if (SuccessCallback)
+                    {
+                        const FNakamaMatchList MatchList = FNakamaMatchList(ResponseBody);
+                        SuccessCallback(MatchList);
+                    }
+                }
+                else
+                {
+                    // Check for Error Callback
+                    if (ErrorCallback)
+                    {
+                        const FNakamaError Error(ResponseBody);
+                        ErrorCallback(Error);
+                    }
+                }
+            }
+            else
+            {
+                // Handle Invalid Response
+                if (ErrorCallback)
+                {
+                    const FNakamaError RequestError = CreateRequestFailureError();
+                    ErrorCallback(RequestError);
+                }
+            }
+
+            // Remove the HttpRequest from ActiveRequests
+            ActiveRequests.Remove(HttpRequest);
+        }
+    });
+
+    // Process the request
+    HttpRequest->ProcessRequest();
+}
+
+void UNakamaClient::ListNotifications(UNakamaSession* Session,
+    const TOptional<int32>& Limit,
+    const TOptional<FString>& CacheableCursor,
+    TFunction<void(const FNakamaNotificationList& NotificationList)> SuccessCallback,
+    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+{
+    // Setup the endpoint
+    const FString Endpoint = TEXT("/v2/notification");
+
+    // Verify the session
+    if (!IsSessionValid(Session, ErrorCallback))
+    {
+        return;
+    }
+
+    // Setup the query parameters
+    TMultiMap<FString, FString> QueryParams;
+    if (Limit.IsSet())
+    {
+        QueryParams.Add(TEXT("limit"), FString::FromInt(Limit.GetValue()));
+    }
+    if (CacheableCursor.IsSet())
+    {
+        const FString EncodedCursor = FGenericPlatformHttp::UrlEncode(CacheableCursor.GetValue());
+        QueryParams.Add(TEXT("cacheable_cursor"), EncodedCursor);
+    }
+
+    // Make the request
+    const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::GET, QueryParams, Session->GetAuthToken());
+
+    // Lock the ActiveRequests mutex to protect concurrent access
+    FScopeLock Lock(&ActiveRequestsMutex);
+
+    // Add the HttpRequest to ActiveRequests
+    ActiveRequests.Add(HttpRequest);
+
+    // Bind the response callback and handle the response
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+
+        if (!IsValidLowLevel())
+        {
+            return;
+        }
+
+        // Lock the ActiveRequests mutex to protect concurrent access
+        FScopeLock Lock(&ActiveRequestsMutex);
+
+        if (ActiveRequests.Contains(HttpRequest))
+        {
+            if (bSuccess && Response.IsValid())
+            {
+                const FString ResponseBody = Response->GetContentAsString();
+
+                // Check if Request was successful
+                if (IsResponseSuccessful(Response->GetResponseCode()))
+                {
+                    // Check for Success Callback
+                    if (SuccessCallback)
+                    {
+                        const FNakamaNotificationList NotificationList = FNakamaNotificationList(ResponseBody);
+                        SuccessCallback(NotificationList);
+                    }
+                }
+                else
+                {
+                    // Check for Error Callback
+                    if (ErrorCallback)
+                    {
+                        const FNakamaError Error(ResponseBody);
+                        ErrorCallback(Error);
+                    }
+                }
+            }
+            else
+            {
+                // Handle Invalid Response
+                if (ErrorCallback)
+                {
+                    const FNakamaError RequestError = CreateRequestFailureError();
+                    ErrorCallback(RequestError);
+                }
+            }
+
+            // Remove the HttpRequest from ActiveRequests
+            ActiveRequests.Remove(HttpRequest);
+        }
+    });
+
+    // Process the request
+    HttpRequest->ProcessRequest();
+}
+
+void UNakamaClient::DeleteNotifications(
+    UNakamaSession* Session,
+    const TArray<FString>& NotificationIds,
+    TFunction<void()> SuccessCallback,
+    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+{
+    // Setup the endpoint
+    const FString Endpoint = TEXT("/v2/notification");
+
+    // Verify the session
+    if (!IsSessionValid(Session, ErrorCallback))
+    {
+        return;
+    }
+
+    // Setup the query parameters
+    TMultiMap<FString, FString> QueryParams;
+    if (NotificationIds.Num() > 0)
+    {
+        for (const FString& NotificationId : NotificationIds)
+        {
+            QueryParams.Add(TEXT("ids"), NotificationId);
+        }
+    }
+
+    // Make the request
+    const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::DELETE, QueryParams, Session->GetAuthToken());
+
+    // Lock the ActiveRequests mutex to protect concurrent access
+    FScopeLock Lock(&ActiveRequestsMutex);
+
+    // Add the HttpRequest to ActiveRequests
+    ActiveRequests.Add(HttpRequest);
+
+    // Bind the response callback and handle the response
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+
+        if (!IsValidLowLevel())
+        {
+            return;
+        }
+
+        // Lock the ActiveRequests mutex to protect concurrent access
+        FScopeLock Lock(&ActiveRequestsMutex);
+
+        if (ActiveRequests.Contains(HttpRequest))
+        {
+            if (bSuccess && Response.IsValid())
+            {
+                const FString ResponseBody = Response->GetContentAsString();
+
+                // Check if Request was successful
+                if (IsResponseSuccessful(Response->GetResponseCode()))
+                {
+                    // Check for Success Callback
+                    if (SuccessCallback)
+                    {
+                        SuccessCallback();
+                    }
+                }
+                else
+                {
+                    // Check for Error Callback
+                    if (ErrorCallback)
+                    {
+                        const FNakamaError Error(ResponseBody);
+                        ErrorCallback(Error);
+                    }
+                }
+            }
+            else
+            {
+                // Handle Invalid Response
+                if (ErrorCallback)
+                {
+                    const FNakamaError RequestError = CreateRequestFailureError();
+                    ErrorCallback(RequestError);
+                }
+            }
+
+            // Remove the HttpRequest from ActiveRequests
+            ActiveRequests.Remove(HttpRequest);
+        }
+    });
+
+    // Process the request
+    HttpRequest->ProcessRequest();
+}
+
+void UNakamaClient::ListChannelMessages(UNakamaSession* Session,
+    const FString& ChannelId,
+    const TOptional<int32>& Limit,
+    const TOptional<FString>& Cursor,
+    const TOptional<bool> Forward,
+    TFunction<void(const FNakamaChannelMessageList& ChannelMessageList)> SuccessCallback,
+    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+{
+    // Setup the endpoint
+    const FString Endpoint = FString::Printf(TEXT("/v2/channel/%s"), *ChannelId);
+
+    // Verify the session
+    if (!IsSessionValid(Session, ErrorCallback))
+    {
+        return;
+    }
+
+    // Setup the query parameters
+    TMultiMap<FString, FString> QueryParams;
+    if (Limit.IsSet())
+    {
+        QueryParams.Add(TEXT("limit"), FString::FromInt(Limit.GetValue()));
+    }
+    if (Cursor.IsSet())
+    {
+        const FString EncodedCursor = FGenericPlatformHttp::UrlEncode(Cursor.GetValue());
+        QueryParams.Add(TEXT("cursor"), EncodedCursor);
+    }
+    if (Forward.IsSet())
+    {
+        QueryParams.Add(TEXT("forward"), FNakamaUtils::BoolToString(Forward.GetValue()));
+    }
+
+    // Make the request
+    const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::GET, QueryParams, Session->GetAuthToken());
+
+    // Lock the ActiveRequests mutex to protect concurrent access
+    FScopeLock Lock(&ActiveRequestsMutex);
+
+    // Add the HttpRequest to ActiveRequests
+    ActiveRequests.Add(HttpRequest);
+
+    // Bind the response callback and handle the response
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+
+        if (!IsValidLowLevel())
+        {
+            return;
+        }
+
+        // Lock the ActiveRequests mutex to protect concurrent access
+        FScopeLock Lock(&ActiveRequestsMutex);
+
+        if (ActiveRequests.Contains(HttpRequest))
+        {
+            if (bSuccess && Response.IsValid())
+            {
+                const FString ResponseBody = Response->GetContentAsString();
+
+                // Check if Request was successful
+                if (IsResponseSuccessful(Response->GetResponseCode()))
+                {
+                    // Check for Success Callback
+                    if (SuccessCallback)
+                    {
+                        const FNakamaChannelMessageList ChannelMessageList = FNakamaChannelMessageList(ResponseBody);
+                        SuccessCallback(ChannelMessageList);
+                    }
+                }
+                else
+                {
+                    // Check for Error Callback
+                    if (ErrorCallback)
+                    {
+                        const FNakamaError Error(ResponseBody);
+                        ErrorCallback(Error);
+                    }
+                }
+            }
+            else
+            {
+                // Handle Invalid Response
+                if (ErrorCallback)
+                {
+                    const FNakamaError RequestError = CreateRequestFailureError();
+                    ErrorCallback(RequestError);
+                }
+            }
+
+            // Remove the HttpRequest from ActiveRequests
+            ActiveRequests.Remove(HttpRequest);
+        }
+    });
+
+    // Process the request
+    HttpRequest->ProcessRequest();
+}
+
+void UNakamaClient::ListTournaments(UNakamaSession* Session,
+    const TOptional<int32>& CategoryStart,
+    const TOptional<int32>& CategoryEnd,
+    const TOptional<int32>& StartTime,
+    const TOptional<int32>& EndTime,
+    const TOptional<int32>& Limit,
+    const TOptional<FString>& Cursor,
+    TFunction<void(const FNakamaTournamentList& TournamentList)> SuccessCallback,
+    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+{
+    // Setup the endpoint
+    const FString Endpoint = TEXT("/v2/tournament");
+
+    // Verify the session
+    if (!IsSessionValid(Session, ErrorCallback))
+    {
+        return;
+    }
+
+    // Setup the query parameters
+    TMultiMap<FString, FString> QueryParams;
+    if (CategoryStart.IsSet())
+    {
+        QueryParams.Add(TEXT("category_start"), FString::FromInt(CategoryStart.GetValue()));
+    }
+    if (CategoryEnd.IsSet())
+    {
+        QueryParams.Add(TEXT("category_end"), FString::FromInt(CategoryEnd.GetValue()));
+    }
+    if (StartTime.IsSet())
+    {
+        QueryParams.Add(TEXT("start_time"), FString::FromInt(StartTime.GetValue()));
+    }
+    if (EndTime.IsSet())
+    {
+        QueryParams.Add(TEXT("end_time"), FString::FromInt(EndTime.GetValue()));
+    }
+    if (Limit.IsSet())
+    {
+        QueryParams.Add(TEXT("limit"), FString::FromInt(Limit.GetValue()));
+    }
+    if (Cursor.IsSet())
+    {
+        const FString EncodedCursor = FGenericPlatformHttp::UrlEncode(Cursor.GetValue());
+        QueryParams.Add(TEXT("cursor"), EncodedCursor);
+    }
+
+    // Make the request
+    const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::GET, QueryParams, Session->GetAuthToken());
+
+    // Lock the ActiveRequests mutex to protect concurrent access
+    FScopeLock Lock(&ActiveRequestsMutex);
+
+    // Add the HttpRequest to ActiveRequests
+    ActiveRequests.Add(HttpRequest);
+
+    // Bind the response callback and handle the response
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+
+        if (!IsValidLowLevel())
+        {
+            return;
+        }
+
+        // Lock the ActiveRequests mutex to protect concurrent access
+        FScopeLock Lock(&ActiveRequestsMutex);
+
+        if (ActiveRequests.Contains(HttpRequest))
+        {
+            if (bSuccess && Response.IsValid())
+            {
+                const FString ResponseBody = Response->GetContentAsString();
+
+                // Check if Request was successful
+                if (IsResponseSuccessful(Response->GetResponseCode()))
+                {
+                    // Check for Success Callback
+                    if (SuccessCallback)
+                    {
+                        const FNakamaTournamentList TournamentList = FNakamaTournamentList(ResponseBody);
+                        SuccessCallback(TournamentList);
+                    }
+                }
+                else
+                {
+                    // Check for Error Callback
+                    if (ErrorCallback)
+                    {
+                        const FNakamaError Error(ResponseBody);
+                        ErrorCallback(Error);
+                    }
+                }
+            }
+            else
+            {
+                // Handle Invalid Response
+                if (ErrorCallback)
+                {
+                    const FNakamaError RequestError = CreateRequestFailureError();
+                    ErrorCallback(RequestError);
+                }
+            }
+
+            // Remove the HttpRequest from ActiveRequests
+            ActiveRequests.Remove(HttpRequest);
+        }
+    });
+
+    // Process the request
+    HttpRequest->ProcessRequest();
+}
+
+void UNakamaClient::ListTournamentRecords(UNakamaSession* Session,
+    const FString& TournamentId,
+    const TOptional<int32>& Limit,
+    const TOptional<FString>& Cursor,
+    const TArray<FString>& OwnerIds,
+    TFunction<void(const FNakamaTournamentRecordList& TournamentRecordList)> SuccessCallback,
+    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+{
+    // Setup the endpoint
+    const FString Endpoint = FString::Printf(TEXT("/v2/tournament/%s"), *TournamentId);
+
+    // Verify the session
+    if (!IsSessionValid(Session, ErrorCallback))
+    {
+        return;
+    }
+
+    // Setup the query parameters
+    TMultiMap<FString, FString> QueryParams;
+    if (Limit.IsSet())
+    {
+        QueryParams.Add(TEXT("limit"), FString::FromInt(Limit.GetValue()));
+    }
+    if (Cursor.IsSet())
+    {
+        const FString EncodedCursor = FGenericPlatformHttp::UrlEncode(Cursor.GetValue());
+        QueryParams.Add(TEXT("cursor"), EncodedCursor);
+    }
+    if (OwnerIds.Num() > 0)
+    {
+        for (const FString& OwnerId : OwnerIds)
+        {
+            QueryParams.Add(TEXT("owner_ids"), OwnerId);
+        }
+    }
+
+    // Make the request
+    const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::GET, QueryParams, Session->GetAuthToken());
+
+    // Lock the ActiveRequests mutex to protect concurrent access
+    FScopeLock Lock(&ActiveRequestsMutex);
+
+    // Add the HttpRequest to ActiveRequests
+    ActiveRequests.Add(HttpRequest);
+
+    // Bind the response callback and handle the response
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+
+        if (!IsValidLowLevel())
+        {
+            return;
+        }
+
+        // Lock the ActiveRequests mutex to protect concurrent access
+        FScopeLock Lock(&ActiveRequestsMutex);
+
+        if (ActiveRequests.Contains(HttpRequest))
+        {
+            if (bSuccess && Response.IsValid())
+            {
+                const FString ResponseBody = Response->GetContentAsString();
+
+                // Check if Request was successful
+                if (IsResponseSuccessful(Response->GetResponseCode()))
+                {
+                    // Check for Success Callback
+                    if (SuccessCallback)
+                    {
+                        const FNakamaTournamentRecordList TournamentRecordList = FNakamaTournamentRecordList(ResponseBody);
+                        SuccessCallback(TournamentRecordList);
+                    }
+                }
+                else
+                {
+                    // Check for Error Callback
+                    if (ErrorCallback)
+                    {
+                        const FNakamaError Error(ResponseBody);
+                        ErrorCallback(Error);
+                    }
+                }
+            }
+            else
+            {
+                // Handle Invalid Response
+                if (ErrorCallback)
+                {
+                    const FNakamaError RequestError = CreateRequestFailureError();
+                    ErrorCallback(RequestError);
+                }
+            }
+
+            // Remove the HttpRequest from ActiveRequests
+            ActiveRequests.Remove(HttpRequest);
+        }
+    });
+
+    // Process the request
+    HttpRequest->ProcessRequest();
+}
+
+void UNakamaClient::ListTournamentRecordsAroundOwner(
+    UNakamaSession* Session, const FString& TournamentId,
+    const FString& OwnerId, const TOptional<int32>& Limit,
+    TFunction<void(const FNakamaTournamentRecordList& TournamentRecordList)> SuccessCallback,
+    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+{
+    // Setup the endpoint
+    const FString Endpoint = FString::Printf(TEXT("/v2/tournament/%s/owner/%s"), *TournamentId, *OwnerId);
+
+    // Verify the session
+    if (!IsSessionValid(Session, ErrorCallback))
+    {
+        return;
+    }
+
+    // Setup the query parameters
+    TMultiMap<FString, FString> QueryParams;
+    if (Limit.IsSet())
+    {
+        QueryParams.Add(TEXT("limit"), FString::FromInt(Limit.GetValue()));
+    }
+
+    // Make the request
+    const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::GET, QueryParams, Session->GetAuthToken());
+
+    // Lock the ActiveRequests mutex to protect concurrent access
+    FScopeLock Lock(&ActiveRequestsMutex);
+
+    // Add the HttpRequest to ActiveRequests
+    ActiveRequests.Add(HttpRequest);
+
+    // Bind the response callback and handle the response
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+
+        if (!IsValidLowLevel())
+        {
+            return;
+        }
+
+        // Lock the ActiveRequests mutex to protect concurrent access
+        FScopeLock Lock(&ActiveRequestsMutex);
+
+        if (ActiveRequests.Contains(HttpRequest))
+        {
+            if (bSuccess && Response.IsValid())
+            {
+                const FString ResponseBody = Response->GetContentAsString();
+
+                // Check if Request was successful
+                if (IsResponseSuccessful(Response->GetResponseCode()))
+                {
+                    // Check for Success Callback
+                    if (SuccessCallback)
+                    {
+                        const FNakamaTournamentRecordList TournamentRecordList = FNakamaTournamentRecordList(ResponseBody);
+                        SuccessCallback(TournamentRecordList);
+                    }
+                }
+                else
+                {
+                    // Check for Error Callback
+                    if (ErrorCallback)
+                    {
+                        const FNakamaError Error(ResponseBody);
+                        ErrorCallback(Error);
+                    }
+                }
+            }
+            else
+            {
+                // Handle Invalid Response
+                if (ErrorCallback)
+                {
+                    const FNakamaError RequestError = CreateRequestFailureError();
+                    ErrorCallback(RequestError);
+                }
+            }
+
+            // Remove the HttpRequest from ActiveRequests
+            ActiveRequests.Remove(HttpRequest);
+        }
+    });
+
+    // Process the request
+    HttpRequest->ProcessRequest();
+}
+
+void UNakamaClient::WriteTournamentRecord(UNakamaSession* Session,
+    const FString& TournamentId, int64 Score,
+    const TOptional<int64>& Subscore,
+    const TOptional<FString>& Metadata,
+    TFunction<void(const FNakamaLeaderboardRecord& TournamentRecord)> SuccessCallback,
+    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+{
+    // Setup the endpoint
+    const FString Endpoint = FString::Printf(TEXT("/v2/tournament/%s"), *TournamentId);
+
+    // Verify the session
+    if (!IsSessionValid(Session, ErrorCallback))
+    {
+        return;
+    }
+
+    // Setup the request content
+    TSharedPtr<FJsonObject> ContentJson = MakeShareable(new FJsonObject);
+    ContentJson->SetNumberField(TEXT("score"), Score);
+    if (Subscore.IsSet())
+    {
+        ContentJson->SetNumberField(TEXT("subscore"), Subscore.GetValue());
+    }
+    if (Metadata.IsSet())
+    {
+        ContentJson->SetStringField(TEXT("metadata"), Metadata.GetValue());
+    }
+
+    // Serialize the request content
+    FString Content;
+    if (!SerializeJsonObject(ContentJson, Content))
+    {
+        // Handle JSON serialization failure
+        HandleJsonSerializationFailure(ErrorCallback);
+        return;
+    }
+
+    // Make the request
+    const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::PUT, TMultiMap<FString, FString>(), Session->GetAuthToken());
+
+    // Lock the ActiveRequests mutex to protect concurrent access
+    FScopeLock Lock(&ActiveRequestsMutex);
+
+    // Add the HttpRequest to ActiveRequests
+    ActiveRequests.Add(HttpRequest);
+
+    // Bind the response callback and handle the response
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+
+        if (!IsValidLowLevel())
+        {
+            return;
+        }
+
+        // Lock the ActiveRequests mutex to protect concurrent access
+        FScopeLock Lock(&ActiveRequestsMutex);
+
+        if (ActiveRequests.Contains(HttpRequest))
+        {
+            if (bSuccess && Response.IsValid())
+            {
+                const FString ResponseBody = Response->GetContentAsString();
+
+                // Check if Request was successful
+                if (IsResponseSuccessful(Response->GetResponseCode()))
+                {
+                    // Check for Success Callback
+                    if (SuccessCallback)
+                    {
+                        const FNakamaLeaderboardRecord TournamentRecord = FNakamaLeaderboardRecord(ResponseBody);
+                        SuccessCallback(TournamentRecord);
+                    }
+                }
+                else
+                {
+                    // Check for Error Callback
+                    if (ErrorCallback)
+                    {
+                        const FNakamaError Error(ResponseBody);
+                        ErrorCallback(Error);
+                    }
+                }
+            }
+            else
+            {
+                // Handle Invalid Response
+                if (ErrorCallback)
+                {
+                    const FNakamaError RequestError = CreateRequestFailureError();
+                    ErrorCallback(RequestError);
+                }
+            }
+
+            // Remove the HttpRequest from ActiveRequests
+            ActiveRequests.Remove(HttpRequest);
+        }
+    });
+
+    // Process the request
+    HttpRequest->ProcessRequest();
+}
+
+void UNakamaClient::JoinTournament(
+    UNakamaSession* Session,
+    const FString& TournamentId,
+    TFunction<void()> SuccessCallback,
+    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+{
+    // Setup the endpoint
+    const FString Endpoint = FString::Printf(TEXT("/v2/tournament/%s/join"), *TournamentId);
+
+    // Verify the session
+    if (!IsSessionValid(Session, ErrorCallback))
+    {
+        return;
+    }
+
+    // Make the request
+    const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::POST, TMultiMap<FString, FString>(), Session->GetAuthToken());
+
+    // Lock the ActiveRequests mutex to protect concurrent access
+    FScopeLock Lock(&ActiveRequestsMutex);
+
+    // Add the HttpRequest to ActiveRequests
+    ActiveRequests.Add(HttpRequest);
+
+    // Bind the response callback and handle the response
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+
+        if (!IsValidLowLevel())
+        {
+            return;
+        }
+
+        // Lock the ActiveRequests mutex to protect concurrent access
+        FScopeLock Lock(&ActiveRequestsMutex);
+
+        if (ActiveRequests.Contains(HttpRequest))
+        {
+            if (bSuccess && Response.IsValid())
+            {
+                const FString ResponseBody = Response->GetContentAsString();
+
+                // Check if Request was successful
+                if (IsResponseSuccessful(Response->GetResponseCode()))
+                {
+                    // Check for Success Callback
+                    if (SuccessCallback)
+                    {
+                        SuccessCallback();
+                    }
+                }
+                else
+                {
+                    // Check for Error Callback
+                    if (ErrorCallback)
+                    {
+                        const FNakamaError Error(ResponseBody);
+                        ErrorCallback(Error);
+                    }
+                }
+            }
+            else
+            {
+                // Handle Invalid Response
+                if (ErrorCallback)
+                {
+                    const FNakamaError RequestError = CreateRequestFailureError();
+                    ErrorCallback(RequestError);
+                }
+            }
+
+            // Remove the HttpRequest from ActiveRequests
+            ActiveRequests.Remove(HttpRequest);
+        }
+    });
+
+    // Process the request
+    HttpRequest->ProcessRequest();
+}
+
+void UNakamaClient::ListStorageObjects(UNakamaSession* Session,
+    const FString& Collection,
+    const TOptional<int32>& Limit,
+    const TOptional<FString>& Cursor,
+    TFunction<void(const FNakamaStorageObjectList& StorageObjectList)> SuccessCallback,
+    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+{
+    // Setup the endpoint
+    const FString Endpoint = FString::Printf(TEXT("/v2/storage/%s"), *Collection);
+
+    // Verify the session
+    if (!IsSessionValid(Session, ErrorCallback))
+    {
+        return;
+    }
+
+    // Setup the query parameters
+    TMultiMap<FString, FString> QueryParams;
+    if (Limit.IsSet())
+    {
+        QueryParams.Add(TEXT("limit"), FString::FromInt(Limit.GetValue()));
+    }
+    if (Cursor.IsSet())
+    {
+        const FString EncodedCursor = FGenericPlatformHttp::UrlEncode(Cursor.GetValue());
+        QueryParams.Add(TEXT("cursor"), EncodedCursor);
+    }
+
+    //QueryParams.Add(TEXT("user_id"), Session->GetUserId());
+
+    // Make the request
+    const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::GET, QueryParams, Session->GetAuthToken());
+
+    // Lock the ActiveRequests mutex to protect concurrent access
+    FScopeLock Lock(&ActiveRequestsMutex);
+
+    // Add the HttpRequest to ActiveRequests
+    ActiveRequests.Add(HttpRequest);
+
+    // Bind the response callback and handle the response
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+
+        if (!IsValidLowLevel())
+        {
+            return;
+        }
+
+        // Lock the ActiveRequests mutex to protect concurrent access
+        FScopeLock Lock(&ActiveRequestsMutex);
+
+        if (ActiveRequests.Contains(HttpRequest))
+        {
+            if (bSuccess && Response.IsValid())
+            {
+                const FString ResponseBody = Response->GetContentAsString();
+
+                // Check if Request was successful
+                if (IsResponseSuccessful(Response->GetResponseCode()))
+                {
+                    // Check for Success Callback
+                    if (SuccessCallback)
+                    {
+                        const FNakamaStorageObjectList StorageObjectList = FNakamaStorageObjectList(ResponseBody);
+                        SuccessCallback(StorageObjectList);
+                    }
+                }
+                else
+                {
+                    // Check for Error Callback
+                    if (ErrorCallback)
+                    {
+                        const FNakamaError Error(ResponseBody);
+                        ErrorCallback(Error);
+                    }
+                }
+            }
+            else
+            {
+                // Handle Invalid Response
+                if (ErrorCallback)
+                {
+                    const FNakamaError RequestError = CreateRequestFailureError();
+                    ErrorCallback(RequestError);
+                }
+            }
+
+            // Remove the HttpRequest from ActiveRequests
+            ActiveRequests.Remove(HttpRequest);
+        }
+    });
+
+    // Process the request
+    HttpRequest->ProcessRequest();
+}
+
+void UNakamaClient::ListUsersStorageObjects(UNakamaSession* Session,
+    const FString& Collection,
+    const FString& UserId,
+    const TOptional<int32>& Limit,
+    const TOptional<FString>& Cursor,
+    TFunction<void(const FNakamaStorageObjectList& StorageObjectList)> SuccessCallback,
+    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+{
+    // Setup the endpoint
+    const FString Endpoint = FString::Printf(TEXT("/v2/storage/%s"), *Collection);
+
+    // Verify the session
+    if (!IsSessionValid(Session, ErrorCallback))
+    {
+        return;
+    }
+
+    // Setup the query parameters
+    TMultiMap<FString, FString> QueryParams;
+    QueryParams.Add( TEXT("user_id"), UserId);
+    if (Limit.IsSet())
+    {
+        QueryParams.Add(TEXT("limit"), FString::FromInt(Limit.GetValue()));
+    }
+    if (Cursor.IsSet())
+    {
+        const FString EncodedCursor = FGenericPlatformHttp::UrlEncode(Cursor.GetValue());
+        QueryParams.Add(TEXT("cursor"), EncodedCursor);
+    }
+
+    // Make the request
+    const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::GET, QueryParams, Session->GetAuthToken());
+
+    // Lock the ActiveRequests mutex to protect concurrent access
+    FScopeLock Lock(&ActiveRequestsMutex);
+
+    // Add the HttpRequest to ActiveRequests
+    ActiveRequests.Add(HttpRequest);
+
+    // Bind the response callback and handle the response
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+
+        if (!IsValidLowLevel())
+        {
+            return;
+        }
+
+        // Lock the ActiveRequests mutex to protect concurrent access
+        FScopeLock Lock(&ActiveRequestsMutex);
+
+        if (ActiveRequests.Contains(HttpRequest))
+        {
+            if (bSuccess && Response.IsValid())
+            {
+                const FString ResponseBody = Response->GetContentAsString();
+
+                // Check if Request was successful
+                if (IsResponseSuccessful(Response->GetResponseCode()))
+                {
+                    // Check for Success Callback
+                    if (SuccessCallback)
+                    {
+                        const FNakamaStorageObjectList StorageObjectList = FNakamaStorageObjectList(ResponseBody);
+                        SuccessCallback(StorageObjectList);
+                    }
+                }
+                else
+                {
+                    // Check for Error Callback
+                    if (ErrorCallback)
+                    {
+                        const FNakamaError Error(ResponseBody);
+                        ErrorCallback(Error);
+                    }
+                }
+            }
+            else
+            {
+                // Handle Invalid Response
+                if (ErrorCallback)
+                {
+                    const FNakamaError RequestError = CreateRequestFailureError();
+                    ErrorCallback(RequestError);
+                }
+            }
+
+            // Remove the HttpRequest from ActiveRequests
+            ActiveRequests.Remove(HttpRequest);
+        }
+    });
+
+    // Process the request
+    HttpRequest->ProcessRequest();
+}
+
+void UNakamaClient::WriteStorageObjects(
+    UNakamaSession* Session,
+    const TArray<FNakamaStoreObjectWrite>& Objects,
+    TFunction<void(const FNakamaStoreObjectAcks& StoreObjectAcks)> SuccessCallback,
+    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+{
+    // Setup the endpoint
+    const FString Endpoint = TEXT("/v2/storage");
+
+    // Verify the session
+    if (!IsSessionValid(Session, ErrorCallback))
+    {
+        return;
+    }
+
+    // Setup the request body
+    TArray<TSharedPtr<FJsonValue>> ObjectsJson;
+    for (const FNakamaStoreObjectWrite& Object : Objects)
+    {
+        TSharedPtr<FJsonObject> ObjectJson = MakeShareable(new FJsonObject());
+        ObjectJson->SetStringField(TEXT("collection"), Object.Collection);
+        ObjectJson->SetStringField(TEXT("key"), Object.Key);
+        ObjectJson->SetStringField(TEXT("value"), Object.Value);
+        ObjectJson->SetStringField(TEXT("version"), Object.Version);
+        
+        // Note: Should these be optional?
+        const FString PermissionRead = FNakamaUtils::GetEnumValueAsIntString(Object.PermissionRead);
+        ObjectJson->SetStringField(TEXT("permission_read"), PermissionRead);
+
+        const FString PermissionWrite = FNakamaUtils::GetEnumValueAsIntString(Object.PermissionWrite);
+        ObjectJson->SetStringField(TEXT("permission_write"), PermissionWrite);
+
+        ObjectsJson.Add(MakeShareable(new FJsonValueObject(ObjectJson)));
+    }
+
+    TSharedPtr<FJsonObject> RequestBodyJson = MakeShareable(new FJsonObject());
+    RequestBodyJson->SetArrayField(TEXT("objects"), ObjectsJson);
+
+    // Serialize the request content
+    FString Content;
+    if (!SerializeJsonObject(RequestBodyJson, Content))
+    {
+        // Handle JSON serialization failure
+        HandleJsonSerializationFailure(ErrorCallback);
+        return;
+    }
+
+    // Make the request
+    const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::PUT, TMultiMap<FString, FString>(), Session->GetAuthToken());
+
+    // Lock the ActiveRequests mutex to protect concurrent access
+    FScopeLock Lock(&ActiveRequestsMutex);
+
+    // Add the HttpRequest to ActiveRequests
+    ActiveRequests.Add(HttpRequest);
+
+    // Bind the response callback and handle the response
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+
+        if (!IsValidLowLevel())
+        {
+            return;
+        }
+
+        // Lock the ActiveRequests mutex to protect concurrent access
+        FScopeLock Lock(&ActiveRequestsMutex);
+
+        if (ActiveRequests.Contains(HttpRequest))
+        {
+            if (bSuccess && Response.IsValid())
+            {
+                const FString ResponseBody = Response->GetContentAsString();
+
+                // Check if Request was successful
+                if (IsResponseSuccessful(Response->GetResponseCode()))
+                {
+                    // Check for Success Callback
+                    if (SuccessCallback)
+                    {
+                        const FNakamaStoreObjectAcks StoreObjectAcks = FNakamaStoreObjectAcks(ResponseBody);
+                        SuccessCallback(StoreObjectAcks);
+                    }
+                }
+                else
+                {
+                    // Check for Error Callback
+                    if (ErrorCallback)
+                    {
+                        const FNakamaError Error(ResponseBody);
+                        ErrorCallback(Error);
+                    }
+                }
+            }
+            else
+            {
+                // Handle Invalid Response
+                if (ErrorCallback)
+                {
+                    const FNakamaError RequestError = CreateRequestFailureError();
+                    ErrorCallback(RequestError);
+                }
+            }
+
+            // Remove the HttpRequest from ActiveRequests
+            ActiveRequests.Remove(HttpRequest);
+        }
+    });
+
+    // Process the request
+    HttpRequest->ProcessRequest();
+}
+
+void UNakamaClient::ReadStorageObjects(
+    UNakamaSession* Session,
+    const TArray<FNakamaReadStorageObjectId>& ObjectIds,
+    TFunction<void(const FNakamaStorageObjectList& StorageObjectList)> SuccessCallback,
+    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+{
+     // Setup the endpoint
+    const FString Endpoint = TEXT("/v2/storage");
+
+    // Verify the session
+    if (!IsSessionValid(Session, ErrorCallback))
+    {
+        return;
+    }
+
+    // Setup the request body
+    TArray<TSharedPtr<FJsonValue>> ObjectsJson;
+    for (const FNakamaReadStorageObjectId& Object : ObjectIds)
+    {
+        TSharedPtr<FJsonObject> ObjectJson = MakeShareable(new FJsonObject());
+        ObjectJson->SetStringField(TEXT("collection"), Object.Collection);
+        ObjectJson->SetStringField(TEXT("key"), Object.Key);
+        ObjectJson->SetStringField(TEXT("user_id"), Object.UserId);
+
+        ObjectsJson.Add(MakeShareable(new FJsonValueObject(ObjectJson)));
+    }
+
+    TSharedPtr<FJsonObject> RequestBodyJson = MakeShareable(new FJsonObject());
+    RequestBodyJson->SetArrayField(TEXT("object_ids"), ObjectsJson);
+
+    // Serialize the request content
+    FString Content;
+    if (!SerializeJsonObject(RequestBodyJson, Content))
+    {
+        // Handle JSON serialization failure
+        HandleJsonSerializationFailure(ErrorCallback);
+        return;
+    }
+
+    // Make the request
+    const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::POST, TMultiMap<FString, FString>(), Session->GetAuthToken());
+
+    // Lock the ActiveRequests mutex to protect concurrent access
+    FScopeLock Lock(&ActiveRequestsMutex);
+
+    // Add the HttpRequest to ActiveRequests
+    ActiveRequests.Add(HttpRequest);
+
+    // Bind the response callback and handle the response
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+
+        if (!IsValidLowLevel())
+        {
+            return;
+        }
+
+        // Lock the ActiveRequests mutex to protect concurrent access
+        FScopeLock Lock(&ActiveRequestsMutex);
+
+        if (ActiveRequests.Contains(HttpRequest))
+        {
+            if (bSuccess && Response.IsValid())
+            {
+                const FString ResponseBody = Response->GetContentAsString();
+
+                // Check if Request was successful
+                if (IsResponseSuccessful(Response->GetResponseCode()))
+                {
+                    // Check for Success Callback
+                    if (SuccessCallback)
+                    {
+                        const FNakamaStorageObjectList StorageObjectList = FNakamaStorageObjectList(ResponseBody);
+                        SuccessCallback(StorageObjectList);
+                    }
+                }
+                else
+                {
+                    // Check for Error Callback
+                    if (ErrorCallback)
+                    {
+                        const FNakamaError Error(ResponseBody);
+                        ErrorCallback(Error);
+                    }
+                }
+            }
+            else
+            {
+                // Handle Invalid Response
+                if (ErrorCallback)
+                {
+                    const FNakamaError RequestError = CreateRequestFailureError();
+                    ErrorCallback(RequestError);
+                }
+            }
+
+            // Remove the HttpRequest from ActiveRequests
+            ActiveRequests.Remove(HttpRequest);
+        }
+    });
+
+    // Process the request
+    HttpRequest->ProcessRequest();
+}
+
+void UNakamaClient::DeleteStorageObjects(
+    UNakamaSession* Session,
+    const TArray<FNakamaDeleteStorageObjectId>& ObjectIds,
+    TFunction<void()> SuccessCallback,
+    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+{
+    // Setup the endpoint
+    const FString Endpoint = TEXT("/v2/storage/delete");
+
+    // Verify the session
+    if (!IsSessionValid(Session, ErrorCallback))
+    {
+        return;
+    }
+
+    // Setup the request body
+    TArray<TSharedPtr<FJsonValue>> ObjectsJson;
+    for (const FNakamaDeleteStorageObjectId& Object : ObjectIds)
+    {
+        TSharedPtr<FJsonObject> ObjectJson = MakeShareable(new FJsonObject());
+        ObjectJson->SetStringField(TEXT("collection"), Object.Collection);
+        ObjectJson->SetStringField(TEXT("key"), Object.Key);
+        ObjectJson->SetStringField(TEXT("version"), Object.Version);
+
+        ObjectsJson.Add(MakeShareable(new FJsonValueObject(ObjectJson)));
+    }
+
+    TSharedPtr<FJsonObject> RequestBodyJson = MakeShareable(new FJsonObject());
+    RequestBodyJson->SetArrayField(TEXT("object_ids"), ObjectsJson);
+
+    // Serialize the request content
+    FString Content;
+    if (!SerializeJsonObject(RequestBodyJson, Content))
+    {
+        // Handle JSON serialization failure
+        HandleJsonSerializationFailure(ErrorCallback);
+        return;
+    }
+
+    // Make the request
+    const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::PUT, TMultiMap<FString, FString>(), Session->GetAuthToken());
+
+    // Lock the ActiveRequests mutex to protect concurrent access
+    FScopeLock Lock(&ActiveRequestsMutex);
+
+    // Add the HttpRequest to ActiveRequests
+    ActiveRequests.Add(HttpRequest);
+
+    // Bind the response callback and handle the response
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+
+        if (!IsValidLowLevel())
+        {
+            return;
+        }
+
+        // Lock the ActiveRequests mutex to protect concurrent access
+        FScopeLock Lock(&ActiveRequestsMutex);
+
+        if (ActiveRequests.Contains(HttpRequest))
+        {
+            if (bSuccess && Response.IsValid())
+            {
+                const FString ResponseBody = Response->GetContentAsString();
+
+                // Check if Request was successful
+                if (IsResponseSuccessful(Response->GetResponseCode()))
+                {
+                    // Check for Success Callback
+                    if (SuccessCallback)
+                    {
+                        SuccessCallback();
+                    }
+                }
+                else
+                {
+                    // Check for Error Callback
+                    if (ErrorCallback)
+                    {
+                        const FNakamaError Error(ResponseBody);
+                        ErrorCallback(Error);
+                    }
+                }
+            }
+            else
+            {
+                // Handle Invalid Response
+                if (ErrorCallback)
+                {
+                    const FNakamaError RequestError = CreateRequestFailureError();
+                    ErrorCallback(RequestError);
+                }
+            }
+
+            // Remove the HttpRequest from ActiveRequests
+            ActiveRequests.Remove(HttpRequest);
+        }
+    });
+
+    // Process the request
+    HttpRequest->ProcessRequest();
+}
+
+void UNakamaClient::RPC(
+    UNakamaSession* Session,
+    const FString& Id,
+    const TOptional<FString>& Payload,
+    TFunction<void(const FNakamaRPC& Rpc)> SuccessCallback,
+    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+{
+    // Verify the session
+    if (!IsSessionValid(Session, ErrorCallback))
+    {
+        return;
+    }
+    
+    // Call the SendRPC function
+    SendRPC(Session, Id, Payload, {},  SuccessCallback, ErrorCallback);
+}
+
+void UNakamaClient::RPC(
+    const FString& HttpKey,
+    const FString& Id,
+    const FString& Payload,
+    TFunction<void(const FNakamaRPC& Rpc)> SuccessCallback,
+    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+{
+    TMultiMap<FString, FString> QueryParams;
+    //QueryParams.Add(TEXT("http_key"), HttpKey);
+    const FString EncodedHttpKey = FGenericPlatformHttp::UrlEncode(HttpKey);
+    QueryParams.Add(TEXT("http_key"), EncodedHttpKey);
+    
+
+    // Sends Empty Session
+    SendRPC({}, Id, Payload, QueryParams, SuccessCallback, ErrorCallback);
+}
+
+// End of TFunctions 
+
+FString UNakamaClient::ConstructURL(const FString& Endpoint)
+{
+	FString Protocol = bUseSSL ? TEXT("https") : TEXT("http");
+	FString URL = FString::Printf(TEXT("%s://%s:%d%s"), *Protocol, *Hostname, Port, *Endpoint);
+
+	return URL;
+}
+
+TSharedRef<IHttpRequest, ESPMode::ThreadSafe> UNakamaClient::MakeRequest(const FString& Endpoint,
+	const FString& Content, ENakamaRequestMethod RequestMethod, const TMultiMap<FString, FString>& QueryParams,
+	const FString& SessionToken)
+{
+	HttpModule = &FHttpModule::Get();
+    
+	// Create the HttpRequest
+	#if ENGINE_MAJOR_VERSION <= 4 && ENGINE_MINOR_VERSION <= 25
+	TSharedRef<IHttpRequest> Request = HttpModule->CreateRequest();
+#else
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = HttpModule->CreateRequest();
+#endif
+
+	// Append query parameters to the endpoint
+	FString ModifiedEndpoint = Endpoint;
+	if (QueryParams.Num() > 0)
+	{
+		FString QueryString = FNakamaUtils::BuildQueryString(QueryParams);
+		ModifiedEndpoint += "?" + QueryString;
+	}
+
+	// Construct the URL
+	FString URL = ConstructURL(ModifiedEndpoint);
+
+	HttpRequest->SetURL(URL);
+	HttpRequest->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
+	HttpRequest->SetTimeout(Timeout); // Exposed to end user
+
+	FString VerbString = FNakamaUtils::ENakamaRequesMethodToFString(RequestMethod);
+	if (!VerbString.IsEmpty())
+	{
+		HttpRequest->SetVerb(VerbString);
+	}
+
+	// Set the content if it is not empty
+	if (!Content.IsEmpty())
+	{
+		HttpRequest->SetContentAsString(Content);
+	}
+
+	// Add authorization header if session token is provided
+	if (!SessionToken.IsEmpty())
+	{
+		FString AuthorizationHeader = FString::Printf(TEXT("Bearer %s"), *SessionToken);
+		HttpRequest->SetHeader(TEXT("Authorization"), AuthorizationHeader);
+	}
+
+	//NAKAMA_LOG_INFO(TEXT("..."));
+	//NAKAMA_LOG_INFO(FString::Printf(TEXT("Making Request to %s"), *Endpoint));
+	NAKAMA_LOG_INFO(FString::Printf(TEXT("Making %s request to %s with content: %s"), *VerbString, *URL, *Content));
+	return HttpRequest;
+}
+
+void UNakamaClient::AddVarsToJson(const TSharedPtr<FJsonObject>& JsonObject, const TMap<FString, FString>& Vars)
+{
+	if (Vars.Num() > 0)
+	{
+		const TSharedPtr<FJsonObject> VarsJson = MakeShared<FJsonObject>();
+		for (const auto& Var : Vars)
+		{
+			if (!Var.Key.IsEmpty() && !Var.Value.IsEmpty())
+			{
+				VarsJson->SetStringField(Var.Key, Var.Value);
+			}
+			else
+			{
+				NAKAMA_LOG_WARN(TEXT("AddVarsToJson: Empty key or value detected."));
+			}
+		}
+		JsonObject->SetObjectField(TEXT("vars"), VarsJson);
+	}
+}
+
+void UNakamaClient::SetBasicAuthorizationHeader(TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest)
+{
+	FString AuthToken = FString::Printf(TEXT("%s:"), *ServerKey);
+	FString EncodedAuthToken = FBase64::Encode(AuthToken);
+	FString AuthorizationHeader = FString::Printf(TEXT("Basic %s"), *EncodedAuthToken);
+
+	//NAKAMA_LOG_DEBUG(FString::Printf( TEXT("Authorization Header: %s"), *AuthorizationHeader ));
+
+	HttpRequest->SetHeader(TEXT("Authorization"), AuthorizationHeader);
+}
+
+void UNakamaClient::ProcessRequestComplete(FHttpRequestPtr Request, const FHttpResponsePtr& Response, bool bSuccess,
+	const TFunction<void(const FString&)>& SuccessCallback,
+	const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
+{
+	if (bSuccess && Response.IsValid())
+	{
+		const int32 ResponseCode = Response->GetResponseCode();
+		const FString ResponseBody = Response->GetContentAsString();
+
+		if (ResponseCode == 200)
+		{
+			NAKAMA_LOG_DEBUG(FString::Printf(TEXT("Request Successful: %s"), *ResponseBody));
+			if (SuccessCallback)
+			{
+				SuccessCallback(ResponseBody);
+			}
+		}
+		else
+		{
+			NAKAMA_LOG_WARN(FString::Printf(TEXT("Response (Code: %d) - Contents: %s"), ResponseCode, *ResponseBody));
+			const FNakamaError Error(ResponseBody);
+			if (ErrorCallback)
+			{
+				ErrorCallback(Error);
+			}
+		}
+	}
+	else
+	{
+		// Handle request failure
+		NAKAMA_LOG_ERROR(TEXT("Failed to process request."));
+
+		if(Request.IsValid())
+		{
+			NAKAMA_LOG_DEBUG(FString::Printf(TEXT("Request URL: %s"), *(Request->GetURL())));
+		}
+        
+		FNakamaError Error;
+		Error.Code = ENakamaErrorCode::Unknown;
+		Error.Message = TEXT("Failed to proccess request. Request failed.");
+        
+		if(ErrorCallback)
+		{
+			ErrorCallback(Error);
+		}
+	}
+}
+
+void UNakamaClient::HandleJsonSerializationFailure(TFunction<void(const FNakamaError& Error)> ErrorCallback)
+{
+	NAKAMA_LOG_ERROR(TEXT("Failed to generate request content."));
+	FNakamaError Error;
+	Error.Code = ENakamaErrorCode::Unknown;
+	Error.Message = TEXT("Failed to generate request content.");
+	ErrorCallback(Error);
+}
+
+bool UNakamaClient::IsSessionValid(const UNakamaSession* Session,
+	TFunction<void(const FNakamaError& Error)> ErrorCallback)
+{
+	if (!Session || Session->SessionData.AuthToken.IsEmpty())
+	{
+		NAKAMA_LOG_ERROR("Invalid session or session data.");
+        
+		FNakamaError Error;
+		Error.Message = "Invalid session or session data.";
+		ErrorCallback(Error);
+		return false;
+	}
+
+	return true;
+}
+
+bool UNakamaClient::SerializeJsonObject(const TSharedPtr<FJsonObject>& JsonObject, FString& OutSerializedJson)
+{
+	if (!JsonObject.IsValid())
+	{
+		return false;
+	}
+
+	const TSharedRef<TJsonWriter<>> JsonWriter = TJsonWriterFactory<>::Create(&OutSerializedJson);
+	if (!FJsonSerializer::Serialize(JsonObject.ToSharedRef(), JsonWriter))
+	{
+		JsonWriter->Close();
+		return false;
+	}
+
+	JsonWriter->Close();
+
+	return true;
+}
+
+bool UNakamaClient::IsResponseSuccessful(int32 ResponseCode)
+{
+	return ResponseCode == 200;
+}
+
+FNakamaError UNakamaClient::CreateRequestFailureError()
+{
+	NAKAMA_LOG_ERROR(TEXT("Failed to proccess request. Request failed."));
+	FNakamaError Error;
+	Error.Code = ENakamaErrorCode::Unknown;
+	Error.Message = TEXT("Failed to proccess request. Request failed.");
+	return Error;
+}
+
+bool UNakamaClient::IsClientValid() const
+{
+	return IsValidLowLevel();
+	//return IsValid(this);
+}
+
+void UNakamaClient::SendRPC(UNakamaSession* Session, const FString& Id, const TOptional<FString>& Payload,
+	TMultiMap<FString, FString> QueryParams, TFunction<void(const FNakamaRPC& Rpc)> SuccessCallback,
+	TFunction<void(const FNakamaError& Error)> ErrorCallback)
+{
+	// Setup the endpoint
+    const FString Endpoint = FString("/v2/rpc/") + Id;
+
+    if (Payload.IsSet() && !Payload.GetValue().IsEmpty())
+    {
+        // This part is important
+        const FString EscapedPayload = EscapeJsonString(Payload.GetValue());
+        
+        FString SessionToken;
+        if (Session != nullptr)
+        {
+            SessionToken = Session->GetAuthToken();
+        }
+
+        // Make the POST request with payload
+        const auto HttpRequest = MakeRequest(Endpoint, EscapedPayload, ENakamaRequestMethod::POST, QueryParams, SessionToken);
+
+        // Bind the response callback and handle the response
+        HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+            ProcessRequestComplete(Request, Response, bSuccess, [SuccessCallback](const FString& ResponseBody) {
+                if (SuccessCallback)
+                {
+                    FNakamaRPC Rpc = FNakamaRPC(ResponseBody);
+                    SuccessCallback(Rpc);
+                }
+            }, [ErrorCallback](const FNakamaError& Error) {
+                if (ErrorCallback)
+                {
+                    ErrorCallback(Error);
+                }
+            });
+        });
+
+        // Process the request
+        HttpRequest->ProcessRequest();
+    }
+    else
+    {
+        // Add the RPC ID to the query parameters
+        QueryParams.Add(TEXT("id"), Id);
+        
+        FString SessionToken;
+        if (Session != nullptr)
+        {
+            SessionToken = Session->GetAuthToken();
+        }
+
+        // Make the GET request without payload
+        const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::GET, QueryParams, SessionToken);
+
+        // Bind the response callback and handle the response
+        HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+            ProcessRequestComplete(Request, Response, bSuccess, [SuccessCallback](const FString& ResponseBody) {
+                if (SuccessCallback)
+                {
+                    FNakamaRPC Rpc = FNakamaRPC(ResponseBody);
+                    SuccessCallback(Rpc);
+                }
+            }, [ErrorCallback](const FNakamaError& Error) {
+                if (ErrorCallback)
+                {
+                    ErrorCallback(Error);
+                }
+            });
+        });
+
+        // Process the request
+        HttpRequest->ProcessRequest();
+    }
+}
+
+void UNakamaClient::CancelAllRequests()
+{
+	if(!IsValidLowLevel())
+	{
+		return;
+	}
+
+	// Lock the mutex to protect access to ActiveRequests
+	FScopeLock Lock(&ActiveRequestsMutex);
+
+	// Iterate over the active requests and cancel each one
+	for (const FHttpRequestPtr& Request : ActiveRequests)
+	{
+		Request->OnProcessRequestComplete().Unbind();
+		Request->CancelRequest();
+	}
+
+	// Clear the ActiveRequests array
+	ActiveRequests.Empty();
 }
 

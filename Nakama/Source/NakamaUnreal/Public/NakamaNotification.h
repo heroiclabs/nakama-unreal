@@ -1,11 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "nakama-cpp/data/NNotificationList.h"
-
 #include "NakamaNotification.generated.h"
-
-using namespace Nakama;
 
 // A notification in the server.
 USTRUCT(BlueprintType)
@@ -41,7 +37,7 @@ struct NAKAMAUNREAL_API FNakamaNotification
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Notification")
 	bool Persistent = false;
 
-	FNakamaNotification(const NNotification& NakamaNativeNotification);
+	FNakamaNotification(const FString& JsonString);
 	FNakamaNotification();
 };
 
@@ -59,8 +55,7 @@ struct NAKAMAUNREAL_API FNakamaNotificationList
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Notification")
 	FString CacheableCursor;
 
-	FNakamaNotificationList(const NNotificationList& NakamaNativeNotificationList);
+	FNakamaNotificationList(const FString& JsonString);
 	FNakamaNotificationList();
-
 
 };

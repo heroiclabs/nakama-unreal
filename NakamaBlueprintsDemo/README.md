@@ -5,13 +5,13 @@ This documentation is NOT Final and subject to change.
 
 This repository includes the Nakama plugin within the `Plugins` folder.
 
-It is primarily tested on Unreal Engine 4.27 but should work on UE5 as well.
+It is primarily tested on Unreal Engine 5.0
 
 # Getting Started
 These are the steps to get started with the project.
 
 1. Install and run the Nakama server. Follow these [instructions](https://heroiclabs.com/docs/install-docker-quickstart).
-2. Install [Unreal Engine](https://www.unrealengine.com) 4.25 or greater (Unreal Engine 5 support is tentative).
+2. Install [Unreal Engine](https://www.unrealengine.com) 5.0 or greater
 3. Right click the .uproject and select `Generate Visual Studio Project Files`
 4. Open the solution in your Unreal Compatible IDE (Visual Studio, Xcode, Rider) and run the project
 5. Once the Unreal Editor is open, click Play and start testing the features
@@ -20,7 +20,7 @@ These are the steps to get started with the project.
 # Build and Test
 Follow these instructions to package the example project:
 
-https://docs.unrealengine.com/4.27/en-US/Basics/Projects/Packaging/
+https://docs.unrealengine.com/5.0/en-US/packaging-unreal-engine-projects/
 
 To package it from the command line on Windows run:
 

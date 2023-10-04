@@ -10,10 +10,8 @@
 #include "NakamaChannelTypes.h"
 #include "NakamaMatch.h"
 #include "NakamaMatchTypes.h"
-#include "NakamaNotification.h"
 #include "NakamaParty.h"
 #include "NakamaPresence.h"
-#include "NakamaStreams.h"
 #include "NakamaChat.h"
 #include "NakamaRealtimeClientRequests.generated.h"
 
@@ -28,10 +26,7 @@ class NAKAMABLUEPRINTS_API UNakamaRealtimeClientRequests : public UBlueprintAsyn
 };
 
 
-
-/// <summary>
-/// Messaging (Were split up into direct and channel based)
-/// </summary>
+// --- Messaging --- //
 
 // Global Delegates for empty success / error
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAnyRtError, FNakamaRtError, Error);
@@ -61,9 +56,11 @@ public:
 	 * Connect to the Server.
 	 *
 	 * @param RealtimeClient The Realtime Client (Socket) to use.
+	 * @param Session The Session to use.
+	 * @param bInShowAsOnline Show as online.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Setup", meta = (BlueprintInternalUseOnly = "true"))
-	static UNakamaRealtimeClientConnect* Connect(UNakamaRealtimeClient *RealtimeClient);
+	static UNakamaRealtimeClientConnect* Connect(UNakamaRealtimeClient *RealtimeClient, UNakamaSession* Session, bool bInShowAsOnline);
 
 	virtual void Activate() override;
 
@@ -71,6 +68,11 @@ private:
 
 	UPROPERTY()
 	UNakamaRealtimeClient *RealtimeClient;
+
+	UPROPERTY()
+	UNakamaSession *UserSession;
+
+	bool bShowAsOnline;
 
 };
 
@@ -101,7 +103,7 @@ public:
 	 * @param Content The content of the chat message. Must be a JSON object.
 	 * @param RealtimeClient The Realtime Client (Socket) to use.
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Nakama|Chat|Messaging", meta = (BlueprintInternalUseOnly = "true"))
+	UFUNCTION(BlueprintCallable, Category = "Nakama|Chat|Messaging", meta = (BlueprintInternalUseOnly = "true", DisplayName = "Write Chat Message"))
 	static UNakamaRealtimeClientSendMessage* SendMessage(UNakamaRealtimeClient *RealtimeClient, FString ChannelId, FString Content);
 
 	virtual void Activate() override;
@@ -174,7 +176,7 @@ public:
 	FOnUpdateChatMessage OnSuccess;
 
 	UPROPERTY(BlueprintAssignable)
-	FOnWriteChannelMessage OnError;
+	FOnUpdateChatMessage OnError;
 
 	/**
 	 * Update a chat message to a channel on the server.
@@ -200,9 +202,47 @@ private:
 
 };
 
-/// <summary>
-/// Chat
-/// </summary>
+/**
+ * Remove Chat Message
+ */
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnRemoveChatMessage, FNakamaRtError, Error, FNakamaChannelMessageAck, MessageAck);
+
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaRealtimeClientRemoveChatMessage : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY(BlueprintAssignable)
+	FOnRemoveChatMessage OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnRemoveChatMessage OnError;
+
+	/**
+	 * Remove a chat message from a channel on the server.
+	 *
+	 * @param ChannelId The ID of the chat channel with the message.
+	 * @param MessageId The ID of the message to remove.
+	 * @param RealtimeClient The Realtime Client (Socket) to use.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Nakama|Chat|Messaging", meta = (BlueprintInternalUseOnly = "true"))
+	static UNakamaRealtimeClientRemoveChatMessage* RemoveChatMessage(UNakamaRealtimeClient *RealtimeClient, FString ChannelId, FString MessageId);
+
+	virtual void Activate() override;
+
+private:
+
+	UPROPERTY()
+	UNakamaRealtimeClient *RealtimeClient;
+
+	FString ChannelId;
+	FString MessageId;
+};
+
+// --- Chat --- //
 
 
 /**
@@ -290,9 +330,7 @@ private:
 };
 
 
-/// <summary>
-/// Matchmaker System
-/// </summary>
+// --- Matchmaker --- //
 
 /**
  * Join Matchmaker
@@ -326,7 +364,7 @@ public:
 	 * @param RealtimeClient The Realtime Client (Socket) to use.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Matchmaker", meta = (BlueprintInternalUseOnly = "true"))
-	static UNakamaRealtimeClientAddMatchmaker* AddMatchmaker(UNakamaRealtimeClient *RealtimeClient, int32 MinCount, int32 MaxCount, FString Query, TMap<FString, FString> StringProperties, TMap<FString, int32> NumericProperties, int32 CountMultiple, bool IgnoreCountMultiple);
+	static UNakamaRealtimeClientAddMatchmaker* AddMatchmaker(UNakamaRealtimeClient *RealtimeClient, int32 MinCount, int32 MaxCount, FString Query, TMap<FString, FString> StringProperties, TMap<FString, float> NumericProperties, int32 CountMultiple, bool IgnoreCountMultiple);
 
 	virtual void Activate() override;
 
@@ -339,7 +377,7 @@ private:
 	int32 MaxCount;
 	FString Query;
 	TMap<FString, FString> StringProperties;
-	TMap<FString, int32> NumericProperties;
+	TMap<FString, float> NumericProperties;
 	int32 CountMultiple;
 	bool IgnoreCountMultiple;
 
@@ -372,7 +410,7 @@ public:
 	 * @param Ticket The ticket returned by the matchmaker on join. See <c>NMatchmakerTicket.ticket</c>.
 	 * @param RealtimeClient The Realtime Client (Socket) to use.
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Nakama|Matchmaker", meta = (BlueprintInternalUseOnly = "true"))
+	UFUNCTION(BlueprintCallable, Category = "Nakama|Matchmaker", meta = (BlueprintInternalUseOnly = "true", DisplayName = "Remove Matchmaker"))
 	static UNakamaRealtimeClientLeaveMatchmaker* LeaveMatchmaker(UNakamaRealtimeClient *RealtimeClient, FString Ticket);
 
 	virtual void Activate() override;
@@ -387,9 +425,8 @@ private:
 };
 
 
-/// <summary>
-/// Statuses
-/// </summary>
+// --- Statuses --- //
+
 
 /**
  * Update Status
@@ -547,9 +584,8 @@ private:
 
 };
 
-/// <summary>
-/// Realtime and Match (To send RPC, please use normal Client)
-/// </summary>
+// --- Realtime and Match (To send RPC, please use normal Client) --- //
+
 
 /**
  * Create Match
@@ -704,9 +740,7 @@ private:
 };
 
 
-/// <summary>
-/// Parties
-/// </summary>
+// --- Parties --- //
 
 /**
  * Create Party
@@ -1060,7 +1094,7 @@ public:
 	 * @param CountMultiple An optional multiple of the matched count that must be satisfied.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Matchmaker", meta = (BlueprintInternalUseOnly = "true"))
-	static UNakamaRealtimeClientAddMatchmakerParty* AddMatchmakerParty(UNakamaRealtimeClient *RealtimeClient, FString PartyId, int32 MinCount, int32 MaxCount, FString Query, TMap<FString, FString> StringProperties, TMap<FString, int32> NumericProperties, int32 CountMultiple, bool IgnoreCountMultiple);
+	static UNakamaRealtimeClientAddMatchmakerParty* AddMatchmakerParty(UNakamaRealtimeClient *RealtimeClient, FString PartyId, int32 MinCount, int32 MaxCount, FString Query, TMap<FString, FString> StringProperties, TMap<FString, float> NumericProperties, int32 CountMultiple, bool IgnoreCountMultiple);
 
 	virtual void Activate() override;
 
@@ -1074,7 +1108,7 @@ private:
 	int32 MaxCount;
 	FString Query;
 	TMap<FString, FString> StringProperties;
-	TMap<FString, int32> NumericProperties;
+	TMap<FString, float> NumericProperties;
 	int32 CountMultiple;
 	bool IgnoreCountMultiple;
 
@@ -1118,12 +1152,43 @@ private:
 };
 
 
+/**
+ * RPC
+ */
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnRtRPCResponse, FNakamaRtError, Error, FNakamaRPC, RPCResponse);
 
-/// <summary>
-/// Get/Set UserData
-/// GetTransport
-/// IsConnected
-/// Connect
-/// Rpc
-/// </summary>
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaRealtimeClientRPC : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+
+	
+	UPROPERTY(BlueprintAssignable)
+	FOnRtRPCResponse OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnRtRPCResponse OnError;
+
+	/**
+	 * Send an RPC message to the server.
+	 *
+	 * @param FunctionId The ID of the function to execute.
+	 * @param Payload The string content to send to the server.
+	 * @param RealtimeClient The Realtime Client (Socket) to use.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Nakama|Realtime|RPC", meta = (BlueprintInternalUseOnly = "true", DisplayName="RPC Realtime"))
+	static UNakamaRealtimeClientRPC* RPC(UNakamaRealtimeClient* RealtimeClient, const FString& FunctionId, const FString& Payload);
+
+	virtual void Activate() override;
+
+private:
+
+	UPROPERTY()
+	UNakamaRealtimeClient *RealtimeClient;
+
+	FString FunctionId;
+	FString Payload;
+};

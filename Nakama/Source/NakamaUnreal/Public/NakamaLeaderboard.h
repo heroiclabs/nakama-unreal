@@ -1,10 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "nakama-cpp/Nakama.h"
 #include "NakamaLeaderboard.generated.h"
-
-using namespace Nakama;
 
 // Leaderboardss
 USTRUCT(BlueprintType)
@@ -60,7 +57,7 @@ struct NAKAMAUNREAL_API FNakamaLeaderboardRecord
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Leaderboards")
 	int64 Rank = 0;
 
-	FNakamaLeaderboardRecord(const NLeaderboardRecord& NakamaNativeLeaderboardRecord);
+	FNakamaLeaderboardRecord(const FString& JsonString);
 	FNakamaLeaderboardRecord();
 
 };
@@ -73,7 +70,6 @@ enum class ENakamaLeaderboardListBy : uint8
 	BY_SCORE UMETA(DisplayName = "By Score"),
 	//Only the user who owns it may write
 	BY_FRIENDS UMETA(DisplayName = "By Friends"),
-
 };
 
 
@@ -98,7 +94,7 @@ struct NAKAMAUNREAL_API FNakamaLeaderboardRecordList
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Leaderboards")
 	FString PrevCursor;
 
-	FNakamaLeaderboardRecordList(const NLeaderboardRecordList& NakamaNativeLeaderboardRecordList);
+	FNakamaLeaderboardRecordList(const FString& JsonString);
 	FNakamaLeaderboardRecordList();
 
 };
