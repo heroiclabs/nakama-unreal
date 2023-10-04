@@ -15,9 +15,11 @@ This plugin can also be used for programmers who like C++ or Blueprints. All var
 
 The plugin is divided into three modules which can be pulled in depending on your needs.
 
-- `NakamaUnreal` The recommended C++ based module for using Nakama in UnrealEngine. This integrates with Unreal's native types and UObjects.
+- `NakamaUnreal` The recommended C++-based module for using Nakama in UnrealEngine. This integrates with Unreal's native types and UObjects.
 - `NakamaBlueprints` For users who would prefer to use Blueprints in their project.
-- `NakamaCore` For users who are migrating from our old Unreal client and want to make minimal changes, or use our lower-level C++ API without Unreal types: (https://github.com/heroiclabs/nakama-cpp). Note that because these are prebuilt libraries, you may run into build issues due to differences in Unreal's toolchain from standard C++ toolchains.
+- `NakamaCore` For users who are migrating from pre-v2.6.0 Unreal client and want to make minimal changes, or use our lower-level C++ API without Unreal types: (https://github.com/heroiclabs/nakama-cpp).
+
+> *Warning* Because `NakamaCore` uses prebuilt libraries, you may run into build issues due to differences in Unreal's toolchain from standard C++ toolchains. This is why `NakamaUnreal` is our recommended module.
 
 Clients are referred in this documentation as **Realtime Client** and **Default Client** in which the realtime client is the socket and the default client is using REST API to communicate with Nakama.
 
