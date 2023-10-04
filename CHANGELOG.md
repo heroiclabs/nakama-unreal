@@ -4,6 +4,18 @@ All notable changes to this project are documented below.
 The format is based on [keep a changelog](http://keepachangelog.com/) and this project uses [semantic versioning](http://semver.org/).
 ### Unreleased
 
+### [2.9.0] - 2023-10-04
+### Added
+- Added `TFunction` support to our API calls for more concise use of callbacks.
+- The implementation of the `NakamaUnreal` has been rewritten to use native Unreal types rather than the prebuilt `NakamaCore`. The user-facing API should remain unchanged.
+    - This should resolve linking issues users have when depending on `NakamaUnreal`. `NakamaUnreal` is the recommended way to use our library, but `NakamaCore` is still available for users who want to use `nakama-cpp` in Unreal Engine.
+- Introduced a Blueprint-based test project.
+- Added feature parity with Nakama 3.17.
+- Added use of `FDateTime` for reading session create and expiry time.
+
+### Fixed
+- Fixed x64 detection on pre-5.2.0 versions of Unreal.
+
 ### [2.8.2] - [2023-08-01]
 ### Fixed
 - Fixed loading of Websocket Module.
