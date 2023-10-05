@@ -94,7 +94,8 @@ public class NakamaCore : ModuleRules
 #if UE_5_2_OR_LATER
 		return Target.Architecture == UnrealArch.X64;
 #else
-		return Target.Architecture.StartsWith("x86_64") || Target.Architecture.StartsWith("x64");
+		// empty string is the "default architecture" which is x64
+		return Target.Architecture == "" || Target.Architecture.StartsWith("x86_64") || Target.Architecture.StartsWith("x64");
 #endif
 	}
 }

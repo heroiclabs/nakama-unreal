@@ -15,9 +15,11 @@ This plugin can also be used for programmers who like C++ or Blueprints. All var
 
 The plugin is divided into three modules which can be pulled in depending on your needs.
 
-- `NakamaUnreal` The recommended C++ based module for using Nakama in UnrealEngine. This integrates with Unreal's native types and UObjects.
+- `NakamaUnreal` The recommended C++-based module for using Nakama in UnrealEngine. This integrates with Unreal's native types and UObjects.
 - `NakamaBlueprints` For users who would prefer to use Blueprints in their project.
-- `NakamaCore` For users who are migrating from our old Unreal client and want to make minimal changes, or use our lower-level C++ API without Unreal types: (https://github.com/heroiclabs/nakama-cpp)
+- `NakamaCore` For users who are migrating from pre-v2.6.0 Unreal client and want to make minimal changes, or use our lower-level C++ API without Unreal types: (https://github.com/heroiclabs/nakama-cpp).
+
+> Because `NakamaCore` uses prebuilt libraries, you may run into build issues due to differences in Unreal's toolchain from standard C++ toolchains. This is why `NakamaUnreal` is our recommended module.
 
 Clients are referred in this documentation as **Realtime Client** and **Default Client** in which the realtime client is the socket and the default client is using REST API to communicate with Nakama.
 
@@ -71,7 +73,7 @@ PrivateDependencyModuleNames.AddRange(new string[] { "NakamaUnreal", "NakamaCore
 ```
 
 Starting with the headers public variables, we are using a blank actor that will be placed in the scene in this example. Unreal Engine uses a reflection system that provides metadata about its classes and allows for advanced features like Blueprint/C++ communication, serialization, and more.
-When working with Nakama objects, or any UObject-derived class, it's crucial to mark them using the Unreal reflection system. This is done using macros such as UFUNCTION(), and UPROPERTY(). 
+When working with Nakama objects, or any UObject-derived class, it's crucial to mark them using the Unreal reflection system. This is done using macros such as UFUNCTION(), and UPROPERTY().
 
 ```cpp
 UPROPERTY()
@@ -218,7 +220,7 @@ Here's a demonstration of using `lambdas` as an alternative to `delegates`:
 ```cpp
 // Define success callback with a lambda
 auto successCallback = [&](UNakamaSession* session)
-{	
+{
 	UE_LOG(LogTemp, Warning, TEXT("Session Token: %s"), *Session->GetAuthToken());
 	UE_LOG(LogTemp, Warning, TEXT("Username: %s"), *Session->GetUsername());
 };
@@ -237,7 +239,7 @@ Client->AuthenticateEmail(TEXT("debug@mail.com"), TEXT("verysecretpassword"), TE
 
 # Working with Realtime Events
 
-Upon initializing your Realtime Client, it's essential to establish event listeners for critical in-game events, ranging from channel messages and notifications to party interactions. Nakama Unreal provides flexibility by allowing both lambdas and delegates for this purpose. 
+Upon initializing your Realtime Client, it's essential to establish event listeners for critical in-game events, ranging from channel messages and notifications to party interactions. Nakama Unreal provides flexibility by allowing both lambdas and delegates for this purpose.
 
 ```cpp
 // Start by creating a Realtime Client:
@@ -263,7 +265,7 @@ Socket->SetNotificationsCallback( [](const FNakamaNotificationList& Notification
 	}
 });
 
-// Establish a connection to start receiving events. 
+// Establish a connection to start receiving events.
 // Optional success and error callbacks (either lambdas or delegates) can be provided:
 Socket->Connect(Session, true);
 ```
@@ -496,7 +498,7 @@ Parameters such as hostname, port and server key can be passed as command-line a
 
 ```bash
 -hostname="127.0.0.1" -port=7350 -serverkey="defaultkey" -serverhttpkey="defaulthttpkey" -timeout=45 -useSSL
-``` 
+```
 
 # Additional Information
 
