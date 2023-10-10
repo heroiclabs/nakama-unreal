@@ -8555,7 +8555,8 @@ void UNakamaClient::AddVarsToJson(const TSharedPtr<FJsonObject>& JsonObject, con
 void UNakamaClient::SetBasicAuthorizationHeader(TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest)
 {
 	FString AuthToken = FString::Printf(TEXT("%s:"), *ServerKey);
-	FString EncodedAuthToken = FBase64::Encode(AuthToken);
+	FTCHARToUTF8 Utf8Token = FTCHARToUTF8(*AuthToken);
+	FString EncodedAuthToken = FBase64::Encode((const uint8*)Utf8Token.Get(), Utf8Token.Length());
 	FString AuthorizationHeader = FString::Printf(TEXT("Basic %s"), *EncodedAuthToken);
 
 	//NAKAMA_LOG_DEBUG(FString::Printf( TEXT("Authorization Header: %s"), *AuthorizationHeader ));
