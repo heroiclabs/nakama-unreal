@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "NakamaRtError.h"
 //#include "NakamaUtils.h"
+#include "Serialization/JsonSerializer.h"
 #include "UObject/NoExportTypes.h"
 #include "NakamaRealtimeRequestContext.generated.h"
 

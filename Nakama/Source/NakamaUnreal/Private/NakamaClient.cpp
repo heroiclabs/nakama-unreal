@@ -5270,7 +5270,7 @@ void UNakamaClient::DeleteFriends(
     }
 
     // Make the request
-    const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::DELETE, QueryParams, Session->GetAuthToken());
+    const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::DEL, QueryParams, Session->GetAuthToken());
 
     // Lock the ActiveRequests mutex to protect concurrent access
     FScopeLock Lock(&ActiveRequestsMutex);
@@ -5654,7 +5654,7 @@ void UNakamaClient::DeleteGroup(
     }
 
     // Make the request
-    const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::DELETE, TMultiMap<FString, FString>(), Session->SessionData.AuthToken);
+    const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::DEL, TMultiMap<FString, FString>(), Session->SessionData.AuthToken);
 
     // Lock the ActiveRequests mutex to protect concurrent access
     FScopeLock Lock(&ActiveRequestsMutex);
@@ -6990,7 +6990,7 @@ void UNakamaClient::DeleteLeaderboardRecord(UNakamaSession* Session,
     }
 
     // Make the request
-    const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::DELETE, TMultiMap<FString, FString>(), Session->GetAuthToken());
+    const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::DEL, TMultiMap<FString, FString>(), Session->GetAuthToken());
 
     // Lock the ActiveRequests mutex to protect concurrent access
     FScopeLock Lock(&ActiveRequestsMutex);
@@ -7284,7 +7284,7 @@ void UNakamaClient::DeleteNotifications(
     }
 
     // Make the request
-    const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::DELETE, QueryParams, Session->GetAuthToken());
+    const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::DEL, QueryParams, Session->GetAuthToken());
 
     // Lock the ActiveRequests mutex to protect concurrent access
     FScopeLock Lock(&ActiveRequestsMutex);

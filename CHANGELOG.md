@@ -4,6 +4,11 @@ All notable changes to this project are documented below.
 The format is based on [keep a changelog](http://keepachangelog.com/) and this project uses [semantic versioning](http://semver.org/).
 ### Unreleased
 
+### [2.9.1] - 2023-10-11
+### Fixed
+- Fix support for non-ASCII characters in session authentication tokens.
+- Fixed an internal import and enum name that could cause compilation failures depending on the project's build flags.
+
 ### [2.9.0] - 2023-10-04
 ### Added
 - Added `TFunction` support to our API calls for more concise use of callbacks.
