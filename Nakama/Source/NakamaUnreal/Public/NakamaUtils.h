@@ -25,7 +25,7 @@ public:
 			return TEXT("POST");
 		case ENakamaRequestMethod::PUT:
 			return TEXT("PUT");
-		case ENakamaRequestMethod::DELETE:
+		case ENakamaRequestMethod::DEL:
 			return TEXT("DELETE");
 		default:
 			// Handle unrecognized verb if needed

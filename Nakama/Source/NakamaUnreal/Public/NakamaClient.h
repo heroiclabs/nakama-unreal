@@ -76,7 +76,7 @@ enum class ENakamaRequestMethod : uint8
 {
 	GET,
 	POST,
-	DELETE,
+	DEL,
 	PUT,
 };
 
