@@ -2135,7 +2135,7 @@ TWeakObjectPtr<UNakamaRealtimeRequestContext> UNakamaRealtimeClient::CreateReqCo
 		NextCid = 0;
 	}
 
-	TWeakObjectPtr<UNakamaRealtimeRequestContext> ReqContext = NewObject<UNakamaRealtimeRequestContext>();
+	TObjectPtr<UNakamaRealtimeRequestContext> ReqContext = NewObject<UNakamaRealtimeRequestContext>();
 	
 	int32_t Cid = 0;
 	bool Inserted = false;

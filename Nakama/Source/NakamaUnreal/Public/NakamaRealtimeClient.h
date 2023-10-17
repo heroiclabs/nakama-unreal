@@ -1365,7 +1365,8 @@ private:
 protected:
 
 	// CID generator and request contexts
-	TMap<int32, TWeakObjectPtr <UNakamaRealtimeRequestContext>> ReqContexts;
+	UPROPERTY()
+	TMap<int32, TObjectPtr<UNakamaRealtimeRequestContext>> ReqContexts;
 	int32 NextCid = 0;
 	FCriticalSection ReqContextsLock;
 };
