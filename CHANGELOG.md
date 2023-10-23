@@ -4,6 +4,14 @@ All notable changes to this project are documented below.
 The format is based on [keep a changelog](http://keepachangelog.com/) and this project uses [semantic versioning](http://semver.org/).
 ### Unreleased
 
+### [2.9.2] - 2023-10-23
+### Fixed
+- Fixed lifetime of socket request contexts.
+- Fixed build warnings about enum default values.
+
+### Changed
+- Tests are now only enabled in developer builds by default.
+
 ### [2.9.1] - 2023-10-11
 ### Fixed
 - Fix support for non-ASCII characters in session authentication tokens.
