@@ -4751,8 +4751,8 @@ void UNakamaClient::ImportSteamFriends(
     const TSharedPtr<FJsonObject> AccountJson = MakeShared<FJsonObject>();
     AccountJson->SetStringField(TEXT("token"), SteamToken);
 
-	const TSharedPtr<FJsonObject> ContentJson = MakeShared<FJsonObject>();
-	ContentJson->SetObjectField(TEXT("account"), AccountJson);
+    const TSharedPtr<FJsonObject> ContentJson = MakeShared<FJsonObject>();
+    ContentJson->SetObjectField(TEXT("account"), AccountJson);
 
     if (bReset.IsSet())
     {
