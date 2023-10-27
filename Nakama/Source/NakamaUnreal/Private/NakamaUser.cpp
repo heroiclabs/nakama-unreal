@@ -49,7 +49,7 @@ FNakamaUser::FNakamaUser(const FString& JsonString)
 		JsonObject->TryGetStringField("google_id", GoogleId);
 		JsonObject->TryGetStringField("gamecenter_id", GameCenterId);
 		JsonObject->TryGetStringField("apple_id", AppleId);
-		JsonObject->TryGetStringField("steam_id", SteamToken);
+		JsonObject->TryGetStringField("steam_id", SteamId);
 
 		JsonObject->TryGetBoolField("online", Online);
 		JsonObject->TryGetNumberField("edge_count", EdgeCount);

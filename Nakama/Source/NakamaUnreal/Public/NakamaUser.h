@@ -58,9 +58,9 @@ struct NAKAMAUNREAL_API FNakamaUser
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|User")
 	FString AppleId;
 
-	// The Steam token in the user's account.
+	// The Steam ID in the user's account.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|User")
-	FString SteamToken;
+	FString SteamId;
 
 	// Indicates whether the user is currently online.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|User")
