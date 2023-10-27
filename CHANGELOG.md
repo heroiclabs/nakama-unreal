@@ -4,6 +4,10 @@ All notable changes to this project are documented below.
 The format is based on [keep a changelog](http://keepachangelog.com/) and this project uses [semantic versioning](http://semver.org/).
 ### Unreleased
 
+### [2.9.3] - 2023-10-27
+### Fixed
+- Fixed importing of steam friends.
+
 ### [2.9.2] - 2023-10-23
 ### Fixed
 - Fixed lifetime of socket request contexts.

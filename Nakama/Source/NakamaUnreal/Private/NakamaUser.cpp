@@ -15,7 +15,7 @@ FNakamaUserList::FNakamaUserList(const FString& JsonString)
 				if (UserJson->Type == EJson::Object)
 				{
 					TSharedPtr<FJsonObject> UserJsonObject = UserJson->AsObject();
-                
+
 					FString UserJsonString;
 					auto Writer = TJsonWriterFactory<>::Create(&UserJsonString);
 					if (FJsonSerializer::Serialize(UserJsonObject.ToSharedRef(), Writer))
@@ -49,7 +49,7 @@ FNakamaUser::FNakamaUser(const FString& JsonString)
 		JsonObject->TryGetStringField("google_id", GoogleId);
 		JsonObject->TryGetStringField("gamecenter_id", GameCenterId);
 		JsonObject->TryGetStringField("apple_id", AppleId);
-		JsonObject->TryGetStringField("steam_id", SteamId);
+		JsonObject->TryGetStringField("steam_id", SteamToken);
 
 		JsonObject->TryGetBoolField("online", Online);
 		JsonObject->TryGetNumberField("edge_count", EdgeCount);
@@ -59,7 +59,7 @@ FNakamaUser::FNakamaUser(const FString& JsonString)
 		{
 			FDateTime::ParseIso8601(*CreatedAtString, CreatedAt);
 		}
-		
+
 		FString UpdatedAtString;
 		if (JsonObject->TryGetStringField("update_time", UpdatedAtString))
 		{

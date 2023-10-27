@@ -441,7 +441,7 @@ public:
 	static UNakamaClientAuthenticateRefresh* AuthenticateRefresh(UNakamaClient *Client, UNakamaSession* Session);
 
 	virtual void Activate() override;
-	
+
 };
 
 
@@ -1270,17 +1270,17 @@ public:
 	 *
 	 * @param Client The Client to use.
 	 * @param Session The session of the user.
-	 * @param SteamId The Steam Id to use.
+	 * @param SteamToken The Steam token to use.
 	 * @param Reset True if the Steam friend import for the user should be reset.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Friends", meta = (BlueprintInternalUseOnly = "true"))
-	static UNakamaClientImportSteamFriends* ImportSteamFriends(UNakamaClient *Client, UNakamaSession *Session, FString SteamId, bool Reset);
+	static UNakamaClientImportSteamFriends* ImportSteamFriends(UNakamaClient *Client, UNakamaSession *Session, FString SteamToken, bool Reset);
 
 	virtual void Activate() override;
 
 private:
 
-	FString SteamId;
+	FString SteamToken;
 	bool Reset;
 
 };
@@ -2562,7 +2562,7 @@ public:
 	virtual void Activate() override;
 
 private:
-	
+
 	FString HttpKey;
 	FString FunctionId;
 	FString Payload;

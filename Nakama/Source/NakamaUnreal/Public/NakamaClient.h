@@ -16,7 +16,7 @@
 #include "NakamaRPC.h"
 #include "NakamaMatch.h"
 #include "NakamaSession.h"
-#include "Interfaces/IHttpRequest.h"	
+#include "Interfaces/IHttpRequest.h"
 #include "HttpModule.h"
 
 #include "NakamaClient.generated.h"
@@ -103,14 +103,14 @@ protected:
 	FHttpModule* HttpModule;
 
 public:
-	
+
 	void InitializeClient(
 		const FString& InHostname,
 		int32 InPort,
 		const FString& InServerKey,
 		bool bInUseSSL
 	);
-	
+
 	bool bEnableDebug;
 
 	UPROPERTY(BlueprintAssignable, Category = "Nakama|Events")
@@ -147,7 +147,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Client")
 	float GetTimeout();
-	
+
 
 	// Event that is called on cleanup
 	virtual void BeginDestroy() override;
@@ -169,7 +169,7 @@ public:
 		bool UseSSL = false,
 		bool EnableDebug = true
 	);
-	
+
 	// --- Authentication --- //
 
 	/**
@@ -710,7 +710,7 @@ public:
 	 * explicit with the import operation.
 	 *
 	 * @param Session The session of the user.
-	 * @param SteamId The Steam Id to use.
+	 * @param SteamToken The Steam token to use.
 	 * @param Reset True if the Steam friend import for the user should be reset.
 	 * @param Success Delegate called upon successful import of Steam friends.
 	 * @param Error Delegate called if the Steam friends import operation fails, providing error details.
@@ -718,7 +718,7 @@ public:
 	UFUNCTION(Category = "Nakama|Friends")
 	void ImportSteamFriends(
 		UNakamaSession* Session,
-		const FString& SteamId,
+		const FString& SteamToken,
 		bool Reset,
 		FOnImportSteamFriends Success,
 		FOnError Error
@@ -734,7 +734,7 @@ public:
 	 * @param Error Delegate called if the fetch operation for user account details fails, providing error information.
 	 * @param Success Delegate called upon successfully retrieving user account details.
 	 * @param Error Delegate called if the fetch operation for user account details fails, providing error information.
-	 * 
+	 *
 	 */
 	UFUNCTION(Category = "Nakama|Users", meta=(DeprecatedFunction, DeprecationMessage="Use GetAccount instead"))
 	void GetUserAccount(
@@ -768,7 +768,7 @@ public:
 	 * @param Session The session of the user.
 	 * @param Success Delegate called upon successfully retrieving the users' details.
 	 * @param Error Delegate called if the user fetch operation fails, providing error information.
-	 * 
+	 *
 	 */
 	UFUNCTION(Category = "Nakama|Users")
 	void GetUsers(
@@ -881,7 +881,7 @@ public:
 		FOnFriendsList Success,
 		FOnError Error
 	);
-	
+
 	/**
 	 * Add one or more friends by id.
 	 *
@@ -890,7 +890,7 @@ public:
 	 * @param Session The session of the user.
 	 * @param Success Delegate called upon successful friend addition.
 	 * @param Error Delegate called if an error occurs, detailing the failure.
-	 * 
+	 *
 	 */
 	UFUNCTION(Category = "Nakama|Friends")
 	void AddFriends(
@@ -1097,7 +1097,7 @@ public:
 	 * @param Session The session of the user.
 	 * @param Success Delegate called upon successfully leaving the group.
 	 * @param Error Delegate called if an error occurs, detailing the failure.
-	 * 
+	 *
 	 */
 	UFUNCTION(Category = "Nakama|Groups")
 	void LeaveGroup(
@@ -1169,7 +1169,7 @@ public:
 	 * @param Session The session of the user.
 	 * @param Success Delegate called upon successfully demoting users in the group.
 	 * @param Error Delegate called if an error occurs, detailing the failure.
-	 * 
+	 *
 	 */
 	UFUNCTION(Category = "Nakama|Groups")
 	void DemoteGroupUsers(
@@ -1233,7 +1233,7 @@ public:
 	);
 
 	// --- Storage --- //
-	
+
 	/**
 	 * Write objects to the storage engine.
 	 *
@@ -1767,7 +1767,7 @@ public:
 		TFunction<void(UNakamaSession* UserSession)> SuccessCallback,
 		TFunction<void(const FNakamaError& Error)> ErrorCallback
 	);
-	
+
 	// --- Linking --- //
 
 	/**
@@ -1903,7 +1903,7 @@ public:
 		TFunction<void()> SuccessCallback,
 		TFunction<void(const FNakamaError& Error)> ErrorCallback
 	);
-	
+
 	// --- Unlinking --- //
 
 	/**
@@ -2067,19 +2067,19 @@ public:
 	 * explicit with the import operation.
 	 *
 	 * @param Session The session of the user.
-	 * @param SteamId The Steam Id to use.
+	 * @param SteamToken The Steam token to use.
 	 * @param bReset True if the Steam friend import for the user should be reset.
 	 * @param SuccessCallback Callback invoked upon successful import of Steam friends.
 	 * @param ErrorCallback Callback invoked if the Steam friends import operation fails, providing error details.
 	 */
 	void ImportSteamFriends(
 		UNakamaSession* Session,
-		const FString& SteamId,
+		const FString& SteamToken,
 		const TOptional<bool> bReset,
 		TFunction<void()> SuccessCallback,
 		TFunction<void(const FNakamaError& Error)> ErrorCallback
 	);
-	
+
 	// --- Accounts --- //
 
 	/**
@@ -2168,7 +2168,7 @@ public:
 	 * @param Session The session of the user.
 	 * @param SuccessCallback Callback invoked upon successful friend removal.
 	 * @param ErrorCallback Callback invoked if an error occurs, detailing the failure.
-	 * 
+	 *
 	 */
 	void DeleteFriends(
 		UNakamaSession *Session,
