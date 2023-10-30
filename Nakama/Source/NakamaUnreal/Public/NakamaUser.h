@@ -9,7 +9,7 @@ USTRUCT(BlueprintType)
 struct NAKAMAUNREAL_API FNakamaUser
 {
 	GENERATED_BODY()
-	
+
 	// The id of the user's account.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|User")
 	FString Id;
@@ -58,7 +58,7 @@ struct NAKAMAUNREAL_API FNakamaUser
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|User")
 	FString AppleId;
 
-	// The Steam id in the user's account.
+	// The Steam ID in the user's account.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|User")
 	FString SteamId;
 

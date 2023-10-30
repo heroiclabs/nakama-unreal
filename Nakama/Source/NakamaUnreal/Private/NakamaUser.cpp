@@ -15,7 +15,7 @@ FNakamaUserList::FNakamaUserList(const FString& JsonString)
 				if (UserJson->Type == EJson::Object)
 				{
 					TSharedPtr<FJsonObject> UserJsonObject = UserJson->AsObject();
-                
+
 					FString UserJsonString;
 					auto Writer = TJsonWriterFactory<>::Create(&UserJsonString);
 					if (FJsonSerializer::Serialize(UserJsonObject.ToSharedRef(), Writer))
@@ -59,7 +59,7 @@ FNakamaUser::FNakamaUser(const FString& JsonString)
 		{
 			FDateTime::ParseIso8601(*CreatedAtString, CreatedAt);
 		}
-		
+
 		FString UpdatedAtString;
 		if (JsonObject->TryGetStringField("update_time", UpdatedAtString))
 		{
