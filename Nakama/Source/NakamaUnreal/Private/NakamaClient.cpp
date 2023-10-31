@@ -2947,7 +2947,7 @@ void UNakamaClient::AuthenticateSteam(
     TMultiMap<FString, FString> QueryParams;
     QueryParams.Add(TEXT("create"), FNakamaUtils::BoolToString(bCreate));
     QueryParams.Add(TEXT("username"), EncodedUsername);
-    QueryParams.Add(TEXT("import"), FNakamaUtils::BoolToString(bImport));
+    QueryParams.Add(TEXT("sync"), FNakamaUtils::BoolToString(bImport));
 
     // Setup the request content
     const TSharedPtr<FJsonObject> ContentJson = MakeShared<FJsonObject>();
