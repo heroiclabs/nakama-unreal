@@ -4752,7 +4752,7 @@ void UNakamaClient::ImportSteamFriends(
 
     if (bReset.IsSet())
     {
-        QueryParams.Add(TEXT("reset"), bReset.GetValue() ? TEXT("true") : TEXT("false"));
+        QueryParams.Add(TEXT("reset"), FNakamaUtils::BoolToString(bReset.GetValue()));
     }
 
     // Setup the request content
