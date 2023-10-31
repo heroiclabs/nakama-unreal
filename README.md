@@ -95,7 +95,7 @@ UFUNCTION()
 void OnRealtimeClientConnectSuccess();
 
 UFUNCTION()
-void OnRealtimeClientConnectError();
+void OnRealtimeClientConnectError(const FNakamaRtError& ErrorData);
 
 // Initialize client and authenticate here
 virtual void BeginPlay() override;
@@ -158,7 +158,7 @@ void AMyActor::OnAuthenticationSuccess(UNakamaSession* LoginData)
 	FOnRealtimeClientConnected ConnectionSuccessDelegate;
 	ConnectionSuccessDelegate.AddDynamic(this, &AMyActor::OnRealtimeClientConnectSuccess);
 
-	FOnRealtimeClientError ConnectionErrorDelegate;
+	FOnRealtimeClientConnectionError ConnectionErrorDelegate;
 	ConnectionErrorDelegate.AddDynamic(this, &AMyActor::OnRealtimeClientConnectError);
 
 	// This is our realtime client (socket) ready to use
@@ -188,7 +188,7 @@ void AMyActor::OnRealtimeClientConnectSuccess()
 
 }
 
-void AMyActor::OnRealtimeClientConnectError()
+void AMyActor::OnRealtimeClientConnectError(const FNakamaRtError& ErrorData)
 {
 	if(GEngine) GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, FString(TEXT("Socket Setup Failed!")));
 }
