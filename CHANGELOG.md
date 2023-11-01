@@ -4,6 +4,10 @@ All notable changes to this project are documented below.
 The format is based on [keep a changelog](http://keepachangelog.com/) and this project uses [semantic versioning](http://semver.org/).
 ### Unreleased
 
+### [2.9.4] - 2023-11-1
+### Fixed
+- Fixed automatic importing of steam friends during the Steam authentication process if `import` was passed.
+
 ### [2.9.3] - 2023-10-27
 ### Fixed
 - Fixed importing of steam friends.

@@ -2947,7 +2947,7 @@ void UNakamaClient::AuthenticateSteam(
     TMultiMap<FString, FString> QueryParams;
     QueryParams.Add(TEXT("create"), FNakamaUtils::BoolToString(bCreate));
     QueryParams.Add(TEXT("username"), EncodedUsername);
-    QueryParams.Add(TEXT("import"), FNakamaUtils::BoolToString(bImport));
+    QueryParams.Add(TEXT("sync"), FNakamaUtils::BoolToString(bImport));
 
     // Setup the request content
     const TSharedPtr<FJsonObject> ContentJson = MakeShared<FJsonObject>();
@@ -4747,17 +4747,17 @@ void UNakamaClient::ImportSteamFriends(
         return;
     }
 
-    // Setup the request content
-    const TSharedPtr<FJsonObject> AccountJson = MakeShared<FJsonObject>();
-    AccountJson->SetStringField(TEXT("token"), SteamToken);
-
-    const TSharedPtr<FJsonObject> ContentJson = MakeShared<FJsonObject>();
-    ContentJson->SetObjectField(TEXT("account"), AccountJson);
+    // Setup the query parameters
+    TMultiMap<FString, FString> QueryParams;
 
     if (bReset.IsSet())
     {
-        ContentJson->SetBoolField(TEXT("reset"), bReset.GetValue());
+        QueryParams.Add(TEXT("reset"), FNakamaUtils::BoolToString(bReset.GetValue()));
     }
+
+    // Setup the request content
+    const TSharedPtr<FJsonObject> ContentJson = MakeShared<FJsonObject>();
+    ContentJson->SetStringField(TEXT("token"), SteamToken);
 
     // Serialize the request content
     FString Content;
@@ -4769,7 +4769,7 @@ void UNakamaClient::ImportSteamFriends(
     }
 
     // Make the request
-    const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::POST, TMultiMap<FString, FString>(), Session->GetAuthToken());
+    const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::POST, QueryParams, Session->GetAuthToken());
 
     // Lock the ActiveRequests mutex to protect concurrent access
     FScopeLock Lock(&ActiveRequestsMutex);
