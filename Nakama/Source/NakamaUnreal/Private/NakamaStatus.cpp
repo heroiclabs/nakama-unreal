@@ -74,7 +74,7 @@ FNakamaStatusPresenceEvent::FNakamaStatusPresenceEvent(const FString& JsonString
 					{
 						Writer->Close();
 						FNakamaUserPresence User(UserPresenceJsonString);
-						Joins.Add(User);
+						Leaves.Add(User);
 					}
 				}
 			}
