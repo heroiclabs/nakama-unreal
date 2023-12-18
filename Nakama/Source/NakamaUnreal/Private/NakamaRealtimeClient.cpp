@@ -1419,10 +1419,13 @@ void UNakamaRealtimeClient::JoinMatch(
 	const TSharedPtr<FJsonObject> MatchJoin = MakeShareable(new FJsonObject());
 	MatchJoin->SetStringField(TEXT("match_id"), MatchId);
 
+	const TSharedPtr<FJsonObject> MetadataJson = MakeShareable(new FJsonObject());
 	for (auto& Entry : Metadata)
 	{
-		MatchJoin->SetStringField(Entry.Key, Entry.Value);
+		MetadataJson->SetStringField(Entry.Key, Entry.Value);
 	}
+
+	MatchJoin->SetObjectField(TEXT("metadata"), MetadataJson);
 	
 	SendMessageWithEnvelope(TEXT("match_join"), MatchJoin,
 		[SuccessCallback](const FNakamaRealtimeEnvelope& Envelope)
