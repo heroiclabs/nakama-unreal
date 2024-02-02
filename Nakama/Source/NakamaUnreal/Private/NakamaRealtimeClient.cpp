@@ -35,7 +35,7 @@ void UNakamaRealtimeClient::Connect(
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
 			return;
-		
+
 		Success.Broadcast();
 	};
 
@@ -43,7 +43,7 @@ void UNakamaRealtimeClient::Connect(
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
 			return;
-		
+
 		ConnectionError.Broadcast(error);
 	};
 
@@ -79,7 +79,7 @@ void UNakamaRealtimeClient::Connect(
 
 		return;
 	}
-	
+
 	// Check if connetion is ongoing
 	// remove this block if you want to create a new socket connection while one is already active
 	if (ConnectionState != EConnectionState::Disconnected)
@@ -101,12 +101,12 @@ void UNakamaRealtimeClient::Connect(
 		{
 			ConnectionErrorEvent.Broadcast(ExistingConnectionError);
 		}
-		
+
 		return;
 	}
 
 	ConnectionState = EConnectionState::Connecting;
-	
+
 	FString Url;
 
 	if (bUseSSL)
@@ -122,12 +122,12 @@ void UNakamaRealtimeClient::Connect(
 	Url += FString(Host + TEXT(":") + FString::FromInt(Port) + TEXT("/ws"));
 	Url += TEXT("?token=") + EncodedToken;
 	Url += TEXT("&status=") + FNakamaUtils::BoolToString(bCreateStatus);
-	
+
 	if(!FModuleManager::Get().IsModuleLoaded("WebSockets"))
 	{
 		FModuleManager::Get().LoadModule("WebSockets");
 	}
-	
+
 	// Check if a previous WebSocket object exists (safety check)
 	if (WebSocket)
 	{
@@ -140,9 +140,9 @@ void UNakamaRealtimeClient::Connect(
 	WebSocket->OnConnected().AddLambda([this, Success]()
 	{
 		NAKAMA_LOG_INFO(TEXT("Realtime Client Connected"));
-		
+
 		ConnectionState = EConnectionState::Connected;
-		
+
 		// Handle callbacks
 		if(FNakamaUtils::IsRealtimeClientActive(this))
 		{
@@ -206,7 +206,7 @@ void UNakamaRealtimeClient::Connect(
 		NAKAMA_LOG_INFO(FString::Printf(TEXT("Realtime Client Connection closed with status code: %d, reason: %s, was clean: %d"), StatusCode, *Reason, bWasClean));
 
 		ConnectionState = EConnectionState::Disconnected;
-		
+
 		CancelAllRequests(ENakamaRtErrorCode::DISCONNECTED);
 
 		// Call disconnect callback if OnDisconnect is bound and DisconnectedEvent is bound
@@ -246,7 +246,7 @@ void UNakamaRealtimeClient::Connect(
 	{
 		// Parse the message
 		HandleReceivedMessage(MessageString);
-		
+
 		// Update the last message timestamp
 		LastMessageTimestamp = FPlatformTime::Seconds();
 	});
@@ -267,7 +267,7 @@ void UNakamaRealtimeClient::Connect(
 	});
 
 	bIsActive = true;
-	
+
 	WebSocket->Connect();
 }
 
@@ -397,7 +397,7 @@ void UNakamaRealtimeClient::BeginDestroy()
 
 	// Clear the request contexts in a thread-safe manner.
 	CancelAllRequests(ENakamaRtErrorCode::DISCONNECTED);
-	
+
 	CleanupWebSocket();
 
 	Super::BeginDestroy();
@@ -412,12 +412,12 @@ void UNakamaRealtimeClient::Disconnect()
 	}
 
 	ConnectionState = EConnectionState::Disconnecting;
-	
+
 	if(!WebSocket.IsValid())
 	{
 		return;
 	}
-	
+
 	bLocalDisconnectInitiated = true;
 
 	// NOTE: We do NOT clear binding for 'OnClosed' because it will clean up the Socket Connection
@@ -458,7 +458,7 @@ void UNakamaRealtimeClient::WriteChatMessage(
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
 			return;
-		
+
 		Success.Broadcast(ChannelMessageAck);
 	};
 
@@ -466,7 +466,7 @@ void UNakamaRealtimeClient::WriteChatMessage(
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
 			return;
-		
+
 		Error.Broadcast(error);
 	};
 
@@ -483,7 +483,7 @@ void UNakamaRealtimeClient::SendDirectMessage(
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
 			return;
-		
+
 		Success.Broadcast(ChannelMessageAck);
 	};
 
@@ -491,7 +491,7 @@ void UNakamaRealtimeClient::SendDirectMessage(
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
 			return;
-		
+
 		Error.Broadcast(error);
 	};
 
@@ -509,7 +509,7 @@ void UNakamaRealtimeClient::UpdateChatMessage(
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
 			return;
-		
+
 		Success.Broadcast(ChannelMessageAck);
 	};
 
@@ -517,7 +517,7 @@ void UNakamaRealtimeClient::UpdateChatMessage(
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
 			return;
-		
+
 		Error.Broadcast(error);
 	};
 
@@ -534,7 +534,7 @@ void UNakamaRealtimeClient::RemoveChatMessage(
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
 			return;
-		
+
 		Success.Broadcast(ChannelMessageAck);
 	};
 
@@ -542,7 +542,7 @@ void UNakamaRealtimeClient::RemoveChatMessage(
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
 			return;
-		
+
 		Error.Broadcast(error);
 	};
 
@@ -566,7 +566,7 @@ void UNakamaRealtimeClient::JoinChat(
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
 			return;
-		
+
 		Success.Broadcast(Channel);
 	};
 
@@ -574,7 +574,7 @@ void UNakamaRealtimeClient::JoinChat(
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
 			return;
-		
+
 		Error.Broadcast(error);
 	};
 
@@ -590,7 +590,7 @@ void UNakamaRealtimeClient::LeaveChat(
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
 			return;
-		
+
 		Success.Broadcast();
 	};
 
@@ -598,7 +598,7 @@ void UNakamaRealtimeClient::LeaveChat(
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
 			return;
-		
+
 		Error.Broadcast(error);
 	};
 
@@ -624,7 +624,7 @@ void UNakamaRealtimeClient::AddMatchmaker(
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
 			return;
-		
+
 		Success.Broadcast(MatchmakerTicket.TicketId);
 	};
 
@@ -632,7 +632,7 @@ void UNakamaRealtimeClient::AddMatchmaker(
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
 			return;
-		
+
 		Error.Broadcast(error);
 	};
 
@@ -640,7 +640,7 @@ void UNakamaRealtimeClient::AddMatchmaker(
 	auto OptMaxCount = FNakamaUtils::CreateOptional(MaxCount, 0);
 	const auto OptQuery = FNakamaUtils::CreateOptional(Query, FString());
 	const auto OptCountMultiple = FNakamaUtils::CreateOptional(CountMultiple, 0);
-	
+
 	AddMatchmaker(
 		OptMinCount,
 		OptMaxCount,
@@ -670,7 +670,7 @@ void UNakamaRealtimeClient::RemoveMatchmaker(
     {
     	if(!FNakamaUtils::IsRealtimeClientActive(this))
     		return;
-    	
+
     	Success.Broadcast(Ticket); // Deviation from the C++ SDK by returning the ticket
     };
 
@@ -678,7 +678,7 @@ void UNakamaRealtimeClient::RemoveMatchmaker(
     {
     	if(!FNakamaUtils::IsRealtimeClientActive(this))
     		return;
-    	
+
     	Error.Broadcast(error);
     };
 
@@ -698,7 +698,7 @@ void UNakamaRealtimeClient::UpdateStatus(
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
 			return;
-		
+
 		Success.Broadcast();
 	};
 
@@ -706,7 +706,7 @@ void UNakamaRealtimeClient::UpdateStatus(
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
 			return;
-		
+
 		Error.Broadcast(error);
 	};
 
@@ -721,7 +721,7 @@ void UNakamaRealtimeClient::SetAppearOffline(
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
 			return;
-		
+
 		Success.Broadcast();
 	};
 
@@ -729,7 +729,7 @@ void UNakamaRealtimeClient::SetAppearOffline(
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
 			return;
-		
+
 		Error.Broadcast(error);
 	};
 
@@ -745,7 +745,7 @@ void UNakamaRealtimeClient::FollowUsers(
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
 			return;
-		
+
 		Success.Broadcast(Status);
 	};
 
@@ -753,10 +753,10 @@ void UNakamaRealtimeClient::FollowUsers(
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
 			return;
-		
+
 		Error.Broadcast(error);
 	};
-	
+
 	FollowUsers(UserIds, successCallback, errorCallback);
 }
 
@@ -769,7 +769,7 @@ void UNakamaRealtimeClient::UnFollowUsers(
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
 			return;
-		
+
 		Success.Broadcast();
 	};
 
@@ -777,10 +777,10 @@ void UNakamaRealtimeClient::UnFollowUsers(
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
 			return;
-		
+
 		Error.Broadcast(error);
 	};
-	
+
 	UnfollowUsers(UserIds, successCallback, errorCallback);
 }
 
@@ -796,7 +796,7 @@ void UNakamaRealtimeClient::CreateMatch(
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
 			return;
-		
+
 		Success.Broadcast(Match);
 	};
 
@@ -804,7 +804,7 @@ void UNakamaRealtimeClient::CreateMatch(
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
 			return;
-		
+
 		Error.Broadcast(error);
 	};
 
@@ -821,7 +821,7 @@ void UNakamaRealtimeClient::JoinMatch(
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
 			return;
-		
+
 		Success.Broadcast(Match);
 	};
 
@@ -829,7 +829,7 @@ void UNakamaRealtimeClient::JoinMatch(
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
 			return;
-		
+
 		Error.Broadcast(error);
 	};
 
@@ -845,7 +845,7 @@ void UNakamaRealtimeClient::JoinMatchByToken(
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
 			return;
-		
+
 		Success.Broadcast(Match);
 	};
 
@@ -853,7 +853,7 @@ void UNakamaRealtimeClient::JoinMatchByToken(
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
 			return;
-		
+
 		Error.Broadcast(error);
 	};
 
@@ -873,7 +873,7 @@ void UNakamaRealtimeClient::SendMatchData(
 
 	FString EncodeData = FNakamaUtils::Base64Encode(Data);
 	MatchDataSend->SetStringField(TEXT("data"), EncodeData);
-	
+
 	if (Presences.Num() > 0)
 	{
 		TArray<TSharedPtr<FJsonValue>> PresencesJsonArray;
@@ -919,7 +919,7 @@ void UNakamaRealtimeClient::LeaveMatch(
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
 			return;
-		
+
 		Success.Broadcast();
 	};
 
@@ -927,7 +927,7 @@ void UNakamaRealtimeClient::LeaveMatch(
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
 			return;
-		
+
 		Error.Broadcast(error);
 	};
 
@@ -949,7 +949,7 @@ void UNakamaRealtimeClient::CreateParty(
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
 			return;
-		
+
 		Success.Broadcast(Party);
 	};
 
@@ -957,7 +957,7 @@ void UNakamaRealtimeClient::CreateParty(
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
 			return;
-		
+
 		Error.Broadcast(error);
 	};
 
@@ -973,7 +973,7 @@ void UNakamaRealtimeClient::JoinParty(
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
 			return;
-		
+
 		Success.Broadcast(PartyId); // Deviation from C++ SDK by passing PartyId
 	};
 
@@ -981,7 +981,7 @@ void UNakamaRealtimeClient::JoinParty(
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
 			return;
-		
+
 		Error.Broadcast(error);
 	};
 
@@ -997,7 +997,7 @@ void UNakamaRealtimeClient::LeaveParty(
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
 			return;
-		
+
 		Success.Broadcast();
 	};
 
@@ -1005,7 +1005,7 @@ void UNakamaRealtimeClient::LeaveParty(
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
 			return;
-		
+
 		Error.Broadcast(error);
 	};
 
@@ -1021,7 +1021,7 @@ void UNakamaRealtimeClient::ListPartyJoinRequests(
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
 			return;
-		
+
 		Success.Broadcast(PartyJoinRequest);
 	};
 
@@ -1029,7 +1029,7 @@ void UNakamaRealtimeClient::ListPartyJoinRequests(
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
 			return;
-		
+
 		Error.Broadcast(error);
 	};
 
@@ -1046,7 +1046,7 @@ void UNakamaRealtimeClient::PromotePartyMember(
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
 			return;
-		
+
 		Success.Broadcast();
 	};
 
@@ -1054,7 +1054,7 @@ void UNakamaRealtimeClient::PromotePartyMember(
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
 			return;
-		
+
 		Error.Broadcast(error);
 	};
 
@@ -1071,7 +1071,7 @@ void UNakamaRealtimeClient::RemoveMatchMakerParty(
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
 			return;
-		
+
 		Success.Broadcast(Ticket); // Deviation from C++ SDK by passing Ticket
 	};
 
@@ -1079,7 +1079,7 @@ void UNakamaRealtimeClient::RemoveMatchMakerParty(
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
 			return;
-		
+
 		Error.Broadcast(error);
 	};
 
@@ -1096,7 +1096,7 @@ void UNakamaRealtimeClient::RemovePartyMember(
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
 			return;
-		
+
 		Success.Broadcast();
 	};
 
@@ -1104,7 +1104,7 @@ void UNakamaRealtimeClient::RemovePartyMember(
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
 			return;
-		
+
 		Error.Broadcast(error);
 	};
 
@@ -1121,7 +1121,7 @@ void UNakamaRealtimeClient::AcceptPartyMember(
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
 			return;
-		
+
 		Success.Broadcast();
 	};
 
@@ -1129,7 +1129,7 @@ void UNakamaRealtimeClient::AcceptPartyMember(
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
 			return;
-		
+
 		Error.Broadcast(error);
 	};
 
@@ -1152,7 +1152,7 @@ void UNakamaRealtimeClient::AddMatchmakerParty(
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
 			return;
-		
+
 		Success.Broadcast(MatchmakerTicket);
 	};
 
@@ -1160,7 +1160,7 @@ void UNakamaRealtimeClient::AddMatchmakerParty(
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
 			return;
-		
+
 		Error.Broadcast(error);
 	};
 
@@ -1168,7 +1168,7 @@ void UNakamaRealtimeClient::AddMatchmakerParty(
 	auto OptMaxCount = FNakamaUtils::CreateOptional(MaxCount, 0);
 	const auto OptQuery = FNakamaUtils::CreateOptional(Query, FString());
 	const auto OptCountMultiple = FNakamaUtils::CreateOptional(CountMultiple, 0);
-	
+
 	AddMatchmakerParty(
 		PartyId,
 		OptMinCount,
@@ -1191,7 +1191,7 @@ void UNakamaRealtimeClient::CloseParty(
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
 			return;
-		
+
 		Success.Broadcast();
 	};
 
@@ -1199,7 +1199,7 @@ void UNakamaRealtimeClient::CloseParty(
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
 			return;
-		
+
 		Error.Broadcast(error);
 	};
 
@@ -1212,7 +1212,7 @@ void UNakamaRealtimeClient::RPC(const FString& FunctionId, const FString& Payloa
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
 			return;
-		
+
 		Success.Broadcast(rpc);
 	};
 
@@ -1220,7 +1220,7 @@ void UNakamaRealtimeClient::RPC(const FString& FunctionId, const FString& Payloa
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
 			return;
-		
+
 		Error.Broadcast(error);
 	};
 
@@ -1265,7 +1265,7 @@ void UNakamaRealtimeClient::JoinChat(
 			}
 		}
 	);
-	
+
 }
 
 void UNakamaRealtimeClient::LeaveChat(
@@ -1276,7 +1276,7 @@ void UNakamaRealtimeClient::LeaveChat(
 	// Setup the json object
 	const TSharedPtr<FJsonObject> ChannelLeave = MakeShareable(new FJsonObject());
 	ChannelLeave->SetStringField(TEXT("channel_id"), ChannelId);
-	
+
 	SendMessageWithEnvelope(TEXT("channel_leave"), ChannelLeave,
 		[SuccessCallback](const FNakamaRealtimeEnvelope& Envelope)
 		{
@@ -1426,7 +1426,7 @@ void UNakamaRealtimeClient::JoinMatch(
 	}
 
 	MatchJoin->SetObjectField(TEXT("metadata"), MetadataJson);
-	
+
 	SendMessageWithEnvelope(TEXT("match_join"), MatchJoin,
 		[SuccessCallback](const FNakamaRealtimeEnvelope& Envelope)
 		{
@@ -1610,7 +1610,7 @@ void UNakamaRealtimeClient::FollowUsers(
 	// Setup the json object
 	const TSharedPtr<FJsonObject> StatusFollowUsers = MakeShared<FJsonObject>();
 	TArray<TSharedPtr<FJsonValue>> UserIdsJsonArray;
-	
+
 	for (const FString& UserId : UserIds)
 	{
 		UserIdsJsonArray.Add(MakeShared<FJsonValueString>(UserId));
@@ -2100,7 +2100,7 @@ void UNakamaRealtimeClient::SendPartyData(
 	PartySendData->SetStringField(TEXT("party_id"), PartyId);
 	PartySendData->SetNumberField(TEXT("op_code"), OpCode);
 	PartySendData->SetStringField(TEXT("data"), Data);
-	
+
 	const FString EncodeData = FNakamaUtils::Base64Encode(Data);
 	PartySendData->SetStringField(TEXT("data"), EncodeData);
 
@@ -2127,7 +2127,7 @@ void UNakamaRealtimeClient::SetHeartbeatIntervalMs(int32 IntervalMs)
 	HeartbeatIntervalMs = IntervalMs;
 }
 
-TWeakObjectPtr<UNakamaRealtimeRequestContext> UNakamaRealtimeClient::CreateReqContext(FNakamaRealtimeEnvelope& envelope)
+UNakamaRealtimeRequestContext* UNakamaRealtimeClient::CreateReqContext(FNakamaRealtimeEnvelope& envelope)
 {
 	FScopeLock Lock(&ReqContextsLock);
 
@@ -2138,8 +2138,8 @@ TWeakObjectPtr<UNakamaRealtimeRequestContext> UNakamaRealtimeClient::CreateReqCo
 		NextCid = 0;
 	}
 
-	TObjectPtr<UNakamaRealtimeRequestContext> ReqContext = NewObject<UNakamaRealtimeRequestContext>();
-	
+	UNakamaRealtimeRequestContext* ReqContext = NewObject<UNakamaRealtimeRequestContext>();
+
 	int32_t Cid = 0;
 	bool Inserted = false;
 
@@ -2177,10 +2177,10 @@ void UNakamaRealtimeClient::SendMessageWithEnvelope(const FString& FieldName,
 		{
 			ErrorCallback(Error);
 		}
-		
+
 		return;
 	}
-	
+
 	// Create the Envelope with the object field
 	const TSharedPtr<FJsonObject> Envelope = MakeShareable(new FJsonObject());
 	//Envelope->SetObjectField(FieldName, ObjectField);
@@ -2190,7 +2190,7 @@ void UNakamaRealtimeClient::SendMessageWithEnvelope(const FString& FieldName,
 	FNakamaRealtimeEnvelope NakamaEnvelope;
 
 	// Create Context from the Envelope
-	const TWeakObjectPtr<UNakamaRealtimeRequestContext> ReqContext = CreateReqContext(NakamaEnvelope);
+	UNakamaRealtimeRequestContext* ReqContext = CreateReqContext(NakamaEnvelope);
 	Envelope->SetStringField(TEXT("cid"), FString::FromInt(ReqContext->CID));
 
 	// Envelope is basically just holding a reference to the Payload in the SuccessCallback (makes it generic)
@@ -2219,7 +2219,7 @@ void UNakamaRealtimeClient::SendMessageWithEnvelope(const FString& FieldName,
 	// Send Message
 	const FString Message = NakamaEnvelope.Payload;
 	WebSocket->Send(Message);
-	
+
 	NAKAMA_LOG_INFO(FString::Printf(TEXT("Realtime Client - Request %s sent with CID: %d"), *FieldName, ReqContext->CID));
 }
 
@@ -2231,7 +2231,7 @@ void UNakamaRealtimeClient::SendDataWithEnvelope(const FString& FieldName, const
 		NAKAMA_LOG_ERROR(TEXT("WebSocket is not valid or not connected."));
 		return;
 	}
-	
+
 	// Create the Envelope with the object field
 	const TSharedPtr<FJsonObject> Envelope = MakeShareable(new FJsonObject());
 	//Envelope->SetObjectField(FieldName, ObjectField);
@@ -2241,7 +2241,7 @@ void UNakamaRealtimeClient::SendDataWithEnvelope(const FString& FieldName, const
 	FNakamaRealtimeEnvelope NakamaEnvelope;
 
 	// Create Context from the Envelope
-	const TWeakObjectPtr<UNakamaRealtimeRequestContext> ReqContext = CreateReqContext(NakamaEnvelope);
+	const UNakamaRealtimeRequestContext* ReqContext = CreateReqContext(NakamaEnvelope);
 	Envelope->SetStringField(TEXT("cid"), FString::FromInt(ReqContext->CID));
 
 	// Set the payload
@@ -2253,7 +2253,7 @@ void UNakamaRealtimeClient::SendDataWithEnvelope(const FString& FieldName, const
 	// Send Message
 	const FString Message = NakamaEnvelope.Payload;
 	WebSocket->Send(Message);
-	
+
 	NAKAMA_LOG_DEBUG(FString::Printf(TEXT("%s request sent with CID=%d"), *FieldName, ReqContext->CID));
 }
 
@@ -2310,8 +2310,8 @@ void UNakamaRealtimeClient::HandleReceivedMessage(const FString& Data)
 	{
 		NAKAMA_LOG_DEBUG(FString::Printf(TEXT("Realtime Client - Received message: %s"), *Data));
 	}
-	
-	FNakamaRtError Error; 
+
+	FNakamaRtError Error;
 	if (JsonObject->HasField("error"))
 	{
 		FString JsonString;
@@ -2341,7 +2341,7 @@ void UNakamaRealtimeClient::HandleReceivedMessage(const FString& Data)
     			{
     				// TODO: Look into if we need to get Error from JsonString (using ReturnedError) or use 'Error' from above
     				FNakamaRtError ReturnedError = FNakamaRtError(JsonString);
-    				
+
     				// Handle Lambda Callback
     				if(OnError)
     				{
@@ -2365,7 +2365,7 @@ void UNakamaRealtimeClient::HandleReceivedMessage(const FString& Data)
     			if (SerializeJsonObject(JsonObject->GetObjectField("channel_message"), JsonString))
     			{
     				FNakamaChannelMessage ChannelMessage = FNakamaChannelMessage(JsonString);
-    				
+
     				// Handle Lambda Callback
     				if(OnChannelMessage)
     				{
@@ -2389,7 +2389,7 @@ void UNakamaRealtimeClient::HandleReceivedMessage(const FString& Data)
     			if (SerializeJsonObject(JsonObject->GetObjectField("channel_presence_event"), JsonString))
     			{
     				FNakamaChannelPresenceEvent ChannelPresenceEvent = FNakamaChannelPresenceEvent(JsonString);
-    				
+
     				// Handle Lambda Callback
     				if(OnChannelPresenceEvent)
     				{
@@ -2413,7 +2413,7 @@ void UNakamaRealtimeClient::HandleReceivedMessage(const FString& Data)
     			if (SerializeJsonObject(JsonObject->GetObjectField("match_data"), JsonString))
     			{
     				FNakamaMatchData MatchData = FNakamaMatchData(JsonString);
-    				
+
     				// Handle Lambda Callback
     				if(OnMatchData)
     				{
@@ -2437,7 +2437,7 @@ void UNakamaRealtimeClient::HandleReceivedMessage(const FString& Data)
     			if (SerializeJsonObject(JsonObject->GetObjectField("match_presence_event"), JsonString))
     			{
     				FNakamaMatchPresenceEvent MatchPresenceEvent = FNakamaMatchPresenceEvent(JsonString);
-    				
+
     				// Handle Lambda Callback
     				if(OnMatchPresenceEvent)
     				{
@@ -2461,7 +2461,7 @@ void UNakamaRealtimeClient::HandleReceivedMessage(const FString& Data)
     			if (SerializeJsonObject(JsonObject->GetObjectField("matchmaker_matched"), JsonString))
     			{
     				FNakamaMatchmakerMatched MatchmakerMatched = FNakamaMatchmakerMatched(JsonString);
-    				
+
     				// Handle Lambda Callback
     				if(OnMatchmakerMatched)
     				{
@@ -2485,7 +2485,7 @@ void UNakamaRealtimeClient::HandleReceivedMessage(const FString& Data)
     			if (SerializeJsonObject(JsonObject->GetObjectField("notifications"), JsonString))
     			{
     				FNakamaNotificationList NotificationList = FNakamaNotificationList(JsonString);
-    				
+
     				// Handle Lambda Callback
     				if(OnNotifications)
     				{
@@ -2509,7 +2509,7 @@ void UNakamaRealtimeClient::HandleReceivedMessage(const FString& Data)
     			if (SerializeJsonObject(JsonObject->GetObjectField("status_presence_event"), JsonString))
     			{
     				FNakamaStatusPresenceEvent StatusPresenceEvent = FNakamaStatusPresenceEvent(JsonString);
-    				
+
     				// Handle Lambda Callback
     				if(OnStatusPresenceEvent)
     				{
@@ -2533,7 +2533,7 @@ void UNakamaRealtimeClient::HandleReceivedMessage(const FString& Data)
     			if (SerializeJsonObject(JsonObject->GetObjectField("stream_data"), JsonString))
     			{
     				FNakamaStreamData StreamData = FNakamaStreamData(JsonString);
-    				
+
     				// Handle Lambda Callback
     				if(OnStreamData)
     				{
@@ -2557,7 +2557,7 @@ void UNakamaRealtimeClient::HandleReceivedMessage(const FString& Data)
     			if (SerializeJsonObject(JsonObject->GetObjectField("stream_presence_event"), JsonString))
     			{
     				FNakamaStreamPresenceEvent StreamPresenceEvent = FNakamaStreamPresenceEvent(JsonString);
-    				
+
     				// Handle Lambda Callback
     				if(OnStreamPresenceEvent)
     				{
@@ -2581,7 +2581,7 @@ void UNakamaRealtimeClient::HandleReceivedMessage(const FString& Data)
     			if (SerializeJsonObject(JsonObject->GetObjectField("party"), JsonString))
     			{
     				FNakamaParty Party = FNakamaParty(JsonString);
-    				
+
     				// Handle Lambda Callback
     				if(OnParty)
     				{
@@ -2605,7 +2605,7 @@ void UNakamaRealtimeClient::HandleReceivedMessage(const FString& Data)
     			if (SerializeJsonObject(JsonObject->GetObjectField("party_close"), JsonString))
     			{
     				FNakamaPartyClose PartyClose = FNakamaPartyClose(JsonString);
-    				
+
     				// Handle Lambda Callback
     				if(OnPartyClose)
     				{
@@ -2629,7 +2629,7 @@ void UNakamaRealtimeClient::HandleReceivedMessage(const FString& Data)
     			if (SerializeJsonObject(JsonObject->GetObjectField("party_data"), JsonString))
     			{
     				FNakamaPartyData PartyData = FNakamaPartyData(JsonString);
-    				
+
     				// Handle Lambda Callback
     				if(OnPartyData)
     				{
@@ -2653,7 +2653,7 @@ void UNakamaRealtimeClient::HandleReceivedMessage(const FString& Data)
     			if (SerializeJsonObject(JsonObject->GetObjectField("party_join_request"), JsonString))
     			{
     				FNakamaPartyJoinRequest PartyJoinRequest = FNakamaPartyJoinRequest(JsonString);
-    				
+
     				// Handle Lambda Callback
     				if(OnPartyJoinRequest)
     				{
@@ -2677,7 +2677,7 @@ void UNakamaRealtimeClient::HandleReceivedMessage(const FString& Data)
     			if (SerializeJsonObject(JsonObject->GetObjectField("party_leader"), JsonString))
     			{
     				FNakamaPartyLeader PartyLeader = FNakamaPartyLeader(JsonString);
-    				
+
     				// Handle Lambda Callback
     				if(OnPartyLeader)
     				{
@@ -2701,7 +2701,7 @@ void UNakamaRealtimeClient::HandleReceivedMessage(const FString& Data)
     			if (SerializeJsonObject(JsonObject->GetObjectField("party_matchmaker_ticket"), JsonString))
     			{
     				FNakamaPartyMatchmakerTicket PartyMatchmakerTicket = FNakamaPartyMatchmakerTicket(JsonString);
-    				
+
     				// Handle Lambda Callback
     				if(OnPartyMatchmakerTicket)
     				{
@@ -2725,7 +2725,7 @@ void UNakamaRealtimeClient::HandleReceivedMessage(const FString& Data)
     			if (SerializeJsonObject(JsonObject->GetObjectField("party_presence_event"), JsonString))
     			{
     				FNakamaPartyPresenceEvent PartyPresenceEvent = FNakamaPartyPresenceEvent(JsonString);
-    				
+
     				// Handle Lambda Callback
     				if(OnPartyPresenceEvent)
     				{
@@ -2769,8 +2769,8 @@ void UNakamaRealtimeClient::HandleReceivedMessage(const FString& Data)
 
 	    {
 	        FScopeLock Lock(&ReqContextsLock);
-	        TWeakObjectPtr<UNakamaRealtimeRequestContext> ReqContext = ReqContexts.FindRef(Cid);
-	        if (ReqContext.IsValid())
+	        UNakamaRealtimeRequestContext* ReqContext = ReqContexts.FindRef(Cid);
+	        if (ReqContext)
 	        {
 	        	bContextIsValid = true;
 	            SuccessCallback = ReqContext->SuccessCallback;
@@ -2783,7 +2783,7 @@ void UNakamaRealtimeClient::HandleReceivedMessage(const FString& Data)
 	            return;
 	        }
 	    }
-    	
+
     	if(bContextIsValid)
     	{
     		if (JsonObject->HasField("error"))
@@ -2835,7 +2835,7 @@ void UNakamaRealtimeClient::SendMessage(const FString& FieldName, const TSharedP
 		NAKAMA_LOG_ERROR(TEXT("WebSocket is not valid or not connected."));
 		return;
 	}
-	
+
 	TSharedPtr<FJsonObject> Envelope = MakeShareable(new FJsonObject());
 	Envelope->SetObjectField(FieldName, Object);
 
@@ -2843,7 +2843,7 @@ void UNakamaRealtimeClient::SendMessage(const FString& FieldName, const TSharedP
 	FNakamaRealtimeEnvelope NakamaEnvelope;
 
 	// Create Context
-	const TWeakObjectPtr<UNakamaRealtimeRequestContext> ReqContext = CreateReqContext(NakamaEnvelope);
+	const UNakamaRealtimeRequestContext* ReqContext = CreateReqContext(NakamaEnvelope);
 	Envelope->SetStringField(TEXT("cid"), FString::FromInt(ReqContext->CID));
 
 	// Set the payload
@@ -2900,20 +2900,19 @@ void UNakamaRealtimeClient::CancelAllRequests(const ENakamaRtErrorCode& ErrorCod
 	{
 		return;
 	}
-	
+
 	FNakamaRtError Error;
 	Error.Code = ErrorCode;
 	Error.Message = TEXT("");
-	
+
 	FScopeLock Lock(&ReqContextsLock);
 
 	for (const auto& Pair : ReqContexts)
 	{
-		TWeakObjectPtr<UNakamaRealtimeRequestContext> Value = Pair.Value;
-		
-		if (Value.IsValid())
+		UNakamaRealtimeRequestContext* Context = Pair.Value;
+
+		if (Context)
 		{
-			const UNakamaRealtimeRequestContext* Context = Value.Get();
 			if(Context->ErrorCallback.IsBound())
 			{
 				Context->ErrorCallback.Execute(Error);
@@ -2931,7 +2930,7 @@ void UNakamaRealtimeClient::OnTransportError(const FString& Description)
 	Error.Message = Description;
 	Error.Code = WebSocket->IsConnected() ? ENakamaRtErrorCode::TRANSPORT_ERROR : ENakamaRtErrorCode::CONNECT_ERROR;
 
-	NAKAMA_LOG_ERROR(FString::Printf(TEXT("Realtime Client Transport Error (Code: %s): %s"), 
+	NAKAMA_LOG_ERROR(FString::Printf(TEXT("Realtime Client Transport Error (Code: %s): %s"),
 		WebSocket->IsConnected() ? TEXT("TRANSPORT_ERROR") : TEXT("CONNECT_ERROR"), *Description));
 
 	// Handle Callbacks

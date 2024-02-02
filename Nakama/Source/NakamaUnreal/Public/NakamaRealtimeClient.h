@@ -157,7 +157,7 @@ public:
 	 * @param bCreateStatus Show as online.
 	 * @param Success Callback invoked when successfully connected to the server.
 	 * @param ConnectionError Callback invoked when a connection error occurs. Provides detailed error information.
-	 * 
+	 *
 	 */
 	void Connect(
 		UNakamaSession* Session,
@@ -165,7 +165,7 @@ public:
 		TFunction<void()> Success = nullptr,
 		TFunction<void(const FNakamaRtError& Error)> ConnectionError = nullptr
 	);
-	
+
 	// Events (bindable from blueprints or c++)
 
 	// OnConnect
@@ -591,7 +591,7 @@ public:
 	);
 
 	// --- Realtime and Match (To send RPC, please use normal Client) --- //
-	
+
 	/**
 	 * Create a multiplayer match on the server.
 	 * @param Success Delegate called when a multiplayer match is successfully created on the server.
@@ -1245,9 +1245,9 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Realtime")
 	void SetHeartbeatIntervalMs(int32 IntervalMs);
-	
+
 	// Creates a request context and assigns a CID to the outgoing message.
-	TWeakObjectPtr <UNakamaRealtimeRequestContext> CreateReqContext(FNakamaRealtimeEnvelope& envelope);
+	UNakamaRealtimeRequestContext* CreateReqContext(FNakamaRealtimeEnvelope& envelope);
 
 	// Reusable functionality to handle Sending messages with Envelopes (with callbacks)
 	void SendMessageWithEnvelope(const FString& FieldName, const TSharedPtr<FJsonObject>& ObjectField, TFunction<void(const FNakamaRealtimeEnvelope& Envelope)> SuccessCallback, TFunction<void(const FNakamaRtError& Error)> ErrorCallback);
@@ -1366,7 +1366,7 @@ protected:
 
 	// CID generator and request contexts
 	UPROPERTY()
-	TMap<int32, TObjectPtr<UNakamaRealtimeRequestContext>> ReqContexts;
+	TMap<int32, UNakamaRealtimeRequestContext*> ReqContexts;
 	int32 NextCid = 0;
 	FCriticalSection ReqContextsLock;
 };

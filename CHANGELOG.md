@@ -4,6 +4,10 @@ All notable changes to this project are documented below.
 The format is based on [keep a changelog](http://keepachangelog.com/) and this project uses [semantic versioning](http://semver.org/).
 ### Unreleased
 
+### [2.9.5] - 2024-02-02
+### Fixed
+- Fixed realtime client compatibility with Unreal 4 Engine.
+
 ### [2.9.4] - 2023-11-1
 ### Fixed
 - Fixed automatic importing of steam friends during the Steam authentication process if `import` was passed.
