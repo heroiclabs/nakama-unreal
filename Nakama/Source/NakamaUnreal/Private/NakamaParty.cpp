@@ -59,7 +59,7 @@ FNakamaParty::FNakamaParty(const FString& JsonString)
     		}
     	}
     }
-	
+
 }
 
 FNakamaParty::FNakamaParty(): Open(false), MaxSize(0)
@@ -73,10 +73,17 @@ FNakamaPartyJoinRequest::FNakamaPartyJoinRequest(const FString& JsonString)
 
 	if (FJsonSerializer::Deserialize(JsonReader, JsonObject) && JsonObject.IsValid())
 	{
-		JsonObject->TryGetStringField("party_id", PartyId);
+		const TSharedPtr<FJsonObject>* PartyJoinRequestJsonObject;
+
+		if (!JsonObject->TryGetObjectField("party_join_request", PartyJoinRequestJsonObject))
+		{
+			return;
+		}
+
+		(*PartyJoinRequestJsonObject)->TryGetStringField("party_id", PartyId);
 
 		const TArray<TSharedPtr<FJsonValue>>* PresencesJsonArray;
-		if (JsonObject->TryGetArrayField("presences", PresencesJsonArray))
+		if ((*PartyJoinRequestJsonObject)->TryGetArrayField("presences", PresencesJsonArray))
 		{
 			for (const TSharedPtr<FJsonValue>& PresenceJson : *PresencesJsonArray)
 			{
@@ -99,7 +106,7 @@ FNakamaPartyJoinRequest::FNakamaPartyJoinRequest(const FString& JsonString)
 
 FNakamaPartyJoinRequest::FNakamaPartyJoinRequest()
 {
-	
+
 }
 
 FNakamaPartyMatchmakerTicket::FNakamaPartyMatchmakerTicket(const FString& JsonString)
@@ -110,20 +117,20 @@ FNakamaPartyMatchmakerTicket::FNakamaPartyMatchmakerTicket(const FString& JsonSt
 	{
 		return;
 	}
-	
+
 	TSharedPtr<FJsonObject> PartyTicketObject = JsonObject->GetObjectField(TEXT("party_matchmaker_ticket"));
 	if (!PartyTicketObject.IsValid())
 	{
 		return;
 	}
-	
+
 	PartyTicketObject->TryGetStringField(TEXT("ticket"), Ticket);
 	PartyTicketObject->TryGetStringField(TEXT("party_id"), PartyId);
 }
 
 FNakamaPartyMatchmakerTicket::FNakamaPartyMatchmakerTicket()
 {
-	
+
 }
 
 
@@ -140,7 +147,7 @@ FNakamaPartyClose::FNakamaPartyClose(const FString& JsonString)
 
 FNakamaPartyClose::FNakamaPartyClose()
 {
-	
+
 }
 
 FNakamaPartyData::FNakamaPartyData(const FString& JsonString)
@@ -210,7 +217,7 @@ FNakamaPartyLeader::FNakamaPartyLeader(const FString& JsonString)
 
 FNakamaPartyLeader::FNakamaPartyLeader()
 {
-	
+
 }
 
 FNakamaPartyPresenceEvent::FNakamaPartyPresenceEvent(const FString& JsonString)
@@ -266,5 +273,5 @@ FNakamaPartyPresenceEvent::FNakamaPartyPresenceEvent(const FString& JsonString)
 
 FNakamaPartyPresenceEvent::FNakamaPartyPresenceEvent()
 {
-	
+
 }
