@@ -9,11 +9,11 @@ class FNakamaPartiesTestBase : public FNakamaTestBase
 public:
 	FNakamaPartiesTestBase(const FString& InName, bool bInComplexTask) : FNakamaTestBase(InName, bInComplexTask), Client2(nullptr), Socket2(nullptr), Session2(nullptr)
 	{
-		
+
 	}
 
 	virtual bool SuppressLogWarnings() override { return true; }
-	
+
 	UNakamaClient* Client2;
 	UNakamaRealtimeClient* Socket2;
 	UNakamaSession* Session2;
@@ -21,4 +21,6 @@ public:
 	FNakamaParty Party;
 
 	void SetupClient2AndJoinParty();
+	void SetupClient2AndRequestJoinParty();
+	void SetupClient2AndReceiveRequestJoinParty();
 };
