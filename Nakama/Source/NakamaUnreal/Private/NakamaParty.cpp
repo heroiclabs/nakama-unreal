@@ -73,17 +73,13 @@ FNakamaPartyJoinRequest::FNakamaPartyJoinRequest(const FString& JsonString)
 
 	if (FJsonSerializer::Deserialize(JsonReader, JsonObject) && JsonObject.IsValid())
 	{
-		const TSharedPtr<FJsonObject>* PartyJoinRequestJsonObject;
+		// Get the appropriate object based on whether "party_join_request" is present or not.
+		TSharedPtr<FJsonObject> PartyJoinRequestJsonObject = JsonObject->HasField("party_join_request") ? JsonObject->GetObjectField("party_join_request") : JsonObject;
 
-		if (!JsonObject->TryGetObjectField("party_join_request", PartyJoinRequestJsonObject))
-		{
-			return;
-		}
-
-		(*PartyJoinRequestJsonObject)->TryGetStringField("party_id", PartyId);
+		PartyJoinRequestJsonObject->TryGetStringField("party_id", PartyId);
 
 		const TArray<TSharedPtr<FJsonValue>>* PresencesJsonArray;
-		if ((*PartyJoinRequestJsonObject)->TryGetArrayField("presences", PresencesJsonArray))
+		if (PartyJoinRequestJsonObject->TryGetArrayField("presences", PresencesJsonArray))
 		{
 			for (const TSharedPtr<FJsonValue>& PresenceJson : *PresencesJsonArray)
 			{

@@ -22,4 +22,5 @@ public:
 
 	void SetupClient2AndJoinParty();
 	void SetupClient2AndRequestJoinParty();
+	void SetupClient2AndReceiveRequestJoinParty();
 };
