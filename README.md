@@ -64,11 +64,11 @@ Normally you would have to handle ticking on a C++ basis, luckily this is done a
 
 Below is a simple example of setting up a default client, authenticating, setting up a realtime client and joining a chat room. In the example we will put everything in a empty AActor class that is placed in the level.
 
-Remember to add NakamaUnreal and NakamaCore to your Private Dependencies under your project Build.cs file. For example:
+Remember to add NakamaUnreal to your Private Dependencies under your project Build.cs file. For example:
 
 ```cs
 
-PrivateDependencyModuleNames.AddRange(new string[] { "NakamaUnreal", "NakamaCore" });
+PrivateDependencyModuleNames.AddRange(new string[] { "NakamaUnreal" });
 
 ```
 
