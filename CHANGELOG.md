@@ -4,6 +4,10 @@ All notable changes to this project are documented below.
 The format is based on [keep a changelog](http://keepachangelog.com/) and this project uses [semantic versioning](http://semver.org/).
 ### Unreleased
 
+### [2.9.6] - 2024-02-06
+### Fixed
+- Fixed serialization of party join requests.
+
 ### [2.9.5] - 2024-02-02
 ### Fixed
 - Fixed realtime client compatibility with Unreal 4 Engine.
