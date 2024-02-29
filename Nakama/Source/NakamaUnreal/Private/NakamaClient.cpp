@@ -2246,7 +2246,7 @@ void UNakamaClient::AuthenticateDevice(
     ActiveRequests.Add(HttpRequest);
 
     // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
 
         if (!IsValidLowLevel())
         {
@@ -2256,7 +2256,7 @@ void UNakamaClient::AuthenticateDevice(
         // Lock the ActiveRequests mutex to protect concurrent access
         FScopeLock Lock(&ActiveRequestsMutex);
 
-        if (ActiveRequests.Contains(HttpRequest))
+        if (ActiveRequests.Contains(Request))
         {
             if (bSuccess && Response.IsValid())
             {
@@ -2294,7 +2294,7 @@ void UNakamaClient::AuthenticateDevice(
             }
 
             // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(HttpRequest);
+            ActiveRequests.Remove(Request);
         }
     });
 
@@ -2350,7 +2350,7 @@ void UNakamaClient::AuthenticateEmail(
     ActiveRequests.Add(HttpRequest);
 
     // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
 
         if (!IsValidLowLevel())
         {
@@ -2360,7 +2360,7 @@ void UNakamaClient::AuthenticateEmail(
         // Lock the ActiveRequests mutex to protect concurrent access
         FScopeLock Lock(&ActiveRequestsMutex);
 
-        if (ActiveRequests.Contains(HttpRequest))
+        if (ActiveRequests.Contains(Request))
         {
             if (bSuccess && Response.IsValid())
             {
@@ -2398,7 +2398,7 @@ void UNakamaClient::AuthenticateEmail(
             }
 
             // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(HttpRequest);
+            ActiveRequests.Remove(Request);
         }
     });
 
@@ -2452,7 +2452,7 @@ void UNakamaClient::AuthenticateCustom(
     ActiveRequests.Add(HttpRequest);
 
     // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
 
         if (!IsValidLowLevel())
         {
@@ -2462,7 +2462,7 @@ void UNakamaClient::AuthenticateCustom(
         // Lock the ActiveRequests mutex to protect concurrent access
         FScopeLock Lock(&ActiveRequestsMutex);
 
-        if (ActiveRequests.Contains(HttpRequest))
+        if (ActiveRequests.Contains(Request))
         {
             if (bSuccess && Response.IsValid())
             {
@@ -2500,7 +2500,7 @@ void UNakamaClient::AuthenticateCustom(
             }
 
             // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(HttpRequest);
+            ActiveRequests.Remove(Request);
         }
     });
 
@@ -2554,7 +2554,7 @@ void UNakamaClient::AuthenticateApple(
     ActiveRequests.Add(HttpRequest);
 
     // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
 
         if (!IsValidLowLevel())
         {
@@ -2564,7 +2564,7 @@ void UNakamaClient::AuthenticateApple(
         // Lock the ActiveRequests mutex to protect concurrent access
         FScopeLock Lock(&ActiveRequestsMutex);
 
-        if (ActiveRequests.Contains(HttpRequest))
+        if (ActiveRequests.Contains(Request))
         {
             if (bSuccess && Response.IsValid())
             {
@@ -2602,7 +2602,7 @@ void UNakamaClient::AuthenticateApple(
             }
 
             // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(HttpRequest);
+            ActiveRequests.Remove(Request);
         }
     });
 
@@ -2658,7 +2658,7 @@ void UNakamaClient::AuthenticateFacebook(
     ActiveRequests.Add(HttpRequest);
 
     // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
 
         if (!IsValidLowLevel())
         {
@@ -2668,7 +2668,7 @@ void UNakamaClient::AuthenticateFacebook(
         // Lock the ActiveRequests mutex to protect concurrent access
         FScopeLock Lock(&ActiveRequestsMutex);
 
-        if (ActiveRequests.Contains(HttpRequest))
+        if (ActiveRequests.Contains(Request))
         {
             if (bSuccess && Response.IsValid())
             {
@@ -2706,7 +2706,7 @@ void UNakamaClient::AuthenticateFacebook(
             }
 
             // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(HttpRequest);
+            ActiveRequests.Remove(Request);
         }
     });
 
@@ -2760,7 +2760,7 @@ void UNakamaClient::AuthenticateGoogle(
     ActiveRequests.Add(HttpRequest);
 
     // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
 
         if (!IsValidLowLevel())
         {
@@ -2770,7 +2770,7 @@ void UNakamaClient::AuthenticateGoogle(
         // Lock the ActiveRequests mutex to protect concurrent access
         FScopeLock Lock(&ActiveRequestsMutex);
 
-        if (ActiveRequests.Contains(HttpRequest))
+        if (ActiveRequests.Contains(Request))
         {
             if (bSuccess && Response.IsValid())
             {
@@ -2808,7 +2808,7 @@ void UNakamaClient::AuthenticateGoogle(
             }
 
             // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(HttpRequest);
+            ActiveRequests.Remove(Request);
         }
     });
 
@@ -2872,7 +2872,7 @@ void UNakamaClient::AuthenticateGameCenter(
     ActiveRequests.Add(HttpRequest);
 
     // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
 
         if (!IsValidLowLevel())
         {
@@ -2882,7 +2882,7 @@ void UNakamaClient::AuthenticateGameCenter(
         // Lock the ActiveRequests mutex to protect concurrent access
         FScopeLock Lock(&ActiveRequestsMutex);
 
-        if (ActiveRequests.Contains(HttpRequest))
+        if (ActiveRequests.Contains(Request))
         {
             if (bSuccess && Response.IsValid())
             {
@@ -2920,7 +2920,7 @@ void UNakamaClient::AuthenticateGameCenter(
             }
 
             // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(HttpRequest);
+            ActiveRequests.Remove(Request);
         }
     });
 
@@ -2976,7 +2976,7 @@ void UNakamaClient::AuthenticateSteam(
     ActiveRequests.Add(HttpRequest);
 
     // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
 
         if (!IsValidLowLevel())
         {
@@ -2986,7 +2986,7 @@ void UNakamaClient::AuthenticateSteam(
         // Lock the ActiveRequests mutex to protect concurrent access
         FScopeLock Lock(&ActiveRequestsMutex);
 
-        if (ActiveRequests.Contains(HttpRequest))
+        if (ActiveRequests.Contains(Request))
         {
             if (bSuccess && Response.IsValid())
             {
@@ -3024,7 +3024,7 @@ void UNakamaClient::AuthenticateSteam(
             }
 
             // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(HttpRequest);
+            ActiveRequests.Remove(Request);
         }
     });
 
@@ -3068,7 +3068,7 @@ void UNakamaClient::AuthenticateRefresh(
     ActiveRequests.Add(HttpRequest);
 
     // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
 
         if (!IsValidLowLevel())
         {
@@ -3078,7 +3078,7 @@ void UNakamaClient::AuthenticateRefresh(
         // Lock the ActiveRequests mutex to protect concurrent access
         FScopeLock Lock(&ActiveRequestsMutex);
 
-        if (ActiveRequests.Contains(HttpRequest))
+        if (ActiveRequests.Contains(Request))
         {
             if (bSuccess && Response.IsValid())
             {
@@ -3116,7 +3116,7 @@ void UNakamaClient::AuthenticateRefresh(
             }
 
             // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(HttpRequest);
+            ActiveRequests.Remove(Request);
         }
     });
 
@@ -3162,7 +3162,7 @@ void UNakamaClient::LinkDevice(
     ActiveRequests.Add(HttpRequest);
 
     // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
 
         if (!IsValidLowLevel())
         {
@@ -3172,7 +3172,7 @@ void UNakamaClient::LinkDevice(
         // Lock the ActiveRequests mutex to protect concurrent access
         FScopeLock Lock(&ActiveRequestsMutex);
 
-        if (ActiveRequests.Contains(HttpRequest))
+        if (ActiveRequests.Contains(Request))
         {
             if (bSuccess && Response.IsValid())
             {
@@ -3208,7 +3208,7 @@ void UNakamaClient::LinkDevice(
             }
 
             // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(HttpRequest);
+            ActiveRequests.Remove(Request);
         }
     });
 
@@ -3256,7 +3256,7 @@ void UNakamaClient::LinkEmail(
         ActiveRequests.Add(HttpRequest);
 
         // Bind the response callback and handle the response
-        HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+        HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
 
             if (!IsValidLowLevel())
             {
@@ -3266,7 +3266,7 @@ void UNakamaClient::LinkEmail(
             // Lock the ActiveRequests mutex to protect concurrent access
             FScopeLock Lock(&ActiveRequestsMutex);
 
-            if (ActiveRequests.Contains(HttpRequest))
+            if (ActiveRequests.Contains(Request))
             {
                 if (bSuccess && Response.IsValid())
                 {
@@ -3302,7 +3302,7 @@ void UNakamaClient::LinkEmail(
                 }
 
                 // Remove the HttpRequest from ActiveRequests
-                ActiveRequests.Remove(HttpRequest);
+                ActiveRequests.Remove(Request);
             }
         });
 
@@ -3348,7 +3348,7 @@ void UNakamaClient::LinkCustom(
     ActiveRequests.Add(HttpRequest);
 
     // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
 
         if (!IsValidLowLevel())
         {
@@ -3358,7 +3358,7 @@ void UNakamaClient::LinkCustom(
         // Lock the ActiveRequests mutex to protect concurrent access
         FScopeLock Lock(&ActiveRequestsMutex);
 
-        if (ActiveRequests.Contains(HttpRequest))
+        if (ActiveRequests.Contains(Request))
         {
             if (bSuccess && Response.IsValid())
             {
@@ -3394,7 +3394,7 @@ void UNakamaClient::LinkCustom(
             }
 
             // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(HttpRequest);
+            ActiveRequests.Remove(Request);
         }
     });
 
@@ -3440,7 +3440,7 @@ void UNakamaClient::LinkApple(
     ActiveRequests.Add(HttpRequest);
 
     // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
 
         if (!IsValidLowLevel())
         {
@@ -3450,7 +3450,7 @@ void UNakamaClient::LinkApple(
         // Lock the ActiveRequests mutex to protect concurrent access
         FScopeLock Lock(&ActiveRequestsMutex);
 
-        if (ActiveRequests.Contains(HttpRequest))
+        if (ActiveRequests.Contains(Request))
         {
             if (bSuccess && Response.IsValid())
             {
@@ -3486,7 +3486,7 @@ void UNakamaClient::LinkApple(
             }
 
             // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(HttpRequest);
+            ActiveRequests.Remove(Request);
         }
     });
 
@@ -3540,7 +3540,7 @@ void UNakamaClient::LinkFacebook(
     ActiveRequests.Add(HttpRequest);
 
     // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
 
         if (!IsValidLowLevel())
         {
@@ -3550,7 +3550,7 @@ void UNakamaClient::LinkFacebook(
         // Lock the ActiveRequests mutex to protect concurrent access
         FScopeLock Lock(&ActiveRequestsMutex);
 
-        if (ActiveRequests.Contains(HttpRequest))
+        if (ActiveRequests.Contains(Request))
         {
             if (bSuccess && Response.IsValid())
             {
@@ -3586,7 +3586,7 @@ void UNakamaClient::LinkFacebook(
             }
 
             // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(HttpRequest);
+            ActiveRequests.Remove(Request);
         }
     });
 
@@ -3632,7 +3632,7 @@ void UNakamaClient::LinkGoogle(
     ActiveRequests.Add(HttpRequest);
 
     // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
 
         if (!IsValidLowLevel())
         {
@@ -3642,7 +3642,7 @@ void UNakamaClient::LinkGoogle(
         // Lock the ActiveRequests mutex to protect concurrent access
         FScopeLock Lock(&ActiveRequestsMutex);
 
-        if (ActiveRequests.Contains(HttpRequest))
+        if (ActiveRequests.Contains(Request))
         {
             if (bSuccess && Response.IsValid())
             {
@@ -3678,7 +3678,7 @@ void UNakamaClient::LinkGoogle(
             }
 
             // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(HttpRequest);
+            ActiveRequests.Remove(Request);
         }
     });
 
@@ -3733,7 +3733,7 @@ void UNakamaClient::LinkGameCenter(
     ActiveRequests.Add(HttpRequest);
 
     // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
 
         if (!IsValidLowLevel())
         {
@@ -3743,7 +3743,7 @@ void UNakamaClient::LinkGameCenter(
         // Lock the ActiveRequests mutex to protect concurrent access
         FScopeLock Lock(&ActiveRequestsMutex);
 
-        if (ActiveRequests.Contains(HttpRequest))
+        if (ActiveRequests.Contains(Request))
         {
             if (bSuccess && Response.IsValid())
             {
@@ -3779,7 +3779,7 @@ void UNakamaClient::LinkGameCenter(
             }
 
             // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(HttpRequest);
+            ActiveRequests.Remove(Request);
         }
     });
 
@@ -3827,7 +3827,7 @@ void UNakamaClient::LinkSteam(
     ActiveRequests.Add(HttpRequest);
 
     // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
 
         if (!IsValidLowLevel())
         {
@@ -3837,7 +3837,7 @@ void UNakamaClient::LinkSteam(
         // Lock the ActiveRequests mutex to protect concurrent access
         FScopeLock Lock(&ActiveRequestsMutex);
 
-        if (ActiveRequests.Contains(HttpRequest))
+        if (ActiveRequests.Contains(Request))
         {
             if (bSuccess && Response.IsValid())
             {
@@ -3873,7 +3873,7 @@ void UNakamaClient::LinkSteam(
             }
 
             // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(HttpRequest);
+            ActiveRequests.Remove(Request);
         }
     });
 
@@ -3919,7 +3919,7 @@ void UNakamaClient::UnLinkDevice(
     ActiveRequests.Add(HttpRequest);
 
     // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
 
         if (!IsValidLowLevel())
         {
@@ -3929,7 +3929,7 @@ void UNakamaClient::UnLinkDevice(
         // Lock the ActiveRequests mutex to protect concurrent access
         FScopeLock Lock(&ActiveRequestsMutex);
 
-        if (ActiveRequests.Contains(HttpRequest))
+        if (ActiveRequests.Contains(Request))
         {
             if (bSuccess && Response.IsValid())
             {
@@ -3965,7 +3965,7 @@ void UNakamaClient::UnLinkDevice(
             }
 
             // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(HttpRequest);
+            ActiveRequests.Remove(Request);
         }
     });
 
@@ -4013,7 +4013,7 @@ void UNakamaClient::UnLinkEmail(
     ActiveRequests.Add(HttpRequest);
 
     // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
 
         if (!IsValidLowLevel())
         {
@@ -4023,7 +4023,7 @@ void UNakamaClient::UnLinkEmail(
         // Lock the ActiveRequests mutex to protect concurrent access
         FScopeLock Lock(&ActiveRequestsMutex);
 
-        if (ActiveRequests.Contains(HttpRequest))
+        if (ActiveRequests.Contains(Request))
         {
             if (bSuccess && Response.IsValid())
             {
@@ -4059,7 +4059,7 @@ void UNakamaClient::UnLinkEmail(
             }
 
             // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(HttpRequest);
+            ActiveRequests.Remove(Request);
         }
     });
 
@@ -4105,7 +4105,7 @@ void UNakamaClient::UnLinkCustom(
     ActiveRequests.Add(HttpRequest);
 
     // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
 
         if (!IsValidLowLevel())
         {
@@ -4115,7 +4115,7 @@ void UNakamaClient::UnLinkCustom(
         // Lock the ActiveRequests mutex to protect concurrent access
         FScopeLock Lock(&ActiveRequestsMutex);
 
-        if (ActiveRequests.Contains(HttpRequest))
+        if (ActiveRequests.Contains(Request))
         {
             if (bSuccess && Response.IsValid())
             {
@@ -4151,7 +4151,7 @@ void UNakamaClient::UnLinkCustom(
             }
 
             // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(HttpRequest);
+            ActiveRequests.Remove(Request);
         }
     });
 
@@ -4197,7 +4197,7 @@ void UNakamaClient::UnLinkApple(
     ActiveRequests.Add(HttpRequest);
 
     // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
 
         if (!IsValidLowLevel())
         {
@@ -4207,7 +4207,7 @@ void UNakamaClient::UnLinkApple(
         // Lock the ActiveRequests mutex to protect concurrent access
         FScopeLock Lock(&ActiveRequestsMutex);
 
-        if (ActiveRequests.Contains(HttpRequest))
+        if (ActiveRequests.Contains(Request))
         {
             if (bSuccess && Response.IsValid())
             {
@@ -4243,7 +4243,7 @@ void UNakamaClient::UnLinkApple(
             }
 
             // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(HttpRequest);
+            ActiveRequests.Remove(Request);
         }
     });
 
@@ -4292,7 +4292,7 @@ void UNakamaClient::UnLinkFacebook(
     ActiveRequests.Add(HttpRequest);
 
     // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
 
         if (!IsValidLowLevel())
         {
@@ -4302,7 +4302,7 @@ void UNakamaClient::UnLinkFacebook(
         // Lock the ActiveRequests mutex to protect concurrent access
         FScopeLock Lock(&ActiveRequestsMutex);
 
-        if (ActiveRequests.Contains(HttpRequest))
+        if (ActiveRequests.Contains(Request))
         {
             if (bSuccess && Response.IsValid())
             {
@@ -4338,7 +4338,7 @@ void UNakamaClient::UnLinkFacebook(
             }
 
             // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(HttpRequest);
+            ActiveRequests.Remove(Request);
         }
     });
 
@@ -4384,7 +4384,7 @@ void UNakamaClient::UnLinkGoogle(
     ActiveRequests.Add(HttpRequest);
 
     // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
 
         if (!IsValidLowLevel())
         {
@@ -4394,7 +4394,7 @@ void UNakamaClient::UnLinkGoogle(
         // Lock the ActiveRequests mutex to protect concurrent access
         FScopeLock Lock(&ActiveRequestsMutex);
 
-        if (ActiveRequests.Contains(HttpRequest))
+        if (ActiveRequests.Contains(Request))
         {
             if (bSuccess && Response.IsValid())
             {
@@ -4430,7 +4430,7 @@ void UNakamaClient::UnLinkGoogle(
             }
 
             // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(HttpRequest);
+            ActiveRequests.Remove(Request);
         }
     });
 
@@ -4486,7 +4486,7 @@ void UNakamaClient::UnLinkGameCenter(
     ActiveRequests.Add(HttpRequest);
 
     // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
 
         if (!IsValidLowLevel())
         {
@@ -4496,7 +4496,7 @@ void UNakamaClient::UnLinkGameCenter(
         // Lock the ActiveRequests mutex to protect concurrent access
         FScopeLock Lock(&ActiveRequestsMutex);
 
-        if (ActiveRequests.Contains(HttpRequest))
+        if (ActiveRequests.Contains(Request))
         {
             if (bSuccess && Response.IsValid())
             {
@@ -4532,7 +4532,7 @@ void UNakamaClient::UnLinkGameCenter(
             }
 
             // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(HttpRequest);
+            ActiveRequests.Remove(Request);
         }
     });
 
@@ -4578,7 +4578,7 @@ void UNakamaClient::UnLinkSteam(
     ActiveRequests.Add(HttpRequest);
 
     // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
 
         if (!IsValidLowLevel())
         {
@@ -4588,7 +4588,7 @@ void UNakamaClient::UnLinkSteam(
         // Lock the ActiveRequests mutex to protect concurrent access
         FScopeLock Lock(&ActiveRequestsMutex);
 
-        if (ActiveRequests.Contains(HttpRequest))
+        if (ActiveRequests.Contains(Request))
         {
             if (bSuccess && Response.IsValid())
             {
@@ -4624,7 +4624,7 @@ void UNakamaClient::UnLinkSteam(
             }
 
             // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(HttpRequest);
+            ActiveRequests.Remove(Request);
         }
     });
 
@@ -4677,7 +4677,7 @@ void UNakamaClient::ImportFacebookFriends(
     ActiveRequests.Add(HttpRequest);
 
     // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
 
         if (!IsValidLowLevel())
         {
@@ -4687,7 +4687,7 @@ void UNakamaClient::ImportFacebookFriends(
         // Lock the ActiveRequests mutex to protect concurrent access
         FScopeLock Lock(&ActiveRequestsMutex);
 
-        if (ActiveRequests.Contains(HttpRequest))
+        if (ActiveRequests.Contains(Request))
         {
             if (bSuccess && Response.IsValid())
             {
@@ -4723,7 +4723,7 @@ void UNakamaClient::ImportFacebookFriends(
             }
 
             // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(HttpRequest);
+            ActiveRequests.Remove(Request);
         }
     });
 
@@ -4778,7 +4778,7 @@ void UNakamaClient::ImportSteamFriends(
     ActiveRequests.Add(HttpRequest);
 
     // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
 
         if (!IsValidLowLevel())
         {
@@ -4788,7 +4788,7 @@ void UNakamaClient::ImportSteamFriends(
         // Lock the ActiveRequests mutex to protect concurrent access
         FScopeLock Lock(&ActiveRequestsMutex);
 
-        if (ActiveRequests.Contains(HttpRequest))
+        if (ActiveRequests.Contains(Request))
         {
             if (bSuccess && Response.IsValid())
             {
@@ -4824,7 +4824,7 @@ void UNakamaClient::ImportSteamFriends(
             }
 
             // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(HttpRequest);
+            ActiveRequests.Remove(Request);
         }
     });
 
@@ -4857,7 +4857,7 @@ void UNakamaClient::GetAccount(
     ActiveRequests.Add(HttpRequest);
 
     // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
 
         if (!IsValidLowLevel())
         {
@@ -4867,7 +4867,7 @@ void UNakamaClient::GetAccount(
         // Lock the ActiveRequests mutex to protect concurrent access
         FScopeLock Lock(&ActiveRequestsMutex);
 
-        if (ActiveRequests.Contains(HttpRequest))
+        if (ActiveRequests.Contains(Request))
         {
             if (bSuccess && Response.IsValid())
             {
@@ -4904,7 +4904,7 @@ void UNakamaClient::GetAccount(
             }
 
             // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(HttpRequest);
+            ActiveRequests.Remove(Request);
         }
     });
 
@@ -4978,7 +4978,7 @@ void UNakamaClient::UpdateAccount(
     ActiveRequests.Add(HttpRequest);
 
     // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
 
         if (!IsValidLowLevel())
         {
@@ -4988,7 +4988,7 @@ void UNakamaClient::UpdateAccount(
         // Lock the ActiveRequests mutex to protect concurrent access
         FScopeLock Lock(&ActiveRequestsMutex);
 
-        if (ActiveRequests.Contains(HttpRequest))
+        if (ActiveRequests.Contains(Request))
         {
             if (bSuccess && Response.IsValid())
             {
@@ -5024,7 +5024,7 @@ void UNakamaClient::UpdateAccount(
             }
 
             // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(HttpRequest);
+            ActiveRequests.Remove(Request);
         }
     });
 
@@ -5084,7 +5084,7 @@ void UNakamaClient::GetUsers(
     ActiveRequests.Add(HttpRequest);
 
     // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
 
         if (!IsValidLowLevel())
         {
@@ -5094,7 +5094,7 @@ void UNakamaClient::GetUsers(
         // Lock the ActiveRequests mutex to protect concurrent access
         FScopeLock Lock(&ActiveRequestsMutex);
 
-        if (ActiveRequests.Contains(HttpRequest))
+        if (ActiveRequests.Contains(Request))
         {
             if (bSuccess && Response.IsValid())
             {
@@ -5131,7 +5131,7 @@ void UNakamaClient::GetUsers(
             }
 
             // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(HttpRequest);
+            ActiveRequests.Remove(Request);
         }
     });
 
@@ -5183,7 +5183,7 @@ void UNakamaClient::AddFriends(
     ActiveRequests.Add(HttpRequest);
 
     // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
 
         if (!IsValidLowLevel())
         {
@@ -5193,7 +5193,7 @@ void UNakamaClient::AddFriends(
         // Lock the ActiveRequests mutex to protect concurrent access
         FScopeLock Lock(&ActiveRequestsMutex);
 
-        if (ActiveRequests.Contains(HttpRequest))
+        if (ActiveRequests.Contains(Request))
         {
             if (bSuccess && Response.IsValid())
             {
@@ -5229,7 +5229,7 @@ void UNakamaClient::AddFriends(
             }
 
             // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(HttpRequest);
+            ActiveRequests.Remove(Request);
         }
     });
 
@@ -5281,7 +5281,7 @@ void UNakamaClient::DeleteFriends(
     ActiveRequests.Add(HttpRequest);
 
     // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
 
         if (!IsValidLowLevel())
         {
@@ -5291,7 +5291,7 @@ void UNakamaClient::DeleteFriends(
         // Lock the ActiveRequests mutex to protect concurrent access
         FScopeLock Lock(&ActiveRequestsMutex);
 
-        if (ActiveRequests.Contains(HttpRequest))
+        if (ActiveRequests.Contains(Request))
         {
             if (bSuccess && Response.IsValid())
             {
@@ -5327,7 +5327,7 @@ void UNakamaClient::DeleteFriends(
             }
 
             // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(HttpRequest);
+            ActiveRequests.Remove(Request);
         }
     });
 
@@ -5379,7 +5379,7 @@ void UNakamaClient::BlockFriends(
     ActiveRequests.Add(HttpRequest);
 
     // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
 
         if (!IsValidLowLevel())
         {
@@ -5389,7 +5389,7 @@ void UNakamaClient::BlockFriends(
         // Lock the ActiveRequests mutex to protect concurrent access
         FScopeLock Lock(&ActiveRequestsMutex);
 
-        if (ActiveRequests.Contains(HttpRequest))
+        if (ActiveRequests.Contains(Request))
         {
             if (bSuccess && Response.IsValid())
             {
@@ -5425,7 +5425,7 @@ void UNakamaClient::BlockFriends(
             }
 
             // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(HttpRequest);
+            ActiveRequests.Remove(Request);
         }
     });
 
@@ -5478,7 +5478,7 @@ void UNakamaClient::ListFriends(
     ActiveRequests.Add(HttpRequest);
 
     // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
 
         if (!IsValidLowLevel())
         {
@@ -5488,7 +5488,7 @@ void UNakamaClient::ListFriends(
         // Lock the ActiveRequests mutex to protect concurrent access
         FScopeLock Lock(&ActiveRequestsMutex);
 
-        if (ActiveRequests.Contains(HttpRequest))
+        if (ActiveRequests.Contains(Request))
         {
             if (bSuccess && Response.IsValid())
             {
@@ -5525,7 +5525,7 @@ void UNakamaClient::ListFriends(
             }
 
             // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(HttpRequest);
+            ActiveRequests.Remove(Request);
         }
     });
 
@@ -5585,7 +5585,7 @@ void UNakamaClient::CreateGroup(
     ActiveRequests.Add(HttpRequest);
 
     // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
 
         if (!IsValidLowLevel())
         {
@@ -5595,7 +5595,7 @@ void UNakamaClient::CreateGroup(
         // Lock the ActiveRequests mutex to protect concurrent access
         FScopeLock Lock(&ActiveRequestsMutex);
 
-        if (ActiveRequests.Contains(HttpRequest))
+        if (ActiveRequests.Contains(Request))
         {
             if (bSuccess && Response.IsValid())
             {
@@ -5632,7 +5632,7 @@ void UNakamaClient::CreateGroup(
             }
 
             // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(HttpRequest);
+            ActiveRequests.Remove(Request);
         }
     });
 
@@ -5665,7 +5665,7 @@ void UNakamaClient::DeleteGroup(
     ActiveRequests.Add(HttpRequest);
 
     // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
 
         if (!IsValidLowLevel())
         {
@@ -5675,7 +5675,7 @@ void UNakamaClient::DeleteGroup(
         // Lock the ActiveRequests mutex to protect concurrent access
         FScopeLock Lock(&ActiveRequestsMutex);
 
-        if (ActiveRequests.Contains(HttpRequest))
+        if (ActiveRequests.Contains(Request))
         {
             if (bSuccess && Response.IsValid())
             {
@@ -5711,7 +5711,7 @@ void UNakamaClient::DeleteGroup(
             }
 
             // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(HttpRequest);
+            ActiveRequests.Remove(Request);
         }
     });
 
@@ -5756,7 +5756,7 @@ void UNakamaClient::AddGroupUsers(
     ActiveRequests.Add(HttpRequest);
 
     // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
 
         if (!IsValidLowLevel())
         {
@@ -5766,7 +5766,7 @@ void UNakamaClient::AddGroupUsers(
         // Lock the ActiveRequests mutex to protect concurrent access
         FScopeLock Lock(&ActiveRequestsMutex);
 
-        if (ActiveRequests.Contains(HttpRequest))
+        if (ActiveRequests.Contains(Request))
         {
             if (bSuccess && Response.IsValid())
             {
@@ -5802,7 +5802,7 @@ void UNakamaClient::AddGroupUsers(
             }
 
             // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(HttpRequest);
+            ActiveRequests.Remove(Request);
         }
     });
 
@@ -5855,7 +5855,7 @@ void UNakamaClient::ListGroupUsers(
     ActiveRequests.Add(HttpRequest);
 
     // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
 
         if (!IsValidLowLevel())
         {
@@ -5865,7 +5865,7 @@ void UNakamaClient::ListGroupUsers(
         // Lock the ActiveRequests mutex to protect concurrent access
         FScopeLock Lock(&ActiveRequestsMutex);
 
-        if (ActiveRequests.Contains(HttpRequest))
+        if (ActiveRequests.Contains(Request))
         {
             if (bSuccess && Response.IsValid())
             {
@@ -5902,7 +5902,7 @@ void UNakamaClient::ListGroupUsers(
             }
 
             // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(HttpRequest);
+            ActiveRequests.Remove(Request);
         }
     });
 
@@ -5946,7 +5946,7 @@ void UNakamaClient::KickGroupUsers(
     ActiveRequests.Add(HttpRequest);
 
     // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
 
         if (!IsValidLowLevel())
         {
@@ -5956,7 +5956,7 @@ void UNakamaClient::KickGroupUsers(
         // Lock the ActiveRequests mutex to protect concurrent access
         FScopeLock Lock(&ActiveRequestsMutex);
 
-        if (ActiveRequests.Contains(HttpRequest))
+        if (ActiveRequests.Contains(Request))
         {
             if (bSuccess && Response.IsValid())
             {
@@ -5992,7 +5992,7 @@ void UNakamaClient::KickGroupUsers(
             }
 
             // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(HttpRequest);
+            ActiveRequests.Remove(Request);
         }
     });
 
@@ -6025,7 +6025,7 @@ void UNakamaClient::JoinGroup(
     ActiveRequests.Add(HttpRequest);
 
     // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
 
         if (!IsValidLowLevel())
         {
@@ -6035,7 +6035,7 @@ void UNakamaClient::JoinGroup(
         // Lock the ActiveRequests mutex to protect concurrent access
         FScopeLock Lock(&ActiveRequestsMutex);
 
-        if (ActiveRequests.Contains(HttpRequest))
+        if (ActiveRequests.Contains(Request))
         {
             if (bSuccess && Response.IsValid())
             {
@@ -6071,7 +6071,7 @@ void UNakamaClient::JoinGroup(
             }
 
             // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(HttpRequest);
+            ActiveRequests.Remove(Request);
         }
     });
 
@@ -6104,7 +6104,7 @@ void UNakamaClient::LeaveGroup(
     ActiveRequests.Add(HttpRequest);
 
     // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
 
         if (!IsValidLowLevel())
         {
@@ -6114,7 +6114,7 @@ void UNakamaClient::LeaveGroup(
         // Lock the ActiveRequests mutex to protect concurrent access
         FScopeLock Lock(&ActiveRequestsMutex);
 
-        if (ActiveRequests.Contains(HttpRequest))
+        if (ActiveRequests.Contains(Request))
         {
             if (bSuccess && Response.IsValid())
             {
@@ -6150,7 +6150,7 @@ void UNakamaClient::LeaveGroup(
             }
 
             // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(HttpRequest);
+            ActiveRequests.Remove(Request);
         }
     });
 
@@ -6201,7 +6201,7 @@ void UNakamaClient::ListGroups(
     ActiveRequests.Add(HttpRequest);
 
     // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
 
         if (!IsValidLowLevel())
         {
@@ -6211,7 +6211,7 @@ void UNakamaClient::ListGroups(
         // Lock the ActiveRequests mutex to protect concurrent access
         FScopeLock Lock(&ActiveRequestsMutex);
 
-        if (ActiveRequests.Contains(HttpRequest))
+        if (ActiveRequests.Contains(Request))
         {
             if (bSuccess && Response.IsValid())
             {
@@ -6248,7 +6248,7 @@ void UNakamaClient::ListGroups(
             }
 
             // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(HttpRequest);
+            ActiveRequests.Remove(Request);
         }
     });
 
@@ -6327,7 +6327,7 @@ void UNakamaClient::ListUserGroups(
     ActiveRequests.Add(HttpRequest);
 
     // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
 
         if (!IsValidLowLevel())
         {
@@ -6337,7 +6337,7 @@ void UNakamaClient::ListUserGroups(
         // Lock the ActiveRequests mutex to protect concurrent access
         FScopeLock Lock(&ActiveRequestsMutex);
 
-        if (ActiveRequests.Contains(HttpRequest))
+        if (ActiveRequests.Contains(Request))
         {
             if (bSuccess && Response.IsValid())
             {
@@ -6374,7 +6374,7 @@ void UNakamaClient::ListUserGroups(
             }
 
             // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(HttpRequest);
+            ActiveRequests.Remove(Request);
         }
     });
 
@@ -6418,7 +6418,7 @@ void UNakamaClient::PromoteGroupUsers(UNakamaSession* Session,
     ActiveRequests.Add(HttpRequest);
 
     // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
 
         if (!IsValidLowLevel())
         {
@@ -6428,7 +6428,7 @@ void UNakamaClient::PromoteGroupUsers(UNakamaSession* Session,
         // Lock the ActiveRequests mutex to protect concurrent access
         FScopeLock Lock(&ActiveRequestsMutex);
 
-        if (ActiveRequests.Contains(HttpRequest))
+        if (ActiveRequests.Contains(Request))
         {
             if (bSuccess && Response.IsValid())
             {
@@ -6464,7 +6464,7 @@ void UNakamaClient::PromoteGroupUsers(UNakamaSession* Session,
             }
 
             // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(HttpRequest);
+            ActiveRequests.Remove(Request);
         }
     });
 
@@ -6508,7 +6508,7 @@ void UNakamaClient::DemoteGroupUsers(
     ActiveRequests.Add(HttpRequest);
 
     // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
 
         if (!IsValidLowLevel())
         {
@@ -6518,7 +6518,7 @@ void UNakamaClient::DemoteGroupUsers(
         // Lock the ActiveRequests mutex to protect concurrent access
         FScopeLock Lock(&ActiveRequestsMutex);
 
-        if (ActiveRequests.Contains(HttpRequest))
+        if (ActiveRequests.Contains(Request))
         {
             if (bSuccess && Response.IsValid())
             {
@@ -6554,7 +6554,7 @@ void UNakamaClient::DemoteGroupUsers(
             }
 
             // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(HttpRequest);
+            ActiveRequests.Remove(Request);
         }
     });
 
@@ -6625,7 +6625,7 @@ void UNakamaClient::UpdateGroup(
     ActiveRequests.Add(HttpRequest);
 
     // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
 
         if (!IsValidLowLevel())
         {
@@ -6635,7 +6635,7 @@ void UNakamaClient::UpdateGroup(
         // Lock the ActiveRequests mutex to protect concurrent access
         FScopeLock Lock(&ActiveRequestsMutex);
 
-        if (ActiveRequests.Contains(HttpRequest))
+        if (ActiveRequests.Contains(Request))
         {
             if (bSuccess && Response.IsValid())
             {
@@ -6671,7 +6671,7 @@ void UNakamaClient::UpdateGroup(
             }
 
             // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(HttpRequest);
+            ActiveRequests.Remove(Request);
         }
     });
 
@@ -6728,7 +6728,7 @@ void UNakamaClient::ListLeaderboardRecords(
     ActiveRequests.Add(HttpRequest);
 
     // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
 
         if (!IsValidLowLevel())
         {
@@ -6738,7 +6738,7 @@ void UNakamaClient::ListLeaderboardRecords(
         // Lock the ActiveRequests mutex to protect concurrent access
         FScopeLock Lock(&ActiveRequestsMutex);
 
-        if (ActiveRequests.Contains(HttpRequest))
+        if (ActiveRequests.Contains(Request))
         {
             if (bSuccess && Response.IsValid())
             {
@@ -6775,7 +6775,7 @@ void UNakamaClient::ListLeaderboardRecords(
             }
 
             // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(HttpRequest);
+            ActiveRequests.Remove(Request);
         }
     });
 
@@ -6818,7 +6818,7 @@ void UNakamaClient::ListLeaderboardRecordsAroundOwner(
     ActiveRequests.Add(HttpRequest);
 
     // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
 
         if (!IsValidLowLevel())
         {
@@ -6828,7 +6828,7 @@ void UNakamaClient::ListLeaderboardRecordsAroundOwner(
         // Lock the ActiveRequests mutex to protect concurrent access
         FScopeLock Lock(&ActiveRequestsMutex);
 
-        if (ActiveRequests.Contains(HttpRequest))
+        if (ActiveRequests.Contains(Request))
         {
             if (bSuccess && Response.IsValid())
             {
@@ -6865,7 +6865,7 @@ void UNakamaClient::ListLeaderboardRecordsAroundOwner(
             }
 
             // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(HttpRequest);
+            ActiveRequests.Remove(Request);
         }
     });
 
@@ -6922,7 +6922,7 @@ void UNakamaClient::WriteLeaderboardRecord(
     ActiveRequests.Add(HttpRequest);
 
     // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
 
         if (!IsValidLowLevel())
         {
@@ -6932,7 +6932,7 @@ void UNakamaClient::WriteLeaderboardRecord(
         // Lock the ActiveRequests mutex to protect concurrent access
         FScopeLock Lock(&ActiveRequestsMutex);
 
-        if (ActiveRequests.Contains(HttpRequest))
+        if (ActiveRequests.Contains(Request))
         {
             if (bSuccess && Response.IsValid())
             {
@@ -6969,7 +6969,7 @@ void UNakamaClient::WriteLeaderboardRecord(
             }
 
             // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(HttpRequest);
+            ActiveRequests.Remove(Request);
         }
     });
 
@@ -7001,7 +7001,7 @@ void UNakamaClient::DeleteLeaderboardRecord(UNakamaSession* Session,
     ActiveRequests.Add(HttpRequest);
 
     // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
 
         if (!IsValidLowLevel())
         {
@@ -7011,7 +7011,7 @@ void UNakamaClient::DeleteLeaderboardRecord(UNakamaSession* Session,
         // Lock the ActiveRequests mutex to protect concurrent access
         FScopeLock Lock(&ActiveRequestsMutex);
 
-        if (ActiveRequests.Contains(HttpRequest))
+        if (ActiveRequests.Contains(Request))
         {
             if (bSuccess && Response.IsValid())
             {
@@ -7047,7 +7047,7 @@ void UNakamaClient::DeleteLeaderboardRecord(UNakamaSession* Session,
             }
 
             // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(HttpRequest);
+            ActiveRequests.Remove(Request);
         }
     });
 
@@ -7113,7 +7113,7 @@ void UNakamaClient::ListMatches(UNakamaSession* Session,
     ActiveRequests.Add(HttpRequest);
 
     // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
 
         if (!IsValidLowLevel())
         {
@@ -7123,7 +7123,7 @@ void UNakamaClient::ListMatches(UNakamaSession* Session,
         // Lock the ActiveRequests mutex to protect concurrent access
         FScopeLock Lock(&ActiveRequestsMutex);
 
-        if (ActiveRequests.Contains(HttpRequest))
+        if (ActiveRequests.Contains(Request))
         {
             if (bSuccess && Response.IsValid())
             {
@@ -7160,7 +7160,7 @@ void UNakamaClient::ListMatches(UNakamaSession* Session,
             }
 
             // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(HttpRequest);
+            ActiveRequests.Remove(Request);
         }
     });
 
@@ -7205,7 +7205,7 @@ void UNakamaClient::ListNotifications(UNakamaSession* Session,
     ActiveRequests.Add(HttpRequest);
 
     // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
 
         if (!IsValidLowLevel())
         {
@@ -7215,7 +7215,7 @@ void UNakamaClient::ListNotifications(UNakamaSession* Session,
         // Lock the ActiveRequests mutex to protect concurrent access
         FScopeLock Lock(&ActiveRequestsMutex);
 
-        if (ActiveRequests.Contains(HttpRequest))
+        if (ActiveRequests.Contains(Request))
         {
             if (bSuccess && Response.IsValid())
             {
@@ -7252,7 +7252,7 @@ void UNakamaClient::ListNotifications(UNakamaSession* Session,
             }
 
             // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(HttpRequest);
+            ActiveRequests.Remove(Request);
         }
     });
 
@@ -7295,7 +7295,7 @@ void UNakamaClient::DeleteNotifications(
     ActiveRequests.Add(HttpRequest);
 
     // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
 
         if (!IsValidLowLevel())
         {
@@ -7305,7 +7305,7 @@ void UNakamaClient::DeleteNotifications(
         // Lock the ActiveRequests mutex to protect concurrent access
         FScopeLock Lock(&ActiveRequestsMutex);
 
-        if (ActiveRequests.Contains(HttpRequest))
+        if (ActiveRequests.Contains(Request))
         {
             if (bSuccess && Response.IsValid())
             {
@@ -7341,7 +7341,7 @@ void UNakamaClient::DeleteNotifications(
             }
 
             // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(HttpRequest);
+            ActiveRequests.Remove(Request);
         }
     });
 
@@ -7392,7 +7392,7 @@ void UNakamaClient::ListChannelMessages(UNakamaSession* Session,
     ActiveRequests.Add(HttpRequest);
 
     // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
 
         if (!IsValidLowLevel())
         {
@@ -7402,7 +7402,7 @@ void UNakamaClient::ListChannelMessages(UNakamaSession* Session,
         // Lock the ActiveRequests mutex to protect concurrent access
         FScopeLock Lock(&ActiveRequestsMutex);
 
-        if (ActiveRequests.Contains(HttpRequest))
+        if (ActiveRequests.Contains(Request))
         {
             if (bSuccess && Response.IsValid())
             {
@@ -7439,7 +7439,7 @@ void UNakamaClient::ListChannelMessages(UNakamaSession* Session,
             }
 
             // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(HttpRequest);
+            ActiveRequests.Remove(Request);
         }
     });
 
@@ -7504,7 +7504,7 @@ void UNakamaClient::ListTournaments(UNakamaSession* Session,
     ActiveRequests.Add(HttpRequest);
 
     // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
 
         if (!IsValidLowLevel())
         {
@@ -7514,7 +7514,7 @@ void UNakamaClient::ListTournaments(UNakamaSession* Session,
         // Lock the ActiveRequests mutex to protect concurrent access
         FScopeLock Lock(&ActiveRequestsMutex);
 
-        if (ActiveRequests.Contains(HttpRequest))
+        if (ActiveRequests.Contains(Request))
         {
             if (bSuccess && Response.IsValid())
             {
@@ -7551,7 +7551,7 @@ void UNakamaClient::ListTournaments(UNakamaSession* Session,
             }
 
             // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(HttpRequest);
+            ActiveRequests.Remove(Request);
         }
     });
 
@@ -7605,7 +7605,7 @@ void UNakamaClient::ListTournamentRecords(UNakamaSession* Session,
     ActiveRequests.Add(HttpRequest);
 
     // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
 
         if (!IsValidLowLevel())
         {
@@ -7615,7 +7615,7 @@ void UNakamaClient::ListTournamentRecords(UNakamaSession* Session,
         // Lock the ActiveRequests mutex to protect concurrent access
         FScopeLock Lock(&ActiveRequestsMutex);
 
-        if (ActiveRequests.Contains(HttpRequest))
+        if (ActiveRequests.Contains(Request))
         {
             if (bSuccess && Response.IsValid())
             {
@@ -7652,7 +7652,7 @@ void UNakamaClient::ListTournamentRecords(UNakamaSession* Session,
             }
 
             // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(HttpRequest);
+            ActiveRequests.Remove(Request);
         }
     });
 
@@ -7692,7 +7692,7 @@ void UNakamaClient::ListTournamentRecordsAroundOwner(
     ActiveRequests.Add(HttpRequest);
 
     // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
 
         if (!IsValidLowLevel())
         {
@@ -7702,7 +7702,7 @@ void UNakamaClient::ListTournamentRecordsAroundOwner(
         // Lock the ActiveRequests mutex to protect concurrent access
         FScopeLock Lock(&ActiveRequestsMutex);
 
-        if (ActiveRequests.Contains(HttpRequest))
+        if (ActiveRequests.Contains(Request))
         {
             if (bSuccess && Response.IsValid())
             {
@@ -7739,7 +7739,7 @@ void UNakamaClient::ListTournamentRecordsAroundOwner(
             }
 
             // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(HttpRequest);
+            ActiveRequests.Remove(Request);
         }
     });
 
@@ -7794,7 +7794,7 @@ void UNakamaClient::WriteTournamentRecord(UNakamaSession* Session,
     ActiveRequests.Add(HttpRequest);
 
     // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
 
         if (!IsValidLowLevel())
         {
@@ -7804,7 +7804,7 @@ void UNakamaClient::WriteTournamentRecord(UNakamaSession* Session,
         // Lock the ActiveRequests mutex to protect concurrent access
         FScopeLock Lock(&ActiveRequestsMutex);
 
-        if (ActiveRequests.Contains(HttpRequest))
+        if (ActiveRequests.Contains(Request))
         {
             if (bSuccess && Response.IsValid())
             {
@@ -7841,7 +7841,7 @@ void UNakamaClient::WriteTournamentRecord(UNakamaSession* Session,
             }
 
             // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(HttpRequest);
+            ActiveRequests.Remove(Request);
         }
     });
 
@@ -7874,7 +7874,7 @@ void UNakamaClient::JoinTournament(
     ActiveRequests.Add(HttpRequest);
 
     // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
 
         if (!IsValidLowLevel())
         {
@@ -7884,7 +7884,7 @@ void UNakamaClient::JoinTournament(
         // Lock the ActiveRequests mutex to protect concurrent access
         FScopeLock Lock(&ActiveRequestsMutex);
 
-        if (ActiveRequests.Contains(HttpRequest))
+        if (ActiveRequests.Contains(Request))
         {
             if (bSuccess && Response.IsValid())
             {
@@ -7920,7 +7920,7 @@ void UNakamaClient::JoinTournament(
             }
 
             // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(HttpRequest);
+            ActiveRequests.Remove(Request);
         }
     });
 
@@ -7968,7 +7968,7 @@ void UNakamaClient::ListStorageObjects(UNakamaSession* Session,
     ActiveRequests.Add(HttpRequest);
 
     // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
 
         if (!IsValidLowLevel())
         {
@@ -7978,7 +7978,7 @@ void UNakamaClient::ListStorageObjects(UNakamaSession* Session,
         // Lock the ActiveRequests mutex to protect concurrent access
         FScopeLock Lock(&ActiveRequestsMutex);
 
-        if (ActiveRequests.Contains(HttpRequest))
+        if (ActiveRequests.Contains(Request))
         {
             if (bSuccess && Response.IsValid())
             {
@@ -8015,7 +8015,7 @@ void UNakamaClient::ListStorageObjects(UNakamaSession* Session,
             }
 
             // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(HttpRequest);
+            ActiveRequests.Remove(Request);
         }
     });
 
@@ -8063,7 +8063,7 @@ void UNakamaClient::ListUsersStorageObjects(UNakamaSession* Session,
     ActiveRequests.Add(HttpRequest);
 
     // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
 
         if (!IsValidLowLevel())
         {
@@ -8073,7 +8073,7 @@ void UNakamaClient::ListUsersStorageObjects(UNakamaSession* Session,
         // Lock the ActiveRequests mutex to protect concurrent access
         FScopeLock Lock(&ActiveRequestsMutex);
 
-        if (ActiveRequests.Contains(HttpRequest))
+        if (ActiveRequests.Contains(Request))
         {
             if (bSuccess && Response.IsValid())
             {
@@ -8110,7 +8110,7 @@ void UNakamaClient::ListUsersStorageObjects(UNakamaSession* Session,
             }
 
             // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(HttpRequest);
+            ActiveRequests.Remove(Request);
         }
     });
 
@@ -8175,7 +8175,7 @@ void UNakamaClient::WriteStorageObjects(
     ActiveRequests.Add(HttpRequest);
 
     // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
 
         if (!IsValidLowLevel())
         {
@@ -8185,7 +8185,7 @@ void UNakamaClient::WriteStorageObjects(
         // Lock the ActiveRequests mutex to protect concurrent access
         FScopeLock Lock(&ActiveRequestsMutex);
 
-        if (ActiveRequests.Contains(HttpRequest))
+        if (ActiveRequests.Contains(Request))
         {
             if (bSuccess && Response.IsValid())
             {
@@ -8222,7 +8222,7 @@ void UNakamaClient::WriteStorageObjects(
             }
 
             // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(HttpRequest);
+            ActiveRequests.Remove(Request);
         }
     });
 
@@ -8279,7 +8279,7 @@ void UNakamaClient::ReadStorageObjects(
     ActiveRequests.Add(HttpRequest);
 
     // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
 
         if (!IsValidLowLevel())
         {
@@ -8289,7 +8289,7 @@ void UNakamaClient::ReadStorageObjects(
         // Lock the ActiveRequests mutex to protect concurrent access
         FScopeLock Lock(&ActiveRequestsMutex);
 
-        if (ActiveRequests.Contains(HttpRequest))
+        if (ActiveRequests.Contains(Request))
         {
             if (bSuccess && Response.IsValid())
             {
@@ -8326,7 +8326,7 @@ void UNakamaClient::ReadStorageObjects(
             }
 
             // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(HttpRequest);
+            ActiveRequests.Remove(Request);
         }
     });
 
@@ -8383,7 +8383,7 @@ void UNakamaClient::DeleteStorageObjects(
     ActiveRequests.Add(HttpRequest);
 
     // Bind the response callback and handle the response
-    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this, HttpRequest](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
 
         if (!IsValidLowLevel())
         {
@@ -8393,7 +8393,7 @@ void UNakamaClient::DeleteStorageObjects(
         // Lock the ActiveRequests mutex to protect concurrent access
         FScopeLock Lock(&ActiveRequestsMutex);
 
-        if (ActiveRequests.Contains(HttpRequest))
+        if (ActiveRequests.Contains(Request))
         {
             if (bSuccess && Response.IsValid())
             {
@@ -8429,7 +8429,7 @@ void UNakamaClient::DeleteStorageObjects(
             }
 
             // Remove the HttpRequest from ActiveRequests
-            ActiveRequests.Remove(HttpRequest);
+            ActiveRequests.Remove(Request);
         }
     });
 
