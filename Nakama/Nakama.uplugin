@@ -1,7 +1,7 @@
 {
     "FileVersion": 3,
     "Version": 2400,
-    "VersionName": "2.9.6",
+    "VersionName": "2.9.7",
     "FriendlyName": "Nakama client",
     "Description": "A UE4 and UE5 client for the Nakama server.",
     "Category": "HeroicLabs.Nakama",
@@ -31,18 +31,6 @@
             "Name": "NakamaBlueprints",
             "Type": "Runtime",
             "LoadingPhase": "Default",
-            "WhitelistPlatforms": [
-                "Win64",
-                "Linux",
-                "IOS",
-                "Mac",
-                "Android"
-            ]
-        },
-        {
-            "Name": "NakamaCore",
-            "Type": "Runtime",
-            "LoadingPhase": "PreDefault",
             "WhitelistPlatforms": [
                 "Win64",
                 "Linux",

@@ -9,14 +9,14 @@ inline bool RestoreSession::RunTest(const FString& Parameters)
 	const FString FirstToken = TEXT("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1MTY5MTA5NzMsInVpZCI6ImY0MTU4ZjJiLTgwZjMtNDkyNi05NDZiLWE4Y2NmYzE2NTQ5MCIsInVzbiI6InZUR2RHSHl4dmwifQ.gzLaMQPaj5wEKoskOSALIeJLOYXEVFoPx3KY0Jm1EVU");
 	UNakamaSession* FirstSession = UNakamaSession::RestoreSession(FirstToken, TEXT(""));
 	bool bDidFirstTokenFail = false;
-	
+
 	if(FirstSession->GetAuthToken() != FirstToken)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Restore Session Test Failed: AuthToken"));
 		TestFalse("Restore Session Test Failed: AuthToken", true);
 		bDidFirstTokenFail = true;
 	}
-	if(!FirstSession->GetVariables().IsEmpty())
+	if(FirstSession->GetVariables().Num() != 0)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Restore Session Test Failed: Variables"));
 		TestFalse("Restore Session Test Failed: Variables", true);
@@ -68,7 +68,7 @@ inline bool RestoreSession::RunTest(const FString& Parameters)
 	{
 		StopTest();
 	}
-	
+
 	if(!bDidFirstTokenFail && !bDidSecondTokenFail)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Restore Session Test Passed: Both Tokens"));
@@ -88,7 +88,7 @@ inline bool RestoreSession2::RunTest(const FString& Parameters)
 {
 	// Initiates the test
 	InitiateTest();
-	
+
 	auto successCallback = [this](UNakamaSession* session)
 	{
 		// Set the session for later use
@@ -96,7 +96,7 @@ inline bool RestoreSession2::RunTest(const FString& Parameters)
 
 		const int ExpirePeriodMinutes = 121;
 		const int RefreshExpirePeriodMinutes = 7201;
-		
+
 		UNakamaSession* RestoredSession = UNakamaSession::RestoreSession(Session->GetAuthToken(), Session->GetRefreshToken());
 		UE_LOG (LogTemp, Display, TEXT("Session Token: %s"), *Session->GetAuthToken());
 		UE_LOG (LogTemp, Display, TEXT("Session IsExpired: %hhd"), Session->IsExpired());
@@ -150,13 +150,13 @@ inline bool RestoreSession2::RunTest(const FString& Parameters)
 				TestFalse("RestoreSession Test Failed: Final Account Step", true);
 				StopTest();
 			};
-			
+
 			Client->GetAccount(RestoredSession, GetAccountSuccessCallback, GetAccountErrorCallback);
 		}
 	};
 
 	Client->AuthenticateDevice("mytestdevice0000", true, {}, {}, successCallback, {});
-	
+
 	ADD_LATENT_AUTOMATION_COMMAND(FWaitForAsyncQueries(this));
 
 	// Return true to indicate the test is complete
