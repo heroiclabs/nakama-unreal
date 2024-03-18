@@ -6599,7 +6599,7 @@ void UNakamaClient::UpdateGroup(
     }
     if (LangTag.IsSet())
     {
-        ContentJson->SetStringField(TEXT("lang_tag"), AvatarUrl.GetValue());
+        ContentJson->SetStringField(TEXT("lang_tag"), LangTag.GetValue());
     }
     if (bOpen.IsSet())
     {
