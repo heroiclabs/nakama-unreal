@@ -3,6 +3,10 @@ All notable changes to this project are documented below.
 
 The format is based on [keep a changelog](http://keepachangelog.com/) and this project uses [semantic versioning](http://semver.org/).
 ### Unreleased
+
+### Fixed
+- Fixed assignment of language tags when updating groups.
+
 ### [2.9.7] - 2024-02-29
 ### Changed
 - Removed deprecated `NakamaCore` from .uplugin module list. This will improve the build experience for mobile platforms.
