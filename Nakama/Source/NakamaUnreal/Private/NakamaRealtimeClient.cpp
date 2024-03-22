@@ -229,7 +229,7 @@ void UNakamaRealtimeClient::Connect(
 			}
 
 			// Call Lambda
-			if(OnConnectionError)
+			if(OnDisconnect)
 			{
 				OnDisconnect(DisconnectInfo);
 			}
