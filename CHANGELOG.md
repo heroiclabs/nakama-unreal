@@ -4,8 +4,11 @@ All notable changes to this project are documented below.
 The format is based on [keep a changelog](http://keepachangelog.com/) and this project uses [semantic versioning](http://semver.org/).
 ### Unreleased
 
+### [2.9.8] - 2024-03-21
+
 ### Fixed
 - Fixed assignment of language tags when updating groups.
+- Fixed checking of bound status of OnDisconnect callback in socket.
 
 ### [2.9.7] - 2024-02-29
 ### Changed
