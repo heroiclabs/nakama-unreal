@@ -4,6 +4,13 @@ All notable changes to this project are documented below.
 The format is based on [keep a changelog](http://keepachangelog.com/) and this project uses [semantic versioning](http://semver.org/).
 ### Unreleased
 
+### [2.9.9] - 2024-03-28
+### Fixed
+- Fixed return payload of `UNakamaRealtimeClient.FollowUsers`.
+
+### Added
+- Added `UNakamaSession.GetRefreshExpireTime` to get expiry time of refresh token.
+
 ### [2.9.8] - 2024-03-21
 
 ### Fixed

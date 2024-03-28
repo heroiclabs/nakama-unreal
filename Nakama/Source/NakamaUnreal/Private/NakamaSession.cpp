@@ -15,7 +15,7 @@ void UNakamaSession::SetupSession(const FString& AuthResponse)
     {
         FString Token = JsonObject->GetStringField("token");
         FString RefreshToken = JsonObject->GetStringField("refresh_token");
-    	
+
     	SessionData.AuthToken = Token;
     	_AuthToken = Token;
     	SessionData.RefreshToken = RefreshToken;
@@ -36,7 +36,7 @@ void UNakamaSession::SetupSession(const FString& AuthResponse)
             FString Username;
             PayloadJson->TryGetStringField("uid", UserId);
             PayloadJson->TryGetStringField("usn", Username);
-        	
+
             SessionData.Username = Username;
         	_Username = Username;
             SessionData.UserId = UserId;
@@ -79,7 +79,7 @@ void UNakamaSession::SetupSession(const FString& AuthResponse)
                 	_IsRefreshExpired = (FDateTime::UtcNow() >= RefreshExpireTime);
                 }
             }
-        	
+
             SessionData.CreateTime = FDateTime::UtcNow();
         	_CreateTime = FDateTime::UtcNow();
         }
@@ -127,6 +127,11 @@ const FDateTime UNakamaSession::GetCreateTime()
 const FDateTime UNakamaSession::GetExpireTime()
 {
 	return _ExpireTime;
+}
+
+const FDateTime UNakamaSession::GetRefreshExpireTime()
+{
+	return _RefreshExpireTime;
 }
 
 bool UNakamaSession::IsExpired() const

@@ -15,11 +15,11 @@ class NAKAMAUNREAL_API UNakamaSession : public UObject
 	GENERATED_BODY()
 
 public:
-	
+
 	// Blueprint/C++ Exposed Struct with Data
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Sessions")
 	FNakamaUserSession SessionData;
-	
+
 	UNakamaSession() { }
 
 	void SetupSession(const FString& AuthResponse);
@@ -29,7 +29,7 @@ public:
 	 */
 	UFUNCTION(BlueprintPure, Category = "Nakama|Session")
 	const FString GetAuthToken();
-	
+
 	/**
 	 * @return The refresh token used to construct this session.
 	 */
@@ -65,6 +65,12 @@ public:
 	 */
 	UFUNCTION(BlueprintPure, Category = "Nakama|Session")
 	const FDateTime GetExpireTime();
+
+	/**
+	 * @return The timestamp in milliseconds when the refresh token will expire.
+	 */
+	UFUNCTION(BlueprintPure, Category = "Nakama|Session")
+	const FDateTime GetRefreshExpireTime();
 
 	/**
 		 * @return <c>True</c> if the session has expired against the current time.
@@ -129,7 +135,7 @@ public:
 	static UNakamaSession* RestoreSession(FString Token, FString RefreshToken);
 
 private:
-	
+
 	FString _AuthToken;
 	FString _RefreshToken;
 	bool _IsCreated;
