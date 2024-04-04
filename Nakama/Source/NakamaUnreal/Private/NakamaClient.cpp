@@ -1527,6 +1527,32 @@ void UNakamaClient::KickGroupUsers(
 	KickGroupUsers(Session, GroupId, UserIds, successCallback, errorCallback);
 }
 
+void UNakamaClient::BanGroupUsers(
+	UNakamaSession* Session,
+	const FString& GroupId,
+	const TArray<FString>& UserIds,
+	FOnBanGroupUsers Success,
+	FOnError Error)
+{
+	auto successCallback = [this, Success]()
+	{
+		if(!FNakamaUtils::IsClientActive(this))
+			return;
+
+		Success.Broadcast();
+	};
+
+	auto errorCallback = [this, Error](const FNakamaError& error)
+	{
+		if(!FNakamaUtils::IsClientActive(this))
+			return;
+
+		Error.Broadcast(error);
+	};
+
+	BanGroupUsers(Session, GroupId, UserIds, successCallback, errorCallback);
+}
+
 void UNakamaClient::DemoteGroupUsers(
 	UNakamaSession* Session,
 	const FString& GroupId,

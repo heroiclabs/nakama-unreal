@@ -5,6 +5,9 @@ The format is based on [keep a changelog](http://keepachangelog.com/) and this p
 ### Unreleased
 
 ### [2.10.0] - 2024-04-04
+### Changed
+- Changed `ENakamaErrorCode` enum casts to match official GRPC error codes. *Any user client code checking against specific error values should be aware of this change.*
+
 ### Added
 - Added `UNakamaClient.BanGroupUsers`.
 

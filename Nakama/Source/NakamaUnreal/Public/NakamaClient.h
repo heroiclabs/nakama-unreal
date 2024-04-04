@@ -2329,6 +2329,24 @@ public:
 		TFunction<void(const FNakamaError& Error)> ErrorCallback
 	);
 
+
+	/**
+	 * Ban one or more users from the group.
+	 *
+	 * @param GroupId The id of the group.
+	 * @param UserIds The ids of the users to ban.
+	 * @param Session The session of the user.
+	 * @param SuccessCallback Callback invoked upon successfully banning users from the group.
+	 * @param ErrorCallback Callback invoked if an error occurs, detailing the failure.
+	 */
+	void BanGroupUsers(
+		UNakamaSession *Session,
+		const FString& GroupId,
+		const TArray<FString>& UserIds,
+		TFunction<void()> SuccessCallback,
+		TFunction<void(const FNakamaError& Error)> ErrorCallback
+	);
+
 	/**
 	 * Join a group if it has open membership or request to join it.
 	 *
