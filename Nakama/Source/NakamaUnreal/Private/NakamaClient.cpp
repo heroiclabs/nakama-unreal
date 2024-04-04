@@ -1527,6 +1527,32 @@ void UNakamaClient::KickGroupUsers(
 	KickGroupUsers(Session, GroupId, UserIds, successCallback, errorCallback);
 }
 
+void UNakamaClient::BanGroupUsers(
+	UNakamaSession* Session,
+	const FString& GroupId,
+	const TArray<FString>& UserIds,
+	FOnBanGroupUsers Success,
+	FOnError Error)
+{
+	auto successCallback = [this, Success]()
+	{
+		if(!FNakamaUtils::IsClientActive(this))
+			return;
+
+		Success.Broadcast();
+	};
+
+	auto errorCallback = [this, Error](const FNakamaError& error)
+	{
+		if(!FNakamaUtils::IsClientActive(this))
+			return;
+
+		Error.Broadcast(error);
+	};
+
+	BanGroupUsers(Session, GroupId, UserIds, successCallback, errorCallback);
+}
+
 void UNakamaClient::DemoteGroupUsers(
 	UNakamaSession* Session,
 	const FString& GroupId,
@@ -5919,6 +5945,96 @@ void UNakamaClient::KickGroupUsers(
 {
     // Setup the endpoint
     const FString Endpoint = FString::Printf(TEXT("/v2/group/%s/kick"), *GroupId);
+
+    // Verify the session
+    if (!IsSessionValid(Session, ErrorCallback))
+    {
+        return;
+    }
+
+    // Setup the query parameters
+    TMultiMap<FString, FString> QueryParams;
+    if (UserIds.Num() > 0)
+    {
+        for (const FString& UserId : UserIds)
+        {
+            QueryParams.Add(TEXT("user_ids"), UserId);
+        }
+    }
+
+    // Make the request
+    const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::POST, QueryParams, Session->GetAuthToken());
+
+    // Lock the ActiveRequests mutex to protect concurrent access
+    FScopeLock Lock(&ActiveRequestsMutex);
+
+    // Add the HttpRequest to ActiveRequests
+    ActiveRequests.Add(HttpRequest);
+
+    // Bind the response callback and handle the response
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+
+        if (!IsValidLowLevel())
+        {
+            return;
+        }
+
+        // Lock the ActiveRequests mutex to protect concurrent access
+        FScopeLock Lock(&ActiveRequestsMutex);
+
+        if (ActiveRequests.Contains(Request))
+        {
+            if (bSuccess && Response.IsValid())
+            {
+                const FString ResponseBody = Response->GetContentAsString();
+
+                // Check if Request was successful
+                if (IsResponseSuccessful(Response->GetResponseCode()))
+                {
+                    // Check for Success Callback
+                    if (SuccessCallback)
+                    {
+                        SuccessCallback();
+                    }
+                }
+                else
+                {
+                    // Check for Error Callback
+                    if (ErrorCallback)
+                    {
+                        const FNakamaError Error(ResponseBody);
+                        ErrorCallback(Error);
+                    }
+                }
+            }
+            else
+            {
+                // Handle Invalid Response
+                if (ErrorCallback)
+                {
+                    const FNakamaError RequestError = CreateRequestFailureError();
+                    ErrorCallback(RequestError);
+                }
+            }
+
+            // Remove the HttpRequest from ActiveRequests
+            ActiveRequests.Remove(Request);
+        }
+    });
+
+    // Process the request
+    HttpRequest->ProcessRequest();
+}
+
+void UNakamaClient::BanGroupUsers(
+    UNakamaSession* Session,
+    const FString& GroupId,
+    const TArray<FString>& UserIds,
+    TFunction<void()> SuccessCallback,
+    TFunction<void(const FNakamaError& Error)> ErrorCallback)
+{
+    // Setup the endpoint
+    const FString Endpoint = FString::Printf(TEXT("/v2/group/%s/ban"), *GroupId);
 
     // Verify the session
     if (!IsSessionValid(Session, ErrorCallback))

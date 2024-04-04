@@ -6,23 +6,39 @@ ENakamaErrorCode FNakamaError::ConvertNakamaErrorCode(int32 CodeValue)
 	switch (CodeValue)
 	{
 	case 0:
-		return ENakamaErrorCode::Unknown;
+		return ENakamaErrorCode::Ok;
 	case 1:
-		return ENakamaErrorCode::NotFound;
+		return ENakamaErrorCode::Cancelled;
 	case 2:
-		return ENakamaErrorCode::AlreadyExists;
+		return ENakamaErrorCode::Unknown;
 	case 3:
 		return ENakamaErrorCode::InvalidArgument;
 	case 4:
-		return ENakamaErrorCode::Unauthenticated;
+		return ENakamaErrorCode::DeadlineExceeded;
 	case 5:
+		return ENakamaErrorCode::NotFound;
+	case 6:
+		return ENakamaErrorCode::AlreadyExists;
+	case 7:
 		return ENakamaErrorCode::PermissionDenied;
-	case -1:
-		return ENakamaErrorCode::ConnectionError;
-	case -2:
-		return ENakamaErrorCode::InternalError;
-	case -3:
-		return ENakamaErrorCode::CancelledByUser;
+	case 8:
+		return ENakamaErrorCode::ResourceExhausted;
+	case 9:
+		return ENakamaErrorCode::FailedPrecondition;
+	case 10:
+		return ENakamaErrorCode::Aborted;
+	case 11:
+		return ENakamaErrorCode::OutOfRange;
+	case 12:
+		return ENakamaErrorCode::Unimplemented;
+	case 13:
+		return ENakamaErrorCode::Internal;
+	case 14:
+		return ENakamaErrorCode::Unavailable;
+	case 15:
+		return ENakamaErrorCode::DataLoss;
+	case 16:
+		return ENakamaErrorCode::Unauthenticated;
 	default:
 		return ENakamaErrorCode::Unknown;
 	}
