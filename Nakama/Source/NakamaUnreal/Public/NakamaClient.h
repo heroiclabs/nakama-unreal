@@ -1162,6 +1162,24 @@ public:
 	);
 
 	/**
+	 * Ban one or more users from the group.
+	 *
+	 * @param GroupId The id of the group.
+	 * @param UserIds The ids of the users to ban.
+	 * @param Session The session of the user.
+	 * @param Success Delegate called upon successfully banning users from the group.
+	 * @param Error Delegate called if an error occurs, detailing the failure.
+	 */
+	UFUNCTION(Category = "Nakama|Groups")
+	void BanGroupUsers(
+		UNakamaSession* Session,
+		const FString& GroupId,
+		const TArray<FString>& UserIds,
+		FOnBanGroupUsers Success,
+		FOnError Error
+	);
+
+	/**
 	 * Demote a set of users in a group to the next role down.
 	 *
 	 * @param GroupId The group ID to demote in.

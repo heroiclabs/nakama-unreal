@@ -4,6 +4,10 @@ All notable changes to this project are documented below.
 The format is based on [keep a changelog](http://keepachangelog.com/) and this project uses [semantic versioning](http://semver.org/).
 ### Unreleased
 
+### [2.10.0] - 2024-04-04
+### Added
+- Added `UNakamaClient.BanGroupUsers`.
+
 ### [2.9.9] - 2024-03-28
 ### Fixed
 - Fixed return payload of `UNakamaRealtimeClient.FollowUsers`.
