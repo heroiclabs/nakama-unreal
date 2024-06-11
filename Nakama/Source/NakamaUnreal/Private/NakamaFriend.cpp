@@ -10,7 +10,7 @@ FNakamaFriend::FNakamaFriend(const FString& JsonString)
 	if (FJsonSerializer::Deserialize(JsonReader, JsonObject) && JsonObject.IsValid())
 	{
 		const TSharedPtr<FJsonObject>* UserJsonObject;
-		if (JsonObject->TryGetObjectField("user", UserJsonObject))
+		if (JsonObject->TryGetObjectField(TEXT("user"), UserJsonObject))
 		{
 			FString UserJsonString;
 			TSharedRef<TJsonWriter<>> JsonWriter = TJsonWriterFactory<>::Create(&UserJsonString);
@@ -22,13 +22,13 @@ FNakamaFriend::FNakamaFriend(const FString& JsonString)
 		}
 
 		FString StateString;
-		if (JsonObject->TryGetStringField("state", StateString))
+		if (JsonObject->TryGetStringField(TEXT("state"), StateString))
 		{
 			UserState = GetFriendStateFromString(StateString);
 		}
 
 		FString UpdateTimeString;
-		if (JsonObject->TryGetStringField("update_time", UpdateTimeString))
+		if (JsonObject->TryGetStringField(TEXT("update_time"), UpdateTimeString))
 		{
 			FDateTime::ParseIso8601(*UpdateTimeString, UpdateTime);
 		}
@@ -62,7 +62,7 @@ FNakamaFriendList::FNakamaFriendList(const FString& JsonString)
 	if (FJsonSerializer::Deserialize(JsonReader, JsonObject) && JsonObject.IsValid())
 	{
 		const TArray<TSharedPtr<FJsonValue>>* FriendsJsonArray;
-		if (JsonObject->TryGetArrayField("friends", FriendsJsonArray))
+		if (JsonObject->TryGetArrayField(TEXT("friends"), FriendsJsonArray))
 		{
 			for (const TSharedPtr<FJsonValue>& FriendJsonValue : *FriendsJsonArray)
 			{
@@ -84,7 +84,7 @@ FNakamaFriendList::FNakamaFriendList(const FString& JsonString)
 			}
 		}
 
-		JsonObject->TryGetStringField("cursor", Cursor);
+		JsonObject->TryGetStringField(TEXT("cursor"), Cursor);
 	}
 }
 

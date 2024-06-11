@@ -8,16 +8,16 @@ FNakamaRtError::FNakamaRtError(const FString& JsonString)
 
 	if (FJsonSerializer::Deserialize(JsonReader, JsonObject) && JsonObject.IsValid())
 	{
-		JsonObject->TryGetStringField("message", Message);
+		JsonObject->TryGetStringField(TEXT("message"), Message);
 
 		int32 CodeValue;
-		if (JsonObject->TryGetNumberField("code", CodeValue))
+		if (JsonObject->TryGetNumberField(TEXT("code"), CodeValue))
 		{
 			Code = static_cast<ENakamaRtErrorCode>(CodeValue);
 		}
 
 		const TSharedPtr<FJsonObject>* ContextJsonObject;
-		if (JsonObject->TryGetObjectField("context", ContextJsonObject))
+		if (JsonObject->TryGetObjectField(TEXT("context"), ContextJsonObject))
 		{
 			for (auto& Pair : (*ContextJsonObject)->Values)
 			{

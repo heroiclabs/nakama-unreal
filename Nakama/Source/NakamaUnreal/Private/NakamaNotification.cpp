@@ -10,19 +10,19 @@ FNakamaNotification::FNakamaNotification(const FString& JsonString)
 
 	if (FJsonSerializer::Deserialize(JsonReader, JsonObject) && JsonObject.IsValid())
 	{
-		JsonObject->TryGetStringField("id", Id);
-		JsonObject->TryGetStringField("subject", Subject);
-		JsonObject->TryGetStringField("content", Content);
-		JsonObject->TryGetNumberField("code", Code);
-		JsonObject->TryGetStringField("sender_id", SenderId);
+		JsonObject->TryGetStringField(TEXT("id"), Id);
+		JsonObject->TryGetStringField(TEXT("subject"), Subject);
+		JsonObject->TryGetStringField(TEXT("content"), Content);
+		JsonObject->TryGetNumberField(TEXT("code"), Code);
+		JsonObject->TryGetStringField(TEXT("sender_id"), SenderId);
 
 		FString CreateTimeString;
-		if (JsonObject->TryGetStringField("create_time", CreateTimeString))
+		if (JsonObject->TryGetStringField(TEXT("create_time"), CreateTimeString))
 		{
 			FDateTime::ParseIso8601(*CreateTimeString, CreateTime);
 		}
 
-		JsonObject->TryGetBoolField("persistent", Persistent);
+		JsonObject->TryGetBoolField(TEXT("persistent"), Persistent);
 	}
 }
 
@@ -39,7 +39,7 @@ FNakamaNotificationList::FNakamaNotificationList(const FString& JsonString)
 	if (FJsonSerializer::Deserialize(JsonReader, JsonObject) && JsonObject.IsValid())
 	{
 		const TArray<TSharedPtr<FJsonValue>>* NotificationsJsonArray;
-		if (JsonObject->TryGetArrayField("notifications", NotificationsJsonArray))
+		if (JsonObject->TryGetArrayField(TEXT("notifications"), NotificationsJsonArray))
 		{
 			for (const TSharedPtr<FJsonValue>& NotificationJson : *NotificationsJsonArray)
 			{
@@ -58,7 +58,7 @@ FNakamaNotificationList::FNakamaNotificationList(const FString& JsonString)
 			}
 		}
 		
-		JsonObject->TryGetStringField("cacheable_cursor", CacheableCursor);
+		JsonObject->TryGetStringField(TEXT("cacheable_cursor"), CacheableCursor);
 	}
 }
 

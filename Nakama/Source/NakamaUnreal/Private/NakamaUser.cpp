@@ -8,7 +8,7 @@ FNakamaUserList::FNakamaUserList(const FString& JsonString)
 	if (FJsonSerializer::Deserialize(JsonReader, JsonObject) && JsonObject.IsValid())
 	{
 		const TArray<TSharedPtr<FJsonValue>>* UsersJsonArray;
-		if (JsonObject->TryGetArrayField("users", UsersJsonArray))
+		if (JsonObject->TryGetArrayField(TEXT("users"), UsersJsonArray))
 		{
 			for (const TSharedPtr<FJsonValue>& UserJson : *UsersJsonArray)
 			{
@@ -37,31 +37,31 @@ FNakamaUser::FNakamaUser(const FString& JsonString)
 
 	if (FJsonSerializer::Deserialize(JsonReader, JsonObject) && JsonObject.IsValid())
 	{
-		JsonObject->TryGetStringField("id", Id);
-		JsonObject->TryGetStringField("username", Username);
-		JsonObject->TryGetStringField("display_name", DisplayName);
-		JsonObject->TryGetStringField("avatar_url", AvatarUrl);
-		JsonObject->TryGetStringField("lang_tag", Language);
-		JsonObject->TryGetStringField("location", Location);
-		JsonObject->TryGetStringField("timezone", TimeZone);
-		JsonObject->TryGetStringField("metadata", MetaData);
-		JsonObject->TryGetStringField("facebook_id", FacebookId);
-		JsonObject->TryGetStringField("google_id", GoogleId);
-		JsonObject->TryGetStringField("gamecenter_id", GameCenterId);
-		JsonObject->TryGetStringField("apple_id", AppleId);
-		JsonObject->TryGetStringField("steam_id", SteamId);
+		JsonObject->TryGetStringField(TEXT("id"), Id);
+		JsonObject->TryGetStringField(TEXT("username"), Username);
+		JsonObject->TryGetStringField(TEXT("display_name"), DisplayName);
+		JsonObject->TryGetStringField(TEXT("avatar_url"), AvatarUrl);
+		JsonObject->TryGetStringField(TEXT("lang_tag"), Language);
+		JsonObject->TryGetStringField(TEXT("location"), Location);
+		JsonObject->TryGetStringField(TEXT("timezone"), TimeZone);
+		JsonObject->TryGetStringField(TEXT("metadata"), MetaData);
+		JsonObject->TryGetStringField(TEXT("facebook_id"), FacebookId);
+		JsonObject->TryGetStringField(TEXT("google_id"), GoogleId);
+		JsonObject->TryGetStringField(TEXT("gamecenter_id"), GameCenterId);
+		JsonObject->TryGetStringField(TEXT("apple_id"), AppleId);
+		JsonObject->TryGetStringField(TEXT("steam_id"), SteamId);
 
-		JsonObject->TryGetBoolField("online", Online);
-		JsonObject->TryGetNumberField("edge_count", EdgeCount);
+		JsonObject->TryGetBoolField(TEXT("online"), Online);
+		JsonObject->TryGetNumberField(TEXT("edge_count"), EdgeCount);
 
 		FString CreatedAtString;
-		if (JsonObject->TryGetStringField("create_time", CreatedAtString))
+		if (JsonObject->TryGetStringField(TEXT("create_time"), CreatedAtString))
 		{
 			FDateTime::ParseIso8601(*CreatedAtString, CreatedAt);
 		}
 
 		FString UpdatedAtString;
-		if (JsonObject->TryGetStringField("update_time", UpdatedAtString))
+		if (JsonObject->TryGetStringField(TEXT("update_time"), UpdatedAtString))
 		{
 			FDateTime::ParseIso8601(*UpdatedAtString, updatedAt);
 		}

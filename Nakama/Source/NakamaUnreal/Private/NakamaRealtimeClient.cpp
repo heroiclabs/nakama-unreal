@@ -258,7 +258,7 @@ void UNakamaRealtimeClient::Connect(
 		const TSharedRef<TJsonReader<>> JsonReader = TJsonReaderFactory<>::Create(MessageString);
 		if (FJsonSerializer::Deserialize(JsonReader, JsonObject))
 		{
-			if (!JsonObject->HasField("ping"))
+			if (!JsonObject->HasField(TEXT("ping")))
 			{
 				//NAKAMA_LOG_INFO(TEXT("..."));
 				NAKAMA_LOG_DEBUG(FString::Printf(TEXT("Realtime Client: Sent Message: %s"), *MessageString));
@@ -2306,16 +2306,16 @@ void UNakamaRealtimeClient::HandleReceivedMessage(const FString& Data)
     }
 
 	// Only log if it is not a pong
-	if (!JsonObject->HasField("pong"))
+	if (!JsonObject->HasField(TEXT("pong")))
 	{
 		NAKAMA_LOG_DEBUG(FString::Printf(TEXT("Realtime Client - Received message: %s"), *Data));
 	}
 
 	FNakamaRtError Error;
-	if (JsonObject->HasField("error"))
+	if (JsonObject->HasField(TEXT("error")))
 	{
 		FString JsonString;
-		if (SerializeJsonObject(JsonObject->GetObjectField("error"), JsonString))
+		if (SerializeJsonObject(JsonObject->GetObjectField(TEXT("error")), JsonString))
 		{
 			Error = FNakamaRtError(JsonString);
 		}
@@ -2334,10 +2334,10 @@ void UNakamaRealtimeClient::HandleReceivedMessage(const FString& Data)
     	// Handle Events here
     	if(FNakamaUtils::IsRealtimeClientActive(this))
     	{
-    		if (JsonObject->HasField("error"))
+    		if (JsonObject->HasField(TEXT("error")))
     		{
     			FString JsonString;
-    			if (SerializeJsonObject(JsonObject->GetObjectField("error"), JsonString))
+    			if (SerializeJsonObject(JsonObject->GetObjectField(TEXT("error")), JsonString))
     			{
     				// TODO: Look into if we need to get Error from JsonString (using ReturnedError) or use 'Error' from above
     				FNakamaRtError ReturnedError = FNakamaRtError(JsonString);
@@ -2359,10 +2359,10 @@ void UNakamaRealtimeClient::HandleReceivedMessage(const FString& Data)
     				NAKAMA_LOG_ERROR("Realtime Client - Failed to deserialize 'error' from JSON string.");
     			}
     		}
-    		else if (JsonObject->HasField("channel_message"))
+    		else if (JsonObject->HasField(TEXT("channel_message")))
     		{
     			FString JsonString;
-    			if (SerializeJsonObject(JsonObject->GetObjectField("channel_message"), JsonString))
+    			if (SerializeJsonObject(JsonObject->GetObjectField(TEXT("channel_message")), JsonString))
     			{
     				FNakamaChannelMessage ChannelMessage = FNakamaChannelMessage(JsonString);
 
@@ -2383,10 +2383,10 @@ void UNakamaRealtimeClient::HandleReceivedMessage(const FString& Data)
     				NAKAMA_LOG_ERROR("Realtime Client - Failed to deserialize 'channel_message' from JSON string.");
     			}
     		}
-    		else if (JsonObject->HasField("channel_presence_event"))
+    		else if (JsonObject->HasField(TEXT("channel_presence_event")))
     		{
     			FString JsonString;
-    			if (SerializeJsonObject(JsonObject->GetObjectField("channel_presence_event"), JsonString))
+    			if (SerializeJsonObject(JsonObject->GetObjectField(TEXT("channel_presence_event")), JsonString))
     			{
     				FNakamaChannelPresenceEvent ChannelPresenceEvent = FNakamaChannelPresenceEvent(JsonString);
 
@@ -2407,10 +2407,10 @@ void UNakamaRealtimeClient::HandleReceivedMessage(const FString& Data)
     				NAKAMA_LOG_ERROR("Realtime Client - Failed to deserialize 'channel_presence_event' from JSON string.");
     			}
     		}
-    		else if (JsonObject->HasField("match_data"))
+    		else if (JsonObject->HasField(TEXT("match_data")))
     		{
     			FString JsonString;
-    			if (SerializeJsonObject(JsonObject->GetObjectField("match_data"), JsonString))
+    			if (SerializeJsonObject(JsonObject->GetObjectField(TEXT("match_data")), JsonString))
     			{
     				FNakamaMatchData MatchData = FNakamaMatchData(JsonString);
 
@@ -2431,10 +2431,10 @@ void UNakamaRealtimeClient::HandleReceivedMessage(const FString& Data)
     				NAKAMA_LOG_ERROR("Realtime Client - Failed to deserialize 'match_data' from JSON string.");
     			}
     		}
-    		else if (JsonObject->HasField("match_presence_event"))
+    		else if (JsonObject->HasField(TEXT("match_presence_event")))
     		{
     			FString JsonString;
-    			if (SerializeJsonObject(JsonObject->GetObjectField("match_presence_event"), JsonString))
+    			if (SerializeJsonObject(JsonObject->GetObjectField(TEXT("match_presence_event")), JsonString))
     			{
     				FNakamaMatchPresenceEvent MatchPresenceEvent = FNakamaMatchPresenceEvent(JsonString);
 
@@ -2455,10 +2455,10 @@ void UNakamaRealtimeClient::HandleReceivedMessage(const FString& Data)
     				NAKAMA_LOG_ERROR("Realtime Client - Failed to deserialize 'match_presence_event' from JSON string.");
     			}
     		}
-    		else if (JsonObject->HasField("matchmaker_matched"))
+    		else if (JsonObject->HasField(TEXT("matchmaker_matched")))
     		{
     			FString JsonString;
-    			if (SerializeJsonObject(JsonObject->GetObjectField("matchmaker_matched"), JsonString))
+    			if (SerializeJsonObject(JsonObject->GetObjectField(TEXT("matchmaker_matched")), JsonString))
     			{
     				FNakamaMatchmakerMatched MatchmakerMatched = FNakamaMatchmakerMatched(JsonString);
 
@@ -2479,10 +2479,10 @@ void UNakamaRealtimeClient::HandleReceivedMessage(const FString& Data)
     				NAKAMA_LOG_ERROR("Realtime Client - Failed to deserialize 'matchmaker_matched' from JSON string.");
     			}
     		}
-    		else if (JsonObject->HasField("notifications"))
+    		else if (JsonObject->HasField(TEXT("notifications")))
     		{
     			FString JsonString;
-    			if (SerializeJsonObject(JsonObject->GetObjectField("notifications"), JsonString))
+    			if (SerializeJsonObject(JsonObject->GetObjectField(TEXT("notifications")), JsonString))
     			{
     				FNakamaNotificationList NotificationList = FNakamaNotificationList(JsonString);
 
@@ -2503,10 +2503,10 @@ void UNakamaRealtimeClient::HandleReceivedMessage(const FString& Data)
     				NAKAMA_LOG_ERROR("Realtime Client - Failed to deserialize 'notifications' from JSON string.");
     			}
     		}
-    		else if (JsonObject->HasField("status_presence_event"))
+    		else if (JsonObject->HasField(TEXT("status_presence_event")))
     		{
     			FString JsonString;
-    			if (SerializeJsonObject(JsonObject->GetObjectField("status_presence_event"), JsonString))
+    			if (SerializeJsonObject(JsonObject->GetObjectField(TEXT("status_presence_event")), JsonString))
     			{
     				FNakamaStatusPresenceEvent StatusPresenceEvent = FNakamaStatusPresenceEvent(JsonString);
 
@@ -2527,10 +2527,10 @@ void UNakamaRealtimeClient::HandleReceivedMessage(const FString& Data)
     				NAKAMA_LOG_ERROR("Realtime Client - Failed to deserialize 'status_presence_event' from JSON string.");
     			}
     		}
-    		else if (JsonObject->HasField("stream_data"))
+    		else if (JsonObject->HasField(TEXT("stream_data")))
     		{
     			FString JsonString;
-    			if (SerializeJsonObject(JsonObject->GetObjectField("stream_data"), JsonString))
+    			if (SerializeJsonObject(JsonObject->GetObjectField(TEXT("stream_data")), JsonString))
     			{
     				FNakamaStreamData StreamData = FNakamaStreamData(JsonString);
 
@@ -2551,10 +2551,10 @@ void UNakamaRealtimeClient::HandleReceivedMessage(const FString& Data)
     				NAKAMA_LOG_ERROR("Realtime Client - Failed to deserialize 'stream_data' from JSON string.");
     			}
     		}
-    		else if (JsonObject->HasField("stream_presence_event"))
+    		else if (JsonObject->HasField(TEXT("stream_presence_event")))
     		{
     			FString JsonString;
-    			if (SerializeJsonObject(JsonObject->GetObjectField("stream_presence_event"), JsonString))
+    			if (SerializeJsonObject(JsonObject->GetObjectField(TEXT("stream_presence_event")), JsonString))
     			{
     				FNakamaStreamPresenceEvent StreamPresenceEvent = FNakamaStreamPresenceEvent(JsonString);
 
@@ -2575,10 +2575,10 @@ void UNakamaRealtimeClient::HandleReceivedMessage(const FString& Data)
     				NAKAMA_LOG_ERROR("Realtime Client - Failed to deserialize 'stream_presence_event' from JSON string.");
     			}
     		}
-    		else if (JsonObject->HasField("party"))
+    		else if (JsonObject->HasField(TEXT("party")))
     		{
     			FString JsonString;
-    			if (SerializeJsonObject(JsonObject->GetObjectField("party"), JsonString))
+    			if (SerializeJsonObject(JsonObject->GetObjectField(TEXT("party")), JsonString))
     			{
     				FNakamaParty Party = FNakamaParty(JsonString);
 
@@ -2599,10 +2599,10 @@ void UNakamaRealtimeClient::HandleReceivedMessage(const FString& Data)
     				NAKAMA_LOG_ERROR("Realtime Client - Failed to deserialize 'party' from JSON string.");
     			}
     		}
-    		else if (JsonObject->HasField("party_close"))
+    		else if (JsonObject->HasField(TEXT("party_close")))
     		{
     			FString JsonString;
-    			if (SerializeJsonObject(JsonObject->GetObjectField("party_close"), JsonString))
+    			if (SerializeJsonObject(JsonObject->GetObjectField(TEXT("party_close")), JsonString))
     			{
     				FNakamaPartyClose PartyClose = FNakamaPartyClose(JsonString);
 
@@ -2623,10 +2623,10 @@ void UNakamaRealtimeClient::HandleReceivedMessage(const FString& Data)
     				NAKAMA_LOG_ERROR("Realtime Client - Failed to deserialize 'party_close' from JSON string.");
     			}
     		}
-    		else if (JsonObject->HasField("party_data"))
+    		else if (JsonObject->HasField(TEXT("party_data")))
     		{
     			FString JsonString;
-    			if (SerializeJsonObject(JsonObject->GetObjectField("party_data"), JsonString))
+    			if (SerializeJsonObject(JsonObject->GetObjectField(TEXT("party_data")), JsonString))
     			{
     				FNakamaPartyData PartyData = FNakamaPartyData(JsonString);
 
@@ -2647,10 +2647,10 @@ void UNakamaRealtimeClient::HandleReceivedMessage(const FString& Data)
     				NAKAMA_LOG_ERROR("Realtime Client - Failed to deserialize 'party_data' from JSON string.");
     			}
     		}
-    		else if (JsonObject->HasField("party_join_request"))
+    		else if (JsonObject->HasField(TEXT("party_join_request")))
     		{
     			FString JsonString;
-    			if (SerializeJsonObject(JsonObject->GetObjectField("party_join_request"), JsonString))
+    			if (SerializeJsonObject(JsonObject->GetObjectField(TEXT("party_join_request")), JsonString))
     			{
     				FNakamaPartyJoinRequest PartyJoinRequest = FNakamaPartyJoinRequest(JsonString);
 
@@ -2671,10 +2671,10 @@ void UNakamaRealtimeClient::HandleReceivedMessage(const FString& Data)
     				NAKAMA_LOG_ERROR("Realtime Client - Failed to deserialize 'party_join_request' from JSON string.");
     			}
     		}
-    		else if (JsonObject->HasField("party_leader"))
+    		else if (JsonObject->HasField(TEXT("party_leader")))
     		{
     			FString JsonString;
-    			if (SerializeJsonObject(JsonObject->GetObjectField("party_leader"), JsonString))
+    			if (SerializeJsonObject(JsonObject->GetObjectField(TEXT("party_leader")), JsonString))
     			{
     				FNakamaPartyLeader PartyLeader = FNakamaPartyLeader(JsonString);
 
@@ -2695,10 +2695,10 @@ void UNakamaRealtimeClient::HandleReceivedMessage(const FString& Data)
     				NAKAMA_LOG_ERROR("Realtime Client - Failed to deserialize 'party_leader' from JSON string.");
     			}
     		}
-    		else if (JsonObject->HasField("party_matchmaker_ticket"))
+    		else if (JsonObject->HasField(TEXT("party_matchmaker_ticket")))
     		{
     			FString JsonString;
-    			if (SerializeJsonObject(JsonObject->GetObjectField("party_matchmaker_ticket"), JsonString))
+    			if (SerializeJsonObject(JsonObject->GetObjectField(TEXT("party_matchmaker_ticket")), JsonString))
     			{
     				FNakamaPartyMatchmakerTicket PartyMatchmakerTicket = FNakamaPartyMatchmakerTicket(JsonString);
 
@@ -2719,10 +2719,10 @@ void UNakamaRealtimeClient::HandleReceivedMessage(const FString& Data)
     				NAKAMA_LOG_ERROR("Realtime Client - Failed to deserialize 'party_matchmaker_ticket' from JSON string.");
     			}
     		}
-    		else if (JsonObject->HasField("party_presence_event"))
+    		else if (JsonObject->HasField(TEXT("party_presence_event")))
     		{
     			FString JsonString;
-    			if (SerializeJsonObject(JsonObject->GetObjectField("party_presence_event"), JsonString))
+    			if (SerializeJsonObject(JsonObject->GetObjectField(TEXT("party_presence_event")), JsonString))
     			{
     				FNakamaPartyPresenceEvent PartyPresenceEvent = FNakamaPartyPresenceEvent(JsonString);
 
@@ -2786,7 +2786,7 @@ void UNakamaRealtimeClient::HandleReceivedMessage(const FString& Data)
 
     	if(bContextIsValid)
     	{
-    		if (JsonObject->HasField("error"))
+    		if (JsonObject->HasField(TEXT("error")))
     		{
     			if (ErrorCallback.IsBound())
     			{

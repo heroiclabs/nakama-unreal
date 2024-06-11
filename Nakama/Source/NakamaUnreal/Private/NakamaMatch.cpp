@@ -27,7 +27,7 @@ FNakamaMatch::FNakamaMatch(const FString& JsonString)
     MatchObject->TryGetNumberField(TEXT("size"), Size);
 
     const TArray<TSharedPtr<FJsonValue>>* JoinsJsonArray;
-    if (MatchObject->TryGetArrayField("presences", JoinsJsonArray))
+    if (MatchObject->TryGetArrayField(TEXT("presences"), JoinsJsonArray))
     {
         for (const TSharedPtr<FJsonValue>& UserPresence : *JoinsJsonArray)
         {
@@ -87,9 +87,9 @@ FNakamaMatchData::FNakamaMatchData(const FString& JsonString)
 
 		JsonObject->TryGetNumberField(TEXT("op_code"), OpCode);
 		
-		if(JsonObject->HasField("data"))
+		if(JsonObject->HasField(TEXT("data")))
 		{
-			FNakamaUtils::Base64Decode(JsonObject->GetStringField("data"), Data);
+			FNakamaUtils::Base64Decode(JsonObject->GetStringField(TEXT("data")), Data);
 		}
 		
 	}
@@ -107,7 +107,7 @@ FNakamaMatchList::FNakamaMatchList(const FString& JsonString)
 	if (FJsonSerializer::Deserialize(JsonReader, JsonObject) && JsonObject.IsValid())
 	{
 		const TArray<TSharedPtr<FJsonValue>>* MatchesJsonArray;
-		if (JsonObject->TryGetArrayField("matches", MatchesJsonArray))
+		if (JsonObject->TryGetArrayField(TEXT("matches"), MatchesJsonArray))
 		{
 			for (const TSharedPtr<FJsonValue>& MatchJsonValue : *MatchesJsonArray)
 			{

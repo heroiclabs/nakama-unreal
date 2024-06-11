@@ -11,14 +11,14 @@ FNakamaMatchmakerUser::FNakamaMatchmakerUser(const FString& JsonString)
 	{
 		FString PresenceJsonString;
 		auto Writer = TJsonWriterFactory<>::Create(&PresenceJsonString);
-		if (FJsonSerializer::Serialize(JsonObject->GetObjectField("presence").ToSharedRef(), Writer))
+		if (FJsonSerializer::Serialize(JsonObject->GetObjectField(TEXT("presence")).ToSharedRef(), Writer))
 		{
 			Writer->Close();
 			Presence = FNakamaUserPresence(PresenceJsonString);
 		}
 
 		const TSharedPtr<FJsonObject>* StringPropertiesObject;
-		if (JsonObject->TryGetObjectField("string_properties", StringPropertiesObject))
+		if (JsonObject->TryGetObjectField(TEXT("string_properties"), StringPropertiesObject))
 		{
 			for (const auto& Entry : (*StringPropertiesObject)->Values)
 			{
@@ -27,7 +27,7 @@ FNakamaMatchmakerUser::FNakamaMatchmakerUser(const FString& JsonString)
 		}
 
 		const TSharedPtr<FJsonObject>* NumericPropertiesObject;
-		if (JsonObject->TryGetObjectField("numeric_properties", NumericPropertiesObject))
+		if (JsonObject->TryGetObjectField(TEXT("numeric_properties"), NumericPropertiesObject))
 		{
 			for (const auto& Entry : (*NumericPropertiesObject)->Values)
 			{
@@ -49,12 +49,12 @@ FNakamaMatchmakerMatched::FNakamaMatchmakerMatched(const FString& JsonString)
 
 	if (FJsonSerializer::Deserialize(JsonReader, JsonObject) && JsonObject.IsValid())
 	{
-		JsonObject->TryGetStringField("ticket", Ticket);
-		JsonObject->TryGetStringField("match_id", MatchId);
-		JsonObject->TryGetStringField("token", Token);
+		JsonObject->TryGetStringField(TEXT("ticket"), Ticket);
+		JsonObject->TryGetStringField(TEXT("match_id"), MatchId);
+		JsonObject->TryGetStringField(TEXT("token"), Token);
 
 		const TArray<TSharedPtr<FJsonValue>>* UsersJsonArray;
-		if (JsonObject->TryGetArrayField("users", UsersJsonArray))
+		if (JsonObject->TryGetArrayField(TEXT("users"), UsersJsonArray))
 		{
 			for (const TSharedPtr<FJsonValue>& UserJson : *UsersJsonArray)
 			{
@@ -75,7 +75,7 @@ FNakamaMatchmakerMatched::FNakamaMatchmakerMatched(const FString& JsonString)
 
 		FString MeJsonString;
 		auto Writer = TJsonWriterFactory<>::Create(&MeJsonString);
-		if (FJsonSerializer::Serialize(JsonObject->GetObjectField("self").ToSharedRef(), Writer))
+		if (FJsonSerializer::Serialize(JsonObject->GetObjectField(TEXT("self")).ToSharedRef(), Writer))
 		{
 			Writer->Close();
 			Me = FNakamaMatchmakerUser(MeJsonString);
@@ -95,10 +95,10 @@ FNakamaMatchPresenceEvent::FNakamaMatchPresenceEvent(const FString& JsonString)
 
 	if (FJsonSerializer::Deserialize(JsonReader, JsonObject) && JsonObject.IsValid())
 	{
-		JsonObject->TryGetStringField("match_id", MatchId);
+		JsonObject->TryGetStringField(TEXT("match_id"), MatchId);
 
 		const TArray<TSharedPtr<FJsonValue>>* JoinsJsonArray;
-		if (JsonObject->TryGetArrayField("joins", JoinsJsonArray))
+		if (JsonObject->TryGetArrayField(TEXT("joins"), JoinsJsonArray))
 		{
 			for (const TSharedPtr<FJsonValue>& JoinJson : *JoinsJsonArray)
 			{
@@ -118,7 +118,7 @@ FNakamaMatchPresenceEvent::FNakamaMatchPresenceEvent(const FString& JsonString)
 		}
 
 		const TArray<TSharedPtr<FJsonValue>>* LeavesJsonArray;
-		if (JsonObject->TryGetArrayField("leaves", LeavesJsonArray))
+		if (JsonObject->TryGetArrayField(TEXT("leaves"), LeavesJsonArray))
 		{
 			for (const TSharedPtr<FJsonValue>& LeaveJson : *LeavesJsonArray)
 			{

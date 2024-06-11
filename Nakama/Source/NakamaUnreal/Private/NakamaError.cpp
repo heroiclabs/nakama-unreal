@@ -50,9 +50,9 @@ FNakamaError::FNakamaError(const FString& JsonString)
 	const TSharedRef<TJsonReader<>> JsonReader = TJsonReaderFactory<>::Create(JsonString);
 	if (FJsonSerializer::Deserialize(JsonReader, JsonObject))
 	{
-		if (JsonObject->HasField("message"))
+		if (JsonObject->HasField(TEXT("message")))
 		{
-			Message = JsonObject->GetStringField("message");
+			Message = JsonObject->GetStringField(TEXT("message"));
 		}
 		else
 		{
@@ -60,7 +60,7 @@ FNakamaError::FNakamaError(const FString& JsonString)
 		}
 
 		int32 CodeValue;
-		if (JsonObject->TryGetNumberField("code", CodeValue))
+		if (JsonObject->TryGetNumberField(TEXT("code"), CodeValue))
 		{
 			//Code = static_cast<ENakamaErrorCode>(CodeValue);
 			Code = ConvertNakamaErrorCode(CodeValue);

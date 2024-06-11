@@ -9,15 +9,15 @@ FNakamaParty::FNakamaParty(const FString& JsonString)
     if (FJsonSerializer::Deserialize(JsonReader, JsonObject) && JsonObject.IsValid())
     {
         // Get the appropriate object based on whether "party" is present or not
-        TSharedPtr<FJsonObject> PartyObject = JsonObject->HasField("party") ? JsonObject->GetObjectField("party") : JsonObject;
+        TSharedPtr<FJsonObject> PartyObject = JsonObject->HasField(TEXT("party")) ? JsonObject->GetObjectField(TEXT("party")) : JsonObject;
 
-        PartyObject->TryGetStringField("party_id", Id);
-        PartyObject->TryGetBoolField("open", Open);
-        PartyObject->TryGetNumberField("max_size", MaxSize);
+        PartyObject->TryGetStringField(TEXT("party_id"), Id);
+        PartyObject->TryGetBoolField(TEXT("open"), Open);
+        PartyObject->TryGetNumberField(TEXT("max_size"), MaxSize);
 
         FString SelfJsonString;
         const TSharedPtr<FJsonObject>* SelfJsonObject;
-        if (PartyObject->TryGetObjectField("self", SelfJsonObject))
+        if (PartyObject->TryGetObjectField(TEXT("self"), SelfJsonObject))
         {
             TSharedRef<TJsonWriter<>> SelfWriter = TJsonWriterFactory<>::Create(&SelfJsonString);
             if (FJsonSerializer::Serialize(SelfJsonObject->ToSharedRef(), SelfWriter))
@@ -29,7 +29,7 @@ FNakamaParty::FNakamaParty(const FString& JsonString)
 
         FString LeaderJsonString;
         const TSharedPtr<FJsonObject>* LeaderJsonObject;
-        if (PartyObject->TryGetObjectField("leader", LeaderJsonObject))
+        if (PartyObject->TryGetObjectField(TEXT("leader"), LeaderJsonObject))
         {
             TSharedRef<TJsonWriter<>> LeaderWriter = TJsonWriterFactory<>::Create(&LeaderJsonString);
             if (FJsonSerializer::Serialize(LeaderJsonObject->ToSharedRef(), LeaderWriter))
@@ -40,7 +40,7 @@ FNakamaParty::FNakamaParty(const FString& JsonString)
         }
 
     	const TArray<TSharedPtr<FJsonValue>>* PresencesJsonArray;
-    	if (PartyObject->TryGetArrayField("presences", PresencesJsonArray))
+    	if (PartyObject->TryGetArrayField(TEXT("presences"), PresencesJsonArray))
     	{
     		for (const TSharedPtr<FJsonValue>& PresenceJson : *PresencesJsonArray)
     		{
@@ -74,12 +74,12 @@ FNakamaPartyJoinRequest::FNakamaPartyJoinRequest(const FString& JsonString)
 	if (FJsonSerializer::Deserialize(JsonReader, JsonObject) && JsonObject.IsValid())
 	{
 		// Get the appropriate object based on whether "party_join_request" is present or not.
-		TSharedPtr<FJsonObject> PartyJoinRequestJsonObject = JsonObject->HasField("party_join_request") ? JsonObject->GetObjectField("party_join_request") : JsonObject;
+		TSharedPtr<FJsonObject> PartyJoinRequestJsonObject = JsonObject->HasField(TEXT("party_join_request")) ? JsonObject->GetObjectField(TEXT("party_join_request")) : JsonObject;
 
-		PartyJoinRequestJsonObject->TryGetStringField("party_id", PartyId);
+		PartyJoinRequestJsonObject->TryGetStringField(TEXT("party_id"), PartyId);
 
 		const TArray<TSharedPtr<FJsonValue>>* PresencesJsonArray;
-		if (PartyJoinRequestJsonObject->TryGetArrayField("presences", PresencesJsonArray))
+		if (PartyJoinRequestJsonObject->TryGetArrayField(TEXT("presences"), PresencesJsonArray))
 		{
 			for (const TSharedPtr<FJsonValue>& PresenceJson : *PresencesJsonArray)
 			{
@@ -137,7 +137,7 @@ FNakamaPartyClose::FNakamaPartyClose(const FString& JsonString)
 
 	if (FJsonSerializer::Deserialize(JsonReader, JsonObject) && JsonObject.IsValid())
 	{
-		Id = JsonObject->GetStringField("id");
+		Id = JsonObject->GetStringField(TEXT("id"));
 	}
 }
 
@@ -153,10 +153,10 @@ FNakamaPartyData::FNakamaPartyData(const FString& JsonString)
 
 	if (FJsonSerializer::Deserialize(JsonReader, JsonObject) && JsonObject.IsValid())
 	{
-		JsonObject->TryGetStringField("party_id", PartyId);
+		JsonObject->TryGetStringField(TEXT("party_id"), PartyId);
 
 		const TSharedPtr<FJsonObject>* PresenceJsonObject;
-		if (JsonObject->TryGetObjectField("presence", PresenceJsonObject))
+		if (JsonObject->TryGetObjectField(TEXT("presence"), PresenceJsonObject))
 		{
 			FString PresenceJsonString;
 			auto PresenceWriter = TJsonWriterFactory<>::Create(&PresenceJsonString);
@@ -171,11 +171,11 @@ FNakamaPartyData::FNakamaPartyData(const FString& JsonString)
 			Presence = FNakamaUserPresence();
 		}
 
-		JsonObject->TryGetNumberField("op_code", OpCode);
+		JsonObject->TryGetNumberField(TEXT("op_code"), OpCode);
 
-		if(JsonObject->HasField("data"))
+		if(JsonObject->HasField(TEXT("data")))
 		{
-			FBase64::Decode(JsonObject->GetStringField("data"), Data);
+			FBase64::Decode(JsonObject->GetStringField(TEXT("data")), Data);
 		}
 	}
 }
@@ -191,10 +191,10 @@ FNakamaPartyLeader::FNakamaPartyLeader(const FString& JsonString)
 
 	if (FJsonSerializer::Deserialize(JsonReader, JsonObject) && JsonObject.IsValid())
 	{
-		JsonObject->TryGetStringField("party_id", PartyId);
+		JsonObject->TryGetStringField(TEXT("party_id"), PartyId);
 
 		const TSharedPtr<FJsonObject>* PresenceJsonObject;
-		if (JsonObject->TryGetObjectField("presence", PresenceJsonObject))
+		if (JsonObject->TryGetObjectField(TEXT("presence"), PresenceJsonObject))
 		{
 			FString PresenceJsonString;
 			auto PresenceWriter = TJsonWriterFactory<>::Create(&PresenceJsonString);
@@ -223,10 +223,10 @@ FNakamaPartyPresenceEvent::FNakamaPartyPresenceEvent(const FString& JsonString)
 
     if (FJsonSerializer::Deserialize(JsonReader, JsonObject) && JsonObject.IsValid())
     {
-    	JsonObject->TryGetStringField("party_id", PartyId);
+    	JsonObject->TryGetStringField(TEXT("party_id"), PartyId);
 
         const TArray<TSharedPtr<FJsonValue>>* JoinsJsonArray;
-        if (JsonObject->TryGetArrayField("joins", JoinsJsonArray))
+        if (JsonObject->TryGetArrayField(TEXT("joins"), JoinsJsonArray))
         {
             for (const TSharedPtr<FJsonValue>& PresenceJson : *JoinsJsonArray)
             {
@@ -246,7 +246,7 @@ FNakamaPartyPresenceEvent::FNakamaPartyPresenceEvent(const FString& JsonString)
         }
 
         const TArray<TSharedPtr<FJsonValue>>* LeavesJsonArray;
-        if (JsonObject->TryGetArrayField("leaves", LeavesJsonArray))
+        if (JsonObject->TryGetArrayField(TEXT("leaves"), LeavesJsonArray))
         {
             for (const TSharedPtr<FJsonValue>& PresenceJson : *LeavesJsonArray)
             {

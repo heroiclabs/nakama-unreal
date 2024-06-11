@@ -9,11 +9,11 @@ FNakamaUserPresence::FNakamaUserPresence(const FString& JsonString)
 
 	if (FJsonSerializer::Deserialize(JsonReader, JsonObject) && JsonObject.IsValid())
 	{
-		JsonObject->TryGetStringField("user_id", UserID);
-		JsonObject->TryGetStringField("session_id", SessionID);
-		JsonObject->TryGetStringField("username", Username);
-		JsonObject->TryGetBoolField("persistence", Persistence);
-		JsonObject->TryGetStringField("status", Status);
+		JsonObject->TryGetStringField(TEXT("user_id"), UserID);
+		JsonObject->TryGetStringField(TEXT("session_id"), SessionID);
+		JsonObject->TryGetStringField(TEXT("username"), Username);
+		JsonObject->TryGetBoolField(TEXT("persistence"), Persistence);
+		JsonObject->TryGetStringField(TEXT("status"), Status);
 	}
 }
 

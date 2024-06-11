@@ -11,10 +11,10 @@ FNakamaStatus::FNakamaStatus(const FString& JsonString)
 	if (FJsonSerializer::Deserialize(JsonReader, JsonObject) && JsonObject.IsValid())
 	{
 		const TSharedPtr<FJsonObject>* StatusJsonObject;
-		if (JsonObject->TryGetObjectField("status", StatusJsonObject))
+		if (JsonObject->TryGetObjectField(TEXT("status"), StatusJsonObject))
 		{
 			const TArray<TSharedPtr<FJsonValue>>* PresencesJsonArray;
-			if ((*StatusJsonObject)->TryGetArrayField("presences", PresencesJsonArray))
+			if ((*StatusJsonObject)->TryGetArrayField(TEXT("presences"), PresencesJsonArray))
 			{
 				for (const TSharedPtr<FJsonValue>& PresenceJson : *PresencesJsonArray)
 				{
@@ -50,7 +50,7 @@ FNakamaStatusPresenceEvent::FNakamaStatusPresenceEvent(const FString& JsonString
 	if (FJsonSerializer::Deserialize(JsonReader, JsonObject) && JsonObject.IsValid())
 	{
 		const TArray<TSharedPtr<FJsonValue>>* JoinsJsonArray;
-		if (JsonObject->TryGetArrayField("joins", JoinsJsonArray))
+		if (JsonObject->TryGetArrayField(TEXT("joins"), JoinsJsonArray))
 		{
 			for (const TSharedPtr<FJsonValue>& UserPresence : *JoinsJsonArray)
 			{
@@ -71,7 +71,7 @@ FNakamaStatusPresenceEvent::FNakamaStatusPresenceEvent(const FString& JsonString
 		}
 
 		const TArray<TSharedPtr<FJsonValue>>* LeavesJsonArray;
-		if (JsonObject->TryGetArrayField("leaves", LeavesJsonArray))
+		if (JsonObject->TryGetArrayField(TEXT("leaves"), LeavesJsonArray))
 		{
 			for (const TSharedPtr<FJsonValue>& UserPresence : *LeavesJsonArray)
 			{
