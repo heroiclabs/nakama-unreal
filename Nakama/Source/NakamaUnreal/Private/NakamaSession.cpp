@@ -13,8 +13,8 @@ void UNakamaSession::SetupSession(const FString& AuthResponse)
 
     if (FJsonSerializer::Deserialize(JsonReader, JsonObject))
     {
-        FString Token = JsonObject->GetStringField("token");
-        FString RefreshToken = JsonObject->GetStringField("refresh_token");
+        FString Token = JsonObject->GetStringField(TEXT("token"));
+        FString RefreshToken = JsonObject->GetStringField(TEXT("refresh_token"));
 
     	SessionData.AuthToken = Token;
     	_AuthToken = Token;
@@ -23,7 +23,7 @@ void UNakamaSession::SetupSession(const FString& AuthResponse)
 
     	// Check if the "created" field is available and set IsCreated accordingly
     	bool IsSessionCreated;
-    	if (JsonObject->TryGetBoolField("created", IsSessionCreated))
+    	if (JsonObject->TryGetBoolField(TEXT("created"), IsSessionCreated))
     	{
     		SessionData.IsCreated = IsSessionCreated;
     		_IsCreated = IsSessionCreated;
@@ -34,8 +34,8 @@ void UNakamaSession::SetupSession(const FString& AuthResponse)
         {
             FString UserId;
             FString Username;
-            PayloadJson->TryGetStringField("uid", UserId);
-            PayloadJson->TryGetStringField("usn", Username);
+            PayloadJson->TryGetStringField(TEXT("uid"), UserId);
+            PayloadJson->TryGetStringField(TEXT("usn"), Username);
 
             SessionData.Username = Username;
         	_Username = Username;
@@ -43,9 +43,9 @@ void UNakamaSession::SetupSession(const FString& AuthResponse)
         	_UserId = UserId;
 
             TMap<FString, FString> InVars;
-            if (PayloadJson->HasField("vrs"))
+            if (PayloadJson->HasField(TEXT("vrs")))
             {
-                const TSharedPtr<FJsonObject>& VarsJson = PayloadJson->GetObjectField("vrs");
+                const TSharedPtr<FJsonObject>& VarsJson = PayloadJson->GetObjectField(TEXT("vrs"));
                 for (const auto& Entry : VarsJson->Values)
                 {
                     FString Key = Entry.Key;
@@ -56,7 +56,7 @@ void UNakamaSession::SetupSession(const FString& AuthResponse)
             }
 
             int64 Expires;
-            if (PayloadJson->TryGetNumberField("exp", Expires))
+            if (PayloadJson->TryGetNumberField(TEXT("exp"), Expires))
             {
                 FDateTime ExpireTime = FDateTime::FromUnixTimestamp(Expires);
                 SessionData.ExpireTime = ExpireTime;
@@ -70,7 +70,7 @@ void UNakamaSession::SetupSession(const FString& AuthResponse)
             if (ParseJwtPayload(RefreshToken, RefreshPayloadJson))
             {
                 int64 RefreshExpires;
-                if (RefreshPayloadJson->TryGetNumberField("exp", RefreshExpires))
+                if (RefreshPayloadJson->TryGetNumberField(TEXT("exp"), RefreshExpires))
                 {
                     FDateTime RefreshExpireTime = FDateTime::FromUnixTimestamp(RefreshExpires);
                     SessionData.RefreshExpireTime = RefreshExpireTime;

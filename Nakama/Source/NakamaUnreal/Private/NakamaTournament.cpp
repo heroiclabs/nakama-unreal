@@ -9,40 +9,40 @@ FNakamaTournament::FNakamaTournament(const FString& JsonString)
 
 	if (FJsonSerializer::Deserialize(JsonReader, JsonObject) && JsonObject.IsValid())
 	{
-		JsonObject->TryGetStringField("id", Id);
-		JsonObject->TryGetStringField("title", Title);
-		JsonObject->TryGetStringField("description", Description);
-		JsonObject->TryGetNumberField("category", Category);
-		JsonObject->TryGetNumberField("sort_order", SortOrder);
-		JsonObject->TryGetNumberField("size", Size);
-		JsonObject->TryGetNumberField("max_size", MaxSize);
-		JsonObject->TryGetNumberField("max_num_score", MaxNumScore);
-		JsonObject->TryGetBoolField("can_enter", CanEnter);
+		JsonObject->TryGetStringField(TEXT("id"), Id);
+		JsonObject->TryGetStringField(TEXT("title"), Title);
+		JsonObject->TryGetStringField(TEXT("description"), Description);
+		JsonObject->TryGetNumberField(TEXT("category"), Category);
+		JsonObject->TryGetNumberField(TEXT("sort_order"), SortOrder);
+		JsonObject->TryGetNumberField(TEXT("size"), Size);
+		JsonObject->TryGetNumberField(TEXT("max_size"), MaxSize);
+		JsonObject->TryGetNumberField(TEXT("max_num_score"), MaxNumScore);
+		JsonObject->TryGetBoolField(TEXT("can_enter"), CanEnter);
 
 		FString CreateTimeString;
-		if (JsonObject->TryGetStringField("create_time", CreateTimeString))
+		if (JsonObject->TryGetStringField(TEXT("create_time"), CreateTimeString))
 		{
 			FDateTime::ParseIso8601(*CreateTimeString, CreateTime);
 		}
 
 		FString StartTimeString;
-		if (JsonObject->TryGetStringField("start_time", StartTimeString))
+		if (JsonObject->TryGetStringField(TEXT("start_time"), StartTimeString))
 		{
 			FDateTime::ParseIso8601(*StartTimeString, StartTime);
 		}
 
 		FString EndTimeString;
-		if (JsonObject->TryGetStringField("end_time", EndTimeString))
+		if (JsonObject->TryGetStringField(TEXT("end_time"), EndTimeString))
 		{
 			FDateTime::ParseIso8601(*EndTimeString, EndTime);
 		}
 
-		JsonObject->TryGetNumberField("end_active", EndActive);
-		JsonObject->TryGetNumberField("next_reset", NextReset);
-		JsonObject->TryGetNumberField("duration", Duration);
-		JsonObject->TryGetNumberField("start_active", StartActive);
+		JsonObject->TryGetNumberField(TEXT("end_active"), EndActive);
+		JsonObject->TryGetNumberField(TEXT("next_reset"), NextReset);
+		JsonObject->TryGetNumberField(TEXT("duration"), Duration);
+		JsonObject->TryGetNumberField(TEXT("start_active"), StartActive);
 
-		JsonObject->TryGetStringField("metadata", Metadata);
+		JsonObject->TryGetStringField(TEXT("metadata"), Metadata);
 	}
 }
 
@@ -59,7 +59,7 @@ FNakamaTournamentRecordList::FNakamaTournamentRecordList(const FString& JsonStri
     if (FJsonSerializer::Deserialize(JsonReader, JsonObject) && JsonObject.IsValid())
     {
         const TArray<TSharedPtr<FJsonValue>>* RecordsJsonArray;
-        if (JsonObject->TryGetArrayField("records", RecordsJsonArray))
+        if (JsonObject->TryGetArrayField(TEXT("records"), RecordsJsonArray))
         {
             for (const TSharedPtr<FJsonValue>& RecordJson : *RecordsJsonArray)
             {
@@ -82,7 +82,7 @@ FNakamaTournamentRecordList::FNakamaTournamentRecordList(const FString& JsonStri
         }
 
         const TArray<TSharedPtr<FJsonValue>>* OwnerRecordsJsonArray;
-        if (JsonObject->TryGetArrayField("owner_records", OwnerRecordsJsonArray))
+        if (JsonObject->TryGetArrayField(TEXT("owner_records"), OwnerRecordsJsonArray))
         {
             for (const TSharedPtr<FJsonValue>& OwnerRecordJson : *OwnerRecordsJsonArray)
             {
@@ -104,8 +104,8 @@ FNakamaTournamentRecordList::FNakamaTournamentRecordList(const FString& JsonStri
             }
         }
 
-        JsonObject->TryGetStringField("next_cursor", NextCursor);
-        JsonObject->TryGetStringField("prev_cursor", PrevCursor);
+        JsonObject->TryGetStringField(TEXT("next_cursor"), NextCursor);
+        JsonObject->TryGetStringField(TEXT("prev_cursor"), PrevCursor);
     }
 	
 }
@@ -123,7 +123,7 @@ FNakamaTournamentList::FNakamaTournamentList(const FString& JsonString)
 	if (FJsonSerializer::Deserialize(JsonReader, JsonObject) && JsonObject.IsValid())
 	{
 		const TArray<TSharedPtr<FJsonValue>>* TournamentsJsonArray;
-		if (JsonObject->TryGetArrayField("tournaments", TournamentsJsonArray))
+		if (JsonObject->TryGetArrayField(TEXT("tournaments"), TournamentsJsonArray))
 		{
 			for (const TSharedPtr<FJsonValue>& TournamentJson : *TournamentsJsonArray)
 			{
@@ -145,7 +145,7 @@ FNakamaTournamentList::FNakamaTournamentList(const FString& JsonString)
 			}
 		}
 
-		JsonObject->TryGetStringField("cursor", Cursor);
+		JsonObject->TryGetStringField(TEXT("cursor"), Cursor);
 	}
 }
 

@@ -113,7 +113,7 @@ FString FNakamaTournamentTestBase::GetTournamentIdFromJsonString(const FString& 
 	if (FJsonSerializer::Deserialize(JsonReader, JsonObject) && JsonObject.IsValid())
 	{
 		FString TournamentId;
-		if (JsonObject->TryGetStringField("tournament_id", TournamentId))
+		if (JsonObject->TryGetStringField(TEXT("tournament_id"), TournamentId))
 		{
 			return TournamentId;
 		}

@@ -31,33 +31,33 @@ FNakamaGroup::FNakamaGroup(const FString& JsonString)
 	const TSharedRef<TJsonReader<>> JsonReader = TJsonReaderFactory<>::Create(JsonString);
 	if (FJsonSerializer::Deserialize(JsonReader, JsonObject) && JsonObject.IsValid())
 	{
-		JsonObject->TryGetStringField("id", Id);
-		JsonObject->TryGetStringField("creator_id", CreatorId);
-		JsonObject->TryGetStringField("name", Name);
-		JsonObject->TryGetStringField("description", Description);
-		JsonObject->TryGetStringField("lang_tag", Language);
-		JsonObject->TryGetStringField("metadata", MetaData);
-		JsonObject->TryGetStringField("avatar_url", AvatarUrl);
+		JsonObject->TryGetStringField(TEXT("id"), Id);
+		JsonObject->TryGetStringField(TEXT("creator_id"), CreatorId);
+		JsonObject->TryGetStringField(TEXT("name"), Name);
+		JsonObject->TryGetStringField(TEXT("description"), Description);
+		JsonObject->TryGetStringField(TEXT("lang_tag"), Language);
+		JsonObject->TryGetStringField(TEXT("metadata"), MetaData);
+		JsonObject->TryGetStringField(TEXT("avatar_url"), AvatarUrl);
         
-		JsonObject->TryGetBoolField("open", open);
+		JsonObject->TryGetBoolField(TEXT("open"), open);
 
 		double Tmp;
-		if (JsonObject->TryGetNumberField("edge_count", Tmp))
+		if (JsonObject->TryGetNumberField(TEXT("edge_count"), Tmp))
 		{
 			EdgeCount = static_cast<int32>(Tmp);
 		}
-		if (JsonObject->TryGetNumberField("max_count", Tmp))
+		if (JsonObject->TryGetNumberField(TEXT("max_count"), Tmp))
 		{
 			MaxCount = static_cast<int32>(Tmp);
 		}
 
 		FString CreateTimeString;
-		if (JsonObject->TryGetStringField("create_time", CreateTimeString))
+		if (JsonObject->TryGetStringField(TEXT("create_time"), CreateTimeString))
 		{
 			FDateTime::ParseIso8601(*CreateTimeString, CreateTime);
 		}
 		FString UpdateTimeString;
-		if (JsonObject->TryGetStringField("update_time", UpdateTimeString))
+		if (JsonObject->TryGetStringField(TEXT("update_time"), UpdateTimeString))
 		{
 			FDateTime::ParseIso8601(*UpdateTimeString, UpdateTime);
 		}
@@ -72,7 +72,7 @@ FNakamaGroupUser::FNakamaGroupUser(const FString& JsonString)
 	if (FJsonSerializer::Deserialize(JsonReader, JsonObject) && JsonObject.IsValid())
 	{
 		const TSharedPtr<FJsonObject>* UserJsonObject;
-		if (JsonObject->TryGetObjectField("user", UserJsonObject))
+		if (JsonObject->TryGetObjectField(TEXT("user"), UserJsonObject))
 		{
 			FString UserJsonString;
 			TSharedRef<TJsonWriter<>> JsonWriter = TJsonWriterFactory<>::Create(&UserJsonString);
@@ -84,7 +84,7 @@ FNakamaGroupUser::FNakamaGroupUser(const FString& JsonString)
 		}
 
 		FString StateString;
-		if (JsonObject->TryGetStringField("state", StateString))
+		if (JsonObject->TryGetStringField(TEXT("state"), StateString))
 		{
 			State = GetGroupStateFromString(StateString);
 		}
@@ -104,7 +104,7 @@ FNakamaGroupUsersList::FNakamaGroupUsersList(const FString& JsonString)
 	if (FJsonSerializer::Deserialize(JsonReader, JsonObject) && JsonObject.IsValid())
 	{
 		const TArray<TSharedPtr<FJsonValue>>* GroupUsersJsonArray;
-		if (JsonObject->TryGetArrayField("group_users", GroupUsersJsonArray))
+		if (JsonObject->TryGetArrayField(TEXT("group_users"), GroupUsersJsonArray))
 		{
 			for (const TSharedPtr<FJsonValue>& GroupUserJsonValue : *GroupUsersJsonArray)
 			{
@@ -126,7 +126,7 @@ FNakamaGroupUsersList::FNakamaGroupUsersList(const FString& JsonString)
 			}
 		}
 
-		JsonObject->TryGetStringField("cursor", Cursor);
+		JsonObject->TryGetStringField(TEXT("cursor"), Cursor);
 	}
 }
 
@@ -138,7 +138,7 @@ FNakamaGroupList::FNakamaGroupList(const FString& JsonString)
 	if (FJsonSerializer::Deserialize(JsonReader, JsonObject) && JsonObject.IsValid())
 	{
 		const TArray<TSharedPtr<FJsonValue>>* GroupsJsonArray;
-		if (JsonObject->TryGetArrayField("groups", GroupsJsonArray))
+		if (JsonObject->TryGetArrayField(TEXT("groups"), GroupsJsonArray))
 		{
 			for (const TSharedPtr<FJsonValue>& GroupJsonValue : *GroupsJsonArray)
 			{
@@ -160,7 +160,7 @@ FNakamaGroupList::FNakamaGroupList(const FString& JsonString)
 			}
 		}
 
-		JsonObject->TryGetStringField("cursor", Cursor);
+		JsonObject->TryGetStringField(TEXT("cursor"), Cursor);
 	}
 }
 
@@ -171,9 +171,9 @@ FNakamaUserGroup::FNakamaUserGroup(const FString& JsonString)
 
 	if (FJsonSerializer::Deserialize(JsonReader, JsonObject) && JsonObject.IsValid())
 	{
-		if (JsonObject->HasField("group") && JsonObject->GetField<EJson::Object>("group"))
+		if (JsonObject->HasField(TEXT("group")) && JsonObject->GetField<EJson::Object>(TEXT("group")))
 		{
-			TSharedPtr<FJsonObject> GroupJsonObject = JsonObject->GetObjectField("group");
+			TSharedPtr<FJsonObject> GroupJsonObject = JsonObject->GetObjectField(TEXT("group"));
 			if (GroupJsonObject.IsValid())
 			{
 				FString GroupJsonString;
@@ -187,7 +187,7 @@ FNakamaUserGroup::FNakamaUserGroup(const FString& JsonString)
 		}
 
 		FString StateString;
-		if (JsonObject->TryGetStringField("state", StateString))
+		if (JsonObject->TryGetStringField(TEXT("state"), StateString))
 		{
 			State = GetGroupStateFromString(StateString);
 		}
@@ -207,7 +207,7 @@ FNakamaUserGroupList::FNakamaUserGroupList(const FString& JsonString)
 	if (FJsonSerializer::Deserialize(JsonReader, JsonObject) && JsonObject.IsValid())
 	{
 		const TArray<TSharedPtr<FJsonValue>>* UserGroupsJsonArray;
-		if (JsonObject->TryGetArrayField("user_groups", UserGroupsJsonArray))
+		if (JsonObject->TryGetArrayField(TEXT("user_groups"), UserGroupsJsonArray))
 		{
 			for (const TSharedPtr<FJsonValue>& UserGroupJsonValue : *UserGroupsJsonArray)
 			{
@@ -229,7 +229,7 @@ FNakamaUserGroupList::FNakamaUserGroupList(const FString& JsonString)
 			}
 		}
 
-		JsonObject->TryGetStringField("cursor", Cursor);
+		JsonObject->TryGetStringField(TEXT("cursor"), Cursor);
 	}
 }
 

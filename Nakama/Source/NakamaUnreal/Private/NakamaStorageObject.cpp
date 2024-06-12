@@ -9,32 +9,32 @@ FNakamaStoreObjectData::FNakamaStoreObjectData(const FString& JsonString)
 
 	if (FJsonSerializer::Deserialize(JsonReader, JsonObject) && JsonObject.IsValid())
 	{
-		JsonObject->TryGetStringField("collection", Collection);
-		JsonObject->TryGetStringField("key", Key);
-		JsonObject->TryGetStringField("user_id", UserId);
-		JsonObject->TryGetStringField("value", Value);
-		JsonObject->TryGetStringField("version", Version);
+		JsonObject->TryGetStringField(TEXT("collection"), Collection);
+		JsonObject->TryGetStringField(TEXT("key"), Key);
+		JsonObject->TryGetStringField(TEXT("user_id"), UserId);
+		JsonObject->TryGetStringField(TEXT("value"), Value);
+		JsonObject->TryGetStringField(TEXT("version"), Version);
 
 		int32 PermissionReadValue;
-		if (JsonObject->TryGetNumberField("permission_read", PermissionReadValue))
+		if (JsonObject->TryGetNumberField(TEXT("permission_read"), PermissionReadValue))
 		{
 			PermissionRead = static_cast<ENakamaStoragePermissionRead>(PermissionReadValue);
 		}
 
 		int32 PermissionWriteValue;
-		if (JsonObject->TryGetNumberField("permission_write", PermissionWriteValue))
+		if (JsonObject->TryGetNumberField(TEXT("permission_write"), PermissionWriteValue))
 		{
 			PermissionWrite = static_cast<ENakamaStoragePermissionWrite>(PermissionWriteValue);
 		}
 		
 		FString CreatedAtString;
-		if (JsonObject->TryGetStringField("create_time", CreatedAtString))
+		if (JsonObject->TryGetStringField(TEXT("create_time"), CreatedAtString))
 		{
 			FDateTime::ParseIso8601(*CreatedAtString, CreateTime);
 		}
 		
 		FString UpdatedAtString;
-		if (JsonObject->TryGetStringField("update_time", UpdatedAtString))
+		if (JsonObject->TryGetStringField(TEXT("update_time"), UpdatedAtString))
 		{
 			FDateTime::ParseIso8601(*UpdatedAtString, UpdateTime);
 		}
@@ -53,19 +53,19 @@ FNakamaStoreObjectWrite::FNakamaStoreObjectWrite(const FString& JsonString)
 
 	if (FJsonSerializer::Deserialize(JsonReader, JsonObject) && JsonObject.IsValid())
 	{
-		JsonObject->TryGetStringField("collection", Collection);
-		JsonObject->TryGetStringField("key", Key);
-		JsonObject->TryGetStringField("value", Value);
-		JsonObject->TryGetStringField("version", Version);
+		JsonObject->TryGetStringField(TEXT("collection"), Collection);
+		JsonObject->TryGetStringField(TEXT("key"), Key);
+		JsonObject->TryGetStringField(TEXT("value"), Value);
+		JsonObject->TryGetStringField(TEXT("version"), Version);
 
 		int32 PermissionReadValue;
-		if (JsonObject->TryGetNumberField("permission_read", PermissionReadValue))
+		if (JsonObject->TryGetNumberField(TEXT("permission_read"), PermissionReadValue))
 		{
 			PermissionRead = static_cast<ENakamaStoragePermissionRead>(PermissionReadValue);
 		}
 
 		int32 PermissionWriteValue;
-		if (JsonObject->TryGetNumberField("permission_write", PermissionWriteValue))
+		if (JsonObject->TryGetNumberField(TEXT("permission_write"), PermissionWriteValue))
 		{
 			PermissionWrite = static_cast<ENakamaStoragePermissionWrite>(PermissionWriteValue);
 		}
@@ -83,9 +83,9 @@ FNakamaReadStorageObjectId::FNakamaReadStorageObjectId(const FString& JsonString
 
 	if (FJsonSerializer::Deserialize(JsonReader, JsonObject) && JsonObject.IsValid())
 	{
-		JsonObject->TryGetStringField("collection", Collection);
-		JsonObject->TryGetStringField("key", Key);
-		JsonObject->TryGetStringField("user_id", UserId);
+		JsonObject->TryGetStringField(TEXT("collection"), Collection);
+		JsonObject->TryGetStringField(TEXT("key"), Key);
+		JsonObject->TryGetStringField(TEXT("user_id"), UserId);
 	}
 }
 
@@ -101,9 +101,9 @@ FNakamaDeleteStorageObjectId::FNakamaDeleteStorageObjectId(const FString& JsonSt
 
 	if (FJsonSerializer::Deserialize(JsonReader, JsonObject) && JsonObject.IsValid())
 	{
-		JsonObject->TryGetStringField("collection", Collection);
-		JsonObject->TryGetStringField("key", Key);
-		JsonObject->TryGetStringField("version", Version);
+		JsonObject->TryGetStringField(TEXT("collection"), Collection);
+		JsonObject->TryGetStringField(TEXT("key"), Key);
+		JsonObject->TryGetStringField(TEXT("version"), Version);
 	}
 }
 
@@ -119,10 +119,10 @@ FNakamaStoreObjectAck::FNakamaStoreObjectAck(const FString& JsonString)
 
 	if (FJsonSerializer::Deserialize(JsonReader, JsonObject) && JsonObject.IsValid())
 	{
-		JsonObject->TryGetStringField("collection", Collection);
-		JsonObject->TryGetStringField("key", Key);
-		JsonObject->TryGetStringField("version", Version);
-		JsonObject->TryGetStringField("user_id", UserId);
+		JsonObject->TryGetStringField(TEXT("collection"), Collection);
+		JsonObject->TryGetStringField(TEXT("key"), Key);
+		JsonObject->TryGetStringField(TEXT("version"), Version);
+		JsonObject->TryGetStringField(TEXT("user_id"), UserId);
 	}
 }
 
@@ -140,7 +140,7 @@ FNakamaStoreObjectAcks::FNakamaStoreObjectAcks(const FString& JsonString)
 	if (FJsonSerializer::Deserialize(JsonReader, JsonObject) && JsonObject.IsValid())
 	{
 		const TArray<TSharedPtr<FJsonValue>>* StorageJobjectsJsonArray;
-		if (JsonObject->TryGetArrayField("acks", StorageJobjectsJsonArray))
+		if (JsonObject->TryGetArrayField(TEXT("acks"), StorageJobjectsJsonArray))
 		{
 			for (const TSharedPtr<FJsonValue>& StorageJson : *StorageJobjectsJsonArray)
 			{
@@ -176,7 +176,7 @@ FNakamaStorageObjectList::FNakamaStorageObjectList(const FString& JsonString)
 	if (FJsonSerializer::Deserialize(JsonReader, JsonObject) && JsonObject.IsValid())
 	{
 		const TArray<TSharedPtr<FJsonValue>>* StorageJobjectsJsonArray;
-		if (JsonObject->TryGetArrayField("objects", StorageJobjectsJsonArray))
+		if (JsonObject->TryGetArrayField(TEXT("objects"), StorageJobjectsJsonArray))
 		{
 			for (const TSharedPtr<FJsonValue>& StorageJson : *StorageJobjectsJsonArray)
 			{
@@ -196,7 +196,7 @@ FNakamaStorageObjectList::FNakamaStorageObjectList(const FString& JsonString)
 			}
 		}
 
-		JsonObject->TryGetStringField("cursor", Cursor);
+		JsonObject->TryGetStringField(TEXT("cursor"), Cursor);
 	}
 }
 
