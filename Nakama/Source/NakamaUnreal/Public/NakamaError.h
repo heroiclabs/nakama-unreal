@@ -42,7 +42,7 @@ struct NAKAMAUNREAL_API FNakamaError
 	FNakamaError(const FString& JsonString);
 	FNakamaError(): Code(ENakamaErrorCode::Unknown) { }
 
-	ENakamaErrorCode ConvertNakamaErrorCode(int32 CodeValue);
+	static ENakamaErrorCode ConvertNakamaErrorCode(int32 CodeValue);
 
 
 };
