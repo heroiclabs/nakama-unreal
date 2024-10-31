@@ -5,6 +5,37 @@
 
 
 // Flags
+UENUM(BlueprintType)
+enum class FSatoriFlagValueChangeReasonType : uint8
+{
+	UNKNOWN = 0,
+	FLAG_VARIANT = 1,
+	LIVE_EVENT = 2,
+	EXPERIMENT = 3
+};
+
+USTRUCT(BlueprintType)
+struct SATORIUNREAL_API FSatoriFlagValueChangeReason
+{
+	GENERATED_BODY()
+
+	// The type of the configuration that declared the override.
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Satori|Flags")
+	FSatoriFlagValueChangeReasonType Type = FSatoriFlagValueChangeReasonType::UNKNOWN;
+
+	// The name of the configuration that overrides the flag value.
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Satori|Flags")
+	FString Name;
+
+	// The variant name of the configuration that overrides the flag value.
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Satori|Flags")
+	FString VariantName;
+
+	FSatoriFlagValueChangeReason(const FString& JsonString);
+	FSatoriFlagValueChangeReason(const TSharedPtr<FJsonObject> JsonObject);
+	FSatoriFlagValueChangeReason(); // Default Constructor
+};
+
 USTRUCT(BlueprintType)
 struct SATORIUNREAL_API FSatoriFlag
 {
@@ -20,7 +51,11 @@ struct SATORIUNREAL_API FSatoriFlag
 
 	// Whether the value for this flag has conditionally changed from the default state.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Satori|Flags")
-	bool bConditionChanged;
+	bool bConditionChanged = false;
+
+	// The origin of change on the flag value returned.
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Satori|Flags")
+	FSatoriFlagValueChangeReason ChangeReason;
 
 	FSatoriFlag(const FString& JsonString);
 	FSatoriFlag(const TSharedPtr<FJsonObject> JsonObject);
@@ -38,4 +73,78 @@ struct SATORIUNREAL_API FSatoriFlagList
 
 	FSatoriFlagList(const FString& JsonString);
 	FSatoriFlagList(); // Default Constructor
+};
+
+
+// Flag Overrides
+
+UENUM(BlueprintType)
+enum class FSatoriFlagOverrideType : uint8
+{
+	FLAG = 0,
+	FLAG_VARIANT = 1,
+	LIVE_EVENT_FLAG = 2,
+	LIVE_EVENT_FLAG_VARIANT = 3,
+	EXPERIMENT_PHASE_VARIANT_FLAG = 4
+};
+
+USTRUCT(BlueprintType)
+struct SATORIUNREAL_API FSatoriFlagOverrideValue
+{
+	GENERATED_BODY()
+
+	// The type of the configuration that declared the override.
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Satori|Flags")
+	FSatoriFlagOverrideType Type = FSatoriFlagOverrideType::FLAG;
+
+	// The name of the configuration that overrides the flag value.
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Satori|Flags")
+	FString Name;
+
+	// The variant name of the configuration that overrides the flag value.
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Satori|Flags")
+	FString VariantName;
+
+	// The value of the configuration that overrides the flag.
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Satori|Flags")
+	FString Value;
+
+	// The create time of the configuration that overrides the flag.
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Satori|Flags")
+	int64 CreateTimeSec;
+
+	FSatoriFlagOverrideValue(const FString& JsonString);
+	FSatoriFlagOverrideValue(const TSharedPtr<FJsonObject> JsonObject);
+	FSatoriFlagOverrideValue(); // Default Constructor
+};
+
+USTRUCT(BlueprintType)
+struct SATORIUNREAL_API FSatoriFlagOverride
+{
+	GENERATED_BODY()
+
+	// Flag name
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Satori|Flags")
+	FString FlagName;
+
+	// The list of configuration that affect the value of the flag.
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Satori|Flags")
+	TArray<FSatoriFlagOverrideValue> Overrides;
+
+	FSatoriFlagOverride(const FString& JsonString);
+	FSatoriFlagOverride(const TSharedPtr<FJsonObject> JsonObject);
+	FSatoriFlagOverride(); // Default Constructor
+};
+
+USTRUCT(BlueprintType)
+struct SATORIUNREAL_API FSatoriFlagOverrideList
+{
+	GENERATED_BODY()
+
+	// Flags.
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Satori|Flags")
+	TArray<FSatoriFlagOverride> Flags;
+
+	FSatoriFlagOverrideList(const FString& JsonString);
+	FSatoriFlagOverrideList(); // Default Constructor
 };
