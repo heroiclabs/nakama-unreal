@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "CoreMinimal.h"
 #include "NakamaPresence.h"
@@ -27,6 +27,7 @@ struct NAKAMAUNREAL_API FNakamaStream
 	FString Label;
 
 	FNakamaStream(const FString& JsonString);
+    FNakamaStream(const TSharedPtr<FJsonObject> JsonObject);
 	FNakamaStream();
 };
 

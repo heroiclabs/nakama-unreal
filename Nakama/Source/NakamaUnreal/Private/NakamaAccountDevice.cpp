@@ -1,13 +1,13 @@
-﻿#include "NakamaAccountDevice.h"
+#include "NakamaAccountDevice.h"
 
 #include "NakamaUtils.h"
 
-FNakamaAccountDevice::FNakamaAccountDevice(const FString& JsonString)
-{
-	TSharedPtr<FJsonObject> JsonObject;
-	const TSharedRef<TJsonReader<TCHAR>> JsonReader = TJsonReaderFactory<TCHAR>::Create(JsonString);
+FNakamaAccountDevice::FNakamaAccountDevice(const FString& JsonString) : FNakamaAccountDevice(FNakamaUtils::DeserializeJsonObject(JsonString)) {
+}
 
-	if (FJsonSerializer::Deserialize(JsonReader, JsonObject) && JsonObject.IsValid())
+FNakamaAccountDevice::FNakamaAccountDevice(const TSharedPtr<FJsonObject> JsonObject)
+{
+	if (JsonObject.IsValid())
 	{
 		if (JsonObject->HasField(TEXT("id")))
 		{

@@ -1,13 +1,12 @@
-﻿#include "NakamaLeaderboard.h"
-
+#include "NakamaLeaderboard.h"
 #include "NakamaUtils.h"
 
-FNakamaLeaderboardRecord::FNakamaLeaderboardRecord(const FString& JsonString)
-{
-	TSharedPtr<FJsonObject> JsonObject;
-	const TSharedRef<TJsonReader<>> JsonReader = TJsonReaderFactory<>::Create(JsonString);
+FNakamaLeaderboardRecord::FNakamaLeaderboardRecord(const FString& JsonString) : FNakamaLeaderboardRecord(FNakamaUtils::DeserializeJsonObject(JsonString)) {
+}
 
-	if (FJsonSerializer::Deserialize(JsonReader, JsonObject) && JsonObject.IsValid())
+FNakamaLeaderboardRecord::FNakamaLeaderboardRecord(const TSharedPtr<FJsonObject> JsonObject)
+{
+	if (JsonObject.IsValid())
 	{
 		JsonObject->TryGetStringField(TEXT("leaderboard_id"), LeaderboardId);
 		JsonObject->TryGetStringField(TEXT("owner_id"), OwnerId);
@@ -57,19 +56,10 @@ FNakamaLeaderboardRecordList::FNakamaLeaderboardRecordList(const FString& JsonSt
         {
             for (const TSharedPtr<FJsonValue>& RecordJsonValue : *RecordsJsonArray)
             {
-                if (RecordJsonValue->Type == EJson::Object)
-                {
-                    TSharedPtr<FJsonObject> RecordJsonObject = RecordJsonValue->AsObject();
-
-                    FString RecordJsonString;
-                    auto Writer = TJsonWriterFactory<>::Create(&RecordJsonString);
-                    if (FJsonSerializer::Serialize(RecordJsonObject.ToSharedRef(), Writer))
-                    {
-                        Writer->Close();
-                        FNakamaLeaderboardRecord Record(RecordJsonString);
-                        Records.Add(Record);
-                    }
-                }
+                if (TSharedPtr<FJsonObject> RecordJsonObject = RecordJsonValue->AsObject())
+				{
+					Records.Add(FNakamaLeaderboardRecord(RecordJsonObject));
+				}
             }
         }
 
@@ -78,19 +68,10 @@ FNakamaLeaderboardRecordList::FNakamaLeaderboardRecordList(const FString& JsonSt
         {
             for (const TSharedPtr<FJsonValue>& OwnerRecordJsonValue : *OwnerRecordsJsonArray)
             {
-                if (OwnerRecordJsonValue->Type == EJson::Object)
-                {
-                    TSharedPtr<FJsonObject> OwnerRecordJsonObject = OwnerRecordJsonValue->AsObject();
-
-                    FString OwnerRecordJsonString;
-                    auto Writer = TJsonWriterFactory<>::Create(&OwnerRecordJsonString);
-                    if (FJsonSerializer::Serialize(OwnerRecordJsonObject.ToSharedRef(), Writer))
-                    {
-                        Writer->Close();
-                        FNakamaLeaderboardRecord OwnerRecord(OwnerRecordJsonString);
-                        OwnerRecords.Add(OwnerRecord);
-                    }
-                }
+				if (TSharedPtr<FJsonObject> OwnerRecordJsonObject = OwnerRecordJsonValue->AsObject())
+				{
+					OwnerRecords.Add(FNakamaLeaderboardRecord(OwnerRecordJsonObject));
+				}
             }
         }
 

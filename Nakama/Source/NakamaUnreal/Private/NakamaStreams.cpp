@@ -1,14 +1,12 @@
-﻿#include "NakamaStreams.h"
-
+#include "NakamaStreams.h"
 #include "NakamaUtils.h"
 
+FNakamaStream::FNakamaStream(const FString& JsonString) : FNakamaStream(FNakamaUtils::DeserializeJsonObject(JsonString)) {
+}
 
-FNakamaStream::FNakamaStream(const FString& JsonString)
+FNakamaStream::FNakamaStream(const TSharedPtr<FJsonObject> JsonObject)
 {
-	TSharedPtr<FJsonObject> JsonObject;
-	const TSharedRef<TJsonReader<>> JsonReader = TJsonReaderFactory<>::Create(JsonString);
-
-	if (FJsonSerializer::Deserialize(JsonReader, JsonObject) && JsonObject.IsValid())
+	if (JsonObject.IsValid())
 	{
 		JsonObject->TryGetNumberField(TEXT("mode"), Mode);
 		JsonObject->TryGetStringField(TEXT("subject"), Subject);
@@ -29,20 +27,16 @@ FNakamaStreamData::FNakamaStreamData(const FString& JsonString)
 
 	if (FJsonSerializer::Deserialize(JsonReader, JsonObject) && JsonObject.IsValid())
 	{
-		FString StreamJsonString;
-		TSharedRef<TJsonWriter<>> StreamJsonWriter = TJsonWriterFactory<>::Create(&StreamJsonString);
-		if (FJsonSerializer::Serialize(JsonObject->GetObjectField(TEXT("stream")).ToSharedRef(), StreamJsonWriter))
+		const TSharedPtr<FJsonObject>* StreamJsonObject;
+		if (JsonObject->TryGetObjectField(TEXT("stream"), StreamJsonObject))
 		{
-			StreamJsonWriter->Close();
-			Stream = FNakamaStream(StreamJsonString);
+			Stream = FNakamaStream(*StreamJsonObject);
 		}
 
-		FString SenderJsonString;
-		TSharedRef<TJsonWriter<>> SenderJsonWriter = TJsonWriterFactory<>::Create(&SenderJsonString);
-		if (FJsonSerializer::Serialize(JsonObject->GetObjectField(TEXT("sender")).ToSharedRef(), SenderJsonWriter))
+		const TSharedPtr<FJsonObject>* SenderJsonObject;
+		if (JsonObject->TryGetObjectField(TEXT("sender"), SenderJsonObject))
 		{
-			SenderJsonWriter->Close();
-			Sender = FNakamaUserPresence(SenderJsonString);
+			Sender = FNakamaUserPresence(*SenderJsonObject);
 		}
 
 		JsonObject->TryGetStringField(TEXT("data"), Data);
@@ -61,12 +55,10 @@ FNakamaStreamPresenceEvent::FNakamaStreamPresenceEvent(const FString& JsonString
 
 	if (FJsonSerializer::Deserialize(JsonReader, JsonObject) && JsonObject.IsValid())
 	{
-		FString StreamJsonString;
-		TSharedRef<TJsonWriter<>> StreamJsonWriter = TJsonWriterFactory<>::Create(&StreamJsonString);
-		if (FJsonSerializer::Serialize(JsonObject->GetObjectField(TEXT("stream")).ToSharedRef(), StreamJsonWriter))
+		const TSharedPtr<FJsonObject>* StreamJsonObject;
+		if (JsonObject->TryGetObjectField(TEXT("stream"), StreamJsonObject))
 		{
-			StreamJsonWriter->Close();
-			Stream = FNakamaStream(StreamJsonString);
+			Stream = FNakamaStream(*StreamJsonObject);
 		}
 
 		const TArray<TSharedPtr<FJsonValue>>* JoinsJsonArray;
@@ -74,20 +66,9 @@ FNakamaStreamPresenceEvent::FNakamaStreamPresenceEvent(const FString& JsonString
 		{
 			for (const TSharedPtr<FJsonValue>& JoinJsonValue : *JoinsJsonArray)
 			{
-				if (JoinJsonValue->Type == EJson::Object)
+				if (TSharedPtr<FJsonObject> JoinJsonObject = JoinJsonValue->AsObject())
 				{
-					TSharedPtr<FJsonObject> JoinJsonObject = JoinJsonValue->AsObject();
-					if (JoinJsonObject.IsValid())
-					{
-						FString JoinPresenceJsonString;
-						TSharedRef<TJsonWriter<>> JsonWriter = TJsonWriterFactory<>::Create(&JoinPresenceJsonString);
-						if (FJsonSerializer::Serialize(JoinJsonObject.ToSharedRef(), JsonWriter))
-						{
-							JsonWriter->Close();
-							FNakamaUserPresence JoinPresence(JoinPresenceJsonString);
-							Joins.Add(JoinPresence);
-						}
-					}
+					Joins.Add(FNakamaUserPresence(JoinJsonObject));
 				}
 			}
 		}
@@ -97,20 +78,9 @@ FNakamaStreamPresenceEvent::FNakamaStreamPresenceEvent(const FString& JsonString
 		{
 			for (const TSharedPtr<FJsonValue>& LeaveJsonValue : *LeavesJsonArray)
 			{
-				if (LeaveJsonValue->Type == EJson::Object)
+				if (TSharedPtr<FJsonObject> LeaveJsonObject = LeaveJsonValue->AsObject())
 				{
-					TSharedPtr<FJsonObject> LeaveJsonObject = LeaveJsonValue->AsObject();
-					if (LeaveJsonObject.IsValid())
-					{
-						FString LeavePresenceJsonString;
-						TSharedRef<TJsonWriter<>> JsonWriter = TJsonWriterFactory<>::Create(&LeavePresenceJsonString);
-						if (FJsonSerializer::Serialize(LeaveJsonObject.ToSharedRef(), JsonWriter))
-						{
-							JsonWriter->Close();
-							FNakamaUserPresence LeavePresence(LeavePresenceJsonString);
-							Leaves.Add(LeavePresence);
-						}
-					}
+					Leaves.Add(FNakamaUserPresence(LeaveJsonObject));
 				}
 			}
 		}

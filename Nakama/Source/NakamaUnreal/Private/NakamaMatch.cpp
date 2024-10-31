@@ -1,67 +1,47 @@
 #include "NakamaMatch.h"
 #include "NakamaUtils.h"
 
-FNakamaMatch::FNakamaMatch(const FString& JsonString)
+FNakamaMatch::FNakamaMatch(const FString& JsonString) : FNakamaMatch(FNakamaUtils::DeserializeJsonObject(JsonString)) {
+}
+
+FNakamaMatch::FNakamaMatch(const TSharedPtr<FJsonObject> JsonObject)
 {
-	// Parse the JSON string
-    TSharedPtr<FJsonObject> JsonObject;
-    TSharedRef<TJsonReader<>> JsonReader = TJsonReaderFactory<>::Create(JsonString);
-    if (!FJsonSerializer::Deserialize(JsonReader, JsonObject))
-    {
-        return;
-    }
+	if (JsonObject.IsValid())
+	{
+		// Try to get the "match" object from the parsed JSON
+		const TSharedPtr<FJsonObject>* MatchObjectPtr = nullptr;
+		JsonObject->TryGetObjectField(TEXT("match"), MatchObjectPtr);
 
-    // Try to get the "match" object from the parsed JSON
-    const TSharedPtr<FJsonObject>* MatchObjectPtr = nullptr;
-    JsonObject->TryGetObjectField(TEXT("match"), MatchObjectPtr);
-    
-    // If "match" object is not found, use the root object
-    TSharedPtr<FJsonObject> MatchObject = MatchObjectPtr ? *MatchObjectPtr : JsonObject;
+		// If "match" object is not found, use the root object
+		TSharedPtr<FJsonObject> MatchObject = MatchObjectPtr ? *MatchObjectPtr : JsonObject;
 
-	// NOTE: Server can respond with 'tick_rate' and 'handler_name' as well
+		// NOTE: Server can respond with 'tick_rate' and 'handler_name' as well
 
-    // Extract and assign the individual fields
-    MatchObject->TryGetStringField(TEXT("match_id"), MatchId);
-    MatchObject->TryGetBoolField(TEXT("authoritative"), Authoritative);
-    MatchObject->TryGetStringField(TEXT("label"), Label);
-    MatchObject->TryGetNumberField(TEXT("size"), Size);
+		// Extract and assign the individual fields
+		MatchObject->TryGetStringField(TEXT("match_id"), MatchId);
+		MatchObject->TryGetBoolField(TEXT("authoritative"), Authoritative);
+		MatchObject->TryGetStringField(TEXT("label"), Label);
+		MatchObject->TryGetNumberField(TEXT("size"), Size);
 
-    const TArray<TSharedPtr<FJsonValue>>* JoinsJsonArray;
-    if (MatchObject->TryGetArrayField(TEXT("presences"), JoinsJsonArray))
-    {
-        for (const TSharedPtr<FJsonValue>& UserPresence : *JoinsJsonArray)
-        {
-            if (UserPresence->Type == EJson::Object)
-            {
-                TSharedPtr<FJsonObject> UserPresenceJsonObject = UserPresence->AsObject();
-                FString UserPresenceJsonString;
-                auto Writer = TJsonWriterFactory<>::Create(&UserPresenceJsonString);
-                if (FJsonSerializer::Serialize(UserPresenceJsonObject.ToSharedRef(), Writer))
-                {
-                    Writer->Close();
-                    FNakamaUserPresence User(UserPresenceJsonString);
-                    Pressences.Add(User);
-                }
-            }
-        }
-    }
+		const TArray<TSharedPtr<FJsonValue>>* JoinsJsonArray;
+		if (MatchObject->TryGetArrayField(TEXT("presences"), JoinsJsonArray))
+		{
+			for (const TSharedPtr<FJsonValue>& UserPresence : *JoinsJsonArray)
+			{
+				if (TSharedPtr<FJsonObject> UserPresenceJsonObject = UserPresence->AsObject())
+				{
+					Pressences.Add(FNakamaUserPresence(UserPresenceJsonObject));
+				}
+			}
+		}
 
-    // Try to get the "self" object from the match object
-    const TSharedPtr<FJsonObject>* SelfObjectPtr = nullptr;
-    MatchObject->TryGetObjectField(TEXT("self"), SelfObjectPtr);
-    
-    if (SelfObjectPtr)
-    {
-        FString UserPresenceJsonString;
-        auto Writer = TJsonWriterFactory<>::Create(&UserPresenceJsonString);
-        if (FJsonSerializer::Serialize(SelfObjectPtr->ToSharedRef(), Writer))
-        {
-            Writer->Close();
-            FNakamaUserPresence User(UserPresenceJsonString);
-            Me = User;
-        }
-    }
-	
+		// Try to get the "self" object from the match object
+		const TSharedPtr<FJsonObject>* SelfObjectPtr;
+		if (MatchObject->TryGetObjectField(TEXT("self"), SelfObjectPtr))
+		{
+			Me = FNakamaUserPresence(*SelfObjectPtr);
+		}
+	}
 }
 
 FNakamaMatchData::FNakamaMatchData(const FString& JsonString)
@@ -76,13 +56,7 @@ FNakamaMatchData::FNakamaMatchData(const FString& JsonString)
 		const TSharedPtr<FJsonObject>* PresenceJsonObject;
 		if (JsonObject->TryGetObjectField(TEXT("presence"), PresenceJsonObject))
 		{
-			FString PresenceJsonString;
-			auto Writer = TJsonWriterFactory<>::Create(&PresenceJsonString);
-			if (FJsonSerializer::Serialize(PresenceJsonObject->ToSharedRef(), Writer))
-			{
-				Writer->Close();
-				Presence = FNakamaUserPresence(PresenceJsonString);
-			}
+			Presence = FNakamaUserPresence(*PresenceJsonObject);
 		}
 
 		JsonObject->TryGetNumberField(TEXT("op_code"), OpCode);
@@ -111,17 +85,9 @@ FNakamaMatchList::FNakamaMatchList(const FString& JsonString)
 		{
 			for (const TSharedPtr<FJsonValue>& MatchJsonValue : *MatchesJsonArray)
 			{
-				if (MatchJsonValue->Type == EJson::Object)
+				if (TSharedPtr<FJsonObject> MatchJsonObject = MatchJsonValue->AsObject())
 				{
-					TSharedPtr<FJsonObject> MatchJsonObject = MatchJsonValue->AsObject();
-					FString MatchJsonString;
-					auto Writer = TJsonWriterFactory<>::Create(&MatchJsonString);
-					if (FJsonSerializer::Serialize(MatchJsonObject.ToSharedRef(), Writer))
-					{
-						Writer->Close();
-						FNakamaMatch Match(MatchJsonString);
-						Matches.Add(Match);
-					}
+					Matches.Add(FNakamaMatch(MatchJsonObject));
 				}
 			}
 		}

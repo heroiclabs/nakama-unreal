@@ -3,7 +3,6 @@
 
 FNakamaAccount::FNakamaAccount(): VerifyTime(FDateTime::MinValue()), DisableTime(FDateTime::MinValue())
 {
-	
 }
 
 FNakamaAccount::FNakamaAccount(const FString& JsonString)
@@ -16,17 +15,11 @@ FNakamaAccount::FNakamaAccount(const FString& JsonString)
         return;
     }
 	
-	if (JsonObject->HasTypedField<EJson::Object>(TEXT("user")))
-	{
-		TSharedPtr<FJsonObject> UserJsonObject = JsonObject->GetObjectField(TEXT("user"));
 
-		FString UserJsonString;
-		auto Writer = TJsonWriterFactory<>::Create(&UserJsonString);
-		if (FJsonSerializer::Serialize(UserJsonObject.ToSharedRef(), Writer))
-		{
-			Writer->Close();
-			User = FNakamaUser(UserJsonString);
-		}
+	const TSharedPtr<FJsonObject>* UserJsonObject;
+	if (JsonObject->TryGetObjectField(TEXT("user"), UserJsonObject))
+	{
+		User = FNakamaUser(*UserJsonObject);
 	}
 
     JsonObject->TryGetStringField(TEXT("wallet"), Wallet);
@@ -40,18 +33,10 @@ FNakamaAccount::FNakamaAccount(const FString& JsonString)
     	{
     		for (const TSharedPtr<FJsonValue>& DeviceJson : *DevicesJsonArray)
     		{
-    			if (DeviceJson->Type == EJson::Object)
+    			if (TSharedPtr<FJsonObject> DeviceJsonObject = DeviceJson->AsObject())
     			{
-    				TSharedPtr<FJsonObject> DeviceJsonObject = DeviceJson->AsObject();
-                
-    				FString DeviceJsonString;
-    				auto Writer = TJsonWriterFactory<>::Create(&DeviceJsonString);
-    				if (FJsonSerializer::Serialize(DeviceJsonObject.ToSharedRef(), Writer))
-    				{
-    					Writer->Close();
-    					FNakamaAccountDevice Device(DeviceJsonString);
-    					Devices.Add(Device);
-    				}
+    				FNakamaAccountDevice Device(DeviceJsonObject);
+    				Devices.Add(Device);
     			}
     		}
     	}
