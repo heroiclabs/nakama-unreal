@@ -29,7 +29,7 @@ You'll need to setup the server and database before you can connect with the cli
 
 To get started using Nakama in Unreal you will need the following:
 
-1. Install and run the servers. Follow these [instructions](https://heroiclabs.com/docs/install-docker-quickstart).
+1. Install and run the servers. Follow these [instructions](https://heroiclabs.com/docs/nakama/getting-started/install/docker/).
 2. A copy of the core [Nakama Unreal](https://github.com/heroiclabs/nakama-unreal) plugin
 3. [Unreal Engine](https://www.unrealengine.com) 4.25 or greater or 5.
 4. A compiler for the platform you are developing on, such as [Visual Studio](https://www.visualstudio.com/vs/community/) on Windows or [XCode](https://developer.apple.com/xcode/download/) on OSX.
