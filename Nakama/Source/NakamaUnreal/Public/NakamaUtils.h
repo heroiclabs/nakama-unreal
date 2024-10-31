@@ -102,6 +102,16 @@ public:
 		return true;
 	}
 
+	static TSharedPtr<FJsonObject> DeserializeJsonObject(const FString& JsonString) {
+		TSharedPtr<FJsonObject> JsonObject;
+		const TSharedRef<TJsonReader<>> JsonReader = TJsonReaderFactory<>::Create(JsonString);
+		if (!FJsonSerializer::Deserialize(JsonReader, JsonObject))
+		{
+			JsonObject = nullptr;
+		}
+		return JsonObject;
+	}
+
 	static void AddVarsToJson(const TSharedPtr<FJsonObject>& JsonObject, const TMap<FString, FString>& Vars, const FString varsFieldName = TEXT("vars"), const bool addAlways = false) {
 
 		if (addAlways || Vars.Num() > 0)

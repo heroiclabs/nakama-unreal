@@ -26,6 +26,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSatoriError, const FNakamaError&,
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPostEventSent);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnGetExperiments, const FSatoriExperimentList&, Experiments);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnGetFlags, const FSatoriFlagList&, Flags);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnGetFlagOverrides, const FSatoriFlagOverrideList&, FlagOverrides);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnGetLiveEvents, const FSatoriLiveEventList&, LiveEvents);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnGetProperties, const FSatoriProperties&, Properties);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnUpdatePropertiesSent);
@@ -71,6 +72,34 @@ public:
 	// Initialize System, this has to be called first, done via the Library Action instead (removed BlueprintCallable)
 	UFUNCTION(Category = "Satori|Initialize")
 	void InitializeSystem(const FString& InServerKey, const FString& Host, int32 InPort, bool UseSSL, bool EnableDebug);
+
+	/**
+	 * Disconnects the client. This function kills all outgoing exchanges immediately without waiting.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Satori|Client", meta = (DeprecatedFunction, DeprecationMessage = "Use CancelAllRequests instead"))
+	void Disconnect();
+
+	/**
+	 * Cancels all Requests. This function kills all outgoing exchanges immediately without waiting.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Satori|Client")
+	void CancelAllRequests();
+
+	/**
+	 * Destroys the Client.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Satori|Client")
+	void Destroy();
+
+	// Manage Timeout
+	UFUNCTION(BlueprintCallable, Category = "Satori|Client")
+	void SetTimeout(float InTimeout);
+
+	UFUNCTION(BlueprintCallable, Category = "Satori|Client")
+	float GetTimeout();
+
+	// Event that is called on cleanup
+	virtual void BeginDestroy() override;
 
 	/**
 	 * Creates a default client to interact with Satori server.
@@ -256,6 +285,21 @@ public:
 		UNakamaSession* Session,
 		const TArray<FString>& Names,
 		TFunction<void(const FSatoriFlagList& Flags)> SuccessCallback,
+		TFunction<void(const FNakamaError& Error)> ErrorCallback
+	);
+
+	UFUNCTION(Category = "Satori|Flags")
+	void GetFlagOverrides(
+		UNakamaSession* Session,
+		const TArray<FString>& Names,
+		FOnGetFlagOverrides Success,
+		FOnSatoriError Error
+	);
+
+	void GetFlagOverrides(
+		UNakamaSession* Session,
+		const TArray<FString>& Names,
+		TFunction<void(const FSatoriFlagOverrideList& Flags)> SuccessCallback,
 		TFunction<void(const FNakamaError& Error)> ErrorCallback
 	);
 

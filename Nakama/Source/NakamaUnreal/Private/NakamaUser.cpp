@@ -1,4 +1,5 @@
 #include "NakamaUser.h"
+#include "NakamaUtils.h"
 
 FNakamaUserList::FNakamaUserList(const FString& JsonString)
 {
@@ -12,30 +13,22 @@ FNakamaUserList::FNakamaUserList(const FString& JsonString)
 		{
 			for (const TSharedPtr<FJsonValue>& UserJson : *UsersJsonArray)
 			{
-				if (UserJson->Type == EJson::Object)
+				if (TSharedPtr<FJsonObject> UserJsonObject = UserJson->AsObject())
 				{
-					TSharedPtr<FJsonObject> UserJsonObject = UserJson->AsObject();
-
-					FString UserJsonString;
-					auto Writer = TJsonWriterFactory<>::Create(&UserJsonString);
-					if (FJsonSerializer::Serialize(UserJsonObject.ToSharedRef(), Writer))
-					{
-						Writer->Close();
-						FNakamaUser User(UserJsonString);
-						Users.Add(User);
-					}
+					Users.Add(FNakamaUser(UserJsonObject));
 				}
 			}
 		}
 	}
 }
 
-FNakamaUser::FNakamaUser(const FString& JsonString)
-{
-	TSharedPtr<FJsonObject> JsonObject;
-	const TSharedRef<TJsonReader<>> JsonReader = TJsonReaderFactory<>::Create(JsonString);
 
-	if (FJsonSerializer::Deserialize(JsonReader, JsonObject) && JsonObject.IsValid())
+FNakamaUser::FNakamaUser(const FString& JsonString) : FNakamaUser(FNakamaUtils::DeserializeJsonObject(JsonString)) {
+}
+
+FNakamaUser::FNakamaUser(const TSharedPtr<FJsonObject> JsonObject)
+{
+	if (JsonObject.IsValid())
 	{
 		JsonObject->TryGetStringField(TEXT("id"), Id);
 		JsonObject->TryGetStringField(TEXT("username"), Username);

@@ -1,14 +1,7 @@
 #include "SatoriProperties.h"
+#include "NakamaUtils.h"
 
-FSatoriProperties::FSatoriProperties(const FString& JsonString) : FSatoriProperties([](const FString& JsonString) {
-	TSharedPtr<FJsonObject> JsonObject;
-	const TSharedRef<TJsonReader<>> JsonReader = TJsonReaderFactory<>::Create(JsonString);
-	if (!FJsonSerializer::Deserialize(JsonReader, JsonObject))
-	{
-		JsonObject = nullptr;
-	}
-	return JsonObject;
-	}(JsonString)) {
+FSatoriProperties::FSatoriProperties(const FString& JsonString) : FSatoriProperties(FNakamaUtils::DeserializeJsonObject(JsonString)) {
 }
 
 FSatoriProperties::FSatoriProperties(const TSharedPtr<FJsonObject> JsonObject)

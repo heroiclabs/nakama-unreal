@@ -21,6 +21,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSatoriDeleteIdentity, FNakamaErro
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSatoriPostEvent, FNakamaError, Error);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSatoriGetExperiments, FSatoriExperimentList, Experiments, FNakamaError, Error);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSatoriGetFlags, FSatoriFlagList, Flags, FNakamaError, Error);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSatoriGetFlagOverrides, FSatoriFlagOverrideList, FlagOverrides, FNakamaError, Error);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSatoriGetLiveEvents, FSatoriLiveEventList, LiveEvents, FNakamaError, Error);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSatoriGetMessages, FSatoriMessageList, Messages, FNakamaError, Error);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSatoriUpdateMessage, FNakamaError, Error);
@@ -59,7 +60,7 @@ public:
 	 * @param CreateAccount True if the user should be created when authenticated.
 	 * @param Vars Extra information that will be bundled in the session token.
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Satori|Authentication", meta = (BlueprintInternalUseOnly = "true"))
+	UFUNCTION(BlueprintCallable, Category = "Satori|Authentication", meta = (BlueprintInternalUseOnly = "true", AutoCreateRefTerm = "Vars"))
 	static USatoriClientAuthenticateCustom* AuthenticateCustom(
 		USatoriClient *Client,
 		const FString& UserID,
@@ -181,7 +182,7 @@ public:
 	 * @param Session The session of the user.
 	 * @param Client The Client to use.
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Satori|Identity", meta = (BlueprintInternalUseOnly = "true"))
+	UFUNCTION(BlueprintCallable, Category = "Satori|Identity", meta = (BlueprintInternalUseOnly = "true", AutoCreateRefTerm = "DefaultProperties,CustomProperties"))
 	static USatoriClientIdentify* Identify(
 		USatoriClient* Client,
 		UNakamaSession* Session,
@@ -224,7 +225,6 @@ public:
 	/**
 	 * Post one or more events.
 	 *
-	 * @param Events The ids of the users to add or invite as friends.
 	 * @param Session The session of the user.
 	 * @param Client The Client to use.
 	 */
@@ -265,7 +265,7 @@ public:
 	 * @param Session The session of the user.
 	 * @param Client The Client to use.
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Satori|Identity", meta = (BlueprintInternalUseOnly = "true"))
+	UFUNCTION(BlueprintCallable, Category = "Satori|Identity", meta = (BlueprintInternalUseOnly = "true", AutoCreateRefTerm = "DefaultProperties,CustomProperties"))
 	static USatoriClientUpdateProperties* UpdateProperties(
 		USatoriClient* Client, 
 		UNakamaSession* Session,
@@ -308,7 +308,6 @@ public:
 	/**
 	 * Post one or more events.
 	 *
-	 * @param Events The ids of the users to add or invite as friends.
 	 * @param Session The session of the user.
 	 * @param Client The Client to use.
 	 */
@@ -349,7 +348,7 @@ public:
 	/**
 	 * Post one or more events.
 	 *
-	 * @param Events The ids of the users to add or invite as friends.
+	 * @param Events The events to publish.
 	 * @param Session The session of the user.
 	 * @param Client The Client to use.
 	 */
@@ -389,11 +388,11 @@ public:
 	/**
 	 * Post one or more events.
 	 *
-	 * @param Events The ids of the users to add or invite as friends.
+	 * @param Names The ids of the experiments to query. Leave empty or pass an empty array to get them all.
 	 * @param Session The session of the user.
 	 * @param Client The Client to use.
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Satori|Experiments", meta = (BlueprintInternalUseOnly = "true"))
+	UFUNCTION(BlueprintCallable, Category = "Satori|Experiments", meta = (BlueprintInternalUseOnly = "true", AutoCreateRefTerm = "Names"))
 	static USatoriClientGetExperiments* GetExperiments(USatoriClient* Client, UNakamaSession* Session, const TArray<FString>& Names);
 
 	virtual void Activate() override;
@@ -429,12 +428,52 @@ public:
 	/**
 	 * Post one or more events.
 	 *
-	 * @param Events The ids of the users to add or invite as friends.
+	 * @param Names The ids of the flags to query. Leave empty or pass an empty array to get them all.
 	 * @param Session The session of the user.
 	 * @param Client The Client to use.
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Satori|Flags", meta = (BlueprintInternalUseOnly = "true"))
+	UFUNCTION(BlueprintCallable, Category = "Satori|Flags", meta = (BlueprintInternalUseOnly = "true", AutoCreateRefTerm = "Names"))
 	static USatoriClientGetFlags* GetFlags(USatoriClient* Client, UNakamaSession* Session, const TArray<FString>& Names);
+
+	virtual void Activate() override;
+
+private:
+	TArray<FString> Names;
+};
+
+
+/**
+ * Get flags
+ */
+
+UCLASS()
+class SATORIBLUEPRINTS_API USatoriClientGetFlagOverrides : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY()
+	TObjectPtr<USatoriClient> SatoriClient;
+
+	UPROPERTY()
+	TObjectPtr<UNakamaSession> UserSession;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnSatoriGetFlagOverrides OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnSatoriGetFlagOverrides OnError;
+
+	/**
+	 * Post one or more events.
+	 *
+	 * @param Names The ids of the flags to query overrides for. Leave empty or pass an empty array to get them all.
+	 * @param Session The session of the user.
+	 * @param Client The Client to use.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Satori|Flags", meta = (BlueprintInternalUseOnly = "true", AutoCreateRefTerm = "Names"))
+	static USatoriClientGetFlagOverrides* GetFlagOverrides(USatoriClient* Client, UNakamaSession* Session, const TArray<FString>& Names);
 
 	virtual void Activate() override;
 
@@ -473,7 +512,7 @@ public:
 	 * @param Session The session of the user.
 	 * @param Client The Client to use.
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Satori|LiveEvents", meta = (BlueprintInternalUseOnly = "true"))
+	UFUNCTION(BlueprintCallable, Category = "Satori|LiveEvents", meta = (BlueprintInternalUseOnly = "true", AutoCreateRefTerm = "LiveEventNames"))
 	static USatoriClientGetLiveEvents* GetLiveEvents(USatoriClient* Client, UNakamaSession* Session, const TArray<FString>& LiveEventNames);
 
 	virtual void Activate() override;

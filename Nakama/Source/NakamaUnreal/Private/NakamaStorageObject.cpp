@@ -1,13 +1,12 @@
-﻿#include "NakamaStorageObject.h"
-
+#include "NakamaStorageObject.h"
 #include "NakamaUtils.h"
 
-FNakamaStoreObjectData::FNakamaStoreObjectData(const FString& JsonString)
-{
-	TSharedPtr<FJsonObject> JsonObject;
-	const TSharedRef<TJsonReader<>> JsonReader = TJsonReaderFactory<>::Create(JsonString);
+FNakamaStoreObjectData::FNakamaStoreObjectData(const FString& JsonString) : FNakamaStoreObjectData(FNakamaUtils::DeserializeJsonObject(JsonString)) {
+}
 
-	if (FJsonSerializer::Deserialize(JsonReader, JsonObject) && JsonObject.IsValid())
+FNakamaStoreObjectData::FNakamaStoreObjectData(const TSharedPtr<FJsonObject> JsonObject)
+{
+	if (JsonObject.IsValid())
 	{
 		JsonObject->TryGetStringField(TEXT("collection"), Collection);
 		JsonObject->TryGetStringField(TEXT("key"), Key);
@@ -112,12 +111,12 @@ FNakamaDeleteStorageObjectId::FNakamaDeleteStorageObjectId()
 	
 }
 
-FNakamaStoreObjectAck::FNakamaStoreObjectAck(const FString& JsonString)
-{
-	TSharedPtr<FJsonObject> JsonObject;
-	const TSharedRef<TJsonReader<>> JsonReader = TJsonReaderFactory<>::Create(JsonString);
+FNakamaStoreObjectAck::FNakamaStoreObjectAck(const FString& JsonString) : FNakamaStoreObjectAck(FNakamaUtils::DeserializeJsonObject(JsonString)) {
+}
 
-	if (FJsonSerializer::Deserialize(JsonReader, JsonObject) && JsonObject.IsValid())
+FNakamaStoreObjectAck::FNakamaStoreObjectAck(const TSharedPtr<FJsonObject> JsonObject)
+{
+	if (JsonObject.IsValid())
 	{
 		JsonObject->TryGetStringField(TEXT("collection"), Collection);
 		JsonObject->TryGetStringField(TEXT("key"), Key);
@@ -144,18 +143,9 @@ FNakamaStoreObjectAcks::FNakamaStoreObjectAcks(const FString& JsonString)
 		{
 			for (const TSharedPtr<FJsonValue>& StorageJson : *StorageJobjectsJsonArray)
 			{
-				if (StorageJson->Type == EJson::Object)
+				if (TSharedPtr<FJsonObject> StorageJsonObject = StorageJson->AsObject())
 				{
-					TSharedPtr<FJsonObject> StorageJsonObject = StorageJson->AsObject();
-                
-					FString StorageObjectJsonString;
-					auto Writer = TJsonWriterFactory<>::Create(&StorageObjectJsonString);
-					if (FJsonSerializer::Serialize(StorageJsonObject.ToSharedRef(), Writer))
-					{
-						Writer->Close();
-						FNakamaStoreObjectAck StorageObject(StorageObjectJsonString);
-						StorageObjects.Add(StorageObject);
-					}
+					StorageObjects.Add(FNakamaStoreObjectAck(StorageJsonObject));
 				}
 			}
 		}
@@ -180,18 +170,9 @@ FNakamaStorageObjectList::FNakamaStorageObjectList(const FString& JsonString)
 		{
 			for (const TSharedPtr<FJsonValue>& StorageJson : *StorageJobjectsJsonArray)
 			{
-				if (StorageJson->Type == EJson::Object)
+				if (TSharedPtr<FJsonObject> StorageJsonObject = StorageJson->AsObject())
 				{
-					TSharedPtr<FJsonObject> StorageJsonObject = StorageJson->AsObject();
-                
-					FString StorageObjectJsonString;
-					auto Writer = TJsonWriterFactory<>::Create(&StorageObjectJsonString);
-					if (FJsonSerializer::Serialize(StorageJsonObject.ToSharedRef(), Writer))
-					{
-						Writer->Close();
-						FNakamaStoreObjectData StorageObject(StorageObjectJsonString);
-						Objects.Add(StorageObject);
-					}
+					Objects.Add(FNakamaStoreObjectData(StorageJsonObject));
 				}
 			}
 		}

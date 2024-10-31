@@ -72,6 +72,7 @@ struct NAKAMAUNREAL_API FNakamaGroup
 	FDateTime UpdateTime = 0;
 
 	FNakamaGroup(const FString& JsonString);
+    FNakamaGroup(const TSharedPtr<FJsonObject> JsonObject);
 	FNakamaGroup() { }
 };
 
@@ -101,6 +102,7 @@ struct NAKAMAUNREAL_API FNakamaGroupUser
 	ENakamaGroupState State;
 
 	FNakamaGroupUser(const FString& JsonString);
+	FNakamaGroupUser(const TSharedPtr<FJsonObject> JsonObject);
 	FNakamaGroupUser();
 };
 
@@ -157,6 +159,7 @@ struct NAKAMAUNREAL_API FNakamaUserGroup
 	ENakamaGroupState State;
 
 	FNakamaUserGroup(const FString& JsonString);
+	FNakamaUserGroup(const TSharedPtr<FJsonObject> JsonObject);
 	FNakamaUserGroup();
 };
 

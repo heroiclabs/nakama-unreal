@@ -1,14 +1,7 @@
 #include "SatoriMessage.h"
+#include "NakamaUtils.h"
 
-FSatoriMessage::FSatoriMessage(const FString& JsonString) : FSatoriMessage([](const FString& JsonString) {
-	TSharedPtr<FJsonObject> JsonObject;
-	const TSharedRef<TJsonReader<>> JsonReader = TJsonReaderFactory<>::Create(JsonString);
-	if (!FJsonSerializer::Deserialize(JsonReader, JsonObject))
-	{
-		JsonObject = nullptr;
-	}
-	return JsonObject;
-	}(JsonString)) {
+FSatoriMessage::FSatoriMessage(const FString& JsonString) : FSatoriMessage(FNakamaUtils::DeserializeJsonObject(JsonString)) {
 }
 
 FSatoriMessage::FSatoriMessage(const TSharedPtr<FJsonObject> JsonObject)
@@ -50,9 +43,8 @@ FSatoriMessageList::FSatoriMessageList(const FString& JsonString)
 		{
 			for (const TSharedPtr<FJsonValue>& MessageJsonValue : *MessagesJsonArray)
 			{
-				if (MessageJsonValue->Type == EJson::Object)
+				if(TSharedPtr<FJsonObject> MessageJsonObject = MessageJsonValue->AsObject())
 				{
-					TSharedPtr<FJsonObject> MessageJsonObject = MessageJsonValue->AsObject();
 					FSatoriMessage Message(MessageJsonObject);
 					if (!Message.ID.IsEmpty())
 					{

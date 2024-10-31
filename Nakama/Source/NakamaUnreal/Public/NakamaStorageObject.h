@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -49,6 +49,7 @@ struct NAKAMAUNREAL_API FNakamaStoreObjectData
 	FDateTime UpdateTime = 0;
 
 	FNakamaStoreObjectData(const FString& JsonString);
+	FNakamaStoreObjectData(const TSharedPtr<FJsonObject> JsonObject);
 	FNakamaStoreObjectData();
 };
 
@@ -159,6 +160,7 @@ struct NAKAMAUNREAL_API FNakamaStoreObjectAck
 	FString UserId;
 
 	FNakamaStoreObjectAck(const FString& JsonString);
+    FNakamaStoreObjectAck(const TSharedPtr<FJsonObject> JsonObject);
 	FNakamaStoreObjectAck();
 
 };

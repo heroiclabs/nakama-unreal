@@ -641,6 +641,70 @@ void USatoriClientGetFlags::Activate()
 	SatoriClient->GetFlags(UserSession, Names, successCallback, errorCallback);
 }
 
+USatoriClientGetFlagOverrides* USatoriClientGetFlagOverrides::GetFlagOverrides(USatoriClient* Client, UNakamaSession* Session, const TArray<FString>& Names)
+{
+	USatoriClientGetFlagOverrides* Node = NewObject<USatoriClientGetFlagOverrides>();
+	Node->SatoriClient = Client;
+	Node->UserSession = Session;
+	Node->Names = Names;
+
+	return Node;
+}
+
+void USatoriClientGetFlagOverrides::Activate()
+{
+	// Check validity of client and session
+	if (!SatoriClient && !UserSession)
+	{
+		const FNakamaError Error = FNakamaUtils::HandleInvalidClientAndSession();
+		OnError.Broadcast({}, Error);
+		SetReadyToDestroy();
+		return;
+	}
+
+	if (!SatoriClient)
+	{
+		const FNakamaError Error = FNakamaUtils::HandleInvalidClient();
+		OnError.Broadcast({}, Error);
+		SetReadyToDestroy();
+		return;
+	}
+
+	if (!UserSession)
+	{
+		const FNakamaError Error = FNakamaUtils::HandleInvalidSession();
+		OnError.Broadcast({}, Error);
+		SetReadyToDestroy();
+		return;
+	}
+
+	auto successCallback = [this](const FSatoriFlagOverrideList& FlagOverrides)
+		{
+			if (!USatoriClient::IsClientActive(SatoriClient))
+			{
+				SetReadyToDestroy();
+				return;
+			}
+
+			OnSuccess.Broadcast(FlagOverrides, {});
+			SetReadyToDestroy();
+		};
+
+	auto errorCallback = [this](const FNakamaError& error)
+		{
+			if (!USatoriClient::IsClientActive(SatoriClient))
+			{
+				SetReadyToDestroy();
+				return;
+			}
+
+			OnError.Broadcast({}, error);
+			SetReadyToDestroy();
+		};
+
+	SatoriClient->GetFlagOverrides(UserSession, Names, successCallback, errorCallback);
+}
+
 USatoriClientGetLiveEvents* USatoriClientGetLiveEvents::GetLiveEvents(USatoriClient* Client, UNakamaSession* Session, const TArray<FString>& LiveEventNames)
 {
 	USatoriClientGetLiveEvents* Node = NewObject<USatoriClientGetLiveEvents>();

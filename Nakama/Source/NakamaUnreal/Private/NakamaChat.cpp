@@ -1,4 +1,4 @@
-﻿#include "NakamaChat.h"
+#include "NakamaChat.h"
 
 FNakamaChannel::FNakamaChannel()
 {
@@ -28,18 +28,10 @@ FNakamaChannel::FNakamaChannel(const FString& JsonString)
 			{
 				for (const TSharedPtr<FJsonValue>& PresenceJsonValue : *PresencesJsonArray)
 				{
-					if (PresenceJsonValue->Type == EJson::Object)
+					if (TSharedPtr<FJsonObject> PresenceJsonObject = PresenceJsonValue->AsObject())
 					{
-						TSharedPtr<FJsonObject> PresenceJsonObject = PresenceJsonValue->AsObject();
-
-						FString PresenceJsonString;
-						auto Writer = TJsonWriterFactory<>::Create(&PresenceJsonString);
-						if (FJsonSerializer::Serialize(PresenceJsonObject.ToSharedRef(), Writer))
-						{
-							Writer->Close();
-							FNakamaUserPresence Presence(PresenceJsonString);
-							Presences.Add(Presence);
-						}
+						FNakamaUserPresence Presence(PresenceJsonObject);
+						Presences.Add(Presence);
 					}
 				}
 			}
@@ -47,15 +39,7 @@ FNakamaChannel::FNakamaChannel(const FString& JsonString)
 			const TSharedPtr<FJsonObject>* SelfObjectPtr;
 			if (ChannelObject->TryGetObjectField(TEXT("self"), SelfObjectPtr))
 			{
-				TSharedPtr<FJsonObject> SelfObject = *SelfObjectPtr;
-				
-				FString SelfJsonString;
-				auto Writer = TJsonWriterFactory<>::Create(&SelfJsonString);
-				if (FJsonSerializer::Serialize(SelfObject.ToSharedRef(), Writer))
-				{
-					Writer->Close();
-					Me = FNakamaUserPresence(SelfJsonString);
-				}
+				Me = FNakamaUserPresence(*SelfObjectPtr);
 			}
 		}
 	}

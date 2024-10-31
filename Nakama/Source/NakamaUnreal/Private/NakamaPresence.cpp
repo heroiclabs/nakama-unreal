@@ -1,13 +1,12 @@
-﻿#include "NakamaPresence.h"
-
+#include "NakamaPresence.h"
 #include "NakamaUtils.h"
 
-FNakamaUserPresence::FNakamaUserPresence(const FString& JsonString)
-{
-	TSharedPtr<FJsonObject> JsonObject;
-	TSharedRef<TJsonReader<>> JsonReader = TJsonReaderFactory<>::Create(JsonString);
+FNakamaUserPresence::FNakamaUserPresence(const FString& JsonString) : FNakamaUserPresence(FNakamaUtils::DeserializeJsonObject(JsonString)) {
+}
 
-	if (FJsonSerializer::Deserialize(JsonReader, JsonObject) && JsonObject.IsValid())
+FNakamaUserPresence::FNakamaUserPresence(const TSharedPtr<FJsonObject> JsonObject)
+{
+	if (JsonObject.IsValid())
 	{
 		JsonObject->TryGetStringField(TEXT("user_id"), UserID);
 		JsonObject->TryGetStringField(TEXT("session_id"), SessionID);
