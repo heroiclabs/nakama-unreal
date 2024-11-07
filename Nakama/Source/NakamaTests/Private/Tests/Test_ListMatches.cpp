@@ -1,10 +1,10 @@
-﻿#include "NakamaTestBase.h"
+#include "NakamaTestBase.h"
 #include "Misc/AutomationTest.h"
 #include "Tests/AutomationCommon.h"
 
 // List Matches
 // TODO: Disabled because this Test Fails, it only works with a delay after the RPC call, could be that matches are not created before RPC returns success
-/*IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(ListMatches, FNakamaTestBase, "Nakama.Base.Matches.ListMatches", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
+/*IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(ListMatches, FNakamaTestBase, "Nakama.Base.Matches.ListMatches", NAKAMA_MODULE_TEST_MASK)
 inline bool ListMatches::RunTest(const FString& Parameters)
 {
 	// Initiates the test

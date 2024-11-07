@@ -1,8 +1,8 @@
-﻿
+
 #include "NakamaTestBase.h"
 
 // Restore Session check with example JWT tokens
-IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(RestoreSession, FNakamaTestBase, "Nakama.Base.Sessions.RestoreSession", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
+IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(RestoreSession, FNakamaTestBase, "Nakama.Base.Sessions.RestoreSession", NAKAMA_MODULE_TEST_MASK)
 inline bool RestoreSession::RunTest(const FString& Parameters)
 {
 	// First Token
@@ -83,7 +83,7 @@ inline bool RestoreSession::RunTest(const FString& Parameters)
 }
 
 // Error Unauthenticated
-IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(RestoreSession2, FNakamaTestBase, "Nakama.Base.Sessions.RestoreSession2", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
+IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(RestoreSession2, FNakamaTestBase, "Nakama.Base.Sessions.RestoreSession2", NAKAMA_MODULE_TEST_MASK)
 inline bool RestoreSession2::RunTest(const FString& Parameters)
 {
 	// Initiates the test

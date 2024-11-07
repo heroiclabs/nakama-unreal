@@ -1,8 +1,8 @@
-﻿#include "Tests/Realtime/Test_AuthoritativeMatch.h"
+#include "Tests/Realtime/Test_AuthoritativeMatch.h"
 
 #include "NakamaLoggingMacros.h"
 
-IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(AuthoritativeMatch, FNakamaAuthoritativeMatchTestBase, "Nakama.Base.Realtime.Matches.AuthoritativeMatch", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
+IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(AuthoritativeMatch, FNakamaAuthoritativeMatchTestBase, "Nakama.Base.Realtime.Matches.AuthoritativeMatch", NAKAMA_MODULE_TEST_MASK)
 inline bool AuthoritativeMatch::RunTest(const FString& Parameters)
 {
 	// Initiates the test

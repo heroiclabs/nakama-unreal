@@ -18,7 +18,7 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(FNakamaTestCore, "NakamaTest.Core", EAutomation
 
 bool FNakamaTestCore::RunTest(const FString &Parameters)
 {
-	UE_LOG(LogTemp, Log, TEXT("%s"), "Running tests");
+	UE_LOG(LogTemp, Log, TEXT("%hs"), "Running tests");
 
 	// enqueue the test to run in a separate thread so it doesn't block the game thread, where requests come in on.
 	FAutomationTestFramework::Get().EnqueueLatentCommand(MakeShareable(new FThreadedAutomationLatentCommand([]()

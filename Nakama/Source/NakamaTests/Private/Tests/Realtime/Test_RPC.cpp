@@ -1,6 +1,6 @@
-﻿#include "NakamaTestBase.h"
+#include "NakamaTestBase.h"
 
-IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(RPCWithHttpKey, FNakamaTestBase, "Nakama.Base.Realtime.RPC.RPCWithHttpKey", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
+IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(RPCWithHttpKey, FNakamaTestBase, "Nakama.Base.Realtime.RPC.RPCWithHttpKey", NAKAMA_MODULE_TEST_MASK)
 inline bool RPCWithHttpKey::RunTest(const FString& Parameters)
 {
 	// Initiates the test
@@ -79,7 +79,7 @@ inline bool RPCWithHttpKey::RunTest(const FString& Parameters)
 	return true;
 }
 
-IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(RPCWithHttpKey2, FNakamaTestBase, "Nakama.Base.Realtime.RPC.RPCWithHttpKey2", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
+IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(RPCWithHttpKey2, FNakamaTestBase, "Nakama.Base.Realtime.RPC.RPCWithHttpKey2", NAKAMA_MODULE_TEST_MASK)
 inline bool RPCWithHttpKey2::RunTest(const FString& Parameters)
 {
 	// Initiates the test
@@ -158,7 +158,7 @@ inline bool RPCWithHttpKey2::RunTest(const FString& Parameters)
 	return true;
 }
 
-IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(RPCWithAuth1, FNakamaTestBase, "Nakama.Base.Realtime.RPC.RPCWithAuth1", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
+IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(RPCWithAuth1, FNakamaTestBase, "Nakama.Base.Realtime.RPC.RPCWithAuth1", NAKAMA_MODULE_TEST_MASK)
 inline bool RPCWithAuth1::RunTest(const FString& Parameters)
 {
 	// Initiates the test
@@ -221,7 +221,7 @@ inline bool RPCWithAuth1::RunTest(const FString& Parameters)
 	return true;
 }
 
-IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(RPCWithAuth2, FNakamaTestBase, "Nakama.Base.Realtime.RPC.RPCWithAuth2", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
+IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(RPCWithAuth2, FNakamaTestBase, "Nakama.Base.Realtime.RPC.RPCWithAuth2", NAKAMA_MODULE_TEST_MASK)
 inline bool RPCWithAuth2::RunTest(const FString& Parameters)
 {
 	// Initiates the test
@@ -286,7 +286,7 @@ inline bool RPCWithAuth2::RunTest(const FString& Parameters)
 	return true;
 }
 
-IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(RPCWithAuth4, FNakamaTestBase, "Nakama.Base.Realtime.RPC.RPCWithAuth4", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
+IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(RPCWithAuth4, FNakamaTestBase, "Nakama.Base.Realtime.RPC.RPCWithAuth4", NAKAMA_MODULE_TEST_MASK)
 inline bool RPCWithAuth4::RunTest(const FString& Parameters)
 {
 	// Initiates the test
@@ -350,7 +350,7 @@ inline bool RPCWithAuth4::RunTest(const FString& Parameters)
 	return true;
 }
 
-IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(RPCWithAuth5, FNakamaTestBase, "Nakama.Base.Realtime.RPC.RPCWithAuth5", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
+IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(RPCWithAuth5, FNakamaTestBase, "Nakama.Base.Realtime.RPC.RPCWithAuth5", NAKAMA_MODULE_TEST_MASK)
 inline bool RPCWithAuth5::RunTest(const FString& Parameters)
 {
 	// Initiates the test

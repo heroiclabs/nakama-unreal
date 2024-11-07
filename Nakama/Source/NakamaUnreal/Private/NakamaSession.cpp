@@ -94,42 +94,42 @@ void UNakamaSession::SetupSession(const FString& AuthResponse)
     }
 }
 
-const FString UNakamaSession::GetAuthToken()
+const FString UNakamaSession::GetAuthToken()  const
 {
 	return _AuthToken;
 }
 
-const FString UNakamaSession::GetRefreshToken()
+const FString UNakamaSession::GetRefreshToken() const
 {
 	return _RefreshToken;
 }
 
-bool UNakamaSession::IsCreated()
+bool UNakamaSession::IsCreated() const
 {
 	return _IsCreated;
 }
 
-const FString UNakamaSession::GetUsername()
+const FString UNakamaSession::GetUsername() const
 {
 	return _Username;
 }
 
-const FString UNakamaSession::GetUserId()
+const FString UNakamaSession::GetUserId() const
 {
 	return _UserId;
 }
 
-const FDateTime UNakamaSession::GetCreateTime()
+const FDateTime UNakamaSession::GetCreateTime() const
 {
 	return _CreateTime;
 }
 
-const FDateTime UNakamaSession::GetExpireTime()
+const FDateTime UNakamaSession::GetExpireTime() const
 {
 	return _ExpireTime;
 }
 
-const FDateTime UNakamaSession::GetRefreshExpireTime()
+const FDateTime UNakamaSession::GetRefreshExpireTime() const
 {
 	return _RefreshExpireTime;
 }
@@ -154,15 +154,15 @@ bool UNakamaSession::IsRefreshExpiredTime(FDateTime Time) const
 	return Time >= _RefreshExpireTime;
 }
 
-TMap<FString, FString> UNakamaSession::GetVariables()
+TMap<FString, FString> UNakamaSession::GetVariables() const
 {
 	return _Variables;
 }
 
-FString UNakamaSession::GetVariable(FString Name)
+FString UNakamaSession::GetVariable(FString Name) const
 {
-	FString *Value = _Variables.Find(Name);
-	return *Value;
+	const FString* Value = _Variables.Find(Name);
+	return Value==nullptr? "" : *Value;
 }
 
 UNakamaSession* UNakamaSession::RestoreSession(FString Token, FString RefreshToken)

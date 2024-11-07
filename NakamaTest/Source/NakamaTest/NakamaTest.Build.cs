@@ -9,7 +9,7 @@ public class NakamaTest : ModuleRules
 	public NakamaTest(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
-		PrivateDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "NakamaCore"});
+		PrivateDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "NakamaCore", "WebSockets" });
 		PrivateIncludePaths.Add(Path.Combine(ModuleDirectory, "libnakamatest"));
 
 		if (Target.Platform == UnrealTargetPlatform.Mac)
