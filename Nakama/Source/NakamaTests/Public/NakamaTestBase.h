@@ -1,8 +1,17 @@
-﻿#pragma once
+#pragma once
 
 #include "CoreMinimal.h"
 #include "NakamaClient.h"
 #include "NakamaLogger.h"
+#include "Misc/EngineVersionComparison.h"
+
+#if UE_VERSION_OLDER_THAN(5, 5, 0)
+#define NAKAMA_MODULE_TEST_MASK EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter
+#else
+#include "Misc/AutomationTest.h"
+#define NAKAMA_MODULE_TEST_MASK EAutomationTestFlags_ApplicationContextMask | EAutomationTestFlags::ProductFilter
+#endif
+
 
 // The base class for the tests
 class FNakamaTestBase : public FAutomationTestBase

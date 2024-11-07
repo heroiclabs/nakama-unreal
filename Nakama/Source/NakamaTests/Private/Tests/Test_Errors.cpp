@@ -1,8 +1,8 @@
-﻿#include "NakamaTestBase.h"
+#include "NakamaTestBase.h"
 
 // Error Not Found
 // TODO: Disabled because this Test Fails, returns PermissionDenied from server, expects NotFound
-/*IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(ErrorNotFound, FNakamaTestBase, "Nakama.Base.Errors.NotFound", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
+/*IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(ErrorNotFound, FNakamaTestBase, "Nakama.Base.Errors.NotFound", NAKAMA_MODULE_TEST_MASK)
 inline bool ErrorNotFound::RunTest(const FString& Parameters)
 {
 	// Initiates the test
@@ -40,7 +40,7 @@ inline bool ErrorNotFound::RunTest(const FString& Parameters)
 }*/
 
 // Error Invalid Argument
-IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(ErrorInvalidArgument, FNakamaTestBase, "Nakama.Base.Errors.InvalidArgument", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
+IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(ErrorInvalidArgument, FNakamaTestBase, "Nakama.Base.Errors.InvalidArgument", NAKAMA_MODULE_TEST_MASK)
 inline bool ErrorInvalidArgument::RunTest(const FString& Parameters)
 {
 	// Initiates the test
@@ -77,7 +77,7 @@ inline bool ErrorInvalidArgument::RunTest(const FString& Parameters)
 }
 
 // Error Invalid Argument
-IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(ErrorInvalidArgument2, FNakamaTestBase, "Nakama.Base.Errors.InvalidArgument2", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
+IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(ErrorInvalidArgument2, FNakamaTestBase, "Nakama.Base.Errors.InvalidArgument2", NAKAMA_MODULE_TEST_MASK)
 inline bool ErrorInvalidArgument2::RunTest(const FString& Parameters)
 {
 	// Initiates the test
@@ -115,7 +115,7 @@ inline bool ErrorInvalidArgument2::RunTest(const FString& Parameters)
 
 // Error Unauthenticated
 // TODO: Disabled because this Test Fails, returns Error Code 16 from server, expects Unauthenticated (4)
-/*IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(ErrorUnauthenticated, FNakamaTestBase, "Nakama.Base.Errors.Unauthenticated", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
+/*IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(ErrorUnauthenticated, FNakamaTestBase, "Nakama.Base.Errors.Unauthenticated", NAKAMA_MODULE_TEST_MASK)
 inline bool ErrorUnauthenticated::RunTest(const FString& Parameters)
 {
 	// initiates the test

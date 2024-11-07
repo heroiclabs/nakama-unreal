@@ -1,7 +1,7 @@
-﻿#include "NakamaTestBase.h"
+#include "NakamaTestBase.h"
 
 // Send Notification to self from RPC and receive it
-IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(NotificationsCreateReceive, FNakamaTestBase, "Nakama.Base.Realtime.Notifications.CreateReceive", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
+IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(NotificationsCreateReceive, FNakamaTestBase, "Nakama.Base.Realtime.Notifications.CreateReceive", NAKAMA_MODULE_TEST_MASK)
 inline bool NotificationsCreateReceive::RunTest(const FString& Parameters)
 {
 	// Initiates the test
@@ -81,7 +81,7 @@ inline bool NotificationsCreateReceive::RunTest(const FString& Parameters)
 
 
 // Send Notification to self from RPC and receive it
-IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(NotificationsCreateListDelete, FNakamaTestBase, "Nakama.Base.Realtime.Notifications.CreateListDelete", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
+IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(NotificationsCreateListDelete, FNakamaTestBase, "Nakama.Base.Realtime.Notifications.CreateListDelete", NAKAMA_MODULE_TEST_MASK)
 inline bool NotificationsCreateListDelete::RunTest(const FString& Parameters)
 {
 	// Initiates the test

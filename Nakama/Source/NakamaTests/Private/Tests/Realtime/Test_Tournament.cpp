@@ -1,6 +1,6 @@
-﻿#include "Tests/Realtime/Test_Tournament.h"
+#include "Tests/Realtime/Test_Tournament.h"
 
-IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(Tournament, FNakamaTournamentTestBase, "Nakama.Base.Realtime.Tournament", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
+IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(Tournament, FNakamaTournamentTestBase, "Nakama.Base.Realtime.Tournament", NAKAMA_MODULE_TEST_MASK)
 inline bool Tournament::RunTest(const FString& Parameters)
 {
 	// Initiates the test

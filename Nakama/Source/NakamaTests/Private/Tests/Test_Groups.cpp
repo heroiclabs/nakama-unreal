@@ -1,8 +1,8 @@
-﻿#include "Tests/Test_Groups.h"
+#include "Tests/Test_Groups.h"
 #include "Misc/AutomationTest.h"
 
 // List Groups
-IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(ListGroups, FNakamaGroupsTestBase, "Nakama.Base.Groups.List", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
+IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(ListGroups, FNakamaGroupsTestBase, "Nakama.Base.Groups.List", NAKAMA_MODULE_TEST_MASK)
 inline bool ListGroups::RunTest(const FString& Parameters)
 {
 	// Initiates the test
