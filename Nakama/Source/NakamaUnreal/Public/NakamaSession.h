@@ -28,49 +28,49 @@ public:
 	 * @return The authentication token used to construct this session.
 	 */
 	UFUNCTION(BlueprintPure, Category = "Nakama|Session")
-	const FString GetAuthToken();
+	const FString GetAuthToken() const;
 
 	/**
 	 * @return The refresh token used to construct this session.
 	 */
 	UFUNCTION(BlueprintPure, Category = "Nakama|Session")
-	const FString GetRefreshToken();
+	const FString GetRefreshToken() const;
 
 	/**
 	 * @return <c>True</c> if the user account for this session was just created.
 	 */
 	UFUNCTION(BlueprintPure, Category = "Nakama|Session")
-	bool IsCreated();
+	bool IsCreated() const;
 
 	/**
 	 * @return The username of the user who owns this session.
 	 */
 	UFUNCTION(BlueprintPure, Category = "Nakama|Session")
-	const FString GetUsername();
+	const FString GetUsername() const;
 
 	/**
 	 * @return The ID of the user who owns this session.
 	 */
 	UFUNCTION(BlueprintPure, Category = "Nakama|Session")
-	const FString GetUserId();
+	const FString GetUserId() const;
 
 	/**
 	 * @return The timestamp in milliseconds when this session object was created.
 	 */
 	UFUNCTION(BlueprintPure, Category = "Nakama|Session")
-	const FDateTime GetCreateTime();
+	const FDateTime GetCreateTime() const;
 
 	/**
 	 * @return The timestamp in milliseconds when this session will expire.
 	 */
 	UFUNCTION(BlueprintPure, Category = "Nakama|Session")
-	const FDateTime GetExpireTime();
+	const FDateTime GetExpireTime() const;
 
 	/**
 	 * @return The timestamp in milliseconds when the refresh token will expire.
 	 */
 	UFUNCTION(BlueprintPure, Category = "Nakama|Session")
-	const FDateTime GetRefreshExpireTime();
+	const FDateTime GetRefreshExpireTime() const;
 
 	/**
 		 * @return <c>True</c> if the session has expired against the current time.
@@ -114,7 +114,7 @@ public:
 	 * @return Variables.
 	 */
 	UFUNCTION(BlueprintPure, Category = "Nakama|Session")
-	TMap<FString, FString> GetVariables();
+	TMap<FString, FString> GetVariables() const;
 
 	/**
 	 * Get session variable value by name.
@@ -123,7 +123,7 @@ public:
 	 * @param Name Value Key
 	 */
 	UFUNCTION(BlueprintPure, Category = "Nakama|Session")
-	FString GetVariable(FString Name);
+	FString GetVariable(FString Name) const;
 
 	/**
 	 * Restore User Session

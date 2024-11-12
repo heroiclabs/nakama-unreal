@@ -814,7 +814,7 @@ void UNakamaClient::RefreshSession(
 	FOnAuthRefresh Success,
 	FOnAuthRefreshError Error)
 {
-	auto successCallback = [this, Success](const UNakamaSession* Session)
+	auto successCallback = [this, Success](UNakamaSession* Session)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
 			return;
