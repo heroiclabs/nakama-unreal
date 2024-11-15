@@ -162,7 +162,7 @@ TMap<FString, FString> UNakamaSession::GetVariables() const
 FString UNakamaSession::GetVariable(FString Name) const
 {
 	const FString* Value = _Variables.Find(Name);
-	return *Value;
+	return Value==nullptr? "" : *Value;
 }
 
 UNakamaSession* UNakamaSession::RestoreSession(FString Token, FString RefreshToken)

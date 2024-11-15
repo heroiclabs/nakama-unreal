@@ -119,8 +119,8 @@ public:
 	/**
 	 * Get session variable value by name.
 	 *
-	 * @param Name Authentication Token from Session
 	 * @param Name Value Key
+	 * @return Variable for this key, or empty string if not found.
 	 */
 	UFUNCTION(BlueprintPure, Category = "Nakama|Session")
 	FString GetVariable(FString Name) const;
