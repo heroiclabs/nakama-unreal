@@ -40,8 +40,11 @@ void UNakamaClientAuthenticateCustom::Activate()
 
 	auto successCallback = [this](UNakamaSession* session)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnSuccess.Broadcast({}, session);
 		SetReadyToDestroy();
@@ -49,8 +52,11 @@ void UNakamaClientAuthenticateCustom::Activate()
 
 	auto errorCallback = [this](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnError.Broadcast(error, {});
 		SetReadyToDestroy();
@@ -85,8 +91,11 @@ void UNakamaClientAuthenticateEmail::Activate()
 
 	auto successCallback = [this](UNakamaSession* session)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnSuccess.Broadcast({}, session);
 		SetReadyToDestroy();
@@ -94,8 +103,11 @@ void UNakamaClientAuthenticateEmail::Activate()
 
 	auto errorCallback = [this](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnError.Broadcast(error, {});
 		SetReadyToDestroy();
@@ -129,8 +141,11 @@ void UNakamaClientAuthenticateDevice::Activate()
 
 	auto successCallback = [this](UNakamaSession* session)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnSuccess.Broadcast({}, session);
 		SetReadyToDestroy();
@@ -139,7 +154,10 @@ void UNakamaClientAuthenticateDevice::Activate()
 	auto errorCallback = [this](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnError.Broadcast(error, {});
 		SetReadyToDestroy();
@@ -176,8 +194,11 @@ void UNakamaClientAuthenticateSteam::Activate()
 
 	auto successCallback = [this](UNakamaSession* session)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnSuccess.Broadcast({}, session);
 		SetReadyToDestroy();
@@ -185,8 +206,11 @@ void UNakamaClientAuthenticateSteam::Activate()
 
 	auto errorCallback = [this](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnError.Broadcast(error, {});
 		SetReadyToDestroy();
@@ -220,8 +244,11 @@ void UNakamaClientAuthenticateGoogle::Activate()
 
 	auto successCallback = [this](UNakamaSession* session)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnSuccess.Broadcast({}, session);
 		SetReadyToDestroy();
@@ -229,8 +256,11 @@ void UNakamaClientAuthenticateGoogle::Activate()
 
 	auto errorCallback = [this](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnError.Broadcast(error, {});
 		SetReadyToDestroy();
@@ -270,8 +300,11 @@ void UNakamaClientAuthenticateGameCenter::Activate()
 
 	auto successCallback = [this](UNakamaSession* session)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnSuccess.Broadcast({}, session);
 		SetReadyToDestroy();
@@ -279,8 +312,11 @@ void UNakamaClientAuthenticateGameCenter::Activate()
 
 	auto errorCallback = [this](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnError.Broadcast(error, {});
 		SetReadyToDestroy();
@@ -326,8 +362,11 @@ void UNakamaClientAuthenticateFacebook::Activate()
 
 	auto successCallback = [this](UNakamaSession* session)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnSuccess.Broadcast({}, session);
 		SetReadyToDestroy();
@@ -335,8 +374,11 @@ void UNakamaClientAuthenticateFacebook::Activate()
 
 	auto errorCallback = [this](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnError.Broadcast(error, {});
 		SetReadyToDestroy();
@@ -370,8 +412,11 @@ void UNakamaClientAuthenticateApple::Activate()
 
 	auto successCallback = [this](UNakamaSession* session)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnSuccess.Broadcast({}, session);
 		SetReadyToDestroy();
@@ -379,8 +424,11 @@ void UNakamaClientAuthenticateApple::Activate()
 
 	auto errorCallback = [this](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnError.Broadcast(error, {});
 		SetReadyToDestroy();
@@ -427,8 +475,11 @@ void UNakamaClientAuthenticateRefresh::Activate()
 
 	auto successCallback = [this](UNakamaSession* session)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnSuccess.Broadcast({}, session);
 		SetReadyToDestroy();
@@ -436,8 +487,11 @@ void UNakamaClientAuthenticateRefresh::Activate()
 
 	auto errorCallback = [this](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnError.Broadcast(error, {});
 		SetReadyToDestroy();
@@ -486,8 +540,11 @@ void UNakamaClientLinkCustom::Activate()
 
 	auto successCallback = [this]()
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnSuccess.Broadcast();
 		SetReadyToDestroy();
@@ -495,8 +552,11 @@ void UNakamaClientLinkCustom::Activate()
 
 	auto errorCallback = [this](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnError.Broadcast(error);
 		SetReadyToDestroy();
@@ -545,8 +605,11 @@ void UNakamaClientUnLinkCustom::Activate()
 
 	auto successCallback = [this]()
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnSuccess.Broadcast();
 		SetReadyToDestroy();
@@ -554,8 +617,11 @@ void UNakamaClientUnLinkCustom::Activate()
 
 	auto errorCallback = [this](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnError.Broadcast(error);
 		SetReadyToDestroy();
@@ -604,8 +670,11 @@ void UNakamaClientUnLinkDevice::Activate()
 
 	auto successCallback = [this]()
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnSuccess.Broadcast();
 		SetReadyToDestroy();
@@ -613,8 +682,11 @@ void UNakamaClientUnLinkDevice::Activate()
 
 	auto errorCallback = [this](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnError.Broadcast(error);
 		SetReadyToDestroy();
@@ -664,8 +736,11 @@ void UNakamaClientUnLinkEmail::Activate()
 
 	auto successCallback = [this]()
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnSuccess.Broadcast();
 		SetReadyToDestroy();
@@ -673,8 +748,11 @@ void UNakamaClientUnLinkEmail::Activate()
 
 	auto errorCallback = [this](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnError.Broadcast(error);
 		SetReadyToDestroy();
@@ -723,8 +801,11 @@ void UNakamaClientUnLinkFacebook::Activate()
 
 	auto successCallback = [this]()
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnSuccess.Broadcast();
 		SetReadyToDestroy();
@@ -732,8 +813,11 @@ void UNakamaClientUnLinkFacebook::Activate()
 
 	auto errorCallback = [this](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnError.Broadcast(error);
 		SetReadyToDestroy();
@@ -788,8 +872,11 @@ void UNakamaClientUnLinkGameCenter::Activate()
 
 	auto successCallback = [this]()
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnSuccess.Broadcast();
 		SetReadyToDestroy();
@@ -797,8 +884,11 @@ void UNakamaClientUnLinkGameCenter::Activate()
 
 	auto errorCallback = [this](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnError.Broadcast(error);
 		SetReadyToDestroy();
@@ -858,8 +948,11 @@ void UNakamaClientUnLinkGoogle::Activate()
 
 	auto successCallback = [this]()
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnSuccess.Broadcast();
 		SetReadyToDestroy();
@@ -867,8 +960,11 @@ void UNakamaClientUnLinkGoogle::Activate()
 
 	auto errorCallback = [this](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnError.Broadcast(error);
 		SetReadyToDestroy();
@@ -917,8 +1013,11 @@ void UNakamaClientUnLinkSteam::Activate()
 
 	auto successCallback = [this]()
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnSuccess.Broadcast();
 		SetReadyToDestroy();
@@ -926,8 +1025,11 @@ void UNakamaClientUnLinkSteam::Activate()
 
 	auto errorCallback = [this](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnError.Broadcast(error);
 		SetReadyToDestroy();
@@ -976,8 +1078,11 @@ void UNakamaClientUnLinkApple::Activate()
 
 	auto successCallback = [this]()
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnSuccess.Broadcast();
 		SetReadyToDestroy();
@@ -985,8 +1090,11 @@ void UNakamaClientUnLinkApple::Activate()
 
 	auto errorCallback = [this](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnError.Broadcast(error);
 		SetReadyToDestroy();
@@ -1033,8 +1141,11 @@ void UNakamaClientRefreshSession::Activate()
 
 	auto successCallback = [this](UNakamaSession* session)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnSuccess.Broadcast({}, session);
 		SetReadyToDestroy();
@@ -1042,8 +1153,11 @@ void UNakamaClientRefreshSession::Activate()
 
 	auto errorCallback = [this](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnError.Broadcast(error, {});
 		SetReadyToDestroy();
@@ -1093,8 +1207,11 @@ void UNakamaClientImportFacebookFriends::Activate()
 
 	auto successCallback = [this]()
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnSuccess.Broadcast();
 		SetReadyToDestroy();
@@ -1102,8 +1219,11 @@ void UNakamaClientImportFacebookFriends::Activate()
 
 	auto errorCallback = [this](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnError.Broadcast(error);
 		SetReadyToDestroy();
@@ -1153,8 +1273,11 @@ void UNakamaClientImportSteamFriends::Activate()
 
 	auto successCallback = [this]()
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnSuccess.Broadcast();
 		SetReadyToDestroy();
@@ -1162,8 +1285,11 @@ void UNakamaClientImportSteamFriends::Activate()
 
 	auto errorCallback = [this](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnError.Broadcast(error);
 		SetReadyToDestroy();
@@ -1211,8 +1337,11 @@ void UNakamaClientGetUserAccount::Activate()
 	// Get Account:
 	auto successCallback = [this](const FNakamaAccount& Account)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnSuccess.Broadcast({}, Account);
 		SetReadyToDestroy();
@@ -1220,8 +1349,11 @@ void UNakamaClientGetUserAccount::Activate()
 
 	auto errorCallback = [this](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnError.Broadcast(error, {});
 		SetReadyToDestroy();
@@ -1272,8 +1404,11 @@ void UNakamaClientGetUsers::Activate()
 
 	auto successCallback = [this](const FNakamaUserList& UserList)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnSuccess.Broadcast({}, UserList);
 		SetReadyToDestroy();
@@ -1281,8 +1416,11 @@ void UNakamaClientGetUsers::Activate()
 
 	auto errorCallback = [this](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnError.Broadcast(error, {});
 		SetReadyToDestroy();
@@ -1336,8 +1474,11 @@ void UNakamaClientUpdateAccount::Activate()
 
 	auto successCallback = [this]()
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnSuccess.Broadcast();
 		SetReadyToDestroy();
@@ -1345,8 +1486,11 @@ void UNakamaClientUpdateAccount::Activate()
 
 	auto errorCallback = [this](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnError.Broadcast(error);
 		SetReadyToDestroy();
@@ -1410,8 +1554,11 @@ void UNakamaClientListMatches::Activate()
 
 	auto successCallback = [this](const FNakamaMatchList& MatchList)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnSuccess.Broadcast({}, MatchList);
 		SetReadyToDestroy();
@@ -1419,8 +1566,11 @@ void UNakamaClientListMatches::Activate()
 
 	auto errorCallback = [this](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnError.Broadcast(error, {});
 		SetReadyToDestroy();
@@ -1488,8 +1638,11 @@ void UNakamaClientGetFriends::Activate()
 
 	auto successCallback = [this](const FNakamaFriendList&  Friends)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnSuccess.Broadcast({}, Friends);
 		SetReadyToDestroy();
@@ -1497,8 +1650,11 @@ void UNakamaClientGetFriends::Activate()
 
 	auto errorCallback = [this](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnError.Broadcast(error, {});
 		SetReadyToDestroy();
@@ -1558,8 +1714,11 @@ void UNakamaClientAddFriends::Activate()
 
 	auto successCallback = [this]()
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnSuccess.Broadcast();
 		SetReadyToDestroy();
@@ -1567,8 +1726,11 @@ void UNakamaClientAddFriends::Activate()
 
 	auto errorCallback = [this](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnError.Broadcast(error);
 		SetReadyToDestroy();
@@ -1619,8 +1781,11 @@ void UNakamaClientRemoveFriends::Activate()
 
 	auto successCallback = [this]()
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnSuccess.Broadcast();
 		SetReadyToDestroy();
@@ -1628,8 +1793,11 @@ void UNakamaClientRemoveFriends::Activate()
 
 	auto errorCallback = [this](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnError.Broadcast(error);
 		SetReadyToDestroy();
@@ -1679,8 +1847,11 @@ void UNakamaClientBlockFriends::Activate()
 
 	auto successCallback = [this]()
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnSuccess.Broadcast();
 		SetReadyToDestroy();
@@ -1688,8 +1859,11 @@ void UNakamaClientBlockFriends::Activate()
 
 	auto errorCallback = [this](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnError.Broadcast(error);
 		SetReadyToDestroy();
@@ -1743,8 +1917,11 @@ void UNakamaClientCreateGroup::Activate()
 
 	auto successCallback = [this](const FNakamaGroup& Group)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnSuccess.Broadcast({}, Group);
 		SetReadyToDestroy();
@@ -1752,8 +1929,11 @@ void UNakamaClientCreateGroup::Activate()
 
 	auto errorCallback = [this](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnError.Broadcast(error, {});
 		SetReadyToDestroy();
@@ -1816,8 +1996,11 @@ void UNakamaClientListGroups::Activate()
 
 	auto successCallback = [this](const FNakamaGroupList& Groups)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnSuccess.Broadcast({}, Groups);
 		SetReadyToDestroy();
@@ -1825,8 +2008,11 @@ void UNakamaClientListGroups::Activate()
 
 	auto errorCallback = [this](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnError.Broadcast(error, {});
 		SetReadyToDestroy();
@@ -1875,8 +2061,11 @@ void UNakamaClientJoinGroup::Activate()
 
 	auto successCallback = [this]()
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnSuccess.Broadcast();
 		SetReadyToDestroy();
@@ -1884,8 +2073,11 @@ void UNakamaClientJoinGroup::Activate()
 
 	auto errorCallback = [this](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnError.Broadcast(error);
 		SetReadyToDestroy();
@@ -1938,8 +2130,11 @@ void UNakamaClientListUserGroups::Activate()
 
 	auto successCallback = [this](const FNakamaUserGroupList&  UserGroupList)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnSuccess.Broadcast({}, UserGroupList);
 		SetReadyToDestroy();
@@ -1947,8 +2142,11 @@ void UNakamaClientListUserGroups::Activate()
 
 	auto errorCallback = [this](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnError.Broadcast(error, {});
 		SetReadyToDestroy();
@@ -2011,8 +2209,11 @@ void UNakamaClientListListGroupUsers::Activate()
 
 	auto successCallback = [this](const FNakamaGroupUsersList&  GroupUsersList)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnSuccess.Broadcast({}, GroupUsersList);
 		SetReadyToDestroy();
@@ -2020,8 +2221,11 @@ void UNakamaClientListListGroupUsers::Activate()
 
 	auto errorCallback = [this](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnError.Broadcast(error, {});
 		SetReadyToDestroy();
@@ -2085,8 +2289,11 @@ void UNakamaClientUpdateGroup::Activate()
 
 	auto successCallback = [this]()
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnSuccess.Broadcast();
 		SetReadyToDestroy();
@@ -2094,8 +2301,11 @@ void UNakamaClientUpdateGroup::Activate()
 
 	auto errorCallback = [this](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnError.Broadcast(error);
 		SetReadyToDestroy();
@@ -2159,8 +2369,11 @@ void UNakamaClientLeaveGroup::Activate()
 
 	auto successCallback = [this]()
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnSuccess.Broadcast();
 		SetReadyToDestroy();
@@ -2168,8 +2381,11 @@ void UNakamaClientLeaveGroup::Activate()
 
 	auto errorCallback = [this](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnError.Broadcast(error);
 		SetReadyToDestroy();
@@ -2219,8 +2435,11 @@ void UNakamaClientAddGroupUsers::Activate()
 
 	auto successCallback = [this]()
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnSuccess.Broadcast();
 		SetReadyToDestroy();
@@ -2228,8 +2447,11 @@ void UNakamaClientAddGroupUsers::Activate()
 
 	auto errorCallback = [this](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnError.Broadcast(error);
 		SetReadyToDestroy();
@@ -2279,8 +2501,11 @@ void UNakamaClientPromoteGroupUsers::Activate()
 
 	auto successCallback = [this]()
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnSuccess.Broadcast();
 		SetReadyToDestroy();
@@ -2288,8 +2513,11 @@ void UNakamaClientPromoteGroupUsers::Activate()
 
 	auto errorCallback = [this](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnError.Broadcast(error);
 		SetReadyToDestroy();
@@ -2339,8 +2567,11 @@ void UNakamaClientKickGroupUsers::Activate()
 
 	auto successCallback = [this]()
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnSuccess.Broadcast();
 		SetReadyToDestroy();
@@ -2348,8 +2579,11 @@ void UNakamaClientKickGroupUsers::Activate()
 
 	auto errorCallback = [this](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnError.Broadcast(error);
 		SetReadyToDestroy();
@@ -2399,8 +2633,11 @@ void UNakamaClientDemoteGroupUsers::Activate()
 
 	auto successCallback = [this]()
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnSuccess.Broadcast();
 		SetReadyToDestroy();
@@ -2408,8 +2645,11 @@ void UNakamaClientDemoteGroupUsers::Activate()
 
 	auto errorCallback = [this](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnError.Broadcast(error);
 		SetReadyToDestroy();
@@ -2458,8 +2698,11 @@ void UNakamaClientDeleteGroup::Activate()
 
 	auto successCallback = [this]()
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnSuccess.Broadcast();
 		SetReadyToDestroy();
@@ -2467,8 +2710,11 @@ void UNakamaClientDeleteGroup::Activate()
 
 	auto errorCallback = [this](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnError.Broadcast(error);
 		SetReadyToDestroy();
@@ -2518,8 +2764,11 @@ void UNakamaClientListNotifications::Activate()
 
 	auto successCallback = [this](const FNakamaNotificationList& NotificationList)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnSuccess.Broadcast({}, NotificationList);
 		SetReadyToDestroy();
@@ -2527,8 +2776,11 @@ void UNakamaClientListNotifications::Activate()
 
 	auto errorCallback = [this](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnError.Broadcast(error, {});
 		SetReadyToDestroy();
@@ -2580,8 +2832,11 @@ void UNakamaClientDeleteNotifications::Activate()
 
 	auto successCallback = [this]()
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnSuccess.Broadcast();
 		SetReadyToDestroy();
@@ -2589,8 +2844,11 @@ void UNakamaClientDeleteNotifications::Activate()
 
 	auto errorCallback = [this](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnError.Broadcast(error);
 		SetReadyToDestroy();
@@ -2639,8 +2897,11 @@ void UNakamaClientWriteStorageObjects::Activate()
 
 	auto successCallback = [this](const FNakamaStoreObjectAcks& StorageObjectAcks)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnSuccess.Broadcast({}, StorageObjectAcks);
 		SetReadyToDestroy();
@@ -2648,8 +2909,11 @@ void UNakamaClientWriteStorageObjects::Activate()
 
 	auto errorCallback = [this](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnError.Broadcast(error, {});
 		SetReadyToDestroy();
@@ -2698,8 +2962,11 @@ void UNakamaClientReadStorageObjects::Activate()
 
 	auto successCallback = [this](const FNakamaStorageObjectList& StorageObjectList)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnSuccess.Broadcast({}, StorageObjectList);
 		SetReadyToDestroy();
@@ -2707,8 +2974,11 @@ void UNakamaClientReadStorageObjects::Activate()
 
 	auto errorCallback = [this](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnError.Broadcast(error, {});
 		SetReadyToDestroy();
@@ -2760,8 +3030,11 @@ void UNakamaClientListtorageObjects::Activate()
 
 	auto successCallback = [this](const  FNakamaStorageObjectList& StorageObjectList)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnSuccess.Broadcast({}, StorageObjectList);
 		SetReadyToDestroy();
@@ -2769,8 +3042,11 @@ void UNakamaClientListtorageObjects::Activate()
 
 	auto errorCallback = [this](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnError.Broadcast(error, {});
 		SetReadyToDestroy();
@@ -2829,8 +3105,11 @@ void UNakamaClientRemoveStorageObjects::Activate()
 
 	auto successCallback = [this]()
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnSuccess.Broadcast();
 		SetReadyToDestroy();
@@ -2838,8 +3117,11 @@ void UNakamaClientRemoveStorageObjects::Activate()
 
 	auto errorCallback = [this](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnError.Broadcast(error);
 		SetReadyToDestroy();
@@ -2889,8 +3171,11 @@ void UNakamaClientRPC::Activate()
 
 	auto successCallback = [this](const FNakamaRPC& Rpc)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnSuccess.Broadcast({}, Rpc);
 		SetReadyToDestroy();
@@ -2898,8 +3183,11 @@ void UNakamaClientRPC::Activate()
 
 	auto errorCallback = [this](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnError.Broadcast(error, {});
 		SetReadyToDestroy();
@@ -2933,8 +3221,11 @@ void UNakamaClientRPCHttpKey::Activate()
 
 	auto successCallback = [this](const FNakamaRPC& Rpc)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnSuccess.Broadcast({}, Rpc);
 		SetReadyToDestroy();
@@ -2942,8 +3233,11 @@ void UNakamaClientRPCHttpKey::Activate()
 
 	auto errorCallback = [this](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnError.Broadcast(error, {});
 		SetReadyToDestroy();
@@ -2997,8 +3291,11 @@ void UNakamaClientListChannelMessages::Activate()
 
 	auto successCallback = [this](const FNakamaChannelMessageList& ChannelMessageList)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnSuccess.Broadcast({}, ChannelMessageList);
 		SetReadyToDestroy();
@@ -3006,8 +3303,11 @@ void UNakamaClientListChannelMessages::Activate()
 
 	auto errorCallback = [this](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnError.Broadcast(error, {});
 		SetReadyToDestroy();
@@ -3062,8 +3362,11 @@ void UNakamaClientWriteLeaderboardRecord::Activate()
 
 	auto successCallback = [this](const FNakamaLeaderboardRecord& LeaderboardRecord)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnSuccess.Broadcast({}, LeaderboardRecord);
 		SetReadyToDestroy();
@@ -3071,8 +3374,11 @@ void UNakamaClientWriteLeaderboardRecord::Activate()
 
 	auto errorCallback = [this](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnError.Broadcast(error, {});
 		SetReadyToDestroy();
@@ -3137,8 +3443,11 @@ void UNakamaClientListLeaderboardRecords::Activate()
 
 	auto successCallback = [this](const FNakamaLeaderboardRecordList& LeaderboardRecords)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnSuccess.Broadcast({}, LeaderboardRecords);
 		SetReadyToDestroy();
@@ -3146,8 +3455,11 @@ void UNakamaClientListLeaderboardRecords::Activate()
 
 	auto errorCallback = [this](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnError.Broadcast(error, {});
 		SetReadyToDestroy();
@@ -3225,8 +3537,11 @@ void UNakamaClientListLeaderboardRecordsAroundOwner::Activate()
 
 	auto successCallback = [this](const FNakamaLeaderboardRecordList& LeaderboardRecords)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnSuccess.Broadcast({}, LeaderboardRecords);
 		SetReadyToDestroy();
@@ -3234,8 +3549,11 @@ void UNakamaClientListLeaderboardRecordsAroundOwner::Activate()
 
 	auto errorCallback = [this](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnError.Broadcast(error, {});
 		SetReadyToDestroy();
@@ -3286,8 +3604,11 @@ void UNakamaClientDeleteLeaderboardRecord::Activate()
 
 	auto successCallback = [this]()
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnSuccess.Broadcast();
 		SetReadyToDestroy();
@@ -3295,8 +3616,11 @@ void UNakamaClientDeleteLeaderboardRecord::Activate()
 
 	auto errorCallback = [this](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnError.Broadcast(error);
 		SetReadyToDestroy();
@@ -3348,8 +3672,11 @@ void UNakamaClientWriteTournamentRecord::Activate()
 
 	auto successCallback = [this](const FNakamaLeaderboardRecord& LeaderboardRecord)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnSuccess.Broadcast({}, LeaderboardRecord);
 		SetReadyToDestroy();
@@ -3357,8 +3684,11 @@ void UNakamaClientWriteTournamentRecord::Activate()
 
 	auto errorCallback = [this](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnError.Broadcast(error, {});
 		SetReadyToDestroy();
@@ -3415,8 +3745,11 @@ void UNakamaClientListTournamentRecords::Activate()
 
 	auto successCallback = [this](const FNakamaTournamentRecordList& TournamentRecordList)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnSuccess.Broadcast({}, TournamentRecordList);
 		SetReadyToDestroy();
@@ -3424,8 +3757,11 @@ void UNakamaClientListTournamentRecords::Activate()
 
 	auto errorCallback = [this](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnError.Broadcast(error, {});
 		SetReadyToDestroy();
@@ -3488,8 +3824,11 @@ void UNakamaClientListTournamentRecordsAroundOwner::Activate()
 
 	auto successCallback = [this](const FNakamaTournamentRecordList& TournamentRecordList)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnSuccess.Broadcast({}, TournamentRecordList);
 		SetReadyToDestroy();
@@ -3497,8 +3836,11 @@ void UNakamaClientListTournamentRecordsAroundOwner::Activate()
 
 	auto errorCallback = [this](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnError.Broadcast(error, {});
 		SetReadyToDestroy();
@@ -3556,8 +3898,11 @@ void UNakamaClientJoinTournament::Activate()
 
 	auto successCallback = [this]()
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnSuccess.Broadcast({},TournamentId); // Deviates from normal client
 		SetReadyToDestroy();
@@ -3565,8 +3910,11 @@ void UNakamaClientJoinTournament::Activate()
 
 	auto errorCallback = [this](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnError.Broadcast(error, {});
 		SetReadyToDestroy();
@@ -3621,8 +3969,11 @@ void UNakamaClientListTournaments::Activate()
 
 	auto successCallback = [this](const FNakamaTournamentList& TournamentList)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnSuccess.Broadcast({},TournamentList);
 		SetReadyToDestroy();
@@ -3630,8 +3981,11 @@ void UNakamaClientListTournaments::Activate()
 
 	auto errorCallback = [this](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnError.Broadcast(error, {});
 		SetReadyToDestroy();
@@ -3696,8 +4050,11 @@ void UNakamaClientLinkDevice::Activate()
 
 	auto successCallback = [this]()
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnSuccess.Broadcast();
 		SetReadyToDestroy();
@@ -3705,8 +4062,11 @@ void UNakamaClientLinkDevice::Activate()
 
 	auto errorCallback = [this](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnError.Broadcast(error);
 		SetReadyToDestroy();
@@ -3756,8 +4116,11 @@ void UNakamaClientLinkEmail::Activate()
 
 	auto successCallback = [this]()
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnSuccess.Broadcast();
 		SetReadyToDestroy();
@@ -3765,8 +4128,11 @@ void UNakamaClientLinkEmail::Activate()
 
 	auto errorCallback = [this](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnError.Broadcast(error);
 		SetReadyToDestroy();
@@ -3816,8 +4182,11 @@ void UNakamaClientLinkFacebook::Activate()
 
 	auto successCallback = [this]()
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnSuccess.Broadcast();
 		SetReadyToDestroy();
@@ -3825,8 +4194,11 @@ void UNakamaClientLinkFacebook::Activate()
 
 	auto errorCallback = [this](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnError.Broadcast(error);
 		SetReadyToDestroy();
@@ -3881,8 +4253,11 @@ void UNakamaClientLinkGameCenter::Activate()
 
 	auto successCallback = [this]()
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnSuccess.Broadcast();
 		SetReadyToDestroy();
@@ -3890,8 +4265,11 @@ void UNakamaClientLinkGameCenter::Activate()
 
 	auto errorCallback = [this](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnError.Broadcast(error);
 		SetReadyToDestroy();
@@ -3940,8 +4318,11 @@ void UNakamaClientLinkGoogle::Activate()
 
 	auto successCallback = [this]()
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnSuccess.Broadcast();
 		SetReadyToDestroy();
@@ -3949,8 +4330,11 @@ void UNakamaClientLinkGoogle::Activate()
 
 	auto errorCallback = [this](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnError.Broadcast(error);
 		SetReadyToDestroy();
@@ -3999,8 +4383,11 @@ void UNakamaClientLinkSteam::Activate()
 
 	auto successCallback = [this]()
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnSuccess.Broadcast();
 		SetReadyToDestroy();
@@ -4008,8 +4395,11 @@ void UNakamaClientLinkSteam::Activate()
 
 	auto errorCallback = [this](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnError.Broadcast(error);
 		SetReadyToDestroy();
@@ -4057,8 +4447,11 @@ void UNakamaClientLinkApple::Activate()
 
 	auto successCallback = [this]()
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnSuccess.Broadcast();
 		SetReadyToDestroy();
@@ -4066,8 +4459,11 @@ void UNakamaClientLinkApple::Activate()
 
 	auto errorCallback = [this](const FNakamaError& error)
 	{
-		if(!FNakamaUtils::IsClientActive(NakamaClient))
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 
 		OnError.Broadcast(error);
 		SetReadyToDestroy();

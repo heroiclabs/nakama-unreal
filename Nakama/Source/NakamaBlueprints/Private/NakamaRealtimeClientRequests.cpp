@@ -60,8 +60,11 @@ void UNakamaRealtimeClientConnect::Activate()
 	// Connect Callback
 	auto connectSuccessCallback = [this]()
 	{
-		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 		
 		OnSuccess.Broadcast();
 		SetReadyToDestroy();
@@ -70,8 +73,11 @@ void UNakamaRealtimeClientConnect::Activate()
 	// Connection error Callback
 	auto connectErrorCallback = [this](const FNakamaRtError& Error)
     {
-		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 		
 		OnError.Broadcast(Error);
 		SetReadyToDestroy();
@@ -104,8 +110,11 @@ void UNakamaRealtimeClientSendMessage::Activate()
 	
 	auto successCallback = [this](const FNakamaChannelMessageAck& ChannelMessageAck)
 	{
-		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 		
 		OnSuccess.Broadcast({}, ChannelMessageAck);
 		SetReadyToDestroy();
@@ -113,8 +122,11 @@ void UNakamaRealtimeClientSendMessage::Activate()
 
 	auto errorCallback = [this](const FNakamaRtError& Error)
 	{
-		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 		
 		OnError.Broadcast(Error, {});
 		SetReadyToDestroy();
@@ -146,8 +158,11 @@ void UNakamaRealtimeClientSendDirectMessage::Activate()
 	
 	auto successCallback = [this](const FNakamaChannelMessageAck& ChannelMessageAck)
 	{
-		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 		
 		OnSuccess.Broadcast({}, ChannelMessageAck);
 		SetReadyToDestroy();
@@ -155,8 +170,11 @@ void UNakamaRealtimeClientSendDirectMessage::Activate()
 
 	auto errorCallback = [this](const FNakamaRtError& Error)
 	{
-		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 		
 		OnError.Broadcast(Error, {});
 		SetReadyToDestroy();
@@ -189,8 +207,11 @@ void UNakamaRealtimeClientUpdateChatMessage::Activate()
 	
 	auto successCallback = [this](const FNakamaChannelMessageAck& ChannelMessageAck)
 	{
-		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 		
 		OnSuccess.Broadcast({}, ChannelMessageAck);
 		SetReadyToDestroy();
@@ -199,7 +220,10 @@ void UNakamaRealtimeClientUpdateChatMessage::Activate()
 	auto errorCallback = [this](const FNakamaRtError& Error)
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 		
 		OnError.Broadcast(Error, {});
 		SetReadyToDestroy();
@@ -230,8 +254,11 @@ void UNakamaRealtimeClientRemoveChatMessage::Activate()
 	
 	auto successCallback = [this](const FNakamaChannelMessageAck& ChannelMessageAck)
 	{
-		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 		
 		OnSuccess.Broadcast({}, ChannelMessageAck);
 		SetReadyToDestroy();
@@ -239,8 +266,11 @@ void UNakamaRealtimeClientRemoveChatMessage::Activate()
 
 	auto errorCallback = [this](const FNakamaRtError& Error)
 	{
-		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 		
 		OnError.Broadcast(Error, {});
 		SetReadyToDestroy();
@@ -275,8 +305,11 @@ void UNakamaRealtimeClientJoinChat::Activate()
 	
 	auto successCallback = [this](const FNakamaChannel& Channel)
 	{
-		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 		
 		OnSuccess.Broadcast({}, Channel);
 		SetReadyToDestroy();
@@ -284,8 +317,11 @@ void UNakamaRealtimeClientJoinChat::Activate()
 
 	auto errorCallback = [this](const FNakamaRtError& Error)
 	{
-		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 		
 		OnError.Broadcast(Error, {});
 		SetReadyToDestroy();
@@ -316,8 +352,11 @@ void UNakamaRealtimeClientLeaveChat::Activate()
 	
 	auto successCallback = [this]()
 	{
-		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 		
 		OnSuccess.Broadcast({}, ChannelId); // Channel Parameter Deviates from the other C++ Client
 		SetReadyToDestroy();
@@ -325,8 +364,11 @@ void UNakamaRealtimeClientLeaveChat::Activate()
 
 	auto errorCallback = [this](const FNakamaRtError& Error)
 	{
-		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 		
 		OnError.Broadcast(Error, {});
 		SetReadyToDestroy();
@@ -365,8 +407,11 @@ void UNakamaRealtimeClientAddMatchmaker::Activate()
 	
 	auto successCallback = [this](const FNakamaMatchmakerTicket& MatchmakerTicket)
 	{
-		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 		
 		OnSuccess.Broadcast({}, MatchmakerTicket);
 		SetReadyToDestroy();
@@ -374,8 +419,11 @@ void UNakamaRealtimeClientAddMatchmaker::Activate()
 
 	auto errorCallback = [this](const FNakamaRtError& Error)
 	{
-		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 		
 		OnError.Broadcast(Error, {});
 		SetReadyToDestroy();
@@ -423,8 +471,11 @@ void UNakamaRealtimeClientLeaveMatchmaker::Activate()
 	
 	auto successCallback = [this]()
 	{
-		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 		
 		OnSuccess.Broadcast({}, Ticket); // Deviates from the other C++ Client by returning Ticket
 		SetReadyToDestroy();
@@ -432,8 +483,11 @@ void UNakamaRealtimeClientLeaveMatchmaker::Activate()
 
 	auto errorCallback = [this](const FNakamaRtError& Error)
 	{
-		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 		
 		OnError.Broadcast(Error, {});
 		SetReadyToDestroy();
@@ -464,8 +518,11 @@ void UNakamaRealtimeClientUpdateStatus::Activate()
 	
 	auto successCallback = [this]()
 	{
-		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 		
 		OnSuccess.Broadcast();
 		SetReadyToDestroy();
@@ -473,8 +530,11 @@ void UNakamaRealtimeClientUpdateStatus::Activate()
 
 	auto errorCallback = [this](const FNakamaRtError& Error)
 	{
-		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 		
 		OnError.Broadcast(Error);
 		SetReadyToDestroy();
@@ -504,8 +564,11 @@ void UNakamaRealtimeClientSetAppearOffline::Activate()
 	
 	auto successCallback = [this]()
 	{
-		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 		
 		OnSuccess.Broadcast();
 		SetReadyToDestroy();
@@ -513,8 +576,11 @@ void UNakamaRealtimeClientSetAppearOffline::Activate()
 
 	auto errorCallback = [this](const FNakamaRtError& Error)
 	{
-		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 		
 		OnError.Broadcast(Error);
 		SetReadyToDestroy();
@@ -545,8 +611,11 @@ void UNakamaRealtimeClientFollowUsers::Activate()
 	
 	auto successCallback = [this](const FNakamaStatus& Status)
 	{
-		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 		
 		OnSuccess.Broadcast({}, Status);
 		SetReadyToDestroy();
@@ -554,8 +623,11 @@ void UNakamaRealtimeClientFollowUsers::Activate()
 
 	auto errorCallback = [this](const FNakamaRtError& Error)
 	{
-		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 		
 		OnError.Broadcast(Error, {});
 		SetReadyToDestroy();
@@ -586,8 +658,11 @@ void UNakamaRealtimeClientUnFollowUsers::Activate()
 	
 	auto successCallback = [this]()
 	{
-		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 		
 		OnSuccess.Broadcast();
 		SetReadyToDestroy();
@@ -595,8 +670,11 @@ void UNakamaRealtimeClientUnFollowUsers::Activate()
 
 	auto errorCallback = [this](const FNakamaRtError& Error)
 	{
-		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 		
 		OnError.Broadcast(Error);
 		SetReadyToDestroy();
@@ -625,8 +703,11 @@ void UNakamaRealtimeClientCreateMatch::Activate()
 	
 	auto successCallback = [this](const FNakamaMatch& Match)
 	{
-		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 		
 		OnSuccess.Broadcast({},Match);
 		SetReadyToDestroy();
@@ -634,8 +715,11 @@ void UNakamaRealtimeClientCreateMatch::Activate()
 
 	auto errorCallback = [this](const FNakamaRtError& Error)
 	{
-		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 		
 		OnError.Broadcast(Error, {});
 		SetReadyToDestroy();
@@ -667,8 +751,11 @@ void UNakamaRealtimeClientJoinMatch::Activate()
 	
 	auto successCallback = [this](const FNakamaMatch& Match)
 	{
-		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 		
 		OnSuccess.Broadcast({},Match);
 		SetReadyToDestroy();
@@ -676,8 +763,11 @@ void UNakamaRealtimeClientJoinMatch::Activate()
 
 	auto errorCallback = [this](const FNakamaRtError& Error)
 	{
-		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 		
 		OnError.Broadcast(Error, {});
 		SetReadyToDestroy();
@@ -708,8 +798,11 @@ void UNakamaRealtimeClientJoinMatchByToken::Activate()
 	
 	auto successCallback = [this](const FNakamaMatch& Match)
 	{
-		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 		
 		OnSuccess.Broadcast({},Match);
 		SetReadyToDestroy();
@@ -717,8 +810,11 @@ void UNakamaRealtimeClientJoinMatchByToken::Activate()
 
 	auto errorCallback = [this](const FNakamaRtError& Error)
 	{
-		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 		
 		OnError.Broadcast(Error, {});
 		SetReadyToDestroy();
@@ -751,8 +847,11 @@ void UNakamaRealtimeClientLeaveMatch::Activate()
 	
 	auto successCallback = [this]()
 	{
-		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 		
 		OnSuccess.Broadcast({}, MatchId); // Deviation from C++ SDK by returning the MatchId
 		SetReadyToDestroy();
@@ -760,8 +859,11 @@ void UNakamaRealtimeClientLeaveMatch::Activate()
 
 	auto errorCallback = [this](const FNakamaRtError& Error)
 	{
-		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 		
 		OnError.Broadcast(Error, {});
 		SetReadyToDestroy();
@@ -793,8 +895,11 @@ void UNakamaRealtimeClientCreateParty::Activate()
 	
 	auto successCallback = [this](const FNakamaParty& Party)
 	{
-		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 		
 		OnSuccess.Broadcast({}, Party);
 		SetReadyToDestroy();
@@ -802,8 +907,11 @@ void UNakamaRealtimeClientCreateParty::Activate()
 
 	auto errorCallback = [this](const FNakamaRtError& Error)
 	{
-		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 		
 		OnError.Broadcast(Error, {});
 		SetReadyToDestroy();
@@ -833,8 +941,11 @@ void UNakamaRealtimeClientJoinParty::Activate()
 	
 	auto successCallback = [this]()
 	{
-		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 		
 		OnSuccess.Broadcast({}, PartyId); // Deviates from C++ SDK by returning the PartyId
 		SetReadyToDestroy();
@@ -842,8 +953,11 @@ void UNakamaRealtimeClientJoinParty::Activate()
 
 	auto errorCallback = [this](const FNakamaRtError& Error)
 	{
-		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 		
 		OnError.Broadcast(Error, {});
 		SetReadyToDestroy();
@@ -873,8 +987,11 @@ void UNakamaRealtimeClientLeaveParty::Activate()
 	
 	auto successCallback = [this]()
 	{
-		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 		
 		OnSuccess.Broadcast({}, PartyId); // Deviates from C++ SDK by returning the PartyId
 		SetReadyToDestroy();
@@ -882,8 +999,11 @@ void UNakamaRealtimeClientLeaveParty::Activate()
 
 	auto errorCallback = [this](const FNakamaRtError& Error)
 	{
-		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 		
 		OnError.Broadcast(Error, {});
 		SetReadyToDestroy();
@@ -914,8 +1034,11 @@ void UNakamaRealtimeClientListPartyJoinRequests::Activate()
 	
 	auto successCallback = [this](const FNakamaPartyJoinRequest& PartyJoinRequest)
 	{
-		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 		
 		OnSuccess.Broadcast({}, PartyJoinRequest);
 		SetReadyToDestroy();
@@ -923,8 +1046,11 @@ void UNakamaRealtimeClientListPartyJoinRequests::Activate()
 
 	auto errorCallback = [this](const FNakamaRtError& Error)
 	{
-		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 		
 		OnError.Broadcast(Error, {});
 		SetReadyToDestroy();
@@ -956,8 +1082,11 @@ void UNakamaRealtimeClientPromotePartyMember::Activate()
 	
 	auto successCallback = [this]()
 	{
-		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 		
 		OnSuccess.Broadcast();
 		SetReadyToDestroy();
@@ -965,8 +1094,11 @@ void UNakamaRealtimeClientPromotePartyMember::Activate()
 
 	auto errorCallback = [this](const FNakamaRtError& Error)
 	{
-		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 		
 		OnError.Broadcast(Error);
 		SetReadyToDestroy();
@@ -998,8 +1130,11 @@ void UNakamaRealtimeClientRemoveMatchmakerParty::Activate()
 	
 	auto successCallback = [this]()
 	{
-		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 		
 		OnSuccess.Broadcast({}, Ticket); // Deviates from C++ SDK by returning the Ticket
 		SetReadyToDestroy();
@@ -1007,8 +1142,11 @@ void UNakamaRealtimeClientRemoveMatchmakerParty::Activate()
 
 	auto errorCallback = [this](const FNakamaRtError& Error)
 	{
-		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 		
 		OnError.Broadcast(Error, {});
 		SetReadyToDestroy();
@@ -1040,8 +1178,11 @@ void UNakamaRealtimeClientRemovePartyMember::Activate()
 	
 	auto successCallback = [this]()
 	{
-		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 		
 		OnSuccess.Broadcast();
 		SetReadyToDestroy();
@@ -1049,8 +1190,11 @@ void UNakamaRealtimeClientRemovePartyMember::Activate()
 
 	auto errorCallback = [this](const FNakamaRtError& Error)
 	{
-		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 		
 		OnError.Broadcast(Error);
 		SetReadyToDestroy();
@@ -1083,8 +1227,11 @@ void UNakamaRealtimeClientAcceptPartyMember::Activate()
 	
 	auto successCallback = [this]()
 	{
-		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 		
 		OnSuccess.Broadcast();
 		SetReadyToDestroy();
@@ -1092,8 +1239,11 @@ void UNakamaRealtimeClientAcceptPartyMember::Activate()
 
 	auto errorCallback = [this](const FNakamaRtError& Error)
 	{
-		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 		
 		OnError.Broadcast(Error);
 		SetReadyToDestroy();
@@ -1133,8 +1283,11 @@ void UNakamaRealtimeClientAddMatchmakerParty::Activate()
 	
 	auto successCallback = [this](const FNakamaPartyMatchmakerTicket& PartyMatchmakerTicket)
 	{
-		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 		
 		OnSuccess.Broadcast({}, PartyMatchmakerTicket);
 		SetReadyToDestroy();
@@ -1142,8 +1295,11 @@ void UNakamaRealtimeClientAddMatchmakerParty::Activate()
 
 	auto errorCallback = [this](const FNakamaRtError& Error)
 	{
-		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 		
 		OnError.Broadcast(Error, {});
 		SetReadyToDestroy();
@@ -1192,8 +1348,11 @@ void UNakamaRealtimeClientCloseParty::Activate()
 	
 	auto successCallback = [this]()
 	{
-		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 		
 		OnSuccess.Broadcast();
 		SetReadyToDestroy();
@@ -1201,8 +1360,11 @@ void UNakamaRealtimeClientCloseParty::Activate()
 
 	auto errorCallback = [this](const FNakamaRtError& Error)
 	{
-		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 		
 		OnError.Broadcast(Error);
 		SetReadyToDestroy();
@@ -1233,8 +1395,11 @@ void UNakamaRealtimeClientRPC::Activate()
 	
 	auto successCallback = [this](const FNakamaRPC& rpc)
 	{
-		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 		
 		OnSuccess.Broadcast({}, rpc);
 		SetReadyToDestroy();
@@ -1242,8 +1407,11 @@ void UNakamaRealtimeClientRPC::Activate()
 
 	auto errorCallback = [this](const FNakamaRtError& Error)
 	{
-		if(!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		if (!FNakamaUtils::IsRealtimeClientActive(RealtimeClient))
+		{
+			SetReadyToDestroy();
 			return;
+		}
 		
 		OnError.Broadcast(Error, {});
 		SetReadyToDestroy();
