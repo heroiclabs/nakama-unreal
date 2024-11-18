@@ -1,8 +1,8 @@
-﻿#include "NakamaTestBase.h"
+#include "NakamaTestBase.h"
 #include "Misc/AutomationTest.h"
 
 // Get Account
-IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(GetAccount, FNakamaTestBase, "Nakama.Base.Users.GetAccount", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
+IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(GetAccount, FNakamaTestBase, "Nakama.Base.Users.GetAccount", NAKAMA_MODULE_TEST_MASK)
 inline bool GetAccount::RunTest(const FString& Parameters)
 {
 	// Initiates the test

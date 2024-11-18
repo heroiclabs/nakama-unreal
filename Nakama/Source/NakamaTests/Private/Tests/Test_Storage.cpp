@@ -1,10 +1,10 @@
-﻿
+
 #include "Tests/Test_Storage.h"
 
 #include "NakamaTestBase.h"
 
 // Write Storage Invalid Argument
-IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(WriteStorageInvalidArgument, FNakamaTestBase, "Nakama.Base.Storage.InvalidArgument", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
+IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(WriteStorageInvalidArgument, FNakamaTestBase, "Nakama.Base.Storage.InvalidArgument", NAKAMA_MODULE_TEST_MASK)
 inline bool WriteStorageInvalidArgument::RunTest(const FString& Parameters)
 {
 	// TODO: This test ends up being quite slow
@@ -48,7 +48,7 @@ inline bool WriteStorageInvalidArgument::RunTest(const FString& Parameters)
 }
 
 // Write Storage Object then verify read
-IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(WriteStorage, FNakamaTestBase, "Nakama.Base.Storage.Write", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
+IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(WriteStorage, FNakamaTestBase, "Nakama.Base.Storage.Write", NAKAMA_MODULE_TEST_MASK)
 inline bool WriteStorage::RunTest(const FString& Parameters)
 {
 	// Initiates the test
@@ -122,7 +122,7 @@ inline bool WriteStorage::RunTest(const FString& Parameters)
 }
 
 // Write Storage Object then verify cursor
-IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(WriteStorageCursor, FNakamaStorageTestBase, "Nakama.Base.Storage.WriteCursor", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
+IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(WriteStorageCursor, FNakamaStorageTestBase, "Nakama.Base.Storage.WriteCursor", NAKAMA_MODULE_TEST_MASK)
 inline bool WriteStorageCursor::RunTest(const FString& Parameters)
 {
 	// Initiates the test

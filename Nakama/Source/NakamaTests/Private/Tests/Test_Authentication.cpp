@@ -1,9 +1,9 @@
-﻿#include "NakamaTestBase.h"
+#include "NakamaTestBase.h"
 #include "NakamaUtils.h"
 #include "Misc/AutomationTest.h"
 
 // Authenticate Email
-IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(AuthenticateEmail, FNakamaTestBase, "Nakama.Base.Authenticate.Email", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
+IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(AuthenticateEmail, FNakamaTestBase, "Nakama.Base.Authenticate.Email", NAKAMA_MODULE_TEST_MASK)
 inline bool AuthenticateEmail::RunTest(const FString& Parameters)
 {
 	// Initiates the test
@@ -44,7 +44,7 @@ inline bool AuthenticateEmail::RunTest(const FString& Parameters)
 }
 
 // Authenticate Email 2
-IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(AuthenticateEmail2, FNakamaTestBase, "Nakama.Base.Authenticate.Email2", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
+IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(AuthenticateEmail2, FNakamaTestBase, "Nakama.Base.Authenticate.Email2", NAKAMA_MODULE_TEST_MASK)
 inline bool AuthenticateEmail2::RunTest(const FString& Parameters)
 {
 	// Initiates the test
@@ -88,7 +88,7 @@ inline bool AuthenticateEmail2::RunTest(const FString& Parameters)
 }
 
 // Authenticate Device
-IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(AuthenticateDevice, FNakamaTestBase, "Nakama.Base.Authenticate.Device", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
+IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(AuthenticateDevice, FNakamaTestBase, "Nakama.Base.Authenticate.Device", NAKAMA_MODULE_TEST_MASK)
 inline bool AuthenticateDevice::RunTest(const FString& Parameters)
 {
 	// Initiates the test
@@ -125,7 +125,7 @@ inline bool AuthenticateDevice::RunTest(const FString& Parameters)
 }
 
 // Authenticate Device2
-IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(AuthenticateDevice2, FNakamaTestBase, "Nakama.Base.Authenticate.Device2", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
+IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(AuthenticateDevice2, FNakamaTestBase, "Nakama.Base.Authenticate.Device2", NAKAMA_MODULE_TEST_MASK)
 inline bool AuthenticateDevice2::RunTest(const FString& Parameters)
 {
 	// Initiates the test

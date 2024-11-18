@@ -1,7 +1,7 @@
-﻿#include "Tests/Realtime/Test_Parties.h"
+#include "Tests/Realtime/Test_Parties.h"
 
 // Create Party and Join Party Test Case
-IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(CreateParty, FNakamaPartiesTestBase, "Nakama.Base.Realtime.Parties.CreateParty", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
+IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(CreateParty, FNakamaPartiesTestBase, "Nakama.Base.Realtime.Parties.CreateParty", NAKAMA_MODULE_TEST_MASK)
 inline bool CreateParty::RunTest(const FString& Parameters)
 {
 	// Initiates the test
@@ -243,7 +243,7 @@ void FNakamaPartiesTestBase::SetupClient2AndReceiveRequestJoinParty()
 }
 
 // Create Party and Join Party Test Case
-IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(PartyMatchmaker, FNakamaPartiesTestBase, "Nakama.Base.Realtime.Parties.PartyMatchmaker", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
+IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(PartyMatchmaker, FNakamaPartiesTestBase, "Nakama.Base.Realtime.Parties.PartyMatchmaker", NAKAMA_MODULE_TEST_MASK)
 inline bool PartyMatchmaker::RunTest(const FString& Parameters)
 {
 	// Initiates the test
@@ -325,7 +325,7 @@ inline bool PartyMatchmaker::RunTest(const FString& Parameters)
 }
 
 // Create Party and Join Party Test Case
-IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(ListPartyJoinRequests, FNakamaPartiesTestBase, "Nakama.Base.Realtime.Parties.ListPartyJoinRequests", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
+IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(ListPartyJoinRequests, FNakamaPartiesTestBase, "Nakama.Base.Realtime.Parties.ListPartyJoinRequests", NAKAMA_MODULE_TEST_MASK)
 inline bool ListPartyJoinRequests::RunTest(const FString& Parameters)
 {
 	// Initiates the test
@@ -383,7 +383,7 @@ inline bool ListPartyJoinRequests::RunTest(const FString& Parameters)
 }
 
 // Received Party Join Requests Test Case
-IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(ReceivedPartyJoinRequests, FNakamaPartiesTestBase, "Nakama.Base.Realtime.Parties.ReceivedPartyJoinRequests", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
+IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(ReceivedPartyJoinRequests, FNakamaPartiesTestBase, "Nakama.Base.Realtime.Parties.ReceivedPartyJoinRequests", NAKAMA_MODULE_TEST_MASK)
 inline bool ReceivedPartyJoinRequests::RunTest(const FString& Parameters)
 {
 	// Initiates the test

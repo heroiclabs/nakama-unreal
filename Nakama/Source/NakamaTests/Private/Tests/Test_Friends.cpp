@@ -1,11 +1,11 @@
-﻿#include "Tests/Test_Friends.h"
+#include "Tests/Test_Friends.h"
 
 #include "NakamaLogger.h"
 #include "NakamaLoggingMacros.h"
 #include "NakamaTestBase.h"
 
 // List friends and testing cursor
-IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(ListFriends, FNakamaFriendsTestBase, "Nakama.Base.Friends.ListFriends", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
+IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(ListFriends, FNakamaFriendsTestBase, "Nakama.Base.Friends.ListFriends", NAKAMA_MODULE_TEST_MASK)
 inline bool ListFriends::RunTest(const FString& Parameters)
 {
 	// Initiates the test

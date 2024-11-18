@@ -1,8 +1,8 @@
-﻿#include "NakamaTestBase.h"
+#include "NakamaTestBase.h"
 #include "Misc/AutomationTest.h"
 
 // Join Chat
-IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(JoinChat, FNakamaTestBase, "Nakama.Base.Realtime.Chat.JoinChat", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
+IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(JoinChat, FNakamaTestBase, "Nakama.Base.Realtime.Chat.JoinChat", NAKAMA_MODULE_TEST_MASK)
 inline bool JoinChat::RunTest(const FString& Parameters)
 {
 	// Initiates the test
@@ -69,7 +69,7 @@ inline bool JoinChat::RunTest(const FString& Parameters)
 
 
 // Join Chat and Wirte Chat Message
-IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(JoinChatWriteMessage, FNakamaTestBase, "Nakama.Base.Realtime.Chat.JoinChatWriteMessage", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
+IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(JoinChatWriteMessage, FNakamaTestBase, "Nakama.Base.Realtime.Chat.JoinChatWriteMessage", NAKAMA_MODULE_TEST_MASK)
 inline bool JoinChatWriteMessage::RunTest(const FString& Parameters)
 {
 	// Initiates the test
@@ -170,7 +170,7 @@ inline bool JoinChatWriteMessage::RunTest(const FString& Parameters)
 }
 
 // Join Chat
-IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(JoinGroupChat, FNakamaTestBase, "Nakama.Base.Realtime.Chat.JoinGroupChat", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
+IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(JoinGroupChat, FNakamaTestBase, "Nakama.Base.Realtime.Chat.JoinGroupChat", NAKAMA_MODULE_TEST_MASK)
 inline bool JoinGroupChat::RunTest(const FString& Parameters)
 {
 	// Initiates the test

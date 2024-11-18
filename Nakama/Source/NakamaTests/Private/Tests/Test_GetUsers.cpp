@@ -1,8 +1,8 @@
-﻿#include "NakamaTestBase.h"
+#include "NakamaTestBase.h"
 #include "Misc/AutomationTest.h"
 
 // Authenticate Email
-IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(GetUsers, FNakamaTestBase, "Nakama.Base.Users.GetUsers", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
+IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(GetUsers, FNakamaTestBase, "Nakama.Base.Users.GetUsers", NAKAMA_MODULE_TEST_MASK)
 inline bool GetUsers::RunTest(const FString& Parameters)
 {
 	// Initiates the test

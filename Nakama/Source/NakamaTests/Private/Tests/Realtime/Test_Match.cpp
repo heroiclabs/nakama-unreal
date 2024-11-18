@@ -1,9 +1,9 @@
-﻿#include "Tests/Realtime/Test_Match.h"
+#include "Tests/Realtime/Test_Match.h"
 #include "NakamaTestBase.h"
 #include "Misc/AutomationTest.h"
 
 // Create Match
-IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(CreateMatch, FNakamaTestBase, "Nakama.Base.Realtime.Matches.Match", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
+IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(CreateMatch, FNakamaTestBase, "Nakama.Base.Realtime.Matches.Match", NAKAMA_MODULE_TEST_MASK)
 inline bool CreateMatch::RunTest(const FString& Parameters)
 {
 	// Initiates the test
@@ -64,7 +64,7 @@ inline bool CreateMatch::RunTest(const FString& Parameters)
 
 // Add Matchmaker, must return a TicketId
 IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(AddMatchmaker, FNakamaTestBase, "Nakama.Base.Realtime.Matches"
-																		".AddMatchmaker", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
+																		".AddMatchmaker", NAKAMA_MODULE_TEST_MASK)
 inline bool AddMatchmaker::RunTest(const FString& Parameters)
 {
 	// Initiates the test
@@ -145,7 +145,7 @@ inline bool AddMatchmaker::RunTest(const FString& Parameters)
 
 // Add Matchmaker, wait for Match Matched and Join Match by Token
 IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(MatchmakerJoinMatch, FNakamaMatchTestBase, "Nakama.Base.Realtime.Matches"
-																				   ".MatchmakerJoinMatch", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
+																				   ".MatchmakerJoinMatch", NAKAMA_MODULE_TEST_MASK)
 inline bool MatchmakerJoinMatch::RunTest(const FString& Parameters)
 {
 	// Initiates the test

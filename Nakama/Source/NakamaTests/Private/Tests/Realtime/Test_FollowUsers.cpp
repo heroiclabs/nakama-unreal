@@ -4,7 +4,7 @@
 
 // Add Matchmaker, wait for Match Matched and Join Match by Token
 IMPLEMENT_CUSTOM_SIMPLE_AUTOMATION_TEST(FollowUsers, FNakamaFollowUsersTestBase, "Nakama.Base.Realtime."
-																				   ".FollowUsers", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
+																				   ".FollowUsers", NAKAMA_MODULE_TEST_MASK)
 inline bool FollowUsers::RunTest(const FString& Parameters)
 {
 	// Initiates the test
