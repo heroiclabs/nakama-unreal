@@ -8702,7 +8702,8 @@ void UNakamaClient::ProcessRequestComplete(FHttpRequestPtr Request, const FHttpR
 		else
 		{
 			NAKAMA_LOG_WARN(FString::Printf(TEXT("Response (Code: %d) - Contents: %s"), ResponseCode, *ResponseBody));
-			const FNakamaError Error(ResponseBody);
+			FNakamaError Error(ResponseBody);
+                       Error.Code = FNakamaError::ConvertNakamaErrorCode(ResponseCode);
 			if (ErrorCallback)
 			{
 				ErrorCallback(Error);
