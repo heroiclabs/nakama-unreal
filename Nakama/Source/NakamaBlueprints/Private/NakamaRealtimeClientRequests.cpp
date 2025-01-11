@@ -11,7 +11,7 @@
 #include "NakamaStatus.h"
 #include "NakamaChat.h"
 
-UNakamaRealtimeClientConnect* UNakamaRealtimeClientConnect::Connect(UNakamaRealtimeClient *RealtimeClient, UNakamaSession *Session, bool bInShowAsOnline)
+UNakamaRealtimeClientConnect* UNakamaRealtimeClientConnect::Connect(UNakamaRealtimeClient* RealtimeClient, UNakamaSession *Session, bool bInShowAsOnline)
 {
 	UNakamaRealtimeClientConnect* Node = NewObject<UNakamaRealtimeClientConnect>();
 	Node->RealtimeClient = RealtimeClient;
@@ -232,7 +232,7 @@ void UNakamaRealtimeClientUpdateChatMessage::Activate()
 	RealtimeClient->UpdateChatMessage(ChannelId, MessageId, Content, successCallback, errorCallback);
 }
 
-UNakamaRealtimeClientRemoveChatMessage* UNakamaRealtimeClientRemoveChatMessage::RemoveChatMessage(UNakamaRealtimeClient *RealtimeClient, FString ChannelId, FString MessageId)
+UNakamaRealtimeClientRemoveChatMessage* UNakamaRealtimeClientRemoveChatMessage::RemoveChatMessage(UNakamaRealtimeClient* RealtimeClient, FString ChannelId, FString MessageId)
 {
 	UNakamaRealtimeClientRemoveChatMessage* Node = NewObject<UNakamaRealtimeClientRemoveChatMessage>();
 	Node->RealtimeClient = RealtimeClient;

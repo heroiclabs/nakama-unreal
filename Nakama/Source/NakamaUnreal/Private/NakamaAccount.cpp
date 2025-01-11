@@ -1,4 +1,4 @@
-﻿#include "NakamaAccount.h"
+#include "NakamaAccount.h"
 #include "NakamaUtils.h"
 
 FNakamaAccount::FNakamaAccount(): VerifyTime(FDateTime::MinValue()), DisableTime(FDateTime::MinValue())
@@ -16,9 +16,9 @@ FNakamaAccount::FNakamaAccount(const FString& JsonString)
         return;
     }
 	
-	if (JsonObject->HasTypedField<EJson::Object>("user"))
+	if (JsonObject->HasTypedField<EJson::Object>(TEXT("user")))
 	{
-		TSharedPtr<FJsonObject> UserJsonObject = JsonObject->GetObjectField("user");
+		TSharedPtr<FJsonObject> UserJsonObject = JsonObject->GetObjectField(TEXT("user"));
 
 		FString UserJsonString;
 		auto Writer = TJsonWriterFactory<>::Create(&UserJsonString);
@@ -29,14 +29,14 @@ FNakamaAccount::FNakamaAccount(const FString& JsonString)
 		}
 	}
 
-    JsonObject->TryGetStringField("wallet", Wallet);
-    JsonObject->TryGetStringField("email", Email);
-    JsonObject->TryGetStringField("custom_id", CustomId);
+    JsonObject->TryGetStringField(TEXT("wallet"), Wallet);
+    JsonObject->TryGetStringField(TEXT("email"), Email);
+    JsonObject->TryGetStringField(TEXT("custom_id"), CustomId);
 	
-    if (JsonObject->HasTypedField<EJson::Array>("devices"))
+    if (JsonObject->HasTypedField<EJson::Array>(TEXT("devices")))
     {
     	const TArray<TSharedPtr<FJsonValue>>* DevicesJsonArray;
-    	if (JsonObject->TryGetArrayField("devices", DevicesJsonArray))
+    	if (JsonObject->TryGetArrayField(TEXT("devices"), DevicesJsonArray))
     	{
     		for (const TSharedPtr<FJsonValue>& DeviceJson : *DevicesJsonArray)
     		{
@@ -58,7 +58,7 @@ FNakamaAccount::FNakamaAccount(const FString& JsonString)
     }
 
 	FString VerifyTimeString;
-	if (JsonObject->TryGetStringField("verify_time", VerifyTimeString))
+	if (JsonObject->TryGetStringField(TEXT("verify_time"), VerifyTimeString))
 	{
 		FDateTime::ParseIso8601(*VerifyTimeString, VerifyTime);
 	}
@@ -68,7 +68,7 @@ FNakamaAccount::FNakamaAccount(const FString& JsonString)
 	}
 
 	FString DisableTimeString;
-	if (JsonObject->TryGetStringField("disable_time", DisableTimeString))
+	if (JsonObject->TryGetStringField(TEXT("disable_time"), DisableTimeString))
 	{
 		FDateTime::ParseIso8601(*DisableTimeString, DisableTime);
 	}

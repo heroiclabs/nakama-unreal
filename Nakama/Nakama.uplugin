@@ -14,42 +14,42 @@
     "CanContainContent": true,
     "IsBetaVersion": false,
     "Installed": false,
-    "Modules": [
-        {
-            "Name": "NakamaUnreal",
-            "Type": "Runtime",
-            "LoadingPhase": "Default",
-            "WhitelistPlatforms": [
-                "Win64",
-                "Linux",
-                "IOS",
-                "Mac",
-                "Android"
-            ]
-        },
-        {
-            "Name": "NakamaBlueprints",
-            "Type": "Runtime",
-            "LoadingPhase": "Default",
-            "WhitelistPlatforms": [
-                "Win64",
-                "Linux",
-                "IOS",
-                "Mac",
-                "Android"
-            ]
-        },
-        {
-            "Name": "NakamaTests",
-            "Type": "DeveloperTool",
-            "LoadingPhase": "Default",
-            "WhitelistPlatforms": [
-                "Win64",
-                "Linux",
-                "IOS",
-                "Mac",
-                "Android"
-            ]
-        },
-    ]
+	"Modules": [
+		{
+			"Name": "NakamaUnreal",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"WhitelistPlatforms": [
+				"Win64",
+				"Linux",
+				"IOS",
+				"Mac",
+				"Android"
+			]
+		},
+		{
+			"Name": "NakamaBlueprints",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"WhitelistPlatforms": [
+				"Win64",
+				"Linux",
+				"IOS",
+				"Mac",
+				"Android"
+			]
+		},
+		{
+			"Name": "NakamaTests",
+			"Type": "DeveloperTool",
+			"LoadingPhase": "Default",
+			"WhitelistPlatforms": [
+				"Win64",
+				"Linux",
+				"IOS",
+				"Mac",
+				"Android"
+			]
+		}
+	]
 }

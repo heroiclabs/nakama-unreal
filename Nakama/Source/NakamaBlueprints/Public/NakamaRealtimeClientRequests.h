@@ -60,17 +60,17 @@ public:
 	 * @param bInShowAsOnline Show as online.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Setup", meta = (BlueprintInternalUseOnly = "true"))
-	static UNakamaRealtimeClientConnect* Connect(UNakamaRealtimeClient *RealtimeClient, UNakamaSession* Session, bool bInShowAsOnline);
+	static UNakamaRealtimeClientConnect* Connect(UNakamaRealtimeClient* RealtimeClient, UNakamaSession* Session, bool bInShowAsOnline);
 
 	virtual void Activate() override;
 
 private:
 
 	UPROPERTY()
-	UNakamaRealtimeClient *RealtimeClient;
+	TObjectPtr<UNakamaRealtimeClient> RealtimeClient;
 
 	UPROPERTY()
-	UNakamaSession *UserSession;
+	TObjectPtr<UNakamaSession> UserSession;
 
 	bool bShowAsOnline;
 
@@ -104,14 +104,14 @@ public:
 	 * @param RealtimeClient The Realtime Client (Socket) to use.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Chat|Messaging", meta = (BlueprintInternalUseOnly = "true", DisplayName = "Write Chat Message"))
-	static UNakamaRealtimeClientSendMessage* SendMessage(UNakamaRealtimeClient *RealtimeClient, FString ChannelId, FString Content);
+	static UNakamaRealtimeClientSendMessage* SendMessage(UNakamaRealtimeClient* RealtimeClient, FString ChannelId, FString Content);
 
 	virtual void Activate() override;
 
 private:
 
 	UPROPERTY()
-	UNakamaRealtimeClient *RealtimeClient;
+	TObjectPtr<UNakamaRealtimeClient> RealtimeClient;
 
 	FString ChannelId;
 	FString Content;
@@ -145,14 +145,14 @@ public:
 	 * @param RealtimeClient The Realtime Client (Socket) to use.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Chat|Messaging", meta = (BlueprintInternalUseOnly = "true"))
-	static UNakamaRealtimeClientSendDirectMessage* SendDirectMessage(UNakamaRealtimeClient *RealtimeClient, FString UserID, FString Content);
+	static UNakamaRealtimeClientSendDirectMessage* SendDirectMessage(UNakamaRealtimeClient* RealtimeClient, FString UserID, FString Content);
 
 	virtual void Activate() override;
 
 private:
 
 	UPROPERTY()
-	UNakamaRealtimeClient *RealtimeClient;
+	TObjectPtr<UNakamaRealtimeClient> RealtimeClient;
 
 	FString UserID;
 	FString Content;
@@ -187,14 +187,14 @@ public:
 	 * @param RealtimeClient The Realtime Client (Socket) to use.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Chat|Messaging", meta = (BlueprintInternalUseOnly = "true"))
-	static UNakamaRealtimeClientUpdateChatMessage* UpdateChatMessage(UNakamaRealtimeClient *RealtimeClient, FString ChannelId, FString MessageId, FString Content);
+	static UNakamaRealtimeClientUpdateChatMessage* UpdateChatMessage(UNakamaRealtimeClient* RealtimeClient, FString ChannelId, FString MessageId, FString Content);
 
 	virtual void Activate() override;
 
 private:
 
 	UPROPERTY()
-	UNakamaRealtimeClient *RealtimeClient;
+	TObjectPtr<UNakamaRealtimeClient> RealtimeClient;
 
 	FString ChannelId;
 	FString Content;
@@ -229,14 +229,14 @@ public:
 	 * @param RealtimeClient The Realtime Client (Socket) to use.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Chat|Messaging", meta = (BlueprintInternalUseOnly = "true"))
-	static UNakamaRealtimeClientRemoveChatMessage* RemoveChatMessage(UNakamaRealtimeClient *RealtimeClient, FString ChannelId, FString MessageId);
+	static UNakamaRealtimeClientRemoveChatMessage* RemoveChatMessage(UNakamaRealtimeClient* RealtimeClient, FString ChannelId, FString MessageId);
 
 	virtual void Activate() override;
 
 private:
 
 	UPROPERTY()
-	UNakamaRealtimeClient *RealtimeClient;
+	TObjectPtr<UNakamaRealtimeClient> RealtimeClient;
 
 	FString ChannelId;
 	FString MessageId;
@@ -274,14 +274,14 @@ public:
 	 * @param RealtimeClient The Realtime Client (Socket) to use.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Chat", meta = (BlueprintInternalUseOnly = "true"))
-	static UNakamaRealtimeClientJoinChat* JoinChat(UNakamaRealtimeClient *RealtimeClient, FString ChatId, ENakamaChannelType ChannelType, bool Persistence, bool Hidden);
+	static UNakamaRealtimeClientJoinChat* JoinChat(UNakamaRealtimeClient* RealtimeClient, FString ChatId, ENakamaChannelType ChannelType, bool Persistence, bool Hidden);
 
 	virtual void Activate() override;
 
 private:
 
 	UPROPERTY()
-	UNakamaRealtimeClient *RealtimeClient;
+	TObjectPtr<UNakamaRealtimeClient> RealtimeClient;
 
 	FString ChatId;
 	ENakamaChannelType ChannelType;
@@ -317,14 +317,14 @@ public:
 	* @param RealtimeClient The Realtime Client (Socket) to use.
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Chat", meta = (BlueprintInternalUseOnly = "true"))
-	static UNakamaRealtimeClientLeaveChat* LeaveChat(UNakamaRealtimeClient *RealtimeClient, FString ChannelId);
+	static UNakamaRealtimeClientLeaveChat* LeaveChat(UNakamaRealtimeClient* RealtimeClient, FString ChannelId);
 
 	virtual void Activate() override;
 
 private:
 
 	UPROPERTY()
-	UNakamaRealtimeClient *RealtimeClient;
+	TObjectPtr<UNakamaRealtimeClient> RealtimeClient;
 
 	FString ChannelId;
 };
@@ -364,14 +364,14 @@ public:
 	 * @param RealtimeClient The Realtime Client (Socket) to use.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Matchmaker", meta = (BlueprintInternalUseOnly = "true"))
-	static UNakamaRealtimeClientAddMatchmaker* AddMatchmaker(UNakamaRealtimeClient *RealtimeClient, int32 MinCount, int32 MaxCount, FString Query, TMap<FString, FString> StringProperties, TMap<FString, float> NumericProperties, int32 CountMultiple, bool IgnoreCountMultiple);
+	static UNakamaRealtimeClientAddMatchmaker* AddMatchmaker(UNakamaRealtimeClient* RealtimeClient, int32 MinCount, int32 MaxCount, FString Query, TMap<FString, FString> StringProperties, TMap<FString, float> NumericProperties, int32 CountMultiple, bool IgnoreCountMultiple);
 
 	virtual void Activate() override;
 
 private:
 
 	UPROPERTY()
-	UNakamaRealtimeClient *RealtimeClient;
+	TObjectPtr<UNakamaRealtimeClient> RealtimeClient;
 
 	int32 MinCount;
 	int32 MaxCount;
@@ -411,14 +411,14 @@ public:
 	 * @param RealtimeClient The Realtime Client (Socket) to use.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Matchmaker", meta = (BlueprintInternalUseOnly = "true", DisplayName = "Remove Matchmaker"))
-	static UNakamaRealtimeClientLeaveMatchmaker* LeaveMatchmaker(UNakamaRealtimeClient *RealtimeClient, FString Ticket);
+	static UNakamaRealtimeClientLeaveMatchmaker* LeaveMatchmaker(UNakamaRealtimeClient* RealtimeClient, FString Ticket);
 
 	virtual void Activate() override;
 
 private:
 
 	UPROPERTY()
-	UNakamaRealtimeClient *RealtimeClient;
+	TObjectPtr<UNakamaRealtimeClient> RealtimeClient;
 
 	FString Ticket;
 
@@ -453,14 +453,14 @@ public:
 	 * @param RealtimeClient The Realtime Client (Socket) to use.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Status", meta = (BlueprintInternalUseOnly = "true"))
-	static UNakamaRealtimeClientUpdateStatus* UpdateStatus(UNakamaRealtimeClient *RealtimeClient, FString StatusMessage);
+	static UNakamaRealtimeClientUpdateStatus* UpdateStatus(UNakamaRealtimeClient* RealtimeClient, FString StatusMessage);
 
 	virtual void Activate() override;
 
 private:
 
 	UPROPERTY()
-	UNakamaRealtimeClient *RealtimeClient;
+	TObjectPtr<UNakamaRealtimeClient> RealtimeClient;
 
 	FString StatusMessage;
 
@@ -490,14 +490,14 @@ public:
 	 *@param RealtimeClient The Realtime Client (Socket) to use.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Status", meta = (BlueprintInternalUseOnly = "true"))
-	static UNakamaRealtimeClientSetAppearOffline* SetAppearOffline(UNakamaRealtimeClient *RealtimeClient);
+	static UNakamaRealtimeClientSetAppearOffline* SetAppearOffline(UNakamaRealtimeClient* RealtimeClient);
 
 	virtual void Activate() override;
 
 private:
 
 	UPROPERTY()
-	UNakamaRealtimeClient *RealtimeClient;
+	TObjectPtr<UNakamaRealtimeClient> RealtimeClient;
 
 	FString StatusMessage;
 
@@ -530,14 +530,14 @@ public:
 	 * @param RealtimeClient The Realtime Client (Socket) to use.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Status", meta = (BlueprintInternalUseOnly = "true"))
-	static UNakamaRealtimeClientFollowUsers* FollowUsers(UNakamaRealtimeClient *RealtimeClient, TArray<FString> UserIds);
+	static UNakamaRealtimeClientFollowUsers* FollowUsers(UNakamaRealtimeClient* RealtimeClient, TArray<FString> UserIds);
 
 	virtual void Activate() override;
 
 private:
 
 	UPROPERTY()
-	UNakamaRealtimeClient *RealtimeClient;
+	TObjectPtr<UNakamaRealtimeClient> RealtimeClient;
 
 	TArray<FString> UserIds;
 
@@ -571,14 +571,14 @@ public:
 	 * @param RealtimeClient The Realtime Client (Socket) to use.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Status", meta = (BlueprintInternalUseOnly = "true"))
-	static UNakamaRealtimeClientUnFollowUsers* UnFollowUsers(UNakamaRealtimeClient *RealtimeClient, TArray<FString> UserIds);
+	static UNakamaRealtimeClientUnFollowUsers* UnFollowUsers(UNakamaRealtimeClient* RealtimeClient, TArray<FString> UserIds);
 
 	virtual void Activate() override;
 
 private:
 
 	UPROPERTY()
-	UNakamaRealtimeClient *RealtimeClient;
+	TObjectPtr<UNakamaRealtimeClient> RealtimeClient;
 
 	TArray<FString> UserIds;
 
@@ -611,14 +611,14 @@ public:
 	 * @param RealtimeClient The Realtime Client (Socket) to use.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Realtime|Match", meta = (BlueprintInternalUseOnly = "true"))
-	static UNakamaRealtimeClientCreateMatch* CreateMatch(UNakamaRealtimeClient *RealtimeClient);
+	static UNakamaRealtimeClientCreateMatch* CreateMatch(UNakamaRealtimeClient* RealtimeClient);
 
 	virtual void Activate() override;
 
 private:
 
 	UPROPERTY()
-	UNakamaRealtimeClient *RealtimeClient;
+	TObjectPtr<UNakamaRealtimeClient> RealtimeClient;
 
 };
 
@@ -650,14 +650,14 @@ public:
 	 * @param RealtimeClient The Realtime Client (Socket) to use.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Realtime|Match", meta = (BlueprintInternalUseOnly = "true"))
-	static UNakamaRealtimeClientJoinMatch* JoinMatch(UNakamaRealtimeClient *RealtimeClient, FString MatchId, TMap<FString, FString> MetaData);
+	static UNakamaRealtimeClientJoinMatch* JoinMatch(UNakamaRealtimeClient* RealtimeClient, FString MatchId, TMap<FString, FString> MetaData);
 
 	virtual void Activate() override;
 
 private:
 
 	UPROPERTY()
-	UNakamaRealtimeClient *RealtimeClient;
+	TObjectPtr<UNakamaRealtimeClient> RealtimeClient;
 
 	FString MatchId;
 	TMap<FString, FString> MetaData;
@@ -688,14 +688,14 @@ public:
 	* @param RealtimeClient The Realtime Client (Socket) to use.
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Realtime|Match", meta = (BlueprintInternalUseOnly = "true"))
-	static UNakamaRealtimeClientJoinMatchByToken* JoinMatchByToken(UNakamaRealtimeClient *RealtimeClient, FString Token);
+	static UNakamaRealtimeClientJoinMatchByToken* JoinMatchByToken(UNakamaRealtimeClient* RealtimeClient, FString Token);
 
 	virtual void Activate() override;
 
 private:
 
 	UPROPERTY()
-	UNakamaRealtimeClient *RealtimeClient;
+	TObjectPtr<UNakamaRealtimeClient> RealtimeClient;
 
 	FString Token;
 };
@@ -727,14 +727,14 @@ public:
 	* @param RealtimeClient The Realtime Client (Socket) to use.
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Realtime|Match", meta = (BlueprintInternalUseOnly = "true"))
-	static UNakamaRealtimeClientLeaveMatch* LeaveMatch(UNakamaRealtimeClient *RealtimeClient, FString MatchId);
+	static UNakamaRealtimeClientLeaveMatch* LeaveMatch(UNakamaRealtimeClient* RealtimeClient, FString MatchId);
 
 	virtual void Activate() override;
 
 private:
 
 	UPROPERTY()
-	UNakamaRealtimeClient *RealtimeClient;
+	TObjectPtr<UNakamaRealtimeClient> RealtimeClient;
 
 	FString MatchId;
 };
@@ -769,14 +769,14 @@ public:
 	 * @param RealtimeClient The Realtime Client (Socket) to use.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Realtime|Parties", meta = (BlueprintInternalUseOnly = "true"))
-	static UNakamaRealtimeClientCreateParty* CreateParty(UNakamaRealtimeClient *RealtimeClient, bool Open, int32 MaxSize);
+	static UNakamaRealtimeClientCreateParty* CreateParty(UNakamaRealtimeClient* RealtimeClient, bool Open, int32 MaxSize);
 
 	virtual void Activate() override;
 
 private:
 
 	UPROPERTY()
-	UNakamaRealtimeClient *RealtimeClient;
+	TObjectPtr<UNakamaRealtimeClient> RealtimeClient;
 
 	bool Open;
 	int32 MaxSize;
@@ -809,14 +809,14 @@ public:
 	 * @param RealtimeClient The Realtime Client (Socket) to use.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Realtime|Parties", meta = (BlueprintInternalUseOnly = "true"))
-	static UNakamaRealtimeClientJoinParty* JoinParty(UNakamaRealtimeClient *RealtimeClient, FString PartyId);
+	static UNakamaRealtimeClientJoinParty* JoinParty(UNakamaRealtimeClient* RealtimeClient, FString PartyId);
 
 	virtual void Activate() override;
 
 private:
 
 	UPROPERTY()
-	UNakamaRealtimeClient *RealtimeClient;
+	TObjectPtr<UNakamaRealtimeClient> RealtimeClient;
 
 	FString PartyId;
 
@@ -849,14 +849,14 @@ public:
 	 * @param RealtimeClient The Realtime Client (Socket) to use.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Realtime|Parties", meta = (BlueprintInternalUseOnly = "true"))
-	static UNakamaRealtimeClientLeaveParty* LeaveParty(UNakamaRealtimeClient *RealtimeClient, FString PartyId);
+	static UNakamaRealtimeClientLeaveParty* LeaveParty(UNakamaRealtimeClient* RealtimeClient, FString PartyId);
 
 	virtual void Activate() override;
 
 private:
 
 	UPROPERTY()
-	UNakamaRealtimeClient *RealtimeClient;
+	TObjectPtr<UNakamaRealtimeClient> RealtimeClient;
 
 	FString PartyId;
 
@@ -890,14 +890,14 @@ public:
 	 * @param RealtimeClient The Realtime Client (Socket) to use.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Realtime|Parties", meta = (BlueprintInternalUseOnly = "true"))
-	static UNakamaRealtimeClientListPartyJoinRequests* ListPartyJoinRequests(UNakamaRealtimeClient *RealtimeClient, FString PartyId);
+	static UNakamaRealtimeClientListPartyJoinRequests* ListPartyJoinRequests(UNakamaRealtimeClient* RealtimeClient, FString PartyId);
 
 	virtual void Activate() override;
 
 private:
 
 	UPROPERTY()
-	UNakamaRealtimeClient *RealtimeClient;
+	TObjectPtr<UNakamaRealtimeClient> RealtimeClient;
 
 	FString PartyId;
 
@@ -927,14 +927,14 @@ public:
 	 * @param RealtimeClient The Realtime Client (Socket) to use.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Realtime|Parties", meta = (BlueprintInternalUseOnly = "true"))
-	static UNakamaRealtimeClientPromotePartyMember* PromotePartyMember(UNakamaRealtimeClient *RealtimeClient, FString PartyId, FNakamaUserPresence PartyMember);
+	static UNakamaRealtimeClientPromotePartyMember* PromotePartyMember(UNakamaRealtimeClient* RealtimeClient, FString PartyId, FNakamaUserPresence PartyMember);
 
 	virtual void Activate() override;
 
 private:
 
 	UPROPERTY()
-	UNakamaRealtimeClient *RealtimeClient;
+	TObjectPtr<UNakamaRealtimeClient> RealtimeClient;
 
 	FString PartyId;
 	FNakamaUserPresence PartyMember;
@@ -968,14 +968,14 @@ public:
 	 * @param RealtimeClient The Realtime Client (Socket) to use.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Realtime|Parties", meta = (BlueprintInternalUseOnly = "true"))
-	static UNakamaRealtimeClientRemoveMatchmakerParty* RemoveMatchmakerParty(UNakamaRealtimeClient *RealtimeClient, FString PartyId, FString Ticket);
+	static UNakamaRealtimeClientRemoveMatchmakerParty* RemoveMatchmakerParty(UNakamaRealtimeClient* RealtimeClient, FString PartyId, FString Ticket);
 
 	virtual void Activate() override;
 
 private:
 
 	UPROPERTY()
-	UNakamaRealtimeClient *RealtimeClient;
+	TObjectPtr<UNakamaRealtimeClient> RealtimeClient;
 
 	FString PartyId;
 	FString Ticket;
@@ -1007,14 +1007,14 @@ public:
 	 * @param RealtimeClient The Realtime Client (Socket) to use.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Realtime|Parties", meta = (BlueprintInternalUseOnly = "true"))
-	static UNakamaRealtimeClientRemovePartyMember* RemovePartyMember(UNakamaRealtimeClient *RealtimeClient, FString PartyId, FNakamaUserPresence Presence);
+	static UNakamaRealtimeClientRemovePartyMember* RemovePartyMember(UNakamaRealtimeClient* RealtimeClient, FString PartyId, FNakamaUserPresence Presence);
 
 	virtual void Activate() override;
 
 private:
 
 	UPROPERTY()
-	UNakamaRealtimeClient *RealtimeClient;
+	TObjectPtr<UNakamaRealtimeClient> RealtimeClient;
 
 	FString PartyId;
 	FNakamaUserPresence Presence;
@@ -1048,14 +1048,14 @@ public:
 	 * @param RealtimeClient The Realtime Client (Socket) to use.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Realtime|Parties", meta = (BlueprintInternalUseOnly = "true"))
-	static UNakamaRealtimeClientAcceptPartyMember* AcceptPartyMember(UNakamaRealtimeClient *RealtimeClient, FString PartyId, FNakamaUserPresence Presence);
+	static UNakamaRealtimeClientAcceptPartyMember* AcceptPartyMember(UNakamaRealtimeClient* RealtimeClient, FString PartyId, FNakamaUserPresence Presence);
 
 	virtual void Activate() override;
 
 private:
 
 	UPROPERTY()
-	UNakamaRealtimeClient *RealtimeClient;
+	TObjectPtr<UNakamaRealtimeClient> RealtimeClient;
 
 	FString PartyId;
 	FNakamaUserPresence Presence;
@@ -1094,14 +1094,14 @@ public:
 	 * @param CountMultiple An optional multiple of the matched count that must be satisfied.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Matchmaker", meta = (BlueprintInternalUseOnly = "true"))
-	static UNakamaRealtimeClientAddMatchmakerParty* AddMatchmakerParty(UNakamaRealtimeClient *RealtimeClient, FString PartyId, int32 MinCount, int32 MaxCount, FString Query, TMap<FString, FString> StringProperties, TMap<FString, float> NumericProperties, int32 CountMultiple, bool IgnoreCountMultiple);
+	static UNakamaRealtimeClientAddMatchmakerParty* AddMatchmakerParty(UNakamaRealtimeClient* RealtimeClient, FString PartyId, int32 MinCount, int32 MaxCount, FString Query, TMap<FString, FString> StringProperties, TMap<FString, float> NumericProperties, int32 CountMultiple, bool IgnoreCountMultiple);
 
 	virtual void Activate() override;
 
 private:
 
 	UPROPERTY()
-	UNakamaRealtimeClient *RealtimeClient;
+	TObjectPtr<UNakamaRealtimeClient> RealtimeClient;
 
 	FString PartyId;
 	int32 MinCount;
@@ -1138,14 +1138,14 @@ public:
 	 * @param RealtimeClient The Realtime Client (Socket) to use.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Nakama|Realtime|Parties", meta = (BlueprintInternalUseOnly = "true"))
-	static UNakamaRealtimeClientCloseParty* CloseParty(UNakamaRealtimeClient *RealtimeClient, FString PartyId);
+	static UNakamaRealtimeClientCloseParty* CloseParty(UNakamaRealtimeClient* RealtimeClient, FString PartyId);
 
 	virtual void Activate() override;
 
 private:
 
 	UPROPERTY()
-	UNakamaRealtimeClient *RealtimeClient;
+	TObjectPtr<UNakamaRealtimeClient> RealtimeClient;
 
 	FString PartyId;
 
@@ -1187,7 +1187,7 @@ public:
 private:
 
 	UPROPERTY()
-	UNakamaRealtimeClient *RealtimeClient;
+	TObjectPtr<UNakamaRealtimeClient> RealtimeClient;
 
 	FString FunctionId;
 	FString Payload;

@@ -1,4 +1,4 @@
-﻿#include "NakamaChannelTypes.h"
+#include "NakamaChannelTypes.h"
 #include "NakamaUtils.h"
 
 FNakamaChannelMessage::FNakamaChannelMessage(const FString& JsonString)
@@ -8,28 +8,28 @@ FNakamaChannelMessage::FNakamaChannelMessage(const FString& JsonString)
 
 	if (FJsonSerializer::Deserialize(JsonReader, JsonObject) && JsonObject.IsValid())
 	{
-		JsonObject->TryGetStringField("channel_id", ChannelId);
-		JsonObject->TryGetStringField("message_id", MessageId);
-		JsonObject->TryGetNumberField("code", code);
-		JsonObject->TryGetStringField("sender_id", SenderId);
-		JsonObject->TryGetStringField("username", Username);
-		JsonObject->TryGetStringField("content", Content);
+		JsonObject->TryGetStringField(TEXT("channel_id"), ChannelId);
+		JsonObject->TryGetStringField(TEXT("message_id"), MessageId);
+		JsonObject->TryGetNumberField(TEXT("code"), code);
+		JsonObject->TryGetStringField(TEXT("sender_id"), SenderId);
+		JsonObject->TryGetStringField(TEXT("username"), Username);
+		JsonObject->TryGetStringField(TEXT("content"), Content);
     
 		FString CreateTimeString;
-		if (JsonObject->TryGetStringField("create_time", CreateTimeString)) {
+		if (JsonObject->TryGetStringField(TEXT("create_time"), CreateTimeString)) {
 			FDateTime::ParseIso8601(*CreateTimeString, CreateTime);
 		}
 
 		FString UpdateTimeString;
-		if (JsonObject->TryGetStringField("update_time", UpdateTimeString)) {
+		if (JsonObject->TryGetStringField(TEXT("update_time"), UpdateTimeString)) {
 			FDateTime::ParseIso8601(*UpdateTimeString, UpdateTime);
 		}
     
-		JsonObject->TryGetBoolField("persistent", Persistent);
-		JsonObject->TryGetStringField("room_name", RoomName);
-		JsonObject->TryGetStringField("group_id", GroupId);
-		JsonObject->TryGetStringField("user_id_one", UserIdOne);
-		JsonObject->TryGetStringField("user_id_two", UserIdTwo);
+		JsonObject->TryGetBoolField(TEXT("persistent"), Persistent);
+		JsonObject->TryGetStringField(TEXT("room_name"), RoomName);
+		JsonObject->TryGetStringField(TEXT("group_id"), GroupId);
+		JsonObject->TryGetStringField(TEXT("user_id_one"), UserIdOne);
+		JsonObject->TryGetStringField(TEXT("user_id_two"), UserIdTwo);
 	}
 }
 
@@ -46,25 +46,25 @@ FNakamaChannelMessageAck::FNakamaChannelMessageAck(const FString& JsonString)
 	if (FJsonSerializer::Deserialize(JsonReader, JsonObject) && JsonObject.IsValid())
 	{
 		const TSharedPtr<FJsonObject>* ChannelMessageObject;
-		if (JsonObject->TryGetObjectField("channel_message_ack", ChannelMessageObject)) {
+		if (JsonObject->TryGetObjectField(TEXT("channel_message_ack"), ChannelMessageObject)) {
 
-			(*ChannelMessageObject)->TryGetStringField("channel_id", ChannelId);
-			(*ChannelMessageObject)->TryGetStringField("message_id", MessageId);
-			(*ChannelMessageObject)->TryGetStringField("username", Username);
-			(*ChannelMessageObject)->TryGetNumberField("code", code);
+			(*ChannelMessageObject)->TryGetStringField(TEXT("channel_id"), ChannelId);
+			(*ChannelMessageObject)->TryGetStringField(TEXT("message_id"), MessageId);
+			(*ChannelMessageObject)->TryGetStringField(TEXT("username"), Username);
+			(*ChannelMessageObject)->TryGetNumberField(TEXT("code"), code);
 
 			FString CreateTimeString;
-			if ((*ChannelMessageObject)->TryGetStringField("create_time", CreateTimeString)) {
+			if ((*ChannelMessageObject)->TryGetStringField(TEXT("create_time"), CreateTimeString)) {
 				FDateTime::ParseIso8601(*CreateTimeString, CreateTime);
 			}
 
 			FString UpdateTimeString;
-			if ((*ChannelMessageObject)->TryGetStringField("update_time", UpdateTimeString)) {
+			if ((*ChannelMessageObject)->TryGetStringField(TEXT("update_time"), UpdateTimeString)) {
 				FDateTime::ParseIso8601(*UpdateTimeString, UpdateTime);
 			}
 
-			(*ChannelMessageObject)->TryGetBoolField("persistent", Persistent);
-			(*ChannelMessageObject)->TryGetStringField("room_name", RoomName);
+			(*ChannelMessageObject)->TryGetBoolField(TEXT("persistent"), Persistent);
+			(*ChannelMessageObject)->TryGetStringField(TEXT("room_name"), RoomName);
 		}
 	}
 	
@@ -82,7 +82,7 @@ FNakamaChannelMessageList::FNakamaChannelMessageList(const FString& JsonString)
 	if (FJsonSerializer::Deserialize(JsonReader, JsonObject) && JsonObject.IsValid())
 	{
 		const TArray<TSharedPtr<FJsonValue>>* MessagesJsonArray;
-		if (JsonObject->TryGetArrayField("messages", MessagesJsonArray))
+		if (JsonObject->TryGetArrayField(TEXT("messages"), MessagesJsonArray))
 		{
 			for (const TSharedPtr<FJsonValue>& MessageJsonValue : *MessagesJsonArray)
 			{
@@ -103,8 +103,8 @@ FNakamaChannelMessageList::FNakamaChannelMessageList(const FString& JsonString)
 			}
 		}
 
-		JsonObject->TryGetStringField("next_cursor", NextCursor);
-		JsonObject->TryGetStringField("prev_cursor", PrevCursor);
+		JsonObject->TryGetStringField(TEXT("next_cursor"), NextCursor);
+		JsonObject->TryGetStringField(TEXT("prev_cursor"), PrevCursor);
 	}
 }
 
@@ -121,10 +121,10 @@ FNakamaChannelPresenceEvent::FNakamaChannelPresenceEvent(const FString& JsonStri
 
 	if (FJsonSerializer::Deserialize(JsonReader, JsonObject) && JsonObject.IsValid())
 	{
-	    JsonObject->TryGetStringField("channel_id", ChannelId);
+	    JsonObject->TryGetStringField(TEXT("channel_id"), ChannelId);
 
 	    const TArray<TSharedPtr<FJsonValue>>* JoinsJsonArray;
-	    if (JsonObject->TryGetArrayField("joins", JoinsJsonArray))
+	    if (JsonObject->TryGetArrayField(TEXT("joins"), JoinsJsonArray))
 	    {
 	        for (const TSharedPtr<FJsonValue>& JoinJsonValue : *JoinsJsonArray)
 	        {
@@ -147,7 +147,7 @@ FNakamaChannelPresenceEvent::FNakamaChannelPresenceEvent(const FString& JsonStri
 	    }
 
 	    const TArray<TSharedPtr<FJsonValue>>* LeavesJsonArray;
-	    if (JsonObject->TryGetArrayField("leaves", LeavesJsonArray))
+	    if (JsonObject->TryGetArrayField(TEXT("leaves"), LeavesJsonArray))
 	    {
 	        for (const TSharedPtr<FJsonValue>& LeaveJsonValue : *LeavesJsonArray)
 	        {
@@ -169,10 +169,10 @@ FNakamaChannelPresenceEvent::FNakamaChannelPresenceEvent(const FString& JsonStri
 	        }
 	    }
 
-	    JsonObject->TryGetStringField("room_name", RoomName);
-	    JsonObject->TryGetStringField("group_id", GroupId);
-	    JsonObject->TryGetStringField("user_id_one", UserIdOne);
-	    JsonObject->TryGetStringField("user_id_two", UserIdTwo);
+	    JsonObject->TryGetStringField(TEXT("room_name"), RoomName);
+	    JsonObject->TryGetStringField(TEXT("group_id"), GroupId);
+	    JsonObject->TryGetStringField(TEXT("user_id_one"), UserIdOne);
+	    JsonObject->TryGetStringField(TEXT("user_id_two"), UserIdTwo);
 	}
 }
 

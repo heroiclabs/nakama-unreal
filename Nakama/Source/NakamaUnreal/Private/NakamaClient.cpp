@@ -2248,14 +2248,14 @@ void UNakamaClient::AuthenticateDevice(
     // Setup the request content
     const TSharedPtr<FJsonObject> ContentJson = MakeShared<FJsonObject>();
     ContentJson->SetStringField(TEXT("id"), DeviceId);
-    AddVarsToJson(ContentJson, Vars);
+    FNakamaUtils::AddVarsToJson(ContentJson, Vars);
 
     // Serialize the request content
     FString Content;
-    if (!SerializeJsonObject(ContentJson, Content))
+    if (!FNakamaUtils::SerializeJsonObject(ContentJson, Content))
     {
         // Handle JSON serialization failure
-        HandleJsonSerializationFailure(ErrorCallback);
+        FNakamaUtils::HandleJsonSerializationFailure(ErrorCallback);
         return;
     }
 
@@ -2263,7 +2263,7 @@ void UNakamaClient::AuthenticateDevice(
     const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::POST, QueryParams, "");
 
     // Set the basic authorization header
-    SetBasicAuthorizationHeader(HttpRequest);
+	FNakamaUtils::FNakamaUtils::SetBasicAuthorizationHeader(HttpRequest, ServerKey);
 
     // Lock the ActiveRequests mutex to protect concurrent access
     FScopeLock Lock(&ActiveRequestsMutex);
@@ -2289,7 +2289,7 @@ void UNakamaClient::AuthenticateDevice(
                 const FString ResponseBody = Response->GetContentAsString();
 
                 // Check if Request was successful
-                if (IsResponseSuccessful(Response->GetResponseCode()))
+                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
                 {
                     // Check for Success Callback
                     if (SuccessCallback)
@@ -2314,7 +2314,7 @@ void UNakamaClient::AuthenticateDevice(
                 // Handle Invalid Response
                 if (ErrorCallback)
                 {
-                    const FNakamaError RequestError = CreateRequestFailureError();
+                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
                     ErrorCallback(RequestError);
                 }
             }
@@ -2352,14 +2352,14 @@ void UNakamaClient::AuthenticateEmail(
     const TSharedPtr<FJsonObject> ContentJson = MakeShared<FJsonObject>();
     ContentJson->SetStringField(TEXT("email"), Email);
     ContentJson->SetStringField(TEXT("password"), Password);
-    AddVarsToJson(ContentJson, Vars);
+    FNakamaUtils::AddVarsToJson(ContentJson, Vars);
 
     // Serialize the request content
     FString Content;
-    if (!SerializeJsonObject(ContentJson, Content))
+    if (!FNakamaUtils::SerializeJsonObject(ContentJson, Content))
     {
         // Handle JSON serialization failure
-        HandleJsonSerializationFailure(ErrorCallback);
+        FNakamaUtils::HandleJsonSerializationFailure(ErrorCallback);
         return;
     }
 
@@ -2367,7 +2367,7 @@ void UNakamaClient::AuthenticateEmail(
     const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::POST, QueryParams, "");
 
     // Set the basic authorization header
-    SetBasicAuthorizationHeader(HttpRequest);
+    FNakamaUtils::SetBasicAuthorizationHeader(HttpRequest, ServerKey);
 
     // Lock the ActiveRequests mutex to protect concurrent access
     FScopeLock Lock(&ActiveRequestsMutex);
@@ -2393,7 +2393,7 @@ void UNakamaClient::AuthenticateEmail(
                 const FString ResponseBody = Response->GetContentAsString();
 
                 // Check if Request was successful
-                if (IsResponseSuccessful(Response->GetResponseCode()))
+                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
                 {
                     // Check for Success Callback
                     if (SuccessCallback)
@@ -2418,7 +2418,7 @@ void UNakamaClient::AuthenticateEmail(
                 // Handle Invalid Response
                 if (ErrorCallback)
                 {
-                    const FNakamaError RequestError = CreateRequestFailureError();
+                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
                     ErrorCallback(RequestError);
                 }
             }
@@ -2454,14 +2454,14 @@ void UNakamaClient::AuthenticateCustom(
     // Setup the request content
     const TSharedPtr<FJsonObject> ContentJson = MakeShared<FJsonObject>();
     ContentJson->SetStringField(TEXT("id"), CustomId);
-    AddVarsToJson(ContentJson, Vars);
+    FNakamaUtils::AddVarsToJson(ContentJson, Vars);
 
     // Serialize the request content
     FString Content;
-    if (!SerializeJsonObject(ContentJson, Content))
+    if (!FNakamaUtils::SerializeJsonObject(ContentJson, Content))
     {
         // Handle JSON serialization failure
-        HandleJsonSerializationFailure(ErrorCallback);
+        FNakamaUtils::HandleJsonSerializationFailure(ErrorCallback);
         return;
     }
 
@@ -2469,7 +2469,7 @@ void UNakamaClient::AuthenticateCustom(
     const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::POST, QueryParams, "");
 
     // Set the basic authorization header
-    SetBasicAuthorizationHeader(HttpRequest);
+	FNakamaUtils::SetBasicAuthorizationHeader(HttpRequest, ServerKey);
 
     // Lock the ActiveRequests mutex to protect concurrent access
     FScopeLock Lock(&ActiveRequestsMutex);
@@ -2495,7 +2495,7 @@ void UNakamaClient::AuthenticateCustom(
                 const FString ResponseBody = Response->GetContentAsString();
 
                 // Check if Request was successful
-                if (IsResponseSuccessful(Response->GetResponseCode()))
+                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
                 {
                     // Check for Success Callback
                     if (SuccessCallback)
@@ -2520,7 +2520,7 @@ void UNakamaClient::AuthenticateCustom(
                 // Handle Invalid Response
                 if (ErrorCallback)
                 {
-                    const FNakamaError RequestError = CreateRequestFailureError();
+                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
                     ErrorCallback(RequestError);
                 }
             }
@@ -2556,14 +2556,14 @@ void UNakamaClient::AuthenticateApple(
     // Setup the request content
     const TSharedPtr<FJsonObject> ContentJson = MakeShared<FJsonObject>();
     ContentJson->SetStringField(TEXT("token"), Token);
-    AddVarsToJson(ContentJson, Vars);
+    FNakamaUtils::AddVarsToJson(ContentJson, Vars);
 
     // Serialize the request content
     FString Content;
-    if (!SerializeJsonObject(ContentJson, Content))
+    if (!FNakamaUtils::SerializeJsonObject(ContentJson, Content))
     {
         // Handle JSON serialization failure
-        HandleJsonSerializationFailure(ErrorCallback);
+        FNakamaUtils::HandleJsonSerializationFailure(ErrorCallback);
         return;
     }
 
@@ -2571,7 +2571,7 @@ void UNakamaClient::AuthenticateApple(
     const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::POST, QueryParams, "");
 
     // Set the basic authorization header
-    SetBasicAuthorizationHeader(HttpRequest);
+	FNakamaUtils::SetBasicAuthorizationHeader(HttpRequest, ServerKey);
 
     // Lock the ActiveRequests mutex to protect concurrent access
     FScopeLock Lock(&ActiveRequestsMutex);
@@ -2597,7 +2597,7 @@ void UNakamaClient::AuthenticateApple(
                 const FString ResponseBody = Response->GetContentAsString();
 
                 // Check if Request was successful
-                if (IsResponseSuccessful(Response->GetResponseCode()))
+                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
                 {
                     // Check for Success Callback
                     if (SuccessCallback)
@@ -2622,7 +2622,7 @@ void UNakamaClient::AuthenticateApple(
                 // Handle Invalid Response
                 if (ErrorCallback)
                 {
-                    const FNakamaError RequestError = CreateRequestFailureError();
+                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
                     ErrorCallback(RequestError);
                 }
             }
@@ -2660,14 +2660,14 @@ void UNakamaClient::AuthenticateFacebook(
     // Setup the request content
     const TSharedPtr<FJsonObject> ContentJson = MakeShared<FJsonObject>();
     ContentJson->SetStringField(TEXT("token"), Token);
-    AddVarsToJson(ContentJson, Vars);
+    FNakamaUtils::AddVarsToJson(ContentJson, Vars);
 
     // Serialize the request content
     FString Content;
-    if (!SerializeJsonObject(ContentJson, Content))
+    if (!FNakamaUtils::SerializeJsonObject(ContentJson, Content))
     {
         // Handle JSON serialization failure
-        HandleJsonSerializationFailure(ErrorCallback);
+        FNakamaUtils::HandleJsonSerializationFailure(ErrorCallback);
         return;
     }
 
@@ -2675,7 +2675,7 @@ void UNakamaClient::AuthenticateFacebook(
     const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::POST, QueryParams, "");
 
     // Set the basic authorization header
-    SetBasicAuthorizationHeader(HttpRequest);
+	FNakamaUtils::SetBasicAuthorizationHeader(HttpRequest, ServerKey);
 
     // Lock the ActiveRequests mutex to protect concurrent access
     FScopeLock Lock(&ActiveRequestsMutex);
@@ -2701,7 +2701,7 @@ void UNakamaClient::AuthenticateFacebook(
                 const FString ResponseBody = Response->GetContentAsString();
 
                 // Check if Request was successful
-                if (IsResponseSuccessful(Response->GetResponseCode()))
+                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
                 {
                     // Check for Success Callback
                     if (SuccessCallback)
@@ -2726,7 +2726,7 @@ void UNakamaClient::AuthenticateFacebook(
                 // Handle Invalid Response
                 if (ErrorCallback)
                 {
-                    const FNakamaError RequestError = CreateRequestFailureError();
+                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
                     ErrorCallback(RequestError);
                 }
             }
@@ -2762,14 +2762,14 @@ void UNakamaClient::AuthenticateGoogle(
     // Setup the request content
     const TSharedPtr<FJsonObject> ContentJson = MakeShared<FJsonObject>();
     ContentJson->SetStringField(TEXT("token"), Token);
-    AddVarsToJson(ContentJson, Vars);
+    FNakamaUtils::AddVarsToJson(ContentJson, Vars);
 
     // Serialize the request content
     FString Content;
-    if (!SerializeJsonObject(ContentJson, Content))
+    if (!FNakamaUtils::SerializeJsonObject(ContentJson, Content))
     {
         // Handle JSON serialization failure
-        HandleJsonSerializationFailure(ErrorCallback);
+        FNakamaUtils::HandleJsonSerializationFailure(ErrorCallback);
         return;
     }
 
@@ -2777,7 +2777,7 @@ void UNakamaClient::AuthenticateGoogle(
     const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::POST, QueryParams, "");
 
     // Set the basic authorization header
-    SetBasicAuthorizationHeader(HttpRequest);
+	FNakamaUtils::SetBasicAuthorizationHeader(HttpRequest, ServerKey);
 
     // Lock the ActiveRequests mutex to protect concurrent access
     FScopeLock Lock(&ActiveRequestsMutex);
@@ -2803,7 +2803,7 @@ void UNakamaClient::AuthenticateGoogle(
                 const FString ResponseBody = Response->GetContentAsString();
 
                 // Check if Request was successful
-                if (IsResponseSuccessful(Response->GetResponseCode()))
+                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
                 {
                     // Check for Success Callback
                     if (SuccessCallback)
@@ -2828,7 +2828,7 @@ void UNakamaClient::AuthenticateGoogle(
                 // Handle Invalid Response
                 if (ErrorCallback)
                 {
-                    const FNakamaError RequestError = CreateRequestFailureError();
+                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
                     ErrorCallback(RequestError);
                 }
             }
@@ -2874,14 +2874,14 @@ void UNakamaClient::AuthenticateGameCenter(
     ContentJson->SetStringField(TEXT("salt"), Salt);
     ContentJson->SetStringField(TEXT("signature"), Signature);
     ContentJson->SetStringField(TEXT("public_key_url"), PublicKeyUrl);
-    AddVarsToJson(ContentJson, Vars);
+    FNakamaUtils::AddVarsToJson(ContentJson, Vars);
 
     // Serialize the request content
     FString Content;
-    if (!SerializeJsonObject(ContentJson, Content))
+    if (!FNakamaUtils::SerializeJsonObject(ContentJson, Content))
     {
         // Handle JSON serialization failure
-        HandleJsonSerializationFailure(ErrorCallback);
+        FNakamaUtils::HandleJsonSerializationFailure(ErrorCallback);
         return;
     }
 
@@ -2889,7 +2889,7 @@ void UNakamaClient::AuthenticateGameCenter(
     const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::POST, QueryParams, "");
 
     // Set the basic authorization header
-    SetBasicAuthorizationHeader(HttpRequest);
+	FNakamaUtils::SetBasicAuthorizationHeader(HttpRequest, ServerKey);
 
     // Lock the ActiveRequests mutex to protect concurrent access
     FScopeLock Lock(&ActiveRequestsMutex);
@@ -2915,7 +2915,7 @@ void UNakamaClient::AuthenticateGameCenter(
                 const FString ResponseBody = Response->GetContentAsString();
 
                 // Check if Request was successful
-                if (IsResponseSuccessful(Response->GetResponseCode()))
+                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
                 {
                     // Check for Success Callback
                     if (SuccessCallback)
@@ -2940,7 +2940,7 @@ void UNakamaClient::AuthenticateGameCenter(
                 // Handle Invalid Response
                 if (ErrorCallback)
                 {
-                    const FNakamaError RequestError = CreateRequestFailureError();
+                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
                     ErrorCallback(RequestError);
                 }
             }
@@ -2978,14 +2978,14 @@ void UNakamaClient::AuthenticateSteam(
     // Setup the request content
     const TSharedPtr<FJsonObject> ContentJson = MakeShared<FJsonObject>();
     ContentJson->SetStringField(TEXT("token"), Token);
-    AddVarsToJson(ContentJson, Vars);
+    FNakamaUtils::AddVarsToJson(ContentJson, Vars);
 
     // Serialize the request content
     FString Content;
-    if (!SerializeJsonObject(ContentJson, Content))
+    if (!FNakamaUtils::SerializeJsonObject(ContentJson, Content))
     {
         // Handle JSON serialization failure
-        HandleJsonSerializationFailure(ErrorCallback);
+        FNakamaUtils::HandleJsonSerializationFailure(ErrorCallback);
         return;
     }
 
@@ -2993,7 +2993,7 @@ void UNakamaClient::AuthenticateSteam(
     const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::POST, QueryParams, "");
 
     // Set the basic authorization header
-    SetBasicAuthorizationHeader(HttpRequest);
+	FNakamaUtils::SetBasicAuthorizationHeader(HttpRequest, ServerKey);
 
     // Lock the ActiveRequests mutex to protect concurrent access
     FScopeLock Lock(&ActiveRequestsMutex);
@@ -3019,7 +3019,7 @@ void UNakamaClient::AuthenticateSteam(
                 const FString ResponseBody = Response->GetContentAsString();
 
                 // Check if Request was successful
-                if (IsResponseSuccessful(Response->GetResponseCode()))
+                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
                 {
                     // Check for Success Callback
                     if (SuccessCallback)
@@ -3044,7 +3044,7 @@ void UNakamaClient::AuthenticateSteam(
                 // Handle Invalid Response
                 if (ErrorCallback)
                 {
-                    const FNakamaError RequestError = CreateRequestFailureError();
+                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
                     ErrorCallback(RequestError);
                 }
             }
@@ -3070,14 +3070,14 @@ void UNakamaClient::AuthenticateRefresh(
     // Setup the request content
     const TSharedPtr<FJsonObject> ContentJson = MakeShared<FJsonObject>();
     ContentJson->SetStringField(TEXT("token"), Session->GetRefreshToken());
-    AddVarsToJson(ContentJson, Session->GetVariables());
+    FNakamaUtils::AddVarsToJson(ContentJson, Session->GetVariables());
 
     // Serialize the request content
     FString Content;
-    if (!SerializeJsonObject(ContentJson, Content))
+    if (!FNakamaUtils::SerializeJsonObject(ContentJson, Content))
     {
         // Handle JSON serialization failure
-        HandleJsonSerializationFailure(ErrorCallback);
+        FNakamaUtils::HandleJsonSerializationFailure(ErrorCallback);
         return;
     }
 
@@ -3085,7 +3085,7 @@ void UNakamaClient::AuthenticateRefresh(
     const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::POST, TMultiMap<FString, FString>(), "");
 
     // Set the basic authorization header
-    SetBasicAuthorizationHeader(HttpRequest);
+	FNakamaUtils::SetBasicAuthorizationHeader(HttpRequest, ServerKey);
 
     // Lock the ActiveRequests mutex to protect concurrent access
     FScopeLock Lock(&ActiveRequestsMutex);
@@ -3111,7 +3111,7 @@ void UNakamaClient::AuthenticateRefresh(
                 const FString ResponseBody = Response->GetContentAsString();
 
                 // Check if Request was successful
-                if (IsResponseSuccessful(Response->GetResponseCode()))
+                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
                 {
                     // Check for Success Callback
                     if (SuccessCallback)
@@ -3136,7 +3136,7 @@ void UNakamaClient::AuthenticateRefresh(
                 // Handle Invalid Response
                 if (ErrorCallback)
                 {
-                    const FNakamaError RequestError = CreateRequestFailureError();
+                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
                     ErrorCallback(RequestError);
                 }
             }
@@ -3160,7 +3160,7 @@ void UNakamaClient::LinkDevice(
     const FString Endpoint = TEXT("/v2/account/link/device");
 
     // Verify the session
-    if (!IsSessionValid(Session, ErrorCallback))
+    if (!FNakamaUtils::IsSessionValid(Session, ErrorCallback))
     {
         return;
     }
@@ -3171,10 +3171,10 @@ void UNakamaClient::LinkDevice(
 
     // Serialize the request content
     FString Content;
-    if (!SerializeJsonObject(ContentJson, Content))
+    if (!FNakamaUtils::SerializeJsonObject(ContentJson, Content))
     {
         // Handle JSON serialization failure
-        HandleJsonSerializationFailure(ErrorCallback);
+        FNakamaUtils::HandleJsonSerializationFailure(ErrorCallback);
         return;
     }
 
@@ -3205,7 +3205,7 @@ void UNakamaClient::LinkDevice(
                 const FString ResponseBody = Response->GetContentAsString();
 
                 // Check if Request was successful
-                if (IsResponseSuccessful(Response->GetResponseCode()))
+                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
                 {
                     // Check for Success Callback
                     if (SuccessCallback)
@@ -3228,7 +3228,7 @@ void UNakamaClient::LinkDevice(
                 // Handle Invalid Response
                 if (ErrorCallback)
                 {
-                    const FNakamaError RequestError = CreateRequestFailureError();
+                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
                     ErrorCallback(RequestError);
                 }
             }
@@ -3253,7 +3253,7 @@ void UNakamaClient::LinkEmail(
     const FString Endpoint = TEXT("/v2/account/link/email");
 
     // Verify the session
-    if (!IsSessionValid(Session, ErrorCallback))
+    if (!FNakamaUtils::IsSessionValid(Session, ErrorCallback))
     {
         return;
     }
@@ -3265,10 +3265,10 @@ void UNakamaClient::LinkEmail(
 
     // Serialize the request content
     FString Content;
-    if (!SerializeJsonObject(ContentJson, Content))
+    if (!FNakamaUtils::SerializeJsonObject(ContentJson, Content))
     {
         // Handle JSON serialization failure
-        HandleJsonSerializationFailure(ErrorCallback);
+        FNakamaUtils::HandleJsonSerializationFailure(ErrorCallback);
         return;
     }
 
@@ -3299,7 +3299,7 @@ void UNakamaClient::LinkEmail(
                     const FString ResponseBody = Response->GetContentAsString();
 
                     // Check if Request was successful
-                    if (IsResponseSuccessful(Response->GetResponseCode()))
+                    if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
                     {
                         // Check for Success Callback
                         if (SuccessCallback)
@@ -3322,7 +3322,7 @@ void UNakamaClient::LinkEmail(
                     // Handle Invalid Response
                     if (ErrorCallback)
                     {
-                        const FNakamaError RequestError = CreateRequestFailureError();
+                        const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
                         ErrorCallback(RequestError);
                     }
                 }
@@ -3346,7 +3346,7 @@ void UNakamaClient::LinkCustom(
     const FString Endpoint = TEXT("/v2/account/link/custom");
 
     // Verify the session
-    if (!IsSessionValid(Session, ErrorCallback))
+    if (!FNakamaUtils::IsSessionValid(Session, ErrorCallback))
     {
         return;
     }
@@ -3357,10 +3357,10 @@ void UNakamaClient::LinkCustom(
 
     // Serialize the request content
     FString Content;
-    if (!SerializeJsonObject(ContentJson, Content))
+    if (!FNakamaUtils::SerializeJsonObject(ContentJson, Content))
     {
         // Handle JSON serialization failure
-        HandleJsonSerializationFailure(ErrorCallback);
+        FNakamaUtils::HandleJsonSerializationFailure(ErrorCallback);
         return;
     }
 
@@ -3391,7 +3391,7 @@ void UNakamaClient::LinkCustom(
                 const FString ResponseBody = Response->GetContentAsString();
 
                 // Check if Request was successful
-                if (IsResponseSuccessful(Response->GetResponseCode()))
+                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
                 {
                     // Check for Success Callback
                     if (SuccessCallback)
@@ -3414,7 +3414,7 @@ void UNakamaClient::LinkCustom(
                 // Handle Invalid Response
                 if (ErrorCallback)
                 {
-                    const FNakamaError RequestError = CreateRequestFailureError();
+                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
                     ErrorCallback(RequestError);
                 }
             }
@@ -3438,7 +3438,7 @@ void UNakamaClient::LinkApple(
     const FString Endpoint = TEXT("/v2/account/link/apple");
 
     // Verify the session
-    if (!IsSessionValid(Session, ErrorCallback))
+    if (!FNakamaUtils::IsSessionValid(Session, ErrorCallback))
     {
         return;
     }
@@ -3449,10 +3449,10 @@ void UNakamaClient::LinkApple(
 
     // Serialize the request content
     FString Content;
-    if (!SerializeJsonObject(ContentJson, Content))
+    if (!FNakamaUtils::SerializeJsonObject(ContentJson, Content))
     {
         // Handle JSON serialization failure
-        HandleJsonSerializationFailure(ErrorCallback);
+        FNakamaUtils::HandleJsonSerializationFailure(ErrorCallback);
         return;
     }
 
@@ -3483,7 +3483,7 @@ void UNakamaClient::LinkApple(
                 const FString ResponseBody = Response->GetContentAsString();
 
                 // Check if Request was successful
-                if (IsResponseSuccessful(Response->GetResponseCode()))
+                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
                 {
                     // Check for Success Callback
                     if (SuccessCallback)
@@ -3506,7 +3506,7 @@ void UNakamaClient::LinkApple(
                 // Handle Invalid Response
                 if (ErrorCallback)
                 {
-                    const FNakamaError RequestError = CreateRequestFailureError();
+                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
                     ErrorCallback(RequestError);
                 }
             }
@@ -3531,7 +3531,7 @@ void UNakamaClient::LinkFacebook(
     const FString Endpoint = TEXT("/v2/account/link/facebook");
 
     // Verify the session
-    if (!IsSessionValid(Session, ErrorCallback))
+    if (!FNakamaUtils::IsSessionValid(Session, ErrorCallback))
     {
         return;
     }
@@ -3549,10 +3549,10 @@ void UNakamaClient::LinkFacebook(
 
     // Serialize the request content
     FString Content;
-    if (!SerializeJsonObject(ContentJson, Content))
+    if (!FNakamaUtils::SerializeJsonObject(ContentJson, Content))
     {
         // Handle JSON serialization failure
-        HandleJsonSerializationFailure(ErrorCallback);
+        FNakamaUtils::HandleJsonSerializationFailure(ErrorCallback);
         return;
     }
 
@@ -3583,7 +3583,7 @@ void UNakamaClient::LinkFacebook(
                 const FString ResponseBody = Response->GetContentAsString();
 
                 // Check if Request was successful
-                if (IsResponseSuccessful(Response->GetResponseCode()))
+                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
                 {
                     // Check for Success Callback
                     if (SuccessCallback)
@@ -3606,7 +3606,7 @@ void UNakamaClient::LinkFacebook(
                 // Handle Invalid Response
                 if (ErrorCallback)
                 {
-                    const FNakamaError RequestError = CreateRequestFailureError();
+                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
                     ErrorCallback(RequestError);
                 }
             }
@@ -3630,7 +3630,7 @@ void UNakamaClient::LinkGoogle(
     const FString Endpoint = TEXT("/v2/account/link/google");
 
     // Verify the session
-    if (!IsSessionValid(Session, ErrorCallback))
+    if (!FNakamaUtils::IsSessionValid(Session, ErrorCallback))
     {
         return;
     }
@@ -3641,10 +3641,10 @@ void UNakamaClient::LinkGoogle(
 
     // Serialize the request content
     FString Content;
-    if (!SerializeJsonObject(ContentJson, Content))
+    if (!FNakamaUtils::SerializeJsonObject(ContentJson, Content))
     {
         // Handle JSON serialization failure
-        HandleJsonSerializationFailure(ErrorCallback);
+        FNakamaUtils::HandleJsonSerializationFailure(ErrorCallback);
         return;
     }
 
@@ -3675,7 +3675,7 @@ void UNakamaClient::LinkGoogle(
                 const FString ResponseBody = Response->GetContentAsString();
 
                 // Check if Request was successful
-                if (IsResponseSuccessful(Response->GetResponseCode()))
+                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
                 {
                     // Check for Success Callback
                     if (SuccessCallback)
@@ -3698,7 +3698,7 @@ void UNakamaClient::LinkGoogle(
                 // Handle Invalid Response
                 if (ErrorCallback)
                 {
-                    const FNakamaError RequestError = CreateRequestFailureError();
+                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
                     ErrorCallback(RequestError);
                 }
             }
@@ -3726,7 +3726,7 @@ void UNakamaClient::LinkGameCenter(
     const FString Endpoint = TEXT("/v2/account/link/gamecenter");
 
     // Verify the session
-    if (!IsSessionValid(Session, ErrorCallback))
+    if (!FNakamaUtils::IsSessionValid(Session, ErrorCallback))
     {
         return;
     }
@@ -3742,10 +3742,10 @@ void UNakamaClient::LinkGameCenter(
 
     // Serialize the request content
     FString Content;
-    if (!SerializeJsonObject(ContentJson, Content))
+    if (!FNakamaUtils::SerializeJsonObject(ContentJson, Content))
     {
         // Handle JSON serialization failure
-        HandleJsonSerializationFailure(ErrorCallback);
+        FNakamaUtils::HandleJsonSerializationFailure(ErrorCallback);
         return;
     }
 
@@ -3776,7 +3776,7 @@ void UNakamaClient::LinkGameCenter(
                 const FString ResponseBody = Response->GetContentAsString();
 
                 // Check if Request was successful
-                if (IsResponseSuccessful(Response->GetResponseCode()))
+                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
                 {
                     // Check for Success Callback
                     if (SuccessCallback)
@@ -3799,7 +3799,7 @@ void UNakamaClient::LinkGameCenter(
                 // Handle Invalid Response
                 if (ErrorCallback)
                 {
-                    const FNakamaError RequestError = CreateRequestFailureError();
+                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
                     ErrorCallback(RequestError);
                 }
             }
@@ -3824,7 +3824,7 @@ void UNakamaClient::LinkSteam(
     const FString Endpoint = TEXT("/v2/account/link/steam");
 
     // Verify the session
-    if (!IsSessionValid(Session, ErrorCallback))
+    if (!FNakamaUtils::IsSessionValid(Session, ErrorCallback))
     {
         return;
     }
@@ -3836,10 +3836,10 @@ void UNakamaClient::LinkSteam(
 
     // Serialize the request content
     FString Content;
-    if (!SerializeJsonObject(ContentJson, Content))
+    if (!FNakamaUtils::SerializeJsonObject(ContentJson, Content))
     {
         // Handle JSON serialization failure
-        HandleJsonSerializationFailure(ErrorCallback);
+        FNakamaUtils::HandleJsonSerializationFailure(ErrorCallback);
         return;
     }
 
@@ -3870,7 +3870,7 @@ void UNakamaClient::LinkSteam(
                 const FString ResponseBody = Response->GetContentAsString();
 
                 // Check if Request was successful
-                if (IsResponseSuccessful(Response->GetResponseCode()))
+                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
                 {
                     // Check for Success Callback
                     if (SuccessCallback)
@@ -3893,7 +3893,7 @@ void UNakamaClient::LinkSteam(
                 // Handle Invalid Response
                 if (ErrorCallback)
                 {
-                    const FNakamaError RequestError = CreateRequestFailureError();
+                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
                     ErrorCallback(RequestError);
                 }
             }
@@ -3917,7 +3917,7 @@ void UNakamaClient::UnLinkDevice(
     const FString Endpoint = TEXT("/v2/account/unlink/device");
 
     // Verify the session
-    if (!IsSessionValid(Session, ErrorCallback))
+    if (!FNakamaUtils::IsSessionValid(Session, ErrorCallback))
     {
         return;
     }
@@ -3928,10 +3928,10 @@ void UNakamaClient::UnLinkDevice(
 
     // Serialize the request content
     FString Content;
-    if (!SerializeJsonObject(ContentJson, Content))
+    if (!FNakamaUtils::SerializeJsonObject(ContentJson, Content))
     {
         // Handle JSON serialization failure
-        HandleJsonSerializationFailure(ErrorCallback);
+        FNakamaUtils::HandleJsonSerializationFailure(ErrorCallback);
         return;
     }
 
@@ -3962,7 +3962,7 @@ void UNakamaClient::UnLinkDevice(
                 const FString ResponseBody = Response->GetContentAsString();
 
                 // Check if Request was successful
-                if (IsResponseSuccessful(Response->GetResponseCode()))
+                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
                 {
                     // Check for Success Callback
                     if (SuccessCallback)
@@ -3985,7 +3985,7 @@ void UNakamaClient::UnLinkDevice(
                 // Handle Invalid Response
                 if (ErrorCallback)
                 {
-                    const FNakamaError RequestError = CreateRequestFailureError();
+                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
                     ErrorCallback(RequestError);
                 }
             }
@@ -4010,7 +4010,7 @@ void UNakamaClient::UnLinkEmail(
     const FString Endpoint = TEXT("/v2/account/unlink/email");
 
     // Verify the session
-    if (!IsSessionValid(Session, ErrorCallback))
+    if (!FNakamaUtils::IsSessionValid(Session, ErrorCallback))
     {
         return;
     }
@@ -4022,10 +4022,10 @@ void UNakamaClient::UnLinkEmail(
 
     // Serialize the request content
     FString Content;
-    if (!SerializeJsonObject(ContentJson, Content))
+    if (!FNakamaUtils::SerializeJsonObject(ContentJson, Content))
     {
         // Handle JSON serialization failure
-        HandleJsonSerializationFailure(ErrorCallback);
+        FNakamaUtils::HandleJsonSerializationFailure(ErrorCallback);
         return;
     }
 
@@ -4056,7 +4056,7 @@ void UNakamaClient::UnLinkEmail(
                 const FString ResponseBody = Response->GetContentAsString();
 
                 // Check if Request was successful
-                if (IsResponseSuccessful(Response->GetResponseCode()))
+                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
                 {
                     // Check for Success Callback
                     if (SuccessCallback)
@@ -4079,7 +4079,7 @@ void UNakamaClient::UnLinkEmail(
                 // Handle Invalid Response
                 if (ErrorCallback)
                 {
-                    const FNakamaError RequestError = CreateRequestFailureError();
+                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
                     ErrorCallback(RequestError);
                 }
             }
@@ -4103,7 +4103,7 @@ void UNakamaClient::UnLinkCustom(
     const FString Endpoint = TEXT("/v2/account/unlink/custom");
 
     // Verify the session
-    if (!IsSessionValid(Session, ErrorCallback))
+    if (!FNakamaUtils::IsSessionValid(Session, ErrorCallback))
     {
         return;
     }
@@ -4114,10 +4114,10 @@ void UNakamaClient::UnLinkCustom(
 
     // Serialize the request content
     FString Content;
-    if (!SerializeJsonObject(ContentJson, Content))
+    if (!FNakamaUtils::SerializeJsonObject(ContentJson, Content))
     {
         // Handle JSON serialization failure
-        HandleJsonSerializationFailure(ErrorCallback);
+        FNakamaUtils::HandleJsonSerializationFailure(ErrorCallback);
         return;
     }
 
@@ -4148,7 +4148,7 @@ void UNakamaClient::UnLinkCustom(
                 const FString ResponseBody = Response->GetContentAsString();
 
                 // Check if Request was successful
-                if (IsResponseSuccessful(Response->GetResponseCode()))
+                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
                 {
                     // Check for Success Callback
                     if (SuccessCallback)
@@ -4171,7 +4171,7 @@ void UNakamaClient::UnLinkCustom(
                 // Handle Invalid Response
                 if (ErrorCallback)
                 {
-                    const FNakamaError RequestError = CreateRequestFailureError();
+                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
                     ErrorCallback(RequestError);
                 }
             }
@@ -4195,7 +4195,7 @@ void UNakamaClient::UnLinkApple(
     const FString Endpoint = TEXT("/v2/account/unlink/apple");
 
     // Verify the session
-    if (!IsSessionValid(Session, ErrorCallback))
+    if (!FNakamaUtils::IsSessionValid(Session, ErrorCallback))
     {
         return;
     }
@@ -4206,10 +4206,10 @@ void UNakamaClient::UnLinkApple(
 
     // Serialize the request content
     FString Content;
-    if (!SerializeJsonObject(ContentJson, Content))
+    if (!FNakamaUtils::SerializeJsonObject(ContentJson, Content))
     {
         // Handle JSON serialization failure
-        HandleJsonSerializationFailure(ErrorCallback);
+        FNakamaUtils::HandleJsonSerializationFailure(ErrorCallback);
         return;
     }
 
@@ -4240,7 +4240,7 @@ void UNakamaClient::UnLinkApple(
                 const FString ResponseBody = Response->GetContentAsString();
 
                 // Check if Request was successful
-                if (IsResponseSuccessful(Response->GetResponseCode()))
+                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
                 {
                     // Check for Success Callback
                     if (SuccessCallback)
@@ -4263,7 +4263,7 @@ void UNakamaClient::UnLinkApple(
                 // Handle Invalid Response
                 if (ErrorCallback)
                 {
-                    const FNakamaError RequestError = CreateRequestFailureError();
+                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
                     ErrorCallback(RequestError);
                 }
             }
@@ -4287,7 +4287,7 @@ void UNakamaClient::UnLinkFacebook(
     const FString Endpoint = TEXT("/v2/account/unlink/facebook");
 
     // Verify the session
-    if (!IsSessionValid(Session, ErrorCallback))
+    if (!FNakamaUtils::IsSessionValid(Session, ErrorCallback))
     {
         return;
     }
@@ -4301,10 +4301,10 @@ void UNakamaClient::UnLinkFacebook(
 
     // Serialize the request content
     FString Content;
-    if (!SerializeJsonObject(ContentJson, Content))
+    if (!FNakamaUtils::SerializeJsonObject(ContentJson, Content))
     {
         // Handle JSON serialization failure
-        HandleJsonSerializationFailure(ErrorCallback);
+        FNakamaUtils::HandleJsonSerializationFailure(ErrorCallback);
         return;
     }
 
@@ -4335,7 +4335,7 @@ void UNakamaClient::UnLinkFacebook(
                 const FString ResponseBody = Response->GetContentAsString();
 
                 // Check if Request was successful
-                if (IsResponseSuccessful(Response->GetResponseCode()))
+                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
                 {
                     // Check for Success Callback
                     if (SuccessCallback)
@@ -4358,7 +4358,7 @@ void UNakamaClient::UnLinkFacebook(
                 // Handle Invalid Response
                 if (ErrorCallback)
                 {
-                    const FNakamaError RequestError = CreateRequestFailureError();
+                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
                     ErrorCallback(RequestError);
                 }
             }
@@ -4382,7 +4382,7 @@ void UNakamaClient::UnLinkGoogle(
     const FString Endpoint = TEXT("/v2/account/unlink/google");
 
     // Verify the session
-    if (!IsSessionValid(Session, ErrorCallback))
+    if (!FNakamaUtils::IsSessionValid(Session, ErrorCallback))
     {
         return;
     }
@@ -4393,10 +4393,10 @@ void UNakamaClient::UnLinkGoogle(
 
     // Serialize the request content
     FString Content;
-    if (!SerializeJsonObject(ContentJson, Content))
+    if (!FNakamaUtils::SerializeJsonObject(ContentJson, Content))
     {
         // Handle JSON serialization failure
-        HandleJsonSerializationFailure(ErrorCallback);
+        FNakamaUtils::HandleJsonSerializationFailure(ErrorCallback);
         return;
     }
 
@@ -4427,7 +4427,7 @@ void UNakamaClient::UnLinkGoogle(
                 const FString ResponseBody = Response->GetContentAsString();
 
                 // Check if Request was successful
-                if (IsResponseSuccessful(Response->GetResponseCode()))
+                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
                 {
                     // Check for Success Callback
                     if (SuccessCallback)
@@ -4450,7 +4450,7 @@ void UNakamaClient::UnLinkGoogle(
                 // Handle Invalid Response
                 if (ErrorCallback)
                 {
-                    const FNakamaError RequestError = CreateRequestFailureError();
+                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
                     ErrorCallback(RequestError);
                 }
             }
@@ -4479,7 +4479,7 @@ void UNakamaClient::UnLinkGameCenter(
     const FString Endpoint = TEXT("/v2/account/unlink/gamecenter");
 
     // Verify the session
-    if (!IsSessionValid(Session, ErrorCallback))
+    if (!FNakamaUtils::IsSessionValid(Session, ErrorCallback))
     {
         return;
     }
@@ -4495,10 +4495,10 @@ void UNakamaClient::UnLinkGameCenter(
 
     // Serialize the request content
     FString Content;
-    if (!SerializeJsonObject(ContentJson, Content))
+    if (!FNakamaUtils::SerializeJsonObject(ContentJson, Content))
     {
         // Handle JSON serialization failure
-        HandleJsonSerializationFailure(ErrorCallback);
+        FNakamaUtils::HandleJsonSerializationFailure(ErrorCallback);
         return;
     }
 
@@ -4529,7 +4529,7 @@ void UNakamaClient::UnLinkGameCenter(
                 const FString ResponseBody = Response->GetContentAsString();
 
                 // Check if Request was successful
-                if (IsResponseSuccessful(Response->GetResponseCode()))
+                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
                 {
                     // Check for Success Callback
                     if (SuccessCallback)
@@ -4552,7 +4552,7 @@ void UNakamaClient::UnLinkGameCenter(
                 // Handle Invalid Response
                 if (ErrorCallback)
                 {
-                    const FNakamaError RequestError = CreateRequestFailureError();
+                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
                     ErrorCallback(RequestError);
                 }
             }
@@ -4576,7 +4576,7 @@ void UNakamaClient::UnLinkSteam(
     const FString Endpoint = TEXT("/v2/account/unlink/steam");
 
     // Verify the session
-    if (!IsSessionValid(Session, ErrorCallback))
+    if (!FNakamaUtils::IsSessionValid(Session, ErrorCallback))
     {
         return;
     }
@@ -4587,10 +4587,10 @@ void UNakamaClient::UnLinkSteam(
 
     // Serialize the request content
     FString Content;
-    if (!SerializeJsonObject(ContentJson, Content))
+    if (!FNakamaUtils::SerializeJsonObject(ContentJson, Content))
     {
         // Handle JSON serialization failure
-        HandleJsonSerializationFailure(ErrorCallback);
+        FNakamaUtils::HandleJsonSerializationFailure(ErrorCallback);
         return;
     }
 
@@ -4621,7 +4621,7 @@ void UNakamaClient::UnLinkSteam(
                 const FString ResponseBody = Response->GetContentAsString();
 
                 // Check if Request was successful
-                if (IsResponseSuccessful(Response->GetResponseCode()))
+                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
                 {
                     // Check for Success Callback
                     if (SuccessCallback)
@@ -4644,7 +4644,7 @@ void UNakamaClient::UnLinkSteam(
                 // Handle Invalid Response
                 if (ErrorCallback)
                 {
-                    const FNakamaError RequestError = CreateRequestFailureError();
+                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
                     ErrorCallback(RequestError);
                 }
             }
@@ -4669,7 +4669,7 @@ void UNakamaClient::ImportFacebookFriends(
     const FString Endpoint = TEXT("/v2/friend/facebook");
 
     // Verify the session
-    if (!IsSessionValid(Session, ErrorCallback))
+    if (!FNakamaUtils::IsSessionValid(Session, ErrorCallback))
     {
         return;
     }
@@ -4686,10 +4686,10 @@ void UNakamaClient::ImportFacebookFriends(
 
     // Serialize the request content
     FString Content;
-    if (!SerializeJsonObject(ContentJson, Content))
+    if (!FNakamaUtils::SerializeJsonObject(ContentJson, Content))
     {
         // Handle JSON serialization failure
-        HandleJsonSerializationFailure(ErrorCallback);
+        FNakamaUtils::HandleJsonSerializationFailure(ErrorCallback);
         return;
     }
 
@@ -4720,7 +4720,7 @@ void UNakamaClient::ImportFacebookFriends(
                 const FString ResponseBody = Response->GetContentAsString();
 
                 // Check if Request was successful
-                if (IsResponseSuccessful(Response->GetResponseCode()))
+                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
                 {
                     // Check for Success Callback
                     if (SuccessCallback)
@@ -4743,7 +4743,7 @@ void UNakamaClient::ImportFacebookFriends(
                 // Handle Invalid Response
                 if (ErrorCallback)
                 {
-                    const FNakamaError RequestError = CreateRequestFailureError();
+                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
                     ErrorCallback(RequestError);
                 }
             }
@@ -4768,7 +4768,7 @@ void UNakamaClient::ImportSteamFriends(
     const FString Endpoint = TEXT("/v2/friend/steam");
 
     // Verify the session
-    if (!IsSessionValid(Session, ErrorCallback))
+    if (!FNakamaUtils::IsSessionValid(Session, ErrorCallback))
     {
         return;
     }
@@ -4787,10 +4787,10 @@ void UNakamaClient::ImportSteamFriends(
 
     // Serialize the request content
     FString Content;
-    if (!SerializeJsonObject(ContentJson, Content))
+    if (!FNakamaUtils::SerializeJsonObject(ContentJson, Content))
     {
         // Handle JSON serialization failure
-        HandleJsonSerializationFailure(ErrorCallback);
+        FNakamaUtils::HandleJsonSerializationFailure(ErrorCallback);
         return;
     }
 
@@ -4821,7 +4821,7 @@ void UNakamaClient::ImportSteamFriends(
                 const FString ResponseBody = Response->GetContentAsString();
 
                 // Check if Request was successful
-                if (IsResponseSuccessful(Response->GetResponseCode()))
+                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
                 {
                     // Check for Success Callback
                     if (SuccessCallback)
@@ -4844,7 +4844,7 @@ void UNakamaClient::ImportSteamFriends(
                 // Handle Invalid Response
                 if (ErrorCallback)
                 {
-                    const FNakamaError RequestError = CreateRequestFailureError();
+                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
                     ErrorCallback(RequestError);
                 }
             }
@@ -4868,7 +4868,7 @@ void UNakamaClient::GetAccount(
     const FString Endpoint = TEXT("/v2/account");
 
     // Verify the session
-    if (!IsSessionValid(Session, ErrorCallback))
+    if (!FNakamaUtils::IsSessionValid(Session, ErrorCallback))
     {
         return;
     }
@@ -4900,7 +4900,7 @@ void UNakamaClient::GetAccount(
                 const FString ResponseBody = Response->GetContentAsString();
 
                 // Check if Request was successful
-                if (IsResponseSuccessful(Response->GetResponseCode()))
+                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
                 {
                     // Check for Success Callback
                     if (SuccessCallback)
@@ -4924,7 +4924,7 @@ void UNakamaClient::GetAccount(
                 // Handle Invalid Response
                 if (ErrorCallback)
                 {
-                    const FNakamaError RequestError = CreateRequestFailureError();
+                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
                     ErrorCallback(RequestError);
                 }
             }
@@ -4953,7 +4953,7 @@ void UNakamaClient::UpdateAccount(
     const FString Endpoint = TEXT("/v2/account");
 
     // Verify the session
-    if (!IsSessionValid(Session, ErrorCallback))
+    if (!FNakamaUtils::IsSessionValid(Session, ErrorCallback))
     {
         return;
     }
@@ -4987,10 +4987,10 @@ void UNakamaClient::UpdateAccount(
 
     // Serialize the request content
     FString Content;
-    if (!SerializeJsonObject(ContentJson, Content))
+    if (!FNakamaUtils::SerializeJsonObject(ContentJson, Content))
     {
         // Handle JSON serialization failure
-        HandleJsonSerializationFailure(ErrorCallback);
+        FNakamaUtils::HandleJsonSerializationFailure(ErrorCallback);
         return;
     }
 
@@ -5021,7 +5021,7 @@ void UNakamaClient::UpdateAccount(
                 const FString ResponseBody = Response->GetContentAsString();
 
                 // Check if Request was successful
-                if (IsResponseSuccessful(Response->GetResponseCode()))
+                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
                 {
                     // Check for Success Callback
                     if (SuccessCallback)
@@ -5044,7 +5044,7 @@ void UNakamaClient::UpdateAccount(
                 // Handle Invalid Response
                 if (ErrorCallback)
                 {
-                    const FNakamaError RequestError = CreateRequestFailureError();
+                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
                     ErrorCallback(RequestError);
                 }
             }
@@ -5070,7 +5070,7 @@ void UNakamaClient::GetUsers(
     const FString Endpoint = TEXT("/v2/user");
 
     // Verify the session
-    if (!IsSessionValid(Session, ErrorCallback))
+    if (!FNakamaUtils::IsSessionValid(Session, ErrorCallback))
     {
         return;
     }
@@ -5127,7 +5127,7 @@ void UNakamaClient::GetUsers(
                 const FString ResponseBody = Response->GetContentAsString();
 
                 // Check if Request was successful
-                if (IsResponseSuccessful(Response->GetResponseCode()))
+                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
                 {
                     // Check for Success Callback
                     if (SuccessCallback)
@@ -5151,7 +5151,7 @@ void UNakamaClient::GetUsers(
                 // Handle Invalid Response
                 if (ErrorCallback)
                 {
-                    const FNakamaError RequestError = CreateRequestFailureError();
+                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
                     ErrorCallback(RequestError);
                 }
             }
@@ -5176,7 +5176,7 @@ void UNakamaClient::AddFriends(
     const FString Endpoint = TEXT("/v2/friend");
 
     // Verify the session
-    if (!IsSessionValid(Session, ErrorCallback))
+    if (!FNakamaUtils::IsSessionValid(Session, ErrorCallback))
     {
         return;
     }
@@ -5226,7 +5226,7 @@ void UNakamaClient::AddFriends(
                 const FString ResponseBody = Response->GetContentAsString();
 
                 // Check if Request was successful
-                if (IsResponseSuccessful(Response->GetResponseCode()))
+                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
                 {
                     // Check for Success Callback
                     if (SuccessCallback)
@@ -5249,7 +5249,7 @@ void UNakamaClient::AddFriends(
                 // Handle Invalid Response
                 if (ErrorCallback)
                 {
-                    const FNakamaError RequestError = CreateRequestFailureError();
+                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
                     ErrorCallback(RequestError);
                 }
             }
@@ -5274,7 +5274,7 @@ void UNakamaClient::DeleteFriends(
     const FString Endpoint = TEXT("/v2/friend");
 
     // Verify the session
-    if (!IsSessionValid(Session, ErrorCallback))
+    if (!FNakamaUtils::IsSessionValid(Session, ErrorCallback))
     {
         return;
     }
@@ -5324,7 +5324,7 @@ void UNakamaClient::DeleteFriends(
                 const FString ResponseBody = Response->GetContentAsString();
 
                 // Check if Request was successful
-                if (IsResponseSuccessful(Response->GetResponseCode()))
+                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
                 {
                     // Check for Success Callback
                     if (SuccessCallback)
@@ -5347,7 +5347,7 @@ void UNakamaClient::DeleteFriends(
                 // Handle Invalid Response
                 if (ErrorCallback)
                 {
-                    const FNakamaError RequestError = CreateRequestFailureError();
+                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
                     ErrorCallback(RequestError);
                 }
             }
@@ -5372,7 +5372,7 @@ void UNakamaClient::BlockFriends(
     const FString Endpoint = TEXT("/v2/friend/block");
 
     // Verify the session
-    if (!IsSessionValid(Session, ErrorCallback))
+    if (!FNakamaUtils::IsSessionValid(Session, ErrorCallback))
     {
         return;
     }
@@ -5422,7 +5422,7 @@ void UNakamaClient::BlockFriends(
                 const FString ResponseBody = Response->GetContentAsString();
 
                 // Check if Request was successful
-                if (IsResponseSuccessful(Response->GetResponseCode()))
+                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
                 {
                     // Check for Success Callback
                     if (SuccessCallback)
@@ -5445,7 +5445,7 @@ void UNakamaClient::BlockFriends(
                 // Handle Invalid Response
                 if (ErrorCallback)
                 {
-                    const FNakamaError RequestError = CreateRequestFailureError();
+                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
                     ErrorCallback(RequestError);
                 }
             }
@@ -5471,7 +5471,7 @@ void UNakamaClient::ListFriends(
     const FString Endpoint = TEXT("/v2/friend");
 
     // Verify the session
-    if (!IsSessionValid(Session, ErrorCallback))
+    if (!FNakamaUtils::IsSessionValid(Session, ErrorCallback))
     {
         return;
     }
@@ -5521,7 +5521,7 @@ void UNakamaClient::ListFriends(
                 const FString ResponseBody = Response->GetContentAsString();
 
                 // Check if Request was successful
-                if (IsResponseSuccessful(Response->GetResponseCode()))
+                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
                 {
                     // Check for Success Callback
                     if (SuccessCallback)
@@ -5545,7 +5545,7 @@ void UNakamaClient::ListFriends(
                 // Handle Invalid Response
                 if (ErrorCallback)
                 {
-                    const FNakamaError RequestError = CreateRequestFailureError();
+                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
                     ErrorCallback(RequestError);
                 }
             }
@@ -5574,7 +5574,7 @@ void UNakamaClient::CreateGroup(
     const FString Endpoint = TEXT("/v2/group");
 
     // Verify the session
-    if (!IsSessionValid(Session, ErrorCallback))
+    if (!FNakamaUtils::IsSessionValid(Session, ErrorCallback))
     {
         return;
     }
@@ -5594,10 +5594,10 @@ void UNakamaClient::CreateGroup(
 
     // Serialize the request content
     FString Content;
-    if (!SerializeJsonObject(ContentJson, Content))
+    if (!FNakamaUtils::SerializeJsonObject(ContentJson, Content))
     {
         // Handle JSON serialization failure
-        HandleJsonSerializationFailure(ErrorCallback);
+        FNakamaUtils::HandleJsonSerializationFailure(ErrorCallback);
         return;
     }
 
@@ -5628,7 +5628,7 @@ void UNakamaClient::CreateGroup(
                 const FString ResponseBody = Response->GetContentAsString();
 
                 // Check if Request was successful
-                if (IsResponseSuccessful(Response->GetResponseCode()))
+                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
                 {
                     // Check for Success Callback
                     if (SuccessCallback)
@@ -5652,7 +5652,7 @@ void UNakamaClient::CreateGroup(
                 // Handle Invalid Response
                 if (ErrorCallback)
                 {
-                    const FNakamaError RequestError = CreateRequestFailureError();
+                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
                     ErrorCallback(RequestError);
                 }
             }
@@ -5676,7 +5676,7 @@ void UNakamaClient::DeleteGroup(
     const FString Endpoint = FString::Printf(TEXT("/v2/group/%s"), *GroupId);
 
     // Verify the session
-    if (!IsSessionValid(Session, ErrorCallback))
+    if (!FNakamaUtils::IsSessionValid(Session, ErrorCallback))
     {
         return;
     }
@@ -5708,7 +5708,7 @@ void UNakamaClient::DeleteGroup(
                 const FString ResponseBody = Response->GetContentAsString();
 
                 // Check if Request was successful
-                if (IsResponseSuccessful(Response->GetResponseCode()))
+                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
                 {
                     // Check for Success Callback
                     if (SuccessCallback)
@@ -5731,7 +5731,7 @@ void UNakamaClient::DeleteGroup(
                 // Handle Invalid Response
                 if (ErrorCallback)
                 {
-                    const FNakamaError RequestError = CreateRequestFailureError();
+                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
                     ErrorCallback(RequestError);
                 }
             }
@@ -5757,7 +5757,7 @@ void UNakamaClient::AddGroupUsers(
 
 
     // Verify the session
-    if (!IsSessionValid(Session, ErrorCallback))
+    if (!FNakamaUtils::IsSessionValid(Session, ErrorCallback))
     {
         return;
     }
@@ -5799,7 +5799,7 @@ void UNakamaClient::AddGroupUsers(
                 const FString ResponseBody = Response->GetContentAsString();
 
                 // Check if Request was successful
-                if (IsResponseSuccessful(Response->GetResponseCode()))
+                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
                 {
                     // Check for Success Callback
                     if (SuccessCallback)
@@ -5822,7 +5822,7 @@ void UNakamaClient::AddGroupUsers(
                 // Handle Invalid Response
                 if (ErrorCallback)
                 {
-                    const FNakamaError RequestError = CreateRequestFailureError();
+                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
                     ErrorCallback(RequestError);
                 }
             }
@@ -5849,7 +5849,7 @@ void UNakamaClient::ListGroupUsers(
     const FString Endpoint = FString::Printf(TEXT("/v2/group/%s/user"), *GroupId);
 
     // Verify the session
-    if (!IsSessionValid(Session, ErrorCallback))
+    if (!FNakamaUtils::IsSessionValid(Session, ErrorCallback))
     {
         return;
     }
@@ -5898,7 +5898,7 @@ void UNakamaClient::ListGroupUsers(
                 const FString ResponseBody = Response->GetContentAsString();
 
                 // Check if Request was successful
-                if (IsResponseSuccessful(Response->GetResponseCode()))
+                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
                 {
                     // Check for Success Callback
                     if (SuccessCallback)
@@ -5922,7 +5922,7 @@ void UNakamaClient::ListGroupUsers(
                 // Handle Invalid Response
                 if (ErrorCallback)
                 {
-                    const FNakamaError RequestError = CreateRequestFailureError();
+                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
                     ErrorCallback(RequestError);
                 }
             }
@@ -5947,7 +5947,7 @@ void UNakamaClient::KickGroupUsers(
     const FString Endpoint = FString::Printf(TEXT("/v2/group/%s/kick"), *GroupId);
 
     // Verify the session
-    if (!IsSessionValid(Session, ErrorCallback))
+    if (!FNakamaUtils::IsSessionValid(Session, ErrorCallback))
     {
         return;
     }
@@ -5989,7 +5989,7 @@ void UNakamaClient::KickGroupUsers(
                 const FString ResponseBody = Response->GetContentAsString();
 
                 // Check if Request was successful
-                if (IsResponseSuccessful(Response->GetResponseCode()))
+                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
                 {
                     // Check for Success Callback
                     if (SuccessCallback)
@@ -6012,7 +6012,7 @@ void UNakamaClient::KickGroupUsers(
                 // Handle Invalid Response
                 if (ErrorCallback)
                 {
-                    const FNakamaError RequestError = CreateRequestFailureError();
+                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
                     ErrorCallback(RequestError);
                 }
             }
@@ -6037,7 +6037,7 @@ void UNakamaClient::BanGroupUsers(
     const FString Endpoint = FString::Printf(TEXT("/v2/group/%s/ban"), *GroupId);
 
     // Verify the session
-    if (!IsSessionValid(Session, ErrorCallback))
+    if (!FNakamaUtils::IsSessionValid(Session, ErrorCallback))
     {
         return;
     }
@@ -6079,7 +6079,7 @@ void UNakamaClient::BanGroupUsers(
                 const FString ResponseBody = Response->GetContentAsString();
 
                 // Check if Request was successful
-                if (IsResponseSuccessful(Response->GetResponseCode()))
+                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
                 {
                     // Check for Success Callback
                     if (SuccessCallback)
@@ -6102,7 +6102,7 @@ void UNakamaClient::BanGroupUsers(
                 // Handle Invalid Response
                 if (ErrorCallback)
                 {
-                    const FNakamaError RequestError = CreateRequestFailureError();
+                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
                     ErrorCallback(RequestError);
                 }
             }
@@ -6126,7 +6126,7 @@ void UNakamaClient::JoinGroup(
     const FString Endpoint = FString::Printf(TEXT("/v2/group/%s/join"), *GroupId);
 
     // Verify the session
-    if (!IsSessionValid(Session, ErrorCallback))
+    if (!FNakamaUtils::IsSessionValid(Session, ErrorCallback))
     {
         return;
     }
@@ -6158,7 +6158,7 @@ void UNakamaClient::JoinGroup(
                 const FString ResponseBody = Response->GetContentAsString();
 
                 // Check if Request was successful
-                if (IsResponseSuccessful(Response->GetResponseCode()))
+                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
                 {
                     // Check for Success Callback
                     if (SuccessCallback)
@@ -6181,7 +6181,7 @@ void UNakamaClient::JoinGroup(
                 // Handle Invalid Response
                 if (ErrorCallback)
                 {
-                    const FNakamaError RequestError = CreateRequestFailureError();
+                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
                     ErrorCallback(RequestError);
                 }
             }
@@ -6205,7 +6205,7 @@ void UNakamaClient::LeaveGroup(
     const FString Endpoint = FString::Printf(TEXT("/v2/group/%s/leave"), *GroupId);
 
     // Verify the session
-    if (!IsSessionValid(Session, ErrorCallback))
+    if (!FNakamaUtils::IsSessionValid(Session, ErrorCallback))
     {
         return;
     }
@@ -6237,7 +6237,7 @@ void UNakamaClient::LeaveGroup(
                 const FString ResponseBody = Response->GetContentAsString();
 
                 // Check if Request was successful
-                if (IsResponseSuccessful(Response->GetResponseCode()))
+                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
                 {
                     // Check for Success Callback
                     if (SuccessCallback)
@@ -6260,7 +6260,7 @@ void UNakamaClient::LeaveGroup(
                 // Handle Invalid Response
                 if (ErrorCallback)
                 {
-                    const FNakamaError RequestError = CreateRequestFailureError();
+                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
                     ErrorCallback(RequestError);
                 }
             }
@@ -6286,7 +6286,7 @@ void UNakamaClient::ListGroups(
     const FString Endpoint = TEXT("/v2/group");
 
     // Verify the session
-    if (!IsSessionValid(Session, ErrorCallback))
+    if (!FNakamaUtils::IsSessionValid(Session, ErrorCallback))
     {
         return;
     }
@@ -6334,7 +6334,7 @@ void UNakamaClient::ListGroups(
                 const FString ResponseBody = Response->GetContentAsString();
 
                 // Check if Request was successful
-                if (IsResponseSuccessful(Response->GetResponseCode()))
+                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
                 {
                     // Check for Success Callback
                     if (SuccessCallback)
@@ -6358,7 +6358,7 @@ void UNakamaClient::ListGroups(
                 // Handle Invalid Response
                 if (ErrorCallback)
                 {
-                    const FNakamaError RequestError = CreateRequestFailureError();
+                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
                     ErrorCallback(RequestError);
                 }
             }
@@ -6411,7 +6411,7 @@ void UNakamaClient::ListUserGroups(
     const FString Endpoint = FString::Printf(TEXT("/v2/user/%s/group"), *UserId);
 
     // Verify the session
-    if (!IsSessionValid(Session, ErrorCallback))
+    if (!FNakamaUtils::IsSessionValid(Session, ErrorCallback))
     {
         return;
     }
@@ -6460,7 +6460,7 @@ void UNakamaClient::ListUserGroups(
                 const FString ResponseBody = Response->GetContentAsString();
 
                 // Check if Request was successful
-                if (IsResponseSuccessful(Response->GetResponseCode()))
+                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
                 {
                     // Check for Success Callback
                     if (SuccessCallback)
@@ -6484,7 +6484,7 @@ void UNakamaClient::ListUserGroups(
                 // Handle Invalid Response
                 if (ErrorCallback)
                 {
-                    const FNakamaError RequestError = CreateRequestFailureError();
+                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
                     ErrorCallback(RequestError);
                 }
             }
@@ -6509,7 +6509,7 @@ void UNakamaClient::PromoteGroupUsers(UNakamaSession* Session,
 
 
     // Verify the session
-    if (!IsSessionValid(Session, ErrorCallback))
+    if (!FNakamaUtils::IsSessionValid(Session, ErrorCallback))
     {
         return;
     }
@@ -6551,7 +6551,7 @@ void UNakamaClient::PromoteGroupUsers(UNakamaSession* Session,
                 const FString ResponseBody = Response->GetContentAsString();
 
                 // Check if Request was successful
-                if (IsResponseSuccessful(Response->GetResponseCode()))
+                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
                 {
                     // Check for Success Callback
                     if (SuccessCallback)
@@ -6574,7 +6574,7 @@ void UNakamaClient::PromoteGroupUsers(UNakamaSession* Session,
                 // Handle Invalid Response
                 if (ErrorCallback)
                 {
-                    const FNakamaError RequestError = CreateRequestFailureError();
+                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
                     ErrorCallback(RequestError);
                 }
             }
@@ -6599,7 +6599,7 @@ void UNakamaClient::DemoteGroupUsers(
     const FString Endpoint = FString::Printf(TEXT("/v2/group/%s/demote"), *GroupId);
 
     // Verify the session
-    if (!IsSessionValid(Session, ErrorCallback))
+    if (!FNakamaUtils::IsSessionValid(Session, ErrorCallback))
     {
         return;
     }
@@ -6641,7 +6641,7 @@ void UNakamaClient::DemoteGroupUsers(
                 const FString ResponseBody = Response->GetContentAsString();
 
                 // Check if Request was successful
-                if (IsResponseSuccessful(Response->GetResponseCode()))
+                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
                 {
                     // Check for Success Callback
                     if (SuccessCallback)
@@ -6664,7 +6664,7 @@ void UNakamaClient::DemoteGroupUsers(
                 // Handle Invalid Response
                 if (ErrorCallback)
                 {
-                    const FNakamaError RequestError = CreateRequestFailureError();
+                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
                     ErrorCallback(RequestError);
                 }
             }
@@ -6693,7 +6693,7 @@ void UNakamaClient::UpdateGroup(
     const FString Endpoint = FString::Printf(TEXT("/v2/group/%s"), *GroupId);
 
     // Verify the session
-    if (!IsSessionValid(Session, ErrorCallback))
+    if (!FNakamaUtils::IsSessionValid(Session, ErrorCallback))
     {
         return;
     }
@@ -6724,10 +6724,10 @@ void UNakamaClient::UpdateGroup(
 
     // Serialize the request content
     FString Content;
-    if (!SerializeJsonObject(ContentJson, Content))
+    if (!FNakamaUtils::SerializeJsonObject(ContentJson, Content))
     {
         // Handle JSON serialization failure
-        HandleJsonSerializationFailure(ErrorCallback);
+        FNakamaUtils::HandleJsonSerializationFailure(ErrorCallback);
         return;
     }
 
@@ -6758,7 +6758,7 @@ void UNakamaClient::UpdateGroup(
                 const FString ResponseBody = Response->GetContentAsString();
 
                 // Check if Request was successful
-                if (IsResponseSuccessful(Response->GetResponseCode()))
+                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
                 {
                     // Check for Success Callback
                     if (SuccessCallback)
@@ -6781,7 +6781,7 @@ void UNakamaClient::UpdateGroup(
                 // Handle Invalid Response
                 if (ErrorCallback)
                 {
-                    const FNakamaError RequestError = CreateRequestFailureError();
+                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
                     ErrorCallback(RequestError);
                 }
             }
@@ -6808,7 +6808,7 @@ void UNakamaClient::ListLeaderboardRecords(
     const FString Endpoint = FString::Printf(TEXT("/v2/leaderboard/%s"), *LeaderboardId);
 
     // Verify the session
-    if (!IsSessionValid(Session, ErrorCallback))
+    if (!FNakamaUtils::IsSessionValid(Session, ErrorCallback))
     {
         return;
     }
@@ -6861,7 +6861,7 @@ void UNakamaClient::ListLeaderboardRecords(
                 const FString ResponseBody = Response->GetContentAsString();
 
                 // Check if Request was successful
-                if (IsResponseSuccessful(Response->GetResponseCode()))
+                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
                 {
                     // Check for Success Callback
                     if (SuccessCallback)
@@ -6885,7 +6885,7 @@ void UNakamaClient::ListLeaderboardRecords(
                 // Handle Invalid Response
                 if (ErrorCallback)
                 {
-                    const FNakamaError RequestError = CreateRequestFailureError();
+                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
                     ErrorCallback(RequestError);
                 }
             }
@@ -6911,7 +6911,7 @@ void UNakamaClient::ListLeaderboardRecordsAroundOwner(
     const FString Endpoint = FString::Printf(TEXT("/v2/leaderboard/%s/owner/%s"), *LeaderboardId, *OwnerId);
 
     // Verify the session
-    if (!IsSessionValid(Session, ErrorCallback))
+    if (!FNakamaUtils::IsSessionValid(Session, ErrorCallback))
     {
         return;
     }
@@ -6951,7 +6951,7 @@ void UNakamaClient::ListLeaderboardRecordsAroundOwner(
                 const FString ResponseBody = Response->GetContentAsString();
 
                 // Check if Request was successful
-                if (IsResponseSuccessful(Response->GetResponseCode()))
+                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
                 {
                     // Check for Success Callback
                     if (SuccessCallback)
@@ -6975,7 +6975,7 @@ void UNakamaClient::ListLeaderboardRecordsAroundOwner(
                 // Handle Invalid Response
                 if (ErrorCallback)
                 {
-                    const FNakamaError RequestError = CreateRequestFailureError();
+                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
                     ErrorCallback(RequestError);
                 }
             }
@@ -7002,7 +7002,7 @@ void UNakamaClient::WriteLeaderboardRecord(
     const FString Endpoint = FString::Printf(TEXT("/v2/leaderboard/%s"), *LeaderboardId);
 
     // Verify the session
-    if (!IsSessionValid(Session, ErrorCallback))
+    if (!FNakamaUtils::IsSessionValid(Session, ErrorCallback))
     {
         return;
     }
@@ -7021,10 +7021,10 @@ void UNakamaClient::WriteLeaderboardRecord(
 
     // Serialize the request content
     FString Content;
-    if (!SerializeJsonObject(ContentJson, Content))
+    if (!FNakamaUtils::SerializeJsonObject(ContentJson, Content))
     {
         // Handle JSON serialization failure
-        HandleJsonSerializationFailure(ErrorCallback);
+        FNakamaUtils::HandleJsonSerializationFailure(ErrorCallback);
         return;
     }
 
@@ -7055,7 +7055,7 @@ void UNakamaClient::WriteLeaderboardRecord(
                 const FString ResponseBody = Response->GetContentAsString();
 
                 // Check if Request was successful
-                if (IsResponseSuccessful(Response->GetResponseCode()))
+                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
                 {
                     // Check for Success Callback
                     if (SuccessCallback)
@@ -7079,7 +7079,7 @@ void UNakamaClient::WriteLeaderboardRecord(
                 // Handle Invalid Response
                 if (ErrorCallback)
                 {
-                    const FNakamaError RequestError = CreateRequestFailureError();
+                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
                     ErrorCallback(RequestError);
                 }
             }
@@ -7102,7 +7102,7 @@ void UNakamaClient::DeleteLeaderboardRecord(UNakamaSession* Session,
     const FString Endpoint = FString::Printf(TEXT("/v2/leaderboard/%s"), *LeaderboardId);
 
     // Verify the session
-    if (!IsSessionValid(Session, ErrorCallback))
+    if (!FNakamaUtils::IsSessionValid(Session, ErrorCallback))
     {
         return;
     }
@@ -7134,7 +7134,7 @@ void UNakamaClient::DeleteLeaderboardRecord(UNakamaSession* Session,
                 const FString ResponseBody = Response->GetContentAsString();
 
                 // Check if Request was successful
-                if (IsResponseSuccessful(Response->GetResponseCode()))
+                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
                 {
                     // Check for Success Callback
                     if (SuccessCallback)
@@ -7157,7 +7157,7 @@ void UNakamaClient::DeleteLeaderboardRecord(UNakamaSession* Session,
                 // Handle Invalid Response
                 if (ErrorCallback)
                 {
-                    const FNakamaError RequestError = CreateRequestFailureError();
+                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
                     ErrorCallback(RequestError);
                 }
             }
@@ -7185,7 +7185,7 @@ void UNakamaClient::ListMatches(UNakamaSession* Session,
     const FString Endpoint = TEXT("/v2/match");
 
     // Verify the session
-    if (!IsSessionValid(Session, ErrorCallback))
+    if (!FNakamaUtils::IsSessionValid(Session, ErrorCallback))
     {
         return;
     }
@@ -7246,7 +7246,7 @@ void UNakamaClient::ListMatches(UNakamaSession* Session,
                 const FString ResponseBody = Response->GetContentAsString();
 
                 // Check if Request was successful
-                if (IsResponseSuccessful(Response->GetResponseCode()))
+                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
                 {
                     // Check for Success Callback
                     if (SuccessCallback)
@@ -7270,7 +7270,7 @@ void UNakamaClient::ListMatches(UNakamaSession* Session,
                 // Handle Invalid Response
                 if (ErrorCallback)
                 {
-                    const FNakamaError RequestError = CreateRequestFailureError();
+                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
                     ErrorCallback(RequestError);
                 }
             }
@@ -7294,7 +7294,7 @@ void UNakamaClient::ListNotifications(UNakamaSession* Session,
     const FString Endpoint = TEXT("/v2/notification");
 
     // Verify the session
-    if (!IsSessionValid(Session, ErrorCallback))
+    if (!FNakamaUtils::IsSessionValid(Session, ErrorCallback))
     {
         return;
     }
@@ -7338,7 +7338,7 @@ void UNakamaClient::ListNotifications(UNakamaSession* Session,
                 const FString ResponseBody = Response->GetContentAsString();
 
                 // Check if Request was successful
-                if (IsResponseSuccessful(Response->GetResponseCode()))
+                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
                 {
                     // Check for Success Callback
                     if (SuccessCallback)
@@ -7362,7 +7362,7 @@ void UNakamaClient::ListNotifications(UNakamaSession* Session,
                 // Handle Invalid Response
                 if (ErrorCallback)
                 {
-                    const FNakamaError RequestError = CreateRequestFailureError();
+                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
                     ErrorCallback(RequestError);
                 }
             }
@@ -7386,7 +7386,7 @@ void UNakamaClient::DeleteNotifications(
     const FString Endpoint = TEXT("/v2/notification");
 
     // Verify the session
-    if (!IsSessionValid(Session, ErrorCallback))
+    if (!FNakamaUtils::IsSessionValid(Session, ErrorCallback))
     {
         return;
     }
@@ -7428,7 +7428,7 @@ void UNakamaClient::DeleteNotifications(
                 const FString ResponseBody = Response->GetContentAsString();
 
                 // Check if Request was successful
-                if (IsResponseSuccessful(Response->GetResponseCode()))
+                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
                 {
                     // Check for Success Callback
                     if (SuccessCallback)
@@ -7451,7 +7451,7 @@ void UNakamaClient::DeleteNotifications(
                 // Handle Invalid Response
                 if (ErrorCallback)
                 {
-                    const FNakamaError RequestError = CreateRequestFailureError();
+                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
                     ErrorCallback(RequestError);
                 }
             }
@@ -7477,7 +7477,7 @@ void UNakamaClient::ListChannelMessages(UNakamaSession* Session,
     const FString Endpoint = FString::Printf(TEXT("/v2/channel/%s"), *ChannelId);
 
     // Verify the session
-    if (!IsSessionValid(Session, ErrorCallback))
+    if (!FNakamaUtils::IsSessionValid(Session, ErrorCallback))
     {
         return;
     }
@@ -7525,7 +7525,7 @@ void UNakamaClient::ListChannelMessages(UNakamaSession* Session,
                 const FString ResponseBody = Response->GetContentAsString();
 
                 // Check if Request was successful
-                if (IsResponseSuccessful(Response->GetResponseCode()))
+                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
                 {
                     // Check for Success Callback
                     if (SuccessCallback)
@@ -7549,7 +7549,7 @@ void UNakamaClient::ListChannelMessages(UNakamaSession* Session,
                 // Handle Invalid Response
                 if (ErrorCallback)
                 {
-                    const FNakamaError RequestError = CreateRequestFailureError();
+                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
                     ErrorCallback(RequestError);
                 }
             }
@@ -7577,7 +7577,7 @@ void UNakamaClient::ListTournaments(UNakamaSession* Session,
     const FString Endpoint = TEXT("/v2/tournament");
 
     // Verify the session
-    if (!IsSessionValid(Session, ErrorCallback))
+    if (!FNakamaUtils::IsSessionValid(Session, ErrorCallback))
     {
         return;
     }
@@ -7637,7 +7637,7 @@ void UNakamaClient::ListTournaments(UNakamaSession* Session,
                 const FString ResponseBody = Response->GetContentAsString();
 
                 // Check if Request was successful
-                if (IsResponseSuccessful(Response->GetResponseCode()))
+                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
                 {
                     // Check for Success Callback
                     if (SuccessCallback)
@@ -7661,7 +7661,7 @@ void UNakamaClient::ListTournaments(UNakamaSession* Session,
                 // Handle Invalid Response
                 if (ErrorCallback)
                 {
-                    const FNakamaError RequestError = CreateRequestFailureError();
+                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
                     ErrorCallback(RequestError);
                 }
             }
@@ -7687,7 +7687,7 @@ void UNakamaClient::ListTournamentRecords(UNakamaSession* Session,
     const FString Endpoint = FString::Printf(TEXT("/v2/tournament/%s"), *TournamentId);
 
     // Verify the session
-    if (!IsSessionValid(Session, ErrorCallback))
+    if (!FNakamaUtils::IsSessionValid(Session, ErrorCallback))
     {
         return;
     }
@@ -7738,7 +7738,7 @@ void UNakamaClient::ListTournamentRecords(UNakamaSession* Session,
                 const FString ResponseBody = Response->GetContentAsString();
 
                 // Check if Request was successful
-                if (IsResponseSuccessful(Response->GetResponseCode()))
+                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
                 {
                     // Check for Success Callback
                     if (SuccessCallback)
@@ -7762,7 +7762,7 @@ void UNakamaClient::ListTournamentRecords(UNakamaSession* Session,
                 // Handle Invalid Response
                 if (ErrorCallback)
                 {
-                    const FNakamaError RequestError = CreateRequestFailureError();
+                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
                     ErrorCallback(RequestError);
                 }
             }
@@ -7786,7 +7786,7 @@ void UNakamaClient::ListTournamentRecordsAroundOwner(
     const FString Endpoint = FString::Printf(TEXT("/v2/tournament/%s/owner/%s"), *TournamentId, *OwnerId);
 
     // Verify the session
-    if (!IsSessionValid(Session, ErrorCallback))
+    if (!FNakamaUtils::IsSessionValid(Session, ErrorCallback))
     {
         return;
     }
@@ -7825,7 +7825,7 @@ void UNakamaClient::ListTournamentRecordsAroundOwner(
                 const FString ResponseBody = Response->GetContentAsString();
 
                 // Check if Request was successful
-                if (IsResponseSuccessful(Response->GetResponseCode()))
+                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
                 {
                     // Check for Success Callback
                     if (SuccessCallback)
@@ -7849,7 +7849,7 @@ void UNakamaClient::ListTournamentRecordsAroundOwner(
                 // Handle Invalid Response
                 if (ErrorCallback)
                 {
-                    const FNakamaError RequestError = CreateRequestFailureError();
+                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
                     ErrorCallback(RequestError);
                 }
             }
@@ -7874,7 +7874,7 @@ void UNakamaClient::WriteTournamentRecord(UNakamaSession* Session,
     const FString Endpoint = FString::Printf(TEXT("/v2/tournament/%s"), *TournamentId);
 
     // Verify the session
-    if (!IsSessionValid(Session, ErrorCallback))
+    if (!FNakamaUtils::IsSessionValid(Session, ErrorCallback))
     {
         return;
     }
@@ -7893,10 +7893,10 @@ void UNakamaClient::WriteTournamentRecord(UNakamaSession* Session,
 
     // Serialize the request content
     FString Content;
-    if (!SerializeJsonObject(ContentJson, Content))
+    if (!FNakamaUtils::SerializeJsonObject(ContentJson, Content))
     {
         // Handle JSON serialization failure
-        HandleJsonSerializationFailure(ErrorCallback);
+        FNakamaUtils::HandleJsonSerializationFailure(ErrorCallback);
         return;
     }
 
@@ -7927,7 +7927,7 @@ void UNakamaClient::WriteTournamentRecord(UNakamaSession* Session,
                 const FString ResponseBody = Response->GetContentAsString();
 
                 // Check if Request was successful
-                if (IsResponseSuccessful(Response->GetResponseCode()))
+                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
                 {
                     // Check for Success Callback
                     if (SuccessCallback)
@@ -7951,7 +7951,7 @@ void UNakamaClient::WriteTournamentRecord(UNakamaSession* Session,
                 // Handle Invalid Response
                 if (ErrorCallback)
                 {
-                    const FNakamaError RequestError = CreateRequestFailureError();
+                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
                     ErrorCallback(RequestError);
                 }
             }
@@ -7975,7 +7975,7 @@ void UNakamaClient::JoinTournament(
     const FString Endpoint = FString::Printf(TEXT("/v2/tournament/%s/join"), *TournamentId);
 
     // Verify the session
-    if (!IsSessionValid(Session, ErrorCallback))
+    if (!FNakamaUtils::IsSessionValid(Session, ErrorCallback))
     {
         return;
     }
@@ -8007,7 +8007,7 @@ void UNakamaClient::JoinTournament(
                 const FString ResponseBody = Response->GetContentAsString();
 
                 // Check if Request was successful
-                if (IsResponseSuccessful(Response->GetResponseCode()))
+                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
                 {
                     // Check for Success Callback
                     if (SuccessCallback)
@@ -8030,7 +8030,7 @@ void UNakamaClient::JoinTournament(
                 // Handle Invalid Response
                 if (ErrorCallback)
                 {
-                    const FNakamaError RequestError = CreateRequestFailureError();
+                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
                     ErrorCallback(RequestError);
                 }
             }
@@ -8055,7 +8055,7 @@ void UNakamaClient::ListStorageObjects(UNakamaSession* Session,
     const FString Endpoint = FString::Printf(TEXT("/v2/storage/%s"), *Collection);
 
     // Verify the session
-    if (!IsSessionValid(Session, ErrorCallback))
+    if (!FNakamaUtils::IsSessionValid(Session, ErrorCallback))
     {
         return;
     }
@@ -8101,7 +8101,7 @@ void UNakamaClient::ListStorageObjects(UNakamaSession* Session,
                 const FString ResponseBody = Response->GetContentAsString();
 
                 // Check if Request was successful
-                if (IsResponseSuccessful(Response->GetResponseCode()))
+                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
                 {
                     // Check for Success Callback
                     if (SuccessCallback)
@@ -8125,7 +8125,7 @@ void UNakamaClient::ListStorageObjects(UNakamaSession* Session,
                 // Handle Invalid Response
                 if (ErrorCallback)
                 {
-                    const FNakamaError RequestError = CreateRequestFailureError();
+                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
                     ErrorCallback(RequestError);
                 }
             }
@@ -8151,7 +8151,7 @@ void UNakamaClient::ListUsersStorageObjects(UNakamaSession* Session,
     const FString Endpoint = FString::Printf(TEXT("/v2/storage/%s"), *Collection);
 
     // Verify the session
-    if (!IsSessionValid(Session, ErrorCallback))
+    if (!FNakamaUtils::IsSessionValid(Session, ErrorCallback))
     {
         return;
     }
@@ -8196,7 +8196,7 @@ void UNakamaClient::ListUsersStorageObjects(UNakamaSession* Session,
                 const FString ResponseBody = Response->GetContentAsString();
 
                 // Check if Request was successful
-                if (IsResponseSuccessful(Response->GetResponseCode()))
+                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
                 {
                     // Check for Success Callback
                     if (SuccessCallback)
@@ -8220,7 +8220,7 @@ void UNakamaClient::ListUsersStorageObjects(UNakamaSession* Session,
                 // Handle Invalid Response
                 if (ErrorCallback)
                 {
-                    const FNakamaError RequestError = CreateRequestFailureError();
+                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
                     ErrorCallback(RequestError);
                 }
             }
@@ -8244,7 +8244,7 @@ void UNakamaClient::WriteStorageObjects(
     const FString Endpoint = TEXT("/v2/storage");
 
     // Verify the session
-    if (!IsSessionValid(Session, ErrorCallback))
+    if (!FNakamaUtils::IsSessionValid(Session, ErrorCallback))
     {
         return;
     }
@@ -8274,10 +8274,10 @@ void UNakamaClient::WriteStorageObjects(
 
     // Serialize the request content
     FString Content;
-    if (!SerializeJsonObject(RequestBodyJson, Content))
+    if (!FNakamaUtils::SerializeJsonObject(RequestBodyJson, Content))
     {
         // Handle JSON serialization failure
-        HandleJsonSerializationFailure(ErrorCallback);
+        FNakamaUtils::HandleJsonSerializationFailure(ErrorCallback);
         return;
     }
 
@@ -8308,7 +8308,7 @@ void UNakamaClient::WriteStorageObjects(
                 const FString ResponseBody = Response->GetContentAsString();
 
                 // Check if Request was successful
-                if (IsResponseSuccessful(Response->GetResponseCode()))
+                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
                 {
                     // Check for Success Callback
                     if (SuccessCallback)
@@ -8332,7 +8332,7 @@ void UNakamaClient::WriteStorageObjects(
                 // Handle Invalid Response
                 if (ErrorCallback)
                 {
-                    const FNakamaError RequestError = CreateRequestFailureError();
+                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
                     ErrorCallback(RequestError);
                 }
             }
@@ -8356,7 +8356,7 @@ void UNakamaClient::ReadStorageObjects(
     const FString Endpoint = TEXT("/v2/storage");
 
     // Verify the session
-    if (!IsSessionValid(Session, ErrorCallback))
+    if (!FNakamaUtils::IsSessionValid(Session, ErrorCallback))
     {
         return;
     }
@@ -8378,10 +8378,10 @@ void UNakamaClient::ReadStorageObjects(
 
     // Serialize the request content
     FString Content;
-    if (!SerializeJsonObject(RequestBodyJson, Content))
+    if (!FNakamaUtils::SerializeJsonObject(RequestBodyJson, Content))
     {
         // Handle JSON serialization failure
-        HandleJsonSerializationFailure(ErrorCallback);
+        FNakamaUtils::HandleJsonSerializationFailure(ErrorCallback);
         return;
     }
 
@@ -8412,7 +8412,7 @@ void UNakamaClient::ReadStorageObjects(
                 const FString ResponseBody = Response->GetContentAsString();
 
                 // Check if Request was successful
-                if (IsResponseSuccessful(Response->GetResponseCode()))
+                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
                 {
                     // Check for Success Callback
                     if (SuccessCallback)
@@ -8436,7 +8436,7 @@ void UNakamaClient::ReadStorageObjects(
                 // Handle Invalid Response
                 if (ErrorCallback)
                 {
-                    const FNakamaError RequestError = CreateRequestFailureError();
+                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
                     ErrorCallback(RequestError);
                 }
             }
@@ -8460,7 +8460,7 @@ void UNakamaClient::DeleteStorageObjects(
     const FString Endpoint = TEXT("/v2/storage/delete");
 
     // Verify the session
-    if (!IsSessionValid(Session, ErrorCallback))
+    if (!FNakamaUtils::IsSessionValid(Session, ErrorCallback))
     {
         return;
     }
@@ -8482,10 +8482,10 @@ void UNakamaClient::DeleteStorageObjects(
 
     // Serialize the request content
     FString Content;
-    if (!SerializeJsonObject(RequestBodyJson, Content))
+    if (!FNakamaUtils::SerializeJsonObject(RequestBodyJson, Content))
     {
         // Handle JSON serialization failure
-        HandleJsonSerializationFailure(ErrorCallback);
+        FNakamaUtils::HandleJsonSerializationFailure(ErrorCallback);
         return;
     }
 
@@ -8516,7 +8516,7 @@ void UNakamaClient::DeleteStorageObjects(
                 const FString ResponseBody = Response->GetContentAsString();
 
                 // Check if Request was successful
-                if (IsResponseSuccessful(Response->GetResponseCode()))
+                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
                 {
                     // Check for Success Callback
                     if (SuccessCallback)
@@ -8539,7 +8539,7 @@ void UNakamaClient::DeleteStorageObjects(
                 // Handle Invalid Response
                 if (ErrorCallback)
                 {
-                    const FNakamaError RequestError = CreateRequestFailureError();
+                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
                     ErrorCallback(RequestError);
                 }
             }
@@ -8561,7 +8561,7 @@ void UNakamaClient::RPC(
     TFunction<void(const FNakamaError& Error)> ErrorCallback)
 {
     // Verify the session
-    if (!IsSessionValid(Session, ErrorCallback))
+    if (!FNakamaUtils::IsSessionValid(Session, ErrorCallback))
     {
         return;
     }
@@ -8601,15 +8601,6 @@ TSharedRef<IHttpRequest, ESPMode::ThreadSafe> UNakamaClient::MakeRequest(const F
 	const FString& Content, ENakamaRequestMethod RequestMethod, const TMultiMap<FString, FString>& QueryParams,
 	const FString& SessionToken)
 {
-	HttpModule = &FHttpModule::Get();
-
-	// Create the HttpRequest
-	#if ENGINE_MAJOR_VERSION <= 4 && ENGINE_MINOR_VERSION <= 25
-	TSharedRef<IHttpRequest> Request = HttpModule->CreateRequest();
-#else
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = HttpModule->CreateRequest();
-#endif
-
 	// Append query parameters to the endpoint
 	FString ModifiedEndpoint = Endpoint;
 	if (QueryParams.Num() > 0)
@@ -8621,171 +8612,7 @@ TSharedRef<IHttpRequest, ESPMode::ThreadSafe> UNakamaClient::MakeRequest(const F
 	// Construct the URL
 	FString URL = ConstructURL(ModifiedEndpoint);
 
-	HttpRequest->SetURL(URL);
-	HttpRequest->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
-	HttpRequest->SetTimeout(Timeout); // Exposed to end user
-
-	FString VerbString = FNakamaUtils::ENakamaRequesMethodToFString(RequestMethod);
-	if (!VerbString.IsEmpty())
-	{
-		HttpRequest->SetVerb(VerbString);
-	}
-
-	// Set the content if it is not empty
-	if (!Content.IsEmpty())
-	{
-		HttpRequest->SetContentAsString(Content);
-	}
-
-	// Add authorization header if session token is provided
-	if (!SessionToken.IsEmpty())
-	{
-		FString AuthorizationHeader = FString::Printf(TEXT("Bearer %s"), *SessionToken);
-		HttpRequest->SetHeader(TEXT("Authorization"), AuthorizationHeader);
-	}
-
-	//NAKAMA_LOG_INFO(TEXT("..."));
-	//NAKAMA_LOG_INFO(FString::Printf(TEXT("Making Request to %s"), *Endpoint));
-	NAKAMA_LOG_INFO(FString::Printf(TEXT("Making %s request to %s with content: %s"), *VerbString, *URL, *Content));
-	return HttpRequest;
-}
-
-void UNakamaClient::AddVarsToJson(const TSharedPtr<FJsonObject>& JsonObject, const TMap<FString, FString>& Vars)
-{
-	if (Vars.Num() > 0)
-	{
-		const TSharedPtr<FJsonObject> VarsJson = MakeShared<FJsonObject>();
-		for (const auto& Var : Vars)
-		{
-			if (!Var.Key.IsEmpty() && !Var.Value.IsEmpty())
-			{
-				VarsJson->SetStringField(Var.Key, Var.Value);
-			}
-			else
-			{
-				NAKAMA_LOG_WARN(TEXT("AddVarsToJson: Empty key or value detected."));
-			}
-		}
-		JsonObject->SetObjectField(TEXT("vars"), VarsJson);
-	}
-}
-
-void UNakamaClient::SetBasicAuthorizationHeader(TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest)
-{
-	FString AuthToken = FString::Printf(TEXT("%s:"), *ServerKey);
-	FTCHARToUTF8 Utf8Token = FTCHARToUTF8(*AuthToken);
-	FString EncodedAuthToken = FBase64::Encode((const uint8*)Utf8Token.Get(), Utf8Token.Length());
-	FString AuthorizationHeader = FString::Printf(TEXT("Basic %s"), *EncodedAuthToken);
-
-	//NAKAMA_LOG_DEBUG(FString::Printf( TEXT("Authorization Header: %s"), *AuthorizationHeader ));
-
-	HttpRequest->SetHeader(TEXT("Authorization"), AuthorizationHeader);
-}
-
-void UNakamaClient::ProcessRequestComplete(FHttpRequestPtr Request, const FHttpResponsePtr& Response, bool bSuccess,
-	const TFunction<void(const FString&)>& SuccessCallback,
-	const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
-{
-	if (bSuccess && Response.IsValid())
-	{
-		const int32 ResponseCode = Response->GetResponseCode();
-		const FString ResponseBody = Response->GetContentAsString();
-
-		if (ResponseCode == 200)
-		{
-			NAKAMA_LOG_DEBUG(FString::Printf(TEXT("Request Successful: %s"), *ResponseBody));
-			if (SuccessCallback)
-			{
-				SuccessCallback(ResponseBody);
-			}
-		}
-		else
-		{
-			NAKAMA_LOG_WARN(FString::Printf(TEXT("Response (Code: %d) - Contents: %s"), ResponseCode, *ResponseBody));
-			const FNakamaError Error(ResponseBody);
-			if (ErrorCallback)
-			{
-				ErrorCallback(Error);
-			}
-		}
-	}
-	else
-	{
-		// Handle request failure
-		NAKAMA_LOG_ERROR(TEXT("Failed to process request."));
-
-		if(Request.IsValid())
-		{
-			NAKAMA_LOG_DEBUG(FString::Printf(TEXT("Request URL: %s"), *(Request->GetURL())));
-		}
-
-		FNakamaError Error;
-		Error.Code = ENakamaErrorCode::Unknown;
-		Error.Message = TEXT("Failed to proccess request. Request failed.");
-
-		if(ErrorCallback)
-		{
-			ErrorCallback(Error);
-		}
-	}
-}
-
-void UNakamaClient::HandleJsonSerializationFailure(TFunction<void(const FNakamaError& Error)> ErrorCallback)
-{
-	NAKAMA_LOG_ERROR(TEXT("Failed to generate request content."));
-	FNakamaError Error;
-	Error.Code = ENakamaErrorCode::Unknown;
-	Error.Message = TEXT("Failed to generate request content.");
-	ErrorCallback(Error);
-}
-
-bool UNakamaClient::IsSessionValid(const UNakamaSession* Session,
-	TFunction<void(const FNakamaError& Error)> ErrorCallback)
-{
-	if (!Session || Session->SessionData.AuthToken.IsEmpty())
-	{
-		NAKAMA_LOG_ERROR("Invalid session or session data.");
-
-		FNakamaError Error;
-		Error.Message = "Invalid session or session data.";
-		ErrorCallback(Error);
-		return false;
-	}
-
-	return true;
-}
-
-bool UNakamaClient::SerializeJsonObject(const TSharedPtr<FJsonObject>& JsonObject, FString& OutSerializedJson)
-{
-	if (!JsonObject.IsValid())
-	{
-		return false;
-	}
-
-	const TSharedRef<TJsonWriter<>> JsonWriter = TJsonWriterFactory<>::Create(&OutSerializedJson);
-	if (!FJsonSerializer::Serialize(JsonObject.ToSharedRef(), JsonWriter))
-	{
-		JsonWriter->Close();
-		return false;
-	}
-
-	JsonWriter->Close();
-
-	return true;
-}
-
-bool UNakamaClient::IsResponseSuccessful(int32 ResponseCode)
-{
-	return ResponseCode == 200;
-}
-
-FNakamaError UNakamaClient::CreateRequestFailureError()
-{
-	NAKAMA_LOG_ERROR(TEXT("Failed to proccess request. Request failed."));
-	FNakamaError Error;
-	Error.Code = ENakamaErrorCode::Unknown;
-	Error.Message = TEXT("Failed to proccess request. Request failed.");
-	return Error;
+	return FNakamaUtils::MakeRequest(URL, Content, RequestMethod, SessionToken, Timeout);
 }
 
 bool UNakamaClient::IsClientValid() const
@@ -8817,7 +8644,7 @@ void UNakamaClient::SendRPC(UNakamaSession* Session, const FString& Id, const TO
 
         // Bind the response callback and handle the response
         HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-            ProcessRequestComplete(Request, Response, bSuccess, [SuccessCallback](const FString& ResponseBody) {
+            FNakamaUtils::ProcessRequestComplete(Request, Response, bSuccess, [SuccessCallback](const FString& ResponseBody) {
                 if (SuccessCallback)
                 {
                     FNakamaRPC Rpc = FNakamaRPC(ResponseBody);
@@ -8850,7 +8677,7 @@ void UNakamaClient::SendRPC(UNakamaSession* Session, const FString& Id, const TO
 
         // Bind the response callback and handle the response
         HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-            ProcessRequestComplete(Request, Response, bSuccess, [SuccessCallback](const FString& ResponseBody) {
+            FNakamaUtils::ProcessRequestComplete(Request, Response, bSuccess, [SuccessCallback](const FString& ResponseBody) {
                 if (SuccessCallback)
                 {
                     FNakamaRPC Rpc = FNakamaRPC(ResponseBody);

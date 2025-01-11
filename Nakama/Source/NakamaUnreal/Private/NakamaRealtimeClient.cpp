@@ -15,7 +15,6 @@
 #include "WebSocketsModule.h"
 #include "GenericPlatform/GenericPlatformHttp.h"
 
-
 void UNakamaRealtimeClient::Initialize(const FString& InHost, int32 InPort, bool InSSL)
 {
 	Host = InHost;
@@ -2127,7 +2126,7 @@ void UNakamaRealtimeClient::SetHeartbeatIntervalMs(int32 IntervalMs)
 	HeartbeatIntervalMs = IntervalMs;
 }
 
-UNakamaRealtimeRequestContext* UNakamaRealtimeClient::CreateReqContext(FNakamaRealtimeEnvelope& envelope)
+TObjectPtr<UNakamaRealtimeRequestContext> UNakamaRealtimeClient::CreateReqContext(FNakamaRealtimeEnvelope& envelope)
 {
 	FScopeLock Lock(&ReqContextsLock);
 
@@ -2138,7 +2137,7 @@ UNakamaRealtimeRequestContext* UNakamaRealtimeClient::CreateReqContext(FNakamaRe
 		NextCid = 0;
 	}
 
-	UNakamaRealtimeRequestContext* ReqContext = NewObject<UNakamaRealtimeRequestContext>();
+	TObjectPtr<UNakamaRealtimeRequestContext> ReqContext = NewObject<UNakamaRealtimeRequestContext>();
 
 	int32_t Cid = 0;
 	bool Inserted = false;
@@ -2190,7 +2189,7 @@ void UNakamaRealtimeClient::SendMessageWithEnvelope(const FString& FieldName,
 	FNakamaRealtimeEnvelope NakamaEnvelope;
 
 	// Create Context from the Envelope
-	UNakamaRealtimeRequestContext* ReqContext = CreateReqContext(NakamaEnvelope);
+	TObjectPtr<UNakamaRealtimeRequestContext> ReqContext = CreateReqContext(NakamaEnvelope);
 	Envelope->SetStringField(TEXT("cid"), FString::FromInt(ReqContext->CID));
 
 	// Envelope is basically just holding a reference to the Payload in the SuccessCallback (makes it generic)
@@ -2241,7 +2240,7 @@ void UNakamaRealtimeClient::SendDataWithEnvelope(const FString& FieldName, const
 	FNakamaRealtimeEnvelope NakamaEnvelope;
 
 	// Create Context from the Envelope
-	const UNakamaRealtimeRequestContext* ReqContext = CreateReqContext(NakamaEnvelope);
+	const TObjectPtr<UNakamaRealtimeRequestContext> ReqContext = CreateReqContext(NakamaEnvelope);
 	Envelope->SetStringField(TEXT("cid"), FString::FromInt(ReqContext->CID));
 
 	// Set the payload
@@ -2769,7 +2768,7 @@ void UNakamaRealtimeClient::HandleReceivedMessage(const FString& Data)
 
 	    {
 	        FScopeLock Lock(&ReqContextsLock);
-	        UNakamaRealtimeRequestContext* ReqContext = ReqContexts.FindRef(Cid);
+	        TObjectPtr<UNakamaRealtimeRequestContext> ReqContext = ReqContexts.FindRef(Cid);
 	        if (ReqContext)
 	        {
 	        	bContextIsValid = true;
@@ -2843,7 +2842,7 @@ void UNakamaRealtimeClient::SendMessage(const FString& FieldName, const TSharedP
 	FNakamaRealtimeEnvelope NakamaEnvelope;
 
 	// Create Context
-	const UNakamaRealtimeRequestContext* ReqContext = CreateReqContext(NakamaEnvelope);
+	const TObjectPtr<UNakamaRealtimeRequestContext> ReqContext = CreateReqContext(NakamaEnvelope);
 	Envelope->SetStringField(TEXT("cid"), FString::FromInt(ReqContext->CID));
 
 	// Set the payload
