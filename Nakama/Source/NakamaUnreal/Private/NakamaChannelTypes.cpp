@@ -1,12 +1,12 @@
 #include "NakamaChannelTypes.h"
 #include "NakamaUtils.h"
 
-FNakamaChannelMessage::FNakamaChannelMessage(const FString& JsonString)
-{
-	TSharedPtr<FJsonObject> JsonObject;
-	const TSharedRef<TJsonReader<>> JsonReader = TJsonReaderFactory<>::Create(JsonString);
+FNakamaChannelMessage::FNakamaChannelMessage(const FString& JsonString) : FNakamaChannelMessage(FNakamaUtils::DeserializeJsonObject(JsonString)) {
+}
 
-	if (FJsonSerializer::Deserialize(JsonReader, JsonObject) && JsonObject.IsValid())
+FNakamaChannelMessage::FNakamaChannelMessage(const TSharedPtr<FJsonObject> JsonObject)
+{
+	if (JsonObject.IsValid())
 	{
 		JsonObject->TryGetStringField(TEXT("channel_id"), ChannelId);
 		JsonObject->TryGetStringField(TEXT("message_id"), MessageId);
@@ -86,19 +86,10 @@ FNakamaChannelMessageList::FNakamaChannelMessageList(const FString& JsonString)
 		{
 			for (const TSharedPtr<FJsonValue>& MessageJsonValue : *MessagesJsonArray)
 			{
-				if (MessageJsonValue->Type == EJson::Object)
+				if (TSharedPtr<FJsonObject> MessageJsonObject = MessageJsonValue->AsObject())
 				{
-					TSharedPtr<FJsonObject> MessageJsonObject = MessageJsonValue->AsObject();
-					if (MessageJsonObject.IsValid())
-					{
-						FString MessageJsonString;
-						TSharedRef<TJsonWriter<>> JsonWriter = TJsonWriterFactory<>::Create(&MessageJsonString);
-						if (FJsonSerializer::Serialize(MessageJsonObject.ToSharedRef(), JsonWriter))
-						{
-							FNakamaChannelMessage Message(MessageJsonString);
-							Messages.Add(Message);
-						}
-					}
+					FNakamaChannelMessage Message(MessageJsonObject);
+					Messages.Add(Message);
 				}
 			}
 		}
@@ -128,20 +119,10 @@ FNakamaChannelPresenceEvent::FNakamaChannelPresenceEvent(const FString& JsonStri
 	    {
 	        for (const TSharedPtr<FJsonValue>& JoinJsonValue : *JoinsJsonArray)
 	        {
-	            if (JoinJsonValue->Type == EJson::Object)
+	            if (TSharedPtr<FJsonObject> JoinJsonObject = JoinJsonValue->AsObject())
 	            {
-	                TSharedPtr<FJsonObject> JoinJsonObject = JoinJsonValue->AsObject();
-	                if (JoinJsonObject.IsValid())
-	                {
-	                    FString JoinPresenceJsonString;
-	                    TSharedRef<TJsonWriter<>> JsonWriter = TJsonWriterFactory<>::Create(&JoinPresenceJsonString);
-	                    if (FJsonSerializer::Serialize(JoinJsonObject.ToSharedRef(), JsonWriter))
-	                    {
-	                        JsonWriter->Close();
-	                        FNakamaUserPresence JoinPresence(JoinPresenceJsonString);
-	                        Joins.Add(JoinPresence);
-	                    }
-	                }
+	                FNakamaUserPresence JoinPresence(JoinJsonObject);
+	                Joins.Add(JoinPresence);
 	            }
 	        }
 	    }
@@ -151,20 +132,10 @@ FNakamaChannelPresenceEvent::FNakamaChannelPresenceEvent(const FString& JsonStri
 	    {
 	        for (const TSharedPtr<FJsonValue>& LeaveJsonValue : *LeavesJsonArray)
 	        {
-	            if (LeaveJsonValue->Type == EJson::Object)
+	            if (TSharedPtr<FJsonObject> LeaveJsonObject = LeaveJsonValue->AsObject())
 	            {
-	                TSharedPtr<FJsonObject> LeaveJsonObject = LeaveJsonValue->AsObject();
-	                if (LeaveJsonObject.IsValid())
-	                {
-	                    FString LeavePresenceJsonString;
-	                    TSharedRef<TJsonWriter<>> JsonWriter = TJsonWriterFactory<>::Create(&LeavePresenceJsonString);
-	                    if (FJsonSerializer::Serialize(LeaveJsonObject.ToSharedRef(), JsonWriter))
-	                    {
-	                        JsonWriter->Close();
-	                        FNakamaUserPresence LeavePresence(LeavePresenceJsonString);
-	                        Leaves.Add(LeavePresence);
-	                    }
-	                }
+	                FNakamaUserPresence LeavePresence(LeaveJsonObject);
+	                Leaves.Add(LeavePresence);
 	            }
 	        }
 	    }

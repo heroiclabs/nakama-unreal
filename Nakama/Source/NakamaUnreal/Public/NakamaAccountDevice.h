@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -21,5 +21,6 @@ struct NAKAMAUNREAL_API FNakamaAccountDevice
 	TMap<FString, FString> Vars;
 
 	FNakamaAccountDevice(const FString& JsonString);
+    FNakamaAccountDevice(const TSharedPtr<FJsonObject> JsonObject);
 	FNakamaAccountDevice();
 };

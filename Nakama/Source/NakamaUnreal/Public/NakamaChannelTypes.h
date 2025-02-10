@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -80,6 +80,7 @@ struct NAKAMAUNREAL_API FNakamaChannelMessage
 	FString UserIdTwo;
 
 	FNakamaChannelMessage(const FString& JsonString);
+    FNakamaChannelMessage(const TSharedPtr<FJsonObject> JsonObject);
 	FNakamaChannelMessage(); // Default Constructor
 };
 
