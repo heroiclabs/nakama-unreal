@@ -1,4 +1,4 @@
-﻿#include "NakamaMatch.h"
+#include "NakamaMatch.h"
 #include "NakamaUtils.h"
 
 FNakamaMatch::FNakamaMatch(const FString& JsonString)

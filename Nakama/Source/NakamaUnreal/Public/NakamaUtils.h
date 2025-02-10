@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -9,11 +9,9 @@
 #include "NakamaLogger.h"
 #include "NakamaLoggingMacros.h"
 
-class FNakamaUtils
+class NAKAMAUNREAL_API FNakamaUtils
 {
-	
 public:
-	
 	// Handle Request Methods for REST API
 	static FString ENakamaRequesMethodToFString(ENakamaRequestMethod Verb)
 	{
@@ -71,7 +69,7 @@ public:
 	}
 
 	// Extra client checks for lambdas in requests
-	static bool IsRealtimeClientActive(const UNakamaRealtimeClient *RealtimeClient)
+	static bool IsRealtimeClientActive(const UNakamaRealtimeClient* RealtimeClient)
 	{
 		return IsValid(RealtimeClient) && RealtimeClient->bIsActive == true;
 	}
@@ -83,6 +81,45 @@ public:
 		const TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&OutputString);
 		FJsonSerializer::Serialize(JsonObject.ToSharedRef(), Writer);
 		return OutputString;
+	}
+
+	static bool SerializeJsonObject(const TSharedPtr<FJsonObject>& JsonObject, FString& OutSerializedJson)
+	{
+		if (!JsonObject.IsValid())
+		{
+			return false;
+		}
+
+		const TSharedRef<TJsonWriter<>> JsonWriter = TJsonWriterFactory<>::Create(&OutSerializedJson);
+		if (!FJsonSerializer::Serialize(JsonObject.ToSharedRef(), JsonWriter))
+		{
+			JsonWriter->Close();
+			return false;
+		}
+
+		JsonWriter->Close();
+
+		return true;
+	}
+
+	static void AddVarsToJson(const TSharedPtr<FJsonObject>& JsonObject, const TMap<FString, FString>& Vars, const FString varsFieldName = TEXT("vars"), const bool addAlways = false) {
+
+		if (addAlways || Vars.Num() > 0)
+		{
+			const TSharedPtr<FJsonObject> VarsJson = MakeShared<FJsonObject>();
+			for (const auto& Var : Vars)
+			{
+				if (!Var.Key.IsEmpty() && !Var.Value.IsEmpty())
+				{
+					VarsJson->SetStringField(Var.Key, Var.Value);
+				}
+				else
+				{
+					NAKAMA_LOG_WARN(TEXT("AddVarsToJson: Empty key or value detected."));
+				}
+			}
+			JsonObject->SetObjectField(varsFieldName, VarsJson);
+		}
 	}
 
 	// Enum as integer string
@@ -178,5 +215,33 @@ public:
 		}
 		return DoubleMap;
 	}
+
+	// Common functions used by multiple clients
+	static void ProcessRequestComplete(FHttpRequestPtr Request, const FHttpResponsePtr& Response, bool bSuccess, const TFunction<void(const FString&)>& SuccessCallback, const TFunction<void(const FNakamaError& Error)>& ErrorCallback);
 	
+	static void HandleJsonSerializationFailure(TFunction<void(const FNakamaError& Error)> ErrorCallback);
+	static bool IsSessionValid(const UNakamaSession* Session, TFunction<void(const FNakamaError& Error)> ErrorCallback);
+	static bool IsResponseSuccessful(int32 ResponseCode);
+	static FNakamaError CreateRequestFailureError();
+
+	// Make HTTP request
+	static TSharedRef<IHttpRequest, ESPMode::ThreadSafe> MakeRequest(
+		const FString& URL,
+		const FString& Content,
+		ENakamaRequestMethod RequestMethod,
+		const FString& SessionToken,
+		float Timeout
+	);
+
+	static void SetBasicAuthorizationHeader(TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest, const FString& ServerKey)
+	{
+		FString AuthToken = FString::Printf(TEXT("%s:"), *ServerKey);
+		FTCHARToUTF8 Utf8Token = FTCHARToUTF8(*AuthToken);
+		FString EncodedAuthToken = FBase64::Encode((const uint8*)Utf8Token.Get(), Utf8Token.Length());
+		FString AuthorizationHeader = FString::Printf(TEXT("Basic %s"), *EncodedAuthToken);
+
+		//NAKAMA_LOG_DEBUG(FString::Printf( TEXT("Authorization Header: %s"), *AuthorizationHeader ));
+
+		HttpRequest->SetHeader(TEXT("Authorization"), AuthorizationHeader);
+	}
 };

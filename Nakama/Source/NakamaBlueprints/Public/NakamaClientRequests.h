@@ -38,7 +38,7 @@ class NAKAMABLUEPRINTS_API UNakamaClientAuthenticateCustom : public UBlueprintAs
 public:
 
 	UPROPERTY()
-	UNakamaClient *NakamaClient;
+	TObjectPtr<UNakamaClient> NakamaClient;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnAuthenticateCustom OnSuccess;
@@ -83,7 +83,7 @@ class NAKAMABLUEPRINTS_API UNakamaClientAuthenticateEmail : public UBlueprintAsy
 public:
 
 	UPROPERTY()
-	UNakamaClient *NakamaClient;
+	TObjectPtr<UNakamaClient> NakamaClient;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnAuthenticateEmail OnSuccess;
@@ -131,7 +131,7 @@ class NAKAMABLUEPRINTS_API UNakamaClientAuthenticateDevice : public UBlueprintAs
 public:
 
 	UPROPERTY()
-	UNakamaClient *NakamaClient;
+	TObjectPtr<UNakamaClient> NakamaClient;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnAuthenticateDevice OnSuccess;
@@ -177,7 +177,7 @@ class NAKAMABLUEPRINTS_API UNakamaClientAuthenticateSteam : public UBlueprintAsy
 public:
 
 	UPROPERTY()
-	UNakamaClient *NakamaClient;
+	TObjectPtr<UNakamaClient> NakamaClient;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnAuthenticateSteam OnSuccess;
@@ -225,7 +225,7 @@ class NAKAMABLUEPRINTS_API UNakamaClientAuthenticateGoogle : public UBlueprintAs
 public:
 
 	UPROPERTY()
-	UNakamaClient *NakamaClient;
+	TObjectPtr<UNakamaClient> NakamaClient;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnAuthenticateGoogle OnSuccess;
@@ -271,7 +271,7 @@ class NAKAMABLUEPRINTS_API UNakamaClientAuthenticateGameCenter: public UBlueprin
 public:
 
 	UPROPERTY()
-	UNakamaClient *NakamaClient;
+	TObjectPtr<UNakamaClient> NakamaClient;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnAuthenticateGameCenter OnSuccess;
@@ -327,7 +327,7 @@ class NAKAMABLUEPRINTS_API UNakamaClientAuthenticateFacebook: public UBlueprintA
 public:
 
 	UPROPERTY()
-	UNakamaClient *NakamaClient;
+	TObjectPtr<UNakamaClient> NakamaClient;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnAuthenticateFacebook OnSuccess;
@@ -375,7 +375,7 @@ class NAKAMABLUEPRINTS_API UNakamaClientAuthenticateApple: public UBlueprintAsyn
 public:
 
 	UPROPERTY()
-	UNakamaClient *NakamaClient;
+	TObjectPtr<UNakamaClient> NakamaClient;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnAuthenticateApple OnSuccess;
@@ -421,10 +421,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientAuthenticateRefresh: public UBlueprintAs
 public:
 
 	UPROPERTY()
-	UNakamaClient *NakamaClient;
+	TObjectPtr<UNakamaClient> NakamaClient;
 
 	UPROPERTY()
-	UNakamaSession *UserSession;
+	TObjectPtr<UNakamaSession> UserSession;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnAuthenticateRefresh OnSuccess;
@@ -463,10 +463,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientLinkCustom: public UBlueprintAsyncAction
 public:
 
 	UPROPERTY()
-	UNakamaClient *NakamaClient;
+	TObjectPtr<UNakamaClient> NakamaClient;
 
 	UPROPERTY()
-	UNakamaSession *UserSession;
+	TObjectPtr<UNakamaSession> UserSession;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnLinkError OnError;
@@ -505,10 +505,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientLinkDevice: public UBlueprintAsyncAction
 public:
 
 	UPROPERTY()
-	UNakamaClient *NakamaClient;
+	TObjectPtr<UNakamaClient> NakamaClient;
 
 	UPROPERTY()
-	UNakamaSession *UserSession;
+	TObjectPtr<UNakamaSession> UserSession;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnLinkError OnError;
@@ -546,10 +546,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientLinkEmail: public UBlueprintAsyncActionB
 public:
 
 	UPROPERTY()
-	UNakamaClient *NakamaClient;
+	TObjectPtr<UNakamaClient> NakamaClient;
 
 	UPROPERTY()
-	UNakamaSession *UserSession;
+	TObjectPtr<UNakamaSession> UserSession;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnLinkError OnError;
@@ -590,10 +590,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientLinkFacebook: public UBlueprintAsyncActi
 public:
 
 	UPROPERTY()
-	UNakamaClient *NakamaClient;
+	TObjectPtr<UNakamaClient> NakamaClient;
 
 	UPROPERTY()
-	UNakamaSession *UserSession;
+	TObjectPtr<UNakamaSession> UserSession;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnLinkError OnError;
@@ -634,10 +634,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientLinkGameCenter : public UBlueprintAsyncA
 public:
 
 	UPROPERTY()
-	UNakamaClient *NakamaClient;
+	TObjectPtr<UNakamaClient> NakamaClient;
 
 	UPROPERTY()
-	UNakamaSession *UserSession;
+	TObjectPtr<UNakamaSession> UserSession;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnLinkError OnError;
@@ -686,10 +686,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientLinkGoogle: public UBlueprintAsyncAction
 public:
 
 	UPROPERTY()
-	UNakamaClient *NakamaClient;
+	TObjectPtr<UNakamaClient> NakamaClient;
 
 	UPROPERTY()
-	UNakamaSession *UserSession;
+	TObjectPtr<UNakamaSession> UserSession;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnLinkError OnError;
@@ -728,10 +728,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientLinkSteam: public UBlueprintAsyncActionB
 public:
 
 	UPROPERTY()
-	UNakamaClient *NakamaClient;
+	TObjectPtr<UNakamaClient> NakamaClient;
 
 	UPROPERTY()
-	UNakamaSession *UserSession;
+	TObjectPtr<UNakamaSession> UserSession;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnLinkError OnError;
@@ -770,10 +770,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientLinkApple: public UBlueprintAsyncActionB
 public:
 
 	UPROPERTY()
-	UNakamaClient *NakamaClient;
+	TObjectPtr<UNakamaClient> NakamaClient;
 
 	UPROPERTY()
-	UNakamaSession *UserSession;
+	TObjectPtr<UNakamaSession> UserSession;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnLinkError OnError;
@@ -816,10 +816,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientUnLinkCustom: public UBlueprintAsyncActi
 public:
 
 	UPROPERTY()
-	UNakamaClient *NakamaClient;
+	TObjectPtr<UNakamaClient> NakamaClient;
 
 	UPROPERTY()
-	UNakamaSession *UserSession;
+	TObjectPtr<UNakamaSession> UserSession;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnLinkError OnError;
@@ -858,10 +858,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientUnLinkDevice: public UBlueprintAsyncActi
 public:
 
 	UPROPERTY()
-	UNakamaClient *NakamaClient;
+	TObjectPtr<UNakamaClient> NakamaClient;
 
 	UPROPERTY()
-	UNakamaSession *UserSession;
+	TObjectPtr<UNakamaSession> UserSession;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnLinkError OnError;
@@ -899,10 +899,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientUnLinkEmail: public UBlueprintAsyncActio
 public:
 
 	UPROPERTY()
-	UNakamaClient *NakamaClient;
+	TObjectPtr<UNakamaClient> NakamaClient;
 
 	UPROPERTY()
-	UNakamaSession *UserSession;
+	TObjectPtr<UNakamaSession> UserSession;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnLinkError OnError;
@@ -943,10 +943,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientUnLinkFacebook: public UBlueprintAsyncAc
 public:
 
 	UPROPERTY()
-	UNakamaClient *NakamaClient;
+	TObjectPtr<UNakamaClient> NakamaClient;
 
 	UPROPERTY()
-	UNakamaSession *UserSession;
+	TObjectPtr<UNakamaSession> UserSession;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnLinkError OnError;
@@ -985,10 +985,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientUnLinkGameCenter : public UBlueprintAsyn
 public:
 
 	UPROPERTY()
-	UNakamaClient *NakamaClient;
+	TObjectPtr<UNakamaClient> NakamaClient;
 
 	UPROPERTY()
-	UNakamaSession *UserSession;
+	TObjectPtr<UNakamaSession> UserSession;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnLinkError OnError;
@@ -1037,10 +1037,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientUnLinkGoogle: public UBlueprintAsyncActi
 public:
 
 	UPROPERTY()
-	UNakamaClient *NakamaClient;
+	TObjectPtr<UNakamaClient> NakamaClient;
 
 	UPROPERTY()
-	UNakamaSession *UserSession;
+	TObjectPtr<UNakamaSession> UserSession;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnLinkError OnError;
@@ -1079,10 +1079,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientUnLinkSteam: public UBlueprintAsyncActio
 public:
 
 	UPROPERTY()
-	UNakamaClient *NakamaClient;
+	TObjectPtr<UNakamaClient> NakamaClient;
 
 	UPROPERTY()
-	UNakamaSession *UserSession;
+	TObjectPtr<UNakamaSession> UserSession;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnLinkError OnError;
@@ -1121,10 +1121,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientUnLinkApple: public UBlueprintAsyncActio
 public:
 
 	UPROPERTY()
-	UNakamaClient *NakamaClient;
+	TObjectPtr<UNakamaClient> NakamaClient;
 
 	UPROPERTY()
-	UNakamaSession *UserSession;
+	TObjectPtr<UNakamaSession> UserSession;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnLinkError OnError;
@@ -1166,10 +1166,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientRefreshSession : public UBlueprintAsyncA
 public:
 
 	UPROPERTY()
-	UNakamaClient *NakamaClient;
+	TObjectPtr<UNakamaClient> NakamaClient;
 
 	UPROPERTY()
-	UNakamaSession *UserSession;
+	TObjectPtr<UNakamaSession> UserSession;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnRefreshSession OnError;
@@ -1205,10 +1205,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientImportFacebookFriends : public UBlueprin
 public:
 
 	UPROPERTY()
-	UNakamaClient *NakamaClient;
+	TObjectPtr<UNakamaClient> NakamaClient;
 
 	UPROPERTY()
-	UNakamaSession *UserSession;
+	TObjectPtr<UNakamaSession> UserSession;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnAnyError OnError;
@@ -1251,10 +1251,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientImportSteamFriends : public UBlueprintAs
 public:
 
 	UPROPERTY()
-	UNakamaClient *NakamaClient;
+	TObjectPtr<UNakamaClient> NakamaClient;
 
 	UPROPERTY()
-	UNakamaSession *UserSession;
+	TObjectPtr<UNakamaSession> UserSession;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnAnyError OnError;
@@ -1302,10 +1302,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientGetUserAccount : public UBlueprintAsyncA
 public:
 
 	UPROPERTY()
-	UNakamaClient *NakamaClient;
+	TObjectPtr<UNakamaClient> NakamaClient;
 
 	UPROPERTY()
-	UNakamaSession *UserSession;
+	TObjectPtr<UNakamaSession> UserSession;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnGetUserAccount OnError;
@@ -1341,10 +1341,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientGetUsers : public UBlueprintAsyncActionB
 public:
 
 	UPROPERTY()
-	UNakamaClient *NakamaClient;
+	TObjectPtr<UNakamaClient> NakamaClient;
 
 	UPROPERTY()
-	UNakamaSession *UserSession;
+	TObjectPtr<UNakamaSession> UserSession;
 
 	UPROPERTY(BlueprintAssignable)
 	FGetUsers OnSuccess;
@@ -1389,10 +1389,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientUpdateAccount : public UBlueprintAsyncAc
 public:
 
 	UPROPERTY()
-	UNakamaClient *NakamaClient;
+	TObjectPtr<UNakamaClient> NakamaClient;
 
 	UPROPERTY()
-	UNakamaSession *UserSession;
+	TObjectPtr<UNakamaSession> UserSession;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnAnyError OnError;
@@ -1441,10 +1441,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientListMatches : public UBlueprintAsyncActi
 public:
 
 	UPROPERTY()
-	UNakamaClient *NakamaClient;
+	TObjectPtr<UNakamaClient> NakamaClient;
 
 	UPROPERTY()
-	UNakamaSession *UserSession;
+	TObjectPtr<UNakamaSession> UserSession;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnListMatches OnSuccess;
@@ -1496,10 +1496,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientGetFriends : public UBlueprintAsyncActio
 public:
 
 	UPROPERTY()
-	UNakamaClient *NakamaClient;
+	TObjectPtr<UNakamaClient> NakamaClient;
 
 	UPROPERTY()
-	UNakamaSession *UserSession;
+	TObjectPtr<UNakamaSession> UserSession;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnListFriends OnSuccess;
@@ -1541,10 +1541,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientAddFriends : public UBlueprintAsyncActio
 public:
 
 	UPROPERTY()
-	UNakamaClient *NakamaClient;
+	TObjectPtr<UNakamaClient> NakamaClient;
 
 	UPROPERTY()
-	UNakamaSession *UserSession;
+	TObjectPtr<UNakamaSession> UserSession;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnAnyError OnError;
@@ -1584,10 +1584,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientRemoveFriends : public UBlueprintAsyncAc
 public:
 
 	UPROPERTY()
-	UNakamaClient *NakamaClient;
+	TObjectPtr<UNakamaClient> NakamaClient;
 
 	UPROPERTY()
-	UNakamaSession *UserSession;
+	TObjectPtr<UNakamaSession> UserSession;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnAnyError OnError;
@@ -1627,10 +1627,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientBlockFriends : public UBlueprintAsyncAct
 public:
 
 	UPROPERTY()
-	UNakamaClient *NakamaClient;
+	TObjectPtr<UNakamaClient> NakamaClient;
 
 	UPROPERTY()
-	UNakamaSession *UserSession;
+	TObjectPtr<UNakamaSession> UserSession;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnAnyError OnError;
@@ -1674,10 +1674,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientCreateGroup : public UBlueprintAsyncActi
 public:
 
 	UPROPERTY()
-	UNakamaClient *NakamaClient;
+	TObjectPtr<UNakamaClient> NakamaClient;
 
 	UPROPERTY()
-	UNakamaSession *UserSession;
+	TObjectPtr<UNakamaSession> UserSession;
 
 	UPROPERTY(BlueprintAssignable)
 	FCreateGroup OnSuccess;
@@ -1726,10 +1726,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientListGroups : public UBlueprintAsyncActio
 public:
 
 	UPROPERTY()
-	UNakamaClient *NakamaClient;
+	TObjectPtr<UNakamaClient> NakamaClient;
 
 	UPROPERTY()
-	UNakamaSession *UserSession;
+	TObjectPtr<UNakamaSession> UserSession;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnListGroups OnSuccess;
@@ -1773,10 +1773,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientJoinGroup : public UBlueprintAsyncAction
 public:
 
 	UPROPERTY()
-	UNakamaClient *NakamaClient;
+	TObjectPtr<UNakamaClient> NakamaClient;
 
 	UPROPERTY()
-	UNakamaSession *UserSession;
+	TObjectPtr<UNakamaSession> UserSession;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnAnyError OnError;
@@ -1818,10 +1818,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientListUserGroups : public UBlueprintAsyncA
 public:
 
 	UPROPERTY()
-	UNakamaClient *NakamaClient;
+	TObjectPtr<UNakamaClient> NakamaClient;
 
 	UPROPERTY()
-	UNakamaSession *UserSession;
+	TObjectPtr<UNakamaSession> UserSession;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnListUserGroups OnSuccess;
@@ -1865,10 +1865,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientListListGroupUsers : public UBlueprintAs
 public:
 
 	UPROPERTY()
-	UNakamaClient *NakamaClient;
+	TObjectPtr<UNakamaClient> NakamaClient;
 
 	UPROPERTY()
-	UNakamaSession *UserSession;
+	TObjectPtr<UNakamaSession> UserSession;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnListListGroupUsers OnSuccess;
@@ -1911,10 +1911,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientUpdateGroup : public UBlueprintAsyncActi
 public:
 
 	UPROPERTY()
-	UNakamaClient *NakamaClient;
+	TObjectPtr<UNakamaClient> NakamaClient;
 
 	UPROPERTY()
-	UNakamaSession *UserSession;
+	TObjectPtr<UNakamaSession> UserSession;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnAnyError OnError;
@@ -1966,10 +1966,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientLeaveGroup : public UBlueprintAsyncActio
 public:
 
 	UPROPERTY()
-	UNakamaClient *NakamaClient;
+	TObjectPtr<UNakamaClient> NakamaClient;
 
 	UPROPERTY()
-	UNakamaSession *UserSession;
+	TObjectPtr<UNakamaSession> UserSession;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnAnyError OnError;
@@ -2008,10 +2008,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientAddGroupUsers : public UBlueprintAsyncAc
 public:
 
 	UPROPERTY()
-	UNakamaClient *NakamaClient;
+	TObjectPtr<UNakamaClient> NakamaClient;
 
 	UPROPERTY()
-	UNakamaSession *UserSession;
+	TObjectPtr<UNakamaSession> UserSession;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnAnyError OnError;
@@ -2052,10 +2052,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientPromoteGroupUsers : public UBlueprintAsy
 public:
 
 	UPROPERTY()
-	UNakamaClient *NakamaClient;
+	TObjectPtr<UNakamaClient> NakamaClient;
 
 	UPROPERTY()
-	UNakamaSession *UserSession;
+	TObjectPtr<UNakamaSession> UserSession;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnAnyError OnError;
@@ -2096,10 +2096,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientKickGroupUsers : public UBlueprintAsyncA
 public:
 
 	UPROPERTY()
-	UNakamaClient *NakamaClient;
+	TObjectPtr<UNakamaClient> NakamaClient;
 
 	UPROPERTY()
-	UNakamaSession *UserSession;
+	TObjectPtr<UNakamaSession> UserSession;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnAnyError OnError;
@@ -2140,10 +2140,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientDemoteGroupUsers : public UBlueprintAsyn
 public:
 
 	UPROPERTY()
-	UNakamaClient *NakamaClient;
+	TObjectPtr<UNakamaClient> NakamaClient;
 
 	UPROPERTY()
-	UNakamaSession *UserSession;
+	TObjectPtr<UNakamaSession> UserSession;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnAnyError OnError;
@@ -2184,10 +2184,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientDeleteGroup : public UBlueprintAsyncActi
 public:
 
 	UPROPERTY()
-	UNakamaClient *NakamaClient;
+	TObjectPtr<UNakamaClient> NakamaClient;
 
 	UPROPERTY()
-	UNakamaSession *UserSession;
+	TObjectPtr<UNakamaSession> UserSession;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnAnyError OnError;
@@ -2230,10 +2230,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientListNotifications : public UBlueprintAsy
 public:
 
 	UPROPERTY()
-	UNakamaClient *NakamaClient;
+	TObjectPtr<UNakamaClient> NakamaClient;
 
 	UPROPERTY()
-	UNakamaSession *UserSession;
+	TObjectPtr<UNakamaSession> UserSession;
 
 	UPROPERTY(BlueprintAssignable)
 	FListNotifications OnSuccess;
@@ -2273,10 +2273,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientDeleteNotifications : public UBlueprintA
 public:
 
 	UPROPERTY()
-	UNakamaClient *NakamaClient;
+	TObjectPtr<UNakamaClient> NakamaClient;
 
 	UPROPERTY()
-	UNakamaSession *UserSession;
+	TObjectPtr<UNakamaSession> UserSession;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnAnyError OnError;
@@ -2319,10 +2319,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientWriteStorageObjects : public UBlueprintA
 public:
 
 	UPROPERTY()
-	UNakamaClient *NakamaClient;
+	TObjectPtr<UNakamaClient> NakamaClient;
 
 	UPROPERTY()
-	UNakamaSession *UserSession;
+	TObjectPtr<UNakamaSession> UserSession;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnWriteStorageObjects OnSuccess;
@@ -2360,10 +2360,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientReadStorageObjects : public UBlueprintAs
 public:
 
 	UPROPERTY()
-	UNakamaClient *NakamaClient;
+	TObjectPtr<UNakamaClient> NakamaClient;
 
 	UPROPERTY()
-	UNakamaSession *UserSession;
+	TObjectPtr<UNakamaSession> UserSession;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnReadStorageObjects OnSuccess;
@@ -2401,10 +2401,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientListtorageObjects : public UBlueprintAsy
 public:
 
 	UPROPERTY()
-	UNakamaClient *NakamaClient;
+	TObjectPtr<UNakamaClient> NakamaClient;
 
 	UPROPERTY()
-	UNakamaSession *UserSession;
+	TObjectPtr<UNakamaSession> UserSession;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnListStorageObjects OnSuccess;
@@ -2449,10 +2449,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientRemoveStorageObjects : public UBlueprint
 public:
 
 	UPROPERTY()
-	UNakamaClient *NakamaClient;
+	TObjectPtr<UNakamaClient> NakamaClient;
 
 	UPROPERTY()
-	UNakamaSession *UserSession;
+	TObjectPtr<UNakamaSession> UserSession;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnAnyError OnError;
@@ -2496,10 +2496,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientRPC : public UBlueprintAsyncActionBase
 public:
 
 	UPROPERTY()
-	UNakamaClient *NakamaClient;
+	TObjectPtr<UNakamaClient> NakamaClient;
 
 	UPROPERTY()
-	UNakamaSession *UserSession;
+	TObjectPtr<UNakamaSession> UserSession;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnRPCResponse OnSuccess;
@@ -2540,7 +2540,7 @@ class NAKAMABLUEPRINTS_API UNakamaClientRPCHttpKey : public UBlueprintAsyncActio
 public:
 
 	UPROPERTY()
-	UNakamaClient *NakamaClient;
+	TObjectPtr<UNakamaClient> NakamaClient;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnRPCResponse OnSuccess;
@@ -2585,10 +2585,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientListChannelMessages : public UBlueprintA
 public:
 
 	UPROPERTY()
-	UNakamaClient *NakamaClient;
+	TObjectPtr<UNakamaClient> NakamaClient;
 
 	UPROPERTY()
-	UNakamaSession *UserSession;
+	TObjectPtr<UNakamaSession> UserSession;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnChannelMessagesListed OnSuccess;
@@ -2637,10 +2637,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientWriteLeaderboardRecord : public UBluepri
 public:
 
 	UPROPERTY()
-	UNakamaClient *NakamaClient;
+	TObjectPtr<UNakamaClient> NakamaClient;
 
 	UPROPERTY()
-	UNakamaSession *UserSession;
+	TObjectPtr<UNakamaSession> UserSession;
 
 	UPROPERTY(BlueprintAssignable)
 	FWriteLeaderboardRecord OnSuccess;
@@ -2685,10 +2685,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientListLeaderboardRecords : public UBluepri
 public:
 
 	UPROPERTY()
-	UNakamaClient *NakamaClient;
+	TObjectPtr<UNakamaClient> NakamaClient;
 
 	UPROPERTY()
-	UNakamaSession *UserSession;
+	TObjectPtr<UNakamaSession> UserSession;
 
 	UPROPERTY(BlueprintAssignable)
 	FListLeaderboardRecords OnSuccess;
@@ -2734,10 +2734,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientListLeaderboardRecordsAroundOwner : publ
 public:
 
 	UPROPERTY()
-	UNakamaClient *NakamaClient;
+	TObjectPtr<UNakamaClient> NakamaClient;
 
 	UPROPERTY()
-	UNakamaSession *UserSession;
+	TObjectPtr<UNakamaSession> UserSession;
 
 	UPROPERTY(BlueprintAssignable)
 	FListLeaderboardRecords OnSuccess;
@@ -2778,10 +2778,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientDeleteLeaderboardRecord : public UBluepr
 public:
 
 	UPROPERTY()
-	UNakamaClient *NakamaClient;
+	TObjectPtr<UNakamaClient> NakamaClient;
 
 	UPROPERTY()
-	UNakamaSession *UserSession;
+	TObjectPtr<UNakamaSession> UserSession;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnAnyError OnError;
@@ -2822,10 +2822,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientWriteTournamentRecord : public UBlueprin
 public:
 
 	UPROPERTY()
-	UNakamaClient *NakamaClient;
+	TObjectPtr<UNakamaClient> NakamaClient;
 
 	UPROPERTY()
-	UNakamaSession *UserSession;
+	TObjectPtr<UNakamaSession> UserSession;
 
 	UPROPERTY(BlueprintAssignable)
 	FWriteLeaderboardRecord OnSuccess;
@@ -2871,10 +2871,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientListTournamentRecords : public UBlueprin
 public:
 
 	UPROPERTY()
-	UNakamaClient *NakamaClient;
+	TObjectPtr<UNakamaClient> NakamaClient;
 
 	UPROPERTY()
-	UNakamaSession *UserSession;
+	TObjectPtr<UNakamaSession> UserSession;
 
 	UPROPERTY(BlueprintAssignable)
 	FListTournamentRecords OnSuccess;
@@ -2920,10 +2920,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientListTournamentRecordsAroundOwner : publi
 public:
 
 	UPROPERTY()
-	UNakamaClient *NakamaClient;
+	TObjectPtr<UNakamaClient> NakamaClient;
 
 	UPROPERTY()
-	UNakamaSession *UserSession;
+	TObjectPtr<UNakamaSession> UserSession;
 
 	UPROPERTY(BlueprintAssignable)
 	FListTournamentRecords OnSuccess;
@@ -2966,10 +2966,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientJoinTournament : public UBlueprintAsyncA
 public:
 
 	UPROPERTY()
-	UNakamaClient *NakamaClient;
+	TObjectPtr<UNakamaClient> NakamaClient;
 
 	UPROPERTY()
-	UNakamaSession *UserSession;
+	TObjectPtr<UNakamaSession> UserSession;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnJoinTournament OnSuccess;
@@ -3009,10 +3009,10 @@ class NAKAMABLUEPRINTS_API UNakamaClientListTournaments : public UBlueprintAsync
 public:
 
 	UPROPERTY()
-	UNakamaClient *NakamaClient;
+	TObjectPtr<UNakamaClient> NakamaClient;
 
 	UPROPERTY()
-	UNakamaSession *UserSession;
+	TObjectPtr<UNakamaSession> UserSession;
 
 	UPROPERTY(BlueprintAssignable)
 	FListTournaments OnSuccess;

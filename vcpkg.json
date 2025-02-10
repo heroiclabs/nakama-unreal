@@ -10,6 +10,13 @@
             ]
         },
         {
+            "name": "satori-sdk",
+            "version>=": "0.0.0#1",
+            "features": [
+                "apple-dylib"
+            ]
+        },
+        {
             "name": "nakama-test",
             "features": [],
             "version>=": "0.0.0#12"

@@ -1247,7 +1247,7 @@ public:
 	void SetHeartbeatIntervalMs(int32 IntervalMs);
 
 	// Creates a request context and assigns a CID to the outgoing message.
-	UNakamaRealtimeRequestContext* CreateReqContext(FNakamaRealtimeEnvelope& envelope);
+	TObjectPtr<UNakamaRealtimeRequestContext> CreateReqContext(FNakamaRealtimeEnvelope& envelope);
 
 	// Reusable functionality to handle Sending messages with Envelopes (with callbacks)
 	void SendMessageWithEnvelope(const FString& FieldName, const TSharedPtr<FJsonObject>& ObjectField, TFunction<void(const FNakamaRealtimeEnvelope& Envelope)> SuccessCallback, TFunction<void(const FNakamaRtError& Error)> ErrorCallback);
@@ -1366,7 +1366,7 @@ protected:
 
 	// CID generator and request contexts
 	UPROPERTY()
-	TMap<int32, UNakamaRealtimeRequestContext*> ReqContexts;
+	TMap<int32, TObjectPtr<UNakamaRealtimeRequestContext>> ReqContexts;
 	int32 NextCid = 0;
 	FCriticalSection ReqContextsLock;
 };
