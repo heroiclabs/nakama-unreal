@@ -4,6 +4,13 @@ All notable changes to this project are documented below.
 The format is based on [keep a changelog](http://keepachangelog.com/) and this project uses [semantic versioning](http://semver.org/).
 ### Unreleased
 
+### [2.10.1] - 2025-03-06
+### Fixed
+- Fixed client compilation for Unreal 5.5 Engine.
+- Fixed corner case memory leak.
+- Fixed crash when searching for session variables that do not exist.
+- Fixed const issues from using NakamSession given back by delegate.
+
 ### [2.10.0] - 2024-04-04
 ### Changed
 - Changed `ENakamaErrorCode` enum casts to match official GRPC error codes. *Any user client code checking against specific error values should be aware of this change.*
