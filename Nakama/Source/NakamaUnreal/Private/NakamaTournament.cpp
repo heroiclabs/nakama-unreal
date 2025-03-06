@@ -1,13 +1,12 @@
-﻿#include "NakamaTournament.h"
-
+#include "NakamaTournament.h"
 #include "NakamaUtils.h"
 
-FNakamaTournament::FNakamaTournament(const FString& JsonString)
-{
-	TSharedPtr<FJsonObject> JsonObject;
-	const TSharedRef<TJsonReader<>> JsonReader = TJsonReaderFactory<>::Create(JsonString);
+FNakamaTournament::FNakamaTournament(const FString& JsonString) : FNakamaTournament(FNakamaUtils::DeserializeJsonObject(JsonString)) {
+}
 
-	if (FJsonSerializer::Deserialize(JsonReader, JsonObject) && JsonObject.IsValid())
+FNakamaTournament::FNakamaTournament(const TSharedPtr<FJsonObject> JsonObject)
+{
+	if (JsonObject.IsValid())
 	{
 		JsonObject->TryGetStringField(TEXT("id"), Id);
 		JsonObject->TryGetStringField(TEXT("title"), Title);
@@ -63,20 +62,9 @@ FNakamaTournamentRecordList::FNakamaTournamentRecordList(const FString& JsonStri
         {
             for (const TSharedPtr<FJsonValue>& RecordJson : *RecordsJsonArray)
             {
-                if (RecordJson->Type == EJson::Object)
+                if (TSharedPtr<FJsonObject> RecordJsonObject = RecordJson->AsObject())
                 {
-                    TSharedPtr<FJsonObject> RecordJsonObject = RecordJson->AsObject();
-                    if (RecordJsonObject.IsValid())
-                    {
-                        FString RecordJsonString;
-                        TSharedRef<TJsonWriter<>> JsonWriter = TJsonWriterFactory<>::Create(&RecordJsonString);
-                        if (FJsonSerializer::Serialize(RecordJsonObject.ToSharedRef(), JsonWriter))
-                        {
-                            JsonWriter->Close();
-                            FNakamaLeaderboardRecord Record(RecordJsonString);
-                            Records.Add(Record);
-                        }
-                    }
+                    Records.Add(FNakamaLeaderboardRecord(RecordJsonObject));
                 }
             }
         }
@@ -86,20 +74,9 @@ FNakamaTournamentRecordList::FNakamaTournamentRecordList(const FString& JsonStri
         {
             for (const TSharedPtr<FJsonValue>& OwnerRecordJson : *OwnerRecordsJsonArray)
             {
-                if (OwnerRecordJson->Type == EJson::Object)
+                if (TSharedPtr<FJsonObject> OwnerRecordJsonObject = OwnerRecordJson->AsObject())
                 {
-                    TSharedPtr<FJsonObject> OwnerRecordJsonObject = OwnerRecordJson->AsObject();
-                    if (OwnerRecordJsonObject.IsValid())
-                    {
-                        FString OwnerRecordJsonString;
-                        TSharedRef<TJsonWriter<>> JsonWriter = TJsonWriterFactory<>::Create(&OwnerRecordJsonString);
-                        if (FJsonSerializer::Serialize(OwnerRecordJsonObject.ToSharedRef(), JsonWriter))
-                        {
-                            JsonWriter->Close();
-                            FNakamaLeaderboardRecord OwnerRecord(OwnerRecordJsonString);
-                            OwnerRecords.Add(OwnerRecord);
-                        }
-                    }
+                    OwnerRecords.Add(FNakamaLeaderboardRecord(OwnerRecordJsonObject));
                 }
             }
         }
@@ -127,20 +104,9 @@ FNakamaTournamentList::FNakamaTournamentList(const FString& JsonString)
 		{
 			for (const TSharedPtr<FJsonValue>& TournamentJson : *TournamentsJsonArray)
 			{
-				if (TournamentJson->Type == EJson::Object)
+				if (TSharedPtr<FJsonObject> TournamentJsonObject = TournamentJson->AsObject())
 				{
-					TSharedPtr<FJsonObject> TournamentJsonObject = TournamentJson->AsObject();
-					if (TournamentJsonObject.IsValid())
-					{
-						FString TournamentJsonString;
-						TSharedRef<TJsonWriter<>> JsonWriter = TJsonWriterFactory<>::Create(&TournamentJsonString);
-						if (FJsonSerializer::Serialize(TournamentJsonObject.ToSharedRef(), JsonWriter))
-						{
-							JsonWriter->Close();
-							FNakamaTournament Tournament(TournamentJsonString);
-							Tournaments.Add(Tournament);
-						}
-					}
+					Tournaments.Add(FNakamaTournament(TournamentJsonObject));
 				}
 			}
 		}

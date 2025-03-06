@@ -1,14 +1,7 @@
 #include "SatoriLiveEvent.h"
+#include "NakamaUtils.h"
 
-FSatoriLiveEvent::FSatoriLiveEvent(const FString& JsonString) : FSatoriLiveEvent([](const FString& JsonString) {
-	TSharedPtr<FJsonObject> JsonObject;
-	const TSharedRef<TJsonReader<>> JsonReader = TJsonReaderFactory<>::Create(JsonString);
-	if (!FJsonSerializer::Deserialize(JsonReader, JsonObject))
-	{
-		JsonObject = nullptr;
-	}
-	return JsonObject;
-	}(JsonString)) {
+FSatoriLiveEvent::FSatoriLiveEvent(const FString& JsonString) : FSatoriLiveEvent(FNakamaUtils::DeserializeJsonObject(JsonString)) {
 }
 
 FSatoriLiveEvent::FSatoriLiveEvent(const TSharedPtr<FJsonObject> JsonObject)
@@ -43,9 +36,8 @@ FSatoriLiveEventList::FSatoriLiveEventList(const FString& JsonString)
 		{
 			for (const TSharedPtr<FJsonValue>& LiveEventJsonValue : *LiveEventsJsonArray)
 			{
-				if (LiveEventJsonValue->Type == EJson::Object)
+				if(TSharedPtr<FJsonObject> LiveEventJsonObject = LiveEventJsonValue->AsObject())
 				{
-					TSharedPtr<FJsonObject> LiveEventJsonObject = LiveEventJsonValue->AsObject();
 					FSatoriLiveEvent LiveEvent(LiveEventJsonObject);
 					if (!LiveEvent.Name.IsEmpty())
 					{
