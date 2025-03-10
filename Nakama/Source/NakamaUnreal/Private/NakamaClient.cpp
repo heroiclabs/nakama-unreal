@@ -930,7 +930,7 @@ void UNakamaClient::GetAccount(
 }
 
 /**
- * Get Get Users
+ * Get Users
  */
 
 void UNakamaClient::GetUsers(
@@ -998,6 +998,27 @@ void UNakamaClient::UpdateAccount(
 		successCallback,
 		errorCallback
 	);
+}
+
+void UNakamaClient::DeleteUser(UNakamaSession* Session, FOnDeleteUser Success, FOnError Error)
+{
+	auto successCallback = [this, Success]()
+	{
+		if (!FNakamaUtils::IsClientActive(this))
+			return;
+
+		Success.Broadcast();
+	};
+
+	auto errorCallback = [this, Error](const FNakamaError& error)
+	{
+		if (!FNakamaUtils::IsClientActive(this))
+			return;
+
+		Error.Broadcast(error);
+	};
+
+	DeleteUser(Session, successCallback, errorCallback);
 }
 
 /**
@@ -4874,7 +4895,7 @@ void UNakamaClient::GetAccount(
     }
 
     // Make the request
-    const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::GET, TMultiMap<FString, FString>(), Session->SessionData.AuthToken);
+    const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::GET, TMultiMap<FString, FString>(), Session->GetAuthToken());
 
     // Lock the ActiveRequests mutex to protect concurrent access
     FScopeLock Lock(&ActiveRequestsMutex);
@@ -4995,7 +5016,7 @@ void UNakamaClient::UpdateAccount(
     }
 
     // Make the request
-    const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::PUT, TMultiMap<FString, FString>(), Session->SessionData.AuthToken);
+    const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::PUT, TMultiMap<FString, FString>(), Session->GetAuthToken());
 
     // Lock the ActiveRequests mutex to protect concurrent access
     FScopeLock Lock(&ActiveRequestsMutex);
@@ -5056,6 +5077,85 @@ void UNakamaClient::UpdateAccount(
 
     // Process the request
     HttpRequest->ProcessRequest();
+}
+
+
+void UNakamaClient::DeleteUser(
+	UNakamaSession* Session,
+	TFunction<void()> SuccessCallback,
+	TFunction<void(const FNakamaError& Error)> ErrorCallback)
+{
+	// Setup the endpoint
+	const FString Endpoint = TEXT("/v2/account");
+
+	// Verify the session
+	if (!FNakamaUtils::IsSessionValid(Session, ErrorCallback))
+	{
+		return;
+	}
+
+	// Make the request
+	const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::DEL, TMultiMap<FString, FString>(), Session->GetAuthToken());
+
+	// Lock the ActiveRequests mutex to protect concurrent access
+	FScopeLock Lock(&ActiveRequestsMutex);
+
+	// Add the HttpRequest to ActiveRequests
+	ActiveRequests.Add(HttpRequest);
+
+	// Bind the response callback and handle the response
+	HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+
+		if (!IsValidLowLevel())
+		{
+			return;
+		}
+
+		// Lock the ActiveRequests mutex to protect concurrent access
+		FScopeLock Lock(&ActiveRequestsMutex);
+
+		if (ActiveRequests.Contains(Request))
+		{
+			if (bSuccess && Response.IsValid())
+			{
+				const FString ResponseBody = Response->GetContentAsString();
+
+				// Check if Request was successful
+				if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
+				{
+					// Check for Success Callback
+					if (SuccessCallback)
+					{
+						SuccessCallback();
+					}
+				}
+				else
+				{
+					// Check for Error Callback
+					if (ErrorCallback)
+					{
+						const FNakamaError Error(ResponseBody);
+						ErrorCallback(Error);
+					}
+				}
+			}
+			else
+			{
+				// Handle Invalid Response
+				if (ErrorCallback)
+				{
+					const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
+					ErrorCallback(RequestError);
+				}
+			}
+
+			// Remove the HttpRequest from ActiveRequests
+			ActiveRequests.Remove(Request);
+		}
+	});
+
+	// Process the request
+	HttpRequest->ProcessRequest();
 }
 
 void UNakamaClient::GetUsers(
@@ -5602,7 +5702,7 @@ void UNakamaClient::CreateGroup(
     }
 
     // Make the request
-    const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::POST, TMultiMap<FString, FString>(), Session->SessionData.AuthToken);
+    const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::POST, TMultiMap<FString, FString>(), Session->GetAuthToken());
 
     // Lock the ActiveRequests mutex to protect concurrent access
     FScopeLock Lock(&ActiveRequestsMutex);
@@ -5682,7 +5782,7 @@ void UNakamaClient::DeleteGroup(
     }
 
     // Make the request
-    const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::DEL, TMultiMap<FString, FString>(), Session->SessionData.AuthToken);
+    const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::DEL, TMultiMap<FString, FString>(), Session->GetAuthToken());
 
     // Lock the ActiveRequests mutex to protect concurrent access
     FScopeLock Lock(&ActiveRequestsMutex);
@@ -6732,7 +6832,7 @@ void UNakamaClient::UpdateGroup(
     }
 
     // Make the request
-    const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::PUT, TMultiMap<FString, FString>(), Session->SessionData.AuthToken);
+    const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::PUT, TMultiMap<FString, FString>(), Session->GetAuthToken());
 
     // Lock the ActiveRequests mutex to protect concurrent access
     FScopeLock Lock(&ActiveRequestsMutex);
