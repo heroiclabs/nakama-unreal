@@ -1,14 +1,12 @@
-﻿#include "NakamaNotification.h"
-
+#include "NakamaNotification.h"
 #include "NakamaUtils.h"
 
+FNakamaNotification::FNakamaNotification(const FString& JsonString) : FNakamaNotification(FNakamaUtils::DeserializeJsonObject(JsonString)) {
+}
 
-FNakamaNotification::FNakamaNotification(const FString& JsonString)
+FNakamaNotification::FNakamaNotification(const TSharedPtr<FJsonObject> JsonObject)
 {
-	TSharedPtr<FJsonObject> JsonObject;
-	TSharedRef<TJsonReader<>> JsonReader = TJsonReaderFactory<>::Create(JsonString);
-
-	if (FJsonSerializer::Deserialize(JsonReader, JsonObject) && JsonObject.IsValid())
+	if (JsonObject.IsValid())
 	{
 		JsonObject->TryGetStringField(TEXT("id"), Id);
 		JsonObject->TryGetStringField(TEXT("subject"), Subject);
@@ -43,17 +41,9 @@ FNakamaNotificationList::FNakamaNotificationList(const FString& JsonString)
 		{
 			for (const TSharedPtr<FJsonValue>& NotificationJson : *NotificationsJsonArray)
 			{
-				if (NotificationJson->Type == EJson::Object)
+				if (TSharedPtr<FJsonObject> NotificationJsonObject = NotificationJson->AsObject())
 				{
-					TSharedPtr<FJsonObject> NotificationJsonObject = NotificationJson->AsObject();
-					FString NotificationJsonString;
-					auto Writer = TJsonWriterFactory<>::Create(&NotificationJsonString);
-					if (FJsonSerializer::Serialize(NotificationJsonObject.ToSharedRef(), Writer))
-					{
-						Writer->Close();
-						FNakamaNotification Notification(NotificationJsonString);
-						Notifications.Add(Notification);
-					}
+					Notifications.Add(FNakamaNotification(NotificationJsonObject));
 				}
 			}
 		}

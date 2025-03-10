@@ -79,6 +79,7 @@ struct NAKAMAUNREAL_API FNakamaTournament
 	FString Metadata;
 
 	FNakamaTournament(const FString& JsonString);
+	FNakamaTournament(const TSharedPtr<FJsonObject> JsonObject);
 	FNakamaTournament();
 	
 };

@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -37,6 +37,7 @@ struct NAKAMAUNREAL_API FNakamaFriend
 	FDateTime UpdateTime;
 
 	FNakamaFriend(const FString& JsonString);
+    FNakamaFriend(const TSharedPtr<FJsonObject> JsonObject);
 	FNakamaFriend();
 
 	static ENakamaFriendState GetFriendStateFromString(const FString& StateString);

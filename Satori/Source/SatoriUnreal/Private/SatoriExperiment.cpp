@@ -1,15 +1,7 @@
 #include "SatoriExperiment.h"
-#include "SatoriExperiment.h"
+#include "NakamaUtils.h"
 
-FSatoriExperiment::FSatoriExperiment(const FString& JsonString) : FSatoriExperiment([](const FString& JsonString) {
-	TSharedPtr<FJsonObject> JsonObject;
-	const TSharedRef<TJsonReader<>> JsonReader = TJsonReaderFactory<>::Create(JsonString);
-	if (!FJsonSerializer::Deserialize(JsonReader, JsonObject))
-	{
-		JsonObject = nullptr;
-	}
-	return JsonObject;
-	}(JsonString)) {
+FSatoriExperiment::FSatoriExperiment(const FString& JsonString) : FSatoriExperiment(FNakamaUtils::DeserializeJsonObject(JsonString)) {
 }
 
 FSatoriExperiment::FSatoriExperiment(const TSharedPtr<FJsonObject> JsonObject)
@@ -36,9 +28,8 @@ FSatoriExperimentList::FSatoriExperimentList(const FString& JsonString)
 		{
 			for (const TSharedPtr<FJsonValue>& ExperimentJsonValue : *ExperimentsJsonArray)
 			{
-				if (ExperimentJsonValue->Type == EJson::Object)
+				if (TSharedPtr<FJsonObject> ExperimentJsonObject = ExperimentJsonValue->AsObject())
 				{
-					TSharedPtr<FJsonObject> ExperimentJsonObject = ExperimentJsonValue->AsObject();
 					FSatoriExperiment Experiment(ExperimentJsonObject);
 					if (!Experiment.Name.IsEmpty())
 					{
