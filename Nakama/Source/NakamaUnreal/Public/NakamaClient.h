@@ -33,6 +33,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAuthRefreshError, const FNakamaEr
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnUserAccountInfo, const FNakamaAccount&, AccountData);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnGetUsers, const TArray <FNakamaUser>&, Users);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnUpdateAccount);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDeleteUser);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnFriendsList, FNakamaFriendList, Friends);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnReceivedFriendsList, FNakamaFriendList, list);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnAddedFriend); //Add 's here
@@ -801,6 +802,20 @@ public:
 		const FString& Location,
 		const FString& Timezone,
 		FOnUpdateAccount Success,
+		FOnError Error
+	);
+
+	/**
+	 * Delete the current user from the server.
+	 *
+	 * @param Session The session of the user.
+	 * @param Success Delegate called upon successfully deleting the user's account.
+	 * @param Error Delegate called if the update operation fails, detailing the encountered error.
+	 */
+	UFUNCTION(Category = "Nakama|Users")
+	void DeleteUser(
+		UNakamaSession* Session,
+		FOnDeleteUser Success,
 		FOnError Error
 	);
 
@@ -2135,6 +2150,17 @@ public:
 		TFunction<void()> SuccessCallback,
 		TFunction<void(const FNakamaError& Error)> ErrorCallback
 	);
+
+
+	/**
+	 * Delete the current user from the server.
+	 *
+	 * @param Session The session of the user.
+	 * @param SuccessCallback Callback invoked upon successfully deleting the user's account.
+	 * @param ErrorCallback Callback invoked if the delete operation fails, detailing the encountered error.
+	 */
+	void DeleteUser(UNakamaSession* Session, TFunction<void()> SuccessCallback,
+	                TFunction<void(const FNakamaError& Error)> ErrorCallback);
 
 	// --- Users --- //
 
