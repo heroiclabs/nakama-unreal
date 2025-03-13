@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "CoreMinimal.h"
 #include "NakamaPresence.h"
@@ -36,6 +36,7 @@ struct NAKAMAUNREAL_API FNakamaParty
 	TArray<FNakamaUserPresence> Presences;
 
 	FNakamaParty(const FString& JsonString);
+    FNakamaParty(const TSharedPtr<FJsonObject> JsonObject);
 	FNakamaParty(); // Default Constructor
 };
 

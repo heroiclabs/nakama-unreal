@@ -2,15 +2,7 @@
 
 #include "NakamaUtils.h"
 
-FSatoriEvent::FSatoriEvent(const FString& JsonString) : FSatoriEvent([](const FString& JsonString) {
-	TSharedPtr<FJsonObject> JsonObject;
-	const TSharedRef<TJsonReader<>> JsonReader = TJsonReaderFactory<>::Create(JsonString);
-	if (!FJsonSerializer::Deserialize(JsonReader, JsonObject))
-	{
-		JsonObject = nullptr;
-	}
-	return JsonObject;
-	}(JsonString)) {
+FSatoriEvent::FSatoriEvent(const FString& JsonString) : FSatoriEvent(FNakamaUtils::DeserializeJsonObject(JsonString)) {
 }
 
 FSatoriEvent::FSatoriEvent(const TSharedPtr<FJsonObject> JsonObject)

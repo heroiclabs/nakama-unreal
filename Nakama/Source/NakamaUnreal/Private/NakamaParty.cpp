@@ -1,13 +1,13 @@
-﻿#include "NakamaParty.h"
+#include "NakamaParty.h"
 #include "NakamaUtils.h"
 
-FNakamaParty::FNakamaParty(const FString& JsonString)
-{
-	TSharedPtr<FJsonObject> JsonObject;
-    TSharedRef<TJsonReader<>> JsonReader = TJsonReaderFactory<>::Create(JsonString);
+FNakamaParty::FNakamaParty(const FString& JsonString) : FNakamaParty(FNakamaUtils::DeserializeJsonObject(JsonString)) {
+}
 
-    if (FJsonSerializer::Deserialize(JsonReader, JsonObject) && JsonObject.IsValid())
-    {
+FNakamaParty::FNakamaParty(const TSharedPtr<FJsonObject> JsonObject)
+{
+	if (JsonObject.IsValid())
+	{
         // Get the appropriate object based on whether "party" is present or not
         TSharedPtr<FJsonObject> PartyObject = JsonObject->HasField(TEXT("party")) ? JsonObject->GetObjectField(TEXT("party")) : JsonObject;
 
@@ -19,24 +19,14 @@ FNakamaParty::FNakamaParty(const FString& JsonString)
         const TSharedPtr<FJsonObject>* SelfJsonObject;
         if (PartyObject->TryGetObjectField(TEXT("self"), SelfJsonObject))
         {
-            TSharedRef<TJsonWriter<>> SelfWriter = TJsonWriterFactory<>::Create(&SelfJsonString);
-            if (FJsonSerializer::Serialize(SelfJsonObject->ToSharedRef(), SelfWriter))
-            {
-                SelfWriter->Close();
-                Me = FNakamaUserPresence(SelfJsonString);
-            }
+            Me = FNakamaUserPresence(*SelfJsonObject);
         }
 
         FString LeaderJsonString;
         const TSharedPtr<FJsonObject>* LeaderJsonObject;
         if (PartyObject->TryGetObjectField(TEXT("leader"), LeaderJsonObject))
         {
-            TSharedRef<TJsonWriter<>> LeaderWriter = TJsonWriterFactory<>::Create(&LeaderJsonString);
-            if (FJsonSerializer::Serialize(LeaderJsonObject->ToSharedRef(), LeaderWriter))
-            {
-                LeaderWriter->Close();
-                Leader = FNakamaUserPresence(LeaderJsonString);
-            }
+            Leader = FNakamaUserPresence(*LeaderJsonObject);
         }
 
     	const TArray<TSharedPtr<FJsonValue>>* PresencesJsonArray;
@@ -44,17 +34,9 @@ FNakamaParty::FNakamaParty(const FString& JsonString)
     	{
     		for (const TSharedPtr<FJsonValue>& PresenceJson : *PresencesJsonArray)
     		{
-    			if (PresenceJson->Type == EJson::Object)
+    			if (TSharedPtr<FJsonObject> PresenceObject = PresenceJson->AsObject())
     			{
-    				TSharedPtr<FJsonObject> PresenceObject = PresenceJson->AsObject();
-    				FString PresenceJsonString;
-    				auto PresenceWriter = TJsonWriterFactory<>::Create(&PresenceJsonString);
-    				if (FJsonSerializer::Serialize(PresenceObject.ToSharedRef(), PresenceWriter))
-    				{
-    					PresenceWriter->Close();
-    					FNakamaUserPresence Presence(PresenceJsonString);
-    					Presences.Add(Presence);
-    				}
+    				Presences.Add(FNakamaUserPresence(PresenceObject));
     			}
     		}
     	}
@@ -83,17 +65,9 @@ FNakamaPartyJoinRequest::FNakamaPartyJoinRequest(const FString& JsonString)
 		{
 			for (const TSharedPtr<FJsonValue>& PresenceJson : *PresencesJsonArray)
 			{
-				if (PresenceJson->Type == EJson::Object)
+				if (TSharedPtr<FJsonObject> PresenceObject = PresenceJson->AsObject())
 				{
-					TSharedPtr<FJsonObject> PresenceObject = PresenceJson->AsObject();
-					FString PresenceJsonString;
-					auto PresenceWriter = TJsonWriterFactory<>::Create(&PresenceJsonString);
-					if (FJsonSerializer::Serialize(PresenceObject.ToSharedRef(), PresenceWriter))
-					{
-						PresenceWriter->Close();
-						FNakamaUserPresence Presence(PresenceJsonString);
-						Presences.Add(Presence);
-					}
+					Presences.Add(FNakamaUserPresence(PresenceObject));
 				}
 			}
 		}
@@ -158,13 +132,7 @@ FNakamaPartyData::FNakamaPartyData(const FString& JsonString)
 		const TSharedPtr<FJsonObject>* PresenceJsonObject;
 		if (JsonObject->TryGetObjectField(TEXT("presence"), PresenceJsonObject))
 		{
-			FString PresenceJsonString;
-			auto PresenceWriter = TJsonWriterFactory<>::Create(&PresenceJsonString);
-			if (FJsonSerializer::Serialize((*PresenceJsonObject).ToSharedRef(), PresenceWriter))
-			{
-				PresenceWriter->Close();
-				Presence = FNakamaUserPresence(PresenceJsonString);
-			}
+			Presence = FNakamaUserPresence(*PresenceJsonObject);
 		}
 		else
 		{
@@ -196,13 +164,7 @@ FNakamaPartyLeader::FNakamaPartyLeader(const FString& JsonString)
 		const TSharedPtr<FJsonObject>* PresenceJsonObject;
 		if (JsonObject->TryGetObjectField(TEXT("presence"), PresenceJsonObject))
 		{
-			FString PresenceJsonString;
-			auto PresenceWriter = TJsonWriterFactory<>::Create(&PresenceJsonString);
-			if (FJsonSerializer::Serialize((*PresenceJsonObject).ToSharedRef(), PresenceWriter))
-			{
-				PresenceWriter->Close();
-				Presence = FNakamaUserPresence(PresenceJsonString);
-			}
+			Presence = FNakamaUserPresence(*PresenceJsonObject);
 		}
 		else
 		{
@@ -230,17 +192,9 @@ FNakamaPartyPresenceEvent::FNakamaPartyPresenceEvent(const FString& JsonString)
         {
             for (const TSharedPtr<FJsonValue>& PresenceJson : *JoinsJsonArray)
             {
-                if (PresenceJson->Type == EJson::Object)
+                if (TSharedPtr<FJsonObject> PresenceObject = PresenceJson->AsObject())
                 {
-                    TSharedPtr<FJsonObject> PresenceObject = PresenceJson->AsObject();
-                    FString PresenceJsonString;
-                    auto PresenceWriter = TJsonWriterFactory<>::Create(&PresenceJsonString);
-                    if (FJsonSerializer::Serialize(PresenceObject.ToSharedRef(), PresenceWriter))
-                    {
-                        PresenceWriter->Close();
-                        FNakamaUserPresence Presence(PresenceJsonString);
-                        Joins.Add(Presence);
-                    }
+                    Joins.Add(FNakamaUserPresence(PresenceObject));
                 }
             }
         }
@@ -250,17 +204,9 @@ FNakamaPartyPresenceEvent::FNakamaPartyPresenceEvent(const FString& JsonString)
         {
             for (const TSharedPtr<FJsonValue>& PresenceJson : *LeavesJsonArray)
             {
-                if (PresenceJson->Type == EJson::Object)
+                if (TSharedPtr<FJsonObject> PresenceObject = PresenceJson->AsObject())
                 {
-                    TSharedPtr<FJsonObject> PresenceObject = PresenceJson->AsObject();
-                    FString PresenceJsonString;
-                    auto PresenceWriter = TJsonWriterFactory<>::Create(&PresenceJsonString);
-                    if (FJsonSerializer::Serialize(PresenceObject.ToSharedRef(), PresenceWriter))
-                    {
-                        PresenceWriter->Close();
-                        FNakamaUserPresence Presence(PresenceJsonString);
-                        Leaves.Add(Presence);
-                    }
+                    Leaves.Add(FNakamaUserPresence(PresenceObject));
                 }
             }
         }

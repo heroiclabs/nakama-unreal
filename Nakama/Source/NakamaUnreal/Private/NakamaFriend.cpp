@@ -1,24 +1,18 @@
-﻿#include "NakamaFriend.h"
-
+#include "NakamaFriend.h"
 #include "NakamaUtils.h"
 
-FNakamaFriend::FNakamaFriend(const FString& JsonString)
-{
-	TSharedPtr<FJsonObject> JsonObject;
-	const TSharedRef<TJsonReader<>> JsonReader = TJsonReaderFactory<>::Create(JsonString);
 
-	if (FJsonSerializer::Deserialize(JsonReader, JsonObject) && JsonObject.IsValid())
+FNakamaFriend::FNakamaFriend(const FString& JsonString) : FNakamaFriend(FNakamaUtils::DeserializeJsonObject(JsonString)) {
+}
+
+FNakamaFriend::FNakamaFriend(const TSharedPtr<FJsonObject> JsonObject)
+{
+	if (JsonObject.IsValid())
 	{
 		const TSharedPtr<FJsonObject>* UserJsonObject;
 		if (JsonObject->TryGetObjectField(TEXT("user"), UserJsonObject))
 		{
-			FString UserJsonString;
-			TSharedRef<TJsonWriter<>> JsonWriter = TJsonWriterFactory<>::Create(&UserJsonString);
-			if (FJsonSerializer::Serialize(UserJsonObject->ToSharedRef(), JsonWriter))
-			{
-				JsonWriter->Close();
-				NakamaUser = FNakamaUser(UserJsonString);
-			}
+			NakamaUser = FNakamaUser(*UserJsonObject);
 		}
 
 		FString StateString;
@@ -66,20 +60,10 @@ FNakamaFriendList::FNakamaFriendList(const FString& JsonString)
 		{
 			for (const TSharedPtr<FJsonValue>& FriendJsonValue : *FriendsJsonArray)
 			{
-				if (FriendJsonValue->Type == EJson::Object)
+				if (TSharedPtr<FJsonObject> FriendJsonObject = FriendJsonValue->AsObject())
 				{
-					TSharedPtr<FJsonObject> FriendJsonObject = FriendJsonValue->AsObject();
-					if (FriendJsonObject.IsValid())
-					{
-						FString FriendJsonString;
-						TSharedRef<TJsonWriter<>> JsonWriter = TJsonWriterFactory<>::Create(&FriendJsonString);
-						if (FJsonSerializer::Serialize(FriendJsonObject.ToSharedRef(), JsonWriter))
-						{
-							JsonWriter->Close();
-							FNakamaFriend Friend(FriendJsonString);
-							NakamaUsers.Add(Friend);
-						}
-					}
+					FNakamaFriend Friend(FriendJsonObject);
+					NakamaUsers.Add(Friend);
 				}
 			}
 		}

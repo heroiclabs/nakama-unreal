@@ -30,6 +30,57 @@ void USatoriClient::InitializeSystem(
 	bIsActive = true;
 }
 
+void USatoriClient::Disconnect()
+{
+	if (IsValidLowLevel())
+	{
+		CancelAllRequests();
+	}
+}
+
+void USatoriClient::CancelAllRequests()
+{
+	if (!IsValidLowLevel())
+	{
+		return;
+	}
+
+	// Lock the mutex to protect access to ActiveRequests
+	FScopeLock Lock(&ActiveRequestsMutex);
+
+	// Iterate over the active requests and cancel each one
+	for (const FHttpRequestPtr& Request : ActiveRequests)
+	{
+		Request->OnProcessRequestComplete().Unbind();
+		Request->CancelRequest();
+	}
+
+	// Clear the ActiveRequests array
+	ActiveRequests.Empty();
+}
+
+void USatoriClient::Destroy()
+{
+	bIsActive = false;
+	ConditionalBeginDestroy();
+}
+
+void USatoriClient::SetTimeout(float InTimeout)
+{
+	Timeout = InTimeout;
+}
+
+float USatoriClient::GetTimeout()
+{
+	return Timeout;
+}
+
+void USatoriClient::BeginDestroy()
+{
+	UObject::BeginDestroy();
+	bIsActive = false;
+}
+
 USatoriClient* USatoriClient::CreateDefaultClient(
 	const FString& ServerKey, 
 	const FString& Host, 
@@ -1224,7 +1275,6 @@ void USatoriClient::GetFlags(
 
 	// Bind the response callback and handle the response
 	HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-
 		if (!IsValidLowLevel())
 		{
 			return;
@@ -1273,6 +1323,121 @@ void USatoriClient::GetFlags(
 			ActiveRequests.Remove(Request);
 		}
 	});
+
+	// Process the request
+	HttpRequest->ProcessRequest();
+}
+
+void USatoriClient::GetFlagOverrides(
+	UNakamaSession* Session, 
+	const TArray<FString>& Names, 
+	FOnGetFlagOverrides Success,
+	FOnSatoriError Error)
+{
+	auto successCallback = [this, Success](const FSatoriFlagOverrideList& Flags)
+		{
+			if (!IsClientActive(this))
+			{
+				return;
+			}
+
+			Success.Broadcast(Flags);
+		};
+
+	auto errorCallback = [this, Error](const FNakamaError& error)
+		{
+			if (!IsClientActive(this))
+			{
+				return;
+			}
+
+			Error.Broadcast(error);
+		};
+
+	GetFlagOverrides(Session, Names, successCallback, errorCallback);
+}
+
+void USatoriClient::GetFlagOverrides(
+	UNakamaSession* Session, 
+	const TArray<FString>& Names, 
+	TFunction<void(const FSatoriFlagOverrideList& Flags)> SuccessCallback, 
+	TFunction<void(const FNakamaError& Error)> ErrorCallback)
+{
+	// Setup the endpoint
+	const FString Endpoint = TEXT("/v1/flag/override");
+
+	// Verify the session
+	if (!FNakamaUtils::IsSessionValid(Session, ErrorCallback))
+	{
+		return;
+	}
+
+	// Setup the query parameters
+	TMultiMap<FString, FString> QueryParams;
+	for (const FString& Name : Names)
+	{
+		QueryParams.Add(TEXT("names"), Name);
+	}
+
+	// Make the request
+	const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::GET, QueryParams, Session->GetAuthToken());
+
+	// Lock the ActiveRequests mutex to protect concurrent access
+	FScopeLock Lock(&ActiveRequestsMutex);
+
+	// Add the HttpRequest to ActiveRequests
+	ActiveRequests.Add(HttpRequest);
+
+	// Bind the response callback and handle the response
+	HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+		if (!IsValidLowLevel())
+		{
+			return;
+		}
+
+		// Lock the ActiveRequests mutex to protect concurrent access
+		FScopeLock Lock(&ActiveRequestsMutex);
+
+		if (ActiveRequests.Contains(Request))
+		{
+			if (bSuccess && Response.IsValid())
+			{
+				const FString ResponseBody = Response->GetContentAsString();
+
+				// Check if Request was successful
+				if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
+				{
+					// Check for Success Callback
+					if (SuccessCallback)
+					{
+						const FSatoriFlagOverrideList FlagOverrides = FSatoriFlagOverrideList(ResponseBody);
+						SuccessCallback(FlagOverrides);
+					}
+				}
+				else
+				{
+					// Check for Error Callback
+					if (ErrorCallback)
+					{
+						const FNakamaError Error(ResponseBody);
+						ErrorCallback(Error);
+					}
+				}
+			}
+			else
+			{
+				// Handle Invalid Response
+				if (ErrorCallback)
+				{
+					const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
+					ErrorCallback(RequestError);
+				}
+			}
+
+			// Remove the HttpRequest from ActiveRequests
+			ActiveRequests.Remove(Request);
+		}
+		});
 
 	// Process the request
 	HttpRequest->ProcessRequest();
