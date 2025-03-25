@@ -8653,7 +8653,7 @@ void UNakamaClient::DeleteStorageObjects(
     HttpRequest->ProcessRequest();
 }
 
-void UNakamaClient::RPC(
+bool UNakamaClient::RPC(
     UNakamaSession* Session,
     const FString& Id,
     const TOptional<FString>& Payload,
@@ -8663,14 +8663,14 @@ void UNakamaClient::RPC(
     // Verify the session
     if (!FNakamaUtils::IsSessionValid(Session, ErrorCallback))
     {
-        return;
+        return false;
     }
 
     // Call the SendRPC function
-    SendRPC(Session, Id, Payload, {},  SuccessCallback, ErrorCallback);
+    return SendRPC(Session, Id, Payload, {},  SuccessCallback, ErrorCallback);
 }
 
-void UNakamaClient::RPC(
+bool UNakamaClient::RPC(
     const FString& HttpKey,
     const FString& Id,
     const FString& Payload,
@@ -8684,7 +8684,7 @@ void UNakamaClient::RPC(
 
 
     // Sends Empty Session
-    SendRPC({}, Id, Payload, QueryParams, SuccessCallback, ErrorCallback);
+    return SendRPC({}, Id, Payload, QueryParams, SuccessCallback, ErrorCallback);
 }
 
 // End of TFunctions
@@ -8721,7 +8721,7 @@ bool UNakamaClient::IsClientValid() const
 	//return IsValid(this);
 }
 
-void UNakamaClient::SendRPC(UNakamaSession* Session, const FString& Id, const TOptional<FString>& Payload,
+bool UNakamaClient::SendRPC(UNakamaSession* Session, const FString& Id, const TOptional<FString>& Payload,
 	TMultiMap<FString, FString> QueryParams, TFunction<void(const FNakamaRPC& Rpc)> SuccessCallback,
 	TFunction<void(const FNakamaError& Error)> ErrorCallback)
 {
@@ -8759,7 +8759,7 @@ void UNakamaClient::SendRPC(UNakamaSession* Session, const FString& Id, const TO
         });
 
         // Process the request
-        HttpRequest->ProcessRequest();
+        return HttpRequest->ProcessRequest();
     }
     else
     {
@@ -8792,7 +8792,7 @@ void UNakamaClient::SendRPC(UNakamaSession* Session, const FString& Id, const TO
         });
 
         // Process the request
-        HttpRequest->ProcessRequest();
+        return HttpRequest->ProcessRequest();
     }
 }
 

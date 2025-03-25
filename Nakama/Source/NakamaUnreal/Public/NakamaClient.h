@@ -2875,6 +2875,7 @@ public:
 
 	/**
 	 * Send an RPC message to the server.
+	 * returns true if the call was made.
 	 *
 	 * @param Id The ID of the function to execute.
 	 * @param Payload The string content to send to the server.
@@ -2882,7 +2883,7 @@ public:
 	 * @param SuccessCallback Callback invoked upon successfully sending the RPC message and receiving a response.
 	 * @param ErrorCallback Callback invoked if an error occurs, detailing the failure.
 	 */
-	void RPC (
+	bool RPC (
 		UNakamaSession *Session,
 		const FString& Id,
 		const TOptional<FString>& Payload,
@@ -2892,6 +2893,7 @@ public:
 
 	/**
 	 * Send an RPC message to the server using HTTP key.
+	 * returns true if the call was made.
 	 *
 	 * @param HttpKey The HTTP key for the server.
 	 * @param Id The ID of the function to execute.
@@ -2899,7 +2901,7 @@ public:
 	 * @param SuccessCallback Callback invoked upon successfully sending the RPC message using the HTTP key and receiving a response.
 	 * @param ErrorCallback Callback invoked if an error occurs, detailing the failure.
 	 */
-	void RPC ( // HTTPKey
+	bool RPC ( // HTTPKey
 		const FString& HttpKey,
 		const FString& Id,
 		const FString& Payload,
@@ -2925,7 +2927,7 @@ private:
 	bool IsClientValid() const;
 
 	// Requests for RPC
-	void SendRPC(
+	bool SendRPC(
 		UNakamaSession* Session,
 		const FString& Id,
 		const TOptional<FString>& Payload,
