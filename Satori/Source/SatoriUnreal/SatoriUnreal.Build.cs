@@ -27,7 +27,7 @@ public class SatoriUnreal : ModuleRules
 		PublicDependencyModuleNames.AddRange(
 			new string[]
 			{
-				"Core", "HTTP", "WebSockets", "JsonUtilities", "NakamaUnreal"
+				"Core", "HTTP", "WebSockets", "JsonUtilities"
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);
@@ -43,8 +43,7 @@ public class SatoriUnreal : ModuleRules
 				"Engine",
 				"JsonUtilities",
 				"Json",
-				"HTTP",
-				"NakamaUnreal"
+				"HTTP"
 				// ... add private dependencies that you statically link with here ...
 			}
 			);

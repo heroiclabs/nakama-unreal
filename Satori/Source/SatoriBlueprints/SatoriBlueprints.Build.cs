@@ -41,8 +41,7 @@ public class SatoriBlueprints : ModuleRules
 				"SlateCore",
 				"Engine",
 				"JsonUtilities",
-				"Json",
-				"NakamaUnreal",
+				"Json"
 
 				// ... private dependencies that you statically link with here ...
 			}
