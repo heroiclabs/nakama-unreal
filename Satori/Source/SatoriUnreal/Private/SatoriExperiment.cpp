@@ -1,7 +1,7 @@
 #include "SatoriExperiment.h"
-#include "NakamaUtils.h"
+#include "SatoriUtils.h"
 
-FSatoriExperiment::FSatoriExperiment(const FString& JsonString) : FSatoriExperiment(FNakamaUtils::DeserializeJsonObject(JsonString)) {
+FSatoriExperiment::FSatoriExperiment(const FString& JsonString) : FSatoriExperiment(FSatoriUtils::DeserializeJsonObject(JsonString)) {
 }
 
 FSatoriExperiment::FSatoriExperiment(const TSharedPtr<FJsonObject> JsonObject)

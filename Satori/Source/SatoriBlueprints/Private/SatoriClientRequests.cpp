@@ -1,5 +1,5 @@
 #include "SatoriClientRequests.h"
-#include "NakamaUtils.h"
+#include "SatoriUtils.h"
 
 USatoriClientAuthenticateCustom* USatoriClientAuthenticateCustom::AuthenticateCustom(
 	USatoriClient* Client, 
@@ -22,13 +22,13 @@ void USatoriClientAuthenticateCustom::Activate()
 {
 	if (!SatoriClient)
 	{
-		const FNakamaError Error = FNakamaUtils::HandleInvalidClient();
+		const FSatoriError Error = FSatoriUtils::HandleInvalidClient();
 		OnError.Broadcast({}, Error);
 		SetReadyToDestroy();
 		return;
 	}
 
-	auto successCallback = [this](UNakamaSession* session)
+	auto successCallback = [this](USatoriSession* session)
 		{
 			if (!USatoriClient::IsClientActive(SatoriClient))
 			{
@@ -40,7 +40,7 @@ void USatoriClientAuthenticateCustom::Activate()
 			SetReadyToDestroy();
 		};
 
-	auto errorCallback = [this](const FNakamaError& error)
+	auto errorCallback = [this](const FSatoriError& error)
 		{
 			if (!USatoriClient::IsClientActive(SatoriClient))
 			{
@@ -55,7 +55,7 @@ void USatoriClientAuthenticateCustom::Activate()
 	SatoriClient->AuthenticateCustom(UserID, Username, bCreateAccount, Vars, successCallback, errorCallback);
 }
 
-USatoriClientAuthenticateRefresh* USatoriClientAuthenticateRefresh::AuthenticateRefresh(USatoriClient* Client, UNakamaSession* Session)
+USatoriClientAuthenticateRefresh* USatoriClientAuthenticateRefresh::AuthenticateRefresh(USatoriClient* Client, USatoriSession* Session)
 {
 	USatoriClientAuthenticateRefresh* Node = NewObject<USatoriClientAuthenticateRefresh>();
 	Node->SatoriClient = Client;
@@ -69,7 +69,7 @@ void USatoriClientAuthenticateRefresh::Activate()
 	// Check validity of client and session
 	if (!SatoriClient && !UserSession)
 	{
-		const FNakamaError Error = FNakamaUtils::HandleInvalidClientAndSession();
+		const FSatoriError Error = FSatoriUtils::HandleInvalidClientAndSession();
 		OnError.Broadcast({}, Error);
 		SetReadyToDestroy();
 		return;
@@ -77,7 +77,7 @@ void USatoriClientAuthenticateRefresh::Activate()
 
 	if (!SatoriClient)
 	{
-		const FNakamaError Error = FNakamaUtils::HandleInvalidClient();
+		const FSatoriError Error = FSatoriUtils::HandleInvalidClient();
 		OnError.Broadcast({}, Error);
 		SetReadyToDestroy();
 		return;
@@ -85,13 +85,13 @@ void USatoriClientAuthenticateRefresh::Activate()
 
 	if (!UserSession)
 	{
-		const FNakamaError Error = FNakamaUtils::HandleInvalidSession();
+		const FSatoriError Error = FSatoriUtils::HandleInvalidSession();
 		OnError.Broadcast({}, Error);
 		SetReadyToDestroy();
 		return;
 	}
 
-	auto successCallback = [this](UNakamaSession* session)
+	auto successCallback = [this](USatoriSession* session)
 		{
 			if (!USatoriClient::IsClientActive(SatoriClient))
 			{
@@ -103,7 +103,7 @@ void USatoriClientAuthenticateRefresh::Activate()
 			SetReadyToDestroy();
 		};
 
-	auto errorCallback = [this](const FNakamaError& error)
+	auto errorCallback = [this](const FSatoriError& error)
 		{
 			if (!USatoriClient::IsClientActive(SatoriClient))
 			{
@@ -118,7 +118,7 @@ void USatoriClientAuthenticateRefresh::Activate()
 	SatoriClient->AuthenticateRefresh(UserSession, successCallback, errorCallback);
 }
 
-USatoriClientAuthenticateLogout* USatoriClientAuthenticateLogout::AuthenticateLogout(USatoriClient* Client, UNakamaSession* Session)
+USatoriClientAuthenticateLogout* USatoriClientAuthenticateLogout::AuthenticateLogout(USatoriClient* Client, USatoriSession* Session)
 {
 	USatoriClientAuthenticateLogout* Node = NewObject<USatoriClientAuthenticateLogout>();
 	Node->SatoriClient = Client;
@@ -132,7 +132,7 @@ void USatoriClientAuthenticateLogout::Activate()
 	// Check validity of client and session
 	if (!SatoriClient && !UserSession)
 	{
-		const FNakamaError Error = FNakamaUtils::HandleInvalidClientAndSession();
+		const FSatoriError Error = FSatoriUtils::HandleInvalidClientAndSession();
 		OnError.Broadcast(Error);
 		SetReadyToDestroy();
 		return;
@@ -140,7 +140,7 @@ void USatoriClientAuthenticateLogout::Activate()
 
 	if (!SatoriClient)
 	{
-		const FNakamaError Error = FNakamaUtils::HandleInvalidClient();
+		const FSatoriError Error = FSatoriUtils::HandleInvalidClient();
 		OnError.Broadcast(Error);
 		SetReadyToDestroy();
 		return;
@@ -148,7 +148,7 @@ void USatoriClientAuthenticateLogout::Activate()
 
 	if (!UserSession)
 	{
-		const FNakamaError Error = FNakamaUtils::HandleInvalidSession();
+		const FSatoriError Error = FSatoriUtils::HandleInvalidSession();
 		OnError.Broadcast(Error);
 		SetReadyToDestroy();
 		return;
@@ -166,7 +166,7 @@ void USatoriClientAuthenticateLogout::Activate()
 			SetReadyToDestroy();
 		};
 
-	auto errorCallback = [this](const FNakamaError& error)
+	auto errorCallback = [this](const FSatoriError& error)
 		{
 			if (!USatoriClient::IsClientActive(SatoriClient))
 			{
@@ -183,7 +183,7 @@ void USatoriClientAuthenticateLogout::Activate()
 
 USatoriClientIdentify* USatoriClientIdentify::Identify(
 	USatoriClient* Client,
-	UNakamaSession* Session,
+	USatoriSession* Session,
 	const FString& ID,
 	const TMap<FString, FString>& DefaultProperties,
 	const TMap<FString, FString>& CustomProperties)
@@ -203,7 +203,7 @@ void USatoriClientIdentify::Activate()
 	// Check validity of client and session
 	if (!SatoriClient && !UserSession)
 	{
-		const FNakamaError Error = FNakamaUtils::HandleInvalidClientAndSession();
+		const FSatoriError Error = FSatoriUtils::HandleInvalidClientAndSession();
 		OnError.Broadcast({}, Error);
 		SetReadyToDestroy();
 		return;
@@ -211,7 +211,7 @@ void USatoriClientIdentify::Activate()
 
 	if (!SatoriClient)
 	{
-		const FNakamaError Error = FNakamaUtils::HandleInvalidClient();
+		const FSatoriError Error = FSatoriUtils::HandleInvalidClient();
 		OnError.Broadcast({}, Error);
 		SetReadyToDestroy();
 		return;
@@ -219,13 +219,13 @@ void USatoriClientIdentify::Activate()
 
 	if (!UserSession)
 	{
-		const FNakamaError Error = FNakamaUtils::HandleInvalidSession();
+		const FSatoriError Error = FSatoriUtils::HandleInvalidSession();
 		OnError.Broadcast({}, Error);
 		SetReadyToDestroy();
 		return;
 	}
 
-	auto successCallback = [this](UNakamaSession* session)
+	auto successCallback = [this](USatoriSession* session)
 		{
 			if (!USatoriClient::IsClientActive(SatoriClient))
 			{
@@ -237,7 +237,7 @@ void USatoriClientIdentify::Activate()
 			SetReadyToDestroy();
 		};
 
-	auto errorCallback = [this](const FNakamaError& error)
+	auto errorCallback = [this](const FSatoriError& error)
 		{
 			if (!USatoriClient::IsClientActive(SatoriClient))
 			{
@@ -252,7 +252,7 @@ void USatoriClientIdentify::Activate()
 	SatoriClient->Identify(UserSession, ID, DefaultProperties, CustomProperties, successCallback, errorCallback);
 }
 
-USatoriClientListIdentityProperties* USatoriClientListIdentityProperties::ListIdentityProperties(USatoriClient* Client, UNakamaSession* Session)
+USatoriClientListIdentityProperties* USatoriClientListIdentityProperties::ListIdentityProperties(USatoriClient* Client, USatoriSession* Session)
 {
 	USatoriClientListIdentityProperties* Node = NewObject<USatoriClientListIdentityProperties>();
 	Node->SatoriClient = Client;
@@ -266,7 +266,7 @@ void USatoriClientListIdentityProperties::Activate()
 	// Check validity of client and session
 	if (!SatoriClient && !UserSession)
 	{
-		const FNakamaError Error = FNakamaUtils::HandleInvalidClientAndSession();
+		const FSatoriError Error = FSatoriUtils::HandleInvalidClientAndSession();
 		OnError.Broadcast({}, Error);
 		SetReadyToDestroy();
 		return;
@@ -274,7 +274,7 @@ void USatoriClientListIdentityProperties::Activate()
 
 	if (!SatoriClient)
 	{
-		const FNakamaError Error = FNakamaUtils::HandleInvalidClient();
+		const FSatoriError Error = FSatoriUtils::HandleInvalidClient();
 		OnError.Broadcast({}, Error);
 		SetReadyToDestroy();
 		return;
@@ -282,7 +282,7 @@ void USatoriClientListIdentityProperties::Activate()
 
 	if (!UserSession)
 	{
-		const FNakamaError Error = FNakamaUtils::HandleInvalidSession();
+		const FSatoriError Error = FSatoriUtils::HandleInvalidSession();
 		OnError.Broadcast({}, Error);
 		SetReadyToDestroy();
 		return;
@@ -300,7 +300,7 @@ void USatoriClientListIdentityProperties::Activate()
 			SetReadyToDestroy();
 		};
 
-	auto errorCallback = [this](const FNakamaError& error)
+	auto errorCallback = [this](const FSatoriError& error)
 		{
 			if (!USatoriClient::IsClientActive(SatoriClient))
 			{
@@ -317,7 +317,7 @@ void USatoriClientListIdentityProperties::Activate()
 
 USatoriClientUpdateProperties* USatoriClientUpdateProperties::UpdateProperties(
 	USatoriClient* Client,
-	UNakamaSession* Session, 
+	USatoriSession* Session, 
 	const TMap<FString, FString>& DefaultProperties, 
 	const TMap<FString, FString>& CustomProperties, 
 	const bool bRecompute)
@@ -337,7 +337,7 @@ void USatoriClientUpdateProperties::Activate()
 	// Check validity of client and session
 	if (!SatoriClient && !UserSession)
 	{
-		const FNakamaError Error = FNakamaUtils::HandleInvalidClientAndSession();
+		const FSatoriError Error = FSatoriUtils::HandleInvalidClientAndSession();
 		OnError.Broadcast(Error);
 		SetReadyToDestroy();
 		return;
@@ -345,7 +345,7 @@ void USatoriClientUpdateProperties::Activate()
 
 	if (!SatoriClient)
 	{
-		const FNakamaError Error = FNakamaUtils::HandleInvalidClient();
+		const FSatoriError Error = FSatoriUtils::HandleInvalidClient();
 		OnError.Broadcast(Error);
 		SetReadyToDestroy();
 		return;
@@ -353,7 +353,7 @@ void USatoriClientUpdateProperties::Activate()
 
 	if (!UserSession)
 	{
-		const FNakamaError Error = FNakamaUtils::HandleInvalidSession();
+		const FSatoriError Error = FSatoriUtils::HandleInvalidSession();
 		OnError.Broadcast(Error);
 		SetReadyToDestroy();
 		return;
@@ -371,7 +371,7 @@ void USatoriClientUpdateProperties::Activate()
 			SetReadyToDestroy();
 		};
 
-	auto errorCallback = [this](const FNakamaError& error)
+	auto errorCallback = [this](const FSatoriError& error)
 		{
 			if (!USatoriClient::IsClientActive(SatoriClient))
 			{
@@ -386,7 +386,7 @@ void USatoriClientUpdateProperties::Activate()
 	SatoriClient->UpdateProperties(UserSession, DefaultProperties, CustomProperties, bRecompute, successCallback, errorCallback);
 }
 
-USatoriClientDeleteIdentity* USatoriClientDeleteIdentity::DeleteIdentity(USatoriClient* Client, UNakamaSession* Session)
+USatoriClientDeleteIdentity* USatoriClientDeleteIdentity::DeleteIdentity(USatoriClient* Client, USatoriSession* Session)
 {
 	USatoriClientDeleteIdentity* Node = NewObject<USatoriClientDeleteIdentity>();
 	Node->SatoriClient = Client;
@@ -400,7 +400,7 @@ void USatoriClientDeleteIdentity::Activate()
 	// Check validity of client and session
 	if (!SatoriClient && !UserSession)
 	{
-		const FNakamaError Error = FNakamaUtils::HandleInvalidClientAndSession();
+		const FSatoriError Error = FSatoriUtils::HandleInvalidClientAndSession();
 		OnError.Broadcast(Error);
 		SetReadyToDestroy();
 		return;
@@ -408,7 +408,7 @@ void USatoriClientDeleteIdentity::Activate()
 
 	if (!SatoriClient)
 	{
-		const FNakamaError Error = FNakamaUtils::HandleInvalidClient();
+		const FSatoriError Error = FSatoriUtils::HandleInvalidClient();
 		OnError.Broadcast(Error);
 		SetReadyToDestroy();
 		return;
@@ -416,7 +416,7 @@ void USatoriClientDeleteIdentity::Activate()
 
 	if (!UserSession)
 	{
-		const FNakamaError Error = FNakamaUtils::HandleInvalidSession();
+		const FSatoriError Error = FSatoriUtils::HandleInvalidSession();
 		OnError.Broadcast(Error);
 		SetReadyToDestroy();
 		return;
@@ -434,7 +434,7 @@ void USatoriClientDeleteIdentity::Activate()
 			SetReadyToDestroy();
 		};
 
-	auto errorCallback = [this](const FNakamaError& error)
+	auto errorCallback = [this](const FSatoriError& error)
 		{
 			if (!USatoriClient::IsClientActive(SatoriClient))
 			{
@@ -449,7 +449,7 @@ void USatoriClientDeleteIdentity::Activate()
 	SatoriClient->DeleteIdentity(UserSession, successCallback, errorCallback);
 }
 
-USatoriClientPostEvent* USatoriClientPostEvent::PostEvent(USatoriClient* Client, UNakamaSession* Session, const TArray<FSatoriEvent>& Events)
+USatoriClientPostEvent* USatoriClientPostEvent::PostEvent(USatoriClient* Client, USatoriSession* Session, const TArray<FSatoriEvent>& Events)
 {
 	USatoriClientPostEvent* Node = NewObject<USatoriClientPostEvent>();
 	Node->SatoriClient = Client;
@@ -464,7 +464,7 @@ void USatoriClientPostEvent::Activate()
 	// Check validity of client and session
 	if (!SatoriClient && !UserSession)
 	{
-		const FNakamaError Error = FNakamaUtils::HandleInvalidClientAndSession();
+		const FSatoriError Error = FSatoriUtils::HandleInvalidClientAndSession();
 		OnError.Broadcast(Error);
 		SetReadyToDestroy();
 		return;
@@ -472,7 +472,7 @@ void USatoriClientPostEvent::Activate()
 
 	if (!SatoriClient)
 	{
-		const FNakamaError Error = FNakamaUtils::HandleInvalidClient();
+		const FSatoriError Error = FSatoriUtils::HandleInvalidClient();
 		OnError.Broadcast(Error);
 		SetReadyToDestroy();
 		return;
@@ -480,7 +480,7 @@ void USatoriClientPostEvent::Activate()
 
 	if (!UserSession)
 	{
-		const FNakamaError Error = FNakamaUtils::HandleInvalidSession();
+		const FSatoriError Error = FSatoriUtils::HandleInvalidSession();
 		OnError.Broadcast(Error);
 		SetReadyToDestroy();
 		return;
@@ -498,7 +498,7 @@ void USatoriClientPostEvent::Activate()
 			SetReadyToDestroy();
 		};
 
-	auto errorCallback = [this](const FNakamaError& error)
+	auto errorCallback = [this](const FSatoriError& error)
 		{
 			if (!USatoriClient::IsClientActive(SatoriClient))
 			{
@@ -513,7 +513,7 @@ void USatoriClientPostEvent::Activate()
 	SatoriClient->PostEvent(UserSession, Events, successCallback, errorCallback);
 }
 
-USatoriClientGetExperiments* USatoriClientGetExperiments::GetExperiments(USatoriClient* Client, UNakamaSession* Session, const TArray<FString>& Names)
+USatoriClientGetExperiments* USatoriClientGetExperiments::GetExperiments(USatoriClient* Client, USatoriSession* Session, const TArray<FString>& Names)
 {
 	USatoriClientGetExperiments* Node = NewObject<USatoriClientGetExperiments>();
 	Node->SatoriClient = Client;
@@ -528,7 +528,7 @@ void USatoriClientGetExperiments::Activate()
 	// Check validity of client and session
 	if (!SatoriClient && !UserSession)
 	{
-		const FNakamaError Error = FNakamaUtils::HandleInvalidClientAndSession();
+		const FSatoriError Error = FSatoriUtils::HandleInvalidClientAndSession();
 		OnError.Broadcast({}, Error);
 		SetReadyToDestroy();
 		return;
@@ -536,7 +536,7 @@ void USatoriClientGetExperiments::Activate()
 
 	if (!SatoriClient)
 	{
-		const FNakamaError Error = FNakamaUtils::HandleInvalidClient();
+		const FSatoriError Error = FSatoriUtils::HandleInvalidClient();
 		OnError.Broadcast({}, Error);
 		SetReadyToDestroy();
 		return;
@@ -544,7 +544,7 @@ void USatoriClientGetExperiments::Activate()
 
 	if (!UserSession)
 	{
-		const FNakamaError Error = FNakamaUtils::HandleInvalidSession();
+		const FSatoriError Error = FSatoriUtils::HandleInvalidSession();
 		OnError.Broadcast({}, Error);
 		SetReadyToDestroy();
 		return;
@@ -562,7 +562,7 @@ void USatoriClientGetExperiments::Activate()
 			SetReadyToDestroy();
 		};
 
-	auto errorCallback = [this](const FNakamaError& error)
+	auto errorCallback = [this](const FSatoriError& error)
 		{
 			if (!USatoriClient::IsClientActive(SatoriClient))
 			{
@@ -577,7 +577,7 @@ void USatoriClientGetExperiments::Activate()
 	SatoriClient->GetExperiments(UserSession, Names, successCallback, errorCallback);
 }
 
-USatoriClientGetFlags* USatoriClientGetFlags::GetFlags(USatoriClient* Client, UNakamaSession* Session, const TArray<FString>& Names)
+USatoriClientGetFlags* USatoriClientGetFlags::GetFlags(USatoriClient* Client, USatoriSession* Session, const TArray<FString>& Names)
 {
 	USatoriClientGetFlags* Node = NewObject<USatoriClientGetFlags>();
 	Node->SatoriClient = Client;
@@ -592,7 +592,7 @@ void USatoriClientGetFlags::Activate()
 	// Check validity of client and session
 	if (!SatoriClient && !UserSession)
 	{
-		const FNakamaError Error = FNakamaUtils::HandleInvalidClientAndSession();
+		const FSatoriError Error = FSatoriUtils::HandleInvalidClientAndSession();
 		OnError.Broadcast({}, Error);
 		SetReadyToDestroy();
 		return;
@@ -600,7 +600,7 @@ void USatoriClientGetFlags::Activate()
 
 	if (!SatoriClient)
 	{
-		const FNakamaError Error = FNakamaUtils::HandleInvalidClient();
+		const FSatoriError Error = FSatoriUtils::HandleInvalidClient();
 		OnError.Broadcast({}, Error);
 		SetReadyToDestroy();
 		return;
@@ -608,7 +608,7 @@ void USatoriClientGetFlags::Activate()
 
 	if (!UserSession)
 	{
-		const FNakamaError Error = FNakamaUtils::HandleInvalidSession();
+		const FSatoriError Error = FSatoriUtils::HandleInvalidSession();
 		OnError.Broadcast({}, Error);
 		SetReadyToDestroy();
 		return;
@@ -626,7 +626,7 @@ void USatoriClientGetFlags::Activate()
 			SetReadyToDestroy();
 		};
 
-	auto errorCallback = [this](const FNakamaError& error)
+	auto errorCallback = [this](const FSatoriError& error)
 		{
 			if (!USatoriClient::IsClientActive(SatoriClient))
 			{
@@ -641,7 +641,7 @@ void USatoriClientGetFlags::Activate()
 	SatoriClient->GetFlags(UserSession, Names, successCallback, errorCallback);
 }
 
-USatoriClientGetFlagOverrides* USatoriClientGetFlagOverrides::GetFlagOverrides(USatoriClient* Client, UNakamaSession* Session, const TArray<FString>& Names)
+USatoriClientGetFlagOverrides* USatoriClientGetFlagOverrides::GetFlagOverrides(USatoriClient* Client, USatoriSession* Session, const TArray<FString>& Names)
 {
 	USatoriClientGetFlagOverrides* Node = NewObject<USatoriClientGetFlagOverrides>();
 	Node->SatoriClient = Client;
@@ -656,7 +656,7 @@ void USatoriClientGetFlagOverrides::Activate()
 	// Check validity of client and session
 	if (!SatoriClient && !UserSession)
 	{
-		const FNakamaError Error = FNakamaUtils::HandleInvalidClientAndSession();
+		const FSatoriError Error = FSatoriUtils::HandleInvalidClientAndSession();
 		OnError.Broadcast({}, Error);
 		SetReadyToDestroy();
 		return;
@@ -664,7 +664,7 @@ void USatoriClientGetFlagOverrides::Activate()
 
 	if (!SatoriClient)
 	{
-		const FNakamaError Error = FNakamaUtils::HandleInvalidClient();
+		const FSatoriError Error = FSatoriUtils::HandleInvalidClient();
 		OnError.Broadcast({}, Error);
 		SetReadyToDestroy();
 		return;
@@ -672,7 +672,7 @@ void USatoriClientGetFlagOverrides::Activate()
 
 	if (!UserSession)
 	{
-		const FNakamaError Error = FNakamaUtils::HandleInvalidSession();
+		const FSatoriError Error = FSatoriUtils::HandleInvalidSession();
 		OnError.Broadcast({}, Error);
 		SetReadyToDestroy();
 		return;
@@ -690,7 +690,7 @@ void USatoriClientGetFlagOverrides::Activate()
 			SetReadyToDestroy();
 		};
 
-	auto errorCallback = [this](const FNakamaError& error)
+	auto errorCallback = [this](const FSatoriError& error)
 		{
 			if (!USatoriClient::IsClientActive(SatoriClient))
 			{
@@ -705,7 +705,7 @@ void USatoriClientGetFlagOverrides::Activate()
 	SatoriClient->GetFlagOverrides(UserSession, Names, successCallback, errorCallback);
 }
 
-USatoriClientGetLiveEvents* USatoriClientGetLiveEvents::GetLiveEvents(USatoriClient* Client, UNakamaSession* Session, const TArray<FString>& LiveEventNames)
+USatoriClientGetLiveEvents* USatoriClientGetLiveEvents::GetLiveEvents(USatoriClient* Client, USatoriSession* Session, const TArray<FString>& LiveEventNames)
 {
 	USatoriClientGetLiveEvents* Node = NewObject<USatoriClientGetLiveEvents>();
 	Node->SatoriClient = Client;
@@ -720,7 +720,7 @@ void USatoriClientGetLiveEvents::Activate()
 	// Check validity of client and session
 	if (!SatoriClient && !UserSession)
 	{
-		const FNakamaError Error = FNakamaUtils::HandleInvalidClientAndSession();
+		const FSatoriError Error = FSatoriUtils::HandleInvalidClientAndSession();
 		OnError.Broadcast({}, Error);
 		SetReadyToDestroy();
 		return;
@@ -728,7 +728,7 @@ void USatoriClientGetLiveEvents::Activate()
 
 	if (!SatoriClient)
 	{
-		const FNakamaError Error = FNakamaUtils::HandleInvalidClient();
+		const FSatoriError Error = FSatoriUtils::HandleInvalidClient();
 		OnError.Broadcast({}, Error);
 		SetReadyToDestroy();
 		return;
@@ -736,7 +736,7 @@ void USatoriClientGetLiveEvents::Activate()
 
 	if (!UserSession)
 	{
-		const FNakamaError Error = FNakamaUtils::HandleInvalidSession();
+		const FSatoriError Error = FSatoriUtils::HandleInvalidSession();
 		OnError.Broadcast({}, Error);
 		SetReadyToDestroy();
 		return;
@@ -754,7 +754,7 @@ void USatoriClientGetLiveEvents::Activate()
 			SetReadyToDestroy();
 		};
 
-	auto errorCallback = [this](const FNakamaError& error)
+	auto errorCallback = [this](const FSatoriError& error)
 		{
 			if (!USatoriClient::IsClientActive(SatoriClient))
 			{
@@ -771,7 +771,7 @@ void USatoriClientGetLiveEvents::Activate()
 
 USatoriClientGetMessages* USatoriClientGetMessages::GetMessages(
 	USatoriClient* Client, 
-	UNakamaSession* Session, 
+	USatoriSession* Session, 
 	int32 Limit, 
 	bool Forward, 
 	const FString& Cursor)
@@ -791,7 +791,7 @@ void USatoriClientGetMessages::Activate()
 	// Check validity of client and session
 	if (!SatoriClient && !UserSession)
 	{
-		const FNakamaError Error = FNakamaUtils::HandleInvalidClientAndSession();
+		const FSatoriError Error = FSatoriUtils::HandleInvalidClientAndSession();
 		OnError.Broadcast({}, Error);
 		SetReadyToDestroy();
 		return;
@@ -799,7 +799,7 @@ void USatoriClientGetMessages::Activate()
 
 	if (!SatoriClient)
 	{
-		const FNakamaError Error = FNakamaUtils::HandleInvalidClient();
+		const FSatoriError Error = FSatoriUtils::HandleInvalidClient();
 		OnError.Broadcast({}, Error);
 		SetReadyToDestroy();
 		return;
@@ -807,7 +807,7 @@ void USatoriClientGetMessages::Activate()
 
 	if (!UserSession)
 	{
-		const FNakamaError Error = FNakamaUtils::HandleInvalidSession();
+		const FSatoriError Error = FSatoriUtils::HandleInvalidSession();
 		OnError.Broadcast({}, Error);
 		SetReadyToDestroy();
 		return;
@@ -825,7 +825,7 @@ void USatoriClientGetMessages::Activate()
 			SetReadyToDestroy();
 		};
 
-	auto errorCallback = [this](const FNakamaError& error)
+	auto errorCallback = [this](const FSatoriError& error)
 		{
 			if (!USatoriClient::IsClientActive(SatoriClient))
 			{
@@ -842,7 +842,7 @@ void USatoriClientGetMessages::Activate()
 
 USatoriClientUpdateMessage* USatoriClientUpdateMessage::UpdateMessage(
 	USatoriClient* Client,
-	UNakamaSession* Session, 
+	USatoriSession* Session, 
 	const FString& MessageId,
 	const FDateTime ReadTime, 
 	const FDateTime ConsumeTime)
@@ -862,7 +862,7 @@ void USatoriClientUpdateMessage::Activate()
 	// Check validity of client and session
 	if (!SatoriClient && !UserSession)
 	{
-		const FNakamaError Error = FNakamaUtils::HandleInvalidClientAndSession();
+		const FSatoriError Error = FSatoriUtils::HandleInvalidClientAndSession();
 		OnError.Broadcast(Error);
 		SetReadyToDestroy();
 		return;
@@ -870,7 +870,7 @@ void USatoriClientUpdateMessage::Activate()
 
 	if (!SatoriClient)
 	{
-		const FNakamaError Error = FNakamaUtils::HandleInvalidClient();
+		const FSatoriError Error = FSatoriUtils::HandleInvalidClient();
 		OnError.Broadcast(Error);
 		SetReadyToDestroy();
 		return;
@@ -878,7 +878,7 @@ void USatoriClientUpdateMessage::Activate()
 
 	if (!UserSession)
 	{
-		const FNakamaError Error = FNakamaUtils::HandleInvalidSession();
+		const FSatoriError Error = FSatoriUtils::HandleInvalidSession();
 		OnError.Broadcast(Error);
 		SetReadyToDestroy();
 		return;
@@ -896,7 +896,7 @@ void USatoriClientUpdateMessage::Activate()
 			SetReadyToDestroy();
 		};
 
-	auto errorCallback = [this](const FNakamaError& error)
+	auto errorCallback = [this](const FSatoriError& error)
 		{
 			if (!USatoriClient::IsClientActive(SatoriClient))
 			{
@@ -911,7 +911,7 @@ void USatoriClientUpdateMessage::Activate()
 	SatoriClient->UpdateMessage(UserSession, MessageId, ReadTime, ConsumeTime, successCallback, errorCallback);
 }
 
-USatoriClientDeleteMessage* USatoriClientDeleteMessage::DeleteMessage(USatoriClient* Client, UNakamaSession* Session, const FString& MessageId)
+USatoriClientDeleteMessage* USatoriClientDeleteMessage::DeleteMessage(USatoriClient* Client, USatoriSession* Session, const FString& MessageId)
 {
 	USatoriClientDeleteMessage* Node = NewObject<USatoriClientDeleteMessage>();
 	Node->SatoriClient = Client;
@@ -926,7 +926,7 @@ void USatoriClientDeleteMessage::Activate()
 	// Check validity of client and session
 	if (!SatoriClient && !UserSession)
 	{
-		const FNakamaError Error = FNakamaUtils::HandleInvalidClientAndSession();
+		const FSatoriError Error = FSatoriUtils::HandleInvalidClientAndSession();
 		OnError.Broadcast(Error);
 		SetReadyToDestroy();
 		return;
@@ -934,7 +934,7 @@ void USatoriClientDeleteMessage::Activate()
 
 	if (!SatoriClient)
 	{
-		const FNakamaError Error = FNakamaUtils::HandleInvalidClient();
+		const FSatoriError Error = FSatoriUtils::HandleInvalidClient();
 		OnError.Broadcast(Error);
 		SetReadyToDestroy();
 		return;
@@ -942,7 +942,7 @@ void USatoriClientDeleteMessage::Activate()
 
 	if (!UserSession)
 	{
-		const FNakamaError Error = FNakamaUtils::HandleInvalidSession();
+		const FSatoriError Error = FSatoriUtils::HandleInvalidSession();
 		OnError.Broadcast(Error);
 		SetReadyToDestroy();
 		return;
@@ -960,7 +960,7 @@ void USatoriClientDeleteMessage::Activate()
 			SetReadyToDestroy();
 		};
 
-	auto errorCallback = [this](const FNakamaError& error)
+	auto errorCallback = [this](const FSatoriError& error)
 		{
 			if (!USatoriClient::IsClientActive(SatoriClient))
 			{

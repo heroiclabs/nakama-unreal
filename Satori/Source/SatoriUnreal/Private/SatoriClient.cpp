@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "SatoriClient.h"
-#include "NakamaUtils.h"
+#include "SatoriUtils.h"
 #include "GenericPlatform/GenericPlatformHttp.h"
 #include "Interfaces/IHttpResponse.h"
 
@@ -93,8 +93,8 @@ USatoriClient* USatoriClient::CreateDefaultClient(
 
 	if (EnableDebug)
 	{
-		UNakamaLogger::EnableLogging(true);
-		UNakamaLogger::SetLogLevel(ENakamaLogLevel::Debug);
+		USatoriLogger::EnableLogging(true);
+		USatoriLogger::SetLogLevel(ESatoriLogLevel::Debug);
 	}
 
 	return NewClient;
@@ -108,7 +108,7 @@ void USatoriClient::AuthenticateCustom(
 	FOnSatoriAuthUpdate Success,
 	FOnSatoriError Error)
 {
-	auto successCallback = [this, Success](UNakamaSession* session)
+	auto successCallback = [this, Success](USatoriSession* session)
 		{
 			if (!IsClientActive(this))
 				return;
@@ -116,7 +116,7 @@ void USatoriClient::AuthenticateCustom(
 			Success.Broadcast(session);
 		};
 
-	auto errorCallback = [this, Error](const FNakamaError& error)
+	auto errorCallback = [this, Error](const FSatoriError& error)
 		{
 			if (!IsClientActive(this))
 				return;
@@ -135,36 +135,36 @@ void USatoriClient::AuthenticateCustom(
 	const FString& Username,
 	bool bCreate,
 	const TMap<FString, FString>& Vars,
-	TFunction<void(UNakamaSession* UserSession)> SuccessCallback,
-	TFunction<void(const FNakamaError& Error)> ErrorCallback)
+	TFunction<void(USatoriSession* UserSession)> SuccessCallback,
+	TFunction<void(const FSatoriError& Error)> ErrorCallback)
 {
 	// Setup the endpoint
 	const FString Endpoint = TEXT("/v1/authenticate");
 
 	// Setup the query parameters
 	TMultiMap<FString, FString> QueryParams;
-	QueryParams.Add(TEXT("create"), FNakamaUtils::BoolToString(bCreate));
+	QueryParams.Add(TEXT("create"), FSatoriUtils::BoolToString(bCreate));
 	QueryParams.Add(TEXT("username"), FGenericPlatformHttp::UrlEncode(Username));
 
 	// Setup the request content
 	const TSharedPtr<FJsonObject> ContentJson = MakeShared<FJsonObject>();
 	ContentJson->SetStringField(TEXT("id"), CustomId);
-	FNakamaUtils::AddVarsToJson(ContentJson, Vars);
+	FSatoriUtils::AddVarsToJson(ContentJson, Vars);
 
 	// Serialize the request content
 	FString Content;
-	if (!FNakamaUtils::SerializeJsonObject(ContentJson, Content))
+	if (!FSatoriUtils::SerializeJsonObject(ContentJson, Content))
 	{
 		// Handle JSON serialization failure
-		FNakamaUtils::HandleJsonSerializationFailure(ErrorCallback);
+		FSatoriUtils::HandleJsonSerializationFailure(ErrorCallback);
 		return;
 	}
 
 	// Make the request
-	const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::POST, QueryParams, "");
+	const auto HttpRequest = MakeRequest(Endpoint, Content, ESatoriRequestMethod::POST, QueryParams, "");
 
 	// Set the basic authorization header
-	FNakamaUtils::SetBasicAuthorizationHeader(HttpRequest, ServerKey);
+	FSatoriUtils::SetBasicAuthorizationHeader(HttpRequest, ServerKey);
 
 	// Lock the ActiveRequests mutex to protect concurrent access
 	FScopeLock Lock(&ActiveRequestsMutex);
@@ -190,12 +190,12 @@ void USatoriClient::AuthenticateCustom(
 				const FString ResponseBody = Response->GetContentAsString();
 
 				// Check if Request was successful
-				if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
+				if (FSatoriUtils::IsResponseSuccessful(Response->GetResponseCode()))
 				{
 					// Check for Success Callback
 					if (SuccessCallback)
 					{
-						UNakamaSession* ResultSession = NewObject<UNakamaSession>();
+						USatoriSession* ResultSession = NewObject<USatoriSession>();
 						ResultSession->SetupSession(ResponseBody);
 						SuccessCallback(ResultSession);
 					}
@@ -205,7 +205,7 @@ void USatoriClient::AuthenticateCustom(
 					// Check for Error Callback
 					if (ErrorCallback)
 					{
-						const FNakamaError Error(ResponseBody);
+						const FSatoriError Error(ResponseBody);
 						ErrorCallback(Error);
 					}
 				}
@@ -215,7 +215,7 @@ void USatoriClient::AuthenticateCustom(
 				// Handle Invalid Response
 				if (ErrorCallback)
 				{
-					const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
+					const FSatoriError RequestError = FSatoriUtils::CreateRequestFailureError();
 					ErrorCallback(RequestError);
 				}
 			}
@@ -230,11 +230,11 @@ void USatoriClient::AuthenticateCustom(
 }
 
 void USatoriClient::AuthenticateRefresh(
-	UNakamaSession* Session, 
+	USatoriSession* Session, 
 	FOnSatoriAuthUpdate Success, 
 	FOnSatoriError Error)
 {
-	auto successCallback = [this, Success](UNakamaSession* UserSession)
+	auto successCallback = [this, Success](USatoriSession* UserSession)
 		{
 			if (!IsClientActive(this))
 			{
@@ -244,7 +244,7 @@ void USatoriClient::AuthenticateRefresh(
 			Success.Broadcast(UserSession);
 		};
 
-	auto errorCallback = [this, Error](const FNakamaError& error)
+	auto errorCallback = [this, Error](const FSatoriError& error)
 		{
 			if (!IsClientActive(this))
 			{
@@ -258,15 +258,15 @@ void USatoriClient::AuthenticateRefresh(
 }
 
 void USatoriClient::AuthenticateRefresh(
-	UNakamaSession* Session, 
-	TFunction<void(UNakamaSession* UserSession)> SuccessCallback,
-	TFunction<void(const FNakamaError& Error)> ErrorCallback)
+	USatoriSession* Session, 
+	TFunction<void(USatoriSession* UserSession)> SuccessCallback,
+	TFunction<void(const FSatoriError& Error)> ErrorCallback)
 {
 	// Setup the endpoint
 	const FString Endpoint = TEXT("/v1/authenticate/refresh");
 
 	// Verify the session
-	if (!FNakamaUtils::IsSessionValid(Session, ErrorCallback))
+	if (!FSatoriUtils::IsSessionValid(Session, ErrorCallback))
 	{
 		return;
 	}
@@ -277,18 +277,18 @@ void USatoriClient::AuthenticateRefresh(
 
 	// Serialize the request content
 	FString Content;
-	if (!FNakamaUtils::SerializeJsonObject(ContentJson, Content))
+	if (!FSatoriUtils::SerializeJsonObject(ContentJson, Content))
 	{
 		// Handle JSON serialization failure
-		FNakamaUtils::HandleJsonSerializationFailure(ErrorCallback);
+		FSatoriUtils::HandleJsonSerializationFailure(ErrorCallback);
 		return;
 	}
 
 	// Make the request
-	const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::POST, TMultiMap<FString, FString>(), "");
+	const auto HttpRequest = MakeRequest(Endpoint, Content, ESatoriRequestMethod::POST, TMultiMap<FString, FString>(), "");
 
 	// Set the basic authorization header
-	FNakamaUtils::SetBasicAuthorizationHeader(HttpRequest, ServerKey);
+	FSatoriUtils::SetBasicAuthorizationHeader(HttpRequest, ServerKey);
 
 	// Lock the ActiveRequests mutex to protect concurrent access
 	FScopeLock Lock(&ActiveRequestsMutex);
@@ -314,12 +314,12 @@ void USatoriClient::AuthenticateRefresh(
 				const FString ResponseBody = Response->GetContentAsString();
 
 				// Check if Request was successful
-				if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
+				if (FSatoriUtils::IsResponseSuccessful(Response->GetResponseCode()))
 				{
 					// Check for Success Callback
 					if (SuccessCallback)
 					{
-						UNakamaSession* ResultSession = NewObject<UNakamaSession>();
+						USatoriSession* ResultSession = NewObject<USatoriSession>();
 						ResultSession->SetupSession(ResponseBody);
 						SuccessCallback(ResultSession);
 					}
@@ -329,7 +329,7 @@ void USatoriClient::AuthenticateRefresh(
 					// Check for Error Callback
 					if (ErrorCallback)
 					{
-						const FNakamaError Error(ResponseBody);
+						const FSatoriError Error(ResponseBody);
 						ErrorCallback(Error);
 					}
 				}
@@ -339,7 +339,7 @@ void USatoriClient::AuthenticateRefresh(
 				// Handle Invalid Response
 				if (ErrorCallback)
 				{
-					const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
+					const FSatoriError RequestError = FSatoriUtils::CreateRequestFailureError();
 					ErrorCallback(RequestError);
 				}
 			}
@@ -354,7 +354,7 @@ void USatoriClient::AuthenticateRefresh(
 }
 
 void USatoriClient::AuthenticateLogout(
-	UNakamaSession* Session,
+	USatoriSession* Session,
 	FOnAuthLogoutSent Success, 
 	FOnSatoriError Error)
 {
@@ -368,7 +368,7 @@ void USatoriClient::AuthenticateLogout(
 			Success.Broadcast();
 		};
 
-	auto errorCallback = [this, Error](const FNakamaError& error)
+	auto errorCallback = [this, Error](const FSatoriError& error)
 		{
 			if (!IsClientActive(this))
 			{
@@ -382,15 +382,15 @@ void USatoriClient::AuthenticateLogout(
 }
 
 void USatoriClient::AuthenticateLogout(
-	UNakamaSession* Session,
+	USatoriSession* Session,
 	TFunction<void()> SuccessCallback,
-	TFunction<void(const FNakamaError& Error)> ErrorCallback)
+	TFunction<void(const FSatoriError& Error)> ErrorCallback)
 {
 	// Setup the endpoint
 	const FString Endpoint = TEXT("/v1/authenticate/logout");
 
 	// Verify the session
-	if (!FNakamaUtils::IsSessionValid(Session, ErrorCallback))
+	if (!FSatoriUtils::IsSessionValid(Session, ErrorCallback))
 	{
 		return;
 	}
@@ -402,15 +402,15 @@ void USatoriClient::AuthenticateLogout(
 
 	// Serialize the request content
 	FString Content;
-	if (!FNakamaUtils::SerializeJsonObject(ContentJson, Content))
+	if (!FSatoriUtils::SerializeJsonObject(ContentJson, Content))
 	{
 		// Handle JSON serialization failure
-		FNakamaUtils::HandleJsonSerializationFailure(ErrorCallback);
+		FSatoriUtils::HandleJsonSerializationFailure(ErrorCallback);
 		return;
 	}
 
 	// Make the request
-	const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::POST, TMultiMap<FString, FString>(), Session->GetAuthToken());
+	const auto HttpRequest = MakeRequest(Endpoint, Content, ESatoriRequestMethod::POST, TMultiMap<FString, FString>(), Session->GetAuthToken());
 
 	// Lock the ActiveRequests mutex to protect concurrent access
 	FScopeLock Lock(&ActiveRequestsMutex);
@@ -436,7 +436,7 @@ void USatoriClient::AuthenticateLogout(
 				const FString ResponseBody = Response->GetContentAsString();
 
 				// Check if Request was successful
-				if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
+				if (FSatoriUtils::IsResponseSuccessful(Response->GetResponseCode()))
 				{
 					// Check for Success Callback
 					if (SuccessCallback)
@@ -449,7 +449,7 @@ void USatoriClient::AuthenticateLogout(
 					// Check for Error Callback
 					if (ErrorCallback)
 					{
-						const FNakamaError Error(ResponseBody);
+						const FSatoriError Error(ResponseBody);
 						ErrorCallback(Error);
 					}
 				}
@@ -459,7 +459,7 @@ void USatoriClient::AuthenticateLogout(
 				// Handle Invalid Response
 				if (ErrorCallback)
 				{
-					const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
+					const FSatoriError RequestError = FSatoriUtils::CreateRequestFailureError();
 					ErrorCallback(RequestError);
 				}
 			}
@@ -474,14 +474,14 @@ void USatoriClient::AuthenticateLogout(
 }
 
 void USatoriClient::Identify(
-	UNakamaSession* Session, 
+	USatoriSession* Session, 
 	const FString& ID, 
 	const TMap<FString, FString>& defaultProperties,
 	const TMap<FString, FString>& customProperties, 
 	FOnSatoriAuthUpdate Success, 
 	FOnSatoriError Error)
 {
-	auto successCallback = [this, Success](UNakamaSession* UserSession)
+	auto successCallback = [this, Success](USatoriSession* UserSession)
 		{
 			if (!IsClientActive(this))
 			{
@@ -491,7 +491,7 @@ void USatoriClient::Identify(
 			Success.Broadcast(UserSession);
 		};
 
-	auto errorCallback = [this, Error](const FNakamaError& error)
+	auto errorCallback = [this, Error](const FSatoriError& error)
 		{
 			if (!IsClientActive(this))
 			{
@@ -505,12 +505,12 @@ void USatoriClient::Identify(
 }
 
 void USatoriClient::Identify(
-	UNakamaSession* Session, 
+	USatoriSession* Session, 
 	const FString& ID, 
 	const TMap<FString, FString>& DefaultProperties, 
 	const TMap<FString, FString>& CustomProperties, 
-	TFunction<void(UNakamaSession* UserSession)> SuccessCallback, 
-	TFunction<void(const FNakamaError& Error)> ErrorCallback)
+	TFunction<void(USatoriSession* UserSession)> SuccessCallback, 
+	TFunction<void(const FSatoriError& Error)> ErrorCallback)
 {
 	// Setup the endpoint
 	const FString Endpoint = TEXT("/v1/identify");
@@ -536,15 +536,15 @@ void USatoriClient::Identify(
 
 	// Serialize the request content
 	FString Content;
-	if (!FNakamaUtils::SerializeJsonObject(ContentJson, Content))
+	if (!FSatoriUtils::SerializeJsonObject(ContentJson, Content))
 	{
 		// Handle JSON serialization failure
-		FNakamaUtils::HandleJsonSerializationFailure(ErrorCallback);
+		FSatoriUtils::HandleJsonSerializationFailure(ErrorCallback);
 		return;
 	}
 
 	// Make the request
-	const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::PUT, TMultiMap<FString, FString>(), Session->GetAuthToken());
+	const auto HttpRequest = MakeRequest(Endpoint, Content, ESatoriRequestMethod::PUT, TMultiMap<FString, FString>(), Session->GetAuthToken());
 
 	// Lock the ActiveRequests mutex to protect concurrent access
 	FScopeLock Lock(&ActiveRequestsMutex);
@@ -570,12 +570,12 @@ void USatoriClient::Identify(
 				const FString ResponseBody = Response->GetContentAsString();
 
 				// Check if Request was successful
-				if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
+				if (FSatoriUtils::IsResponseSuccessful(Response->GetResponseCode()))
 				{
 					// Check for Success Callback
 					if (SuccessCallback)
 					{
-						UNakamaSession* ResultSession = NewObject<UNakamaSession>();
+						USatoriSession* ResultSession = NewObject<USatoriSession>();
 						ResultSession->SetupSession(ResponseBody);
 						SuccessCallback(ResultSession);
 					}
@@ -585,7 +585,7 @@ void USatoriClient::Identify(
 					// Check for Error Callback
 					if (ErrorCallback)
 					{
-						const FNakamaError Error(ResponseBody);
+						const FSatoriError Error(ResponseBody);
 						ErrorCallback(Error);
 					}
 				}
@@ -595,7 +595,7 @@ void USatoriClient::Identify(
 				// Handle Invalid Response
 				if (ErrorCallback)
 				{
-					const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
+					const FSatoriError RequestError = FSatoriUtils::CreateRequestFailureError();
 					ErrorCallback(RequestError);
 				}
 			}
@@ -610,7 +610,7 @@ void USatoriClient::Identify(
 }
 
 void USatoriClient::ListIdentityProperties(
-	UNakamaSession* Session,
+	USatoriSession* Session,
 	FOnGetProperties Success,
 	FOnSatoriError Error)
 {
@@ -624,7 +624,7 @@ void USatoriClient::ListIdentityProperties(
 			Success.Broadcast(Properties);
 		};
 
-	auto errorCallback = [this, Error](const FNakamaError& error)
+	auto errorCallback = [this, Error](const FSatoriError& error)
 		{
 			if (!IsClientActive(this))
 			{
@@ -638,21 +638,21 @@ void USatoriClient::ListIdentityProperties(
 }
 
 void USatoriClient::ListIdentityProperties(
-	UNakamaSession* Session,
+	USatoriSession* Session,
 	TFunction<void(const FSatoriProperties& Properties)> SuccessCallback,
-	TFunction<void(const FNakamaError& Error)> ErrorCallback)
+	TFunction<void(const FSatoriError& Error)> ErrorCallback)
 {
 	// Setup the endpoint
 	const FString Endpoint = TEXT("/v1/properties");
 
 	// Verify the session
-	if (!FNakamaUtils::IsSessionValid(Session, ErrorCallback))
+	if (!FSatoriUtils::IsSessionValid(Session, ErrorCallback))
 	{
 		return;
 	}
 
 	// Make the request
-	const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::GET, TMultiMap<FString, FString>(), Session->GetAuthToken());
+	const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ESatoriRequestMethod::GET, TMultiMap<FString, FString>(), Session->GetAuthToken());
 
 	// Lock the ActiveRequests mutex to protect concurrent access
 	FScopeLock Lock(&ActiveRequestsMutex);
@@ -678,7 +678,7 @@ void USatoriClient::ListIdentityProperties(
 				const FString ResponseBody = Response->GetContentAsString();
 
 				// Check if Request was successful
-				if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
+				if (FSatoriUtils::IsResponseSuccessful(Response->GetResponseCode()))
 				{
 					// Check for Success Callback
 					if (SuccessCallback)
@@ -692,7 +692,7 @@ void USatoriClient::ListIdentityProperties(
 					// Check for Error Callback
 					if (ErrorCallback)
 					{
-						const FNakamaError Error(ResponseBody);
+						const FSatoriError Error(ResponseBody);
 						ErrorCallback(Error);
 					}
 				}
@@ -702,7 +702,7 @@ void USatoriClient::ListIdentityProperties(
 				// Handle Invalid Response
 				if (ErrorCallback)
 				{
-					const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
+					const FSatoriError RequestError = FSatoriUtils::CreateRequestFailureError();
 					ErrorCallback(RequestError);
 				}
 			}
@@ -717,7 +717,7 @@ void USatoriClient::ListIdentityProperties(
 }
 
 void USatoriClient::UpdateProperties(
-	UNakamaSession* Session,
+	USatoriSession* Session,
 	const TMap<FString, FString>& DefaultProperties,
 	const TMap<FString, FString>& CustomProperties,
 	const bool bRecompute,
@@ -734,7 +734,7 @@ void USatoriClient::UpdateProperties(
 			Success.Broadcast();
 		};
 
-	auto errorCallback = [this, Error](const FNakamaError& error)
+	auto errorCallback = [this, Error](const FSatoriError& error)
 		{
 			if (!IsClientActive(this))
 			{
@@ -748,12 +748,12 @@ void USatoriClient::UpdateProperties(
 }
 
 void USatoriClient::UpdateProperties(
-	UNakamaSession* Session,
+	USatoriSession* Session,
 	const TMap<FString, FString>& DefaultProperties,
 	const TMap<FString, FString>& CustomProperties,
 	const bool bRecompute,
 	TFunction<void()> SuccessCallback,
-	TFunction<void(const FNakamaError& Error)> ErrorCallback)
+	TFunction<void(const FSatoriError& Error)> ErrorCallback)
 {
 	// Setup the endpoint
 	const FString Endpoint = TEXT("/v1/properties");
@@ -779,15 +779,15 @@ void USatoriClient::UpdateProperties(
 
 	// Serialize the request content
 	FString Content;
-	if (!FNakamaUtils::SerializeJsonObject(ContentJson, Content))
+	if (!FSatoriUtils::SerializeJsonObject(ContentJson, Content))
 	{
 		// Handle JSON serialization failure
-		FNakamaUtils::HandleJsonSerializationFailure(ErrorCallback);
+		FSatoriUtils::HandleJsonSerializationFailure(ErrorCallback);
 		return;
 	}
 
 	// Make the request
-	const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::PUT, TMultiMap<FString, FString>(), Session->GetAuthToken());
+	const auto HttpRequest = MakeRequest(Endpoint, Content, ESatoriRequestMethod::PUT, TMultiMap<FString, FString>(), Session->GetAuthToken());
 
 	// Lock the ActiveRequests mutex to protect concurrent access
 	FScopeLock Lock(&ActiveRequestsMutex);
@@ -813,7 +813,7 @@ void USatoriClient::UpdateProperties(
 				const FString ResponseBody = Response->GetContentAsString();
 
 				// Check if Request was successful
-				if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
+				if (FSatoriUtils::IsResponseSuccessful(Response->GetResponseCode()))
 				{
 					// Check for Success Callback
 					if (SuccessCallback)
@@ -826,7 +826,7 @@ void USatoriClient::UpdateProperties(
 					// Check for Error Callback
 					if (ErrorCallback)
 					{
-						const FNakamaError Error(ResponseBody);
+						const FSatoriError Error(ResponseBody);
 						ErrorCallback(Error);
 					}
 				}
@@ -836,7 +836,7 @@ void USatoriClient::UpdateProperties(
 				// Handle Invalid Response
 				if (ErrorCallback)
 				{
-					const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
+					const FSatoriError RequestError = FSatoriUtils::CreateRequestFailureError();
 					ErrorCallback(RequestError);
 				}
 			}
@@ -851,7 +851,7 @@ void USatoriClient::UpdateProperties(
 }
 
 void USatoriClient::DeleteIdentity(
-	UNakamaSession* Session,
+	USatoriSession* Session,
 	FOnDeleteIdentitySent Success,
 	FOnSatoriError Error)
 {
@@ -865,7 +865,7 @@ void USatoriClient::DeleteIdentity(
 			Success.Broadcast();
 		};
 
-	auto errorCallback = [this, Error](const FNakamaError& error)
+	auto errorCallback = [this, Error](const FSatoriError& error)
 		{
 			if (!IsClientActive(this))
 			{
@@ -879,21 +879,21 @@ void USatoriClient::DeleteIdentity(
 }
 
 void USatoriClient::DeleteIdentity(
-	UNakamaSession* Session,
+	USatoriSession* Session,
 	TFunction<void()> SuccessCallback,
-	TFunction<void(const FNakamaError& Error)> ErrorCallback)
+	TFunction<void(const FSatoriError& Error)> ErrorCallback)
 {
 	// Setup the endpoint
 	const FString Endpoint = TEXT("/v1/identity");
 
 	// Verify the session
-	if (!FNakamaUtils::IsSessionValid(Session, ErrorCallback))
+	if (!FSatoriUtils::IsSessionValid(Session, ErrorCallback))
 	{
 		return;
 	}
 
 	// Make the request
-	const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::DEL, TMultiMap<FString, FString>(), Session->GetAuthToken());
+	const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ESatoriRequestMethod::DEL, TMultiMap<FString, FString>(), Session->GetAuthToken());
 
 	// Lock the ActiveRequests mutex to protect concurrent access
 	FScopeLock Lock(&ActiveRequestsMutex);
@@ -919,7 +919,7 @@ void USatoriClient::DeleteIdentity(
 				const FString ResponseBody = Response->GetContentAsString();
 
 				// Check if Request was successful
-				if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
+				if (FSatoriUtils::IsResponseSuccessful(Response->GetResponseCode()))
 				{
 					// Check for Success Callback
 					if (SuccessCallback)
@@ -932,7 +932,7 @@ void USatoriClient::DeleteIdentity(
 					// Check for Error Callback
 					if (ErrorCallback)
 					{
-						const FNakamaError Error(ResponseBody);
+						const FSatoriError Error(ResponseBody);
 						ErrorCallback(Error);
 					}
 				}
@@ -942,7 +942,7 @@ void USatoriClient::DeleteIdentity(
 				// Handle Invalid Response
 				if (ErrorCallback)
 				{
-					const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
+					const FSatoriError RequestError = FSatoriUtils::CreateRequestFailureError();
 					ErrorCallback(RequestError);
 				}
 			}
@@ -957,7 +957,7 @@ void USatoriClient::DeleteIdentity(
 }
 
 void USatoriClient::PostEvent(
-	UNakamaSession* Session,
+	USatoriSession* Session,
 	const TArray<FSatoriEvent>& events, 
 	FOnPostEventSent Success, 
 	FOnSatoriError Error)
@@ -972,7 +972,7 @@ void USatoriClient::PostEvent(
 			Success.Broadcast();
 		};
 
-	auto errorCallback = [this, Error](const FNakamaError& error)
+	auto errorCallback = [this, Error](const FSatoriError& error)
 		{
 			if (!IsClientActive(this))
 			{
@@ -986,16 +986,16 @@ void USatoriClient::PostEvent(
 }
 
 void USatoriClient::PostEvent(
-	UNakamaSession* Session,
+	USatoriSession* Session,
 	const TArray<FSatoriEvent>& Events,
 	TFunction<void()> SuccessCallback,
-	TFunction<void(const FNakamaError& Error)> ErrorCallback)
+	TFunction<void(const FSatoriError& Error)> ErrorCallback)
 {
 	// Setup the endpoint
 	const FString Endpoint = TEXT("/v1/event");
 
 	// Verify the session
-	if (!FNakamaUtils::IsSessionValid(Session, ErrorCallback))
+	if (!FSatoriUtils::IsSessionValid(Session, ErrorCallback))
 	{
 		return;
 	}
@@ -1013,7 +1013,7 @@ void USatoriClient::PostEvent(
 		{
 			EventJson->SetStringField(TEXT("id"), Event.ID);
 		}
-		FNakamaUtils::AddVarsToJson(EventJson, Event.Metadata, TEXT("metadata"));
+		FSatoriUtils::AddVarsToJson(EventJson, Event.Metadata, TEXT("metadata"));
 		if (!Event.Value.IsEmpty())
 		{
 			EventJson->SetStringField(TEXT("value"), Event.Value);
@@ -1026,15 +1026,15 @@ void USatoriClient::PostEvent(
 
 	// Serialize the request content
 	FString Content;
-	if (!FNakamaUtils::SerializeJsonObject(ContentJson, Content))
+	if (!FSatoriUtils::SerializeJsonObject(ContentJson, Content))
 	{
 		// Handle JSON serialization failure
-		FNakamaUtils::HandleJsonSerializationFailure(ErrorCallback);
+		FSatoriUtils::HandleJsonSerializationFailure(ErrorCallback);
 		return;
 	}
 
 	// Make the request
-	const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::POST, TMultiMap<FString, FString>(), Session->GetAuthToken());
+	const auto HttpRequest = MakeRequest(Endpoint, Content, ESatoriRequestMethod::POST, TMultiMap<FString, FString>(), Session->GetAuthToken());
 
 	// Lock the ActiveRequests mutex to protect concurrent access
 	FScopeLock Lock(&ActiveRequestsMutex);
@@ -1060,7 +1060,7 @@ void USatoriClient::PostEvent(
 				const FString ResponseBody = Response->GetContentAsString();
 
 				// Check if Request was successful
-				if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
+				if (FSatoriUtils::IsResponseSuccessful(Response->GetResponseCode()))
 				{
 					// Check for Success Callback
 					if (SuccessCallback)
@@ -1073,7 +1073,7 @@ void USatoriClient::PostEvent(
 					// Check for Error Callback
 					if (ErrorCallback)
 					{
-						const FNakamaError Error(ResponseBody);
+						const FSatoriError Error(ResponseBody);
 						ErrorCallback(Error);
 					}
 				}
@@ -1083,7 +1083,7 @@ void USatoriClient::PostEvent(
 				// Handle Invalid Response
 				if (ErrorCallback)
 				{
-					const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
+					const FSatoriError RequestError = FSatoriUtils::CreateRequestFailureError();
 					ErrorCallback(RequestError);
 				}
 			}
@@ -1098,7 +1098,7 @@ void USatoriClient::PostEvent(
 }
 
 void USatoriClient::GetExperiments(
-	UNakamaSession* Session,
+	USatoriSession* Session,
 	const TArray<FString>& Names, 
 	FOnGetExperiments Success, 
 	FOnSatoriError Error)
@@ -1113,7 +1113,7 @@ void USatoriClient::GetExperiments(
 		Success.Broadcast(Experiments);
 	};
 
-	auto errorCallback = [this, Error](const FNakamaError& error)
+	auto errorCallback = [this, Error](const FSatoriError& error)
 	{
 		if (!IsClientActive(this))
 		{
@@ -1127,16 +1127,16 @@ void USatoriClient::GetExperiments(
 }
 
 void USatoriClient::GetExperiments(
-	UNakamaSession* Session, 
+	USatoriSession* Session, 
 	const TArray<FString>& Names, 
 	TFunction<void(const FSatoriExperimentList& Experiments)> SuccessCallback, 
-	TFunction<void(const FNakamaError& Error)> ErrorCallback)
+	TFunction<void(const FSatoriError& Error)> ErrorCallback)
 {
 	// Setup the endpoint
 	const FString Endpoint = TEXT("/v1/experiment");
 
 	// Verify the session
-	if (!FNakamaUtils::IsSessionValid(Session, ErrorCallback))
+	if (!FSatoriUtils::IsSessionValid(Session, ErrorCallback))
 	{
 		return;
 	}
@@ -1149,7 +1149,7 @@ void USatoriClient::GetExperiments(
 	}
 
 	// Make the request
-	const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::GET, QueryParams, Session->GetAuthToken());
+	const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ESatoriRequestMethod::GET, QueryParams, Session->GetAuthToken());
 
 	// Lock the ActiveRequests mutex to protect concurrent access
 	FScopeLock Lock(&ActiveRequestsMutex);
@@ -1175,7 +1175,7 @@ void USatoriClient::GetExperiments(
 				const FString ResponseBody = Response->GetContentAsString();
 
 				// Check if Request was successful
-				if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
+				if (FSatoriUtils::IsResponseSuccessful(Response->GetResponseCode()))
 				{
 					// Check for Success Callback
 					if (SuccessCallback)
@@ -1189,7 +1189,7 @@ void USatoriClient::GetExperiments(
 					// Check for Error Callback
 					if (ErrorCallback)
 					{
-						const FNakamaError Error(ResponseBody);
+						const FSatoriError Error(ResponseBody);
 						ErrorCallback(Error);
 					}
 				}
@@ -1199,7 +1199,7 @@ void USatoriClient::GetExperiments(
 				// Handle Invalid Response
 				if (ErrorCallback)
 				{
-					const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
+					const FSatoriError RequestError = FSatoriUtils::CreateRequestFailureError();
 					ErrorCallback(RequestError);
 				}
 			}
@@ -1214,7 +1214,7 @@ void USatoriClient::GetExperiments(
 }
 
 void USatoriClient::GetFlags(
-	UNakamaSession* Session,
+	USatoriSession* Session,
 	const TArray<FString>& Names,
 	FOnGetFlags Success,
 	FOnSatoriError Error)
@@ -1229,7 +1229,7 @@ void USatoriClient::GetFlags(
 		Success.Broadcast(Flags);
 	};
 
-	auto errorCallback = [this, Error](const FNakamaError& error)
+	auto errorCallback = [this, Error](const FSatoriError& error)
 	{
 		if (!IsClientActive(this))
 		{
@@ -1243,16 +1243,16 @@ void USatoriClient::GetFlags(
 }
 
 void USatoriClient::GetFlags(
-	UNakamaSession* Session, 
+	USatoriSession* Session, 
 	const TArray<FString>& Names, 
 	TFunction<void(const FSatoriFlagList& Flags)> SuccessCallback, 
-	TFunction<void(const FNakamaError& Error)> ErrorCallback)
+	TFunction<void(const FSatoriError& Error)> ErrorCallback)
 {
 	// Setup the endpoint
 	const FString Endpoint = TEXT("/v1/flag");
 
 	// Verify the session
-	if (!FNakamaUtils::IsSessionValid(Session, ErrorCallback))
+	if (!FSatoriUtils::IsSessionValid(Session, ErrorCallback))
 	{
 		return;
 	}
@@ -1265,7 +1265,7 @@ void USatoriClient::GetFlags(
 	}
 
 	// Make the request
-	const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::GET, QueryParams, Session->GetAuthToken());
+	const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ESatoriRequestMethod::GET, QueryParams, Session->GetAuthToken());
 
 	// Lock the ActiveRequests mutex to protect concurrent access
 	FScopeLock Lock(&ActiveRequestsMutex);
@@ -1290,7 +1290,7 @@ void USatoriClient::GetFlags(
 				const FString ResponseBody = Response->GetContentAsString();
 
 				// Check if Request was successful
-				if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
+				if (FSatoriUtils::IsResponseSuccessful(Response->GetResponseCode()))
 				{
 					// Check for Success Callback
 					if (SuccessCallback)
@@ -1304,7 +1304,7 @@ void USatoriClient::GetFlags(
 					// Check for Error Callback
 					if (ErrorCallback)
 					{
-						const FNakamaError Error(ResponseBody);
+						const FSatoriError Error(ResponseBody);
 						ErrorCallback(Error);
 					}
 				}
@@ -1314,7 +1314,7 @@ void USatoriClient::GetFlags(
 				// Handle Invalid Response
 				if (ErrorCallback)
 				{
-					const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
+					const FSatoriError RequestError = FSatoriUtils::CreateRequestFailureError();
 					ErrorCallback(RequestError);
 				}
 			}
@@ -1329,7 +1329,7 @@ void USatoriClient::GetFlags(
 }
 
 void USatoriClient::GetFlagOverrides(
-	UNakamaSession* Session, 
+	USatoriSession* Session, 
 	const TArray<FString>& Names, 
 	FOnGetFlagOverrides Success,
 	FOnSatoriError Error)
@@ -1344,7 +1344,7 @@ void USatoriClient::GetFlagOverrides(
 			Success.Broadcast(Flags);
 		};
 
-	auto errorCallback = [this, Error](const FNakamaError& error)
+	auto errorCallback = [this, Error](const FSatoriError& error)
 		{
 			if (!IsClientActive(this))
 			{
@@ -1358,16 +1358,16 @@ void USatoriClient::GetFlagOverrides(
 }
 
 void USatoriClient::GetFlagOverrides(
-	UNakamaSession* Session, 
+	USatoriSession* Session, 
 	const TArray<FString>& Names, 
 	TFunction<void(const FSatoriFlagOverrideList& Flags)> SuccessCallback, 
-	TFunction<void(const FNakamaError& Error)> ErrorCallback)
+	TFunction<void(const FSatoriError& Error)> ErrorCallback)
 {
 	// Setup the endpoint
 	const FString Endpoint = TEXT("/v1/flag/override");
 
 	// Verify the session
-	if (!FNakamaUtils::IsSessionValid(Session, ErrorCallback))
+	if (!FSatoriUtils::IsSessionValid(Session, ErrorCallback))
 	{
 		return;
 	}
@@ -1380,7 +1380,7 @@ void USatoriClient::GetFlagOverrides(
 	}
 
 	// Make the request
-	const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::GET, QueryParams, Session->GetAuthToken());
+	const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ESatoriRequestMethod::GET, QueryParams, Session->GetAuthToken());
 
 	// Lock the ActiveRequests mutex to protect concurrent access
 	FScopeLock Lock(&ActiveRequestsMutex);
@@ -1405,7 +1405,7 @@ void USatoriClient::GetFlagOverrides(
 				const FString ResponseBody = Response->GetContentAsString();
 
 				// Check if Request was successful
-				if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
+				if (FSatoriUtils::IsResponseSuccessful(Response->GetResponseCode()))
 				{
 					// Check for Success Callback
 					if (SuccessCallback)
@@ -1419,7 +1419,7 @@ void USatoriClient::GetFlagOverrides(
 					// Check for Error Callback
 					if (ErrorCallback)
 					{
-						const FNakamaError Error(ResponseBody);
+						const FSatoriError Error(ResponseBody);
 						ErrorCallback(Error);
 					}
 				}
@@ -1429,7 +1429,7 @@ void USatoriClient::GetFlagOverrides(
 				// Handle Invalid Response
 				if (ErrorCallback)
 				{
-					const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
+					const FSatoriError RequestError = FSatoriUtils::CreateRequestFailureError();
 					ErrorCallback(RequestError);
 				}
 			}
@@ -1444,7 +1444,7 @@ void USatoriClient::GetFlagOverrides(
 }
 
 void USatoriClient::GetLiveEvents(
-	UNakamaSession* Session, 
+	USatoriSession* Session, 
 	const TArray<FString>& LiveEventNames, 
 	FOnGetLiveEvents Success, 
 	FOnSatoriError Error)
@@ -1459,7 +1459,7 @@ void USatoriClient::GetLiveEvents(
 			Success.Broadcast(LiveEvents);
 		};
 
-	auto errorCallback = [this, Error](const FNakamaError& error)
+	auto errorCallback = [this, Error](const FSatoriError& error)
 		{
 			if (!IsClientActive(this))
 			{
@@ -1473,16 +1473,16 @@ void USatoriClient::GetLiveEvents(
 }
 
 void USatoriClient::GetLiveEvents(
-	UNakamaSession* Session,
+	USatoriSession* Session,
 	const TArray<FString>& LiveEventNames, 
 	TFunction<void(const FSatoriLiveEventList& LiveEvents)> SuccessCallback, 
-	TFunction<void(const FNakamaError& Error)> ErrorCallback)
+	TFunction<void(const FSatoriError& Error)> ErrorCallback)
 {
 	// Setup the endpoint
 	const FString Endpoint = TEXT("/v1/live-event");
 
 	// Verify the session
-	if (!FNakamaUtils::IsSessionValid(Session, ErrorCallback))
+	if (!FSatoriUtils::IsSessionValid(Session, ErrorCallback))
 	{
 		return;
 	}
@@ -1495,7 +1495,7 @@ void USatoriClient::GetLiveEvents(
 	}
 
 	// Make the request
-	const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::GET, QueryParams, Session->GetAuthToken());
+	const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ESatoriRequestMethod::GET, QueryParams, Session->GetAuthToken());
 
 	// Lock the ActiveRequests mutex to protect concurrent access
 	FScopeLock Lock(&ActiveRequestsMutex);
@@ -1521,7 +1521,7 @@ void USatoriClient::GetLiveEvents(
 				const FString ResponseBody = Response->GetContentAsString();
 
 				// Check if Request was successful
-				if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
+				if (FSatoriUtils::IsResponseSuccessful(Response->GetResponseCode()))
 				{
 					// Check for Success Callback
 					if (SuccessCallback)
@@ -1535,7 +1535,7 @@ void USatoriClient::GetLiveEvents(
 					// Check for Error Callback
 					if (ErrorCallback)
 					{
-						const FNakamaError Error(ResponseBody);
+						const FSatoriError Error(ResponseBody);
 						ErrorCallback(Error);
 					}
 				}
@@ -1545,7 +1545,7 @@ void USatoriClient::GetLiveEvents(
 				// Handle Invalid Response
 				if (ErrorCallback)
 				{
-					const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
+					const FSatoriError RequestError = FSatoriUtils::CreateRequestFailureError();
 					ErrorCallback(RequestError);
 				}
 			}
@@ -1560,7 +1560,7 @@ void USatoriClient::GetLiveEvents(
 }
 
 void USatoriClient::GetMessages(
-	UNakamaSession* Session, 
+	USatoriSession* Session, 
 	int32 Limit,
 	bool Forward, 
 	const FString& Cursor, 
@@ -1577,7 +1577,7 @@ void USatoriClient::GetMessages(
 			Success.Broadcast(Messages);
 		};
 
-	auto errorCallback = [this, Error](const FNakamaError& error)
+	auto errorCallback = [this, Error](const FSatoriError& error)
 		{
 			if (!IsClientActive(this))
 			{
@@ -1591,18 +1591,18 @@ void USatoriClient::GetMessages(
 }
 
 void USatoriClient::GetMessages(
-	UNakamaSession* Session, 
+	USatoriSession* Session, 
 	int32 Limit, 
 	bool Forward,
 	const FString& Cursor, 
 	TFunction<void(const FSatoriMessageList& Messages)> SuccessCallback, 
-	TFunction<void(const FNakamaError& Error)> ErrorCallback)
+	TFunction<void(const FSatoriError& Error)> ErrorCallback)
 {
 	// Setup the endpoint
 	const FString Endpoint = TEXT("/v1/message");
 
 	// Verify the session
-	if (!FNakamaUtils::IsSessionValid(Session, ErrorCallback))
+	if (!FSatoriUtils::IsSessionValid(Session, ErrorCallback))
 	{
 		return;
 	}
@@ -1610,11 +1610,11 @@ void USatoriClient::GetMessages(
 	// Setup the query parameters
 	TMultiMap<FString, FString> QueryParams;
 	QueryParams.Add(TEXT("limit"), FString::FromInt(Limit));
-	QueryParams.Add(TEXT("forward"), FNakamaUtils::BoolToString(Forward));
+	QueryParams.Add(TEXT("forward"), FSatoriUtils::BoolToString(Forward));
 	if (!Cursor.IsEmpty()) { QueryParams.Add(TEXT("cursor"), FGenericPlatformHttp::UrlEncode(Cursor)); }
 
 	// Make the request
-	const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::GET, QueryParams, Session->GetAuthToken());
+	const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ESatoriRequestMethod::GET, QueryParams, Session->GetAuthToken());
 
 	// Lock the ActiveRequests mutex to protect concurrent access
 	FScopeLock Lock(&ActiveRequestsMutex);
@@ -1640,7 +1640,7 @@ void USatoriClient::GetMessages(
 				const FString ResponseBody = Response->GetContentAsString();
 
 				// Check if Request was successful
-				if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
+				if (FSatoriUtils::IsResponseSuccessful(Response->GetResponseCode()))
 				{
 					// Check for Success Callback
 					if (SuccessCallback)
@@ -1654,7 +1654,7 @@ void USatoriClient::GetMessages(
 					// Check for Error Callback
 					if (ErrorCallback)
 					{
-						const FNakamaError Error(ResponseBody);
+						const FSatoriError Error(ResponseBody);
 						ErrorCallback(Error);
 					}
 				}
@@ -1664,7 +1664,7 @@ void USatoriClient::GetMessages(
 				// Handle Invalid Response
 				if (ErrorCallback)
 				{
-					const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
+					const FSatoriError RequestError = FSatoriUtils::CreateRequestFailureError();
 					ErrorCallback(RequestError);
 				}
 			}
@@ -1679,7 +1679,7 @@ void USatoriClient::GetMessages(
 }
 
 void USatoriClient::UpdateMessage(
-	UNakamaSession* Session, 
+	USatoriSession* Session, 
 	const FString& MessageId, 
 	const FDateTime ReadTime, 
 	const FDateTime ConsumeTime, 
@@ -1696,7 +1696,7 @@ void USatoriClient::UpdateMessage(
 			Success.Broadcast();
 		};
 
-	auto errorCallback = [this, Error](const FNakamaError& error)
+	auto errorCallback = [this, Error](const FSatoriError& error)
 		{
 			if (!IsClientActive(this))
 			{
@@ -1710,12 +1710,12 @@ void USatoriClient::UpdateMessage(
 }
 
 void USatoriClient::UpdateMessage(
-	UNakamaSession* Session, 
+	USatoriSession* Session, 
 	const FString& MessageId, 
 	const FDateTime ReadTime, 
 	const FDateTime ConsumeTime,
 	TFunction<void()> SuccessCallback, 
-	TFunction<void(const FNakamaError& Error)> ErrorCallback)
+	TFunction<void(const FSatoriError& Error)> ErrorCallback)
 {
 	// Setup the endpoint
 	const FString Endpoint = TEXT("/v1/message/") + FGenericPlatformHttp::UrlEncode(MessageId);
@@ -1728,15 +1728,15 @@ void USatoriClient::UpdateMessage(
 
 	// Serialize the request content
 	FString Content;
-	if (!FNakamaUtils::SerializeJsonObject(ContentJson, Content))
+	if (!FSatoriUtils::SerializeJsonObject(ContentJson, Content))
 	{
 		// Handle JSON serialization failure
-		FNakamaUtils::HandleJsonSerializationFailure(ErrorCallback);
+		FSatoriUtils::HandleJsonSerializationFailure(ErrorCallback);
 		return;
 	}
 
 	// Make the request
-	const auto HttpRequest = MakeRequest(Endpoint, Content, ENakamaRequestMethod::PUT, TMultiMap<FString, FString>(), Session->GetAuthToken());
+	const auto HttpRequest = MakeRequest(Endpoint, Content, ESatoriRequestMethod::PUT, TMultiMap<FString, FString>(), Session->GetAuthToken());
 
 	// Lock the ActiveRequests mutex to protect concurrent access
 	FScopeLock Lock(&ActiveRequestsMutex);
@@ -1762,7 +1762,7 @@ void USatoriClient::UpdateMessage(
 				const FString ResponseBody = Response->GetContentAsString();
 
 				// Check if Request was successful
-				if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
+				if (FSatoriUtils::IsResponseSuccessful(Response->GetResponseCode()))
 				{
 					// Check for Success Callback
 					if (SuccessCallback)
@@ -1775,7 +1775,7 @@ void USatoriClient::UpdateMessage(
 					// Check for Error Callback
 					if (ErrorCallback)
 					{
-						const FNakamaError Error(ResponseBody);
+						const FSatoriError Error(ResponseBody);
 						ErrorCallback(Error);
 					}
 				}
@@ -1785,7 +1785,7 @@ void USatoriClient::UpdateMessage(
 				// Handle Invalid Response
 				if (ErrorCallback)
 				{
-					const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
+					const FSatoriError RequestError = FSatoriUtils::CreateRequestFailureError();
 					ErrorCallback(RequestError);
 				}
 			}
@@ -1800,7 +1800,7 @@ void USatoriClient::UpdateMessage(
 }
 
 void USatoriClient::DeleteMessage(
-	UNakamaSession* Session, 
+	USatoriSession* Session, 
 	const FString& MessageId,
 	FOnDeleteMessageSent Success, 
 	FOnSatoriError Error)
@@ -1815,7 +1815,7 @@ void USatoriClient::DeleteMessage(
 			Success.Broadcast();
 		};
 
-	auto errorCallback = [this, Error](const FNakamaError& error)
+	auto errorCallback = [this, Error](const FSatoriError& error)
 		{
 			if (!IsClientActive(this))
 			{
@@ -1829,22 +1829,22 @@ void USatoriClient::DeleteMessage(
 }
 
 void USatoriClient::DeleteMessage(
-	UNakamaSession* Session,
+	USatoriSession* Session,
 	const FString& MessageId, 
 	TFunction<void()> SuccessCallback,
-	TFunction<void(const FNakamaError& Error)> ErrorCallback)
+	TFunction<void(const FSatoriError& Error)> ErrorCallback)
 {
 	// Setup the endpoint
 	const FString Endpoint = TEXT("/v1/message/") + FGenericPlatformHttp::UrlEncode(MessageId);
 
 	// Verify the session
-	if (!FNakamaUtils::IsSessionValid(Session, ErrorCallback))
+	if (!FSatoriUtils::IsSessionValid(Session, ErrorCallback))
 	{
 		return;
 	}
 
 	// Make the request
-	const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::DEL, TMultiMap<FString, FString>(), Session->GetAuthToken());
+	const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ESatoriRequestMethod::DEL, TMultiMap<FString, FString>(), Session->GetAuthToken());
 
 	// Lock the ActiveRequests mutex to protect concurrent access
 	FScopeLock Lock(&ActiveRequestsMutex);
@@ -1870,7 +1870,7 @@ void USatoriClient::DeleteMessage(
 				const FString ResponseBody = Response->GetContentAsString();
 
 				// Check if Request was successful
-				if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
+				if (FSatoriUtils::IsResponseSuccessful(Response->GetResponseCode()))
 				{
 					// Check for Success Callback
 					if (SuccessCallback)
@@ -1883,7 +1883,7 @@ void USatoriClient::DeleteMessage(
 					// Check for Error Callback
 					if (ErrorCallback)
 					{
-						const FNakamaError Error(ResponseBody);
+						const FSatoriError Error(ResponseBody);
 						ErrorCallback(Error);
 					}
 				}
@@ -1893,7 +1893,7 @@ void USatoriClient::DeleteMessage(
 				// Handle Invalid Response
 				if (ErrorCallback)
 				{
-					const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
+					const FSatoriError RequestError = FSatoriUtils::CreateRequestFailureError();
 					ErrorCallback(RequestError);
 				}
 			}
@@ -1923,7 +1923,7 @@ FString USatoriClient::ConstructURL(const FString& Endpoint)
 TSharedRef<IHttpRequest, ESPMode::ThreadSafe> USatoriClient::MakeRequest(
 	const FString& Endpoint, 
 	const FString& Content, 
-	ENakamaRequestMethod RequestMethod, 
+	ESatoriRequestMethod RequestMethod, 
 	const TMultiMap<FString, FString>& QueryParams, 
 	const FString& SessionToken)
 {
@@ -1931,12 +1931,12 @@ TSharedRef<IHttpRequest, ESPMode::ThreadSafe> USatoriClient::MakeRequest(
 	FString ModifiedEndpoint = Endpoint;
 	if (QueryParams.Num() > 0)
 	{
-		FString QueryString = FNakamaUtils::BuildQueryString(QueryParams);
+		FString QueryString = FSatoriUtils::BuildQueryString(QueryParams);
 		ModifiedEndpoint += "?" + QueryString;
 	}
 
 	// Construct the URL
 	FString URL = ConstructURL(ModifiedEndpoint);
 
-	return FNakamaUtils::MakeRequest(URL, Content, RequestMethod, SessionToken, Timeout);
+	return FSatoriUtils::MakeRequest(URL, Content, RequestMethod, SessionToken, Timeout);
 }
