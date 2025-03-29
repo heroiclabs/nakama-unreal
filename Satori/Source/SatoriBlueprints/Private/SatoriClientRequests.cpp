@@ -1,24 +1,24 @@
 #include "SatoriClientRequests.h"
 #include "SatoriUtils.h"
 
-USatoriClientAuthenticateCustom* USatoriClientAuthenticateCustom::AuthenticateCustom(
-	USatoriClient* Client, 
-	const FString& UserID,
-	const FString& Username,
-	bool CreateAccount, 
-	const TMap<FString, FString>& Vars)
+USatoriClientAuthenticate* USatoriClientAuthenticate::Authenticate(
+	USatoriClient* Client,
+	const FString& ID,
+	const TMap<FString, FString>& DefaultProperties,
+	const TMap<FString, FString>& CustomProperties,
+	const bool bNoSession)
 {
-	USatoriClientAuthenticateCustom* Node = NewObject<USatoriClientAuthenticateCustom>();
+	USatoriClientAuthenticate* Node = NewObject<USatoriClientAuthenticate>();
 	Node->SatoriClient = Client;
-	Node->UserID = UserID;
-	Node->Username = Username;
-	Node->bCreateAccount = CreateAccount;
-	Node->Vars = Vars;
+	Node->ID = ID;
+	Node->DefaultProperties = DefaultProperties;
+	Node->CustomProperties = CustomProperties;
+	Node->bNoSession = bNoSession;
 
 	return Node;
 }
 
-void USatoriClientAuthenticateCustom::Activate()
+void USatoriClientAuthenticate::Activate()
 {
 	if (!SatoriClient)
 	{
@@ -52,7 +52,7 @@ void USatoriClientAuthenticateCustom::Activate()
 			SetReadyToDestroy();
 		};
 
-	SatoriClient->AuthenticateCustom(UserID, Username, bCreateAccount, Vars, successCallback, errorCallback);
+	SatoriClient->Authenticate(ID, DefaultProperties, CustomProperties, bNoSession, successCallback, errorCallback);
 }
 
 USatoriClientAuthenticateRefresh* USatoriClientAuthenticateRefresh::AuthenticateRefresh(USatoriClient* Client, USatoriSession* Session)

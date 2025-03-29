@@ -100,11 +100,11 @@ USatoriClient* USatoriClient::CreateDefaultClient(
 	return NewClient;
 }
 
-void USatoriClient::AuthenticateCustom(
-	const FString& UserID,
-	const FString& Username,
-	bool CreateAccount, 
-	const TMap<FString, FString>& Vars,
+void USatoriClient::Authenticate(
+	const FString& ID,
+	const TMap<FString, FString>& DefaultProperties,
+	const TMap<FString, FString>& CustomProperties,
+	const bool bNoSession,
 	FOnSatoriAuthUpdate Success,
 	FOnSatoriError Error)
 {
@@ -127,29 +127,39 @@ void USatoriClient::AuthenticateCustom(
 	// A custom identifier must contain alphanumeric
 	// characters with dashesand be between 6 and 128 bytes.
 
-	AuthenticateCustom(UserID, Username, CreateAccount, Vars, successCallback, errorCallback);
+	Authenticate(ID, DefaultProperties, CustomProperties, bNoSession, successCallback, errorCallback);
 }
 
-void USatoriClient::AuthenticateCustom(
-	const FString& CustomId,
-	const FString& Username,
-	bool bCreate,
-	const TMap<FString, FString>& Vars,
+void USatoriClient::Authenticate(
+	const FString& ID,
+	const TMap<FString, FString>& DefaultProperties,
+	const TMap<FString, FString>& CustomProperties,
+	const bool bNoSession,
 	TFunction<void(USatoriSession* UserSession)> SuccessCallback,
 	TFunction<void(const FSatoriError& Error)> ErrorCallback)
 {
 	// Setup the endpoint
 	const FString Endpoint = TEXT("/v1/authenticate");
 
-	// Setup the query parameters
-	TMultiMap<FString, FString> QueryParams;
-	QueryParams.Add(TEXT("create"), FSatoriUtils::BoolToString(bCreate));
-	QueryParams.Add(TEXT("username"), FGenericPlatformHttp::UrlEncode(Username));
-
 	// Setup the request content
 	const TSharedPtr<FJsonObject> ContentJson = MakeShared<FJsonObject>();
-	ContentJson->SetStringField(TEXT("id"), CustomId);
-	FSatoriUtils::AddVarsToJson(ContentJson, Vars);
+
+	ContentJson->SetStringField(TEXT("id"), ID);
+	ContentJson->SetBoolField(TEXT("no_session"), bNoSession);
+
+	TSharedPtr<FJsonObject> DefaultPropertiesJson = MakeShared<FJsonObject>();
+	for (const TPair<FString, FString>& Pair : DefaultProperties)
+	{
+		DefaultPropertiesJson->SetStringField(Pair.Key, Pair.Value);
+	}
+	ContentJson->SetObjectField(TEXT("default"), DefaultPropertiesJson);
+
+	TSharedPtr<FJsonObject> CustomPropertiesJson = MakeShared<FJsonObject>();
+	for (const TPair<FString, FString>& Pair : DefaultProperties)
+	{
+		CustomPropertiesJson->SetStringField(Pair.Key, Pair.Value);
+	}
+	ContentJson->SetObjectField(TEXT("custom"), CustomPropertiesJson);
 
 	// Serialize the request content
 	FString Content;
@@ -161,7 +171,7 @@ void USatoriClient::AuthenticateCustom(
 	}
 
 	// Make the request
-	const auto HttpRequest = MakeRequest(Endpoint, Content, ESatoriRequestMethod::POST, QueryParams, "");
+	const auto HttpRequest = MakeRequest(Endpoint, Content, ESatoriRequestMethod::POST, TMultiMap<FString, FString>(), "");
 
 	// Set the basic authorization header
 	FSatoriUtils::SetBasicAuthorizationHeader(HttpRequest, ServerKey);
@@ -347,7 +357,7 @@ void USatoriClient::AuthenticateRefresh(
 			// Remove the HttpRequest from ActiveRequests
 			ActiveRequests.Remove(Request);
 		}
-		});
+	});
 
 	// Process the request
 	HttpRequest->ProcessRequest();

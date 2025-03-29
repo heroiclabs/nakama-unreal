@@ -130,31 +130,31 @@ public:
 	// --- Authentication --- //
 
 	/**
-	 * Authenticate a user with a custom id.
+	 * Authenticate to get a satori session.
 	 *
-	 * @param UserID A custom identifier usually obtained from an external authentication service.
-	 * @param Username A username used to create the user.
-	 * @param CreateAccount True if the user should be created when authenticated.
-	 * @param Vars Extra information that will be bundled in the session token.
+	 * @param ID Must be between eight and 128 characters (inclusive). Must be an alphanumeric string with only underscores and hyphens allowed.
+	 * @param DefaultProperties Optional default properties to update with this call. If not set, properties are left as they are on the server.
+	 * @param CustomProperties Optional custom properties to update with this call. If not set, properties are left as they are on the server.
+	 * @param bNoSession Modifies the request to only create/update an identity without creating a new session. If set to 'true' the response won't include a token and a refresh token.
 	 * @param Success Delegate called upon successful authentication, providing the user session.
 	 * @param Error Delegate called on authentication failure with error details.
 	 */
 
 	UFUNCTION(Category = "Satori|Authentication")
-	void AuthenticateCustom(
-		const FString& UserID,
-		const FString& Username,
-		bool CreateAccount,
-		const TMap<FString, FString>& Vars,
+	void Authenticate(
+		const FString& ID,
+		const TMap<FString, FString>& DefaultProperties,
+		const TMap<FString, FString>& CustomProperties,
+		const bool bNoSession,
 		FOnSatoriAuthUpdate Success,
 		FOnSatoriError Error
 	);
 
-	void AuthenticateCustom(
-		const FString& UserID,
-		const FString& Username,
-		bool bCreate,
-		const TMap<FString, FString>& Vars,
+	void Authenticate(
+		const FString& ID,
+		const TMap<FString, FString>& DefaultProperties,
+		const TMap<FString, FString>& CustomProperties,
+		const bool bNoSession,
 		TFunction<void(USatoriSession* UserSession)> SuccessCallback,
 		TFunction<void(const FSatoriError& Error)> ErrorCallback
 	);
@@ -185,7 +185,7 @@ public:
 		TFunction<void(const FSatoriError& Error)> ErrorCallback
 	);
 
-	UFUNCTION(Category = "Satori|Identity")
+	UFUNCTION(Category = "Satori|Authentication")
 	void Identify(
 		USatoriSession* Session,
 		const FString& ID,
@@ -204,7 +204,7 @@ public:
 		TFunction<void(const FSatoriError& Error)> ErrorCallback
 	);
 
-	UFUNCTION(Category = "Satori|Identity")
+	UFUNCTION(Category = "Satori|Authentication")
 	void ListIdentityProperties(
 		USatoriSession* Session,
 		FOnGetProperties Success,
@@ -217,7 +217,7 @@ public:
 		TFunction<void(const FSatoriError& Error)> ErrorCallback
 	);
 
-	UFUNCTION(Category = "Satori|Identity")
+	UFUNCTION(Category = "Satori|Authentication")
 	void UpdateProperties(
 		USatoriSession* Session,
 		const TMap<FString, FString>& DefaultProperties,
@@ -236,7 +236,7 @@ public:
 		TFunction<void(const FSatoriError& Error)> ErrorCallback
 	);
 
-	UFUNCTION(Category = "Satori|Identity")
+	UFUNCTION(Category = "Satori|Authentication")
 	void DeleteIdentity(
 		USatoriSession* Session,
 		FOnDeleteIdentitySent Success,

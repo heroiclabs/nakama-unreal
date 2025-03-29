@@ -17,7 +17,7 @@ class SATORIUNREAL_API USatoriSession : public UObject
 public:
 
 	// Blueprint/C++ Exposed Struct with Data
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Satori|Sessions")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Satori|Authentication")
 	FSatoriUserSession SessionData;
 
 	USatoriSession() { }
@@ -27,55 +27,55 @@ public:
 	/**
 	 * @return The authentication token used to construct this session.
 	 */
-	UFUNCTION(BlueprintPure, Category = "Satori|Session")
+	UFUNCTION(BlueprintPure, Category = "Satori|Authentication")
 	const FString GetAuthToken() const;
 
 	/**
 	 * @return The refresh token used to construct this session.
 	 */
-	UFUNCTION(BlueprintPure, Category = "Satori|Session")
+	UFUNCTION(BlueprintPure, Category = "Satori|Authentication")
 	const FString GetRefreshToken() const;
 
 	/**
 	 * @return <c>True</c> if the user account for this session was just created.
 	 */
-	UFUNCTION(BlueprintPure, Category = "Satori|Session")
+	UFUNCTION(BlueprintPure, Category = "Satori|Authentication")
 	bool IsCreated() const;
 
 	/**
 	 * @return The username of the user who owns this session.
 	 */
-	UFUNCTION(BlueprintPure, Category = "Satori|Session")
+	UFUNCTION(BlueprintPure, Category = "Satori|Authentication")
 	const FString GetUsername() const;
 
 	/**
 	 * @return The ID of the user who owns this session.
 	 */
-	UFUNCTION(BlueprintPure, Category = "Satori|Session")
+	UFUNCTION(BlueprintPure, Category = "Satori|Authentication")
 	const FString GetUserId() const;
 
 	/**
 	 * @return The timestamp in milliseconds when this session object was created.
 	 */
-	UFUNCTION(BlueprintPure, Category = "Satori|Session")
+	UFUNCTION(BlueprintPure, Category = "Satori|Authentication")
 	const FDateTime GetCreateTime() const;
 
 	/**
 	 * @return The timestamp in milliseconds when this session will expire.
 	 */
-	UFUNCTION(BlueprintPure, Category = "Satori|Session")
+	UFUNCTION(BlueprintPure, Category = "Satori|Authentication")
 	const FDateTime GetExpireTime() const;
 
 	/**
 	 * @return The timestamp in milliseconds when the refresh token will expire.
 	 */
-	UFUNCTION(BlueprintPure, Category = "Satori|Session")
+	UFUNCTION(BlueprintPure, Category = "Satori|Authentication")
 	const FDateTime GetRefreshExpireTime() const;
 
 	/**
 		 * @return <c>True</c> if the session has expired against the current time.
 		 */
-	UFUNCTION(BlueprintPure, Category = "Satori|Session")
+	UFUNCTION(BlueprintPure, Category = "Satori|Authentication")
 	bool IsExpired() const;
 
 	/**
@@ -85,7 +85,7 @@ public:
 	 *        Use getUnixTimestampMs() to get current time.
 	 * @return <c>true</c> if the session has expired.
 	 */
-	UFUNCTION(BlueprintPure, Category = "Satori|Session")
+	UFUNCTION(BlueprintPure, Category = "Satori|Authentication")
 	bool IsExpiredTime(FDateTime Time) const;
 
 	/**
@@ -95,7 +95,7 @@ public:
 	 *        Use getUnixTimestampMs() to get current time.
 	 * @return <c>true</c> if the session has expired.
 	 */
-	UFUNCTION(BlueprintPure, Category = "Satori|Session")
+	UFUNCTION(BlueprintPure, Category = "Satori|Authentication")
 	bool IsRefreshExpired() const;
 
 	/**
@@ -105,7 +105,7 @@ public:
 	 *        Use getUnixTimestampMs() to get current time.
 	 * @return <c>true</c> if the session has expired.
 	 */
-	UFUNCTION(BlueprintPure, Category = "Satori|Session")
+	UFUNCTION(BlueprintPure, Category = "Satori|Authentication")
 	bool IsRefreshExpiredTime(FDateTime Time) const;
 
 	/**
@@ -113,7 +113,7 @@ public:
 	 *
 	 * @return Variables.
 	 */
-	UFUNCTION(BlueprintPure, Category = "Satori|Session")
+	UFUNCTION(BlueprintPure, Category = "Satori|Authentication")
 	TMap<FString, FString> GetVariables() const;
 
 	/**
@@ -122,7 +122,7 @@ public:
 	 * @param Name Value Key
 	 * @return Variable for this key, or empty string if not found.
 	 */
-	UFUNCTION(BlueprintPure, Category = "Satori|Session")
+	UFUNCTION(BlueprintPure, Category = "Satori|Authentication")
 	FString GetVariable(FString Name) const;
 
 	/**
@@ -131,7 +131,7 @@ public:
 	 * @param Token Authentication Token from Session
 	 * @param RefreshToken RefreshToken retrieved from Session
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Satori|Session")
+	UFUNCTION(BlueprintCallable, Category = "Satori|Authentication")
 	static USatoriSession* RestoreSession(FString Token, FString RefreshToken);
 
 private:

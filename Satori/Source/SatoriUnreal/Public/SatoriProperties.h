@@ -10,13 +10,13 @@ struct SATORIUNREAL_API FSatoriProperties
 {
 	GENERATED_BODY()
 	// Event default properties.
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Satori|Properties")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Satori|Authentication")
 	TMap<FString, FString> DefaultProperties;
 	// Event computed properties.
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Satori|Properties")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Satori|Authentication")
 	TMap<FString, FString> ComputedProperties;
 	// Event custom properties.
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Satori|Properties")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Satori|Authentication")
 	TMap<FString, FString> CustomProperties;
 
 	FSatoriProperties(const FString& JsonString);
