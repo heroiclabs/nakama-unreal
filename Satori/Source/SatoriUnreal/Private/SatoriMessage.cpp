@@ -1,7 +1,7 @@
 #include "SatoriMessage.h"
-#include "NakamaUtils.h"
+#include "SatoriUtils.h"
 
-FSatoriMessage::FSatoriMessage(const FString& JsonString) : FSatoriMessage(FNakamaUtils::DeserializeJsonObject(JsonString)) {
+FSatoriMessage::FSatoriMessage(const FString& JsonString) : FSatoriMessage(FSatoriUtils::DeserializeJsonObject(JsonString)) {
 }
 
 FSatoriMessage::FSatoriMessage(const TSharedPtr<FJsonObject> JsonObject)

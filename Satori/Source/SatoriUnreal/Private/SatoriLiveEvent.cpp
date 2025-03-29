@@ -1,7 +1,7 @@
 #include "SatoriLiveEvent.h"
-#include "NakamaUtils.h"
+#include "SatoriUtils.h"
 
-FSatoriLiveEvent::FSatoriLiveEvent(const FString& JsonString) : FSatoriLiveEvent(FNakamaUtils::DeserializeJsonObject(JsonString)) {
+FSatoriLiveEvent::FSatoriLiveEvent(const FString& JsonString) : FSatoriLiveEvent(FSatoriUtils::DeserializeJsonObject(JsonString)) {
 }
 
 FSatoriLiveEvent::FSatoriLiveEvent(const TSharedPtr<FJsonObject> JsonObject)

@@ -1,7 +1,7 @@
 #include "SatoriFlag.h"
-#include "NakamaUtils.h"
+#include "SatoriUtils.h"
 
-FSatoriFlagValueChangeReason::FSatoriFlagValueChangeReason(const FString& JsonString) : FSatoriFlagValueChangeReason(FNakamaUtils::DeserializeJsonObject(JsonString))
+FSatoriFlagValueChangeReason::FSatoriFlagValueChangeReason(const FString& JsonString) : FSatoriFlagValueChangeReason(FSatoriUtils::DeserializeJsonObject(JsonString))
 {
 }
 
@@ -25,7 +25,7 @@ FSatoriFlagValueChangeReason::FSatoriFlagValueChangeReason()
 {
 }
 
-FSatoriFlag::FSatoriFlag(const FString& JsonString) : FSatoriFlag(FNakamaUtils::DeserializeJsonObject(JsonString))
+FSatoriFlag::FSatoriFlag(const FString& JsonString) : FSatoriFlag(FSatoriUtils::DeserializeJsonObject(JsonString))
 {
 }
 
@@ -75,7 +75,7 @@ FSatoriFlagList::FSatoriFlagList()
 {
 }
 
-FSatoriFlagOverrideValue::FSatoriFlagOverrideValue(const FString& JsonString) : FSatoriFlagOverrideValue(FNakamaUtils::DeserializeJsonObject(JsonString))
+FSatoriFlagOverrideValue::FSatoriFlagOverrideValue(const FString& JsonString) : FSatoriFlagOverrideValue(FSatoriUtils::DeserializeJsonObject(JsonString))
 {
 }
 
@@ -100,7 +100,7 @@ FSatoriFlagOverrideValue::FSatoriFlagOverrideValue()
 {
 }
 
-FSatoriFlagOverride::FSatoriFlagOverride(const FString& JsonString) : FSatoriFlagOverride(FNakamaUtils::DeserializeJsonObject(JsonString))
+FSatoriFlagOverride::FSatoriFlagOverride(const FString& JsonString) : FSatoriFlagOverride(FSatoriUtils::DeserializeJsonObject(JsonString))
 {
 }
 
@@ -131,6 +131,7 @@ FSatoriFlagOverride::FSatoriFlagOverride(const TSharedPtr<FJsonObject> JsonObjec
 FSatoriFlagOverride::FSatoriFlagOverride()
 {
 }
+
 
 FSatoriFlagOverrideList::FSatoriFlagOverrideList(const FString& JsonString)
 {
