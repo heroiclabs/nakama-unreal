@@ -10,7 +10,7 @@
 #include "SatoriClientRequests.generated.h"
 
 // Delegates
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSatoriAuthenticateCustom, USatoriSession*, Session, FSatoriError, Error);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSatoriAuthenticate, USatoriSession*, Session, FSatoriError, Error);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSatoriAuthenticateRefresh, USatoriSession*, Session, FSatoriError, Error);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSatoriAuthenticateLogout, FSatoriError, Error);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSatoriIdentify, USatoriSession*, Session, FSatoriError, Error);
@@ -37,7 +37,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSatoriDeleteMessage, FSatoriError
  */
 
 UCLASS()
-class SATORIBLUEPRINTS_API USatoriClientAuthenticateCustom : public UBlueprintAsyncActionBase
+class SATORIBLUEPRINTS_API USatoriClientAuthenticate : public UBlueprintAsyncActionBase
 {
 	GENERATED_BODY()
 
@@ -47,36 +47,36 @@ public:
 	TObjectPtr<USatoriClient> SatoriClient;
 
 	UPROPERTY(BlueprintAssignable)
-	FOnSatoriAuthenticateCustom OnSuccess;
+	FOnSatoriAuthenticate OnSuccess;
 
 	UPROPERTY(BlueprintAssignable)
-	FOnSatoriAuthenticateCustom OnError;
+	FOnSatoriAuthenticate OnError;
 
 	/**
-	 * Authenticate a user with a custom id.
-	 * @param Client The Client to use.
-	 * @param UserID A custom identifier usually obtained from an external authentication service.
-	 * @param Username A username used to create the user.
-	 * @param CreateAccount True if the user should be created when authenticated.
-	 * @param Vars Extra information that will be bundled in the session token.
+	 * Authenticate to get a satori session.
+	 * @param ID Must be between eight and 128 characters (inclusive). Must be an alphanumeric string with only underscores and hyphens allowed.
+	 * @param DefaultProperties Optional default properties to update with this call. If not set, properties are left as they are on the server.
+	 * @param CustomProperties Optional custom properties to update with this call. If not set, properties are left as they are on the server.
+	 * @param bNoSession Modifies the request to only create/update an identity without creating a new session. If set to 'true' the response won't include a token and a refresh token.
+	 * @param Success Delegate called upon successful authentication, providing the user session.
+	 * @param Error Delegate called on authentication failure with error details.
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Satori|Authentication", meta = (BlueprintInternalUseOnly = "true", AutoCreateRefTerm = "Vars"))
-	static USatoriClientAuthenticateCustom* AuthenticateCustom(
+	UFUNCTION(BlueprintCallable, Category = "Satori|Authentication", meta = (BlueprintInternalUseOnly = "true", AutoCreateRefTerm = "DefaultProperties,CustomProperties"))
+	static USatoriClientAuthenticate* Authenticate(
 		USatoriClient *Client,
-		const FString& UserID,
-		const FString& Username,
-		bool CreateAccount,
-		const TMap<FString, FString>& Vars);
+		const FString& ID,
+		const TMap<FString, FString>& DefaultProperties,
+		const TMap<FString, FString>& CustomProperties,
+		const bool bNoSession);
 
 	virtual void Activate() override;
 
 private:
 
-	FString UserID;
-	FString Username;
-	bool bCreateAccount;
-	TMap<FString, FString> Vars;
-
+	FString ID;
+	TMap<FString, FString> DefaultProperties;
+	TMap<FString, FString> CustomProperties;
+	bool bNoSession;
 };
 
 
@@ -182,7 +182,7 @@ public:
 	 * @param Session The session of the user.
 	 * @param Client The Client to use.
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Satori|Identity", meta = (BlueprintInternalUseOnly = "true", AutoCreateRefTerm = "DefaultProperties,CustomProperties"))
+	UFUNCTION(BlueprintCallable, Category = "Satori|Authentication", meta = (BlueprintInternalUseOnly = "true", AutoCreateRefTerm = "DefaultProperties,CustomProperties"))
 	static USatoriClientIdentify* Identify(
 		USatoriClient* Client,
 		USatoriSession* Session,
@@ -228,7 +228,7 @@ public:
 	 * @param Session The session of the user.
 	 * @param Client The Client to use.
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Satori|Identity", meta = (BlueprintInternalUseOnly = "true"))
+	UFUNCTION(BlueprintCallable, Category = "Satori|Authentication", meta = (BlueprintInternalUseOnly = "true"))
 	static USatoriClientListIdentityProperties* ListIdentityProperties(USatoriClient* Client, USatoriSession* Session);
 
 	virtual void Activate() override;
@@ -265,7 +265,7 @@ public:
 	 * @param Session The session of the user.
 	 * @param Client The Client to use.
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Satori|Identity", meta = (BlueprintInternalUseOnly = "true", AutoCreateRefTerm = "DefaultProperties,CustomProperties"))
+	UFUNCTION(BlueprintCallable, Category = "Satori|Authentication", meta = (BlueprintInternalUseOnly = "true", AutoCreateRefTerm = "DefaultProperties,CustomProperties"))
 	static USatoriClientUpdateProperties* UpdateProperties(
 		USatoriClient* Client, 
 		USatoriSession* Session,
@@ -311,7 +311,7 @@ public:
 	 * @param Session The session of the user.
 	 * @param Client The Client to use.
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Satori|Identity", meta = (BlueprintInternalUseOnly = "true"))
+	UFUNCTION(BlueprintCallable, Category = "Satori|Authentication", meta = (BlueprintInternalUseOnly = "true"))
 	static USatoriClientDeleteIdentity* DeleteIdentity(USatoriClient* Client, USatoriSession* Session);
 
 	virtual void Activate() override;
