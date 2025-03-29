@@ -145,21 +145,30 @@ void USatoriClient::Authenticate(
 	const TSharedPtr<FJsonObject> ContentJson = MakeShared<FJsonObject>();
 
 	ContentJson->SetStringField(TEXT("id"), ID);
-	ContentJson->SetBoolField(TEXT("no_session"), bNoSession);
-
-	TSharedPtr<FJsonObject> DefaultPropertiesJson = MakeShared<FJsonObject>();
-	for (const TPair<FString, FString>& Pair : DefaultProperties)
+	if (bNoSession)
 	{
-		DefaultPropertiesJson->SetStringField(Pair.Key, Pair.Value);
+		ContentJson->SetBoolField(TEXT("no_session"), bNoSession);
 	}
-	ContentJson->SetObjectField(TEXT("default"), DefaultPropertiesJson);
 
-	TSharedPtr<FJsonObject> CustomPropertiesJson = MakeShared<FJsonObject>();
-	for (const TPair<FString, FString>& Pair : DefaultProperties)
+	if(!DefaultProperties.IsEmpty())
 	{
-		CustomPropertiesJson->SetStringField(Pair.Key, Pair.Value);
+		TSharedPtr<FJsonObject> DefaultPropertiesJson = MakeShared<FJsonObject>();
+		for (const TPair<FString, FString>& Pair : DefaultProperties)
+		{
+			DefaultPropertiesJson->SetStringField(Pair.Key, Pair.Value);
+		}
+		ContentJson->SetObjectField(TEXT("default"), DefaultPropertiesJson);
 	}
-	ContentJson->SetObjectField(TEXT("custom"), CustomPropertiesJson);
+
+	if (!CustomProperties.IsEmpty())
+	{
+		TSharedPtr<FJsonObject> CustomPropertiesJson = MakeShared<FJsonObject>();
+		for (const TPair<FString, FString>& Pair : CustomProperties)
+		{
+			CustomPropertiesJson->SetStringField(Pair.Key, Pair.Value);
+		}
+		ContentJson->SetObjectField(TEXT("custom"), CustomPropertiesJson);
+	}
 
 	// Serialize the request content
 	FString Content;
@@ -530,19 +539,25 @@ void USatoriClient::Identify(
 
 	ContentJson->SetStringField(TEXT("id"), ID);
 
-	TSharedPtr<FJsonObject> DefaultPropertiesJson = MakeShared<FJsonObject>();
-	for (const TPair<FString, FString>& Pair : DefaultProperties)
+	if(!DefaultProperties.IsEmpty())
 	{
-		DefaultPropertiesJson->SetStringField(Pair.Key, Pair.Value);
+		TSharedPtr<FJsonObject> DefaultPropertiesJson = MakeShared<FJsonObject>();
+		for (const TPair<FString, FString>& Pair : DefaultProperties)
+		{
+			DefaultPropertiesJson->SetStringField(Pair.Key, Pair.Value);
+		}
+		ContentJson->SetObjectField(TEXT("default"), DefaultPropertiesJson);
 	}
-	ContentJson->SetObjectField(TEXT("default"), DefaultPropertiesJson);
 
-	TSharedPtr<FJsonObject> CustomPropertiesJson = MakeShared<FJsonObject>();
-	for (const TPair<FString, FString>& Pair : DefaultProperties)
+	if (!CustomProperties.IsEmpty())
 	{
-		CustomPropertiesJson->SetStringField(Pair.Key, Pair.Value);
+		TSharedPtr<FJsonObject> CustomPropertiesJson = MakeShared<FJsonObject>();
+		for (const TPair<FString, FString>& Pair : CustomProperties)
+		{
+			CustomPropertiesJson->SetStringField(Pair.Key, Pair.Value);
+		}
+		ContentJson->SetObjectField(TEXT("custom"), CustomPropertiesJson);
 	}
-	ContentJson->SetObjectField(TEXT("custom"), CustomPropertiesJson);
 
 	// Serialize the request content
 	FString Content;
@@ -771,19 +786,25 @@ void USatoriClient::UpdateProperties(
 	// Setup the request content
 	const TSharedPtr<FJsonObject> ContentJson = MakeShared<FJsonObject>();
 
-	TSharedPtr<FJsonObject> DefaultPropertiesJson = MakeShared<FJsonObject>();
-	for (const TPair<FString, FString>& Pair : DefaultProperties)
+	if (!DefaultProperties.IsEmpty())
 	{
-		DefaultPropertiesJson->SetStringField(Pair.Key, Pair.Value);
+		TSharedPtr<FJsonObject> DefaultPropertiesJson = MakeShared<FJsonObject>();
+		for (const TPair<FString, FString>& Pair : DefaultProperties)
+		{
+			DefaultPropertiesJson->SetStringField(Pair.Key, Pair.Value);
+		}
+		ContentJson->SetObjectField(TEXT("default"), DefaultPropertiesJson);
 	}
-	ContentJson->SetObjectField(TEXT("default"), DefaultPropertiesJson);
 
-	TSharedPtr<FJsonObject> CustomPropertiesJson = MakeShared<FJsonObject>();
-	for (const TPair<FString, FString>& Pair : DefaultProperties)
+	if (!CustomProperties.IsEmpty())
 	{
-		CustomPropertiesJson->SetStringField(Pair.Key, Pair.Value);
+		TSharedPtr<FJsonObject> CustomPropertiesJson = MakeShared<FJsonObject>();
+		for (const TPair<FString, FString>& Pair : CustomProperties)
+		{
+			CustomPropertiesJson->SetStringField(Pair.Key, Pair.Value);
+		}
+		ContentJson->SetObjectField(TEXT("custom"), CustomPropertiesJson);
 	}
-	ContentJson->SetObjectField(TEXT("custom"), CustomPropertiesJson);
 
 	ContentJson->SetBoolField(TEXT("recompute"), bRecompute);
 
