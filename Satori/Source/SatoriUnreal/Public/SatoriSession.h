@@ -37,93 +37,10 @@ public:
 	const FString GetRefreshToken() const;
 
 	/**
-	 * @return <c>True</c> if the user account for this session was just created.
+	 * @return The refresh properties used to construct this session.
 	 */
 	UFUNCTION(BlueprintPure, Category = "Satori|Authentication")
-	bool IsCreated() const;
-
-	/**
-	 * @return The username of the user who owns this session.
-	 */
-	UFUNCTION(BlueprintPure, Category = "Satori|Authentication")
-	const FString GetUsername() const;
-
-	/**
-	 * @return The ID of the user who owns this session.
-	 */
-	UFUNCTION(BlueprintPure, Category = "Satori|Authentication")
-	const FString GetUserId() const;
-
-	/**
-	 * @return The timestamp in milliseconds when this session object was created.
-	 */
-	UFUNCTION(BlueprintPure, Category = "Satori|Authentication")
-	const FDateTime GetCreateTime() const;
-
-	/**
-	 * @return The timestamp in milliseconds when this session will expire.
-	 */
-	UFUNCTION(BlueprintPure, Category = "Satori|Authentication")
-	const FDateTime GetExpireTime() const;
-
-	/**
-	 * @return The timestamp in milliseconds when the refresh token will expire.
-	 */
-	UFUNCTION(BlueprintPure, Category = "Satori|Authentication")
-	const FDateTime GetRefreshExpireTime() const;
-
-	/**
-		 * @return <c>True</c> if the session has expired against the current time.
-		 */
-	UFUNCTION(BlueprintPure, Category = "Satori|Authentication")
-	bool IsExpired() const;
-
-	/**
-	 * Check if the session's token has expired against the input time.
-	 *
-	 * @param Time The time to compare against the session.
-	 *        Use getUnixTimestampMs() to get current time.
-	 * @return <c>true</c> if the session has expired.
-	 */
-	UFUNCTION(BlueprintPure, Category = "Satori|Authentication")
-	bool IsExpiredTime(FDateTime Time) const;
-
-	/**
-	 * Check if the session's token has expired against the input time.
-	 *
-	 * @param now The time to compare against the session.
-	 *        Use getUnixTimestampMs() to get current time.
-	 * @return <c>true</c> if the session has expired.
-	 */
-	UFUNCTION(BlueprintPure, Category = "Satori|Authentication")
-	bool IsRefreshExpired() const;
-
-	/**
-	 * Check if the session's refresh token has expired against the input time.
-	 *
-	 * @param Time The time to compare against the session.
-	 *        Use getUnixTimestampMs() to get current time.
-	 * @return <c>true</c> if the session has expired.
-	 */
-	UFUNCTION(BlueprintPure, Category = "Satori|Authentication")
-	bool IsRefreshExpiredTime(FDateTime Time) const;
-
-	/**
-	 * Get session variables.
-	 *
-	 * @return Variables.
-	 */
-	UFUNCTION(BlueprintPure, Category = "Satori|Authentication")
-	TMap<FString, FString> GetVariables() const;
-
-	/**
-	 * Get session variable value by name.
-	 *
-	 * @param Name Value Key
-	 * @return Variable for this key, or empty string if not found.
-	 */
-	UFUNCTION(BlueprintPure, Category = "Satori|Authentication")
-	FString GetVariable(FString Name) const;
+	const FSatoriProperties GetProperties() const;
 
 	/**
 	 * Restore User Session
@@ -138,15 +55,5 @@ private:
 
 	FString _AuthToken;
 	FString _RefreshToken;
-	bool _IsCreated;
-	FString _Username;
-	FString _UserId;
-	FDateTime _CreateTime;
-	FDateTime _ExpireTime;
-	FDateTime _RefreshExpireTime;
-	bool _IsExpired;
-	bool _IsRefreshExpired;
-	TMap<FString, FString> _Variables;
-
-	bool ParseJwtPayload(const FString& jwt, TSharedPtr<FJsonObject>& payloadJson);
+	FSatoriProperties _Properties;
 };
