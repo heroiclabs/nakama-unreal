@@ -66,7 +66,7 @@ UNakamaClient* UNakamaClient::CreateDefaultClient(
 	bool UseSSL,
 	bool EnableDebug)
 {
-	UNakamaClient* NewClient = NewObject<UNakamaClient>();
+	UNakamaClient* NewClient = NewObject<UNakamaClient>((UObject*)GetTransientPackage(), UNakamaClient::StaticClass());
 	NewClient->InitializeSystem(ServerKey, Host, Port, UseSSL, EnableDebug);
 
 	if (EnableDebug)

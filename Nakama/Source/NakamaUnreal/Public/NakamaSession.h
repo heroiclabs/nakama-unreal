@@ -20,8 +20,6 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Sessions")
 	FNakamaUserSession SessionData;
 
-	UNakamaSession() { }
-
 	void SetupSession(const FString& AuthResponse);
 
 	/**
