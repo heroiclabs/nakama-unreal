@@ -731,8 +731,6 @@ public:
 	 * @param Session The session of the user.
 	 * @param Success Delegate called upon successfully retrieving user account details.
 	 * @param Error Delegate called if the fetch operation for user account details fails, providing error information.
-	 * @param Success Delegate called upon successfully retrieving user account details.
-	 * @param Error Delegate called if the fetch operation for user account details fails, providing error information.
 	 *
 	 */
 	UFUNCTION(Category = "Nakama|Users", meta=(DeprecatedFunction, DeprecationMessage="Use GetAccount instead"))
@@ -746,8 +744,6 @@ public:
 	 *
 	 * Fetch the user account owned by the session.
 	 * @param Session The session of the user.
-	 * @param Success Delegate called upon successfully retrieving user account details.
-	 * @param Error Delegate called if the fetch operation for user account details fails, providing error information.
 	 * @param Success Delegate called upon successfully retrieving user account details.
 	 * @param Error Delegate called if the fetch operation for user account details fails, providing error information.
 	 */
