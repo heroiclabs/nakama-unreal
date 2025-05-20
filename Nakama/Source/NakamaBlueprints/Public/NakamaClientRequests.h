@@ -54,7 +54,7 @@ public:
 	 * @param CreateAccount True if the user should be created when authenticated.
 	 * @param Vars Extra information that will be bundled in the session token.
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Nakama|Authentication", meta = (BlueprintInternalUseOnly = "true"))
+	UFUNCTION(BlueprintCallable, Category = "Nakama|Authentication", meta = (BlueprintInternalUseOnly = "true", AutoCreateRefTerm = "Vars"))
 	static UNakamaClientAuthenticateCustom* AuthenticateCustom(UNakamaClient *Client, FString UserID, FString Username, bool CreateAccount, TMap<FString, FString> Vars);
 
 	virtual void Activate() override;
@@ -102,7 +102,7 @@ public:
 	 * @param CreateAccount True if the user should be created when authenticated.
 	 * @param Vars Extra information that will be bundled in the session token.
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Nakama|Authentication", meta = (BlueprintInternalUseOnly = "true"))
+	UFUNCTION(BlueprintCallable, Category = "Nakama|Authentication", meta = (BlueprintInternalUseOnly = "true", AutoCreateRefTerm = "Vars"))
 	static UNakamaClientAuthenticateEmail* AuthenticateEmail(UNakamaClient *Client, FString Email, FString Password, FString Username, bool CreateAccount, TMap<FString, FString> Vars);
 
 	virtual void Activate() override;
@@ -148,7 +148,7 @@ public:
 	 * @param CreateAccount True if the user should be created when authenticated. Defaults to false.
 	 * @param Vars Extra information that will be bundled in the session token.
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Nakama|Authentication", meta = (BlueprintInternalUseOnly = "true"))
+	UFUNCTION(BlueprintCallable, Category = "Nakama|Authentication", meta = (BlueprintInternalUseOnly = "true", AutoCreateRefTerm = "Vars"))
 	static UNakamaClientAuthenticateDevice* AuthenticateDevice(UNakamaClient *Client, FString DeviceID, FString Username, bool CreateAccount, TMap<FString, FString> Vars);
 
 	virtual void Activate() override;
@@ -195,7 +195,7 @@ public:
 	 * @param ImportFriends True if the Steam friends should be imported.
 	 * @param Vars Extra information that will be bundled in the session token.
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Nakama|Authentication", meta = (BlueprintInternalUseOnly = "true"))
+	UFUNCTION(BlueprintCallable, Category = "Nakama|Authentication", meta = (BlueprintInternalUseOnly = "true", AutoCreateRefTerm = "Vars"))
 	static UNakamaClientAuthenticateSteam* AuthenticateSteam(UNakamaClient *Client, FString SteamToken, FString Username, bool CreateAccount, bool ImportFriends, TMap<FString, FString> Vars);
 
 	virtual void Activate() override;
@@ -242,7 +242,7 @@ public:
 	 * @param CreateAccount True if the user should be created when authenticated.
 	 * @param Vars Extra information that will be bundled in the session token.
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Nakama|Authentication", meta = (BlueprintInternalUseOnly = "true"))
+	UFUNCTION(BlueprintCallable, Category = "Nakama|Authentication", meta = (BlueprintInternalUseOnly = "true", AutoCreateRefTerm = "Vars"))
 	static UNakamaClientAuthenticateGoogle* AuthenticateGoogle(UNakamaClient *Client, FString AccessToken, FString Username, bool CreateAccount, TMap<FString, FString> Vars);
 
 	virtual void Activate() override;
@@ -293,7 +293,7 @@ public:
 	 * @param CreateAccount True if the user should be created when authenticated.
 	 * @param Vars Extra information that will be bundled in the session token.
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Nakama|Authentication", meta = (BlueprintInternalUseOnly = "true"))
+	UFUNCTION(BlueprintCallable, Category = "Nakama|Authentication", meta = (BlueprintInternalUseOnly = "true", AutoCreateRefTerm = "Vars"))
 	static UNakamaClientAuthenticateGameCenter* AuthenticateGameCenter(UNakamaClient *Client, FString PlayerId, FString BundleId, int64 TimeStampSeconds, FString Salt, FString Signature, FString PublicKeyUrl, FString Username, bool CreateAccount, TMap<FString, FString> Vars);
 
 	virtual void Activate() override;
@@ -345,7 +345,7 @@ public:
 	 * @param ImportFriends True if the Facebook friends should be imported.
 	 * @param Vars Extra information that will be bundled in the session token.
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Nakama|Authentication", meta = (BlueprintInternalUseOnly = "true"))
+	UFUNCTION(BlueprintCallable, Category = "Nakama|Authentication", meta = (BlueprintInternalUseOnly = "true", AutoCreateRefTerm = "Vars"))
 	static UNakamaClientAuthenticateFacebook* AuthenticateFacebook(UNakamaClient *Client, FString AccessToken, FString Username, bool CreateAccount, bool ImportFriends, TMap<FString, FString> Vars);
 
 	virtual void Activate() override;
@@ -392,7 +392,7 @@ public:
 	 * @param CreateAccount True if the user should be created when authenticated.
 	 * @param Vars Extra information that will be bundled in the session token.
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Nakama|Authentication", meta = (BlueprintInternalUseOnly = "true"))
+	UFUNCTION(BlueprintCallable, Category = "Nakama|Authentication", meta = (BlueprintInternalUseOnly = "true", AutoCreateRefTerm = "Vars"))
 	static UNakamaClientAuthenticateApple* AuthenticateApple(UNakamaClient *Client, FString Token, FString Username, bool CreateAccount, TMap<FString, FString> Vars);
 
 	virtual void Activate() override;
