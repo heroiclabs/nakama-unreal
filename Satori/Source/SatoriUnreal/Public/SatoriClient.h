@@ -1,12 +1,26 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+/*
+* Copyright 2025 The Nakama Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "Interfaces/IHttpRequest.h"
 #include "HttpModule.h"
-#include "NakamaError.h"
-#include "NakamaSession.h"
+#include "SatoriError.h"
+#include "SatoriSession.h"
 #include "SatoriEvent.h"
 #include "SatoriExperiment.h"
 #include "SatoriLiveEvent.h"
@@ -16,13 +30,13 @@
 
 namespace Satori {}
 using namespace Satori;
-enum class ENakamaRequestMethod:uint8;
+enum class ESatoriRequestMethod:uint8;
 
 // Delegates
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSatoriAuthUpdate, UNakamaSession*, LoginData);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSatoriAuthUpdate, USatoriSession*, LoginData);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnAuthLogoutSent);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDeleteIdentitySent);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSatoriError, const FNakamaError&, ErrorData);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSatoriError, const FSatoriError&, ErrorData);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPostEventSent);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnGetExperiments, const FSatoriExperimentList&, Experiments);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnGetFlags, const FSatoriFlagList&, Flags);
@@ -33,6 +47,15 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnUpdatePropertiesSent);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnGetMessages, const FSatoriMessageList&, Messages);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnUpdateMessageSent);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDeleteMessageSent);
+
+UENUM(BlueprintType)
+enum class ESatoriRequestMethod : uint8
+{
+	GET,
+	POST,
+	DEL,
+	PUT,
+};
 
 /**
  *
@@ -121,64 +144,64 @@ public:
 	// --- Authentication --- //
 
 	/**
-	 * Authenticate a user with a custom id.
+	 * Authenticate to get a satori session.
 	 *
-	 * @param UserID A custom identifier usually obtained from an external authentication service.
-	 * @param Username A username used to create the user.
-	 * @param CreateAccount True if the user should be created when authenticated.
-	 * @param Vars Extra information that will be bundled in the session token.
+	 * @param ID Must be between eight and 128 characters (inclusive). Must be an alphanumeric string with only underscores and hyphens allowed.
+	 * @param DefaultProperties Optional default properties to update with this call. If not set, properties are left as they are on the server.
+	 * @param CustomProperties Optional custom properties to update with this call. If not set, properties are left as they are on the server.
+	 * @param bNoSession Modifies the request to only create/update an identity without creating a new session. If set to 'true' the response won't include a token and a refresh token.
 	 * @param Success Delegate called upon successful authentication, providing the user session.
 	 * @param Error Delegate called on authentication failure with error details.
 	 */
 
 	UFUNCTION(Category = "Satori|Authentication")
-	void AuthenticateCustom(
-		const FString& UserID,
-		const FString& Username,
-		bool CreateAccount,
-		const TMap<FString, FString>& Vars,
+	void Authenticate(
+		const FString& ID,
+		const TMap<FString, FString>& DefaultProperties,
+		const TMap<FString, FString>& CustomProperties,
+		const bool bNoSession,
 		FOnSatoriAuthUpdate Success,
 		FOnSatoriError Error
 	);
 
-	void AuthenticateCustom(
-		const FString& UserID,
-		const FString& Username,
-		bool bCreate,
-		const TMap<FString, FString>& Vars,
-		TFunction<void(UNakamaSession* UserSession)> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+	void Authenticate(
+		const FString& ID,
+		const TMap<FString, FString>& DefaultProperties,
+		const TMap<FString, FString>& CustomProperties,
+		const bool bNoSession,
+		TFunction<void(USatoriSession* UserSession)> SuccessCallback,
+		TFunction<void(const FSatoriError& Error)> ErrorCallback
 	);
 
 	UFUNCTION(Category = "Satori|Authentication")
 	void AuthenticateRefresh(
-		UNakamaSession* Session,
+		USatoriSession* Session,
 		FOnSatoriAuthUpdate Success,
 		FOnSatoriError Error
 	);
 
 	void AuthenticateRefresh(
-		UNakamaSession* Session,
-		TFunction<void(UNakamaSession* UserSession)> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		USatoriSession* Session,
+		TFunction<void(USatoriSession* UserSession)> SuccessCallback,
+		TFunction<void(const FSatoriError& Error)> ErrorCallback
 	);
 
 	UFUNCTION(Category = "Satori|Authentication")
 	void AuthenticateLogout(
-		UNakamaSession* Session,
+		USatoriSession* Session,
 		FOnAuthLogoutSent Success,
 		FOnSatoriError Error
 	);
 
 	void AuthenticateLogout(
-		UNakamaSession* Session,
+		USatoriSession* Session,
 		TFunction<void()> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		TFunction<void(const FSatoriError& Error)> ErrorCallback
 	);
 
-	UFUNCTION(Category = "Satori|Identity")
+	UFUNCTION(Category = "Satori|Authentication")
 	void Identify(
-		UNakamaSession* Session,
+		USatoriSession* Session,
 		const FString& ID,
 		const TMap<FString, FString>& defaultProperties,
 		const TMap<FString, FString>& customProperties,
@@ -187,30 +210,30 @@ public:
 	);
 
 	void Identify(
-		UNakamaSession* Session,
+		USatoriSession* Session,
 		const FString& ID,
 		const TMap<FString, FString>& DefaultProperties,
 		const TMap<FString, FString>& CustomProperties,
-		TFunction<void(UNakamaSession* UserSession)> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		TFunction<void(USatoriSession* UserSession)> SuccessCallback,
+		TFunction<void(const FSatoriError& Error)> ErrorCallback
 	);
 
-	UFUNCTION(Category = "Satori|Identity")
+	UFUNCTION(Category = "Satori|Authentication")
 	void ListIdentityProperties(
-		UNakamaSession* Session,
+		USatoriSession* Session,
 		FOnGetProperties Success,
 		FOnSatoriError Error
 	);
 
 	void ListIdentityProperties(
-		UNakamaSession* Session,
+		USatoriSession* Session,
 		TFunction<void(const FSatoriProperties& Properties)> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		TFunction<void(const FSatoriError& Error)> ErrorCallback
 	);
 
-	UFUNCTION(Category = "Satori|Identity")
+	UFUNCTION(Category = "Satori|Authentication")
 	void UpdateProperties(
-		UNakamaSession* Session,
+		USatoriSession* Session,
 		const TMap<FString, FString>& DefaultProperties,
 		const TMap<FString, FString>& CustomProperties,
 		const bool bRecompute,
@@ -219,25 +242,25 @@ public:
 	);
 
 	void UpdateProperties(
-		UNakamaSession* Session,
+		USatoriSession* Session,
 		const TMap<FString, FString>& DefaultProperties,
 		const TMap<FString, FString>& CustomProperties,
 		const bool bRecompute,
 		TFunction<void()> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		TFunction<void(const FSatoriError& Error)> ErrorCallback
 	);
 
-	UFUNCTION(Category = "Satori|Identity")
+	UFUNCTION(Category = "Satori|Authentication")
 	void DeleteIdentity(
-		UNakamaSession* Session,
+		USatoriSession* Session,
 		FOnDeleteIdentitySent Success,
 		FOnSatoriError Error
 	);
 
 	void DeleteIdentity(
-		UNakamaSession* Session,
+		USatoriSession* Session,
 		TFunction<void()> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		TFunction<void(const FSatoriError& Error)> ErrorCallback
 	);
 
 
@@ -245,82 +268,82 @@ public:
 
 	UFUNCTION(Category = "Satori|Events")
 	void PostEvent(
-		UNakamaSession* Session,
+		USatoriSession* Session,
 		const TArray<FSatoriEvent>& Events,
 		FOnPostEventSent Success,
 		FOnSatoriError Error
 	);
 
 	void PostEvent(
-		UNakamaSession* Session,
+		USatoriSession* Session,
 		const TArray<FSatoriEvent>& Events,
 		TFunction<void()> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		TFunction<void(const FSatoriError& Error)> ErrorCallback
 	);
 
 	UFUNCTION(Category = "Satori|Experiments")
 	void GetExperiments(
-		UNakamaSession* Session,
+		USatoriSession* Session,
 		const TArray<FString>& Names,
 		FOnGetExperiments Success,
 		FOnSatoriError Error
 	);
 
 	void GetExperiments(
-		UNakamaSession* Session,
+		USatoriSession* Session,
 		const TArray<FString>& Names,
 		TFunction<void(const FSatoriExperimentList& Experiments)> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		TFunction<void(const FSatoriError& Error)> ErrorCallback
 	);
 
 	UFUNCTION(Category = "Satori|Flags")
 	void GetFlags(
-		UNakamaSession* Session,
+		USatoriSession* Session,
 		const TArray<FString>& Names,
 		FOnGetFlags Success,
 		FOnSatoriError Error
 	);
 
 	void GetFlags(
-		UNakamaSession* Session,
+		USatoriSession* Session,
 		const TArray<FString>& Names,
 		TFunction<void(const FSatoriFlagList& Flags)> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		TFunction<void(const FSatoriError& Error)> ErrorCallback
 	);
 
 	UFUNCTION(Category = "Satori|Flags")
 	void GetFlagOverrides(
-		UNakamaSession* Session,
+		USatoriSession* Session,
 		const TArray<FString>& Names,
 		FOnGetFlagOverrides Success,
 		FOnSatoriError Error
 	);
 
 	void GetFlagOverrides(
-		UNakamaSession* Session,
+		USatoriSession* Session,
 		const TArray<FString>& Names,
 		TFunction<void(const FSatoriFlagOverrideList& Flags)> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		TFunction<void(const FSatoriError& Error)> ErrorCallback
 	);
 
 	UFUNCTION(Category = "Satori|LiveEvents")
 	void GetLiveEvents(
-		UNakamaSession* Session,
+		USatoriSession* Session,
 		const TArray<FString>& LiveEventNames,
 		FOnGetLiveEvents Success,
 		FOnSatoriError Error
 	);
 
 	void GetLiveEvents(
-		UNakamaSession* Session,
+		USatoriSession* Session,
 		const TArray<FString>& LiveEventNames,
 		TFunction<void(const FSatoriLiveEventList& LiveEvents)> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		TFunction<void(const FSatoriError& Error)> ErrorCallback
 	);
 
 	UFUNCTION(Category = "Satori|Messages")
 	void GetMessages(
-		UNakamaSession* Session,
+		USatoriSession* Session,
 		int32 Limit,
 		bool Forward,
 		const FString& Cursor,
@@ -329,17 +352,17 @@ public:
 	);
 
 	void GetMessages(
-		UNakamaSession* Session,
+		USatoriSession* Session,
 		int32 Limit,
 		bool Forward,
 		const FString& Cursor,
 		TFunction<void(const FSatoriMessageList& Messages)> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		TFunction<void(const FSatoriError& Error)> ErrorCallback
 	);
 
 	UFUNCTION(Category = "Satori|Messages")
 	void UpdateMessage(
-		UNakamaSession* Session,
+		USatoriSession* Session,
 		const FString& MessageId,
 		const FDateTime ReadTime,
 		const FDateTime ConsumeTime,
@@ -348,27 +371,27 @@ public:
 	);
 
 	void UpdateMessage(
-		UNakamaSession* Session,
+		USatoriSession* Session,
 		const FString& MessageId,
 		const FDateTime ReadTime,
 		const FDateTime ConsumeTime,
 		TFunction<void()> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		TFunction<void(const FSatoriError& Error)> ErrorCallback
 	);
 
 	UFUNCTION(Category = "Satori|Messages")
 	void DeleteMessage(
-		UNakamaSession* Session,
+		USatoriSession* Session,
 		const FString& MessageId,
 		FOnDeleteMessageSent Success,
 		FOnSatoriError Error
 	);
 
 	void DeleteMessage(
-		UNakamaSession* Session,
+		USatoriSession* Session,
 		const FString& MessageId,
 		TFunction<void()> SuccessCallback,
-		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		TFunction<void(const FSatoriError& Error)> ErrorCallback
 	);
 
 	// --- Utilities --- //
@@ -381,7 +404,7 @@ private:
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> MakeRequest(
 		const FString& Endpoint,
 		const FString& Content,
-		ENakamaRequestMethod RequestMethod,
+		ESatoriRequestMethod RequestMethod,
 		const TMultiMap<FString, FString>& QueryParams,
 		const FString& SessionToken
 	);
