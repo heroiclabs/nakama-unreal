@@ -39,11 +39,5 @@
 				"Android"
 			]
 		}
-	],
-	"Plugins": [
-		{
-			"Name": "Nakama",
-			"Enabled": true
-		}
 	]
 }

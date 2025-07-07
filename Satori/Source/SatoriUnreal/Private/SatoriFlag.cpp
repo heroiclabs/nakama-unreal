@@ -138,10 +138,6 @@ FSatoriFlagOverride::FSatoriFlagOverride(const TSharedPtr<FJsonObject> JsonObjec
 			}
 		}
 	}
-	// Flag name
-	std::string flag_name;
-	// The list of configuration that affect the value of the flag.
-	std::vector<FSatoriFlagOverrideValue> overrides;
 }
 
 FSatoriFlagOverride::FSatoriFlagOverride()
