@@ -1,7 +1,7 @@
 {
 	"FileVersion": 1,
-	"Version": 1,
-	"VersionName": "0.0.1",
+	"Version": 2,
+	"VersionName": "2.10.1",
 	"FriendlyName": "Satori client",
 	"Description": "A UE4 and UE5 client for the Satori server.",
 	"Category": "HeroicLabs.Satori",
@@ -38,12 +38,6 @@
 				"Mac",
 				"Android"
 			]
-		}
-	],
-	"Plugins": [
-		{
-			"Name": "Nakama",
-			"Enabled": true
 		}
 	]
 }
