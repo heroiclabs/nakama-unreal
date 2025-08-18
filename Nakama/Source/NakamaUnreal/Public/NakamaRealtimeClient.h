@@ -31,6 +31,7 @@
 #include "IWebSocket.h"
 #include "NakamaRealtimeRequestContext.h"
 #include "NakamaRPC.h"
+#include "Engine/TimerHandle.h"
 
 #include "NakamaRealtimeClient.generated.h"
 

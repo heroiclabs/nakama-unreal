@@ -35,7 +35,7 @@ struct SATORIUNREAL_API FSatoriExperiment
 	FString Value;
 
 	FSatoriExperiment(const FString& JsonString);
-	FSatoriExperiment(const TSharedPtr<FJsonObject> JsonObject);
+	FSatoriExperiment(const TSharedPtr<class FJsonObject> JsonObject);
 	FSatoriExperiment(); // Default Constructor
 };
 

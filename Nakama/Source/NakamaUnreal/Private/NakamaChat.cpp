@@ -15,6 +15,8 @@
  */
 
 #include "NakamaChat.h"
+#include "Dom/JsonObject.h"
+#include "Serialization/JsonSerializer.h"
 
 FNakamaChannel::FNakamaChannel()
 {

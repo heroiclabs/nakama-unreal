@@ -16,6 +16,8 @@
 
 #include "SatoriUtils.h"
 #include "SatoriLogger.h"
+#include "Dom/JsonObject.h"
+#include "Misc/EngineVersionComparison.h"
 #include "Interfaces/IHttpResponse.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogSatoriUtils, Log, Log);

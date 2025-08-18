@@ -55,7 +55,7 @@ struct NAKAMAUNREAL_API FNakamaUserPresence
 	FString Status;
 
 	FNakamaUserPresence(const FString& JsonString);
-    FNakamaUserPresence(const TSharedPtr<FJsonObject> JsonObject);
+    FNakamaUserPresence(const TSharedPtr<class FJsonObject> JsonObject);
 	FNakamaUserPresence();
 
 };

@@ -71,7 +71,7 @@ struct SATORIUNREAL_API FSatoriMessage
 	FString ImageURL;
 
 	FSatoriMessage(const FString& JsonString);
-	FSatoriMessage(const TSharedPtr<FJsonObject> JsonObject);
+	FSatoriMessage(const TSharedPtr<class FJsonObject> JsonObject);
 	FSatoriMessage(); // Default Constructor
 };
 

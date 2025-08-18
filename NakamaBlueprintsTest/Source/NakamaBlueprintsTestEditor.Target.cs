@@ -9,6 +9,13 @@ public class NakamaBlueprintsTestEditorTarget : TargetRules
 	{
 		Type = TargetType.Editor;
 		DefaultBuildSettings = BuildSettingsVersion.V5;
+        IncludeOrderVersion = EngineIncludeOrderVersion.Latest;
+
+        //bIWYU = true;
+        bEnforceIWYU = true;
+		bUseUnityBuild = false;
+		bForceUnityBuild = false;
+		bUsePCHFiles = false;
 
 		ExtraModuleNames.AddRange( new string[] { "NakamaBlueprintsTest" } );
 	}

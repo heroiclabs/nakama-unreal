@@ -74,7 +74,7 @@ struct NAKAMAUNREAL_API FNakamaLeaderboardRecord
 	int64 Rank = 0;
 
 	FNakamaLeaderboardRecord(const FString& JsonString);
-    FNakamaLeaderboardRecord(const TSharedPtr<FJsonObject> JsonObject);
+    FNakamaLeaderboardRecord(const TSharedPtr<class FJsonObject> JsonObject);
     FNakamaLeaderboardRecord();
 
 };

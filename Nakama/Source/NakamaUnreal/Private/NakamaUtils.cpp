@@ -17,6 +17,8 @@
 #include "NakamaUtils.h"
 #include "NakamaUser.h"
 #include "NakamaLogger.h"
+#include "Dom/JsonObject.h"
+#include "Misc/EngineVersionComparison.h"
 #include "Interfaces/IHttpResponse.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogNakamaUtils, Log, Log);

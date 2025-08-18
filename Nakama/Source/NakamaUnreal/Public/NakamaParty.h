@@ -52,7 +52,7 @@ struct NAKAMAUNREAL_API FNakamaParty
 	TArray<FNakamaUserPresence> Presences;
 
 	FNakamaParty(const FString& JsonString);
-    FNakamaParty(const TSharedPtr<FJsonObject> JsonObject);
+    FNakamaParty(const TSharedPtr<class FJsonObject> JsonObject);
 	FNakamaParty(); // Default Constructor
 };
 

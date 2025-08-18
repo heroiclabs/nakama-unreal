@@ -93,7 +93,7 @@ struct NAKAMAUNREAL_API FNakamaUser
 	FDateTime updatedAt;
 
 	FNakamaUser(const FString& JsonString);
-    FNakamaUser(const TSharedPtr<FJsonObject> JsonObject);
+    FNakamaUser(const TSharedPtr<class FJsonObject> JsonObject);
 	FNakamaUser(): EdgeCount(0), CreatedAt(0), updatedAt(0) { }
 
 };

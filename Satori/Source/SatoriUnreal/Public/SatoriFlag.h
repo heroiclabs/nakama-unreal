@@ -48,7 +48,7 @@ struct SATORIUNREAL_API FSatoriFlagValueChangeReason
 	FString VariantName;
 
 	FSatoriFlagValueChangeReason(const FString& JsonString);
-	FSatoriFlagValueChangeReason(const TSharedPtr<FJsonObject> JsonObject);
+	FSatoriFlagValueChangeReason(const TSharedPtr<class FJsonObject> JsonObject);
 	FSatoriFlagValueChangeReason(); // Default Constructor
 };
 
@@ -74,7 +74,7 @@ struct SATORIUNREAL_API FSatoriFlag
 	FSatoriFlagValueChangeReason ChangeReason;
 
 	FSatoriFlag(const FString& JsonString);
-	FSatoriFlag(const TSharedPtr<FJsonObject> JsonObject);
+	FSatoriFlag(const TSharedPtr<class FJsonObject> JsonObject);
 	FSatoriFlag(); // Default Constructor
 };
 
@@ -130,7 +130,7 @@ struct SATORIUNREAL_API FSatoriFlagOverrideValue
 	int64 CreateTimeSec;
 
 	FSatoriFlagOverrideValue(const FString& JsonString);
-	FSatoriFlagOverrideValue(const TSharedPtr<FJsonObject> JsonObject);
+	FSatoriFlagOverrideValue(const TSharedPtr<class FJsonObject> JsonObject);
 	FSatoriFlagOverrideValue(); // Default Constructor
 };
 
@@ -148,7 +148,7 @@ struct SATORIUNREAL_API FSatoriFlagOverride
 	TArray<FSatoriFlagOverrideValue> Overrides;
 
 	FSatoriFlagOverride(const FString& JsonString);
-	FSatoriFlagOverride(const TSharedPtr<FJsonObject> JsonObject);
+	FSatoriFlagOverride(const TSharedPtr<class FJsonObject> JsonObject);
 	FSatoriFlagOverride(); // Default Constructor
 };
 

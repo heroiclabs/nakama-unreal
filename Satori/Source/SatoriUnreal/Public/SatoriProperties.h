@@ -36,6 +36,6 @@ struct SATORIUNREAL_API FSatoriProperties
 	TMap<FString, FString> CustomProperties;
 
 	FSatoriProperties(const FString& JsonString);
-	FSatoriProperties(const TSharedPtr<FJsonObject> JsonObject);
+	FSatoriProperties(const TSharedPtr<class FJsonObject> JsonObject);
 	FSatoriProperties(); // Default Constructor
 };

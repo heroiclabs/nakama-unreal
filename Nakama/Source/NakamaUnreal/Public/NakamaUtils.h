@@ -21,7 +21,10 @@
 #include "NakamaClient.h"
 #include "Templates/SharedPointer.h"
 #include "NakamaLogger.h"
+#include "Misc/Base64.h"
 #include "NakamaLoggingMacros.h"
+
+class FJsonObject;
 
 class NAKAMAUNREAL_API FNakamaUtils
 {

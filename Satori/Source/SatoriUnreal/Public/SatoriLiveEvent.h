@@ -67,7 +67,7 @@ struct SATORIUNREAL_API FSatoriLiveEvent
 	FString ResetCron;
 
 	FSatoriLiveEvent(const FString& JsonString);
-	FSatoriLiveEvent(const TSharedPtr<FJsonObject> JsonObject);
+	FSatoriLiveEvent(const TSharedPtr<class FJsonObject> JsonObject);
 	FSatoriLiveEvent(); // Default Constructor
 };
 

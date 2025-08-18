@@ -54,7 +54,7 @@ struct NAKAMAUNREAL_API FNakamaNotification
 	bool Persistent = false;
 
 	FNakamaNotification(const FString& JsonString);
-    FNakamaNotification(const TSharedPtr<FJsonObject> JsonObject);
+    FNakamaNotification(const TSharedPtr<class FJsonObject> JsonObject);
 	FNakamaNotification();
 };
 

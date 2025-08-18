@@ -35,6 +35,6 @@ struct NAKAMAUNREAL_API FNakamaAccountDevice
 	TMap<FString, FString> Vars;
 
 	FNakamaAccountDevice(const FString& JsonString);
-    FNakamaAccountDevice(const TSharedPtr<FJsonObject> JsonObject);
+    FNakamaAccountDevice(const TSharedPtr<class FJsonObject> JsonObject);
 	FNakamaAccountDevice();
 };

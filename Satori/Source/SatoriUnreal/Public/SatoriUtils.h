@@ -21,7 +21,11 @@
 #include "SatoriClient.h"
 #include "Templates/SharedPointer.h"
 #include "SatoriLogger.h"
+#include "Misc/Base64.h"
+#include "Serialization/JsonSerializer.h"
 #include "SatoriLoggingMacros.h"
+
+class FJsonObject;
 
 class SATORIUNREAL_API FSatoriUtils
 {

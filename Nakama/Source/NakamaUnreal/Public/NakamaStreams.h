@@ -43,7 +43,7 @@ struct NAKAMAUNREAL_API FNakamaStream
 	FString Label;
 
 	FNakamaStream(const FString& JsonString);
-    FNakamaStream(const TSharedPtr<FJsonObject> JsonObject);
+    FNakamaStream(const TSharedPtr<class FJsonObject> JsonObject);
 	FNakamaStream();
 };
 

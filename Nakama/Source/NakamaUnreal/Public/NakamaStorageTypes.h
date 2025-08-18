@@ -17,6 +17,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "NakamaStorageTypes.generated.h"
 
 
 UENUM(BlueprintType)

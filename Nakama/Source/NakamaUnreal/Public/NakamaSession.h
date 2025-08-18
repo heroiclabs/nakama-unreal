@@ -160,5 +160,5 @@ private:
 	bool _IsRefreshExpired;
 	TMap<FString, FString> _Variables;
 
-	bool ParseJwtPayload(const FString& jwt, TSharedPtr<FJsonObject>& payloadJson);
+	bool ParseJwtPayload(const FString& jwt, TSharedPtr<class FJsonObject>& payloadJson);
 };

@@ -63,7 +63,7 @@ struct NAKAMAUNREAL_API FNakamaStoreObjectData
 	FDateTime UpdateTime = 0;
 
 	FNakamaStoreObjectData(const FString& JsonString);
-	FNakamaStoreObjectData(const TSharedPtr<FJsonObject> JsonObject);
+	FNakamaStoreObjectData(const TSharedPtr<class FJsonObject> JsonObject);
 	FNakamaStoreObjectData();
 };
 
@@ -174,7 +174,7 @@ struct NAKAMAUNREAL_API FNakamaStoreObjectAck
 	FString UserId;
 
 	FNakamaStoreObjectAck(const FString& JsonString);
-    FNakamaStoreObjectAck(const TSharedPtr<FJsonObject> JsonObject);
+    FNakamaStoreObjectAck(const TSharedPtr<class FJsonObject> JsonObject);
 	FNakamaStoreObjectAck();
 
 };

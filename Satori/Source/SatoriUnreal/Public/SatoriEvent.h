@@ -49,6 +49,6 @@ struct SATORIUNREAL_API FSatoriEvent
 	FDateTime Timestamp;
 
 	FSatoriEvent(const FString& JsonString);
-	FSatoriEvent(const TSharedPtr<FJsonObject> JsonObject);
+	FSatoriEvent(const TSharedPtr<class FJsonObject> JsonObject);
 	FSatoriEvent(); // Default Constructor
 };

@@ -94,7 +94,7 @@ struct NAKAMAUNREAL_API FNakamaChannelMessage
 	FString UserIdTwo;
 
 	FNakamaChannelMessage(const FString& JsonString);
-    FNakamaChannelMessage(const TSharedPtr<FJsonObject> JsonObject);
+    FNakamaChannelMessage(const TSharedPtr<class FJsonObject> JsonObject);
 	FNakamaChannelMessage(); // Default Constructor
 };
 

@@ -38,7 +38,7 @@ struct NAKAMAUNREAL_API FNakamaMatchmakerUser
 	TMap<FString, int32> NumericProperties;
 
 	FNakamaMatchmakerUser(const FString& JsonString);
-    FNakamaMatchmakerUser(const TSharedPtr<FJsonObject> JsonObject);
+    FNakamaMatchmakerUser(const TSharedPtr<class FJsonObject> JsonObject);
 	FNakamaMatchmakerUser();
 };
 

@@ -19,6 +19,7 @@
 #include "CoreMinimal.h"
 #include "NakamaClient.h"
 #include "NakamaLogger.h"
+#include "Misc/CommandLine.h"
 #include "Misc/EngineVersionComparison.h"
 
 #if UE_VERSION_OLDER_THAN(5, 5, 0)

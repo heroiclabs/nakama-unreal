@@ -50,7 +50,7 @@ struct NAKAMAUNREAL_API FNakamaMatch
 	FNakamaUserPresence Me;
 
 	FNakamaMatch(const FString& JsonString);
-    FNakamaMatch(const TSharedPtr<FJsonObject> JsonObject);
+    FNakamaMatch(const TSharedPtr<class FJsonObject> JsonObject);
 	FNakamaMatch() : Authoritative(false), Size(0) { }
 
 };
