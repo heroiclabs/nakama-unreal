@@ -1,6 +1,6 @@
 {
 	"FileVersion": 3,
-	"EngineAssociation": "5.2",
+	"EngineAssociation": "{FE4C7F82-447D-007E-B2C8-718DECD5B49A}",
 	"Category": "",
 	"Description": "",
 	"Modules": [
@@ -27,6 +27,10 @@
 		},
 		{
 			"Name": "Nakama",
+			"Enabled": true
+		},
+		{
+			"Name": "Satori",
 			"Enabled": true
 		}
 	]

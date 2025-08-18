@@ -2,6 +2,8 @@
 
 
 #include "NakamaTestFunctionLibrary.h"
+#include "Serialization/JsonSerializer.h"
+#include "Dom/JsonObject.h"
 
 FString UNakamaTestFunctionLibrary::GetMatchIdFromJsonString(const FString& JsonString)
 {
@@ -11,7 +13,7 @@ FString UNakamaTestFunctionLibrary::GetMatchIdFromJsonString(const FString& Json
 	if (FJsonSerializer::Deserialize(JsonReader, JsonObject) && JsonObject.IsValid())
 	{
 		FString MatchId;
-		if (JsonObject->TryGetStringField("match_id", MatchId))
+		if (JsonObject->TryGetStringField(TEXT("match_id"), MatchId))
 		{
 			return MatchId;
 		}

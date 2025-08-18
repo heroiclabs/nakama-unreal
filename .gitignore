@@ -535,10 +535,17 @@ __pycache__/
 # End of https://www.gitignore.io/api/unrealengine,c++,c,windows,linux,macos,intellij+iml,visualstudio,visualstudiocode,xcode,gradle
 
 Out/
-NakamaBlueprintsDemo/Plugins/Nakama
+NakamaBlueprintsDemo/Plugins
 NakamaBlueprintsDemo/Intermediate
+NakamaBlueprintsDemo/DerivedDataCache
 NakamaBlueprintsDemo/Saved
 NakamaBlueprintsDemo/Binaries
+
+NakamaBlueprintsTest/Plugins
+NakamaBlueprintsTest/Intermediate
+NakamaBlueprintsTest/DerivedDataCache
+NakamaBlueprintsTest/Saved
+NakamaBlueprintsTest/Binaries
 
 NakamaTest/Plugins/Nakama
 NakamaTest/Intermediate
@@ -554,3 +561,5 @@ Satori/Saved
 Satori/Binaries
 
 vcpkg_installed/
+/NakamaBlueprintsTest/Content/Developers
+/NakamaBlueprintsTest/Content/Collections
