@@ -1,13 +1,27 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
+/*
+* Copyright 2025 The Nakama Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 #include "NakamaSession.h"
 
 #include "NakamaUtils.h"
 
 
-void UNakamaSession::SetupSession(const FString& AuthResponse)
+UNakamaSession* UNakamaSession::SetupSession(const FString& AuthResponse)
 {
+	UNakamaSession* ResultSession = NewObject<UNakamaSession>();
     TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
     const TSharedRef<TJsonReader<>> JsonReader = TJsonReaderFactory<>::Create(AuthResponse);
 
@@ -16,17 +30,17 @@ void UNakamaSession::SetupSession(const FString& AuthResponse)
         FString Token = JsonObject->GetStringField(TEXT("token"));
         FString RefreshToken = JsonObject->GetStringField(TEXT("refresh_token"));
 
-    	SessionData.AuthToken = Token;
-    	_AuthToken = Token;
-    	SessionData.RefreshToken = RefreshToken;
-    	_RefreshToken = RefreshToken;
+		ResultSession->SessionData.AuthToken = Token;
+		ResultSession->_AuthToken = Token;
+		ResultSession->SessionData.RefreshToken = RefreshToken;
+		ResultSession->_RefreshToken = RefreshToken;
 
     	// Check if the "created" field is available and set IsCreated accordingly
     	bool IsSessionCreated;
     	if (JsonObject->TryGetBoolField(TEXT("created"), IsSessionCreated))
     	{
-    		SessionData.IsCreated = IsSessionCreated;
-    		_IsCreated = IsSessionCreated;
+			ResultSession->SessionData.IsCreated = IsSessionCreated;
+			ResultSession->_IsCreated = IsSessionCreated;
     	}
 
         TSharedPtr<FJsonObject> PayloadJson;
@@ -37,10 +51,10 @@ void UNakamaSession::SetupSession(const FString& AuthResponse)
             PayloadJson->TryGetStringField(TEXT("uid"), UserId);
             PayloadJson->TryGetStringField(TEXT("usn"), Username);
 
-            SessionData.Username = Username;
-        	_Username = Username;
-            SessionData.UserId = UserId;
-        	_UserId = UserId;
+			ResultSession->SessionData.Username = Username;
+			ResultSession->_Username = Username;
+			ResultSession->SessionData.UserId = UserId;
+			ResultSession->_UserId = UserId;
 
             TMap<FString, FString> InVars;
             if (PayloadJson->HasField(TEXT("vrs")))
@@ -50,8 +64,8 @@ void UNakamaSession::SetupSession(const FString& AuthResponse)
                 {
                     FString Key = Entry.Key;
                     FString Value = Entry.Value->AsString();
-                    SessionData.Variables.Add(Key, Value);
-                	_Variables.Add(Key, Value);
+					ResultSession->SessionData.Variables.Add(Key, Value);
+					ResultSession->_Variables.Add(Key, Value);
                 }
             }
 
@@ -59,10 +73,10 @@ void UNakamaSession::SetupSession(const FString& AuthResponse)
             if (PayloadJson->TryGetNumberField(TEXT("exp"), Expires))
             {
                 FDateTime ExpireTime = FDateTime::FromUnixTimestamp(Expires);
-                SessionData.ExpireTime = ExpireTime;
-            	_ExpireTime = ExpireTime;
-                SessionData.IsExpired = (FDateTime::UtcNow() >= ExpireTime);
-            	_IsExpired = (FDateTime::UtcNow() >= ExpireTime);
+				ResultSession->SessionData.ExpireTime = ExpireTime;
+				ResultSession->_ExpireTime = ExpireTime;
+				ResultSession->SessionData.IsExpired = (FDateTime::UtcNow() >= ExpireTime);
+				ResultSession->_IsExpired = (FDateTime::UtcNow() >= ExpireTime);
             }
 
             // Parse and check expiration time of the refresh_token
@@ -73,15 +87,16 @@ void UNakamaSession::SetupSession(const FString& AuthResponse)
                 if (RefreshPayloadJson->TryGetNumberField(TEXT("exp"), RefreshExpires))
                 {
                     FDateTime RefreshExpireTime = FDateTime::FromUnixTimestamp(RefreshExpires);
-                    SessionData.RefreshExpireTime = RefreshExpireTime;
-                	_RefreshExpireTime = RefreshExpireTime;
-                    SessionData.IsRefreshExpired = (FDateTime::UtcNow() >= RefreshExpireTime);
-                	_IsRefreshExpired = (FDateTime::UtcNow() >= RefreshExpireTime);
+					ResultSession->SessionData.RefreshExpireTime = RefreshExpireTime;
+					ResultSession->_RefreshExpireTime = RefreshExpireTime;
+					ResultSession->SessionData.IsRefreshExpired = (FDateTime::UtcNow() >= RefreshExpireTime);
+					ResultSession->_IsRefreshExpired = (FDateTime::UtcNow() >= RefreshExpireTime);
                 }
             }
 
-            SessionData.CreateTime = FDateTime::UtcNow();
-        	_CreateTime = FDateTime::UtcNow();
+			ResultSession->SessionData.CreateTime = FDateTime::UtcNow();
+			ResultSession->_CreateTime = FDateTime::UtcNow();
+			return ResultSession;
         }
         else
         {
@@ -92,6 +107,7 @@ void UNakamaSession::SetupSession(const FString& AuthResponse)
     {
     	NAKAMA_LOG_ERROR(TEXT("Failed to deserialize Session JSON object"));
     }
+	return nullptr;
 }
 
 const FString UNakamaSession::GetAuthToken()  const
@@ -187,8 +203,8 @@ UNakamaSession* UNakamaSession::RestoreSession(FString Token, FString RefreshTok
 	else
 	{
 		NAKAMA_LOG_ERROR("Restore Session: Failed to serialize Restore Session JSON object");
-		return nullptr;
 	}
+	return nullptr;
 }
 
 bool UNakamaSession::ParseJwtPayload(const FString& jwt, TSharedPtr<FJsonObject>& payloadJson)

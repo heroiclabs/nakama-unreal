@@ -1,4 +1,18 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+/*
+* Copyright 2025 The Nakama Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 #pragma once
 
@@ -20,7 +34,7 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Sessions")
 	FNakamaUserSession SessionData;
 
-	void SetupSession(const FString& AuthResponse);
+	static UNakamaSession* SetupSession(const FString& AuthResponse);
 
 	/**
 	 * @return The authentication token used to construct this session.
@@ -134,6 +148,8 @@ public:
 
 private:
 
+	UNakamaSession() {}
+
 	FString _AuthToken;
 	FString _RefreshToken;
 	bool _IsCreated;
@@ -146,5 +162,5 @@ private:
 	bool _IsRefreshExpired;
 	TMap<FString, FString> _Variables;
 
-	bool ParseJwtPayload(const FString& jwt, TSharedPtr<FJsonObject>& payloadJson);
+	static bool ParseJwtPayload(const FString& jwt, TSharedPtr<class FJsonObject>& payloadJson);
 };
