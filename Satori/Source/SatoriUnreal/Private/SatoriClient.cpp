@@ -228,9 +228,7 @@ void USatoriClient::Authenticate(
 					// Check for Success Callback
 					if (SuccessCallback)
 					{
-						USatoriSession* ResultSession = NewObject<USatoriSession>();
-						ResultSession->SetupSession(ResponseBody);
-						SuccessCallback(ResultSession);
+						SuccessCallback(USatoriSession::SetupSession(ResponseBody));
 					}
 				}
 				else
@@ -352,9 +350,7 @@ void USatoriClient::AuthenticateRefresh(
 					// Check for Success Callback
 					if (SuccessCallback)
 					{
-						USatoriSession* ResultSession = NewObject<USatoriSession>();
-						ResultSession->SetupSession(ResponseBody);
-						SuccessCallback(ResultSession);
+						SuccessCallback(USatoriSession::SetupSession(ResponseBody));
 					}
 				}
 				else
@@ -614,9 +610,7 @@ void USatoriClient::Identify(
 					// Check for Success Callback
 					if (SuccessCallback)
 					{
-						USatoriSession* ResultSession = NewObject<USatoriSession>();
-						ResultSession->SetupSession(ResponseBody);
-						SuccessCallback(ResultSession);
+						SuccessCallback(USatoriSession::SetupSession(ResponseBody));
 					}
 				}
 				else

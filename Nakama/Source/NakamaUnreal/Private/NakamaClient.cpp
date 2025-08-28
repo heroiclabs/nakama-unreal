@@ -2329,9 +2329,7 @@ void UNakamaClient::AuthenticateDevice(
                     // Check for Success Callback
                     if (SuccessCallback)
                     {
-                        UNakamaSession* ResultSession = NewObject<UNakamaSession>();
-                        ResultSession->SetupSession(ResponseBody);
-                        SuccessCallback(ResultSession);
+                        SuccessCallback(UNakamaSession::SetupSession(ResponseBody));
                     }
                 }
                 else
@@ -2433,9 +2431,7 @@ void UNakamaClient::AuthenticateEmail(
                     // Check for Success Callback
                     if (SuccessCallback)
                     {
-                        UNakamaSession* ResultSession = NewObject<UNakamaSession>();
-                        ResultSession->SetupSession(ResponseBody);
-                        SuccessCallback(ResultSession);
+						SuccessCallback(UNakamaSession::SetupSession(ResponseBody));
                     }
                 }
                 else
@@ -2535,9 +2531,7 @@ void UNakamaClient::AuthenticateCustom(
                     // Check for Success Callback
                     if (SuccessCallback)
                     {
-                        UNakamaSession* ResultSession = NewObject<UNakamaSession>();
-                        ResultSession->SetupSession(ResponseBody);
-                        SuccessCallback(ResultSession);
+						SuccessCallback(UNakamaSession::SetupSession(ResponseBody));
                     }
                 }
                 else
@@ -2637,9 +2631,7 @@ void UNakamaClient::AuthenticateApple(
                     // Check for Success Callback
                     if (SuccessCallback)
                     {
-                        UNakamaSession* ResultSession = NewObject<UNakamaSession>();
-                        ResultSession->SetupSession(ResponseBody);
-                        SuccessCallback(ResultSession);
+						SuccessCallback(UNakamaSession::SetupSession(ResponseBody));
                     }
                 }
                 else
@@ -2741,9 +2733,7 @@ void UNakamaClient::AuthenticateFacebook(
                     // Check for Success Callback
                     if (SuccessCallback)
                     {
-                        UNakamaSession* ResultSession = NewObject<UNakamaSession>();
-                        ResultSession->SetupSession(ResponseBody);
-                        SuccessCallback(ResultSession);
+						SuccessCallback(UNakamaSession::SetupSession(ResponseBody));
                     }
                 }
                 else
@@ -2843,9 +2833,7 @@ void UNakamaClient::AuthenticateGoogle(
                     // Check for Success Callback
                     if (SuccessCallback)
                     {
-                        UNakamaSession* ResultSession = NewObject<UNakamaSession>();
-                        ResultSession->SetupSession(ResponseBody);
-                        SuccessCallback(ResultSession);
+						SuccessCallback(UNakamaSession::SetupSession(ResponseBody));
                     }
                 }
                 else
@@ -2955,9 +2943,7 @@ void UNakamaClient::AuthenticateGameCenter(
                     // Check for Success Callback
                     if (SuccessCallback)
                     {
-                        UNakamaSession* ResultSession = NewObject<UNakamaSession>();
-                        ResultSession->SetupSession(ResponseBody);
-                        SuccessCallback(ResultSession);
+						SuccessCallback(UNakamaSession::SetupSession(ResponseBody));
                     }
                 }
                 else
@@ -3059,9 +3045,7 @@ void UNakamaClient::AuthenticateSteam(
                     // Check for Success Callback
                     if (SuccessCallback)
                     {
-                        UNakamaSession* ResultSession = NewObject<UNakamaSession>();
-                        ResultSession->SetupSession(ResponseBody);
-                        SuccessCallback(ResultSession);
+						SuccessCallback(UNakamaSession::SetupSession(ResponseBody));
                     }
                 }
                 else
@@ -3151,9 +3135,7 @@ void UNakamaClient::AuthenticateRefresh(
                     // Check for Success Callback
                     if (SuccessCallback)
                     {
-                        UNakamaSession* ResultSession = NewObject<UNakamaSession>();
-                        ResultSession->SetupSession(ResponseBody);
-                        SuccessCallback(ResultSession);
+						SuccessCallback(UNakamaSession::SetupSession(ResponseBody));
                     }
                 }
                 else

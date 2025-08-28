@@ -34,7 +34,7 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Sessions")
 	FNakamaUserSession SessionData;
 
-	void SetupSession(const FString& AuthResponse);
+	static UNakamaSession* SetupSession(const FString& AuthResponse);
 
 	/**
 	 * @return The authentication token used to construct this session.
@@ -148,6 +148,8 @@ public:
 
 private:
 
+	UNakamaSession() {}
+
 	FString _AuthToken;
 	FString _RefreshToken;
 	bool _IsCreated;
@@ -160,5 +162,5 @@ private:
 	bool _IsRefreshExpired;
 	TMap<FString, FString> _Variables;
 
-	bool ParseJwtPayload(const FString& jwt, TSharedPtr<class FJsonObject>& payloadJson);
+	static bool ParseJwtPayload(const FString& jwt, TSharedPtr<class FJsonObject>& payloadJson);
 };

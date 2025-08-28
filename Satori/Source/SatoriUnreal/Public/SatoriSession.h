@@ -34,9 +34,7 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Satori|Authentication")
 	FSatoriUserSession SessionData;
 
-	USatoriSession() { }
-
-	void SetupSession(const FString& AuthResponse);
+	static USatoriSession* SetupSession(const FString& AuthResponse);
 
 	/**
 	 * @return The authentication token used to construct this session.
@@ -66,6 +64,8 @@ public:
 	static USatoriSession* RestoreSession(FString Token, FString RefreshToken);
 
 private:
+
+	USatoriSession() {}
 
 	FString _AuthToken;
 	FString _RefreshToken;

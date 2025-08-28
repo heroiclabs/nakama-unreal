@@ -19,8 +19,9 @@
 #include "SatoriUtils.h"
 
 
-void USatoriSession::SetupSession(const FString& AuthResponse)
+USatoriSession* USatoriSession::SetupSession(const FString& AuthResponse)
 {
+	USatoriSession* ResultSession = NewObject<USatoriSession>();
     TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
     const TSharedRef<TJsonReader<>> JsonReader = TJsonReaderFactory<>::Create(AuthResponse);
 
@@ -29,23 +30,25 @@ void USatoriSession::SetupSession(const FString& AuthResponse)
         FString Token = JsonObject->GetStringField(TEXT("token"));
         FString RefreshToken = JsonObject->GetStringField(TEXT("refresh_token"));
 
-    	SessionData.AuthToken = Token;
-    	_AuthToken = Token;
-    	SessionData.RefreshToken = RefreshToken;
-    	_RefreshToken = RefreshToken;
+		ResultSession->SessionData.AuthToken = Token;
+		ResultSession->_AuthToken = Token;
+		ResultSession->SessionData.RefreshToken = RefreshToken;
+		ResultSession->_RefreshToken = RefreshToken;
 
 		const TSharedPtr<FJsonObject>* PropertiesJson = nullptr;
     	if (JsonObject->TryGetObjectField(TEXT("properties"), PropertiesJson))
     	{
 			FSatoriProperties Properties = FSatoriProperties(*PropertiesJson);
-			SessionData.Properties = Properties;
-    		_Properties = Properties;
+			ResultSession->SessionData.Properties = Properties;
+			ResultSession->_Properties = Properties;
     	}
+		return ResultSession;
     }
     else
     {
     	SATORI_LOG_ERROR(TEXT("Failed to deserialize Satori Session JSON object"));
     }
+	return nullptr;
 }
 
 const FString USatoriSession::GetAuthToken()  const
