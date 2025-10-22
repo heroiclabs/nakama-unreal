@@ -21,6 +21,7 @@
 #include "NakamaLogger.h"
 #include "GenericPlatform/GenericPlatformHttp.h"
 #include "Interfaces/IHttpResponse.h"
+#include "Misc/Optional.h"
 
 void UNakamaClient::InitializeClient(const FString& InHostname, int32 InPort, const FString& InServerKey,
 	bool bInUseSSL)
@@ -1828,7 +1829,7 @@ void UNakamaClient::DeleteStorageObjects(
  * RPC
  */
 
-void UNakamaClient::RPC(
+bool UNakamaClient::RPC(
 	UNakamaSession* Session,
 	const FString& FunctionId,
 	const FString& Payload,
@@ -1851,14 +1852,14 @@ void UNakamaClient::RPC(
 		Error.Broadcast(error);
 	};
 
-	RPC(Session, FunctionId, Payload, successCallback, errorCallback);
+	return RPC(Session, FunctionId, TOptional<FString>(Payload), successCallback, errorCallback);
 }
 
 /**
  * RPCHttpKey
  */
 
-void UNakamaClient::RPCHttpKey(
+bool UNakamaClient::RPCHttpKey(
 	const FString& HttpKey,
 	const FString& FunctionId,
 	const FString& Payload,
@@ -1881,7 +1882,7 @@ void UNakamaClient::RPCHttpKey(
 		Error.Broadcast(error);
 	};
 
-	RPC(HttpKey, FunctionId, Payload, successCallback, errorCallback);
+	return RPC(HttpKey, FunctionId, Payload, successCallback, errorCallback);
 }
 
 /**
@@ -8680,7 +8681,7 @@ bool UNakamaClient::RPC(
 
 
     // Sends Empty Session
-    return SendRPC({}, Id, Payload, QueryParams, SuccessCallback, ErrorCallback);
+    return SendRPC({}, Id, TOptional<FString>(Payload), QueryParams, SuccessCallback, ErrorCallback);
 }
 
 // End of TFunctions

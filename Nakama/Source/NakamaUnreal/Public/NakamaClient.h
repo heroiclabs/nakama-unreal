@@ -1373,7 +1373,7 @@ public:
 	 * @param Error Delegate called if an error occurs, detailing the failure.
 	 */
 	UFUNCTION(Category = "Nakama|Realtime|RPC")
-	void RPC(
+	bool RPC(
 		UNakamaSession* Session,
 		const FString& FunctionId,
 		const FString& Payload,
@@ -1393,7 +1393,7 @@ public:
 	 * @param Error Delegate called if an error occurs, detailing the failure.
 	 */
 	UFUNCTION(Category = "Nakama|Realtime|RPC")
-	void RPCHttpKey(
+	bool RPCHttpKey(
 		const FString& HttpKey,
 		const FString& FunctionId,
 		const FString& Payload,

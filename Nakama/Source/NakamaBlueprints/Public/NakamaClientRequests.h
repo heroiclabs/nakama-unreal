@@ -17,8 +17,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "NakamaClient.h"
 #include "Kismet/BlueprintAsyncActionBase.h"
+#include "Delegates/DelegateCombinations.h"
+#include "NakamaClient.h"
 #include "NakamaStorageObject.h"
 #include "NakamaError.h"
 #include "NakamaGroup.h"
