@@ -1,7 +1,23 @@
-#include "SatoriFlag.h"
-#include "NakamaUtils.h"
+/*
+* Copyright 2025 The Nakama Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-FSatoriFlagValueChangeReason::FSatoriFlagValueChangeReason(const FString& JsonString) : FSatoriFlagValueChangeReason(FNakamaUtils::DeserializeJsonObject(JsonString))
+#include "SatoriFlag.h"
+#include "SatoriUtils.h"
+
+FSatoriFlagValueChangeReason::FSatoriFlagValueChangeReason(const FString& JsonString) : FSatoriFlagValueChangeReason(FSatoriUtils::DeserializeJsonObject(JsonString))
 {
 }
 
@@ -25,7 +41,7 @@ FSatoriFlagValueChangeReason::FSatoriFlagValueChangeReason()
 {
 }
 
-FSatoriFlag::FSatoriFlag(const FString& JsonString) : FSatoriFlag(FNakamaUtils::DeserializeJsonObject(JsonString))
+FSatoriFlag::FSatoriFlag(const FString& JsonString) : FSatoriFlag(FSatoriUtils::DeserializeJsonObject(JsonString))
 {
 }
 
@@ -75,7 +91,7 @@ FSatoriFlagList::FSatoriFlagList()
 {
 }
 
-FSatoriFlagOverrideValue::FSatoriFlagOverrideValue(const FString& JsonString) : FSatoriFlagOverrideValue(FNakamaUtils::DeserializeJsonObject(JsonString))
+FSatoriFlagOverrideValue::FSatoriFlagOverrideValue(const FString& JsonString) : FSatoriFlagOverrideValue(FSatoriUtils::DeserializeJsonObject(JsonString))
 {
 }
 
@@ -100,7 +116,7 @@ FSatoriFlagOverrideValue::FSatoriFlagOverrideValue()
 {
 }
 
-FSatoriFlagOverride::FSatoriFlagOverride(const FString& JsonString) : FSatoriFlagOverride(FNakamaUtils::DeserializeJsonObject(JsonString))
+FSatoriFlagOverride::FSatoriFlagOverride(const FString& JsonString) : FSatoriFlagOverride(FSatoriUtils::DeserializeJsonObject(JsonString))
 {
 }
 
@@ -122,15 +138,12 @@ FSatoriFlagOverride::FSatoriFlagOverride(const TSharedPtr<FJsonObject> JsonObjec
 			}
 		}
 	}
-	// Flag name
-	std::string flag_name;
-	// The list of configuration that affect the value of the flag.
-	std::vector<FSatoriFlagOverrideValue> overrides;
 }
 
 FSatoriFlagOverride::FSatoriFlagOverride()
 {
 }
+
 
 FSatoriFlagOverrideList::FSatoriFlagOverrideList(const FString& JsonString)
 {

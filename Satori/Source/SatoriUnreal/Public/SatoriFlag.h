@@ -1,3 +1,19 @@
+/*
+* Copyright 2025 The Nakama Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 #pragma once
 
 #include "CoreMinimal.h"
@@ -32,7 +48,7 @@ struct SATORIUNREAL_API FSatoriFlagValueChangeReason
 	FString VariantName;
 
 	FSatoriFlagValueChangeReason(const FString& JsonString);
-	FSatoriFlagValueChangeReason(const TSharedPtr<FJsonObject> JsonObject);
+	FSatoriFlagValueChangeReason(const TSharedPtr<class FJsonObject> JsonObject);
 	FSatoriFlagValueChangeReason(); // Default Constructor
 };
 
@@ -58,7 +74,7 @@ struct SATORIUNREAL_API FSatoriFlag
 	FSatoriFlagValueChangeReason ChangeReason;
 
 	FSatoriFlag(const FString& JsonString);
-	FSatoriFlag(const TSharedPtr<FJsonObject> JsonObject);
+	FSatoriFlag(const TSharedPtr<class FJsonObject> JsonObject);
 	FSatoriFlag(); // Default Constructor
 };
 
@@ -114,7 +130,7 @@ struct SATORIUNREAL_API FSatoriFlagOverrideValue
 	int64 CreateTimeSec;
 
 	FSatoriFlagOverrideValue(const FString& JsonString);
-	FSatoriFlagOverrideValue(const TSharedPtr<FJsonObject> JsonObject);
+	FSatoriFlagOverrideValue(const TSharedPtr<class FJsonObject> JsonObject);
 	FSatoriFlagOverrideValue(); // Default Constructor
 };
 
@@ -132,7 +148,7 @@ struct SATORIUNREAL_API FSatoriFlagOverride
 	TArray<FSatoriFlagOverrideValue> Overrides;
 
 	FSatoriFlagOverride(const FString& JsonString);
-	FSatoriFlagOverride(const TSharedPtr<FJsonObject> JsonObject);
+	FSatoriFlagOverride(const TSharedPtr<class FJsonObject> JsonObject);
 	FSatoriFlagOverride(); // Default Constructor
 };
 

@@ -1,4 +1,18 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+/*
+* Copyright 2025 The Nakama Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 #include "NakamaClient.h"
 #include "NakamaUtils.h"
@@ -7,6 +21,7 @@
 #include "NakamaLogger.h"
 #include "GenericPlatform/GenericPlatformHttp.h"
 #include "Interfaces/IHttpResponse.h"
+#include "Misc/Optional.h"
 
 void UNakamaClient::InitializeClient(const FString& InHostname, int32 InPort, const FString& InServerKey,
 	bool bInUseSSL)
@@ -1814,7 +1829,7 @@ void UNakamaClient::DeleteStorageObjects(
  * RPC
  */
 
-void UNakamaClient::RPC(
+bool UNakamaClient::RPC(
 	UNakamaSession* Session,
 	const FString& FunctionId,
 	const FString& Payload,
@@ -1837,14 +1852,14 @@ void UNakamaClient::RPC(
 		Error.Broadcast(error);
 	};
 
-	RPC(Session, FunctionId, Payload, successCallback, errorCallback);
+	return RPC(Session, FunctionId, TOptional<FString>(Payload), successCallback, errorCallback);
 }
 
 /**
  * RPCHttpKey
  */
 
-void UNakamaClient::RPCHttpKey(
+bool UNakamaClient::RPCHttpKey(
 	const FString& HttpKey,
 	const FString& FunctionId,
 	const FString& Payload,
@@ -1867,7 +1882,7 @@ void UNakamaClient::RPCHttpKey(
 		Error.Broadcast(error);
 	};
 
-	RPC(HttpKey, FunctionId, Payload, successCallback, errorCallback);
+	return RPC(HttpKey, FunctionId, Payload, successCallback, errorCallback);
 }
 
 /**
@@ -2315,9 +2330,7 @@ void UNakamaClient::AuthenticateDevice(
                     // Check for Success Callback
                     if (SuccessCallback)
                     {
-                        UNakamaSession* ResultSession = NewObject<UNakamaSession>();
-                        ResultSession->SetupSession(ResponseBody);
-                        SuccessCallback(ResultSession);
+                        SuccessCallback(UNakamaSession::SetupSession(ResponseBody));
                     }
                 }
                 else
@@ -2419,9 +2432,7 @@ void UNakamaClient::AuthenticateEmail(
                     // Check for Success Callback
                     if (SuccessCallback)
                     {
-                        UNakamaSession* ResultSession = NewObject<UNakamaSession>();
-                        ResultSession->SetupSession(ResponseBody);
-                        SuccessCallback(ResultSession);
+						SuccessCallback(UNakamaSession::SetupSession(ResponseBody));
                     }
                 }
                 else
@@ -2521,9 +2532,7 @@ void UNakamaClient::AuthenticateCustom(
                     // Check for Success Callback
                     if (SuccessCallback)
                     {
-                        UNakamaSession* ResultSession = NewObject<UNakamaSession>();
-                        ResultSession->SetupSession(ResponseBody);
-                        SuccessCallback(ResultSession);
+						SuccessCallback(UNakamaSession::SetupSession(ResponseBody));
                     }
                 }
                 else
@@ -2623,9 +2632,7 @@ void UNakamaClient::AuthenticateApple(
                     // Check for Success Callback
                     if (SuccessCallback)
                     {
-                        UNakamaSession* ResultSession = NewObject<UNakamaSession>();
-                        ResultSession->SetupSession(ResponseBody);
-                        SuccessCallback(ResultSession);
+						SuccessCallback(UNakamaSession::SetupSession(ResponseBody));
                     }
                 }
                 else
@@ -2727,9 +2734,7 @@ void UNakamaClient::AuthenticateFacebook(
                     // Check for Success Callback
                     if (SuccessCallback)
                     {
-                        UNakamaSession* ResultSession = NewObject<UNakamaSession>();
-                        ResultSession->SetupSession(ResponseBody);
-                        SuccessCallback(ResultSession);
+						SuccessCallback(UNakamaSession::SetupSession(ResponseBody));
                     }
                 }
                 else
@@ -2829,9 +2834,7 @@ void UNakamaClient::AuthenticateGoogle(
                     // Check for Success Callback
                     if (SuccessCallback)
                     {
-                        UNakamaSession* ResultSession = NewObject<UNakamaSession>();
-                        ResultSession->SetupSession(ResponseBody);
-                        SuccessCallback(ResultSession);
+						SuccessCallback(UNakamaSession::SetupSession(ResponseBody));
                     }
                 }
                 else
@@ -2941,9 +2944,7 @@ void UNakamaClient::AuthenticateGameCenter(
                     // Check for Success Callback
                     if (SuccessCallback)
                     {
-                        UNakamaSession* ResultSession = NewObject<UNakamaSession>();
-                        ResultSession->SetupSession(ResponseBody);
-                        SuccessCallback(ResultSession);
+						SuccessCallback(UNakamaSession::SetupSession(ResponseBody));
                     }
                 }
                 else
@@ -3045,9 +3046,7 @@ void UNakamaClient::AuthenticateSteam(
                     // Check for Success Callback
                     if (SuccessCallback)
                     {
-                        UNakamaSession* ResultSession = NewObject<UNakamaSession>();
-                        ResultSession->SetupSession(ResponseBody);
-                        SuccessCallback(ResultSession);
+						SuccessCallback(UNakamaSession::SetupSession(ResponseBody));
                     }
                 }
                 else
@@ -3137,9 +3136,7 @@ void UNakamaClient::AuthenticateRefresh(
                     // Check for Success Callback
                     if (SuccessCallback)
                     {
-                        UNakamaSession* ResultSession = NewObject<UNakamaSession>();
-                        ResultSession->SetupSession(ResponseBody);
-                        SuccessCallback(ResultSession);
+						SuccessCallback(UNakamaSession::SetupSession(ResponseBody));
                     }
                 }
                 else
@@ -8684,7 +8681,7 @@ bool UNakamaClient::RPC(
 
 
     // Sends Empty Session
-    return SendRPC({}, Id, Payload, QueryParams, SuccessCallback, ErrorCallback);
+    return SendRPC({}, Id, TOptional<FString>(Payload), QueryParams, SuccessCallback, ErrorCallback);
 }
 
 // End of TFunctions

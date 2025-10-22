@@ -1,31 +1,45 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+/*
+* Copyright 2025 The Nakama Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "SatoriClient.h"
 #include "Kismet/BlueprintAsyncActionBase.h"
-#include "NakamaError.h"
+#include "SatoriError.h"
 
 #include "SatoriClientRequests.generated.h"
 
 // Delegates
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSatoriAuthenticateCustom, UNakamaSession*, Session, FNakamaError, Error);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSatoriAuthenticateRefresh, UNakamaSession*, Session, FNakamaError, Error);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSatoriAuthenticateLogout, FNakamaError, Error);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSatoriIdentify, UNakamaSession*, Session, FNakamaError, Error);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSatoriListIdentityProperties, FSatoriProperties, Properties, FNakamaError, Error);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSatoriUpdateProperties, FNakamaError, Error);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSatoriDeleteIdentity, FNakamaError, Error);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSatoriAuthenticate, USatoriSession*, Session, FSatoriError, Error);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSatoriAuthenticateRefresh, USatoriSession*, Session, FSatoriError, Error);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSatoriAuthenticateLogout, FSatoriError, Error);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSatoriIdentify, USatoriSession*, Session, FSatoriError, Error);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSatoriListIdentityProperties, FSatoriProperties, Properties, FSatoriError, Error);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSatoriUpdateProperties, FSatoriError, Error);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSatoriDeleteIdentity, FSatoriError, Error);
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSatoriPostEvent, FNakamaError, Error);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSatoriGetExperiments, FSatoriExperimentList, Experiments, FNakamaError, Error);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSatoriGetFlags, FSatoriFlagList, Flags, FNakamaError, Error);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSatoriGetFlagOverrides, FSatoriFlagOverrideList, FlagOverrides, FNakamaError, Error);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSatoriGetLiveEvents, FSatoriLiveEventList, LiveEvents, FNakamaError, Error);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSatoriGetMessages, FSatoriMessageList, Messages, FNakamaError, Error);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSatoriUpdateMessage, FNakamaError, Error);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSatoriDeleteMessage, FNakamaError, Error);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSatoriPostEvent, FSatoriError, Error);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSatoriGetExperiments, FSatoriExperimentList, Experiments, FSatoriError, Error);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSatoriGetFlags, FSatoriFlagList, Flags, FSatoriError, Error);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSatoriGetFlagOverrides, FSatoriFlagOverrideList, FlagOverrides, FSatoriError, Error);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSatoriGetLiveEvents, FSatoriLiveEventList, LiveEvents, FSatoriError, Error);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSatoriGetMessages, FSatoriMessageList, Messages, FSatoriError, Error);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSatoriUpdateMessage, FSatoriError, Error);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSatoriDeleteMessage, FSatoriError, Error);
 
 
 
@@ -37,7 +51,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSatoriDeleteMessage, FNakamaError
  */
 
 UCLASS()
-class SATORIBLUEPRINTS_API USatoriClientAuthenticateCustom : public UBlueprintAsyncActionBase
+class SATORIBLUEPRINTS_API USatoriClientAuthenticate : public UBlueprintAsyncActionBase
 {
 	GENERATED_BODY()
 
@@ -47,36 +61,36 @@ public:
 	TObjectPtr<USatoriClient> SatoriClient;
 
 	UPROPERTY(BlueprintAssignable)
-	FOnSatoriAuthenticateCustom OnSuccess;
+	FOnSatoriAuthenticate OnSuccess;
 
 	UPROPERTY(BlueprintAssignable)
-	FOnSatoriAuthenticateCustom OnError;
+	FOnSatoriAuthenticate OnError;
 
 	/**
-	 * Authenticate a user with a custom id.
-	 * @param Client The Client to use.
-	 * @param UserID A custom identifier usually obtained from an external authentication service.
-	 * @param Username A username used to create the user.
-	 * @param CreateAccount True if the user should be created when authenticated.
-	 * @param Vars Extra information that will be bundled in the session token.
+	 * Authenticate to get a satori session.
+	 * @param ID Must be between eight and 128 characters (inclusive). Must be an alphanumeric string with only underscores and hyphens allowed.
+	 * @param DefaultProperties Optional default properties to update with this call. If not set, properties are left as they are on the server.
+	 * @param CustomProperties Optional custom properties to update with this call. If not set, properties are left as they are on the server.
+	 * @param bNoSession Modifies the request to only create/update an identity without creating a new session. If set to 'true' the response won't include a token and a refresh token.
+	 * @param Success Delegate called upon successful authentication, providing the user session.
+	 * @param Error Delegate called on authentication failure with error details.
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Satori|Authentication", meta = (BlueprintInternalUseOnly = "true", AutoCreateRefTerm = "Vars"))
-	static USatoriClientAuthenticateCustom* AuthenticateCustom(
+	UFUNCTION(BlueprintCallable, Category = "Satori|Authentication", meta = (BlueprintInternalUseOnly = "true", AutoCreateRefTerm = "DefaultProperties,CustomProperties"))
+	static USatoriClientAuthenticate* Authenticate(
 		USatoriClient *Client,
-		const FString& UserID,
-		const FString& Username,
-		bool CreateAccount,
-		const TMap<FString, FString>& Vars);
+		const FString& ID,
+		const TMap<FString, FString>& DefaultProperties,
+		const TMap<FString, FString>& CustomProperties,
+		const bool bNoSession);
 
 	virtual void Activate() override;
 
 private:
 
-	FString UserID;
-	FString Username;
-	bool bCreateAccount;
-	TMap<FString, FString> Vars;
-
+	FString ID;
+	TMap<FString, FString> DefaultProperties;
+	TMap<FString, FString> CustomProperties;
+	bool bNoSession;
 };
 
 
@@ -95,7 +109,7 @@ public:
 	TObjectPtr<USatoriClient> SatoriClient;
 
 	UPROPERTY()
-	TObjectPtr<UNakamaSession> UserSession;
+	TObjectPtr<USatoriSession> UserSession;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnSatoriAuthenticateRefresh OnSuccess;
@@ -110,7 +124,7 @@ public:
 	 * @param Client The Client to use.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Satori|Authentication", meta = (BlueprintInternalUseOnly = "true"))
-	static USatoriClientAuthenticateRefresh* AuthenticateRefresh(USatoriClient* Client, UNakamaSession* Session);
+	static USatoriClientAuthenticateRefresh* AuthenticateRefresh(USatoriClient* Client, USatoriSession* Session);
 
 	virtual void Activate() override;
 };
@@ -131,7 +145,7 @@ public:
 	TObjectPtr<USatoriClient> SatoriClient;
 
 	UPROPERTY()
-	TObjectPtr<UNakamaSession> UserSession;
+	TObjectPtr<USatoriSession> UserSession;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnSatoriAuthenticateLogout OnSuccess;
@@ -146,7 +160,7 @@ public:
 	 * @param Client The Client to use.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Satori|Authentication", meta = (BlueprintInternalUseOnly = "true"))
-	static USatoriClientAuthenticateLogout* AuthenticateLogout(USatoriClient* Client, UNakamaSession* Session);
+	static USatoriClientAuthenticateLogout* AuthenticateLogout(USatoriClient* Client, USatoriSession* Session);
 
 	virtual void Activate() override;
 };
@@ -167,7 +181,7 @@ public:
 	TObjectPtr<USatoriClient> SatoriClient;
 
 	UPROPERTY()
-	TObjectPtr<UNakamaSession> UserSession;
+	TObjectPtr<USatoriSession> UserSession;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnSatoriIdentify OnSuccess;
@@ -182,10 +196,10 @@ public:
 	 * @param Session The session of the user.
 	 * @param Client The Client to use.
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Satori|Identity", meta = (BlueprintInternalUseOnly = "true", AutoCreateRefTerm = "DefaultProperties,CustomProperties"))
+	UFUNCTION(BlueprintCallable, Category = "Satori|Authentication", meta = (BlueprintInternalUseOnly = "true", AutoCreateRefTerm = "DefaultProperties,CustomProperties"))
 	static USatoriClientIdentify* Identify(
 		USatoriClient* Client,
-		UNakamaSession* Session,
+		USatoriSession* Session,
 		const FString& ID,
 		const TMap<FString, FString>& DefaultProperties,
 		const TMap<FString, FString>& CustomProperties);
@@ -214,7 +228,7 @@ public:
 	TObjectPtr<USatoriClient> SatoriClient;
 
 	UPROPERTY()
-	TObjectPtr<UNakamaSession> UserSession;
+	TObjectPtr<USatoriSession> UserSession;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnSatoriListIdentityProperties OnSuccess;
@@ -228,8 +242,8 @@ public:
 	 * @param Session The session of the user.
 	 * @param Client The Client to use.
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Satori|Identity", meta = (BlueprintInternalUseOnly = "true"))
-	static USatoriClientListIdentityProperties* ListIdentityProperties(USatoriClient* Client, UNakamaSession* Session);
+	UFUNCTION(BlueprintCallable, Category = "Satori|Authentication", meta = (BlueprintInternalUseOnly = "true"))
+	static USatoriClientListIdentityProperties* ListIdentityProperties(USatoriClient* Client, USatoriSession* Session);
 
 	virtual void Activate() override;
 };
@@ -250,7 +264,7 @@ public:
 	TObjectPtr<USatoriClient> SatoriClient;
 
 	UPROPERTY()
-	TObjectPtr<UNakamaSession> UserSession;
+	TObjectPtr<USatoriSession> UserSession;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnSatoriUpdateProperties OnSuccess;
@@ -265,10 +279,10 @@ public:
 	 * @param Session The session of the user.
 	 * @param Client The Client to use.
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Satori|Identity", meta = (BlueprintInternalUseOnly = "true", AutoCreateRefTerm = "DefaultProperties,CustomProperties"))
+	UFUNCTION(BlueprintCallable, Category = "Satori|Authentication", meta = (BlueprintInternalUseOnly = "true", AutoCreateRefTerm = "DefaultProperties,CustomProperties"))
 	static USatoriClientUpdateProperties* UpdateProperties(
 		USatoriClient* Client, 
-		UNakamaSession* Session,
+		USatoriSession* Session,
 		const TMap<FString, FString>& DefaultProperties,
 		const TMap<FString, FString>& CustomProperties,
 		const bool bRecompute);
@@ -297,7 +311,7 @@ public:
 	TObjectPtr<USatoriClient> SatoriClient;
 
 	UPROPERTY()
-	TObjectPtr<UNakamaSession> UserSession;
+	TObjectPtr<USatoriSession> UserSession;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnSatoriDeleteIdentity OnSuccess;
@@ -311,8 +325,8 @@ public:
 	 * @param Session The session of the user.
 	 * @param Client The Client to use.
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Satori|Identity", meta = (BlueprintInternalUseOnly = "true"))
-	static USatoriClientDeleteIdentity* DeleteIdentity(USatoriClient* Client, UNakamaSession* Session);
+	UFUNCTION(BlueprintCallable, Category = "Satori|Authentication", meta = (BlueprintInternalUseOnly = "true"))
+	static USatoriClientDeleteIdentity* DeleteIdentity(USatoriClient* Client, USatoriSession* Session);
 
 	virtual void Activate() override;
 };
@@ -337,7 +351,7 @@ public:
 	TObjectPtr<USatoriClient> SatoriClient;
 
 	UPROPERTY()
-	TObjectPtr<UNakamaSession> UserSession;
+	TObjectPtr<USatoriSession> UserSession;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnSatoriPostEvent OnSuccess;
@@ -353,7 +367,7 @@ public:
 	 * @param Client The Client to use.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Satori|Events", meta = (BlueprintInternalUseOnly = "true"))
-	static USatoriClientPostEvent* PostEvent(USatoriClient* Client, UNakamaSession* Session, const TArray<FSatoriEvent>& Events);
+	static USatoriClientPostEvent* PostEvent(USatoriClient* Client, USatoriSession* Session, const TArray<FSatoriEvent>& Events);
 
 	virtual void Activate() override;
 
@@ -377,7 +391,7 @@ public:
 	TObjectPtr<USatoriClient> SatoriClient;
 
 	UPROPERTY()
-	TObjectPtr<UNakamaSession> UserSession;
+	TObjectPtr<USatoriSession> UserSession;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnSatoriGetExperiments OnSuccess;
@@ -393,7 +407,7 @@ public:
 	 * @param Client The Client to use.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Satori|Experiments", meta = (BlueprintInternalUseOnly = "true", AutoCreateRefTerm = "Names"))
-	static USatoriClientGetExperiments* GetExperiments(USatoriClient* Client, UNakamaSession* Session, const TArray<FString>& Names);
+	static USatoriClientGetExperiments* GetExperiments(USatoriClient* Client, USatoriSession* Session, const TArray<FString>& Names);
 
 	virtual void Activate() override;
 
@@ -417,7 +431,7 @@ public:
 	TObjectPtr<USatoriClient> SatoriClient;
 
 	UPROPERTY()
-	TObjectPtr<UNakamaSession> UserSession;
+	TObjectPtr<USatoriSession> UserSession;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnSatoriGetFlags OnSuccess;
@@ -433,7 +447,7 @@ public:
 	 * @param Client The Client to use.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Satori|Flags", meta = (BlueprintInternalUseOnly = "true", AutoCreateRefTerm = "Names"))
-	static USatoriClientGetFlags* GetFlags(USatoriClient* Client, UNakamaSession* Session, const TArray<FString>& Names);
+	static USatoriClientGetFlags* GetFlags(USatoriClient* Client, USatoriSession* Session, const TArray<FString>& Names);
 
 	virtual void Activate() override;
 
@@ -457,7 +471,7 @@ public:
 	TObjectPtr<USatoriClient> SatoriClient;
 
 	UPROPERTY()
-	TObjectPtr<UNakamaSession> UserSession;
+	TObjectPtr<USatoriSession> UserSession;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnSatoriGetFlagOverrides OnSuccess;
@@ -473,7 +487,7 @@ public:
 	 * @param Client The Client to use.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Satori|Flags", meta = (BlueprintInternalUseOnly = "true", AutoCreateRefTerm = "Names"))
-	static USatoriClientGetFlagOverrides* GetFlagOverrides(USatoriClient* Client, UNakamaSession* Session, const TArray<FString>& Names);
+	static USatoriClientGetFlagOverrides* GetFlagOverrides(USatoriClient* Client, USatoriSession* Session, const TArray<FString>& Names);
 
 	virtual void Activate() override;
 
@@ -497,7 +511,7 @@ public:
 	TObjectPtr<USatoriClient> SatoriClient;
 
 	UPROPERTY()
-	TObjectPtr<UNakamaSession> UserSession;
+	TObjectPtr<USatoriSession> UserSession;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnSatoriGetLiveEvents OnSuccess;
@@ -513,7 +527,7 @@ public:
 	 * @param Client The Client to use.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Satori|LiveEvents", meta = (BlueprintInternalUseOnly = "true", AutoCreateRefTerm = "LiveEventNames"))
-	static USatoriClientGetLiveEvents* GetLiveEvents(USatoriClient* Client, UNakamaSession* Session, const TArray<FString>& LiveEventNames);
+	static USatoriClientGetLiveEvents* GetLiveEvents(USatoriClient* Client, USatoriSession* Session, const TArray<FString>& LiveEventNames);
 
 	virtual void Activate() override;
 
@@ -537,7 +551,7 @@ public:
 	TObjectPtr<USatoriClient> SatoriClient;
 
 	UPROPERTY()
-	TObjectPtr<UNakamaSession> UserSession;
+	TObjectPtr<USatoriSession> UserSession;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnSatoriGetMessages OnSuccess;
@@ -555,7 +569,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Satori|Messages", meta = (BlueprintInternalUseOnly = "true"))
 	static USatoriClientGetMessages* GetMessages(
 		USatoriClient* Client,
-		UNakamaSession* Session,
+		USatoriSession* Session,
 		int32 Limit,
 		bool Forward,
 		const FString& Cursor);
@@ -584,7 +598,7 @@ public:
 	TObjectPtr<USatoriClient> SatoriClient;
 
 	UPROPERTY()
-	TObjectPtr<UNakamaSession> UserSession;
+	TObjectPtr<USatoriSession> UserSession;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnSatoriUpdateMessage OnSuccess;
@@ -602,7 +616,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Satori|Messages", meta = (BlueprintInternalUseOnly = "true"))
 	static USatoriClientUpdateMessage* UpdateMessage(
 		USatoriClient* Client,
-		UNakamaSession* Session,
+		USatoriSession* Session,
 		const FString& MessageId,
 		const FDateTime ReadTime,
 		const FDateTime ConsumeTime);
@@ -631,7 +645,7 @@ public:
 	TObjectPtr<USatoriClient> SatoriClient;
 
 	UPROPERTY()
-	TObjectPtr<UNakamaSession> UserSession;
+	TObjectPtr<USatoriSession> UserSession;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnSatoriDeleteMessage OnSuccess;
@@ -647,7 +661,7 @@ public:
 	 * @param Client The Client to use.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Satori|Messages", meta = (BlueprintInternalUseOnly = "true"))
-	static USatoriClientDeleteMessage* DeleteMessage(USatoriClient* Client, UNakamaSession* Session, const FString& MessageId);
+	static USatoriClientDeleteMessage* DeleteMessage(USatoriClient* Client, USatoriSession* Session, const FString& MessageId);
 
 	virtual void Activate() override;
 
