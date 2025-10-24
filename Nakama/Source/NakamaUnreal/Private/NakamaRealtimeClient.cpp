@@ -59,7 +59,9 @@ void UNakamaRealtimeClient::Connect(
 	auto successCallback = [this, Success]()
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
+		{
 			return;
+		}
 
 		Success.Broadcast();
 	};
@@ -67,7 +69,9 @@ void UNakamaRealtimeClient::Connect(
 	auto errorCallback = [this, ConnectionError](const FNakamaRtError& error)
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
+		{
 			return;
+		}
 
 		ConnectionError.Broadcast(error);
 	};
@@ -485,7 +489,9 @@ void UNakamaRealtimeClient::WriteChatMessage(
 	auto successCallback = [this, Success](const FNakamaChannelMessageAck& ChannelMessageAck)
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
+		{
 			return;
+		}
 
 		Success.Broadcast(ChannelMessageAck);
 	};
@@ -493,7 +499,9 @@ void UNakamaRealtimeClient::WriteChatMessage(
 	auto errorCallback = [this, Error](const FNakamaRtError& error)
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
+		{
 			return;
+		}
 
 		Error.Broadcast(error);
 	};
@@ -510,7 +518,9 @@ void UNakamaRealtimeClient::SendDirectMessage(
 	auto successCallback = [this, Success](const FNakamaChannelMessageAck& ChannelMessageAck)
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
+		{
 			return;
+		}
 
 		Success.Broadcast(ChannelMessageAck);
 	};
@@ -518,7 +528,9 @@ void UNakamaRealtimeClient::SendDirectMessage(
 	auto errorCallback = [this, Error](const FNakamaRtError& error)
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
+		{
 			return;
+		}
 
 		Error.Broadcast(error);
 	};
@@ -536,7 +548,9 @@ void UNakamaRealtimeClient::UpdateChatMessage(
 	auto successCallback = [this, Success](const FNakamaChannelMessageAck& ChannelMessageAck)
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
+		{
 			return;
+		}
 
 		Success.Broadcast(ChannelMessageAck);
 	};
@@ -544,7 +558,9 @@ void UNakamaRealtimeClient::UpdateChatMessage(
 	auto errorCallback = [this, Error](const FNakamaRtError& error)
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
+		{
 			return;
+		}
 
 		Error.Broadcast(error);
 	};
@@ -561,7 +577,9 @@ void UNakamaRealtimeClient::RemoveChatMessage(
 	auto successCallback = [this, Success](const FNakamaChannelMessageAck& ChannelMessageAck)
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
+		{
 			return;
+		}
 
 		Success.Broadcast(ChannelMessageAck);
 	};
@@ -569,7 +587,9 @@ void UNakamaRealtimeClient::RemoveChatMessage(
 	auto errorCallback = [this, Error](const FNakamaRtError& error)
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
+		{
 			return;
+		}
 
 		Error.Broadcast(error);
 	};
@@ -593,7 +613,9 @@ void UNakamaRealtimeClient::JoinChat(
 	auto successCallback = [this, Success](const FNakamaChannel& Channel)
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
+		{
 			return;
+		}
 
 		Success.Broadcast(Channel);
 	};
@@ -601,7 +623,9 @@ void UNakamaRealtimeClient::JoinChat(
 	auto errorCallback = [this, Error](const FNakamaRtError& error)
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
+		{
 			return;
+		}
 
 		Error.Broadcast(error);
 	};
@@ -617,7 +641,9 @@ void UNakamaRealtimeClient::LeaveChat(
 	auto successCallback = [this, Success]()
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
+		{
 			return;
+		}
 
 		Success.Broadcast();
 	};
@@ -625,7 +651,9 @@ void UNakamaRealtimeClient::LeaveChat(
 	auto errorCallback = [this, Error](const FNakamaRtError& error)
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
+		{
 			return;
+		}
 
 		Error.Broadcast(error);
 	};
@@ -651,7 +679,9 @@ void UNakamaRealtimeClient::AddMatchmaker(
 	auto successCallback = [this, Success](const FNakamaMatchmakerTicket& MatchmakerTicket)
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
+		{
 			return;
+		}
 
 		Success.Broadcast(MatchmakerTicket.TicketId);
 	};
@@ -659,7 +689,9 @@ void UNakamaRealtimeClient::AddMatchmaker(
 	auto errorCallback = [this, Error](const FNakamaRtError& error)
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
+		{
 			return;
+		}
 
 		Error.Broadcast(error);
 	};
@@ -697,7 +729,9 @@ void UNakamaRealtimeClient::RemoveMatchmaker(
 	auto successCallback = [this, Success, Ticket]()
     {
     	if(!FNakamaUtils::IsRealtimeClientActive(this))
+    	{
     		return;
+    	}
 
     	Success.Broadcast(Ticket); // Deviation from the C++ SDK by returning the ticket
     };
@@ -705,7 +739,9 @@ void UNakamaRealtimeClient::RemoveMatchmaker(
     auto errorCallback = [this, Error](const FNakamaRtError& error)
     {
     	if(!FNakamaUtils::IsRealtimeClientActive(this))
+    	{
     		return;
+    	}
 
     	Error.Broadcast(error);
     };
@@ -725,7 +761,9 @@ void UNakamaRealtimeClient::UpdateStatus(
 	auto successCallback = [this, Success]()
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
+		{
 			return;
+		}
 
 		Success.Broadcast();
 	};
@@ -733,7 +771,9 @@ void UNakamaRealtimeClient::UpdateStatus(
 	auto errorCallback = [this, Error](const FNakamaRtError& error)
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
+		{
 			return;
+		}
 
 		Error.Broadcast(error);
 	};
@@ -748,7 +788,9 @@ void UNakamaRealtimeClient::SetAppearOffline(
 	auto successCallback = [this, Success]()
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
+		{
 			return;
+		}
 
 		Success.Broadcast();
 	};
@@ -756,7 +798,9 @@ void UNakamaRealtimeClient::SetAppearOffline(
 	auto errorCallback = [this, Error](const FNakamaRtError& error)
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
+		{
 			return;
+		}
 
 		Error.Broadcast(error);
 	};
@@ -772,7 +816,9 @@ void UNakamaRealtimeClient::FollowUsers(
 	auto successCallback = [this, Success](const FNakamaStatus& Status)
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
+		{
 			return;
+		}
 
 		Success.Broadcast(Status);
 	};
@@ -780,7 +826,9 @@ void UNakamaRealtimeClient::FollowUsers(
 	auto errorCallback = [this, Error](const FNakamaRtError& error)
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
+		{
 			return;
+		}
 
 		Error.Broadcast(error);
 	};
@@ -796,7 +844,9 @@ void UNakamaRealtimeClient::UnFollowUsers(
 	auto successCallback = [this, Success]()
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
+		{
 			return;
+		}
 
 		Success.Broadcast();
 	};
@@ -804,7 +854,9 @@ void UNakamaRealtimeClient::UnFollowUsers(
 	auto errorCallback = [this, Error](const FNakamaRtError& error)
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
+		{
 			return;
+		}
 
 		Error.Broadcast(error);
 	};
@@ -823,7 +875,9 @@ void UNakamaRealtimeClient::CreateMatch(
 	auto successCallback = [this, Success](const FNakamaMatch& Match)
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
+		{
 			return;
+		}
 
 		Success.Broadcast(Match);
 	};
@@ -831,7 +885,9 @@ void UNakamaRealtimeClient::CreateMatch(
 	auto errorCallback = [this, Error](const FNakamaRtError& error)
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
+		{
 			return;
+		}
 
 		Error.Broadcast(error);
 	};
@@ -848,7 +904,9 @@ void UNakamaRealtimeClient::JoinMatch(
 	auto successCallback = [this, Success](const FNakamaMatch& Match)
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
+		{
 			return;
+		}
 
 		Success.Broadcast(Match);
 	};
@@ -856,7 +914,9 @@ void UNakamaRealtimeClient::JoinMatch(
 	auto errorCallback = [this, Error](const FNakamaRtError& error)
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
+		{
 			return;
+		}
 
 		Error.Broadcast(error);
 	};
@@ -872,7 +932,9 @@ void UNakamaRealtimeClient::JoinMatchByToken(
 	auto successCallback = [this, Success](const FNakamaMatch& Match)
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
+		{
 			return;
+		}
 
 		Success.Broadcast(Match);
 	};
@@ -880,7 +942,9 @@ void UNakamaRealtimeClient::JoinMatchByToken(
 	auto errorCallback = [this, Error](const FNakamaRtError& error)
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
+		{
 			return;
+		}
 
 		Error.Broadcast(error);
 	};
@@ -946,7 +1010,9 @@ void UNakamaRealtimeClient::LeaveMatch(
 	auto successCallback = [this, Success]()
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
+		{
 			return;
+		}
 
 		Success.Broadcast();
 	};
@@ -954,7 +1020,9 @@ void UNakamaRealtimeClient::LeaveMatch(
 	auto errorCallback = [this, Error](const FNakamaRtError& error)
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
+		{
 			return;
+		}
 
 		Error.Broadcast(error);
 	};
@@ -976,7 +1044,9 @@ void UNakamaRealtimeClient::CreateParty(
 	auto successCallback = [this, Success](const FNakamaParty& Party)
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
+		{
 			return;
+		}
 
 		Success.Broadcast(Party);
 	};
@@ -984,7 +1054,9 @@ void UNakamaRealtimeClient::CreateParty(
 	auto errorCallback = [this, Error](const FNakamaRtError& error)
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
+		{
 			return;
+		}
 
 		Error.Broadcast(error);
 	};
@@ -1000,7 +1072,9 @@ void UNakamaRealtimeClient::JoinParty(
 	auto successCallback = [this, Success, PartyId]()
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
+		{
 			return;
+		}
 
 		Success.Broadcast(PartyId); // Deviation from C++ SDK by passing PartyId
 	};
@@ -1008,7 +1082,9 @@ void UNakamaRealtimeClient::JoinParty(
 	auto errorCallback = [this, Error](const FNakamaRtError& error)
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
+		{
 			return;
+		}
 
 		Error.Broadcast(error);
 	};
@@ -1024,7 +1100,9 @@ void UNakamaRealtimeClient::LeaveParty(
 	auto successCallback = [this, Success]()
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
+		{
 			return;
+		}
 
 		Success.Broadcast();
 	};
@@ -1032,7 +1110,9 @@ void UNakamaRealtimeClient::LeaveParty(
 	auto errorCallback = [this, Error](const FNakamaRtError& error)
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
+		{
 			return;
+		}
 
 		Error.Broadcast(error);
 	};
@@ -1048,7 +1128,9 @@ void UNakamaRealtimeClient::ListPartyJoinRequests(
 	auto successCallback = [this, Success](const FNakamaPartyJoinRequest& PartyJoinRequest)
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
+		{
 			return;
+		}
 
 		Success.Broadcast(PartyJoinRequest);
 	};
@@ -1056,7 +1138,9 @@ void UNakamaRealtimeClient::ListPartyJoinRequests(
 	auto errorCallback = [this, Error](const FNakamaRtError& error)
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
+		{
 			return;
+		}
 
 		Error.Broadcast(error);
 	};
@@ -1073,7 +1157,9 @@ void UNakamaRealtimeClient::PromotePartyMember(
 	auto successCallback = [this, Success]()
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
+		{
 			return;
+		}
 
 		Success.Broadcast();
 	};
@@ -1081,7 +1167,9 @@ void UNakamaRealtimeClient::PromotePartyMember(
 	auto errorCallback = [this, Error](const FNakamaRtError& error)
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
+		{
 			return;
+		}
 
 		Error.Broadcast(error);
 	};
@@ -1098,7 +1186,9 @@ void UNakamaRealtimeClient::RemoveMatchMakerParty(
 	auto successCallback = [this, Success, Ticket]()
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
+		{
 			return;
+		}
 
 		Success.Broadcast(Ticket); // Deviation from C++ SDK by passing Ticket
 	};
@@ -1106,7 +1196,9 @@ void UNakamaRealtimeClient::RemoveMatchMakerParty(
 	auto errorCallback = [this, Error](const FNakamaRtError& error)
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
+		{
 			return;
+		}
 
 		Error.Broadcast(error);
 	};
@@ -1123,7 +1215,9 @@ void UNakamaRealtimeClient::RemovePartyMember(
 	auto successCallback = [this, Success]()
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
+		{
 			return;
+		}
 
 		Success.Broadcast();
 	};
@@ -1131,7 +1225,9 @@ void UNakamaRealtimeClient::RemovePartyMember(
 	auto errorCallback = [this, Error](const FNakamaRtError& error)
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
+		{
 			return;
+		}
 
 		Error.Broadcast(error);
 	};
@@ -1148,7 +1244,9 @@ void UNakamaRealtimeClient::AcceptPartyMember(
 	auto successCallback = [this, Success]()
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
+		{
 			return;
+		}
 
 		Success.Broadcast();
 	};
@@ -1156,7 +1254,9 @@ void UNakamaRealtimeClient::AcceptPartyMember(
 	auto errorCallback = [this, Error](const FNakamaRtError& error)
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
+		{
 			return;
+		}
 
 		Error.Broadcast(error);
 	};
@@ -1179,7 +1279,9 @@ void UNakamaRealtimeClient::AddMatchmakerParty(
 	auto successCallback = [this, Success](const FNakamaPartyMatchmakerTicket& MatchmakerTicket)
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
+		{
 			return;
+		}
 
 		Success.Broadcast(MatchmakerTicket);
 	};
@@ -1187,7 +1289,9 @@ void UNakamaRealtimeClient::AddMatchmakerParty(
 	auto errorCallback = [this, Error](const FNakamaRtError& error)
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
+		{
 			return;
+		}
 
 		Error.Broadcast(error);
 	};
@@ -1218,7 +1322,9 @@ void UNakamaRealtimeClient::CloseParty(
 	auto successCallback = [this, Success]()
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
+		{
 			return;
+		}
 
 		Success.Broadcast();
 	};
@@ -1226,7 +1332,9 @@ void UNakamaRealtimeClient::CloseParty(
 	auto errorCallback = [this, Error](const FNakamaRtError& error)
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
+		{
 			return;
+		}
 
 		Error.Broadcast(error);
 	};
@@ -1239,7 +1347,9 @@ void UNakamaRealtimeClient::RPC(const FString& FunctionId, const FString& Payloa
 	auto successCallback = [this, Success](const FNakamaRPC& rpc)
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
+		{
 			return;
+		}
 
 		Success.Broadcast(rpc);
 	};
@@ -1247,7 +1357,9 @@ void UNakamaRealtimeClient::RPC(const FString& FunctionId, const FString& Payloa
 	auto errorCallback = [this, Error](const FNakamaRtError& error)
 	{
 		if(!FNakamaUtils::IsRealtimeClientActive(this))
+		{
 			return;
+		}
 
 		Error.Broadcast(error);
 	};
@@ -2140,7 +2252,9 @@ void UNakamaRealtimeClient::SendPartyData(
 bool UNakamaRealtimeClient::IsConnected()
 {
 	if(!WebSocket)
+	{
 		return false;
+	}
 
 	return WebSocket->IsConnected();
 }
@@ -2288,7 +2402,9 @@ void UNakamaRealtimeClient::SendDataWithEnvelope(const FString& FieldName, const
 void UNakamaRealtimeClient::CleanupWebSocket()
 {
 	if (!WebSocket.IsValid())
+	{
 		return;
+	}
 
 	// Indicate that the disconnect was initiated locally.
 	bLocalDisconnectInitiated = true;
