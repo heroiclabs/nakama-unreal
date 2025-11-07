@@ -37,6 +37,25 @@ void UNakamaRealtimeClient::Initialize(const FString& InHost, int32 InPort, bool
 	NAKAMA_LOG_INFO(FString::Printf(TEXT("Nakama Realtime Client Created on Port: %d"), InPort));
 }
 
+void UNakamaRealtimeClient::UseCustomWebsocket(TSharedPtr<IWebSocket> CustomWebSocket)
+{
+	if (CustomWebSocket.IsValid())
+	{
+		// Check if a previous WebSocket object exists (safety check)
+		if (WebSocket)
+		{
+			CancelAllRequests(ENakamaRtErrorCode::DISCONNECTED);
+			CleanupWebSocket();
+		}
+		bIsCustomWebsocketSet = true;
+		WebSocket = CustomWebSocket;
+	}
+	else
+	{
+		bIsCustomWebsocketSet = false;
+	}
+}
+
 void UNakamaRealtimeClient::Connect(
 	UNakamaSession* Session,
 	bool bCreateStatus,
@@ -140,14 +159,17 @@ void UNakamaRealtimeClient::Connect(
 		FModuleManager::Get().LoadModule("WebSockets");
 	}
 
-	// Check if a previous WebSocket object exists (safety check)
-	if (WebSocket)
+	if (!bIsCustomWebsocketSet)
 	{
-		CancelAllRequests(ENakamaRtErrorCode::DISCONNECTED);
-		CleanupWebSocket();
-	}
+		// Check if a previous WebSocket object exists (safety check)
+		if (WebSocket)
+		{
+			CancelAllRequests(ENakamaRtErrorCode::DISCONNECTED);
+			CleanupWebSocket();
+		}
 
-	WebSocket = FWebSocketsModule::Get().CreateWebSocket(Url);
+		WebSocket = FWebSocketsModule::Get().CreateWebSocket(Url);
+	}
 
 	WebSocket->OnConnected().AddLambda([this, Success]()
 	{
