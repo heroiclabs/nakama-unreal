@@ -1333,7 +1333,7 @@ private:
 	FString Host;
 	int32 Port;
 	bool bUseSSL;
-	bool bIsCustomWebsocketSet;
+	bool bIsCustomWebsocketSet = false;
 
 	UPROPERTY()
 	bool bShowAsOnline;
