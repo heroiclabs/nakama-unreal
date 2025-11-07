@@ -101,10 +101,8 @@ void UNakamaRealtimeClient::Connect(
 		}
 
 		// Broadcast Multicast Delegate Event
-		if(ConnectionErrorEvent.IsBound())
-		{
-			ConnectionErrorEvent.Broadcast(InvalidSessionError);
-		}
+		ConnectionErrorEvent.Broadcast(InvalidSessionError);
+		ConnectionErrorEventNative.Broadcast(InvalidSessionError);
 
 		return;
 	}
@@ -126,10 +124,8 @@ void UNakamaRealtimeClient::Connect(
 		}
 
 		// Broadcast Multicast Delegate Event
-		if(ConnectionErrorEvent.IsBound())
-		{
-			ConnectionErrorEvent.Broadcast(ExistingConnectionError);
-		}
+		ConnectionErrorEvent.Broadcast(ExistingConnectionError);
+		ConnectionErrorEventNative.Broadcast(ExistingConnectionError);
 
 		return;
 	}
@@ -191,10 +187,8 @@ void UNakamaRealtimeClient::Connect(
 			}
 
 			// Broadcast Event Multicast Delegate
-			if(ConnectedEvent.IsBound())
-			{
-				ConnectedEvent.Broadcast();
-			}
+			ConnectedEvent.Broadcast();
+			ConnectedEventNative.Broadcast();
 		}
 	});
 
@@ -226,10 +220,8 @@ void UNakamaRealtimeClient::Connect(
 			}
 
 			// Broadcast Event Multicast Delegate
-			if(ConnectionErrorEvent.IsBound())
-			{
-				ConnectionErrorEvent.Broadcast(ConnectionRtError);
-			}
+			ConnectionErrorEvent.Broadcast(ConnectionRtError);
+			ConnectionErrorEventNative.Broadcast(ConnectionRtError);
 		}
 	});
 
@@ -267,10 +259,8 @@ void UNakamaRealtimeClient::Connect(
 			}
 
 			// Broadcast Event Multicast Delegate
-			if(DisconnectedEvent.IsBound())
-			{
-				DisconnectedEvent.Broadcast(DisconnectInfo);
-			}
+			DisconnectedEvent.Broadcast(DisconnectInfo);
+			DisconnectedEventNative.Broadcast(DisconnectInfo);
 		}
 	});
 
@@ -2249,7 +2239,7 @@ void UNakamaRealtimeClient::SendPartyData(
 }
 
 
-bool UNakamaRealtimeClient::IsConnected()
+bool UNakamaRealtimeClient::IsConnected() const
 {
 	if(!WebSocket)
 	{
@@ -2259,7 +2249,7 @@ bool UNakamaRealtimeClient::IsConnected()
 	return WebSocket->IsConnected();
 }
 
-int32 UNakamaRealtimeClient::GetHeartbeatIntervalMs()
+int32 UNakamaRealtimeClient::GetHeartbeatIntervalMs() const
 {
 	return HeartbeatIntervalMs;
 }
@@ -2493,10 +2483,8 @@ void UNakamaRealtimeClient::HandleReceivedMessage(const FString& Data)
     				}
 
     				// Handle Multicast Delegate
-    				if(ErrorEvent.IsBound())
-    				{
-    					ErrorEvent.Broadcast(ReturnedError);
-    				}
+    				ErrorEvent.Broadcast(ReturnedError);
+    				ErrorEventNative.Broadcast(ReturnedError);
     			}
     			else
     			{
@@ -2517,10 +2505,8 @@ void UNakamaRealtimeClient::HandleReceivedMessage(const FString& Data)
     				}
 
     				// Handle Multicast Delegate
-    				if(ChannelMessageReceived.IsBound())
-    				{
-    					ChannelMessageReceived.Broadcast(ChannelMessage);
-    				}
+    				ChannelMessageReceived.Broadcast(ChannelMessage);
+    				ChannelMessageReceivedNative.Broadcast(ChannelMessage);
     			}
     			else
     			{
@@ -2541,10 +2527,8 @@ void UNakamaRealtimeClient::HandleReceivedMessage(const FString& Data)
     				}
 
     				// Handle Multicast Delegate
-    				if(ChannelPresenceEventReceived.IsBound())
-    				{
-    					ChannelPresenceEventReceived.Broadcast(ChannelPresenceEvent);
-    				}
+    				ChannelPresenceEventReceived.Broadcast(ChannelPresenceEvent);
+    				ChannelPresenceEventReceivedNative.Broadcast(ChannelPresenceEvent);
     			}
     			else
     			{
@@ -2565,10 +2549,8 @@ void UNakamaRealtimeClient::HandleReceivedMessage(const FString& Data)
     				}
 
     				// Handle Multicast Delegate
-    				if(MatchDataCallback.IsBound())
-    				{
-    					MatchDataCallback.Broadcast(MatchData);
-    				}
+    				MatchDataCallback.Broadcast(MatchData);
+    				MatchDataCallbackNative.Broadcast(MatchData);
     			}
     			else
     			{
@@ -2589,10 +2571,8 @@ void UNakamaRealtimeClient::HandleReceivedMessage(const FString& Data)
     				}
 
     				// Handle Multicast Delegate
-    				if(MatchmakerPresenceCallback.IsBound())
-    				{
-    					MatchmakerPresenceCallback.Broadcast(MatchPresenceEvent);
-    				}
+    				MatchmakerPresenceCallback.Broadcast(MatchPresenceEvent);
+    				MatchmakerPresenceCallbackNative.Broadcast(MatchPresenceEvent);
     			}
     			else
     			{
@@ -2613,10 +2593,8 @@ void UNakamaRealtimeClient::HandleReceivedMessage(const FString& Data)
     				}
 
     				// Handle Multicast Delegate
-    				if(MatchmakerMatchMatched.IsBound())
-    				{
-    					MatchmakerMatchMatched.Broadcast(MatchmakerMatched);
-    				}
+    				MatchmakerMatchMatched.Broadcast(MatchmakerMatched);
+    				MatchmakerMatchMatchedNative.Broadcast(MatchmakerMatched);
     			}
     			else
     			{
@@ -2637,10 +2615,8 @@ void UNakamaRealtimeClient::HandleReceivedMessage(const FString& Data)
     				}
 
     				// Handle Multicast Delegate
-    				if(NotificationReceived.IsBound())
-    				{
-    					NotificationReceived.Broadcast(NotificationList);
-    				}
+    				NotificationReceived.Broadcast(NotificationList);
+    				NotificationReceivedNative.Broadcast(NotificationList);
     			}
     			else
     			{
@@ -2661,10 +2637,8 @@ void UNakamaRealtimeClient::HandleReceivedMessage(const FString& Data)
     				}
 
     				// Handle Multicast Delegate
-    				if(PresenceStatusReceived.IsBound())
-    				{
-    					PresenceStatusReceived.Broadcast(StatusPresenceEvent);
-    				}
+    				PresenceStatusReceived.Broadcast(StatusPresenceEvent);
+    				PresenceStatusReceivedNative.Broadcast(StatusPresenceEvent);
     			}
     			else
     			{
@@ -2685,10 +2659,8 @@ void UNakamaRealtimeClient::HandleReceivedMessage(const FString& Data)
     				}
 
     				// Handle Multicast Delegate
-    				if(StreamPresenceDataReceived.IsBound())
-    				{
-    					StreamPresenceDataReceived.Broadcast(StreamData);
-    				}
+    				StreamPresenceDataReceived.Broadcast(StreamData);
+    				StreamPresenceDataReceivedNative.Broadcast(StreamData);
     			}
     			else
     			{
@@ -2709,10 +2681,8 @@ void UNakamaRealtimeClient::HandleReceivedMessage(const FString& Data)
     				}
 
     				// Handle Multicast Delegate
-    				if(StreamPresenceEventReceived.IsBound())
-    				{
-    					StreamPresenceEventReceived.Broadcast(StreamPresenceEvent);
-    				}
+    				StreamPresenceEventReceived.Broadcast(StreamPresenceEvent);
+    				StreamPresenceEventReceivedNative.Broadcast(StreamPresenceEvent);
     			}
     			else
     			{
@@ -2733,10 +2703,8 @@ void UNakamaRealtimeClient::HandleReceivedMessage(const FString& Data)
     				}
 
     				// Handle Multicast Delegate
-    				if(PartyReceived.IsBound())
-    				{
-    					PartyReceived.Broadcast(Party);
-    				}
+    				PartyReceived.Broadcast(Party);
+    				PartyReceivedNative.Broadcast(Party);
     			}
     			else
     			{
@@ -2757,10 +2725,8 @@ void UNakamaRealtimeClient::HandleReceivedMessage(const FString& Data)
     				}
 
     				// Handle Multicast Delegate
-    				if(PartyCloseReceived.IsBound())
-    				{
-    					PartyCloseReceived.Broadcast(PartyClose);
-    				}
+    				PartyCloseReceived.Broadcast(PartyClose);
+    				PartyCloseReceivedNative.Broadcast(PartyClose);
     			}
     			else
     			{
@@ -2781,10 +2747,8 @@ void UNakamaRealtimeClient::HandleReceivedMessage(const FString& Data)
     				}
 
     				// Handle Multicast Delegate
-    				if(PartyDataReceived.IsBound())
-    				{
-    					PartyDataReceived.Broadcast(PartyData);
-    				}
+    				PartyDataReceived.Broadcast(PartyData);
+    				PartyDataReceivedNative.Broadcast(PartyData);
     			}
     			else
     			{
@@ -2805,10 +2769,8 @@ void UNakamaRealtimeClient::HandleReceivedMessage(const FString& Data)
     				}
 
     				// Handle Multicast Delegate
-    				if(PartyJoinRequestReceived.IsBound())
-    				{
-    					PartyJoinRequestReceived.Broadcast(PartyJoinRequest);
-    				}
+    				PartyJoinRequestReceived.Broadcast(PartyJoinRequest);
+    				PartyJoinRequestReceivedNative.Broadcast(PartyJoinRequest);
     			}
     			else
     			{
@@ -2829,10 +2791,8 @@ void UNakamaRealtimeClient::HandleReceivedMessage(const FString& Data)
     				}
 
     				// Handle Multicast Delegate
-    				if(PartyLeaderReceived.IsBound())
-    				{
-    					PartyLeaderReceived.Broadcast(PartyLeader);
-    				}
+    				PartyLeaderReceived.Broadcast(PartyLeader);
+    				PartyLeaderReceivedNative.Broadcast(PartyLeader);
     			}
     			else
     			{
@@ -2853,10 +2813,8 @@ void UNakamaRealtimeClient::HandleReceivedMessage(const FString& Data)
     				}
 
     				// Handle Multicast Delegate
-    				if(PartyMatchmakerTicketReceived.IsBound())
-    				{
-    					PartyMatchmakerTicketReceived.Broadcast(PartyMatchmakerTicket);
-    				}
+    				PartyMatchmakerTicketReceived.Broadcast(PartyMatchmakerTicket);
+    				PartyMatchmakerTicketReceivedNative.Broadcast(PartyMatchmakerTicket);
     			}
     			else
     			{
@@ -2877,10 +2835,8 @@ void UNakamaRealtimeClient::HandleReceivedMessage(const FString& Data)
     				}
 
     				// Handle Multicast Delegate
-    				if(PartyPresenceReceived.IsBound())
-    				{
-    					PartyPresenceReceived.Broadcast(PartyPresenceEvent);
-    				}
+    				PartyPresenceReceived.Broadcast(PartyPresenceEvent);
+    				PartyPresenceReceivedNative.Broadcast(PartyPresenceEvent);
     			}
     			else
     			{
@@ -2936,7 +2892,7 @@ void UNakamaRealtimeClient::HandleReceivedMessage(const FString& Data)
     			{
     				ErrorCallback.Execute(Error);
     			}
-    			else if (OnError || ErrorEvent.IsBound()) // Checks if Error is bound (means it is handled)
+    			else if (OnError || ErrorEvent.IsBound() || ErrorEventNative.IsBound()) // Checks if Error is bound (means it is handled)
     			{
     				// Lambda Callback
     				if(OnError)
@@ -2945,10 +2901,8 @@ void UNakamaRealtimeClient::HandleReceivedMessage(const FString& Data)
     				}
 
     				// Multicast Delegate
-    				if(ErrorEvent.IsBound())
-    				{
-    					ErrorEvent.Broadcast(Error);
-    				}
+    				ErrorEvent.Broadcast(Error);
+    				ErrorEventNative.Broadcast(Error);
     			}
     			else
     			{
@@ -3087,10 +3041,8 @@ void UNakamaRealtimeClient::OnTransportError(const FString& Description)
 		}
 
 		// Multicast Delegate
-		if(ErrorEvent.IsBound())
-		{
-			ErrorEvent.Broadcast(Error);
-		}
+		ErrorEvent.Broadcast(Error);
+		ErrorEventNative.Broadcast(Error);
 	}
 }
 

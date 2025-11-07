@@ -19,13 +19,13 @@
 #include "CoreMinimal.h"
 #include "NakamaClient.h"
 #include "NakamaLogger.h"
-#include "Misc/AutomationTest.h"
 #include "Misc/CommandLine.h"
 #include "Misc/EngineVersionComparison.h"
 
 #if UE_VERSION_OLDER_THAN(5, 5, 0)
 #define NAKAMA_MODULE_TEST_MASK EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter
 #else
+#include "Misc/AutomationTest.h"
 #define NAKAMA_MODULE_TEST_MASK EAutomationTestFlags_ApplicationContextMask | EAutomationTestFlags::ProductFilter
 #endif
 

@@ -39,65 +39,85 @@
 
 // OnConnect
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnConnect);
+DECLARE_MULTICAST_DELEGATE(FOnConnectNative);
 
 // OnConnectionError
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnReceivedConnectionError, const FNakamaRtError&, Error);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnReceivedConnectionErrorNative, const FNakamaRtError&);
 
 // OnDisconnect
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDisconnected, const FNakamaDisconnectInfo&, DisconnectInfo);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnDisconnectedNative, const FNakamaDisconnectInfo&);
 
 // OnError
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnReceivedError, const FNakamaRtError&, Error);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnReceivedErrorNative, const FNakamaRtError&);
 
 // OnChannelMessage
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnReceivedChannelMessage, const FNakamaChannelMessage&, ChannelMessage);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnReceivedChannelMessageNative, const FNakamaChannelMessage&);
 
 // OnChannelPresenceEvent
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnReceivedChannelPresenceEvent, const FNakamaChannelPresenceEvent&, ChannelPresenceEvent);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnReceivedChannelPresenceEventNative, const FNakamaChannelPresenceEvent&);
 
 // OnMatchmakerMatched
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnReceivedMatchmakerMatched, const FNakamaMatchmakerMatched&, Match);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnReceivedMatchmakerMatchedNative, const FNakamaMatchmakerMatched&);
 
 // OnMatchPresenceEvent
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnReceivedMatchPresenceCallback, const FNakamaMatchPresenceEvent&, PresenceEvent);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnReceivedMatchPresenceCallbackNative, const FNakamaMatchPresenceEvent&);
 
 // OnMatchData
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnReceivedMatchData, const FNakamaMatchData&, MatchData);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnReceivedMatchDataNative, const FNakamaMatchData&);
 
 // OnNotifications
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnReceivedNotification, const FNakamaNotificationList&, NotificationData);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnReceivedNotificationNative, const FNakamaNotificationList&);
 
 // OnStatusPresenceEvent
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnReceivedStatusPresence, const FNakamaStatusPresenceEvent&, UserPresenceData);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnReceivedStatusPresenceNative, const FNakamaStatusPresenceEvent&);
 
 // OnStreamPresenceEvent
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnReceivedStreamPresenceEvent, const FNakamaStreamPresenceEvent&, StreamPresence);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnReceivedStreamPresenceEventNative, const FNakamaStreamPresenceEvent&);
 
 // OnStreamData
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnReceivedStreamPresenceData, const FNakamaStreamData&, StreamPresenceData);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnReceivedStreamPresenceDataNative, const FNakamaStreamData&);
 
 // --- Bindable Delegates: Parties --- //
 
 // OnParty
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnReceivedParty, const FNakamaParty&, Party);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnReceivedPartyNative, const FNakamaParty&);
 
 // OnPartyClose
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnReceivedPartyClose, const FNakamaPartyClose&, PartyClose);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnReceivedPartyCloseNative, const FNakamaPartyClose&);
 
 // OnPartyData
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnReceivedPartyData, const FNakamaPartyData&, PartyData);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnReceivedPartyDataNative, const FNakamaPartyData&);
 
 // OnPartyJoinRequest
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnReceivedPartyJoinRequest, const FNakamaPartyJoinRequest&, PartyJoinRequest);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnReceivedPartyJoinRequestNative, const FNakamaPartyJoinRequest&);
 
 // OnPartyLeader
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnReceivedPartyLeader, const FNakamaPartyLeader&, PartyLeader);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnReceivedPartyLeaderNative, const FNakamaPartyLeader&);
 
 // OnPartyMatchmakerTicket
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnReceivedPartyMatchmakerTicket, const FNakamaPartyMatchmakerTicket&, Ticket);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnReceivedPartyMatchmakerTicketNative, const FNakamaPartyMatchmakerTicket&);
 
 // OnPartyPresence
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnReceivedPartyPresence, const FNakamaPartyPresenceEvent&, Presences);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnReceivedPartyPresenceNative, const FNakamaPartyPresenceEvent&);
 
 
 // Functionality Delegates
@@ -192,82 +212,102 @@ public:
 	// OnConnect
 	UPROPERTY(BlueprintAssignable, Category = "Nakama|Events", meta = (DisplayName = "OnConnect"))
 	FOnConnect ConnectedEvent;
+	FOnConnectNative ConnectedEventNative;
 
 	// OnConnectionError
 	UPROPERTY(BlueprintAssignable, Category = "Nakama|Events", meta = (DisplayName = "OnConnectionError"))
 	FOnReceivedConnectionError ConnectionErrorEvent;
+	FOnReceivedConnectionErrorNative ConnectionErrorEventNative;
 
 	// OnDisconnect
 	UPROPERTY(BlueprintAssignable, Category = "Nakama|Events", meta = (DisplayName = "OnDisconnect"))
 	FOnDisconnected DisconnectedEvent;
+	FOnDisconnectedNative DisconnectedEventNative;
 
 	// OnError
 	UPROPERTY(BlueprintAssignable, Category = "Nakama|Events", meta = (DisplayName = "OnError"))
 	FOnReceivedError ErrorEvent;
+	FOnReceivedErrorNative ErrorEventNative;
 
 	// OnChannelMessage
 	UPROPERTY(BlueprintAssignable, Category = "Nakama|Events", meta = (DisplayName = "OnChannelMessage"))
 	FOnReceivedChannelMessage ChannelMessageReceived;
+	FOnReceivedChannelMessageNative ChannelMessageReceivedNative;
 
 	// OnChannelPresenceEvent
 	UPROPERTY(BlueprintAssignable, Category = "Nakama|Events", meta = (DisplayName = "OnChannelPresenceEvent"))
 	FOnReceivedChannelPresenceEvent ChannelPresenceEventReceived;
+	FOnReceivedChannelPresenceEventNative ChannelPresenceEventReceivedNative;
 
 	// OnMatchmakerMatched
 	UPROPERTY(BlueprintAssignable, Category = "Nakama|Events", meta = (DisplayName = "OnMatchmakerMatched"))
 	FOnReceivedMatchmakerMatched MatchmakerMatchMatched;
+	FOnReceivedMatchmakerMatchedNative MatchmakerMatchMatchedNative;
 
 	// OnMatchPresenceEvent
 	UPROPERTY(BlueprintAssignable, Category = "Nakama|Events", meta = (DisplayName = "OnMatchPresenceEvent"))
 	FOnReceivedMatchPresenceCallback MatchmakerPresenceCallback;
+	FOnReceivedMatchPresenceCallbackNative MatchmakerPresenceCallbackNative;
 
 	// OnMatchData
 	UPROPERTY(BlueprintAssignable, Category = "Nakama|Events", meta = (DisplayName = "OnMatchData"))
 	FOnReceivedMatchData MatchDataCallback;
+	FOnReceivedMatchDataNative MatchDataCallbackNative;
 
 	// OnNotifications
 	UPROPERTY(BlueprintAssignable, Category = "Nakama|Events", meta = (DisplayName = "OnNotifications"))
 	FOnReceivedNotification NotificationReceived;
+	FOnReceivedNotificationNative NotificationReceivedNative;
 
 	// OnStatusPresenceEvent
 	UPROPERTY(BlueprintAssignable, Category = "Nakama|Events", meta = (DisplayName = "OnStatusPresenceEvent"))
 	FOnReceivedStatusPresence PresenceStatusReceived;
+	FOnReceivedStatusPresenceNative PresenceStatusReceivedNative;
 
 	// OnStreamPresenceEvent
 	UPROPERTY(BlueprintAssignable, Category = "Nakama|Events", meta = (DisplayName = "OnStreamPresenceEvent"))
 	FOnReceivedStreamPresenceEvent StreamPresenceEventReceived;
+	FOnReceivedStreamPresenceEventNative StreamPresenceEventReceivedNative;
 
 	// OnStreamData
 	UPROPERTY(BlueprintAssignable, Category = "Nakama|Events", meta = (DisplayName = "OnStreamData"))
 	FOnReceivedStreamPresenceData StreamPresenceDataReceived;
+	FOnReceivedStreamPresenceDataNative StreamPresenceDataReceivedNative;
 
 	// OnParty
 	UPROPERTY(BlueprintAssignable, Category = "Nakama|Events", meta = (DisplayName = "OnParty"))
 	FOnReceivedParty PartyReceived;
+	FOnReceivedPartyNative PartyReceivedNative;
 
 	// OnPartyClose
 	UPROPERTY(BlueprintAssignable, Category = "Nakama|Events", meta = (DisplayName = "OnPartyClose"))
 	FOnReceivedPartyClose PartyCloseReceived;
+	FOnReceivedPartyCloseNative PartyCloseReceivedNative;
 
 	// OnPartyData
 	UPROPERTY(BlueprintAssignable, Category = "Nakama|Events", meta = (DisplayName = "OnPartyData"))
 	FOnReceivedPartyData PartyDataReceived;
+	FOnReceivedPartyDataNative PartyDataReceivedNative;
 
 	// OnPartyJoinRequest
 	UPROPERTY(BlueprintAssignable, Category = "Nakama|Events", meta = (DisplayName = "OnPartyJoinRequest"))
 	FOnReceivedPartyJoinRequest PartyJoinRequestReceived;
+	FOnReceivedPartyJoinRequestNative PartyJoinRequestReceivedNative;
 
 	// OnPartyLeader
 	UPROPERTY(BlueprintAssignable, Category = "Nakama|Events", meta = (DisplayName = "OnPartyLeader"))
 	FOnReceivedPartyLeader PartyLeaderReceived;
+	FOnReceivedPartyLeaderNative PartyLeaderReceivedNative;
 
 	// OnPartyMatchmakerTicket
 	UPROPERTY(BlueprintAssignable, Category = "Nakama|Events", meta = (DisplayName = "OnPartyMatchmakerTicket"))
 	FOnReceivedPartyMatchmakerTicket PartyMatchmakerTicketReceived;
+	FOnReceivedPartyMatchmakerTicketNative PartyMatchmakerTicketReceivedNative;
 
 	// OnPartyPresence
 	UPROPERTY(BlueprintAssignable, Category = "Nakama|Events", meta = (DisplayName = "OnPartyPresence"))
 	FOnReceivedPartyPresence PartyPresenceReceived;
+	FOnReceivedPartyPresenceNative PartyPresenceReceivedNative;
 
 	// Functionaliy Events
 	FOnWriteChatMessage ChannelMessageWrite;
@@ -1246,7 +1286,7 @@ public:
 	 * @return True if connected to server.
 	 */
 	UFUNCTION(BlueprintPure, Category = "Nakama|Realtime")
-	bool IsConnected();
+	bool IsConnected() const;
 
 	/**
 	 * Get heartbeat interval in milliseconds.
@@ -1254,7 +1294,7 @@ public:
 	 * @return heartbeat interval value or opt::nullopt if disabled
 	 */
 	UFUNCTION(BlueprintPure, Category = "Nakama|Realtime")
-	int32 GetHeartbeatIntervalMs();
+	int32 GetHeartbeatIntervalMs() const;
 
 	/**
 	 * Set heartbeat interval in milliseconds. Disconnect event will be
