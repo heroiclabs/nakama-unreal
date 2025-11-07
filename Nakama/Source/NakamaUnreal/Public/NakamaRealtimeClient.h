@@ -149,6 +149,12 @@ public:
 	// Internal, do not use, use SetupRealtimeClient from NakamaClient instead
 	void Initialize(const FString& InHost, int32 InPort, bool InSSL);
 
+	// Call this before calling Connect to use your own websocket implementation.
+	// Pass nullpointer to go back to default UNakamaRealtimeClient behaviour.
+	// This will disconnect existing websocket connection if UNakamaRealtimeClient was already connected!
+	// IWebSocket->Connect() should not have been called on this websocket when passing it here. It will be managed by UNakamaRealtimeClient.Connect(...);
+	void UseCustomWebsocket(TSharedPtr<IWebSocket> CustomWebSocket);
+	
 	/**
 	 * Connect to the Server.
 	 *
@@ -1326,6 +1332,7 @@ private:
 	FString Host;
 	int32 Port;
 	bool bUseSSL;
+	bool bIsCustomWebsocketSet = false;
 
 	UPROPERTY()
 	bool bShowAsOnline;
