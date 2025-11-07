@@ -17,7 +17,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Templates/SharedPointer.h"
 #include "NakamaRtError.h"
 #include "NakamaChannelTypes.h"
 #include "NakamaMatch.h"
