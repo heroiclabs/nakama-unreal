@@ -1,7 +1,7 @@
 {
     "FileVersion": 3,
     "Version": 2402,
-    "VersionName": "2.10.2",
+    "VersionName": "2.11.0",
     "FriendlyName": "Nakama client",
     "Description": "A UE4 and UE5 client for the Nakama server.",
     "Category": "HeroicLabs.Nakama",

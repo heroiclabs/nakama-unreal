@@ -4,7 +4,7 @@ All notable changes to this project are documented below.
 The format is based on [keep a changelog](http://keepachangelog.com/) and this project uses [semantic versioning](http://semver.org/).
 ### Unreleased
 
-### [2.10.1] - 2025-11-11
+### [2.11.0] - 2025-11-11
 ### Added
 - Satori API: For CPP and Blueprints.
 - Delete User Nakama API callback.
