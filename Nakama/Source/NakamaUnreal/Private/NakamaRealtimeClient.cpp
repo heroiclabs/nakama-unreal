@@ -132,22 +132,6 @@ void UNakamaRealtimeClient::Connect(
 
 	ConnectionState = EConnectionState::Connecting;
 
-	FString Url;
-
-	if (bUseSSL)
-	{
-		Url = TEXT("wss://");
-	}
-	else
-	{
-		Url = TEXT("ws://");
-	}
-
-	const FString EncodedToken = FGenericPlatformHttp::UrlEncode(Session->GetAuthToken());
-	Url += FString(Host + TEXT(":") + FString::FromInt(Port) + TEXT("/ws"));
-	Url += TEXT("?token=") + EncodedToken;
-	Url += TEXT("&status=") + FNakamaUtils::BoolToString(bCreateStatus);
-
 	if(!FModuleManager::Get().IsModuleLoaded("WebSockets"))
 	{
 		FModuleManager::Get().LoadModule("WebSockets");
@@ -162,6 +146,22 @@ void UNakamaRealtimeClient::Connect(
 	
 	if (!bIsCustomWebsocketSet)
 	{
+		FString Url;
+
+		if (bUseSSL)
+		{
+			Url = TEXT("wss://");
+		}
+		else
+		{
+			Url = TEXT("ws://");
+		}
+
+		const FString EncodedToken = FGenericPlatformHttp::UrlEncode(Session->GetAuthToken());
+		Url += FString(Host + TEXT(":") + FString::FromInt(Port) + TEXT("/ws"));
+		Url += TEXT("?token=") + EncodedToken;
+		Url += TEXT("&status=") + FNakamaUtils::BoolToString(bCreateStatus);
+		
 		WebSocket = FWebSocketsModule::Get().CreateWebSocket(Url);
 	}
 
