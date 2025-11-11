@@ -4,6 +4,19 @@ All notable changes to this project are documented below.
 The format is based on [keep a changelog](http://keepachangelog.com/) and this project uses [semantic versioning](http://semver.org/).
 ### Unreleased
 
+### [2.10.1] - 2025-11-11
+### Added
+- Satori API: For CPP and Blueprints.
+- Delete User Nakama API callback.
+- Nakama Realtime client can be setup with a custom WebSocket implementation. Calling UNakamaRealtimeClient::UseCustomWebsocket(TSharedPtr<IWebSocket>) before Connect allows using a different implementation or configuring the current implementation differently than our default.
+- Nakama Realtime client now has cpp native delegates alongside the already existing dynamic delegates, allowing binding to delegates from outside managed memory types.
+### Changed
+- Removed unnecessary re-serialization when processing incoming messages.
+- RPC Nakama API callback now returns a boolean indicating success or failure of the synchronous part of the function.
+- Nakama Blueprint APIs now have a default, this means that have input array pins can be left empty if not used.
+### Fixed
+- Client compilation for Unreal 5.6 Engine.
+
 ### [2.10.1] - 2025-03-06
 ### Fixed
 - Fixed client compilation for Unreal 5.5 Engine.
