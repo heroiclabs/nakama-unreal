@@ -31,6 +31,10 @@ FNakamaRtError::FNakamaRtError(const FString& JsonString)
 		{
 			Code = static_cast<ENakamaRtErrorCode>(CodeValue);
 		}
+		else
+		{
+			Code = ENakamaRtErrorCode::UNKNOWN_JSON;
+		}
 
 		const TSharedPtr<FJsonObject>* ContextJsonObject;
 		if (JsonObject->TryGetObjectField(TEXT("context"), ContextJsonObject))
