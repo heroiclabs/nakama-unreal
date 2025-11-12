@@ -29,6 +29,7 @@ enum class ENakamaRtErrorCode : uint8
 	CONNECT_ERROR = 9 UMETA(DisplayName = "CONNECT_ERROR"), // -1
 	TRANSPORT_ERROR = 10 UMETA(DisplayName = "TRANSPORT_ERROR"), // -2
 	DISCONNECTED = 11 UMETA(DisplayName = "DISCONNECTED"), // -3
+	UNKNOWN_JSON = 12 UMETA(DisplayName = "UNKNOWN_JSON"), // -4
 
 	// Server Side Errors
 	RUNTIME_EXCEPTION = 0 UMETA(DisplayName = "RUNTIME_EXCEPTION"),
@@ -48,6 +49,7 @@ enum class ENakamaRtErrorCode : uint8
 	CONNECT_ERROR                 = -1,           ///< Connect has failed.
 	TRANSPORT_ERROR               = -2,           ///< Transport error.
 	DISCONNECTED                  = -3,           ///< Request cancelled due to transport disconnect
+	UNKNOWN_JSON				  = -4,			  ///< FNakamaRtError was build with a json that does not contain error code
 
 	// server side errors
 	RUNTIME_EXCEPTION             = 0,            ///< An unexpected result from the server.
