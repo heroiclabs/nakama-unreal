@@ -46,6 +46,7 @@ struct FNakamaRealtimeEnvelope
 
 	FString EncodeJson(TSharedPtr<FJsonObject> JsonObject)
 	{
+		check(JsonObject.IsValid());
 		FString OutputString;
 		TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&OutputString);
 		FJsonSerializer::Serialize(JsonObject.ToSharedRef(), Writer);
@@ -56,6 +57,7 @@ struct FNakamaRealtimeEnvelope
 
 // Change delegate types
 DECLARE_DELEGATE_OneParam(FNakamaRealtimeSuccessCallback, const FNakamaRealtimeEnvelope&); // This basically holds the payload
+DECLARE_DELEGATE_OneParam(FNakamaRealtimeSuccessCallbackMove, FNakamaRealtimeEnvelope&&); // This basically holds the payload
 DECLARE_DELEGATE_OneParam(FNakamaRealtimeErrorCallback, const FNakamaRtError&);
 
 UCLASS()
@@ -73,6 +75,9 @@ public:
 	
 	// The callback to invoke on success
 	FNakamaRealtimeSuccessCallback SuccessCallback;
+	
+	// The move version of callback to invoke on success
+	FNakamaRealtimeSuccessCallbackMove SuccessCallbackMove;
 
 	// The callback to invoke on error
 	FNakamaRealtimeErrorCallback ErrorCallback;

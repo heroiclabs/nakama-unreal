@@ -23,53 +23,100 @@
 
 DEFINE_LOG_CATEGORY_STATIC(LogNakamaUtils, Log, Log);
 
-	void FNakamaUtils::ProcessRequestComplete(FHttpRequestPtr Request, const FHttpResponsePtr& Response, bool bSuccess, const TFunction<void(const FString&)>& SuccessCallback, const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
+void FNakamaUtils::ProcessRequestComplete(FHttpRequestPtr Request, const FHttpResponsePtr& Response, bool bSuccess, const TFunction<void(const FString&)>& SuccessCallback, const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
+{
+	if (bSuccess && Response.IsValid())
 	{
-		if (bSuccess && Response.IsValid())
-		{
-			const int32 ResponseCode = Response->GetResponseCode();
-			const FString ResponseBody = Response->GetContentAsString();
+		const int32 ResponseCode = Response->GetResponseCode();
+		const FString ResponseBody = Response->GetContentAsString();
 
-			if (ResponseCode == 200)
+		if (ResponseCode == 200)
+		{
+			NAKAMA_LOG_DEBUG(FString::Printf(TEXT("Request Successful: %s"), *ResponseBody));
+			if (SuccessCallback)
 			{
-				NAKAMA_LOG_DEBUG(FString::Printf(TEXT("Request Successful: %s"), *ResponseBody));
-				if (SuccessCallback)
-				{
-					SuccessCallback(ResponseBody);
-				}
-			}
-			else
-			{
-				NAKAMA_LOG_WARN(FString::Printf(TEXT("Response (Code: %d) - Contents: %s"), ResponseCode, *ResponseBody));
-				const FNakamaError Error(ResponseBody);
-				if (ErrorCallback)
-				{
-					ErrorCallback(Error);
-				}
+				SuccessCallback(ResponseBody);
 			}
 		}
 		else
 		{
-			// Handle request failure
-			NAKAMA_LOG_ERROR(TEXT("Failed to process request."));
-
-			if (Request.IsValid())
-			{
-				NAKAMA_LOG_DEBUG(FString::Printf(TEXT("Request URL: %s"), *(Request->GetURL())));
-			}
-
-			FNakamaError Error;
-			Error.Code = ENakamaErrorCode::Unknown;
-			Error.Message = TEXT("Failed to proccess request. Request failed.");
-
+			NAKAMA_LOG_WARN(FString::Printf(TEXT("Response (Code: %d) - Contents: %s"), ResponseCode, *ResponseBody));
+			const FNakamaError Error(ResponseBody);
 			if (ErrorCallback)
 			{
 				ErrorCallback(Error);
 			}
 		}
 	}
+	else
+	{
+		// Handle request failure
+		NAKAMA_LOG_ERROR(TEXT("Failed to process request."));
 
-	void FNakamaUtils::HandleJsonSerializationFailure(TFunction<void(const FNakamaError& Error)> ErrorCallback)
+		if (Request.IsValid())
+		{
+			NAKAMA_LOG_DEBUG(FString::Printf(TEXT("Request URL: %s"), *(Request->GetURL())));
+		}
+
+		FNakamaError Error;
+		Error.Code = ENakamaErrorCode::Unknown;
+		Error.Message = TEXT("Failed to proccess request. Request failed.");
+
+		if (ErrorCallback)
+		{
+			ErrorCallback(Error);
+		}
+	}
+}
+
+void FNakamaUtils::ProcessRequestCompleteMove(FHttpRequestPtr Request, const FHttpResponsePtr& Response, bool bSuccess,
+	const TFunction<void(FString&&)>& SuccessCallback, const TFunction<void(const FNakamaError& Error)>& ErrorCallback)
+{
+	if (bSuccess && Response.IsValid())
+	{
+		const int32 ResponseCode = Response->GetResponseCode();
+		FString ResponseBody = Response->GetContentAsString();
+
+		if (ResponseCode == 200)
+		{
+			NAKAMA_LOG_DEBUG(FString::Printf(TEXT("Request Successful: %s"), *ResponseBody));
+			if (SuccessCallback)
+			{
+				SuccessCallback(MoveTemp(ResponseBody));
+			}
+		}
+		else
+		{
+			NAKAMA_LOG_WARN(FString::Printf(TEXT("Response (Code: %d) - Contents: %s"), ResponseCode, *ResponseBody));
+			const FNakamaError Error(ResponseBody);
+			if (ErrorCallback)
+			{
+				ErrorCallback(Error);
+			}
+		}
+	}
+	else
+	{
+		// Handle request failure
+		NAKAMA_LOG_ERROR(TEXT("Failed to process request."));
+
+		if (Request.IsValid())
+		{
+			NAKAMA_LOG_DEBUG(FString::Printf(TEXT("Request URL: %s"), *(Request->GetURL())));
+		}
+
+		FNakamaError Error;
+		Error.Code = ENakamaErrorCode::Unknown;
+		Error.Message = TEXT("Failed to proccess request. Request failed.");
+
+		if (ErrorCallback)
+		{
+			ErrorCallback(Error);
+		}
+	}
+}
+
+void FNakamaUtils::HandleJsonSerializationFailure(TFunction<void(const FNakamaError& Error)> ErrorCallback)
 	{
 		NAKAMA_LOG_ERROR(TEXT("Failed to generate request content."));
 		FNakamaError Error;

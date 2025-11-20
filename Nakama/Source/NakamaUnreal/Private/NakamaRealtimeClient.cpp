@@ -2355,6 +2355,68 @@ void UNakamaRealtimeClient::SendMessageWithEnvelope(const FString& FieldName,
 	NAKAMA_LOG_INFO(FString::Printf(TEXT("Realtime Client - Request %s sent with CID: %d"), *FieldName, ReqContext->CID));
 }
 
+void UNakamaRealtimeClient::SendMessageWithEnvelopeMove(const FString& FieldName,
+	const TSharedPtr<FJsonObject>& ObjectField, TFunction<void(FNakamaRealtimeEnvelope&& Envelope)> SuccessCallback,
+	TFunction<void(const FNakamaRtError& Error)> ErrorCallback)
+{
+	// Check WebSocket before sending Data
+	if (!WebSocket || !WebSocket->IsConnected())
+	{
+		FNakamaRtError Error;
+		Error.Message = TEXT("WebSocket is not valid or not connected.");
+		Error.Code = ENakamaRtErrorCode::TRANSPORT_ERROR;
+		NAKAMA_LOG_ERROR(Error.Message);
+
+		if(ErrorCallback)
+		{
+			ErrorCallback(Error);
+		}
+
+		return;
+	}
+
+	// Create the Envelope with the object field
+	const TSharedPtr<FJsonObject> Envelope = MakeShareable(new FJsonObject());
+	//Envelope->SetObjectField(FieldName, ObjectField);
+	Envelope->SetObjectField(FieldName, ObjectField != nullptr ? ObjectField : MakeShareable(new FJsonObject()));
+
+	// Make the Envelope
+	FNakamaRealtimeEnvelope NakamaEnvelope;
+
+	// Create Context from the Envelope
+	TObjectPtr<UNakamaRealtimeRequestContext> ReqContext = CreateReqContext(NakamaEnvelope);
+	Envelope->SetStringField(TEXT("cid"), FString::FromInt(ReqContext->CID));
+
+	// Envelope is basically just holding a reference to the Payload in the SuccessCallback (makes it generic)
+	// It is being set in the HandleMessage function
+	// Finally: Call the SuccessCallback with the Envelope
+	ReqContext->SuccessCallbackMove.BindLambda([this, SuccessCallback](FNakamaRealtimeEnvelope&& ChannelEnvelope)
+	{
+		if(SuccessCallback)
+		{
+			SuccessCallback(MoveTemp(ChannelEnvelope));
+		}
+	});
+
+	// Made into FNakamaRtError inside the HandleMessage function
+	ReqContext->ErrorCallback.BindLambda([this, ErrorCallback](const FNakamaRtError& Error)
+	{
+		if(ErrorCallback)
+		{
+			ErrorCallback(Error);
+		}
+	});
+
+	// Set the payload
+	NakamaEnvelope.Payload = FNakamaUtils::EncodeJson(Envelope);
+
+	// Send Message
+	const FString Message = NakamaEnvelope.Payload;
+	WebSocket->Send(Message);
+
+	NAKAMA_LOG_INFO(FString::Printf(TEXT("Realtime Client - Request %s sent with CID: %d"), *FieldName, ReqContext->CID));
+}
+
 void UNakamaRealtimeClient::SendDataWithEnvelope(const FString& FieldName, const TSharedPtr<FJsonObject>& ObjectField)
 {
 	// Check WebSocket before sending Data
@@ -2474,7 +2536,7 @@ void UNakamaRealtimeClient::HandleReceivedMessage(const FString& Data)
     			if (SerializeJsonObject(JsonObject->GetObjectField(TEXT("error")), JsonString))
     			{
     				// TODO: Look into if we need to get Error from JsonString (using ReturnedError) or use 'Error' from above
-    				FNakamaRtError ReturnedError = FNakamaRtError(JsonString);
+    				FNakamaRtError ReturnedError = FNakamaRtError(MoveTemp(JsonString));
 
     				// Handle Lambda Callback
     				if(OnError)
@@ -2496,7 +2558,7 @@ void UNakamaRealtimeClient::HandleReceivedMessage(const FString& Data)
     			FString JsonString;
     			if (SerializeJsonObject(JsonObject->GetObjectField(TEXT("channel_message")), JsonString))
     			{
-    				FNakamaChannelMessage ChannelMessage = FNakamaChannelMessage(JsonString);
+    				FNakamaChannelMessage ChannelMessage = FNakamaChannelMessage(MoveTemp(JsonString));
 
     				// Handle Lambda Callback
     				if(OnChannelMessage)
@@ -2518,7 +2580,7 @@ void UNakamaRealtimeClient::HandleReceivedMessage(const FString& Data)
     			FString JsonString;
     			if (SerializeJsonObject(JsonObject->GetObjectField(TEXT("channel_presence_event")), JsonString))
     			{
-    				FNakamaChannelPresenceEvent ChannelPresenceEvent = FNakamaChannelPresenceEvent(JsonString);
+    				FNakamaChannelPresenceEvent ChannelPresenceEvent = FNakamaChannelPresenceEvent(MoveTemp(JsonString));
 
     				// Handle Lambda Callback
     				if(OnChannelPresenceEvent)
@@ -2540,7 +2602,7 @@ void UNakamaRealtimeClient::HandleReceivedMessage(const FString& Data)
     			FString JsonString;
     			if (SerializeJsonObject(JsonObject->GetObjectField(TEXT("match_data")), JsonString))
     			{
-    				FNakamaMatchData MatchData = FNakamaMatchData(JsonString);
+    				FNakamaMatchData MatchData = FNakamaMatchData(MoveTemp(JsonString));
 
     				// Handle Lambda Callback
     				if(OnMatchData)
@@ -2562,7 +2624,7 @@ void UNakamaRealtimeClient::HandleReceivedMessage(const FString& Data)
     			FString JsonString;
     			if (SerializeJsonObject(JsonObject->GetObjectField(TEXT("match_presence_event")), JsonString))
     			{
-    				FNakamaMatchPresenceEvent MatchPresenceEvent = FNakamaMatchPresenceEvent(JsonString);
+    				FNakamaMatchPresenceEvent MatchPresenceEvent = FNakamaMatchPresenceEvent(MoveTemp(JsonString));
 
     				// Handle Lambda Callback
     				if(OnMatchPresenceEvent)
@@ -2584,7 +2646,7 @@ void UNakamaRealtimeClient::HandleReceivedMessage(const FString& Data)
     			FString JsonString;
     			if (SerializeJsonObject(JsonObject->GetObjectField(TEXT("matchmaker_matched")), JsonString))
     			{
-    				FNakamaMatchmakerMatched MatchmakerMatched = FNakamaMatchmakerMatched(JsonString);
+    				FNakamaMatchmakerMatched MatchmakerMatched = FNakamaMatchmakerMatched(MoveTemp(JsonString));
 
     				// Handle Lambda Callback
     				if(OnMatchmakerMatched)
@@ -2606,7 +2668,7 @@ void UNakamaRealtimeClient::HandleReceivedMessage(const FString& Data)
     			FString JsonString;
     			if (SerializeJsonObject(JsonObject->GetObjectField(TEXT("notifications")), JsonString))
     			{
-    				FNakamaNotificationList NotificationList = FNakamaNotificationList(JsonString);
+    				FNakamaNotificationList NotificationList = FNakamaNotificationList(MoveTemp(JsonString));
 
     				// Handle Lambda Callback
     				if(OnNotifications)
@@ -2628,7 +2690,7 @@ void UNakamaRealtimeClient::HandleReceivedMessage(const FString& Data)
     			FString JsonString;
     			if (SerializeJsonObject(JsonObject->GetObjectField(TEXT("status_presence_event")), JsonString))
     			{
-    				FNakamaStatusPresenceEvent StatusPresenceEvent = FNakamaStatusPresenceEvent(JsonString);
+    				FNakamaStatusPresenceEvent StatusPresenceEvent = FNakamaStatusPresenceEvent(MoveTemp(JsonString));
 
     				// Handle Lambda Callback
     				if(OnStatusPresenceEvent)
@@ -2650,7 +2712,7 @@ void UNakamaRealtimeClient::HandleReceivedMessage(const FString& Data)
     			FString JsonString;
     			if (SerializeJsonObject(JsonObject->GetObjectField(TEXT("stream_data")), JsonString))
     			{
-    				FNakamaStreamData StreamData = FNakamaStreamData(JsonString);
+    				FNakamaStreamData StreamData = FNakamaStreamData(MoveTemp(JsonString));
 
     				// Handle Lambda Callback
     				if(OnStreamData)
@@ -2672,7 +2734,7 @@ void UNakamaRealtimeClient::HandleReceivedMessage(const FString& Data)
     			FString JsonString;
     			if (SerializeJsonObject(JsonObject->GetObjectField(TEXT("stream_presence_event")), JsonString))
     			{
-    				FNakamaStreamPresenceEvent StreamPresenceEvent = FNakamaStreamPresenceEvent(JsonString);
+    				FNakamaStreamPresenceEvent StreamPresenceEvent = FNakamaStreamPresenceEvent(MoveTemp(JsonString));
 
     				// Handle Lambda Callback
     				if(OnStreamPresenceEvent)
@@ -2694,7 +2756,7 @@ void UNakamaRealtimeClient::HandleReceivedMessage(const FString& Data)
     			FString JsonString;
     			if (SerializeJsonObject(JsonObject->GetObjectField(TEXT("party")), JsonString))
     			{
-    				FNakamaParty Party = FNakamaParty(JsonString);
+    				FNakamaParty Party = FNakamaParty(MoveTemp(JsonString));
 
     				// Handle Lambda Callback
     				if(OnParty)
@@ -2716,7 +2778,7 @@ void UNakamaRealtimeClient::HandleReceivedMessage(const FString& Data)
     			FString JsonString;
     			if (SerializeJsonObject(JsonObject->GetObjectField(TEXT("party_close")), JsonString))
     			{
-    				FNakamaPartyClose PartyClose = FNakamaPartyClose(JsonString);
+    				FNakamaPartyClose PartyClose = FNakamaPartyClose(MoveTemp(JsonString));
 
     				// Handle Lambda Callback
     				if(OnPartyClose)
@@ -2738,7 +2800,7 @@ void UNakamaRealtimeClient::HandleReceivedMessage(const FString& Data)
     			FString JsonString;
     			if (SerializeJsonObject(JsonObject->GetObjectField(TEXT("party_data")), JsonString))
     			{
-    				FNakamaPartyData PartyData = FNakamaPartyData(JsonString);
+    				FNakamaPartyData PartyData = FNakamaPartyData(MoveTemp(JsonString));
 
     				// Handle Lambda Callback
     				if(OnPartyData)
@@ -2760,7 +2822,7 @@ void UNakamaRealtimeClient::HandleReceivedMessage(const FString& Data)
     			FString JsonString;
     			if (SerializeJsonObject(JsonObject->GetObjectField(TEXT("party_join_request")), JsonString))
     			{
-    				FNakamaPartyJoinRequest PartyJoinRequest = FNakamaPartyJoinRequest(JsonString);
+    				FNakamaPartyJoinRequest PartyJoinRequest = FNakamaPartyJoinRequest(MoveTemp(JsonString));
 
     				// Handle Lambda Callback
     				if(OnPartyJoinRequest)
@@ -2782,7 +2844,7 @@ void UNakamaRealtimeClient::HandleReceivedMessage(const FString& Data)
     			FString JsonString;
     			if (SerializeJsonObject(JsonObject->GetObjectField(TEXT("party_leader")), JsonString))
     			{
-    				FNakamaPartyLeader PartyLeader = FNakamaPartyLeader(JsonString);
+    				FNakamaPartyLeader PartyLeader = FNakamaPartyLeader(MoveTemp(JsonString));
 
     				// Handle Lambda Callback
     				if(OnPartyLeader)
@@ -2804,7 +2866,7 @@ void UNakamaRealtimeClient::HandleReceivedMessage(const FString& Data)
     			FString JsonString;
     			if (SerializeJsonObject(JsonObject->GetObjectField(TEXT("party_matchmaker_ticket")), JsonString))
     			{
-    				FNakamaPartyMatchmakerTicket PartyMatchmakerTicket = FNakamaPartyMatchmakerTicket(JsonString);
+    				FNakamaPartyMatchmakerTicket PartyMatchmakerTicket = FNakamaPartyMatchmakerTicket(MoveTemp(JsonString));
 
     				// Handle Lambda Callback
     				if(OnPartyMatchmakerTicket)
@@ -2826,7 +2888,7 @@ void UNakamaRealtimeClient::HandleReceivedMessage(const FString& Data)
     			FString JsonString;
     			if (SerializeJsonObject(JsonObject->GetObjectField(TEXT("party_presence_event")), JsonString))
     			{
-    				FNakamaPartyPresenceEvent PartyPresenceEvent = FNakamaPartyPresenceEvent(JsonString);
+    				FNakamaPartyPresenceEvent PartyPresenceEvent = FNakamaPartyPresenceEvent(MoveTemp(JsonString));
 
     				// Handle Lambda Callback
     				if(OnPartyPresenceEvent)
@@ -2863,6 +2925,7 @@ void UNakamaRealtimeClient::HandleReceivedMessage(const FString& Data)
     	//NAKAMA_LOG_DEBUG(FString::Printf(TEXT("Received message with CID: %d"), Cid));
 
 	    FNakamaRealtimeSuccessCallback SuccessCallback;
+    	FNakamaRealtimeSuccessCallbackMove SuccessCallbackMove;
 	    FNakamaRealtimeErrorCallback ErrorCallback;
 
     	bool bContextIsValid = false;
@@ -2874,6 +2937,7 @@ void UNakamaRealtimeClient::HandleReceivedMessage(const FString& Data)
 	        {
 	        	bContextIsValid = true;
 	            SuccessCallback = ReqContext->SuccessCallback;
+	            SuccessCallbackMove = ReqContext->SuccessCallbackMove;
 	            ErrorCallback = ReqContext->ErrorCallback;
 	            ReqContexts.Remove(Cid);
 	        }
@@ -2910,12 +2974,24 @@ void UNakamaRealtimeClient::HandleReceivedMessage(const FString& Data)
     				NAKAMA_LOG_WARN(TEXT("Error not handled."));
     			}
     		}
-    		else if (SuccessCallback.IsBound())
+    		else
     		{
-    			FNakamaRealtimeEnvelope Envelope;
-    			Envelope.CID = Cid;
-    			Envelope.Payload = Data;
-    			SuccessCallback.Execute(Envelope);
+    			bool constRefBound = SuccessCallback.IsBound();
+    			bool moveBound = SuccessCallbackMove.IsBound();
+    			if (constRefBound || moveBound)
+    			{
+    				FNakamaRealtimeEnvelope Envelope;
+    				Envelope.CID = Cid;
+    				Envelope.Payload = Data;
+    				if (constRefBound)
+    				{
+    					SuccessCallback.Execute(Envelope);
+    				}
+    				if (moveBound)
+    				{
+    					SuccessCallbackMove.Execute(MoveTemp(Envelope));
+    				}
+    			}
     		}
     	}
         else

@@ -107,7 +107,9 @@ void UNakamaClient::AuthenticateCustom(const FString& UserID,
 	auto successCallback = [this, Success](UNakamaSession* session)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Success.Broadcast(session);
 	};
@@ -115,7 +117,9 @@ void UNakamaClient::AuthenticateCustom(const FString& UserID,
 	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Error.Broadcast(error);
 	};
@@ -138,7 +142,9 @@ void UNakamaClient::AuthenticateEmail(
 	auto successCallback = [this, Success](UNakamaSession* session)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Success.Broadcast(session);
 	};
@@ -146,7 +152,9 @@ void UNakamaClient::AuthenticateEmail(
 	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Error.Broadcast(error);
 	};
@@ -167,7 +175,9 @@ void UNakamaClient::AuthenticateDevice(
 	auto successCallback = [this, Success](UNakamaSession* session)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Success.Broadcast(session);
 	};
@@ -175,7 +185,9 @@ void UNakamaClient::AuthenticateDevice(
 	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Error.Broadcast(error);
 	};
@@ -199,7 +211,9 @@ void UNakamaClient::AuthenticateSteam(
 	auto successCallback = [this, Success](UNakamaSession* session)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Success.Broadcast(session);
 	};
@@ -207,7 +221,9 @@ void UNakamaClient::AuthenticateSteam(
 	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Error.Broadcast(error);
 	};
@@ -227,7 +243,9 @@ void UNakamaClient::AuthenticateGoogle(
 	auto successCallback = [this, Success](UNakamaSession* session)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Success.Broadcast(session);
 	};
@@ -235,7 +253,9 @@ void UNakamaClient::AuthenticateGoogle(
 	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Error.Broadcast(error);
 	};
@@ -259,7 +279,9 @@ void UNakamaClient::AuthenticateGameCenter(
 	auto successCallback = [this, Success](UNakamaSession* session)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Success.Broadcast(session);
 	};
@@ -267,7 +289,9 @@ void UNakamaClient::AuthenticateGameCenter(
 	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Error.Broadcast(error);
 	};
@@ -299,7 +323,9 @@ void UNakamaClient::AuthenticateFacebook(
 	auto successCallback = [this, Success](UNakamaSession* session)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Success.Broadcast(session);
 	};
@@ -307,7 +333,9 @@ void UNakamaClient::AuthenticateFacebook(
 	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Error.Broadcast(error);
 	};
@@ -326,7 +354,9 @@ void UNakamaClient::AuthenticateApple(
 	auto successCallback = [this, Success](UNakamaSession* session)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Success.Broadcast(session);
 	};
@@ -334,7 +364,9 @@ void UNakamaClient::AuthenticateApple(
 	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Error.Broadcast(error);
 	};
@@ -350,7 +382,9 @@ void UNakamaClient::AuthenticateRefresh(
 	auto successCallback = [this, Success](UNakamaSession* session)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Success.Broadcast(session);
 	};
@@ -358,7 +392,9 @@ void UNakamaClient::AuthenticateRefresh(
 	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Error.Broadcast(error);
 	};
@@ -392,7 +428,9 @@ void UNakamaClient::LinkCustom(
 	auto successCallback = [this, Success]()
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Success.Broadcast();
 	};
@@ -400,7 +438,9 @@ void UNakamaClient::LinkCustom(
 	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Error.Broadcast(error);
 	};
@@ -417,7 +457,9 @@ void UNakamaClient::LinkDevice(
 	auto successCallback = [this, Success]()
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Success.Broadcast();
 	};
@@ -425,7 +467,9 @@ void UNakamaClient::LinkDevice(
 	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Error.Broadcast(error);
 	};
@@ -443,7 +487,9 @@ void UNakamaClient::LinkEmail(
 	auto successCallback = [this, Success]()
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Success.Broadcast();
 	};
@@ -451,7 +497,9 @@ void UNakamaClient::LinkEmail(
 	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Error.Broadcast(error);
 	};
@@ -469,7 +517,9 @@ void UNakamaClient::LinkFacebook(
 	auto successCallback = [this, Success]()
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Success.Broadcast();
 	};
@@ -477,7 +527,9 @@ void UNakamaClient::LinkFacebook(
 	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Error.Broadcast(error);
 	};
@@ -499,7 +551,9 @@ void UNakamaClient::LinkGameCenter(
 	auto successCallback = [this, Success]()
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Success.Broadcast();
 	};
@@ -507,7 +561,9 @@ void UNakamaClient::LinkGameCenter(
 	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Error.Broadcast(error);
 	};
@@ -534,7 +590,9 @@ void UNakamaClient::LinkGoogle(
 	auto successCallback = [this, Success]()
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Success.Broadcast();
 	};
@@ -542,7 +600,9 @@ void UNakamaClient::LinkGoogle(
 	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Error.Broadcast(error);
 	};
@@ -559,7 +619,9 @@ void UNakamaClient::LinkSteam(
 	auto successCallback = [this, Success]()
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Success.Broadcast();
 	};
@@ -567,7 +629,9 @@ void UNakamaClient::LinkSteam(
 	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Error.Broadcast(error);
 	};
@@ -584,7 +648,9 @@ void UNakamaClient::LinkApple(
 	auto successCallback = [this, Success]()
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Success.Broadcast();
 	};
@@ -592,7 +658,9 @@ void UNakamaClient::LinkApple(
 	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Error.Broadcast(error);
 	};
@@ -613,7 +681,9 @@ void UNakamaClient::UnLinkCustom(
 	auto successCallback = [this, Success]()
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Success.Broadcast();
 	};
@@ -621,7 +691,9 @@ void UNakamaClient::UnLinkCustom(
 	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Error.Broadcast(error);
 	};
@@ -638,7 +710,9 @@ void UNakamaClient::UnLinkDevice(
 	auto successCallback = [this, Success]()
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Success.Broadcast();
 	};
@@ -646,7 +720,9 @@ void UNakamaClient::UnLinkDevice(
 	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Error.Broadcast(error);
 	};
@@ -664,7 +740,9 @@ void UNakamaClient::UnLinkEmail(
 	auto successCallback = [this, Success]()
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Success.Broadcast();
 	};
@@ -672,7 +750,9 @@ void UNakamaClient::UnLinkEmail(
 	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Error.Broadcast(error);
 	};
@@ -689,7 +769,9 @@ void UNakamaClient::UnLinkFacebook(
 	auto successCallback = [this, Success]()
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Success.Broadcast();
 	};
@@ -697,7 +779,9 @@ void UNakamaClient::UnLinkFacebook(
 	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Error.Broadcast(error);
 	};
@@ -719,7 +803,9 @@ void UNakamaClient::UnLinkGameCenter(
 	auto successCallback = [this, Success]()
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Success.Broadcast();
 	};
@@ -727,7 +813,9 @@ void UNakamaClient::UnLinkGameCenter(
 	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Error.Broadcast(error);
 	};
@@ -754,7 +842,9 @@ void UNakamaClient::UnLinkGoogle(
 	auto successCallback = [this, Success]()
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Success.Broadcast();
 	};
@@ -762,7 +852,9 @@ void UNakamaClient::UnLinkGoogle(
 	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Error.Broadcast(error);
 	};
@@ -779,7 +871,9 @@ void UNakamaClient::UnLinkSteam(
 	auto successCallback = [this, Success]()
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Success.Broadcast();
 	};
@@ -787,7 +881,9 @@ void UNakamaClient::UnLinkSteam(
 	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Error.Broadcast(error);
 	};
@@ -804,7 +900,9 @@ void UNakamaClient::UnLinkApple(
 	auto successCallback = [this, Success]()
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Success.Broadcast();
 	};
@@ -812,7 +910,9 @@ void UNakamaClient::UnLinkApple(
 	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Error.Broadcast(error);
 	};
@@ -832,7 +932,9 @@ void UNakamaClient::RefreshSession(
 	auto successCallback = [this, Success](UNakamaSession* Session)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Success.Broadcast(Session);
 	};
@@ -840,7 +942,9 @@ void UNakamaClient::RefreshSession(
 	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Error.Broadcast(error);
 	};
@@ -862,7 +966,9 @@ void UNakamaClient::ImportFacebookFriends(
 	auto successCallback = [this, Success]()
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Success.Broadcast();
 	};
@@ -870,7 +976,9 @@ void UNakamaClient::ImportFacebookFriends(
 	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Error.Broadcast(error);
 	};
@@ -892,7 +1000,9 @@ void UNakamaClient::ImportSteamFriends(
 	auto successCallback = [this, Success]()
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Success.Broadcast();
 	};
@@ -900,7 +1010,9 @@ void UNakamaClient::ImportSteamFriends(
 	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Error.Broadcast(error);
 	};
@@ -928,7 +1040,9 @@ void UNakamaClient::GetAccount(
 	auto successCallback = [this, Success](const FNakamaAccount& account)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Success.Broadcast(account);
 	};
@@ -936,7 +1050,9 @@ void UNakamaClient::GetAccount(
 	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Error.Broadcast(error);
 	};
@@ -959,7 +1075,9 @@ void UNakamaClient::GetUsers(
 	auto successCallback = [this, Success](const FNakamaUserList& UserList)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Success.Broadcast(UserList.Users);
 	};
@@ -967,7 +1085,9 @@ void UNakamaClient::GetUsers(
 	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Error.Broadcast(error);
 	};
@@ -989,7 +1109,9 @@ void UNakamaClient::UpdateAccount(
 	auto successCallback = [this, Success]()
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Success.Broadcast();
 	};
@@ -997,7 +1119,9 @@ void UNakamaClient::UpdateAccount(
 	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Error.Broadcast(error);
 	};
@@ -1020,7 +1144,9 @@ void UNakamaClient::DeleteUser(UNakamaSession* Session, FOnDeleteUser Success, F
 	auto successCallback = [this, Success]()
 	{
 		if (!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Success.Broadcast();
 	};
@@ -1028,7 +1154,9 @@ void UNakamaClient::DeleteUser(UNakamaSession* Session, FOnDeleteUser Success, F
 	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if (!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Error.Broadcast(error);
 	};
@@ -1063,7 +1191,9 @@ void UNakamaClient::ListMatches(
 	auto successCallback = [this, Success](const FNakamaMatchList& MatchList)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Success.Broadcast(MatchList);
 	};
@@ -1071,7 +1201,9 @@ void UNakamaClient::ListMatches(
 	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Error.Broadcast(error);
 	};
@@ -1124,7 +1256,9 @@ void UNakamaClient::ListFriends(
 	auto successCallback = [this, Success](const FNakamaFriendList&  Friends)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Success.Broadcast(Friends);
 	};
@@ -1132,7 +1266,9 @@ void UNakamaClient::ListFriends(
 	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Error.Broadcast(error);
 	};
@@ -1160,7 +1296,9 @@ void UNakamaClient::AddFriends(
 	auto successCallback = [this, Success]()
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Success.Broadcast();
 	};
@@ -1168,7 +1306,9 @@ void UNakamaClient::AddFriends(
 	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Error.Broadcast(error);
 	};
@@ -1196,7 +1336,9 @@ void UNakamaClient::DeleteFriends(
 	auto successCallback = [this, Success]()
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Success.Broadcast();
 	};
@@ -1204,7 +1346,9 @@ void UNakamaClient::DeleteFriends(
 	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Error.Broadcast(error);
 	};
@@ -1222,7 +1366,9 @@ void UNakamaClient::BlockFriends(
 	auto successCallback = [this, Success]()
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Success.Broadcast();
 	};
@@ -1230,7 +1376,9 @@ void UNakamaClient::BlockFriends(
 	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Error.Broadcast(error);
 	};
@@ -1257,7 +1405,9 @@ void UNakamaClient::CreateGroup(
 	auto successCallback = [this, Success](const FNakamaGroup& Group)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Success.Broadcast(Group);
 	};
@@ -1265,7 +1415,9 @@ void UNakamaClient::CreateGroup(
 	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Error.Broadcast(error);
 	};
@@ -1296,7 +1448,9 @@ void UNakamaClient::ListGroups(
 	auto successCallback = [this, Success](const FNakamaGroupList& Groups)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Success.Broadcast(Groups);
 	};
@@ -1304,7 +1458,9 @@ void UNakamaClient::ListGroups(
 	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Error.Broadcast(error);
 	};
@@ -1321,7 +1477,9 @@ void UNakamaClient::JoinGroup(
 	auto successCallback = [this, Success]()
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Success.Broadcast();
 	};
@@ -1329,7 +1487,9 @@ void UNakamaClient::JoinGroup(
 	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Error.Broadcast(error);
 	};
@@ -1350,7 +1510,9 @@ void UNakamaClient::ListUserGroups(
 	auto successCallback = [this, Success](const FNakamaUserGroupList&  UserGroupList)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Success.Broadcast(UserGroupList);
 	};
@@ -1358,7 +1520,9 @@ void UNakamaClient::ListUserGroups(
 	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Error.Broadcast(error);
 	};
@@ -1388,7 +1552,9 @@ void UNakamaClient::ListGroupUsers(
 	auto successCallback = [this, Success](const FNakamaGroupUsersList&  GroupUsersList)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Success.Broadcast(GroupUsersList);
 	};
@@ -1396,7 +1562,9 @@ void UNakamaClient::ListGroupUsers(
 	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Error.Broadcast(error);
 	};
@@ -1429,7 +1597,9 @@ void UNakamaClient::UpdateGroup(
 	auto successCallback = [this, Success]()
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Success.Broadcast();
 	};
@@ -1437,7 +1607,9 @@ void UNakamaClient::UpdateGroup(
 	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Error.Broadcast(error);
 	};
@@ -1469,7 +1641,9 @@ void UNakamaClient::LeaveGroup(
 	auto successCallback = [this, Success]()
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Success.Broadcast();
 	};
@@ -1477,7 +1651,9 @@ void UNakamaClient::LeaveGroup(
 	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Error.Broadcast(error);
 	};
@@ -1495,7 +1671,9 @@ void UNakamaClient::AddGroupUsers(
 	auto successCallback = [this, Success]()
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Success.Broadcast();
 	};
@@ -1503,7 +1681,9 @@ void UNakamaClient::AddGroupUsers(
 	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Error.Broadcast(error);
 	};
@@ -1521,7 +1701,9 @@ void UNakamaClient::PromoteGroupUsers(
 	auto successCallback = [this, Success]()
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Success.Broadcast();
 	};
@@ -1529,7 +1711,9 @@ void UNakamaClient::PromoteGroupUsers(
 	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Error.Broadcast(error);
 	};
@@ -1547,7 +1731,9 @@ void UNakamaClient::KickGroupUsers(
 	auto successCallback = [this, Success]()
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Success.Broadcast();
 	};
@@ -1555,7 +1741,9 @@ void UNakamaClient::KickGroupUsers(
 	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Error.Broadcast(error);
 	};
@@ -1573,7 +1761,9 @@ void UNakamaClient::BanGroupUsers(
 	auto successCallback = [this, Success]()
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Success.Broadcast();
 	};
@@ -1581,7 +1771,9 @@ void UNakamaClient::BanGroupUsers(
 	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Error.Broadcast(error);
 	};
@@ -1599,7 +1791,9 @@ void UNakamaClient::DemoteGroupUsers(
 	auto successCallback = [this, Success]()
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Success.Broadcast();
 	};
@@ -1607,7 +1801,9 @@ void UNakamaClient::DemoteGroupUsers(
 	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Error.Broadcast(error);
 	};
@@ -1624,7 +1820,9 @@ void UNakamaClient::DeleteGroup(
 	auto successCallback = [this, Success]()
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Success.Broadcast();
 	};
@@ -1632,7 +1830,9 @@ void UNakamaClient::DeleteGroup(
 	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Error.Broadcast(error);
 	};
@@ -1654,7 +1854,9 @@ void UNakamaClient::ListNotifications(
 	auto successCallback = [this, Success](const FNakamaNotificationList& NotificationList)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Success.Broadcast(NotificationList);
 	};
@@ -1662,7 +1864,9 @@ void UNakamaClient::ListNotifications(
 	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Error.Broadcast(error);
 	};
@@ -1683,7 +1887,9 @@ void UNakamaClient::DeleteNotifications(
 	auto successCallback = [this, Success]()
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Success.Broadcast();
 	};
@@ -1691,7 +1897,9 @@ void UNakamaClient::DeleteNotifications(
 	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Error.Broadcast(error);
 	};
@@ -1712,7 +1920,9 @@ void UNakamaClient::WriteStorageObjects(
 	auto successCallback = [this, Success](const FNakamaStoreObjectAcks& StorageObjectAcks)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Success.Broadcast(StorageObjectAcks);
 	};
@@ -1720,7 +1930,9 @@ void UNakamaClient::WriteStorageObjects(
 	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Error.Broadcast(error);
 	};
@@ -1737,7 +1949,9 @@ void UNakamaClient::ReadStorageObjects(
 	auto successCallback = [this, Success](const FNakamaStorageObjectList& StorageObjectList)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Success.Broadcast(StorageObjectList);
 	};
@@ -1745,7 +1959,9 @@ void UNakamaClient::ReadStorageObjects(
 	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Error.Broadcast(error);
 	};
@@ -1765,7 +1981,9 @@ void UNakamaClient::ListStorageObjects(
 	auto successCallback = [this, Success](const FNakamaStorageObjectList& StorageObjectList)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Success.Broadcast(StorageObjectList);
 	};
@@ -1773,7 +1991,9 @@ void UNakamaClient::ListStorageObjects(
 	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Error.Broadcast(error);
 	};
@@ -1809,7 +2029,9 @@ void UNakamaClient::DeleteStorageObjects(
 	auto successCallback = [this, Success]()
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Success.Broadcast();
 	};
@@ -1817,7 +2039,9 @@ void UNakamaClient::DeleteStorageObjects(
 	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Error.Broadcast(error);
 	};
@@ -1836,10 +2060,12 @@ bool UNakamaClient::RPC(
 	FOnRPC Success,
 	FOnError Error)
 {
-	auto successCallback = [this, Success](const FNakamaRPC& Rpc)
+	auto successCallback = [this, Success](FNakamaRPC&& Rpc)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Success.Broadcast(Rpc);
 	};
@@ -1847,12 +2073,14 @@ bool UNakamaClient::RPC(
 	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Error.Broadcast(error);
 	};
 
-	return RPC(Session, FunctionId, TOptional<FString>(Payload), successCallback, errorCallback);
+	return RPCm(Session, FunctionId, TOptional<FString>(Payload), successCallback, errorCallback);
 }
 
 /**
@@ -1869,7 +2097,9 @@ bool UNakamaClient::RPCHttpKey(
 	auto successCallback = [this, Success](const FNakamaRPC& Rpc)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Success.Broadcast(Rpc);
 	};
@@ -1877,7 +2107,9 @@ bool UNakamaClient::RPCHttpKey(
 	auto errorCallback = [this, Error](const FNakamaError& error)
 	{
 		if(!FNakamaUtils::IsClientActive(this))
+		{
 			return;
+		}
 
 		Error.Broadcast(error);
 	};
@@ -8684,6 +8916,36 @@ bool UNakamaClient::RPC(
     return SendRPC({}, Id, TOptional<FString>(Payload), QueryParams, SuccessCallback, ErrorCallback);
 }
 
+bool UNakamaClient::RPCm(
+	UNakamaSession* Session,
+	const FString& Id,
+	TOptional<FString>&& Payload,
+	TFunction<void(FNakamaRPC&& Rpc)> SuccessCallback,
+	TFunction<void(const FNakamaError& Error)> ErrorCallback)
+{
+	// Verify the session
+	if (!FNakamaUtils::IsSessionValid(Session, ErrorCallback))
+	{
+		return false;
+	}
+
+	// Call the SendRPC function
+	return SendRPCm(Session, Id, MoveTemp(Payload), {}, SuccessCallback, ErrorCallback);
+}
+
+bool UNakamaClient::RPCm(const FString& HttpKey, const FString& Id, FString&& Payload,
+	TFunction<void(FNakamaRPC&& Rpc)> SuccessCallback, TFunction<void(const FNakamaError& Error)> ErrorCallback)
+{
+	TMultiMap<FString, FString> QueryParams;
+	//QueryParams.Add(TEXT("http_key"), HttpKey);
+	const FString EncodedHttpKey = FGenericPlatformHttp::UrlEncode(HttpKey);
+	QueryParams.Add(TEXT("http_key"), EncodedHttpKey);
+
+
+	// Sends Empty Session
+	return SendRPCm({}, Id, TOptional<FString>(MoveTemp(Payload)), QueryParams, SuccessCallback, ErrorCallback);
+}
+
 // End of TFunctions
 
 FString UNakamaClient::ConstructURL(const FString& Endpoint)
@@ -8741,11 +9003,10 @@ bool UNakamaClient::SendRPC(UNakamaSession* Session, const FString& Id, const TO
 
         // Bind the response callback and handle the response
         HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-            FNakamaUtils::ProcessRequestComplete(Request, Response, bSuccess, [SuccessCallback](const FString& ResponseBody) {
+            FNakamaUtils::ProcessRequestCompleteMove(Request, Response, bSuccess, [SuccessCallback](FString&& ResponseBody) {
                 if (SuccessCallback)
                 {
-                    FNakamaRPC Rpc = FNakamaRPC(ResponseBody);
-                    SuccessCallback(Rpc);
+                    SuccessCallback(FNakamaRPC(MoveTemp(ResponseBody)));
                 }
             }, [ErrorCallback](const FNakamaError& Error) {
                 if (ErrorCallback)
@@ -8774,11 +9035,83 @@ bool UNakamaClient::SendRPC(UNakamaSession* Session, const FString& Id, const TO
 
         // Bind the response callback and handle the response
         HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-            FNakamaUtils::ProcessRequestComplete(Request, Response, bSuccess, [SuccessCallback](const FString& ResponseBody) {
+            FNakamaUtils::ProcessRequestCompleteMove(Request, Response, bSuccess, [SuccessCallback](FString&& ResponseBody) {
                 if (SuccessCallback)
                 {
-                    FNakamaRPC Rpc = FNakamaRPC(ResponseBody);
-                    SuccessCallback(Rpc);
+                    SuccessCallback(FNakamaRPC(MoveTemp(ResponseBody)));
+                }
+            }, [ErrorCallback](const FNakamaError& Error) {
+                if (ErrorCallback)
+                {
+                    ErrorCallback(Error);
+                }
+            });
+        });
+
+        // Process the request
+        return HttpRequest->ProcessRequest();
+    }
+}
+
+bool UNakamaClient::SendRPCm(UNakamaSession* Session, const FString& Id, const TOptional<FString>& Payload,
+	TMultiMap<FString, FString> QueryParams, TFunction<void(FNakamaRPC&& Rpc)> SuccessCallback,
+	TFunction<void(const FNakamaError& Error)> ErrorCallback)
+{
+	// Setup the endpoint
+    const FString Endpoint = FString("/v2/rpc/") + Id;
+
+    if (Payload.IsSet() && !Payload.GetValue().IsEmpty())
+    {
+        // This part is important
+        const FString EscapedPayload = EscapeJsonString(Payload.GetValue());
+
+        FString SessionToken;
+        if (Session != nullptr)
+        {
+            SessionToken = Session->GetAuthToken();
+        }
+
+        // Make the POST request with payload
+        const auto HttpRequest = MakeRequest(Endpoint, EscapedPayload, ENakamaRequestMethod::POST, QueryParams, SessionToken);
+
+        // Bind the response callback and handle the response
+        HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+            FNakamaUtils::ProcessRequestCompleteMove(Request, Response, bSuccess, [SuccessCallback](FString&& ResponseBody) {
+                if (SuccessCallback)
+                {
+                    SuccessCallback(FNakamaRPC(MoveTemp(ResponseBody)));
+                }
+            }, [ErrorCallback](const FNakamaError& Error) {
+                if (ErrorCallback)
+                {
+                    ErrorCallback(Error);
+                }
+            });
+        });
+
+        // Process the request
+        return HttpRequest->ProcessRequest();
+    }
+    else
+    {
+        // Add the RPC ID to the query parameters
+        QueryParams.Add(TEXT("id"), Id);
+
+        FString SessionToken;
+        if (Session != nullptr)
+        {
+            SessionToken = Session->GetAuthToken();
+        }
+
+        // Make the GET request without payload
+        const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::GET, QueryParams, SessionToken);
+
+        // Bind the response callback and handle the response
+        HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+            FNakamaUtils::ProcessRequestCompleteMove(Request, Response, bSuccess, [SuccessCallback](FString&& ResponseBody) {
+                if (SuccessCallback)
+                {
+                    SuccessCallback(FNakamaRPC(MoveTemp(ResponseBody)));
                 }
             }, [ErrorCallback](const FNakamaError& Error) {
                 if (ErrorCallback)
