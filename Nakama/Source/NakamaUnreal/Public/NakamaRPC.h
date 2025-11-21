@@ -38,5 +38,6 @@ struct NAKAMAUNREAL_API FNakamaRPC
 	FString HttpKey;
 
 	FNakamaRPC(const FString& JsonString);
+	FNakamaRPC(FString&& JsonString);
 	FNakamaRPC();
 };

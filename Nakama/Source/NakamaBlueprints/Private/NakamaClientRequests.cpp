@@ -3182,7 +3182,7 @@ void UNakamaClientRPC::Activate()
 		return;
 	}
 
-	auto successCallback = [this](const FNakamaRPC& Rpc)
+	auto successCallback = [this](FNakamaRPC&& Rpc)
 	{
 		if (!FNakamaUtils::IsClientActive(NakamaClient))
 		{
@@ -3190,7 +3190,7 @@ void UNakamaClientRPC::Activate()
 			return;
 		}
 
-		OnSuccess.Broadcast({}, Rpc);
+		OnSuccess.Broadcast({}, MoveTemp(Rpc));
 		SetReadyToDestroy();
 	};
 
@@ -3206,7 +3206,7 @@ void UNakamaClientRPC::Activate()
 		SetReadyToDestroy();
 	};
 
-	NakamaClient->RPC(UserSession, FunctionId, Payload, successCallback, errorCallback);
+	NakamaClient->RPCm(UserSession, FunctionId, Payload, successCallback, errorCallback);
 }
 
 // RPC HttpKey
@@ -3232,7 +3232,7 @@ void UNakamaClientRPCHttpKey::Activate()
 		return;
 	}
 
-	auto successCallback = [this](const FNakamaRPC& Rpc)
+	auto successCallback = [this](FNakamaRPC&& Rpc)
 	{
 		if (!FNakamaUtils::IsClientActive(NakamaClient))
 		{
@@ -3240,7 +3240,7 @@ void UNakamaClientRPCHttpKey::Activate()
 			return;
 		}
 
-		OnSuccess.Broadcast({}, Rpc);
+		OnSuccess.Broadcast({}, MoveTemp(Rpc));
 		SetReadyToDestroy();
 	};
 
@@ -3256,7 +3256,7 @@ void UNakamaClientRPCHttpKey::Activate()
 		SetReadyToDestroy();
 	};
 
-	NakamaClient->RPC(HttpKey, FunctionId, Payload, successCallback, errorCallback);
+	NakamaClient->RPCm(HttpKey, FunctionId, MoveTemp(Payload), successCallback, errorCallback);
 }
 
 UNakamaClientListChannelMessages* UNakamaClientListChannelMessages::ListChannelMessages(UNakamaClient* Client,

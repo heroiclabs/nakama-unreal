@@ -245,6 +245,7 @@ public:
 
 	// Common functions used by multiple clients
 	static void ProcessRequestComplete(FHttpRequestPtr Request, const FHttpResponsePtr& Response, bool bSuccess, const TFunction<void(const FString&)>& SuccessCallback, const TFunction<void(const FNakamaError& Error)>& ErrorCallback);
+	static void ProcessRequestCompleteMove(FHttpRequestPtr Request, const FHttpResponsePtr& Response, bool bSuccess, const TFunction<void(FString&&)>& SuccessCallback, const TFunction<void(const FNakamaError& Error)>& ErrorCallback);
 	
 	static void HandleJsonSerializationFailure(TFunction<void(const FNakamaError& Error)> ErrorCallback);
 	static bool IsSessionValid(const UNakamaSession* Session, TFunction<void(const FNakamaError& Error)> ErrorCallback);

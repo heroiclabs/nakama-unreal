@@ -2917,6 +2917,42 @@ public:
 		const FString& Payload,
 		TFunction<void(const FNakamaRPC& Rpc)> SuccessCallback,
 		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		);
+
+	/**
+	 * Send an RPC message to the server.
+	 * returns true if the call was made.
+	 *
+	 * @param Id The ID of the function to execute.
+	 * @param Payload The string content to send to the server.
+	 * @param Session The session of the user.
+	 * @param SuccessCallback Callback invoked upon successfully sending the RPC message and receiving a response.
+	 * @param ErrorCallback Callback invoked if an error occurs, detailing the failure.
+	 */
+	bool RPCm (
+		UNakamaSession *Session,
+		const FString& Id,
+		TOptional<FString>&& Payload,
+		TFunction<void(FNakamaRPC&& Rpc)> SuccessCallback,
+		TFunction<void(const FNakamaError& Error)> ErrorCallback
+	);
+
+	/**
+	 * Send an RPC message to the server using HTTP key.
+	 * returns true if the call was made.
+	 *
+	 * @param HttpKey The HTTP key for the server.
+	 * @param Id The ID of the function to execute.
+	 * @param Payload The string content to send to the server.
+	 * @param SuccessCallback Callback invoked upon successfully sending the RPC message using the HTTP key and receiving a response.
+	 * @param ErrorCallback Callback invoked if an error occurs, detailing the failure.
+	 */
+	bool RPCm ( // HTTPKey
+		const FString& HttpKey,
+		const FString& Id,
+		FString&& Payload,
+		TFunction<void(FNakamaRPC&& Rpc)> SuccessCallback,
+		TFunction<void(const FNakamaError& Error)> ErrorCallback
 	);
 
 private:
@@ -2943,6 +2979,15 @@ private:
 		const TOptional<FString>& Payload,
 		TMultiMap<FString, FString> QueryParams,
 		TFunction<void(const FNakamaRPC& Rpc)> SuccessCallback,
+		TFunction<void(const FNakamaError& Error)> ErrorCallback
+		);
+
+	bool SendRPCm(
+		UNakamaSession* Session,
+		const FString& Id,
+		const TOptional<FString>& Payload,
+		TMultiMap<FString, FString> QueryParams,
+		TFunction<void(FNakamaRPC&& Rpc)> SuccessCallback,
 		TFunction<void(const FNakamaError& Error)> ErrorCallback
 	);
 

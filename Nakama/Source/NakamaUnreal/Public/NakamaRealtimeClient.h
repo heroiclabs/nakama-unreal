@@ -1312,6 +1312,7 @@ public:
 
 	// Reusable functionality to handle Sending messages with Envelopes (with callbacks)
 	void SendMessageWithEnvelope(const FString& FieldName, const TSharedPtr<FJsonObject>& ObjectField, TFunction<void(const FNakamaRealtimeEnvelope& Envelope)> SuccessCallback, TFunction<void(const FNakamaRtError& Error)> ErrorCallback);
+	void SendMessageWithEnvelopeMove(const FString& FieldName, const TSharedPtr<FJsonObject>& ObjectField, TFunction<void(FNakamaRealtimeEnvelope&& Envelope)> SuccessCallback, TFunction<void(const FNakamaRtError& Error)> ErrorCallback);
 
 	// Reusable functionality to handle Sending messages with Envelopes (no callbacks)
 	void SendDataWithEnvelope(const FString& FieldName, const TSharedPtr<FJsonObject>& ObjectField);
