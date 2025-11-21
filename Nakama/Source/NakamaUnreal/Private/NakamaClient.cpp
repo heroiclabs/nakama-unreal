@@ -2067,7 +2067,7 @@ bool UNakamaClient::RPC(
 			return;
 		}
 
-		Success.Broadcast(Rpc);
+		Success.Broadcast(MoveTemp(Rpc));
 	};
 
 	auto errorCallback = [this, Error](const FNakamaError& error)
