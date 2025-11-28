@@ -5320,6 +5320,8 @@ void UNakamaClient::DeleteUser(
 	// Verify the session
 	if (!FNakamaUtils::IsSessionValid(Session, ErrorCallback))
 	{
+		const FNakamaError Error("Invalid session on DeleteUser call.");
+		ErrorCallback(Error);
 		return;
 	}
 
@@ -5334,9 +5336,10 @@ void UNakamaClient::DeleteUser(
 
 	// Bind the response callback and handle the response
 	HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
-
 		if (!IsValidLowLevel())
 		{
+			const FNakamaError Error("Invalid http request when lambda executes on DeleteUser call.");
+			ErrorCallback(Error);
 			return;
 		}
 
@@ -5384,7 +5387,11 @@ void UNakamaClient::DeleteUser(
 	});
 
 	// Process the request
-	HttpRequest->ProcessRequest();
+	if (!HttpRequest->ProcessRequest())
+	{
+		const FNakamaError Error("Failed to process request on DeleteUser call.");
+		ErrorCallback(Error);
+	}
 }
 
 void UNakamaClient::GetUsers(
@@ -7338,7 +7345,7 @@ void UNakamaClient::WriteLeaderboardRecord(
 
     // Setup the request content
     TSharedPtr<FJsonObject> ContentJson = MakeShareable(new FJsonObject);
-    ContentJson->SetNumberField(TEXT("score"), Score);
+	ContentJson->SetNumberField(TEXT("score"), Score);
     if (Subscore.IsSet())
     {
         ContentJson->SetNumberField(TEXT("subscore"), Subscore.GetValue());

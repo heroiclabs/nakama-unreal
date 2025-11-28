@@ -83,10 +83,26 @@ struct NAKAMAUNREAL_API FNakamaLeaderboardRecord
 UENUM(BlueprintType)
 enum class ENakamaLeaderboardListBy : uint8
 {
-	//The object is only writable by server runtime
+	// The object is only writable by server runtime
 	BY_SCORE UMETA(DisplayName = "By Score"),
-	//Only the user who owns it may write
+	// Only the user who owns it may write
 	BY_FRIENDS UMETA(DisplayName = "By Friends"),
+};
+
+
+UENUM(BlueprintType)
+enum class ENakamaLeaderboardOperatorOverride : uint8
+{
+	// Do not override the leaderboard operator
+	NO_OVERRIDE UMETA(DisplayName = "NO_OVERRIDE"),
+	// Override the leaderboard operator with BEST
+	BEST UMETA(DisplayName = "BEST"),
+	// Override the leaderboard operator with SET
+	SET UMETA(DisplayName = "SET"),
+	// Override the leaderboard operator with INCREMENT
+	INCREMENT UMETA(DisplayName = "INCREMENT"),
+	// Override the leaderboard operator with DECREMENT
+	DECREMENT UMETA(DisplayName = "DECREMENT"),
 };
 
 
