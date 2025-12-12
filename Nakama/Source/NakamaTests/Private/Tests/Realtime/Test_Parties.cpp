@@ -98,9 +98,9 @@ void FNakamaPartiesTestBase::SetupClient2AndJoinParty()
 			// Join Party Callbacks
 			auto JoinPartySuccessCallback = [&]()
 			{
-				UE_LOG(LogTemp, Display, TEXT("Joined Party with Id: %s"), *Party.Id);
+				UE_LOG(LogTemp, Display, TEXT("Joined Party with Id: %s"), *Party.PartyId);
 
-				Socket2->SendPartyData(Party.Id, 100, "Testing if it works");
+				Socket2->SendPartyData(Party.PartyId, 100, "Testing if it works");
 				TestTrue("Create Party Test Passed", true);
 				StopTest();
 			};
@@ -112,12 +112,12 @@ void FNakamaPartiesTestBase::SetupClient2AndJoinParty()
 				StopTest();
 			};
 
-			Socket2->JoinParty(Party.Id, JoinPartySuccessCallback, JoinPartyErrorCallback);
+			Socket2->JoinParty(Party.PartyId, JoinPartySuccessCallback, JoinPartyErrorCallback);
 		});
 
 		Socket2->SetPartyCallback( [&](const FNakamaParty& MyParty)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Party Callback. PartyId: %s"), *MyParty.Id);
+			UE_LOG(LogTemp, Warning, TEXT("Party Callback. PartyId: %s"), *MyParty.PartyId);
 			for (auto& Presence : MyParty.Presences)
 			{
 				UE_LOG(LogTemp, Display, TEXT("Event Presence: %s"), *Presence.UserID);
@@ -170,7 +170,7 @@ void FNakamaPartiesTestBase::SetupClient2AndRequestJoinParty()
 					StopTest();
 				};
 
-				this->Socket->ListPartyJoinRequests(Party.Id, ListPartyJoinRequestsSuccessCallback, ListPartyJoinRequestsErrorCallback);
+				this->Socket->ListPartyJoinRequests(Party.PartyId, ListPartyJoinRequestsSuccessCallback, ListPartyJoinRequestsErrorCallback);
 			};
 
 			auto JoinPartyErrorCallback = [&](const FNakamaRtError& Error)
@@ -180,12 +180,12 @@ void FNakamaPartiesTestBase::SetupClient2AndRequestJoinParty()
 				StopTest();
 			};
 
-			Socket2->JoinParty(Party.Id, JoinPartySuccessCallback, JoinPartyErrorCallback);
+			Socket2->JoinParty(Party.PartyId, JoinPartySuccessCallback, JoinPartyErrorCallback);
 		});
 
 		Socket2->SetPartyCallback([&](const FNakamaParty& MyParty)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Party Callback. PartyId: %s"), *MyParty.Id);
+			UE_LOG(LogTemp, Warning, TEXT("Party Callback. PartyId: %s"), *MyParty.PartyId);
 			for (auto& Presence : MyParty.Presences)
 			{
 				UE_LOG(LogTemp, Display, TEXT("Event Presence: %s"), *Presence.UserID);
@@ -232,12 +232,12 @@ void FNakamaPartiesTestBase::SetupClient2AndReceiveRequestJoinParty()
 				StopTest();
 			};
 
-			Socket2->JoinParty(Party.Id, JoinPartySuccessCallback, JoinPartyErrorCallback);
+			Socket2->JoinParty(Party.PartyId, JoinPartySuccessCallback, JoinPartyErrorCallback);
 		});
 
 		Socket2->SetPartyCallback([&](const FNakamaParty& MyParty)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Party Callback. PartyId: %s"), *MyParty.Id);
+			UE_LOG(LogTemp, Warning, TEXT("Party Callback. PartyId: %s"), *MyParty.PartyId);
 			for (auto& Presence : MyParty.Presences)
 			{
 				UE_LOG(LogTemp, Display, TEXT("Event Presence: %s"), *Presence.UserID);
@@ -300,7 +300,7 @@ inline bool PartyMatchmaker::RunTest(const FString& Parameters)
 				TOptional<int32> MaxCount = 2;
 				TOptional<FString> Query(TEXT("*"));
 
-				Socket->AddMatchmakerParty(Party.Id, MinCount, MaxCount, Query, {}, {} , {},AddMatchmakerPartySuccessCallback, AddMatchmakerPartyErrorCallback);
+				Socket->AddMatchmakerParty(Party.PartyId, MinCount, MaxCount, Query, {}, {} , {},AddMatchmakerPartySuccessCallback, AddMatchmakerPartyErrorCallback);
 			};
 
 			auto CreatePartyErrorCallback = [&](const FNakamaRtError& Error)

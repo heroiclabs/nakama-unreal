@@ -3061,3 +3061,60 @@ private:
 	FString Cursor;
 
 };
+
+
+/**
+ * List Parties
+ */
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnListParties, FNakamaError, Error, FNakamaPartyList, PartyList);
+
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientListParties : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY()
+	TObjectPtr<UNakamaClient> NakamaClient;
+
+	UPROPERTY()
+	TObjectPtr<UNakamaSession> UserSession;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnListParties OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnListParties OnError;
+
+	/**
+	 * List parties and optionally filter by matching criteria.
+	 *
+	 * @param Limit Limit the number of returned parties.
+	 * @param Open Optionally filter by open/closed parties.
+	 * @param Query Arbitrary label query.
+	 * @param Cursor Cursor for the next page of results, if any.
+	 * @param Session The session of the user.
+	 * @param Client The Client to use.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Nakama|Parties", meta = (BlueprintInternalUseOnly = "true"))
+	static UNakamaClientListParties* ListParties(
+		UNakamaClient* Client,
+		UNakamaSession *Session,
+		int32 Limit,
+		bool Open,
+		FString Query,
+		FString Cursor
+	);
+
+	virtual void Activate() override;
+
+private:
+
+	int32 Limit;
+	bool Open;
+	FString Query;
+	FString Cursor;
+
+};

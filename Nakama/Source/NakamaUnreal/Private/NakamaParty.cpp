@@ -27,10 +27,20 @@ FNakamaParty::FNakamaParty(const TSharedPtr<FJsonObject> JsonObject)
         // Get the appropriate object based on whether "party" is present or not
         TSharedPtr<FJsonObject> PartyObject = JsonObject->HasField(TEXT("party")) ? JsonObject->GetObjectField(TEXT("party")) : JsonObject;
 
-        PartyObject->TryGetStringField(TEXT("party_id"), Id);
+        if (!PartyObject->TryGetStringField(TEXT("party_id"), PartyId))
+        {
+        	// TODO: Check which is the one actually sent by the server
+			PartyObject->TryGetStringField(TEXT("partyId"), PartyId);
+        }
         PartyObject->TryGetBoolField(TEXT("open"), Open);
-        PartyObject->TryGetNumberField(TEXT("max_size"), MaxSize);
-
+        PartyObject->TryGetBoolField(TEXT("hidden"), Hidden);
+		if (!PartyObject->TryGetNumberField(TEXT("max_size"), MaxSize))
+		{
+			// TODO: Check which is the one actually sent by the server
+			PartyObject->TryGetNumberField(TEXT("maxSize"), MaxSize);
+		}
+        PartyObject->TryGetStringField(TEXT("label"), Label);
+		
         FString SelfJsonString;
         const TSharedPtr<FJsonObject>* SelfJsonObject;
         if (PartyObject->TryGetObjectField(TEXT("self"), SelfJsonObject))
@@ -60,7 +70,7 @@ FNakamaParty::FNakamaParty(const TSharedPtr<FJsonObject> JsonObject)
 
 }
 
-FNakamaParty::FNakamaParty(): Open(false), MaxSize(0)
+FNakamaParty::FNakamaParty(): Open(false), Hidden(true), MaxSize(0)
 {
 }
 
@@ -232,4 +242,33 @@ FNakamaPartyPresenceEvent::FNakamaPartyPresenceEvent(const FString& JsonString)
 FNakamaPartyPresenceEvent::FNakamaPartyPresenceEvent()
 {
 
+}
+
+
+FNakamaPartyList::FNakamaPartyList(const FString& JsonString)
+{
+	TSharedPtr<FJsonObject> JsonObject;
+	const TSharedRef<TJsonReader<>> JsonReader = TJsonReaderFactory<>::Create(JsonString);
+
+	if (FJsonSerializer::Deserialize(JsonReader, JsonObject) && JsonObject.IsValid())
+	{
+		const TArray<TSharedPtr<FJsonValue>>* PartiesJsonArray;
+		if (JsonObject->TryGetArrayField(TEXT("parties"), PartiesJsonArray))
+		{
+			for (const TSharedPtr<FJsonValue>& PartyJsonValue : *PartiesJsonArray)
+			{
+				if (TSharedPtr<FJsonObject> PartyJsonObject = PartyJsonValue->AsObject())
+				{
+					FNakamaParty Party(PartyJsonObject);
+					Parties.Add(Party);
+				}
+			}
+		}
+
+		JsonObject->TryGetStringField(TEXT("cursor"), Cursor);
+	}
+}
+
+FNakamaPartyList::FNakamaPartyList()
+{
 }

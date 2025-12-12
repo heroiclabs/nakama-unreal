@@ -2049,6 +2049,44 @@ void UNakamaClient::DeleteStorageObjects(
 	DeleteStorageObjects(Session, StorageObjectsData, successCallback, errorCallback);
 }
 
+
+void UNakamaClient::ListParties (
+	UNakamaSession* Session,
+	int32 Limit,
+	bool Open,
+	const FString&  Query,
+	const FString&  Cursor,
+	FOnListedParties Success,
+	FOnError Error
+)
+{
+	auto successCallback = [this, Success](const FNakamaPartyList& PartyList)
+	{
+		if(!FNakamaUtils::IsClientActive(this))
+		{
+			return;
+		}
+
+		Success.Broadcast(PartyList);
+	};
+
+	auto errorCallback = [this, Error](const FNakamaError& error)
+	{
+		if(!FNakamaUtils::IsClientActive(this))
+		{
+			return;
+		}
+
+		Error.Broadcast(error);
+	};
+
+	const auto OptLimit = FNakamaUtils::CreateOptional(Limit, 0);
+	const auto OptQuery = FNakamaUtils::CreateOptional(Query, FString());
+	const auto OptCursor = FNakamaUtils::CreateOptional(Cursor, FString());
+	
+	ListParties(Session, OptLimit, Open, OptQuery, OptCursor, successCallback, errorCallback);
+}
+
 /**
  * RPC
  */
@@ -8858,6 +8896,111 @@ void UNakamaClient::DeleteStorageObjects(
                     if (SuccessCallback)
                     {
                         SuccessCallback();
+                    }
+                }
+                else
+                {
+                    // Check for Error Callback
+                    if (ErrorCallback)
+                    {
+                        const FNakamaError Error(ResponseBody);
+                        ErrorCallback(Error);
+                    }
+                }
+            }
+            else
+            {
+                // Handle Invalid Response
+                if (ErrorCallback)
+                {
+                    const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
+                    ErrorCallback(RequestError);
+                }
+            }
+
+            // Remove the HttpRequest from ActiveRequests
+            ActiveRequests.Remove(Request);
+        }
+    });
+
+    // Process the request
+    HttpRequest->ProcessRequest();
+}
+
+void UNakamaClient::ListParties (
+	UNakamaSession* Session,
+	const TOptional<int32>& Limit,
+	const TOptional<bool>& Open,
+	const TOptional<FString>&  Query,
+	const TOptional<FString>&  Cursor,
+	TFunction<void(const FNakamaPartyList&)> SuccessCallback,
+	TFunction<void(const FNakamaError&)> ErrorCallback
+)
+{
+    // Setup the endpoint
+    const FString Endpoint = TEXT("/v2/party");
+
+    // Verify the session
+    if (!FNakamaUtils::IsSessionValid(Session, ErrorCallback))
+    {
+        return;
+    }
+
+    // Setup the query parameters
+    TMultiMap<FString, FString> QueryParams;
+    if (Limit.IsSet())
+    {
+        QueryParams.Add(TEXT("limit"), FString::FromInt(Limit.GetValue()));
+    }
+	if (Open.IsSet())
+	{
+		QueryParams.Add(TEXT("open"), FNakamaUtils::BoolToString(Open.GetValue()));
+	}
+	if (Query.IsSet())
+	{
+		const FString EncodedQuery = FGenericPlatformHttp::UrlEncode(Query.GetValue());
+		QueryParams.Add(TEXT("query"), EncodedQuery);
+	}
+    if (Cursor.IsSet())
+    {
+        const FString EncodedCursor = FGenericPlatformHttp::UrlEncode(Cursor.GetValue());
+        QueryParams.Add(TEXT("cursor"), EncodedCursor);
+    }
+
+    // Make the request
+    const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), ENakamaRequestMethod::GET, QueryParams, Session->GetAuthToken());
+
+    // Lock the ActiveRequests mutex to protect concurrent access
+    FScopeLock Lock(&ActiveRequestsMutex);
+
+    // Add the HttpRequest to ActiveRequests
+    ActiveRequests.Add(HttpRequest);
+
+    // Bind the response callback and handle the response
+    HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess) {
+
+        if (!IsValidLowLevel())
+        {
+            return;
+        }
+
+        // Lock the ActiveRequests mutex to protect concurrent access
+        FScopeLock Lock(&ActiveRequestsMutex);
+
+        if (ActiveRequests.Contains(Request))
+        {
+            if (bSuccess && Response.IsValid())
+            {
+                const FString ResponseBody = Response->GetContentAsString();
+
+                // Check if Request was successful
+                if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
+                {
+                    // Check for Success Callback
+                    if (SuccessCallback)
+                    {
+                        const FNakamaPartyList PartyList = FNakamaPartyList(ResponseBody);
+                        SuccessCallback(PartyList);
                     }
                 }
                 else
