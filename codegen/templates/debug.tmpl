@@ -1,0 +1,17 @@
+{{- range $idx, $rpc := $.Rpcs -}}
+
+------------------
+RPC
+{{ "\n" -}}
+Name:          {{ $rpc.Name }}
+RequestType:   {{ with $rpc.RequestType }}{{ $rpc.RequestType.Name }}{{ end }}
+ReturnType:    {{ with $rpc.ReturnType }}{{ $rpc.ReturnType.Name }}{{ end }}
+Endpoint:      {{ $rpc.Endpoint }}
+Method:        {{ $rpc.Method }}
+Query Params:
+{{- range $idx, $param := $rpc.QueryParams -}}
+{{- " "}}{{ $param }}
+{{- end -}}
+
+{{ "\n" }}
+{{- end -}}

@@ -1,0 +1,171 @@
+/*
+ * Copyright {{currentYear}} The Nakama Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/* This code is auto-generated. DO NOT EDIT. */
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "NakamaClient.h"
+#include "Kismet/BlueprintFunctionLibrary.h"
+
+#include "NakamaClientBlueprintLibrary.generated.h"
+
+using namespace Nakama;
+
+{{/* ----------- DELEGATES ---------------- */}}
+{{/* Map each RPC return type to a delegate */}}
+{{- range $idx, $rpc := $.Rpcs }}
+
+{{- $returnType := $rpc.ReturnType -}}
+{{- $hasReturn := ne $returnType nil }}
+{{- $successDelegateName := appendStringNew "FOn" ( $rpc.Name | pascalCase) }}
+
+{{- if $hasReturn -}}
+{{- $returnTypeName := appendStringNew "FNakama" ( $returnType.Name | pascalCase ) -}}
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(
+  {{- $successDelegateName -}},{{ " " -}}
+  const {{$returnTypeName}}&,{{ " " -}}
+  {{ $returnType.Name -}});
+{{- else -}}
+DECLARE_DYNAMIC_MULTICAST_DELEGATE({{$successDelegateName}});
+{{- end -}}
+
+{{ "\n" }} {{- end -}} DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnError, const FNakamaError&, ErrorData);
+{{/* ----------- END DELEGATES ------------ */}}
+
+/**
+ * Blueprint Library to expose NakamaClient functions.
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientBlueprintLibrary : public UBlueprintFunctionLibrary
+{
+  GENERATED_BODY()
+
+public:
+
+  /**
+  * Creates a default client to interact with Nakama server.
+  *
+  * @param ServerKey Server key should match the one on the Nakama Server.
+  * @param Host The endpoint host name.
+  * @param Port The port to use, default is 7350.
+  * @param UseSSL Use "https" scheme if you've setup SSL.
+  * @param EnableDebug To enable logs output to console with debug logging level.
+  */
+  UFUNCTION(BlueprintCallable, Category = "Nakama|Client")
+  static UNakamaClient* CreateDefaultClient(
+    const FString& ServerKey = "defaultkey",
+    const FString& Host = "localhost",
+    int32 Port = 7350,
+    bool UseSSL = false,
+    bool EnableDebug = true
+  );
+
+
+  {{/* Map each RPC to a function in the client library */}}
+  {{- range $idx, $rpc := $.Rpcs }}
+
+  {{- $category := "Client" -}}{{/* TODO: Custom mapping somewhere? */}}
+
+  {{- $functionComment := $rpc.Comment -}}
+
+  {{- $functionName := $rpc.Name -}}
+  {{- $functionReturnType := "void" -}}{{/* TODO: Sometimes bool */}}
+
+  {{- $requestType := $rpc.RequestType -}}
+  {{- $returnType := $rpc.ReturnType -}}
+  {{- $hasParams := ne $requestType nil }}
+  {{- $hasReturn := ne $returnType nil }}
+
+  {{- $successDelegateName := appendStringNew "FOn" ( $rpc.Name | pascalCase) }}
+
+  {{/* We have two versions for each function  */}}
+  {{/* Delegate and TFunction(lambda) overload */}}
+  /**
+  *
+  * {{ $functionComment }}
+  *
+  {{ if $hasParams -}}
+  {{ range $idx, $field := $requestType.Fields -}}
+  * @param {{$field.Name | pascalCase}} {{$field.Comment.Message}}{{"\n  "}}
+  {{- end -}}
+  {{ range $idx, $field := $requestType.MapFields -}}
+  * @param {{$field.Name | pascalCase}} {{$field.Comment.Message}}{{"\n  "}}
+  {{- end -}}
+  {{- end -}}
+  * @param OnSuccess Delegate called on success
+  * @param OnError Delegate called on error
+  */
+  UFUNCTION(BlueprintCallable, Category = "Nakama|{{$category}}")
+  static {{ $functionReturnType }} {{ $functionName }}(
+    const FNakamaClient& Client{{ "" -}}{{/* TODO: Sometimes UPARAM(ref) instead of const */}}
+    {{- if $hasParams -}}
+    
+    {{- range $idx, $field := $requestType.Fields -}}
+    {{- ",\n    " }}{{getUnrealType $field.Type $field.Repeated}} {{$field.Name | pascalCase}}
+    {{- end -}}{{/* End foreach normal field in params */}}
+
+    {{- range $idx, $field := $requestType.MapFields -}}
+    {{- ",\n    " }}{{getUnrealMapType $field.Type}} {{$field.Name | pascalCase}}
+    {{- end -}}{{/* End foreach map field in params */}}
+    
+    {{- end -}}{{/* End if-hasParams */}}
+
+    {{- ",\n    " }}{{ $successDelegateName }} OnSuccess,
+    FOnError OnError
+  );
+
+  /**
+  *
+  * {{ $functionComment }}
+  *
+  {{ if $hasParams -}}
+  {{ range $idx, $field := $requestType.Fields -}}
+  * @param {{$field.Name | pascalCase}} {{$field.Comment.Message}}{{"\n  "}}
+  {{- end -}}
+  {{ range $idx, $field := $requestType.MapFields -}}
+  * @param {{$field.Name | pascalCase}} {{$field.Comment.Message}}{{"\n  "}}
+  {{- end -}}
+  {{- end -}}
+  * @param OnSuccess Callback to invoke on success
+  * @param OnError Callback to invoke on error
+  */
+  static {{ $functionReturnType }} {{ $functionName }}(
+    const FNakamaClient& Client{{ "" -}}{{/* TODO: Sometimes UPARAM(ref) instead of const */}}
+    {{- if $hasParams -}}
+    
+    {{- range $idx, $field := $requestType.Fields -}}
+    {{- ",\n    " }}{{getUnrealType $field.Type $field.Repeated}} {{$field.Name | pascalCase}}
+    {{- end -}}{{/* End foreach normal field in params */}}
+
+    {{- range $idx, $field := $requestType.MapFields -}}
+    {{- ",\n    " }}{{getUnrealMapType $field.Type}} {{$field.Name | pascalCase}}
+    {{- end -}}{{/* End foreach map field in params */}}
+    
+    {{- end -}}{{/* End if-hasParams */}}
+
+    {{- if $hasReturn -}}
+    {{- $returnTypeName := appendStringNew "FNakama" ( $returnType.Name | pascalCase ) -}}
+    {{- ",\n    " }}TFunction<void({{$returnTypeName}})> OnSuccess,
+    {{- else -}}
+    {{- ",\n    " }}TFunction<void()> OnSuccess,
+    {{- end -}}
+    {{- "\n    " }}TFunction<void(const FNakamaError& Error)> OnError
+  );
+
+  {{- end -}}{{/* End foreach RPC */}}
+}
