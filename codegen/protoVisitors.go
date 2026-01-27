@@ -144,24 +144,9 @@ func (v *rpcVisitor) VisitOption(o *proto.Option) {
 				v.Rpc.Method = method
 				v.Rpc.Endpoint = l.Literal.Source
 			}
-
-			// TODO: This means we have multiple methods/endpoints
-			//       Is this used? What's the purpose?
-			/*
-				if l.Name == "additional_bindings" {
-					for _, ab := range l.OrderedMap {
-						method, found := tryGetHttpMethod(ab.Name)
-						if found {
-							v.Rpc.Method = method
-							v.Rpc.Endpoint = l.Literal.Source
-						}
-					}
-				}
-			*/
 		}
 	}
 
-	// TODO: detect templated params and what to do with them?
 	paramRegex := regexp.MustCompile(`\{([a-zA-Z0-9_]*)\}`)
 	matches := paramRegex.FindAllStringSubmatch(v.Rpc.Endpoint, -1)
 
