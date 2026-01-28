@@ -33,12 +33,12 @@ tasks:
     desc: 'Build the codegen.'
     cmds:
     - cmd: |
-        go build
+        go build -o Build/codegen 
 
   run-codegen:
     cmds:
     - cmd: |
-        ./codegen \
+        Build/codegen \
         --template {{.TEMPLATE_FILE}} \
         --proto {{.PROTO_FILE}} \
         --proto-service {{.PROTO_SERVICE_FILE}}
