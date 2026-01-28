@@ -33,7 +33,6 @@
 *.idb
 
 # Kernel Module Compile Results
-*.mod*
 *.cmd
 modules.order
 Module.symvers
@@ -49,10 +48,6 @@ dkms.conf
 # Precompiled Headers
 
 # Compiled Dynamic libraries
-
-# Fortran module files
-*.mod
-*.smod
 
 # Compiled Static libraries
 *.lai
@@ -164,16 +159,6 @@ Temporary Items
 
 # Visual Studio 2015 database file
 *.VC.db
-
-# Compiled Object files
-
-# Precompiled Headers
-
-# Compiled Dynamic libraries
-
-# Fortran module files
-
-# Compiled Static libraries
 
 # Executables
 *.ipa
