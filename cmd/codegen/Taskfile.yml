@@ -1,8 +1,9 @@
 version: '3'
 
 vars:
-  PROTO_FILE: "nakama-types.proto"
-  PROTO_SERVICE_FILE: "nakama-api.proto"
+  PROTO_FILE: "proto/nakama-types.proto"
+  PROTO_SERVICE_FILE: "proto/nakama-api.proto"
+  BIN_PATH: "build/codegen"
 
 tasks:
   generate-ue-client-h:
@@ -22,7 +23,7 @@ tasks:
         TEMPLATE_FILE: templates/nakama-client-bplib.ue.cpp.tmpl
 
   generate-debug:
-    desc: 'Debug Codegen parsed info'
+    desc: 'Debug Codegen parsed info.'
     cmds:
     - task: build
     - task: run-codegen
@@ -30,15 +31,24 @@ tasks:
         TEMPLATE_FILE: templates/debug.tmpl
 
   build:
-    desc: 'Build the codegen.'
+    desc: 'Build the codegen tool.'
     cmds:
     - cmd: |
-        go build -o Build/codegen 
+        go build -o {{.BIN_PATH}} 
+
+  fetch-protos:
+    desc: 'Fetch .proto files from Nakama.'
+    cmds:
+    - cmd: |
+        curl -o {{.PROTO_SERVICE_FILE}} https://raw.githubusercontent.com/heroiclabs/nakama/master/apigrpc/apigrpc.proto
+        curl -o {{.PROTO_FILE}} https://raw.githubusercontent.com/heroiclabs/nakama-common/master/api/api.proto
 
   run-codegen:
+    desc: 'Fetch Nakama proto schemas and run codegen.'
     cmds:
+    - task: fetch-protos
     - cmd: |
-        Build/codegen \
+        {{.BIN_PATH}} \
         --template {{.TEMPLATE_FILE}} \
         --proto {{.PROTO_FILE}} \
         --proto-service {{.PROTO_SERVICE_FILE}}

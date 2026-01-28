@@ -163,8 +163,6 @@ func loadApi(apiFile string, messagesFile string) (Api, error) {
 					Comment:     comment,
 					RequestType: requestType,
 					ReturnType:  returnType,
-					Endpoint:    "/api/TODO",
-					Method:      "POST",
 					Name:        rpc.Name,
 				},
 			}
@@ -194,7 +192,6 @@ func loadApi(apiFile string, messagesFile string) (Api, error) {
 }
 
 // TODO: Enums
-// TODO: Imports. Probably need to set some flags and then another pass
 // TODO: Add alias: using ProtobufStructValue = std::variant<std::string, int32_t, double, bool>;
 
 func main() {
