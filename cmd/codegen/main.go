@@ -72,7 +72,7 @@ func loadApi(apiFile string, messagesFile string) (Api, error) {
 
 			visitor := &enumVisitor{
 				Enum: &visitedEnum{
-					Comment: comment,
+					Comment: strings.Trim(comment, " "),
 					Fields:  make([]*enumField, 0),
 					Name:    enum.Name,
 				},

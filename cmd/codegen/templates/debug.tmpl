@@ -15,3 +15,23 @@ Query Params:
 
 {{ "\n" }}
 {{- end -}}
+{{- end -}}{{/* ---------------------- END RPC DUMP */}}
+
+
+{{- if $isDumpEnums -}}{{/* ---------- BEGIN ENUM DUMP */}}
+{{- range $idx, $enum := $.Enums -}}
+
+------------------
+ENUM
+{{ "\n" -}}
+Comment:       {{ $enum.Comment }}
+Name:          {{ $enum.Name }}
+Fields:
+{{- range $idx, $field := $enum.Fields -}}
+{{- "\n  " -}}{{ $field.Name }} {{ $field.Input }} {{ $field.Output }} = {{ $field.Integer }} // {{ $field.Comment.Message }}
+{{- end -}}
+
+{{ "\n\n" }}
+{{- end -}}
+{{- end -}}{{/* ---------------------- END ENUM DUMP */}}
+
