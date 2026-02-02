@@ -5852,15 +5852,14 @@ void UNakamaClient::ListFriends(
 
     // Setup the query parameters
     TMultiMap<FString, FString> QueryParams;
-    if (Limit.IsSet())
+    if (Limit.IsSet() && Limit.GetValue() > 0)
     {
         QueryParams.Add(TEXT("limit"), FString::FromInt(Limit.GetValue()));
     }
-    if (State.IsSet())
+    if (State.IsSet() && State.GetValue() != ENakamaFriendState::ALL)
     {
         const FString StateString = FNakamaUtils::GetEnumValueAsIntString(State.GetValue());
         QueryParams.Add(TEXT("state"), StateString);
-
     }
     if(!Cursor.IsEmpty())
     {
