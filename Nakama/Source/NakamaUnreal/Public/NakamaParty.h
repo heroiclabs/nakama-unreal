@@ -27,19 +27,19 @@ struct NAKAMAUNREAL_API FNakamaParty
 {
 	GENERATED_BODY()
 
-	// Unique party identifier.
+	// The unique party identifier.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Parties")
 	FString PartyId;
 
-	// Open flag.
+	// True if the party is open to join.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Parties")
 	bool Open;
 
-	// Hidden flag.
+	// True if the party is hidden from public listings and searches.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Parties")
 	bool Hidden;
 
-	// Maximum number of party members.
+	// The maximum number of party members.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Parties")
 	int32 MaxSize;
 
