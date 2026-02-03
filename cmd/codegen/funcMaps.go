@@ -24,6 +24,10 @@ func getGeneralFuncMap(api Api) template.FuncMap {
 			_, ok := api.EnumsByName[key]
 			return ok
 		},
+		"isEnumType": func(fieldType string) bool {
+			_, ok := api.EnumsByName[fieldType]
+			return ok
+		},
 		"containsMessage": func(key string) bool {
 			_, ok := api.MessagesByName[key]
 			return ok
@@ -167,22 +171,57 @@ func getCppFuncMap() template.FuncMap {
 	return fnMap
 }
 
-func getUnrealFuncMap() template.FuncMap {
-	getUnrealType := func(fieldType string, isRepeated bool) string {
+func getUnrealFuncMap(api Api) template.FuncMap {
+	isEnum := func(fieldType string) bool {
+		_, ok := api.EnumsByName[fieldType]
+		return ok
+	}
+
+	getUnrealBaseType := func(fieldType string, isRepeated bool) string {
 		var unrealType string
+
+		// Handle enums as int32
+		if isEnum(fieldType) {
+			if isRepeated {
+				return "TArray<int32>"
+			}
+			return "int32"
+		}
 
 		if isRepeated {
 			switch fieldType {
 			case "string",
 				"google.protobuf.StringValue":
-				unrealType = "const TArray<FString>&"
+				unrealType = "TArray<FString>"
 
-			case "google.protobuf.Timestamp":
-				unrealType = "std::vector<NTimestamp>"
+			case "int32", "google.protobuf.Int32Value":
+				unrealType = "TArray<int32>"
+
+			case "uint32", "google.protobuf.UInt32Value":
+				unrealType = "TArray<uint32>"
+
+			case "int64", "google.protobuf.Int64Value":
+				unrealType = "TArray<int64>"
+
+			case "uint64", "google.protobuf.UInt64Value":
+				unrealType = "TArray<uint64>"
+
+			case "float", "google.protobuf.FloatValue":
+				unrealType = "TArray<float>"
+
+			case "double", "google.protobuf.DoubleValue":
+				unrealType = "TArray<double>"
+
+			case "bool", "google.protobuf.BoolValue":
+				unrealType = "TArray<bool>"
 
 			default:
-				unrealType = fmt.Sprintf("const TArray<FNakama%s>", fieldType)
-
+				// For message types (starts with uppercase), use TArray<FNakama*>
+				if len(fieldType) > 0 && fieldType[0] >= 'A' && fieldType[0] <= 'Z' {
+					unrealType = fmt.Sprintf("TArray<FNakama%s>", fieldType)
+				} else {
+					unrealType = "TArray<FString>"
+				}
 			}
 		} else {
 			switch fieldType {
@@ -192,10 +231,16 @@ func getUnrealFuncMap() template.FuncMap {
 			case "uint32", "google.protobuf.UInt32Value":
 				unrealType = "uint32"
 
-			case "float":
+			case "int64", "google.protobuf.Int64Value":
+				unrealType = "int64"
+
+			case "uint64", "google.protobuf.UInt64Value":
+				unrealType = "uint64"
+
+			case "float", "google.protobuf.FloatValue":
 				unrealType = "float"
 
-			case "double":
+			case "double", "google.protobuf.DoubleValue":
 				unrealType = "double"
 
 			case "bool", "google.protobuf.BoolValue":
@@ -203,22 +248,29 @@ func getUnrealFuncMap() template.FuncMap {
 
 			case "string",
 				"google.protobuf.StringValue",
-				"int64",
-				"uint64":
+				"google.protobuf.Timestamp":
 				unrealType = "FString"
 
-			case "google.protobuf.Struct":
-				// TODO: Something different here
-				unrealType = "std::unordered_map<std::string, ProtobufStructValue>"
-
-			case "google.protobuf.Timestamp":
-				unrealType = "NTimestamp"
-
 			default:
-				unrealType = fmt.Sprintf("FNakama%s", fieldType)
+				// For message types (starts with uppercase), use FNakama prefix
+				if len(fieldType) > 0 && fieldType[0] >= 'A' && fieldType[0] <= 'Z' {
+					unrealType = fmt.Sprintf("FNakama%s", fieldType)
+				} else {
+					unrealType = "FString"
+				}
 			}
 		}
+
 		return unrealType
+	}
+
+	getUnrealType := func(fieldType string, isRepeated bool) string {
+		baseType := getUnrealBaseType(fieldType, isRepeated)
+		// Don't add const& for pointers, shared pointers (Ptr suffix), or non-container types
+		if strings.HasSuffix(baseType, "*") || strings.HasSuffix(baseType, "Ptr") || (!strings.HasPrefix(baseType, "TArray<") && !strings.HasPrefix(baseType, "TMap<")) {
+			return baseType
+		}
+		return fmt.Sprintf("const %s&", baseType)
 	}
 
 	getUnrealMapType := func(fieldType string) string {
@@ -230,11 +282,11 @@ func getUnrealFuncMap() template.FuncMap {
 			"google.protobuf.Timestamp":
 			unrealType = "TMap<FString, FString>"
 
-		case "int32", "int64", "uint64", "bool", "float", "double":
+		case "int32", "int64", "uint32", "uint64", "bool", "float", "double", "google.protobuf.Int32Value", "google.protobuf.Int64Value", "google.protobuf.UInt32Value", "google.protobuf.UInt64Value":
 			unrealType = fmt.Sprintf("TMap<FString, %s>", fieldType)
 
 		default:
-			unrealType = fmt.Sprintf("TMap<FString, FNakama%s>", fieldType)
+			unrealType = "TMap<FString, FString>"
 
 		}
 		return unrealType
@@ -243,6 +295,41 @@ func getUnrealFuncMap() template.FuncMap {
 	fnMap := template.FuncMap{
 		"getUnrealType":    getUnrealType,
 		"getUnrealMapType": getUnrealMapType,
+		"getUnrealReturnType": func(fieldType string) string {
+			return getUnrealBaseType(fieldType, false)
+		},
+		"getUnrealFieldType": func(fieldType string, isRepeated bool) string {
+			// For struct members: no const&, just TArray<T> or T
+			if isRepeated {
+				baseType := getUnrealBaseType(fieldType, false)
+				return fmt.Sprintf("TArray<%s>", baseType)
+			}
+			return getUnrealBaseType(fieldType, false)
+		},
+		"isMessageType": func(fieldType string) bool {
+			// Check if this is a message type (not a primitive, wrapper, or enum)
+			switch fieldType {
+			case "string", "int32", "int64", "uint32", "uint64", "float", "double", "bool",
+				"google.protobuf.StringValue", "google.protobuf.Int32Value", "google.protobuf.Int64Value",
+				"google.protobuf.UInt32Value", "google.protobuf.UInt64Value", "google.protobuf.FloatValue",
+				"google.protobuf.DoubleValue", "google.protobuf.BoolValue", "google.protobuf.Timestamp":
+				return false
+			default:
+				// Also check if it's an enum
+				if isEnum(fieldType) {
+					return false
+				}
+				return len(fieldType) > 0 && fieldType[0] >= 'A' && fieldType[0] <= 'Z'
+			}
+		},
+		"getUnrealDelegateParamType": func(fieldType string) string {
+			baseType := getUnrealBaseType(fieldType, false)
+			// Don't add const& for pointers or shared pointers (Ptr suffix)
+			if strings.HasSuffix(baseType, "*") || strings.HasSuffix(baseType, "Ptr") {
+				return baseType
+			}
+			return fmt.Sprintf("const %s&", baseType)
+		},
 
 		// TODO: Implement these.
 		"getUnrealTypeEmptyPredicate": func(objName string, objType string) string {

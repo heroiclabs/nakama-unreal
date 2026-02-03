@@ -1,0 +1,129 @@
+/*
+ * Copyright {{currentYear}} The Nakama Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/* This code is auto-generated. DO NOT EDIT. */
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "Templates/Function.h"
+#include "Templates/SharedPointer.h"
+#include "Dom/JsonObject.h"
+
+DECLARE_LOG_CATEGORY_EXTERN(LogNakama, Log, All);
+
+// Forward declarations
+{{- range $idx, $msg := $.Messages }}
+struct FNakama{{ $msg.Name }};
+{{- end }}
+
+struct NAKAMAUNREAL_API FNakamaError
+{
+	FString Message;
+	int32 Code = 0;
+
+	FNakamaError() = default;
+	FNakamaError(const FString& InMessage, int32 InCode)
+		: Message(InMessage), Code(InCode) {}
+};
+
+{{- /* Generate struct definitions for each proto message */ -}}
+{{- range $idx, $msg := $.Messages }}
+
+/** {{ $msg.Comment }} */
+struct NAKAMAUNREAL_API FNakama{{ $msg.Name }}
+{
+	{{- range $fidx, $field := $msg.Fields }}
+	/** {{ $field.Comment.Message }} */
+	{{ getUnrealFieldType $field.Type $field.Repeated }} {{ $field.Name | pascalCase }};
+	{{- end }}
+	{{- range $fidx, $field := $msg.MapFields }}
+	/** {{ $field.Comment.Message }} */
+	{{ getUnrealMapType $field.Type }} {{ $field.Name | pascalCase }};
+	{{- end }}
+
+	static FNakama{{ $msg.Name }} FromJson(const TSharedPtr<FJsonObject>& Json);
+	TSharedPtr<FJsonObject> ToJson() const;
+};
+{{- end }}
+
+using FNakamaSessionPtr = TSharedPtr<FNakamaSession>;
+
+enum class ENakamaRequestAuth : uint8
+{
+	None,
+	Basic,
+	Bearer
+};
+
+class NAKAMAUNREAL_API FNakamaClient : public TSharedFromThis<FNakamaClient>
+{
+public:
+	static TSharedPtr<FNakamaClient> CreateDefaultClient(
+		const FString& ServerKey,
+		const FString& Host,
+		int32 Port,
+		bool bUseSSL,
+		bool bEnableDebug);
+
+	void SetTimeout(float InTimeout) { Timeout = InTimeout; }
+	float GetTimeout() const { return Timeout; }
+
+{{- /* Generate method declarations for each RPC */ -}}
+{{- range $idx, $rpc := $.Rpcs }}
+
+{{- $requestType := $rpc.RequestType -}}
+{{- $returnType := $rpc.ReturnType -}}
+{{- $hasParams := ne $requestType nil }}
+{{- $hasReturn := ne $returnType nil }}
+
+	/** {{ $rpc.Comment }} */
+	void {{ $rpc.Name }}(
+		{{- if $hasParams -}}
+		{{- range $fidx, $field := $requestType.Fields }}
+		{{ getUnrealType $field.Type $field.Repeated }} {{ $field.Name | pascalCase }},
+		{{- end -}}
+		{{- range $fidx, $field := $requestType.MapFields }}
+		const {{ getUnrealMapType $field.Type }}& {{ $field.Name | pascalCase }},
+		{{- end -}}
+		{{- end }}
+		{{- if $hasReturn }}
+		TFunction<void(const FNakama{{ $returnType.Name }}&)> OnSuccess,
+		{{- else }}
+		TFunction<void()> OnSuccess,
+		{{- end }}
+		TFunction<void(const FNakamaError&)> OnError);
+{{- end }}
+
+private:
+	FString GetBaseUrl() const;
+
+	void MakeRequest(
+		const FString& Endpoint,
+		const FString& Method,
+		const TSharedPtr<FJsonObject>& Body,
+		ENakamaRequestAuth AuthType,
+		TFunction<void(TSharedPtr<FJsonObject>)> OnSuccess,
+		TFunction<void(const FNakamaError&)> OnError);
+
+	FString ServerKey;
+	FString Host;
+	int32 Port = 0;
+	bool bUseSSL = false;
+	bool bEnableDebug = false;
+	float Timeout = 10.0f;
+	FNakamaSessionPtr CurrentSession;
+};

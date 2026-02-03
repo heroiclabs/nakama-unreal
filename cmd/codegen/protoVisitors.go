@@ -99,6 +99,7 @@ type visitedRpc struct {
 	Endpoint    string
 	Method      string
 	QueryParams []string
+	BodyField   string // The field name to use as the body (from google.api.http body option)
 }
 
 type rpcVisitor struct {
@@ -143,6 +144,10 @@ func (v *rpcVisitor) VisitOption(o *proto.Option) {
 			if found {
 				v.Rpc.Method = method
 				v.Rpc.Endpoint = l.Literal.Source
+			}
+			// Extract the body field specification
+			if l.Name == "body" {
+				v.Rpc.BodyField = l.Literal.Source
 			}
 		}
 	}

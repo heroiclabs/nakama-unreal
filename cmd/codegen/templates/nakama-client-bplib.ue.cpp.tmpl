@@ -16,18 +16,21 @@
 
 /* This code is auto-generated. DO NOT EDIT. */
 
-#include "NakamaClient.h"
+#include "NakamaClientBlueprintLibrary.h"
 
 using namespace Nakama;
 
 
 UNakamaClient* UNakamaClientBlueprintLibrary::CreateDefaultClient(
-  const FString& ServerKey = "defaultkey",
-  const FString& Host = "localhost",
-  int32 Port = 7350,
-  bool UseSSL = false,
-  bool EnableDebug = true
-);
+  const FString& ServerKey,
+  const FString& Host,
+  int32 Port,
+  bool UseSSL,
+  bool EnableDebug
+)
+{
+  return UNakamaClient::CreateDefaultClient(ServerKey, Host, Port, UseSSL, EnableDebug);
+}
 
 
 {{/* Map each RPC to a function in the client library */}}
@@ -48,73 +51,7 @@ UNakamaClient* UNakamaClientBlueprintLibrary::CreateDefaultClient(
 {{- $successDelegateName := appendStringNew "FOn" ( $rpc.Name | pascalCase) }}
 
 {{ $functionReturnType }} UNakamaClientBlueprintLibrary::{{ $functionName }}(
-  const FNakamaClient& Client{{ "" -}}{{/* TODO: Sometimes UPARAM(ref) instead of const */}}
-  {{- if $hasParams -}}
-  
-  {{- range $idx, $field := $requestType.Fields -}}
-  {{- ",\n  " }}{{getUnrealType $field.Type $field.Repeated}} {{$field.Name | pascalCase}}
-  {{- end -}}{{/* End foreach normal field in params */}}
-
-  {{- range $idx, $field := $requestType.MapFields -}}
-  {{- ",\n  " }}{{getUnrealMapType $field.Type}} {{$field.Name | pascalCase}}
-  {{- end -}}{{/* End foreach map field in params */}}
-  
-  {{- end -}}{{/* End if-hasParams */}}
-
-  {{- ",\n  " }}{{ $successDelegateName }} OnSuccess,
-  FOnError OnError
-)
-{
-  {{- $constrefReturnTypeName := "" -}}
-  {{- $returnTypeName := "" -}}
-  {{- $returnObjectName := "" -}}
-
-  {{- if $hasReturn -}}
-    {{- $returnTypeName = $returnType.Name | pascalCase -}}
-    {{- $returnTypeName = appendStringNew "FNakama" $returnTypeName -}}
-    
-    {{- $constrefReturnTypeName = appendStringNew "const " $returnTypeName -}}
-    {{- $constrefReturnTypeName = appendStringNew $constrefReturnTypeName "&" -}}
-    {{- $returnObjectName = $returnType.Name -}}
-  {{- end -}}
-  {{ "\n  " -}}
-  auto SuccessCallback = [this, Success]({{ $constrefReturnTypeName }} {{ $returnObjectName }})
-  {
-    if(!FNakamaUtils::IsClientActive(Client))
-    {
-      return;
-    }
-
-    Success.Broadcast({{ $returnObjectName }});
-  };
-
-  auto ErrorCallback = [this, Error](const FNakamaError& error)
-  {
-    if(!FNakamaUtils::IsClientActive(Client))
-    {
-      return;
-    }
-
-    Error.Broadcast(error);
-  };
-
-  {{ $functionName }}(
-    Client
-  {{- if $hasParams -}}
-  {{- range $idx, $field := $requestType.Fields -}}
-  {{- ",\n    " }}{{$field.Name | pascalCase}}
-  {{- end -}}{{/* End foreach normal field in params */}}
-
-  {{- range $idx, $field := $requestType.MapFields -}}
-  {{- ",\n    " }}{{$field.Name | pascalCase}}
-  {{- end -}}{{/* End foreach map field in params */}}
-  {{- end -}}{{- ",\n    " }}SuccessCallback,
-    ErrorCallback
-  );
-}
-
-{{ $functionReturnType }} UNakamaClientBlueprintLibrary::{{ $functionName }}(
-  const FNakamaClient& Client{{ "" -}}{{/* TODO: Sometimes UPARAM(ref) instead of const */}}
+  UNakamaClient* Client
   {{- if $hasParams -}}
   
   {{- range $idx, $field := $requestType.Fields -}}
@@ -128,7 +65,7 @@ UNakamaClient* UNakamaClientBlueprintLibrary::CreateDefaultClient(
   {{- end -}}{{/* End if-hasParams */}}
 
   {{- if $hasReturn -}}
-  {{- $constrefReturnTypeName := appendStringNew "FNakama" ( $returnType.Name | pascalCase ) -}}
+  {{- $constrefReturnTypeName := getUnrealReturnType $returnType.Name -}}
   {{- ",\n  " }}TFunction<void({{$constrefReturnTypeName}})> OnSuccess,
   {{- else -}}
   {{- ",\n  " }}TFunction<void()> OnSuccess,
@@ -136,104 +73,23 @@ UNakamaClient* UNakamaClientBlueprintLibrary::CreateDefaultClient(
   {{- "\n  " }}TFunction<void(const FNakamaError& Error)> OnError
 )
 {
-  {{- $endpoint := "/v2/friend" -}}
-  {{- $method := "ENakamaRequestMethod::POST" }}
-
-  // Setup the endpoint
-  const FString Endpoint = TEXT({{ $rpc.Endpoint }});
-
-  // Verify the session
-  if (!FNakamaUtils::IsSessionValid(Session, ErrorCallback))
+  if (!Client)
   {
+    FNakamaError Error;
+    Error.Message = TEXT("Nakama client is null.");
+    if (OnError)
+    {
+      OnError(Error);
+    }
     return;
   }
 
-
-  // Setup the query parameters
-  TMultiMap<FString, FString> QueryParams;
-  {{/* For repeated fields, if .Num() > 0 and for loop */}}
-  {{/* QueryParams.Add(TEXT("ids"), UserId); // UserId : UserIds */}}
-  {{/* const FString EncodedUsername = FGenericPlatformHttp::UrlEncode(Username); // ....? */}}
-
-  {{- if $hasParams -}}
-  {{- range $idx, $field := $requestType.Fields -}}
-
-  {{ "\n" }}
-  if ({{ getUnrealTypeEmptyPredicate $field.Name $field.Type }})
+  FNakamaError Error;
+  Error.Message = TEXT("Not implemented in generated blueprint library.");
+  if (OnError)
   {
-    QueryParams.Add(TEXT("{{ $field.Name | snakeCase }}", {{ getUnrealToStringConversion $field.Name $field.Type }}))
+    OnError(Error);
   }
-
-  {{- end -}}{{/* End foreach normal field in params */}}
-  {{- end -}}{{/* End hasParams */}}
-
-  // Make the request
-  const auto HttpRequest = MakeRequest(Endpoint, TEXT(""), {{ $method }}, QueryParams, Session->GetAuthToken());
-
-  // Lock the ActiveRequests mutex to protect concurrent access
-  FScopeLock Lock(&ActiveRequestsMutex);
-
-  // Add the HttpRequest to ActiveRequests
-  ActiveRequests.Add(HttpRequest);
-
-  // Bind the response callback and handle the response
-  HttpRequest->OnProcessRequestComplete().BindLambda([SuccessCallback, ErrorCallback, this](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess)
-  {
-    if (!IsValidLowLevel())
-    {
-      return;
-    }
-
-    // Lock the ActiveRequests mutex to protect concurrent access
-    FScopeLock Lock(&ActiveRequestsMutex);
-
-    if (ActiveRequests.Contains(Request))
-    {
-      if (bSuccess && Response.IsValid())
-      {
-        const FString ResponseBody = Response->GetContentAsString();
-
-        // Check if Request was successful
-        if (FNakamaUtils::IsResponseSuccessful(Response->GetResponseCode()))
-        {
-          // Check for Success Callback
-          if (SuccessCallback)
-          {
-            {{ if $hasReturn -}}
-            {{ $returnTypeName }} {{ $returnObjectName }} = {{ $returnTypeName }}(ResponseBody);
-            SuccessCallback({{ $returnObjectName }});
-            {{- else }}
-            SuccessCallback();
-            {{- end }}
-          }
-        }
-        else
-        {
-          // Check for Error Callback
-          if (ErrorCallback)
-          {
-            const FNakamaError Error(ResponseBody);
-            ErrorCallback(Error);
-          }
-        }
-      }
-      else
-      {
-        // Handle Invalid Response
-        if (ErrorCallback)
-        {
-          const FNakamaError RequestError = FNakamaUtils::CreateRequestFailureError();
-          ErrorCallback(RequestError);
-        }
-      }
-
-      // Remove the HttpRequest from ActiveRequests
-      ActiveRequests.Remove(Request);
-    }
-  });
-
-  // Process the request
-  HttpRequest->ProcessRequest();
 }
 
 {{- end -}}{{/* End foreach RPC */}}

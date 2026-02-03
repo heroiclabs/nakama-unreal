@@ -120,6 +120,9 @@ func loadApi(apiFile string, messagesFile string) (Api, error) {
 		messagesByName[message.Name] = message
 	}
 
+	// Topologically sort messages so dependencies come before their dependents
+	messages = topologicalSortMessages(messages, messagesByName, enumsByName)
+
 	//
 	// Parse service file
 	apiFileBytes, err := os.ReadFile(apiFile)
@@ -225,7 +228,7 @@ func main() {
 	// Make function maps that we will use in templates.
 	generalFuncMap := getGeneralFuncMap(api)
 	cppFuncMap := getCppFuncMap()
-	unrealFuncMap := getUnrealFuncMap()
+	unrealFuncMap := getUnrealFuncMap(api)
 
 	combinedFuncMap := mergeFuncMaps(generalFuncMap, cppFuncMap, unrealFuncMap)
 
@@ -247,4 +250,112 @@ func main() {
 	if err := tmpl.Execute(os.Stdout, api); err != nil {
 		log.Printf("Failed to execute template: %s", err)
 	}
+}
+
+// isPrimitiveOrWrapperType returns true if the type is a primitive, wrapper, or google type
+func isPrimitiveOrWrapperType(fieldType string) bool {
+	switch fieldType {
+	case "string", "int32", "int64", "uint32", "uint64", "float", "double", "bool", "bytes",
+		"google.protobuf.StringValue", "google.protobuf.Int32Value", "google.protobuf.Int64Value",
+		"google.protobuf.UInt32Value", "google.protobuf.UInt64Value", "google.protobuf.FloatValue",
+		"google.protobuf.DoubleValue", "google.protobuf.BoolValue", "google.protobuf.Timestamp",
+		"google.protobuf.Struct", "google.protobuf.Empty":
+		return true
+	}
+	return false
+}
+
+// topologicalSortMessages sorts messages so that dependencies come before their dependents
+func topologicalSortMessages(messages []*visitedMessage, messagesByName map[string]*visitedMessage, enumsByName map[string]*visitedEnum) []*visitedMessage {
+	// Build dependency graph
+	// dependencies[A] = [B, C] means A depends on B and C (B and C must be defined before A)
+	dependencies := make(map[string][]string)
+	for _, msg := range messages {
+		deps := []string{}
+		for _, field := range msg.Fields {
+			// Skip repeated fields (they can use incomplete types in TArray)
+			// Skip primitives, wrappers, and enums
+			if field.Repeated {
+				continue
+			}
+			if isPrimitiveOrWrapperType(field.Type) {
+				continue
+			}
+			if _, isEnum := enumsByName[field.Type]; isEnum {
+				continue
+			}
+			// This is a nested message type that needs to be defined before
+			if _, exists := messagesByName[field.Type]; exists {
+				deps = append(deps, field.Type)
+			}
+		}
+		dependencies[msg.Name] = deps
+	}
+
+	// Kahn's algorithm for topological sort
+	// Calculate in-degrees
+	inDegree := make(map[string]int)
+	for _, msg := range messages {
+		inDegree[msg.Name] = 0
+	}
+	for _, deps := range dependencies {
+		for _, dep := range deps {
+			inDegree[dep]++ // dep is depended upon, increment
+		}
+	}
+
+	// Actually, we need reverse - messages with no dependents should come first
+	// But that's not quite right either. We need messages with no dependencies first.
+	// Let me recalculate: inDegree[A] = number of messages that A depends on
+
+	inDegree = make(map[string]int)
+	for name, deps := range dependencies {
+		inDegree[name] = len(deps)
+	}
+
+	// Queue of messages with no dependencies
+	queue := []string{}
+	for _, msg := range messages {
+		if inDegree[msg.Name] == 0 {
+			queue = append(queue, msg.Name)
+		}
+	}
+
+	// Build reverse dependency map: reverseDeps[A] = messages that depend on A
+	reverseDeps := make(map[string][]string)
+	for name, deps := range dependencies {
+		for _, dep := range deps {
+			reverseDeps[dep] = append(reverseDeps[dep], name)
+		}
+	}
+
+	sorted := []string{}
+	for len(queue) > 0 {
+		// Pop from queue
+		name := queue[0]
+		queue = queue[1:]
+		sorted = append(sorted, name)
+
+		// For each message that depends on this one, decrement its in-degree
+		for _, dependent := range reverseDeps[name] {
+			inDegree[dependent]--
+			if inDegree[dependent] == 0 {
+				queue = append(queue, dependent)
+			}
+		}
+	}
+
+	// Check for cycles
+	if len(sorted) != len(messages) {
+		log.Printf("Warning: cyclic dependency detected in messages, using original order")
+		return messages
+	}
+
+	// Build sorted message list
+	result := make([]*visitedMessage, 0, len(messages))
+	for _, name := range sorted {
+		result = append(result, messagesByName[name])
+	}
+
+	return result
 }

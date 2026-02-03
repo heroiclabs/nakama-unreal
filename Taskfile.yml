@@ -1,0 +1,270 @@
+version: '3'
+
+dotenv: ['.env']
+
+vars:
+  PROTO_FILE: "proto/nakama-types.proto"
+  PROTO_SERVICE_FILE: "proto/nakama-api.proto"
+  BIN_PATH: "build/codegen"
+  BIN_PATH_WIN: "build/codegen.exe"
+
+tasks:
+  link-nakama-plugin:
+    desc: 'Link Nakama plugin into NakamaTest (Windows only).'
+    cmds:
+    - cmd: powershell -NoProfile -Command "New-Item -ItemType Junction -Force -Path 'NakamaTest\\Plugins\\Nakama' -Target 'C:\\Users\\andres\\Development\\nakama-unreal\\Nakama'"
+      platforms: [windows]
+    - cmd: |
+        echo "This task is only available on Windows."
+      platforms: [darwin, linux]
+
+  start-nakama:
+    desc: 'Start Nakama server with PostgreSQL via Docker Compose.'
+    cmds:
+    - cmd: |
+        echo "Stopping any existing containers..."
+        docker compose down -v 2>/dev/null || true
+        docker rm -f nakama_unreal_test_nakama nakama_unreal_test_postgres 2>/dev/null || true
+        echo "Starting Nakama server..."
+        docker compose up -d
+        echo "Waiting for Nakama to be healthy..."
+        timeout=60
+        while [ $timeout -gt 0 ]; do
+          if docker exec nakama_unreal_test_nakama /nakama/nakama healthcheck 2>/dev/null; then
+            echo "Nakama is ready!"
+            exit 0
+          fi
+          sleep 2
+          timeout=$((timeout - 2))
+        done
+        echo "Error: Nakama failed to start within 60 seconds"
+        docker compose logs nakama
+        exit 1
+      platforms: [darwin, linux]
+    - cmd: |
+        powershell -NoProfile -Command "& {
+          Write-Host 'Stopping any existing containers...'
+          docker compose down -v 2>&1 | Out-Null
+          docker rm -f nakama_unreal_test_nakama nakama_unreal_test_postgres 2>&1 | Out-Null
+          Write-Host 'Starting Nakama server...'
+          docker compose up -d
+          Write-Host 'Waiting for Nakama to be healthy...'
+          \$timeout = 60
+          while (\$timeout -gt 0) {
+            \$result = docker exec nakama_unreal_test_nakama /nakama/nakama healthcheck 2>&1
+            if (\$LASTEXITCODE -eq 0) {
+              Write-Host 'Nakama is ready!'
+              exit 0
+            }
+            Start-Sleep -Seconds 2
+            \$timeout -= 2
+          }
+          Write-Host 'Error: Nakama failed to start within 60 seconds'
+          docker compose logs nakama
+          exit 1
+        }"
+      platforms: [windows]
+
+  stop-nakama:
+    desc: 'Stop Nakama server and remove volumes.'
+    cmds:
+    - cmd: docker compose down -v
+      platforms: [darwin, linux]
+    - cmd: docker compose down -v
+      platforms: [windows]
+
+  watch-nakama-logs:
+    desc: 'Stream Nakama container logs.'
+    cmds:
+    - cmd: docker logs -f nakama_unreal_test_nakama
+      platforms: [darwin, linux]
+    - cmd: docker logs -f nakama_unreal_test_nakama
+      platforms: [windows]
+
+  test-unreal:
+    desc: 'Build and run NakamaTest C++ automation suite.'
+    vars:
+      TEST_SUITE: '{{.TEST_SUITE | default "NakamaTest.Account.Create"}}'
+      REPORT_PATH: '{{.REPORT_PATH | default "Reports/NakamaTest"}}'
+    deps:
+    - task: check-unreal-engine
+    - task: start-nakama
+    cmds:
+    - cmd: |
+        if [ -z "$UNREAL_ENGINE" ]; then
+            echo "Error: UNREAL_ENGINE is not set!"
+            echo "Set it in .env or pass it as an argument:"
+            echo "  task test-unreal UNREAL_ENGINE=/path/to/engine"
+            exit 1
+        fi
+
+        PROJECT="$(pwd)/NakamaTest/NakamaTest.uproject"
+        REPORT_DIR="$(pwd)/{{.REPORT_PATH}}"
+        LOG_FILE="$REPORT_DIR/unreal.log"
+
+        mkdir -p "$REPORT_DIR"
+
+        echo "Building NakamaTest..."
+        "$UNREAL_ENGINE/Engine/Build/BatchFiles/Build.bat" \
+            NakamaTestEditor Win64 Development \
+            -Project="$PROJECT"
+
+        if [ $? -ne 0 ]; then
+            echo "Build failed!"
+            exit 1
+        fi
+
+        echo "Running automation suite {{.TEST_SUITE}}..."
+        "$UNREAL_ENGINE/Engine/Binaries/Win64/UnrealEditor-Cmd.exe" \
+            "$PROJECT" \
+            -nullrhi \
+            -stdout \
+            -FullStdOutLogOutput \
+            -forcelogflush \
+            -nosplash \
+            -buildmachine \
+            -unattended \
+            -nopause \
+            -nosound \
+            -abslog="$LOG_FILE" \
+            -ReportOutputPath="$REPORT_DIR" \
+            -ExecCmds="Automation RunTests {{.TEST_SUITE}}; Quit"
+      platforms: [windows]
+    - cmd: |
+        if [ -z "$UNREAL_ENGINE" ]; then
+            echo "Error: UNREAL_ENGINE is not set!"
+            echo "Set it in .env or pass it as an argument:"
+            echo "  task test-unreal UNREAL_ENGINE=/path/to/engine"
+            exit 1
+        fi
+
+        PROJECT="$(pwd)/NakamaTest/NakamaTest.uproject"
+        REPORT_DIR="$(pwd)/{{.REPORT_PATH}}"
+        LOG_FILE="$REPORT_DIR/unreal.log"
+
+        mkdir -p "$REPORT_DIR"
+
+        echo "Running automation suite {{.TEST_SUITE}}..."
+        "$UNREAL_ENGINE/Engine/Binaries/Mac/UnrealEditor-Mac-Debug.app/Contents/MacOS/UnrealEditor-Mac-Debug" \
+            "$PROJECT" \
+            -nullrhi \
+            -stdout \
+            -FullStdOutLogOutput \
+            -forcelogflush \
+            -nosplash \
+            -buildmachine \
+            -unattended \
+            -nopause \
+            -nosound \
+            -abslog="$LOG_FILE" \
+            -ReportOutputPath="$REPORT_DIR" \
+            -ExecCmds="Automation RunTests {{.TEST_SUITE}}; Quit"
+      platforms: [darwin, linux]
+
+  check-unreal-engine:
+    desc: 'Check that UNREAL_ENGINE environment variable is set.'
+    cmds:
+    - cmd: |
+        if [ -z "$UNREAL_ENGINE" ]; then
+            echo "Error: UNREAL_ENGINE is not set!"
+            echo ""
+            echo "Please set UNREAL_ENGINE in .env file:"
+            echo "  echo 'UNREAL_ENGINE=/path/to/UnrealEngine' >> .env"
+            echo ""
+            echo "Or pass it as an argument:"
+            echo "  task test-unreal UNREAL_ENGINE=/path/to/UnrealEngine"
+            exit 1
+        fi
+        echo "UNREAL_ENGINE=$UNREAL_ENGINE"
+  generate-ue-client-h:
+    desc: 'Generate UE Nakama Client Header file.'
+    cmds:
+    - task: build
+    - task: fetch-protos
+    - cmd: ./{{.BIN_PATH}} --template cmd/codegen/templates/nakama-client-bplib.ue.h.tmpl --proto {{.PROTO_FILE}} --proto-service {{.PROTO_SERVICE_FILE}} > Nakama/Source/NakamaBlueprints/Public/NakamaClientBlueprintLibrary.h
+      platforms: [linux, darwin]
+    - cmd: cmd /c ".\\build\\codegen.exe --template cmd\\codegen\\templates\\nakama-client-bplib.ue.h.tmpl --proto {{.PROTO_FILE}} --proto-service {{.PROTO_SERVICE_FILE}} > Nakama\\Source\\NakamaBlueprints\\Public\\NakamaClientBlueprintLibrary.h"
+      platforms: [windows]
+
+  generate-ue-client-cpp:
+    desc: 'Generate UE Nakama Client Source file.'
+    cmds:
+    - task: build
+    - task: fetch-protos
+    - cmd: ./{{.BIN_PATH}} --template cmd/codegen/templates/nakama-client-bplib.ue.cpp.tmpl --proto {{.PROTO_FILE}} --proto-service {{.PROTO_SERVICE_FILE}} > Nakama/Source/NakamaBlueprints/Private/NakamaClientBlueprintLibrary.cpp
+      platforms: [linux, darwin]
+    - cmd: cmd /c ".\\build\\codegen.exe --template cmd\\codegen\\templates\\nakama-client-bplib.ue.cpp.tmpl --proto {{.PROTO_FILE}} --proto-service {{.PROTO_SERVICE_FILE}} > Nakama\\Source\\NakamaBlueprints\\Private\\NakamaClientBlueprintLibrary.cpp"
+      platforms: [windows]
+
+  generate-ue-unreal-h:
+    desc: 'Generate UE Nakama Unreal core header file.'
+    cmds:
+    - task: build
+    - task: fetch-protos
+    - cmd: ./{{.BIN_PATH}} --template cmd/codegen/templates/nakama-unreal.ue.h.tmpl --proto {{.PROTO_FILE}} --proto-service {{.PROTO_SERVICE_FILE}} > Nakama/Source/NakamaUnreal/Public/NakamaUnreal.h
+      platforms: [linux, darwin]
+    - cmd: cmd /c ".\\build\\codegen.exe --template cmd\\codegen\\templates\\nakama-unreal.ue.h.tmpl --proto {{.PROTO_FILE}} --proto-service {{.PROTO_SERVICE_FILE}} > Nakama\\Source\\NakamaUnreal\\Public\\NakamaUnreal.h"
+      platforms: [windows]
+
+  generate-ue-unreal-cpp:
+    desc: 'Generate UE Nakama Unreal core source file.'
+    cmds:
+    - task: build
+    - task: fetch-protos
+    - cmd: ./{{.BIN_PATH}} --template cmd/codegen/templates/nakama-unreal.ue.cpp.tmpl --proto {{.PROTO_FILE}} --proto-service {{.PROTO_SERVICE_FILE}} > Nakama/Source/NakamaUnreal/Private/NakamaUnreal.cpp
+      platforms: [linux, darwin]
+    - cmd: cmd /c ".\\build\\codegen.exe --template cmd\\codegen\\templates\\nakama-unreal.ue.cpp.tmpl --proto {{.PROTO_FILE}} --proto-service {{.PROTO_SERVICE_FILE}} > Nakama\\Source\\NakamaUnreal\\Private\\NakamaUnreal.cpp"
+      platforms: [windows]
+
+  generate-debug:
+    desc: 'Debug Codegen parsed info.'
+    cmds:
+    - task: build
+    - task: run-codegen
+      vars:
+        TEMPLATE_FILE: cmd/codegen/templates/debug.tmpl
+
+  build:
+    desc: 'Build the codegen tool.'
+    dir: cmd/codegen
+    cmds:
+    - cmd: mkdir ../../build
+      ignore_error: true
+    - cmd: |
+        go build -o ../../{{.BIN_PATH}}
+      platforms: [linux, darwin]
+    - cmd: |
+        go build -o ../../{{.BIN_PATH_WIN}}
+      platforms: [windows]
+
+  fetch-protos:
+    desc: 'Fetch .proto files from Nakama.'
+    cmds:
+    - cmd: mkdir proto
+      ignore_error: true
+    - cmd: |
+        curl -o {{.PROTO_SERVICE_FILE}} https://raw.githubusercontent.com/heroiclabs/nakama/master/apigrpc/apigrpc.proto
+        curl -o {{.PROTO_FILE}} https://raw.githubusercontent.com/heroiclabs/nakama-common/master/api/api.proto
+
+  run-codegen:
+    desc: 'Fetch Nakama proto schemas and run codegen.'
+    vars:
+      TEMPLATE_FILE: cmd/codegen/templates/debug.tmpl
+    cmds:
+    - task: fetch-protos
+    - cmd: ./{{.BIN_PATH}} --template {{.TEMPLATE_FILE}} --proto {{.PROTO_FILE}} --proto-service {{.PROTO_SERVICE_FILE}}
+      platforms: [linux, darwin]
+    - cmd: cmd /c ".\\build\\codegen.exe --template {{.TEMPLATE_FILE}} --proto {{.PROTO_FILE}} --proto-service {{.PROTO_SERVICE_FILE}}"
+      platforms: [windows]
+
+  run-codegen-file:
+    desc: 'Fetch Nakama proto schemas and run codegen to file.'
+    vars:
+      TEMPLATE_FILE: cmd/codegen/templates/debug.tmpl
+      OUTPUT_FILE: build/codegen.out
+    cmds:
+    - task: fetch-protos
+    - cmd: ./{{.BIN_PATH}} --template {{.TEMPLATE_FILE}} --proto {{.PROTO_FILE}} --proto-service {{.PROTO_SERVICE_FILE}} > {{.OUTPUT_FILE}}
+      platforms: [linux, darwin]
+    - cmd: cmd /c ".\\build\\codegen.exe --template {{.TEMPLATE_FILE}} --proto {{.PROTO_FILE}} --proto-service {{.PROTO_SERVICE_FILE}} > {{.OUTPUT_FILE}}"
+      platforms: [windows]

@@ -19,33 +19,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Templates/Function.h"
 #include "NakamaClient.h"
+#include "NakamaError.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 
 #include "NakamaClientBlueprintLibrary.generated.h"
 
 using namespace Nakama;
-
-{{/* ----------- DELEGATES ---------------- */}}
-{{/* Map each RPC return type to a delegate */}}
-{{- range $idx, $rpc := $.Rpcs }}
-
-{{- $returnType := $rpc.ReturnType -}}
-{{- $hasReturn := ne $returnType nil }}
-{{- $successDelegateName := appendStringNew "FOn" ( $rpc.Name | pascalCase) }}
-
-{{- if $hasReturn -}}
-{{- $returnTypeName := appendStringNew "FNakama" ( $returnType.Name | pascalCase ) -}}
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(
-  {{- $successDelegateName -}},{{ " " -}}
-  const {{$returnTypeName}}&,{{ " " -}}
-  {{ $returnType.Name -}});
-{{- else -}}
-DECLARE_DYNAMIC_MULTICAST_DELEGATE({{$successDelegateName}});
-{{- end -}}
-
-{{ "\n" }} {{- end -}} DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnError, const FNakamaError&, ErrorData);
-{{/* ----------- END DELEGATES ------------ */}}
 
 /**
  * Blueprint Library to expose NakamaClient functions.
@@ -107,45 +88,11 @@ public:
   * @param {{$field.Name | pascalCase}} {{$field.Comment.Message}}{{"\n  "}}
   {{- end -}}
   {{- end -}}
-  * @param OnSuccess Delegate called on success
-  * @param OnError Delegate called on error
-  */
-  UFUNCTION(BlueprintCallable, Category = "Nakama|{{$category}}")
-  static {{ $functionReturnType }} {{ $functionName }}(
-    const FNakamaClient& Client{{ "" -}}{{/* TODO: Sometimes UPARAM(ref) instead of const */}}
-    {{- if $hasParams -}}
-    
-    {{- range $idx, $field := $requestType.Fields -}}
-    {{- ",\n    " }}{{getUnrealType $field.Type $field.Repeated}} {{$field.Name | pascalCase}}
-    {{- end -}}{{/* End foreach normal field in params */}}
-
-    {{- range $idx, $field := $requestType.MapFields -}}
-    {{- ",\n    " }}{{getUnrealMapType $field.Type}} {{$field.Name | pascalCase}}
-    {{- end -}}{{/* End foreach map field in params */}}
-    
-    {{- end -}}{{/* End if-hasParams */}}
-
-    {{- ",\n    " }}{{ $successDelegateName }} OnSuccess,
-    FOnError OnError
-  );
-
-  /**
-  *
-  * {{ $functionComment }}
-  *
-  {{ if $hasParams -}}
-  {{ range $idx, $field := $requestType.Fields -}}
-  * @param {{$field.Name | pascalCase}} {{$field.Comment.Message}}{{"\n  "}}
-  {{- end -}}
-  {{ range $idx, $field := $requestType.MapFields -}}
-  * @param {{$field.Name | pascalCase}} {{$field.Comment.Message}}{{"\n  "}}
-  {{- end -}}
-  {{- end -}}
   * @param OnSuccess Callback to invoke on success
   * @param OnError Callback to invoke on error
   */
   static {{ $functionReturnType }} {{ $functionName }}(
-    const FNakamaClient& Client{{ "" -}}{{/* TODO: Sometimes UPARAM(ref) instead of const */}}
+    UNakamaClient* Client
     {{- if $hasParams -}}
     
     {{- range $idx, $field := $requestType.Fields -}}
@@ -159,7 +106,7 @@ public:
     {{- end -}}{{/* End if-hasParams */}}
 
     {{- if $hasReturn -}}
-    {{- $returnTypeName := appendStringNew "FNakama" ( $returnType.Name | pascalCase ) -}}
+    {{- $returnTypeName := getUnrealReturnType $returnType.Name -}}
     {{- ",\n    " }}TFunction<void({{$returnTypeName}})> OnSuccess,
     {{- else -}}
     {{- ",\n    " }}TFunction<void()> OnSuccess,
@@ -168,4 +115,4 @@ public:
   );
 
   {{- end -}}{{/* End foreach RPC */}}
-}
+};
