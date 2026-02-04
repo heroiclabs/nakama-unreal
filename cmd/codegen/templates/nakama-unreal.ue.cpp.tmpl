@@ -402,8 +402,11 @@ void FNakamaClient::{{ $rpc.Name }}(
 {{- $jsonFieldName := $field.Name }}
 {{- /* Skip fields that are path parameters (already in the URL) */ -}}
 {{- $isPathParam := containsInSlice $pathParams $jsonFieldName }}
-{{- /* For GET requests with no body field, all non-path fields go to query params. Otherwise, only non-body fields are query params. */ -}}
-{{- $isQueryParam := and (not $isPathParam) (or $isGetRequest (and (ne $bodyField "") (ne $bodyField "*") (ne $jsonFieldName $bodyField))) }}
+{{- /* Per gRPC-gateway spec:
+     - body: "*" means all non-path fields go to body
+     - body: "field_name" means only that field goes to body, others to query params
+     - No body option (empty) means all non-path fields go to query params */ -}}
+{{- $isQueryParam := and (not $isPathParam) (or $isGetRequest (eq $bodyField "") (and (ne $bodyField "*") (ne $jsonFieldName $bodyField))) }}
 {{- if $isQueryParam }}
 {{- if $field.Repeated }}
 {{- /* Repeated fields: add multiple query params like ids=a&ids=b */ -}}
@@ -452,7 +455,7 @@ void FNakamaClient::{{ $rpc.Name }}(
 	}
 {{- end }}
 
-{{- /* Build request body - skip for GET requests */ -}}
+{{- /* Build request body - only when body: "*" or body: "field_name" is specified */ -}}
 	TSharedPtr<FJsonObject> Body;
 {{- if $hasParams }}
 {{- $bodyField := $rpc.BodyField }}
@@ -470,8 +473,8 @@ void FNakamaClient::{{ $rpc.Name }}(
 {{- end }}
 {{- end }}
 {{- end }}
-{{- else if not $isGetRequest }}
-{{- /* No body field specified and not a GET request - serialize all fields to body */ -}}
+{{- else if and (eq $bodyField "*") (not $isGetRequest) }}
+{{- /* body: "*" specified - serialize all non-path fields to body */ -}}
 	Body = MakeShared<FJsonObject>();
 {{- range $fidx, $field := $requestType.Fields }}
 {{- $fieldName := $field.Name | pascalCase }}

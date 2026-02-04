@@ -6058,32 +6058,22 @@ void FNakamaClient::AddFriends(
 {
 	FString Endpoint = TEXT("/v2/friend");
 	TArray<FString> QueryParams;
-	if (QueryParams.Num() > 0)
+	for (const FString& Item : Ids)
 	{
-		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
-	if (Ids.Num() > 0)
-	{
-		TArray<TSharedPtr<FJsonValue>> Array;
-		for (const auto& Item : Ids)
-		{
-			Array.Add(MakeShared<FJsonValueString>(Item));
-		}
-		Body->SetArrayField(TEXT("ids"), Array);
+		QueryParams.Add(FString::Printf(TEXT("ids=%s"), *Item));
 	}
-	if (Usernames.Num() > 0)
+	for (const FString& Item : Usernames)
 	{
-		TArray<TSharedPtr<FJsonValue>> Array;
-		for (const auto& Item : Usernames)
-		{
-			Array.Add(MakeShared<FJsonValueString>(Item));
-		}
-		Body->SetArrayField(TEXT("usernames"), Array);
+		QueryParams.Add(FString::Printf(TEXT("usernames=%s"), *Item));
 	}
 	if (!Metadata.IsEmpty())
 	{
-		Body->SetStringField(TEXT("metadata"), Metadata);
+		QueryParams.Add(FString::Printf(TEXT("metadata=%s"), *Metadata));
 	}
+	if (QueryParams.Num() > 0)
+	{
+		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+	}TSharedPtr<FJsonObject> Body;
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
 
@@ -6107,23 +6097,14 @@ void FNakamaClient::AddGroupUsers(
 	FString Endpoint = TEXT("/v2/group/{group_id}/add");
 	Endpoint = Endpoint.Replace(TEXT("{group_id}"), *GroupId);
 	TArray<FString> QueryParams;
+	for (const FString& Item : UserIds)
+	{
+		QueryParams.Add(FString::Printf(TEXT("user_ids=%s"), *Item));
+	}
 	if (QueryParams.Num() > 0)
 	{
 		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
-	if (!GroupId.IsEmpty())
-	{
-		Body->SetStringField(TEXT("group_id"), GroupId);
-	}
-	if (UserIds.Num() > 0)
-	{
-		TArray<TSharedPtr<FJsonValue>> Array;
-		for (const auto& Item : UserIds)
-		{
-			Array.Add(MakeShared<FJsonValueString>(Item));
-		}
-		Body->SetArrayField(TEXT("user_ids"), Array);
-	}
+	}TSharedPtr<FJsonObject> Body;
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
 
@@ -6541,23 +6522,14 @@ void FNakamaClient::BanGroupUsers(
 	FString Endpoint = TEXT("/v2/group/{group_id}/ban");
 	Endpoint = Endpoint.Replace(TEXT("{group_id}"), *GroupId);
 	TArray<FString> QueryParams;
+	for (const FString& Item : UserIds)
+	{
+		QueryParams.Add(FString::Printf(TEXT("user_ids=%s"), *Item));
+	}
 	if (QueryParams.Num() > 0)
 	{
 		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
-	if (!GroupId.IsEmpty())
-	{
-		Body->SetStringField(TEXT("group_id"), GroupId);
-	}
-	if (UserIds.Num() > 0)
-	{
-		TArray<TSharedPtr<FJsonValue>> Array;
-		for (const auto& Item : UserIds)
-		{
-			Array.Add(MakeShared<FJsonValueString>(Item));
-		}
-		Body->SetArrayField(TEXT("user_ids"), Array);
-	}
+	}TSharedPtr<FJsonObject> Body;
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
 
@@ -6580,28 +6552,18 @@ void FNakamaClient::BlockFriends(
 {
 	FString Endpoint = TEXT("/v2/friend/block");
 	TArray<FString> QueryParams;
+	for (const FString& Item : Ids)
+	{
+		QueryParams.Add(FString::Printf(TEXT("ids=%s"), *Item));
+	}
+	for (const FString& Item : Usernames)
+	{
+		QueryParams.Add(FString::Printf(TEXT("usernames=%s"), *Item));
+	}
 	if (QueryParams.Num() > 0)
 	{
 		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
-	if (Ids.Num() > 0)
-	{
-		TArray<TSharedPtr<FJsonValue>> Array;
-		for (const auto& Item : Ids)
-		{
-			Array.Add(MakeShared<FJsonValueString>(Item));
-		}
-		Body->SetArrayField(TEXT("ids"), Array);
-	}
-	if (Usernames.Num() > 0)
-	{
-		TArray<TSharedPtr<FJsonValue>> Array;
-		for (const auto& Item : Usernames)
-		{
-			Array.Add(MakeShared<FJsonValueString>(Item));
-		}
-		Body->SetArrayField(TEXT("usernames"), Array);
-	}
+	}TSharedPtr<FJsonObject> Body;
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
 
@@ -6692,28 +6654,18 @@ void FNakamaClient::DeleteFriends(
 {
 	FString Endpoint = TEXT("/v2/friend");
 	TArray<FString> QueryParams;
+	for (const FString& Item : Ids)
+	{
+		QueryParams.Add(FString::Printf(TEXT("ids=%s"), *Item));
+	}
+	for (const FString& Item : Usernames)
+	{
+		QueryParams.Add(FString::Printf(TEXT("usernames=%s"), *Item));
+	}
 	if (QueryParams.Num() > 0)
 	{
 		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
-	if (Ids.Num() > 0)
-	{
-		TArray<TSharedPtr<FJsonValue>> Array;
-		for (const auto& Item : Ids)
-		{
-			Array.Add(MakeShared<FJsonValueString>(Item));
-		}
-		Body->SetArrayField(TEXT("ids"), Array);
-	}
-	if (Usernames.Num() > 0)
-	{
-		TArray<TSharedPtr<FJsonValue>> Array;
-		for (const auto& Item : Usernames)
-		{
-			Array.Add(MakeShared<FJsonValueString>(Item));
-		}
-		Body->SetArrayField(TEXT("usernames"), Array);
-	}
+	}TSharedPtr<FJsonObject> Body;
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
 
@@ -6739,11 +6691,7 @@ void FNakamaClient::DeleteGroup(
 	if (QueryParams.Num() > 0)
 	{
 		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
-	if (!GroupId.IsEmpty())
-	{
-		Body->SetStringField(TEXT("group_id"), GroupId);
-	}
+	}TSharedPtr<FJsonObject> Body;
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
 
@@ -6769,11 +6717,7 @@ void FNakamaClient::DeleteLeaderboardRecord(
 	if (QueryParams.Num() > 0)
 	{
 		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
-	if (!LeaderboardId.IsEmpty())
-	{
-		Body->SetStringField(TEXT("leaderboard_id"), LeaderboardId);
-	}
+	}TSharedPtr<FJsonObject> Body;
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
 
@@ -6795,19 +6739,14 @@ void FNakamaClient::DeleteNotifications(
 {
 	FString Endpoint = TEXT("/v2/notification");
 	TArray<FString> QueryParams;
+	for (const FString& Item : Ids)
+	{
+		QueryParams.Add(FString::Printf(TEXT("ids=%s"), *Item));
+	}
 	if (QueryParams.Num() > 0)
 	{
 		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
-	if (Ids.Num() > 0)
-	{
-		TArray<TSharedPtr<FJsonValue>> Array;
-		for (const auto& Item : Ids)
-		{
-			Array.Add(MakeShared<FJsonValueString>(Item));
-		}
-		Body->SetArrayField(TEXT("ids"), Array);
-	}
+	}TSharedPtr<FJsonObject> Body;
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
 
@@ -6833,11 +6772,7 @@ void FNakamaClient::DeleteTournamentRecord(
 	if (QueryParams.Num() > 0)
 	{
 		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
-	if (!TournamentId.IsEmpty())
-	{
-		Body->SetStringField(TEXT("tournament_id"), TournamentId);
-	}
+	}TSharedPtr<FJsonObject> Body;
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
 
@@ -7122,11 +7057,7 @@ void FNakamaClient::JoinGroup(
 	if (QueryParams.Num() > 0)
 	{
 		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
-	if (!GroupId.IsEmpty())
-	{
-		Body->SetStringField(TEXT("group_id"), GroupId);
-	}
+	}TSharedPtr<FJsonObject> Body;
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
 
@@ -7152,11 +7083,7 @@ void FNakamaClient::JoinTournament(
 	if (QueryParams.Num() > 0)
 	{
 		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
-	if (!TournamentId.IsEmpty())
-	{
-		Body->SetStringField(TEXT("tournament_id"), TournamentId);
-	}
+	}TSharedPtr<FJsonObject> Body;
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
 
@@ -7180,23 +7107,14 @@ void FNakamaClient::KickGroupUsers(
 	FString Endpoint = TEXT("/v2/group/{group_id}/kick");
 	Endpoint = Endpoint.Replace(TEXT("{group_id}"), *GroupId);
 	TArray<FString> QueryParams;
+	for (const FString& Item : UserIds)
+	{
+		QueryParams.Add(FString::Printf(TEXT("user_ids=%s"), *Item));
+	}
 	if (QueryParams.Num() > 0)
 	{
 		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
-	if (!GroupId.IsEmpty())
-	{
-		Body->SetStringField(TEXT("group_id"), GroupId);
-	}
-	if (UserIds.Num() > 0)
-	{
-		TArray<TSharedPtr<FJsonValue>> Array;
-		for (const auto& Item : UserIds)
-		{
-			Array.Add(MakeShared<FJsonValueString>(Item));
-		}
-		Body->SetArrayField(TEXT("user_ids"), Array);
-	}
+	}TSharedPtr<FJsonObject> Body;
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
 
@@ -7222,11 +7140,7 @@ void FNakamaClient::LeaveGroup(
 	if (QueryParams.Num() > 0)
 	{
 		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
-	if (!GroupId.IsEmpty())
-	{
-		Body->SetStringField(TEXT("group_id"), GroupId);
-	}
+	}TSharedPtr<FJsonObject> Body;
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
 
@@ -8296,23 +8210,14 @@ void FNakamaClient::PromoteGroupUsers(
 	FString Endpoint = TEXT("/v2/group/{group_id}/promote");
 	Endpoint = Endpoint.Replace(TEXT("{group_id}"), *GroupId);
 	TArray<FString> QueryParams;
+	for (const FString& Item : UserIds)
+	{
+		QueryParams.Add(FString::Printf(TEXT("user_ids=%s"), *Item));
+	}
 	if (QueryParams.Num() > 0)
 	{
 		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
-	if (!GroupId.IsEmpty())
-	{
-		Body->SetStringField(TEXT("group_id"), GroupId);
-	}
-	if (UserIds.Num() > 0)
-	{
-		TArray<TSharedPtr<FJsonValue>> Array;
-		for (const auto& Item : UserIds)
-		{
-			Array.Add(MakeShared<FJsonValueString>(Item));
-		}
-		Body->SetArrayField(TEXT("user_ids"), Array);
-	}
+	}TSharedPtr<FJsonObject> Body;
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
 
@@ -8336,23 +8241,14 @@ void FNakamaClient::DemoteGroupUsers(
 	FString Endpoint = TEXT("/v2/group/{group_id}/demote");
 	Endpoint = Endpoint.Replace(TEXT("{group_id}"), *GroupId);
 	TArray<FString> QueryParams;
+	for (const FString& Item : UserIds)
+	{
+		QueryParams.Add(FString::Printf(TEXT("user_ids=%s"), *Item));
+	}
 	if (QueryParams.Num() > 0)
 	{
 		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
-	if (!GroupId.IsEmpty())
-	{
-		Body->SetStringField(TEXT("group_id"), GroupId);
-	}
-	if (UserIds.Num() > 0)
-	{
-		TArray<TSharedPtr<FJsonValue>> Array;
-		for (const auto& Item : UserIds)
-		{
-			Array.Add(MakeShared<FJsonValueString>(Item));
-		}
-		Body->SetArrayField(TEXT("user_ids"), Array);
-	}
+	}TSharedPtr<FJsonObject> Body;
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
 
