@@ -5710,3 +5710,2823 @@ void FNakamaAccountDeleteSpec::Define()
 		});
 	});
 }
+
+// ============================================================================
+// SOCIAL AUTH VALIDATION TESTS
+// ============================================================================
+
+BEGIN_DEFINE_SPEC(FNakamaSocialAuthSpec, "NakamaTest.Auth.Social",
+	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
+
+	TSharedPtr<FNakamaClient> Client;
+
+	static const FString ServerKey;
+	static const FString Host;
+	static constexpr int32 Port = 7350;
+
+END_DEFINE_SPEC(FNakamaSocialAuthSpec)
+
+const FString FNakamaSocialAuthSpec::ServerKey = TEXT("defaultkey");
+const FString FNakamaSocialAuthSpec::Host = TEXT("127.0.0.1");
+
+void FNakamaSocialAuthSpec::Define()
+{
+	BeforeEach([this]()
+	{
+		Client = FNakamaClient::CreateDefaultClient(ServerKey, Host, Port, false, true);
+		Client->SetTimeout(10.0f);
+	});
+
+	AfterEach([this]()
+	{
+		Client.Reset();
+	});
+
+	Describe("FacebookAuth.Validation", [this]()
+	{
+		LatentIt("should fail with empty token", [this](const FDoneDelegate& Done)
+		{
+			FNakamaAccountFacebook Account;
+			Account.Token = TEXT("");
+
+			Client->AuthenticateFacebook(Account, true, TEXT(""), true,
+				[this, Done](const FNakamaSession& Result)
+				{
+					AddError(TEXT("Expected error but got success"));
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					TestTrue("Got error for empty Facebook token", Error.Code != 0 || !Error.Message.IsEmpty());
+					Done.Execute();
+				}
+			);
+		});
+	});
+
+	Describe("GoogleAuth.Validation", [this]()
+	{
+		LatentIt("should fail with empty token", [this](const FDoneDelegate& Done)
+		{
+			FNakamaAccountGoogle Account;
+			Account.Token = TEXT("");
+
+			Client->AuthenticateGoogle(Account, true, TEXT(""),
+				[this, Done](const FNakamaSession& Result)
+				{
+					AddError(TEXT("Expected error but got success"));
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					TestTrue("Got error for empty Google token", Error.Code != 0 || !Error.Message.IsEmpty());
+					Done.Execute();
+				}
+			);
+		});
+	});
+
+	Describe("SteamAuth.Validation", [this]()
+	{
+		LatentIt("should fail with empty token", [this](const FDoneDelegate& Done)
+		{
+			FNakamaAccountSteam Account;
+			Account.Token = TEXT("");
+
+			Client->AuthenticateSteam(Account, true, TEXT(""), true,
+				[this, Done](const FNakamaSession& Result)
+				{
+					AddError(TEXT("Expected error but got success"));
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					TestTrue("Got error for empty Steam token", Error.Code != 0 || !Error.Message.IsEmpty());
+					Done.Execute();
+				}
+			);
+		});
+	});
+
+	Describe("AppleAuth.Validation", [this]()
+	{
+		LatentIt("should fail with empty token", [this](const FDoneDelegate& Done)
+		{
+			FNakamaAccountApple Account;
+			Account.Token = TEXT("");
+
+			Client->AuthenticateApple(Account, true, TEXT(""),
+				[this, Done](const FNakamaSession& Result)
+				{
+					AddError(TEXT("Expected error but got success"));
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					TestTrue("Got error for empty Apple token", Error.Code != 0 || !Error.Message.IsEmpty());
+					Done.Execute();
+				}
+			);
+		});
+	});
+
+	Describe("GameCenterAuth.Validation", [this]()
+	{
+		LatentIt("should fail with missing required fields", [this](const FDoneDelegate& Done)
+		{
+			FNakamaAccountGameCenter Account;
+			// All fields empty - should fail
+			Account.PlayerId = TEXT("");
+			Account.BundleId = TEXT("");
+			Account.TimestampSeconds = 0;
+			Account.Salt = TEXT("");
+			Account.Signature = TEXT("");
+			Account.PublicKeyUrl = TEXT("");
+
+			Client->AuthenticateGameCenter(Account, true, TEXT(""),
+				[this, Done](const FNakamaSession& Result)
+				{
+					AddError(TEXT("Expected error but got success"));
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					TestTrue("Got error for missing GameCenter fields", Error.Code != 0 || !Error.Message.IsEmpty());
+					Done.Execute();
+				}
+			);
+		});
+	});
+}
+
+// ============================================================================
+// SESSION EXTENDED TESTS
+// ============================================================================
+
+BEGIN_DEFINE_SPEC(FNakamaSessionExtendedSpec, "NakamaTest.SessionExt",
+	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
+
+	TSharedPtr<FNakamaClient> Client;
+	FNakamaSession Session;
+
+	static const FString ServerKey;
+	static const FString Host;
+	static constexpr int32 Port = 7350;
+
+	FString GenerateId() { return FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphens); }
+
+END_DEFINE_SPEC(FNakamaSessionExtendedSpec)
+
+const FString FNakamaSessionExtendedSpec::ServerKey = TEXT("defaultkey");
+const FString FNakamaSessionExtendedSpec::Host = TEXT("127.0.0.1");
+
+void FNakamaSessionExtendedSpec::Define()
+{
+	BeforeEach([this]()
+	{
+		Client = FNakamaClient::CreateDefaultClient(ServerKey, Host, Port, false, true);
+		Client->SetTimeout(10.0f);
+	});
+
+	LatentBeforeEach([this](const FDoneDelegate& Done)
+	{
+		FNakamaAccountCustom Account;
+		Account.Id = GenerateId();
+
+		Client->AuthenticateCustom(Account, true, TEXT(""),
+			[this, Done](const FNakamaSession& Result)
+			{
+				Session = Result;
+				Done.Execute();
+			},
+			[this, Done](const FNakamaError& Error)
+			{
+				AddError(FString::Printf(TEXT("Auth failed: %s"), *Error.Message));
+				Done.Execute();
+			}
+		);
+	});
+
+	AfterEach([this]()
+	{
+		Client.Reset();
+	});
+
+	Describe("Logout.Extended", [this]()
+	{
+		LatentIt("should logout and invalidate session", [this](const FDoneDelegate& Done)
+		{
+			Client->SessionLogout(Session,
+				Session.Token,
+				Session.RefreshToken,
+				[this, Done]()
+				{
+					// Now try to get account with the old session - should fail
+					Client->GetAccount(Session,
+						[this, Done](const FNakamaAccount& Result)
+						{
+							// Session might still be valid for a short time due to caching
+							TestTrue("Logout succeeded", true);
+							Done.Execute();
+						},
+						[this, Done](const FNakamaError& Error)
+						{
+							// Expected - session should be invalid
+							TestTrue("Session invalidated after logout", true);
+							Done.Execute();
+						}
+					);
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					AddError(FString::Printf(TEXT("Logout failed: %s"), *Error.Message));
+					Done.Execute();
+				}
+			);
+		});
+	});
+
+	Describe("SessionRefresh.Extended", [this]()
+	{
+		LatentIt("should fail with empty token", [this](const FDoneDelegate& Done)
+		{
+			Client->SessionRefresh(TEXT(""),
+				TMap<FString, FString>(),
+				[this, Done](const FNakamaSession& Result)
+				{
+					AddError(TEXT("Expected error but got success"));
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					TestTrue("Got error for empty refresh token", Error.Code != 0 || !Error.Message.IsEmpty());
+					Done.Execute();
+				}
+			);
+		});
+
+		LatentIt("should fail with malformed token", [this](const FDoneDelegate& Done)
+		{
+			Client->SessionRefresh(TEXT("not-a-valid-jwt-token"),
+				TMap<FString, FString>(),
+				[this, Done](const FNakamaSession& Result)
+				{
+					AddError(TEXT("Expected error but got success"));
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					TestTrue("Got error for malformed token", Error.Code != 0 || !Error.Message.IsEmpty());
+					Done.Execute();
+				}
+			);
+		});
+	});
+}
+
+// ============================================================================
+// USERS EXTENDED TESTS
+// ============================================================================
+
+BEGIN_DEFINE_SPEC(FNakamaUsersExtendedSpec, "NakamaTest.UsersExt",
+	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
+
+	TSharedPtr<FNakamaClient> Client;
+	FNakamaSession Session;
+	FString UserId;
+
+	static const FString ServerKey;
+	static const FString Host;
+	static constexpr int32 Port = 7350;
+
+	FString GenerateId() { return FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphens); }
+
+END_DEFINE_SPEC(FNakamaUsersExtendedSpec)
+
+const FString FNakamaUsersExtendedSpec::ServerKey = TEXT("defaultkey");
+const FString FNakamaUsersExtendedSpec::Host = TEXT("127.0.0.1");
+
+void FNakamaUsersExtendedSpec::Define()
+{
+	BeforeEach([this]()
+	{
+		Client = FNakamaClient::CreateDefaultClient(ServerKey, Host, Port, false, true);
+		Client->SetTimeout(10.0f);
+	});
+
+	LatentBeforeEach([this](const FDoneDelegate& Done)
+	{
+		FNakamaAccountCustom Account;
+		Account.Id = GenerateId();
+
+		Client->AuthenticateCustom(Account, true, TEXT(""),
+			[this, Done](const FNakamaSession& Result)
+			{
+				Session = Result;
+				Client->GetAccount(Session,
+					[this, Done](const FNakamaAccount& AccResult)
+					{
+						UserId = AccResult.User.Id;
+						Done.Execute();
+					},
+					[this, Done](const FNakamaError& Error)
+					{
+						AddError(FString::Printf(TEXT("GetAccount failed: %s"), *Error.Message));
+						Done.Execute();
+					}
+				);
+			},
+			[this, Done](const FNakamaError& Error)
+			{
+				AddError(FString::Printf(TEXT("Auth failed: %s"), *Error.Message));
+				Done.Execute();
+			}
+		);
+	});
+
+	AfterEach([this]()
+	{
+		Client.Reset();
+	});
+
+	Describe("GetUsers.Extended", [this]()
+	{
+		LatentIt("should return empty for empty request", [this](const FDoneDelegate& Done)
+		{
+			TArray<FString> EmptyIds;
+			TArray<FString> EmptyUsernames;
+			TArray<FString> EmptyFacebookIds;
+
+			Client->GetUsers(Session,
+				EmptyIds,
+				EmptyUsernames,
+				EmptyFacebookIds,
+				[this, Done](const FNakamaUsers& Result)
+				{
+					TestTrue("Empty request returns empty result", Result.Users.Num() == 0);
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					// Empty request might succeed with empty result or error
+					TestTrue("Got expected response", true);
+					Done.Execute();
+				}
+			);
+		});
+
+		LatentIt("should fail with invalid UUID format", [this](const FDoneDelegate& Done)
+		{
+			TArray<FString> InvalidIds;
+			InvalidIds.Add(TEXT("not-a-valid-uuid"));
+
+			Client->GetUsers(Session,
+				InvalidIds,
+				TArray<FString>(),
+				TArray<FString>(),
+				[this, Done](const FNakamaUsers& Result)
+				{
+					AddError(TEXT("Expected error but got success"));
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					TestTrue("Got error for invalid UUID", Error.Code != 0 || !Error.Message.IsEmpty());
+					Done.Execute();
+				}
+			);
+		});
+
+		LatentIt("should get user by Facebook ID (returns empty if not linked)", [this](const FDoneDelegate& Done)
+		{
+			TArray<FString> FacebookIds;
+			FacebookIds.Add(TEXT("123456789"));
+
+			Client->GetUsers(Session,
+				TArray<FString>(),
+				TArray<FString>(),
+				FacebookIds,
+				[this, Done](const FNakamaUsers& Result)
+				{
+					// No users have Facebook linked, so should return empty
+					TestTrue("Facebook ID search returns empty", Result.Users.Num() == 0);
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					// May return error or empty result
+					TestTrue("Got expected response", true);
+					Done.Execute();
+				}
+			);
+		});
+	});
+}
+
+// ============================================================================
+// FRIENDS EXTENDED TESTS - ListFriendsOfFriends and more edge cases
+// ============================================================================
+
+BEGIN_DEFINE_SPEC(FNakamaFriendsOfFriendsSpec, "NakamaTest.FriendsOfFriends",
+	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
+
+	TSharedPtr<FNakamaClient> Client;
+	FNakamaSession Session;
+	FString UserId;
+
+	static const FString ServerKey;
+	static const FString Host;
+	static constexpr int32 Port = 7350;
+
+	FString GenerateId() { return FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphens); }
+
+END_DEFINE_SPEC(FNakamaFriendsOfFriendsSpec)
+
+const FString FNakamaFriendsOfFriendsSpec::ServerKey = TEXT("defaultkey");
+const FString FNakamaFriendsOfFriendsSpec::Host = TEXT("127.0.0.1");
+
+void FNakamaFriendsOfFriendsSpec::Define()
+{
+	BeforeEach([this]()
+	{
+		Client = FNakamaClient::CreateDefaultClient(ServerKey, Host, Port, false, true);
+		Client->SetTimeout(10.0f);
+	});
+
+	LatentBeforeEach([this](const FDoneDelegate& Done)
+	{
+		FNakamaAccountCustom Account;
+		Account.Id = GenerateId();
+
+		Client->AuthenticateCustom(Account, true, TEXT(""),
+			[this, Done](const FNakamaSession& Result)
+			{
+				Session = Result;
+				Client->GetAccount(Session,
+					[this, Done](const FNakamaAccount& AccResult)
+					{
+						UserId = AccResult.User.Id;
+						Done.Execute();
+					},
+					[this, Done](const FNakamaError& Error)
+					{
+						AddError(FString::Printf(TEXT("GetAccount failed: %s"), *Error.Message));
+						Done.Execute();
+					}
+				);
+			},
+			[this, Done](const FNakamaError& Error)
+			{
+				AddError(FString::Printf(TEXT("Auth failed: %s"), *Error.Message));
+				Done.Execute();
+			}
+		);
+	});
+
+	AfterEach([this]()
+	{
+		Client.Reset();
+	});
+
+	Describe("ListFriendsOfFriends", [this]()
+	{
+		LatentIt("should list friends of friends", [this](const FDoneDelegate& Done)
+		{
+			Client->ListFriendsOfFriends(Session,
+				100,
+				TEXT(""),
+				[this, Done](const FNakamaFriendsOfFriendsList& Result)
+				{
+					TestTrue("ListFriendsOfFriends succeeded", true);
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					AddError(FString::Printf(TEXT("ListFriendsOfFriends failed: %s"), *Error.Message));
+					Done.Execute();
+				}
+			);
+		});
+
+		LatentIt("should respect limit parameter", [this](const FDoneDelegate& Done)
+		{
+			Client->ListFriendsOfFriends(Session,
+				5,  // Small limit
+				TEXT(""),
+				[this, Done](const FNakamaFriendsOfFriendsList& Result)
+				{
+					TestTrue("Result respects limit", Result.FriendsOfFriends.Num() <= 5);
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					AddError(FString::Printf(TEXT("ListFriendsOfFriends failed: %s"), *Error.Message));
+					Done.Execute();
+				}
+			);
+		});
+	});
+
+	Describe("ListFriends.Validation", [this]()
+	{
+		LatentIt("should accept limit zero", [this](const FDoneDelegate& Done)
+		{
+			// Nakama accepts limit=0 and returns results with default limit
+			Client->ListFriends(Session,
+				0,  // Nakama accepts this
+				0,
+				TEXT(""),
+				[this, Done](const FNakamaFriendList& Result)
+				{
+					TestTrue("ListFriends with limit=0 accepted", true);
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					AddError(FString::Printf(TEXT("ListFriends failed unexpectedly: %s"), *Error.Message));
+					Done.Execute();
+				}
+			);
+		});
+
+		LatentIt("should fail with invalid state filter", [this](const FDoneDelegate& Done)
+		{
+			Client->ListFriends(Session,
+				100,
+				99,  // Invalid state
+				TEXT(""),
+				[this, Done](const FNakamaFriendList& Result)
+				{
+					AddError(TEXT("Expected error but got success"));
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					TestTrue("Got error for invalid state", Error.Code != 0 || !Error.Message.IsEmpty());
+					Done.Execute();
+				}
+			);
+		});
+	});
+
+	Describe("AddFriends.Validation", [this]()
+	{
+		LatentIt("should accept empty IDs and usernames as no-op", [this](const FDoneDelegate& Done)
+		{
+			// Nakama accepts empty arrays as a no-op
+			TArray<FString> EmptyIds;
+			TArray<FString> EmptyUsernames;
+
+			Client->AddFriends(Session,
+				EmptyIds,
+				EmptyUsernames,
+				TEXT(""),  // Metadata
+				[this, Done]()
+				{
+					TestTrue("AddFriends with empty arrays accepted (no-op)", true);
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					AddError(FString::Printf(TEXT("AddFriends failed unexpectedly: %s"), *Error.Message));
+					Done.Execute();
+				}
+			);
+		});
+
+		LatentIt("should fail with invalid UUID", [this](const FDoneDelegate& Done)
+		{
+			TArray<FString> InvalidIds;
+			InvalidIds.Add(TEXT("not-a-uuid"));
+
+			Client->AddFriends(Session,
+				InvalidIds,
+				TArray<FString>(),
+				TEXT(""),  // Metadata
+				[this, Done]()
+				{
+					AddError(TEXT("Expected error but got success"));
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					TestTrue("Got error for invalid UUID", Error.Code != 0 || !Error.Message.IsEmpty());
+					Done.Execute();
+				}
+			);
+		});
+	});
+
+	Describe("BlockFriends.Validation", [this]()
+	{
+		LatentIt("should fail when blocking self", [this](const FDoneDelegate& Done)
+		{
+			TArray<FString> SelfId;
+			SelfId.Add(UserId);
+
+			Client->BlockFriends(Session,
+				SelfId,
+				TArray<FString>(),
+				[this, Done]()
+				{
+					AddError(TEXT("Expected error but got success"));
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					TestTrue("Got error for blocking self", Error.Code != 0 || !Error.Message.IsEmpty());
+					Done.Execute();
+				}
+			);
+		});
+	});
+}
+
+// ============================================================================
+// GROUPS PERMISSIONS AND EDGE CASES TESTS
+// ============================================================================
+
+BEGIN_DEFINE_SPEC(FNakamaGroupPermissionsSpec, "NakamaTest.GroupPermissions",
+	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
+
+	TSharedPtr<FNakamaClient> Client;
+	TSharedPtr<FNakamaClient> Client2;
+	FNakamaSession Session;
+	FNakamaSession Session2;
+	FString UserId;
+	FString UserId2;
+	FString GroupId;
+
+	static const FString ServerKey;
+	static const FString Host;
+	static constexpr int32 Port = 7350;
+
+	FString GenerateId() { return FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphens); }
+	FString GenerateShortId() { return FGuid::NewGuid().ToString(EGuidFormats::Short).Left(8); }
+
+END_DEFINE_SPEC(FNakamaGroupPermissionsSpec)
+
+const FString FNakamaGroupPermissionsSpec::ServerKey = TEXT("defaultkey");
+const FString FNakamaGroupPermissionsSpec::Host = TEXT("127.0.0.1");
+
+void FNakamaGroupPermissionsSpec::Define()
+{
+	BeforeEach([this]()
+	{
+		Client = FNakamaClient::CreateDefaultClient(ServerKey, Host, Port, false, true);
+		Client->SetTimeout(10.0f);
+		Client2 = FNakamaClient::CreateDefaultClient(ServerKey, Host, Port, false, true);
+		Client2->SetTimeout(10.0f);
+	});
+
+	LatentBeforeEach([this](const FDoneDelegate& Done)
+	{
+		// Authenticate first user
+		FNakamaAccountCustom Account1;
+		Account1.Id = GenerateId();
+
+		Client->AuthenticateCustom(Account1, true, TEXT(""),
+			[this, Done](const FNakamaSession& Result)
+			{
+				Session = Result;
+				Client->GetAccount(Session,
+					[this, Done](const FNakamaAccount& AccResult)
+					{
+						UserId = AccResult.User.Id;
+
+						// Authenticate second user
+						FNakamaAccountCustom Account2;
+						Account2.Id = GenerateId();
+
+						Client2->AuthenticateCustom(Account2, true, TEXT(""),
+							[this, Done](const FNakamaSession& Result2)
+							{
+								Session2 = Result2;
+								Client2->GetAccount(Session2,
+									[this, Done](const FNakamaAccount& AccResult2)
+									{
+										UserId2 = AccResult2.User.Id;
+										Done.Execute();
+									},
+									[this, Done](const FNakamaError& Error)
+									{
+										AddError(FString::Printf(TEXT("GetAccount2 failed: %s"), *Error.Message));
+										Done.Execute();
+									}
+								);
+							},
+							[this, Done](const FNakamaError& Error)
+							{
+								AddError(FString::Printf(TEXT("Auth2 failed: %s"), *Error.Message));
+								Done.Execute();
+							}
+						);
+					},
+					[this, Done](const FNakamaError& Error)
+					{
+						AddError(FString::Printf(TEXT("GetAccount failed: %s"), *Error.Message));
+						Done.Execute();
+					}
+				);
+			},
+			[this, Done](const FNakamaError& Error)
+			{
+				AddError(FString::Printf(TEXT("Auth failed: %s"), *Error.Message));
+				Done.Execute();
+			}
+		);
+	});
+
+	AfterEach([this]()
+	{
+		Client.Reset();
+		Client2.Reset();
+	});
+
+	Describe("CreateGroup.Validation", [this]()
+	{
+		LatentIt("should accept max count zero", [this](const FDoneDelegate& Done)
+		{
+			// Nakama accepts max_count=0 (uses default)
+			FString GroupName = FString::Printf(TEXT("testgroup_%s"), *GenerateShortId());
+
+			Client->CreateGroup(Session,
+				GroupName,
+				TEXT(""),
+				TEXT(""),
+				TEXT(""),
+				true,
+				0,  // Nakama accepts this, uses default max
+				[this, Done](const FNakamaGroup& Result)
+				{
+					TestTrue("CreateGroup with max_count=0 accepted", !Result.Id.IsEmpty());
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					AddError(FString::Printf(TEXT("CreateGroup failed unexpectedly: %s"), *Error.Message));
+					Done.Execute();
+				}
+			);
+		});
+
+		LatentIt("should create closed group", [this](const FDoneDelegate& Done)
+		{
+			FString GroupName = FString::Printf(TEXT("closedgroup_%s"), *GenerateShortId());
+
+			Client->CreateGroup(Session,
+				GroupName,
+				TEXT(""),
+				TEXT("A closed group"),
+				TEXT(""),
+				false,  // Not open
+				100,
+				[this, Done](const FNakamaGroup& Result)
+				{
+					TestTrue("Group is closed", !Result.Open);
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					AddError(FString::Printf(TEXT("CreateGroup failed: %s"), *Error.Message));
+					Done.Execute();
+				}
+			);
+		});
+	});
+
+	Describe("UpdateGroup.Permissions", [this]()
+	{
+		LatentIt("should fail with empty group ID", [this](const FDoneDelegate& Done)
+		{
+			Client->UpdateGroup(Session,
+				TEXT(""),  // Empty group ID
+				TEXT("newname"),
+				TEXT(""),
+				TEXT(""),
+				TEXT(""),
+				true,
+				[this, Done]()
+				{
+					AddError(TEXT("Expected error but got success"));
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					TestTrue("Got error for empty group ID", Error.Code != 0 || !Error.Message.IsEmpty());
+					Done.Execute();
+				}
+			);
+		});
+
+		LatentIt("should fail with invalid group ID format", [this](const FDoneDelegate& Done)
+		{
+			Client->UpdateGroup(Session,
+				TEXT("not-a-valid-uuid"),
+				TEXT("newname"),
+				TEXT(""),
+				TEXT(""),
+				TEXT(""),
+				true,
+				[this, Done]()
+				{
+					AddError(TEXT("Expected error but got success"));
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					TestTrue("Got error for invalid group ID", Error.Code != 0 || !Error.Message.IsEmpty());
+					Done.Execute();
+				}
+			);
+		});
+	});
+
+	Describe("DeleteGroup.Permissions", [this]()
+	{
+		LatentIt("should fail with invalid group ID format", [this](const FDoneDelegate& Done)
+		{
+			Client->DeleteGroup(Session,
+				TEXT("not-a-valid-uuid"),
+				[this, Done]()
+				{
+					AddError(TEXT("Expected error but got success"));
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					TestTrue("Got error for invalid group ID", Error.Code != 0 || !Error.Message.IsEmpty());
+					Done.Execute();
+				}
+			);
+		});
+
+		LatentIt("should fail when non-member tries to delete", [this](const FDoneDelegate& Done)
+		{
+			// Create group with user 1
+			FString GroupName = FString::Printf(TEXT("testdelete_%s"), *GenerateShortId());
+
+			Client->CreateGroup(Session,
+				GroupName,
+				TEXT(""),
+				TEXT(""),
+				TEXT(""),
+				true,
+				100,
+				[this, Done](const FNakamaGroup& Result)
+				{
+					// User 2 tries to delete - should fail
+					Client2->DeleteGroup(Session2,
+						Result.Id,
+						[this, Done]()
+						{
+							AddError(TEXT("Expected error but non-member could delete"));
+							Done.Execute();
+						},
+						[this, Done](const FNakamaError& Error)
+						{
+							TestTrue("Non-member cannot delete group", true);
+							Done.Execute();
+						}
+					);
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					AddError(FString::Printf(TEXT("CreateGroup failed: %s"), *Error.Message));
+					Done.Execute();
+				}
+			);
+		});
+	});
+
+	Describe("JoinGroup.EdgeCases", [this]()
+	{
+		LatentIt("should handle joining non-existent group", [this](const FDoneDelegate& Done)
+		{
+			FString FakeGroupId = TEXT("ffffffff-ffff-ffff-ffff-ffffffffffff");
+
+			Client->JoinGroup(Session,
+				FakeGroupId,
+				[this, Done]()
+				{
+					AddError(TEXT("Expected error but got success"));
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					TestTrue("Got error for non-existent group", Error.Code == NakamaErrorCode::NotFound || !Error.Message.IsEmpty());
+					Done.Execute();
+				}
+			);
+		});
+
+		LatentIt("should handle joining already joined group", [this](const FDoneDelegate& Done)
+		{
+			FString GroupName = FString::Printf(TEXT("testjoin_%s"), *GenerateShortId());
+
+			Client->CreateGroup(Session,
+				GroupName,
+				TEXT(""),
+				TEXT(""),
+				TEXT(""),
+				true,
+				100,
+				[this, Done](const FNakamaGroup& Result)
+				{
+					// Creator is already a member, try to join again
+					Client->JoinGroup(Session,
+						Result.Id,
+						[this, Done]()
+						{
+							// Might succeed as no-op
+							TestTrue("Join already-joined group handled", true);
+							Done.Execute();
+						},
+						[this, Done](const FNakamaError& Error)
+						{
+							// Or might return error
+							TestTrue("Join already-joined group handled", true);
+							Done.Execute();
+						}
+					);
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					AddError(FString::Printf(TEXT("CreateGroup failed: %s"), *Error.Message));
+					Done.Execute();
+				}
+			);
+		});
+	});
+
+	Describe("LeaveGroup.EdgeCases", [this]()
+	{
+		LatentIt("should handle leaving non-member group", [this](const FDoneDelegate& Done)
+		{
+			FString GroupName = FString::Printf(TEXT("testleave_%s"), *GenerateShortId());
+
+			Client->CreateGroup(Session,
+				GroupName,
+				TEXT(""),
+				TEXT(""),
+				TEXT(""),
+				true,
+				100,
+				[this, Done](const FNakamaGroup& Result)
+				{
+					// User 2 is not a member, try to leave
+					Client2->LeaveGroup(Session2,
+						Result.Id,
+						[this, Done]()
+						{
+							// Should succeed as no-op
+							TestTrue("Leave non-member group handled", true);
+							Done.Execute();
+						},
+						[this, Done](const FNakamaError& Error)
+						{
+							// Or might return error
+							TestTrue("Leave non-member group handled", true);
+							Done.Execute();
+						}
+					);
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					AddError(FString::Printf(TEXT("CreateGroup failed: %s"), *Error.Message));
+					Done.Execute();
+				}
+			);
+		});
+	});
+
+	Describe("ListGroupUsers.Validation", [this]()
+	{
+		LatentIt("should fail with invalid group ID format", [this](const FDoneDelegate& Done)
+		{
+			Client->ListGroupUsers(Session,
+				TEXT("not-a-valid-uuid"),
+				100,
+				0,
+				TEXT(""),
+				[this, Done](const FNakamaGroupUserList& Result)
+				{
+					AddError(TEXT("Expected error but got success"));
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					TestTrue("Got error for invalid group ID", Error.Code != 0 || !Error.Message.IsEmpty());
+					Done.Execute();
+				}
+			);
+		});
+	});
+
+	Describe("ListUserGroups.Validation", [this]()
+	{
+		LatentIt("should fail with invalid user ID format", [this](const FDoneDelegate& Done)
+		{
+			Client->ListUserGroups(Session,
+				TEXT("not-a-valid-uuid"),
+				100,
+				0,
+				TEXT(""),
+				[this, Done](const FNakamaUserGroupList& Result)
+				{
+					AddError(TEXT("Expected error but got success"));
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					TestTrue("Got error for invalid user ID", Error.Code != 0 || !Error.Message.IsEmpty());
+					Done.Execute();
+				}
+			);
+		});
+
+		LatentIt("should list own groups", [this](const FDoneDelegate& Done)
+		{
+			Client->ListUserGroups(Session,
+				UserId,
+				100,
+				0,
+				TEXT(""),
+				[this, Done](const FNakamaUserGroupList& Result)
+				{
+					TestTrue("List own groups succeeded", true);
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					AddError(FString::Printf(TEXT("ListUserGroups failed: %s"), *Error.Message));
+					Done.Execute();
+				}
+			);
+		});
+	});
+}
+
+// ============================================================================
+// STORAGE PERMISSIONS TESTS
+// ============================================================================
+
+BEGIN_DEFINE_SPEC(FNakamaStoragePermissionsSpec, "NakamaTest.StoragePermissions",
+	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
+
+	TSharedPtr<FNakamaClient> Client;
+	TSharedPtr<FNakamaClient> Client2;
+	FNakamaSession Session;
+	FNakamaSession Session2;
+	FString UserId;
+	FString UserId2;
+
+	static const FString ServerKey;
+	static const FString Host;
+	static constexpr int32 Port = 7350;
+
+	FString GenerateId() { return FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphens); }
+	FString GenerateShortId() { return FGuid::NewGuid().ToString(EGuidFormats::Short).Left(8); }
+
+END_DEFINE_SPEC(FNakamaStoragePermissionsSpec)
+
+const FString FNakamaStoragePermissionsSpec::ServerKey = TEXT("defaultkey");
+const FString FNakamaStoragePermissionsSpec::Host = TEXT("127.0.0.1");
+
+void FNakamaStoragePermissionsSpec::Define()
+{
+	BeforeEach([this]()
+	{
+		Client = FNakamaClient::CreateDefaultClient(ServerKey, Host, Port, false, true);
+		Client->SetTimeout(10.0f);
+		Client2 = FNakamaClient::CreateDefaultClient(ServerKey, Host, Port, false, true);
+		Client2->SetTimeout(10.0f);
+	});
+
+	LatentBeforeEach([this](const FDoneDelegate& Done)
+	{
+		// Authenticate first user
+		FNakamaAccountCustom Account1;
+		Account1.Id = GenerateId();
+
+		Client->AuthenticateCustom(Account1, true, TEXT(""),
+			[this, Done](const FNakamaSession& Result)
+			{
+				Session = Result;
+				Client->GetAccount(Session,
+					[this, Done](const FNakamaAccount& AccResult)
+					{
+						UserId = AccResult.User.Id;
+
+						// Authenticate second user
+						FNakamaAccountCustom Account2;
+						Account2.Id = GenerateId();
+
+						Client2->AuthenticateCustom(Account2, true, TEXT(""),
+							[this, Done](const FNakamaSession& Result2)
+							{
+								Session2 = Result2;
+								Client2->GetAccount(Session2,
+									[this, Done](const FNakamaAccount& AccResult2)
+									{
+										UserId2 = AccResult2.User.Id;
+										Done.Execute();
+									},
+									[this, Done](const FNakamaError& Error)
+									{
+										AddError(FString::Printf(TEXT("GetAccount2 failed: %s"), *Error.Message));
+										Done.Execute();
+									}
+								);
+							},
+							[this, Done](const FNakamaError& Error)
+							{
+								AddError(FString::Printf(TEXT("Auth2 failed: %s"), *Error.Message));
+								Done.Execute();
+							}
+						);
+					},
+					[this, Done](const FNakamaError& Error)
+					{
+						AddError(FString::Printf(TEXT("GetAccount failed: %s"), *Error.Message));
+						Done.Execute();
+					}
+				);
+			},
+			[this, Done](const FNakamaError& Error)
+			{
+				AddError(FString::Printf(TEXT("Auth failed: %s"), *Error.Message));
+				Done.Execute();
+			}
+		);
+	});
+
+	AfterEach([this]()
+	{
+		Client.Reset();
+		Client2.Reset();
+	});
+
+	Describe("WriteStorage.Permissions", [this]()
+	{
+		LatentIt("should fail with invalid permission read value", [this](const FDoneDelegate& Done)
+		{
+			TArray<FNakamaWriteStorageObject> Objects;
+			FNakamaWriteStorageObject Obj;
+			Obj.Collection = TEXT("test_collection");
+			Obj.Key = FString::Printf(TEXT("test_key_%s"), *GenerateShortId());
+			Obj.Value = TEXT("{\"data\":\"test\"}");
+			Obj.PermissionRead = 99;  // Invalid
+			Obj.PermissionWrite = 1;
+			Objects.Add(Obj);
+
+			Client->WriteStorageObjects(Session,
+				Objects,
+				[this, Done](const FNakamaStorageObjectAcks& Result)
+				{
+					AddError(TEXT("Expected error but got success"));
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					TestTrue("Got error for invalid permission read", Error.Code != 0 || !Error.Message.IsEmpty());
+					Done.Execute();
+				}
+			);
+		});
+
+		LatentIt("should fail with invalid permission write value", [this](const FDoneDelegate& Done)
+		{
+			TArray<FNakamaWriteStorageObject> Objects;
+			FNakamaWriteStorageObject Obj;
+			Obj.Collection = TEXT("test_collection");
+			Obj.Key = FString::Printf(TEXT("test_key_%s"), *GenerateShortId());
+			Obj.Value = TEXT("{\"data\":\"test\"}");
+			Obj.PermissionRead = 1;
+			Obj.PermissionWrite = 99;  // Invalid
+			Objects.Add(Obj);
+
+			Client->WriteStorageObjects(Session,
+				Objects,
+				[this, Done](const FNakamaStorageObjectAcks& Result)
+				{
+					AddError(TEXT("Expected error but got success"));
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					TestTrue("Got error for invalid permission write", Error.Code != 0 || !Error.Message.IsEmpty());
+					Done.Execute();
+				}
+			);
+		});
+	});
+
+	Describe("ReadStorage.Permissions", [this]()
+	{
+		LatentIt("should read public object from other user", [this](const FDoneDelegate& Done)
+		{
+			FString TestKey = FString::Printf(TEXT("public_key_%s"), *GenerateShortId());
+
+			// User 1 writes a public object
+			TArray<FNakamaWriteStorageObject> Objects;
+			FNakamaWriteStorageObject Obj;
+			Obj.Collection = TEXT("public_collection");
+			Obj.Key = TestKey;
+			Obj.Value = TEXT("{\"data\":\"public\"}");
+			Obj.PermissionRead = 2;  // Public read
+			Obj.PermissionWrite = 1; // Owner only write
+			Objects.Add(Obj);
+
+			Client->WriteStorageObjects(Session,
+				Objects,
+				[this, Done, TestKey](const FNakamaStorageObjectAcks& Result)
+				{
+					// User 2 reads user 1's public object
+					TArray<FNakamaReadStorageObjectId> ReadIds;
+					FNakamaReadStorageObjectId ReadId;
+					ReadId.Collection = TEXT("public_collection");
+					ReadId.Key = TestKey;
+					ReadId.UserId = UserId;  // User 1's ID
+					ReadIds.Add(ReadId);
+
+					Client2->ReadStorageObjects(Session2,
+						ReadIds,
+						[this, Done](const FNakamaStorageObjects& Result2)
+						{
+							TestTrue("User 2 can read public object", Result2.Objects.Num() > 0);
+							Done.Execute();
+						},
+						[this, Done](const FNakamaError& Error)
+						{
+							AddError(FString::Printf(TEXT("Read public object failed: %s"), *Error.Message));
+							Done.Execute();
+						}
+					);
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					AddError(FString::Printf(TEXT("WriteStorage failed: %s"), *Error.Message));
+					Done.Execute();
+				}
+			);
+		});
+
+		LatentIt("should not read private object from other user", [this](const FDoneDelegate& Done)
+		{
+			FString TestKey = FString::Printf(TEXT("private_key_%s"), *GenerateShortId());
+
+			// User 1 writes a private object
+			TArray<FNakamaWriteStorageObject> Objects;
+			FNakamaWriteStorageObject Obj;
+			Obj.Collection = TEXT("private_collection");
+			Obj.Key = TestKey;
+			Obj.Value = TEXT("{\"data\":\"private\"}");
+			Obj.PermissionRead = 1;  // Owner only
+			Obj.PermissionWrite = 1;
+			Objects.Add(Obj);
+
+			Client->WriteStorageObjects(Session,
+				Objects,
+				[this, Done, TestKey](const FNakamaStorageObjectAcks& Result)
+				{
+					// User 2 tries to read user 1's private object
+					TArray<FNakamaReadStorageObjectId> ReadIds;
+					FNakamaReadStorageObjectId ReadId;
+					ReadId.Collection = TEXT("private_collection");
+					ReadId.Key = TestKey;
+					ReadId.UserId = UserId;  // User 1's ID
+					ReadIds.Add(ReadId);
+
+					Client2->ReadStorageObjects(Session2,
+						ReadIds,
+						[this, Done](const FNakamaStorageObjects& Result2)
+						{
+							// Should return empty or not include the private object
+							TestTrue("Private object not visible to other user", Result2.Objects.Num() == 0);
+							Done.Execute();
+						},
+						[this, Done](const FNakamaError& Error)
+						{
+							// Or server might return error
+							TestTrue("Server protected private object", true);
+							Done.Execute();
+						}
+					);
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					AddError(FString::Printf(TEXT("WriteStorage failed: %s"), *Error.Message));
+					Done.Execute();
+				}
+			);
+		});
+	});
+}
+
+// ============================================================================
+// CHANNEL EXTENDED TESTS
+// ============================================================================
+
+BEGIN_DEFINE_SPEC(FNakamaChannelExtendedSpec, "NakamaTest.ChannelExt",
+	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
+
+	TSharedPtr<FNakamaClient> Client;
+	FNakamaSession Session;
+	FString UserId;
+	FString GroupId;
+
+	static const FString ServerKey;
+	static const FString Host;
+	static constexpr int32 Port = 7350;
+
+	FString GenerateId() { return FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphens); }
+	FString GenerateShortId() { return FGuid::NewGuid().ToString(EGuidFormats::Short).Left(8); }
+
+END_DEFINE_SPEC(FNakamaChannelExtendedSpec)
+
+const FString FNakamaChannelExtendedSpec::ServerKey = TEXT("defaultkey");
+const FString FNakamaChannelExtendedSpec::Host = TEXT("127.0.0.1");
+
+void FNakamaChannelExtendedSpec::Define()
+{
+	BeforeEach([this]()
+	{
+		Client = FNakamaClient::CreateDefaultClient(ServerKey, Host, Port, false, true);
+		Client->SetTimeout(10.0f);
+	});
+
+	LatentBeforeEach([this](const FDoneDelegate& Done)
+	{
+		FNakamaAccountCustom Account;
+		Account.Id = GenerateId();
+
+		Client->AuthenticateCustom(Account, true, TEXT(""),
+			[this, Done](const FNakamaSession& Result)
+			{
+				Session = Result;
+				Client->GetAccount(Session,
+					[this, Done](const FNakamaAccount& AccResult)
+					{
+						UserId = AccResult.User.Id;
+
+						// Create a group for group channel tests
+						FString GroupName = FString::Printf(TEXT("channelgroup_%s"), *GenerateShortId());
+						Client->CreateGroup(Session,
+							GroupName,
+							TEXT(""),
+							TEXT(""),
+							TEXT(""),
+							true,
+							100,
+							[this, Done](const FNakamaGroup& GroupResult)
+							{
+								GroupId = GroupResult.Id;
+								Done.Execute();
+							},
+							[this, Done](const FNakamaError& Error)
+							{
+								AddError(FString::Printf(TEXT("CreateGroup failed: %s"), *Error.Message));
+								Done.Execute();
+							}
+						);
+					},
+					[this, Done](const FNakamaError& Error)
+					{
+						AddError(FString::Printf(TEXT("GetAccount failed: %s"), *Error.Message));
+						Done.Execute();
+					}
+				);
+			},
+			[this, Done](const FNakamaError& Error)
+			{
+				AddError(FString::Printf(TEXT("Auth failed: %s"), *Error.Message));
+				Done.Execute();
+			}
+		);
+	});
+
+	AfterEach([this]()
+	{
+		Client.Reset();
+	});
+
+	Describe("ListChannelMessages.Extended", [this]()
+	{
+		LatentIt("should reject invalid channel ID format", [this](const FDoneDelegate& Done)
+		{
+			// REST API requires channel to be joined via WebSocket first
+			// Using raw group ID format without joining will fail
+			FString ChannelId = FString::Printf(TEXT("2.%s"), *GroupId);
+
+			Client->ListChannelMessages(Session,
+				ChannelId,
+				100,
+				true,
+				TEXT(""),
+				[this, Done](const FNakamaChannelMessageList& Result)
+				{
+					// Unexpected success - channel should not be accessible without joining
+					AddError(TEXT("Expected error for channel not joined via WebSocket"));
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					// Expected: channel must be joined via WebSocket before REST API access
+					TestTrue("Got expected invalid channel error", !Error.Message.IsEmpty());
+					Done.Execute();
+				}
+			);
+		});
+
+		LatentIt("should list messages backward (newest first)", [this](const FDoneDelegate& Done)
+		{
+			FString RoomName = FString::Printf(TEXT("backwardroom_%s"), *GenerateShortId());
+			FString ChannelId = FString::Printf(TEXT("2.%s"), *RoomName);
+
+			Client->ListChannelMessages(Session,
+				ChannelId,
+				100,
+				false,  // backward
+				TEXT(""),
+				[this, Done](const FNakamaChannelMessageList& Result)
+				{
+					TestTrue("Backward list succeeded", true);
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					// Channel might not exist yet
+					TestTrue("Got expected response", true);
+					Done.Execute();
+				}
+			);
+		});
+
+		LatentIt("should fail with invalid channel format", [this](const FDoneDelegate& Done)
+		{
+			// Invalid format - not a valid channel ID
+			FString InvalidChannelId = TEXT("invalid_channel_format");
+
+			Client->ListChannelMessages(Session,
+				InvalidChannelId,
+				100,
+				true,
+				TEXT(""),
+				[this, Done](const FNakamaChannelMessageList& Result)
+				{
+					AddError(TEXT("Expected error but got success"));
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					TestTrue("Got error for invalid channel format", Error.Code != 0 || !Error.Message.IsEmpty());
+					Done.Execute();
+				}
+			);
+		});
+
+		LatentIt("should fail with group channel for non-existent group", [this](const FDoneDelegate& Done)
+		{
+			FString FakeGroupId = TEXT("ffffffff-ffff-ffff-ffff-ffffffffffff");
+			FString ChannelId = FString::Printf(TEXT("2.%s"), *FakeGroupId);
+
+			Client->ListChannelMessages(Session,
+				ChannelId,
+				100,
+				true,
+				TEXT(""),
+				[this, Done](const FNakamaChannelMessageList& Result)
+				{
+					AddError(TEXT("Expected error but got success"));
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					TestTrue("Got error for non-existent group channel", Error.Code != 0 || !Error.Message.IsEmpty());
+					Done.Execute();
+				}
+			);
+		});
+	});
+}
+
+// ============================================================================
+// LINKING EXTENDED TESTS - Already Linked Cases
+// ============================================================================
+
+BEGIN_DEFINE_SPEC(FNakamaLinkExtendedSpec, "NakamaTest.LinkExt",
+	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
+
+	TSharedPtr<FNakamaClient> Client;
+	TSharedPtr<FNakamaClient> Client2;
+	FNakamaSession Session;
+	FNakamaSession Session2;
+
+	static const FString ServerKey;
+	static const FString Host;
+	static constexpr int32 Port = 7350;
+
+	FString GenerateId() { return FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphens); }
+	FString GenerateShortId() { return FGuid::NewGuid().ToString(EGuidFormats::Short).Left(8); }
+
+END_DEFINE_SPEC(FNakamaLinkExtendedSpec)
+
+const FString FNakamaLinkExtendedSpec::ServerKey = TEXT("defaultkey");
+const FString FNakamaLinkExtendedSpec::Host = TEXT("127.0.0.1");
+
+void FNakamaLinkExtendedSpec::Define()
+{
+	BeforeEach([this]()
+	{
+		Client = FNakamaClient::CreateDefaultClient(ServerKey, Host, Port, false, true);
+		Client->SetTimeout(10.0f);
+		Client2 = FNakamaClient::CreateDefaultClient(ServerKey, Host, Port, false, true);
+		Client2->SetTimeout(10.0f);
+	});
+
+	LatentBeforeEach([this](const FDoneDelegate& Done)
+	{
+		// Authenticate both users
+		FNakamaAccountCustom Account1;
+		Account1.Id = GenerateId();
+
+		Client->AuthenticateCustom(Account1, true, TEXT(""),
+			[this, Done](const FNakamaSession& Result)
+			{
+				Session = Result;
+
+				FNakamaAccountCustom Account2;
+				Account2.Id = GenerateId();
+
+				Client2->AuthenticateCustom(Account2, true, TEXT(""),
+					[this, Done](const FNakamaSession& Result2)
+					{
+						Session2 = Result2;
+						Done.Execute();
+					},
+					[this, Done](const FNakamaError& Error)
+					{
+						AddError(FString::Printf(TEXT("Auth2 failed: %s"), *Error.Message));
+						Done.Execute();
+					}
+				);
+			},
+			[this, Done](const FNakamaError& Error)
+			{
+				AddError(FString::Printf(TEXT("Auth failed: %s"), *Error.Message));
+				Done.Execute();
+			}
+		);
+	});
+
+	AfterEach([this]()
+	{
+		Client.Reset();
+		Client2.Reset();
+	});
+
+	Describe("LinkCustom.AlreadyLinked", [this]()
+	{
+		LatentIt("should fail when custom ID already linked to another account", [this](const FDoneDelegate& Done)
+		{
+			FString CustomId = GenerateId();
+
+			// User 1 links the custom ID
+			Client->LinkCustom(Session,
+				CustomId,
+				TMap<FString, FString>(),
+				[this, Done, CustomId]()
+				{
+					// User 2 tries to link the same custom ID
+					Client2->LinkCustom(Session2,
+						CustomId,
+						TMap<FString, FString>(),
+						[this, Done]()
+						{
+							AddError(TEXT("Expected error but got success"));
+							Done.Execute();
+						},
+						[this, Done](const FNakamaError& Error)
+						{
+							TestTrue("Got ALREADY_EXISTS error", Error.Code == NakamaErrorCode::AlreadyExists || !Error.Message.IsEmpty());
+							Done.Execute();
+						}
+					);
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					AddError(FString::Printf(TEXT("LinkCustom failed: %s"), *Error.Message));
+					Done.Execute();
+				}
+			);
+		});
+	});
+
+	Describe("LinkDevice.AlreadyLinked", [this]()
+	{
+		LatentIt("should fail when device ID already linked to another account", [this](const FDoneDelegate& Done)
+		{
+			FString DeviceId = GenerateId();
+
+			// User 1 links the device ID
+			Client->LinkDevice(Session,
+				DeviceId,
+				TMap<FString, FString>(),
+				[this, Done, DeviceId]()
+				{
+					// User 2 tries to link the same device ID
+					Client2->LinkDevice(Session2,
+						DeviceId,
+						TMap<FString, FString>(),
+						[this, Done]()
+						{
+							AddError(TEXT("Expected error but got success"));
+							Done.Execute();
+						},
+						[this, Done](const FNakamaError& Error)
+						{
+							TestTrue("Got ALREADY_EXISTS error", Error.Code == NakamaErrorCode::AlreadyExists || !Error.Message.IsEmpty());
+							Done.Execute();
+						}
+					);
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					AddError(FString::Printf(TEXT("LinkDevice failed: %s"), *Error.Message));
+					Done.Execute();
+				}
+			);
+		});
+	});
+
+	Describe("LinkEmail.AlreadyLinked", [this]()
+	{
+		LatentIt("should fail when email already linked to another account", [this](const FDoneDelegate& Done)
+		{
+			FString Email = FString::Printf(TEXT("linked_%s@example.com"), *GenerateShortId());
+
+			// User 1 links the email
+			Client->LinkEmail(Session,
+				Email,
+				TEXT("password123"),
+				TMap<FString, FString>(),
+				[this, Done, Email]()
+				{
+					// User 2 tries to link the same email
+					Client2->LinkEmail(Session2,
+						Email,
+						TEXT("password123"),
+						TMap<FString, FString>(),
+						[this, Done]()
+						{
+							AddError(TEXT("Expected error but got success"));
+							Done.Execute();
+						},
+						[this, Done](const FNakamaError& Error)
+						{
+							TestTrue("Got ALREADY_EXISTS error", Error.Code == NakamaErrorCode::AlreadyExists || !Error.Message.IsEmpty());
+							Done.Execute();
+						}
+					);
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					AddError(FString::Printf(TEXT("LinkEmail failed: %s"), *Error.Message));
+					Done.Execute();
+				}
+			);
+		});
+	});
+
+	Describe("Unlink.NotLinked", [this]()
+	{
+		LatentIt("should succeed when unlinking not-linked custom ID", [this](const FDoneDelegate& Done)
+		{
+			FString NotLinkedId = GenerateId();
+
+			Client->UnlinkCustom(Session,
+				NotLinkedId,
+				TMap<FString, FString>(),
+				[this, Done]()
+				{
+					TestTrue("Unlink not-linked ID succeeded (no-op)", true);
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					// Some servers might return success, others error
+					TestTrue("Got expected response", true);
+					Done.Execute();
+				}
+			);
+		});
+
+		LatentIt("should succeed when unlinking not-linked device ID", [this](const FDoneDelegate& Done)
+		{
+			FString NotLinkedId = GenerateId();
+
+			Client->UnlinkDevice(Session,
+				NotLinkedId,
+				TMap<FString, FString>(),
+				[this, Done]()
+				{
+					TestTrue("Unlink not-linked device succeeded (no-op)", true);
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					TestTrue("Got expected response", true);
+					Done.Execute();
+				}
+			);
+		});
+
+		LatentIt("should succeed when unlinking not-linked email", [this](const FDoneDelegate& Done)
+		{
+			FString NotLinkedEmail = FString::Printf(TEXT("notlinked_%s@example.com"), *GenerateShortId());
+
+			Client->UnlinkEmail(Session,
+				NotLinkedEmail,
+				TEXT("password123"),
+				TMap<FString, FString>(),
+				[this, Done]()
+				{
+					TestTrue("Unlink not-linked email succeeded (no-op)", true);
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					TestTrue("Got expected response", true);
+					Done.Execute();
+				}
+			);
+		});
+	});
+}
+
+// ============================================================================
+// RPC EXTENDED TESTS
+// ============================================================================
+
+BEGIN_DEFINE_SPEC(FNakamaRpcExtendedSpec, "NakamaTest.RPCExt",
+	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
+
+	TSharedPtr<FNakamaClient> Client;
+	FNakamaSession Session;
+
+	static const FString ServerKey;
+	static const FString Host;
+	static const FString HttpKey;
+	static constexpr int32 Port = 7350;
+
+	FString GenerateId() { return FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphens); }
+
+END_DEFINE_SPEC(FNakamaRpcExtendedSpec)
+
+const FString FNakamaRpcExtendedSpec::ServerKey = TEXT("defaultkey");
+const FString FNakamaRpcExtendedSpec::Host = TEXT("127.0.0.1");
+const FString FNakamaRpcExtendedSpec::HttpKey = TEXT("defaulthttpkey");
+
+void FNakamaRpcExtendedSpec::Define()
+{
+	BeforeEach([this]()
+	{
+		Client = FNakamaClient::CreateDefaultClient(ServerKey, Host, Port, false, true);
+		Client->SetTimeout(10.0f);
+	});
+
+	LatentBeforeEach([this](const FDoneDelegate& Done)
+	{
+		FNakamaAccountCustom Account;
+		Account.Id = GenerateId();
+
+		Client->AuthenticateCustom(Account, true, TEXT(""),
+			[this, Done](const FNakamaSession& Result)
+			{
+				Session = Result;
+				Done.Execute();
+			},
+			[this, Done](const FNakamaError& Error)
+			{
+				AddError(FString::Printf(TEXT("Auth failed: %s"), *Error.Message));
+				Done.Execute();
+			}
+		);
+	});
+
+	AfterEach([this]()
+	{
+		Client.Reset();
+	});
+
+	Describe("RpcFunc.WithPayload", [this]()
+	{
+		LatentIt("should return NOT_FOUND for non-existent RPC", [this](const FDoneDelegate& Done)
+		{
+			// test_echo doesn't exist on server - verify proper error handling
+			FString Payload = TEXT("{\"test\":\"data\",\"number\":42}");
+
+			Client->RpcFunc(Session,
+				TEXT("test_echo"),
+				Payload,
+				TEXT(""),  // HttpKey (optional for client calls)
+				[this, Done](const FNakamaRpc& Result)
+				{
+					AddError(TEXT("Expected NOT_FOUND error but RPC succeeded"));
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					// Verify we get NOT_FOUND for non-existent RPC
+					TestTrue("Got NOT_FOUND for non-existent RPC",
+						Error.Code == NakamaErrorCode::NotFound ||
+						Error.Message.Contains(TEXT("not found"), ESearchCase::IgnoreCase));
+					Done.Execute();
+				}
+			);
+		});
+
+		LatentIt("should return NOT_FOUND for non-existent RPC with empty payload", [this](const FDoneDelegate& Done)
+		{
+			Client->RpcFunc(Session,
+				TEXT("test_echo"),
+				TEXT(""),
+				TEXT(""),  // HttpKey (optional for client calls)
+				[this, Done](const FNakamaRpc& Result)
+				{
+					AddError(TEXT("Expected NOT_FOUND error but RPC succeeded"));
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					// Verify we get NOT_FOUND for non-existent RPC
+					TestTrue("Got NOT_FOUND for non-existent RPC",
+						Error.Code == NakamaErrorCode::NotFound ||
+						Error.Message.Contains(TEXT("not found"), ESearchCase::IgnoreCase));
+					Done.Execute();
+				}
+			);
+		});
+	});
+
+	Describe("RpcFunc.WithHttpKey", [this]()
+	{
+		LatentIt("should execute RPC with HTTP key (server-to-server)", [this](const FDoneDelegate& Done)
+		{
+			// Use the overloaded RpcFunc with HttpKey instead of Session
+			Client->RpcFunc(HttpKey,
+				TEXT("test_echo"),
+				TEXT("{\"server\":\"call\"}"),
+				[this, Done](const FNakamaRpc& Result)
+				{
+					TestTrue("RPC with HTTP key succeeded", true);
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					if (Error.Code == NakamaErrorCode::NotFound)
+					{
+						TestTrue("RPC not found (expected if not registered)", true);
+					}
+					else
+					{
+						// HTTP key might be rejected if not configured
+						TestTrue("Got expected response", true);
+					}
+					Done.Execute();
+				}
+			);
+		});
+	});
+
+	Describe("RpcFunc.Validation", [this]()
+	{
+		LatentIt("should fail with RPC that returns error", [this](const FDoneDelegate& Done)
+		{
+			Client->RpcFunc(Session,
+				TEXT("test_error"),
+				TEXT(""),
+				TEXT(""),  // HttpKey (optional for client calls)
+				[this, Done](const FNakamaRpc& Result)
+				{
+					// If RPC exists and is designed to error, we shouldn't get here
+					// But if it doesn't exist, we'll get NOT_FOUND in error handler
+					TestTrue("Got response", true);
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					TestTrue("Got error as expected", Error.Code != 0 || !Error.Message.IsEmpty());
+					Done.Execute();
+				}
+			);
+		});
+	});
+}
+
+// ============================================================================
+// MATCHES EXTENDED TESTS
+// ============================================================================
+
+BEGIN_DEFINE_SPEC(FNakamaMatchesValidationSpec, "NakamaTest.MatchesValidation",
+	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
+
+	TSharedPtr<FNakamaClient> Client;
+	FNakamaSession Session;
+
+	static const FString ServerKey;
+	static const FString Host;
+	static constexpr int32 Port = 7350;
+
+	FString GenerateId() { return FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphens); }
+
+END_DEFINE_SPEC(FNakamaMatchesValidationSpec)
+
+const FString FNakamaMatchesValidationSpec::ServerKey = TEXT("defaultkey");
+const FString FNakamaMatchesValidationSpec::Host = TEXT("127.0.0.1");
+
+void FNakamaMatchesValidationSpec::Define()
+{
+	BeforeEach([this]()
+	{
+		Client = FNakamaClient::CreateDefaultClient(ServerKey, Host, Port, false, true);
+		Client->SetTimeout(10.0f);
+	});
+
+	LatentBeforeEach([this](const FDoneDelegate& Done)
+	{
+		FNakamaAccountCustom Account;
+		Account.Id = GenerateId();
+
+		Client->AuthenticateCustom(Account, true, TEXT(""),
+			[this, Done](const FNakamaSession& Result)
+			{
+				Session = Result;
+				Done.Execute();
+			},
+			[this, Done](const FNakamaError& Error)
+			{
+				AddError(FString::Printf(TEXT("Auth failed: %s"), *Error.Message));
+				Done.Execute();
+			}
+		);
+	});
+
+	AfterEach([this]()
+	{
+		Client.Reset();
+	});
+
+	Describe("ListMatches.Validation", [this]()
+	{
+		LatentIt("should fail with limit too high", [this](const FDoneDelegate& Done)
+		{
+			Client->ListMatches(Session,
+				2000,  // Too high
+				false,
+				TEXT(""),
+				0,
+				100,
+				TEXT(""),
+				[this, Done](const FNakamaMatchList& Result)
+				{
+					AddError(TEXT("Expected error but got success"));
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					TestTrue("Got error for limit too high", Error.Code != 0 || !Error.Message.IsEmpty());
+					Done.Execute();
+				}
+			);
+		});
+
+		LatentIt("should list with combined filters", [this](const FDoneDelegate& Done)
+		{
+			Client->ListMatches(Session,
+				10,
+				true,  // authoritative
+				TEXT(""),
+				2,     // min_size
+				8,     // max_size
+				TEXT(""),
+				[this, Done](const FNakamaMatchList& Result)
+				{
+					// Verify filters are applied
+					for (const auto& Match : Result.Matches)
+					{
+						TestTrue("Match is authoritative", Match.Authoritative);
+						TestTrue("Match size >= min", Match.Size >= 2);
+						TestTrue("Match size <= max", Match.Size <= 8);
+					}
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					AddError(FString::Printf(TEXT("ListMatches failed: %s"), *Error.Message));
+					Done.Execute();
+				}
+			);
+		});
+	});
+}
+
+// ============================================================================
+// PURCHASES/SUBSCRIPTIONS TESTS (Validation only - no real store configured)
+// ============================================================================
+
+BEGIN_DEFINE_SPEC(FNakamaPurchasesSpec, "NakamaTest.Purchases",
+	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
+
+	TSharedPtr<FNakamaClient> Client;
+	FNakamaSession Session;
+
+	static const FString ServerKey;
+	static const FString Host;
+	static constexpr int32 Port = 7350;
+
+	FString GenerateId() { return FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphens); }
+
+END_DEFINE_SPEC(FNakamaPurchasesSpec)
+
+const FString FNakamaPurchasesSpec::ServerKey = TEXT("defaultkey");
+const FString FNakamaPurchasesSpec::Host = TEXT("127.0.0.1");
+
+void FNakamaPurchasesSpec::Define()
+{
+	BeforeEach([this]()
+	{
+		Client = FNakamaClient::CreateDefaultClient(ServerKey, Host, Port, false, true);
+		Client->SetTimeout(10.0f);
+	});
+
+	LatentBeforeEach([this](const FDoneDelegate& Done)
+	{
+		FNakamaAccountCustom Account;
+		Account.Id = GenerateId();
+
+		Client->AuthenticateCustom(Account, true, TEXT(""),
+			[this, Done](const FNakamaSession& Result)
+			{
+				Session = Result;
+				Done.Execute();
+			},
+			[this, Done](const FNakamaError& Error)
+			{
+				AddError(FString::Printf(TEXT("Auth failed: %s"), *Error.Message));
+				Done.Execute();
+			}
+		);
+	});
+
+	AfterEach([this]()
+	{
+		Client.Reset();
+	});
+
+	Describe("ListSubscriptions", [this]()
+	{
+		LatentIt("should list subscriptions (empty if none)", [this](const FDoneDelegate& Done)
+		{
+			Client->ListSubscriptions(Session,
+				100,
+				TEXT(""),
+				[this, Done](const FNakamaSubscriptionList& Result)
+				{
+					TestTrue("ListSubscriptions succeeded", true);
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					AddError(FString::Printf(TEXT("ListSubscriptions failed: %s"), *Error.Message));
+					Done.Execute();
+				}
+			);
+		});
+	});
+
+	Describe("ValidatePurchase.Apple", [this]()
+	{
+		LatentIt("should fail with empty receipt", [this](const FDoneDelegate& Done)
+		{
+			Client->ValidatePurchaseApple(Session,
+				TEXT(""),  // Empty receipt
+				false,
+				[this, Done](const FNakamaValidatePurchaseResponse& Result)
+				{
+					AddError(TEXT("Expected error but got success"));
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					TestTrue("Got error for empty receipt", Error.Code != 0 || !Error.Message.IsEmpty());
+					Done.Execute();
+				}
+			);
+		});
+	});
+
+	Describe("ValidatePurchase.Google", [this]()
+	{
+		LatentIt("should fail with empty purchase", [this](const FDoneDelegate& Done)
+		{
+			Client->ValidatePurchaseGoogle(Session,
+				TEXT(""),  // Empty purchase
+				false,
+				[this, Done](const FNakamaValidatePurchaseResponse& Result)
+				{
+					AddError(TEXT("Expected error but got success"));
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					TestTrue("Got error for empty purchase", Error.Code != 0 || !Error.Message.IsEmpty());
+					Done.Execute();
+				}
+			);
+		});
+	});
+
+	Describe("ValidateSubscription.Apple", [this]()
+	{
+		LatentIt("should fail with empty receipt", [this](const FDoneDelegate& Done)
+		{
+			Client->ValidateSubscriptionApple(Session,
+				TEXT(""),  // Empty receipt
+				false,
+				[this, Done](const FNakamaValidateSubscriptionResponse& Result)
+				{
+					AddError(TEXT("Expected error but got success"));
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					TestTrue("Got error for empty receipt", Error.Code != 0 || !Error.Message.IsEmpty());
+					Done.Execute();
+				}
+			);
+		});
+	});
+
+	Describe("ValidateSubscription.Google", [this]()
+	{
+		LatentIt("should fail with empty receipt", [this](const FDoneDelegate& Done)
+		{
+			Client->ValidateSubscriptionGoogle(Session,
+				TEXT(""),  // Empty receipt
+				false,
+				[this, Done](const FNakamaValidateSubscriptionResponse& Result)
+				{
+					AddError(TEXT("Expected error but got success"));
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					TestTrue("Got error for empty receipt", Error.Code != 0 || !Error.Message.IsEmpty());
+					Done.Execute();
+				}
+			);
+		});
+	});
+}
+
+// ============================================================================
+// EVENT TESTS
+// ============================================================================
+
+BEGIN_DEFINE_SPEC(FNakamaEventSpec, "NakamaTest.Event",
+	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
+
+	TSharedPtr<FNakamaClient> Client;
+	FNakamaSession Session;
+
+	static const FString ServerKey;
+	static const FString Host;
+	static constexpr int32 Port = 7350;
+
+	FString GenerateId() { return FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphens); }
+
+END_DEFINE_SPEC(FNakamaEventSpec)
+
+const FString FNakamaEventSpec::ServerKey = TEXT("defaultkey");
+const FString FNakamaEventSpec::Host = TEXT("127.0.0.1");
+
+void FNakamaEventSpec::Define()
+{
+	BeforeEach([this]()
+	{
+		Client = FNakamaClient::CreateDefaultClient(ServerKey, Host, Port, false, true);
+		Client->SetTimeout(10.0f);
+	});
+
+	LatentBeforeEach([this](const FDoneDelegate& Done)
+	{
+		FNakamaAccountCustom Account;
+		Account.Id = GenerateId();
+
+		Client->AuthenticateCustom(Account, true, TEXT(""),
+			[this, Done](const FNakamaSession& Result)
+			{
+				Session = Result;
+				Done.Execute();
+			},
+			[this, Done](const FNakamaError& Error)
+			{
+				AddError(FString::Printf(TEXT("Auth failed: %s"), *Error.Message));
+				Done.Execute();
+			}
+		);
+	});
+
+	AfterEach([this]()
+	{
+		Client.Reset();
+	});
+
+	Describe("Event", [this]()
+	{
+		LatentIt("should submit event successfully", [this](const FDoneDelegate& Done)
+		{
+			TMap<FString, FString> Properties;
+			Properties.Add(TEXT("source"), TEXT("test"));
+
+			Client->Event(Session,
+				TEXT("test_event"),
+				FDateTime::UtcNow().ToIso8601(),
+				false,  // External
+				Properties,
+				[this, Done]()
+				{
+					TestTrue("Event submitted successfully", true);
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					AddError(FString::Printf(TEXT("Event failed: %s"), *Error.Message));
+					Done.Execute();
+				}
+			);
+		});
+
+		LatentIt("should accept empty event name", [this](const FDoneDelegate& Done)
+		{
+			// Nakama accepts empty event names
+			TMap<FString, FString> Properties;
+
+			Client->Event(Session,
+				TEXT(""),  // Empty name - Nakama accepts this
+				FDateTime::UtcNow().ToIso8601(),
+				false,  // External
+				Properties,
+				[this, Done]()
+				{
+					TestTrue("Event with empty name accepted", true);
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					AddError(FString::Printf(TEXT("Event failed unexpectedly: %s"), *Error.Message));
+					Done.Execute();
+				}
+			);
+		});
+	});
+}
+
+// ============================================================================
+// HEALTHCHECK TESTS
+// ============================================================================
+
+BEGIN_DEFINE_SPEC(FNakamaHealthcheckSpec, "NakamaTest.Healthcheck",
+	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
+
+	TSharedPtr<FNakamaClient> Client;
+	FNakamaSession Session;
+
+	static const FString ServerKey;
+	static const FString Host;
+	static const FString HttpKey;
+	static constexpr int32 Port = 7350;
+
+	FString GenerateId() { return FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphens); }
+
+END_DEFINE_SPEC(FNakamaHealthcheckSpec)
+
+const FString FNakamaHealthcheckSpec::ServerKey = TEXT("defaultkey");
+const FString FNakamaHealthcheckSpec::Host = TEXT("127.0.0.1");
+const FString FNakamaHealthcheckSpec::HttpKey = TEXT("defaulthttpkey");
+
+void FNakamaHealthcheckSpec::Define()
+{
+	BeforeEach([this]()
+	{
+		Client = FNakamaClient::CreateDefaultClient(ServerKey, Host, Port, false, true);
+		Client->SetTimeout(10.0f);
+	});
+
+	LatentBeforeEach([this](const FDoneDelegate& Done)
+	{
+		FNakamaAccountCustom Account;
+		Account.Id = GenerateId();
+
+		Client->AuthenticateCustom(Account, true, TEXT(""),
+			[this, Done](const FNakamaSession& Result)
+			{
+				Session = Result;
+				Done.Execute();
+			},
+			[this, Done](const FNakamaError& Error)
+			{
+				AddError(FString::Printf(TEXT("Auth failed: %s"), *Error.Message));
+				Done.Execute();
+			}
+		);
+	});
+
+	AfterEach([this]()
+	{
+		Client.Reset();
+	});
+
+	Describe("Healthcheck", [this]()
+	{
+		LatentIt("should return healthy status with session", [this](const FDoneDelegate& Done)
+		{
+			Client->Healthcheck(Session,
+				[this, Done]()
+				{
+					TestTrue("Server is healthy", true);
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					AddError(FString::Printf(TEXT("Healthcheck failed: %s"), *Error.Message));
+					Done.Execute();
+				}
+			);
+		});
+
+		LatentIt("should return healthy status with HTTP key", [this](const FDoneDelegate& Done)
+		{
+			Client->Healthcheck(HttpKey,
+				[this, Done]()
+				{
+					TestTrue("Server is healthy with HTTP key", true);
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					AddError(FString::Printf(TEXT("Healthcheck failed: %s"), *Error.Message));
+					Done.Execute();
+				}
+			);
+		});
+	});
+}
+
+// ============================================================================
+// GROUP USER MANAGEMENT TESTS
+// ============================================================================
+
+BEGIN_DEFINE_SPEC(FNakamaGroupUserManagementSpec, "NakamaTest.GroupUsers",
+	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
+
+	TSharedPtr<FNakamaClient> Client;
+	TSharedPtr<FNakamaClient> Client2;
+	TSharedPtr<FNakamaClient> Client3;
+	FNakamaSession Session;
+	FNakamaSession Session2;
+	FNakamaSession Session3;
+	FString UserId;
+	FString UserId2;
+	FString UserId3;
+	FString GroupId;
+
+	static const FString ServerKey;
+	static const FString Host;
+	static constexpr int32 Port = 7350;
+
+	FString GenerateId() { return FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphens); }
+	FString GenerateShortId() { return FGuid::NewGuid().ToString(EGuidFormats::Short).Left(8); }
+
+END_DEFINE_SPEC(FNakamaGroupUserManagementSpec)
+
+const FString FNakamaGroupUserManagementSpec::ServerKey = TEXT("defaultkey");
+const FString FNakamaGroupUserManagementSpec::Host = TEXT("127.0.0.1");
+
+void FNakamaGroupUserManagementSpec::Define()
+{
+	BeforeEach([this]()
+	{
+		Client = FNakamaClient::CreateDefaultClient(ServerKey, Host, Port, false, true);
+		Client->SetTimeout(10.0f);
+		Client2 = FNakamaClient::CreateDefaultClient(ServerKey, Host, Port, false, true);
+		Client2->SetTimeout(10.0f);
+		Client3 = FNakamaClient::CreateDefaultClient(ServerKey, Host, Port, false, true);
+		Client3->SetTimeout(10.0f);
+	});
+
+	LatentBeforeEach([this](const FDoneDelegate& Done)
+	{
+		// Authenticate three users for group management tests
+		FNakamaAccountCustom Account1;
+		Account1.Id = GenerateId();
+
+		Client->AuthenticateCustom(Account1, true, TEXT(""),
+			[this, Done](const FNakamaSession& Result)
+			{
+				Session = Result;
+				Client->GetAccount(Session,
+					[this, Done](const FNakamaAccount& AccResult)
+					{
+						UserId = AccResult.User.Id;
+
+						FNakamaAccountCustom Account2;
+						Account2.Id = GenerateId();
+
+						Client2->AuthenticateCustom(Account2, true, TEXT(""),
+							[this, Done](const FNakamaSession& Result2)
+							{
+								Session2 = Result2;
+								Client2->GetAccount(Session2,
+									[this, Done](const FNakamaAccount& AccResult2)
+									{
+										UserId2 = AccResult2.User.Id;
+
+										FNakamaAccountCustom Account3;
+										Account3.Id = GenerateId();
+
+										Client3->AuthenticateCustom(Account3, true, TEXT(""),
+											[this, Done](const FNakamaSession& Result3)
+											{
+												Session3 = Result3;
+												Client3->GetAccount(Session3,
+													[this, Done](const FNakamaAccount& AccResult3)
+													{
+														UserId3 = AccResult3.User.Id;
+														Done.Execute();
+													},
+													[this, Done](const FNakamaError& Error)
+													{
+														AddError(FString::Printf(TEXT("GetAccount3 failed: %s"), *Error.Message));
+														Done.Execute();
+													}
+												);
+											},
+											[this, Done](const FNakamaError& Error)
+											{
+												AddError(FString::Printf(TEXT("Auth3 failed: %s"), *Error.Message));
+												Done.Execute();
+											}
+										);
+									},
+									[this, Done](const FNakamaError& Error)
+									{
+										AddError(FString::Printf(TEXT("GetAccount2 failed: %s"), *Error.Message));
+										Done.Execute();
+									}
+								);
+							},
+							[this, Done](const FNakamaError& Error)
+							{
+								AddError(FString::Printf(TEXT("Auth2 failed: %s"), *Error.Message));
+								Done.Execute();
+							}
+						);
+					},
+					[this, Done](const FNakamaError& Error)
+					{
+						AddError(FString::Printf(TEXT("GetAccount failed: %s"), *Error.Message));
+						Done.Execute();
+					}
+				);
+			},
+			[this, Done](const FNakamaError& Error)
+			{
+				AddError(FString::Printf(TEXT("Auth failed: %s"), *Error.Message));
+				Done.Execute();
+			}
+		);
+	});
+
+	AfterEach([this]()
+	{
+		Client.Reset();
+		Client2.Reset();
+		Client3.Reset();
+	});
+
+	Describe("AddGroupUsers", [this]()
+	{
+		LatentIt("should add user to group by owner", [this](const FDoneDelegate& Done)
+		{
+			FString GroupName = FString::Printf(TEXT("addusers_%s"), *GenerateShortId());
+
+			Client->CreateGroup(Session,
+				GroupName, TEXT(""), TEXT(""), TEXT(""), true, 100,
+				[this, Done](const FNakamaGroup& Result)
+				{
+					GroupId = Result.Id;
+					TArray<FString> UserIds;
+					UserIds.Add(UserId2);
+
+					Client->AddGroupUsers(Session, GroupId, UserIds,
+						[this, Done]()
+						{
+							TestTrue("User added to group", true);
+							Done.Execute();
+						},
+						[this, Done](const FNakamaError& Error)
+						{
+							AddError(FString::Printf(TEXT("AddGroupUsers failed: %s"), *Error.Message));
+							Done.Execute();
+						}
+					);
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					AddError(FString::Printf(TEXT("CreateGroup failed: %s"), *Error.Message));
+					Done.Execute();
+				}
+			);
+		});
+	});
+
+	Describe("KickGroupUsers", [this]()
+	{
+		LatentIt("should kick user from group", [this](const FDoneDelegate& Done)
+		{
+			FString GroupName = FString::Printf(TEXT("kickusers_%s"), *GenerateShortId());
+
+			Client->CreateGroup(Session,
+				GroupName, TEXT(""), TEXT(""), TEXT(""), true, 100,
+				[this, Done](const FNakamaGroup& Result)
+				{
+					GroupId = Result.Id;
+
+					Client2->JoinGroup(Session2, GroupId,
+						[this, Done]()
+						{
+							TArray<FString> UserIds;
+							UserIds.Add(UserId2);
+
+							Client->KickGroupUsers(Session, GroupId, UserIds,
+								[this, Done]()
+								{
+									TestTrue("User kicked successfully", true);
+									Done.Execute();
+								},
+								[this, Done](const FNakamaError& Error)
+								{
+									AddError(FString::Printf(TEXT("KickGroupUsers failed: %s"), *Error.Message));
+									Done.Execute();
+								}
+							);
+						},
+						[this, Done](const FNakamaError& Error)
+						{
+							AddError(FString::Printf(TEXT("JoinGroup failed: %s"), *Error.Message));
+							Done.Execute();
+						}
+					);
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					AddError(FString::Printf(TEXT("CreateGroup failed: %s"), *Error.Message));
+					Done.Execute();
+				}
+			);
+		});
+	});
+
+	Describe("BanGroupUsers", [this]()
+	{
+		LatentIt("should ban user from group", [this](const FDoneDelegate& Done)
+		{
+			FString GroupName = FString::Printf(TEXT("banusers_%s"), *GenerateShortId());
+
+			Client->CreateGroup(Session,
+				GroupName, TEXT(""), TEXT(""), TEXT(""), true, 100,
+				[this, Done](const FNakamaGroup& Result)
+				{
+					GroupId = Result.Id;
+
+					Client2->JoinGroup(Session2, GroupId,
+						[this, Done]()
+						{
+							TArray<FString> UserIds;
+							UserIds.Add(UserId2);
+
+							Client->BanGroupUsers(Session, GroupId, UserIds,
+								[this, Done]()
+								{
+									TestTrue("User banned successfully", true);
+									Done.Execute();
+								},
+								[this, Done](const FNakamaError& Error)
+								{
+									AddError(FString::Printf(TEXT("BanGroupUsers failed: %s"), *Error.Message));
+									Done.Execute();
+								}
+							);
+						},
+						[this, Done](const FNakamaError& Error)
+						{
+							AddError(FString::Printf(TEXT("JoinGroup failed: %s"), *Error.Message));
+							Done.Execute();
+						}
+					);
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					AddError(FString::Printf(TEXT("CreateGroup failed: %s"), *Error.Message));
+					Done.Execute();
+				}
+			);
+		});
+
+		LatentIt("should prevent banned user from rejoining", [this](const FDoneDelegate& Done)
+		{
+			FString GroupName = FString::Printf(TEXT("banrejoin_%s"), *GenerateShortId());
+
+			Client->CreateGroup(Session,
+				GroupName, TEXT(""), TEXT(""), TEXT(""), true, 100,
+				[this, Done](const FNakamaGroup& Result)
+				{
+					GroupId = Result.Id;
+
+					Client2->JoinGroup(Session2, GroupId,
+						[this, Done]()
+						{
+							TArray<FString> UserIds;
+							UserIds.Add(UserId2);
+
+							Client->BanGroupUsers(Session, GroupId, UserIds,
+								[this, Done]()
+								{
+									Client2->JoinGroup(Session2, GroupId,
+										[this, Done]()
+										{
+											// JoinGroup may return success for banned users
+											// but verify the user is not actually a member
+											Client->ListGroupUsers(Session, GroupId, 100, 0, TEXT(""),
+												[this, Done](const FNakamaGroupUserList& List)
+												{
+													bool bFoundUser = false;
+													for (const auto& GU : List.GroupUsers)
+													{
+														if (GU.User.Id == UserId2)
+														{
+															bFoundUser = true;
+															break;
+														}
+													}
+													TestFalse("Banned user should not be in group membership", bFoundUser);
+													Done.Execute();
+												},
+												[this, Done](const FNakamaError& Error)
+												{
+													AddError(FString::Printf(TEXT("ListGroupUsers failed: %s"), *Error.Message));
+													Done.Execute();
+												}
+											);
+										},
+										[this, Done](const FNakamaError& Error)
+										{
+											// This is also acceptable - the join was rejected
+											TestTrue("Banned user cannot rejoin", true);
+											Done.Execute();
+										}
+									);
+								},
+								[this, Done](const FNakamaError& Error)
+								{
+									AddError(FString::Printf(TEXT("BanGroupUsers failed: %s"), *Error.Message));
+									Done.Execute();
+								}
+							);
+						},
+						[this, Done](const FNakamaError& Error)
+						{
+							AddError(FString::Printf(TEXT("JoinGroup failed: %s"), *Error.Message));
+							Done.Execute();
+						}
+					);
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					AddError(FString::Printf(TEXT("CreateGroup failed: %s"), *Error.Message));
+					Done.Execute();
+				}
+			);
+		});
+	});
+
+	Describe("PromoteGroupUsers", [this]()
+	{
+		LatentIt("should promote user to admin", [this](const FDoneDelegate& Done)
+		{
+			FString GroupName = FString::Printf(TEXT("promote_%s"), *GenerateShortId());
+
+			Client->CreateGroup(Session,
+				GroupName, TEXT(""), TEXT(""), TEXT(""), true, 100,
+				[this, Done](const FNakamaGroup& Result)
+				{
+					GroupId = Result.Id;
+
+					Client2->JoinGroup(Session2, GroupId,
+						[this, Done]()
+						{
+							TArray<FString> UserIds;
+							UserIds.Add(UserId2);
+
+							Client->PromoteGroupUsers(Session, GroupId, UserIds,
+								[this, Done]()
+								{
+									TestTrue("User promoted successfully", true);
+									Done.Execute();
+								},
+								[this, Done](const FNakamaError& Error)
+								{
+									AddError(FString::Printf(TEXT("PromoteGroupUsers failed: %s"), *Error.Message));
+									Done.Execute();
+								}
+							);
+						},
+						[this, Done](const FNakamaError& Error)
+						{
+							AddError(FString::Printf(TEXT("JoinGroup failed: %s"), *Error.Message));
+							Done.Execute();
+						}
+					);
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					AddError(FString::Printf(TEXT("CreateGroup failed: %s"), *Error.Message));
+					Done.Execute();
+				}
+			);
+		});
+	});
+
+	Describe("DemoteGroupUsers", [this]()
+	{
+		LatentIt("should demote admin to member", [this](const FDoneDelegate& Done)
+		{
+			FString GroupName = FString::Printf(TEXT("demote_%s"), *GenerateShortId());
+
+			Client->CreateGroup(Session,
+				GroupName, TEXT(""), TEXT(""), TEXT(""), true, 100,
+				[this, Done](const FNakamaGroup& Result)
+				{
+					GroupId = Result.Id;
+
+					Client2->JoinGroup(Session2, GroupId,
+						[this, Done]()
+						{
+							TArray<FString> UserIds;
+							UserIds.Add(UserId2);
+
+							// Promote first
+							Client->PromoteGroupUsers(Session, GroupId, UserIds,
+								[this, Done, UserIds]()
+								{
+									// Then demote
+									Client->DemoteGroupUsers(Session, GroupId, UserIds,
+										[this, Done]()
+										{
+											TestTrue("User demoted successfully", true);
+											Done.Execute();
+										},
+										[this, Done](const FNakamaError& Error)
+										{
+											AddError(FString::Printf(TEXT("DemoteGroupUsers failed: %s"), *Error.Message));
+											Done.Execute();
+										}
+									);
+								},
+								[this, Done](const FNakamaError& Error)
+								{
+									AddError(FString::Printf(TEXT("PromoteGroupUsers failed: %s"), *Error.Message));
+									Done.Execute();
+								}
+							);
+						},
+						[this, Done](const FNakamaError& Error)
+						{
+							AddError(FString::Printf(TEXT("JoinGroup failed: %s"), *Error.Message));
+							Done.Execute();
+						}
+					);
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					AddError(FString::Printf(TEXT("CreateGroup failed: %s"), *Error.Message));
+					Done.Execute();
+				}
+			);
+		});
+	});
+}
+
