@@ -6146,14 +6146,23 @@ void FNakamaClient::SessionRefresh(
 {
 	FString Endpoint = TEXT("/v2/account/session/refresh");
 	TArray<FString> QueryParams;
-	if (!Token.IsEmpty())
-	{
-		QueryParams.Add(FString::Printf(TEXT("token=%s"), *Token));
-	}
 	if (QueryParams.Num() > 0)
 	{
 		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-	}TSharedPtr<FJsonObject> Body;
+	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
+	if (!Token.IsEmpty())
+	{
+		Body->SetStringField(TEXT("token"), Token);
+	}
+	if (Vars.Num() > 0)
+	{
+		TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
+		for (const auto& Pair : Vars)
+		{
+			MapObj->SetStringField(Pair.Key, Pair.Value);
+		}
+		Body->SetObjectField(TEXT("vars"), MapObj);
+	}
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Basic;
 
@@ -6178,18 +6187,18 @@ void FNakamaClient::SessionLogout(
 {
 	FString Endpoint = TEXT("/v2/session/logout");
 	TArray<FString> QueryParams;
-	if (!Token.IsEmpty())
-	{
-		QueryParams.Add(FString::Printf(TEXT("token=%s"), *Token));
-	}
-	if (!RefreshToken.IsEmpty())
-	{
-		QueryParams.Add(FString::Printf(TEXT("refresh_token=%s"), *RefreshToken));
-	}
 	if (QueryParams.Num() > 0)
 	{
 		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-	}TSharedPtr<FJsonObject> Body;
+	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
+	if (!Token.IsEmpty())
+	{
+		Body->SetStringField(TEXT("token"), Token);
+	}
+	if (!RefreshToken.IsEmpty())
+	{
+		Body->SetStringField(TEXT("refresh_token"), RefreshToken);
+	}
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
 
@@ -6619,31 +6628,28 @@ void FNakamaClient::CreateGroup(
 {
 	FString Endpoint = TEXT("/v2/group");
 	TArray<FString> QueryParams;
-	if (!Name.IsEmpty())
-	{
-		QueryParams.Add(FString::Printf(TEXT("name=%s"), *Name));
-	}
-	if (!Description.IsEmpty())
-	{
-		QueryParams.Add(FString::Printf(TEXT("description=%s"), *Description));
-	}
-	if (!LangTag.IsEmpty())
-	{
-		QueryParams.Add(FString::Printf(TEXT("lang_tag=%s"), *LangTag));
-	}
-	if (!AvatarUrl.IsEmpty())
-	{
-		QueryParams.Add(FString::Printf(TEXT("avatar_url=%s"), *AvatarUrl));
-	}
-	QueryParams.Add(FString::Printf(TEXT("open=%s"), Open ? TEXT("true") : TEXT("false")));
-	if (MaxCount != 0)
-	{
-		QueryParams.Add(FString::Printf(TEXT("max_count=%d"), MaxCount));
-	}
 	if (QueryParams.Num() > 0)
 	{
 		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-	}TSharedPtr<FJsonObject> Body;
+	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
+	if (!Name.IsEmpty())
+	{
+		Body->SetStringField(TEXT("name"), Name);
+	}
+	if (!Description.IsEmpty())
+	{
+		Body->SetStringField(TEXT("description"), Description);
+	}
+	if (!LangTag.IsEmpty())
+	{
+		Body->SetStringField(TEXT("lang_tag"), LangTag);
+	}
+	if (!AvatarUrl.IsEmpty())
+	{
+		Body->SetStringField(TEXT("avatar_url"), AvatarUrl);
+	}
+	Body->SetBoolField(TEXT("open"), Open);
+	Body->SetNumberField(TEXT("max_count"), MaxCount);
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
 
@@ -6856,7 +6862,16 @@ void FNakamaClient::DeleteStorageObjects(
 	if (QueryParams.Num() > 0)
 	{
 		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-	}TSharedPtr<FJsonObject> Body;
+	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
+	if (ObjectIds.Num() > 0)
+	{
+		TArray<TSharedPtr<FJsonValue>> Array;
+		for (const auto& Item : ObjectIds)
+		{
+			Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
+		}
+		Body->SetArrayField(TEXT("object_ids"), Array);
+	}
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
 
@@ -6881,15 +6896,25 @@ void FNakamaClient::Event(
 {
 	FString Endpoint = TEXT("/v2/event");
 	TArray<FString> QueryParams;
-	if (!Name.IsEmpty())
-	{
-		QueryParams.Add(FString::Printf(TEXT("name=%s"), *Name));
-	}
-	QueryParams.Add(FString::Printf(TEXT("external=%s"), External ? TEXT("true") : TEXT("false")));
 	if (QueryParams.Num() > 0)
 	{
 		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-	}TSharedPtr<FJsonObject> Body;
+	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
+	if (!Name.IsEmpty())
+	{
+		Body->SetStringField(TEXT("name"), Name);
+	}
+	Body->SetStringField(TEXT("timestamp"), Timestamp);
+	Body->SetBoolField(TEXT("external"), External);
+	if (Properties.Num() > 0)
+	{
+		TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
+		for (const auto& Pair : Properties)
+		{
+			MapObj->SetStringField(Pair.Key, Pair.Value);
+		}
+		Body->SetObjectField(TEXT("properties"), MapObj);
+	}
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
 
@@ -7243,14 +7268,23 @@ void FNakamaClient::LinkApple(
 {
 	FString Endpoint = TEXT("/v2/account/link/apple");
 	TArray<FString> QueryParams;
-	if (!Token.IsEmpty())
-	{
-		QueryParams.Add(FString::Printf(TEXT("token=%s"), *Token));
-	}
 	if (QueryParams.Num() > 0)
 	{
 		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-	}TSharedPtr<FJsonObject> Body;
+	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
+	if (!Token.IsEmpty())
+	{
+		Body->SetStringField(TEXT("token"), Token);
+	}
+	if (Vars.Num() > 0)
+	{
+		TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
+		for (const auto& Pair : Vars)
+		{
+			MapObj->SetStringField(Pair.Key, Pair.Value);
+		}
+		Body->SetObjectField(TEXT("vars"), MapObj);
+	}
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
 
@@ -7273,14 +7307,23 @@ void FNakamaClient::LinkCustom(
 {
 	FString Endpoint = TEXT("/v2/account/link/custom");
 	TArray<FString> QueryParams;
-	if (!Id.IsEmpty())
-	{
-		QueryParams.Add(FString::Printf(TEXT("id=%s"), *Id));
-	}
 	if (QueryParams.Num() > 0)
 	{
 		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-	}TSharedPtr<FJsonObject> Body;
+	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
+	if (!Id.IsEmpty())
+	{
+		Body->SetStringField(TEXT("id"), Id);
+	}
+	if (Vars.Num() > 0)
+	{
+		TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
+		for (const auto& Pair : Vars)
+		{
+			MapObj->SetStringField(Pair.Key, Pair.Value);
+		}
+		Body->SetObjectField(TEXT("vars"), MapObj);
+	}
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
 
@@ -7303,14 +7346,23 @@ void FNakamaClient::LinkDevice(
 {
 	FString Endpoint = TEXT("/v2/account/link/device");
 	TArray<FString> QueryParams;
-	if (!Id.IsEmpty())
-	{
-		QueryParams.Add(FString::Printf(TEXT("id=%s"), *Id));
-	}
 	if (QueryParams.Num() > 0)
 	{
 		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-	}TSharedPtr<FJsonObject> Body;
+	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
+	if (!Id.IsEmpty())
+	{
+		Body->SetStringField(TEXT("id"), Id);
+	}
+	if (Vars.Num() > 0)
+	{
+		TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
+		for (const auto& Pair : Vars)
+		{
+			MapObj->SetStringField(Pair.Key, Pair.Value);
+		}
+		Body->SetObjectField(TEXT("vars"), MapObj);
+	}
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
 
@@ -7334,18 +7386,27 @@ void FNakamaClient::LinkEmail(
 {
 	FString Endpoint = TEXT("/v2/account/link/email");
 	TArray<FString> QueryParams;
-	if (!Email.IsEmpty())
-	{
-		QueryParams.Add(FString::Printf(TEXT("email=%s"), *Email));
-	}
-	if (!Password.IsEmpty())
-	{
-		QueryParams.Add(FString::Printf(TEXT("password=%s"), *Password));
-	}
 	if (QueryParams.Num() > 0)
 	{
 		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-	}TSharedPtr<FJsonObject> Body;
+	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
+	if (!Email.IsEmpty())
+	{
+		Body->SetStringField(TEXT("email"), Email);
+	}
+	if (!Password.IsEmpty())
+	{
+		Body->SetStringField(TEXT("password"), Password);
+	}
+	if (Vars.Num() > 0)
+	{
+		TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
+		for (const auto& Pair : Vars)
+		{
+			MapObj->SetStringField(Pair.Key, Pair.Value);
+		}
+		Body->SetObjectField(TEXT("vars"), MapObj);
+	}
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
 
@@ -7396,14 +7457,23 @@ void FNakamaClient::LinkFacebookInstantGame(
 {
 	FString Endpoint = TEXT("/v2/account/link/facebookinstantgame");
 	TArray<FString> QueryParams;
-	if (!SignedPlayerInfo.IsEmpty())
-	{
-		QueryParams.Add(FString::Printf(TEXT("signed_player_info=%s"), *SignedPlayerInfo));
-	}
 	if (QueryParams.Num() > 0)
 	{
 		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-	}TSharedPtr<FJsonObject> Body;
+	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
+	if (!SignedPlayerInfo.IsEmpty())
+	{
+		Body->SetStringField(TEXT("signed_player_info"), SignedPlayerInfo);
+	}
+	if (Vars.Num() > 0)
+	{
+		TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
+		for (const auto& Pair : Vars)
+		{
+			MapObj->SetStringField(Pair.Key, Pair.Value);
+		}
+		Body->SetObjectField(TEXT("vars"), MapObj);
+	}
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
 
@@ -7431,34 +7501,40 @@ void FNakamaClient::LinkGameCenter(
 {
 	FString Endpoint = TEXT("/v2/account/link/gamecenter");
 	TArray<FString> QueryParams;
-	if (!PlayerId.IsEmpty())
-	{
-		QueryParams.Add(FString::Printf(TEXT("player_id=%s"), *PlayerId));
-	}
-	if (!BundleId.IsEmpty())
-	{
-		QueryParams.Add(FString::Printf(TEXT("bundle_id=%s"), *BundleId));
-	}
-	if (TimestampSeconds != 0)
-	{
-		QueryParams.Add(FString::Printf(TEXT("timestamp_seconds=%lld"), TimestampSeconds));
-	}
-	if (!Salt.IsEmpty())
-	{
-		QueryParams.Add(FString::Printf(TEXT("salt=%s"), *Salt));
-	}
-	if (!Signature.IsEmpty())
-	{
-		QueryParams.Add(FString::Printf(TEXT("signature=%s"), *Signature));
-	}
-	if (!PublicKeyUrl.IsEmpty())
-	{
-		QueryParams.Add(FString::Printf(TEXT("public_key_url=%s"), *PublicKeyUrl));
-	}
 	if (QueryParams.Num() > 0)
 	{
 		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-	}TSharedPtr<FJsonObject> Body;
+	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
+	if (!PlayerId.IsEmpty())
+	{
+		Body->SetStringField(TEXT("player_id"), PlayerId);
+	}
+	if (!BundleId.IsEmpty())
+	{
+		Body->SetStringField(TEXT("bundle_id"), BundleId);
+	}
+	Body->SetNumberField(TEXT("timestamp_seconds"), TimestampSeconds);
+	if (!Salt.IsEmpty())
+	{
+		Body->SetStringField(TEXT("salt"), Salt);
+	}
+	if (!Signature.IsEmpty())
+	{
+		Body->SetStringField(TEXT("signature"), Signature);
+	}
+	if (!PublicKeyUrl.IsEmpty())
+	{
+		Body->SetStringField(TEXT("public_key_url"), PublicKeyUrl);
+	}
+	if (Vars.Num() > 0)
+	{
+		TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
+		for (const auto& Pair : Vars)
+		{
+			MapObj->SetStringField(Pair.Key, Pair.Value);
+		}
+		Body->SetObjectField(TEXT("vars"), MapObj);
+	}
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
 
@@ -7481,14 +7557,23 @@ void FNakamaClient::LinkGoogle(
 {
 	FString Endpoint = TEXT("/v2/account/link/google");
 	TArray<FString> QueryParams;
-	if (!Token.IsEmpty())
-	{
-		QueryParams.Add(FString::Printf(TEXT("token=%s"), *Token));
-	}
 	if (QueryParams.Num() > 0)
 	{
 		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-	}TSharedPtr<FJsonObject> Body;
+	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
+	if (!Token.IsEmpty())
+	{
+		Body->SetStringField(TEXT("token"), Token);
+	}
+	if (Vars.Num() > 0)
+	{
+		TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
+		for (const auto& Pair : Vars)
+		{
+			MapObj->SetStringField(Pair.Key, Pair.Value);
+		}
+		Body->SetObjectField(TEXT("vars"), MapObj);
+	}
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
 
@@ -7511,11 +7596,12 @@ void FNakamaClient::LinkSteam(
 {
 	FString Endpoint = TEXT("/v2/account/link/steam");
 	TArray<FString> QueryParams;
-	QueryParams.Add(FString::Printf(TEXT("sync=%s"), Sync ? TEXT("true") : TEXT("false")));
 	if (QueryParams.Num() > 0)
 	{
 		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-	}TSharedPtr<FJsonObject> Body;
+	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
+	Body->SetObjectField(TEXT("account"), Account.ToJson());
+	Body->SetBoolField(TEXT("sync"), Sync);
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
 
@@ -7983,18 +8069,15 @@ void FNakamaClient::ListSubscriptions(
 {
 	FString Endpoint = TEXT("/v2/iap/subscription");
 	TArray<FString> QueryParams;
-	if (Limit != 0)
-	{
-		QueryParams.Add(FString::Printf(TEXT("limit=%d"), Limit));
-	}
-	if (!Cursor.IsEmpty())
-	{
-		QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *Cursor));
-	}
 	if (QueryParams.Num() > 0)
 	{
 		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-	}TSharedPtr<FJsonObject> Body;
+	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
+	Body->SetNumberField(TEXT("limit"), Limit);
+	if (!Cursor.IsEmpty())
+	{
+		Body->SetStringField(TEXT("cursor"), Cursor);
+	}
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
 
@@ -8276,7 +8359,16 @@ void FNakamaClient::ReadStorageObjects(
 	if (QueryParams.Num() > 0)
 	{
 		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-	}TSharedPtr<FJsonObject> Body;
+	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
+	if (ObjectIds.Num() > 0)
+	{
+		TArray<TSharedPtr<FJsonValue>> Array;
+		for (const auto& Item : ObjectIds)
+		{
+			Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
+		}
+		Body->SetArrayField(TEXT("object_ids"), Array);
+	}
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
 
@@ -8338,14 +8430,23 @@ void FNakamaClient::UnlinkApple(
 {
 	FString Endpoint = TEXT("/v2/account/unlink/apple");
 	TArray<FString> QueryParams;
-	if (!Token.IsEmpty())
-	{
-		QueryParams.Add(FString::Printf(TEXT("token=%s"), *Token));
-	}
 	if (QueryParams.Num() > 0)
 	{
 		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-	}TSharedPtr<FJsonObject> Body;
+	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
+	if (!Token.IsEmpty())
+	{
+		Body->SetStringField(TEXT("token"), Token);
+	}
+	if (Vars.Num() > 0)
+	{
+		TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
+		for (const auto& Pair : Vars)
+		{
+			MapObj->SetStringField(Pair.Key, Pair.Value);
+		}
+		Body->SetObjectField(TEXT("vars"), MapObj);
+	}
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
 
@@ -8368,14 +8469,23 @@ void FNakamaClient::UnlinkCustom(
 {
 	FString Endpoint = TEXT("/v2/account/unlink/custom");
 	TArray<FString> QueryParams;
-	if (!Id.IsEmpty())
-	{
-		QueryParams.Add(FString::Printf(TEXT("id=%s"), *Id));
-	}
 	if (QueryParams.Num() > 0)
 	{
 		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-	}TSharedPtr<FJsonObject> Body;
+	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
+	if (!Id.IsEmpty())
+	{
+		Body->SetStringField(TEXT("id"), Id);
+	}
+	if (Vars.Num() > 0)
+	{
+		TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
+		for (const auto& Pair : Vars)
+		{
+			MapObj->SetStringField(Pair.Key, Pair.Value);
+		}
+		Body->SetObjectField(TEXT("vars"), MapObj);
+	}
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
 
@@ -8398,14 +8508,23 @@ void FNakamaClient::UnlinkDevice(
 {
 	FString Endpoint = TEXT("/v2/account/unlink/device");
 	TArray<FString> QueryParams;
-	if (!Id.IsEmpty())
-	{
-		QueryParams.Add(FString::Printf(TEXT("id=%s"), *Id));
-	}
 	if (QueryParams.Num() > 0)
 	{
 		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-	}TSharedPtr<FJsonObject> Body;
+	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
+	if (!Id.IsEmpty())
+	{
+		Body->SetStringField(TEXT("id"), Id);
+	}
+	if (Vars.Num() > 0)
+	{
+		TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
+		for (const auto& Pair : Vars)
+		{
+			MapObj->SetStringField(Pair.Key, Pair.Value);
+		}
+		Body->SetObjectField(TEXT("vars"), MapObj);
+	}
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
 
@@ -8429,18 +8548,27 @@ void FNakamaClient::UnlinkEmail(
 {
 	FString Endpoint = TEXT("/v2/account/unlink/email");
 	TArray<FString> QueryParams;
-	if (!Email.IsEmpty())
-	{
-		QueryParams.Add(FString::Printf(TEXT("email=%s"), *Email));
-	}
-	if (!Password.IsEmpty())
-	{
-		QueryParams.Add(FString::Printf(TEXT("password=%s"), *Password));
-	}
 	if (QueryParams.Num() > 0)
 	{
 		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-	}TSharedPtr<FJsonObject> Body;
+	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
+	if (!Email.IsEmpty())
+	{
+		Body->SetStringField(TEXT("email"), Email);
+	}
+	if (!Password.IsEmpty())
+	{
+		Body->SetStringField(TEXT("password"), Password);
+	}
+	if (Vars.Num() > 0)
+	{
+		TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
+		for (const auto& Pair : Vars)
+		{
+			MapObj->SetStringField(Pair.Key, Pair.Value);
+		}
+		Body->SetObjectField(TEXT("vars"), MapObj);
+	}
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
 
@@ -8463,14 +8591,23 @@ void FNakamaClient::UnlinkFacebook(
 {
 	FString Endpoint = TEXT("/v2/account/unlink/facebook");
 	TArray<FString> QueryParams;
-	if (!Token.IsEmpty())
-	{
-		QueryParams.Add(FString::Printf(TEXT("token=%s"), *Token));
-	}
 	if (QueryParams.Num() > 0)
 	{
 		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-	}TSharedPtr<FJsonObject> Body;
+	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
+	if (!Token.IsEmpty())
+	{
+		Body->SetStringField(TEXT("token"), Token);
+	}
+	if (Vars.Num() > 0)
+	{
+		TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
+		for (const auto& Pair : Vars)
+		{
+			MapObj->SetStringField(Pair.Key, Pair.Value);
+		}
+		Body->SetObjectField(TEXT("vars"), MapObj);
+	}
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
 
@@ -8493,14 +8630,23 @@ void FNakamaClient::UnlinkFacebookInstantGame(
 {
 	FString Endpoint = TEXT("/v2/account/unlink/facebookinstantgame");
 	TArray<FString> QueryParams;
-	if (!SignedPlayerInfo.IsEmpty())
-	{
-		QueryParams.Add(FString::Printf(TEXT("signed_player_info=%s"), *SignedPlayerInfo));
-	}
 	if (QueryParams.Num() > 0)
 	{
 		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-	}TSharedPtr<FJsonObject> Body;
+	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
+	if (!SignedPlayerInfo.IsEmpty())
+	{
+		Body->SetStringField(TEXT("signed_player_info"), SignedPlayerInfo);
+	}
+	if (Vars.Num() > 0)
+	{
+		TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
+		for (const auto& Pair : Vars)
+		{
+			MapObj->SetStringField(Pair.Key, Pair.Value);
+		}
+		Body->SetObjectField(TEXT("vars"), MapObj);
+	}
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
 
@@ -8528,34 +8674,40 @@ void FNakamaClient::UnlinkGameCenter(
 {
 	FString Endpoint = TEXT("/v2/account/unlink/gamecenter");
 	TArray<FString> QueryParams;
-	if (!PlayerId.IsEmpty())
-	{
-		QueryParams.Add(FString::Printf(TEXT("player_id=%s"), *PlayerId));
-	}
-	if (!BundleId.IsEmpty())
-	{
-		QueryParams.Add(FString::Printf(TEXT("bundle_id=%s"), *BundleId));
-	}
-	if (TimestampSeconds != 0)
-	{
-		QueryParams.Add(FString::Printf(TEXT("timestamp_seconds=%lld"), TimestampSeconds));
-	}
-	if (!Salt.IsEmpty())
-	{
-		QueryParams.Add(FString::Printf(TEXT("salt=%s"), *Salt));
-	}
-	if (!Signature.IsEmpty())
-	{
-		QueryParams.Add(FString::Printf(TEXT("signature=%s"), *Signature));
-	}
-	if (!PublicKeyUrl.IsEmpty())
-	{
-		QueryParams.Add(FString::Printf(TEXT("public_key_url=%s"), *PublicKeyUrl));
-	}
 	if (QueryParams.Num() > 0)
 	{
 		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-	}TSharedPtr<FJsonObject> Body;
+	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
+	if (!PlayerId.IsEmpty())
+	{
+		Body->SetStringField(TEXT("player_id"), PlayerId);
+	}
+	if (!BundleId.IsEmpty())
+	{
+		Body->SetStringField(TEXT("bundle_id"), BundleId);
+	}
+	Body->SetNumberField(TEXT("timestamp_seconds"), TimestampSeconds);
+	if (!Salt.IsEmpty())
+	{
+		Body->SetStringField(TEXT("salt"), Salt);
+	}
+	if (!Signature.IsEmpty())
+	{
+		Body->SetStringField(TEXT("signature"), Signature);
+	}
+	if (!PublicKeyUrl.IsEmpty())
+	{
+		Body->SetStringField(TEXT("public_key_url"), PublicKeyUrl);
+	}
+	if (Vars.Num() > 0)
+	{
+		TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
+		for (const auto& Pair : Vars)
+		{
+			MapObj->SetStringField(Pair.Key, Pair.Value);
+		}
+		Body->SetObjectField(TEXT("vars"), MapObj);
+	}
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
 
@@ -8578,14 +8730,23 @@ void FNakamaClient::UnlinkGoogle(
 {
 	FString Endpoint = TEXT("/v2/account/unlink/google");
 	TArray<FString> QueryParams;
-	if (!Token.IsEmpty())
-	{
-		QueryParams.Add(FString::Printf(TEXT("token=%s"), *Token));
-	}
 	if (QueryParams.Num() > 0)
 	{
 		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-	}TSharedPtr<FJsonObject> Body;
+	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
+	if (!Token.IsEmpty())
+	{
+		Body->SetStringField(TEXT("token"), Token);
+	}
+	if (Vars.Num() > 0)
+	{
+		TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
+		for (const auto& Pair : Vars)
+		{
+			MapObj->SetStringField(Pair.Key, Pair.Value);
+		}
+		Body->SetObjectField(TEXT("vars"), MapObj);
+	}
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
 
@@ -8608,14 +8769,23 @@ void FNakamaClient::UnlinkSteam(
 {
 	FString Endpoint = TEXT("/v2/account/unlink/steam");
 	TArray<FString> QueryParams;
-	if (!Token.IsEmpty())
-	{
-		QueryParams.Add(FString::Printf(TEXT("token=%s"), *Token));
-	}
 	if (QueryParams.Num() > 0)
 	{
 		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-	}TSharedPtr<FJsonObject> Body;
+	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
+	if (!Token.IsEmpty())
+	{
+		Body->SetStringField(TEXT("token"), Token);
+	}
+	if (Vars.Num() > 0)
+	{
+		TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
+		for (const auto& Pair : Vars)
+		{
+			MapObj->SetStringField(Pair.Key, Pair.Value);
+		}
+		Body->SetObjectField(TEXT("vars"), MapObj);
+	}
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
 
@@ -8642,34 +8812,34 @@ void FNakamaClient::UpdateAccount(
 {
 	FString Endpoint = TEXT("/v2/account");
 	TArray<FString> QueryParams;
-	if (!Username.IsEmpty())
-	{
-		QueryParams.Add(FString::Printf(TEXT("username=%s"), *Username));
-	}
-	if (!DisplayName.IsEmpty())
-	{
-		QueryParams.Add(FString::Printf(TEXT("display_name=%s"), *DisplayName));
-	}
-	if (!AvatarUrl.IsEmpty())
-	{
-		QueryParams.Add(FString::Printf(TEXT("avatar_url=%s"), *AvatarUrl));
-	}
-	if (!LangTag.IsEmpty())
-	{
-		QueryParams.Add(FString::Printf(TEXT("lang_tag=%s"), *LangTag));
-	}
-	if (!Location.IsEmpty())
-	{
-		QueryParams.Add(FString::Printf(TEXT("location=%s"), *Location));
-	}
-	if (!Timezone.IsEmpty())
-	{
-		QueryParams.Add(FString::Printf(TEXT("timezone=%s"), *Timezone));
-	}
 	if (QueryParams.Num() > 0)
 	{
 		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-	}TSharedPtr<FJsonObject> Body;
+	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
+	if (!Username.IsEmpty())
+	{
+		Body->SetStringField(TEXT("username"), Username);
+	}
+	if (!DisplayName.IsEmpty())
+	{
+		Body->SetStringField(TEXT("display_name"), DisplayName);
+	}
+	if (!AvatarUrl.IsEmpty())
+	{
+		Body->SetStringField(TEXT("avatar_url"), AvatarUrl);
+	}
+	if (!LangTag.IsEmpty())
+	{
+		Body->SetStringField(TEXT("lang_tag"), LangTag);
+	}
+	if (!Location.IsEmpty())
+	{
+		Body->SetStringField(TEXT("location"), Location);
+	}
+	if (!Timezone.IsEmpty())
+	{
+		Body->SetStringField(TEXT("timezone"), Timezone);
+	}
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
 
@@ -8697,31 +8867,31 @@ void FNakamaClient::UpdateGroup(
 	FString Endpoint = TEXT("/v2/group/{group_id}");
 	Endpoint = Endpoint.Replace(TEXT("{group_id}"), *GroupId);
 	TArray<FString> QueryParams;
-	if (!GroupId.IsEmpty())
-	{
-		QueryParams.Add(FString::Printf(TEXT("group_id=%s"), *GroupId));
-	}
-	if (!Name.IsEmpty())
-	{
-		QueryParams.Add(FString::Printf(TEXT("name=%s"), *Name));
-	}
-	if (!Description.IsEmpty())
-	{
-		QueryParams.Add(FString::Printf(TEXT("description=%s"), *Description));
-	}
-	if (!LangTag.IsEmpty())
-	{
-		QueryParams.Add(FString::Printf(TEXT("lang_tag=%s"), *LangTag));
-	}
-	if (!AvatarUrl.IsEmpty())
-	{
-		QueryParams.Add(FString::Printf(TEXT("avatar_url=%s"), *AvatarUrl));
-	}
-	QueryParams.Add(FString::Printf(TEXT("open=%s"), Open ? TEXT("true") : TEXT("false")));
 	if (QueryParams.Num() > 0)
 	{
 		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-	}TSharedPtr<FJsonObject> Body;
+	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
+	if (!GroupId.IsEmpty())
+	{
+		Body->SetStringField(TEXT("group_id"), GroupId);
+	}
+	if (!Name.IsEmpty())
+	{
+		Body->SetStringField(TEXT("name"), Name);
+	}
+	if (!Description.IsEmpty())
+	{
+		Body->SetStringField(TEXT("description"), Description);
+	}
+	if (!LangTag.IsEmpty())
+	{
+		Body->SetStringField(TEXT("lang_tag"), LangTag);
+	}
+	if (!AvatarUrl.IsEmpty())
+	{
+		Body->SetStringField(TEXT("avatar_url"), AvatarUrl);
+	}
+	Body->SetBoolField(TEXT("open"), Open);
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
 
@@ -8744,15 +8914,15 @@ void FNakamaClient::ValidatePurchaseApple(
 {
 	FString Endpoint = TEXT("/v2/iap/purchase/apple");
 	TArray<FString> QueryParams;
-	if (!Receipt.IsEmpty())
-	{
-		QueryParams.Add(FString::Printf(TEXT("receipt=%s"), *Receipt));
-	}
-	QueryParams.Add(FString::Printf(TEXT("persist=%s"), Persist ? TEXT("true") : TEXT("false")));
 	if (QueryParams.Num() > 0)
 	{
 		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-	}TSharedPtr<FJsonObject> Body;
+	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
+	if (!Receipt.IsEmpty())
+	{
+		Body->SetStringField(TEXT("receipt"), Receipt);
+	}
+	Body->SetBoolField(TEXT("persist"), Persist);
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
 
@@ -8776,15 +8946,15 @@ void FNakamaClient::ValidateSubscriptionApple(
 {
 	FString Endpoint = TEXT("/v2/iap/subscription/apple");
 	TArray<FString> QueryParams;
-	if (!Receipt.IsEmpty())
-	{
-		QueryParams.Add(FString::Printf(TEXT("receipt=%s"), *Receipt));
-	}
-	QueryParams.Add(FString::Printf(TEXT("persist=%s"), Persist ? TEXT("true") : TEXT("false")));
 	if (QueryParams.Num() > 0)
 	{
 		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-	}TSharedPtr<FJsonObject> Body;
+	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
+	if (!Receipt.IsEmpty())
+	{
+		Body->SetStringField(TEXT("receipt"), Receipt);
+	}
+	Body->SetBoolField(TEXT("persist"), Persist);
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
 
@@ -8808,15 +8978,15 @@ void FNakamaClient::ValidatePurchaseGoogle(
 {
 	FString Endpoint = TEXT("/v2/iap/purchase/google");
 	TArray<FString> QueryParams;
-	if (!Purchase.IsEmpty())
-	{
-		QueryParams.Add(FString::Printf(TEXT("purchase=%s"), *Purchase));
-	}
-	QueryParams.Add(FString::Printf(TEXT("persist=%s"), Persist ? TEXT("true") : TEXT("false")));
 	if (QueryParams.Num() > 0)
 	{
 		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-	}TSharedPtr<FJsonObject> Body;
+	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
+	if (!Purchase.IsEmpty())
+	{
+		Body->SetStringField(TEXT("purchase"), Purchase);
+	}
+	Body->SetBoolField(TEXT("persist"), Persist);
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
 
@@ -8840,15 +9010,15 @@ void FNakamaClient::ValidateSubscriptionGoogle(
 {
 	FString Endpoint = TEXT("/v2/iap/subscription/google");
 	TArray<FString> QueryParams;
-	if (!Receipt.IsEmpty())
-	{
-		QueryParams.Add(FString::Printf(TEXT("receipt=%s"), *Receipt));
-	}
-	QueryParams.Add(FString::Printf(TEXT("persist=%s"), Persist ? TEXT("true") : TEXT("false")));
 	if (QueryParams.Num() > 0)
 	{
 		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-	}TSharedPtr<FJsonObject> Body;
+	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
+	if (!Receipt.IsEmpty())
+	{
+		Body->SetStringField(TEXT("receipt"), Receipt);
+	}
+	Body->SetBoolField(TEXT("persist"), Persist);
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
 
@@ -8873,19 +9043,19 @@ void FNakamaClient::ValidatePurchaseHuawei(
 {
 	FString Endpoint = TEXT("/v2/iap/purchase/huawei");
 	TArray<FString> QueryParams;
-	if (!Purchase.IsEmpty())
-	{
-		QueryParams.Add(FString::Printf(TEXT("purchase=%s"), *Purchase));
-	}
-	if (!Signature.IsEmpty())
-	{
-		QueryParams.Add(FString::Printf(TEXT("signature=%s"), *Signature));
-	}
-	QueryParams.Add(FString::Printf(TEXT("persist=%s"), Persist ? TEXT("true") : TEXT("false")));
 	if (QueryParams.Num() > 0)
 	{
 		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-	}TSharedPtr<FJsonObject> Body;
+	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
+	if (!Purchase.IsEmpty())
+	{
+		Body->SetStringField(TEXT("purchase"), Purchase);
+	}
+	if (!Signature.IsEmpty())
+	{
+		Body->SetStringField(TEXT("signature"), Signature);
+	}
+	Body->SetBoolField(TEXT("persist"), Persist);
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
 
@@ -8909,15 +9079,15 @@ void FNakamaClient::ValidatePurchaseFacebookInstant(
 {
 	FString Endpoint = TEXT("/v2/iap/purchase/facebookinstant");
 	TArray<FString> QueryParams;
-	if (!SignedRequest.IsEmpty())
-	{
-		QueryParams.Add(FString::Printf(TEXT("signed_request=%s"), *SignedRequest));
-	}
-	QueryParams.Add(FString::Printf(TEXT("persist=%s"), Persist ? TEXT("true") : TEXT("false")));
 	if (QueryParams.Num() > 0)
 	{
 		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-	}TSharedPtr<FJsonObject> Body;
+	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
+	if (!SignedRequest.IsEmpty())
+	{
+		Body->SetStringField(TEXT("signed_request"), SignedRequest);
+	}
+	Body->SetBoolField(TEXT("persist"), Persist);
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
 
@@ -8976,7 +9146,16 @@ void FNakamaClient::WriteStorageObjects(
 	if (QueryParams.Num() > 0)
 	{
 		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-	}TSharedPtr<FJsonObject> Body;
+	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
+	if (Objects.Num() > 0)
+	{
+		TArray<TSharedPtr<FJsonValue>> Array;
+		for (const auto& Item : Objects)
+		{
+			Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
+		}
+		Body->SetArrayField(TEXT("objects"), Array);
+	}
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
 

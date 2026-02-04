@@ -398,7 +398,7 @@ void FNakamaClient::{{ $rpc.Name }}(
 {{- $fieldName := $field.Name | pascalCase }}
 {{- $fieldType := $field.Type }}
 {{- $jsonFieldName := $field.Name }}
-{{- if and (ne $bodyField "") (ne $jsonFieldName $bodyField) }}
+{{- if and (ne $bodyField "") (ne $bodyField "*") (ne $jsonFieldName $bodyField) }}
 {{- /* This field is NOT the body field, so it's a query parameter */ -}}
 {{- if or (eq $fieldType "string") (containsString $fieldType "StringValue") }}
 	if (!{{ $fieldName }}.IsEmpty())
@@ -430,7 +430,7 @@ void FNakamaClient::{{ $rpc.Name }}(
 	TSharedPtr<FJsonObject> Body;
 {{- if $hasParams }}
 {{- $bodyField := $rpc.BodyField }}
-{{- if ne $bodyField "" }}
+{{- if and (ne $bodyField "") (ne $bodyField "*") }}
 {{- /* Body is a specific field - serialize just that field's content */ -}}
 {{- range $fidx, $field := $requestType.Fields }}
 {{- if eq $field.Name $bodyField }}
