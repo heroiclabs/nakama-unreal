@@ -356,7 +356,7 @@ void FNakamaAccountSpec::Define()
 	{
 		LatentIt("should get account for authenticated user", [this](const FDoneDelegate& Done)
 		{
-			Client->GetAccount(
+			Client->GetAccount(Session,
 				[this, Done](const FNakamaAccount& Result)
 				{
 					TestTrue("Account has user ID", !Result.User.Id.IsEmpty());
@@ -378,7 +378,7 @@ void FNakamaAccountSpec::Define()
 		{
 			FString NewDisplayName = FString::Printf(TEXT("TestUser_%s"), *GenerateShortId());
 
-			Client->UpdateAccount(
+			Client->UpdateAccount(Session,
 				TEXT(""),  // username (don't change)
 				NewDisplayName,
 				TEXT(""),  // avatar_url
@@ -388,7 +388,7 @@ void FNakamaAccountSpec::Define()
 				[this, Done, NewDisplayName]()
 				{
 					// Verify update by getting account
-					Client->GetAccount(
+					Client->GetAccount(Session,
 						[this, Done, NewDisplayName](const FNakamaAccount& Result)
 						{
 							TestEqual("Display name updated", Result.User.DisplayName, NewDisplayName);
@@ -461,6 +461,7 @@ BEGIN_DEFINE_SPEC(FNakamaFriendsSpec, "NakamaTest.Friends",
 	TSharedPtr<FNakamaClient> Client;
 	TSharedPtr<FNakamaClient> FriendClient;
 	FNakamaSession Session;
+	FNakamaSession FriendSession;
 	FString UserId;
 	FString FriendUserId;
 
@@ -496,7 +497,7 @@ void FNakamaFriendsSpec::Define()
 			{
 				Session = Result;
 				// Get user ID
-				Client->GetAccount(
+				Client->GetAccount(Session,
 					[this, Done](const FNakamaAccount& AccResult)
 					{
 						UserId = AccResult.User.Id;
@@ -506,9 +507,10 @@ void FNakamaFriendsSpec::Define()
 						FriendAccount.Id = GenerateId();
 
 						FriendClient->AuthenticateCustom(FriendAccount, true, TEXT(""),
-							[this, Done](const FNakamaSession& FriendSession)
+							[this, Done](const FNakamaSession& FriendSessionResult)
 							{
-								FriendClient->GetAccount(
+								FriendSession = FriendSessionResult;
+								FriendClient->GetAccount(FriendSession,
 									[this, Done](const FNakamaAccount& FriendAccResult)
 									{
 										FriendUserId = FriendAccResult.User.Id;
@@ -553,7 +555,7 @@ void FNakamaFriendsSpec::Define()
 	{
 		LatentIt("should list friends for authenticated user", [this](const FDoneDelegate& Done)
 		{
-			Client->ListFriends(
+			Client->ListFriends(Session,
 				100,  // limit
 				0,    // state (all)
 				TEXT(""),  // cursor
@@ -579,7 +581,7 @@ void FNakamaFriendsSpec::Define()
 			TArray<FString> Ids;
 			Ids.Add(FriendUserId);
 
-			Client->AddFriends(
+			Client->AddFriends(Session,
 				Ids,
 				TArray<FString>(),  // usernames
 				TEXT(""),  // metadata
@@ -604,7 +606,7 @@ void FNakamaFriendsSpec::Define()
 			TArray<FString> Ids;
 			Ids.Add(UserId);
 
-			Client->AddFriends(
+			Client->AddFriends(Session,
 				Ids,
 				TArray<FString>(),
 				TEXT(""),
@@ -612,7 +614,7 @@ void FNakamaFriendsSpec::Define()
 				{
 					// Server accepts but should not add self to friend list
 					// Verify self is not in friend list
-					Client->ListFriends(100, 2, TEXT(""),  // state 2 = INVITE_SENT
+					Client->ListFriends(Session, 100, 2, TEXT(""),  // state 2 = INVITE_SENT
 						[this, Done](const FNakamaFriendList& Result)
 						{
 							bool bFoundSelf = false;
@@ -650,7 +652,7 @@ void FNakamaFriendsSpec::Define()
 			TArray<FString> Ids;
 			Ids.Add(FriendUserId);
 
-			Client->BlockFriends(
+			Client->BlockFriends(Session,
 				Ids,
 				TArray<FString>(),
 				[this, Done]()
@@ -710,7 +712,7 @@ void FNakamaGroupsSpec::Define()
 			[this, Done](const FNakamaSession& Result)
 			{
 				Session = Result;
-				Client->GetAccount(
+				Client->GetAccount(Session,
 					[this, Done](const FNakamaAccount& AccResult)
 					{
 						UserId = AccResult.User.Id;
@@ -742,7 +744,7 @@ void FNakamaGroupsSpec::Define()
 		{
 			FString GroupName = FString::Printf(TEXT("TestGroup_%s"), *GenerateShortId());
 
-			Client->CreateGroup(
+			Client->CreateGroup(Session,
 				GroupName,
 				TEXT("Test description"),
 				TEXT(""),  // avatar_url
@@ -766,7 +768,7 @@ void FNakamaGroupsSpec::Define()
 
 		LatentIt("should fail with empty group name", [this](const FDoneDelegate& Done)
 		{
-			Client->CreateGroup(
+			Client->CreateGroup(Session,
 				TEXT(""),  // empty name
 				TEXT("Description"),
 				TEXT(""),
@@ -791,7 +793,7 @@ void FNakamaGroupsSpec::Define()
 	{
 		LatentIt("should list groups", [this](const FDoneDelegate& Done)
 		{
-			Client->ListGroups(
+			Client->ListGroups(Session,
 				TEXT(""),  // name filter
 				TEXT(""),  // cursor
 				100,  // limit
@@ -819,12 +821,12 @@ void FNakamaGroupsSpec::Define()
 			// First create a group
 			FString GroupName = FString::Printf(TEXT("UserGroup_%s"), *GenerateShortId());
 
-			Client->CreateGroup(
+			Client->CreateGroup(Session,
 				GroupName, TEXT("Test"), TEXT(""), TEXT("en"), true, 100,
 				[this, Done](const FNakamaGroup& Group)
 				{
 					// Now list user's groups
-					Client->ListUserGroups(
+					Client->ListUserGroups(Session,
 						UserId,
 						100,  // limit
 						0,    // state
@@ -891,7 +893,7 @@ void FNakamaStorageSpec::Define()
 			[this, Done](const FNakamaSession& Result)
 			{
 				Session = Result;
-				Client->GetAccount(
+				Client->GetAccount(Session,
 					[this, Done](const FNakamaAccount& AccResult)
 					{
 						UserId = AccResult.User.Id;
@@ -930,7 +932,7 @@ void FNakamaStorageSpec::Define()
 			Object.PermissionWrite = 1;
 			Objects.Add(Object);
 
-			Client->WriteStorageObjects(
+			Client->WriteStorageObjects(Session,
 				Objects,
 				[this, Done](const FNakamaStorageObjectAcks& Result)
 				{
@@ -956,7 +958,7 @@ void FNakamaStorageSpec::Define()
 			Object.PermissionWrite = 1;
 			Objects.Add(Object);
 
-			Client->WriteStorageObjects(
+			Client->WriteStorageObjects(Session,
 				Objects,
 				[this, Done](const FNakamaStorageObjectAcks& Result)
 				{
@@ -988,7 +990,7 @@ void FNakamaStorageSpec::Define()
 			WriteObject.PermissionWrite = 1;
 			WriteObjects.Add(WriteObject);
 
-			Client->WriteStorageObjects(
+			Client->WriteStorageObjects(Session,
 				WriteObjects,
 				[this, Done, Key](const FNakamaStorageObjectAcks& WriteResult)
 				{
@@ -1000,7 +1002,7 @@ void FNakamaStorageSpec::Define()
 					ReadId.UserId = UserId;
 					ReadIds.Add(ReadId);
 
-					Client->ReadStorageObjects(
+					Client->ReadStorageObjects(Session,
 						ReadIds,
 						[this, Done](const FNakamaStorageObjects& ReadResult)
 						{
@@ -1040,11 +1042,11 @@ void FNakamaStorageSpec::Define()
 				Objects.Add(Object);
 			}
 
-			Client->WriteStorageObjects(
+			Client->WriteStorageObjects(Session,
 				Objects,
 				[this, Done](const FNakamaStorageObjectAcks& WriteResult)
 				{
-					Client->ListStorageObjects(
+					Client->ListStorageObjects(Session,
 						UserId,
 						TEXT("list_collection"),
 						100,
@@ -1124,11 +1126,86 @@ void FNakamaLeaderboardSpec::Define()
 		Client.Reset();
 	});
 
+	Describe("WriteLeaderboardRecord", [this]()
+	{
+		LatentIt("should fail with empty leaderboard ID", [this](const FDoneDelegate& Done)
+		{
+			FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite Record;
+			Record.Score = 100;
+			Record.Subscore = 0;
+			Record.Metadata = TEXT("{}");
+			Record.Operator = 0;
+
+			Client->WriteLeaderboardRecord(Session,
+				TEXT(""),  // empty ID
+				Record,
+				[this, Done](const FNakamaLeaderboardRecord& Result)
+				{
+					AddError(TEXT("Expected error but got success"));
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					TestTrue("Got error for empty leaderboard ID", Error.Code != 0 || !Error.Message.IsEmpty());
+					Done.Execute();
+				}
+			);
+		});
+
+		LatentIt("should fail with non-existent leaderboard", [this](const FDoneDelegate& Done)
+		{
+			FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite Record;
+			Record.Score = 100;
+			Record.Subscore = 0;
+			Record.Metadata = TEXT("{}");
+			Record.Operator = 0;
+
+			Client->WriteLeaderboardRecord(Session,
+				TEXT("nonexistent_leaderboard_12345"),
+				Record,
+				[this, Done](const FNakamaLeaderboardRecord& Result)
+				{
+					AddError(TEXT("Expected error but got success"));
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					TestTrue("Got NOT_FOUND error", Error.Code == 5 || Error.Message.Contains(TEXT("not found")));
+					Done.Execute();
+				}
+			);
+		});
+
+		LatentIt("should fail with invalid JSON metadata", [this](const FDoneDelegate& Done)
+		{
+			FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite Record;
+			Record.Score = 100;
+			Record.Subscore = 0;
+			Record.Metadata = TEXT("not valid json {{{");
+			Record.Operator = 0;
+
+			Client->WriteLeaderboardRecord(Session,
+				TEXT("test_leaderboard"),
+				Record,
+				[this, Done](const FNakamaLeaderboardRecord& Result)
+				{
+					// If the server doesn't validate metadata, this might succeed
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					TestTrue("Got error for invalid metadata", Error.Code != 0 || !Error.Message.IsEmpty());
+					Done.Execute();
+				}
+			);
+		});
+	});
+
 	Describe("ListLeaderboardRecords", [this]()
 	{
 		LatentIt("should fail with empty leaderboard ID", [this](const FDoneDelegate& Done)
 		{
-			Client->ListLeaderboardRecords(
+			Client->ListLeaderboardRecords(Session,
 				TEXT(""),  // empty ID
 				TArray<FString>(),
 				100,
@@ -1142,6 +1219,198 @@ void FNakamaLeaderboardSpec::Define()
 				[this, Done](const FNakamaError& Error)
 				{
 					TestTrue("Got error for empty ID", Error.Code != 0 || !Error.Message.IsEmpty());
+					Done.Execute();
+				}
+			);
+		});
+
+		LatentIt("should fail with non-existent leaderboard", [this](const FDoneDelegate& Done)
+		{
+			Client->ListLeaderboardRecords(Session,
+				TEXT("nonexistent_leaderboard_12345"),
+				TArray<FString>(),
+				100,
+				TEXT(""),
+				0,
+				[this, Done](const FNakamaLeaderboardRecordList& Result)
+				{
+					AddError(TEXT("Expected error but got success"));
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					TestTrue("Got NOT_FOUND error", Error.Code == 5 || Error.Message.Contains(TEXT("not found")));
+					Done.Execute();
+				}
+			);
+		});
+
+		LatentIt("should fail with limit too high", [this](const FDoneDelegate& Done)
+		{
+			Client->ListLeaderboardRecords(Session,
+				TEXT("test_leaderboard"),
+				TArray<FString>(),
+				2000,  // Limit too high
+				TEXT(""),
+				0,
+				[this, Done](const FNakamaLeaderboardRecordList& Result)
+				{
+					AddError(TEXT("Expected error but got success"));
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					TestTrue("Got error for limit too high", Error.Code != 0 || !Error.Message.IsEmpty());
+					Done.Execute();
+				}
+			);
+		});
+
+		LatentIt("should fail with invalid owner ID format", [this](const FDoneDelegate& Done)
+		{
+			TArray<FString> OwnerIds;
+			OwnerIds.Add(TEXT("not-a-valid-uuid"));
+
+			Client->ListLeaderboardRecords(Session,
+				TEXT("test_leaderboard"),
+				OwnerIds,
+				100,
+				TEXT(""),
+				0,
+				[this, Done](const FNakamaLeaderboardRecordList& Result)
+				{
+					AddError(TEXT("Expected error but got success"));
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					TestTrue("Got error for invalid owner ID", Error.Code != 0 || !Error.Message.IsEmpty());
+					Done.Execute();
+				}
+			);
+		});
+	});
+
+	Describe("ListLeaderboardRecordsAroundOwner", [this]()
+	{
+		LatentIt("should fail with empty leaderboard ID", [this](const FDoneDelegate& Done)
+		{
+			FString TestUserId = GenerateId();
+			Client->ListLeaderboardRecordsAroundOwner(Session,
+				TEXT(""),  // empty leaderboard ID
+				10,
+				TestUserId,
+				0,
+				TEXT(""),
+				[this, Done](const FNakamaLeaderboardRecordList& Result)
+				{
+					AddError(TEXT("Expected error but got success"));
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					TestTrue("Got error for empty leaderboard ID", Error.Code != 0 || !Error.Message.IsEmpty());
+					Done.Execute();
+				}
+			);
+		});
+
+		LatentIt("should fail with empty owner ID", [this](const FDoneDelegate& Done)
+		{
+			Client->ListLeaderboardRecordsAroundOwner(Session,
+				TEXT("test_leaderboard"),
+				10,
+				TEXT(""),  // empty owner ID
+				0,
+				TEXT(""),
+				[this, Done](const FNakamaLeaderboardRecordList& Result)
+				{
+					AddError(TEXT("Expected error but got success"));
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					TestTrue("Got error for empty owner ID", Error.Code != 0 || !Error.Message.IsEmpty());
+					Done.Execute();
+				}
+			);
+		});
+
+		LatentIt("should fail with invalid owner ID format", [this](const FDoneDelegate& Done)
+		{
+			Client->ListLeaderboardRecordsAroundOwner(Session,
+				TEXT("test_leaderboard"),
+				10,
+				TEXT("not-a-valid-uuid"),  // invalid UUID
+				0,
+				TEXT(""),
+				[this, Done](const FNakamaLeaderboardRecordList& Result)
+				{
+					AddError(TEXT("Expected error but got success"));
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					TestTrue("Got error for invalid owner ID", Error.Code != 0 || !Error.Message.IsEmpty());
+					Done.Execute();
+				}
+			);
+		});
+
+		LatentIt("should fail with limit too high", [this](const FDoneDelegate& Done)
+		{
+			FString TestUserId = GenerateId();
+			Client->ListLeaderboardRecordsAroundOwner(Session,
+				TEXT("test_leaderboard"),
+				200,  // limit too high
+				TestUserId,
+				0,
+				TEXT(""),
+				[this, Done](const FNakamaLeaderboardRecordList& Result)
+				{
+					AddError(TEXT("Expected error but got success"));
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					TestTrue("Got error for limit too high", Error.Code != 0 || !Error.Message.IsEmpty());
+					Done.Execute();
+				}
+			);
+		});
+	});
+
+	Describe("DeleteLeaderboardRecord", [this]()
+	{
+		LatentIt("should fail with empty leaderboard ID", [this](const FDoneDelegate& Done)
+		{
+			Client->DeleteLeaderboardRecord(Session,
+				TEXT(""),  // empty ID
+				[this, Done]()
+				{
+					AddError(TEXT("Expected error but got success"));
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					TestTrue("Got error for empty leaderboard ID", Error.Code != 0 || !Error.Message.IsEmpty());
+					Done.Execute();
+				}
+			);
+		});
+
+		LatentIt("should fail with non-existent leaderboard", [this](const FDoneDelegate& Done)
+		{
+			Client->DeleteLeaderboardRecord(Session,
+				TEXT("nonexistent_leaderboard_12345"),
+				[this, Done]()
+				{
+					AddError(TEXT("Expected error but got success"));
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					TestTrue("Got NOT_FOUND error", Error.Code == 5 || Error.Message.Contains(TEXT("not found")));
 					Done.Execute();
 				}
 			);
@@ -1206,7 +1475,7 @@ void FNakamaMatchesSpec::Define()
 	{
 		LatentIt("should list matches", [this](const FDoneDelegate& Done)
 		{
-			Client->ListMatches(
+			Client->ListMatches(Session,
 				10,  // limit
 				false,  // authoritative
 				TEXT(""),  // label
@@ -1228,7 +1497,7 @@ void FNakamaMatchesSpec::Define()
 
 		LatentIt("should list authoritative matches only", [this](const FDoneDelegate& Done)
 		{
-			Client->ListMatches(
+			Client->ListMatches(Session,
 				10,
 				true,  // authoritative only
 				TEXT(""),
@@ -1307,7 +1576,7 @@ void FNakamaNotificationsSpec::Define()
 	{
 		LatentIt("should list notifications", [this](const FDoneDelegate& Done)
 		{
-			Client->ListNotifications(
+			Client->ListNotifications(Session,
 				100,
 				TEXT(""),
 				[this, Done](const FNakamaNotificationList& Result)
@@ -1386,7 +1655,7 @@ void FNakamaLinkSpec::Define()
 	{
 		LatentIt("should link custom ID", [this](const FDoneDelegate& Done)
 		{
-			Client->LinkCustom(
+			Client->LinkCustom(Session,
 				GenerateId(),
 				TMap<FString, FString>(),
 				[this, Done]()
@@ -1404,7 +1673,7 @@ void FNakamaLinkSpec::Define()
 
 		LatentIt("should fail with ID too short", [this](const FDoneDelegate& Done)
 		{
-			Client->LinkCustom(
+			Client->LinkCustom(Session,
 				TEXT("abc"),  // < 6 chars
 				TMap<FString, FString>(),
 				[this, Done]()
@@ -1427,7 +1696,7 @@ void FNakamaLinkSpec::Define()
 		{
 			FString Email = FString::Printf(TEXT("link_%s@example.com"), *GenerateShortId());
 
-			Client->LinkEmail(
+			Client->LinkEmail(Session,
 				Email,
 				TEXT("password123"),
 				TMap<FString, FString>(),
@@ -1446,7 +1715,7 @@ void FNakamaLinkSpec::Define()
 
 		LatentIt("should fail with invalid email format", [this](const FDoneDelegate& Done)
 		{
-			Client->LinkEmail(
+			Client->LinkEmail(Session,
 				TEXT("notanemail"),
 				TEXT("password123"),
 				TMap<FString, FString>(),
@@ -1467,7 +1736,7 @@ void FNakamaLinkSpec::Define()
 		{
 			FString Email = FString::Printf(TEXT("short_%s@example.com"), *GenerateShortId());
 
-			Client->LinkEmail(
+			Client->LinkEmail(Session,
 				Email,
 				TEXT("short"),  // < 8 chars
 				TMap<FString, FString>(),
@@ -1543,7 +1812,7 @@ void FNakamaTournamentSpec::Define()
 	{
 		LatentIt("should list tournaments", [this](const FDoneDelegate& Done)
 		{
-			Client->ListTournaments(
+			Client->ListTournaments(Session,
 				0,  // category_start
 				127,  // category_end
 				0,  // start_time
@@ -1565,7 +1834,7 @@ void FNakamaTournamentSpec::Define()
 
 		LatentIt("should fail with category end too high", [this](const FDoneDelegate& Done)
 		{
-			Client->ListTournaments(
+			Client->ListTournaments(Session,
 				0,  // category_start
 				200,  // category_end - too high (>=128)
 				0,  // start_time
@@ -1580,6 +1849,331 @@ void FNakamaTournamentSpec::Define()
 				[this, Done](const FNakamaError& Error)
 				{
 					TestTrue("Got error for invalid category", Error.Code != 0 || !Error.Message.IsEmpty());
+					Done.Execute();
+				}
+			);
+		});
+
+		LatentIt("should fail with category end less than start", [this](const FDoneDelegate& Done)
+		{
+			Client->ListTournaments(Session,
+				100,  // category_start
+				50,   // category_end - less than start
+				0,  // start_time
+				0,  // end_time
+				100,  // limit
+				TEXT(""),  // cursor
+				[this, Done](const FNakamaTournamentList& Result)
+				{
+					AddError(TEXT("Expected error but got success"));
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					TestTrue("Got error for invalid category range", Error.Code != 0 || !Error.Message.IsEmpty());
+					Done.Execute();
+				}
+			);
+		});
+
+		LatentIt("should fail with limit too high", [this](const FDoneDelegate& Done)
+		{
+			Client->ListTournaments(Session,
+				0,  // category_start
+				127,  // category_end
+				0,  // start_time
+				0,  // end_time
+				2000,  // limit - too high
+				TEXT(""),  // cursor
+				[this, Done](const FNakamaTournamentList& Result)
+				{
+					AddError(TEXT("Expected error but got success"));
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					TestTrue("Got error for limit too high", Error.Code != 0 || !Error.Message.IsEmpty());
+					Done.Execute();
+				}
+			);
+		});
+
+		LatentIt("should list with category filter", [this](const FDoneDelegate& Done)
+		{
+			Client->ListTournaments(Session,
+				1,  // category_start
+				5,  // category_end
+				0,  // start_time
+				0,  // end_time
+				10,  // limit
+				TEXT(""),  // cursor
+				[this, Done](const FNakamaTournamentList& Result)
+				{
+					TestTrue("Filtered tournaments list is valid", true);
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					AddError(FString::Printf(TEXT("ListTournaments with filter failed: %s"), *Error.Message));
+					Done.Execute();
+				}
+			);
+		});
+	});
+
+	Describe("JoinTournament", [this]()
+	{
+		LatentIt("should fail with empty tournament ID", [this](const FDoneDelegate& Done)
+		{
+			Client->JoinTournament(Session,
+				TEXT(""),  // empty tournament ID
+				[this, Done]()
+				{
+					AddError(TEXT("Expected error but got success"));
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					TestTrue("Got error for empty tournament ID", Error.Code != 0 || !Error.Message.IsEmpty());
+					Done.Execute();
+				}
+			);
+		});
+
+		LatentIt("should fail with non-existent tournament", [this](const FDoneDelegate& Done)
+		{
+			Client->JoinTournament(Session,
+				TEXT("nonexistent_tournament_12345"),
+				[this, Done]()
+				{
+					AddError(TEXT("Expected error but got success"));
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					TestTrue("Got NOT_FOUND error", Error.Code == 5 || Error.Message.Contains(TEXT("not found")));
+					Done.Execute();
+				}
+			);
+		});
+	});
+
+	Describe("ListTournamentRecords", [this]()
+	{
+		LatentIt("should fail with empty tournament ID", [this](const FDoneDelegate& Done)
+		{
+			Client->ListTournamentRecords(Session,
+				TEXT(""),  // empty tournament ID
+				TArray<FString>(),
+				100,
+				TEXT(""),
+				0,
+				[this, Done](const FNakamaTournamentRecordList& Result)
+				{
+					AddError(TEXT("Expected error but got success"));
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					TestTrue("Got error for empty tournament ID", Error.Code != 0 || !Error.Message.IsEmpty());
+					Done.Execute();
+				}
+			);
+		});
+
+		LatentIt("should fail with non-existent tournament", [this](const FDoneDelegate& Done)
+		{
+			Client->ListTournamentRecords(Session,
+				TEXT("nonexistent_tournament_12345"),
+				TArray<FString>(),
+				100,
+				TEXT(""),
+				0,
+				[this, Done](const FNakamaTournamentRecordList& Result)
+				{
+					AddError(TEXT("Expected error but got success"));
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					TestTrue("Got NOT_FOUND error", Error.Code == 5 || Error.Message.Contains(TEXT("not found")));
+					Done.Execute();
+				}
+			);
+		});
+
+		LatentIt("should fail with limit too high", [this](const FDoneDelegate& Done)
+		{
+			Client->ListTournamentRecords(Session,
+				TEXT("test_tournament"),
+				TArray<FString>(),
+				2000,  // limit too high
+				TEXT(""),
+				0,
+				[this, Done](const FNakamaTournamentRecordList& Result)
+				{
+					AddError(TEXT("Expected error but got success"));
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					TestTrue("Got error for limit too high", Error.Code != 0 || !Error.Message.IsEmpty());
+					Done.Execute();
+				}
+			);
+		});
+	});
+
+	Describe("ListTournamentRecordsAroundOwner", [this]()
+	{
+		LatentIt("should fail with empty tournament ID", [this](const FDoneDelegate& Done)
+		{
+			FString TestUserId = GenerateId();
+			Client->ListTournamentRecordsAroundOwner(Session,
+				TEXT(""),  // empty tournament ID
+				10,
+				TestUserId,
+				0,
+				TEXT(""),
+				[this, Done](const FNakamaTournamentRecordList& Result)
+				{
+					AddError(TEXT("Expected error but got success"));
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					TestTrue("Got error for empty tournament ID", Error.Code != 0 || !Error.Message.IsEmpty());
+					Done.Execute();
+				}
+			);
+		});
+
+		LatentIt("should fail with empty owner ID", [this](const FDoneDelegate& Done)
+		{
+			Client->ListTournamentRecordsAroundOwner(Session,
+				TEXT("test_tournament"),
+				10,
+				TEXT(""),  // empty owner ID
+				0,
+				TEXT(""),
+				[this, Done](const FNakamaTournamentRecordList& Result)
+				{
+					AddError(TEXT("Expected error but got success"));
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					TestTrue("Got error for empty owner ID", Error.Code != 0 || !Error.Message.IsEmpty());
+					Done.Execute();
+				}
+			);
+		});
+
+		LatentIt("should fail with invalid owner ID format", [this](const FDoneDelegate& Done)
+		{
+			Client->ListTournamentRecordsAroundOwner(Session,
+				TEXT("test_tournament"),
+				10,
+				TEXT("not-a-valid-uuid"),
+				0,
+				TEXT(""),
+				[this, Done](const FNakamaTournamentRecordList& Result)
+				{
+					AddError(TEXT("Expected error but got success"));
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					TestTrue("Got error for invalid owner ID", Error.Code != 0 || !Error.Message.IsEmpty());
+					Done.Execute();
+				}
+			);
+		});
+	});
+
+	Describe("WriteTournamentRecord", [this]()
+	{
+		LatentIt("should fail with empty tournament ID", [this](const FDoneDelegate& Done)
+		{
+			FNakamaWriteTournamentRecordRequest_TournamentRecordWrite Record;
+			Record.Score = 100;
+			Record.Subscore = 0;
+			Record.Metadata = TEXT("{}");
+			Record.Operator = 0;
+
+			Client->WriteTournamentRecord(Session,
+				TEXT(""),  // empty tournament ID
+				Record,
+				[this, Done](const FNakamaLeaderboardRecord& Result)
+				{
+					AddError(TEXT("Expected error but got success"));
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					TestTrue("Got error for empty tournament ID", Error.Code != 0 || !Error.Message.IsEmpty());
+					Done.Execute();
+				}
+			);
+		});
+
+		LatentIt("should fail with non-existent tournament", [this](const FDoneDelegate& Done)
+		{
+			FNakamaWriteTournamentRecordRequest_TournamentRecordWrite Record;
+			Record.Score = 100;
+			Record.Subscore = 0;
+			Record.Metadata = TEXT("{}");
+			Record.Operator = 0;
+
+			Client->WriteTournamentRecord(Session,
+				TEXT("nonexistent_tournament_12345"),
+				Record,
+				[this, Done](const FNakamaLeaderboardRecord& Result)
+				{
+					AddError(TEXT("Expected error but got success"));
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					TestTrue("Got NOT_FOUND error", Error.Code == 5 || Error.Message.Contains(TEXT("not found")));
+					Done.Execute();
+				}
+			);
+		});
+	});
+
+	Describe("DeleteTournamentRecord", [this]()
+	{
+		LatentIt("should fail with empty tournament ID", [this](const FDoneDelegate& Done)
+		{
+			Client->DeleteTournamentRecord(Session,
+				TEXT(""),  // empty tournament ID
+				[this, Done]()
+				{
+					AddError(TEXT("Expected error but got success"));
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					TestTrue("Got error for empty tournament ID", Error.Code != 0 || !Error.Message.IsEmpty());
+					Done.Execute();
+				}
+			);
+		});
+
+		LatentIt("should fail with non-existent tournament", [this](const FDoneDelegate& Done)
+		{
+			Client->DeleteTournamentRecord(Session,
+				TEXT("nonexistent_tournament_12345"),
+				[this, Done]()
+				{
+					AddError(TEXT("Expected error but got success"));
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					// Server may return NOT_FOUND (5) or other error codes for non-existent tournaments
+					TestTrue("Got error for non-existent tournament", Error.Code != 0 || !Error.Message.IsEmpty());
 					Done.Execute();
 				}
 			);
@@ -1629,7 +2223,7 @@ void FNakamaUsersSpec::Define()
 			[this, Done](const FNakamaSession& Result)
 			{
 				Session = Result;
-				Client->GetAccount(
+				Client->GetAccount(Session,
 					[this, Done](const FNakamaAccount& AccResult)
 					{
 						UserId = AccResult.User.Id;
@@ -1662,7 +2256,7 @@ void FNakamaUsersSpec::Define()
 			TArray<FString> Ids;
 			Ids.Add(UserId);
 
-			Client->GetUsers(
+			Client->GetUsers(Session,
 				Ids,
 				TArray<FString>(),  // usernames
 				TArray<FString>(),  // facebook_ids
@@ -1688,7 +2282,7 @@ void FNakamaUsersSpec::Define()
 			TArray<FString> Usernames;
 			Usernames.Add(Username);
 
-			Client->GetUsers(
+			Client->GetUsers(Session,
 				TArray<FString>(),  // ids
 				Usernames,
 				TArray<FString>(),  // facebook_ids
@@ -1711,7 +2305,7 @@ void FNakamaUsersSpec::Define()
 			// Use a valid UUID format but one that doesn't exist (not the zero UUID which is reserved)
 			Ids.Add(TEXT("ffffffff-ffff-ffff-ffff-ffffffffffff"));
 
-			Client->GetUsers(
+			Client->GetUsers(Session,
 				Ids,
 				TArray<FString>(),
 				TArray<FString>(),
@@ -1787,7 +2381,7 @@ void FNakamaSessionSpec::Define()
 	{
 		LatentIt("should logout successfully", [this](const FDoneDelegate& Done)
 		{
-			Client->SessionLogout(
+			Client->SessionLogout(Session,
 				Session.Token,
 				Session.RefreshToken,
 				[this, Done]()
@@ -1845,7 +2439,7 @@ void FNakamaDeleteStorageSpec::Define()
 			[this, Done](const FNakamaSession& Result)
 			{
 				Session = Result;
-				Client->GetAccount(
+				Client->GetAccount(Session,
 					[this, Done](const FNakamaAccount& AccResult)
 					{
 						UserId = AccResult.User.Id;
@@ -1887,7 +2481,7 @@ void FNakamaDeleteStorageSpec::Define()
 			WriteObject.PermissionWrite = 1;
 			WriteObjects.Add(WriteObject);
 
-			Client->WriteStorageObjects(
+			Client->WriteStorageObjects(Session,
 				WriteObjects,
 				[this, Done, Key](const FNakamaStorageObjectAcks& WriteResult)
 				{
@@ -1898,7 +2492,7 @@ void FNakamaDeleteStorageSpec::Define()
 					DeleteId.Key = Key;
 					DeleteIds.Add(DeleteId);
 
-					Client->DeleteStorageObjects(
+					Client->DeleteStorageObjects(Session,
 						DeleteIds,
 						[this, Done]()
 						{
@@ -1928,7 +2522,7 @@ void FNakamaDeleteStorageSpec::Define()
 			DeleteId.Key = TEXT("nonexistent_key");
 			DeleteIds.Add(DeleteId);
 
-			Client->DeleteStorageObjects(
+			Client->DeleteStorageObjects(Session,
 				DeleteIds,
 				[this, Done]()
 				{
@@ -1956,6 +2550,7 @@ BEGIN_DEFINE_SPEC(FNakamaDeleteFriendsSpec, "NakamaTest.DeleteFriends",
 	TSharedPtr<FNakamaClient> Client;
 	TSharedPtr<FNakamaClient> FriendClient;
 	FNakamaSession Session;
+	FNakamaSession FriendSession;
 	FString UserId;
 	FString FriendUserId;
 
@@ -1989,7 +2584,7 @@ void FNakamaDeleteFriendsSpec::Define()
 			[this, Done](const FNakamaSession& Result)
 			{
 				Session = Result;
-				Client->GetAccount(
+				Client->GetAccount(Session,
 					[this, Done](const FNakamaAccount& AccResult)
 					{
 						UserId = AccResult.User.Id;
@@ -1999,9 +2594,10 @@ void FNakamaDeleteFriendsSpec::Define()
 						FriendAccount.Id = GenerateId();
 
 						FriendClient->AuthenticateCustom(FriendAccount, true, TEXT(""),
-							[this, Done](const FNakamaSession& FriendSession)
+							[this, Done](const FNakamaSession& FriendSessionResult)
 							{
-								FriendClient->GetAccount(
+								FriendSession = FriendSessionResult;
+								FriendClient->GetAccount(FriendSession,
 									[this, Done](const FNakamaAccount& FriendAccResult)
 									{
 										FriendUserId = FriendAccResult.User.Id;
@@ -2050,7 +2646,7 @@ void FNakamaDeleteFriendsSpec::Define()
 			TArray<FString> AddIds;
 			AddIds.Add(FriendUserId);
 
-			Client->AddFriends(
+			Client->AddFriends(Session,
 				AddIds,
 				TArray<FString>(),
 				TEXT(""),
@@ -2060,7 +2656,7 @@ void FNakamaDeleteFriendsSpec::Define()
 					TArray<FString> DeleteIds;
 					DeleteIds.Add(FriendUserId);
 
-					Client->DeleteFriends(
+					Client->DeleteFriends(Session,
 						DeleteIds,
 						TArray<FString>(),
 						[this, Done]()
@@ -2089,7 +2685,7 @@ void FNakamaDeleteFriendsSpec::Define()
 			TArray<FString> DeleteIds;
 			DeleteIds.Add(FriendUserId);
 
-			Client->DeleteFriends(
+			Client->DeleteFriends(Session,
 				DeleteIds,
 				TArray<FString>(),
 				[this, Done]()
@@ -2117,6 +2713,7 @@ BEGIN_DEFINE_SPEC(FNakamaGroupOpsSpec, "NakamaTest.GroupOps",
 	TSharedPtr<FNakamaClient> Client;
 	TSharedPtr<FNakamaClient> MemberClient;
 	FNakamaSession Session;
+	FNakamaSession MemberSession;
 	FString UserId;
 	FString MemberUserId;
 	FString GroupId;
@@ -2153,7 +2750,7 @@ void FNakamaGroupOpsSpec::Define()
 			[this, Done](const FNakamaSession& Result)
 			{
 				Session = Result;
-				Client->GetAccount(
+				Client->GetAccount(Session,
 					[this, Done](const FNakamaAccount& AccResult)
 					{
 						UserId = AccResult.User.Id;
@@ -2163,9 +2760,10 @@ void FNakamaGroupOpsSpec::Define()
 						MemberAccount.Id = GenerateId();
 
 						MemberClient->AuthenticateCustom(MemberAccount, true, TEXT(""),
-							[this, Done](const FNakamaSession& MemberSession)
+							[this, Done](const FNakamaSession& MemberSessionResult)
 							{
-								MemberClient->GetAccount(
+								MemberSession = MemberSessionResult;
+								MemberClient->GetAccount(MemberSession,
 									[this, Done](const FNakamaAccount& MemberAccResult)
 									{
 										MemberUserId = MemberAccResult.User.Id;
@@ -2213,14 +2811,14 @@ void FNakamaGroupOpsSpec::Define()
 			// Create an open group first
 			FString GroupName = FString::Printf(TEXT("JoinGroup_%s"), *GenerateShortId());
 
-			Client->CreateGroup(
+			Client->CreateGroup(Session,
 				GroupName, TEXT("Test"), TEXT(""), TEXT("en"), true, 100,
 				[this, Done](const FNakamaGroup& Group)
 				{
 					GroupId = Group.Id;
 
 					// Now have member join the group
-					MemberClient->JoinGroup(
+					MemberClient->JoinGroup(MemberSession,
 						GroupId,
 						[this, Done]()
 						{
@@ -2244,7 +2842,7 @@ void FNakamaGroupOpsSpec::Define()
 
 		LatentIt("should fail to join non-existent group", [this](const FDoneDelegate& Done)
 		{
-			Client->JoinGroup(
+			Client->JoinGroup(Session,
 				TEXT("00000000-0000-0000-0000-000000000000"),
 				[this, Done]()
 				{
@@ -2267,19 +2865,19 @@ void FNakamaGroupOpsSpec::Define()
 			// Create a group, have member join, then leave
 			FString GroupName = FString::Printf(TEXT("LeaveGroup_%s"), *GenerateShortId());
 
-			Client->CreateGroup(
+			Client->CreateGroup(Session,
 				GroupName, TEXT("Test"), TEXT(""), TEXT("en"), true, 100,
 				[this, Done](const FNakamaGroup& Group)
 				{
 					GroupId = Group.Id;
 
 					// Member joins
-					MemberClient->JoinGroup(
+					MemberClient->JoinGroup(MemberSession,
 						GroupId,
 						[this, Done]()
 						{
 							// Member leaves
-							MemberClient->LeaveGroup(
+							MemberClient->LeaveGroup(MemberSession,
 								GroupId,
 								[this, Done]()
 								{
@@ -2316,11 +2914,11 @@ void FNakamaGroupOpsSpec::Define()
 			FString GroupName = FString::Printf(TEXT("UpdateGroup_%s"), *GenerateShortId());
 			FString NewGroupName = FString::Printf(TEXT("Updated_%s"), *GenerateShortId());
 
-			Client->CreateGroup(
+			Client->CreateGroup(Session,
 				GroupName, TEXT("Test"), TEXT(""), TEXT("en"), true, 100,
 				[this, Done, NewGroupName](const FNakamaGroup& Group)
 				{
-					Client->UpdateGroup(
+					Client->UpdateGroup(Session,
 						Group.Id,
 						NewGroupName,
 						TEXT("Updated description"),
@@ -2354,11 +2952,11 @@ void FNakamaGroupOpsSpec::Define()
 		{
 			FString GroupName = FString::Printf(TEXT("DeleteGroup_%s"), *GenerateShortId());
 
-			Client->CreateGroup(
+			Client->CreateGroup(Session,
 				GroupName, TEXT("Test"), TEXT(""), TEXT("en"), true, 100,
 				[this, Done](const FNakamaGroup& Group)
 				{
-					Client->DeleteGroup(
+					Client->DeleteGroup(Session,
 						Group.Id,
 						[this, Done]()
 						{
@@ -2387,11 +2985,11 @@ void FNakamaGroupOpsSpec::Define()
 		{
 			FString GroupName = FString::Printf(TEXT("ListUsers_%s"), *GenerateShortId());
 
-			Client->CreateGroup(
+			Client->CreateGroup(Session,
 				GroupName, TEXT("Test"), TEXT(""), TEXT("en"), true, 100,
 				[this, Done](const FNakamaGroup& Group)
 				{
-					Client->ListGroupUsers(
+					Client->ListGroupUsers(Session,
 						Group.Id,
 						100,  // limit
 						0,    // state
@@ -2475,7 +3073,7 @@ void FNakamaRpcSpec::Define()
 	{
 		LatentIt("should fail with empty RPC ID", [this](const FDoneDelegate& Done)
 		{
-			Client->RpcFunc(
+			Client->RpcFunc(Session,
 				TEXT(""),  // empty ID
 				TEXT("{}"),
 				TEXT(""),  // empty http_key (using session auth)
@@ -2494,7 +3092,7 @@ void FNakamaRpcSpec::Define()
 
 		LatentIt("should fail with non-existent RPC", [this](const FDoneDelegate& Done)
 		{
-			Client->RpcFunc(
+			Client->RpcFunc(Session,
 				TEXT("nonexistent_rpc_function"),
 				TEXT("{}"),
 				TEXT(""),  // empty http_key (using session auth)
@@ -2574,7 +3172,7 @@ void FNakamaImportSpec::Define()
 			FNakamaAccountSteam Account;
 			Account.Token = TEXT("");
 
-			Client->ImportSteamFriends(
+			Client->ImportSteamFriends(Session,
 				Account,
 				false,
 				[this, Done]()
@@ -2598,7 +3196,7 @@ void FNakamaImportSpec::Define()
 			FNakamaAccountFacebook Account;
 			Account.Token = TEXT("");
 
-			Client->ImportFacebookFriends(
+			Client->ImportFacebookFriends(Session,
 				Account,
 				false,
 				[this, Done]()
@@ -2854,7 +3452,7 @@ void FNakamaAccountExtendedSpec::Define()
 			[this, Done](const FNakamaSession& Result)
 			{
 				Session = Result;
-				Client->GetAccount(
+				Client->GetAccount(Session,
 					[this, Done](const FNakamaAccount& AccResult)
 					{
 						UserId = AccResult.User.Id;
@@ -2887,7 +3485,7 @@ void FNakamaAccountExtendedSpec::Define()
 			FString NewDisplayName = FString::Printf(TEXT("Display_%s"), *GenerateShortId());
 			FString NewAvatarUrl = TEXT("https://example.com/avatar.png");
 
-			Client->UpdateAccount(
+			Client->UpdateAccount(Session,
 				TEXT(""),  // username (don't change)
 				NewDisplayName,
 				NewAvatarUrl,
@@ -2909,7 +3507,7 @@ void FNakamaAccountExtendedSpec::Define()
 
 		LatentIt("should update lang tag", [this](const FDoneDelegate& Done)
 		{
-			Client->UpdateAccount(
+			Client->UpdateAccount(Session,
 				TEXT(""),
 				TEXT(""),
 				TEXT(""),
@@ -2918,7 +3516,7 @@ void FNakamaAccountExtendedSpec::Define()
 				TEXT(""),
 				[this, Done]()
 				{
-					Client->GetAccount(
+					Client->GetAccount(Session,
 						[this, Done](const FNakamaAccount& Result)
 						{
 							TestEqual("Lang tag updated", Result.User.LangTag, TEXT("fr"));
@@ -2941,7 +3539,7 @@ void FNakamaAccountExtendedSpec::Define()
 
 		LatentIt("should update location", [this](const FDoneDelegate& Done)
 		{
-			Client->UpdateAccount(
+			Client->UpdateAccount(Session,
 				TEXT(""),
 				TEXT(""),
 				TEXT(""),
@@ -2950,7 +3548,7 @@ void FNakamaAccountExtendedSpec::Define()
 				TEXT(""),
 				[this, Done]()
 				{
-					Client->GetAccount(
+					Client->GetAccount(Session,
 						[this, Done](const FNakamaAccount& Result)
 						{
 							TestEqual("Location updated", Result.User.Location, TEXT("London"));
@@ -2973,7 +3571,7 @@ void FNakamaAccountExtendedSpec::Define()
 
 		LatentIt("should update timezone", [this](const FDoneDelegate& Done)
 		{
-			Client->UpdateAccount(
+			Client->UpdateAccount(Session,
 				TEXT(""),
 				TEXT(""),
 				TEXT(""),
@@ -2982,7 +3580,7 @@ void FNakamaAccountExtendedSpec::Define()
 				TEXT("Europe/London"),
 				[this, Done]()
 				{
-					Client->GetAccount(
+					Client->GetAccount(Session,
 						[this, Done](const FNakamaAccount& Result)
 						{
 							TestEqual("Timezone updated", Result.User.Timezone, TEXT("Europe/London"));
@@ -3007,7 +3605,7 @@ void FNakamaAccountExtendedSpec::Define()
 		{
 			FString NewAvatarUrl = TEXT("https://example.com/new-avatar.png");
 
-			Client->UpdateAccount(
+			Client->UpdateAccount(Session,
 				TEXT(""),
 				TEXT(""),
 				NewAvatarUrl,
@@ -3016,7 +3614,7 @@ void FNakamaAccountExtendedSpec::Define()
 				TEXT(""),
 				[this, Done, NewAvatarUrl]()
 				{
-					Client->GetAccount(
+					Client->GetAccount(Session,
 						[this, Done, NewAvatarUrl](const FNakamaAccount& Result)
 						{
 							TestEqual("Avatar URL updated", Result.User.AvatarUrl, NewAvatarUrl);
@@ -3042,7 +3640,7 @@ void FNakamaAccountExtendedSpec::Define()
 	{
 		LatentIt("should return account with devices", [this](const FDoneDelegate& Done)
 		{
-			Client->GetAccount(
+			Client->GetAccount(Session,
 				[this, Done](const FNakamaAccount& Result)
 				{
 					TestTrue("Account has user", !Result.User.Id.IsEmpty());
@@ -3069,6 +3667,7 @@ BEGIN_DEFINE_SPEC(FNakamaFriendsExtendedSpec, "NakamaTest.FriendsExt",
 	TSharedPtr<FNakamaClient> Client;
 	TSharedPtr<FNakamaClient> FriendClient;
 	FNakamaSession Session;
+	FNakamaSession FriendSession;
 	FString UserId;
 	FString FriendUserId;
 	FString FriendUsername;
@@ -3104,7 +3703,7 @@ void FNakamaFriendsExtendedSpec::Define()
 			[this, Done](const FNakamaSession& Result)
 			{
 				Session = Result;
-				Client->GetAccount(
+				Client->GetAccount(Session,
 					[this, Done](const FNakamaAccount& AccResult)
 					{
 						UserId = AccResult.User.Id;
@@ -3115,9 +3714,10 @@ void FNakamaFriendsExtendedSpec::Define()
 						FriendAccount.Id = GenerateId();
 
 						FriendClient->AuthenticateCustom(FriendAccount, true, FriendUsername,
-							[this, Done](const FNakamaSession& FriendSession)
+							[this, Done](const FNakamaSession& FriendSessionResult)
 							{
-								FriendClient->GetAccount(
+								FriendSession = FriendSessionResult;
+								FriendClient->GetAccount(FriendSession,
 									[this, Done](const FNakamaAccount& FriendAccResult)
 									{
 										FriendUserId = FriendAccResult.User.Id;
@@ -3162,7 +3762,7 @@ void FNakamaFriendsExtendedSpec::Define()
 	{
 		LatentIt("should list friends with limit", [this](const FDoneDelegate& Done)
 		{
-			Client->ListFriends(
+			Client->ListFriends(Session,
 				5,  // limit = 5
 				0,  // state (all)
 				TEXT(""),
@@ -3182,7 +3782,7 @@ void FNakamaFriendsExtendedSpec::Define()
 		LatentIt("should list friends with state filter", [this](const FDoneDelegate& Done)
 		{
 			// Filter by state=0 (actual friends)
-			Client->ListFriends(
+			Client->ListFriends(Session,
 				100,
 				0,  // state = FRIEND
 				TEXT(""),
@@ -3202,7 +3802,7 @@ void FNakamaFriendsExtendedSpec::Define()
 		LatentIt("should list blocked friends", [this](const FDoneDelegate& Done)
 		{
 			// Filter by state=3 (blocked)
-			Client->ListFriends(
+			Client->ListFriends(Session,
 				100,
 				3,  // state = BLOCKED
 				TEXT(""),
@@ -3227,7 +3827,7 @@ void FNakamaFriendsExtendedSpec::Define()
 			TArray<FString> Usernames;
 			Usernames.Add(FriendUsername);
 
-			Client->AddFriends(
+			Client->AddFriends(Session,
 				TArray<FString>(),  // ids
 				Usernames,
 				TEXT(""),
@@ -3249,7 +3849,7 @@ void FNakamaFriendsExtendedSpec::Define()
 			TArray<FString> Ids;
 			Ids.Add(TEXT("not-a-valid-uuid"));
 
-			Client->AddFriends(
+			Client->AddFriends(Session,
 				Ids,
 				TArray<FString>(),
 				TEXT(""),
@@ -3276,7 +3876,7 @@ void FNakamaFriendsExtendedSpec::Define()
 			TArray<FString> AddUsernames;
 			AddUsernames.Add(FriendUsername);
 
-			Client->AddFriends(
+			Client->AddFriends(Session,
 				TArray<FString>(),
 				AddUsernames,
 				TEXT(""),
@@ -3286,7 +3886,7 @@ void FNakamaFriendsExtendedSpec::Define()
 					TArray<FString> DeleteUsernames;
 					DeleteUsernames.Add(FriendUsername);
 
-					Client->DeleteFriends(
+					Client->DeleteFriends(Session,
 						TArray<FString>(),
 						DeleteUsernames,
 						[this, Done]()
@@ -3317,7 +3917,7 @@ void FNakamaFriendsExtendedSpec::Define()
 			TArray<FString> Usernames;
 			Usernames.Add(FriendUsername);
 
-			Client->BlockFriends(
+			Client->BlockFriends(Session,
 				TArray<FString>(),
 				Usernames,
 				[this, Done]()
@@ -3375,7 +3975,7 @@ void FNakamaStorageExtendedSpec::Define()
 			[this, Done](const FNakamaSession& Result)
 			{
 				Session = Result;
-				Client->GetAccount(
+				Client->GetAccount(Session,
 					[this, Done](const FNakamaAccount& AccResult)
 					{
 						UserId = AccResult.User.Id;
@@ -3417,7 +4017,7 @@ void FNakamaStorageExtendedSpec::Define()
 				Objects.Add(Object);
 			}
 
-			Client->WriteStorageObjects(
+			Client->WriteStorageObjects(Session,
 				Objects,
 				[this, Done](const FNakamaStorageObjectAcks& Result)
 				{
@@ -3444,7 +4044,7 @@ void FNakamaStorageExtendedSpec::Define()
 			Object.Value = TEXT("{\"test\": true}");
 			Objects.Add(Object);
 
-			Client->WriteStorageObjects(
+			Client->WriteStorageObjects(Session,
 				Objects,
 				[this, Done](const FNakamaStorageObjectAcks& Result)
 				{
@@ -3468,7 +4068,7 @@ void FNakamaStorageExtendedSpec::Define()
 			Object.Value = TEXT("{\"test\": true}");
 			Objects.Add(Object);
 
-			Client->WriteStorageObjects(
+			Client->WriteStorageObjects(Session,
 				Objects,
 				[this, Done](const FNakamaStorageObjectAcks& Result)
 				{
@@ -3494,7 +4094,7 @@ void FNakamaStorageExtendedSpec::Define()
 			Object.PermissionWrite = 1;
 			Objects.Add(Object);
 
-			Client->WriteStorageObjects(
+			Client->WriteStorageObjects(Session,
 				Objects,
 				[this, Done](const FNakamaStorageObjectAcks& Result)
 				{
@@ -3518,7 +4118,7 @@ void FNakamaStorageExtendedSpec::Define()
 			Object.Value = TEXT("[1, 2, 3]");  // JSON array, not object
 			Objects.Add(Object);
 
-			Client->WriteStorageObjects(
+			Client->WriteStorageObjects(Session,
 				Objects,
 				[this, Done](const FNakamaStorageObjectAcks& Result)
 				{
@@ -3545,7 +4145,7 @@ void FNakamaStorageExtendedSpec::Define()
 			ReadId.UserId = UserId;
 			ReadIds.Add(ReadId);
 
-			Client->ReadStorageObjects(
+			Client->ReadStorageObjects(Session,
 				ReadIds,
 				[this, Done](const FNakamaStorageObjects& Result)
 				{
@@ -3579,7 +4179,7 @@ void FNakamaStorageExtendedSpec::Define()
 				WriteObjects.Add(Object);
 			}
 
-			Client->WriteStorageObjects(
+			Client->WriteStorageObjects(Session,
 				WriteObjects,
 				[this, Done, Keys](const FNakamaStorageObjectAcks& WriteResult)
 				{
@@ -3594,7 +4194,7 @@ void FNakamaStorageExtendedSpec::Define()
 						ReadIds.Add(ReadId);
 					}
 
-					Client->ReadStorageObjects(
+					Client->ReadStorageObjects(Session,
 						ReadIds,
 						[this, Done](const FNakamaStorageObjects& Result)
 						{
@@ -3634,11 +4234,11 @@ void FNakamaStorageExtendedSpec::Define()
 				Objects.Add(Object);
 			}
 
-			Client->WriteStorageObjects(
+			Client->WriteStorageObjects(Session,
 				Objects,
 				[this, Done](const FNakamaStorageObjectAcks& WriteResult)
 				{
-					Client->ListStorageObjects(
+					Client->ListStorageObjects(Session,
 						UserId,
 						TEXT("list_limit_collection"),
 						2,  // limit = 2
@@ -3685,7 +4285,7 @@ void FNakamaStorageExtendedSpec::Define()
 				WriteObjects.Add(Object);
 			}
 
-			Client->WriteStorageObjects(
+			Client->WriteStorageObjects(Session,
 				WriteObjects,
 				[this, Done, Keys](const FNakamaStorageObjectAcks& WriteResult)
 				{
@@ -3699,7 +4299,7 @@ void FNakamaStorageExtendedSpec::Define()
 						DeleteIds.Add(DeleteId);
 					}
 
-					Client->DeleteStorageObjects(
+					Client->DeleteStorageObjects(Session,
 						DeleteIds,
 						[this, Done]()
 						{
@@ -3733,6 +4333,7 @@ BEGIN_DEFINE_SPEC(FNakamaGroupExtendedSpec, "NakamaTest.GroupExt",
 	TSharedPtr<FNakamaClient> Client;
 	TSharedPtr<FNakamaClient> MemberClient;
 	FNakamaSession Session;
+	FNakamaSession MemberSession;
 	FString UserId;
 	FString MemberUserId;
 
@@ -3767,7 +4368,7 @@ void FNakamaGroupExtendedSpec::Define()
 			[this, Done](const FNakamaSession& Result)
 			{
 				Session = Result;
-				Client->GetAccount(
+				Client->GetAccount(Session,
 					[this, Done](const FNakamaAccount& AccResult)
 					{
 						UserId = AccResult.User.Id;
@@ -3777,9 +4378,10 @@ void FNakamaGroupExtendedSpec::Define()
 						MemberAccount.Id = GenerateId();
 
 						MemberClient->AuthenticateCustom(MemberAccount, true, TEXT(""),
-							[this, Done](const FNakamaSession& MemberSession)
+							[this, Done](const FNakamaSession& MemberSessionResult)
 							{
-								MemberClient->GetAccount(
+								MemberSession = MemberSessionResult;
+								MemberClient->GetAccount(MemberSession,
 									[this, Done](const FNakamaAccount& MemberAccResult)
 									{
 										MemberUserId = MemberAccResult.User.Id;
@@ -3826,7 +4428,7 @@ void FNakamaGroupExtendedSpec::Define()
 		{
 			FString GroupName = FString::Printf(TEXT("ClosedGroup_%s"), *GenerateShortId());
 
-			Client->CreateGroup(
+			Client->CreateGroup(Session,
 				GroupName,
 				TEXT("Closed group for testing"),
 				TEXT(""),
@@ -3851,7 +4453,7 @@ void FNakamaGroupExtendedSpec::Define()
 		{
 			FString GroupName = FString::Printf(TEXT("MetaGroup_%s"), *GenerateShortId());
 
-			Client->CreateGroup(
+			Client->CreateGroup(Session,
 				GroupName,
 				TEXT("Group with description"),
 				TEXT(""),  // empty avatar URL
@@ -3879,12 +4481,12 @@ void FNakamaGroupExtendedSpec::Define()
 			FString GroupName = FString::Printf(TEXT("SearchGroup_%s"), *GenerateShortId());
 
 			// First create a group
-			Client->CreateGroup(
+			Client->CreateGroup(Session,
 				GroupName, TEXT("Test"), TEXT(""), TEXT("en"), true, 100,
 				[this, Done, GroupName](const FNakamaGroup& Group)
 				{
 					// Now search by name prefix - name filter cannot be combined with other filters
-					Client->ListGroups(
+					Client->ListGroups(Session,
 						TEXT("SearchGroup"),  // name filter only
 						TEXT(""),  // cursor
 						100,  // limit
@@ -3914,7 +4516,7 @@ void FNakamaGroupExtendedSpec::Define()
 
 		LatentIt("should list groups with limit", [this](const FDoneDelegate& Done)
 		{
-			Client->ListGroups(
+			Client->ListGroups(Session,
 				TEXT(""),
 				TEXT(""),
 				5,  // limit = 5
@@ -3941,14 +4543,14 @@ void FNakamaGroupExtendedSpec::Define()
 		{
 			FString GroupName = FString::Printf(TEXT("AddUserGroup_%s"), *GenerateShortId());
 
-			Client->CreateGroup(
+			Client->CreateGroup(Session,
 				GroupName, TEXT("Test"), TEXT(""), TEXT("en"), true, 100,
 				[this, Done](const FNakamaGroup& Group)
 				{
 					TArray<FString> UserIds;
 					UserIds.Add(MemberUserId);
 
-					Client->AddGroupUsers(
+					Client->AddGroupUsers(Session,
 						Group.Id,
 						UserIds,
 						[this, Done]()
@@ -3975,7 +4577,7 @@ void FNakamaGroupExtendedSpec::Define()
 		{
 			FString GroupName = FString::Printf(TEXT("KickGroup_%s"), *GenerateShortId());
 
-			Client->CreateGroup(
+			Client->CreateGroup(Session,
 				GroupName, TEXT("Test"), TEXT(""), TEXT("en"), true, 100,
 				[this, Done](const FNakamaGroup& Group)
 				{
@@ -3983,7 +4585,7 @@ void FNakamaGroupExtendedSpec::Define()
 					TArray<FString> UserIds;
 					UserIds.Add(MemberUserId);
 
-					Client->AddGroupUsers(
+					Client->AddGroupUsers(Session,
 						Group.Id,
 						UserIds,
 						[this, Done, Group]()
@@ -3992,7 +4594,7 @@ void FNakamaGroupExtendedSpec::Define()
 							TArray<FString> KickIds;
 							KickIds.Add(MemberUserId);
 
-							Client->KickGroupUsers(
+							Client->KickGroupUsers(Session,
 								Group.Id,
 								KickIds,
 								[this, Done]()
@@ -4026,14 +4628,14 @@ void FNakamaGroupExtendedSpec::Define()
 		{
 			FString GroupName = FString::Printf(TEXT("BanGroup_%s"), *GenerateShortId());
 
-			Client->CreateGroup(
+			Client->CreateGroup(Session,
 				GroupName, TEXT("Test"), TEXT(""), TEXT("en"), true, 100,
 				[this, Done](const FNakamaGroup& Group)
 				{
 					TArray<FString> UserIds;
 					UserIds.Add(MemberUserId);
 
-					Client->BanGroupUsers(
+					Client->BanGroupUsers(Session,
 						Group.Id,
 						UserIds,
 						[this, Done]()
@@ -4060,7 +4662,7 @@ void FNakamaGroupExtendedSpec::Define()
 		{
 			FString GroupName = FString::Printf(TEXT("PromoteGroup_%s"), *GenerateShortId());
 
-			Client->CreateGroup(
+			Client->CreateGroup(Session,
 				GroupName, TEXT("Test"), TEXT(""), TEXT("en"), true, 100,
 				[this, Done](const FNakamaGroup& Group)
 				{
@@ -4068,7 +4670,7 @@ void FNakamaGroupExtendedSpec::Define()
 					TArray<FString> UserIds;
 					UserIds.Add(MemberUserId);
 
-					Client->AddGroupUsers(
+					Client->AddGroupUsers(Session,
 						Group.Id,
 						UserIds,
 						[this, Done, Group]()
@@ -4077,7 +4679,7 @@ void FNakamaGroupExtendedSpec::Define()
 							TArray<FString> PromoteIds;
 							PromoteIds.Add(MemberUserId);
 
-							Client->PromoteGroupUsers(
+							Client->PromoteGroupUsers(Session,
 								Group.Id,
 								PromoteIds,
 								[this, Done]()
@@ -4113,7 +4715,7 @@ void FNakamaGroupExtendedSpec::Define()
 			// Capture MemberUserId at test start - it was set in LatentBeforeEach
 			FString TargetUserId = MemberUserId;
 
-			Client->CreateGroup(
+			Client->CreateGroup(Session,
 				GroupName, TEXT("Test"), TEXT(""), TEXT("en"), true, 100,
 				[this, Done, TargetUserId](const FNakamaGroup& Group)
 				{
@@ -4121,7 +4723,7 @@ void FNakamaGroupExtendedSpec::Define()
 					TArray<FString> UserIds;
 					UserIds.Add(TargetUserId);
 
-					Client->AddGroupUsers(
+					Client->AddGroupUsers(Session,
 						Group.Id,
 						UserIds,
 						[this, Done, Group, TargetUserId]()
@@ -4130,7 +4732,7 @@ void FNakamaGroupExtendedSpec::Define()
 							TArray<FString> PromoteIds;
 							PromoteIds.Add(TargetUserId);
 
-							Client->PromoteGroupUsers(
+							Client->PromoteGroupUsers(Session,
 								Group.Id,
 								PromoteIds,
 								[this, Done, Group, TargetUserId]()
@@ -4139,7 +4741,7 @@ void FNakamaGroupExtendedSpec::Define()
 									TArray<FString> DemoteIds;
 									DemoteIds.Add(TargetUserId);
 
-									Client->DemoteGroupUsers(
+									Client->DemoteGroupUsers(Session,
 										Group.Id,
 										DemoteIds,
 										[this, Done]()
@@ -4183,12 +4785,12 @@ void FNakamaGroupExtendedSpec::Define()
 		{
 			FString GroupName = FString::Printf(TEXT("ListUsersState_%s"), *GenerateShortId());
 
-			Client->CreateGroup(
+			Client->CreateGroup(Session,
 				GroupName, TEXT("Test"), TEXT(""), TEXT("en"), true, 100,
 				[this, Done](const FNakamaGroup& Group)
 				{
 					// List only superadmins (state = 0)
-					Client->ListGroupUsers(
+					Client->ListGroupUsers(Session,
 						Group.Id,
 						100,
 						0,  // state = SUPERADMIN
@@ -4279,13 +4881,13 @@ void FNakamaUnlinkSpec::Define()
 		LatentIt("should unlink custom ID", [this](const FDoneDelegate& Done)
 		{
 			// First link
-			Client->LinkCustom(
+			Client->LinkCustom(Session,
 				CustomId,
 				TMap<FString, FString>(),
 				[this, Done]()
 				{
 					// Now unlink
-					Client->UnlinkCustom(
+					Client->UnlinkCustom(Session,
 						CustomId,
 						TMap<FString, FString>(),
 						[this, Done]()
@@ -4316,14 +4918,14 @@ void FNakamaUnlinkSpec::Define()
 			FString Email = FString::Printf(TEXT("unlink_%s@example.com"), *GenerateShortId());
 
 			// First link
-			Client->LinkEmail(
+			Client->LinkEmail(Session,
 				Email,
 				TEXT("password123"),
 				TMap<FString, FString>(),
 				[this, Done, Email]()
 				{
 					// Now unlink
-					Client->UnlinkEmail(
+					Client->UnlinkEmail(Session,
 						Email,
 						TEXT("password123"),
 						TMap<FString, FString>(),
@@ -4355,13 +4957,13 @@ void FNakamaUnlinkSpec::Define()
 			FString NewDeviceId = GenerateId();
 
 			// First link a new device
-			Client->LinkDevice(
+			Client->LinkDevice(Session,
 				NewDeviceId,
 				TMap<FString, FString>(),
 				[this, Done, NewDeviceId]()
 				{
 					// Now unlink it
-					Client->UnlinkDevice(
+					Client->UnlinkDevice(Session,
 						NewDeviceId,
 						TMap<FString, FString>(),
 						[this, Done]()
@@ -4443,7 +5045,7 @@ void FNakamaMatchesExtendedSpec::Define()
 	{
 		LatentIt("should list matches with min size filter", [this](const FDoneDelegate& Done)
 		{
-			Client->ListMatches(
+			Client->ListMatches(Session,
 				100,
 				false,
 				TEXT(""),
@@ -4469,7 +5071,7 @@ void FNakamaMatchesExtendedSpec::Define()
 
 		LatentIt("should list matches with max size filter", [this](const FDoneDelegate& Done)
 		{
-			Client->ListMatches(
+			Client->ListMatches(Session,
 				100,
 				false,
 				TEXT(""),
@@ -4495,7 +5097,7 @@ void FNakamaMatchesExtendedSpec::Define()
 
 		LatentIt("should list matches with label filter", [this](const FDoneDelegate& Done)
 		{
-			Client->ListMatches(
+			Client->ListMatches(Session,
 				10,
 				true,  // authoritative
 				TEXT("test_label"),  // label filter
@@ -4557,7 +5159,7 @@ void FNakamaChannelSpec::Define()
 			[this, Done](const FNakamaSession& Result)
 			{
 				Session = Result;
-				Client->GetAccount(
+				Client->GetAccount(Session,
 					[this, Done](const FNakamaAccount& AccResult)
 					{
 						UserId = AccResult.User.Id;
@@ -4587,7 +5189,7 @@ void FNakamaChannelSpec::Define()
 	{
 		LatentIt("should fail with empty channel ID", [this](const FDoneDelegate& Done)
 		{
-			Client->ListChannelMessages(
+			Client->ListChannelMessages(Session,
 				TEXT(""),  // empty channel ID
 				100,
 				true,
@@ -4611,7 +5213,7 @@ void FNakamaChannelSpec::Define()
 			// Format: 2.<room_name> for room channels
 			FString ChannelId = FString::Printf(TEXT("2.%s"), *RoomName);
 
-			Client->ListChannelMessages(
+			Client->ListChannelMessages(Session,
 				ChannelId,
 				100,
 				true,  // forward
@@ -4635,7 +5237,7 @@ void FNakamaChannelSpec::Define()
 			FString RoomName = FString::Printf(TEXT("limitroom_%s"), *GenerateShortId());
 			FString ChannelId = FString::Printf(TEXT("2.%s"), *RoomName);
 
-			Client->ListChannelMessages(
+			Client->ListChannelMessages(Session,
 				ChannelId,
 				5,  // limit = 5
 				true,
@@ -4713,7 +5315,7 @@ void FNakamaNotificationsExtendedSpec::Define()
 	{
 		LatentIt("should list notifications with limit", [this](const FDoneDelegate& Done)
 		{
-			Client->ListNotifications(
+			Client->ListNotifications(Session,
 				5,  // limit = 5
 				TEXT(""),
 				[this, Done](const FNakamaNotificationList& Result)
@@ -4737,7 +5339,7 @@ void FNakamaNotificationsExtendedSpec::Define()
 			TArray<FString> Ids;
 			Ids.Add(TEXT("not-a-valid-uuid"));
 
-			Client->DeleteNotifications(
+			Client->DeleteNotifications(Session,
 				Ids,
 				[this, Done]()
 				{
@@ -4758,7 +5360,7 @@ void FNakamaNotificationsExtendedSpec::Define()
 			TArray<FString> Ids;
 			Ids.Add(TEXT("ffffffff-ffff-ffff-ffff-ffffffffffff"));  // Valid UUID but doesn't exist
 
-			Client->DeleteNotifications(
+			Client->DeleteNotifications(Session,
 				Ids,
 				[this, Done]()
 				{
@@ -4770,6 +5372,338 @@ void FNakamaNotificationsExtendedSpec::Define()
 				{
 					// Some servers may return error
 					TestTrue("Got expected response", true);
+					Done.Execute();
+				}
+			);
+		});
+	});
+}
+
+// ============================================================================
+// ADDITIONAL AUTH VALIDATION TESTS
+// ============================================================================
+
+BEGIN_DEFINE_SPEC(FNakamaAuthValidationSpec, "NakamaTest.Auth.Validation",
+	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
+
+	TSharedPtr<FNakamaClient> Client;
+	FNakamaSession Session;
+
+	static const FString ServerKey;
+	static const FString Host;
+	static constexpr int32 Port = 7350;
+
+	FString GenerateId() { return FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphens); }
+	FString GenerateShortId() { return FGuid::NewGuid().ToString(EGuidFormats::Short).Left(8); }
+
+END_DEFINE_SPEC(FNakamaAuthValidationSpec)
+
+const FString FNakamaAuthValidationSpec::ServerKey = TEXT("defaultkey");
+const FString FNakamaAuthValidationSpec::Host = TEXT("127.0.0.1");
+
+void FNakamaAuthValidationSpec::Define()
+{
+	BeforeEach([this]()
+	{
+		Client = FNakamaClient::CreateDefaultClient(ServerKey, Host, Port, false, true);
+		Client->SetTimeout(10.0f);
+	});
+
+	AfterEach([this]()
+	{
+		Client.Reset();
+	});
+
+	Describe("CustomAuth.Validation", [this]()
+	{
+		LatentIt("should fail with custom ID containing spaces", [this](const FDoneDelegate& Done)
+		{
+			FNakamaAccountCustom Account;
+			Account.Id = TEXT("test id with spaces");
+
+			Client->AuthenticateCustom(Account, true, TEXT(""),
+				[this, Done](const FNakamaSession& Result)
+				{
+					AddError(TEXT("Expected error but got success"));
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					TestTrue("Got error for ID with spaces", Error.Code != 0 || !Error.Message.IsEmpty());
+					Done.Execute();
+				}
+			);
+		});
+
+		LatentIt("should fail with username too long", [this](const FDoneDelegate& Done)
+		{
+			FNakamaAccountCustom Account;
+			Account.Id = GenerateId();
+			FString LongUsername = FString::ChrN(150, 'x');  // > 128 chars
+
+			Client->AuthenticateCustom(Account, true, LongUsername,
+				[this, Done](const FNakamaSession& Result)
+				{
+					AddError(TEXT("Expected error but got success"));
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					TestTrue("Got error for username too long", Error.Code != 0 || !Error.Message.IsEmpty());
+					Done.Execute();
+				}
+			);
+		});
+
+		// NOTE: Nakama accepts usernames with special characters, so this test validates that behavior
+		LatentIt("should accept username with special chars", [this](const FDoneDelegate& Done)
+		{
+			FNakamaAccountCustom Account;
+			Account.Id = GenerateId();
+			FString Username = TEXT("user@#$%^!");
+
+			Client->AuthenticateCustom(Account, true, Username,
+				[this, Done](const FNakamaSession& Result)
+				{
+					TestTrue("Session is valid", !Result.Token.IsEmpty());
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					AddError(FString::Printf(TEXT("Unexpected error: %s"), *Error.Message));
+					Done.Execute();
+				}
+			);
+		});
+	});
+
+	Describe("DeviceAuth.Validation", [this]()
+	{
+		LatentIt("should fail with device ID containing only spaces", [this](const FDoneDelegate& Done)
+		{
+			FNakamaAccountDevice Account;
+			Account.Id = TEXT("          ");  // 10 spaces
+
+			Client->AuthenticateDevice(Account, true, TEXT(""),
+				[this, Done](const FNakamaSession& Result)
+				{
+					AddError(TEXT("Expected error but got success"));
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					TestTrue("Got error for spaces-only ID", Error.Code != 0 || !Error.Message.IsEmpty());
+					Done.Execute();
+				}
+			);
+		});
+	});
+
+	Describe("EmailAuth.Validation", [this]()
+	{
+		LatentIt("should fail with email too short", [this](const FDoneDelegate& Done)
+		{
+			FNakamaAccountEmail Account;
+			Account.Email = TEXT("a@b.c");  // < 10 chars
+			Account.Password = TEXT("password123");
+
+			Client->AuthenticateEmail(Account, true, TEXT(""),
+				[this, Done](const FNakamaSession& Result)
+				{
+					AddError(TEXT("Expected error but got success"));
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					TestTrue("Got error for email too short", Error.Code != 0 || !Error.Message.IsEmpty());
+					Done.Execute();
+				}
+			);
+		});
+
+		LatentIt("should fail with missing at symbol in email", [this](const FDoneDelegate& Done)
+		{
+			FNakamaAccountEmail Account;
+			Account.Email = TEXT("notanemailaddress.com");
+			Account.Password = TEXT("password123");
+
+			Client->AuthenticateEmail(Account, true, TEXT(""),
+				[this, Done](const FNakamaSession& Result)
+				{
+					AddError(TEXT("Expected error but got success"));
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					TestTrue("Got error for missing @ in email", Error.Code != 0 || !Error.Message.IsEmpty());
+					Done.Execute();
+				}
+			);
+		});
+
+		LatentIt("should fail with empty password", [this](const FDoneDelegate& Done)
+		{
+			FNakamaAccountEmail Account;
+			Account.Email = FString::Printf(TEXT("test_%s@example.com"), *GenerateShortId());
+			Account.Password = TEXT("");
+
+			Client->AuthenticateEmail(Account, true, TEXT(""),
+				[this, Done](const FNakamaSession& Result)
+				{
+					AddError(TEXT("Expected error but got success"));
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					TestTrue("Got error for empty password", Error.Code != 0 || !Error.Message.IsEmpty());
+					Done.Execute();
+				}
+			);
+		});
+
+		LatentIt("should authenticate existing user with create=false", [this](const FDoneDelegate& Done)
+		{
+			// First create the user
+			FNakamaAccountEmail Account;
+			Account.Email = FString::Printf(TEXT("existing_%s@example.com"), *GenerateShortId());
+			Account.Password = TEXT("password123");
+
+			Client->AuthenticateEmail(Account, true, TEXT(""),
+				[this, Done, Account](const FNakamaSession& FirstResult)
+				{
+					// Now try to authenticate with create=false
+					Client->AuthenticateEmail(Account, false, TEXT(""),
+						[this, Done](const FNakamaSession& Result)
+						{
+							TestTrue("Session has token", !Result.Token.IsEmpty());
+							Done.Execute();
+						},
+						[this, Done](const FNakamaError& Error)
+						{
+							AddError(FString::Printf(TEXT("Unexpected error: %s"), *Error.Message));
+							Done.Execute();
+						}
+					);
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					AddError(FString::Printf(TEXT("First auth failed: %s"), *Error.Message));
+					Done.Execute();
+				}
+			);
+		});
+	});
+}
+
+// ============================================================================
+// ACCOUNT DELETE TESTS
+// ============================================================================
+
+BEGIN_DEFINE_SPEC(FNakamaAccountDeleteSpec, "NakamaTest.Account.Delete",
+	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
+
+	TSharedPtr<FNakamaClient> Client;
+	FNakamaSession Session;
+
+	static const FString ServerKey;
+	static const FString Host;
+	static constexpr int32 Port = 7350;
+
+	FString GenerateId() { return FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphens); }
+
+END_DEFINE_SPEC(FNakamaAccountDeleteSpec)
+
+const FString FNakamaAccountDeleteSpec::ServerKey = TEXT("defaultkey");
+const FString FNakamaAccountDeleteSpec::Host = TEXT("127.0.0.1");
+
+void FNakamaAccountDeleteSpec::Define()
+{
+	BeforeEach([this]()
+	{
+		Client = FNakamaClient::CreateDefaultClient(ServerKey, Host, Port, false, true);
+		Client->SetTimeout(10.0f);
+	});
+
+	AfterEach([this]()
+	{
+		Client.Reset();
+	});
+
+	Describe("DeleteAccount", [this]()
+	{
+		LatentIt("should delete account successfully", [this](const FDoneDelegate& Done)
+		{
+			FNakamaAccountCustom Account;
+			Account.Id = GenerateId();
+
+			// First authenticate
+			Client->AuthenticateCustom(Account, true, TEXT(""),
+				[this, Done](const FNakamaSession& Result)
+				{
+					Session = Result;
+					// Now delete the account
+					Client->DeleteAccount(Session,
+						[this, Done]()
+						{
+							TestTrue("Account deleted successfully", true);
+							Done.Execute();
+						},
+						[this, Done](const FNakamaError& Error)
+						{
+							AddError(FString::Printf(TEXT("Delete failed: %s"), *Error.Message));
+							Done.Execute();
+						}
+					);
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					AddError(FString::Printf(TEXT("Auth failed: %s"), *Error.Message));
+					Done.Execute();
+				}
+			);
+		});
+
+		LatentIt("should fail to get account after deletion", [this](const FDoneDelegate& Done)
+		{
+			FNakamaAccountCustom Account;
+			Account.Id = GenerateId();
+
+			// First authenticate
+			Client->AuthenticateCustom(Account, true, TEXT(""),
+				[this, Done](const FNakamaSession& AuthResult)
+				{
+					Session = AuthResult;
+					// Delete the account
+					Client->DeleteAccount(Session,
+						[this, Done]()
+						{
+							// Try to get account after deletion
+							Client->GetAccount(Session,
+								[this, Done](const FNakamaAccount& AccountResult)
+								{
+									AddError(TEXT("Expected error but got account after deletion"));
+									Done.Execute();
+								},
+								[this, Done](const FNakamaError& Error)
+								{
+									TestTrue("Got error when accessing deleted account",
+										Error.Code == NakamaErrorCode::Unauthenticated ||
+										Error.Code == NakamaErrorCode::NotFound ||
+										!Error.Message.IsEmpty());
+									Done.Execute();
+								}
+							);
+						},
+						[this, Done](const FNakamaError& Error)
+						{
+							AddError(FString::Printf(TEXT("Delete failed: %s"), *Error.Message));
+							Done.Execute();
+						}
+					);
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					AddError(FString::Printf(TEXT("Auth failed: %s"), *Error.Message));
 					Done.Execute();
 				}
 			);

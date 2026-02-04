@@ -5940,6 +5940,7 @@ void FNakamaClient::MakeRequest(
 	const FString& Method,
 	const TSharedPtr<FJsonObject>& Body,
 	ENakamaRequestAuth AuthType,
+	const FString& SessionToken,
 	TFunction<void(TSharedPtr<FJsonObject>)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError)
 {
@@ -5960,9 +5961,9 @@ void FNakamaClient::MakeRequest(
 		}
 		break;
 	case ENakamaRequestAuth::Bearer:
-		if (CurrentSession.IsValid() && !CurrentSession->Token.IsEmpty())
+		if (!SessionToken.IsEmpty())
 		{
-			Request->SetHeader(TEXT("Authorization"), FString::Printf(TEXT("Bearer %s"), *CurrentSession->Token));
+			Request->SetHeader(TEXT("Authorization"), FString::Printf(TEXT("Bearer %s"), *SessionToken));
 		}
 		break;
 	case ENakamaRequestAuth::None:
@@ -6050,6 +6051,7 @@ void FNakamaClient::MakeRequest(
 }
 
 void FNakamaClient::AddFriends(
+	const FNakamaSession& Session,
 	const TArray<FString>& Ids,
 	const TArray<FString>& Usernames,
 	FString Metadata,
@@ -6076,8 +6078,9 @@ void FNakamaClient::AddFriends(
 	}TSharedPtr<FJsonObject> Body;
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
+	FString SessionToken = Session.Token;
 
-	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType,
+	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType, SessionToken,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			if (OnSuccess)
@@ -6089,6 +6092,7 @@ void FNakamaClient::AddFriends(
 }
 
 void FNakamaClient::AddGroupUsers(
+	const FNakamaSession& Session,
 	FString GroupId,
 	const TArray<FString>& UserIds,
 	TFunction<void()> OnSuccess,
@@ -6107,8 +6111,9 @@ void FNakamaClient::AddGroupUsers(
 	}TSharedPtr<FJsonObject> Body;
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
+	FString SessionToken = Session.Token;
 
-	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType,
+	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType, SessionToken,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			if (OnSuccess)
@@ -6146,12 +6151,12 @@ void FNakamaClient::SessionRefresh(
 	}
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Basic;
+	FString SessionToken = TEXT("");
 
-	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType,
-		[OnSuccess, this](TSharedPtr<FJsonObject> Json)
+	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType, SessionToken,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			FNakamaSession Result = FNakamaSession::FromJson(Json);
-			CurrentSession = MakeShared<FNakamaSession>(Result);
 			if (OnSuccess)
 			{
 				OnSuccess(Result);
@@ -6161,6 +6166,7 @@ void FNakamaClient::SessionRefresh(
 }
 
 void FNakamaClient::SessionLogout(
+	const FNakamaSession& Session,
 	FString Token,
 	FString RefreshToken,
 	TFunction<void()> OnSuccess,
@@ -6182,8 +6188,9 @@ void FNakamaClient::SessionLogout(
 	}
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
+	FString SessionToken = Session.Token;
 
-	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType,
+	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType, SessionToken,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			if (OnSuccess)
@@ -6215,12 +6222,12 @@ void FNakamaClient::AuthenticateApple(
 	Body = Account.ToJson();
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Basic;
+	FString SessionToken = TEXT("");
 
-	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType,
-		[OnSuccess, this](TSharedPtr<FJsonObject> Json)
+	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType, SessionToken,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			FNakamaSession Result = FNakamaSession::FromJson(Json);
-			CurrentSession = MakeShared<FNakamaSession>(Result);
 			if (OnSuccess)
 			{
 				OnSuccess(Result);
@@ -6250,12 +6257,12 @@ void FNakamaClient::AuthenticateCustom(
 	Body = Account.ToJson();
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Basic;
+	FString SessionToken = TEXT("");
 
-	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType,
-		[OnSuccess, this](TSharedPtr<FJsonObject> Json)
+	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType, SessionToken,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			FNakamaSession Result = FNakamaSession::FromJson(Json);
-			CurrentSession = MakeShared<FNakamaSession>(Result);
 			if (OnSuccess)
 			{
 				OnSuccess(Result);
@@ -6285,12 +6292,12 @@ void FNakamaClient::AuthenticateDevice(
 	Body = Account.ToJson();
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Basic;
+	FString SessionToken = TEXT("");
 
-	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType,
-		[OnSuccess, this](TSharedPtr<FJsonObject> Json)
+	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType, SessionToken,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			FNakamaSession Result = FNakamaSession::FromJson(Json);
-			CurrentSession = MakeShared<FNakamaSession>(Result);
 			if (OnSuccess)
 			{
 				OnSuccess(Result);
@@ -6320,12 +6327,12 @@ void FNakamaClient::AuthenticateEmail(
 	Body = Account.ToJson();
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Basic;
+	FString SessionToken = TEXT("");
 
-	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType,
-		[OnSuccess, this](TSharedPtr<FJsonObject> Json)
+	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType, SessionToken,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			FNakamaSession Result = FNakamaSession::FromJson(Json);
-			CurrentSession = MakeShared<FNakamaSession>(Result);
 			if (OnSuccess)
 			{
 				OnSuccess(Result);
@@ -6357,12 +6364,12 @@ void FNakamaClient::AuthenticateFacebook(
 	Body = Account.ToJson();
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Basic;
+	FString SessionToken = TEXT("");
 
-	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType,
-		[OnSuccess, this](TSharedPtr<FJsonObject> Json)
+	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType, SessionToken,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			FNakamaSession Result = FNakamaSession::FromJson(Json);
-			CurrentSession = MakeShared<FNakamaSession>(Result);
 			if (OnSuccess)
 			{
 				OnSuccess(Result);
@@ -6392,12 +6399,12 @@ void FNakamaClient::AuthenticateFacebookInstantGame(
 	Body = Account.ToJson();
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Basic;
+	FString SessionToken = TEXT("");
 
-	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType,
-		[OnSuccess, this](TSharedPtr<FJsonObject> Json)
+	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType, SessionToken,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			FNakamaSession Result = FNakamaSession::FromJson(Json);
-			CurrentSession = MakeShared<FNakamaSession>(Result);
 			if (OnSuccess)
 			{
 				OnSuccess(Result);
@@ -6427,12 +6434,12 @@ void FNakamaClient::AuthenticateGameCenter(
 	Body = Account.ToJson();
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Basic;
+	FString SessionToken = TEXT("");
 
-	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType,
-		[OnSuccess, this](TSharedPtr<FJsonObject> Json)
+	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType, SessionToken,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			FNakamaSession Result = FNakamaSession::FromJson(Json);
-			CurrentSession = MakeShared<FNakamaSession>(Result);
 			if (OnSuccess)
 			{
 				OnSuccess(Result);
@@ -6462,12 +6469,12 @@ void FNakamaClient::AuthenticateGoogle(
 	Body = Account.ToJson();
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Basic;
+	FString SessionToken = TEXT("");
 
-	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType,
-		[OnSuccess, this](TSharedPtr<FJsonObject> Json)
+	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType, SessionToken,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			FNakamaSession Result = FNakamaSession::FromJson(Json);
-			CurrentSession = MakeShared<FNakamaSession>(Result);
 			if (OnSuccess)
 			{
 				OnSuccess(Result);
@@ -6499,12 +6506,12 @@ void FNakamaClient::AuthenticateSteam(
 	Body = Account.ToJson();
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Basic;
+	FString SessionToken = TEXT("");
 
-	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType,
-		[OnSuccess, this](TSharedPtr<FJsonObject> Json)
+	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType, SessionToken,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			FNakamaSession Result = FNakamaSession::FromJson(Json);
-			CurrentSession = MakeShared<FNakamaSession>(Result);
 			if (OnSuccess)
 			{
 				OnSuccess(Result);
@@ -6514,6 +6521,7 @@ void FNakamaClient::AuthenticateSteam(
 }
 
 void FNakamaClient::BanGroupUsers(
+	const FNakamaSession& Session,
 	FString GroupId,
 	const TArray<FString>& UserIds,
 	TFunction<void()> OnSuccess,
@@ -6532,8 +6540,9 @@ void FNakamaClient::BanGroupUsers(
 	}TSharedPtr<FJsonObject> Body;
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
+	FString SessionToken = Session.Token;
 
-	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType,
+	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType, SessionToken,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			if (OnSuccess)
@@ -6545,6 +6554,7 @@ void FNakamaClient::BanGroupUsers(
 }
 
 void FNakamaClient::BlockFriends(
+	const FNakamaSession& Session,
 	const TArray<FString>& Ids,
 	const TArray<FString>& Usernames,
 	TFunction<void()> OnSuccess,
@@ -6566,8 +6576,9 @@ void FNakamaClient::BlockFriends(
 	}TSharedPtr<FJsonObject> Body;
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
+	FString SessionToken = Session.Token;
 
-	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType,
+	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType, SessionToken,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			if (OnSuccess)
@@ -6579,6 +6590,7 @@ void FNakamaClient::BlockFriends(
 }
 
 void FNakamaClient::CreateGroup(
+	const FNakamaSession& Session,
 	FString Name,
 	FString Description,
 	FString LangTag,
@@ -6614,9 +6626,10 @@ void FNakamaClient::CreateGroup(
 	Body->SetNumberField(TEXT("max_count"), MaxCount);
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
+	FString SessionToken = Session.Token;
 
-	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType,
-		[OnSuccess, this](TSharedPtr<FJsonObject> Json)
+	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType, SessionToken,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			FNakamaGroup Result = FNakamaGroup::FromJson(Json);
 			if (OnSuccess)
@@ -6628,14 +6641,16 @@ void FNakamaClient::CreateGroup(
 }
 
 void FNakamaClient::DeleteAccount(
+	const FNakamaSession& Session,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError)
 {
 	FString Endpoint = TEXT("/v2/account");TSharedPtr<FJsonObject> Body;
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
+	FString SessionToken = Session.Token;
 
-	MakeRequest(Endpoint, TEXT("DELETE"), Body, AuthType,
+	MakeRequest(Endpoint, TEXT("DELETE"), Body, AuthType, SessionToken,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			if (OnSuccess)
@@ -6647,6 +6662,7 @@ void FNakamaClient::DeleteAccount(
 }
 
 void FNakamaClient::DeleteFriends(
+	const FNakamaSession& Session,
 	const TArray<FString>& Ids,
 	const TArray<FString>& Usernames,
 	TFunction<void()> OnSuccess,
@@ -6668,8 +6684,9 @@ void FNakamaClient::DeleteFriends(
 	}TSharedPtr<FJsonObject> Body;
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
+	FString SessionToken = Session.Token;
 
-	MakeRequest(Endpoint, TEXT("DELETE"), Body, AuthType,
+	MakeRequest(Endpoint, TEXT("DELETE"), Body, AuthType, SessionToken,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			if (OnSuccess)
@@ -6681,6 +6698,7 @@ void FNakamaClient::DeleteFriends(
 }
 
 void FNakamaClient::DeleteGroup(
+	const FNakamaSession& Session,
 	FString GroupId,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError)
@@ -6694,8 +6712,9 @@ void FNakamaClient::DeleteGroup(
 	}TSharedPtr<FJsonObject> Body;
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
+	FString SessionToken = Session.Token;
 
-	MakeRequest(Endpoint, TEXT("DELETE"), Body, AuthType,
+	MakeRequest(Endpoint, TEXT("DELETE"), Body, AuthType, SessionToken,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			if (OnSuccess)
@@ -6707,6 +6726,7 @@ void FNakamaClient::DeleteGroup(
 }
 
 void FNakamaClient::DeleteLeaderboardRecord(
+	const FNakamaSession& Session,
 	FString LeaderboardId,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError)
@@ -6720,8 +6740,9 @@ void FNakamaClient::DeleteLeaderboardRecord(
 	}TSharedPtr<FJsonObject> Body;
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
+	FString SessionToken = Session.Token;
 
-	MakeRequest(Endpoint, TEXT("DELETE"), Body, AuthType,
+	MakeRequest(Endpoint, TEXT("DELETE"), Body, AuthType, SessionToken,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			if (OnSuccess)
@@ -6733,6 +6754,7 @@ void FNakamaClient::DeleteLeaderboardRecord(
 }
 
 void FNakamaClient::DeleteNotifications(
+	const FNakamaSession& Session,
 	const TArray<FString>& Ids,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError)
@@ -6749,8 +6771,9 @@ void FNakamaClient::DeleteNotifications(
 	}TSharedPtr<FJsonObject> Body;
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
+	FString SessionToken = Session.Token;
 
-	MakeRequest(Endpoint, TEXT("DELETE"), Body, AuthType,
+	MakeRequest(Endpoint, TEXT("DELETE"), Body, AuthType, SessionToken,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			if (OnSuccess)
@@ -6762,6 +6785,7 @@ void FNakamaClient::DeleteNotifications(
 }
 
 void FNakamaClient::DeleteTournamentRecord(
+	const FNakamaSession& Session,
 	FString TournamentId,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError)
@@ -6775,8 +6799,9 @@ void FNakamaClient::DeleteTournamentRecord(
 	}TSharedPtr<FJsonObject> Body;
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
+	FString SessionToken = Session.Token;
 
-	MakeRequest(Endpoint, TEXT("DELETE"), Body, AuthType,
+	MakeRequest(Endpoint, TEXT("DELETE"), Body, AuthType, SessionToken,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			if (OnSuccess)
@@ -6788,6 +6813,7 @@ void FNakamaClient::DeleteTournamentRecord(
 }
 
 void FNakamaClient::DeleteStorageObjects(
+	const FNakamaSession& Session,
 	const TArray<FNakamaDeleteStorageObjectId>& ObjectIds,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError)
@@ -6809,8 +6835,9 @@ void FNakamaClient::DeleteStorageObjects(
 	}
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
+	FString SessionToken = Session.Token;
 
-	MakeRequest(Endpoint, TEXT("PUT"), Body, AuthType,
+	MakeRequest(Endpoint, TEXT("PUT"), Body, AuthType, SessionToken,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			if (OnSuccess)
@@ -6822,6 +6849,7 @@ void FNakamaClient::DeleteStorageObjects(
 }
 
 void FNakamaClient::Event(
+	const FNakamaSession& Session,
 	FString Name,
 	FString Timestamp,
 	bool External,
@@ -6852,8 +6880,9 @@ void FNakamaClient::Event(
 	}
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
+	FString SessionToken = Session.Token;
 
-	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType,
+	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType, SessionToken,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			if (OnSuccess)
@@ -6865,15 +6894,17 @@ void FNakamaClient::Event(
 }
 
 void FNakamaClient::GetAccount(
+	const FNakamaSession& Session,
 	TFunction<void(const FNakamaAccount&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError)
 {
 	FString Endpoint = TEXT("/v2/account");TSharedPtr<FJsonObject> Body;
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
+	FString SessionToken = Session.Token;
 
-	MakeRequest(Endpoint, TEXT("GET"), Body, AuthType,
-		[OnSuccess, this](TSharedPtr<FJsonObject> Json)
+	MakeRequest(Endpoint, TEXT("GET"), Body, AuthType, SessionToken,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			FNakamaAccount Result = FNakamaAccount::FromJson(Json);
 			if (OnSuccess)
@@ -6885,6 +6916,7 @@ void FNakamaClient::GetAccount(
 }
 
 void FNakamaClient::GetUsers(
+	const FNakamaSession& Session,
 	const TArray<FString>& Ids,
 	const TArray<FString>& Usernames,
 	const TArray<FString>& FacebookIds,
@@ -6911,9 +6943,10 @@ void FNakamaClient::GetUsers(
 	}TSharedPtr<FJsonObject> Body;
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
+	FString SessionToken = Session.Token;
 
-	MakeRequest(Endpoint, TEXT("GET"), Body, AuthType,
-		[OnSuccess, this](TSharedPtr<FJsonObject> Json)
+	MakeRequest(Endpoint, TEXT("GET"), Body, AuthType, SessionToken,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			FNakamaUsers Result = FNakamaUsers::FromJson(Json);
 			if (OnSuccess)
@@ -6925,6 +6958,7 @@ void FNakamaClient::GetUsers(
 }
 
 void FNakamaClient::GetSubscription(
+	const FNakamaSession& Session,
 	FString ProductId,
 	TFunction<void(const FNakamaValidatedSubscription&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError)
@@ -6938,9 +6972,10 @@ void FNakamaClient::GetSubscription(
 	}TSharedPtr<FJsonObject> Body;
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
+	FString SessionToken = Session.Token;
 
-	MakeRequest(Endpoint, TEXT("GET"), Body, AuthType,
-		[OnSuccess, this](TSharedPtr<FJsonObject> Json)
+	MakeRequest(Endpoint, TEXT("GET"), Body, AuthType, SessionToken,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			FNakamaValidatedSubscription Result = FNakamaValidatedSubscription::FromJson(Json);
 			if (OnSuccess)
@@ -6952,15 +6987,17 @@ void FNakamaClient::GetSubscription(
 }
 
 void FNakamaClient::GetMatchmakerStats(
+	const FNakamaSession& Session,
 	TFunction<void(const FNakamaMatchmakerStats&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError)
 {
 	FString Endpoint = TEXT("/v2/matchmaker/stats");TSharedPtr<FJsonObject> Body;
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
+	FString SessionToken = Session.Token;
 
-	MakeRequest(Endpoint, TEXT("GET"), Body, AuthType,
-		[OnSuccess, this](TSharedPtr<FJsonObject> Json)
+	MakeRequest(Endpoint, TEXT("GET"), Body, AuthType, SessionToken,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			FNakamaMatchmakerStats Result = FNakamaMatchmakerStats::FromJson(Json);
 			if (OnSuccess)
@@ -6972,14 +7009,16 @@ void FNakamaClient::GetMatchmakerStats(
 }
 
 void FNakamaClient::Healthcheck(
+	const FNakamaSession& Session,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError)
 {
 	FString Endpoint = TEXT("/healthcheck");TSharedPtr<FJsonObject> Body;
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
+	FString SessionToken = Session.Token;
 
-	MakeRequest(Endpoint, TEXT("GET"), Body, AuthType,
+	MakeRequest(Endpoint, TEXT("GET"), Body, AuthType, SessionToken,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			if (OnSuccess)
@@ -6991,6 +7030,7 @@ void FNakamaClient::Healthcheck(
 }
 
 void FNakamaClient::ImportFacebookFriends(
+	const FNakamaSession& Session,
 	FNakamaAccountFacebook Account,
 	bool Reset,
 	TFunction<void()> OnSuccess,
@@ -7006,8 +7046,9 @@ void FNakamaClient::ImportFacebookFriends(
 	Body = Account.ToJson();
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
+	FString SessionToken = Session.Token;
 
-	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType,
+	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType, SessionToken,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			if (OnSuccess)
@@ -7019,6 +7060,7 @@ void FNakamaClient::ImportFacebookFriends(
 }
 
 void FNakamaClient::ImportSteamFriends(
+	const FNakamaSession& Session,
 	FNakamaAccountSteam Account,
 	bool Reset,
 	TFunction<void()> OnSuccess,
@@ -7034,8 +7076,9 @@ void FNakamaClient::ImportSteamFriends(
 	Body = Account.ToJson();
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
+	FString SessionToken = Session.Token;
 
-	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType,
+	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType, SessionToken,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			if (OnSuccess)
@@ -7047,6 +7090,7 @@ void FNakamaClient::ImportSteamFriends(
 }
 
 void FNakamaClient::JoinGroup(
+	const FNakamaSession& Session,
 	FString GroupId,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError)
@@ -7060,8 +7104,9 @@ void FNakamaClient::JoinGroup(
 	}TSharedPtr<FJsonObject> Body;
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
+	FString SessionToken = Session.Token;
 
-	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType,
+	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType, SessionToken,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			if (OnSuccess)
@@ -7073,6 +7118,7 @@ void FNakamaClient::JoinGroup(
 }
 
 void FNakamaClient::JoinTournament(
+	const FNakamaSession& Session,
 	FString TournamentId,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError)
@@ -7086,8 +7132,9 @@ void FNakamaClient::JoinTournament(
 	}TSharedPtr<FJsonObject> Body;
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
+	FString SessionToken = Session.Token;
 
-	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType,
+	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType, SessionToken,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			if (OnSuccess)
@@ -7099,6 +7146,7 @@ void FNakamaClient::JoinTournament(
 }
 
 void FNakamaClient::KickGroupUsers(
+	const FNakamaSession& Session,
 	FString GroupId,
 	const TArray<FString>& UserIds,
 	TFunction<void()> OnSuccess,
@@ -7117,8 +7165,9 @@ void FNakamaClient::KickGroupUsers(
 	}TSharedPtr<FJsonObject> Body;
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
+	FString SessionToken = Session.Token;
 
-	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType,
+	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType, SessionToken,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			if (OnSuccess)
@@ -7130,6 +7179,7 @@ void FNakamaClient::KickGroupUsers(
 }
 
 void FNakamaClient::LeaveGroup(
+	const FNakamaSession& Session,
 	FString GroupId,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError)
@@ -7143,8 +7193,9 @@ void FNakamaClient::LeaveGroup(
 	}TSharedPtr<FJsonObject> Body;
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
+	FString SessionToken = Session.Token;
 
-	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType,
+	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType, SessionToken,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			if (OnSuccess)
@@ -7156,6 +7207,7 @@ void FNakamaClient::LeaveGroup(
 }
 
 void FNakamaClient::LinkApple(
+	const FNakamaSession& Session,
 	FString Token,
 	const TMap<FString, FString>& Vars,
 	TFunction<void()> OnSuccess,
@@ -7182,8 +7234,9 @@ void FNakamaClient::LinkApple(
 	}
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
+	FString SessionToken = Session.Token;
 
-	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType,
+	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType, SessionToken,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			if (OnSuccess)
@@ -7195,6 +7248,7 @@ void FNakamaClient::LinkApple(
 }
 
 void FNakamaClient::LinkCustom(
+	const FNakamaSession& Session,
 	FString Id,
 	const TMap<FString, FString>& Vars,
 	TFunction<void()> OnSuccess,
@@ -7221,8 +7275,9 @@ void FNakamaClient::LinkCustom(
 	}
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
+	FString SessionToken = Session.Token;
 
-	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType,
+	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType, SessionToken,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			if (OnSuccess)
@@ -7234,6 +7289,7 @@ void FNakamaClient::LinkCustom(
 }
 
 void FNakamaClient::LinkDevice(
+	const FNakamaSession& Session,
 	FString Id,
 	const TMap<FString, FString>& Vars,
 	TFunction<void()> OnSuccess,
@@ -7260,8 +7316,9 @@ void FNakamaClient::LinkDevice(
 	}
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
+	FString SessionToken = Session.Token;
 
-	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType,
+	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType, SessionToken,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			if (OnSuccess)
@@ -7273,6 +7330,7 @@ void FNakamaClient::LinkDevice(
 }
 
 void FNakamaClient::LinkEmail(
+	const FNakamaSession& Session,
 	FString Email,
 	FString Password,
 	const TMap<FString, FString>& Vars,
@@ -7304,8 +7362,9 @@ void FNakamaClient::LinkEmail(
 	}
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
+	FString SessionToken = Session.Token;
 
-	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType,
+	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType, SessionToken,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			if (OnSuccess)
@@ -7317,6 +7376,7 @@ void FNakamaClient::LinkEmail(
 }
 
 void FNakamaClient::LinkFacebook(
+	const FNakamaSession& Session,
 	FNakamaAccountFacebook Account,
 	bool Sync,
 	TFunction<void()> OnSuccess,
@@ -7332,8 +7392,9 @@ void FNakamaClient::LinkFacebook(
 	Body = Account.ToJson();
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
+	FString SessionToken = Session.Token;
 
-	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType,
+	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType, SessionToken,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			if (OnSuccess)
@@ -7345,6 +7406,7 @@ void FNakamaClient::LinkFacebook(
 }
 
 void FNakamaClient::LinkFacebookInstantGame(
+	const FNakamaSession& Session,
 	FString SignedPlayerInfo,
 	const TMap<FString, FString>& Vars,
 	TFunction<void()> OnSuccess,
@@ -7371,8 +7433,9 @@ void FNakamaClient::LinkFacebookInstantGame(
 	}
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
+	FString SessionToken = Session.Token;
 
-	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType,
+	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType, SessionToken,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			if (OnSuccess)
@@ -7384,6 +7447,7 @@ void FNakamaClient::LinkFacebookInstantGame(
 }
 
 void FNakamaClient::LinkGameCenter(
+	const FNakamaSession& Session,
 	FString PlayerId,
 	FString BundleId,
 	int64 TimestampSeconds,
@@ -7432,8 +7496,9 @@ void FNakamaClient::LinkGameCenter(
 	}
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
+	FString SessionToken = Session.Token;
 
-	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType,
+	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType, SessionToken,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			if (OnSuccess)
@@ -7445,6 +7510,7 @@ void FNakamaClient::LinkGameCenter(
 }
 
 void FNakamaClient::LinkGoogle(
+	const FNakamaSession& Session,
 	FString Token,
 	const TMap<FString, FString>& Vars,
 	TFunction<void()> OnSuccess,
@@ -7471,8 +7537,9 @@ void FNakamaClient::LinkGoogle(
 	}
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
+	FString SessionToken = Session.Token;
 
-	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType,
+	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType, SessionToken,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			if (OnSuccess)
@@ -7484,6 +7551,7 @@ void FNakamaClient::LinkGoogle(
 }
 
 void FNakamaClient::LinkSteam(
+	const FNakamaSession& Session,
 	FNakamaAccountSteam Account,
 	bool Sync,
 	TFunction<void()> OnSuccess,
@@ -7499,8 +7567,9 @@ void FNakamaClient::LinkSteam(
 	Body->SetBoolField(TEXT("sync"), Sync);
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
+	FString SessionToken = Session.Token;
 
-	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType,
+	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType, SessionToken,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			if (OnSuccess)
@@ -7512,6 +7581,7 @@ void FNakamaClient::LinkSteam(
 }
 
 void FNakamaClient::ListChannelMessages(
+	const FNakamaSession& Session,
 	FString ChannelId,
 	int32 Limit,
 	bool Forward,
@@ -7537,9 +7607,10 @@ void FNakamaClient::ListChannelMessages(
 	}TSharedPtr<FJsonObject> Body;
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
+	FString SessionToken = Session.Token;
 
-	MakeRequest(Endpoint, TEXT("GET"), Body, AuthType,
-		[OnSuccess, this](TSharedPtr<FJsonObject> Json)
+	MakeRequest(Endpoint, TEXT("GET"), Body, AuthType, SessionToken,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			FNakamaChannelMessageList Result = FNakamaChannelMessageList::FromJson(Json);
 			if (OnSuccess)
@@ -7551,6 +7622,7 @@ void FNakamaClient::ListChannelMessages(
 }
 
 void FNakamaClient::ListFriends(
+	const FNakamaSession& Session,
 	int32 Limit,
 	int32 State,
 	FString Cursor,
@@ -7577,9 +7649,10 @@ void FNakamaClient::ListFriends(
 	}TSharedPtr<FJsonObject> Body;
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
+	FString SessionToken = Session.Token;
 
-	MakeRequest(Endpoint, TEXT("GET"), Body, AuthType,
-		[OnSuccess, this](TSharedPtr<FJsonObject> Json)
+	MakeRequest(Endpoint, TEXT("GET"), Body, AuthType, SessionToken,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			FNakamaFriendList Result = FNakamaFriendList::FromJson(Json);
 			if (OnSuccess)
@@ -7591,6 +7664,7 @@ void FNakamaClient::ListFriends(
 }
 
 void FNakamaClient::ListFriendsOfFriends(
+	const FNakamaSession& Session,
 	int32 Limit,
 	FString Cursor,
 	TFunction<void(const FNakamaFriendsOfFriendsList&)> OnSuccess,
@@ -7612,9 +7686,10 @@ void FNakamaClient::ListFriendsOfFriends(
 	}TSharedPtr<FJsonObject> Body;
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
+	FString SessionToken = Session.Token;
 
-	MakeRequest(Endpoint, TEXT("GET"), Body, AuthType,
-		[OnSuccess, this](TSharedPtr<FJsonObject> Json)
+	MakeRequest(Endpoint, TEXT("GET"), Body, AuthType, SessionToken,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			FNakamaFriendsOfFriendsList Result = FNakamaFriendsOfFriendsList::FromJson(Json);
 			if (OnSuccess)
@@ -7626,6 +7701,7 @@ void FNakamaClient::ListFriendsOfFriends(
 }
 
 void FNakamaClient::ListGroups(
+	const FNakamaSession& Session,
 	FString Name,
 	FString Cursor,
 	int32 Limit,
@@ -7664,9 +7740,10 @@ void FNakamaClient::ListGroups(
 	}TSharedPtr<FJsonObject> Body;
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
+	FString SessionToken = Session.Token;
 
-	MakeRequest(Endpoint, TEXT("GET"), Body, AuthType,
-		[OnSuccess, this](TSharedPtr<FJsonObject> Json)
+	MakeRequest(Endpoint, TEXT("GET"), Body, AuthType, SessionToken,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			FNakamaGroupList Result = FNakamaGroupList::FromJson(Json);
 			if (OnSuccess)
@@ -7678,6 +7755,7 @@ void FNakamaClient::ListGroups(
 }
 
 void FNakamaClient::ListGroupUsers(
+	const FNakamaSession& Session,
 	FString GroupId,
 	int32 Limit,
 	int32 State,
@@ -7706,9 +7784,10 @@ void FNakamaClient::ListGroupUsers(
 	}TSharedPtr<FJsonObject> Body;
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
+	FString SessionToken = Session.Token;
 
-	MakeRequest(Endpoint, TEXT("GET"), Body, AuthType,
-		[OnSuccess, this](TSharedPtr<FJsonObject> Json)
+	MakeRequest(Endpoint, TEXT("GET"), Body, AuthType, SessionToken,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			FNakamaGroupUserList Result = FNakamaGroupUserList::FromJson(Json);
 			if (OnSuccess)
@@ -7720,6 +7799,7 @@ void FNakamaClient::ListGroupUsers(
 }
 
 void FNakamaClient::ListLeaderboardRecords(
+	const FNakamaSession& Session,
 	FString LeaderboardId,
 	const TArray<FString>& OwnerIds,
 	int32 Limit,
@@ -7753,9 +7833,10 @@ void FNakamaClient::ListLeaderboardRecords(
 	}TSharedPtr<FJsonObject> Body;
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
+	FString SessionToken = Session.Token;
 
-	MakeRequest(Endpoint, TEXT("GET"), Body, AuthType,
-		[OnSuccess, this](TSharedPtr<FJsonObject> Json)
+	MakeRequest(Endpoint, TEXT("GET"), Body, AuthType, SessionToken,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			FNakamaLeaderboardRecordList Result = FNakamaLeaderboardRecordList::FromJson(Json);
 			if (OnSuccess)
@@ -7767,6 +7848,7 @@ void FNakamaClient::ListLeaderboardRecords(
 }
 
 void FNakamaClient::ListLeaderboardRecordsAroundOwner(
+	const FNakamaSession& Session,
 	FString LeaderboardId,
 	uint32 Limit,
 	FString OwnerId,
@@ -7797,9 +7879,10 @@ void FNakamaClient::ListLeaderboardRecordsAroundOwner(
 	}TSharedPtr<FJsonObject> Body;
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
+	FString SessionToken = Session.Token;
 
-	MakeRequest(Endpoint, TEXT("GET"), Body, AuthType,
-		[OnSuccess, this](TSharedPtr<FJsonObject> Json)
+	MakeRequest(Endpoint, TEXT("GET"), Body, AuthType, SessionToken,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			FNakamaLeaderboardRecordList Result = FNakamaLeaderboardRecordList::FromJson(Json);
 			if (OnSuccess)
@@ -7811,6 +7894,7 @@ void FNakamaClient::ListLeaderboardRecordsAroundOwner(
 }
 
 void FNakamaClient::ListMatches(
+	const FNakamaSession& Session,
 	int32 Limit,
 	bool Authoritative,
 	FString Label,
@@ -7849,9 +7933,10 @@ void FNakamaClient::ListMatches(
 	}TSharedPtr<FJsonObject> Body;
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
+	FString SessionToken = Session.Token;
 
-	MakeRequest(Endpoint, TEXT("GET"), Body, AuthType,
-		[OnSuccess, this](TSharedPtr<FJsonObject> Json)
+	MakeRequest(Endpoint, TEXT("GET"), Body, AuthType, SessionToken,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			FNakamaMatchList Result = FNakamaMatchList::FromJson(Json);
 			if (OnSuccess)
@@ -7863,6 +7948,7 @@ void FNakamaClient::ListMatches(
 }
 
 void FNakamaClient::ListParties(
+	const FNakamaSession& Session,
 	int32 Limit,
 	bool Open,
 	FString Query,
@@ -7891,9 +7977,10 @@ void FNakamaClient::ListParties(
 	}TSharedPtr<FJsonObject> Body;
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
+	FString SessionToken = Session.Token;
 
-	MakeRequest(Endpoint, TEXT("GET"), Body, AuthType,
-		[OnSuccess, this](TSharedPtr<FJsonObject> Json)
+	MakeRequest(Endpoint, TEXT("GET"), Body, AuthType, SessionToken,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			FNakamaPartyList Result = FNakamaPartyList::FromJson(Json);
 			if (OnSuccess)
@@ -7905,6 +7992,7 @@ void FNakamaClient::ListParties(
 }
 
 void FNakamaClient::ListNotifications(
+	const FNakamaSession& Session,
 	int32 Limit,
 	FString CacheableCursor,
 	TFunction<void(const FNakamaNotificationList&)> OnSuccess,
@@ -7926,9 +8014,10 @@ void FNakamaClient::ListNotifications(
 	}TSharedPtr<FJsonObject> Body;
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
+	FString SessionToken = Session.Token;
 
-	MakeRequest(Endpoint, TEXT("GET"), Body, AuthType,
-		[OnSuccess, this](TSharedPtr<FJsonObject> Json)
+	MakeRequest(Endpoint, TEXT("GET"), Body, AuthType, SessionToken,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			FNakamaNotificationList Result = FNakamaNotificationList::FromJson(Json);
 			if (OnSuccess)
@@ -7940,6 +8029,7 @@ void FNakamaClient::ListNotifications(
 }
 
 void FNakamaClient::ListStorageObjects(
+	const FNakamaSession& Session,
 	FString UserId,
 	FString Collection,
 	int32 Limit,
@@ -7968,9 +8058,10 @@ void FNakamaClient::ListStorageObjects(
 	}TSharedPtr<FJsonObject> Body;
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
+	FString SessionToken = Session.Token;
 
-	MakeRequest(Endpoint, TEXT("GET"), Body, AuthType,
-		[OnSuccess, this](TSharedPtr<FJsonObject> Json)
+	MakeRequest(Endpoint, TEXT("GET"), Body, AuthType, SessionToken,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			FNakamaStorageObjectList Result = FNakamaStorageObjectList::FromJson(Json);
 			if (OnSuccess)
@@ -7982,6 +8073,7 @@ void FNakamaClient::ListStorageObjects(
 }
 
 void FNakamaClient::ListSubscriptions(
+	const FNakamaSession& Session,
 	int32 Limit,
 	FString Cursor,
 	TFunction<void(const FNakamaSubscriptionList&)> OnSuccess,
@@ -8000,9 +8092,10 @@ void FNakamaClient::ListSubscriptions(
 	}
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
+	FString SessionToken = Session.Token;
 
-	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType,
-		[OnSuccess, this](TSharedPtr<FJsonObject> Json)
+	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType, SessionToken,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			FNakamaSubscriptionList Result = FNakamaSubscriptionList::FromJson(Json);
 			if (OnSuccess)
@@ -8014,6 +8107,7 @@ void FNakamaClient::ListSubscriptions(
 }
 
 void FNakamaClient::ListTournaments(
+	const FNakamaSession& Session,
 	uint32 CategoryStart,
 	uint32 CategoryEnd,
 	uint32 StartTime,
@@ -8055,9 +8149,10 @@ void FNakamaClient::ListTournaments(
 	}TSharedPtr<FJsonObject> Body;
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
+	FString SessionToken = Session.Token;
 
-	MakeRequest(Endpoint, TEXT("GET"), Body, AuthType,
-		[OnSuccess, this](TSharedPtr<FJsonObject> Json)
+	MakeRequest(Endpoint, TEXT("GET"), Body, AuthType, SessionToken,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			FNakamaTournamentList Result = FNakamaTournamentList::FromJson(Json);
 			if (OnSuccess)
@@ -8069,6 +8164,7 @@ void FNakamaClient::ListTournaments(
 }
 
 void FNakamaClient::ListTournamentRecords(
+	const FNakamaSession& Session,
 	FString TournamentId,
 	const TArray<FString>& OwnerIds,
 	int32 Limit,
@@ -8102,9 +8198,10 @@ void FNakamaClient::ListTournamentRecords(
 	}TSharedPtr<FJsonObject> Body;
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
+	FString SessionToken = Session.Token;
 
-	MakeRequest(Endpoint, TEXT("GET"), Body, AuthType,
-		[OnSuccess, this](TSharedPtr<FJsonObject> Json)
+	MakeRequest(Endpoint, TEXT("GET"), Body, AuthType, SessionToken,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			FNakamaTournamentRecordList Result = FNakamaTournamentRecordList::FromJson(Json);
 			if (OnSuccess)
@@ -8116,6 +8213,7 @@ void FNakamaClient::ListTournamentRecords(
 }
 
 void FNakamaClient::ListTournamentRecordsAroundOwner(
+	const FNakamaSession& Session,
 	FString TournamentId,
 	uint32 Limit,
 	FString OwnerId,
@@ -8146,9 +8244,10 @@ void FNakamaClient::ListTournamentRecordsAroundOwner(
 	}TSharedPtr<FJsonObject> Body;
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
+	FString SessionToken = Session.Token;
 
-	MakeRequest(Endpoint, TEXT("GET"), Body, AuthType,
-		[OnSuccess, this](TSharedPtr<FJsonObject> Json)
+	MakeRequest(Endpoint, TEXT("GET"), Body, AuthType, SessionToken,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			FNakamaTournamentRecordList Result = FNakamaTournamentRecordList::FromJson(Json);
 			if (OnSuccess)
@@ -8160,6 +8259,7 @@ void FNakamaClient::ListTournamentRecordsAroundOwner(
 }
 
 void FNakamaClient::ListUserGroups(
+	const FNakamaSession& Session,
 	FString UserId,
 	int32 Limit,
 	int32 State,
@@ -8188,9 +8288,10 @@ void FNakamaClient::ListUserGroups(
 	}TSharedPtr<FJsonObject> Body;
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
+	FString SessionToken = Session.Token;
 
-	MakeRequest(Endpoint, TEXT("GET"), Body, AuthType,
-		[OnSuccess, this](TSharedPtr<FJsonObject> Json)
+	MakeRequest(Endpoint, TEXT("GET"), Body, AuthType, SessionToken,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			FNakamaUserGroupList Result = FNakamaUserGroupList::FromJson(Json);
 			if (OnSuccess)
@@ -8202,6 +8303,7 @@ void FNakamaClient::ListUserGroups(
 }
 
 void FNakamaClient::PromoteGroupUsers(
+	const FNakamaSession& Session,
 	FString GroupId,
 	const TArray<FString>& UserIds,
 	TFunction<void()> OnSuccess,
@@ -8220,8 +8322,9 @@ void FNakamaClient::PromoteGroupUsers(
 	}TSharedPtr<FJsonObject> Body;
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
+	FString SessionToken = Session.Token;
 
-	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType,
+	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType, SessionToken,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			if (OnSuccess)
@@ -8233,6 +8336,7 @@ void FNakamaClient::PromoteGroupUsers(
 }
 
 void FNakamaClient::DemoteGroupUsers(
+	const FNakamaSession& Session,
 	FString GroupId,
 	const TArray<FString>& UserIds,
 	TFunction<void()> OnSuccess,
@@ -8251,8 +8355,9 @@ void FNakamaClient::DemoteGroupUsers(
 	}TSharedPtr<FJsonObject> Body;
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
+	FString SessionToken = Session.Token;
 
-	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType,
+	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType, SessionToken,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			if (OnSuccess)
@@ -8264,6 +8369,7 @@ void FNakamaClient::DemoteGroupUsers(
 }
 
 void FNakamaClient::ReadStorageObjects(
+	const FNakamaSession& Session,
 	const TArray<FNakamaReadStorageObjectId>& ObjectIds,
 	TFunction<void(const FNakamaStorageObjects&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError)
@@ -8285,9 +8391,10 @@ void FNakamaClient::ReadStorageObjects(
 	}
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
+	FString SessionToken = Session.Token;
 
-	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType,
-		[OnSuccess, this](TSharedPtr<FJsonObject> Json)
+	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType, SessionToken,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			FNakamaStorageObjects Result = FNakamaStorageObjects::FromJson(Json);
 			if (OnSuccess)
@@ -8299,6 +8406,7 @@ void FNakamaClient::ReadStorageObjects(
 }
 
 void FNakamaClient::RpcFunc(
+	const FNakamaSession& Session,
 	FString Id,
 	FString Payload,
 	FString HttpKey,
@@ -8319,9 +8427,10 @@ void FNakamaClient::RpcFunc(
 	Body = MakeShared<FJsonObject>();
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
+	FString SessionToken = Session.Token;
 
-	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType,
-		[OnSuccess, this](TSharedPtr<FJsonObject> Json)
+	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType, SessionToken,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			FNakamaRpc Result = FNakamaRpc::FromJson(Json);
 			if (OnSuccess)
@@ -8333,6 +8442,7 @@ void FNakamaClient::RpcFunc(
 }
 
 void FNakamaClient::UnlinkApple(
+	const FNakamaSession& Session,
 	FString Token,
 	const TMap<FString, FString>& Vars,
 	TFunction<void()> OnSuccess,
@@ -8359,8 +8469,9 @@ void FNakamaClient::UnlinkApple(
 	}
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
+	FString SessionToken = Session.Token;
 
-	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType,
+	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType, SessionToken,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			if (OnSuccess)
@@ -8372,6 +8483,7 @@ void FNakamaClient::UnlinkApple(
 }
 
 void FNakamaClient::UnlinkCustom(
+	const FNakamaSession& Session,
 	FString Id,
 	const TMap<FString, FString>& Vars,
 	TFunction<void()> OnSuccess,
@@ -8398,8 +8510,9 @@ void FNakamaClient::UnlinkCustom(
 	}
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
+	FString SessionToken = Session.Token;
 
-	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType,
+	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType, SessionToken,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			if (OnSuccess)
@@ -8411,6 +8524,7 @@ void FNakamaClient::UnlinkCustom(
 }
 
 void FNakamaClient::UnlinkDevice(
+	const FNakamaSession& Session,
 	FString Id,
 	const TMap<FString, FString>& Vars,
 	TFunction<void()> OnSuccess,
@@ -8437,8 +8551,9 @@ void FNakamaClient::UnlinkDevice(
 	}
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
+	FString SessionToken = Session.Token;
 
-	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType,
+	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType, SessionToken,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			if (OnSuccess)
@@ -8450,6 +8565,7 @@ void FNakamaClient::UnlinkDevice(
 }
 
 void FNakamaClient::UnlinkEmail(
+	const FNakamaSession& Session,
 	FString Email,
 	FString Password,
 	const TMap<FString, FString>& Vars,
@@ -8481,8 +8597,9 @@ void FNakamaClient::UnlinkEmail(
 	}
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
+	FString SessionToken = Session.Token;
 
-	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType,
+	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType, SessionToken,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			if (OnSuccess)
@@ -8494,6 +8611,7 @@ void FNakamaClient::UnlinkEmail(
 }
 
 void FNakamaClient::UnlinkFacebook(
+	const FNakamaSession& Session,
 	FString Token,
 	const TMap<FString, FString>& Vars,
 	TFunction<void()> OnSuccess,
@@ -8520,8 +8638,9 @@ void FNakamaClient::UnlinkFacebook(
 	}
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
+	FString SessionToken = Session.Token;
 
-	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType,
+	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType, SessionToken,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			if (OnSuccess)
@@ -8533,6 +8652,7 @@ void FNakamaClient::UnlinkFacebook(
 }
 
 void FNakamaClient::UnlinkFacebookInstantGame(
+	const FNakamaSession& Session,
 	FString SignedPlayerInfo,
 	const TMap<FString, FString>& Vars,
 	TFunction<void()> OnSuccess,
@@ -8559,8 +8679,9 @@ void FNakamaClient::UnlinkFacebookInstantGame(
 	}
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
+	FString SessionToken = Session.Token;
 
-	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType,
+	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType, SessionToken,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			if (OnSuccess)
@@ -8572,6 +8693,7 @@ void FNakamaClient::UnlinkFacebookInstantGame(
 }
 
 void FNakamaClient::UnlinkGameCenter(
+	const FNakamaSession& Session,
 	FString PlayerId,
 	FString BundleId,
 	int64 TimestampSeconds,
@@ -8620,8 +8742,9 @@ void FNakamaClient::UnlinkGameCenter(
 	}
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
+	FString SessionToken = Session.Token;
 
-	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType,
+	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType, SessionToken,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			if (OnSuccess)
@@ -8633,6 +8756,7 @@ void FNakamaClient::UnlinkGameCenter(
 }
 
 void FNakamaClient::UnlinkGoogle(
+	const FNakamaSession& Session,
 	FString Token,
 	const TMap<FString, FString>& Vars,
 	TFunction<void()> OnSuccess,
@@ -8659,8 +8783,9 @@ void FNakamaClient::UnlinkGoogle(
 	}
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
+	FString SessionToken = Session.Token;
 
-	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType,
+	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType, SessionToken,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			if (OnSuccess)
@@ -8672,6 +8797,7 @@ void FNakamaClient::UnlinkGoogle(
 }
 
 void FNakamaClient::UnlinkSteam(
+	const FNakamaSession& Session,
 	FString Token,
 	const TMap<FString, FString>& Vars,
 	TFunction<void()> OnSuccess,
@@ -8698,8 +8824,9 @@ void FNakamaClient::UnlinkSteam(
 	}
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
+	FString SessionToken = Session.Token;
 
-	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType,
+	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType, SessionToken,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			if (OnSuccess)
@@ -8711,6 +8838,7 @@ void FNakamaClient::UnlinkSteam(
 }
 
 void FNakamaClient::UpdateAccount(
+	const FNakamaSession& Session,
 	FString Username,
 	FString DisplayName,
 	FString AvatarUrl,
@@ -8752,8 +8880,9 @@ void FNakamaClient::UpdateAccount(
 	}
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
+	FString SessionToken = Session.Token;
 
-	MakeRequest(Endpoint, TEXT("PUT"), Body, AuthType,
+	MakeRequest(Endpoint, TEXT("PUT"), Body, AuthType, SessionToken,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			if (OnSuccess)
@@ -8765,6 +8894,7 @@ void FNakamaClient::UpdateAccount(
 }
 
 void FNakamaClient::UpdateGroup(
+	const FNakamaSession& Session,
 	FString GroupId,
 	FString Name,
 	FString Description,
@@ -8804,8 +8934,9 @@ void FNakamaClient::UpdateGroup(
 	Body->SetBoolField(TEXT("open"), Open);
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
+	FString SessionToken = Session.Token;
 
-	MakeRequest(Endpoint, TEXT("PUT"), Body, AuthType,
+	MakeRequest(Endpoint, TEXT("PUT"), Body, AuthType, SessionToken,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			if (OnSuccess)
@@ -8817,6 +8948,7 @@ void FNakamaClient::UpdateGroup(
 }
 
 void FNakamaClient::ValidatePurchaseApple(
+	const FNakamaSession& Session,
 	FString Receipt,
 	bool Persist,
 	TFunction<void(const FNakamaValidatePurchaseResponse&)> OnSuccess,
@@ -8835,9 +8967,10 @@ void FNakamaClient::ValidatePurchaseApple(
 	Body->SetBoolField(TEXT("persist"), Persist);
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
+	FString SessionToken = Session.Token;
 
-	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType,
-		[OnSuccess, this](TSharedPtr<FJsonObject> Json)
+	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType, SessionToken,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			FNakamaValidatePurchaseResponse Result = FNakamaValidatePurchaseResponse::FromJson(Json);
 			if (OnSuccess)
@@ -8849,6 +8982,7 @@ void FNakamaClient::ValidatePurchaseApple(
 }
 
 void FNakamaClient::ValidateSubscriptionApple(
+	const FNakamaSession& Session,
 	FString Receipt,
 	bool Persist,
 	TFunction<void(const FNakamaValidateSubscriptionResponse&)> OnSuccess,
@@ -8867,9 +9001,10 @@ void FNakamaClient::ValidateSubscriptionApple(
 	Body->SetBoolField(TEXT("persist"), Persist);
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
+	FString SessionToken = Session.Token;
 
-	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType,
-		[OnSuccess, this](TSharedPtr<FJsonObject> Json)
+	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType, SessionToken,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			FNakamaValidateSubscriptionResponse Result = FNakamaValidateSubscriptionResponse::FromJson(Json);
 			if (OnSuccess)
@@ -8881,6 +9016,7 @@ void FNakamaClient::ValidateSubscriptionApple(
 }
 
 void FNakamaClient::ValidatePurchaseGoogle(
+	const FNakamaSession& Session,
 	FString Purchase,
 	bool Persist,
 	TFunction<void(const FNakamaValidatePurchaseResponse&)> OnSuccess,
@@ -8899,9 +9035,10 @@ void FNakamaClient::ValidatePurchaseGoogle(
 	Body->SetBoolField(TEXT("persist"), Persist);
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
+	FString SessionToken = Session.Token;
 
-	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType,
-		[OnSuccess, this](TSharedPtr<FJsonObject> Json)
+	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType, SessionToken,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			FNakamaValidatePurchaseResponse Result = FNakamaValidatePurchaseResponse::FromJson(Json);
 			if (OnSuccess)
@@ -8913,6 +9050,7 @@ void FNakamaClient::ValidatePurchaseGoogle(
 }
 
 void FNakamaClient::ValidateSubscriptionGoogle(
+	const FNakamaSession& Session,
 	FString Receipt,
 	bool Persist,
 	TFunction<void(const FNakamaValidateSubscriptionResponse&)> OnSuccess,
@@ -8931,9 +9069,10 @@ void FNakamaClient::ValidateSubscriptionGoogle(
 	Body->SetBoolField(TEXT("persist"), Persist);
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
+	FString SessionToken = Session.Token;
 
-	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType,
-		[OnSuccess, this](TSharedPtr<FJsonObject> Json)
+	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType, SessionToken,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			FNakamaValidateSubscriptionResponse Result = FNakamaValidateSubscriptionResponse::FromJson(Json);
 			if (OnSuccess)
@@ -8945,6 +9084,7 @@ void FNakamaClient::ValidateSubscriptionGoogle(
 }
 
 void FNakamaClient::ValidatePurchaseHuawei(
+	const FNakamaSession& Session,
 	FString Purchase,
 	FString Signature,
 	bool Persist,
@@ -8968,9 +9108,10 @@ void FNakamaClient::ValidatePurchaseHuawei(
 	Body->SetBoolField(TEXT("persist"), Persist);
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
+	FString SessionToken = Session.Token;
 
-	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType,
-		[OnSuccess, this](TSharedPtr<FJsonObject> Json)
+	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType, SessionToken,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			FNakamaValidatePurchaseResponse Result = FNakamaValidatePurchaseResponse::FromJson(Json);
 			if (OnSuccess)
@@ -8982,6 +9123,7 @@ void FNakamaClient::ValidatePurchaseHuawei(
 }
 
 void FNakamaClient::ValidatePurchaseFacebookInstant(
+	const FNakamaSession& Session,
 	FString SignedRequest,
 	bool Persist,
 	TFunction<void(const FNakamaValidatePurchaseResponse&)> OnSuccess,
@@ -9000,9 +9142,10 @@ void FNakamaClient::ValidatePurchaseFacebookInstant(
 	Body->SetBoolField(TEXT("persist"), Persist);
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
+	FString SessionToken = Session.Token;
 
-	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType,
-		[OnSuccess, this](TSharedPtr<FJsonObject> Json)
+	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType, SessionToken,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			FNakamaValidatePurchaseResponse Result = FNakamaValidatePurchaseResponse::FromJson(Json);
 			if (OnSuccess)
@@ -9014,6 +9157,7 @@ void FNakamaClient::ValidatePurchaseFacebookInstant(
 }
 
 void FNakamaClient::WriteLeaderboardRecord(
+	const FNakamaSession& Session,
 	FString LeaderboardId,
 	FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite Record,
 	TFunction<void(const FNakamaLeaderboardRecord&)> OnSuccess,
@@ -9029,9 +9173,10 @@ void FNakamaClient::WriteLeaderboardRecord(
 	Body = Record.ToJson();
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
+	FString SessionToken = Session.Token;
 
-	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType,
-		[OnSuccess, this](TSharedPtr<FJsonObject> Json)
+	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType, SessionToken,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			FNakamaLeaderboardRecord Result = FNakamaLeaderboardRecord::FromJson(Json);
 			if (OnSuccess)
@@ -9043,6 +9188,7 @@ void FNakamaClient::WriteLeaderboardRecord(
 }
 
 void FNakamaClient::WriteStorageObjects(
+	const FNakamaSession& Session,
 	const TArray<FNakamaWriteStorageObject>& Objects,
 	TFunction<void(const FNakamaStorageObjectAcks&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError)
@@ -9064,9 +9210,10 @@ void FNakamaClient::WriteStorageObjects(
 	}
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
+	FString SessionToken = Session.Token;
 
-	MakeRequest(Endpoint, TEXT("PUT"), Body, AuthType,
-		[OnSuccess, this](TSharedPtr<FJsonObject> Json)
+	MakeRequest(Endpoint, TEXT("PUT"), Body, AuthType, SessionToken,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			FNakamaStorageObjectAcks Result = FNakamaStorageObjectAcks::FromJson(Json);
 			if (OnSuccess)
@@ -9078,6 +9225,7 @@ void FNakamaClient::WriteStorageObjects(
 }
 
 void FNakamaClient::WriteTournamentRecord(
+	const FNakamaSession& Session,
 	FString TournamentId,
 	FNakamaWriteTournamentRecordRequest_TournamentRecordWrite Record,
 	TFunction<void(const FNakamaLeaderboardRecord&)> OnSuccess,
@@ -9093,9 +9241,10 @@ void FNakamaClient::WriteTournamentRecord(
 	Body = Record.ToJson();
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
+	FString SessionToken = Session.Token;
 
-	MakeRequest(Endpoint, TEXT("PUT"), Body, AuthType,
-		[OnSuccess, this](TSharedPtr<FJsonObject> Json)
+	MakeRequest(Endpoint, TEXT("PUT"), Body, AuthType, SessionToken,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			FNakamaLeaderboardRecord Result = FNakamaLeaderboardRecord::FromJson(Json);
 			if (OnSuccess)

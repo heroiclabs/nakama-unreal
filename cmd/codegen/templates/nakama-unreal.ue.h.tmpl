@@ -89,9 +89,15 @@ public:
 {{- $returnType := $rpc.ReturnType -}}
 {{- $hasParams := ne $requestType nil }}
 {{- $hasReturn := ne $returnType nil }}
+{{- $isAuthenticate := containsString $rpc.Name "Authenticate" }}
+{{- $isSessionRefresh := eq $rpc.Name "SessionRefresh" }}
+{{- $needsSession := and (not $isAuthenticate) (not $isSessionRefresh) }}
 
 	/** {{ $rpc.Comment }} */
 	void {{ $rpc.Name }}(
+		{{- if $needsSession }}
+		const FNakamaSession& Session,
+		{{- end }}
 		{{- if $hasParams -}}
 		{{- range $fidx, $field := $requestType.Fields }}
 		{{ getUnrealType $field.Type $field.Repeated }} {{ $field.Name | pascalCase }},
@@ -116,6 +122,7 @@ private:
 		const FString& Method,
 		const TSharedPtr<FJsonObject>& Body,
 		ENakamaRequestAuth AuthType,
+		const FString& SessionToken,
 		TFunction<void(TSharedPtr<FJsonObject>)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError);
 
@@ -125,5 +132,4 @@ private:
 	bool bUseSSL = false;
 	bool bEnableDebug = false;
 	float Timeout = 10.0f;
-	FNakamaSessionPtr CurrentSession;
 };

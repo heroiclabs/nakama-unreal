@@ -247,6 +247,7 @@ void FNakamaClient::MakeRequest(
 	const FString& Method,
 	const TSharedPtr<FJsonObject>& Body,
 	ENakamaRequestAuth AuthType,
+	const FString& SessionToken,
 	TFunction<void(TSharedPtr<FJsonObject>)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError)
 {
@@ -267,9 +268,9 @@ void FNakamaClient::MakeRequest(
 		}
 		break;
 	case ENakamaRequestAuth::Bearer:
-		if (CurrentSession.IsValid() && !CurrentSession->Token.IsEmpty())
+		if (!SessionToken.IsEmpty())
 		{
-			Request->SetHeader(TEXT("Authorization"), FString::Printf(TEXT("Bearer %s"), *CurrentSession->Token));
+			Request->SetHeader(TEXT("Authorization"), FString::Printf(TEXT("Bearer %s"), *SessionToken));
 		}
 		break;
 	case ENakamaRequestAuth::None:
@@ -365,8 +366,12 @@ void FNakamaClient::MakeRequest(
 {{- $hasReturn := ne $returnType nil }}
 {{- $isAuthenticate := containsString $rpc.Name "Authenticate" }}
 {{- $isSessionRefresh := eq $rpc.Name "SessionRefresh" }}
+{{- $needsSession := and (not $isAuthenticate) (not $isSessionRefresh) }}
 
 void FNakamaClient::{{ $rpc.Name }}(
+	{{- if $needsSession }}
+	const FNakamaSession& Session,
+	{{- end }}
 	{{- if $hasParams -}}
 	{{- range $fidx, $field := $requestType.Fields }}
 	{{ getUnrealType $field.Type $field.Repeated }} {{ $field.Name | pascalCase }},
@@ -534,16 +539,13 @@ void FNakamaClient::{{ $rpc.Name }}(
 {{- end }}
 
 	ENakamaRequestAuth AuthType = {{ if or $isAuthenticate $isSessionRefresh }}ENakamaRequestAuth::Basic{{ else }}ENakamaRequestAuth::Bearer{{ end }};
+	FString SessionToken = {{ if $needsSession }}Session.Token{{ else }}TEXT(""){{ end }};
 
-	MakeRequest(Endpoint, TEXT("{{ $rpc.Method }}"), Body, AuthType,
-		[{{ if $hasReturn }}OnSuccess, this{{ else }}OnSuccess{{ end }}](TSharedPtr<FJsonObject> Json)
+	MakeRequest(Endpoint, TEXT("{{ $rpc.Method }}"), Body, AuthType, SessionToken,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			{{- if $hasReturn }}
 			FNakama{{ $returnType.Name }} Result = FNakama{{ $returnType.Name }}::FromJson(Json);
-			{{- /* Store session if this is an auth endpoint */ -}}
-			{{- if eq $returnType.Name "Session" }}
-			CurrentSession = MakeShared<FNakamaSession>(Result);
-			{{- end }}
 			if (OnSuccess)
 			{
 				OnSuccess(Result);

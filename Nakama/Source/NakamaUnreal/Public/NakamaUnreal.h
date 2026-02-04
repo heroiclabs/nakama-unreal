@@ -2028,6 +2028,7 @@ public:
 
 	/** Add friends by ID or username to a user's account. */
 	void AddFriends(
+		const FNakamaSession& Session,
 		const TArray<FString>& Ids,
 		const TArray<FString>& Usernames,
 		FString Metadata,
@@ -2036,6 +2037,7 @@ public:
 
 	/** Add users to a group. */
 	void AddGroupUsers(
+		const FNakamaSession& Session,
 		FString GroupId,
 		const TArray<FString>& UserIds,
 		TFunction<void()> OnSuccess,
@@ -2050,6 +2052,7 @@ public:
 
 	/** Log out a session, invalidate a refresh token, or log out all sessions/refresh tokens for a user. */
 	void SessionLogout(
+		const FNakamaSession& Session,
 		FString Token,
 		FString RefreshToken,
 		TFunction<void()> OnSuccess,
@@ -2131,6 +2134,7 @@ public:
 
 	/** Ban a set of users from a group. */
 	void BanGroupUsers(
+		const FNakamaSession& Session,
 		FString GroupId,
 		const TArray<FString>& UserIds,
 		TFunction<void()> OnSuccess,
@@ -2138,6 +2142,7 @@ public:
 
 	/** Block one or more users by ID or username. */
 	void BlockFriends(
+		const FNakamaSession& Session,
 		const TArray<FString>& Ids,
 		const TArray<FString>& Usernames,
 		TFunction<void()> OnSuccess,
@@ -2145,6 +2150,7 @@ public:
 
 	/** Create a new group with the current user as the owner. */
 	void CreateGroup(
+		const FNakamaSession& Session,
 		FString Name,
 		FString Description,
 		FString LangTag,
@@ -2156,11 +2162,13 @@ public:
 
 	/** Delete the current user's account. */
 	void DeleteAccount(
+		const FNakamaSession& Session,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError);
 
 	/** Delete one or more users by ID or username. */
 	void DeleteFriends(
+		const FNakamaSession& Session,
 		const TArray<FString>& Ids,
 		const TArray<FString>& Usernames,
 		TFunction<void()> OnSuccess,
@@ -2168,36 +2176,42 @@ public:
 
 	/** Delete a group by ID. */
 	void DeleteGroup(
+		const FNakamaSession& Session,
 		FString GroupId,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError);
 
 	/** Delete a leaderboard record. */
 	void DeleteLeaderboardRecord(
+		const FNakamaSession& Session,
 		FString LeaderboardId,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError);
 
 	/** Delete one or more notifications for the current user. */
 	void DeleteNotifications(
+		const FNakamaSession& Session,
 		const TArray<FString>& Ids,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError);
 
 	/** Delete a tournament record. */
 	void DeleteTournamentRecord(
+		const FNakamaSession& Session,
 		FString TournamentId,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError);
 
 	/** Delete one or more objects by ID or username. */
 	void DeleteStorageObjects(
+		const FNakamaSession& Session,
 		const TArray<FNakamaDeleteStorageObjectId>& ObjectIds,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError);
 
 	/** Submit an event for processing in the server's registered runtime custom events handler. */
 	void Event(
+		const FNakamaSession& Session,
 		FString Name,
 		FString Timestamp,
 		bool External,
@@ -2207,11 +2221,13 @@ public:
 
 	/** Fetch the current user's account. */
 	void GetAccount(
+		const FNakamaSession& Session,
 		TFunction<void(const FNakamaAccount&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError);
 
 	/** Fetch zero or more users by ID and/or username. */
 	void GetUsers(
+		const FNakamaSession& Session,
 		const TArray<FString>& Ids,
 		const TArray<FString>& Usernames,
 		const TArray<FString>& FacebookIds,
@@ -2220,22 +2236,26 @@ public:
 
 	/** Get subscription by product id. */
 	void GetSubscription(
+		const FNakamaSession& Session,
 		FString ProductId,
 		TFunction<void(const FNakamaValidatedSubscription&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError);
 
 	/** Get matchmaker stats. */
 	void GetMatchmakerStats(
+		const FNakamaSession& Session,
 		TFunction<void(const FNakamaMatchmakerStats&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError);
 
 	/** A healthcheck which load balancers can use to check the service. */
 	void Healthcheck(
+		const FNakamaSession& Session,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError);
 
 	/** Import Facebook friends and add them to a user's account. */
 	void ImportFacebookFriends(
+		const FNakamaSession& Session,
 		FNakamaAccountFacebook Account,
 		bool Reset,
 		TFunction<void()> OnSuccess,
@@ -2243,6 +2263,7 @@ public:
 
 	/** Import Steam friends and add them to a user's account. */
 	void ImportSteamFriends(
+		const FNakamaSession& Session,
 		FNakamaAccountSteam Account,
 		bool Reset,
 		TFunction<void()> OnSuccess,
@@ -2250,18 +2271,21 @@ public:
 
 	/** Immediately join an open group, or request to join a closed one. */
 	void JoinGroup(
+		const FNakamaSession& Session,
 		FString GroupId,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError);
 
 	/** Attempt to join an open and running tournament. */
 	void JoinTournament(
+		const FNakamaSession& Session,
 		FString TournamentId,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError);
 
 	/** Kick a set of users from a group. */
 	void KickGroupUsers(
+		const FNakamaSession& Session,
 		FString GroupId,
 		const TArray<FString>& UserIds,
 		TFunction<void()> OnSuccess,
@@ -2269,12 +2293,14 @@ public:
 
 	/** Leave a group the user is a member of. */
 	void LeaveGroup(
+		const FNakamaSession& Session,
 		FString GroupId,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError);
 
 	/** Add an Apple ID to the social profiles on the current user's account. */
 	void LinkApple(
+		const FNakamaSession& Session,
 		FString Token,
 		const TMap<FString, FString>& Vars,
 		TFunction<void()> OnSuccess,
@@ -2282,6 +2308,7 @@ public:
 
 	/** Add a custom ID to the social profiles on the current user's account. */
 	void LinkCustom(
+		const FNakamaSession& Session,
 		FString Id,
 		const TMap<FString, FString>& Vars,
 		TFunction<void()> OnSuccess,
@@ -2289,6 +2316,7 @@ public:
 
 	/** Add a device ID to the social profiles on the current user's account. */
 	void LinkDevice(
+		const FNakamaSession& Session,
 		FString Id,
 		const TMap<FString, FString>& Vars,
 		TFunction<void()> OnSuccess,
@@ -2296,6 +2324,7 @@ public:
 
 	/** Add an email+password to the social profiles on the current user's account. */
 	void LinkEmail(
+		const FNakamaSession& Session,
 		FString Email,
 		FString Password,
 		const TMap<FString, FString>& Vars,
@@ -2304,6 +2333,7 @@ public:
 
 	/** Add Facebook to the social profiles on the current user's account. */
 	void LinkFacebook(
+		const FNakamaSession& Session,
 		FNakamaAccountFacebook Account,
 		bool Sync,
 		TFunction<void()> OnSuccess,
@@ -2311,6 +2341,7 @@ public:
 
 	/** Add Facebook Instant Game to the social profiles on the current user's account. */
 	void LinkFacebookInstantGame(
+		const FNakamaSession& Session,
 		FString SignedPlayerInfo,
 		const TMap<FString, FString>& Vars,
 		TFunction<void()> OnSuccess,
@@ -2318,6 +2349,7 @@ public:
 
 	/** Add Apple's GameCenter to the social profiles on the current user's account. */
 	void LinkGameCenter(
+		const FNakamaSession& Session,
 		FString PlayerId,
 		FString BundleId,
 		int64 TimestampSeconds,
@@ -2330,6 +2362,7 @@ public:
 
 	/** Add Google to the social profiles on the current user's account. */
 	void LinkGoogle(
+		const FNakamaSession& Session,
 		FString Token,
 		const TMap<FString, FString>& Vars,
 		TFunction<void()> OnSuccess,
@@ -2337,6 +2370,7 @@ public:
 
 	/** Add Steam to the social profiles on the current user's account. */
 	void LinkSteam(
+		const FNakamaSession& Session,
 		FNakamaAccountSteam Account,
 		bool Sync,
 		TFunction<void()> OnSuccess,
@@ -2344,6 +2378,7 @@ public:
 
 	/** List a channel's message history. */
 	void ListChannelMessages(
+		const FNakamaSession& Session,
 		FString ChannelId,
 		int32 Limit,
 		bool Forward,
@@ -2353,6 +2388,7 @@ public:
 
 	/** List all friends for the current user. */
 	void ListFriends(
+		const FNakamaSession& Session,
 		int32 Limit,
 		int32 State,
 		FString Cursor,
@@ -2361,6 +2397,7 @@ public:
 
 	/** List friends of friends for the current user. */
 	void ListFriendsOfFriends(
+		const FNakamaSession& Session,
 		int32 Limit,
 		FString Cursor,
 		TFunction<void(const FNakamaFriendsOfFriendsList&)> OnSuccess,
@@ -2368,6 +2405,7 @@ public:
 
 	/** List groups based on given filters. */
 	void ListGroups(
+		const FNakamaSession& Session,
 		FString Name,
 		FString Cursor,
 		int32 Limit,
@@ -2379,6 +2417,7 @@ public:
 
 	/** List all users that are part of a group. */
 	void ListGroupUsers(
+		const FNakamaSession& Session,
 		FString GroupId,
 		int32 Limit,
 		int32 State,
@@ -2388,6 +2427,7 @@ public:
 
 	/** List leaderboard records. */
 	void ListLeaderboardRecords(
+		const FNakamaSession& Session,
 		FString LeaderboardId,
 		const TArray<FString>& OwnerIds,
 		int32 Limit,
@@ -2398,6 +2438,7 @@ public:
 
 	/** List leaderboard records around the target ownerId. */
 	void ListLeaderboardRecordsAroundOwner(
+		const FNakamaSession& Session,
 		FString LeaderboardId,
 		uint32 Limit,
 		FString OwnerId,
@@ -2408,6 +2449,7 @@ public:
 
 	/** List running matches and optionally filter by matching criteria. */
 	void ListMatches(
+		const FNakamaSession& Session,
 		int32 Limit,
 		bool Authoritative,
 		FString Label,
@@ -2419,6 +2461,7 @@ public:
 
 	/** List parties and optionally filter by matching criteria. */
 	void ListParties(
+		const FNakamaSession& Session,
 		int32 Limit,
 		bool Open,
 		FString Query,
@@ -2428,6 +2471,7 @@ public:
 
 	/** Fetch list of notifications. */
 	void ListNotifications(
+		const FNakamaSession& Session,
 		int32 Limit,
 		FString CacheableCursor,
 		TFunction<void(const FNakamaNotificationList&)> OnSuccess,
@@ -2435,6 +2479,7 @@ public:
 
 	/** List publicly readable storage objects in a given collection. */
 	void ListStorageObjects(
+		const FNakamaSession& Session,
 		FString UserId,
 		FString Collection,
 		int32 Limit,
@@ -2444,6 +2489,7 @@ public:
 
 	/** List user's subscriptions. */
 	void ListSubscriptions(
+		const FNakamaSession& Session,
 		int32 Limit,
 		FString Cursor,
 		TFunction<void(const FNakamaSubscriptionList&)> OnSuccess,
@@ -2451,6 +2497,7 @@ public:
 
 	/** List current or upcoming tournaments. */
 	void ListTournaments(
+		const FNakamaSession& Session,
 		uint32 CategoryStart,
 		uint32 CategoryEnd,
 		uint32 StartTime,
@@ -2462,6 +2509,7 @@ public:
 
 	/** List tournament records. */
 	void ListTournamentRecords(
+		const FNakamaSession& Session,
 		FString TournamentId,
 		const TArray<FString>& OwnerIds,
 		int32 Limit,
@@ -2472,6 +2520,7 @@ public:
 
 	/** List tournament records for a given owner. */
 	void ListTournamentRecordsAroundOwner(
+		const FNakamaSession& Session,
 		FString TournamentId,
 		uint32 Limit,
 		FString OwnerId,
@@ -2482,6 +2531,7 @@ public:
 
 	/** List groups the current user belongs to. */
 	void ListUserGroups(
+		const FNakamaSession& Session,
 		FString UserId,
 		int32 Limit,
 		int32 State,
@@ -2491,6 +2541,7 @@ public:
 
 	/** Promote a set of users in a group to the next role up. */
 	void PromoteGroupUsers(
+		const FNakamaSession& Session,
 		FString GroupId,
 		const TArray<FString>& UserIds,
 		TFunction<void()> OnSuccess,
@@ -2498,6 +2549,7 @@ public:
 
 	/** Demote a set of users in a group to the next role down. */
 	void DemoteGroupUsers(
+		const FNakamaSession& Session,
 		FString GroupId,
 		const TArray<FString>& UserIds,
 		TFunction<void()> OnSuccess,
@@ -2505,12 +2557,14 @@ public:
 
 	/** Get storage objects. */
 	void ReadStorageObjects(
+		const FNakamaSession& Session,
 		const TArray<FNakamaReadStorageObjectId>& ObjectIds,
 		TFunction<void(const FNakamaStorageObjects&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError);
 
 	/** Execute a Lua function on the server. */
 	void RpcFunc(
+		const FNakamaSession& Session,
 		FString Id,
 		FString Payload,
 		FString HttpKey,
@@ -2519,6 +2573,7 @@ public:
 
 	/** Remove the Apple ID from the social profiles on the current user's account. */
 	void UnlinkApple(
+		const FNakamaSession& Session,
 		FString Token,
 		const TMap<FString, FString>& Vars,
 		TFunction<void()> OnSuccess,
@@ -2526,6 +2581,7 @@ public:
 
 	/** Remove the custom ID from the social profiles on the current user's account. */
 	void UnlinkCustom(
+		const FNakamaSession& Session,
 		FString Id,
 		const TMap<FString, FString>& Vars,
 		TFunction<void()> OnSuccess,
@@ -2533,6 +2589,7 @@ public:
 
 	/** Remove the device ID from the social profiles on the current user's account. */
 	void UnlinkDevice(
+		const FNakamaSession& Session,
 		FString Id,
 		const TMap<FString, FString>& Vars,
 		TFunction<void()> OnSuccess,
@@ -2540,6 +2597,7 @@ public:
 
 	/** Remove the email+password from the social profiles on the current user's account. */
 	void UnlinkEmail(
+		const FNakamaSession& Session,
 		FString Email,
 		FString Password,
 		const TMap<FString, FString>& Vars,
@@ -2548,6 +2606,7 @@ public:
 
 	/** Remove Facebook from the social profiles on the current user's account. */
 	void UnlinkFacebook(
+		const FNakamaSession& Session,
 		FString Token,
 		const TMap<FString, FString>& Vars,
 		TFunction<void()> OnSuccess,
@@ -2555,6 +2614,7 @@ public:
 
 	/** Remove Facebook Instant Game profile from the social profiles on the current user's account. */
 	void UnlinkFacebookInstantGame(
+		const FNakamaSession& Session,
 		FString SignedPlayerInfo,
 		const TMap<FString, FString>& Vars,
 		TFunction<void()> OnSuccess,
@@ -2562,6 +2622,7 @@ public:
 
 	/** Remove Apple's GameCenter from the social profiles on the current user's account. */
 	void UnlinkGameCenter(
+		const FNakamaSession& Session,
 		FString PlayerId,
 		FString BundleId,
 		int64 TimestampSeconds,
@@ -2574,6 +2635,7 @@ public:
 
 	/** Remove Google from the social profiles on the current user's account. */
 	void UnlinkGoogle(
+		const FNakamaSession& Session,
 		FString Token,
 		const TMap<FString, FString>& Vars,
 		TFunction<void()> OnSuccess,
@@ -2581,6 +2643,7 @@ public:
 
 	/** Remove Steam from the social profiles on the current user's account. */
 	void UnlinkSteam(
+		const FNakamaSession& Session,
 		FString Token,
 		const TMap<FString, FString>& Vars,
 		TFunction<void()> OnSuccess,
@@ -2588,6 +2651,7 @@ public:
 
 	/** Update fields in the current user's account. */
 	void UpdateAccount(
+		const FNakamaSession& Session,
 		FString Username,
 		FString DisplayName,
 		FString AvatarUrl,
@@ -2599,6 +2663,7 @@ public:
 
 	/** Update fields in a given group. */
 	void UpdateGroup(
+		const FNakamaSession& Session,
 		FString GroupId,
 		FString Name,
 		FString Description,
@@ -2610,6 +2675,7 @@ public:
 
 	/** Validate Apple IAP Receipt */
 	void ValidatePurchaseApple(
+		const FNakamaSession& Session,
 		FString Receipt,
 		bool Persist,
 		TFunction<void(const FNakamaValidatePurchaseResponse&)> OnSuccess,
@@ -2617,6 +2683,7 @@ public:
 
 	/** Validate Apple Subscription Receipt */
 	void ValidateSubscriptionApple(
+		const FNakamaSession& Session,
 		FString Receipt,
 		bool Persist,
 		TFunction<void(const FNakamaValidateSubscriptionResponse&)> OnSuccess,
@@ -2624,6 +2691,7 @@ public:
 
 	/** Validate Google IAP Receipt */
 	void ValidatePurchaseGoogle(
+		const FNakamaSession& Session,
 		FString Purchase,
 		bool Persist,
 		TFunction<void(const FNakamaValidatePurchaseResponse&)> OnSuccess,
@@ -2631,6 +2699,7 @@ public:
 
 	/** Validate Google Subscription Receipt */
 	void ValidateSubscriptionGoogle(
+		const FNakamaSession& Session,
 		FString Receipt,
 		bool Persist,
 		TFunction<void(const FNakamaValidateSubscriptionResponse&)> OnSuccess,
@@ -2638,6 +2707,7 @@ public:
 
 	/** Validate Huawei IAP Receipt */
 	void ValidatePurchaseHuawei(
+		const FNakamaSession& Session,
 		FString Purchase,
 		FString Signature,
 		bool Persist,
@@ -2646,6 +2716,7 @@ public:
 
 	/** Validate FB Instant IAP Receipt */
 	void ValidatePurchaseFacebookInstant(
+		const FNakamaSession& Session,
 		FString SignedRequest,
 		bool Persist,
 		TFunction<void(const FNakamaValidatePurchaseResponse&)> OnSuccess,
@@ -2653,6 +2724,7 @@ public:
 
 	/** Write a record to a leaderboard. */
 	void WriteLeaderboardRecord(
+		const FNakamaSession& Session,
 		FString LeaderboardId,
 		FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite Record,
 		TFunction<void(const FNakamaLeaderboardRecord&)> OnSuccess,
@@ -2660,12 +2732,14 @@ public:
 
 	/** Write objects into the storage engine. */
 	void WriteStorageObjects(
+		const FNakamaSession& Session,
 		const TArray<FNakamaWriteStorageObject>& Objects,
 		TFunction<void(const FNakamaStorageObjectAcks&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError);
 
 	/** Write a record to a tournament. */
 	void WriteTournamentRecord(
+		const FNakamaSession& Session,
 		FString TournamentId,
 		FNakamaWriteTournamentRecordRequest_TournamentRecordWrite Record,
 		TFunction<void(const FNakamaLeaderboardRecord&)> OnSuccess,
@@ -2679,6 +2753,7 @@ private:
 		const FString& Method,
 		const TSharedPtr<FJsonObject>& Body,
 		ENakamaRequestAuth AuthType,
+		const FString& SessionToken,
 		TFunction<void(TSharedPtr<FJsonObject>)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError);
 
@@ -2688,5 +2763,4 @@ private:
 	bool bUseSSL = false;
 	bool bEnableDebug = false;
 	float Timeout = 10.0f;
-	FNakamaSessionPtr CurrentSession;
 };
