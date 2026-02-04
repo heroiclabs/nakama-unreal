@@ -180,7 +180,6 @@ tasks:
     desc: 'Generate UE Nakama Client Header file.'
     cmds:
     - task: build
-    - task: fetch-protos
     - cmd: ./{{.BIN_PATH}} --template cmd/codegen/templates/nakama-client-bplib.ue.h.tmpl --proto {{.PROTO_FILE}} --proto-service {{.PROTO_SERVICE_FILE}} > Nakama/Source/NakamaBlueprints/Public/NakamaClientBlueprintLibrary.h
       platforms: [linux, darwin]
     - cmd: cmd /c ".\\build\\codegen.exe --template cmd\\codegen\\templates\\nakama-client-bplib.ue.h.tmpl --proto {{.PROTO_FILE}} --proto-service {{.PROTO_SERVICE_FILE}} > Nakama\\Source\\NakamaBlueprints\\Public\\NakamaClientBlueprintLibrary.h"
@@ -190,7 +189,6 @@ tasks:
     desc: 'Generate UE Nakama Client Source file.'
     cmds:
     - task: build
-    - task: fetch-protos
     - cmd: ./{{.BIN_PATH}} --template cmd/codegen/templates/nakama-client-bplib.ue.cpp.tmpl --proto {{.PROTO_FILE}} --proto-service {{.PROTO_SERVICE_FILE}} > Nakama/Source/NakamaBlueprints/Private/NakamaClientBlueprintLibrary.cpp
       platforms: [linux, darwin]
     - cmd: cmd /c ".\\build\\codegen.exe --template cmd\\codegen\\templates\\nakama-client-bplib.ue.cpp.tmpl --proto {{.PROTO_FILE}} --proto-service {{.PROTO_SERVICE_FILE}} > Nakama\\Source\\NakamaBlueprints\\Private\\NakamaClientBlueprintLibrary.cpp"
@@ -200,7 +198,6 @@ tasks:
     desc: 'Generate UE Nakama Unreal core header file.'
     cmds:
     - task: build
-    - task: fetch-protos
     - cmd: ./{{.BIN_PATH}} --template cmd/codegen/templates/nakama-unreal.ue.h.tmpl --proto {{.PROTO_FILE}} --proto-service {{.PROTO_SERVICE_FILE}} > Nakama/Source/NakamaUnreal/Public/NakamaUnreal.h
       platforms: [linux, darwin]
     - cmd: cmd /c ".\\build\\codegen.exe --template cmd\\codegen\\templates\\nakama-unreal.ue.h.tmpl --proto {{.PROTO_FILE}} --proto-service {{.PROTO_SERVICE_FILE}} > Nakama\\Source\\NakamaUnreal\\Public\\NakamaUnreal.h"
@@ -210,7 +207,6 @@ tasks:
     desc: 'Generate UE Nakama Unreal core source file.'
     cmds:
     - task: build
-    - task: fetch-protos
     - cmd: ./{{.BIN_PATH}} --template cmd/codegen/templates/nakama-unreal.ue.cpp.tmpl --proto {{.PROTO_FILE}} --proto-service {{.PROTO_SERVICE_FILE}} > Nakama/Source/NakamaUnreal/Private/NakamaUnreal.cpp
       platforms: [linux, darwin]
     - cmd: cmd /c ".\\build\\codegen.exe --template cmd\\codegen\\templates\\nakama-unreal.ue.cpp.tmpl --proto {{.PROTO_FILE}} --proto-service {{.PROTO_SERVICE_FILE}} > Nakama\\Source\\NakamaUnreal\\Private\\NakamaUnreal.cpp"
@@ -243,8 +239,8 @@ tasks:
     - cmd: mkdir proto
       ignore_error: true
     - cmd: |
-        curl -o {{.PROTO_SERVICE_FILE}} https://raw.githubusercontent.com/heroiclabs/nakama/master/apigrpc/apigrpc.proto
-        curl -o {{.PROTO_FILE}} https://raw.githubusercontent.com/heroiclabs/nakama-common/master/api/api.proto
+        curl -o {{.PROTO_SERVICE_FILE}} https://raw.githubusercontent.com/heroiclabs/nakama/feat/flatten-proto/apigrpc/apigrpc.proto
+        curl -o {{.PROTO_FILE}} https://raw.githubusercontent.com/heroiclabs/nakama-common/feat/flatten-proto-v2/api/api.proto
 
   run-codegen:
     desc: 'Fetch Nakama proto schemas and run codegen.'

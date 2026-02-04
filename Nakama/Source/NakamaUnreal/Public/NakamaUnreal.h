@@ -26,6 +26,8 @@
 DECLARE_LOG_CATEGORY_EXTERN(LogNakama, Log, All);
 
 // Forward declarations
+struct FNakamaUser;
+struct FNakamaAccount;
 struct FNakamaAccountRefresh;
 struct FNakamaAccountApple;
 struct FNakamaAccountCustom;
@@ -40,6 +42,15 @@ struct FNakamaAddFriendsRequest;
 struct FNakamaAddGroupUsersRequest;
 struct FNakamaSessionRefreshRequest;
 struct FNakamaSessionLogoutRequest;
+struct FNakamaAuthenticateAppleRequest;
+struct FNakamaAuthenticateCustomRequest;
+struct FNakamaAuthenticateDeviceRequest;
+struct FNakamaAuthenticateEmailRequest;
+struct FNakamaAuthenticateFacebookRequest;
+struct FNakamaAuthenticateFacebookInstantGameRequest;
+struct FNakamaAuthenticateGameCenterRequest;
+struct FNakamaAuthenticateGoogleRequest;
+struct FNakamaAuthenticateSteamRequest;
 struct FNakamaBanGroupUsersRequest;
 struct FNakamaBlockFriendsRequest;
 struct FNakamaChannelMessage;
@@ -53,13 +64,18 @@ struct FNakamaDeleteTournamentRecordRequest;
 struct FNakamaDeleteStorageObjectId;
 struct FNakamaDeleteStorageObjectsRequest;
 struct FNakamaEvent;
+struct FNakamaFriend;
 struct FNakamaFriendList;
+struct FNakamaFriendsOfFriendsList_FriendOfFriend;
 struct FNakamaFriendsOfFriendsList;
 struct FNakamaGetUsersRequest;
 struct FNakamaGetSubscriptionRequest;
 struct FNakamaGroup;
 struct FNakamaGroupList;
+struct FNakamaGroupUserList_GroupUser;
 struct FNakamaGroupUserList;
+struct FNakamaImportFacebookFriendsRequest;
+struct FNakamaImportSteamFriendsRequest;
 struct FNakamaJoinGroupRequest;
 struct FNakamaJoinTournamentRequest;
 struct FNakamaKickGroupUsersRequest;
@@ -68,6 +84,8 @@ struct FNakamaLeaderboardList;
 struct FNakamaLeaderboardRecord;
 struct FNakamaLeaderboardRecordList;
 struct FNakamaLeaveGroupRequest;
+struct FNakamaLinkFacebookRequest;
+struct FNakamaLinkSteamRequest;
 struct FNakamaListChannelMessagesRequest;
 struct FNakamaListFriendsRequest;
 struct FNakamaListFriendsOfFriendsRequest;
@@ -105,7 +123,7 @@ struct FNakamaTournamentList;
 struct FNakamaTournamentRecordList;
 struct FNakamaUpdateAccountRequest;
 struct FNakamaUpdateGroupRequest;
-struct FNakamaUser;
+struct FNakamaUserGroupList_UserGroup;
 struct FNakamaUserGroupList;
 struct FNakamaUsers;
 struct FNakamaValidatePurchaseAppleRequest;
@@ -117,36 +135,18 @@ struct FNakamaValidatePurchaseFacebookInstantRequest;
 struct FNakamaValidatedPurchase;
 struct FNakamaValidatePurchaseResponse;
 struct FNakamaValidatedSubscription;
+struct FNakamaValidateSubscriptionResponse;
 struct FNakamaPurchaseList;
 struct FNakamaSubscriptionList;
-struct FNakamaLeaderboardRecordWrite;
+struct FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite;
+struct FNakamaWriteLeaderboardRecordRequest;
 struct FNakamaWriteStorageObject;
 struct FNakamaWriteStorageObjectsRequest;
-struct FNakamaTournamentRecordWrite;
+struct FNakamaWriteTournamentRecordRequest_TournamentRecordWrite;
+struct FNakamaWriteTournamentRecordRequest;
 struct FNakamaListPartiesRequest;
 struct FNakamaParty;
 struct FNakamaPartyList;
-struct FNakamaAuthenticateAppleRequest;
-struct FNakamaAuthenticateCustomRequest;
-struct FNakamaAuthenticateDeviceRequest;
-struct FNakamaAuthenticateEmailRequest;
-struct FNakamaImportFacebookFriendsRequest;
-struct FNakamaAuthenticateFacebookRequest;
-struct FNakamaLinkFacebookRequest;
-struct FNakamaAuthenticateFacebookInstantGameRequest;
-struct FNakamaAuthenticateGameCenterRequest;
-struct FNakamaAuthenticateGoogleRequest;
-struct FNakamaImportSteamFriendsRequest;
-struct FNakamaAuthenticateSteamRequest;
-struct FNakamaLinkSteamRequest;
-struct FNakamaUserGroup;
-struct FNakamaFriendOfFriend;
-struct FNakamaAccount;
-struct FNakamaFriend;
-struct FNakamaGroupUser;
-struct FNakamaValidateSubscriptionResponse;
-struct FNakamaWriteLeaderboardRecordRequest;
-struct FNakamaWriteTournamentRecordRequest;
 
 struct NAKAMAUNREAL_API FNakamaError
 {
@@ -156,6 +156,72 @@ struct NAKAMAUNREAL_API FNakamaError
 	FNakamaError() = default;
 	FNakamaError(const FString& InMessage, int32 InCode)
 		: Message(InMessage), Code(InCode) {}
+};
+
+/**  A user in the server. */
+struct NAKAMAUNREAL_API FNakamaUser
+{
+	/**  The id of the user's account. */
+	FString Id;
+	/**  The username of the user's account. */
+	FString Username;
+	/**  The display name of the user. */
+	FString DisplayName;
+	/**  A URL for an avatar image. */
+	FString AvatarUrl;
+	/**  The language expected to be a tag which follows the BCP-47 spec. */
+	FString LangTag;
+	/**  The location set by the user. */
+	FString Location;
+	/**  The timezone set by the user. */
+	FString Timezone;
+	/**  Additional information stored as a JSON object. */
+	FString Metadata;
+	/**  The Facebook id in the user's account. */
+	FString FacebookId;
+	/**  The Google id in the user's account. */
+	FString GoogleId;
+	/**  The Apple Game Center in of the user's account. */
+	FString GamecenterId;
+	/**  The Steam id in the user's account. */
+	FString SteamId;
+	/**  Indicates whether the user is currently online. */
+	bool Online;
+	/**  Number of related edges to this user. */
+	int32 EdgeCount;
+	/**  The UNIX time (for gRPC clients) or ISO string (for REST clients) when the user was created. */
+	FString CreateTime;
+	/**  The UNIX time (for gRPC clients) or ISO string (for REST clients) when the user was last updated. */
+	FString UpdateTime;
+	/**  The Facebook Instant Game ID in the user's account. */
+	FString FacebookInstantGameId;
+	/**  The Apple Sign In ID in the user's account. */
+	FString AppleId;
+
+	static FNakamaUser FromJson(const TSharedPtr<FJsonObject>& Json);
+	TSharedPtr<FJsonObject> ToJson() const;
+};
+
+/**  A user with additional account details. Always the current user. */
+struct NAKAMAUNREAL_API FNakamaAccount
+{
+	/**  The user object. */
+	FNakamaUser User;
+	/**  The user's wallet data. */
+	FString Wallet;
+	/**  The email address of the user. */
+	FString Email;
+	/**  The devices which belong to the user's account. */
+	TArray<FNakamaAccountDevice> Devices;
+	/**  The custom id in the user's account. */
+	FString CustomId;
+	/**  The UNIX time (for gRPC clients) or ISO string (for REST clients) when the user's email was verified. */
+	FString VerifyTime;
+	/**  The UNIX time (for gRPC clients) or ISO string (for REST clients) when the user's account was disabled/banned. */
+	FString DisableTime;
+
+	static FNakamaAccount FromJson(const TSharedPtr<FJsonObject>& Json);
+	TSharedPtr<FJsonObject> ToJson() const;
 };
 
 /**  Obtain a new authentication token using a refresh token. */
@@ -337,6 +403,136 @@ struct NAKAMAUNREAL_API FNakamaSessionLogoutRequest
 	FString RefreshToken;
 
 	static FNakamaSessionLogoutRequest FromJson(const TSharedPtr<FJsonObject>& Json);
+	TSharedPtr<FJsonObject> ToJson() const;
+};
+
+/**  Authenticate against the server with Apple Sign In. */
+struct NAKAMAUNREAL_API FNakamaAuthenticateAppleRequest
+{
+	/**  The Apple account details. */
+	FNakamaAccountApple Account;
+	/**  Register the account if the user does not already exist. */
+	bool Create;
+	/**  Set the username on the account at register. Must be unique. */
+	FString Username;
+
+	static FNakamaAuthenticateAppleRequest FromJson(const TSharedPtr<FJsonObject>& Json);
+	TSharedPtr<FJsonObject> ToJson() const;
+};
+
+/**  Authenticate against the server with a custom ID. */
+struct NAKAMAUNREAL_API FNakamaAuthenticateCustomRequest
+{
+	/**  The custom account details. */
+	FNakamaAccountCustom Account;
+	/**  Register the account if the user does not already exist. */
+	bool Create;
+	/**  Set the username on the account at register. Must be unique. */
+	FString Username;
+
+	static FNakamaAuthenticateCustomRequest FromJson(const TSharedPtr<FJsonObject>& Json);
+	TSharedPtr<FJsonObject> ToJson() const;
+};
+
+/**  Authenticate against the server with a device ID. */
+struct NAKAMAUNREAL_API FNakamaAuthenticateDeviceRequest
+{
+	/**  The device account details. */
+	FNakamaAccountDevice Account;
+	/**  Register the account if the user does not already exist. */
+	bool Create;
+	/**  Set the username on the account at register. Must be unique. */
+	FString Username;
+
+	static FNakamaAuthenticateDeviceRequest FromJson(const TSharedPtr<FJsonObject>& Json);
+	TSharedPtr<FJsonObject> ToJson() const;
+};
+
+/**  Authenticate against the server with email+password. */
+struct NAKAMAUNREAL_API FNakamaAuthenticateEmailRequest
+{
+	/**  The email account details. */
+	FNakamaAccountEmail Account;
+	/**  Register the account if the user does not already exist. */
+	bool Create;
+	/**  Set the username on the account at register. Must be unique. */
+	FString Username;
+
+	static FNakamaAuthenticateEmailRequest FromJson(const TSharedPtr<FJsonObject>& Json);
+	TSharedPtr<FJsonObject> ToJson() const;
+};
+
+/**  Authenticate against the server with Facebook. */
+struct NAKAMAUNREAL_API FNakamaAuthenticateFacebookRequest
+{
+	/**  The Facebook account details. */
+	FNakamaAccountFacebook Account;
+	/**  Register the account if the user does not already exist. */
+	bool Create;
+	/**  Set the username on the account at register. Must be unique. */
+	FString Username;
+	/**  Import Facebook friends for the user. */
+	bool Sync;
+
+	static FNakamaAuthenticateFacebookRequest FromJson(const TSharedPtr<FJsonObject>& Json);
+	TSharedPtr<FJsonObject> ToJson() const;
+};
+
+/**  Authenticate against the server with Facebook Instant Game token. */
+struct NAKAMAUNREAL_API FNakamaAuthenticateFacebookInstantGameRequest
+{
+	/**  The Facebook Instant Game account details. */
+	FNakamaAccountFacebookInstantGame Account;
+	/**  Register the account if the user does not already exist. */
+	bool Create;
+	/**  Set the username on the account at register. Must be unique. */
+	FString Username;
+
+	static FNakamaAuthenticateFacebookInstantGameRequest FromJson(const TSharedPtr<FJsonObject>& Json);
+	TSharedPtr<FJsonObject> ToJson() const;
+};
+
+/**  Authenticate against the server with Apple's Game Center. */
+struct NAKAMAUNREAL_API FNakamaAuthenticateGameCenterRequest
+{
+	/**  The Game Center account details. */
+	FNakamaAccountGameCenter Account;
+	/**  Register the account if the user does not already exist. */
+	bool Create;
+	/**  Set the username on the account at register. Must be unique. */
+	FString Username;
+
+	static FNakamaAuthenticateGameCenterRequest FromJson(const TSharedPtr<FJsonObject>& Json);
+	TSharedPtr<FJsonObject> ToJson() const;
+};
+
+/**  Authenticate against the server with Google. */
+struct NAKAMAUNREAL_API FNakamaAuthenticateGoogleRequest
+{
+	/**  The Google account details. */
+	FNakamaAccountGoogle Account;
+	/**  Register the account if the user does not already exist. */
+	bool Create;
+	/**  Set the username on the account at register. Must be unique. */
+	FString Username;
+
+	static FNakamaAuthenticateGoogleRequest FromJson(const TSharedPtr<FJsonObject>& Json);
+	TSharedPtr<FJsonObject> ToJson() const;
+};
+
+/**  Authenticate against the server with Steam. */
+struct NAKAMAUNREAL_API FNakamaAuthenticateSteamRequest
+{
+	/**  The Steam account details. */
+	FNakamaAccountSteam Account;
+	/**  Register the account if the user does not already exist. */
+	bool Create;
+	/**  Set the username on the account at register. Must be unique. */
+	FString Username;
+	/**  Import Steam friends for the user. */
+	bool Sync;
+
+	static FNakamaAuthenticateSteamRequest FromJson(const TSharedPtr<FJsonObject>& Json);
 	TSharedPtr<FJsonObject> ToJson() const;
 };
 
@@ -526,6 +722,22 @@ struct NAKAMAUNREAL_API FNakamaEvent
 	TSharedPtr<FJsonObject> ToJson() const;
 };
 
+/**  A friend of a user. */
+struct NAKAMAUNREAL_API FNakamaFriend
+{
+	/**  The user object. */
+	FNakamaUser User;
+	/**  The friend status. */
+	int32 State;
+	/**  Time of the latest relationship update. */
+	FString UpdateTime;
+	/**  Metadata. */
+	FString Metadata;
+
+	static FNakamaFriend FromJson(const TSharedPtr<FJsonObject>& Json);
+	TSharedPtr<FJsonObject> ToJson() const;
+};
+
 /**  A collection of zero or more friends of the user. */
 struct NAKAMAUNREAL_API FNakamaFriendList
 {
@@ -538,11 +750,23 @@ struct NAKAMAUNREAL_API FNakamaFriendList
 	TSharedPtr<FJsonObject> ToJson() const;
 };
 
+/**  A friend of a friend. */
+struct NAKAMAUNREAL_API FNakamaFriendsOfFriendsList_FriendOfFriend
+{
+	/**  The user who referred its friend. */
+	FString Referrer;
+	/**  User. */
+	FNakamaUser User;
+
+	static FNakamaFriendsOfFriendsList_FriendOfFriend FromJson(const TSharedPtr<FJsonObject>& Json);
+	TSharedPtr<FJsonObject> ToJson() const;
+};
+
 /**  A List of friends of friends */
 struct NAKAMAUNREAL_API FNakamaFriendsOfFriendsList
 {
 	/**  User friends of friends. */
-	TArray<FNakamaFriendOfFriend> FriendsOfFriends;
+	TArray<FNakamaFriendsOfFriendsList_FriendOfFriend> FriendsOfFriends;
 	/**  Cursor for the next page of results, if any. */
 	FString Cursor;
 
@@ -618,15 +842,51 @@ struct NAKAMAUNREAL_API FNakamaGroupList
 	TSharedPtr<FJsonObject> ToJson() const;
 };
 
+/**  */
+struct NAKAMAUNREAL_API FNakamaGroupUserList_GroupUser
+{
+	/**  User. */
+	FNakamaUser User;
+	/**  Their relationship to the group. */
+	int32 State;
+
+	static FNakamaGroupUserList_GroupUser FromJson(const TSharedPtr<FJsonObject>& Json);
+	TSharedPtr<FJsonObject> ToJson() const;
+};
+
 /**  A list of users belonging to a group, along with their role. */
 struct NAKAMAUNREAL_API FNakamaGroupUserList
 {
 	/**  User-role pairs for a group. */
-	TArray<FNakamaGroupUser> GroupUsers;
+	TArray<FNakamaGroupUserList_GroupUser> GroupUsers;
 	/**  Cursor for the next page of results, if any. */
 	FString Cursor;
 
 	static FNakamaGroupUserList FromJson(const TSharedPtr<FJsonObject>& Json);
+	TSharedPtr<FJsonObject> ToJson() const;
+};
+
+/**  Import Facebook friends into the current user's account. */
+struct NAKAMAUNREAL_API FNakamaImportFacebookFriendsRequest
+{
+	/**  The Facebook account details. */
+	FNakamaAccountFacebook Account;
+	/**  Reset the current user's friends list. */
+	bool Reset;
+
+	static FNakamaImportFacebookFriendsRequest FromJson(const TSharedPtr<FJsonObject>& Json);
+	TSharedPtr<FJsonObject> ToJson() const;
+};
+
+/**  Import Facebook friends into the current user's account. */
+struct NAKAMAUNREAL_API FNakamaImportSteamFriendsRequest
+{
+	/**  The Facebook account details. */
+	FNakamaAccountSteam Account;
+	/**  Reset the current user's friends list. */
+	bool Reset;
+
+	static FNakamaImportSteamFriendsRequest FromJson(const TSharedPtr<FJsonObject>& Json);
 	TSharedPtr<FJsonObject> ToJson() const;
 };
 
@@ -755,6 +1015,30 @@ struct NAKAMAUNREAL_API FNakamaLeaveGroupRequest
 	FString GroupId;
 
 	static FNakamaLeaveGroupRequest FromJson(const TSharedPtr<FJsonObject>& Json);
+	TSharedPtr<FJsonObject> ToJson() const;
+};
+
+/**  Link Facebook to the current user's account. */
+struct NAKAMAUNREAL_API FNakamaLinkFacebookRequest
+{
+	/**  The Facebook account details. */
+	FNakamaAccountFacebook Account;
+	/**  Import Facebook friends for the user. */
+	bool Sync;
+
+	static FNakamaLinkFacebookRequest FromJson(const TSharedPtr<FJsonObject>& Json);
+	TSharedPtr<FJsonObject> ToJson() const;
+};
+
+/**  Link Steam to the current user's account. */
+struct NAKAMAUNREAL_API FNakamaLinkSteamRequest
+{
+	/**  The Facebook account details. */
+	FNakamaAccountSteam Account;
+	/**  Import Steam friends for the user. */
+	bool Sync;
+
+	static FNakamaLinkSteamRequest FromJson(const TSharedPtr<FJsonObject>& Json);
 	TSharedPtr<FJsonObject> ToJson() const;
 };
 
@@ -1368,47 +1652,15 @@ struct NAKAMAUNREAL_API FNakamaUpdateGroupRequest
 	TSharedPtr<FJsonObject> ToJson() const;
 };
 
-/**  A user in the server. */
-struct NAKAMAUNREAL_API FNakamaUser
+/**  A single group-role pair. */
+struct NAKAMAUNREAL_API FNakamaUserGroupList_UserGroup
 {
-	/**  The id of the user's account. */
-	FString Id;
-	/**  The username of the user's account. */
-	FString Username;
-	/**  The display name of the user. */
-	FString DisplayName;
-	/**  A URL for an avatar image. */
-	FString AvatarUrl;
-	/**  The language expected to be a tag which follows the BCP-47 spec. */
-	FString LangTag;
-	/**  The location set by the user. */
-	FString Location;
-	/**  The timezone set by the user. */
-	FString Timezone;
-	/**  Additional information stored as a JSON object. */
-	FString Metadata;
-	/**  The Facebook id in the user's account. */
-	FString FacebookId;
-	/**  The Google id in the user's account. */
-	FString GoogleId;
-	/**  The Apple Game Center in of the user's account. */
-	FString GamecenterId;
-	/**  The Steam id in the user's account. */
-	FString SteamId;
-	/**  Indicates whether the user is currently online. */
-	bool Online;
-	/**  Number of related edges to this user. */
-	int32 EdgeCount;
-	/**  The UNIX time (for gRPC clients) or ISO string (for REST clients) when the user was created. */
-	FString CreateTime;
-	/**  The UNIX time (for gRPC clients) or ISO string (for REST clients) when the user was last updated. */
-	FString UpdateTime;
-	/**  The Facebook Instant Game ID in the user's account. */
-	FString FacebookInstantGameId;
-	/**  The Apple Sign In ID in the user's account. */
-	FString AppleId;
+	/**  Group. */
+	FNakamaGroup Group;
+	/**  The user's relationship to the group. */
+	int32 State;
 
-	static FNakamaUser FromJson(const TSharedPtr<FJsonObject>& Json);
+	static FNakamaUserGroupList_UserGroup FromJson(const TSharedPtr<FJsonObject>& Json);
 	TSharedPtr<FJsonObject> ToJson() const;
 };
 
@@ -1416,7 +1668,7 @@ struct NAKAMAUNREAL_API FNakamaUser
 struct NAKAMAUNREAL_API FNakamaUserGroupList
 {
 	/**  Group-role pairs for a user. */
-	TArray<FNakamaUserGroup> UserGroups;
+	TArray<FNakamaUserGroupList_UserGroup> UserGroups;
 	/**  Cursor for the next page of results, if any. */
 	FString Cursor;
 
@@ -1582,6 +1834,16 @@ struct NAKAMAUNREAL_API FNakamaValidatedSubscription
 	TSharedPtr<FJsonObject> ToJson() const;
 };
 
+/**  Validate Subscription response. */
+struct NAKAMAUNREAL_API FNakamaValidateSubscriptionResponse
+{
+	/**  */
+	FNakamaValidatedSubscription ValidatedSubscription;
+
+	static FNakamaValidateSubscriptionResponse FromJson(const TSharedPtr<FJsonObject>& Json);
+	TSharedPtr<FJsonObject> ToJson() const;
+};
+
 /**  A list of validated purchases stored by Nakama. */
 struct NAKAMAUNREAL_API FNakamaPurchaseList
 {
@@ -1611,7 +1873,7 @@ struct NAKAMAUNREAL_API FNakamaSubscriptionList
 };
 
 /**  Record values to write. */
-struct NAKAMAUNREAL_API FNakamaLeaderboardRecordWrite
+struct NAKAMAUNREAL_API FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite
 {
 	/**  The score value to submit. */
 	int64 Score;
@@ -1622,7 +1884,19 @@ struct NAKAMAUNREAL_API FNakamaLeaderboardRecordWrite
 	/**  Operator override. */
 	int32 Operator;
 
-	static FNakamaLeaderboardRecordWrite FromJson(const TSharedPtr<FJsonObject>& Json);
+	static FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite FromJson(const TSharedPtr<FJsonObject>& Json);
+	TSharedPtr<FJsonObject> ToJson() const;
+};
+
+/**  A request to submit a score to a leaderboard. */
+struct NAKAMAUNREAL_API FNakamaWriteLeaderboardRecordRequest
+{
+	/**  The ID of the leaderboard to write to. */
+	FString LeaderboardId;
+	/**  Record input. */
+	FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite Record;
+
+	static FNakamaWriteLeaderboardRecordRequest FromJson(const TSharedPtr<FJsonObject>& Json);
 	TSharedPtr<FJsonObject> ToJson() const;
 };
 
@@ -1657,7 +1931,7 @@ struct NAKAMAUNREAL_API FNakamaWriteStorageObjectsRequest
 };
 
 /**  Record values to write. */
-struct NAKAMAUNREAL_API FNakamaTournamentRecordWrite
+struct NAKAMAUNREAL_API FNakamaWriteTournamentRecordRequest_TournamentRecordWrite
 {
 	/**  The score value to submit. */
 	int64 Score;
@@ -1668,7 +1942,19 @@ struct NAKAMAUNREAL_API FNakamaTournamentRecordWrite
 	/**  Operator override. */
 	int32 Operator;
 
-	static FNakamaTournamentRecordWrite FromJson(const TSharedPtr<FJsonObject>& Json);
+	static FNakamaWriteTournamentRecordRequest_TournamentRecordWrite FromJson(const TSharedPtr<FJsonObject>& Json);
+	TSharedPtr<FJsonObject> ToJson() const;
+};
+
+/**  A request to submit a score to a tournament. */
+struct NAKAMAUNREAL_API FNakamaWriteTournamentRecordRequest
+{
+	/**  The tournament ID to write the record for. */
+	FString TournamentId;
+	/**  Record input. */
+	FNakamaWriteTournamentRecordRequest_TournamentRecordWrite Record;
+
+	static FNakamaWriteTournamentRecordRequest FromJson(const TSharedPtr<FJsonObject>& Json);
 	TSharedPtr<FJsonObject> ToJson() const;
 };
 
@@ -1715,292 +2001,6 @@ struct NAKAMAUNREAL_API FNakamaPartyList
 	FString Cursor;
 
 	static FNakamaPartyList FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
-};
-
-/**  Authenticate against the server with Apple Sign In. */
-struct NAKAMAUNREAL_API FNakamaAuthenticateAppleRequest
-{
-	/**  The Apple account details. */
-	FNakamaAccountApple Account;
-	/**  Register the account if the user does not already exist. */
-	bool Create;
-	/**  Set the username on the account at register. Must be unique. */
-	FString Username;
-
-	static FNakamaAuthenticateAppleRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
-};
-
-/**  Authenticate against the server with a custom ID. */
-struct NAKAMAUNREAL_API FNakamaAuthenticateCustomRequest
-{
-	/**  The custom account details. */
-	FNakamaAccountCustom Account;
-	/**  Register the account if the user does not already exist. */
-	bool Create;
-	/**  Set the username on the account at register. Must be unique. */
-	FString Username;
-
-	static FNakamaAuthenticateCustomRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
-};
-
-/**  Authenticate against the server with a device ID. */
-struct NAKAMAUNREAL_API FNakamaAuthenticateDeviceRequest
-{
-	/**  The device account details. */
-	FNakamaAccountDevice Account;
-	/**  Register the account if the user does not already exist. */
-	bool Create;
-	/**  Set the username on the account at register. Must be unique. */
-	FString Username;
-
-	static FNakamaAuthenticateDeviceRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
-};
-
-/**  Authenticate against the server with email+password. */
-struct NAKAMAUNREAL_API FNakamaAuthenticateEmailRequest
-{
-	/**  The email account details. */
-	FNakamaAccountEmail Account;
-	/**  Register the account if the user does not already exist. */
-	bool Create;
-	/**  Set the username on the account at register. Must be unique. */
-	FString Username;
-
-	static FNakamaAuthenticateEmailRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
-};
-
-/**  Import Facebook friends into the current user's account. */
-struct NAKAMAUNREAL_API FNakamaImportFacebookFriendsRequest
-{
-	/**  The Facebook account details. */
-	FNakamaAccountFacebook Account;
-	/**  Reset the current user's friends list. */
-	bool Reset;
-
-	static FNakamaImportFacebookFriendsRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
-};
-
-/**  Authenticate against the server with Facebook. */
-struct NAKAMAUNREAL_API FNakamaAuthenticateFacebookRequest
-{
-	/**  The Facebook account details. */
-	FNakamaAccountFacebook Account;
-	/**  Register the account if the user does not already exist. */
-	bool Create;
-	/**  Set the username on the account at register. Must be unique. */
-	FString Username;
-	/**  Import Facebook friends for the user. */
-	bool Sync;
-
-	static FNakamaAuthenticateFacebookRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
-};
-
-/**  Link Facebook to the current user's account. */
-struct NAKAMAUNREAL_API FNakamaLinkFacebookRequest
-{
-	/**  The Facebook account details. */
-	FNakamaAccountFacebook Account;
-	/**  Import Facebook friends for the user. */
-	bool Sync;
-
-	static FNakamaLinkFacebookRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
-};
-
-/**  Authenticate against the server with Facebook Instant Game token. */
-struct NAKAMAUNREAL_API FNakamaAuthenticateFacebookInstantGameRequest
-{
-	/**  The Facebook Instant Game account details. */
-	FNakamaAccountFacebookInstantGame Account;
-	/**  Register the account if the user does not already exist. */
-	bool Create;
-	/**  Set the username on the account at register. Must be unique. */
-	FString Username;
-
-	static FNakamaAuthenticateFacebookInstantGameRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
-};
-
-/**  Authenticate against the server with Apple's Game Center. */
-struct NAKAMAUNREAL_API FNakamaAuthenticateGameCenterRequest
-{
-	/**  The Game Center account details. */
-	FNakamaAccountGameCenter Account;
-	/**  Register the account if the user does not already exist. */
-	bool Create;
-	/**  Set the username on the account at register. Must be unique. */
-	FString Username;
-
-	static FNakamaAuthenticateGameCenterRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
-};
-
-/**  Authenticate against the server with Google. */
-struct NAKAMAUNREAL_API FNakamaAuthenticateGoogleRequest
-{
-	/**  The Google account details. */
-	FNakamaAccountGoogle Account;
-	/**  Register the account if the user does not already exist. */
-	bool Create;
-	/**  Set the username on the account at register. Must be unique. */
-	FString Username;
-
-	static FNakamaAuthenticateGoogleRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
-};
-
-/**  Import Facebook friends into the current user's account. */
-struct NAKAMAUNREAL_API FNakamaImportSteamFriendsRequest
-{
-	/**  The Facebook account details. */
-	FNakamaAccountSteam Account;
-	/**  Reset the current user's friends list. */
-	bool Reset;
-
-	static FNakamaImportSteamFriendsRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
-};
-
-/**  Authenticate against the server with Steam. */
-struct NAKAMAUNREAL_API FNakamaAuthenticateSteamRequest
-{
-	/**  The Steam account details. */
-	FNakamaAccountSteam Account;
-	/**  Register the account if the user does not already exist. */
-	bool Create;
-	/**  Set the username on the account at register. Must be unique. */
-	FString Username;
-	/**  Import Steam friends for the user. */
-	bool Sync;
-
-	static FNakamaAuthenticateSteamRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
-};
-
-/**  Link Steam to the current user's account. */
-struct NAKAMAUNREAL_API FNakamaLinkSteamRequest
-{
-	/**  The Facebook account details. */
-	FNakamaAccountSteam Account;
-	/**  Import Steam friends for the user. */
-	bool Sync;
-
-	static FNakamaLinkSteamRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
-};
-
-/**  A single group-role pair. */
-struct NAKAMAUNREAL_API FNakamaUserGroup
-{
-	/**  Group. */
-	FNakamaGroup Group;
-	/**  The user's relationship to the group. */
-	int32 State;
-
-	static FNakamaUserGroup FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
-};
-
-/**  A friend of a friend. */
-struct NAKAMAUNREAL_API FNakamaFriendOfFriend
-{
-	/**  The user who referred its friend. */
-	FString Referrer;
-	/**  User. */
-	FNakamaUser User;
-
-	static FNakamaFriendOfFriend FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
-};
-
-/**  A user with additional account details. Always the current user. */
-struct NAKAMAUNREAL_API FNakamaAccount
-{
-	/**  The user object. */
-	FNakamaUser User;
-	/**  The user's wallet data. */
-	FString Wallet;
-	/**  The email address of the user. */
-	FString Email;
-	/**  The devices which belong to the user's account. */
-	TArray<FNakamaAccountDevice> Devices;
-	/**  The custom id in the user's account. */
-	FString CustomId;
-	/**  The UNIX time (for gRPC clients) or ISO string (for REST clients) when the user's email was verified. */
-	FString VerifyTime;
-	/**  The UNIX time (for gRPC clients) or ISO string (for REST clients) when the user's account was disabled/banned. */
-	FString DisableTime;
-
-	static FNakamaAccount FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
-};
-
-/**  A friend of a user. */
-struct NAKAMAUNREAL_API FNakamaFriend
-{
-	/**  The user object. */
-	FNakamaUser User;
-	/**  The friend status. */
-	int32 State;
-	/**  Time of the latest relationship update. */
-	FString UpdateTime;
-	/**  Metadata. */
-	FString Metadata;
-
-	static FNakamaFriend FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
-};
-
-/**  A single user-role pair. */
-struct NAKAMAUNREAL_API FNakamaGroupUser
-{
-	/**  User. */
-	FNakamaUser User;
-	/**  Their relationship to the group. */
-	int32 State;
-
-	static FNakamaGroupUser FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
-};
-
-/**  Validate Subscription response. */
-struct NAKAMAUNREAL_API FNakamaValidateSubscriptionResponse
-{
-	/**  */
-	FNakamaValidatedSubscription ValidatedSubscription;
-
-	static FNakamaValidateSubscriptionResponse FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
-};
-
-/**  A request to submit a score to a leaderboard. */
-struct NAKAMAUNREAL_API FNakamaWriteLeaderboardRecordRequest
-{
-	/**  The ID of the leaderboard to write to. */
-	FString LeaderboardId;
-	/**  Record input. */
-	FNakamaLeaderboardRecordWrite Record;
-
-	static FNakamaWriteLeaderboardRecordRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
-};
-
-/**  A request to submit a score to a tournament. */
-struct NAKAMAUNREAL_API FNakamaWriteTournamentRecordRequest
-{
-	/**  The tournament ID to write the record for. */
-	FString TournamentId;
-	/**  Record input. */
-	FNakamaTournamentRecordWrite Record;
-
-	static FNakamaWriteTournamentRecordRequest FromJson(const TSharedPtr<FJsonObject>& Json);
 	TSharedPtr<FJsonObject> ToJson() const;
 };
 
@@ -2654,7 +2654,7 @@ public:
 	/** Write a record to a leaderboard. */
 	void WriteLeaderboardRecord(
 		FString LeaderboardId,
-		FNakamaLeaderboardRecordWrite Record,
+		FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite Record,
 		TFunction<void(const FNakamaLeaderboardRecord&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError);
 
@@ -2667,7 +2667,7 @@ public:
 	/** Write a record to a tournament. */
 	void WriteTournamentRecord(
 		FString TournamentId,
-		FNakamaTournamentRecordWrite Record,
+		FNakamaWriteTournamentRecordRequest_TournamentRecordWrite Record,
 		TFunction<void(const FNakamaLeaderboardRecord&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError);
 

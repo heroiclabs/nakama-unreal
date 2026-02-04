@@ -30,6 +30,249 @@
 
 DEFINE_LOG_CATEGORY(LogNakama);
 
+FNakamaUser FNakamaUser::FromJson(const TSharedPtr<FJsonObject>& Json)
+{
+	FNakamaUser Result;
+	if (!Json.IsValid())
+	{
+		return Result;
+	}
+	if (Json->HasField(TEXT("id")))
+	{
+		Result.Id = Json->GetStringField(TEXT("id"));
+	}
+	if (Json->HasField(TEXT("username")))
+	{
+		Result.Username = Json->GetStringField(TEXT("username"));
+	}
+	if (Json->HasField(TEXT("display_name")))
+	{
+		Result.DisplayName = Json->GetStringField(TEXT("display_name"));
+	}
+	if (Json->HasField(TEXT("avatar_url")))
+	{
+		Result.AvatarUrl = Json->GetStringField(TEXT("avatar_url"));
+	}
+	if (Json->HasField(TEXT("lang_tag")))
+	{
+		Result.LangTag = Json->GetStringField(TEXT("lang_tag"));
+	}
+	if (Json->HasField(TEXT("location")))
+	{
+		Result.Location = Json->GetStringField(TEXT("location"));
+	}
+	if (Json->HasField(TEXT("timezone")))
+	{
+		Result.Timezone = Json->GetStringField(TEXT("timezone"));
+	}
+	if (Json->HasField(TEXT("metadata")))
+	{
+		Result.Metadata = Json->GetStringField(TEXT("metadata"));
+	}
+	if (Json->HasField(TEXT("facebook_id")))
+	{
+		Result.FacebookId = Json->GetStringField(TEXT("facebook_id"));
+	}
+	if (Json->HasField(TEXT("google_id")))
+	{
+		Result.GoogleId = Json->GetStringField(TEXT("google_id"));
+	}
+	if (Json->HasField(TEXT("gamecenter_id")))
+	{
+		Result.GamecenterId = Json->GetStringField(TEXT("gamecenter_id"));
+	}
+	if (Json->HasField(TEXT("steam_id")))
+	{
+		Result.SteamId = Json->GetStringField(TEXT("steam_id"));
+	}
+	if (Json->HasField(TEXT("online")))
+	{
+		Result.Online = Json->GetBoolField(TEXT("online"));
+	}
+	if (Json->HasField(TEXT("edge_count")))
+	{
+		Result.EdgeCount = Json->GetIntegerField(TEXT("edge_count"));
+	}
+	if (Json->HasField(TEXT("create_time")))
+	{
+		Result.CreateTime = Json->GetStringField(TEXT("create_time"));
+	}
+	if (Json->HasField(TEXT("update_time")))
+	{
+		Result.UpdateTime = Json->GetStringField(TEXT("update_time"));
+	}
+	if (Json->HasField(TEXT("facebook_instant_game_id")))
+	{
+		Result.FacebookInstantGameId = Json->GetStringField(TEXT("facebook_instant_game_id"));
+	}
+	if (Json->HasField(TEXT("apple_id")))
+	{
+		Result.AppleId = Json->GetStringField(TEXT("apple_id"));
+	}
+	return Result;
+}
+
+TSharedPtr<FJsonObject> FNakamaUser::ToJson() const
+{
+	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+	if (!Id.IsEmpty())
+	{
+		Json->SetStringField(TEXT("id"), Id);
+	}
+	if (!Username.IsEmpty())
+	{
+		Json->SetStringField(TEXT("username"), Username);
+	}
+	if (!DisplayName.IsEmpty())
+	{
+		Json->SetStringField(TEXT("display_name"), DisplayName);
+	}
+	if (!AvatarUrl.IsEmpty())
+	{
+		Json->SetStringField(TEXT("avatar_url"), AvatarUrl);
+	}
+	if (!LangTag.IsEmpty())
+	{
+		Json->SetStringField(TEXT("lang_tag"), LangTag);
+	}
+	if (!Location.IsEmpty())
+	{
+		Json->SetStringField(TEXT("location"), Location);
+	}
+	if (!Timezone.IsEmpty())
+	{
+		Json->SetStringField(TEXT("timezone"), Timezone);
+	}
+	if (!Metadata.IsEmpty())
+	{
+		Json->SetStringField(TEXT("metadata"), Metadata);
+	}
+	if (!FacebookId.IsEmpty())
+	{
+		Json->SetStringField(TEXT("facebook_id"), FacebookId);
+	}
+	if (!GoogleId.IsEmpty())
+	{
+		Json->SetStringField(TEXT("google_id"), GoogleId);
+	}
+	if (!GamecenterId.IsEmpty())
+	{
+		Json->SetStringField(TEXT("gamecenter_id"), GamecenterId);
+	}
+	if (!SteamId.IsEmpty())
+	{
+		Json->SetStringField(TEXT("steam_id"), SteamId);
+	}
+	Json->SetBoolField(TEXT("online"), Online);
+	Json->SetNumberField(TEXT("edge_count"), EdgeCount);
+	if (!CreateTime.IsEmpty())
+	{
+		Json->SetStringField(TEXT("create_time"), CreateTime);
+	}
+	if (!UpdateTime.IsEmpty())
+	{
+		Json->SetStringField(TEXT("update_time"), UpdateTime);
+	}
+	if (!FacebookInstantGameId.IsEmpty())
+	{
+		Json->SetStringField(TEXT("facebook_instant_game_id"), FacebookInstantGameId);
+	}
+	if (!AppleId.IsEmpty())
+	{
+		Json->SetStringField(TEXT("apple_id"), AppleId);
+	}
+	return Json;
+}
+
+FNakamaAccount FNakamaAccount::FromJson(const TSharedPtr<FJsonObject>& Json)
+{
+	FNakamaAccount Result;
+	if (!Json.IsValid())
+	{
+		return Result;
+	}
+	if (Json->HasField(TEXT("user")))
+	{
+		const TSharedPtr<FJsonObject>* NestedObj;
+		if (Json->TryGetObjectField(TEXT("user"), NestedObj))
+		{
+			Result.User = FNakamaUser::FromJson(*NestedObj);
+		}
+	}
+	if (Json->HasField(TEXT("wallet")))
+	{
+		Result.Wallet = Json->GetStringField(TEXT("wallet"));
+	}
+	if (Json->HasField(TEXT("email")))
+	{
+		Result.Email = Json->GetStringField(TEXT("email"));
+	}
+	if (Json->HasField(TEXT("devices")))
+	{
+		const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
+		if (Json->TryGetArrayField(TEXT("devices"), ArrayPtr))
+		{
+			for (const auto& Item : *ArrayPtr)
+			{
+				const TSharedPtr<FJsonObject>* ItemObj = nullptr;
+				if (Item->TryGetObject(ItemObj) && ItemObj)
+				{
+					Result.Devices.Add(FNakamaAccountDevice::FromJson(*ItemObj));
+				}
+			}
+		}
+	}
+	if (Json->HasField(TEXT("custom_id")))
+	{
+		Result.CustomId = Json->GetStringField(TEXT("custom_id"));
+	}
+	if (Json->HasField(TEXT("verify_time")))
+	{
+		Result.VerifyTime = Json->GetStringField(TEXT("verify_time"));
+	}
+	if (Json->HasField(TEXT("disable_time")))
+	{
+		Result.DisableTime = Json->GetStringField(TEXT("disable_time"));
+	}
+	return Result;
+}
+
+TSharedPtr<FJsonObject> FNakamaAccount::ToJson() const
+{
+	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+	Json->SetObjectField(TEXT("user"), User.ToJson());
+	if (!Wallet.IsEmpty())
+	{
+		Json->SetStringField(TEXT("wallet"), Wallet);
+	}
+	if (!Email.IsEmpty())
+	{
+		Json->SetStringField(TEXT("email"), Email);
+	}
+	if (Devices.Num() > 0)
+	{
+		TArray<TSharedPtr<FJsonValue>> Array;
+		for (const auto& Item : Devices)
+		{
+			Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
+		}
+		Json->SetArrayField(TEXT("devices"), Array);
+	}
+	if (!CustomId.IsEmpty())
+	{
+		Json->SetStringField(TEXT("custom_id"), CustomId);
+	}
+	if (!VerifyTime.IsEmpty())
+	{
+		Json->SetStringField(TEXT("verify_time"), VerifyTime);
+	}
+	if (!DisableTime.IsEmpty())
+	{
+		Json->SetStringField(TEXT("disable_time"), DisableTime);
+	}
+	return Json;
+}
+
 FNakamaAccountRefresh FNakamaAccountRefresh::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
 	FNakamaAccountRefresh Result;
@@ -699,6 +942,358 @@ TSharedPtr<FJsonObject> FNakamaSessionLogoutRequest::ToJson() const
 	return Json;
 }
 
+FNakamaAuthenticateAppleRequest FNakamaAuthenticateAppleRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+{
+	FNakamaAuthenticateAppleRequest Result;
+	if (!Json.IsValid())
+	{
+		return Result;
+	}
+	if (Json->HasField(TEXT("account")))
+	{
+		const TSharedPtr<FJsonObject>* NestedObj;
+		if (Json->TryGetObjectField(TEXT("account"), NestedObj))
+		{
+			Result.Account = FNakamaAccountApple::FromJson(*NestedObj);
+		}
+	}
+	if (Json->HasField(TEXT("create")))
+	{
+		Result.Create = Json->GetBoolField(TEXT("create"));
+	}
+	if (Json->HasField(TEXT("username")))
+	{
+		Result.Username = Json->GetStringField(TEXT("username"));
+	}
+	return Result;
+}
+
+TSharedPtr<FJsonObject> FNakamaAuthenticateAppleRequest::ToJson() const
+{
+	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+	Json->SetObjectField(TEXT("account"), Account.ToJson());
+	Json->SetBoolField(TEXT("create"), Create);
+	if (!Username.IsEmpty())
+	{
+		Json->SetStringField(TEXT("username"), Username);
+	}
+	return Json;
+}
+
+FNakamaAuthenticateCustomRequest FNakamaAuthenticateCustomRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+{
+	FNakamaAuthenticateCustomRequest Result;
+	if (!Json.IsValid())
+	{
+		return Result;
+	}
+	if (Json->HasField(TEXT("account")))
+	{
+		const TSharedPtr<FJsonObject>* NestedObj;
+		if (Json->TryGetObjectField(TEXT("account"), NestedObj))
+		{
+			Result.Account = FNakamaAccountCustom::FromJson(*NestedObj);
+		}
+	}
+	if (Json->HasField(TEXT("create")))
+	{
+		Result.Create = Json->GetBoolField(TEXT("create"));
+	}
+	if (Json->HasField(TEXT("username")))
+	{
+		Result.Username = Json->GetStringField(TEXT("username"));
+	}
+	return Result;
+}
+
+TSharedPtr<FJsonObject> FNakamaAuthenticateCustomRequest::ToJson() const
+{
+	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+	Json->SetObjectField(TEXT("account"), Account.ToJson());
+	Json->SetBoolField(TEXT("create"), Create);
+	if (!Username.IsEmpty())
+	{
+		Json->SetStringField(TEXT("username"), Username);
+	}
+	return Json;
+}
+
+FNakamaAuthenticateDeviceRequest FNakamaAuthenticateDeviceRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+{
+	FNakamaAuthenticateDeviceRequest Result;
+	if (!Json.IsValid())
+	{
+		return Result;
+	}
+	if (Json->HasField(TEXT("account")))
+	{
+		const TSharedPtr<FJsonObject>* NestedObj;
+		if (Json->TryGetObjectField(TEXT("account"), NestedObj))
+		{
+			Result.Account = FNakamaAccountDevice::FromJson(*NestedObj);
+		}
+	}
+	if (Json->HasField(TEXT("create")))
+	{
+		Result.Create = Json->GetBoolField(TEXT("create"));
+	}
+	if (Json->HasField(TEXT("username")))
+	{
+		Result.Username = Json->GetStringField(TEXT("username"));
+	}
+	return Result;
+}
+
+TSharedPtr<FJsonObject> FNakamaAuthenticateDeviceRequest::ToJson() const
+{
+	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+	Json->SetObjectField(TEXT("account"), Account.ToJson());
+	Json->SetBoolField(TEXT("create"), Create);
+	if (!Username.IsEmpty())
+	{
+		Json->SetStringField(TEXT("username"), Username);
+	}
+	return Json;
+}
+
+FNakamaAuthenticateEmailRequest FNakamaAuthenticateEmailRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+{
+	FNakamaAuthenticateEmailRequest Result;
+	if (!Json.IsValid())
+	{
+		return Result;
+	}
+	if (Json->HasField(TEXT("account")))
+	{
+		const TSharedPtr<FJsonObject>* NestedObj;
+		if (Json->TryGetObjectField(TEXT("account"), NestedObj))
+		{
+			Result.Account = FNakamaAccountEmail::FromJson(*NestedObj);
+		}
+	}
+	if (Json->HasField(TEXT("create")))
+	{
+		Result.Create = Json->GetBoolField(TEXT("create"));
+	}
+	if (Json->HasField(TEXT("username")))
+	{
+		Result.Username = Json->GetStringField(TEXT("username"));
+	}
+	return Result;
+}
+
+TSharedPtr<FJsonObject> FNakamaAuthenticateEmailRequest::ToJson() const
+{
+	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+	Json->SetObjectField(TEXT("account"), Account.ToJson());
+	Json->SetBoolField(TEXT("create"), Create);
+	if (!Username.IsEmpty())
+	{
+		Json->SetStringField(TEXT("username"), Username);
+	}
+	return Json;
+}
+
+FNakamaAuthenticateFacebookRequest FNakamaAuthenticateFacebookRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+{
+	FNakamaAuthenticateFacebookRequest Result;
+	if (!Json.IsValid())
+	{
+		return Result;
+	}
+	if (Json->HasField(TEXT("account")))
+	{
+		const TSharedPtr<FJsonObject>* NestedObj;
+		if (Json->TryGetObjectField(TEXT("account"), NestedObj))
+		{
+			Result.Account = FNakamaAccountFacebook::FromJson(*NestedObj);
+		}
+	}
+	if (Json->HasField(TEXT("create")))
+	{
+		Result.Create = Json->GetBoolField(TEXT("create"));
+	}
+	if (Json->HasField(TEXT("username")))
+	{
+		Result.Username = Json->GetStringField(TEXT("username"));
+	}
+	if (Json->HasField(TEXT("sync")))
+	{
+		Result.Sync = Json->GetBoolField(TEXT("sync"));
+	}
+	return Result;
+}
+
+TSharedPtr<FJsonObject> FNakamaAuthenticateFacebookRequest::ToJson() const
+{
+	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+	Json->SetObjectField(TEXT("account"), Account.ToJson());
+	Json->SetBoolField(TEXT("create"), Create);
+	if (!Username.IsEmpty())
+	{
+		Json->SetStringField(TEXT("username"), Username);
+	}
+	Json->SetBoolField(TEXT("sync"), Sync);
+	return Json;
+}
+
+FNakamaAuthenticateFacebookInstantGameRequest FNakamaAuthenticateFacebookInstantGameRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+{
+	FNakamaAuthenticateFacebookInstantGameRequest Result;
+	if (!Json.IsValid())
+	{
+		return Result;
+	}
+	if (Json->HasField(TEXT("account")))
+	{
+		const TSharedPtr<FJsonObject>* NestedObj;
+		if (Json->TryGetObjectField(TEXT("account"), NestedObj))
+		{
+			Result.Account = FNakamaAccountFacebookInstantGame::FromJson(*NestedObj);
+		}
+	}
+	if (Json->HasField(TEXT("create")))
+	{
+		Result.Create = Json->GetBoolField(TEXT("create"));
+	}
+	if (Json->HasField(TEXT("username")))
+	{
+		Result.Username = Json->GetStringField(TEXT("username"));
+	}
+	return Result;
+}
+
+TSharedPtr<FJsonObject> FNakamaAuthenticateFacebookInstantGameRequest::ToJson() const
+{
+	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+	Json->SetObjectField(TEXT("account"), Account.ToJson());
+	Json->SetBoolField(TEXT("create"), Create);
+	if (!Username.IsEmpty())
+	{
+		Json->SetStringField(TEXT("username"), Username);
+	}
+	return Json;
+}
+
+FNakamaAuthenticateGameCenterRequest FNakamaAuthenticateGameCenterRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+{
+	FNakamaAuthenticateGameCenterRequest Result;
+	if (!Json.IsValid())
+	{
+		return Result;
+	}
+	if (Json->HasField(TEXT("account")))
+	{
+		const TSharedPtr<FJsonObject>* NestedObj;
+		if (Json->TryGetObjectField(TEXT("account"), NestedObj))
+		{
+			Result.Account = FNakamaAccountGameCenter::FromJson(*NestedObj);
+		}
+	}
+	if (Json->HasField(TEXT("create")))
+	{
+		Result.Create = Json->GetBoolField(TEXT("create"));
+	}
+	if (Json->HasField(TEXT("username")))
+	{
+		Result.Username = Json->GetStringField(TEXT("username"));
+	}
+	return Result;
+}
+
+TSharedPtr<FJsonObject> FNakamaAuthenticateGameCenterRequest::ToJson() const
+{
+	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+	Json->SetObjectField(TEXT("account"), Account.ToJson());
+	Json->SetBoolField(TEXT("create"), Create);
+	if (!Username.IsEmpty())
+	{
+		Json->SetStringField(TEXT("username"), Username);
+	}
+	return Json;
+}
+
+FNakamaAuthenticateGoogleRequest FNakamaAuthenticateGoogleRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+{
+	FNakamaAuthenticateGoogleRequest Result;
+	if (!Json.IsValid())
+	{
+		return Result;
+	}
+	if (Json->HasField(TEXT("account")))
+	{
+		const TSharedPtr<FJsonObject>* NestedObj;
+		if (Json->TryGetObjectField(TEXT("account"), NestedObj))
+		{
+			Result.Account = FNakamaAccountGoogle::FromJson(*NestedObj);
+		}
+	}
+	if (Json->HasField(TEXT("create")))
+	{
+		Result.Create = Json->GetBoolField(TEXT("create"));
+	}
+	if (Json->HasField(TEXT("username")))
+	{
+		Result.Username = Json->GetStringField(TEXT("username"));
+	}
+	return Result;
+}
+
+TSharedPtr<FJsonObject> FNakamaAuthenticateGoogleRequest::ToJson() const
+{
+	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+	Json->SetObjectField(TEXT("account"), Account.ToJson());
+	Json->SetBoolField(TEXT("create"), Create);
+	if (!Username.IsEmpty())
+	{
+		Json->SetStringField(TEXT("username"), Username);
+	}
+	return Json;
+}
+
+FNakamaAuthenticateSteamRequest FNakamaAuthenticateSteamRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+{
+	FNakamaAuthenticateSteamRequest Result;
+	if (!Json.IsValid())
+	{
+		return Result;
+	}
+	if (Json->HasField(TEXT("account")))
+	{
+		const TSharedPtr<FJsonObject>* NestedObj;
+		if (Json->TryGetObjectField(TEXT("account"), NestedObj))
+		{
+			Result.Account = FNakamaAccountSteam::FromJson(*NestedObj);
+		}
+	}
+	if (Json->HasField(TEXT("create")))
+	{
+		Result.Create = Json->GetBoolField(TEXT("create"));
+	}
+	if (Json->HasField(TEXT("username")))
+	{
+		Result.Username = Json->GetStringField(TEXT("username"));
+	}
+	if (Json->HasField(TEXT("sync")))
+	{
+		Result.Sync = Json->GetBoolField(TEXT("sync"));
+	}
+	return Result;
+}
+
+TSharedPtr<FJsonObject> FNakamaAuthenticateSteamRequest::ToJson() const
+{
+	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+	Json->SetObjectField(TEXT("account"), Account.ToJson());
+	Json->SetBoolField(TEXT("create"), Create);
+	if (!Username.IsEmpty())
+	{
+		Json->SetStringField(TEXT("username"), Username);
+	}
+	Json->SetBoolField(TEXT("sync"), Sync);
+	return Json;
+}
+
 FNakamaBanGroupUsersRequest FNakamaBanGroupUsersRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
 	FNakamaBanGroupUsersRequest Result;
@@ -1336,6 +1931,52 @@ TSharedPtr<FJsonObject> FNakamaEvent::ToJson() const
 	return Json;
 }
 
+FNakamaFriend FNakamaFriend::FromJson(const TSharedPtr<FJsonObject>& Json)
+{
+	FNakamaFriend Result;
+	if (!Json.IsValid())
+	{
+		return Result;
+	}
+	if (Json->HasField(TEXT("user")))
+	{
+		const TSharedPtr<FJsonObject>* NestedObj;
+		if (Json->TryGetObjectField(TEXT("user"), NestedObj))
+		{
+			Result.User = FNakamaUser::FromJson(*NestedObj);
+		}
+	}
+	if (Json->HasField(TEXT("state")))
+	{
+		Result.State = Json->GetIntegerField(TEXT("state"));
+	}
+	if (Json->HasField(TEXT("update_time")))
+	{
+		Result.UpdateTime = Json->GetStringField(TEXT("update_time"));
+	}
+	if (Json->HasField(TEXT("metadata")))
+	{
+		Result.Metadata = Json->GetStringField(TEXT("metadata"));
+	}
+	return Result;
+}
+
+TSharedPtr<FJsonObject> FNakamaFriend::ToJson() const
+{
+	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+	Json->SetObjectField(TEXT("user"), User.ToJson());
+	Json->SetNumberField(TEXT("state"), State);
+	if (!UpdateTime.IsEmpty())
+	{
+		Json->SetStringField(TEXT("update_time"), UpdateTime);
+	}
+	if (!Metadata.IsEmpty())
+	{
+		Json->SetStringField(TEXT("metadata"), Metadata);
+	}
+	return Json;
+}
+
 FNakamaFriendList FNakamaFriendList::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
 	FNakamaFriendList Result;
@@ -1384,6 +2025,39 @@ TSharedPtr<FJsonObject> FNakamaFriendList::ToJson() const
 	return Json;
 }
 
+FNakamaFriendsOfFriendsList_FriendOfFriend FNakamaFriendsOfFriendsList_FriendOfFriend::FromJson(const TSharedPtr<FJsonObject>& Json)
+{
+	FNakamaFriendsOfFriendsList_FriendOfFriend Result;
+	if (!Json.IsValid())
+	{
+		return Result;
+	}
+	if (Json->HasField(TEXT("referrer")))
+	{
+		Result.Referrer = Json->GetStringField(TEXT("referrer"));
+	}
+	if (Json->HasField(TEXT("user")))
+	{
+		const TSharedPtr<FJsonObject>* NestedObj;
+		if (Json->TryGetObjectField(TEXT("user"), NestedObj))
+		{
+			Result.User = FNakamaUser::FromJson(*NestedObj);
+		}
+	}
+	return Result;
+}
+
+TSharedPtr<FJsonObject> FNakamaFriendsOfFriendsList_FriendOfFriend::ToJson() const
+{
+	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+	if (!Referrer.IsEmpty())
+	{
+		Json->SetStringField(TEXT("referrer"), Referrer);
+	}
+	Json->SetObjectField(TEXT("user"), User.ToJson());
+	return Json;
+}
+
 FNakamaFriendsOfFriendsList FNakamaFriendsOfFriendsList::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
 	FNakamaFriendsOfFriendsList Result;
@@ -1401,7 +2075,7 @@ FNakamaFriendsOfFriendsList FNakamaFriendsOfFriendsList::FromJson(const TSharedP
 				const TSharedPtr<FJsonObject>* ItemObj = nullptr;
 				if (Item->TryGetObject(ItemObj) && ItemObj)
 				{
-					Result.FriendsOfFriends.Add(FNakamaFriendOfFriend::FromJson(*ItemObj));
+					Result.FriendsOfFriends.Add(FNakamaFriendsOfFriendsList_FriendOfFriend::FromJson(*ItemObj));
 				}
 			}
 		}
@@ -1683,6 +2357,36 @@ TSharedPtr<FJsonObject> FNakamaGroupList::ToJson() const
 	return Json;
 }
 
+FNakamaGroupUserList_GroupUser FNakamaGroupUserList_GroupUser::FromJson(const TSharedPtr<FJsonObject>& Json)
+{
+	FNakamaGroupUserList_GroupUser Result;
+	if (!Json.IsValid())
+	{
+		return Result;
+	}
+	if (Json->HasField(TEXT("user")))
+	{
+		const TSharedPtr<FJsonObject>* NestedObj;
+		if (Json->TryGetObjectField(TEXT("user"), NestedObj))
+		{
+			Result.User = FNakamaUser::FromJson(*NestedObj);
+		}
+	}
+	if (Json->HasField(TEXT("state")))
+	{
+		Result.State = Json->GetIntegerField(TEXT("state"));
+	}
+	return Result;
+}
+
+TSharedPtr<FJsonObject> FNakamaGroupUserList_GroupUser::ToJson() const
+{
+	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+	Json->SetObjectField(TEXT("user"), User.ToJson());
+	Json->SetNumberField(TEXT("state"), State);
+	return Json;
+}
+
 FNakamaGroupUserList FNakamaGroupUserList::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
 	FNakamaGroupUserList Result;
@@ -1700,7 +2404,7 @@ FNakamaGroupUserList FNakamaGroupUserList::FromJson(const TSharedPtr<FJsonObject
 				const TSharedPtr<FJsonObject>* ItemObj = nullptr;
 				if (Item->TryGetObject(ItemObj) && ItemObj)
 				{
-					Result.GroupUsers.Add(FNakamaGroupUser::FromJson(*ItemObj));
+					Result.GroupUsers.Add(FNakamaGroupUserList_GroupUser::FromJson(*ItemObj));
 				}
 			}
 		}
@@ -1728,6 +2432,66 @@ TSharedPtr<FJsonObject> FNakamaGroupUserList::ToJson() const
 	{
 		Json->SetStringField(TEXT("cursor"), Cursor);
 	}
+	return Json;
+}
+
+FNakamaImportFacebookFriendsRequest FNakamaImportFacebookFriendsRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+{
+	FNakamaImportFacebookFriendsRequest Result;
+	if (!Json.IsValid())
+	{
+		return Result;
+	}
+	if (Json->HasField(TEXT("account")))
+	{
+		const TSharedPtr<FJsonObject>* NestedObj;
+		if (Json->TryGetObjectField(TEXT("account"), NestedObj))
+		{
+			Result.Account = FNakamaAccountFacebook::FromJson(*NestedObj);
+		}
+	}
+	if (Json->HasField(TEXT("reset")))
+	{
+		Result.Reset = Json->GetBoolField(TEXT("reset"));
+	}
+	return Result;
+}
+
+TSharedPtr<FJsonObject> FNakamaImportFacebookFriendsRequest::ToJson() const
+{
+	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+	Json->SetObjectField(TEXT("account"), Account.ToJson());
+	Json->SetBoolField(TEXT("reset"), Reset);
+	return Json;
+}
+
+FNakamaImportSteamFriendsRequest FNakamaImportSteamFriendsRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+{
+	FNakamaImportSteamFriendsRequest Result;
+	if (!Json.IsValid())
+	{
+		return Result;
+	}
+	if (Json->HasField(TEXT("account")))
+	{
+		const TSharedPtr<FJsonObject>* NestedObj;
+		if (Json->TryGetObjectField(TEXT("account"), NestedObj))
+		{
+			Result.Account = FNakamaAccountSteam::FromJson(*NestedObj);
+		}
+	}
+	if (Json->HasField(TEXT("reset")))
+	{
+		Result.Reset = Json->GetBoolField(TEXT("reset"));
+	}
+	return Result;
+}
+
+TSharedPtr<FJsonObject> FNakamaImportSteamFriendsRequest::ToJson() const
+{
+	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+	Json->SetObjectField(TEXT("account"), Account.ToJson());
+	Json->SetBoolField(TEXT("reset"), Reset);
 	return Json;
 }
 
@@ -2139,6 +2903,66 @@ TSharedPtr<FJsonObject> FNakamaLeaveGroupRequest::ToJson() const
 	{
 		Json->SetStringField(TEXT("group_id"), GroupId);
 	}
+	return Json;
+}
+
+FNakamaLinkFacebookRequest FNakamaLinkFacebookRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+{
+	FNakamaLinkFacebookRequest Result;
+	if (!Json.IsValid())
+	{
+		return Result;
+	}
+	if (Json->HasField(TEXT("account")))
+	{
+		const TSharedPtr<FJsonObject>* NestedObj;
+		if (Json->TryGetObjectField(TEXT("account"), NestedObj))
+		{
+			Result.Account = FNakamaAccountFacebook::FromJson(*NestedObj);
+		}
+	}
+	if (Json->HasField(TEXT("sync")))
+	{
+		Result.Sync = Json->GetBoolField(TEXT("sync"));
+	}
+	return Result;
+}
+
+TSharedPtr<FJsonObject> FNakamaLinkFacebookRequest::ToJson() const
+{
+	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+	Json->SetObjectField(TEXT("account"), Account.ToJson());
+	Json->SetBoolField(TEXT("sync"), Sync);
+	return Json;
+}
+
+FNakamaLinkSteamRequest FNakamaLinkSteamRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+{
+	FNakamaLinkSteamRequest Result;
+	if (!Json.IsValid())
+	{
+		return Result;
+	}
+	if (Json->HasField(TEXT("account")))
+	{
+		const TSharedPtr<FJsonObject>* NestedObj;
+		if (Json->TryGetObjectField(TEXT("account"), NestedObj))
+		{
+			Result.Account = FNakamaAccountSteam::FromJson(*NestedObj);
+		}
+	}
+	if (Json->HasField(TEXT("sync")))
+	{
+		Result.Sync = Json->GetBoolField(TEXT("sync"));
+	}
+	return Result;
+}
+
+TSharedPtr<FJsonObject> FNakamaLinkSteamRequest::ToJson() const
+{
+	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+	Json->SetObjectField(TEXT("account"), Account.ToJson());
+	Json->SetBoolField(TEXT("sync"), Sync);
 	return Json;
 }
 
@@ -4027,157 +4851,33 @@ TSharedPtr<FJsonObject> FNakamaUpdateGroupRequest::ToJson() const
 	return Json;
 }
 
-FNakamaUser FNakamaUser::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaUserGroupList_UserGroup FNakamaUserGroupList_UserGroup::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
-	FNakamaUser Result;
+	FNakamaUserGroupList_UserGroup Result;
 	if (!Json.IsValid())
 	{
 		return Result;
 	}
-	if (Json->HasField(TEXT("id")))
+	if (Json->HasField(TEXT("group")))
 	{
-		Result.Id = Json->GetStringField(TEXT("id"));
+		const TSharedPtr<FJsonObject>* NestedObj;
+		if (Json->TryGetObjectField(TEXT("group"), NestedObj))
+		{
+			Result.Group = FNakamaGroup::FromJson(*NestedObj);
+		}
 	}
-	if (Json->HasField(TEXT("username")))
+	if (Json->HasField(TEXT("state")))
 	{
-		Result.Username = Json->GetStringField(TEXT("username"));
-	}
-	if (Json->HasField(TEXT("display_name")))
-	{
-		Result.DisplayName = Json->GetStringField(TEXT("display_name"));
-	}
-	if (Json->HasField(TEXT("avatar_url")))
-	{
-		Result.AvatarUrl = Json->GetStringField(TEXT("avatar_url"));
-	}
-	if (Json->HasField(TEXT("lang_tag")))
-	{
-		Result.LangTag = Json->GetStringField(TEXT("lang_tag"));
-	}
-	if (Json->HasField(TEXT("location")))
-	{
-		Result.Location = Json->GetStringField(TEXT("location"));
-	}
-	if (Json->HasField(TEXT("timezone")))
-	{
-		Result.Timezone = Json->GetStringField(TEXT("timezone"));
-	}
-	if (Json->HasField(TEXT("metadata")))
-	{
-		Result.Metadata = Json->GetStringField(TEXT("metadata"));
-	}
-	if (Json->HasField(TEXT("facebook_id")))
-	{
-		Result.FacebookId = Json->GetStringField(TEXT("facebook_id"));
-	}
-	if (Json->HasField(TEXT("google_id")))
-	{
-		Result.GoogleId = Json->GetStringField(TEXT("google_id"));
-	}
-	if (Json->HasField(TEXT("gamecenter_id")))
-	{
-		Result.GamecenterId = Json->GetStringField(TEXT("gamecenter_id"));
-	}
-	if (Json->HasField(TEXT("steam_id")))
-	{
-		Result.SteamId = Json->GetStringField(TEXT("steam_id"));
-	}
-	if (Json->HasField(TEXT("online")))
-	{
-		Result.Online = Json->GetBoolField(TEXT("online"));
-	}
-	if (Json->HasField(TEXT("edge_count")))
-	{
-		Result.EdgeCount = Json->GetIntegerField(TEXT("edge_count"));
-	}
-	if (Json->HasField(TEXT("create_time")))
-	{
-		Result.CreateTime = Json->GetStringField(TEXT("create_time"));
-	}
-	if (Json->HasField(TEXT("update_time")))
-	{
-		Result.UpdateTime = Json->GetStringField(TEXT("update_time"));
-	}
-	if (Json->HasField(TEXT("facebook_instant_game_id")))
-	{
-		Result.FacebookInstantGameId = Json->GetStringField(TEXT("facebook_instant_game_id"));
-	}
-	if (Json->HasField(TEXT("apple_id")))
-	{
-		Result.AppleId = Json->GetStringField(TEXT("apple_id"));
+		Result.State = Json->GetIntegerField(TEXT("state"));
 	}
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaUser::ToJson() const
+TSharedPtr<FJsonObject> FNakamaUserGroupList_UserGroup::ToJson() const
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-	if (!Id.IsEmpty())
-	{
-		Json->SetStringField(TEXT("id"), Id);
-	}
-	if (!Username.IsEmpty())
-	{
-		Json->SetStringField(TEXT("username"), Username);
-	}
-	if (!DisplayName.IsEmpty())
-	{
-		Json->SetStringField(TEXT("display_name"), DisplayName);
-	}
-	if (!AvatarUrl.IsEmpty())
-	{
-		Json->SetStringField(TEXT("avatar_url"), AvatarUrl);
-	}
-	if (!LangTag.IsEmpty())
-	{
-		Json->SetStringField(TEXT("lang_tag"), LangTag);
-	}
-	if (!Location.IsEmpty())
-	{
-		Json->SetStringField(TEXT("location"), Location);
-	}
-	if (!Timezone.IsEmpty())
-	{
-		Json->SetStringField(TEXT("timezone"), Timezone);
-	}
-	if (!Metadata.IsEmpty())
-	{
-		Json->SetStringField(TEXT("metadata"), Metadata);
-	}
-	if (!FacebookId.IsEmpty())
-	{
-		Json->SetStringField(TEXT("facebook_id"), FacebookId);
-	}
-	if (!GoogleId.IsEmpty())
-	{
-		Json->SetStringField(TEXT("google_id"), GoogleId);
-	}
-	if (!GamecenterId.IsEmpty())
-	{
-		Json->SetStringField(TEXT("gamecenter_id"), GamecenterId);
-	}
-	if (!SteamId.IsEmpty())
-	{
-		Json->SetStringField(TEXT("steam_id"), SteamId);
-	}
-	Json->SetBoolField(TEXT("online"), Online);
-	Json->SetNumberField(TEXT("edge_count"), EdgeCount);
-	if (!CreateTime.IsEmpty())
-	{
-		Json->SetStringField(TEXT("create_time"), CreateTime);
-	}
-	if (!UpdateTime.IsEmpty())
-	{
-		Json->SetStringField(TEXT("update_time"), UpdateTime);
-	}
-	if (!FacebookInstantGameId.IsEmpty())
-	{
-		Json->SetStringField(TEXT("facebook_instant_game_id"), FacebookInstantGameId);
-	}
-	if (!AppleId.IsEmpty())
-	{
-		Json->SetStringField(TEXT("apple_id"), AppleId);
-	}
+	Json->SetObjectField(TEXT("group"), Group.ToJson());
+	Json->SetNumberField(TEXT("state"), State);
 	return Json;
 }
 
@@ -4198,7 +4898,7 @@ FNakamaUserGroupList FNakamaUserGroupList::FromJson(const TSharedPtr<FJsonObject
 				const TSharedPtr<FJsonObject>* ItemObj = nullptr;
 				if (Item->TryGetObject(ItemObj) && ItemObj)
 				{
-					Result.UserGroups.Add(FNakamaUserGroup::FromJson(*ItemObj));
+					Result.UserGroups.Add(FNakamaUserGroupList_UserGroup::FromJson(*ItemObj));
 				}
 			}
 		}
@@ -4697,6 +5397,31 @@ TSharedPtr<FJsonObject> FNakamaValidatedSubscription::ToJson() const
 	return Json;
 }
 
+FNakamaValidateSubscriptionResponse FNakamaValidateSubscriptionResponse::FromJson(const TSharedPtr<FJsonObject>& Json)
+{
+	FNakamaValidateSubscriptionResponse Result;
+	if (!Json.IsValid())
+	{
+		return Result;
+	}
+	if (Json->HasField(TEXT("validated_subscription")))
+	{
+		const TSharedPtr<FJsonObject>* NestedObj;
+		if (Json->TryGetObjectField(TEXT("validated_subscription"), NestedObj))
+		{
+			Result.ValidatedSubscription = FNakamaValidatedSubscription::FromJson(*NestedObj);
+		}
+	}
+	return Result;
+}
+
+TSharedPtr<FJsonObject> FNakamaValidateSubscriptionResponse::ToJson() const
+{
+	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+	Json->SetObjectField(TEXT("validated_subscription"), ValidatedSubscription.ToJson());
+	return Json;
+}
+
 FNakamaPurchaseList FNakamaPurchaseList::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
 	FNakamaPurchaseList Result;
@@ -4809,9 +5534,9 @@ TSharedPtr<FJsonObject> FNakamaSubscriptionList::ToJson() const
 	return Json;
 }
 
-FNakamaLeaderboardRecordWrite FNakamaLeaderboardRecordWrite::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
-	FNakamaLeaderboardRecordWrite Result;
+	FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite Result;
 	if (!Json.IsValid())
 	{
 		return Result;
@@ -4835,7 +5560,7 @@ FNakamaLeaderboardRecordWrite FNakamaLeaderboardRecordWrite::FromJson(const TSha
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaLeaderboardRecordWrite::ToJson() const
+TSharedPtr<FJsonObject> FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite::ToJson() const
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	Json->SetNumberField(TEXT("score"), Score);
@@ -4845,6 +5570,39 @@ TSharedPtr<FJsonObject> FNakamaLeaderboardRecordWrite::ToJson() const
 		Json->SetStringField(TEXT("metadata"), Metadata);
 	}
 	Json->SetNumberField(TEXT("operator"), Operator);
+	return Json;
+}
+
+FNakamaWriteLeaderboardRecordRequest FNakamaWriteLeaderboardRecordRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+{
+	FNakamaWriteLeaderboardRecordRequest Result;
+	if (!Json.IsValid())
+	{
+		return Result;
+	}
+	if (Json->HasField(TEXT("leaderboard_id")))
+	{
+		Result.LeaderboardId = Json->GetStringField(TEXT("leaderboard_id"));
+	}
+	if (Json->HasField(TEXT("record")))
+	{
+		const TSharedPtr<FJsonObject>* NestedObj;
+		if (Json->TryGetObjectField(TEXT("record"), NestedObj))
+		{
+			Result.Record = FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite::FromJson(*NestedObj);
+		}
+	}
+	return Result;
+}
+
+TSharedPtr<FJsonObject> FNakamaWriteLeaderboardRecordRequest::ToJson() const
+{
+	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+	if (!LeaderboardId.IsEmpty())
+	{
+		Json->SetStringField(TEXT("leaderboard_id"), LeaderboardId);
+	}
+	Json->SetObjectField(TEXT("record"), Record.ToJson());
 	return Json;
 }
 
@@ -4946,9 +5704,9 @@ TSharedPtr<FJsonObject> FNakamaWriteStorageObjectsRequest::ToJson() const
 	return Json;
 }
 
-FNakamaTournamentRecordWrite FNakamaTournamentRecordWrite::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaWriteTournamentRecordRequest_TournamentRecordWrite FNakamaWriteTournamentRecordRequest_TournamentRecordWrite::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
-	FNakamaTournamentRecordWrite Result;
+	FNakamaWriteTournamentRecordRequest_TournamentRecordWrite Result;
 	if (!Json.IsValid())
 	{
 		return Result;
@@ -4972,7 +5730,7 @@ FNakamaTournamentRecordWrite FNakamaTournamentRecordWrite::FromJson(const TShare
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaTournamentRecordWrite::ToJson() const
+TSharedPtr<FJsonObject> FNakamaWriteTournamentRecordRequest_TournamentRecordWrite::ToJson() const
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	Json->SetNumberField(TEXT("score"), Score);
@@ -4982,6 +5740,39 @@ TSharedPtr<FJsonObject> FNakamaTournamentRecordWrite::ToJson() const
 		Json->SetStringField(TEXT("metadata"), Metadata);
 	}
 	Json->SetNumberField(TEXT("operator"), Operator);
+	return Json;
+}
+
+FNakamaWriteTournamentRecordRequest FNakamaWriteTournamentRecordRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+{
+	FNakamaWriteTournamentRecordRequest Result;
+	if (!Json.IsValid())
+	{
+		return Result;
+	}
+	if (Json->HasField(TEXT("tournament_id")))
+	{
+		Result.TournamentId = Json->GetStringField(TEXT("tournament_id"));
+	}
+	if (Json->HasField(TEXT("record")))
+	{
+		const TSharedPtr<FJsonObject>* NestedObj;
+		if (Json->TryGetObjectField(TEXT("record"), NestedObj))
+		{
+			Result.Record = FNakamaWriteTournamentRecordRequest_TournamentRecordWrite::FromJson(*NestedObj);
+		}
+	}
+	return Result;
+}
+
+TSharedPtr<FJsonObject> FNakamaWriteTournamentRecordRequest::ToJson() const
+{
+	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+	if (!TournamentId.IsEmpty())
+	{
+		Json->SetStringField(TEXT("tournament_id"), TournamentId);
+	}
+	Json->SetObjectField(TEXT("record"), Record.ToJson());
 	return Json;
 }
 
@@ -5119,797 +5910,6 @@ TSharedPtr<FJsonObject> FNakamaPartyList::ToJson() const
 	{
 		Json->SetStringField(TEXT("cursor"), Cursor);
 	}
-	return Json;
-}
-
-FNakamaAuthenticateAppleRequest FNakamaAuthenticateAppleRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
-{
-	FNakamaAuthenticateAppleRequest Result;
-	if (!Json.IsValid())
-	{
-		return Result;
-	}
-	if (Json->HasField(TEXT("account")))
-	{
-		const TSharedPtr<FJsonObject>* NestedObj;
-		if (Json->TryGetObjectField(TEXT("account"), NestedObj))
-		{
-			Result.Account = FNakamaAccountApple::FromJson(*NestedObj);
-		}
-	}
-	if (Json->HasField(TEXT("create")))
-	{
-		Result.Create = Json->GetBoolField(TEXT("create"));
-	}
-	if (Json->HasField(TEXT("username")))
-	{
-		Result.Username = Json->GetStringField(TEXT("username"));
-	}
-	return Result;
-}
-
-TSharedPtr<FJsonObject> FNakamaAuthenticateAppleRequest::ToJson() const
-{
-	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-	Json->SetObjectField(TEXT("account"), Account.ToJson());
-	Json->SetBoolField(TEXT("create"), Create);
-	if (!Username.IsEmpty())
-	{
-		Json->SetStringField(TEXT("username"), Username);
-	}
-	return Json;
-}
-
-FNakamaAuthenticateCustomRequest FNakamaAuthenticateCustomRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
-{
-	FNakamaAuthenticateCustomRequest Result;
-	if (!Json.IsValid())
-	{
-		return Result;
-	}
-	if (Json->HasField(TEXT("account")))
-	{
-		const TSharedPtr<FJsonObject>* NestedObj;
-		if (Json->TryGetObjectField(TEXT("account"), NestedObj))
-		{
-			Result.Account = FNakamaAccountCustom::FromJson(*NestedObj);
-		}
-	}
-	if (Json->HasField(TEXT("create")))
-	{
-		Result.Create = Json->GetBoolField(TEXT("create"));
-	}
-	if (Json->HasField(TEXT("username")))
-	{
-		Result.Username = Json->GetStringField(TEXT("username"));
-	}
-	return Result;
-}
-
-TSharedPtr<FJsonObject> FNakamaAuthenticateCustomRequest::ToJson() const
-{
-	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-	Json->SetObjectField(TEXT("account"), Account.ToJson());
-	Json->SetBoolField(TEXT("create"), Create);
-	if (!Username.IsEmpty())
-	{
-		Json->SetStringField(TEXT("username"), Username);
-	}
-	return Json;
-}
-
-FNakamaAuthenticateDeviceRequest FNakamaAuthenticateDeviceRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
-{
-	FNakamaAuthenticateDeviceRequest Result;
-	if (!Json.IsValid())
-	{
-		return Result;
-	}
-	if (Json->HasField(TEXT("account")))
-	{
-		const TSharedPtr<FJsonObject>* NestedObj;
-		if (Json->TryGetObjectField(TEXT("account"), NestedObj))
-		{
-			Result.Account = FNakamaAccountDevice::FromJson(*NestedObj);
-		}
-	}
-	if (Json->HasField(TEXT("create")))
-	{
-		Result.Create = Json->GetBoolField(TEXT("create"));
-	}
-	if (Json->HasField(TEXT("username")))
-	{
-		Result.Username = Json->GetStringField(TEXT("username"));
-	}
-	return Result;
-}
-
-TSharedPtr<FJsonObject> FNakamaAuthenticateDeviceRequest::ToJson() const
-{
-	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-	Json->SetObjectField(TEXT("account"), Account.ToJson());
-	Json->SetBoolField(TEXT("create"), Create);
-	if (!Username.IsEmpty())
-	{
-		Json->SetStringField(TEXT("username"), Username);
-	}
-	return Json;
-}
-
-FNakamaAuthenticateEmailRequest FNakamaAuthenticateEmailRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
-{
-	FNakamaAuthenticateEmailRequest Result;
-	if (!Json.IsValid())
-	{
-		return Result;
-	}
-	if (Json->HasField(TEXT("account")))
-	{
-		const TSharedPtr<FJsonObject>* NestedObj;
-		if (Json->TryGetObjectField(TEXT("account"), NestedObj))
-		{
-			Result.Account = FNakamaAccountEmail::FromJson(*NestedObj);
-		}
-	}
-	if (Json->HasField(TEXT("create")))
-	{
-		Result.Create = Json->GetBoolField(TEXT("create"));
-	}
-	if (Json->HasField(TEXT("username")))
-	{
-		Result.Username = Json->GetStringField(TEXT("username"));
-	}
-	return Result;
-}
-
-TSharedPtr<FJsonObject> FNakamaAuthenticateEmailRequest::ToJson() const
-{
-	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-	Json->SetObjectField(TEXT("account"), Account.ToJson());
-	Json->SetBoolField(TEXT("create"), Create);
-	if (!Username.IsEmpty())
-	{
-		Json->SetStringField(TEXT("username"), Username);
-	}
-	return Json;
-}
-
-FNakamaImportFacebookFriendsRequest FNakamaImportFacebookFriendsRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
-{
-	FNakamaImportFacebookFriendsRequest Result;
-	if (!Json.IsValid())
-	{
-		return Result;
-	}
-	if (Json->HasField(TEXT("account")))
-	{
-		const TSharedPtr<FJsonObject>* NestedObj;
-		if (Json->TryGetObjectField(TEXT("account"), NestedObj))
-		{
-			Result.Account = FNakamaAccountFacebook::FromJson(*NestedObj);
-		}
-	}
-	if (Json->HasField(TEXT("reset")))
-	{
-		Result.Reset = Json->GetBoolField(TEXT("reset"));
-	}
-	return Result;
-}
-
-TSharedPtr<FJsonObject> FNakamaImportFacebookFriendsRequest::ToJson() const
-{
-	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-	Json->SetObjectField(TEXT("account"), Account.ToJson());
-	Json->SetBoolField(TEXT("reset"), Reset);
-	return Json;
-}
-
-FNakamaAuthenticateFacebookRequest FNakamaAuthenticateFacebookRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
-{
-	FNakamaAuthenticateFacebookRequest Result;
-	if (!Json.IsValid())
-	{
-		return Result;
-	}
-	if (Json->HasField(TEXT("account")))
-	{
-		const TSharedPtr<FJsonObject>* NestedObj;
-		if (Json->TryGetObjectField(TEXT("account"), NestedObj))
-		{
-			Result.Account = FNakamaAccountFacebook::FromJson(*NestedObj);
-		}
-	}
-	if (Json->HasField(TEXT("create")))
-	{
-		Result.Create = Json->GetBoolField(TEXT("create"));
-	}
-	if (Json->HasField(TEXT("username")))
-	{
-		Result.Username = Json->GetStringField(TEXT("username"));
-	}
-	if (Json->HasField(TEXT("sync")))
-	{
-		Result.Sync = Json->GetBoolField(TEXT("sync"));
-	}
-	return Result;
-}
-
-TSharedPtr<FJsonObject> FNakamaAuthenticateFacebookRequest::ToJson() const
-{
-	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-	Json->SetObjectField(TEXT("account"), Account.ToJson());
-	Json->SetBoolField(TEXT("create"), Create);
-	if (!Username.IsEmpty())
-	{
-		Json->SetStringField(TEXT("username"), Username);
-	}
-	Json->SetBoolField(TEXT("sync"), Sync);
-	return Json;
-}
-
-FNakamaLinkFacebookRequest FNakamaLinkFacebookRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
-{
-	FNakamaLinkFacebookRequest Result;
-	if (!Json.IsValid())
-	{
-		return Result;
-	}
-	if (Json->HasField(TEXT("account")))
-	{
-		const TSharedPtr<FJsonObject>* NestedObj;
-		if (Json->TryGetObjectField(TEXT("account"), NestedObj))
-		{
-			Result.Account = FNakamaAccountFacebook::FromJson(*NestedObj);
-		}
-	}
-	if (Json->HasField(TEXT("sync")))
-	{
-		Result.Sync = Json->GetBoolField(TEXT("sync"));
-	}
-	return Result;
-}
-
-TSharedPtr<FJsonObject> FNakamaLinkFacebookRequest::ToJson() const
-{
-	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-	Json->SetObjectField(TEXT("account"), Account.ToJson());
-	Json->SetBoolField(TEXT("sync"), Sync);
-	return Json;
-}
-
-FNakamaAuthenticateFacebookInstantGameRequest FNakamaAuthenticateFacebookInstantGameRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
-{
-	FNakamaAuthenticateFacebookInstantGameRequest Result;
-	if (!Json.IsValid())
-	{
-		return Result;
-	}
-	if (Json->HasField(TEXT("account")))
-	{
-		const TSharedPtr<FJsonObject>* NestedObj;
-		if (Json->TryGetObjectField(TEXT("account"), NestedObj))
-		{
-			Result.Account = FNakamaAccountFacebookInstantGame::FromJson(*NestedObj);
-		}
-	}
-	if (Json->HasField(TEXT("create")))
-	{
-		Result.Create = Json->GetBoolField(TEXT("create"));
-	}
-	if (Json->HasField(TEXT("username")))
-	{
-		Result.Username = Json->GetStringField(TEXT("username"));
-	}
-	return Result;
-}
-
-TSharedPtr<FJsonObject> FNakamaAuthenticateFacebookInstantGameRequest::ToJson() const
-{
-	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-	Json->SetObjectField(TEXT("account"), Account.ToJson());
-	Json->SetBoolField(TEXT("create"), Create);
-	if (!Username.IsEmpty())
-	{
-		Json->SetStringField(TEXT("username"), Username);
-	}
-	return Json;
-}
-
-FNakamaAuthenticateGameCenterRequest FNakamaAuthenticateGameCenterRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
-{
-	FNakamaAuthenticateGameCenterRequest Result;
-	if (!Json.IsValid())
-	{
-		return Result;
-	}
-	if (Json->HasField(TEXT("account")))
-	{
-		const TSharedPtr<FJsonObject>* NestedObj;
-		if (Json->TryGetObjectField(TEXT("account"), NestedObj))
-		{
-			Result.Account = FNakamaAccountGameCenter::FromJson(*NestedObj);
-		}
-	}
-	if (Json->HasField(TEXT("create")))
-	{
-		Result.Create = Json->GetBoolField(TEXT("create"));
-	}
-	if (Json->HasField(TEXT("username")))
-	{
-		Result.Username = Json->GetStringField(TEXT("username"));
-	}
-	return Result;
-}
-
-TSharedPtr<FJsonObject> FNakamaAuthenticateGameCenterRequest::ToJson() const
-{
-	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-	Json->SetObjectField(TEXT("account"), Account.ToJson());
-	Json->SetBoolField(TEXT("create"), Create);
-	if (!Username.IsEmpty())
-	{
-		Json->SetStringField(TEXT("username"), Username);
-	}
-	return Json;
-}
-
-FNakamaAuthenticateGoogleRequest FNakamaAuthenticateGoogleRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
-{
-	FNakamaAuthenticateGoogleRequest Result;
-	if (!Json.IsValid())
-	{
-		return Result;
-	}
-	if (Json->HasField(TEXT("account")))
-	{
-		const TSharedPtr<FJsonObject>* NestedObj;
-		if (Json->TryGetObjectField(TEXT("account"), NestedObj))
-		{
-			Result.Account = FNakamaAccountGoogle::FromJson(*NestedObj);
-		}
-	}
-	if (Json->HasField(TEXT("create")))
-	{
-		Result.Create = Json->GetBoolField(TEXT("create"));
-	}
-	if (Json->HasField(TEXT("username")))
-	{
-		Result.Username = Json->GetStringField(TEXT("username"));
-	}
-	return Result;
-}
-
-TSharedPtr<FJsonObject> FNakamaAuthenticateGoogleRequest::ToJson() const
-{
-	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-	Json->SetObjectField(TEXT("account"), Account.ToJson());
-	Json->SetBoolField(TEXT("create"), Create);
-	if (!Username.IsEmpty())
-	{
-		Json->SetStringField(TEXT("username"), Username);
-	}
-	return Json;
-}
-
-FNakamaLinkSteamRequest FNakamaLinkSteamRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
-{
-	FNakamaLinkSteamRequest Result;
-	if (!Json.IsValid())
-	{
-		return Result;
-	}
-	if (Json->HasField(TEXT("account")))
-	{
-		const TSharedPtr<FJsonObject>* NestedObj;
-		if (Json->TryGetObjectField(TEXT("account"), NestedObj))
-		{
-			Result.Account = FNakamaAccountSteam::FromJson(*NestedObj);
-		}
-	}
-	if (Json->HasField(TEXT("sync")))
-	{
-		Result.Sync = Json->GetBoolField(TEXT("sync"));
-	}
-	return Result;
-}
-
-TSharedPtr<FJsonObject> FNakamaLinkSteamRequest::ToJson() const
-{
-	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-	Json->SetObjectField(TEXT("account"), Account.ToJson());
-	Json->SetBoolField(TEXT("sync"), Sync);
-	return Json;
-}
-
-FNakamaImportSteamFriendsRequest FNakamaImportSteamFriendsRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
-{
-	FNakamaImportSteamFriendsRequest Result;
-	if (!Json.IsValid())
-	{
-		return Result;
-	}
-	if (Json->HasField(TEXT("account")))
-	{
-		const TSharedPtr<FJsonObject>* NestedObj;
-		if (Json->TryGetObjectField(TEXT("account"), NestedObj))
-		{
-			Result.Account = FNakamaAccountSteam::FromJson(*NestedObj);
-		}
-	}
-	if (Json->HasField(TEXT("reset")))
-	{
-		Result.Reset = Json->GetBoolField(TEXT("reset"));
-	}
-	return Result;
-}
-
-TSharedPtr<FJsonObject> FNakamaImportSteamFriendsRequest::ToJson() const
-{
-	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-	Json->SetObjectField(TEXT("account"), Account.ToJson());
-	Json->SetBoolField(TEXT("reset"), Reset);
-	return Json;
-}
-
-FNakamaAuthenticateSteamRequest FNakamaAuthenticateSteamRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
-{
-	FNakamaAuthenticateSteamRequest Result;
-	if (!Json.IsValid())
-	{
-		return Result;
-	}
-	if (Json->HasField(TEXT("account")))
-	{
-		const TSharedPtr<FJsonObject>* NestedObj;
-		if (Json->TryGetObjectField(TEXT("account"), NestedObj))
-		{
-			Result.Account = FNakamaAccountSteam::FromJson(*NestedObj);
-		}
-	}
-	if (Json->HasField(TEXT("create")))
-	{
-		Result.Create = Json->GetBoolField(TEXT("create"));
-	}
-	if (Json->HasField(TEXT("username")))
-	{
-		Result.Username = Json->GetStringField(TEXT("username"));
-	}
-	if (Json->HasField(TEXT("sync")))
-	{
-		Result.Sync = Json->GetBoolField(TEXT("sync"));
-	}
-	return Result;
-}
-
-TSharedPtr<FJsonObject> FNakamaAuthenticateSteamRequest::ToJson() const
-{
-	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-	Json->SetObjectField(TEXT("account"), Account.ToJson());
-	Json->SetBoolField(TEXT("create"), Create);
-	if (!Username.IsEmpty())
-	{
-		Json->SetStringField(TEXT("username"), Username);
-	}
-	Json->SetBoolField(TEXT("sync"), Sync);
-	return Json;
-}
-
-FNakamaUserGroup FNakamaUserGroup::FromJson(const TSharedPtr<FJsonObject>& Json)
-{
-	FNakamaUserGroup Result;
-	if (!Json.IsValid())
-	{
-		return Result;
-	}
-	if (Json->HasField(TEXT("group")))
-	{
-		const TSharedPtr<FJsonObject>* NestedObj;
-		if (Json->TryGetObjectField(TEXT("group"), NestedObj))
-		{
-			Result.Group = FNakamaGroup::FromJson(*NestedObj);
-		}
-	}
-	if (Json->HasField(TEXT("state")))
-	{
-		Result.State = Json->GetIntegerField(TEXT("state"));
-	}
-	return Result;
-}
-
-TSharedPtr<FJsonObject> FNakamaUserGroup::ToJson() const
-{
-	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-	Json->SetObjectField(TEXT("group"), Group.ToJson());
-	Json->SetNumberField(TEXT("state"), State);
-	return Json;
-}
-
-FNakamaGroupUser FNakamaGroupUser::FromJson(const TSharedPtr<FJsonObject>& Json)
-{
-	FNakamaGroupUser Result;
-	if (!Json.IsValid())
-	{
-		return Result;
-	}
-	if (Json->HasField(TEXT("user")))
-	{
-		const TSharedPtr<FJsonObject>* NestedObj;
-		if (Json->TryGetObjectField(TEXT("user"), NestedObj))
-		{
-			Result.User = FNakamaUser::FromJson(*NestedObj);
-		}
-	}
-	if (Json->HasField(TEXT("state")))
-	{
-		Result.State = Json->GetIntegerField(TEXT("state"));
-	}
-	return Result;
-}
-
-TSharedPtr<FJsonObject> FNakamaGroupUser::ToJson() const
-{
-	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-	Json->SetObjectField(TEXT("user"), User.ToJson());
-	Json->SetNumberField(TEXT("state"), State);
-	return Json;
-}
-
-FNakamaFriendOfFriend FNakamaFriendOfFriend::FromJson(const TSharedPtr<FJsonObject>& Json)
-{
-	FNakamaFriendOfFriend Result;
-	if (!Json.IsValid())
-	{
-		return Result;
-	}
-	if (Json->HasField(TEXT("referrer")))
-	{
-		Result.Referrer = Json->GetStringField(TEXT("referrer"));
-	}
-	if (Json->HasField(TEXT("user")))
-	{
-		const TSharedPtr<FJsonObject>* NestedObj;
-		if (Json->TryGetObjectField(TEXT("user"), NestedObj))
-		{
-			Result.User = FNakamaUser::FromJson(*NestedObj);
-		}
-	}
-	return Result;
-}
-
-TSharedPtr<FJsonObject> FNakamaFriendOfFriend::ToJson() const
-{
-	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-	if (!Referrer.IsEmpty())
-	{
-		Json->SetStringField(TEXT("referrer"), Referrer);
-	}
-	Json->SetObjectField(TEXT("user"), User.ToJson());
-	return Json;
-}
-
-FNakamaFriend FNakamaFriend::FromJson(const TSharedPtr<FJsonObject>& Json)
-{
-	FNakamaFriend Result;
-	if (!Json.IsValid())
-	{
-		return Result;
-	}
-	if (Json->HasField(TEXT("user")))
-	{
-		const TSharedPtr<FJsonObject>* NestedObj;
-		if (Json->TryGetObjectField(TEXT("user"), NestedObj))
-		{
-			Result.User = FNakamaUser::FromJson(*NestedObj);
-		}
-	}
-	if (Json->HasField(TEXT("state")))
-	{
-		Result.State = Json->GetIntegerField(TEXT("state"));
-	}
-	if (Json->HasField(TEXT("update_time")))
-	{
-		Result.UpdateTime = Json->GetStringField(TEXT("update_time"));
-	}
-	if (Json->HasField(TEXT("metadata")))
-	{
-		Result.Metadata = Json->GetStringField(TEXT("metadata"));
-	}
-	return Result;
-}
-
-TSharedPtr<FJsonObject> FNakamaFriend::ToJson() const
-{
-	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-	Json->SetObjectField(TEXT("user"), User.ToJson());
-	Json->SetNumberField(TEXT("state"), State);
-	if (!UpdateTime.IsEmpty())
-	{
-		Json->SetStringField(TEXT("update_time"), UpdateTime);
-	}
-	if (!Metadata.IsEmpty())
-	{
-		Json->SetStringField(TEXT("metadata"), Metadata);
-	}
-	return Json;
-}
-
-FNakamaAccount FNakamaAccount::FromJson(const TSharedPtr<FJsonObject>& Json)
-{
-	FNakamaAccount Result;
-	if (!Json.IsValid())
-	{
-		return Result;
-	}
-	if (Json->HasField(TEXT("user")))
-	{
-		const TSharedPtr<FJsonObject>* NestedObj;
-		if (Json->TryGetObjectField(TEXT("user"), NestedObj))
-		{
-			Result.User = FNakamaUser::FromJson(*NestedObj);
-		}
-	}
-	if (Json->HasField(TEXT("wallet")))
-	{
-		Result.Wallet = Json->GetStringField(TEXT("wallet"));
-	}
-	if (Json->HasField(TEXT("email")))
-	{
-		Result.Email = Json->GetStringField(TEXT("email"));
-	}
-	if (Json->HasField(TEXT("devices")))
-	{
-		const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
-		if (Json->TryGetArrayField(TEXT("devices"), ArrayPtr))
-		{
-			for (const auto& Item : *ArrayPtr)
-			{
-				const TSharedPtr<FJsonObject>* ItemObj = nullptr;
-				if (Item->TryGetObject(ItemObj) && ItemObj)
-				{
-					Result.Devices.Add(FNakamaAccountDevice::FromJson(*ItemObj));
-				}
-			}
-		}
-	}
-	if (Json->HasField(TEXT("custom_id")))
-	{
-		Result.CustomId = Json->GetStringField(TEXT("custom_id"));
-	}
-	if (Json->HasField(TEXT("verify_time")))
-	{
-		Result.VerifyTime = Json->GetStringField(TEXT("verify_time"));
-	}
-	if (Json->HasField(TEXT("disable_time")))
-	{
-		Result.DisableTime = Json->GetStringField(TEXT("disable_time"));
-	}
-	return Result;
-}
-
-TSharedPtr<FJsonObject> FNakamaAccount::ToJson() const
-{
-	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-	Json->SetObjectField(TEXT("user"), User.ToJson());
-	if (!Wallet.IsEmpty())
-	{
-		Json->SetStringField(TEXT("wallet"), Wallet);
-	}
-	if (!Email.IsEmpty())
-	{
-		Json->SetStringField(TEXT("email"), Email);
-	}
-	if (Devices.Num() > 0)
-	{
-		TArray<TSharedPtr<FJsonValue>> Array;
-		for (const auto& Item : Devices)
-		{
-			Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
-		}
-		Json->SetArrayField(TEXT("devices"), Array);
-	}
-	if (!CustomId.IsEmpty())
-	{
-		Json->SetStringField(TEXT("custom_id"), CustomId);
-	}
-	if (!VerifyTime.IsEmpty())
-	{
-		Json->SetStringField(TEXT("verify_time"), VerifyTime);
-	}
-	if (!DisableTime.IsEmpty())
-	{
-		Json->SetStringField(TEXT("disable_time"), DisableTime);
-	}
-	return Json;
-}
-
-FNakamaValidateSubscriptionResponse FNakamaValidateSubscriptionResponse::FromJson(const TSharedPtr<FJsonObject>& Json)
-{
-	FNakamaValidateSubscriptionResponse Result;
-	if (!Json.IsValid())
-	{
-		return Result;
-	}
-	if (Json->HasField(TEXT("validated_subscription")))
-	{
-		const TSharedPtr<FJsonObject>* NestedObj;
-		if (Json->TryGetObjectField(TEXT("validated_subscription"), NestedObj))
-		{
-			Result.ValidatedSubscription = FNakamaValidatedSubscription::FromJson(*NestedObj);
-		}
-	}
-	return Result;
-}
-
-TSharedPtr<FJsonObject> FNakamaValidateSubscriptionResponse::ToJson() const
-{
-	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-	Json->SetObjectField(TEXT("validated_subscription"), ValidatedSubscription.ToJson());
-	return Json;
-}
-
-FNakamaWriteLeaderboardRecordRequest FNakamaWriteLeaderboardRecordRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
-{
-	FNakamaWriteLeaderboardRecordRequest Result;
-	if (!Json.IsValid())
-	{
-		return Result;
-	}
-	if (Json->HasField(TEXT("leaderboard_id")))
-	{
-		Result.LeaderboardId = Json->GetStringField(TEXT("leaderboard_id"));
-	}
-	if (Json->HasField(TEXT("record")))
-	{
-		const TSharedPtr<FJsonObject>* NestedObj;
-		if (Json->TryGetObjectField(TEXT("record"), NestedObj))
-		{
-			Result.Record = FNakamaLeaderboardRecordWrite::FromJson(*NestedObj);
-		}
-	}
-	return Result;
-}
-
-TSharedPtr<FJsonObject> FNakamaWriteLeaderboardRecordRequest::ToJson() const
-{
-	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-	if (!LeaderboardId.IsEmpty())
-	{
-		Json->SetStringField(TEXT("leaderboard_id"), LeaderboardId);
-	}
-	Json->SetObjectField(TEXT("record"), Record.ToJson());
-	return Json;
-}
-
-FNakamaWriteTournamentRecordRequest FNakamaWriteTournamentRecordRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
-{
-	FNakamaWriteTournamentRecordRequest Result;
-	if (!Json.IsValid())
-	{
-		return Result;
-	}
-	if (Json->HasField(TEXT("tournament_id")))
-	{
-		Result.TournamentId = Json->GetStringField(TEXT("tournament_id"));
-	}
-	if (Json->HasField(TEXT("record")))
-	{
-		const TSharedPtr<FJsonObject>* NestedObj;
-		if (Json->TryGetObjectField(TEXT("record"), NestedObj))
-		{
-			Result.Record = FNakamaTournamentRecordWrite::FromJson(*NestedObj);
-		}
-	}
-	return Result;
-}
-
-TSharedPtr<FJsonObject> FNakamaWriteTournamentRecordRequest::ToJson() const
-{
-	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-	if (!TournamentId.IsEmpty())
-	{
-		Json->SetStringField(TEXT("tournament_id"), TournamentId);
-	}
-	Json->SetObjectField(TEXT("record"), Record.ToJson());
 	return Json;
 }
 
@@ -8935,7 +8935,7 @@ void FNakamaClient::ValidatePurchaseFacebookInstant(
 
 void FNakamaClient::WriteLeaderboardRecord(
 	FString LeaderboardId,
-	FNakamaLeaderboardRecordWrite Record,
+	FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite Record,
 	TFunction<void(const FNakamaLeaderboardRecord&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError)
 {
@@ -8994,7 +8994,7 @@ void FNakamaClient::WriteStorageObjects(
 
 void FNakamaClient::WriteTournamentRecord(
 	FString TournamentId,
-	FNakamaTournamentRecordWrite Record,
+	FNakamaWriteTournamentRecordRequest_TournamentRecordWrite Record,
 	TFunction<void(const FNakamaLeaderboardRecord&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError)
 {
