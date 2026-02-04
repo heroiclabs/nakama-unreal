@@ -5966,6 +5966,14 @@ void FNakamaClient::MakeRequest(
 			Request->SetHeader(TEXT("Authorization"), FString::Printf(TEXT("Bearer %s"), *SessionToken));
 		}
 		break;
+	case ENakamaRequestAuth::HttpKey:
+		if (!SessionToken.IsEmpty())
+		{
+			// For server-to-server calls, use Basic auth with the HTTP key
+			const FString Auth = FString::Printf(TEXT("%s:"), *SessionToken);
+			Request->SetHeader(TEXT("Authorization"), FString::Printf(TEXT("Basic %s"), *FBase64::Encode(Auth)));
+		}
+		break;
 	case ENakamaRequestAuth::None:
 	default:
 		break;
@@ -6091,6 +6099,44 @@ void FNakamaClient::AddFriends(
 		OnError);
 }
 
+void FNakamaClient::AddFriends(
+	const FString& HttpKey,
+	const TArray<FString>& Ids,
+	const TArray<FString>& Usernames,
+	FString Metadata,
+	TFunction<void()> OnSuccess,
+	TFunction<void(const FNakamaError&)> OnError)
+{
+	FString Endpoint = TEXT("/v2/friend");
+	TArray<FString> QueryParams;
+	for (const FString& Item : Ids)
+	{
+		QueryParams.Add(FString::Printf(TEXT("ids=%s"), *Item));
+	}
+	for (const FString& Item : Usernames)
+	{
+		QueryParams.Add(FString::Printf(TEXT("usernames=%s"), *Item));
+	}
+	if (!Metadata.IsEmpty())
+	{
+		QueryParams.Add(FString::Printf(TEXT("metadata=%s"), *Metadata));
+	}
+	if (QueryParams.Num() > 0)
+	{
+		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+	}TSharedPtr<FJsonObject> Body;
+
+	MakeRequest(Endpoint, TEXT("POST"), Body, ENakamaRequestAuth::HttpKey, HttpKey,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
+		{
+			if (OnSuccess)
+			{
+				OnSuccess();
+			}
+		},
+		OnError);
+}
+
 void FNakamaClient::AddGroupUsers(
 	const FNakamaSession& Session,
 	FString GroupId,
@@ -6114,6 +6160,36 @@ void FNakamaClient::AddGroupUsers(
 	FString SessionToken = Session.Token;
 
 	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType, SessionToken,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
+		{
+			if (OnSuccess)
+			{
+				OnSuccess();
+			}
+		},
+		OnError);
+}
+
+void FNakamaClient::AddGroupUsers(
+	const FString& HttpKey,
+	FString GroupId,
+	const TArray<FString>& UserIds,
+	TFunction<void()> OnSuccess,
+	TFunction<void(const FNakamaError&)> OnError)
+{
+	FString Endpoint = TEXT("/v2/group/{group_id}/add");
+	Endpoint = Endpoint.Replace(TEXT("{group_id}"), *GroupId);
+	TArray<FString> QueryParams;
+	for (const FString& Item : UserIds)
+	{
+		QueryParams.Add(FString::Printf(TEXT("user_ids=%s"), *Item));
+	}
+	if (QueryParams.Num() > 0)
+	{
+		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+	}TSharedPtr<FJsonObject> Body;
+
+	MakeRequest(Endpoint, TEXT("POST"), Body, ENakamaRequestAuth::HttpKey, HttpKey,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			if (OnSuccess)
@@ -6191,6 +6267,39 @@ void FNakamaClient::SessionLogout(
 	FString SessionToken = Session.Token;
 
 	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType, SessionToken,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
+		{
+			if (OnSuccess)
+			{
+				OnSuccess();
+			}
+		},
+		OnError);
+}
+
+void FNakamaClient::SessionLogout(
+	const FString& HttpKey,
+	FString Token,
+	FString RefreshToken,
+	TFunction<void()> OnSuccess,
+	TFunction<void(const FNakamaError&)> OnError)
+{
+	FString Endpoint = TEXT("/v2/session/logout");
+	TArray<FString> QueryParams;
+	if (QueryParams.Num() > 0)
+	{
+		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
+	if (!Token.IsEmpty())
+	{
+		Body->SetStringField(TEXT("token"), Token);
+	}
+	if (!RefreshToken.IsEmpty())
+	{
+		Body->SetStringField(TEXT("refresh_token"), RefreshToken);
+	}
+
+	MakeRequest(Endpoint, TEXT("POST"), Body, ENakamaRequestAuth::HttpKey, HttpKey,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			if (OnSuccess)
@@ -6553,6 +6662,36 @@ void FNakamaClient::BanGroupUsers(
 		OnError);
 }
 
+void FNakamaClient::BanGroupUsers(
+	const FString& HttpKey,
+	FString GroupId,
+	const TArray<FString>& UserIds,
+	TFunction<void()> OnSuccess,
+	TFunction<void(const FNakamaError&)> OnError)
+{
+	FString Endpoint = TEXT("/v2/group/{group_id}/ban");
+	Endpoint = Endpoint.Replace(TEXT("{group_id}"), *GroupId);
+	TArray<FString> QueryParams;
+	for (const FString& Item : UserIds)
+	{
+		QueryParams.Add(FString::Printf(TEXT("user_ids=%s"), *Item));
+	}
+	if (QueryParams.Num() > 0)
+	{
+		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+	}TSharedPtr<FJsonObject> Body;
+
+	MakeRequest(Endpoint, TEXT("POST"), Body, ENakamaRequestAuth::HttpKey, HttpKey,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
+		{
+			if (OnSuccess)
+			{
+				OnSuccess();
+			}
+		},
+		OnError);
+}
+
 void FNakamaClient::BlockFriends(
 	const FNakamaSession& Session,
 	const TArray<FString>& Ids,
@@ -6579,6 +6718,39 @@ void FNakamaClient::BlockFriends(
 	FString SessionToken = Session.Token;
 
 	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType, SessionToken,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
+		{
+			if (OnSuccess)
+			{
+				OnSuccess();
+			}
+		},
+		OnError);
+}
+
+void FNakamaClient::BlockFriends(
+	const FString& HttpKey,
+	const TArray<FString>& Ids,
+	const TArray<FString>& Usernames,
+	TFunction<void()> OnSuccess,
+	TFunction<void(const FNakamaError&)> OnError)
+{
+	FString Endpoint = TEXT("/v2/friend/block");
+	TArray<FString> QueryParams;
+	for (const FString& Item : Ids)
+	{
+		QueryParams.Add(FString::Printf(TEXT("ids=%s"), *Item));
+	}
+	for (const FString& Item : Usernames)
+	{
+		QueryParams.Add(FString::Printf(TEXT("usernames=%s"), *Item));
+	}
+	if (QueryParams.Num() > 0)
+	{
+		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+	}TSharedPtr<FJsonObject> Body;
+
+	MakeRequest(Endpoint, TEXT("POST"), Body, ENakamaRequestAuth::HttpKey, HttpKey,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			if (OnSuccess)
@@ -6640,6 +6812,54 @@ void FNakamaClient::CreateGroup(
 		OnError);
 }
 
+void FNakamaClient::CreateGroup(
+	const FString& HttpKey,
+	FString Name,
+	FString Description,
+	FString LangTag,
+	FString AvatarUrl,
+	bool Open,
+	int32 MaxCount,
+	TFunction<void(const FNakamaGroup&)> OnSuccess,
+	TFunction<void(const FNakamaError&)> OnError)
+{
+	FString Endpoint = TEXT("/v2/group");
+	TArray<FString> QueryParams;
+	if (QueryParams.Num() > 0)
+	{
+		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
+	if (!Name.IsEmpty())
+	{
+		Body->SetStringField(TEXT("name"), Name);
+	}
+	if (!Description.IsEmpty())
+	{
+		Body->SetStringField(TEXT("description"), Description);
+	}
+	if (!LangTag.IsEmpty())
+	{
+		Body->SetStringField(TEXT("lang_tag"), LangTag);
+	}
+	if (!AvatarUrl.IsEmpty())
+	{
+		Body->SetStringField(TEXT("avatar_url"), AvatarUrl);
+	}
+	Body->SetBoolField(TEXT("open"), Open);
+	Body->SetNumberField(TEXT("max_count"), MaxCount);
+
+	MakeRequest(Endpoint, TEXT("POST"), Body, ENakamaRequestAuth::HttpKey, HttpKey,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
+		{
+			FNakamaGroup Result = FNakamaGroup::FromJson(Json);
+			if (OnSuccess)
+			{
+				OnSuccess(Result);
+			}
+		},
+		OnError);
+}
+
 void FNakamaClient::DeleteAccount(
 	const FNakamaSession& Session,
 	TFunction<void()> OnSuccess,
@@ -6651,6 +6871,24 @@ void FNakamaClient::DeleteAccount(
 	FString SessionToken = Session.Token;
 
 	MakeRequest(Endpoint, TEXT("DELETE"), Body, AuthType, SessionToken,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
+		{
+			if (OnSuccess)
+			{
+				OnSuccess();
+			}
+		},
+		OnError);
+}
+
+void FNakamaClient::DeleteAccount(
+	const FString& HttpKey,
+	TFunction<void()> OnSuccess,
+	TFunction<void(const FNakamaError&)> OnError)
+{
+	FString Endpoint = TEXT("/v2/account");TSharedPtr<FJsonObject> Body;
+
+	MakeRequest(Endpoint, TEXT("DELETE"), Body, ENakamaRequestAuth::HttpKey, HttpKey,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			if (OnSuccess)
@@ -6697,6 +6935,39 @@ void FNakamaClient::DeleteFriends(
 		OnError);
 }
 
+void FNakamaClient::DeleteFriends(
+	const FString& HttpKey,
+	const TArray<FString>& Ids,
+	const TArray<FString>& Usernames,
+	TFunction<void()> OnSuccess,
+	TFunction<void(const FNakamaError&)> OnError)
+{
+	FString Endpoint = TEXT("/v2/friend");
+	TArray<FString> QueryParams;
+	for (const FString& Item : Ids)
+	{
+		QueryParams.Add(FString::Printf(TEXT("ids=%s"), *Item));
+	}
+	for (const FString& Item : Usernames)
+	{
+		QueryParams.Add(FString::Printf(TEXT("usernames=%s"), *Item));
+	}
+	if (QueryParams.Num() > 0)
+	{
+		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+	}TSharedPtr<FJsonObject> Body;
+
+	MakeRequest(Endpoint, TEXT("DELETE"), Body, ENakamaRequestAuth::HttpKey, HttpKey,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
+		{
+			if (OnSuccess)
+			{
+				OnSuccess();
+			}
+		},
+		OnError);
+}
+
 void FNakamaClient::DeleteGroup(
 	const FNakamaSession& Session,
 	FString GroupId,
@@ -6725,6 +6996,31 @@ void FNakamaClient::DeleteGroup(
 		OnError);
 }
 
+void FNakamaClient::DeleteGroup(
+	const FString& HttpKey,
+	FString GroupId,
+	TFunction<void()> OnSuccess,
+	TFunction<void(const FNakamaError&)> OnError)
+{
+	FString Endpoint = TEXT("/v2/group/{group_id}");
+	Endpoint = Endpoint.Replace(TEXT("{group_id}"), *GroupId);
+	TArray<FString> QueryParams;
+	if (QueryParams.Num() > 0)
+	{
+		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+	}TSharedPtr<FJsonObject> Body;
+
+	MakeRequest(Endpoint, TEXT("DELETE"), Body, ENakamaRequestAuth::HttpKey, HttpKey,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
+		{
+			if (OnSuccess)
+			{
+				OnSuccess();
+			}
+		},
+		OnError);
+}
+
 void FNakamaClient::DeleteLeaderboardRecord(
 	const FNakamaSession& Session,
 	FString LeaderboardId,
@@ -6743,6 +7039,31 @@ void FNakamaClient::DeleteLeaderboardRecord(
 	FString SessionToken = Session.Token;
 
 	MakeRequest(Endpoint, TEXT("DELETE"), Body, AuthType, SessionToken,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
+		{
+			if (OnSuccess)
+			{
+				OnSuccess();
+			}
+		},
+		OnError);
+}
+
+void FNakamaClient::DeleteLeaderboardRecord(
+	const FString& HttpKey,
+	FString LeaderboardId,
+	TFunction<void()> OnSuccess,
+	TFunction<void(const FNakamaError&)> OnError)
+{
+	FString Endpoint = TEXT("/v2/leaderboard/{leaderboard_id}");
+	Endpoint = Endpoint.Replace(TEXT("{leaderboard_id}"), *LeaderboardId);
+	TArray<FString> QueryParams;
+	if (QueryParams.Num() > 0)
+	{
+		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+	}TSharedPtr<FJsonObject> Body;
+
+	MakeRequest(Endpoint, TEXT("DELETE"), Body, ENakamaRequestAuth::HttpKey, HttpKey,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			if (OnSuccess)
@@ -6784,6 +7105,34 @@ void FNakamaClient::DeleteNotifications(
 		OnError);
 }
 
+void FNakamaClient::DeleteNotifications(
+	const FString& HttpKey,
+	const TArray<FString>& Ids,
+	TFunction<void()> OnSuccess,
+	TFunction<void(const FNakamaError&)> OnError)
+{
+	FString Endpoint = TEXT("/v2/notification");
+	TArray<FString> QueryParams;
+	for (const FString& Item : Ids)
+	{
+		QueryParams.Add(FString::Printf(TEXT("ids=%s"), *Item));
+	}
+	if (QueryParams.Num() > 0)
+	{
+		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+	}TSharedPtr<FJsonObject> Body;
+
+	MakeRequest(Endpoint, TEXT("DELETE"), Body, ENakamaRequestAuth::HttpKey, HttpKey,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
+		{
+			if (OnSuccess)
+			{
+				OnSuccess();
+			}
+		},
+		OnError);
+}
+
 void FNakamaClient::DeleteTournamentRecord(
 	const FNakamaSession& Session,
 	FString TournamentId,
@@ -6802,6 +7151,31 @@ void FNakamaClient::DeleteTournamentRecord(
 	FString SessionToken = Session.Token;
 
 	MakeRequest(Endpoint, TEXT("DELETE"), Body, AuthType, SessionToken,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
+		{
+			if (OnSuccess)
+			{
+				OnSuccess();
+			}
+		},
+		OnError);
+}
+
+void FNakamaClient::DeleteTournamentRecord(
+	const FString& HttpKey,
+	FString TournamentId,
+	TFunction<void()> OnSuccess,
+	TFunction<void(const FNakamaError&)> OnError)
+{
+	FString Endpoint = TEXT("/v2/tournament/{tournament_id}");
+	Endpoint = Endpoint.Replace(TEXT("{tournament_id}"), *TournamentId);
+	TArray<FString> QueryParams;
+	if (QueryParams.Num() > 0)
+	{
+		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+	}TSharedPtr<FJsonObject> Body;
+
+	MakeRequest(Endpoint, TEXT("DELETE"), Body, ENakamaRequestAuth::HttpKey, HttpKey,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			if (OnSuccess)
@@ -6838,6 +7212,39 @@ void FNakamaClient::DeleteStorageObjects(
 	FString SessionToken = Session.Token;
 
 	MakeRequest(Endpoint, TEXT("PUT"), Body, AuthType, SessionToken,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
+		{
+			if (OnSuccess)
+			{
+				OnSuccess();
+			}
+		},
+		OnError);
+}
+
+void FNakamaClient::DeleteStorageObjects(
+	const FString& HttpKey,
+	const TArray<FNakamaDeleteStorageObjectId>& ObjectIds,
+	TFunction<void()> OnSuccess,
+	TFunction<void(const FNakamaError&)> OnError)
+{
+	FString Endpoint = TEXT("/v2/storage/delete");
+	TArray<FString> QueryParams;
+	if (QueryParams.Num() > 0)
+	{
+		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
+	if (ObjectIds.Num() > 0)
+	{
+		TArray<TSharedPtr<FJsonValue>> Array;
+		for (const auto& Item : ObjectIds)
+		{
+			Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
+		}
+		Body->SetArrayField(TEXT("object_ids"), Array);
+	}
+
+	MakeRequest(Endpoint, TEXT("PUT"), Body, ENakamaRequestAuth::HttpKey, HttpKey,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			if (OnSuccess)
@@ -6893,6 +7300,48 @@ void FNakamaClient::Event(
 		OnError);
 }
 
+void FNakamaClient::Event(
+	const FString& HttpKey,
+	FString Name,
+	FString Timestamp,
+	bool External,
+	const TMap<FString, FString>& Properties,
+	TFunction<void()> OnSuccess,
+	TFunction<void(const FNakamaError&)> OnError)
+{
+	FString Endpoint = TEXT("/v2/event");
+	TArray<FString> QueryParams;
+	if (QueryParams.Num() > 0)
+	{
+		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
+	if (!Name.IsEmpty())
+	{
+		Body->SetStringField(TEXT("name"), Name);
+	}
+	Body->SetStringField(TEXT("timestamp"), Timestamp);
+	Body->SetBoolField(TEXT("external"), External);
+	if (Properties.Num() > 0)
+	{
+		TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
+		for (const auto& Pair : Properties)
+		{
+			MapObj->SetStringField(Pair.Key, Pair.Value);
+		}
+		Body->SetObjectField(TEXT("properties"), MapObj);
+	}
+
+	MakeRequest(Endpoint, TEXT("POST"), Body, ENakamaRequestAuth::HttpKey, HttpKey,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
+		{
+			if (OnSuccess)
+			{
+				OnSuccess();
+			}
+		},
+		OnError);
+}
+
 void FNakamaClient::GetAccount(
 	const FNakamaSession& Session,
 	TFunction<void(const FNakamaAccount&)> OnSuccess,
@@ -6904,6 +7353,25 @@ void FNakamaClient::GetAccount(
 	FString SessionToken = Session.Token;
 
 	MakeRequest(Endpoint, TEXT("GET"), Body, AuthType, SessionToken,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
+		{
+			FNakamaAccount Result = FNakamaAccount::FromJson(Json);
+			if (OnSuccess)
+			{
+				OnSuccess(Result);
+			}
+		},
+		OnError);
+}
+
+void FNakamaClient::GetAccount(
+	const FString& HttpKey,
+	TFunction<void(const FNakamaAccount&)> OnSuccess,
+	TFunction<void(const FNakamaError&)> OnError)
+{
+	FString Endpoint = TEXT("/v2/account");TSharedPtr<FJsonObject> Body;
+
+	MakeRequest(Endpoint, TEXT("GET"), Body, ENakamaRequestAuth::HttpKey, HttpKey,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			FNakamaAccount Result = FNakamaAccount::FromJson(Json);
@@ -6957,6 +7425,45 @@ void FNakamaClient::GetUsers(
 		OnError);
 }
 
+void FNakamaClient::GetUsers(
+	const FString& HttpKey,
+	const TArray<FString>& Ids,
+	const TArray<FString>& Usernames,
+	const TArray<FString>& FacebookIds,
+	TFunction<void(const FNakamaUsers&)> OnSuccess,
+	TFunction<void(const FNakamaError&)> OnError)
+{
+	FString Endpoint = TEXT("/v2/user");
+	TArray<FString> QueryParams;
+	for (const FString& Item : Ids)
+	{
+		QueryParams.Add(FString::Printf(TEXT("ids=%s"), *Item));
+	}
+	for (const FString& Item : Usernames)
+	{
+		QueryParams.Add(FString::Printf(TEXT("usernames=%s"), *Item));
+	}
+	for (const FString& Item : FacebookIds)
+	{
+		QueryParams.Add(FString::Printf(TEXT("facebook_ids=%s"), *Item));
+	}
+	if (QueryParams.Num() > 0)
+	{
+		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+	}TSharedPtr<FJsonObject> Body;
+
+	MakeRequest(Endpoint, TEXT("GET"), Body, ENakamaRequestAuth::HttpKey, HttpKey,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
+		{
+			FNakamaUsers Result = FNakamaUsers::FromJson(Json);
+			if (OnSuccess)
+			{
+				OnSuccess(Result);
+			}
+		},
+		OnError);
+}
+
 void FNakamaClient::GetSubscription(
 	const FNakamaSession& Session,
 	FString ProductId,
@@ -6975,6 +7482,32 @@ void FNakamaClient::GetSubscription(
 	FString SessionToken = Session.Token;
 
 	MakeRequest(Endpoint, TEXT("GET"), Body, AuthType, SessionToken,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
+		{
+			FNakamaValidatedSubscription Result = FNakamaValidatedSubscription::FromJson(Json);
+			if (OnSuccess)
+			{
+				OnSuccess(Result);
+			}
+		},
+		OnError);
+}
+
+void FNakamaClient::GetSubscription(
+	const FString& HttpKey,
+	FString ProductId,
+	TFunction<void(const FNakamaValidatedSubscription&)> OnSuccess,
+	TFunction<void(const FNakamaError&)> OnError)
+{
+	FString Endpoint = TEXT("/v2/iap/subscription/{product_id}");
+	Endpoint = Endpoint.Replace(TEXT("{product_id}"), *ProductId);
+	TArray<FString> QueryParams;
+	if (QueryParams.Num() > 0)
+	{
+		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+	}TSharedPtr<FJsonObject> Body;
+
+	MakeRequest(Endpoint, TEXT("GET"), Body, ENakamaRequestAuth::HttpKey, HttpKey,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			FNakamaValidatedSubscription Result = FNakamaValidatedSubscription::FromJson(Json);
@@ -7008,6 +7541,25 @@ void FNakamaClient::GetMatchmakerStats(
 		OnError);
 }
 
+void FNakamaClient::GetMatchmakerStats(
+	const FString& HttpKey,
+	TFunction<void(const FNakamaMatchmakerStats&)> OnSuccess,
+	TFunction<void(const FNakamaError&)> OnError)
+{
+	FString Endpoint = TEXT("/v2/matchmaker/stats");TSharedPtr<FJsonObject> Body;
+
+	MakeRequest(Endpoint, TEXT("GET"), Body, ENakamaRequestAuth::HttpKey, HttpKey,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
+		{
+			FNakamaMatchmakerStats Result = FNakamaMatchmakerStats::FromJson(Json);
+			if (OnSuccess)
+			{
+				OnSuccess(Result);
+			}
+		},
+		OnError);
+}
+
 void FNakamaClient::Healthcheck(
 	const FNakamaSession& Session,
 	TFunction<void()> OnSuccess,
@@ -7019,6 +7571,24 @@ void FNakamaClient::Healthcheck(
 	FString SessionToken = Session.Token;
 
 	MakeRequest(Endpoint, TEXT("GET"), Body, AuthType, SessionToken,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
+		{
+			if (OnSuccess)
+			{
+				OnSuccess();
+			}
+		},
+		OnError);
+}
+
+void FNakamaClient::Healthcheck(
+	const FString& HttpKey,
+	TFunction<void()> OnSuccess,
+	TFunction<void(const FNakamaError&)> OnError)
+{
+	FString Endpoint = TEXT("/healthcheck");TSharedPtr<FJsonObject> Body;
+
+	MakeRequest(Endpoint, TEXT("GET"), Body, ENakamaRequestAuth::HttpKey, HttpKey,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			if (OnSuccess)
@@ -7059,6 +7629,33 @@ void FNakamaClient::ImportFacebookFriends(
 		OnError);
 }
 
+void FNakamaClient::ImportFacebookFriends(
+	const FString& HttpKey,
+	FNakamaAccountFacebook Account,
+	bool Reset,
+	TFunction<void()> OnSuccess,
+	TFunction<void(const FNakamaError&)> OnError)
+{
+	FString Endpoint = TEXT("/v2/friend/facebook");
+	TArray<FString> QueryParams;
+	QueryParams.Add(FString::Printf(TEXT("reset=%s"), Reset ? TEXT("true") : TEXT("false")));
+	if (QueryParams.Num() > 0)
+	{
+		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+	}TSharedPtr<FJsonObject> Body;
+	Body = Account.ToJson();
+
+	MakeRequest(Endpoint, TEXT("POST"), Body, ENakamaRequestAuth::HttpKey, HttpKey,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
+		{
+			if (OnSuccess)
+			{
+				OnSuccess();
+			}
+		},
+		OnError);
+}
+
 void FNakamaClient::ImportSteamFriends(
 	const FNakamaSession& Session,
 	FNakamaAccountSteam Account,
@@ -7079,6 +7676,33 @@ void FNakamaClient::ImportSteamFriends(
 	FString SessionToken = Session.Token;
 
 	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType, SessionToken,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
+		{
+			if (OnSuccess)
+			{
+				OnSuccess();
+			}
+		},
+		OnError);
+}
+
+void FNakamaClient::ImportSteamFriends(
+	const FString& HttpKey,
+	FNakamaAccountSteam Account,
+	bool Reset,
+	TFunction<void()> OnSuccess,
+	TFunction<void(const FNakamaError&)> OnError)
+{
+	FString Endpoint = TEXT("/v2/friend/steam");
+	TArray<FString> QueryParams;
+	QueryParams.Add(FString::Printf(TEXT("reset=%s"), Reset ? TEXT("true") : TEXT("false")));
+	if (QueryParams.Num() > 0)
+	{
+		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+	}TSharedPtr<FJsonObject> Body;
+	Body = Account.ToJson();
+
+	MakeRequest(Endpoint, TEXT("POST"), Body, ENakamaRequestAuth::HttpKey, HttpKey,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			if (OnSuccess)
@@ -7117,6 +7741,31 @@ void FNakamaClient::JoinGroup(
 		OnError);
 }
 
+void FNakamaClient::JoinGroup(
+	const FString& HttpKey,
+	FString GroupId,
+	TFunction<void()> OnSuccess,
+	TFunction<void(const FNakamaError&)> OnError)
+{
+	FString Endpoint = TEXT("/v2/group/{group_id}/join");
+	Endpoint = Endpoint.Replace(TEXT("{group_id}"), *GroupId);
+	TArray<FString> QueryParams;
+	if (QueryParams.Num() > 0)
+	{
+		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+	}TSharedPtr<FJsonObject> Body;
+
+	MakeRequest(Endpoint, TEXT("POST"), Body, ENakamaRequestAuth::HttpKey, HttpKey,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
+		{
+			if (OnSuccess)
+			{
+				OnSuccess();
+			}
+		},
+		OnError);
+}
+
 void FNakamaClient::JoinTournament(
 	const FNakamaSession& Session,
 	FString TournamentId,
@@ -7135,6 +7784,31 @@ void FNakamaClient::JoinTournament(
 	FString SessionToken = Session.Token;
 
 	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType, SessionToken,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
+		{
+			if (OnSuccess)
+			{
+				OnSuccess();
+			}
+		},
+		OnError);
+}
+
+void FNakamaClient::JoinTournament(
+	const FString& HttpKey,
+	FString TournamentId,
+	TFunction<void()> OnSuccess,
+	TFunction<void(const FNakamaError&)> OnError)
+{
+	FString Endpoint = TEXT("/v2/tournament/{tournament_id}/join");
+	Endpoint = Endpoint.Replace(TEXT("{tournament_id}"), *TournamentId);
+	TArray<FString> QueryParams;
+	if (QueryParams.Num() > 0)
+	{
+		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+	}TSharedPtr<FJsonObject> Body;
+
+	MakeRequest(Endpoint, TEXT("POST"), Body, ENakamaRequestAuth::HttpKey, HttpKey,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			if (OnSuccess)
@@ -7178,6 +7852,36 @@ void FNakamaClient::KickGroupUsers(
 		OnError);
 }
 
+void FNakamaClient::KickGroupUsers(
+	const FString& HttpKey,
+	FString GroupId,
+	const TArray<FString>& UserIds,
+	TFunction<void()> OnSuccess,
+	TFunction<void(const FNakamaError&)> OnError)
+{
+	FString Endpoint = TEXT("/v2/group/{group_id}/kick");
+	Endpoint = Endpoint.Replace(TEXT("{group_id}"), *GroupId);
+	TArray<FString> QueryParams;
+	for (const FString& Item : UserIds)
+	{
+		QueryParams.Add(FString::Printf(TEXT("user_ids=%s"), *Item));
+	}
+	if (QueryParams.Num() > 0)
+	{
+		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+	}TSharedPtr<FJsonObject> Body;
+
+	MakeRequest(Endpoint, TEXT("POST"), Body, ENakamaRequestAuth::HttpKey, HttpKey,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
+		{
+			if (OnSuccess)
+			{
+				OnSuccess();
+			}
+		},
+		OnError);
+}
+
 void FNakamaClient::LeaveGroup(
 	const FNakamaSession& Session,
 	FString GroupId,
@@ -7196,6 +7900,31 @@ void FNakamaClient::LeaveGroup(
 	FString SessionToken = Session.Token;
 
 	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType, SessionToken,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
+		{
+			if (OnSuccess)
+			{
+				OnSuccess();
+			}
+		},
+		OnError);
+}
+
+void FNakamaClient::LeaveGroup(
+	const FString& HttpKey,
+	FString GroupId,
+	TFunction<void()> OnSuccess,
+	TFunction<void(const FNakamaError&)> OnError)
+{
+	FString Endpoint = TEXT("/v2/group/{group_id}/leave");
+	Endpoint = Endpoint.Replace(TEXT("{group_id}"), *GroupId);
+	TArray<FString> QueryParams;
+	if (QueryParams.Num() > 0)
+	{
+		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+	}TSharedPtr<FJsonObject> Body;
+
+	MakeRequest(Endpoint, TEXT("POST"), Body, ENakamaRequestAuth::HttpKey, HttpKey,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			if (OnSuccess)
@@ -7247,6 +7976,44 @@ void FNakamaClient::LinkApple(
 		OnError);
 }
 
+void FNakamaClient::LinkApple(
+	const FString& HttpKey,
+	FString Token,
+	const TMap<FString, FString>& Vars,
+	TFunction<void()> OnSuccess,
+	TFunction<void(const FNakamaError&)> OnError)
+{
+	FString Endpoint = TEXT("/v2/account/link/apple");
+	TArray<FString> QueryParams;
+	if (QueryParams.Num() > 0)
+	{
+		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
+	if (!Token.IsEmpty())
+	{
+		Body->SetStringField(TEXT("token"), Token);
+	}
+	if (Vars.Num() > 0)
+	{
+		TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
+		for (const auto& Pair : Vars)
+		{
+			MapObj->SetStringField(Pair.Key, Pair.Value);
+		}
+		Body->SetObjectField(TEXT("vars"), MapObj);
+	}
+
+	MakeRequest(Endpoint, TEXT("POST"), Body, ENakamaRequestAuth::HttpKey, HttpKey,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
+		{
+			if (OnSuccess)
+			{
+				OnSuccess();
+			}
+		},
+		OnError);
+}
+
 void FNakamaClient::LinkCustom(
 	const FNakamaSession& Session,
 	FString Id,
@@ -7288,6 +8055,44 @@ void FNakamaClient::LinkCustom(
 		OnError);
 }
 
+void FNakamaClient::LinkCustom(
+	const FString& HttpKey,
+	FString Id,
+	const TMap<FString, FString>& Vars,
+	TFunction<void()> OnSuccess,
+	TFunction<void(const FNakamaError&)> OnError)
+{
+	FString Endpoint = TEXT("/v2/account/link/custom");
+	TArray<FString> QueryParams;
+	if (QueryParams.Num() > 0)
+	{
+		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
+	if (!Id.IsEmpty())
+	{
+		Body->SetStringField(TEXT("id"), Id);
+	}
+	if (Vars.Num() > 0)
+	{
+		TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
+		for (const auto& Pair : Vars)
+		{
+			MapObj->SetStringField(Pair.Key, Pair.Value);
+		}
+		Body->SetObjectField(TEXT("vars"), MapObj);
+	}
+
+	MakeRequest(Endpoint, TEXT("POST"), Body, ENakamaRequestAuth::HttpKey, HttpKey,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
+		{
+			if (OnSuccess)
+			{
+				OnSuccess();
+			}
+		},
+		OnError);
+}
+
 void FNakamaClient::LinkDevice(
 	const FNakamaSession& Session,
 	FString Id,
@@ -7319,6 +8124,44 @@ void FNakamaClient::LinkDevice(
 	FString SessionToken = Session.Token;
 
 	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType, SessionToken,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
+		{
+			if (OnSuccess)
+			{
+				OnSuccess();
+			}
+		},
+		OnError);
+}
+
+void FNakamaClient::LinkDevice(
+	const FString& HttpKey,
+	FString Id,
+	const TMap<FString, FString>& Vars,
+	TFunction<void()> OnSuccess,
+	TFunction<void(const FNakamaError&)> OnError)
+{
+	FString Endpoint = TEXT("/v2/account/link/device");
+	TArray<FString> QueryParams;
+	if (QueryParams.Num() > 0)
+	{
+		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
+	if (!Id.IsEmpty())
+	{
+		Body->SetStringField(TEXT("id"), Id);
+	}
+	if (Vars.Num() > 0)
+	{
+		TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
+		for (const auto& Pair : Vars)
+		{
+			MapObj->SetStringField(Pair.Key, Pair.Value);
+		}
+		Body->SetObjectField(TEXT("vars"), MapObj);
+	}
+
+	MakeRequest(Endpoint, TEXT("POST"), Body, ENakamaRequestAuth::HttpKey, HttpKey,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			if (OnSuccess)
@@ -7375,6 +8218,49 @@ void FNakamaClient::LinkEmail(
 		OnError);
 }
 
+void FNakamaClient::LinkEmail(
+	const FString& HttpKey,
+	FString Email,
+	FString Password,
+	const TMap<FString, FString>& Vars,
+	TFunction<void()> OnSuccess,
+	TFunction<void(const FNakamaError&)> OnError)
+{
+	FString Endpoint = TEXT("/v2/account/link/email");
+	TArray<FString> QueryParams;
+	if (QueryParams.Num() > 0)
+	{
+		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
+	if (!Email.IsEmpty())
+	{
+		Body->SetStringField(TEXT("email"), Email);
+	}
+	if (!Password.IsEmpty())
+	{
+		Body->SetStringField(TEXT("password"), Password);
+	}
+	if (Vars.Num() > 0)
+	{
+		TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
+		for (const auto& Pair : Vars)
+		{
+			MapObj->SetStringField(Pair.Key, Pair.Value);
+		}
+		Body->SetObjectField(TEXT("vars"), MapObj);
+	}
+
+	MakeRequest(Endpoint, TEXT("POST"), Body, ENakamaRequestAuth::HttpKey, HttpKey,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
+		{
+			if (OnSuccess)
+			{
+				OnSuccess();
+			}
+		},
+		OnError);
+}
+
 void FNakamaClient::LinkFacebook(
 	const FNakamaSession& Session,
 	FNakamaAccountFacebook Account,
@@ -7395,6 +8281,33 @@ void FNakamaClient::LinkFacebook(
 	FString SessionToken = Session.Token;
 
 	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType, SessionToken,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
+		{
+			if (OnSuccess)
+			{
+				OnSuccess();
+			}
+		},
+		OnError);
+}
+
+void FNakamaClient::LinkFacebook(
+	const FString& HttpKey,
+	FNakamaAccountFacebook Account,
+	bool Sync,
+	TFunction<void()> OnSuccess,
+	TFunction<void(const FNakamaError&)> OnError)
+{
+	FString Endpoint = TEXT("/v2/account/link/facebook");
+	TArray<FString> QueryParams;
+	QueryParams.Add(FString::Printf(TEXT("sync=%s"), Sync ? TEXT("true") : TEXT("false")));
+	if (QueryParams.Num() > 0)
+	{
+		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+	}TSharedPtr<FJsonObject> Body;
+	Body = Account.ToJson();
+
+	MakeRequest(Endpoint, TEXT("POST"), Body, ENakamaRequestAuth::HttpKey, HttpKey,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			if (OnSuccess)
@@ -7436,6 +8349,44 @@ void FNakamaClient::LinkFacebookInstantGame(
 	FString SessionToken = Session.Token;
 
 	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType, SessionToken,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
+		{
+			if (OnSuccess)
+			{
+				OnSuccess();
+			}
+		},
+		OnError);
+}
+
+void FNakamaClient::LinkFacebookInstantGame(
+	const FString& HttpKey,
+	FString SignedPlayerInfo,
+	const TMap<FString, FString>& Vars,
+	TFunction<void()> OnSuccess,
+	TFunction<void(const FNakamaError&)> OnError)
+{
+	FString Endpoint = TEXT("/v2/account/link/facebookinstantgame");
+	TArray<FString> QueryParams;
+	if (QueryParams.Num() > 0)
+	{
+		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
+	if (!SignedPlayerInfo.IsEmpty())
+	{
+		Body->SetStringField(TEXT("signed_player_info"), SignedPlayerInfo);
+	}
+	if (Vars.Num() > 0)
+	{
+		TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
+		for (const auto& Pair : Vars)
+		{
+			MapObj->SetStringField(Pair.Key, Pair.Value);
+		}
+		Body->SetObjectField(TEXT("vars"), MapObj);
+	}
+
+	MakeRequest(Endpoint, TEXT("POST"), Body, ENakamaRequestAuth::HttpKey, HttpKey,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			if (OnSuccess)
@@ -7509,6 +8460,66 @@ void FNakamaClient::LinkGameCenter(
 		OnError);
 }
 
+void FNakamaClient::LinkGameCenter(
+	const FString& HttpKey,
+	FString PlayerId,
+	FString BundleId,
+	int64 TimestampSeconds,
+	FString Salt,
+	FString Signature,
+	FString PublicKeyUrl,
+	const TMap<FString, FString>& Vars,
+	TFunction<void()> OnSuccess,
+	TFunction<void(const FNakamaError&)> OnError)
+{
+	FString Endpoint = TEXT("/v2/account/link/gamecenter");
+	TArray<FString> QueryParams;
+	if (QueryParams.Num() > 0)
+	{
+		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
+	if (!PlayerId.IsEmpty())
+	{
+		Body->SetStringField(TEXT("player_id"), PlayerId);
+	}
+	if (!BundleId.IsEmpty())
+	{
+		Body->SetStringField(TEXT("bundle_id"), BundleId);
+	}
+	Body->SetNumberField(TEXT("timestamp_seconds"), TimestampSeconds);
+	if (!Salt.IsEmpty())
+	{
+		Body->SetStringField(TEXT("salt"), Salt);
+	}
+	if (!Signature.IsEmpty())
+	{
+		Body->SetStringField(TEXT("signature"), Signature);
+	}
+	if (!PublicKeyUrl.IsEmpty())
+	{
+		Body->SetStringField(TEXT("public_key_url"), PublicKeyUrl);
+	}
+	if (Vars.Num() > 0)
+	{
+		TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
+		for (const auto& Pair : Vars)
+		{
+			MapObj->SetStringField(Pair.Key, Pair.Value);
+		}
+		Body->SetObjectField(TEXT("vars"), MapObj);
+	}
+
+	MakeRequest(Endpoint, TEXT("POST"), Body, ENakamaRequestAuth::HttpKey, HttpKey,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
+		{
+			if (OnSuccess)
+			{
+				OnSuccess();
+			}
+		},
+		OnError);
+}
+
 void FNakamaClient::LinkGoogle(
 	const FNakamaSession& Session,
 	FString Token,
@@ -7550,6 +8561,44 @@ void FNakamaClient::LinkGoogle(
 		OnError);
 }
 
+void FNakamaClient::LinkGoogle(
+	const FString& HttpKey,
+	FString Token,
+	const TMap<FString, FString>& Vars,
+	TFunction<void()> OnSuccess,
+	TFunction<void(const FNakamaError&)> OnError)
+{
+	FString Endpoint = TEXT("/v2/account/link/google");
+	TArray<FString> QueryParams;
+	if (QueryParams.Num() > 0)
+	{
+		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
+	if (!Token.IsEmpty())
+	{
+		Body->SetStringField(TEXT("token"), Token);
+	}
+	if (Vars.Num() > 0)
+	{
+		TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
+		for (const auto& Pair : Vars)
+		{
+			MapObj->SetStringField(Pair.Key, Pair.Value);
+		}
+		Body->SetObjectField(TEXT("vars"), MapObj);
+	}
+
+	MakeRequest(Endpoint, TEXT("POST"), Body, ENakamaRequestAuth::HttpKey, HttpKey,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
+		{
+			if (OnSuccess)
+			{
+				OnSuccess();
+			}
+		},
+		OnError);
+}
+
 void FNakamaClient::LinkSteam(
 	const FNakamaSession& Session,
 	FNakamaAccountSteam Account,
@@ -7570,6 +8619,33 @@ void FNakamaClient::LinkSteam(
 	FString SessionToken = Session.Token;
 
 	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType, SessionToken,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
+		{
+			if (OnSuccess)
+			{
+				OnSuccess();
+			}
+		},
+		OnError);
+}
+
+void FNakamaClient::LinkSteam(
+	const FString& HttpKey,
+	FNakamaAccountSteam Account,
+	bool Sync,
+	TFunction<void()> OnSuccess,
+	TFunction<void(const FNakamaError&)> OnError)
+{
+	FString Endpoint = TEXT("/v2/account/link/steam");
+	TArray<FString> QueryParams;
+	if (QueryParams.Num() > 0)
+	{
+		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
+	Body->SetObjectField(TEXT("account"), Account.ToJson());
+	Body->SetBoolField(TEXT("sync"), Sync);
+
+	MakeRequest(Endpoint, TEXT("POST"), Body, ENakamaRequestAuth::HttpKey, HttpKey,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			if (OnSuccess)
@@ -7610,6 +8686,44 @@ void FNakamaClient::ListChannelMessages(
 	FString SessionToken = Session.Token;
 
 	MakeRequest(Endpoint, TEXT("GET"), Body, AuthType, SessionToken,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
+		{
+			FNakamaChannelMessageList Result = FNakamaChannelMessageList::FromJson(Json);
+			if (OnSuccess)
+			{
+				OnSuccess(Result);
+			}
+		},
+		OnError);
+}
+
+void FNakamaClient::ListChannelMessages(
+	const FString& HttpKey,
+	FString ChannelId,
+	int32 Limit,
+	bool Forward,
+	FString Cursor,
+	TFunction<void(const FNakamaChannelMessageList&)> OnSuccess,
+	TFunction<void(const FNakamaError&)> OnError)
+{
+	FString Endpoint = TEXT("/v2/channel/{channel_id}");
+	Endpoint = Endpoint.Replace(TEXT("{channel_id}"), *ChannelId);
+	TArray<FString> QueryParams;
+	if (Limit != 0)
+	{
+		QueryParams.Add(FString::Printf(TEXT("limit=%d"), Limit));
+	}
+	QueryParams.Add(FString::Printf(TEXT("forward=%s"), Forward ? TEXT("true") : TEXT("false")));
+	if (!Cursor.IsEmpty())
+	{
+		QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *Cursor));
+	}
+	if (QueryParams.Num() > 0)
+	{
+		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+	}TSharedPtr<FJsonObject> Body;
+
+	MakeRequest(Endpoint, TEXT("GET"), Body, ENakamaRequestAuth::HttpKey, HttpKey,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			FNakamaChannelMessageList Result = FNakamaChannelMessageList::FromJson(Json);
@@ -7663,6 +8777,45 @@ void FNakamaClient::ListFriends(
 		OnError);
 }
 
+void FNakamaClient::ListFriends(
+	const FString& HttpKey,
+	int32 Limit,
+	int32 State,
+	FString Cursor,
+	TFunction<void(const FNakamaFriendList&)> OnSuccess,
+	TFunction<void(const FNakamaError&)> OnError)
+{
+	FString Endpoint = TEXT("/v2/friend");
+	TArray<FString> QueryParams;
+	if (Limit != 0)
+	{
+		QueryParams.Add(FString::Printf(TEXT("limit=%d"), Limit));
+	}
+	if (State != 0)
+	{
+		QueryParams.Add(FString::Printf(TEXT("state=%d"), State));
+	}
+	if (!Cursor.IsEmpty())
+	{
+		QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *Cursor));
+	}
+	if (QueryParams.Num() > 0)
+	{
+		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+	}TSharedPtr<FJsonObject> Body;
+
+	MakeRequest(Endpoint, TEXT("GET"), Body, ENakamaRequestAuth::HttpKey, HttpKey,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
+		{
+			FNakamaFriendList Result = FNakamaFriendList::FromJson(Json);
+			if (OnSuccess)
+			{
+				OnSuccess(Result);
+			}
+		},
+		OnError);
+}
+
 void FNakamaClient::ListFriendsOfFriends(
 	const FNakamaSession& Session,
 	int32 Limit,
@@ -7689,6 +8842,40 @@ void FNakamaClient::ListFriendsOfFriends(
 	FString SessionToken = Session.Token;
 
 	MakeRequest(Endpoint, TEXT("GET"), Body, AuthType, SessionToken,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
+		{
+			FNakamaFriendsOfFriendsList Result = FNakamaFriendsOfFriendsList::FromJson(Json);
+			if (OnSuccess)
+			{
+				OnSuccess(Result);
+			}
+		},
+		OnError);
+}
+
+void FNakamaClient::ListFriendsOfFriends(
+	const FString& HttpKey,
+	int32 Limit,
+	FString Cursor,
+	TFunction<void(const FNakamaFriendsOfFriendsList&)> OnSuccess,
+	TFunction<void(const FNakamaError&)> OnError)
+{
+	FString Endpoint = TEXT("/v2/friend/friends");
+	TArray<FString> QueryParams;
+	if (Limit != 0)
+	{
+		QueryParams.Add(FString::Printf(TEXT("limit=%d"), Limit));
+	}
+	if (!Cursor.IsEmpty())
+	{
+		QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *Cursor));
+	}
+	if (QueryParams.Num() > 0)
+	{
+		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+	}TSharedPtr<FJsonObject> Body;
+
+	MakeRequest(Endpoint, TEXT("GET"), Body, ENakamaRequestAuth::HttpKey, HttpKey,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			FNakamaFriendsOfFriendsList Result = FNakamaFriendsOfFriendsList::FromJson(Json);
@@ -7754,6 +8941,57 @@ void FNakamaClient::ListGroups(
 		OnError);
 }
 
+void FNakamaClient::ListGroups(
+	const FString& HttpKey,
+	FString Name,
+	FString Cursor,
+	int32 Limit,
+	FString LangTag,
+	int32 Members,
+	bool Open,
+	TFunction<void(const FNakamaGroupList&)> OnSuccess,
+	TFunction<void(const FNakamaError&)> OnError)
+{
+	FString Endpoint = TEXT("/v2/group");
+	TArray<FString> QueryParams;
+	if (!Name.IsEmpty())
+	{
+		QueryParams.Add(FString::Printf(TEXT("name=%s"), *Name));
+	}
+	if (!Cursor.IsEmpty())
+	{
+		QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *Cursor));
+	}
+	if (Limit != 0)
+	{
+		QueryParams.Add(FString::Printf(TEXT("limit=%d"), Limit));
+	}
+	if (!LangTag.IsEmpty())
+	{
+		QueryParams.Add(FString::Printf(TEXT("lang_tag=%s"), *LangTag));
+	}
+	if (Members != 0)
+	{
+		QueryParams.Add(FString::Printf(TEXT("members=%d"), Members));
+	}
+	QueryParams.Add(FString::Printf(TEXT("open=%s"), Open ? TEXT("true") : TEXT("false")));
+	if (QueryParams.Num() > 0)
+	{
+		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+	}TSharedPtr<FJsonObject> Body;
+
+	MakeRequest(Endpoint, TEXT("GET"), Body, ENakamaRequestAuth::HttpKey, HttpKey,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
+		{
+			FNakamaGroupList Result = FNakamaGroupList::FromJson(Json);
+			if (OnSuccess)
+			{
+				OnSuccess(Result);
+			}
+		},
+		OnError);
+}
+
 void FNakamaClient::ListGroupUsers(
 	const FNakamaSession& Session,
 	FString GroupId,
@@ -7787,6 +9025,47 @@ void FNakamaClient::ListGroupUsers(
 	FString SessionToken = Session.Token;
 
 	MakeRequest(Endpoint, TEXT("GET"), Body, AuthType, SessionToken,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
+		{
+			FNakamaGroupUserList Result = FNakamaGroupUserList::FromJson(Json);
+			if (OnSuccess)
+			{
+				OnSuccess(Result);
+			}
+		},
+		OnError);
+}
+
+void FNakamaClient::ListGroupUsers(
+	const FString& HttpKey,
+	FString GroupId,
+	int32 Limit,
+	int32 State,
+	FString Cursor,
+	TFunction<void(const FNakamaGroupUserList&)> OnSuccess,
+	TFunction<void(const FNakamaError&)> OnError)
+{
+	FString Endpoint = TEXT("/v2/group/{group_id}/user");
+	Endpoint = Endpoint.Replace(TEXT("{group_id}"), *GroupId);
+	TArray<FString> QueryParams;
+	if (Limit != 0)
+	{
+		QueryParams.Add(FString::Printf(TEXT("limit=%d"), Limit));
+	}
+	if (State != 0)
+	{
+		QueryParams.Add(FString::Printf(TEXT("state=%d"), State));
+	}
+	if (!Cursor.IsEmpty())
+	{
+		QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *Cursor));
+	}
+	if (QueryParams.Num() > 0)
+	{
+		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+	}TSharedPtr<FJsonObject> Body;
+
+	MakeRequest(Endpoint, TEXT("GET"), Body, ENakamaRequestAuth::HttpKey, HttpKey,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			FNakamaGroupUserList Result = FNakamaGroupUserList::FromJson(Json);
@@ -7847,6 +9126,52 @@ void FNakamaClient::ListLeaderboardRecords(
 		OnError);
 }
 
+void FNakamaClient::ListLeaderboardRecords(
+	const FString& HttpKey,
+	FString LeaderboardId,
+	const TArray<FString>& OwnerIds,
+	int32 Limit,
+	FString Cursor,
+	int64 Expiry,
+	TFunction<void(const FNakamaLeaderboardRecordList&)> OnSuccess,
+	TFunction<void(const FNakamaError&)> OnError)
+{
+	FString Endpoint = TEXT("/v2/leaderboard/{leaderboard_id}");
+	Endpoint = Endpoint.Replace(TEXT("{leaderboard_id}"), *LeaderboardId);
+	TArray<FString> QueryParams;
+	for (const FString& Item : OwnerIds)
+	{
+		QueryParams.Add(FString::Printf(TEXT("owner_ids=%s"), *Item));
+	}
+	if (Limit != 0)
+	{
+		QueryParams.Add(FString::Printf(TEXT("limit=%d"), Limit));
+	}
+	if (!Cursor.IsEmpty())
+	{
+		QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *Cursor));
+	}
+	if (Expiry != 0)
+	{
+		QueryParams.Add(FString::Printf(TEXT("expiry=%lld"), Expiry));
+	}
+	if (QueryParams.Num() > 0)
+	{
+		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+	}TSharedPtr<FJsonObject> Body;
+
+	MakeRequest(Endpoint, TEXT("GET"), Body, ENakamaRequestAuth::HttpKey, HttpKey,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
+		{
+			FNakamaLeaderboardRecordList Result = FNakamaLeaderboardRecordList::FromJson(Json);
+			if (OnSuccess)
+			{
+				OnSuccess(Result);
+			}
+		},
+		OnError);
+}
+
 void FNakamaClient::ListLeaderboardRecordsAroundOwner(
 	const FNakamaSession& Session,
 	FString LeaderboardId,
@@ -7882,6 +9207,49 @@ void FNakamaClient::ListLeaderboardRecordsAroundOwner(
 	FString SessionToken = Session.Token;
 
 	MakeRequest(Endpoint, TEXT("GET"), Body, AuthType, SessionToken,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
+		{
+			FNakamaLeaderboardRecordList Result = FNakamaLeaderboardRecordList::FromJson(Json);
+			if (OnSuccess)
+			{
+				OnSuccess(Result);
+			}
+		},
+		OnError);
+}
+
+void FNakamaClient::ListLeaderboardRecordsAroundOwner(
+	const FString& HttpKey,
+	FString LeaderboardId,
+	uint32 Limit,
+	FString OwnerId,
+	int64 Expiry,
+	FString Cursor,
+	TFunction<void(const FNakamaLeaderboardRecordList&)> OnSuccess,
+	TFunction<void(const FNakamaError&)> OnError)
+{
+	FString Endpoint = TEXT("/v2/leaderboard/{leaderboard_id}/owner/{owner_id}");
+	Endpoint = Endpoint.Replace(TEXT("{leaderboard_id}"), *LeaderboardId);
+	Endpoint = Endpoint.Replace(TEXT("{owner_id}"), *OwnerId);
+	TArray<FString> QueryParams;
+	if (Limit != 0)
+	{
+		QueryParams.Add(FString::Printf(TEXT("limit=%d"), Limit));
+	}
+	if (Expiry != 0)
+	{
+		QueryParams.Add(FString::Printf(TEXT("expiry=%lld"), Expiry));
+	}
+	if (!Cursor.IsEmpty())
+	{
+		QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *Cursor));
+	}
+	if (QueryParams.Num() > 0)
+	{
+		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+	}TSharedPtr<FJsonObject> Body;
+
+	MakeRequest(Endpoint, TEXT("GET"), Body, ENakamaRequestAuth::HttpKey, HttpKey,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			FNakamaLeaderboardRecordList Result = FNakamaLeaderboardRecordList::FromJson(Json);
@@ -7947,6 +9315,57 @@ void FNakamaClient::ListMatches(
 		OnError);
 }
 
+void FNakamaClient::ListMatches(
+	const FString& HttpKey,
+	int32 Limit,
+	bool Authoritative,
+	FString Label,
+	int32 MinSize,
+	int32 MaxSize,
+	FString Query,
+	TFunction<void(const FNakamaMatchList&)> OnSuccess,
+	TFunction<void(const FNakamaError&)> OnError)
+{
+	FString Endpoint = TEXT("/v2/match");
+	TArray<FString> QueryParams;
+	if (Limit != 0)
+	{
+		QueryParams.Add(FString::Printf(TEXT("limit=%d"), Limit));
+	}
+	QueryParams.Add(FString::Printf(TEXT("authoritative=%s"), Authoritative ? TEXT("true") : TEXT("false")));
+	if (!Label.IsEmpty())
+	{
+		QueryParams.Add(FString::Printf(TEXT("label=%s"), *Label));
+	}
+	if (MinSize != 0)
+	{
+		QueryParams.Add(FString::Printf(TEXT("min_size=%d"), MinSize));
+	}
+	if (MaxSize != 0)
+	{
+		QueryParams.Add(FString::Printf(TEXT("max_size=%d"), MaxSize));
+	}
+	if (!Query.IsEmpty())
+	{
+		QueryParams.Add(FString::Printf(TEXT("query=%s"), *Query));
+	}
+	if (QueryParams.Num() > 0)
+	{
+		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+	}TSharedPtr<FJsonObject> Body;
+
+	MakeRequest(Endpoint, TEXT("GET"), Body, ENakamaRequestAuth::HttpKey, HttpKey,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
+		{
+			FNakamaMatchList Result = FNakamaMatchList::FromJson(Json);
+			if (OnSuccess)
+			{
+				OnSuccess(Result);
+			}
+		},
+		OnError);
+}
+
 void FNakamaClient::ListParties(
 	const FNakamaSession& Session,
 	int32 Limit,
@@ -7991,6 +9410,47 @@ void FNakamaClient::ListParties(
 		OnError);
 }
 
+void FNakamaClient::ListParties(
+	const FString& HttpKey,
+	int32 Limit,
+	bool Open,
+	FString Query,
+	FString Cursor,
+	TFunction<void(const FNakamaPartyList&)> OnSuccess,
+	TFunction<void(const FNakamaError&)> OnError)
+{
+	FString Endpoint = TEXT("/v2/party");
+	TArray<FString> QueryParams;
+	if (Limit != 0)
+	{
+		QueryParams.Add(FString::Printf(TEXT("limit=%d"), Limit));
+	}
+	QueryParams.Add(FString::Printf(TEXT("open=%s"), Open ? TEXT("true") : TEXT("false")));
+	if (!Query.IsEmpty())
+	{
+		QueryParams.Add(FString::Printf(TEXT("query=%s"), *Query));
+	}
+	if (!Cursor.IsEmpty())
+	{
+		QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *Cursor));
+	}
+	if (QueryParams.Num() > 0)
+	{
+		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+	}TSharedPtr<FJsonObject> Body;
+
+	MakeRequest(Endpoint, TEXT("GET"), Body, ENakamaRequestAuth::HttpKey, HttpKey,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
+		{
+			FNakamaPartyList Result = FNakamaPartyList::FromJson(Json);
+			if (OnSuccess)
+			{
+				OnSuccess(Result);
+			}
+		},
+		OnError);
+}
+
 void FNakamaClient::ListNotifications(
 	const FNakamaSession& Session,
 	int32 Limit,
@@ -8017,6 +9477,40 @@ void FNakamaClient::ListNotifications(
 	FString SessionToken = Session.Token;
 
 	MakeRequest(Endpoint, TEXT("GET"), Body, AuthType, SessionToken,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
+		{
+			FNakamaNotificationList Result = FNakamaNotificationList::FromJson(Json);
+			if (OnSuccess)
+			{
+				OnSuccess(Result);
+			}
+		},
+		OnError);
+}
+
+void FNakamaClient::ListNotifications(
+	const FString& HttpKey,
+	int32 Limit,
+	FString CacheableCursor,
+	TFunction<void(const FNakamaNotificationList&)> OnSuccess,
+	TFunction<void(const FNakamaError&)> OnError)
+{
+	FString Endpoint = TEXT("/v2/notification");
+	TArray<FString> QueryParams;
+	if (Limit != 0)
+	{
+		QueryParams.Add(FString::Printf(TEXT("limit=%d"), Limit));
+	}
+	if (!CacheableCursor.IsEmpty())
+	{
+		QueryParams.Add(FString::Printf(TEXT("cacheable_cursor=%s"), *CacheableCursor));
+	}
+	if (QueryParams.Num() > 0)
+	{
+		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+	}TSharedPtr<FJsonObject> Body;
+
+	MakeRequest(Endpoint, TEXT("GET"), Body, ENakamaRequestAuth::HttpKey, HttpKey,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			FNakamaNotificationList Result = FNakamaNotificationList::FromJson(Json);
@@ -8072,6 +9566,47 @@ void FNakamaClient::ListStorageObjects(
 		OnError);
 }
 
+void FNakamaClient::ListStorageObjects(
+	const FString& HttpKey,
+	FString UserId,
+	FString Collection,
+	int32 Limit,
+	FString Cursor,
+	TFunction<void(const FNakamaStorageObjectList&)> OnSuccess,
+	TFunction<void(const FNakamaError&)> OnError)
+{
+	FString Endpoint = TEXT("/v2/storage/{collection}");
+	Endpoint = Endpoint.Replace(TEXT("{collection}"), *Collection);
+	TArray<FString> QueryParams;
+	if (!UserId.IsEmpty())
+	{
+		QueryParams.Add(FString::Printf(TEXT("user_id=%s"), *UserId));
+	}
+	if (Limit != 0)
+	{
+		QueryParams.Add(FString::Printf(TEXT("limit=%d"), Limit));
+	}
+	if (!Cursor.IsEmpty())
+	{
+		QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *Cursor));
+	}
+	if (QueryParams.Num() > 0)
+	{
+		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+	}TSharedPtr<FJsonObject> Body;
+
+	MakeRequest(Endpoint, TEXT("GET"), Body, ENakamaRequestAuth::HttpKey, HttpKey,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
+		{
+			FNakamaStorageObjectList Result = FNakamaStorageObjectList::FromJson(Json);
+			if (OnSuccess)
+			{
+				OnSuccess(Result);
+			}
+		},
+		OnError);
+}
+
 void FNakamaClient::ListSubscriptions(
 	const FNakamaSession& Session,
 	int32 Limit,
@@ -8095,6 +9630,37 @@ void FNakamaClient::ListSubscriptions(
 	FString SessionToken = Session.Token;
 
 	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType, SessionToken,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
+		{
+			FNakamaSubscriptionList Result = FNakamaSubscriptionList::FromJson(Json);
+			if (OnSuccess)
+			{
+				OnSuccess(Result);
+			}
+		},
+		OnError);
+}
+
+void FNakamaClient::ListSubscriptions(
+	const FString& HttpKey,
+	int32 Limit,
+	FString Cursor,
+	TFunction<void(const FNakamaSubscriptionList&)> OnSuccess,
+	TFunction<void(const FNakamaError&)> OnError)
+{
+	FString Endpoint = TEXT("/v2/iap/subscription");
+	TArray<FString> QueryParams;
+	if (QueryParams.Num() > 0)
+	{
+		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
+	Body->SetNumberField(TEXT("limit"), Limit);
+	if (!Cursor.IsEmpty())
+	{
+		Body->SetStringField(TEXT("cursor"), Cursor);
+	}
+
+	MakeRequest(Endpoint, TEXT("POST"), Body, ENakamaRequestAuth::HttpKey, HttpKey,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			FNakamaSubscriptionList Result = FNakamaSubscriptionList::FromJson(Json);
@@ -8163,6 +9729,60 @@ void FNakamaClient::ListTournaments(
 		OnError);
 }
 
+void FNakamaClient::ListTournaments(
+	const FString& HttpKey,
+	uint32 CategoryStart,
+	uint32 CategoryEnd,
+	uint32 StartTime,
+	uint32 EndTime,
+	int32 Limit,
+	FString Cursor,
+	TFunction<void(const FNakamaTournamentList&)> OnSuccess,
+	TFunction<void(const FNakamaError&)> OnError)
+{
+	FString Endpoint = TEXT("/v2/tournament");
+	TArray<FString> QueryParams;
+	if (CategoryStart != 0)
+	{
+		QueryParams.Add(FString::Printf(TEXT("category_start=%d"), CategoryStart));
+	}
+	if (CategoryEnd != 0)
+	{
+		QueryParams.Add(FString::Printf(TEXT("category_end=%d"), CategoryEnd));
+	}
+	if (StartTime != 0)
+	{
+		QueryParams.Add(FString::Printf(TEXT("start_time=%d"), StartTime));
+	}
+	if (EndTime != 0)
+	{
+		QueryParams.Add(FString::Printf(TEXT("end_time=%d"), EndTime));
+	}
+	if (Limit != 0)
+	{
+		QueryParams.Add(FString::Printf(TEXT("limit=%d"), Limit));
+	}
+	if (!Cursor.IsEmpty())
+	{
+		QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *Cursor));
+	}
+	if (QueryParams.Num() > 0)
+	{
+		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+	}TSharedPtr<FJsonObject> Body;
+
+	MakeRequest(Endpoint, TEXT("GET"), Body, ENakamaRequestAuth::HttpKey, HttpKey,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
+		{
+			FNakamaTournamentList Result = FNakamaTournamentList::FromJson(Json);
+			if (OnSuccess)
+			{
+				OnSuccess(Result);
+			}
+		},
+		OnError);
+}
+
 void FNakamaClient::ListTournamentRecords(
 	const FNakamaSession& Session,
 	FString TournamentId,
@@ -8201,6 +9821,52 @@ void FNakamaClient::ListTournamentRecords(
 	FString SessionToken = Session.Token;
 
 	MakeRequest(Endpoint, TEXT("GET"), Body, AuthType, SessionToken,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
+		{
+			FNakamaTournamentRecordList Result = FNakamaTournamentRecordList::FromJson(Json);
+			if (OnSuccess)
+			{
+				OnSuccess(Result);
+			}
+		},
+		OnError);
+}
+
+void FNakamaClient::ListTournamentRecords(
+	const FString& HttpKey,
+	FString TournamentId,
+	const TArray<FString>& OwnerIds,
+	int32 Limit,
+	FString Cursor,
+	int64 Expiry,
+	TFunction<void(const FNakamaTournamentRecordList&)> OnSuccess,
+	TFunction<void(const FNakamaError&)> OnError)
+{
+	FString Endpoint = TEXT("/v2/tournament/{tournament_id}");
+	Endpoint = Endpoint.Replace(TEXT("{tournament_id}"), *TournamentId);
+	TArray<FString> QueryParams;
+	for (const FString& Item : OwnerIds)
+	{
+		QueryParams.Add(FString::Printf(TEXT("owner_ids=%s"), *Item));
+	}
+	if (Limit != 0)
+	{
+		QueryParams.Add(FString::Printf(TEXT("limit=%d"), Limit));
+	}
+	if (!Cursor.IsEmpty())
+	{
+		QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *Cursor));
+	}
+	if (Expiry != 0)
+	{
+		QueryParams.Add(FString::Printf(TEXT("expiry=%lld"), Expiry));
+	}
+	if (QueryParams.Num() > 0)
+	{
+		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+	}TSharedPtr<FJsonObject> Body;
+
+	MakeRequest(Endpoint, TEXT("GET"), Body, ENakamaRequestAuth::HttpKey, HttpKey,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			FNakamaTournamentRecordList Result = FNakamaTournamentRecordList::FromJson(Json);
@@ -8258,6 +9924,49 @@ void FNakamaClient::ListTournamentRecordsAroundOwner(
 		OnError);
 }
 
+void FNakamaClient::ListTournamentRecordsAroundOwner(
+	const FString& HttpKey,
+	FString TournamentId,
+	uint32 Limit,
+	FString OwnerId,
+	int64 Expiry,
+	FString Cursor,
+	TFunction<void(const FNakamaTournamentRecordList&)> OnSuccess,
+	TFunction<void(const FNakamaError&)> OnError)
+{
+	FString Endpoint = TEXT("/v2/tournament/{tournament_id}/owner/{owner_id}");
+	Endpoint = Endpoint.Replace(TEXT("{tournament_id}"), *TournamentId);
+	Endpoint = Endpoint.Replace(TEXT("{owner_id}"), *OwnerId);
+	TArray<FString> QueryParams;
+	if (Limit != 0)
+	{
+		QueryParams.Add(FString::Printf(TEXT("limit=%d"), Limit));
+	}
+	if (Expiry != 0)
+	{
+		QueryParams.Add(FString::Printf(TEXT("expiry=%lld"), Expiry));
+	}
+	if (!Cursor.IsEmpty())
+	{
+		QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *Cursor));
+	}
+	if (QueryParams.Num() > 0)
+	{
+		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+	}TSharedPtr<FJsonObject> Body;
+
+	MakeRequest(Endpoint, TEXT("GET"), Body, ENakamaRequestAuth::HttpKey, HttpKey,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
+		{
+			FNakamaTournamentRecordList Result = FNakamaTournamentRecordList::FromJson(Json);
+			if (OnSuccess)
+			{
+				OnSuccess(Result);
+			}
+		},
+		OnError);
+}
+
 void FNakamaClient::ListUserGroups(
 	const FNakamaSession& Session,
 	FString UserId,
@@ -8302,6 +10011,47 @@ void FNakamaClient::ListUserGroups(
 		OnError);
 }
 
+void FNakamaClient::ListUserGroups(
+	const FString& HttpKey,
+	FString UserId,
+	int32 Limit,
+	int32 State,
+	FString Cursor,
+	TFunction<void(const FNakamaUserGroupList&)> OnSuccess,
+	TFunction<void(const FNakamaError&)> OnError)
+{
+	FString Endpoint = TEXT("/v2/user/{user_id}/group");
+	Endpoint = Endpoint.Replace(TEXT("{user_id}"), *UserId);
+	TArray<FString> QueryParams;
+	if (Limit != 0)
+	{
+		QueryParams.Add(FString::Printf(TEXT("limit=%d"), Limit));
+	}
+	if (State != 0)
+	{
+		QueryParams.Add(FString::Printf(TEXT("state=%d"), State));
+	}
+	if (!Cursor.IsEmpty())
+	{
+		QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *Cursor));
+	}
+	if (QueryParams.Num() > 0)
+	{
+		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+	}TSharedPtr<FJsonObject> Body;
+
+	MakeRequest(Endpoint, TEXT("GET"), Body, ENakamaRequestAuth::HttpKey, HttpKey,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
+		{
+			FNakamaUserGroupList Result = FNakamaUserGroupList::FromJson(Json);
+			if (OnSuccess)
+			{
+				OnSuccess(Result);
+			}
+		},
+		OnError);
+}
+
 void FNakamaClient::PromoteGroupUsers(
 	const FNakamaSession& Session,
 	FString GroupId,
@@ -8335,6 +10085,36 @@ void FNakamaClient::PromoteGroupUsers(
 		OnError);
 }
 
+void FNakamaClient::PromoteGroupUsers(
+	const FString& HttpKey,
+	FString GroupId,
+	const TArray<FString>& UserIds,
+	TFunction<void()> OnSuccess,
+	TFunction<void(const FNakamaError&)> OnError)
+{
+	FString Endpoint = TEXT("/v2/group/{group_id}/promote");
+	Endpoint = Endpoint.Replace(TEXT("{group_id}"), *GroupId);
+	TArray<FString> QueryParams;
+	for (const FString& Item : UserIds)
+	{
+		QueryParams.Add(FString::Printf(TEXT("user_ids=%s"), *Item));
+	}
+	if (QueryParams.Num() > 0)
+	{
+		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+	}TSharedPtr<FJsonObject> Body;
+
+	MakeRequest(Endpoint, TEXT("POST"), Body, ENakamaRequestAuth::HttpKey, HttpKey,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
+		{
+			if (OnSuccess)
+			{
+				OnSuccess();
+			}
+		},
+		OnError);
+}
+
 void FNakamaClient::DemoteGroupUsers(
 	const FNakamaSession& Session,
 	FString GroupId,
@@ -8358,6 +10138,36 @@ void FNakamaClient::DemoteGroupUsers(
 	FString SessionToken = Session.Token;
 
 	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType, SessionToken,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
+		{
+			if (OnSuccess)
+			{
+				OnSuccess();
+			}
+		},
+		OnError);
+}
+
+void FNakamaClient::DemoteGroupUsers(
+	const FString& HttpKey,
+	FString GroupId,
+	const TArray<FString>& UserIds,
+	TFunction<void()> OnSuccess,
+	TFunction<void(const FNakamaError&)> OnError)
+{
+	FString Endpoint = TEXT("/v2/group/{group_id}/demote");
+	Endpoint = Endpoint.Replace(TEXT("{group_id}"), *GroupId);
+	TArray<FString> QueryParams;
+	for (const FString& Item : UserIds)
+	{
+		QueryParams.Add(FString::Printf(TEXT("user_ids=%s"), *Item));
+	}
+	if (QueryParams.Num() > 0)
+	{
+		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+	}TSharedPtr<FJsonObject> Body;
+
+	MakeRequest(Endpoint, TEXT("POST"), Body, ENakamaRequestAuth::HttpKey, HttpKey,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			if (OnSuccess)
@@ -8405,6 +10215,40 @@ void FNakamaClient::ReadStorageObjects(
 		OnError);
 }
 
+void FNakamaClient::ReadStorageObjects(
+	const FString& HttpKey,
+	const TArray<FNakamaReadStorageObjectId>& ObjectIds,
+	TFunction<void(const FNakamaStorageObjects&)> OnSuccess,
+	TFunction<void(const FNakamaError&)> OnError)
+{
+	FString Endpoint = TEXT("/v2/storage");
+	TArray<FString> QueryParams;
+	if (QueryParams.Num() > 0)
+	{
+		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
+	if (ObjectIds.Num() > 0)
+	{
+		TArray<TSharedPtr<FJsonValue>> Array;
+		for (const auto& Item : ObjectIds)
+		{
+			Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
+		}
+		Body->SetArrayField(TEXT("object_ids"), Array);
+	}
+
+	MakeRequest(Endpoint, TEXT("POST"), Body, ENakamaRequestAuth::HttpKey, HttpKey,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
+		{
+			FNakamaStorageObjects Result = FNakamaStorageObjects::FromJson(Json);
+			if (OnSuccess)
+			{
+				OnSuccess(Result);
+			}
+		},
+		OnError);
+}
+
 void FNakamaClient::RpcFunc(
 	const FNakamaSession& Session,
 	FString Id,
@@ -8430,6 +10274,34 @@ void FNakamaClient::RpcFunc(
 	FString SessionToken = Session.Token;
 
 	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType, SessionToken,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
+		{
+			FNakamaRpc Result = FNakamaRpc::FromJson(Json);
+			if (OnSuccess)
+			{
+				OnSuccess(Result);
+			}
+		},
+		OnError);
+}
+
+void FNakamaClient::RpcFunc(
+	const FString& HttpKey,
+	FString Id,
+	FString Payload,
+	TFunction<void(const FNakamaRpc&)> OnSuccess,
+	TFunction<void(const FNakamaError&)> OnError)
+{
+	FString Endpoint = TEXT("/v2/rpc/{id}");
+	Endpoint = Endpoint.Replace(TEXT("{id}"), *Id);
+	TArray<FString> QueryParams;
+	if (QueryParams.Num() > 0)
+	{
+		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+	}TSharedPtr<FJsonObject> Body;
+	Body = MakeShared<FJsonObject>();
+
+	MakeRequest(Endpoint, TEXT("POST"), Body, ENakamaRequestAuth::HttpKey, HttpKey,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			FNakamaRpc Result = FNakamaRpc::FromJson(Json);
@@ -8482,6 +10354,44 @@ void FNakamaClient::UnlinkApple(
 		OnError);
 }
 
+void FNakamaClient::UnlinkApple(
+	const FString& HttpKey,
+	FString Token,
+	const TMap<FString, FString>& Vars,
+	TFunction<void()> OnSuccess,
+	TFunction<void(const FNakamaError&)> OnError)
+{
+	FString Endpoint = TEXT("/v2/account/unlink/apple");
+	TArray<FString> QueryParams;
+	if (QueryParams.Num() > 0)
+	{
+		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
+	if (!Token.IsEmpty())
+	{
+		Body->SetStringField(TEXT("token"), Token);
+	}
+	if (Vars.Num() > 0)
+	{
+		TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
+		for (const auto& Pair : Vars)
+		{
+			MapObj->SetStringField(Pair.Key, Pair.Value);
+		}
+		Body->SetObjectField(TEXT("vars"), MapObj);
+	}
+
+	MakeRequest(Endpoint, TEXT("POST"), Body, ENakamaRequestAuth::HttpKey, HttpKey,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
+		{
+			if (OnSuccess)
+			{
+				OnSuccess();
+			}
+		},
+		OnError);
+}
+
 void FNakamaClient::UnlinkCustom(
 	const FNakamaSession& Session,
 	FString Id,
@@ -8523,6 +10433,44 @@ void FNakamaClient::UnlinkCustom(
 		OnError);
 }
 
+void FNakamaClient::UnlinkCustom(
+	const FString& HttpKey,
+	FString Id,
+	const TMap<FString, FString>& Vars,
+	TFunction<void()> OnSuccess,
+	TFunction<void(const FNakamaError&)> OnError)
+{
+	FString Endpoint = TEXT("/v2/account/unlink/custom");
+	TArray<FString> QueryParams;
+	if (QueryParams.Num() > 0)
+	{
+		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
+	if (!Id.IsEmpty())
+	{
+		Body->SetStringField(TEXT("id"), Id);
+	}
+	if (Vars.Num() > 0)
+	{
+		TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
+		for (const auto& Pair : Vars)
+		{
+			MapObj->SetStringField(Pair.Key, Pair.Value);
+		}
+		Body->SetObjectField(TEXT("vars"), MapObj);
+	}
+
+	MakeRequest(Endpoint, TEXT("POST"), Body, ENakamaRequestAuth::HttpKey, HttpKey,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
+		{
+			if (OnSuccess)
+			{
+				OnSuccess();
+			}
+		},
+		OnError);
+}
+
 void FNakamaClient::UnlinkDevice(
 	const FNakamaSession& Session,
 	FString Id,
@@ -8554,6 +10502,44 @@ void FNakamaClient::UnlinkDevice(
 	FString SessionToken = Session.Token;
 
 	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType, SessionToken,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
+		{
+			if (OnSuccess)
+			{
+				OnSuccess();
+			}
+		},
+		OnError);
+}
+
+void FNakamaClient::UnlinkDevice(
+	const FString& HttpKey,
+	FString Id,
+	const TMap<FString, FString>& Vars,
+	TFunction<void()> OnSuccess,
+	TFunction<void(const FNakamaError&)> OnError)
+{
+	FString Endpoint = TEXT("/v2/account/unlink/device");
+	TArray<FString> QueryParams;
+	if (QueryParams.Num() > 0)
+	{
+		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
+	if (!Id.IsEmpty())
+	{
+		Body->SetStringField(TEXT("id"), Id);
+	}
+	if (Vars.Num() > 0)
+	{
+		TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
+		for (const auto& Pair : Vars)
+		{
+			MapObj->SetStringField(Pair.Key, Pair.Value);
+		}
+		Body->SetObjectField(TEXT("vars"), MapObj);
+	}
+
+	MakeRequest(Endpoint, TEXT("POST"), Body, ENakamaRequestAuth::HttpKey, HttpKey,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			if (OnSuccess)
@@ -8610,6 +10596,49 @@ void FNakamaClient::UnlinkEmail(
 		OnError);
 }
 
+void FNakamaClient::UnlinkEmail(
+	const FString& HttpKey,
+	FString Email,
+	FString Password,
+	const TMap<FString, FString>& Vars,
+	TFunction<void()> OnSuccess,
+	TFunction<void(const FNakamaError&)> OnError)
+{
+	FString Endpoint = TEXT("/v2/account/unlink/email");
+	TArray<FString> QueryParams;
+	if (QueryParams.Num() > 0)
+	{
+		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
+	if (!Email.IsEmpty())
+	{
+		Body->SetStringField(TEXT("email"), Email);
+	}
+	if (!Password.IsEmpty())
+	{
+		Body->SetStringField(TEXT("password"), Password);
+	}
+	if (Vars.Num() > 0)
+	{
+		TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
+		for (const auto& Pair : Vars)
+		{
+			MapObj->SetStringField(Pair.Key, Pair.Value);
+		}
+		Body->SetObjectField(TEXT("vars"), MapObj);
+	}
+
+	MakeRequest(Endpoint, TEXT("POST"), Body, ENakamaRequestAuth::HttpKey, HttpKey,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
+		{
+			if (OnSuccess)
+			{
+				OnSuccess();
+			}
+		},
+		OnError);
+}
+
 void FNakamaClient::UnlinkFacebook(
 	const FNakamaSession& Session,
 	FString Token,
@@ -8651,6 +10680,44 @@ void FNakamaClient::UnlinkFacebook(
 		OnError);
 }
 
+void FNakamaClient::UnlinkFacebook(
+	const FString& HttpKey,
+	FString Token,
+	const TMap<FString, FString>& Vars,
+	TFunction<void()> OnSuccess,
+	TFunction<void(const FNakamaError&)> OnError)
+{
+	FString Endpoint = TEXT("/v2/account/unlink/facebook");
+	TArray<FString> QueryParams;
+	if (QueryParams.Num() > 0)
+	{
+		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
+	if (!Token.IsEmpty())
+	{
+		Body->SetStringField(TEXT("token"), Token);
+	}
+	if (Vars.Num() > 0)
+	{
+		TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
+		for (const auto& Pair : Vars)
+		{
+			MapObj->SetStringField(Pair.Key, Pair.Value);
+		}
+		Body->SetObjectField(TEXT("vars"), MapObj);
+	}
+
+	MakeRequest(Endpoint, TEXT("POST"), Body, ENakamaRequestAuth::HttpKey, HttpKey,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
+		{
+			if (OnSuccess)
+			{
+				OnSuccess();
+			}
+		},
+		OnError);
+}
+
 void FNakamaClient::UnlinkFacebookInstantGame(
 	const FNakamaSession& Session,
 	FString SignedPlayerInfo,
@@ -8682,6 +10749,44 @@ void FNakamaClient::UnlinkFacebookInstantGame(
 	FString SessionToken = Session.Token;
 
 	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType, SessionToken,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
+		{
+			if (OnSuccess)
+			{
+				OnSuccess();
+			}
+		},
+		OnError);
+}
+
+void FNakamaClient::UnlinkFacebookInstantGame(
+	const FString& HttpKey,
+	FString SignedPlayerInfo,
+	const TMap<FString, FString>& Vars,
+	TFunction<void()> OnSuccess,
+	TFunction<void(const FNakamaError&)> OnError)
+{
+	FString Endpoint = TEXT("/v2/account/unlink/facebookinstantgame");
+	TArray<FString> QueryParams;
+	if (QueryParams.Num() > 0)
+	{
+		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
+	if (!SignedPlayerInfo.IsEmpty())
+	{
+		Body->SetStringField(TEXT("signed_player_info"), SignedPlayerInfo);
+	}
+	if (Vars.Num() > 0)
+	{
+		TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
+		for (const auto& Pair : Vars)
+		{
+			MapObj->SetStringField(Pair.Key, Pair.Value);
+		}
+		Body->SetObjectField(TEXT("vars"), MapObj);
+	}
+
+	MakeRequest(Endpoint, TEXT("POST"), Body, ENakamaRequestAuth::HttpKey, HttpKey,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			if (OnSuccess)
@@ -8755,6 +10860,66 @@ void FNakamaClient::UnlinkGameCenter(
 		OnError);
 }
 
+void FNakamaClient::UnlinkGameCenter(
+	const FString& HttpKey,
+	FString PlayerId,
+	FString BundleId,
+	int64 TimestampSeconds,
+	FString Salt,
+	FString Signature,
+	FString PublicKeyUrl,
+	const TMap<FString, FString>& Vars,
+	TFunction<void()> OnSuccess,
+	TFunction<void(const FNakamaError&)> OnError)
+{
+	FString Endpoint = TEXT("/v2/account/unlink/gamecenter");
+	TArray<FString> QueryParams;
+	if (QueryParams.Num() > 0)
+	{
+		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
+	if (!PlayerId.IsEmpty())
+	{
+		Body->SetStringField(TEXT("player_id"), PlayerId);
+	}
+	if (!BundleId.IsEmpty())
+	{
+		Body->SetStringField(TEXT("bundle_id"), BundleId);
+	}
+	Body->SetNumberField(TEXT("timestamp_seconds"), TimestampSeconds);
+	if (!Salt.IsEmpty())
+	{
+		Body->SetStringField(TEXT("salt"), Salt);
+	}
+	if (!Signature.IsEmpty())
+	{
+		Body->SetStringField(TEXT("signature"), Signature);
+	}
+	if (!PublicKeyUrl.IsEmpty())
+	{
+		Body->SetStringField(TEXT("public_key_url"), PublicKeyUrl);
+	}
+	if (Vars.Num() > 0)
+	{
+		TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
+		for (const auto& Pair : Vars)
+		{
+			MapObj->SetStringField(Pair.Key, Pair.Value);
+		}
+		Body->SetObjectField(TEXT("vars"), MapObj);
+	}
+
+	MakeRequest(Endpoint, TEXT("POST"), Body, ENakamaRequestAuth::HttpKey, HttpKey,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
+		{
+			if (OnSuccess)
+			{
+				OnSuccess();
+			}
+		},
+		OnError);
+}
+
 void FNakamaClient::UnlinkGoogle(
 	const FNakamaSession& Session,
 	FString Token,
@@ -8796,6 +10961,44 @@ void FNakamaClient::UnlinkGoogle(
 		OnError);
 }
 
+void FNakamaClient::UnlinkGoogle(
+	const FString& HttpKey,
+	FString Token,
+	const TMap<FString, FString>& Vars,
+	TFunction<void()> OnSuccess,
+	TFunction<void(const FNakamaError&)> OnError)
+{
+	FString Endpoint = TEXT("/v2/account/unlink/google");
+	TArray<FString> QueryParams;
+	if (QueryParams.Num() > 0)
+	{
+		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
+	if (!Token.IsEmpty())
+	{
+		Body->SetStringField(TEXT("token"), Token);
+	}
+	if (Vars.Num() > 0)
+	{
+		TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
+		for (const auto& Pair : Vars)
+		{
+			MapObj->SetStringField(Pair.Key, Pair.Value);
+		}
+		Body->SetObjectField(TEXT("vars"), MapObj);
+	}
+
+	MakeRequest(Endpoint, TEXT("POST"), Body, ENakamaRequestAuth::HttpKey, HttpKey,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
+		{
+			if (OnSuccess)
+			{
+				OnSuccess();
+			}
+		},
+		OnError);
+}
+
 void FNakamaClient::UnlinkSteam(
 	const FNakamaSession& Session,
 	FString Token,
@@ -8827,6 +11030,44 @@ void FNakamaClient::UnlinkSteam(
 	FString SessionToken = Session.Token;
 
 	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType, SessionToken,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
+		{
+			if (OnSuccess)
+			{
+				OnSuccess();
+			}
+		},
+		OnError);
+}
+
+void FNakamaClient::UnlinkSteam(
+	const FString& HttpKey,
+	FString Token,
+	const TMap<FString, FString>& Vars,
+	TFunction<void()> OnSuccess,
+	TFunction<void(const FNakamaError&)> OnError)
+{
+	FString Endpoint = TEXT("/v2/account/unlink/steam");
+	TArray<FString> QueryParams;
+	if (QueryParams.Num() > 0)
+	{
+		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
+	if (!Token.IsEmpty())
+	{
+		Body->SetStringField(TEXT("token"), Token);
+	}
+	if (Vars.Num() > 0)
+	{
+		TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
+		for (const auto& Pair : Vars)
+		{
+			MapObj->SetStringField(Pair.Key, Pair.Value);
+		}
+		Body->SetObjectField(TEXT("vars"), MapObj);
+	}
+
+	MakeRequest(Endpoint, TEXT("POST"), Body, ENakamaRequestAuth::HttpKey, HttpKey,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			if (OnSuccess)
@@ -8893,6 +11134,59 @@ void FNakamaClient::UpdateAccount(
 		OnError);
 }
 
+void FNakamaClient::UpdateAccount(
+	const FString& HttpKey,
+	FString Username,
+	FString DisplayName,
+	FString AvatarUrl,
+	FString LangTag,
+	FString Location,
+	FString Timezone,
+	TFunction<void()> OnSuccess,
+	TFunction<void(const FNakamaError&)> OnError)
+{
+	FString Endpoint = TEXT("/v2/account");
+	TArray<FString> QueryParams;
+	if (QueryParams.Num() > 0)
+	{
+		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
+	if (!Username.IsEmpty())
+	{
+		Body->SetStringField(TEXT("username"), Username);
+	}
+	if (!DisplayName.IsEmpty())
+	{
+		Body->SetStringField(TEXT("display_name"), DisplayName);
+	}
+	if (!AvatarUrl.IsEmpty())
+	{
+		Body->SetStringField(TEXT("avatar_url"), AvatarUrl);
+	}
+	if (!LangTag.IsEmpty())
+	{
+		Body->SetStringField(TEXT("lang_tag"), LangTag);
+	}
+	if (!Location.IsEmpty())
+	{
+		Body->SetStringField(TEXT("location"), Location);
+	}
+	if (!Timezone.IsEmpty())
+	{
+		Body->SetStringField(TEXT("timezone"), Timezone);
+	}
+
+	MakeRequest(Endpoint, TEXT("PUT"), Body, ENakamaRequestAuth::HttpKey, HttpKey,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
+		{
+			if (OnSuccess)
+			{
+				OnSuccess();
+			}
+		},
+		OnError);
+}
+
 void FNakamaClient::UpdateGroup(
 	const FNakamaSession& Session,
 	FString GroupId,
@@ -8947,6 +11241,57 @@ void FNakamaClient::UpdateGroup(
 		OnError);
 }
 
+void FNakamaClient::UpdateGroup(
+	const FString& HttpKey,
+	FString GroupId,
+	FString Name,
+	FString Description,
+	FString LangTag,
+	FString AvatarUrl,
+	bool Open,
+	TFunction<void()> OnSuccess,
+	TFunction<void(const FNakamaError&)> OnError)
+{
+	FString Endpoint = TEXT("/v2/group/{group_id}");
+	Endpoint = Endpoint.Replace(TEXT("{group_id}"), *GroupId);
+	TArray<FString> QueryParams;
+	if (QueryParams.Num() > 0)
+	{
+		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
+	if (!GroupId.IsEmpty())
+	{
+		Body->SetStringField(TEXT("group_id"), GroupId);
+	}
+	if (!Name.IsEmpty())
+	{
+		Body->SetStringField(TEXT("name"), Name);
+	}
+	if (!Description.IsEmpty())
+	{
+		Body->SetStringField(TEXT("description"), Description);
+	}
+	if (!LangTag.IsEmpty())
+	{
+		Body->SetStringField(TEXT("lang_tag"), LangTag);
+	}
+	if (!AvatarUrl.IsEmpty())
+	{
+		Body->SetStringField(TEXT("avatar_url"), AvatarUrl);
+	}
+	Body->SetBoolField(TEXT("open"), Open);
+
+	MakeRequest(Endpoint, TEXT("PUT"), Body, ENakamaRequestAuth::HttpKey, HttpKey,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
+		{
+			if (OnSuccess)
+			{
+				OnSuccess();
+			}
+		},
+		OnError);
+}
+
 void FNakamaClient::ValidatePurchaseApple(
 	const FNakamaSession& Session,
 	FString Receipt,
@@ -8970,6 +11315,37 @@ void FNakamaClient::ValidatePurchaseApple(
 	FString SessionToken = Session.Token;
 
 	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType, SessionToken,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
+		{
+			FNakamaValidatePurchaseResponse Result = FNakamaValidatePurchaseResponse::FromJson(Json);
+			if (OnSuccess)
+			{
+				OnSuccess(Result);
+			}
+		},
+		OnError);
+}
+
+void FNakamaClient::ValidatePurchaseApple(
+	const FString& HttpKey,
+	FString Receipt,
+	bool Persist,
+	TFunction<void(const FNakamaValidatePurchaseResponse&)> OnSuccess,
+	TFunction<void(const FNakamaError&)> OnError)
+{
+	FString Endpoint = TEXT("/v2/iap/purchase/apple");
+	TArray<FString> QueryParams;
+	if (QueryParams.Num() > 0)
+	{
+		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
+	if (!Receipt.IsEmpty())
+	{
+		Body->SetStringField(TEXT("receipt"), Receipt);
+	}
+	Body->SetBoolField(TEXT("persist"), Persist);
+
+	MakeRequest(Endpoint, TEXT("POST"), Body, ENakamaRequestAuth::HttpKey, HttpKey,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			FNakamaValidatePurchaseResponse Result = FNakamaValidatePurchaseResponse::FromJson(Json);
@@ -9015,6 +11391,37 @@ void FNakamaClient::ValidateSubscriptionApple(
 		OnError);
 }
 
+void FNakamaClient::ValidateSubscriptionApple(
+	const FString& HttpKey,
+	FString Receipt,
+	bool Persist,
+	TFunction<void(const FNakamaValidateSubscriptionResponse&)> OnSuccess,
+	TFunction<void(const FNakamaError&)> OnError)
+{
+	FString Endpoint = TEXT("/v2/iap/subscription/apple");
+	TArray<FString> QueryParams;
+	if (QueryParams.Num() > 0)
+	{
+		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
+	if (!Receipt.IsEmpty())
+	{
+		Body->SetStringField(TEXT("receipt"), Receipt);
+	}
+	Body->SetBoolField(TEXT("persist"), Persist);
+
+	MakeRequest(Endpoint, TEXT("POST"), Body, ENakamaRequestAuth::HttpKey, HttpKey,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
+		{
+			FNakamaValidateSubscriptionResponse Result = FNakamaValidateSubscriptionResponse::FromJson(Json);
+			if (OnSuccess)
+			{
+				OnSuccess(Result);
+			}
+		},
+		OnError);
+}
+
 void FNakamaClient::ValidatePurchaseGoogle(
 	const FNakamaSession& Session,
 	FString Purchase,
@@ -9049,6 +11456,37 @@ void FNakamaClient::ValidatePurchaseGoogle(
 		OnError);
 }
 
+void FNakamaClient::ValidatePurchaseGoogle(
+	const FString& HttpKey,
+	FString Purchase,
+	bool Persist,
+	TFunction<void(const FNakamaValidatePurchaseResponse&)> OnSuccess,
+	TFunction<void(const FNakamaError&)> OnError)
+{
+	FString Endpoint = TEXT("/v2/iap/purchase/google");
+	TArray<FString> QueryParams;
+	if (QueryParams.Num() > 0)
+	{
+		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
+	if (!Purchase.IsEmpty())
+	{
+		Body->SetStringField(TEXT("purchase"), Purchase);
+	}
+	Body->SetBoolField(TEXT("persist"), Persist);
+
+	MakeRequest(Endpoint, TEXT("POST"), Body, ENakamaRequestAuth::HttpKey, HttpKey,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
+		{
+			FNakamaValidatePurchaseResponse Result = FNakamaValidatePurchaseResponse::FromJson(Json);
+			if (OnSuccess)
+			{
+				OnSuccess(Result);
+			}
+		},
+		OnError);
+}
+
 void FNakamaClient::ValidateSubscriptionGoogle(
 	const FNakamaSession& Session,
 	FString Receipt,
@@ -9072,6 +11510,37 @@ void FNakamaClient::ValidateSubscriptionGoogle(
 	FString SessionToken = Session.Token;
 
 	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType, SessionToken,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
+		{
+			FNakamaValidateSubscriptionResponse Result = FNakamaValidateSubscriptionResponse::FromJson(Json);
+			if (OnSuccess)
+			{
+				OnSuccess(Result);
+			}
+		},
+		OnError);
+}
+
+void FNakamaClient::ValidateSubscriptionGoogle(
+	const FString& HttpKey,
+	FString Receipt,
+	bool Persist,
+	TFunction<void(const FNakamaValidateSubscriptionResponse&)> OnSuccess,
+	TFunction<void(const FNakamaError&)> OnError)
+{
+	FString Endpoint = TEXT("/v2/iap/subscription/google");
+	TArray<FString> QueryParams;
+	if (QueryParams.Num() > 0)
+	{
+		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
+	if (!Receipt.IsEmpty())
+	{
+		Body->SetStringField(TEXT("receipt"), Receipt);
+	}
+	Body->SetBoolField(TEXT("persist"), Persist);
+
+	MakeRequest(Endpoint, TEXT("POST"), Body, ENakamaRequestAuth::HttpKey, HttpKey,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			FNakamaValidateSubscriptionResponse Result = FNakamaValidateSubscriptionResponse::FromJson(Json);
@@ -9122,6 +11591,42 @@ void FNakamaClient::ValidatePurchaseHuawei(
 		OnError);
 }
 
+void FNakamaClient::ValidatePurchaseHuawei(
+	const FString& HttpKey,
+	FString Purchase,
+	FString Signature,
+	bool Persist,
+	TFunction<void(const FNakamaValidatePurchaseResponse&)> OnSuccess,
+	TFunction<void(const FNakamaError&)> OnError)
+{
+	FString Endpoint = TEXT("/v2/iap/purchase/huawei");
+	TArray<FString> QueryParams;
+	if (QueryParams.Num() > 0)
+	{
+		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
+	if (!Purchase.IsEmpty())
+	{
+		Body->SetStringField(TEXT("purchase"), Purchase);
+	}
+	if (!Signature.IsEmpty())
+	{
+		Body->SetStringField(TEXT("signature"), Signature);
+	}
+	Body->SetBoolField(TEXT("persist"), Persist);
+
+	MakeRequest(Endpoint, TEXT("POST"), Body, ENakamaRequestAuth::HttpKey, HttpKey,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
+		{
+			FNakamaValidatePurchaseResponse Result = FNakamaValidatePurchaseResponse::FromJson(Json);
+			if (OnSuccess)
+			{
+				OnSuccess(Result);
+			}
+		},
+		OnError);
+}
+
 void FNakamaClient::ValidatePurchaseFacebookInstant(
 	const FNakamaSession& Session,
 	FString SignedRequest,
@@ -9156,6 +11661,37 @@ void FNakamaClient::ValidatePurchaseFacebookInstant(
 		OnError);
 }
 
+void FNakamaClient::ValidatePurchaseFacebookInstant(
+	const FString& HttpKey,
+	FString SignedRequest,
+	bool Persist,
+	TFunction<void(const FNakamaValidatePurchaseResponse&)> OnSuccess,
+	TFunction<void(const FNakamaError&)> OnError)
+{
+	FString Endpoint = TEXT("/v2/iap/purchase/facebookinstant");
+	TArray<FString> QueryParams;
+	if (QueryParams.Num() > 0)
+	{
+		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
+	if (!SignedRequest.IsEmpty())
+	{
+		Body->SetStringField(TEXT("signed_request"), SignedRequest);
+	}
+	Body->SetBoolField(TEXT("persist"), Persist);
+
+	MakeRequest(Endpoint, TEXT("POST"), Body, ENakamaRequestAuth::HttpKey, HttpKey,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
+		{
+			FNakamaValidatePurchaseResponse Result = FNakamaValidatePurchaseResponse::FromJson(Json);
+			if (OnSuccess)
+			{
+				OnSuccess(Result);
+			}
+		},
+		OnError);
+}
+
 void FNakamaClient::WriteLeaderboardRecord(
 	const FNakamaSession& Session,
 	FString LeaderboardId,
@@ -9176,6 +11712,34 @@ void FNakamaClient::WriteLeaderboardRecord(
 	FString SessionToken = Session.Token;
 
 	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType, SessionToken,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
+		{
+			FNakamaLeaderboardRecord Result = FNakamaLeaderboardRecord::FromJson(Json);
+			if (OnSuccess)
+			{
+				OnSuccess(Result);
+			}
+		},
+		OnError);
+}
+
+void FNakamaClient::WriteLeaderboardRecord(
+	const FString& HttpKey,
+	FString LeaderboardId,
+	FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite Record,
+	TFunction<void(const FNakamaLeaderboardRecord&)> OnSuccess,
+	TFunction<void(const FNakamaError&)> OnError)
+{
+	FString Endpoint = TEXT("/v2/leaderboard/{leaderboard_id}");
+	Endpoint = Endpoint.Replace(TEXT("{leaderboard_id}"), *LeaderboardId);
+	TArray<FString> QueryParams;
+	if (QueryParams.Num() > 0)
+	{
+		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+	}TSharedPtr<FJsonObject> Body;
+	Body = Record.ToJson();
+
+	MakeRequest(Endpoint, TEXT("POST"), Body, ENakamaRequestAuth::HttpKey, HttpKey,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			FNakamaLeaderboardRecord Result = FNakamaLeaderboardRecord::FromJson(Json);
@@ -9224,6 +11788,40 @@ void FNakamaClient::WriteStorageObjects(
 		OnError);
 }
 
+void FNakamaClient::WriteStorageObjects(
+	const FString& HttpKey,
+	const TArray<FNakamaWriteStorageObject>& Objects,
+	TFunction<void(const FNakamaStorageObjectAcks&)> OnSuccess,
+	TFunction<void(const FNakamaError&)> OnError)
+{
+	FString Endpoint = TEXT("/v2/storage");
+	TArray<FString> QueryParams;
+	if (QueryParams.Num() > 0)
+	{
+		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
+	if (Objects.Num() > 0)
+	{
+		TArray<TSharedPtr<FJsonValue>> Array;
+		for (const auto& Item : Objects)
+		{
+			Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
+		}
+		Body->SetArrayField(TEXT("objects"), Array);
+	}
+
+	MakeRequest(Endpoint, TEXT("PUT"), Body, ENakamaRequestAuth::HttpKey, HttpKey,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
+		{
+			FNakamaStorageObjectAcks Result = FNakamaStorageObjectAcks::FromJson(Json);
+			if (OnSuccess)
+			{
+				OnSuccess(Result);
+			}
+		},
+		OnError);
+}
+
 void FNakamaClient::WriteTournamentRecord(
 	const FNakamaSession& Session,
 	FString TournamentId,
@@ -9244,6 +11842,34 @@ void FNakamaClient::WriteTournamentRecord(
 	FString SessionToken = Session.Token;
 
 	MakeRequest(Endpoint, TEXT("PUT"), Body, AuthType, SessionToken,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
+		{
+			FNakamaLeaderboardRecord Result = FNakamaLeaderboardRecord::FromJson(Json);
+			if (OnSuccess)
+			{
+				OnSuccess(Result);
+			}
+		},
+		OnError);
+}
+
+void FNakamaClient::WriteTournamentRecord(
+	const FString& HttpKey,
+	FString TournamentId,
+	FNakamaWriteTournamentRecordRequest_TournamentRecordWrite Record,
+	TFunction<void(const FNakamaLeaderboardRecord&)> OnSuccess,
+	TFunction<void(const FNakamaError&)> OnError)
+{
+	FString Endpoint = TEXT("/v2/tournament/{tournament_id}");
+	Endpoint = Endpoint.Replace(TEXT("{tournament_id}"), *TournamentId);
+	TArray<FString> QueryParams;
+	if (QueryParams.Num() > 0)
+	{
+		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+	}TSharedPtr<FJsonObject> Body;
+	Body = Record.ToJson();
+
+	MakeRequest(Endpoint, TEXT("PUT"), Body, ENakamaRequestAuth::HttpKey, HttpKey,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			FNakamaLeaderboardRecord Result = FNakamaLeaderboardRecord::FromJson(Json);

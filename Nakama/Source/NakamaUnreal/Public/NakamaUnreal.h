@@ -2010,7 +2010,8 @@ enum class ENakamaRequestAuth : uint8
 {
 	None,
 	Basic,
-	Bearer
+	Bearer,
+	HttpKey
 };
 
 class NAKAMAUNREAL_API FNakamaClient : public TSharedFromThis<FNakamaClient>
@@ -2035,9 +2036,26 @@ public:
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError);
 
+	/** Add friends by ID or username to a user's account. (Server-to-server with HTTP key) */
+	void AddFriends(
+		const FString& HttpKey,
+		const TArray<FString>& Ids,
+		const TArray<FString>& Usernames,
+		FString Metadata,
+		TFunction<void()> OnSuccess,
+		TFunction<void(const FNakamaError&)> OnError);
+
 	/** Add users to a group. */
 	void AddGroupUsers(
 		const FNakamaSession& Session,
+		FString GroupId,
+		const TArray<FString>& UserIds,
+		TFunction<void()> OnSuccess,
+		TFunction<void(const FNakamaError&)> OnError);
+
+	/** Add users to a group. (Server-to-server with HTTP key) */
+	void AddGroupUsers(
+		const FString& HttpKey,
 		FString GroupId,
 		const TArray<FString>& UserIds,
 		TFunction<void()> OnSuccess,
@@ -2053,6 +2071,14 @@ public:
 	/** Log out a session, invalidate a refresh token, or log out all sessions/refresh tokens for a user. */
 	void SessionLogout(
 		const FNakamaSession& Session,
+		FString Token,
+		FString RefreshToken,
+		TFunction<void()> OnSuccess,
+		TFunction<void(const FNakamaError&)> OnError);
+
+	/** Log out a session, invalidate a refresh token, or log out all sessions/refresh tokens for a user. (Server-to-server with HTTP key) */
+	void SessionLogout(
+		const FString& HttpKey,
 		FString Token,
 		FString RefreshToken,
 		TFunction<void()> OnSuccess,
@@ -2140,9 +2166,25 @@ public:
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError);
 
+	/** Ban a set of users from a group. (Server-to-server with HTTP key) */
+	void BanGroupUsers(
+		const FString& HttpKey,
+		FString GroupId,
+		const TArray<FString>& UserIds,
+		TFunction<void()> OnSuccess,
+		TFunction<void(const FNakamaError&)> OnError);
+
 	/** Block one or more users by ID or username. */
 	void BlockFriends(
 		const FNakamaSession& Session,
+		const TArray<FString>& Ids,
+		const TArray<FString>& Usernames,
+		TFunction<void()> OnSuccess,
+		TFunction<void(const FNakamaError&)> OnError);
+
+	/** Block one or more users by ID or username. (Server-to-server with HTTP key) */
+	void BlockFriends(
+		const FString& HttpKey,
 		const TArray<FString>& Ids,
 		const TArray<FString>& Usernames,
 		TFunction<void()> OnSuccess,
@@ -2160,15 +2202,41 @@ public:
 		TFunction<void(const FNakamaGroup&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError);
 
+	/** Create a new group with the current user as the owner. (Server-to-server with HTTP key) */
+	void CreateGroup(
+		const FString& HttpKey,
+		FString Name,
+		FString Description,
+		FString LangTag,
+		FString AvatarUrl,
+		bool Open,
+		int32 MaxCount,
+		TFunction<void(const FNakamaGroup&)> OnSuccess,
+		TFunction<void(const FNakamaError&)> OnError);
+
 	/** Delete the current user's account. */
 	void DeleteAccount(
 		const FNakamaSession& Session,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError);
 
+	/** Delete the current user's account. (Server-to-server with HTTP key) */
+	void DeleteAccount(
+		const FString& HttpKey,
+		TFunction<void()> OnSuccess,
+		TFunction<void(const FNakamaError&)> OnError);
+
 	/** Delete one or more users by ID or username. */
 	void DeleteFriends(
 		const FNakamaSession& Session,
+		const TArray<FString>& Ids,
+		const TArray<FString>& Usernames,
+		TFunction<void()> OnSuccess,
+		TFunction<void(const FNakamaError&)> OnError);
+
+	/** Delete one or more users by ID or username. (Server-to-server with HTTP key) */
+	void DeleteFriends(
+		const FString& HttpKey,
 		const TArray<FString>& Ids,
 		const TArray<FString>& Usernames,
 		TFunction<void()> OnSuccess,
@@ -2181,9 +2249,23 @@ public:
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError);
 
+	/** Delete a group by ID. (Server-to-server with HTTP key) */
+	void DeleteGroup(
+		const FString& HttpKey,
+		FString GroupId,
+		TFunction<void()> OnSuccess,
+		TFunction<void(const FNakamaError&)> OnError);
+
 	/** Delete a leaderboard record. */
 	void DeleteLeaderboardRecord(
 		const FNakamaSession& Session,
+		FString LeaderboardId,
+		TFunction<void()> OnSuccess,
+		TFunction<void(const FNakamaError&)> OnError);
+
+	/** Delete a leaderboard record. (Server-to-server with HTTP key) */
+	void DeleteLeaderboardRecord(
+		const FString& HttpKey,
 		FString LeaderboardId,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError);
@@ -2195,6 +2277,13 @@ public:
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError);
 
+	/** Delete one or more notifications for the current user. (Server-to-server with HTTP key) */
+	void DeleteNotifications(
+		const FString& HttpKey,
+		const TArray<FString>& Ids,
+		TFunction<void()> OnSuccess,
+		TFunction<void(const FNakamaError&)> OnError);
+
 	/** Delete a tournament record. */
 	void DeleteTournamentRecord(
 		const FNakamaSession& Session,
@@ -2202,9 +2291,23 @@ public:
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError);
 
+	/** Delete a tournament record. (Server-to-server with HTTP key) */
+	void DeleteTournamentRecord(
+		const FString& HttpKey,
+		FString TournamentId,
+		TFunction<void()> OnSuccess,
+		TFunction<void(const FNakamaError&)> OnError);
+
 	/** Delete one or more objects by ID or username. */
 	void DeleteStorageObjects(
 		const FNakamaSession& Session,
+		const TArray<FNakamaDeleteStorageObjectId>& ObjectIds,
+		TFunction<void()> OnSuccess,
+		TFunction<void(const FNakamaError&)> OnError);
+
+	/** Delete one or more objects by ID or username. (Server-to-server with HTTP key) */
+	void DeleteStorageObjects(
+		const FString& HttpKey,
 		const TArray<FNakamaDeleteStorageObjectId>& ObjectIds,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError);
@@ -2219,15 +2322,40 @@ public:
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError);
 
+	/** Submit an event for processing in the server's registered runtime custom events handler. (Server-to-server with HTTP key) */
+	void Event(
+		const FString& HttpKey,
+		FString Name,
+		FString Timestamp,
+		bool External,
+		const TMap<FString, FString>& Properties,
+		TFunction<void()> OnSuccess,
+		TFunction<void(const FNakamaError&)> OnError);
+
 	/** Fetch the current user's account. */
 	void GetAccount(
 		const FNakamaSession& Session,
 		TFunction<void(const FNakamaAccount&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError);
 
+	/** Fetch the current user's account. (Server-to-server with HTTP key) */
+	void GetAccount(
+		const FString& HttpKey,
+		TFunction<void(const FNakamaAccount&)> OnSuccess,
+		TFunction<void(const FNakamaError&)> OnError);
+
 	/** Fetch zero or more users by ID and/or username. */
 	void GetUsers(
 		const FNakamaSession& Session,
+		const TArray<FString>& Ids,
+		const TArray<FString>& Usernames,
+		const TArray<FString>& FacebookIds,
+		TFunction<void(const FNakamaUsers&)> OnSuccess,
+		TFunction<void(const FNakamaError&)> OnError);
+
+	/** Fetch zero or more users by ID and/or username. (Server-to-server with HTTP key) */
+	void GetUsers(
+		const FString& HttpKey,
 		const TArray<FString>& Ids,
 		const TArray<FString>& Usernames,
 		const TArray<FString>& FacebookIds,
@@ -2241,9 +2369,22 @@ public:
 		TFunction<void(const FNakamaValidatedSubscription&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError);
 
+	/** Get subscription by product id. (Server-to-server with HTTP key) */
+	void GetSubscription(
+		const FString& HttpKey,
+		FString ProductId,
+		TFunction<void(const FNakamaValidatedSubscription&)> OnSuccess,
+		TFunction<void(const FNakamaError&)> OnError);
+
 	/** Get matchmaker stats. */
 	void GetMatchmakerStats(
 		const FNakamaSession& Session,
+		TFunction<void(const FNakamaMatchmakerStats&)> OnSuccess,
+		TFunction<void(const FNakamaError&)> OnError);
+
+	/** Get matchmaker stats. (Server-to-server with HTTP key) */
+	void GetMatchmakerStats(
+		const FString& HttpKey,
 		TFunction<void(const FNakamaMatchmakerStats&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError);
 
@@ -2253,9 +2394,23 @@ public:
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError);
 
+	/** A healthcheck which load balancers can use to check the service. (Server-to-server with HTTP key) */
+	void Healthcheck(
+		const FString& HttpKey,
+		TFunction<void()> OnSuccess,
+		TFunction<void(const FNakamaError&)> OnError);
+
 	/** Import Facebook friends and add them to a user's account. */
 	void ImportFacebookFriends(
 		const FNakamaSession& Session,
+		FNakamaAccountFacebook Account,
+		bool Reset,
+		TFunction<void()> OnSuccess,
+		TFunction<void(const FNakamaError&)> OnError);
+
+	/** Import Facebook friends and add them to a user's account. (Server-to-server with HTTP key) */
+	void ImportFacebookFriends(
+		const FString& HttpKey,
 		FNakamaAccountFacebook Account,
 		bool Reset,
 		TFunction<void()> OnSuccess,
@@ -2269,6 +2424,14 @@ public:
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError);
 
+	/** Import Steam friends and add them to a user's account. (Server-to-server with HTTP key) */
+	void ImportSteamFriends(
+		const FString& HttpKey,
+		FNakamaAccountSteam Account,
+		bool Reset,
+		TFunction<void()> OnSuccess,
+		TFunction<void(const FNakamaError&)> OnError);
+
 	/** Immediately join an open group, or request to join a closed one. */
 	void JoinGroup(
 		const FNakamaSession& Session,
@@ -2276,9 +2439,23 @@ public:
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError);
 
+	/** Immediately join an open group, or request to join a closed one. (Server-to-server with HTTP key) */
+	void JoinGroup(
+		const FString& HttpKey,
+		FString GroupId,
+		TFunction<void()> OnSuccess,
+		TFunction<void(const FNakamaError&)> OnError);
+
 	/** Attempt to join an open and running tournament. */
 	void JoinTournament(
 		const FNakamaSession& Session,
+		FString TournamentId,
+		TFunction<void()> OnSuccess,
+		TFunction<void(const FNakamaError&)> OnError);
+
+	/** Attempt to join an open and running tournament. (Server-to-server with HTTP key) */
+	void JoinTournament(
+		const FString& HttpKey,
 		FString TournamentId,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError);
@@ -2291,6 +2468,14 @@ public:
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError);
 
+	/** Kick a set of users from a group. (Server-to-server with HTTP key) */
+	void KickGroupUsers(
+		const FString& HttpKey,
+		FString GroupId,
+		const TArray<FString>& UserIds,
+		TFunction<void()> OnSuccess,
+		TFunction<void(const FNakamaError&)> OnError);
+
 	/** Leave a group the user is a member of. */
 	void LeaveGroup(
 		const FNakamaSession& Session,
@@ -2298,9 +2483,24 @@ public:
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError);
 
+	/** Leave a group the user is a member of. (Server-to-server with HTTP key) */
+	void LeaveGroup(
+		const FString& HttpKey,
+		FString GroupId,
+		TFunction<void()> OnSuccess,
+		TFunction<void(const FNakamaError&)> OnError);
+
 	/** Add an Apple ID to the social profiles on the current user's account. */
 	void LinkApple(
 		const FNakamaSession& Session,
+		FString Token,
+		const TMap<FString, FString>& Vars,
+		TFunction<void()> OnSuccess,
+		TFunction<void(const FNakamaError&)> OnError);
+
+	/** Add an Apple ID to the social profiles on the current user's account. (Server-to-server with HTTP key) */
+	void LinkApple(
+		const FString& HttpKey,
 		FString Token,
 		const TMap<FString, FString>& Vars,
 		TFunction<void()> OnSuccess,
@@ -2314,9 +2514,25 @@ public:
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError);
 
+	/** Add a custom ID to the social profiles on the current user's account. (Server-to-server with HTTP key) */
+	void LinkCustom(
+		const FString& HttpKey,
+		FString Id,
+		const TMap<FString, FString>& Vars,
+		TFunction<void()> OnSuccess,
+		TFunction<void(const FNakamaError&)> OnError);
+
 	/** Add a device ID to the social profiles on the current user's account. */
 	void LinkDevice(
 		const FNakamaSession& Session,
+		FString Id,
+		const TMap<FString, FString>& Vars,
+		TFunction<void()> OnSuccess,
+		TFunction<void(const FNakamaError&)> OnError);
+
+	/** Add a device ID to the social profiles on the current user's account. (Server-to-server with HTTP key) */
+	void LinkDevice(
+		const FString& HttpKey,
 		FString Id,
 		const TMap<FString, FString>& Vars,
 		TFunction<void()> OnSuccess,
@@ -2331,6 +2547,15 @@ public:
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError);
 
+	/** Add an email+password to the social profiles on the current user's account. (Server-to-server with HTTP key) */
+	void LinkEmail(
+		const FString& HttpKey,
+		FString Email,
+		FString Password,
+		const TMap<FString, FString>& Vars,
+		TFunction<void()> OnSuccess,
+		TFunction<void(const FNakamaError&)> OnError);
+
 	/** Add Facebook to the social profiles on the current user's account. */
 	void LinkFacebook(
 		const FNakamaSession& Session,
@@ -2339,9 +2564,25 @@ public:
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError);
 
+	/** Add Facebook to the social profiles on the current user's account. (Server-to-server with HTTP key) */
+	void LinkFacebook(
+		const FString& HttpKey,
+		FNakamaAccountFacebook Account,
+		bool Sync,
+		TFunction<void()> OnSuccess,
+		TFunction<void(const FNakamaError&)> OnError);
+
 	/** Add Facebook Instant Game to the social profiles on the current user's account. */
 	void LinkFacebookInstantGame(
 		const FNakamaSession& Session,
+		FString SignedPlayerInfo,
+		const TMap<FString, FString>& Vars,
+		TFunction<void()> OnSuccess,
+		TFunction<void(const FNakamaError&)> OnError);
+
+	/** Add Facebook Instant Game to the social profiles on the current user's account. (Server-to-server with HTTP key) */
+	void LinkFacebookInstantGame(
+		const FString& HttpKey,
 		FString SignedPlayerInfo,
 		const TMap<FString, FString>& Vars,
 		TFunction<void()> OnSuccess,
@@ -2360,9 +2601,30 @@ public:
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError);
 
+	/** Add Apple's GameCenter to the social profiles on the current user's account. (Server-to-server with HTTP key) */
+	void LinkGameCenter(
+		const FString& HttpKey,
+		FString PlayerId,
+		FString BundleId,
+		int64 TimestampSeconds,
+		FString Salt,
+		FString Signature,
+		FString PublicKeyUrl,
+		const TMap<FString, FString>& Vars,
+		TFunction<void()> OnSuccess,
+		TFunction<void(const FNakamaError&)> OnError);
+
 	/** Add Google to the social profiles on the current user's account. */
 	void LinkGoogle(
 		const FNakamaSession& Session,
+		FString Token,
+		const TMap<FString, FString>& Vars,
+		TFunction<void()> OnSuccess,
+		TFunction<void(const FNakamaError&)> OnError);
+
+	/** Add Google to the social profiles on the current user's account. (Server-to-server with HTTP key) */
+	void LinkGoogle(
+		const FString& HttpKey,
 		FString Token,
 		const TMap<FString, FString>& Vars,
 		TFunction<void()> OnSuccess,
@@ -2376,9 +2638,27 @@ public:
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError);
 
+	/** Add Steam to the social profiles on the current user's account. (Server-to-server with HTTP key) */
+	void LinkSteam(
+		const FString& HttpKey,
+		FNakamaAccountSteam Account,
+		bool Sync,
+		TFunction<void()> OnSuccess,
+		TFunction<void(const FNakamaError&)> OnError);
+
 	/** List a channel's message history. */
 	void ListChannelMessages(
 		const FNakamaSession& Session,
+		FString ChannelId,
+		int32 Limit,
+		bool Forward,
+		FString Cursor,
+		TFunction<void(const FNakamaChannelMessageList&)> OnSuccess,
+		TFunction<void(const FNakamaError&)> OnError);
+
+	/** List a channel's message history. (Server-to-server with HTTP key) */
+	void ListChannelMessages(
+		const FString& HttpKey,
 		FString ChannelId,
 		int32 Limit,
 		bool Forward,
@@ -2395,6 +2675,15 @@ public:
 		TFunction<void(const FNakamaFriendList&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError);
 
+	/** List all friends for the current user. (Server-to-server with HTTP key) */
+	void ListFriends(
+		const FString& HttpKey,
+		int32 Limit,
+		int32 State,
+		FString Cursor,
+		TFunction<void(const FNakamaFriendList&)> OnSuccess,
+		TFunction<void(const FNakamaError&)> OnError);
+
 	/** List friends of friends for the current user. */
 	void ListFriendsOfFriends(
 		const FNakamaSession& Session,
@@ -2403,9 +2692,29 @@ public:
 		TFunction<void(const FNakamaFriendsOfFriendsList&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError);
 
+	/** List friends of friends for the current user. (Server-to-server with HTTP key) */
+	void ListFriendsOfFriends(
+		const FString& HttpKey,
+		int32 Limit,
+		FString Cursor,
+		TFunction<void(const FNakamaFriendsOfFriendsList&)> OnSuccess,
+		TFunction<void(const FNakamaError&)> OnError);
+
 	/** List groups based on given filters. */
 	void ListGroups(
 		const FNakamaSession& Session,
+		FString Name,
+		FString Cursor,
+		int32 Limit,
+		FString LangTag,
+		int32 Members,
+		bool Open,
+		TFunction<void(const FNakamaGroupList&)> OnSuccess,
+		TFunction<void(const FNakamaError&)> OnError);
+
+	/** List groups based on given filters. (Server-to-server with HTTP key) */
+	void ListGroups(
+		const FString& HttpKey,
 		FString Name,
 		FString Cursor,
 		int32 Limit,
@@ -2425,6 +2734,16 @@ public:
 		TFunction<void(const FNakamaGroupUserList&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError);
 
+	/** List all users that are part of a group. (Server-to-server with HTTP key) */
+	void ListGroupUsers(
+		const FString& HttpKey,
+		FString GroupId,
+		int32 Limit,
+		int32 State,
+		FString Cursor,
+		TFunction<void(const FNakamaGroupUserList&)> OnSuccess,
+		TFunction<void(const FNakamaError&)> OnError);
+
 	/** List leaderboard records. */
 	void ListLeaderboardRecords(
 		const FNakamaSession& Session,
@@ -2436,9 +2755,31 @@ public:
 		TFunction<void(const FNakamaLeaderboardRecordList&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError);
 
+	/** List leaderboard records. (Server-to-server with HTTP key) */
+	void ListLeaderboardRecords(
+		const FString& HttpKey,
+		FString LeaderboardId,
+		const TArray<FString>& OwnerIds,
+		int32 Limit,
+		FString Cursor,
+		int64 Expiry,
+		TFunction<void(const FNakamaLeaderboardRecordList&)> OnSuccess,
+		TFunction<void(const FNakamaError&)> OnError);
+
 	/** List leaderboard records around the target ownerId. */
 	void ListLeaderboardRecordsAroundOwner(
 		const FNakamaSession& Session,
+		FString LeaderboardId,
+		uint32 Limit,
+		FString OwnerId,
+		int64 Expiry,
+		FString Cursor,
+		TFunction<void(const FNakamaLeaderboardRecordList&)> OnSuccess,
+		TFunction<void(const FNakamaError&)> OnError);
+
+	/** List leaderboard records around the target ownerId. (Server-to-server with HTTP key) */
+	void ListLeaderboardRecordsAroundOwner(
+		const FString& HttpKey,
 		FString LeaderboardId,
 		uint32 Limit,
 		FString OwnerId,
@@ -2459,9 +2800,31 @@ public:
 		TFunction<void(const FNakamaMatchList&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError);
 
+	/** List running matches and optionally filter by matching criteria. (Server-to-server with HTTP key) */
+	void ListMatches(
+		const FString& HttpKey,
+		int32 Limit,
+		bool Authoritative,
+		FString Label,
+		int32 MinSize,
+		int32 MaxSize,
+		FString Query,
+		TFunction<void(const FNakamaMatchList&)> OnSuccess,
+		TFunction<void(const FNakamaError&)> OnError);
+
 	/** List parties and optionally filter by matching criteria. */
 	void ListParties(
 		const FNakamaSession& Session,
+		int32 Limit,
+		bool Open,
+		FString Query,
+		FString Cursor,
+		TFunction<void(const FNakamaPartyList&)> OnSuccess,
+		TFunction<void(const FNakamaError&)> OnError);
+
+	/** List parties and optionally filter by matching criteria. (Server-to-server with HTTP key) */
+	void ListParties(
+		const FString& HttpKey,
 		int32 Limit,
 		bool Open,
 		FString Query,
@@ -2477,9 +2840,27 @@ public:
 		TFunction<void(const FNakamaNotificationList&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError);
 
+	/** Fetch list of notifications. (Server-to-server with HTTP key) */
+	void ListNotifications(
+		const FString& HttpKey,
+		int32 Limit,
+		FString CacheableCursor,
+		TFunction<void(const FNakamaNotificationList&)> OnSuccess,
+		TFunction<void(const FNakamaError&)> OnError);
+
 	/** List publicly readable storage objects in a given collection. */
 	void ListStorageObjects(
 		const FNakamaSession& Session,
+		FString UserId,
+		FString Collection,
+		int32 Limit,
+		FString Cursor,
+		TFunction<void(const FNakamaStorageObjectList&)> OnSuccess,
+		TFunction<void(const FNakamaError&)> OnError);
+
+	/** List publicly readable storage objects in a given collection. (Server-to-server with HTTP key) */
+	void ListStorageObjects(
+		const FString& HttpKey,
 		FString UserId,
 		FString Collection,
 		int32 Limit,
@@ -2495,9 +2876,29 @@ public:
 		TFunction<void(const FNakamaSubscriptionList&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError);
 
+	/** List user's subscriptions. (Server-to-server with HTTP key) */
+	void ListSubscriptions(
+		const FString& HttpKey,
+		int32 Limit,
+		FString Cursor,
+		TFunction<void(const FNakamaSubscriptionList&)> OnSuccess,
+		TFunction<void(const FNakamaError&)> OnError);
+
 	/** List current or upcoming tournaments. */
 	void ListTournaments(
 		const FNakamaSession& Session,
+		uint32 CategoryStart,
+		uint32 CategoryEnd,
+		uint32 StartTime,
+		uint32 EndTime,
+		int32 Limit,
+		FString Cursor,
+		TFunction<void(const FNakamaTournamentList&)> OnSuccess,
+		TFunction<void(const FNakamaError&)> OnError);
+
+	/** List current or upcoming tournaments. (Server-to-server with HTTP key) */
+	void ListTournaments(
+		const FString& HttpKey,
 		uint32 CategoryStart,
 		uint32 CategoryEnd,
 		uint32 StartTime,
@@ -2518,9 +2919,31 @@ public:
 		TFunction<void(const FNakamaTournamentRecordList&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError);
 
+	/** List tournament records. (Server-to-server with HTTP key) */
+	void ListTournamentRecords(
+		const FString& HttpKey,
+		FString TournamentId,
+		const TArray<FString>& OwnerIds,
+		int32 Limit,
+		FString Cursor,
+		int64 Expiry,
+		TFunction<void(const FNakamaTournamentRecordList&)> OnSuccess,
+		TFunction<void(const FNakamaError&)> OnError);
+
 	/** List tournament records for a given owner. */
 	void ListTournamentRecordsAroundOwner(
 		const FNakamaSession& Session,
+		FString TournamentId,
+		uint32 Limit,
+		FString OwnerId,
+		int64 Expiry,
+		FString Cursor,
+		TFunction<void(const FNakamaTournamentRecordList&)> OnSuccess,
+		TFunction<void(const FNakamaError&)> OnError);
+
+	/** List tournament records for a given owner. (Server-to-server with HTTP key) */
+	void ListTournamentRecordsAroundOwner(
+		const FString& HttpKey,
 		FString TournamentId,
 		uint32 Limit,
 		FString OwnerId,
@@ -2539,9 +2962,27 @@ public:
 		TFunction<void(const FNakamaUserGroupList&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError);
 
+	/** List groups the current user belongs to. (Server-to-server with HTTP key) */
+	void ListUserGroups(
+		const FString& HttpKey,
+		FString UserId,
+		int32 Limit,
+		int32 State,
+		FString Cursor,
+		TFunction<void(const FNakamaUserGroupList&)> OnSuccess,
+		TFunction<void(const FNakamaError&)> OnError);
+
 	/** Promote a set of users in a group to the next role up. */
 	void PromoteGroupUsers(
 		const FNakamaSession& Session,
+		FString GroupId,
+		const TArray<FString>& UserIds,
+		TFunction<void()> OnSuccess,
+		TFunction<void(const FNakamaError&)> OnError);
+
+	/** Promote a set of users in a group to the next role up. (Server-to-server with HTTP key) */
+	void PromoteGroupUsers(
+		const FString& HttpKey,
 		FString GroupId,
 		const TArray<FString>& UserIds,
 		TFunction<void()> OnSuccess,
@@ -2555,9 +2996,24 @@ public:
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError);
 
+	/** Demote a set of users in a group to the next role down. (Server-to-server with HTTP key) */
+	void DemoteGroupUsers(
+		const FString& HttpKey,
+		FString GroupId,
+		const TArray<FString>& UserIds,
+		TFunction<void()> OnSuccess,
+		TFunction<void(const FNakamaError&)> OnError);
+
 	/** Get storage objects. */
 	void ReadStorageObjects(
 		const FNakamaSession& Session,
+		const TArray<FNakamaReadStorageObjectId>& ObjectIds,
+		TFunction<void(const FNakamaStorageObjects&)> OnSuccess,
+		TFunction<void(const FNakamaError&)> OnError);
+
+	/** Get storage objects. (Server-to-server with HTTP key) */
+	void ReadStorageObjects(
+		const FString& HttpKey,
 		const TArray<FNakamaReadStorageObjectId>& ObjectIds,
 		TFunction<void(const FNakamaStorageObjects&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError);
@@ -2571,9 +3027,25 @@ public:
 		TFunction<void(const FNakamaRpc&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError);
 
+	/** Execute a Lua function on the server. (Server-to-server with HTTP key) */
+	void RpcFunc(
+		const FString& HttpKey,
+		FString Id,
+		FString Payload,
+		TFunction<void(const FNakamaRpc&)> OnSuccess,
+		TFunction<void(const FNakamaError&)> OnError);
+
 	/** Remove the Apple ID from the social profiles on the current user's account. */
 	void UnlinkApple(
 		const FNakamaSession& Session,
+		FString Token,
+		const TMap<FString, FString>& Vars,
+		TFunction<void()> OnSuccess,
+		TFunction<void(const FNakamaError&)> OnError);
+
+	/** Remove the Apple ID from the social profiles on the current user's account. (Server-to-server with HTTP key) */
+	void UnlinkApple(
+		const FString& HttpKey,
 		FString Token,
 		const TMap<FString, FString>& Vars,
 		TFunction<void()> OnSuccess,
@@ -2587,9 +3059,25 @@ public:
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError);
 
+	/** Remove the custom ID from the social profiles on the current user's account. (Server-to-server with HTTP key) */
+	void UnlinkCustom(
+		const FString& HttpKey,
+		FString Id,
+		const TMap<FString, FString>& Vars,
+		TFunction<void()> OnSuccess,
+		TFunction<void(const FNakamaError&)> OnError);
+
 	/** Remove the device ID from the social profiles on the current user's account. */
 	void UnlinkDevice(
 		const FNakamaSession& Session,
+		FString Id,
+		const TMap<FString, FString>& Vars,
+		TFunction<void()> OnSuccess,
+		TFunction<void(const FNakamaError&)> OnError);
+
+	/** Remove the device ID from the social profiles on the current user's account. (Server-to-server with HTTP key) */
+	void UnlinkDevice(
+		const FString& HttpKey,
 		FString Id,
 		const TMap<FString, FString>& Vars,
 		TFunction<void()> OnSuccess,
@@ -2604,6 +3092,15 @@ public:
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError);
 
+	/** Remove the email+password from the social profiles on the current user's account. (Server-to-server with HTTP key) */
+	void UnlinkEmail(
+		const FString& HttpKey,
+		FString Email,
+		FString Password,
+		const TMap<FString, FString>& Vars,
+		TFunction<void()> OnSuccess,
+		TFunction<void(const FNakamaError&)> OnError);
+
 	/** Remove Facebook from the social profiles on the current user's account. */
 	void UnlinkFacebook(
 		const FNakamaSession& Session,
@@ -2612,9 +3109,25 @@ public:
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError);
 
+	/** Remove Facebook from the social profiles on the current user's account. (Server-to-server with HTTP key) */
+	void UnlinkFacebook(
+		const FString& HttpKey,
+		FString Token,
+		const TMap<FString, FString>& Vars,
+		TFunction<void()> OnSuccess,
+		TFunction<void(const FNakamaError&)> OnError);
+
 	/** Remove Facebook Instant Game profile from the social profiles on the current user's account. */
 	void UnlinkFacebookInstantGame(
 		const FNakamaSession& Session,
+		FString SignedPlayerInfo,
+		const TMap<FString, FString>& Vars,
+		TFunction<void()> OnSuccess,
+		TFunction<void(const FNakamaError&)> OnError);
+
+	/** Remove Facebook Instant Game profile from the social profiles on the current user's account. (Server-to-server with HTTP key) */
+	void UnlinkFacebookInstantGame(
+		const FString& HttpKey,
 		FString SignedPlayerInfo,
 		const TMap<FString, FString>& Vars,
 		TFunction<void()> OnSuccess,
@@ -2633,9 +3146,30 @@ public:
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError);
 
+	/** Remove Apple's GameCenter from the social profiles on the current user's account. (Server-to-server with HTTP key) */
+	void UnlinkGameCenter(
+		const FString& HttpKey,
+		FString PlayerId,
+		FString BundleId,
+		int64 TimestampSeconds,
+		FString Salt,
+		FString Signature,
+		FString PublicKeyUrl,
+		const TMap<FString, FString>& Vars,
+		TFunction<void()> OnSuccess,
+		TFunction<void(const FNakamaError&)> OnError);
+
 	/** Remove Google from the social profiles on the current user's account. */
 	void UnlinkGoogle(
 		const FNakamaSession& Session,
+		FString Token,
+		const TMap<FString, FString>& Vars,
+		TFunction<void()> OnSuccess,
+		TFunction<void(const FNakamaError&)> OnError);
+
+	/** Remove Google from the social profiles on the current user's account. (Server-to-server with HTTP key) */
+	void UnlinkGoogle(
+		const FString& HttpKey,
 		FString Token,
 		const TMap<FString, FString>& Vars,
 		TFunction<void()> OnSuccess,
@@ -2649,9 +3183,29 @@ public:
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError);
 
+	/** Remove Steam from the social profiles on the current user's account. (Server-to-server with HTTP key) */
+	void UnlinkSteam(
+		const FString& HttpKey,
+		FString Token,
+		const TMap<FString, FString>& Vars,
+		TFunction<void()> OnSuccess,
+		TFunction<void(const FNakamaError&)> OnError);
+
 	/** Update fields in the current user's account. */
 	void UpdateAccount(
 		const FNakamaSession& Session,
+		FString Username,
+		FString DisplayName,
+		FString AvatarUrl,
+		FString LangTag,
+		FString Location,
+		FString Timezone,
+		TFunction<void()> OnSuccess,
+		TFunction<void(const FNakamaError&)> OnError);
+
+	/** Update fields in the current user's account. (Server-to-server with HTTP key) */
+	void UpdateAccount(
+		const FString& HttpKey,
 		FString Username,
 		FString DisplayName,
 		FString AvatarUrl,
@@ -2673,9 +3227,29 @@ public:
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError);
 
+	/** Update fields in a given group. (Server-to-server with HTTP key) */
+	void UpdateGroup(
+		const FString& HttpKey,
+		FString GroupId,
+		FString Name,
+		FString Description,
+		FString LangTag,
+		FString AvatarUrl,
+		bool Open,
+		TFunction<void()> OnSuccess,
+		TFunction<void(const FNakamaError&)> OnError);
+
 	/** Validate Apple IAP Receipt */
 	void ValidatePurchaseApple(
 		const FNakamaSession& Session,
+		FString Receipt,
+		bool Persist,
+		TFunction<void(const FNakamaValidatePurchaseResponse&)> OnSuccess,
+		TFunction<void(const FNakamaError&)> OnError);
+
+	/** Validate Apple IAP Receipt (Server-to-server with HTTP key) */
+	void ValidatePurchaseApple(
+		const FString& HttpKey,
 		FString Receipt,
 		bool Persist,
 		TFunction<void(const FNakamaValidatePurchaseResponse&)> OnSuccess,
@@ -2689,6 +3263,14 @@ public:
 		TFunction<void(const FNakamaValidateSubscriptionResponse&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError);
 
+	/** Validate Apple Subscription Receipt (Server-to-server with HTTP key) */
+	void ValidateSubscriptionApple(
+		const FString& HttpKey,
+		FString Receipt,
+		bool Persist,
+		TFunction<void(const FNakamaValidateSubscriptionResponse&)> OnSuccess,
+		TFunction<void(const FNakamaError&)> OnError);
+
 	/** Validate Google IAP Receipt */
 	void ValidatePurchaseGoogle(
 		const FNakamaSession& Session,
@@ -2697,9 +3279,25 @@ public:
 		TFunction<void(const FNakamaValidatePurchaseResponse&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError);
 
+	/** Validate Google IAP Receipt (Server-to-server with HTTP key) */
+	void ValidatePurchaseGoogle(
+		const FString& HttpKey,
+		FString Purchase,
+		bool Persist,
+		TFunction<void(const FNakamaValidatePurchaseResponse&)> OnSuccess,
+		TFunction<void(const FNakamaError&)> OnError);
+
 	/** Validate Google Subscription Receipt */
 	void ValidateSubscriptionGoogle(
 		const FNakamaSession& Session,
+		FString Receipt,
+		bool Persist,
+		TFunction<void(const FNakamaValidateSubscriptionResponse&)> OnSuccess,
+		TFunction<void(const FNakamaError&)> OnError);
+
+	/** Validate Google Subscription Receipt (Server-to-server with HTTP key) */
+	void ValidateSubscriptionGoogle(
+		const FString& HttpKey,
 		FString Receipt,
 		bool Persist,
 		TFunction<void(const FNakamaValidateSubscriptionResponse&)> OnSuccess,
@@ -2714,9 +3312,26 @@ public:
 		TFunction<void(const FNakamaValidatePurchaseResponse&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError);
 
+	/** Validate Huawei IAP Receipt (Server-to-server with HTTP key) */
+	void ValidatePurchaseHuawei(
+		const FString& HttpKey,
+		FString Purchase,
+		FString Signature,
+		bool Persist,
+		TFunction<void(const FNakamaValidatePurchaseResponse&)> OnSuccess,
+		TFunction<void(const FNakamaError&)> OnError);
+
 	/** Validate FB Instant IAP Receipt */
 	void ValidatePurchaseFacebookInstant(
 		const FNakamaSession& Session,
+		FString SignedRequest,
+		bool Persist,
+		TFunction<void(const FNakamaValidatePurchaseResponse&)> OnSuccess,
+		TFunction<void(const FNakamaError&)> OnError);
+
+	/** Validate FB Instant IAP Receipt (Server-to-server with HTTP key) */
+	void ValidatePurchaseFacebookInstant(
+		const FString& HttpKey,
 		FString SignedRequest,
 		bool Persist,
 		TFunction<void(const FNakamaValidatePurchaseResponse&)> OnSuccess,
@@ -2730,6 +3345,14 @@ public:
 		TFunction<void(const FNakamaLeaderboardRecord&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError);
 
+	/** Write a record to a leaderboard. (Server-to-server with HTTP key) */
+	void WriteLeaderboardRecord(
+		const FString& HttpKey,
+		FString LeaderboardId,
+		FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite Record,
+		TFunction<void(const FNakamaLeaderboardRecord&)> OnSuccess,
+		TFunction<void(const FNakamaError&)> OnError);
+
 	/** Write objects into the storage engine. */
 	void WriteStorageObjects(
 		const FNakamaSession& Session,
@@ -2737,9 +3360,24 @@ public:
 		TFunction<void(const FNakamaStorageObjectAcks&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError);
 
+	/** Write objects into the storage engine. (Server-to-server with HTTP key) */
+	void WriteStorageObjects(
+		const FString& HttpKey,
+		const TArray<FNakamaWriteStorageObject>& Objects,
+		TFunction<void(const FNakamaStorageObjectAcks&)> OnSuccess,
+		TFunction<void(const FNakamaError&)> OnError);
+
 	/** Write a record to a tournament. */
 	void WriteTournamentRecord(
 		const FNakamaSession& Session,
+		FString TournamentId,
+		FNakamaWriteTournamentRecordRequest_TournamentRecordWrite Record,
+		TFunction<void(const FNakamaLeaderboardRecord&)> OnSuccess,
+		TFunction<void(const FNakamaError&)> OnError);
+
+	/** Write a record to a tournament. (Server-to-server with HTTP key) */
+	void WriteTournamentRecord(
+		const FString& HttpKey,
 		FString TournamentId,
 		FNakamaWriteTournamentRecordRequest_TournamentRecordWrite Record,
 		TFunction<void(const FNakamaLeaderboardRecord&)> OnSuccess,

@@ -273,6 +273,14 @@ void FNakamaClient::MakeRequest(
 			Request->SetHeader(TEXT("Authorization"), FString::Printf(TEXT("Bearer %s"), *SessionToken));
 		}
 		break;
+	case ENakamaRequestAuth::HttpKey:
+		if (!SessionToken.IsEmpty())
+		{
+			// For server-to-server calls, use Basic auth with the HTTP key
+			const FString Auth = FString::Printf(TEXT("%s:"), *SessionToken);
+			Request->SetHeader(TEXT("Authorization"), FString::Printf(TEXT("Basic %s"), *FBase64::Encode(Auth)));
+		}
+		break;
 	case ENakamaRequestAuth::None:
 	default:
 		break;
@@ -559,6 +567,205 @@ void FNakamaClient::{{ $rpc.Name }}(
 		},
 		OnError);
 }
+{{- if $needsSession }}
+
+void FNakamaClient::{{ $rpc.Name }}(
+	const FString& HttpKey,
+	{{- if $hasParams -}}
+	{{- range $fidx, $field := $requestType.Fields }}
+	{{- /* Skip http_key field since it's provided as the HttpKey auth parameter */ -}}
+	{{- if ne $field.Name "http_key" }}
+	{{ getUnrealType $field.Type $field.Repeated }} {{ $field.Name | pascalCase }},
+	{{- end }}
+	{{- end -}}
+	{{- range $fidx, $field := $requestType.MapFields }}
+	const {{ getUnrealMapType $field.Type }}& {{ $field.Name | pascalCase }},
+	{{- end -}}
+	{{- end }}
+	{{- if $hasReturn }}
+	TFunction<void(const FNakama{{ $returnType.Name }}&)> OnSuccess,
+	{{- else }}
+	TFunction<void()> OnSuccess,
+	{{- end }}
+	TFunction<void(const FNakamaError&)> OnError)
+{
+	FString Endpoint = TEXT("{{ $rpc.Endpoint }}");
+	{{- /* Handle path parameters like {group_id} */ -}}
+	{{- range $pidx, $param := $rpc.QueryParams }}
+	{{- if ne $param "" }}
+	Endpoint = Endpoint.Replace(TEXT("{{ printf "{%s}" $param }}"), *{{ $param | pascalCase }});
+	{{- end }}
+	{{- end }}
+
+{{- /* Handle query parameters (fields not in body) */ -}}
+{{- if $hasParams }}
+{{- $bodyField := $rpc.BodyField }}
+{{- $isGetRequest := eq $rpc.Method "GET" }}
+{{- $pathParams := $rpc.QueryParams }}
+	TArray<FString> QueryParams;
+{{- range $fidx, $field := $requestType.Fields }}
+{{- /* Skip http_key field since it's provided as the HttpKey auth parameter */ -}}
+{{- if ne $field.Name "http_key" }}
+{{- $fieldName := $field.Name | pascalCase }}
+{{- $fieldType := $field.Type }}
+{{- $jsonFieldName := $field.Name }}
+{{- /* Skip fields that are path parameters (already in the URL) */ -}}
+{{- $isPathParam := containsInSlice $pathParams $jsonFieldName }}
+{{- /* Per gRPC-gateway spec:
+     - body: "*" means all non-path fields go to body
+     - body: "field_name" means only that field goes to body, others to query params
+     - No body option (empty) means all non-path fields go to query params */ -}}
+{{- $isQueryParam := and (not $isPathParam) (or $isGetRequest (eq $bodyField "") (and (ne $bodyField "*") (ne $jsonFieldName $bodyField))) }}
+{{- if $isQueryParam }}
+{{- if $field.Repeated }}
+{{- /* Repeated fields: add multiple query params like ids=a&ids=b */ -}}
+{{- if or (eq $fieldType "string") (containsString $fieldType "StringValue") }}
+	for (const FString& Item : {{ $fieldName }})
+	{
+		QueryParams.Add(FString::Printf(TEXT("{{ $jsonFieldName }}=%s"), *Item));
+	}
+{{- else if or (eq $fieldType "int32") (containsString $fieldType "Int32Value") }}
+	for (const int32& Item : {{ $fieldName }})
+	{
+		QueryParams.Add(FString::Printf(TEXT("{{ $jsonFieldName }}=%d"), Item));
+	}
+{{- else if or (eq $fieldType "int64") (containsString $fieldType "Int64Value") }}
+	for (const int64& Item : {{ $fieldName }})
+	{
+		QueryParams.Add(FString::Printf(TEXT("{{ $jsonFieldName }}=%lld"), Item));
+	}
+{{- end }}
+{{- else }}
+{{- /* Non-repeated fields */ -}}
+{{- if or (eq $fieldType "string") (containsString $fieldType "StringValue") }}
+	if (!{{ $fieldName }}.IsEmpty())
+	{
+		QueryParams.Add(FString::Printf(TEXT("{{ $jsonFieldName }}=%s"), *{{ $fieldName }}));
+	}
+{{- else if or (eq $fieldType "bool") (containsString $fieldType "BoolValue") }}
+	QueryParams.Add(FString::Printf(TEXT("{{ $jsonFieldName }}=%s"), {{ $fieldName }} ? TEXT("true") : TEXT("false")));
+{{- else if or (eq $fieldType "int32") (containsString $fieldType "Int32Value") }}
+	if ({{ $fieldName }} != 0)
+	{
+		QueryParams.Add(FString::Printf(TEXT("{{ $jsonFieldName }}=%d"), {{ $fieldName }}));
+	}
+{{- else if or (eq $fieldType "int64") (containsString $fieldType "Int64Value") }}
+	if ({{ $fieldName }} != 0)
+	{
+		QueryParams.Add(FString::Printf(TEXT("{{ $jsonFieldName }}=%lld"), {{ $fieldName }}));
+	}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
+	if (QueryParams.Num() > 0)
+	{
+		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+	}
+{{- end }}
+
+{{- /* Build request body - only when body: "*" or body: "field_name" is specified */ -}}
+	TSharedPtr<FJsonObject> Body;
+{{- if $hasParams }}
+{{- $bodyField := $rpc.BodyField }}
+{{- $isGetRequest := eq $rpc.Method "GET" }}
+{{- if and (ne $bodyField "") (ne $bodyField "*") }}
+{{- /* Body is a specific field - serialize just that field's content */ -}}
+{{- range $fidx, $field := $requestType.Fields }}
+{{- /* Skip http_key field */ -}}
+{{- if and (eq $field.Name $bodyField) (ne $field.Name "http_key") }}
+{{- $fieldName := $field.Name | pascalCase }}
+{{- $fieldType := $field.Type }}
+{{- if isMessageType $fieldType }}
+	Body = {{ $fieldName }}.ToJson();
+{{- else }}
+	Body = MakeShared<FJsonObject>();
+{{- end }}
+{{- end }}
+{{- end }}
+{{- else if and (eq $bodyField "*") (not $isGetRequest) }}
+{{- /* body: "*" specified - serialize all non-path fields to body */ -}}
+	Body = MakeShared<FJsonObject>();
+{{- range $fidx, $field := $requestType.Fields }}
+{{- /* Skip http_key field */ -}}
+{{- if ne $field.Name "http_key" }}
+{{- $fieldName := $field.Name | pascalCase }}
+{{- $fieldType := $field.Type }}
+{{- $jsonFieldName := $field.Name }}
+{{- if $field.Repeated }}
+	if ({{ $fieldName }}.Num() > 0)
+	{
+		TArray<TSharedPtr<FJsonValue>> Array;
+		for (const auto& Item : {{ $fieldName }})
+		{
+{{- if or (eq $fieldType "string") (containsString $fieldType "StringValue") }}
+			Array.Add(MakeShared<FJsonValueString>(Item));
+{{- else if or (eq $fieldType "int32") (eq $fieldType "int64") (eq $fieldType "uint32") (eq $fieldType "uint64") (eq $fieldType "float") (eq $fieldType "double") (containsString $fieldType "Int32Value") (containsString $fieldType "Int64Value") }}
+			Array.Add(MakeShared<FJsonValueNumber>(Item));
+{{- else if or (eq $fieldType "bool") (containsString $fieldType "BoolValue") }}
+			Array.Add(MakeShared<FJsonValueBoolean>(Item));
+{{- else if isMessageType $fieldType }}
+			Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
+{{- else }}
+			Array.Add(MakeShared<FJsonValueString>(Item));
+{{- end }}
+		}
+		Body->SetArrayField(TEXT("{{ $jsonFieldName }}"), Array);
+	}
+{{- else if or (eq $fieldType "string") (containsString $fieldType "StringValue") }}
+	if (!{{ $fieldName }}.IsEmpty())
+	{
+		Body->SetStringField(TEXT("{{ $jsonFieldName }}"), {{ $fieldName }});
+	}
+{{- else if or (eq $fieldType "bool") (containsString $fieldType "BoolValue") }}
+	Body->SetBoolField(TEXT("{{ $jsonFieldName }}"), {{ $fieldName }});
+{{- else if or (eq $fieldType "int32") (eq $fieldType "int64") (eq $fieldType "uint32") (eq $fieldType "uint64") (eq $fieldType "float") (eq $fieldType "double") (containsString $fieldType "Int32Value") (containsString $fieldType "Int64Value") (containsString $fieldType "UInt32Value") (containsString $fieldType "UInt64Value") }}
+	Body->SetNumberField(TEXT("{{ $jsonFieldName }}"), {{ $fieldName }});
+{{- else if isEnumType $fieldType }}
+	Body->SetNumberField(TEXT("{{ $jsonFieldName }}"), {{ $fieldName }});
+{{- else if isMessageType $fieldType }}
+	Body->SetObjectField(TEXT("{{ $jsonFieldName }}"), {{ $fieldName }}.ToJson());
+{{- else }}
+	Body->SetStringField(TEXT("{{ $jsonFieldName }}"), {{ $fieldName }});
+{{- end }}
+{{- end }}
+{{- end }}
+{{- range $fidx, $field := $requestType.MapFields }}
+{{- $fieldName := $field.Name | pascalCase }}
+{{- $jsonFieldName := $field.Name }}
+	if ({{ $fieldName }}.Num() > 0)
+	{
+		TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
+		for (const auto& Pair : {{ $fieldName }})
+		{
+			MapObj->SetStringField(Pair.Key, Pair.Value);
+		}
+		Body->SetObjectField(TEXT("{{ $jsonFieldName }}"), MapObj);
+	}
+{{- end }}
+{{- end }}
+{{- end }}
+
+	MakeRequest(Endpoint, TEXT("{{ $rpc.Method }}"), Body, ENakamaRequestAuth::HttpKey, HttpKey,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
+		{
+			{{- if $hasReturn }}
+			FNakama{{ $returnType.Name }} Result = FNakama{{ $returnType.Name }}::FromJson(Json);
+			if (OnSuccess)
+			{
+				OnSuccess(Result);
+			}
+			{{- else }}
+			if (OnSuccess)
+			{
+				OnSuccess();
+			}
+			{{- end }}
+		},
+		OnError);
+}
+{{- end }}
 {{- end }}
 
 // Module implementation

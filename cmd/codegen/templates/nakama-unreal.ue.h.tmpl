@@ -66,7 +66,8 @@ enum class ENakamaRequestAuth : uint8
 {
 	None,
 	Basic,
-	Bearer
+	Bearer,
+	HttpKey
 };
 
 class NAKAMAUNREAL_API FNakamaClient : public TSharedFromThis<FNakamaClient>
@@ -112,6 +113,29 @@ public:
 		TFunction<void()> OnSuccess,
 		{{- end }}
 		TFunction<void(const FNakamaError&)> OnError);
+{{- if $needsSession }}
+
+	/** {{ $rpc.Comment }} (Server-to-server with HTTP key) */
+	void {{ $rpc.Name }}(
+		const FString& HttpKey,
+		{{- if $hasParams -}}
+		{{- range $fidx, $field := $requestType.Fields }}
+		{{- /* Skip http_key field since it's provided as the HttpKey auth parameter */ -}}
+		{{- if ne $field.Name "http_key" }}
+		{{ getUnrealType $field.Type $field.Repeated }} {{ $field.Name | pascalCase }},
+		{{- end }}
+		{{- end -}}
+		{{- range $fidx, $field := $requestType.MapFields }}
+		const {{ getUnrealMapType $field.Type }}& {{ $field.Name | pascalCase }},
+		{{- end -}}
+		{{- end }}
+		{{- if $hasReturn }}
+		TFunction<void(const FNakama{{ $returnType.Name }}&)> OnSuccess,
+		{{- else }}
+		TFunction<void()> OnSuccess,
+		{{- end }}
+		TFunction<void(const FNakamaError&)> OnError);
+{{- end }}
 {{- end }}
 
 private:
