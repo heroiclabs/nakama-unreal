@@ -20,6 +20,14 @@ func getGeneralFuncMap(api Api) template.FuncMap {
 		"upperCase":      strings.ToUpper,
 		"trimPrefix":     strings.TrimPrefix,
 		"containsString": strings.Contains,
+		"containsInSlice": func(slice []string, value string) bool {
+			for _, item := range slice {
+				if item == value {
+					return true
+				}
+			}
+			return false
+		},
 		"containsEnum": func(key string) bool {
 			_, ok := api.EnumsByName[key]
 			return ok

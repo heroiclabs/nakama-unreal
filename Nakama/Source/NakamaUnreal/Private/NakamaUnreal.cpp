@@ -6958,37 +6958,22 @@ void FNakamaClient::GetUsers(
 {
 	FString Endpoint = TEXT("/v2/user");
 	TArray<FString> QueryParams;
+	for (const FString& Item : Ids)
+	{
+		QueryParams.Add(FString::Printf(TEXT("ids=%s"), *Item));
+	}
+	for (const FString& Item : Usernames)
+	{
+		QueryParams.Add(FString::Printf(TEXT("usernames=%s"), *Item));
+	}
+	for (const FString& Item : FacebookIds)
+	{
+		QueryParams.Add(FString::Printf(TEXT("facebook_ids=%s"), *Item));
+	}
 	if (QueryParams.Num() > 0)
 	{
 		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
-	if (Ids.Num() > 0)
-	{
-		TArray<TSharedPtr<FJsonValue>> Array;
-		for (const auto& Item : Ids)
-		{
-			Array.Add(MakeShared<FJsonValueString>(Item));
-		}
-		Body->SetArrayField(TEXT("ids"), Array);
-	}
-	if (Usernames.Num() > 0)
-	{
-		TArray<TSharedPtr<FJsonValue>> Array;
-		for (const auto& Item : Usernames)
-		{
-			Array.Add(MakeShared<FJsonValueString>(Item));
-		}
-		Body->SetArrayField(TEXT("usernames"), Array);
-	}
-	if (FacebookIds.Num() > 0)
-	{
-		TArray<TSharedPtr<FJsonValue>> Array;
-		for (const auto& Item : FacebookIds)
-		{
-			Array.Add(MakeShared<FJsonValueString>(Item));
-		}
-		Body->SetArrayField(TEXT("facebook_ids"), Array);
-	}
+	}TSharedPtr<FJsonObject> Body;
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
 
@@ -7015,11 +7000,7 @@ void FNakamaClient::GetSubscription(
 	if (QueryParams.Num() > 0)
 	{
 		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
-	if (!ProductId.IsEmpty())
-	{
-		Body->SetStringField(TEXT("product_id"), ProductId);
-	}
+	}TSharedPtr<FJsonObject> Body;
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
 
@@ -7627,20 +7608,19 @@ void FNakamaClient::ListChannelMessages(
 	FString Endpoint = TEXT("/v2/channel/{channel_id}");
 	Endpoint = Endpoint.Replace(TEXT("{channel_id}"), *ChannelId);
 	TArray<FString> QueryParams;
+	if (Limit != 0)
+	{
+		QueryParams.Add(FString::Printf(TEXT("limit=%d"), Limit));
+	}
+	QueryParams.Add(FString::Printf(TEXT("forward=%s"), Forward ? TEXT("true") : TEXT("false")));
+	if (!Cursor.IsEmpty())
+	{
+		QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *Cursor));
+	}
 	if (QueryParams.Num() > 0)
 	{
 		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
-	if (!ChannelId.IsEmpty())
-	{
-		Body->SetStringField(TEXT("channel_id"), ChannelId);
-	}
-	Body->SetNumberField(TEXT("limit"), Limit);
-	Body->SetBoolField(TEXT("forward"), Forward);
-	if (!Cursor.IsEmpty())
-	{
-		Body->SetStringField(TEXT("cursor"), Cursor);
-	}
+	}TSharedPtr<FJsonObject> Body;
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
 
@@ -7665,16 +7645,22 @@ void FNakamaClient::ListFriends(
 {
 	FString Endpoint = TEXT("/v2/friend");
 	TArray<FString> QueryParams;
+	if (Limit != 0)
+	{
+		QueryParams.Add(FString::Printf(TEXT("limit=%d"), Limit));
+	}
+	if (State != 0)
+	{
+		QueryParams.Add(FString::Printf(TEXT("state=%d"), State));
+	}
+	if (!Cursor.IsEmpty())
+	{
+		QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *Cursor));
+	}
 	if (QueryParams.Num() > 0)
 	{
 		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
-	Body->SetNumberField(TEXT("limit"), Limit);
-	Body->SetNumberField(TEXT("state"), State);
-	if (!Cursor.IsEmpty())
-	{
-		Body->SetStringField(TEXT("cursor"), Cursor);
-	}
+	}TSharedPtr<FJsonObject> Body;
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
 
@@ -7698,15 +7684,18 @@ void FNakamaClient::ListFriendsOfFriends(
 {
 	FString Endpoint = TEXT("/v2/friend/friends");
 	TArray<FString> QueryParams;
+	if (Limit != 0)
+	{
+		QueryParams.Add(FString::Printf(TEXT("limit=%d"), Limit));
+	}
+	if (!Cursor.IsEmpty())
+	{
+		QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *Cursor));
+	}
 	if (QueryParams.Num() > 0)
 	{
 		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
-	Body->SetNumberField(TEXT("limit"), Limit);
-	if (!Cursor.IsEmpty())
-	{
-		Body->SetStringField(TEXT("cursor"), Cursor);
-	}
+	}TSharedPtr<FJsonObject> Body;
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
 
@@ -7734,25 +7723,31 @@ void FNakamaClient::ListGroups(
 {
 	FString Endpoint = TEXT("/v2/group");
 	TArray<FString> QueryParams;
-	if (QueryParams.Num() > 0)
-	{
-		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
 	if (!Name.IsEmpty())
 	{
-		Body->SetStringField(TEXT("name"), Name);
+		QueryParams.Add(FString::Printf(TEXT("name=%s"), *Name));
 	}
 	if (!Cursor.IsEmpty())
 	{
-		Body->SetStringField(TEXT("cursor"), Cursor);
+		QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *Cursor));
 	}
-	Body->SetNumberField(TEXT("limit"), Limit);
+	if (Limit != 0)
+	{
+		QueryParams.Add(FString::Printf(TEXT("limit=%d"), Limit));
+	}
 	if (!LangTag.IsEmpty())
 	{
-		Body->SetStringField(TEXT("lang_tag"), LangTag);
+		QueryParams.Add(FString::Printf(TEXT("lang_tag=%s"), *LangTag));
 	}
-	Body->SetNumberField(TEXT("members"), Members);
-	Body->SetBoolField(TEXT("open"), Open);
+	if (Members != 0)
+	{
+		QueryParams.Add(FString::Printf(TEXT("members=%d"), Members));
+	}
+	QueryParams.Add(FString::Printf(TEXT("open=%s"), Open ? TEXT("true") : TEXT("false")));
+	if (QueryParams.Num() > 0)
+	{
+		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+	}TSharedPtr<FJsonObject> Body;
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
 
@@ -7779,20 +7774,22 @@ void FNakamaClient::ListGroupUsers(
 	FString Endpoint = TEXT("/v2/group/{group_id}/user");
 	Endpoint = Endpoint.Replace(TEXT("{group_id}"), *GroupId);
 	TArray<FString> QueryParams;
+	if (Limit != 0)
+	{
+		QueryParams.Add(FString::Printf(TEXT("limit=%d"), Limit));
+	}
+	if (State != 0)
+	{
+		QueryParams.Add(FString::Printf(TEXT("state=%d"), State));
+	}
+	if (!Cursor.IsEmpty())
+	{
+		QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *Cursor));
+	}
 	if (QueryParams.Num() > 0)
 	{
 		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
-	if (!GroupId.IsEmpty())
-	{
-		Body->SetStringField(TEXT("group_id"), GroupId);
-	}
-	Body->SetNumberField(TEXT("limit"), Limit);
-	Body->SetNumberField(TEXT("state"), State);
-	if (!Cursor.IsEmpty())
-	{
-		Body->SetStringField(TEXT("cursor"), Cursor);
-	}
+	}TSharedPtr<FJsonObject> Body;
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
 
@@ -7820,29 +7817,26 @@ void FNakamaClient::ListLeaderboardRecords(
 	FString Endpoint = TEXT("/v2/leaderboard/{leaderboard_id}");
 	Endpoint = Endpoint.Replace(TEXT("{leaderboard_id}"), *LeaderboardId);
 	TArray<FString> QueryParams;
+	for (const FString& Item : OwnerIds)
+	{
+		QueryParams.Add(FString::Printf(TEXT("owner_ids=%s"), *Item));
+	}
+	if (Limit != 0)
+	{
+		QueryParams.Add(FString::Printf(TEXT("limit=%d"), Limit));
+	}
+	if (!Cursor.IsEmpty())
+	{
+		QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *Cursor));
+	}
+	if (Expiry != 0)
+	{
+		QueryParams.Add(FString::Printf(TEXT("expiry=%lld"), Expiry));
+	}
 	if (QueryParams.Num() > 0)
 	{
 		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
-	if (!LeaderboardId.IsEmpty())
-	{
-		Body->SetStringField(TEXT("leaderboard_id"), LeaderboardId);
-	}
-	if (OwnerIds.Num() > 0)
-	{
-		TArray<TSharedPtr<FJsonValue>> Array;
-		for (const auto& Item : OwnerIds)
-		{
-			Array.Add(MakeShared<FJsonValueString>(Item));
-		}
-		Body->SetArrayField(TEXT("owner_ids"), Array);
-	}
-	Body->SetNumberField(TEXT("limit"), Limit);
-	if (!Cursor.IsEmpty())
-	{
-		Body->SetStringField(TEXT("cursor"), Cursor);
-	}
-	Body->SetNumberField(TEXT("expiry"), Expiry);
+	}TSharedPtr<FJsonObject> Body;
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
 
@@ -7871,24 +7865,22 @@ void FNakamaClient::ListLeaderboardRecordsAroundOwner(
 	Endpoint = Endpoint.Replace(TEXT("{leaderboard_id}"), *LeaderboardId);
 	Endpoint = Endpoint.Replace(TEXT("{owner_id}"), *OwnerId);
 	TArray<FString> QueryParams;
+	if (Limit != 0)
+	{
+		QueryParams.Add(FString::Printf(TEXT("limit=%d"), Limit));
+	}
+	if (Expiry != 0)
+	{
+		QueryParams.Add(FString::Printf(TEXT("expiry=%lld"), Expiry));
+	}
+	if (!Cursor.IsEmpty())
+	{
+		QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *Cursor));
+	}
 	if (QueryParams.Num() > 0)
 	{
 		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
-	if (!LeaderboardId.IsEmpty())
-	{
-		Body->SetStringField(TEXT("leaderboard_id"), LeaderboardId);
-	}
-	Body->SetNumberField(TEXT("limit"), Limit);
-	if (!OwnerId.IsEmpty())
-	{
-		Body->SetStringField(TEXT("owner_id"), OwnerId);
-	}
-	Body->SetNumberField(TEXT("expiry"), Expiry);
-	if (!Cursor.IsEmpty())
-	{
-		Body->SetStringField(TEXT("cursor"), Cursor);
-	}
+	}TSharedPtr<FJsonObject> Body;
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
 
@@ -7916,22 +7908,31 @@ void FNakamaClient::ListMatches(
 {
 	FString Endpoint = TEXT("/v2/match");
 	TArray<FString> QueryParams;
+	if (Limit != 0)
+	{
+		QueryParams.Add(FString::Printf(TEXT("limit=%d"), Limit));
+	}
+	QueryParams.Add(FString::Printf(TEXT("authoritative=%s"), Authoritative ? TEXT("true") : TEXT("false")));
+	if (!Label.IsEmpty())
+	{
+		QueryParams.Add(FString::Printf(TEXT("label=%s"), *Label));
+	}
+	if (MinSize != 0)
+	{
+		QueryParams.Add(FString::Printf(TEXT("min_size=%d"), MinSize));
+	}
+	if (MaxSize != 0)
+	{
+		QueryParams.Add(FString::Printf(TEXT("max_size=%d"), MaxSize));
+	}
+	if (!Query.IsEmpty())
+	{
+		QueryParams.Add(FString::Printf(TEXT("query=%s"), *Query));
+	}
 	if (QueryParams.Num() > 0)
 	{
 		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
-	Body->SetNumberField(TEXT("limit"), Limit);
-	Body->SetBoolField(TEXT("authoritative"), Authoritative);
-	if (!Label.IsEmpty())
-	{
-		Body->SetStringField(TEXT("label"), Label);
-	}
-	Body->SetNumberField(TEXT("min_size"), MinSize);
-	Body->SetNumberField(TEXT("max_size"), MaxSize);
-	if (!Query.IsEmpty())
-	{
-		Body->SetStringField(TEXT("query"), Query);
-	}
+	}TSharedPtr<FJsonObject> Body;
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
 
@@ -7957,20 +7958,23 @@ void FNakamaClient::ListParties(
 {
 	FString Endpoint = TEXT("/v2/party");
 	TArray<FString> QueryParams;
-	if (QueryParams.Num() > 0)
+	if (Limit != 0)
 	{
-		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
-	Body->SetNumberField(TEXT("limit"), Limit);
-	Body->SetBoolField(TEXT("open"), Open);
+		QueryParams.Add(FString::Printf(TEXT("limit=%d"), Limit));
+	}
+	QueryParams.Add(FString::Printf(TEXT("open=%s"), Open ? TEXT("true") : TEXT("false")));
 	if (!Query.IsEmpty())
 	{
-		Body->SetStringField(TEXT("query"), Query);
+		QueryParams.Add(FString::Printf(TEXT("query=%s"), *Query));
 	}
 	if (!Cursor.IsEmpty())
 	{
-		Body->SetStringField(TEXT("cursor"), Cursor);
+		QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *Cursor));
 	}
+	if (QueryParams.Num() > 0)
+	{
+		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+	}TSharedPtr<FJsonObject> Body;
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
 
@@ -7994,15 +7998,18 @@ void FNakamaClient::ListNotifications(
 {
 	FString Endpoint = TEXT("/v2/notification");
 	TArray<FString> QueryParams;
+	if (Limit != 0)
+	{
+		QueryParams.Add(FString::Printf(TEXT("limit=%d"), Limit));
+	}
+	if (!CacheableCursor.IsEmpty())
+	{
+		QueryParams.Add(FString::Printf(TEXT("cacheable_cursor=%s"), *CacheableCursor));
+	}
 	if (QueryParams.Num() > 0)
 	{
 		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
-	Body->SetNumberField(TEXT("limit"), Limit);
-	if (!CacheableCursor.IsEmpty())
-	{
-		Body->SetStringField(TEXT("cacheable_cursor"), CacheableCursor);
-	}
+	}TSharedPtr<FJsonObject> Body;
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
 
@@ -8029,23 +8036,22 @@ void FNakamaClient::ListStorageObjects(
 	FString Endpoint = TEXT("/v2/storage/{collection}");
 	Endpoint = Endpoint.Replace(TEXT("{collection}"), *Collection);
 	TArray<FString> QueryParams;
+	if (!UserId.IsEmpty())
+	{
+		QueryParams.Add(FString::Printf(TEXT("user_id=%s"), *UserId));
+	}
+	if (Limit != 0)
+	{
+		QueryParams.Add(FString::Printf(TEXT("limit=%d"), Limit));
+	}
+	if (!Cursor.IsEmpty())
+	{
+		QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *Cursor));
+	}
 	if (QueryParams.Num() > 0)
 	{
 		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
-	if (!UserId.IsEmpty())
-	{
-		Body->SetStringField(TEXT("user_id"), UserId);
-	}
-	if (!Collection.IsEmpty())
-	{
-		Body->SetStringField(TEXT("collection"), Collection);
-	}
-	Body->SetNumberField(TEXT("limit"), Limit);
-	if (!Cursor.IsEmpty())
-	{
-		Body->SetStringField(TEXT("cursor"), Cursor);
-	}
+	}TSharedPtr<FJsonObject> Body;
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
 
@@ -8105,19 +8111,34 @@ void FNakamaClient::ListTournaments(
 {
 	FString Endpoint = TEXT("/v2/tournament");
 	TArray<FString> QueryParams;
+	if (CategoryStart != 0)
+	{
+		QueryParams.Add(FString::Printf(TEXT("category_start=%d"), CategoryStart));
+	}
+	if (CategoryEnd != 0)
+	{
+		QueryParams.Add(FString::Printf(TEXT("category_end=%d"), CategoryEnd));
+	}
+	if (StartTime != 0)
+	{
+		QueryParams.Add(FString::Printf(TEXT("start_time=%d"), StartTime));
+	}
+	if (EndTime != 0)
+	{
+		QueryParams.Add(FString::Printf(TEXT("end_time=%d"), EndTime));
+	}
+	if (Limit != 0)
+	{
+		QueryParams.Add(FString::Printf(TEXT("limit=%d"), Limit));
+	}
+	if (!Cursor.IsEmpty())
+	{
+		QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *Cursor));
+	}
 	if (QueryParams.Num() > 0)
 	{
 		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
-	Body->SetNumberField(TEXT("category_start"), CategoryStart);
-	Body->SetNumberField(TEXT("category_end"), CategoryEnd);
-	Body->SetNumberField(TEXT("start_time"), StartTime);
-	Body->SetNumberField(TEXT("end_time"), EndTime);
-	Body->SetNumberField(TEXT("limit"), Limit);
-	if (!Cursor.IsEmpty())
-	{
-		Body->SetStringField(TEXT("cursor"), Cursor);
-	}
+	}TSharedPtr<FJsonObject> Body;
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
 
@@ -8145,29 +8166,26 @@ void FNakamaClient::ListTournamentRecords(
 	FString Endpoint = TEXT("/v2/tournament/{tournament_id}");
 	Endpoint = Endpoint.Replace(TEXT("{tournament_id}"), *TournamentId);
 	TArray<FString> QueryParams;
+	for (const FString& Item : OwnerIds)
+	{
+		QueryParams.Add(FString::Printf(TEXT("owner_ids=%s"), *Item));
+	}
+	if (Limit != 0)
+	{
+		QueryParams.Add(FString::Printf(TEXT("limit=%d"), Limit));
+	}
+	if (!Cursor.IsEmpty())
+	{
+		QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *Cursor));
+	}
+	if (Expiry != 0)
+	{
+		QueryParams.Add(FString::Printf(TEXT("expiry=%lld"), Expiry));
+	}
 	if (QueryParams.Num() > 0)
 	{
 		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
-	if (!TournamentId.IsEmpty())
-	{
-		Body->SetStringField(TEXT("tournament_id"), TournamentId);
-	}
-	if (OwnerIds.Num() > 0)
-	{
-		TArray<TSharedPtr<FJsonValue>> Array;
-		for (const auto& Item : OwnerIds)
-		{
-			Array.Add(MakeShared<FJsonValueString>(Item));
-		}
-		Body->SetArrayField(TEXT("owner_ids"), Array);
-	}
-	Body->SetNumberField(TEXT("limit"), Limit);
-	if (!Cursor.IsEmpty())
-	{
-		Body->SetStringField(TEXT("cursor"), Cursor);
-	}
-	Body->SetNumberField(TEXT("expiry"), Expiry);
+	}TSharedPtr<FJsonObject> Body;
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
 
@@ -8196,24 +8214,22 @@ void FNakamaClient::ListTournamentRecordsAroundOwner(
 	Endpoint = Endpoint.Replace(TEXT("{tournament_id}"), *TournamentId);
 	Endpoint = Endpoint.Replace(TEXT("{owner_id}"), *OwnerId);
 	TArray<FString> QueryParams;
+	if (Limit != 0)
+	{
+		QueryParams.Add(FString::Printf(TEXT("limit=%d"), Limit));
+	}
+	if (Expiry != 0)
+	{
+		QueryParams.Add(FString::Printf(TEXT("expiry=%lld"), Expiry));
+	}
+	if (!Cursor.IsEmpty())
+	{
+		QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *Cursor));
+	}
 	if (QueryParams.Num() > 0)
 	{
 		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
-	if (!TournamentId.IsEmpty())
-	{
-		Body->SetStringField(TEXT("tournament_id"), TournamentId);
-	}
-	Body->SetNumberField(TEXT("limit"), Limit);
-	if (!OwnerId.IsEmpty())
-	{
-		Body->SetStringField(TEXT("owner_id"), OwnerId);
-	}
-	Body->SetNumberField(TEXT("expiry"), Expiry);
-	if (!Cursor.IsEmpty())
-	{
-		Body->SetStringField(TEXT("cursor"), Cursor);
-	}
+	}TSharedPtr<FJsonObject> Body;
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
 
@@ -8240,20 +8256,22 @@ void FNakamaClient::ListUserGroups(
 	FString Endpoint = TEXT("/v2/user/{user_id}/group");
 	Endpoint = Endpoint.Replace(TEXT("{user_id}"), *UserId);
 	TArray<FString> QueryParams;
+	if (Limit != 0)
+	{
+		QueryParams.Add(FString::Printf(TEXT("limit=%d"), Limit));
+	}
+	if (State != 0)
+	{
+		QueryParams.Add(FString::Printf(TEXT("state=%d"), State));
+	}
+	if (!Cursor.IsEmpty())
+	{
+		QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *Cursor));
+	}
 	if (QueryParams.Num() > 0)
 	{
 		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-	}TSharedPtr<FJsonObject> Body;Body = MakeShared<FJsonObject>();
-	if (!UserId.IsEmpty())
-	{
-		Body->SetStringField(TEXT("user_id"), UserId);
-	}
-	Body->SetNumberField(TEXT("limit"), Limit);
-	Body->SetNumberField(TEXT("state"), State);
-	if (!Cursor.IsEmpty())
-	{
-		Body->SetStringField(TEXT("cursor"), Cursor);
-	}
+	}TSharedPtr<FJsonObject> Body;
 
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
 
@@ -8394,10 +8412,6 @@ void FNakamaClient::RpcFunc(
 	FString Endpoint = TEXT("/v2/rpc/{id}");
 	Endpoint = Endpoint.Replace(TEXT("{id}"), *Id);
 	TArray<FString> QueryParams;
-	if (!Id.IsEmpty())
-	{
-		QueryParams.Add(FString::Printf(TEXT("id=%s"), *Id));
-	}
 	if (!HttpKey.IsEmpty())
 	{
 		QueryParams.Add(FString::Printf(TEXT("http_key=%s"), *HttpKey));
@@ -9112,10 +9126,6 @@ void FNakamaClient::WriteLeaderboardRecord(
 	FString Endpoint = TEXT("/v2/leaderboard/{leaderboard_id}");
 	Endpoint = Endpoint.Replace(TEXT("{leaderboard_id}"), *LeaderboardId);
 	TArray<FString> QueryParams;
-	if (!LeaderboardId.IsEmpty())
-	{
-		QueryParams.Add(FString::Printf(TEXT("leaderboard_id=%s"), *LeaderboardId));
-	}
 	if (QueryParams.Num() > 0)
 	{
 		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
@@ -9180,10 +9190,6 @@ void FNakamaClient::WriteTournamentRecord(
 	FString Endpoint = TEXT("/v2/tournament/{tournament_id}");
 	Endpoint = Endpoint.Replace(TEXT("{tournament_id}"), *TournamentId);
 	TArray<FString> QueryParams;
-	if (!TournamentId.IsEmpty())
-	{
-		QueryParams.Add(FString::Printf(TEXT("tournament_id=%s"), *TournamentId));
-	}
 	if (QueryParams.Num() > 0)
 	{
 		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));

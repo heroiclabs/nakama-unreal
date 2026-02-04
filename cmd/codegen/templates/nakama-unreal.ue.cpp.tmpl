@@ -393,13 +393,38 @@ void FNakamaClient::{{ $rpc.Name }}(
 {{- /* Handle query parameters (fields not in body) */ -}}
 {{- if $hasParams }}
 {{- $bodyField := $rpc.BodyField }}
+{{- $isGetRequest := eq $rpc.Method "GET" }}
+{{- $pathParams := $rpc.QueryParams }}
 	TArray<FString> QueryParams;
 {{- range $fidx, $field := $requestType.Fields }}
 {{- $fieldName := $field.Name | pascalCase }}
 {{- $fieldType := $field.Type }}
 {{- $jsonFieldName := $field.Name }}
-{{- if and (ne $bodyField "") (ne $bodyField "*") (ne $jsonFieldName $bodyField) }}
-{{- /* This field is NOT the body field, so it's a query parameter */ -}}
+{{- /* Skip fields that are path parameters (already in the URL) */ -}}
+{{- $isPathParam := containsInSlice $pathParams $jsonFieldName }}
+{{- /* For GET requests with no body field, all non-path fields go to query params. Otherwise, only non-body fields are query params. */ -}}
+{{- $isQueryParam := and (not $isPathParam) (or $isGetRequest (and (ne $bodyField "") (ne $bodyField "*") (ne $jsonFieldName $bodyField))) }}
+{{- if $isQueryParam }}
+{{- if $field.Repeated }}
+{{- /* Repeated fields: add multiple query params like ids=a&ids=b */ -}}
+{{- if or (eq $fieldType "string") (containsString $fieldType "StringValue") }}
+	for (const FString& Item : {{ $fieldName }})
+	{
+		QueryParams.Add(FString::Printf(TEXT("{{ $jsonFieldName }}=%s"), *Item));
+	}
+{{- else if or (eq $fieldType "int32") (containsString $fieldType "Int32Value") }}
+	for (const int32& Item : {{ $fieldName }})
+	{
+		QueryParams.Add(FString::Printf(TEXT("{{ $jsonFieldName }}=%d"), Item));
+	}
+{{- else if or (eq $fieldType "int64") (containsString $fieldType "Int64Value") }}
+	for (const int64& Item : {{ $fieldName }})
+	{
+		QueryParams.Add(FString::Printf(TEXT("{{ $jsonFieldName }}=%lld"), Item));
+	}
+{{- end }}
+{{- else }}
+{{- /* Non-repeated fields */ -}}
 {{- if or (eq $fieldType "string") (containsString $fieldType "StringValue") }}
 	if (!{{ $fieldName }}.IsEmpty())
 	{
@@ -420,16 +445,18 @@ void FNakamaClient::{{ $rpc.Name }}(
 {{- end }}
 {{- end }}
 {{- end }}
+{{- end }}
 	if (QueryParams.Num() > 0)
 	{
 		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
 	}
 {{- end }}
 
-{{- /* Build request body */ -}}
+{{- /* Build request body - skip for GET requests */ -}}
 	TSharedPtr<FJsonObject> Body;
 {{- if $hasParams }}
 {{- $bodyField := $rpc.BodyField }}
+{{- $isGetRequest := eq $rpc.Method "GET" }}
 {{- if and (ne $bodyField "") (ne $bodyField "*") }}
 {{- /* Body is a specific field - serialize just that field's content */ -}}
 {{- range $fidx, $field := $requestType.Fields }}
@@ -443,8 +470,8 @@ void FNakamaClient::{{ $rpc.Name }}(
 {{- end }}
 {{- end }}
 {{- end }}
-{{- else }}
-{{- /* No body field specified - serialize all fields */ -}}
+{{- else if not $isGetRequest }}
+{{- /* No body field specified and not a GET request - serialize all fields to body */ -}}
 	Body = MakeShared<FJsonObject>();
 {{- range $fidx, $field := $requestType.Fields }}
 {{- $fieldName := $field.Name | pascalCase }}
