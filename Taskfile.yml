@@ -194,20 +194,88 @@ tasks:
       platforms: [darwin, linux]
 
   check-unreal-engine:
-    desc: 'Check that UNREAL_ENGINE environment variable is set.'
+    desc: 'Check or auto-detect UNREAL_ENGINE environment variable.'
     cmds:
     - cmd: |
         if [ -z "$UNREAL_ENGINE" ]; then
-            echo "Error: UNREAL_ENGINE is not set!"
-            echo ""
-            echo "Please set UNREAL_ENGINE in .env file:"
-            echo "  echo 'UNREAL_ENGINE=/path/to/UnrealEngine' >> .env"
-            echo ""
-            echo "Or pass it as an argument:"
-            echo "  task test-unreal UNREAL_ENGINE=/path/to/UnrealEngine"
-            exit 1
+            echo "UNREAL_ENGINE not set, searching for Unreal Engine installations..."
+
+            FOUND=""
+            # macOS: use mdfind (Spotlight)
+            if command -v mdfind &> /dev/null; then
+                CANDIDATE=$(mdfind -name "RunUAT.sh" 2>/dev/null | grep "Engine/Build/BatchFiles/RunUAT.sh" | head -1)
+                if [ -n "$CANDIDATE" ]; then
+                    FOUND="${CANDIDATE%/Engine/Build/BatchFiles/RunUAT.sh}"
+                fi
+            # Linux: use locate
+            elif command -v locate &> /dev/null; then
+                CANDIDATE=$(locate "Engine/Build/BatchFiles/RunUAT.sh" 2>/dev/null | head -1)
+                if [ -n "$CANDIDATE" ]; then
+                    FOUND="${CANDIDATE%/Engine/Build/BatchFiles/RunUAT.sh}"
+                fi
+            fi
+
+            if [ -z "$FOUND" ]; then
+                echo "Error: Could not find Unreal Engine installation!"
+                echo ""
+                echo "Set UNREAL_ENGINE manually in .env file:"
+                echo "  echo 'UNREAL_ENGINE=/path/to/UnrealEngine' >> .env"
+                exit 1
+            fi
+
+            echo "Found Unreal Engine at: $FOUND"
+            echo "Saving to .env file..."
+            echo "UNREAL_ENGINE=$FOUND" >> .env
+            export UNREAL_ENGINE="$FOUND"
         fi
         echo "UNREAL_ENGINE=$UNREAL_ENGINE"
+      platforms: [darwin, linux]
+    - cmd: |
+        powershell -NoProfile -Command "& {
+          if (-not \$env:UNREAL_ENGINE) {
+            Write-Host 'UNREAL_ENGINE not set, searching for Unreal Engine installations...'
+
+            \$searchPaths = @(
+              'C:\Program Files\Epic Games',
+              'D:\Program Files\Epic Games',
+              'E:\Program Files\Epic Games',
+              \"\$env:USERPROFILE\UnrealEngine\"
+            )
+
+            \$found = \$null
+            foreach (\$basePath in \$searchPaths) {
+              if (Test-Path \$basePath) {
+                \$candidates = Get-ChildItem -Path \$basePath -Directory -Filter 'UE_*' -ErrorAction SilentlyContinue | Sort-Object Name -Descending
+                foreach (\$candidate in \$candidates) {
+                  \$uatPath = Join-Path \$candidate.FullName 'Engine\Build\BatchFiles\RunUAT.bat'
+                  if (Test-Path \$uatPath) {
+                    \$found = \$candidate.FullName
+                    break
+                  }
+                }
+                if (\$found) { break }
+              }
+            }
+
+            if (-not \$found) {
+              Write-Host 'Error: Could not find Unreal Engine installation!'
+              Write-Host ''
+              Write-Host 'Please set UNREAL_ENGINE in .env file:'
+              Write-Host '  echo UNREAL_ENGINE=C:\Path\To\UE_5.x >> .env'
+              Write-Host ''
+              Write-Host 'Or pass it as an argument:'
+              Write-Host '  task test-unreal UNREAL_ENGINE=C:\Path\To\UE_5.x'
+              exit 1
+            }
+
+            Write-Host \"Found Unreal Engine at: \$found\"
+            Write-Host 'Saving to .env file...'
+            Add-Content -Path '.env' -Value \"UNREAL_ENGINE=\$found\"
+            \$env:UNREAL_ENGINE = \$found
+          }
+          Write-Host \"UNREAL_ENGINE=\$env:UNREAL_ENGINE\"
+        }"
+      platforms: [windows]
   generate-ue-client-h:
     desc: 'Generate UE Nakama Client Header file.'
     cmds:

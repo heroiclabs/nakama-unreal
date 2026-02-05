@@ -548,3 +548,4 @@ Satori/Binaries
 vcpkg_installed/
 /NakamaBlueprintsTest/Content/Developers
 /NakamaBlueprintsTest/Content/Collections
+.env
