@@ -549,3 +549,5 @@ vcpkg_installed/
 /NakamaBlueprintsTest/Content/Developers
 /NakamaBlueprintsTest/Content/Collections
 .env
+Reports/NakamaTest/index.html
+Reports/NakamaTest/index.json

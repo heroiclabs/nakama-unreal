@@ -70,11 +70,19 @@ func loadApi(apiFile string, messagesFile string) (Api, error) {
 				}
 			}
 
+			// Build fully qualified enum name including parent message if nested
+			enumName := enum.Name
+			if enum.Parent != nil {
+				if parentMsg, ok := enum.Parent.(*proto.Message); ok {
+					enumName = parentMsg.Name + "_" + enum.Name
+				}
+			}
+
 			visitor := &enumVisitor{
 				Enum: &visitedEnum{
 					Comment: strings.Trim(comment, " "),
 					Fields:  make([]*enumField, 0),
-					Name:    enum.Name,
+					Name:    enumName,
 				},
 			}
 			for _, each := range enum.Elements {
@@ -191,9 +199,6 @@ func loadApi(apiFile string, messagesFile string) (Api, error) {
 	return api, nil
 }
 
-// TODO: Enums
-// TODO: Add alias: using ProtobufStructValue = std::variant<std::string, int32_t, double, bool>;
-
 func main() {
 	//
 	// Parse command line args.
@@ -224,7 +229,7 @@ func main() {
 	//
 	// Make function maps that we will use in templates.
 	generalFuncMap := getGeneralFuncMap(api)
-	cppFuncMap := getCppFuncMap()
+	cppFuncMap := getCppFuncMap(api)
 	unrealFuncMap := getUnrealFuncMap(api)
 
 	combinedFuncMap := mergeFuncMaps(generalFuncMap, cppFuncMap, unrealFuncMap)

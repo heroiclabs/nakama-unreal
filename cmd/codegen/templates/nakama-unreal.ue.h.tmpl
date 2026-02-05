@@ -30,6 +30,19 @@ DECLARE_LOG_CATEGORY_EXTERN(LogNakama, Log, All);
 struct FNakama{{ $msg.Name }};
 {{- end }}
 
+{{- /* Generate enum definitions */ -}}
+{{- range $idx, $enum := $.Enums }}
+
+/** {{ $enum.Comment }} */
+UENUM(BlueprintType)
+enum class ENakama{{ $enum.Name }} : uint8
+{
+	{{- range $fidx, $field := $enum.Fields }}
+	{{ $field.Name }} = {{ $field.Integer }}{{ if not (isLastEnumField $enum.Fields $fidx) }},{{ end }}
+	{{- end }}
+};
+{{- end }}
+
 struct NAKAMAUNREAL_API FNakamaError
 {
 	FString Message;

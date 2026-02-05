@@ -148,6 +148,66 @@ struct FNakamaListPartiesRequest;
 struct FNakamaParty;
 struct FNakamaPartyList;
 
+/** The friendship status. */
+UENUM(BlueprintType)
+enum class ENakamaFriend_State : uint8
+{
+	FRIEND = 0,
+	INVITE_SENT = 1,
+	INVITE_RECEIVED = 2,
+	BLOCKED = 3
+};
+
+/** The group role status. */
+UENUM(BlueprintType)
+enum class ENakamaGroupUserList_GroupUser_State : uint8
+{
+	SUPERADMIN = 0,
+	ADMIN = 1,
+	MEMBER = 2,
+	JOIN_REQUEST = 3
+};
+
+/** The group role status. */
+UENUM(BlueprintType)
+enum class ENakamaUserGroupList_UserGroup_State : uint8
+{
+	SUPERADMIN = 0,
+	ADMIN = 1,
+	MEMBER = 2,
+	JOIN_REQUEST = 3
+};
+
+/** Validation Provider, */
+UENUM(BlueprintType)
+enum class ENakamaStoreProvider : uint8
+{
+	APPLE_APP_STORE = 0,
+	GOOGLE_PLAY_STORE = 1,
+	HUAWEI_APP_GALLERY = 2,
+	FACEBOOK_INSTANT_STORE = 3
+};
+
+/** Environment where a purchase/subscription took place, */
+UENUM(BlueprintType)
+enum class ENakamaStoreEnvironment : uint8
+{
+	UNKNOWN = 0,
+	SANDBOX = 1,
+	PRODUCTION = 2
+};
+
+/** Operator that can be used to override the one set in the leaderboard. */
+UENUM(BlueprintType)
+enum class ENakamaOperator : uint8
+{
+	NO_OVERRIDE = 0,
+	BEST = 1,
+	SET = 2,
+	INCREMENT = 3,
+	DECREMENT = 4
+};
+
 struct NAKAMAUNREAL_API FNakamaError
 {
 	FString Message;

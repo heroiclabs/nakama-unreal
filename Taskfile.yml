@@ -10,12 +10,17 @@ vars:
 
 tasks:
   link-nakama-plugin:
-    desc: 'Link Nakama plugin into NakamaTest (Windows only).'
+    desc: 'Link Nakama plugin into NakamaTest.'
     cmds:
-    - cmd: powershell -NoProfile -Command "New-Item -ItemType Junction -Force -Path 'NakamaTest\\Plugins\\Nakama' -Target (Join-Path (Get-Location) 'Nakama')"
+    - cmd: |
+        powershell -NoProfile -Command "& {
+          New-Item -ItemType Directory -Force -Path 'NakamaTest\Plugins' | Out-Null
+          New-Item -ItemType Junction -Force -Path 'NakamaTest\Plugins\Nakama' -Target (Join-Path (Get-Location) 'Nakama')
+        }"
       platforms: [windows]
     - cmd: |
-        ln -sf "$(pwd)/Nakama" "NakamaTest/Plugins/Nakama"
+        mkdir -p "NakamaTest/Plugins"
+        ln -sfn "$(pwd)/Nakama" "NakamaTest/Plugins/Nakama"
       platforms: [darwin, linux]
 
   start-nakama:
@@ -85,6 +90,7 @@ tasks:
     desc: 'Build NakamaTest project only (no server start).'
     deps:
     - task: check-unreal-engine
+    - task: link-nakama-plugin
     cmds:
     - cmd: |
         if [ -z "$UNREAL_ENGINE" ]; then
@@ -108,15 +114,28 @@ tasks:
         PROJECT="$(pwd)/NakamaTest/NakamaTest.uproject"
 
         echo "Building NakamaTest..."
-        "$UNREAL_ENGINE/Engine/Build/BatchFiles/Build.sh" \
+        "$UNREAL_ENGINE/Engine/Build/BatchFiles/Mac/Build.sh" \
             NakamaTestEditor Mac Development \
             -Project="$PROJECT"
-      platforms: [darwin, linux]
+      platforms: [darwin]
+    - cmd: |
+        if [ -z "$UNREAL_ENGINE" ]; then
+            echo "Error: UNREAL_ENGINE is not set!"
+            exit 1
+        fi
+
+        PROJECT="$(pwd)/NakamaTest/NakamaTest.uproject"
+
+        echo "Building NakamaTest..."
+        "$UNREAL_ENGINE/Engine/Build/BatchFiles/Linux/Build.sh" \
+            NakamaTestEditor Linux Development \
+            -Project="$PROJECT"
+      platforms: [linux]
 
   test-unreal:
     desc: 'Build and run NakamaTest C++ automation suite.'
     vars:
-      TEST_SUITE: '{{.TEST_SUITE | default "NakamaTest.Account.Create"}}'
+      TEST_SUITE: '{{.TEST_SUITE | default "NakamaTest.Auth"}}'
       REPORT_PATH: '{{.REPORT_PATH | default "Reports/NakamaTest"}}'
     deps:
     - task: check-unreal-engine
@@ -177,7 +196,7 @@ tasks:
         mkdir -p "$REPORT_DIR"
 
         echo "Running automation suite {{.TEST_SUITE}}..."
-        "$UNREAL_ENGINE/Engine/Binaries/Mac/UnrealEditor-Mac-Debug.app/Contents/MacOS/UnrealEditor-Mac-Debug" \
+        "$UNREAL_ENGINE/Engine/Binaries/Mac/UnrealEditor.app/Contents/MacOS/UnrealEditor" \
             "$PROJECT" \
             -nullrhi \
             -stdout \
@@ -276,40 +295,36 @@ tasks:
           Write-Host \"UNREAL_ENGINE=\$env:UNREAL_ENGINE\"
         }"
       platforms: [windows]
-  generate-ue-client-h:
-    desc: 'Generate UE Nakama Client Header file.'
+  generate:
+    desc: 'Generate all Nakama modules from protobuf schemas.'
+    cmds:
+    - task: generate-nakama-unreal
+    - task: generate-nakama-blueprints
+
+  generate-nakama-unreal:
+    desc: 'Generate NakamaUnreal module (core C++ types and client).'
     cmds:
     - task: build
-    - cmd: ./{{.BIN_PATH}} --template cmd/codegen/templates/nakama-client-bplib.ue.h.tmpl --proto {{.PROTO_FILE}} --proto-service {{.PROTO_SERVICE_FILE}} > Nakama/Source/NakamaBlueprints/Public/NakamaClientBlueprintLibrary.h
+    - cmd: |
+        ./{{.BIN_PATH}} --template cmd/codegen/templates/nakama-unreal.ue.h.tmpl --proto {{.PROTO_FILE}} --proto-service {{.PROTO_SERVICE_FILE}} > Nakama/Source/NakamaUnreal/Public/NakamaUnreal.h
+        ./{{.BIN_PATH}} --template cmd/codegen/templates/nakama-unreal.ue.cpp.tmpl --proto {{.PROTO_FILE}} --proto-service {{.PROTO_SERVICE_FILE}} > Nakama/Source/NakamaUnreal/Private/NakamaUnreal.cpp
       platforms: [linux, darwin]
-    - cmd: cmd /c ".\\build\\codegen.exe --template cmd\\codegen\\templates\\nakama-client-bplib.ue.h.tmpl --proto {{.PROTO_FILE}} --proto-service {{.PROTO_SERVICE_FILE}} > Nakama\\Source\\NakamaBlueprints\\Public\\NakamaClientBlueprintLibrary.h"
+    - cmd: |
+        cmd /c ".\\build\\codegen.exe --template cmd\\codegen\\templates\\nakama-unreal.ue.h.tmpl --proto {{.PROTO_FILE}} --proto-service {{.PROTO_SERVICE_FILE}} > Nakama\\Source\\NakamaUnreal\\Public\\NakamaUnreal.h"
+        cmd /c ".\\build\\codegen.exe --template cmd\\codegen\\templates\\nakama-unreal.ue.cpp.tmpl --proto {{.PROTO_FILE}} --proto-service {{.PROTO_SERVICE_FILE}} > Nakama\\Source\\NakamaUnreal\\Private\\NakamaUnreal.cpp"
       platforms: [windows]
 
-  generate-ue-client-cpp:
-    desc: 'Generate UE Nakama Client Source file.'
+  generate-nakama-blueprints:
+    desc: 'Generate NakamaBlueprints module (Blueprint library wrappers).'
     cmds:
     - task: build
-    - cmd: ./{{.BIN_PATH}} --template cmd/codegen/templates/nakama-client-bplib.ue.cpp.tmpl --proto {{.PROTO_FILE}} --proto-service {{.PROTO_SERVICE_FILE}} > Nakama/Source/NakamaBlueprints/Private/NakamaClientBlueprintLibrary.cpp
+    - cmd: |
+        ./{{.BIN_PATH}} --template cmd/codegen/templates/nakama-client-bplib.ue.h.tmpl --proto {{.PROTO_FILE}} --proto-service {{.PROTO_SERVICE_FILE}} > Nakama/Source/NakamaBlueprints/Public/NakamaClientBlueprintLibrary.h
+        ./{{.BIN_PATH}} --template cmd/codegen/templates/nakama-client-bplib.ue.cpp.tmpl --proto {{.PROTO_FILE}} --proto-service {{.PROTO_SERVICE_FILE}} > Nakama/Source/NakamaBlueprints/Private/NakamaClientBlueprintLibrary.cpp
       platforms: [linux, darwin]
-    - cmd: cmd /c ".\\build\\codegen.exe --template cmd\\codegen\\templates\\nakama-client-bplib.ue.cpp.tmpl --proto {{.PROTO_FILE}} --proto-service {{.PROTO_SERVICE_FILE}} > Nakama\\Source\\NakamaBlueprints\\Private\\NakamaClientBlueprintLibrary.cpp"
-      platforms: [windows]
-
-  generate-ue-unreal-h:
-    desc: 'Generate UE Nakama Unreal core header file.'
-    cmds:
-    - task: build
-    - cmd: ./{{.BIN_PATH}} --template cmd/codegen/templates/nakama-unreal.ue.h.tmpl --proto {{.PROTO_FILE}} --proto-service {{.PROTO_SERVICE_FILE}} > Nakama/Source/NakamaUnreal/Public/NakamaUnreal.h
-      platforms: [linux, darwin]
-    - cmd: cmd /c ".\\build\\codegen.exe --template cmd\\codegen\\templates\\nakama-unreal.ue.h.tmpl --proto {{.PROTO_FILE}} --proto-service {{.PROTO_SERVICE_FILE}} > Nakama\\Source\\NakamaUnreal\\Public\\NakamaUnreal.h"
-      platforms: [windows]
-
-  generate-ue-unreal-cpp:
-    desc: 'Generate UE Nakama Unreal core source file.'
-    cmds:
-    - task: build
-    - cmd: ./{{.BIN_PATH}} --template cmd/codegen/templates/nakama-unreal.ue.cpp.tmpl --proto {{.PROTO_FILE}} --proto-service {{.PROTO_SERVICE_FILE}} > Nakama/Source/NakamaUnreal/Private/NakamaUnreal.cpp
-      platforms: [linux, darwin]
-    - cmd: cmd /c ".\\build\\codegen.exe --template cmd\\codegen\\templates\\nakama-unreal.ue.cpp.tmpl --proto {{.PROTO_FILE}} --proto-service {{.PROTO_SERVICE_FILE}} > Nakama\\Source\\NakamaUnreal\\Private\\NakamaUnreal.cpp"
+    - cmd: |
+        cmd /c ".\\build\\codegen.exe --template cmd\\codegen\\templates\\nakama-client-bplib.ue.h.tmpl --proto {{.PROTO_FILE}} --proto-service {{.PROTO_SERVICE_FILE}} > Nakama\\Source\\NakamaBlueprints\\Public\\NakamaClientBlueprintLibrary.h"
+        cmd /c ".\\build\\codegen.exe --template cmd\\codegen\\templates\\nakama-client-bplib.ue.cpp.tmpl --proto {{.PROTO_FILE}} --proto-service {{.PROTO_SERVICE_FILE}} > Nakama\\Source\\NakamaBlueprints\\Private\\NakamaClientBlueprintLibrary.cpp"
       platforms: [windows]
 
   generate-debug:

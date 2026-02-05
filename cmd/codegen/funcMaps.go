@@ -73,6 +73,9 @@ func getGeneralFuncMap(api Api) template.FuncMap {
 		"isLastMapElement": func(slice []*proto.MapField, index int) bool {
 			return index == len(slice)-1
 		},
+		"isLastEnumField": func(slice []*enumField, index int) bool {
+			return index == len(slice)-1
+		},
 		"currentYear": func() int {
 			return time.Now().Year()
 		},
@@ -81,7 +84,12 @@ func getGeneralFuncMap(api Api) template.FuncMap {
 	return fnMap
 }
 
-func getCppFuncMap() template.FuncMap {
+func getCppFuncMap(api Api) template.FuncMap {
+	isEnum := func(fieldType string) bool {
+		_, ok := api.EnumsByName[fieldType]
+		return ok
+	}
+
 	fnMap := template.FuncMap{
 		"cppIsReservedKeyword": func(s string) bool {
 			_, isKw := cppKeywords[s]
@@ -97,7 +105,6 @@ func getCppFuncMap() template.FuncMap {
 		},
 
 		"cppMapFieldType": func(fieldType string) string {
-			fmt.Printf("Got type: %s\n", fieldType)
 			var cppType string
 
 			switch fieldType {
@@ -119,11 +126,17 @@ func getCppFuncMap() template.FuncMap {
 			}
 			return cppType
 		},
-		// TODO: Enum state inside message, represented as number,
-		//       see NUserGroupState
+
 		"cppFieldType": func(fieldType string, isRepeated bool) string {
-			fmt.Printf("Got type: %s\n", fieldType)
 			var cppType string
+
+			// Handle enums as int32_t
+			if isEnum(fieldType) {
+				if isRepeated {
+					return "std::vector<int32_t>"
+				}
+				return "int32_t"
+			}
 
 			if isRepeated {
 				switch fieldType {

@@ -940,7 +940,7 @@ public:
   *
   * List all friends for the current user.
   *
-  * @param Limit  Max number of records to return. Between 1 and 100.
+  * @param Limit  Max number of records to return. Between 1 and 1000.
   * @param State  The friend state to list.
   * @param Cursor  An optional next page cursor.
   * @param OnSuccess Callback to invoke on success
