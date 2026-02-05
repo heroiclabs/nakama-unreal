@@ -4023,6 +4023,86 @@ void UNakamaClientListTournaments::Activate()
 	);
 }
 
+UNakamaClientListParties* UNakamaClientListParties::ListParties(UNakamaClient* Client, UNakamaSession* Session,
+	int32 Limit, bool Open, FString Query, FString Cursor)
+{
+	UNakamaClientListParties* Node = NewObject<UNakamaClientListParties>();
+	Node->NakamaClient = Client;
+	Node->UserSession = Session;
+	Node->Limit = Limit;
+	Node->Open = Open;
+	Node->Query = Query;
+	Node->Cursor = Cursor;
+
+	return Node;
+}
+
+void UNakamaClientListParties::Activate()
+{
+	// Check validity of client and session
+	if (!NakamaClient && !UserSession)
+	{
+		const FNakamaError Error = FNakamaUtils::HandleInvalidClientAndSession();
+		OnError.Broadcast(Error, {});
+		SetReadyToDestroy();
+		return;
+	}
+
+	if (!NakamaClient)
+	{
+		const FNakamaError Error = FNakamaUtils::HandleInvalidClient();
+		OnError.Broadcast(Error, {});
+		SetReadyToDestroy();
+		return;
+	}
+
+	if (!UserSession)
+	{
+		const FNakamaError Error = FNakamaUtils::HandleInvalidSession();
+		OnError.Broadcast(Error, {});
+		SetReadyToDestroy();
+		return;
+	}
+
+	auto successCallback = [this](const FNakamaPartyList& PartyList)
+	{
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
+			return;
+		}
+
+		OnSuccess.Broadcast({},PartyList);
+		SetReadyToDestroy();
+	};
+
+	auto errorCallback = [this](const FNakamaError& error)
+	{
+		if (!FNakamaUtils::IsClientActive(NakamaClient))
+		{
+			SetReadyToDestroy();
+			return;
+		}
+
+		OnError.Broadcast(error, {});
+		SetReadyToDestroy();
+	};
+	
+	const auto OptLimit = FNakamaUtils::CreateOptional(Limit, 0);
+	const auto OptOpen = FNakamaUtils::CreateOptional(Open, false);
+	const auto OptQuery = FNakamaUtils::CreateOptional(Query, FString());
+	const auto OptCursor = FNakamaUtils::CreateOptional(Cursor, FString());
+
+	NakamaClient->ListParties(
+		UserSession,
+		OptLimit,
+		OptOpen,
+		OptQuery,
+		OptCursor,
+		successCallback, errorCallback
+	);
+}
+
 UNakamaClientLinkDevice* UNakamaClientLinkDevice::LinkDevice(UNakamaClient* Client, UNakamaSession* Session,
                                                              FString DeviceId)
 {

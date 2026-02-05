@@ -12,7 +12,7 @@
 #define SERVER_SSL false
 #define SERVER_PORT SERVER_HTTP_PORT
 
-DEFINE_LOG_CATEGORY_STATIC(NakamaTestLog, All, Log)
+DEFINE_LOG_CATEGORY_STATIC(NakamaTestLog, Log, All)
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FNakamaTestCore, "NakamaTest.Core", EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 

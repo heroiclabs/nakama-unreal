@@ -29,15 +29,23 @@ struct NAKAMAUNREAL_API FNakamaParty
 
 	// The unique party identifier.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Parties")
-	FString Id;
+	FString PartyId;
 
-	// True, if the party is open to join.
+	// True if the party is open to join.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Parties")
 	bool Open;
+
+	// True if the party is hidden from public listings and searches.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Parties")
+	bool Hidden;
 
 	// The maximum number of party members.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Parties")
 	int32 MaxSize;
+
+	// The party label, if any.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Parties")
+	FString Label;
 
 	// The current user in this party. i.e. Yourself.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, DisplayName = "Self", Category = "Nakama|Parties")
@@ -172,4 +180,22 @@ struct NAKAMAUNREAL_API FNakamaPartyPresenceEvent
 
 	FNakamaPartyPresenceEvent(const FString& JsonString);
 	FNakamaPartyPresenceEvent();
+};
+
+// List of realtime parties.
+USTRUCT(BlueprintType)
+struct NAKAMAUNREAL_API FNakamaPartyList
+{
+	GENERATED_BODY()
+
+	// A number of parties corresponding to a list operation.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Parties")
+	TArray<FNakamaParty> Parties;
+
+	// A cursor to send when retrieving the next page, if any.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Parties")
+	FString Cursor;
+
+	FNakamaPartyList(const FString& JsonString);
+	FNakamaPartyList();
 };

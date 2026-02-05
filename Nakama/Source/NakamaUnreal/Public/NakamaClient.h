@@ -73,6 +73,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnStorageObjectAcks, const FNakamaS
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnStorageObjectsRead, const FNakamaStorageObjectList&, StorageObjects);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnStorageObjectsListed, const FNakamaStorageObjectList&, StorageObjects);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnRemovedStorageObjects);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnListedParties, const FNakamaPartyList&, PartyList);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnRPC, const FNakamaRPC&, rpc);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnListChannelMessages, const FNakamaChannelMessageList&, MessageList);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnWriteLeaderboardRecord, const FNakamaLeaderboardRecord&, Record);
@@ -1358,6 +1359,28 @@ public:
 		UNakamaSession* Session,
 		const TArray<FNakamaDeleteStorageObjectId>& StorageObjectsData,
 		FOnRemovedStorageObjects Success,
+		FOnError Error
+		);
+
+	/**
+	 * List parties and optionally filter by matching criteria.
+	 *
+	 * @param Limit Limit the number of returned parties.
+	 * @param Open Optionally filter by open/closed parties.
+	 * @param Query Arbitrary label query.
+	 * @param Cursor Cursor for the next page of results, if any.
+	 * @param Session The session of the user.
+	 * @param Success Delegate called upon successfully deleting storage objects.
+	 * @param Error Delegate called if an error occurs, detailing the failure.
+	 */
+	UFUNCTION(Category = "Nakama|Parties")
+	void ListParties (
+		UNakamaSession* Session,
+		int32 Limit,
+		bool Open,
+		const FString&  Query,
+		const FString&  Cursor,
+		FOnListedParties Success,
 		FOnError Error
 	);
 
@@ -2881,6 +2904,27 @@ public:
 		TFunction<void(const FNakamaError& Error)> ErrorCallback
 	);
 
+	/**
+	 * List parties and optionally filter by matching criteria.
+	 *
+	 * @param Limit Limit the number of returned parties.
+	 * @param Open Optionally filter by open/closed parties.
+	 * @param Query Arbitrary label query.
+	 * @param Cursor Cursor for the next page of results, if any.
+	 * @param Session The session of the user.
+	 * @param SuccessCallback Callback invoked upon successfully deleting storage objects.
+	 * @param ErrorCallback Callback invoked if an error occurs, detailing the failure.
+	 */
+	void ListParties (
+		UNakamaSession* Session,
+		const TOptional<int32>& Limit,
+		const TOptional<bool>& Open,
+		const TOptional<FString>&  Query,
+		const TOptional<FString>&  Cursor,
+		TFunction<void(const FNakamaPartyList& PartyList)> SuccessCallback,
+		TFunction<void(const FNakamaError& Error)> ErrorCallback
+	);
+	
 	// --- RPC --- //
 
 	/**
