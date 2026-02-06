@@ -112,7 +112,7 @@ void UNakamaLogger::Log(ENakamaLogLevel InLogLevel, const FString& Message)
 		switch (InLogLevel)
 		{
 		case ENakamaLogLevel::Debug:
-			UE_LOG(LogNakamaUnreal, Display, TEXT("%s"), *Message);
+			UE_LOG(LogNakamaUnreal, Verbose, TEXT("%s"), *Message);
 			break;
 		case ENakamaLogLevel::Info:
 			UE_LOG(LogNakamaUnreal, Display, TEXT("%s"), *Message);
