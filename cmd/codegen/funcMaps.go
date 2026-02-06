@@ -79,6 +79,17 @@ func getGeneralFuncMap(api Api) template.FuncMap {
 		"currentYear": func() int {
 			return time.Now().Year()
 		},
+		"uniqueReturnTypes": func(rpcs []*visitedRpc) []string {
+			seen := make(map[string]bool)
+			var result []string
+			for _, rpc := range rpcs {
+				if rpc.ReturnType != nil && !seen[rpc.ReturnType.Name] {
+					seen[rpc.ReturnType.Name] = true
+					result = append(result, rpc.ReturnType.Name)
+				}
+			}
+			return result
+		},
 	}
 
 	return fnMap
@@ -219,13 +230,14 @@ func getUnrealFuncMap(api Api) template.FuncMap {
 				unrealType = "TArray<int32>"
 
 			case "uint32", "google.protobuf.UInt32Value":
-				unrealType = "TArray<uint32>"
+				// uint32 not Blueprint-compatible, use int32
+				unrealType = "TArray<int32>"
 
 			case "int64", "google.protobuf.Int64Value":
 				unrealType = "TArray<int64>"
 
 			case "uint64", "google.protobuf.UInt64Value":
-				unrealType = "TArray<uint64>"
+				unrealType = "TArray<int64>"
 
 			case "float", "google.protobuf.FloatValue":
 				unrealType = "TArray<float>"
@@ -250,13 +262,15 @@ func getUnrealFuncMap(api Api) template.FuncMap {
 				unrealType = "int32"
 
 			case "uint32", "google.protobuf.UInt32Value":
-				unrealType = "uint32"
+				// uint32 not Blueprint-compatible, use int32
+				unrealType = "int32"
 
 			case "int64", "google.protobuf.Int64Value":
 				unrealType = "int64"
 
 			case "uint64", "google.protobuf.UInt64Value":
-				unrealType = "uint64"
+				// uint64 not Blueprint-compatible, use int64
+				unrealType = "int64"
 
 			case "float", "google.protobuf.FloatValue":
 				unrealType = "float"
@@ -313,9 +327,45 @@ func getUnrealFuncMap(api Api) template.FuncMap {
 		return unrealType
 	}
 
+	// Helper to check if a type is a message type (needs BP wrapper)
+	isMessageType := func(fieldType string) bool {
+		switch fieldType {
+		case "string", "int32", "int64", "uint32", "uint64", "float", "double", "bool",
+			"google.protobuf.StringValue", "google.protobuf.Int32Value", "google.protobuf.Int64Value",
+			"google.protobuf.UInt32Value", "google.protobuf.UInt64Value", "google.protobuf.FloatValue",
+			"google.protobuf.DoubleValue", "google.protobuf.BoolValue", "google.protobuf.Timestamp":
+			return false
+		default:
+			if isEnum(fieldType) {
+				return false
+			}
+			return len(fieldType) > 0 && fieldType[0] >= 'A' && fieldType[0] <= 'Z'
+		}
+	}
+
+	// Get BP type for function parameters (uses BP wrapper for message types)
+	getUnrealBPType := func(fieldType string, isRepeated bool) string {
+		if isMessageType(fieldType) {
+			if isRepeated {
+				return fmt.Sprintf("const TArray<FNakama%sBP>&", fieldType)
+			}
+			return fmt.Sprintf("const FNakama%sBP&", fieldType)
+		}
+		// Handle Blueprint-incompatible types
+		// uint32 is not supported by Blueprint - convert to int32
+		if fieldType == "uint32" || fieldType == "google.protobuf.UInt32Value" {
+			if isRepeated {
+				return "const TArray<int32>&"
+			}
+			return "int32"
+		}
+		return getUnrealType(fieldType, isRepeated)
+	}
+
 	fnMap := template.FuncMap{
 		"getUnrealType":    getUnrealType,
 		"getUnrealMapType": getUnrealMapType,
+		"getUnrealBPType":  getUnrealBPType,
 		"getUnrealReturnType": func(fieldType string) string {
 			return getUnrealBaseType(fieldType, false)
 		},
@@ -327,21 +377,34 @@ func getUnrealFuncMap(api Api) template.FuncMap {
 			}
 			return getUnrealBaseType(fieldType, false)
 		},
-		"isMessageType": func(fieldType string) bool {
-			// Check if this is a message type (not a primitive, wrapper, or enum)
-			switch fieldType {
-			case "string", "int32", "int64", "uint32", "uint64", "float", "double", "bool",
-				"google.protobuf.StringValue", "google.protobuf.Int32Value", "google.protobuf.Int64Value",
-				"google.protobuf.UInt32Value", "google.protobuf.UInt64Value", "google.protobuf.FloatValue",
-				"google.protobuf.DoubleValue", "google.protobuf.BoolValue", "google.protobuf.Timestamp":
-				return false
-			default:
-				// Also check if it's an enum
-				if isEnum(fieldType) {
-					return false
+		"isMessageType":    isMessageType,
+		"isBPWrapperType":  isMessageType, // Alias for template clarity
+		"getBaseType": func(fieldType string) string {
+			// Return the base type name (e.g., "User" from "User")
+			return fieldType
+		},
+		"getUnrealBPFieldType": func(fieldType string, isRepeated bool) string {
+			// For BP wrapper struct fields: use FNakama*BP for message types
+			if isMessageType(fieldType) {
+				if isRepeated {
+					return fmt.Sprintf("TArray<FNakama%sBP>", fieldType)
 				}
-				return len(fieldType) > 0 && fieldType[0] >= 'A' && fieldType[0] <= 'Z'
+				return fmt.Sprintf("FNakama%sBP", fieldType)
 			}
+			// For primitives, handle Blueprint-incompatible types
+			// uint32 is not supported by Blueprint - convert to int32
+			if fieldType == "uint32" || fieldType == "google.protobuf.UInt32Value" {
+				if isRepeated {
+					return "TArray<int32>"
+				}
+				return "int32"
+			}
+			// For other primitives, use same as native
+			if isRepeated {
+				baseType := getUnrealBaseType(fieldType, false)
+				return fmt.Sprintf("TArray<%s>", baseType)
+			}
+			return getUnrealBaseType(fieldType, false)
 		},
 		"getUnrealDelegateParamType": func(fieldType string) string {
 			baseType := getUnrealBaseType(fieldType, false)

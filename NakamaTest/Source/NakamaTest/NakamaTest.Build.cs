@@ -9,6 +9,6 @@ public class NakamaTest : ModuleRules
 	public NakamaTest(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
-		PrivateDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "NakamaUnreal", "WebSockets" });
+		PrivateDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "NakamaUnreal", "NakamaBlueprints", "WebSockets" });
 	}
 }

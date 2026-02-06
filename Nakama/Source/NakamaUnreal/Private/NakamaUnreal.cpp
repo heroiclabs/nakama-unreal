@@ -184,6 +184,50 @@ TSharedPtr<FJsonObject> FNakamaUser::ToJson() const
 	return Json;
 }
 
+FNakamaAccountDevice FNakamaAccountDevice::FromJson(const TSharedPtr<FJsonObject>& Json)
+{
+	FNakamaAccountDevice Result;
+	if (!Json.IsValid())
+	{
+		return Result;
+	}
+	if (Json->HasField(TEXT("id")))
+	{
+		Result.Id = Json->GetStringField(TEXT("id"));
+	}
+	if (Json->HasField(TEXT("vars")))
+	{
+		const TSharedPtr<FJsonObject>* MapObj;
+		if (Json->TryGetObjectField(TEXT("vars"), MapObj))
+		{
+			for (const auto& Pair : (*MapObj)->Values)
+			{
+				Result.Vars.Add(Pair.Key, Pair.Value->AsString());
+			}
+		}
+	}
+	return Result;
+}
+
+TSharedPtr<FJsonObject> FNakamaAccountDevice::ToJson() const
+{
+	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+	if (!Id.IsEmpty())
+	{
+		Json->SetStringField(TEXT("id"), Id);
+	}
+	if (Vars.Num() > 0)
+	{
+		TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
+		for (const auto& Pair : Vars)
+		{
+			MapObj->SetStringField(Pair.Key, Pair.Value);
+		}
+		Json->SetObjectField(TEXT("vars"), MapObj);
+	}
+	return Json;
+}
+
 FNakamaAccount FNakamaAccount::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
 	FNakamaAccount Result;
@@ -387,50 +431,6 @@ FNakamaAccountCustom FNakamaAccountCustom::FromJson(const TSharedPtr<FJsonObject
 }
 
 TSharedPtr<FJsonObject> FNakamaAccountCustom::ToJson() const
-{
-	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-	if (!Id.IsEmpty())
-	{
-		Json->SetStringField(TEXT("id"), Id);
-	}
-	if (Vars.Num() > 0)
-	{
-		TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
-		for (const auto& Pair : Vars)
-		{
-			MapObj->SetStringField(Pair.Key, Pair.Value);
-		}
-		Json->SetObjectField(TEXT("vars"), MapObj);
-	}
-	return Json;
-}
-
-FNakamaAccountDevice FNakamaAccountDevice::FromJson(const TSharedPtr<FJsonObject>& Json)
-{
-	FNakamaAccountDevice Result;
-	if (!Json.IsValid())
-	{
-		return Result;
-	}
-	if (Json->HasField(TEXT("id")))
-	{
-		Result.Id = Json->GetStringField(TEXT("id"));
-	}
-	if (Json->HasField(TEXT("vars")))
-	{
-		const TSharedPtr<FJsonObject>* MapObj;
-		if (Json->TryGetObjectField(TEXT("vars"), MapObj))
-		{
-			for (const auto& Pair : (*MapObj)->Values)
-			{
-				Result.Vars.Add(Pair.Key, Pair.Value->AsString());
-			}
-		}
-	}
-	return Result;
-}
-
-TSharedPtr<FJsonObject> FNakamaAccountDevice::ToJson() const
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (!Id.IsEmpty())
@@ -9175,7 +9175,7 @@ void FNakamaClient::ListLeaderboardRecords(
 void FNakamaClient::ListLeaderboardRecordsAroundOwner(
 	const FNakamaSession& Session,
 	FString LeaderboardId,
-	uint32 Limit,
+	int32 Limit,
 	FString OwnerId,
 	int64 Expiry,
 	FString Cursor,
@@ -9221,7 +9221,7 @@ void FNakamaClient::ListLeaderboardRecordsAroundOwner(
 void FNakamaClient::ListLeaderboardRecordsAroundOwner(
 	const FString& HttpKey,
 	FString LeaderboardId,
-	uint32 Limit,
+	int32 Limit,
 	FString OwnerId,
 	int64 Expiry,
 	FString Cursor,
@@ -9674,10 +9674,10 @@ void FNakamaClient::ListSubscriptions(
 
 void FNakamaClient::ListTournaments(
 	const FNakamaSession& Session,
-	uint32 CategoryStart,
-	uint32 CategoryEnd,
-	uint32 StartTime,
-	uint32 EndTime,
+	int32 CategoryStart,
+	int32 CategoryEnd,
+	int32 StartTime,
+	int32 EndTime,
 	int32 Limit,
 	FString Cursor,
 	TFunction<void(const FNakamaTournamentList&)> OnSuccess,
@@ -9731,10 +9731,10 @@ void FNakamaClient::ListTournaments(
 
 void FNakamaClient::ListTournaments(
 	const FString& HttpKey,
-	uint32 CategoryStart,
-	uint32 CategoryEnd,
-	uint32 StartTime,
-	uint32 EndTime,
+	int32 CategoryStart,
+	int32 CategoryEnd,
+	int32 StartTime,
+	int32 EndTime,
 	int32 Limit,
 	FString Cursor,
 	TFunction<void(const FNakamaTournamentList&)> OnSuccess,
@@ -9881,7 +9881,7 @@ void FNakamaClient::ListTournamentRecords(
 void FNakamaClient::ListTournamentRecordsAroundOwner(
 	const FNakamaSession& Session,
 	FString TournamentId,
-	uint32 Limit,
+	int32 Limit,
 	FString OwnerId,
 	int64 Expiry,
 	FString Cursor,
@@ -9927,7 +9927,7 @@ void FNakamaClient::ListTournamentRecordsAroundOwner(
 void FNakamaClient::ListTournamentRecordsAroundOwner(
 	const FString& HttpKey,
 	FString TournamentId,
-	uint32 Limit,
+	int32 Limit,
 	FString OwnerId,
 	int64 Expiry,
 	FString Cursor,

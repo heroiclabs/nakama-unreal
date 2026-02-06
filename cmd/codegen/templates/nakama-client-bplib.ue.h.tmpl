@@ -19,100 +19,138 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Templates/Function.h"
-#include "NakamaClient.h"
-#include "NakamaError.h"
+#include "Kismet/BlueprintAsyncActionBase.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
+#include "NakamaUnreal.h"
 
 #include "NakamaClientBlueprintLibrary.generated.h"
 
-using namespace Nakama;
+// ============================================================================
+// Blueprint-compatible client reference
+// ============================================================================
+
+USTRUCT(BlueprintType)
+struct NAKAMABLUEPRINTS_API FNakamaClientRef
+{
+	GENERATED_BODY()
+
+	FNakamaClientRef() = default;
+	FNakamaClientRef(TSharedPtr<FNakamaClient> InClient) : Client(InClient) {}
+
+	bool IsValid() const { return Client.IsValid(); }
+	TSharedPtr<FNakamaClient> GetClient() const { return Client; }
+
+private:
+	TSharedPtr<FNakamaClient> Client;
+};
+
+// ============================================================================
+// Dynamic delegates for async actions
+// ============================================================================
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaError, const FNakamaError&, Error);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnNakamaSuccess);
+
+{{- /* Generate success delegates for each unique return type */ -}}
+{{- range $idx, $typeName := uniqueReturnTypes $.Rpcs }}
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakama{{ $typeName }}, const FNakama{{ $typeName }}&, Result);
+{{- end }}
+
+// ============================================================================
+// Blueprint Function Library
+// ============================================================================
 
 /**
- * Blueprint Library to expose NakamaClient functions.
+ * Blueprint Function Library for Nakama client operations.
  */
-UCLASS()
-class NAKAMABLUEPRINTS_API UNakamaClientBlueprintLibrary : public UBlueprintFunctionLibrary
+UCLASS(meta=(ScriptName="NakamaLibrary"), MinimalAPI)
+class UNakamaBlueprintLibrary : public UBlueprintFunctionLibrary
 {
-  GENERATED_BODY()
+	GENERATED_BODY()
 
 public:
+	/**
+	 * Creates a default client to interact with Nakama server.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Nakama|Client")
+	static NAKAMABLUEPRINTS_API FNakamaClientRef CreateDefaultClient(
+		const FString& ServerKey = TEXT("defaultkey"),
+		const FString& Host = TEXT("localhost"),
+		int32 Port = 7350,
+		bool UseSSL = false,
+		bool EnableDebug = true);
 
-  /**
-  * Creates a default client to interact with Nakama server.
-  *
-  * @param ServerKey Server key should match the one on the Nakama Server.
-  * @param Host The endpoint host name.
-  * @param Port The port to use, default is 7350.
-  * @param UseSSL Use "https" scheme if you've setup SSL.
-  * @param EnableDebug To enable logs output to console with debug logging level.
-  */
-  UFUNCTION(BlueprintCallable, Category = "Nakama|Client")
-  static UNakamaClient* CreateDefaultClient(
-    const FString& ServerKey = "defaultkey",
-    const FString& Host = "localhost",
-    int32 Port = 7350,
-    bool UseSSL = false,
-    bool EnableDebug = true
-  );
-
-
-  {{/* Map each RPC to a function in the client library */}}
-  {{- range $idx, $rpc := $.Rpcs }}
-
-  {{- $category := "Client" -}}{{/* TODO: Custom mapping somewhere? */}}
-
-  {{- $functionComment := $rpc.Comment -}}
-
-  {{- $functionName := $rpc.Name -}}
-  {{- $functionReturnType := "void" -}}{{/* TODO: Sometimes bool */}}
-
-  {{- $requestType := $rpc.RequestType -}}
-  {{- $returnType := $rpc.ReturnType -}}
-  {{- $hasParams := ne $requestType nil }}
-  {{- $hasReturn := ne $returnType nil }}
-
-  {{- $successDelegateName := appendStringNew "FOn" ( $rpc.Name | pascalCase) }}
-
-  {{/* We have two versions for each function  */}}
-  {{/* Delegate and TFunction(lambda) overload */}}
-  /**
-  *
-  * {{ $functionComment }}
-  *
-  {{ if $hasParams -}}
-  {{ range $idx, $field := $requestType.Fields -}}
-  * @param {{$field.Name | pascalCase}} {{$field.Comment.Message}}{{"\n  "}}
-  {{- end -}}
-  {{ range $idx, $field := $requestType.MapFields -}}
-  * @param {{$field.Name | pascalCase}} {{$field.Comment.Message}}{{"\n  "}}
-  {{- end -}}
-  {{- end -}}
-  * @param OnSuccess Callback to invoke on success
-  * @param OnError Callback to invoke on error
-  */
-  static {{ $functionReturnType }} {{ $functionName }}(
-    UNakamaClient* Client
-    {{- if $hasParams -}}
-    
-    {{- range $idx, $field := $requestType.Fields -}}
-    {{- ",\n    " }}{{getUnrealType $field.Type $field.Repeated}} {{$field.Name | pascalCase}}
-    {{- end -}}{{/* End foreach normal field in params */}}
-
-    {{- range $idx, $field := $requestType.MapFields -}}
-    {{- ",\n    " }}{{getUnrealMapType $field.Type}} {{$field.Name | pascalCase}}
-    {{- end -}}{{/* End foreach map field in params */}}
-    
-    {{- end -}}{{/* End if-hasParams */}}
-
-    {{- if $hasReturn -}}
-    {{- $returnTypeName := getUnrealReturnType $returnType.Name -}}
-    {{- ",\n    " }}TFunction<void({{$returnTypeName}})> OnSuccess,
-    {{- else -}}
-    {{- ",\n    " }}TFunction<void()> OnSuccess,
-    {{- end -}}
-    {{- "\n    " }}TFunction<void(const FNakamaError& Error)> OnError
-  );
-
-  {{- end -}}{{/* End foreach RPC */}}
+	/**
+	 * Checks if a client reference is valid.
+	 */
+	UFUNCTION(BlueprintPure, Category = "Nakama|Client")
+	static NAKAMABLUEPRINTS_API bool IsValidClient(const FNakamaClientRef& Client);
 };
+
+// ============================================================================
+// Async Action Classes (one per RPC)
+// ============================================================================
+{{- range $idx, $rpc := $.Rpcs }}
+
+{{- $requestType := $rpc.RequestType -}}
+{{- $returnType := $rpc.ReturnType -}}
+{{- $hasParams := ne $requestType nil }}
+{{- $hasReturn := ne $returnType nil }}
+{{- $isAuthenticate := containsString $rpc.Name "Authenticate" }}
+{{- $isSessionRefresh := eq $rpc.Name "SessionRefresh" }}
+{{- $needsSession := and (not $isAuthenticate) (not $isSessionRefresh) }}
+
+/**
+ * {{ $rpc.Comment }}
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClient{{ $rpc.Name }} : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+{{- if $hasReturn }}
+	UPROPERTY(BlueprintAssignable)
+	FOnNakama{{ $returnType.Name }} OnSuccess;
+{{- else }}
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaSuccess OnSuccess;
+{{- end }}
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "{{ $rpc.Name }}"), Category = "Nakama|Client")
+	static UNakamaClient{{ $rpc.Name }}* {{ $rpc.Name }}(
+		UObject* WorldContextObject,
+		const FNakamaClientRef& Client
+{{- if $needsSession }},
+		const FNakamaSession& Session
+{{- end }}
+{{- if $hasParams }}
+{{- range $fidx, $field := $requestType.Fields }},
+		{{ getUnrealType $field.Type $field.Repeated }} {{ $field.Name | pascalCase }}
+{{- end }}
+{{- range $fidx, $field := $requestType.MapFields }},
+		const {{ getUnrealMapType $field.Type }}& {{ $field.Name | pascalCase }}
+{{- end }}
+{{- end }});
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientRef Client;
+
+{{- if $needsSession }}
+	FNakamaSession Session;
+{{- end }}
+{{- if $hasParams }}
+{{- range $fidx, $field := $requestType.Fields }}
+	{{ getUnrealFieldType $field.Type $field.Repeated }} Stored{{ $field.Name | pascalCase }};
+{{- end }}
+{{- range $fidx, $field := $requestType.MapFields }}
+	{{ getUnrealMapType $field.Type }} Stored{{ $field.Name | pascalCase }};
+{{- end }}
+{{- end }}
+};
+{{- end }}

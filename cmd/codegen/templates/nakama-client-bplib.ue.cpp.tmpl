@@ -18,78 +18,126 @@
 
 #include "NakamaClientBlueprintLibrary.h"
 
-using namespace Nakama;
+// ============================================================================
+// Blueprint Function Library Implementation
+// ============================================================================
 
-
-UNakamaClient* UNakamaClientBlueprintLibrary::CreateDefaultClient(
-  const FString& ServerKey,
-  const FString& Host,
-  int32 Port,
-  bool UseSSL,
-  bool EnableDebug
-)
+FNakamaClientRef UNakamaBlueprintLibrary::CreateDefaultClient(
+	const FString& ServerKey,
+	const FString& Host,
+	int32 Port,
+	bool UseSSL,
+	bool EnableDebug)
 {
-  return UNakamaClient::CreateDefaultClient(ServerKey, Host, Port, UseSSL, EnableDebug);
+	return FNakamaClientRef(FNakamaClient::CreateDefaultClient(ServerKey, Host, Port, UseSSL, EnableDebug));
 }
 
+bool UNakamaBlueprintLibrary::IsValidClient(const FNakamaClientRef& Client)
+{
+	return Client.IsValid();
+}
 
-{{/* Map each RPC to a function in the client library */}}
+// ============================================================================
+// Async Action Classes Implementation
+// ============================================================================
 {{- range $idx, $rpc := $.Rpcs }}
-
-{{- $category := "Client" -}}{{/* TODO: Custom mapping somewhere? */}}
-
-{{- $functionComment := $rpc.Comment -}}
-
-{{- $functionName := $rpc.Name -}}
-{{- $functionReturnType := "void" -}}{{/* TODO: Sometimes bool */}}
 
 {{- $requestType := $rpc.RequestType -}}
 {{- $returnType := $rpc.ReturnType -}}
 {{- $hasParams := ne $requestType nil }}
 {{- $hasReturn := ne $returnType nil }}
+{{- $isAuthenticate := containsString $rpc.Name "Authenticate" }}
+{{- $isSessionRefresh := eq $rpc.Name "SessionRefresh" }}
+{{- $needsSession := and (not $isAuthenticate) (not $isSessionRefresh) }}
 
-{{- $successDelegateName := appendStringNew "FOn" ( $rpc.Name | pascalCase) }}
-
-{{ $functionReturnType }} UNakamaClientBlueprintLibrary::{{ $functionName }}(
-  UNakamaClient* Client
-  {{- if $hasParams -}}
-  
-  {{- range $idx, $field := $requestType.Fields -}}
-  {{- ",\n  " }}{{getUnrealType $field.Type $field.Repeated}} {{$field.Name | pascalCase}}
-  {{- end -}}{{/* End foreach normal field in params */}}
-
-  {{- range $idx, $field := $requestType.MapFields -}}
-  {{- ",\n  " }}{{getUnrealMapType $field.Type}} {{$field.Name | pascalCase}}
-  {{- end -}}{{/* End foreach map field in params */}}
-  
-  {{- end -}}{{/* End if-hasParams */}}
-
-  {{- if $hasReturn -}}
-  {{- $constrefReturnTypeName := getUnrealReturnType $returnType.Name -}}
-  {{- ",\n  " }}TFunction<void({{$constrefReturnTypeName}})> OnSuccess,
-  {{- else -}}
-  {{- ",\n  " }}TFunction<void()> OnSuccess,
-  {{- end -}}
-  {{- "\n  " }}TFunction<void(const FNakamaError& Error)> OnError
-)
+// {{ $rpc.Name }}
+UNakamaClient{{ $rpc.Name }}* UNakamaClient{{ $rpc.Name }}::{{ $rpc.Name }}(
+	UObject* WorldContextObject,
+	const FNakamaClientRef& Client
+{{- if $needsSession }},
+	const FNakamaSession& Session
+{{- end }}
+{{- if $hasParams }}
+{{- range $fidx, $field := $requestType.Fields }},
+	{{ getUnrealType $field.Type $field.Repeated }} {{ $field.Name | pascalCase }}
+{{- end }}
+{{- range $fidx, $field := $requestType.MapFields }},
+	const {{ getUnrealMapType $field.Type }}& {{ $field.Name | pascalCase }}
+{{- end }}
+{{- end }})
 {
-  if (!Client)
-  {
-    FNakamaError Error;
-    Error.Message = TEXT("Nakama client is null.");
-    if (OnError)
-    {
-      OnError(Error);
-    }
-    return;
-  }
-
-  FNakamaError Error;
-  Error.Message = TEXT("Not implemented in generated blueprint library.");
-  if (OnError)
-  {
-    OnError(Error);
-  }
+	UNakamaClient{{ $rpc.Name }}* Action = NewObject<UNakamaClient{{ $rpc.Name }}>();
+	Action->Client = Client;
+{{- if $needsSession }}
+	Action->Session = Session;
+{{- end }}
+{{- if $hasParams }}
+{{- range $fidx, $field := $requestType.Fields }}
+	Action->Stored{{ $field.Name | pascalCase }} = {{ $field.Name | pascalCase }};
+{{- end }}
+{{- range $fidx, $field := $requestType.MapFields }}
+	Action->Stored{{ $field.Name | pascalCase }} = {{ $field.Name | pascalCase }};
+{{- end }}
+{{- end }}
+	Action->RegisterWithGameInstance(WorldContextObject);
+	return Action;
 }
 
-{{- end -}}{{/* End foreach RPC */}}
+void UNakamaClient{{ $rpc.Name }}::Activate()
+{
+	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
+	if (!ClientPtr)
+	{
+		FNakamaError Error;
+		Error.Message = TEXT("Invalid Nakama client");
+		Error.Code = -1;
+		OnError.Broadcast(Error);
+		SetReadyToDestroy();
+		return;
+	}
+
+	ClientPtr->{{ $rpc.Name }}(
+{{- if $needsSession }}
+		Session,
+{{- end }}
+{{- if $hasParams }}
+{{- range $fidx, $field := $requestType.Fields }}
+		Stored{{ $field.Name | pascalCase }},
+{{- end }}
+{{- range $fidx, $field := $requestType.MapFields }}
+		Stored{{ $field.Name | pascalCase }},
+{{- end }}
+{{- end }}
+{{- if $hasReturn }}
+		[this](const FNakama{{ $returnType.Name }}& Result)
+		{
+			OnSuccess.Broadcast(Result);
+			SetReadyToDestroy();
+		},
+{{- else }}
+		[this]()
+		{
+			OnSuccess.Broadcast();
+			SetReadyToDestroy();
+		},
+{{- end }}
+		[this](const FNakamaError& Error)
+		{
+			OnError.Broadcast(Error);
+			SetReadyToDestroy();
+		}
+	);
+}
+{{- end }}
+
+// ============================================================================
+// Module Implementation
+// ============================================================================
+
+#include "Modules/ModuleManager.h"
+
+class FNakamaBlueprintsModule : public IModuleInterface
+{
+};
+
+IMPLEMENT_MODULE(FNakamaBlueprintsModule, NakamaBlueprints)

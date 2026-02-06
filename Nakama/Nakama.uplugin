@@ -26,6 +26,18 @@
 				"Mac",
 				"Android"
 			]
+		},
+		{
+			"Name": "NakamaBlueprints",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"WhitelistPlatforms": [
+				"Win64",
+				"Linux",
+				"IOS",
+				"Mac",
+				"Android"
+			]
 		}
 	]
 }

@@ -19,1753 +19,2877 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Templates/Function.h"
-#include "NakamaClient.h"
-#include "NakamaError.h"
+#include "Kismet/BlueprintAsyncActionBase.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
+#include "NakamaUnreal.h"
 
 #include "NakamaClientBlueprintLibrary.generated.h"
 
-using namespace Nakama;
+// ============================================================================
+// Blueprint-compatible client reference
+// ============================================================================
+
+USTRUCT(BlueprintType)
+struct NAKAMABLUEPRINTS_API FNakamaClientRef
+{
+	GENERATED_BODY()
+
+	FNakamaClientRef() = default;
+	FNakamaClientRef(TSharedPtr<FNakamaClient> InClient) : Client(InClient) {}
+
+	bool IsValid() const { return Client.IsValid(); }
+	TSharedPtr<FNakamaClient> GetClient() const { return Client; }
+
+private:
+	TSharedPtr<FNakamaClient> Client;
+};
+
+// ============================================================================
+// Dynamic delegates for async actions
+// ============================================================================
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaError, const FNakamaError&, Error);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnNakamaSuccess);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaSession, const FNakamaSession&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaGroup, const FNakamaGroup&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaAccount, const FNakamaAccount&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaUsers, const FNakamaUsers&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaValidatedSubscription, const FNakamaValidatedSubscription&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaMatchmakerStats, const FNakamaMatchmakerStats&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaChannelMessageList, const FNakamaChannelMessageList&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaFriendList, const FNakamaFriendList&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaFriendsOfFriendsList, const FNakamaFriendsOfFriendsList&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaGroupList, const FNakamaGroupList&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaGroupUserList, const FNakamaGroupUserList&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaLeaderboardRecordList, const FNakamaLeaderboardRecordList&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaMatchList, const FNakamaMatchList&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaPartyList, const FNakamaPartyList&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaNotificationList, const FNakamaNotificationList&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaStorageObjectList, const FNakamaStorageObjectList&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaSubscriptionList, const FNakamaSubscriptionList&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaTournamentList, const FNakamaTournamentList&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaTournamentRecordList, const FNakamaTournamentRecordList&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaUserGroupList, const FNakamaUserGroupList&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaStorageObjects, const FNakamaStorageObjects&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaRpc, const FNakamaRpc&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaValidatePurchaseResponse, const FNakamaValidatePurchaseResponse&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaValidateSubscriptionResponse, const FNakamaValidateSubscriptionResponse&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaLeaderboardRecord, const FNakamaLeaderboardRecord&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaStorageObjectAcks, const FNakamaStorageObjectAcks&, Result);
+
+// ============================================================================
+// Blueprint Function Library
+// ============================================================================
 
 /**
- * Blueprint Library to expose NakamaClient functions.
+ * Blueprint Function Library for Nakama client operations.
  */
-UCLASS()
-class NAKAMABLUEPRINTS_API UNakamaClientBlueprintLibrary : public UBlueprintFunctionLibrary
+UCLASS(meta=(ScriptName="NakamaLibrary"), MinimalAPI)
+class UNakamaBlueprintLibrary : public UBlueprintFunctionLibrary
 {
-  GENERATED_BODY()
+	GENERATED_BODY()
 
 public:
-
-  /**
-  * Creates a default client to interact with Nakama server.
-  *
-  * @param ServerKey Server key should match the one on the Nakama Server.
-  * @param Host The endpoint host name.
-  * @param Port The port to use, default is 7350.
-  * @param UseSSL Use "https" scheme if you've setup SSL.
-  * @param EnableDebug To enable logs output to console with debug logging level.
-  */
-  UFUNCTION(BlueprintCallable, Category = "Nakama|Client")
-  static UNakamaClient* CreateDefaultClient(
-    const FString& ServerKey = "defaultkey",
-    const FString& Host = "localhost",
-    int32 Port = 7350,
-    bool UseSSL = false,
-    bool EnableDebug = true
-  );
-
-
-  
-
-  
-  
-  /**
-  *
-  * Add friends by ID or username to a user's account.
-  *
-  * @param Ids  The account id of a user.
-  * @param Usernames  The account username of a user.
-  * @param Metadata  Optional metadata to add to friends.
-  * @param OnSuccess Callback to invoke on success
-  * @param OnError Callback to invoke on error
-  */
-  static void AddFriends(
-    UNakamaClient* Client,
-    const TArray<FString>& Ids,
-    const TArray<FString>& Usernames,
-    FString Metadata,
-    TFunction<void()> OnSuccess,
-    TFunction<void(const FNakamaError& Error)> OnError
-  );
-
-  
-  
-  /**
-  *
-  * Add users to a group.
-  *
-  * @param GroupId  The group to add users to.
-  * @param UserIds  The users to add.
-  * @param OnSuccess Callback to invoke on success
-  * @param OnError Callback to invoke on error
-  */
-  static void AddGroupUsers(
-    UNakamaClient* Client,
-    FString GroupId,
-    const TArray<FString>& UserIds,
-    TFunction<void()> OnSuccess,
-    TFunction<void(const FNakamaError& Error)> OnError
-  );
-
-  
-  
-  /**
-  *
-  * Refresh a user's session using a refresh token retrieved from a previous authentication request.
-  *
-  * @param Token  Refresh token.
-  * @param Vars  Extra information that will be bundled in the session token.
-  * @param OnSuccess Callback to invoke on success
-  * @param OnError Callback to invoke on error
-  */
-  static void SessionRefresh(
-    UNakamaClient* Client,
-    FString Token,
-    TMap<FString, FString> Vars,
-    TFunction<void(FNakamaSession)> OnSuccess,
-    TFunction<void(const FNakamaError& Error)> OnError
-  );
-
-  
-  
-  /**
-  *
-  * Log out a session, invalidate a refresh token, or log out all sessions/refresh tokens for a user.
-  *
-  * @param Token  Session token to log out.
-  * @param RefreshToken  Refresh token to invalidate.
-  * @param OnSuccess Callback to invoke on success
-  * @param OnError Callback to invoke on error
-  */
-  static void SessionLogout(
-    UNakamaClient* Client,
-    FString Token,
-    FString RefreshToken,
-    TFunction<void()> OnSuccess,
-    TFunction<void(const FNakamaError& Error)> OnError
-  );
-
-  
-  
-  /**
-  *
-  * Authenticate a user with an Apple ID against the server.
-  *
-  * @param Account  The Apple account details.
-  * @param Create  Register the account if the user does not already exist.
-  * @param Username  Set the username on the account at register. Must be unique.
-  * @param OnSuccess Callback to invoke on success
-  * @param OnError Callback to invoke on error
-  */
-  static void AuthenticateApple(
-    UNakamaClient* Client,
-    FNakamaAccountApple Account,
-    bool Create,
-    FString Username,
-    TFunction<void(FNakamaSession)> OnSuccess,
-    TFunction<void(const FNakamaError& Error)> OnError
-  );
-
-  
-  
-  /**
-  *
-  * Authenticate a user with a custom id against the server.
-  *
-  * @param Account  The custom account details.
-  * @param Create  Register the account if the user does not already exist.
-  * @param Username  Set the username on the account at register. Must be unique.
-  * @param OnSuccess Callback to invoke on success
-  * @param OnError Callback to invoke on error
-  */
-  static void AuthenticateCustom(
-    UNakamaClient* Client,
-    FNakamaAccountCustom Account,
-    bool Create,
-    FString Username,
-    TFunction<void(FNakamaSession)> OnSuccess,
-    TFunction<void(const FNakamaError& Error)> OnError
-  );
-
-  
-  
-  /**
-  *
-  * Authenticate a user with a device id against the server.
-  *
-  * @param Account  The device account details.
-  * @param Create  Register the account if the user does not already exist.
-  * @param Username  Set the username on the account at register. Must be unique.
-  * @param OnSuccess Callback to invoke on success
-  * @param OnError Callback to invoke on error
-  */
-  static void AuthenticateDevice(
-    UNakamaClient* Client,
-    FNakamaAccountDevice Account,
-    bool Create,
-    FString Username,
-    TFunction<void(FNakamaSession)> OnSuccess,
-    TFunction<void(const FNakamaError& Error)> OnError
-  );
-
-  
-  
-  /**
-  *
-  * Authenticate a user with an email+password against the server.
-  *
-  * @param Account  The email account details.
-  * @param Create  Register the account if the user does not already exist.
-  * @param Username  Set the username on the account at register. Must be unique.
-  * @param OnSuccess Callback to invoke on success
-  * @param OnError Callback to invoke on error
-  */
-  static void AuthenticateEmail(
-    UNakamaClient* Client,
-    FNakamaAccountEmail Account,
-    bool Create,
-    FString Username,
-    TFunction<void(FNakamaSession)> OnSuccess,
-    TFunction<void(const FNakamaError& Error)> OnError
-  );
-
-  
-  
-  /**
-  *
-  * Authenticate a user with a Facebook OAuth token against the server.
-  *
-  * @param Account  The Facebook account details.
-  * @param Create  Register the account if the user does not already exist.
-  * @param Username  Set the username on the account at register. Must be unique.
-  * @param Sync  Import Facebook friends for the user.
-  * @param OnSuccess Callback to invoke on success
-  * @param OnError Callback to invoke on error
-  */
-  static void AuthenticateFacebook(
-    UNakamaClient* Client,
-    FNakamaAccountFacebook Account,
-    bool Create,
-    FString Username,
-    bool Sync,
-    TFunction<void(FNakamaSession)> OnSuccess,
-    TFunction<void(const FNakamaError& Error)> OnError
-  );
-
-  
-  
-  /**
-  *
-  * Authenticate a user with a Facebook Instant Game token against the server.
-  *
-  * @param Account  The Facebook Instant Game account details.
-  * @param Create  Register the account if the user does not already exist.
-  * @param Username  Set the username on the account at register. Must be unique.
-  * @param OnSuccess Callback to invoke on success
-  * @param OnError Callback to invoke on error
-  */
-  static void AuthenticateFacebookInstantGame(
-    UNakamaClient* Client,
-    FNakamaAccountFacebookInstantGame Account,
-    bool Create,
-    FString Username,
-    TFunction<void(FNakamaSession)> OnSuccess,
-    TFunction<void(const FNakamaError& Error)> OnError
-  );
-
-  
-  
-  /**
-  *
-  * Authenticate a user with Apple's GameCenter against the server.
-  *
-  * @param Account  The Game Center account details.
-  * @param Create  Register the account if the user does not already exist.
-  * @param Username  Set the username on the account at register. Must be unique.
-  * @param OnSuccess Callback to invoke on success
-  * @param OnError Callback to invoke on error
-  */
-  static void AuthenticateGameCenter(
-    UNakamaClient* Client,
-    FNakamaAccountGameCenter Account,
-    bool Create,
-    FString Username,
-    TFunction<void(FNakamaSession)> OnSuccess,
-    TFunction<void(const FNakamaError& Error)> OnError
-  );
-
-  
-  
-  /**
-  *
-  * Authenticate a user with Google against the server.
-  *
-  * @param Account  The Google account details.
-  * @param Create  Register the account if the user does not already exist.
-  * @param Username  Set the username on the account at register. Must be unique.
-  * @param OnSuccess Callback to invoke on success
-  * @param OnError Callback to invoke on error
-  */
-  static void AuthenticateGoogle(
-    UNakamaClient* Client,
-    FNakamaAccountGoogle Account,
-    bool Create,
-    FString Username,
-    TFunction<void(FNakamaSession)> OnSuccess,
-    TFunction<void(const FNakamaError& Error)> OnError
-  );
-
-  
-  
-  /**
-  *
-  * Authenticate a user with Steam against the server.
-  *
-  * @param Account  The Steam account details.
-  * @param Create  Register the account if the user does not already exist.
-  * @param Username  Set the username on the account at register. Must be unique.
-  * @param Sync  Import Steam friends for the user.
-  * @param OnSuccess Callback to invoke on success
-  * @param OnError Callback to invoke on error
-  */
-  static void AuthenticateSteam(
-    UNakamaClient* Client,
-    FNakamaAccountSteam Account,
-    bool Create,
-    FString Username,
-    bool Sync,
-    TFunction<void(FNakamaSession)> OnSuccess,
-    TFunction<void(const FNakamaError& Error)> OnError
-  );
-
-  
-  
-  /**
-  *
-  * Ban a set of users from a group.
-  *
-  * @param GroupId  The group to ban users from.
-  * @param UserIds  The users to ban.
-  * @param OnSuccess Callback to invoke on success
-  * @param OnError Callback to invoke on error
-  */
-  static void BanGroupUsers(
-    UNakamaClient* Client,
-    FString GroupId,
-    const TArray<FString>& UserIds,
-    TFunction<void()> OnSuccess,
-    TFunction<void(const FNakamaError& Error)> OnError
-  );
-
-  
-  
-  /**
-  *
-  * Block one or more users by ID or username.
-  *
-  * @param Ids  The account id of a user.
-  * @param Usernames  The account username of a user.
-  * @param OnSuccess Callback to invoke on success
-  * @param OnError Callback to invoke on error
-  */
-  static void BlockFriends(
-    UNakamaClient* Client,
-    const TArray<FString>& Ids,
-    const TArray<FString>& Usernames,
-    TFunction<void()> OnSuccess,
-    TFunction<void(const FNakamaError& Error)> OnError
-  );
-
-  
-  
-  /**
-  *
-  * Create a new group with the current user as the owner.
-  *
-  * @param Name  A unique name for the group.
-  * @param Description  A description for the group.
-  * @param LangTag  The language expected to be a tag which follows the BCP-47 spec.
-  * @param AvatarUrl  A URL for an avatar image.
-  * @param Open  Mark a group as open or not where only admins can accept members.
-  * @param MaxCount  Maximum number of group members.
-  * @param OnSuccess Callback to invoke on success
-  * @param OnError Callback to invoke on error
-  */
-  static void CreateGroup(
-    UNakamaClient* Client,
-    FString Name,
-    FString Description,
-    FString LangTag,
-    FString AvatarUrl,
-    bool Open,
-    int32 MaxCount,
-    TFunction<void(FNakamaGroup)> OnSuccess,
-    TFunction<void(const FNakamaError& Error)> OnError
-  );
-
-  
-  
-  /**
-  *
-  * Delete the current user's account.
-  *
-  * @param OnSuccess Callback to invoke on success
-  * @param OnError Callback to invoke on error
-  */
-  static void DeleteAccount(
-    UNakamaClient* Client,
-    TFunction<void()> OnSuccess,
-    TFunction<void(const FNakamaError& Error)> OnError
-  );
-
-  
-  
-  /**
-  *
-  * Delete one or more users by ID or username.
-  *
-  * @param Ids  The account id of a user.
-  * @param Usernames  The account username of a user.
-  * @param OnSuccess Callback to invoke on success
-  * @param OnError Callback to invoke on error
-  */
-  static void DeleteFriends(
-    UNakamaClient* Client,
-    const TArray<FString>& Ids,
-    const TArray<FString>& Usernames,
-    TFunction<void()> OnSuccess,
-    TFunction<void(const FNakamaError& Error)> OnError
-  );
-
-  
-  
-  /**
-  *
-  * Delete a group by ID.
-  *
-  * @param GroupId  The id of a group.
-  * @param OnSuccess Callback to invoke on success
-  * @param OnError Callback to invoke on error
-  */
-  static void DeleteGroup(
-    UNakamaClient* Client,
-    FString GroupId,
-    TFunction<void()> OnSuccess,
-    TFunction<void(const FNakamaError& Error)> OnError
-  );
-
-  
-  
-  /**
-  *
-  * Delete a leaderboard record.
-  *
-  * @param LeaderboardId  The leaderboard ID to delete from.
-  * @param OnSuccess Callback to invoke on success
-  * @param OnError Callback to invoke on error
-  */
-  static void DeleteLeaderboardRecord(
-    UNakamaClient* Client,
-    FString LeaderboardId,
-    TFunction<void()> OnSuccess,
-    TFunction<void(const FNakamaError& Error)> OnError
-  );
-
-  
-  
-  /**
-  *
-  * Delete one or more notifications for the current user.
-  *
-  * @param Ids  The id of notifications.
-  * @param OnSuccess Callback to invoke on success
-  * @param OnError Callback to invoke on error
-  */
-  static void DeleteNotifications(
-    UNakamaClient* Client,
-    const TArray<FString>& Ids,
-    TFunction<void()> OnSuccess,
-    TFunction<void(const FNakamaError& Error)> OnError
-  );
-
-  
-  
-  /**
-  *
-  * Delete a tournament record.
-  *
-  * @param TournamentId  The tournament ID to delete from.
-  * @param OnSuccess Callback to invoke on success
-  * @param OnError Callback to invoke on error
-  */
-  static void DeleteTournamentRecord(
-    UNakamaClient* Client,
-    FString TournamentId,
-    TFunction<void()> OnSuccess,
-    TFunction<void(const FNakamaError& Error)> OnError
-  );
-
-  
-  
-  /**
-  *
-  * Delete one or more objects by ID or username.
-  *
-  * @param ObjectIds  Batch of storage objects.
-  * @param OnSuccess Callback to invoke on success
-  * @param OnError Callback to invoke on error
-  */
-  static void DeleteStorageObjects(
-    UNakamaClient* Client,
-    const TArray<FNakamaDeleteStorageObjectId>& ObjectIds,
-    TFunction<void()> OnSuccess,
-    TFunction<void(const FNakamaError& Error)> OnError
-  );
-
-  
-  
-  /**
-  *
-  * Submit an event for processing in the server's registered runtime custom events handler.
-  *
-  * @param Name  An event name, type, category, or identifier.
-  * @param Timestamp  The time when the event was triggered.
-  * @param External  True if the event came directly from a client call, false otherwise.
-  * @param Properties  Arbitrary event property values.
-  * @param OnSuccess Callback to invoke on success
-  * @param OnError Callback to invoke on error
-  */
-  static void Event(
-    UNakamaClient* Client,
-    FString Name,
-    FString Timestamp,
-    bool External,
-    TMap<FString, FString> Properties,
-    TFunction<void()> OnSuccess,
-    TFunction<void(const FNakamaError& Error)> OnError
-  );
-
-  
-  
-  /**
-  *
-  * Fetch the current user's account.
-  *
-  * @param OnSuccess Callback to invoke on success
-  * @param OnError Callback to invoke on error
-  */
-  static void GetAccount(
-    UNakamaClient* Client,
-    TFunction<void(FNakamaAccount)> OnSuccess,
-    TFunction<void(const FNakamaError& Error)> OnError
-  );
-
-  
-  
-  /**
-  *
-  * Fetch zero or more users by ID and/or username.
-  *
-  * @param Ids  The account id of a user.
-  * @param Usernames  The account username of a user.
-  * @param FacebookIds  The Facebook ID of a user.
-  * @param OnSuccess Callback to invoke on success
-  * @param OnError Callback to invoke on error
-  */
-  static void GetUsers(
-    UNakamaClient* Client,
-    const TArray<FString>& Ids,
-    const TArray<FString>& Usernames,
-    const TArray<FString>& FacebookIds,
-    TFunction<void(FNakamaUsers)> OnSuccess,
-    TFunction<void(const FNakamaError& Error)> OnError
-  );
-
-  
-  
-  /**
-  *
-  * Get subscription by product id.
-  *
-  * @param ProductId  Product id of the subscription
-  * @param OnSuccess Callback to invoke on success
-  * @param OnError Callback to invoke on error
-  */
-  static void GetSubscription(
-    UNakamaClient* Client,
-    FString ProductId,
-    TFunction<void(FNakamaValidatedSubscription)> OnSuccess,
-    TFunction<void(const FNakamaError& Error)> OnError
-  );
-
-  
-  
-  /**
-  *
-  * Get matchmaker stats.
-  *
-  * @param OnSuccess Callback to invoke on success
-  * @param OnError Callback to invoke on error
-  */
-  static void GetMatchmakerStats(
-    UNakamaClient* Client,
-    TFunction<void(FNakamaMatchmakerStats)> OnSuccess,
-    TFunction<void(const FNakamaError& Error)> OnError
-  );
-
-  
-  
-  /**
-  *
-  * A healthcheck which load balancers can use to check the service.
-  *
-  * @param OnSuccess Callback to invoke on success
-  * @param OnError Callback to invoke on error
-  */
-  static void Healthcheck(
-    UNakamaClient* Client,
-    TFunction<void()> OnSuccess,
-    TFunction<void(const FNakamaError& Error)> OnError
-  );
-
-  
-  
-  /**
-  *
-  * Import Facebook friends and add them to a user's account.
-  *
-  * @param Account  The Facebook account details.
-  * @param Reset  Reset the current user's friends list.
-  * @param OnSuccess Callback to invoke on success
-  * @param OnError Callback to invoke on error
-  */
-  static void ImportFacebookFriends(
-    UNakamaClient* Client,
-    FNakamaAccountFacebook Account,
-    bool Reset,
-    TFunction<void()> OnSuccess,
-    TFunction<void(const FNakamaError& Error)> OnError
-  );
-
-  
-  
-  /**
-  *
-  * Import Steam friends and add them to a user's account.
-  *
-  * @param Account  The Facebook account details.
-  * @param Reset  Reset the current user's friends list.
-  * @param OnSuccess Callback to invoke on success
-  * @param OnError Callback to invoke on error
-  */
-  static void ImportSteamFriends(
-    UNakamaClient* Client,
-    FNakamaAccountSteam Account,
-    bool Reset,
-    TFunction<void()> OnSuccess,
-    TFunction<void(const FNakamaError& Error)> OnError
-  );
-
-  
-  
-  /**
-  *
-  * Immediately join an open group, or request to join a closed one.
-  *
-  * @param GroupId  The group ID to join. The group must already exist.
-  * @param OnSuccess Callback to invoke on success
-  * @param OnError Callback to invoke on error
-  */
-  static void JoinGroup(
-    UNakamaClient* Client,
-    FString GroupId,
-    TFunction<void()> OnSuccess,
-    TFunction<void(const FNakamaError& Error)> OnError
-  );
-
-  
-  
-  /**
-  *
-  * Attempt to join an open and running tournament.
-  *
-  * @param TournamentId  The ID of the tournament to join. The tournament must already exist.
-  * @param OnSuccess Callback to invoke on success
-  * @param OnError Callback to invoke on error
-  */
-  static void JoinTournament(
-    UNakamaClient* Client,
-    FString TournamentId,
-    TFunction<void()> OnSuccess,
-    TFunction<void(const FNakamaError& Error)> OnError
-  );
-
-  
-  
-  /**
-  *
-  * Kick a set of users from a group.
-  *
-  * @param GroupId  The group ID to kick from.
-  * @param UserIds  The users to kick.
-  * @param OnSuccess Callback to invoke on success
-  * @param OnError Callback to invoke on error
-  */
-  static void KickGroupUsers(
-    UNakamaClient* Client,
-    FString GroupId,
-    const TArray<FString>& UserIds,
-    TFunction<void()> OnSuccess,
-    TFunction<void(const FNakamaError& Error)> OnError
-  );
-
-  
-  
-  /**
-  *
-  * Leave a group the user is a member of.
-  *
-  * @param GroupId  The group ID to leave.
-  * @param OnSuccess Callback to invoke on success
-  * @param OnError Callback to invoke on error
-  */
-  static void LeaveGroup(
-    UNakamaClient* Client,
-    FString GroupId,
-    TFunction<void()> OnSuccess,
-    TFunction<void(const FNakamaError& Error)> OnError
-  );
-
-  
-  
-  /**
-  *
-  * Add an Apple ID to the social profiles on the current user's account.
-  *
-  * @param Token  The ID token received from Apple to validate.
-  * @param Vars  Extra information that will be bundled in the session token.
-  * @param OnSuccess Callback to invoke on success
-  * @param OnError Callback to invoke on error
-  */
-  static void LinkApple(
-    UNakamaClient* Client,
-    FString Token,
-    TMap<FString, FString> Vars,
-    TFunction<void()> OnSuccess,
-    TFunction<void(const FNakamaError& Error)> OnError
-  );
-
-  
-  
-  /**
-  *
-  * Add a custom ID to the social profiles on the current user's account.
-  *
-  * @param Id  A custom identifier.
-  * @param Vars  Extra information that will be bundled in the session token.
-  * @param OnSuccess Callback to invoke on success
-  * @param OnError Callback to invoke on error
-  */
-  static void LinkCustom(
-    UNakamaClient* Client,
-    FString Id,
-    TMap<FString, FString> Vars,
-    TFunction<void()> OnSuccess,
-    TFunction<void(const FNakamaError& Error)> OnError
-  );
-
-  
-  
-  /**
-  *
-  * Add a device ID to the social profiles on the current user's account.
-  *
-  * @param Id  A device identifier. Should be obtained by a platform-specific device API.
-  * @param Vars  Extra information that will be bundled in the session token.
-  * @param OnSuccess Callback to invoke on success
-  * @param OnError Callback to invoke on error
-  */
-  static void LinkDevice(
-    UNakamaClient* Client,
-    FString Id,
-    TMap<FString, FString> Vars,
-    TFunction<void()> OnSuccess,
-    TFunction<void(const FNakamaError& Error)> OnError
-  );
-
-  
-  
-  /**
-  *
-  * Add an email+password to the social profiles on the current user's account.
-  *
-  * @param Email  A valid RFC-5322 email address.
-  * @param Password  A password for the user account.
-  * @param Vars  Extra information that will be bundled in the session token.
-  * @param OnSuccess Callback to invoke on success
-  * @param OnError Callback to invoke on error
-  */
-  static void LinkEmail(
-    UNakamaClient* Client,
-    FString Email,
-    FString Password,
-    TMap<FString, FString> Vars,
-    TFunction<void()> OnSuccess,
-    TFunction<void(const FNakamaError& Error)> OnError
-  );
-
-  
-  
-  /**
-  *
-  * Add Facebook to the social profiles on the current user's account.
-  *
-  * @param Account  The Facebook account details.
-  * @param Sync  Import Facebook friends for the user.
-  * @param OnSuccess Callback to invoke on success
-  * @param OnError Callback to invoke on error
-  */
-  static void LinkFacebook(
-    UNakamaClient* Client,
-    FNakamaAccountFacebook Account,
-    bool Sync,
-    TFunction<void()> OnSuccess,
-    TFunction<void(const FNakamaError& Error)> OnError
-  );
-
-  
-  
-  /**
-  *
-  * Add Facebook Instant Game to the social profiles on the current user's account.
-  *
-  * @param SignedPlayerInfo  The OAuth token received from a Facebook Instant Game that may be decoded with the Application Secret (must be available with the nakama configuration)
-  * @param Vars  Extra information that will be bundled in the session token.
-  * @param OnSuccess Callback to invoke on success
-  * @param OnError Callback to invoke on error
-  */
-  static void LinkFacebookInstantGame(
-    UNakamaClient* Client,
-    FString SignedPlayerInfo,
-    TMap<FString, FString> Vars,
-    TFunction<void()> OnSuccess,
-    TFunction<void(const FNakamaError& Error)> OnError
-  );
-
-  
-  
-  /**
-  *
-  * Add Apple's GameCenter to the social profiles on the current user's account.
-  *
-  * @param PlayerId  Player ID (generated by GameCenter).
-  * @param BundleId  Bundle ID (generated by GameCenter).
-  * @param TimestampSeconds  Time since UNIX epoch when the signature was created.
-  * @param Salt  A random "NSString" used to compute the hash and keep it randomized.
-  * @param Signature  The verification signature data generated.
-  * @param PublicKeyUrl  The URL for the public encryption key.
-  * @param Vars  Extra information that will be bundled in the session token.
-  * @param OnSuccess Callback to invoke on success
-  * @param OnError Callback to invoke on error
-  */
-  static void LinkGameCenter(
-    UNakamaClient* Client,
-    FString PlayerId,
-    FString BundleId,
-    int64 TimestampSeconds,
-    FString Salt,
-    FString Signature,
-    FString PublicKeyUrl,
-    TMap<FString, FString> Vars,
-    TFunction<void()> OnSuccess,
-    TFunction<void(const FNakamaError& Error)> OnError
-  );
-
-  
-  
-  /**
-  *
-  * Add Google to the social profiles on the current user's account.
-  *
-  * @param Token  The OAuth token received from Google to access their profile API.
-  * @param Vars  Extra information that will be bundled in the session token.
-  * @param OnSuccess Callback to invoke on success
-  * @param OnError Callback to invoke on error
-  */
-  static void LinkGoogle(
-    UNakamaClient* Client,
-    FString Token,
-    TMap<FString, FString> Vars,
-    TFunction<void()> OnSuccess,
-    TFunction<void(const FNakamaError& Error)> OnError
-  );
-
-  
-  
-  /**
-  *
-  * Add Steam to the social profiles on the current user's account.
-  *
-  * @param Account  The Facebook account details.
-  * @param Sync  Import Steam friends for the user.
-  * @param OnSuccess Callback to invoke on success
-  * @param OnError Callback to invoke on error
-  */
-  static void LinkSteam(
-    UNakamaClient* Client,
-    FNakamaAccountSteam Account,
-    bool Sync,
-    TFunction<void()> OnSuccess,
-    TFunction<void(const FNakamaError& Error)> OnError
-  );
-
-  
-  
-  /**
-  *
-  * List a channel's message history.
-  *
-  * @param ChannelId  The channel ID to list from.
-  * @param Limit  Max number of records to return. Between 1 and 100.
-  * @param Forward  True if listing should be older messages to newer, false if reverse.
-  * @param Cursor  A pagination cursor, if any.
-  * @param OnSuccess Callback to invoke on success
-  * @param OnError Callback to invoke on error
-  */
-  static void ListChannelMessages(
-    UNakamaClient* Client,
-    FString ChannelId,
-    int32 Limit,
-    bool Forward,
-    FString Cursor,
-    TFunction<void(FNakamaChannelMessageList)> OnSuccess,
-    TFunction<void(const FNakamaError& Error)> OnError
-  );
-
-  
-  
-  /**
-  *
-  * List all friends for the current user.
-  *
-  * @param Limit  Max number of records to return. Between 1 and 1000.
-  * @param State  The friend state to list.
-  * @param Cursor  An optional next page cursor.
-  * @param OnSuccess Callback to invoke on success
-  * @param OnError Callback to invoke on error
-  */
-  static void ListFriends(
-    UNakamaClient* Client,
-    int32 Limit,
-    int32 State,
-    FString Cursor,
-    TFunction<void(FNakamaFriendList)> OnSuccess,
-    TFunction<void(const FNakamaError& Error)> OnError
-  );
-
-  
-  
-  /**
-  *
-  * List friends of friends for the current user.
-  *
-  * @param Limit  Max number of records to return. Between 1 and 100.
-  * @param Cursor  An optional next page cursor.
-  * @param OnSuccess Callback to invoke on success
-  * @param OnError Callback to invoke on error
-  */
-  static void ListFriendsOfFriends(
-    UNakamaClient* Client,
-    int32 Limit,
-    FString Cursor,
-    TFunction<void(FNakamaFriendsOfFriendsList)> OnSuccess,
-    TFunction<void(const FNakamaError& Error)> OnError
-  );
-
-  
-  
-  /**
-  *
-  * List groups based on given filters.
-  *
-  * @param Name  List groups that contain this value in their names.
-  * @param Cursor  Optional pagination cursor.
-  * @param Limit  Max number of groups to return. Between 1 and 100.
-  * @param LangTag  Language tag filter
-  * @param Members  Number of group members
-  * @param Open  Optional Open/Closed filter.
-  * @param OnSuccess Callback to invoke on success
-  * @param OnError Callback to invoke on error
-  */
-  static void ListGroups(
-    UNakamaClient* Client,
-    FString Name,
-    FString Cursor,
-    int32 Limit,
-    FString LangTag,
-    int32 Members,
-    bool Open,
-    TFunction<void(FNakamaGroupList)> OnSuccess,
-    TFunction<void(const FNakamaError& Error)> OnError
-  );
-
-  
-  
-  /**
-  *
-  * List all users that are part of a group.
-  *
-  * @param GroupId  The group ID to list from.
-  * @param Limit  Max number of records to return. Between 1 and 100.
-  * @param State  The group user state to list.
-  * @param Cursor  An optional next page cursor.
-  * @param OnSuccess Callback to invoke on success
-  * @param OnError Callback to invoke on error
-  */
-  static void ListGroupUsers(
-    UNakamaClient* Client,
-    FString GroupId,
-    int32 Limit,
-    int32 State,
-    FString Cursor,
-    TFunction<void(FNakamaGroupUserList)> OnSuccess,
-    TFunction<void(const FNakamaError& Error)> OnError
-  );
-
-  
-  
-  /**
-  *
-  * List leaderboard records.
-  *
-  * @param LeaderboardId  The ID of the leaderboard to list for.
-  * @param OwnerIds  One or more owners to retrieve records for.
-  * @param Limit  Max number of records to return. Between 1 and 100.
-  * @param Cursor  A next or previous page cursor.
-  * @param Expiry  Expiry in seconds (since epoch) to begin fetching records from. Optional. 0 means from current time.
-  * @param OnSuccess Callback to invoke on success
-  * @param OnError Callback to invoke on error
-  */
-  static void ListLeaderboardRecords(
-    UNakamaClient* Client,
-    FString LeaderboardId,
-    const TArray<FString>& OwnerIds,
-    int32 Limit,
-    FString Cursor,
-    int64 Expiry,
-    TFunction<void(FNakamaLeaderboardRecordList)> OnSuccess,
-    TFunction<void(const FNakamaError& Error)> OnError
-  );
-
-  
-  
-  /**
-  *
-  * List leaderboard records around the target ownerId.
-  *
-  * @param LeaderboardId  The ID of the tournament to list for.
-  * @param Limit  Max number of records to return. Between 1 and 100.
-  * @param OwnerId  The owner to retrieve records around.
-  * @param Expiry  Expiry in seconds (since epoch) to begin fetching records from.
-  * @param Cursor  A next or previous page cursor.
-  * @param OnSuccess Callback to invoke on success
-  * @param OnError Callback to invoke on error
-  */
-  static void ListLeaderboardRecordsAroundOwner(
-    UNakamaClient* Client,
-    FString LeaderboardId,
-    uint32 Limit,
-    FString OwnerId,
-    int64 Expiry,
-    FString Cursor,
-    TFunction<void(FNakamaLeaderboardRecordList)> OnSuccess,
-    TFunction<void(const FNakamaError& Error)> OnError
-  );
-
-  
-  
-  /**
-  *
-  * List running matches and optionally filter by matching criteria.
-  *
-  * @param Limit  Limit the number of returned matches.
-  * @param Authoritative  Authoritative or relayed matches.
-  * @param Label  Label filter.
-  * @param MinSize  Minimum user count.
-  * @param MaxSize  Maximum user count.
-  * @param Query  Arbitrary label query.
-  * @param OnSuccess Callback to invoke on success
-  * @param OnError Callback to invoke on error
-  */
-  static void ListMatches(
-    UNakamaClient* Client,
-    int32 Limit,
-    bool Authoritative,
-    FString Label,
-    int32 MinSize,
-    int32 MaxSize,
-    FString Query,
-    TFunction<void(FNakamaMatchList)> OnSuccess,
-    TFunction<void(const FNakamaError& Error)> OnError
-  );
-
-  
-  
-  /**
-  *
-  * List parties and optionally filter by matching criteria.
-  *
-  * @param Limit  Limit the number of returned parties.
-  * @param Open  Optionally filter by open/closed parties.
-  * @param Query  Arbitrary label query.
-  * @param Cursor  Cursor for the next page of results, if any.
-  * @param OnSuccess Callback to invoke on success
-  * @param OnError Callback to invoke on error
-  */
-  static void ListParties(
-    UNakamaClient* Client,
-    int32 Limit,
-    bool Open,
-    FString Query,
-    FString Cursor,
-    TFunction<void(FNakamaPartyList)> OnSuccess,
-    TFunction<void(const FNakamaError& Error)> OnError
-  );
-
-  
-  
-  /**
-  *
-  * Fetch list of notifications.
-  *
-  * @param Limit  The number of notifications to get. Between 1 and 100.
-  * @param CacheableCursor  A cursor to page through notifications. May be cached by clients to get from point in time forwards.
-  * @param OnSuccess Callback to invoke on success
-  * @param OnError Callback to invoke on error
-  */
-  static void ListNotifications(
-    UNakamaClient* Client,
-    int32 Limit,
-    FString CacheableCursor,
-    TFunction<void(FNakamaNotificationList)> OnSuccess,
-    TFunction<void(const FNakamaError& Error)> OnError
-  );
-
-  
-  
-  /**
-  *
-  * List publicly readable storage objects in a given collection.
-  *
-  * @param UserId  ID of the user.
-  * @param Collection  The collection which stores the object.
-  * @param Limit  The number of storage objects to list. Between 1 and 100.
-  * @param Cursor  The cursor to page through results from.
-  * @param OnSuccess Callback to invoke on success
-  * @param OnError Callback to invoke on error
-  */
-  static void ListStorageObjects(
-    UNakamaClient* Client,
-    FString UserId,
-    FString Collection,
-    int32 Limit,
-    FString Cursor,
-    TFunction<void(FNakamaStorageObjectList)> OnSuccess,
-    TFunction<void(const FNakamaError& Error)> OnError
-  );
-
-  
-  
-  /**
-  *
-  * List user's subscriptions.
-  *
-  * @param Limit  Max number of results per page
-  * @param Cursor  Cursor to retrieve a page of records from
-  * @param OnSuccess Callback to invoke on success
-  * @param OnError Callback to invoke on error
-  */
-  static void ListSubscriptions(
-    UNakamaClient* Client,
-    int32 Limit,
-    FString Cursor,
-    TFunction<void(FNakamaSubscriptionList)> OnSuccess,
-    TFunction<void(const FNakamaError& Error)> OnError
-  );
-
-  
-  
-  /**
-  *
-  * List current or upcoming tournaments.
-  *
-  * @param CategoryStart  The start of the categories to include. Defaults to 0.
-  * @param CategoryEnd  The end of the categories to include. Defaults to 128.
-  * @param StartTime  The start time for tournaments. Defaults to epoch.
-  * @param EndTime  The end time for tournaments. Defaults to +1 year from current Unix time.
-  * @param Limit  Max number of records to return. Between 1 and 100.
-  * @param Cursor  A next page cursor for listings (optional).
-  * @param OnSuccess Callback to invoke on success
-  * @param OnError Callback to invoke on error
-  */
-  static void ListTournaments(
-    UNakamaClient* Client,
-    uint32 CategoryStart,
-    uint32 CategoryEnd,
-    uint32 StartTime,
-    uint32 EndTime,
-    int32 Limit,
-    FString Cursor,
-    TFunction<void(FNakamaTournamentList)> OnSuccess,
-    TFunction<void(const FNakamaError& Error)> OnError
-  );
-
-  
-  
-  /**
-  *
-  * List tournament records.
-  *
-  * @param TournamentId  The ID of the tournament to list for.
-  * @param OwnerIds  One or more owners to retrieve records for.
-  * @param Limit  Max number of records to return. Between 1 and 100.
-  * @param Cursor  A next or previous page cursor.
-  * @param Expiry  Expiry in seconds (since epoch) to begin fetching records from.
-  * @param OnSuccess Callback to invoke on success
-  * @param OnError Callback to invoke on error
-  */
-  static void ListTournamentRecords(
-    UNakamaClient* Client,
-    FString TournamentId,
-    const TArray<FString>& OwnerIds,
-    int32 Limit,
-    FString Cursor,
-    int64 Expiry,
-    TFunction<void(FNakamaTournamentRecordList)> OnSuccess,
-    TFunction<void(const FNakamaError& Error)> OnError
-  );
-
-  
-  
-  /**
-  *
-  * List tournament records for a given owner.
-  *
-  * @param TournamentId  The ID of the tournament to list for.
-  * @param Limit  Max number of records to return. Between 1 and 100.
-  * @param OwnerId  The owner to retrieve records around.
-  * @param Expiry  Expiry in seconds (since epoch) to begin fetching records from.
-  * @param Cursor  A next or previous page cursor.
-  * @param OnSuccess Callback to invoke on success
-  * @param OnError Callback to invoke on error
-  */
-  static void ListTournamentRecordsAroundOwner(
-    UNakamaClient* Client,
-    FString TournamentId,
-    uint32 Limit,
-    FString OwnerId,
-    int64 Expiry,
-    FString Cursor,
-    TFunction<void(FNakamaTournamentRecordList)> OnSuccess,
-    TFunction<void(const FNakamaError& Error)> OnError
-  );
-
-  
-  
-  /**
-  *
-  * List groups the current user belongs to.
-  *
-  * @param UserId  ID of the user.
-  * @param Limit  Max number of records to return. Between 1 and 100.
-  * @param State  The user group state to list.
-  * @param Cursor  An optional next page cursor.
-  * @param OnSuccess Callback to invoke on success
-  * @param OnError Callback to invoke on error
-  */
-  static void ListUserGroups(
-    UNakamaClient* Client,
-    FString UserId,
-    int32 Limit,
-    int32 State,
-    FString Cursor,
-    TFunction<void(FNakamaUserGroupList)> OnSuccess,
-    TFunction<void(const FNakamaError& Error)> OnError
-  );
-
-  
-  
-  /**
-  *
-  * Promote a set of users in a group to the next role up.
-  *
-  * @param GroupId  The group ID to promote in.
-  * @param UserIds  The users to promote.
-  * @param OnSuccess Callback to invoke on success
-  * @param OnError Callback to invoke on error
-  */
-  static void PromoteGroupUsers(
-    UNakamaClient* Client,
-    FString GroupId,
-    const TArray<FString>& UserIds,
-    TFunction<void()> OnSuccess,
-    TFunction<void(const FNakamaError& Error)> OnError
-  );
-
-  
-  
-  /**
-  *
-  * Demote a set of users in a group to the next role down.
-  *
-  * @param GroupId  The group ID to demote in.
-  * @param UserIds  The users to demote.
-  * @param OnSuccess Callback to invoke on success
-  * @param OnError Callback to invoke on error
-  */
-  static void DemoteGroupUsers(
-    UNakamaClient* Client,
-    FString GroupId,
-    const TArray<FString>& UserIds,
-    TFunction<void()> OnSuccess,
-    TFunction<void(const FNakamaError& Error)> OnError
-  );
-
-  
-  
-  /**
-  *
-  * Get storage objects.
-  *
-  * @param ObjectIds  Batch of storage objects.
-  * @param OnSuccess Callback to invoke on success
-  * @param OnError Callback to invoke on error
-  */
-  static void ReadStorageObjects(
-    UNakamaClient* Client,
-    const TArray<FNakamaReadStorageObjectId>& ObjectIds,
-    TFunction<void(FNakamaStorageObjects)> OnSuccess,
-    TFunction<void(const FNakamaError& Error)> OnError
-  );
-
-  
-  
-  /**
-  *
-  * Execute a Lua function on the server.
-  *
-  * @param Id  The identifier of the function.
-  * @param Payload  The payload of the function which must be a JSON object.
-  * @param HttpKey  The authentication key used when executed as a non-client HTTP request.
-  * @param OnSuccess Callback to invoke on success
-  * @param OnError Callback to invoke on error
-  */
-  static void RpcFunc(
-    UNakamaClient* Client,
-    FString Id,
-    FString Payload,
-    FString HttpKey,
-    TFunction<void(FNakamaRpc)> OnSuccess,
-    TFunction<void(const FNakamaError& Error)> OnError
-  );
-
-  
-  
-  /**
-  *
-  * Remove the Apple ID from the social profiles on the current user's account.
-  *
-  * @param Token  The ID token received from Apple to validate.
-  * @param Vars  Extra information that will be bundled in the session token.
-  * @param OnSuccess Callback to invoke on success
-  * @param OnError Callback to invoke on error
-  */
-  static void UnlinkApple(
-    UNakamaClient* Client,
-    FString Token,
-    TMap<FString, FString> Vars,
-    TFunction<void()> OnSuccess,
-    TFunction<void(const FNakamaError& Error)> OnError
-  );
-
-  
-  
-  /**
-  *
-  * Remove the custom ID from the social profiles on the current user's account.
-  *
-  * @param Id  A custom identifier.
-  * @param Vars  Extra information that will be bundled in the session token.
-  * @param OnSuccess Callback to invoke on success
-  * @param OnError Callback to invoke on error
-  */
-  static void UnlinkCustom(
-    UNakamaClient* Client,
-    FString Id,
-    TMap<FString, FString> Vars,
-    TFunction<void()> OnSuccess,
-    TFunction<void(const FNakamaError& Error)> OnError
-  );
-
-  
-  
-  /**
-  *
-  * Remove the device ID from the social profiles on the current user's account.
-  *
-  * @param Id  A device identifier. Should be obtained by a platform-specific device API.
-  * @param Vars  Extra information that will be bundled in the session token.
-  * @param OnSuccess Callback to invoke on success
-  * @param OnError Callback to invoke on error
-  */
-  static void UnlinkDevice(
-    UNakamaClient* Client,
-    FString Id,
-    TMap<FString, FString> Vars,
-    TFunction<void()> OnSuccess,
-    TFunction<void(const FNakamaError& Error)> OnError
-  );
-
-  
-  
-  /**
-  *
-  * Remove the email+password from the social profiles on the current user's account.
-  *
-  * @param Email  A valid RFC-5322 email address.
-  * @param Password  A password for the user account.
-  * @param Vars  Extra information that will be bundled in the session token.
-  * @param OnSuccess Callback to invoke on success
-  * @param OnError Callback to invoke on error
-  */
-  static void UnlinkEmail(
-    UNakamaClient* Client,
-    FString Email,
-    FString Password,
-    TMap<FString, FString> Vars,
-    TFunction<void()> OnSuccess,
-    TFunction<void(const FNakamaError& Error)> OnError
-  );
-
-  
-  
-  /**
-  *
-  * Remove Facebook from the social profiles on the current user's account.
-  *
-  * @param Token  The OAuth token received from Facebook to access their profile API.
-  * @param Vars  Extra information that will be bundled in the session token.
-  * @param OnSuccess Callback to invoke on success
-  * @param OnError Callback to invoke on error
-  */
-  static void UnlinkFacebook(
-    UNakamaClient* Client,
-    FString Token,
-    TMap<FString, FString> Vars,
-    TFunction<void()> OnSuccess,
-    TFunction<void(const FNakamaError& Error)> OnError
-  );
-
-  
-  
-  /**
-  *
-  * Remove Facebook Instant Game profile from the social profiles on the current user's account.
-  *
-  * @param SignedPlayerInfo  The OAuth token received from a Facebook Instant Game that may be decoded with the Application Secret (must be available with the nakama configuration)
-  * @param Vars  Extra information that will be bundled in the session token.
-  * @param OnSuccess Callback to invoke on success
-  * @param OnError Callback to invoke on error
-  */
-  static void UnlinkFacebookInstantGame(
-    UNakamaClient* Client,
-    FString SignedPlayerInfo,
-    TMap<FString, FString> Vars,
-    TFunction<void()> OnSuccess,
-    TFunction<void(const FNakamaError& Error)> OnError
-  );
-
-  
-  
-  /**
-  *
-  * Remove Apple's GameCenter from the social profiles on the current user's account.
-  *
-  * @param PlayerId  Player ID (generated by GameCenter).
-  * @param BundleId  Bundle ID (generated by GameCenter).
-  * @param TimestampSeconds  Time since UNIX epoch when the signature was created.
-  * @param Salt  A random "NSString" used to compute the hash and keep it randomized.
-  * @param Signature  The verification signature data generated.
-  * @param PublicKeyUrl  The URL for the public encryption key.
-  * @param Vars  Extra information that will be bundled in the session token.
-  * @param OnSuccess Callback to invoke on success
-  * @param OnError Callback to invoke on error
-  */
-  static void UnlinkGameCenter(
-    UNakamaClient* Client,
-    FString PlayerId,
-    FString BundleId,
-    int64 TimestampSeconds,
-    FString Salt,
-    FString Signature,
-    FString PublicKeyUrl,
-    TMap<FString, FString> Vars,
-    TFunction<void()> OnSuccess,
-    TFunction<void(const FNakamaError& Error)> OnError
-  );
-
-  
-  
-  /**
-  *
-  * Remove Google from the social profiles on the current user's account.
-  *
-  * @param Token  The OAuth token received from Google to access their profile API.
-  * @param Vars  Extra information that will be bundled in the session token.
-  * @param OnSuccess Callback to invoke on success
-  * @param OnError Callback to invoke on error
-  */
-  static void UnlinkGoogle(
-    UNakamaClient* Client,
-    FString Token,
-    TMap<FString, FString> Vars,
-    TFunction<void()> OnSuccess,
-    TFunction<void(const FNakamaError& Error)> OnError
-  );
-
-  
-  
-  /**
-  *
-  * Remove Steam from the social profiles on the current user's account.
-  *
-  * @param Token  The account token received from Steam to access their profile API.
-  * @param Vars  Extra information that will be bundled in the session token.
-  * @param OnSuccess Callback to invoke on success
-  * @param OnError Callback to invoke on error
-  */
-  static void UnlinkSteam(
-    UNakamaClient* Client,
-    FString Token,
-    TMap<FString, FString> Vars,
-    TFunction<void()> OnSuccess,
-    TFunction<void(const FNakamaError& Error)> OnError
-  );
-
-  
-  
-  /**
-  *
-  * Update fields in the current user's account.
-  *
-  * @param Username  The username of the user's account.
-  * @param DisplayName  The display name of the user.
-  * @param AvatarUrl  A URL for an avatar image.
-  * @param LangTag  The language expected to be a tag which follows the BCP-47 spec.
-  * @param Location  The location set by the user.
-  * @param Timezone  The timezone set by the user.
-  * @param OnSuccess Callback to invoke on success
-  * @param OnError Callback to invoke on error
-  */
-  static void UpdateAccount(
-    UNakamaClient* Client,
-    FString Username,
-    FString DisplayName,
-    FString AvatarUrl,
-    FString LangTag,
-    FString Location,
-    FString Timezone,
-    TFunction<void()> OnSuccess,
-    TFunction<void(const FNakamaError& Error)> OnError
-  );
-
-  
-  
-  /**
-  *
-  * Update fields in a given group.
-  *
-  * @param GroupId  The ID of the group to update.
-  * @param Name  Name.
-  * @param Description  Description string.
-  * @param LangTag  Lang tag.
-  * @param AvatarUrl  Avatar URL.
-  * @param Open  Open is true if anyone should be allowed to join, or false if joins must be approved by a group admin.
-  * @param OnSuccess Callback to invoke on success
-  * @param OnError Callback to invoke on error
-  */
-  static void UpdateGroup(
-    UNakamaClient* Client,
-    FString GroupId,
-    FString Name,
-    FString Description,
-    FString LangTag,
-    FString AvatarUrl,
-    bool Open,
-    TFunction<void()> OnSuccess,
-    TFunction<void(const FNakamaError& Error)> OnError
-  );
-
-  
-  
-  /**
-  *
-  * Validate Apple IAP Receipt
-  *
-  * @param Receipt  Base64 encoded Apple receipt data payload.
-  * @param Persist  Persist the purchase
-  * @param OnSuccess Callback to invoke on success
-  * @param OnError Callback to invoke on error
-  */
-  static void ValidatePurchaseApple(
-    UNakamaClient* Client,
-    FString Receipt,
-    bool Persist,
-    TFunction<void(FNakamaValidatePurchaseResponse)> OnSuccess,
-    TFunction<void(const FNakamaError& Error)> OnError
-  );
-
-  
-  
-  /**
-  *
-  * Validate Apple Subscription Receipt
-  *
-  * @param Receipt  Base64 encoded Apple receipt data payload.
-  * @param Persist  Persist the subscription.
-  * @param OnSuccess Callback to invoke on success
-  * @param OnError Callback to invoke on error
-  */
-  static void ValidateSubscriptionApple(
-    UNakamaClient* Client,
-    FString Receipt,
-    bool Persist,
-    TFunction<void(FNakamaValidateSubscriptionResponse)> OnSuccess,
-    TFunction<void(const FNakamaError& Error)> OnError
-  );
-
-  
-  
-  /**
-  *
-  * Validate Google IAP Receipt
-  *
-  * @param Purchase  JSON encoded Google purchase payload.
-  * @param Persist  Persist the purchase
-  * @param OnSuccess Callback to invoke on success
-  * @param OnError Callback to invoke on error
-  */
-  static void ValidatePurchaseGoogle(
-    UNakamaClient* Client,
-    FString Purchase,
-    bool Persist,
-    TFunction<void(FNakamaValidatePurchaseResponse)> OnSuccess,
-    TFunction<void(const FNakamaError& Error)> OnError
-  );
-
-  
-  
-  /**
-  *
-  * Validate Google Subscription Receipt
-  *
-  * @param Receipt  JSON encoded Google purchase payload.
-  * @param Persist  Persist the subscription.
-  * @param OnSuccess Callback to invoke on success
-  * @param OnError Callback to invoke on error
-  */
-  static void ValidateSubscriptionGoogle(
-    UNakamaClient* Client,
-    FString Receipt,
-    bool Persist,
-    TFunction<void(FNakamaValidateSubscriptionResponse)> OnSuccess,
-    TFunction<void(const FNakamaError& Error)> OnError
-  );
-
-  
-  
-  /**
-  *
-  * Validate Huawei IAP Receipt
-  *
-  * @param Purchase  JSON encoded Huawei InAppPurchaseData.
-  * @param Signature  InAppPurchaseData signature.
-  * @param Persist  Persist the purchase
-  * @param OnSuccess Callback to invoke on success
-  * @param OnError Callback to invoke on error
-  */
-  static void ValidatePurchaseHuawei(
-    UNakamaClient* Client,
-    FString Purchase,
-    FString Signature,
-    bool Persist,
-    TFunction<void(FNakamaValidatePurchaseResponse)> OnSuccess,
-    TFunction<void(const FNakamaError& Error)> OnError
-  );
-
-  
-  
-  /**
-  *
-  * Validate FB Instant IAP Receipt
-  *
-  * @param SignedRequest  Base64 encoded Facebook Instant signedRequest receipt data payload.
-  * @param Persist  Persist the purchase
-  * @param OnSuccess Callback to invoke on success
-  * @param OnError Callback to invoke on error
-  */
-  static void ValidatePurchaseFacebookInstant(
-    UNakamaClient* Client,
-    FString SignedRequest,
-    bool Persist,
-    TFunction<void(FNakamaValidatePurchaseResponse)> OnSuccess,
-    TFunction<void(const FNakamaError& Error)> OnError
-  );
-
-  
-  
-  /**
-  *
-  * Write a record to a leaderboard.
-  *
-  * @param LeaderboardId  The ID of the leaderboard to write to.
-  * @param Record  Record input.
-  * @param OnSuccess Callback to invoke on success
-  * @param OnError Callback to invoke on error
-  */
-  static void WriteLeaderboardRecord(
-    UNakamaClient* Client,
-    FString LeaderboardId,
-    FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite Record,
-    TFunction<void(FNakamaLeaderboardRecord)> OnSuccess,
-    TFunction<void(const FNakamaError& Error)> OnError
-  );
-
-  
-  
-  /**
-  *
-  * Write objects into the storage engine.
-  *
-  * @param Objects  The objects to store on the server.
-  * @param OnSuccess Callback to invoke on success
-  * @param OnError Callback to invoke on error
-  */
-  static void WriteStorageObjects(
-    UNakamaClient* Client,
-    const TArray<FNakamaWriteStorageObject>& Objects,
-    TFunction<void(FNakamaStorageObjectAcks)> OnSuccess,
-    TFunction<void(const FNakamaError& Error)> OnError
-  );
-
-  
-  
-  /**
-  *
-  * Write a record to a tournament.
-  *
-  * @param TournamentId  The tournament ID to write the record for.
-  * @param Record  Record input.
-  * @param OnSuccess Callback to invoke on success
-  * @param OnError Callback to invoke on error
-  */
-  static void WriteTournamentRecord(
-    UNakamaClient* Client,
-    FString TournamentId,
-    FNakamaWriteTournamentRecordRequest_TournamentRecordWrite Record,
-    TFunction<void(FNakamaLeaderboardRecord)> OnSuccess,
-    TFunction<void(const FNakamaError& Error)> OnError
-  );
+	/**
+	 * Creates a default client to interact with Nakama server.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Nakama|Client")
+	static NAKAMABLUEPRINTS_API FNakamaClientRef CreateDefaultClient(
+		const FString& ServerKey = TEXT("defaultkey"),
+		const FString& Host = TEXT("localhost"),
+		int32 Port = 7350,
+		bool UseSSL = false,
+		bool EnableDebug = true);
+
+	/**
+	 * Checks if a client reference is valid.
+	 */
+	UFUNCTION(BlueprintPure, Category = "Nakama|Client")
+	static NAKAMABLUEPRINTS_API bool IsValidClient(const FNakamaClientRef& Client);
+};
+
+// ============================================================================
+// Async Action Classes (one per RPC)
+// ============================================================================
+
+/**
+ * Add friends by ID or username to a user's account.
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientAddFriends : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaSuccess OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "AddFriends"), Category = "Nakama|Client")
+	static UNakamaClientAddFriends* AddFriends(
+		UObject* WorldContextObject,
+		const FNakamaClientRef& Client,
+		const FNakamaSession& Session,
+		const TArray<FString>& Ids,
+		const TArray<FString>& Usernames,
+		FString Metadata);
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientRef Client;
+	FNakamaSession Session;
+	TArray<FString> StoredIds;
+	TArray<FString> StoredUsernames;
+	FString StoredMetadata;
+};
+
+/**
+ * Add users to a group.
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientAddGroupUsers : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaSuccess OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "AddGroupUsers"), Category = "Nakama|Client")
+	static UNakamaClientAddGroupUsers* AddGroupUsers(
+		UObject* WorldContextObject,
+		const FNakamaClientRef& Client,
+		const FNakamaSession& Session,
+		FString GroupId,
+		const TArray<FString>& UserIds);
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientRef Client;
+	FNakamaSession Session;
+	FString StoredGroupId;
+	TArray<FString> StoredUserIds;
+};
+
+/**
+ * Refresh a user's session using a refresh token retrieved from a previous authentication request.
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientSessionRefresh : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaSession OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "SessionRefresh"), Category = "Nakama|Client")
+	static UNakamaClientSessionRefresh* SessionRefresh(
+		UObject* WorldContextObject,
+		const FNakamaClientRef& Client,
+		FString Token,
+		const TMap<FString, FString>& Vars);
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientRef Client;
+	FString StoredToken;
+	TMap<FString, FString> StoredVars;
+};
+
+/**
+ * Log out a session, invalidate a refresh token, or log out all sessions/refresh tokens for a user.
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientSessionLogout : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaSuccess OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "SessionLogout"), Category = "Nakama|Client")
+	static UNakamaClientSessionLogout* SessionLogout(
+		UObject* WorldContextObject,
+		const FNakamaClientRef& Client,
+		const FNakamaSession& Session,
+		FString Token,
+		FString RefreshToken);
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientRef Client;
+	FNakamaSession Session;
+	FString StoredToken;
+	FString StoredRefreshToken;
+};
+
+/**
+ * Authenticate a user with an Apple ID against the server.
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientAuthenticateApple : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaSession OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "AuthenticateApple"), Category = "Nakama|Client")
+	static UNakamaClientAuthenticateApple* AuthenticateApple(
+		UObject* WorldContextObject,
+		const FNakamaClientRef& Client,
+		FNakamaAccountApple Account,
+		bool Create,
+		FString Username);
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientRef Client;
+	FNakamaAccountApple StoredAccount;
+	bool StoredCreate;
+	FString StoredUsername;
+};
+
+/**
+ * Authenticate a user with a custom id against the server.
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientAuthenticateCustom : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaSession OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "AuthenticateCustom"), Category = "Nakama|Client")
+	static UNakamaClientAuthenticateCustom* AuthenticateCustom(
+		UObject* WorldContextObject,
+		const FNakamaClientRef& Client,
+		FNakamaAccountCustom Account,
+		bool Create,
+		FString Username);
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientRef Client;
+	FNakamaAccountCustom StoredAccount;
+	bool StoredCreate;
+	FString StoredUsername;
+};
+
+/**
+ * Authenticate a user with a device id against the server.
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientAuthenticateDevice : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaSession OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "AuthenticateDevice"), Category = "Nakama|Client")
+	static UNakamaClientAuthenticateDevice* AuthenticateDevice(
+		UObject* WorldContextObject,
+		const FNakamaClientRef& Client,
+		FNakamaAccountDevice Account,
+		bool Create,
+		FString Username);
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientRef Client;
+	FNakamaAccountDevice StoredAccount;
+	bool StoredCreate;
+	FString StoredUsername;
+};
+
+/**
+ * Authenticate a user with an email+password against the server.
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientAuthenticateEmail : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaSession OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "AuthenticateEmail"), Category = "Nakama|Client")
+	static UNakamaClientAuthenticateEmail* AuthenticateEmail(
+		UObject* WorldContextObject,
+		const FNakamaClientRef& Client,
+		FNakamaAccountEmail Account,
+		bool Create,
+		FString Username);
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientRef Client;
+	FNakamaAccountEmail StoredAccount;
+	bool StoredCreate;
+	FString StoredUsername;
+};
+
+/**
+ * Authenticate a user with a Facebook OAuth token against the server.
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientAuthenticateFacebook : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaSession OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "AuthenticateFacebook"), Category = "Nakama|Client")
+	static UNakamaClientAuthenticateFacebook* AuthenticateFacebook(
+		UObject* WorldContextObject,
+		const FNakamaClientRef& Client,
+		FNakamaAccountFacebook Account,
+		bool Create,
+		FString Username,
+		bool Sync);
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientRef Client;
+	FNakamaAccountFacebook StoredAccount;
+	bool StoredCreate;
+	FString StoredUsername;
+	bool StoredSync;
+};
+
+/**
+ * Authenticate a user with a Facebook Instant Game token against the server.
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientAuthenticateFacebookInstantGame : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaSession OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "AuthenticateFacebookInstantGame"), Category = "Nakama|Client")
+	static UNakamaClientAuthenticateFacebookInstantGame* AuthenticateFacebookInstantGame(
+		UObject* WorldContextObject,
+		const FNakamaClientRef& Client,
+		FNakamaAccountFacebookInstantGame Account,
+		bool Create,
+		FString Username);
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientRef Client;
+	FNakamaAccountFacebookInstantGame StoredAccount;
+	bool StoredCreate;
+	FString StoredUsername;
+};
+
+/**
+ * Authenticate a user with Apple's GameCenter against the server.
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientAuthenticateGameCenter : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaSession OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "AuthenticateGameCenter"), Category = "Nakama|Client")
+	static UNakamaClientAuthenticateGameCenter* AuthenticateGameCenter(
+		UObject* WorldContextObject,
+		const FNakamaClientRef& Client,
+		FNakamaAccountGameCenter Account,
+		bool Create,
+		FString Username);
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientRef Client;
+	FNakamaAccountGameCenter StoredAccount;
+	bool StoredCreate;
+	FString StoredUsername;
+};
+
+/**
+ * Authenticate a user with Google against the server.
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientAuthenticateGoogle : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaSession OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "AuthenticateGoogle"), Category = "Nakama|Client")
+	static UNakamaClientAuthenticateGoogle* AuthenticateGoogle(
+		UObject* WorldContextObject,
+		const FNakamaClientRef& Client,
+		FNakamaAccountGoogle Account,
+		bool Create,
+		FString Username);
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientRef Client;
+	FNakamaAccountGoogle StoredAccount;
+	bool StoredCreate;
+	FString StoredUsername;
+};
+
+/**
+ * Authenticate a user with Steam against the server.
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientAuthenticateSteam : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaSession OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "AuthenticateSteam"), Category = "Nakama|Client")
+	static UNakamaClientAuthenticateSteam* AuthenticateSteam(
+		UObject* WorldContextObject,
+		const FNakamaClientRef& Client,
+		FNakamaAccountSteam Account,
+		bool Create,
+		FString Username,
+		bool Sync);
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientRef Client;
+	FNakamaAccountSteam StoredAccount;
+	bool StoredCreate;
+	FString StoredUsername;
+	bool StoredSync;
+};
+
+/**
+ * Ban a set of users from a group.
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientBanGroupUsers : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaSuccess OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "BanGroupUsers"), Category = "Nakama|Client")
+	static UNakamaClientBanGroupUsers* BanGroupUsers(
+		UObject* WorldContextObject,
+		const FNakamaClientRef& Client,
+		const FNakamaSession& Session,
+		FString GroupId,
+		const TArray<FString>& UserIds);
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientRef Client;
+	FNakamaSession Session;
+	FString StoredGroupId;
+	TArray<FString> StoredUserIds;
+};
+
+/**
+ * Block one or more users by ID or username.
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientBlockFriends : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaSuccess OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "BlockFriends"), Category = "Nakama|Client")
+	static UNakamaClientBlockFriends* BlockFriends(
+		UObject* WorldContextObject,
+		const FNakamaClientRef& Client,
+		const FNakamaSession& Session,
+		const TArray<FString>& Ids,
+		const TArray<FString>& Usernames);
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientRef Client;
+	FNakamaSession Session;
+	TArray<FString> StoredIds;
+	TArray<FString> StoredUsernames;
+};
+
+/**
+ * Create a new group with the current user as the owner.
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientCreateGroup : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaGroup OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "CreateGroup"), Category = "Nakama|Client")
+	static UNakamaClientCreateGroup* CreateGroup(
+		UObject* WorldContextObject,
+		const FNakamaClientRef& Client,
+		const FNakamaSession& Session,
+		FString Name,
+		FString Description,
+		FString LangTag,
+		FString AvatarUrl,
+		bool Open,
+		int32 MaxCount);
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientRef Client;
+	FNakamaSession Session;
+	FString StoredName;
+	FString StoredDescription;
+	FString StoredLangTag;
+	FString StoredAvatarUrl;
+	bool StoredOpen;
+	int32 StoredMaxCount;
+};
+
+/**
+ * Delete the current user's account.
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientDeleteAccount : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaSuccess OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "DeleteAccount"), Category = "Nakama|Client")
+	static UNakamaClientDeleteAccount* DeleteAccount(
+		UObject* WorldContextObject,
+		const FNakamaClientRef& Client,
+		const FNakamaSession& Session);
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientRef Client;
+	FNakamaSession Session;
+};
+
+/**
+ * Delete one or more users by ID or username.
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientDeleteFriends : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaSuccess OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "DeleteFriends"), Category = "Nakama|Client")
+	static UNakamaClientDeleteFriends* DeleteFriends(
+		UObject* WorldContextObject,
+		const FNakamaClientRef& Client,
+		const FNakamaSession& Session,
+		const TArray<FString>& Ids,
+		const TArray<FString>& Usernames);
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientRef Client;
+	FNakamaSession Session;
+	TArray<FString> StoredIds;
+	TArray<FString> StoredUsernames;
+};
+
+/**
+ * Delete a group by ID.
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientDeleteGroup : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaSuccess OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "DeleteGroup"), Category = "Nakama|Client")
+	static UNakamaClientDeleteGroup* DeleteGroup(
+		UObject* WorldContextObject,
+		const FNakamaClientRef& Client,
+		const FNakamaSession& Session,
+		FString GroupId);
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientRef Client;
+	FNakamaSession Session;
+	FString StoredGroupId;
+};
+
+/**
+ * Delete a leaderboard record.
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientDeleteLeaderboardRecord : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaSuccess OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "DeleteLeaderboardRecord"), Category = "Nakama|Client")
+	static UNakamaClientDeleteLeaderboardRecord* DeleteLeaderboardRecord(
+		UObject* WorldContextObject,
+		const FNakamaClientRef& Client,
+		const FNakamaSession& Session,
+		FString LeaderboardId);
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientRef Client;
+	FNakamaSession Session;
+	FString StoredLeaderboardId;
+};
+
+/**
+ * Delete one or more notifications for the current user.
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientDeleteNotifications : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaSuccess OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "DeleteNotifications"), Category = "Nakama|Client")
+	static UNakamaClientDeleteNotifications* DeleteNotifications(
+		UObject* WorldContextObject,
+		const FNakamaClientRef& Client,
+		const FNakamaSession& Session,
+		const TArray<FString>& Ids);
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientRef Client;
+	FNakamaSession Session;
+	TArray<FString> StoredIds;
+};
+
+/**
+ * Delete a tournament record.
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientDeleteTournamentRecord : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaSuccess OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "DeleteTournamentRecord"), Category = "Nakama|Client")
+	static UNakamaClientDeleteTournamentRecord* DeleteTournamentRecord(
+		UObject* WorldContextObject,
+		const FNakamaClientRef& Client,
+		const FNakamaSession& Session,
+		FString TournamentId);
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientRef Client;
+	FNakamaSession Session;
+	FString StoredTournamentId;
+};
+
+/**
+ * Delete one or more objects by ID or username.
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientDeleteStorageObjects : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaSuccess OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "DeleteStorageObjects"), Category = "Nakama|Client")
+	static UNakamaClientDeleteStorageObjects* DeleteStorageObjects(
+		UObject* WorldContextObject,
+		const FNakamaClientRef& Client,
+		const FNakamaSession& Session,
+		const TArray<FNakamaDeleteStorageObjectId>& ObjectIds);
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientRef Client;
+	FNakamaSession Session;
+	TArray<FNakamaDeleteStorageObjectId> StoredObjectIds;
+};
+
+/**
+ * Submit an event for processing in the server's registered runtime custom events handler.
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientEvent : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaSuccess OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "Event"), Category = "Nakama|Client")
+	static UNakamaClientEvent* Event(
+		UObject* WorldContextObject,
+		const FNakamaClientRef& Client,
+		const FNakamaSession& Session,
+		FString Name,
+		FString Timestamp,
+		bool External,
+		const TMap<FString, FString>& Properties);
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientRef Client;
+	FNakamaSession Session;
+	FString StoredName;
+	FString StoredTimestamp;
+	bool StoredExternal;
+	TMap<FString, FString> StoredProperties;
+};
+
+/**
+ * Fetch the current user's account.
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientGetAccount : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaAccount OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "GetAccount"), Category = "Nakama|Client")
+	static UNakamaClientGetAccount* GetAccount(
+		UObject* WorldContextObject,
+		const FNakamaClientRef& Client,
+		const FNakamaSession& Session);
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientRef Client;
+	FNakamaSession Session;
+};
+
+/**
+ * Fetch zero or more users by ID and/or username.
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientGetUsers : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaUsers OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "GetUsers"), Category = "Nakama|Client")
+	static UNakamaClientGetUsers* GetUsers(
+		UObject* WorldContextObject,
+		const FNakamaClientRef& Client,
+		const FNakamaSession& Session,
+		const TArray<FString>& Ids,
+		const TArray<FString>& Usernames,
+		const TArray<FString>& FacebookIds);
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientRef Client;
+	FNakamaSession Session;
+	TArray<FString> StoredIds;
+	TArray<FString> StoredUsernames;
+	TArray<FString> StoredFacebookIds;
+};
+
+/**
+ * Get subscription by product id.
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientGetSubscription : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaValidatedSubscription OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "GetSubscription"), Category = "Nakama|Client")
+	static UNakamaClientGetSubscription* GetSubscription(
+		UObject* WorldContextObject,
+		const FNakamaClientRef& Client,
+		const FNakamaSession& Session,
+		FString ProductId);
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientRef Client;
+	FNakamaSession Session;
+	FString StoredProductId;
+};
+
+/**
+ * Get matchmaker stats.
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientGetMatchmakerStats : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaMatchmakerStats OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "GetMatchmakerStats"), Category = "Nakama|Client")
+	static UNakamaClientGetMatchmakerStats* GetMatchmakerStats(
+		UObject* WorldContextObject,
+		const FNakamaClientRef& Client,
+		const FNakamaSession& Session);
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientRef Client;
+	FNakamaSession Session;
+};
+
+/**
+ * A healthcheck which load balancers can use to check the service.
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientHealthcheck : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaSuccess OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "Healthcheck"), Category = "Nakama|Client")
+	static UNakamaClientHealthcheck* Healthcheck(
+		UObject* WorldContextObject,
+		const FNakamaClientRef& Client,
+		const FNakamaSession& Session);
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientRef Client;
+	FNakamaSession Session;
+};
+
+/**
+ * Import Facebook friends and add them to a user's account.
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientImportFacebookFriends : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaSuccess OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ImportFacebookFriends"), Category = "Nakama|Client")
+	static UNakamaClientImportFacebookFriends* ImportFacebookFriends(
+		UObject* WorldContextObject,
+		const FNakamaClientRef& Client,
+		const FNakamaSession& Session,
+		FNakamaAccountFacebook Account,
+		bool Reset);
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientRef Client;
+	FNakamaSession Session;
+	FNakamaAccountFacebook StoredAccount;
+	bool StoredReset;
+};
+
+/**
+ * Import Steam friends and add them to a user's account.
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientImportSteamFriends : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaSuccess OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ImportSteamFriends"), Category = "Nakama|Client")
+	static UNakamaClientImportSteamFriends* ImportSteamFriends(
+		UObject* WorldContextObject,
+		const FNakamaClientRef& Client,
+		const FNakamaSession& Session,
+		FNakamaAccountSteam Account,
+		bool Reset);
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientRef Client;
+	FNakamaSession Session;
+	FNakamaAccountSteam StoredAccount;
+	bool StoredReset;
+};
+
+/**
+ * Immediately join an open group, or request to join a closed one.
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientJoinGroup : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaSuccess OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "JoinGroup"), Category = "Nakama|Client")
+	static UNakamaClientJoinGroup* JoinGroup(
+		UObject* WorldContextObject,
+		const FNakamaClientRef& Client,
+		const FNakamaSession& Session,
+		FString GroupId);
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientRef Client;
+	FNakamaSession Session;
+	FString StoredGroupId;
+};
+
+/**
+ * Attempt to join an open and running tournament.
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientJoinTournament : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaSuccess OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "JoinTournament"), Category = "Nakama|Client")
+	static UNakamaClientJoinTournament* JoinTournament(
+		UObject* WorldContextObject,
+		const FNakamaClientRef& Client,
+		const FNakamaSession& Session,
+		FString TournamentId);
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientRef Client;
+	FNakamaSession Session;
+	FString StoredTournamentId;
+};
+
+/**
+ * Kick a set of users from a group.
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientKickGroupUsers : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaSuccess OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "KickGroupUsers"), Category = "Nakama|Client")
+	static UNakamaClientKickGroupUsers* KickGroupUsers(
+		UObject* WorldContextObject,
+		const FNakamaClientRef& Client,
+		const FNakamaSession& Session,
+		FString GroupId,
+		const TArray<FString>& UserIds);
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientRef Client;
+	FNakamaSession Session;
+	FString StoredGroupId;
+	TArray<FString> StoredUserIds;
+};
+
+/**
+ * Leave a group the user is a member of.
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientLeaveGroup : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaSuccess OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "LeaveGroup"), Category = "Nakama|Client")
+	static UNakamaClientLeaveGroup* LeaveGroup(
+		UObject* WorldContextObject,
+		const FNakamaClientRef& Client,
+		const FNakamaSession& Session,
+		FString GroupId);
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientRef Client;
+	FNakamaSession Session;
+	FString StoredGroupId;
+};
+
+/**
+ * Add an Apple ID to the social profiles on the current user's account.
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientLinkApple : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaSuccess OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "LinkApple"), Category = "Nakama|Client")
+	static UNakamaClientLinkApple* LinkApple(
+		UObject* WorldContextObject,
+		const FNakamaClientRef& Client,
+		const FNakamaSession& Session,
+		FString Token,
+		const TMap<FString, FString>& Vars);
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientRef Client;
+	FNakamaSession Session;
+	FString StoredToken;
+	TMap<FString, FString> StoredVars;
+};
+
+/**
+ * Add a custom ID to the social profiles on the current user's account.
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientLinkCustom : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaSuccess OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "LinkCustom"), Category = "Nakama|Client")
+	static UNakamaClientLinkCustom* LinkCustom(
+		UObject* WorldContextObject,
+		const FNakamaClientRef& Client,
+		const FNakamaSession& Session,
+		FString Id,
+		const TMap<FString, FString>& Vars);
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientRef Client;
+	FNakamaSession Session;
+	FString StoredId;
+	TMap<FString, FString> StoredVars;
+};
+
+/**
+ * Add a device ID to the social profiles on the current user's account.
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientLinkDevice : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaSuccess OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "LinkDevice"), Category = "Nakama|Client")
+	static UNakamaClientLinkDevice* LinkDevice(
+		UObject* WorldContextObject,
+		const FNakamaClientRef& Client,
+		const FNakamaSession& Session,
+		FString Id,
+		const TMap<FString, FString>& Vars);
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientRef Client;
+	FNakamaSession Session;
+	FString StoredId;
+	TMap<FString, FString> StoredVars;
+};
+
+/**
+ * Add an email+password to the social profiles on the current user's account.
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientLinkEmail : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaSuccess OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "LinkEmail"), Category = "Nakama|Client")
+	static UNakamaClientLinkEmail* LinkEmail(
+		UObject* WorldContextObject,
+		const FNakamaClientRef& Client,
+		const FNakamaSession& Session,
+		FString Email,
+		FString Password,
+		const TMap<FString, FString>& Vars);
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientRef Client;
+	FNakamaSession Session;
+	FString StoredEmail;
+	FString StoredPassword;
+	TMap<FString, FString> StoredVars;
+};
+
+/**
+ * Add Facebook to the social profiles on the current user's account.
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientLinkFacebook : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaSuccess OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "LinkFacebook"), Category = "Nakama|Client")
+	static UNakamaClientLinkFacebook* LinkFacebook(
+		UObject* WorldContextObject,
+		const FNakamaClientRef& Client,
+		const FNakamaSession& Session,
+		FNakamaAccountFacebook Account,
+		bool Sync);
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientRef Client;
+	FNakamaSession Session;
+	FNakamaAccountFacebook StoredAccount;
+	bool StoredSync;
+};
+
+/**
+ * Add Facebook Instant Game to the social profiles on the current user's account.
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientLinkFacebookInstantGame : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaSuccess OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "LinkFacebookInstantGame"), Category = "Nakama|Client")
+	static UNakamaClientLinkFacebookInstantGame* LinkFacebookInstantGame(
+		UObject* WorldContextObject,
+		const FNakamaClientRef& Client,
+		const FNakamaSession& Session,
+		FString SignedPlayerInfo,
+		const TMap<FString, FString>& Vars);
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientRef Client;
+	FNakamaSession Session;
+	FString StoredSignedPlayerInfo;
+	TMap<FString, FString> StoredVars;
+};
+
+/**
+ * Add Apple's GameCenter to the social profiles on the current user's account.
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientLinkGameCenter : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaSuccess OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "LinkGameCenter"), Category = "Nakama|Client")
+	static UNakamaClientLinkGameCenter* LinkGameCenter(
+		UObject* WorldContextObject,
+		const FNakamaClientRef& Client,
+		const FNakamaSession& Session,
+		FString PlayerId,
+		FString BundleId,
+		int64 TimestampSeconds,
+		FString Salt,
+		FString Signature,
+		FString PublicKeyUrl,
+		const TMap<FString, FString>& Vars);
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientRef Client;
+	FNakamaSession Session;
+	FString StoredPlayerId;
+	FString StoredBundleId;
+	int64 StoredTimestampSeconds;
+	FString StoredSalt;
+	FString StoredSignature;
+	FString StoredPublicKeyUrl;
+	TMap<FString, FString> StoredVars;
+};
+
+/**
+ * Add Google to the social profiles on the current user's account.
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientLinkGoogle : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaSuccess OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "LinkGoogle"), Category = "Nakama|Client")
+	static UNakamaClientLinkGoogle* LinkGoogle(
+		UObject* WorldContextObject,
+		const FNakamaClientRef& Client,
+		const FNakamaSession& Session,
+		FString Token,
+		const TMap<FString, FString>& Vars);
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientRef Client;
+	FNakamaSession Session;
+	FString StoredToken;
+	TMap<FString, FString> StoredVars;
+};
+
+/**
+ * Add Steam to the social profiles on the current user's account.
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientLinkSteam : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaSuccess OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "LinkSteam"), Category = "Nakama|Client")
+	static UNakamaClientLinkSteam* LinkSteam(
+		UObject* WorldContextObject,
+		const FNakamaClientRef& Client,
+		const FNakamaSession& Session,
+		FNakamaAccountSteam Account,
+		bool Sync);
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientRef Client;
+	FNakamaSession Session;
+	FNakamaAccountSteam StoredAccount;
+	bool StoredSync;
+};
+
+/**
+ * List a channel's message history.
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientListChannelMessages : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaChannelMessageList OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ListChannelMessages"), Category = "Nakama|Client")
+	static UNakamaClientListChannelMessages* ListChannelMessages(
+		UObject* WorldContextObject,
+		const FNakamaClientRef& Client,
+		const FNakamaSession& Session,
+		FString ChannelId,
+		int32 Limit,
+		bool Forward,
+		FString Cursor);
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientRef Client;
+	FNakamaSession Session;
+	FString StoredChannelId;
+	int32 StoredLimit;
+	bool StoredForward;
+	FString StoredCursor;
+};
+
+/**
+ * List all friends for the current user.
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientListFriends : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaFriendList OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ListFriends"), Category = "Nakama|Client")
+	static UNakamaClientListFriends* ListFriends(
+		UObject* WorldContextObject,
+		const FNakamaClientRef& Client,
+		const FNakamaSession& Session,
+		int32 Limit,
+		int32 State,
+		FString Cursor);
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientRef Client;
+	FNakamaSession Session;
+	int32 StoredLimit;
+	int32 StoredState;
+	FString StoredCursor;
+};
+
+/**
+ * List friends of friends for the current user.
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientListFriendsOfFriends : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaFriendsOfFriendsList OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ListFriendsOfFriends"), Category = "Nakama|Client")
+	static UNakamaClientListFriendsOfFriends* ListFriendsOfFriends(
+		UObject* WorldContextObject,
+		const FNakamaClientRef& Client,
+		const FNakamaSession& Session,
+		int32 Limit,
+		FString Cursor);
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientRef Client;
+	FNakamaSession Session;
+	int32 StoredLimit;
+	FString StoredCursor;
+};
+
+/**
+ * List groups based on given filters.
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientListGroups : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaGroupList OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ListGroups"), Category = "Nakama|Client")
+	static UNakamaClientListGroups* ListGroups(
+		UObject* WorldContextObject,
+		const FNakamaClientRef& Client,
+		const FNakamaSession& Session,
+		FString Name,
+		FString Cursor,
+		int32 Limit,
+		FString LangTag,
+		int32 Members,
+		bool Open);
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientRef Client;
+	FNakamaSession Session;
+	FString StoredName;
+	FString StoredCursor;
+	int32 StoredLimit;
+	FString StoredLangTag;
+	int32 StoredMembers;
+	bool StoredOpen;
+};
+
+/**
+ * List all users that are part of a group.
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientListGroupUsers : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaGroupUserList OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ListGroupUsers"), Category = "Nakama|Client")
+	static UNakamaClientListGroupUsers* ListGroupUsers(
+		UObject* WorldContextObject,
+		const FNakamaClientRef& Client,
+		const FNakamaSession& Session,
+		FString GroupId,
+		int32 Limit,
+		int32 State,
+		FString Cursor);
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientRef Client;
+	FNakamaSession Session;
+	FString StoredGroupId;
+	int32 StoredLimit;
+	int32 StoredState;
+	FString StoredCursor;
+};
+
+/**
+ * List leaderboard records.
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientListLeaderboardRecords : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaLeaderboardRecordList OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ListLeaderboardRecords"), Category = "Nakama|Client")
+	static UNakamaClientListLeaderboardRecords* ListLeaderboardRecords(
+		UObject* WorldContextObject,
+		const FNakamaClientRef& Client,
+		const FNakamaSession& Session,
+		FString LeaderboardId,
+		const TArray<FString>& OwnerIds,
+		int32 Limit,
+		FString Cursor,
+		int64 Expiry);
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientRef Client;
+	FNakamaSession Session;
+	FString StoredLeaderboardId;
+	TArray<FString> StoredOwnerIds;
+	int32 StoredLimit;
+	FString StoredCursor;
+	int64 StoredExpiry;
+};
+
+/**
+ * List leaderboard records around the target ownerId.
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientListLeaderboardRecordsAroundOwner : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaLeaderboardRecordList OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ListLeaderboardRecordsAroundOwner"), Category = "Nakama|Client")
+	static UNakamaClientListLeaderboardRecordsAroundOwner* ListLeaderboardRecordsAroundOwner(
+		UObject* WorldContextObject,
+		const FNakamaClientRef& Client,
+		const FNakamaSession& Session,
+		FString LeaderboardId,
+		int32 Limit,
+		FString OwnerId,
+		int64 Expiry,
+		FString Cursor);
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientRef Client;
+	FNakamaSession Session;
+	FString StoredLeaderboardId;
+	int32 StoredLimit;
+	FString StoredOwnerId;
+	int64 StoredExpiry;
+	FString StoredCursor;
+};
+
+/**
+ * List running matches and optionally filter by matching criteria.
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientListMatches : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaMatchList OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ListMatches"), Category = "Nakama|Client")
+	static UNakamaClientListMatches* ListMatches(
+		UObject* WorldContextObject,
+		const FNakamaClientRef& Client,
+		const FNakamaSession& Session,
+		int32 Limit,
+		bool Authoritative,
+		FString Label,
+		int32 MinSize,
+		int32 MaxSize,
+		FString Query);
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientRef Client;
+	FNakamaSession Session;
+	int32 StoredLimit;
+	bool StoredAuthoritative;
+	FString StoredLabel;
+	int32 StoredMinSize;
+	int32 StoredMaxSize;
+	FString StoredQuery;
+};
+
+/**
+ * List parties and optionally filter by matching criteria.
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientListParties : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaPartyList OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ListParties"), Category = "Nakama|Client")
+	static UNakamaClientListParties* ListParties(
+		UObject* WorldContextObject,
+		const FNakamaClientRef& Client,
+		const FNakamaSession& Session,
+		int32 Limit,
+		bool Open,
+		FString Query,
+		FString Cursor);
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientRef Client;
+	FNakamaSession Session;
+	int32 StoredLimit;
+	bool StoredOpen;
+	FString StoredQuery;
+	FString StoredCursor;
+};
+
+/**
+ * Fetch list of notifications.
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientListNotifications : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaNotificationList OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ListNotifications"), Category = "Nakama|Client")
+	static UNakamaClientListNotifications* ListNotifications(
+		UObject* WorldContextObject,
+		const FNakamaClientRef& Client,
+		const FNakamaSession& Session,
+		int32 Limit,
+		FString CacheableCursor);
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientRef Client;
+	FNakamaSession Session;
+	int32 StoredLimit;
+	FString StoredCacheableCursor;
+};
+
+/**
+ * List publicly readable storage objects in a given collection.
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientListStorageObjects : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaStorageObjectList OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ListStorageObjects"), Category = "Nakama|Client")
+	static UNakamaClientListStorageObjects* ListStorageObjects(
+		UObject* WorldContextObject,
+		const FNakamaClientRef& Client,
+		const FNakamaSession& Session,
+		FString UserId,
+		FString Collection,
+		int32 Limit,
+		FString Cursor);
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientRef Client;
+	FNakamaSession Session;
+	FString StoredUserId;
+	FString StoredCollection;
+	int32 StoredLimit;
+	FString StoredCursor;
+};
+
+/**
+ * List user's subscriptions.
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientListSubscriptions : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaSubscriptionList OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ListSubscriptions"), Category = "Nakama|Client")
+	static UNakamaClientListSubscriptions* ListSubscriptions(
+		UObject* WorldContextObject,
+		const FNakamaClientRef& Client,
+		const FNakamaSession& Session,
+		int32 Limit,
+		FString Cursor);
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientRef Client;
+	FNakamaSession Session;
+	int32 StoredLimit;
+	FString StoredCursor;
+};
+
+/**
+ * List current or upcoming tournaments.
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientListTournaments : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaTournamentList OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ListTournaments"), Category = "Nakama|Client")
+	static UNakamaClientListTournaments* ListTournaments(
+		UObject* WorldContextObject,
+		const FNakamaClientRef& Client,
+		const FNakamaSession& Session,
+		int32 CategoryStart,
+		int32 CategoryEnd,
+		int32 StartTime,
+		int32 EndTime,
+		int32 Limit,
+		FString Cursor);
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientRef Client;
+	FNakamaSession Session;
+	int32 StoredCategoryStart;
+	int32 StoredCategoryEnd;
+	int32 StoredStartTime;
+	int32 StoredEndTime;
+	int32 StoredLimit;
+	FString StoredCursor;
+};
+
+/**
+ * List tournament records.
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientListTournamentRecords : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaTournamentRecordList OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ListTournamentRecords"), Category = "Nakama|Client")
+	static UNakamaClientListTournamentRecords* ListTournamentRecords(
+		UObject* WorldContextObject,
+		const FNakamaClientRef& Client,
+		const FNakamaSession& Session,
+		FString TournamentId,
+		const TArray<FString>& OwnerIds,
+		int32 Limit,
+		FString Cursor,
+		int64 Expiry);
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientRef Client;
+	FNakamaSession Session;
+	FString StoredTournamentId;
+	TArray<FString> StoredOwnerIds;
+	int32 StoredLimit;
+	FString StoredCursor;
+	int64 StoredExpiry;
+};
+
+/**
+ * List tournament records for a given owner.
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientListTournamentRecordsAroundOwner : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaTournamentRecordList OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ListTournamentRecordsAroundOwner"), Category = "Nakama|Client")
+	static UNakamaClientListTournamentRecordsAroundOwner* ListTournamentRecordsAroundOwner(
+		UObject* WorldContextObject,
+		const FNakamaClientRef& Client,
+		const FNakamaSession& Session,
+		FString TournamentId,
+		int32 Limit,
+		FString OwnerId,
+		int64 Expiry,
+		FString Cursor);
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientRef Client;
+	FNakamaSession Session;
+	FString StoredTournamentId;
+	int32 StoredLimit;
+	FString StoredOwnerId;
+	int64 StoredExpiry;
+	FString StoredCursor;
+};
+
+/**
+ * List groups the current user belongs to.
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientListUserGroups : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaUserGroupList OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ListUserGroups"), Category = "Nakama|Client")
+	static UNakamaClientListUserGroups* ListUserGroups(
+		UObject* WorldContextObject,
+		const FNakamaClientRef& Client,
+		const FNakamaSession& Session,
+		FString UserId,
+		int32 Limit,
+		int32 State,
+		FString Cursor);
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientRef Client;
+	FNakamaSession Session;
+	FString StoredUserId;
+	int32 StoredLimit;
+	int32 StoredState;
+	FString StoredCursor;
+};
+
+/**
+ * Promote a set of users in a group to the next role up.
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientPromoteGroupUsers : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaSuccess OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "PromoteGroupUsers"), Category = "Nakama|Client")
+	static UNakamaClientPromoteGroupUsers* PromoteGroupUsers(
+		UObject* WorldContextObject,
+		const FNakamaClientRef& Client,
+		const FNakamaSession& Session,
+		FString GroupId,
+		const TArray<FString>& UserIds);
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientRef Client;
+	FNakamaSession Session;
+	FString StoredGroupId;
+	TArray<FString> StoredUserIds;
+};
+
+/**
+ * Demote a set of users in a group to the next role down.
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientDemoteGroupUsers : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaSuccess OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "DemoteGroupUsers"), Category = "Nakama|Client")
+	static UNakamaClientDemoteGroupUsers* DemoteGroupUsers(
+		UObject* WorldContextObject,
+		const FNakamaClientRef& Client,
+		const FNakamaSession& Session,
+		FString GroupId,
+		const TArray<FString>& UserIds);
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientRef Client;
+	FNakamaSession Session;
+	FString StoredGroupId;
+	TArray<FString> StoredUserIds;
+};
+
+/**
+ * Get storage objects.
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientReadStorageObjects : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaStorageObjects OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ReadStorageObjects"), Category = "Nakama|Client")
+	static UNakamaClientReadStorageObjects* ReadStorageObjects(
+		UObject* WorldContextObject,
+		const FNakamaClientRef& Client,
+		const FNakamaSession& Session,
+		const TArray<FNakamaReadStorageObjectId>& ObjectIds);
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientRef Client;
+	FNakamaSession Session;
+	TArray<FNakamaReadStorageObjectId> StoredObjectIds;
+};
+
+/**
+ * Execute a Lua function on the server.
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientRpcFunc : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaRpc OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "RpcFunc"), Category = "Nakama|Client")
+	static UNakamaClientRpcFunc* RpcFunc(
+		UObject* WorldContextObject,
+		const FNakamaClientRef& Client,
+		const FNakamaSession& Session,
+		FString Id,
+		FString Payload,
+		FString HttpKey);
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientRef Client;
+	FNakamaSession Session;
+	FString StoredId;
+	FString StoredPayload;
+	FString StoredHttpKey;
+};
+
+/**
+ * Remove the Apple ID from the social profiles on the current user's account.
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientUnlinkApple : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaSuccess OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "UnlinkApple"), Category = "Nakama|Client")
+	static UNakamaClientUnlinkApple* UnlinkApple(
+		UObject* WorldContextObject,
+		const FNakamaClientRef& Client,
+		const FNakamaSession& Session,
+		FString Token,
+		const TMap<FString, FString>& Vars);
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientRef Client;
+	FNakamaSession Session;
+	FString StoredToken;
+	TMap<FString, FString> StoredVars;
+};
+
+/**
+ * Remove the custom ID from the social profiles on the current user's account.
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientUnlinkCustom : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaSuccess OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "UnlinkCustom"), Category = "Nakama|Client")
+	static UNakamaClientUnlinkCustom* UnlinkCustom(
+		UObject* WorldContextObject,
+		const FNakamaClientRef& Client,
+		const FNakamaSession& Session,
+		FString Id,
+		const TMap<FString, FString>& Vars);
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientRef Client;
+	FNakamaSession Session;
+	FString StoredId;
+	TMap<FString, FString> StoredVars;
+};
+
+/**
+ * Remove the device ID from the social profiles on the current user's account.
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientUnlinkDevice : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaSuccess OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "UnlinkDevice"), Category = "Nakama|Client")
+	static UNakamaClientUnlinkDevice* UnlinkDevice(
+		UObject* WorldContextObject,
+		const FNakamaClientRef& Client,
+		const FNakamaSession& Session,
+		FString Id,
+		const TMap<FString, FString>& Vars);
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientRef Client;
+	FNakamaSession Session;
+	FString StoredId;
+	TMap<FString, FString> StoredVars;
+};
+
+/**
+ * Remove the email+password from the social profiles on the current user's account.
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientUnlinkEmail : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaSuccess OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "UnlinkEmail"), Category = "Nakama|Client")
+	static UNakamaClientUnlinkEmail* UnlinkEmail(
+		UObject* WorldContextObject,
+		const FNakamaClientRef& Client,
+		const FNakamaSession& Session,
+		FString Email,
+		FString Password,
+		const TMap<FString, FString>& Vars);
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientRef Client;
+	FNakamaSession Session;
+	FString StoredEmail;
+	FString StoredPassword;
+	TMap<FString, FString> StoredVars;
+};
+
+/**
+ * Remove Facebook from the social profiles on the current user's account.
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientUnlinkFacebook : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaSuccess OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "UnlinkFacebook"), Category = "Nakama|Client")
+	static UNakamaClientUnlinkFacebook* UnlinkFacebook(
+		UObject* WorldContextObject,
+		const FNakamaClientRef& Client,
+		const FNakamaSession& Session,
+		FString Token,
+		const TMap<FString, FString>& Vars);
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientRef Client;
+	FNakamaSession Session;
+	FString StoredToken;
+	TMap<FString, FString> StoredVars;
+};
+
+/**
+ * Remove Facebook Instant Game profile from the social profiles on the current user's account.
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientUnlinkFacebookInstantGame : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaSuccess OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "UnlinkFacebookInstantGame"), Category = "Nakama|Client")
+	static UNakamaClientUnlinkFacebookInstantGame* UnlinkFacebookInstantGame(
+		UObject* WorldContextObject,
+		const FNakamaClientRef& Client,
+		const FNakamaSession& Session,
+		FString SignedPlayerInfo,
+		const TMap<FString, FString>& Vars);
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientRef Client;
+	FNakamaSession Session;
+	FString StoredSignedPlayerInfo;
+	TMap<FString, FString> StoredVars;
+};
+
+/**
+ * Remove Apple's GameCenter from the social profiles on the current user's account.
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientUnlinkGameCenter : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaSuccess OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "UnlinkGameCenter"), Category = "Nakama|Client")
+	static UNakamaClientUnlinkGameCenter* UnlinkGameCenter(
+		UObject* WorldContextObject,
+		const FNakamaClientRef& Client,
+		const FNakamaSession& Session,
+		FString PlayerId,
+		FString BundleId,
+		int64 TimestampSeconds,
+		FString Salt,
+		FString Signature,
+		FString PublicKeyUrl,
+		const TMap<FString, FString>& Vars);
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientRef Client;
+	FNakamaSession Session;
+	FString StoredPlayerId;
+	FString StoredBundleId;
+	int64 StoredTimestampSeconds;
+	FString StoredSalt;
+	FString StoredSignature;
+	FString StoredPublicKeyUrl;
+	TMap<FString, FString> StoredVars;
+};
+
+/**
+ * Remove Google from the social profiles on the current user's account.
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientUnlinkGoogle : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaSuccess OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "UnlinkGoogle"), Category = "Nakama|Client")
+	static UNakamaClientUnlinkGoogle* UnlinkGoogle(
+		UObject* WorldContextObject,
+		const FNakamaClientRef& Client,
+		const FNakamaSession& Session,
+		FString Token,
+		const TMap<FString, FString>& Vars);
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientRef Client;
+	FNakamaSession Session;
+	FString StoredToken;
+	TMap<FString, FString> StoredVars;
+};
+
+/**
+ * Remove Steam from the social profiles on the current user's account.
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientUnlinkSteam : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaSuccess OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "UnlinkSteam"), Category = "Nakama|Client")
+	static UNakamaClientUnlinkSteam* UnlinkSteam(
+		UObject* WorldContextObject,
+		const FNakamaClientRef& Client,
+		const FNakamaSession& Session,
+		FString Token,
+		const TMap<FString, FString>& Vars);
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientRef Client;
+	FNakamaSession Session;
+	FString StoredToken;
+	TMap<FString, FString> StoredVars;
+};
+
+/**
+ * Update fields in the current user's account.
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientUpdateAccount : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaSuccess OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "UpdateAccount"), Category = "Nakama|Client")
+	static UNakamaClientUpdateAccount* UpdateAccount(
+		UObject* WorldContextObject,
+		const FNakamaClientRef& Client,
+		const FNakamaSession& Session,
+		FString Username,
+		FString DisplayName,
+		FString AvatarUrl,
+		FString LangTag,
+		FString Location,
+		FString Timezone);
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientRef Client;
+	FNakamaSession Session;
+	FString StoredUsername;
+	FString StoredDisplayName;
+	FString StoredAvatarUrl;
+	FString StoredLangTag;
+	FString StoredLocation;
+	FString StoredTimezone;
+};
+
+/**
+ * Update fields in a given group.
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientUpdateGroup : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaSuccess OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "UpdateGroup"), Category = "Nakama|Client")
+	static UNakamaClientUpdateGroup* UpdateGroup(
+		UObject* WorldContextObject,
+		const FNakamaClientRef& Client,
+		const FNakamaSession& Session,
+		FString GroupId,
+		FString Name,
+		FString Description,
+		FString LangTag,
+		FString AvatarUrl,
+		bool Open);
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientRef Client;
+	FNakamaSession Session;
+	FString StoredGroupId;
+	FString StoredName;
+	FString StoredDescription;
+	FString StoredLangTag;
+	FString StoredAvatarUrl;
+	bool StoredOpen;
+};
+
+/**
+ * Validate Apple IAP Receipt
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientValidatePurchaseApple : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaValidatePurchaseResponse OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ValidatePurchaseApple"), Category = "Nakama|Client")
+	static UNakamaClientValidatePurchaseApple* ValidatePurchaseApple(
+		UObject* WorldContextObject,
+		const FNakamaClientRef& Client,
+		const FNakamaSession& Session,
+		FString Receipt,
+		bool Persist);
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientRef Client;
+	FNakamaSession Session;
+	FString StoredReceipt;
+	bool StoredPersist;
+};
+
+/**
+ * Validate Apple Subscription Receipt
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientValidateSubscriptionApple : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaValidateSubscriptionResponse OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ValidateSubscriptionApple"), Category = "Nakama|Client")
+	static UNakamaClientValidateSubscriptionApple* ValidateSubscriptionApple(
+		UObject* WorldContextObject,
+		const FNakamaClientRef& Client,
+		const FNakamaSession& Session,
+		FString Receipt,
+		bool Persist);
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientRef Client;
+	FNakamaSession Session;
+	FString StoredReceipt;
+	bool StoredPersist;
+};
+
+/**
+ * Validate Google IAP Receipt
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientValidatePurchaseGoogle : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaValidatePurchaseResponse OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ValidatePurchaseGoogle"), Category = "Nakama|Client")
+	static UNakamaClientValidatePurchaseGoogle* ValidatePurchaseGoogle(
+		UObject* WorldContextObject,
+		const FNakamaClientRef& Client,
+		const FNakamaSession& Session,
+		FString Purchase,
+		bool Persist);
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientRef Client;
+	FNakamaSession Session;
+	FString StoredPurchase;
+	bool StoredPersist;
+};
+
+/**
+ * Validate Google Subscription Receipt
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientValidateSubscriptionGoogle : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaValidateSubscriptionResponse OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ValidateSubscriptionGoogle"), Category = "Nakama|Client")
+	static UNakamaClientValidateSubscriptionGoogle* ValidateSubscriptionGoogle(
+		UObject* WorldContextObject,
+		const FNakamaClientRef& Client,
+		const FNakamaSession& Session,
+		FString Receipt,
+		bool Persist);
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientRef Client;
+	FNakamaSession Session;
+	FString StoredReceipt;
+	bool StoredPersist;
+};
+
+/**
+ * Validate Huawei IAP Receipt
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientValidatePurchaseHuawei : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaValidatePurchaseResponse OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ValidatePurchaseHuawei"), Category = "Nakama|Client")
+	static UNakamaClientValidatePurchaseHuawei* ValidatePurchaseHuawei(
+		UObject* WorldContextObject,
+		const FNakamaClientRef& Client,
+		const FNakamaSession& Session,
+		FString Purchase,
+		FString Signature,
+		bool Persist);
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientRef Client;
+	FNakamaSession Session;
+	FString StoredPurchase;
+	FString StoredSignature;
+	bool StoredPersist;
+};
+
+/**
+ * Validate FB Instant IAP Receipt
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientValidatePurchaseFacebookInstant : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaValidatePurchaseResponse OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ValidatePurchaseFacebookInstant"), Category = "Nakama|Client")
+	static UNakamaClientValidatePurchaseFacebookInstant* ValidatePurchaseFacebookInstant(
+		UObject* WorldContextObject,
+		const FNakamaClientRef& Client,
+		const FNakamaSession& Session,
+		FString SignedRequest,
+		bool Persist);
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientRef Client;
+	FNakamaSession Session;
+	FString StoredSignedRequest;
+	bool StoredPersist;
+};
+
+/**
+ * Write a record to a leaderboard.
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientWriteLeaderboardRecord : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaLeaderboardRecord OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "WriteLeaderboardRecord"), Category = "Nakama|Client")
+	static UNakamaClientWriteLeaderboardRecord* WriteLeaderboardRecord(
+		UObject* WorldContextObject,
+		const FNakamaClientRef& Client,
+		const FNakamaSession& Session,
+		FString LeaderboardId,
+		FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite Record);
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientRef Client;
+	FNakamaSession Session;
+	FString StoredLeaderboardId;
+	FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite StoredRecord;
+};
+
+/**
+ * Write objects into the storage engine.
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientWriteStorageObjects : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaStorageObjectAcks OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "WriteStorageObjects"), Category = "Nakama|Client")
+	static UNakamaClientWriteStorageObjects* WriteStorageObjects(
+		UObject* WorldContextObject,
+		const FNakamaClientRef& Client,
+		const FNakamaSession& Session,
+		const TArray<FNakamaWriteStorageObject>& Objects);
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientRef Client;
+	FNakamaSession Session;
+	TArray<FNakamaWriteStorageObject> StoredObjects;
+};
+
+/**
+ * Write a record to a tournament.
+ */
+UCLASS()
+class NAKAMABLUEPRINTS_API UNakamaClientWriteTournamentRecord : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaLeaderboardRecord OnSuccess;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "WriteTournamentRecord"), Category = "Nakama|Client")
+	static UNakamaClientWriteTournamentRecord* WriteTournamentRecord(
+		UObject* WorldContextObject,
+		const FNakamaClientRef& Client,
+		const FNakamaSession& Session,
+		FString TournamentId,
+		FNakamaWriteTournamentRecordRequest_TournamentRecordWrite Record);
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientRef Client;
+	FNakamaSession Session;
+	FString StoredTournamentId;
+	FNakamaWriteTournamentRecordRequest_TournamentRecordWrite StoredRecord;
 };

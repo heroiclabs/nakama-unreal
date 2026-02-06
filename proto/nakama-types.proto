@@ -70,6 +70,14 @@ message User {
   string apple_id = 18;
 }
 
+// Send a device to the server. Used with authenticate/link/unlink and user.
+message AccountDevice {
+  // A device identifier. Should be obtained by a platform-specific device API.
+  string id = 1;
+  // Extra information that will be bundled in the session token.
+  map<string, string> vars = 2;
+}
+
 // A user with additional account details. Always the current user.
 message Account {
   // The user object.
@@ -107,14 +115,6 @@ message AccountApple {
 // Send a custom ID to the server. Used with authenticate/link/unlink.
 message AccountCustom {
   // A custom identifier.
-  string id = 1;
-  // Extra information that will be bundled in the session token.
-  map<string, string> vars = 2;
-}
-
-// Send a device to the server. Used with authenticate/link/unlink and user.
-message AccountDevice {
-  // A device identifier. Should be obtained by a platform-specific device API.
   string id = 1;
   // Extra information that will be bundled in the session token.
   map<string, string> vars = 2;

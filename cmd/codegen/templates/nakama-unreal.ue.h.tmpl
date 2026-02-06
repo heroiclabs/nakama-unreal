@@ -23,6 +23,8 @@
 #include "Templates/SharedPointer.h"
 #include "Dom/JsonObject.h"
 
+#include "NakamaUnreal.generated.h"
+
 DECLARE_LOG_CATEGORY_EXTERN(LogNakama, Log, All);
 
 // Forward declarations
@@ -43,9 +45,15 @@ enum class ENakama{{ $enum.Name }} : uint8
 };
 {{- end }}
 
+USTRUCT(BlueprintType)
 struct NAKAMAUNREAL_API FNakamaError
 {
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString Message;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	int32 Code = 0;
 
 	FNakamaError() = default;
@@ -57,14 +65,19 @@ struct NAKAMAUNREAL_API FNakamaError
 {{- range $idx, $msg := $.Messages }}
 
 /** {{ $msg.Comment }} */
+USTRUCT(BlueprintType)
 struct NAKAMAUNREAL_API FNakama{{ $msg.Name }}
 {
+	GENERATED_BODY()
+
 	{{- range $fidx, $field := $msg.Fields }}
 	/** {{ $field.Comment.Message }} */
+	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	{{ getUnrealFieldType $field.Type $field.Repeated }} {{ $field.Name | pascalCase }};
 	{{- end }}
 	{{- range $fidx, $field := $msg.MapFields }}
 	/** {{ $field.Comment.Message }} */
+	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	{{ getUnrealMapType $field.Type }} {{ $field.Name | pascalCase }};
 	{{- end }}
 
