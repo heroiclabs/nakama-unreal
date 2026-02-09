@@ -85,6 +85,8 @@ UNakamaClient{{ $rpc.Name }}* UNakamaClient{{ $rpc.Name }}::{{ $rpc.Name }}(
 
 void UNakamaClient{{ $rpc.Name }}::Activate()
 {
+	static const TCHAR* TraceScope_{{ $rpc.Name }} = TEXT("NakamaBP_{{ $rpc.Name }}");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_{{ $rpc.Name }});
 	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
 	if (!ClientPtr)
 	{

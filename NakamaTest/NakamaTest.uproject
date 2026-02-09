@@ -30,6 +30,10 @@
 		{
 			"Name": "RuntimeTests",
 			"Enabled": true
+		},
+		{
+			"Name": "ModelViewViewModel",
+			"Enabled": true
 		}
 	]
 }

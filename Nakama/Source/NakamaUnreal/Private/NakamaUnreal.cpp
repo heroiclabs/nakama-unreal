@@ -27,8 +27,19 @@
 #include "Serialization/JsonReader.h"
 #include "Serialization/JsonSerializer.h"
 #include "Serialization/JsonWriter.h"
+#include "Stats/Stats.h"
 
 DEFINE_LOG_CATEGORY(LogNakama);
+
+// Stat group: use "stat Nakama" in console
+DECLARE_STATS_GROUP(TEXT("Nakama"), STATGROUP_Nakama, STATCAT_Advanced);
+DECLARE_CYCLE_STAT(TEXT("MakeRequest Dispatch"), STAT_Nakama_MakeRequest_Dispatch, STATGROUP_Nakama);
+DECLARE_CYCLE_STAT(TEXT("OnResponse"), STAT_Nakama_OnResponse, STATGROUP_Nakama);
+DECLARE_CYCLE_STAT(TEXT("JsonSerialize"), STAT_Nakama_JsonSerialize, STATGROUP_Nakama);
+DECLARE_CYCLE_STAT(TEXT("JsonDeserialize"), STAT_Nakama_JsonDeserialize, STATGROUP_Nakama);
+DECLARE_DWORD_ACCUMULATOR_STAT(TEXT("ActiveRequests"), STAT_Nakama_ActiveRequests, STATGROUP_Nakama);
+DECLARE_DWORD_ACCUMULATOR_STAT(TEXT("TotalRequests"), STAT_Nakama_TotalRequests, STATGROUP_Nakama);
+DECLARE_DWORD_ACCUMULATOR_STAT(TEXT("TotalErrors"), STAT_Nakama_TotalErrors, STATGROUP_Nakama);
 
 FNakamaUser FNakamaUser::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
@@ -5944,7 +5955,16 @@ void FNakamaClient::MakeRequest(
 	TFunction<void(TSharedPtr<FJsonObject>)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError)
 {
-	const FString Url = GetBaseUrl() + Endpoint;
+	// Capture Self first — ensures the client outlives the async HTTP request.
+	// Also used for all member access below for consistency.
+	TSharedPtr<FNakamaClient> Self = AsShared();
+
+	SCOPE_CYCLE_COUNTER(STAT_Nakama_MakeRequest_Dispatch);
+	TRACE_CPUPROFILER_EVENT_SCOPE(Nakama_MakeRequest);
+	INC_DWORD_STAT(STAT_Nakama_ActiveRequests);
+	INC_DWORD_STAT(STAT_Nakama_TotalRequests);
+
+	const FString Url = Self->GetBaseUrl() + Endpoint;
 
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> Request = FHttpModule::Get().CreateRequest();
 	Request->SetURL(Url);
@@ -5956,7 +5976,7 @@ void FNakamaClient::MakeRequest(
 	{
 	case ENakamaRequestAuth::Basic:
 		{
-			const FString Auth = FString::Printf(TEXT("%s:"), *ServerKey);
+			const FString Auth = FString::Printf(TEXT("%s:"), *Self->ServerKey);
 			Request->SetHeader(TEXT("Authorization"), FString::Printf(TEXT("Basic %s"), *FBase64::Encode(Auth)));
 		}
 		break;
@@ -5983,26 +6003,34 @@ void FNakamaClient::MakeRequest(
 	{
 		FString BodyString;
 		TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&BodyString);
-		FJsonSerializer::Serialize(Body.ToSharedRef(), Writer);
+		{
+			SCOPE_CYCLE_COUNTER(STAT_Nakama_JsonSerialize);
+			FJsonSerializer::Serialize(Body.ToSharedRef(), Writer);
+		}
 		Request->SetContentAsString(BodyString);
 
-		if (bEnableDebug)
+		if (Self->bEnableDebug)
 		{
 			UE_LOG(LogNakama, Log, TEXT("Request %s %s: %s"), *Method, *Url, *BodyString);
 		}
 	}
-	else if (bEnableDebug)
+	else if (Self->bEnableDebug)
 	{
 		UE_LOG(LogNakama, Log, TEXT("Request %s %s"), *Method, *Url);
 	}
 
-	Request->SetTimeout(Timeout);
+	Request->SetTimeout(Self->Timeout);
 
 	Request->OnProcessRequestComplete().BindLambda(
-		[OnSuccess, OnError, this](FHttpRequestPtr Req, FHttpResponsePtr Res, bool bSuccess)
+		[OnSuccess, OnError, Self](FHttpRequestPtr Req, FHttpResponsePtr Res, bool bSuccess)
 		{
+			SCOPE_CYCLE_COUNTER(STAT_Nakama_OnResponse);
+			TRACE_CPUPROFILER_EVENT_SCOPE(Nakama_OnResponse);
+			DEC_DWORD_STAT(STAT_Nakama_ActiveRequests);
+
 			if (!bSuccess || !Res.IsValid())
 			{
+				INC_DWORD_STAT(STAT_Nakama_TotalErrors);
 				if (OnError)
 				{
 					OnError(FNakamaError(TEXT("Connection failed"), 0));
@@ -6013,13 +6041,14 @@ void FNakamaClient::MakeRequest(
 			const int32 Code = Res->GetResponseCode();
 			const FString Content = Res->GetContentAsString();
 
-			if (bEnableDebug)
+			if (Self->bEnableDebug)
 			{
 				UE_LOG(LogNakama, Log, TEXT("Response %d: %s"), Code, *Content);
 			}
 
 			if (Code < 200 || Code >= 300)
 			{
+				INC_DWORD_STAT(STAT_Nakama_TotalErrors);
 				FString ErrorMsg = FString::Printf(TEXT("HTTP %d"), Code);
 				TSharedPtr<FJsonObject> Json;
 				if (FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Content), Json) && Json.IsValid())
@@ -6039,8 +6068,10 @@ void FNakamaClient::MakeRequest(
 			TSharedPtr<FJsonObject> Json;
 			if (!Content.IsEmpty())
 			{
+				SCOPE_CYCLE_COUNTER(STAT_Nakama_JsonDeserialize);
 				if (!FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Content), Json) || !Json.IsValid())
 				{
+					INC_DWORD_STAT(STAT_Nakama_TotalErrors);
 					if (OnError)
 					{
 						OnError(FNakamaError(TEXT("Invalid JSON response"), 500));

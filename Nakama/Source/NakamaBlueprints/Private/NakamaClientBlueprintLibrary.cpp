@@ -62,6 +62,8 @@ UNakamaClientAddFriends* UNakamaClientAddFriends::AddFriends(
 
 void UNakamaClientAddFriends::Activate()
 {
+	static const TCHAR* TraceScope_AddFriends = TEXT("NakamaBP_AddFriends");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_AddFriends);
 	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
 	if (!ClientPtr)
 	{
@@ -110,6 +112,8 @@ UNakamaClientAddGroupUsers* UNakamaClientAddGroupUsers::AddGroupUsers(
 
 void UNakamaClientAddGroupUsers::Activate()
 {
+	static const TCHAR* TraceScope_AddGroupUsers = TEXT("NakamaBP_AddGroupUsers");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_AddGroupUsers);
 	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
 	if (!ClientPtr)
 	{
@@ -155,6 +159,8 @@ UNakamaClientSessionRefresh* UNakamaClientSessionRefresh::SessionRefresh(
 
 void UNakamaClientSessionRefresh::Activate()
 {
+	static const TCHAR* TraceScope_SessionRefresh = TEXT("NakamaBP_SessionRefresh");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_SessionRefresh);
 	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
 	if (!ClientPtr)
 	{
@@ -201,6 +207,8 @@ UNakamaClientSessionLogout* UNakamaClientSessionLogout::SessionLogout(
 
 void UNakamaClientSessionLogout::Activate()
 {
+	static const TCHAR* TraceScope_SessionLogout = TEXT("NakamaBP_SessionLogout");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_SessionLogout);
 	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
 	if (!ClientPtr)
 	{
@@ -248,6 +256,8 @@ UNakamaClientAuthenticateApple* UNakamaClientAuthenticateApple::AuthenticateAppl
 
 void UNakamaClientAuthenticateApple::Activate()
 {
+	static const TCHAR* TraceScope_AuthenticateApple = TEXT("NakamaBP_AuthenticateApple");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_AuthenticateApple);
 	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
 	if (!ClientPtr)
 	{
@@ -295,6 +305,8 @@ UNakamaClientAuthenticateCustom* UNakamaClientAuthenticateCustom::AuthenticateCu
 
 void UNakamaClientAuthenticateCustom::Activate()
 {
+	static const TCHAR* TraceScope_AuthenticateCustom = TEXT("NakamaBP_AuthenticateCustom");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_AuthenticateCustom);
 	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
 	if (!ClientPtr)
 	{
@@ -342,6 +354,8 @@ UNakamaClientAuthenticateDevice* UNakamaClientAuthenticateDevice::AuthenticateDe
 
 void UNakamaClientAuthenticateDevice::Activate()
 {
+	static const TCHAR* TraceScope_AuthenticateDevice = TEXT("NakamaBP_AuthenticateDevice");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_AuthenticateDevice);
 	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
 	if (!ClientPtr)
 	{
@@ -389,6 +403,8 @@ UNakamaClientAuthenticateEmail* UNakamaClientAuthenticateEmail::AuthenticateEmai
 
 void UNakamaClientAuthenticateEmail::Activate()
 {
+	static const TCHAR* TraceScope_AuthenticateEmail = TEXT("NakamaBP_AuthenticateEmail");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_AuthenticateEmail);
 	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
 	if (!ClientPtr)
 	{
@@ -438,6 +454,8 @@ UNakamaClientAuthenticateFacebook* UNakamaClientAuthenticateFacebook::Authentica
 
 void UNakamaClientAuthenticateFacebook::Activate()
 {
+	static const TCHAR* TraceScope_AuthenticateFacebook = TEXT("NakamaBP_AuthenticateFacebook");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_AuthenticateFacebook);
 	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
 	if (!ClientPtr)
 	{
@@ -486,6 +504,8 @@ UNakamaClientAuthenticateFacebookInstantGame* UNakamaClientAuthenticateFacebookI
 
 void UNakamaClientAuthenticateFacebookInstantGame::Activate()
 {
+	static const TCHAR* TraceScope_AuthenticateFacebookInstantGame = TEXT("NakamaBP_AuthenticateFacebookInstantGame");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_AuthenticateFacebookInstantGame);
 	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
 	if (!ClientPtr)
 	{
@@ -533,6 +553,8 @@ UNakamaClientAuthenticateGameCenter* UNakamaClientAuthenticateGameCenter::Authen
 
 void UNakamaClientAuthenticateGameCenter::Activate()
 {
+	static const TCHAR* TraceScope_AuthenticateGameCenter = TEXT("NakamaBP_AuthenticateGameCenter");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_AuthenticateGameCenter);
 	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
 	if (!ClientPtr)
 	{
@@ -580,6 +602,8 @@ UNakamaClientAuthenticateGoogle* UNakamaClientAuthenticateGoogle::AuthenticateGo
 
 void UNakamaClientAuthenticateGoogle::Activate()
 {
+	static const TCHAR* TraceScope_AuthenticateGoogle = TEXT("NakamaBP_AuthenticateGoogle");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_AuthenticateGoogle);
 	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
 	if (!ClientPtr)
 	{
@@ -629,6 +653,8 @@ UNakamaClientAuthenticateSteam* UNakamaClientAuthenticateSteam::AuthenticateStea
 
 void UNakamaClientAuthenticateSteam::Activate()
 {
+	static const TCHAR* TraceScope_AuthenticateSteam = TEXT("NakamaBP_AuthenticateSteam");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_AuthenticateSteam);
 	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
 	if (!ClientPtr)
 	{
@@ -677,6 +703,8 @@ UNakamaClientBanGroupUsers* UNakamaClientBanGroupUsers::BanGroupUsers(
 
 void UNakamaClientBanGroupUsers::Activate()
 {
+	static const TCHAR* TraceScope_BanGroupUsers = TEXT("NakamaBP_BanGroupUsers");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_BanGroupUsers);
 	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
 	if (!ClientPtr)
 	{
@@ -724,6 +752,8 @@ UNakamaClientBlockFriends* UNakamaClientBlockFriends::BlockFriends(
 
 void UNakamaClientBlockFriends::Activate()
 {
+	static const TCHAR* TraceScope_BlockFriends = TEXT("NakamaBP_BlockFriends");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_BlockFriends);
 	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
 	if (!ClientPtr)
 	{
@@ -779,6 +809,8 @@ UNakamaClientCreateGroup* UNakamaClientCreateGroup::CreateGroup(
 
 void UNakamaClientCreateGroup::Activate()
 {
+	static const TCHAR* TraceScope_CreateGroup = TEXT("NakamaBP_CreateGroup");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_CreateGroup);
 	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
 	if (!ClientPtr)
 	{
@@ -826,6 +858,8 @@ UNakamaClientDeleteAccount* UNakamaClientDeleteAccount::DeleteAccount(
 
 void UNakamaClientDeleteAccount::Activate()
 {
+	static const TCHAR* TraceScope_DeleteAccount = TEXT("NakamaBP_DeleteAccount");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_DeleteAccount);
 	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
 	if (!ClientPtr)
 	{
@@ -871,6 +905,8 @@ UNakamaClientDeleteFriends* UNakamaClientDeleteFriends::DeleteFriends(
 
 void UNakamaClientDeleteFriends::Activate()
 {
+	static const TCHAR* TraceScope_DeleteFriends = TEXT("NakamaBP_DeleteFriends");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_DeleteFriends);
 	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
 	if (!ClientPtr)
 	{
@@ -916,6 +952,8 @@ UNakamaClientDeleteGroup* UNakamaClientDeleteGroup::DeleteGroup(
 
 void UNakamaClientDeleteGroup::Activate()
 {
+	static const TCHAR* TraceScope_DeleteGroup = TEXT("NakamaBP_DeleteGroup");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_DeleteGroup);
 	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
 	if (!ClientPtr)
 	{
@@ -960,6 +998,8 @@ UNakamaClientDeleteLeaderboardRecord* UNakamaClientDeleteLeaderboardRecord::Dele
 
 void UNakamaClientDeleteLeaderboardRecord::Activate()
 {
+	static const TCHAR* TraceScope_DeleteLeaderboardRecord = TEXT("NakamaBP_DeleteLeaderboardRecord");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_DeleteLeaderboardRecord);
 	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
 	if (!ClientPtr)
 	{
@@ -1004,6 +1044,8 @@ UNakamaClientDeleteNotifications* UNakamaClientDeleteNotifications::DeleteNotifi
 
 void UNakamaClientDeleteNotifications::Activate()
 {
+	static const TCHAR* TraceScope_DeleteNotifications = TEXT("NakamaBP_DeleteNotifications");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_DeleteNotifications);
 	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
 	if (!ClientPtr)
 	{
@@ -1048,6 +1090,8 @@ UNakamaClientDeleteTournamentRecord* UNakamaClientDeleteTournamentRecord::Delete
 
 void UNakamaClientDeleteTournamentRecord::Activate()
 {
+	static const TCHAR* TraceScope_DeleteTournamentRecord = TEXT("NakamaBP_DeleteTournamentRecord");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_DeleteTournamentRecord);
 	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
 	if (!ClientPtr)
 	{
@@ -1092,6 +1136,8 @@ UNakamaClientDeleteStorageObjects* UNakamaClientDeleteStorageObjects::DeleteStor
 
 void UNakamaClientDeleteStorageObjects::Activate()
 {
+	static const TCHAR* TraceScope_DeleteStorageObjects = TEXT("NakamaBP_DeleteStorageObjects");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_DeleteStorageObjects);
 	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
 	if (!ClientPtr)
 	{
@@ -1142,6 +1188,8 @@ UNakamaClientEvent* UNakamaClientEvent::Event(
 
 void UNakamaClientEvent::Activate()
 {
+	static const TCHAR* TraceScope_Event = TEXT("NakamaBP_Event");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_Event);
 	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
 	if (!ClientPtr)
 	{
@@ -1187,6 +1235,8 @@ UNakamaClientGetAccount* UNakamaClientGetAccount::GetAccount(
 
 void UNakamaClientGetAccount::Activate()
 {
+	static const TCHAR* TraceScope_GetAccount = TEXT("NakamaBP_GetAccount");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_GetAccount);
 	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
 	if (!ClientPtr)
 	{
@@ -1234,6 +1284,8 @@ UNakamaClientGetUsers* UNakamaClientGetUsers::GetUsers(
 
 void UNakamaClientGetUsers::Activate()
 {
+	static const TCHAR* TraceScope_GetUsers = TEXT("NakamaBP_GetUsers");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_GetUsers);
 	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
 	if (!ClientPtr)
 	{
@@ -1280,6 +1332,8 @@ UNakamaClientGetSubscription* UNakamaClientGetSubscription::GetSubscription(
 
 void UNakamaClientGetSubscription::Activate()
 {
+	static const TCHAR* TraceScope_GetSubscription = TEXT("NakamaBP_GetSubscription");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_GetSubscription);
 	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
 	if (!ClientPtr)
 	{
@@ -1322,6 +1376,8 @@ UNakamaClientGetMatchmakerStats* UNakamaClientGetMatchmakerStats::GetMatchmakerS
 
 void UNakamaClientGetMatchmakerStats::Activate()
 {
+	static const TCHAR* TraceScope_GetMatchmakerStats = TEXT("NakamaBP_GetMatchmakerStats");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_GetMatchmakerStats);
 	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
 	if (!ClientPtr)
 	{
@@ -1363,6 +1419,8 @@ UNakamaClientHealthcheck* UNakamaClientHealthcheck::Healthcheck(
 
 void UNakamaClientHealthcheck::Activate()
 {
+	static const TCHAR* TraceScope_Healthcheck = TEXT("NakamaBP_Healthcheck");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_Healthcheck);
 	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
 	if (!ClientPtr)
 	{
@@ -1408,6 +1466,8 @@ UNakamaClientImportFacebookFriends* UNakamaClientImportFacebookFriends::ImportFa
 
 void UNakamaClientImportFacebookFriends::Activate()
 {
+	static const TCHAR* TraceScope_ImportFacebookFriends = TEXT("NakamaBP_ImportFacebookFriends");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ImportFacebookFriends);
 	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
 	if (!ClientPtr)
 	{
@@ -1455,6 +1515,8 @@ UNakamaClientImportSteamFriends* UNakamaClientImportSteamFriends::ImportSteamFri
 
 void UNakamaClientImportSteamFriends::Activate()
 {
+	static const TCHAR* TraceScope_ImportSteamFriends = TEXT("NakamaBP_ImportSteamFriends");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ImportSteamFriends);
 	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
 	if (!ClientPtr)
 	{
@@ -1500,6 +1562,8 @@ UNakamaClientJoinGroup* UNakamaClientJoinGroup::JoinGroup(
 
 void UNakamaClientJoinGroup::Activate()
 {
+	static const TCHAR* TraceScope_JoinGroup = TEXT("NakamaBP_JoinGroup");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_JoinGroup);
 	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
 	if (!ClientPtr)
 	{
@@ -1544,6 +1608,8 @@ UNakamaClientJoinTournament* UNakamaClientJoinTournament::JoinTournament(
 
 void UNakamaClientJoinTournament::Activate()
 {
+	static const TCHAR* TraceScope_JoinTournament = TEXT("NakamaBP_JoinTournament");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_JoinTournament);
 	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
 	if (!ClientPtr)
 	{
@@ -1590,6 +1656,8 @@ UNakamaClientKickGroupUsers* UNakamaClientKickGroupUsers::KickGroupUsers(
 
 void UNakamaClientKickGroupUsers::Activate()
 {
+	static const TCHAR* TraceScope_KickGroupUsers = TEXT("NakamaBP_KickGroupUsers");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_KickGroupUsers);
 	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
 	if (!ClientPtr)
 	{
@@ -1635,6 +1703,8 @@ UNakamaClientLeaveGroup* UNakamaClientLeaveGroup::LeaveGroup(
 
 void UNakamaClientLeaveGroup::Activate()
 {
+	static const TCHAR* TraceScope_LeaveGroup = TEXT("NakamaBP_LeaveGroup");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_LeaveGroup);
 	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
 	if (!ClientPtr)
 	{
@@ -1681,6 +1751,8 @@ UNakamaClientLinkApple* UNakamaClientLinkApple::LinkApple(
 
 void UNakamaClientLinkApple::Activate()
 {
+	static const TCHAR* TraceScope_LinkApple = TEXT("NakamaBP_LinkApple");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_LinkApple);
 	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
 	if (!ClientPtr)
 	{
@@ -1728,6 +1800,8 @@ UNakamaClientLinkCustom* UNakamaClientLinkCustom::LinkCustom(
 
 void UNakamaClientLinkCustom::Activate()
 {
+	static const TCHAR* TraceScope_LinkCustom = TEXT("NakamaBP_LinkCustom");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_LinkCustom);
 	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
 	if (!ClientPtr)
 	{
@@ -1775,6 +1849,8 @@ UNakamaClientLinkDevice* UNakamaClientLinkDevice::LinkDevice(
 
 void UNakamaClientLinkDevice::Activate()
 {
+	static const TCHAR* TraceScope_LinkDevice = TEXT("NakamaBP_LinkDevice");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_LinkDevice);
 	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
 	if (!ClientPtr)
 	{
@@ -1824,6 +1900,8 @@ UNakamaClientLinkEmail* UNakamaClientLinkEmail::LinkEmail(
 
 void UNakamaClientLinkEmail::Activate()
 {
+	static const TCHAR* TraceScope_LinkEmail = TEXT("NakamaBP_LinkEmail");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_LinkEmail);
 	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
 	if (!ClientPtr)
 	{
@@ -1872,6 +1950,8 @@ UNakamaClientLinkFacebook* UNakamaClientLinkFacebook::LinkFacebook(
 
 void UNakamaClientLinkFacebook::Activate()
 {
+	static const TCHAR* TraceScope_LinkFacebook = TEXT("NakamaBP_LinkFacebook");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_LinkFacebook);
 	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
 	if (!ClientPtr)
 	{
@@ -1919,6 +1999,8 @@ UNakamaClientLinkFacebookInstantGame* UNakamaClientLinkFacebookInstantGame::Link
 
 void UNakamaClientLinkFacebookInstantGame::Activate()
 {
+	static const TCHAR* TraceScope_LinkFacebookInstantGame = TEXT("NakamaBP_LinkFacebookInstantGame");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_LinkFacebookInstantGame);
 	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
 	if (!ClientPtr)
 	{
@@ -1976,6 +2058,8 @@ UNakamaClientLinkGameCenter* UNakamaClientLinkGameCenter::LinkGameCenter(
 
 void UNakamaClientLinkGameCenter::Activate()
 {
+	static const TCHAR* TraceScope_LinkGameCenter = TEXT("NakamaBP_LinkGameCenter");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_LinkGameCenter);
 	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
 	if (!ClientPtr)
 	{
@@ -2028,6 +2112,8 @@ UNakamaClientLinkGoogle* UNakamaClientLinkGoogle::LinkGoogle(
 
 void UNakamaClientLinkGoogle::Activate()
 {
+	static const TCHAR* TraceScope_LinkGoogle = TEXT("NakamaBP_LinkGoogle");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_LinkGoogle);
 	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
 	if (!ClientPtr)
 	{
@@ -2075,6 +2161,8 @@ UNakamaClientLinkSteam* UNakamaClientLinkSteam::LinkSteam(
 
 void UNakamaClientLinkSteam::Activate()
 {
+	static const TCHAR* TraceScope_LinkSteam = TEXT("NakamaBP_LinkSteam");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_LinkSteam);
 	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
 	if (!ClientPtr)
 	{
@@ -2126,6 +2214,8 @@ UNakamaClientListChannelMessages* UNakamaClientListChannelMessages::ListChannelM
 
 void UNakamaClientListChannelMessages::Activate()
 {
+	static const TCHAR* TraceScope_ListChannelMessages = TEXT("NakamaBP_ListChannelMessages");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListChannelMessages);
 	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
 	if (!ClientPtr)
 	{
@@ -2177,6 +2267,8 @@ UNakamaClientListFriends* UNakamaClientListFriends::ListFriends(
 
 void UNakamaClientListFriends::Activate()
 {
+	static const TCHAR* TraceScope_ListFriends = TEXT("NakamaBP_ListFriends");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListFriends);
 	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
 	if (!ClientPtr)
 	{
@@ -2225,6 +2317,8 @@ UNakamaClientListFriendsOfFriends* UNakamaClientListFriendsOfFriends::ListFriend
 
 void UNakamaClientListFriendsOfFriends::Activate()
 {
+	static const TCHAR* TraceScope_ListFriendsOfFriends = TEXT("NakamaBP_ListFriendsOfFriends");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListFriendsOfFriends);
 	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
 	if (!ClientPtr)
 	{
@@ -2280,6 +2374,8 @@ UNakamaClientListGroups* UNakamaClientListGroups::ListGroups(
 
 void UNakamaClientListGroups::Activate()
 {
+	static const TCHAR* TraceScope_ListGroups = TEXT("NakamaBP_ListGroups");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListGroups);
 	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
 	if (!ClientPtr)
 	{
@@ -2335,6 +2431,8 @@ UNakamaClientListGroupUsers* UNakamaClientListGroupUsers::ListGroupUsers(
 
 void UNakamaClientListGroupUsers::Activate()
 {
+	static const TCHAR* TraceScope_ListGroupUsers = TEXT("NakamaBP_ListGroupUsers");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListGroupUsers);
 	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
 	if (!ClientPtr)
 	{
@@ -2390,6 +2488,8 @@ UNakamaClientListLeaderboardRecords* UNakamaClientListLeaderboardRecords::ListLe
 
 void UNakamaClientListLeaderboardRecords::Activate()
 {
+	static const TCHAR* TraceScope_ListLeaderboardRecords = TEXT("NakamaBP_ListLeaderboardRecords");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListLeaderboardRecords);
 	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
 	if (!ClientPtr)
 	{
@@ -2446,6 +2546,8 @@ UNakamaClientListLeaderboardRecordsAroundOwner* UNakamaClientListLeaderboardReco
 
 void UNakamaClientListLeaderboardRecordsAroundOwner::Activate()
 {
+	static const TCHAR* TraceScope_ListLeaderboardRecordsAroundOwner = TEXT("NakamaBP_ListLeaderboardRecordsAroundOwner");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListLeaderboardRecordsAroundOwner);
 	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
 	if (!ClientPtr)
 	{
@@ -2504,6 +2606,8 @@ UNakamaClientListMatches* UNakamaClientListMatches::ListMatches(
 
 void UNakamaClientListMatches::Activate()
 {
+	static const TCHAR* TraceScope_ListMatches = TEXT("NakamaBP_ListMatches");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListMatches);
 	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
 	if (!ClientPtr)
 	{
@@ -2559,6 +2663,8 @@ UNakamaClientListParties* UNakamaClientListParties::ListParties(
 
 void UNakamaClientListParties::Activate()
 {
+	static const TCHAR* TraceScope_ListParties = TEXT("NakamaBP_ListParties");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListParties);
 	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
 	if (!ClientPtr)
 	{
@@ -2608,6 +2714,8 @@ UNakamaClientListNotifications* UNakamaClientListNotifications::ListNotification
 
 void UNakamaClientListNotifications::Activate()
 {
+	static const TCHAR* TraceScope_ListNotifications = TEXT("NakamaBP_ListNotifications");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListNotifications);
 	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
 	if (!ClientPtr)
 	{
@@ -2659,6 +2767,8 @@ UNakamaClientListStorageObjects* UNakamaClientListStorageObjects::ListStorageObj
 
 void UNakamaClientListStorageObjects::Activate()
 {
+	static const TCHAR* TraceScope_ListStorageObjects = TEXT("NakamaBP_ListStorageObjects");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListStorageObjects);
 	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
 	if (!ClientPtr)
 	{
@@ -2708,6 +2818,8 @@ UNakamaClientListSubscriptions* UNakamaClientListSubscriptions::ListSubscription
 
 void UNakamaClientListSubscriptions::Activate()
 {
+	static const TCHAR* TraceScope_ListSubscriptions = TEXT("NakamaBP_ListSubscriptions");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListSubscriptions);
 	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
 	if (!ClientPtr)
 	{
@@ -2763,6 +2875,8 @@ UNakamaClientListTournaments* UNakamaClientListTournaments::ListTournaments(
 
 void UNakamaClientListTournaments::Activate()
 {
+	static const TCHAR* TraceScope_ListTournaments = TEXT("NakamaBP_ListTournaments");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListTournaments);
 	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
 	if (!ClientPtr)
 	{
@@ -2820,6 +2934,8 @@ UNakamaClientListTournamentRecords* UNakamaClientListTournamentRecords::ListTour
 
 void UNakamaClientListTournamentRecords::Activate()
 {
+	static const TCHAR* TraceScope_ListTournamentRecords = TEXT("NakamaBP_ListTournamentRecords");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListTournamentRecords);
 	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
 	if (!ClientPtr)
 	{
@@ -2876,6 +2992,8 @@ UNakamaClientListTournamentRecordsAroundOwner* UNakamaClientListTournamentRecord
 
 void UNakamaClientListTournamentRecordsAroundOwner::Activate()
 {
+	static const TCHAR* TraceScope_ListTournamentRecordsAroundOwner = TEXT("NakamaBP_ListTournamentRecordsAroundOwner");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListTournamentRecordsAroundOwner);
 	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
 	if (!ClientPtr)
 	{
@@ -2930,6 +3048,8 @@ UNakamaClientListUserGroups* UNakamaClientListUserGroups::ListUserGroups(
 
 void UNakamaClientListUserGroups::Activate()
 {
+	static const TCHAR* TraceScope_ListUserGroups = TEXT("NakamaBP_ListUserGroups");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListUserGroups);
 	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
 	if (!ClientPtr)
 	{
@@ -2979,6 +3099,8 @@ UNakamaClientPromoteGroupUsers* UNakamaClientPromoteGroupUsers::PromoteGroupUser
 
 void UNakamaClientPromoteGroupUsers::Activate()
 {
+	static const TCHAR* TraceScope_PromoteGroupUsers = TEXT("NakamaBP_PromoteGroupUsers");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_PromoteGroupUsers);
 	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
 	if (!ClientPtr)
 	{
@@ -3026,6 +3148,8 @@ UNakamaClientDemoteGroupUsers* UNakamaClientDemoteGroupUsers::DemoteGroupUsers(
 
 void UNakamaClientDemoteGroupUsers::Activate()
 {
+	static const TCHAR* TraceScope_DemoteGroupUsers = TEXT("NakamaBP_DemoteGroupUsers");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_DemoteGroupUsers);
 	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
 	if (!ClientPtr)
 	{
@@ -3071,6 +3195,8 @@ UNakamaClientReadStorageObjects* UNakamaClientReadStorageObjects::ReadStorageObj
 
 void UNakamaClientReadStorageObjects::Activate()
 {
+	static const TCHAR* TraceScope_ReadStorageObjects = TEXT("NakamaBP_ReadStorageObjects");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ReadStorageObjects);
 	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
 	if (!ClientPtr)
 	{
@@ -3119,6 +3245,8 @@ UNakamaClientRpcFunc* UNakamaClientRpcFunc::RpcFunc(
 
 void UNakamaClientRpcFunc::Activate()
 {
+	static const TCHAR* TraceScope_RpcFunc = TEXT("NakamaBP_RpcFunc");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_RpcFunc);
 	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
 	if (!ClientPtr)
 	{
@@ -3167,6 +3295,8 @@ UNakamaClientUnlinkApple* UNakamaClientUnlinkApple::UnlinkApple(
 
 void UNakamaClientUnlinkApple::Activate()
 {
+	static const TCHAR* TraceScope_UnlinkApple = TEXT("NakamaBP_UnlinkApple");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_UnlinkApple);
 	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
 	if (!ClientPtr)
 	{
@@ -3214,6 +3344,8 @@ UNakamaClientUnlinkCustom* UNakamaClientUnlinkCustom::UnlinkCustom(
 
 void UNakamaClientUnlinkCustom::Activate()
 {
+	static const TCHAR* TraceScope_UnlinkCustom = TEXT("NakamaBP_UnlinkCustom");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_UnlinkCustom);
 	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
 	if (!ClientPtr)
 	{
@@ -3261,6 +3393,8 @@ UNakamaClientUnlinkDevice* UNakamaClientUnlinkDevice::UnlinkDevice(
 
 void UNakamaClientUnlinkDevice::Activate()
 {
+	static const TCHAR* TraceScope_UnlinkDevice = TEXT("NakamaBP_UnlinkDevice");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_UnlinkDevice);
 	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
 	if (!ClientPtr)
 	{
@@ -3310,6 +3444,8 @@ UNakamaClientUnlinkEmail* UNakamaClientUnlinkEmail::UnlinkEmail(
 
 void UNakamaClientUnlinkEmail::Activate()
 {
+	static const TCHAR* TraceScope_UnlinkEmail = TEXT("NakamaBP_UnlinkEmail");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_UnlinkEmail);
 	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
 	if (!ClientPtr)
 	{
@@ -3358,6 +3494,8 @@ UNakamaClientUnlinkFacebook* UNakamaClientUnlinkFacebook::UnlinkFacebook(
 
 void UNakamaClientUnlinkFacebook::Activate()
 {
+	static const TCHAR* TraceScope_UnlinkFacebook = TEXT("NakamaBP_UnlinkFacebook");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_UnlinkFacebook);
 	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
 	if (!ClientPtr)
 	{
@@ -3405,6 +3543,8 @@ UNakamaClientUnlinkFacebookInstantGame* UNakamaClientUnlinkFacebookInstantGame::
 
 void UNakamaClientUnlinkFacebookInstantGame::Activate()
 {
+	static const TCHAR* TraceScope_UnlinkFacebookInstantGame = TEXT("NakamaBP_UnlinkFacebookInstantGame");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_UnlinkFacebookInstantGame);
 	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
 	if (!ClientPtr)
 	{
@@ -3462,6 +3602,8 @@ UNakamaClientUnlinkGameCenter* UNakamaClientUnlinkGameCenter::UnlinkGameCenter(
 
 void UNakamaClientUnlinkGameCenter::Activate()
 {
+	static const TCHAR* TraceScope_UnlinkGameCenter = TEXT("NakamaBP_UnlinkGameCenter");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_UnlinkGameCenter);
 	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
 	if (!ClientPtr)
 	{
@@ -3514,6 +3656,8 @@ UNakamaClientUnlinkGoogle* UNakamaClientUnlinkGoogle::UnlinkGoogle(
 
 void UNakamaClientUnlinkGoogle::Activate()
 {
+	static const TCHAR* TraceScope_UnlinkGoogle = TEXT("NakamaBP_UnlinkGoogle");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_UnlinkGoogle);
 	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
 	if (!ClientPtr)
 	{
@@ -3561,6 +3705,8 @@ UNakamaClientUnlinkSteam* UNakamaClientUnlinkSteam::UnlinkSteam(
 
 void UNakamaClientUnlinkSteam::Activate()
 {
+	static const TCHAR* TraceScope_UnlinkSteam = TEXT("NakamaBP_UnlinkSteam");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_UnlinkSteam);
 	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
 	if (!ClientPtr)
 	{
@@ -3616,6 +3762,8 @@ UNakamaClientUpdateAccount* UNakamaClientUpdateAccount::UpdateAccount(
 
 void UNakamaClientUpdateAccount::Activate()
 {
+	static const TCHAR* TraceScope_UpdateAccount = TEXT("NakamaBP_UpdateAccount");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_UpdateAccount);
 	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
 	if (!ClientPtr)
 	{
@@ -3675,6 +3823,8 @@ UNakamaClientUpdateGroup* UNakamaClientUpdateGroup::UpdateGroup(
 
 void UNakamaClientUpdateGroup::Activate()
 {
+	static const TCHAR* TraceScope_UpdateGroup = TEXT("NakamaBP_UpdateGroup");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_UpdateGroup);
 	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
 	if (!ClientPtr)
 	{
@@ -3726,6 +3876,8 @@ UNakamaClientValidatePurchaseApple* UNakamaClientValidatePurchaseApple::Validate
 
 void UNakamaClientValidatePurchaseApple::Activate()
 {
+	static const TCHAR* TraceScope_ValidatePurchaseApple = TEXT("NakamaBP_ValidatePurchaseApple");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ValidatePurchaseApple);
 	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
 	if (!ClientPtr)
 	{
@@ -3773,6 +3925,8 @@ UNakamaClientValidateSubscriptionApple* UNakamaClientValidateSubscriptionApple::
 
 void UNakamaClientValidateSubscriptionApple::Activate()
 {
+	static const TCHAR* TraceScope_ValidateSubscriptionApple = TEXT("NakamaBP_ValidateSubscriptionApple");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ValidateSubscriptionApple);
 	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
 	if (!ClientPtr)
 	{
@@ -3820,6 +3974,8 @@ UNakamaClientValidatePurchaseGoogle* UNakamaClientValidatePurchaseGoogle::Valida
 
 void UNakamaClientValidatePurchaseGoogle::Activate()
 {
+	static const TCHAR* TraceScope_ValidatePurchaseGoogle = TEXT("NakamaBP_ValidatePurchaseGoogle");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ValidatePurchaseGoogle);
 	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
 	if (!ClientPtr)
 	{
@@ -3867,6 +4023,8 @@ UNakamaClientValidateSubscriptionGoogle* UNakamaClientValidateSubscriptionGoogle
 
 void UNakamaClientValidateSubscriptionGoogle::Activate()
 {
+	static const TCHAR* TraceScope_ValidateSubscriptionGoogle = TEXT("NakamaBP_ValidateSubscriptionGoogle");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ValidateSubscriptionGoogle);
 	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
 	if (!ClientPtr)
 	{
@@ -3916,6 +4074,8 @@ UNakamaClientValidatePurchaseHuawei* UNakamaClientValidatePurchaseHuawei::Valida
 
 void UNakamaClientValidatePurchaseHuawei::Activate()
 {
+	static const TCHAR* TraceScope_ValidatePurchaseHuawei = TEXT("NakamaBP_ValidatePurchaseHuawei");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ValidatePurchaseHuawei);
 	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
 	if (!ClientPtr)
 	{
@@ -3964,6 +4124,8 @@ UNakamaClientValidatePurchaseFacebookInstant* UNakamaClientValidatePurchaseFaceb
 
 void UNakamaClientValidatePurchaseFacebookInstant::Activate()
 {
+	static const TCHAR* TraceScope_ValidatePurchaseFacebookInstant = TEXT("NakamaBP_ValidatePurchaseFacebookInstant");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ValidatePurchaseFacebookInstant);
 	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
 	if (!ClientPtr)
 	{
@@ -4011,6 +4173,8 @@ UNakamaClientWriteLeaderboardRecord* UNakamaClientWriteLeaderboardRecord::WriteL
 
 void UNakamaClientWriteLeaderboardRecord::Activate()
 {
+	static const TCHAR* TraceScope_WriteLeaderboardRecord = TEXT("NakamaBP_WriteLeaderboardRecord");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_WriteLeaderboardRecord);
 	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
 	if (!ClientPtr)
 	{
@@ -4056,6 +4220,8 @@ UNakamaClientWriteStorageObjects* UNakamaClientWriteStorageObjects::WriteStorage
 
 void UNakamaClientWriteStorageObjects::Activate()
 {
+	static const TCHAR* TraceScope_WriteStorageObjects = TEXT("NakamaBP_WriteStorageObjects");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_WriteStorageObjects);
 	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
 	if (!ClientPtr)
 	{
@@ -4102,6 +4268,8 @@ UNakamaClientWriteTournamentRecord* UNakamaClientWriteTournamentRecord::WriteTou
 
 void UNakamaClientWriteTournamentRecord::Activate()
 {
+	static const TCHAR* TraceScope_WriteTournamentRecord = TEXT("NakamaBP_WriteTournamentRecord");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_WriteTournamentRecord);
 	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
 	if (!ClientPtr)
 	{

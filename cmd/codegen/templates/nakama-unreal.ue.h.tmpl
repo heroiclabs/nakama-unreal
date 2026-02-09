@@ -98,6 +98,13 @@ enum class ENakamaRequestAuth : uint8
 
 class NAKAMAUNREAL_API FNakamaClient : public TSharedFromThis<FNakamaClient>
 {
+	// Private constructor — use CreateDefaultClient() factory.
+	// Required because AsShared() crashes on objects not owned by TSharedPtr.
+	FNakamaClient() = default;
+	friend class TSharedPtr<FNakamaClient>;
+	friend SharedPointerInternals::TIntrusiveReferenceController<FNakamaClient, ESPMode::ThreadSafe>;
+	friend SharedPointerInternals::TIntrusiveReferenceController<FNakamaClient, ESPMode::NotThreadSafe>;
+
 public:
 	static TSharedPtr<FNakamaClient> CreateDefaultClient(
 		const FString& ServerKey,

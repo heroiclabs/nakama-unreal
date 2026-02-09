@@ -551,3 +551,4 @@ vcpkg_installed/
 .env
 Reports/NakamaTest/index.html
 Reports/NakamaTest/index.json
+Reports/NakamaProfile/

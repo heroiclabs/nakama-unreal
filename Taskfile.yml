@@ -212,6 +212,119 @@ tasks:
             -ExecCmds="Automation RunTests {{.TEST_SUITE}}; Quit"
       platforms: [darwin, linux]
 
+  profile-unreal:
+    desc: 'Run profiling tests with Unreal Insights tracing enabled.'
+    vars:
+      TEST_SUITE: '{{.TEST_SUITE | default "NakamaTest.Profiling"}}'
+      REPORT_PATH: '{{.REPORT_PATH | default "Reports/NakamaProfile"}}'
+    deps:
+    - task: check-unreal-engine
+    - task: start-nakama
+    cmds:
+    - cmd: |
+        if [ -z "$UNREAL_ENGINE" ]; then
+            echo "Error: UNREAL_ENGINE is not set!"
+            exit 1
+        fi
+
+        PROJECT="$(pwd)/NakamaTest/NakamaTest.uproject"
+        REPORT_DIR="$(pwd)/{{.REPORT_PATH}}"
+        LOG_FILE="$REPORT_DIR/unreal.log"
+
+        mkdir -p "$REPORT_DIR"
+
+        echo "Building NakamaTest..."
+        "$UNREAL_ENGINE/Engine/Build/BatchFiles/Build.bat" \
+            NakamaTestEditor Win64 Development \
+            -Project="$PROJECT"
+
+        if [ $? -ne 0 ]; then
+            echo "Build failed!"
+            exit 1
+        fi
+
+        echo "Running profiling suite {{.TEST_SUITE}} with tracing..."
+        "$UNREAL_ENGINE/Engine/Binaries/Win64/UnrealEditor-Cmd.exe" \
+            "$PROJECT" \
+            -nullrhi \
+            -stdout \
+            -FullStdOutLogOutput \
+            -forcelogflush \
+            -nosplash \
+            -buildmachine \
+            -unattended \
+            -nopause \
+            -nosound \
+            -trace=cpu,frame,memory,counters \
+            -statnamedevents \
+            -tracefile="$REPORT_DIR/trace.utrace" \
+            -abslog="$LOG_FILE" \
+            -ReportOutputPath="$REPORT_DIR" \
+            -ExecCmds="Automation RunTests {{.TEST_SUITE}}; Quit"
+      platforms: [windows]
+    - cmd: |
+        if [ -z "$UNREAL_ENGINE" ]; then
+            echo "Error: UNREAL_ENGINE is not set!"
+            exit 1
+        fi
+
+        PROJECT="$(pwd)/NakamaTest/NakamaTest.uproject"
+        REPORT_DIR="$(pwd)/{{.REPORT_PATH}}"
+        LOG_FILE="$REPORT_DIR/unreal.log"
+
+        mkdir -p "$REPORT_DIR"
+
+        echo "Running profiling suite {{.TEST_SUITE}} with tracing..."
+        "$UNREAL_ENGINE/Engine/Binaries/Mac/UnrealEditor.app/Contents/MacOS/UnrealEditor" \
+            "$PROJECT" \
+            -nullrhi \
+            -stdout \
+            -FullStdOutLogOutput \
+            -forcelogflush \
+            -nosplash \
+            -buildmachine \
+            -unattended \
+            -nopause \
+            -nosound \
+            -trace=cpu,frame,memory,counters \
+            -statnamedevents \
+            -tracefile="$REPORT_DIR/trace.utrace" \
+            -abslog="$LOG_FILE" \
+            -ReportOutputPath="$REPORT_DIR" \
+            -ExecCmds="Automation RunTests {{.TEST_SUITE}}; Quit"
+      platforms: [darwin]
+    - cmd: |
+        if [ -z "$UNREAL_ENGINE" ]; then
+            echo "Error: UNREAL_ENGINE is not set!"
+            exit 1
+        fi
+
+        PROJECT="$(pwd)/NakamaTest/NakamaTest.uproject"
+        REPORT_DIR="$(pwd)/{{.REPORT_PATH}}"
+        LOG_FILE="$REPORT_DIR/unreal.log"
+
+        mkdir -p "$REPORT_DIR"
+
+        echo "Running profiling suite {{.TEST_SUITE}} with tracing..."
+        "$UNREAL_ENGINE/Engine/Binaries/Linux/UnrealEditor" \
+            "$PROJECT" \
+            -nullrhi \
+            -stdout \
+            -FullStdOutLogOutput \
+            -forcelogflush \
+            -nosplash \
+            -buildmachine \
+            -unattended \
+            -nopause \
+            -nosound \
+            -trace=cpu,frame,memory,counters \
+            -statnamedevents \
+            -tracefile="$REPORT_DIR/trace.utrace" \
+            -abslog="$LOG_FILE" \
+            -ReportOutputPath="$REPORT_DIR" \
+            -ExecCmds="Automation RunTests {{.TEST_SUITE}}; Quit"
+      platforms: [linux]
+
   check-unreal-engine:
     desc: 'Check or auto-detect UNREAL_ENGINE environment variable.'
     cmds:
