@@ -11,7 +11,7 @@ services:
       interval: 3s
       timeout: 3s
       retries: 5
-    image: postgres:12.2-alpine
+    image: postgres:18-alpine
     ports:
       - "5432:5432"
     volumes:
@@ -19,7 +19,7 @@ services:
 
   nakama:
     container_name: nakama_unreal_test_nakama
-    image: heroiclabs/nakama:3.25.0
+    image: heroiclabs/nakama:3.36.0
     depends_on:
       postgres:
         condition: service_healthy

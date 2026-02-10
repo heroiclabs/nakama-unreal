@@ -269,10 +269,10 @@ struct NAKAMAUNREAL_API FNakamaUser
 	FString SteamId;
 	/**  Indicates whether the user is currently online. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	bool Online;
+	bool Online = false;
 	/**  Number of related edges to this user. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int32 EdgeCount;
+	int32 EdgeCount = 0;
 	/**  The UNIX time (for gRPC clients) or ISO string (for REST clients) when the user was created. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString CreateTime;
@@ -449,7 +449,7 @@ struct NAKAMAUNREAL_API FNakamaAccountGameCenter
 	FString BundleId;
 	/**  Time since UNIX epoch when the signature was created. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int64 TimestampSeconds;
+	int64 TimestampSeconds = 0;
 	/**  A random "NSString" used to compute the hash and keep it randomized. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString Salt;
@@ -576,7 +576,7 @@ struct NAKAMAUNREAL_API FNakamaAuthenticateAppleRequest
 	FNakamaAccountApple Account;
 	/**  Register the account if the user does not already exist. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	bool Create;
+	bool Create = false;
 	/**  Set the username on the account at register. Must be unique. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString Username;
@@ -595,7 +595,7 @@ struct NAKAMAUNREAL_API FNakamaAuthenticateCustomRequest
 	FNakamaAccountCustom Account;
 	/**  Register the account if the user does not already exist. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	bool Create;
+	bool Create = false;
 	/**  Set the username on the account at register. Must be unique. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString Username;
@@ -614,7 +614,7 @@ struct NAKAMAUNREAL_API FNakamaAuthenticateDeviceRequest
 	FNakamaAccountDevice Account;
 	/**  Register the account if the user does not already exist. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	bool Create;
+	bool Create = false;
 	/**  Set the username on the account at register. Must be unique. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString Username;
@@ -633,7 +633,7 @@ struct NAKAMAUNREAL_API FNakamaAuthenticateEmailRequest
 	FNakamaAccountEmail Account;
 	/**  Register the account if the user does not already exist. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	bool Create;
+	bool Create = false;
 	/**  Set the username on the account at register. Must be unique. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString Username;
@@ -652,13 +652,13 @@ struct NAKAMAUNREAL_API FNakamaAuthenticateFacebookRequest
 	FNakamaAccountFacebook Account;
 	/**  Register the account if the user does not already exist. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	bool Create;
+	bool Create = false;
 	/**  Set the username on the account at register. Must be unique. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString Username;
 	/**  Import Facebook friends for the user. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	bool Sync;
+	bool Sync = false;
 
 	static FNakamaAuthenticateFacebookRequest FromJson(const TSharedPtr<FJsonObject>& Json);
 	TSharedPtr<FJsonObject> ToJson() const;
@@ -674,7 +674,7 @@ struct NAKAMAUNREAL_API FNakamaAuthenticateFacebookInstantGameRequest
 	FNakamaAccountFacebookInstantGame Account;
 	/**  Register the account if the user does not already exist. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	bool Create;
+	bool Create = false;
 	/**  Set the username on the account at register. Must be unique. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString Username;
@@ -693,7 +693,7 @@ struct NAKAMAUNREAL_API FNakamaAuthenticateGameCenterRequest
 	FNakamaAccountGameCenter Account;
 	/**  Register the account if the user does not already exist. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	bool Create;
+	bool Create = false;
 	/**  Set the username on the account at register. Must be unique. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString Username;
@@ -712,7 +712,7 @@ struct NAKAMAUNREAL_API FNakamaAuthenticateGoogleRequest
 	FNakamaAccountGoogle Account;
 	/**  Register the account if the user does not already exist. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	bool Create;
+	bool Create = false;
 	/**  Set the username on the account at register. Must be unique. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString Username;
@@ -731,13 +731,13 @@ struct NAKAMAUNREAL_API FNakamaAuthenticateSteamRequest
 	FNakamaAccountSteam Account;
 	/**  Register the account if the user does not already exist. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	bool Create;
+	bool Create = false;
 	/**  Set the username on the account at register. Must be unique. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString Username;
 	/**  Import Steam friends for the user. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	bool Sync;
+	bool Sync = false;
 
 	static FNakamaAuthenticateSteamRequest FromJson(const TSharedPtr<FJsonObject>& Json);
 	TSharedPtr<FJsonObject> ToJson() const;
@@ -788,7 +788,7 @@ struct NAKAMAUNREAL_API FNakamaChannelMessage
 	FString MessageId;
 	/**  The code representing a message type or category. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int32 Code;
+	int32 Code = 0;
 	/**  Message sender, usually a user ID. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString SenderId;
@@ -806,7 +806,7 @@ struct NAKAMAUNREAL_API FNakamaChannelMessage
 	FString UpdateTime;
 	/**  True if the message was persisted to the channel's history, false otherwise. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	bool Persistent;
+	bool Persistent = false;
 	/**  The name of the chat room, or an empty string if this message was not sent through a chat room. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString RoomName;
@@ -865,10 +865,10 @@ struct NAKAMAUNREAL_API FNakamaCreateGroupRequest
 	FString AvatarUrl;
 	/**  Mark a group as open or not where only admins can accept members. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	bool Open;
+	bool Open = false;
 	/**  Maximum number of group members. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int32 MaxCount;
+	int32 MaxCount = 0;
 
 	static FNakamaCreateGroupRequest FromJson(const TSharedPtr<FJsonObject>& Json);
 	TSharedPtr<FJsonObject> ToJson() const;
@@ -987,7 +987,7 @@ struct NAKAMAUNREAL_API FNakamaEvent
 	FString Timestamp;
 	/**  True if the event came directly from a client call, false otherwise. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	bool External;
+	bool External = false;
 	/**  Arbitrary event property values. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	TMap<FString, FString> Properties;
@@ -1006,7 +1006,7 @@ struct NAKAMAUNREAL_API FNakamaFriend
 	FNakamaUser User;
 	/**  The friend status. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int32 State;
+	int32 State = 0;
 	/**  Time of the latest relationship update. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString UpdateTime;
@@ -1126,13 +1126,13 @@ struct NAKAMAUNREAL_API FNakamaGroup
 	FString AvatarUrl;
 	/**  Anyone can join open groups, otherwise only admins can accept members. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	bool Open;
+	bool Open = false;
 	/**  The current count of all members in the group. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int32 EdgeCount;
+	int32 EdgeCount = 0;
 	/**  The maximum number of members allowed. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int32 MaxCount;
+	int32 MaxCount = 0;
 	/**  The UNIX time (for gRPC clients) or ISO string (for REST clients) when the group was created. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString CreateTime;
@@ -1170,7 +1170,7 @@ struct NAKAMAUNREAL_API FNakamaGroupUserList_GroupUser
 	FNakamaUser User;
 	/**  Their relationship to the group. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int32 State;
+	int32 State = 0;
 
 	static FNakamaGroupUserList_GroupUser FromJson(const TSharedPtr<FJsonObject>& Json);
 	TSharedPtr<FJsonObject> ToJson() const;
@@ -1202,7 +1202,7 @@ struct NAKAMAUNREAL_API FNakamaImportFacebookFriendsRequest
 	FNakamaAccountFacebook Account;
 	/**  Reset the current user's friends list. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	bool Reset;
+	bool Reset = false;
 
 	static FNakamaImportFacebookFriendsRequest FromJson(const TSharedPtr<FJsonObject>& Json);
 	TSharedPtr<FJsonObject> ToJson() const;
@@ -1218,7 +1218,7 @@ struct NAKAMAUNREAL_API FNakamaImportSteamFriendsRequest
 	FNakamaAccountSteam Account;
 	/**  Reset the current user's friends list. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	bool Reset;
+	bool Reset = false;
 
 	static FNakamaImportSteamFriendsRequest FromJson(const TSharedPtr<FJsonObject>& Json);
 	TSharedPtr<FJsonObject> ToJson() const;
@@ -1276,16 +1276,16 @@ struct NAKAMAUNREAL_API FNakamaLeaderboard
 	FString Id;
 	/**  ASC(0) or DESC(1) sort mode of scores in the leaderboard. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int32 SortOrder;
+	int32 SortOrder = 0;
 	/**  BEST, SET, INCREMENT or DECREMENT operator mode of the leaderboard. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int32 Operator;
+	int32 Operator = 0;
 	/**  The UNIX time when the leaderboard was previously reset. A computed value. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int32 PrevReset;
+	int32 PrevReset = 0;
 	/**  The UNIX time when the leaderboard is next playable. A computed value. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int32 NextReset;
+	int32 NextReset = 0;
 	/**  Additional information stored as a JSON object. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString Metadata;
@@ -1294,7 +1294,7 @@ struct NAKAMAUNREAL_API FNakamaLeaderboard
 	FString CreateTime;
 	/**  Whether the leaderboard was created authoritatively or not. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	bool Authoritative;
+	bool Authoritative = false;
 
 	static FNakamaLeaderboard FromJson(const TSharedPtr<FJsonObject>& Json);
 	TSharedPtr<FJsonObject> ToJson() const;
@@ -1332,13 +1332,13 @@ struct NAKAMAUNREAL_API FNakamaLeaderboardRecord
 	FString Username;
 	/**  The score value. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int64 Score;
+	int64 Score = 0;
 	/**  An optional subscore value. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int64 Subscore;
+	int64 Subscore = 0;
 	/**  The number of submissions to this score record. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int32 NumScore;
+	int32 NumScore = 0;
 	/**  Metadata. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString Metadata;
@@ -1353,10 +1353,10 @@ struct NAKAMAUNREAL_API FNakamaLeaderboardRecord
 	FString ExpiryTime;
 	/**  The rank of this record. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int64 Rank;
+	int64 Rank = 0;
 	/**  The maximum number of score updates allowed by the owner. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int32 MaxNumScore;
+	int32 MaxNumScore = 0;
 
 	static FNakamaLeaderboardRecord FromJson(const TSharedPtr<FJsonObject>& Json);
 	TSharedPtr<FJsonObject> ToJson() const;
@@ -1381,7 +1381,7 @@ struct NAKAMAUNREAL_API FNakamaLeaderboardRecordList
 	FString PrevCursor;
 	/**  The total number of ranks available. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int64 RankCount;
+	int64 RankCount = 0;
 
 	static FNakamaLeaderboardRecordList FromJson(const TSharedPtr<FJsonObject>& Json);
 	TSharedPtr<FJsonObject> ToJson() const;
@@ -1410,7 +1410,7 @@ struct NAKAMAUNREAL_API FNakamaLinkFacebookRequest
 	FNakamaAccountFacebook Account;
 	/**  Import Facebook friends for the user. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	bool Sync;
+	bool Sync = false;
 
 	static FNakamaLinkFacebookRequest FromJson(const TSharedPtr<FJsonObject>& Json);
 	TSharedPtr<FJsonObject> ToJson() const;
@@ -1426,7 +1426,7 @@ struct NAKAMAUNREAL_API FNakamaLinkSteamRequest
 	FNakamaAccountSteam Account;
 	/**  Import Steam friends for the user. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	bool Sync;
+	bool Sync = false;
 
 	static FNakamaLinkSteamRequest FromJson(const TSharedPtr<FJsonObject>& Json);
 	TSharedPtr<FJsonObject> ToJson() const;
@@ -1442,10 +1442,10 @@ struct NAKAMAUNREAL_API FNakamaListChannelMessagesRequest
 	FString ChannelId;
 	/**  Max number of records to return. Between 1 and 100. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int32 Limit;
+	int32 Limit = 0;
 	/**  True if listing should be older messages to newer, false if reverse. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	bool Forward;
+	bool Forward = false;
 	/**  A pagination cursor, if any. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString Cursor;
@@ -1461,10 +1461,10 @@ struct NAKAMAUNREAL_API FNakamaListFriendsRequest
 	GENERATED_BODY()
 	/**  Max number of records to return. Between 1 and 1000. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int32 Limit;
+	int32 Limit = 0;
 	/**  The friend state to list. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int32 State;
+	int32 State = 0;
 	/**  An optional next page cursor. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString Cursor;
@@ -1480,7 +1480,7 @@ struct NAKAMAUNREAL_API FNakamaListFriendsOfFriendsRequest
 	GENERATED_BODY()
 	/**  Max number of records to return. Between 1 and 100. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int32 Limit;
+	int32 Limit = 0;
 	/**  An optional next page cursor. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString Cursor;
@@ -1502,16 +1502,16 @@ struct NAKAMAUNREAL_API FNakamaListGroupsRequest
 	FString Cursor;
 	/**  Max number of groups to return. Between 1 and 100. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int32 Limit;
+	int32 Limit = 0;
 	/**  Language tag filter */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString LangTag;
 	/**  Number of group members */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int32 Members;
+	int32 Members = 0;
 	/**  Optional Open/Closed filter. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	bool Open;
+	bool Open = false;
 
 	static FNakamaListGroupsRequest FromJson(const TSharedPtr<FJsonObject>& Json);
 	TSharedPtr<FJsonObject> ToJson() const;
@@ -1527,10 +1527,10 @@ struct NAKAMAUNREAL_API FNakamaListGroupUsersRequest
 	FString GroupId;
 	/**  Max number of records to return. Between 1 and 100. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int32 Limit;
+	int32 Limit = 0;
 	/**  The group user state to list. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int32 State;
+	int32 State = 0;
 	/**  An optional next page cursor. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString Cursor;
@@ -1549,13 +1549,13 @@ struct NAKAMAUNREAL_API FNakamaListLeaderboardRecordsAroundOwnerRequest
 	FString LeaderboardId;
 	/**  Max number of records to return. Between 1 and 100. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int32 Limit;
+	int32 Limit = 0;
 	/**  The owner to retrieve records around. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString OwnerId;
 	/**  Expiry in seconds (since epoch) to begin fetching records from. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int64 Expiry;
+	int64 Expiry = 0;
 	/**  A next or previous page cursor. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString Cursor;
@@ -1577,13 +1577,13 @@ struct NAKAMAUNREAL_API FNakamaListLeaderboardRecordsRequest
 	TArray<FString> OwnerIds;
 	/**  Max number of records to return. Between 1 and 100. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int32 Limit;
+	int32 Limit = 0;
 	/**  A next or previous page cursor. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString Cursor;
 	/**  Expiry in seconds (since epoch) to begin fetching records from. Optional. 0 means from current time. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int64 Expiry;
+	int64 Expiry = 0;
 
 	static FNakamaListLeaderboardRecordsRequest FromJson(const TSharedPtr<FJsonObject>& Json);
 	TSharedPtr<FJsonObject> ToJson() const;
@@ -1596,19 +1596,19 @@ struct NAKAMAUNREAL_API FNakamaListMatchesRequest
 	GENERATED_BODY()
 	/**  Limit the number of returned matches. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int32 Limit;
+	int32 Limit = 0;
 	/**  Authoritative or relayed matches. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	bool Authoritative;
+	bool Authoritative = false;
 	/**  Label filter. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString Label;
 	/**  Minimum user count. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int32 MinSize;
+	int32 MinSize = 0;
 	/**  Maximum user count. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int32 MaxSize;
+	int32 MaxSize = 0;
 	/**  Arbitrary label query. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString Query;
@@ -1624,7 +1624,7 @@ struct NAKAMAUNREAL_API FNakamaListNotificationsRequest
 	GENERATED_BODY()
 	/**  The number of notifications to get. Between 1 and 100. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int32 Limit;
+	int32 Limit = 0;
 	/**  A cursor to page through notifications. May be cached by clients to get from point in time forwards. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString CacheableCursor;
@@ -1646,7 +1646,7 @@ struct NAKAMAUNREAL_API FNakamaListStorageObjectsRequest
 	FString Collection;
 	/**  The number of storage objects to list. Between 1 and 100. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int32 Limit;
+	int32 Limit = 0;
 	/**  The cursor to page through results from. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString Cursor;
@@ -1662,7 +1662,7 @@ struct NAKAMAUNREAL_API FNakamaListSubscriptionsRequest
 	GENERATED_BODY()
 	/**  Max number of results per page */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int32 Limit;
+	int32 Limit = 0;
 	/**  Cursor to retrieve a page of records from */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString Cursor;
@@ -1681,13 +1681,13 @@ struct NAKAMAUNREAL_API FNakamaListTournamentRecordsAroundOwnerRequest
 	FString TournamentId;
 	/**  Max number of records to return. Between 1 and 100. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int32 Limit;
+	int32 Limit = 0;
 	/**  The owner to retrieve records around. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString OwnerId;
 	/**  Expiry in seconds (since epoch) to begin fetching records from. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int64 Expiry;
+	int64 Expiry = 0;
 	/**  A next or previous page cursor. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString Cursor;
@@ -1709,13 +1709,13 @@ struct NAKAMAUNREAL_API FNakamaListTournamentRecordsRequest
 	TArray<FString> OwnerIds;
 	/**  Max number of records to return. Between 1 and 100. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int32 Limit;
+	int32 Limit = 0;
 	/**  A next or previous page cursor. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString Cursor;
 	/**  Expiry in seconds (since epoch) to begin fetching records from. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int64 Expiry;
+	int64 Expiry = 0;
 
 	static FNakamaListTournamentRecordsRequest FromJson(const TSharedPtr<FJsonObject>& Json);
 	TSharedPtr<FJsonObject> ToJson() const;
@@ -1728,19 +1728,19 @@ struct NAKAMAUNREAL_API FNakamaListTournamentsRequest
 	GENERATED_BODY()
 	/**  The start of the categories to include. Defaults to 0. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int32 CategoryStart;
+	int32 CategoryStart = 0;
 	/**  The end of the categories to include. Defaults to 128. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int32 CategoryEnd;
+	int32 CategoryEnd = 0;
 	/**  The start time for tournaments. Defaults to epoch. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int32 StartTime;
+	int32 StartTime = 0;
 	/**  The end time for tournaments. Defaults to +1 year from current Unix time. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int32 EndTime;
+	int32 EndTime = 0;
 	/**  Max number of records to return. Between 1 and 100. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int32 Limit;
+	int32 Limit = 0;
 	/**  A next page cursor for listings (optional). */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString Cursor;
@@ -1759,10 +1759,10 @@ struct NAKAMAUNREAL_API FNakamaListUserGroupsRequest
 	FString UserId;
 	/**  Max number of records to return. Between 1 and 100. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int32 Limit;
+	int32 Limit = 0;
 	/**  The user group state to list. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int32 State;
+	int32 State = 0;
 	/**  An optional next page cursor. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString Cursor;
@@ -1781,16 +1781,16 @@ struct NAKAMAUNREAL_API FNakamaMatch
 	FString MatchId;
 	/**  True if it's an server-managed authoritative match, false otherwise. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	bool Authoritative;
+	bool Authoritative = false;
 	/**  Match label, if any. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString Label;
 	/**  Current number of users in the match. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int32 Size;
+	int32 Size = 0;
 	/**  Tick Rate */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int32 TickRate;
+	int32 TickRate = 0;
 	/**  Handler name */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString HandlerName;
@@ -1835,7 +1835,7 @@ struct NAKAMAUNREAL_API FNakamaMatchmakerStats
 	GENERATED_BODY()
 	/**  */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int32 TicketCount;
+	int32 TicketCount = 0;
 	/**  */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString OldestTicketCreateTime;
@@ -1863,7 +1863,7 @@ struct NAKAMAUNREAL_API FNakamaNotification
 	FString Content;
 	/**  Category code for this notification. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int32 Code;
+	int32 Code = 0;
 	/**  ID of the sender, if a user. Otherwise 'null'. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString SenderId;
@@ -1872,7 +1872,7 @@ struct NAKAMAUNREAL_API FNakamaNotification
 	FString CreateTime;
 	/**  True if this notification was persisted to the database. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	bool Persistent;
+	bool Persistent = false;
 
 	static FNakamaNotification FromJson(const TSharedPtr<FJsonObject>& Json);
 	TSharedPtr<FJsonObject> ToJson() const;
@@ -1984,7 +1984,7 @@ struct NAKAMAUNREAL_API FNakamaSession
 	GENERATED_BODY()
 	/**  True if the corresponding account was just created, false otherwise. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	bool Created;
+	bool Created = false;
 	/**  Authentication credentials. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString Token;
@@ -2018,10 +2018,10 @@ struct NAKAMAUNREAL_API FNakamaStorageObject
 	FString Version;
 	/**  The read access permissions for the object. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int32 PermissionRead;
+	int32 PermissionRead = 0;
 	/**  The write access permissions for the object. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int32 PermissionWrite;
+	int32 PermissionWrite = 0;
 	/**  The UNIX time (for gRPC clients) or ISO string (for REST clients) when the object was created. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString CreateTime;
@@ -2119,28 +2119,28 @@ struct NAKAMAUNREAL_API FNakamaTournament
 	FString Description;
 	/**  The category of the tournament. e.g. "vip" could be category 1. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int32 Category;
+	int32 Category = 0;
 	/**  ASC (0) or DESC (1) sort mode of scores in the tournament. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int32 SortOrder;
+	int32 SortOrder = 0;
 	/**  The current number of players in the tournament. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int32 Size;
+	int32 Size = 0;
 	/**  The maximum number of players for the tournament. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int32 MaxSize;
+	int32 MaxSize = 0;
 	/**  The maximum score updates allowed per player for the current tournament. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int32 MaxNumScore;
+	int32 MaxNumScore = 0;
 	/**  True if the tournament is active and can enter. A computed value. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	bool CanEnter;
+	bool CanEnter = false;
 	/**  The UNIX time when the tournament stops being active until next reset. A computed value. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int32 EndActive;
+	int32 EndActive = 0;
 	/**  The UNIX time when the tournament is next playable. A computed value. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int32 NextReset;
+	int32 NextReset = 0;
 	/**  Additional information stored as a JSON object. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString Metadata;
@@ -2155,22 +2155,22 @@ struct NAKAMAUNREAL_API FNakamaTournament
 	FString EndTime;
 	/**  Duration of the tournament in seconds. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int32 Duration;
+	int32 Duration = 0;
 	/**  The UNIX time when the tournament start being active. A computed value. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int32 StartActive;
+	int32 StartActive = 0;
 	/**  The UNIX time when the tournament was last reset. A computed value. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int32 PrevReset;
+	int32 PrevReset = 0;
 	/**  Operator. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int32 Operator;
+	int32 Operator = 0;
 	/**  Whether the leaderboard was created authoritatively or not. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	bool Authoritative;
+	bool Authoritative = false;
 	/**  Whether the user must join the tournament before being able to submit scores. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	bool JoinRequired;
+	bool JoinRequired = false;
 
 	static FNakamaTournament FromJson(const TSharedPtr<FJsonObject>& Json);
 	TSharedPtr<FJsonObject> ToJson() const;
@@ -2211,7 +2211,7 @@ struct NAKAMAUNREAL_API FNakamaTournamentRecordList
 	FString PrevCursor;
 	/**  The total number of ranks available. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int64 RankCount;
+	int64 RankCount = 0;
 
 	static FNakamaTournamentRecordList FromJson(const TSharedPtr<FJsonObject>& Json);
 	TSharedPtr<FJsonObject> ToJson() const;
@@ -2267,7 +2267,7 @@ struct NAKAMAUNREAL_API FNakamaUpdateGroupRequest
 	FString AvatarUrl;
 	/**  Open is true if anyone should be allowed to join, or false if joins must be approved by a group admin. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	bool Open;
+	bool Open = false;
 
 	static FNakamaUpdateGroupRequest FromJson(const TSharedPtr<FJsonObject>& Json);
 	TSharedPtr<FJsonObject> ToJson() const;
@@ -2283,7 +2283,7 @@ struct NAKAMAUNREAL_API FNakamaUserGroupList_UserGroup
 	FNakamaGroup Group;
 	/**  The user's relationship to the group. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int32 State;
+	int32 State = 0;
 
 	static FNakamaUserGroupList_UserGroup FromJson(const TSharedPtr<FJsonObject>& Json);
 	TSharedPtr<FJsonObject> ToJson() const;
@@ -2328,7 +2328,7 @@ struct NAKAMAUNREAL_API FNakamaValidatePurchaseAppleRequest
 	FString Receipt;
 	/**  Persist the purchase */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	bool Persist;
+	bool Persist = false;
 
 	static FNakamaValidatePurchaseAppleRequest FromJson(const TSharedPtr<FJsonObject>& Json);
 	TSharedPtr<FJsonObject> ToJson() const;
@@ -2344,7 +2344,7 @@ struct NAKAMAUNREAL_API FNakamaValidateSubscriptionAppleRequest
 	FString Receipt;
 	/**  Persist the subscription. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	bool Persist;
+	bool Persist = false;
 
 	static FNakamaValidateSubscriptionAppleRequest FromJson(const TSharedPtr<FJsonObject>& Json);
 	TSharedPtr<FJsonObject> ToJson() const;
@@ -2360,7 +2360,7 @@ struct NAKAMAUNREAL_API FNakamaValidatePurchaseGoogleRequest
 	FString Purchase;
 	/**  Persist the purchase */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	bool Persist;
+	bool Persist = false;
 
 	static FNakamaValidatePurchaseGoogleRequest FromJson(const TSharedPtr<FJsonObject>& Json);
 	TSharedPtr<FJsonObject> ToJson() const;
@@ -2376,7 +2376,7 @@ struct NAKAMAUNREAL_API FNakamaValidateSubscriptionGoogleRequest
 	FString Receipt;
 	/**  Persist the subscription. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	bool Persist;
+	bool Persist = false;
 
 	static FNakamaValidateSubscriptionGoogleRequest FromJson(const TSharedPtr<FJsonObject>& Json);
 	TSharedPtr<FJsonObject> ToJson() const;
@@ -2395,7 +2395,7 @@ struct NAKAMAUNREAL_API FNakamaValidatePurchaseHuaweiRequest
 	FString Signature;
 	/**  Persist the purchase */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	bool Persist;
+	bool Persist = false;
 
 	static FNakamaValidatePurchaseHuaweiRequest FromJson(const TSharedPtr<FJsonObject>& Json);
 	TSharedPtr<FJsonObject> ToJson() const;
@@ -2411,7 +2411,7 @@ struct NAKAMAUNREAL_API FNakamaValidatePurchaseFacebookInstantRequest
 	FString SignedRequest;
 	/**  Persist the purchase */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	bool Persist;
+	bool Persist = false;
 
 	static FNakamaValidatePurchaseFacebookInstantRequest FromJson(const TSharedPtr<FJsonObject>& Json);
 	TSharedPtr<FJsonObject> ToJson() const;
@@ -2433,7 +2433,7 @@ struct NAKAMAUNREAL_API FNakamaValidatedPurchase
 	FString TransactionId;
 	/**  Store identifier */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int32 Store;
+	int32 Store = 0;
 	/**  Timestamp when the purchase was done. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString PurchaseTime;
@@ -2451,10 +2451,10 @@ struct NAKAMAUNREAL_API FNakamaValidatedPurchase
 	FString ProviderResponse;
 	/**  Whether the purchase was done in production or sandbox environment. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int32 Environment;
+	int32 Environment = 0;
 	/**  Whether the purchase had already been validated by Nakama before. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	bool SeenBefore;
+	bool SeenBefore = false;
 
 	static FNakamaValidatedPurchase FromJson(const TSharedPtr<FJsonObject>& Json);
 	TSharedPtr<FJsonObject> ToJson() const;
@@ -2489,7 +2489,7 @@ struct NAKAMAUNREAL_API FNakamaValidatedSubscription
 	FString OriginalTransactionId;
 	/**  Store identifier */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int32 Store;
+	int32 Store = 0;
 	/**  UNIX Timestamp when the purchase was done. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString PurchaseTime;
@@ -2501,7 +2501,7 @@ struct NAKAMAUNREAL_API FNakamaValidatedSubscription
 	FString UpdateTime;
 	/**  Whether the purchase was done in production or sandbox environment. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int32 Environment;
+	int32 Environment = 0;
 	/**  Subscription expiration time. The subscription can still be auto-renewed to extend the expiration time further. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString ExpiryTime;
@@ -2516,7 +2516,7 @@ struct NAKAMAUNREAL_API FNakamaValidatedSubscription
 	FString ProviderNotification;
 	/**  Whether the subscription is currently active or not. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	bool Active;
+	bool Active = false;
 
 	static FNakamaValidatedSubscription FromJson(const TSharedPtr<FJsonObject>& Json);
 	TSharedPtr<FJsonObject> ToJson() const;
@@ -2580,16 +2580,16 @@ struct NAKAMAUNREAL_API FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWr
 	GENERATED_BODY()
 	/**  The score value to submit. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int64 Score;
+	int64 Score = 0;
 	/**  An optional secondary value. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int64 Subscore;
+	int64 Subscore = 0;
 	/**  Optional record metadata. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString Metadata;
 	/**  Operator override. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int32 Operator;
+	int32 Operator = 0;
 
 	static FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite FromJson(const TSharedPtr<FJsonObject>& Json);
 	TSharedPtr<FJsonObject> ToJson() const;
@@ -2630,10 +2630,10 @@ struct NAKAMAUNREAL_API FNakamaWriteStorageObject
 	FString Version;
 	/**  The read access permissions for the object. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int32 PermissionRead;
+	int32 PermissionRead = 0;
 	/**  The write access permissions for the object. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int32 PermissionWrite;
+	int32 PermissionWrite = 0;
 
 	static FNakamaWriteStorageObject FromJson(const TSharedPtr<FJsonObject>& Json);
 	TSharedPtr<FJsonObject> ToJson() const;
@@ -2659,16 +2659,16 @@ struct NAKAMAUNREAL_API FNakamaWriteTournamentRecordRequest_TournamentRecordWrit
 	GENERATED_BODY()
 	/**  The score value to submit. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int64 Score;
+	int64 Score = 0;
 	/**  An optional secondary value. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int64 Subscore;
+	int64 Subscore = 0;
 	/**  A JSON object of additional properties (optional). */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString Metadata;
 	/**  Operator override. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int32 Operator;
+	int32 Operator = 0;
 
 	static FNakamaWriteTournamentRecordRequest_TournamentRecordWrite FromJson(const TSharedPtr<FJsonObject>& Json);
 	TSharedPtr<FJsonObject> ToJson() const;
@@ -2697,10 +2697,10 @@ struct NAKAMAUNREAL_API FNakamaListPartiesRequest
 	GENERATED_BODY()
 	/**  Limit the number of returned parties. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int32 Limit;
+	int32 Limit = 0;
 	/**  Optionally filter by open/closed parties. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	bool Open;
+	bool Open = false;
 	/**  Arbitrary label query. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString Query;
@@ -2722,13 +2722,13 @@ struct NAKAMAUNREAL_API FNakamaParty
 	FString PartyId;
 	/**  Open flag. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	bool Open;
+	bool Open = false;
 	/**  Hidden flag. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	bool Hidden;
+	bool Hidden = false;
 	/**  Maximum number of party members. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int32 MaxSize;
+	int32 MaxSize = 0;
 	/**  The party label, if any. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString Label;

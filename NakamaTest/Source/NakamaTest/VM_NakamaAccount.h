@@ -10,6 +10,7 @@
 /**
  * Viewmodel that exposes Nakama account data for UMG widget bindings.
  * Properties use FieldNotify so widgets update automatically when values change.
+ * Text properties are FText so they bind directly to UTextBlock::Text without conversion.
  */
 UCLASS()
 class UVM_NakamaAccount : public UMVVMViewModelBase
@@ -23,25 +24,38 @@ public:
 	// --- Getters ---
 
 	UFUNCTION(BlueprintPure, FieldNotify)
-	FString GetStatus() const { return Status; }
+	FText GetStatus() const { return Status; }
 
 	UFUNCTION(BlueprintPure, FieldNotify)
-	FString GetStatusMessage() const { return StatusMessage; }
+	FText GetStatusMessage() const { return StatusMessage; }
 
 	UFUNCTION(BlueprintPure, FieldNotify)
-	FString GetUserId() const { return UserId; }
+	FText GetUserId() const { return UserId; }
 
 	UFUNCTION(BlueprintPure, FieldNotify)
-	FString GetUsername() const { return Username; }
+	FText GetUsername() const { return Username; }
 
 	UFUNCTION(BlueprintPure, FieldNotify)
-	FString GetDisplayName() const { return DisplayName; }
+	FText GetDisplayName() const { return DisplayName; }
 
 	UFUNCTION(BlueprintPure, FieldNotify)
-	FString GetWallet() const { return Wallet; }
+	FText GetWallet() const { return Wallet; }
 
 	UFUNCTION(BlueprintPure, FieldNotify)
-	int32 GetDeviceCount() const { return DeviceCount; }
+	FText GetDeviceCount() const { return DeviceCount; }
+
+	UFUNCTION(BlueprintPure, FieldNotify)
+	TArray<FString> GetWalletCurrencyNames() const { return WalletCurrencyNames; }
+
+	UFUNCTION(BlueprintPure, FieldNotify)
+	TArray<FText> GetWalletEntries() const { return WalletEntries; }
+
+	UFUNCTION(BlueprintPure, FieldNotify)
+	TArray<FName> GetSessionKeys() const { return SessionKeys; }
+
+	/** Look up the display name for a session key (e.g. UserId → "TestUser_0"). */
+	UFUNCTION(BlueprintPure, Category = "Nakama")
+	FString GetSessionDisplayName(FName InKey) const;
 
 	// --- Setters ---
 
@@ -53,25 +67,45 @@ public:
 	void SetWallet(const FString& NewValue);
 	void SetDeviceCount(int32 NewValue);
 
+	/** Set the session list. Keys are UserIds, DisplayNames are the visible text. */
+	void SetSessions(const TArray<FName>& InKeys, const TMap<FName, FString>& InDisplayNames);
+
 private:
-	UPROPERTY(BlueprintReadOnly, FieldNotify, Getter, meta = (AllowPrivateAccess = "true"))
-	FString Status;
+	void ParseWalletJson(const FString& WalletJson);
 
 	UPROPERTY(BlueprintReadOnly, FieldNotify, Getter, meta = (AllowPrivateAccess = "true"))
-	FString StatusMessage;
+	FText Status;
 
 	UPROPERTY(BlueprintReadOnly, FieldNotify, Getter, meta = (AllowPrivateAccess = "true"))
-	FString UserId;
+	FText StatusMessage;
 
 	UPROPERTY(BlueprintReadOnly, FieldNotify, Getter, meta = (AllowPrivateAccess = "true"))
-	FString Username;
+	FText UserId;
 
 	UPROPERTY(BlueprintReadOnly, FieldNotify, Getter, meta = (AllowPrivateAccess = "true"))
-	FString DisplayName;
+	FText Username;
 
 	UPROPERTY(BlueprintReadOnly, FieldNotify, Getter, meta = (AllowPrivateAccess = "true"))
-	FString Wallet;
+	FText DisplayName;
 
 	UPROPERTY(BlueprintReadOnly, FieldNotify, Getter, meta = (AllowPrivateAccess = "true"))
-	int32 DeviceCount = 0;
+	FText Wallet;
+
+	UPROPERTY(BlueprintReadOnly, FieldNotify, Getter, meta = (AllowPrivateAccess = "true"))
+	FText DeviceCount;
+
+	/** Currency names for the dropdown (e.g. "coins", "gems"). */
+	UPROPERTY(BlueprintReadOnly, FieldNotify, Getter, meta = (AllowPrivateAccess = "true"))
+	TArray<FString> WalletCurrencyNames;
+
+	/** Formatted wallet entries for the list view (e.g. "coins: 100"). */
+	UPROPERTY(BlueprintReadOnly, FieldNotify, Getter, meta = (AllowPrivateAccess = "true"))
+	TArray<FText> WalletEntries;
+
+	/** Session keys (UserIds) for the active user dropdown. */
+	UPROPERTY(BlueprintReadOnly, FieldNotify, Getter, meta = (AllowPrivateAccess = "true"))
+	TArray<FName> SessionKeys;
+
+	/** UserId → display name lookup (not FieldNotify, just a data store). */
+	TMap<FName, FString> SessionDisplayNames;
 };

@@ -73,7 +73,7 @@ struct NAKAMAUNREAL_API FNakama{{ $msg.Name }}
 	{{- range $fidx, $field := $msg.Fields }}
 	/** {{ $field.Comment.Message }} */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	{{ getUnrealFieldType $field.Type $field.Repeated }} {{ $field.Name | pascalCase }};
+	{{ getUnrealFieldType $field.Type $field.Repeated }} {{ $field.Name | pascalCase }}{{ getUnrealFieldDefault $field.Type $field.Repeated }};
 	{{- end }}
 	{{- range $fidx, $field := $msg.MapFields }}
 	/** {{ $field.Comment.Message }} */

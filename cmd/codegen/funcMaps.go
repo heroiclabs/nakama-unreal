@@ -373,6 +373,34 @@ func getUnrealFuncMap(api Api) template.FuncMap {
 			}
 			return getUnrealBaseType(fieldType, false)
 		},
+		"getUnrealFieldDefault": func(fieldType string, isRepeated bool) string {
+			// Return a default initializer for primitive UPROPERTY fields.
+			// UE requires all UPROPERTY primitives to be initialized.
+			if isRepeated {
+				return "" // TArray, TMap etc. are default-constructed
+			}
+			if isEnum(fieldType) {
+				return " = 0"
+			}
+			switch fieldType {
+			case "int32", "google.protobuf.Int32Value",
+				"uint32", "google.protobuf.UInt32Value":
+				return " = 0"
+			case "int64", "google.protobuf.Int64Value",
+				"uint64", "google.protobuf.UInt64Value":
+				return " = 0"
+			case "float", "google.protobuf.FloatValue":
+				return " = 0.0f"
+			case "double", "google.protobuf.DoubleValue":
+				return " = 0.0"
+			case "bool", "google.protobuf.BoolValue":
+				return " = false"
+			default:
+				return "" // FString, FNakama* structs are default-constructed
+			}
+		},
+		"isMessageType":   isMessageType,
+		"isBPWrapperType": isMessageType, // Alias for template clarity
 		"isMessageType":   isMessageType,
 		"isBPWrapperType": isMessageType, // Alias for template clarity
 		"getBaseType": func(fieldType string) string {

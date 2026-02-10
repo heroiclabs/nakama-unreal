@@ -534,6 +534,7 @@ NakamaBlueprintsTest/Binaries
 
 NakamaTest/Plugins/Nakama
 NakamaTest/Intermediate
+NakamaTest/DerivedDataCache
 NakamaTest/Saved
 NakamaTest/Binaries
 

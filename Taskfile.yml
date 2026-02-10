@@ -87,6 +87,287 @@ tasks:
     - cmd: docker logs -f nakama_unreal_test_nakama
       platforms: [windows]
 
+  build-plugin:
+    desc: 'Build the Nakama plugin as a packaged plugin.'
+    deps:
+    - task: check-unreal-engine
+    vars:
+      OUTPUT_DIR: '{{.OUTPUT_DIR | default "Out/Nakama"}}'
+    cmds:
+    - cmd: |
+        if [ -z "$UNREAL_ENGINE" ]; then
+            echo "Error: UNREAL_ENGINE is not set!"
+            exit 1
+        fi
+
+        PLUGIN="$(pwd)/Nakama/Nakama.uplugin"
+        OUTPUT="$(pwd)/{{.OUTPUT_DIR}}"
+
+        echo "Building Nakama plugin → $OUTPUT..."
+        "$UNREAL_ENGINE/Engine/Build/BatchFiles/RunUAT.bat" \
+            BuildPlugin -NoHostPlatform \
+            -Plugin="$PLUGIN" \
+            -TargetPlatforms=Win64 \
+            -package="$OUTPUT"
+      platforms: [windows]
+    - cmd: |
+        if [ -z "$UNREAL_ENGINE" ]; then
+            echo "Error: UNREAL_ENGINE is not set!"
+            exit 1
+        fi
+
+        PLUGIN="$(pwd)/Nakama/Nakama.uplugin"
+        OUTPUT="$(pwd)/{{.OUTPUT_DIR}}"
+
+        echo "Building Nakama plugin → $OUTPUT..."
+        "$UNREAL_ENGINE/Engine/Build/BatchFiles/RunUAT.sh" \
+            BuildPlugin -NoHostPlatform \
+            -Plugin="$PLUGIN" \
+            -TargetPlatforms=Mac \
+            -package="$OUTPUT" \
+            -Architecture_Mac=arm64
+      platforms: [darwin]
+    - cmd: |
+        if [ -z "$UNREAL_ENGINE" ]; then
+            echo "Error: UNREAL_ENGINE is not set!"
+            exit 1
+        fi
+
+        PLUGIN="$(pwd)/Nakama/Nakama.uplugin"
+        OUTPUT="$(pwd)/{{.OUTPUT_DIR}}"
+
+        echo "Building Nakama plugin → $OUTPUT..."
+        "$UNREAL_ENGINE/Engine/Build/BatchFiles/RunUAT.sh" \
+            BuildPlugin -NoHostPlatform \
+            -Plugin="$PLUGIN" \
+            -TargetPlatforms=Linux \
+            -package="$OUTPUT"
+      platforms: [linux]
+
+  build-project:
+    desc: 'Build and cook a project via UAT (BuildCookRun).'
+    deps:
+    - task: check-unreal-engine
+    vars:
+      PROJECT: '{{.PROJECT}}'
+      CONFIG: '{{.CONFIG | default "Development"}}'
+    cmds:
+    - cmd: |
+        if [ -z "$UNREAL_ENGINE" ]; then
+            echo "Error: UNREAL_ENGINE is not set!"
+            exit 1
+        fi
+        if [ -z "{{.PROJECT}}" ]; then
+            echo "Error: PROJECT is required. Example:"
+            echo "  task build-project PROJECT=NakamaBlueprintsDemo/NakamaBlueprintsDemo.uproject"
+            exit 1
+        fi
+
+        PROJECT="$(pwd)/{{.PROJECT}}"
+
+        echo "Building project $PROJECT ({{.CONFIG}})..."
+        "$UNREAL_ENGINE/Engine/Build/BatchFiles/RunUAT.bat" \
+            BuildCookRun \
+            -Platform=Win64 \
+            -Project="$PROJECT" \
+            -ClientConfig={{.CONFIG}} \
+            -Cook -Build
+      platforms: [windows]
+    - cmd: |
+        if [ -z "$UNREAL_ENGINE" ]; then
+            echo "Error: UNREAL_ENGINE is not set!"
+            exit 1
+        fi
+        if [ -z "{{.PROJECT}}" ]; then
+            echo "Error: PROJECT is required. Example:"
+            echo "  task build-project PROJECT=NakamaBlueprintsDemo/NakamaBlueprintsDemo.uproject"
+            exit 1
+        fi
+
+        PROJECT="$(pwd)/{{.PROJECT}}"
+
+        echo "Building project $PROJECT ({{.CONFIG}})..."
+        "$UNREAL_ENGINE/Engine/Build/BatchFiles/RunUAT.sh" \
+            BuildCookRun \
+            -Platform=Mac \
+            -Project="$PROJECT" \
+            -ClientConfig={{.CONFIG}} \
+            -Cook -Build \
+            -Architecture_Mac=arm64
+      platforms: [darwin]
+    - cmd: |
+        if [ -z "$UNREAL_ENGINE" ]; then
+            echo "Error: UNREAL_ENGINE is not set!"
+            exit 1
+        fi
+        if [ -z "{{.PROJECT}}" ]; then
+            echo "Error: PROJECT is required. Example:"
+            echo "  task build-project PROJECT=NakamaBlueprintsDemo/NakamaBlueprintsDemo.uproject"
+            exit 1
+        fi
+
+        PROJECT="$(pwd)/{{.PROJECT}}"
+
+        echo "Building project $PROJECT ({{.CONFIG}})..."
+        "$UNREAL_ENGINE/Engine/Build/BatchFiles/RunUAT.sh" \
+            BuildCookRun \
+            -Platform=Linux \
+            -Project="$PROJECT" \
+            -ClientConfig={{.CONFIG}} \
+            -Cook -Build
+      platforms: [linux]
+
+  package-nakamatest:
+    desc: 'Package NakamaTest as a standalone build (BuildCookRun).'
+    deps:
+    - task: check-unreal-engine
+    - task: link-nakama-plugin
+    cmds:
+    - cmd: |
+        if [ -z "$UNREAL_ENGINE" ]; then
+            echo "Error: UNREAL_ENGINE is not set!"
+            exit 1
+        fi
+
+        PROJECT="$(pwd)/NakamaTest/NakamaTest.uproject"
+
+        echo "Packaging NakamaTest..."
+        "$UNREAL_ENGINE/Engine/Build/BatchFiles/RunUAT.bat" \
+            BuildCookRun \
+            -targetconfig=Debug \
+            -project="$PROJECT" \
+            -noP4 -installed -utf8output \
+            -build -cook -stage -package \
+            -verbose -stdout -nohostplatform -useshellexecute
+      platforms: [windows]
+    - cmd: |
+        if [ -z "$UNREAL_ENGINE" ]; then
+            echo "Error: UNREAL_ENGINE is not set!"
+            exit 1
+        fi
+
+        PROJECT="$(pwd)/NakamaTest/NakamaTest.uproject"
+
+        echo "Packaging NakamaTest..."
+        "$UNREAL_ENGINE/Engine/Build/BatchFiles/RunUAT.sh" \
+            BuildCookRun \
+            -project="$PROJECT" \
+            -targetConfig=Debug \
+            -noP4 -platform=Mac -Architecture_Mac=arm64 \
+            -installed -unrealexe=UnrealEditor -utf8output \
+            -build -cook -stage -package -verbose
+      platforms: [darwin]
+    - cmd: |
+        if [ -z "$UNREAL_ENGINE" ]; then
+            echo "Error: UNREAL_ENGINE is not set!"
+            exit 1
+        fi
+
+        PROJECT="$(pwd)/NakamaTest/NakamaTest.uproject"
+
+        echo "Packaging NakamaTest..."
+        "$UNREAL_ENGINE/Engine/Build/BatchFiles/RunUAT.sh" \
+            BuildCookRun \
+            -project="$PROJECT" \
+            -clientconfig=Test \
+            -noP4 -platform=Linux -targetconfig=Debug \
+            -installed -utf8output \
+            -build -cook -stage -package -verbose
+      platforms: [linux]
+
+  run-test:
+    desc: 'Run a single test suite (editor mode, no build).'
+    deps:
+    - task: check-unreal-engine
+    vars:
+      TEST_SUITE: '{{.TEST_SUITE | default "NakamaTest.Auth"}}'
+      REPORT_PATH: '{{.REPORT_PATH | default "Reports/NakamaTest"}}'
+    cmds:
+    - cmd: |
+        if [ -z "$UNREAL_ENGINE" ]; then
+            echo "Error: UNREAL_ENGINE is not set!"
+            exit 1
+        fi
+
+        PROJECT="$(pwd)/NakamaTest/NakamaTest.uproject"
+        REPORT_DIR="$(pwd)/{{.REPORT_PATH}}"
+        LOG_FILE="$REPORT_DIR/unreal.log"
+
+        mkdir -p "$REPORT_DIR"
+
+        echo "Running test suite {{.TEST_SUITE}}..."
+        "$UNREAL_ENGINE/Engine/Binaries/Win64/UnrealEditor-Cmd.exe" \
+            "$PROJECT" \
+            -nullrhi \
+            -stdout \
+            -FullStdOutLogOutput \
+            -forcelogflush \
+            -nosplash \
+            -buildmachine \
+            -unattended \
+            -nopause \
+            -nosound \
+            -abslog="$LOG_FILE" \
+            -ReportOutputPath="$REPORT_DIR" \
+            -ExecCmds="Automation RunTests {{.TEST_SUITE}}; Quit"
+      platforms: [windows]
+    - cmd: |
+        if [ -z "$UNREAL_ENGINE" ]; then
+            echo "Error: UNREAL_ENGINE is not set!"
+            exit 1
+        fi
+
+        PROJECT="$(pwd)/NakamaTest/NakamaTest.uproject"
+        REPORT_DIR="$(pwd)/{{.REPORT_PATH}}"
+        LOG_FILE="$REPORT_DIR/unreal.log"
+
+        mkdir -p "$REPORT_DIR"
+
+        echo "Running test suite {{.TEST_SUITE}}..."
+        "$UNREAL_ENGINE/Engine/Binaries/Mac/UnrealEditor.app/Contents/MacOS/UnrealEditor" \
+            "$PROJECT" \
+            -nullrhi \
+            -stdout \
+            -FullStdOutLogOutput \
+            -forcelogflush \
+            -nosplash \
+            -buildmachine \
+            -unattended \
+            -nopause \
+            -nosound \
+            -abslog="$LOG_FILE" \
+            -ReportOutputPath="$REPORT_DIR" \
+            -ExecCmds="Automation RunTests {{.TEST_SUITE}}; Quit"
+      platforms: [darwin]
+    - cmd: |
+        if [ -z "$UNREAL_ENGINE" ]; then
+            echo "Error: UNREAL_ENGINE is not set!"
+            exit 1
+        fi
+
+        PROJECT="$(pwd)/NakamaTest/NakamaTest.uproject"
+        REPORT_DIR="$(pwd)/{{.REPORT_PATH}}"
+        LOG_FILE="$REPORT_DIR/unreal.log"
+
+        mkdir -p "$REPORT_DIR"
+
+        echo "Running test suite {{.TEST_SUITE}}..."
+        "$UNREAL_ENGINE/Engine/Binaries/Linux/UnrealEditor" \
+            "$PROJECT" \
+            -nullrhi \
+            -stdout \
+            -FullStdOutLogOutput \
+            -forcelogflush \
+            -nosplash \
+            -buildmachine \
+            -unattended \
+            -nopause \
+            -nosound \
+            -abslog="$LOG_FILE" \
+            -ReportOutputPath="$REPORT_DIR" \
+            -ExecCmds="Automation RunTests {{.TEST_SUITE}}; Quit"
+      platforms: [linux]
+
   build-nakamatest:
     desc: 'Build NakamaTest project only (no server start).'
     deps:
