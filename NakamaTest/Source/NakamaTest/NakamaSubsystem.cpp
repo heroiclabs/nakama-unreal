@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "View/MVVMView.h"
 #include "Engine/Engine.h"
+#include "GameFramework/PlayerController.h"
 
 void UNakamaSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
@@ -103,6 +104,13 @@ void UNakamaSubsystem::ShowMenu()
 	}
 
 	MenuWidget->AddToViewport();
+
+	// UI-only mode: show mouse cursor and don't capture it.
+	if (APlayerController* PC = World->GetFirstPlayerController())
+	{
+		PC->SetShowMouseCursor(true);
+		PC->SetInputMode(FInputModeUIOnly());
+	}
 
 	AccountVM->SetStatus(TEXT("Connecting"));
 	AuthenticateDevice();
