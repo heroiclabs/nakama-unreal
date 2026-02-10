@@ -1,6 +1,7 @@
-{{- $isDumpRpcs := true -}}
-{{- $isDumpEnums := true -}}
-{{- $isDumpMsgs := true -}}
+{{- $isDumpRpcs := false -}}
+{{- $isDumpEnums := false -}}
+{{- $isDumpMsgs := false -}}
+{{- $isDumpRtClient := true -}}
 
 {{- if $isDumpRpcs -}}{{/* ---------- BEGIN RPC DUMP */}}
 {{- range $idx, $rpc := $.Rpcs -}}
@@ -47,7 +48,35 @@ MESSAGE
 {{ "\n" -}}
 Comment:       {{ $msg.Comment }}
 Name:          {{ $msg.Name }}
+Oneofs:
+{{- range $idx, $field := $msg.OneofFields -}}
+{{- "\n  " -}}{{ $field.Type}} {{ $field.Name }} // {{ $field.Comment.Message }}
+{{- end -}}
 
 {{ "\n\n" }}
 {{- end -}}
 {{- end -}}{{/* ---------------------- END MESSAGE DUMP */}}
+
+{{- if $isDumpRtClient -}}{{/* ---------- BEGIN RT DUMP */}}
+{{- $envelope := getMessage "Envelope" -}}
+{{- range $idx, $rpc := $envelope.OneofFields -}}
+
+{{- $rpcType := getMessage (stripDot $rpc.Type) -}}
+
+------------------
+ENVELOPE REQUEST
+{{ "\n" -}}
+Type:          {{ $rpcType.Name }}
+{{- range $idx, $rpcTypeField := $rpcType.Fields -}}
+{{ "\n  " }}{{ $rpcTypeField.Name }}
+{{- end -}}
+{{- range $idx, $rpcTypeField := $rpcType.MapFields -}}
+{{ "\n  " }}{{ $rpcTypeField.Name }}
+{{- end -}}
+{{ "\n" -}}
+Name:          {{ $rpc.Name }}
+Comment:       {{ $rpc.Comment.Message }}
+
+{{ "\n\n" }}
+{{- end -}}
+{{- end -}}{{/* ---------------------- END RT DUMP */}}

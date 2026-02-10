@@ -1,0 +1,92 @@
+{{- $envelope := getMessage "Envelope" -}}
+
+{{- range $idx, $rpc := $envelope.OneofFields -}}
+{{- $rpcType := getMessage (stripDot $rpc.Type) }}
+{{- $funcName := $rpcType.Name | pascalCase -}}
+
+void UNakamaRtBlueprintLibrary::{{ $funcName }}({{ "\n    " }}
+  {{- range $idx, $rpcTypeField := $rpcType.Fields -}}
+  const {{ getUnrealFieldType $rpcTypeField.Type false }}& {{ $rpcTypeField.Name | pascalCase }}{{ ",\n    " }}
+  {{- end -}}
+  {{- range $idx, $rpcTypeField := $rpcType.MapFields -}}
+  const {{ getUnrealFieldType $rpcTypeField.Type true }}& {{ $rpcTypeField.Name | pascalCase }}{{ ",\n    " }}
+  {{- end -}}
+  FOn{{- $rpcType.Name }} Success,
+    FOnRtError Error
+)
+{
+  auto SuccessCallback = [this, Success](const FNakama{{- $funcName }}& {{- $funcName }})
+  {
+    if(!FNakamaUtils::IsRealtimeClientActive(this))
+    {
+      return;
+    }
+
+    Success.Broadcast({{ $rpcType.Name }});
+  };
+
+  auto ErrorCallback = [this, Error](const FNakamaRtError& error)
+  {
+    if(!FNakamaUtils::IsRealtimeClientActive(this))
+    {
+      return;
+    }
+
+    Error.Broadcast(error);
+  };
+
+  {{ $funcName }}(
+    {{ range $idx, $rpcTypeField := $rpcType.Fields -}}
+    {{ $rpcTypeField.Name | pascalCase }}{{ ",\n    " }}
+    {{- end -}}
+    {{- range $idx, $rpcTypeField := $rpcType.MapFields -}}
+    {{ $rpcTypeField.Name | pascalCase }}{{ ",\n    " }}
+    {{- end -}}
+    SuccessCallback,
+    ErrorCallback
+  );
+}
+
+void UNakamaRtBlueprintLibrary::{{ $rpcType.Name | pascalCase }}({{ "\n    " }}
+  {{- range $idx, $rpcTypeField := $rpcType.Fields -}}
+  const {{ getUnrealFieldType $rpcTypeField.Type false }}& {{ $rpcTypeField.Name | pascalCase }}{{ ",\n    " }}
+  {{- end -}}
+  {{- range $idx, $rpcTypeField := $rpcType.MapFields -}}
+  const {{ getUnrealFieldType $rpcTypeField.Type true }}& {{ $rpcTypeField.Name | pascalCase }}{{ ",\n    " }}
+  {{- end -}}
+  TFunction<void FNakama{{- $rpcType.Name }}& {{ $rpcType.Name }}> SuccessCallback,
+    TFunction<void FNakamaRtError& Error> ErrorCallback
+)
+{
+  // Setup the json object
+  const FNakama{{- $rpcType.Name | pascalCase }} Payload = {
+    {{ range $idx, $rpcTypeField := $rpcType.Fields -}}
+    .{{ $rpcTypeField.Name | pascalCase }} = {{ $rpcTypeField.Name | pascalCase }}{{ ",\n    " }}
+    {{- end -}}
+    {{- range $idx, $rpcTypeField := $rpcType.MapFields -}}
+    .{{ $rpcTypeField.Name | pascalCase }} = {{ $rpcTypeField.Name | pascalCase }}{{ ",\n    " }}
+    {{- end }}
+  };
+
+  const TSharedPtr<FJsonObject> PayloadJson = Payload.ToJson();
+
+  SendMessageWithEnvelope(TEXT("{{ $rpc.Name }}"), PayloadJson,
+    [SuccessCallback](const FNakamaRealtimeEnvelope& Envelope)
+    {
+      if (SuccessCallback)
+      {
+        SuccessCallback();
+      }
+    },
+    [ErrorCallback](const FNakamaRtError& Error)
+    {
+      if (ErrorCallback)
+      {
+        ErrorCallback(Error);
+      }
+    }
+  );
+}
+
+{{ "\n" }}
+{{- end -}}

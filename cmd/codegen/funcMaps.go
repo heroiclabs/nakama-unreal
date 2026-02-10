@@ -86,6 +86,9 @@ func getGeneralFuncMap(api Api) template.FuncMap {
 			}
 			return result
 		},
+		"stripDot": func(s string) string {
+			return s[strings.LastIndex(s, ".")+1:]
+		},
 	}
 
 	return fnMap
