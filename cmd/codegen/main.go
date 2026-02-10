@@ -25,8 +25,6 @@ import (
 )
 
 type Api struct {
-	/* TODO: We probably don't need both of these? */
-
 	// Use slices to preserve order of proto messages
 	Enums    []*visitedEnum
 	Messages []*visitedMessage
@@ -37,191 +35,196 @@ type Api struct {
 	RpcsByName     map[string]*visitedRpc
 }
 
-func loadApi(apiFile string, messagesFile string) (Api, error) {
-	enums := make([]*visitedEnum, 0)
-	messages := make([]*visitedMessage, 0) // use a slice to preserve order of proto enums
-	rpcs := make([]*visitedRpc, 0)
-
-	messagesFileBytes, err := os.ReadFile(messagesFile)
+func (api *Api) addFile(protoFile string) error {
+	fileBytes, err := os.ReadFile(protoFile)
 	if err != nil {
-		return Api{}, fmt.Errorf("failed to read file %s: %s", messagesFile, err.Error())
+		return fmt.Errorf("failed to read file %s: %s", protoFile, err.Error())
 	}
 
-	//
-	// Parse definition files
-	parser := proto.NewParser(bytes.NewReader(messagesFileBytes))
+	parser := proto.NewParser(bytes.NewReader(fileBytes))
 	parsedProto, err := parser.Parse()
 	if err != nil {
-		return Api{}, fmt.Errorf("failed to parse proto file %s: %s", messagesFile, err.Error())
+		return fmt.Errorf("failed to parse proto file %s: %s", protoFile, err.Error())
 	}
 
-	proto.Walk(parsedProto, proto.WithEnum(
-		func(enum *proto.Enum) {
-			comment := ""
-			if enum.Comment != nil {
-				comment = enum.Comment.Message()
+	enums := make([]*visitedEnum, 0)
+	messages := make([]*visitedMessage, 0)
+	rpcs := make([]*visitedRpc, 0)
 
-				// Find everything between square brackets
-				re := regexp.MustCompile(`\[(.*?)\]`)
-				matches := re.FindAllStringSubmatch(comment, -1)
-				for _, match := range matches {
-					// match[0] is the entire match, match[1] is the first submatch.
-					comment = match[1]
+	proto.Walk(
+		parsedProto,
+		proto.WithEnum(
+			func(enum *proto.Enum) {
+				comment := ""
+				if enum.Comment != nil {
+					comment = enum.Comment.Message()
+
+					// Find everything between square brackets
+					re := regexp.MustCompile(`\[(.*?)\]`)
+					matches := re.FindAllStringSubmatch(comment, -1)
+					for _, match := range matches {
+						// match[0] is the entire match, match[1] is the first submatch.
+						comment = match[1]
+					}
 				}
-			}
 
-			// Build fully qualified enum name including parent message if nested
-			enumName := enum.Name
-			if enum.Parent != nil {
-				if parentMsg, ok := enum.Parent.(*proto.Message); ok {
-					enumName = parentMsg.Name + "_" + enum.Name
+				// Build fully qualified enum name including parent message if nested
+				enumName := enum.Name
+				if enum.Parent != nil {
+					if parentMsg, ok := enum.Parent.(*proto.Message); ok {
+						enumName = parentMsg.Name + "_" + enum.Name
+					}
 				}
-			}
 
-			visitor := &enumVisitor{
-				Enum: &visitedEnum{
-					Comment: strings.Trim(comment, " "),
-					Fields:  make([]*enumField, 0),
-					Name:    enumName,
-				},
-			}
-			for _, each := range enum.Elements {
-				each.Accept(visitor)
-			}
-			enums = append(enums, visitor.Enum)
-		},
-	), proto.WithMessage(
-		func(message *proto.Message) {
-			if message.Name == "google.protobuf.EnumValueOptions" {
-				return
-			}
+				visitor := &enumVisitor{
+					Enum: &visitedEnum{
+						Comment: strings.Trim(comment, " "),
+						Fields:  make([]*enumField, 0),
+						Name:    enumName,
+					},
+				}
+				for _, each := range enum.Elements {
+					each.Accept(visitor)
+				}
+				enums = append(enums, visitor.Enum)
+			},
+		),
+		proto.WithMessage(
+			func(message *proto.Message) {
+				if message.Name == "google.protobuf.EnumValueOptions" {
+					return
+				}
 
-			comment := ""
-			if message.Comment != nil {
-				comment = message.Comment.Message()
-			}
-			visitor := &messageVisitor{
-				Message: &visitedMessage{
-					Comment:   comment,
-					Fields:    make([]*proto.NormalField, 0),
-					MapFields: make([]*proto.MapField, 0),
-					Name:      message.Name,
-				},
-			}
-			for _, each := range message.Elements {
-				each.Accept(visitor)
-			}
-			messages = append(messages, visitor.Message)
-		},
-	),
+				comment := ""
+				if message.Comment != nil {
+					comment = message.Comment.Message()
+				}
+				visitor := &messageVisitor{
+					Message: &visitedMessage{
+						Comment:   comment,
+						Fields:    make([]*proto.NormalField, 0),
+						MapFields: make([]*proto.MapField, 0),
+						Name:      message.Name,
+					},
+				}
+				for _, each := range message.Elements {
+					each.Accept(visitor)
+				}
+				messages = append(messages, visitor.Message)
+			},
+		),
+		proto.WithRPC(
+			func(rpc *proto.RPC) {
+				comment := ""
+				if rpc.Comment != nil {
+					comment = rpc.Comment.Message()
+					comment = strings.TrimSpace(comment)
+				}
+
+				resolveType := func(fullTypeName string) *visitedMessage {
+					if fullTypeName == "google.protobuf.Empty" {
+						return nil
+					} else {
+						// We get something like `api.MyRequestType`, so strip after the last dot.
+						stripped := fullTypeName[strings.LastIndex(fullTypeName, ".")+1:]
+
+						t, ok := api.MessagesByName[stripped]
+						if !ok {
+							log.Fatalf("Unable to find type %s for %s", fullTypeName, rpc.Name)
+						}
+						return t
+					}
+				}
+
+				requestType := resolveType(rpc.RequestType)
+				returnType := resolveType(rpc.ReturnsType)
+
+				visitor := &rpcVisitor{
+					Rpc: &visitedRpc{
+						Comment:     comment,
+						RequestType: requestType,
+						ReturnType:  returnType,
+						Name:        rpc.Name,
+					},
+				}
+
+				for _, each := range rpc.Elements {
+					each.Accept(visitor)
+				}
+				rpcs = append(rpcs, visitor.Rpc)
+			},
+		),
 	)
 
-	// allow efficient lookup of messages and enums in template functions
-	enumsByName := make(map[string]*visitedEnum, len(enums))
-	messagesByName := make(map[string]*visitedMessage, len(messages))
-
-	for _, enum := range enums {
-		enumsByName[enum.Name] = enum
-	}
-
-	for _, message := range messages {
-		messagesByName[message.Name] = message
-	}
-
 	//
-	// Parse service file
-	apiFileBytes, err := os.ReadFile(apiFile)
-	if err != nil {
-		return Api{}, fmt.Errorf("failed to read file %s: %s", apiFile, err.Error())
+	// Update maps...
+	for _, enum := range enums {
+		api.Enums = append(api.Enums, enum)
+		api.EnumsByName[enum.Name] = enum
 	}
-	parser = proto.NewParser(bytes.NewReader(apiFileBytes))
-	parsedProto, err = parser.Parse()
-	if err != nil {
-		return Api{}, fmt.Errorf("failed to parse proto file %s: %s", apiFile, err.Error())
+	for _, message := range messages {
+		api.Messages = append(api.Messages, message)
+		api.MessagesByName[message.Name] = message
 	}
-	proto.Walk(parsedProto, proto.WithRPC(
-		func(rpc *proto.RPC) {
-
-			comment := ""
-			if rpc.Comment != nil {
-				comment = rpc.Comment.Message()
-				comment = strings.TrimSpace(comment)
-			}
-
-			resolveType := func(fullTypeName string) *visitedMessage {
-				if fullTypeName == "google.protobuf.Empty" {
-					return nil
-				} else {
-					// We get something like `api.MyRequestType`, so strip after the last dot.
-					stripped := fullTypeName[strings.LastIndex(fullTypeName, ".")+1:]
-
-					t, ok := messagesByName[stripped]
-					if !ok {
-						log.Fatalf("Unable to find type %s for %s", fullTypeName, rpc.Name)
-					}
-					return t
-				}
-			}
-
-			requestType := resolveType(rpc.RequestType)
-			returnType := resolveType(rpc.ReturnsType)
-
-			visitor := &rpcVisitor{
-				Rpc: &visitedRpc{
-					Comment:     comment,
-					RequestType: requestType,
-					ReturnType:  returnType,
-					Name:        rpc.Name,
-				},
-			}
-
-			for _, each := range rpc.Elements {
-				each.Accept(visitor)
-			}
-			rpcs = append(rpcs, visitor.Rpc)
-		},
-	))
-	rpcsByName := make(map[string]*visitedRpc, len(rpcs))
 	for _, rpc := range rpcs {
-		rpcsByName[rpc.Name] = rpc
+		api.Rpcs = append(api.Rpcs, rpc)
+		api.RpcsByName[rpc.Name] = rpc
 	}
 
-	api := Api{
-		Enums:    enums,
-		Messages: messages,
-		Rpcs:     rpcs,
+	return nil
+}
 
-		EnumsByName:    enumsByName,
-		MessagesByName: messagesByName,
-		RpcsByName:     rpcsByName,
+func loadApi(protoFiles []string) (Api, error) {
+	api := Api{
+		Enums:    make([]*visitedEnum, 0),
+		Messages: make([]*visitedMessage, 0),
+		Rpcs:     make([]*visitedRpc, 0),
+
+		EnumsByName:    make(map[string]*visitedEnum, 0),
+		MessagesByName: make(map[string]*visitedMessage, 0),
+		RpcsByName:     make(map[string]*visitedRpc, 0),
+	}
+
+	// Load file by file...
+	// Updates maps internally, so each subsequent
+	// file will have previous context to work with.
+	for _, f := range protoFiles {
+		api.addFile(f)
 	}
 
 	return api, nil
+}
+
+type fileList []string
+
+func (f *fileList) String() string {
+	return fmt.Sprint(*f)
+}
+func (f *fileList) Set(value string) error {
+	*f = append(*f, value)
+	return nil
 }
 
 func main() {
 	//
 	// Parse command line args.
 	argTmpl := flag.String("template", "", "template file path.")
-	argProtoPath := flag.String("proto", "", "proto input file.")
-	argProtoServicePath := flag.String("proto-service", "", "proto service input file.")
+
+	var argProtoFiles fileList
+	flag.Var(&argProtoFiles, "proto", "list of proto files to parse. Proto files provided later can depend on files provided earlier.")
 
 	flag.Parse()
 
 	if *argTmpl == "" {
 		log.Fatalf("Template file is not given. Please provide it via --template.")
 	}
-	if *argProtoPath == "" {
-		log.Fatalf("Message file is not given. Please provide it via --proto.")
-	}
-	// TODO: Should probably be optional
-	if *argProtoServicePath == "" {
-		log.Fatalf("Service file is not given. Please provide it via --proto-service.")
+	if len(argProtoFiles) == 0 {
+		log.Fatalf("No proto files are given. Please provide one or more proto files via --proto.")
 	}
 
 	//
 	// Parse the API files and load structures.
-	api, err := loadApi(*argProtoServicePath, *argProtoPath)
+	api, err := loadApi(argProtoFiles)
 	if err != nil {
 		log.Fatalf("Failed to load API: %s", err.Error())
 	}
@@ -252,17 +255,4 @@ func main() {
 	if err := tmpl.Execute(os.Stdout, api); err != nil {
 		log.Printf("Failed to execute template: %s", err)
 	}
-}
-
-// isPrimitiveOrWrapperType returns true if the type is a primitive, wrapper, or google type
-func isPrimitiveOrWrapperType(fieldType string) bool {
-	switch fieldType {
-	case "string", "int32", "int64", "uint32", "uint64", "float", "double", "bool", "bytes",
-		"google.protobuf.StringValue", "google.protobuf.Int32Value", "google.protobuf.Int64Value",
-		"google.protobuf.UInt32Value", "google.protobuf.UInt64Value", "google.protobuf.FloatValue",
-		"google.protobuf.DoubleValue", "google.protobuf.BoolValue", "google.protobuf.Timestamp",
-		"google.protobuf.Struct", "google.protobuf.Empty":
-		return true
-	}
-	return false
 }

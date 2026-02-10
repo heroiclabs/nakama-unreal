@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"maps"
+	"slices"
 	"strings"
 	"text/template"
 	"time"
@@ -21,12 +22,7 @@ func getGeneralFuncMap(api Api) template.FuncMap {
 		"trimPrefix":     strings.TrimPrefix,
 		"containsString": strings.Contains,
 		"containsInSlice": func(slice []string, value string) bool {
-			for _, item := range slice {
-				if item == value {
-					return true
-				}
-			}
-			return false
+			return slices.Contains(slice, value)
 		},
 		"containsEnum": func(key string) bool {
 			_, ok := api.EnumsByName[key]
@@ -377,8 +373,8 @@ func getUnrealFuncMap(api Api) template.FuncMap {
 			}
 			return getUnrealBaseType(fieldType, false)
 		},
-		"isMessageType":    isMessageType,
-		"isBPWrapperType":  isMessageType, // Alias for template clarity
+		"isMessageType":   isMessageType,
+		"isBPWrapperType": isMessageType, // Alias for template clarity
 		"getBaseType": func(fieldType string) string {
 			// Return the base type name (e.g., "User" from "User")
 			return fieldType
@@ -434,6 +430,19 @@ func mergeFuncMaps(funcMaps ...template.FuncMap) template.FuncMap {
 		maps.Copy(result, m)
 	}
 	return result
+}
+
+// isPrimitiveOrWrapperType returns true if the type is a primitive, wrapper, or google type
+func isPrimitiveOrWrapperType(fieldType string) bool {
+	switch fieldType {
+	case "string", "int32", "int64", "uint32", "uint64", "float", "double", "bool", "bytes",
+		"google.protobuf.StringValue", "google.protobuf.Int32Value", "google.protobuf.Int64Value",
+		"google.protobuf.UInt32Value", "google.protobuf.UInt64Value", "google.protobuf.FloatValue",
+		"google.protobuf.DoubleValue", "google.protobuf.BoolValue", "google.protobuf.Timestamp",
+		"google.protobuf.Struct", "google.protobuf.Empty":
+		return true
+	}
+	return false
 }
 
 var cppKeywords = map[string]struct{}{

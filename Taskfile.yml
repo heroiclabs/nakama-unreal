@@ -5,6 +5,7 @@ dotenv: ['.env']
 vars:
   PROTO_FILE: "proto/nakama-types.proto"
   PROTO_SERVICE_FILE: "proto/nakama-api.proto"
+  PROTO_RT_FILE: "proto/realtime.proto"
   BIN_PATH: "build/codegen"
   BIN_PATH_WIN: "build/codegen.exe"
 
@@ -419,12 +420,21 @@ tasks:
     cmds:
     - task: build
     - cmd: |
-        ./{{.BIN_PATH}} --template cmd/codegen/templates/nakama-unreal.ue.h.tmpl --proto {{.PROTO_FILE}} --proto-service {{.PROTO_SERVICE_FILE}} > Nakama/Source/NakamaUnreal/Public/NakamaUnreal.h
-        ./{{.BIN_PATH}} --template cmd/codegen/templates/nakama-unreal.ue.cpp.tmpl --proto {{.PROTO_FILE}} --proto-service {{.PROTO_SERVICE_FILE}} > Nakama/Source/NakamaUnreal/Private/NakamaUnreal.cpp
+        ./{{.BIN_PATH}} \
+        --template cmd/codegen/templates/nakama-unreal.ue.h.tmpl \
+        --proto {{.PROTO_FILE}} \
+        --proto {{.PROTO_SERVICE_FILE}} \
+        > Nakama/Source/NakamaUnreal/Public/NakamaUnreal.h
+        
+        ./{{.BIN_PATH}} \
+        --template cmd/codegen/templates/nakama-unreal.ue.cpp.tmpl \
+        --proto {{.PROTO_FILE}} \
+        --proto {{.PROTO_SERVICE_FILE}} \
+        > Nakama/Source/NakamaUnreal/Private/NakamaUnreal.cpp
       platforms: [linux, darwin]
     - cmd: |
-        cmd /c ".\\build\\codegen.exe --template cmd\\codegen\\templates\\nakama-unreal.ue.h.tmpl --proto {{.PROTO_FILE}} --proto-service {{.PROTO_SERVICE_FILE}} > Nakama\\Source\\NakamaUnreal\\Public\\NakamaUnreal.h"
-        cmd /c ".\\build\\codegen.exe --template cmd\\codegen\\templates\\nakama-unreal.ue.cpp.tmpl --proto {{.PROTO_FILE}} --proto-service {{.PROTO_SERVICE_FILE}} > Nakama\\Source\\NakamaUnreal\\Private\\NakamaUnreal.cpp"
+        cmd /c ".\\build\\codegen.exe --template cmd\\codegen\\templates\\nakama-unreal.ue.h.tmpl --proto {{.PROTO_FILE}} --proto {{.PROTO_SERVICE_FILE}} > Nakama\\Source\\NakamaUnreal\\Public\\NakamaUnreal.h"
+        cmd /c ".\\build\\codegen.exe --template cmd\\codegen\\templates\\nakama-unreal.ue.cpp.tmpl --proto {{.PROTO_FILE}} --proto {{.PROTO_SERVICE_FILE}} > Nakama\\Source\\NakamaUnreal\\Private\\NakamaUnreal.cpp"
       platforms: [windows]
 
   generate-nakama-blueprints:
@@ -432,12 +442,21 @@ tasks:
     cmds:
     - task: build
     - cmd: |
-        ./{{.BIN_PATH}} --template cmd/codegen/templates/nakama-client-bplib.ue.h.tmpl --proto {{.PROTO_FILE}} --proto-service {{.PROTO_SERVICE_FILE}} > Nakama/Source/NakamaBlueprints/Public/NakamaClientBlueprintLibrary.h
-        ./{{.BIN_PATH}} --template cmd/codegen/templates/nakama-client-bplib.ue.cpp.tmpl --proto {{.PROTO_FILE}} --proto-service {{.PROTO_SERVICE_FILE}} > Nakama/Source/NakamaBlueprints/Private/NakamaClientBlueprintLibrary.cpp
+        ./{{.BIN_PATH}} \
+        --template cmd/codegen/templates/nakama-client-bplib.ue.h.tmpl \
+        --proto {{.PROTO_FILE}} \
+        --proto {{.PROTO_SERVICE_FILE}} \
+        > Nakama/Source/NakamaBlueprints/Public/NakamaClientBlueprintLibrary.h
+
+        ./{{.BIN_PATH}} \ 
+        --template cmd/codegen/templates/nakama-client-bplib.ue.cpp.tmpl \
+        --proto {{.PROTO_FILE}} \
+        --proto {{.PROTO_SERVICE_FILE}} \
+        > Nakama/Source/NakamaBlueprints/Private/NakamaClientBlueprintLibrary.cpp
       platforms: [linux, darwin]
     - cmd: |
-        cmd /c ".\\build\\codegen.exe --template cmd\\codegen\\templates\\nakama-client-bplib.ue.h.tmpl --proto {{.PROTO_FILE}} --proto-service {{.PROTO_SERVICE_FILE}} > Nakama\\Source\\NakamaBlueprints\\Public\\NakamaClientBlueprintLibrary.h"
-        cmd /c ".\\build\\codegen.exe --template cmd\\codegen\\templates\\nakama-client-bplib.ue.cpp.tmpl --proto {{.PROTO_FILE}} --proto-service {{.PROTO_SERVICE_FILE}} > Nakama\\Source\\NakamaBlueprints\\Private\\NakamaClientBlueprintLibrary.cpp"
+        cmd /c ".\\build\\codegen.exe --template cmd\\codegen\\templates\\nakama-client-bplib.ue.h.tmpl --proto {{.PROTO_FILE}} --proto {{.PROTO_SERVICE_FILE}} > Nakama\\Source\\NakamaBlueprints\\Public\\NakamaClientBlueprintLibrary.h"
+        cmd /c ".\\build\\codegen.exe --template cmd\\codegen\\templates\\nakama-client-bplib.ue.cpp.tmpl --proto {{.PROTO_FILE}} --proto {{.PROTO_SERVICE_FILE}} > Nakama\\Source\\NakamaBlueprints\\Private\\NakamaClientBlueprintLibrary.cpp"
       platforms: [windows]
 
   generate-debug:
@@ -469,6 +488,7 @@ tasks:
     - cmd: |
         curl -o {{.PROTO_SERVICE_FILE}} https://raw.githubusercontent.com/heroiclabs/nakama/feat/flatten-proto/apigrpc/apigrpc.proto
         curl -o {{.PROTO_FILE}} https://raw.githubusercontent.com/heroiclabs/nakama-common/feat/flatten-proto-v2/api/api.proto
+        curl -o {{.PROTO_RT_FILE}} https://raw.githubusercontent.com/heroiclabs/nakama-common/feat/flatten-proto-v2/rtapi/realtime.proto
 
   run-codegen:
     desc: 'Fetch Nakama proto schemas and run codegen.'
@@ -476,9 +496,9 @@ tasks:
       TEMPLATE_FILE: cmd/codegen/templates/debug.tmpl
     cmds:
     - task: fetch-protos
-    - cmd: ./{{.BIN_PATH}} --template {{.TEMPLATE_FILE}} --proto {{.PROTO_FILE}} --proto-service {{.PROTO_SERVICE_FILE}}
+    - cmd: ./{{.BIN_PATH}} --template {{.TEMPLATE_FILE}} --proto {{.PROTO_FILE}} --proto {{.PROTO_SERVICE_FILE}} --proto {{.PROTO_RT_FILE}}
       platforms: [linux, darwin]
-    - cmd: cmd /c ".\\build\\codegen.exe --template {{.TEMPLATE_FILE}} --proto {{.PROTO_FILE}} --proto-service {{.PROTO_SERVICE_FILE}}"
+    - cmd: cmd /c ".\\build\\codegen.exe --template {{.TEMPLATE_FILE}} --proto {{.PROTO_FILE}} --proto {{.PROTO_SERVICE_FILE}} --proto {{.PROTO_RT_FILE}}"
       platforms: [windows]
 
   run-codegen-file:
@@ -488,7 +508,7 @@ tasks:
       OUTPUT_FILE: build/codegen.out
     cmds:
     - task: fetch-protos
-    - cmd: ./{{.BIN_PATH}} --template {{.TEMPLATE_FILE}} --proto {{.PROTO_FILE}} --proto-service {{.PROTO_SERVICE_FILE}} > {{.OUTPUT_FILE}}
+    - cmd: ./{{.BIN_PATH}} --template {{.TEMPLATE_FILE}} --proto {{.PROTO_FILE}} --proto {{.PROTO_SERVICE_FILE}} > {{.OUTPUT_FILE}}
       platforms: [linux, darwin]
-    - cmd: cmd /c ".\\build\\codegen.exe --template {{.TEMPLATE_FILE}} --proto {{.PROTO_FILE}} --proto-service {{.PROTO_SERVICE_FILE}} > {{.OUTPUT_FILE}}"
+    - cmd: cmd /c ".\\build\\codegen.exe --template {{.TEMPLATE_FILE}} --proto {{.PROTO_FILE}} --proto {{.PROTO_SERVICE_FILE}} > {{.OUTPUT_FILE}}"
       platforms: [windows]

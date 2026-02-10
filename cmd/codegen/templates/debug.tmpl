@@ -1,3 +1,8 @@
+{{- $isDumpRpcs := true -}}
+{{- $isDumpEnums := true -}}
+{{- $isDumpMsgs := true -}}
+
+{{- if $isDumpRpcs -}}{{/* ---------- BEGIN RPC DUMP */}}
 {{- range $idx, $rpc := $.Rpcs -}}
 
 ------------------
@@ -12,11 +17,10 @@ Query Params:
 {{- range $idx, $param := $rpc.QueryParams -}}
 {{- " "}}{{ $param }}
 {{- end -}}
+{{- end -}}
 
 {{ "\n" }}
-{{- end -}}
 {{- end -}}{{/* ---------------------- END RPC DUMP */}}
-
 
 {{- if $isDumpEnums -}}{{/* ---------- BEGIN ENUM DUMP */}}
 {{- range $idx, $enum := $.Enums -}}
@@ -35,3 +39,15 @@ Fields:
 {{- end -}}
 {{- end -}}{{/* ---------------------- END ENUM DUMP */}}
 
+{{- if $isDumpMsgs -}}{{/* ---------- BEGIN MESSAGE DUMP */}}
+{{- range $idx, $msg := $.Messages -}}
+
+------------------
+MESSAGE
+{{ "\n" -}}
+Comment:       {{ $msg.Comment }}
+Name:          {{ $msg.Name }}
+
+{{ "\n\n" }}
+{{- end -}}
+{{- end -}}{{/* ---------------------- END MESSAGE DUMP */}}
