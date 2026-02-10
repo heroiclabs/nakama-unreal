@@ -401,8 +401,6 @@ func getUnrealFuncMap(api Api) template.FuncMap {
 		},
 		"isMessageType":   isMessageType,
 		"isBPWrapperType": isMessageType, // Alias for template clarity
-		"isMessageType":   isMessageType,
-		"isBPWrapperType": isMessageType, // Alias for template clarity
 		"getBaseType": func(fieldType string) string {
 			// Return the base type name (e.g., "User" from "User")
 			return fieldType
