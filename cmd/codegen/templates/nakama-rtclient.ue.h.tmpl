@@ -1,0 +1,61 @@
+{{- $envelope := getMessage "Envelope" -}}
+
+UCLASS(meta=(ScriptName="NakamaLibrary"), MinimalAPI)
+class UNakamaRtBlueprintLibrary : public UBlueprintFunctionLibrary
+{
+	GENERATED_BODY()
+
+public:
+{{- range $idx, $rpc := $envelope.OneofFields -}}
+{{- $rpcType := getMessage (stripDot $rpc.Type) }}
+  /**
+   *{{ $rpc.Comment.Message }}
+  {{ " *\n   * " }} 
+  {{- range $idx, $rpcTypeField := $rpcType.Fields -}}
+  @param {{ $rpcTypeField.Name | pascalCase }} {{ $rpcTypeField.Comment.Message }}{{ "\n   * " }}
+  {{- end -}}
+  {{- range $idx, $rpcTypeField := $rpcType.MapFields -}}
+  @param {{ $rpcTypeField.Name | pascalCase }} {{ $rpcTypeField.Comment.Message }}{{ "\n  * " }}
+  {{- end -}}
+  @param Success Delegate called when successfully left a party.
+   * @param Error Delegate called if an error occurs, detailing the failure.
+   */
+  UFUNCTION(Category = "Nakama")
+  void {{ $rpcType.Name | pascalCase }}({{ "\n    " }}
+    {{- range $idx, $rpcTypeField := $rpcType.Fields -}}
+    const {{ getUnrealFieldType $rpcTypeField.Type false }}& {{ $rpcTypeField.Name | pascalCase }}{{ ",\n    " }}
+    {{- end -}}
+    {{- range $idx, $rpcTypeField := $rpcType.MapFields -}}
+    const {{ getUnrealFieldType $rpcTypeField.Type true }}& {{ $rpcTypeField.Name | pascalCase }}{{ ",\n    " }}
+    {{- end -}}
+    FOn{{- $rpcType.Name }} Success,
+    FOnRtError Error
+  );
+
+  /**
+   *{{ $rpc.Comment.Message }}
+  {{ " *\n   * " }} 
+  {{- range $idx, $rpcTypeField := $rpcType.Fields -}}
+  @param {{ $rpcTypeField.Name | pascalCase }} {{ $rpcTypeField.Comment.Message }}{{ "\n   * " }}
+  {{- end -}}
+  {{- range $idx, $rpcTypeField := $rpcType.MapFields -}}
+  @param {{ $rpcTypeField.Name | pascalCase }} {{ $rpcTypeField.Comment.Message }}{{ "\n  * " }}
+  {{- end -}}
+  @param Success Delegate called when successfully left a party.
+   * @param Error Delegate called if an error occurs, detailing the failure.
+   */
+  UFUNCTION(Category = "Nakama")
+  void {{ $rpcType.Name | pascalCase }}({{ "\n    " }}
+    {{- range $idx, $rpcTypeField := $rpcType.Fields -}}
+    const {{ getUnrealFieldType $rpcTypeField.Type false }}& {{ $rpcTypeField.Name | pascalCase }}{{ ",\n    " }}
+    {{- end -}}
+    {{- range $idx, $rpcTypeField := $rpcType.MapFields -}}
+    const {{ getUnrealFieldType $rpcTypeField.Type true }}& {{ $rpcTypeField.Name | pascalCase }}{{ ",\n    " }}
+    {{- end -}}
+    TFunction<void FNakama{{- $rpcType.Name }} {{ $rpcType.Name }}> SuccessCallback,
+    TFunction<void FNakamaRtError& Error> ErrorCallback
+  );
+
+{{ "\n" }}
+{{- end -}}
+};

@@ -58,10 +58,11 @@ func (v *enumVisitor) VisitEnumField(ef *proto.EnumField) {
 // --------------------
 // Messages
 type visitedMessage struct {
-	Comment   string
-	Fields    []*proto.NormalField
-	MapFields []*proto.MapField
-	Name      string
+	Comment     string
+	Fields      []*proto.NormalField
+	MapFields   []*proto.MapField
+	OneofFields []*proto.OneOfField
+	Name        string
 }
 
 type messageVisitor struct {
@@ -87,6 +88,20 @@ func (v *messageVisitor) VisitNormalField(nf *proto.NormalField) {
 		}
 	}
 	v.Message.Fields = append(v.Message.Fields, nf)
+}
+
+func (v *messageVisitor) VisitOneof(oneof *proto.Oneof) {
+	for _, o := range oneof.Elements {
+		o.Accept(v)
+	}
+}
+
+func (v *messageVisitor) VisitOneofField(oneof *proto.OneOfField) {
+	// Sometimes we can get types like more qualified
+	// types like api.MyMessage, so take only the bit after last dot.
+	oneof.Name = oneof.Name[strings.LastIndex(oneof.Name, ".")+1:]
+
+	v.Message.OneofFields = append(v.Message.OneofFields, oneof)
 }
 
 // --------------------
