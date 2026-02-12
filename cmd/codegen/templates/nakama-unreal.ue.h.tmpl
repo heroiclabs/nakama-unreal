@@ -134,7 +134,11 @@ public:
 		{{- end }}
 		{{- if $hasParams -}}
 		{{- range $fidx, $field := $requestType.Fields }}
+		{{- if and (eq $field.Name $rpc.BodyField) (not (isMessageType $field.Type)) }}
+		TSharedPtr<FJsonObject> {{ $field.Name | pascalCase }},
+		{{- else }}
 		{{ getUnrealType $field.Type $field.Repeated }} {{ $field.Name | pascalCase }},
+		{{- end }}
 		{{- end -}}
 		{{- range $fidx, $field := $requestType.MapFields }}
 		const {{ getUnrealMapType $field.Type }}& {{ $field.Name | pascalCase }},
@@ -155,7 +159,11 @@ public:
 		{{- range $fidx, $field := $requestType.Fields }}
 		{{- /* Skip http_key field since it's provided as the HttpKey auth parameter */ -}}
 		{{- if ne $field.Name "http_key" }}
+		{{- if and (eq $field.Name $rpc.BodyField) (not (isMessageType $field.Type)) }}
+		TSharedPtr<FJsonObject> {{ $field.Name | pascalCase }},
+		{{- else }}
 		{{ getUnrealType $field.Type $field.Repeated }} {{ $field.Name | pascalCase }},
+		{{- end }}
 		{{- end }}
 		{{- end -}}
 		{{- range $fidx, $field := $requestType.MapFields }}

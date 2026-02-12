@@ -3778,7 +3778,7 @@ public:
 	void RpcFunc(
 		const FNakamaSession& Session,
 		FString Id,
-		FString Payload,
+		TSharedPtr<FJsonObject> Payload,
 		FString HttpKey,
 		TFunction<void(const FNakamaRpc&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError);
@@ -3787,7 +3787,7 @@ public:
 	void RpcFunc(
 		const FString& HttpKey,
 		FString Id,
-		FString Payload,
+		TSharedPtr<FJsonObject> Payload,
 		TFunction<void(const FNakamaRpc&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError);
 

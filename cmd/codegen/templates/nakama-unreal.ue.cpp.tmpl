@@ -262,6 +262,16 @@ void FNakamaClient::MakeRequest(
 	TFunction<void(TSharedPtr<FJsonObject>)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError)
 {
+	FString BodyString;
+	if (Body.IsValid() && Method != TEXT("GET"))
+	{
+		TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&BodyString);
+		{
+			SCOPE_CYCLE_COUNTER(STAT_Nakama_JsonSerialize);
+			FJsonSerializer::Serialize(Body.ToSharedRef(), Writer);
+		}
+	}
+
 	// Capture Self first — ensures the client outlives the async HTTP request.
 	// Also used for all member access below for consistency.
 	TSharedPtr<FNakamaClient> Self = AsShared();
@@ -306,14 +316,8 @@ void FNakamaClient::MakeRequest(
 		break;
 	}
 
-	if (Body.IsValid() && Method != TEXT("GET"))
+	if (!BodyString.IsEmpty() && Method != TEXT("GET"))
 	{
-		FString BodyString;
-		TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&BodyString);
-		{
-			SCOPE_CYCLE_COUNTER(STAT_Nakama_JsonSerialize);
-			FJsonSerializer::Serialize(Body.ToSharedRef(), Writer);
-		}
 		Request->SetContentAsString(BodyString);
 
 		if (Self->bEnableDebug)
@@ -413,7 +417,11 @@ void FNakamaClient::{{ $rpc.Name }}(
 	{{- end }}
 	{{- if $hasParams -}}
 	{{- range $fidx, $field := $requestType.Fields }}
+	{{- if and (eq $field.Name $rpc.BodyField) (not (isMessageType $field.Type)) }}
+	TSharedPtr<FJsonObject> {{ $field.Name | pascalCase }},
+	{{- else }}
 	{{ getUnrealType $field.Type $field.Repeated }} {{ $field.Name | pascalCase }},
+	{{- end }}
 	{{- end -}}
 	{{- range $fidx, $field := $requestType.MapFields }}
 	const {{ getUnrealMapType $field.Type }}& {{ $field.Name | pascalCase }},
@@ -499,22 +507,55 @@ void FNakamaClient::{{ $rpc.Name }}(
 	}
 {{- end }}
 
-{{- /* Build request body - only when body: "*" or body: "field_name" is specified */ -}}
+	ENakamaRequestAuth AuthType = {{ if or $isAuthenticate $isSessionRefresh }}ENakamaRequestAuth::Basic{{ else }}ENakamaRequestAuth::Bearer{{ end }};
+	FString SessionToken = {{ if $needsSession }}Session.Token{{ else }}TEXT(""){{ end }};
+
+{{- /* Build request body and dispatch */ -}}
+{{- $scalarBodyField := "" }}
+{{- if $hasParams }}
+{{- $bodyField := $rpc.BodyField }}
+{{- $isGetRequest := eq $rpc.Method "GET" }}
+{{- if and (ne $bodyField "") (ne $bodyField "*") }}
+{{- range $fidx, $field := $requestType.Fields }}
+{{- if eq $field.Name $bodyField }}
+{{- if not (isMessageType $field.Type) }}
+{{- $scalarBodyField = $field.Name | pascalCase }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- if ne $scalarBodyField "" }}
+
+	MakeRequest(Endpoint, TEXT("{{ $rpc.Method }}"), {{ $scalarBodyField }}, AuthType, SessionToken,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
+		{
+			{{- if $hasReturn }}
+			FNakama{{ $returnType.Name }} Result = FNakama{{ $returnType.Name }}::FromJson(Json);
+			if (OnSuccess)
+			{
+				OnSuccess(Result);
+			}
+			{{- else }}
+			if (OnSuccess)
+			{
+				OnSuccess();
+			}
+			{{- end }}
+		},
+		OnError);
+{{- else }}
+{{- /* Object body or no body */ -}}
 	TSharedPtr<FJsonObject> Body;
 {{- if $hasParams }}
 {{- $bodyField := $rpc.BodyField }}
 {{- $isGetRequest := eq $rpc.Method "GET" }}
 {{- if and (ne $bodyField "") (ne $bodyField "*") }}
-{{- /* Body is a specific field - serialize just that field's content */ -}}
+{{- /* Body is a specific message field */ -}}
 {{- range $fidx, $field := $requestType.Fields }}
 {{- if eq $field.Name $bodyField }}
 {{- $fieldName := $field.Name | pascalCase }}
-{{- $fieldType := $field.Type }}
-{{- if isMessageType $fieldType }}
 	Body = {{ $fieldName }}.ToJson();
-{{- else }}
-	Body = MakeShared<FJsonObject>();
-{{- end }}
 {{- end }}
 {{- end }}
 {{- else if and (eq $bodyField "*") (not $isGetRequest) }}
@@ -577,9 +618,6 @@ void FNakamaClient::{{ $rpc.Name }}(
 {{- end }}
 {{- end }}
 
-	ENakamaRequestAuth AuthType = {{ if or $isAuthenticate $isSessionRefresh }}ENakamaRequestAuth::Basic{{ else }}ENakamaRequestAuth::Bearer{{ end }};
-	FString SessionToken = {{ if $needsSession }}Session.Token{{ else }}TEXT(""){{ end }};
-
 	MakeRequest(Endpoint, TEXT("{{ $rpc.Method }}"), Body, AuthType, SessionToken,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
@@ -597,6 +635,7 @@ void FNakamaClient::{{ $rpc.Name }}(
 			{{- end }}
 		},
 		OnError);
+{{- end }}
 }
 {{- if $needsSession }}
 
@@ -606,7 +645,11 @@ void FNakamaClient::{{ $rpc.Name }}(
 	{{- range $fidx, $field := $requestType.Fields }}
 	{{- /* Skip http_key field since it's provided as the HttpKey auth parameter */ -}}
 	{{- if ne $field.Name "http_key" }}
+	{{- if and (eq $field.Name $rpc.BodyField) (not (isMessageType $field.Type)) }}
+	TSharedPtr<FJsonObject> {{ $field.Name | pascalCase }},
+	{{- else }}
 	{{ getUnrealType $field.Type $field.Repeated }} {{ $field.Name | pascalCase }},
+	{{- end }}
 	{{- end }}
 	{{- end -}}
 	{{- range $fidx, $field := $requestType.MapFields }}
@@ -696,23 +739,52 @@ void FNakamaClient::{{ $rpc.Name }}(
 	}
 {{- end }}
 
-{{- /* Build request body - only when body: "*" or body: "field_name" is specified */ -}}
+{{- /* Build request body and dispatch */ -}}
+{{- $scalarBodyField2 := "" }}
+{{- if $hasParams }}
+{{- $bodyField := $rpc.BodyField }}
+{{- $isGetRequest := eq $rpc.Method "GET" }}
+{{- if and (ne $bodyField "") (ne $bodyField "*") }}
+{{- range $fidx, $field := $requestType.Fields }}
+{{- if and (eq $field.Name $bodyField) (ne $field.Name "http_key") }}
+{{- if not (isMessageType $field.Type) }}
+{{- $scalarBodyField2 = $field.Name | pascalCase }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- if ne $scalarBodyField2 "" }}
+
+	MakeRequest(Endpoint, TEXT("{{ $rpc.Method }}"), {{ $scalarBodyField2 }}, ENakamaRequestAuth::HttpKey, HttpKey,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
+		{
+			{{- if $hasReturn }}
+			FNakama{{ $returnType.Name }} Result = FNakama{{ $returnType.Name }}::FromJson(Json);
+			if (OnSuccess)
+			{
+				OnSuccess(Result);
+			}
+			{{- else }}
+			if (OnSuccess)
+			{
+				OnSuccess();
+			}
+			{{- end }}
+		},
+		OnError);
+{{- else }}
+{{- /* Object body or no body */ -}}
 	TSharedPtr<FJsonObject> Body;
 {{- if $hasParams }}
 {{- $bodyField := $rpc.BodyField }}
 {{- $isGetRequest := eq $rpc.Method "GET" }}
 {{- if and (ne $bodyField "") (ne $bodyField "*") }}
-{{- /* Body is a specific field - serialize just that field's content */ -}}
+{{- /* Body is a specific message field */ -}}
 {{- range $fidx, $field := $requestType.Fields }}
-{{- /* Skip http_key field */ -}}
 {{- if and (eq $field.Name $bodyField) (ne $field.Name "http_key") }}
 {{- $fieldName := $field.Name | pascalCase }}
-{{- $fieldType := $field.Type }}
-{{- if isMessageType $fieldType }}
 	Body = {{ $fieldName }}.ToJson();
-{{- else }}
-	Body = MakeShared<FJsonObject>();
-{{- end }}
 {{- end }}
 {{- end }}
 {{- else if and (eq $bodyField "*") (not $isGetRequest) }}
@@ -795,6 +867,7 @@ void FNakamaClient::{{ $rpc.Name }}(
 			{{- end }}
 		},
 		OnError);
+{{- end }}
 }
 {{- end }}
 {{- end }}
