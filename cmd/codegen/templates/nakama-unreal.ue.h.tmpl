@@ -191,6 +191,15 @@ private:
 		TFunction<void(TSharedPtr<FJsonObject>)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError);
 
+	void SendRequest(
+		const FString& Endpoint,
+		const FString& Method,
+		const FString& BodyString,
+		ENakamaRequestAuth AuthType,
+		const FString& SessionToken,
+		TFunction<void(TSharedPtr<FJsonObject>)> OnSuccess,
+		TFunction<void(const FNakamaError&)> OnError);
+
 	FString ServerKey;
 	FString Host;
 	int32 Port = 0;

@@ -19,7 +19,10 @@ services:
 
   nakama:
     container_name: nakama_unreal_test_nakama
-    image: heroiclabs/nakama:3.36.0
+    build:
+      context: .
+      args:
+        NAKAMA_VERSION: "3.36.0"
     depends_on:
       postgres:
         condition: service_healthy

@@ -29,10 +29,10 @@ tasks:
     cmds:
     - cmd: |
         echo "Stopping any existing containers..."
-        docker compose down -v 2>/dev/null || true
+        docker compose -f NakamaTest/nakama-server/docker-compose.yml down -v 2>/dev/null || true
         docker rm -f nakama_unreal_test_nakama nakama_unreal_test_postgres 2>/dev/null || true
         echo "Starting Nakama server..."
-        docker compose up -d
+        docker compose -f NakamaTest/nakama-server/docker-compose.yml up -d
         echo "Waiting for Nakama to be healthy..."
         timeout=60
         while [ $timeout -gt 0 ]; do
@@ -44,16 +44,16 @@ tasks:
           timeout=$((timeout - 2))
         done
         echo "Error: Nakama failed to start within 60 seconds"
-        docker compose logs nakama
+        docker compose -f NakamaTest/nakama-server/docker-compose.yml logs nakama
         exit 1
       platforms: [darwin, linux]
     - cmd: |
         powershell -NoProfile -Command "& {
           Write-Host 'Stopping any existing containers...'
-          docker compose down -v 2>&1 | Out-Null
+          docker compose -f NakamaTest/nakama-server/docker-compose.yml down -v 2>&1 | Out-Null
           docker rm -f nakama_unreal_test_nakama nakama_unreal_test_postgres 2>&1 | Out-Null
           Write-Host 'Starting Nakama server...'
-          docker compose up -d
+          docker compose -f NakamaTest/nakama-server/docker-compose.yml up -d
           Write-Host 'Waiting for Nakama to be healthy...'
           \$timeout = 60
           while (\$timeout -gt 0) {
@@ -66,7 +66,7 @@ tasks:
             \$timeout -= 2
           }
           Write-Host 'Error: Nakama failed to start within 60 seconds'
-          docker compose logs nakama
+          docker compose -f NakamaTest/nakama-server/docker-compose.yml logs nakama
           exit 1
         }"
       platforms: [windows]
@@ -74,9 +74,9 @@ tasks:
   stop-nakama:
     desc: 'Stop Nakama server and remove volumes.'
     cmds:
-    - cmd: docker compose down -v
+    - cmd: docker compose -f NakamaTest/nakama-server/docker-compose.yml down -v
       platforms: [darwin, linux]
-    - cmd: docker compose down -v
+    - cmd: docker compose -f NakamaTest/nakama-server/docker-compose.yml down -v
       platforms: [windows]
 
   watch-nakama-logs:
@@ -273,99 +273,6 @@ tasks:
             -noP4 -platform=Linux -targetconfig=Debug \
             -installed -utf8output \
             -build -cook -stage -package -verbose
-      platforms: [linux]
-
-  run-test:
-    desc: 'Run a single test suite (editor mode, no build).'
-    deps:
-    - task: check-unreal-engine
-    vars:
-      TEST_SUITE: '{{.TEST_SUITE | default "NakamaTest.Auth"}}'
-      REPORT_PATH: '{{.REPORT_PATH | default "Reports/NakamaTest"}}'
-    cmds:
-    - cmd: |
-        if [ -z "$UNREAL_ENGINE" ]; then
-            echo "Error: UNREAL_ENGINE is not set!"
-            exit 1
-        fi
-
-        PROJECT="$(pwd)/NakamaTest/NakamaTest.uproject"
-        REPORT_DIR="$(pwd)/{{.REPORT_PATH}}"
-        LOG_FILE="$REPORT_DIR/unreal.log"
-
-        mkdir -p "$REPORT_DIR"
-
-        echo "Running test suite {{.TEST_SUITE}}..."
-        "$UNREAL_ENGINE/Engine/Binaries/Win64/UnrealEditor-Cmd.exe" \
-            "$PROJECT" \
-            -nullrhi \
-            -stdout \
-            -FullStdOutLogOutput \
-            -forcelogflush \
-            -nosplash \
-            -buildmachine \
-            -unattended \
-            -nopause \
-            -nosound \
-            -abslog="$LOG_FILE" \
-            -ReportOutputPath="$REPORT_DIR" \
-            -ExecCmds="Automation RunTests {{.TEST_SUITE}}; Quit"
-      platforms: [windows]
-    - cmd: |
-        if [ -z "$UNREAL_ENGINE" ]; then
-            echo "Error: UNREAL_ENGINE is not set!"
-            exit 1
-        fi
-
-        PROJECT="$(pwd)/NakamaTest/NakamaTest.uproject"
-        REPORT_DIR="$(pwd)/{{.REPORT_PATH}}"
-        LOG_FILE="$REPORT_DIR/unreal.log"
-
-        mkdir -p "$REPORT_DIR"
-
-        echo "Running test suite {{.TEST_SUITE}}..."
-        "$UNREAL_ENGINE/Engine/Binaries/Mac/UnrealEditor.app/Contents/MacOS/UnrealEditor" \
-            "$PROJECT" \
-            -nullrhi \
-            -stdout \
-            -FullStdOutLogOutput \
-            -forcelogflush \
-            -nosplash \
-            -buildmachine \
-            -unattended \
-            -nopause \
-            -nosound \
-            -abslog="$LOG_FILE" \
-            -ReportOutputPath="$REPORT_DIR" \
-            -ExecCmds="Automation RunTests {{.TEST_SUITE}}; Quit"
-      platforms: [darwin]
-    - cmd: |
-        if [ -z "$UNREAL_ENGINE" ]; then
-            echo "Error: UNREAL_ENGINE is not set!"
-            exit 1
-        fi
-
-        PROJECT="$(pwd)/NakamaTest/NakamaTest.uproject"
-        REPORT_DIR="$(pwd)/{{.REPORT_PATH}}"
-        LOG_FILE="$REPORT_DIR/unreal.log"
-
-        mkdir -p "$REPORT_DIR"
-
-        echo "Running test suite {{.TEST_SUITE}}..."
-        "$UNREAL_ENGINE/Engine/Binaries/Linux/UnrealEditor" \
-            "$PROJECT" \
-            -nullrhi \
-            -stdout \
-            -FullStdOutLogOutput \
-            -forcelogflush \
-            -nosplash \
-            -buildmachine \
-            -unattended \
-            -nopause \
-            -nosound \
-            -abslog="$LOG_FILE" \
-            -ReportOutputPath="$REPORT_DIR" \
-            -ExecCmds="Automation RunTests {{.TEST_SUITE}}; Quit"
       platforms: [linux]
 
   build-nakamatest:

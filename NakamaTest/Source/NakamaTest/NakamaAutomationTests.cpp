@@ -8,7 +8,6 @@
 #include "Misc/AutomationTest.h"
 #include "NakamaUnreal.h"
 #include "Misc/Guid.h"
-
 // Error codes from gRPC/Nakama
 namespace NakamaErrorCode
 {
@@ -3075,7 +3074,7 @@ void FNakamaRpcSpec::Define()
 		{
 			Client->RpcFunc(Session,
 				TEXT(""),  // empty ID
-				TEXT("{}"),
+				nullptr,
 				TEXT(""),  // empty http_key (using session auth)
 				[this, Done](const FNakamaRpc& Result)
 				{
@@ -3094,7 +3093,7 @@ void FNakamaRpcSpec::Define()
 		{
 			Client->RpcFunc(Session,
 				TEXT("nonexistent_rpc_function"),
-				TEXT("{}"),
+				nullptr,
 				TEXT(""),  // empty http_key (using session auth)
 				[this, Done](const FNakamaRpc& Result)
 				{
@@ -7525,7 +7524,9 @@ void FNakamaRpcExtendedSpec::Define()
 		LatentIt("should return NOT_FOUND for non-existent RPC", [this](const FDoneDelegate& Done)
 		{
 			// test_echo doesn't exist on server - verify proper error handling
-			FString Payload = TEXT("{\"test\":\"data\",\"number\":42}");
+			TSharedPtr<FJsonObject> Payload = MakeShared<FJsonObject>();
+			Payload->SetStringField(TEXT("test"), TEXT("data"));
+			Payload->SetNumberField(TEXT("number"), 42);
 
 			Client->RpcFunc(Session,
 				TEXT("test_echo"),
@@ -7551,7 +7552,7 @@ void FNakamaRpcExtendedSpec::Define()
 		{
 			Client->RpcFunc(Session,
 				TEXT("test_echo"),
-				TEXT(""),
+				nullptr,
 				TEXT(""),  // HttpKey (optional for client calls)
 				[this, Done](const FNakamaRpc& Result)
 				{
@@ -7575,9 +7576,11 @@ void FNakamaRpcExtendedSpec::Define()
 		LatentIt("should execute RPC with HTTP key (server-to-server)", [this](const FDoneDelegate& Done)
 		{
 			// Use the overloaded RpcFunc with HttpKey instead of Session
+			TSharedPtr<FJsonObject> ServerPayload = MakeShared<FJsonObject>();
+			ServerPayload->SetStringField(TEXT("server"), TEXT("call"));
 			Client->RpcFunc(HttpKey,
 				TEXT("test_echo"),
-				TEXT("{\"server\":\"call\"}"),
+				ServerPayload,
 				[this, Done](const FNakamaRpc& Result)
 				{
 					TestTrue("RPC with HTTP key succeeded", true);
@@ -7606,7 +7609,7 @@ void FNakamaRpcExtendedSpec::Define()
 		{
 			Client->RpcFunc(Session,
 				TEXT("test_error"),
-				TEXT(""),
+				nullptr,
 				TEXT(""),  // HttpKey (optional for client calls)
 				[this, Done](const FNakamaRpc& Result)
 				{
@@ -7618,6 +7621,98 @@ void FNakamaRpcExtendedSpec::Define()
 				[this, Done](const FNakamaError& Error)
 				{
 					TestTrue("Got error as expected", Error.Code != 0 || !Error.Message.IsEmpty());
+					Done.Execute();
+				}
+			);
+		});
+	});
+
+	Describe("RpcFunc.Transform", [this]()
+	{
+		LatentIt("should transform a message", [this](const FDoneDelegate& Done)
+		{
+			TSharedPtr<FJsonObject> Payload = MakeShared<FJsonObject>();
+			Payload->SetStringField(TEXT("message"), TEXT("hello"));
+
+			Client->RpcFunc(Session,
+				TEXT("transform"),
+				Payload,
+				TEXT(""),
+				[this, Done](const FNakamaRpc& Result)
+				{
+					TSharedPtr<FJsonObject> Response;
+					TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(Result.Payload);
+					if (!FJsonSerializer::Deserialize(Reader, Response) || !Response.IsValid())
+					{
+						AddError(TEXT("Failed to parse transform RPC response JSON"));
+						Done.Execute();
+						return;
+					}
+
+					TestEqual("original matches", Response->GetStringField(TEXT("original")), FString(TEXT("hello")));
+					TestEqual("reversed matches", Response->GetStringField(TEXT("reversed")), FString(TEXT("olleh")));
+					TestEqual("upper matches", Response->GetStringField(TEXT("upper")), FString(TEXT("HELLO")));
+					TestEqual("length matches", static_cast<int32>(Response->GetNumberField(TEXT("length"))), 5);
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					AddError(FString::Printf(TEXT("Transform RPC failed: %s"), *Error.Message));
+					Done.Execute();
+				}
+			);
+		});
+
+		LatentIt("should return error for missing message field", [this](const FDoneDelegate& Done)
+		{
+			TSharedPtr<FJsonObject> Payload = MakeShared<FJsonObject>();
+			Payload->SetStringField(TEXT("foo"), TEXT("bar"));
+
+			Client->RpcFunc(Session,
+				TEXT("transform"),
+				Payload,
+				TEXT(""),
+				[this, Done](const FNakamaRpc& Result)
+				{
+					AddError(TEXT("Expected error for missing message field but RPC succeeded"));
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					TestTrue("Got error for missing message field", Error.Code != 0 || !Error.Message.IsEmpty());
+					Done.Execute();
+				}
+			);
+		});
+
+		LatentIt("should transform via HTTP key", [this](const FDoneDelegate& Done)
+		{
+			TSharedPtr<FJsonObject> Payload = MakeShared<FJsonObject>();
+			Payload->SetStringField(TEXT("message"), TEXT("world"));
+
+			Client->RpcFunc(HttpKey,
+				TEXT("transform"),
+				Payload,
+				[this, Done](const FNakamaRpc& Result)
+				{
+					TSharedPtr<FJsonObject> Response;
+					TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(Result.Payload);
+					if (!FJsonSerializer::Deserialize(Reader, Response) || !Response.IsValid())
+					{
+						AddError(TEXT("Failed to parse transform RPC response JSON"));
+						Done.Execute();
+						return;
+					}
+
+					TestEqual("original matches", Response->GetStringField(TEXT("original")), FString(TEXT("world")));
+					TestEqual("reversed matches", Response->GetStringField(TEXT("reversed")), FString(TEXT("dlrow")));
+					TestEqual("upper matches", Response->GetStringField(TEXT("upper")), FString(TEXT("WORLD")));
+					TestEqual("length matches", static_cast<int32>(Response->GetNumberField(TEXT("length"))), 5);
+					Done.Execute();
+				},
+				[this, Done](const FNakamaError& Error)
+				{
+					AddError(FString::Printf(TEXT("Transform RPC via HTTP key failed: %s"), *Error.Message));
 					Done.Execute();
 				}
 			);

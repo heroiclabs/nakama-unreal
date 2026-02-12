@@ -5958,15 +5958,22 @@ void FNakamaClient::MakeRequest(
 	FString BodyString;
 	if (Body.IsValid() && Method != TEXT("GET"))
 	{
+		SCOPE_CYCLE_COUNTER(STAT_Nakama_JsonSerialize);
 		TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&BodyString);
-		{
-			SCOPE_CYCLE_COUNTER(STAT_Nakama_JsonSerialize);
-			FJsonSerializer::Serialize(Body.ToSharedRef(), Writer);
-		}
+		FJsonSerializer::Serialize(Body.ToSharedRef(), Writer);
 	}
+	SendRequest(Endpoint, Method, BodyString, AuthType, SessionToken, OnSuccess, OnError);
+}
 
-	// Capture Self first — ensures the client outlives the async HTTP request.
-	// Also used for all member access below for consistency.
+void FNakamaClient::SendRequest(
+	const FString& Endpoint,
+	const FString& Method,
+	const FString& BodyString,
+	ENakamaRequestAuth AuthType,
+	const FString& SessionToken,
+	TFunction<void(TSharedPtr<FJsonObject>)> OnSuccess,
+	TFunction<void(const FNakamaError&)> OnError)
+{
 	TSharedPtr<FNakamaClient> Self = AsShared();
 
 	SCOPE_CYCLE_COUNTER(STAT_Nakama_MakeRequest_Dispatch);
@@ -5999,7 +6006,6 @@ void FNakamaClient::MakeRequest(
 	case ENakamaRequestAuth::HttpKey:
 		if (!SessionToken.IsEmpty())
 		{
-			// For server-to-server calls, use Basic auth with the HTTP key
 			const FString Auth = FString::Printf(TEXT("%s:"), *SessionToken);
 			Request->SetHeader(TEXT("Authorization"), FString::Printf(TEXT("Basic %s"), *FBase64::Encode(Auth)));
 		}
@@ -10307,20 +10313,19 @@ void FNakamaClient::RpcFunc(
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
 	FString SessionToken = Session.Token;
 
-	TSharedPtr<FJsonObject> Body = MakeShared<FJsonObject>();
+	FString BodyString;
+	if (Payload.IsValid())
 	{
 		FString Condensed;
-		if (Payload.IsValid())
-		{
-			TSharedRef<TJsonWriter<TCHAR, TCondensedJsonPrintPolicy<TCHAR>>> Writer =
-				TJsonWriterFactory<TCHAR, TCondensedJsonPrintPolicy<TCHAR>>::Create(&Condensed);
-			FJsonSerializer::Serialize(Payload.ToSharedRef(), Writer);
-			Writer->Close();
-		}
-		Body->SetStringField(TEXT("payload"), Condensed);
+		TSharedRef<TJsonWriter<TCHAR, TCondensedJsonPrintPolicy<TCHAR>>> Writer =
+			TJsonWriterFactory<TCHAR, TCondensedJsonPrintPolicy<TCHAR>>::Create(&Condensed);
+		FJsonSerializer::Serialize(Payload.ToSharedRef(), Writer);
+		Writer->Close();
+		FString Escaped = Condensed.Replace(TEXT("\\"), TEXT("\\\\")).Replace(TEXT("\""), TEXT("\\\""));
+		BodyString = TEXT("\"") + Escaped + TEXT("\"");
 	}
 
-	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType, SessionToken,
+	SendRequest(Endpoint, TEXT("POST"), BodyString, AuthType, SessionToken,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			FNakamaRpc Result = FNakamaRpc::FromJson(Json);
@@ -10347,20 +10352,19 @@ void FNakamaClient::RpcFunc(
 		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
 	}
 
-	TSharedPtr<FJsonObject> Body = MakeShared<FJsonObject>();
+	FString BodyString;
+	if (Payload.IsValid())
 	{
 		FString Condensed;
-		if (Payload.IsValid())
-		{
-			TSharedRef<TJsonWriter<TCHAR, TCondensedJsonPrintPolicy<TCHAR>>> Writer =
-				TJsonWriterFactory<TCHAR, TCondensedJsonPrintPolicy<TCHAR>>::Create(&Condensed);
-			FJsonSerializer::Serialize(Payload.ToSharedRef(), Writer);
-			Writer->Close();
-		}
-		Body->SetStringField(TEXT("payload"), Condensed);
+		TSharedRef<TJsonWriter<TCHAR, TCondensedJsonPrintPolicy<TCHAR>>> Writer =
+			TJsonWriterFactory<TCHAR, TCondensedJsonPrintPolicy<TCHAR>>::Create(&Condensed);
+		FJsonSerializer::Serialize(Payload.ToSharedRef(), Writer);
+		Writer->Close();
+		FString Escaped = Condensed.Replace(TEXT("\\"), TEXT("\\\\")).Replace(TEXT("\""), TEXT("\\\""));
+		BodyString = TEXT("\"") + Escaped + TEXT("\"");
 	}
 
-	MakeRequest(Endpoint, TEXT("POST"), Body, ENakamaRequestAuth::HttpKey, HttpKey,
+	SendRequest(Endpoint, TEXT("POST"), BodyString, ENakamaRequestAuth::HttpKey, HttpKey,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			FNakamaRpc Result = FNakamaRpc::FromJson(Json);
