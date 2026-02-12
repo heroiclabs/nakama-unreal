@@ -2213,7 +2213,7 @@ public:
 		const FNakamaClientRef& Client,
 		const FNakamaSession& Session,
 		FString Id,
-		FString Payload,
+		const TMap<FString, FString>& Payload,
 		FString HttpKey);
 
 	virtual void Activate() override;
@@ -2222,7 +2222,7 @@ private:
 	FNakamaClientRef Client;
 	FNakamaSession Session;
 	FString StoredId;
-	FString StoredPayload;
+	TMap<FString, FString> StoredPayload;
 	FString StoredHttpKey;
 };
 

@@ -129,7 +129,11 @@ public:
 {{- end }}
 {{- if $hasParams }}
 {{- range $fidx, $field := $requestType.Fields }},
+{{- if and (eq $field.Name $rpc.BodyField) (not (isMessageType $field.Type)) }}
+		const TMap<FString, FString>& {{ $field.Name | pascalCase }}
+{{- else }}
 		{{ getUnrealType $field.Type $field.Repeated }} {{ $field.Name | pascalCase }}
+{{- end }}
 {{- end }}
 {{- range $fidx, $field := $requestType.MapFields }},
 		const {{ getUnrealMapType $field.Type }}& {{ $field.Name | pascalCase }}
@@ -146,7 +150,11 @@ private:
 {{- end }}
 {{- if $hasParams }}
 {{- range $fidx, $field := $requestType.Fields }}
+{{- if and (eq $field.Name $rpc.BodyField) (not (isMessageType $field.Type)) }}
+	TMap<FString, FString> Stored{{ $field.Name | pascalCase }};
+{{- else }}
 	{{ getUnrealFieldType $field.Type $field.Repeated }} Stored{{ $field.Name | pascalCase }};
+{{- end }}
 {{- end }}
 {{- range $fidx, $field := $requestType.MapFields }}
 	{{ getUnrealMapType $field.Type }} Stored{{ $field.Name | pascalCase }};

@@ -10307,7 +10307,20 @@ void FNakamaClient::RpcFunc(
 	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;
 	FString SessionToken = Session.Token;
 
-	MakeRequest(Endpoint, TEXT("POST"), Payload, AuthType, SessionToken,
+	TSharedPtr<FJsonObject> Body = MakeShared<FJsonObject>();
+	{
+		FString Condensed;
+		if (Payload.IsValid())
+		{
+			TSharedRef<TJsonWriter<TCHAR, TCondensedJsonPrintPolicy<TCHAR>>> Writer =
+				TJsonWriterFactory<TCHAR, TCondensedJsonPrintPolicy<TCHAR>>::Create(&Condensed);
+			FJsonSerializer::Serialize(Payload.ToSharedRef(), Writer);
+			Writer->Close();
+		}
+		Body->SetStringField(TEXT("payload"), Condensed);
+	}
+
+	MakeRequest(Endpoint, TEXT("POST"), Body, AuthType, SessionToken,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			FNakamaRpc Result = FNakamaRpc::FromJson(Json);
@@ -10334,7 +10347,20 @@ void FNakamaClient::RpcFunc(
 		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
 	}
 
-	MakeRequest(Endpoint, TEXT("POST"), Payload, ENakamaRequestAuth::HttpKey, HttpKey,
+	TSharedPtr<FJsonObject> Body = MakeShared<FJsonObject>();
+	{
+		FString Condensed;
+		if (Payload.IsValid())
+		{
+			TSharedRef<TJsonWriter<TCHAR, TCondensedJsonPrintPolicy<TCHAR>>> Writer =
+				TJsonWriterFactory<TCHAR, TCondensedJsonPrintPolicy<TCHAR>>::Create(&Condensed);
+			FJsonSerializer::Serialize(Payload.ToSharedRef(), Writer);
+			Writer->Close();
+		}
+		Body->SetStringField(TEXT("payload"), Condensed);
+	}
+
+	MakeRequest(Endpoint, TEXT("POST"), Body, ENakamaRequestAuth::HttpKey, HttpKey,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			FNakamaRpc Result = FNakamaRpc::FromJson(Json);

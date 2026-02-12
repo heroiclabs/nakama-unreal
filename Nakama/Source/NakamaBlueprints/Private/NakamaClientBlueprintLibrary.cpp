@@ -3230,7 +3230,7 @@ UNakamaClientRpcFunc* UNakamaClientRpcFunc::RpcFunc(
 	const FNakamaClientRef& Client,
 	const FNakamaSession& Session,
 	FString Id,
-	FString Payload,
+	const TMap<FString, FString>& Payload,
 	FString HttpKey)
 {
 	UNakamaClientRpcFunc* Action = NewObject<UNakamaClientRpcFunc>();
@@ -3261,7 +3261,15 @@ void UNakamaClientRpcFunc::Activate()
 	ClientPtr->RpcFunc(
 		Session,
 		StoredId,
-		StoredPayload,
+		[&]() -> TSharedPtr<FJsonObject> {
+			if (StoredPayload.Num() == 0) { return nullptr; }
+			TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+			for (const auto& Pair : StoredPayload)
+			{
+				Json->SetStringField(Pair.Key, Pair.Value);
+			}
+			return Json;
+		}(),
 		StoredHttpKey,
 		[this](const FNakamaRpc& Result)
 		{

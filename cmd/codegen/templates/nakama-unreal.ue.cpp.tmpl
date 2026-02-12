@@ -265,11 +265,9 @@ void FNakamaClient::MakeRequest(
 	FString BodyString;
 	if (Body.IsValid() && Method != TEXT("GET"))
 	{
+		SCOPE_CYCLE_COUNTER(STAT_Nakama_JsonSerialize);
 		TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&BodyString);
-		{
-			SCOPE_CYCLE_COUNTER(STAT_Nakama_JsonSerialize);
-			FJsonSerializer::Serialize(Body.ToSharedRef(), Writer);
-		}
+		FJsonSerializer::Serialize(Body.ToSharedRef(), Writer);
 	}
 
 	// Capture Self first — ensures the client outlives the async HTTP request.
@@ -527,7 +525,20 @@ void FNakamaClient::{{ $rpc.Name }}(
 {{- end }}
 {{- if ne $scalarBodyField "" }}
 
-	MakeRequest(Endpoint, TEXT("{{ $rpc.Method }}"), {{ $scalarBodyField }}, AuthType, SessionToken,
+	TSharedPtr<FJsonObject> Body = MakeShared<FJsonObject>();
+	{
+		FString Condensed;
+		if ({{ $scalarBodyField }}.IsValid())
+		{
+			TSharedRef<TJsonWriter<TCHAR, TCondensedJsonPrintPolicy<TCHAR>>> Writer =
+				TJsonWriterFactory<TCHAR, TCondensedJsonPrintPolicy<TCHAR>>::Create(&Condensed);
+			FJsonSerializer::Serialize({{ $scalarBodyField }}.ToSharedRef(), Writer);
+			Writer->Close();
+		}
+		Body->SetStringField(TEXT("{{ $rpc.BodyField }}"), Condensed);
+	}
+
+	MakeRequest(Endpoint, TEXT("{{ $rpc.Method }}"), Body, AuthType, SessionToken,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			{{- if $hasReturn }}
@@ -756,7 +767,20 @@ void FNakamaClient::{{ $rpc.Name }}(
 {{- end }}
 {{- if ne $scalarBodyField2 "" }}
 
-	MakeRequest(Endpoint, TEXT("{{ $rpc.Method }}"), {{ $scalarBodyField2 }}, ENakamaRequestAuth::HttpKey, HttpKey,
+	TSharedPtr<FJsonObject> Body = MakeShared<FJsonObject>();
+	{
+		FString Condensed;
+		if ({{ $scalarBodyField2 }}.IsValid())
+		{
+			TSharedRef<TJsonWriter<TCHAR, TCondensedJsonPrintPolicy<TCHAR>>> Writer =
+				TJsonWriterFactory<TCHAR, TCondensedJsonPrintPolicy<TCHAR>>::Create(&Condensed);
+			FJsonSerializer::Serialize({{ $scalarBodyField2 }}.ToSharedRef(), Writer);
+			Writer->Close();
+		}
+		Body->SetStringField(TEXT("{{ $rpc.BodyField }}"), Condensed);
+	}
+
+	MakeRequest(Endpoint, TEXT("{{ $rpc.Method }}"), Body, ENakamaRequestAuth::HttpKey, HttpKey,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			{{- if $hasReturn }}

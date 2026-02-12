@@ -59,7 +59,11 @@ UNakamaClient{{ $rpc.Name }}* UNakamaClient{{ $rpc.Name }}::{{ $rpc.Name }}(
 {{- end }}
 {{- if $hasParams }}
 {{- range $fidx, $field := $requestType.Fields }},
+{{- if and (eq $field.Name $rpc.BodyField) (not (isMessageType $field.Type)) }}
+	const TMap<FString, FString>& {{ $field.Name | pascalCase }}
+{{- else }}
 	{{ getUnrealType $field.Type $field.Repeated }} {{ $field.Name | pascalCase }}
+{{- end }}
 {{- end }}
 {{- range $fidx, $field := $requestType.MapFields }},
 	const {{ getUnrealMapType $field.Type }}& {{ $field.Name | pascalCase }}
@@ -104,7 +108,19 @@ void UNakamaClient{{ $rpc.Name }}::Activate()
 {{- end }}
 {{- if $hasParams }}
 {{- range $fidx, $field := $requestType.Fields }}
+{{- if and (eq $field.Name $rpc.BodyField) (not (isMessageType $field.Type)) }}
+		[&]() -> TSharedPtr<FJsonObject> {
+			if (Stored{{ $field.Name | pascalCase }}.Num() == 0) { return nullptr; }
+			TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+			for (const auto& Pair : Stored{{ $field.Name | pascalCase }})
+			{
+				Json->SetStringField(Pair.Key, Pair.Value);
+			}
+			return Json;
+		}(),
+{{- else }}
 		Stored{{ $field.Name | pascalCase }},
+{{- end }}
 {{- end }}
 {{- range $fidx, $field := $requestType.MapFields }}
 		Stored{{ $field.Name | pascalCase }},
