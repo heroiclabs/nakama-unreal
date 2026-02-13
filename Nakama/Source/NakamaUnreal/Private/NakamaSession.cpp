@@ -196,9 +196,7 @@ UNakamaSession* UNakamaSession::RestoreSession(FString Token, FString RefreshTok
 	// Check if serialization was successful
 	if (bSerializationSuccessful)
 	{
-		UNakamaSession* ResultSession = NewObject<UNakamaSession>();
-		ResultSession->SetupSession(JsonString);
-		return ResultSession;
+		return UNakamaSession::SetupSession(JsonString);
 	}
 	else
 	{
