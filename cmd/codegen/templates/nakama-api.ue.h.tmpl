@@ -191,18 +191,28 @@ enum class ENakamaRequestAuth : uint8
 };
 
 /** Low-level API client configuration. */
+USTRUCT(BlueprintType)
 struct NAKAMAAPI_API FNakamaApiConfig
 {
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Nakama")
 	FString ServerKey;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Nakama")
 	FString Host;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Nakama")
 	int32 Port = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Nakama")
 	bool bUseSSL = false;
-	bool bEnableDebug = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Nakama")
 	float Timeout = 10.0f;
 
 	FString GetBaseUrl() const;
 };
-using FNakamaApiConfigPtr = TSharedPtr<FNakamaApiConfig>;
 
 /** Low-level Nakama API: data types + free functions for HTTP RPCs (callback-based). */
 namespace NakamaApi
@@ -221,7 +231,7 @@ namespace NakamaApi
 
 	/** {{ $rpc.Comment }} */
 	NAKAMAAPI_API void {{ $rpc.Name }}(
-		FNakamaApiConfigPtr Config,
+		const FNakamaApiConfig& Config,
 		{{- if $needsSession }}
 		FNakamaSessionPtr Session,
 		{{- end }}
@@ -248,7 +258,7 @@ namespace NakamaApi
 
 	/** {{ $rpc.Comment }} (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void {{ $rpc.Name }}(
-		FNakamaApiConfigPtr Config,
+		const FNakamaApiConfig& Config,
 		const FString& HttpKey,
 		{{- if $hasParams -}}
 		{{- range $fidx, $field := $requestType.Fields }}

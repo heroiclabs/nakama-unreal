@@ -62,7 +62,7 @@ public:
 	static FString GenerateShortId();
 
 protected:
-	FNakamaApiConfigPtr NakamaClient;
+	FNakamaApiConfig NakamaClient;
 	FNakamaSessionPtr Session;
 
 	// Test configuration

@@ -12,8 +12,7 @@ void UNakamaSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
 
-	Client = MakeShared<FNakamaApiConfig>(FNakamaApiConfig{ServerKey, Host, Port, bUseSSL, true});
-	Client->Timeout = 10.0f;
+	Client = FNakamaApiConfig{ServerKey, Host, Port, bUseSSL, 10.0f};
 
 	AccountVM = NewObject<UVM_NakamaAccount>(this);
 
@@ -38,7 +37,7 @@ void UNakamaSubsystem::Deinitialize()
 	FWorldDelegates::OnWorldCleanup.Remove(WorldCleanupHandle);
 
 	HideMenu();
-	Client.Reset();
+	Client = {};
 	Super::Deinitialize();
 }
 
@@ -127,7 +126,7 @@ void UNakamaSubsystem::HideMenu()
 
 void UNakamaSubsystem::AuthenticateDevice()
 {
-	if (!Client)
+	if (Client.ServerKey.IsEmpty())
 	{
 		return;
 	}
@@ -203,7 +202,7 @@ void UNakamaSubsystem::SetActiveSessionIndex(int32 Index)
 
 void UNakamaSubsystem::GetAccount()
 {
-	if (!Client)
+	if (Client.ServerKey.IsEmpty())
 	{
 		return;
 	}

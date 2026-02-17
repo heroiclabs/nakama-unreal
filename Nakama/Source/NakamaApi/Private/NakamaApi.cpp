@@ -6053,7 +6053,7 @@ namespace
 {
 
 void DoHttpRequest(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	const FString& Endpoint,
 	const FString& Method,
 	const FString& BodyString,
@@ -6068,7 +6068,7 @@ void DoHttpRequest(
 	INC_DWORD_STAT(STAT_Nakama_ActiveRequests);
 	INC_DWORD_STAT(STAT_Nakama_TotalRequests);
 
-	const FString Url = Config->GetBaseUrl() + Endpoint;
+	const FString Url = Config.GetBaseUrl() + Endpoint;
 
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> Request = FHttpModule::Get().CreateRequest();
 	Request->SetURL(Url);
@@ -6080,7 +6080,7 @@ void DoHttpRequest(
 	{
 	case ENakamaRequestAuth::Basic:
 		{
-			const FString Auth = FString::Printf(TEXT("%s:"), *Config->ServerKey);
+			const FString Auth = FString::Printf(TEXT("%s:"), *Config.ServerKey);
 			Request->SetHeader(TEXT("Authorization"), FString::Printf(TEXT("Basic %s"), *FBase64::Encode(Auth)));
 		}
 		break;
@@ -6105,21 +6105,17 @@ void DoHttpRequest(
 	if (!BodyString.IsEmpty() && Method != TEXT("GET"))
 	{
 		Request->SetContentAsString(BodyString);
-
-		if (Config->bEnableDebug)
-		{
-			UE_LOG(LogNakama, Log, TEXT("Request %s %s: %s"), *Method, *Url, *BodyString);
-		}
+		UE_LOG(LogNakama, Log, TEXT("Request %s %s: %s"), *Method, *Url, *BodyString);
 	}
-	else if (Config->bEnableDebug)
+	else
 	{
 		UE_LOG(LogNakama, Log, TEXT("Request %s %s"), *Method, *Url);
 	}
 
-	Request->SetTimeout(Config->Timeout);
+	Request->SetTimeout(Config.Timeout);
 
 	Request->OnProcessRequestComplete().BindLambda(
-		[OnSuccess, OnError, Config, CancellationToken](FHttpRequestPtr Req, FHttpResponsePtr Res, bool bSuccess)
+		[OnSuccess, OnError, CancellationToken](FHttpRequestPtr Req, FHttpResponsePtr Res, bool bSuccess)
 		{
 			SCOPE_CYCLE_COUNTER(STAT_Nakama_OnResponse);
 			TRACE_CPUPROFILER_EVENT_SCOPE(Nakama_OnResponse);
@@ -6147,10 +6143,7 @@ void DoHttpRequest(
 			const int32 Code = Res->GetResponseCode();
 			const FString Content = Res->GetContentAsString();
 
-			if (Config->bEnableDebug)
-			{
-				UE_LOG(LogNakama, Log, TEXT("Response %d: %s"), Code, *Content);
-			}
+			UE_LOG(LogNakama, Log, TEXT("Response %d: %s"), Code, *Content);
 
 			if (Code < 200 || Code >= 300)
 			{
@@ -6196,7 +6189,7 @@ void DoHttpRequest(
 }
 
 void SendRequest(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	const FString& Endpoint,
 	const FString& Method,
 	const FString& BodyString,
@@ -6232,7 +6225,7 @@ void SendRequest(
 }
 
 void MakeRequest(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	const FString& Endpoint,
 	const FString& Method,
 	const TSharedPtr<FJsonObject>& Body,
@@ -6256,7 +6249,7 @@ void MakeRequest(
 } // anonymous namespace
 
 void NakamaApi::AddFriends(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	FNakamaSessionPtr Session,
 	const TArray<FString>& Ids,
 	const TArray<FString>& Usernames,
@@ -6298,7 +6291,7 @@ void NakamaApi::AddFriends(
 }
 
 void NakamaApi::AddFriends(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	const FString& HttpKey,
 	const TArray<FString>& Ids,
 	const TArray<FString>& Usernames,
@@ -6338,7 +6331,7 @@ void NakamaApi::AddFriends(
 }
 
 void NakamaApi::AddGroupUsers(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	FNakamaSessionPtr Session,
 	FString GroupId,
 	const TArray<FString>& UserIds,
@@ -6372,7 +6365,7 @@ void NakamaApi::AddGroupUsers(
 }
 
 void NakamaApi::AddGroupUsers(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	const FString& HttpKey,
 	FString GroupId,
 	const TArray<FString>& UserIds,
@@ -6404,7 +6397,7 @@ void NakamaApi::AddGroupUsers(
 }
 
 void NakamaApi::SessionRefresh(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	FString Token,
 	const TMap<FString, FString>& Vars,
 	TFunction<void(const FNakamaSession&)> OnSuccess,
@@ -6447,7 +6440,7 @@ void NakamaApi::SessionRefresh(
 }
 
 void NakamaApi::SessionLogout(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	FNakamaSessionPtr Session,
 	FString Token,
 	FString RefreshToken,
@@ -6485,7 +6478,7 @@ void NakamaApi::SessionLogout(
 }
 
 void NakamaApi::SessionLogout(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	const FString& HttpKey,
 	FString Token,
 	FString RefreshToken,
@@ -6521,7 +6514,7 @@ void NakamaApi::SessionLogout(
 }
 
 void NakamaApi::AuthenticateApple(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	FNakamaAccountApple Account,
 	bool Create,
 	FString Username,
@@ -6557,7 +6550,7 @@ void NakamaApi::AuthenticateApple(
 }
 
 void NakamaApi::AuthenticateCustom(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	FNakamaAccountCustom Account,
 	bool Create,
 	FString Username,
@@ -6593,7 +6586,7 @@ void NakamaApi::AuthenticateCustom(
 }
 
 void NakamaApi::AuthenticateDevice(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	FNakamaAccountDevice Account,
 	bool Create,
 	FString Username,
@@ -6629,7 +6622,7 @@ void NakamaApi::AuthenticateDevice(
 }
 
 void NakamaApi::AuthenticateEmail(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	FNakamaAccountEmail Account,
 	bool Create,
 	FString Username,
@@ -6665,7 +6658,7 @@ void NakamaApi::AuthenticateEmail(
 }
 
 void NakamaApi::AuthenticateFacebook(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	FNakamaAccountFacebook Account,
 	bool Create,
 	FString Username,
@@ -6703,7 +6696,7 @@ void NakamaApi::AuthenticateFacebook(
 }
 
 void NakamaApi::AuthenticateFacebookInstantGame(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	FNakamaAccountFacebookInstantGame Account,
 	bool Create,
 	FString Username,
@@ -6739,7 +6732,7 @@ void NakamaApi::AuthenticateFacebookInstantGame(
 }
 
 void NakamaApi::AuthenticateGameCenter(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	FNakamaAccountGameCenter Account,
 	bool Create,
 	FString Username,
@@ -6775,7 +6768,7 @@ void NakamaApi::AuthenticateGameCenter(
 }
 
 void NakamaApi::AuthenticateGoogle(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	FNakamaAccountGoogle Account,
 	bool Create,
 	FString Username,
@@ -6811,7 +6804,7 @@ void NakamaApi::AuthenticateGoogle(
 }
 
 void NakamaApi::AuthenticateSteam(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	FNakamaAccountSteam Account,
 	bool Create,
 	FString Username,
@@ -6849,7 +6842,7 @@ void NakamaApi::AuthenticateSteam(
 }
 
 void NakamaApi::BanGroupUsers(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	FNakamaSessionPtr Session,
 	FString GroupId,
 	const TArray<FString>& UserIds,
@@ -6883,7 +6876,7 @@ void NakamaApi::BanGroupUsers(
 }
 
 void NakamaApi::BanGroupUsers(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	const FString& HttpKey,
 	FString GroupId,
 	const TArray<FString>& UserIds,
@@ -6915,7 +6908,7 @@ void NakamaApi::BanGroupUsers(
 }
 
 void NakamaApi::BlockFriends(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	FNakamaSessionPtr Session,
 	const TArray<FString>& Ids,
 	const TArray<FString>& Usernames,
@@ -6952,7 +6945,7 @@ void NakamaApi::BlockFriends(
 }
 
 void NakamaApi::BlockFriends(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	const FString& HttpKey,
 	const TArray<FString>& Ids,
 	const TArray<FString>& Usernames,
@@ -6987,7 +6980,7 @@ void NakamaApi::BlockFriends(
 }
 
 void NakamaApi::CreateGroup(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	FNakamaSessionPtr Session,
 	FString Name,
 	FString Description,
@@ -7040,7 +7033,7 @@ void NakamaApi::CreateGroup(
 }
 
 void NakamaApi::CreateGroup(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	const FString& HttpKey,
 	FString Name,
 	FString Description,
@@ -7091,7 +7084,7 @@ void NakamaApi::CreateGroup(
 }
 
 void NakamaApi::DeleteAccount(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	FNakamaSessionPtr Session,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
@@ -7113,7 +7106,7 @@ void NakamaApi::DeleteAccount(
 }
 
 void NakamaApi::DeleteAccount(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	const FString& HttpKey,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
@@ -7133,7 +7126,7 @@ void NakamaApi::DeleteAccount(
 }
 
 void NakamaApi::DeleteFriends(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	FNakamaSessionPtr Session,
 	const TArray<FString>& Ids,
 	const TArray<FString>& Usernames,
@@ -7170,7 +7163,7 @@ void NakamaApi::DeleteFriends(
 }
 
 void NakamaApi::DeleteFriends(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	const FString& HttpKey,
 	const TArray<FString>& Ids,
 	const TArray<FString>& Usernames,
@@ -7205,7 +7198,7 @@ void NakamaApi::DeleteFriends(
 }
 
 void NakamaApi::DeleteGroup(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	FNakamaSessionPtr Session,
 	FString GroupId,
 	TFunction<void()> OnSuccess,
@@ -7234,7 +7227,7 @@ void NakamaApi::DeleteGroup(
 }
 
 void NakamaApi::DeleteGroup(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	const FString& HttpKey,
 	FString GroupId,
 	TFunction<void()> OnSuccess,
@@ -7261,7 +7254,7 @@ void NakamaApi::DeleteGroup(
 }
 
 void NakamaApi::DeleteLeaderboardRecord(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	FNakamaSessionPtr Session,
 	FString LeaderboardId,
 	TFunction<void()> OnSuccess,
@@ -7290,7 +7283,7 @@ void NakamaApi::DeleteLeaderboardRecord(
 }
 
 void NakamaApi::DeleteLeaderboardRecord(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	const FString& HttpKey,
 	FString LeaderboardId,
 	TFunction<void()> OnSuccess,
@@ -7317,7 +7310,7 @@ void NakamaApi::DeleteLeaderboardRecord(
 }
 
 void NakamaApi::DeleteNotifications(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	FNakamaSessionPtr Session,
 	const TArray<FString>& Ids,
 	TFunction<void()> OnSuccess,
@@ -7349,7 +7342,7 @@ void NakamaApi::DeleteNotifications(
 }
 
 void NakamaApi::DeleteNotifications(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	const FString& HttpKey,
 	const TArray<FString>& Ids,
 	TFunction<void()> OnSuccess,
@@ -7379,7 +7372,7 @@ void NakamaApi::DeleteNotifications(
 }
 
 void NakamaApi::DeleteTournamentRecord(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	FNakamaSessionPtr Session,
 	FString TournamentId,
 	TFunction<void()> OnSuccess,
@@ -7408,7 +7401,7 @@ void NakamaApi::DeleteTournamentRecord(
 }
 
 void NakamaApi::DeleteTournamentRecord(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	const FString& HttpKey,
 	FString TournamentId,
 	TFunction<void()> OnSuccess,
@@ -7435,7 +7428,7 @@ void NakamaApi::DeleteTournamentRecord(
 }
 
 void NakamaApi::DeleteStorageObjects(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	FNakamaSessionPtr Session,
 	const TArray<FNakamaDeleteStorageObjectId>& ObjectIds,
 	TFunction<void()> OnSuccess,
@@ -7473,7 +7466,7 @@ void NakamaApi::DeleteStorageObjects(
 }
 
 void NakamaApi::DeleteStorageObjects(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	const FString& HttpKey,
 	const TArray<FNakamaDeleteStorageObjectId>& ObjectIds,
 	TFunction<void()> OnSuccess,
@@ -7509,7 +7502,7 @@ void NakamaApi::DeleteStorageObjects(
 }
 
 void NakamaApi::Event(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	FNakamaSessionPtr Session,
 	FString Name,
 	FString Timestamp,
@@ -7556,7 +7549,7 @@ void NakamaApi::Event(
 }
 
 void NakamaApi::Event(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	const FString& HttpKey,
 	FString Name,
 	FString Timestamp,
@@ -7601,7 +7594,7 @@ void NakamaApi::Event(
 }
 
 void NakamaApi::GetAccount(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	FNakamaSessionPtr Session,
 	TFunction<void(const FNakamaAccount&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
@@ -7624,7 +7617,7 @@ void NakamaApi::GetAccount(
 }
 
 void NakamaApi::GetAccount(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	const FString& HttpKey,
 	TFunction<void(const FNakamaAccount&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
@@ -7645,7 +7638,7 @@ void NakamaApi::GetAccount(
 }
 
 void NakamaApi::GetUsers(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	FNakamaSessionPtr Session,
 	const TArray<FString>& Ids,
 	const TArray<FString>& Usernames,
@@ -7688,7 +7681,7 @@ void NakamaApi::GetUsers(
 }
 
 void NakamaApi::GetUsers(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	const FString& HttpKey,
 	const TArray<FString>& Ids,
 	const TArray<FString>& Usernames,
@@ -7729,7 +7722,7 @@ void NakamaApi::GetUsers(
 }
 
 void NakamaApi::GetSubscription(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	FNakamaSessionPtr Session,
 	FString ProductId,
 	TFunction<void(const FNakamaValidatedSubscription&)> OnSuccess,
@@ -7759,7 +7752,7 @@ void NakamaApi::GetSubscription(
 }
 
 void NakamaApi::GetSubscription(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	const FString& HttpKey,
 	FString ProductId,
 	TFunction<void(const FNakamaValidatedSubscription&)> OnSuccess,
@@ -7787,7 +7780,7 @@ void NakamaApi::GetSubscription(
 }
 
 void NakamaApi::GetMatchmakerStats(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	FNakamaSessionPtr Session,
 	TFunction<void(const FNakamaMatchmakerStats&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
@@ -7810,7 +7803,7 @@ void NakamaApi::GetMatchmakerStats(
 }
 
 void NakamaApi::GetMatchmakerStats(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	const FString& HttpKey,
 	TFunction<void(const FNakamaMatchmakerStats&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
@@ -7831,7 +7824,7 @@ void NakamaApi::GetMatchmakerStats(
 }
 
 void NakamaApi::Healthcheck(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	FNakamaSessionPtr Session,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
@@ -7853,7 +7846,7 @@ void NakamaApi::Healthcheck(
 }
 
 void NakamaApi::Healthcheck(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	const FString& HttpKey,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
@@ -7873,7 +7866,7 @@ void NakamaApi::Healthcheck(
 }
 
 void NakamaApi::ImportFacebookFriends(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	FNakamaSessionPtr Session,
 	FNakamaAccountFacebook Account,
 	bool Reset,
@@ -7904,7 +7897,7 @@ void NakamaApi::ImportFacebookFriends(
 }
 
 void NakamaApi::ImportFacebookFriends(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	const FString& HttpKey,
 	FNakamaAccountFacebook Account,
 	bool Reset,
@@ -7933,7 +7926,7 @@ void NakamaApi::ImportFacebookFriends(
 }
 
 void NakamaApi::ImportSteamFriends(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	FNakamaSessionPtr Session,
 	FNakamaAccountSteam Account,
 	bool Reset,
@@ -7964,7 +7957,7 @@ void NakamaApi::ImportSteamFriends(
 }
 
 void NakamaApi::ImportSteamFriends(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	const FString& HttpKey,
 	FNakamaAccountSteam Account,
 	bool Reset,
@@ -7993,7 +7986,7 @@ void NakamaApi::ImportSteamFriends(
 }
 
 void NakamaApi::JoinGroup(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	FNakamaSessionPtr Session,
 	FString GroupId,
 	TFunction<void()> OnSuccess,
@@ -8022,7 +8015,7 @@ void NakamaApi::JoinGroup(
 }
 
 void NakamaApi::JoinGroup(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	const FString& HttpKey,
 	FString GroupId,
 	TFunction<void()> OnSuccess,
@@ -8049,7 +8042,7 @@ void NakamaApi::JoinGroup(
 }
 
 void NakamaApi::JoinTournament(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	FNakamaSessionPtr Session,
 	FString TournamentId,
 	TFunction<void()> OnSuccess,
@@ -8078,7 +8071,7 @@ void NakamaApi::JoinTournament(
 }
 
 void NakamaApi::JoinTournament(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	const FString& HttpKey,
 	FString TournamentId,
 	TFunction<void()> OnSuccess,
@@ -8105,7 +8098,7 @@ void NakamaApi::JoinTournament(
 }
 
 void NakamaApi::KickGroupUsers(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	FNakamaSessionPtr Session,
 	FString GroupId,
 	const TArray<FString>& UserIds,
@@ -8139,7 +8132,7 @@ void NakamaApi::KickGroupUsers(
 }
 
 void NakamaApi::KickGroupUsers(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	const FString& HttpKey,
 	FString GroupId,
 	const TArray<FString>& UserIds,
@@ -8171,7 +8164,7 @@ void NakamaApi::KickGroupUsers(
 }
 
 void NakamaApi::LeaveGroup(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	FNakamaSessionPtr Session,
 	FString GroupId,
 	TFunction<void()> OnSuccess,
@@ -8200,7 +8193,7 @@ void NakamaApi::LeaveGroup(
 }
 
 void NakamaApi::LeaveGroup(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	const FString& HttpKey,
 	FString GroupId,
 	TFunction<void()> OnSuccess,
@@ -8227,7 +8220,7 @@ void NakamaApi::LeaveGroup(
 }
 
 void NakamaApi::LinkApple(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	FNakamaSessionPtr Session,
 	FString Token,
 	const TMap<FString, FString>& Vars,
@@ -8270,7 +8263,7 @@ void NakamaApi::LinkApple(
 }
 
 void NakamaApi::LinkApple(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	const FString& HttpKey,
 	FString Token,
 	const TMap<FString, FString>& Vars,
@@ -8311,7 +8304,7 @@ void NakamaApi::LinkApple(
 }
 
 void NakamaApi::LinkCustom(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	FNakamaSessionPtr Session,
 	FString Id,
 	const TMap<FString, FString>& Vars,
@@ -8354,7 +8347,7 @@ void NakamaApi::LinkCustom(
 }
 
 void NakamaApi::LinkCustom(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	const FString& HttpKey,
 	FString Id,
 	const TMap<FString, FString>& Vars,
@@ -8395,7 +8388,7 @@ void NakamaApi::LinkCustom(
 }
 
 void NakamaApi::LinkDevice(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	FNakamaSessionPtr Session,
 	FString Id,
 	const TMap<FString, FString>& Vars,
@@ -8438,7 +8431,7 @@ void NakamaApi::LinkDevice(
 }
 
 void NakamaApi::LinkDevice(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	const FString& HttpKey,
 	FString Id,
 	const TMap<FString, FString>& Vars,
@@ -8479,7 +8472,7 @@ void NakamaApi::LinkDevice(
 }
 
 void NakamaApi::LinkEmail(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	FNakamaSessionPtr Session,
 	FString Email,
 	FString Password,
@@ -8527,7 +8520,7 @@ void NakamaApi::LinkEmail(
 }
 
 void NakamaApi::LinkEmail(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	const FString& HttpKey,
 	FString Email,
 	FString Password,
@@ -8573,7 +8566,7 @@ void NakamaApi::LinkEmail(
 }
 
 void NakamaApi::LinkFacebook(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	FNakamaSessionPtr Session,
 	FNakamaAccountFacebook Account,
 	bool Sync,
@@ -8604,7 +8597,7 @@ void NakamaApi::LinkFacebook(
 }
 
 void NakamaApi::LinkFacebook(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	const FString& HttpKey,
 	FNakamaAccountFacebook Account,
 	bool Sync,
@@ -8633,7 +8626,7 @@ void NakamaApi::LinkFacebook(
 }
 
 void NakamaApi::LinkFacebookInstantGame(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	FNakamaSessionPtr Session,
 	FString SignedPlayerInfo,
 	const TMap<FString, FString>& Vars,
@@ -8676,7 +8669,7 @@ void NakamaApi::LinkFacebookInstantGame(
 }
 
 void NakamaApi::LinkFacebookInstantGame(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	const FString& HttpKey,
 	FString SignedPlayerInfo,
 	const TMap<FString, FString>& Vars,
@@ -8717,7 +8710,7 @@ void NakamaApi::LinkFacebookInstantGame(
 }
 
 void NakamaApi::LinkGameCenter(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	FNakamaSessionPtr Session,
 	FString PlayerId,
 	FString BundleId,
@@ -8782,7 +8775,7 @@ void NakamaApi::LinkGameCenter(
 }
 
 void NakamaApi::LinkGameCenter(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	const FString& HttpKey,
 	FString PlayerId,
 	FString BundleId,
@@ -8845,7 +8838,7 @@ void NakamaApi::LinkGameCenter(
 }
 
 void NakamaApi::LinkGoogle(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	FNakamaSessionPtr Session,
 	FString Token,
 	const TMap<FString, FString>& Vars,
@@ -8888,7 +8881,7 @@ void NakamaApi::LinkGoogle(
 }
 
 void NakamaApi::LinkGoogle(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	const FString& HttpKey,
 	FString Token,
 	const TMap<FString, FString>& Vars,
@@ -8929,7 +8922,7 @@ void NakamaApi::LinkGoogle(
 }
 
 void NakamaApi::LinkSteam(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	FNakamaSessionPtr Session,
 	FNakamaAccountSteam Account,
 	bool Sync,
@@ -8961,7 +8954,7 @@ void NakamaApi::LinkSteam(
 }
 
 void NakamaApi::LinkSteam(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	const FString& HttpKey,
 	FNakamaAccountSteam Account,
 	bool Sync,
@@ -8991,7 +8984,7 @@ void NakamaApi::LinkSteam(
 }
 
 void NakamaApi::ListChannelMessages(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	FNakamaSessionPtr Session,
 	FString ChannelId,
 	int32 Limit,
@@ -9033,7 +9026,7 @@ void NakamaApi::ListChannelMessages(
 }
 
 void NakamaApi::ListChannelMessages(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	const FString& HttpKey,
 	FString ChannelId,
 	int32 Limit,
@@ -9073,7 +9066,7 @@ void NakamaApi::ListChannelMessages(
 }
 
 void NakamaApi::ListFriends(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	FNakamaSessionPtr Session,
 	int32 Limit,
 	int32 State,
@@ -9116,7 +9109,7 @@ void NakamaApi::ListFriends(
 }
 
 void NakamaApi::ListFriends(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	const FString& HttpKey,
 	int32 Limit,
 	int32 State,
@@ -9157,7 +9150,7 @@ void NakamaApi::ListFriends(
 }
 
 void NakamaApi::ListFriendsOfFriends(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	FNakamaSessionPtr Session,
 	int32 Limit,
 	FString Cursor,
@@ -9195,7 +9188,7 @@ void NakamaApi::ListFriendsOfFriends(
 }
 
 void NakamaApi::ListFriendsOfFriends(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	const FString& HttpKey,
 	int32 Limit,
 	FString Cursor,
@@ -9231,7 +9224,7 @@ void NakamaApi::ListFriendsOfFriends(
 }
 
 void NakamaApi::ListGroups(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	FNakamaSessionPtr Session,
 	FString Name,
 	FString Cursor,
@@ -9286,7 +9279,7 @@ void NakamaApi::ListGroups(
 }
 
 void NakamaApi::ListGroups(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	const FString& HttpKey,
 	FString Name,
 	FString Cursor,
@@ -9339,7 +9332,7 @@ void NakamaApi::ListGroups(
 }
 
 void NakamaApi::ListGroupUsers(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	FNakamaSessionPtr Session,
 	FString GroupId,
 	int32 Limit,
@@ -9384,7 +9377,7 @@ void NakamaApi::ListGroupUsers(
 }
 
 void NakamaApi::ListGroupUsers(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	const FString& HttpKey,
 	FString GroupId,
 	int32 Limit,
@@ -9427,7 +9420,7 @@ void NakamaApi::ListGroupUsers(
 }
 
 void NakamaApi::ListLeaderboardRecords(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	FNakamaSessionPtr Session,
 	FString LeaderboardId,
 	const TArray<FString>& OwnerIds,
@@ -9477,7 +9470,7 @@ void NakamaApi::ListLeaderboardRecords(
 }
 
 void NakamaApi::ListLeaderboardRecords(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	const FString& HttpKey,
 	FString LeaderboardId,
 	const TArray<FString>& OwnerIds,
@@ -9525,7 +9518,7 @@ void NakamaApi::ListLeaderboardRecords(
 }
 
 void NakamaApi::ListLeaderboardRecordsAroundOwner(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	FNakamaSessionPtr Session,
 	FString LeaderboardId,
 	int32 Limit,
@@ -9572,7 +9565,7 @@ void NakamaApi::ListLeaderboardRecordsAroundOwner(
 }
 
 void NakamaApi::ListLeaderboardRecordsAroundOwner(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	const FString& HttpKey,
 	FString LeaderboardId,
 	int32 Limit,
@@ -9617,7 +9610,7 @@ void NakamaApi::ListLeaderboardRecordsAroundOwner(
 }
 
 void NakamaApi::ListMatches(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	FNakamaSessionPtr Session,
 	int32 Limit,
 	bool Authoritative,
@@ -9672,7 +9665,7 @@ void NakamaApi::ListMatches(
 }
 
 void NakamaApi::ListMatches(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	const FString& HttpKey,
 	int32 Limit,
 	bool Authoritative,
@@ -9725,7 +9718,7 @@ void NakamaApi::ListMatches(
 }
 
 void NakamaApi::ListParties(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	FNakamaSessionPtr Session,
 	int32 Limit,
 	bool Open,
@@ -9770,7 +9763,7 @@ void NakamaApi::ListParties(
 }
 
 void NakamaApi::ListParties(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	const FString& HttpKey,
 	int32 Limit,
 	bool Open,
@@ -9813,7 +9806,7 @@ void NakamaApi::ListParties(
 }
 
 void NakamaApi::ListNotifications(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	FNakamaSessionPtr Session,
 	int32 Limit,
 	FString CacheableCursor,
@@ -9851,7 +9844,7 @@ void NakamaApi::ListNotifications(
 }
 
 void NakamaApi::ListNotifications(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	const FString& HttpKey,
 	int32 Limit,
 	FString CacheableCursor,
@@ -9887,7 +9880,7 @@ void NakamaApi::ListNotifications(
 }
 
 void NakamaApi::ListStorageObjects(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	FNakamaSessionPtr Session,
 	FString UserId,
 	FString Collection,
@@ -9932,7 +9925,7 @@ void NakamaApi::ListStorageObjects(
 }
 
 void NakamaApi::ListStorageObjects(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	const FString& HttpKey,
 	FString UserId,
 	FString Collection,
@@ -9975,7 +9968,7 @@ void NakamaApi::ListStorageObjects(
 }
 
 void NakamaApi::ListSubscriptions(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	FNakamaSessionPtr Session,
 	int32 Limit,
 	FString Cursor,
@@ -10011,7 +10004,7 @@ void NakamaApi::ListSubscriptions(
 }
 
 void NakamaApi::ListSubscriptions(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	const FString& HttpKey,
 	int32 Limit,
 	FString Cursor,
@@ -10045,7 +10038,7 @@ void NakamaApi::ListSubscriptions(
 }
 
 void NakamaApi::ListTournaments(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	FNakamaSessionPtr Session,
 	int32 CategoryStart,
 	int32 CategoryEnd,
@@ -10103,7 +10096,7 @@ void NakamaApi::ListTournaments(
 }
 
 void NakamaApi::ListTournaments(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	const FString& HttpKey,
 	int32 CategoryStart,
 	int32 CategoryEnd,
@@ -10159,7 +10152,7 @@ void NakamaApi::ListTournaments(
 }
 
 void NakamaApi::ListTournamentRecords(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	FNakamaSessionPtr Session,
 	FString TournamentId,
 	const TArray<FString>& OwnerIds,
@@ -10209,7 +10202,7 @@ void NakamaApi::ListTournamentRecords(
 }
 
 void NakamaApi::ListTournamentRecords(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	const FString& HttpKey,
 	FString TournamentId,
 	const TArray<FString>& OwnerIds,
@@ -10257,7 +10250,7 @@ void NakamaApi::ListTournamentRecords(
 }
 
 void NakamaApi::ListTournamentRecordsAroundOwner(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	FNakamaSessionPtr Session,
 	FString TournamentId,
 	int32 Limit,
@@ -10304,7 +10297,7 @@ void NakamaApi::ListTournamentRecordsAroundOwner(
 }
 
 void NakamaApi::ListTournamentRecordsAroundOwner(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	const FString& HttpKey,
 	FString TournamentId,
 	int32 Limit,
@@ -10349,7 +10342,7 @@ void NakamaApi::ListTournamentRecordsAroundOwner(
 }
 
 void NakamaApi::ListUserGroups(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	FNakamaSessionPtr Session,
 	FString UserId,
 	int32 Limit,
@@ -10394,7 +10387,7 @@ void NakamaApi::ListUserGroups(
 }
 
 void NakamaApi::ListUserGroups(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	const FString& HttpKey,
 	FString UserId,
 	int32 Limit,
@@ -10437,7 +10430,7 @@ void NakamaApi::ListUserGroups(
 }
 
 void NakamaApi::PromoteGroupUsers(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	FNakamaSessionPtr Session,
 	FString GroupId,
 	const TArray<FString>& UserIds,
@@ -10471,7 +10464,7 @@ void NakamaApi::PromoteGroupUsers(
 }
 
 void NakamaApi::PromoteGroupUsers(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	const FString& HttpKey,
 	FString GroupId,
 	const TArray<FString>& UserIds,
@@ -10503,7 +10496,7 @@ void NakamaApi::PromoteGroupUsers(
 }
 
 void NakamaApi::DemoteGroupUsers(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	FNakamaSessionPtr Session,
 	FString GroupId,
 	const TArray<FString>& UserIds,
@@ -10537,7 +10530,7 @@ void NakamaApi::DemoteGroupUsers(
 }
 
 void NakamaApi::DemoteGroupUsers(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	const FString& HttpKey,
 	FString GroupId,
 	const TArray<FString>& UserIds,
@@ -10569,7 +10562,7 @@ void NakamaApi::DemoteGroupUsers(
 }
 
 void NakamaApi::ReadStorageObjects(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	FNakamaSessionPtr Session,
 	const TArray<FNakamaReadStorageObjectId>& ObjectIds,
 	TFunction<void(const FNakamaStorageObjects&)> OnSuccess,
@@ -10608,7 +10601,7 @@ void NakamaApi::ReadStorageObjects(
 }
 
 void NakamaApi::ReadStorageObjects(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	const FString& HttpKey,
 	const TArray<FNakamaReadStorageObjectId>& ObjectIds,
 	TFunction<void(const FNakamaStorageObjects&)> OnSuccess,
@@ -10645,7 +10638,7 @@ void NakamaApi::ReadStorageObjects(
 }
 
 void NakamaApi::RpcFunc(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	FNakamaSessionPtr Session,
 	FString Id,
 	TSharedPtr<FJsonObject> Payload,
@@ -10693,7 +10686,7 @@ void NakamaApi::RpcFunc(
 }
 
 void NakamaApi::RpcFunc(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	const FString& HttpKey,
 	FString Id,
 	TSharedPtr<FJsonObject> Payload,
@@ -10734,7 +10727,7 @@ void NakamaApi::RpcFunc(
 }
 
 void NakamaApi::UnlinkApple(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	FNakamaSessionPtr Session,
 	FString Token,
 	const TMap<FString, FString>& Vars,
@@ -10777,7 +10770,7 @@ void NakamaApi::UnlinkApple(
 }
 
 void NakamaApi::UnlinkApple(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	const FString& HttpKey,
 	FString Token,
 	const TMap<FString, FString>& Vars,
@@ -10818,7 +10811,7 @@ void NakamaApi::UnlinkApple(
 }
 
 void NakamaApi::UnlinkCustom(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	FNakamaSessionPtr Session,
 	FString Id,
 	const TMap<FString, FString>& Vars,
@@ -10861,7 +10854,7 @@ void NakamaApi::UnlinkCustom(
 }
 
 void NakamaApi::UnlinkCustom(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	const FString& HttpKey,
 	FString Id,
 	const TMap<FString, FString>& Vars,
@@ -10902,7 +10895,7 @@ void NakamaApi::UnlinkCustom(
 }
 
 void NakamaApi::UnlinkDevice(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	FNakamaSessionPtr Session,
 	FString Id,
 	const TMap<FString, FString>& Vars,
@@ -10945,7 +10938,7 @@ void NakamaApi::UnlinkDevice(
 }
 
 void NakamaApi::UnlinkDevice(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	const FString& HttpKey,
 	FString Id,
 	const TMap<FString, FString>& Vars,
@@ -10986,7 +10979,7 @@ void NakamaApi::UnlinkDevice(
 }
 
 void NakamaApi::UnlinkEmail(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	FNakamaSessionPtr Session,
 	FString Email,
 	FString Password,
@@ -11034,7 +11027,7 @@ void NakamaApi::UnlinkEmail(
 }
 
 void NakamaApi::UnlinkEmail(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	const FString& HttpKey,
 	FString Email,
 	FString Password,
@@ -11080,7 +11073,7 @@ void NakamaApi::UnlinkEmail(
 }
 
 void NakamaApi::UnlinkFacebook(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	FNakamaSessionPtr Session,
 	FString Token,
 	const TMap<FString, FString>& Vars,
@@ -11123,7 +11116,7 @@ void NakamaApi::UnlinkFacebook(
 }
 
 void NakamaApi::UnlinkFacebook(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	const FString& HttpKey,
 	FString Token,
 	const TMap<FString, FString>& Vars,
@@ -11164,7 +11157,7 @@ void NakamaApi::UnlinkFacebook(
 }
 
 void NakamaApi::UnlinkFacebookInstantGame(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	FNakamaSessionPtr Session,
 	FString SignedPlayerInfo,
 	const TMap<FString, FString>& Vars,
@@ -11207,7 +11200,7 @@ void NakamaApi::UnlinkFacebookInstantGame(
 }
 
 void NakamaApi::UnlinkFacebookInstantGame(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	const FString& HttpKey,
 	FString SignedPlayerInfo,
 	const TMap<FString, FString>& Vars,
@@ -11248,7 +11241,7 @@ void NakamaApi::UnlinkFacebookInstantGame(
 }
 
 void NakamaApi::UnlinkGameCenter(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	FNakamaSessionPtr Session,
 	FString PlayerId,
 	FString BundleId,
@@ -11313,7 +11306,7 @@ void NakamaApi::UnlinkGameCenter(
 }
 
 void NakamaApi::UnlinkGameCenter(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	const FString& HttpKey,
 	FString PlayerId,
 	FString BundleId,
@@ -11376,7 +11369,7 @@ void NakamaApi::UnlinkGameCenter(
 }
 
 void NakamaApi::UnlinkGoogle(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	FNakamaSessionPtr Session,
 	FString Token,
 	const TMap<FString, FString>& Vars,
@@ -11419,7 +11412,7 @@ void NakamaApi::UnlinkGoogle(
 }
 
 void NakamaApi::UnlinkGoogle(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	const FString& HttpKey,
 	FString Token,
 	const TMap<FString, FString>& Vars,
@@ -11460,7 +11453,7 @@ void NakamaApi::UnlinkGoogle(
 }
 
 void NakamaApi::UnlinkSteam(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	FNakamaSessionPtr Session,
 	FString Token,
 	const TMap<FString, FString>& Vars,
@@ -11503,7 +11496,7 @@ void NakamaApi::UnlinkSteam(
 }
 
 void NakamaApi::UnlinkSteam(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	const FString& HttpKey,
 	FString Token,
 	const TMap<FString, FString>& Vars,
@@ -11544,7 +11537,7 @@ void NakamaApi::UnlinkSteam(
 }
 
 void NakamaApi::UpdateAccount(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	FNakamaSessionPtr Session,
 	FString Username,
 	FString DisplayName,
@@ -11602,7 +11595,7 @@ void NakamaApi::UpdateAccount(
 }
 
 void NakamaApi::UpdateAccount(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	const FString& HttpKey,
 	FString Username,
 	FString DisplayName,
@@ -11658,7 +11651,7 @@ void NakamaApi::UpdateAccount(
 }
 
 void NakamaApi::UpdateGroup(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	FNakamaSessionPtr Session,
 	FString GroupId,
 	FString Name,
@@ -11714,7 +11707,7 @@ void NakamaApi::UpdateGroup(
 }
 
 void NakamaApi::UpdateGroup(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	const FString& HttpKey,
 	FString GroupId,
 	FString Name,
@@ -11768,7 +11761,7 @@ void NakamaApi::UpdateGroup(
 }
 
 void NakamaApi::ValidatePurchaseApple(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	FNakamaSessionPtr Session,
 	FString Receipt,
 	bool Persist,
@@ -11804,7 +11797,7 @@ void NakamaApi::ValidatePurchaseApple(
 }
 
 void NakamaApi::ValidatePurchaseApple(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	const FString& HttpKey,
 	FString Receipt,
 	bool Persist,
@@ -11838,7 +11831,7 @@ void NakamaApi::ValidatePurchaseApple(
 }
 
 void NakamaApi::ValidateSubscriptionApple(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	FNakamaSessionPtr Session,
 	FString Receipt,
 	bool Persist,
@@ -11874,7 +11867,7 @@ void NakamaApi::ValidateSubscriptionApple(
 }
 
 void NakamaApi::ValidateSubscriptionApple(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	const FString& HttpKey,
 	FString Receipt,
 	bool Persist,
@@ -11908,7 +11901,7 @@ void NakamaApi::ValidateSubscriptionApple(
 }
 
 void NakamaApi::ValidatePurchaseGoogle(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	FNakamaSessionPtr Session,
 	FString Purchase,
 	bool Persist,
@@ -11944,7 +11937,7 @@ void NakamaApi::ValidatePurchaseGoogle(
 }
 
 void NakamaApi::ValidatePurchaseGoogle(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	const FString& HttpKey,
 	FString Purchase,
 	bool Persist,
@@ -11978,7 +11971,7 @@ void NakamaApi::ValidatePurchaseGoogle(
 }
 
 void NakamaApi::ValidateSubscriptionGoogle(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	FNakamaSessionPtr Session,
 	FString Receipt,
 	bool Persist,
@@ -12014,7 +12007,7 @@ void NakamaApi::ValidateSubscriptionGoogle(
 }
 
 void NakamaApi::ValidateSubscriptionGoogle(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	const FString& HttpKey,
 	FString Receipt,
 	bool Persist,
@@ -12048,7 +12041,7 @@ void NakamaApi::ValidateSubscriptionGoogle(
 }
 
 void NakamaApi::ValidatePurchaseHuawei(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	FNakamaSessionPtr Session,
 	FString Purchase,
 	FString Signature,
@@ -12089,7 +12082,7 @@ void NakamaApi::ValidatePurchaseHuawei(
 }
 
 void NakamaApi::ValidatePurchaseHuawei(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	const FString& HttpKey,
 	FString Purchase,
 	FString Signature,
@@ -12128,7 +12121,7 @@ void NakamaApi::ValidatePurchaseHuawei(
 }
 
 void NakamaApi::ValidatePurchaseFacebookInstant(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	FNakamaSessionPtr Session,
 	FString SignedRequest,
 	bool Persist,
@@ -12164,7 +12157,7 @@ void NakamaApi::ValidatePurchaseFacebookInstant(
 }
 
 void NakamaApi::ValidatePurchaseFacebookInstant(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	const FString& HttpKey,
 	FString SignedRequest,
 	bool Persist,
@@ -12198,7 +12191,7 @@ void NakamaApi::ValidatePurchaseFacebookInstant(
 }
 
 void NakamaApi::WriteLeaderboardRecord(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	FNakamaSessionPtr Session,
 	FString LeaderboardId,
 	FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite Record,
@@ -12230,7 +12223,7 @@ void NakamaApi::WriteLeaderboardRecord(
 }
 
 void NakamaApi::WriteLeaderboardRecord(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	const FString& HttpKey,
 	FString LeaderboardId,
 	FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite Record,
@@ -12260,7 +12253,7 @@ void NakamaApi::WriteLeaderboardRecord(
 }
 
 void NakamaApi::WriteStorageObjects(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	FNakamaSessionPtr Session,
 	const TArray<FNakamaWriteStorageObject>& Objects,
 	TFunction<void(const FNakamaStorageObjectAcks&)> OnSuccess,
@@ -12299,7 +12292,7 @@ void NakamaApi::WriteStorageObjects(
 }
 
 void NakamaApi::WriteStorageObjects(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	const FString& HttpKey,
 	const TArray<FNakamaWriteStorageObject>& Objects,
 	TFunction<void(const FNakamaStorageObjectAcks&)> OnSuccess,
@@ -12336,7 +12329,7 @@ void NakamaApi::WriteStorageObjects(
 }
 
 void NakamaApi::WriteTournamentRecord(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	FNakamaSessionPtr Session,
 	FString TournamentId,
 	FNakamaWriteTournamentRecordRequest_TournamentRecordWrite Record,
@@ -12368,7 +12361,7 @@ void NakamaApi::WriteTournamentRecord(
 }
 
 void NakamaApi::WriteTournamentRecord(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	const FString& HttpKey,
 	FString TournamentId,
 	FNakamaWriteTournamentRecordRequest_TournamentRecordWrite Record,

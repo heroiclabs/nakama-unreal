@@ -31,7 +31,7 @@ DEFINE_LOG_CATEGORY_STATIC(LogNakamaProfile, Log, All);
 BEGIN_DEFINE_SPEC(FNakamaProfilingMemorySpec, "NakamaTest.Profiling.Memory",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaApiConfigPtr Client;
+	FNakamaApiConfig Client;
 	FNakamaSessionPtr Session;
 
 	static const FString ServerKey;
@@ -55,8 +55,7 @@ void FNakamaProfilingMemorySpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = MakeShared<FNakamaApiConfig>(FNakamaApiConfig{ServerKey, Host, Port, false, false});
-		Client->Timeout = 10.0f;
+		Client = FNakamaApiConfig{ServerKey, Host, Port, false, 10.0f};
 	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
@@ -80,7 +79,7 @@ void FNakamaProfilingMemorySpec::Define()
 
 	AfterEach([this]()
 	{
-		Client.Reset();
+		Client = {};
 	});
 
 	Describe("ClientLifecycle", [this]()
@@ -94,8 +93,8 @@ void FNakamaProfilingMemorySpec::Define()
 			constexpr int32 NumClients = 100;
 			for (int32 i = 0; i < NumClients; ++i)
 			{
-				FNakamaApiConfigPtr TempClient = MakeShared<FNakamaApiConfig>(FNakamaApiConfig{ServerKey, Host, Port, false, false});
-				TempClient.Reset();
+				FNakamaApiConfig TempClient = FNakamaApiConfig{ServerKey, Host, Port, false};
+				TempClient = {};
 			}
 
 			CollectGarbage(GARBAGE_COLLECTION_KEEPFLAGS);
@@ -200,13 +199,12 @@ void FNakamaProfilingMemorySpec::Define()
 
 		LatentIt("should clean up Blueprint actions", [this](const FDoneDelegate& Done)
 		{
-			FNakamaClientRef ClientRef(Client);
-			constexpr int32 NumActions = 20;
+						constexpr int32 NumActions = 20;
 			TSharedPtr<int32> ActivatedCount = MakeShared<int32>(0);
 
 			for (int32 i = 0; i < NumActions; ++i)
 			{
-				auto* Action = UNakamaClientHealthcheck::Healthcheck(nullptr, ClientRef, *Session);
+				auto* Action = UNakamaClientHealthcheck::Healthcheck(nullptr, Client, *Session);
 				Action->AddToRoot();
 				Action->Activate();
 
@@ -241,7 +239,7 @@ void FNakamaProfilingMemorySpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaProfilingPerformanceSpec, "NakamaTest.Profiling.Performance",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaApiConfigPtr Client;
+	FNakamaApiConfig Client;
 	FNakamaSessionPtr Session;
 
 	static const FString ServerKey;
@@ -259,8 +257,7 @@ void FNakamaProfilingPerformanceSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = MakeShared<FNakamaApiConfig>(FNakamaApiConfig{ServerKey, Host, Port, false, false});
-		Client->Timeout = 10.0f;
+		Client = FNakamaApiConfig{ServerKey, Host, Port, false, 10.0f};
 	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
@@ -284,7 +281,7 @@ void FNakamaProfilingPerformanceSpec::Define()
 
 	AfterEach([this]()
 	{
-		Client.Reset();
+		Client = {};
 	});
 
 	Describe("Latency", [this]()
@@ -297,7 +294,7 @@ void FNakamaProfilingPerformanceSpec::Define()
 
 			struct FSequentialRequester : TSharedFromThis<FSequentialRequester>
 			{
-				FNakamaApiConfigPtr Client;
+				FNakamaApiConfig Client;
 				FNakamaSessionPtr Session;
 				TSharedPtr<TArray<double>> Latencies;
 				TSharedPtr<int32> CompletedCount;
@@ -458,7 +455,7 @@ void FNakamaProfilingPerformanceSpec::Define()
 			const double StartTime = FPlatformTime::Seconds();
 			for (int32 i = 0; i < NumIterations; ++i)
 			{
-				FNakamaApiConfigPtr TempClient = MakeShared<FNakamaApiConfig>(FNakamaApiConfig{ServerKey, Host, Port, false, false});
+				FNakamaApiConfig TempClient = FNakamaApiConfig{ServerKey, Host, Port, false};
 			}
 			const double Elapsed = (FPlatformTime::Seconds() - StartTime) * 1000000.0;
 
@@ -473,13 +470,12 @@ void FNakamaProfilingPerformanceSpec::Define()
 	{
 		LatentIt("should measure BP action dispatch cost", [this](const FDoneDelegate& Done)
 		{
-			FNakamaClientRef ClientRef(Client);
-
+			
 			// Measure the C++ call as baseline
 			const double CppStart = FPlatformTime::Seconds();
 
 			NakamaApi::GetAccount(Client, Session,
-				[this, CppStart, ClientRef, Done](const FNakamaAccount& CppResult)
+				[this, CppStart, Done](const FNakamaAccount& CppResult)
 				{
 					const double CppElapsed = (FPlatformTime::Seconds() - CppStart) * 1000.0;
 
@@ -487,7 +483,7 @@ void FNakamaProfilingPerformanceSpec::Define()
 					TSharedPtr<double> BpStart = MakeShared<double>(0.0);
 					TSharedPtr<double> BpElapsed = MakeShared<double>(0.0);
 
-					auto* Action = UNakamaClientGetAccount::GetAccount(nullptr, ClientRef, *Session);
+					auto* Action = UNakamaClientGetAccount::GetAccount(nullptr, Client, *Session);
 					Action->AddToRoot();
 
 					// Can't bind dynamic delegates to lambdas directly, so we time from
@@ -534,7 +530,7 @@ void FNakamaProfilingPerformanceSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaProfilingStressSpec, "NakamaTest.Profiling.Stress",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaApiConfigPtr Client;
+	FNakamaApiConfig Client;
 	FNakamaSessionPtr Session;
 
 	static const FString ServerKey;
@@ -552,8 +548,7 @@ void FNakamaProfilingStressSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = MakeShared<FNakamaApiConfig>(FNakamaApiConfig{ServerKey, Host, Port, false, false});
-		Client->Timeout = 15.0f;
+		Client = FNakamaApiConfig{ServerKey, Host, Port, false, 15.0f};
 	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
@@ -577,7 +572,7 @@ void FNakamaProfilingStressSpec::Define()
 
 	AfterEach([this]()
 	{
-		Client.Reset();
+		Client = {};
 	});
 
 	Describe("MassRequests", [this]()
@@ -664,8 +659,7 @@ void FNakamaProfilingStressSpec::Define()
 	{
 		LatentIt("should handle abandoned requests gracefully", [this](const FDoneDelegate& Done)
 		{
-			FNakamaApiConfigPtr TempClient = MakeShared<FNakamaApiConfig>(FNakamaApiConfig{ServerKey, Host, Port, false, false});
-			TempClient->Timeout = 10.0f;
+			FNakamaApiConfig TempClient = FNakamaApiConfig{ServerKey, Host, Port, false, 10.0f};
 
 			FNakamaAccountCustom Account;
 			Account.Id = GenerateId();
@@ -685,7 +679,7 @@ void FNakamaProfilingStressSpec::Define()
 					);
 
 					// Release our reference — AsShared() in MakeRequest keeps client alive
-					TempClient.Reset();
+					TempClient = {};
 				},
 				[this, Done](const FNakamaError& Error)
 				{
@@ -703,8 +697,7 @@ void FNakamaProfilingStressSpec::Define()
 
 			for (int32 i = 0; i < NumClients; ++i)
 			{
-				FNakamaApiConfigPtr IsoClient = MakeShared<FNakamaApiConfig>(FNakamaApiConfig{ServerKey, Host, Port, false, false});
-				IsoClient->Timeout = 10.0f;
+				FNakamaApiConfig IsoClient = FNakamaApiConfig{ServerKey, Host, Port, false, 10.0f};
 
 				FNakamaAccountCustom Account;
 				Account.Id = GenerateId();
@@ -766,6 +759,8 @@ void FNakamaProfilingStressSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaProfilingLeakSpec, "NakamaTest.Profiling.LeakDetection",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
+	FNakamaApiConfig Client;
+
 	static const FString ServerKey;
 	static const FString Host;
 	static constexpr int32 Port = 7350;
@@ -785,19 +780,13 @@ const FString FNakamaProfilingLeakSpec::Host = TEXT("127.0.0.1");
 
 void FNakamaProfilingLeakSpec::Define()
 {
+	BeforeEach([this]()
+	{
+		Client = FNakamaApiConfig{ServerKey, Host, Port, false, 10.0f};
+	});
+
 	Describe("SharedPointers", [this]()
 	{
-		It("should release shared pointers to zero", [this]()
-		{
-			TWeakPtr<FNakamaApiConfig> WeakClient;
-			{
-				FNakamaApiConfigPtr Client = MakeShared<FNakamaApiConfig>(FNakamaApiConfig{ServerKey, Host, Port, false, false});
-				WeakClient = Client;
-				TestTrue("WeakPtr should be valid while shared exists", WeakClient.IsValid());
-			}
-			TestFalse("WeakPtr should be invalid after shared is released", WeakClient.IsValid());
-		});
-
 		It("should not leak sessions", [this]()
 		{
 			CollectGarbage(GARBAGE_COLLECTION_KEEPFLAGS);
@@ -836,15 +825,11 @@ void FNakamaProfilingLeakSpec::Define()
 	{
 		LatentIt("should detect UObject leaks for BP actions", [this](const FDoneDelegate& Done)
 		{
-			FNakamaApiConfigPtr Client = MakeShared<FNakamaApiConfig>(FNakamaApiConfig{ServerKey, Host, Port, false, false});
-			Client->Timeout = 10.0f;
-			FNakamaClientRef ClientRef(Client);
-
-			FNakamaAccountCustom Account;
+				FNakamaAccountCustom Account;
 			Account.Id = GenerateId();
 
 			NakamaApi::AuthenticateCustom(Client, Account, true, TEXT(""),
-				[this, Client, ClientRef, Done](const FNakamaSession& Session)
+				[this, Done](const FNakamaSession& Session)
 				{
 					constexpr int32 NumActions = 50;
 					TSharedPtr<int32> CompletedCount = MakeShared<int32>(0);
@@ -853,7 +838,7 @@ void FNakamaProfilingLeakSpec::Define()
 
 					for (int32 i = 0; i < NumActions; ++i)
 					{
-						auto* Action = UNakamaClientHealthcheck::Healthcheck(nullptr, ClientRef, Session);
+						auto* Action = UNakamaClientHealthcheck::Healthcheck(nullptr, Client, Session);
 						Action->AddToRoot();
 						WeakRefs->Add(Action);
 						Action->Activate();
@@ -937,12 +922,12 @@ void FNakamaProfilingDiagnosticsSpec::Define()
 
 		It("should report Nakama client defaults", [this]()
 		{
-			FNakamaApiConfigPtr TestClient = MakeShared<FNakamaApiConfig>(FNakamaApiConfig{TEXT("defaultkey"), TEXT("127.0.0.1"), 7350, false, false});
+			FNakamaApiConfig TestClient = FNakamaApiConfig{TEXT("defaultkey"), TEXT("127.0.0.1"), 7350, false};
 
 			UE_LOG(LogNakamaProfile, Log, TEXT("[Profiling.Diagnostics] NakamaClient:"));
-			UE_LOG(LogNakamaProfile, Log, TEXT("  DefaultTimeout=%.1f"), TestClient->Timeout);
+			UE_LOG(LogNakamaProfile, Log, TEXT("  DefaultTimeout=%.1f"), TestClient.Timeout);
 
-			TestTrue("Client should have positive timeout", TestClient->Timeout > 0.0f);
+			TestTrue("Client should have positive timeout", TestClient.Timeout > 0.0f);
 		});
 	});
 }

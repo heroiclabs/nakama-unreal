@@ -20,18 +20,6 @@
 #include "Containers/Ticker.h"
 #include "Modules/ModuleManager.h"
 
-FNakamaClientPtr Nakama::CreateClient(
-	const FString& ServerKey,
-	const FString& Host,
-	int32 Port,
-	bool bUseSSL,
-	bool bEnableDebug)
-{
-	FNakamaClientPtr Client = MakeShared<FNakamaClient>();
-	Client->ApiConfig = MakeShared<FNakamaApiConfig>(FNakamaApiConfig{ServerKey, Host, Port, bUseSSL, bEnableDebug});
-	return Client;
-}
-
 bool Nakama::IsTransientError(const FNakamaError& Error)
 {
 	switch (Error.Code)
@@ -57,16 +45,16 @@ namespace
 
 /** Optionally refresh the session before calling the RPC. */
 void MaybeRefreshThenCall(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FNakamaSessionPtr Session,
 	TFunction<void()> OnReady,
 	TFunction<void(const FNakamaError&)> OnError,
 	FNakamaCancellationTokenPtr CancellationToken)
 {
-	if (!Client->bAutoRefreshSession
+	if (!Client.bAutoRefreshSession
 		|| !Session.IsValid()
 		|| Session->RefreshToken.IsEmpty()
-		|| !Session->IsExpired(Client->AutoRefreshBufferSeconds))
+		|| !Session->IsExpired(Client.AutoRefreshBufferSeconds))
 	{
 		OnReady();
 		return;
@@ -82,15 +70,15 @@ void MaybeRefreshThenCall(
 	}
 
 	NakamaApi::SessionRefresh(
-		Client->ApiConfig,
+		Client.ApiConfig,
 		Session->RefreshToken,
 		{},
 		[Client, Session, OnReady](const FNakamaSession& RefreshedSession)
 		{
 			Session->Update(RefreshedSession.Token, RefreshedSession.RefreshToken);
-			if (Client->OnSessionRefreshed)
+			if (Client.OnSessionRefreshed)
 			{
-				Client->OnSessionRefreshed(*Session);
+				Client.OnSessionRefreshed(*Session);
 			}
 			OnReady();
 		},
@@ -119,7 +107,7 @@ void MaybeRefreshThenCall(
 {{- $resultType := asyncResultType $returnType }}
 
 TNakamaFuture<{{ $resultType }}> Nakama::{{ $rpc.Name }}(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	{{- if $needsSession }}
 	FNakamaSessionPtr Session,
 	{{- end }}
@@ -141,7 +129,7 @@ TNakamaFuture<{{ $resultType }}> Nakama::{{ $rpc.Name }}(
 	TFuture<TNakamaResult<{{ $resultType }}>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -190,7 +178,7 @@ TNakamaFuture<{{ $resultType }}> Nakama::{{ $rpc.Name }}(
 				CancellationToken]()
 			{
 				NakamaApi::{{ $rpc.Name }}(
-					Client->ApiConfig,
+					Client.ApiConfig,
 					Session,
 					{{- if $hasParams -}}
 					{{- range $fidx, $field := $requestType.Fields }}
@@ -222,7 +210,7 @@ TNakamaFuture<{{ $resultType }}> Nakama::{{ $rpc.Name }}(
 			CancellationToken);
 {{- else }}
 		NakamaApi::{{ $rpc.Name }}(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			{{- if $hasParams -}}
 			{{- range $fidx, $field := $requestType.Fields }}
 			{{ $field.Name | pascalCase }},
@@ -258,7 +246,7 @@ TNakamaFuture<{{ $resultType }}> Nakama::{{ $rpc.Name }}(
 {{- if $needsSession }}
 
 TNakamaFuture<{{ $resultType }}> Nakama::{{ $rpc.Name }}(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	const FString& HttpKey,
 	{{- if $hasParams -}}
 	{{- range $fidx, $field := $requestType.Fields }}
@@ -280,7 +268,7 @@ TNakamaFuture<{{ $resultType }}> Nakama::{{ $rpc.Name }}(
 	TFuture<TNakamaResult<{{ $resultType }}>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -318,7 +306,7 @@ TNakamaFuture<{{ $resultType }}> Nakama::{{ $rpc.Name }}(
 		CancellationToken]()
 	{
 		NakamaApi::{{ $rpc.Name }}(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			HttpKey,
 			{{- if $hasParams -}}
 			{{- range $fidx, $field := $requestType.Fields }}

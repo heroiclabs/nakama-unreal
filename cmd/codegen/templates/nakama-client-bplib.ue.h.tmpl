@@ -26,25 +26,6 @@
 #include "NakamaClientBlueprintLibrary.generated.h"
 
 // ============================================================================
-// Blueprint-compatible client reference
-// ============================================================================
-
-USTRUCT(BlueprintType)
-struct NAKAMABLUEPRINTS_API FNakamaClientRef
-{
-	GENERATED_BODY()
-
-	FNakamaClientRef() = default;
-	FNakamaClientRef(FNakamaApiConfigPtr InConfig) : Config(InConfig) {}
-
-	bool IsValid() const { return Config.IsValid(); }
-	FNakamaApiConfigPtr GetConfig() const { return Config; }
-
-private:
-	FNakamaApiConfigPtr Config;
-};
-
-// ============================================================================
 // Dynamic delegates for async actions
 // ============================================================================
 
@@ -55,37 +36,6 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnNakamaSuccess);
 {{- range $idx, $typeName := uniqueReturnTypes $.Rpcs }}
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakama{{ $typeName }}, const FNakama{{ $typeName }}&, Result);
 {{- end }}
-
-// ============================================================================
-// Blueprint Function Library
-// ============================================================================
-
-/**
- * Blueprint Function Library for Nakama client operations.
- */
-UCLASS(meta=(ScriptName="NakamaLibrary"), MinimalAPI)
-class UNakamaBlueprintLibrary : public UBlueprintFunctionLibrary
-{
-	GENERATED_BODY()
-
-public:
-	/**
-	 * Creates a default client to interact with Nakama server.
-	 */
-	UFUNCTION(BlueprintCallable, Category = "Nakama|Client")
-	static NAKAMABLUEPRINTS_API FNakamaClientRef CreateDefaultClient(
-		const FString& ServerKey = TEXT("defaultkey"),
-		const FString& Host = TEXT("localhost"),
-		int32 Port = 7350,
-		bool UseSSL = false,
-		bool EnableDebug = true);
-
-	/**
-	 * Checks if a client reference is valid.
-	 */
-	UFUNCTION(BlueprintPure, Category = "Nakama|Client")
-	static NAKAMABLUEPRINTS_API bool IsValidClient(const FNakamaClientRef& Client);
-};
 
 // ============================================================================
 // Async Action Classes (one per RPC)
@@ -123,7 +73,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "{{ $rpc.Name }}"), Category = "Nakama|Client")
 	static UNakamaClient{{ $rpc.Name }}* {{ $rpc.Name }}(
 		UObject* WorldContextObject,
-		const FNakamaClientRef& Client
+		FNakamaApiConfig Client
 {{- if $needsSession }},
 		const FNakamaSession& Session
 {{- end }}
@@ -143,7 +93,7 @@ public:
 	virtual void Activate() override;
 
 private:
-	FNakamaClientRef Client;
+	FNakamaApiConfig Client;
 
 {{- if $needsSession }}
 	FNakamaSession Session;

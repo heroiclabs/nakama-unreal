@@ -189,7 +189,7 @@ struct NAKAMAUNREAL_API FNakamaRetryConfiguration
  */
 struct NAKAMAUNREAL_API FNakamaClient
 {
-	FNakamaApiConfigPtr ApiConfig;
+	FNakamaApiConfig ApiConfig;
 	FNakamaRetryConfiguration RetryConfiguration;
 	bool bAutoRefreshSession = true;
 	int64 AutoRefreshBufferSeconds = 300;
@@ -197,10 +197,9 @@ struct NAKAMAUNREAL_API FNakamaClient
 	/** Called after a session is automatically refreshed, so callers can persist the updated session. */
 	TFunction<void(const FNakamaSession&)> OnSessionRefreshed;
 
-	void SetTimeout(float InTimeout) { if (ApiConfig) { ApiConfig->Timeout = InTimeout; } }
-	float GetTimeout() const { return ApiConfig ? ApiConfig->Timeout : 10.0f; }
+	void SetTimeout(float InTimeout) { ApiConfig.Timeout = InTimeout; }
+	float GetTimeout() const { return ApiConfig.Timeout; }
 };
-using FNakamaClientPtr = TSharedPtr<FNakamaClient>;
 
 /**
  * High-level Nakama API: free functions with retry logic + session auto-refresh.
@@ -211,14 +210,6 @@ using FNakamaClientPtr = TSharedPtr<FNakamaClient>;
  */
 namespace Nakama
 {
-	/** Create a client with default configuration. */
-	NAKAMAUNREAL_API FNakamaClientPtr CreateClient(
-		const FString& ServerKey,
-		const FString& Host = TEXT("127.0.0.1"),
-		int32 Port = 7350,
-		bool bUseSSL = false,
-		bool bEnableDebug = false);
-
 	/** Returns true if the error code is considered transient (eligible for retry). */
 	NAKAMAUNREAL_API bool IsTransientError(const FNakamaError& Error);
 
@@ -238,7 +229,7 @@ namespace Nakama
 
 	/** {{ $rpc.Comment }} */
 	NAKAMAUNREAL_API TNakamaFuture<{{ $resultType }}> {{ $rpc.Name }}(
-		FNakamaClientPtr Client,
+		FNakamaClient Client,
 		{{- if $needsSession }}
 		FNakamaSessionPtr Session,
 		{{- end }}
@@ -259,7 +250,7 @@ namespace Nakama
 
 	/** {{ $rpc.Comment }} (Server-to-server with HTTP key) */
 	NAKAMAUNREAL_API TNakamaFuture<{{ $resultType }}> {{ $rpc.Name }}(
-		FNakamaClientPtr Client,
+		FNakamaClient Client,
 		const FString& HttpKey,
 		{{- if $hasParams -}}
 		{{- range $fidx, $field := $requestType.Fields }}

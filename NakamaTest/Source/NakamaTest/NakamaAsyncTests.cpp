@@ -28,7 +28,7 @@
 BEGIN_DEFINE_SPEC(FNakamaAsyncAuthSpec, "NakamaTest.Async.Auth",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientPtr Client;
+	FNakamaClient Client;
 	FNakamaSessionPtr Session;
 	FString TestCustomId;
 	FString TestDeviceId;
@@ -50,17 +50,13 @@ void FNakamaAsyncAuthSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = Nakama::CreateClient(ServerKey, Host, Port, false, true);
-		Client->SetTimeout(10.0f);
+		Client = FNakamaClient{FNakamaApiConfig{ServerKey, Host, Port, false, 10.0f}};
 		TestCustomId = GenerateId();
 		TestDeviceId = GenerateId();
 		TestEmail = FString::Printf(TEXT("test_%s@example.com"), *GenerateShortId());
 	});
 
-	AfterEach([this]()
-	{
-		Client.Reset();
-	});
+
 
 	Describe("CustomAuth", [this]()
 	{
@@ -263,7 +259,7 @@ void FNakamaAsyncAuthSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAsyncAccountSpec, "NakamaTest.Async.Account",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientPtr Client;
+	FNakamaClient Client;
 	FNakamaSessionPtr Session;
 	FString UserId;
 
@@ -283,8 +279,7 @@ void FNakamaAsyncAccountSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = Nakama::CreateClient(ServerKey, Host, Port, false, true);
-		Client->SetTimeout(10.0f);
+		Client = FNakamaClient{FNakamaApiConfig{ServerKey, Host, Port, false, 10.0f}};
 	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
@@ -300,10 +295,7 @@ void FNakamaAsyncAccountSpec::Define()
 		});
 	});
 
-	AfterEach([this]()
-	{
-		Client.Reset();
-	});
+
 
 	Describe("GetAccount", [this]()
 	{
@@ -378,7 +370,7 @@ void FNakamaAsyncAccountSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAsyncFriendsSpec, "NakamaTest.Async.Friends",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientPtr Client;
+	FNakamaClient Client;
 	FNakamaSessionPtr Session;
 	FNakamaSessionPtr FriendSession;
 	FString UserId;
@@ -399,8 +391,7 @@ void FNakamaAsyncFriendsSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = Nakama::CreateClient(ServerKey, Host, Port, false, true);
-		Client->SetTimeout(10.0f);
+		Client = FNakamaClient{FNakamaApiConfig{ServerKey, Host, Port, false, 10.0f}};
 	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
@@ -434,10 +425,7 @@ void FNakamaAsyncFriendsSpec::Define()
 		});
 	});
 
-	AfterEach([this]()
-	{
-		Client.Reset();
-	});
+
 
 	Describe("ListFriends", [this]()
 	{
@@ -526,7 +514,7 @@ void FNakamaAsyncFriendsSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAsyncGroupsSpec, "NakamaTest.Async.Groups",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientPtr Client;
+	FNakamaClient Client;
 	FNakamaSessionPtr Session;
 	FString UserId;
 	FString CreatedGroupId;
@@ -547,8 +535,7 @@ void FNakamaAsyncGroupsSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = Nakama::CreateClient(ServerKey, Host, Port, false, true);
-		Client->SetTimeout(10.0f);
+		Client = FNakamaClient{FNakamaApiConfig{ServerKey, Host, Port, false, 10.0f}};
 		CreatedGroupId.Empty();
 	});
 
@@ -571,10 +558,7 @@ void FNakamaAsyncGroupsSpec::Define()
 		});
 	});
 
-	AfterEach([this]()
-	{
-		Client.Reset();
-	});
+
 
 	Describe("CreateGroup", [this]()
 	{
@@ -647,7 +631,7 @@ void FNakamaAsyncGroupsSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAsyncStorageSpec, "NakamaTest.Async.Storage",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientPtr Client;
+	FNakamaClient Client;
 	FNakamaSessionPtr Session;
 	FString UserId;
 
@@ -667,8 +651,7 @@ void FNakamaAsyncStorageSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = Nakama::CreateClient(ServerKey, Host, Port, false, true);
-		Client->SetTimeout(10.0f);
+		Client = FNakamaClient{FNakamaApiConfig{ServerKey, Host, Port, false, 10.0f}};
 	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
@@ -690,10 +673,7 @@ void FNakamaAsyncStorageSpec::Define()
 		});
 	});
 
-	AfterEach([this]()
-	{
-		Client.Reset();
-	});
+
 
 	Describe("WriteStorageObjects", [this]()
 	{
@@ -810,7 +790,7 @@ void FNakamaAsyncStorageSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAsyncLeaderboardSpec, "NakamaTest.Async.Leaderboard",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientPtr Client;
+	FNakamaClient Client;
 	FNakamaSessionPtr Session;
 
 	static const FString ServerKey;
@@ -828,8 +808,7 @@ void FNakamaAsyncLeaderboardSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = Nakama::CreateClient(ServerKey, Host, Port, false, true);
-		Client->SetTimeout(10.0f);
+		Client = FNakamaClient{FNakamaApiConfig{ServerKey, Host, Port, false, 10.0f}};
 	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
@@ -845,10 +824,7 @@ void FNakamaAsyncLeaderboardSpec::Define()
 		});
 	});
 
-	AfterEach([this]()
-	{
-		Client.Reset();
-	});
+
 
 	Describe("WriteLeaderboardRecord", [this]()
 	{
@@ -934,7 +910,7 @@ void FNakamaAsyncLeaderboardSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAsyncMatchesSpec, "NakamaTest.Async.Matches",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientPtr Client;
+	FNakamaClient Client;
 	FNakamaSessionPtr Session;
 
 	static const FString ServerKey;
@@ -952,8 +928,7 @@ void FNakamaAsyncMatchesSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = Nakama::CreateClient(ServerKey, Host, Port, false, true);
-		Client->SetTimeout(10.0f);
+		Client = FNakamaClient{FNakamaApiConfig{ServerKey, Host, Port, false, 10.0f}};
 	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
@@ -969,10 +944,7 @@ void FNakamaAsyncMatchesSpec::Define()
 		});
 	});
 
-	AfterEach([this]()
-	{
-		Client.Reset();
-	});
+
 
 	Describe("ListMatches", [this]()
 	{
@@ -1007,7 +979,7 @@ void FNakamaAsyncMatchesSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAsyncNotificationsSpec, "NakamaTest.Async.Notifications",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientPtr Client;
+	FNakamaClient Client;
 	FNakamaSessionPtr Session;
 
 	static const FString ServerKey;
@@ -1025,8 +997,7 @@ void FNakamaAsyncNotificationsSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = Nakama::CreateClient(ServerKey, Host, Port, false, true);
-		Client->SetTimeout(10.0f);
+		Client = FNakamaClient{FNakamaApiConfig{ServerKey, Host, Port, false, 10.0f}};
 	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
@@ -1042,10 +1013,7 @@ void FNakamaAsyncNotificationsSpec::Define()
 		});
 	});
 
-	AfterEach([this]()
-	{
-		Client.Reset();
-	});
+
 
 	Describe("ListNotifications", [this]()
 	{
@@ -1069,7 +1037,7 @@ void FNakamaAsyncNotificationsSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAsyncLinkSpec, "NakamaTest.Async.Link",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientPtr Client;
+	FNakamaClient Client;
 	FNakamaSessionPtr Session;
 	FString DeviceId;
 
@@ -1089,8 +1057,7 @@ void FNakamaAsyncLinkSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = Nakama::CreateClient(ServerKey, Host, Port, false, true);
-		Client->SetTimeout(10.0f);
+		Client = FNakamaClient{FNakamaApiConfig{ServerKey, Host, Port, false, 10.0f}};
 		DeviceId = GenerateId();
 	});
 
@@ -1107,10 +1074,7 @@ void FNakamaAsyncLinkSpec::Define()
 		});
 	});
 
-	AfterEach([this]()
-	{
-		Client.Reset();
-	});
+
 
 	Describe("LinkCustom", [this]()
 	{
@@ -1185,7 +1149,7 @@ void FNakamaAsyncLinkSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAsyncTournamentSpec, "NakamaTest.Async.Tournament",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientPtr Client;
+	FNakamaClient Client;
 	FNakamaSessionPtr Session;
 
 	static const FString ServerKey;
@@ -1203,8 +1167,7 @@ void FNakamaAsyncTournamentSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = Nakama::CreateClient(ServerKey, Host, Port, false, true);
-		Client->SetTimeout(10.0f);
+		Client = FNakamaClient{FNakamaApiConfig{ServerKey, Host, Port, false, 10.0f}};
 	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
@@ -1220,10 +1183,7 @@ void FNakamaAsyncTournamentSpec::Define()
 		});
 	});
 
-	AfterEach([this]()
-	{
-		Client.Reset();
-	});
+
 
 	Describe("ListTournaments", [this]()
 	{
@@ -1294,7 +1254,7 @@ void FNakamaAsyncTournamentSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAsyncUsersSpec, "NakamaTest.Async.Users",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientPtr Client;
+	FNakamaClient Client;
 	FNakamaSessionPtr Session;
 	FString UserId;
 	FString Username;
@@ -1315,8 +1275,7 @@ void FNakamaAsyncUsersSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = Nakama::CreateClient(ServerKey, Host, Port, false, true);
-		Client->SetTimeout(10.0f);
+		Client = FNakamaClient{FNakamaApiConfig{ServerKey, Host, Port, false, 10.0f}};
 	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
@@ -1339,10 +1298,7 @@ void FNakamaAsyncUsersSpec::Define()
 		});
 	});
 
-	AfterEach([this]()
-	{
-		Client.Reset();
-	});
+
 
 	Describe("GetUsers", [this]()
 	{
@@ -1401,7 +1357,7 @@ void FNakamaAsyncUsersSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAsyncSessionSpec, "NakamaTest.Async.Session",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientPtr Client;
+	FNakamaClient Client;
 	FNakamaSessionPtr Session;
 
 	static const FString ServerKey;
@@ -1419,8 +1375,7 @@ void FNakamaAsyncSessionSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = Nakama::CreateClient(ServerKey, Host, Port, false, true);
-		Client->SetTimeout(10.0f);
+		Client = FNakamaClient{FNakamaApiConfig{ServerKey, Host, Port, false, 10.0f}};
 	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
@@ -1436,10 +1391,7 @@ void FNakamaAsyncSessionSpec::Define()
 		});
 	});
 
-	AfterEach([this]()
-	{
-		Client.Reset();
-	});
+
 
 	Describe("SessionLogout", [this]()
 	{
@@ -1463,7 +1415,7 @@ void FNakamaAsyncSessionSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAsyncDeleteStorageSpec, "NakamaTest.Async.DeleteStorage",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientPtr Client;
+	FNakamaClient Client;
 	FNakamaSessionPtr Session;
 	FString UserId;
 
@@ -1483,8 +1435,7 @@ void FNakamaAsyncDeleteStorageSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = Nakama::CreateClient(ServerKey, Host, Port, false, true);
-		Client->SetTimeout(10.0f);
+		Client = FNakamaClient{FNakamaApiConfig{ServerKey, Host, Port, false, 10.0f}};
 	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
@@ -1506,10 +1457,7 @@ void FNakamaAsyncDeleteStorageSpec::Define()
 		});
 	});
 
-	AfterEach([this]()
-	{
-		Client.Reset();
-	});
+
 
 	Describe("DeleteStorageObjects", [this]()
 	{
@@ -1554,7 +1502,7 @@ void FNakamaAsyncDeleteStorageSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAsyncGroupOpsSpec, "NakamaTest.Async.GroupOps",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientPtr Client;
+	FNakamaClient Client;
 	FNakamaSessionPtr Session;
 	FNakamaSessionPtr MemberSession;
 	FString UserId;
@@ -1577,8 +1525,7 @@ void FNakamaAsyncGroupOpsSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = Nakama::CreateClient(ServerKey, Host, Port, false, true);
-		Client->SetTimeout(10.0f);
+		Client = FNakamaClient{FNakamaApiConfig{ServerKey, Host, Port, false, 10.0f}};
 		GroupId.Empty();
 	});
 
@@ -1613,10 +1560,7 @@ void FNakamaAsyncGroupOpsSpec::Define()
 		});
 	});
 
-	AfterEach([this]()
-	{
-		Client.Reset();
-	});
+
 
 	Describe("JoinGroup", [this]()
 	{
@@ -1744,7 +1688,7 @@ void FNakamaAsyncGroupOpsSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAsyncRpcSpec, "NakamaTest.Async.RPC",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientPtr Client;
+	FNakamaClient Client;
 	FNakamaSessionPtr Session;
 
 	static const FString ServerKey;
@@ -1762,8 +1706,7 @@ void FNakamaAsyncRpcSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = Nakama::CreateClient(ServerKey, Host, Port, false, true);
-		Client->SetTimeout(10.0f);
+		Client = FNakamaClient{FNakamaApiConfig{ServerKey, Host, Port, false, 10.0f}};
 	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
@@ -1779,10 +1722,7 @@ void FNakamaAsyncRpcSpec::Define()
 		});
 	});
 
-	AfterEach([this]()
-	{
-		Client.Reset();
-	});
+
 
 	Describe("RpcFunc", [this]()
 	{
@@ -1817,7 +1757,7 @@ void FNakamaAsyncRpcSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAsyncAuthExtSpec, "NakamaTest.Async.AuthExt",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientPtr Client;
+	FNakamaClient Client;
 
 	static const FString ServerKey;
 	static const FString Host;
@@ -1835,14 +1775,10 @@ void FNakamaAsyncAuthExtSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = Nakama::CreateClient(ServerKey, Host, Port, false, true);
-		Client->SetTimeout(10.0f);
+		Client = FNakamaClient{FNakamaApiConfig{ServerKey, Host, Port, false, 10.0f}};
 	});
 
-	AfterEach([this]()
-	{
-		Client.Reset();
-	});
+
 
 	Describe("CustomAuthExtended", [this]()
 	{
@@ -1966,7 +1902,7 @@ void FNakamaAsyncAuthExtSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAsyncDeleteFriendsSpec, "NakamaTest.Async.DeleteFriends",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientPtr Client;
+	FNakamaClient Client;
 	FNakamaSessionPtr Session;
 	FNakamaSessionPtr FriendSession;
 	FString UserId;
@@ -1987,8 +1923,7 @@ void FNakamaAsyncDeleteFriendsSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = Nakama::CreateClient(ServerKey, Host, Port, false, true);
-		Client->SetTimeout(10.0f);
+		Client = FNakamaClient{FNakamaApiConfig{ServerKey, Host, Port, false, 10.0f}};
 	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
@@ -2022,10 +1957,7 @@ void FNakamaAsyncDeleteFriendsSpec::Define()
 		});
 	});
 
-	AfterEach([this]()
-	{
-		Client.Reset();
-	});
+
 
 	Describe("DeleteFriends", [this]()
 	{
@@ -2071,7 +2003,7 @@ void FNakamaAsyncDeleteFriendsSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAsyncImportSpec, "NakamaTest.Async.Import",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientPtr Client;
+	FNakamaClient Client;
 	FNakamaSessionPtr Session;
 
 	static const FString ServerKey;
@@ -2089,8 +2021,7 @@ void FNakamaAsyncImportSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = Nakama::CreateClient(ServerKey, Host, Port, false, true);
-		Client->SetTimeout(10.0f);
+		Client = FNakamaClient{FNakamaApiConfig{ServerKey, Host, Port, false, 10.0f}};
 	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
@@ -2106,10 +2037,7 @@ void FNakamaAsyncImportSpec::Define()
 		});
 	});
 
-	AfterEach([this]()
-	{
-		Client.Reset();
-	});
+
 
 	Describe("ImportSteamFriends", [this]()
 	{
@@ -2153,7 +2081,7 @@ void FNakamaAsyncImportSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAsyncAccountExtSpec, "NakamaTest.Async.AccountExt",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientPtr Client;
+	FNakamaClient Client;
 	FNakamaSessionPtr Session;
 	FString UserId;
 
@@ -2173,8 +2101,7 @@ void FNakamaAsyncAccountExtSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = Nakama::CreateClient(ServerKey, Host, Port, false, true);
-		Client->SetTimeout(10.0f);
+		Client = FNakamaClient{FNakamaApiConfig{ServerKey, Host, Port, false, 10.0f}};
 	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
@@ -2196,10 +2123,7 @@ void FNakamaAsyncAccountExtSpec::Define()
 		});
 	});
 
-	AfterEach([this]()
-	{
-		Client.Reset();
-	});
+
 
 	Describe("UpdateAccountExtended", [this]()
 	{
@@ -2298,7 +2222,7 @@ void FNakamaAsyncAccountExtSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAsyncFriendsExtSpec, "NakamaTest.Async.FriendsExt",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientPtr Client;
+	FNakamaClient Client;
 	FNakamaSessionPtr Session;
 	FNakamaSessionPtr FriendSession;
 	FString UserId;
@@ -2321,8 +2245,7 @@ void FNakamaAsyncFriendsExtSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = Nakama::CreateClient(ServerKey, Host, Port, false, true);
-		Client->SetTimeout(10.0f);
+		Client = FNakamaClient{FNakamaApiConfig{ServerKey, Host, Port, false, 10.0f}};
 	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
@@ -2357,10 +2280,7 @@ void FNakamaAsyncFriendsExtSpec::Define()
 		});
 	});
 
-	AfterEach([this]()
-	{
-		Client.Reset();
-	});
+
 
 	Describe("ListFriendsWithFilters", [this]()
 	{
@@ -2466,7 +2386,7 @@ void FNakamaAsyncFriendsExtSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAsyncStorageExtSpec, "NakamaTest.Async.StorageExt",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientPtr Client;
+	FNakamaClient Client;
 	FNakamaSessionPtr Session;
 	FString UserId;
 
@@ -2486,8 +2406,7 @@ void FNakamaAsyncStorageExtSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = Nakama::CreateClient(ServerKey, Host, Port, false, true);
-		Client->SetTimeout(10.0f);
+		Client = FNakamaClient{FNakamaApiConfig{ServerKey, Host, Port, false, 10.0f}};
 	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
@@ -2508,10 +2427,7 @@ void FNakamaAsyncStorageExtSpec::Define()
 		});
 	});
 
-	AfterEach([this]()
-	{
-		Client.Reset();
-	});
+
 
 	Describe("WriteStorageMultiple", [this]()
 	{
@@ -2740,7 +2656,7 @@ void FNakamaAsyncStorageExtSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAsyncGroupExtSpec, "NakamaTest.Async.GroupExt",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientPtr Client;
+	FNakamaClient Client;
 	FNakamaSessionPtr Session;
 	FNakamaSessionPtr MemberSession;
 	FString UserId;
@@ -2762,8 +2678,7 @@ void FNakamaAsyncGroupExtSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = Nakama::CreateClient(ServerKey, Host, Port, false, true);
-		Client->SetTimeout(10.0f);
+		Client = FNakamaClient{FNakamaApiConfig{ServerKey, Host, Port, false, 10.0f}};
 	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
@@ -2796,10 +2711,7 @@ void FNakamaAsyncGroupExtSpec::Define()
 		});
 	});
 
-	AfterEach([this]()
-	{
-		Client.Reset();
-	});
+
 
 	Describe("CreateGroupValidation", [this]()
 	{
@@ -3000,7 +2912,7 @@ void FNakamaAsyncGroupExtSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAsyncUnlinkSpec, "NakamaTest.Async.Unlink",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientPtr Client;
+	FNakamaClient Client;
 	FNakamaSessionPtr Session;
 	FString DeviceId;
 	FString CustomId;
@@ -3021,8 +2933,7 @@ void FNakamaAsyncUnlinkSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = Nakama::CreateClient(ServerKey, Host, Port, false, true);
-		Client->SetTimeout(10.0f);
+		Client = FNakamaClient{FNakamaApiConfig{ServerKey, Host, Port, false, 10.0f}};
 		DeviceId = GenerateId();
 		CustomId = GenerateId();
 	});
@@ -3039,10 +2950,7 @@ void FNakamaAsyncUnlinkSpec::Define()
 		});
 	});
 
-	AfterEach([this]()
-	{
-		Client.Reset();
-	});
+
 
 	Describe("UnlinkCustom", [this]()
 	{
@@ -3108,7 +3016,7 @@ void FNakamaAsyncUnlinkSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAsyncMatchesExtSpec, "NakamaTest.Async.MatchesExt",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientPtr Client;
+	FNakamaClient Client;
 	FNakamaSessionPtr Session;
 
 	static const FString ServerKey;
@@ -3126,8 +3034,7 @@ void FNakamaAsyncMatchesExtSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = Nakama::CreateClient(ServerKey, Host, Port, false, true);
-		Client->SetTimeout(10.0f);
+		Client = FNakamaClient{FNakamaApiConfig{ServerKey, Host, Port, false, 10.0f}};
 	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
@@ -3142,10 +3049,7 @@ void FNakamaAsyncMatchesExtSpec::Define()
 		});
 	});
 
-	AfterEach([this]()
-	{
-		Client.Reset();
-	});
+
 
 	Describe("ListMatchesWithFilters", [this]()
 	{
@@ -3188,7 +3092,7 @@ void FNakamaAsyncMatchesExtSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAsyncChannelSpec, "NakamaTest.Async.Channel",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientPtr Client;
+	FNakamaClient Client;
 	FNakamaSessionPtr Session;
 
 	static const FString ServerKey;
@@ -3207,8 +3111,7 @@ void FNakamaAsyncChannelSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = Nakama::CreateClient(ServerKey, Host, Port, false, true);
-		Client->SetTimeout(10.0f);
+		Client = FNakamaClient{FNakamaApiConfig{ServerKey, Host, Port, false, 10.0f}};
 	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
@@ -3223,10 +3126,7 @@ void FNakamaAsyncChannelSpec::Define()
 		});
 	});
 
-	AfterEach([this]()
-	{
-		Client.Reset();
-	});
+
 
 	Describe("ListChannelMessages", [this]()
 	{
@@ -3270,7 +3170,7 @@ void FNakamaAsyncChannelSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAsyncNotificationsExtSpec, "NakamaTest.Async.NotificationsExt",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientPtr Client;
+	FNakamaClient Client;
 	FNakamaSessionPtr Session;
 
 	static const FString ServerKey;
@@ -3288,8 +3188,7 @@ void FNakamaAsyncNotificationsExtSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = Nakama::CreateClient(ServerKey, Host, Port, false, true);
-		Client->SetTimeout(10.0f);
+		Client = FNakamaClient{FNakamaApiConfig{ServerKey, Host, Port, false, 10.0f}};
 	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
@@ -3304,7 +3203,7 @@ void FNakamaAsyncNotificationsExtSpec::Define()
 		});
 	});
 
-	AfterEach([this]() { Client.Reset(); });
+
 
 	Describe("ListNotificationsWithFilters", [this]()
 	{
@@ -3352,7 +3251,7 @@ void FNakamaAsyncNotificationsExtSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAsyncAuthValidationSpec, "NakamaTest.Async.Auth.Validation",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientPtr Client;
+	FNakamaClient Client;
 
 	static const FString ServerKey;
 	static const FString Host;
@@ -3368,8 +3267,8 @@ const FString FNakamaAsyncAuthValidationSpec::Host = TEXT("127.0.0.1");
 
 void FNakamaAsyncAuthValidationSpec::Define()
 {
-	BeforeEach([this]() { Client = Nakama::CreateClient(ServerKey, Host, Port, false, true); Client->SetTimeout(10.0f); });
-	AfterEach([this]() { Client.Reset(); });
+	BeforeEach([this]() { Client = FNakamaClient{FNakamaApiConfig{ServerKey, Host, Port, false, 10.0f}}; });
+
 
 	Describe("CustomAuth.Validation", [this]()
 	{
@@ -3493,7 +3392,7 @@ void FNakamaAsyncAuthValidationSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAsyncAccountDeleteSpec, "NakamaTest.Async.Account.Delete",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientPtr Client;
+	FNakamaClient Client;
 	FNakamaSessionPtr Session;
 
 	static const FString ServerKey;
@@ -3509,8 +3408,8 @@ const FString FNakamaAsyncAccountDeleteSpec::Host = TEXT("127.0.0.1");
 
 void FNakamaAsyncAccountDeleteSpec::Define()
 {
-	BeforeEach([this]() { Client = Nakama::CreateClient(ServerKey, Host, Port, false, true); Client->SetTimeout(10.0f); });
-	AfterEach([this]() { Client.Reset(); });
+	BeforeEach([this]() { Client = FNakamaClient{FNakamaApiConfig{ServerKey, Host, Port, false, 10.0f}}; });
+
 
 	Describe("DeleteAccount", [this]()
 	{
@@ -3566,7 +3465,7 @@ void FNakamaAsyncAccountDeleteSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAsyncSocialAuthSpec, "NakamaTest.Async.Auth.Social",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientPtr Client;
+	FNakamaClient Client;
 
 	static const FString ServerKey;
 	static const FString Host;
@@ -3579,8 +3478,8 @@ const FString FNakamaAsyncSocialAuthSpec::Host = TEXT("127.0.0.1");
 
 void FNakamaAsyncSocialAuthSpec::Define()
 {
-	BeforeEach([this]() { Client = Nakama::CreateClient(ServerKey, Host, Port, false, true); Client->SetTimeout(10.0f); });
-	AfterEach([this]() { Client.Reset(); });
+	BeforeEach([this]() { Client = FNakamaClient{FNakamaApiConfig{ServerKey, Host, Port, false, 10.0f}}; });
+
 
 	Describe("FacebookAuth.Validation", [this]()
 	{
@@ -3670,7 +3569,7 @@ void FNakamaAsyncSocialAuthSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAsyncSessionExtSpec, "NakamaTest.Async.SessionExt",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientPtr Client;
+	FNakamaClient Client;
 	FNakamaSessionPtr Session;
 
 	static const FString ServerKey;
@@ -3686,7 +3585,7 @@ const FString FNakamaAsyncSessionExtSpec::Host = TEXT("127.0.0.1");
 
 void FNakamaAsyncSessionExtSpec::Define()
 {
-	BeforeEach([this]() { Client = Nakama::CreateClient(ServerKey, Host, Port, false, true); Client->SetTimeout(10.0f); });
+	BeforeEach([this]() { Client = FNakamaClient{FNakamaApiConfig{ServerKey, Host, Port, false, 10.0f}}; });
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
 	{
@@ -3700,7 +3599,7 @@ void FNakamaAsyncSessionExtSpec::Define()
 		});
 	});
 
-	AfterEach([this]() { Client.Reset(); });
+
 
 	Describe("Logout.Extended", [this]()
 	{
@@ -3750,7 +3649,7 @@ void FNakamaAsyncSessionExtSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAsyncUsersExtSpec, "NakamaTest.Async.UsersExt",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientPtr Client;
+	FNakamaClient Client;
 	FNakamaSessionPtr Session;
 	FString UserId;
 
@@ -3767,7 +3666,7 @@ const FString FNakamaAsyncUsersExtSpec::Host = TEXT("127.0.0.1");
 
 void FNakamaAsyncUsersExtSpec::Define()
 {
-	BeforeEach([this]() { Client = Nakama::CreateClient(ServerKey, Host, Port, false, true); Client->SetTimeout(10.0f); });
+	BeforeEach([this]() { Client = FNakamaClient{FNakamaApiConfig{ServerKey, Host, Port, false, 10.0f}}; });
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
 	{
@@ -3787,7 +3686,7 @@ void FNakamaAsyncUsersExtSpec::Define()
 		});
 	});
 
-	AfterEach([this]() { Client.Reset(); });
+
 
 	Describe("GetUsers.Extended", [this]()
 	{
@@ -3834,7 +3733,7 @@ void FNakamaAsyncUsersExtSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAsyncFriendsOfFriendsSpec, "NakamaTest.Async.FriendsOfFriends",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientPtr Client;
+	FNakamaClient Client;
 	FNakamaSessionPtr Session;
 	FString UserId;
 
@@ -3851,7 +3750,7 @@ const FString FNakamaAsyncFriendsOfFriendsSpec::Host = TEXT("127.0.0.1");
 
 void FNakamaAsyncFriendsOfFriendsSpec::Define()
 {
-	BeforeEach([this]() { Client = Nakama::CreateClient(ServerKey, Host, Port, false, true); Client->SetTimeout(10.0f); });
+	BeforeEach([this]() { Client = FNakamaClient{FNakamaApiConfig{ServerKey, Host, Port, false, 10.0f}}; });
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
 	{
@@ -3871,7 +3770,7 @@ void FNakamaAsyncFriendsOfFriendsSpec::Define()
 		});
 	});
 
-	AfterEach([this]() { Client.Reset(); });
+
 
 	Describe("ListFriendsOfFriends", [this]()
 	{
@@ -3966,7 +3865,7 @@ void FNakamaAsyncFriendsOfFriendsSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAsyncGroupPermissionsSpec, "NakamaTest.Async.GroupPermissions",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientPtr Client;
+	FNakamaClient Client;
 	FNakamaSessionPtr Session;
 	FNakamaSessionPtr Session2;
 	FString UserId;
@@ -3988,8 +3887,7 @@ void FNakamaAsyncGroupPermissionsSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = Nakama::CreateClient(ServerKey, Host, Port, false, true);
-		Client->SetTimeout(10.0f);
+		Client = FNakamaClient{FNakamaApiConfig{ServerKey, Host, Port, false, 10.0f}};
 	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
@@ -4022,7 +3920,7 @@ void FNakamaAsyncGroupPermissionsSpec::Define()
 		});
 	});
 
-	AfterEach([this]() { Client.Reset(); });
+
 
 	Describe("CreateGroup.Validation", [this]()
 	{
@@ -4188,7 +4086,7 @@ void FNakamaAsyncGroupPermissionsSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAsyncStoragePermissionsSpec, "NakamaTest.Async.StoragePermissions",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientPtr Client;
+	FNakamaClient Client;
 	FNakamaSessionPtr Session;
 	FNakamaSessionPtr Session2;
 	FString UserId;
@@ -4210,7 +4108,7 @@ void FNakamaAsyncStoragePermissionsSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = Nakama::CreateClient(ServerKey, Host, Port, false, true); Client->SetTimeout(10.0f);
+		Client = FNakamaClient{FNakamaApiConfig{ServerKey, Host, Port, false, 10.0f}};
 	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
@@ -4243,7 +4141,7 @@ void FNakamaAsyncStoragePermissionsSpec::Define()
 		});
 	});
 
-	AfterEach([this]() { Client.Reset(); });
+
 
 	Describe("WriteStorage.Permissions", [this]()
 	{
@@ -4355,7 +4253,7 @@ void FNakamaAsyncStoragePermissionsSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAsyncChannelExtSpec, "NakamaTest.Async.ChannelExt",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientPtr Client;
+	FNakamaClient Client;
 	FNakamaSessionPtr Session;
 	FString UserId;
 	FString GroupId;
@@ -4374,7 +4272,7 @@ const FString FNakamaAsyncChannelExtSpec::Host = TEXT("127.0.0.1");
 
 void FNakamaAsyncChannelExtSpec::Define()
 {
-	BeforeEach([this]() { Client = Nakama::CreateClient(ServerKey, Host, Port, false, true); Client->SetTimeout(10.0f); });
+	BeforeEach([this]() { Client = FNakamaClient{FNakamaApiConfig{ServerKey, Host, Port, false, 10.0f}}; });
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
 	{
@@ -4399,7 +4297,7 @@ void FNakamaAsyncChannelExtSpec::Define()
 		});
 	});
 
-	AfterEach([this]() { Client.Reset(); });
+
 
 	Describe("ListChannelMessages.Extended", [this]()
 	{
@@ -4453,7 +4351,7 @@ void FNakamaAsyncChannelExtSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAsyncLinkExtSpec, "NakamaTest.Async.LinkExt",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientPtr Client;
+	FNakamaClient Client;
 	FNakamaSessionPtr Session;
 	FNakamaSessionPtr Session2;
 
@@ -4473,7 +4371,7 @@ void FNakamaAsyncLinkExtSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = Nakama::CreateClient(ServerKey, Host, Port, false, true); Client->SetTimeout(10.0f);
+		Client = FNakamaClient{FNakamaApiConfig{ServerKey, Host, Port, false, 10.0f}};
 	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
@@ -4496,7 +4394,7 @@ void FNakamaAsyncLinkExtSpec::Define()
 		});
 	});
 
-	AfterEach([this]() { Client.Reset(); });
+
 
 	Describe("LinkCustom.AlreadyLinked", [this]()
 	{
@@ -4593,7 +4491,7 @@ void FNakamaAsyncLinkExtSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAsyncRpcExtSpec, "NakamaTest.Async.RPCExt",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientPtr Client;
+	FNakamaClient Client;
 	FNakamaSessionPtr Session;
 
 	static const FString ServerKey;
@@ -4611,7 +4509,7 @@ const FString FNakamaAsyncRpcExtSpec::HttpKey = TEXT("defaulthttpkey");
 
 void FNakamaAsyncRpcExtSpec::Define()
 {
-	BeforeEach([this]() { Client = Nakama::CreateClient(ServerKey, Host, Port, false, true); Client->SetTimeout(10.0f); });
+	BeforeEach([this]() { Client = FNakamaClient{FNakamaApiConfig{ServerKey, Host, Port, false, 10.0f}}; });
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
 	{
@@ -4625,7 +4523,7 @@ void FNakamaAsyncRpcExtSpec::Define()
 		});
 	});
 
-	AfterEach([this]() { Client.Reset(); });
+
 
 	Describe("RpcFunc.WithPayload", [this]()
 	{
@@ -4752,7 +4650,7 @@ void FNakamaAsyncRpcExtSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAsyncMatchesValidationSpec, "NakamaTest.Async.MatchesValidation",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientPtr Client;
+	FNakamaClient Client;
 	FNakamaSessionPtr Session;
 
 	static const FString ServerKey;
@@ -4768,7 +4666,7 @@ const FString FNakamaAsyncMatchesValidationSpec::Host = TEXT("127.0.0.1");
 
 void FNakamaAsyncMatchesValidationSpec::Define()
 {
-	BeforeEach([this]() { Client = Nakama::CreateClient(ServerKey, Host, Port, false, true); Client->SetTimeout(10.0f); });
+	BeforeEach([this]() { Client = FNakamaClient{FNakamaApiConfig{ServerKey, Host, Port, false, 10.0f}}; });
 	LatentBeforeEach([this](const FDoneDelegate& Done)
 	{
 		FNakamaAccountCustom Account;
@@ -4780,7 +4678,7 @@ void FNakamaAsyncMatchesValidationSpec::Define()
 			Done.Execute();
 		});
 	});
-	AfterEach([this]() { Client.Reset(); });
+
 
 	Describe("ListMatches.Validation", [this]()
 	{
@@ -4818,7 +4716,7 @@ void FNakamaAsyncMatchesValidationSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAsyncPurchasesSpec, "NakamaTest.Async.Purchases",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientPtr Client;
+	FNakamaClient Client;
 	FNakamaSessionPtr Session;
 
 	static const FString ServerKey;
@@ -4834,7 +4732,7 @@ const FString FNakamaAsyncPurchasesSpec::Host = TEXT("127.0.0.1");
 
 void FNakamaAsyncPurchasesSpec::Define()
 {
-	BeforeEach([this]() { Client = Nakama::CreateClient(ServerKey, Host, Port, false, true); Client->SetTimeout(10.0f); });
+	BeforeEach([this]() { Client = FNakamaClient{FNakamaApiConfig{ServerKey, Host, Port, false, 10.0f}}; });
 	LatentBeforeEach([this](const FDoneDelegate& Done)
 	{
 		FNakamaAccountCustom Account;
@@ -4846,7 +4744,7 @@ void FNakamaAsyncPurchasesSpec::Define()
 			Done.Execute();
 		});
 	});
-	AfterEach([this]() { Client.Reset(); });
+
 
 	Describe("ListSubscriptions", [this]()
 	{
@@ -4921,7 +4819,7 @@ void FNakamaAsyncPurchasesSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAsyncEventSpec, "NakamaTest.Async.Event",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientPtr Client;
+	FNakamaClient Client;
 	FNakamaSessionPtr Session;
 
 	static const FString ServerKey;
@@ -4937,7 +4835,7 @@ const FString FNakamaAsyncEventSpec::Host = TEXT("127.0.0.1");
 
 void FNakamaAsyncEventSpec::Define()
 {
-	BeforeEach([this]() { Client = Nakama::CreateClient(ServerKey, Host, Port, false, true); Client->SetTimeout(10.0f); });
+	BeforeEach([this]() { Client = FNakamaClient{FNakamaApiConfig{ServerKey, Host, Port, false, 10.0f}}; });
 	LatentBeforeEach([this](const FDoneDelegate& Done)
 	{
 		FNakamaAccountCustom Account;
@@ -4949,7 +4847,7 @@ void FNakamaAsyncEventSpec::Define()
 			Done.Execute();
 		});
 	});
-	AfterEach([this]() { Client.Reset(); });
+
 
 	Describe("Event", [this]()
 	{
@@ -4985,7 +4883,7 @@ void FNakamaAsyncEventSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAsyncHealthcheckSpec, "NakamaTest.Async.Healthcheck",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientPtr Client;
+	FNakamaClient Client;
 	FNakamaSessionPtr Session;
 
 	static const FString ServerKey;
@@ -5003,7 +4901,7 @@ const FString FNakamaAsyncHealthcheckSpec::HttpKey = TEXT("defaulthttpkey");
 
 void FNakamaAsyncHealthcheckSpec::Define()
 {
-	BeforeEach([this]() { Client = Nakama::CreateClient(ServerKey, Host, Port, false, true); Client->SetTimeout(10.0f); });
+	BeforeEach([this]() { Client = FNakamaClient{FNakamaApiConfig{ServerKey, Host, Port, false, 10.0f}}; });
 	LatentBeforeEach([this](const FDoneDelegate& Done)
 	{
 		FNakamaAccountCustom Account;
@@ -5015,7 +4913,7 @@ void FNakamaAsyncHealthcheckSpec::Define()
 			Done.Execute();
 		});
 	});
-	AfterEach([this]() { Client.Reset(); });
+
 
 	Describe("Healthcheck", [this]()
 	{
@@ -5048,7 +4946,7 @@ void FNakamaAsyncHealthcheckSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAsyncGroupUsersSpec, "NakamaTest.Async.GroupUsers",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientPtr Client;
+	FNakamaClient Client;
 	FNakamaSessionPtr Session;
 	FNakamaSessionPtr Session2;
 	FNakamaSessionPtr Session3;
@@ -5073,7 +4971,7 @@ void FNakamaAsyncGroupUsersSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = Nakama::CreateClient(ServerKey, Host, Port, false, true); Client->SetTimeout(10.0f);
+		Client = FNakamaClient{FNakamaApiConfig{ServerKey, Host, Port, false, 10.0f}};
 	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
@@ -5118,7 +5016,7 @@ void FNakamaAsyncGroupUsersSpec::Define()
 		});
 	});
 
-	AfterEach([this]() { Client.Reset(); });
+
 
 	Describe("AddGroupUsers", [this]()
 	{

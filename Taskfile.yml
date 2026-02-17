@@ -1,5 +1,6 @@
 version: '3'
 
+silent: true
 dotenv: ['.env']
 
 vars:
@@ -13,15 +14,20 @@ tasks:
 
   codegen:
     desc: 'Fetch protos, build codegen tool, and generate all Nakama modules.'
+    vars:
+      PROTO_API_URL: 'https://raw.githubusercontent.com/heroiclabs/nakama-common/feat/flatten-proto-v2/api/api.proto'
+      PROTO_SERVICE_URL: 'https://raw.githubusercontent.com/heroiclabs/nakama/feat/flatten-proto/apigrpc/apigrpc.proto'
+      PROTO_RT_URL: 'https://raw.githubusercontent.com/heroiclabs/nakama-common/feat/flatten-proto-v2/rtapi/realtime.proto'
     cmds:
-    - cmd: mkdir -p proto build
     - cmd: |
-        curl -o {{.PROTO_SERVICE_FILE}} https://raw.githubusercontent.com/heroiclabs/nakama/feat/flatten-proto/apigrpc/apigrpc.proto
-        curl -o {{.PROTO_FILE}} https://raw.githubusercontent.com/heroiclabs/nakama-common/feat/flatten-proto-v2/api/api.proto
-        curl -o {{.PROTO_RT_FILE}} https://raw.githubusercontent.com/heroiclabs/nakama-common/feat/flatten-proto-v2/rtapi/realtime.proto
-    - dir: cmd/codegen
-      cmd: go build -o ../../{{.CODEGEN}}
-    - cmd: |
+        mkdir -p proto build
+
+        curl -o {{.PROTO_FILE}} "{{.PROTO_API_URL}}"
+        curl -o {{.PROTO_SERVICE_FILE}} "{{.PROTO_SERVICE_URL}}"
+        curl -o {{.PROTO_RT_FILE}} "{{.PROTO_RT_URL}}"
+
+        cd cmd/codegen && go build -o ../../{{.CODEGEN}} && cd ../..
+
         ./{{.CODEGEN}} \
         --template cmd/codegen/templates/nakama-api.ue.h.tmpl \
         --proto {{.PROTO_FILE}} \
@@ -75,7 +81,7 @@ tasks:
             echo "Nakama is ready!"
             exit 0
           fi
-          sleep 2
+          powershell -NoProfile -Command "Start-Sleep -Seconds 2" 2>/dev/null || sleep 2
           timeout=$((timeout - 2))
         done
         echo "Error: Nakama failed to start within 60 seconds"
@@ -310,10 +316,10 @@ tasks:
     vars:
       TEST_SUITE: '{{.TEST_SUITE | default "NakamaTest.Auth"}}'
       REPORT_PATH: '{{.REPORT_PATH | default "Reports/NakamaTest"}}'
-    deps:
-    - task: check-unreal-engine
-    - task: start-nakama
     cmds:
+    - task: check-unreal-engine
+    - task: codegen
+    - task: start-nakama
     - cmd: |
         if [ ! -d "NakamaTest/Plugins/Nakama" ]; then
             mkdir -p NakamaTest/Plugins

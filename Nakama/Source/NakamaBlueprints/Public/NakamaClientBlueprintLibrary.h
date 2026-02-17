@@ -26,25 +26,6 @@
 #include "NakamaClientBlueprintLibrary.generated.h"
 
 // ============================================================================
-// Blueprint-compatible client reference
-// ============================================================================
-
-USTRUCT(BlueprintType)
-struct NAKAMABLUEPRINTS_API FNakamaClientRef
-{
-	GENERATED_BODY()
-
-	FNakamaClientRef() = default;
-	FNakamaClientRef(FNakamaApiConfigPtr InConfig) : Config(InConfig) {}
-
-	bool IsValid() const { return Config.IsValid(); }
-	FNakamaApiConfigPtr GetConfig() const { return Config; }
-
-private:
-	FNakamaApiConfigPtr Config;
-};
-
-// ============================================================================
 // Dynamic delegates for async actions
 // ============================================================================
 
@@ -78,37 +59,6 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaLeaderboardRecord, const FN
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaStorageObjectAcks, const FNakamaStorageObjectAcks&, Result);
 
 // ============================================================================
-// Blueprint Function Library
-// ============================================================================
-
-/**
- * Blueprint Function Library for Nakama client operations.
- */
-UCLASS(meta=(ScriptName="NakamaLibrary"), MinimalAPI)
-class UNakamaBlueprintLibrary : public UBlueprintFunctionLibrary
-{
-	GENERATED_BODY()
-
-public:
-	/**
-	 * Creates a default client to interact with Nakama server.
-	 */
-	UFUNCTION(BlueprintCallable, Category = "Nakama|Client")
-	static NAKAMABLUEPRINTS_API FNakamaClientRef CreateDefaultClient(
-		const FString& ServerKey = TEXT("defaultkey"),
-		const FString& Host = TEXT("localhost"),
-		int32 Port = 7350,
-		bool UseSSL = false,
-		bool EnableDebug = true);
-
-	/**
-	 * Checks if a client reference is valid.
-	 */
-	UFUNCTION(BlueprintPure, Category = "Nakama|Client")
-	static NAKAMABLUEPRINTS_API bool IsValidClient(const FNakamaClientRef& Client);
-};
-
-// ============================================================================
 // Async Action Classes (one per RPC)
 // ============================================================================
 
@@ -130,7 +80,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "AddFriends"), Category = "Nakama|Client")
 	static UNakamaClientAddFriends* AddFriends(
 		UObject* WorldContextObject,
-		const FNakamaClientRef& Client,
+		FNakamaApiConfig Client,
 		const FNakamaSession& Session,
 		const TArray<FString>& Ids,
 		const TArray<FString>& Usernames,
@@ -139,7 +89,7 @@ public:
 	virtual void Activate() override;
 
 private:
-	FNakamaClientRef Client;
+	FNakamaApiConfig Client;
 	FNakamaSession Session;
 	TArray<FString> StoredIds;
 	TArray<FString> StoredUsernames;
@@ -164,7 +114,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "AddGroupUsers"), Category = "Nakama|Client")
 	static UNakamaClientAddGroupUsers* AddGroupUsers(
 		UObject* WorldContextObject,
-		const FNakamaClientRef& Client,
+		FNakamaApiConfig Client,
 		const FNakamaSession& Session,
 		FString GroupId,
 		const TArray<FString>& UserIds);
@@ -172,7 +122,7 @@ public:
 	virtual void Activate() override;
 
 private:
-	FNakamaClientRef Client;
+	FNakamaApiConfig Client;
 	FNakamaSession Session;
 	FString StoredGroupId;
 	TArray<FString> StoredUserIds;
@@ -196,14 +146,14 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "SessionRefresh"), Category = "Nakama|Client")
 	static UNakamaClientSessionRefresh* SessionRefresh(
 		UObject* WorldContextObject,
-		const FNakamaClientRef& Client,
+		FNakamaApiConfig Client,
 		FString Token,
 		const TMap<FString, FString>& Vars);
 
 	virtual void Activate() override;
 
 private:
-	FNakamaClientRef Client;
+	FNakamaApiConfig Client;
 	FString StoredToken;
 	TMap<FString, FString> StoredVars;
 };
@@ -226,7 +176,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "SessionLogout"), Category = "Nakama|Client")
 	static UNakamaClientSessionLogout* SessionLogout(
 		UObject* WorldContextObject,
-		const FNakamaClientRef& Client,
+		FNakamaApiConfig Client,
 		const FNakamaSession& Session,
 		FString Token,
 		FString RefreshToken);
@@ -234,7 +184,7 @@ public:
 	virtual void Activate() override;
 
 private:
-	FNakamaClientRef Client;
+	FNakamaApiConfig Client;
 	FNakamaSession Session;
 	FString StoredToken;
 	FString StoredRefreshToken;
@@ -258,7 +208,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "AuthenticateApple"), Category = "Nakama|Client")
 	static UNakamaClientAuthenticateApple* AuthenticateApple(
 		UObject* WorldContextObject,
-		const FNakamaClientRef& Client,
+		FNakamaApiConfig Client,
 		FNakamaAccountApple Account,
 		bool Create,
 		FString Username);
@@ -266,7 +216,7 @@ public:
 	virtual void Activate() override;
 
 private:
-	FNakamaClientRef Client;
+	FNakamaApiConfig Client;
 	FNakamaAccountApple StoredAccount;
 	bool StoredCreate;
 	FString StoredUsername;
@@ -290,7 +240,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "AuthenticateCustom"), Category = "Nakama|Client")
 	static UNakamaClientAuthenticateCustom* AuthenticateCustom(
 		UObject* WorldContextObject,
-		const FNakamaClientRef& Client,
+		FNakamaApiConfig Client,
 		FNakamaAccountCustom Account,
 		bool Create,
 		FString Username);
@@ -298,7 +248,7 @@ public:
 	virtual void Activate() override;
 
 private:
-	FNakamaClientRef Client;
+	FNakamaApiConfig Client;
 	FNakamaAccountCustom StoredAccount;
 	bool StoredCreate;
 	FString StoredUsername;
@@ -322,7 +272,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "AuthenticateDevice"), Category = "Nakama|Client")
 	static UNakamaClientAuthenticateDevice* AuthenticateDevice(
 		UObject* WorldContextObject,
-		const FNakamaClientRef& Client,
+		FNakamaApiConfig Client,
 		FNakamaAccountDevice Account,
 		bool Create,
 		FString Username);
@@ -330,7 +280,7 @@ public:
 	virtual void Activate() override;
 
 private:
-	FNakamaClientRef Client;
+	FNakamaApiConfig Client;
 	FNakamaAccountDevice StoredAccount;
 	bool StoredCreate;
 	FString StoredUsername;
@@ -354,7 +304,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "AuthenticateEmail"), Category = "Nakama|Client")
 	static UNakamaClientAuthenticateEmail* AuthenticateEmail(
 		UObject* WorldContextObject,
-		const FNakamaClientRef& Client,
+		FNakamaApiConfig Client,
 		FNakamaAccountEmail Account,
 		bool Create,
 		FString Username);
@@ -362,7 +312,7 @@ public:
 	virtual void Activate() override;
 
 private:
-	FNakamaClientRef Client;
+	FNakamaApiConfig Client;
 	FNakamaAccountEmail StoredAccount;
 	bool StoredCreate;
 	FString StoredUsername;
@@ -386,7 +336,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "AuthenticateFacebook"), Category = "Nakama|Client")
 	static UNakamaClientAuthenticateFacebook* AuthenticateFacebook(
 		UObject* WorldContextObject,
-		const FNakamaClientRef& Client,
+		FNakamaApiConfig Client,
 		FNakamaAccountFacebook Account,
 		bool Create,
 		FString Username,
@@ -395,7 +345,7 @@ public:
 	virtual void Activate() override;
 
 private:
-	FNakamaClientRef Client;
+	FNakamaApiConfig Client;
 	FNakamaAccountFacebook StoredAccount;
 	bool StoredCreate;
 	FString StoredUsername;
@@ -420,7 +370,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "AuthenticateFacebookInstantGame"), Category = "Nakama|Client")
 	static UNakamaClientAuthenticateFacebookInstantGame* AuthenticateFacebookInstantGame(
 		UObject* WorldContextObject,
-		const FNakamaClientRef& Client,
+		FNakamaApiConfig Client,
 		FNakamaAccountFacebookInstantGame Account,
 		bool Create,
 		FString Username);
@@ -428,7 +378,7 @@ public:
 	virtual void Activate() override;
 
 private:
-	FNakamaClientRef Client;
+	FNakamaApiConfig Client;
 	FNakamaAccountFacebookInstantGame StoredAccount;
 	bool StoredCreate;
 	FString StoredUsername;
@@ -452,7 +402,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "AuthenticateGameCenter"), Category = "Nakama|Client")
 	static UNakamaClientAuthenticateGameCenter* AuthenticateGameCenter(
 		UObject* WorldContextObject,
-		const FNakamaClientRef& Client,
+		FNakamaApiConfig Client,
 		FNakamaAccountGameCenter Account,
 		bool Create,
 		FString Username);
@@ -460,7 +410,7 @@ public:
 	virtual void Activate() override;
 
 private:
-	FNakamaClientRef Client;
+	FNakamaApiConfig Client;
 	FNakamaAccountGameCenter StoredAccount;
 	bool StoredCreate;
 	FString StoredUsername;
@@ -484,7 +434,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "AuthenticateGoogle"), Category = "Nakama|Client")
 	static UNakamaClientAuthenticateGoogle* AuthenticateGoogle(
 		UObject* WorldContextObject,
-		const FNakamaClientRef& Client,
+		FNakamaApiConfig Client,
 		FNakamaAccountGoogle Account,
 		bool Create,
 		FString Username);
@@ -492,7 +442,7 @@ public:
 	virtual void Activate() override;
 
 private:
-	FNakamaClientRef Client;
+	FNakamaApiConfig Client;
 	FNakamaAccountGoogle StoredAccount;
 	bool StoredCreate;
 	FString StoredUsername;
@@ -516,7 +466,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "AuthenticateSteam"), Category = "Nakama|Client")
 	static UNakamaClientAuthenticateSteam* AuthenticateSteam(
 		UObject* WorldContextObject,
-		const FNakamaClientRef& Client,
+		FNakamaApiConfig Client,
 		FNakamaAccountSteam Account,
 		bool Create,
 		FString Username,
@@ -525,7 +475,7 @@ public:
 	virtual void Activate() override;
 
 private:
-	FNakamaClientRef Client;
+	FNakamaApiConfig Client;
 	FNakamaAccountSteam StoredAccount;
 	bool StoredCreate;
 	FString StoredUsername;
@@ -550,7 +500,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "BanGroupUsers"), Category = "Nakama|Client")
 	static UNakamaClientBanGroupUsers* BanGroupUsers(
 		UObject* WorldContextObject,
-		const FNakamaClientRef& Client,
+		FNakamaApiConfig Client,
 		const FNakamaSession& Session,
 		FString GroupId,
 		const TArray<FString>& UserIds);
@@ -558,7 +508,7 @@ public:
 	virtual void Activate() override;
 
 private:
-	FNakamaClientRef Client;
+	FNakamaApiConfig Client;
 	FNakamaSession Session;
 	FString StoredGroupId;
 	TArray<FString> StoredUserIds;
@@ -582,7 +532,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "BlockFriends"), Category = "Nakama|Client")
 	static UNakamaClientBlockFriends* BlockFriends(
 		UObject* WorldContextObject,
-		const FNakamaClientRef& Client,
+		FNakamaApiConfig Client,
 		const FNakamaSession& Session,
 		const TArray<FString>& Ids,
 		const TArray<FString>& Usernames);
@@ -590,7 +540,7 @@ public:
 	virtual void Activate() override;
 
 private:
-	FNakamaClientRef Client;
+	FNakamaApiConfig Client;
 	FNakamaSession Session;
 	TArray<FString> StoredIds;
 	TArray<FString> StoredUsernames;
@@ -614,7 +564,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "CreateGroup"), Category = "Nakama|Client")
 	static UNakamaClientCreateGroup* CreateGroup(
 		UObject* WorldContextObject,
-		const FNakamaClientRef& Client,
+		FNakamaApiConfig Client,
 		const FNakamaSession& Session,
 		FString Name,
 		FString Description,
@@ -626,7 +576,7 @@ public:
 	virtual void Activate() override;
 
 private:
-	FNakamaClientRef Client;
+	FNakamaApiConfig Client;
 	FNakamaSession Session;
 	FString StoredName;
 	FString StoredDescription;
@@ -654,13 +604,13 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "DeleteAccount"), Category = "Nakama|Client")
 	static UNakamaClientDeleteAccount* DeleteAccount(
 		UObject* WorldContextObject,
-		const FNakamaClientRef& Client,
+		FNakamaApiConfig Client,
 		const FNakamaSession& Session);
 
 	virtual void Activate() override;
 
 private:
-	FNakamaClientRef Client;
+	FNakamaApiConfig Client;
 	FNakamaSession Session;
 };
 
@@ -682,7 +632,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "DeleteFriends"), Category = "Nakama|Client")
 	static UNakamaClientDeleteFriends* DeleteFriends(
 		UObject* WorldContextObject,
-		const FNakamaClientRef& Client,
+		FNakamaApiConfig Client,
 		const FNakamaSession& Session,
 		const TArray<FString>& Ids,
 		const TArray<FString>& Usernames);
@@ -690,7 +640,7 @@ public:
 	virtual void Activate() override;
 
 private:
-	FNakamaClientRef Client;
+	FNakamaApiConfig Client;
 	FNakamaSession Session;
 	TArray<FString> StoredIds;
 	TArray<FString> StoredUsernames;
@@ -714,14 +664,14 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "DeleteGroup"), Category = "Nakama|Client")
 	static UNakamaClientDeleteGroup* DeleteGroup(
 		UObject* WorldContextObject,
-		const FNakamaClientRef& Client,
+		FNakamaApiConfig Client,
 		const FNakamaSession& Session,
 		FString GroupId);
 
 	virtual void Activate() override;
 
 private:
-	FNakamaClientRef Client;
+	FNakamaApiConfig Client;
 	FNakamaSession Session;
 	FString StoredGroupId;
 };
@@ -744,14 +694,14 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "DeleteLeaderboardRecord"), Category = "Nakama|Client")
 	static UNakamaClientDeleteLeaderboardRecord* DeleteLeaderboardRecord(
 		UObject* WorldContextObject,
-		const FNakamaClientRef& Client,
+		FNakamaApiConfig Client,
 		const FNakamaSession& Session,
 		FString LeaderboardId);
 
 	virtual void Activate() override;
 
 private:
-	FNakamaClientRef Client;
+	FNakamaApiConfig Client;
 	FNakamaSession Session;
 	FString StoredLeaderboardId;
 };
@@ -774,14 +724,14 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "DeleteNotifications"), Category = "Nakama|Client")
 	static UNakamaClientDeleteNotifications* DeleteNotifications(
 		UObject* WorldContextObject,
-		const FNakamaClientRef& Client,
+		FNakamaApiConfig Client,
 		const FNakamaSession& Session,
 		const TArray<FString>& Ids);
 
 	virtual void Activate() override;
 
 private:
-	FNakamaClientRef Client;
+	FNakamaApiConfig Client;
 	FNakamaSession Session;
 	TArray<FString> StoredIds;
 };
@@ -804,14 +754,14 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "DeleteTournamentRecord"), Category = "Nakama|Client")
 	static UNakamaClientDeleteTournamentRecord* DeleteTournamentRecord(
 		UObject* WorldContextObject,
-		const FNakamaClientRef& Client,
+		FNakamaApiConfig Client,
 		const FNakamaSession& Session,
 		FString TournamentId);
 
 	virtual void Activate() override;
 
 private:
-	FNakamaClientRef Client;
+	FNakamaApiConfig Client;
 	FNakamaSession Session;
 	FString StoredTournamentId;
 };
@@ -834,14 +784,14 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "DeleteStorageObjects"), Category = "Nakama|Client")
 	static UNakamaClientDeleteStorageObjects* DeleteStorageObjects(
 		UObject* WorldContextObject,
-		const FNakamaClientRef& Client,
+		FNakamaApiConfig Client,
 		const FNakamaSession& Session,
 		const TArray<FNakamaDeleteStorageObjectId>& ObjectIds);
 
 	virtual void Activate() override;
 
 private:
-	FNakamaClientRef Client;
+	FNakamaApiConfig Client;
 	FNakamaSession Session;
 	TArray<FNakamaDeleteStorageObjectId> StoredObjectIds;
 };
@@ -864,7 +814,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "Event"), Category = "Nakama|Client")
 	static UNakamaClientEvent* Event(
 		UObject* WorldContextObject,
-		const FNakamaClientRef& Client,
+		FNakamaApiConfig Client,
 		const FNakamaSession& Session,
 		FString Name,
 		FString Timestamp,
@@ -874,7 +824,7 @@ public:
 	virtual void Activate() override;
 
 private:
-	FNakamaClientRef Client;
+	FNakamaApiConfig Client;
 	FNakamaSession Session;
 	FString StoredName;
 	FString StoredTimestamp;
@@ -900,13 +850,13 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "GetAccount"), Category = "Nakama|Client")
 	static UNakamaClientGetAccount* GetAccount(
 		UObject* WorldContextObject,
-		const FNakamaClientRef& Client,
+		FNakamaApiConfig Client,
 		const FNakamaSession& Session);
 
 	virtual void Activate() override;
 
 private:
-	FNakamaClientRef Client;
+	FNakamaApiConfig Client;
 	FNakamaSession Session;
 };
 
@@ -928,7 +878,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "GetUsers"), Category = "Nakama|Client")
 	static UNakamaClientGetUsers* GetUsers(
 		UObject* WorldContextObject,
-		const FNakamaClientRef& Client,
+		FNakamaApiConfig Client,
 		const FNakamaSession& Session,
 		const TArray<FString>& Ids,
 		const TArray<FString>& Usernames,
@@ -937,7 +887,7 @@ public:
 	virtual void Activate() override;
 
 private:
-	FNakamaClientRef Client;
+	FNakamaApiConfig Client;
 	FNakamaSession Session;
 	TArray<FString> StoredIds;
 	TArray<FString> StoredUsernames;
@@ -962,14 +912,14 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "GetSubscription"), Category = "Nakama|Client")
 	static UNakamaClientGetSubscription* GetSubscription(
 		UObject* WorldContextObject,
-		const FNakamaClientRef& Client,
+		FNakamaApiConfig Client,
 		const FNakamaSession& Session,
 		FString ProductId);
 
 	virtual void Activate() override;
 
 private:
-	FNakamaClientRef Client;
+	FNakamaApiConfig Client;
 	FNakamaSession Session;
 	FString StoredProductId;
 };
@@ -992,13 +942,13 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "GetMatchmakerStats"), Category = "Nakama|Client")
 	static UNakamaClientGetMatchmakerStats* GetMatchmakerStats(
 		UObject* WorldContextObject,
-		const FNakamaClientRef& Client,
+		FNakamaApiConfig Client,
 		const FNakamaSession& Session);
 
 	virtual void Activate() override;
 
 private:
-	FNakamaClientRef Client;
+	FNakamaApiConfig Client;
 	FNakamaSession Session;
 };
 
@@ -1020,13 +970,13 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "Healthcheck"), Category = "Nakama|Client")
 	static UNakamaClientHealthcheck* Healthcheck(
 		UObject* WorldContextObject,
-		const FNakamaClientRef& Client,
+		FNakamaApiConfig Client,
 		const FNakamaSession& Session);
 
 	virtual void Activate() override;
 
 private:
-	FNakamaClientRef Client;
+	FNakamaApiConfig Client;
 	FNakamaSession Session;
 };
 
@@ -1048,7 +998,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ImportFacebookFriends"), Category = "Nakama|Client")
 	static UNakamaClientImportFacebookFriends* ImportFacebookFriends(
 		UObject* WorldContextObject,
-		const FNakamaClientRef& Client,
+		FNakamaApiConfig Client,
 		const FNakamaSession& Session,
 		FNakamaAccountFacebook Account,
 		bool Reset);
@@ -1056,7 +1006,7 @@ public:
 	virtual void Activate() override;
 
 private:
-	FNakamaClientRef Client;
+	FNakamaApiConfig Client;
 	FNakamaSession Session;
 	FNakamaAccountFacebook StoredAccount;
 	bool StoredReset;
@@ -1080,7 +1030,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ImportSteamFriends"), Category = "Nakama|Client")
 	static UNakamaClientImportSteamFriends* ImportSteamFriends(
 		UObject* WorldContextObject,
-		const FNakamaClientRef& Client,
+		FNakamaApiConfig Client,
 		const FNakamaSession& Session,
 		FNakamaAccountSteam Account,
 		bool Reset);
@@ -1088,7 +1038,7 @@ public:
 	virtual void Activate() override;
 
 private:
-	FNakamaClientRef Client;
+	FNakamaApiConfig Client;
 	FNakamaSession Session;
 	FNakamaAccountSteam StoredAccount;
 	bool StoredReset;
@@ -1112,14 +1062,14 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "JoinGroup"), Category = "Nakama|Client")
 	static UNakamaClientJoinGroup* JoinGroup(
 		UObject* WorldContextObject,
-		const FNakamaClientRef& Client,
+		FNakamaApiConfig Client,
 		const FNakamaSession& Session,
 		FString GroupId);
 
 	virtual void Activate() override;
 
 private:
-	FNakamaClientRef Client;
+	FNakamaApiConfig Client;
 	FNakamaSession Session;
 	FString StoredGroupId;
 };
@@ -1142,14 +1092,14 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "JoinTournament"), Category = "Nakama|Client")
 	static UNakamaClientJoinTournament* JoinTournament(
 		UObject* WorldContextObject,
-		const FNakamaClientRef& Client,
+		FNakamaApiConfig Client,
 		const FNakamaSession& Session,
 		FString TournamentId);
 
 	virtual void Activate() override;
 
 private:
-	FNakamaClientRef Client;
+	FNakamaApiConfig Client;
 	FNakamaSession Session;
 	FString StoredTournamentId;
 };
@@ -1172,7 +1122,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "KickGroupUsers"), Category = "Nakama|Client")
 	static UNakamaClientKickGroupUsers* KickGroupUsers(
 		UObject* WorldContextObject,
-		const FNakamaClientRef& Client,
+		FNakamaApiConfig Client,
 		const FNakamaSession& Session,
 		FString GroupId,
 		const TArray<FString>& UserIds);
@@ -1180,7 +1130,7 @@ public:
 	virtual void Activate() override;
 
 private:
-	FNakamaClientRef Client;
+	FNakamaApiConfig Client;
 	FNakamaSession Session;
 	FString StoredGroupId;
 	TArray<FString> StoredUserIds;
@@ -1204,14 +1154,14 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "LeaveGroup"), Category = "Nakama|Client")
 	static UNakamaClientLeaveGroup* LeaveGroup(
 		UObject* WorldContextObject,
-		const FNakamaClientRef& Client,
+		FNakamaApiConfig Client,
 		const FNakamaSession& Session,
 		FString GroupId);
 
 	virtual void Activate() override;
 
 private:
-	FNakamaClientRef Client;
+	FNakamaApiConfig Client;
 	FNakamaSession Session;
 	FString StoredGroupId;
 };
@@ -1234,7 +1184,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "LinkApple"), Category = "Nakama|Client")
 	static UNakamaClientLinkApple* LinkApple(
 		UObject* WorldContextObject,
-		const FNakamaClientRef& Client,
+		FNakamaApiConfig Client,
 		const FNakamaSession& Session,
 		FString Token,
 		const TMap<FString, FString>& Vars);
@@ -1242,7 +1192,7 @@ public:
 	virtual void Activate() override;
 
 private:
-	FNakamaClientRef Client;
+	FNakamaApiConfig Client;
 	FNakamaSession Session;
 	FString StoredToken;
 	TMap<FString, FString> StoredVars;
@@ -1266,7 +1216,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "LinkCustom"), Category = "Nakama|Client")
 	static UNakamaClientLinkCustom* LinkCustom(
 		UObject* WorldContextObject,
-		const FNakamaClientRef& Client,
+		FNakamaApiConfig Client,
 		const FNakamaSession& Session,
 		FString Id,
 		const TMap<FString, FString>& Vars);
@@ -1274,7 +1224,7 @@ public:
 	virtual void Activate() override;
 
 private:
-	FNakamaClientRef Client;
+	FNakamaApiConfig Client;
 	FNakamaSession Session;
 	FString StoredId;
 	TMap<FString, FString> StoredVars;
@@ -1298,7 +1248,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "LinkDevice"), Category = "Nakama|Client")
 	static UNakamaClientLinkDevice* LinkDevice(
 		UObject* WorldContextObject,
-		const FNakamaClientRef& Client,
+		FNakamaApiConfig Client,
 		const FNakamaSession& Session,
 		FString Id,
 		const TMap<FString, FString>& Vars);
@@ -1306,7 +1256,7 @@ public:
 	virtual void Activate() override;
 
 private:
-	FNakamaClientRef Client;
+	FNakamaApiConfig Client;
 	FNakamaSession Session;
 	FString StoredId;
 	TMap<FString, FString> StoredVars;
@@ -1330,7 +1280,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "LinkEmail"), Category = "Nakama|Client")
 	static UNakamaClientLinkEmail* LinkEmail(
 		UObject* WorldContextObject,
-		const FNakamaClientRef& Client,
+		FNakamaApiConfig Client,
 		const FNakamaSession& Session,
 		FString Email,
 		FString Password,
@@ -1339,7 +1289,7 @@ public:
 	virtual void Activate() override;
 
 private:
-	FNakamaClientRef Client;
+	FNakamaApiConfig Client;
 	FNakamaSession Session;
 	FString StoredEmail;
 	FString StoredPassword;
@@ -1364,7 +1314,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "LinkFacebook"), Category = "Nakama|Client")
 	static UNakamaClientLinkFacebook* LinkFacebook(
 		UObject* WorldContextObject,
-		const FNakamaClientRef& Client,
+		FNakamaApiConfig Client,
 		const FNakamaSession& Session,
 		FNakamaAccountFacebook Account,
 		bool Sync);
@@ -1372,7 +1322,7 @@ public:
 	virtual void Activate() override;
 
 private:
-	FNakamaClientRef Client;
+	FNakamaApiConfig Client;
 	FNakamaSession Session;
 	FNakamaAccountFacebook StoredAccount;
 	bool StoredSync;
@@ -1396,7 +1346,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "LinkFacebookInstantGame"), Category = "Nakama|Client")
 	static UNakamaClientLinkFacebookInstantGame* LinkFacebookInstantGame(
 		UObject* WorldContextObject,
-		const FNakamaClientRef& Client,
+		FNakamaApiConfig Client,
 		const FNakamaSession& Session,
 		FString SignedPlayerInfo,
 		const TMap<FString, FString>& Vars);
@@ -1404,7 +1354,7 @@ public:
 	virtual void Activate() override;
 
 private:
-	FNakamaClientRef Client;
+	FNakamaApiConfig Client;
 	FNakamaSession Session;
 	FString StoredSignedPlayerInfo;
 	TMap<FString, FString> StoredVars;
@@ -1428,7 +1378,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "LinkGameCenter"), Category = "Nakama|Client")
 	static UNakamaClientLinkGameCenter* LinkGameCenter(
 		UObject* WorldContextObject,
-		const FNakamaClientRef& Client,
+		FNakamaApiConfig Client,
 		const FNakamaSession& Session,
 		FString PlayerId,
 		FString BundleId,
@@ -1441,7 +1391,7 @@ public:
 	virtual void Activate() override;
 
 private:
-	FNakamaClientRef Client;
+	FNakamaApiConfig Client;
 	FNakamaSession Session;
 	FString StoredPlayerId;
 	FString StoredBundleId;
@@ -1470,7 +1420,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "LinkGoogle"), Category = "Nakama|Client")
 	static UNakamaClientLinkGoogle* LinkGoogle(
 		UObject* WorldContextObject,
-		const FNakamaClientRef& Client,
+		FNakamaApiConfig Client,
 		const FNakamaSession& Session,
 		FString Token,
 		const TMap<FString, FString>& Vars);
@@ -1478,7 +1428,7 @@ public:
 	virtual void Activate() override;
 
 private:
-	FNakamaClientRef Client;
+	FNakamaApiConfig Client;
 	FNakamaSession Session;
 	FString StoredToken;
 	TMap<FString, FString> StoredVars;
@@ -1502,7 +1452,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "LinkSteam"), Category = "Nakama|Client")
 	static UNakamaClientLinkSteam* LinkSteam(
 		UObject* WorldContextObject,
-		const FNakamaClientRef& Client,
+		FNakamaApiConfig Client,
 		const FNakamaSession& Session,
 		FNakamaAccountSteam Account,
 		bool Sync);
@@ -1510,7 +1460,7 @@ public:
 	virtual void Activate() override;
 
 private:
-	FNakamaClientRef Client;
+	FNakamaApiConfig Client;
 	FNakamaSession Session;
 	FNakamaAccountSteam StoredAccount;
 	bool StoredSync;
@@ -1534,7 +1484,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ListChannelMessages"), Category = "Nakama|Client")
 	static UNakamaClientListChannelMessages* ListChannelMessages(
 		UObject* WorldContextObject,
-		const FNakamaClientRef& Client,
+		FNakamaApiConfig Client,
 		const FNakamaSession& Session,
 		FString ChannelId,
 		int32 Limit,
@@ -1544,7 +1494,7 @@ public:
 	virtual void Activate() override;
 
 private:
-	FNakamaClientRef Client;
+	FNakamaApiConfig Client;
 	FNakamaSession Session;
 	FString StoredChannelId;
 	int32 StoredLimit;
@@ -1570,7 +1520,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ListFriends"), Category = "Nakama|Client")
 	static UNakamaClientListFriends* ListFriends(
 		UObject* WorldContextObject,
-		const FNakamaClientRef& Client,
+		FNakamaApiConfig Client,
 		const FNakamaSession& Session,
 		int32 Limit,
 		int32 State,
@@ -1579,7 +1529,7 @@ public:
 	virtual void Activate() override;
 
 private:
-	FNakamaClientRef Client;
+	FNakamaApiConfig Client;
 	FNakamaSession Session;
 	int32 StoredLimit;
 	int32 StoredState;
@@ -1604,7 +1554,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ListFriendsOfFriends"), Category = "Nakama|Client")
 	static UNakamaClientListFriendsOfFriends* ListFriendsOfFriends(
 		UObject* WorldContextObject,
-		const FNakamaClientRef& Client,
+		FNakamaApiConfig Client,
 		const FNakamaSession& Session,
 		int32 Limit,
 		FString Cursor);
@@ -1612,7 +1562,7 @@ public:
 	virtual void Activate() override;
 
 private:
-	FNakamaClientRef Client;
+	FNakamaApiConfig Client;
 	FNakamaSession Session;
 	int32 StoredLimit;
 	FString StoredCursor;
@@ -1636,7 +1586,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ListGroups"), Category = "Nakama|Client")
 	static UNakamaClientListGroups* ListGroups(
 		UObject* WorldContextObject,
-		const FNakamaClientRef& Client,
+		FNakamaApiConfig Client,
 		const FNakamaSession& Session,
 		FString Name,
 		FString Cursor,
@@ -1648,7 +1598,7 @@ public:
 	virtual void Activate() override;
 
 private:
-	FNakamaClientRef Client;
+	FNakamaApiConfig Client;
 	FNakamaSession Session;
 	FString StoredName;
 	FString StoredCursor;
@@ -1676,7 +1626,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ListGroupUsers"), Category = "Nakama|Client")
 	static UNakamaClientListGroupUsers* ListGroupUsers(
 		UObject* WorldContextObject,
-		const FNakamaClientRef& Client,
+		FNakamaApiConfig Client,
 		const FNakamaSession& Session,
 		FString GroupId,
 		int32 Limit,
@@ -1686,7 +1636,7 @@ public:
 	virtual void Activate() override;
 
 private:
-	FNakamaClientRef Client;
+	FNakamaApiConfig Client;
 	FNakamaSession Session;
 	FString StoredGroupId;
 	int32 StoredLimit;
@@ -1712,7 +1662,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ListLeaderboardRecords"), Category = "Nakama|Client")
 	static UNakamaClientListLeaderboardRecords* ListLeaderboardRecords(
 		UObject* WorldContextObject,
-		const FNakamaClientRef& Client,
+		FNakamaApiConfig Client,
 		const FNakamaSession& Session,
 		FString LeaderboardId,
 		const TArray<FString>& OwnerIds,
@@ -1723,7 +1673,7 @@ public:
 	virtual void Activate() override;
 
 private:
-	FNakamaClientRef Client;
+	FNakamaApiConfig Client;
 	FNakamaSession Session;
 	FString StoredLeaderboardId;
 	TArray<FString> StoredOwnerIds;
@@ -1750,7 +1700,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ListLeaderboardRecordsAroundOwner"), Category = "Nakama|Client")
 	static UNakamaClientListLeaderboardRecordsAroundOwner* ListLeaderboardRecordsAroundOwner(
 		UObject* WorldContextObject,
-		const FNakamaClientRef& Client,
+		FNakamaApiConfig Client,
 		const FNakamaSession& Session,
 		FString LeaderboardId,
 		int32 Limit,
@@ -1761,7 +1711,7 @@ public:
 	virtual void Activate() override;
 
 private:
-	FNakamaClientRef Client;
+	FNakamaApiConfig Client;
 	FNakamaSession Session;
 	FString StoredLeaderboardId;
 	int32 StoredLimit;
@@ -1788,7 +1738,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ListMatches"), Category = "Nakama|Client")
 	static UNakamaClientListMatches* ListMatches(
 		UObject* WorldContextObject,
-		const FNakamaClientRef& Client,
+		FNakamaApiConfig Client,
 		const FNakamaSession& Session,
 		int32 Limit,
 		bool Authoritative,
@@ -1800,7 +1750,7 @@ public:
 	virtual void Activate() override;
 
 private:
-	FNakamaClientRef Client;
+	FNakamaApiConfig Client;
 	FNakamaSession Session;
 	int32 StoredLimit;
 	bool StoredAuthoritative;
@@ -1828,7 +1778,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ListParties"), Category = "Nakama|Client")
 	static UNakamaClientListParties* ListParties(
 		UObject* WorldContextObject,
-		const FNakamaClientRef& Client,
+		FNakamaApiConfig Client,
 		const FNakamaSession& Session,
 		int32 Limit,
 		bool Open,
@@ -1838,7 +1788,7 @@ public:
 	virtual void Activate() override;
 
 private:
-	FNakamaClientRef Client;
+	FNakamaApiConfig Client;
 	FNakamaSession Session;
 	int32 StoredLimit;
 	bool StoredOpen;
@@ -1864,7 +1814,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ListNotifications"), Category = "Nakama|Client")
 	static UNakamaClientListNotifications* ListNotifications(
 		UObject* WorldContextObject,
-		const FNakamaClientRef& Client,
+		FNakamaApiConfig Client,
 		const FNakamaSession& Session,
 		int32 Limit,
 		FString CacheableCursor);
@@ -1872,7 +1822,7 @@ public:
 	virtual void Activate() override;
 
 private:
-	FNakamaClientRef Client;
+	FNakamaApiConfig Client;
 	FNakamaSession Session;
 	int32 StoredLimit;
 	FString StoredCacheableCursor;
@@ -1896,7 +1846,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ListStorageObjects"), Category = "Nakama|Client")
 	static UNakamaClientListStorageObjects* ListStorageObjects(
 		UObject* WorldContextObject,
-		const FNakamaClientRef& Client,
+		FNakamaApiConfig Client,
 		const FNakamaSession& Session,
 		FString UserId,
 		FString Collection,
@@ -1906,7 +1856,7 @@ public:
 	virtual void Activate() override;
 
 private:
-	FNakamaClientRef Client;
+	FNakamaApiConfig Client;
 	FNakamaSession Session;
 	FString StoredUserId;
 	FString StoredCollection;
@@ -1932,7 +1882,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ListSubscriptions"), Category = "Nakama|Client")
 	static UNakamaClientListSubscriptions* ListSubscriptions(
 		UObject* WorldContextObject,
-		const FNakamaClientRef& Client,
+		FNakamaApiConfig Client,
 		const FNakamaSession& Session,
 		int32 Limit,
 		FString Cursor);
@@ -1940,7 +1890,7 @@ public:
 	virtual void Activate() override;
 
 private:
-	FNakamaClientRef Client;
+	FNakamaApiConfig Client;
 	FNakamaSession Session;
 	int32 StoredLimit;
 	FString StoredCursor;
@@ -1964,7 +1914,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ListTournaments"), Category = "Nakama|Client")
 	static UNakamaClientListTournaments* ListTournaments(
 		UObject* WorldContextObject,
-		const FNakamaClientRef& Client,
+		FNakamaApiConfig Client,
 		const FNakamaSession& Session,
 		int32 CategoryStart,
 		int32 CategoryEnd,
@@ -1976,7 +1926,7 @@ public:
 	virtual void Activate() override;
 
 private:
-	FNakamaClientRef Client;
+	FNakamaApiConfig Client;
 	FNakamaSession Session;
 	int32 StoredCategoryStart;
 	int32 StoredCategoryEnd;
@@ -2004,7 +1954,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ListTournamentRecords"), Category = "Nakama|Client")
 	static UNakamaClientListTournamentRecords* ListTournamentRecords(
 		UObject* WorldContextObject,
-		const FNakamaClientRef& Client,
+		FNakamaApiConfig Client,
 		const FNakamaSession& Session,
 		FString TournamentId,
 		const TArray<FString>& OwnerIds,
@@ -2015,7 +1965,7 @@ public:
 	virtual void Activate() override;
 
 private:
-	FNakamaClientRef Client;
+	FNakamaApiConfig Client;
 	FNakamaSession Session;
 	FString StoredTournamentId;
 	TArray<FString> StoredOwnerIds;
@@ -2042,7 +1992,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ListTournamentRecordsAroundOwner"), Category = "Nakama|Client")
 	static UNakamaClientListTournamentRecordsAroundOwner* ListTournamentRecordsAroundOwner(
 		UObject* WorldContextObject,
-		const FNakamaClientRef& Client,
+		FNakamaApiConfig Client,
 		const FNakamaSession& Session,
 		FString TournamentId,
 		int32 Limit,
@@ -2053,7 +2003,7 @@ public:
 	virtual void Activate() override;
 
 private:
-	FNakamaClientRef Client;
+	FNakamaApiConfig Client;
 	FNakamaSession Session;
 	FString StoredTournamentId;
 	int32 StoredLimit;
@@ -2080,7 +2030,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ListUserGroups"), Category = "Nakama|Client")
 	static UNakamaClientListUserGroups* ListUserGroups(
 		UObject* WorldContextObject,
-		const FNakamaClientRef& Client,
+		FNakamaApiConfig Client,
 		const FNakamaSession& Session,
 		FString UserId,
 		int32 Limit,
@@ -2090,7 +2040,7 @@ public:
 	virtual void Activate() override;
 
 private:
-	FNakamaClientRef Client;
+	FNakamaApiConfig Client;
 	FNakamaSession Session;
 	FString StoredUserId;
 	int32 StoredLimit;
@@ -2116,7 +2066,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "PromoteGroupUsers"), Category = "Nakama|Client")
 	static UNakamaClientPromoteGroupUsers* PromoteGroupUsers(
 		UObject* WorldContextObject,
-		const FNakamaClientRef& Client,
+		FNakamaApiConfig Client,
 		const FNakamaSession& Session,
 		FString GroupId,
 		const TArray<FString>& UserIds);
@@ -2124,7 +2074,7 @@ public:
 	virtual void Activate() override;
 
 private:
-	FNakamaClientRef Client;
+	FNakamaApiConfig Client;
 	FNakamaSession Session;
 	FString StoredGroupId;
 	TArray<FString> StoredUserIds;
@@ -2148,7 +2098,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "DemoteGroupUsers"), Category = "Nakama|Client")
 	static UNakamaClientDemoteGroupUsers* DemoteGroupUsers(
 		UObject* WorldContextObject,
-		const FNakamaClientRef& Client,
+		FNakamaApiConfig Client,
 		const FNakamaSession& Session,
 		FString GroupId,
 		const TArray<FString>& UserIds);
@@ -2156,7 +2106,7 @@ public:
 	virtual void Activate() override;
 
 private:
-	FNakamaClientRef Client;
+	FNakamaApiConfig Client;
 	FNakamaSession Session;
 	FString StoredGroupId;
 	TArray<FString> StoredUserIds;
@@ -2180,14 +2130,14 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ReadStorageObjects"), Category = "Nakama|Client")
 	static UNakamaClientReadStorageObjects* ReadStorageObjects(
 		UObject* WorldContextObject,
-		const FNakamaClientRef& Client,
+		FNakamaApiConfig Client,
 		const FNakamaSession& Session,
 		const TArray<FNakamaReadStorageObjectId>& ObjectIds);
 
 	virtual void Activate() override;
 
 private:
-	FNakamaClientRef Client;
+	FNakamaApiConfig Client;
 	FNakamaSession Session;
 	TArray<FNakamaReadStorageObjectId> StoredObjectIds;
 };
@@ -2210,7 +2160,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "RpcFunc"), Category = "Nakama|Client")
 	static UNakamaClientRpcFunc* RpcFunc(
 		UObject* WorldContextObject,
-		const FNakamaClientRef& Client,
+		FNakamaApiConfig Client,
 		const FNakamaSession& Session,
 		FString Id,
 		const TMap<FString, FString>& Payload,
@@ -2219,7 +2169,7 @@ public:
 	virtual void Activate() override;
 
 private:
-	FNakamaClientRef Client;
+	FNakamaApiConfig Client;
 	FNakamaSession Session;
 	FString StoredId;
 	TMap<FString, FString> StoredPayload;
@@ -2244,7 +2194,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "UnlinkApple"), Category = "Nakama|Client")
 	static UNakamaClientUnlinkApple* UnlinkApple(
 		UObject* WorldContextObject,
-		const FNakamaClientRef& Client,
+		FNakamaApiConfig Client,
 		const FNakamaSession& Session,
 		FString Token,
 		const TMap<FString, FString>& Vars);
@@ -2252,7 +2202,7 @@ public:
 	virtual void Activate() override;
 
 private:
-	FNakamaClientRef Client;
+	FNakamaApiConfig Client;
 	FNakamaSession Session;
 	FString StoredToken;
 	TMap<FString, FString> StoredVars;
@@ -2276,7 +2226,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "UnlinkCustom"), Category = "Nakama|Client")
 	static UNakamaClientUnlinkCustom* UnlinkCustom(
 		UObject* WorldContextObject,
-		const FNakamaClientRef& Client,
+		FNakamaApiConfig Client,
 		const FNakamaSession& Session,
 		FString Id,
 		const TMap<FString, FString>& Vars);
@@ -2284,7 +2234,7 @@ public:
 	virtual void Activate() override;
 
 private:
-	FNakamaClientRef Client;
+	FNakamaApiConfig Client;
 	FNakamaSession Session;
 	FString StoredId;
 	TMap<FString, FString> StoredVars;
@@ -2308,7 +2258,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "UnlinkDevice"), Category = "Nakama|Client")
 	static UNakamaClientUnlinkDevice* UnlinkDevice(
 		UObject* WorldContextObject,
-		const FNakamaClientRef& Client,
+		FNakamaApiConfig Client,
 		const FNakamaSession& Session,
 		FString Id,
 		const TMap<FString, FString>& Vars);
@@ -2316,7 +2266,7 @@ public:
 	virtual void Activate() override;
 
 private:
-	FNakamaClientRef Client;
+	FNakamaApiConfig Client;
 	FNakamaSession Session;
 	FString StoredId;
 	TMap<FString, FString> StoredVars;
@@ -2340,7 +2290,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "UnlinkEmail"), Category = "Nakama|Client")
 	static UNakamaClientUnlinkEmail* UnlinkEmail(
 		UObject* WorldContextObject,
-		const FNakamaClientRef& Client,
+		FNakamaApiConfig Client,
 		const FNakamaSession& Session,
 		FString Email,
 		FString Password,
@@ -2349,7 +2299,7 @@ public:
 	virtual void Activate() override;
 
 private:
-	FNakamaClientRef Client;
+	FNakamaApiConfig Client;
 	FNakamaSession Session;
 	FString StoredEmail;
 	FString StoredPassword;
@@ -2374,7 +2324,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "UnlinkFacebook"), Category = "Nakama|Client")
 	static UNakamaClientUnlinkFacebook* UnlinkFacebook(
 		UObject* WorldContextObject,
-		const FNakamaClientRef& Client,
+		FNakamaApiConfig Client,
 		const FNakamaSession& Session,
 		FString Token,
 		const TMap<FString, FString>& Vars);
@@ -2382,7 +2332,7 @@ public:
 	virtual void Activate() override;
 
 private:
-	FNakamaClientRef Client;
+	FNakamaApiConfig Client;
 	FNakamaSession Session;
 	FString StoredToken;
 	TMap<FString, FString> StoredVars;
@@ -2406,7 +2356,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "UnlinkFacebookInstantGame"), Category = "Nakama|Client")
 	static UNakamaClientUnlinkFacebookInstantGame* UnlinkFacebookInstantGame(
 		UObject* WorldContextObject,
-		const FNakamaClientRef& Client,
+		FNakamaApiConfig Client,
 		const FNakamaSession& Session,
 		FString SignedPlayerInfo,
 		const TMap<FString, FString>& Vars);
@@ -2414,7 +2364,7 @@ public:
 	virtual void Activate() override;
 
 private:
-	FNakamaClientRef Client;
+	FNakamaApiConfig Client;
 	FNakamaSession Session;
 	FString StoredSignedPlayerInfo;
 	TMap<FString, FString> StoredVars;
@@ -2438,7 +2388,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "UnlinkGameCenter"), Category = "Nakama|Client")
 	static UNakamaClientUnlinkGameCenter* UnlinkGameCenter(
 		UObject* WorldContextObject,
-		const FNakamaClientRef& Client,
+		FNakamaApiConfig Client,
 		const FNakamaSession& Session,
 		FString PlayerId,
 		FString BundleId,
@@ -2451,7 +2401,7 @@ public:
 	virtual void Activate() override;
 
 private:
-	FNakamaClientRef Client;
+	FNakamaApiConfig Client;
 	FNakamaSession Session;
 	FString StoredPlayerId;
 	FString StoredBundleId;
@@ -2480,7 +2430,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "UnlinkGoogle"), Category = "Nakama|Client")
 	static UNakamaClientUnlinkGoogle* UnlinkGoogle(
 		UObject* WorldContextObject,
-		const FNakamaClientRef& Client,
+		FNakamaApiConfig Client,
 		const FNakamaSession& Session,
 		FString Token,
 		const TMap<FString, FString>& Vars);
@@ -2488,7 +2438,7 @@ public:
 	virtual void Activate() override;
 
 private:
-	FNakamaClientRef Client;
+	FNakamaApiConfig Client;
 	FNakamaSession Session;
 	FString StoredToken;
 	TMap<FString, FString> StoredVars;
@@ -2512,7 +2462,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "UnlinkSteam"), Category = "Nakama|Client")
 	static UNakamaClientUnlinkSteam* UnlinkSteam(
 		UObject* WorldContextObject,
-		const FNakamaClientRef& Client,
+		FNakamaApiConfig Client,
 		const FNakamaSession& Session,
 		FString Token,
 		const TMap<FString, FString>& Vars);
@@ -2520,7 +2470,7 @@ public:
 	virtual void Activate() override;
 
 private:
-	FNakamaClientRef Client;
+	FNakamaApiConfig Client;
 	FNakamaSession Session;
 	FString StoredToken;
 	TMap<FString, FString> StoredVars;
@@ -2544,7 +2494,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "UpdateAccount"), Category = "Nakama|Client")
 	static UNakamaClientUpdateAccount* UpdateAccount(
 		UObject* WorldContextObject,
-		const FNakamaClientRef& Client,
+		FNakamaApiConfig Client,
 		const FNakamaSession& Session,
 		FString Username,
 		FString DisplayName,
@@ -2556,7 +2506,7 @@ public:
 	virtual void Activate() override;
 
 private:
-	FNakamaClientRef Client;
+	FNakamaApiConfig Client;
 	FNakamaSession Session;
 	FString StoredUsername;
 	FString StoredDisplayName;
@@ -2584,7 +2534,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "UpdateGroup"), Category = "Nakama|Client")
 	static UNakamaClientUpdateGroup* UpdateGroup(
 		UObject* WorldContextObject,
-		const FNakamaClientRef& Client,
+		FNakamaApiConfig Client,
 		const FNakamaSession& Session,
 		FString GroupId,
 		FString Name,
@@ -2596,7 +2546,7 @@ public:
 	virtual void Activate() override;
 
 private:
-	FNakamaClientRef Client;
+	FNakamaApiConfig Client;
 	FNakamaSession Session;
 	FString StoredGroupId;
 	FString StoredName;
@@ -2624,7 +2574,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ValidatePurchaseApple"), Category = "Nakama|Client")
 	static UNakamaClientValidatePurchaseApple* ValidatePurchaseApple(
 		UObject* WorldContextObject,
-		const FNakamaClientRef& Client,
+		FNakamaApiConfig Client,
 		const FNakamaSession& Session,
 		FString Receipt,
 		bool Persist);
@@ -2632,7 +2582,7 @@ public:
 	virtual void Activate() override;
 
 private:
-	FNakamaClientRef Client;
+	FNakamaApiConfig Client;
 	FNakamaSession Session;
 	FString StoredReceipt;
 	bool StoredPersist;
@@ -2656,7 +2606,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ValidateSubscriptionApple"), Category = "Nakama|Client")
 	static UNakamaClientValidateSubscriptionApple* ValidateSubscriptionApple(
 		UObject* WorldContextObject,
-		const FNakamaClientRef& Client,
+		FNakamaApiConfig Client,
 		const FNakamaSession& Session,
 		FString Receipt,
 		bool Persist);
@@ -2664,7 +2614,7 @@ public:
 	virtual void Activate() override;
 
 private:
-	FNakamaClientRef Client;
+	FNakamaApiConfig Client;
 	FNakamaSession Session;
 	FString StoredReceipt;
 	bool StoredPersist;
@@ -2688,7 +2638,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ValidatePurchaseGoogle"), Category = "Nakama|Client")
 	static UNakamaClientValidatePurchaseGoogle* ValidatePurchaseGoogle(
 		UObject* WorldContextObject,
-		const FNakamaClientRef& Client,
+		FNakamaApiConfig Client,
 		const FNakamaSession& Session,
 		FString Purchase,
 		bool Persist);
@@ -2696,7 +2646,7 @@ public:
 	virtual void Activate() override;
 
 private:
-	FNakamaClientRef Client;
+	FNakamaApiConfig Client;
 	FNakamaSession Session;
 	FString StoredPurchase;
 	bool StoredPersist;
@@ -2720,7 +2670,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ValidateSubscriptionGoogle"), Category = "Nakama|Client")
 	static UNakamaClientValidateSubscriptionGoogle* ValidateSubscriptionGoogle(
 		UObject* WorldContextObject,
-		const FNakamaClientRef& Client,
+		FNakamaApiConfig Client,
 		const FNakamaSession& Session,
 		FString Receipt,
 		bool Persist);
@@ -2728,7 +2678,7 @@ public:
 	virtual void Activate() override;
 
 private:
-	FNakamaClientRef Client;
+	FNakamaApiConfig Client;
 	FNakamaSession Session;
 	FString StoredReceipt;
 	bool StoredPersist;
@@ -2752,7 +2702,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ValidatePurchaseHuawei"), Category = "Nakama|Client")
 	static UNakamaClientValidatePurchaseHuawei* ValidatePurchaseHuawei(
 		UObject* WorldContextObject,
-		const FNakamaClientRef& Client,
+		FNakamaApiConfig Client,
 		const FNakamaSession& Session,
 		FString Purchase,
 		FString Signature,
@@ -2761,7 +2711,7 @@ public:
 	virtual void Activate() override;
 
 private:
-	FNakamaClientRef Client;
+	FNakamaApiConfig Client;
 	FNakamaSession Session;
 	FString StoredPurchase;
 	FString StoredSignature;
@@ -2786,7 +2736,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ValidatePurchaseFacebookInstant"), Category = "Nakama|Client")
 	static UNakamaClientValidatePurchaseFacebookInstant* ValidatePurchaseFacebookInstant(
 		UObject* WorldContextObject,
-		const FNakamaClientRef& Client,
+		FNakamaApiConfig Client,
 		const FNakamaSession& Session,
 		FString SignedRequest,
 		bool Persist);
@@ -2794,7 +2744,7 @@ public:
 	virtual void Activate() override;
 
 private:
-	FNakamaClientRef Client;
+	FNakamaApiConfig Client;
 	FNakamaSession Session;
 	FString StoredSignedRequest;
 	bool StoredPersist;
@@ -2818,7 +2768,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "WriteLeaderboardRecord"), Category = "Nakama|Client")
 	static UNakamaClientWriteLeaderboardRecord* WriteLeaderboardRecord(
 		UObject* WorldContextObject,
-		const FNakamaClientRef& Client,
+		FNakamaApiConfig Client,
 		const FNakamaSession& Session,
 		FString LeaderboardId,
 		FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite Record);
@@ -2826,7 +2776,7 @@ public:
 	virtual void Activate() override;
 
 private:
-	FNakamaClientRef Client;
+	FNakamaApiConfig Client;
 	FNakamaSession Session;
 	FString StoredLeaderboardId;
 	FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite StoredRecord;
@@ -2850,14 +2800,14 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "WriteStorageObjects"), Category = "Nakama|Client")
 	static UNakamaClientWriteStorageObjects* WriteStorageObjects(
 		UObject* WorldContextObject,
-		const FNakamaClientRef& Client,
+		FNakamaApiConfig Client,
 		const FNakamaSession& Session,
 		const TArray<FNakamaWriteStorageObject>& Objects);
 
 	virtual void Activate() override;
 
 private:
-	FNakamaClientRef Client;
+	FNakamaApiConfig Client;
 	FNakamaSession Session;
 	TArray<FNakamaWriteStorageObject> StoredObjects;
 };
@@ -2880,7 +2830,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "WriteTournamentRecord"), Category = "Nakama|Client")
 	static UNakamaClientWriteTournamentRecord* WriteTournamentRecord(
 		UObject* WorldContextObject,
-		const FNakamaClientRef& Client,
+		FNakamaApiConfig Client,
 		const FNakamaSession& Session,
 		FString TournamentId,
 		FNakamaWriteTournamentRecordRequest_TournamentRecordWrite Record);
@@ -2888,7 +2838,7 @@ public:
 	virtual void Activate() override;
 
 private:
-	FNakamaClientRef Client;
+	FNakamaApiConfig Client;
 	FNakamaSession Session;
 	FString StoredTournamentId;
 	FNakamaWriteTournamentRecordRequest_TournamentRecordWrite StoredRecord;

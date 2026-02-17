@@ -20,18 +20,6 @@
 #include "Containers/Ticker.h"
 #include "Modules/ModuleManager.h"
 
-FNakamaClientPtr Nakama::CreateClient(
-	const FString& ServerKey,
-	const FString& Host,
-	int32 Port,
-	bool bUseSSL,
-	bool bEnableDebug)
-{
-	FNakamaClientPtr Client = MakeShared<FNakamaClient>();
-	Client->ApiConfig = MakeShared<FNakamaApiConfig>(FNakamaApiConfig{ServerKey, Host, Port, bUseSSL, bEnableDebug});
-	return Client;
-}
-
 bool Nakama::IsTransientError(const FNakamaError& Error)
 {
 	switch (Error.Code)
@@ -57,16 +45,16 @@ namespace
 
 /** Optionally refresh the session before calling the RPC. */
 void MaybeRefreshThenCall(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FNakamaSessionPtr Session,
 	TFunction<void()> OnReady,
 	TFunction<void(const FNakamaError&)> OnError,
 	FNakamaCancellationTokenPtr CancellationToken)
 {
-	if (!Client->bAutoRefreshSession
+	if (!Client.bAutoRefreshSession
 		|| !Session.IsValid()
 		|| Session->RefreshToken.IsEmpty()
-		|| !Session->IsExpired(Client->AutoRefreshBufferSeconds))
+		|| !Session->IsExpired(Client.AutoRefreshBufferSeconds))
 	{
 		OnReady();
 		return;
@@ -82,15 +70,15 @@ void MaybeRefreshThenCall(
 	}
 
 	NakamaApi::SessionRefresh(
-		Client->ApiConfig,
+		Client.ApiConfig,
 		Session->RefreshToken,
 		{},
 		[Client, Session, OnReady](const FNakamaSession& RefreshedSession)
 		{
 			Session->Update(RefreshedSession.Token, RefreshedSession.RefreshToken);
-			if (Client->OnSessionRefreshed)
+			if (Client.OnSessionRefreshed)
 			{
-				Client->OnSessionRefreshed(*Session);
+				Client.OnSessionRefreshed(*Session);
 			}
 			OnReady();
 		},
@@ -107,7 +95,7 @@ void MaybeRefreshThenCall(
 } // anonymous namespace
 
 TNakamaFuture<FNakamaVoid> Nakama::AddFriends(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FNakamaSessionPtr Session,
 	const TArray<FString>& Ids,
 	const TArray<FString>& Usernames,
@@ -118,7 +106,7 @@ TNakamaFuture<FNakamaVoid> Nakama::AddFriends(
 	TFuture<TNakamaResult<FNakamaVoid>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -155,7 +143,7 @@ TNakamaFuture<FNakamaVoid> Nakama::AddFriends(
 				CancellationToken]()
 			{
 				NakamaApi::AddFriends(
-					Client->ApiConfig,
+					Client.ApiConfig,
 					Session,
 					Ids,
 					Usernames,
@@ -179,7 +167,7 @@ TNakamaFuture<FNakamaVoid> Nakama::AddFriends(
 }
 
 TNakamaFuture<FNakamaVoid> Nakama::AddFriends(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	const FString& HttpKey,
 	const TArray<FString>& Ids,
 	const TArray<FString>& Usernames,
@@ -190,7 +178,7 @@ TNakamaFuture<FNakamaVoid> Nakama::AddFriends(
 	TFuture<TNakamaResult<FNakamaVoid>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -221,7 +209,7 @@ TNakamaFuture<FNakamaVoid> Nakama::AddFriends(
 		CancellationToken]()
 	{
 		NakamaApi::AddFriends(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			HttpKey,
 			Ids,
 			Usernames,
@@ -242,7 +230,7 @@ TNakamaFuture<FNakamaVoid> Nakama::AddFriends(
 }
 
 TNakamaFuture<FNakamaVoid> Nakama::AddGroupUsers(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FNakamaSessionPtr Session,
 	FString GroupId,
 	const TArray<FString>& UserIds,
@@ -252,7 +240,7 @@ TNakamaFuture<FNakamaVoid> Nakama::AddGroupUsers(
 	TFuture<TNakamaResult<FNakamaVoid>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -287,7 +275,7 @@ TNakamaFuture<FNakamaVoid> Nakama::AddGroupUsers(
 				CancellationToken]()
 			{
 				NakamaApi::AddGroupUsers(
-					Client->ApiConfig,
+					Client.ApiConfig,
 					Session,
 					GroupId,
 					UserIds,
@@ -310,7 +298,7 @@ TNakamaFuture<FNakamaVoid> Nakama::AddGroupUsers(
 }
 
 TNakamaFuture<FNakamaVoid> Nakama::AddGroupUsers(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	const FString& HttpKey,
 	FString GroupId,
 	const TArray<FString>& UserIds,
@@ -320,7 +308,7 @@ TNakamaFuture<FNakamaVoid> Nakama::AddGroupUsers(
 	TFuture<TNakamaResult<FNakamaVoid>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -350,7 +338,7 @@ TNakamaFuture<FNakamaVoid> Nakama::AddGroupUsers(
 		CancellationToken]()
 	{
 		NakamaApi::AddGroupUsers(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			HttpKey,
 			GroupId,
 			UserIds,
@@ -370,7 +358,7 @@ TNakamaFuture<FNakamaVoid> Nakama::AddGroupUsers(
 }
 
 TNakamaFuture<FNakamaSession> Nakama::SessionRefresh(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FString Token,
 	const TMap<FString, FString>& Vars,
 	FNakamaCancellationTokenPtr CancellationToken)
@@ -379,7 +367,7 @@ TNakamaFuture<FNakamaSession> Nakama::SessionRefresh(
 	TFuture<TNakamaResult<FNakamaSession>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -408,7 +396,7 @@ TNakamaFuture<FNakamaSession> Nakama::SessionRefresh(
 		CancellationToken]()
 	{
 		NakamaApi::SessionRefresh(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			Token,
 			Vars,
 			[Promise, DoRequest, OnError](const FNakamaSession& Result)
@@ -427,7 +415,7 @@ TNakamaFuture<FNakamaSession> Nakama::SessionRefresh(
 }
 
 TNakamaFuture<FNakamaVoid> Nakama::SessionLogout(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FNakamaSessionPtr Session,
 	FString Token,
 	FString RefreshToken,
@@ -437,7 +425,7 @@ TNakamaFuture<FNakamaVoid> Nakama::SessionLogout(
 	TFuture<TNakamaResult<FNakamaVoid>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -472,7 +460,7 @@ TNakamaFuture<FNakamaVoid> Nakama::SessionLogout(
 				CancellationToken]()
 			{
 				NakamaApi::SessionLogout(
-					Client->ApiConfig,
+					Client.ApiConfig,
 					Session,
 					Token,
 					RefreshToken,
@@ -495,7 +483,7 @@ TNakamaFuture<FNakamaVoid> Nakama::SessionLogout(
 }
 
 TNakamaFuture<FNakamaVoid> Nakama::SessionLogout(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	const FString& HttpKey,
 	FString Token,
 	FString RefreshToken,
@@ -505,7 +493,7 @@ TNakamaFuture<FNakamaVoid> Nakama::SessionLogout(
 	TFuture<TNakamaResult<FNakamaVoid>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -535,7 +523,7 @@ TNakamaFuture<FNakamaVoid> Nakama::SessionLogout(
 		CancellationToken]()
 	{
 		NakamaApi::SessionLogout(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			HttpKey,
 			Token,
 			RefreshToken,
@@ -555,7 +543,7 @@ TNakamaFuture<FNakamaVoid> Nakama::SessionLogout(
 }
 
 TNakamaFuture<FNakamaSession> Nakama::AuthenticateApple(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FNakamaAccountApple Account,
 	bool Create,
 	FString Username,
@@ -565,7 +553,7 @@ TNakamaFuture<FNakamaSession> Nakama::AuthenticateApple(
 	TFuture<TNakamaResult<FNakamaSession>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -595,7 +583,7 @@ TNakamaFuture<FNakamaSession> Nakama::AuthenticateApple(
 		CancellationToken]()
 	{
 		NakamaApi::AuthenticateApple(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			Account,
 			Create,
 			Username,
@@ -615,7 +603,7 @@ TNakamaFuture<FNakamaSession> Nakama::AuthenticateApple(
 }
 
 TNakamaFuture<FNakamaSession> Nakama::AuthenticateCustom(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FNakamaAccountCustom Account,
 	bool Create,
 	FString Username,
@@ -625,7 +613,7 @@ TNakamaFuture<FNakamaSession> Nakama::AuthenticateCustom(
 	TFuture<TNakamaResult<FNakamaSession>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -655,7 +643,7 @@ TNakamaFuture<FNakamaSession> Nakama::AuthenticateCustom(
 		CancellationToken]()
 	{
 		NakamaApi::AuthenticateCustom(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			Account,
 			Create,
 			Username,
@@ -675,7 +663,7 @@ TNakamaFuture<FNakamaSession> Nakama::AuthenticateCustom(
 }
 
 TNakamaFuture<FNakamaSession> Nakama::AuthenticateDevice(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FNakamaAccountDevice Account,
 	bool Create,
 	FString Username,
@@ -685,7 +673,7 @@ TNakamaFuture<FNakamaSession> Nakama::AuthenticateDevice(
 	TFuture<TNakamaResult<FNakamaSession>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -715,7 +703,7 @@ TNakamaFuture<FNakamaSession> Nakama::AuthenticateDevice(
 		CancellationToken]()
 	{
 		NakamaApi::AuthenticateDevice(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			Account,
 			Create,
 			Username,
@@ -735,7 +723,7 @@ TNakamaFuture<FNakamaSession> Nakama::AuthenticateDevice(
 }
 
 TNakamaFuture<FNakamaSession> Nakama::AuthenticateEmail(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FNakamaAccountEmail Account,
 	bool Create,
 	FString Username,
@@ -745,7 +733,7 @@ TNakamaFuture<FNakamaSession> Nakama::AuthenticateEmail(
 	TFuture<TNakamaResult<FNakamaSession>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -775,7 +763,7 @@ TNakamaFuture<FNakamaSession> Nakama::AuthenticateEmail(
 		CancellationToken]()
 	{
 		NakamaApi::AuthenticateEmail(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			Account,
 			Create,
 			Username,
@@ -795,7 +783,7 @@ TNakamaFuture<FNakamaSession> Nakama::AuthenticateEmail(
 }
 
 TNakamaFuture<FNakamaSession> Nakama::AuthenticateFacebook(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FNakamaAccountFacebook Account,
 	bool Create,
 	FString Username,
@@ -806,7 +794,7 @@ TNakamaFuture<FNakamaSession> Nakama::AuthenticateFacebook(
 	TFuture<TNakamaResult<FNakamaSession>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -837,7 +825,7 @@ TNakamaFuture<FNakamaSession> Nakama::AuthenticateFacebook(
 		CancellationToken]()
 	{
 		NakamaApi::AuthenticateFacebook(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			Account,
 			Create,
 			Username,
@@ -858,7 +846,7 @@ TNakamaFuture<FNakamaSession> Nakama::AuthenticateFacebook(
 }
 
 TNakamaFuture<FNakamaSession> Nakama::AuthenticateFacebookInstantGame(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FNakamaAccountFacebookInstantGame Account,
 	bool Create,
 	FString Username,
@@ -868,7 +856,7 @@ TNakamaFuture<FNakamaSession> Nakama::AuthenticateFacebookInstantGame(
 	TFuture<TNakamaResult<FNakamaSession>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -898,7 +886,7 @@ TNakamaFuture<FNakamaSession> Nakama::AuthenticateFacebookInstantGame(
 		CancellationToken]()
 	{
 		NakamaApi::AuthenticateFacebookInstantGame(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			Account,
 			Create,
 			Username,
@@ -918,7 +906,7 @@ TNakamaFuture<FNakamaSession> Nakama::AuthenticateFacebookInstantGame(
 }
 
 TNakamaFuture<FNakamaSession> Nakama::AuthenticateGameCenter(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FNakamaAccountGameCenter Account,
 	bool Create,
 	FString Username,
@@ -928,7 +916,7 @@ TNakamaFuture<FNakamaSession> Nakama::AuthenticateGameCenter(
 	TFuture<TNakamaResult<FNakamaSession>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -958,7 +946,7 @@ TNakamaFuture<FNakamaSession> Nakama::AuthenticateGameCenter(
 		CancellationToken]()
 	{
 		NakamaApi::AuthenticateGameCenter(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			Account,
 			Create,
 			Username,
@@ -978,7 +966,7 @@ TNakamaFuture<FNakamaSession> Nakama::AuthenticateGameCenter(
 }
 
 TNakamaFuture<FNakamaSession> Nakama::AuthenticateGoogle(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FNakamaAccountGoogle Account,
 	bool Create,
 	FString Username,
@@ -988,7 +976,7 @@ TNakamaFuture<FNakamaSession> Nakama::AuthenticateGoogle(
 	TFuture<TNakamaResult<FNakamaSession>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -1018,7 +1006,7 @@ TNakamaFuture<FNakamaSession> Nakama::AuthenticateGoogle(
 		CancellationToken]()
 	{
 		NakamaApi::AuthenticateGoogle(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			Account,
 			Create,
 			Username,
@@ -1038,7 +1026,7 @@ TNakamaFuture<FNakamaSession> Nakama::AuthenticateGoogle(
 }
 
 TNakamaFuture<FNakamaSession> Nakama::AuthenticateSteam(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FNakamaAccountSteam Account,
 	bool Create,
 	FString Username,
@@ -1049,7 +1037,7 @@ TNakamaFuture<FNakamaSession> Nakama::AuthenticateSteam(
 	TFuture<TNakamaResult<FNakamaSession>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -1080,7 +1068,7 @@ TNakamaFuture<FNakamaSession> Nakama::AuthenticateSteam(
 		CancellationToken]()
 	{
 		NakamaApi::AuthenticateSteam(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			Account,
 			Create,
 			Username,
@@ -1101,7 +1089,7 @@ TNakamaFuture<FNakamaSession> Nakama::AuthenticateSteam(
 }
 
 TNakamaFuture<FNakamaVoid> Nakama::BanGroupUsers(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FNakamaSessionPtr Session,
 	FString GroupId,
 	const TArray<FString>& UserIds,
@@ -1111,7 +1099,7 @@ TNakamaFuture<FNakamaVoid> Nakama::BanGroupUsers(
 	TFuture<TNakamaResult<FNakamaVoid>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -1146,7 +1134,7 @@ TNakamaFuture<FNakamaVoid> Nakama::BanGroupUsers(
 				CancellationToken]()
 			{
 				NakamaApi::BanGroupUsers(
-					Client->ApiConfig,
+					Client.ApiConfig,
 					Session,
 					GroupId,
 					UserIds,
@@ -1169,7 +1157,7 @@ TNakamaFuture<FNakamaVoid> Nakama::BanGroupUsers(
 }
 
 TNakamaFuture<FNakamaVoid> Nakama::BanGroupUsers(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	const FString& HttpKey,
 	FString GroupId,
 	const TArray<FString>& UserIds,
@@ -1179,7 +1167,7 @@ TNakamaFuture<FNakamaVoid> Nakama::BanGroupUsers(
 	TFuture<TNakamaResult<FNakamaVoid>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -1209,7 +1197,7 @@ TNakamaFuture<FNakamaVoid> Nakama::BanGroupUsers(
 		CancellationToken]()
 	{
 		NakamaApi::BanGroupUsers(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			HttpKey,
 			GroupId,
 			UserIds,
@@ -1229,7 +1217,7 @@ TNakamaFuture<FNakamaVoid> Nakama::BanGroupUsers(
 }
 
 TNakamaFuture<FNakamaVoid> Nakama::BlockFriends(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FNakamaSessionPtr Session,
 	const TArray<FString>& Ids,
 	const TArray<FString>& Usernames,
@@ -1239,7 +1227,7 @@ TNakamaFuture<FNakamaVoid> Nakama::BlockFriends(
 	TFuture<TNakamaResult<FNakamaVoid>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -1274,7 +1262,7 @@ TNakamaFuture<FNakamaVoid> Nakama::BlockFriends(
 				CancellationToken]()
 			{
 				NakamaApi::BlockFriends(
-					Client->ApiConfig,
+					Client.ApiConfig,
 					Session,
 					Ids,
 					Usernames,
@@ -1297,7 +1285,7 @@ TNakamaFuture<FNakamaVoid> Nakama::BlockFriends(
 }
 
 TNakamaFuture<FNakamaVoid> Nakama::BlockFriends(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	const FString& HttpKey,
 	const TArray<FString>& Ids,
 	const TArray<FString>& Usernames,
@@ -1307,7 +1295,7 @@ TNakamaFuture<FNakamaVoid> Nakama::BlockFriends(
 	TFuture<TNakamaResult<FNakamaVoid>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -1337,7 +1325,7 @@ TNakamaFuture<FNakamaVoid> Nakama::BlockFriends(
 		CancellationToken]()
 	{
 		NakamaApi::BlockFriends(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			HttpKey,
 			Ids,
 			Usernames,
@@ -1357,7 +1345,7 @@ TNakamaFuture<FNakamaVoid> Nakama::BlockFriends(
 }
 
 TNakamaFuture<FNakamaGroup> Nakama::CreateGroup(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FNakamaSessionPtr Session,
 	FString Name,
 	FString Description,
@@ -1371,7 +1359,7 @@ TNakamaFuture<FNakamaGroup> Nakama::CreateGroup(
 	TFuture<TNakamaResult<FNakamaGroup>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -1414,7 +1402,7 @@ TNakamaFuture<FNakamaGroup> Nakama::CreateGroup(
 				CancellationToken]()
 			{
 				NakamaApi::CreateGroup(
-					Client->ApiConfig,
+					Client.ApiConfig,
 					Session,
 					Name,
 					Description,
@@ -1441,7 +1429,7 @@ TNakamaFuture<FNakamaGroup> Nakama::CreateGroup(
 }
 
 TNakamaFuture<FNakamaGroup> Nakama::CreateGroup(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	const FString& HttpKey,
 	FString Name,
 	FString Description,
@@ -1455,7 +1443,7 @@ TNakamaFuture<FNakamaGroup> Nakama::CreateGroup(
 	TFuture<TNakamaResult<FNakamaGroup>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -1489,7 +1477,7 @@ TNakamaFuture<FNakamaGroup> Nakama::CreateGroup(
 		CancellationToken]()
 	{
 		NakamaApi::CreateGroup(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			HttpKey,
 			Name,
 			Description,
@@ -1513,7 +1501,7 @@ TNakamaFuture<FNakamaGroup> Nakama::CreateGroup(
 }
 
 TNakamaFuture<FNakamaVoid> Nakama::DeleteAccount(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FNakamaSessionPtr Session,
 	FNakamaCancellationTokenPtr CancellationToken)
 {
@@ -1521,7 +1509,7 @@ TNakamaFuture<FNakamaVoid> Nakama::DeleteAccount(
 	TFuture<TNakamaResult<FNakamaVoid>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -1552,7 +1540,7 @@ TNakamaFuture<FNakamaVoid> Nakama::DeleteAccount(
 				CancellationToken]()
 			{
 				NakamaApi::DeleteAccount(
-					Client->ApiConfig,
+					Client.ApiConfig,
 					Session,
 					[Promise, DoRequest, OnError]()
 					{
@@ -1573,7 +1561,7 @@ TNakamaFuture<FNakamaVoid> Nakama::DeleteAccount(
 }
 
 TNakamaFuture<FNakamaVoid> Nakama::DeleteAccount(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	const FString& HttpKey,
 	FNakamaCancellationTokenPtr CancellationToken)
 {
@@ -1581,7 +1569,7 @@ TNakamaFuture<FNakamaVoid> Nakama::DeleteAccount(
 	TFuture<TNakamaResult<FNakamaVoid>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -1609,7 +1597,7 @@ TNakamaFuture<FNakamaVoid> Nakama::DeleteAccount(
 		CancellationToken]()
 	{
 		NakamaApi::DeleteAccount(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			HttpKey,
 			[Promise, DoRequest, OnError]()
 			{
@@ -1627,7 +1615,7 @@ TNakamaFuture<FNakamaVoid> Nakama::DeleteAccount(
 }
 
 TNakamaFuture<FNakamaVoid> Nakama::DeleteFriends(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FNakamaSessionPtr Session,
 	const TArray<FString>& Ids,
 	const TArray<FString>& Usernames,
@@ -1637,7 +1625,7 @@ TNakamaFuture<FNakamaVoid> Nakama::DeleteFriends(
 	TFuture<TNakamaResult<FNakamaVoid>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -1672,7 +1660,7 @@ TNakamaFuture<FNakamaVoid> Nakama::DeleteFriends(
 				CancellationToken]()
 			{
 				NakamaApi::DeleteFriends(
-					Client->ApiConfig,
+					Client.ApiConfig,
 					Session,
 					Ids,
 					Usernames,
@@ -1695,7 +1683,7 @@ TNakamaFuture<FNakamaVoid> Nakama::DeleteFriends(
 }
 
 TNakamaFuture<FNakamaVoid> Nakama::DeleteFriends(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	const FString& HttpKey,
 	const TArray<FString>& Ids,
 	const TArray<FString>& Usernames,
@@ -1705,7 +1693,7 @@ TNakamaFuture<FNakamaVoid> Nakama::DeleteFriends(
 	TFuture<TNakamaResult<FNakamaVoid>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -1735,7 +1723,7 @@ TNakamaFuture<FNakamaVoid> Nakama::DeleteFriends(
 		CancellationToken]()
 	{
 		NakamaApi::DeleteFriends(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			HttpKey,
 			Ids,
 			Usernames,
@@ -1755,7 +1743,7 @@ TNakamaFuture<FNakamaVoid> Nakama::DeleteFriends(
 }
 
 TNakamaFuture<FNakamaVoid> Nakama::DeleteGroup(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FNakamaSessionPtr Session,
 	FString GroupId,
 	FNakamaCancellationTokenPtr CancellationToken)
@@ -1764,7 +1752,7 @@ TNakamaFuture<FNakamaVoid> Nakama::DeleteGroup(
 	TFuture<TNakamaResult<FNakamaVoid>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -1797,7 +1785,7 @@ TNakamaFuture<FNakamaVoid> Nakama::DeleteGroup(
 				CancellationToken]()
 			{
 				NakamaApi::DeleteGroup(
-					Client->ApiConfig,
+					Client.ApiConfig,
 					Session,
 					GroupId,
 					[Promise, DoRequest, OnError]()
@@ -1819,7 +1807,7 @@ TNakamaFuture<FNakamaVoid> Nakama::DeleteGroup(
 }
 
 TNakamaFuture<FNakamaVoid> Nakama::DeleteGroup(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	const FString& HttpKey,
 	FString GroupId,
 	FNakamaCancellationTokenPtr CancellationToken)
@@ -1828,7 +1816,7 @@ TNakamaFuture<FNakamaVoid> Nakama::DeleteGroup(
 	TFuture<TNakamaResult<FNakamaVoid>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -1857,7 +1845,7 @@ TNakamaFuture<FNakamaVoid> Nakama::DeleteGroup(
 		CancellationToken]()
 	{
 		NakamaApi::DeleteGroup(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			HttpKey,
 			GroupId,
 			[Promise, DoRequest, OnError]()
@@ -1876,7 +1864,7 @@ TNakamaFuture<FNakamaVoid> Nakama::DeleteGroup(
 }
 
 TNakamaFuture<FNakamaVoid> Nakama::DeleteLeaderboardRecord(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FNakamaSessionPtr Session,
 	FString LeaderboardId,
 	FNakamaCancellationTokenPtr CancellationToken)
@@ -1885,7 +1873,7 @@ TNakamaFuture<FNakamaVoid> Nakama::DeleteLeaderboardRecord(
 	TFuture<TNakamaResult<FNakamaVoid>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -1918,7 +1906,7 @@ TNakamaFuture<FNakamaVoid> Nakama::DeleteLeaderboardRecord(
 				CancellationToken]()
 			{
 				NakamaApi::DeleteLeaderboardRecord(
-					Client->ApiConfig,
+					Client.ApiConfig,
 					Session,
 					LeaderboardId,
 					[Promise, DoRequest, OnError]()
@@ -1940,7 +1928,7 @@ TNakamaFuture<FNakamaVoid> Nakama::DeleteLeaderboardRecord(
 }
 
 TNakamaFuture<FNakamaVoid> Nakama::DeleteLeaderboardRecord(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	const FString& HttpKey,
 	FString LeaderboardId,
 	FNakamaCancellationTokenPtr CancellationToken)
@@ -1949,7 +1937,7 @@ TNakamaFuture<FNakamaVoid> Nakama::DeleteLeaderboardRecord(
 	TFuture<TNakamaResult<FNakamaVoid>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -1978,7 +1966,7 @@ TNakamaFuture<FNakamaVoid> Nakama::DeleteLeaderboardRecord(
 		CancellationToken]()
 	{
 		NakamaApi::DeleteLeaderboardRecord(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			HttpKey,
 			LeaderboardId,
 			[Promise, DoRequest, OnError]()
@@ -1997,7 +1985,7 @@ TNakamaFuture<FNakamaVoid> Nakama::DeleteLeaderboardRecord(
 }
 
 TNakamaFuture<FNakamaVoid> Nakama::DeleteNotifications(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FNakamaSessionPtr Session,
 	const TArray<FString>& Ids,
 	FNakamaCancellationTokenPtr CancellationToken)
@@ -2006,7 +1994,7 @@ TNakamaFuture<FNakamaVoid> Nakama::DeleteNotifications(
 	TFuture<TNakamaResult<FNakamaVoid>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -2039,7 +2027,7 @@ TNakamaFuture<FNakamaVoid> Nakama::DeleteNotifications(
 				CancellationToken]()
 			{
 				NakamaApi::DeleteNotifications(
-					Client->ApiConfig,
+					Client.ApiConfig,
 					Session,
 					Ids,
 					[Promise, DoRequest, OnError]()
@@ -2061,7 +2049,7 @@ TNakamaFuture<FNakamaVoid> Nakama::DeleteNotifications(
 }
 
 TNakamaFuture<FNakamaVoid> Nakama::DeleteNotifications(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	const FString& HttpKey,
 	const TArray<FString>& Ids,
 	FNakamaCancellationTokenPtr CancellationToken)
@@ -2070,7 +2058,7 @@ TNakamaFuture<FNakamaVoid> Nakama::DeleteNotifications(
 	TFuture<TNakamaResult<FNakamaVoid>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -2099,7 +2087,7 @@ TNakamaFuture<FNakamaVoid> Nakama::DeleteNotifications(
 		CancellationToken]()
 	{
 		NakamaApi::DeleteNotifications(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			HttpKey,
 			Ids,
 			[Promise, DoRequest, OnError]()
@@ -2118,7 +2106,7 @@ TNakamaFuture<FNakamaVoid> Nakama::DeleteNotifications(
 }
 
 TNakamaFuture<FNakamaVoid> Nakama::DeleteTournamentRecord(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FNakamaSessionPtr Session,
 	FString TournamentId,
 	FNakamaCancellationTokenPtr CancellationToken)
@@ -2127,7 +2115,7 @@ TNakamaFuture<FNakamaVoid> Nakama::DeleteTournamentRecord(
 	TFuture<TNakamaResult<FNakamaVoid>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -2160,7 +2148,7 @@ TNakamaFuture<FNakamaVoid> Nakama::DeleteTournamentRecord(
 				CancellationToken]()
 			{
 				NakamaApi::DeleteTournamentRecord(
-					Client->ApiConfig,
+					Client.ApiConfig,
 					Session,
 					TournamentId,
 					[Promise, DoRequest, OnError]()
@@ -2182,7 +2170,7 @@ TNakamaFuture<FNakamaVoid> Nakama::DeleteTournamentRecord(
 }
 
 TNakamaFuture<FNakamaVoid> Nakama::DeleteTournamentRecord(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	const FString& HttpKey,
 	FString TournamentId,
 	FNakamaCancellationTokenPtr CancellationToken)
@@ -2191,7 +2179,7 @@ TNakamaFuture<FNakamaVoid> Nakama::DeleteTournamentRecord(
 	TFuture<TNakamaResult<FNakamaVoid>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -2220,7 +2208,7 @@ TNakamaFuture<FNakamaVoid> Nakama::DeleteTournamentRecord(
 		CancellationToken]()
 	{
 		NakamaApi::DeleteTournamentRecord(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			HttpKey,
 			TournamentId,
 			[Promise, DoRequest, OnError]()
@@ -2239,7 +2227,7 @@ TNakamaFuture<FNakamaVoid> Nakama::DeleteTournamentRecord(
 }
 
 TNakamaFuture<FNakamaVoid> Nakama::DeleteStorageObjects(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FNakamaSessionPtr Session,
 	const TArray<FNakamaDeleteStorageObjectId>& ObjectIds,
 	FNakamaCancellationTokenPtr CancellationToken)
@@ -2248,7 +2236,7 @@ TNakamaFuture<FNakamaVoid> Nakama::DeleteStorageObjects(
 	TFuture<TNakamaResult<FNakamaVoid>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -2281,7 +2269,7 @@ TNakamaFuture<FNakamaVoid> Nakama::DeleteStorageObjects(
 				CancellationToken]()
 			{
 				NakamaApi::DeleteStorageObjects(
-					Client->ApiConfig,
+					Client.ApiConfig,
 					Session,
 					ObjectIds,
 					[Promise, DoRequest, OnError]()
@@ -2303,7 +2291,7 @@ TNakamaFuture<FNakamaVoid> Nakama::DeleteStorageObjects(
 }
 
 TNakamaFuture<FNakamaVoid> Nakama::DeleteStorageObjects(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	const FString& HttpKey,
 	const TArray<FNakamaDeleteStorageObjectId>& ObjectIds,
 	FNakamaCancellationTokenPtr CancellationToken)
@@ -2312,7 +2300,7 @@ TNakamaFuture<FNakamaVoid> Nakama::DeleteStorageObjects(
 	TFuture<TNakamaResult<FNakamaVoid>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -2341,7 +2329,7 @@ TNakamaFuture<FNakamaVoid> Nakama::DeleteStorageObjects(
 		CancellationToken]()
 	{
 		NakamaApi::DeleteStorageObjects(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			HttpKey,
 			ObjectIds,
 			[Promise, DoRequest, OnError]()
@@ -2360,7 +2348,7 @@ TNakamaFuture<FNakamaVoid> Nakama::DeleteStorageObjects(
 }
 
 TNakamaFuture<FNakamaVoid> Nakama::Event(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FNakamaSessionPtr Session,
 	FString Name,
 	FString Timestamp,
@@ -2372,7 +2360,7 @@ TNakamaFuture<FNakamaVoid> Nakama::Event(
 	TFuture<TNakamaResult<FNakamaVoid>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -2411,7 +2399,7 @@ TNakamaFuture<FNakamaVoid> Nakama::Event(
 				CancellationToken]()
 			{
 				NakamaApi::Event(
-					Client->ApiConfig,
+					Client.ApiConfig,
 					Session,
 					Name,
 					Timestamp,
@@ -2436,7 +2424,7 @@ TNakamaFuture<FNakamaVoid> Nakama::Event(
 }
 
 TNakamaFuture<FNakamaVoid> Nakama::Event(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	const FString& HttpKey,
 	FString Name,
 	FString Timestamp,
@@ -2448,7 +2436,7 @@ TNakamaFuture<FNakamaVoid> Nakama::Event(
 	TFuture<TNakamaResult<FNakamaVoid>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -2480,7 +2468,7 @@ TNakamaFuture<FNakamaVoid> Nakama::Event(
 		CancellationToken]()
 	{
 		NakamaApi::Event(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			HttpKey,
 			Name,
 			Timestamp,
@@ -2502,7 +2490,7 @@ TNakamaFuture<FNakamaVoid> Nakama::Event(
 }
 
 TNakamaFuture<FNakamaAccount> Nakama::GetAccount(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FNakamaSessionPtr Session,
 	FNakamaCancellationTokenPtr CancellationToken)
 {
@@ -2510,7 +2498,7 @@ TNakamaFuture<FNakamaAccount> Nakama::GetAccount(
 	TFuture<TNakamaResult<FNakamaAccount>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -2541,7 +2529,7 @@ TNakamaFuture<FNakamaAccount> Nakama::GetAccount(
 				CancellationToken]()
 			{
 				NakamaApi::GetAccount(
-					Client->ApiConfig,
+					Client.ApiConfig,
 					Session,
 					[Promise, DoRequest, OnError](const FNakamaAccount& Result)
 					{
@@ -2562,7 +2550,7 @@ TNakamaFuture<FNakamaAccount> Nakama::GetAccount(
 }
 
 TNakamaFuture<FNakamaAccount> Nakama::GetAccount(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	const FString& HttpKey,
 	FNakamaCancellationTokenPtr CancellationToken)
 {
@@ -2570,7 +2558,7 @@ TNakamaFuture<FNakamaAccount> Nakama::GetAccount(
 	TFuture<TNakamaResult<FNakamaAccount>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -2598,7 +2586,7 @@ TNakamaFuture<FNakamaAccount> Nakama::GetAccount(
 		CancellationToken]()
 	{
 		NakamaApi::GetAccount(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			HttpKey,
 			[Promise, DoRequest, OnError](const FNakamaAccount& Result)
 			{
@@ -2616,7 +2604,7 @@ TNakamaFuture<FNakamaAccount> Nakama::GetAccount(
 }
 
 TNakamaFuture<FNakamaUsers> Nakama::GetUsers(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FNakamaSessionPtr Session,
 	const TArray<FString>& Ids,
 	const TArray<FString>& Usernames,
@@ -2627,7 +2615,7 @@ TNakamaFuture<FNakamaUsers> Nakama::GetUsers(
 	TFuture<TNakamaResult<FNakamaUsers>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -2664,7 +2652,7 @@ TNakamaFuture<FNakamaUsers> Nakama::GetUsers(
 				CancellationToken]()
 			{
 				NakamaApi::GetUsers(
-					Client->ApiConfig,
+					Client.ApiConfig,
 					Session,
 					Ids,
 					Usernames,
@@ -2688,7 +2676,7 @@ TNakamaFuture<FNakamaUsers> Nakama::GetUsers(
 }
 
 TNakamaFuture<FNakamaUsers> Nakama::GetUsers(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	const FString& HttpKey,
 	const TArray<FString>& Ids,
 	const TArray<FString>& Usernames,
@@ -2699,7 +2687,7 @@ TNakamaFuture<FNakamaUsers> Nakama::GetUsers(
 	TFuture<TNakamaResult<FNakamaUsers>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -2730,7 +2718,7 @@ TNakamaFuture<FNakamaUsers> Nakama::GetUsers(
 		CancellationToken]()
 	{
 		NakamaApi::GetUsers(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			HttpKey,
 			Ids,
 			Usernames,
@@ -2751,7 +2739,7 @@ TNakamaFuture<FNakamaUsers> Nakama::GetUsers(
 }
 
 TNakamaFuture<FNakamaValidatedSubscription> Nakama::GetSubscription(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FNakamaSessionPtr Session,
 	FString ProductId,
 	FNakamaCancellationTokenPtr CancellationToken)
@@ -2760,7 +2748,7 @@ TNakamaFuture<FNakamaValidatedSubscription> Nakama::GetSubscription(
 	TFuture<TNakamaResult<FNakamaValidatedSubscription>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -2793,7 +2781,7 @@ TNakamaFuture<FNakamaValidatedSubscription> Nakama::GetSubscription(
 				CancellationToken]()
 			{
 				NakamaApi::GetSubscription(
-					Client->ApiConfig,
+					Client.ApiConfig,
 					Session,
 					ProductId,
 					[Promise, DoRequest, OnError](const FNakamaValidatedSubscription& Result)
@@ -2815,7 +2803,7 @@ TNakamaFuture<FNakamaValidatedSubscription> Nakama::GetSubscription(
 }
 
 TNakamaFuture<FNakamaValidatedSubscription> Nakama::GetSubscription(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	const FString& HttpKey,
 	FString ProductId,
 	FNakamaCancellationTokenPtr CancellationToken)
@@ -2824,7 +2812,7 @@ TNakamaFuture<FNakamaValidatedSubscription> Nakama::GetSubscription(
 	TFuture<TNakamaResult<FNakamaValidatedSubscription>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -2853,7 +2841,7 @@ TNakamaFuture<FNakamaValidatedSubscription> Nakama::GetSubscription(
 		CancellationToken]()
 	{
 		NakamaApi::GetSubscription(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			HttpKey,
 			ProductId,
 			[Promise, DoRequest, OnError](const FNakamaValidatedSubscription& Result)
@@ -2872,7 +2860,7 @@ TNakamaFuture<FNakamaValidatedSubscription> Nakama::GetSubscription(
 }
 
 TNakamaFuture<FNakamaMatchmakerStats> Nakama::GetMatchmakerStats(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FNakamaSessionPtr Session,
 	FNakamaCancellationTokenPtr CancellationToken)
 {
@@ -2880,7 +2868,7 @@ TNakamaFuture<FNakamaMatchmakerStats> Nakama::GetMatchmakerStats(
 	TFuture<TNakamaResult<FNakamaMatchmakerStats>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -2911,7 +2899,7 @@ TNakamaFuture<FNakamaMatchmakerStats> Nakama::GetMatchmakerStats(
 				CancellationToken]()
 			{
 				NakamaApi::GetMatchmakerStats(
-					Client->ApiConfig,
+					Client.ApiConfig,
 					Session,
 					[Promise, DoRequest, OnError](const FNakamaMatchmakerStats& Result)
 					{
@@ -2932,7 +2920,7 @@ TNakamaFuture<FNakamaMatchmakerStats> Nakama::GetMatchmakerStats(
 }
 
 TNakamaFuture<FNakamaMatchmakerStats> Nakama::GetMatchmakerStats(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	const FString& HttpKey,
 	FNakamaCancellationTokenPtr CancellationToken)
 {
@@ -2940,7 +2928,7 @@ TNakamaFuture<FNakamaMatchmakerStats> Nakama::GetMatchmakerStats(
 	TFuture<TNakamaResult<FNakamaMatchmakerStats>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -2968,7 +2956,7 @@ TNakamaFuture<FNakamaMatchmakerStats> Nakama::GetMatchmakerStats(
 		CancellationToken]()
 	{
 		NakamaApi::GetMatchmakerStats(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			HttpKey,
 			[Promise, DoRequest, OnError](const FNakamaMatchmakerStats& Result)
 			{
@@ -2986,7 +2974,7 @@ TNakamaFuture<FNakamaMatchmakerStats> Nakama::GetMatchmakerStats(
 }
 
 TNakamaFuture<FNakamaVoid> Nakama::Healthcheck(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FNakamaSessionPtr Session,
 	FNakamaCancellationTokenPtr CancellationToken)
 {
@@ -2994,7 +2982,7 @@ TNakamaFuture<FNakamaVoid> Nakama::Healthcheck(
 	TFuture<TNakamaResult<FNakamaVoid>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -3025,7 +3013,7 @@ TNakamaFuture<FNakamaVoid> Nakama::Healthcheck(
 				CancellationToken]()
 			{
 				NakamaApi::Healthcheck(
-					Client->ApiConfig,
+					Client.ApiConfig,
 					Session,
 					[Promise, DoRequest, OnError]()
 					{
@@ -3046,7 +3034,7 @@ TNakamaFuture<FNakamaVoid> Nakama::Healthcheck(
 }
 
 TNakamaFuture<FNakamaVoid> Nakama::Healthcheck(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	const FString& HttpKey,
 	FNakamaCancellationTokenPtr CancellationToken)
 {
@@ -3054,7 +3042,7 @@ TNakamaFuture<FNakamaVoid> Nakama::Healthcheck(
 	TFuture<TNakamaResult<FNakamaVoid>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -3082,7 +3070,7 @@ TNakamaFuture<FNakamaVoid> Nakama::Healthcheck(
 		CancellationToken]()
 	{
 		NakamaApi::Healthcheck(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			HttpKey,
 			[Promise, DoRequest, OnError]()
 			{
@@ -3100,7 +3088,7 @@ TNakamaFuture<FNakamaVoid> Nakama::Healthcheck(
 }
 
 TNakamaFuture<FNakamaVoid> Nakama::ImportFacebookFriends(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FNakamaSessionPtr Session,
 	FNakamaAccountFacebook Account,
 	bool Reset,
@@ -3110,7 +3098,7 @@ TNakamaFuture<FNakamaVoid> Nakama::ImportFacebookFriends(
 	TFuture<TNakamaResult<FNakamaVoid>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -3145,7 +3133,7 @@ TNakamaFuture<FNakamaVoid> Nakama::ImportFacebookFriends(
 				CancellationToken]()
 			{
 				NakamaApi::ImportFacebookFriends(
-					Client->ApiConfig,
+					Client.ApiConfig,
 					Session,
 					Account,
 					Reset,
@@ -3168,7 +3156,7 @@ TNakamaFuture<FNakamaVoid> Nakama::ImportFacebookFriends(
 }
 
 TNakamaFuture<FNakamaVoid> Nakama::ImportFacebookFriends(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	const FString& HttpKey,
 	FNakamaAccountFacebook Account,
 	bool Reset,
@@ -3178,7 +3166,7 @@ TNakamaFuture<FNakamaVoid> Nakama::ImportFacebookFriends(
 	TFuture<TNakamaResult<FNakamaVoid>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -3208,7 +3196,7 @@ TNakamaFuture<FNakamaVoid> Nakama::ImportFacebookFriends(
 		CancellationToken]()
 	{
 		NakamaApi::ImportFacebookFriends(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			HttpKey,
 			Account,
 			Reset,
@@ -3228,7 +3216,7 @@ TNakamaFuture<FNakamaVoid> Nakama::ImportFacebookFriends(
 }
 
 TNakamaFuture<FNakamaVoid> Nakama::ImportSteamFriends(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FNakamaSessionPtr Session,
 	FNakamaAccountSteam Account,
 	bool Reset,
@@ -3238,7 +3226,7 @@ TNakamaFuture<FNakamaVoid> Nakama::ImportSteamFriends(
 	TFuture<TNakamaResult<FNakamaVoid>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -3273,7 +3261,7 @@ TNakamaFuture<FNakamaVoid> Nakama::ImportSteamFriends(
 				CancellationToken]()
 			{
 				NakamaApi::ImportSteamFriends(
-					Client->ApiConfig,
+					Client.ApiConfig,
 					Session,
 					Account,
 					Reset,
@@ -3296,7 +3284,7 @@ TNakamaFuture<FNakamaVoid> Nakama::ImportSteamFriends(
 }
 
 TNakamaFuture<FNakamaVoid> Nakama::ImportSteamFriends(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	const FString& HttpKey,
 	FNakamaAccountSteam Account,
 	bool Reset,
@@ -3306,7 +3294,7 @@ TNakamaFuture<FNakamaVoid> Nakama::ImportSteamFriends(
 	TFuture<TNakamaResult<FNakamaVoid>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -3336,7 +3324,7 @@ TNakamaFuture<FNakamaVoid> Nakama::ImportSteamFriends(
 		CancellationToken]()
 	{
 		NakamaApi::ImportSteamFriends(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			HttpKey,
 			Account,
 			Reset,
@@ -3356,7 +3344,7 @@ TNakamaFuture<FNakamaVoid> Nakama::ImportSteamFriends(
 }
 
 TNakamaFuture<FNakamaVoid> Nakama::JoinGroup(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FNakamaSessionPtr Session,
 	FString GroupId,
 	FNakamaCancellationTokenPtr CancellationToken)
@@ -3365,7 +3353,7 @@ TNakamaFuture<FNakamaVoid> Nakama::JoinGroup(
 	TFuture<TNakamaResult<FNakamaVoid>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -3398,7 +3386,7 @@ TNakamaFuture<FNakamaVoid> Nakama::JoinGroup(
 				CancellationToken]()
 			{
 				NakamaApi::JoinGroup(
-					Client->ApiConfig,
+					Client.ApiConfig,
 					Session,
 					GroupId,
 					[Promise, DoRequest, OnError]()
@@ -3420,7 +3408,7 @@ TNakamaFuture<FNakamaVoid> Nakama::JoinGroup(
 }
 
 TNakamaFuture<FNakamaVoid> Nakama::JoinGroup(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	const FString& HttpKey,
 	FString GroupId,
 	FNakamaCancellationTokenPtr CancellationToken)
@@ -3429,7 +3417,7 @@ TNakamaFuture<FNakamaVoid> Nakama::JoinGroup(
 	TFuture<TNakamaResult<FNakamaVoid>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -3458,7 +3446,7 @@ TNakamaFuture<FNakamaVoid> Nakama::JoinGroup(
 		CancellationToken]()
 	{
 		NakamaApi::JoinGroup(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			HttpKey,
 			GroupId,
 			[Promise, DoRequest, OnError]()
@@ -3477,7 +3465,7 @@ TNakamaFuture<FNakamaVoid> Nakama::JoinGroup(
 }
 
 TNakamaFuture<FNakamaVoid> Nakama::JoinTournament(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FNakamaSessionPtr Session,
 	FString TournamentId,
 	FNakamaCancellationTokenPtr CancellationToken)
@@ -3486,7 +3474,7 @@ TNakamaFuture<FNakamaVoid> Nakama::JoinTournament(
 	TFuture<TNakamaResult<FNakamaVoid>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -3519,7 +3507,7 @@ TNakamaFuture<FNakamaVoid> Nakama::JoinTournament(
 				CancellationToken]()
 			{
 				NakamaApi::JoinTournament(
-					Client->ApiConfig,
+					Client.ApiConfig,
 					Session,
 					TournamentId,
 					[Promise, DoRequest, OnError]()
@@ -3541,7 +3529,7 @@ TNakamaFuture<FNakamaVoid> Nakama::JoinTournament(
 }
 
 TNakamaFuture<FNakamaVoid> Nakama::JoinTournament(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	const FString& HttpKey,
 	FString TournamentId,
 	FNakamaCancellationTokenPtr CancellationToken)
@@ -3550,7 +3538,7 @@ TNakamaFuture<FNakamaVoid> Nakama::JoinTournament(
 	TFuture<TNakamaResult<FNakamaVoid>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -3579,7 +3567,7 @@ TNakamaFuture<FNakamaVoid> Nakama::JoinTournament(
 		CancellationToken]()
 	{
 		NakamaApi::JoinTournament(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			HttpKey,
 			TournamentId,
 			[Promise, DoRequest, OnError]()
@@ -3598,7 +3586,7 @@ TNakamaFuture<FNakamaVoid> Nakama::JoinTournament(
 }
 
 TNakamaFuture<FNakamaVoid> Nakama::KickGroupUsers(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FNakamaSessionPtr Session,
 	FString GroupId,
 	const TArray<FString>& UserIds,
@@ -3608,7 +3596,7 @@ TNakamaFuture<FNakamaVoid> Nakama::KickGroupUsers(
 	TFuture<TNakamaResult<FNakamaVoid>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -3643,7 +3631,7 @@ TNakamaFuture<FNakamaVoid> Nakama::KickGroupUsers(
 				CancellationToken]()
 			{
 				NakamaApi::KickGroupUsers(
-					Client->ApiConfig,
+					Client.ApiConfig,
 					Session,
 					GroupId,
 					UserIds,
@@ -3666,7 +3654,7 @@ TNakamaFuture<FNakamaVoid> Nakama::KickGroupUsers(
 }
 
 TNakamaFuture<FNakamaVoid> Nakama::KickGroupUsers(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	const FString& HttpKey,
 	FString GroupId,
 	const TArray<FString>& UserIds,
@@ -3676,7 +3664,7 @@ TNakamaFuture<FNakamaVoid> Nakama::KickGroupUsers(
 	TFuture<TNakamaResult<FNakamaVoid>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -3706,7 +3694,7 @@ TNakamaFuture<FNakamaVoid> Nakama::KickGroupUsers(
 		CancellationToken]()
 	{
 		NakamaApi::KickGroupUsers(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			HttpKey,
 			GroupId,
 			UserIds,
@@ -3726,7 +3714,7 @@ TNakamaFuture<FNakamaVoid> Nakama::KickGroupUsers(
 }
 
 TNakamaFuture<FNakamaVoid> Nakama::LeaveGroup(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FNakamaSessionPtr Session,
 	FString GroupId,
 	FNakamaCancellationTokenPtr CancellationToken)
@@ -3735,7 +3723,7 @@ TNakamaFuture<FNakamaVoid> Nakama::LeaveGroup(
 	TFuture<TNakamaResult<FNakamaVoid>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -3768,7 +3756,7 @@ TNakamaFuture<FNakamaVoid> Nakama::LeaveGroup(
 				CancellationToken]()
 			{
 				NakamaApi::LeaveGroup(
-					Client->ApiConfig,
+					Client.ApiConfig,
 					Session,
 					GroupId,
 					[Promise, DoRequest, OnError]()
@@ -3790,7 +3778,7 @@ TNakamaFuture<FNakamaVoid> Nakama::LeaveGroup(
 }
 
 TNakamaFuture<FNakamaVoid> Nakama::LeaveGroup(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	const FString& HttpKey,
 	FString GroupId,
 	FNakamaCancellationTokenPtr CancellationToken)
@@ -3799,7 +3787,7 @@ TNakamaFuture<FNakamaVoid> Nakama::LeaveGroup(
 	TFuture<TNakamaResult<FNakamaVoid>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -3828,7 +3816,7 @@ TNakamaFuture<FNakamaVoid> Nakama::LeaveGroup(
 		CancellationToken]()
 	{
 		NakamaApi::LeaveGroup(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			HttpKey,
 			GroupId,
 			[Promise, DoRequest, OnError]()
@@ -3847,7 +3835,7 @@ TNakamaFuture<FNakamaVoid> Nakama::LeaveGroup(
 }
 
 TNakamaFuture<FNakamaVoid> Nakama::LinkApple(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FNakamaSessionPtr Session,
 	FString Token,
 	const TMap<FString, FString>& Vars,
@@ -3857,7 +3845,7 @@ TNakamaFuture<FNakamaVoid> Nakama::LinkApple(
 	TFuture<TNakamaResult<FNakamaVoid>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -3892,7 +3880,7 @@ TNakamaFuture<FNakamaVoid> Nakama::LinkApple(
 				CancellationToken]()
 			{
 				NakamaApi::LinkApple(
-					Client->ApiConfig,
+					Client.ApiConfig,
 					Session,
 					Token,
 					Vars,
@@ -3915,7 +3903,7 @@ TNakamaFuture<FNakamaVoid> Nakama::LinkApple(
 }
 
 TNakamaFuture<FNakamaVoid> Nakama::LinkApple(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	const FString& HttpKey,
 	FString Token,
 	const TMap<FString, FString>& Vars,
@@ -3925,7 +3913,7 @@ TNakamaFuture<FNakamaVoid> Nakama::LinkApple(
 	TFuture<TNakamaResult<FNakamaVoid>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -3955,7 +3943,7 @@ TNakamaFuture<FNakamaVoid> Nakama::LinkApple(
 		CancellationToken]()
 	{
 		NakamaApi::LinkApple(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			HttpKey,
 			Token,
 			Vars,
@@ -3975,7 +3963,7 @@ TNakamaFuture<FNakamaVoid> Nakama::LinkApple(
 }
 
 TNakamaFuture<FNakamaVoid> Nakama::LinkCustom(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FNakamaSessionPtr Session,
 	FString Id,
 	const TMap<FString, FString>& Vars,
@@ -3985,7 +3973,7 @@ TNakamaFuture<FNakamaVoid> Nakama::LinkCustom(
 	TFuture<TNakamaResult<FNakamaVoid>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -4020,7 +4008,7 @@ TNakamaFuture<FNakamaVoid> Nakama::LinkCustom(
 				CancellationToken]()
 			{
 				NakamaApi::LinkCustom(
-					Client->ApiConfig,
+					Client.ApiConfig,
 					Session,
 					Id,
 					Vars,
@@ -4043,7 +4031,7 @@ TNakamaFuture<FNakamaVoid> Nakama::LinkCustom(
 }
 
 TNakamaFuture<FNakamaVoid> Nakama::LinkCustom(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	const FString& HttpKey,
 	FString Id,
 	const TMap<FString, FString>& Vars,
@@ -4053,7 +4041,7 @@ TNakamaFuture<FNakamaVoid> Nakama::LinkCustom(
 	TFuture<TNakamaResult<FNakamaVoid>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -4083,7 +4071,7 @@ TNakamaFuture<FNakamaVoid> Nakama::LinkCustom(
 		CancellationToken]()
 	{
 		NakamaApi::LinkCustom(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			HttpKey,
 			Id,
 			Vars,
@@ -4103,7 +4091,7 @@ TNakamaFuture<FNakamaVoid> Nakama::LinkCustom(
 }
 
 TNakamaFuture<FNakamaVoid> Nakama::LinkDevice(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FNakamaSessionPtr Session,
 	FString Id,
 	const TMap<FString, FString>& Vars,
@@ -4113,7 +4101,7 @@ TNakamaFuture<FNakamaVoid> Nakama::LinkDevice(
 	TFuture<TNakamaResult<FNakamaVoid>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -4148,7 +4136,7 @@ TNakamaFuture<FNakamaVoid> Nakama::LinkDevice(
 				CancellationToken]()
 			{
 				NakamaApi::LinkDevice(
-					Client->ApiConfig,
+					Client.ApiConfig,
 					Session,
 					Id,
 					Vars,
@@ -4171,7 +4159,7 @@ TNakamaFuture<FNakamaVoid> Nakama::LinkDevice(
 }
 
 TNakamaFuture<FNakamaVoid> Nakama::LinkDevice(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	const FString& HttpKey,
 	FString Id,
 	const TMap<FString, FString>& Vars,
@@ -4181,7 +4169,7 @@ TNakamaFuture<FNakamaVoid> Nakama::LinkDevice(
 	TFuture<TNakamaResult<FNakamaVoid>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -4211,7 +4199,7 @@ TNakamaFuture<FNakamaVoid> Nakama::LinkDevice(
 		CancellationToken]()
 	{
 		NakamaApi::LinkDevice(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			HttpKey,
 			Id,
 			Vars,
@@ -4231,7 +4219,7 @@ TNakamaFuture<FNakamaVoid> Nakama::LinkDevice(
 }
 
 TNakamaFuture<FNakamaVoid> Nakama::LinkEmail(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FNakamaSessionPtr Session,
 	FString Email,
 	FString Password,
@@ -4242,7 +4230,7 @@ TNakamaFuture<FNakamaVoid> Nakama::LinkEmail(
 	TFuture<TNakamaResult<FNakamaVoid>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -4279,7 +4267,7 @@ TNakamaFuture<FNakamaVoid> Nakama::LinkEmail(
 				CancellationToken]()
 			{
 				NakamaApi::LinkEmail(
-					Client->ApiConfig,
+					Client.ApiConfig,
 					Session,
 					Email,
 					Password,
@@ -4303,7 +4291,7 @@ TNakamaFuture<FNakamaVoid> Nakama::LinkEmail(
 }
 
 TNakamaFuture<FNakamaVoid> Nakama::LinkEmail(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	const FString& HttpKey,
 	FString Email,
 	FString Password,
@@ -4314,7 +4302,7 @@ TNakamaFuture<FNakamaVoid> Nakama::LinkEmail(
 	TFuture<TNakamaResult<FNakamaVoid>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -4345,7 +4333,7 @@ TNakamaFuture<FNakamaVoid> Nakama::LinkEmail(
 		CancellationToken]()
 	{
 		NakamaApi::LinkEmail(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			HttpKey,
 			Email,
 			Password,
@@ -4366,7 +4354,7 @@ TNakamaFuture<FNakamaVoid> Nakama::LinkEmail(
 }
 
 TNakamaFuture<FNakamaVoid> Nakama::LinkFacebook(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FNakamaSessionPtr Session,
 	FNakamaAccountFacebook Account,
 	bool Sync,
@@ -4376,7 +4364,7 @@ TNakamaFuture<FNakamaVoid> Nakama::LinkFacebook(
 	TFuture<TNakamaResult<FNakamaVoid>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -4411,7 +4399,7 @@ TNakamaFuture<FNakamaVoid> Nakama::LinkFacebook(
 				CancellationToken]()
 			{
 				NakamaApi::LinkFacebook(
-					Client->ApiConfig,
+					Client.ApiConfig,
 					Session,
 					Account,
 					Sync,
@@ -4434,7 +4422,7 @@ TNakamaFuture<FNakamaVoid> Nakama::LinkFacebook(
 }
 
 TNakamaFuture<FNakamaVoid> Nakama::LinkFacebook(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	const FString& HttpKey,
 	FNakamaAccountFacebook Account,
 	bool Sync,
@@ -4444,7 +4432,7 @@ TNakamaFuture<FNakamaVoid> Nakama::LinkFacebook(
 	TFuture<TNakamaResult<FNakamaVoid>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -4474,7 +4462,7 @@ TNakamaFuture<FNakamaVoid> Nakama::LinkFacebook(
 		CancellationToken]()
 	{
 		NakamaApi::LinkFacebook(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			HttpKey,
 			Account,
 			Sync,
@@ -4494,7 +4482,7 @@ TNakamaFuture<FNakamaVoid> Nakama::LinkFacebook(
 }
 
 TNakamaFuture<FNakamaVoid> Nakama::LinkFacebookInstantGame(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FNakamaSessionPtr Session,
 	FString SignedPlayerInfo,
 	const TMap<FString, FString>& Vars,
@@ -4504,7 +4492,7 @@ TNakamaFuture<FNakamaVoid> Nakama::LinkFacebookInstantGame(
 	TFuture<TNakamaResult<FNakamaVoid>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -4539,7 +4527,7 @@ TNakamaFuture<FNakamaVoid> Nakama::LinkFacebookInstantGame(
 				CancellationToken]()
 			{
 				NakamaApi::LinkFacebookInstantGame(
-					Client->ApiConfig,
+					Client.ApiConfig,
 					Session,
 					SignedPlayerInfo,
 					Vars,
@@ -4562,7 +4550,7 @@ TNakamaFuture<FNakamaVoid> Nakama::LinkFacebookInstantGame(
 }
 
 TNakamaFuture<FNakamaVoid> Nakama::LinkFacebookInstantGame(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	const FString& HttpKey,
 	FString SignedPlayerInfo,
 	const TMap<FString, FString>& Vars,
@@ -4572,7 +4560,7 @@ TNakamaFuture<FNakamaVoid> Nakama::LinkFacebookInstantGame(
 	TFuture<TNakamaResult<FNakamaVoid>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -4602,7 +4590,7 @@ TNakamaFuture<FNakamaVoid> Nakama::LinkFacebookInstantGame(
 		CancellationToken]()
 	{
 		NakamaApi::LinkFacebookInstantGame(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			HttpKey,
 			SignedPlayerInfo,
 			Vars,
@@ -4622,7 +4610,7 @@ TNakamaFuture<FNakamaVoid> Nakama::LinkFacebookInstantGame(
 }
 
 TNakamaFuture<FNakamaVoid> Nakama::LinkGameCenter(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FNakamaSessionPtr Session,
 	FString PlayerId,
 	FString BundleId,
@@ -4637,7 +4625,7 @@ TNakamaFuture<FNakamaVoid> Nakama::LinkGameCenter(
 	TFuture<TNakamaResult<FNakamaVoid>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -4682,7 +4670,7 @@ TNakamaFuture<FNakamaVoid> Nakama::LinkGameCenter(
 				CancellationToken]()
 			{
 				NakamaApi::LinkGameCenter(
-					Client->ApiConfig,
+					Client.ApiConfig,
 					Session,
 					PlayerId,
 					BundleId,
@@ -4710,7 +4698,7 @@ TNakamaFuture<FNakamaVoid> Nakama::LinkGameCenter(
 }
 
 TNakamaFuture<FNakamaVoid> Nakama::LinkGameCenter(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	const FString& HttpKey,
 	FString PlayerId,
 	FString BundleId,
@@ -4725,7 +4713,7 @@ TNakamaFuture<FNakamaVoid> Nakama::LinkGameCenter(
 	TFuture<TNakamaResult<FNakamaVoid>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -4760,7 +4748,7 @@ TNakamaFuture<FNakamaVoid> Nakama::LinkGameCenter(
 		CancellationToken]()
 	{
 		NakamaApi::LinkGameCenter(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			HttpKey,
 			PlayerId,
 			BundleId,
@@ -4785,7 +4773,7 @@ TNakamaFuture<FNakamaVoid> Nakama::LinkGameCenter(
 }
 
 TNakamaFuture<FNakamaVoid> Nakama::LinkGoogle(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FNakamaSessionPtr Session,
 	FString Token,
 	const TMap<FString, FString>& Vars,
@@ -4795,7 +4783,7 @@ TNakamaFuture<FNakamaVoid> Nakama::LinkGoogle(
 	TFuture<TNakamaResult<FNakamaVoid>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -4830,7 +4818,7 @@ TNakamaFuture<FNakamaVoid> Nakama::LinkGoogle(
 				CancellationToken]()
 			{
 				NakamaApi::LinkGoogle(
-					Client->ApiConfig,
+					Client.ApiConfig,
 					Session,
 					Token,
 					Vars,
@@ -4853,7 +4841,7 @@ TNakamaFuture<FNakamaVoid> Nakama::LinkGoogle(
 }
 
 TNakamaFuture<FNakamaVoid> Nakama::LinkGoogle(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	const FString& HttpKey,
 	FString Token,
 	const TMap<FString, FString>& Vars,
@@ -4863,7 +4851,7 @@ TNakamaFuture<FNakamaVoid> Nakama::LinkGoogle(
 	TFuture<TNakamaResult<FNakamaVoid>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -4893,7 +4881,7 @@ TNakamaFuture<FNakamaVoid> Nakama::LinkGoogle(
 		CancellationToken]()
 	{
 		NakamaApi::LinkGoogle(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			HttpKey,
 			Token,
 			Vars,
@@ -4913,7 +4901,7 @@ TNakamaFuture<FNakamaVoid> Nakama::LinkGoogle(
 }
 
 TNakamaFuture<FNakamaVoid> Nakama::LinkSteam(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FNakamaSessionPtr Session,
 	FNakamaAccountSteam Account,
 	bool Sync,
@@ -4923,7 +4911,7 @@ TNakamaFuture<FNakamaVoid> Nakama::LinkSteam(
 	TFuture<TNakamaResult<FNakamaVoid>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -4958,7 +4946,7 @@ TNakamaFuture<FNakamaVoid> Nakama::LinkSteam(
 				CancellationToken]()
 			{
 				NakamaApi::LinkSteam(
-					Client->ApiConfig,
+					Client.ApiConfig,
 					Session,
 					Account,
 					Sync,
@@ -4981,7 +4969,7 @@ TNakamaFuture<FNakamaVoid> Nakama::LinkSteam(
 }
 
 TNakamaFuture<FNakamaVoid> Nakama::LinkSteam(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	const FString& HttpKey,
 	FNakamaAccountSteam Account,
 	bool Sync,
@@ -4991,7 +4979,7 @@ TNakamaFuture<FNakamaVoid> Nakama::LinkSteam(
 	TFuture<TNakamaResult<FNakamaVoid>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -5021,7 +5009,7 @@ TNakamaFuture<FNakamaVoid> Nakama::LinkSteam(
 		CancellationToken]()
 	{
 		NakamaApi::LinkSteam(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			HttpKey,
 			Account,
 			Sync,
@@ -5041,7 +5029,7 @@ TNakamaFuture<FNakamaVoid> Nakama::LinkSteam(
 }
 
 TNakamaFuture<FNakamaChannelMessageList> Nakama::ListChannelMessages(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FNakamaSessionPtr Session,
 	FString ChannelId,
 	int32 Limit,
@@ -5053,7 +5041,7 @@ TNakamaFuture<FNakamaChannelMessageList> Nakama::ListChannelMessages(
 	TFuture<TNakamaResult<FNakamaChannelMessageList>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -5092,7 +5080,7 @@ TNakamaFuture<FNakamaChannelMessageList> Nakama::ListChannelMessages(
 				CancellationToken]()
 			{
 				NakamaApi::ListChannelMessages(
-					Client->ApiConfig,
+					Client.ApiConfig,
 					Session,
 					ChannelId,
 					Limit,
@@ -5117,7 +5105,7 @@ TNakamaFuture<FNakamaChannelMessageList> Nakama::ListChannelMessages(
 }
 
 TNakamaFuture<FNakamaChannelMessageList> Nakama::ListChannelMessages(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	const FString& HttpKey,
 	FString ChannelId,
 	int32 Limit,
@@ -5129,7 +5117,7 @@ TNakamaFuture<FNakamaChannelMessageList> Nakama::ListChannelMessages(
 	TFuture<TNakamaResult<FNakamaChannelMessageList>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -5161,7 +5149,7 @@ TNakamaFuture<FNakamaChannelMessageList> Nakama::ListChannelMessages(
 		CancellationToken]()
 	{
 		NakamaApi::ListChannelMessages(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			HttpKey,
 			ChannelId,
 			Limit,
@@ -5183,7 +5171,7 @@ TNakamaFuture<FNakamaChannelMessageList> Nakama::ListChannelMessages(
 }
 
 TNakamaFuture<FNakamaFriendList> Nakama::ListFriends(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FNakamaSessionPtr Session,
 	int32 Limit,
 	int32 State,
@@ -5194,7 +5182,7 @@ TNakamaFuture<FNakamaFriendList> Nakama::ListFriends(
 	TFuture<TNakamaResult<FNakamaFriendList>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -5231,7 +5219,7 @@ TNakamaFuture<FNakamaFriendList> Nakama::ListFriends(
 				CancellationToken]()
 			{
 				NakamaApi::ListFriends(
-					Client->ApiConfig,
+					Client.ApiConfig,
 					Session,
 					Limit,
 					State,
@@ -5255,7 +5243,7 @@ TNakamaFuture<FNakamaFriendList> Nakama::ListFriends(
 }
 
 TNakamaFuture<FNakamaFriendList> Nakama::ListFriends(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	const FString& HttpKey,
 	int32 Limit,
 	int32 State,
@@ -5266,7 +5254,7 @@ TNakamaFuture<FNakamaFriendList> Nakama::ListFriends(
 	TFuture<TNakamaResult<FNakamaFriendList>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -5297,7 +5285,7 @@ TNakamaFuture<FNakamaFriendList> Nakama::ListFriends(
 		CancellationToken]()
 	{
 		NakamaApi::ListFriends(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			HttpKey,
 			Limit,
 			State,
@@ -5318,7 +5306,7 @@ TNakamaFuture<FNakamaFriendList> Nakama::ListFriends(
 }
 
 TNakamaFuture<FNakamaFriendsOfFriendsList> Nakama::ListFriendsOfFriends(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FNakamaSessionPtr Session,
 	int32 Limit,
 	FString Cursor,
@@ -5328,7 +5316,7 @@ TNakamaFuture<FNakamaFriendsOfFriendsList> Nakama::ListFriendsOfFriends(
 	TFuture<TNakamaResult<FNakamaFriendsOfFriendsList>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -5363,7 +5351,7 @@ TNakamaFuture<FNakamaFriendsOfFriendsList> Nakama::ListFriendsOfFriends(
 				CancellationToken]()
 			{
 				NakamaApi::ListFriendsOfFriends(
-					Client->ApiConfig,
+					Client.ApiConfig,
 					Session,
 					Limit,
 					Cursor,
@@ -5386,7 +5374,7 @@ TNakamaFuture<FNakamaFriendsOfFriendsList> Nakama::ListFriendsOfFriends(
 }
 
 TNakamaFuture<FNakamaFriendsOfFriendsList> Nakama::ListFriendsOfFriends(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	const FString& HttpKey,
 	int32 Limit,
 	FString Cursor,
@@ -5396,7 +5384,7 @@ TNakamaFuture<FNakamaFriendsOfFriendsList> Nakama::ListFriendsOfFriends(
 	TFuture<TNakamaResult<FNakamaFriendsOfFriendsList>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -5426,7 +5414,7 @@ TNakamaFuture<FNakamaFriendsOfFriendsList> Nakama::ListFriendsOfFriends(
 		CancellationToken]()
 	{
 		NakamaApi::ListFriendsOfFriends(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			HttpKey,
 			Limit,
 			Cursor,
@@ -5446,7 +5434,7 @@ TNakamaFuture<FNakamaFriendsOfFriendsList> Nakama::ListFriendsOfFriends(
 }
 
 TNakamaFuture<FNakamaGroupList> Nakama::ListGroups(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FNakamaSessionPtr Session,
 	FString Name,
 	FString Cursor,
@@ -5460,7 +5448,7 @@ TNakamaFuture<FNakamaGroupList> Nakama::ListGroups(
 	TFuture<TNakamaResult<FNakamaGroupList>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -5503,7 +5491,7 @@ TNakamaFuture<FNakamaGroupList> Nakama::ListGroups(
 				CancellationToken]()
 			{
 				NakamaApi::ListGroups(
-					Client->ApiConfig,
+					Client.ApiConfig,
 					Session,
 					Name,
 					Cursor,
@@ -5530,7 +5518,7 @@ TNakamaFuture<FNakamaGroupList> Nakama::ListGroups(
 }
 
 TNakamaFuture<FNakamaGroupList> Nakama::ListGroups(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	const FString& HttpKey,
 	FString Name,
 	FString Cursor,
@@ -5544,7 +5532,7 @@ TNakamaFuture<FNakamaGroupList> Nakama::ListGroups(
 	TFuture<TNakamaResult<FNakamaGroupList>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -5578,7 +5566,7 @@ TNakamaFuture<FNakamaGroupList> Nakama::ListGroups(
 		CancellationToken]()
 	{
 		NakamaApi::ListGroups(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			HttpKey,
 			Name,
 			Cursor,
@@ -5602,7 +5590,7 @@ TNakamaFuture<FNakamaGroupList> Nakama::ListGroups(
 }
 
 TNakamaFuture<FNakamaGroupUserList> Nakama::ListGroupUsers(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FNakamaSessionPtr Session,
 	FString GroupId,
 	int32 Limit,
@@ -5614,7 +5602,7 @@ TNakamaFuture<FNakamaGroupUserList> Nakama::ListGroupUsers(
 	TFuture<TNakamaResult<FNakamaGroupUserList>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -5653,7 +5641,7 @@ TNakamaFuture<FNakamaGroupUserList> Nakama::ListGroupUsers(
 				CancellationToken]()
 			{
 				NakamaApi::ListGroupUsers(
-					Client->ApiConfig,
+					Client.ApiConfig,
 					Session,
 					GroupId,
 					Limit,
@@ -5678,7 +5666,7 @@ TNakamaFuture<FNakamaGroupUserList> Nakama::ListGroupUsers(
 }
 
 TNakamaFuture<FNakamaGroupUserList> Nakama::ListGroupUsers(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	const FString& HttpKey,
 	FString GroupId,
 	int32 Limit,
@@ -5690,7 +5678,7 @@ TNakamaFuture<FNakamaGroupUserList> Nakama::ListGroupUsers(
 	TFuture<TNakamaResult<FNakamaGroupUserList>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -5722,7 +5710,7 @@ TNakamaFuture<FNakamaGroupUserList> Nakama::ListGroupUsers(
 		CancellationToken]()
 	{
 		NakamaApi::ListGroupUsers(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			HttpKey,
 			GroupId,
 			Limit,
@@ -5744,7 +5732,7 @@ TNakamaFuture<FNakamaGroupUserList> Nakama::ListGroupUsers(
 }
 
 TNakamaFuture<FNakamaLeaderboardRecordList> Nakama::ListLeaderboardRecords(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FNakamaSessionPtr Session,
 	FString LeaderboardId,
 	const TArray<FString>& OwnerIds,
@@ -5757,7 +5745,7 @@ TNakamaFuture<FNakamaLeaderboardRecordList> Nakama::ListLeaderboardRecords(
 	TFuture<TNakamaResult<FNakamaLeaderboardRecordList>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -5798,7 +5786,7 @@ TNakamaFuture<FNakamaLeaderboardRecordList> Nakama::ListLeaderboardRecords(
 				CancellationToken]()
 			{
 				NakamaApi::ListLeaderboardRecords(
-					Client->ApiConfig,
+					Client.ApiConfig,
 					Session,
 					LeaderboardId,
 					OwnerIds,
@@ -5824,7 +5812,7 @@ TNakamaFuture<FNakamaLeaderboardRecordList> Nakama::ListLeaderboardRecords(
 }
 
 TNakamaFuture<FNakamaLeaderboardRecordList> Nakama::ListLeaderboardRecords(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	const FString& HttpKey,
 	FString LeaderboardId,
 	const TArray<FString>& OwnerIds,
@@ -5837,7 +5825,7 @@ TNakamaFuture<FNakamaLeaderboardRecordList> Nakama::ListLeaderboardRecords(
 	TFuture<TNakamaResult<FNakamaLeaderboardRecordList>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -5870,7 +5858,7 @@ TNakamaFuture<FNakamaLeaderboardRecordList> Nakama::ListLeaderboardRecords(
 		CancellationToken]()
 	{
 		NakamaApi::ListLeaderboardRecords(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			HttpKey,
 			LeaderboardId,
 			OwnerIds,
@@ -5893,7 +5881,7 @@ TNakamaFuture<FNakamaLeaderboardRecordList> Nakama::ListLeaderboardRecords(
 }
 
 TNakamaFuture<FNakamaLeaderboardRecordList> Nakama::ListLeaderboardRecordsAroundOwner(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FNakamaSessionPtr Session,
 	FString LeaderboardId,
 	int32 Limit,
@@ -5906,7 +5894,7 @@ TNakamaFuture<FNakamaLeaderboardRecordList> Nakama::ListLeaderboardRecordsAround
 	TFuture<TNakamaResult<FNakamaLeaderboardRecordList>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -5947,7 +5935,7 @@ TNakamaFuture<FNakamaLeaderboardRecordList> Nakama::ListLeaderboardRecordsAround
 				CancellationToken]()
 			{
 				NakamaApi::ListLeaderboardRecordsAroundOwner(
-					Client->ApiConfig,
+					Client.ApiConfig,
 					Session,
 					LeaderboardId,
 					Limit,
@@ -5973,7 +5961,7 @@ TNakamaFuture<FNakamaLeaderboardRecordList> Nakama::ListLeaderboardRecordsAround
 }
 
 TNakamaFuture<FNakamaLeaderboardRecordList> Nakama::ListLeaderboardRecordsAroundOwner(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	const FString& HttpKey,
 	FString LeaderboardId,
 	int32 Limit,
@@ -5986,7 +5974,7 @@ TNakamaFuture<FNakamaLeaderboardRecordList> Nakama::ListLeaderboardRecordsAround
 	TFuture<TNakamaResult<FNakamaLeaderboardRecordList>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -6019,7 +6007,7 @@ TNakamaFuture<FNakamaLeaderboardRecordList> Nakama::ListLeaderboardRecordsAround
 		CancellationToken]()
 	{
 		NakamaApi::ListLeaderboardRecordsAroundOwner(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			HttpKey,
 			LeaderboardId,
 			Limit,
@@ -6042,7 +6030,7 @@ TNakamaFuture<FNakamaLeaderboardRecordList> Nakama::ListLeaderboardRecordsAround
 }
 
 TNakamaFuture<FNakamaMatchList> Nakama::ListMatches(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FNakamaSessionPtr Session,
 	int32 Limit,
 	bool Authoritative,
@@ -6056,7 +6044,7 @@ TNakamaFuture<FNakamaMatchList> Nakama::ListMatches(
 	TFuture<TNakamaResult<FNakamaMatchList>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -6099,7 +6087,7 @@ TNakamaFuture<FNakamaMatchList> Nakama::ListMatches(
 				CancellationToken]()
 			{
 				NakamaApi::ListMatches(
-					Client->ApiConfig,
+					Client.ApiConfig,
 					Session,
 					Limit,
 					Authoritative,
@@ -6126,7 +6114,7 @@ TNakamaFuture<FNakamaMatchList> Nakama::ListMatches(
 }
 
 TNakamaFuture<FNakamaMatchList> Nakama::ListMatches(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	const FString& HttpKey,
 	int32 Limit,
 	bool Authoritative,
@@ -6140,7 +6128,7 @@ TNakamaFuture<FNakamaMatchList> Nakama::ListMatches(
 	TFuture<TNakamaResult<FNakamaMatchList>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -6174,7 +6162,7 @@ TNakamaFuture<FNakamaMatchList> Nakama::ListMatches(
 		CancellationToken]()
 	{
 		NakamaApi::ListMatches(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			HttpKey,
 			Limit,
 			Authoritative,
@@ -6198,7 +6186,7 @@ TNakamaFuture<FNakamaMatchList> Nakama::ListMatches(
 }
 
 TNakamaFuture<FNakamaPartyList> Nakama::ListParties(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FNakamaSessionPtr Session,
 	int32 Limit,
 	bool Open,
@@ -6210,7 +6198,7 @@ TNakamaFuture<FNakamaPartyList> Nakama::ListParties(
 	TFuture<TNakamaResult<FNakamaPartyList>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -6249,7 +6237,7 @@ TNakamaFuture<FNakamaPartyList> Nakama::ListParties(
 				CancellationToken]()
 			{
 				NakamaApi::ListParties(
-					Client->ApiConfig,
+					Client.ApiConfig,
 					Session,
 					Limit,
 					Open,
@@ -6274,7 +6262,7 @@ TNakamaFuture<FNakamaPartyList> Nakama::ListParties(
 }
 
 TNakamaFuture<FNakamaPartyList> Nakama::ListParties(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	const FString& HttpKey,
 	int32 Limit,
 	bool Open,
@@ -6286,7 +6274,7 @@ TNakamaFuture<FNakamaPartyList> Nakama::ListParties(
 	TFuture<TNakamaResult<FNakamaPartyList>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -6318,7 +6306,7 @@ TNakamaFuture<FNakamaPartyList> Nakama::ListParties(
 		CancellationToken]()
 	{
 		NakamaApi::ListParties(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			HttpKey,
 			Limit,
 			Open,
@@ -6340,7 +6328,7 @@ TNakamaFuture<FNakamaPartyList> Nakama::ListParties(
 }
 
 TNakamaFuture<FNakamaNotificationList> Nakama::ListNotifications(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FNakamaSessionPtr Session,
 	int32 Limit,
 	FString CacheableCursor,
@@ -6350,7 +6338,7 @@ TNakamaFuture<FNakamaNotificationList> Nakama::ListNotifications(
 	TFuture<TNakamaResult<FNakamaNotificationList>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -6385,7 +6373,7 @@ TNakamaFuture<FNakamaNotificationList> Nakama::ListNotifications(
 				CancellationToken]()
 			{
 				NakamaApi::ListNotifications(
-					Client->ApiConfig,
+					Client.ApiConfig,
 					Session,
 					Limit,
 					CacheableCursor,
@@ -6408,7 +6396,7 @@ TNakamaFuture<FNakamaNotificationList> Nakama::ListNotifications(
 }
 
 TNakamaFuture<FNakamaNotificationList> Nakama::ListNotifications(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	const FString& HttpKey,
 	int32 Limit,
 	FString CacheableCursor,
@@ -6418,7 +6406,7 @@ TNakamaFuture<FNakamaNotificationList> Nakama::ListNotifications(
 	TFuture<TNakamaResult<FNakamaNotificationList>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -6448,7 +6436,7 @@ TNakamaFuture<FNakamaNotificationList> Nakama::ListNotifications(
 		CancellationToken]()
 	{
 		NakamaApi::ListNotifications(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			HttpKey,
 			Limit,
 			CacheableCursor,
@@ -6468,7 +6456,7 @@ TNakamaFuture<FNakamaNotificationList> Nakama::ListNotifications(
 }
 
 TNakamaFuture<FNakamaStorageObjectList> Nakama::ListStorageObjects(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FNakamaSessionPtr Session,
 	FString UserId,
 	FString Collection,
@@ -6480,7 +6468,7 @@ TNakamaFuture<FNakamaStorageObjectList> Nakama::ListStorageObjects(
 	TFuture<TNakamaResult<FNakamaStorageObjectList>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -6519,7 +6507,7 @@ TNakamaFuture<FNakamaStorageObjectList> Nakama::ListStorageObjects(
 				CancellationToken]()
 			{
 				NakamaApi::ListStorageObjects(
-					Client->ApiConfig,
+					Client.ApiConfig,
 					Session,
 					UserId,
 					Collection,
@@ -6544,7 +6532,7 @@ TNakamaFuture<FNakamaStorageObjectList> Nakama::ListStorageObjects(
 }
 
 TNakamaFuture<FNakamaStorageObjectList> Nakama::ListStorageObjects(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	const FString& HttpKey,
 	FString UserId,
 	FString Collection,
@@ -6556,7 +6544,7 @@ TNakamaFuture<FNakamaStorageObjectList> Nakama::ListStorageObjects(
 	TFuture<TNakamaResult<FNakamaStorageObjectList>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -6588,7 +6576,7 @@ TNakamaFuture<FNakamaStorageObjectList> Nakama::ListStorageObjects(
 		CancellationToken]()
 	{
 		NakamaApi::ListStorageObjects(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			HttpKey,
 			UserId,
 			Collection,
@@ -6610,7 +6598,7 @@ TNakamaFuture<FNakamaStorageObjectList> Nakama::ListStorageObjects(
 }
 
 TNakamaFuture<FNakamaSubscriptionList> Nakama::ListSubscriptions(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FNakamaSessionPtr Session,
 	int32 Limit,
 	FString Cursor,
@@ -6620,7 +6608,7 @@ TNakamaFuture<FNakamaSubscriptionList> Nakama::ListSubscriptions(
 	TFuture<TNakamaResult<FNakamaSubscriptionList>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -6655,7 +6643,7 @@ TNakamaFuture<FNakamaSubscriptionList> Nakama::ListSubscriptions(
 				CancellationToken]()
 			{
 				NakamaApi::ListSubscriptions(
-					Client->ApiConfig,
+					Client.ApiConfig,
 					Session,
 					Limit,
 					Cursor,
@@ -6678,7 +6666,7 @@ TNakamaFuture<FNakamaSubscriptionList> Nakama::ListSubscriptions(
 }
 
 TNakamaFuture<FNakamaSubscriptionList> Nakama::ListSubscriptions(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	const FString& HttpKey,
 	int32 Limit,
 	FString Cursor,
@@ -6688,7 +6676,7 @@ TNakamaFuture<FNakamaSubscriptionList> Nakama::ListSubscriptions(
 	TFuture<TNakamaResult<FNakamaSubscriptionList>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -6718,7 +6706,7 @@ TNakamaFuture<FNakamaSubscriptionList> Nakama::ListSubscriptions(
 		CancellationToken]()
 	{
 		NakamaApi::ListSubscriptions(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			HttpKey,
 			Limit,
 			Cursor,
@@ -6738,7 +6726,7 @@ TNakamaFuture<FNakamaSubscriptionList> Nakama::ListSubscriptions(
 }
 
 TNakamaFuture<FNakamaTournamentList> Nakama::ListTournaments(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FNakamaSessionPtr Session,
 	int32 CategoryStart,
 	int32 CategoryEnd,
@@ -6752,7 +6740,7 @@ TNakamaFuture<FNakamaTournamentList> Nakama::ListTournaments(
 	TFuture<TNakamaResult<FNakamaTournamentList>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -6795,7 +6783,7 @@ TNakamaFuture<FNakamaTournamentList> Nakama::ListTournaments(
 				CancellationToken]()
 			{
 				NakamaApi::ListTournaments(
-					Client->ApiConfig,
+					Client.ApiConfig,
 					Session,
 					CategoryStart,
 					CategoryEnd,
@@ -6822,7 +6810,7 @@ TNakamaFuture<FNakamaTournamentList> Nakama::ListTournaments(
 }
 
 TNakamaFuture<FNakamaTournamentList> Nakama::ListTournaments(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	const FString& HttpKey,
 	int32 CategoryStart,
 	int32 CategoryEnd,
@@ -6836,7 +6824,7 @@ TNakamaFuture<FNakamaTournamentList> Nakama::ListTournaments(
 	TFuture<TNakamaResult<FNakamaTournamentList>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -6870,7 +6858,7 @@ TNakamaFuture<FNakamaTournamentList> Nakama::ListTournaments(
 		CancellationToken]()
 	{
 		NakamaApi::ListTournaments(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			HttpKey,
 			CategoryStart,
 			CategoryEnd,
@@ -6894,7 +6882,7 @@ TNakamaFuture<FNakamaTournamentList> Nakama::ListTournaments(
 }
 
 TNakamaFuture<FNakamaTournamentRecordList> Nakama::ListTournamentRecords(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FNakamaSessionPtr Session,
 	FString TournamentId,
 	const TArray<FString>& OwnerIds,
@@ -6907,7 +6895,7 @@ TNakamaFuture<FNakamaTournamentRecordList> Nakama::ListTournamentRecords(
 	TFuture<TNakamaResult<FNakamaTournamentRecordList>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -6948,7 +6936,7 @@ TNakamaFuture<FNakamaTournamentRecordList> Nakama::ListTournamentRecords(
 				CancellationToken]()
 			{
 				NakamaApi::ListTournamentRecords(
-					Client->ApiConfig,
+					Client.ApiConfig,
 					Session,
 					TournamentId,
 					OwnerIds,
@@ -6974,7 +6962,7 @@ TNakamaFuture<FNakamaTournamentRecordList> Nakama::ListTournamentRecords(
 }
 
 TNakamaFuture<FNakamaTournamentRecordList> Nakama::ListTournamentRecords(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	const FString& HttpKey,
 	FString TournamentId,
 	const TArray<FString>& OwnerIds,
@@ -6987,7 +6975,7 @@ TNakamaFuture<FNakamaTournamentRecordList> Nakama::ListTournamentRecords(
 	TFuture<TNakamaResult<FNakamaTournamentRecordList>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -7020,7 +7008,7 @@ TNakamaFuture<FNakamaTournamentRecordList> Nakama::ListTournamentRecords(
 		CancellationToken]()
 	{
 		NakamaApi::ListTournamentRecords(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			HttpKey,
 			TournamentId,
 			OwnerIds,
@@ -7043,7 +7031,7 @@ TNakamaFuture<FNakamaTournamentRecordList> Nakama::ListTournamentRecords(
 }
 
 TNakamaFuture<FNakamaTournamentRecordList> Nakama::ListTournamentRecordsAroundOwner(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FNakamaSessionPtr Session,
 	FString TournamentId,
 	int32 Limit,
@@ -7056,7 +7044,7 @@ TNakamaFuture<FNakamaTournamentRecordList> Nakama::ListTournamentRecordsAroundOw
 	TFuture<TNakamaResult<FNakamaTournamentRecordList>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -7097,7 +7085,7 @@ TNakamaFuture<FNakamaTournamentRecordList> Nakama::ListTournamentRecordsAroundOw
 				CancellationToken]()
 			{
 				NakamaApi::ListTournamentRecordsAroundOwner(
-					Client->ApiConfig,
+					Client.ApiConfig,
 					Session,
 					TournamentId,
 					Limit,
@@ -7123,7 +7111,7 @@ TNakamaFuture<FNakamaTournamentRecordList> Nakama::ListTournamentRecordsAroundOw
 }
 
 TNakamaFuture<FNakamaTournamentRecordList> Nakama::ListTournamentRecordsAroundOwner(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	const FString& HttpKey,
 	FString TournamentId,
 	int32 Limit,
@@ -7136,7 +7124,7 @@ TNakamaFuture<FNakamaTournamentRecordList> Nakama::ListTournamentRecordsAroundOw
 	TFuture<TNakamaResult<FNakamaTournamentRecordList>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -7169,7 +7157,7 @@ TNakamaFuture<FNakamaTournamentRecordList> Nakama::ListTournamentRecordsAroundOw
 		CancellationToken]()
 	{
 		NakamaApi::ListTournamentRecordsAroundOwner(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			HttpKey,
 			TournamentId,
 			Limit,
@@ -7192,7 +7180,7 @@ TNakamaFuture<FNakamaTournamentRecordList> Nakama::ListTournamentRecordsAroundOw
 }
 
 TNakamaFuture<FNakamaUserGroupList> Nakama::ListUserGroups(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FNakamaSessionPtr Session,
 	FString UserId,
 	int32 Limit,
@@ -7204,7 +7192,7 @@ TNakamaFuture<FNakamaUserGroupList> Nakama::ListUserGroups(
 	TFuture<TNakamaResult<FNakamaUserGroupList>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -7243,7 +7231,7 @@ TNakamaFuture<FNakamaUserGroupList> Nakama::ListUserGroups(
 				CancellationToken]()
 			{
 				NakamaApi::ListUserGroups(
-					Client->ApiConfig,
+					Client.ApiConfig,
 					Session,
 					UserId,
 					Limit,
@@ -7268,7 +7256,7 @@ TNakamaFuture<FNakamaUserGroupList> Nakama::ListUserGroups(
 }
 
 TNakamaFuture<FNakamaUserGroupList> Nakama::ListUserGroups(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	const FString& HttpKey,
 	FString UserId,
 	int32 Limit,
@@ -7280,7 +7268,7 @@ TNakamaFuture<FNakamaUserGroupList> Nakama::ListUserGroups(
 	TFuture<TNakamaResult<FNakamaUserGroupList>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -7312,7 +7300,7 @@ TNakamaFuture<FNakamaUserGroupList> Nakama::ListUserGroups(
 		CancellationToken]()
 	{
 		NakamaApi::ListUserGroups(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			HttpKey,
 			UserId,
 			Limit,
@@ -7334,7 +7322,7 @@ TNakamaFuture<FNakamaUserGroupList> Nakama::ListUserGroups(
 }
 
 TNakamaFuture<FNakamaVoid> Nakama::PromoteGroupUsers(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FNakamaSessionPtr Session,
 	FString GroupId,
 	const TArray<FString>& UserIds,
@@ -7344,7 +7332,7 @@ TNakamaFuture<FNakamaVoid> Nakama::PromoteGroupUsers(
 	TFuture<TNakamaResult<FNakamaVoid>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -7379,7 +7367,7 @@ TNakamaFuture<FNakamaVoid> Nakama::PromoteGroupUsers(
 				CancellationToken]()
 			{
 				NakamaApi::PromoteGroupUsers(
-					Client->ApiConfig,
+					Client.ApiConfig,
 					Session,
 					GroupId,
 					UserIds,
@@ -7402,7 +7390,7 @@ TNakamaFuture<FNakamaVoid> Nakama::PromoteGroupUsers(
 }
 
 TNakamaFuture<FNakamaVoid> Nakama::PromoteGroupUsers(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	const FString& HttpKey,
 	FString GroupId,
 	const TArray<FString>& UserIds,
@@ -7412,7 +7400,7 @@ TNakamaFuture<FNakamaVoid> Nakama::PromoteGroupUsers(
 	TFuture<TNakamaResult<FNakamaVoid>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -7442,7 +7430,7 @@ TNakamaFuture<FNakamaVoid> Nakama::PromoteGroupUsers(
 		CancellationToken]()
 	{
 		NakamaApi::PromoteGroupUsers(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			HttpKey,
 			GroupId,
 			UserIds,
@@ -7462,7 +7450,7 @@ TNakamaFuture<FNakamaVoid> Nakama::PromoteGroupUsers(
 }
 
 TNakamaFuture<FNakamaVoid> Nakama::DemoteGroupUsers(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FNakamaSessionPtr Session,
 	FString GroupId,
 	const TArray<FString>& UserIds,
@@ -7472,7 +7460,7 @@ TNakamaFuture<FNakamaVoid> Nakama::DemoteGroupUsers(
 	TFuture<TNakamaResult<FNakamaVoid>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -7507,7 +7495,7 @@ TNakamaFuture<FNakamaVoid> Nakama::DemoteGroupUsers(
 				CancellationToken]()
 			{
 				NakamaApi::DemoteGroupUsers(
-					Client->ApiConfig,
+					Client.ApiConfig,
 					Session,
 					GroupId,
 					UserIds,
@@ -7530,7 +7518,7 @@ TNakamaFuture<FNakamaVoid> Nakama::DemoteGroupUsers(
 }
 
 TNakamaFuture<FNakamaVoid> Nakama::DemoteGroupUsers(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	const FString& HttpKey,
 	FString GroupId,
 	const TArray<FString>& UserIds,
@@ -7540,7 +7528,7 @@ TNakamaFuture<FNakamaVoid> Nakama::DemoteGroupUsers(
 	TFuture<TNakamaResult<FNakamaVoid>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -7570,7 +7558,7 @@ TNakamaFuture<FNakamaVoid> Nakama::DemoteGroupUsers(
 		CancellationToken]()
 	{
 		NakamaApi::DemoteGroupUsers(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			HttpKey,
 			GroupId,
 			UserIds,
@@ -7590,7 +7578,7 @@ TNakamaFuture<FNakamaVoid> Nakama::DemoteGroupUsers(
 }
 
 TNakamaFuture<FNakamaStorageObjects> Nakama::ReadStorageObjects(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FNakamaSessionPtr Session,
 	const TArray<FNakamaReadStorageObjectId>& ObjectIds,
 	FNakamaCancellationTokenPtr CancellationToken)
@@ -7599,7 +7587,7 @@ TNakamaFuture<FNakamaStorageObjects> Nakama::ReadStorageObjects(
 	TFuture<TNakamaResult<FNakamaStorageObjects>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -7632,7 +7620,7 @@ TNakamaFuture<FNakamaStorageObjects> Nakama::ReadStorageObjects(
 				CancellationToken]()
 			{
 				NakamaApi::ReadStorageObjects(
-					Client->ApiConfig,
+					Client.ApiConfig,
 					Session,
 					ObjectIds,
 					[Promise, DoRequest, OnError](const FNakamaStorageObjects& Result)
@@ -7654,7 +7642,7 @@ TNakamaFuture<FNakamaStorageObjects> Nakama::ReadStorageObjects(
 }
 
 TNakamaFuture<FNakamaStorageObjects> Nakama::ReadStorageObjects(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	const FString& HttpKey,
 	const TArray<FNakamaReadStorageObjectId>& ObjectIds,
 	FNakamaCancellationTokenPtr CancellationToken)
@@ -7663,7 +7651,7 @@ TNakamaFuture<FNakamaStorageObjects> Nakama::ReadStorageObjects(
 	TFuture<TNakamaResult<FNakamaStorageObjects>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -7692,7 +7680,7 @@ TNakamaFuture<FNakamaStorageObjects> Nakama::ReadStorageObjects(
 		CancellationToken]()
 	{
 		NakamaApi::ReadStorageObjects(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			HttpKey,
 			ObjectIds,
 			[Promise, DoRequest, OnError](const FNakamaStorageObjects& Result)
@@ -7711,7 +7699,7 @@ TNakamaFuture<FNakamaStorageObjects> Nakama::ReadStorageObjects(
 }
 
 TNakamaFuture<FNakamaRpc> Nakama::RpcFunc(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FNakamaSessionPtr Session,
 	FString Id,
 	TSharedPtr<FJsonObject> Payload,
@@ -7722,7 +7710,7 @@ TNakamaFuture<FNakamaRpc> Nakama::RpcFunc(
 	TFuture<TNakamaResult<FNakamaRpc>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -7759,7 +7747,7 @@ TNakamaFuture<FNakamaRpc> Nakama::RpcFunc(
 				CancellationToken]()
 			{
 				NakamaApi::RpcFunc(
-					Client->ApiConfig,
+					Client.ApiConfig,
 					Session,
 					Id,
 					Payload,
@@ -7783,7 +7771,7 @@ TNakamaFuture<FNakamaRpc> Nakama::RpcFunc(
 }
 
 TNakamaFuture<FNakamaRpc> Nakama::RpcFunc(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	const FString& HttpKey,
 	FString Id,
 	TSharedPtr<FJsonObject> Payload,
@@ -7793,7 +7781,7 @@ TNakamaFuture<FNakamaRpc> Nakama::RpcFunc(
 	TFuture<TNakamaResult<FNakamaRpc>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -7823,7 +7811,7 @@ TNakamaFuture<FNakamaRpc> Nakama::RpcFunc(
 		CancellationToken]()
 	{
 		NakamaApi::RpcFunc(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			HttpKey,
 			Id,
 			Payload,
@@ -7843,7 +7831,7 @@ TNakamaFuture<FNakamaRpc> Nakama::RpcFunc(
 }
 
 TNakamaFuture<FNakamaVoid> Nakama::UnlinkApple(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FNakamaSessionPtr Session,
 	FString Token,
 	const TMap<FString, FString>& Vars,
@@ -7853,7 +7841,7 @@ TNakamaFuture<FNakamaVoid> Nakama::UnlinkApple(
 	TFuture<TNakamaResult<FNakamaVoid>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -7888,7 +7876,7 @@ TNakamaFuture<FNakamaVoid> Nakama::UnlinkApple(
 				CancellationToken]()
 			{
 				NakamaApi::UnlinkApple(
-					Client->ApiConfig,
+					Client.ApiConfig,
 					Session,
 					Token,
 					Vars,
@@ -7911,7 +7899,7 @@ TNakamaFuture<FNakamaVoid> Nakama::UnlinkApple(
 }
 
 TNakamaFuture<FNakamaVoid> Nakama::UnlinkApple(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	const FString& HttpKey,
 	FString Token,
 	const TMap<FString, FString>& Vars,
@@ -7921,7 +7909,7 @@ TNakamaFuture<FNakamaVoid> Nakama::UnlinkApple(
 	TFuture<TNakamaResult<FNakamaVoid>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -7951,7 +7939,7 @@ TNakamaFuture<FNakamaVoid> Nakama::UnlinkApple(
 		CancellationToken]()
 	{
 		NakamaApi::UnlinkApple(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			HttpKey,
 			Token,
 			Vars,
@@ -7971,7 +7959,7 @@ TNakamaFuture<FNakamaVoid> Nakama::UnlinkApple(
 }
 
 TNakamaFuture<FNakamaVoid> Nakama::UnlinkCustom(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FNakamaSessionPtr Session,
 	FString Id,
 	const TMap<FString, FString>& Vars,
@@ -7981,7 +7969,7 @@ TNakamaFuture<FNakamaVoid> Nakama::UnlinkCustom(
 	TFuture<TNakamaResult<FNakamaVoid>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -8016,7 +8004,7 @@ TNakamaFuture<FNakamaVoid> Nakama::UnlinkCustom(
 				CancellationToken]()
 			{
 				NakamaApi::UnlinkCustom(
-					Client->ApiConfig,
+					Client.ApiConfig,
 					Session,
 					Id,
 					Vars,
@@ -8039,7 +8027,7 @@ TNakamaFuture<FNakamaVoid> Nakama::UnlinkCustom(
 }
 
 TNakamaFuture<FNakamaVoid> Nakama::UnlinkCustom(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	const FString& HttpKey,
 	FString Id,
 	const TMap<FString, FString>& Vars,
@@ -8049,7 +8037,7 @@ TNakamaFuture<FNakamaVoid> Nakama::UnlinkCustom(
 	TFuture<TNakamaResult<FNakamaVoid>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -8079,7 +8067,7 @@ TNakamaFuture<FNakamaVoid> Nakama::UnlinkCustom(
 		CancellationToken]()
 	{
 		NakamaApi::UnlinkCustom(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			HttpKey,
 			Id,
 			Vars,
@@ -8099,7 +8087,7 @@ TNakamaFuture<FNakamaVoid> Nakama::UnlinkCustom(
 }
 
 TNakamaFuture<FNakamaVoid> Nakama::UnlinkDevice(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FNakamaSessionPtr Session,
 	FString Id,
 	const TMap<FString, FString>& Vars,
@@ -8109,7 +8097,7 @@ TNakamaFuture<FNakamaVoid> Nakama::UnlinkDevice(
 	TFuture<TNakamaResult<FNakamaVoid>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -8144,7 +8132,7 @@ TNakamaFuture<FNakamaVoid> Nakama::UnlinkDevice(
 				CancellationToken]()
 			{
 				NakamaApi::UnlinkDevice(
-					Client->ApiConfig,
+					Client.ApiConfig,
 					Session,
 					Id,
 					Vars,
@@ -8167,7 +8155,7 @@ TNakamaFuture<FNakamaVoid> Nakama::UnlinkDevice(
 }
 
 TNakamaFuture<FNakamaVoid> Nakama::UnlinkDevice(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	const FString& HttpKey,
 	FString Id,
 	const TMap<FString, FString>& Vars,
@@ -8177,7 +8165,7 @@ TNakamaFuture<FNakamaVoid> Nakama::UnlinkDevice(
 	TFuture<TNakamaResult<FNakamaVoid>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -8207,7 +8195,7 @@ TNakamaFuture<FNakamaVoid> Nakama::UnlinkDevice(
 		CancellationToken]()
 	{
 		NakamaApi::UnlinkDevice(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			HttpKey,
 			Id,
 			Vars,
@@ -8227,7 +8215,7 @@ TNakamaFuture<FNakamaVoid> Nakama::UnlinkDevice(
 }
 
 TNakamaFuture<FNakamaVoid> Nakama::UnlinkEmail(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FNakamaSessionPtr Session,
 	FString Email,
 	FString Password,
@@ -8238,7 +8226,7 @@ TNakamaFuture<FNakamaVoid> Nakama::UnlinkEmail(
 	TFuture<TNakamaResult<FNakamaVoid>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -8275,7 +8263,7 @@ TNakamaFuture<FNakamaVoid> Nakama::UnlinkEmail(
 				CancellationToken]()
 			{
 				NakamaApi::UnlinkEmail(
-					Client->ApiConfig,
+					Client.ApiConfig,
 					Session,
 					Email,
 					Password,
@@ -8299,7 +8287,7 @@ TNakamaFuture<FNakamaVoid> Nakama::UnlinkEmail(
 }
 
 TNakamaFuture<FNakamaVoid> Nakama::UnlinkEmail(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	const FString& HttpKey,
 	FString Email,
 	FString Password,
@@ -8310,7 +8298,7 @@ TNakamaFuture<FNakamaVoid> Nakama::UnlinkEmail(
 	TFuture<TNakamaResult<FNakamaVoid>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -8341,7 +8329,7 @@ TNakamaFuture<FNakamaVoid> Nakama::UnlinkEmail(
 		CancellationToken]()
 	{
 		NakamaApi::UnlinkEmail(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			HttpKey,
 			Email,
 			Password,
@@ -8362,7 +8350,7 @@ TNakamaFuture<FNakamaVoid> Nakama::UnlinkEmail(
 }
 
 TNakamaFuture<FNakamaVoid> Nakama::UnlinkFacebook(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FNakamaSessionPtr Session,
 	FString Token,
 	const TMap<FString, FString>& Vars,
@@ -8372,7 +8360,7 @@ TNakamaFuture<FNakamaVoid> Nakama::UnlinkFacebook(
 	TFuture<TNakamaResult<FNakamaVoid>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -8407,7 +8395,7 @@ TNakamaFuture<FNakamaVoid> Nakama::UnlinkFacebook(
 				CancellationToken]()
 			{
 				NakamaApi::UnlinkFacebook(
-					Client->ApiConfig,
+					Client.ApiConfig,
 					Session,
 					Token,
 					Vars,
@@ -8430,7 +8418,7 @@ TNakamaFuture<FNakamaVoid> Nakama::UnlinkFacebook(
 }
 
 TNakamaFuture<FNakamaVoid> Nakama::UnlinkFacebook(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	const FString& HttpKey,
 	FString Token,
 	const TMap<FString, FString>& Vars,
@@ -8440,7 +8428,7 @@ TNakamaFuture<FNakamaVoid> Nakama::UnlinkFacebook(
 	TFuture<TNakamaResult<FNakamaVoid>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -8470,7 +8458,7 @@ TNakamaFuture<FNakamaVoid> Nakama::UnlinkFacebook(
 		CancellationToken]()
 	{
 		NakamaApi::UnlinkFacebook(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			HttpKey,
 			Token,
 			Vars,
@@ -8490,7 +8478,7 @@ TNakamaFuture<FNakamaVoid> Nakama::UnlinkFacebook(
 }
 
 TNakamaFuture<FNakamaVoid> Nakama::UnlinkFacebookInstantGame(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FNakamaSessionPtr Session,
 	FString SignedPlayerInfo,
 	const TMap<FString, FString>& Vars,
@@ -8500,7 +8488,7 @@ TNakamaFuture<FNakamaVoid> Nakama::UnlinkFacebookInstantGame(
 	TFuture<TNakamaResult<FNakamaVoid>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -8535,7 +8523,7 @@ TNakamaFuture<FNakamaVoid> Nakama::UnlinkFacebookInstantGame(
 				CancellationToken]()
 			{
 				NakamaApi::UnlinkFacebookInstantGame(
-					Client->ApiConfig,
+					Client.ApiConfig,
 					Session,
 					SignedPlayerInfo,
 					Vars,
@@ -8558,7 +8546,7 @@ TNakamaFuture<FNakamaVoid> Nakama::UnlinkFacebookInstantGame(
 }
 
 TNakamaFuture<FNakamaVoid> Nakama::UnlinkFacebookInstantGame(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	const FString& HttpKey,
 	FString SignedPlayerInfo,
 	const TMap<FString, FString>& Vars,
@@ -8568,7 +8556,7 @@ TNakamaFuture<FNakamaVoid> Nakama::UnlinkFacebookInstantGame(
 	TFuture<TNakamaResult<FNakamaVoid>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -8598,7 +8586,7 @@ TNakamaFuture<FNakamaVoid> Nakama::UnlinkFacebookInstantGame(
 		CancellationToken]()
 	{
 		NakamaApi::UnlinkFacebookInstantGame(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			HttpKey,
 			SignedPlayerInfo,
 			Vars,
@@ -8618,7 +8606,7 @@ TNakamaFuture<FNakamaVoid> Nakama::UnlinkFacebookInstantGame(
 }
 
 TNakamaFuture<FNakamaVoid> Nakama::UnlinkGameCenter(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FNakamaSessionPtr Session,
 	FString PlayerId,
 	FString BundleId,
@@ -8633,7 +8621,7 @@ TNakamaFuture<FNakamaVoid> Nakama::UnlinkGameCenter(
 	TFuture<TNakamaResult<FNakamaVoid>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -8678,7 +8666,7 @@ TNakamaFuture<FNakamaVoid> Nakama::UnlinkGameCenter(
 				CancellationToken]()
 			{
 				NakamaApi::UnlinkGameCenter(
-					Client->ApiConfig,
+					Client.ApiConfig,
 					Session,
 					PlayerId,
 					BundleId,
@@ -8706,7 +8694,7 @@ TNakamaFuture<FNakamaVoid> Nakama::UnlinkGameCenter(
 }
 
 TNakamaFuture<FNakamaVoid> Nakama::UnlinkGameCenter(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	const FString& HttpKey,
 	FString PlayerId,
 	FString BundleId,
@@ -8721,7 +8709,7 @@ TNakamaFuture<FNakamaVoid> Nakama::UnlinkGameCenter(
 	TFuture<TNakamaResult<FNakamaVoid>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -8756,7 +8744,7 @@ TNakamaFuture<FNakamaVoid> Nakama::UnlinkGameCenter(
 		CancellationToken]()
 	{
 		NakamaApi::UnlinkGameCenter(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			HttpKey,
 			PlayerId,
 			BundleId,
@@ -8781,7 +8769,7 @@ TNakamaFuture<FNakamaVoid> Nakama::UnlinkGameCenter(
 }
 
 TNakamaFuture<FNakamaVoid> Nakama::UnlinkGoogle(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FNakamaSessionPtr Session,
 	FString Token,
 	const TMap<FString, FString>& Vars,
@@ -8791,7 +8779,7 @@ TNakamaFuture<FNakamaVoid> Nakama::UnlinkGoogle(
 	TFuture<TNakamaResult<FNakamaVoid>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -8826,7 +8814,7 @@ TNakamaFuture<FNakamaVoid> Nakama::UnlinkGoogle(
 				CancellationToken]()
 			{
 				NakamaApi::UnlinkGoogle(
-					Client->ApiConfig,
+					Client.ApiConfig,
 					Session,
 					Token,
 					Vars,
@@ -8849,7 +8837,7 @@ TNakamaFuture<FNakamaVoid> Nakama::UnlinkGoogle(
 }
 
 TNakamaFuture<FNakamaVoid> Nakama::UnlinkGoogle(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	const FString& HttpKey,
 	FString Token,
 	const TMap<FString, FString>& Vars,
@@ -8859,7 +8847,7 @@ TNakamaFuture<FNakamaVoid> Nakama::UnlinkGoogle(
 	TFuture<TNakamaResult<FNakamaVoid>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -8889,7 +8877,7 @@ TNakamaFuture<FNakamaVoid> Nakama::UnlinkGoogle(
 		CancellationToken]()
 	{
 		NakamaApi::UnlinkGoogle(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			HttpKey,
 			Token,
 			Vars,
@@ -8909,7 +8897,7 @@ TNakamaFuture<FNakamaVoid> Nakama::UnlinkGoogle(
 }
 
 TNakamaFuture<FNakamaVoid> Nakama::UnlinkSteam(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FNakamaSessionPtr Session,
 	FString Token,
 	const TMap<FString, FString>& Vars,
@@ -8919,7 +8907,7 @@ TNakamaFuture<FNakamaVoid> Nakama::UnlinkSteam(
 	TFuture<TNakamaResult<FNakamaVoid>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -8954,7 +8942,7 @@ TNakamaFuture<FNakamaVoid> Nakama::UnlinkSteam(
 				CancellationToken]()
 			{
 				NakamaApi::UnlinkSteam(
-					Client->ApiConfig,
+					Client.ApiConfig,
 					Session,
 					Token,
 					Vars,
@@ -8977,7 +8965,7 @@ TNakamaFuture<FNakamaVoid> Nakama::UnlinkSteam(
 }
 
 TNakamaFuture<FNakamaVoid> Nakama::UnlinkSteam(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	const FString& HttpKey,
 	FString Token,
 	const TMap<FString, FString>& Vars,
@@ -8987,7 +8975,7 @@ TNakamaFuture<FNakamaVoid> Nakama::UnlinkSteam(
 	TFuture<TNakamaResult<FNakamaVoid>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -9017,7 +9005,7 @@ TNakamaFuture<FNakamaVoid> Nakama::UnlinkSteam(
 		CancellationToken]()
 	{
 		NakamaApi::UnlinkSteam(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			HttpKey,
 			Token,
 			Vars,
@@ -9037,7 +9025,7 @@ TNakamaFuture<FNakamaVoid> Nakama::UnlinkSteam(
 }
 
 TNakamaFuture<FNakamaVoid> Nakama::UpdateAccount(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FNakamaSessionPtr Session,
 	FString Username,
 	FString DisplayName,
@@ -9051,7 +9039,7 @@ TNakamaFuture<FNakamaVoid> Nakama::UpdateAccount(
 	TFuture<TNakamaResult<FNakamaVoid>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -9094,7 +9082,7 @@ TNakamaFuture<FNakamaVoid> Nakama::UpdateAccount(
 				CancellationToken]()
 			{
 				NakamaApi::UpdateAccount(
-					Client->ApiConfig,
+					Client.ApiConfig,
 					Session,
 					Username,
 					DisplayName,
@@ -9121,7 +9109,7 @@ TNakamaFuture<FNakamaVoid> Nakama::UpdateAccount(
 }
 
 TNakamaFuture<FNakamaVoid> Nakama::UpdateAccount(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	const FString& HttpKey,
 	FString Username,
 	FString DisplayName,
@@ -9135,7 +9123,7 @@ TNakamaFuture<FNakamaVoid> Nakama::UpdateAccount(
 	TFuture<TNakamaResult<FNakamaVoid>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -9169,7 +9157,7 @@ TNakamaFuture<FNakamaVoid> Nakama::UpdateAccount(
 		CancellationToken]()
 	{
 		NakamaApi::UpdateAccount(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			HttpKey,
 			Username,
 			DisplayName,
@@ -9193,7 +9181,7 @@ TNakamaFuture<FNakamaVoid> Nakama::UpdateAccount(
 }
 
 TNakamaFuture<FNakamaVoid> Nakama::UpdateGroup(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FNakamaSessionPtr Session,
 	FString GroupId,
 	FString Name,
@@ -9207,7 +9195,7 @@ TNakamaFuture<FNakamaVoid> Nakama::UpdateGroup(
 	TFuture<TNakamaResult<FNakamaVoid>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -9250,7 +9238,7 @@ TNakamaFuture<FNakamaVoid> Nakama::UpdateGroup(
 				CancellationToken]()
 			{
 				NakamaApi::UpdateGroup(
-					Client->ApiConfig,
+					Client.ApiConfig,
 					Session,
 					GroupId,
 					Name,
@@ -9277,7 +9265,7 @@ TNakamaFuture<FNakamaVoid> Nakama::UpdateGroup(
 }
 
 TNakamaFuture<FNakamaVoid> Nakama::UpdateGroup(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	const FString& HttpKey,
 	FString GroupId,
 	FString Name,
@@ -9291,7 +9279,7 @@ TNakamaFuture<FNakamaVoid> Nakama::UpdateGroup(
 	TFuture<TNakamaResult<FNakamaVoid>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -9325,7 +9313,7 @@ TNakamaFuture<FNakamaVoid> Nakama::UpdateGroup(
 		CancellationToken]()
 	{
 		NakamaApi::UpdateGroup(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			HttpKey,
 			GroupId,
 			Name,
@@ -9349,7 +9337,7 @@ TNakamaFuture<FNakamaVoid> Nakama::UpdateGroup(
 }
 
 TNakamaFuture<FNakamaValidatePurchaseResponse> Nakama::ValidatePurchaseApple(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FNakamaSessionPtr Session,
 	FString Receipt,
 	bool Persist,
@@ -9359,7 +9347,7 @@ TNakamaFuture<FNakamaValidatePurchaseResponse> Nakama::ValidatePurchaseApple(
 	TFuture<TNakamaResult<FNakamaValidatePurchaseResponse>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -9394,7 +9382,7 @@ TNakamaFuture<FNakamaValidatePurchaseResponse> Nakama::ValidatePurchaseApple(
 				CancellationToken]()
 			{
 				NakamaApi::ValidatePurchaseApple(
-					Client->ApiConfig,
+					Client.ApiConfig,
 					Session,
 					Receipt,
 					Persist,
@@ -9417,7 +9405,7 @@ TNakamaFuture<FNakamaValidatePurchaseResponse> Nakama::ValidatePurchaseApple(
 }
 
 TNakamaFuture<FNakamaValidatePurchaseResponse> Nakama::ValidatePurchaseApple(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	const FString& HttpKey,
 	FString Receipt,
 	bool Persist,
@@ -9427,7 +9415,7 @@ TNakamaFuture<FNakamaValidatePurchaseResponse> Nakama::ValidatePurchaseApple(
 	TFuture<TNakamaResult<FNakamaValidatePurchaseResponse>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -9457,7 +9445,7 @@ TNakamaFuture<FNakamaValidatePurchaseResponse> Nakama::ValidatePurchaseApple(
 		CancellationToken]()
 	{
 		NakamaApi::ValidatePurchaseApple(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			HttpKey,
 			Receipt,
 			Persist,
@@ -9477,7 +9465,7 @@ TNakamaFuture<FNakamaValidatePurchaseResponse> Nakama::ValidatePurchaseApple(
 }
 
 TNakamaFuture<FNakamaValidateSubscriptionResponse> Nakama::ValidateSubscriptionApple(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FNakamaSessionPtr Session,
 	FString Receipt,
 	bool Persist,
@@ -9487,7 +9475,7 @@ TNakamaFuture<FNakamaValidateSubscriptionResponse> Nakama::ValidateSubscriptionA
 	TFuture<TNakamaResult<FNakamaValidateSubscriptionResponse>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -9522,7 +9510,7 @@ TNakamaFuture<FNakamaValidateSubscriptionResponse> Nakama::ValidateSubscriptionA
 				CancellationToken]()
 			{
 				NakamaApi::ValidateSubscriptionApple(
-					Client->ApiConfig,
+					Client.ApiConfig,
 					Session,
 					Receipt,
 					Persist,
@@ -9545,7 +9533,7 @@ TNakamaFuture<FNakamaValidateSubscriptionResponse> Nakama::ValidateSubscriptionA
 }
 
 TNakamaFuture<FNakamaValidateSubscriptionResponse> Nakama::ValidateSubscriptionApple(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	const FString& HttpKey,
 	FString Receipt,
 	bool Persist,
@@ -9555,7 +9543,7 @@ TNakamaFuture<FNakamaValidateSubscriptionResponse> Nakama::ValidateSubscriptionA
 	TFuture<TNakamaResult<FNakamaValidateSubscriptionResponse>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -9585,7 +9573,7 @@ TNakamaFuture<FNakamaValidateSubscriptionResponse> Nakama::ValidateSubscriptionA
 		CancellationToken]()
 	{
 		NakamaApi::ValidateSubscriptionApple(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			HttpKey,
 			Receipt,
 			Persist,
@@ -9605,7 +9593,7 @@ TNakamaFuture<FNakamaValidateSubscriptionResponse> Nakama::ValidateSubscriptionA
 }
 
 TNakamaFuture<FNakamaValidatePurchaseResponse> Nakama::ValidatePurchaseGoogle(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FNakamaSessionPtr Session,
 	FString Purchase,
 	bool Persist,
@@ -9615,7 +9603,7 @@ TNakamaFuture<FNakamaValidatePurchaseResponse> Nakama::ValidatePurchaseGoogle(
 	TFuture<TNakamaResult<FNakamaValidatePurchaseResponse>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -9650,7 +9638,7 @@ TNakamaFuture<FNakamaValidatePurchaseResponse> Nakama::ValidatePurchaseGoogle(
 				CancellationToken]()
 			{
 				NakamaApi::ValidatePurchaseGoogle(
-					Client->ApiConfig,
+					Client.ApiConfig,
 					Session,
 					Purchase,
 					Persist,
@@ -9673,7 +9661,7 @@ TNakamaFuture<FNakamaValidatePurchaseResponse> Nakama::ValidatePurchaseGoogle(
 }
 
 TNakamaFuture<FNakamaValidatePurchaseResponse> Nakama::ValidatePurchaseGoogle(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	const FString& HttpKey,
 	FString Purchase,
 	bool Persist,
@@ -9683,7 +9671,7 @@ TNakamaFuture<FNakamaValidatePurchaseResponse> Nakama::ValidatePurchaseGoogle(
 	TFuture<TNakamaResult<FNakamaValidatePurchaseResponse>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -9713,7 +9701,7 @@ TNakamaFuture<FNakamaValidatePurchaseResponse> Nakama::ValidatePurchaseGoogle(
 		CancellationToken]()
 	{
 		NakamaApi::ValidatePurchaseGoogle(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			HttpKey,
 			Purchase,
 			Persist,
@@ -9733,7 +9721,7 @@ TNakamaFuture<FNakamaValidatePurchaseResponse> Nakama::ValidatePurchaseGoogle(
 }
 
 TNakamaFuture<FNakamaValidateSubscriptionResponse> Nakama::ValidateSubscriptionGoogle(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FNakamaSessionPtr Session,
 	FString Receipt,
 	bool Persist,
@@ -9743,7 +9731,7 @@ TNakamaFuture<FNakamaValidateSubscriptionResponse> Nakama::ValidateSubscriptionG
 	TFuture<TNakamaResult<FNakamaValidateSubscriptionResponse>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -9778,7 +9766,7 @@ TNakamaFuture<FNakamaValidateSubscriptionResponse> Nakama::ValidateSubscriptionG
 				CancellationToken]()
 			{
 				NakamaApi::ValidateSubscriptionGoogle(
-					Client->ApiConfig,
+					Client.ApiConfig,
 					Session,
 					Receipt,
 					Persist,
@@ -9801,7 +9789,7 @@ TNakamaFuture<FNakamaValidateSubscriptionResponse> Nakama::ValidateSubscriptionG
 }
 
 TNakamaFuture<FNakamaValidateSubscriptionResponse> Nakama::ValidateSubscriptionGoogle(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	const FString& HttpKey,
 	FString Receipt,
 	bool Persist,
@@ -9811,7 +9799,7 @@ TNakamaFuture<FNakamaValidateSubscriptionResponse> Nakama::ValidateSubscriptionG
 	TFuture<TNakamaResult<FNakamaValidateSubscriptionResponse>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -9841,7 +9829,7 @@ TNakamaFuture<FNakamaValidateSubscriptionResponse> Nakama::ValidateSubscriptionG
 		CancellationToken]()
 	{
 		NakamaApi::ValidateSubscriptionGoogle(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			HttpKey,
 			Receipt,
 			Persist,
@@ -9861,7 +9849,7 @@ TNakamaFuture<FNakamaValidateSubscriptionResponse> Nakama::ValidateSubscriptionG
 }
 
 TNakamaFuture<FNakamaValidatePurchaseResponse> Nakama::ValidatePurchaseHuawei(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FNakamaSessionPtr Session,
 	FString Purchase,
 	FString Signature,
@@ -9872,7 +9860,7 @@ TNakamaFuture<FNakamaValidatePurchaseResponse> Nakama::ValidatePurchaseHuawei(
 	TFuture<TNakamaResult<FNakamaValidatePurchaseResponse>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -9909,7 +9897,7 @@ TNakamaFuture<FNakamaValidatePurchaseResponse> Nakama::ValidatePurchaseHuawei(
 				CancellationToken]()
 			{
 				NakamaApi::ValidatePurchaseHuawei(
-					Client->ApiConfig,
+					Client.ApiConfig,
 					Session,
 					Purchase,
 					Signature,
@@ -9933,7 +9921,7 @@ TNakamaFuture<FNakamaValidatePurchaseResponse> Nakama::ValidatePurchaseHuawei(
 }
 
 TNakamaFuture<FNakamaValidatePurchaseResponse> Nakama::ValidatePurchaseHuawei(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	const FString& HttpKey,
 	FString Purchase,
 	FString Signature,
@@ -9944,7 +9932,7 @@ TNakamaFuture<FNakamaValidatePurchaseResponse> Nakama::ValidatePurchaseHuawei(
 	TFuture<TNakamaResult<FNakamaValidatePurchaseResponse>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -9975,7 +9963,7 @@ TNakamaFuture<FNakamaValidatePurchaseResponse> Nakama::ValidatePurchaseHuawei(
 		CancellationToken]()
 	{
 		NakamaApi::ValidatePurchaseHuawei(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			HttpKey,
 			Purchase,
 			Signature,
@@ -9996,7 +9984,7 @@ TNakamaFuture<FNakamaValidatePurchaseResponse> Nakama::ValidatePurchaseHuawei(
 }
 
 TNakamaFuture<FNakamaValidatePurchaseResponse> Nakama::ValidatePurchaseFacebookInstant(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FNakamaSessionPtr Session,
 	FString SignedRequest,
 	bool Persist,
@@ -10006,7 +9994,7 @@ TNakamaFuture<FNakamaValidatePurchaseResponse> Nakama::ValidatePurchaseFacebookI
 	TFuture<TNakamaResult<FNakamaValidatePurchaseResponse>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -10041,7 +10029,7 @@ TNakamaFuture<FNakamaValidatePurchaseResponse> Nakama::ValidatePurchaseFacebookI
 				CancellationToken]()
 			{
 				NakamaApi::ValidatePurchaseFacebookInstant(
-					Client->ApiConfig,
+					Client.ApiConfig,
 					Session,
 					SignedRequest,
 					Persist,
@@ -10064,7 +10052,7 @@ TNakamaFuture<FNakamaValidatePurchaseResponse> Nakama::ValidatePurchaseFacebookI
 }
 
 TNakamaFuture<FNakamaValidatePurchaseResponse> Nakama::ValidatePurchaseFacebookInstant(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	const FString& HttpKey,
 	FString SignedRequest,
 	bool Persist,
@@ -10074,7 +10062,7 @@ TNakamaFuture<FNakamaValidatePurchaseResponse> Nakama::ValidatePurchaseFacebookI
 	TFuture<TNakamaResult<FNakamaValidatePurchaseResponse>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -10104,7 +10092,7 @@ TNakamaFuture<FNakamaValidatePurchaseResponse> Nakama::ValidatePurchaseFacebookI
 		CancellationToken]()
 	{
 		NakamaApi::ValidatePurchaseFacebookInstant(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			HttpKey,
 			SignedRequest,
 			Persist,
@@ -10124,7 +10112,7 @@ TNakamaFuture<FNakamaValidatePurchaseResponse> Nakama::ValidatePurchaseFacebookI
 }
 
 TNakamaFuture<FNakamaLeaderboardRecord> Nakama::WriteLeaderboardRecord(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FNakamaSessionPtr Session,
 	FString LeaderboardId,
 	FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite Record,
@@ -10134,7 +10122,7 @@ TNakamaFuture<FNakamaLeaderboardRecord> Nakama::WriteLeaderboardRecord(
 	TFuture<TNakamaResult<FNakamaLeaderboardRecord>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -10169,7 +10157,7 @@ TNakamaFuture<FNakamaLeaderboardRecord> Nakama::WriteLeaderboardRecord(
 				CancellationToken]()
 			{
 				NakamaApi::WriteLeaderboardRecord(
-					Client->ApiConfig,
+					Client.ApiConfig,
 					Session,
 					LeaderboardId,
 					Record,
@@ -10192,7 +10180,7 @@ TNakamaFuture<FNakamaLeaderboardRecord> Nakama::WriteLeaderboardRecord(
 }
 
 TNakamaFuture<FNakamaLeaderboardRecord> Nakama::WriteLeaderboardRecord(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	const FString& HttpKey,
 	FString LeaderboardId,
 	FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite Record,
@@ -10202,7 +10190,7 @@ TNakamaFuture<FNakamaLeaderboardRecord> Nakama::WriteLeaderboardRecord(
 	TFuture<TNakamaResult<FNakamaLeaderboardRecord>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -10232,7 +10220,7 @@ TNakamaFuture<FNakamaLeaderboardRecord> Nakama::WriteLeaderboardRecord(
 		CancellationToken]()
 	{
 		NakamaApi::WriteLeaderboardRecord(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			HttpKey,
 			LeaderboardId,
 			Record,
@@ -10252,7 +10240,7 @@ TNakamaFuture<FNakamaLeaderboardRecord> Nakama::WriteLeaderboardRecord(
 }
 
 TNakamaFuture<FNakamaStorageObjectAcks> Nakama::WriteStorageObjects(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FNakamaSessionPtr Session,
 	const TArray<FNakamaWriteStorageObject>& Objects,
 	FNakamaCancellationTokenPtr CancellationToken)
@@ -10261,7 +10249,7 @@ TNakamaFuture<FNakamaStorageObjectAcks> Nakama::WriteStorageObjects(
 	TFuture<TNakamaResult<FNakamaStorageObjectAcks>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -10294,7 +10282,7 @@ TNakamaFuture<FNakamaStorageObjectAcks> Nakama::WriteStorageObjects(
 				CancellationToken]()
 			{
 				NakamaApi::WriteStorageObjects(
-					Client->ApiConfig,
+					Client.ApiConfig,
 					Session,
 					Objects,
 					[Promise, DoRequest, OnError](const FNakamaStorageObjectAcks& Result)
@@ -10316,7 +10304,7 @@ TNakamaFuture<FNakamaStorageObjectAcks> Nakama::WriteStorageObjects(
 }
 
 TNakamaFuture<FNakamaStorageObjectAcks> Nakama::WriteStorageObjects(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	const FString& HttpKey,
 	const TArray<FNakamaWriteStorageObject>& Objects,
 	FNakamaCancellationTokenPtr CancellationToken)
@@ -10325,7 +10313,7 @@ TNakamaFuture<FNakamaStorageObjectAcks> Nakama::WriteStorageObjects(
 	TFuture<TNakamaResult<FNakamaStorageObjectAcks>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -10354,7 +10342,7 @@ TNakamaFuture<FNakamaStorageObjectAcks> Nakama::WriteStorageObjects(
 		CancellationToken]()
 	{
 		NakamaApi::WriteStorageObjects(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			HttpKey,
 			Objects,
 			[Promise, DoRequest, OnError](const FNakamaStorageObjectAcks& Result)
@@ -10373,7 +10361,7 @@ TNakamaFuture<FNakamaStorageObjectAcks> Nakama::WriteStorageObjects(
 }
 
 TNakamaFuture<FNakamaLeaderboardRecord> Nakama::WriteTournamentRecord(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	FNakamaSessionPtr Session,
 	FString TournamentId,
 	FNakamaWriteTournamentRecordRequest_TournamentRecordWrite Record,
@@ -10383,7 +10371,7 @@ TNakamaFuture<FNakamaLeaderboardRecord> Nakama::WriteTournamentRecord(
 	TFuture<TNakamaResult<FNakamaLeaderboardRecord>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -10418,7 +10406,7 @@ TNakamaFuture<FNakamaLeaderboardRecord> Nakama::WriteTournamentRecord(
 				CancellationToken]()
 			{
 				NakamaApi::WriteTournamentRecord(
-					Client->ApiConfig,
+					Client.ApiConfig,
 					Session,
 					TournamentId,
 					Record,
@@ -10441,7 +10429,7 @@ TNakamaFuture<FNakamaLeaderboardRecord> Nakama::WriteTournamentRecord(
 }
 
 TNakamaFuture<FNakamaLeaderboardRecord> Nakama::WriteTournamentRecord(
-	FNakamaClientPtr Client,
+	FNakamaClient Client,
 	const FString& HttpKey,
 	FString TournamentId,
 	FNakamaWriteTournamentRecordRequest_TournamentRecordWrite Record,
@@ -10451,7 +10439,7 @@ TNakamaFuture<FNakamaLeaderboardRecord> Nakama::WriteTournamentRecord(
 	TFuture<TNakamaResult<FNakamaLeaderboardRecord>> Future = Promise->GetFuture();
 
 	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client->RetryConfiguration;
+	auto Cfg = Client.RetryConfiguration;
 
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
@@ -10481,7 +10469,7 @@ TNakamaFuture<FNakamaLeaderboardRecord> Nakama::WriteTournamentRecord(
 		CancellationToken]()
 	{
 		NakamaApi::WriteTournamentRecord(
-			Client->ApiConfig,
+			Client.ApiConfig,
 			HttpKey,
 			TournamentId,
 			Record,

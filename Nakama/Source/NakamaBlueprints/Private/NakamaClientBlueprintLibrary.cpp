@@ -19,32 +19,13 @@
 #include "NakamaClientBlueprintLibrary.h"
 
 // ============================================================================
-// Blueprint Function Library Implementation
-// ============================================================================
-
-FNakamaClientRef UNakamaBlueprintLibrary::CreateDefaultClient(
-	const FString& ServerKey,
-	const FString& Host,
-	int32 Port,
-	bool UseSSL,
-	bool EnableDebug)
-{
-	return FNakamaClientRef(MakeShared<FNakamaApiConfig>(FNakamaApiConfig{ServerKey, Host, Port, UseSSL, EnableDebug}));
-}
-
-bool UNakamaBlueprintLibrary::IsValidClient(const FNakamaClientRef& Client)
-{
-	return Client.IsValid();
-}
-
-// ============================================================================
 // Async Action Classes Implementation
 // ============================================================================
 
 // AddFriends
 UNakamaClientAddFriends* UNakamaClientAddFriends::AddFriends(
 	UObject* WorldContextObject,
-	const FNakamaClientRef& Client,
+	FNakamaApiConfig Client,
 	const FNakamaSession& Session,
 	const TArray<FString>& Ids,
 	const TArray<FString>& Usernames,
@@ -64,19 +45,9 @@ void UNakamaClientAddFriends::Activate()
 {
 	static const TCHAR* TraceScope_AddFriends = TEXT("NakamaBP_AddFriends");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_AddFriends);
-	FNakamaApiConfigPtr Config = Client.GetConfig();
-	if (!Config)
-	{
-		FNakamaError Error;
-		Error.Message = TEXT("Invalid Nakama client");
-		Error.Code = -1;
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
-		return;
-	}
 
 	NakamaApi::AddFriends(
-		Config,
+		Client,
 		MakeShared<FNakamaSession>(Session),
 		StoredIds,
 		StoredUsernames,
@@ -97,7 +68,7 @@ void UNakamaClientAddFriends::Activate()
 // AddGroupUsers
 UNakamaClientAddGroupUsers* UNakamaClientAddGroupUsers::AddGroupUsers(
 	UObject* WorldContextObject,
-	const FNakamaClientRef& Client,
+	FNakamaApiConfig Client,
 	const FNakamaSession& Session,
 	FString GroupId,
 	const TArray<FString>& UserIds)
@@ -115,19 +86,9 @@ void UNakamaClientAddGroupUsers::Activate()
 {
 	static const TCHAR* TraceScope_AddGroupUsers = TEXT("NakamaBP_AddGroupUsers");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_AddGroupUsers);
-	FNakamaApiConfigPtr Config = Client.GetConfig();
-	if (!Config)
-	{
-		FNakamaError Error;
-		Error.Message = TEXT("Invalid Nakama client");
-		Error.Code = -1;
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
-		return;
-	}
 
 	NakamaApi::AddGroupUsers(
-		Config,
+		Client,
 		MakeShared<FNakamaSession>(Session),
 		StoredGroupId,
 		StoredUserIds,
@@ -147,7 +108,7 @@ void UNakamaClientAddGroupUsers::Activate()
 // SessionRefresh
 UNakamaClientSessionRefresh* UNakamaClientSessionRefresh::SessionRefresh(
 	UObject* WorldContextObject,
-	const FNakamaClientRef& Client,
+	FNakamaApiConfig Client,
 	FString Token,
 	const TMap<FString, FString>& Vars)
 {
@@ -163,19 +124,9 @@ void UNakamaClientSessionRefresh::Activate()
 {
 	static const TCHAR* TraceScope_SessionRefresh = TEXT("NakamaBP_SessionRefresh");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_SessionRefresh);
-	FNakamaApiConfigPtr Config = Client.GetConfig();
-	if (!Config)
-	{
-		FNakamaError Error;
-		Error.Message = TEXT("Invalid Nakama client");
-		Error.Code = -1;
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
-		return;
-	}
 
 	NakamaApi::SessionRefresh(
-		Config,
+		Client,
 		StoredToken,
 		StoredVars,
 		[this](const FNakamaSession& Result)
@@ -194,7 +145,7 @@ void UNakamaClientSessionRefresh::Activate()
 // SessionLogout
 UNakamaClientSessionLogout* UNakamaClientSessionLogout::SessionLogout(
 	UObject* WorldContextObject,
-	const FNakamaClientRef& Client,
+	FNakamaApiConfig Client,
 	const FNakamaSession& Session,
 	FString Token,
 	FString RefreshToken)
@@ -212,19 +163,9 @@ void UNakamaClientSessionLogout::Activate()
 {
 	static const TCHAR* TraceScope_SessionLogout = TEXT("NakamaBP_SessionLogout");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_SessionLogout);
-	FNakamaApiConfigPtr Config = Client.GetConfig();
-	if (!Config)
-	{
-		FNakamaError Error;
-		Error.Message = TEXT("Invalid Nakama client");
-		Error.Code = -1;
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
-		return;
-	}
 
 	NakamaApi::SessionLogout(
-		Config,
+		Client,
 		MakeShared<FNakamaSession>(Session),
 		StoredToken,
 		StoredRefreshToken,
@@ -244,7 +185,7 @@ void UNakamaClientSessionLogout::Activate()
 // AuthenticateApple
 UNakamaClientAuthenticateApple* UNakamaClientAuthenticateApple::AuthenticateApple(
 	UObject* WorldContextObject,
-	const FNakamaClientRef& Client,
+	FNakamaApiConfig Client,
 	FNakamaAccountApple Account,
 	bool Create,
 	FString Username)
@@ -262,19 +203,9 @@ void UNakamaClientAuthenticateApple::Activate()
 {
 	static const TCHAR* TraceScope_AuthenticateApple = TEXT("NakamaBP_AuthenticateApple");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_AuthenticateApple);
-	FNakamaApiConfigPtr Config = Client.GetConfig();
-	if (!Config)
-	{
-		FNakamaError Error;
-		Error.Message = TEXT("Invalid Nakama client");
-		Error.Code = -1;
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
-		return;
-	}
 
 	NakamaApi::AuthenticateApple(
-		Config,
+		Client,
 		StoredAccount,
 		StoredCreate,
 		StoredUsername,
@@ -294,7 +225,7 @@ void UNakamaClientAuthenticateApple::Activate()
 // AuthenticateCustom
 UNakamaClientAuthenticateCustom* UNakamaClientAuthenticateCustom::AuthenticateCustom(
 	UObject* WorldContextObject,
-	const FNakamaClientRef& Client,
+	FNakamaApiConfig Client,
 	FNakamaAccountCustom Account,
 	bool Create,
 	FString Username)
@@ -312,19 +243,9 @@ void UNakamaClientAuthenticateCustom::Activate()
 {
 	static const TCHAR* TraceScope_AuthenticateCustom = TEXT("NakamaBP_AuthenticateCustom");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_AuthenticateCustom);
-	FNakamaApiConfigPtr Config = Client.GetConfig();
-	if (!Config)
-	{
-		FNakamaError Error;
-		Error.Message = TEXT("Invalid Nakama client");
-		Error.Code = -1;
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
-		return;
-	}
 
 	NakamaApi::AuthenticateCustom(
-		Config,
+		Client,
 		StoredAccount,
 		StoredCreate,
 		StoredUsername,
@@ -344,7 +265,7 @@ void UNakamaClientAuthenticateCustom::Activate()
 // AuthenticateDevice
 UNakamaClientAuthenticateDevice* UNakamaClientAuthenticateDevice::AuthenticateDevice(
 	UObject* WorldContextObject,
-	const FNakamaClientRef& Client,
+	FNakamaApiConfig Client,
 	FNakamaAccountDevice Account,
 	bool Create,
 	FString Username)
@@ -362,19 +283,9 @@ void UNakamaClientAuthenticateDevice::Activate()
 {
 	static const TCHAR* TraceScope_AuthenticateDevice = TEXT("NakamaBP_AuthenticateDevice");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_AuthenticateDevice);
-	FNakamaApiConfigPtr Config = Client.GetConfig();
-	if (!Config)
-	{
-		FNakamaError Error;
-		Error.Message = TEXT("Invalid Nakama client");
-		Error.Code = -1;
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
-		return;
-	}
 
 	NakamaApi::AuthenticateDevice(
-		Config,
+		Client,
 		StoredAccount,
 		StoredCreate,
 		StoredUsername,
@@ -394,7 +305,7 @@ void UNakamaClientAuthenticateDevice::Activate()
 // AuthenticateEmail
 UNakamaClientAuthenticateEmail* UNakamaClientAuthenticateEmail::AuthenticateEmail(
 	UObject* WorldContextObject,
-	const FNakamaClientRef& Client,
+	FNakamaApiConfig Client,
 	FNakamaAccountEmail Account,
 	bool Create,
 	FString Username)
@@ -412,19 +323,9 @@ void UNakamaClientAuthenticateEmail::Activate()
 {
 	static const TCHAR* TraceScope_AuthenticateEmail = TEXT("NakamaBP_AuthenticateEmail");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_AuthenticateEmail);
-	FNakamaApiConfigPtr Config = Client.GetConfig();
-	if (!Config)
-	{
-		FNakamaError Error;
-		Error.Message = TEXT("Invalid Nakama client");
-		Error.Code = -1;
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
-		return;
-	}
 
 	NakamaApi::AuthenticateEmail(
-		Config,
+		Client,
 		StoredAccount,
 		StoredCreate,
 		StoredUsername,
@@ -444,7 +345,7 @@ void UNakamaClientAuthenticateEmail::Activate()
 // AuthenticateFacebook
 UNakamaClientAuthenticateFacebook* UNakamaClientAuthenticateFacebook::AuthenticateFacebook(
 	UObject* WorldContextObject,
-	const FNakamaClientRef& Client,
+	FNakamaApiConfig Client,
 	FNakamaAccountFacebook Account,
 	bool Create,
 	FString Username,
@@ -464,19 +365,9 @@ void UNakamaClientAuthenticateFacebook::Activate()
 {
 	static const TCHAR* TraceScope_AuthenticateFacebook = TEXT("NakamaBP_AuthenticateFacebook");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_AuthenticateFacebook);
-	FNakamaApiConfigPtr Config = Client.GetConfig();
-	if (!Config)
-	{
-		FNakamaError Error;
-		Error.Message = TEXT("Invalid Nakama client");
-		Error.Code = -1;
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
-		return;
-	}
 
 	NakamaApi::AuthenticateFacebook(
-		Config,
+		Client,
 		StoredAccount,
 		StoredCreate,
 		StoredUsername,
@@ -497,7 +388,7 @@ void UNakamaClientAuthenticateFacebook::Activate()
 // AuthenticateFacebookInstantGame
 UNakamaClientAuthenticateFacebookInstantGame* UNakamaClientAuthenticateFacebookInstantGame::AuthenticateFacebookInstantGame(
 	UObject* WorldContextObject,
-	const FNakamaClientRef& Client,
+	FNakamaApiConfig Client,
 	FNakamaAccountFacebookInstantGame Account,
 	bool Create,
 	FString Username)
@@ -515,19 +406,9 @@ void UNakamaClientAuthenticateFacebookInstantGame::Activate()
 {
 	static const TCHAR* TraceScope_AuthenticateFacebookInstantGame = TEXT("NakamaBP_AuthenticateFacebookInstantGame");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_AuthenticateFacebookInstantGame);
-	FNakamaApiConfigPtr Config = Client.GetConfig();
-	if (!Config)
-	{
-		FNakamaError Error;
-		Error.Message = TEXT("Invalid Nakama client");
-		Error.Code = -1;
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
-		return;
-	}
 
 	NakamaApi::AuthenticateFacebookInstantGame(
-		Config,
+		Client,
 		StoredAccount,
 		StoredCreate,
 		StoredUsername,
@@ -547,7 +428,7 @@ void UNakamaClientAuthenticateFacebookInstantGame::Activate()
 // AuthenticateGameCenter
 UNakamaClientAuthenticateGameCenter* UNakamaClientAuthenticateGameCenter::AuthenticateGameCenter(
 	UObject* WorldContextObject,
-	const FNakamaClientRef& Client,
+	FNakamaApiConfig Client,
 	FNakamaAccountGameCenter Account,
 	bool Create,
 	FString Username)
@@ -565,19 +446,9 @@ void UNakamaClientAuthenticateGameCenter::Activate()
 {
 	static const TCHAR* TraceScope_AuthenticateGameCenter = TEXT("NakamaBP_AuthenticateGameCenter");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_AuthenticateGameCenter);
-	FNakamaApiConfigPtr Config = Client.GetConfig();
-	if (!Config)
-	{
-		FNakamaError Error;
-		Error.Message = TEXT("Invalid Nakama client");
-		Error.Code = -1;
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
-		return;
-	}
 
 	NakamaApi::AuthenticateGameCenter(
-		Config,
+		Client,
 		StoredAccount,
 		StoredCreate,
 		StoredUsername,
@@ -597,7 +468,7 @@ void UNakamaClientAuthenticateGameCenter::Activate()
 // AuthenticateGoogle
 UNakamaClientAuthenticateGoogle* UNakamaClientAuthenticateGoogle::AuthenticateGoogle(
 	UObject* WorldContextObject,
-	const FNakamaClientRef& Client,
+	FNakamaApiConfig Client,
 	FNakamaAccountGoogle Account,
 	bool Create,
 	FString Username)
@@ -615,19 +486,9 @@ void UNakamaClientAuthenticateGoogle::Activate()
 {
 	static const TCHAR* TraceScope_AuthenticateGoogle = TEXT("NakamaBP_AuthenticateGoogle");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_AuthenticateGoogle);
-	FNakamaApiConfigPtr Config = Client.GetConfig();
-	if (!Config)
-	{
-		FNakamaError Error;
-		Error.Message = TEXT("Invalid Nakama client");
-		Error.Code = -1;
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
-		return;
-	}
 
 	NakamaApi::AuthenticateGoogle(
-		Config,
+		Client,
 		StoredAccount,
 		StoredCreate,
 		StoredUsername,
@@ -647,7 +508,7 @@ void UNakamaClientAuthenticateGoogle::Activate()
 // AuthenticateSteam
 UNakamaClientAuthenticateSteam* UNakamaClientAuthenticateSteam::AuthenticateSteam(
 	UObject* WorldContextObject,
-	const FNakamaClientRef& Client,
+	FNakamaApiConfig Client,
 	FNakamaAccountSteam Account,
 	bool Create,
 	FString Username,
@@ -667,19 +528,9 @@ void UNakamaClientAuthenticateSteam::Activate()
 {
 	static const TCHAR* TraceScope_AuthenticateSteam = TEXT("NakamaBP_AuthenticateSteam");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_AuthenticateSteam);
-	FNakamaApiConfigPtr Config = Client.GetConfig();
-	if (!Config)
-	{
-		FNakamaError Error;
-		Error.Message = TEXT("Invalid Nakama client");
-		Error.Code = -1;
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
-		return;
-	}
 
 	NakamaApi::AuthenticateSteam(
-		Config,
+		Client,
 		StoredAccount,
 		StoredCreate,
 		StoredUsername,
@@ -700,7 +551,7 @@ void UNakamaClientAuthenticateSteam::Activate()
 // BanGroupUsers
 UNakamaClientBanGroupUsers* UNakamaClientBanGroupUsers::BanGroupUsers(
 	UObject* WorldContextObject,
-	const FNakamaClientRef& Client,
+	FNakamaApiConfig Client,
 	const FNakamaSession& Session,
 	FString GroupId,
 	const TArray<FString>& UserIds)
@@ -718,19 +569,9 @@ void UNakamaClientBanGroupUsers::Activate()
 {
 	static const TCHAR* TraceScope_BanGroupUsers = TEXT("NakamaBP_BanGroupUsers");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_BanGroupUsers);
-	FNakamaApiConfigPtr Config = Client.GetConfig();
-	if (!Config)
-	{
-		FNakamaError Error;
-		Error.Message = TEXT("Invalid Nakama client");
-		Error.Code = -1;
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
-		return;
-	}
 
 	NakamaApi::BanGroupUsers(
-		Config,
+		Client,
 		MakeShared<FNakamaSession>(Session),
 		StoredGroupId,
 		StoredUserIds,
@@ -750,7 +591,7 @@ void UNakamaClientBanGroupUsers::Activate()
 // BlockFriends
 UNakamaClientBlockFriends* UNakamaClientBlockFriends::BlockFriends(
 	UObject* WorldContextObject,
-	const FNakamaClientRef& Client,
+	FNakamaApiConfig Client,
 	const FNakamaSession& Session,
 	const TArray<FString>& Ids,
 	const TArray<FString>& Usernames)
@@ -768,19 +609,9 @@ void UNakamaClientBlockFriends::Activate()
 {
 	static const TCHAR* TraceScope_BlockFriends = TEXT("NakamaBP_BlockFriends");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_BlockFriends);
-	FNakamaApiConfigPtr Config = Client.GetConfig();
-	if (!Config)
-	{
-		FNakamaError Error;
-		Error.Message = TEXT("Invalid Nakama client");
-		Error.Code = -1;
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
-		return;
-	}
 
 	NakamaApi::BlockFriends(
-		Config,
+		Client,
 		MakeShared<FNakamaSession>(Session),
 		StoredIds,
 		StoredUsernames,
@@ -800,7 +631,7 @@ void UNakamaClientBlockFriends::Activate()
 // CreateGroup
 UNakamaClientCreateGroup* UNakamaClientCreateGroup::CreateGroup(
 	UObject* WorldContextObject,
-	const FNakamaClientRef& Client,
+	FNakamaApiConfig Client,
 	const FNakamaSession& Session,
 	FString Name,
 	FString Description,
@@ -826,19 +657,9 @@ void UNakamaClientCreateGroup::Activate()
 {
 	static const TCHAR* TraceScope_CreateGroup = TEXT("NakamaBP_CreateGroup");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_CreateGroup);
-	FNakamaApiConfigPtr Config = Client.GetConfig();
-	if (!Config)
-	{
-		FNakamaError Error;
-		Error.Message = TEXT("Invalid Nakama client");
-		Error.Code = -1;
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
-		return;
-	}
 
 	NakamaApi::CreateGroup(
-		Config,
+		Client,
 		MakeShared<FNakamaSession>(Session),
 		StoredName,
 		StoredDescription,
@@ -862,7 +683,7 @@ void UNakamaClientCreateGroup::Activate()
 // DeleteAccount
 UNakamaClientDeleteAccount* UNakamaClientDeleteAccount::DeleteAccount(
 	UObject* WorldContextObject,
-	const FNakamaClientRef& Client,
+	FNakamaApiConfig Client,
 	const FNakamaSession& Session)
 {
 	UNakamaClientDeleteAccount* Action = NewObject<UNakamaClientDeleteAccount>();
@@ -876,19 +697,9 @@ void UNakamaClientDeleteAccount::Activate()
 {
 	static const TCHAR* TraceScope_DeleteAccount = TEXT("NakamaBP_DeleteAccount");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_DeleteAccount);
-	FNakamaApiConfigPtr Config = Client.GetConfig();
-	if (!Config)
-	{
-		FNakamaError Error;
-		Error.Message = TEXT("Invalid Nakama client");
-		Error.Code = -1;
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
-		return;
-	}
 
 	NakamaApi::DeleteAccount(
-		Config,
+		Client,
 		MakeShared<FNakamaSession>(Session),
 		[this]()
 		{
@@ -906,7 +717,7 @@ void UNakamaClientDeleteAccount::Activate()
 // DeleteFriends
 UNakamaClientDeleteFriends* UNakamaClientDeleteFriends::DeleteFriends(
 	UObject* WorldContextObject,
-	const FNakamaClientRef& Client,
+	FNakamaApiConfig Client,
 	const FNakamaSession& Session,
 	const TArray<FString>& Ids,
 	const TArray<FString>& Usernames)
@@ -924,19 +735,9 @@ void UNakamaClientDeleteFriends::Activate()
 {
 	static const TCHAR* TraceScope_DeleteFriends = TEXT("NakamaBP_DeleteFriends");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_DeleteFriends);
-	FNakamaApiConfigPtr Config = Client.GetConfig();
-	if (!Config)
-	{
-		FNakamaError Error;
-		Error.Message = TEXT("Invalid Nakama client");
-		Error.Code = -1;
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
-		return;
-	}
 
 	NakamaApi::DeleteFriends(
-		Config,
+		Client,
 		MakeShared<FNakamaSession>(Session),
 		StoredIds,
 		StoredUsernames,
@@ -956,7 +757,7 @@ void UNakamaClientDeleteFriends::Activate()
 // DeleteGroup
 UNakamaClientDeleteGroup* UNakamaClientDeleteGroup::DeleteGroup(
 	UObject* WorldContextObject,
-	const FNakamaClientRef& Client,
+	FNakamaApiConfig Client,
 	const FNakamaSession& Session,
 	FString GroupId)
 {
@@ -972,19 +773,9 @@ void UNakamaClientDeleteGroup::Activate()
 {
 	static const TCHAR* TraceScope_DeleteGroup = TEXT("NakamaBP_DeleteGroup");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_DeleteGroup);
-	FNakamaApiConfigPtr Config = Client.GetConfig();
-	if (!Config)
-	{
-		FNakamaError Error;
-		Error.Message = TEXT("Invalid Nakama client");
-		Error.Code = -1;
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
-		return;
-	}
 
 	NakamaApi::DeleteGroup(
-		Config,
+		Client,
 		MakeShared<FNakamaSession>(Session),
 		StoredGroupId,
 		[this]()
@@ -1003,7 +794,7 @@ void UNakamaClientDeleteGroup::Activate()
 // DeleteLeaderboardRecord
 UNakamaClientDeleteLeaderboardRecord* UNakamaClientDeleteLeaderboardRecord::DeleteLeaderboardRecord(
 	UObject* WorldContextObject,
-	const FNakamaClientRef& Client,
+	FNakamaApiConfig Client,
 	const FNakamaSession& Session,
 	FString LeaderboardId)
 {
@@ -1019,19 +810,9 @@ void UNakamaClientDeleteLeaderboardRecord::Activate()
 {
 	static const TCHAR* TraceScope_DeleteLeaderboardRecord = TEXT("NakamaBP_DeleteLeaderboardRecord");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_DeleteLeaderboardRecord);
-	FNakamaApiConfigPtr Config = Client.GetConfig();
-	if (!Config)
-	{
-		FNakamaError Error;
-		Error.Message = TEXT("Invalid Nakama client");
-		Error.Code = -1;
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
-		return;
-	}
 
 	NakamaApi::DeleteLeaderboardRecord(
-		Config,
+		Client,
 		MakeShared<FNakamaSession>(Session),
 		StoredLeaderboardId,
 		[this]()
@@ -1050,7 +831,7 @@ void UNakamaClientDeleteLeaderboardRecord::Activate()
 // DeleteNotifications
 UNakamaClientDeleteNotifications* UNakamaClientDeleteNotifications::DeleteNotifications(
 	UObject* WorldContextObject,
-	const FNakamaClientRef& Client,
+	FNakamaApiConfig Client,
 	const FNakamaSession& Session,
 	const TArray<FString>& Ids)
 {
@@ -1066,19 +847,9 @@ void UNakamaClientDeleteNotifications::Activate()
 {
 	static const TCHAR* TraceScope_DeleteNotifications = TEXT("NakamaBP_DeleteNotifications");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_DeleteNotifications);
-	FNakamaApiConfigPtr Config = Client.GetConfig();
-	if (!Config)
-	{
-		FNakamaError Error;
-		Error.Message = TEXT("Invalid Nakama client");
-		Error.Code = -1;
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
-		return;
-	}
 
 	NakamaApi::DeleteNotifications(
-		Config,
+		Client,
 		MakeShared<FNakamaSession>(Session),
 		StoredIds,
 		[this]()
@@ -1097,7 +868,7 @@ void UNakamaClientDeleteNotifications::Activate()
 // DeleteTournamentRecord
 UNakamaClientDeleteTournamentRecord* UNakamaClientDeleteTournamentRecord::DeleteTournamentRecord(
 	UObject* WorldContextObject,
-	const FNakamaClientRef& Client,
+	FNakamaApiConfig Client,
 	const FNakamaSession& Session,
 	FString TournamentId)
 {
@@ -1113,19 +884,9 @@ void UNakamaClientDeleteTournamentRecord::Activate()
 {
 	static const TCHAR* TraceScope_DeleteTournamentRecord = TEXT("NakamaBP_DeleteTournamentRecord");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_DeleteTournamentRecord);
-	FNakamaApiConfigPtr Config = Client.GetConfig();
-	if (!Config)
-	{
-		FNakamaError Error;
-		Error.Message = TEXT("Invalid Nakama client");
-		Error.Code = -1;
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
-		return;
-	}
 
 	NakamaApi::DeleteTournamentRecord(
-		Config,
+		Client,
 		MakeShared<FNakamaSession>(Session),
 		StoredTournamentId,
 		[this]()
@@ -1144,7 +905,7 @@ void UNakamaClientDeleteTournamentRecord::Activate()
 // DeleteStorageObjects
 UNakamaClientDeleteStorageObjects* UNakamaClientDeleteStorageObjects::DeleteStorageObjects(
 	UObject* WorldContextObject,
-	const FNakamaClientRef& Client,
+	FNakamaApiConfig Client,
 	const FNakamaSession& Session,
 	const TArray<FNakamaDeleteStorageObjectId>& ObjectIds)
 {
@@ -1160,19 +921,9 @@ void UNakamaClientDeleteStorageObjects::Activate()
 {
 	static const TCHAR* TraceScope_DeleteStorageObjects = TEXT("NakamaBP_DeleteStorageObjects");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_DeleteStorageObjects);
-	FNakamaApiConfigPtr Config = Client.GetConfig();
-	if (!Config)
-	{
-		FNakamaError Error;
-		Error.Message = TEXT("Invalid Nakama client");
-		Error.Code = -1;
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
-		return;
-	}
 
 	NakamaApi::DeleteStorageObjects(
-		Config,
+		Client,
 		MakeShared<FNakamaSession>(Session),
 		StoredObjectIds,
 		[this]()
@@ -1191,7 +942,7 @@ void UNakamaClientDeleteStorageObjects::Activate()
 // Event
 UNakamaClientEvent* UNakamaClientEvent::Event(
 	UObject* WorldContextObject,
-	const FNakamaClientRef& Client,
+	FNakamaApiConfig Client,
 	const FNakamaSession& Session,
 	FString Name,
 	FString Timestamp,
@@ -1213,19 +964,9 @@ void UNakamaClientEvent::Activate()
 {
 	static const TCHAR* TraceScope_Event = TEXT("NakamaBP_Event");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_Event);
-	FNakamaApiConfigPtr Config = Client.GetConfig();
-	if (!Config)
-	{
-		FNakamaError Error;
-		Error.Message = TEXT("Invalid Nakama client");
-		Error.Code = -1;
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
-		return;
-	}
 
 	NakamaApi::Event(
-		Config,
+		Client,
 		MakeShared<FNakamaSession>(Session),
 		StoredName,
 		StoredTimestamp,
@@ -1247,7 +988,7 @@ void UNakamaClientEvent::Activate()
 // GetAccount
 UNakamaClientGetAccount* UNakamaClientGetAccount::GetAccount(
 	UObject* WorldContextObject,
-	const FNakamaClientRef& Client,
+	FNakamaApiConfig Client,
 	const FNakamaSession& Session)
 {
 	UNakamaClientGetAccount* Action = NewObject<UNakamaClientGetAccount>();
@@ -1261,19 +1002,9 @@ void UNakamaClientGetAccount::Activate()
 {
 	static const TCHAR* TraceScope_GetAccount = TEXT("NakamaBP_GetAccount");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_GetAccount);
-	FNakamaApiConfigPtr Config = Client.GetConfig();
-	if (!Config)
-	{
-		FNakamaError Error;
-		Error.Message = TEXT("Invalid Nakama client");
-		Error.Code = -1;
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
-		return;
-	}
 
 	NakamaApi::GetAccount(
-		Config,
+		Client,
 		MakeShared<FNakamaSession>(Session),
 		[this](const FNakamaAccount& Result)
 		{
@@ -1291,7 +1022,7 @@ void UNakamaClientGetAccount::Activate()
 // GetUsers
 UNakamaClientGetUsers* UNakamaClientGetUsers::GetUsers(
 	UObject* WorldContextObject,
-	const FNakamaClientRef& Client,
+	FNakamaApiConfig Client,
 	const FNakamaSession& Session,
 	const TArray<FString>& Ids,
 	const TArray<FString>& Usernames,
@@ -1311,19 +1042,9 @@ void UNakamaClientGetUsers::Activate()
 {
 	static const TCHAR* TraceScope_GetUsers = TEXT("NakamaBP_GetUsers");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_GetUsers);
-	FNakamaApiConfigPtr Config = Client.GetConfig();
-	if (!Config)
-	{
-		FNakamaError Error;
-		Error.Message = TEXT("Invalid Nakama client");
-		Error.Code = -1;
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
-		return;
-	}
 
 	NakamaApi::GetUsers(
-		Config,
+		Client,
 		MakeShared<FNakamaSession>(Session),
 		StoredIds,
 		StoredUsernames,
@@ -1344,7 +1065,7 @@ void UNakamaClientGetUsers::Activate()
 // GetSubscription
 UNakamaClientGetSubscription* UNakamaClientGetSubscription::GetSubscription(
 	UObject* WorldContextObject,
-	const FNakamaClientRef& Client,
+	FNakamaApiConfig Client,
 	const FNakamaSession& Session,
 	FString ProductId)
 {
@@ -1360,19 +1081,9 @@ void UNakamaClientGetSubscription::Activate()
 {
 	static const TCHAR* TraceScope_GetSubscription = TEXT("NakamaBP_GetSubscription");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_GetSubscription);
-	FNakamaApiConfigPtr Config = Client.GetConfig();
-	if (!Config)
-	{
-		FNakamaError Error;
-		Error.Message = TEXT("Invalid Nakama client");
-		Error.Code = -1;
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
-		return;
-	}
 
 	NakamaApi::GetSubscription(
-		Config,
+		Client,
 		MakeShared<FNakamaSession>(Session),
 		StoredProductId,
 		[this](const FNakamaValidatedSubscription& Result)
@@ -1391,7 +1102,7 @@ void UNakamaClientGetSubscription::Activate()
 // GetMatchmakerStats
 UNakamaClientGetMatchmakerStats* UNakamaClientGetMatchmakerStats::GetMatchmakerStats(
 	UObject* WorldContextObject,
-	const FNakamaClientRef& Client,
+	FNakamaApiConfig Client,
 	const FNakamaSession& Session)
 {
 	UNakamaClientGetMatchmakerStats* Action = NewObject<UNakamaClientGetMatchmakerStats>();
@@ -1405,19 +1116,9 @@ void UNakamaClientGetMatchmakerStats::Activate()
 {
 	static const TCHAR* TraceScope_GetMatchmakerStats = TEXT("NakamaBP_GetMatchmakerStats");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_GetMatchmakerStats);
-	FNakamaApiConfigPtr Config = Client.GetConfig();
-	if (!Config)
-	{
-		FNakamaError Error;
-		Error.Message = TEXT("Invalid Nakama client");
-		Error.Code = -1;
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
-		return;
-	}
 
 	NakamaApi::GetMatchmakerStats(
-		Config,
+		Client,
 		MakeShared<FNakamaSession>(Session),
 		[this](const FNakamaMatchmakerStats& Result)
 		{
@@ -1435,7 +1136,7 @@ void UNakamaClientGetMatchmakerStats::Activate()
 // Healthcheck
 UNakamaClientHealthcheck* UNakamaClientHealthcheck::Healthcheck(
 	UObject* WorldContextObject,
-	const FNakamaClientRef& Client,
+	FNakamaApiConfig Client,
 	const FNakamaSession& Session)
 {
 	UNakamaClientHealthcheck* Action = NewObject<UNakamaClientHealthcheck>();
@@ -1449,19 +1150,9 @@ void UNakamaClientHealthcheck::Activate()
 {
 	static const TCHAR* TraceScope_Healthcheck = TEXT("NakamaBP_Healthcheck");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_Healthcheck);
-	FNakamaApiConfigPtr Config = Client.GetConfig();
-	if (!Config)
-	{
-		FNakamaError Error;
-		Error.Message = TEXT("Invalid Nakama client");
-		Error.Code = -1;
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
-		return;
-	}
 
 	NakamaApi::Healthcheck(
-		Config,
+		Client,
 		MakeShared<FNakamaSession>(Session),
 		[this]()
 		{
@@ -1479,7 +1170,7 @@ void UNakamaClientHealthcheck::Activate()
 // ImportFacebookFriends
 UNakamaClientImportFacebookFriends* UNakamaClientImportFacebookFriends::ImportFacebookFriends(
 	UObject* WorldContextObject,
-	const FNakamaClientRef& Client,
+	FNakamaApiConfig Client,
 	const FNakamaSession& Session,
 	FNakamaAccountFacebook Account,
 	bool Reset)
@@ -1497,19 +1188,9 @@ void UNakamaClientImportFacebookFriends::Activate()
 {
 	static const TCHAR* TraceScope_ImportFacebookFriends = TEXT("NakamaBP_ImportFacebookFriends");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ImportFacebookFriends);
-	FNakamaApiConfigPtr Config = Client.GetConfig();
-	if (!Config)
-	{
-		FNakamaError Error;
-		Error.Message = TEXT("Invalid Nakama client");
-		Error.Code = -1;
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
-		return;
-	}
 
 	NakamaApi::ImportFacebookFriends(
-		Config,
+		Client,
 		MakeShared<FNakamaSession>(Session),
 		StoredAccount,
 		StoredReset,
@@ -1529,7 +1210,7 @@ void UNakamaClientImportFacebookFriends::Activate()
 // ImportSteamFriends
 UNakamaClientImportSteamFriends* UNakamaClientImportSteamFriends::ImportSteamFriends(
 	UObject* WorldContextObject,
-	const FNakamaClientRef& Client,
+	FNakamaApiConfig Client,
 	const FNakamaSession& Session,
 	FNakamaAccountSteam Account,
 	bool Reset)
@@ -1547,19 +1228,9 @@ void UNakamaClientImportSteamFriends::Activate()
 {
 	static const TCHAR* TraceScope_ImportSteamFriends = TEXT("NakamaBP_ImportSteamFriends");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ImportSteamFriends);
-	FNakamaApiConfigPtr Config = Client.GetConfig();
-	if (!Config)
-	{
-		FNakamaError Error;
-		Error.Message = TEXT("Invalid Nakama client");
-		Error.Code = -1;
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
-		return;
-	}
 
 	NakamaApi::ImportSteamFriends(
-		Config,
+		Client,
 		MakeShared<FNakamaSession>(Session),
 		StoredAccount,
 		StoredReset,
@@ -1579,7 +1250,7 @@ void UNakamaClientImportSteamFriends::Activate()
 // JoinGroup
 UNakamaClientJoinGroup* UNakamaClientJoinGroup::JoinGroup(
 	UObject* WorldContextObject,
-	const FNakamaClientRef& Client,
+	FNakamaApiConfig Client,
 	const FNakamaSession& Session,
 	FString GroupId)
 {
@@ -1595,19 +1266,9 @@ void UNakamaClientJoinGroup::Activate()
 {
 	static const TCHAR* TraceScope_JoinGroup = TEXT("NakamaBP_JoinGroup");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_JoinGroup);
-	FNakamaApiConfigPtr Config = Client.GetConfig();
-	if (!Config)
-	{
-		FNakamaError Error;
-		Error.Message = TEXT("Invalid Nakama client");
-		Error.Code = -1;
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
-		return;
-	}
 
 	NakamaApi::JoinGroup(
-		Config,
+		Client,
 		MakeShared<FNakamaSession>(Session),
 		StoredGroupId,
 		[this]()
@@ -1626,7 +1287,7 @@ void UNakamaClientJoinGroup::Activate()
 // JoinTournament
 UNakamaClientJoinTournament* UNakamaClientJoinTournament::JoinTournament(
 	UObject* WorldContextObject,
-	const FNakamaClientRef& Client,
+	FNakamaApiConfig Client,
 	const FNakamaSession& Session,
 	FString TournamentId)
 {
@@ -1642,19 +1303,9 @@ void UNakamaClientJoinTournament::Activate()
 {
 	static const TCHAR* TraceScope_JoinTournament = TEXT("NakamaBP_JoinTournament");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_JoinTournament);
-	FNakamaApiConfigPtr Config = Client.GetConfig();
-	if (!Config)
-	{
-		FNakamaError Error;
-		Error.Message = TEXT("Invalid Nakama client");
-		Error.Code = -1;
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
-		return;
-	}
 
 	NakamaApi::JoinTournament(
-		Config,
+		Client,
 		MakeShared<FNakamaSession>(Session),
 		StoredTournamentId,
 		[this]()
@@ -1673,7 +1324,7 @@ void UNakamaClientJoinTournament::Activate()
 // KickGroupUsers
 UNakamaClientKickGroupUsers* UNakamaClientKickGroupUsers::KickGroupUsers(
 	UObject* WorldContextObject,
-	const FNakamaClientRef& Client,
+	FNakamaApiConfig Client,
 	const FNakamaSession& Session,
 	FString GroupId,
 	const TArray<FString>& UserIds)
@@ -1691,19 +1342,9 @@ void UNakamaClientKickGroupUsers::Activate()
 {
 	static const TCHAR* TraceScope_KickGroupUsers = TEXT("NakamaBP_KickGroupUsers");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_KickGroupUsers);
-	FNakamaApiConfigPtr Config = Client.GetConfig();
-	if (!Config)
-	{
-		FNakamaError Error;
-		Error.Message = TEXT("Invalid Nakama client");
-		Error.Code = -1;
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
-		return;
-	}
 
 	NakamaApi::KickGroupUsers(
-		Config,
+		Client,
 		MakeShared<FNakamaSession>(Session),
 		StoredGroupId,
 		StoredUserIds,
@@ -1723,7 +1364,7 @@ void UNakamaClientKickGroupUsers::Activate()
 // LeaveGroup
 UNakamaClientLeaveGroup* UNakamaClientLeaveGroup::LeaveGroup(
 	UObject* WorldContextObject,
-	const FNakamaClientRef& Client,
+	FNakamaApiConfig Client,
 	const FNakamaSession& Session,
 	FString GroupId)
 {
@@ -1739,19 +1380,9 @@ void UNakamaClientLeaveGroup::Activate()
 {
 	static const TCHAR* TraceScope_LeaveGroup = TEXT("NakamaBP_LeaveGroup");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_LeaveGroup);
-	FNakamaApiConfigPtr Config = Client.GetConfig();
-	if (!Config)
-	{
-		FNakamaError Error;
-		Error.Message = TEXT("Invalid Nakama client");
-		Error.Code = -1;
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
-		return;
-	}
 
 	NakamaApi::LeaveGroup(
-		Config,
+		Client,
 		MakeShared<FNakamaSession>(Session),
 		StoredGroupId,
 		[this]()
@@ -1770,7 +1401,7 @@ void UNakamaClientLeaveGroup::Activate()
 // LinkApple
 UNakamaClientLinkApple* UNakamaClientLinkApple::LinkApple(
 	UObject* WorldContextObject,
-	const FNakamaClientRef& Client,
+	FNakamaApiConfig Client,
 	const FNakamaSession& Session,
 	FString Token,
 	const TMap<FString, FString>& Vars)
@@ -1788,19 +1419,9 @@ void UNakamaClientLinkApple::Activate()
 {
 	static const TCHAR* TraceScope_LinkApple = TEXT("NakamaBP_LinkApple");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_LinkApple);
-	FNakamaApiConfigPtr Config = Client.GetConfig();
-	if (!Config)
-	{
-		FNakamaError Error;
-		Error.Message = TEXT("Invalid Nakama client");
-		Error.Code = -1;
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
-		return;
-	}
 
 	NakamaApi::LinkApple(
-		Config,
+		Client,
 		MakeShared<FNakamaSession>(Session),
 		StoredToken,
 		StoredVars,
@@ -1820,7 +1441,7 @@ void UNakamaClientLinkApple::Activate()
 // LinkCustom
 UNakamaClientLinkCustom* UNakamaClientLinkCustom::LinkCustom(
 	UObject* WorldContextObject,
-	const FNakamaClientRef& Client,
+	FNakamaApiConfig Client,
 	const FNakamaSession& Session,
 	FString Id,
 	const TMap<FString, FString>& Vars)
@@ -1838,19 +1459,9 @@ void UNakamaClientLinkCustom::Activate()
 {
 	static const TCHAR* TraceScope_LinkCustom = TEXT("NakamaBP_LinkCustom");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_LinkCustom);
-	FNakamaApiConfigPtr Config = Client.GetConfig();
-	if (!Config)
-	{
-		FNakamaError Error;
-		Error.Message = TEXT("Invalid Nakama client");
-		Error.Code = -1;
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
-		return;
-	}
 
 	NakamaApi::LinkCustom(
-		Config,
+		Client,
 		MakeShared<FNakamaSession>(Session),
 		StoredId,
 		StoredVars,
@@ -1870,7 +1481,7 @@ void UNakamaClientLinkCustom::Activate()
 // LinkDevice
 UNakamaClientLinkDevice* UNakamaClientLinkDevice::LinkDevice(
 	UObject* WorldContextObject,
-	const FNakamaClientRef& Client,
+	FNakamaApiConfig Client,
 	const FNakamaSession& Session,
 	FString Id,
 	const TMap<FString, FString>& Vars)
@@ -1888,19 +1499,9 @@ void UNakamaClientLinkDevice::Activate()
 {
 	static const TCHAR* TraceScope_LinkDevice = TEXT("NakamaBP_LinkDevice");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_LinkDevice);
-	FNakamaApiConfigPtr Config = Client.GetConfig();
-	if (!Config)
-	{
-		FNakamaError Error;
-		Error.Message = TEXT("Invalid Nakama client");
-		Error.Code = -1;
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
-		return;
-	}
 
 	NakamaApi::LinkDevice(
-		Config,
+		Client,
 		MakeShared<FNakamaSession>(Session),
 		StoredId,
 		StoredVars,
@@ -1920,7 +1521,7 @@ void UNakamaClientLinkDevice::Activate()
 // LinkEmail
 UNakamaClientLinkEmail* UNakamaClientLinkEmail::LinkEmail(
 	UObject* WorldContextObject,
-	const FNakamaClientRef& Client,
+	FNakamaApiConfig Client,
 	const FNakamaSession& Session,
 	FString Email,
 	FString Password,
@@ -1940,19 +1541,9 @@ void UNakamaClientLinkEmail::Activate()
 {
 	static const TCHAR* TraceScope_LinkEmail = TEXT("NakamaBP_LinkEmail");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_LinkEmail);
-	FNakamaApiConfigPtr Config = Client.GetConfig();
-	if (!Config)
-	{
-		FNakamaError Error;
-		Error.Message = TEXT("Invalid Nakama client");
-		Error.Code = -1;
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
-		return;
-	}
 
 	NakamaApi::LinkEmail(
-		Config,
+		Client,
 		MakeShared<FNakamaSession>(Session),
 		StoredEmail,
 		StoredPassword,
@@ -1973,7 +1564,7 @@ void UNakamaClientLinkEmail::Activate()
 // LinkFacebook
 UNakamaClientLinkFacebook* UNakamaClientLinkFacebook::LinkFacebook(
 	UObject* WorldContextObject,
-	const FNakamaClientRef& Client,
+	FNakamaApiConfig Client,
 	const FNakamaSession& Session,
 	FNakamaAccountFacebook Account,
 	bool Sync)
@@ -1991,19 +1582,9 @@ void UNakamaClientLinkFacebook::Activate()
 {
 	static const TCHAR* TraceScope_LinkFacebook = TEXT("NakamaBP_LinkFacebook");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_LinkFacebook);
-	FNakamaApiConfigPtr Config = Client.GetConfig();
-	if (!Config)
-	{
-		FNakamaError Error;
-		Error.Message = TEXT("Invalid Nakama client");
-		Error.Code = -1;
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
-		return;
-	}
 
 	NakamaApi::LinkFacebook(
-		Config,
+		Client,
 		MakeShared<FNakamaSession>(Session),
 		StoredAccount,
 		StoredSync,
@@ -2023,7 +1604,7 @@ void UNakamaClientLinkFacebook::Activate()
 // LinkFacebookInstantGame
 UNakamaClientLinkFacebookInstantGame* UNakamaClientLinkFacebookInstantGame::LinkFacebookInstantGame(
 	UObject* WorldContextObject,
-	const FNakamaClientRef& Client,
+	FNakamaApiConfig Client,
 	const FNakamaSession& Session,
 	FString SignedPlayerInfo,
 	const TMap<FString, FString>& Vars)
@@ -2041,19 +1622,9 @@ void UNakamaClientLinkFacebookInstantGame::Activate()
 {
 	static const TCHAR* TraceScope_LinkFacebookInstantGame = TEXT("NakamaBP_LinkFacebookInstantGame");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_LinkFacebookInstantGame);
-	FNakamaApiConfigPtr Config = Client.GetConfig();
-	if (!Config)
-	{
-		FNakamaError Error;
-		Error.Message = TEXT("Invalid Nakama client");
-		Error.Code = -1;
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
-		return;
-	}
 
 	NakamaApi::LinkFacebookInstantGame(
-		Config,
+		Client,
 		MakeShared<FNakamaSession>(Session),
 		StoredSignedPlayerInfo,
 		StoredVars,
@@ -2073,7 +1644,7 @@ void UNakamaClientLinkFacebookInstantGame::Activate()
 // LinkGameCenter
 UNakamaClientLinkGameCenter* UNakamaClientLinkGameCenter::LinkGameCenter(
 	UObject* WorldContextObject,
-	const FNakamaClientRef& Client,
+	FNakamaApiConfig Client,
 	const FNakamaSession& Session,
 	FString PlayerId,
 	FString BundleId,
@@ -2101,19 +1672,9 @@ void UNakamaClientLinkGameCenter::Activate()
 {
 	static const TCHAR* TraceScope_LinkGameCenter = TEXT("NakamaBP_LinkGameCenter");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_LinkGameCenter);
-	FNakamaApiConfigPtr Config = Client.GetConfig();
-	if (!Config)
-	{
-		FNakamaError Error;
-		Error.Message = TEXT("Invalid Nakama client");
-		Error.Code = -1;
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
-		return;
-	}
 
 	NakamaApi::LinkGameCenter(
-		Config,
+		Client,
 		MakeShared<FNakamaSession>(Session),
 		StoredPlayerId,
 		StoredBundleId,
@@ -2138,7 +1699,7 @@ void UNakamaClientLinkGameCenter::Activate()
 // LinkGoogle
 UNakamaClientLinkGoogle* UNakamaClientLinkGoogle::LinkGoogle(
 	UObject* WorldContextObject,
-	const FNakamaClientRef& Client,
+	FNakamaApiConfig Client,
 	const FNakamaSession& Session,
 	FString Token,
 	const TMap<FString, FString>& Vars)
@@ -2156,19 +1717,9 @@ void UNakamaClientLinkGoogle::Activate()
 {
 	static const TCHAR* TraceScope_LinkGoogle = TEXT("NakamaBP_LinkGoogle");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_LinkGoogle);
-	FNakamaApiConfigPtr Config = Client.GetConfig();
-	if (!Config)
-	{
-		FNakamaError Error;
-		Error.Message = TEXT("Invalid Nakama client");
-		Error.Code = -1;
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
-		return;
-	}
 
 	NakamaApi::LinkGoogle(
-		Config,
+		Client,
 		MakeShared<FNakamaSession>(Session),
 		StoredToken,
 		StoredVars,
@@ -2188,7 +1739,7 @@ void UNakamaClientLinkGoogle::Activate()
 // LinkSteam
 UNakamaClientLinkSteam* UNakamaClientLinkSteam::LinkSteam(
 	UObject* WorldContextObject,
-	const FNakamaClientRef& Client,
+	FNakamaApiConfig Client,
 	const FNakamaSession& Session,
 	FNakamaAccountSteam Account,
 	bool Sync)
@@ -2206,19 +1757,9 @@ void UNakamaClientLinkSteam::Activate()
 {
 	static const TCHAR* TraceScope_LinkSteam = TEXT("NakamaBP_LinkSteam");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_LinkSteam);
-	FNakamaApiConfigPtr Config = Client.GetConfig();
-	if (!Config)
-	{
-		FNakamaError Error;
-		Error.Message = TEXT("Invalid Nakama client");
-		Error.Code = -1;
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
-		return;
-	}
 
 	NakamaApi::LinkSteam(
-		Config,
+		Client,
 		MakeShared<FNakamaSession>(Session),
 		StoredAccount,
 		StoredSync,
@@ -2238,7 +1779,7 @@ void UNakamaClientLinkSteam::Activate()
 // ListChannelMessages
 UNakamaClientListChannelMessages* UNakamaClientListChannelMessages::ListChannelMessages(
 	UObject* WorldContextObject,
-	const FNakamaClientRef& Client,
+	FNakamaApiConfig Client,
 	const FNakamaSession& Session,
 	FString ChannelId,
 	int32 Limit,
@@ -2260,19 +1801,9 @@ void UNakamaClientListChannelMessages::Activate()
 {
 	static const TCHAR* TraceScope_ListChannelMessages = TEXT("NakamaBP_ListChannelMessages");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListChannelMessages);
-	FNakamaApiConfigPtr Config = Client.GetConfig();
-	if (!Config)
-	{
-		FNakamaError Error;
-		Error.Message = TEXT("Invalid Nakama client");
-		Error.Code = -1;
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
-		return;
-	}
 
 	NakamaApi::ListChannelMessages(
-		Config,
+		Client,
 		MakeShared<FNakamaSession>(Session),
 		StoredChannelId,
 		StoredLimit,
@@ -2294,7 +1825,7 @@ void UNakamaClientListChannelMessages::Activate()
 // ListFriends
 UNakamaClientListFriends* UNakamaClientListFriends::ListFriends(
 	UObject* WorldContextObject,
-	const FNakamaClientRef& Client,
+	FNakamaApiConfig Client,
 	const FNakamaSession& Session,
 	int32 Limit,
 	int32 State,
@@ -2314,19 +1845,9 @@ void UNakamaClientListFriends::Activate()
 {
 	static const TCHAR* TraceScope_ListFriends = TEXT("NakamaBP_ListFriends");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListFriends);
-	FNakamaApiConfigPtr Config = Client.GetConfig();
-	if (!Config)
-	{
-		FNakamaError Error;
-		Error.Message = TEXT("Invalid Nakama client");
-		Error.Code = -1;
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
-		return;
-	}
 
 	NakamaApi::ListFriends(
-		Config,
+		Client,
 		MakeShared<FNakamaSession>(Session),
 		StoredLimit,
 		StoredState,
@@ -2347,7 +1868,7 @@ void UNakamaClientListFriends::Activate()
 // ListFriendsOfFriends
 UNakamaClientListFriendsOfFriends* UNakamaClientListFriendsOfFriends::ListFriendsOfFriends(
 	UObject* WorldContextObject,
-	const FNakamaClientRef& Client,
+	FNakamaApiConfig Client,
 	const FNakamaSession& Session,
 	int32 Limit,
 	FString Cursor)
@@ -2365,19 +1886,9 @@ void UNakamaClientListFriendsOfFriends::Activate()
 {
 	static const TCHAR* TraceScope_ListFriendsOfFriends = TEXT("NakamaBP_ListFriendsOfFriends");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListFriendsOfFriends);
-	FNakamaApiConfigPtr Config = Client.GetConfig();
-	if (!Config)
-	{
-		FNakamaError Error;
-		Error.Message = TEXT("Invalid Nakama client");
-		Error.Code = -1;
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
-		return;
-	}
 
 	NakamaApi::ListFriendsOfFriends(
-		Config,
+		Client,
 		MakeShared<FNakamaSession>(Session),
 		StoredLimit,
 		StoredCursor,
@@ -2397,7 +1908,7 @@ void UNakamaClientListFriendsOfFriends::Activate()
 // ListGroups
 UNakamaClientListGroups* UNakamaClientListGroups::ListGroups(
 	UObject* WorldContextObject,
-	const FNakamaClientRef& Client,
+	FNakamaApiConfig Client,
 	const FNakamaSession& Session,
 	FString Name,
 	FString Cursor,
@@ -2423,19 +1934,9 @@ void UNakamaClientListGroups::Activate()
 {
 	static const TCHAR* TraceScope_ListGroups = TEXT("NakamaBP_ListGroups");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListGroups);
-	FNakamaApiConfigPtr Config = Client.GetConfig();
-	if (!Config)
-	{
-		FNakamaError Error;
-		Error.Message = TEXT("Invalid Nakama client");
-		Error.Code = -1;
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
-		return;
-	}
 
 	NakamaApi::ListGroups(
-		Config,
+		Client,
 		MakeShared<FNakamaSession>(Session),
 		StoredName,
 		StoredCursor,
@@ -2459,7 +1960,7 @@ void UNakamaClientListGroups::Activate()
 // ListGroupUsers
 UNakamaClientListGroupUsers* UNakamaClientListGroupUsers::ListGroupUsers(
 	UObject* WorldContextObject,
-	const FNakamaClientRef& Client,
+	FNakamaApiConfig Client,
 	const FNakamaSession& Session,
 	FString GroupId,
 	int32 Limit,
@@ -2481,19 +1982,9 @@ void UNakamaClientListGroupUsers::Activate()
 {
 	static const TCHAR* TraceScope_ListGroupUsers = TEXT("NakamaBP_ListGroupUsers");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListGroupUsers);
-	FNakamaApiConfigPtr Config = Client.GetConfig();
-	if (!Config)
-	{
-		FNakamaError Error;
-		Error.Message = TEXT("Invalid Nakama client");
-		Error.Code = -1;
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
-		return;
-	}
 
 	NakamaApi::ListGroupUsers(
-		Config,
+		Client,
 		MakeShared<FNakamaSession>(Session),
 		StoredGroupId,
 		StoredLimit,
@@ -2515,7 +2006,7 @@ void UNakamaClientListGroupUsers::Activate()
 // ListLeaderboardRecords
 UNakamaClientListLeaderboardRecords* UNakamaClientListLeaderboardRecords::ListLeaderboardRecords(
 	UObject* WorldContextObject,
-	const FNakamaClientRef& Client,
+	FNakamaApiConfig Client,
 	const FNakamaSession& Session,
 	FString LeaderboardId,
 	const TArray<FString>& OwnerIds,
@@ -2539,19 +2030,9 @@ void UNakamaClientListLeaderboardRecords::Activate()
 {
 	static const TCHAR* TraceScope_ListLeaderboardRecords = TEXT("NakamaBP_ListLeaderboardRecords");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListLeaderboardRecords);
-	FNakamaApiConfigPtr Config = Client.GetConfig();
-	if (!Config)
-	{
-		FNakamaError Error;
-		Error.Message = TEXT("Invalid Nakama client");
-		Error.Code = -1;
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
-		return;
-	}
 
 	NakamaApi::ListLeaderboardRecords(
-		Config,
+		Client,
 		MakeShared<FNakamaSession>(Session),
 		StoredLeaderboardId,
 		StoredOwnerIds,
@@ -2574,7 +2055,7 @@ void UNakamaClientListLeaderboardRecords::Activate()
 // ListLeaderboardRecordsAroundOwner
 UNakamaClientListLeaderboardRecordsAroundOwner* UNakamaClientListLeaderboardRecordsAroundOwner::ListLeaderboardRecordsAroundOwner(
 	UObject* WorldContextObject,
-	const FNakamaClientRef& Client,
+	FNakamaApiConfig Client,
 	const FNakamaSession& Session,
 	FString LeaderboardId,
 	int32 Limit,
@@ -2598,19 +2079,9 @@ void UNakamaClientListLeaderboardRecordsAroundOwner::Activate()
 {
 	static const TCHAR* TraceScope_ListLeaderboardRecordsAroundOwner = TEXT("NakamaBP_ListLeaderboardRecordsAroundOwner");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListLeaderboardRecordsAroundOwner);
-	FNakamaApiConfigPtr Config = Client.GetConfig();
-	if (!Config)
-	{
-		FNakamaError Error;
-		Error.Message = TEXT("Invalid Nakama client");
-		Error.Code = -1;
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
-		return;
-	}
 
 	NakamaApi::ListLeaderboardRecordsAroundOwner(
-		Config,
+		Client,
 		MakeShared<FNakamaSession>(Session),
 		StoredLeaderboardId,
 		StoredLimit,
@@ -2633,7 +2104,7 @@ void UNakamaClientListLeaderboardRecordsAroundOwner::Activate()
 // ListMatches
 UNakamaClientListMatches* UNakamaClientListMatches::ListMatches(
 	UObject* WorldContextObject,
-	const FNakamaClientRef& Client,
+	FNakamaApiConfig Client,
 	const FNakamaSession& Session,
 	int32 Limit,
 	bool Authoritative,
@@ -2659,19 +2130,9 @@ void UNakamaClientListMatches::Activate()
 {
 	static const TCHAR* TraceScope_ListMatches = TEXT("NakamaBP_ListMatches");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListMatches);
-	FNakamaApiConfigPtr Config = Client.GetConfig();
-	if (!Config)
-	{
-		FNakamaError Error;
-		Error.Message = TEXT("Invalid Nakama client");
-		Error.Code = -1;
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
-		return;
-	}
 
 	NakamaApi::ListMatches(
-		Config,
+		Client,
 		MakeShared<FNakamaSession>(Session),
 		StoredLimit,
 		StoredAuthoritative,
@@ -2695,7 +2156,7 @@ void UNakamaClientListMatches::Activate()
 // ListParties
 UNakamaClientListParties* UNakamaClientListParties::ListParties(
 	UObject* WorldContextObject,
-	const FNakamaClientRef& Client,
+	FNakamaApiConfig Client,
 	const FNakamaSession& Session,
 	int32 Limit,
 	bool Open,
@@ -2717,19 +2178,9 @@ void UNakamaClientListParties::Activate()
 {
 	static const TCHAR* TraceScope_ListParties = TEXT("NakamaBP_ListParties");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListParties);
-	FNakamaApiConfigPtr Config = Client.GetConfig();
-	if (!Config)
-	{
-		FNakamaError Error;
-		Error.Message = TEXT("Invalid Nakama client");
-		Error.Code = -1;
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
-		return;
-	}
 
 	NakamaApi::ListParties(
-		Config,
+		Client,
 		MakeShared<FNakamaSession>(Session),
 		StoredLimit,
 		StoredOpen,
@@ -2751,7 +2202,7 @@ void UNakamaClientListParties::Activate()
 // ListNotifications
 UNakamaClientListNotifications* UNakamaClientListNotifications::ListNotifications(
 	UObject* WorldContextObject,
-	const FNakamaClientRef& Client,
+	FNakamaApiConfig Client,
 	const FNakamaSession& Session,
 	int32 Limit,
 	FString CacheableCursor)
@@ -2769,19 +2220,9 @@ void UNakamaClientListNotifications::Activate()
 {
 	static const TCHAR* TraceScope_ListNotifications = TEXT("NakamaBP_ListNotifications");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListNotifications);
-	FNakamaApiConfigPtr Config = Client.GetConfig();
-	if (!Config)
-	{
-		FNakamaError Error;
-		Error.Message = TEXT("Invalid Nakama client");
-		Error.Code = -1;
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
-		return;
-	}
 
 	NakamaApi::ListNotifications(
-		Config,
+		Client,
 		MakeShared<FNakamaSession>(Session),
 		StoredLimit,
 		StoredCacheableCursor,
@@ -2801,7 +2242,7 @@ void UNakamaClientListNotifications::Activate()
 // ListStorageObjects
 UNakamaClientListStorageObjects* UNakamaClientListStorageObjects::ListStorageObjects(
 	UObject* WorldContextObject,
-	const FNakamaClientRef& Client,
+	FNakamaApiConfig Client,
 	const FNakamaSession& Session,
 	FString UserId,
 	FString Collection,
@@ -2823,19 +2264,9 @@ void UNakamaClientListStorageObjects::Activate()
 {
 	static const TCHAR* TraceScope_ListStorageObjects = TEXT("NakamaBP_ListStorageObjects");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListStorageObjects);
-	FNakamaApiConfigPtr Config = Client.GetConfig();
-	if (!Config)
-	{
-		FNakamaError Error;
-		Error.Message = TEXT("Invalid Nakama client");
-		Error.Code = -1;
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
-		return;
-	}
 
 	NakamaApi::ListStorageObjects(
-		Config,
+		Client,
 		MakeShared<FNakamaSession>(Session),
 		StoredUserId,
 		StoredCollection,
@@ -2857,7 +2288,7 @@ void UNakamaClientListStorageObjects::Activate()
 // ListSubscriptions
 UNakamaClientListSubscriptions* UNakamaClientListSubscriptions::ListSubscriptions(
 	UObject* WorldContextObject,
-	const FNakamaClientRef& Client,
+	FNakamaApiConfig Client,
 	const FNakamaSession& Session,
 	int32 Limit,
 	FString Cursor)
@@ -2875,19 +2306,9 @@ void UNakamaClientListSubscriptions::Activate()
 {
 	static const TCHAR* TraceScope_ListSubscriptions = TEXT("NakamaBP_ListSubscriptions");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListSubscriptions);
-	FNakamaApiConfigPtr Config = Client.GetConfig();
-	if (!Config)
-	{
-		FNakamaError Error;
-		Error.Message = TEXT("Invalid Nakama client");
-		Error.Code = -1;
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
-		return;
-	}
 
 	NakamaApi::ListSubscriptions(
-		Config,
+		Client,
 		MakeShared<FNakamaSession>(Session),
 		StoredLimit,
 		StoredCursor,
@@ -2907,7 +2328,7 @@ void UNakamaClientListSubscriptions::Activate()
 // ListTournaments
 UNakamaClientListTournaments* UNakamaClientListTournaments::ListTournaments(
 	UObject* WorldContextObject,
-	const FNakamaClientRef& Client,
+	FNakamaApiConfig Client,
 	const FNakamaSession& Session,
 	int32 CategoryStart,
 	int32 CategoryEnd,
@@ -2933,19 +2354,9 @@ void UNakamaClientListTournaments::Activate()
 {
 	static const TCHAR* TraceScope_ListTournaments = TEXT("NakamaBP_ListTournaments");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListTournaments);
-	FNakamaApiConfigPtr Config = Client.GetConfig();
-	if (!Config)
-	{
-		FNakamaError Error;
-		Error.Message = TEXT("Invalid Nakama client");
-		Error.Code = -1;
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
-		return;
-	}
 
 	NakamaApi::ListTournaments(
-		Config,
+		Client,
 		MakeShared<FNakamaSession>(Session),
 		StoredCategoryStart,
 		StoredCategoryEnd,
@@ -2969,7 +2380,7 @@ void UNakamaClientListTournaments::Activate()
 // ListTournamentRecords
 UNakamaClientListTournamentRecords* UNakamaClientListTournamentRecords::ListTournamentRecords(
 	UObject* WorldContextObject,
-	const FNakamaClientRef& Client,
+	FNakamaApiConfig Client,
 	const FNakamaSession& Session,
 	FString TournamentId,
 	const TArray<FString>& OwnerIds,
@@ -2993,19 +2404,9 @@ void UNakamaClientListTournamentRecords::Activate()
 {
 	static const TCHAR* TraceScope_ListTournamentRecords = TEXT("NakamaBP_ListTournamentRecords");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListTournamentRecords);
-	FNakamaApiConfigPtr Config = Client.GetConfig();
-	if (!Config)
-	{
-		FNakamaError Error;
-		Error.Message = TEXT("Invalid Nakama client");
-		Error.Code = -1;
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
-		return;
-	}
 
 	NakamaApi::ListTournamentRecords(
-		Config,
+		Client,
 		MakeShared<FNakamaSession>(Session),
 		StoredTournamentId,
 		StoredOwnerIds,
@@ -3028,7 +2429,7 @@ void UNakamaClientListTournamentRecords::Activate()
 // ListTournamentRecordsAroundOwner
 UNakamaClientListTournamentRecordsAroundOwner* UNakamaClientListTournamentRecordsAroundOwner::ListTournamentRecordsAroundOwner(
 	UObject* WorldContextObject,
-	const FNakamaClientRef& Client,
+	FNakamaApiConfig Client,
 	const FNakamaSession& Session,
 	FString TournamentId,
 	int32 Limit,
@@ -3052,19 +2453,9 @@ void UNakamaClientListTournamentRecordsAroundOwner::Activate()
 {
 	static const TCHAR* TraceScope_ListTournamentRecordsAroundOwner = TEXT("NakamaBP_ListTournamentRecordsAroundOwner");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListTournamentRecordsAroundOwner);
-	FNakamaApiConfigPtr Config = Client.GetConfig();
-	if (!Config)
-	{
-		FNakamaError Error;
-		Error.Message = TEXT("Invalid Nakama client");
-		Error.Code = -1;
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
-		return;
-	}
 
 	NakamaApi::ListTournamentRecordsAroundOwner(
-		Config,
+		Client,
 		MakeShared<FNakamaSession>(Session),
 		StoredTournamentId,
 		StoredLimit,
@@ -3087,7 +2478,7 @@ void UNakamaClientListTournamentRecordsAroundOwner::Activate()
 // ListUserGroups
 UNakamaClientListUserGroups* UNakamaClientListUserGroups::ListUserGroups(
 	UObject* WorldContextObject,
-	const FNakamaClientRef& Client,
+	FNakamaApiConfig Client,
 	const FNakamaSession& Session,
 	FString UserId,
 	int32 Limit,
@@ -3109,19 +2500,9 @@ void UNakamaClientListUserGroups::Activate()
 {
 	static const TCHAR* TraceScope_ListUserGroups = TEXT("NakamaBP_ListUserGroups");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListUserGroups);
-	FNakamaApiConfigPtr Config = Client.GetConfig();
-	if (!Config)
-	{
-		FNakamaError Error;
-		Error.Message = TEXT("Invalid Nakama client");
-		Error.Code = -1;
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
-		return;
-	}
 
 	NakamaApi::ListUserGroups(
-		Config,
+		Client,
 		MakeShared<FNakamaSession>(Session),
 		StoredUserId,
 		StoredLimit,
@@ -3143,7 +2524,7 @@ void UNakamaClientListUserGroups::Activate()
 // PromoteGroupUsers
 UNakamaClientPromoteGroupUsers* UNakamaClientPromoteGroupUsers::PromoteGroupUsers(
 	UObject* WorldContextObject,
-	const FNakamaClientRef& Client,
+	FNakamaApiConfig Client,
 	const FNakamaSession& Session,
 	FString GroupId,
 	const TArray<FString>& UserIds)
@@ -3161,19 +2542,9 @@ void UNakamaClientPromoteGroupUsers::Activate()
 {
 	static const TCHAR* TraceScope_PromoteGroupUsers = TEXT("NakamaBP_PromoteGroupUsers");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_PromoteGroupUsers);
-	FNakamaApiConfigPtr Config = Client.GetConfig();
-	if (!Config)
-	{
-		FNakamaError Error;
-		Error.Message = TEXT("Invalid Nakama client");
-		Error.Code = -1;
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
-		return;
-	}
 
 	NakamaApi::PromoteGroupUsers(
-		Config,
+		Client,
 		MakeShared<FNakamaSession>(Session),
 		StoredGroupId,
 		StoredUserIds,
@@ -3193,7 +2564,7 @@ void UNakamaClientPromoteGroupUsers::Activate()
 // DemoteGroupUsers
 UNakamaClientDemoteGroupUsers* UNakamaClientDemoteGroupUsers::DemoteGroupUsers(
 	UObject* WorldContextObject,
-	const FNakamaClientRef& Client,
+	FNakamaApiConfig Client,
 	const FNakamaSession& Session,
 	FString GroupId,
 	const TArray<FString>& UserIds)
@@ -3211,19 +2582,9 @@ void UNakamaClientDemoteGroupUsers::Activate()
 {
 	static const TCHAR* TraceScope_DemoteGroupUsers = TEXT("NakamaBP_DemoteGroupUsers");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_DemoteGroupUsers);
-	FNakamaApiConfigPtr Config = Client.GetConfig();
-	if (!Config)
-	{
-		FNakamaError Error;
-		Error.Message = TEXT("Invalid Nakama client");
-		Error.Code = -1;
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
-		return;
-	}
 
 	NakamaApi::DemoteGroupUsers(
-		Config,
+		Client,
 		MakeShared<FNakamaSession>(Session),
 		StoredGroupId,
 		StoredUserIds,
@@ -3243,7 +2604,7 @@ void UNakamaClientDemoteGroupUsers::Activate()
 // ReadStorageObjects
 UNakamaClientReadStorageObjects* UNakamaClientReadStorageObjects::ReadStorageObjects(
 	UObject* WorldContextObject,
-	const FNakamaClientRef& Client,
+	FNakamaApiConfig Client,
 	const FNakamaSession& Session,
 	const TArray<FNakamaReadStorageObjectId>& ObjectIds)
 {
@@ -3259,19 +2620,9 @@ void UNakamaClientReadStorageObjects::Activate()
 {
 	static const TCHAR* TraceScope_ReadStorageObjects = TEXT("NakamaBP_ReadStorageObjects");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ReadStorageObjects);
-	FNakamaApiConfigPtr Config = Client.GetConfig();
-	if (!Config)
-	{
-		FNakamaError Error;
-		Error.Message = TEXT("Invalid Nakama client");
-		Error.Code = -1;
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
-		return;
-	}
 
 	NakamaApi::ReadStorageObjects(
-		Config,
+		Client,
 		MakeShared<FNakamaSession>(Session),
 		StoredObjectIds,
 		[this](const FNakamaStorageObjects& Result)
@@ -3290,7 +2641,7 @@ void UNakamaClientReadStorageObjects::Activate()
 // RpcFunc
 UNakamaClientRpcFunc* UNakamaClientRpcFunc::RpcFunc(
 	UObject* WorldContextObject,
-	const FNakamaClientRef& Client,
+	FNakamaApiConfig Client,
 	const FNakamaSession& Session,
 	FString Id,
 	const TMap<FString, FString>& Payload,
@@ -3310,19 +2661,9 @@ void UNakamaClientRpcFunc::Activate()
 {
 	static const TCHAR* TraceScope_RpcFunc = TEXT("NakamaBP_RpcFunc");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_RpcFunc);
-	FNakamaApiConfigPtr Config = Client.GetConfig();
-	if (!Config)
-	{
-		FNakamaError Error;
-		Error.Message = TEXT("Invalid Nakama client");
-		Error.Code = -1;
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
-		return;
-	}
 
 	NakamaApi::RpcFunc(
-		Config,
+		Client,
 		MakeShared<FNakamaSession>(Session),
 		StoredId,
 		[&]() -> TSharedPtr<FJsonObject> {
@@ -3351,7 +2692,7 @@ void UNakamaClientRpcFunc::Activate()
 // UnlinkApple
 UNakamaClientUnlinkApple* UNakamaClientUnlinkApple::UnlinkApple(
 	UObject* WorldContextObject,
-	const FNakamaClientRef& Client,
+	FNakamaApiConfig Client,
 	const FNakamaSession& Session,
 	FString Token,
 	const TMap<FString, FString>& Vars)
@@ -3369,19 +2710,9 @@ void UNakamaClientUnlinkApple::Activate()
 {
 	static const TCHAR* TraceScope_UnlinkApple = TEXT("NakamaBP_UnlinkApple");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_UnlinkApple);
-	FNakamaApiConfigPtr Config = Client.GetConfig();
-	if (!Config)
-	{
-		FNakamaError Error;
-		Error.Message = TEXT("Invalid Nakama client");
-		Error.Code = -1;
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
-		return;
-	}
 
 	NakamaApi::UnlinkApple(
-		Config,
+		Client,
 		MakeShared<FNakamaSession>(Session),
 		StoredToken,
 		StoredVars,
@@ -3401,7 +2732,7 @@ void UNakamaClientUnlinkApple::Activate()
 // UnlinkCustom
 UNakamaClientUnlinkCustom* UNakamaClientUnlinkCustom::UnlinkCustom(
 	UObject* WorldContextObject,
-	const FNakamaClientRef& Client,
+	FNakamaApiConfig Client,
 	const FNakamaSession& Session,
 	FString Id,
 	const TMap<FString, FString>& Vars)
@@ -3419,19 +2750,9 @@ void UNakamaClientUnlinkCustom::Activate()
 {
 	static const TCHAR* TraceScope_UnlinkCustom = TEXT("NakamaBP_UnlinkCustom");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_UnlinkCustom);
-	FNakamaApiConfigPtr Config = Client.GetConfig();
-	if (!Config)
-	{
-		FNakamaError Error;
-		Error.Message = TEXT("Invalid Nakama client");
-		Error.Code = -1;
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
-		return;
-	}
 
 	NakamaApi::UnlinkCustom(
-		Config,
+		Client,
 		MakeShared<FNakamaSession>(Session),
 		StoredId,
 		StoredVars,
@@ -3451,7 +2772,7 @@ void UNakamaClientUnlinkCustom::Activate()
 // UnlinkDevice
 UNakamaClientUnlinkDevice* UNakamaClientUnlinkDevice::UnlinkDevice(
 	UObject* WorldContextObject,
-	const FNakamaClientRef& Client,
+	FNakamaApiConfig Client,
 	const FNakamaSession& Session,
 	FString Id,
 	const TMap<FString, FString>& Vars)
@@ -3469,19 +2790,9 @@ void UNakamaClientUnlinkDevice::Activate()
 {
 	static const TCHAR* TraceScope_UnlinkDevice = TEXT("NakamaBP_UnlinkDevice");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_UnlinkDevice);
-	FNakamaApiConfigPtr Config = Client.GetConfig();
-	if (!Config)
-	{
-		FNakamaError Error;
-		Error.Message = TEXT("Invalid Nakama client");
-		Error.Code = -1;
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
-		return;
-	}
 
 	NakamaApi::UnlinkDevice(
-		Config,
+		Client,
 		MakeShared<FNakamaSession>(Session),
 		StoredId,
 		StoredVars,
@@ -3501,7 +2812,7 @@ void UNakamaClientUnlinkDevice::Activate()
 // UnlinkEmail
 UNakamaClientUnlinkEmail* UNakamaClientUnlinkEmail::UnlinkEmail(
 	UObject* WorldContextObject,
-	const FNakamaClientRef& Client,
+	FNakamaApiConfig Client,
 	const FNakamaSession& Session,
 	FString Email,
 	FString Password,
@@ -3521,19 +2832,9 @@ void UNakamaClientUnlinkEmail::Activate()
 {
 	static const TCHAR* TraceScope_UnlinkEmail = TEXT("NakamaBP_UnlinkEmail");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_UnlinkEmail);
-	FNakamaApiConfigPtr Config = Client.GetConfig();
-	if (!Config)
-	{
-		FNakamaError Error;
-		Error.Message = TEXT("Invalid Nakama client");
-		Error.Code = -1;
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
-		return;
-	}
 
 	NakamaApi::UnlinkEmail(
-		Config,
+		Client,
 		MakeShared<FNakamaSession>(Session),
 		StoredEmail,
 		StoredPassword,
@@ -3554,7 +2855,7 @@ void UNakamaClientUnlinkEmail::Activate()
 // UnlinkFacebook
 UNakamaClientUnlinkFacebook* UNakamaClientUnlinkFacebook::UnlinkFacebook(
 	UObject* WorldContextObject,
-	const FNakamaClientRef& Client,
+	FNakamaApiConfig Client,
 	const FNakamaSession& Session,
 	FString Token,
 	const TMap<FString, FString>& Vars)
@@ -3572,19 +2873,9 @@ void UNakamaClientUnlinkFacebook::Activate()
 {
 	static const TCHAR* TraceScope_UnlinkFacebook = TEXT("NakamaBP_UnlinkFacebook");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_UnlinkFacebook);
-	FNakamaApiConfigPtr Config = Client.GetConfig();
-	if (!Config)
-	{
-		FNakamaError Error;
-		Error.Message = TEXT("Invalid Nakama client");
-		Error.Code = -1;
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
-		return;
-	}
 
 	NakamaApi::UnlinkFacebook(
-		Config,
+		Client,
 		MakeShared<FNakamaSession>(Session),
 		StoredToken,
 		StoredVars,
@@ -3604,7 +2895,7 @@ void UNakamaClientUnlinkFacebook::Activate()
 // UnlinkFacebookInstantGame
 UNakamaClientUnlinkFacebookInstantGame* UNakamaClientUnlinkFacebookInstantGame::UnlinkFacebookInstantGame(
 	UObject* WorldContextObject,
-	const FNakamaClientRef& Client,
+	FNakamaApiConfig Client,
 	const FNakamaSession& Session,
 	FString SignedPlayerInfo,
 	const TMap<FString, FString>& Vars)
@@ -3622,19 +2913,9 @@ void UNakamaClientUnlinkFacebookInstantGame::Activate()
 {
 	static const TCHAR* TraceScope_UnlinkFacebookInstantGame = TEXT("NakamaBP_UnlinkFacebookInstantGame");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_UnlinkFacebookInstantGame);
-	FNakamaApiConfigPtr Config = Client.GetConfig();
-	if (!Config)
-	{
-		FNakamaError Error;
-		Error.Message = TEXT("Invalid Nakama client");
-		Error.Code = -1;
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
-		return;
-	}
 
 	NakamaApi::UnlinkFacebookInstantGame(
-		Config,
+		Client,
 		MakeShared<FNakamaSession>(Session),
 		StoredSignedPlayerInfo,
 		StoredVars,
@@ -3654,7 +2935,7 @@ void UNakamaClientUnlinkFacebookInstantGame::Activate()
 // UnlinkGameCenter
 UNakamaClientUnlinkGameCenter* UNakamaClientUnlinkGameCenter::UnlinkGameCenter(
 	UObject* WorldContextObject,
-	const FNakamaClientRef& Client,
+	FNakamaApiConfig Client,
 	const FNakamaSession& Session,
 	FString PlayerId,
 	FString BundleId,
@@ -3682,19 +2963,9 @@ void UNakamaClientUnlinkGameCenter::Activate()
 {
 	static const TCHAR* TraceScope_UnlinkGameCenter = TEXT("NakamaBP_UnlinkGameCenter");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_UnlinkGameCenter);
-	FNakamaApiConfigPtr Config = Client.GetConfig();
-	if (!Config)
-	{
-		FNakamaError Error;
-		Error.Message = TEXT("Invalid Nakama client");
-		Error.Code = -1;
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
-		return;
-	}
 
 	NakamaApi::UnlinkGameCenter(
-		Config,
+		Client,
 		MakeShared<FNakamaSession>(Session),
 		StoredPlayerId,
 		StoredBundleId,
@@ -3719,7 +2990,7 @@ void UNakamaClientUnlinkGameCenter::Activate()
 // UnlinkGoogle
 UNakamaClientUnlinkGoogle* UNakamaClientUnlinkGoogle::UnlinkGoogle(
 	UObject* WorldContextObject,
-	const FNakamaClientRef& Client,
+	FNakamaApiConfig Client,
 	const FNakamaSession& Session,
 	FString Token,
 	const TMap<FString, FString>& Vars)
@@ -3737,19 +3008,9 @@ void UNakamaClientUnlinkGoogle::Activate()
 {
 	static const TCHAR* TraceScope_UnlinkGoogle = TEXT("NakamaBP_UnlinkGoogle");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_UnlinkGoogle);
-	FNakamaApiConfigPtr Config = Client.GetConfig();
-	if (!Config)
-	{
-		FNakamaError Error;
-		Error.Message = TEXT("Invalid Nakama client");
-		Error.Code = -1;
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
-		return;
-	}
 
 	NakamaApi::UnlinkGoogle(
-		Config,
+		Client,
 		MakeShared<FNakamaSession>(Session),
 		StoredToken,
 		StoredVars,
@@ -3769,7 +3030,7 @@ void UNakamaClientUnlinkGoogle::Activate()
 // UnlinkSteam
 UNakamaClientUnlinkSteam* UNakamaClientUnlinkSteam::UnlinkSteam(
 	UObject* WorldContextObject,
-	const FNakamaClientRef& Client,
+	FNakamaApiConfig Client,
 	const FNakamaSession& Session,
 	FString Token,
 	const TMap<FString, FString>& Vars)
@@ -3787,19 +3048,9 @@ void UNakamaClientUnlinkSteam::Activate()
 {
 	static const TCHAR* TraceScope_UnlinkSteam = TEXT("NakamaBP_UnlinkSteam");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_UnlinkSteam);
-	FNakamaApiConfigPtr Config = Client.GetConfig();
-	if (!Config)
-	{
-		FNakamaError Error;
-		Error.Message = TEXT("Invalid Nakama client");
-		Error.Code = -1;
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
-		return;
-	}
 
 	NakamaApi::UnlinkSteam(
-		Config,
+		Client,
 		MakeShared<FNakamaSession>(Session),
 		StoredToken,
 		StoredVars,
@@ -3819,7 +3070,7 @@ void UNakamaClientUnlinkSteam::Activate()
 // UpdateAccount
 UNakamaClientUpdateAccount* UNakamaClientUpdateAccount::UpdateAccount(
 	UObject* WorldContextObject,
-	const FNakamaClientRef& Client,
+	FNakamaApiConfig Client,
 	const FNakamaSession& Session,
 	FString Username,
 	FString DisplayName,
@@ -3845,19 +3096,9 @@ void UNakamaClientUpdateAccount::Activate()
 {
 	static const TCHAR* TraceScope_UpdateAccount = TEXT("NakamaBP_UpdateAccount");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_UpdateAccount);
-	FNakamaApiConfigPtr Config = Client.GetConfig();
-	if (!Config)
-	{
-		FNakamaError Error;
-		Error.Message = TEXT("Invalid Nakama client");
-		Error.Code = -1;
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
-		return;
-	}
 
 	NakamaApi::UpdateAccount(
-		Config,
+		Client,
 		MakeShared<FNakamaSession>(Session),
 		StoredUsername,
 		StoredDisplayName,
@@ -3881,7 +3122,7 @@ void UNakamaClientUpdateAccount::Activate()
 // UpdateGroup
 UNakamaClientUpdateGroup* UNakamaClientUpdateGroup::UpdateGroup(
 	UObject* WorldContextObject,
-	const FNakamaClientRef& Client,
+	FNakamaApiConfig Client,
 	const FNakamaSession& Session,
 	FString GroupId,
 	FString Name,
@@ -3907,19 +3148,9 @@ void UNakamaClientUpdateGroup::Activate()
 {
 	static const TCHAR* TraceScope_UpdateGroup = TEXT("NakamaBP_UpdateGroup");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_UpdateGroup);
-	FNakamaApiConfigPtr Config = Client.GetConfig();
-	if (!Config)
-	{
-		FNakamaError Error;
-		Error.Message = TEXT("Invalid Nakama client");
-		Error.Code = -1;
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
-		return;
-	}
 
 	NakamaApi::UpdateGroup(
-		Config,
+		Client,
 		MakeShared<FNakamaSession>(Session),
 		StoredGroupId,
 		StoredName,
@@ -3943,7 +3174,7 @@ void UNakamaClientUpdateGroup::Activate()
 // ValidatePurchaseApple
 UNakamaClientValidatePurchaseApple* UNakamaClientValidatePurchaseApple::ValidatePurchaseApple(
 	UObject* WorldContextObject,
-	const FNakamaClientRef& Client,
+	FNakamaApiConfig Client,
 	const FNakamaSession& Session,
 	FString Receipt,
 	bool Persist)
@@ -3961,19 +3192,9 @@ void UNakamaClientValidatePurchaseApple::Activate()
 {
 	static const TCHAR* TraceScope_ValidatePurchaseApple = TEXT("NakamaBP_ValidatePurchaseApple");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ValidatePurchaseApple);
-	FNakamaApiConfigPtr Config = Client.GetConfig();
-	if (!Config)
-	{
-		FNakamaError Error;
-		Error.Message = TEXT("Invalid Nakama client");
-		Error.Code = -1;
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
-		return;
-	}
 
 	NakamaApi::ValidatePurchaseApple(
-		Config,
+		Client,
 		MakeShared<FNakamaSession>(Session),
 		StoredReceipt,
 		StoredPersist,
@@ -3993,7 +3214,7 @@ void UNakamaClientValidatePurchaseApple::Activate()
 // ValidateSubscriptionApple
 UNakamaClientValidateSubscriptionApple* UNakamaClientValidateSubscriptionApple::ValidateSubscriptionApple(
 	UObject* WorldContextObject,
-	const FNakamaClientRef& Client,
+	FNakamaApiConfig Client,
 	const FNakamaSession& Session,
 	FString Receipt,
 	bool Persist)
@@ -4011,19 +3232,9 @@ void UNakamaClientValidateSubscriptionApple::Activate()
 {
 	static const TCHAR* TraceScope_ValidateSubscriptionApple = TEXT("NakamaBP_ValidateSubscriptionApple");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ValidateSubscriptionApple);
-	FNakamaApiConfigPtr Config = Client.GetConfig();
-	if (!Config)
-	{
-		FNakamaError Error;
-		Error.Message = TEXT("Invalid Nakama client");
-		Error.Code = -1;
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
-		return;
-	}
 
 	NakamaApi::ValidateSubscriptionApple(
-		Config,
+		Client,
 		MakeShared<FNakamaSession>(Session),
 		StoredReceipt,
 		StoredPersist,
@@ -4043,7 +3254,7 @@ void UNakamaClientValidateSubscriptionApple::Activate()
 // ValidatePurchaseGoogle
 UNakamaClientValidatePurchaseGoogle* UNakamaClientValidatePurchaseGoogle::ValidatePurchaseGoogle(
 	UObject* WorldContextObject,
-	const FNakamaClientRef& Client,
+	FNakamaApiConfig Client,
 	const FNakamaSession& Session,
 	FString Purchase,
 	bool Persist)
@@ -4061,19 +3272,9 @@ void UNakamaClientValidatePurchaseGoogle::Activate()
 {
 	static const TCHAR* TraceScope_ValidatePurchaseGoogle = TEXT("NakamaBP_ValidatePurchaseGoogle");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ValidatePurchaseGoogle);
-	FNakamaApiConfigPtr Config = Client.GetConfig();
-	if (!Config)
-	{
-		FNakamaError Error;
-		Error.Message = TEXT("Invalid Nakama client");
-		Error.Code = -1;
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
-		return;
-	}
 
 	NakamaApi::ValidatePurchaseGoogle(
-		Config,
+		Client,
 		MakeShared<FNakamaSession>(Session),
 		StoredPurchase,
 		StoredPersist,
@@ -4093,7 +3294,7 @@ void UNakamaClientValidatePurchaseGoogle::Activate()
 // ValidateSubscriptionGoogle
 UNakamaClientValidateSubscriptionGoogle* UNakamaClientValidateSubscriptionGoogle::ValidateSubscriptionGoogle(
 	UObject* WorldContextObject,
-	const FNakamaClientRef& Client,
+	FNakamaApiConfig Client,
 	const FNakamaSession& Session,
 	FString Receipt,
 	bool Persist)
@@ -4111,19 +3312,9 @@ void UNakamaClientValidateSubscriptionGoogle::Activate()
 {
 	static const TCHAR* TraceScope_ValidateSubscriptionGoogle = TEXT("NakamaBP_ValidateSubscriptionGoogle");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ValidateSubscriptionGoogle);
-	FNakamaApiConfigPtr Config = Client.GetConfig();
-	if (!Config)
-	{
-		FNakamaError Error;
-		Error.Message = TEXT("Invalid Nakama client");
-		Error.Code = -1;
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
-		return;
-	}
 
 	NakamaApi::ValidateSubscriptionGoogle(
-		Config,
+		Client,
 		MakeShared<FNakamaSession>(Session),
 		StoredReceipt,
 		StoredPersist,
@@ -4143,7 +3334,7 @@ void UNakamaClientValidateSubscriptionGoogle::Activate()
 // ValidatePurchaseHuawei
 UNakamaClientValidatePurchaseHuawei* UNakamaClientValidatePurchaseHuawei::ValidatePurchaseHuawei(
 	UObject* WorldContextObject,
-	const FNakamaClientRef& Client,
+	FNakamaApiConfig Client,
 	const FNakamaSession& Session,
 	FString Purchase,
 	FString Signature,
@@ -4163,19 +3354,9 @@ void UNakamaClientValidatePurchaseHuawei::Activate()
 {
 	static const TCHAR* TraceScope_ValidatePurchaseHuawei = TEXT("NakamaBP_ValidatePurchaseHuawei");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ValidatePurchaseHuawei);
-	FNakamaApiConfigPtr Config = Client.GetConfig();
-	if (!Config)
-	{
-		FNakamaError Error;
-		Error.Message = TEXT("Invalid Nakama client");
-		Error.Code = -1;
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
-		return;
-	}
 
 	NakamaApi::ValidatePurchaseHuawei(
-		Config,
+		Client,
 		MakeShared<FNakamaSession>(Session),
 		StoredPurchase,
 		StoredSignature,
@@ -4196,7 +3377,7 @@ void UNakamaClientValidatePurchaseHuawei::Activate()
 // ValidatePurchaseFacebookInstant
 UNakamaClientValidatePurchaseFacebookInstant* UNakamaClientValidatePurchaseFacebookInstant::ValidatePurchaseFacebookInstant(
 	UObject* WorldContextObject,
-	const FNakamaClientRef& Client,
+	FNakamaApiConfig Client,
 	const FNakamaSession& Session,
 	FString SignedRequest,
 	bool Persist)
@@ -4214,19 +3395,9 @@ void UNakamaClientValidatePurchaseFacebookInstant::Activate()
 {
 	static const TCHAR* TraceScope_ValidatePurchaseFacebookInstant = TEXT("NakamaBP_ValidatePurchaseFacebookInstant");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ValidatePurchaseFacebookInstant);
-	FNakamaApiConfigPtr Config = Client.GetConfig();
-	if (!Config)
-	{
-		FNakamaError Error;
-		Error.Message = TEXT("Invalid Nakama client");
-		Error.Code = -1;
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
-		return;
-	}
 
 	NakamaApi::ValidatePurchaseFacebookInstant(
-		Config,
+		Client,
 		MakeShared<FNakamaSession>(Session),
 		StoredSignedRequest,
 		StoredPersist,
@@ -4246,7 +3417,7 @@ void UNakamaClientValidatePurchaseFacebookInstant::Activate()
 // WriteLeaderboardRecord
 UNakamaClientWriteLeaderboardRecord* UNakamaClientWriteLeaderboardRecord::WriteLeaderboardRecord(
 	UObject* WorldContextObject,
-	const FNakamaClientRef& Client,
+	FNakamaApiConfig Client,
 	const FNakamaSession& Session,
 	FString LeaderboardId,
 	FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite Record)
@@ -4264,19 +3435,9 @@ void UNakamaClientWriteLeaderboardRecord::Activate()
 {
 	static const TCHAR* TraceScope_WriteLeaderboardRecord = TEXT("NakamaBP_WriteLeaderboardRecord");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_WriteLeaderboardRecord);
-	FNakamaApiConfigPtr Config = Client.GetConfig();
-	if (!Config)
-	{
-		FNakamaError Error;
-		Error.Message = TEXT("Invalid Nakama client");
-		Error.Code = -1;
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
-		return;
-	}
 
 	NakamaApi::WriteLeaderboardRecord(
-		Config,
+		Client,
 		MakeShared<FNakamaSession>(Session),
 		StoredLeaderboardId,
 		StoredRecord,
@@ -4296,7 +3457,7 @@ void UNakamaClientWriteLeaderboardRecord::Activate()
 // WriteStorageObjects
 UNakamaClientWriteStorageObjects* UNakamaClientWriteStorageObjects::WriteStorageObjects(
 	UObject* WorldContextObject,
-	const FNakamaClientRef& Client,
+	FNakamaApiConfig Client,
 	const FNakamaSession& Session,
 	const TArray<FNakamaWriteStorageObject>& Objects)
 {
@@ -4312,19 +3473,9 @@ void UNakamaClientWriteStorageObjects::Activate()
 {
 	static const TCHAR* TraceScope_WriteStorageObjects = TEXT("NakamaBP_WriteStorageObjects");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_WriteStorageObjects);
-	FNakamaApiConfigPtr Config = Client.GetConfig();
-	if (!Config)
-	{
-		FNakamaError Error;
-		Error.Message = TEXT("Invalid Nakama client");
-		Error.Code = -1;
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
-		return;
-	}
 
 	NakamaApi::WriteStorageObjects(
-		Config,
+		Client,
 		MakeShared<FNakamaSession>(Session),
 		StoredObjects,
 		[this](const FNakamaStorageObjectAcks& Result)
@@ -4343,7 +3494,7 @@ void UNakamaClientWriteStorageObjects::Activate()
 // WriteTournamentRecord
 UNakamaClientWriteTournamentRecord* UNakamaClientWriteTournamentRecord::WriteTournamentRecord(
 	UObject* WorldContextObject,
-	const FNakamaClientRef& Client,
+	FNakamaApiConfig Client,
 	const FNakamaSession& Session,
 	FString TournamentId,
 	FNakamaWriteTournamentRecordRequest_TournamentRecordWrite Record)
@@ -4361,19 +3512,9 @@ void UNakamaClientWriteTournamentRecord::Activate()
 {
 	static const TCHAR* TraceScope_WriteTournamentRecord = TEXT("NakamaBP_WriteTournamentRecord");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_WriteTournamentRecord);
-	FNakamaApiConfigPtr Config = Client.GetConfig();
-	if (!Config)
-	{
-		FNakamaError Error;
-		Error.Message = TEXT("Invalid Nakama client");
-		Error.Code = -1;
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
-		return;
-	}
 
 	NakamaApi::WriteTournamentRecord(
-		Config,
+		Client,
 		MakeShared<FNakamaSession>(Session),
 		StoredTournamentId,
 		StoredRecord,

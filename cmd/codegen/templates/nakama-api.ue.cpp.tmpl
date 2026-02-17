@@ -549,7 +549,7 @@ namespace
 {
 
 void DoHttpRequest(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	const FString& Endpoint,
 	const FString& Method,
 	const FString& BodyString,
@@ -564,7 +564,7 @@ void DoHttpRequest(
 	INC_DWORD_STAT(STAT_Nakama_ActiveRequests);
 	INC_DWORD_STAT(STAT_Nakama_TotalRequests);
 
-	const FString Url = Config->GetBaseUrl() + Endpoint;
+	const FString Url = Config.GetBaseUrl() + Endpoint;
 
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> Request = FHttpModule::Get().CreateRequest();
 	Request->SetURL(Url);
@@ -576,7 +576,7 @@ void DoHttpRequest(
 	{
 	case ENakamaRequestAuth::Basic:
 		{
-			const FString Auth = FString::Printf(TEXT("%s:"), *Config->ServerKey);
+			const FString Auth = FString::Printf(TEXT("%s:"), *Config.ServerKey);
 			Request->SetHeader(TEXT("Authorization"), FString::Printf(TEXT("Basic %s"), *FBase64::Encode(Auth)));
 		}
 		break;
@@ -601,21 +601,17 @@ void DoHttpRequest(
 	if (!BodyString.IsEmpty() && Method != TEXT("GET"))
 	{
 		Request->SetContentAsString(BodyString);
-
-		if (Config->bEnableDebug)
-		{
-			UE_LOG(LogNakama, Log, TEXT("Request %s %s: %s"), *Method, *Url, *BodyString);
-		}
+		UE_LOG(LogNakama, Log, TEXT("Request %s %s: %s"), *Method, *Url, *BodyString);
 	}
-	else if (Config->bEnableDebug)
+	else
 	{
 		UE_LOG(LogNakama, Log, TEXT("Request %s %s"), *Method, *Url);
 	}
 
-	Request->SetTimeout(Config->Timeout);
+	Request->SetTimeout(Config.Timeout);
 
 	Request->OnProcessRequestComplete().BindLambda(
-		[OnSuccess, OnError, Config, CancellationToken](FHttpRequestPtr Req, FHttpResponsePtr Res, bool bSuccess)
+		[OnSuccess, OnError, CancellationToken](FHttpRequestPtr Req, FHttpResponsePtr Res, bool bSuccess)
 		{
 			SCOPE_CYCLE_COUNTER(STAT_Nakama_OnResponse);
 			TRACE_CPUPROFILER_EVENT_SCOPE(Nakama_OnResponse);
@@ -643,10 +639,7 @@ void DoHttpRequest(
 			const int32 Code = Res->GetResponseCode();
 			const FString Content = Res->GetContentAsString();
 
-			if (Config->bEnableDebug)
-			{
-				UE_LOG(LogNakama, Log, TEXT("Response %d: %s"), Code, *Content);
-			}
+			UE_LOG(LogNakama, Log, TEXT("Response %d: %s"), Code, *Content);
 
 			if (Code < 200 || Code >= 300)
 			{
@@ -692,7 +685,7 @@ void DoHttpRequest(
 }
 
 void SendRequest(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	const FString& Endpoint,
 	const FString& Method,
 	const FString& BodyString,
@@ -728,7 +721,7 @@ void SendRequest(
 }
 
 void MakeRequest(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	const FString& Endpoint,
 	const FString& Method,
 	const TSharedPtr<FJsonObject>& Body,
@@ -763,7 +756,7 @@ void MakeRequest(
 {{- $needsSession := and (not $isAuthenticate) (not $isSessionRefresh) }}
 
 void NakamaApi::{{ $rpc.Name }}(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	{{- if $needsSession }}
 	FNakamaSessionPtr Session,
 	{{- end }}
@@ -995,7 +988,7 @@ void NakamaApi::{{ $rpc.Name }}(
 {{- if $needsSession }}
 
 void NakamaApi::{{ $rpc.Name }}(
-	FNakamaApiConfigPtr Config,
+	const FNakamaApiConfig& Config,
 	const FString& HttpKey,
 	{{- if $hasParams -}}
 	{{- range $fidx, $field := $requestType.Fields }}

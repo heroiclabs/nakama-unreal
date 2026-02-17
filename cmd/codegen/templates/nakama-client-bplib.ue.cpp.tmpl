@@ -19,25 +19,6 @@
 #include "NakamaClientBlueprintLibrary.h"
 
 // ============================================================================
-// Blueprint Function Library Implementation
-// ============================================================================
-
-FNakamaClientRef UNakamaBlueprintLibrary::CreateDefaultClient(
-	const FString& ServerKey,
-	const FString& Host,
-	int32 Port,
-	bool UseSSL,
-	bool EnableDebug)
-{
-	return FNakamaClientRef(MakeShared<FNakamaApiConfig>(FNakamaApiConfig{ServerKey, Host, Port, UseSSL, EnableDebug}));
-}
-
-bool UNakamaBlueprintLibrary::IsValidClient(const FNakamaClientRef& Client)
-{
-	return Client.IsValid();
-}
-
-// ============================================================================
 // Async Action Classes Implementation
 // ============================================================================
 {{- range $idx, $rpc := $.Rpcs }}
@@ -53,7 +34,7 @@ bool UNakamaBlueprintLibrary::IsValidClient(const FNakamaClientRef& Client)
 // {{ $rpc.Name }}
 UNakamaClient{{ $rpc.Name }}* UNakamaClient{{ $rpc.Name }}::{{ $rpc.Name }}(
 	UObject* WorldContextObject,
-	const FNakamaClientRef& Client
+	FNakamaApiConfig Client
 {{- if $needsSession }},
 	const FNakamaSession& Session
 {{- end }}
@@ -91,19 +72,9 @@ void UNakamaClient{{ $rpc.Name }}::Activate()
 {
 	static const TCHAR* TraceScope_{{ $rpc.Name }} = TEXT("NakamaBP_{{ $rpc.Name }}");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_{{ $rpc.Name }});
-	FNakamaApiConfigPtr Config = Client.GetConfig();
-	if (!Config)
-	{
-		FNakamaError Error;
-		Error.Message = TEXT("Invalid Nakama client");
-		Error.Code = -1;
-		OnError.Broadcast(Error);
-		SetReadyToDestroy();
-		return;
-	}
 
 	NakamaApi::{{ $rpc.Name }}(
-		Config,
+		Client,
 {{- if $needsSession }}
 		MakeShared<FNakamaSession>(Session),
 {{- end }}
