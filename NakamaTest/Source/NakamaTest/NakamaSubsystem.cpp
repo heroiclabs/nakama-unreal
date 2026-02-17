@@ -12,8 +12,8 @@ void UNakamaSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
 
-	Client = FNakamaClient::CreateDefaultClient(ServerKey, Host, Port, bUseSSL, true);
-	Client->SetTimeout(10.0f);
+	Client = MakeShared<FNakamaApiConfig>(FNakamaApiConfig{ServerKey, Host, Port, bUseSSL, true});
+	Client->Timeout = 10.0f;
 
 	AccountVM = NewObject<UVM_NakamaAccount>(this);
 
@@ -145,7 +145,7 @@ void UNakamaSubsystem::AuthenticateSession(int32 Index)
 	FNakamaAccountDevice DeviceAccount;
 	DeviceAccount.Id = FString::Printf(TEXT("TestUser_%d"), Index);
 
-	Client->AuthenticateDevice(DeviceAccount, true, DeviceAccount.Id,
+	NakamaApi::AuthenticateDevice(Client, DeviceAccount, true, DeviceAccount.Id,
 		[this, Index](const FNakamaSession& Result)
 		{
 			OnSessionAuthenticated(Index, Result);
@@ -161,7 +161,7 @@ void UNakamaSubsystem::AuthenticateSession(int32 Index)
 
 void UNakamaSubsystem::OnSessionAuthenticated(int32 Index, const FNakamaSession& Result)
 {
-	Sessions[Index] = Result;
+	Sessions[Index] = MakeShared<FNakamaSession>(Result);
 	++AuthenticatedCount;
 
 	UE_LOG(LogTemp, Log, TEXT("NakamaSubsystem: Session %d authenticated [%d/%d]"),
@@ -170,7 +170,7 @@ void UNakamaSubsystem::OnSessionAuthenticated(int32 Index, const FNakamaSession&
 	if (AuthenticatedCount == NumSessions)
 	{
 		AccountVM->SetStatus(FString::Printf(TEXT("Authenticated (%d sessions)"), NumSessions));
-		OnAuthenticated.Broadcast(Sessions[0]);
+		OnAuthenticated.Broadcast(*Sessions[0]);
 
 		// Push session keys/display names into the ViewModel.
 		// Keys are device IDs (used as ComboBoxKey FName), display names are the visible text.
@@ -208,7 +208,7 @@ void UNakamaSubsystem::GetAccount()
 		return;
 	}
 
-	Client->GetAccount(Sessions[ActiveSessionIndex],
+	NakamaApi::GetAccount(Client, Sessions[ActiveSessionIndex],
 		[this](const FNakamaAccount& Account)
 		{
 			AccountVM->SetFromAccount(Account);

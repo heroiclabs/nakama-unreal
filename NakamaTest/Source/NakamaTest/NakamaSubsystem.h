@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Subsystems/GameInstanceSubsystem.h"
-#include "NakamaUnreal.h"
+#include "NakamaApi.h"
 #include "NakamaSubsystem.generated.h"
 
 class UVM_NakamaAccount;
@@ -49,13 +49,13 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Nakama|UI")
 	void HideMenu();
 
-	TSharedPtr<FNakamaClient> GetClient() const { return Client; }
+	FNakamaApiConfigPtr GetClient() const { return Client; }
 
 	/** Get the active session (the one selected in the dropdown). */
-	const FNakamaSession& GetActiveSession() const { return Sessions[ActiveSessionIndex]; }
+	const FNakamaSession& GetActiveSession() const { return *Sessions[ActiveSessionIndex]; }
 
 	/** Get a session by index (0..NumSessions-1). */
-	const FNakamaSession& GetSession(int32 Index) const { return Sessions[Index]; }
+	const FNakamaSession& GetSession(int32 Index) const { return *Sessions[Index]; }
 
 	/** Change the active session and refresh the account view. */
 	UFUNCTION(BlueprintCallable, Category = "Nakama")
@@ -96,8 +96,8 @@ private:
 	UPROPERTY()
 	bool bUseSSL = false;
 
-	TSharedPtr<FNakamaClient> Client;
-	FNakamaSession Sessions[NumSessions];
+	FNakamaApiConfigPtr Client;
+	FNakamaSessionPtr Sessions[NumSessions];
 	int32 AuthenticatedCount = 0;
 	int32 ActiveSessionIndex = 0;
 

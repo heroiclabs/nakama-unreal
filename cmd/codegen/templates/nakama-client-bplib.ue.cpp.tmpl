@@ -29,7 +29,7 @@ FNakamaClientRef UNakamaBlueprintLibrary::CreateDefaultClient(
 	bool UseSSL,
 	bool EnableDebug)
 {
-	return FNakamaClientRef(FNakamaClient::CreateDefaultClient(ServerKey, Host, Port, UseSSL, EnableDebug));
+	return FNakamaClientRef(MakeShared<FNakamaApiConfig>(FNakamaApiConfig{ServerKey, Host, Port, UseSSL, EnableDebug}));
 }
 
 bool UNakamaBlueprintLibrary::IsValidClient(const FNakamaClientRef& Client)
@@ -91,8 +91,8 @@ void UNakamaClient{{ $rpc.Name }}::Activate()
 {
 	static const TCHAR* TraceScope_{{ $rpc.Name }} = TEXT("NakamaBP_{{ $rpc.Name }}");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_{{ $rpc.Name }});
-	TSharedPtr<FNakamaClient> ClientPtr = Client.GetClient();
-	if (!ClientPtr)
+	FNakamaApiConfigPtr Config = Client.GetConfig();
+	if (!Config)
 	{
 		FNakamaError Error;
 		Error.Message = TEXT("Invalid Nakama client");
@@ -102,9 +102,10 @@ void UNakamaClient{{ $rpc.Name }}::Activate()
 		return;
 	}
 
-	ClientPtr->{{ $rpc.Name }}(
+	NakamaApi::{{ $rpc.Name }}(
+		Config,
 {{- if $needsSession }}
-		Session,
+		MakeShared<FNakamaSession>(Session),
 {{- end }}
 {{- if $hasParams }}
 {{- range $fidx, $field := $requestType.Fields }}

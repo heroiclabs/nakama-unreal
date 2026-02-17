@@ -439,6 +439,12 @@ func getUnrealFuncMap(api Api) template.FuncMap {
 			}
 			return fmt.Sprintf("const %s&", baseType)
 		},
+		"asyncResultType": func(returnType *visitedMessage) string {
+			if returnType == nil {
+				return "FNakamaVoid"
+			}
+			return fmt.Sprintf("FNakama%s", returnType.Name)
+		},
 
 		// TODO: Implement these.
 		"getUnrealTypeEmptyPredicate": func(objName string, objType string) string {

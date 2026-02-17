@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "MVVMViewModelBase.h"
-#include "NakamaUnreal.h"
+#include "NakamaApi.h"
 #include "VM_NakamaAccount.generated.h"
 
 /**

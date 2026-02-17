@@ -16,6 +16,18 @@
     "Installed": false,
 	"Modules": [
 		{
+			"Name": "NakamaApi",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"WhitelistPlatforms": [
+				"Win64",
+				"Linux",
+				"IOS",
+				"Mac",
+				"Android"
+			]
+		},
+		{
 			"Name": "NakamaUnreal",
 			"Type": "Runtime",
 			"LoadingPhase": "Default",

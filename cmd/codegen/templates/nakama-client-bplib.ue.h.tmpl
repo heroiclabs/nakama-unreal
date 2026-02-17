@@ -21,7 +21,7 @@
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintAsyncActionBase.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
-#include "NakamaUnreal.h"
+#include "NakamaApi.h"
 
 #include "NakamaClientBlueprintLibrary.generated.h"
 
@@ -35,13 +35,13 @@ struct NAKAMABLUEPRINTS_API FNakamaClientRef
 	GENERATED_BODY()
 
 	FNakamaClientRef() = default;
-	FNakamaClientRef(TSharedPtr<FNakamaClient> InClient) : Client(InClient) {}
+	FNakamaClientRef(FNakamaApiConfigPtr InConfig) : Config(InConfig) {}
 
-	bool IsValid() const { return Client.IsValid(); }
-	TSharedPtr<FNakamaClient> GetClient() const { return Client; }
+	bool IsValid() const { return Config.IsValid(); }
+	FNakamaApiConfigPtr GetConfig() const { return Config; }
 
 private:
-	TSharedPtr<FNakamaClient> Client;
+	FNakamaApiConfigPtr Config;
 };
 
 // ============================================================================

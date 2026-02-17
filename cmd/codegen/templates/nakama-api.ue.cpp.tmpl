@@ -1,0 +1,1250 @@
+/*
+ * Copyright {{currentYear}} The Nakama Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/* This code is auto-generated. DO NOT EDIT. */
+
+#include "NakamaApi.h"
+
+#include "HttpModule.h"
+#include "Interfaces/IHttpRequest.h"
+#include "Interfaces/IHttpResponse.h"
+#include "Misc/Base64.h"
+#include "Misc/DateTime.h"
+#include "Modules/ModuleManager.h"
+#include "Serialization/JsonReader.h"
+#include "Serialization/JsonSerializer.h"
+#include "Serialization/JsonWriter.h"
+#include "Stats/Stats.h"
+
+DEFINE_LOG_CATEGORY(LogNakama);
+
+// Stat group: use "stat Nakama" in console
+DECLARE_STATS_GROUP(TEXT("Nakama"), STATGROUP_Nakama, STATCAT_Advanced);
+DECLARE_CYCLE_STAT(TEXT("MakeRequest Dispatch"), STAT_Nakama_MakeRequest_Dispatch, STATGROUP_Nakama);
+DECLARE_CYCLE_STAT(TEXT("OnResponse"), STAT_Nakama_OnResponse, STATGROUP_Nakama);
+DECLARE_CYCLE_STAT(TEXT("JsonSerialize"), STAT_Nakama_JsonSerialize, STATGROUP_Nakama);
+DECLARE_CYCLE_STAT(TEXT("JsonDeserialize"), STAT_Nakama_JsonDeserialize, STATGROUP_Nakama);
+DECLARE_DWORD_ACCUMULATOR_STAT(TEXT("ActiveRequests"), STAT_Nakama_ActiveRequests, STATGROUP_Nakama);
+DECLARE_DWORD_ACCUMULATOR_STAT(TEXT("TotalRequests"), STAT_Nakama_TotalRequests, STATGROUP_Nakama);
+DECLARE_DWORD_ACCUMULATOR_STAT(TEXT("TotalErrors"), STAT_Nakama_TotalErrors, STATGROUP_Nakama);
+
+// --- FNakamaSession JWT helpers ---
+
+bool FNakamaSession::ParseJwtPayload(const FString& Jwt, TSharedPtr<FJsonObject>& Out)
+{
+	TArray<FString> Parts;
+	Jwt.ParseIntoArray(Parts, TEXT("."));
+	if (Parts.Num() < 2)
+	{
+		return false;
+	}
+
+	// Base64url -> standard Base64
+	FString Payload = Parts[1];
+	Payload.ReplaceInline(TEXT("-"), TEXT("+"));
+	Payload.ReplaceInline(TEXT("_"), TEXT("/"));
+
+	// Pad to multiple of 4
+	while (Payload.Len() % 4 != 0)
+	{
+		Payload += TEXT("=");
+	}
+
+	TArray<uint8> DecodedBytes;
+	if (!FBase64::Decode(Payload, DecodedBytes))
+	{
+		return false;
+	}
+
+	const FUTF8ToTCHAR Converter(reinterpret_cast<const ANSICHAR*>(DecodedBytes.GetData()), DecodedBytes.Num());
+	FString JsonString(Converter.Length(), Converter.Get());
+
+	TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(JsonString);
+	return FJsonSerializer::Deserialize(Reader, Out) && Out.IsValid();
+}
+
+void FNakamaSession::ParseTokens()
+{
+	UserId.Empty();
+	Username.Empty();
+	TokenExpiresAt = 0;
+	TokenIssuedAt = 0;
+	RefreshTokenExpiresAt = 0;
+	Vars.Empty();
+
+	// Parse auth token
+	TSharedPtr<FJsonObject> TokenPayload;
+	if (!Token.IsEmpty() && ParseJwtPayload(Token, TokenPayload))
+	{
+		if (TokenPayload->HasField(TEXT("uid")))
+		{
+			UserId = TokenPayload->GetStringField(TEXT("uid"));
+		}
+		if (TokenPayload->HasField(TEXT("usn")))
+		{
+			Username = TokenPayload->GetStringField(TEXT("usn"));
+		}
+		if (TokenPayload->HasField(TEXT("exp")))
+		{
+			TokenExpiresAt = static_cast<int64>(TokenPayload->GetNumberField(TEXT("exp")));
+		}
+		if (TokenPayload->HasField(TEXT("iat")))
+		{
+			TokenIssuedAt = static_cast<int64>(TokenPayload->GetNumberField(TEXT("iat")));
+		}
+		if (TokenPayload->HasField(TEXT("vrs")))
+		{
+			const TSharedPtr<FJsonObject>* VrsObj;
+			if (TokenPayload->TryGetObjectField(TEXT("vrs"), VrsObj))
+			{
+				for (const auto& Pair : (*VrsObj)->Values)
+				{
+					Vars.Add(Pair.Key, Pair.Value->AsString());
+				}
+			}
+		}
+	}
+
+	// Parse refresh token
+	TSharedPtr<FJsonObject> RefreshPayload;
+	if (!RefreshToken.IsEmpty() && ParseJwtPayload(RefreshToken, RefreshPayload))
+	{
+		if (RefreshPayload->HasField(TEXT("exp")))
+		{
+			RefreshTokenExpiresAt = static_cast<int64>(RefreshPayload->GetNumberField(TEXT("exp")));
+		}
+	}
+}
+
+bool FNakamaSession::IsExpired(int64 BufferSeconds) const
+{
+	if (TokenExpiresAt == 0)
+	{
+		return true;
+	}
+	return (TokenExpiresAt - BufferSeconds) <= FDateTime::UtcNow().ToUnixTimestamp();
+}
+
+bool FNakamaSession::IsRefreshExpired(int64 BufferSeconds) const
+{
+	if (RefreshTokenExpiresAt == 0)
+	{
+		return true;
+	}
+	return (RefreshTokenExpiresAt - BufferSeconds) <= FDateTime::UtcNow().ToUnixTimestamp();
+}
+
+void FNakamaSession::Update(const FString& NewToken, const FString& NewRefreshToken)
+{
+	Token = NewToken;
+	RefreshToken = NewRefreshToken;
+	ParseTokens();
+}
+
+{{- /* Generate FromJson/ToJson implementations for each message */ -}}
+{{- range $idx, $msg := $.Messages }}
+{{- if eq $msg.Name "Session" }}
+
+FNakamaSession FNakamaSession::FromJson(const TSharedPtr<FJsonObject>& Json)
+{
+	FNakamaSession Result;
+	if (!Json.IsValid())
+	{
+		return Result;
+	}
+{{- range $fidx, $field := $msg.Fields }}
+{{- $fieldName := $field.Name | pascalCase }}
+{{- $jsonFieldName := $field.Name }}
+{{- $fieldType := $field.Type }}
+{{- if $field.Repeated }}
+	if (Json->HasField(TEXT("{{ $jsonFieldName }}")))
+	{
+		const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
+		if (Json->TryGetArrayField(TEXT("{{ $jsonFieldName }}"), ArrayPtr))
+		{
+			for (const auto& Item : *ArrayPtr)
+			{
+{{- if or (eq $fieldType "string") (containsString $fieldType "StringValue") }}
+				Result.{{ $fieldName }}.Add(Item->AsString());
+{{- else if or (eq $fieldType "int32") (containsString $fieldType "Int32Value") }}
+				Result.{{ $fieldName }}.Add(static_cast<int32>(Item->AsNumber()));
+{{- else if or (eq $fieldType "int64") (containsString $fieldType "Int64Value") }}
+				Result.{{ $fieldName }}.Add(static_cast<int64>(Item->AsNumber()));
+{{- else if or (eq $fieldType "uint32") (containsString $fieldType "UInt32Value") }}
+				Result.{{ $fieldName }}.Add(static_cast<uint32>(Item->AsNumber()));
+{{- else if or (eq $fieldType "uint64") (containsString $fieldType "UInt64Value") }}
+				Result.{{ $fieldName }}.Add(static_cast<uint64>(Item->AsNumber()));
+{{- else if or (eq $fieldType "float") (eq $fieldType "double") }}
+				Result.{{ $fieldName }}.Add(Item->AsNumber());
+{{- else if or (eq $fieldType "bool") (containsString $fieldType "BoolValue") }}
+				Result.{{ $fieldName }}.Add(Item->AsBool());
+{{- else if isMessageType $fieldType }}
+				const TSharedPtr<FJsonObject>* ItemObj = nullptr;
+				if (Item->TryGetObject(ItemObj) && ItemObj)
+				{
+					Result.{{ $fieldName }}.Add(FNakama{{ $fieldType }}::FromJson(*ItemObj));
+				}
+{{- else }}
+				Result.{{ $fieldName }}.Add(Item->AsString());
+{{- end }}
+			}
+		}
+	}
+{{- else }}
+{{- if or (eq $fieldType "string") (containsString $fieldType "StringValue") }}
+	if (Json->HasField(TEXT("{{ $jsonFieldName }}")))
+	{
+		Result.{{ $fieldName }} = Json->GetStringField(TEXT("{{ $jsonFieldName }}"));
+	}
+{{- else if or (eq $fieldType "int32") (containsString $fieldType "Int32Value") }}
+	if (Json->HasField(TEXT("{{ $jsonFieldName }}")))
+	{
+		Result.{{ $fieldName }} = Json->GetIntegerField(TEXT("{{ $jsonFieldName }}"));
+	}
+{{- else if or (eq $fieldType "int64") (containsString $fieldType "Int64Value") }}
+	if (Json->HasField(TEXT("{{ $jsonFieldName }}")))
+	{
+		Result.{{ $fieldName }} = static_cast<int64>(Json->GetNumberField(TEXT("{{ $jsonFieldName }}")));
+	}
+{{- else if or (eq $fieldType "uint32") (containsString $fieldType "UInt32Value") }}
+	if (Json->HasField(TEXT("{{ $jsonFieldName }}")))
+	{
+		Result.{{ $fieldName }} = static_cast<uint32>(Json->GetNumberField(TEXT("{{ $jsonFieldName }}")));
+	}
+{{- else if or (eq $fieldType "uint64") (containsString $fieldType "UInt64Value") }}
+	if (Json->HasField(TEXT("{{ $jsonFieldName }}")))
+	{
+		Result.{{ $fieldName }} = static_cast<uint64>(Json->GetNumberField(TEXT("{{ $jsonFieldName }}")));
+	}
+{{- else if or (eq $fieldType "bool") (containsString $fieldType "BoolValue") }}
+	if (Json->HasField(TEXT("{{ $jsonFieldName }}")))
+	{
+		Result.{{ $fieldName }} = Json->GetBoolField(TEXT("{{ $jsonFieldName }}"));
+	}
+{{- else if or (eq $fieldType "float") (eq $fieldType "double") }}
+	if (Json->HasField(TEXT("{{ $jsonFieldName }}")))
+	{
+		Result.{{ $fieldName }} = Json->GetNumberField(TEXT("{{ $jsonFieldName }}"));
+	}
+{{- else if containsString $fieldType "Timestamp" }}
+	if (Json->HasField(TEXT("{{ $jsonFieldName }}")))
+	{
+		Result.{{ $fieldName }} = Json->GetStringField(TEXT("{{ $jsonFieldName }}"));
+	}
+{{- else if isEnumType $fieldType }}
+	if (Json->HasField(TEXT("{{ $jsonFieldName }}")))
+	{
+		Result.{{ $fieldName }} = Json->GetIntegerField(TEXT("{{ $jsonFieldName }}"));
+	}
+{{- else }}
+	if (Json->HasField(TEXT("{{ $jsonFieldName }}")))
+	{
+		const TSharedPtr<FJsonObject>* NestedObj;
+		if (Json->TryGetObjectField(TEXT("{{ $jsonFieldName }}"), NestedObj))
+		{
+			Result.{{ $fieldName }} = FNakama{{ $fieldType }}::FromJson(*NestedObj);
+		}
+	}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- range $fidx, $field := $msg.MapFields }}
+{{- $fieldName := $field.Name | pascalCase }}
+{{- $jsonFieldName := $field.Name }}
+	if (Json->HasField(TEXT("{{ $jsonFieldName }}")))
+	{
+		const TSharedPtr<FJsonObject>* MapObj;
+		if (Json->TryGetObjectField(TEXT("{{ $jsonFieldName }}"), MapObj))
+		{
+			for (const auto& Pair : (*MapObj)->Values)
+			{
+				Result.{{ $fieldName }}.Add(Pair.Key, Pair.Value->AsString());
+			}
+		}
+	}
+	{{- end }}
+	Result.ParseTokens();
+	return Result;
+}
+
+TSharedPtr<FJsonObject> FNakamaSession::ToJson() const
+{
+	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+{{- range $fidx, $field := $msg.Fields }}
+{{- $fieldName := $field.Name | pascalCase }}
+{{- $jsonFieldName := $field.Name }}
+{{- $fieldType := $field.Type }}
+{{- if $field.Repeated }}
+	if ({{ $fieldName }}.Num() > 0)
+	{
+		TArray<TSharedPtr<FJsonValue>> Array;
+		for (const auto& Item : {{ $fieldName }})
+		{
+{{- if or (eq $fieldType "string") (containsString $fieldType "StringValue") (containsString $fieldType "Timestamp") }}
+			Array.Add(MakeShared<FJsonValueString>(Item));
+{{- else if or (eq $fieldType "int32") (eq $fieldType "int64") (eq $fieldType "uint32") (eq $fieldType "uint64") (eq $fieldType "float") (eq $fieldType "double") (containsString $fieldType "Int32Value") (containsString $fieldType "Int64Value") (containsString $fieldType "UInt32Value") (containsString $fieldType "UInt64Value") (containsString $fieldType "FloatValue") (containsString $fieldType "DoubleValue") }}
+			Array.Add(MakeShared<FJsonValueNumber>(Item));
+{{- else if or (eq $fieldType "bool") (containsString $fieldType "BoolValue") }}
+			Array.Add(MakeShared<FJsonValueBoolean>(Item));
+{{- else if isMessageType $fieldType }}
+			Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
+{{- else }}
+			Array.Add(MakeShared<FJsonValueString>(Item));
+{{- end }}
+		}
+		Json->SetArrayField(TEXT("{{ $jsonFieldName }}"), Array);
+	}
+{{- else }}
+{{- if or (eq $fieldType "string") (containsString $fieldType "StringValue") }}
+	if (!{{ $fieldName }}.IsEmpty())
+	{
+		Json->SetStringField(TEXT("{{ $jsonFieldName }}"), {{ $fieldName }});
+	}
+{{- else if or (eq $fieldType "int32") (eq $fieldType "int64") (eq $fieldType "uint32") (eq $fieldType "uint64") (eq $fieldType "float") (eq $fieldType "double") (containsString $fieldType "Int32Value") (containsString $fieldType "Int64Value") (containsString $fieldType "UInt32Value") (containsString $fieldType "UInt64Value") (containsString $fieldType "FloatValue") (containsString $fieldType "DoubleValue") }}
+	Json->SetNumberField(TEXT("{{ $jsonFieldName }}"), {{ $fieldName }});
+{{- else if or (eq $fieldType "bool") (containsString $fieldType "BoolValue") }}
+	Json->SetBoolField(TEXT("{{ $jsonFieldName }}"), {{ $fieldName }});
+{{- else if containsString $fieldType "Timestamp" }}
+	if (!{{ $fieldName }}.IsEmpty())
+	{
+		Json->SetStringField(TEXT("{{ $jsonFieldName }}"), {{ $fieldName }});
+	}
+{{- else if isEnumType $fieldType }}
+	Json->SetNumberField(TEXT("{{ $jsonFieldName }}"), {{ $fieldName }});
+{{- else }}
+	Json->SetObjectField(TEXT("{{ $jsonFieldName }}"), {{ $fieldName }}.ToJson());
+{{- end }}
+{{- end }}
+{{- end }}
+{{- range $fidx, $field := $msg.MapFields }}
+	{{- $fieldName := $field.Name | pascalCase }}
+	{{- $jsonFieldName := $field.Name }}
+	if ({{ $fieldName }}.Num() > 0)
+	{
+		TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
+		for (const auto& Pair : {{ $fieldName }})
+		{
+			MapObj->SetStringField(Pair.Key, Pair.Value);
+		}
+		Json->SetObjectField(TEXT("{{ $jsonFieldName }}"), MapObj);
+	}
+	{{- end }}
+	return Json;
+}
+{{- else }}
+
+FNakama{{ $msg.Name }} FNakama{{ $msg.Name }}::FromJson(const TSharedPtr<FJsonObject>& Json)
+{
+	FNakama{{ $msg.Name }} Result;
+	if (!Json.IsValid())
+	{
+		return Result;
+	}
+{{- range $fidx, $field := $msg.Fields }}
+{{- $fieldName := $field.Name | pascalCase }}
+{{- $jsonFieldName := $field.Name }}
+{{- $fieldType := $field.Type }}
+{{- if $field.Repeated }}
+	if (Json->HasField(TEXT("{{ $jsonFieldName }}")))
+	{
+		const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
+		if (Json->TryGetArrayField(TEXT("{{ $jsonFieldName }}"), ArrayPtr))
+		{
+			for (const auto& Item : *ArrayPtr)
+			{
+{{- if or (eq $fieldType "string") (containsString $fieldType "StringValue") }}
+				Result.{{ $fieldName }}.Add(Item->AsString());
+{{- else if or (eq $fieldType "int32") (containsString $fieldType "Int32Value") }}
+				Result.{{ $fieldName }}.Add(static_cast<int32>(Item->AsNumber()));
+{{- else if or (eq $fieldType "int64") (containsString $fieldType "Int64Value") }}
+				Result.{{ $fieldName }}.Add(static_cast<int64>(Item->AsNumber()));
+{{- else if or (eq $fieldType "uint32") (containsString $fieldType "UInt32Value") }}
+				Result.{{ $fieldName }}.Add(static_cast<uint32>(Item->AsNumber()));
+{{- else if or (eq $fieldType "uint64") (containsString $fieldType "UInt64Value") }}
+				Result.{{ $fieldName }}.Add(static_cast<uint64>(Item->AsNumber()));
+{{- else if or (eq $fieldType "float") (eq $fieldType "double") }}
+				Result.{{ $fieldName }}.Add(Item->AsNumber());
+{{- else if or (eq $fieldType "bool") (containsString $fieldType "BoolValue") }}
+				Result.{{ $fieldName }}.Add(Item->AsBool());
+{{- else if isMessageType $fieldType }}
+				const TSharedPtr<FJsonObject>* ItemObj = nullptr;
+				if (Item->TryGetObject(ItemObj) && ItemObj)
+				{
+					Result.{{ $fieldName }}.Add(FNakama{{ $fieldType }}::FromJson(*ItemObj));
+				}
+{{- else }}
+				Result.{{ $fieldName }}.Add(Item->AsString());
+{{- end }}
+			}
+		}
+	}
+{{- else }}
+{{- if or (eq $fieldType "string") (containsString $fieldType "StringValue") }}
+	if (Json->HasField(TEXT("{{ $jsonFieldName }}")))
+	{
+		Result.{{ $fieldName }} = Json->GetStringField(TEXT("{{ $jsonFieldName }}"));
+	}
+{{- else if or (eq $fieldType "int32") (containsString $fieldType "Int32Value") }}
+	if (Json->HasField(TEXT("{{ $jsonFieldName }}")))
+	{
+		Result.{{ $fieldName }} = Json->GetIntegerField(TEXT("{{ $jsonFieldName }}"));
+	}
+{{- else if or (eq $fieldType "int64") (containsString $fieldType "Int64Value") }}
+	if (Json->HasField(TEXT("{{ $jsonFieldName }}")))
+	{
+		Result.{{ $fieldName }} = static_cast<int64>(Json->GetNumberField(TEXT("{{ $jsonFieldName }}")));
+	}
+{{- else if or (eq $fieldType "uint32") (containsString $fieldType "UInt32Value") }}
+	if (Json->HasField(TEXT("{{ $jsonFieldName }}")))
+	{
+		Result.{{ $fieldName }} = static_cast<uint32>(Json->GetNumberField(TEXT("{{ $jsonFieldName }}")));
+	}
+{{- else if or (eq $fieldType "uint64") (containsString $fieldType "UInt64Value") }}
+	if (Json->HasField(TEXT("{{ $jsonFieldName }}")))
+	{
+		Result.{{ $fieldName }} = static_cast<uint64>(Json->GetNumberField(TEXT("{{ $jsonFieldName }}")));
+	}
+{{- else if or (eq $fieldType "bool") (containsString $fieldType "BoolValue") }}
+	if (Json->HasField(TEXT("{{ $jsonFieldName }}")))
+	{
+		Result.{{ $fieldName }} = Json->GetBoolField(TEXT("{{ $jsonFieldName }}"));
+	}
+{{- else if or (eq $fieldType "float") (eq $fieldType "double") }}
+	if (Json->HasField(TEXT("{{ $jsonFieldName }}")))
+	{
+		Result.{{ $fieldName }} = Json->GetNumberField(TEXT("{{ $jsonFieldName }}"));
+	}
+{{- else if containsString $fieldType "Timestamp" }}
+	if (Json->HasField(TEXT("{{ $jsonFieldName }}")))
+	{
+		Result.{{ $fieldName }} = Json->GetStringField(TEXT("{{ $jsonFieldName }}"));
+	}
+{{- else if isEnumType $fieldType }}
+	if (Json->HasField(TEXT("{{ $jsonFieldName }}")))
+	{
+		Result.{{ $fieldName }} = Json->GetIntegerField(TEXT("{{ $jsonFieldName }}"));
+	}
+{{- else }}
+	if (Json->HasField(TEXT("{{ $jsonFieldName }}")))
+	{
+		const TSharedPtr<FJsonObject>* NestedObj;
+		if (Json->TryGetObjectField(TEXT("{{ $jsonFieldName }}"), NestedObj))
+		{
+			Result.{{ $fieldName }} = FNakama{{ $fieldType }}::FromJson(*NestedObj);
+		}
+	}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- range $fidx, $field := $msg.MapFields }}
+{{- $fieldName := $field.Name | pascalCase }}
+{{- $jsonFieldName := $field.Name }}
+	if (Json->HasField(TEXT("{{ $jsonFieldName }}")))
+	{
+		const TSharedPtr<FJsonObject>* MapObj;
+		if (Json->TryGetObjectField(TEXT("{{ $jsonFieldName }}"), MapObj))
+		{
+			for (const auto& Pair : (*MapObj)->Values)
+			{
+				Result.{{ $fieldName }}.Add(Pair.Key, Pair.Value->AsString());
+			}
+		}
+	}
+	{{- end }}
+	return Result;
+}
+
+TSharedPtr<FJsonObject> FNakama{{ $msg.Name }}::ToJson() const
+{
+	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+{{- range $fidx, $field := $msg.Fields }}
+{{- $fieldName := $field.Name | pascalCase }}
+{{- $jsonFieldName := $field.Name }}
+{{- $fieldType := $field.Type }}
+{{- if $field.Repeated }}
+	if ({{ $fieldName }}.Num() > 0)
+	{
+		TArray<TSharedPtr<FJsonValue>> Array;
+		for (const auto& Item : {{ $fieldName }})
+		{
+{{- if or (eq $fieldType "string") (containsString $fieldType "StringValue") (containsString $fieldType "Timestamp") }}
+			Array.Add(MakeShared<FJsonValueString>(Item));
+{{- else if or (eq $fieldType "int32") (eq $fieldType "int64") (eq $fieldType "uint32") (eq $fieldType "uint64") (eq $fieldType "float") (eq $fieldType "double") (containsString $fieldType "Int32Value") (containsString $fieldType "Int64Value") (containsString $fieldType "UInt32Value") (containsString $fieldType "UInt64Value") (containsString $fieldType "FloatValue") (containsString $fieldType "DoubleValue") }}
+			Array.Add(MakeShared<FJsonValueNumber>(Item));
+{{- else if or (eq $fieldType "bool") (containsString $fieldType "BoolValue") }}
+			Array.Add(MakeShared<FJsonValueBoolean>(Item));
+{{- else if isMessageType $fieldType }}
+			Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
+{{- else }}
+			Array.Add(MakeShared<FJsonValueString>(Item));
+{{- end }}
+		}
+		Json->SetArrayField(TEXT("{{ $jsonFieldName }}"), Array);
+	}
+{{- else }}
+{{- if or (eq $fieldType "string") (containsString $fieldType "StringValue") }}
+	if (!{{ $fieldName }}.IsEmpty())
+	{
+		Json->SetStringField(TEXT("{{ $jsonFieldName }}"), {{ $fieldName }});
+	}
+{{- else if or (eq $fieldType "int32") (eq $fieldType "int64") (eq $fieldType "uint32") (eq $fieldType "uint64") (eq $fieldType "float") (eq $fieldType "double") (containsString $fieldType "Int32Value") (containsString $fieldType "Int64Value") (containsString $fieldType "UInt32Value") (containsString $fieldType "UInt64Value") (containsString $fieldType "FloatValue") (containsString $fieldType "DoubleValue") }}
+	Json->SetNumberField(TEXT("{{ $jsonFieldName }}"), {{ $fieldName }});
+{{- else if or (eq $fieldType "bool") (containsString $fieldType "BoolValue") }}
+	Json->SetBoolField(TEXT("{{ $jsonFieldName }}"), {{ $fieldName }});
+{{- else if containsString $fieldType "Timestamp" }}
+	if (!{{ $fieldName }}.IsEmpty())
+	{
+		Json->SetStringField(TEXT("{{ $jsonFieldName }}"), {{ $fieldName }});
+	}
+{{- else if isEnumType $fieldType }}
+	Json->SetNumberField(TEXT("{{ $jsonFieldName }}"), {{ $fieldName }});
+{{- else }}
+	Json->SetObjectField(TEXT("{{ $jsonFieldName }}"), {{ $fieldName }}.ToJson());
+{{- end }}
+{{- end }}
+{{- end }}
+{{- range $fidx, $field := $msg.MapFields }}
+	{{- $fieldName := $field.Name | pascalCase }}
+	{{- $jsonFieldName := $field.Name }}
+	if ({{ $fieldName }}.Num() > 0)
+	{
+		TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
+		for (const auto& Pair : {{ $fieldName }})
+		{
+			MapObj->SetStringField(Pair.Key, Pair.Value);
+		}
+		Json->SetObjectField(TEXT("{{ $jsonFieldName }}"), MapObj);
+	}
+	{{- end }}
+	return Json;
+}
+{{- end }}
+{{- end }}
+
+// --- FNakamaApiConfig ---
+
+FString FNakamaApiConfig::GetBaseUrl() const
+{
+	const FString Scheme = bUseSSL ? TEXT("https") : TEXT("http");
+	return FString::Printf(TEXT("%s://%s:%d"), *Scheme, *Host, Port);
+}
+
+
+// --- File-local HTTP helpers ---
+
+namespace
+{
+
+void DoHttpRequest(
+	FNakamaApiConfigPtr Config,
+	const FString& Endpoint,
+	const FString& Method,
+	const FString& BodyString,
+	ENakamaRequestAuth AuthType,
+	const FString& TokenString,
+	TFunction<void(TSharedPtr<FJsonObject>)> OnSuccess,
+	TFunction<void(const FNakamaError&)> OnError,
+	FNakamaCancellationTokenPtr CancellationToken)
+{
+	SCOPE_CYCLE_COUNTER(STAT_Nakama_MakeRequest_Dispatch);
+	TRACE_CPUPROFILER_EVENT_SCOPE(Nakama_MakeRequest);
+	INC_DWORD_STAT(STAT_Nakama_ActiveRequests);
+	INC_DWORD_STAT(STAT_Nakama_TotalRequests);
+
+	const FString Url = Config->GetBaseUrl() + Endpoint;
+
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> Request = FHttpModule::Get().CreateRequest();
+	Request->SetURL(Url);
+	Request->SetVerb(Method);
+	Request->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
+	Request->SetHeader(TEXT("Accept"), TEXT("application/json"));
+
+	switch (AuthType)
+	{
+	case ENakamaRequestAuth::Basic:
+		{
+			const FString Auth = FString::Printf(TEXT("%s:"), *Config->ServerKey);
+			Request->SetHeader(TEXT("Authorization"), FString::Printf(TEXT("Basic %s"), *FBase64::Encode(Auth)));
+		}
+		break;
+	case ENakamaRequestAuth::Bearer:
+		if (!TokenString.IsEmpty())
+		{
+			Request->SetHeader(TEXT("Authorization"), FString::Printf(TEXT("Bearer %s"), *TokenString));
+		}
+		break;
+	case ENakamaRequestAuth::HttpKey:
+		if (!TokenString.IsEmpty())
+		{
+			const FString Auth = FString::Printf(TEXT("%s:"), *TokenString);
+			Request->SetHeader(TEXT("Authorization"), FString::Printf(TEXT("Basic %s"), *FBase64::Encode(Auth)));
+		}
+		break;
+	case ENakamaRequestAuth::None:
+	default:
+		break;
+	}
+
+	if (!BodyString.IsEmpty() && Method != TEXT("GET"))
+	{
+		Request->SetContentAsString(BodyString);
+
+		if (Config->bEnableDebug)
+		{
+			UE_LOG(LogNakama, Log, TEXT("Request %s %s: %s"), *Method, *Url, *BodyString);
+		}
+	}
+	else if (Config->bEnableDebug)
+	{
+		UE_LOG(LogNakama, Log, TEXT("Request %s %s"), *Method, *Url);
+	}
+
+	Request->SetTimeout(Config->Timeout);
+
+	Request->OnProcessRequestComplete().BindLambda(
+		[OnSuccess, OnError, Config, CancellationToken](FHttpRequestPtr Req, FHttpResponsePtr Res, bool bSuccess)
+		{
+			SCOPE_CYCLE_COUNTER(STAT_Nakama_OnResponse);
+			TRACE_CPUPROFILER_EVENT_SCOPE(Nakama_OnResponse);
+			DEC_DWORD_STAT(STAT_Nakama_ActiveRequests);
+
+			if (CancellationToken && CancellationToken->IsCancelled())
+			{
+				if (OnError)
+				{
+					OnError(FNakamaError(TEXT("Request cancelled"), -1));
+				}
+				return;
+			}
+
+			if (!bSuccess || !Res.IsValid())
+			{
+				INC_DWORD_STAT(STAT_Nakama_TotalErrors);
+				if (OnError)
+				{
+					OnError(FNakamaError(TEXT("Connection failed"), 0));
+				}
+				return;
+			}
+
+			const int32 Code = Res->GetResponseCode();
+			const FString Content = Res->GetContentAsString();
+
+			if (Config->bEnableDebug)
+			{
+				UE_LOG(LogNakama, Log, TEXT("Response %d: %s"), Code, *Content);
+			}
+
+			if (Code < 200 || Code >= 300)
+			{
+				INC_DWORD_STAT(STAT_Nakama_TotalErrors);
+				FString ErrorMsg = FString::Printf(TEXT("HTTP %d"), Code);
+				TSharedPtr<FJsonObject> Json;
+				if (FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Content), Json) && Json.IsValid())
+				{
+					if (Json->HasField(TEXT("message")))
+					{
+						ErrorMsg = Json->GetStringField(TEXT("message"));
+					}
+				}
+				if (OnError)
+				{
+					OnError(FNakamaError(ErrorMsg, Code));
+				}
+				return;
+			}
+
+			TSharedPtr<FJsonObject> Json;
+			if (!Content.IsEmpty())
+			{
+				SCOPE_CYCLE_COUNTER(STAT_Nakama_JsonDeserialize);
+				if (!FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Content), Json) || !Json.IsValid())
+				{
+					INC_DWORD_STAT(STAT_Nakama_TotalErrors);
+					if (OnError)
+					{
+						OnError(FNakamaError(TEXT("Invalid JSON response"), 500));
+					}
+					return;
+				}
+			}
+
+			if (OnSuccess)
+			{
+				OnSuccess(Json);
+			}
+		});
+
+	Request->ProcessRequest();
+}
+
+void SendRequest(
+	FNakamaApiConfigPtr Config,
+	const FString& Endpoint,
+	const FString& Method,
+	const FString& BodyString,
+	ENakamaRequestAuth AuthType,
+	FNakamaSessionPtr Session,
+	const FString& AuthValue,
+	TFunction<void(TSharedPtr<FJsonObject>)> OnSuccess,
+	TFunction<void(const FNakamaError&)> OnError,
+	FNakamaCancellationTokenPtr CancellationToken)
+{
+	// Early cancellation check
+	if (CancellationToken && CancellationToken->IsCancelled())
+	{
+		if (OnError)
+		{
+			OnError(FNakamaError(TEXT("Request cancelled"), -1));
+		}
+		return;
+	}
+
+	// Determine token string
+	FString TokenString;
+	if (AuthType == ENakamaRequestAuth::Bearer && Session.IsValid())
+	{
+		TokenString = Session->Token;
+	}
+	else
+	{
+		TokenString = AuthValue;
+	}
+
+	DoHttpRequest(Config, Endpoint, Method, BodyString, AuthType, TokenString, OnSuccess, OnError, CancellationToken);
+}
+
+void MakeRequest(
+	FNakamaApiConfigPtr Config,
+	const FString& Endpoint,
+	const FString& Method,
+	const TSharedPtr<FJsonObject>& Body,
+	ENakamaRequestAuth AuthType,
+	FNakamaSessionPtr Session,
+	const FString& AuthValue,
+	TFunction<void(TSharedPtr<FJsonObject>)> OnSuccess,
+	TFunction<void(const FNakamaError&)> OnError,
+	FNakamaCancellationTokenPtr CancellationToken)
+{
+	FString BodyString;
+	if (Body.IsValid() && Method != TEXT("GET"))
+	{
+		SCOPE_CYCLE_COUNTER(STAT_Nakama_JsonSerialize);
+		TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&BodyString);
+		FJsonSerializer::Serialize(Body.ToSharedRef(), Writer);
+	}
+	SendRequest(Config, Endpoint, Method, BodyString, AuthType, Session, AuthValue, OnSuccess, OnError, CancellationToken);
+}
+
+} // anonymous namespace
+
+{{- /* Generate free function implementations for each RPC */ -}}
+{{- range $idx, $rpc := $.Rpcs }}
+
+{{- $requestType := $rpc.RequestType -}}
+{{- $returnType := $rpc.ReturnType -}}
+{{- $hasParams := ne $requestType nil }}
+{{- $hasReturn := ne $returnType nil }}
+{{- $isAuthenticate := containsString $rpc.Name "Authenticate" }}
+{{- $isSessionRefresh := eq $rpc.Name "SessionRefresh" }}
+{{- $needsSession := and (not $isAuthenticate) (not $isSessionRefresh) }}
+
+void NakamaApi::{{ $rpc.Name }}(
+	FNakamaApiConfigPtr Config,
+	{{- if $needsSession }}
+	FNakamaSessionPtr Session,
+	{{- end }}
+	{{- if $hasParams -}}
+	{{- range $fidx, $field := $requestType.Fields }}
+	{{- if and (eq $field.Name $rpc.BodyField) (not (isMessageType $field.Type)) }}
+	TSharedPtr<FJsonObject> {{ $field.Name | pascalCase }},
+	{{- else }}
+	{{ getUnrealType $field.Type $field.Repeated }} {{ $field.Name | pascalCase }},
+	{{- end }}
+	{{- end -}}
+	{{- range $fidx, $field := $requestType.MapFields }}
+	const {{ getUnrealMapType $field.Type }}& {{ $field.Name | pascalCase }},
+	{{- end -}}
+	{{- end }}
+	{{- if $hasReturn }}
+	TFunction<void(const FNakama{{ $returnType.Name }}&)> OnSuccess,
+	{{- else }}
+	TFunction<void()> OnSuccess,
+	{{- end }}
+	TFunction<void(const FNakamaError&)> OnError,
+	FNakamaCancellationTokenPtr CancellationToken)
+{
+	FString Endpoint = TEXT("{{ $rpc.Endpoint }}");
+	{{- /* Handle path parameters like {group_id} */ -}}
+	{{- range $pidx, $param := $rpc.QueryParams }}
+	{{- if ne $param "" }}
+	Endpoint = Endpoint.Replace(TEXT("{{ printf "{%s}" $param }}"), *{{ $param | pascalCase }});
+	{{- end }}
+	{{- end }}
+
+{{- /* Handle query parameters (fields not in body) */ -}}
+{{- if $hasParams }}
+{{- $bodyField := $rpc.BodyField }}
+{{- $isGetRequest := eq $rpc.Method "GET" }}
+{{- $pathParams := $rpc.QueryParams }}
+	TArray<FString> QueryParams;
+{{- range $fidx, $field := $requestType.Fields }}
+{{- $fieldName := $field.Name | pascalCase }}
+{{- $fieldType := $field.Type }}
+{{- $jsonFieldName := $field.Name }}
+{{- $isPathParam := containsInSlice $pathParams $jsonFieldName }}
+{{- $isQueryParam := and (not $isPathParam) (or $isGetRequest (eq $bodyField "") (and (ne $bodyField "*") (ne $jsonFieldName $bodyField))) }}
+{{- if $isQueryParam }}
+{{- if $field.Repeated }}
+{{- if or (eq $fieldType "string") (containsString $fieldType "StringValue") }}
+	for (const FString& Item : {{ $fieldName }})
+	{
+		QueryParams.Add(FString::Printf(TEXT("{{ $jsonFieldName }}=%s"), *Item));
+	}
+{{- else if or (eq $fieldType "int32") (containsString $fieldType "Int32Value") }}
+	for (const int32& Item : {{ $fieldName }})
+	{
+		QueryParams.Add(FString::Printf(TEXT("{{ $jsonFieldName }}=%d"), Item));
+	}
+{{- else if or (eq $fieldType "int64") (containsString $fieldType "Int64Value") }}
+	for (const int64& Item : {{ $fieldName }})
+	{
+		QueryParams.Add(FString::Printf(TEXT("{{ $jsonFieldName }}=%lld"), Item));
+	}
+{{- end }}
+{{- else }}
+{{- if or (eq $fieldType "string") (containsString $fieldType "StringValue") }}
+	if (!{{ $fieldName }}.IsEmpty())
+	{
+		QueryParams.Add(FString::Printf(TEXT("{{ $jsonFieldName }}=%s"), *{{ $fieldName }}));
+	}
+{{- else if or (eq $fieldType "bool") (containsString $fieldType "BoolValue") }}
+	QueryParams.Add(FString::Printf(TEXT("{{ $jsonFieldName }}=%s"), {{ $fieldName }} ? TEXT("true") : TEXT("false")));
+{{- else if or (eq $fieldType "int32") (containsString $fieldType "Int32Value") }}
+	if ({{ $fieldName }} != 0)
+	{
+		QueryParams.Add(FString::Printf(TEXT("{{ $jsonFieldName }}=%d"), {{ $fieldName }}));
+	}
+{{- else if or (eq $fieldType "int64") (containsString $fieldType "Int64Value") }}
+	if ({{ $fieldName }} != 0)
+	{
+		QueryParams.Add(FString::Printf(TEXT("{{ $jsonFieldName }}=%lld"), {{ $fieldName }}));
+	}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
+	if (QueryParams.Num() > 0)
+	{
+		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+	}
+{{- end }}
+
+	ENakamaRequestAuth AuthType = {{ if or $isAuthenticate $isSessionRefresh }}ENakamaRequestAuth::Basic{{ else }}ENakamaRequestAuth::Bearer{{ end }};
+
+{{- /* Build request body and dispatch */ -}}
+{{- $scalarBodyField := "" }}
+{{- if $hasParams }}
+{{- $bodyField := $rpc.BodyField }}
+{{- $isGetRequest := eq $rpc.Method "GET" }}
+{{- if and (ne $bodyField "") (ne $bodyField "*") }}
+{{- range $fidx, $field := $requestType.Fields }}
+{{- if eq $field.Name $bodyField }}
+{{- if not (isMessageType $field.Type) }}
+{{- $scalarBodyField = $field.Name | pascalCase }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- if ne $scalarBodyField "" }}
+
+	FString BodyString;
+	if ({{ $scalarBodyField }}.IsValid())
+	{
+		FString Condensed;
+		TSharedRef<TJsonWriter<TCHAR, TCondensedJsonPrintPolicy<TCHAR>>> Writer =
+			TJsonWriterFactory<TCHAR, TCondensedJsonPrintPolicy<TCHAR>>::Create(&Condensed);
+		FJsonSerializer::Serialize({{ $scalarBodyField }}.ToSharedRef(), Writer);
+		Writer->Close();
+		FString Escaped = Condensed.Replace(TEXT("\\"), TEXT("\\\\")).Replace(TEXT("\""), TEXT("\\\""));
+		BodyString = TEXT("\"") + Escaped + TEXT("\"");
+	}
+
+	SendRequest(Config, Endpoint, TEXT("{{ $rpc.Method }}"), BodyString, AuthType, {{ if $needsSession }}Session{{ else }}nullptr{{ end }}, TEXT(""),
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
+		{
+			{{- if $hasReturn }}
+			FNakama{{ $returnType.Name }} Result = FNakama{{ $returnType.Name }}::FromJson(Json);
+			if (OnSuccess)
+			{
+				OnSuccess(Result);
+			}
+			{{- else }}
+			if (OnSuccess)
+			{
+				OnSuccess();
+			}
+			{{- end }}
+		},
+		OnError, CancellationToken);
+{{- else }}
+{{- /* Object body or no body */ -}}
+	TSharedPtr<FJsonObject> Body;
+{{- if $hasParams }}
+{{- $bodyField := $rpc.BodyField }}
+{{- $isGetRequest := eq $rpc.Method "GET" }}
+{{- if and (ne $bodyField "") (ne $bodyField "*") }}
+{{- range $fidx, $field := $requestType.Fields }}
+{{- if eq $field.Name $bodyField }}
+{{- $fieldName := $field.Name | pascalCase }}
+	Body = {{ $fieldName }}.ToJson();
+{{- end }}
+{{- end }}
+{{- else if and (eq $bodyField "*") (not $isGetRequest) }}
+	Body = MakeShared<FJsonObject>();
+{{- range $fidx, $field := $requestType.Fields }}
+{{- $fieldName := $field.Name | pascalCase }}
+{{- $fieldType := $field.Type }}
+{{- $jsonFieldName := $field.Name }}
+{{- if $field.Repeated }}
+	if ({{ $fieldName }}.Num() > 0)
+	{
+		TArray<TSharedPtr<FJsonValue>> Array;
+		for (const auto& Item : {{ $fieldName }})
+		{
+{{- if or (eq $fieldType "string") (containsString $fieldType "StringValue") }}
+			Array.Add(MakeShared<FJsonValueString>(Item));
+{{- else if or (eq $fieldType "int32") (eq $fieldType "int64") (eq $fieldType "uint32") (eq $fieldType "uint64") (eq $fieldType "float") (eq $fieldType "double") (containsString $fieldType "Int32Value") (containsString $fieldType "Int64Value") }}
+			Array.Add(MakeShared<FJsonValueNumber>(Item));
+{{- else if or (eq $fieldType "bool") (containsString $fieldType "BoolValue") }}
+			Array.Add(MakeShared<FJsonValueBoolean>(Item));
+{{- else if isMessageType $fieldType }}
+			Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
+{{- else }}
+			Array.Add(MakeShared<FJsonValueString>(Item));
+{{- end }}
+		}
+		Body->SetArrayField(TEXT("{{ $jsonFieldName }}"), Array);
+	}
+{{- else if or (eq $fieldType "string") (containsString $fieldType "StringValue") }}
+	if (!{{ $fieldName }}.IsEmpty())
+	{
+		Body->SetStringField(TEXT("{{ $jsonFieldName }}"), {{ $fieldName }});
+	}
+{{- else if or (eq $fieldType "bool") (containsString $fieldType "BoolValue") }}
+	Body->SetBoolField(TEXT("{{ $jsonFieldName }}"), {{ $fieldName }});
+{{- else if or (eq $fieldType "int32") (eq $fieldType "int64") (eq $fieldType "uint32") (eq $fieldType "uint64") (eq $fieldType "float") (eq $fieldType "double") (containsString $fieldType "Int32Value") (containsString $fieldType "Int64Value") (containsString $fieldType "UInt32Value") (containsString $fieldType "UInt64Value") }}
+	Body->SetNumberField(TEXT("{{ $jsonFieldName }}"), {{ $fieldName }});
+{{- else if isEnumType $fieldType }}
+	Body->SetNumberField(TEXT("{{ $jsonFieldName }}"), {{ $fieldName }});
+{{- else if isMessageType $fieldType }}
+	Body->SetObjectField(TEXT("{{ $jsonFieldName }}"), {{ $fieldName }}.ToJson());
+{{- else }}
+	Body->SetStringField(TEXT("{{ $jsonFieldName }}"), {{ $fieldName }});
+{{- end }}
+{{- end }}
+{{- range $fidx, $field := $requestType.MapFields }}
+{{- $fieldName := $field.Name | pascalCase }}
+{{- $jsonFieldName := $field.Name }}
+	if ({{ $fieldName }}.Num() > 0)
+	{
+		TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
+		for (const auto& Pair : {{ $fieldName }})
+		{
+			MapObj->SetStringField(Pair.Key, Pair.Value);
+		}
+		Body->SetObjectField(TEXT("{{ $jsonFieldName }}"), MapObj);
+	}
+{{- end }}
+{{- end }}
+{{- end }}
+
+	MakeRequest(Config, Endpoint, TEXT("{{ $rpc.Method }}"), Body, AuthType, {{ if $needsSession }}Session{{ else }}nullptr{{ end }}, TEXT(""),
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
+		{
+			{{- if $hasReturn }}
+			FNakama{{ $returnType.Name }} Result = FNakama{{ $returnType.Name }}::FromJson(Json);
+			if (OnSuccess)
+			{
+				OnSuccess(Result);
+			}
+			{{- else }}
+			if (OnSuccess)
+			{
+				OnSuccess();
+			}
+			{{- end }}
+		},
+		OnError, CancellationToken);
+{{- end }}
+}
+{{- if $needsSession }}
+
+void NakamaApi::{{ $rpc.Name }}(
+	FNakamaApiConfigPtr Config,
+	const FString& HttpKey,
+	{{- if $hasParams -}}
+	{{- range $fidx, $field := $requestType.Fields }}
+	{{- /* Skip http_key field since it's provided as the HttpKey auth parameter */ -}}
+	{{- if ne $field.Name "http_key" }}
+	{{- if and (eq $field.Name $rpc.BodyField) (not (isMessageType $field.Type)) }}
+	TSharedPtr<FJsonObject> {{ $field.Name | pascalCase }},
+	{{- else }}
+	{{ getUnrealType $field.Type $field.Repeated }} {{ $field.Name | pascalCase }},
+	{{- end }}
+	{{- end }}
+	{{- end -}}
+	{{- range $fidx, $field := $requestType.MapFields }}
+	const {{ getUnrealMapType $field.Type }}& {{ $field.Name | pascalCase }},
+	{{- end -}}
+	{{- end }}
+	{{- if $hasReturn }}
+	TFunction<void(const FNakama{{ $returnType.Name }}&)> OnSuccess,
+	{{- else }}
+	TFunction<void()> OnSuccess,
+	{{- end }}
+	TFunction<void(const FNakamaError&)> OnError,
+	FNakamaCancellationTokenPtr CancellationToken)
+{
+	FString Endpoint = TEXT("{{ $rpc.Endpoint }}");
+	{{- /* Handle path parameters like {group_id} */ -}}
+	{{- range $pidx, $param := $rpc.QueryParams }}
+	{{- if ne $param "" }}
+	Endpoint = Endpoint.Replace(TEXT("{{ printf "{%s}" $param }}"), *{{ $param | pascalCase }});
+	{{- end }}
+	{{- end }}
+
+{{- /* Handle query parameters (fields not in body) */ -}}
+{{- if $hasParams }}
+{{- $bodyField := $rpc.BodyField }}
+{{- $isGetRequest := eq $rpc.Method "GET" }}
+{{- $pathParams := $rpc.QueryParams }}
+	TArray<FString> QueryParams;
+{{- range $fidx, $field := $requestType.Fields }}
+{{- /* Skip http_key field since it's provided as the HttpKey auth parameter */ -}}
+{{- if ne $field.Name "http_key" }}
+{{- $fieldName := $field.Name | pascalCase }}
+{{- $fieldType := $field.Type }}
+{{- $jsonFieldName := $field.Name }}
+{{- $isPathParam := containsInSlice $pathParams $jsonFieldName }}
+{{- $isQueryParam := and (not $isPathParam) (or $isGetRequest (eq $bodyField "") (and (ne $bodyField "*") (ne $jsonFieldName $bodyField))) }}
+{{- if $isQueryParam }}
+{{- if $field.Repeated }}
+{{- if or (eq $fieldType "string") (containsString $fieldType "StringValue") }}
+	for (const FString& Item : {{ $fieldName }})
+	{
+		QueryParams.Add(FString::Printf(TEXT("{{ $jsonFieldName }}=%s"), *Item));
+	}
+{{- else if or (eq $fieldType "int32") (containsString $fieldType "Int32Value") }}
+	for (const int32& Item : {{ $fieldName }})
+	{
+		QueryParams.Add(FString::Printf(TEXT("{{ $jsonFieldName }}=%d"), Item));
+	}
+{{- else if or (eq $fieldType "int64") (containsString $fieldType "Int64Value") }}
+	for (const int64& Item : {{ $fieldName }})
+	{
+		QueryParams.Add(FString::Printf(TEXT("{{ $jsonFieldName }}=%lld"), Item));
+	}
+{{- end }}
+{{- else }}
+{{- if or (eq $fieldType "string") (containsString $fieldType "StringValue") }}
+	if (!{{ $fieldName }}.IsEmpty())
+	{
+		QueryParams.Add(FString::Printf(TEXT("{{ $jsonFieldName }}=%s"), *{{ $fieldName }}));
+	}
+{{- else if or (eq $fieldType "bool") (containsString $fieldType "BoolValue") }}
+	QueryParams.Add(FString::Printf(TEXT("{{ $jsonFieldName }}=%s"), {{ $fieldName }} ? TEXT("true") : TEXT("false")));
+{{- else if or (eq $fieldType "int32") (containsString $fieldType "Int32Value") }}
+	if ({{ $fieldName }} != 0)
+	{
+		QueryParams.Add(FString::Printf(TEXT("{{ $jsonFieldName }}=%d"), {{ $fieldName }}));
+	}
+{{- else if or (eq $fieldType "int64") (containsString $fieldType "Int64Value") }}
+	if ({{ $fieldName }} != 0)
+	{
+		QueryParams.Add(FString::Printf(TEXT("{{ $jsonFieldName }}=%lld"), {{ $fieldName }}));
+	}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
+	if (QueryParams.Num() > 0)
+	{
+		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+	}
+{{- end }}
+
+{{- /* Build request body and dispatch */ -}}
+{{- $scalarBodyField2 := "" }}
+{{- if $hasParams }}
+{{- $bodyField := $rpc.BodyField }}
+{{- $isGetRequest := eq $rpc.Method "GET" }}
+{{- if and (ne $bodyField "") (ne $bodyField "*") }}
+{{- range $fidx, $field := $requestType.Fields }}
+{{- if and (eq $field.Name $bodyField) (ne $field.Name "http_key") }}
+{{- if not (isMessageType $field.Type) }}
+{{- $scalarBodyField2 = $field.Name | pascalCase }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- if ne $scalarBodyField2 "" }}
+
+	FString BodyString;
+	if ({{ $scalarBodyField2 }}.IsValid())
+	{
+		FString Condensed;
+		TSharedRef<TJsonWriter<TCHAR, TCondensedJsonPrintPolicy<TCHAR>>> Writer =
+			TJsonWriterFactory<TCHAR, TCondensedJsonPrintPolicy<TCHAR>>::Create(&Condensed);
+		FJsonSerializer::Serialize({{ $scalarBodyField2 }}.ToSharedRef(), Writer);
+		Writer->Close();
+		FString Escaped = Condensed.Replace(TEXT("\\"), TEXT("\\\\")).Replace(TEXT("\""), TEXT("\\\""));
+		BodyString = TEXT("\"") + Escaped + TEXT("\"");
+	}
+
+	SendRequest(Config, Endpoint, TEXT("{{ $rpc.Method }}"), BodyString, ENakamaRequestAuth::HttpKey, nullptr, HttpKey,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
+		{
+			{{- if $hasReturn }}
+			FNakama{{ $returnType.Name }} Result = FNakama{{ $returnType.Name }}::FromJson(Json);
+			if (OnSuccess)
+			{
+				OnSuccess(Result);
+			}
+			{{- else }}
+			if (OnSuccess)
+			{
+				OnSuccess();
+			}
+			{{- end }}
+		},
+		OnError, CancellationToken);
+{{- else }}
+{{- /* Object body or no body */ -}}
+	TSharedPtr<FJsonObject> Body;
+{{- if $hasParams }}
+{{- $bodyField := $rpc.BodyField }}
+{{- $isGetRequest := eq $rpc.Method "GET" }}
+{{- if and (ne $bodyField "") (ne $bodyField "*") }}
+{{- range $fidx, $field := $requestType.Fields }}
+{{- if and (eq $field.Name $bodyField) (ne $field.Name "http_key") }}
+{{- $fieldName := $field.Name | pascalCase }}
+	Body = {{ $fieldName }}.ToJson();
+{{- end }}
+{{- end }}
+{{- else if and (eq $bodyField "*") (not $isGetRequest) }}
+	Body = MakeShared<FJsonObject>();
+{{- range $fidx, $field := $requestType.Fields }}
+{{- /* Skip http_key field */ -}}
+{{- if ne $field.Name "http_key" }}
+{{- $fieldName := $field.Name | pascalCase }}
+{{- $fieldType := $field.Type }}
+{{- $jsonFieldName := $field.Name }}
+{{- if $field.Repeated }}
+	if ({{ $fieldName }}.Num() > 0)
+	{
+		TArray<TSharedPtr<FJsonValue>> Array;
+		for (const auto& Item : {{ $fieldName }})
+		{
+{{- if or (eq $fieldType "string") (containsString $fieldType "StringValue") }}
+			Array.Add(MakeShared<FJsonValueString>(Item));
+{{- else if or (eq $fieldType "int32") (eq $fieldType "int64") (eq $fieldType "uint32") (eq $fieldType "uint64") (eq $fieldType "float") (eq $fieldType "double") (containsString $fieldType "Int32Value") (containsString $fieldType "Int64Value") }}
+			Array.Add(MakeShared<FJsonValueNumber>(Item));
+{{- else if or (eq $fieldType "bool") (containsString $fieldType "BoolValue") }}
+			Array.Add(MakeShared<FJsonValueBoolean>(Item));
+{{- else if isMessageType $fieldType }}
+			Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
+{{- else }}
+			Array.Add(MakeShared<FJsonValueString>(Item));
+{{- end }}
+		}
+		Body->SetArrayField(TEXT("{{ $jsonFieldName }}"), Array);
+	}
+{{- else if or (eq $fieldType "string") (containsString $fieldType "StringValue") }}
+	if (!{{ $fieldName }}.IsEmpty())
+	{
+		Body->SetStringField(TEXT("{{ $jsonFieldName }}"), {{ $fieldName }});
+	}
+{{- else if or (eq $fieldType "bool") (containsString $fieldType "BoolValue") }}
+	Body->SetBoolField(TEXT("{{ $jsonFieldName }}"), {{ $fieldName }});
+{{- else if or (eq $fieldType "int32") (eq $fieldType "int64") (eq $fieldType "uint32") (eq $fieldType "uint64") (eq $fieldType "float") (eq $fieldType "double") (containsString $fieldType "Int32Value") (containsString $fieldType "Int64Value") (containsString $fieldType "UInt32Value") (containsString $fieldType "UInt64Value") }}
+	Body->SetNumberField(TEXT("{{ $jsonFieldName }}"), {{ $fieldName }});
+{{- else if isEnumType $fieldType }}
+	Body->SetNumberField(TEXT("{{ $jsonFieldName }}"), {{ $fieldName }});
+{{- else if isMessageType $fieldType }}
+	Body->SetObjectField(TEXT("{{ $jsonFieldName }}"), {{ $fieldName }}.ToJson());
+{{- else }}
+	Body->SetStringField(TEXT("{{ $jsonFieldName }}"), {{ $fieldName }});
+{{- end }}
+{{- end }}
+{{- end }}
+{{- range $fidx, $field := $requestType.MapFields }}
+{{- $fieldName := $field.Name | pascalCase }}
+{{- $jsonFieldName := $field.Name }}
+	if ({{ $fieldName }}.Num() > 0)
+	{
+		TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
+		for (const auto& Pair : {{ $fieldName }})
+		{
+			MapObj->SetStringField(Pair.Key, Pair.Value);
+		}
+		Body->SetObjectField(TEXT("{{ $jsonFieldName }}"), MapObj);
+	}
+{{- end }}
+{{- end }}
+{{- end }}
+
+	MakeRequest(Config, Endpoint, TEXT("{{ $rpc.Method }}"), Body, ENakamaRequestAuth::HttpKey, nullptr, HttpKey,
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
+		{
+			{{- if $hasReturn }}
+			FNakama{{ $returnType.Name }} Result = FNakama{{ $returnType.Name }}::FromJson(Json);
+			if (OnSuccess)
+			{
+				OnSuccess(Result);
+			}
+			{{- else }}
+			if (OnSuccess)
+			{
+				OnSuccess();
+			}
+			{{- end }}
+		},
+		OnError, CancellationToken);
+{{- end }}
+}
+{{- end }}
+{{- end }}
+
+// Module implementation
+class FNakamaApiModule : public IModuleInterface
+{
+public:
+	virtual void StartupModule() override
+	{
+		UE_LOG(LogNakama, Log, TEXT("NakamaApi module starting"));
+	}
+
+	virtual void ShutdownModule() override
+	{
+		UE_LOG(LogNakama, Log, TEXT("NakamaApi module shutting down"));
+	}
+};
+
+IMPLEMENT_MODULE(FNakamaApiModule, NakamaApi)

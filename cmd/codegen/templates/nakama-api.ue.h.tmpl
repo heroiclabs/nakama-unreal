@@ -1,0 +1,277 @@
+/*
+ * Copyright {{currentYear}} The Nakama Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/* This code is auto-generated. DO NOT EDIT. */
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "Templates/Function.h"
+#include "Templates/SharedPointer.h"
+#include "Dom/JsonObject.h"
+#include "HAL/ThreadSafeBool.h"
+
+#include "NakamaApi.generated.h"
+
+NAKAMAAPI_API DECLARE_LOG_CATEGORY_EXTERN(LogNakama, Log, All);
+
+// Forward declarations
+{{- range $idx, $msg := $.Messages }}
+struct FNakama{{ $msg.Name }};
+{{- end }}
+
+{{- /* Generate enum definitions */ -}}
+{{- range $idx, $enum := $.Enums }}
+
+/** {{ $enum.Comment }} */
+UENUM(BlueprintType)
+enum class ENakama{{ $enum.Name }} : uint8
+{
+	{{- range $fidx, $field := $enum.Fields }}
+	{{ $field.Name }} = {{ $field.Integer }}{{ if not (isLastEnumField $enum.Fields $fidx) }},{{ end }}
+	{{- end }}
+};
+{{- end }}
+
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaError
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
+	FString Message;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
+	int32 Code = 0;
+
+	FNakamaError() = default;
+	FNakamaError(const FString& InMessage, int32 InCode)
+		: Message(InMessage), Code(InCode) {}
+};
+
+/** gRPC status codes returned by Nakama in FNakamaError::Code. */
+namespace NakamaErrorCode
+{
+	constexpr int32 OK = 0;
+	constexpr int32 Cancelled = 1;
+	constexpr int32 Unknown = 2;
+	constexpr int32 InvalidArgument = 3;
+	constexpr int32 DeadlineExceeded = 4;
+	constexpr int32 NotFound = 5;
+	constexpr int32 AlreadyExists = 6;
+	constexpr int32 PermissionDenied = 7;
+	constexpr int32 ResourceExhausted = 8;
+	constexpr int32 FailedPrecondition = 9;
+	constexpr int32 Aborted = 10;
+	constexpr int32 OutOfRange = 11;
+	constexpr int32 Unimplemented = 12;
+	constexpr int32 Internal = 13;
+	constexpr int32 Unavailable = 14;
+	constexpr int32 DataLoss = 15;
+	constexpr int32 Unauthenticated = 16;
+}
+
+struct NAKAMAAPI_API FNakamaCancellationToken
+{
+	void Cancel() { bCancelled.Store(true); }
+	bool IsCancelled() const { return bCancelled.Load(); }
+	static TSharedPtr<FNakamaCancellationToken> Create() { return MakeShared<FNakamaCancellationToken>(); }
+private:
+	TAtomic<bool> bCancelled{false};
+};
+using FNakamaCancellationTokenPtr = TSharedPtr<FNakamaCancellationToken>;
+
+{{- /* Generate struct definitions for each proto message */ -}}
+{{- range $idx, $msg := $.Messages }}
+{{- if eq $msg.Name "Session" }}
+
+/** {{ $msg.Comment }} */
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaSession
+{
+	GENERATED_BODY()
+
+	{{- range $fidx, $field := $msg.Fields }}
+	/** {{ $field.Comment.Message }} */
+	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
+	{{ getUnrealFieldType $field.Type $field.Repeated }} {{ $field.Name | pascalCase }}{{ getUnrealFieldDefault $field.Type $field.Repeated }};
+	{{- end }}
+	{{- range $fidx, $field := $msg.MapFields }}
+	/** {{ $field.Comment.Message }} */
+	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
+	{{ getUnrealMapType $field.Type }} {{ $field.Name | pascalCase }};
+	{{- end }}
+
+	/** User ID parsed from the auth token JWT. */
+	UPROPERTY(BlueprintReadOnly, Category = "Nakama")
+	FString UserId;
+
+	/** Username parsed from the auth token JWT. */
+	UPROPERTY(BlueprintReadOnly, Category = "Nakama")
+	FString Username;
+
+	/** Auth token expiry (Unix timestamp) parsed from JWT. */
+	UPROPERTY(BlueprintReadOnly, Category = "Nakama")
+	int64 TokenExpiresAt = 0;
+
+	/** Auth token issued-at (Unix timestamp) parsed from JWT. */
+	UPROPERTY(BlueprintReadOnly, Category = "Nakama")
+	int64 TokenIssuedAt = 0;
+
+	/** Refresh token expiry (Unix timestamp) parsed from JWT. */
+	UPROPERTY(BlueprintReadOnly, Category = "Nakama")
+	int64 RefreshTokenExpiresAt = 0;
+
+	/** Session variables from the auth token JWT. */
+	UPROPERTY(BlueprintReadOnly, Category = "Nakama")
+	TMap<FString, FString> Vars;
+
+	/** True if the auth token expires within BufferSeconds from now. */
+	bool IsExpired(int64 BufferSeconds = 0) const;
+
+	/** True if the refresh token has expired (no buffer). */
+	bool IsRefreshExpired(int64 BufferSeconds = 0) const;
+
+	/** Replace tokens and re-parse JWT claims. */
+	void Update(const FString& NewToken, const FString& NewRefreshToken);
+
+	static FNakamaSession FromJson(const TSharedPtr<FJsonObject>& Json);
+	TSharedPtr<FJsonObject> ToJson() const;
+
+private:
+	static bool ParseJwtPayload(const FString& Jwt, TSharedPtr<FJsonObject>& Out);
+	void ParseTokens();
+};
+{{- else }}
+
+/** {{ $msg.Comment }} */
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakama{{ $msg.Name }}
+{
+	GENERATED_BODY()
+
+	{{- range $fidx, $field := $msg.Fields }}
+	/** {{ $field.Comment.Message }} */
+	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
+	{{ getUnrealFieldType $field.Type $field.Repeated }} {{ $field.Name | pascalCase }}{{ getUnrealFieldDefault $field.Type $field.Repeated }};
+	{{- end }}
+	{{- range $fidx, $field := $msg.MapFields }}
+	/** {{ $field.Comment.Message }} */
+	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
+	{{ getUnrealMapType $field.Type }} {{ $field.Name | pascalCase }};
+	{{- end }}
+
+	static FNakama{{ $msg.Name }} FromJson(const TSharedPtr<FJsonObject>& Json);
+	TSharedPtr<FJsonObject> ToJson() const;
+};
+{{- end }}
+{{- end }}
+
+using FNakamaSessionPtr = TSharedPtr<FNakamaSession>;
+
+enum class ENakamaRequestAuth : uint8
+{
+	None,
+	Basic,
+	Bearer,
+	HttpKey
+};
+
+/** Low-level API client configuration. */
+struct NAKAMAAPI_API FNakamaApiConfig
+{
+	FString ServerKey;
+	FString Host;
+	int32 Port = 0;
+	bool bUseSSL = false;
+	bool bEnableDebug = false;
+	float Timeout = 10.0f;
+
+	FString GetBaseUrl() const;
+};
+using FNakamaApiConfigPtr = TSharedPtr<FNakamaApiConfig>;
+
+/** Low-level Nakama API: data types + free functions for HTTP RPCs (callback-based). */
+namespace NakamaApi
+{
+
+{{- /* Generate free function declarations for each RPC */ -}}
+{{- range $idx, $rpc := $.Rpcs }}
+
+{{- $requestType := $rpc.RequestType -}}
+{{- $returnType := $rpc.ReturnType -}}
+{{- $hasParams := ne $requestType nil }}
+{{- $hasReturn := ne $returnType nil }}
+{{- $isAuthenticate := containsString $rpc.Name "Authenticate" }}
+{{- $isSessionRefresh := eq $rpc.Name "SessionRefresh" }}
+{{- $needsSession := and (not $isAuthenticate) (not $isSessionRefresh) }}
+
+	/** {{ $rpc.Comment }} */
+	NAKAMAAPI_API void {{ $rpc.Name }}(
+		FNakamaApiConfigPtr Config,
+		{{- if $needsSession }}
+		FNakamaSessionPtr Session,
+		{{- end }}
+		{{- if $hasParams -}}
+		{{- range $fidx, $field := $requestType.Fields }}
+		{{- if and (eq $field.Name $rpc.BodyField) (not (isMessageType $field.Type)) }}
+		TSharedPtr<FJsonObject> {{ $field.Name | pascalCase }},
+		{{- else }}
+		{{ getUnrealType $field.Type $field.Repeated }} {{ $field.Name | pascalCase }},
+		{{- end }}
+		{{- end -}}
+		{{- range $fidx, $field := $requestType.MapFields }}
+		const {{ getUnrealMapType $field.Type }}& {{ $field.Name | pascalCase }},
+		{{- end -}}
+		{{- end }}
+		{{- if $hasReturn }}
+		TFunction<void(const FNakama{{ $returnType.Name }}&)> OnSuccess,
+		{{- else }}
+		TFunction<void()> OnSuccess,
+		{{- end }}
+		TFunction<void(const FNakamaError&)> OnError,
+		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+{{- if $needsSession }}
+
+	/** {{ $rpc.Comment }} (Server-to-server with HTTP key) */
+	NAKAMAAPI_API void {{ $rpc.Name }}(
+		FNakamaApiConfigPtr Config,
+		const FString& HttpKey,
+		{{- if $hasParams -}}
+		{{- range $fidx, $field := $requestType.Fields }}
+		{{- /* Skip http_key field since it's provided as the HttpKey auth parameter */ -}}
+		{{- if ne $field.Name "http_key" }}
+		{{- if and (eq $field.Name $rpc.BodyField) (not (isMessageType $field.Type)) }}
+		TSharedPtr<FJsonObject> {{ $field.Name | pascalCase }},
+		{{- else }}
+		{{ getUnrealType $field.Type $field.Repeated }} {{ $field.Name | pascalCase }},
+		{{- end }}
+		{{- end }}
+		{{- end -}}
+		{{- range $fidx, $field := $requestType.MapFields }}
+		const {{ getUnrealMapType $field.Type }}& {{ $field.Name | pascalCase }},
+		{{- end -}}
+		{{- end }}
+		{{- if $hasReturn }}
+		TFunction<void(const FNakama{{ $returnType.Name }}&)> OnSuccess,
+		{{- else }}
+		TFunction<void()> OnSuccess,
+		{{- end }}
+		TFunction<void(const FNakamaError&)> OnError,
+		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+{{- end }}
+{{- end }}
+}

@@ -12,8 +12,8 @@ FNakamaAutomationTestBase::FNakamaAutomationTestBase(const FString& InName, cons
 
 void FNakamaAutomationTestBase::Initialize()
 {
-	NakamaClient = FNakamaClient::CreateDefaultClient(ServerKey, Host, Port, false, true);
-	NakamaClient->SetTimeout(5.0f);
+	NakamaClient = MakeShared<FNakamaApiConfig>(FNakamaApiConfig{ServerKey, Host, Port, false, true});
+	NakamaClient->Timeout = 5.0f;
 }
 
 FString FNakamaAutomationTestBase::GenerateUniqueId()

@@ -15,10 +15,11 @@
  */
 
 using UnrealBuildTool;
+using System.IO;
 
-public class NakamaBlueprints : ModuleRules
+public class NakamaApi : ModuleRules
 {
-	public NakamaBlueprints(ReadOnlyTargetRules Target) : base(Target)
+	public NakamaApi(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 
@@ -39,8 +40,7 @@ public class NakamaBlueprints : ModuleRules
 		PublicDependencyModuleNames.AddRange(
 			new string[]
 			{
-				"Core",
-				"NakamaApi"
+				"Core", "HTTP", "JsonUtilities"
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);
@@ -49,15 +49,15 @@ public class NakamaBlueprints : ModuleRules
 		PrivateDependencyModuleNames.AddRange(
 			new string[]
 			{
-				"CoreUObject",
+                "CoreUObject",
 				"Engine",
 				"Slate",
 				"SlateCore",
 				"Engine",
 				"JsonUtilities",
 				"Json",
-
-				// ... private dependencies that you statically link with here ...
+				"HTTP"
+				// ... add private dependencies that you statically link with here ...
 			}
 			);
 
@@ -68,5 +68,10 @@ public class NakamaBlueprints : ModuleRules
 				// ... add any modules that your module loads dynamically here ...
 			}
 			);
-	}
+
+        PublicIncludePaths.Add(Path.Combine(ModuleDirectory, "Public"));
+        PublicIncludePaths.Add(Path.Combine(ModuleDirectory, "Private"));
+
+        PrivateIncludePaths.Add(Path.Combine(ModuleDirectory, "Public"));
+    }
 }

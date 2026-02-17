@@ -6,29 +6,8 @@
  */
 
 #include "Misc/AutomationTest.h"
-#include "NakamaUnreal.h"
+#include "NakamaApi.h"
 #include "Misc/Guid.h"
-// Error codes from gRPC/Nakama
-namespace NakamaErrorCode
-{
-	constexpr int32 OK = 0;
-	constexpr int32 Cancelled = 1;
-	constexpr int32 Unknown = 2;
-	constexpr int32 InvalidArgument = 3;
-	constexpr int32 DeadlineExceeded = 4;
-	constexpr int32 NotFound = 5;
-	constexpr int32 AlreadyExists = 6;
-	constexpr int32 PermissionDenied = 7;
-	constexpr int32 ResourceExhausted = 8;
-	constexpr int32 FailedPrecondition = 9;
-	constexpr int32 Aborted = 10;
-	constexpr int32 OutOfRange = 11;
-	constexpr int32 Unimplemented = 12;
-	constexpr int32 Internal = 13;
-	constexpr int32 Unavailable = 14;
-	constexpr int32 DataLoss = 15;
-	constexpr int32 Unauthenticated = 16;
-}
 
 // ============================================================================
 // AUTHENTICATION TESTS
@@ -37,8 +16,8 @@ namespace NakamaErrorCode
 BEGIN_DEFINE_SPEC(FNakamaAuthSpec, "NakamaTest.Auth",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	TSharedPtr<FNakamaClient> Client;
-	FNakamaSession Session;
+	FNakamaApiConfigPtr Client;
+	FNakamaSessionPtr Session;
 	FString TestCustomId;
 	FString TestDeviceId;
 	FString TestEmail;
@@ -59,8 +38,8 @@ void FNakamaAuthSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = FNakamaClient::CreateDefaultClient(ServerKey, Host, Port, false, true);
-		Client->SetTimeout(10.0f);
+		Client = MakeShared<FNakamaApiConfig>(FNakamaApiConfig{ServerKey, Host, Port, false, true});
+		Client->Timeout = 10.0f;
 		TestCustomId = GenerateId();
 		TestDeviceId = GenerateId();
 		TestEmail = FString::Printf(TEXT("test_%s@example.com"), *GenerateShortId());
@@ -78,7 +57,7 @@ void FNakamaAuthSpec::Define()
 			FNakamaAccountCustom Account;
 			Account.Id = TestCustomId;
 
-			Client->AuthenticateCustom(Account, true, TEXT(""),
+			NakamaApi::AuthenticateCustom(Client, Account, true, TEXT(""),
 				[this, Done](const FNakamaSession& Result)
 				{
 					TestTrue("Session has token", !Result.Token.IsEmpty());
@@ -98,7 +77,7 @@ void FNakamaAuthSpec::Define()
 			FNakamaAccountCustom Account;
 			Account.Id = TEXT("");
 
-			Client->AuthenticateCustom(Account, true, TEXT(""),
+			NakamaApi::AuthenticateCustom(Client, Account, true, TEXT(""),
 				[this, Done](const FNakamaSession& Result)
 				{
 					AddError(TEXT("Expected error but got success"));
@@ -117,7 +96,7 @@ void FNakamaAuthSpec::Define()
 			FNakamaAccountCustom Account;
 			Account.Id = TEXT("abc");  // < 6 chars
 
-			Client->AuthenticateCustom(Account, true, TEXT(""),
+			NakamaApi::AuthenticateCustom(Client, Account, true, TEXT(""),
 				[this, Done](const FNakamaSession& Result)
 				{
 					AddError(TEXT("Expected error but got success"));
@@ -136,7 +115,7 @@ void FNakamaAuthSpec::Define()
 			FNakamaAccountCustom Account;
 			Account.Id = FString::ChrN(150, 'a');  // > 128 chars
 
-			Client->AuthenticateCustom(Account, true, TEXT(""),
+			NakamaApi::AuthenticateCustom(Client, Account, true, TEXT(""),
 				[this, Done](const FNakamaSession& Result)
 				{
 					AddError(TEXT("Expected error but got success"));
@@ -156,7 +135,7 @@ void FNakamaAuthSpec::Define()
 			Account.Id = TestCustomId;
 			FString Username = FString::Printf(TEXT("user_%s"), *GenerateShortId());
 
-			Client->AuthenticateCustom(Account, true, Username,
+			NakamaApi::AuthenticateCustom(Client, Account, true, Username,
 				[this, Done](const FNakamaSession& Result)
 				{
 					TestTrue("Session has token", !Result.Token.IsEmpty());
@@ -178,7 +157,7 @@ void FNakamaAuthSpec::Define()
 			FNakamaAccountDevice Account;
 			Account.Id = TestDeviceId;
 
-			Client->AuthenticateDevice(Account, true, TEXT(""),
+			NakamaApi::AuthenticateDevice(Client, Account, true, TEXT(""),
 				[this, Done](const FNakamaSession& Result)
 				{
 					TestTrue("Session has token", !Result.Token.IsEmpty());
@@ -198,7 +177,7 @@ void FNakamaAuthSpec::Define()
 			FNakamaAccountDevice Account;
 			Account.Id = TEXT("");
 
-			Client->AuthenticateDevice(Account, true, TEXT(""),
+			NakamaApi::AuthenticateDevice(Client, Account, true, TEXT(""),
 				[this, Done](const FNakamaSession& Result)
 				{
 					AddError(TEXT("Expected error but got success"));
@@ -217,7 +196,7 @@ void FNakamaAuthSpec::Define()
 			FNakamaAccountDevice Account;
 			Account.Id = TEXT("short");  // < 10 chars
 
-			Client->AuthenticateDevice(Account, true, TEXT(""),
+			NakamaApi::AuthenticateDevice(Client, Account, true, TEXT(""),
 				[this, Done](const FNakamaSession& Result)
 				{
 					AddError(TEXT("Expected error but got success"));
@@ -240,7 +219,7 @@ void FNakamaAuthSpec::Define()
 			Account.Email = TestEmail;
 			Account.Password = TEXT("password123");
 
-			Client->AuthenticateEmail(Account, true, TEXT(""),
+			NakamaApi::AuthenticateEmail(Client, Account, true, TEXT(""),
 				[this, Done](const FNakamaSession& Result)
 				{
 					TestTrue("Session has token", !Result.Token.IsEmpty());
@@ -260,7 +239,7 @@ void FNakamaAuthSpec::Define()
 			Account.Email = TEXT("notanemail");
 			Account.Password = TEXT("password123");
 
-			Client->AuthenticateEmail(Account, true, TEXT(""),
+			NakamaApi::AuthenticateEmail(Client, Account, true, TEXT(""),
 				[this, Done](const FNakamaSession& Result)
 				{
 					AddError(TEXT("Expected error but got success"));
@@ -280,7 +259,7 @@ void FNakamaAuthSpec::Define()
 			Account.Email = TestEmail;
 			Account.Password = TEXT("short");  // < 8 chars
 
-			Client->AuthenticateEmail(Account, true, TEXT(""),
+			NakamaApi::AuthenticateEmail(Client, Account, true, TEXT(""),
 				[this, Done](const FNakamaSession& Result)
 				{
 					AddError(TEXT("Expected error but got success"));
@@ -303,8 +282,8 @@ void FNakamaAuthSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAccountSpec, "NakamaTest.Account",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	TSharedPtr<FNakamaClient> Client;
-	FNakamaSession Session;
+	FNakamaApiConfigPtr Client;
+	FNakamaSessionPtr Session;
 	FString UserId;
 
 	static const FString ServerKey;
@@ -323,8 +302,8 @@ void FNakamaAccountSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = FNakamaClient::CreateDefaultClient(ServerKey, Host, Port, false, true);
-		Client->SetTimeout(10.0f);
+		Client = MakeShared<FNakamaApiConfig>(FNakamaApiConfig{ServerKey, Host, Port, false, true});
+		Client->Timeout = 10.0f;
 	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
@@ -332,10 +311,10 @@ void FNakamaAccountSpec::Define()
 		FNakamaAccountCustom Account;
 		Account.Id = GenerateId();
 
-		Client->AuthenticateCustom(Account, true, TEXT(""),
+		NakamaApi::AuthenticateCustom(Client, Account, true, TEXT(""),
 			[this, Done](const FNakamaSession& Result)
 			{
-				Session = Result;
+				Session = MakeShared<FNakamaSession>(Result);
 				Done.Execute();
 			},
 			[this, Done](const FNakamaError& Error)
@@ -355,7 +334,7 @@ void FNakamaAccountSpec::Define()
 	{
 		LatentIt("should get account for authenticated user", [this](const FDoneDelegate& Done)
 		{
-			Client->GetAccount(Session,
+			NakamaApi::GetAccount(Client, Session,
 				[this, Done](const FNakamaAccount& Result)
 				{
 					TestTrue("Account has user ID", !Result.User.Id.IsEmpty());
@@ -377,7 +356,7 @@ void FNakamaAccountSpec::Define()
 		{
 			FString NewDisplayName = FString::Printf(TEXT("TestUser_%s"), *GenerateShortId());
 
-			Client->UpdateAccount(Session,
+			NakamaApi::UpdateAccount(Client, Session,
 				TEXT(""),  // username (don't change)
 				NewDisplayName,
 				TEXT(""),  // avatar_url
@@ -387,7 +366,7 @@ void FNakamaAccountSpec::Define()
 				[this, Done, NewDisplayName]()
 				{
 					// Verify update by getting account
-					Client->GetAccount(Session,
+					NakamaApi::GetAccount(Client, Session,
 						[this, Done, NewDisplayName](const FNakamaAccount& Result)
 						{
 							TestEqual("Display name updated", Result.User.DisplayName, NewDisplayName);
@@ -413,8 +392,8 @@ void FNakamaAccountSpec::Define()
 	{
 		LatentIt("should refresh session with valid token", [this](const FDoneDelegate& Done)
 		{
-			Client->SessionRefresh(
-				Session.RefreshToken,
+			NakamaApi::SessionRefresh(Client,
+				Session->RefreshToken,
 				TMap<FString, FString>(),
 				[this, Done](const FNakamaSession& Result)
 				{
@@ -432,7 +411,7 @@ void FNakamaAccountSpec::Define()
 
 		LatentIt("should fail with invalid refresh token", [this](const FDoneDelegate& Done)
 		{
-			Client->SessionRefresh(
+			NakamaApi::SessionRefresh(Client,
 				TEXT("invalid.token.here"),
 				TMap<FString, FString>(),
 				[this, Done](const FNakamaSession& Result)
@@ -457,10 +436,10 @@ void FNakamaAccountSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaFriendsSpec, "NakamaTest.Friends",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	TSharedPtr<FNakamaClient> Client;
-	TSharedPtr<FNakamaClient> FriendClient;
-	FNakamaSession Session;
-	FNakamaSession FriendSession;
+	FNakamaApiConfigPtr Client;
+	FNakamaApiConfigPtr FriendClient;
+	FNakamaSessionPtr Session;
+	FNakamaSessionPtr FriendSession;
 	FString UserId;
 	FString FriendUserId;
 
@@ -479,10 +458,10 @@ void FNakamaFriendsSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = FNakamaClient::CreateDefaultClient(ServerKey, Host, Port, false, true);
-		Client->SetTimeout(10.0f);
-		FriendClient = FNakamaClient::CreateDefaultClient(ServerKey, Host, Port, false, true);
-		FriendClient->SetTimeout(10.0f);
+		Client = MakeShared<FNakamaApiConfig>(FNakamaApiConfig{ServerKey, Host, Port, false, true});
+		Client->Timeout = 10.0f;
+		FriendClient = MakeShared<FNakamaApiConfig>(FNakamaApiConfig{ServerKey, Host, Port, false, true});
+		FriendClient->Timeout = 10.0f;
 	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
@@ -491,12 +470,12 @@ void FNakamaFriendsSpec::Define()
 		FNakamaAccountCustom Account;
 		Account.Id = GenerateId();
 
-		Client->AuthenticateCustom(Account, true, TEXT(""),
+		NakamaApi::AuthenticateCustom(Client, Account, true, TEXT(""),
 			[this, Done](const FNakamaSession& Result)
 			{
-				Session = Result;
+				Session = MakeShared<FNakamaSession>(Result);
 				// Get user ID
-				Client->GetAccount(Session,
+				NakamaApi::GetAccount(Client, Session,
 					[this, Done](const FNakamaAccount& AccResult)
 					{
 						UserId = AccResult.User.Id;
@@ -505,11 +484,11 @@ void FNakamaFriendsSpec::Define()
 						FNakamaAccountCustom FriendAccount;
 						FriendAccount.Id = GenerateId();
 
-						FriendClient->AuthenticateCustom(FriendAccount, true, TEXT(""),
+						NakamaApi::AuthenticateCustom(FriendClient, FriendAccount, true, TEXT(""),
 							[this, Done](const FNakamaSession& FriendSessionResult)
 							{
-								FriendSession = FriendSessionResult;
-								FriendClient->GetAccount(FriendSession,
+								FriendSession = MakeShared<FNakamaSession>(FriendSessionResult);
+								NakamaApi::GetAccount(FriendClient, FriendSession,
 									[this, Done](const FNakamaAccount& FriendAccResult)
 									{
 										FriendUserId = FriendAccResult.User.Id;
@@ -554,7 +533,7 @@ void FNakamaFriendsSpec::Define()
 	{
 		LatentIt("should list friends for authenticated user", [this](const FDoneDelegate& Done)
 		{
-			Client->ListFriends(Session,
+			NakamaApi::ListFriends(Client, Session,
 				100,  // limit
 				0,    // state (all)
 				TEXT(""),  // cursor
@@ -580,7 +559,7 @@ void FNakamaFriendsSpec::Define()
 			TArray<FString> Ids;
 			Ids.Add(FriendUserId);
 
-			Client->AddFriends(Session,
+			NakamaApi::AddFriends(Client, Session,
 				Ids,
 				TArray<FString>(),  // usernames
 				TEXT(""),  // metadata
@@ -605,7 +584,7 @@ void FNakamaFriendsSpec::Define()
 			TArray<FString> Ids;
 			Ids.Add(UserId);
 
-			Client->AddFriends(Session,
+			NakamaApi::AddFriends(Client, Session,
 				Ids,
 				TArray<FString>(),
 				TEXT(""),
@@ -613,7 +592,7 @@ void FNakamaFriendsSpec::Define()
 				{
 					// Server accepts but should not add self to friend list
 					// Verify self is not in friend list
-					Client->ListFriends(Session, 100, 2, TEXT(""),  // state 2 = INVITE_SENT
+					NakamaApi::ListFriends(Client, Session, 100, 2, TEXT(""),  // state 2 = INVITE_SENT
 						[this, Done](const FNakamaFriendList& Result)
 						{
 							bool bFoundSelf = false;
@@ -651,7 +630,7 @@ void FNakamaFriendsSpec::Define()
 			TArray<FString> Ids;
 			Ids.Add(FriendUserId);
 
-			Client->BlockFriends(Session,
+			NakamaApi::BlockFriends(Client, Session,
 				Ids,
 				TArray<FString>(),
 				[this, Done]()
@@ -676,8 +655,8 @@ void FNakamaFriendsSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaGroupsSpec, "NakamaTest.Groups",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	TSharedPtr<FNakamaClient> Client;
-	FNakamaSession Session;
+	FNakamaApiConfigPtr Client;
+	FNakamaSessionPtr Session;
 	FString UserId;
 	FString CreatedGroupId;
 
@@ -697,8 +676,8 @@ void FNakamaGroupsSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = FNakamaClient::CreateDefaultClient(ServerKey, Host, Port, false, true);
-		Client->SetTimeout(10.0f);
+		Client = MakeShared<FNakamaApiConfig>(FNakamaApiConfig{ServerKey, Host, Port, false, true});
+		Client->Timeout = 10.0f;
 		CreatedGroupId.Empty();
 	});
 
@@ -707,11 +686,11 @@ void FNakamaGroupsSpec::Define()
 		FNakamaAccountCustom Account;
 		Account.Id = GenerateId();
 
-		Client->AuthenticateCustom(Account, true, TEXT(""),
+		NakamaApi::AuthenticateCustom(Client, Account, true, TEXT(""),
 			[this, Done](const FNakamaSession& Result)
 			{
-				Session = Result;
-				Client->GetAccount(Session,
+				Session = MakeShared<FNakamaSession>(Result);
+				NakamaApi::GetAccount(Client, Session,
 					[this, Done](const FNakamaAccount& AccResult)
 					{
 						UserId = AccResult.User.Id;
@@ -743,7 +722,7 @@ void FNakamaGroupsSpec::Define()
 		{
 			FString GroupName = FString::Printf(TEXT("TestGroup_%s"), *GenerateShortId());
 
-			Client->CreateGroup(Session,
+			NakamaApi::CreateGroup(Client, Session,
 				GroupName,
 				TEXT("Test description"),
 				TEXT(""),  // avatar_url
@@ -767,7 +746,7 @@ void FNakamaGroupsSpec::Define()
 
 		LatentIt("should fail with empty group name", [this](const FDoneDelegate& Done)
 		{
-			Client->CreateGroup(Session,
+			NakamaApi::CreateGroup(Client, Session,
 				TEXT(""),  // empty name
 				TEXT("Description"),
 				TEXT(""),
@@ -792,7 +771,7 @@ void FNakamaGroupsSpec::Define()
 	{
 		LatentIt("should list groups", [this](const FDoneDelegate& Done)
 		{
-			Client->ListGroups(Session,
+			NakamaApi::ListGroups(Client, Session,
 				TEXT(""),  // name filter
 				TEXT(""),  // cursor
 				100,  // limit
@@ -820,12 +799,12 @@ void FNakamaGroupsSpec::Define()
 			// First create a group
 			FString GroupName = FString::Printf(TEXT("UserGroup_%s"), *GenerateShortId());
 
-			Client->CreateGroup(Session,
+			NakamaApi::CreateGroup(Client, Session,
 				GroupName, TEXT("Test"), TEXT(""), TEXT("en"), true, 100,
 				[this, Done](const FNakamaGroup& Group)
 				{
 					// Now list user's groups
-					Client->ListUserGroups(Session,
+					NakamaApi::ListUserGroups(Client, Session,
 						UserId,
 						100,  // limit
 						0,    // state
@@ -859,8 +838,8 @@ void FNakamaGroupsSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaStorageSpec, "NakamaTest.Storage",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	TSharedPtr<FNakamaClient> Client;
-	FNakamaSession Session;
+	FNakamaApiConfigPtr Client;
+	FNakamaSessionPtr Session;
 	FString UserId;
 
 	static const FString ServerKey;
@@ -879,8 +858,8 @@ void FNakamaStorageSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = FNakamaClient::CreateDefaultClient(ServerKey, Host, Port, false, true);
-		Client->SetTimeout(10.0f);
+		Client = MakeShared<FNakamaApiConfig>(FNakamaApiConfig{ServerKey, Host, Port, false, true});
+		Client->Timeout = 10.0f;
 	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
@@ -888,11 +867,11 @@ void FNakamaStorageSpec::Define()
 		FNakamaAccountCustom Account;
 		Account.Id = GenerateId();
 
-		Client->AuthenticateCustom(Account, true, TEXT(""),
+		NakamaApi::AuthenticateCustom(Client, Account, true, TEXT(""),
 			[this, Done](const FNakamaSession& Result)
 			{
-				Session = Result;
-				Client->GetAccount(Session,
+				Session = MakeShared<FNakamaSession>(Result);
+				NakamaApi::GetAccount(Client, Session,
 					[this, Done](const FNakamaAccount& AccResult)
 					{
 						UserId = AccResult.User.Id;
@@ -931,7 +910,7 @@ void FNakamaStorageSpec::Define()
 			Object.PermissionWrite = 1;
 			Objects.Add(Object);
 
-			Client->WriteStorageObjects(Session,
+			NakamaApi::WriteStorageObjects(Client, Session,
 				Objects,
 				[this, Done](const FNakamaStorageObjectAcks& Result)
 				{
@@ -957,7 +936,7 @@ void FNakamaStorageSpec::Define()
 			Object.PermissionWrite = 1;
 			Objects.Add(Object);
 
-			Client->WriteStorageObjects(Session,
+			NakamaApi::WriteStorageObjects(Client, Session,
 				Objects,
 				[this, Done](const FNakamaStorageObjectAcks& Result)
 				{
@@ -989,7 +968,7 @@ void FNakamaStorageSpec::Define()
 			WriteObject.PermissionWrite = 1;
 			WriteObjects.Add(WriteObject);
 
-			Client->WriteStorageObjects(Session,
+			NakamaApi::WriteStorageObjects(Client, Session,
 				WriteObjects,
 				[this, Done, Key](const FNakamaStorageObjectAcks& WriteResult)
 				{
@@ -1001,7 +980,7 @@ void FNakamaStorageSpec::Define()
 					ReadId.UserId = UserId;
 					ReadIds.Add(ReadId);
 
-					Client->ReadStorageObjects(Session,
+					NakamaApi::ReadStorageObjects(Client, Session,
 						ReadIds,
 						[this, Done](const FNakamaStorageObjects& ReadResult)
 						{
@@ -1041,11 +1020,11 @@ void FNakamaStorageSpec::Define()
 				Objects.Add(Object);
 			}
 
-			Client->WriteStorageObjects(Session,
+			NakamaApi::WriteStorageObjects(Client, Session,
 				Objects,
 				[this, Done](const FNakamaStorageObjectAcks& WriteResult)
 				{
-					Client->ListStorageObjects(Session,
+					NakamaApi::ListStorageObjects(Client, Session,
 						UserId,
 						TEXT("list_collection"),
 						100,
@@ -1079,8 +1058,8 @@ void FNakamaStorageSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaLeaderboardSpec, "NakamaTest.Leaderboard",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	TSharedPtr<FNakamaClient> Client;
-	FNakamaSession Session;
+	FNakamaApiConfigPtr Client;
+	FNakamaSessionPtr Session;
 
 	static const FString ServerKey;
 	static const FString Host;
@@ -1097,8 +1076,8 @@ void FNakamaLeaderboardSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = FNakamaClient::CreateDefaultClient(ServerKey, Host, Port, false, true);
-		Client->SetTimeout(10.0f);
+		Client = MakeShared<FNakamaApiConfig>(FNakamaApiConfig{ServerKey, Host, Port, false, true});
+		Client->Timeout = 10.0f;
 	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
@@ -1106,10 +1085,10 @@ void FNakamaLeaderboardSpec::Define()
 		FNakamaAccountCustom Account;
 		Account.Id = GenerateId();
 
-		Client->AuthenticateCustom(Account, true, TEXT(""),
+		NakamaApi::AuthenticateCustom(Client, Account, true, TEXT(""),
 			[this, Done](const FNakamaSession& Result)
 			{
-				Session = Result;
+				Session = MakeShared<FNakamaSession>(Result);
 				Done.Execute();
 			},
 			[this, Done](const FNakamaError& Error)
@@ -1135,7 +1114,7 @@ void FNakamaLeaderboardSpec::Define()
 			Record.Metadata = TEXT("{}");
 			Record.Operator = 0;
 
-			Client->WriteLeaderboardRecord(Session,
+			NakamaApi::WriteLeaderboardRecord(Client, Session,
 				TEXT(""),  // empty ID
 				Record,
 				[this, Done](const FNakamaLeaderboardRecord& Result)
@@ -1159,7 +1138,7 @@ void FNakamaLeaderboardSpec::Define()
 			Record.Metadata = TEXT("{}");
 			Record.Operator = 0;
 
-			Client->WriteLeaderboardRecord(Session,
+			NakamaApi::WriteLeaderboardRecord(Client, Session,
 				TEXT("nonexistent_leaderboard_12345"),
 				Record,
 				[this, Done](const FNakamaLeaderboardRecord& Result)
@@ -1183,7 +1162,7 @@ void FNakamaLeaderboardSpec::Define()
 			Record.Metadata = TEXT("not valid json {{{");
 			Record.Operator = 0;
 
-			Client->WriteLeaderboardRecord(Session,
+			NakamaApi::WriteLeaderboardRecord(Client, Session,
 				TEXT("test_leaderboard"),
 				Record,
 				[this, Done](const FNakamaLeaderboardRecord& Result)
@@ -1204,7 +1183,7 @@ void FNakamaLeaderboardSpec::Define()
 	{
 		LatentIt("should fail with empty leaderboard ID", [this](const FDoneDelegate& Done)
 		{
-			Client->ListLeaderboardRecords(Session,
+			NakamaApi::ListLeaderboardRecords(Client, Session,
 				TEXT(""),  // empty ID
 				TArray<FString>(),
 				100,
@@ -1225,7 +1204,7 @@ void FNakamaLeaderboardSpec::Define()
 
 		LatentIt("should fail with non-existent leaderboard", [this](const FDoneDelegate& Done)
 		{
-			Client->ListLeaderboardRecords(Session,
+			NakamaApi::ListLeaderboardRecords(Client, Session,
 				TEXT("nonexistent_leaderboard_12345"),
 				TArray<FString>(),
 				100,
@@ -1246,7 +1225,7 @@ void FNakamaLeaderboardSpec::Define()
 
 		LatentIt("should fail with limit too high", [this](const FDoneDelegate& Done)
 		{
-			Client->ListLeaderboardRecords(Session,
+			NakamaApi::ListLeaderboardRecords(Client, Session,
 				TEXT("test_leaderboard"),
 				TArray<FString>(),
 				2000,  // Limit too high
@@ -1270,7 +1249,7 @@ void FNakamaLeaderboardSpec::Define()
 			TArray<FString> OwnerIds;
 			OwnerIds.Add(TEXT("not-a-valid-uuid"));
 
-			Client->ListLeaderboardRecords(Session,
+			NakamaApi::ListLeaderboardRecords(Client, Session,
 				TEXT("test_leaderboard"),
 				OwnerIds,
 				100,
@@ -1295,7 +1274,7 @@ void FNakamaLeaderboardSpec::Define()
 		LatentIt("should fail with empty leaderboard ID", [this](const FDoneDelegate& Done)
 		{
 			FString TestUserId = GenerateId();
-			Client->ListLeaderboardRecordsAroundOwner(Session,
+			NakamaApi::ListLeaderboardRecordsAroundOwner(Client, Session,
 				TEXT(""),  // empty leaderboard ID
 				10,
 				TestUserId,
@@ -1316,7 +1295,7 @@ void FNakamaLeaderboardSpec::Define()
 
 		LatentIt("should fail with empty owner ID", [this](const FDoneDelegate& Done)
 		{
-			Client->ListLeaderboardRecordsAroundOwner(Session,
+			NakamaApi::ListLeaderboardRecordsAroundOwner(Client, Session,
 				TEXT("test_leaderboard"),
 				10,
 				TEXT(""),  // empty owner ID
@@ -1337,7 +1316,7 @@ void FNakamaLeaderboardSpec::Define()
 
 		LatentIt("should fail with invalid owner ID format", [this](const FDoneDelegate& Done)
 		{
-			Client->ListLeaderboardRecordsAroundOwner(Session,
+			NakamaApi::ListLeaderboardRecordsAroundOwner(Client, Session,
 				TEXT("test_leaderboard"),
 				10,
 				TEXT("not-a-valid-uuid"),  // invalid UUID
@@ -1359,7 +1338,7 @@ void FNakamaLeaderboardSpec::Define()
 		LatentIt("should fail with limit too high", [this](const FDoneDelegate& Done)
 		{
 			FString TestUserId = GenerateId();
-			Client->ListLeaderboardRecordsAroundOwner(Session,
+			NakamaApi::ListLeaderboardRecordsAroundOwner(Client, Session,
 				TEXT("test_leaderboard"),
 				200,  // limit too high
 				TestUserId,
@@ -1383,7 +1362,7 @@ void FNakamaLeaderboardSpec::Define()
 	{
 		LatentIt("should fail with empty leaderboard ID", [this](const FDoneDelegate& Done)
 		{
-			Client->DeleteLeaderboardRecord(Session,
+			NakamaApi::DeleteLeaderboardRecord(Client, Session,
 				TEXT(""),  // empty ID
 				[this, Done]()
 				{
@@ -1400,7 +1379,7 @@ void FNakamaLeaderboardSpec::Define()
 
 		LatentIt("should fail with non-existent leaderboard", [this](const FDoneDelegate& Done)
 		{
-			Client->DeleteLeaderboardRecord(Session,
+			NakamaApi::DeleteLeaderboardRecord(Client, Session,
 				TEXT("nonexistent_leaderboard_12345"),
 				[this, Done]()
 				{
@@ -1424,8 +1403,8 @@ void FNakamaLeaderboardSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaMatchesSpec, "NakamaTest.Matches",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	TSharedPtr<FNakamaClient> Client;
-	FNakamaSession Session;
+	FNakamaApiConfigPtr Client;
+	FNakamaSessionPtr Session;
 
 	static const FString ServerKey;
 	static const FString Host;
@@ -1442,8 +1421,8 @@ void FNakamaMatchesSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = FNakamaClient::CreateDefaultClient(ServerKey, Host, Port, false, true);
-		Client->SetTimeout(10.0f);
+		Client = MakeShared<FNakamaApiConfig>(FNakamaApiConfig{ServerKey, Host, Port, false, true});
+		Client->Timeout = 10.0f;
 	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
@@ -1451,10 +1430,10 @@ void FNakamaMatchesSpec::Define()
 		FNakamaAccountCustom Account;
 		Account.Id = GenerateId();
 
-		Client->AuthenticateCustom(Account, true, TEXT(""),
+		NakamaApi::AuthenticateCustom(Client, Account, true, TEXT(""),
 			[this, Done](const FNakamaSession& Result)
 			{
-				Session = Result;
+				Session = MakeShared<FNakamaSession>(Result);
 				Done.Execute();
 			},
 			[this, Done](const FNakamaError& Error)
@@ -1474,7 +1453,7 @@ void FNakamaMatchesSpec::Define()
 	{
 		LatentIt("should list matches", [this](const FDoneDelegate& Done)
 		{
-			Client->ListMatches(Session,
+			NakamaApi::ListMatches(Client, Session,
 				10,  // limit
 				false,  // authoritative
 				TEXT(""),  // label
@@ -1496,7 +1475,7 @@ void FNakamaMatchesSpec::Define()
 
 		LatentIt("should list authoritative matches only", [this](const FDoneDelegate& Done)
 		{
-			Client->ListMatches(Session,
+			NakamaApi::ListMatches(Client, Session,
 				10,
 				true,  // authoritative only
 				TEXT(""),
@@ -1525,8 +1504,8 @@ void FNakamaMatchesSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaNotificationsSpec, "NakamaTest.Notifications",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	TSharedPtr<FNakamaClient> Client;
-	FNakamaSession Session;
+	FNakamaApiConfigPtr Client;
+	FNakamaSessionPtr Session;
 
 	static const FString ServerKey;
 	static const FString Host;
@@ -1543,8 +1522,8 @@ void FNakamaNotificationsSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = FNakamaClient::CreateDefaultClient(ServerKey, Host, Port, false, true);
-		Client->SetTimeout(10.0f);
+		Client = MakeShared<FNakamaApiConfig>(FNakamaApiConfig{ServerKey, Host, Port, false, true});
+		Client->Timeout = 10.0f;
 	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
@@ -1552,10 +1531,10 @@ void FNakamaNotificationsSpec::Define()
 		FNakamaAccountCustom Account;
 		Account.Id = GenerateId();
 
-		Client->AuthenticateCustom(Account, true, TEXT(""),
+		NakamaApi::AuthenticateCustom(Client, Account, true, TEXT(""),
 			[this, Done](const FNakamaSession& Result)
 			{
-				Session = Result;
+				Session = MakeShared<FNakamaSession>(Result);
 				Done.Execute();
 			},
 			[this, Done](const FNakamaError& Error)
@@ -1575,7 +1554,7 @@ void FNakamaNotificationsSpec::Define()
 	{
 		LatentIt("should list notifications", [this](const FDoneDelegate& Done)
 		{
-			Client->ListNotifications(Session,
+			NakamaApi::ListNotifications(Client, Session,
 				100,
 				TEXT(""),
 				[this, Done](const FNakamaNotificationList& Result)
@@ -1600,8 +1579,8 @@ void FNakamaNotificationsSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaLinkSpec, "NakamaTest.Link",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	TSharedPtr<FNakamaClient> Client;
-	FNakamaSession Session;
+	FNakamaApiConfigPtr Client;
+	FNakamaSessionPtr Session;
 	FString DeviceId;
 
 	static const FString ServerKey;
@@ -1620,8 +1599,8 @@ void FNakamaLinkSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = FNakamaClient::CreateDefaultClient(ServerKey, Host, Port, false, true);
-		Client->SetTimeout(10.0f);
+		Client = MakeShared<FNakamaApiConfig>(FNakamaApiConfig{ServerKey, Host, Port, false, true});
+		Client->Timeout = 10.0f;
 		DeviceId = GenerateId();
 	});
 
@@ -1631,10 +1610,10 @@ void FNakamaLinkSpec::Define()
 		FNakamaAccountDevice Account;
 		Account.Id = DeviceId;
 
-		Client->AuthenticateDevice(Account, true, TEXT(""),
+		NakamaApi::AuthenticateDevice(Client, Account, true, TEXT(""),
 			[this, Done](const FNakamaSession& Result)
 			{
-				Session = Result;
+				Session = MakeShared<FNakamaSession>(Result);
 				Done.Execute();
 			},
 			[this, Done](const FNakamaError& Error)
@@ -1654,7 +1633,7 @@ void FNakamaLinkSpec::Define()
 	{
 		LatentIt("should link custom ID", [this](const FDoneDelegate& Done)
 		{
-			Client->LinkCustom(Session,
+			NakamaApi::LinkCustom(Client, Session,
 				GenerateId(),
 				TMap<FString, FString>(),
 				[this, Done]()
@@ -1672,7 +1651,7 @@ void FNakamaLinkSpec::Define()
 
 		LatentIt("should fail with ID too short", [this](const FDoneDelegate& Done)
 		{
-			Client->LinkCustom(Session,
+			NakamaApi::LinkCustom(Client, Session,
 				TEXT("abc"),  // < 6 chars
 				TMap<FString, FString>(),
 				[this, Done]()
@@ -1695,7 +1674,7 @@ void FNakamaLinkSpec::Define()
 		{
 			FString Email = FString::Printf(TEXT("link_%s@example.com"), *GenerateShortId());
 
-			Client->LinkEmail(Session,
+			NakamaApi::LinkEmail(Client, Session,
 				Email,
 				TEXT("password123"),
 				TMap<FString, FString>(),
@@ -1714,7 +1693,7 @@ void FNakamaLinkSpec::Define()
 
 		LatentIt("should fail with invalid email format", [this](const FDoneDelegate& Done)
 		{
-			Client->LinkEmail(Session,
+			NakamaApi::LinkEmail(Client, Session,
 				TEXT("notanemail"),
 				TEXT("password123"),
 				TMap<FString, FString>(),
@@ -1735,7 +1714,7 @@ void FNakamaLinkSpec::Define()
 		{
 			FString Email = FString::Printf(TEXT("short_%s@example.com"), *GenerateShortId());
 
-			Client->LinkEmail(Session,
+			NakamaApi::LinkEmail(Client, Session,
 				Email,
 				TEXT("short"),  // < 8 chars
 				TMap<FString, FString>(),
@@ -1761,8 +1740,8 @@ void FNakamaLinkSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaTournamentSpec, "NakamaTest.Tournament",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	TSharedPtr<FNakamaClient> Client;
-	FNakamaSession Session;
+	FNakamaApiConfigPtr Client;
+	FNakamaSessionPtr Session;
 
 	static const FString ServerKey;
 	static const FString Host;
@@ -1779,8 +1758,8 @@ void FNakamaTournamentSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = FNakamaClient::CreateDefaultClient(ServerKey, Host, Port, false, true);
-		Client->SetTimeout(10.0f);
+		Client = MakeShared<FNakamaApiConfig>(FNakamaApiConfig{ServerKey, Host, Port, false, true});
+		Client->Timeout = 10.0f;
 	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
@@ -1788,10 +1767,10 @@ void FNakamaTournamentSpec::Define()
 		FNakamaAccountCustom Account;
 		Account.Id = GenerateId();
 
-		Client->AuthenticateCustom(Account, true, TEXT(""),
+		NakamaApi::AuthenticateCustom(Client, Account, true, TEXT(""),
 			[this, Done](const FNakamaSession& Result)
 			{
-				Session = Result;
+				Session = MakeShared<FNakamaSession>(Result);
 				Done.Execute();
 			},
 			[this, Done](const FNakamaError& Error)
@@ -1811,7 +1790,7 @@ void FNakamaTournamentSpec::Define()
 	{
 		LatentIt("should list tournaments", [this](const FDoneDelegate& Done)
 		{
-			Client->ListTournaments(Session,
+			NakamaApi::ListTournaments(Client, Session,
 				0,  // category_start
 				127,  // category_end
 				0,  // start_time
@@ -1833,7 +1812,7 @@ void FNakamaTournamentSpec::Define()
 
 		LatentIt("should fail with category end too high", [this](const FDoneDelegate& Done)
 		{
-			Client->ListTournaments(Session,
+			NakamaApi::ListTournaments(Client, Session,
 				0,  // category_start
 				200,  // category_end - too high (>=128)
 				0,  // start_time
@@ -1855,7 +1834,7 @@ void FNakamaTournamentSpec::Define()
 
 		LatentIt("should fail with category end less than start", [this](const FDoneDelegate& Done)
 		{
-			Client->ListTournaments(Session,
+			NakamaApi::ListTournaments(Client, Session,
 				100,  // category_start
 				50,   // category_end - less than start
 				0,  // start_time
@@ -1877,7 +1856,7 @@ void FNakamaTournamentSpec::Define()
 
 		LatentIt("should fail with limit too high", [this](const FDoneDelegate& Done)
 		{
-			Client->ListTournaments(Session,
+			NakamaApi::ListTournaments(Client, Session,
 				0,  // category_start
 				127,  // category_end
 				0,  // start_time
@@ -1899,7 +1878,7 @@ void FNakamaTournamentSpec::Define()
 
 		LatentIt("should list with category filter", [this](const FDoneDelegate& Done)
 		{
-			Client->ListTournaments(Session,
+			NakamaApi::ListTournaments(Client, Session,
 				1,  // category_start
 				5,  // category_end
 				0,  // start_time
@@ -1924,7 +1903,7 @@ void FNakamaTournamentSpec::Define()
 	{
 		LatentIt("should fail with empty tournament ID", [this](const FDoneDelegate& Done)
 		{
-			Client->JoinTournament(Session,
+			NakamaApi::JoinTournament(Client, Session,
 				TEXT(""),  // empty tournament ID
 				[this, Done]()
 				{
@@ -1941,7 +1920,7 @@ void FNakamaTournamentSpec::Define()
 
 		LatentIt("should fail with non-existent tournament", [this](const FDoneDelegate& Done)
 		{
-			Client->JoinTournament(Session,
+			NakamaApi::JoinTournament(Client, Session,
 				TEXT("nonexistent_tournament_12345"),
 				[this, Done]()
 				{
@@ -1961,7 +1940,7 @@ void FNakamaTournamentSpec::Define()
 	{
 		LatentIt("should fail with empty tournament ID", [this](const FDoneDelegate& Done)
 		{
-			Client->ListTournamentRecords(Session,
+			NakamaApi::ListTournamentRecords(Client, Session,
 				TEXT(""),  // empty tournament ID
 				TArray<FString>(),
 				100,
@@ -1982,7 +1961,7 @@ void FNakamaTournamentSpec::Define()
 
 		LatentIt("should fail with non-existent tournament", [this](const FDoneDelegate& Done)
 		{
-			Client->ListTournamentRecords(Session,
+			NakamaApi::ListTournamentRecords(Client, Session,
 				TEXT("nonexistent_tournament_12345"),
 				TArray<FString>(),
 				100,
@@ -2003,7 +1982,7 @@ void FNakamaTournamentSpec::Define()
 
 		LatentIt("should fail with limit too high", [this](const FDoneDelegate& Done)
 		{
-			Client->ListTournamentRecords(Session,
+			NakamaApi::ListTournamentRecords(Client, Session,
 				TEXT("test_tournament"),
 				TArray<FString>(),
 				2000,  // limit too high
@@ -2028,7 +2007,7 @@ void FNakamaTournamentSpec::Define()
 		LatentIt("should fail with empty tournament ID", [this](const FDoneDelegate& Done)
 		{
 			FString TestUserId = GenerateId();
-			Client->ListTournamentRecordsAroundOwner(Session,
+			NakamaApi::ListTournamentRecordsAroundOwner(Client, Session,
 				TEXT(""),  // empty tournament ID
 				10,
 				TestUserId,
@@ -2049,7 +2028,7 @@ void FNakamaTournamentSpec::Define()
 
 		LatentIt("should fail with empty owner ID", [this](const FDoneDelegate& Done)
 		{
-			Client->ListTournamentRecordsAroundOwner(Session,
+			NakamaApi::ListTournamentRecordsAroundOwner(Client, Session,
 				TEXT("test_tournament"),
 				10,
 				TEXT(""),  // empty owner ID
@@ -2070,7 +2049,7 @@ void FNakamaTournamentSpec::Define()
 
 		LatentIt("should fail with invalid owner ID format", [this](const FDoneDelegate& Done)
 		{
-			Client->ListTournamentRecordsAroundOwner(Session,
+			NakamaApi::ListTournamentRecordsAroundOwner(Client, Session,
 				TEXT("test_tournament"),
 				10,
 				TEXT("not-a-valid-uuid"),
@@ -2100,7 +2079,7 @@ void FNakamaTournamentSpec::Define()
 			Record.Metadata = TEXT("{}");
 			Record.Operator = 0;
 
-			Client->WriteTournamentRecord(Session,
+			NakamaApi::WriteTournamentRecord(Client, Session,
 				TEXT(""),  // empty tournament ID
 				Record,
 				[this, Done](const FNakamaLeaderboardRecord& Result)
@@ -2124,7 +2103,7 @@ void FNakamaTournamentSpec::Define()
 			Record.Metadata = TEXT("{}");
 			Record.Operator = 0;
 
-			Client->WriteTournamentRecord(Session,
+			NakamaApi::WriteTournamentRecord(Client, Session,
 				TEXT("nonexistent_tournament_12345"),
 				Record,
 				[this, Done](const FNakamaLeaderboardRecord& Result)
@@ -2145,7 +2124,7 @@ void FNakamaTournamentSpec::Define()
 	{
 		LatentIt("should fail with empty tournament ID", [this](const FDoneDelegate& Done)
 		{
-			Client->DeleteTournamentRecord(Session,
+			NakamaApi::DeleteTournamentRecord(Client, Session,
 				TEXT(""),  // empty tournament ID
 				[this, Done]()
 				{
@@ -2162,7 +2141,7 @@ void FNakamaTournamentSpec::Define()
 
 		LatentIt("should fail with non-existent tournament", [this](const FDoneDelegate& Done)
 		{
-			Client->DeleteTournamentRecord(Session,
+			NakamaApi::DeleteTournamentRecord(Client, Session,
 				TEXT("nonexistent_tournament_12345"),
 				[this, Done]()
 				{
@@ -2187,8 +2166,8 @@ void FNakamaTournamentSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaUsersSpec, "NakamaTest.Users",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	TSharedPtr<FNakamaClient> Client;
-	FNakamaSession Session;
+	FNakamaApiConfigPtr Client;
+	FNakamaSessionPtr Session;
 	FString UserId;
 	FString Username;
 
@@ -2208,8 +2187,8 @@ void FNakamaUsersSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = FNakamaClient::CreateDefaultClient(ServerKey, Host, Port, false, true);
-		Client->SetTimeout(10.0f);
+		Client = MakeShared<FNakamaApiConfig>(FNakamaApiConfig{ServerKey, Host, Port, false, true});
+		Client->Timeout = 10.0f;
 	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
@@ -2218,11 +2197,11 @@ void FNakamaUsersSpec::Define()
 		FNakamaAccountCustom Account;
 		Account.Id = GenerateId();
 
-		Client->AuthenticateCustom(Account, true, Username,
+		NakamaApi::AuthenticateCustom(Client, Account, true, Username,
 			[this, Done](const FNakamaSession& Result)
 			{
-				Session = Result;
-				Client->GetAccount(Session,
+				Session = MakeShared<FNakamaSession>(Result);
+				NakamaApi::GetAccount(Client, Session,
 					[this, Done](const FNakamaAccount& AccResult)
 					{
 						UserId = AccResult.User.Id;
@@ -2255,7 +2234,7 @@ void FNakamaUsersSpec::Define()
 			TArray<FString> Ids;
 			Ids.Add(UserId);
 
-			Client->GetUsers(Session,
+			NakamaApi::GetUsers(Client, Session,
 				Ids,
 				TArray<FString>(),  // usernames
 				TArray<FString>(),  // facebook_ids
@@ -2281,7 +2260,7 @@ void FNakamaUsersSpec::Define()
 			TArray<FString> Usernames;
 			Usernames.Add(Username);
 
-			Client->GetUsers(Session,
+			NakamaApi::GetUsers(Client, Session,
 				TArray<FString>(),  // ids
 				Usernames,
 				TArray<FString>(),  // facebook_ids
@@ -2304,7 +2283,7 @@ void FNakamaUsersSpec::Define()
 			// Use a valid UUID format but one that doesn't exist (not the zero UUID which is reserved)
 			Ids.Add(TEXT("ffffffff-ffff-ffff-ffff-ffffffffffff"));
 
-			Client->GetUsers(Session,
+			NakamaApi::GetUsers(Client, Session,
 				Ids,
 				TArray<FString>(),
 				TArray<FString>(),
@@ -2330,8 +2309,8 @@ void FNakamaUsersSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaSessionSpec, "NakamaTest.Session",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	TSharedPtr<FNakamaClient> Client;
-	FNakamaSession Session;
+	FNakamaApiConfigPtr Client;
+	FNakamaSessionPtr Session;
 
 	static const FString ServerKey;
 	static const FString Host;
@@ -2348,8 +2327,8 @@ void FNakamaSessionSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = FNakamaClient::CreateDefaultClient(ServerKey, Host, Port, false, true);
-		Client->SetTimeout(10.0f);
+		Client = MakeShared<FNakamaApiConfig>(FNakamaApiConfig{ServerKey, Host, Port, false, true});
+		Client->Timeout = 10.0f;
 	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
@@ -2357,10 +2336,10 @@ void FNakamaSessionSpec::Define()
 		FNakamaAccountCustom Account;
 		Account.Id = GenerateId();
 
-		Client->AuthenticateCustom(Account, true, TEXT(""),
+		NakamaApi::AuthenticateCustom(Client, Account, true, TEXT(""),
 			[this, Done](const FNakamaSession& Result)
 			{
-				Session = Result;
+				Session = MakeShared<FNakamaSession>(Result);
 				Done.Execute();
 			},
 			[this, Done](const FNakamaError& Error)
@@ -2380,9 +2359,9 @@ void FNakamaSessionSpec::Define()
 	{
 		LatentIt("should logout successfully", [this](const FDoneDelegate& Done)
 		{
-			Client->SessionLogout(Session,
-				Session.Token,
-				Session.RefreshToken,
+			NakamaApi::SessionLogout(Client, Session,
+				Session->Token,
+				Session->RefreshToken,
 				[this, Done]()
 				{
 					TestTrue("Logout succeeded", true);
@@ -2405,8 +2384,8 @@ void FNakamaSessionSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaDeleteStorageSpec, "NakamaTest.DeleteStorage",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	TSharedPtr<FNakamaClient> Client;
-	FNakamaSession Session;
+	FNakamaApiConfigPtr Client;
+	FNakamaSessionPtr Session;
 	FString UserId;
 
 	static const FString ServerKey;
@@ -2425,8 +2404,8 @@ void FNakamaDeleteStorageSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = FNakamaClient::CreateDefaultClient(ServerKey, Host, Port, false, true);
-		Client->SetTimeout(10.0f);
+		Client = MakeShared<FNakamaApiConfig>(FNakamaApiConfig{ServerKey, Host, Port, false, true});
+		Client->Timeout = 10.0f;
 	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
@@ -2434,11 +2413,11 @@ void FNakamaDeleteStorageSpec::Define()
 		FNakamaAccountCustom Account;
 		Account.Id = GenerateId();
 
-		Client->AuthenticateCustom(Account, true, TEXT(""),
+		NakamaApi::AuthenticateCustom(Client, Account, true, TEXT(""),
 			[this, Done](const FNakamaSession& Result)
 			{
-				Session = Result;
-				Client->GetAccount(Session,
+				Session = MakeShared<FNakamaSession>(Result);
+				NakamaApi::GetAccount(Client, Session,
 					[this, Done](const FNakamaAccount& AccResult)
 					{
 						UserId = AccResult.User.Id;
@@ -2480,7 +2459,7 @@ void FNakamaDeleteStorageSpec::Define()
 			WriteObject.PermissionWrite = 1;
 			WriteObjects.Add(WriteObject);
 
-			Client->WriteStorageObjects(Session,
+			NakamaApi::WriteStorageObjects(Client, Session,
 				WriteObjects,
 				[this, Done, Key](const FNakamaStorageObjectAcks& WriteResult)
 				{
@@ -2491,7 +2470,7 @@ void FNakamaDeleteStorageSpec::Define()
 					DeleteId.Key = Key;
 					DeleteIds.Add(DeleteId);
 
-					Client->DeleteStorageObjects(Session,
+					NakamaApi::DeleteStorageObjects(Client, Session,
 						DeleteIds,
 						[this, Done]()
 						{
@@ -2521,7 +2500,7 @@ void FNakamaDeleteStorageSpec::Define()
 			DeleteId.Key = TEXT("nonexistent_key");
 			DeleteIds.Add(DeleteId);
 
-			Client->DeleteStorageObjects(Session,
+			NakamaApi::DeleteStorageObjects(Client, Session,
 				DeleteIds,
 				[this, Done]()
 				{
@@ -2546,10 +2525,10 @@ void FNakamaDeleteStorageSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaDeleteFriendsSpec, "NakamaTest.DeleteFriends",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	TSharedPtr<FNakamaClient> Client;
-	TSharedPtr<FNakamaClient> FriendClient;
-	FNakamaSession Session;
-	FNakamaSession FriendSession;
+	FNakamaApiConfigPtr Client;
+	FNakamaApiConfigPtr FriendClient;
+	FNakamaSessionPtr Session;
+	FNakamaSessionPtr FriendSession;
 	FString UserId;
 	FString FriendUserId;
 
@@ -2568,10 +2547,10 @@ void FNakamaDeleteFriendsSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = FNakamaClient::CreateDefaultClient(ServerKey, Host, Port, false, true);
-		Client->SetTimeout(10.0f);
-		FriendClient = FNakamaClient::CreateDefaultClient(ServerKey, Host, Port, false, true);
-		FriendClient->SetTimeout(10.0f);
+		Client = MakeShared<FNakamaApiConfig>(FNakamaApiConfig{ServerKey, Host, Port, false, true});
+		Client->Timeout = 10.0f;
+		FriendClient = MakeShared<FNakamaApiConfig>(FNakamaApiConfig{ServerKey, Host, Port, false, true});
+		FriendClient->Timeout = 10.0f;
 	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
@@ -2579,11 +2558,11 @@ void FNakamaDeleteFriendsSpec::Define()
 		FNakamaAccountCustom Account;
 		Account.Id = GenerateId();
 
-		Client->AuthenticateCustom(Account, true, TEXT(""),
+		NakamaApi::AuthenticateCustom(Client, Account, true, TEXT(""),
 			[this, Done](const FNakamaSession& Result)
 			{
-				Session = Result;
-				Client->GetAccount(Session,
+				Session = MakeShared<FNakamaSession>(Result);
+				NakamaApi::GetAccount(Client, Session,
 					[this, Done](const FNakamaAccount& AccResult)
 					{
 						UserId = AccResult.User.Id;
@@ -2592,11 +2571,11 @@ void FNakamaDeleteFriendsSpec::Define()
 						FNakamaAccountCustom FriendAccount;
 						FriendAccount.Id = GenerateId();
 
-						FriendClient->AuthenticateCustom(FriendAccount, true, TEXT(""),
+						NakamaApi::AuthenticateCustom(FriendClient, FriendAccount, true, TEXT(""),
 							[this, Done](const FNakamaSession& FriendSessionResult)
 							{
-								FriendSession = FriendSessionResult;
-								FriendClient->GetAccount(FriendSession,
+								FriendSession = MakeShared<FNakamaSession>(FriendSessionResult);
+								NakamaApi::GetAccount(FriendClient, FriendSession,
 									[this, Done](const FNakamaAccount& FriendAccResult)
 									{
 										FriendUserId = FriendAccResult.User.Id;
@@ -2645,7 +2624,7 @@ void FNakamaDeleteFriendsSpec::Define()
 			TArray<FString> AddIds;
 			AddIds.Add(FriendUserId);
 
-			Client->AddFriends(Session,
+			NakamaApi::AddFriends(Client, Session,
 				AddIds,
 				TArray<FString>(),
 				TEXT(""),
@@ -2655,7 +2634,7 @@ void FNakamaDeleteFriendsSpec::Define()
 					TArray<FString> DeleteIds;
 					DeleteIds.Add(FriendUserId);
 
-					Client->DeleteFriends(Session,
+					NakamaApi::DeleteFriends(Client, Session,
 						DeleteIds,
 						TArray<FString>(),
 						[this, Done]()
@@ -2684,7 +2663,7 @@ void FNakamaDeleteFriendsSpec::Define()
 			TArray<FString> DeleteIds;
 			DeleteIds.Add(FriendUserId);
 
-			Client->DeleteFriends(Session,
+			NakamaApi::DeleteFriends(Client, Session,
 				DeleteIds,
 				TArray<FString>(),
 				[this, Done]()
@@ -2709,10 +2688,10 @@ void FNakamaDeleteFriendsSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaGroupOpsSpec, "NakamaTest.GroupOps",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	TSharedPtr<FNakamaClient> Client;
-	TSharedPtr<FNakamaClient> MemberClient;
-	FNakamaSession Session;
-	FNakamaSession MemberSession;
+	FNakamaApiConfigPtr Client;
+	FNakamaApiConfigPtr MemberClient;
+	FNakamaSessionPtr Session;
+	FNakamaSessionPtr MemberSession;
 	FString UserId;
 	FString MemberUserId;
 	FString GroupId;
@@ -2733,10 +2712,10 @@ void FNakamaGroupOpsSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = FNakamaClient::CreateDefaultClient(ServerKey, Host, Port, false, true);
-		Client->SetTimeout(10.0f);
-		MemberClient = FNakamaClient::CreateDefaultClient(ServerKey, Host, Port, false, true);
-		MemberClient->SetTimeout(10.0f);
+		Client = MakeShared<FNakamaApiConfig>(FNakamaApiConfig{ServerKey, Host, Port, false, true});
+		Client->Timeout = 10.0f;
+		MemberClient = MakeShared<FNakamaApiConfig>(FNakamaApiConfig{ServerKey, Host, Port, false, true});
+		MemberClient->Timeout = 10.0f;
 		GroupId.Empty();
 	});
 
@@ -2745,11 +2724,11 @@ void FNakamaGroupOpsSpec::Define()
 		FNakamaAccountCustom Account;
 		Account.Id = GenerateId();
 
-		Client->AuthenticateCustom(Account, true, TEXT(""),
+		NakamaApi::AuthenticateCustom(Client, Account, true, TEXT(""),
 			[this, Done](const FNakamaSession& Result)
 			{
-				Session = Result;
-				Client->GetAccount(Session,
+				Session = MakeShared<FNakamaSession>(Result);
+				NakamaApi::GetAccount(Client, Session,
 					[this, Done](const FNakamaAccount& AccResult)
 					{
 						UserId = AccResult.User.Id;
@@ -2758,11 +2737,11 @@ void FNakamaGroupOpsSpec::Define()
 						FNakamaAccountCustom MemberAccount;
 						MemberAccount.Id = GenerateId();
 
-						MemberClient->AuthenticateCustom(MemberAccount, true, TEXT(""),
+						NakamaApi::AuthenticateCustom(MemberClient, MemberAccount, true, TEXT(""),
 							[this, Done](const FNakamaSession& MemberSessionResult)
 							{
-								MemberSession = MemberSessionResult;
-								MemberClient->GetAccount(MemberSession,
+								MemberSession = MakeShared<FNakamaSession>(MemberSessionResult);
+								NakamaApi::GetAccount(MemberClient, MemberSession,
 									[this, Done](const FNakamaAccount& MemberAccResult)
 									{
 										MemberUserId = MemberAccResult.User.Id;
@@ -2810,14 +2789,14 @@ void FNakamaGroupOpsSpec::Define()
 			// Create an open group first
 			FString GroupName = FString::Printf(TEXT("JoinGroup_%s"), *GenerateShortId());
 
-			Client->CreateGroup(Session,
+			NakamaApi::CreateGroup(Client, Session,
 				GroupName, TEXT("Test"), TEXT(""), TEXT("en"), true, 100,
 				[this, Done](const FNakamaGroup& Group)
 				{
 					GroupId = Group.Id;
 
 					// Now have member join the group
-					MemberClient->JoinGroup(MemberSession,
+					NakamaApi::JoinGroup(MemberClient, MemberSession,
 						GroupId,
 						[this, Done]()
 						{
@@ -2841,7 +2820,7 @@ void FNakamaGroupOpsSpec::Define()
 
 		LatentIt("should fail to join non-existent group", [this](const FDoneDelegate& Done)
 		{
-			Client->JoinGroup(Session,
+			NakamaApi::JoinGroup(Client, Session,
 				TEXT("00000000-0000-0000-0000-000000000000"),
 				[this, Done]()
 				{
@@ -2864,19 +2843,19 @@ void FNakamaGroupOpsSpec::Define()
 			// Create a group, have member join, then leave
 			FString GroupName = FString::Printf(TEXT("LeaveGroup_%s"), *GenerateShortId());
 
-			Client->CreateGroup(Session,
+			NakamaApi::CreateGroup(Client, Session,
 				GroupName, TEXT("Test"), TEXT(""), TEXT("en"), true, 100,
 				[this, Done](const FNakamaGroup& Group)
 				{
 					GroupId = Group.Id;
 
 					// Member joins
-					MemberClient->JoinGroup(MemberSession,
+					NakamaApi::JoinGroup(MemberClient, MemberSession,
 						GroupId,
 						[this, Done]()
 						{
 							// Member leaves
-							MemberClient->LeaveGroup(MemberSession,
+							NakamaApi::LeaveGroup(MemberClient, MemberSession,
 								GroupId,
 								[this, Done]()
 								{
@@ -2913,11 +2892,11 @@ void FNakamaGroupOpsSpec::Define()
 			FString GroupName = FString::Printf(TEXT("UpdateGroup_%s"), *GenerateShortId());
 			FString NewGroupName = FString::Printf(TEXT("Updated_%s"), *GenerateShortId());
 
-			Client->CreateGroup(Session,
+			NakamaApi::CreateGroup(Client, Session,
 				GroupName, TEXT("Test"), TEXT(""), TEXT("en"), true, 100,
 				[this, Done, NewGroupName](const FNakamaGroup& Group)
 				{
-					Client->UpdateGroup(Session,
+					NakamaApi::UpdateGroup(Client, Session,
 						Group.Id,
 						NewGroupName,
 						TEXT("Updated description"),
@@ -2951,11 +2930,11 @@ void FNakamaGroupOpsSpec::Define()
 		{
 			FString GroupName = FString::Printf(TEXT("DeleteGroup_%s"), *GenerateShortId());
 
-			Client->CreateGroup(Session,
+			NakamaApi::CreateGroup(Client, Session,
 				GroupName, TEXT("Test"), TEXT(""), TEXT("en"), true, 100,
 				[this, Done](const FNakamaGroup& Group)
 				{
-					Client->DeleteGroup(Session,
+					NakamaApi::DeleteGroup(Client, Session,
 						Group.Id,
 						[this, Done]()
 						{
@@ -2984,11 +2963,11 @@ void FNakamaGroupOpsSpec::Define()
 		{
 			FString GroupName = FString::Printf(TEXT("ListUsers_%s"), *GenerateShortId());
 
-			Client->CreateGroup(Session,
+			NakamaApi::CreateGroup(Client, Session,
 				GroupName, TEXT("Test"), TEXT(""), TEXT("en"), true, 100,
 				[this, Done](const FNakamaGroup& Group)
 				{
-					Client->ListGroupUsers(Session,
+					NakamaApi::ListGroupUsers(Client, Session,
 						Group.Id,
 						100,  // limit
 						0,    // state
@@ -3022,8 +3001,8 @@ void FNakamaGroupOpsSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaRpcSpec, "NakamaTest.RPC",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	TSharedPtr<FNakamaClient> Client;
-	FNakamaSession Session;
+	FNakamaApiConfigPtr Client;
+	FNakamaSessionPtr Session;
 
 	static const FString ServerKey;
 	static const FString Host;
@@ -3040,8 +3019,8 @@ void FNakamaRpcSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = FNakamaClient::CreateDefaultClient(ServerKey, Host, Port, false, true);
-		Client->SetTimeout(10.0f);
+		Client = MakeShared<FNakamaApiConfig>(FNakamaApiConfig{ServerKey, Host, Port, false, true});
+		Client->Timeout = 10.0f;
 	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
@@ -3049,10 +3028,10 @@ void FNakamaRpcSpec::Define()
 		FNakamaAccountCustom Account;
 		Account.Id = GenerateId();
 
-		Client->AuthenticateCustom(Account, true, TEXT(""),
+		NakamaApi::AuthenticateCustom(Client, Account, true, TEXT(""),
 			[this, Done](const FNakamaSession& Result)
 			{
-				Session = Result;
+				Session = MakeShared<FNakamaSession>(Result);
 				Done.Execute();
 			},
 			[this, Done](const FNakamaError& Error)
@@ -3072,7 +3051,7 @@ void FNakamaRpcSpec::Define()
 	{
 		LatentIt("should fail with empty RPC ID", [this](const FDoneDelegate& Done)
 		{
-			Client->RpcFunc(Session,
+			NakamaApi::RpcFunc(Client, Session,
 				TEXT(""),  // empty ID
 				nullptr,
 				TEXT(""),  // empty http_key (using session auth)
@@ -3091,7 +3070,7 @@ void FNakamaRpcSpec::Define()
 
 		LatentIt("should fail with non-existent RPC", [this](const FDoneDelegate& Done)
 		{
-			Client->RpcFunc(Session,
+			NakamaApi::RpcFunc(Client, Session,
 				TEXT("nonexistent_rpc_function"),
 				nullptr,
 				TEXT(""),  // empty http_key (using session auth)
@@ -3117,8 +3096,8 @@ void FNakamaRpcSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaImportSpec, "NakamaTest.Import",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	TSharedPtr<FNakamaClient> Client;
-	FNakamaSession Session;
+	FNakamaApiConfigPtr Client;
+	FNakamaSessionPtr Session;
 
 	static const FString ServerKey;
 	static const FString Host;
@@ -3136,8 +3115,8 @@ void FNakamaImportSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = FNakamaClient::CreateDefaultClient(ServerKey, Host, Port, false, true);
-		Client->SetTimeout(10.0f);
+		Client = MakeShared<FNakamaApiConfig>(FNakamaApiConfig{ServerKey, Host, Port, false, true});
+		Client->Timeout = 10.0f;
 	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
@@ -3145,10 +3124,10 @@ void FNakamaImportSpec::Define()
 		FNakamaAccountCustom Account;
 		Account.Id = GenerateId();
 
-		Client->AuthenticateCustom(Account, true, TEXT(""),
+		NakamaApi::AuthenticateCustom(Client, Account, true, TEXT(""),
 			[this, Done](const FNakamaSession& Result)
 			{
-				Session = Result;
+				Session = MakeShared<FNakamaSession>(Result);
 				Done.Execute();
 			},
 			[this, Done](const FNakamaError& Error)
@@ -3171,7 +3150,7 @@ void FNakamaImportSpec::Define()
 			FNakamaAccountSteam Account;
 			Account.Token = TEXT("");
 
-			Client->ImportSteamFriends(Session,
+			NakamaApi::ImportSteamFriends(Client, Session,
 				Account,
 				false,
 				[this, Done]()
@@ -3195,7 +3174,7 @@ void FNakamaImportSpec::Define()
 			FNakamaAccountFacebook Account;
 			Account.Token = TEXT("");
 
-			Client->ImportFacebookFriends(Session,
+			NakamaApi::ImportFacebookFriends(Client, Session,
 				Account,
 				false,
 				[this, Done]()
@@ -3220,7 +3199,7 @@ void FNakamaImportSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAuthExtendedSpec, "NakamaTest.AuthExt",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	TSharedPtr<FNakamaClient> Client;
+	FNakamaApiConfigPtr Client;
 
 	static const FString ServerKey;
 	static const FString Host;
@@ -3238,8 +3217,8 @@ void FNakamaAuthExtendedSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = FNakamaClient::CreateDefaultClient(ServerKey, Host, Port, false, true);
-		Client->SetTimeout(10.0f);
+		Client = MakeShared<FNakamaApiConfig>(FNakamaApiConfig{ServerKey, Host, Port, false, true});
+		Client->Timeout = 10.0f;
 	});
 
 	AfterEach([this]()
@@ -3254,7 +3233,7 @@ void FNakamaAuthExtendedSpec::Define()
 			FNakamaAccountCustom Account;
 			Account.Id = GenerateId();  // New unique ID
 
-			Client->AuthenticateCustom(Account, false, TEXT(""),  // create=false
+			NakamaApi::AuthenticateCustom(Client, Account, false, TEXT(""),  // create=false
 				[this, Done](const FNakamaSession& Result)
 				{
 					AddError(TEXT("Expected error but got success"));
@@ -3274,11 +3253,11 @@ void FNakamaAuthExtendedSpec::Define()
 			Account.Id = GenerateId();
 
 			// First create the user
-			Client->AuthenticateCustom(Account, true, TEXT(""),
+			NakamaApi::AuthenticateCustom(Client, Account, true, TEXT(""),
 				[this, Done, Account](const FNakamaSession& FirstSession)
 				{
 					// Now authenticate again with create=false
-					Client->AuthenticateCustom(Account, false, TEXT(""),
+					NakamaApi::AuthenticateCustom(Client, Account, false, TEXT(""),
 						[this, Done](const FNakamaSession& Result)
 						{
 							TestTrue("Session has token", !Result.Token.IsEmpty());
@@ -3307,7 +3286,7 @@ void FNakamaAuthExtendedSpec::Define()
 			FNakamaAccountDevice Account;
 			Account.Id = FString::ChrN(150, 'a');  // > 128 chars
 
-			Client->AuthenticateDevice(Account, true, TEXT(""),
+			NakamaApi::AuthenticateDevice(Client, Account, true, TEXT(""),
 				[this, Done](const FNakamaSession& Result)
 				{
 					AddError(TEXT("Expected error but got success"));
@@ -3329,7 +3308,7 @@ void FNakamaAuthExtendedSpec::Define()
 			FNakamaAccountFacebook Account;
 			Account.Token = TEXT("");
 
-			Client->AuthenticateFacebook(Account, true, TEXT(""), false,
+			NakamaApi::AuthenticateFacebook(Client, Account, true, TEXT(""), false,
 				[this, Done](const FNakamaSession& Result)
 				{
 					AddError(TEXT("Expected error but got success"));
@@ -3351,7 +3330,7 @@ void FNakamaAuthExtendedSpec::Define()
 			FNakamaAccountGoogle Account;
 			Account.Token = TEXT("");
 
-			Client->AuthenticateGoogle(Account, true, TEXT(""),
+			NakamaApi::AuthenticateGoogle(Client, Account, true, TEXT(""),
 				[this, Done](const FNakamaSession& Result)
 				{
 					AddError(TEXT("Expected error but got success"));
@@ -3373,7 +3352,7 @@ void FNakamaAuthExtendedSpec::Define()
 			FNakamaAccountSteam Account;
 			Account.Token = TEXT("");
 
-			Client->AuthenticateSteam(Account, true, TEXT(""), false,
+			NakamaApi::AuthenticateSteam(Client, Account, true, TEXT(""), false,
 				[this, Done](const FNakamaSession& Result)
 				{
 					AddError(TEXT("Expected error but got success"));
@@ -3395,7 +3374,7 @@ void FNakamaAuthExtendedSpec::Define()
 			FNakamaAccountApple Account;
 			Account.Token = TEXT("");
 
-			Client->AuthenticateApple(Account, true, TEXT(""),
+			NakamaApi::AuthenticateApple(Client, Account, true, TEXT(""),
 				[this, Done](const FNakamaSession& Result)
 				{
 					AddError(TEXT("Expected error but got success"));
@@ -3418,8 +3397,8 @@ void FNakamaAuthExtendedSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAccountExtendedSpec, "NakamaTest.AccountExt",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	TSharedPtr<FNakamaClient> Client;
-	FNakamaSession Session;
+	FNakamaApiConfigPtr Client;
+	FNakamaSessionPtr Session;
 	FString UserId;
 
 	static const FString ServerKey;
@@ -3438,8 +3417,8 @@ void FNakamaAccountExtendedSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = FNakamaClient::CreateDefaultClient(ServerKey, Host, Port, false, true);
-		Client->SetTimeout(10.0f);
+		Client = MakeShared<FNakamaApiConfig>(FNakamaApiConfig{ServerKey, Host, Port, false, true});
+		Client->Timeout = 10.0f;
 	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
@@ -3447,11 +3426,11 @@ void FNakamaAccountExtendedSpec::Define()
 		FNakamaAccountCustom Account;
 		Account.Id = GenerateId();
 
-		Client->AuthenticateCustom(Account, true, TEXT(""),
+		NakamaApi::AuthenticateCustom(Client, Account, true, TEXT(""),
 			[this, Done](const FNakamaSession& Result)
 			{
-				Session = Result;
-				Client->GetAccount(Session,
+				Session = MakeShared<FNakamaSession>(Result);
+				NakamaApi::GetAccount(Client, Session,
 					[this, Done](const FNakamaAccount& AccResult)
 					{
 						UserId = AccResult.User.Id;
@@ -3484,7 +3463,7 @@ void FNakamaAccountExtendedSpec::Define()
 			FString NewDisplayName = FString::Printf(TEXT("Display_%s"), *GenerateShortId());
 			FString NewAvatarUrl = TEXT("https://example.com/avatar.png");
 
-			Client->UpdateAccount(Session,
+			NakamaApi::UpdateAccount(Client, Session,
 				TEXT(""),  // username (don't change)
 				NewDisplayName,
 				NewAvatarUrl,
@@ -3506,7 +3485,7 @@ void FNakamaAccountExtendedSpec::Define()
 
 		LatentIt("should update lang tag", [this](const FDoneDelegate& Done)
 		{
-			Client->UpdateAccount(Session,
+			NakamaApi::UpdateAccount(Client, Session,
 				TEXT(""),
 				TEXT(""),
 				TEXT(""),
@@ -3515,7 +3494,7 @@ void FNakamaAccountExtendedSpec::Define()
 				TEXT(""),
 				[this, Done]()
 				{
-					Client->GetAccount(Session,
+					NakamaApi::GetAccount(Client, Session,
 						[this, Done](const FNakamaAccount& Result)
 						{
 							TestEqual("Lang tag updated", Result.User.LangTag, TEXT("fr"));
@@ -3538,7 +3517,7 @@ void FNakamaAccountExtendedSpec::Define()
 
 		LatentIt("should update location", [this](const FDoneDelegate& Done)
 		{
-			Client->UpdateAccount(Session,
+			NakamaApi::UpdateAccount(Client, Session,
 				TEXT(""),
 				TEXT(""),
 				TEXT(""),
@@ -3547,7 +3526,7 @@ void FNakamaAccountExtendedSpec::Define()
 				TEXT(""),
 				[this, Done]()
 				{
-					Client->GetAccount(Session,
+					NakamaApi::GetAccount(Client, Session,
 						[this, Done](const FNakamaAccount& Result)
 						{
 							TestEqual("Location updated", Result.User.Location, TEXT("London"));
@@ -3570,7 +3549,7 @@ void FNakamaAccountExtendedSpec::Define()
 
 		LatentIt("should update timezone", [this](const FDoneDelegate& Done)
 		{
-			Client->UpdateAccount(Session,
+			NakamaApi::UpdateAccount(Client, Session,
 				TEXT(""),
 				TEXT(""),
 				TEXT(""),
@@ -3579,7 +3558,7 @@ void FNakamaAccountExtendedSpec::Define()
 				TEXT("Europe/London"),
 				[this, Done]()
 				{
-					Client->GetAccount(Session,
+					NakamaApi::GetAccount(Client, Session,
 						[this, Done](const FNakamaAccount& Result)
 						{
 							TestEqual("Timezone updated", Result.User.Timezone, TEXT("Europe/London"));
@@ -3604,7 +3583,7 @@ void FNakamaAccountExtendedSpec::Define()
 		{
 			FString NewAvatarUrl = TEXT("https://example.com/new-avatar.png");
 
-			Client->UpdateAccount(Session,
+			NakamaApi::UpdateAccount(Client, Session,
 				TEXT(""),
 				TEXT(""),
 				NewAvatarUrl,
@@ -3613,7 +3592,7 @@ void FNakamaAccountExtendedSpec::Define()
 				TEXT(""),
 				[this, Done, NewAvatarUrl]()
 				{
-					Client->GetAccount(Session,
+					NakamaApi::GetAccount(Client, Session,
 						[this, Done, NewAvatarUrl](const FNakamaAccount& Result)
 						{
 							TestEqual("Avatar URL updated", Result.User.AvatarUrl, NewAvatarUrl);
@@ -3639,7 +3618,7 @@ void FNakamaAccountExtendedSpec::Define()
 	{
 		LatentIt("should return account with devices", [this](const FDoneDelegate& Done)
 		{
-			Client->GetAccount(Session,
+			NakamaApi::GetAccount(Client, Session,
 				[this, Done](const FNakamaAccount& Result)
 				{
 					TestTrue("Account has user", !Result.User.Id.IsEmpty());
@@ -3663,10 +3642,10 @@ void FNakamaAccountExtendedSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaFriendsExtendedSpec, "NakamaTest.FriendsExt",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	TSharedPtr<FNakamaClient> Client;
-	TSharedPtr<FNakamaClient> FriendClient;
-	FNakamaSession Session;
-	FNakamaSession FriendSession;
+	FNakamaApiConfigPtr Client;
+	FNakamaApiConfigPtr FriendClient;
+	FNakamaSessionPtr Session;
+	FNakamaSessionPtr FriendSession;
 	FString UserId;
 	FString FriendUserId;
 	FString FriendUsername;
@@ -3687,10 +3666,10 @@ void FNakamaFriendsExtendedSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = FNakamaClient::CreateDefaultClient(ServerKey, Host, Port, false, true);
-		Client->SetTimeout(10.0f);
-		FriendClient = FNakamaClient::CreateDefaultClient(ServerKey, Host, Port, false, true);
-		FriendClient->SetTimeout(10.0f);
+		Client = MakeShared<FNakamaApiConfig>(FNakamaApiConfig{ServerKey, Host, Port, false, true});
+		Client->Timeout = 10.0f;
+		FriendClient = MakeShared<FNakamaApiConfig>(FNakamaApiConfig{ServerKey, Host, Port, false, true});
+		FriendClient->Timeout = 10.0f;
 	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
@@ -3698,11 +3677,11 @@ void FNakamaFriendsExtendedSpec::Define()
 		FNakamaAccountCustom Account;
 		Account.Id = GenerateId();
 
-		Client->AuthenticateCustom(Account, true, TEXT(""),
+		NakamaApi::AuthenticateCustom(Client, Account, true, TEXT(""),
 			[this, Done](const FNakamaSession& Result)
 			{
-				Session = Result;
-				Client->GetAccount(Session,
+				Session = MakeShared<FNakamaSession>(Result);
+				NakamaApi::GetAccount(Client, Session,
 					[this, Done](const FNakamaAccount& AccResult)
 					{
 						UserId = AccResult.User.Id;
@@ -3712,11 +3691,11 @@ void FNakamaFriendsExtendedSpec::Define()
 						FNakamaAccountCustom FriendAccount;
 						FriendAccount.Id = GenerateId();
 
-						FriendClient->AuthenticateCustom(FriendAccount, true, FriendUsername,
+						NakamaApi::AuthenticateCustom(FriendClient, FriendAccount, true, FriendUsername,
 							[this, Done](const FNakamaSession& FriendSessionResult)
 							{
-								FriendSession = FriendSessionResult;
-								FriendClient->GetAccount(FriendSession,
+								FriendSession = MakeShared<FNakamaSession>(FriendSessionResult);
+								NakamaApi::GetAccount(FriendClient, FriendSession,
 									[this, Done](const FNakamaAccount& FriendAccResult)
 									{
 										FriendUserId = FriendAccResult.User.Id;
@@ -3761,7 +3740,7 @@ void FNakamaFriendsExtendedSpec::Define()
 	{
 		LatentIt("should list friends with limit", [this](const FDoneDelegate& Done)
 		{
-			Client->ListFriends(Session,
+			NakamaApi::ListFriends(Client, Session,
 				5,  // limit = 5
 				0,  // state (all)
 				TEXT(""),
@@ -3781,7 +3760,7 @@ void FNakamaFriendsExtendedSpec::Define()
 		LatentIt("should list friends with state filter", [this](const FDoneDelegate& Done)
 		{
 			// Filter by state=0 (actual friends)
-			Client->ListFriends(Session,
+			NakamaApi::ListFriends(Client, Session,
 				100,
 				0,  // state = FRIEND
 				TEXT(""),
@@ -3801,7 +3780,7 @@ void FNakamaFriendsExtendedSpec::Define()
 		LatentIt("should list blocked friends", [this](const FDoneDelegate& Done)
 		{
 			// Filter by state=3 (blocked)
-			Client->ListFriends(Session,
+			NakamaApi::ListFriends(Client, Session,
 				100,
 				3,  // state = BLOCKED
 				TEXT(""),
@@ -3826,7 +3805,7 @@ void FNakamaFriendsExtendedSpec::Define()
 			TArray<FString> Usernames;
 			Usernames.Add(FriendUsername);
 
-			Client->AddFriends(Session,
+			NakamaApi::AddFriends(Client, Session,
 				TArray<FString>(),  // ids
 				Usernames,
 				TEXT(""),
@@ -3848,7 +3827,7 @@ void FNakamaFriendsExtendedSpec::Define()
 			TArray<FString> Ids;
 			Ids.Add(TEXT("not-a-valid-uuid"));
 
-			Client->AddFriends(Session,
+			NakamaApi::AddFriends(Client, Session,
 				Ids,
 				TArray<FString>(),
 				TEXT(""),
@@ -3875,7 +3854,7 @@ void FNakamaFriendsExtendedSpec::Define()
 			TArray<FString> AddUsernames;
 			AddUsernames.Add(FriendUsername);
 
-			Client->AddFriends(Session,
+			NakamaApi::AddFriends(Client, Session,
 				TArray<FString>(),
 				AddUsernames,
 				TEXT(""),
@@ -3885,7 +3864,7 @@ void FNakamaFriendsExtendedSpec::Define()
 					TArray<FString> DeleteUsernames;
 					DeleteUsernames.Add(FriendUsername);
 
-					Client->DeleteFriends(Session,
+					NakamaApi::DeleteFriends(Client, Session,
 						TArray<FString>(),
 						DeleteUsernames,
 						[this, Done]()
@@ -3916,7 +3895,7 @@ void FNakamaFriendsExtendedSpec::Define()
 			TArray<FString> Usernames;
 			Usernames.Add(FriendUsername);
 
-			Client->BlockFriends(Session,
+			NakamaApi::BlockFriends(Client, Session,
 				TArray<FString>(),
 				Usernames,
 				[this, Done]()
@@ -3941,8 +3920,8 @@ void FNakamaFriendsExtendedSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaStorageExtendedSpec, "NakamaTest.StorageExt",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	TSharedPtr<FNakamaClient> Client;
-	FNakamaSession Session;
+	FNakamaApiConfigPtr Client;
+	FNakamaSessionPtr Session;
 	FString UserId;
 
 	static const FString ServerKey;
@@ -3961,8 +3940,8 @@ void FNakamaStorageExtendedSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = FNakamaClient::CreateDefaultClient(ServerKey, Host, Port, false, true);
-		Client->SetTimeout(10.0f);
+		Client = MakeShared<FNakamaApiConfig>(FNakamaApiConfig{ServerKey, Host, Port, false, true});
+		Client->Timeout = 10.0f;
 	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
@@ -3970,11 +3949,11 @@ void FNakamaStorageExtendedSpec::Define()
 		FNakamaAccountCustom Account;
 		Account.Id = GenerateId();
 
-		Client->AuthenticateCustom(Account, true, TEXT(""),
+		NakamaApi::AuthenticateCustom(Client, Account, true, TEXT(""),
 			[this, Done](const FNakamaSession& Result)
 			{
-				Session = Result;
-				Client->GetAccount(Session,
+				Session = MakeShared<FNakamaSession>(Result);
+				NakamaApi::GetAccount(Client, Session,
 					[this, Done](const FNakamaAccount& AccResult)
 					{
 						UserId = AccResult.User.Id;
@@ -4016,7 +3995,7 @@ void FNakamaStorageExtendedSpec::Define()
 				Objects.Add(Object);
 			}
 
-			Client->WriteStorageObjects(Session,
+			NakamaApi::WriteStorageObjects(Client, Session,
 				Objects,
 				[this, Done](const FNakamaStorageObjectAcks& Result)
 				{
@@ -4043,7 +4022,7 @@ void FNakamaStorageExtendedSpec::Define()
 			Object.Value = TEXT("{\"test\": true}");
 			Objects.Add(Object);
 
-			Client->WriteStorageObjects(Session,
+			NakamaApi::WriteStorageObjects(Client, Session,
 				Objects,
 				[this, Done](const FNakamaStorageObjectAcks& Result)
 				{
@@ -4067,7 +4046,7 @@ void FNakamaStorageExtendedSpec::Define()
 			Object.Value = TEXT("{\"test\": true}");
 			Objects.Add(Object);
 
-			Client->WriteStorageObjects(Session,
+			NakamaApi::WriteStorageObjects(Client, Session,
 				Objects,
 				[this, Done](const FNakamaStorageObjectAcks& Result)
 				{
@@ -4093,7 +4072,7 @@ void FNakamaStorageExtendedSpec::Define()
 			Object.PermissionWrite = 1;
 			Objects.Add(Object);
 
-			Client->WriteStorageObjects(Session,
+			NakamaApi::WriteStorageObjects(Client, Session,
 				Objects,
 				[this, Done](const FNakamaStorageObjectAcks& Result)
 				{
@@ -4117,7 +4096,7 @@ void FNakamaStorageExtendedSpec::Define()
 			Object.Value = TEXT("[1, 2, 3]");  // JSON array, not object
 			Objects.Add(Object);
 
-			Client->WriteStorageObjects(Session,
+			NakamaApi::WriteStorageObjects(Client, Session,
 				Objects,
 				[this, Done](const FNakamaStorageObjectAcks& Result)
 				{
@@ -4144,7 +4123,7 @@ void FNakamaStorageExtendedSpec::Define()
 			ReadId.UserId = UserId;
 			ReadIds.Add(ReadId);
 
-			Client->ReadStorageObjects(Session,
+			NakamaApi::ReadStorageObjects(Client, Session,
 				ReadIds,
 				[this, Done](const FNakamaStorageObjects& Result)
 				{
@@ -4178,7 +4157,7 @@ void FNakamaStorageExtendedSpec::Define()
 				WriteObjects.Add(Object);
 			}
 
-			Client->WriteStorageObjects(Session,
+			NakamaApi::WriteStorageObjects(Client, Session,
 				WriteObjects,
 				[this, Done, Keys](const FNakamaStorageObjectAcks& WriteResult)
 				{
@@ -4193,7 +4172,7 @@ void FNakamaStorageExtendedSpec::Define()
 						ReadIds.Add(ReadId);
 					}
 
-					Client->ReadStorageObjects(Session,
+					NakamaApi::ReadStorageObjects(Client, Session,
 						ReadIds,
 						[this, Done](const FNakamaStorageObjects& Result)
 						{
@@ -4233,11 +4212,11 @@ void FNakamaStorageExtendedSpec::Define()
 				Objects.Add(Object);
 			}
 
-			Client->WriteStorageObjects(Session,
+			NakamaApi::WriteStorageObjects(Client, Session,
 				Objects,
 				[this, Done](const FNakamaStorageObjectAcks& WriteResult)
 				{
-					Client->ListStorageObjects(Session,
+					NakamaApi::ListStorageObjects(Client, Session,
 						UserId,
 						TEXT("list_limit_collection"),
 						2,  // limit = 2
@@ -4284,7 +4263,7 @@ void FNakamaStorageExtendedSpec::Define()
 				WriteObjects.Add(Object);
 			}
 
-			Client->WriteStorageObjects(Session,
+			NakamaApi::WriteStorageObjects(Client, Session,
 				WriteObjects,
 				[this, Done, Keys](const FNakamaStorageObjectAcks& WriteResult)
 				{
@@ -4298,7 +4277,7 @@ void FNakamaStorageExtendedSpec::Define()
 						DeleteIds.Add(DeleteId);
 					}
 
-					Client->DeleteStorageObjects(Session,
+					NakamaApi::DeleteStorageObjects(Client, Session,
 						DeleteIds,
 						[this, Done]()
 						{
@@ -4329,10 +4308,10 @@ void FNakamaStorageExtendedSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaGroupExtendedSpec, "NakamaTest.GroupExt",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	TSharedPtr<FNakamaClient> Client;
-	TSharedPtr<FNakamaClient> MemberClient;
-	FNakamaSession Session;
-	FNakamaSession MemberSession;
+	FNakamaApiConfigPtr Client;
+	FNakamaApiConfigPtr MemberClient;
+	FNakamaSessionPtr Session;
+	FNakamaSessionPtr MemberSession;
 	FString UserId;
 	FString MemberUserId;
 
@@ -4352,10 +4331,10 @@ void FNakamaGroupExtendedSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = FNakamaClient::CreateDefaultClient(ServerKey, Host, Port, false, true);
-		Client->SetTimeout(10.0f);
-		MemberClient = FNakamaClient::CreateDefaultClient(ServerKey, Host, Port, false, true);
-		MemberClient->SetTimeout(10.0f);
+		Client = MakeShared<FNakamaApiConfig>(FNakamaApiConfig{ServerKey, Host, Port, false, true});
+		Client->Timeout = 10.0f;
+		MemberClient = MakeShared<FNakamaApiConfig>(FNakamaApiConfig{ServerKey, Host, Port, false, true});
+		MemberClient->Timeout = 10.0f;
 	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
@@ -4363,11 +4342,11 @@ void FNakamaGroupExtendedSpec::Define()
 		FNakamaAccountCustom Account;
 		Account.Id = GenerateId();
 
-		Client->AuthenticateCustom(Account, true, TEXT(""),
+		NakamaApi::AuthenticateCustom(Client, Account, true, TEXT(""),
 			[this, Done](const FNakamaSession& Result)
 			{
-				Session = Result;
-				Client->GetAccount(Session,
+				Session = MakeShared<FNakamaSession>(Result);
+				NakamaApi::GetAccount(Client, Session,
 					[this, Done](const FNakamaAccount& AccResult)
 					{
 						UserId = AccResult.User.Id;
@@ -4376,11 +4355,11 @@ void FNakamaGroupExtendedSpec::Define()
 						FNakamaAccountCustom MemberAccount;
 						MemberAccount.Id = GenerateId();
 
-						MemberClient->AuthenticateCustom(MemberAccount, true, TEXT(""),
+						NakamaApi::AuthenticateCustom(MemberClient, MemberAccount, true, TEXT(""),
 							[this, Done](const FNakamaSession& MemberSessionResult)
 							{
-								MemberSession = MemberSessionResult;
-								MemberClient->GetAccount(MemberSession,
+								MemberSession = MakeShared<FNakamaSession>(MemberSessionResult);
+								NakamaApi::GetAccount(MemberClient, MemberSession,
 									[this, Done](const FNakamaAccount& MemberAccResult)
 									{
 										MemberUserId = MemberAccResult.User.Id;
@@ -4427,7 +4406,7 @@ void FNakamaGroupExtendedSpec::Define()
 		{
 			FString GroupName = FString::Printf(TEXT("ClosedGroup_%s"), *GenerateShortId());
 
-			Client->CreateGroup(Session,
+			NakamaApi::CreateGroup(Client, Session,
 				GroupName,
 				TEXT("Closed group for testing"),
 				TEXT(""),
@@ -4452,7 +4431,7 @@ void FNakamaGroupExtendedSpec::Define()
 		{
 			FString GroupName = FString::Printf(TEXT("MetaGroup_%s"), *GenerateShortId());
 
-			Client->CreateGroup(Session,
+			NakamaApi::CreateGroup(Client, Session,
 				GroupName,
 				TEXT("Group with description"),
 				TEXT(""),  // empty avatar URL
@@ -4480,12 +4459,12 @@ void FNakamaGroupExtendedSpec::Define()
 			FString GroupName = FString::Printf(TEXT("SearchGroup_%s"), *GenerateShortId());
 
 			// First create a group
-			Client->CreateGroup(Session,
+			NakamaApi::CreateGroup(Client, Session,
 				GroupName, TEXT("Test"), TEXT(""), TEXT("en"), true, 100,
 				[this, Done, GroupName](const FNakamaGroup& Group)
 				{
 					// Now search by name prefix - name filter cannot be combined with other filters
-					Client->ListGroups(Session,
+					NakamaApi::ListGroups(Client, Session,
 						TEXT("SearchGroup"),  // name filter only
 						TEXT(""),  // cursor
 						100,  // limit
@@ -4515,7 +4494,7 @@ void FNakamaGroupExtendedSpec::Define()
 
 		LatentIt("should list groups with limit", [this](const FDoneDelegate& Done)
 		{
-			Client->ListGroups(Session,
+			NakamaApi::ListGroups(Client, Session,
 				TEXT(""),
 				TEXT(""),
 				5,  // limit = 5
@@ -4542,14 +4521,14 @@ void FNakamaGroupExtendedSpec::Define()
 		{
 			FString GroupName = FString::Printf(TEXT("AddUserGroup_%s"), *GenerateShortId());
 
-			Client->CreateGroup(Session,
+			NakamaApi::CreateGroup(Client, Session,
 				GroupName, TEXT("Test"), TEXT(""), TEXT("en"), true, 100,
 				[this, Done](const FNakamaGroup& Group)
 				{
 					TArray<FString> UserIds;
 					UserIds.Add(MemberUserId);
 
-					Client->AddGroupUsers(Session,
+					NakamaApi::AddGroupUsers(Client, Session,
 						Group.Id,
 						UserIds,
 						[this, Done]()
@@ -4576,7 +4555,7 @@ void FNakamaGroupExtendedSpec::Define()
 		{
 			FString GroupName = FString::Printf(TEXT("KickGroup_%s"), *GenerateShortId());
 
-			Client->CreateGroup(Session,
+			NakamaApi::CreateGroup(Client, Session,
 				GroupName, TEXT("Test"), TEXT(""), TEXT("en"), true, 100,
 				[this, Done](const FNakamaGroup& Group)
 				{
@@ -4584,7 +4563,7 @@ void FNakamaGroupExtendedSpec::Define()
 					TArray<FString> UserIds;
 					UserIds.Add(MemberUserId);
 
-					Client->AddGroupUsers(Session,
+					NakamaApi::AddGroupUsers(Client, Session,
 						Group.Id,
 						UserIds,
 						[this, Done, Group]()
@@ -4593,7 +4572,7 @@ void FNakamaGroupExtendedSpec::Define()
 							TArray<FString> KickIds;
 							KickIds.Add(MemberUserId);
 
-							Client->KickGroupUsers(Session,
+							NakamaApi::KickGroupUsers(Client, Session,
 								Group.Id,
 								KickIds,
 								[this, Done]()
@@ -4627,14 +4606,14 @@ void FNakamaGroupExtendedSpec::Define()
 		{
 			FString GroupName = FString::Printf(TEXT("BanGroup_%s"), *GenerateShortId());
 
-			Client->CreateGroup(Session,
+			NakamaApi::CreateGroup(Client, Session,
 				GroupName, TEXT("Test"), TEXT(""), TEXT("en"), true, 100,
 				[this, Done](const FNakamaGroup& Group)
 				{
 					TArray<FString> UserIds;
 					UserIds.Add(MemberUserId);
 
-					Client->BanGroupUsers(Session,
+					NakamaApi::BanGroupUsers(Client, Session,
 						Group.Id,
 						UserIds,
 						[this, Done]()
@@ -4661,7 +4640,7 @@ void FNakamaGroupExtendedSpec::Define()
 		{
 			FString GroupName = FString::Printf(TEXT("PromoteGroup_%s"), *GenerateShortId());
 
-			Client->CreateGroup(Session,
+			NakamaApi::CreateGroup(Client, Session,
 				GroupName, TEXT("Test"), TEXT(""), TEXT("en"), true, 100,
 				[this, Done](const FNakamaGroup& Group)
 				{
@@ -4669,7 +4648,7 @@ void FNakamaGroupExtendedSpec::Define()
 					TArray<FString> UserIds;
 					UserIds.Add(MemberUserId);
 
-					Client->AddGroupUsers(Session,
+					NakamaApi::AddGroupUsers(Client, Session,
 						Group.Id,
 						UserIds,
 						[this, Done, Group]()
@@ -4678,7 +4657,7 @@ void FNakamaGroupExtendedSpec::Define()
 							TArray<FString> PromoteIds;
 							PromoteIds.Add(MemberUserId);
 
-							Client->PromoteGroupUsers(Session,
+							NakamaApi::PromoteGroupUsers(Client, Session,
 								Group.Id,
 								PromoteIds,
 								[this, Done]()
@@ -4714,7 +4693,7 @@ void FNakamaGroupExtendedSpec::Define()
 			// Capture MemberUserId at test start - it was set in LatentBeforeEach
 			FString TargetUserId = MemberUserId;
 
-			Client->CreateGroup(Session,
+			NakamaApi::CreateGroup(Client, Session,
 				GroupName, TEXT("Test"), TEXT(""), TEXT("en"), true, 100,
 				[this, Done, TargetUserId](const FNakamaGroup& Group)
 				{
@@ -4722,7 +4701,7 @@ void FNakamaGroupExtendedSpec::Define()
 					TArray<FString> UserIds;
 					UserIds.Add(TargetUserId);
 
-					Client->AddGroupUsers(Session,
+					NakamaApi::AddGroupUsers(Client, Session,
 						Group.Id,
 						UserIds,
 						[this, Done, Group, TargetUserId]()
@@ -4731,7 +4710,7 @@ void FNakamaGroupExtendedSpec::Define()
 							TArray<FString> PromoteIds;
 							PromoteIds.Add(TargetUserId);
 
-							Client->PromoteGroupUsers(Session,
+							NakamaApi::PromoteGroupUsers(Client, Session,
 								Group.Id,
 								PromoteIds,
 								[this, Done, Group, TargetUserId]()
@@ -4740,7 +4719,7 @@ void FNakamaGroupExtendedSpec::Define()
 									TArray<FString> DemoteIds;
 									DemoteIds.Add(TargetUserId);
 
-									Client->DemoteGroupUsers(Session,
+									NakamaApi::DemoteGroupUsers(Client, Session,
 										Group.Id,
 										DemoteIds,
 										[this, Done]()
@@ -4784,12 +4763,12 @@ void FNakamaGroupExtendedSpec::Define()
 		{
 			FString GroupName = FString::Printf(TEXT("ListUsersState_%s"), *GenerateShortId());
 
-			Client->CreateGroup(Session,
+			NakamaApi::CreateGroup(Client, Session,
 				GroupName, TEXT("Test"), TEXT(""), TEXT("en"), true, 100,
 				[this, Done](const FNakamaGroup& Group)
 				{
 					// List only superadmins (state = 0)
-					Client->ListGroupUsers(Session,
+					NakamaApi::ListGroupUsers(Client, Session,
 						Group.Id,
 						100,
 						0,  // state = SUPERADMIN
@@ -4823,8 +4802,8 @@ void FNakamaGroupExtendedSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaUnlinkSpec, "NakamaTest.Unlink",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	TSharedPtr<FNakamaClient> Client;
-	FNakamaSession Session;
+	FNakamaApiConfigPtr Client;
+	FNakamaSessionPtr Session;
 	FString DeviceId;
 	FString CustomId;
 
@@ -4844,8 +4823,8 @@ void FNakamaUnlinkSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = FNakamaClient::CreateDefaultClient(ServerKey, Host, Port, false, true);
-		Client->SetTimeout(10.0f);
+		Client = MakeShared<FNakamaApiConfig>(FNakamaApiConfig{ServerKey, Host, Port, false, true});
+		Client->Timeout = 10.0f;
 		DeviceId = GenerateId();
 		CustomId = GenerateId();
 	});
@@ -4856,10 +4835,10 @@ void FNakamaUnlinkSpec::Define()
 		FNakamaAccountDevice Account;
 		Account.Id = DeviceId;
 
-		Client->AuthenticateDevice(Account, true, TEXT(""),
+		NakamaApi::AuthenticateDevice(Client, Account, true, TEXT(""),
 			[this, Done](const FNakamaSession& Result)
 			{
-				Session = Result;
+				Session = MakeShared<FNakamaSession>(Result);
 				Done.Execute();
 			},
 			[this, Done](const FNakamaError& Error)
@@ -4880,13 +4859,13 @@ void FNakamaUnlinkSpec::Define()
 		LatentIt("should unlink custom ID", [this](const FDoneDelegate& Done)
 		{
 			// First link
-			Client->LinkCustom(Session,
+			NakamaApi::LinkCustom(Client, Session,
 				CustomId,
 				TMap<FString, FString>(),
 				[this, Done]()
 				{
 					// Now unlink
-					Client->UnlinkCustom(Session,
+					NakamaApi::UnlinkCustom(Client, Session,
 						CustomId,
 						TMap<FString, FString>(),
 						[this, Done]()
@@ -4917,14 +4896,14 @@ void FNakamaUnlinkSpec::Define()
 			FString Email = FString::Printf(TEXT("unlink_%s@example.com"), *GenerateShortId());
 
 			// First link
-			Client->LinkEmail(Session,
+			NakamaApi::LinkEmail(Client, Session,
 				Email,
 				TEXT("password123"),
 				TMap<FString, FString>(),
 				[this, Done, Email]()
 				{
 					// Now unlink
-					Client->UnlinkEmail(Session,
+					NakamaApi::UnlinkEmail(Client, Session,
 						Email,
 						TEXT("password123"),
 						TMap<FString, FString>(),
@@ -4956,13 +4935,13 @@ void FNakamaUnlinkSpec::Define()
 			FString NewDeviceId = GenerateId();
 
 			// First link a new device
-			Client->LinkDevice(Session,
+			NakamaApi::LinkDevice(Client, Session,
 				NewDeviceId,
 				TMap<FString, FString>(),
 				[this, Done, NewDeviceId]()
 				{
 					// Now unlink it
-					Client->UnlinkDevice(Session,
+					NakamaApi::UnlinkDevice(Client, Session,
 						NewDeviceId,
 						TMap<FString, FString>(),
 						[this, Done]()
@@ -4994,8 +4973,8 @@ void FNakamaUnlinkSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaMatchesExtendedSpec, "NakamaTest.MatchesExt",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	TSharedPtr<FNakamaClient> Client;
-	FNakamaSession Session;
+	FNakamaApiConfigPtr Client;
+	FNakamaSessionPtr Session;
 
 	static const FString ServerKey;
 	static const FString Host;
@@ -5012,8 +4991,8 @@ void FNakamaMatchesExtendedSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = FNakamaClient::CreateDefaultClient(ServerKey, Host, Port, false, true);
-		Client->SetTimeout(10.0f);
+		Client = MakeShared<FNakamaApiConfig>(FNakamaApiConfig{ServerKey, Host, Port, false, true});
+		Client->Timeout = 10.0f;
 	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
@@ -5021,10 +5000,10 @@ void FNakamaMatchesExtendedSpec::Define()
 		FNakamaAccountCustom Account;
 		Account.Id = GenerateId();
 
-		Client->AuthenticateCustom(Account, true, TEXT(""),
+		NakamaApi::AuthenticateCustom(Client, Account, true, TEXT(""),
 			[this, Done](const FNakamaSession& Result)
 			{
-				Session = Result;
+				Session = MakeShared<FNakamaSession>(Result);
 				Done.Execute();
 			},
 			[this, Done](const FNakamaError& Error)
@@ -5044,7 +5023,7 @@ void FNakamaMatchesExtendedSpec::Define()
 	{
 		LatentIt("should list matches with min size filter", [this](const FDoneDelegate& Done)
 		{
-			Client->ListMatches(Session,
+			NakamaApi::ListMatches(Client, Session,
 				100,
 				false,
 				TEXT(""),
@@ -5070,7 +5049,7 @@ void FNakamaMatchesExtendedSpec::Define()
 
 		LatentIt("should list matches with max size filter", [this](const FDoneDelegate& Done)
 		{
-			Client->ListMatches(Session,
+			NakamaApi::ListMatches(Client, Session,
 				100,
 				false,
 				TEXT(""),
@@ -5096,7 +5075,7 @@ void FNakamaMatchesExtendedSpec::Define()
 
 		LatentIt("should list matches with label filter", [this](const FDoneDelegate& Done)
 		{
-			Client->ListMatches(Session,
+			NakamaApi::ListMatches(Client, Session,
 				10,
 				true,  // authoritative
 				TEXT("test_label"),  // label filter
@@ -5125,8 +5104,8 @@ void FNakamaMatchesExtendedSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaChannelSpec, "NakamaTest.Channel",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	TSharedPtr<FNakamaClient> Client;
-	FNakamaSession Session;
+	FNakamaApiConfigPtr Client;
+	FNakamaSessionPtr Session;
 	FString UserId;
 
 	static const FString ServerKey;
@@ -5145,8 +5124,8 @@ void FNakamaChannelSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = FNakamaClient::CreateDefaultClient(ServerKey, Host, Port, false, true);
-		Client->SetTimeout(10.0f);
+		Client = MakeShared<FNakamaApiConfig>(FNakamaApiConfig{ServerKey, Host, Port, false, true});
+		Client->Timeout = 10.0f;
 	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
@@ -5154,11 +5133,11 @@ void FNakamaChannelSpec::Define()
 		FNakamaAccountCustom Account;
 		Account.Id = GenerateId();
 
-		Client->AuthenticateCustom(Account, true, TEXT(""),
+		NakamaApi::AuthenticateCustom(Client, Account, true, TEXT(""),
 			[this, Done](const FNakamaSession& Result)
 			{
-				Session = Result;
-				Client->GetAccount(Session,
+				Session = MakeShared<FNakamaSession>(Result);
+				NakamaApi::GetAccount(Client, Session,
 					[this, Done](const FNakamaAccount& AccResult)
 					{
 						UserId = AccResult.User.Id;
@@ -5188,7 +5167,7 @@ void FNakamaChannelSpec::Define()
 	{
 		LatentIt("should fail with empty channel ID", [this](const FDoneDelegate& Done)
 		{
-			Client->ListChannelMessages(Session,
+			NakamaApi::ListChannelMessages(Client, Session,
 				TEXT(""),  // empty channel ID
 				100,
 				true,
@@ -5212,7 +5191,7 @@ void FNakamaChannelSpec::Define()
 			// Format: 2.<room_name> for room channels
 			FString ChannelId = FString::Printf(TEXT("2.%s"), *RoomName);
 
-			Client->ListChannelMessages(Session,
+			NakamaApi::ListChannelMessages(Client, Session,
 				ChannelId,
 				100,
 				true,  // forward
@@ -5236,7 +5215,7 @@ void FNakamaChannelSpec::Define()
 			FString RoomName = FString::Printf(TEXT("limitroom_%s"), *GenerateShortId());
 			FString ChannelId = FString::Printf(TEXT("2.%s"), *RoomName);
 
-			Client->ListChannelMessages(Session,
+			NakamaApi::ListChannelMessages(Client, Session,
 				ChannelId,
 				5,  // limit = 5
 				true,
@@ -5264,8 +5243,8 @@ void FNakamaChannelSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaNotificationsExtendedSpec, "NakamaTest.NotificationsExt",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	TSharedPtr<FNakamaClient> Client;
-	FNakamaSession Session;
+	FNakamaApiConfigPtr Client;
+	FNakamaSessionPtr Session;
 
 	static const FString ServerKey;
 	static const FString Host;
@@ -5282,8 +5261,8 @@ void FNakamaNotificationsExtendedSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = FNakamaClient::CreateDefaultClient(ServerKey, Host, Port, false, true);
-		Client->SetTimeout(10.0f);
+		Client = MakeShared<FNakamaApiConfig>(FNakamaApiConfig{ServerKey, Host, Port, false, true});
+		Client->Timeout = 10.0f;
 	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
@@ -5291,10 +5270,10 @@ void FNakamaNotificationsExtendedSpec::Define()
 		FNakamaAccountCustom Account;
 		Account.Id = GenerateId();
 
-		Client->AuthenticateCustom(Account, true, TEXT(""),
+		NakamaApi::AuthenticateCustom(Client, Account, true, TEXT(""),
 			[this, Done](const FNakamaSession& Result)
 			{
-				Session = Result;
+				Session = MakeShared<FNakamaSession>(Result);
 				Done.Execute();
 			},
 			[this, Done](const FNakamaError& Error)
@@ -5314,7 +5293,7 @@ void FNakamaNotificationsExtendedSpec::Define()
 	{
 		LatentIt("should list notifications with limit", [this](const FDoneDelegate& Done)
 		{
-			Client->ListNotifications(Session,
+			NakamaApi::ListNotifications(Client, Session,
 				5,  // limit = 5
 				TEXT(""),
 				[this, Done](const FNakamaNotificationList& Result)
@@ -5338,7 +5317,7 @@ void FNakamaNotificationsExtendedSpec::Define()
 			TArray<FString> Ids;
 			Ids.Add(TEXT("not-a-valid-uuid"));
 
-			Client->DeleteNotifications(Session,
+			NakamaApi::DeleteNotifications(Client, Session,
 				Ids,
 				[this, Done]()
 				{
@@ -5359,7 +5338,7 @@ void FNakamaNotificationsExtendedSpec::Define()
 			TArray<FString> Ids;
 			Ids.Add(TEXT("ffffffff-ffff-ffff-ffff-ffffffffffff"));  // Valid UUID but doesn't exist
 
-			Client->DeleteNotifications(Session,
+			NakamaApi::DeleteNotifications(Client, Session,
 				Ids,
 				[this, Done]()
 				{
@@ -5385,8 +5364,8 @@ void FNakamaNotificationsExtendedSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAuthValidationSpec, "NakamaTest.Auth.Validation",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	TSharedPtr<FNakamaClient> Client;
-	FNakamaSession Session;
+	FNakamaApiConfigPtr Client;
+	FNakamaSessionPtr Session;
 
 	static const FString ServerKey;
 	static const FString Host;
@@ -5404,8 +5383,8 @@ void FNakamaAuthValidationSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = FNakamaClient::CreateDefaultClient(ServerKey, Host, Port, false, true);
-		Client->SetTimeout(10.0f);
+		Client = MakeShared<FNakamaApiConfig>(FNakamaApiConfig{ServerKey, Host, Port, false, true});
+		Client->Timeout = 10.0f;
 	});
 
 	AfterEach([this]()
@@ -5420,7 +5399,7 @@ void FNakamaAuthValidationSpec::Define()
 			FNakamaAccountCustom Account;
 			Account.Id = TEXT("test id with spaces");
 
-			Client->AuthenticateCustom(Account, true, TEXT(""),
+			NakamaApi::AuthenticateCustom(Client, Account, true, TEXT(""),
 				[this, Done](const FNakamaSession& Result)
 				{
 					AddError(TEXT("Expected error but got success"));
@@ -5440,7 +5419,7 @@ void FNakamaAuthValidationSpec::Define()
 			Account.Id = GenerateId();
 			FString LongUsername = FString::ChrN(150, 'x');  // > 128 chars
 
-			Client->AuthenticateCustom(Account, true, LongUsername,
+			NakamaApi::AuthenticateCustom(Client, Account, true, LongUsername,
 				[this, Done](const FNakamaSession& Result)
 				{
 					AddError(TEXT("Expected error but got success"));
@@ -5461,7 +5440,7 @@ void FNakamaAuthValidationSpec::Define()
 			Account.Id = GenerateId();
 			FString Username = TEXT("user@#$%^!");
 
-			Client->AuthenticateCustom(Account, true, Username,
+			NakamaApi::AuthenticateCustom(Client, Account, true, Username,
 				[this, Done](const FNakamaSession& Result)
 				{
 					TestTrue("Session is valid", !Result.Token.IsEmpty());
@@ -5483,7 +5462,7 @@ void FNakamaAuthValidationSpec::Define()
 			FNakamaAccountDevice Account;
 			Account.Id = TEXT("          ");  // 10 spaces
 
-			Client->AuthenticateDevice(Account, true, TEXT(""),
+			NakamaApi::AuthenticateDevice(Client, Account, true, TEXT(""),
 				[this, Done](const FNakamaSession& Result)
 				{
 					AddError(TEXT("Expected error but got success"));
@@ -5506,7 +5485,7 @@ void FNakamaAuthValidationSpec::Define()
 			Account.Email = TEXT("a@b.c");  // < 10 chars
 			Account.Password = TEXT("password123");
 
-			Client->AuthenticateEmail(Account, true, TEXT(""),
+			NakamaApi::AuthenticateEmail(Client, Account, true, TEXT(""),
 				[this, Done](const FNakamaSession& Result)
 				{
 					AddError(TEXT("Expected error but got success"));
@@ -5526,7 +5505,7 @@ void FNakamaAuthValidationSpec::Define()
 			Account.Email = TEXT("notanemailaddress.com");
 			Account.Password = TEXT("password123");
 
-			Client->AuthenticateEmail(Account, true, TEXT(""),
+			NakamaApi::AuthenticateEmail(Client, Account, true, TEXT(""),
 				[this, Done](const FNakamaSession& Result)
 				{
 					AddError(TEXT("Expected error but got success"));
@@ -5546,7 +5525,7 @@ void FNakamaAuthValidationSpec::Define()
 			Account.Email = FString::Printf(TEXT("test_%s@example.com"), *GenerateShortId());
 			Account.Password = TEXT("");
 
-			Client->AuthenticateEmail(Account, true, TEXT(""),
+			NakamaApi::AuthenticateEmail(Client, Account, true, TEXT(""),
 				[this, Done](const FNakamaSession& Result)
 				{
 					AddError(TEXT("Expected error but got success"));
@@ -5567,11 +5546,11 @@ void FNakamaAuthValidationSpec::Define()
 			Account.Email = FString::Printf(TEXT("existing_%s@example.com"), *GenerateShortId());
 			Account.Password = TEXT("password123");
 
-			Client->AuthenticateEmail(Account, true, TEXT(""),
+			NakamaApi::AuthenticateEmail(Client, Account, true, TEXT(""),
 				[this, Done, Account](const FNakamaSession& FirstResult)
 				{
 					// Now try to authenticate with create=false
-					Client->AuthenticateEmail(Account, false, TEXT(""),
+					NakamaApi::AuthenticateEmail(Client, Account, false, TEXT(""),
 						[this, Done](const FNakamaSession& Result)
 						{
 							TestTrue("Session has token", !Result.Token.IsEmpty());
@@ -5601,8 +5580,8 @@ void FNakamaAuthValidationSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAccountDeleteSpec, "NakamaTest.Account.Delete",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	TSharedPtr<FNakamaClient> Client;
-	FNakamaSession Session;
+	FNakamaApiConfigPtr Client;
+	FNakamaSessionPtr Session;
 
 	static const FString ServerKey;
 	static const FString Host;
@@ -5619,8 +5598,8 @@ void FNakamaAccountDeleteSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = FNakamaClient::CreateDefaultClient(ServerKey, Host, Port, false, true);
-		Client->SetTimeout(10.0f);
+		Client = MakeShared<FNakamaApiConfig>(FNakamaApiConfig{ServerKey, Host, Port, false, true});
+		Client->Timeout = 10.0f;
 	});
 
 	AfterEach([this]()
@@ -5636,12 +5615,12 @@ void FNakamaAccountDeleteSpec::Define()
 			Account.Id = GenerateId();
 
 			// First authenticate
-			Client->AuthenticateCustom(Account, true, TEXT(""),
+			NakamaApi::AuthenticateCustom(Client, Account, true, TEXT(""),
 				[this, Done](const FNakamaSession& Result)
 				{
-					Session = Result;
+					Session = MakeShared<FNakamaSession>(Result);
 					// Now delete the account
-					Client->DeleteAccount(Session,
+					NakamaApi::DeleteAccount(Client, Session,
 						[this, Done]()
 						{
 							TestTrue("Account deleted successfully", true);
@@ -5668,16 +5647,16 @@ void FNakamaAccountDeleteSpec::Define()
 			Account.Id = GenerateId();
 
 			// First authenticate
-			Client->AuthenticateCustom(Account, true, TEXT(""),
+			NakamaApi::AuthenticateCustom(Client, Account, true, TEXT(""),
 				[this, Done](const FNakamaSession& AuthResult)
 				{
-					Session = AuthResult;
+					Session = MakeShared<FNakamaSession>(AuthResult);
 					// Delete the account
-					Client->DeleteAccount(Session,
+					NakamaApi::DeleteAccount(Client, Session,
 						[this, Done]()
 						{
 							// Try to get account after deletion
-							Client->GetAccount(Session,
+							NakamaApi::GetAccount(Client, Session,
 								[this, Done](const FNakamaAccount& AccountResult)
 								{
 									AddError(TEXT("Expected error but got account after deletion"));
@@ -5717,7 +5696,7 @@ void FNakamaAccountDeleteSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaSocialAuthSpec, "NakamaTest.Auth.Social",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	TSharedPtr<FNakamaClient> Client;
+	FNakamaApiConfigPtr Client;
 
 	static const FString ServerKey;
 	static const FString Host;
@@ -5732,8 +5711,8 @@ void FNakamaSocialAuthSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = FNakamaClient::CreateDefaultClient(ServerKey, Host, Port, false, true);
-		Client->SetTimeout(10.0f);
+		Client = MakeShared<FNakamaApiConfig>(FNakamaApiConfig{ServerKey, Host, Port, false, true});
+		Client->Timeout = 10.0f;
 	});
 
 	AfterEach([this]()
@@ -5748,7 +5727,7 @@ void FNakamaSocialAuthSpec::Define()
 			FNakamaAccountFacebook Account;
 			Account.Token = TEXT("");
 
-			Client->AuthenticateFacebook(Account, true, TEXT(""), true,
+			NakamaApi::AuthenticateFacebook(Client, Account, true, TEXT(""), true,
 				[this, Done](const FNakamaSession& Result)
 				{
 					AddError(TEXT("Expected error but got success"));
@@ -5770,7 +5749,7 @@ void FNakamaSocialAuthSpec::Define()
 			FNakamaAccountGoogle Account;
 			Account.Token = TEXT("");
 
-			Client->AuthenticateGoogle(Account, true, TEXT(""),
+			NakamaApi::AuthenticateGoogle(Client, Account, true, TEXT(""),
 				[this, Done](const FNakamaSession& Result)
 				{
 					AddError(TEXT("Expected error but got success"));
@@ -5792,7 +5771,7 @@ void FNakamaSocialAuthSpec::Define()
 			FNakamaAccountSteam Account;
 			Account.Token = TEXT("");
 
-			Client->AuthenticateSteam(Account, true, TEXT(""), true,
+			NakamaApi::AuthenticateSteam(Client, Account, true, TEXT(""), true,
 				[this, Done](const FNakamaSession& Result)
 				{
 					AddError(TEXT("Expected error but got success"));
@@ -5814,7 +5793,7 @@ void FNakamaSocialAuthSpec::Define()
 			FNakamaAccountApple Account;
 			Account.Token = TEXT("");
 
-			Client->AuthenticateApple(Account, true, TEXT(""),
+			NakamaApi::AuthenticateApple(Client, Account, true, TEXT(""),
 				[this, Done](const FNakamaSession& Result)
 				{
 					AddError(TEXT("Expected error but got success"));
@@ -5842,7 +5821,7 @@ void FNakamaSocialAuthSpec::Define()
 			Account.Signature = TEXT("");
 			Account.PublicKeyUrl = TEXT("");
 
-			Client->AuthenticateGameCenter(Account, true, TEXT(""),
+			NakamaApi::AuthenticateGameCenter(Client, Account, true, TEXT(""),
 				[this, Done](const FNakamaSession& Result)
 				{
 					AddError(TEXT("Expected error but got success"));
@@ -5865,8 +5844,8 @@ void FNakamaSocialAuthSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaSessionExtendedSpec, "NakamaTest.SessionExt",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	TSharedPtr<FNakamaClient> Client;
-	FNakamaSession Session;
+	FNakamaApiConfigPtr Client;
+	FNakamaSessionPtr Session;
 
 	static const FString ServerKey;
 	static const FString Host;
@@ -5883,8 +5862,8 @@ void FNakamaSessionExtendedSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = FNakamaClient::CreateDefaultClient(ServerKey, Host, Port, false, true);
-		Client->SetTimeout(10.0f);
+		Client = MakeShared<FNakamaApiConfig>(FNakamaApiConfig{ServerKey, Host, Port, false, true});
+		Client->Timeout = 10.0f;
 	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
@@ -5892,10 +5871,10 @@ void FNakamaSessionExtendedSpec::Define()
 		FNakamaAccountCustom Account;
 		Account.Id = GenerateId();
 
-		Client->AuthenticateCustom(Account, true, TEXT(""),
+		NakamaApi::AuthenticateCustom(Client, Account, true, TEXT(""),
 			[this, Done](const FNakamaSession& Result)
 			{
-				Session = Result;
+				Session = MakeShared<FNakamaSession>(Result);
 				Done.Execute();
 			},
 			[this, Done](const FNakamaError& Error)
@@ -5915,13 +5894,13 @@ void FNakamaSessionExtendedSpec::Define()
 	{
 		LatentIt("should logout and invalidate session", [this](const FDoneDelegate& Done)
 		{
-			Client->SessionLogout(Session,
-				Session.Token,
-				Session.RefreshToken,
+			NakamaApi::SessionLogout(Client, Session,
+				Session->Token,
+				Session->RefreshToken,
 				[this, Done]()
 				{
 					// Now try to get account with the old session - should fail
-					Client->GetAccount(Session,
+					NakamaApi::GetAccount(Client, Session,
 						[this, Done](const FNakamaAccount& Result)
 						{
 							// Session might still be valid for a short time due to caching
@@ -5949,7 +5928,7 @@ void FNakamaSessionExtendedSpec::Define()
 	{
 		LatentIt("should fail with empty token", [this](const FDoneDelegate& Done)
 		{
-			Client->SessionRefresh(TEXT(""),
+			NakamaApi::SessionRefresh(Client, TEXT(""),
 				TMap<FString, FString>(),
 				[this, Done](const FNakamaSession& Result)
 				{
@@ -5966,7 +5945,7 @@ void FNakamaSessionExtendedSpec::Define()
 
 		LatentIt("should fail with malformed token", [this](const FDoneDelegate& Done)
 		{
-			Client->SessionRefresh(TEXT("not-a-valid-jwt-token"),
+			NakamaApi::SessionRefresh(Client, TEXT("not-a-valid-jwt-token"),
 				TMap<FString, FString>(),
 				[this, Done](const FNakamaSession& Result)
 				{
@@ -5990,8 +5969,8 @@ void FNakamaSessionExtendedSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaUsersExtendedSpec, "NakamaTest.UsersExt",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	TSharedPtr<FNakamaClient> Client;
-	FNakamaSession Session;
+	FNakamaApiConfigPtr Client;
+	FNakamaSessionPtr Session;
 	FString UserId;
 
 	static const FString ServerKey;
@@ -6009,8 +5988,8 @@ void FNakamaUsersExtendedSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = FNakamaClient::CreateDefaultClient(ServerKey, Host, Port, false, true);
-		Client->SetTimeout(10.0f);
+		Client = MakeShared<FNakamaApiConfig>(FNakamaApiConfig{ServerKey, Host, Port, false, true});
+		Client->Timeout = 10.0f;
 	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
@@ -6018,11 +5997,11 @@ void FNakamaUsersExtendedSpec::Define()
 		FNakamaAccountCustom Account;
 		Account.Id = GenerateId();
 
-		Client->AuthenticateCustom(Account, true, TEXT(""),
+		NakamaApi::AuthenticateCustom(Client, Account, true, TEXT(""),
 			[this, Done](const FNakamaSession& Result)
 			{
-				Session = Result;
-				Client->GetAccount(Session,
+				Session = MakeShared<FNakamaSession>(Result);
+				NakamaApi::GetAccount(Client, Session,
 					[this, Done](const FNakamaAccount& AccResult)
 					{
 						UserId = AccResult.User.Id;
@@ -6056,7 +6035,7 @@ void FNakamaUsersExtendedSpec::Define()
 			TArray<FString> EmptyUsernames;
 			TArray<FString> EmptyFacebookIds;
 
-			Client->GetUsers(Session,
+			NakamaApi::GetUsers(Client, Session,
 				EmptyIds,
 				EmptyUsernames,
 				EmptyFacebookIds,
@@ -6079,7 +6058,7 @@ void FNakamaUsersExtendedSpec::Define()
 			TArray<FString> InvalidIds;
 			InvalidIds.Add(TEXT("not-a-valid-uuid"));
 
-			Client->GetUsers(Session,
+			NakamaApi::GetUsers(Client, Session,
 				InvalidIds,
 				TArray<FString>(),
 				TArray<FString>(),
@@ -6101,7 +6080,7 @@ void FNakamaUsersExtendedSpec::Define()
 			TArray<FString> FacebookIds;
 			FacebookIds.Add(TEXT("123456789"));
 
-			Client->GetUsers(Session,
+			NakamaApi::GetUsers(Client, Session,
 				TArray<FString>(),
 				TArray<FString>(),
 				FacebookIds,
@@ -6129,8 +6108,8 @@ void FNakamaUsersExtendedSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaFriendsOfFriendsSpec, "NakamaTest.FriendsOfFriends",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	TSharedPtr<FNakamaClient> Client;
-	FNakamaSession Session;
+	FNakamaApiConfigPtr Client;
+	FNakamaSessionPtr Session;
 	FString UserId;
 
 	static const FString ServerKey;
@@ -6148,8 +6127,8 @@ void FNakamaFriendsOfFriendsSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = FNakamaClient::CreateDefaultClient(ServerKey, Host, Port, false, true);
-		Client->SetTimeout(10.0f);
+		Client = MakeShared<FNakamaApiConfig>(FNakamaApiConfig{ServerKey, Host, Port, false, true});
+		Client->Timeout = 10.0f;
 	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
@@ -6157,11 +6136,11 @@ void FNakamaFriendsOfFriendsSpec::Define()
 		FNakamaAccountCustom Account;
 		Account.Id = GenerateId();
 
-		Client->AuthenticateCustom(Account, true, TEXT(""),
+		NakamaApi::AuthenticateCustom(Client, Account, true, TEXT(""),
 			[this, Done](const FNakamaSession& Result)
 			{
-				Session = Result;
-				Client->GetAccount(Session,
+				Session = MakeShared<FNakamaSession>(Result);
+				NakamaApi::GetAccount(Client, Session,
 					[this, Done](const FNakamaAccount& AccResult)
 					{
 						UserId = AccResult.User.Id;
@@ -6191,7 +6170,7 @@ void FNakamaFriendsOfFriendsSpec::Define()
 	{
 		LatentIt("should list friends of friends", [this](const FDoneDelegate& Done)
 		{
-			Client->ListFriendsOfFriends(Session,
+			NakamaApi::ListFriendsOfFriends(Client, Session,
 				100,
 				TEXT(""),
 				[this, Done](const FNakamaFriendsOfFriendsList& Result)
@@ -6209,7 +6188,7 @@ void FNakamaFriendsOfFriendsSpec::Define()
 
 		LatentIt("should respect limit parameter", [this](const FDoneDelegate& Done)
 		{
-			Client->ListFriendsOfFriends(Session,
+			NakamaApi::ListFriendsOfFriends(Client, Session,
 				5,  // Small limit
 				TEXT(""),
 				[this, Done](const FNakamaFriendsOfFriendsList& Result)
@@ -6231,7 +6210,7 @@ void FNakamaFriendsOfFriendsSpec::Define()
 		LatentIt("should accept limit zero", [this](const FDoneDelegate& Done)
 		{
 			// Nakama accepts limit=0 and returns results with default limit
-			Client->ListFriends(Session,
+			NakamaApi::ListFriends(Client, Session,
 				0,  // Nakama accepts this
 				0,
 				TEXT(""),
@@ -6250,7 +6229,7 @@ void FNakamaFriendsOfFriendsSpec::Define()
 
 		LatentIt("should fail with invalid state filter", [this](const FDoneDelegate& Done)
 		{
-			Client->ListFriends(Session,
+			NakamaApi::ListFriends(Client, Session,
 				100,
 				99,  // Invalid state
 				TEXT(""),
@@ -6276,7 +6255,7 @@ void FNakamaFriendsOfFriendsSpec::Define()
 			TArray<FString> EmptyIds;
 			TArray<FString> EmptyUsernames;
 
-			Client->AddFriends(Session,
+			NakamaApi::AddFriends(Client, Session,
 				EmptyIds,
 				EmptyUsernames,
 				TEXT(""),  // Metadata
@@ -6298,7 +6277,7 @@ void FNakamaFriendsOfFriendsSpec::Define()
 			TArray<FString> InvalidIds;
 			InvalidIds.Add(TEXT("not-a-uuid"));
 
-			Client->AddFriends(Session,
+			NakamaApi::AddFriends(Client, Session,
 				InvalidIds,
 				TArray<FString>(),
 				TEXT(""),  // Metadata
@@ -6323,7 +6302,7 @@ void FNakamaFriendsOfFriendsSpec::Define()
 			TArray<FString> SelfId;
 			SelfId.Add(UserId);
 
-			Client->BlockFriends(Session,
+			NakamaApi::BlockFriends(Client, Session,
 				SelfId,
 				TArray<FString>(),
 				[this, Done]()
@@ -6348,10 +6327,10 @@ void FNakamaFriendsOfFriendsSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaGroupPermissionsSpec, "NakamaTest.GroupPermissions",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	TSharedPtr<FNakamaClient> Client;
-	TSharedPtr<FNakamaClient> Client2;
-	FNakamaSession Session;
-	FNakamaSession Session2;
+	FNakamaApiConfigPtr Client;
+	FNakamaApiConfigPtr Client2;
+	FNakamaSessionPtr Session;
+	FNakamaSessionPtr Session2;
 	FString UserId;
 	FString UserId2;
 	FString GroupId;
@@ -6372,10 +6351,10 @@ void FNakamaGroupPermissionsSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = FNakamaClient::CreateDefaultClient(ServerKey, Host, Port, false, true);
-		Client->SetTimeout(10.0f);
-		Client2 = FNakamaClient::CreateDefaultClient(ServerKey, Host, Port, false, true);
-		Client2->SetTimeout(10.0f);
+		Client = MakeShared<FNakamaApiConfig>(FNakamaApiConfig{ServerKey, Host, Port, false, true});
+		Client->Timeout = 10.0f;
+		Client2 = MakeShared<FNakamaApiConfig>(FNakamaApiConfig{ServerKey, Host, Port, false, true});
+		Client2->Timeout = 10.0f;
 	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
@@ -6384,11 +6363,11 @@ void FNakamaGroupPermissionsSpec::Define()
 		FNakamaAccountCustom Account1;
 		Account1.Id = GenerateId();
 
-		Client->AuthenticateCustom(Account1, true, TEXT(""),
+		NakamaApi::AuthenticateCustom(Client, Account1, true, TEXT(""),
 			[this, Done](const FNakamaSession& Result)
 			{
-				Session = Result;
-				Client->GetAccount(Session,
+				Session = MakeShared<FNakamaSession>(Result);
+				NakamaApi::GetAccount(Client, Session,
 					[this, Done](const FNakamaAccount& AccResult)
 					{
 						UserId = AccResult.User.Id;
@@ -6397,11 +6376,11 @@ void FNakamaGroupPermissionsSpec::Define()
 						FNakamaAccountCustom Account2;
 						Account2.Id = GenerateId();
 
-						Client2->AuthenticateCustom(Account2, true, TEXT(""),
+						NakamaApi::AuthenticateCustom(Client2, Account2, true, TEXT(""),
 							[this, Done](const FNakamaSession& Result2)
 							{
-								Session2 = Result2;
-								Client2->GetAccount(Session2,
+								Session2 = MakeShared<FNakamaSession>(Result2);
+								NakamaApi::GetAccount(Client2, Session2,
 									[this, Done](const FNakamaAccount& AccResult2)
 									{
 										UserId2 = AccResult2.User.Id;
@@ -6449,7 +6428,7 @@ void FNakamaGroupPermissionsSpec::Define()
 			// Nakama accepts max_count=0 (uses default)
 			FString GroupName = FString::Printf(TEXT("testgroup_%s"), *GenerateShortId());
 
-			Client->CreateGroup(Session,
+			NakamaApi::CreateGroup(Client, Session,
 				GroupName,
 				TEXT(""),
 				TEXT(""),
@@ -6473,7 +6452,7 @@ void FNakamaGroupPermissionsSpec::Define()
 		{
 			FString GroupName = FString::Printf(TEXT("closedgroup_%s"), *GenerateShortId());
 
-			Client->CreateGroup(Session,
+			NakamaApi::CreateGroup(Client, Session,
 				GroupName,
 				TEXT(""),
 				TEXT("A closed group"),
@@ -6498,7 +6477,7 @@ void FNakamaGroupPermissionsSpec::Define()
 	{
 		LatentIt("should fail with empty group ID", [this](const FDoneDelegate& Done)
 		{
-			Client->UpdateGroup(Session,
+			NakamaApi::UpdateGroup(Client, Session,
 				TEXT(""),  // Empty group ID
 				TEXT("newname"),
 				TEXT(""),
@@ -6520,7 +6499,7 @@ void FNakamaGroupPermissionsSpec::Define()
 
 		LatentIt("should fail with invalid group ID format", [this](const FDoneDelegate& Done)
 		{
-			Client->UpdateGroup(Session,
+			NakamaApi::UpdateGroup(Client, Session,
 				TEXT("not-a-valid-uuid"),
 				TEXT("newname"),
 				TEXT(""),
@@ -6545,7 +6524,7 @@ void FNakamaGroupPermissionsSpec::Define()
 	{
 		LatentIt("should fail with invalid group ID format", [this](const FDoneDelegate& Done)
 		{
-			Client->DeleteGroup(Session,
+			NakamaApi::DeleteGroup(Client, Session,
 				TEXT("not-a-valid-uuid"),
 				[this, Done]()
 				{
@@ -6565,7 +6544,7 @@ void FNakamaGroupPermissionsSpec::Define()
 			// Create group with user 1
 			FString GroupName = FString::Printf(TEXT("testdelete_%s"), *GenerateShortId());
 
-			Client->CreateGroup(Session,
+			NakamaApi::CreateGroup(Client, Session,
 				GroupName,
 				TEXT(""),
 				TEXT(""),
@@ -6575,7 +6554,7 @@ void FNakamaGroupPermissionsSpec::Define()
 				[this, Done](const FNakamaGroup& Result)
 				{
 					// User 2 tries to delete - should fail
-					Client2->DeleteGroup(Session2,
+					NakamaApi::DeleteGroup(Client2, Session2,
 						Result.Id,
 						[this, Done]()
 						{
@@ -6604,7 +6583,7 @@ void FNakamaGroupPermissionsSpec::Define()
 		{
 			FString FakeGroupId = TEXT("ffffffff-ffff-ffff-ffff-ffffffffffff");
 
-			Client->JoinGroup(Session,
+			NakamaApi::JoinGroup(Client, Session,
 				FakeGroupId,
 				[this, Done]()
 				{
@@ -6623,7 +6602,7 @@ void FNakamaGroupPermissionsSpec::Define()
 		{
 			FString GroupName = FString::Printf(TEXT("testjoin_%s"), *GenerateShortId());
 
-			Client->CreateGroup(Session,
+			NakamaApi::CreateGroup(Client, Session,
 				GroupName,
 				TEXT(""),
 				TEXT(""),
@@ -6633,7 +6612,7 @@ void FNakamaGroupPermissionsSpec::Define()
 				[this, Done](const FNakamaGroup& Result)
 				{
 					// Creator is already a member, try to join again
-					Client->JoinGroup(Session,
+					NakamaApi::JoinGroup(Client, Session,
 						Result.Id,
 						[this, Done]()
 						{
@@ -6664,7 +6643,7 @@ void FNakamaGroupPermissionsSpec::Define()
 		{
 			FString GroupName = FString::Printf(TEXT("testleave_%s"), *GenerateShortId());
 
-			Client->CreateGroup(Session,
+			NakamaApi::CreateGroup(Client, Session,
 				GroupName,
 				TEXT(""),
 				TEXT(""),
@@ -6674,7 +6653,7 @@ void FNakamaGroupPermissionsSpec::Define()
 				[this, Done](const FNakamaGroup& Result)
 				{
 					// User 2 is not a member, try to leave
-					Client2->LeaveGroup(Session2,
+					NakamaApi::LeaveGroup(Client2, Session2,
 						Result.Id,
 						[this, Done]()
 						{
@@ -6703,7 +6682,7 @@ void FNakamaGroupPermissionsSpec::Define()
 	{
 		LatentIt("should fail with invalid group ID format", [this](const FDoneDelegate& Done)
 		{
-			Client->ListGroupUsers(Session,
+			NakamaApi::ListGroupUsers(Client, Session,
 				TEXT("not-a-valid-uuid"),
 				100,
 				0,
@@ -6726,7 +6705,7 @@ void FNakamaGroupPermissionsSpec::Define()
 	{
 		LatentIt("should fail with invalid user ID format", [this](const FDoneDelegate& Done)
 		{
-			Client->ListUserGroups(Session,
+			NakamaApi::ListUserGroups(Client, Session,
 				TEXT("not-a-valid-uuid"),
 				100,
 				0,
@@ -6746,7 +6725,7 @@ void FNakamaGroupPermissionsSpec::Define()
 
 		LatentIt("should list own groups", [this](const FDoneDelegate& Done)
 		{
-			Client->ListUserGroups(Session,
+			NakamaApi::ListUserGroups(Client, Session,
 				UserId,
 				100,
 				0,
@@ -6773,10 +6752,10 @@ void FNakamaGroupPermissionsSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaStoragePermissionsSpec, "NakamaTest.StoragePermissions",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	TSharedPtr<FNakamaClient> Client;
-	TSharedPtr<FNakamaClient> Client2;
-	FNakamaSession Session;
-	FNakamaSession Session2;
+	FNakamaApiConfigPtr Client;
+	FNakamaApiConfigPtr Client2;
+	FNakamaSessionPtr Session;
+	FNakamaSessionPtr Session2;
 	FString UserId;
 	FString UserId2;
 
@@ -6796,10 +6775,10 @@ void FNakamaStoragePermissionsSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = FNakamaClient::CreateDefaultClient(ServerKey, Host, Port, false, true);
-		Client->SetTimeout(10.0f);
-		Client2 = FNakamaClient::CreateDefaultClient(ServerKey, Host, Port, false, true);
-		Client2->SetTimeout(10.0f);
+		Client = MakeShared<FNakamaApiConfig>(FNakamaApiConfig{ServerKey, Host, Port, false, true});
+		Client->Timeout = 10.0f;
+		Client2 = MakeShared<FNakamaApiConfig>(FNakamaApiConfig{ServerKey, Host, Port, false, true});
+		Client2->Timeout = 10.0f;
 	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
@@ -6808,11 +6787,11 @@ void FNakamaStoragePermissionsSpec::Define()
 		FNakamaAccountCustom Account1;
 		Account1.Id = GenerateId();
 
-		Client->AuthenticateCustom(Account1, true, TEXT(""),
+		NakamaApi::AuthenticateCustom(Client, Account1, true, TEXT(""),
 			[this, Done](const FNakamaSession& Result)
 			{
-				Session = Result;
-				Client->GetAccount(Session,
+				Session = MakeShared<FNakamaSession>(Result);
+				NakamaApi::GetAccount(Client, Session,
 					[this, Done](const FNakamaAccount& AccResult)
 					{
 						UserId = AccResult.User.Id;
@@ -6821,11 +6800,11 @@ void FNakamaStoragePermissionsSpec::Define()
 						FNakamaAccountCustom Account2;
 						Account2.Id = GenerateId();
 
-						Client2->AuthenticateCustom(Account2, true, TEXT(""),
+						NakamaApi::AuthenticateCustom(Client2, Account2, true, TEXT(""),
 							[this, Done](const FNakamaSession& Result2)
 							{
-								Session2 = Result2;
-								Client2->GetAccount(Session2,
+								Session2 = MakeShared<FNakamaSession>(Result2);
+								NakamaApi::GetAccount(Client2, Session2,
 									[this, Done](const FNakamaAccount& AccResult2)
 									{
 										UserId2 = AccResult2.User.Id;
@@ -6879,7 +6858,7 @@ void FNakamaStoragePermissionsSpec::Define()
 			Obj.PermissionWrite = 1;
 			Objects.Add(Obj);
 
-			Client->WriteStorageObjects(Session,
+			NakamaApi::WriteStorageObjects(Client, Session,
 				Objects,
 				[this, Done](const FNakamaStorageObjectAcks& Result)
 				{
@@ -6905,7 +6884,7 @@ void FNakamaStoragePermissionsSpec::Define()
 			Obj.PermissionWrite = 99;  // Invalid
 			Objects.Add(Obj);
 
-			Client->WriteStorageObjects(Session,
+			NakamaApi::WriteStorageObjects(Client, Session,
 				Objects,
 				[this, Done](const FNakamaStorageObjectAcks& Result)
 				{
@@ -6937,7 +6916,7 @@ void FNakamaStoragePermissionsSpec::Define()
 			Obj.PermissionWrite = 1; // Owner only write
 			Objects.Add(Obj);
 
-			Client->WriteStorageObjects(Session,
+			NakamaApi::WriteStorageObjects(Client, Session,
 				Objects,
 				[this, Done, TestKey](const FNakamaStorageObjectAcks& Result)
 				{
@@ -6949,7 +6928,7 @@ void FNakamaStoragePermissionsSpec::Define()
 					ReadId.UserId = UserId;  // User 1's ID
 					ReadIds.Add(ReadId);
 
-					Client2->ReadStorageObjects(Session2,
+					NakamaApi::ReadStorageObjects(Client2, Session2,
 						ReadIds,
 						[this, Done](const FNakamaStorageObjects& Result2)
 						{
@@ -6985,7 +6964,7 @@ void FNakamaStoragePermissionsSpec::Define()
 			Obj.PermissionWrite = 1;
 			Objects.Add(Obj);
 
-			Client->WriteStorageObjects(Session,
+			NakamaApi::WriteStorageObjects(Client, Session,
 				Objects,
 				[this, Done, TestKey](const FNakamaStorageObjectAcks& Result)
 				{
@@ -6997,7 +6976,7 @@ void FNakamaStoragePermissionsSpec::Define()
 					ReadId.UserId = UserId;  // User 1's ID
 					ReadIds.Add(ReadId);
 
-					Client2->ReadStorageObjects(Session2,
+					NakamaApi::ReadStorageObjects(Client2, Session2,
 						ReadIds,
 						[this, Done](const FNakamaStorageObjects& Result2)
 						{
@@ -7030,8 +7009,8 @@ void FNakamaStoragePermissionsSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaChannelExtendedSpec, "NakamaTest.ChannelExt",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	TSharedPtr<FNakamaClient> Client;
-	FNakamaSession Session;
+	FNakamaApiConfigPtr Client;
+	FNakamaSessionPtr Session;
 	FString UserId;
 	FString GroupId;
 
@@ -7051,8 +7030,8 @@ void FNakamaChannelExtendedSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = FNakamaClient::CreateDefaultClient(ServerKey, Host, Port, false, true);
-		Client->SetTimeout(10.0f);
+		Client = MakeShared<FNakamaApiConfig>(FNakamaApiConfig{ServerKey, Host, Port, false, true});
+		Client->Timeout = 10.0f;
 	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
@@ -7060,18 +7039,18 @@ void FNakamaChannelExtendedSpec::Define()
 		FNakamaAccountCustom Account;
 		Account.Id = GenerateId();
 
-		Client->AuthenticateCustom(Account, true, TEXT(""),
+		NakamaApi::AuthenticateCustom(Client, Account, true, TEXT(""),
 			[this, Done](const FNakamaSession& Result)
 			{
-				Session = Result;
-				Client->GetAccount(Session,
+				Session = MakeShared<FNakamaSession>(Result);
+				NakamaApi::GetAccount(Client, Session,
 					[this, Done](const FNakamaAccount& AccResult)
 					{
 						UserId = AccResult.User.Id;
 
 						// Create a group for group channel tests
 						FString GroupName = FString::Printf(TEXT("channelgroup_%s"), *GenerateShortId());
-						Client->CreateGroup(Session,
+						NakamaApi::CreateGroup(Client, Session,
 							GroupName,
 							TEXT(""),
 							TEXT(""),
@@ -7118,7 +7097,7 @@ void FNakamaChannelExtendedSpec::Define()
 			// Using raw group ID format without joining will fail
 			FString ChannelId = FString::Printf(TEXT("2.%s"), *GroupId);
 
-			Client->ListChannelMessages(Session,
+			NakamaApi::ListChannelMessages(Client, Session,
 				ChannelId,
 				100,
 				true,
@@ -7143,7 +7122,7 @@ void FNakamaChannelExtendedSpec::Define()
 			FString RoomName = FString::Printf(TEXT("backwardroom_%s"), *GenerateShortId());
 			FString ChannelId = FString::Printf(TEXT("2.%s"), *RoomName);
 
-			Client->ListChannelMessages(Session,
+			NakamaApi::ListChannelMessages(Client, Session,
 				ChannelId,
 				100,
 				false,  // backward
@@ -7167,7 +7146,7 @@ void FNakamaChannelExtendedSpec::Define()
 			// Invalid format - not a valid channel ID
 			FString InvalidChannelId = TEXT("invalid_channel_format");
 
-			Client->ListChannelMessages(Session,
+			NakamaApi::ListChannelMessages(Client, Session,
 				InvalidChannelId,
 				100,
 				true,
@@ -7190,7 +7169,7 @@ void FNakamaChannelExtendedSpec::Define()
 			FString FakeGroupId = TEXT("ffffffff-ffff-ffff-ffff-ffffffffffff");
 			FString ChannelId = FString::Printf(TEXT("2.%s"), *FakeGroupId);
 
-			Client->ListChannelMessages(Session,
+			NakamaApi::ListChannelMessages(Client, Session,
 				ChannelId,
 				100,
 				true,
@@ -7217,10 +7196,10 @@ void FNakamaChannelExtendedSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaLinkExtendedSpec, "NakamaTest.LinkExt",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	TSharedPtr<FNakamaClient> Client;
-	TSharedPtr<FNakamaClient> Client2;
-	FNakamaSession Session;
-	FNakamaSession Session2;
+	FNakamaApiConfigPtr Client;
+	FNakamaApiConfigPtr Client2;
+	FNakamaSessionPtr Session;
+	FNakamaSessionPtr Session2;
 
 	static const FString ServerKey;
 	static const FString Host;
@@ -7238,10 +7217,10 @@ void FNakamaLinkExtendedSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = FNakamaClient::CreateDefaultClient(ServerKey, Host, Port, false, true);
-		Client->SetTimeout(10.0f);
-		Client2 = FNakamaClient::CreateDefaultClient(ServerKey, Host, Port, false, true);
-		Client2->SetTimeout(10.0f);
+		Client = MakeShared<FNakamaApiConfig>(FNakamaApiConfig{ServerKey, Host, Port, false, true});
+		Client->Timeout = 10.0f;
+		Client2 = MakeShared<FNakamaApiConfig>(FNakamaApiConfig{ServerKey, Host, Port, false, true});
+		Client2->Timeout = 10.0f;
 	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
@@ -7250,18 +7229,18 @@ void FNakamaLinkExtendedSpec::Define()
 		FNakamaAccountCustom Account1;
 		Account1.Id = GenerateId();
 
-		Client->AuthenticateCustom(Account1, true, TEXT(""),
+		NakamaApi::AuthenticateCustom(Client, Account1, true, TEXT(""),
 			[this, Done](const FNakamaSession& Result)
 			{
-				Session = Result;
+				Session = MakeShared<FNakamaSession>(Result);
 
 				FNakamaAccountCustom Account2;
 				Account2.Id = GenerateId();
 
-				Client2->AuthenticateCustom(Account2, true, TEXT(""),
+				NakamaApi::AuthenticateCustom(Client2, Account2, true, TEXT(""),
 					[this, Done](const FNakamaSession& Result2)
 					{
-						Session2 = Result2;
+						Session2 = MakeShared<FNakamaSession>(Result2);
 						Done.Execute();
 					},
 					[this, Done](const FNakamaError& Error)
@@ -7292,13 +7271,13 @@ void FNakamaLinkExtendedSpec::Define()
 			FString CustomId = GenerateId();
 
 			// User 1 links the custom ID
-			Client->LinkCustom(Session,
+			NakamaApi::LinkCustom(Client, Session,
 				CustomId,
 				TMap<FString, FString>(),
 				[this, Done, CustomId]()
 				{
 					// User 2 tries to link the same custom ID
-					Client2->LinkCustom(Session2,
+					NakamaApi::LinkCustom(Client2, Session2,
 						CustomId,
 						TMap<FString, FString>(),
 						[this, Done]()
@@ -7329,13 +7308,13 @@ void FNakamaLinkExtendedSpec::Define()
 			FString DeviceId = GenerateId();
 
 			// User 1 links the device ID
-			Client->LinkDevice(Session,
+			NakamaApi::LinkDevice(Client, Session,
 				DeviceId,
 				TMap<FString, FString>(),
 				[this, Done, DeviceId]()
 				{
 					// User 2 tries to link the same device ID
-					Client2->LinkDevice(Session2,
+					NakamaApi::LinkDevice(Client2, Session2,
 						DeviceId,
 						TMap<FString, FString>(),
 						[this, Done]()
@@ -7366,14 +7345,14 @@ void FNakamaLinkExtendedSpec::Define()
 			FString Email = FString::Printf(TEXT("linked_%s@example.com"), *GenerateShortId());
 
 			// User 1 links the email
-			Client->LinkEmail(Session,
+			NakamaApi::LinkEmail(Client, Session,
 				Email,
 				TEXT("password123"),
 				TMap<FString, FString>(),
 				[this, Done, Email]()
 				{
 					// User 2 tries to link the same email
-					Client2->LinkEmail(Session2,
+					NakamaApi::LinkEmail(Client2, Session2,
 						Email,
 						TEXT("password123"),
 						TMap<FString, FString>(),
@@ -7404,7 +7383,7 @@ void FNakamaLinkExtendedSpec::Define()
 		{
 			FString NotLinkedId = GenerateId();
 
-			Client->UnlinkCustom(Session,
+			NakamaApi::UnlinkCustom(Client, Session,
 				NotLinkedId,
 				TMap<FString, FString>(),
 				[this, Done]()
@@ -7425,7 +7404,7 @@ void FNakamaLinkExtendedSpec::Define()
 		{
 			FString NotLinkedId = GenerateId();
 
-			Client->UnlinkDevice(Session,
+			NakamaApi::UnlinkDevice(Client, Session,
 				NotLinkedId,
 				TMap<FString, FString>(),
 				[this, Done]()
@@ -7445,7 +7424,7 @@ void FNakamaLinkExtendedSpec::Define()
 		{
 			FString NotLinkedEmail = FString::Printf(TEXT("notlinked_%s@example.com"), *GenerateShortId());
 
-			Client->UnlinkEmail(Session,
+			NakamaApi::UnlinkEmail(Client, Session,
 				NotLinkedEmail,
 				TEXT("password123"),
 				TMap<FString, FString>(),
@@ -7471,8 +7450,8 @@ void FNakamaLinkExtendedSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaRpcExtendedSpec, "NakamaTest.RPCExt",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	TSharedPtr<FNakamaClient> Client;
-	FNakamaSession Session;
+	FNakamaApiConfigPtr Client;
+	FNakamaSessionPtr Session;
 
 	static const FString ServerKey;
 	static const FString Host;
@@ -7491,8 +7470,8 @@ void FNakamaRpcExtendedSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = FNakamaClient::CreateDefaultClient(ServerKey, Host, Port, false, true);
-		Client->SetTimeout(10.0f);
+		Client = MakeShared<FNakamaApiConfig>(FNakamaApiConfig{ServerKey, Host, Port, false, true});
+		Client->Timeout = 10.0f;
 	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
@@ -7500,10 +7479,10 @@ void FNakamaRpcExtendedSpec::Define()
 		FNakamaAccountCustom Account;
 		Account.Id = GenerateId();
 
-		Client->AuthenticateCustom(Account, true, TEXT(""),
+		NakamaApi::AuthenticateCustom(Client, Account, true, TEXT(""),
 			[this, Done](const FNakamaSession& Result)
 			{
-				Session = Result;
+				Session = MakeShared<FNakamaSession>(Result);
 				Done.Execute();
 			},
 			[this, Done](const FNakamaError& Error)
@@ -7528,7 +7507,7 @@ void FNakamaRpcExtendedSpec::Define()
 			Payload->SetStringField(TEXT("test"), TEXT("data"));
 			Payload->SetNumberField(TEXT("number"), 42);
 
-			Client->RpcFunc(Session,
+			NakamaApi::RpcFunc(Client, Session,
 				TEXT("test_echo"),
 				Payload,
 				TEXT(""),  // HttpKey (optional for client calls)
@@ -7550,7 +7529,7 @@ void FNakamaRpcExtendedSpec::Define()
 
 		LatentIt("should return NOT_FOUND for non-existent RPC with empty payload", [this](const FDoneDelegate& Done)
 		{
-			Client->RpcFunc(Session,
+			NakamaApi::RpcFunc(Client, Session,
 				TEXT("test_echo"),
 				nullptr,
 				TEXT(""),  // HttpKey (optional for client calls)
@@ -7578,7 +7557,7 @@ void FNakamaRpcExtendedSpec::Define()
 			// Use the overloaded RpcFunc with HttpKey instead of Session
 			TSharedPtr<FJsonObject> ServerPayload = MakeShared<FJsonObject>();
 			ServerPayload->SetStringField(TEXT("server"), TEXT("call"));
-			Client->RpcFunc(HttpKey,
+			NakamaApi::RpcFunc(Client, HttpKey,
 				TEXT("test_echo"),
 				ServerPayload,
 				[this, Done](const FNakamaRpc& Result)
@@ -7607,7 +7586,7 @@ void FNakamaRpcExtendedSpec::Define()
 	{
 		LatentIt("should fail with RPC that returns error", [this](const FDoneDelegate& Done)
 		{
-			Client->RpcFunc(Session,
+			NakamaApi::RpcFunc(Client, Session,
 				TEXT("test_error"),
 				nullptr,
 				TEXT(""),  // HttpKey (optional for client calls)
@@ -7634,7 +7613,7 @@ void FNakamaRpcExtendedSpec::Define()
 			TSharedPtr<FJsonObject> Payload = MakeShared<FJsonObject>();
 			Payload->SetStringField(TEXT("message"), TEXT("hello"));
 
-			Client->RpcFunc(Session,
+			NakamaApi::RpcFunc(Client, Session,
 				TEXT("transform"),
 				Payload,
 				TEXT(""),
@@ -7668,7 +7647,7 @@ void FNakamaRpcExtendedSpec::Define()
 			TSharedPtr<FJsonObject> Payload = MakeShared<FJsonObject>();
 			Payload->SetStringField(TEXT("foo"), TEXT("bar"));
 
-			Client->RpcFunc(Session,
+			NakamaApi::RpcFunc(Client, Session,
 				TEXT("transform"),
 				Payload,
 				TEXT(""),
@@ -7690,7 +7669,7 @@ void FNakamaRpcExtendedSpec::Define()
 			TSharedPtr<FJsonObject> Payload = MakeShared<FJsonObject>();
 			Payload->SetStringField(TEXT("message"), TEXT("world"));
 
-			Client->RpcFunc(HttpKey,
+			NakamaApi::RpcFunc(Client, HttpKey,
 				TEXT("transform"),
 				Payload,
 				[this, Done](const FNakamaRpc& Result)
@@ -7727,8 +7706,8 @@ void FNakamaRpcExtendedSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaMatchesValidationSpec, "NakamaTest.MatchesValidation",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	TSharedPtr<FNakamaClient> Client;
-	FNakamaSession Session;
+	FNakamaApiConfigPtr Client;
+	FNakamaSessionPtr Session;
 
 	static const FString ServerKey;
 	static const FString Host;
@@ -7745,8 +7724,8 @@ void FNakamaMatchesValidationSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = FNakamaClient::CreateDefaultClient(ServerKey, Host, Port, false, true);
-		Client->SetTimeout(10.0f);
+		Client = MakeShared<FNakamaApiConfig>(FNakamaApiConfig{ServerKey, Host, Port, false, true});
+		Client->Timeout = 10.0f;
 	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
@@ -7754,10 +7733,10 @@ void FNakamaMatchesValidationSpec::Define()
 		FNakamaAccountCustom Account;
 		Account.Id = GenerateId();
 
-		Client->AuthenticateCustom(Account, true, TEXT(""),
+		NakamaApi::AuthenticateCustom(Client, Account, true, TEXT(""),
 			[this, Done](const FNakamaSession& Result)
 			{
-				Session = Result;
+				Session = MakeShared<FNakamaSession>(Result);
 				Done.Execute();
 			},
 			[this, Done](const FNakamaError& Error)
@@ -7777,7 +7756,7 @@ void FNakamaMatchesValidationSpec::Define()
 	{
 		LatentIt("should fail with limit too high", [this](const FDoneDelegate& Done)
 		{
-			Client->ListMatches(Session,
+			NakamaApi::ListMatches(Client, Session,
 				2000,  // Too high
 				false,
 				TEXT(""),
@@ -7799,7 +7778,7 @@ void FNakamaMatchesValidationSpec::Define()
 
 		LatentIt("should list with combined filters", [this](const FDoneDelegate& Done)
 		{
-			Client->ListMatches(Session,
+			NakamaApi::ListMatches(Client, Session,
 				10,
 				true,  // authoritative
 				TEXT(""),
@@ -7834,8 +7813,8 @@ void FNakamaMatchesValidationSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaPurchasesSpec, "NakamaTest.Purchases",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	TSharedPtr<FNakamaClient> Client;
-	FNakamaSession Session;
+	FNakamaApiConfigPtr Client;
+	FNakamaSessionPtr Session;
 
 	static const FString ServerKey;
 	static const FString Host;
@@ -7852,8 +7831,8 @@ void FNakamaPurchasesSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = FNakamaClient::CreateDefaultClient(ServerKey, Host, Port, false, true);
-		Client->SetTimeout(10.0f);
+		Client = MakeShared<FNakamaApiConfig>(FNakamaApiConfig{ServerKey, Host, Port, false, true});
+		Client->Timeout = 10.0f;
 	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
@@ -7861,10 +7840,10 @@ void FNakamaPurchasesSpec::Define()
 		FNakamaAccountCustom Account;
 		Account.Id = GenerateId();
 
-		Client->AuthenticateCustom(Account, true, TEXT(""),
+		NakamaApi::AuthenticateCustom(Client, Account, true, TEXT(""),
 			[this, Done](const FNakamaSession& Result)
 			{
-				Session = Result;
+				Session = MakeShared<FNakamaSession>(Result);
 				Done.Execute();
 			},
 			[this, Done](const FNakamaError& Error)
@@ -7884,7 +7863,7 @@ void FNakamaPurchasesSpec::Define()
 	{
 		LatentIt("should list subscriptions (empty if none)", [this](const FDoneDelegate& Done)
 		{
-			Client->ListSubscriptions(Session,
+			NakamaApi::ListSubscriptions(Client, Session,
 				100,
 				TEXT(""),
 				[this, Done](const FNakamaSubscriptionList& Result)
@@ -7905,7 +7884,7 @@ void FNakamaPurchasesSpec::Define()
 	{
 		LatentIt("should fail with empty receipt", [this](const FDoneDelegate& Done)
 		{
-			Client->ValidatePurchaseApple(Session,
+			NakamaApi::ValidatePurchaseApple(Client, Session,
 				TEXT(""),  // Empty receipt
 				false,
 				[this, Done](const FNakamaValidatePurchaseResponse& Result)
@@ -7926,7 +7905,7 @@ void FNakamaPurchasesSpec::Define()
 	{
 		LatentIt("should fail with empty purchase", [this](const FDoneDelegate& Done)
 		{
-			Client->ValidatePurchaseGoogle(Session,
+			NakamaApi::ValidatePurchaseGoogle(Client, Session,
 				TEXT(""),  // Empty purchase
 				false,
 				[this, Done](const FNakamaValidatePurchaseResponse& Result)
@@ -7947,7 +7926,7 @@ void FNakamaPurchasesSpec::Define()
 	{
 		LatentIt("should fail with empty receipt", [this](const FDoneDelegate& Done)
 		{
-			Client->ValidateSubscriptionApple(Session,
+			NakamaApi::ValidateSubscriptionApple(Client, Session,
 				TEXT(""),  // Empty receipt
 				false,
 				[this, Done](const FNakamaValidateSubscriptionResponse& Result)
@@ -7968,7 +7947,7 @@ void FNakamaPurchasesSpec::Define()
 	{
 		LatentIt("should fail with empty receipt", [this](const FDoneDelegate& Done)
 		{
-			Client->ValidateSubscriptionGoogle(Session,
+			NakamaApi::ValidateSubscriptionGoogle(Client, Session,
 				TEXT(""),  // Empty receipt
 				false,
 				[this, Done](const FNakamaValidateSubscriptionResponse& Result)
@@ -7993,8 +7972,8 @@ void FNakamaPurchasesSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaEventSpec, "NakamaTest.Event",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	TSharedPtr<FNakamaClient> Client;
-	FNakamaSession Session;
+	FNakamaApiConfigPtr Client;
+	FNakamaSessionPtr Session;
 
 	static const FString ServerKey;
 	static const FString Host;
@@ -8011,8 +7990,8 @@ void FNakamaEventSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = FNakamaClient::CreateDefaultClient(ServerKey, Host, Port, false, true);
-		Client->SetTimeout(10.0f);
+		Client = MakeShared<FNakamaApiConfig>(FNakamaApiConfig{ServerKey, Host, Port, false, true});
+		Client->Timeout = 10.0f;
 	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
@@ -8020,10 +7999,10 @@ void FNakamaEventSpec::Define()
 		FNakamaAccountCustom Account;
 		Account.Id = GenerateId();
 
-		Client->AuthenticateCustom(Account, true, TEXT(""),
+		NakamaApi::AuthenticateCustom(Client, Account, true, TEXT(""),
 			[this, Done](const FNakamaSession& Result)
 			{
-				Session = Result;
+				Session = MakeShared<FNakamaSession>(Result);
 				Done.Execute();
 			},
 			[this, Done](const FNakamaError& Error)
@@ -8046,7 +8025,7 @@ void FNakamaEventSpec::Define()
 			TMap<FString, FString> Properties;
 			Properties.Add(TEXT("source"), TEXT("test"));
 
-			Client->Event(Session,
+			NakamaApi::Event(Client, Session,
 				TEXT("test_event"),
 				FDateTime::UtcNow().ToIso8601(),
 				false,  // External
@@ -8069,7 +8048,7 @@ void FNakamaEventSpec::Define()
 			// Nakama accepts empty event names
 			TMap<FString, FString> Properties;
 
-			Client->Event(Session,
+			NakamaApi::Event(Client, Session,
 				TEXT(""),  // Empty name - Nakama accepts this
 				FDateTime::UtcNow().ToIso8601(),
 				false,  // External
@@ -8096,8 +8075,8 @@ void FNakamaEventSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaHealthcheckSpec, "NakamaTest.Healthcheck",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	TSharedPtr<FNakamaClient> Client;
-	FNakamaSession Session;
+	FNakamaApiConfigPtr Client;
+	FNakamaSessionPtr Session;
 
 	static const FString ServerKey;
 	static const FString Host;
@@ -8116,8 +8095,8 @@ void FNakamaHealthcheckSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = FNakamaClient::CreateDefaultClient(ServerKey, Host, Port, false, true);
-		Client->SetTimeout(10.0f);
+		Client = MakeShared<FNakamaApiConfig>(FNakamaApiConfig{ServerKey, Host, Port, false, true});
+		Client->Timeout = 10.0f;
 	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
@@ -8125,10 +8104,10 @@ void FNakamaHealthcheckSpec::Define()
 		FNakamaAccountCustom Account;
 		Account.Id = GenerateId();
 
-		Client->AuthenticateCustom(Account, true, TEXT(""),
+		NakamaApi::AuthenticateCustom(Client, Account, true, TEXT(""),
 			[this, Done](const FNakamaSession& Result)
 			{
-				Session = Result;
+				Session = MakeShared<FNakamaSession>(Result);
 				Done.Execute();
 			},
 			[this, Done](const FNakamaError& Error)
@@ -8148,7 +8127,7 @@ void FNakamaHealthcheckSpec::Define()
 	{
 		LatentIt("should return healthy status with session", [this](const FDoneDelegate& Done)
 		{
-			Client->Healthcheck(Session,
+			NakamaApi::Healthcheck(Client, Session,
 				[this, Done]()
 				{
 					TestTrue("Server is healthy", true);
@@ -8164,7 +8143,7 @@ void FNakamaHealthcheckSpec::Define()
 
 		LatentIt("should return healthy status with HTTP key", [this](const FDoneDelegate& Done)
 		{
-			Client->Healthcheck(HttpKey,
+			NakamaApi::Healthcheck(Client, HttpKey,
 				[this, Done]()
 				{
 					TestTrue("Server is healthy with HTTP key", true);
@@ -8187,13 +8166,11 @@ void FNakamaHealthcheckSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaGroupUserManagementSpec, "NakamaTest.GroupUsers",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	TSharedPtr<FNakamaClient> Client;
-	TSharedPtr<FNakamaClient> Client2;
-	TSharedPtr<FNakamaClient> Client3;
-	FNakamaSession Session;
-	FNakamaSession Session2;
-	FNakamaSession Session3;
-	FString UserId;
+	FNakamaApiConfigPtr Client;
+	FNakamaSessionPtr Session1;
+	FNakamaSessionPtr Session2;
+	FNakamaSessionPtr Session3;
+	FString UserId1;
 	FString UserId2;
 	FString UserId3;
 	FString GroupId;
@@ -8214,12 +8191,12 @@ void FNakamaGroupUserManagementSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = FNakamaClient::CreateDefaultClient(ServerKey, Host, Port, false, true);
-		Client->SetTimeout(10.0f);
-		Client2 = FNakamaClient::CreateDefaultClient(ServerKey, Host, Port, false, true);
-		Client2->SetTimeout(10.0f);
-		Client3 = FNakamaClient::CreateDefaultClient(ServerKey, Host, Port, false, true);
-		Client3->SetTimeout(10.0f);
+		Client = MakeShared<FNakamaApiConfig>(FNakamaApiConfig{ServerKey, Host, Port, false, true});
+		Client->Timeout = 10.0f;
+		Client2 = MakeShared<FNakamaApiConfig>(FNakamaApiConfig{ServerKey, Host, Port, false, true});
+		Client2->Timeout = 10.0f;
+		Client3 = MakeShared<FNakamaApiConfig>(FNakamaApiConfig{ServerKey, Host, Port, false, true});
+		Client3->Timeout = 10.0f;
 	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
@@ -8228,11 +8205,11 @@ void FNakamaGroupUserManagementSpec::Define()
 		FNakamaAccountCustom Account1;
 		Account1.Id = GenerateId();
 
-		Client->AuthenticateCustom(Account1, true, TEXT(""),
+		NakamaApi::AuthenticateCustom(Client, Account1, true, TEXT(""),
 			[this, Done](const FNakamaSession& Result)
 			{
-				Session = Result;
-				Client->GetAccount(Session,
+				Session = MakeShared<FNakamaSession>(Result);
+				NakamaApi::GetAccount(Client, Session,
 					[this, Done](const FNakamaAccount& AccResult)
 					{
 						UserId = AccResult.User.Id;
@@ -8240,11 +8217,11 @@ void FNakamaGroupUserManagementSpec::Define()
 						FNakamaAccountCustom Account2;
 						Account2.Id = GenerateId();
 
-						Client2->AuthenticateCustom(Account2, true, TEXT(""),
+						NakamaApi::AuthenticateCustom(Client2, Account2, true, TEXT(""),
 							[this, Done](const FNakamaSession& Result2)
 							{
-								Session2 = Result2;
-								Client2->GetAccount(Session2,
+								Session2 = MakeShared<FNakamaSession>(Result2);
+								NakamaApi::GetAccount(Client2, Session2,
 									[this, Done](const FNakamaAccount& AccResult2)
 									{
 										UserId2 = AccResult2.User.Id;
@@ -8252,11 +8229,11 @@ void FNakamaGroupUserManagementSpec::Define()
 										FNakamaAccountCustom Account3;
 										Account3.Id = GenerateId();
 
-										Client3->AuthenticateCustom(Account3, true, TEXT(""),
+										NakamaApi::AuthenticateCustom(Client3, Account3, true, TEXT(""),
 											[this, Done](const FNakamaSession& Result3)
 											{
-												Session3 = Result3;
-												Client3->GetAccount(Session3,
+												Session3 = MakeShared<FNakamaSession>(Result3);
+												NakamaApi::GetAccount(Client3, Session3,
 													[this, Done](const FNakamaAccount& AccResult3)
 													{
 														UserId3 = AccResult3.User.Id;
@@ -8318,7 +8295,7 @@ void FNakamaGroupUserManagementSpec::Define()
 		{
 			FString GroupName = FString::Printf(TEXT("addusers_%s"), *GenerateShortId());
 
-			Client->CreateGroup(Session,
+			NakamaApi::CreateGroup(Client, Session,
 				GroupName, TEXT(""), TEXT(""), TEXT(""), true, 100,
 				[this, Done](const FNakamaGroup& Result)
 				{
@@ -8326,7 +8303,7 @@ void FNakamaGroupUserManagementSpec::Define()
 					TArray<FString> UserIds;
 					UserIds.Add(UserId2);
 
-					Client->AddGroupUsers(Session, GroupId, UserIds,
+					NakamaApi::AddGroupUsers(Client, Session, GroupId, UserIds,
 						[this, Done]()
 						{
 							TestTrue("User added to group", true);
@@ -8354,19 +8331,19 @@ void FNakamaGroupUserManagementSpec::Define()
 		{
 			FString GroupName = FString::Printf(TEXT("kickusers_%s"), *GenerateShortId());
 
-			Client->CreateGroup(Session,
+			NakamaApi::CreateGroup(Client, Session,
 				GroupName, TEXT(""), TEXT(""), TEXT(""), true, 100,
 				[this, Done](const FNakamaGroup& Result)
 				{
 					GroupId = Result.Id;
 
-					Client2->JoinGroup(Session2, GroupId,
+					NakamaApi::JoinGroup(Client2, Session2, GroupId,
 						[this, Done]()
 						{
 							TArray<FString> UserIds;
 							UserIds.Add(UserId2);
 
-							Client->KickGroupUsers(Session, GroupId, UserIds,
+							NakamaApi::KickGroupUsers(Client, Session, GroupId, UserIds,
 								[this, Done]()
 								{
 									TestTrue("User kicked successfully", true);
@@ -8401,19 +8378,19 @@ void FNakamaGroupUserManagementSpec::Define()
 		{
 			FString GroupName = FString::Printf(TEXT("banusers_%s"), *GenerateShortId());
 
-			Client->CreateGroup(Session,
+			NakamaApi::CreateGroup(Client, Session,
 				GroupName, TEXT(""), TEXT(""), TEXT(""), true, 100,
 				[this, Done](const FNakamaGroup& Result)
 				{
 					GroupId = Result.Id;
 
-					Client2->JoinGroup(Session2, GroupId,
+					NakamaApi::JoinGroup(Client2, Session2, GroupId,
 						[this, Done]()
 						{
 							TArray<FString> UserIds;
 							UserIds.Add(UserId2);
 
-							Client->BanGroupUsers(Session, GroupId, UserIds,
+							NakamaApi::BanGroupUsers(Client, Session, GroupId, UserIds,
 								[this, Done]()
 								{
 									TestTrue("User banned successfully", true);
@@ -8445,27 +8422,27 @@ void FNakamaGroupUserManagementSpec::Define()
 		{
 			FString GroupName = FString::Printf(TEXT("banrejoin_%s"), *GenerateShortId());
 
-			Client->CreateGroup(Session,
+			NakamaApi::CreateGroup(Client, Session,
 				GroupName, TEXT(""), TEXT(""), TEXT(""), true, 100,
 				[this, Done](const FNakamaGroup& Result)
 				{
 					GroupId = Result.Id;
 
-					Client2->JoinGroup(Session2, GroupId,
+					NakamaApi::JoinGroup(Client2, Session2, GroupId,
 						[this, Done]()
 						{
 							TArray<FString> UserIds;
 							UserIds.Add(UserId2);
 
-							Client->BanGroupUsers(Session, GroupId, UserIds,
+							NakamaApi::BanGroupUsers(Client, Session, GroupId, UserIds,
 								[this, Done]()
 								{
-									Client2->JoinGroup(Session2, GroupId,
+									NakamaApi::JoinGroup(Client2, Session2, GroupId,
 										[this, Done]()
 										{
 											// JoinGroup may return success for banned users
 											// but verify the user is not actually a member
-											Client->ListGroupUsers(Session, GroupId, 100, 0, TEXT(""),
+											NakamaApi::ListGroupUsers(Client, Session, GroupId, 100, 0, TEXT(""),
 												[this, Done](const FNakamaGroupUserList& List)
 												{
 													bool bFoundUser = false;
@@ -8524,19 +8501,19 @@ void FNakamaGroupUserManagementSpec::Define()
 		{
 			FString GroupName = FString::Printf(TEXT("promote_%s"), *GenerateShortId());
 
-			Client->CreateGroup(Session,
+			NakamaApi::CreateGroup(Client, Session,
 				GroupName, TEXT(""), TEXT(""), TEXT(""), true, 100,
 				[this, Done](const FNakamaGroup& Result)
 				{
 					GroupId = Result.Id;
 
-					Client2->JoinGroup(Session2, GroupId,
+					NakamaApi::JoinGroup(Client2, Session2, GroupId,
 						[this, Done]()
 						{
 							TArray<FString> UserIds;
 							UserIds.Add(UserId2);
 
-							Client->PromoteGroupUsers(Session, GroupId, UserIds,
+							NakamaApi::PromoteGroupUsers(Client, Session, GroupId, UserIds,
 								[this, Done]()
 								{
 									TestTrue("User promoted successfully", true);
@@ -8571,24 +8548,24 @@ void FNakamaGroupUserManagementSpec::Define()
 		{
 			FString GroupName = FString::Printf(TEXT("demote_%s"), *GenerateShortId());
 
-			Client->CreateGroup(Session,
+			NakamaApi::CreateGroup(Client, Session,
 				GroupName, TEXT(""), TEXT(""), TEXT(""), true, 100,
 				[this, Done](const FNakamaGroup& Result)
 				{
 					GroupId = Result.Id;
 
-					Client2->JoinGroup(Session2, GroupId,
+					NakamaApi::JoinGroup(Client2, Session2, GroupId,
 						[this, Done]()
 						{
 							TArray<FString> UserIds;
 							UserIds.Add(UserId2);
 
 							// Promote first
-							Client->PromoteGroupUsers(Session, GroupId, UserIds,
+							NakamaApi::PromoteGroupUsers(Client, Session, GroupId, UserIds,
 								[this, Done, UserIds]()
 								{
 									// Then demote
-									Client->DemoteGroupUsers(Session, GroupId, UserIds,
+									NakamaApi::DemoteGroupUsers(Client, Session, GroupId, UserIds,
 										[this, Done]()
 										{
 											TestTrue("User demoted successfully", true);

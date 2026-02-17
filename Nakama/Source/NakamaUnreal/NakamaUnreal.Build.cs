@@ -41,7 +41,7 @@ public class NakamaUnreal : ModuleRules
 		PublicDependencyModuleNames.AddRange(
 			new string[]
 			{
-				"Core", "HTTP", "WebSockets", "JsonUtilities"
+				"Core", "HTTP", "WebSockets", "JsonUtilities", "NakamaApi"
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);
