@@ -10,57 +10,64 @@ vars:
 
 tasks:
 
-  fetch-protos:
-    desc: 'Fetch .proto files from Nakama.'
+
+  codegen:
+    desc: 'Fetch protos, build codegen tool, and generate all Nakama modules.'
     cmds:
-    - cmd: mkdir proto
-      ignore_error: true
+    - cmd: mkdir -p proto build
     - cmd: |
         curl -o {{.PROTO_SERVICE_FILE}} https://raw.githubusercontent.com/heroiclabs/nakama/feat/flatten-proto/apigrpc/apigrpc.proto
         curl -o {{.PROTO_FILE}} https://raw.githubusercontent.com/heroiclabs/nakama-common/feat/flatten-proto-v2/api/api.proto
         curl -o {{.PROTO_RT_FILE}} https://raw.githubusercontent.com/heroiclabs/nakama-common/feat/flatten-proto-v2/rtapi/realtime.proto
-
-  run-codegen:
-    desc: 'Fetch Nakama proto schemas and run codegen.'
-    vars:
-      TEMPLATE_FILE: cmd/codegen/templates/debug.tmpl
-    cmds:
-    - task: fetch-protos
-    - cmd: ./{{.CODEGEN}} --template {{.TEMPLATE_FILE}} --proto {{.PROTO_FILE}} --proto {{.PROTO_SERVICE_FILE}} --proto {{.PROTO_RT_FILE}}
-
-  run-codegen-file:
-    desc: 'Fetch Nakama proto schemas and run codegen to file.'
-    vars:
-      TEMPLATE_FILE: cmd/codegen/templates/debug.tmpl
-      OUTPUT_FILE: build/codegen.out
-    cmds:
-    - task: fetch-protos
-    - cmd: ./{{.CODEGEN}} --template {{.TEMPLATE_FILE}} --proto {{.PROTO_FILE}} --proto {{.PROTO_SERVICE_FILE}} > {{.OUTPUT_FILE}}
-
-
-  link-nakama-plugin:
-    desc: 'Link Nakama plugin into NakamaTest.'
-    cmds:
+    - dir: cmd/codegen
+      cmd: go build -o ../../{{.CODEGEN}}
     - cmd: |
-        powershell -NoProfile -Command "& {
-          New-Item -ItemType Directory -Force -Path 'NakamaTest\Plugins' | Out-Null
-          New-Item -ItemType Junction -Force -Path 'NakamaTest\Plugins\Nakama' -Target (Join-Path (Get-Location) 'Nakama')
-        }"
-      platforms: [windows]
-    - cmd: |
-        mkdir -p "NakamaTest/Plugins"
-        ln -sfn "$(pwd)/Nakama" "NakamaTest/Plugins/Nakama"
-      platforms: [darwin, linux]
+        ./{{.CODEGEN}} \
+        --template cmd/codegen/templates/nakama-api.ue.h.tmpl \
+        --proto {{.PROTO_FILE}} \
+        --proto {{.PROTO_SERVICE_FILE}} \
+        > Nakama/Source/NakamaApi/Public/NakamaApi.h
+
+        ./{{.CODEGEN}} \
+        --template cmd/codegen/templates/nakama-api.ue.cpp.tmpl \
+        --proto {{.PROTO_FILE}} \
+        --proto {{.PROTO_SERVICE_FILE}} \
+        > Nakama/Source/NakamaApi/Private/NakamaApi.cpp
+
+        ./{{.CODEGEN}} \
+        --template cmd/codegen/templates/nakama-unreal.ue.h.tmpl \
+        --proto {{.PROTO_FILE}} \
+        --proto {{.PROTO_SERVICE_FILE}} \
+        > Nakama/Source/NakamaUnreal/Public/NakamaUnreal.h
+
+        ./{{.CODEGEN}} \
+        --template cmd/codegen/templates/nakama-unreal.ue.cpp.tmpl \
+        --proto {{.PROTO_FILE}} \
+        --proto {{.PROTO_SERVICE_FILE}} \
+        > Nakama/Source/NakamaUnreal/Private/NakamaUnreal.cpp
+
+        ./{{.CODEGEN}} \
+        --template cmd/codegen/templates/nakama-client-bplib.ue.h.tmpl \
+        --proto {{.PROTO_FILE}} \
+        --proto {{.PROTO_SERVICE_FILE}} \
+        > Nakama/Source/NakamaBlueprints/Public/NakamaClientBlueprintLibrary.h
+
+        ./{{.CODEGEN}} \
+        --template cmd/codegen/templates/nakama-client-bplib.ue.cpp.tmpl \
+        --proto {{.PROTO_FILE}} \
+        --proto {{.PROTO_SERVICE_FILE}} \
+        > Nakama/Source/NakamaBlueprints/Private/NakamaClientBlueprintLibrary.cpp
 
   start-nakama:
-    desc: 'Start Nakama server with PostgreSQL via Docker Compose.'
+    desc: 'Start Nakama server with PostgreSQL via Docker Compose (skipped if already healthy).'
     cmds:
     - cmd: |
-        echo "Stopping any existing containers..."
-        docker compose -f NakamaTest/nakama-server/docker-compose.yml down -v 2>/dev/null || true
-        docker rm -f nakama_unreal_test_nakama nakama_unreal_test_postgres 2>/dev/null || true
-        echo "Starting Nakama server..."
-        docker compose -f NakamaTest/nakama-server/docker-compose.yml up -d
+        if docker exec nakama_unreal_test_nakama /nakama/nakama healthcheck 2>/dev/null; then
+          echo "Nakama is already running."
+          exit 0
+        fi
+
+        docker compose -f NakamaTest/nakama-server/docker-compose.yml up --build -d
         echo "Waiting for Nakama to be healthy..."
         timeout=60
         while [ $timeout -gt 0 ]; do
@@ -74,95 +81,6 @@ tasks:
         echo "Error: Nakama failed to start within 60 seconds"
         docker compose -f NakamaTest/nakama-server/docker-compose.yml logs nakama
         exit 1
-      platforms: [darwin, linux]
-    - cmd: |
-        powershell -NoProfile -Command "& {
-          Write-Host 'Stopping any existing containers...'
-          docker compose -f NakamaTest/nakama-server/docker-compose.yml down -v 2>&1 | Out-Null
-          docker rm -f nakama_unreal_test_nakama nakama_unreal_test_postgres 2>&1 | Out-Null
-          Write-Host 'Starting Nakama server...'
-          docker compose -f NakamaTest/nakama-server/docker-compose.yml up -d
-          Write-Host 'Waiting for Nakama to be healthy...'
-          \$timeout = 60
-          while (\$timeout -gt 0) {
-            \$result = docker exec nakama_unreal_test_nakama /nakama/nakama healthcheck 2>&1
-            if (\$LASTEXITCODE -eq 0) {
-              Write-Host 'Nakama is ready!'
-              exit 0
-            }
-            Start-Sleep -Seconds 2
-            \$timeout -= 2
-          }
-          Write-Host 'Error: Nakama failed to start within 60 seconds'
-          docker compose -f NakamaTest/nakama-server/docker-compose.yml logs nakama
-          exit 1
-        }"
-      platforms: [windows]
-
-  stop-nakama:
-    desc: 'Stop Nakama server and remove volumes.'
-    cmds:
-    - cmd: docker compose -f NakamaTest/nakama-server/docker-compose.yml down -v
-      platforms: [darwin, linux]
-    - cmd: docker compose -f NakamaTest/nakama-server/docker-compose.yml down -v
-      platforms: [windows]
-
-  build-plugin:
-    desc: 'Build the Nakama plugin as a packaged plugin.'
-    deps:
-    - task: check-unreal-engine
-    vars:
-      OUTPUT_DIR: '{{.OUTPUT_DIR | default "Out/Nakama"}}'
-    cmds:
-    - cmd: |
-        if [ -z "$UNREAL_ENGINE" ]; then
-            echo "Error: UNREAL_ENGINE is not set!"
-            exit 1
-        fi
-
-        PLUGIN="$(pwd)/Nakama/Nakama.uplugin"
-        OUTPUT="$(pwd)/{{.OUTPUT_DIR}}"
-
-        echo "Building Nakama plugin → $OUTPUT..."
-        "$UNREAL_ENGINE/Engine/Build/BatchFiles/RunUAT.bat" \
-            BuildPlugin -NoHostPlatform \
-            -Plugin="$PLUGIN" \
-            -TargetPlatforms=Win64 \
-            -package="$OUTPUT"
-      platforms: [windows]
-    - cmd: |
-        if [ -z "$UNREAL_ENGINE" ]; then
-            echo "Error: UNREAL_ENGINE is not set!"
-            exit 1
-        fi
-
-        PLUGIN="$(pwd)/Nakama/Nakama.uplugin"
-        OUTPUT="$(pwd)/{{.OUTPUT_DIR}}"
-
-        echo "Building Nakama plugin → $OUTPUT..."
-        "$UNREAL_ENGINE/Engine/Build/BatchFiles/RunUAT.sh" \
-            BuildPlugin -NoHostPlatform \
-            -Plugin="$PLUGIN" \
-            -TargetPlatforms=Mac \
-            -package="$OUTPUT" \
-            -Architecture_Mac=arm64
-      platforms: [darwin]
-    - cmd: |
-        if [ -z "$UNREAL_ENGINE" ]; then
-            echo "Error: UNREAL_ENGINE is not set!"
-            exit 1
-        fi
-
-        PLUGIN="$(pwd)/Nakama/Nakama.uplugin"
-        OUTPUT="$(pwd)/{{.OUTPUT_DIR}}"
-
-        echo "Building Nakama plugin → $OUTPUT..."
-        "$UNREAL_ENGINE/Engine/Build/BatchFiles/RunUAT.sh" \
-            BuildPlugin -NoHostPlatform \
-            -Plugin="$PLUGIN" \
-            -TargetPlatforms=Linux \
-            -package="$OUTPUT"
-      platforms: [linux]
 
   build-project:
     desc: 'Build and cook a project via UAT (BuildCookRun).'
@@ -241,8 +159,16 @@ tasks:
     desc: 'Package NakamaTest as a standalone build (BuildCookRun).'
     deps:
     - task: check-unreal-engine
-    - task: link-nakama-plugin
     cmds:
+    - cmd: |
+        if [ ! -d "NakamaTest/Plugins/Nakama" ]; then
+            mkdir -p NakamaTest/Plugins
+            if command -v powershell &>/dev/null; then
+                powershell -NoProfile -Command "New-Item -ItemType Junction -Force -Path 'NakamaTest\Plugins\Nakama' -Target (Join-Path (Get-Location) 'Nakama') | Out-Null"
+            else
+                ln -sfn "$(pwd)/Nakama" "NakamaTest/Plugins/Nakama"
+            fi
+        fi
     - cmd: |
         if [ -z "$UNREAL_ENGINE" ]; then
             echo "Error: UNREAL_ENGINE is not set!"
@@ -294,132 +220,6 @@ tasks:
             -installed -utf8output \
             -build -cook -stage -package -verbose
       platforms: [linux]
-
-  build-nakamatest:
-    desc: 'Build NakamaTest project only (no server start).'
-    deps:
-    - task: check-unreal-engine
-    - task: link-nakama-plugin
-    cmds:
-    - cmd: |
-        if [ -z "$UNREAL_ENGINE" ]; then
-            echo "Error: UNREAL_ENGINE is not set!"
-            exit 1
-        fi
-
-        PROJECT="$(pwd)/NakamaTest/NakamaTest.uproject"
-
-        echo "Building NakamaTest..."
-        "$UNREAL_ENGINE/Engine/Build/BatchFiles/Build.bat" \
-            NakamaTestEditor Win64 Development \
-            -Project="$PROJECT"
-      platforms: [windows]
-    - cmd: |
-        if [ -z "$UNREAL_ENGINE" ]; then
-            echo "Error: UNREAL_ENGINE is not set!"
-            exit 1
-        fi
-
-        PROJECT="$(pwd)/NakamaTest/NakamaTest.uproject"
-
-        echo "Building NakamaTest..."
-        "$UNREAL_ENGINE/Engine/Build/BatchFiles/Mac/Build.sh" \
-            NakamaTestEditor Mac Development \
-            -Project="$PROJECT"
-      platforms: [darwin]
-    - cmd: |
-        if [ -z "$UNREAL_ENGINE" ]; then
-            echo "Error: UNREAL_ENGINE is not set!"
-            exit 1
-        fi
-
-        PROJECT="$(pwd)/NakamaTest/NakamaTest.uproject"
-
-        echo "Building NakamaTest..."
-        "$UNREAL_ENGINE/Engine/Build/BatchFiles/Linux/Build.sh" \
-            NakamaTestEditor Linux Development \
-            -Project="$PROJECT"
-      platforms: [linux]
-
-  test-unreal:
-    desc: 'Build and run NakamaTest C++ automation suite.'
-    vars:
-      TEST_SUITE: '{{.TEST_SUITE | default "NakamaTest.Auth"}}'
-      REPORT_PATH: '{{.REPORT_PATH | default "Reports/NakamaTest"}}'
-    deps:
-    - task: check-unreal-engine
-    - task: start-nakama
-    cmds:
-    - cmd: |
-        if [ -z "$UNREAL_ENGINE" ]; then
-            echo "Error: UNREAL_ENGINE is not set!"
-            echo "Set it in .env or pass it as an argument:"
-            echo "  task test-unreal UNREAL_ENGINE=/path/to/engine"
-            exit 1
-        fi
-
-        PROJECT="$(pwd)/NakamaTest/NakamaTest.uproject"
-        REPORT_DIR="$(pwd)/{{.REPORT_PATH}}"
-        LOG_FILE="$REPORT_DIR/unreal.log"
-
-        mkdir -p "$REPORT_DIR"
-
-        echo "Building NakamaTest..."
-        "$UNREAL_ENGINE/Engine/Build/BatchFiles/Build.bat" \
-            NakamaTestEditor Win64 Development \
-            -Project="$PROJECT"
-
-        if [ $? -ne 0 ]; then
-            echo "Build failed!"
-            exit 1
-        fi
-
-        echo "Running automation suite {{.TEST_SUITE}}..."
-        "$UNREAL_ENGINE/Engine/Binaries/Win64/UnrealEditor-Cmd.exe" \
-            "$PROJECT" \
-            -nullrhi \
-            -stdout \
-            -FullStdOutLogOutput \
-            -forcelogflush \
-            -nosplash \
-            -buildmachine \
-            -unattended \
-            -nopause \
-            -nosound \
-            -abslog="$LOG_FILE" \
-            -ReportOutputPath="$REPORT_DIR" \
-            -ExecCmds="Automation RunTests {{.TEST_SUITE}}; Quit"
-      platforms: [windows]
-    - cmd: |
-        if [ -z "$UNREAL_ENGINE" ]; then
-            echo "Error: UNREAL_ENGINE is not set!"
-            echo "Set it in .env or pass it as an argument:"
-            echo "  task test-unreal UNREAL_ENGINE=/path/to/engine"
-            exit 1
-        fi
-
-        PROJECT="$(pwd)/NakamaTest/NakamaTest.uproject"
-        REPORT_DIR="$(pwd)/{{.REPORT_PATH}}"
-        LOG_FILE="$REPORT_DIR/unreal.log"
-
-        mkdir -p "$REPORT_DIR"
-
-        echo "Running automation suite {{.TEST_SUITE}}..."
-        "$UNREAL_ENGINE/Engine/Binaries/Mac/UnrealEditor.app/Contents/MacOS/UnrealEditor" \
-            "$PROJECT" \
-            -nullrhi \
-            -stdout \
-            -FullStdOutLogOutput \
-            -forcelogflush \
-            -nosplash \
-            -buildmachine \
-            -unattended \
-            -nopause \
-            -nosound \
-            -abslog="$LOG_FILE" \
-            -ReportOutputPath="$REPORT_DIR" \
-            -ExecCmds="Automation RunTests {{.TEST_SUITE}}; Quit"
-      platforms: [darwin, linux]
 
   check-unreal-engine:
     desc: 'Check or auto-detect UNREAL_ENGINE environment variable.'
@@ -505,60 +305,91 @@ tasks:
         }"
       platforms: [windows]
 
-  generate:
-    desc: 'Generate all Nakama modules from protobuf schemas.'
+  test-unreal:
+    desc: 'Build and run NakamaTest C++ automation suite.'
+    vars:
+      TEST_SUITE: '{{.TEST_SUITE | default "NakamaTest.Auth"}}'
+      REPORT_PATH: '{{.REPORT_PATH | default "Reports/NakamaTest"}}'
+    deps:
+    - task: check-unreal-engine
+    - task: start-nakama
     cmds:
-    - task: build
     - cmd: |
-        ./{{.CODEGEN}} \
-        --template cmd/codegen/templates/nakama-api.ue.h.tmpl \
-        --proto {{.PROTO_FILE}} \
-        --proto {{.PROTO_SERVICE_FILE}} \
-        > Nakama/Source/NakamaApi/Public/NakamaApi.h
+        if [ ! -d "NakamaTest/Plugins/Nakama" ]; then
+            mkdir -p NakamaTest/Plugins
+            if command -v powershell &>/dev/null; then
+                powershell -NoProfile -Command "New-Item -ItemType Junction -Force -Path 'NakamaTest\Plugins\Nakama' -Target (Join-Path (Get-Location) 'Nakama') | Out-Null"
+            else
+                ln -sfn "$(pwd)/Nakama" "NakamaTest/Plugins/Nakama"
+            fi
+        fi
+    - cmd: |
+        if [ -z "$UNREAL_ENGINE" ]; then
+            echo "Error: UNREAL_ENGINE is not set!"
+            echo "Set it in .env or pass it as an argument:"
+            echo "  task test-unreal UNREAL_ENGINE=/path/to/engine"
+            exit 1
+        fi
 
-        ./{{.CODEGEN}} \
-        --template cmd/codegen/templates/nakama-api.ue.cpp.tmpl \
-        --proto {{.PROTO_FILE}} \
-        --proto {{.PROTO_SERVICE_FILE}} \
-        > Nakama/Source/NakamaApi/Private/NakamaApi.cpp
+        PROJECT="$(pwd)/NakamaTest/NakamaTest.uproject"
+        REPORT_DIR="$(pwd)/{{.REPORT_PATH}}"
+        LOG_FILE="$REPORT_DIR/unreal.log"
 
-        ./{{.CODEGEN}} \
-        --template cmd/codegen/templates/nakama-unreal.ue.h.tmpl \
-        --proto {{.PROTO_FILE}} \
-        --proto {{.PROTO_SERVICE_FILE}} \
-        > Nakama/Source/NakamaUnreal/Public/NakamaUnreal.h
+        mkdir -p "$REPORT_DIR"
 
-        ./{{.CODEGEN}} \
-        --template cmd/codegen/templates/nakama-unreal.ue.cpp.tmpl \
-        --proto {{.PROTO_FILE}} \
-        --proto {{.PROTO_SERVICE_FILE}} \
-        > Nakama/Source/NakamaUnreal/Private/NakamaUnreal.cpp
+        echo "Building NakamaTest..."
+        "$UNREAL_ENGINE/Engine/Build/BatchFiles/Build.bat" \
+            NakamaTestEditor Win64 Development \
+            -Project="$PROJECT"
 
-        ./{{.CODEGEN}} \
-        --template cmd/codegen/templates/nakama-client-bplib.ue.h.tmpl \
-        --proto {{.PROTO_FILE}} \
-        --proto {{.PROTO_SERVICE_FILE}} \
-        > Nakama/Source/NakamaBlueprints/Public/NakamaClientBlueprintLibrary.h
+        if [ $? -ne 0 ]; then
+            echo "Build failed!"
+            exit 1
+        fi
 
-        ./{{.CODEGEN}} \
-        --template cmd/codegen/templates/nakama-client-bplib.ue.cpp.tmpl \
-        --proto {{.PROTO_FILE}} \
-        --proto {{.PROTO_SERVICE_FILE}} \
-        > Nakama/Source/NakamaBlueprints/Private/NakamaClientBlueprintLibrary.cpp
+        echo "Running automation suite {{.TEST_SUITE}}..."
+        "$UNREAL_ENGINE/Engine/Binaries/Win64/UnrealEditor-Cmd.exe" \
+            "$PROJECT" \
+            -nullrhi \
+            -stdout \
+            -FullStdOutLogOutput \
+            -forcelogflush \
+            -nosplash \
+            -buildmachine \
+            -unattended \
+            -nopause \
+            -nosound \
+            -abslog="$LOG_FILE" \
+            -ReportOutputPath="$REPORT_DIR" \
+            -ExecCmds="Automation RunTests {{.TEST_SUITE}}; Quit"
+      platforms: [windows]
+    - cmd: |
+        if [ -z "$UNREAL_ENGINE" ]; then
+            echo "Error: UNREAL_ENGINE is not set!"
+            echo "Set it in .env or pass it as an argument:"
+            echo "  task test-unreal UNREAL_ENGINE=/path/to/engine"
+            exit 1
+        fi
 
-  generate-debug:
-    desc: 'Debug Codegen parsed info.'
-    cmds:
-    - task: build
-    - task: run-codegen
-      vars:
-        TEMPLATE_FILE: cmd/codegen/templates/debug.tmpl
+        PROJECT="$(pwd)/NakamaTest/NakamaTest.uproject"
+        REPORT_DIR="$(pwd)/{{.REPORT_PATH}}"
+        LOG_FILE="$REPORT_DIR/unreal.log"
 
-  build:
-    desc: 'Build the codegen tool.'
-    dir: cmd/codegen
-    cmds:
-    - cmd: mkdir ../../build
-      ignore_error: true
-    - cmd: go build -o ../../{{.CODEGEN}}
+        mkdir -p "$REPORT_DIR"
 
+        echo "Running automation suite {{.TEST_SUITE}}..."
+        "$UNREAL_ENGINE/Engine/Binaries/Mac/UnrealEditor.app/Contents/MacOS/UnrealEditor" \
+            "$PROJECT" \
+            -nullrhi \
+            -stdout \
+            -FullStdOutLogOutput \
+            -forcelogflush \
+            -nosplash \
+            -buildmachine \
+            -unattended \
+            -nopause \
+            -nosound \
+            -abslog="$LOG_FILE" \
+            -ReportOutputPath="$REPORT_DIR" \
+            -ExecCmds="Automation RunTests {{.TEST_SUITE}}; Quit"
+      platforms: [darwin, linux]
