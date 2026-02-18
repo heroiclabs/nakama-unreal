@@ -28,7 +28,7 @@
 			]
 		},
 		{
-			"Name": "SatoriUnreal",
+			"Name": "Satori",
 			"Type": "Runtime",
 			"LoadingPhase": "Default",
 			"WhitelistPlatforms": [

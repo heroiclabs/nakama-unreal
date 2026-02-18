@@ -15,11 +15,11 @@ This plugin can also be used for programmers who like C++ or Blueprints. All var
 
 The plugin is divided into three modules which can be pulled in depending on your needs.
 
-- `NakamaUnreal` The recommended C++-based module for using Nakama in UnrealEngine. This integrates with Unreal's native types and UObjects.
+- `Nakama` The recommended C++-based module for using Nakama in UnrealEngine. This integrates with Unreal's native types and UObjects.
 - `NakamaBlueprints` For users who would prefer to use Blueprints in their project.
 - `NakamaCore` For users who are migrating from pre-v2.6.0 Unreal client and want to make minimal changes, or use our lower-level C++ API without Unreal types: (https://github.com/heroiclabs/nakama-cpp).
 
-> Because `NakamaCore` uses prebuilt libraries, you may run into build issues due to differences in Unreal's toolchain from standard C++ toolchains. This is why `NakamaUnreal` is our recommended module.
+> Because `NakamaCore` uses prebuilt libraries, you may run into build issues due to differences in Unreal's toolchain from standard C++ toolchains. This is why `Nakama` is our recommended module.
 
 Clients are referred in this documentation as **Realtime Client** and **Default Client** in which the realtime client is the socket and the default client is using REST API to communicate with Nakama.
 
@@ -60,15 +60,15 @@ You have to decide where you want to create and keep record of these clients.
 
 Normally you would have to handle ticking on a C++ basis, luckily this is done automatically under the hood in this plugin after you have created the client. When you create the Client you can define a Tick Interval, by default this is set to 0, which means it will tick every frame, if you want it to tick every 50ms you have to set it as 0.05, to make it tick every second this number would be 1.
 
-# Getting Started with NakamaUnreal (C++ with Unreal Types)
+# Getting Started with Nakama (C++ with Unreal Types)
 
 Below is a simple example of setting up a default client, authenticating, setting up a realtime client and joining a chat room. In the example we will put everything in a empty AActor class that is placed in the level.
 
-Remember to add NakamaUnreal to your Private Dependencies under your project Build.cs file. For example:
+Remember to add Nakama to your Private Dependencies under your project Build.cs file. For example:
 
 ```cs
 
-PrivateDependencyModuleNames.AddRange(new string[] { "NakamaUnreal" });
+PrivateDependencyModuleNames.AddRange(new string[] { "Nakama" });
 
 ```
 

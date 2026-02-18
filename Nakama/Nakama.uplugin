@@ -28,7 +28,7 @@
 			]
 		},
 		{
-			"Name": "NakamaUnreal",
+			"Name": "Nakama",
 			"Type": "Runtime",
 			"LoadingPhase": "Default",
 			"WhitelistPlatforms": [

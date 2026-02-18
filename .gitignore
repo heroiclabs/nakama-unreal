@@ -532,11 +532,11 @@ NakamaBlueprintsTest/DerivedDataCache
 NakamaBlueprintsTest/Saved
 NakamaBlueprintsTest/Binaries
 
-NakamaTest/Plugins/Nakama
-NakamaTest/Intermediate
-NakamaTest/DerivedDataCache
-NakamaTest/Saved
-NakamaTest/Binaries
+IntegrationTests/Plugins/Nakama
+IntegrationTests/Intermediate
+IntegrationTests/DerivedDataCache
+IntegrationTests/Saved
+IntegrationTests/Binaries
 
 Nakama/Intermediate
 Nakama/Saved
@@ -551,7 +551,12 @@ vcpkg_installed/
 /NakamaBlueprintsTest/Content/Collections
 .env
 proto/
-Reports/NakamaTest/index.html
-Reports/NakamaTest/index.json
+Reports/IntegrationTests/index.html
+Reports/IntegrationTests/index.json
 Reports/NakamaProfile/
-/NakamaTest/Reports
+/IntegrationTests/Reports
+NakamaTest/Binaries
+NakamaTest/DerivedDataCache
+NakamaTest/Intermediate/
+NakamaTest/Saved/
+Reports

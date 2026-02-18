@@ -50,16 +50,16 @@ tasks:
         > Nakama/Source/NakamaApi/Private/NakamaApi.cpp
 
         ./{{.CODEGEN}} \
-        --template cmd/codegen/templates/nakama-unreal.ue.h.tmpl \
+        --template cmd/codegen/templates/nakama.ue.h.tmpl \
         --proto {{.PROTO_FILE}} \
         --proto {{.PROTO_SERVICE_FILE}} \
-        > Nakama/Source/NakamaUnreal/Public/NakamaUnreal.h
+        > Nakama/Source/Nakama/Public/Nakama.h
 
         ./{{.CODEGEN}} \
-        --template cmd/codegen/templates/nakama-unreal.ue.cpp.tmpl \
+        --template cmd/codegen/templates/nakama.ue.cpp.tmpl \
         --proto {{.PROTO_FILE}} \
         --proto {{.PROTO_SERVICE_FILE}} \
-        > Nakama/Source/NakamaUnreal/Private/NakamaUnreal.cpp
+        > Nakama/Source/Nakama/Private/Nakama.cpp
 
         ./{{.CODEGEN}} \
         --template cmd/codegen/templates/nakama-client-bplib.ue.h.tmpl \
@@ -88,18 +88,18 @@ tasks:
         > Satori/Source/SatoriApi/Private/SatoriApi.cpp
 
         ./{{.CODEGEN}} \
-        --template cmd/codegen/templates/satori-unreal.ue.h.tmpl \
+        --template cmd/codegen/templates/satori.ue.h.tmpl \
         --proto {{.SATORI_PROTO_FILE}} \
         --proto {{.SATORI_PROTO_SERVICE_FILE}} \
         --prefix FSatori \
-        > Satori/Source/SatoriUnreal/Public/SatoriUnreal.h
+        > Satori/Source/Satori/Public/Satori.h
 
         ./{{.CODEGEN}} \
-        --template cmd/codegen/templates/satori-unreal.ue.cpp.tmpl \
+        --template cmd/codegen/templates/satori.ue.cpp.tmpl \
         --proto {{.SATORI_PROTO_FILE}} \
         --proto {{.SATORI_PROTO_SERVICE_FILE}} \
         --prefix FSatori \
-        > Satori/Source/SatoriUnreal/Private/SatoriUnreal.cpp
+        > Satori/Source/Satori/Private/Satori.cpp
 
         ./{{.CODEGEN}} \
         --template cmd/codegen/templates/satori-client-bplib.ue.h.tmpl \
@@ -119,16 +119,16 @@ tasks:
     desc: 'Start Nakama server with PostgreSQL via Docker Compose (skipped if already healthy).'
     cmds:
     - cmd: |
-        if docker exec nakama_unreal_test_nakama /nakama/nakama healthcheck 2>/dev/null; then
+        if docker exec unreal_integration_test_nakama /nakama/nakama healthcheck 2>/dev/null; then
           echo "Nakama is already running."
           exit 0
         fi
 
-        docker compose -f NakamaTest/nakama-server/docker-compose.yml up --build -d
+        docker compose -f IntegrationTests/server/docker-compose.yml up --build -d
         echo "Waiting for Nakama to be healthy..."
         timeout=60
         while [ $timeout -gt 0 ]; do
-          if docker exec nakama_unreal_test_nakama /nakama/nakama healthcheck 2>/dev/null; then
+          if docker exec unreal_integration_test_nakama /nakama/nakama healthcheck 2>/dev/null; then
             echo "Nakama is ready!"
             exit 0
           fi
@@ -136,7 +136,7 @@ tasks:
           timeout=$((timeout - 2))
         done
         echo "Error: Nakama failed to start within 60 seconds"
-        docker compose -f NakamaTest/nakama-server/docker-compose.yml logs nakama
+        docker compose -f IntegrationTests/server/docker-compose.yml logs nakama
         exit 1
 
   build:
@@ -297,32 +297,32 @@ tasks:
       platforms: [windows]
 
   test-unreal:
-    desc: 'Build and run NakamaTest C++ automation suite.'
+    desc: 'Build and run IntegrationTests C++ automation suite.'
     vars:
-      TEST_SUITE: '{{.TEST_SUITE | default "NakamaTest.Auth"}}'
-      REPORT_PATH: '{{.REPORT_PATH | default "Reports/NakamaTest"}}'
+      TEST_SUITE: '{{.TEST_SUITE | default "IntegrationTests.Auth"}}'
+      REPORT_PATH: '{{.REPORT_PATH | default "Reports/IntegrationTests"}}'
     cmds:
     - task: check-unreal-engine
     - task: codegen
     - task: start-nakama
     - cmd: |
-        if [ ! -d "NakamaTest/Plugins/Nakama" ]; then
-            mkdir -p NakamaTest/Plugins
+        if [ ! -d "IntegrationTests/Plugins/Nakama" ]; then
+            mkdir -p IntegrationTests/Plugins
             if command -v powershell &>/dev/null; then
-                powershell -NoProfile -Command "New-Item -ItemType Junction -Force -Path 'NakamaTest\Plugins\Nakama' -Target (Join-Path (Get-Location) 'Nakama') | Out-Null"
+                powershell -NoProfile -Command "New-Item -ItemType Junction -Force -Path 'IntegrationTests\Plugins\Nakama' -Target (Join-Path (Get-Location) 'Nakama') | Out-Null"
             else
-                ln -sfn "$(pwd)/Nakama" "NakamaTest/Plugins/Nakama"
+                ln -sfn "$(pwd)/Nakama" "IntegrationTests/Plugins/Nakama"
             fi
         fi
     - cmd: |
-        PROJECT="$(pwd)/NakamaTest/NakamaTest.uproject"
+        PROJECT="$(pwd)/IntegrationTests/IntegrationTests.uproject"
         REPORT_DIR="$(pwd)/{{.REPORT_PATH}}"
         LOG_FILE="$REPORT_DIR/unreal.log"
 
         mkdir -p "$REPORT_DIR"
 
         "$UNREAL_ENGINE/Engine/Build/BatchFiles/Build.bat" \
-            NakamaTestEditor Win64 Development \
+            IntegrationTestsEditor Win64 Development \
             -Project="$PROJECT"
 
         if [ $? -ne 0 ]; then
@@ -353,7 +353,7 @@ tasks:
             exit 1
         fi
 
-        PROJECT="$(pwd)/NakamaTest/NakamaTest.uproject"
+        PROJECT="$(pwd)/IntegrationTests/IntegrationTests.uproject"
         REPORT_DIR="$(pwd)/{{.REPORT_PATH}}"
         LOG_FILE="$REPORT_DIR/unreal.log"
 
