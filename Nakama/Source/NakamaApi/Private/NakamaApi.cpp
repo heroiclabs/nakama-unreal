@@ -27,6 +27,7 @@
 #include "Serialization/JsonReader.h"
 #include "Serialization/JsonSerializer.h"
 #include "Serialization/JsonWriter.h"
+#include "Serialization/MemoryWriter.h"
 #include "Stats/Stats.h"
 
 DEFINE_LOG_CATEGORY(LogNakama);
@@ -6223,6 +6224,33 @@ void SendRequest(
 
 	DoHttpRequest(Config, Endpoint, Method, BodyString, AuthType, TokenString, OnSuccess, OnError, CancellationToken);
 }
+FString SerializeJsonToString(const TSharedPtr<FJsonObject>& Json)
+{
+	TArray<uint8> JsonBytes;
+	JsonBytes.Reserve(1024);
+	FMemoryWriter Archive(JsonBytes);
+	TSharedRef<TJsonWriter<UTF8CHAR, TCondensedJsonPrintPolicy<UTF8CHAR>>> Writer =
+		TJsonWriterFactory<UTF8CHAR, TCondensedJsonPrintPolicy<UTF8CHAR>>::Create(&Archive);
+	FJsonSerializer::Serialize(Json.ToSharedRef(), Writer);
+	Writer->Close();
+	FUTF8ToTCHAR Converter(reinterpret_cast<const ANSICHAR*>(JsonBytes.GetData()), JsonBytes.Num());
+	return FString(Converter.Length(), Converter.Get());
+}
+
+FString SerializeJsonEscaped(const TSharedPtr<FJsonObject>& Json)
+{
+	TArray<uint8> JsonBytes;
+	JsonBytes.Reserve(2048);
+	FMemoryWriter Archive(JsonBytes);
+	TSharedRef<TJsonWriter<UTF8CHAR, TCondensedJsonPrintPolicy<UTF8CHAR>>> Writer =
+		TJsonWriterFactory<UTF8CHAR, TCondensedJsonPrintPolicy<UTF8CHAR>>::Create(&Archive);
+	FJsonSerializer::Serialize(Json.ToSharedRef(), Writer);
+	Writer->Close();
+	FUTF8ToTCHAR Converter(reinterpret_cast<const ANSICHAR*>(JsonBytes.GetData()), JsonBytes.Num());
+	FString Condensed(Converter.Length(), Converter.Get());
+	FString Escaped = Condensed.Replace(TEXT("\\"), TEXT("\\\\")).Replace(TEXT("\""), TEXT("\\\""));
+	return TEXT("\"") + Escaped + TEXT("\"");
+}
 
 void MakeRequest(
 	const FNakamaApiConfig& Config,
@@ -6240,8 +6268,7 @@ void MakeRequest(
 	if (Body.IsValid() && Method != TEXT("GET"))
 	{
 		SCOPE_CYCLE_COUNTER(STAT_Nakama_JsonSerialize);
-		TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&BodyString);
-		FJsonSerializer::Serialize(Body.ToSharedRef(), Writer);
+		BodyString = SerializeJsonToString(Body);
 	}
 	SendRequest(Config, Endpoint, Method, BodyString, AuthType, Session, AuthValue, OnSuccess, OnError, CancellationToken);
 }
@@ -10664,13 +10691,7 @@ void NakamaApi::RpcFunc(
 	FString BodyString;
 	if (Payload.IsValid())
 	{
-		FString Condensed;
-		TSharedRef<TJsonWriter<TCHAR, TCondensedJsonPrintPolicy<TCHAR>>> Writer =
-			TJsonWriterFactory<TCHAR, TCondensedJsonPrintPolicy<TCHAR>>::Create(&Condensed);
-		FJsonSerializer::Serialize(Payload.ToSharedRef(), Writer);
-		Writer->Close();
-		FString Escaped = Condensed.Replace(TEXT("\\"), TEXT("\\\\")).Replace(TEXT("\""), TEXT("\\\""));
-		BodyString = TEXT("\"") + Escaped + TEXT("\"");
+		BodyString = SerializeJsonEscaped(Payload);
 	}
 
 	SendRequest(Config, Endpoint, TEXT("POST"), BodyString, AuthType, Session, TEXT(""),
@@ -10705,13 +10726,7 @@ void NakamaApi::RpcFunc(
 	FString BodyString;
 	if (Payload.IsValid())
 	{
-		FString Condensed;
-		TSharedRef<TJsonWriter<TCHAR, TCondensedJsonPrintPolicy<TCHAR>>> Writer =
-			TJsonWriterFactory<TCHAR, TCondensedJsonPrintPolicy<TCHAR>>::Create(&Condensed);
-		FJsonSerializer::Serialize(Payload.ToSharedRef(), Writer);
-		Writer->Close();
-		FString Escaped = Condensed.Replace(TEXT("\\"), TEXT("\\\\")).Replace(TEXT("\""), TEXT("\\\""));
-		BodyString = TEXT("\"") + Escaped + TEXT("\"");
+		BodyString = SerializeJsonEscaped(Payload);
 	}
 
 	SendRequest(Config, Endpoint, TEXT("POST"), BodyString, ENakamaRequestAuth::HttpKey, nullptr, HttpKey,

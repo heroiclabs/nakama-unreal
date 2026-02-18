@@ -16,7 +16,7 @@
 
 /* This code is auto-generated. DO NOT EDIT. */
 
-#include "NakamaApi.h"
+#include "SatoriApi.h"
 
 #include "HttpModule.h"
 #include "Interfaces/IHttpRequest.h"
@@ -30,21 +30,21 @@
 #include "Serialization/MemoryWriter.h"
 #include "Stats/Stats.h"
 
-DEFINE_LOG_CATEGORY(LogNakama);
+DEFINE_LOG_CATEGORY(LogSatori);
 
-// Stat group: use "stat Nakama" in console
-DECLARE_STATS_GROUP(TEXT("Nakama"), STATGROUP_Nakama, STATCAT_Advanced);
-DECLARE_CYCLE_STAT(TEXT("MakeRequest Dispatch"), STAT_Nakama_MakeRequest_Dispatch, STATGROUP_Nakama);
-DECLARE_CYCLE_STAT(TEXT("OnResponse"), STAT_Nakama_OnResponse, STATGROUP_Nakama);
-DECLARE_CYCLE_STAT(TEXT("JsonSerialize"), STAT_Nakama_JsonSerialize, STATGROUP_Nakama);
-DECLARE_CYCLE_STAT(TEXT("JsonDeserialize"), STAT_Nakama_JsonDeserialize, STATGROUP_Nakama);
-DECLARE_DWORD_ACCUMULATOR_STAT(TEXT("ActiveRequests"), STAT_Nakama_ActiveRequests, STATGROUP_Nakama);
-DECLARE_DWORD_ACCUMULATOR_STAT(TEXT("TotalRequests"), STAT_Nakama_TotalRequests, STATGROUP_Nakama);
-DECLARE_DWORD_ACCUMULATOR_STAT(TEXT("TotalErrors"), STAT_Nakama_TotalErrors, STATGROUP_Nakama);
+// Stat group: use "stat Satori" in console
+DECLARE_STATS_GROUP(TEXT("Satori"), STATGROUP_Satori, STATCAT_Advanced);
+DECLARE_CYCLE_STAT(TEXT("MakeRequest Dispatch"), STAT_Satori_MakeRequest_Dispatch, STATGROUP_Satori);
+DECLARE_CYCLE_STAT(TEXT("OnResponse"), STAT_Satori_OnResponse, STATGROUP_Satori);
+DECLARE_CYCLE_STAT(TEXT("JsonSerialize"), STAT_Satori_JsonSerialize, STATGROUP_Satori);
+DECLARE_CYCLE_STAT(TEXT("JsonDeserialize"), STAT_Satori_JsonDeserialize, STATGROUP_Satori);
+DECLARE_DWORD_ACCUMULATOR_STAT(TEXT("ActiveRequests"), STAT_Satori_ActiveRequests, STATGROUP_Satori);
+DECLARE_DWORD_ACCUMULATOR_STAT(TEXT("TotalRequests"), STAT_Satori_TotalRequests, STATGROUP_Satori);
+DECLARE_DWORD_ACCUMULATOR_STAT(TEXT("TotalErrors"), STAT_Satori_TotalErrors, STATGROUP_Satori);
 
-// --- FNakamaSession JWT helpers ---
+// --- FSatoriSession JWT helpers ---
 
-bool FNakamaSession::ParseJwtPayload(const FString& Jwt, TSharedPtr<FJsonObject>& Out)
+bool FSatoriSession::ParseJwtPayload(const FString& Jwt, TSharedPtr<FJsonObject>& Out)
 {
 	TArray<FString> Parts;
 	Jwt.ParseIntoArray(Parts, TEXT("."));
@@ -77,26 +77,20 @@ bool FNakamaSession::ParseJwtPayload(const FString& Jwt, TSharedPtr<FJsonObject>
 	return FJsonSerializer::Deserialize(Reader, Out) && Out.IsValid();
 }
 
-void FNakamaSession::ParseTokens()
+void FSatoriSession::ParseTokens()
 {
-	UserId.Empty();
-	Username.Empty();
+	IdentityId.Empty();
 	TokenExpiresAt = 0;
 	TokenIssuedAt = 0;
 	RefreshTokenExpiresAt = 0;
-	Vars.Empty();
 
 	// Parse auth token
 	TSharedPtr<FJsonObject> TokenPayload;
 	if (!Token.IsEmpty() && ParseJwtPayload(Token, TokenPayload))
 	{
-		if (TokenPayload->HasField(TEXT("uid")))
+		if (TokenPayload->HasField(TEXT("iid")))
 		{
-			UserId = TokenPayload->GetStringField(TEXT("uid"));
-		}
-		if (TokenPayload->HasField(TEXT("usn")))
-		{
-			Username = TokenPayload->GetStringField(TEXT("usn"));
+			IdentityId = TokenPayload->GetStringField(TEXT("iid"));
 		}
 		if (TokenPayload->HasField(TEXT("exp")))
 		{
@@ -105,17 +99,6 @@ void FNakamaSession::ParseTokens()
 		if (TokenPayload->HasField(TEXT("iat")))
 		{
 			TokenIssuedAt = static_cast<int64>(TokenPayload->GetNumberField(TEXT("iat")));
-		}
-		if (TokenPayload->HasField(TEXT("vrs")))
-		{
-			const TSharedPtr<FJsonObject>* VrsObj;
-			if (TokenPayload->TryGetObjectField(TEXT("vrs"), VrsObj))
-			{
-				for (const auto& Pair : (*VrsObj)->Values)
-				{
-					Vars.Add(Pair.Key, Pair.Value->AsString());
-				}
-			}
 		}
 	}
 
@@ -130,7 +113,7 @@ void FNakamaSession::ParseTokens()
 	}
 }
 
-bool FNakamaSession::IsExpired(int64 BufferSeconds) const
+bool FSatoriSession::IsExpired(int64 BufferSeconds) const
 {
 	if (TokenExpiresAt == 0)
 	{
@@ -139,7 +122,7 @@ bool FNakamaSession::IsExpired(int64 BufferSeconds) const
 	return (TokenExpiresAt - BufferSeconds) <= FDateTime::UtcNow().ToUnixTimestamp();
 }
 
-bool FNakamaSession::IsRefreshExpired(int64 BufferSeconds) const
+bool FSatoriSession::IsRefreshExpired(int64 BufferSeconds) const
 {
 	if (RefreshTokenExpiresAt == 0)
 	{
@@ -148,7 +131,7 @@ bool FNakamaSession::IsRefreshExpired(int64 BufferSeconds) const
 	return (RefreshTokenExpiresAt - BufferSeconds) <= FDateTime::UtcNow().ToUnixTimestamp();
 }
 
-void FNakamaSession::Update(const FString& NewToken, const FString& NewRefreshToken)
+void FSatoriSession::Update(const FString& NewToken, const FString& NewRefreshToken)
 {
 	Token = NewToken;
 	RefreshToken = NewRefreshToken;
@@ -159,9 +142,9 @@ void FNakamaSession::Update(const FString& NewToken, const FString& NewRefreshTo
 {{- range $idx, $msg := $.Messages }}
 {{- if eq $msg.Name "Session" }}
 
-FNakamaSession FNakamaSession::FromJson(const TSharedPtr<FJsonObject>& Json)
+FSatoriSession FSatoriSession::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
-	FNakamaSession Result;
+	FSatoriSession Result;
 	if (!Json.IsValid())
 	{
 		return Result;
@@ -196,7 +179,7 @@ FNakamaSession FNakamaSession::FromJson(const TSharedPtr<FJsonObject>& Json)
 				const TSharedPtr<FJsonObject>* ItemObj = nullptr;
 				if (Item->TryGetObject(ItemObj) && ItemObj)
 				{
-					Result.{{ $fieldName }}.Add(FNakama{{ $fieldType }}::FromJson(*ItemObj));
+					Result.{{ $fieldName }}.Add(FSatori{{ $fieldType }}::FromJson(*ItemObj));
 				}
 {{- else }}
 				Result.{{ $fieldName }}.Add(Item->AsString());
@@ -256,7 +239,7 @@ FNakamaSession FNakamaSession::FromJson(const TSharedPtr<FJsonObject>& Json)
 		const TSharedPtr<FJsonObject>* NestedObj;
 		if (Json->TryGetObjectField(TEXT("{{ $jsonFieldName }}"), NestedObj))
 		{
-			Result.{{ $fieldName }} = FNakama{{ $fieldType }}::FromJson(*NestedObj);
+			Result.{{ $fieldName }} = FSatori{{ $fieldType }}::FromJson(*NestedObj);
 		}
 	}
 {{- end }}
@@ -281,7 +264,7 @@ FNakamaSession FNakamaSession::FromJson(const TSharedPtr<FJsonObject>& Json)
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaSession::ToJson() const
+TSharedPtr<FJsonObject> FSatoriSession::ToJson() const
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 {{- range $fidx, $field := $msg.Fields }}
@@ -347,9 +330,9 @@ TSharedPtr<FJsonObject> FNakamaSession::ToJson() const
 }
 {{- else }}
 
-FNakama{{ $msg.Name }} FNakama{{ $msg.Name }}::FromJson(const TSharedPtr<FJsonObject>& Json)
+FSatori{{ $msg.Name }} FSatori{{ $msg.Name }}::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
-	FNakama{{ $msg.Name }} Result;
+	FSatori{{ $msg.Name }} Result;
 	if (!Json.IsValid())
 	{
 		return Result;
@@ -384,7 +367,7 @@ FNakama{{ $msg.Name }} FNakama{{ $msg.Name }}::FromJson(const TSharedPtr<FJsonOb
 				const TSharedPtr<FJsonObject>* ItemObj = nullptr;
 				if (Item->TryGetObject(ItemObj) && ItemObj)
 				{
-					Result.{{ $fieldName }}.Add(FNakama{{ $fieldType }}::FromJson(*ItemObj));
+					Result.{{ $fieldName }}.Add(FSatori{{ $fieldType }}::FromJson(*ItemObj));
 				}
 {{- else }}
 				Result.{{ $fieldName }}.Add(Item->AsString());
@@ -444,7 +427,7 @@ FNakama{{ $msg.Name }} FNakama{{ $msg.Name }}::FromJson(const TSharedPtr<FJsonOb
 		const TSharedPtr<FJsonObject>* NestedObj;
 		if (Json->TryGetObjectField(TEXT("{{ $jsonFieldName }}"), NestedObj))
 		{
-			Result.{{ $fieldName }} = FNakama{{ $fieldType }}::FromJson(*NestedObj);
+			Result.{{ $fieldName }} = FSatori{{ $fieldType }}::FromJson(*NestedObj);
 		}
 	}
 {{- end }}
@@ -468,7 +451,7 @@ FNakama{{ $msg.Name }} FNakama{{ $msg.Name }}::FromJson(const TSharedPtr<FJsonOb
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakama{{ $msg.Name }}::ToJson() const
+TSharedPtr<FJsonObject> FSatori{{ $msg.Name }}::ToJson() const
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 {{- range $fidx, $field := $msg.Fields }}
@@ -535,9 +518,9 @@ TSharedPtr<FJsonObject> FNakama{{ $msg.Name }}::ToJson() const
 {{- end }}
 {{- end }}
 
-// --- FNakamaApiConfig ---
+// --- FSatoriApiConfig ---
 
-FString FNakamaApiConfig::GetBaseUrl() const
+FString FSatoriApiConfig::GetBaseUrl() const
 {
 	const FString Scheme = bUseSSL ? TEXT("https") : TEXT("http");
 	return FString::Printf(TEXT("%s://%s:%d"), *Scheme, *Host, Port);
@@ -550,20 +533,20 @@ namespace
 {
 
 void DoHttpRequest(
-	const FNakamaApiConfig& Config,
+	const FSatoriApiConfig& Config,
 	const FString& Endpoint,
 	const FString& Method,
 	const FString& BodyString,
-	ENakamaRequestAuth AuthType,
+	ESatoriRequestAuth AuthType,
 	const FString& TokenString,
 	TFunction<void(TSharedPtr<FJsonObject>)> OnSuccess,
-	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	TFunction<void(const FSatoriError&)> OnError,
+	FSatoriCancellationTokenPtr CancellationToken)
 {
-	SCOPE_CYCLE_COUNTER(STAT_Nakama_MakeRequest_Dispatch);
-	TRACE_CPUPROFILER_EVENT_SCOPE(Nakama_MakeRequest);
-	INC_DWORD_STAT(STAT_Nakama_ActiveRequests);
-	INC_DWORD_STAT(STAT_Nakama_TotalRequests);
+	SCOPE_CYCLE_COUNTER(STAT_Satori_MakeRequest_Dispatch);
+	TRACE_CPUPROFILER_EVENT_SCOPE(Satori_MakeRequest);
+	INC_DWORD_STAT(STAT_Satori_ActiveRequests);
+	INC_DWORD_STAT(STAT_Satori_TotalRequests);
 
 	const FString Url = Config.GetBaseUrl() + Endpoint;
 
@@ -575,26 +558,19 @@ void DoHttpRequest(
 
 	switch (AuthType)
 	{
-	case ENakamaRequestAuth::Basic:
+	case ESatoriRequestAuth::Basic:
 		{
 			const FString Auth = FString::Printf(TEXT("%s:"), *Config.ServerKey);
 			Request->SetHeader(TEXT("Authorization"), FString::Printf(TEXT("Basic %s"), *FBase64::Encode(Auth)));
 		}
 		break;
-	case ENakamaRequestAuth::Bearer:
+	case ESatoriRequestAuth::Bearer:
 		if (!TokenString.IsEmpty())
 		{
 			Request->SetHeader(TEXT("Authorization"), FString::Printf(TEXT("Bearer %s"), *TokenString));
 		}
 		break;
-	case ENakamaRequestAuth::HttpKey:
-		if (!TokenString.IsEmpty())
-		{
-			const FString Auth = FString::Printf(TEXT("%s:"), *TokenString);
-			Request->SetHeader(TEXT("Authorization"), FString::Printf(TEXT("Basic %s"), *FBase64::Encode(Auth)));
-		}
-		break;
-	case ENakamaRequestAuth::None:
+	case ESatoriRequestAuth::None:
 	default:
 		break;
 	}
@@ -602,11 +578,11 @@ void DoHttpRequest(
 	if (!BodyString.IsEmpty() && Method != TEXT("GET"))
 	{
 		Request->SetContentAsString(BodyString);
-		UE_LOG(LogNakama, Log, TEXT("Request %s %s: %s"), *Method, *Url, *BodyString);
+		UE_LOG(LogSatori, Log, TEXT("Request %s %s: %s"), *Method, *Url, *BodyString);
 	}
 	else
 	{
-		UE_LOG(LogNakama, Log, TEXT("Request %s %s"), *Method, *Url);
+		UE_LOG(LogSatori, Log, TEXT("Request %s %s"), *Method, *Url);
 	}
 
 	Request->SetTimeout(Config.Timeout);
@@ -614,25 +590,25 @@ void DoHttpRequest(
 	Request->OnProcessRequestComplete().BindLambda(
 		[OnSuccess, OnError, CancellationToken](FHttpRequestPtr Req, FHttpResponsePtr Res, bool bSuccess)
 		{
-			SCOPE_CYCLE_COUNTER(STAT_Nakama_OnResponse);
-			TRACE_CPUPROFILER_EVENT_SCOPE(Nakama_OnResponse);
-			DEC_DWORD_STAT(STAT_Nakama_ActiveRequests);
+			SCOPE_CYCLE_COUNTER(STAT_Satori_OnResponse);
+			TRACE_CPUPROFILER_EVENT_SCOPE(Satori_OnResponse);
+			DEC_DWORD_STAT(STAT_Satori_ActiveRequests);
 
 			if (CancellationToken && CancellationToken->IsCancelled())
 			{
 				if (OnError)
 				{
-					OnError(FNakamaError(TEXT("Request cancelled"), -1));
+					OnError(FSatoriError(TEXT("Request cancelled"), -1));
 				}
 				return;
 			}
 
 			if (!bSuccess || !Res.IsValid())
 			{
-				INC_DWORD_STAT(STAT_Nakama_TotalErrors);
+				INC_DWORD_STAT(STAT_Satori_TotalErrors);
 				if (OnError)
 				{
-					OnError(FNakamaError(TEXT("Connection failed"), 0));
+					OnError(FSatoriError(TEXT("Connection failed"), 0));
 				}
 				return;
 			}
@@ -640,11 +616,11 @@ void DoHttpRequest(
 			const int32 Code = Res->GetResponseCode();
 			const FString Content = Res->GetContentAsString();
 
-			UE_LOG(LogNakama, Log, TEXT("Response %d: %s"), Code, *Content);
+			UE_LOG(LogSatori, Log, TEXT("Response %d: %s"), Code, *Content);
 
 			if (Code < 200 || Code >= 300)
 			{
-				INC_DWORD_STAT(STAT_Nakama_TotalErrors);
+				INC_DWORD_STAT(STAT_Satori_TotalErrors);
 				FString ErrorMsg = FString::Printf(TEXT("HTTP %d"), Code);
 				TSharedPtr<FJsonObject> Json;
 				if (FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Content), Json) && Json.IsValid())
@@ -656,7 +632,7 @@ void DoHttpRequest(
 				}
 				if (OnError)
 				{
-					OnError(FNakamaError(ErrorMsg, Code));
+					OnError(FSatoriError(ErrorMsg, Code));
 				}
 				return;
 			}
@@ -664,13 +640,13 @@ void DoHttpRequest(
 			TSharedPtr<FJsonObject> Json;
 			if (!Content.IsEmpty())
 			{
-				SCOPE_CYCLE_COUNTER(STAT_Nakama_JsonDeserialize);
+				SCOPE_CYCLE_COUNTER(STAT_Satori_JsonDeserialize);
 				if (!FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Content), Json) || !Json.IsValid())
 				{
-					INC_DWORD_STAT(STAT_Nakama_TotalErrors);
+					INC_DWORD_STAT(STAT_Satori_TotalErrors);
 					if (OnError)
 					{
-						OnError(FNakamaError(TEXT("Invalid JSON response"), 500));
+						OnError(FSatoriError(TEXT("Invalid JSON response"), 500));
 					}
 					return;
 				}
@@ -686,30 +662,30 @@ void DoHttpRequest(
 }
 
 void SendRequest(
-	const FNakamaApiConfig& Config,
+	const FSatoriApiConfig& Config,
 	const FString& Endpoint,
 	const FString& Method,
 	const FString& BodyString,
-	ENakamaRequestAuth AuthType,
-	FNakamaSessionPtr Session,
+	ESatoriRequestAuth AuthType,
+	FSatoriSessionPtr Session,
 	const FString& AuthValue,
 	TFunction<void(TSharedPtr<FJsonObject>)> OnSuccess,
-	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	TFunction<void(const FSatoriError&)> OnError,
+	FSatoriCancellationTokenPtr CancellationToken)
 {
 	// Early cancellation check
 	if (CancellationToken && CancellationToken->IsCancelled())
 	{
 		if (OnError)
 		{
-			OnError(FNakamaError(TEXT("Request cancelled"), -1));
+			OnError(FSatoriError(TEXT("Request cancelled"), -1));
 		}
 		return;
 	}
 
 	// Determine token string
 	FString TokenString;
-	if (AuthType == ENakamaRequestAuth::Bearer && Session.IsValid())
+	if (AuthType == ESatoriRequestAuth::Bearer && Session.IsValid())
 	{
 		TokenString = Session->Token;
 	}
@@ -724,21 +700,21 @@ void SendRequest(
 {{- template "serializejson" }}
 
 void MakeRequest(
-	const FNakamaApiConfig& Config,
+	const FSatoriApiConfig& Config,
 	const FString& Endpoint,
 	const FString& Method,
 	const TSharedPtr<FJsonObject>& Body,
-	ENakamaRequestAuth AuthType,
-	FNakamaSessionPtr Session,
+	ESatoriRequestAuth AuthType,
+	FSatoriSessionPtr Session,
 	const FString& AuthValue,
 	TFunction<void(TSharedPtr<FJsonObject>)> OnSuccess,
-	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	TFunction<void(const FSatoriError&)> OnError,
+	FSatoriCancellationTokenPtr CancellationToken)
 {
 	FString BodyString;
 	if (Body.IsValid() && Method != TEXT("GET"))
 	{
-		SCOPE_CYCLE_COUNTER(STAT_Nakama_JsonSerialize);
+		SCOPE_CYCLE_COUNTER(STAT_Satori_JsonSerialize);
 		BodyString = SerializeJsonToString(Body);
 	}
 	SendRequest(Config, Endpoint, Method, BodyString, AuthType, Session, AuthValue, OnSuccess, OnError, CancellationToken);
@@ -757,10 +733,10 @@ void MakeRequest(
 {{- $isSessionRefresh := eq $rpc.Name "SessionRefresh" }}
 {{- $needsSession := and (not $isAuthenticate) (not $isSessionRefresh) }}
 
-void NakamaApi::{{ $rpc.Name }}(
-	const FNakamaApiConfig& Config,
+void SatoriApi::{{ $rpc.Name }}(
+	const FSatoriApiConfig& Config,
 	{{- if $needsSession }}
-	FNakamaSessionPtr Session,
+	FSatoriSessionPtr Session,
 	{{- end }}
 	{{- if $hasParams -}}
 	{{- range $fidx, $field := $requestType.Fields }}
@@ -775,12 +751,12 @@ void NakamaApi::{{ $rpc.Name }}(
 	{{- end -}}
 	{{- end }}
 	{{- if $hasReturn }}
-	TFunction<void(const FNakama{{ $returnType.Name }}&)> OnSuccess,
+	TFunction<void(const FSatori{{ $returnType.Name }}&)> OnSuccess,
 	{{- else }}
 	TFunction<void()> OnSuccess,
 	{{- end }}
-	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	TFunction<void(const FSatoriError&)> OnError,
+	FSatoriCancellationTokenPtr CancellationToken)
 {
 	FString Endpoint = TEXT("{{ $rpc.Endpoint }}");
 	{{- /* Handle path parameters like {group_id} */ -}}
@@ -848,7 +824,7 @@ void NakamaApi::{{ $rpc.Name }}(
 	}
 {{- end }}
 
-	ENakamaRequestAuth AuthType = {{ if or $isAuthenticate $isSessionRefresh }}ENakamaRequestAuth::Basic{{ else }}ENakamaRequestAuth::Bearer{{ end }};
+	ESatoriRequestAuth AuthType = {{ if or $isAuthenticate $isSessionRefresh }}ESatoriRequestAuth::Basic{{ else }}ESatoriRequestAuth::Bearer{{ end }};
 
 {{- /* Build request body and dispatch */ -}}
 {{- $scalarBodyField := "" }}
@@ -877,7 +853,7 @@ void NakamaApi::{{ $rpc.Name }}(
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			{{- if $hasReturn }}
-			FNakama{{ $returnType.Name }} Result = FNakama{{ $returnType.Name }}::FromJson(Json);
+			FSatori{{ $returnType.Name }} Result = FSatori{{ $returnType.Name }}::FromJson(Json);
 			if (OnSuccess)
 			{
 				OnSuccess(Result);
@@ -966,7 +942,7 @@ void NakamaApi::{{ $rpc.Name }}(
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			{{- if $hasReturn }}
-			FNakama{{ $returnType.Name }} Result = FNakama{{ $returnType.Name }}::FromJson(Json);
+			FSatori{{ $returnType.Name }} Result = FSatori{{ $returnType.Name }}::FromJson(Json);
 			if (OnSuccess)
 			{
 				OnSuccess(Result);
@@ -981,253 +957,21 @@ void NakamaApi::{{ $rpc.Name }}(
 		OnError, CancellationToken);
 {{- end }}
 }
-{{- if $needsSession }}
-
-void NakamaApi::{{ $rpc.Name }}(
-	const FNakamaApiConfig& Config,
-	const FString& HttpKey,
-	{{- if $hasParams -}}
-	{{- range $fidx, $field := $requestType.Fields }}
-	{{- /* Skip http_key field since it's provided as the HttpKey auth parameter */ -}}
-	{{- if ne $field.Name "http_key" }}
-	{{- if and (eq $field.Name $rpc.BodyField) (not (isMessageType $field.Type)) }}
-	TSharedPtr<FJsonObject> {{ $field.Name | pascalCase }},
-	{{- else }}
-	{{ getUnrealType $field.Type $field.Repeated }} {{ $field.Name | pascalCase }},
-	{{- end }}
-	{{- end }}
-	{{- end -}}
-	{{- range $fidx, $field := $requestType.MapFields }}
-	const {{ getUnrealMapType $field.Type }}& {{ $field.Name | pascalCase }},
-	{{- end -}}
-	{{- end }}
-	{{- if $hasReturn }}
-	TFunction<void(const FNakama{{ $returnType.Name }}&)> OnSuccess,
-	{{- else }}
-	TFunction<void()> OnSuccess,
-	{{- end }}
-	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
-{
-	FString Endpoint = TEXT("{{ $rpc.Endpoint }}");
-	{{- /* Handle path parameters like {group_id} */ -}}
-	{{- range $pidx, $param := $rpc.QueryParams }}
-	{{- if ne $param "" }}
-	Endpoint = Endpoint.Replace(TEXT("{{ printf "{%s}" $param }}"), *{{ $param | pascalCase }});
-	{{- end }}
-	{{- end }}
-
-{{- /* Handle query parameters (fields not in body) */ -}}
-{{- if $hasParams }}
-{{- $bodyField := $rpc.BodyField }}
-{{- $isGetRequest := eq $rpc.Method "GET" }}
-{{- $pathParams := $rpc.QueryParams }}
-	TArray<FString> QueryParams;
-{{- range $fidx, $field := $requestType.Fields }}
-{{- /* Skip http_key field since it's provided as the HttpKey auth parameter */ -}}
-{{- if ne $field.Name "http_key" }}
-{{- $fieldName := $field.Name | pascalCase }}
-{{- $fieldType := $field.Type }}
-{{- $jsonFieldName := $field.Name }}
-{{- $isPathParam := containsInSlice $pathParams $jsonFieldName }}
-{{- $isQueryParam := and (not $isPathParam) (or $isGetRequest (eq $bodyField "") (and (ne $bodyField "*") (ne $jsonFieldName $bodyField))) }}
-{{- if $isQueryParam }}
-{{- if $field.Repeated }}
-{{- if or (eq $fieldType "string") (containsString $fieldType "StringValue") }}
-	for (const FString& Item : {{ $fieldName }})
-	{
-		QueryParams.Add(FString::Printf(TEXT("{{ $jsonFieldName }}=%s"), *Item));
-	}
-{{- else if or (eq $fieldType "int32") (containsString $fieldType "Int32Value") }}
-	for (const int32& Item : {{ $fieldName }})
-	{
-		QueryParams.Add(FString::Printf(TEXT("{{ $jsonFieldName }}=%d"), Item));
-	}
-{{- else if or (eq $fieldType "int64") (containsString $fieldType "Int64Value") }}
-	for (const int64& Item : {{ $fieldName }})
-	{
-		QueryParams.Add(FString::Printf(TEXT("{{ $jsonFieldName }}=%lld"), Item));
-	}
-{{- end }}
-{{- else }}
-{{- if or (eq $fieldType "string") (containsString $fieldType "StringValue") }}
-	if (!{{ $fieldName }}.IsEmpty())
-	{
-		QueryParams.Add(FString::Printf(TEXT("{{ $jsonFieldName }}=%s"), *{{ $fieldName }}));
-	}
-{{- else if or (eq $fieldType "bool") (containsString $fieldType "BoolValue") }}
-	QueryParams.Add(FString::Printf(TEXT("{{ $jsonFieldName }}=%s"), {{ $fieldName }} ? TEXT("true") : TEXT("false")));
-{{- else if or (eq $fieldType "int32") (containsString $fieldType "Int32Value") }}
-	if ({{ $fieldName }} != 0)
-	{
-		QueryParams.Add(FString::Printf(TEXT("{{ $jsonFieldName }}=%d"), {{ $fieldName }}));
-	}
-{{- else if or (eq $fieldType "int64") (containsString $fieldType "Int64Value") }}
-	if ({{ $fieldName }} != 0)
-	{
-		QueryParams.Add(FString::Printf(TEXT("{{ $jsonFieldName }}=%lld"), {{ $fieldName }}));
-	}
-{{- end }}
-{{- end }}
-{{- end }}
-{{- end }}
-{{- end }}
-	if (QueryParams.Num() > 0)
-	{
-		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-	}
-{{- end }}
-
-{{- /* Build request body and dispatch */ -}}
-{{- $scalarBodyField2 := "" }}
-{{- if $hasParams }}
-{{- $bodyField := $rpc.BodyField }}
-{{- $isGetRequest := eq $rpc.Method "GET" }}
-{{- if and (ne $bodyField "") (ne $bodyField "*") }}
-{{- range $fidx, $field := $requestType.Fields }}
-{{- if and (eq $field.Name $bodyField) (ne $field.Name "http_key") }}
-{{- if not (isMessageType $field.Type) }}
-{{- $scalarBodyField2 = $field.Name | pascalCase }}
-{{- end }}
-{{- end }}
-{{- end }}
-{{- end }}
-{{- end }}
-{{- if ne $scalarBodyField2 "" }}
-
-	FString BodyString;
-	if ({{ $scalarBodyField2 }}.IsValid())
-	{
-		BodyString = SerializeJsonEscaped({{ $scalarBodyField2 }});
-	}
-
-	SendRequest(Config, Endpoint, TEXT("{{ $rpc.Method }}"), BodyString, ENakamaRequestAuth::HttpKey, nullptr, HttpKey,
-		[OnSuccess](TSharedPtr<FJsonObject> Json)
-		{
-			{{- if $hasReturn }}
-			FNakama{{ $returnType.Name }} Result = FNakama{{ $returnType.Name }}::FromJson(Json);
-			if (OnSuccess)
-			{
-				OnSuccess(Result);
-			}
-			{{- else }}
-			if (OnSuccess)
-			{
-				OnSuccess();
-			}
-			{{- end }}
-		},
-		OnError, CancellationToken);
-{{- else }}
-{{- /* Object body or no body */ -}}
-	TSharedPtr<FJsonObject> Body;
-{{- if $hasParams }}
-{{- $bodyField := $rpc.BodyField }}
-{{- $isGetRequest := eq $rpc.Method "GET" }}
-{{- if and (ne $bodyField "") (ne $bodyField "*") }}
-{{- range $fidx, $field := $requestType.Fields }}
-{{- if and (eq $field.Name $bodyField) (ne $field.Name "http_key") }}
-{{- $fieldName := $field.Name | pascalCase }}
-	Body = {{ $fieldName }}.ToJson();
-{{- end }}
-{{- end }}
-{{- else if and (eq $bodyField "*") (not $isGetRequest) }}
-	Body = MakeShared<FJsonObject>();
-{{- range $fidx, $field := $requestType.Fields }}
-{{- /* Skip http_key field */ -}}
-{{- if ne $field.Name "http_key" }}
-{{- $fieldName := $field.Name | pascalCase }}
-{{- $fieldType := $field.Type }}
-{{- $jsonFieldName := $field.Name }}
-{{- if $field.Repeated }}
-	if ({{ $fieldName }}.Num() > 0)
-	{
-		TArray<TSharedPtr<FJsonValue>> Array;
-		for (const auto& Item : {{ $fieldName }})
-		{
-{{- if or (eq $fieldType "string") (containsString $fieldType "StringValue") }}
-			Array.Add(MakeShared<FJsonValueString>(Item));
-{{- else if or (eq $fieldType "int32") (eq $fieldType "int64") (eq $fieldType "uint32") (eq $fieldType "uint64") (eq $fieldType "float") (eq $fieldType "double") (containsString $fieldType "Int32Value") (containsString $fieldType "Int64Value") }}
-			Array.Add(MakeShared<FJsonValueNumber>(Item));
-{{- else if or (eq $fieldType "bool") (containsString $fieldType "BoolValue") }}
-			Array.Add(MakeShared<FJsonValueBoolean>(Item));
-{{- else if isMessageType $fieldType }}
-			Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
-{{- else }}
-			Array.Add(MakeShared<FJsonValueString>(Item));
-{{- end }}
-		}
-		Body->SetArrayField(TEXT("{{ $jsonFieldName }}"), Array);
-	}
-{{- else if or (eq $fieldType "string") (containsString $fieldType "StringValue") }}
-	if (!{{ $fieldName }}.IsEmpty())
-	{
-		Body->SetStringField(TEXT("{{ $jsonFieldName }}"), {{ $fieldName }});
-	}
-{{- else if or (eq $fieldType "bool") (containsString $fieldType "BoolValue") }}
-	Body->SetBoolField(TEXT("{{ $jsonFieldName }}"), {{ $fieldName }});
-{{- else if or (eq $fieldType "int32") (eq $fieldType "int64") (eq $fieldType "uint32") (eq $fieldType "uint64") (eq $fieldType "float") (eq $fieldType "double") (containsString $fieldType "Int32Value") (containsString $fieldType "Int64Value") (containsString $fieldType "UInt32Value") (containsString $fieldType "UInt64Value") }}
-	Body->SetNumberField(TEXT("{{ $jsonFieldName }}"), {{ $fieldName }});
-{{- else if isEnumType $fieldType }}
-	Body->SetNumberField(TEXT("{{ $jsonFieldName }}"), {{ $fieldName }});
-{{- else if isMessageType $fieldType }}
-	Body->SetObjectField(TEXT("{{ $jsonFieldName }}"), {{ $fieldName }}.ToJson());
-{{- else }}
-	Body->SetStringField(TEXT("{{ $jsonFieldName }}"), {{ $fieldName }});
-{{- end }}
-{{- end }}
-{{- end }}
-{{- range $fidx, $field := $requestType.MapFields }}
-{{- $fieldName := $field.Name | pascalCase }}
-{{- $jsonFieldName := $field.Name }}
-	if ({{ $fieldName }}.Num() > 0)
-	{
-		TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
-		for (const auto& Pair : {{ $fieldName }})
-		{
-			MapObj->SetStringField(Pair.Key, Pair.Value);
-		}
-		Body->SetObjectField(TEXT("{{ $jsonFieldName }}"), MapObj);
-	}
-{{- end }}
-{{- end }}
-{{- end }}
-
-	MakeRequest(Config, Endpoint, TEXT("{{ $rpc.Method }}"), Body, ENakamaRequestAuth::HttpKey, nullptr, HttpKey,
-		[OnSuccess](TSharedPtr<FJsonObject> Json)
-		{
-			{{- if $hasReturn }}
-			FNakama{{ $returnType.Name }} Result = FNakama{{ $returnType.Name }}::FromJson(Json);
-			if (OnSuccess)
-			{
-				OnSuccess(Result);
-			}
-			{{- else }}
-			if (OnSuccess)
-			{
-				OnSuccess();
-			}
-			{{- end }}
-		},
-		OnError, CancellationToken);
-{{- end }}
-}
-{{- end }}
 {{- end }}
 
 // Module implementation
-class FNakamaApiModule : public IModuleInterface
+class FSatoriApiModule : public IModuleInterface
 {
 public:
 	virtual void StartupModule() override
 	{
-		UE_LOG(LogNakama, Log, TEXT("NakamaApi module starting"));
+		UE_LOG(LogSatori, Log, TEXT("SatoriApi module starting"));
 	}
 
 	virtual void ShutdownModule() override
 	{
-		UE_LOG(LogNakama, Log, TEXT("NakamaApi module shutting down"));
+		UE_LOG(LogSatori, Log, TEXT("SatoriApi module shutting down"));
 	}
 };
 
-IMPLEMENT_MODULE(FNakamaApiModule, NakamaApi)
+IMPLEMENT_MODULE(FSatoriApiModule, SatoriApi)

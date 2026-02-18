@@ -17,6 +17,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 	"regexp"
 	"strings"
 	"text/template"
@@ -33,6 +34,9 @@ type Api struct {
 	EnumsByName    map[string]*visitedEnum
 	MessagesByName map[string]*visitedMessage
 	RpcsByName     map[string]*visitedRpc
+
+	// TypePrefix is prepended to message names in generated code (e.g. "FNakama" or "FSatori").
+	TypePrefix string
 }
 
 func (api *Api) addFile(protoFile string) error {
@@ -174,7 +178,7 @@ func (api *Api) addFile(protoFile string) error {
 	return nil
 }
 
-func loadApi(protoFiles []string) (Api, error) {
+func loadApi(protoFiles []string, prefix string) (Api, error) {
 	api := Api{
 		Enums:    make([]*visitedEnum, 0),
 		Messages: make([]*visitedMessage, 0),
@@ -183,6 +187,8 @@ func loadApi(protoFiles []string) (Api, error) {
 		EnumsByName:    make(map[string]*visitedEnum, 0),
 		MessagesByName: make(map[string]*visitedMessage, 0),
 		RpcsByName:     make(map[string]*visitedRpc, 0),
+
+		TypePrefix: prefix,
 	}
 
 	// Load file by file...
@@ -209,6 +215,7 @@ func main() {
 	//
 	// Parse command line args.
 	argTmpl := flag.String("template", "", "template file path.")
+	argPrefix := flag.String("prefix", "FNakama", "type prefix for generated struct names (e.g. FNakama, FSatori).")
 
 	var argProtoFiles fileList
 	flag.Var(&argProtoFiles, "proto", "list of proto files to parse. Proto files provided later can depend on files provided earlier.")
@@ -224,7 +231,7 @@ func main() {
 
 	//
 	// Parse the API files and load structures.
-	api, err := loadApi(argProtoFiles)
+	api, err := loadApi(argProtoFiles, *argPrefix)
 	if err != nil {
 		log.Fatalf("Failed to load API: %s", err.Error())
 	}
@@ -238,15 +245,28 @@ func main() {
 	combinedFuncMap := mergeFuncMaps(generalFuncMap, cppFuncMap, unrealFuncMap)
 
 	//
-	// Read and parse the template file
+	// Read and parse the template file (with partials)
+	tmpl := template.New("codegen").Funcs(combinedFuncMap)
+
+	// Load partial templates (_*.tmpl) from the same directory as the main template
+	partialPattern := filepath.Join(filepath.Dir(*argTmpl), "_*.tmpl")
+	partials, _ := filepath.Glob(partialPattern)
+	for _, p := range partials {
+		pBytes, err := os.ReadFile(p)
+		if err != nil {
+			log.Fatalf("Failed to read partial template %s: %s", p, err.Error())
+		}
+		if _, err = tmpl.Parse(string(pBytes)); err != nil {
+			log.Fatalf("Failed to parse partial template %s: %s", p, err.Error())
+		}
+	}
+
 	bytes, err := os.ReadFile(*argTmpl)
 	if err != nil {
 		log.Fatalf("Failed to read template file: %s", err.Error())
 	}
 
-	tmplFile := string(bytes)
-	tmpl, err := template.New("codegen").Funcs(combinedFuncMap).Parse(tmplFile)
-	if err != nil {
+	if _, err = tmpl.Parse(string(bytes)); err != nil {
 		log.Fatalf("Failed to parse template: %s", err.Error())
 	}
 

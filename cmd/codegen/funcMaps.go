@@ -250,7 +250,7 @@ func getUnrealFuncMap(api Api) template.FuncMap {
 			default:
 				// For message types (starts with uppercase), use TArray<FNakama*>
 				if len(fieldType) > 0 && fieldType[0] >= 'A' && fieldType[0] <= 'Z' {
-					unrealType = fmt.Sprintf("TArray<FNakama%s>", fieldType)
+					unrealType = fmt.Sprintf("TArray<%s%s>", api.TypePrefix, fieldType)
 				} else {
 					unrealType = "TArray<FString>"
 				}
@@ -288,7 +288,7 @@ func getUnrealFuncMap(api Api) template.FuncMap {
 			default:
 				// For message types (starts with uppercase), use FNakama prefix
 				if len(fieldType) > 0 && fieldType[0] >= 'A' && fieldType[0] <= 'Z' {
-					unrealType = fmt.Sprintf("FNakama%s", fieldType)
+					unrealType = fmt.Sprintf("%s%s", api.TypePrefix, fieldType)
 				} else {
 					unrealType = "FString"
 				}
@@ -346,9 +346,9 @@ func getUnrealFuncMap(api Api) template.FuncMap {
 	getUnrealBPType := func(fieldType string, isRepeated bool) string {
 		if isMessageType(fieldType) {
 			if isRepeated {
-				return fmt.Sprintf("const TArray<FNakama%sBP>&", fieldType)
+				return fmt.Sprintf("const TArray<%s%sBP>&", api.TypePrefix, fieldType)
 			}
-			return fmt.Sprintf("const FNakama%sBP&", fieldType)
+			return fmt.Sprintf("const %s%sBP&", api.TypePrefix, fieldType)
 		}
 		// Handle Blueprint-incompatible types
 		// uint32 is not supported by Blueprint - convert to int32
@@ -412,9 +412,9 @@ func getUnrealFuncMap(api Api) template.FuncMap {
 			// For BP wrapper struct fields: use FNakama*BP for message types
 			if isMessageType(fieldType) {
 				if isRepeated {
-					return fmt.Sprintf("TArray<FNakama%sBP>", fieldType)
+					return fmt.Sprintf("TArray<%s%sBP>", api.TypePrefix, fieldType)
 				}
-				return fmt.Sprintf("FNakama%sBP", fieldType)
+				return fmt.Sprintf("%s%sBP", api.TypePrefix, fieldType)
 			}
 			// For primitives, handle Blueprint-incompatible types
 			// uint32 is not supported by Blueprint - convert to int32
@@ -441,9 +441,9 @@ func getUnrealFuncMap(api Api) template.FuncMap {
 		},
 		"asyncResultType": func(returnType *visitedMessage) string {
 			if returnType == nil {
-				return "FNakamaVoid"
+				return api.TypePrefix + "Void"
 			}
-			return fmt.Sprintf("FNakama%s", returnType.Name)
+			return fmt.Sprintf("%s%s", api.TypePrefix, returnType.Name)
 		},
 
 		// TODO: Implement these.

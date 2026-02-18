@@ -37,11 +37,10 @@ public class SatoriUnreal : ModuleRules
 			);
 
 
-		// NakamaUnreal no longer depends on NakamaCore
 		PublicDependencyModuleNames.AddRange(
 			new string[]
 			{
-				"Core", "HTTP", "WebSockets", "JsonUtilities"
+				"Core", "SatoriApi", "HTTP", "JsonUtilities"
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2026 The Nakama Authors
+ * Copyright {{currentYear}} The Nakama Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -216,150 +216,35 @@ namespace Satori
 	/** Compute backoff delay in seconds for a given attempt using exponential backoff with full jitter. */
 	SATORIUNREAL_API float CalculateBackoff(int32 Attempt, const FSatoriRetryConfiguration& Config);
 
-	/** Authenticate against the server. */
-	SATORIUNREAL_API TSatoriFuture<FSatoriSession> Authenticate(
-		FSatoriClient Client,
-		FString Id,
-		bool NoSession,
-		const TMap<FString, FString>& Default,
-		const TMap<FString, FString>& Custom,
-		FSatoriCancellationTokenPtr CancellationToken = nullptr);
+{{- /* Generate free function declarations for each RPC */ -}}
+{{- range $idx, $rpc := $.Rpcs }}
 
-	/** Log out a session, invalidate a refresh token, or log out all sessions/refresh tokens for a user. */
-	SATORIUNREAL_API TSatoriFuture<FSatoriVoid> AuthenticateLogout(
-		FSatoriClient Client,
-		FString Token,
-		FString RefreshToken,
-		FSatoriCancellationTokenPtr CancellationToken = nullptr);
+{{- $requestType := $rpc.RequestType -}}
+{{- $returnType := $rpc.ReturnType -}}
+{{- $hasParams := ne $requestType nil }}
+{{- $isAuthenticate := containsString $rpc.Name "Authenticate" }}
+{{- $isSessionRefresh := eq $rpc.Name "SessionRefresh" }}
+{{- $needsSession := and (not $isAuthenticate) (not $isSessionRefresh) }}
+{{- $resultType := asyncResultType $returnType }}
 
-	/** Refresh a user's session using a refresh token retrieved from a previous authentication request. */
-	SATORIUNREAL_API TSatoriFuture<FSatoriSession> AuthenticateRefresh(
+	/** {{ $rpc.Comment }} */
+	SATORIUNREAL_API TSatoriFuture<{{ $resultType }}> {{ $rpc.Name }}(
 		FSatoriClient Client,
-		FString RefreshToken,
-		FSatoriCancellationTokenPtr CancellationToken = nullptr);
-
-	/** Delete the caller's identity and associated data. */
-	SATORIUNREAL_API TSatoriFuture<FSatoriVoid> DeleteIdentity(
-		FSatoriClient Client,
+		{{- if $needsSession }}
 		FSatoriSessionPtr Session,
+		{{- end }}
+		{{- if $hasParams -}}
+		{{- range $fidx, $field := $requestType.Fields }}
+		{{- if and (eq $field.Name $rpc.BodyField) (not (isMessageType $field.Type)) }}
+		TSharedPtr<FJsonObject> {{ $field.Name | pascalCase }},
+		{{- else }}
+		{{ getUnrealType $field.Type $field.Repeated }} {{ $field.Name | pascalCase }},
+		{{- end }}
+		{{- end -}}
+		{{- range $fidx, $field := $requestType.MapFields }}
+		const {{ getUnrealMapType $field.Type }}& {{ $field.Name | pascalCase }},
+		{{- end -}}
+		{{- end }}
 		FSatoriCancellationTokenPtr CancellationToken = nullptr);
-
-	/** Publish an event for this session. */
-	SATORIUNREAL_API TSatoriFuture<FSatoriVoid> Event(
-		FSatoriClient Client,
-		FSatoriSessionPtr Session,
-		const TArray<FSatoriEvent>& Events,
-		FSatoriCancellationTokenPtr CancellationToken = nullptr);
-
-	/** Publish server events for multiple distinct identities. */
-	SATORIUNREAL_API TSatoriFuture<FSatoriVoid> ServerEvent(
-		FSatoriClient Client,
-		FSatoriSessionPtr Session,
-		const TArray<FSatoriEvent>& Events,
-		FSatoriCancellationTokenPtr CancellationToken = nullptr);
-
-	/** Get or list all available experiments for this identity. */
-	SATORIUNREAL_API TSatoriFuture<FSatoriExperimentList> GetExperiments(
-		FSatoriClient Client,
-		FSatoriSessionPtr Session,
-		const TArray<FString>& Names,
-		const TArray<FString>& Labels,
-		FSatoriCancellationTokenPtr CancellationToken = nullptr);
-
-	/** List all available flags and their value overrides for this identity. */
-	SATORIUNREAL_API TSatoriFuture<FSatoriFlagOverrideList> GetFlagOverrides(
-		FSatoriClient Client,
-		FSatoriSessionPtr Session,
-		const TArray<FString>& Names,
-		const TArray<FString>& Labels,
-		FSatoriCancellationTokenPtr CancellationToken = nullptr);
-
-	/** List all available flags for this identity. */
-	SATORIUNREAL_API TSatoriFuture<FSatoriFlagList> GetFlags(
-		FSatoriClient Client,
-		FSatoriSessionPtr Session,
-		const TArray<FString>& Names,
-		const TArray<FString>& Labels,
-		FSatoriCancellationTokenPtr CancellationToken = nullptr);
-
-	/** List available live events. */
-	SATORIUNREAL_API TSatoriFuture<FSatoriLiveEventList> GetLiveEvents(
-		FSatoriClient Client,
-		FSatoriSessionPtr Session,
-		const TArray<FString>& Names,
-		const TArray<FString>& Labels,
-		int32 PastRunCount,
-		int32 FutureRunCount,
-		int64 StartTimeSec,
-		int64 EndTimeSec,
-		FSatoriCancellationTokenPtr CancellationToken = nullptr);
-
-	/** Join an 'explicit join' live event. */
-	SATORIUNREAL_API TSatoriFuture<FSatoriVoid> JoinLiveEvent(
-		FSatoriClient Client,
-		FSatoriSessionPtr Session,
-		FString Id,
-		FSatoriCancellationTokenPtr CancellationToken = nullptr);
-
-	/** A healthcheck which load balancers can use to check the service. */
-	SATORIUNREAL_API TSatoriFuture<FSatoriVoid> Healthcheck(
-		FSatoriClient Client,
-		FSatoriSessionPtr Session,
-		FSatoriCancellationTokenPtr CancellationToken = nullptr);
-
-	/** Enrich/replace the current session with new identifier. */
-	SATORIUNREAL_API TSatoriFuture<FSatoriSession> Identify(
-		FSatoriClient Client,
-		FSatoriSessionPtr Session,
-		FString Id,
-		const TMap<FString, FString>& Default,
-		const TMap<FString, FString>& Custom,
-		FSatoriCancellationTokenPtr CancellationToken = nullptr);
-
-	/** List properties associated with this identity. */
-	SATORIUNREAL_API TSatoriFuture<FSatoriProperties> ListProperties(
-		FSatoriClient Client,
-		FSatoriSessionPtr Session,
-		FSatoriCancellationTokenPtr CancellationToken = nullptr);
-
-	/** A readycheck which load balancers can use to check the service. */
-	SATORIUNREAL_API TSatoriFuture<FSatoriVoid> Readycheck(
-		FSatoriClient Client,
-		FSatoriSessionPtr Session,
-		FSatoriCancellationTokenPtr CancellationToken = nullptr);
-
-	/** Update identity properties. */
-	SATORIUNREAL_API TSatoriFuture<FSatoriVoid> UpdateProperties(
-		FSatoriClient Client,
-		FSatoriSessionPtr Session,
-		bool Recompute,
-		const TMap<FString, FString>& Default,
-		const TMap<FString, FString>& Custom,
-		FSatoriCancellationTokenPtr CancellationToken = nullptr);
-
-	/** Get the list of messages for the identity. */
-	SATORIUNREAL_API TSatoriFuture<FSatoriGetMessageListResponse> GetMessageList(
-		FSatoriClient Client,
-		FSatoriSessionPtr Session,
-		int32 Limit,
-		bool Forward,
-		FString Cursor,
-		const TArray<FString>& MessageIds,
-		FSatoriCancellationTokenPtr CancellationToken = nullptr);
-
-	/** Updates a message for an identity. */
-	SATORIUNREAL_API TSatoriFuture<FSatoriVoid> UpdateMessage(
-		FSatoriClient Client,
-		FSatoriSessionPtr Session,
-		FString Id,
-		int64 ReadTime,
-		int64 ConsumeTime,
-		FSatoriCancellationTokenPtr CancellationToken = nullptr);
-
-	/** Deletes a message for an identity. */
-	SATORIUNREAL_API TSatoriFuture<FSatoriVoid> DeleteMessage(
-		FSatoriClient Client,
-		FSatoriSessionPtr Session,
-		FString Id,
-		FSatoriCancellationTokenPtr CancellationToken = nullptr);
+{{- end }}
 }

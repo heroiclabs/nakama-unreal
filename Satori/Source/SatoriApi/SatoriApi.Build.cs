@@ -15,10 +15,11 @@
  */
 
 using UnrealBuildTool;
+using System.IO;
 
-public class SatoriBlueprints : ModuleRules
+public class SatoriApi : ModuleRules
 {
-	public SatoriBlueprints(ReadOnlyTargetRules Target) : base(Target)
+	public SatoriApi(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 
@@ -39,8 +40,7 @@ public class SatoriBlueprints : ModuleRules
 		PublicDependencyModuleNames.AddRange(
 			new string[]
 			{
-				"Core",
-				"SatoriApi"
+				"Core", "HTTP", "JsonUtilities"
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);
@@ -49,15 +49,15 @@ public class SatoriBlueprints : ModuleRules
 		PrivateDependencyModuleNames.AddRange(
 			new string[]
 			{
-				"CoreUObject",
+                "CoreUObject",
 				"Engine",
 				"Slate",
 				"SlateCore",
 				"Engine",
 				"JsonUtilities",
-				"Json"
-
-				// ... private dependencies that you statically link with here ...
+				"Json",
+				"HTTP"
+				// ... add private dependencies that you statically link with here ...
 			}
 			);
 
@@ -68,5 +68,10 @@ public class SatoriBlueprints : ModuleRules
 				// ... add any modules that your module loads dynamically here ...
 			}
 			);
-	}
+
+        PublicIncludePaths.Add(Path.Combine(ModuleDirectory, "Public"));
+        PublicIncludePaths.Add(Path.Combine(ModuleDirectory, "Private"));
+
+        PrivateIncludePaths.Add(Path.Combine(ModuleDirectory, "Public"));
+    }
 }

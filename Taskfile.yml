@@ -7,26 +7,35 @@ vars:
   PROTO_FILE: "proto/nakama-types.proto"
   PROTO_SERVICE_FILE: "proto/nakama-api.proto"
   PROTO_RT_FILE: "proto/realtime.proto"
+  SATORI_PROTO_FILE: "proto/satori-types.proto"
+  SATORI_PROTO_SERVICE_FILE: "proto/satori-api.proto"
   CODEGEN: 'build/codegen{{if eq OS "windows"}}.exe{{end}}'
 
 tasks:
 
 
   codegen:
-    desc: 'Fetch protos, build codegen tool, and generate all Nakama modules.'
+    desc: 'Fetch protos, build codegen tool, and generate all Nakama + Satori modules.'
     vars:
       PROTO_API_URL: 'https://raw.githubusercontent.com/heroiclabs/nakama-common/feat/flatten-proto-v2/api/api.proto'
       PROTO_SERVICE_URL: 'https://raw.githubusercontent.com/heroiclabs/nakama/feat/flatten-proto/apigrpc/apigrpc.proto'
       PROTO_RT_URL: 'https://raw.githubusercontent.com/heroiclabs/nakama-common/feat/flatten-proto-v2/rtapi/realtime.proto'
     cmds:
     - cmd: |
-        mkdir -p proto build
+        mkdir -p build
+        cd cmd/codegen && go build -o ../../{{.CODEGEN}} && cd ../..
+
+        mkdir -p proto Satori/Source/SatoriApi/Public Satori/Source/SatoriApi/Private
 
         curl -o {{.PROTO_FILE}} "{{.PROTO_API_URL}}"
         curl -o {{.PROTO_SERVICE_FILE}} "{{.PROTO_SERVICE_URL}}"
         curl -o {{.PROTO_RT_FILE}} "{{.PROTO_RT_URL}}"
 
-        cd cmd/codegen && go build -o ../../{{.CODEGEN}} && cd ../..
+        git clone --depth 1 --branch feat/reorder-proto --filter=blob:none --sparse git@github.com:heroiclabs/satori.git proto/satori 2>/dev/null
+        cd proto/satori && git sparse-checkout set api 2>/dev/null && cd -
+        cp proto/satori/api/satori-types.proto {{.SATORI_PROTO_FILE}}
+        cp proto/satori/api/satori-api.proto {{.SATORI_PROTO_SERVICE_FILE}}
+        rm -rf proto/satori
 
         ./{{.CODEGEN}} \
         --template cmd/codegen/templates/nakama-api.ue.h.tmpl \
@@ -64,6 +73,48 @@ tasks:
         --proto {{.PROTO_SERVICE_FILE}} \
         > Nakama/Source/NakamaBlueprints/Private/NakamaClientBlueprintLibrary.cpp
 
+        ./{{.CODEGEN}} \
+        --template cmd/codegen/templates/satori-api.ue.h.tmpl \
+        --proto {{.SATORI_PROTO_FILE}} \
+        --proto {{.SATORI_PROTO_SERVICE_FILE}} \
+        --prefix FSatori \
+        > Satori/Source/SatoriApi/Public/SatoriApi.h
+
+        ./{{.CODEGEN}} \
+        --template cmd/codegen/templates/satori-api.ue.cpp.tmpl \
+        --proto {{.SATORI_PROTO_FILE}} \
+        --proto {{.SATORI_PROTO_SERVICE_FILE}} \
+        --prefix FSatori \
+        > Satori/Source/SatoriApi/Private/SatoriApi.cpp
+
+        ./{{.CODEGEN}} \
+        --template cmd/codegen/templates/satori-unreal.ue.h.tmpl \
+        --proto {{.SATORI_PROTO_FILE}} \
+        --proto {{.SATORI_PROTO_SERVICE_FILE}} \
+        --prefix FSatori \
+        > Satori/Source/SatoriUnreal/Public/SatoriUnreal.h
+
+        ./{{.CODEGEN}} \
+        --template cmd/codegen/templates/satori-unreal.ue.cpp.tmpl \
+        --proto {{.SATORI_PROTO_FILE}} \
+        --proto {{.SATORI_PROTO_SERVICE_FILE}} \
+        --prefix FSatori \
+        > Satori/Source/SatoriUnreal/Private/SatoriUnreal.cpp
+
+        ./{{.CODEGEN}} \
+        --template cmd/codegen/templates/satori-client-bplib.ue.h.tmpl \
+        --proto {{.SATORI_PROTO_FILE}} \
+        --proto {{.SATORI_PROTO_SERVICE_FILE}} \
+        --prefix FSatori \
+        > Satori/Source/SatoriBlueprints/Public/SatoriClientBlueprintLibrary.h
+
+        ./{{.CODEGEN}} \
+        --template cmd/codegen/templates/satori-client-bplib.ue.cpp.tmpl \
+        --proto {{.SATORI_PROTO_FILE}} \
+        --proto {{.SATORI_PROTO_SERVICE_FILE}} \
+        --prefix FSatori \
+        > Satori/Source/SatoriBlueprints/Private/SatoriClientBlueprintLibrary.cpp
+
   start-nakama:
     desc: 'Start Nakama server with PostgreSQL via Docker Compose (skipped if already healthy).'
     cmds:
@@ -88,7 +139,7 @@ tasks:
         docker compose -f NakamaTest/nakama-server/docker-compose.yml logs nakama
         exit 1
 
-  build-project:
+  build:
     desc: 'Build and cook a project via UAT (BuildCookRun).'
     deps:
     - task: check-unreal-engine
@@ -159,72 +210,6 @@ tasks:
             -Project="$PROJECT" \
             -ClientConfig={{.CONFIG}} \
             -Cook -Build
-      platforms: [linux]
-
-  package-nakamatest:
-    desc: 'Package NakamaTest as a standalone build (BuildCookRun).'
-    deps:
-    - task: check-unreal-engine
-    cmds:
-    - cmd: |
-        if [ ! -d "NakamaTest/Plugins/Nakama" ]; then
-            mkdir -p NakamaTest/Plugins
-            if command -v powershell &>/dev/null; then
-                powershell -NoProfile -Command "New-Item -ItemType Junction -Force -Path 'NakamaTest\Plugins\Nakama' -Target (Join-Path (Get-Location) 'Nakama') | Out-Null"
-            else
-                ln -sfn "$(pwd)/Nakama" "NakamaTest/Plugins/Nakama"
-            fi
-        fi
-    - cmd: |
-        if [ -z "$UNREAL_ENGINE" ]; then
-            echo "Error: UNREAL_ENGINE is not set!"
-            exit 1
-        fi
-
-        PROJECT="$(pwd)/NakamaTest/NakamaTest.uproject"
-
-        echo "Packaging NakamaTest..."
-        "$UNREAL_ENGINE/Engine/Build/BatchFiles/RunUAT.bat" \
-            BuildCookRun \
-            -targetconfig=Debug \
-            -project="$PROJECT" \
-            -noP4 -installed -utf8output \
-            -build -cook -stage -package \
-            -verbose -stdout -nohostplatform -useshellexecute
-      platforms: [windows]
-    - cmd: |
-        if [ -z "$UNREAL_ENGINE" ]; then
-            echo "Error: UNREAL_ENGINE is not set!"
-            exit 1
-        fi
-
-        PROJECT="$(pwd)/NakamaTest/NakamaTest.uproject"
-
-        echo "Packaging NakamaTest..."
-        "$UNREAL_ENGINE/Engine/Build/BatchFiles/RunUAT.sh" \
-            BuildCookRun \
-            -project="$PROJECT" \
-            -targetConfig=Debug \
-            -noP4 -platform=Mac -Architecture_Mac=arm64 \
-            -installed -unrealexe=UnrealEditor -utf8output \
-            -build -cook -stage -package -verbose
-      platforms: [darwin]
-    - cmd: |
-        if [ -z "$UNREAL_ENGINE" ]; then
-            echo "Error: UNREAL_ENGINE is not set!"
-            exit 1
-        fi
-
-        PROJECT="$(pwd)/NakamaTest/NakamaTest.uproject"
-
-        echo "Packaging NakamaTest..."
-        "$UNREAL_ENGINE/Engine/Build/BatchFiles/RunUAT.sh" \
-            BuildCookRun \
-            -project="$PROJECT" \
-            -clientconfig=Test \
-            -noP4 -platform=Linux -targetconfig=Debug \
-            -installed -utf8output \
-            -build -cook -stage -package -verbose
       platforms: [linux]
 
   check-unreal-engine:
@@ -330,20 +315,12 @@ tasks:
             fi
         fi
     - cmd: |
-        if [ -z "$UNREAL_ENGINE" ]; then
-            echo "Error: UNREAL_ENGINE is not set!"
-            echo "Set it in .env or pass it as an argument:"
-            echo "  task test-unreal UNREAL_ENGINE=/path/to/engine"
-            exit 1
-        fi
-
         PROJECT="$(pwd)/NakamaTest/NakamaTest.uproject"
         REPORT_DIR="$(pwd)/{{.REPORT_PATH}}"
         LOG_FILE="$REPORT_DIR/unreal.log"
 
         mkdir -p "$REPORT_DIR"
 
-        echo "Building NakamaTest..."
         "$UNREAL_ENGINE/Engine/Build/BatchFiles/Build.bat" \
             NakamaTestEditor Win64 Development \
             -Project="$PROJECT"
@@ -353,7 +330,6 @@ tasks:
             exit 1
         fi
 
-        echo "Running automation suite {{.TEST_SUITE}}..."
         "$UNREAL_ENGINE/Engine/Binaries/Win64/UnrealEditor-Cmd.exe" \
             "$PROJECT" \
             -nullrhi \
