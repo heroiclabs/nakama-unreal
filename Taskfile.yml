@@ -115,12 +115,13 @@ tasks:
         --prefix FSatori \
         > Satori/Source/SatoriBlueprints/Private/SatoriClientBlueprintLibrary.cpp
 
-  start-nakama:
-    desc: 'Start Nakama server with PostgreSQL via Docker Compose (skipped if already healthy).'
+  start-server:
+    desc: 'Start Nakama + Satori servers via Docker Compose (skipped if already healthy).'
     cmds:
     - cmd: |
-        if docker exec unreal_integration_test_nakama /nakama/nakama healthcheck 2>/dev/null; then
-          echo "Nakama is already running."
+        if docker exec unreal_integration_test_nakama /nakama/nakama healthcheck 2>/dev/null &&
+           docker exec unreal_integration_test_satori curl -sf http://localhost:7450/ >/dev/null 2>&1; then
+          echo "Nakama and Satori are already running."
           exit 0
         fi
 
@@ -130,13 +131,29 @@ tasks:
         while [ $timeout -gt 0 ]; do
           if docker exec unreal_integration_test_nakama /nakama/nakama healthcheck 2>/dev/null; then
             echo "Nakama is ready!"
+            break
+          fi
+          powershell -NoProfile -Command "Start-Sleep -Seconds 2" 2>/dev/null || sleep 2
+          timeout=$((timeout - 2))
+        done
+        if [ $timeout -le 0 ]; then
+          echo "Error: Nakama failed to start within 60 seconds"
+          docker compose -f IntegrationTests/server/docker-compose.yml logs nakama
+          exit 1
+        fi
+
+        echo "Waiting for Satori to be healthy..."
+        timeout=60
+        while [ $timeout -gt 0 ]; do
+          if docker exec unreal_integration_test_satori curl -sf http://localhost:7450/ >/dev/null 2>&1; then
+            echo "Satori is ready!"
             exit 0
           fi
           powershell -NoProfile -Command "Start-Sleep -Seconds 2" 2>/dev/null || sleep 2
           timeout=$((timeout - 2))
         done
-        echo "Error: Nakama failed to start within 60 seconds"
-        docker compose -f IntegrationTests/server/docker-compose.yml logs nakama
+        echo "Error: Satori failed to start within 60 seconds"
+        docker compose -f IntegrationTests/server/docker-compose.yml logs satori
         exit 1
 
   build:
@@ -304,14 +321,21 @@ tasks:
     cmds:
     - task: check-unreal-engine
     - task: codegen
-    - task: start-nakama
+    - task: start-server
     - cmd: |
+        mkdir -p IntegrationTests/Plugins
         if [ ! -d "IntegrationTests/Plugins/Nakama" ]; then
-            mkdir -p IntegrationTests/Plugins
             if command -v powershell &>/dev/null; then
                 powershell -NoProfile -Command "New-Item -ItemType Junction -Force -Path 'IntegrationTests\Plugins\Nakama' -Target (Join-Path (Get-Location) 'Nakama') | Out-Null"
             else
                 ln -sfn "$(pwd)/Nakama" "IntegrationTests/Plugins/Nakama"
+            fi
+        fi
+        if [ ! -d "IntegrationTests/Plugins/Satori" ]; then
+            if command -v powershell &>/dev/null; then
+                powershell -NoProfile -Command "New-Item -ItemType Junction -Force -Path 'IntegrationTests\Plugins\Satori' -Target (Join-Path (Get-Location) 'Satori') | Out-Null"
+            else
+                ln -sfn "$(pwd)/Satori" "IntegrationTests/Plugins/Satori"
             fi
         fi
     - cmd: |

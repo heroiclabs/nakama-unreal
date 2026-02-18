@@ -37,56 +37,56 @@ struct FSatoriEvent;
 struct FSatoriEventRequest;
 struct FSatoriExperiment;
 struct FSatoriExperimentList;
-struct FSatoriFlag;
 struct FSatoriValueChangeReason;
+struct FSatoriFlag;
 struct FSatoriFlagList;
+struct FSatoriFlagOverrideValue;
 struct FSatoriFlagOverride;
-struct FSatoriValue;
 struct FSatoriFlagOverrideList;
 struct FSatoriGetExperimentsRequest;
 struct FSatoriGetFlagsRequest;
 struct FSatoriGetLiveEventsRequest;
+struct FSatoriMessage;
 struct FSatoriGetMessageListRequest;
 struct FSatoriGetMessageListResponse;
 struct FSatoriIdentifyRequest;
 struct FSatoriJoinLiveEventRequest;
 struct FSatoriLiveEvent;
 struct FSatoriLiveEventList;
-struct FSatoriMessage;
 struct FSatoriProperties;
 struct FSatoriSession;
 struct FSatoriUpdatePropertiesRequest;
 struct FSatoriUpdateMessageRequest;
 
-/**  */
+/** The type of configuration that overrides a flag value. */
 UENUM(BlueprintType)
-enum class ESatoriValueChangeReason_Type : uint8
+enum class ESatoriValueChangeReasonType : uint8
 {
-	UNKNOWN = 0,
-	FLAG_VARIANT = 1,
-	LIVE_EVENT = 2,
-	EXPERIMENT = 3
+	VCR_UNKNOWN = 0,
+	VCR_FLAG_VARIANT = 1,
+	VCR_LIVE_EVENT = 2,
+	VCR_EXPERIMENT = 3
 };
 
-/**  */
+/** The type of configuration that overrides a flag value. */
 UENUM(BlueprintType)
-enum class ESatoriFlagOverride_Type : uint8
+enum class ESatoriFlagOverrideType : uint8
 {
-	FLAG = 0,
-	FLAG_VARIANT = 1,
-	LIVE_EVENT_FLAG = 2,
-	LIVE_EVENT_FLAG_VARIANT = 3,
-	EXPERIMENT_PHASE_VARIANT_FLAG = 4
+	FOT_FLAG = 0,
+	FOT_FLAG_VARIANT = 1,
+	FOT_LIVE_EVENT_FLAG = 2,
+	FOT_LIVE_EVENT_FLAG_VARIANT = 3,
+	FOT_EXPERIMENT_PHASE_VARIANT_FLAG = 4
 };
 
 /** The status variants of a live event. */
 UENUM(BlueprintType)
-enum class ESatoriLiveEvent_Status : uint8
+enum class ESatoriLiveEventStatus : uint8
 {
-	UNKNOWN = 0,
-	ACTIVE = 1,
-	UPCOMING = 2,
-	TERMINATED = 3
+	LES_UNKNOWN = 0,
+	LES_ACTIVE = 1,
+	LES_UPCOMING = 2,
+	LES_TERMINATED = 3
 };
 
 USTRUCT(BlueprintType)
@@ -289,6 +289,25 @@ struct SATORIAPI_API FSatoriExperimentList
 	TSharedPtr<FJsonObject> ToJson() const;
 };
 
+/**  The origin of change on a flag value. */
+USTRUCT(BlueprintType)
+struct SATORIAPI_API FSatoriValueChangeReason
+{
+	GENERATED_BODY()
+	/**  The type of the configuration that declared the override. */
+	UPROPERTY(BlueprintReadWrite, Category = "Satori")
+	int32 Type = 0;
+	/**  The name of the configuration that overrides the flag value. */
+	UPROPERTY(BlueprintReadWrite, Category = "Satori")
+	FString Name;
+	/**  The variant name of the configuration that overrides the flag value. */
+	UPROPERTY(BlueprintReadWrite, Category = "Satori")
+	FString VariantName;
+
+	static FSatoriValueChangeReason FromJson(const TSharedPtr<FJsonObject>& Json);
+	TSharedPtr<FJsonObject> ToJson() const;
+};
+
 /**  Feature flag available to the identity. */
 USTRUCT(BlueprintType)
 struct SATORIAPI_API FSatoriFlag
@@ -314,25 +333,6 @@ struct SATORIAPI_API FSatoriFlag
 	TSharedPtr<FJsonObject> ToJson() const;
 };
 
-/**  */
-USTRUCT(BlueprintType)
-struct SATORIAPI_API FSatoriValueChangeReason
-{
-	GENERATED_BODY()
-	/**  The type of the configuration that declared the override. */
-	UPROPERTY(BlueprintReadWrite, Category = "Satori")
-	FSatoriType Type;
-	/**  The name of the configuration that overrides the flag value. */
-	UPROPERTY(BlueprintReadWrite, Category = "Satori")
-	FString Name;
-	/**  The variant name of the configuration that overrides the flag value. */
-	UPROPERTY(BlueprintReadWrite, Category = "Satori")
-	FString VariantName;
-
-	static FSatoriValueChangeReason FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
-};
-
 /**  All flags available to the identity */
 USTRUCT(BlueprintType)
 struct SATORIAPI_API FSatoriFlagList
@@ -346,33 +346,14 @@ struct SATORIAPI_API FSatoriFlagList
 	TSharedPtr<FJsonObject> ToJson() const;
 };
 
-/**  Feature flag available to the identity. */
-USTRUCT(BlueprintType)
-struct SATORIAPI_API FSatoriFlagOverride
-{
-	GENERATED_BODY()
-	/**  Flag name */
-	UPROPERTY(BlueprintReadWrite, Category = "Satori")
-	FString FlagName;
-	/**  The list of configuration that affect the value of the flag. */
-	UPROPERTY(BlueprintReadWrite, Category = "Satori")
-	TArray<FSatoriValue> Overrides;
-	/**  The labels associated with this flag. */
-	UPROPERTY(BlueprintReadWrite, Category = "Satori")
-	TArray<FString> Labels;
-
-	static FSatoriFlagOverride FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
-};
-
 /**  The details of a flag value override. */
 USTRUCT(BlueprintType)
-struct SATORIAPI_API FSatoriValue
+struct SATORIAPI_API FSatoriFlagOverrideValue
 {
 	GENERATED_BODY()
 	/**  The type of the configuration that declared the override. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
-	FSatoriType Type;
+	int32 Type = 0;
 	/**  The name of the configuration that overrides the flag value. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	FString Name;
@@ -386,7 +367,26 @@ struct SATORIAPI_API FSatoriValue
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	int64 CreateTimeSec = 0;
 
-	static FSatoriValue FromJson(const TSharedPtr<FJsonObject>& Json);
+	static FSatoriFlagOverrideValue FromJson(const TSharedPtr<FJsonObject>& Json);
+	TSharedPtr<FJsonObject> ToJson() const;
+};
+
+/**  Feature flag available to the identity. */
+USTRUCT(BlueprintType)
+struct SATORIAPI_API FSatoriFlagOverride
+{
+	GENERATED_BODY()
+	/**  Flag name */
+	UPROPERTY(BlueprintReadWrite, Category = "Satori")
+	FString FlagName;
+	/**  The list of configuration that affect the value of the flag. */
+	UPROPERTY(BlueprintReadWrite, Category = "Satori")
+	TArray<FSatoriFlagOverrideValue> Overrides;
+	/**  The labels associated with this flag. */
+	UPROPERTY(BlueprintReadWrite, Category = "Satori")
+	TArray<FString> Labels;
+
+	static FSatoriFlagOverride FromJson(const TSharedPtr<FJsonObject>& Json);
 	TSharedPtr<FJsonObject> ToJson() const;
 };
 
@@ -460,6 +460,49 @@ struct SATORIAPI_API FSatoriGetLiveEventsRequest
 	int64 EndTimeSec = 0;
 
 	static FSatoriGetLiveEventsRequest FromJson(const TSharedPtr<FJsonObject>& Json);
+	TSharedPtr<FJsonObject> ToJson() const;
+};
+
+/**  A scheduled message. */
+USTRUCT(BlueprintType)
+struct SATORIAPI_API FSatoriMessage
+{
+	GENERATED_BODY()
+	/**  The identifier of the schedule. */
+	UPROPERTY(BlueprintReadWrite, Category = "Satori")
+	FString ScheduleId;
+	/**  The send time for the message. */
+	UPROPERTY(BlueprintReadWrite, Category = "Satori")
+	int64 SendTime = 0;
+	/**  The time the message was created. */
+	UPROPERTY(BlueprintReadWrite, Category = "Satori")
+	int64 CreateTime = 0;
+	/**  The time the message was updated. */
+	UPROPERTY(BlueprintReadWrite, Category = "Satori")
+	int64 UpdateTime = 0;
+	/**  The time the message was read by the client. */
+	UPROPERTY(BlueprintReadWrite, Category = "Satori")
+	int64 ReadTime = 0;
+	/**  The time the message was consumed by the identity. */
+	UPROPERTY(BlueprintReadWrite, Category = "Satori")
+	int64 ConsumeTime = 0;
+	/**  The message's text. */
+	UPROPERTY(BlueprintReadWrite, Category = "Satori")
+	FString Text;
+	/**  The message's unique identifier. */
+	UPROPERTY(BlueprintReadWrite, Category = "Satori")
+	FString Id;
+	/**  The message's title. */
+	UPROPERTY(BlueprintReadWrite, Category = "Satori")
+	FString Title;
+	/**  The message's image url. */
+	UPROPERTY(BlueprintReadWrite, Category = "Satori")
+	FString ImageUrl;
+	/**  A key-value pairs of metadata. */
+	UPROPERTY(BlueprintReadWrite, Category = "Satori")
+	TMap<FString, FString> Metadata;
+
+	static FSatoriMessage FromJson(const TSharedPtr<FJsonObject>& Json);
 	TSharedPtr<FJsonObject> ToJson() const;
 };
 
@@ -576,7 +619,7 @@ struct SATORIAPI_API FSatoriLiveEvent
 	FString ResetCron;
 	/**  The status of this live event run. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
-	FSatoriStatus Status;
+	int32 Status = 0;
 	/**  The labels associated with this live event. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	TArray<FString> Labels;
@@ -598,49 +641,6 @@ struct SATORIAPI_API FSatoriLiveEventList
 	TArray<FSatoriLiveEvent> ExplicitJoinLiveEvents;
 
 	static FSatoriLiveEventList FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
-};
-
-/**  A scheduled message. */
-USTRUCT(BlueprintType)
-struct SATORIAPI_API FSatoriMessage
-{
-	GENERATED_BODY()
-	/**  The identifier of the schedule. */
-	UPROPERTY(BlueprintReadWrite, Category = "Satori")
-	FString ScheduleId;
-	/**  The send time for the message. */
-	UPROPERTY(BlueprintReadWrite, Category = "Satori")
-	int64 SendTime = 0;
-	/**  The time the message was created. */
-	UPROPERTY(BlueprintReadWrite, Category = "Satori")
-	int64 CreateTime = 0;
-	/**  The time the message was updated. */
-	UPROPERTY(BlueprintReadWrite, Category = "Satori")
-	int64 UpdateTime = 0;
-	/**  The time the message was read by the client. */
-	UPROPERTY(BlueprintReadWrite, Category = "Satori")
-	int64 ReadTime = 0;
-	/**  The time the message was consumed by the identity. */
-	UPROPERTY(BlueprintReadWrite, Category = "Satori")
-	int64 ConsumeTime = 0;
-	/**  The message's text. */
-	UPROPERTY(BlueprintReadWrite, Category = "Satori")
-	FString Text;
-	/**  The message's unique identifier. */
-	UPROPERTY(BlueprintReadWrite, Category = "Satori")
-	FString Id;
-	/**  The message's title. */
-	UPROPERTY(BlueprintReadWrite, Category = "Satori")
-	FString Title;
-	/**  The message's image url. */
-	UPROPERTY(BlueprintReadWrite, Category = "Satori")
-	FString ImageUrl;
-	/**  A key-value pairs of metadata. */
-	UPROPERTY(BlueprintReadWrite, Category = "Satori")
-	TMap<FString, FString> Metadata;
-
-	static FSatoriMessage FromJson(const TSharedPtr<FJsonObject>& Json);
 	TSharedPtr<FJsonObject> ToJson() const;
 };
 

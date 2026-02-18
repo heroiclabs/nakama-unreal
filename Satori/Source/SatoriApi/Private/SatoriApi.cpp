@@ -529,6 +529,43 @@ TSharedPtr<FJsonObject> FSatoriExperimentList::ToJson() const
 	return Json;
 }
 
+FSatoriValueChangeReason FSatoriValueChangeReason::FromJson(const TSharedPtr<FJsonObject>& Json)
+{
+	FSatoriValueChangeReason Result;
+	if (!Json.IsValid())
+	{
+		return Result;
+	}
+	if (Json->HasField(TEXT("type")))
+	{
+		Result.Type = Json->GetIntegerField(TEXT("type"));
+	}
+	if (Json->HasField(TEXT("name")))
+	{
+		Result.Name = Json->GetStringField(TEXT("name"));
+	}
+	if (Json->HasField(TEXT("variant_name")))
+	{
+		Result.VariantName = Json->GetStringField(TEXT("variant_name"));
+	}
+	return Result;
+}
+
+TSharedPtr<FJsonObject> FSatoriValueChangeReason::ToJson() const
+{
+	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+	Json->SetNumberField(TEXT("type"), Type);
+	if (!Name.IsEmpty())
+	{
+		Json->SetStringField(TEXT("name"), Name);
+	}
+	if (!VariantName.IsEmpty())
+	{
+		Json->SetStringField(TEXT("variant_name"), VariantName);
+	}
+	return Json;
+}
+
 FSatoriFlag FSatoriFlag::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
 	FSatoriFlag Result;
@@ -595,47 +632,6 @@ TSharedPtr<FJsonObject> FSatoriFlag::ToJson() const
 	return Json;
 }
 
-FSatoriValueChangeReason FSatoriValueChangeReason::FromJson(const TSharedPtr<FJsonObject>& Json)
-{
-	FSatoriValueChangeReason Result;
-	if (!Json.IsValid())
-	{
-		return Result;
-	}
-	if (Json->HasField(TEXT("type")))
-	{
-		const TSharedPtr<FJsonObject>* NestedObj;
-		if (Json->TryGetObjectField(TEXT("type"), NestedObj))
-		{
-			Result.Type = FSatoriType::FromJson(*NestedObj);
-		}
-	}
-	if (Json->HasField(TEXT("name")))
-	{
-		Result.Name = Json->GetStringField(TEXT("name"));
-	}
-	if (Json->HasField(TEXT("variant_name")))
-	{
-		Result.VariantName = Json->GetStringField(TEXT("variant_name"));
-	}
-	return Result;
-}
-
-TSharedPtr<FJsonObject> FSatoriValueChangeReason::ToJson() const
-{
-	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-	Json->SetObjectField(TEXT("type"), Type.ToJson());
-	if (!Name.IsEmpty())
-	{
-		Json->SetStringField(TEXT("name"), Name);
-	}
-	if (!VariantName.IsEmpty())
-	{
-		Json->SetStringField(TEXT("variant_name"), VariantName);
-	}
-	return Json;
-}
-
 FSatoriFlagList FSatoriFlagList::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
 	FSatoriFlagList Result;
@@ -676,6 +672,56 @@ TSharedPtr<FJsonObject> FSatoriFlagList::ToJson() const
 	return Json;
 }
 
+FSatoriFlagOverrideValue FSatoriFlagOverrideValue::FromJson(const TSharedPtr<FJsonObject>& Json)
+{
+	FSatoriFlagOverrideValue Result;
+	if (!Json.IsValid())
+	{
+		return Result;
+	}
+	if (Json->HasField(TEXT("type")))
+	{
+		Result.Type = Json->GetIntegerField(TEXT("type"));
+	}
+	if (Json->HasField(TEXT("name")))
+	{
+		Result.Name = Json->GetStringField(TEXT("name"));
+	}
+	if (Json->HasField(TEXT("variant_name")))
+	{
+		Result.VariantName = Json->GetStringField(TEXT("variant_name"));
+	}
+	if (Json->HasField(TEXT("value")))
+	{
+		Result.Value = Json->GetStringField(TEXT("value"));
+	}
+	if (Json->HasField(TEXT("create_time_sec")))
+	{
+		Result.CreateTimeSec = static_cast<int64>(Json->GetNumberField(TEXT("create_time_sec")));
+	}
+	return Result;
+}
+
+TSharedPtr<FJsonObject> FSatoriFlagOverrideValue::ToJson() const
+{
+	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+	Json->SetNumberField(TEXT("type"), Type);
+	if (!Name.IsEmpty())
+	{
+		Json->SetStringField(TEXT("name"), Name);
+	}
+	if (!VariantName.IsEmpty())
+	{
+		Json->SetStringField(TEXT("variant_name"), VariantName);
+	}
+	if (!Value.IsEmpty())
+	{
+		Json->SetStringField(TEXT("value"), Value);
+	}
+	Json->SetNumberField(TEXT("create_time_sec"), CreateTimeSec);
+	return Json;
+}
+
 FSatoriFlagOverride FSatoriFlagOverride::FromJson(const TSharedPtr<FJsonObject>& Json)
 {
 	FSatoriFlagOverride Result;
@@ -697,7 +743,7 @@ FSatoriFlagOverride FSatoriFlagOverride::FromJson(const TSharedPtr<FJsonObject>&
 				const TSharedPtr<FJsonObject>* ItemObj = nullptr;
 				if (Item->TryGetObject(ItemObj) && ItemObj)
 				{
-					Result.Overrides.Add(FSatoriValue::FromJson(*ItemObj));
+					Result.Overrides.Add(FSatoriFlagOverrideValue::FromJson(*ItemObj));
 				}
 			}
 		}
@@ -741,60 +787,6 @@ TSharedPtr<FJsonObject> FSatoriFlagOverride::ToJson() const
 		}
 		Json->SetArrayField(TEXT("labels"), Array);
 	}
-	return Json;
-}
-
-FSatoriValue FSatoriValue::FromJson(const TSharedPtr<FJsonObject>& Json)
-{
-	FSatoriValue Result;
-	if (!Json.IsValid())
-	{
-		return Result;
-	}
-	if (Json->HasField(TEXT("type")))
-	{
-		const TSharedPtr<FJsonObject>* NestedObj;
-		if (Json->TryGetObjectField(TEXT("type"), NestedObj))
-		{
-			Result.Type = FSatoriType::FromJson(*NestedObj);
-		}
-	}
-	if (Json->HasField(TEXT("name")))
-	{
-		Result.Name = Json->GetStringField(TEXT("name"));
-	}
-	if (Json->HasField(TEXT("variant_name")))
-	{
-		Result.VariantName = Json->GetStringField(TEXT("variant_name"));
-	}
-	if (Json->HasField(TEXT("value")))
-	{
-		Result.Value = Json->GetStringField(TEXT("value"));
-	}
-	if (Json->HasField(TEXT("create_time_sec")))
-	{
-		Result.CreateTimeSec = static_cast<int64>(Json->GetNumberField(TEXT("create_time_sec")));
-	}
-	return Result;
-}
-
-TSharedPtr<FJsonObject> FSatoriValue::ToJson() const
-{
-	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-	Json->SetObjectField(TEXT("type"), Type.ToJson());
-	if (!Name.IsEmpty())
-	{
-		Json->SetStringField(TEXT("name"), Name);
-	}
-	if (!VariantName.IsEmpty())
-	{
-		Json->SetStringField(TEXT("variant_name"), VariantName);
-	}
-	if (!Value.IsEmpty())
-	{
-		Json->SetStringField(TEXT("value"), Value);
-	}
-	Json->SetNumberField(TEXT("create_time_sec"), CreateTimeSec);
 	return Json;
 }
 
@@ -1023,6 +1015,107 @@ TSharedPtr<FJsonObject> FSatoriGetLiveEventsRequest::ToJson() const
 	Json->SetNumberField(TEXT("future_run_count"), FutureRunCount);
 	Json->SetNumberField(TEXT("start_time_sec"), StartTimeSec);
 	Json->SetNumberField(TEXT("end_time_sec"), EndTimeSec);
+	return Json;
+}
+
+FSatoriMessage FSatoriMessage::FromJson(const TSharedPtr<FJsonObject>& Json)
+{
+	FSatoriMessage Result;
+	if (!Json.IsValid())
+	{
+		return Result;
+	}
+	if (Json->HasField(TEXT("schedule_id")))
+	{
+		Result.ScheduleId = Json->GetStringField(TEXT("schedule_id"));
+	}
+	if (Json->HasField(TEXT("send_time")))
+	{
+		Result.SendTime = static_cast<int64>(Json->GetNumberField(TEXT("send_time")));
+	}
+	if (Json->HasField(TEXT("create_time")))
+	{
+		Result.CreateTime = static_cast<int64>(Json->GetNumberField(TEXT("create_time")));
+	}
+	if (Json->HasField(TEXT("update_time")))
+	{
+		Result.UpdateTime = static_cast<int64>(Json->GetNumberField(TEXT("update_time")));
+	}
+	if (Json->HasField(TEXT("read_time")))
+	{
+		Result.ReadTime = static_cast<int64>(Json->GetNumberField(TEXT("read_time")));
+	}
+	if (Json->HasField(TEXT("consume_time")))
+	{
+		Result.ConsumeTime = static_cast<int64>(Json->GetNumberField(TEXT("consume_time")));
+	}
+	if (Json->HasField(TEXT("text")))
+	{
+		Result.Text = Json->GetStringField(TEXT("text"));
+	}
+	if (Json->HasField(TEXT("id")))
+	{
+		Result.Id = Json->GetStringField(TEXT("id"));
+	}
+	if (Json->HasField(TEXT("title")))
+	{
+		Result.Title = Json->GetStringField(TEXT("title"));
+	}
+	if (Json->HasField(TEXT("image_url")))
+	{
+		Result.ImageUrl = Json->GetStringField(TEXT("image_url"));
+	}
+	if (Json->HasField(TEXT("metadata")))
+	{
+		const TSharedPtr<FJsonObject>* MapObj;
+		if (Json->TryGetObjectField(TEXT("metadata"), MapObj))
+		{
+			for (const auto& Pair : (*MapObj)->Values)
+			{
+				Result.Metadata.Add(Pair.Key, Pair.Value->AsString());
+			}
+		}
+	}
+	return Result;
+}
+
+TSharedPtr<FJsonObject> FSatoriMessage::ToJson() const
+{
+	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+	if (!ScheduleId.IsEmpty())
+	{
+		Json->SetStringField(TEXT("schedule_id"), ScheduleId);
+	}
+	Json->SetNumberField(TEXT("send_time"), SendTime);
+	Json->SetNumberField(TEXT("create_time"), CreateTime);
+	Json->SetNumberField(TEXT("update_time"), UpdateTime);
+	Json->SetNumberField(TEXT("read_time"), ReadTime);
+	Json->SetNumberField(TEXT("consume_time"), ConsumeTime);
+	if (!Text.IsEmpty())
+	{
+		Json->SetStringField(TEXT("text"), Text);
+	}
+	if (!Id.IsEmpty())
+	{
+		Json->SetStringField(TEXT("id"), Id);
+	}
+	if (!Title.IsEmpty())
+	{
+		Json->SetStringField(TEXT("title"), Title);
+	}
+	if (!ImageUrl.IsEmpty())
+	{
+		Json->SetStringField(TEXT("image_url"), ImageUrl);
+	}
+	if (Metadata.Num() > 0)
+	{
+		TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
+		for (const auto& Pair : Metadata)
+		{
+			MapObj->SetStringField(Pair.Key, Pair.Value);
+		}
+		Json->SetObjectField(TEXT("metadata"), MapObj);
+	}
 	return Json;
 }
 
@@ -1281,11 +1374,7 @@ FSatoriLiveEvent FSatoriLiveEvent::FromJson(const TSharedPtr<FJsonObject>& Json)
 	}
 	if (Json->HasField(TEXT("status")))
 	{
-		const TSharedPtr<FJsonObject>* NestedObj;
-		if (Json->TryGetObjectField(TEXT("status"), NestedObj))
-		{
-			Result.Status = FSatoriStatus::FromJson(*NestedObj);
-		}
+		Result.Status = Json->GetIntegerField(TEXT("status"));
 	}
 	if (Json->HasField(TEXT("labels")))
 	{
@@ -1329,7 +1418,7 @@ TSharedPtr<FJsonObject> FSatoriLiveEvent::ToJson() const
 	{
 		Json->SetStringField(TEXT("reset_cron"), ResetCron);
 	}
-	Json->SetObjectField(TEXT("status"), Status.ToJson());
+	Json->SetNumberField(TEXT("status"), Status);
 	if (Labels.Num() > 0)
 	{
 		TArray<TSharedPtr<FJsonValue>> Array;
@@ -1402,107 +1491,6 @@ TSharedPtr<FJsonObject> FSatoriLiveEventList::ToJson() const
 			Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
 		}
 		Json->SetArrayField(TEXT("explicit_join_live_events"), Array);
-	}
-	return Json;
-}
-
-FSatoriMessage FSatoriMessage::FromJson(const TSharedPtr<FJsonObject>& Json)
-{
-	FSatoriMessage Result;
-	if (!Json.IsValid())
-	{
-		return Result;
-	}
-	if (Json->HasField(TEXT("schedule_id")))
-	{
-		Result.ScheduleId = Json->GetStringField(TEXT("schedule_id"));
-	}
-	if (Json->HasField(TEXT("send_time")))
-	{
-		Result.SendTime = static_cast<int64>(Json->GetNumberField(TEXT("send_time")));
-	}
-	if (Json->HasField(TEXT("create_time")))
-	{
-		Result.CreateTime = static_cast<int64>(Json->GetNumberField(TEXT("create_time")));
-	}
-	if (Json->HasField(TEXT("update_time")))
-	{
-		Result.UpdateTime = static_cast<int64>(Json->GetNumberField(TEXT("update_time")));
-	}
-	if (Json->HasField(TEXT("read_time")))
-	{
-		Result.ReadTime = static_cast<int64>(Json->GetNumberField(TEXT("read_time")));
-	}
-	if (Json->HasField(TEXT("consume_time")))
-	{
-		Result.ConsumeTime = static_cast<int64>(Json->GetNumberField(TEXT("consume_time")));
-	}
-	if (Json->HasField(TEXT("text")))
-	{
-		Result.Text = Json->GetStringField(TEXT("text"));
-	}
-	if (Json->HasField(TEXT("id")))
-	{
-		Result.Id = Json->GetStringField(TEXT("id"));
-	}
-	if (Json->HasField(TEXT("title")))
-	{
-		Result.Title = Json->GetStringField(TEXT("title"));
-	}
-	if (Json->HasField(TEXT("image_url")))
-	{
-		Result.ImageUrl = Json->GetStringField(TEXT("image_url"));
-	}
-	if (Json->HasField(TEXT("metadata")))
-	{
-		const TSharedPtr<FJsonObject>* MapObj;
-		if (Json->TryGetObjectField(TEXT("metadata"), MapObj))
-		{
-			for (const auto& Pair : (*MapObj)->Values)
-			{
-				Result.Metadata.Add(Pair.Key, Pair.Value->AsString());
-			}
-		}
-	}
-	return Result;
-}
-
-TSharedPtr<FJsonObject> FSatoriMessage::ToJson() const
-{
-	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-	if (!ScheduleId.IsEmpty())
-	{
-		Json->SetStringField(TEXT("schedule_id"), ScheduleId);
-	}
-	Json->SetNumberField(TEXT("send_time"), SendTime);
-	Json->SetNumberField(TEXT("create_time"), CreateTime);
-	Json->SetNumberField(TEXT("update_time"), UpdateTime);
-	Json->SetNumberField(TEXT("read_time"), ReadTime);
-	Json->SetNumberField(TEXT("consume_time"), ConsumeTime);
-	if (!Text.IsEmpty())
-	{
-		Json->SetStringField(TEXT("text"), Text);
-	}
-	if (!Id.IsEmpty())
-	{
-		Json->SetStringField(TEXT("id"), Id);
-	}
-	if (!Title.IsEmpty())
-	{
-		Json->SetStringField(TEXT("title"), Title);
-	}
-	if (!ImageUrl.IsEmpty())
-	{
-		Json->SetStringField(TEXT("image_url"), ImageUrl);
-	}
-	if (Metadata.Num() > 0)
-	{
-		TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
-		for (const auto& Pair : Metadata)
-		{
-			MapObj->SetStringField(Pair.Key, Pair.Value);
-		}
-		Json->SetObjectField(TEXT("metadata"), MapObj);
 	}
 	return Json;
 }
