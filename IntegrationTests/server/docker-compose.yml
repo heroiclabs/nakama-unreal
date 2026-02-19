@@ -73,6 +73,7 @@ services:
         /satori/satori timescale-cont-agg pause --database.address postgres:localdb@postgres:5432/satori &&
         /satori/satori migrate up --database.address postgres:localdb@postgres:5432/satori &&
         /satori/satori timescale-cont-agg resume --database.address postgres:localdb@postgres:5432/satori &&
+        PGPASSWORD=localdb psql -h postgres -U postgres -d satori -c "INSERT INTO api_key (name, value) VALUES ('default', 'defaultkey') ON CONFLICT DO NOTHING;" &&
         exec /satori/satori --database.address postgres:localdb@postgres:5432/satori --logger.level DEBUG --metrics.prometheus_port 0
     expose:
       - "7450"

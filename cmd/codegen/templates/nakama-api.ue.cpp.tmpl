@@ -44,7 +44,7 @@ DECLARE_DWORD_ACCUMULATOR_STAT(TEXT("TotalErrors"), STAT_Nakama_TotalErrors, STA
 
 // --- FNakamaSession JWT helpers ---
 
-bool FNakamaSession::ParseJwtPayload(const FString& Jwt, TSharedPtr<FJsonObject>& Out)
+bool FNakamaSession::ParseJwtPayload(const FString& Jwt, TSharedPtr<FJsonObject>& Out) noexcept
 {
 	TArray<FString> Parts;
 	Jwt.ParseIntoArray(Parts, TEXT("."));
@@ -77,7 +77,7 @@ bool FNakamaSession::ParseJwtPayload(const FString& Jwt, TSharedPtr<FJsonObject>
 	return FJsonSerializer::Deserialize(Reader, Out) && Out.IsValid();
 }
 
-void FNakamaSession::ParseTokens()
+void FNakamaSession::ParseTokens() noexcept
 {
 	UserId.Empty();
 	Username.Empty();
@@ -130,7 +130,7 @@ void FNakamaSession::ParseTokens()
 	}
 }
 
-bool FNakamaSession::IsExpired(int64 BufferSeconds) const
+bool FNakamaSession::IsExpired(int64 BufferSeconds) const noexcept
 {
 	if (TokenExpiresAt == 0)
 	{
@@ -139,7 +139,7 @@ bool FNakamaSession::IsExpired(int64 BufferSeconds) const
 	return (TokenExpiresAt - BufferSeconds) <= FDateTime::UtcNow().ToUnixTimestamp();
 }
 
-bool FNakamaSession::IsRefreshExpired(int64 BufferSeconds) const
+bool FNakamaSession::IsRefreshExpired(int64 BufferSeconds) const noexcept
 {
 	if (RefreshTokenExpiresAt == 0)
 	{
@@ -148,7 +148,7 @@ bool FNakamaSession::IsRefreshExpired(int64 BufferSeconds) const
 	return (RefreshTokenExpiresAt - BufferSeconds) <= FDateTime::UtcNow().ToUnixTimestamp();
 }
 
-void FNakamaSession::Update(const FString& NewToken, const FString& NewRefreshToken)
+void FNakamaSession::Update(const FString& NewToken, const FString& NewRefreshToken) noexcept
 {
 	Token = NewToken;
 	RefreshToken = NewRefreshToken;
@@ -159,7 +159,7 @@ void FNakamaSession::Update(const FString& NewToken, const FString& NewRefreshTo
 {{- range $idx, $msg := $.Messages }}
 {{- if eq $msg.Name "Session" }}
 
-FNakamaSession FNakamaSession::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaSession FNakamaSession::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaSession Result;
 	if (!Json.IsValid())
@@ -281,7 +281,7 @@ FNakamaSession FNakamaSession::FromJson(const TSharedPtr<FJsonObject>& Json)
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaSession::ToJson() const
+TSharedPtr<FJsonObject> FNakamaSession::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 {{- range $fidx, $field := $msg.Fields }}
@@ -347,7 +347,7 @@ TSharedPtr<FJsonObject> FNakamaSession::ToJson() const
 }
 {{- else }}
 
-FNakama{{ $msg.Name }} FNakama{{ $msg.Name }}::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakama{{ $msg.Name }} FNakama{{ $msg.Name }}::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakama{{ $msg.Name }} Result;
 	if (!Json.IsValid())
@@ -468,7 +468,7 @@ FNakama{{ $msg.Name }} FNakama{{ $msg.Name }}::FromJson(const TSharedPtr<FJsonOb
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakama{{ $msg.Name }}::ToJson() const
+TSharedPtr<FJsonObject> FNakama{{ $msg.Name }}::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 {{- range $fidx, $field := $msg.Fields }}
@@ -537,7 +537,7 @@ TSharedPtr<FJsonObject> FNakama{{ $msg.Name }}::ToJson() const
 
 // --- FNakamaApiConfig ---
 
-FString FNakamaApiConfig::GetBaseUrl() const
+FString FNakamaApiConfig::GetBaseUrl() const noexcept
 {
 	const FString Scheme = bUseSSL ? TEXT("https") : TEXT("http");
 	return FString::Printf(TEXT("%s://%s:%d"), *Scheme, *Host, Port);
@@ -558,7 +558,7 @@ void DoHttpRequest(
 	const FString& TokenString,
 	TFunction<void(TSharedPtr<FJsonObject>)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	SCOPE_CYCLE_COUNTER(STAT_Nakama_MakeRequest_Dispatch);
 	TRACE_CPUPROFILER_EVENT_SCOPE(Nakama_MakeRequest);
@@ -695,7 +695,7 @@ void SendRequest(
 	const FString& AuthValue,
 	TFunction<void(TSharedPtr<FJsonObject>)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	// Early cancellation check
 	if (CancellationToken && CancellationToken->IsCancelled())
@@ -733,7 +733,7 @@ void MakeRequest(
 	const FString& AuthValue,
 	TFunction<void(TSharedPtr<FJsonObject>)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString BodyString;
 	if (Body.IsValid() && Method != TEXT("GET"))
@@ -780,7 +780,7 @@ void NakamaApi::{{ $rpc.Name }}(
 	TFunction<void()> OnSuccess,
 	{{- end }}
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("{{ $rpc.Endpoint }}");
 	{{- /* Handle path parameters like {group_id} */ -}}
@@ -1007,7 +1007,7 @@ void NakamaApi::{{ $rpc.Name }}(
 	TFunction<void()> OnSuccess,
 	{{- end }}
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("{{ $rpc.Endpoint }}");
 	{{- /* Handle path parameters like {group_id} */ -}}

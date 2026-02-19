@@ -26,114 +26,273 @@
 /** Tag type used as the value type for RPCs that return no data. */
 struct NAKAMA_API FNakamaVoid {};
 
-/**
- * Result-or-error wrapper returned by Nakama:: free functions.
- * Exactly one of Value or Error is meaningful depending on IsSuccess().
- */
-template<typename T>
-struct TNakamaResult
+struct NAKAMA_API FNakamaVoidResult
 {
-	bool IsSuccess() const { return !bIsError; }
-	bool IsError() const { return bIsError; }
+	using ValueType = FNakamaVoid;
+	FNakamaVoid Value{};
+	FNakamaError Error;
+	bool bIsError = true;
+};
 
-	const T& GetValue() const { return Value; }
-	T&& MoveValue() { return MoveTemp(Value); }
-	const FNakamaError& GetError() const { return Error; }
+struct NAKAMA_API FNakamaSessionResult
+{
+	using ValueType = FNakamaSession;
+	FNakamaSession Value{};
+	FNakamaError Error;
+	bool bIsError = true;
+};
 
-	static TNakamaResult Success(const T& InValue)
-	{
-		TNakamaResult Result;
-		Result.Value = InValue;
-		Result.bIsError = false;
-		return Result;
-	}
+struct NAKAMA_API FNakamaGroupResult
+{
+	using ValueType = FNakamaGroup;
+	FNakamaGroup Value{};
+	FNakamaError Error;
+	bool bIsError = true;
+};
 
-	static TNakamaResult Success(T&& InValue)
-	{
-		TNakamaResult Result;
-		Result.Value = MoveTemp(InValue);
-		Result.bIsError = false;
-		return Result;
-	}
+struct NAKAMA_API FNakamaAccountResult
+{
+	using ValueType = FNakamaAccount;
+	FNakamaAccount Value{};
+	FNakamaError Error;
+	bool bIsError = true;
+};
 
-	static TNakamaResult Failure(const FNakamaError& InError)
-	{
-		TNakamaResult Result;
-		Result.Error = InError;
-		Result.bIsError = true;
-		return Result;
-	}
+struct NAKAMA_API FNakamaUsersResult
+{
+	using ValueType = FNakamaUsers;
+	FNakamaUsers Value{};
+	FNakamaError Error;
+	bool bIsError = true;
+};
 
-private:
-	T Value{};
+struct NAKAMA_API FNakamaValidatedSubscriptionResult
+{
+	using ValueType = FNakamaValidatedSubscription;
+	FNakamaValidatedSubscription Value{};
+	FNakamaError Error;
+	bool bIsError = true;
+};
+
+struct NAKAMA_API FNakamaMatchmakerStatsResult
+{
+	using ValueType = FNakamaMatchmakerStats;
+	FNakamaMatchmakerStats Value{};
+	FNakamaError Error;
+	bool bIsError = true;
+};
+
+struct NAKAMA_API FNakamaChannelMessageListResult
+{
+	using ValueType = FNakamaChannelMessageList;
+	FNakamaChannelMessageList Value{};
+	FNakamaError Error;
+	bool bIsError = true;
+};
+
+struct NAKAMA_API FNakamaFriendListResult
+{
+	using ValueType = FNakamaFriendList;
+	FNakamaFriendList Value{};
+	FNakamaError Error;
+	bool bIsError = true;
+};
+
+struct NAKAMA_API FNakamaFriendsOfFriendsListResult
+{
+	using ValueType = FNakamaFriendsOfFriendsList;
+	FNakamaFriendsOfFriendsList Value{};
+	FNakamaError Error;
+	bool bIsError = true;
+};
+
+struct NAKAMA_API FNakamaGroupListResult
+{
+	using ValueType = FNakamaGroupList;
+	FNakamaGroupList Value{};
+	FNakamaError Error;
+	bool bIsError = true;
+};
+
+struct NAKAMA_API FNakamaGroupUserListResult
+{
+	using ValueType = FNakamaGroupUserList;
+	FNakamaGroupUserList Value{};
+	FNakamaError Error;
+	bool bIsError = true;
+};
+
+struct NAKAMA_API FNakamaLeaderboardRecordListResult
+{
+	using ValueType = FNakamaLeaderboardRecordList;
+	FNakamaLeaderboardRecordList Value{};
+	FNakamaError Error;
+	bool bIsError = true;
+};
+
+struct NAKAMA_API FNakamaMatchListResult
+{
+	using ValueType = FNakamaMatchList;
+	FNakamaMatchList Value{};
+	FNakamaError Error;
+	bool bIsError = true;
+};
+
+struct NAKAMA_API FNakamaPartyListResult
+{
+	using ValueType = FNakamaPartyList;
+	FNakamaPartyList Value{};
+	FNakamaError Error;
+	bool bIsError = true;
+};
+
+struct NAKAMA_API FNakamaNotificationListResult
+{
+	using ValueType = FNakamaNotificationList;
+	FNakamaNotificationList Value{};
+	FNakamaError Error;
+	bool bIsError = true;
+};
+
+struct NAKAMA_API FNakamaStorageObjectListResult
+{
+	using ValueType = FNakamaStorageObjectList;
+	FNakamaStorageObjectList Value{};
+	FNakamaError Error;
+	bool bIsError = true;
+};
+
+struct NAKAMA_API FNakamaSubscriptionListResult
+{
+	using ValueType = FNakamaSubscriptionList;
+	FNakamaSubscriptionList Value{};
+	FNakamaError Error;
+	bool bIsError = true;
+};
+
+struct NAKAMA_API FNakamaTournamentListResult
+{
+	using ValueType = FNakamaTournamentList;
+	FNakamaTournamentList Value{};
+	FNakamaError Error;
+	bool bIsError = true;
+};
+
+struct NAKAMA_API FNakamaTournamentRecordListResult
+{
+	using ValueType = FNakamaTournamentRecordList;
+	FNakamaTournamentRecordList Value{};
+	FNakamaError Error;
+	bool bIsError = true;
+};
+
+struct NAKAMA_API FNakamaUserGroupListResult
+{
+	using ValueType = FNakamaUserGroupList;
+	FNakamaUserGroupList Value{};
+	FNakamaError Error;
+	bool bIsError = true;
+};
+
+struct NAKAMA_API FNakamaStorageObjectsResult
+{
+	using ValueType = FNakamaStorageObjects;
+	FNakamaStorageObjects Value{};
+	FNakamaError Error;
+	bool bIsError = true;
+};
+
+struct NAKAMA_API FNakamaRpcResult
+{
+	using ValueType = FNakamaRpc;
+	FNakamaRpc Value{};
+	FNakamaError Error;
+	bool bIsError = true;
+};
+
+struct NAKAMA_API FNakamaValidatePurchaseResponseResult
+{
+	using ValueType = FNakamaValidatePurchaseResponse;
+	FNakamaValidatePurchaseResponse Value{};
+	FNakamaError Error;
+	bool bIsError = true;
+};
+
+struct NAKAMA_API FNakamaValidateSubscriptionResponseResult
+{
+	using ValueType = FNakamaValidateSubscriptionResponse;
+	FNakamaValidateSubscriptionResponse Value{};
+	FNakamaError Error;
+	bool bIsError = true;
+};
+
+struct NAKAMA_API FNakamaLeaderboardRecordResult
+{
+	using ValueType = FNakamaLeaderboardRecord;
+	FNakamaLeaderboardRecord Value{};
+	FNakamaError Error;
+	bool bIsError = true;
+};
+
+struct NAKAMA_API FNakamaStorageObjectAcksResult
+{
+	using ValueType = FNakamaStorageObjectAcks;
+	FNakamaStorageObjectAcks Value{};
 	FNakamaError Error;
 	bool bIsError = true;
 };
 
 // Forward declaration
-template<typename T> class TNakamaFuture;
+template<typename T> struct TNakamaFuture;
 
-// Trait to detect TNakamaFuture<U>
+/** Type trait: is T a TNakamaFuture<U>? */
 template<typename T> struct TIsTNakamaFuture : std::false_type {};
 template<typename T> struct TIsTNakamaFuture<TNakamaFuture<T>> : std::true_type {};
 
 /**
- * Chainable future wrapper around TFuture<TNakamaResult<T>>.
+ * Chainable future wrapper for async Nakama operations.
+ * Parameterized by concrete result type (e.g. FNakamaSessionResult).
  *
- * Supports two forms of .Next():
- *
- * Chaining -- callback takes const T& (success value), returns TNakamaFuture<U>.
- *   Errors auto-propagate (callback is skipped).
- *     Nakama::Foo(Client, Session)
- *       .Next([](const FNakamaBar& Bar) { return Nakama::Baz(Client, Bar.Id); })
- *       .Next([](TNakamaResult<FNakamaQux> Result) { ... });
- *
- * Terminal -- callback takes TNakamaResult<T>, returns void.
- *   Always invoked (success or error).
- *     Nakama::Foo(Client, Session).Next([](TNakamaResult<FNakamaBar> Result) { ... });
+ * Chaining: Next(callback(const ValueType&) -> TNakamaFuture<OtherResult>) — flattens and propagates errors
+ * Terminal: Next(callback(ResultT) -> void) — receives the full result
  */
-template<typename T>
-class TNakamaFuture
+template<typename ResultT>
+struct TNakamaFuture
 {
-public:
-	using ResultType = T;
+	using ValueType = typename ResultT::ValueType;
+	using WrappedResultType = ResultT;
+
+	TFuture<ResultT> Future;
 
 	TNakamaFuture() = default;
 
-	explicit TNakamaFuture(TFuture<TNakamaResult<T>>&& InFuture)
-		: Future(MakeShareable(new TFuture<TNakamaResult<T>>(MoveTemp(InFuture)))) {}
+	explicit TNakamaFuture(TFuture<ResultT>&& InFuture) noexcept
+		: Future(MoveTemp(InFuture)) {}
 
-	TNakamaFuture(TNakamaFuture&& Other) = default;
-	TNakamaFuture& operator=(TNakamaFuture&& Other) = default;
+	TNakamaFuture(TNakamaFuture&& Other) noexcept = default;
+	TNakamaFuture& operator=(TNakamaFuture&& Other) noexcept = default;
 	TNakamaFuture(const TNakamaFuture&) = delete;
 	TNakamaFuture& operator=(const TNakamaFuture&) = delete;
 
-	/**
-	 * Chaining Next: callback(const T&) -> TNakamaFuture<U>.
-	 * On error the callback is skipped and the error propagates to the next step.
-	 */
+	/** Chaining Next: callback(const ValueType&) -> TNakamaFuture<OtherResult> */
 	template<typename Func,
-		typename Ret = std::invoke_result_t<std::decay_t<Func>, const T&>,
+		typename Ret = std::invoke_result_t<std::decay_t<Func>, const ValueType&>,
 		std::enable_if_t<TIsTNakamaFuture<Ret>::value, int> = 0>
-	Ret Next(Func&& Callback)
+	Ret Next(Func&& Callback) && noexcept
 	{
-		using U = typename Ret::ResultType;
-		auto OuterPromise = MakeShared<TPromise<TNakamaResult<U>>>();
-		TNakamaFuture<U> ResultFuture(OuterPromise->GetFuture());
+		using InnerResultT = typename Ret::WrappedResultType;
+		auto OuterPromise = MakeShared<TPromise<InnerResultT>>();
+		Ret ResultFuture(OuterPromise->GetFuture());
 
-		check(Future.IsValid());
-		auto CapturedFuture = Future;
-		MoveTemp(*CapturedFuture).Next([Cb = Forward<Func>(Callback), OuterPromise](TNakamaResult<T> Result) mutable
+		MoveTemp(Future).Next([Cb = Forward<Func>(Callback), OuterPromise](ResultT Result) mutable
 		{
-			if (Result.IsError())
+			if (Result.bIsError)
 			{
-				OuterPromise->SetValue(TNakamaResult<U>::Failure(Result.GetError()));
+				OuterPromise->SetValue(InnerResultT{{}, Result.Error, true});
 				return;
 			}
-			TNakamaFuture<U> Inner = Cb(Result.GetValue());
-			check(Inner.Future.IsValid());
-			auto InnerCaptured = Inner.Future;
-			MoveTemp(*InnerCaptured).Next([OuterPromise](TNakamaResult<U> InnerResult) mutable
+			Ret Inner = Cb(Result.Value);
+			MoveTemp(Inner.Future).Next([OuterPromise](InnerResultT InnerResult) mutable
 			{
 				OuterPromise->SetValue(MoveTemp(InnerResult));
 			});
@@ -142,31 +301,17 @@ public:
 		return ResultFuture;
 	}
 
-	/**
-	 * Terminal Next: callback(TNakamaResult<T>) -> void.
-	 * Always invoked with the result (success or propagated error).
-	 */
+	/** Terminal Next: callback(ResultT) -> void */
 	template<typename Func,
-		typename Ret = std::invoke_result_t<std::decay_t<Func>, TNakamaResult<T>>,
-		std::enable_if_t<std::is_void_v<Ret>, int> = 0>
-	void Next(Func&& Callback)
+		typename Ret = std::invoke_result_t<std::decay_t<Func>, ResultT>,
+		std::enable_if_t<!TIsTNakamaFuture<Ret>::value, int> = 0>
+	void Next(Func&& Callback) && noexcept
 	{
-		check(Future.IsValid());
-		auto CapturedFuture = Future;
-		MoveTemp(*CapturedFuture).Next([Cb = Forward<Func>(Callback)](TNakamaResult<T> Result) mutable
+		MoveTemp(Future).Next([Cb = Forward<Func>(Callback)](ResultT Result) mutable
 		{
 			Cb(MoveTemp(Result));
 		});
 	}
-
-	bool IsReady() const { return Future.IsValid() && Future->IsReady(); }
-	TNakamaResult<T> Get() { return Future->Get(); }
-
-private:
-	// TSharedPtr because TFuture is move-only but needs to be captured in lambdas
-	TSharedPtr<TFuture<TNakamaResult<T>>> Future;
-
-	template<typename U> friend class TNakamaFuture;
 };
 
 /** Retry configuration for transient error handling. */
@@ -197,13 +342,10 @@ struct NAKAMA_API FNakamaClient
 	/** Called after a session is automatically refreshed, so callers can persist the updated session. */
 	TFunction<void(const FNakamaSession&)> OnSessionRefreshed;
 
-	void SetTimeout(float InTimeout) { ApiConfig.Timeout = InTimeout; }
-	float GetTimeout() const { return ApiConfig.Timeout; }
 };
 
 /**
  * High-level Nakama API: free functions with retry logic + session auto-refresh.
- * Every RPC returns TNakamaFuture<T>. Use .Next() for non-blocking chaining.
  *
  * Transient errors (UNAVAILABLE, INTERNAL, DEADLINE_EXCEEDED) are
  * automatically retried with exponential backoff and full jitter.
@@ -211,176 +353,176 @@ struct NAKAMA_API FNakamaClient
 namespace Nakama
 {
 	/** Returns true if the error code is considered transient (eligible for retry). */
-	NAKAMA_API bool IsTransientError(const FNakamaError& Error);
+	NAKAMA_API bool IsTransientError(const FNakamaError& Error) noexcept;
 
 	/** Compute backoff delay in seconds for a given attempt using exponential backoff with full jitter. */
-	NAKAMA_API float CalculateBackoff(int32 Attempt, const FNakamaRetryConfiguration& Config);
+	NAKAMA_API float CalculateBackoff(int32 Attempt, const FNakamaRetryConfiguration& Config) noexcept;
 
 	/** Add friends by ID or username to a user's account. */
-	NAKAMA_API TNakamaFuture<FNakamaVoid> AddFriends(
+	NAKAMA_API TNakamaFuture<FNakamaVoidResult> AddFriends(
 		FNakamaClient Client,
 		FNakamaSessionPtr Session,
 		const TArray<FString>& Ids,
 		const TArray<FString>& Usernames,
 		FString Metadata,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Add friends by ID or username to a user's account. (Server-to-server with HTTP key) */
-	NAKAMA_API TNakamaFuture<FNakamaVoid> AddFriends(
+	NAKAMA_API TNakamaFuture<FNakamaVoidResult> AddFriends(
 		FNakamaClient Client,
 		const FString& HttpKey,
 		const TArray<FString>& Ids,
 		const TArray<FString>& Usernames,
 		FString Metadata,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Add users to a group. */
-	NAKAMA_API TNakamaFuture<FNakamaVoid> AddGroupUsers(
+	NAKAMA_API TNakamaFuture<FNakamaVoidResult> AddGroupUsers(
 		FNakamaClient Client,
 		FNakamaSessionPtr Session,
 		FString GroupId,
 		const TArray<FString>& UserIds,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Add users to a group. (Server-to-server with HTTP key) */
-	NAKAMA_API TNakamaFuture<FNakamaVoid> AddGroupUsers(
+	NAKAMA_API TNakamaFuture<FNakamaVoidResult> AddGroupUsers(
 		FNakamaClient Client,
 		const FString& HttpKey,
 		FString GroupId,
 		const TArray<FString>& UserIds,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Refresh a user's session using a refresh token retrieved from a previous authentication request. */
-	NAKAMA_API TNakamaFuture<FNakamaSession> SessionRefresh(
+	NAKAMA_API TNakamaFuture<FNakamaSessionResult> SessionRefresh(
 		FNakamaClient Client,
 		FString Token,
 		const TMap<FString, FString>& Vars,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Log out a session, invalidate a refresh token, or log out all sessions/refresh tokens for a user. */
-	NAKAMA_API TNakamaFuture<FNakamaVoid> SessionLogout(
+	NAKAMA_API TNakamaFuture<FNakamaVoidResult> SessionLogout(
 		FNakamaClient Client,
 		FNakamaSessionPtr Session,
 		FString Token,
 		FString RefreshToken,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Log out a session, invalidate a refresh token, or log out all sessions/refresh tokens for a user. (Server-to-server with HTTP key) */
-	NAKAMA_API TNakamaFuture<FNakamaVoid> SessionLogout(
+	NAKAMA_API TNakamaFuture<FNakamaVoidResult> SessionLogout(
 		FNakamaClient Client,
 		const FString& HttpKey,
 		FString Token,
 		FString RefreshToken,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Authenticate a user with an Apple ID against the server. */
-	NAKAMA_API TNakamaFuture<FNakamaSession> AuthenticateApple(
+	NAKAMA_API TNakamaFuture<FNakamaSessionResult> AuthenticateApple(
 		FNakamaClient Client,
 		FNakamaAccountApple Account,
 		bool Create,
 		FString Username,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Authenticate a user with a custom id against the server. */
-	NAKAMA_API TNakamaFuture<FNakamaSession> AuthenticateCustom(
+	NAKAMA_API TNakamaFuture<FNakamaSessionResult> AuthenticateCustom(
 		FNakamaClient Client,
 		FNakamaAccountCustom Account,
 		bool Create,
 		FString Username,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Authenticate a user with a device id against the server. */
-	NAKAMA_API TNakamaFuture<FNakamaSession> AuthenticateDevice(
+	NAKAMA_API TNakamaFuture<FNakamaSessionResult> AuthenticateDevice(
 		FNakamaClient Client,
 		FNakamaAccountDevice Account,
 		bool Create,
 		FString Username,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Authenticate a user with an email+password against the server. */
-	NAKAMA_API TNakamaFuture<FNakamaSession> AuthenticateEmail(
+	NAKAMA_API TNakamaFuture<FNakamaSessionResult> AuthenticateEmail(
 		FNakamaClient Client,
 		FNakamaAccountEmail Account,
 		bool Create,
 		FString Username,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Authenticate a user with a Facebook OAuth token against the server. */
-	NAKAMA_API TNakamaFuture<FNakamaSession> AuthenticateFacebook(
+	NAKAMA_API TNakamaFuture<FNakamaSessionResult> AuthenticateFacebook(
 		FNakamaClient Client,
 		FNakamaAccountFacebook Account,
 		bool Create,
 		FString Username,
 		bool Sync,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Authenticate a user with a Facebook Instant Game token against the server. */
-	NAKAMA_API TNakamaFuture<FNakamaSession> AuthenticateFacebookInstantGame(
+	NAKAMA_API TNakamaFuture<FNakamaSessionResult> AuthenticateFacebookInstantGame(
 		FNakamaClient Client,
 		FNakamaAccountFacebookInstantGame Account,
 		bool Create,
 		FString Username,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Authenticate a user with Apple's GameCenter against the server. */
-	NAKAMA_API TNakamaFuture<FNakamaSession> AuthenticateGameCenter(
+	NAKAMA_API TNakamaFuture<FNakamaSessionResult> AuthenticateGameCenter(
 		FNakamaClient Client,
 		FNakamaAccountGameCenter Account,
 		bool Create,
 		FString Username,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Authenticate a user with Google against the server. */
-	NAKAMA_API TNakamaFuture<FNakamaSession> AuthenticateGoogle(
+	NAKAMA_API TNakamaFuture<FNakamaSessionResult> AuthenticateGoogle(
 		FNakamaClient Client,
 		FNakamaAccountGoogle Account,
 		bool Create,
 		FString Username,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Authenticate a user with Steam against the server. */
-	NAKAMA_API TNakamaFuture<FNakamaSession> AuthenticateSteam(
+	NAKAMA_API TNakamaFuture<FNakamaSessionResult> AuthenticateSteam(
 		FNakamaClient Client,
 		FNakamaAccountSteam Account,
 		bool Create,
 		FString Username,
 		bool Sync,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Ban a set of users from a group. */
-	NAKAMA_API TNakamaFuture<FNakamaVoid> BanGroupUsers(
+	NAKAMA_API TNakamaFuture<FNakamaVoidResult> BanGroupUsers(
 		FNakamaClient Client,
 		FNakamaSessionPtr Session,
 		FString GroupId,
 		const TArray<FString>& UserIds,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Ban a set of users from a group. (Server-to-server with HTTP key) */
-	NAKAMA_API TNakamaFuture<FNakamaVoid> BanGroupUsers(
+	NAKAMA_API TNakamaFuture<FNakamaVoidResult> BanGroupUsers(
 		FNakamaClient Client,
 		const FString& HttpKey,
 		FString GroupId,
 		const TArray<FString>& UserIds,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Block one or more users by ID or username. */
-	NAKAMA_API TNakamaFuture<FNakamaVoid> BlockFriends(
+	NAKAMA_API TNakamaFuture<FNakamaVoidResult> BlockFriends(
 		FNakamaClient Client,
 		FNakamaSessionPtr Session,
 		const TArray<FString>& Ids,
 		const TArray<FString>& Usernames,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Block one or more users by ID or username. (Server-to-server with HTTP key) */
-	NAKAMA_API TNakamaFuture<FNakamaVoid> BlockFriends(
+	NAKAMA_API TNakamaFuture<FNakamaVoidResult> BlockFriends(
 		FNakamaClient Client,
 		const FString& HttpKey,
 		const TArray<FString>& Ids,
 		const TArray<FString>& Usernames,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Create a new group with the current user as the owner. */
-	NAKAMA_API TNakamaFuture<FNakamaGroup> CreateGroup(
+	NAKAMA_API TNakamaFuture<FNakamaGroupResult> CreateGroup(
 		FNakamaClient Client,
 		FNakamaSessionPtr Session,
 		FString Name,
@@ -389,10 +531,10 @@ namespace Nakama
 		FString AvatarUrl,
 		bool Open,
 		int32 MaxCount,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Create a new group with the current user as the owner. (Server-to-server with HTTP key) */
-	NAKAMA_API TNakamaFuture<FNakamaGroup> CreateGroup(
+	NAKAMA_API TNakamaFuture<FNakamaGroupResult> CreateGroup(
 		FNakamaClient Client,
 		const FString& HttpKey,
 		FString Name,
@@ -401,384 +543,384 @@ namespace Nakama
 		FString AvatarUrl,
 		bool Open,
 		int32 MaxCount,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Delete the current user's account. */
-	NAKAMA_API TNakamaFuture<FNakamaVoid> DeleteAccount(
+	NAKAMA_API TNakamaFuture<FNakamaVoidResult> DeleteAccount(
 		FNakamaClient Client,
 		FNakamaSessionPtr Session,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Delete the current user's account. (Server-to-server with HTTP key) */
-	NAKAMA_API TNakamaFuture<FNakamaVoid> DeleteAccount(
+	NAKAMA_API TNakamaFuture<FNakamaVoidResult> DeleteAccount(
 		FNakamaClient Client,
 		const FString& HttpKey,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Delete one or more users by ID or username. */
-	NAKAMA_API TNakamaFuture<FNakamaVoid> DeleteFriends(
+	NAKAMA_API TNakamaFuture<FNakamaVoidResult> DeleteFriends(
 		FNakamaClient Client,
 		FNakamaSessionPtr Session,
 		const TArray<FString>& Ids,
 		const TArray<FString>& Usernames,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Delete one or more users by ID or username. (Server-to-server with HTTP key) */
-	NAKAMA_API TNakamaFuture<FNakamaVoid> DeleteFriends(
+	NAKAMA_API TNakamaFuture<FNakamaVoidResult> DeleteFriends(
 		FNakamaClient Client,
 		const FString& HttpKey,
 		const TArray<FString>& Ids,
 		const TArray<FString>& Usernames,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Delete a group by ID. */
-	NAKAMA_API TNakamaFuture<FNakamaVoid> DeleteGroup(
+	NAKAMA_API TNakamaFuture<FNakamaVoidResult> DeleteGroup(
 		FNakamaClient Client,
 		FNakamaSessionPtr Session,
 		FString GroupId,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Delete a group by ID. (Server-to-server with HTTP key) */
-	NAKAMA_API TNakamaFuture<FNakamaVoid> DeleteGroup(
+	NAKAMA_API TNakamaFuture<FNakamaVoidResult> DeleteGroup(
 		FNakamaClient Client,
 		const FString& HttpKey,
 		FString GroupId,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Delete a leaderboard record. */
-	NAKAMA_API TNakamaFuture<FNakamaVoid> DeleteLeaderboardRecord(
+	NAKAMA_API TNakamaFuture<FNakamaVoidResult> DeleteLeaderboardRecord(
 		FNakamaClient Client,
 		FNakamaSessionPtr Session,
 		FString LeaderboardId,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Delete a leaderboard record. (Server-to-server with HTTP key) */
-	NAKAMA_API TNakamaFuture<FNakamaVoid> DeleteLeaderboardRecord(
+	NAKAMA_API TNakamaFuture<FNakamaVoidResult> DeleteLeaderboardRecord(
 		FNakamaClient Client,
 		const FString& HttpKey,
 		FString LeaderboardId,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Delete one or more notifications for the current user. */
-	NAKAMA_API TNakamaFuture<FNakamaVoid> DeleteNotifications(
+	NAKAMA_API TNakamaFuture<FNakamaVoidResult> DeleteNotifications(
 		FNakamaClient Client,
 		FNakamaSessionPtr Session,
 		const TArray<FString>& Ids,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Delete one or more notifications for the current user. (Server-to-server with HTTP key) */
-	NAKAMA_API TNakamaFuture<FNakamaVoid> DeleteNotifications(
+	NAKAMA_API TNakamaFuture<FNakamaVoidResult> DeleteNotifications(
 		FNakamaClient Client,
 		const FString& HttpKey,
 		const TArray<FString>& Ids,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Delete a tournament record. */
-	NAKAMA_API TNakamaFuture<FNakamaVoid> DeleteTournamentRecord(
+	NAKAMA_API TNakamaFuture<FNakamaVoidResult> DeleteTournamentRecord(
 		FNakamaClient Client,
 		FNakamaSessionPtr Session,
 		FString TournamentId,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Delete a tournament record. (Server-to-server with HTTP key) */
-	NAKAMA_API TNakamaFuture<FNakamaVoid> DeleteTournamentRecord(
+	NAKAMA_API TNakamaFuture<FNakamaVoidResult> DeleteTournamentRecord(
 		FNakamaClient Client,
 		const FString& HttpKey,
 		FString TournamentId,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Delete one or more objects by ID or username. */
-	NAKAMA_API TNakamaFuture<FNakamaVoid> DeleteStorageObjects(
+	NAKAMA_API TNakamaFuture<FNakamaVoidResult> DeleteStorageObjects(
 		FNakamaClient Client,
 		FNakamaSessionPtr Session,
 		const TArray<FNakamaDeleteStorageObjectId>& ObjectIds,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Delete one or more objects by ID or username. (Server-to-server with HTTP key) */
-	NAKAMA_API TNakamaFuture<FNakamaVoid> DeleteStorageObjects(
+	NAKAMA_API TNakamaFuture<FNakamaVoidResult> DeleteStorageObjects(
 		FNakamaClient Client,
 		const FString& HttpKey,
 		const TArray<FNakamaDeleteStorageObjectId>& ObjectIds,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Submit an event for processing in the server's registered runtime custom events handler. */
-	NAKAMA_API TNakamaFuture<FNakamaVoid> Event(
+	NAKAMA_API TNakamaFuture<FNakamaVoidResult> Event(
 		FNakamaClient Client,
 		FNakamaSessionPtr Session,
 		FString Name,
 		FString Timestamp,
 		bool External,
 		const TMap<FString, FString>& Properties,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Submit an event for processing in the server's registered runtime custom events handler. (Server-to-server with HTTP key) */
-	NAKAMA_API TNakamaFuture<FNakamaVoid> Event(
+	NAKAMA_API TNakamaFuture<FNakamaVoidResult> Event(
 		FNakamaClient Client,
 		const FString& HttpKey,
 		FString Name,
 		FString Timestamp,
 		bool External,
 		const TMap<FString, FString>& Properties,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Fetch the current user's account. */
-	NAKAMA_API TNakamaFuture<FNakamaAccount> GetAccount(
+	NAKAMA_API TNakamaFuture<FNakamaAccountResult> GetAccount(
 		FNakamaClient Client,
 		FNakamaSessionPtr Session,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Fetch the current user's account. (Server-to-server with HTTP key) */
-	NAKAMA_API TNakamaFuture<FNakamaAccount> GetAccount(
+	NAKAMA_API TNakamaFuture<FNakamaAccountResult> GetAccount(
 		FNakamaClient Client,
 		const FString& HttpKey,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Fetch zero or more users by ID and/or username. */
-	NAKAMA_API TNakamaFuture<FNakamaUsers> GetUsers(
+	NAKAMA_API TNakamaFuture<FNakamaUsersResult> GetUsers(
 		FNakamaClient Client,
 		FNakamaSessionPtr Session,
 		const TArray<FString>& Ids,
 		const TArray<FString>& Usernames,
 		const TArray<FString>& FacebookIds,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Fetch zero or more users by ID and/or username. (Server-to-server with HTTP key) */
-	NAKAMA_API TNakamaFuture<FNakamaUsers> GetUsers(
+	NAKAMA_API TNakamaFuture<FNakamaUsersResult> GetUsers(
 		FNakamaClient Client,
 		const FString& HttpKey,
 		const TArray<FString>& Ids,
 		const TArray<FString>& Usernames,
 		const TArray<FString>& FacebookIds,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Get subscription by product id. */
-	NAKAMA_API TNakamaFuture<FNakamaValidatedSubscription> GetSubscription(
+	NAKAMA_API TNakamaFuture<FNakamaValidatedSubscriptionResult> GetSubscription(
 		FNakamaClient Client,
 		FNakamaSessionPtr Session,
 		FString ProductId,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Get subscription by product id. (Server-to-server with HTTP key) */
-	NAKAMA_API TNakamaFuture<FNakamaValidatedSubscription> GetSubscription(
+	NAKAMA_API TNakamaFuture<FNakamaValidatedSubscriptionResult> GetSubscription(
 		FNakamaClient Client,
 		const FString& HttpKey,
 		FString ProductId,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Get matchmaker stats. */
-	NAKAMA_API TNakamaFuture<FNakamaMatchmakerStats> GetMatchmakerStats(
+	NAKAMA_API TNakamaFuture<FNakamaMatchmakerStatsResult> GetMatchmakerStats(
 		FNakamaClient Client,
 		FNakamaSessionPtr Session,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Get matchmaker stats. (Server-to-server with HTTP key) */
-	NAKAMA_API TNakamaFuture<FNakamaMatchmakerStats> GetMatchmakerStats(
+	NAKAMA_API TNakamaFuture<FNakamaMatchmakerStatsResult> GetMatchmakerStats(
 		FNakamaClient Client,
 		const FString& HttpKey,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** A healthcheck which load balancers can use to check the service. */
-	NAKAMA_API TNakamaFuture<FNakamaVoid> Healthcheck(
+	NAKAMA_API TNakamaFuture<FNakamaVoidResult> Healthcheck(
 		FNakamaClient Client,
 		FNakamaSessionPtr Session,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** A healthcheck which load balancers can use to check the service. (Server-to-server with HTTP key) */
-	NAKAMA_API TNakamaFuture<FNakamaVoid> Healthcheck(
+	NAKAMA_API TNakamaFuture<FNakamaVoidResult> Healthcheck(
 		FNakamaClient Client,
 		const FString& HttpKey,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Import Facebook friends and add them to a user's account. */
-	NAKAMA_API TNakamaFuture<FNakamaVoid> ImportFacebookFriends(
+	NAKAMA_API TNakamaFuture<FNakamaVoidResult> ImportFacebookFriends(
 		FNakamaClient Client,
 		FNakamaSessionPtr Session,
 		FNakamaAccountFacebook Account,
 		bool Reset,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Import Facebook friends and add them to a user's account. (Server-to-server with HTTP key) */
-	NAKAMA_API TNakamaFuture<FNakamaVoid> ImportFacebookFriends(
+	NAKAMA_API TNakamaFuture<FNakamaVoidResult> ImportFacebookFriends(
 		FNakamaClient Client,
 		const FString& HttpKey,
 		FNakamaAccountFacebook Account,
 		bool Reset,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Import Steam friends and add them to a user's account. */
-	NAKAMA_API TNakamaFuture<FNakamaVoid> ImportSteamFriends(
+	NAKAMA_API TNakamaFuture<FNakamaVoidResult> ImportSteamFriends(
 		FNakamaClient Client,
 		FNakamaSessionPtr Session,
 		FNakamaAccountSteam Account,
 		bool Reset,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Import Steam friends and add them to a user's account. (Server-to-server with HTTP key) */
-	NAKAMA_API TNakamaFuture<FNakamaVoid> ImportSteamFriends(
+	NAKAMA_API TNakamaFuture<FNakamaVoidResult> ImportSteamFriends(
 		FNakamaClient Client,
 		const FString& HttpKey,
 		FNakamaAccountSteam Account,
 		bool Reset,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Immediately join an open group, or request to join a closed one. */
-	NAKAMA_API TNakamaFuture<FNakamaVoid> JoinGroup(
+	NAKAMA_API TNakamaFuture<FNakamaVoidResult> JoinGroup(
 		FNakamaClient Client,
 		FNakamaSessionPtr Session,
 		FString GroupId,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Immediately join an open group, or request to join a closed one. (Server-to-server with HTTP key) */
-	NAKAMA_API TNakamaFuture<FNakamaVoid> JoinGroup(
+	NAKAMA_API TNakamaFuture<FNakamaVoidResult> JoinGroup(
 		FNakamaClient Client,
 		const FString& HttpKey,
 		FString GroupId,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Attempt to join an open and running tournament. */
-	NAKAMA_API TNakamaFuture<FNakamaVoid> JoinTournament(
+	NAKAMA_API TNakamaFuture<FNakamaVoidResult> JoinTournament(
 		FNakamaClient Client,
 		FNakamaSessionPtr Session,
 		FString TournamentId,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Attempt to join an open and running tournament. (Server-to-server with HTTP key) */
-	NAKAMA_API TNakamaFuture<FNakamaVoid> JoinTournament(
+	NAKAMA_API TNakamaFuture<FNakamaVoidResult> JoinTournament(
 		FNakamaClient Client,
 		const FString& HttpKey,
 		FString TournamentId,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Kick a set of users from a group. */
-	NAKAMA_API TNakamaFuture<FNakamaVoid> KickGroupUsers(
+	NAKAMA_API TNakamaFuture<FNakamaVoidResult> KickGroupUsers(
 		FNakamaClient Client,
 		FNakamaSessionPtr Session,
 		FString GroupId,
 		const TArray<FString>& UserIds,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Kick a set of users from a group. (Server-to-server with HTTP key) */
-	NAKAMA_API TNakamaFuture<FNakamaVoid> KickGroupUsers(
+	NAKAMA_API TNakamaFuture<FNakamaVoidResult> KickGroupUsers(
 		FNakamaClient Client,
 		const FString& HttpKey,
 		FString GroupId,
 		const TArray<FString>& UserIds,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Leave a group the user is a member of. */
-	NAKAMA_API TNakamaFuture<FNakamaVoid> LeaveGroup(
+	NAKAMA_API TNakamaFuture<FNakamaVoidResult> LeaveGroup(
 		FNakamaClient Client,
 		FNakamaSessionPtr Session,
 		FString GroupId,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Leave a group the user is a member of. (Server-to-server with HTTP key) */
-	NAKAMA_API TNakamaFuture<FNakamaVoid> LeaveGroup(
+	NAKAMA_API TNakamaFuture<FNakamaVoidResult> LeaveGroup(
 		FNakamaClient Client,
 		const FString& HttpKey,
 		FString GroupId,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Add an Apple ID to the social profiles on the current user's account. */
-	NAKAMA_API TNakamaFuture<FNakamaVoid> LinkApple(
+	NAKAMA_API TNakamaFuture<FNakamaVoidResult> LinkApple(
 		FNakamaClient Client,
 		FNakamaSessionPtr Session,
 		FString Token,
 		const TMap<FString, FString>& Vars,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Add an Apple ID to the social profiles on the current user's account. (Server-to-server with HTTP key) */
-	NAKAMA_API TNakamaFuture<FNakamaVoid> LinkApple(
+	NAKAMA_API TNakamaFuture<FNakamaVoidResult> LinkApple(
 		FNakamaClient Client,
 		const FString& HttpKey,
 		FString Token,
 		const TMap<FString, FString>& Vars,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Add a custom ID to the social profiles on the current user's account. */
-	NAKAMA_API TNakamaFuture<FNakamaVoid> LinkCustom(
+	NAKAMA_API TNakamaFuture<FNakamaVoidResult> LinkCustom(
 		FNakamaClient Client,
 		FNakamaSessionPtr Session,
 		FString Id,
 		const TMap<FString, FString>& Vars,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Add a custom ID to the social profiles on the current user's account. (Server-to-server with HTTP key) */
-	NAKAMA_API TNakamaFuture<FNakamaVoid> LinkCustom(
+	NAKAMA_API TNakamaFuture<FNakamaVoidResult> LinkCustom(
 		FNakamaClient Client,
 		const FString& HttpKey,
 		FString Id,
 		const TMap<FString, FString>& Vars,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Add a device ID to the social profiles on the current user's account. */
-	NAKAMA_API TNakamaFuture<FNakamaVoid> LinkDevice(
+	NAKAMA_API TNakamaFuture<FNakamaVoidResult> LinkDevice(
 		FNakamaClient Client,
 		FNakamaSessionPtr Session,
 		FString Id,
 		const TMap<FString, FString>& Vars,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Add a device ID to the social profiles on the current user's account. (Server-to-server with HTTP key) */
-	NAKAMA_API TNakamaFuture<FNakamaVoid> LinkDevice(
+	NAKAMA_API TNakamaFuture<FNakamaVoidResult> LinkDevice(
 		FNakamaClient Client,
 		const FString& HttpKey,
 		FString Id,
 		const TMap<FString, FString>& Vars,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Add an email+password to the social profiles on the current user's account. */
-	NAKAMA_API TNakamaFuture<FNakamaVoid> LinkEmail(
+	NAKAMA_API TNakamaFuture<FNakamaVoidResult> LinkEmail(
 		FNakamaClient Client,
 		FNakamaSessionPtr Session,
 		FString Email,
 		FString Password,
 		const TMap<FString, FString>& Vars,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Add an email+password to the social profiles on the current user's account. (Server-to-server with HTTP key) */
-	NAKAMA_API TNakamaFuture<FNakamaVoid> LinkEmail(
+	NAKAMA_API TNakamaFuture<FNakamaVoidResult> LinkEmail(
 		FNakamaClient Client,
 		const FString& HttpKey,
 		FString Email,
 		FString Password,
 		const TMap<FString, FString>& Vars,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Add Facebook to the social profiles on the current user's account. */
-	NAKAMA_API TNakamaFuture<FNakamaVoid> LinkFacebook(
+	NAKAMA_API TNakamaFuture<FNakamaVoidResult> LinkFacebook(
 		FNakamaClient Client,
 		FNakamaSessionPtr Session,
 		FNakamaAccountFacebook Account,
 		bool Sync,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Add Facebook to the social profiles on the current user's account. (Server-to-server with HTTP key) */
-	NAKAMA_API TNakamaFuture<FNakamaVoid> LinkFacebook(
+	NAKAMA_API TNakamaFuture<FNakamaVoidResult> LinkFacebook(
 		FNakamaClient Client,
 		const FString& HttpKey,
 		FNakamaAccountFacebook Account,
 		bool Sync,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Add Facebook Instant Game to the social profiles on the current user's account. */
-	NAKAMA_API TNakamaFuture<FNakamaVoid> LinkFacebookInstantGame(
+	NAKAMA_API TNakamaFuture<FNakamaVoidResult> LinkFacebookInstantGame(
 		FNakamaClient Client,
 		FNakamaSessionPtr Session,
 		FString SignedPlayerInfo,
 		const TMap<FString, FString>& Vars,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Add Facebook Instant Game to the social profiles on the current user's account. (Server-to-server with HTTP key) */
-	NAKAMA_API TNakamaFuture<FNakamaVoid> LinkFacebookInstantGame(
+	NAKAMA_API TNakamaFuture<FNakamaVoidResult> LinkFacebookInstantGame(
 		FNakamaClient Client,
 		const FString& HttpKey,
 		FString SignedPlayerInfo,
 		const TMap<FString, FString>& Vars,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Add Apple's GameCenter to the social profiles on the current user's account. */
-	NAKAMA_API TNakamaFuture<FNakamaVoid> LinkGameCenter(
+	NAKAMA_API TNakamaFuture<FNakamaVoidResult> LinkGameCenter(
 		FNakamaClient Client,
 		FNakamaSessionPtr Session,
 		FString PlayerId,
@@ -788,10 +930,10 @@ namespace Nakama
 		FString Signature,
 		FString PublicKeyUrl,
 		const TMap<FString, FString>& Vars,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Add Apple's GameCenter to the social profiles on the current user's account. (Server-to-server with HTTP key) */
-	NAKAMA_API TNakamaFuture<FNakamaVoid> LinkGameCenter(
+	NAKAMA_API TNakamaFuture<FNakamaVoidResult> LinkGameCenter(
 		FNakamaClient Client,
 		const FString& HttpKey,
 		FString PlayerId,
@@ -801,96 +943,96 @@ namespace Nakama
 		FString Signature,
 		FString PublicKeyUrl,
 		const TMap<FString, FString>& Vars,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Add Google to the social profiles on the current user's account. */
-	NAKAMA_API TNakamaFuture<FNakamaVoid> LinkGoogle(
+	NAKAMA_API TNakamaFuture<FNakamaVoidResult> LinkGoogle(
 		FNakamaClient Client,
 		FNakamaSessionPtr Session,
 		FString Token,
 		const TMap<FString, FString>& Vars,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Add Google to the social profiles on the current user's account. (Server-to-server with HTTP key) */
-	NAKAMA_API TNakamaFuture<FNakamaVoid> LinkGoogle(
+	NAKAMA_API TNakamaFuture<FNakamaVoidResult> LinkGoogle(
 		FNakamaClient Client,
 		const FString& HttpKey,
 		FString Token,
 		const TMap<FString, FString>& Vars,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Add Steam to the social profiles on the current user's account. */
-	NAKAMA_API TNakamaFuture<FNakamaVoid> LinkSteam(
+	NAKAMA_API TNakamaFuture<FNakamaVoidResult> LinkSteam(
 		FNakamaClient Client,
 		FNakamaSessionPtr Session,
 		FNakamaAccountSteam Account,
 		bool Sync,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Add Steam to the social profiles on the current user's account. (Server-to-server with HTTP key) */
-	NAKAMA_API TNakamaFuture<FNakamaVoid> LinkSteam(
+	NAKAMA_API TNakamaFuture<FNakamaVoidResult> LinkSteam(
 		FNakamaClient Client,
 		const FString& HttpKey,
 		FNakamaAccountSteam Account,
 		bool Sync,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** List a channel's message history. */
-	NAKAMA_API TNakamaFuture<FNakamaChannelMessageList> ListChannelMessages(
+	NAKAMA_API TNakamaFuture<FNakamaChannelMessageListResult> ListChannelMessages(
 		FNakamaClient Client,
 		FNakamaSessionPtr Session,
 		FString ChannelId,
 		int32 Limit,
 		bool Forward,
 		FString Cursor,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** List a channel's message history. (Server-to-server with HTTP key) */
-	NAKAMA_API TNakamaFuture<FNakamaChannelMessageList> ListChannelMessages(
+	NAKAMA_API TNakamaFuture<FNakamaChannelMessageListResult> ListChannelMessages(
 		FNakamaClient Client,
 		const FString& HttpKey,
 		FString ChannelId,
 		int32 Limit,
 		bool Forward,
 		FString Cursor,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** List all friends for the current user. */
-	NAKAMA_API TNakamaFuture<FNakamaFriendList> ListFriends(
+	NAKAMA_API TNakamaFuture<FNakamaFriendListResult> ListFriends(
 		FNakamaClient Client,
 		FNakamaSessionPtr Session,
 		int32 Limit,
 		int32 State,
 		FString Cursor,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** List all friends for the current user. (Server-to-server with HTTP key) */
-	NAKAMA_API TNakamaFuture<FNakamaFriendList> ListFriends(
+	NAKAMA_API TNakamaFuture<FNakamaFriendListResult> ListFriends(
 		FNakamaClient Client,
 		const FString& HttpKey,
 		int32 Limit,
 		int32 State,
 		FString Cursor,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** List friends of friends for the current user. */
-	NAKAMA_API TNakamaFuture<FNakamaFriendsOfFriendsList> ListFriendsOfFriends(
+	NAKAMA_API TNakamaFuture<FNakamaFriendsOfFriendsListResult> ListFriendsOfFriends(
 		FNakamaClient Client,
 		FNakamaSessionPtr Session,
 		int32 Limit,
 		FString Cursor,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** List friends of friends for the current user. (Server-to-server with HTTP key) */
-	NAKAMA_API TNakamaFuture<FNakamaFriendsOfFriendsList> ListFriendsOfFriends(
+	NAKAMA_API TNakamaFuture<FNakamaFriendsOfFriendsListResult> ListFriendsOfFriends(
 		FNakamaClient Client,
 		const FString& HttpKey,
 		int32 Limit,
 		FString Cursor,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** List groups based on given filters. */
-	NAKAMA_API TNakamaFuture<FNakamaGroupList> ListGroups(
+	NAKAMA_API TNakamaFuture<FNakamaGroupListResult> ListGroups(
 		FNakamaClient Client,
 		FNakamaSessionPtr Session,
 		FString Name,
@@ -899,10 +1041,10 @@ namespace Nakama
 		FString LangTag,
 		int32 Members,
 		bool Open,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** List groups based on given filters. (Server-to-server with HTTP key) */
-	NAKAMA_API TNakamaFuture<FNakamaGroupList> ListGroups(
+	NAKAMA_API TNakamaFuture<FNakamaGroupListResult> ListGroups(
 		FNakamaClient Client,
 		const FString& HttpKey,
 		FString Name,
@@ -911,30 +1053,30 @@ namespace Nakama
 		FString LangTag,
 		int32 Members,
 		bool Open,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** List all users that are part of a group. */
-	NAKAMA_API TNakamaFuture<FNakamaGroupUserList> ListGroupUsers(
+	NAKAMA_API TNakamaFuture<FNakamaGroupUserListResult> ListGroupUsers(
 		FNakamaClient Client,
 		FNakamaSessionPtr Session,
 		FString GroupId,
 		int32 Limit,
 		int32 State,
 		FString Cursor,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** List all users that are part of a group. (Server-to-server with HTTP key) */
-	NAKAMA_API TNakamaFuture<FNakamaGroupUserList> ListGroupUsers(
+	NAKAMA_API TNakamaFuture<FNakamaGroupUserListResult> ListGroupUsers(
 		FNakamaClient Client,
 		const FString& HttpKey,
 		FString GroupId,
 		int32 Limit,
 		int32 State,
 		FString Cursor,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** List leaderboard records. */
-	NAKAMA_API TNakamaFuture<FNakamaLeaderboardRecordList> ListLeaderboardRecords(
+	NAKAMA_API TNakamaFuture<FNakamaLeaderboardRecordListResult> ListLeaderboardRecords(
 		FNakamaClient Client,
 		FNakamaSessionPtr Session,
 		FString LeaderboardId,
@@ -942,10 +1084,10 @@ namespace Nakama
 		int32 Limit,
 		FString Cursor,
 		int64 Expiry,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** List leaderboard records. (Server-to-server with HTTP key) */
-	NAKAMA_API TNakamaFuture<FNakamaLeaderboardRecordList> ListLeaderboardRecords(
+	NAKAMA_API TNakamaFuture<FNakamaLeaderboardRecordListResult> ListLeaderboardRecords(
 		FNakamaClient Client,
 		const FString& HttpKey,
 		FString LeaderboardId,
@@ -953,10 +1095,10 @@ namespace Nakama
 		int32 Limit,
 		FString Cursor,
 		int64 Expiry,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** List leaderboard records around the target ownerId. */
-	NAKAMA_API TNakamaFuture<FNakamaLeaderboardRecordList> ListLeaderboardRecordsAroundOwner(
+	NAKAMA_API TNakamaFuture<FNakamaLeaderboardRecordListResult> ListLeaderboardRecordsAroundOwner(
 		FNakamaClient Client,
 		FNakamaSessionPtr Session,
 		FString LeaderboardId,
@@ -964,10 +1106,10 @@ namespace Nakama
 		FString OwnerId,
 		int64 Expiry,
 		FString Cursor,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** List leaderboard records around the target ownerId. (Server-to-server with HTTP key) */
-	NAKAMA_API TNakamaFuture<FNakamaLeaderboardRecordList> ListLeaderboardRecordsAroundOwner(
+	NAKAMA_API TNakamaFuture<FNakamaLeaderboardRecordListResult> ListLeaderboardRecordsAroundOwner(
 		FNakamaClient Client,
 		const FString& HttpKey,
 		FString LeaderboardId,
@@ -975,10 +1117,10 @@ namespace Nakama
 		FString OwnerId,
 		int64 Expiry,
 		FString Cursor,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** List running matches and optionally filter by matching criteria. */
-	NAKAMA_API TNakamaFuture<FNakamaMatchList> ListMatches(
+	NAKAMA_API TNakamaFuture<FNakamaMatchListResult> ListMatches(
 		FNakamaClient Client,
 		FNakamaSessionPtr Session,
 		int32 Limit,
@@ -987,10 +1129,10 @@ namespace Nakama
 		int32 MinSize,
 		int32 MaxSize,
 		FString Query,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** List running matches and optionally filter by matching criteria. (Server-to-server with HTTP key) */
-	NAKAMA_API TNakamaFuture<FNakamaMatchList> ListMatches(
+	NAKAMA_API TNakamaFuture<FNakamaMatchListResult> ListMatches(
 		FNakamaClient Client,
 		const FString& HttpKey,
 		int32 Limit,
@@ -999,82 +1141,82 @@ namespace Nakama
 		int32 MinSize,
 		int32 MaxSize,
 		FString Query,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** List parties and optionally filter by matching criteria. */
-	NAKAMA_API TNakamaFuture<FNakamaPartyList> ListParties(
+	NAKAMA_API TNakamaFuture<FNakamaPartyListResult> ListParties(
 		FNakamaClient Client,
 		FNakamaSessionPtr Session,
 		int32 Limit,
 		bool Open,
 		FString Query,
 		FString Cursor,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** List parties and optionally filter by matching criteria. (Server-to-server with HTTP key) */
-	NAKAMA_API TNakamaFuture<FNakamaPartyList> ListParties(
+	NAKAMA_API TNakamaFuture<FNakamaPartyListResult> ListParties(
 		FNakamaClient Client,
 		const FString& HttpKey,
 		int32 Limit,
 		bool Open,
 		FString Query,
 		FString Cursor,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Fetch list of notifications. */
-	NAKAMA_API TNakamaFuture<FNakamaNotificationList> ListNotifications(
+	NAKAMA_API TNakamaFuture<FNakamaNotificationListResult> ListNotifications(
 		FNakamaClient Client,
 		FNakamaSessionPtr Session,
 		int32 Limit,
 		FString CacheableCursor,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Fetch list of notifications. (Server-to-server with HTTP key) */
-	NAKAMA_API TNakamaFuture<FNakamaNotificationList> ListNotifications(
+	NAKAMA_API TNakamaFuture<FNakamaNotificationListResult> ListNotifications(
 		FNakamaClient Client,
 		const FString& HttpKey,
 		int32 Limit,
 		FString CacheableCursor,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** List publicly readable storage objects in a given collection. */
-	NAKAMA_API TNakamaFuture<FNakamaStorageObjectList> ListStorageObjects(
+	NAKAMA_API TNakamaFuture<FNakamaStorageObjectListResult> ListStorageObjects(
 		FNakamaClient Client,
 		FNakamaSessionPtr Session,
 		FString UserId,
 		FString Collection,
 		int32 Limit,
 		FString Cursor,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** List publicly readable storage objects in a given collection. (Server-to-server with HTTP key) */
-	NAKAMA_API TNakamaFuture<FNakamaStorageObjectList> ListStorageObjects(
+	NAKAMA_API TNakamaFuture<FNakamaStorageObjectListResult> ListStorageObjects(
 		FNakamaClient Client,
 		const FString& HttpKey,
 		FString UserId,
 		FString Collection,
 		int32 Limit,
 		FString Cursor,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** List user's subscriptions. */
-	NAKAMA_API TNakamaFuture<FNakamaSubscriptionList> ListSubscriptions(
+	NAKAMA_API TNakamaFuture<FNakamaSubscriptionListResult> ListSubscriptions(
 		FNakamaClient Client,
 		FNakamaSessionPtr Session,
 		int32 Limit,
 		FString Cursor,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** List user's subscriptions. (Server-to-server with HTTP key) */
-	NAKAMA_API TNakamaFuture<FNakamaSubscriptionList> ListSubscriptions(
+	NAKAMA_API TNakamaFuture<FNakamaSubscriptionListResult> ListSubscriptions(
 		FNakamaClient Client,
 		const FString& HttpKey,
 		int32 Limit,
 		FString Cursor,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** List current or upcoming tournaments. */
-	NAKAMA_API TNakamaFuture<FNakamaTournamentList> ListTournaments(
+	NAKAMA_API TNakamaFuture<FNakamaTournamentListResult> ListTournaments(
 		FNakamaClient Client,
 		FNakamaSessionPtr Session,
 		int32 CategoryStart,
@@ -1083,10 +1225,10 @@ namespace Nakama
 		int32 EndTime,
 		int32 Limit,
 		FString Cursor,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** List current or upcoming tournaments. (Server-to-server with HTTP key) */
-	NAKAMA_API TNakamaFuture<FNakamaTournamentList> ListTournaments(
+	NAKAMA_API TNakamaFuture<FNakamaTournamentListResult> ListTournaments(
 		FNakamaClient Client,
 		const FString& HttpKey,
 		int32 CategoryStart,
@@ -1095,10 +1237,10 @@ namespace Nakama
 		int32 EndTime,
 		int32 Limit,
 		FString Cursor,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** List tournament records. */
-	NAKAMA_API TNakamaFuture<FNakamaTournamentRecordList> ListTournamentRecords(
+	NAKAMA_API TNakamaFuture<FNakamaTournamentRecordListResult> ListTournamentRecords(
 		FNakamaClient Client,
 		FNakamaSessionPtr Session,
 		FString TournamentId,
@@ -1106,10 +1248,10 @@ namespace Nakama
 		int32 Limit,
 		FString Cursor,
 		int64 Expiry,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** List tournament records. (Server-to-server with HTTP key) */
-	NAKAMA_API TNakamaFuture<FNakamaTournamentRecordList> ListTournamentRecords(
+	NAKAMA_API TNakamaFuture<FNakamaTournamentRecordListResult> ListTournamentRecords(
 		FNakamaClient Client,
 		const FString& HttpKey,
 		FString TournamentId,
@@ -1117,10 +1259,10 @@ namespace Nakama
 		int32 Limit,
 		FString Cursor,
 		int64 Expiry,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** List tournament records for a given owner. */
-	NAKAMA_API TNakamaFuture<FNakamaTournamentRecordList> ListTournamentRecordsAroundOwner(
+	NAKAMA_API TNakamaFuture<FNakamaTournamentRecordListResult> ListTournamentRecordsAroundOwner(
 		FNakamaClient Client,
 		FNakamaSessionPtr Session,
 		FString TournamentId,
@@ -1128,10 +1270,10 @@ namespace Nakama
 		FString OwnerId,
 		int64 Expiry,
 		FString Cursor,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** List tournament records for a given owner. (Server-to-server with HTTP key) */
-	NAKAMA_API TNakamaFuture<FNakamaTournamentRecordList> ListTournamentRecordsAroundOwner(
+	NAKAMA_API TNakamaFuture<FNakamaTournamentRecordListResult> ListTournamentRecordsAroundOwner(
 		FNakamaClient Client,
 		const FString& HttpKey,
 		FString TournamentId,
@@ -1139,191 +1281,191 @@ namespace Nakama
 		FString OwnerId,
 		int64 Expiry,
 		FString Cursor,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** List groups the current user belongs to. */
-	NAKAMA_API TNakamaFuture<FNakamaUserGroupList> ListUserGroups(
+	NAKAMA_API TNakamaFuture<FNakamaUserGroupListResult> ListUserGroups(
 		FNakamaClient Client,
 		FNakamaSessionPtr Session,
 		FString UserId,
 		int32 Limit,
 		int32 State,
 		FString Cursor,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** List groups the current user belongs to. (Server-to-server with HTTP key) */
-	NAKAMA_API TNakamaFuture<FNakamaUserGroupList> ListUserGroups(
+	NAKAMA_API TNakamaFuture<FNakamaUserGroupListResult> ListUserGroups(
 		FNakamaClient Client,
 		const FString& HttpKey,
 		FString UserId,
 		int32 Limit,
 		int32 State,
 		FString Cursor,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Promote a set of users in a group to the next role up. */
-	NAKAMA_API TNakamaFuture<FNakamaVoid> PromoteGroupUsers(
+	NAKAMA_API TNakamaFuture<FNakamaVoidResult> PromoteGroupUsers(
 		FNakamaClient Client,
 		FNakamaSessionPtr Session,
 		FString GroupId,
 		const TArray<FString>& UserIds,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Promote a set of users in a group to the next role up. (Server-to-server with HTTP key) */
-	NAKAMA_API TNakamaFuture<FNakamaVoid> PromoteGroupUsers(
+	NAKAMA_API TNakamaFuture<FNakamaVoidResult> PromoteGroupUsers(
 		FNakamaClient Client,
 		const FString& HttpKey,
 		FString GroupId,
 		const TArray<FString>& UserIds,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Demote a set of users in a group to the next role down. */
-	NAKAMA_API TNakamaFuture<FNakamaVoid> DemoteGroupUsers(
+	NAKAMA_API TNakamaFuture<FNakamaVoidResult> DemoteGroupUsers(
 		FNakamaClient Client,
 		FNakamaSessionPtr Session,
 		FString GroupId,
 		const TArray<FString>& UserIds,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Demote a set of users in a group to the next role down. (Server-to-server with HTTP key) */
-	NAKAMA_API TNakamaFuture<FNakamaVoid> DemoteGroupUsers(
+	NAKAMA_API TNakamaFuture<FNakamaVoidResult> DemoteGroupUsers(
 		FNakamaClient Client,
 		const FString& HttpKey,
 		FString GroupId,
 		const TArray<FString>& UserIds,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Get storage objects. */
-	NAKAMA_API TNakamaFuture<FNakamaStorageObjects> ReadStorageObjects(
+	NAKAMA_API TNakamaFuture<FNakamaStorageObjectsResult> ReadStorageObjects(
 		FNakamaClient Client,
 		FNakamaSessionPtr Session,
 		const TArray<FNakamaReadStorageObjectId>& ObjectIds,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Get storage objects. (Server-to-server with HTTP key) */
-	NAKAMA_API TNakamaFuture<FNakamaStorageObjects> ReadStorageObjects(
+	NAKAMA_API TNakamaFuture<FNakamaStorageObjectsResult> ReadStorageObjects(
 		FNakamaClient Client,
 		const FString& HttpKey,
 		const TArray<FNakamaReadStorageObjectId>& ObjectIds,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Execute a Lua function on the server. */
-	NAKAMA_API TNakamaFuture<FNakamaRpc> RpcFunc(
+	NAKAMA_API TNakamaFuture<FNakamaRpcResult> RpcFunc(
 		FNakamaClient Client,
 		FNakamaSessionPtr Session,
 		FString Id,
 		TSharedPtr<FJsonObject> Payload,
 		FString HttpKey,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Execute a Lua function on the server. (Server-to-server with HTTP key) */
-	NAKAMA_API TNakamaFuture<FNakamaRpc> RpcFunc(
+	NAKAMA_API TNakamaFuture<FNakamaRpcResult> RpcFunc(
 		FNakamaClient Client,
 		const FString& HttpKey,
 		FString Id,
 		TSharedPtr<FJsonObject> Payload,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Remove the Apple ID from the social profiles on the current user's account. */
-	NAKAMA_API TNakamaFuture<FNakamaVoid> UnlinkApple(
+	NAKAMA_API TNakamaFuture<FNakamaVoidResult> UnlinkApple(
 		FNakamaClient Client,
 		FNakamaSessionPtr Session,
 		FString Token,
 		const TMap<FString, FString>& Vars,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Remove the Apple ID from the social profiles on the current user's account. (Server-to-server with HTTP key) */
-	NAKAMA_API TNakamaFuture<FNakamaVoid> UnlinkApple(
+	NAKAMA_API TNakamaFuture<FNakamaVoidResult> UnlinkApple(
 		FNakamaClient Client,
 		const FString& HttpKey,
 		FString Token,
 		const TMap<FString, FString>& Vars,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Remove the custom ID from the social profiles on the current user's account. */
-	NAKAMA_API TNakamaFuture<FNakamaVoid> UnlinkCustom(
+	NAKAMA_API TNakamaFuture<FNakamaVoidResult> UnlinkCustom(
 		FNakamaClient Client,
 		FNakamaSessionPtr Session,
 		FString Id,
 		const TMap<FString, FString>& Vars,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Remove the custom ID from the social profiles on the current user's account. (Server-to-server with HTTP key) */
-	NAKAMA_API TNakamaFuture<FNakamaVoid> UnlinkCustom(
+	NAKAMA_API TNakamaFuture<FNakamaVoidResult> UnlinkCustom(
 		FNakamaClient Client,
 		const FString& HttpKey,
 		FString Id,
 		const TMap<FString, FString>& Vars,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Remove the device ID from the social profiles on the current user's account. */
-	NAKAMA_API TNakamaFuture<FNakamaVoid> UnlinkDevice(
+	NAKAMA_API TNakamaFuture<FNakamaVoidResult> UnlinkDevice(
 		FNakamaClient Client,
 		FNakamaSessionPtr Session,
 		FString Id,
 		const TMap<FString, FString>& Vars,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Remove the device ID from the social profiles on the current user's account. (Server-to-server with HTTP key) */
-	NAKAMA_API TNakamaFuture<FNakamaVoid> UnlinkDevice(
+	NAKAMA_API TNakamaFuture<FNakamaVoidResult> UnlinkDevice(
 		FNakamaClient Client,
 		const FString& HttpKey,
 		FString Id,
 		const TMap<FString, FString>& Vars,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Remove the email+password from the social profiles on the current user's account. */
-	NAKAMA_API TNakamaFuture<FNakamaVoid> UnlinkEmail(
+	NAKAMA_API TNakamaFuture<FNakamaVoidResult> UnlinkEmail(
 		FNakamaClient Client,
 		FNakamaSessionPtr Session,
 		FString Email,
 		FString Password,
 		const TMap<FString, FString>& Vars,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Remove the email+password from the social profiles on the current user's account. (Server-to-server with HTTP key) */
-	NAKAMA_API TNakamaFuture<FNakamaVoid> UnlinkEmail(
+	NAKAMA_API TNakamaFuture<FNakamaVoidResult> UnlinkEmail(
 		FNakamaClient Client,
 		const FString& HttpKey,
 		FString Email,
 		FString Password,
 		const TMap<FString, FString>& Vars,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Remove Facebook from the social profiles on the current user's account. */
-	NAKAMA_API TNakamaFuture<FNakamaVoid> UnlinkFacebook(
+	NAKAMA_API TNakamaFuture<FNakamaVoidResult> UnlinkFacebook(
 		FNakamaClient Client,
 		FNakamaSessionPtr Session,
 		FString Token,
 		const TMap<FString, FString>& Vars,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Remove Facebook from the social profiles on the current user's account. (Server-to-server with HTTP key) */
-	NAKAMA_API TNakamaFuture<FNakamaVoid> UnlinkFacebook(
+	NAKAMA_API TNakamaFuture<FNakamaVoidResult> UnlinkFacebook(
 		FNakamaClient Client,
 		const FString& HttpKey,
 		FString Token,
 		const TMap<FString, FString>& Vars,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Remove Facebook Instant Game profile from the social profiles on the current user's account. */
-	NAKAMA_API TNakamaFuture<FNakamaVoid> UnlinkFacebookInstantGame(
+	NAKAMA_API TNakamaFuture<FNakamaVoidResult> UnlinkFacebookInstantGame(
 		FNakamaClient Client,
 		FNakamaSessionPtr Session,
 		FString SignedPlayerInfo,
 		const TMap<FString, FString>& Vars,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Remove Facebook Instant Game profile from the social profiles on the current user's account. (Server-to-server with HTTP key) */
-	NAKAMA_API TNakamaFuture<FNakamaVoid> UnlinkFacebookInstantGame(
+	NAKAMA_API TNakamaFuture<FNakamaVoidResult> UnlinkFacebookInstantGame(
 		FNakamaClient Client,
 		const FString& HttpKey,
 		FString SignedPlayerInfo,
 		const TMap<FString, FString>& Vars,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Remove Apple's GameCenter from the social profiles on the current user's account. */
-	NAKAMA_API TNakamaFuture<FNakamaVoid> UnlinkGameCenter(
+	NAKAMA_API TNakamaFuture<FNakamaVoidResult> UnlinkGameCenter(
 		FNakamaClient Client,
 		FNakamaSessionPtr Session,
 		FString PlayerId,
@@ -1333,10 +1475,10 @@ namespace Nakama
 		FString Signature,
 		FString PublicKeyUrl,
 		const TMap<FString, FString>& Vars,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Remove Apple's GameCenter from the social profiles on the current user's account. (Server-to-server with HTTP key) */
-	NAKAMA_API TNakamaFuture<FNakamaVoid> UnlinkGameCenter(
+	NAKAMA_API TNakamaFuture<FNakamaVoidResult> UnlinkGameCenter(
 		FNakamaClient Client,
 		const FString& HttpKey,
 		FString PlayerId,
@@ -1346,42 +1488,42 @@ namespace Nakama
 		FString Signature,
 		FString PublicKeyUrl,
 		const TMap<FString, FString>& Vars,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Remove Google from the social profiles on the current user's account. */
-	NAKAMA_API TNakamaFuture<FNakamaVoid> UnlinkGoogle(
+	NAKAMA_API TNakamaFuture<FNakamaVoidResult> UnlinkGoogle(
 		FNakamaClient Client,
 		FNakamaSessionPtr Session,
 		FString Token,
 		const TMap<FString, FString>& Vars,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Remove Google from the social profiles on the current user's account. (Server-to-server with HTTP key) */
-	NAKAMA_API TNakamaFuture<FNakamaVoid> UnlinkGoogle(
+	NAKAMA_API TNakamaFuture<FNakamaVoidResult> UnlinkGoogle(
 		FNakamaClient Client,
 		const FString& HttpKey,
 		FString Token,
 		const TMap<FString, FString>& Vars,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Remove Steam from the social profiles on the current user's account. */
-	NAKAMA_API TNakamaFuture<FNakamaVoid> UnlinkSteam(
+	NAKAMA_API TNakamaFuture<FNakamaVoidResult> UnlinkSteam(
 		FNakamaClient Client,
 		FNakamaSessionPtr Session,
 		FString Token,
 		const TMap<FString, FString>& Vars,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Remove Steam from the social profiles on the current user's account. (Server-to-server with HTTP key) */
-	NAKAMA_API TNakamaFuture<FNakamaVoid> UnlinkSteam(
+	NAKAMA_API TNakamaFuture<FNakamaVoidResult> UnlinkSteam(
 		FNakamaClient Client,
 		const FString& HttpKey,
 		FString Token,
 		const TMap<FString, FString>& Vars,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Update fields in the current user's account. */
-	NAKAMA_API TNakamaFuture<FNakamaVoid> UpdateAccount(
+	NAKAMA_API TNakamaFuture<FNakamaVoidResult> UpdateAccount(
 		FNakamaClient Client,
 		FNakamaSessionPtr Session,
 		FString Username,
@@ -1390,10 +1532,10 @@ namespace Nakama
 		FString LangTag,
 		FString Location,
 		FString Timezone,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Update fields in the current user's account. (Server-to-server with HTTP key) */
-	NAKAMA_API TNakamaFuture<FNakamaVoid> UpdateAccount(
+	NAKAMA_API TNakamaFuture<FNakamaVoidResult> UpdateAccount(
 		FNakamaClient Client,
 		const FString& HttpKey,
 		FString Username,
@@ -1402,10 +1544,10 @@ namespace Nakama
 		FString LangTag,
 		FString Location,
 		FString Timezone,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Update fields in a given group. */
-	NAKAMA_API TNakamaFuture<FNakamaVoid> UpdateGroup(
+	NAKAMA_API TNakamaFuture<FNakamaVoidResult> UpdateGroup(
 		FNakamaClient Client,
 		FNakamaSessionPtr Session,
 		FString GroupId,
@@ -1414,10 +1556,10 @@ namespace Nakama
 		FString LangTag,
 		FString AvatarUrl,
 		bool Open,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Update fields in a given group. (Server-to-server with HTTP key) */
-	NAKAMA_API TNakamaFuture<FNakamaVoid> UpdateGroup(
+	NAKAMA_API TNakamaFuture<FNakamaVoidResult> UpdateGroup(
 		FNakamaClient Client,
 		const FString& HttpKey,
 		FString GroupId,
@@ -1426,149 +1568,149 @@ namespace Nakama
 		FString LangTag,
 		FString AvatarUrl,
 		bool Open,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Validate Apple IAP Receipt */
-	NAKAMA_API TNakamaFuture<FNakamaValidatePurchaseResponse> ValidatePurchaseApple(
+	NAKAMA_API TNakamaFuture<FNakamaValidatePurchaseResponseResult> ValidatePurchaseApple(
 		FNakamaClient Client,
 		FNakamaSessionPtr Session,
 		FString Receipt,
 		bool Persist,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Validate Apple IAP Receipt (Server-to-server with HTTP key) */
-	NAKAMA_API TNakamaFuture<FNakamaValidatePurchaseResponse> ValidatePurchaseApple(
+	NAKAMA_API TNakamaFuture<FNakamaValidatePurchaseResponseResult> ValidatePurchaseApple(
 		FNakamaClient Client,
 		const FString& HttpKey,
 		FString Receipt,
 		bool Persist,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Validate Apple Subscription Receipt */
-	NAKAMA_API TNakamaFuture<FNakamaValidateSubscriptionResponse> ValidateSubscriptionApple(
+	NAKAMA_API TNakamaFuture<FNakamaValidateSubscriptionResponseResult> ValidateSubscriptionApple(
 		FNakamaClient Client,
 		FNakamaSessionPtr Session,
 		FString Receipt,
 		bool Persist,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Validate Apple Subscription Receipt (Server-to-server with HTTP key) */
-	NAKAMA_API TNakamaFuture<FNakamaValidateSubscriptionResponse> ValidateSubscriptionApple(
+	NAKAMA_API TNakamaFuture<FNakamaValidateSubscriptionResponseResult> ValidateSubscriptionApple(
 		FNakamaClient Client,
 		const FString& HttpKey,
 		FString Receipt,
 		bool Persist,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Validate Google IAP Receipt */
-	NAKAMA_API TNakamaFuture<FNakamaValidatePurchaseResponse> ValidatePurchaseGoogle(
+	NAKAMA_API TNakamaFuture<FNakamaValidatePurchaseResponseResult> ValidatePurchaseGoogle(
 		FNakamaClient Client,
 		FNakamaSessionPtr Session,
 		FString Purchase,
 		bool Persist,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Validate Google IAP Receipt (Server-to-server with HTTP key) */
-	NAKAMA_API TNakamaFuture<FNakamaValidatePurchaseResponse> ValidatePurchaseGoogle(
+	NAKAMA_API TNakamaFuture<FNakamaValidatePurchaseResponseResult> ValidatePurchaseGoogle(
 		FNakamaClient Client,
 		const FString& HttpKey,
 		FString Purchase,
 		bool Persist,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Validate Google Subscription Receipt */
-	NAKAMA_API TNakamaFuture<FNakamaValidateSubscriptionResponse> ValidateSubscriptionGoogle(
+	NAKAMA_API TNakamaFuture<FNakamaValidateSubscriptionResponseResult> ValidateSubscriptionGoogle(
 		FNakamaClient Client,
 		FNakamaSessionPtr Session,
 		FString Receipt,
 		bool Persist,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Validate Google Subscription Receipt (Server-to-server with HTTP key) */
-	NAKAMA_API TNakamaFuture<FNakamaValidateSubscriptionResponse> ValidateSubscriptionGoogle(
+	NAKAMA_API TNakamaFuture<FNakamaValidateSubscriptionResponseResult> ValidateSubscriptionGoogle(
 		FNakamaClient Client,
 		const FString& HttpKey,
 		FString Receipt,
 		bool Persist,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Validate Huawei IAP Receipt */
-	NAKAMA_API TNakamaFuture<FNakamaValidatePurchaseResponse> ValidatePurchaseHuawei(
+	NAKAMA_API TNakamaFuture<FNakamaValidatePurchaseResponseResult> ValidatePurchaseHuawei(
 		FNakamaClient Client,
 		FNakamaSessionPtr Session,
 		FString Purchase,
 		FString Signature,
 		bool Persist,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Validate Huawei IAP Receipt (Server-to-server with HTTP key) */
-	NAKAMA_API TNakamaFuture<FNakamaValidatePurchaseResponse> ValidatePurchaseHuawei(
+	NAKAMA_API TNakamaFuture<FNakamaValidatePurchaseResponseResult> ValidatePurchaseHuawei(
 		FNakamaClient Client,
 		const FString& HttpKey,
 		FString Purchase,
 		FString Signature,
 		bool Persist,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Validate FB Instant IAP Receipt */
-	NAKAMA_API TNakamaFuture<FNakamaValidatePurchaseResponse> ValidatePurchaseFacebookInstant(
+	NAKAMA_API TNakamaFuture<FNakamaValidatePurchaseResponseResult> ValidatePurchaseFacebookInstant(
 		FNakamaClient Client,
 		FNakamaSessionPtr Session,
 		FString SignedRequest,
 		bool Persist,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Validate FB Instant IAP Receipt (Server-to-server with HTTP key) */
-	NAKAMA_API TNakamaFuture<FNakamaValidatePurchaseResponse> ValidatePurchaseFacebookInstant(
+	NAKAMA_API TNakamaFuture<FNakamaValidatePurchaseResponseResult> ValidatePurchaseFacebookInstant(
 		FNakamaClient Client,
 		const FString& HttpKey,
 		FString SignedRequest,
 		bool Persist,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Write a record to a leaderboard. */
-	NAKAMA_API TNakamaFuture<FNakamaLeaderboardRecord> WriteLeaderboardRecord(
+	NAKAMA_API TNakamaFuture<FNakamaLeaderboardRecordResult> WriteLeaderboardRecord(
 		FNakamaClient Client,
 		FNakamaSessionPtr Session,
 		FString LeaderboardId,
 		FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite Record,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Write a record to a leaderboard. (Server-to-server with HTTP key) */
-	NAKAMA_API TNakamaFuture<FNakamaLeaderboardRecord> WriteLeaderboardRecord(
+	NAKAMA_API TNakamaFuture<FNakamaLeaderboardRecordResult> WriteLeaderboardRecord(
 		FNakamaClient Client,
 		const FString& HttpKey,
 		FString LeaderboardId,
 		FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite Record,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Write objects into the storage engine. */
-	NAKAMA_API TNakamaFuture<FNakamaStorageObjectAcks> WriteStorageObjects(
+	NAKAMA_API TNakamaFuture<FNakamaStorageObjectAcksResult> WriteStorageObjects(
 		FNakamaClient Client,
 		FNakamaSessionPtr Session,
 		const TArray<FNakamaWriteStorageObject>& Objects,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Write objects into the storage engine. (Server-to-server with HTTP key) */
-	NAKAMA_API TNakamaFuture<FNakamaStorageObjectAcks> WriteStorageObjects(
+	NAKAMA_API TNakamaFuture<FNakamaStorageObjectAcksResult> WriteStorageObjects(
 		FNakamaClient Client,
 		const FString& HttpKey,
 		const TArray<FNakamaWriteStorageObject>& Objects,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Write a record to a tournament. */
-	NAKAMA_API TNakamaFuture<FNakamaLeaderboardRecord> WriteTournamentRecord(
+	NAKAMA_API TNakamaFuture<FNakamaLeaderboardRecordResult> WriteTournamentRecord(
 		FNakamaClient Client,
 		FNakamaSessionPtr Session,
 		FString TournamentId,
 		FNakamaWriteTournamentRecordRequest_TournamentRecordWrite Record,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Write a record to a tournament. (Server-to-server with HTTP key) */
-	NAKAMA_API TNakamaFuture<FNakamaLeaderboardRecord> WriteTournamentRecord(
+	NAKAMA_API TNakamaFuture<FNakamaLeaderboardRecordResult> WriteTournamentRecord(
 		FNakamaClient Client,
 		const FString& HttpKey,
 		FString TournamentId,
 		FNakamaWriteTournamentRecordRequest_TournamentRecordWrite Record,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 }

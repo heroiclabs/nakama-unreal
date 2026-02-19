@@ -122,39 +122,43 @@ tasks:
         if docker exec unreal_integration_test_nakama /nakama/nakama healthcheck 2>/dev/null &&
            docker exec unreal_integration_test_satori curl -sf http://localhost:7450/ >/dev/null 2>&1; then
           echo "Nakama and Satori are already running."
-          exit 0
+        else
+          docker compose -f IntegrationTests/server/docker-compose.yml up --build -d
+          echo "Waiting for Nakama to be healthy..."
+          timeout=60
+          while [ $timeout -gt 0 ]; do
+            if docker exec unreal_integration_test_nakama /nakama/nakama healthcheck 2>/dev/null; then
+              echo "Nakama is ready!"
+              break
+            fi
+            powershell -NoProfile -Command "Start-Sleep -Seconds 2" 2>/dev/null || sleep 2
+            timeout=$((timeout - 2))
+          done
+          if [ $timeout -le 0 ]; then
+            echo "Error: Nakama failed to start within 60 seconds"
+            docker compose -f IntegrationTests/server/docker-compose.yml logs nakama
+            exit 1
+          fi
+
+          echo "Waiting for Satori to be healthy..."
+          timeout=60
+          while [ $timeout -gt 0 ]; do
+            if docker exec unreal_integration_test_satori curl -sf http://localhost:7450/ >/dev/null 2>&1; then
+              echo "Satori is ready!"
+              break
+            fi
+            powershell -NoProfile -Command "Start-Sleep -Seconds 2" 2>/dev/null || sleep 2
+            timeout=$((timeout - 2))
+          done
+          if [ $timeout -le 0 ]; then
+            echo "Error: Satori failed to start within 60 seconds"
+            docker compose -f IntegrationTests/server/docker-compose.yml logs satori
+            exit 1
+          fi
         fi
 
-        docker compose -f IntegrationTests/server/docker-compose.yml up --build -d
-        echo "Waiting for Nakama to be healthy..."
-        timeout=60
-        while [ $timeout -gt 0 ]; do
-          if docker exec unreal_integration_test_nakama /nakama/nakama healthcheck 2>/dev/null; then
-            echo "Nakama is ready!"
-            break
-          fi
-          powershell -NoProfile -Command "Start-Sleep -Seconds 2" 2>/dev/null || sleep 2
-          timeout=$((timeout - 2))
-        done
-        if [ $timeout -le 0 ]; then
-          echo "Error: Nakama failed to start within 60 seconds"
-          docker compose -f IntegrationTests/server/docker-compose.yml logs nakama
-          exit 1
-        fi
-
-        echo "Waiting for Satori to be healthy..."
-        timeout=60
-        while [ $timeout -gt 0 ]; do
-          if docker exec unreal_integration_test_satori curl -sf http://localhost:7450/ >/dev/null 2>&1; then
-            echo "Satori is ready!"
-            exit 0
-          fi
-          powershell -NoProfile -Command "Start-Sleep -Seconds 2" 2>/dev/null || sleep 2
-          timeout=$((timeout - 2))
-        done
-        echo "Error: Satori failed to start within 60 seconds"
-        docker compose -f IntegrationTests/server/docker-compose.yml logs satori
-        exit 1
+        echo "Seeding Satori API key..."
+        docker exec unreal_integration_test_postgres psql -U postgres -d satori -c "INSERT INTO api_key (name, value) VALUES ('default', 'defaultkey') ON CONFLICT (name) DO UPDATE SET value = 'defaultkey';"
 
   build:
     desc: 'Build and cook a project via UAT (BuildCookRun).'
@@ -316,7 +320,7 @@ tasks:
   test-unreal:
     desc: 'Build and run IntegrationTests C++ automation suite.'
     vars:
-      TEST_SUITE: '{{.TEST_SUITE | default "IntegrationTests.Auth"}}'
+      TEST_SUITE: '{{.TEST_SUITE | default "IntegrationTests"}}'
       REPORT_PATH: '{{.REPORT_PATH | default "Reports/IntegrationTests"}}'
     cmds:
     - task: check-unreal-engine

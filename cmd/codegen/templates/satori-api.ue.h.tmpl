@@ -132,20 +132,20 @@ struct SATORIAPI_API FSatoriSession
 	int64 RefreshTokenExpiresAt = 0;
 
 	/** True if the auth token expires within BufferSeconds from now. */
-	bool IsExpired(int64 BufferSeconds = 0) const;
+	bool IsExpired(int64 BufferSeconds = 0) const noexcept;
 
 	/** True if the refresh token has expired (no buffer). */
-	bool IsRefreshExpired(int64 BufferSeconds = 0) const;
+	bool IsRefreshExpired(int64 BufferSeconds = 0) const noexcept;
 
 	/** Replace tokens and re-parse JWT claims. */
-	void Update(const FString& NewToken, const FString& NewRefreshToken);
+	void Update(const FString& NewToken, const FString& NewRefreshToken) noexcept;
 
-	static FSatoriSession FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FSatoriSession FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 
 private:
-	static bool ParseJwtPayload(const FString& Jwt, TSharedPtr<FJsonObject>& Out);
-	void ParseTokens();
+	static bool ParseJwtPayload(const FString& Jwt, TSharedPtr<FJsonObject>& Out) noexcept;
+	void ParseTokens() noexcept;
 };
 {{- else }}
 
@@ -166,8 +166,8 @@ struct SATORIAPI_API FSatori{{ $msg.Name }}
 	{{ getUnrealMapType $field.Type }} {{ $field.Name | pascalCase }};
 	{{- end }}
 
-	static FSatori{{ $msg.Name }} FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FSatori{{ $msg.Name }} FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 {{- end }}
 {{- end }}
@@ -202,7 +202,7 @@ struct SATORIAPI_API FSatoriApiConfig
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Satori")
 	float Timeout = 10.0f;
 
-	FString GetBaseUrl() const;
+	FString GetBaseUrl() const noexcept;
 };
 
 /** Low-level Satori API: data types + free functions for HTTP RPCs (callback-based). */
@@ -244,6 +244,6 @@ namespace SatoriApi
 		TFunction<void()> OnSuccess,
 		{{- end }}
 		TFunction<void(const FSatoriError&)> OnError,
-		FSatoriCancellationTokenPtr CancellationToken = nullptr);
+		FSatoriCancellationTokenPtr CancellationToken = nullptr) noexcept;
 {{- end }}
 }

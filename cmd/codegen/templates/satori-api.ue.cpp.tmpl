@@ -44,7 +44,7 @@ DECLARE_DWORD_ACCUMULATOR_STAT(TEXT("TotalErrors"), STAT_Satori_TotalErrors, STA
 
 // --- FSatoriSession JWT helpers ---
 
-bool FSatoriSession::ParseJwtPayload(const FString& Jwt, TSharedPtr<FJsonObject>& Out)
+bool FSatoriSession::ParseJwtPayload(const FString& Jwt, TSharedPtr<FJsonObject>& Out) noexcept
 {
 	TArray<FString> Parts;
 	Jwt.ParseIntoArray(Parts, TEXT("."));
@@ -77,7 +77,7 @@ bool FSatoriSession::ParseJwtPayload(const FString& Jwt, TSharedPtr<FJsonObject>
 	return FJsonSerializer::Deserialize(Reader, Out) && Out.IsValid();
 }
 
-void FSatoriSession::ParseTokens()
+void FSatoriSession::ParseTokens() noexcept
 {
 	IdentityId.Empty();
 	TokenExpiresAt = 0;
@@ -113,7 +113,7 @@ void FSatoriSession::ParseTokens()
 	}
 }
 
-bool FSatoriSession::IsExpired(int64 BufferSeconds) const
+bool FSatoriSession::IsExpired(int64 BufferSeconds) const noexcept
 {
 	if (TokenExpiresAt == 0)
 	{
@@ -122,7 +122,7 @@ bool FSatoriSession::IsExpired(int64 BufferSeconds) const
 	return (TokenExpiresAt - BufferSeconds) <= FDateTime::UtcNow().ToUnixTimestamp();
 }
 
-bool FSatoriSession::IsRefreshExpired(int64 BufferSeconds) const
+bool FSatoriSession::IsRefreshExpired(int64 BufferSeconds) const noexcept
 {
 	if (RefreshTokenExpiresAt == 0)
 	{
@@ -131,7 +131,7 @@ bool FSatoriSession::IsRefreshExpired(int64 BufferSeconds) const
 	return (RefreshTokenExpiresAt - BufferSeconds) <= FDateTime::UtcNow().ToUnixTimestamp();
 }
 
-void FSatoriSession::Update(const FString& NewToken, const FString& NewRefreshToken)
+void FSatoriSession::Update(const FString& NewToken, const FString& NewRefreshToken) noexcept
 {
 	Token = NewToken;
 	RefreshToken = NewRefreshToken;
@@ -142,7 +142,7 @@ void FSatoriSession::Update(const FString& NewToken, const FString& NewRefreshTo
 {{- range $idx, $msg := $.Messages }}
 {{- if eq $msg.Name "Session" }}
 
-FSatoriSession FSatoriSession::FromJson(const TSharedPtr<FJsonObject>& Json)
+FSatoriSession FSatoriSession::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FSatoriSession Result;
 	if (!Json.IsValid())
@@ -264,7 +264,7 @@ FSatoriSession FSatoriSession::FromJson(const TSharedPtr<FJsonObject>& Json)
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FSatoriSession::ToJson() const
+TSharedPtr<FJsonObject> FSatoriSession::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 {{- range $fidx, $field := $msg.Fields }}
@@ -330,7 +330,7 @@ TSharedPtr<FJsonObject> FSatoriSession::ToJson() const
 }
 {{- else }}
 
-FSatori{{ $msg.Name }} FSatori{{ $msg.Name }}::FromJson(const TSharedPtr<FJsonObject>& Json)
+FSatori{{ $msg.Name }} FSatori{{ $msg.Name }}::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FSatori{{ $msg.Name }} Result;
 	if (!Json.IsValid())
@@ -451,7 +451,7 @@ FSatori{{ $msg.Name }} FSatori{{ $msg.Name }}::FromJson(const TSharedPtr<FJsonOb
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FSatori{{ $msg.Name }}::ToJson() const
+TSharedPtr<FJsonObject> FSatori{{ $msg.Name }}::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 {{- range $fidx, $field := $msg.Fields }}
@@ -520,7 +520,7 @@ TSharedPtr<FJsonObject> FSatori{{ $msg.Name }}::ToJson() const
 
 // --- FSatoriApiConfig ---
 
-FString FSatoriApiConfig::GetBaseUrl() const
+FString FSatoriApiConfig::GetBaseUrl() const noexcept
 {
 	const FString Scheme = bUseSSL ? TEXT("https") : TEXT("http");
 	return FString::Printf(TEXT("%s://%s:%d"), *Scheme, *Host, Port);
@@ -541,7 +541,7 @@ void DoHttpRequest(
 	const FString& TokenString,
 	TFunction<void(TSharedPtr<FJsonObject>)> OnSuccess,
 	TFunction<void(const FSatoriError&)> OnError,
-	FSatoriCancellationTokenPtr CancellationToken)
+	FSatoriCancellationTokenPtr CancellationToken) noexcept
 {
 	SCOPE_CYCLE_COUNTER(STAT_Satori_MakeRequest_Dispatch);
 	TRACE_CPUPROFILER_EVENT_SCOPE(Satori_MakeRequest);
@@ -671,7 +671,7 @@ void SendRequest(
 	const FString& AuthValue,
 	TFunction<void(TSharedPtr<FJsonObject>)> OnSuccess,
 	TFunction<void(const FSatoriError&)> OnError,
-	FSatoriCancellationTokenPtr CancellationToken)
+	FSatoriCancellationTokenPtr CancellationToken) noexcept
 {
 	// Early cancellation check
 	if (CancellationToken && CancellationToken->IsCancelled())
@@ -709,7 +709,7 @@ void MakeRequest(
 	const FString& AuthValue,
 	TFunction<void(TSharedPtr<FJsonObject>)> OnSuccess,
 	TFunction<void(const FSatoriError&)> OnError,
-	FSatoriCancellationTokenPtr CancellationToken)
+	FSatoriCancellationTokenPtr CancellationToken) noexcept
 {
 	FString BodyString;
 	if (Body.IsValid() && Method != TEXT("GET"))
@@ -756,7 +756,7 @@ void SatoriApi::{{ $rpc.Name }}(
 	TFunction<void()> OnSuccess,
 	{{- end }}
 	TFunction<void(const FSatoriError&)> OnError,
-	FSatoriCancellationTokenPtr CancellationToken)
+	FSatoriCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("{{ $rpc.Endpoint }}");
 	{{- /* Handle path parameters like {group_id} */ -}}

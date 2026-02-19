@@ -26,114 +26,75 @@
 /** Tag type used as the value type for RPCs that return no data. */
 struct NAKAMA_API FNakamaVoid {};
 
-/**
- * Result-or-error wrapper returned by Nakama:: free functions.
- * Exactly one of Value or Error is meaningful depending on IsSuccess().
- */
-template<typename T>
-struct TNakamaResult
+struct NAKAMA_API FNakamaVoidResult
 {
-	bool IsSuccess() const { return !bIsError; }
-	bool IsError() const { return bIsError; }
-
-	const T& GetValue() const { return Value; }
-	T&& MoveValue() { return MoveTemp(Value); }
-	const FNakamaError& GetError() const { return Error; }
-
-	static TNakamaResult Success(const T& InValue)
-	{
-		TNakamaResult Result;
-		Result.Value = InValue;
-		Result.bIsError = false;
-		return Result;
-	}
-
-	static TNakamaResult Success(T&& InValue)
-	{
-		TNakamaResult Result;
-		Result.Value = MoveTemp(InValue);
-		Result.bIsError = false;
-		return Result;
-	}
-
-	static TNakamaResult Failure(const FNakamaError& InError)
-	{
-		TNakamaResult Result;
-		Result.Error = InError;
-		Result.bIsError = true;
-		return Result;
-	}
-
-private:
-	T Value{};
+	using ValueType = FNakamaVoid;
+	FNakamaVoid Value{};
 	FNakamaError Error;
 	bool bIsError = true;
 };
+{{- range $idx, $typeName := uniqueReturnTypes $.Rpcs }}
+
+struct NAKAMA_API FNakama{{ $typeName }}Result
+{
+	using ValueType = FNakama{{ $typeName }};
+	FNakama{{ $typeName }} Value{};
+	FNakamaError Error;
+	bool bIsError = true;
+};
+{{- end }}
 
 // Forward declaration
-template<typename T> class TNakamaFuture;
+template<typename T> struct TNakamaFuture;
 
-// Trait to detect TNakamaFuture<U>
+/** Type trait: is T a TNakamaFuture<U>? */
 template<typename T> struct TIsTNakamaFuture : std::false_type {};
 template<typename T> struct TIsTNakamaFuture<TNakamaFuture<T>> : std::true_type {};
 
 /**
- * Chainable future wrapper around TFuture<TNakamaResult<T>>.
+ * Chainable future wrapper for async Nakama operations.
+ * Parameterized by concrete result type (e.g. FNakamaSessionResult).
  *
- * Supports two forms of .Next():
- *
- * Chaining -- callback takes const T& (success value), returns TNakamaFuture<U>.
- *   Errors auto-propagate (callback is skipped).
- *     Nakama::Foo(Client, Session)
- *       .Next([](const FNakamaBar& Bar) { return Nakama::Baz(Client, Bar.Id); })
- *       .Next([](TNakamaResult<FNakamaQux> Result) { ... });
- *
- * Terminal -- callback takes TNakamaResult<T>, returns void.
- *   Always invoked (success or error).
- *     Nakama::Foo(Client, Session).Next([](TNakamaResult<FNakamaBar> Result) { ... });
+ * Chaining: Next(callback(const ValueType&) -> TNakamaFuture<OtherResult>) — flattens and propagates errors
+ * Terminal: Next(callback(ResultT) -> void) — receives the full result
  */
-template<typename T>
-class TNakamaFuture
+template<typename ResultT>
+struct TNakamaFuture
 {
-public:
-	using ResultType = T;
+	using ValueType = typename ResultT::ValueType;
+	using WrappedResultType = ResultT;
+
+	TFuture<ResultT> Future;
 
 	TNakamaFuture() = default;
 
-	explicit TNakamaFuture(TFuture<TNakamaResult<T>>&& InFuture)
-		: Future(MakeShareable(new TFuture<TNakamaResult<T>>(MoveTemp(InFuture)))) {}
+	explicit TNakamaFuture(TFuture<ResultT>&& InFuture) noexcept
+		: Future(MoveTemp(InFuture)) {}
 
-	TNakamaFuture(TNakamaFuture&& Other) = default;
-	TNakamaFuture& operator=(TNakamaFuture&& Other) = default;
+	TNakamaFuture(TNakamaFuture&& Other) noexcept = default;
+	TNakamaFuture& operator=(TNakamaFuture&& Other) noexcept = default;
 	TNakamaFuture(const TNakamaFuture&) = delete;
 	TNakamaFuture& operator=(const TNakamaFuture&) = delete;
 
-	/**
-	 * Chaining Next: callback(const T&) -> TNakamaFuture<U>.
-	 * On error the callback is skipped and the error propagates to the next step.
-	 */
+	/** Chaining Next: callback(const ValueType&) -> TNakamaFuture<OtherResult> */
 	template<typename Func,
-		typename Ret = std::invoke_result_t<std::decay_t<Func>, const T&>,
+		typename Ret = std::invoke_result_t<std::decay_t<Func>, const ValueType&>,
 		std::enable_if_t<TIsTNakamaFuture<Ret>::value, int> = 0>
-	Ret Next(Func&& Callback)
+	Ret Next(Func&& Callback) && noexcept
 	{
-		using U = typename Ret::ResultType;
-		auto OuterPromise = MakeShared<TPromise<TNakamaResult<U>>>();
-		TNakamaFuture<U> ResultFuture(OuterPromise->GetFuture());
+		using InnerResultT = typename Ret::WrappedResultType;
+		auto OuterPromise = MakeShared<TPromise<InnerResultT>>();
+		Ret ResultFuture(OuterPromise->GetFuture());
 
-		check(Future.IsValid());
-		auto CapturedFuture = Future;
-		MoveTemp(*CapturedFuture).Next([Cb = Forward<Func>(Callback), OuterPromise](TNakamaResult<T> Result) mutable
+		MoveTemp(Future).Next([Cb = Forward<Func>(Callback), OuterPromise](ResultT Result) mutable
 		{
-			if (Result.IsError())
+			if (Result.bIsError)
 			{
-				OuterPromise->SetValue(TNakamaResult<U>::Failure(Result.GetError()));
+				OuterPromise->SetValue(InnerResultT{{ "{{" }}}, Result.Error, true});
 				return;
 			}
-			TNakamaFuture<U> Inner = Cb(Result.GetValue());
-			check(Inner.Future.IsValid());
-			auto InnerCaptured = Inner.Future;
-			MoveTemp(*InnerCaptured).Next([OuterPromise](TNakamaResult<U> InnerResult) mutable
+			Ret Inner = Cb(Result.Value);
+			MoveTemp(Inner.Future).Next([OuterPromise](InnerResultT InnerResult) mutable
 			{
 				OuterPromise->SetValue(MoveTemp(InnerResult));
 			});
@@ -142,31 +103,17 @@ public:
 		return ResultFuture;
 	}
 
-	/**
-	 * Terminal Next: callback(TNakamaResult<T>) -> void.
-	 * Always invoked with the result (success or propagated error).
-	 */
+	/** Terminal Next: callback(ResultT) -> void */
 	template<typename Func,
-		typename Ret = std::invoke_result_t<std::decay_t<Func>, TNakamaResult<T>>,
-		std::enable_if_t<std::is_void_v<Ret>, int> = 0>
-	void Next(Func&& Callback)
+		typename Ret = std::invoke_result_t<std::decay_t<Func>, ResultT>,
+		std::enable_if_t<!TIsTNakamaFuture<Ret>::value, int> = 0>
+	void Next(Func&& Callback) && noexcept
 	{
-		check(Future.IsValid());
-		auto CapturedFuture = Future;
-		MoveTemp(*CapturedFuture).Next([Cb = Forward<Func>(Callback)](TNakamaResult<T> Result) mutable
+		MoveTemp(Future).Next([Cb = Forward<Func>(Callback)](ResultT Result) mutable
 		{
 			Cb(MoveTemp(Result));
 		});
 	}
-
-	bool IsReady() const { return Future.IsValid() && Future->IsReady(); }
-	TNakamaResult<T> Get() { return Future->Get(); }
-
-private:
-	// TSharedPtr because TFuture is move-only but needs to be captured in lambdas
-	TSharedPtr<TFuture<TNakamaResult<T>>> Future;
-
-	template<typename U> friend class TNakamaFuture;
 };
 
 /** Retry configuration for transient error handling. */
@@ -197,13 +144,10 @@ struct NAKAMA_API FNakamaClient
 	/** Called after a session is automatically refreshed, so callers can persist the updated session. */
 	TFunction<void(const FNakamaSession&)> OnSessionRefreshed;
 
-	void SetTimeout(float InTimeout) { ApiConfig.Timeout = InTimeout; }
-	float GetTimeout() const { return ApiConfig.Timeout; }
 };
 
 /**
  * High-level Nakama API: free functions with retry logic + session auto-refresh.
- * Every RPC returns TNakamaFuture<T>. Use .Next() for non-blocking chaining.
  *
  * Transient errors (UNAVAILABLE, INTERNAL, DEADLINE_EXCEEDED) are
  * automatically retried with exponential backoff and full jitter.
@@ -211,10 +155,10 @@ struct NAKAMA_API FNakamaClient
 namespace Nakama
 {
 	/** Returns true if the error code is considered transient (eligible for retry). */
-	NAKAMA_API bool IsTransientError(const FNakamaError& Error);
+	NAKAMA_API bool IsTransientError(const FNakamaError& Error) noexcept;
 
 	/** Compute backoff delay in seconds for a given attempt using exponential backoff with full jitter. */
-	NAKAMA_API float CalculateBackoff(int32 Attempt, const FNakamaRetryConfiguration& Config);
+	NAKAMA_API float CalculateBackoff(int32 Attempt, const FNakamaRetryConfiguration& Config) noexcept;
 
 {{- /* Generate free function declarations for each RPC */ -}}
 {{- range $idx, $rpc := $.Rpcs }}
@@ -228,7 +172,7 @@ namespace Nakama
 {{- $resultType := asyncResultType $returnType }}
 
 	/** {{ $rpc.Comment }} */
-	NAKAMA_API TNakamaFuture<{{ $resultType }}> {{ $rpc.Name }}(
+	NAKAMA_API TNakamaFuture<{{ $resultType }}Result> {{ $rpc.Name }}(
 		FNakamaClient Client,
 		{{- if $needsSession }}
 		FNakamaSessionPtr Session,
@@ -245,11 +189,11 @@ namespace Nakama
 		const {{ getUnrealMapType $field.Type }}& {{ $field.Name | pascalCase }},
 		{{- end -}}
 		{{- end }}
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 {{- if $needsSession }}
 
 	/** {{ $rpc.Comment }} (Server-to-server with HTTP key) */
-	NAKAMA_API TNakamaFuture<{{ $resultType }}> {{ $rpc.Name }}(
+	NAKAMA_API TNakamaFuture<{{ $resultType }}Result> {{ $rpc.Name }}(
 		FNakamaClient Client,
 		const FString& HttpKey,
 		{{- if $hasParams -}}
@@ -266,7 +210,7 @@ namespace Nakama
 		const {{ getUnrealMapType $field.Type }}& {{ $field.Name | pascalCase }},
 		{{- end -}}
 		{{- end }}
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 {{- end }}
 {{- end }}
 }

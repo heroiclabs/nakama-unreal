@@ -221,10 +221,6 @@ struct NAKAMAAPI_API FNakamaError
 
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	int32 Code = 0;
-
-	FNakamaError() = default;
-	FNakamaError(const FString& InMessage, int32 InCode)
-		: Message(InMessage), Code(InCode) {}
 };
 
 /** gRPC status codes returned by Nakama in FNakamaError::Code. */
@@ -319,8 +315,8 @@ struct NAKAMAAPI_API FNakamaUser
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString AppleId;
 
-	static FNakamaUser FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaUser FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  Send a device to the server. Used with authenticate/link/unlink and user. */
@@ -335,8 +331,8 @@ struct NAKAMAAPI_API FNakamaAccountDevice
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	TMap<FString, FString> Vars;
 
-	static FNakamaAccountDevice FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaAccountDevice FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  A user with additional account details. Always the current user. */
@@ -366,8 +362,8 @@ struct NAKAMAAPI_API FNakamaAccount
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString DisableTime;
 
-	static FNakamaAccount FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaAccount FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  Obtain a new authentication token using a refresh token. */
@@ -382,8 +378,8 @@ struct NAKAMAAPI_API FNakamaAccountRefresh
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	TMap<FString, FString> Vars;
 
-	static FNakamaAccountRefresh FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaAccountRefresh FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  Send a Apple Sign In token to the server. Used with authenticate/link/unlink. */
@@ -398,8 +394,8 @@ struct NAKAMAAPI_API FNakamaAccountApple
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	TMap<FString, FString> Vars;
 
-	static FNakamaAccountApple FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaAccountApple FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  Send a custom ID to the server. Used with authenticate/link/unlink. */
@@ -414,8 +410,8 @@ struct NAKAMAAPI_API FNakamaAccountCustom
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	TMap<FString, FString> Vars;
 
-	static FNakamaAccountCustom FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaAccountCustom FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  Send an email with password to the server. Used with authenticate/link/unlink. */
@@ -433,8 +429,8 @@ struct NAKAMAAPI_API FNakamaAccountEmail
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	TMap<FString, FString> Vars;
 
-	static FNakamaAccountEmail FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaAccountEmail FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  Send a Facebook token to the server. Used with authenticate/link/unlink. */
@@ -449,8 +445,8 @@ struct NAKAMAAPI_API FNakamaAccountFacebook
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	TMap<FString, FString> Vars;
 
-	static FNakamaAccountFacebook FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaAccountFacebook FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  Send a Facebook Instant Game token to the server. Used with authenticate/link/unlink. */
@@ -465,8 +461,8 @@ struct NAKAMAAPI_API FNakamaAccountFacebookInstantGame
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	TMap<FString, FString> Vars;
 
-	static FNakamaAccountFacebookInstantGame FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaAccountFacebookInstantGame FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  Send Apple's Game Center account credentials to the server. Used with authenticate/link/unlink. */
@@ -496,8 +492,8 @@ struct NAKAMAAPI_API FNakamaAccountGameCenter
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	TMap<FString, FString> Vars;
 
-	static FNakamaAccountGameCenter FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaAccountGameCenter FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  Send a Google token to the server. Used with authenticate/link/unlink. */
@@ -512,8 +508,8 @@ struct NAKAMAAPI_API FNakamaAccountGoogle
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	TMap<FString, FString> Vars;
 
-	static FNakamaAccountGoogle FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaAccountGoogle FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  Send a Steam token to the server. Used with authenticate/link/unlink. */
@@ -528,8 +524,8 @@ struct NAKAMAAPI_API FNakamaAccountSteam
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	TMap<FString, FString> Vars;
 
-	static FNakamaAccountSteam FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaAccountSteam FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  Add one or more friends to the current user. */
@@ -547,8 +543,8 @@ struct NAKAMAAPI_API FNakamaAddFriendsRequest
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString Metadata;
 
-	static FNakamaAddFriendsRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaAddFriendsRequest FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  Add users to a group. */
@@ -563,8 +559,8 @@ struct NAKAMAAPI_API FNakamaAddGroupUsersRequest
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	TArray<FString> UserIds;
 
-	static FNakamaAddGroupUsersRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaAddGroupUsersRequest FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  Authenticate against the server with a refresh token. */
@@ -579,8 +575,8 @@ struct NAKAMAAPI_API FNakamaSessionRefreshRequest
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	TMap<FString, FString> Vars;
 
-	static FNakamaSessionRefreshRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaSessionRefreshRequest FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  Log out a session, invalidate a refresh token, or log out all sessions/refresh tokens for a user. */
@@ -595,8 +591,8 @@ struct NAKAMAAPI_API FNakamaSessionLogoutRequest
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString RefreshToken;
 
-	static FNakamaSessionLogoutRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaSessionLogoutRequest FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  Authenticate against the server with Apple Sign In. */
@@ -614,8 +610,8 @@ struct NAKAMAAPI_API FNakamaAuthenticateAppleRequest
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString Username;
 
-	static FNakamaAuthenticateAppleRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaAuthenticateAppleRequest FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  Authenticate against the server with a custom ID. */
@@ -633,8 +629,8 @@ struct NAKAMAAPI_API FNakamaAuthenticateCustomRequest
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString Username;
 
-	static FNakamaAuthenticateCustomRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaAuthenticateCustomRequest FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  Authenticate against the server with a device ID. */
@@ -652,8 +648,8 @@ struct NAKAMAAPI_API FNakamaAuthenticateDeviceRequest
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString Username;
 
-	static FNakamaAuthenticateDeviceRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaAuthenticateDeviceRequest FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  Authenticate against the server with email+password. */
@@ -671,8 +667,8 @@ struct NAKAMAAPI_API FNakamaAuthenticateEmailRequest
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString Username;
 
-	static FNakamaAuthenticateEmailRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaAuthenticateEmailRequest FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  Authenticate against the server with Facebook. */
@@ -693,8 +689,8 @@ struct NAKAMAAPI_API FNakamaAuthenticateFacebookRequest
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	bool Sync = false;
 
-	static FNakamaAuthenticateFacebookRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaAuthenticateFacebookRequest FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  Authenticate against the server with Facebook Instant Game token. */
@@ -712,8 +708,8 @@ struct NAKAMAAPI_API FNakamaAuthenticateFacebookInstantGameRequest
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString Username;
 
-	static FNakamaAuthenticateFacebookInstantGameRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaAuthenticateFacebookInstantGameRequest FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  Authenticate against the server with Apple's Game Center. */
@@ -731,8 +727,8 @@ struct NAKAMAAPI_API FNakamaAuthenticateGameCenterRequest
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString Username;
 
-	static FNakamaAuthenticateGameCenterRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaAuthenticateGameCenterRequest FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  Authenticate against the server with Google. */
@@ -750,8 +746,8 @@ struct NAKAMAAPI_API FNakamaAuthenticateGoogleRequest
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString Username;
 
-	static FNakamaAuthenticateGoogleRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaAuthenticateGoogleRequest FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  Authenticate against the server with Steam. */
@@ -772,8 +768,8 @@ struct NAKAMAAPI_API FNakamaAuthenticateSteamRequest
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	bool Sync = false;
 
-	static FNakamaAuthenticateSteamRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaAuthenticateSteamRequest FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  Ban users from a group. */
@@ -788,8 +784,8 @@ struct NAKAMAAPI_API FNakamaBanGroupUsersRequest
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	TArray<FString> UserIds;
 
-	static FNakamaBanGroupUsersRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaBanGroupUsersRequest FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  Block one or more friends for the current user. */
@@ -804,8 +800,8 @@ struct NAKAMAAPI_API FNakamaBlockFriendsRequest
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	TArray<FString> Usernames;
 
-	static FNakamaBlockFriendsRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaBlockFriendsRequest FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  A message sent on a channel. */
@@ -853,8 +849,8 @@ struct NAKAMAAPI_API FNakamaChannelMessage
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString UserIdTwo;
 
-	static FNakamaChannelMessage FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaChannelMessage FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  A list of channel messages, usually a result of a list operation. */
@@ -875,8 +871,8 @@ struct NAKAMAAPI_API FNakamaChannelMessageList
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString CacheableCursor;
 
-	static FNakamaChannelMessageList FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaChannelMessageList FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  Create a group with the current user as owner. */
@@ -903,8 +899,8 @@ struct NAKAMAAPI_API FNakamaCreateGroupRequest
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	int32 MaxCount = 0;
 
-	static FNakamaCreateGroupRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaCreateGroupRequest FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  Delete one or more friends for the current user. */
@@ -919,8 +915,8 @@ struct NAKAMAAPI_API FNakamaDeleteFriendsRequest
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	TArray<FString> Usernames;
 
-	static FNakamaDeleteFriendsRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaDeleteFriendsRequest FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  Delete a group the user has access to. */
@@ -932,8 +928,8 @@ struct NAKAMAAPI_API FNakamaDeleteGroupRequest
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString GroupId;
 
-	static FNakamaDeleteGroupRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaDeleteGroupRequest FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  Delete a leaderboard record. */
@@ -945,8 +941,8 @@ struct NAKAMAAPI_API FNakamaDeleteLeaderboardRecordRequest
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString LeaderboardId;
 
-	static FNakamaDeleteLeaderboardRecordRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaDeleteLeaderboardRecordRequest FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  Delete one or more notifications for the current user. */
@@ -958,8 +954,8 @@ struct NAKAMAAPI_API FNakamaDeleteNotificationsRequest
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	TArray<FString> Ids;
 
-	static FNakamaDeleteNotificationsRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaDeleteNotificationsRequest FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  Delete a leaderboard record. */
@@ -971,8 +967,8 @@ struct NAKAMAAPI_API FNakamaDeleteTournamentRecordRequest
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString TournamentId;
 
-	static FNakamaDeleteTournamentRecordRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaDeleteTournamentRecordRequest FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  Storage objects to delete. */
@@ -990,8 +986,8 @@ struct NAKAMAAPI_API FNakamaDeleteStorageObjectId
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString Version;
 
-	static FNakamaDeleteStorageObjectId FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaDeleteStorageObjectId FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  Batch delete storage objects. */
@@ -1003,8 +999,8 @@ struct NAKAMAAPI_API FNakamaDeleteStorageObjectsRequest
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	TArray<FNakamaDeleteStorageObjectId> ObjectIds;
 
-	static FNakamaDeleteStorageObjectsRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaDeleteStorageObjectsRequest FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  Represents an event to be passed through the server to registered event handlers. */
@@ -1025,8 +1021,8 @@ struct NAKAMAAPI_API FNakamaEvent
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	TMap<FString, FString> Properties;
 
-	static FNakamaEvent FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaEvent FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  A friend of a user. */
@@ -1047,8 +1043,8 @@ struct NAKAMAAPI_API FNakamaFriend
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString Metadata;
 
-	static FNakamaFriend FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaFriend FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  A collection of zero or more friends of the user. */
@@ -1063,8 +1059,8 @@ struct NAKAMAAPI_API FNakamaFriendList
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString Cursor;
 
-	static FNakamaFriendList FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaFriendList FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  A friend of a friend. */
@@ -1079,8 +1075,8 @@ struct NAKAMAAPI_API FNakamaFriendsOfFriendsList_FriendOfFriend
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FNakamaUser User;
 
-	static FNakamaFriendsOfFriendsList_FriendOfFriend FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaFriendsOfFriendsList_FriendOfFriend FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  A List of friends of friends */
@@ -1095,8 +1091,8 @@ struct NAKAMAAPI_API FNakamaFriendsOfFriendsList
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString Cursor;
 
-	static FNakamaFriendsOfFriendsList FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaFriendsOfFriendsList FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  Fetch a batch of zero or more users from the server. */
@@ -1114,8 +1110,8 @@ struct NAKAMAAPI_API FNakamaGetUsersRequest
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	TArray<FString> FacebookIds;
 
-	static FNakamaGetUsersRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaGetUsersRequest FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  Fetch a subscription by product id. */
@@ -1127,8 +1123,8 @@ struct NAKAMAAPI_API FNakamaGetSubscriptionRequest
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString ProductId;
 
-	static FNakamaGetSubscriptionRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaGetSubscriptionRequest FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  A group in the server. */
@@ -1173,8 +1169,8 @@ struct NAKAMAAPI_API FNakamaGroup
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString UpdateTime;
 
-	static FNakamaGroup FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaGroup FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  One or more groups returned from a listing operation. */
@@ -1189,8 +1185,8 @@ struct NAKAMAAPI_API FNakamaGroupList
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString Cursor;
 
-	static FNakamaGroupList FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaGroupList FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  */
@@ -1205,8 +1201,8 @@ struct NAKAMAAPI_API FNakamaGroupUserList_GroupUser
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	int32 State = 0;
 
-	static FNakamaGroupUserList_GroupUser FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaGroupUserList_GroupUser FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  A list of users belonging to a group, along with their role. */
@@ -1221,8 +1217,8 @@ struct NAKAMAAPI_API FNakamaGroupUserList
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString Cursor;
 
-	static FNakamaGroupUserList FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaGroupUserList FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  Import Facebook friends into the current user's account. */
@@ -1237,8 +1233,8 @@ struct NAKAMAAPI_API FNakamaImportFacebookFriendsRequest
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	bool Reset = false;
 
-	static FNakamaImportFacebookFriendsRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaImportFacebookFriendsRequest FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  Import Facebook friends into the current user's account. */
@@ -1253,8 +1249,8 @@ struct NAKAMAAPI_API FNakamaImportSteamFriendsRequest
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	bool Reset = false;
 
-	static FNakamaImportSteamFriendsRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaImportSteamFriendsRequest FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  Immediately join an open group, or request to join a closed one. */
@@ -1266,8 +1262,8 @@ struct NAKAMAAPI_API FNakamaJoinGroupRequest
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString GroupId;
 
-	static FNakamaJoinGroupRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaJoinGroupRequest FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  The request to join a tournament. */
@@ -1279,8 +1275,8 @@ struct NAKAMAAPI_API FNakamaJoinTournamentRequest
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString TournamentId;
 
-	static FNakamaJoinTournamentRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaJoinTournamentRequest FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  Kick a set of users from a group. */
@@ -1295,8 +1291,8 @@ struct NAKAMAAPI_API FNakamaKickGroupUsersRequest
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	TArray<FString> UserIds;
 
-	static FNakamaKickGroupUsersRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaKickGroupUsersRequest FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  A leaderboard on the server. */
@@ -1329,8 +1325,8 @@ struct NAKAMAAPI_API FNakamaLeaderboard
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	bool Authoritative = false;
 
-	static FNakamaLeaderboard FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaLeaderboard FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  A list of leaderboards */
@@ -1345,8 +1341,8 @@ struct NAKAMAAPI_API FNakamaLeaderboardList
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString Cursor;
 
-	static FNakamaLeaderboardList FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaLeaderboardList FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  Represents a complete leaderboard record with all scores and associated metadata. */
@@ -1391,8 +1387,8 @@ struct NAKAMAAPI_API FNakamaLeaderboardRecord
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	int32 MaxNumScore = 0;
 
-	static FNakamaLeaderboardRecord FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaLeaderboardRecord FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  A set of leaderboard records, may be part of a leaderboard records page or a batch of individual records. */
@@ -1416,8 +1412,8 @@ struct NAKAMAAPI_API FNakamaLeaderboardRecordList
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	int64 RankCount = 0;
 
-	static FNakamaLeaderboardRecordList FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaLeaderboardRecordList FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  Leave a group. */
@@ -1429,8 +1425,8 @@ struct NAKAMAAPI_API FNakamaLeaveGroupRequest
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString GroupId;
 
-	static FNakamaLeaveGroupRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaLeaveGroupRequest FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  Link Facebook to the current user's account. */
@@ -1445,8 +1441,8 @@ struct NAKAMAAPI_API FNakamaLinkFacebookRequest
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	bool Sync = false;
 
-	static FNakamaLinkFacebookRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaLinkFacebookRequest FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  Link Steam to the current user's account. */
@@ -1461,8 +1457,8 @@ struct NAKAMAAPI_API FNakamaLinkSteamRequest
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	bool Sync = false;
 
-	static FNakamaLinkSteamRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaLinkSteamRequest FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  List a channel's message history. */
@@ -1483,8 +1479,8 @@ struct NAKAMAAPI_API FNakamaListChannelMessagesRequest
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString Cursor;
 
-	static FNakamaListChannelMessagesRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaListChannelMessagesRequest FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  List friends for a user. */
@@ -1502,8 +1498,8 @@ struct NAKAMAAPI_API FNakamaListFriendsRequest
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString Cursor;
 
-	static FNakamaListFriendsRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaListFriendsRequest FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  */
@@ -1518,8 +1514,8 @@ struct NAKAMAAPI_API FNakamaListFriendsOfFriendsRequest
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString Cursor;
 
-	static FNakamaListFriendsOfFriendsRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaListFriendsOfFriendsRequest FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  List groups based on given filters. */
@@ -1546,8 +1542,8 @@ struct NAKAMAAPI_API FNakamaListGroupsRequest
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	bool Open = false;
 
-	static FNakamaListGroupsRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaListGroupsRequest FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  List all users that are part of a group. */
@@ -1568,8 +1564,8 @@ struct NAKAMAAPI_API FNakamaListGroupUsersRequest
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString Cursor;
 
-	static FNakamaListGroupUsersRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaListGroupUsersRequest FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  List leaerboard records from a given leaderboard around the owner. */
@@ -1593,8 +1589,8 @@ struct NAKAMAAPI_API FNakamaListLeaderboardRecordsAroundOwnerRequest
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString Cursor;
 
-	static FNakamaListLeaderboardRecordsAroundOwnerRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaListLeaderboardRecordsAroundOwnerRequest FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  List leaderboard records from a given leaderboard. */
@@ -1618,8 +1614,8 @@ struct NAKAMAAPI_API FNakamaListLeaderboardRecordsRequest
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	int64 Expiry = 0;
 
-	static FNakamaListLeaderboardRecordsRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaListLeaderboardRecordsRequest FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  List realtime matches. */
@@ -1646,8 +1642,8 @@ struct NAKAMAAPI_API FNakamaListMatchesRequest
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString Query;
 
-	static FNakamaListMatchesRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaListMatchesRequest FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  Get a list of unexpired notifications. */
@@ -1662,8 +1658,8 @@ struct NAKAMAAPI_API FNakamaListNotificationsRequest
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString CacheableCursor;
 
-	static FNakamaListNotificationsRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaListNotificationsRequest FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  List publicly readable storage objects in a given collection. */
@@ -1684,8 +1680,8 @@ struct NAKAMAAPI_API FNakamaListStorageObjectsRequest
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString Cursor;
 
-	static FNakamaListStorageObjectsRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaListStorageObjectsRequest FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  List user subscriptions. */
@@ -1700,8 +1696,8 @@ struct NAKAMAAPI_API FNakamaListSubscriptionsRequest
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString Cursor;
 
-	static FNakamaListSubscriptionsRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaListSubscriptionsRequest FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  List tournament records from a given tournament around the owner. */
@@ -1725,8 +1721,8 @@ struct NAKAMAAPI_API FNakamaListTournamentRecordsAroundOwnerRequest
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString Cursor;
 
-	static FNakamaListTournamentRecordsAroundOwnerRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaListTournamentRecordsAroundOwnerRequest FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  List tournament records from a given tournament. */
@@ -1750,8 +1746,8 @@ struct NAKAMAAPI_API FNakamaListTournamentRecordsRequest
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	int64 Expiry = 0;
 
-	static FNakamaListTournamentRecordsRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaListTournamentRecordsRequest FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  List active/upcoming tournaments based on given filters. */
@@ -1778,8 +1774,8 @@ struct NAKAMAAPI_API FNakamaListTournamentsRequest
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString Cursor;
 
-	static FNakamaListTournamentsRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaListTournamentsRequest FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  List the groups a user is part of, and their relationship to each. */
@@ -1800,8 +1796,8 @@ struct NAKAMAAPI_API FNakamaListUserGroupsRequest
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString Cursor;
 
-	static FNakamaListUserGroupsRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaListUserGroupsRequest FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  Represents a realtime match. */
@@ -1828,8 +1824,8 @@ struct NAKAMAAPI_API FNakamaMatch
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString HandlerName;
 
-	static FNakamaMatch FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaMatch FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  A list of realtime matches. */
@@ -1841,8 +1837,8 @@ struct NAKAMAAPI_API FNakamaMatchList
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	TArray<FNakamaMatch> Matches;
 
-	static FNakamaMatchList FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaMatchList FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  Matchmaker ticket completion stats */
@@ -1857,8 +1853,8 @@ struct NAKAMAAPI_API FNakamaMatchmakerCompletionStats
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString CompleteTime;
 
-	static FNakamaMatchmakerCompletionStats FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaMatchmakerCompletionStats FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  Matchmaker stats */
@@ -1876,8 +1872,8 @@ struct NAKAMAAPI_API FNakamaMatchmakerStats
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	TArray<FNakamaMatchmakerCompletionStats> Completions;
 
-	static FNakamaMatchmakerStats FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaMatchmakerStats FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  A notification in the server. */
@@ -1907,8 +1903,8 @@ struct NAKAMAAPI_API FNakamaNotification
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	bool Persistent = false;
 
-	static FNakamaNotification FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaNotification FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  A collection of zero or more notifications. */
@@ -1923,8 +1919,8 @@ struct NAKAMAAPI_API FNakamaNotificationList
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString CacheableCursor;
 
-	static FNakamaNotificationList FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaNotificationList FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  Promote a set of users in a group to the next role up. */
@@ -1939,8 +1935,8 @@ struct NAKAMAAPI_API FNakamaPromoteGroupUsersRequest
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	TArray<FString> UserIds;
 
-	static FNakamaPromoteGroupUsersRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaPromoteGroupUsersRequest FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  Demote a set of users in a group to the next role down. */
@@ -1955,8 +1951,8 @@ struct NAKAMAAPI_API FNakamaDemoteGroupUsersRequest
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	TArray<FString> UserIds;
 
-	static FNakamaDemoteGroupUsersRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaDemoteGroupUsersRequest FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  Storage objects to get. */
@@ -1974,8 +1970,8 @@ struct NAKAMAAPI_API FNakamaReadStorageObjectId
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString UserId;
 
-	static FNakamaReadStorageObjectId FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaReadStorageObjectId FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  Batch get storage objects. */
@@ -1987,8 +1983,8 @@ struct NAKAMAAPI_API FNakamaReadStorageObjectsRequest
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	TArray<FNakamaReadStorageObjectId> ObjectIds;
 
-	static FNakamaReadStorageObjectsRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaReadStorageObjectsRequest FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  Execute an Lua function on the server. */
@@ -2006,8 +2002,8 @@ struct NAKAMAAPI_API FNakamaRpc
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString HttpKey;
 
-	static FNakamaRpc FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaRpc FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  A user's session used to authenticate messages. */
@@ -2050,20 +2046,20 @@ struct NAKAMAAPI_API FNakamaSession
 	TMap<FString, FString> Vars;
 
 	/** True if the auth token expires within BufferSeconds from now. */
-	bool IsExpired(int64 BufferSeconds = 0) const;
+	bool IsExpired(int64 BufferSeconds = 0) const noexcept;
 
 	/** True if the refresh token has expired (no buffer). */
-	bool IsRefreshExpired(int64 BufferSeconds = 0) const;
+	bool IsRefreshExpired(int64 BufferSeconds = 0) const noexcept;
 
 	/** Replace tokens and re-parse JWT claims. */
-	void Update(const FString& NewToken, const FString& NewRefreshToken);
+	void Update(const FString& NewToken, const FString& NewRefreshToken) noexcept;
 
-	static FNakamaSession FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaSession FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 
 private:
-	static bool ParseJwtPayload(const FString& Jwt, TSharedPtr<FJsonObject>& Out);
-	void ParseTokens();
+	static bool ParseJwtPayload(const FString& Jwt, TSharedPtr<FJsonObject>& Out) noexcept;
+	void ParseTokens() noexcept;
 };
 
 /**  An object within the storage engine. */
@@ -2099,8 +2095,8 @@ struct NAKAMAAPI_API FNakamaStorageObject
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString UpdateTime;
 
-	static FNakamaStorageObject FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaStorageObject FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  A storage acknowledgement. */
@@ -2127,8 +2123,8 @@ struct NAKAMAAPI_API FNakamaStorageObjectAck
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString UpdateTime;
 
-	static FNakamaStorageObjectAck FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaStorageObjectAck FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  Batch of acknowledgements for the storage object write. */
@@ -2140,8 +2136,8 @@ struct NAKAMAAPI_API FNakamaStorageObjectAcks
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	TArray<FNakamaStorageObjectAck> Acks;
 
-	static FNakamaStorageObjectAcks FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaStorageObjectAcks FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  Batch of storage objects. */
@@ -2153,8 +2149,8 @@ struct NAKAMAAPI_API FNakamaStorageObjects
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	TArray<FNakamaStorageObject> Objects;
 
-	static FNakamaStorageObjects FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaStorageObjects FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  List of storage objects. */
@@ -2169,8 +2165,8 @@ struct NAKAMAAPI_API FNakamaStorageObjectList
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString Cursor;
 
-	static FNakamaStorageObjectList FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaStorageObjectList FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  A tournament on the server. */
@@ -2242,8 +2238,8 @@ struct NAKAMAAPI_API FNakamaTournament
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	bool JoinRequired = false;
 
-	static FNakamaTournament FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaTournament FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  A list of tournaments. */
@@ -2258,8 +2254,8 @@ struct NAKAMAAPI_API FNakamaTournamentList
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString Cursor;
 
-	static FNakamaTournamentList FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaTournamentList FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  A set of tournament records which may be part of a tournament records page or a batch of individual records. */
@@ -2283,8 +2279,8 @@ struct NAKAMAAPI_API FNakamaTournamentRecordList
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	int64 RankCount = 0;
 
-	static FNakamaTournamentRecordList FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaTournamentRecordList FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  Update a user's account details. */
@@ -2311,8 +2307,8 @@ struct NAKAMAAPI_API FNakamaUpdateAccountRequest
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString Timezone;
 
-	static FNakamaUpdateAccountRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaUpdateAccountRequest FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  Update fields in a given group. */
@@ -2339,8 +2335,8 @@ struct NAKAMAAPI_API FNakamaUpdateGroupRequest
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	bool Open = false;
 
-	static FNakamaUpdateGroupRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaUpdateGroupRequest FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  A single group-role pair. */
@@ -2355,8 +2351,8 @@ struct NAKAMAAPI_API FNakamaUserGroupList_UserGroup
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	int32 State = 0;
 
-	static FNakamaUserGroupList_UserGroup FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaUserGroupList_UserGroup FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  A list of groups belonging to a user, along with the user's role in each group. */
@@ -2371,8 +2367,8 @@ struct NAKAMAAPI_API FNakamaUserGroupList
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString Cursor;
 
-	static FNakamaUserGroupList FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaUserGroupList FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  A collection of zero or more users. */
@@ -2384,8 +2380,8 @@ struct NAKAMAAPI_API FNakamaUsers
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	TArray<FNakamaUser> Users;
 
-	static FNakamaUsers FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaUsers FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  Apple IAP Purchases validation request */
@@ -2400,8 +2396,8 @@ struct NAKAMAAPI_API FNakamaValidatePurchaseAppleRequest
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	bool Persist = false;
 
-	static FNakamaValidatePurchaseAppleRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaValidatePurchaseAppleRequest FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  Apple Subscription validation request */
@@ -2416,8 +2412,8 @@ struct NAKAMAAPI_API FNakamaValidateSubscriptionAppleRequest
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	bool Persist = false;
 
-	static FNakamaValidateSubscriptionAppleRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaValidateSubscriptionAppleRequest FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  Google IAP Purchase validation request */
@@ -2432,8 +2428,8 @@ struct NAKAMAAPI_API FNakamaValidatePurchaseGoogleRequest
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	bool Persist = false;
 
-	static FNakamaValidatePurchaseGoogleRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaValidatePurchaseGoogleRequest FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  Google Subscription validation request */
@@ -2448,8 +2444,8 @@ struct NAKAMAAPI_API FNakamaValidateSubscriptionGoogleRequest
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	bool Persist = false;
 
-	static FNakamaValidateSubscriptionGoogleRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaValidateSubscriptionGoogleRequest FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  Huawei IAP Purchase validation request */
@@ -2467,8 +2463,8 @@ struct NAKAMAAPI_API FNakamaValidatePurchaseHuaweiRequest
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	bool Persist = false;
 
-	static FNakamaValidatePurchaseHuaweiRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaValidatePurchaseHuaweiRequest FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  Facebook Instant IAP Purchase validation request */
@@ -2483,8 +2479,8 @@ struct NAKAMAAPI_API FNakamaValidatePurchaseFacebookInstantRequest
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	bool Persist = false;
 
-	static FNakamaValidatePurchaseFacebookInstantRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaValidatePurchaseFacebookInstantRequest FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  Validated Purchase stored by Nakama. */
@@ -2526,8 +2522,8 @@ struct NAKAMAAPI_API FNakamaValidatedPurchase
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	bool SeenBefore = false;
 
-	static FNakamaValidatedPurchase FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaValidatedPurchase FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  Validate IAP response. */
@@ -2539,8 +2535,8 @@ struct NAKAMAAPI_API FNakamaValidatePurchaseResponse
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	TArray<FNakamaValidatedPurchase> ValidatedPurchases;
 
-	static FNakamaValidatePurchaseResponse FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaValidatePurchaseResponse FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  */
@@ -2588,8 +2584,8 @@ struct NAKAMAAPI_API FNakamaValidatedSubscription
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	bool Active = false;
 
-	static FNakamaValidatedSubscription FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaValidatedSubscription FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  Validate Subscription response. */
@@ -2601,8 +2597,8 @@ struct NAKAMAAPI_API FNakamaValidateSubscriptionResponse
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FNakamaValidatedSubscription ValidatedSubscription;
 
-	static FNakamaValidateSubscriptionResponse FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaValidateSubscriptionResponse FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  A list of validated purchases stored by Nakama. */
@@ -2620,8 +2616,8 @@ struct NAKAMAAPI_API FNakamaPurchaseList
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString PrevCursor;
 
-	static FNakamaPurchaseList FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaPurchaseList FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  A list of validated subscriptions stored by Nakama. */
@@ -2639,8 +2635,8 @@ struct NAKAMAAPI_API FNakamaSubscriptionList
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString PrevCursor;
 
-	static FNakamaSubscriptionList FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaSubscriptionList FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  Record values to write. */
@@ -2661,8 +2657,8 @@ struct NAKAMAAPI_API FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	int32 Operator = 0;
 
-	static FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  A request to submit a score to a leaderboard. */
@@ -2677,8 +2673,8 @@ struct NAKAMAAPI_API FNakamaWriteLeaderboardRecordRequest
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite Record;
 
-	static FNakamaWriteLeaderboardRecordRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaWriteLeaderboardRecordRequest FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  The object to store. */
@@ -2705,8 +2701,8 @@ struct NAKAMAAPI_API FNakamaWriteStorageObject
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	int32 PermissionWrite = 0;
 
-	static FNakamaWriteStorageObject FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaWriteStorageObject FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  Write objects to the storage engine. */
@@ -2718,8 +2714,8 @@ struct NAKAMAAPI_API FNakamaWriteStorageObjectsRequest
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	TArray<FNakamaWriteStorageObject> Objects;
 
-	static FNakamaWriteStorageObjectsRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaWriteStorageObjectsRequest FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  Record values to write. */
@@ -2740,8 +2736,8 @@ struct NAKAMAAPI_API FNakamaWriteTournamentRecordRequest_TournamentRecordWrite
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	int32 Operator = 0;
 
-	static FNakamaWriteTournamentRecordRequest_TournamentRecordWrite FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaWriteTournamentRecordRequest_TournamentRecordWrite FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  A request to submit a score to a tournament. */
@@ -2756,8 +2752,8 @@ struct NAKAMAAPI_API FNakamaWriteTournamentRecordRequest
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FNakamaWriteTournamentRecordRequest_TournamentRecordWrite Record;
 
-	static FNakamaWriteTournamentRecordRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaWriteTournamentRecordRequest FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  A request to list parties. */
@@ -2778,8 +2774,8 @@ struct NAKAMAAPI_API FNakamaListPartiesRequest
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString Cursor;
 
-	static FNakamaListPartiesRequest FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaListPartiesRequest FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  Incoming information about a party. */
@@ -2803,8 +2799,8 @@ struct NAKAMAAPI_API FNakamaParty
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString Label;
 
-	static FNakamaParty FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaParty FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**  A list of realtime matches. */
@@ -2819,8 +2815,8 @@ struct NAKAMAAPI_API FNakamaPartyList
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString Cursor;
 
-	static FNakamaPartyList FromJson(const TSharedPtr<FJsonObject>& Json);
-	TSharedPtr<FJsonObject> ToJson() const;
+	static FNakamaPartyList FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 using FNakamaSessionPtr = TSharedPtr<FNakamaSession>;
@@ -2854,7 +2850,7 @@ struct NAKAMAAPI_API FNakamaApiConfig
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Nakama")
 	float Timeout = 10.0f;
 
-	FString GetBaseUrl() const;
+	FString GetBaseUrl() const noexcept;
 };
 
 /** Low-level Nakama API: data types + free functions for HTTP RPCs (callback-based). */
@@ -2870,7 +2866,7 @@ namespace NakamaApi
 		FString Metadata,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Add friends by ID or username to a user's account. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void AddFriends(
@@ -2881,7 +2877,7 @@ namespace NakamaApi
 		FString Metadata,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Add users to a group. */
 	NAKAMAAPI_API void AddGroupUsers(
@@ -2891,7 +2887,7 @@ namespace NakamaApi
 		const TArray<FString>& UserIds,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Add users to a group. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void AddGroupUsers(
@@ -2901,7 +2897,7 @@ namespace NakamaApi
 		const TArray<FString>& UserIds,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Refresh a user's session using a refresh token retrieved from a previous authentication request. */
 	NAKAMAAPI_API void SessionRefresh(
@@ -2910,7 +2906,7 @@ namespace NakamaApi
 		const TMap<FString, FString>& Vars,
 		TFunction<void(const FNakamaSession&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Log out a session, invalidate a refresh token, or log out all sessions/refresh tokens for a user. */
 	NAKAMAAPI_API void SessionLogout(
@@ -2920,7 +2916,7 @@ namespace NakamaApi
 		FString RefreshToken,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Log out a session, invalidate a refresh token, or log out all sessions/refresh tokens for a user. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void SessionLogout(
@@ -2930,7 +2926,7 @@ namespace NakamaApi
 		FString RefreshToken,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Authenticate a user with an Apple ID against the server. */
 	NAKAMAAPI_API void AuthenticateApple(
@@ -2940,7 +2936,7 @@ namespace NakamaApi
 		FString Username,
 		TFunction<void(const FNakamaSession&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Authenticate a user with a custom id against the server. */
 	NAKAMAAPI_API void AuthenticateCustom(
@@ -2950,7 +2946,7 @@ namespace NakamaApi
 		FString Username,
 		TFunction<void(const FNakamaSession&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Authenticate a user with a device id against the server. */
 	NAKAMAAPI_API void AuthenticateDevice(
@@ -2960,7 +2956,7 @@ namespace NakamaApi
 		FString Username,
 		TFunction<void(const FNakamaSession&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Authenticate a user with an email+password against the server. */
 	NAKAMAAPI_API void AuthenticateEmail(
@@ -2970,7 +2966,7 @@ namespace NakamaApi
 		FString Username,
 		TFunction<void(const FNakamaSession&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Authenticate a user with a Facebook OAuth token against the server. */
 	NAKAMAAPI_API void AuthenticateFacebook(
@@ -2981,7 +2977,7 @@ namespace NakamaApi
 		bool Sync,
 		TFunction<void(const FNakamaSession&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Authenticate a user with a Facebook Instant Game token against the server. */
 	NAKAMAAPI_API void AuthenticateFacebookInstantGame(
@@ -2991,7 +2987,7 @@ namespace NakamaApi
 		FString Username,
 		TFunction<void(const FNakamaSession&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Authenticate a user with Apple's GameCenter against the server. */
 	NAKAMAAPI_API void AuthenticateGameCenter(
@@ -3001,7 +2997,7 @@ namespace NakamaApi
 		FString Username,
 		TFunction<void(const FNakamaSession&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Authenticate a user with Google against the server. */
 	NAKAMAAPI_API void AuthenticateGoogle(
@@ -3011,7 +3007,7 @@ namespace NakamaApi
 		FString Username,
 		TFunction<void(const FNakamaSession&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Authenticate a user with Steam against the server. */
 	NAKAMAAPI_API void AuthenticateSteam(
@@ -3022,7 +3018,7 @@ namespace NakamaApi
 		bool Sync,
 		TFunction<void(const FNakamaSession&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Ban a set of users from a group. */
 	NAKAMAAPI_API void BanGroupUsers(
@@ -3032,7 +3028,7 @@ namespace NakamaApi
 		const TArray<FString>& UserIds,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Ban a set of users from a group. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void BanGroupUsers(
@@ -3042,7 +3038,7 @@ namespace NakamaApi
 		const TArray<FString>& UserIds,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Block one or more users by ID or username. */
 	NAKAMAAPI_API void BlockFriends(
@@ -3052,7 +3048,7 @@ namespace NakamaApi
 		const TArray<FString>& Usernames,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Block one or more users by ID or username. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void BlockFriends(
@@ -3062,7 +3058,7 @@ namespace NakamaApi
 		const TArray<FString>& Usernames,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Create a new group with the current user as the owner. */
 	NAKAMAAPI_API void CreateGroup(
@@ -3076,7 +3072,7 @@ namespace NakamaApi
 		int32 MaxCount,
 		TFunction<void(const FNakamaGroup&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Create a new group with the current user as the owner. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void CreateGroup(
@@ -3090,7 +3086,7 @@ namespace NakamaApi
 		int32 MaxCount,
 		TFunction<void(const FNakamaGroup&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Delete the current user's account. */
 	NAKAMAAPI_API void DeleteAccount(
@@ -3098,7 +3094,7 @@ namespace NakamaApi
 		FNakamaSessionPtr Session,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Delete the current user's account. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void DeleteAccount(
@@ -3106,7 +3102,7 @@ namespace NakamaApi
 		const FString& HttpKey,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Delete one or more users by ID or username. */
 	NAKAMAAPI_API void DeleteFriends(
@@ -3116,7 +3112,7 @@ namespace NakamaApi
 		const TArray<FString>& Usernames,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Delete one or more users by ID or username. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void DeleteFriends(
@@ -3126,7 +3122,7 @@ namespace NakamaApi
 		const TArray<FString>& Usernames,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Delete a group by ID. */
 	NAKAMAAPI_API void DeleteGroup(
@@ -3135,7 +3131,7 @@ namespace NakamaApi
 		FString GroupId,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Delete a group by ID. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void DeleteGroup(
@@ -3144,7 +3140,7 @@ namespace NakamaApi
 		FString GroupId,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Delete a leaderboard record. */
 	NAKAMAAPI_API void DeleteLeaderboardRecord(
@@ -3153,7 +3149,7 @@ namespace NakamaApi
 		FString LeaderboardId,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Delete a leaderboard record. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void DeleteLeaderboardRecord(
@@ -3162,7 +3158,7 @@ namespace NakamaApi
 		FString LeaderboardId,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Delete one or more notifications for the current user. */
 	NAKAMAAPI_API void DeleteNotifications(
@@ -3171,7 +3167,7 @@ namespace NakamaApi
 		const TArray<FString>& Ids,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Delete one or more notifications for the current user. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void DeleteNotifications(
@@ -3180,7 +3176,7 @@ namespace NakamaApi
 		const TArray<FString>& Ids,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Delete a tournament record. */
 	NAKAMAAPI_API void DeleteTournamentRecord(
@@ -3189,7 +3185,7 @@ namespace NakamaApi
 		FString TournamentId,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Delete a tournament record. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void DeleteTournamentRecord(
@@ -3198,7 +3194,7 @@ namespace NakamaApi
 		FString TournamentId,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Delete one or more objects by ID or username. */
 	NAKAMAAPI_API void DeleteStorageObjects(
@@ -3207,7 +3203,7 @@ namespace NakamaApi
 		const TArray<FNakamaDeleteStorageObjectId>& ObjectIds,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Delete one or more objects by ID or username. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void DeleteStorageObjects(
@@ -3216,7 +3212,7 @@ namespace NakamaApi
 		const TArray<FNakamaDeleteStorageObjectId>& ObjectIds,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Submit an event for processing in the server's registered runtime custom events handler. */
 	NAKAMAAPI_API void Event(
@@ -3228,7 +3224,7 @@ namespace NakamaApi
 		const TMap<FString, FString>& Properties,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Submit an event for processing in the server's registered runtime custom events handler. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void Event(
@@ -3240,7 +3236,7 @@ namespace NakamaApi
 		const TMap<FString, FString>& Properties,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Fetch the current user's account. */
 	NAKAMAAPI_API void GetAccount(
@@ -3248,7 +3244,7 @@ namespace NakamaApi
 		FNakamaSessionPtr Session,
 		TFunction<void(const FNakamaAccount&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Fetch the current user's account. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void GetAccount(
@@ -3256,7 +3252,7 @@ namespace NakamaApi
 		const FString& HttpKey,
 		TFunction<void(const FNakamaAccount&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Fetch zero or more users by ID and/or username. */
 	NAKAMAAPI_API void GetUsers(
@@ -3267,7 +3263,7 @@ namespace NakamaApi
 		const TArray<FString>& FacebookIds,
 		TFunction<void(const FNakamaUsers&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Fetch zero or more users by ID and/or username. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void GetUsers(
@@ -3278,7 +3274,7 @@ namespace NakamaApi
 		const TArray<FString>& FacebookIds,
 		TFunction<void(const FNakamaUsers&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Get subscription by product id. */
 	NAKAMAAPI_API void GetSubscription(
@@ -3287,7 +3283,7 @@ namespace NakamaApi
 		FString ProductId,
 		TFunction<void(const FNakamaValidatedSubscription&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Get subscription by product id. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void GetSubscription(
@@ -3296,7 +3292,7 @@ namespace NakamaApi
 		FString ProductId,
 		TFunction<void(const FNakamaValidatedSubscription&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Get matchmaker stats. */
 	NAKAMAAPI_API void GetMatchmakerStats(
@@ -3304,7 +3300,7 @@ namespace NakamaApi
 		FNakamaSessionPtr Session,
 		TFunction<void(const FNakamaMatchmakerStats&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Get matchmaker stats. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void GetMatchmakerStats(
@@ -3312,7 +3308,7 @@ namespace NakamaApi
 		const FString& HttpKey,
 		TFunction<void(const FNakamaMatchmakerStats&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** A healthcheck which load balancers can use to check the service. */
 	NAKAMAAPI_API void Healthcheck(
@@ -3320,7 +3316,7 @@ namespace NakamaApi
 		FNakamaSessionPtr Session,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** A healthcheck which load balancers can use to check the service. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void Healthcheck(
@@ -3328,7 +3324,7 @@ namespace NakamaApi
 		const FString& HttpKey,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Import Facebook friends and add them to a user's account. */
 	NAKAMAAPI_API void ImportFacebookFriends(
@@ -3338,7 +3334,7 @@ namespace NakamaApi
 		bool Reset,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Import Facebook friends and add them to a user's account. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void ImportFacebookFriends(
@@ -3348,7 +3344,7 @@ namespace NakamaApi
 		bool Reset,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Import Steam friends and add them to a user's account. */
 	NAKAMAAPI_API void ImportSteamFriends(
@@ -3358,7 +3354,7 @@ namespace NakamaApi
 		bool Reset,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Import Steam friends and add them to a user's account. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void ImportSteamFriends(
@@ -3368,7 +3364,7 @@ namespace NakamaApi
 		bool Reset,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Immediately join an open group, or request to join a closed one. */
 	NAKAMAAPI_API void JoinGroup(
@@ -3377,7 +3373,7 @@ namespace NakamaApi
 		FString GroupId,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Immediately join an open group, or request to join a closed one. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void JoinGroup(
@@ -3386,7 +3382,7 @@ namespace NakamaApi
 		FString GroupId,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Attempt to join an open and running tournament. */
 	NAKAMAAPI_API void JoinTournament(
@@ -3395,7 +3391,7 @@ namespace NakamaApi
 		FString TournamentId,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Attempt to join an open and running tournament. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void JoinTournament(
@@ -3404,7 +3400,7 @@ namespace NakamaApi
 		FString TournamentId,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Kick a set of users from a group. */
 	NAKAMAAPI_API void KickGroupUsers(
@@ -3414,7 +3410,7 @@ namespace NakamaApi
 		const TArray<FString>& UserIds,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Kick a set of users from a group. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void KickGroupUsers(
@@ -3424,7 +3420,7 @@ namespace NakamaApi
 		const TArray<FString>& UserIds,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Leave a group the user is a member of. */
 	NAKAMAAPI_API void LeaveGroup(
@@ -3433,7 +3429,7 @@ namespace NakamaApi
 		FString GroupId,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Leave a group the user is a member of. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void LeaveGroup(
@@ -3442,7 +3438,7 @@ namespace NakamaApi
 		FString GroupId,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Add an Apple ID to the social profiles on the current user's account. */
 	NAKAMAAPI_API void LinkApple(
@@ -3452,7 +3448,7 @@ namespace NakamaApi
 		const TMap<FString, FString>& Vars,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Add an Apple ID to the social profiles on the current user's account. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void LinkApple(
@@ -3462,7 +3458,7 @@ namespace NakamaApi
 		const TMap<FString, FString>& Vars,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Add a custom ID to the social profiles on the current user's account. */
 	NAKAMAAPI_API void LinkCustom(
@@ -3472,7 +3468,7 @@ namespace NakamaApi
 		const TMap<FString, FString>& Vars,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Add a custom ID to the social profiles on the current user's account. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void LinkCustom(
@@ -3482,7 +3478,7 @@ namespace NakamaApi
 		const TMap<FString, FString>& Vars,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Add a device ID to the social profiles on the current user's account. */
 	NAKAMAAPI_API void LinkDevice(
@@ -3492,7 +3488,7 @@ namespace NakamaApi
 		const TMap<FString, FString>& Vars,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Add a device ID to the social profiles on the current user's account. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void LinkDevice(
@@ -3502,7 +3498,7 @@ namespace NakamaApi
 		const TMap<FString, FString>& Vars,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Add an email+password to the social profiles on the current user's account. */
 	NAKAMAAPI_API void LinkEmail(
@@ -3513,7 +3509,7 @@ namespace NakamaApi
 		const TMap<FString, FString>& Vars,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Add an email+password to the social profiles on the current user's account. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void LinkEmail(
@@ -3524,7 +3520,7 @@ namespace NakamaApi
 		const TMap<FString, FString>& Vars,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Add Facebook to the social profiles on the current user's account. */
 	NAKAMAAPI_API void LinkFacebook(
@@ -3534,7 +3530,7 @@ namespace NakamaApi
 		bool Sync,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Add Facebook to the social profiles on the current user's account. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void LinkFacebook(
@@ -3544,7 +3540,7 @@ namespace NakamaApi
 		bool Sync,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Add Facebook Instant Game to the social profiles on the current user's account. */
 	NAKAMAAPI_API void LinkFacebookInstantGame(
@@ -3554,7 +3550,7 @@ namespace NakamaApi
 		const TMap<FString, FString>& Vars,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Add Facebook Instant Game to the social profiles on the current user's account. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void LinkFacebookInstantGame(
@@ -3564,7 +3560,7 @@ namespace NakamaApi
 		const TMap<FString, FString>& Vars,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Add Apple's GameCenter to the social profiles on the current user's account. */
 	NAKAMAAPI_API void LinkGameCenter(
@@ -3579,7 +3575,7 @@ namespace NakamaApi
 		const TMap<FString, FString>& Vars,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Add Apple's GameCenter to the social profiles on the current user's account. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void LinkGameCenter(
@@ -3594,7 +3590,7 @@ namespace NakamaApi
 		const TMap<FString, FString>& Vars,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Add Google to the social profiles on the current user's account. */
 	NAKAMAAPI_API void LinkGoogle(
@@ -3604,7 +3600,7 @@ namespace NakamaApi
 		const TMap<FString, FString>& Vars,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Add Google to the social profiles on the current user's account. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void LinkGoogle(
@@ -3614,7 +3610,7 @@ namespace NakamaApi
 		const TMap<FString, FString>& Vars,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Add Steam to the social profiles on the current user's account. */
 	NAKAMAAPI_API void LinkSteam(
@@ -3624,7 +3620,7 @@ namespace NakamaApi
 		bool Sync,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Add Steam to the social profiles on the current user's account. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void LinkSteam(
@@ -3634,7 +3630,7 @@ namespace NakamaApi
 		bool Sync,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** List a channel's message history. */
 	NAKAMAAPI_API void ListChannelMessages(
@@ -3646,7 +3642,7 @@ namespace NakamaApi
 		FString Cursor,
 		TFunction<void(const FNakamaChannelMessageList&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** List a channel's message history. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void ListChannelMessages(
@@ -3658,7 +3654,7 @@ namespace NakamaApi
 		FString Cursor,
 		TFunction<void(const FNakamaChannelMessageList&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** List all friends for the current user. */
 	NAKAMAAPI_API void ListFriends(
@@ -3669,7 +3665,7 @@ namespace NakamaApi
 		FString Cursor,
 		TFunction<void(const FNakamaFriendList&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** List all friends for the current user. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void ListFriends(
@@ -3680,7 +3676,7 @@ namespace NakamaApi
 		FString Cursor,
 		TFunction<void(const FNakamaFriendList&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** List friends of friends for the current user. */
 	NAKAMAAPI_API void ListFriendsOfFriends(
@@ -3690,7 +3686,7 @@ namespace NakamaApi
 		FString Cursor,
 		TFunction<void(const FNakamaFriendsOfFriendsList&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** List friends of friends for the current user. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void ListFriendsOfFriends(
@@ -3700,7 +3696,7 @@ namespace NakamaApi
 		FString Cursor,
 		TFunction<void(const FNakamaFriendsOfFriendsList&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** List groups based on given filters. */
 	NAKAMAAPI_API void ListGroups(
@@ -3714,7 +3710,7 @@ namespace NakamaApi
 		bool Open,
 		TFunction<void(const FNakamaGroupList&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** List groups based on given filters. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void ListGroups(
@@ -3728,7 +3724,7 @@ namespace NakamaApi
 		bool Open,
 		TFunction<void(const FNakamaGroupList&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** List all users that are part of a group. */
 	NAKAMAAPI_API void ListGroupUsers(
@@ -3740,7 +3736,7 @@ namespace NakamaApi
 		FString Cursor,
 		TFunction<void(const FNakamaGroupUserList&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** List all users that are part of a group. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void ListGroupUsers(
@@ -3752,7 +3748,7 @@ namespace NakamaApi
 		FString Cursor,
 		TFunction<void(const FNakamaGroupUserList&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** List leaderboard records. */
 	NAKAMAAPI_API void ListLeaderboardRecords(
@@ -3765,7 +3761,7 @@ namespace NakamaApi
 		int64 Expiry,
 		TFunction<void(const FNakamaLeaderboardRecordList&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** List leaderboard records. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void ListLeaderboardRecords(
@@ -3778,7 +3774,7 @@ namespace NakamaApi
 		int64 Expiry,
 		TFunction<void(const FNakamaLeaderboardRecordList&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** List leaderboard records around the target ownerId. */
 	NAKAMAAPI_API void ListLeaderboardRecordsAroundOwner(
@@ -3791,7 +3787,7 @@ namespace NakamaApi
 		FString Cursor,
 		TFunction<void(const FNakamaLeaderboardRecordList&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** List leaderboard records around the target ownerId. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void ListLeaderboardRecordsAroundOwner(
@@ -3804,7 +3800,7 @@ namespace NakamaApi
 		FString Cursor,
 		TFunction<void(const FNakamaLeaderboardRecordList&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** List running matches and optionally filter by matching criteria. */
 	NAKAMAAPI_API void ListMatches(
@@ -3818,7 +3814,7 @@ namespace NakamaApi
 		FString Query,
 		TFunction<void(const FNakamaMatchList&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** List running matches and optionally filter by matching criteria. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void ListMatches(
@@ -3832,7 +3828,7 @@ namespace NakamaApi
 		FString Query,
 		TFunction<void(const FNakamaMatchList&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** List parties and optionally filter by matching criteria. */
 	NAKAMAAPI_API void ListParties(
@@ -3844,7 +3840,7 @@ namespace NakamaApi
 		FString Cursor,
 		TFunction<void(const FNakamaPartyList&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** List parties and optionally filter by matching criteria. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void ListParties(
@@ -3856,7 +3852,7 @@ namespace NakamaApi
 		FString Cursor,
 		TFunction<void(const FNakamaPartyList&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Fetch list of notifications. */
 	NAKAMAAPI_API void ListNotifications(
@@ -3866,7 +3862,7 @@ namespace NakamaApi
 		FString CacheableCursor,
 		TFunction<void(const FNakamaNotificationList&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Fetch list of notifications. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void ListNotifications(
@@ -3876,7 +3872,7 @@ namespace NakamaApi
 		FString CacheableCursor,
 		TFunction<void(const FNakamaNotificationList&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** List publicly readable storage objects in a given collection. */
 	NAKAMAAPI_API void ListStorageObjects(
@@ -3888,7 +3884,7 @@ namespace NakamaApi
 		FString Cursor,
 		TFunction<void(const FNakamaStorageObjectList&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** List publicly readable storage objects in a given collection. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void ListStorageObjects(
@@ -3900,7 +3896,7 @@ namespace NakamaApi
 		FString Cursor,
 		TFunction<void(const FNakamaStorageObjectList&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** List user's subscriptions. */
 	NAKAMAAPI_API void ListSubscriptions(
@@ -3910,7 +3906,7 @@ namespace NakamaApi
 		FString Cursor,
 		TFunction<void(const FNakamaSubscriptionList&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** List user's subscriptions. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void ListSubscriptions(
@@ -3920,7 +3916,7 @@ namespace NakamaApi
 		FString Cursor,
 		TFunction<void(const FNakamaSubscriptionList&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** List current or upcoming tournaments. */
 	NAKAMAAPI_API void ListTournaments(
@@ -3934,7 +3930,7 @@ namespace NakamaApi
 		FString Cursor,
 		TFunction<void(const FNakamaTournamentList&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** List current or upcoming tournaments. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void ListTournaments(
@@ -3948,7 +3944,7 @@ namespace NakamaApi
 		FString Cursor,
 		TFunction<void(const FNakamaTournamentList&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** List tournament records. */
 	NAKAMAAPI_API void ListTournamentRecords(
@@ -3961,7 +3957,7 @@ namespace NakamaApi
 		int64 Expiry,
 		TFunction<void(const FNakamaTournamentRecordList&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** List tournament records. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void ListTournamentRecords(
@@ -3974,7 +3970,7 @@ namespace NakamaApi
 		int64 Expiry,
 		TFunction<void(const FNakamaTournamentRecordList&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** List tournament records for a given owner. */
 	NAKAMAAPI_API void ListTournamentRecordsAroundOwner(
@@ -3987,7 +3983,7 @@ namespace NakamaApi
 		FString Cursor,
 		TFunction<void(const FNakamaTournamentRecordList&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** List tournament records for a given owner. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void ListTournamentRecordsAroundOwner(
@@ -4000,7 +3996,7 @@ namespace NakamaApi
 		FString Cursor,
 		TFunction<void(const FNakamaTournamentRecordList&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** List groups the current user belongs to. */
 	NAKAMAAPI_API void ListUserGroups(
@@ -4012,7 +4008,7 @@ namespace NakamaApi
 		FString Cursor,
 		TFunction<void(const FNakamaUserGroupList&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** List groups the current user belongs to. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void ListUserGroups(
@@ -4024,7 +4020,7 @@ namespace NakamaApi
 		FString Cursor,
 		TFunction<void(const FNakamaUserGroupList&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Promote a set of users in a group to the next role up. */
 	NAKAMAAPI_API void PromoteGroupUsers(
@@ -4034,7 +4030,7 @@ namespace NakamaApi
 		const TArray<FString>& UserIds,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Promote a set of users in a group to the next role up. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void PromoteGroupUsers(
@@ -4044,7 +4040,7 @@ namespace NakamaApi
 		const TArray<FString>& UserIds,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Demote a set of users in a group to the next role down. */
 	NAKAMAAPI_API void DemoteGroupUsers(
@@ -4054,7 +4050,7 @@ namespace NakamaApi
 		const TArray<FString>& UserIds,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Demote a set of users in a group to the next role down. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void DemoteGroupUsers(
@@ -4064,7 +4060,7 @@ namespace NakamaApi
 		const TArray<FString>& UserIds,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Get storage objects. */
 	NAKAMAAPI_API void ReadStorageObjects(
@@ -4073,7 +4069,7 @@ namespace NakamaApi
 		const TArray<FNakamaReadStorageObjectId>& ObjectIds,
 		TFunction<void(const FNakamaStorageObjects&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Get storage objects. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void ReadStorageObjects(
@@ -4082,7 +4078,7 @@ namespace NakamaApi
 		const TArray<FNakamaReadStorageObjectId>& ObjectIds,
 		TFunction<void(const FNakamaStorageObjects&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Execute a Lua function on the server. */
 	NAKAMAAPI_API void RpcFunc(
@@ -4093,7 +4089,7 @@ namespace NakamaApi
 		FString HttpKey,
 		TFunction<void(const FNakamaRpc&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Execute a Lua function on the server. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void RpcFunc(
@@ -4103,7 +4099,7 @@ namespace NakamaApi
 		TSharedPtr<FJsonObject> Payload,
 		TFunction<void(const FNakamaRpc&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Remove the Apple ID from the social profiles on the current user's account. */
 	NAKAMAAPI_API void UnlinkApple(
@@ -4113,7 +4109,7 @@ namespace NakamaApi
 		const TMap<FString, FString>& Vars,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Remove the Apple ID from the social profiles on the current user's account. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void UnlinkApple(
@@ -4123,7 +4119,7 @@ namespace NakamaApi
 		const TMap<FString, FString>& Vars,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Remove the custom ID from the social profiles on the current user's account. */
 	NAKAMAAPI_API void UnlinkCustom(
@@ -4133,7 +4129,7 @@ namespace NakamaApi
 		const TMap<FString, FString>& Vars,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Remove the custom ID from the social profiles on the current user's account. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void UnlinkCustom(
@@ -4143,7 +4139,7 @@ namespace NakamaApi
 		const TMap<FString, FString>& Vars,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Remove the device ID from the social profiles on the current user's account. */
 	NAKAMAAPI_API void UnlinkDevice(
@@ -4153,7 +4149,7 @@ namespace NakamaApi
 		const TMap<FString, FString>& Vars,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Remove the device ID from the social profiles on the current user's account. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void UnlinkDevice(
@@ -4163,7 +4159,7 @@ namespace NakamaApi
 		const TMap<FString, FString>& Vars,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Remove the email+password from the social profiles on the current user's account. */
 	NAKAMAAPI_API void UnlinkEmail(
@@ -4174,7 +4170,7 @@ namespace NakamaApi
 		const TMap<FString, FString>& Vars,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Remove the email+password from the social profiles on the current user's account. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void UnlinkEmail(
@@ -4185,7 +4181,7 @@ namespace NakamaApi
 		const TMap<FString, FString>& Vars,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Remove Facebook from the social profiles on the current user's account. */
 	NAKAMAAPI_API void UnlinkFacebook(
@@ -4195,7 +4191,7 @@ namespace NakamaApi
 		const TMap<FString, FString>& Vars,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Remove Facebook from the social profiles on the current user's account. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void UnlinkFacebook(
@@ -4205,7 +4201,7 @@ namespace NakamaApi
 		const TMap<FString, FString>& Vars,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Remove Facebook Instant Game profile from the social profiles on the current user's account. */
 	NAKAMAAPI_API void UnlinkFacebookInstantGame(
@@ -4215,7 +4211,7 @@ namespace NakamaApi
 		const TMap<FString, FString>& Vars,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Remove Facebook Instant Game profile from the social profiles on the current user's account. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void UnlinkFacebookInstantGame(
@@ -4225,7 +4221,7 @@ namespace NakamaApi
 		const TMap<FString, FString>& Vars,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Remove Apple's GameCenter from the social profiles on the current user's account. */
 	NAKAMAAPI_API void UnlinkGameCenter(
@@ -4240,7 +4236,7 @@ namespace NakamaApi
 		const TMap<FString, FString>& Vars,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Remove Apple's GameCenter from the social profiles on the current user's account. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void UnlinkGameCenter(
@@ -4255,7 +4251,7 @@ namespace NakamaApi
 		const TMap<FString, FString>& Vars,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Remove Google from the social profiles on the current user's account. */
 	NAKAMAAPI_API void UnlinkGoogle(
@@ -4265,7 +4261,7 @@ namespace NakamaApi
 		const TMap<FString, FString>& Vars,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Remove Google from the social profiles on the current user's account. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void UnlinkGoogle(
@@ -4275,7 +4271,7 @@ namespace NakamaApi
 		const TMap<FString, FString>& Vars,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Remove Steam from the social profiles on the current user's account. */
 	NAKAMAAPI_API void UnlinkSteam(
@@ -4285,7 +4281,7 @@ namespace NakamaApi
 		const TMap<FString, FString>& Vars,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Remove Steam from the social profiles on the current user's account. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void UnlinkSteam(
@@ -4295,7 +4291,7 @@ namespace NakamaApi
 		const TMap<FString, FString>& Vars,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Update fields in the current user's account. */
 	NAKAMAAPI_API void UpdateAccount(
@@ -4309,7 +4305,7 @@ namespace NakamaApi
 		FString Timezone,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Update fields in the current user's account. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void UpdateAccount(
@@ -4323,7 +4319,7 @@ namespace NakamaApi
 		FString Timezone,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Update fields in a given group. */
 	NAKAMAAPI_API void UpdateGroup(
@@ -4337,7 +4333,7 @@ namespace NakamaApi
 		bool Open,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Update fields in a given group. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void UpdateGroup(
@@ -4351,7 +4347,7 @@ namespace NakamaApi
 		bool Open,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Validate Apple IAP Receipt */
 	NAKAMAAPI_API void ValidatePurchaseApple(
@@ -4361,7 +4357,7 @@ namespace NakamaApi
 		bool Persist,
 		TFunction<void(const FNakamaValidatePurchaseResponse&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Validate Apple IAP Receipt (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void ValidatePurchaseApple(
@@ -4371,7 +4367,7 @@ namespace NakamaApi
 		bool Persist,
 		TFunction<void(const FNakamaValidatePurchaseResponse&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Validate Apple Subscription Receipt */
 	NAKAMAAPI_API void ValidateSubscriptionApple(
@@ -4381,7 +4377,7 @@ namespace NakamaApi
 		bool Persist,
 		TFunction<void(const FNakamaValidateSubscriptionResponse&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Validate Apple Subscription Receipt (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void ValidateSubscriptionApple(
@@ -4391,7 +4387,7 @@ namespace NakamaApi
 		bool Persist,
 		TFunction<void(const FNakamaValidateSubscriptionResponse&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Validate Google IAP Receipt */
 	NAKAMAAPI_API void ValidatePurchaseGoogle(
@@ -4401,7 +4397,7 @@ namespace NakamaApi
 		bool Persist,
 		TFunction<void(const FNakamaValidatePurchaseResponse&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Validate Google IAP Receipt (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void ValidatePurchaseGoogle(
@@ -4411,7 +4407,7 @@ namespace NakamaApi
 		bool Persist,
 		TFunction<void(const FNakamaValidatePurchaseResponse&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Validate Google Subscription Receipt */
 	NAKAMAAPI_API void ValidateSubscriptionGoogle(
@@ -4421,7 +4417,7 @@ namespace NakamaApi
 		bool Persist,
 		TFunction<void(const FNakamaValidateSubscriptionResponse&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Validate Google Subscription Receipt (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void ValidateSubscriptionGoogle(
@@ -4431,7 +4427,7 @@ namespace NakamaApi
 		bool Persist,
 		TFunction<void(const FNakamaValidateSubscriptionResponse&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Validate Huawei IAP Receipt */
 	NAKAMAAPI_API void ValidatePurchaseHuawei(
@@ -4442,7 +4438,7 @@ namespace NakamaApi
 		bool Persist,
 		TFunction<void(const FNakamaValidatePurchaseResponse&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Validate Huawei IAP Receipt (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void ValidatePurchaseHuawei(
@@ -4453,7 +4449,7 @@ namespace NakamaApi
 		bool Persist,
 		TFunction<void(const FNakamaValidatePurchaseResponse&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Validate FB Instant IAP Receipt */
 	NAKAMAAPI_API void ValidatePurchaseFacebookInstant(
@@ -4463,7 +4459,7 @@ namespace NakamaApi
 		bool Persist,
 		TFunction<void(const FNakamaValidatePurchaseResponse&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Validate FB Instant IAP Receipt (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void ValidatePurchaseFacebookInstant(
@@ -4473,7 +4469,7 @@ namespace NakamaApi
 		bool Persist,
 		TFunction<void(const FNakamaValidatePurchaseResponse&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Write a record to a leaderboard. */
 	NAKAMAAPI_API void WriteLeaderboardRecord(
@@ -4483,7 +4479,7 @@ namespace NakamaApi
 		FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite Record,
 		TFunction<void(const FNakamaLeaderboardRecord&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Write a record to a leaderboard. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void WriteLeaderboardRecord(
@@ -4493,7 +4489,7 @@ namespace NakamaApi
 		FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite Record,
 		TFunction<void(const FNakamaLeaderboardRecord&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Write objects into the storage engine. */
 	NAKAMAAPI_API void WriteStorageObjects(
@@ -4502,7 +4498,7 @@ namespace NakamaApi
 		const TArray<FNakamaWriteStorageObject>& Objects,
 		TFunction<void(const FNakamaStorageObjectAcks&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Write objects into the storage engine. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void WriteStorageObjects(
@@ -4511,7 +4507,7 @@ namespace NakamaApi
 		const TArray<FNakamaWriteStorageObject>& Objects,
 		TFunction<void(const FNakamaStorageObjectAcks&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Write a record to a tournament. */
 	NAKAMAAPI_API void WriteTournamentRecord(
@@ -4521,7 +4517,7 @@ namespace NakamaApi
 		FNakamaWriteTournamentRecordRequest_TournamentRecordWrite Record,
 		TFunction<void(const FNakamaLeaderboardRecord&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Write a record to a tournament. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void WriteTournamentRecord(
@@ -4531,5 +4527,5 @@ namespace NakamaApi
 		FNakamaWriteTournamentRecordRequest_TournamentRecordWrite Record,
 		TFunction<void(const FNakamaLeaderboardRecord&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
-		FNakamaCancellationTokenPtr CancellationToken = nullptr);
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
 }

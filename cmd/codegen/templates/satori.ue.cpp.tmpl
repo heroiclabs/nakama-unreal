@@ -20,7 +20,7 @@
 #include "Containers/Ticker.h"
 #include "Modules/ModuleManager.h"
 
-bool Satori::IsTransientError(const FSatoriError& Error)
+bool Satori::IsTransientError(const FSatoriError& Error) noexcept
 {
 	switch (Error.Code)
 	{
@@ -33,7 +33,7 @@ bool Satori::IsTransientError(const FSatoriError& Error)
 	}
 }
 
-float Satori::CalculateBackoff(int32 Attempt, const FSatoriRetryConfiguration& Config)
+float Satori::CalculateBackoff(int32 Attempt, const FSatoriRetryConfiguration& Config) noexcept
 {
 	const float ExponentialDelay = FMath::Pow(2.0f, static_cast<float>(Attempt - 1)) * Config.BaseDelayMs;
 	const float Jitter = FMath::FRand() * ExponentialDelay;
@@ -49,7 +49,7 @@ void MaybeRefreshThenCall(
 	FSatoriSessionPtr Session,
 	TFunction<void()> OnReady,
 	TFunction<void(const FSatoriError&)> OnError,
-	FSatoriCancellationTokenPtr CancellationToken)
+	FSatoriCancellationTokenPtr CancellationToken) noexcept
 {
 	if (!Client.bAutoRefreshSession
 		|| !Session.IsValid()
@@ -104,8 +104,7 @@ void MaybeRefreshThenCall(
 {{- $isSessionRefresh := eq $rpc.Name "SessionRefresh" }}
 {{- $needsSession := and (not $isAuthenticate) (not $isSessionRefresh) }}
 {{- $resultType := asyncResultType $returnType }}
-
-TSatoriFuture<{{ $resultType }}> Satori::{{ $rpc.Name }}(
+TSatoriFuture<{{ $resultType }}Result> Satori::{{ $rpc.Name }}(
 	FSatoriClient Client,
 	{{- if $needsSession }}
 	FSatoriSessionPtr Session,
@@ -122,10 +121,9 @@ TSatoriFuture<{{ $resultType }}> Satori::{{ $rpc.Name }}(
 	const {{ getUnrealMapType $field.Type }}& {{ $field.Name | pascalCase }},
 	{{- end -}}
 	{{- end }}
-	FSatoriCancellationTokenPtr CancellationToken)
+	FSatoriCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<TSatoriResult<{{ $resultType }}>>>();
-	TFuture<TSatoriResult<{{ $resultType }}>> Future = Promise->GetFuture();
+	auto Promise = MakeShared<TPromise<{{ $resultType }}Result>>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -147,7 +145,7 @@ TSatoriFuture<{{ $resultType }}> Satori::{{ $rpc.Name }}(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(TSatoriResult<{{ $resultType }}>::Failure(Error));
+			Promise->SetValue({{ $resultType }}Result{{ "{{" }}}, Error, true});
 		}
 	};
 
@@ -192,14 +190,14 @@ TSatoriFuture<{{ $resultType }}> Satori::{{ $rpc.Name }}(
 					{
 						auto DR = DoRequest; auto OE = OnError;
 						DR->Reset(); OE->Reset();
-						Promise->SetValue(TSatoriResult<{{ $resultType }}>::Success(Result));
+						Promise->SetValue({{ $resultType }}Result{Result, {}, false});
 					},
 					{{- else }}
 					[Promise, DoRequest, OnError]()
 					{
 						auto DR = DoRequest; auto OE = OnError;
 						DR->Reset(); OE->Reset();
-						Promise->SetValue(TSatoriResult<{{ $resultType }}>::Success(FSatoriVoid{}));
+						Promise->SetValue(FSatoriVoidResult{FSatoriVoid{}, {}, false});
 					},
 					{{- end }}
 					*OnError,
@@ -223,14 +221,14 @@ TSatoriFuture<{{ $resultType }}> Satori::{{ $rpc.Name }}(
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(TSatoriResult<{{ $resultType }}>::Success(Result));
+				Promise->SetValue({{ $resultType }}Result{Result, {}, false});
 			},
 			{{- else }}
 			[Promise, DoRequest, OnError]()
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(TSatoriResult<{{ $resultType }}>::Success(FSatoriVoid{}));
+				Promise->SetValue(FSatoriVoidResult{FSatoriVoid{}, {}, false});
 			},
 			{{- end }}
 			*OnError,
@@ -240,7 +238,7 @@ TSatoriFuture<{{ $resultType }}> Satori::{{ $rpc.Name }}(
 
 	(*DoRequest)();
 
-	return TSatoriFuture<{{ $resultType }}>(MoveTemp(Future));
+	return TSatoriFuture<{{ $resultType }}Result>(Promise->GetFuture());
 }
 {{- end }}
 

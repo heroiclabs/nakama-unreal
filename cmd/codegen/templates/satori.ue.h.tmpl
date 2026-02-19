@@ -26,114 +26,75 @@
 /** Tag type used as the value type for RPCs that return no data. */
 struct SATORI_API FSatoriVoid {};
 
-/**
- * Result-or-error wrapper returned by Satori:: free functions.
- * Exactly one of Value or Error is meaningful depending on IsSuccess().
- */
-template<typename T>
-struct TSatoriResult
+struct SATORI_API FSatoriVoidResult
 {
-	bool IsSuccess() const { return !bIsError; }
-	bool IsError() const { return bIsError; }
-
-	const T& GetValue() const { return Value; }
-	T&& MoveValue() { return MoveTemp(Value); }
-	const FSatoriError& GetError() const { return Error; }
-
-	static TSatoriResult Success(const T& InValue)
-	{
-		TSatoriResult Result;
-		Result.Value = InValue;
-		Result.bIsError = false;
-		return Result;
-	}
-
-	static TSatoriResult Success(T&& InValue)
-	{
-		TSatoriResult Result;
-		Result.Value = MoveTemp(InValue);
-		Result.bIsError = false;
-		return Result;
-	}
-
-	static TSatoriResult Failure(const FSatoriError& InError)
-	{
-		TSatoriResult Result;
-		Result.Error = InError;
-		Result.bIsError = true;
-		return Result;
-	}
-
-private:
-	T Value{};
+	using ValueType = FSatoriVoid;
+	FSatoriVoid Value{};
 	FSatoriError Error;
 	bool bIsError = true;
 };
+{{- range $idx, $typeName := uniqueReturnTypes $.Rpcs }}
+
+struct SATORI_API FSatori{{ $typeName }}Result
+{
+	using ValueType = FSatori{{ $typeName }};
+	FSatori{{ $typeName }} Value{};
+	FSatoriError Error;
+	bool bIsError = true;
+};
+{{- end }}
 
 // Forward declaration
-template<typename T> class TSatoriFuture;
+template<typename T> struct TSatoriFuture;
 
-// Trait to detect TSatoriFuture<U>
+/** Type trait: is T a TSatoriFuture<U>? */
 template<typename T> struct TIsTSatoriFuture : std::false_type {};
 template<typename T> struct TIsTSatoriFuture<TSatoriFuture<T>> : std::true_type {};
 
 /**
- * Chainable future wrapper around TFuture<TSatoriResult<T>>.
+ * Chainable future wrapper for async Satori operations.
+ * Parameterized by concrete result type (e.g. FSatoriSessionResult).
  *
- * Supports two forms of .Next():
- *
- * Chaining -- callback takes const T& (success value), returns TSatoriFuture<U>.
- *   Errors auto-propagate (callback is skipped).
- *     Satori::Foo(Client, Session)
- *       .Next([](const FSatoriBar& Bar) { return Satori::Baz(Client, Bar.Id); })
- *       .Next([](TSatoriResult<FSatoriQux> Result) { ... });
- *
- * Terminal -- callback takes TSatoriResult<T>, returns void.
- *   Always invoked (success or error).
- *     Satori::Foo(Client, Session).Next([](TSatoriResult<FSatoriBar> Result) { ... });
+ * Chaining: Next(callback(const ValueType&) -> TSatoriFuture<OtherResult>) — flattens and propagates errors
+ * Terminal: Next(callback(ResultT) -> void) — receives the full result
  */
-template<typename T>
-class TSatoriFuture
+template<typename ResultT>
+struct TSatoriFuture
 {
-public:
-	using ResultType = T;
+	using ValueType = typename ResultT::ValueType;
+	using WrappedResultType = ResultT;
+
+	TFuture<ResultT> Future;
 
 	TSatoriFuture() = default;
 
-	explicit TSatoriFuture(TFuture<TSatoriResult<T>>&& InFuture)
-		: Future(MakeShareable(new TFuture<TSatoriResult<T>>(MoveTemp(InFuture)))) {}
+	explicit TSatoriFuture(TFuture<ResultT>&& InFuture) noexcept
+		: Future(MoveTemp(InFuture)) {}
 
-	TSatoriFuture(TSatoriFuture&& Other) = default;
-	TSatoriFuture& operator=(TSatoriFuture&& Other) = default;
+	TSatoriFuture(TSatoriFuture&& Other) noexcept = default;
+	TSatoriFuture& operator=(TSatoriFuture&& Other) noexcept = default;
 	TSatoriFuture(const TSatoriFuture&) = delete;
 	TSatoriFuture& operator=(const TSatoriFuture&) = delete;
 
-	/**
-	 * Chaining Next: callback(const T&) -> TSatoriFuture<U>.
-	 * On error the callback is skipped and the error propagates to the next step.
-	 */
+	/** Chaining Next: callback(const ValueType&) -> TSatoriFuture<OtherResult> */
 	template<typename Func,
-		typename Ret = std::invoke_result_t<std::decay_t<Func>, const T&>,
+		typename Ret = std::invoke_result_t<std::decay_t<Func>, const ValueType&>,
 		std::enable_if_t<TIsTSatoriFuture<Ret>::value, int> = 0>
-	Ret Next(Func&& Callback)
+	Ret Next(Func&& Callback) && noexcept
 	{
-		using U = typename Ret::ResultType;
-		auto OuterPromise = MakeShared<TPromise<TSatoriResult<U>>>();
-		TSatoriFuture<U> ResultFuture(OuterPromise->GetFuture());
+		using InnerResultT = typename Ret::WrappedResultType;
+		auto OuterPromise = MakeShared<TPromise<InnerResultT>>();
+		Ret ResultFuture(OuterPromise->GetFuture());
 
-		check(Future.IsValid());
-		auto CapturedFuture = Future;
-		MoveTemp(*CapturedFuture).Next([Cb = Forward<Func>(Callback), OuterPromise](TSatoriResult<T> Result) mutable
+		MoveTemp(Future).Next([Cb = Forward<Func>(Callback), OuterPromise](ResultT Result) mutable
 		{
-			if (Result.IsError())
+			if (Result.bIsError)
 			{
-				OuterPromise->SetValue(TSatoriResult<U>::Failure(Result.GetError()));
+				OuterPromise->SetValue(InnerResultT{{ "{{" }}}, Result.Error, true});
 				return;
 			}
-			TSatoriFuture<U> Inner = Cb(Result.GetValue());
-			check(Inner.Future.IsValid());
-			auto InnerCaptured = Inner.Future;
-			MoveTemp(*InnerCaptured).Next([OuterPromise](TSatoriResult<U> InnerResult) mutable
+			Ret Inner = Cb(Result.Value);
+			MoveTemp(Inner.Future).Next([OuterPromise](InnerResultT InnerResult) mutable
 			{
 				OuterPromise->SetValue(MoveTemp(InnerResult));
 			});
@@ -142,31 +103,17 @@ public:
 		return ResultFuture;
 	}
 
-	/**
-	 * Terminal Next: callback(TSatoriResult<T>) -> void.
-	 * Always invoked with the result (success or propagated error).
-	 */
+	/** Terminal Next: callback(ResultT) -> void */
 	template<typename Func,
-		typename Ret = std::invoke_result_t<std::decay_t<Func>, TSatoriResult<T>>,
-		std::enable_if_t<std::is_void_v<Ret>, int> = 0>
-	void Next(Func&& Callback)
+		typename Ret = std::invoke_result_t<std::decay_t<Func>, ResultT>,
+		std::enable_if_t<!TIsTSatoriFuture<Ret>::value, int> = 0>
+	void Next(Func&& Callback) && noexcept
 	{
-		check(Future.IsValid());
-		auto CapturedFuture = Future;
-		MoveTemp(*CapturedFuture).Next([Cb = Forward<Func>(Callback)](TSatoriResult<T> Result) mutable
+		MoveTemp(Future).Next([Cb = Forward<Func>(Callback)](ResultT Result) mutable
 		{
 			Cb(MoveTemp(Result));
 		});
 	}
-
-	bool IsReady() const { return Future.IsValid() && Future->IsReady(); }
-	TSatoriResult<T> Get() { return Future->Get(); }
-
-private:
-	// TSharedPtr because TFuture is move-only but needs to be captured in lambdas
-	TSharedPtr<TFuture<TSatoriResult<T>>> Future;
-
-	template<typename U> friend class TSatoriFuture;
 };
 
 /** Retry configuration for transient error handling. */
@@ -197,13 +144,10 @@ struct SATORI_API FSatoriClient
 	/** Called after a session is automatically refreshed, so callers can persist the updated session. */
 	TFunction<void(const FSatoriSession&)> OnSessionRefreshed;
 
-	void SetTimeout(float InTimeout) { ApiConfig.Timeout = InTimeout; }
-	float GetTimeout() const { return ApiConfig.Timeout; }
 };
 
 /**
  * High-level Satori API: free functions with retry logic + session auto-refresh.
- * Every RPC returns TSatoriFuture<T>. Use .Next() for non-blocking chaining.
  *
  * Transient errors (UNAVAILABLE, INTERNAL, DEADLINE_EXCEEDED) are
  * automatically retried with exponential backoff and full jitter.
@@ -211,10 +155,10 @@ struct SATORI_API FSatoriClient
 namespace Satori
 {
 	/** Returns true if the error code is considered transient (eligible for retry). */
-	SATORI_API bool IsTransientError(const FSatoriError& Error);
+	SATORI_API bool IsTransientError(const FSatoriError& Error) noexcept;
 
 	/** Compute backoff delay in seconds for a given attempt using exponential backoff with full jitter. */
-	SATORI_API float CalculateBackoff(int32 Attempt, const FSatoriRetryConfiguration& Config);
+	SATORI_API float CalculateBackoff(int32 Attempt, const FSatoriRetryConfiguration& Config) noexcept;
 
 {{- /* Generate free function declarations for each RPC */ -}}
 {{- range $idx, $rpc := $.Rpcs }}
@@ -228,7 +172,7 @@ namespace Satori
 {{- $resultType := asyncResultType $returnType }}
 
 	/** {{ $rpc.Comment }} */
-	SATORI_API TSatoriFuture<{{ $resultType }}> {{ $rpc.Name }}(
+	SATORI_API TSatoriFuture<{{ $resultType }}Result> {{ $rpc.Name }}(
 		FSatoriClient Client,
 		{{- if $needsSession }}
 		FSatoriSessionPtr Session,
@@ -245,6 +189,6 @@ namespace Satori
 		const {{ getUnrealMapType $field.Type }}& {{ $field.Name | pascalCase }},
 		{{- end -}}
 		{{- end }}
-		FSatoriCancellationTokenPtr CancellationToken = nullptr);
+		FSatoriCancellationTokenPtr CancellationToken = nullptr) noexcept;
 {{- end }}
 }

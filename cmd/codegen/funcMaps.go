@@ -445,6 +445,12 @@ func getUnrealFuncMap(api Api) template.FuncMap {
 			}
 			return fmt.Sprintf("%s%s", api.TypePrefix, returnType.Name)
 		},
+		"futureResultType": func(returnType *visitedMessage) string {
+			if returnType == nil {
+				return "FVoidResult"
+			}
+			return fmt.Sprintf("F%sResult", returnType.Name)
+		},
 
 		// TODO: Implement these.
 		"getUnrealTypeEmptyPredicate": func(objName string, objType string) string {

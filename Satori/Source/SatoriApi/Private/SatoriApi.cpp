@@ -44,7 +44,7 @@ DECLARE_DWORD_ACCUMULATOR_STAT(TEXT("TotalErrors"), STAT_Satori_TotalErrors, STA
 
 // --- FSatoriSession JWT helpers ---
 
-bool FSatoriSession::ParseJwtPayload(const FString& Jwt, TSharedPtr<FJsonObject>& Out)
+bool FSatoriSession::ParseJwtPayload(const FString& Jwt, TSharedPtr<FJsonObject>& Out) noexcept
 {
 	TArray<FString> Parts;
 	Jwt.ParseIntoArray(Parts, TEXT("."));
@@ -77,7 +77,7 @@ bool FSatoriSession::ParseJwtPayload(const FString& Jwt, TSharedPtr<FJsonObject>
 	return FJsonSerializer::Deserialize(Reader, Out) && Out.IsValid();
 }
 
-void FSatoriSession::ParseTokens()
+void FSatoriSession::ParseTokens() noexcept
 {
 	IdentityId.Empty();
 	TokenExpiresAt = 0;
@@ -113,7 +113,7 @@ void FSatoriSession::ParseTokens()
 	}
 }
 
-bool FSatoriSession::IsExpired(int64 BufferSeconds) const
+bool FSatoriSession::IsExpired(int64 BufferSeconds) const noexcept
 {
 	if (TokenExpiresAt == 0)
 	{
@@ -122,7 +122,7 @@ bool FSatoriSession::IsExpired(int64 BufferSeconds) const
 	return (TokenExpiresAt - BufferSeconds) <= FDateTime::UtcNow().ToUnixTimestamp();
 }
 
-bool FSatoriSession::IsRefreshExpired(int64 BufferSeconds) const
+bool FSatoriSession::IsRefreshExpired(int64 BufferSeconds) const noexcept
 {
 	if (RefreshTokenExpiresAt == 0)
 	{
@@ -131,14 +131,14 @@ bool FSatoriSession::IsRefreshExpired(int64 BufferSeconds) const
 	return (RefreshTokenExpiresAt - BufferSeconds) <= FDateTime::UtcNow().ToUnixTimestamp();
 }
 
-void FSatoriSession::Update(const FString& NewToken, const FString& NewRefreshToken)
+void FSatoriSession::Update(const FString& NewToken, const FString& NewRefreshToken) noexcept
 {
 	Token = NewToken;
 	RefreshToken = NewRefreshToken;
 	ParseTokens();
 }
 
-FSatoriAuthenticateLogoutRequest FSatoriAuthenticateLogoutRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+FSatoriAuthenticateLogoutRequest FSatoriAuthenticateLogoutRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FSatoriAuthenticateLogoutRequest Result;
 	if (!Json.IsValid())
@@ -156,7 +156,7 @@ FSatoriAuthenticateLogoutRequest FSatoriAuthenticateLogoutRequest::FromJson(cons
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FSatoriAuthenticateLogoutRequest::ToJson() const
+TSharedPtr<FJsonObject> FSatoriAuthenticateLogoutRequest::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (!Token.IsEmpty())
@@ -170,7 +170,7 @@ TSharedPtr<FJsonObject> FSatoriAuthenticateLogoutRequest::ToJson() const
 	return Json;
 }
 
-FSatoriAuthenticateRefreshRequest FSatoriAuthenticateRefreshRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+FSatoriAuthenticateRefreshRequest FSatoriAuthenticateRefreshRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FSatoriAuthenticateRefreshRequest Result;
 	if (!Json.IsValid())
@@ -184,7 +184,7 @@ FSatoriAuthenticateRefreshRequest FSatoriAuthenticateRefreshRequest::FromJson(co
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FSatoriAuthenticateRefreshRequest::ToJson() const
+TSharedPtr<FJsonObject> FSatoriAuthenticateRefreshRequest::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (!RefreshToken.IsEmpty())
@@ -194,7 +194,7 @@ TSharedPtr<FJsonObject> FSatoriAuthenticateRefreshRequest::ToJson() const
 	return Json;
 }
 
-FSatoriAuthenticateRequest FSatoriAuthenticateRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+FSatoriAuthenticateRequest FSatoriAuthenticateRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FSatoriAuthenticateRequest Result;
 	if (!Json.IsValid())
@@ -234,7 +234,7 @@ FSatoriAuthenticateRequest FSatoriAuthenticateRequest::FromJson(const TSharedPtr
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FSatoriAuthenticateRequest::ToJson() const
+TSharedPtr<FJsonObject> FSatoriAuthenticateRequest::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (!Id.IsEmpty())
@@ -263,7 +263,7 @@ TSharedPtr<FJsonObject> FSatoriAuthenticateRequest::ToJson() const
 	return Json;
 }
 
-FSatoriDeleteMessageRequest FSatoriDeleteMessageRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+FSatoriDeleteMessageRequest FSatoriDeleteMessageRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FSatoriDeleteMessageRequest Result;
 	if (!Json.IsValid())
@@ -277,7 +277,7 @@ FSatoriDeleteMessageRequest FSatoriDeleteMessageRequest::FromJson(const TSharedP
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FSatoriDeleteMessageRequest::ToJson() const
+TSharedPtr<FJsonObject> FSatoriDeleteMessageRequest::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (!Id.IsEmpty())
@@ -287,7 +287,7 @@ TSharedPtr<FJsonObject> FSatoriDeleteMessageRequest::ToJson() const
 	return Json;
 }
 
-FSatoriEvent FSatoriEvent::FromJson(const TSharedPtr<FJsonObject>& Json)
+FSatoriEvent FSatoriEvent::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FSatoriEvent Result;
 	if (!Json.IsValid())
@@ -340,7 +340,7 @@ FSatoriEvent FSatoriEvent::FromJson(const TSharedPtr<FJsonObject>& Json)
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FSatoriEvent::ToJson() const
+TSharedPtr<FJsonObject> FSatoriEvent::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (!Name.IsEmpty())
@@ -381,7 +381,7 @@ TSharedPtr<FJsonObject> FSatoriEvent::ToJson() const
 	return Json;
 }
 
-FSatoriEventRequest FSatoriEventRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+FSatoriEventRequest FSatoriEventRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FSatoriEventRequest Result;
 	if (!Json.IsValid())
@@ -406,7 +406,7 @@ FSatoriEventRequest FSatoriEventRequest::FromJson(const TSharedPtr<FJsonObject>&
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FSatoriEventRequest::ToJson() const
+TSharedPtr<FJsonObject> FSatoriEventRequest::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (Events.Num() > 0)
@@ -421,7 +421,7 @@ TSharedPtr<FJsonObject> FSatoriEventRequest::ToJson() const
 	return Json;
 }
 
-FSatoriExperiment FSatoriExperiment::FromJson(const TSharedPtr<FJsonObject>& Json)
+FSatoriExperiment FSatoriExperiment::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FSatoriExperiment Result;
 	if (!Json.IsValid())
@@ -458,7 +458,7 @@ FSatoriExperiment FSatoriExperiment::FromJson(const TSharedPtr<FJsonObject>& Jso
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FSatoriExperiment::ToJson() const
+TSharedPtr<FJsonObject> FSatoriExperiment::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (!Name.IsEmpty())
@@ -489,7 +489,7 @@ TSharedPtr<FJsonObject> FSatoriExperiment::ToJson() const
 	return Json;
 }
 
-FSatoriExperimentList FSatoriExperimentList::FromJson(const TSharedPtr<FJsonObject>& Json)
+FSatoriExperimentList FSatoriExperimentList::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FSatoriExperimentList Result;
 	if (!Json.IsValid())
@@ -514,7 +514,7 @@ FSatoriExperimentList FSatoriExperimentList::FromJson(const TSharedPtr<FJsonObje
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FSatoriExperimentList::ToJson() const
+TSharedPtr<FJsonObject> FSatoriExperimentList::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (Experiments.Num() > 0)
@@ -529,7 +529,7 @@ TSharedPtr<FJsonObject> FSatoriExperimentList::ToJson() const
 	return Json;
 }
 
-FSatoriValueChangeReason FSatoriValueChangeReason::FromJson(const TSharedPtr<FJsonObject>& Json)
+FSatoriValueChangeReason FSatoriValueChangeReason::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FSatoriValueChangeReason Result;
 	if (!Json.IsValid())
@@ -551,7 +551,7 @@ FSatoriValueChangeReason FSatoriValueChangeReason::FromJson(const TSharedPtr<FJs
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FSatoriValueChangeReason::ToJson() const
+TSharedPtr<FJsonObject> FSatoriValueChangeReason::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	Json->SetNumberField(TEXT("type"), Type);
@@ -566,7 +566,7 @@ TSharedPtr<FJsonObject> FSatoriValueChangeReason::ToJson() const
 	return Json;
 }
 
-FSatoriFlag FSatoriFlag::FromJson(const TSharedPtr<FJsonObject>& Json)
+FSatoriFlag FSatoriFlag::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FSatoriFlag Result;
 	if (!Json.IsValid())
@@ -607,7 +607,7 @@ FSatoriFlag FSatoriFlag::FromJson(const TSharedPtr<FJsonObject>& Json)
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FSatoriFlag::ToJson() const
+TSharedPtr<FJsonObject> FSatoriFlag::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (!Name.IsEmpty())
@@ -632,7 +632,7 @@ TSharedPtr<FJsonObject> FSatoriFlag::ToJson() const
 	return Json;
 }
 
-FSatoriFlagList FSatoriFlagList::FromJson(const TSharedPtr<FJsonObject>& Json)
+FSatoriFlagList FSatoriFlagList::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FSatoriFlagList Result;
 	if (!Json.IsValid())
@@ -657,7 +657,7 @@ FSatoriFlagList FSatoriFlagList::FromJson(const TSharedPtr<FJsonObject>& Json)
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FSatoriFlagList::ToJson() const
+TSharedPtr<FJsonObject> FSatoriFlagList::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (Flags.Num() > 0)
@@ -672,7 +672,7 @@ TSharedPtr<FJsonObject> FSatoriFlagList::ToJson() const
 	return Json;
 }
 
-FSatoriFlagOverrideValue FSatoriFlagOverrideValue::FromJson(const TSharedPtr<FJsonObject>& Json)
+FSatoriFlagOverrideValue FSatoriFlagOverrideValue::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FSatoriFlagOverrideValue Result;
 	if (!Json.IsValid())
@@ -702,7 +702,7 @@ FSatoriFlagOverrideValue FSatoriFlagOverrideValue::FromJson(const TSharedPtr<FJs
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FSatoriFlagOverrideValue::ToJson() const
+TSharedPtr<FJsonObject> FSatoriFlagOverrideValue::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	Json->SetNumberField(TEXT("type"), Type);
@@ -722,7 +722,7 @@ TSharedPtr<FJsonObject> FSatoriFlagOverrideValue::ToJson() const
 	return Json;
 }
 
-FSatoriFlagOverride FSatoriFlagOverride::FromJson(const TSharedPtr<FJsonObject>& Json)
+FSatoriFlagOverride FSatoriFlagOverride::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FSatoriFlagOverride Result;
 	if (!Json.IsValid())
@@ -762,7 +762,7 @@ FSatoriFlagOverride FSatoriFlagOverride::FromJson(const TSharedPtr<FJsonObject>&
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FSatoriFlagOverride::ToJson() const
+TSharedPtr<FJsonObject> FSatoriFlagOverride::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (!FlagName.IsEmpty())
@@ -790,7 +790,7 @@ TSharedPtr<FJsonObject> FSatoriFlagOverride::ToJson() const
 	return Json;
 }
 
-FSatoriFlagOverrideList FSatoriFlagOverrideList::FromJson(const TSharedPtr<FJsonObject>& Json)
+FSatoriFlagOverrideList FSatoriFlagOverrideList::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FSatoriFlagOverrideList Result;
 	if (!Json.IsValid())
@@ -815,7 +815,7 @@ FSatoriFlagOverrideList FSatoriFlagOverrideList::FromJson(const TSharedPtr<FJson
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FSatoriFlagOverrideList::ToJson() const
+TSharedPtr<FJsonObject> FSatoriFlagOverrideList::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (Flags.Num() > 0)
@@ -830,7 +830,7 @@ TSharedPtr<FJsonObject> FSatoriFlagOverrideList::ToJson() const
 	return Json;
 }
 
-FSatoriGetExperimentsRequest FSatoriGetExperimentsRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+FSatoriGetExperimentsRequest FSatoriGetExperimentsRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FSatoriGetExperimentsRequest Result;
 	if (!Json.IsValid())
@@ -862,7 +862,7 @@ FSatoriGetExperimentsRequest FSatoriGetExperimentsRequest::FromJson(const TShare
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FSatoriGetExperimentsRequest::ToJson() const
+TSharedPtr<FJsonObject> FSatoriGetExperimentsRequest::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (Names.Num() > 0)
@@ -886,7 +886,7 @@ TSharedPtr<FJsonObject> FSatoriGetExperimentsRequest::ToJson() const
 	return Json;
 }
 
-FSatoriGetFlagsRequest FSatoriGetFlagsRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+FSatoriGetFlagsRequest FSatoriGetFlagsRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FSatoriGetFlagsRequest Result;
 	if (!Json.IsValid())
@@ -918,7 +918,7 @@ FSatoriGetFlagsRequest FSatoriGetFlagsRequest::FromJson(const TSharedPtr<FJsonOb
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FSatoriGetFlagsRequest::ToJson() const
+TSharedPtr<FJsonObject> FSatoriGetFlagsRequest::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (Names.Num() > 0)
@@ -942,7 +942,7 @@ TSharedPtr<FJsonObject> FSatoriGetFlagsRequest::ToJson() const
 	return Json;
 }
 
-FSatoriGetLiveEventsRequest FSatoriGetLiveEventsRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+FSatoriGetLiveEventsRequest FSatoriGetLiveEventsRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FSatoriGetLiveEventsRequest Result;
 	if (!Json.IsValid())
@@ -990,7 +990,7 @@ FSatoriGetLiveEventsRequest FSatoriGetLiveEventsRequest::FromJson(const TSharedP
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FSatoriGetLiveEventsRequest::ToJson() const
+TSharedPtr<FJsonObject> FSatoriGetLiveEventsRequest::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (Names.Num() > 0)
@@ -1018,7 +1018,7 @@ TSharedPtr<FJsonObject> FSatoriGetLiveEventsRequest::ToJson() const
 	return Json;
 }
 
-FSatoriMessage FSatoriMessage::FromJson(const TSharedPtr<FJsonObject>& Json)
+FSatoriMessage FSatoriMessage::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FSatoriMessage Result;
 	if (!Json.IsValid())
@@ -1079,7 +1079,7 @@ FSatoriMessage FSatoriMessage::FromJson(const TSharedPtr<FJsonObject>& Json)
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FSatoriMessage::ToJson() const
+TSharedPtr<FJsonObject> FSatoriMessage::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (!ScheduleId.IsEmpty())
@@ -1119,7 +1119,7 @@ TSharedPtr<FJsonObject> FSatoriMessage::ToJson() const
 	return Json;
 }
 
-FSatoriGetMessageListRequest FSatoriGetMessageListRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+FSatoriGetMessageListRequest FSatoriGetMessageListRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FSatoriGetMessageListRequest Result;
 	if (!Json.IsValid())
@@ -1152,7 +1152,7 @@ FSatoriGetMessageListRequest FSatoriGetMessageListRequest::FromJson(const TShare
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FSatoriGetMessageListRequest::ToJson() const
+TSharedPtr<FJsonObject> FSatoriGetMessageListRequest::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	Json->SetNumberField(TEXT("limit"), Limit);
@@ -1173,7 +1173,7 @@ TSharedPtr<FJsonObject> FSatoriGetMessageListRequest::ToJson() const
 	return Json;
 }
 
-FSatoriGetMessageListResponse FSatoriGetMessageListResponse::FromJson(const TSharedPtr<FJsonObject>& Json)
+FSatoriGetMessageListResponse FSatoriGetMessageListResponse::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FSatoriGetMessageListResponse Result;
 	if (!Json.IsValid())
@@ -1210,7 +1210,7 @@ FSatoriGetMessageListResponse FSatoriGetMessageListResponse::FromJson(const TSha
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FSatoriGetMessageListResponse::ToJson() const
+TSharedPtr<FJsonObject> FSatoriGetMessageListResponse::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (Messages.Num() > 0)
@@ -1237,7 +1237,7 @@ TSharedPtr<FJsonObject> FSatoriGetMessageListResponse::ToJson() const
 	return Json;
 }
 
-FSatoriIdentifyRequest FSatoriIdentifyRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+FSatoriIdentifyRequest FSatoriIdentifyRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FSatoriIdentifyRequest Result;
 	if (!Json.IsValid())
@@ -1273,7 +1273,7 @@ FSatoriIdentifyRequest FSatoriIdentifyRequest::FromJson(const TSharedPtr<FJsonOb
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FSatoriIdentifyRequest::ToJson() const
+TSharedPtr<FJsonObject> FSatoriIdentifyRequest::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (!Id.IsEmpty())
@@ -1301,7 +1301,7 @@ TSharedPtr<FJsonObject> FSatoriIdentifyRequest::ToJson() const
 	return Json;
 }
 
-FSatoriJoinLiveEventRequest FSatoriJoinLiveEventRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+FSatoriJoinLiveEventRequest FSatoriJoinLiveEventRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FSatoriJoinLiveEventRequest Result;
 	if (!Json.IsValid())
@@ -1315,7 +1315,7 @@ FSatoriJoinLiveEventRequest FSatoriJoinLiveEventRequest::FromJson(const TSharedP
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FSatoriJoinLiveEventRequest::ToJson() const
+TSharedPtr<FJsonObject> FSatoriJoinLiveEventRequest::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (!Id.IsEmpty())
@@ -1325,7 +1325,7 @@ TSharedPtr<FJsonObject> FSatoriJoinLiveEventRequest::ToJson() const
 	return Json;
 }
 
-FSatoriLiveEvent FSatoriLiveEvent::FromJson(const TSharedPtr<FJsonObject>& Json)
+FSatoriLiveEvent FSatoriLiveEvent::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FSatoriLiveEvent Result;
 	if (!Json.IsValid())
@@ -1390,7 +1390,7 @@ FSatoriLiveEvent FSatoriLiveEvent::FromJson(const TSharedPtr<FJsonObject>& Json)
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FSatoriLiveEvent::ToJson() const
+TSharedPtr<FJsonObject> FSatoriLiveEvent::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (!Name.IsEmpty())
@@ -1431,7 +1431,7 @@ TSharedPtr<FJsonObject> FSatoriLiveEvent::ToJson() const
 	return Json;
 }
 
-FSatoriLiveEventList FSatoriLiveEventList::FromJson(const TSharedPtr<FJsonObject>& Json)
+FSatoriLiveEventList FSatoriLiveEventList::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FSatoriLiveEventList Result;
 	if (!Json.IsValid())
@@ -1471,7 +1471,7 @@ FSatoriLiveEventList FSatoriLiveEventList::FromJson(const TSharedPtr<FJsonObject
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FSatoriLiveEventList::ToJson() const
+TSharedPtr<FJsonObject> FSatoriLiveEventList::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (LiveEvents.Num() > 0)
@@ -1495,7 +1495,7 @@ TSharedPtr<FJsonObject> FSatoriLiveEventList::ToJson() const
 	return Json;
 }
 
-FSatoriProperties FSatoriProperties::FromJson(const TSharedPtr<FJsonObject>& Json)
+FSatoriProperties FSatoriProperties::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FSatoriProperties Result;
 	if (!Json.IsValid())
@@ -1538,7 +1538,7 @@ FSatoriProperties FSatoriProperties::FromJson(const TSharedPtr<FJsonObject>& Jso
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FSatoriProperties::ToJson() const
+TSharedPtr<FJsonObject> FSatoriProperties::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (Default.Num() > 0)
@@ -1571,7 +1571,7 @@ TSharedPtr<FJsonObject> FSatoriProperties::ToJson() const
 	return Json;
 }
 
-FSatoriSession FSatoriSession::FromJson(const TSharedPtr<FJsonObject>& Json)
+FSatoriSession FSatoriSession::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FSatoriSession Result;
 	if (!Json.IsValid())
@@ -1598,7 +1598,7 @@ FSatoriSession FSatoriSession::FromJson(const TSharedPtr<FJsonObject>& Json)
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FSatoriSession::ToJson() const
+TSharedPtr<FJsonObject> FSatoriSession::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (!Token.IsEmpty())
@@ -1613,7 +1613,7 @@ TSharedPtr<FJsonObject> FSatoriSession::ToJson() const
 	return Json;
 }
 
-FSatoriUpdatePropertiesRequest FSatoriUpdatePropertiesRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+FSatoriUpdatePropertiesRequest FSatoriUpdatePropertiesRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FSatoriUpdatePropertiesRequest Result;
 	if (!Json.IsValid())
@@ -1649,7 +1649,7 @@ FSatoriUpdatePropertiesRequest FSatoriUpdatePropertiesRequest::FromJson(const TS
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FSatoriUpdatePropertiesRequest::ToJson() const
+TSharedPtr<FJsonObject> FSatoriUpdatePropertiesRequest::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	Json->SetBoolField(TEXT("recompute"), Recompute);
@@ -1674,7 +1674,7 @@ TSharedPtr<FJsonObject> FSatoriUpdatePropertiesRequest::ToJson() const
 	return Json;
 }
 
-FSatoriUpdateMessageRequest FSatoriUpdateMessageRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+FSatoriUpdateMessageRequest FSatoriUpdateMessageRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FSatoriUpdateMessageRequest Result;
 	if (!Json.IsValid())
@@ -1696,7 +1696,7 @@ FSatoriUpdateMessageRequest FSatoriUpdateMessageRequest::FromJson(const TSharedP
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FSatoriUpdateMessageRequest::ToJson() const
+TSharedPtr<FJsonObject> FSatoriUpdateMessageRequest::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (!Id.IsEmpty())
@@ -1710,7 +1710,7 @@ TSharedPtr<FJsonObject> FSatoriUpdateMessageRequest::ToJson() const
 
 // --- FSatoriApiConfig ---
 
-FString FSatoriApiConfig::GetBaseUrl() const
+FString FSatoriApiConfig::GetBaseUrl() const noexcept
 {
 	const FString Scheme = bUseSSL ? TEXT("https") : TEXT("http");
 	return FString::Printf(TEXT("%s://%s:%d"), *Scheme, *Host, Port);
@@ -1731,7 +1731,7 @@ void DoHttpRequest(
 	const FString& TokenString,
 	TFunction<void(TSharedPtr<FJsonObject>)> OnSuccess,
 	TFunction<void(const FSatoriError&)> OnError,
-	FSatoriCancellationTokenPtr CancellationToken)
+	FSatoriCancellationTokenPtr CancellationToken) noexcept
 {
 	SCOPE_CYCLE_COUNTER(STAT_Satori_MakeRequest_Dispatch);
 	TRACE_CPUPROFILER_EVENT_SCOPE(Satori_MakeRequest);
@@ -1861,7 +1861,7 @@ void SendRequest(
 	const FString& AuthValue,
 	TFunction<void(TSharedPtr<FJsonObject>)> OnSuccess,
 	TFunction<void(const FSatoriError&)> OnError,
-	FSatoriCancellationTokenPtr CancellationToken)
+	FSatoriCancellationTokenPtr CancellationToken) noexcept
 {
 	// Early cancellation check
 	if (CancellationToken && CancellationToken->IsCancelled())
@@ -1924,7 +1924,7 @@ void MakeRequest(
 	const FString& AuthValue,
 	TFunction<void(TSharedPtr<FJsonObject>)> OnSuccess,
 	TFunction<void(const FSatoriError&)> OnError,
-	FSatoriCancellationTokenPtr CancellationToken)
+	FSatoriCancellationTokenPtr CancellationToken) noexcept
 {
 	FString BodyString;
 	if (Body.IsValid() && Method != TEXT("GET"))
@@ -1945,7 +1945,7 @@ void SatoriApi::Authenticate(
 	const TMap<FString, FString>& Custom,
 	TFunction<void(const FSatoriSession&)> OnSuccess,
 	TFunction<void(const FSatoriError&)> OnError,
-	FSatoriCancellationTokenPtr CancellationToken)
+	FSatoriCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v1/authenticate");
 	TArray<FString> QueryParams;
@@ -1998,7 +1998,7 @@ void SatoriApi::AuthenticateLogout(
 	FString RefreshToken,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FSatoriError&)> OnError,
-	FSatoriCancellationTokenPtr CancellationToken)
+	FSatoriCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v1/authenticate/logout");
 	TArray<FString> QueryParams;
@@ -2034,7 +2034,7 @@ void SatoriApi::AuthenticateRefresh(
 	FString RefreshToken,
 	TFunction<void(const FSatoriSession&)> OnSuccess,
 	TFunction<void(const FSatoriError&)> OnError,
-	FSatoriCancellationTokenPtr CancellationToken)
+	FSatoriCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v1/authenticate/refresh");
 	TArray<FString> QueryParams;
@@ -2067,7 +2067,7 @@ void SatoriApi::DeleteIdentity(
 	FSatoriSessionPtr Session,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FSatoriError&)> OnError,
-	FSatoriCancellationTokenPtr CancellationToken)
+	FSatoriCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v1/identity");
 
@@ -2090,7 +2090,7 @@ void SatoriApi::Event(
 	const TArray<FSatoriEvent>& Events,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FSatoriError&)> OnError,
-	FSatoriCancellationTokenPtr CancellationToken)
+	FSatoriCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v1/event");
 	TArray<FString> QueryParams;
@@ -2128,7 +2128,7 @@ void SatoriApi::ServerEvent(
 	const TArray<FSatoriEvent>& Events,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FSatoriError&)> OnError,
-	FSatoriCancellationTokenPtr CancellationToken)
+	FSatoriCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v1/server-event");
 	TArray<FString> QueryParams;
@@ -2167,7 +2167,7 @@ void SatoriApi::GetExperiments(
 	const TArray<FString>& Labels,
 	TFunction<void(const FSatoriExperimentList&)> OnSuccess,
 	TFunction<void(const FSatoriError&)> OnError,
-	FSatoriCancellationTokenPtr CancellationToken)
+	FSatoriCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v1/experiment");
 	TArray<FString> QueryParams;
@@ -2205,7 +2205,7 @@ void SatoriApi::GetFlagOverrides(
 	const TArray<FString>& Labels,
 	TFunction<void(const FSatoriFlagOverrideList&)> OnSuccess,
 	TFunction<void(const FSatoriError&)> OnError,
-	FSatoriCancellationTokenPtr CancellationToken)
+	FSatoriCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v1/flag/override");
 	TArray<FString> QueryParams;
@@ -2243,7 +2243,7 @@ void SatoriApi::GetFlags(
 	const TArray<FString>& Labels,
 	TFunction<void(const FSatoriFlagList&)> OnSuccess,
 	TFunction<void(const FSatoriError&)> OnError,
-	FSatoriCancellationTokenPtr CancellationToken)
+	FSatoriCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v1/flag");
 	TArray<FString> QueryParams;
@@ -2285,7 +2285,7 @@ void SatoriApi::GetLiveEvents(
 	int64 EndTimeSec,
 	TFunction<void(const FSatoriLiveEventList&)> OnSuccess,
 	TFunction<void(const FSatoriError&)> OnError,
-	FSatoriCancellationTokenPtr CancellationToken)
+	FSatoriCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v1/live-event");
 	TArray<FString> QueryParams;
@@ -2338,7 +2338,7 @@ void SatoriApi::JoinLiveEvent(
 	FString Id,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FSatoriError&)> OnError,
-	FSatoriCancellationTokenPtr CancellationToken)
+	FSatoriCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v1/live-event/{id}/participation");
 	Endpoint = Endpoint.Replace(TEXT("{id}"), *Id);
@@ -2366,7 +2366,7 @@ void SatoriApi::Healthcheck(
 	FSatoriSessionPtr Session,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FSatoriError&)> OnError,
-	FSatoriCancellationTokenPtr CancellationToken)
+	FSatoriCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/healthcheck");
 
@@ -2391,7 +2391,7 @@ void SatoriApi::Identify(
 	const TMap<FString, FString>& Custom,
 	TFunction<void(const FSatoriSession&)> OnSuccess,
 	TFunction<void(const FSatoriError&)> OnError,
-	FSatoriCancellationTokenPtr CancellationToken)
+	FSatoriCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v1/identify");
 	TArray<FString> QueryParams;
@@ -2442,7 +2442,7 @@ void SatoriApi::ListProperties(
 	FSatoriSessionPtr Session,
 	TFunction<void(const FSatoriProperties&)> OnSuccess,
 	TFunction<void(const FSatoriError&)> OnError,
-	FSatoriCancellationTokenPtr CancellationToken)
+	FSatoriCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v1/properties");
 
@@ -2465,7 +2465,7 @@ void SatoriApi::Readycheck(
 	FSatoriSessionPtr Session,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FSatoriError&)> OnError,
-	FSatoriCancellationTokenPtr CancellationToken)
+	FSatoriCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/readycheck");
 
@@ -2490,7 +2490,7 @@ void SatoriApi::UpdateProperties(
 	const TMap<FString, FString>& Custom,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FSatoriError&)> OnError,
-	FSatoriCancellationTokenPtr CancellationToken)
+	FSatoriCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v1/properties");
 	TArray<FString> QueryParams;
@@ -2541,7 +2541,7 @@ void SatoriApi::GetMessageList(
 	const TArray<FString>& MessageIds,
 	TFunction<void(const FSatoriGetMessageListResponse&)> OnSuccess,
 	TFunction<void(const FSatoriError&)> OnError,
-	FSatoriCancellationTokenPtr CancellationToken)
+	FSatoriCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v1/message");
 	TArray<FString> QueryParams;
@@ -2585,7 +2585,7 @@ void SatoriApi::UpdateMessage(
 	int64 ConsumeTime,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FSatoriError&)> OnError,
-	FSatoriCancellationTokenPtr CancellationToken)
+	FSatoriCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v1/message/{id}");
 	Endpoint = Endpoint.Replace(TEXT("{id}"), *Id);
@@ -2621,7 +2621,7 @@ void SatoriApi::DeleteMessage(
 	FString Id,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FSatoriError&)> OnError,
-	FSatoriCancellationTokenPtr CancellationToken)
+	FSatoriCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v1/message/{id}");
 	Endpoint = Endpoint.Replace(TEXT("{id}"), *Id);

@@ -20,7 +20,7 @@
 #include "Containers/Ticker.h"
 #include "Modules/ModuleManager.h"
 
-bool Nakama::IsTransientError(const FNakamaError& Error)
+bool Nakama::IsTransientError(const FNakamaError& Error) noexcept
 {
 	switch (Error.Code)
 	{
@@ -33,7 +33,7 @@ bool Nakama::IsTransientError(const FNakamaError& Error)
 	}
 }
 
-float Nakama::CalculateBackoff(int32 Attempt, const FNakamaRetryConfiguration& Config)
+float Nakama::CalculateBackoff(int32 Attempt, const FNakamaRetryConfiguration& Config) noexcept
 {
 	const float ExponentialDelay = FMath::Pow(2.0f, static_cast<float>(Attempt - 1)) * Config.BaseDelayMs;
 	const float Jitter = FMath::FRand() * ExponentialDelay;
@@ -49,7 +49,7 @@ void MaybeRefreshThenCall(
 	FNakamaSessionPtr Session,
 	TFunction<void()> OnReady,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	if (!Client.bAutoRefreshSession
 		|| !Session.IsValid()
@@ -105,8 +105,7 @@ void MaybeRefreshThenCall(
 {{- $isSessionRefresh := eq $rpc.Name "SessionRefresh" }}
 {{- $needsSession := and (not $isAuthenticate) (not $isSessionRefresh) }}
 {{- $resultType := asyncResultType $returnType }}
-
-TNakamaFuture<{{ $resultType }}> Nakama::{{ $rpc.Name }}(
+TNakamaFuture<{{ $resultType }}Result> Nakama::{{ $rpc.Name }}(
 	FNakamaClient Client,
 	{{- if $needsSession }}
 	FNakamaSessionPtr Session,
@@ -123,10 +122,9 @@ TNakamaFuture<{{ $resultType }}> Nakama::{{ $rpc.Name }}(
 	const {{ getUnrealMapType $field.Type }}& {{ $field.Name | pascalCase }},
 	{{- end -}}
 	{{- end }}
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<TNakamaResult<{{ $resultType }}>>>();
-	TFuture<TNakamaResult<{{ $resultType }}>> Future = Promise->GetFuture();
+	auto Promise = MakeShared<TPromise<{{ $resultType }}Result>>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -148,7 +146,7 @@ TNakamaFuture<{{ $resultType }}> Nakama::{{ $rpc.Name }}(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(TNakamaResult<{{ $resultType }}>::Failure(Error));
+			Promise->SetValue({{ $resultType }}Result{{ "{{" }}}, Error, true});
 		}
 	};
 
@@ -193,14 +191,14 @@ TNakamaFuture<{{ $resultType }}> Nakama::{{ $rpc.Name }}(
 					{
 						auto DR = DoRequest; auto OE = OnError;
 						DR->Reset(); OE->Reset();
-						Promise->SetValue(TNakamaResult<{{ $resultType }}>::Success(Result));
+						Promise->SetValue({{ $resultType }}Result{Result, {}, false});
 					},
 					{{- else }}
 					[Promise, DoRequest, OnError]()
 					{
 						auto DR = DoRequest; auto OE = OnError;
 						DR->Reset(); OE->Reset();
-						Promise->SetValue(TNakamaResult<{{ $resultType }}>::Success(FNakamaVoid{}));
+						Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 					},
 					{{- end }}
 					*OnError,
@@ -224,14 +222,14 @@ TNakamaFuture<{{ $resultType }}> Nakama::{{ $rpc.Name }}(
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(TNakamaResult<{{ $resultType }}>::Success(Result));
+				Promise->SetValue({{ $resultType }}Result{Result, {}, false});
 			},
 			{{- else }}
 			[Promise, DoRequest, OnError]()
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(TNakamaResult<{{ $resultType }}>::Success(FNakamaVoid{}));
+				Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 			},
 			{{- end }}
 			*OnError,
@@ -241,11 +239,11 @@ TNakamaFuture<{{ $resultType }}> Nakama::{{ $rpc.Name }}(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<{{ $resultType }}>(MoveTemp(Future));
+	return TNakamaFuture<{{ $resultType }}Result>(Promise->GetFuture());
 }
 {{- if $needsSession }}
 
-TNakamaFuture<{{ $resultType }}> Nakama::{{ $rpc.Name }}(
+TNakamaFuture<{{ $resultType }}Result> Nakama::{{ $rpc.Name }}(
 	FNakamaClient Client,
 	const FString& HttpKey,
 	{{- if $hasParams -}}
@@ -262,10 +260,9 @@ TNakamaFuture<{{ $resultType }}> Nakama::{{ $rpc.Name }}(
 	const {{ getUnrealMapType $field.Type }}& {{ $field.Name | pascalCase }},
 	{{- end -}}
 	{{- end }}
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<TNakamaResult<{{ $resultType }}>>>();
-	TFuture<TNakamaResult<{{ $resultType }}>> Future = Promise->GetFuture();
+	auto Promise = MakeShared<TPromise<{{ $resultType }}Result>>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -287,7 +284,7 @@ TNakamaFuture<{{ $resultType }}> Nakama::{{ $rpc.Name }}(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(TNakamaResult<{{ $resultType }}>::Failure(Error));
+			Promise->SetValue({{ $resultType }}Result{{ "{{" }}}, Error, true});
 		}
 	};
 
@@ -323,14 +320,14 @@ TNakamaFuture<{{ $resultType }}> Nakama::{{ $rpc.Name }}(
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(TNakamaResult<{{ $resultType }}>::Success(Result));
+				Promise->SetValue({{ $resultType }}Result{Result, {}, false});
 			},
 			{{- else }}
 			[Promise, DoRequest, OnError]()
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(TNakamaResult<{{ $resultType }}>::Success(FNakamaVoid{}));
+				Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 			},
 			{{- end }}
 			*OnError,
@@ -339,7 +336,7 @@ TNakamaFuture<{{ $resultType }}> Nakama::{{ $rpc.Name }}(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<{{ $resultType }}>(MoveTemp(Future));
+	return TNakamaFuture<{{ $resultType }}Result>(Promise->GetFuture());
 }
 {{- end }}
 {{- end }}

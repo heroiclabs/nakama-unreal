@@ -1,7 +1,7 @@
 /**
  * Satori Async API Integration Test Suite
  *
- * Tests for all Satori REST API endpoints using the TSatoriFuture-based Satori:: free-function API.
+ * Tests for all Satori REST API endpoints using the TFuture-based Satori:: free-function API.
  * Mirrors the Nakama async test pattern: each spec authenticates in BeforeEach, then tests
  * individual endpoints.
  */
@@ -13,8 +13,8 @@
  * Helper macro: early-return on unexpected error inside a .Next() callback.
  */
 #define SATORI_FAIL_ON_ERROR(Result, Done) \
-	if (Result.IsError()) { \
-		AddError(FString::Printf(TEXT("Unexpected error %d: %s"), Result.GetError().Code, *Result.GetError().Message)); \
+	if (Result.bIsError) { \
+		AddError(FString::Printf(TEXT("Unexpected error %d: %s"), Result.Error.Code, *Result.Error.Message)); \
 		Done.Execute(); \
 		return; \
 	}
@@ -52,21 +52,21 @@ void FSatoriAsyncAuthSpec::Define()
 	{
 		LatentIt("should authenticate with valid identity ID", [this](const FDoneDelegate& Done)
 		{
-			Satori::Authenticate(Client, TestIdentityId, false, {}, {}).Next([this, Done](TSatoriResult<FSatoriSession> Result)
+			Satori::Authenticate(Client, TestIdentityId, false, {}, {}).Next([this, Done](FSatoriSessionResult Result)
 			{
 				SATORI_FAIL_ON_ERROR(Result, Done);
-				TestTrue("Session has token", !Result.GetValue().Token.IsEmpty());
-				TestTrue("Session has refresh token", !Result.GetValue().RefreshToken.IsEmpty());
+				TestTrue("Session has token", !Result.Value.Token.IsEmpty());
+				TestTrue("Session has refresh token", !Result.Value.RefreshToken.IsEmpty());
 				Done.Execute();
 			});
 		});
 
 		LatentIt("should authenticate with no_session flag", [this](const FDoneDelegate& Done)
 		{
-			Satori::Authenticate(Client, TestIdentityId, true, {}, {}).Next([this, Done](TSatoriResult<FSatoriSession> Result)
+			Satori::Authenticate(Client, TestIdentityId, true, {}, {}).Next([this, Done](FSatoriSessionResult Result)
 			{
 				SATORI_FAIL_ON_ERROR(Result, Done);
-				TestTrue("Token is empty with no_session", Result.GetValue().Token.IsEmpty());
+				TestTrue("Token is empty with no_session", Result.Value.Token.IsEmpty());
 				Done.Execute();
 			});
 		});
@@ -77,10 +77,10 @@ void FSatoriAsyncAuthSpec::Define()
 			Defaults.Add(TEXT("platform"), TEXT("windows"));
 			Defaults.Add(TEXT("version"), TEXT("1.0"));
 
-			Satori::Authenticate(Client, TestIdentityId, false, Defaults, {}).Next([this, Done](TSatoriResult<FSatoriSession> Result)
+			Satori::Authenticate(Client, TestIdentityId, false, Defaults, {}).Next([this, Done](FSatoriSessionResult Result)
 			{
 				SATORI_FAIL_ON_ERROR(Result, Done);
-				TestTrue("Session has token", !Result.GetValue().Token.IsEmpty());
+				TestTrue("Session has token", !Result.Value.Token.IsEmpty());
 				Done.Execute();
 			});
 		});
@@ -90,28 +90,28 @@ void FSatoriAsyncAuthSpec::Define()
 			TMap<FString, FString> Custom;
 			Custom.Add(TEXT("preferred_mode"), TEXT("ranked"));
 
-			Satori::Authenticate(Client, TestIdentityId, false, {}, Custom).Next([this, Done](TSatoriResult<FSatoriSession> Result)
+			Satori::Authenticate(Client, TestIdentityId, false, {}, Custom).Next([this, Done](FSatoriSessionResult Result)
 			{
 				SATORI_FAIL_ON_ERROR(Result, Done);
-				TestTrue("Session has token", !Result.GetValue().Token.IsEmpty());
+				TestTrue("Session has token", !Result.Value.Token.IsEmpty());
 				Done.Execute();
 			});
 		});
 
 		LatentIt("should fail with empty identity ID", [this](const FDoneDelegate& Done)
 		{
-			Satori::Authenticate(Client, TEXT(""), false, {}, {}).Next([this, Done](TSatoriResult<FSatoriSession> Result)
+			Satori::Authenticate(Client, TEXT(""), false, {}, {}).Next([this, Done](FSatoriSessionResult Result)
 			{
-				TestTrue("Expected error", Result.IsError());
+				TestTrue("Expected error", Result.bIsError);
 				Done.Execute();
 			});
 		});
 
 		LatentIt("should fail with identity ID too short", [this](const FDoneDelegate& Done)
 		{
-			Satori::Authenticate(Client, TEXT("abc"), false, {}, {}).Next([this, Done](TSatoriResult<FSatoriSession> Result)
+			Satori::Authenticate(Client, TEXT("abc"), false, {}, {}).Next([this, Done](FSatoriSessionResult Result)
 			{
-				TestTrue("Expected error", Result.IsError());
+				TestTrue("Expected error", Result.bIsError);
 				Done.Execute();
 			});
 		});
@@ -121,16 +121,16 @@ void FSatoriAsyncAuthSpec::Define()
 	{
 		LatentIt("should refresh a valid session", [this](const FDoneDelegate& Done)
 		{
-			Satori::Authenticate(Client, TestIdentityId, false, {}, {}).Next([this, Done](TSatoriResult<FSatoriSession> Result)
+			Satori::Authenticate(Client, TestIdentityId, false, {}, {}).Next([this, Done](FSatoriSessionResult Result)
 			{
 				SATORI_FAIL_ON_ERROR(Result, Done);
-				const FString RefreshToken = Result.GetValue().RefreshToken;
+				const FString RefreshToken = Result.Value.RefreshToken;
 
-				Satori::AuthenticateRefresh(Client, RefreshToken).Next([this, Done](TSatoriResult<FSatoriSession> Result)
+				Satori::AuthenticateRefresh(Client, RefreshToken).Next([this, Done](FSatoriSessionResult Result)
 				{
 					SATORI_FAIL_ON_ERROR(Result, Done);
-					TestTrue("Refreshed session has token", !Result.GetValue().Token.IsEmpty());
-					TestTrue("Refreshed session has refresh token", !Result.GetValue().RefreshToken.IsEmpty());
+					TestTrue("Refreshed session has token", !Result.Value.Token.IsEmpty());
+					TestTrue("Refreshed session has refresh token", !Result.Value.RefreshToken.IsEmpty());
 					Done.Execute();
 				});
 			});
@@ -138,9 +138,9 @@ void FSatoriAsyncAuthSpec::Define()
 
 		LatentIt("should fail with invalid refresh token", [this](const FDoneDelegate& Done)
 		{
-			Satori::AuthenticateRefresh(Client, TEXT("invalid-token")).Next([this, Done](TSatoriResult<FSatoriSession> Result)
+			Satori::AuthenticateRefresh(Client, TEXT("invalid-token")).Next([this, Done](FSatoriSessionResult Result)
 			{
-				TestTrue("Expected error", Result.IsError());
+				TestTrue("Expected error", Result.bIsError);
 				Done.Execute();
 			});
 		});
@@ -150,13 +150,13 @@ void FSatoriAsyncAuthSpec::Define()
 	{
 		LatentIt("should log out a valid session", [this](const FDoneDelegate& Done)
 		{
-			Satori::Authenticate(Client, TestIdentityId, false, {}, {}).Next([this, Done](TSatoriResult<FSatoriSession> Result)
+			Satori::Authenticate(Client, TestIdentityId, false, {}, {}).Next([this, Done](FSatoriSessionResult Result)
 			{
 				SATORI_FAIL_ON_ERROR(Result, Done);
-				const FString Token = Result.GetValue().Token;
-				const FString RefreshToken = Result.GetValue().RefreshToken;
+				const FString Token = Result.Value.Token;
+				const FString RefreshToken = Result.Value.RefreshToken;
 
-				Satori::AuthenticateLogout(Client, Token, RefreshToken).Next([this, Done](TSatoriResult<FSatoriVoid> Result)
+				Satori::AuthenticateLogout(Client, Token, RefreshToken).Next([this, Done](FSatoriVoidResult Result)
 				{
 					SATORI_FAIL_ON_ERROR(Result, Done);
 					Done.Execute();
@@ -193,7 +193,7 @@ void FSatoriAsyncHealthcheckSpec::Define()
 
 	LatentIt("should return healthy", [this](const FDoneDelegate& Done)
 	{
-		Satori::Healthcheck(Client, nullptr).Next([this, Done](TSatoriResult<FSatoriVoid> Result)
+		Satori::Healthcheck(Client, nullptr).Next([this, Done](FSatoriVoidResult Result)
 		{
 			SATORI_FAIL_ON_ERROR(Result, Done);
 			Done.Execute();
@@ -202,7 +202,7 @@ void FSatoriAsyncHealthcheckSpec::Define()
 
 	LatentIt("readycheck should return ready", [this](const FDoneDelegate& Done)
 	{
-		Satori::Readycheck(Client, nullptr).Next([this, Done](TSatoriResult<FSatoriVoid> Result)
+		Satori::Readycheck(Client, nullptr).Next([this, Done](FSatoriVoidResult Result)
 		{
 			SATORI_FAIL_ON_ERROR(Result, Done);
 			Done.Execute();
@@ -250,10 +250,10 @@ void FSatoriAsyncIdentitySpec::Define()
 			{
 				Session = MakeShared<FSatoriSession>(Sess);
 				return Satori::Identify(Client, Session, NewId, {}, {});
-			}).Next([this, Done](TSatoriResult<FSatoriSession> Result)
+			}).Next([this, Done](FSatoriSessionResult Result)
 			{
 				SATORI_FAIL_ON_ERROR(Result, Done);
-				TestTrue("New session has token", !Result.GetValue().Token.IsEmpty());
+				TestTrue("New session has token", !Result.Value.Token.IsEmpty());
 				Done.Execute();
 			});
 		});
@@ -269,7 +269,7 @@ void FSatoriAsyncIdentitySpec::Define()
 			{
 				Session = MakeShared<FSatoriSession>(Sess);
 				return Satori::DeleteIdentity(Client, Session);
-			}).Next([this, Done](TSatoriResult<FSatoriVoid> Result)
+			}).Next([this, Done](FSatoriVoidResult Result)
 			{
 				SATORI_FAIL_ON_ERROR(Result, Done);
 				Done.Execute();
@@ -319,10 +319,10 @@ void FSatoriAsyncPropertiesSpec::Define()
 			{
 				Session = MakeShared<FSatoriSession>(Sess);
 				return Satori::ListProperties(Client, Session);
-			}).Next([this, Done](TSatoriResult<FSatoriProperties> Result)
+			}).Next([this, Done](FSatoriPropertiesResult Result)
 			{
 				SATORI_FAIL_ON_ERROR(Result, Done);
-				const auto& Props = Result.GetValue();
+				const auto& Props = Result.Value;
 				TestTrue("Default properties contain platform", Props.Default.Contains(TEXT("platform")));
 				Done.Execute();
 			});
@@ -346,10 +346,10 @@ void FSatoriAsyncPropertiesSpec::Define()
 			}).Next([this](const FSatoriVoid&)
 			{
 				return Satori::ListProperties(Client, Session);
-			}).Next([this, Done](TSatoriResult<FSatoriProperties> Result)
+			}).Next([this, Done](FSatoriPropertiesResult Result)
 			{
 				SATORI_FAIL_ON_ERROR(Result, Done);
-				const auto& Props = Result.GetValue();
+				const auto& Props = Result.Value;
 				TestEqual("Custom level", Props.Custom.FindRef(TEXT("level")), TEXT("5"));
 				TestEqual("Custom rank", Props.Custom.FindRef(TEXT("rank")), TEXT("gold"));
 				Done.Execute();
@@ -370,10 +370,10 @@ void FSatoriAsyncPropertiesSpec::Define()
 			}).Next([this](const FSatoriVoid&)
 			{
 				return Satori::ListProperties(Client, Session);
-			}).Next([this, Done](TSatoriResult<FSatoriProperties> Result)
+			}).Next([this, Done](FSatoriPropertiesResult Result)
 			{
 				SATORI_FAIL_ON_ERROR(Result, Done);
-				TestEqual("Default region", Result.GetValue().Default.FindRef(TEXT("region")), TEXT("eu-west"));
+				TestEqual("Default region", Result.Value.Default.FindRef(TEXT("region")), TEXT("eu-west"));
 				Done.Execute();
 			});
 		});
@@ -422,7 +422,7 @@ void FSatoriAsyncEventSpec::Define()
 				Evt.Value = TEXT("tutorial");
 
 				return Satori::Event(Client, Session, {Evt});
-			}).Next([this, Done](TSatoriResult<FSatoriVoid> Result)
+			}).Next([this, Done](FSatoriVoidResult Result)
 			{
 				SATORI_FAIL_ON_ERROR(Result, Done);
 				Done.Execute();
@@ -445,7 +445,7 @@ void FSatoriAsyncEventSpec::Define()
 				Evt2.Metadata.Add(TEXT("score"), TEXT("1500"));
 
 				return Satori::Event(Client, Session, {Evt1, Evt2});
-			}).Next([this, Done](TSatoriResult<FSatoriVoid> Result)
+			}).Next([this, Done](FSatoriVoidResult Result)
 			{
 				SATORI_FAIL_ON_ERROR(Result, Done);
 				Done.Execute();
@@ -465,7 +465,7 @@ void FSatoriAsyncEventSpec::Define()
 				Evt.Metadata.Add(TEXT("amount"), TEXT("9.99"));
 
 				return Satori::Event(Client, Session, {Evt});
-			}).Next([this, Done](TSatoriResult<FSatoriVoid> Result)
+			}).Next([this, Done](FSatoriVoidResult Result)
 			{
 				SATORI_FAIL_ON_ERROR(Result, Done);
 				Done.Execute();
@@ -511,7 +511,7 @@ void FSatoriAsyncFlagsSpec::Define()
 			{
 				Session = MakeShared<FSatoriSession>(Sess);
 				return Satori::GetFlags(Client, Session, {}, {});
-			}).Next([this, Done](TSatoriResult<FSatoriFlagList> Result)
+			}).Next([this, Done](FSatoriFlagListResult Result)
 			{
 				SATORI_FAIL_ON_ERROR(Result, Done);
 				// Fresh server may have no flags configured, but the call should succeed
@@ -525,10 +525,10 @@ void FSatoriAsyncFlagsSpec::Define()
 			{
 				Session = MakeShared<FSatoriSession>(Sess);
 				return Satori::GetFlags(Client, Session, {TEXT("nonexistent_flag")}, {});
-			}).Next([this, Done](TSatoriResult<FSatoriFlagList> Result)
+			}).Next([this, Done](FSatoriFlagListResult Result)
 			{
 				SATORI_FAIL_ON_ERROR(Result, Done);
-				TestEqual("No flags returned for nonexistent name", Result.GetValue().Flags.Num(), 0);
+				TestEqual("No flags returned for nonexistent name", Result.Value.Flags.Num(), 0);
 				Done.Execute();
 			});
 		});
@@ -542,7 +542,7 @@ void FSatoriAsyncFlagsSpec::Define()
 			{
 				Session = MakeShared<FSatoriSession>(Sess);
 				return Satori::GetFlagOverrides(Client, Session, {}, {});
-			}).Next([this, Done](TSatoriResult<FSatoriFlagOverrideList> Result)
+			}).Next([this, Done](FSatoriFlagOverrideListResult Result)
 			{
 				SATORI_FAIL_ON_ERROR(Result, Done);
 				Done.Execute();
@@ -588,7 +588,7 @@ void FSatoriAsyncExperimentsSpec::Define()
 			{
 				Session = MakeShared<FSatoriSession>(Sess);
 				return Satori::GetExperiments(Client, Session, {}, {});
-			}).Next([this, Done](TSatoriResult<FSatoriExperimentList> Result)
+			}).Next([this, Done](FSatoriExperimentListResult Result)
 			{
 				SATORI_FAIL_ON_ERROR(Result, Done);
 				Done.Execute();
@@ -601,10 +601,10 @@ void FSatoriAsyncExperimentsSpec::Define()
 			{
 				Session = MakeShared<FSatoriSession>(Sess);
 				return Satori::GetExperiments(Client, Session, {TEXT("nonexistent_experiment")}, {});
-			}).Next([this, Done](TSatoriResult<FSatoriExperimentList> Result)
+			}).Next([this, Done](FSatoriExperimentListResult Result)
 			{
 				SATORI_FAIL_ON_ERROR(Result, Done);
-				TestEqual("No experiments for nonexistent name", Result.GetValue().Experiments.Num(), 0);
+				TestEqual("No experiments for nonexistent name", Result.Value.Experiments.Num(), 0);
 				Done.Execute();
 			});
 		});
@@ -648,7 +648,7 @@ void FSatoriAsyncLiveEventsSpec::Define()
 			{
 				Session = MakeShared<FSatoriSession>(Sess);
 				return Satori::GetLiveEvents(Client, Session, {}, {}, 0, 0, 0, 0);
-			}).Next([this, Done](TSatoriResult<FSatoriLiveEventList> Result)
+			}).Next([this, Done](FSatoriLiveEventListResult Result)
 			{
 				SATORI_FAIL_ON_ERROR(Result, Done);
 				Done.Execute();
@@ -661,10 +661,10 @@ void FSatoriAsyncLiveEventsSpec::Define()
 			{
 				Session = MakeShared<FSatoriSession>(Sess);
 				return Satori::GetLiveEvents(Client, Session, {TEXT("nonexistent_event")}, {}, 0, 0, 0, 0);
-			}).Next([this, Done](TSatoriResult<FSatoriLiveEventList> Result)
+			}).Next([this, Done](FSatoriLiveEventListResult Result)
 			{
 				SATORI_FAIL_ON_ERROR(Result, Done);
-				TestEqual("No live events for nonexistent name", Result.GetValue().LiveEvents.Num(), 0);
+				TestEqual("No live events for nonexistent name", Result.Value.LiveEvents.Num(), 0);
 				Done.Execute();
 			});
 		});
@@ -708,11 +708,11 @@ void FSatoriAsyncMessagesSpec::Define()
 			{
 				Session = MakeShared<FSatoriSession>(Sess);
 				return Satori::GetMessageList(Client, Session, 10, true, TEXT(""), {});
-			}).Next([this, Done](TSatoriResult<FSatoriGetMessageListResponse> Result)
+			}).Next([this, Done](FSatoriGetMessageListResponseResult Result)
 			{
 				SATORI_FAIL_ON_ERROR(Result, Done);
 				// Fresh identity has no messages
-				TestEqual("No messages for fresh identity", Result.GetValue().Messages.Num(), 0);
+				TestEqual("No messages for fresh identity", Result.Value.Messages.Num(), 0);
 				Done.Execute();
 			});
 		});
@@ -723,7 +723,7 @@ void FSatoriAsyncMessagesSpec::Define()
 			{
 				Session = MakeShared<FSatoriSession>(Sess);
 				return Satori::GetMessageList(Client, Session, 10, false, TEXT(""), {});
-			}).Next([this, Done](TSatoriResult<FSatoriGetMessageListResponse> Result)
+			}).Next([this, Done](FSatoriGetMessageListResponseResult Result)
 			{
 				SATORI_FAIL_ON_ERROR(Result, Done);
 				Done.Execute();
@@ -773,13 +773,13 @@ void FSatoriAsyncSessionSpec::Define()
 			}).Next([this, &Session](const FSatoriFlagList&)
 			{
 				return Satori::AuthenticateRefresh(Client, Session->RefreshToken);
-			}).Next([this, Done](TSatoriResult<FSatoriSession> Result)
+			}).Next([this, Done](FSatoriSessionResult Result)
 			{
 				SATORI_FAIL_ON_ERROR(Result, Done);
-				const FString Token = Result.GetValue().Token;
-				const FString RefreshToken = Result.GetValue().RefreshToken;
+				const FString Token = Result.Value.Token;
+				const FString RefreshToken = Result.Value.RefreshToken;
 
-				Satori::AuthenticateLogout(Client, Token, RefreshToken).Next([this, Done](TSatoriResult<FSatoriVoid> Result)
+				Satori::AuthenticateLogout(Client, Token, RefreshToken).Next([this, Done](FSatoriVoidResult Result)
 				{
 					SATORI_FAIL_ON_ERROR(Result, Done);
 					Done.Execute();
@@ -796,9 +796,9 @@ void FSatoriAsyncSessionSpec::Define()
 			FakeSession->Token = TEXT("invalid.bearer.token");
 			FakeSession->RefreshToken = TEXT("invalid.refresh.token");
 
-			Satori::GetFlags(Client, FakeSession, {}, {}).Next([this, Done](TSatoriResult<FSatoriFlagList> Result)
+			Satori::GetFlags(Client, FakeSession, {}, {}).Next([this, Done](FSatoriFlagListResult Result)
 			{
-				TestTrue("Expected error with invalid session", Result.IsError());
+				TestTrue("Expected error with invalid session", Result.bIsError);
 				Done.Execute();
 			});
 		});

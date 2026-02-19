@@ -44,7 +44,7 @@ DECLARE_DWORD_ACCUMULATOR_STAT(TEXT("TotalErrors"), STAT_Nakama_TotalErrors, STA
 
 // --- FNakamaSession JWT helpers ---
 
-bool FNakamaSession::ParseJwtPayload(const FString& Jwt, TSharedPtr<FJsonObject>& Out)
+bool FNakamaSession::ParseJwtPayload(const FString& Jwt, TSharedPtr<FJsonObject>& Out) noexcept
 {
 	TArray<FString> Parts;
 	Jwt.ParseIntoArray(Parts, TEXT("."));
@@ -77,7 +77,7 @@ bool FNakamaSession::ParseJwtPayload(const FString& Jwt, TSharedPtr<FJsonObject>
 	return FJsonSerializer::Deserialize(Reader, Out) && Out.IsValid();
 }
 
-void FNakamaSession::ParseTokens()
+void FNakamaSession::ParseTokens() noexcept
 {
 	UserId.Empty();
 	Username.Empty();
@@ -130,7 +130,7 @@ void FNakamaSession::ParseTokens()
 	}
 }
 
-bool FNakamaSession::IsExpired(int64 BufferSeconds) const
+bool FNakamaSession::IsExpired(int64 BufferSeconds) const noexcept
 {
 	if (TokenExpiresAt == 0)
 	{
@@ -139,7 +139,7 @@ bool FNakamaSession::IsExpired(int64 BufferSeconds) const
 	return (TokenExpiresAt - BufferSeconds) <= FDateTime::UtcNow().ToUnixTimestamp();
 }
 
-bool FNakamaSession::IsRefreshExpired(int64 BufferSeconds) const
+bool FNakamaSession::IsRefreshExpired(int64 BufferSeconds) const noexcept
 {
 	if (RefreshTokenExpiresAt == 0)
 	{
@@ -148,14 +148,14 @@ bool FNakamaSession::IsRefreshExpired(int64 BufferSeconds) const
 	return (RefreshTokenExpiresAt - BufferSeconds) <= FDateTime::UtcNow().ToUnixTimestamp();
 }
 
-void FNakamaSession::Update(const FString& NewToken, const FString& NewRefreshToken)
+void FNakamaSession::Update(const FString& NewToken, const FString& NewRefreshToken) noexcept
 {
 	Token = NewToken;
 	RefreshToken = NewRefreshToken;
 	ParseTokens();
 }
 
-FNakamaUser FNakamaUser::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaUser FNakamaUser::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaUser Result;
 	if (!Json.IsValid())
@@ -237,7 +237,7 @@ FNakamaUser FNakamaUser::FromJson(const TSharedPtr<FJsonObject>& Json)
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaUser::ToJson() const
+TSharedPtr<FJsonObject> FNakamaUser::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (!Id.IsEmpty())
@@ -309,7 +309,7 @@ TSharedPtr<FJsonObject> FNakamaUser::ToJson() const
 	return Json;
 }
 
-FNakamaAccountDevice FNakamaAccountDevice::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaAccountDevice FNakamaAccountDevice::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaAccountDevice Result;
 	if (!Json.IsValid())
@@ -334,7 +334,7 @@ FNakamaAccountDevice FNakamaAccountDevice::FromJson(const TSharedPtr<FJsonObject
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaAccountDevice::ToJson() const
+TSharedPtr<FJsonObject> FNakamaAccountDevice::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (!Id.IsEmpty())
@@ -353,7 +353,7 @@ TSharedPtr<FJsonObject> FNakamaAccountDevice::ToJson() const
 	return Json;
 }
 
-FNakamaAccount FNakamaAccount::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaAccount FNakamaAccount::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaAccount Result;
 	if (!Json.IsValid())
@@ -406,7 +406,7 @@ FNakamaAccount FNakamaAccount::FromJson(const TSharedPtr<FJsonObject>& Json)
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaAccount::ToJson() const
+TSharedPtr<FJsonObject> FNakamaAccount::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	Json->SetObjectField(TEXT("user"), User.ToJson());
@@ -442,7 +442,7 @@ TSharedPtr<FJsonObject> FNakamaAccount::ToJson() const
 	return Json;
 }
 
-FNakamaAccountRefresh FNakamaAccountRefresh::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaAccountRefresh FNakamaAccountRefresh::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaAccountRefresh Result;
 	if (!Json.IsValid())
@@ -467,7 +467,7 @@ FNakamaAccountRefresh FNakamaAccountRefresh::FromJson(const TSharedPtr<FJsonObje
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaAccountRefresh::ToJson() const
+TSharedPtr<FJsonObject> FNakamaAccountRefresh::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (!Token.IsEmpty())
@@ -486,7 +486,7 @@ TSharedPtr<FJsonObject> FNakamaAccountRefresh::ToJson() const
 	return Json;
 }
 
-FNakamaAccountApple FNakamaAccountApple::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaAccountApple FNakamaAccountApple::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaAccountApple Result;
 	if (!Json.IsValid())
@@ -511,7 +511,7 @@ FNakamaAccountApple FNakamaAccountApple::FromJson(const TSharedPtr<FJsonObject>&
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaAccountApple::ToJson() const
+TSharedPtr<FJsonObject> FNakamaAccountApple::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (!Token.IsEmpty())
@@ -530,7 +530,7 @@ TSharedPtr<FJsonObject> FNakamaAccountApple::ToJson() const
 	return Json;
 }
 
-FNakamaAccountCustom FNakamaAccountCustom::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaAccountCustom FNakamaAccountCustom::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaAccountCustom Result;
 	if (!Json.IsValid())
@@ -555,7 +555,7 @@ FNakamaAccountCustom FNakamaAccountCustom::FromJson(const TSharedPtr<FJsonObject
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaAccountCustom::ToJson() const
+TSharedPtr<FJsonObject> FNakamaAccountCustom::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (!Id.IsEmpty())
@@ -574,7 +574,7 @@ TSharedPtr<FJsonObject> FNakamaAccountCustom::ToJson() const
 	return Json;
 }
 
-FNakamaAccountEmail FNakamaAccountEmail::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaAccountEmail FNakamaAccountEmail::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaAccountEmail Result;
 	if (!Json.IsValid())
@@ -603,7 +603,7 @@ FNakamaAccountEmail FNakamaAccountEmail::FromJson(const TSharedPtr<FJsonObject>&
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaAccountEmail::ToJson() const
+TSharedPtr<FJsonObject> FNakamaAccountEmail::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (!Email.IsEmpty())
@@ -626,7 +626,7 @@ TSharedPtr<FJsonObject> FNakamaAccountEmail::ToJson() const
 	return Json;
 }
 
-FNakamaAccountFacebook FNakamaAccountFacebook::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaAccountFacebook FNakamaAccountFacebook::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaAccountFacebook Result;
 	if (!Json.IsValid())
@@ -651,7 +651,7 @@ FNakamaAccountFacebook FNakamaAccountFacebook::FromJson(const TSharedPtr<FJsonOb
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaAccountFacebook::ToJson() const
+TSharedPtr<FJsonObject> FNakamaAccountFacebook::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (!Token.IsEmpty())
@@ -670,7 +670,7 @@ TSharedPtr<FJsonObject> FNakamaAccountFacebook::ToJson() const
 	return Json;
 }
 
-FNakamaAccountFacebookInstantGame FNakamaAccountFacebookInstantGame::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaAccountFacebookInstantGame FNakamaAccountFacebookInstantGame::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaAccountFacebookInstantGame Result;
 	if (!Json.IsValid())
@@ -695,7 +695,7 @@ FNakamaAccountFacebookInstantGame FNakamaAccountFacebookInstantGame::FromJson(co
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaAccountFacebookInstantGame::ToJson() const
+TSharedPtr<FJsonObject> FNakamaAccountFacebookInstantGame::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (!SignedPlayerInfo.IsEmpty())
@@ -714,7 +714,7 @@ TSharedPtr<FJsonObject> FNakamaAccountFacebookInstantGame::ToJson() const
 	return Json;
 }
 
-FNakamaAccountGameCenter FNakamaAccountGameCenter::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaAccountGameCenter FNakamaAccountGameCenter::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaAccountGameCenter Result;
 	if (!Json.IsValid())
@@ -759,7 +759,7 @@ FNakamaAccountGameCenter FNakamaAccountGameCenter::FromJson(const TSharedPtr<FJs
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaAccountGameCenter::ToJson() const
+TSharedPtr<FJsonObject> FNakamaAccountGameCenter::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (!PlayerId.IsEmpty())
@@ -795,7 +795,7 @@ TSharedPtr<FJsonObject> FNakamaAccountGameCenter::ToJson() const
 	return Json;
 }
 
-FNakamaAccountGoogle FNakamaAccountGoogle::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaAccountGoogle FNakamaAccountGoogle::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaAccountGoogle Result;
 	if (!Json.IsValid())
@@ -820,7 +820,7 @@ FNakamaAccountGoogle FNakamaAccountGoogle::FromJson(const TSharedPtr<FJsonObject
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaAccountGoogle::ToJson() const
+TSharedPtr<FJsonObject> FNakamaAccountGoogle::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (!Token.IsEmpty())
@@ -839,7 +839,7 @@ TSharedPtr<FJsonObject> FNakamaAccountGoogle::ToJson() const
 	return Json;
 }
 
-FNakamaAccountSteam FNakamaAccountSteam::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaAccountSteam FNakamaAccountSteam::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaAccountSteam Result;
 	if (!Json.IsValid())
@@ -864,7 +864,7 @@ FNakamaAccountSteam FNakamaAccountSteam::FromJson(const TSharedPtr<FJsonObject>&
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaAccountSteam::ToJson() const
+TSharedPtr<FJsonObject> FNakamaAccountSteam::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (!Token.IsEmpty())
@@ -883,7 +883,7 @@ TSharedPtr<FJsonObject> FNakamaAccountSteam::ToJson() const
 	return Json;
 }
 
-FNakamaAddFriendsRequest FNakamaAddFriendsRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaAddFriendsRequest FNakamaAddFriendsRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaAddFriendsRequest Result;
 	if (!Json.IsValid())
@@ -919,7 +919,7 @@ FNakamaAddFriendsRequest FNakamaAddFriendsRequest::FromJson(const TSharedPtr<FJs
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaAddFriendsRequest::ToJson() const
+TSharedPtr<FJsonObject> FNakamaAddFriendsRequest::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (Ids.Num() > 0)
@@ -947,7 +947,7 @@ TSharedPtr<FJsonObject> FNakamaAddFriendsRequest::ToJson() const
 	return Json;
 }
 
-FNakamaAddGroupUsersRequest FNakamaAddGroupUsersRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaAddGroupUsersRequest FNakamaAddGroupUsersRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaAddGroupUsersRequest Result;
 	if (!Json.IsValid())
@@ -972,7 +972,7 @@ FNakamaAddGroupUsersRequest FNakamaAddGroupUsersRequest::FromJson(const TSharedP
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaAddGroupUsersRequest::ToJson() const
+TSharedPtr<FJsonObject> FNakamaAddGroupUsersRequest::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (!GroupId.IsEmpty())
@@ -991,7 +991,7 @@ TSharedPtr<FJsonObject> FNakamaAddGroupUsersRequest::ToJson() const
 	return Json;
 }
 
-FNakamaSessionRefreshRequest FNakamaSessionRefreshRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaSessionRefreshRequest FNakamaSessionRefreshRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaSessionRefreshRequest Result;
 	if (!Json.IsValid())
@@ -1016,7 +1016,7 @@ FNakamaSessionRefreshRequest FNakamaSessionRefreshRequest::FromJson(const TShare
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaSessionRefreshRequest::ToJson() const
+TSharedPtr<FJsonObject> FNakamaSessionRefreshRequest::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (!Token.IsEmpty())
@@ -1035,7 +1035,7 @@ TSharedPtr<FJsonObject> FNakamaSessionRefreshRequest::ToJson() const
 	return Json;
 }
 
-FNakamaSessionLogoutRequest FNakamaSessionLogoutRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaSessionLogoutRequest FNakamaSessionLogoutRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaSessionLogoutRequest Result;
 	if (!Json.IsValid())
@@ -1053,7 +1053,7 @@ FNakamaSessionLogoutRequest FNakamaSessionLogoutRequest::FromJson(const TSharedP
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaSessionLogoutRequest::ToJson() const
+TSharedPtr<FJsonObject> FNakamaSessionLogoutRequest::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (!Token.IsEmpty())
@@ -1067,7 +1067,7 @@ TSharedPtr<FJsonObject> FNakamaSessionLogoutRequest::ToJson() const
 	return Json;
 }
 
-FNakamaAuthenticateAppleRequest FNakamaAuthenticateAppleRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaAuthenticateAppleRequest FNakamaAuthenticateAppleRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaAuthenticateAppleRequest Result;
 	if (!Json.IsValid())
@@ -1093,7 +1093,7 @@ FNakamaAuthenticateAppleRequest FNakamaAuthenticateAppleRequest::FromJson(const 
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaAuthenticateAppleRequest::ToJson() const
+TSharedPtr<FJsonObject> FNakamaAuthenticateAppleRequest::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	Json->SetObjectField(TEXT("account"), Account.ToJson());
@@ -1105,7 +1105,7 @@ TSharedPtr<FJsonObject> FNakamaAuthenticateAppleRequest::ToJson() const
 	return Json;
 }
 
-FNakamaAuthenticateCustomRequest FNakamaAuthenticateCustomRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaAuthenticateCustomRequest FNakamaAuthenticateCustomRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaAuthenticateCustomRequest Result;
 	if (!Json.IsValid())
@@ -1131,7 +1131,7 @@ FNakamaAuthenticateCustomRequest FNakamaAuthenticateCustomRequest::FromJson(cons
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaAuthenticateCustomRequest::ToJson() const
+TSharedPtr<FJsonObject> FNakamaAuthenticateCustomRequest::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	Json->SetObjectField(TEXT("account"), Account.ToJson());
@@ -1143,7 +1143,7 @@ TSharedPtr<FJsonObject> FNakamaAuthenticateCustomRequest::ToJson() const
 	return Json;
 }
 
-FNakamaAuthenticateDeviceRequest FNakamaAuthenticateDeviceRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaAuthenticateDeviceRequest FNakamaAuthenticateDeviceRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaAuthenticateDeviceRequest Result;
 	if (!Json.IsValid())
@@ -1169,7 +1169,7 @@ FNakamaAuthenticateDeviceRequest FNakamaAuthenticateDeviceRequest::FromJson(cons
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaAuthenticateDeviceRequest::ToJson() const
+TSharedPtr<FJsonObject> FNakamaAuthenticateDeviceRequest::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	Json->SetObjectField(TEXT("account"), Account.ToJson());
@@ -1181,7 +1181,7 @@ TSharedPtr<FJsonObject> FNakamaAuthenticateDeviceRequest::ToJson() const
 	return Json;
 }
 
-FNakamaAuthenticateEmailRequest FNakamaAuthenticateEmailRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaAuthenticateEmailRequest FNakamaAuthenticateEmailRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaAuthenticateEmailRequest Result;
 	if (!Json.IsValid())
@@ -1207,7 +1207,7 @@ FNakamaAuthenticateEmailRequest FNakamaAuthenticateEmailRequest::FromJson(const 
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaAuthenticateEmailRequest::ToJson() const
+TSharedPtr<FJsonObject> FNakamaAuthenticateEmailRequest::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	Json->SetObjectField(TEXT("account"), Account.ToJson());
@@ -1219,7 +1219,7 @@ TSharedPtr<FJsonObject> FNakamaAuthenticateEmailRequest::ToJson() const
 	return Json;
 }
 
-FNakamaAuthenticateFacebookRequest FNakamaAuthenticateFacebookRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaAuthenticateFacebookRequest FNakamaAuthenticateFacebookRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaAuthenticateFacebookRequest Result;
 	if (!Json.IsValid())
@@ -1249,7 +1249,7 @@ FNakamaAuthenticateFacebookRequest FNakamaAuthenticateFacebookRequest::FromJson(
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaAuthenticateFacebookRequest::ToJson() const
+TSharedPtr<FJsonObject> FNakamaAuthenticateFacebookRequest::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	Json->SetObjectField(TEXT("account"), Account.ToJson());
@@ -1262,7 +1262,7 @@ TSharedPtr<FJsonObject> FNakamaAuthenticateFacebookRequest::ToJson() const
 	return Json;
 }
 
-FNakamaAuthenticateFacebookInstantGameRequest FNakamaAuthenticateFacebookInstantGameRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaAuthenticateFacebookInstantGameRequest FNakamaAuthenticateFacebookInstantGameRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaAuthenticateFacebookInstantGameRequest Result;
 	if (!Json.IsValid())
@@ -1288,7 +1288,7 @@ FNakamaAuthenticateFacebookInstantGameRequest FNakamaAuthenticateFacebookInstant
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaAuthenticateFacebookInstantGameRequest::ToJson() const
+TSharedPtr<FJsonObject> FNakamaAuthenticateFacebookInstantGameRequest::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	Json->SetObjectField(TEXT("account"), Account.ToJson());
@@ -1300,7 +1300,7 @@ TSharedPtr<FJsonObject> FNakamaAuthenticateFacebookInstantGameRequest::ToJson() 
 	return Json;
 }
 
-FNakamaAuthenticateGameCenterRequest FNakamaAuthenticateGameCenterRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaAuthenticateGameCenterRequest FNakamaAuthenticateGameCenterRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaAuthenticateGameCenterRequest Result;
 	if (!Json.IsValid())
@@ -1326,7 +1326,7 @@ FNakamaAuthenticateGameCenterRequest FNakamaAuthenticateGameCenterRequest::FromJ
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaAuthenticateGameCenterRequest::ToJson() const
+TSharedPtr<FJsonObject> FNakamaAuthenticateGameCenterRequest::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	Json->SetObjectField(TEXT("account"), Account.ToJson());
@@ -1338,7 +1338,7 @@ TSharedPtr<FJsonObject> FNakamaAuthenticateGameCenterRequest::ToJson() const
 	return Json;
 }
 
-FNakamaAuthenticateGoogleRequest FNakamaAuthenticateGoogleRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaAuthenticateGoogleRequest FNakamaAuthenticateGoogleRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaAuthenticateGoogleRequest Result;
 	if (!Json.IsValid())
@@ -1364,7 +1364,7 @@ FNakamaAuthenticateGoogleRequest FNakamaAuthenticateGoogleRequest::FromJson(cons
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaAuthenticateGoogleRequest::ToJson() const
+TSharedPtr<FJsonObject> FNakamaAuthenticateGoogleRequest::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	Json->SetObjectField(TEXT("account"), Account.ToJson());
@@ -1376,7 +1376,7 @@ TSharedPtr<FJsonObject> FNakamaAuthenticateGoogleRequest::ToJson() const
 	return Json;
 }
 
-FNakamaAuthenticateSteamRequest FNakamaAuthenticateSteamRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaAuthenticateSteamRequest FNakamaAuthenticateSteamRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaAuthenticateSteamRequest Result;
 	if (!Json.IsValid())
@@ -1406,7 +1406,7 @@ FNakamaAuthenticateSteamRequest FNakamaAuthenticateSteamRequest::FromJson(const 
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaAuthenticateSteamRequest::ToJson() const
+TSharedPtr<FJsonObject> FNakamaAuthenticateSteamRequest::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	Json->SetObjectField(TEXT("account"), Account.ToJson());
@@ -1419,7 +1419,7 @@ TSharedPtr<FJsonObject> FNakamaAuthenticateSteamRequest::ToJson() const
 	return Json;
 }
 
-FNakamaBanGroupUsersRequest FNakamaBanGroupUsersRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaBanGroupUsersRequest FNakamaBanGroupUsersRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaBanGroupUsersRequest Result;
 	if (!Json.IsValid())
@@ -1444,7 +1444,7 @@ FNakamaBanGroupUsersRequest FNakamaBanGroupUsersRequest::FromJson(const TSharedP
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaBanGroupUsersRequest::ToJson() const
+TSharedPtr<FJsonObject> FNakamaBanGroupUsersRequest::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (!GroupId.IsEmpty())
@@ -1463,7 +1463,7 @@ TSharedPtr<FJsonObject> FNakamaBanGroupUsersRequest::ToJson() const
 	return Json;
 }
 
-FNakamaBlockFriendsRequest FNakamaBlockFriendsRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaBlockFriendsRequest FNakamaBlockFriendsRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaBlockFriendsRequest Result;
 	if (!Json.IsValid())
@@ -1495,7 +1495,7 @@ FNakamaBlockFriendsRequest FNakamaBlockFriendsRequest::FromJson(const TSharedPtr
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaBlockFriendsRequest::ToJson() const
+TSharedPtr<FJsonObject> FNakamaBlockFriendsRequest::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (Ids.Num() > 0)
@@ -1519,7 +1519,7 @@ TSharedPtr<FJsonObject> FNakamaBlockFriendsRequest::ToJson() const
 	return Json;
 }
 
-FNakamaChannelMessage FNakamaChannelMessage::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaChannelMessage FNakamaChannelMessage::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaChannelMessage Result;
 	if (!Json.IsValid())
@@ -1581,7 +1581,7 @@ FNakamaChannelMessage FNakamaChannelMessage::FromJson(const TSharedPtr<FJsonObje
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaChannelMessage::ToJson() const
+TSharedPtr<FJsonObject> FNakamaChannelMessage::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (!ChannelId.IsEmpty())
@@ -1633,7 +1633,7 @@ TSharedPtr<FJsonObject> FNakamaChannelMessage::ToJson() const
 	return Json;
 }
 
-FNakamaChannelMessageList FNakamaChannelMessageList::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaChannelMessageList FNakamaChannelMessageList::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaChannelMessageList Result;
 	if (!Json.IsValid())
@@ -1670,7 +1670,7 @@ FNakamaChannelMessageList FNakamaChannelMessageList::FromJson(const TSharedPtr<F
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaChannelMessageList::ToJson() const
+TSharedPtr<FJsonObject> FNakamaChannelMessageList::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (Messages.Num() > 0)
@@ -1697,7 +1697,7 @@ TSharedPtr<FJsonObject> FNakamaChannelMessageList::ToJson() const
 	return Json;
 }
 
-FNakamaCreateGroupRequest FNakamaCreateGroupRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaCreateGroupRequest FNakamaCreateGroupRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaCreateGroupRequest Result;
 	if (!Json.IsValid())
@@ -1731,7 +1731,7 @@ FNakamaCreateGroupRequest FNakamaCreateGroupRequest::FromJson(const TSharedPtr<F
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaCreateGroupRequest::ToJson() const
+TSharedPtr<FJsonObject> FNakamaCreateGroupRequest::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (!Name.IsEmpty())
@@ -1755,7 +1755,7 @@ TSharedPtr<FJsonObject> FNakamaCreateGroupRequest::ToJson() const
 	return Json;
 }
 
-FNakamaDeleteFriendsRequest FNakamaDeleteFriendsRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaDeleteFriendsRequest FNakamaDeleteFriendsRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaDeleteFriendsRequest Result;
 	if (!Json.IsValid())
@@ -1787,7 +1787,7 @@ FNakamaDeleteFriendsRequest FNakamaDeleteFriendsRequest::FromJson(const TSharedP
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaDeleteFriendsRequest::ToJson() const
+TSharedPtr<FJsonObject> FNakamaDeleteFriendsRequest::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (Ids.Num() > 0)
@@ -1811,7 +1811,7 @@ TSharedPtr<FJsonObject> FNakamaDeleteFriendsRequest::ToJson() const
 	return Json;
 }
 
-FNakamaDeleteGroupRequest FNakamaDeleteGroupRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaDeleteGroupRequest FNakamaDeleteGroupRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaDeleteGroupRequest Result;
 	if (!Json.IsValid())
@@ -1825,7 +1825,7 @@ FNakamaDeleteGroupRequest FNakamaDeleteGroupRequest::FromJson(const TSharedPtr<F
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaDeleteGroupRequest::ToJson() const
+TSharedPtr<FJsonObject> FNakamaDeleteGroupRequest::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (!GroupId.IsEmpty())
@@ -1835,7 +1835,7 @@ TSharedPtr<FJsonObject> FNakamaDeleteGroupRequest::ToJson() const
 	return Json;
 }
 
-FNakamaDeleteLeaderboardRecordRequest FNakamaDeleteLeaderboardRecordRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaDeleteLeaderboardRecordRequest FNakamaDeleteLeaderboardRecordRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaDeleteLeaderboardRecordRequest Result;
 	if (!Json.IsValid())
@@ -1849,7 +1849,7 @@ FNakamaDeleteLeaderboardRecordRequest FNakamaDeleteLeaderboardRecordRequest::Fro
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaDeleteLeaderboardRecordRequest::ToJson() const
+TSharedPtr<FJsonObject> FNakamaDeleteLeaderboardRecordRequest::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (!LeaderboardId.IsEmpty())
@@ -1859,7 +1859,7 @@ TSharedPtr<FJsonObject> FNakamaDeleteLeaderboardRecordRequest::ToJson() const
 	return Json;
 }
 
-FNakamaDeleteNotificationsRequest FNakamaDeleteNotificationsRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaDeleteNotificationsRequest FNakamaDeleteNotificationsRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaDeleteNotificationsRequest Result;
 	if (!Json.IsValid())
@@ -1880,7 +1880,7 @@ FNakamaDeleteNotificationsRequest FNakamaDeleteNotificationsRequest::FromJson(co
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaDeleteNotificationsRequest::ToJson() const
+TSharedPtr<FJsonObject> FNakamaDeleteNotificationsRequest::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (Ids.Num() > 0)
@@ -1895,7 +1895,7 @@ TSharedPtr<FJsonObject> FNakamaDeleteNotificationsRequest::ToJson() const
 	return Json;
 }
 
-FNakamaDeleteTournamentRecordRequest FNakamaDeleteTournamentRecordRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaDeleteTournamentRecordRequest FNakamaDeleteTournamentRecordRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaDeleteTournamentRecordRequest Result;
 	if (!Json.IsValid())
@@ -1909,7 +1909,7 @@ FNakamaDeleteTournamentRecordRequest FNakamaDeleteTournamentRecordRequest::FromJ
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaDeleteTournamentRecordRequest::ToJson() const
+TSharedPtr<FJsonObject> FNakamaDeleteTournamentRecordRequest::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (!TournamentId.IsEmpty())
@@ -1919,7 +1919,7 @@ TSharedPtr<FJsonObject> FNakamaDeleteTournamentRecordRequest::ToJson() const
 	return Json;
 }
 
-FNakamaDeleteStorageObjectId FNakamaDeleteStorageObjectId::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaDeleteStorageObjectId FNakamaDeleteStorageObjectId::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaDeleteStorageObjectId Result;
 	if (!Json.IsValid())
@@ -1941,7 +1941,7 @@ FNakamaDeleteStorageObjectId FNakamaDeleteStorageObjectId::FromJson(const TShare
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaDeleteStorageObjectId::ToJson() const
+TSharedPtr<FJsonObject> FNakamaDeleteStorageObjectId::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (!Collection.IsEmpty())
@@ -1959,7 +1959,7 @@ TSharedPtr<FJsonObject> FNakamaDeleteStorageObjectId::ToJson() const
 	return Json;
 }
 
-FNakamaDeleteStorageObjectsRequest FNakamaDeleteStorageObjectsRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaDeleteStorageObjectsRequest FNakamaDeleteStorageObjectsRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaDeleteStorageObjectsRequest Result;
 	if (!Json.IsValid())
@@ -1984,7 +1984,7 @@ FNakamaDeleteStorageObjectsRequest FNakamaDeleteStorageObjectsRequest::FromJson(
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaDeleteStorageObjectsRequest::ToJson() const
+TSharedPtr<FJsonObject> FNakamaDeleteStorageObjectsRequest::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (ObjectIds.Num() > 0)
@@ -1999,7 +1999,7 @@ TSharedPtr<FJsonObject> FNakamaDeleteStorageObjectsRequest::ToJson() const
 	return Json;
 }
 
-FNakamaEvent FNakamaEvent::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaEvent FNakamaEvent::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaEvent Result;
 	if (!Json.IsValid())
@@ -2032,7 +2032,7 @@ FNakamaEvent FNakamaEvent::FromJson(const TSharedPtr<FJsonObject>& Json)
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaEvent::ToJson() const
+TSharedPtr<FJsonObject> FNakamaEvent::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (!Name.IsEmpty())
@@ -2056,7 +2056,7 @@ TSharedPtr<FJsonObject> FNakamaEvent::ToJson() const
 	return Json;
 }
 
-FNakamaFriend FNakamaFriend::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaFriend FNakamaFriend::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaFriend Result;
 	if (!Json.IsValid())
@@ -2086,7 +2086,7 @@ FNakamaFriend FNakamaFriend::FromJson(const TSharedPtr<FJsonObject>& Json)
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaFriend::ToJson() const
+TSharedPtr<FJsonObject> FNakamaFriend::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	Json->SetObjectField(TEXT("user"), User.ToJson());
@@ -2102,7 +2102,7 @@ TSharedPtr<FJsonObject> FNakamaFriend::ToJson() const
 	return Json;
 }
 
-FNakamaFriendList FNakamaFriendList::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaFriendList FNakamaFriendList::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaFriendList Result;
 	if (!Json.IsValid())
@@ -2131,7 +2131,7 @@ FNakamaFriendList FNakamaFriendList::FromJson(const TSharedPtr<FJsonObject>& Jso
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaFriendList::ToJson() const
+TSharedPtr<FJsonObject> FNakamaFriendList::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (Friends.Num() > 0)
@@ -2150,7 +2150,7 @@ TSharedPtr<FJsonObject> FNakamaFriendList::ToJson() const
 	return Json;
 }
 
-FNakamaFriendsOfFriendsList_FriendOfFriend FNakamaFriendsOfFriendsList_FriendOfFriend::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaFriendsOfFriendsList_FriendOfFriend FNakamaFriendsOfFriendsList_FriendOfFriend::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaFriendsOfFriendsList_FriendOfFriend Result;
 	if (!Json.IsValid())
@@ -2172,7 +2172,7 @@ FNakamaFriendsOfFriendsList_FriendOfFriend FNakamaFriendsOfFriendsList_FriendOfF
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaFriendsOfFriendsList_FriendOfFriend::ToJson() const
+TSharedPtr<FJsonObject> FNakamaFriendsOfFriendsList_FriendOfFriend::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (!Referrer.IsEmpty())
@@ -2183,7 +2183,7 @@ TSharedPtr<FJsonObject> FNakamaFriendsOfFriendsList_FriendOfFriend::ToJson() con
 	return Json;
 }
 
-FNakamaFriendsOfFriendsList FNakamaFriendsOfFriendsList::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaFriendsOfFriendsList FNakamaFriendsOfFriendsList::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaFriendsOfFriendsList Result;
 	if (!Json.IsValid())
@@ -2212,7 +2212,7 @@ FNakamaFriendsOfFriendsList FNakamaFriendsOfFriendsList::FromJson(const TSharedP
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaFriendsOfFriendsList::ToJson() const
+TSharedPtr<FJsonObject> FNakamaFriendsOfFriendsList::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (FriendsOfFriends.Num() > 0)
@@ -2231,7 +2231,7 @@ TSharedPtr<FJsonObject> FNakamaFriendsOfFriendsList::ToJson() const
 	return Json;
 }
 
-FNakamaGetUsersRequest FNakamaGetUsersRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaGetUsersRequest FNakamaGetUsersRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaGetUsersRequest Result;
 	if (!Json.IsValid())
@@ -2274,7 +2274,7 @@ FNakamaGetUsersRequest FNakamaGetUsersRequest::FromJson(const TSharedPtr<FJsonOb
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaGetUsersRequest::ToJson() const
+TSharedPtr<FJsonObject> FNakamaGetUsersRequest::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (Ids.Num() > 0)
@@ -2307,7 +2307,7 @@ TSharedPtr<FJsonObject> FNakamaGetUsersRequest::ToJson() const
 	return Json;
 }
 
-FNakamaGetSubscriptionRequest FNakamaGetSubscriptionRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaGetSubscriptionRequest FNakamaGetSubscriptionRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaGetSubscriptionRequest Result;
 	if (!Json.IsValid())
@@ -2321,7 +2321,7 @@ FNakamaGetSubscriptionRequest FNakamaGetSubscriptionRequest::FromJson(const TSha
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaGetSubscriptionRequest::ToJson() const
+TSharedPtr<FJsonObject> FNakamaGetSubscriptionRequest::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (!ProductId.IsEmpty())
@@ -2331,7 +2331,7 @@ TSharedPtr<FJsonObject> FNakamaGetSubscriptionRequest::ToJson() const
 	return Json;
 }
 
-FNakamaGroup FNakamaGroup::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaGroup FNakamaGroup::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaGroup Result;
 	if (!Json.IsValid())
@@ -2389,7 +2389,7 @@ FNakamaGroup FNakamaGroup::FromJson(const TSharedPtr<FJsonObject>& Json)
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaGroup::ToJson() const
+TSharedPtr<FJsonObject> FNakamaGroup::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (!Id.IsEmpty())
@@ -2434,7 +2434,7 @@ TSharedPtr<FJsonObject> FNakamaGroup::ToJson() const
 	return Json;
 }
 
-FNakamaGroupList FNakamaGroupList::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaGroupList FNakamaGroupList::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaGroupList Result;
 	if (!Json.IsValid())
@@ -2463,7 +2463,7 @@ FNakamaGroupList FNakamaGroupList::FromJson(const TSharedPtr<FJsonObject>& Json)
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaGroupList::ToJson() const
+TSharedPtr<FJsonObject> FNakamaGroupList::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (Groups.Num() > 0)
@@ -2482,7 +2482,7 @@ TSharedPtr<FJsonObject> FNakamaGroupList::ToJson() const
 	return Json;
 }
 
-FNakamaGroupUserList_GroupUser FNakamaGroupUserList_GroupUser::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaGroupUserList_GroupUser FNakamaGroupUserList_GroupUser::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaGroupUserList_GroupUser Result;
 	if (!Json.IsValid())
@@ -2504,7 +2504,7 @@ FNakamaGroupUserList_GroupUser FNakamaGroupUserList_GroupUser::FromJson(const TS
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaGroupUserList_GroupUser::ToJson() const
+TSharedPtr<FJsonObject> FNakamaGroupUserList_GroupUser::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	Json->SetObjectField(TEXT("user"), User.ToJson());
@@ -2512,7 +2512,7 @@ TSharedPtr<FJsonObject> FNakamaGroupUserList_GroupUser::ToJson() const
 	return Json;
 }
 
-FNakamaGroupUserList FNakamaGroupUserList::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaGroupUserList FNakamaGroupUserList::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaGroupUserList Result;
 	if (!Json.IsValid())
@@ -2541,7 +2541,7 @@ FNakamaGroupUserList FNakamaGroupUserList::FromJson(const TSharedPtr<FJsonObject
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaGroupUserList::ToJson() const
+TSharedPtr<FJsonObject> FNakamaGroupUserList::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (GroupUsers.Num() > 0)
@@ -2560,7 +2560,7 @@ TSharedPtr<FJsonObject> FNakamaGroupUserList::ToJson() const
 	return Json;
 }
 
-FNakamaImportFacebookFriendsRequest FNakamaImportFacebookFriendsRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaImportFacebookFriendsRequest FNakamaImportFacebookFriendsRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaImportFacebookFriendsRequest Result;
 	if (!Json.IsValid())
@@ -2582,7 +2582,7 @@ FNakamaImportFacebookFriendsRequest FNakamaImportFacebookFriendsRequest::FromJso
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaImportFacebookFriendsRequest::ToJson() const
+TSharedPtr<FJsonObject> FNakamaImportFacebookFriendsRequest::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	Json->SetObjectField(TEXT("account"), Account.ToJson());
@@ -2590,7 +2590,7 @@ TSharedPtr<FJsonObject> FNakamaImportFacebookFriendsRequest::ToJson() const
 	return Json;
 }
 
-FNakamaImportSteamFriendsRequest FNakamaImportSteamFriendsRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaImportSteamFriendsRequest FNakamaImportSteamFriendsRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaImportSteamFriendsRequest Result;
 	if (!Json.IsValid())
@@ -2612,7 +2612,7 @@ FNakamaImportSteamFriendsRequest FNakamaImportSteamFriendsRequest::FromJson(cons
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaImportSteamFriendsRequest::ToJson() const
+TSharedPtr<FJsonObject> FNakamaImportSteamFriendsRequest::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	Json->SetObjectField(TEXT("account"), Account.ToJson());
@@ -2620,7 +2620,7 @@ TSharedPtr<FJsonObject> FNakamaImportSteamFriendsRequest::ToJson() const
 	return Json;
 }
 
-FNakamaJoinGroupRequest FNakamaJoinGroupRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaJoinGroupRequest FNakamaJoinGroupRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaJoinGroupRequest Result;
 	if (!Json.IsValid())
@@ -2634,7 +2634,7 @@ FNakamaJoinGroupRequest FNakamaJoinGroupRequest::FromJson(const TSharedPtr<FJson
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaJoinGroupRequest::ToJson() const
+TSharedPtr<FJsonObject> FNakamaJoinGroupRequest::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (!GroupId.IsEmpty())
@@ -2644,7 +2644,7 @@ TSharedPtr<FJsonObject> FNakamaJoinGroupRequest::ToJson() const
 	return Json;
 }
 
-FNakamaJoinTournamentRequest FNakamaJoinTournamentRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaJoinTournamentRequest FNakamaJoinTournamentRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaJoinTournamentRequest Result;
 	if (!Json.IsValid())
@@ -2658,7 +2658,7 @@ FNakamaJoinTournamentRequest FNakamaJoinTournamentRequest::FromJson(const TShare
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaJoinTournamentRequest::ToJson() const
+TSharedPtr<FJsonObject> FNakamaJoinTournamentRequest::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (!TournamentId.IsEmpty())
@@ -2668,7 +2668,7 @@ TSharedPtr<FJsonObject> FNakamaJoinTournamentRequest::ToJson() const
 	return Json;
 }
 
-FNakamaKickGroupUsersRequest FNakamaKickGroupUsersRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaKickGroupUsersRequest FNakamaKickGroupUsersRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaKickGroupUsersRequest Result;
 	if (!Json.IsValid())
@@ -2693,7 +2693,7 @@ FNakamaKickGroupUsersRequest FNakamaKickGroupUsersRequest::FromJson(const TShare
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaKickGroupUsersRequest::ToJson() const
+TSharedPtr<FJsonObject> FNakamaKickGroupUsersRequest::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (!GroupId.IsEmpty())
@@ -2712,7 +2712,7 @@ TSharedPtr<FJsonObject> FNakamaKickGroupUsersRequest::ToJson() const
 	return Json;
 }
 
-FNakamaLeaderboard FNakamaLeaderboard::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaLeaderboard FNakamaLeaderboard::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaLeaderboard Result;
 	if (!Json.IsValid())
@@ -2754,7 +2754,7 @@ FNakamaLeaderboard FNakamaLeaderboard::FromJson(const TSharedPtr<FJsonObject>& J
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaLeaderboard::ToJson() const
+TSharedPtr<FJsonObject> FNakamaLeaderboard::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (!Id.IsEmpty())
@@ -2777,7 +2777,7 @@ TSharedPtr<FJsonObject> FNakamaLeaderboard::ToJson() const
 	return Json;
 }
 
-FNakamaLeaderboardList FNakamaLeaderboardList::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaLeaderboardList FNakamaLeaderboardList::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaLeaderboardList Result;
 	if (!Json.IsValid())
@@ -2806,7 +2806,7 @@ FNakamaLeaderboardList FNakamaLeaderboardList::FromJson(const TSharedPtr<FJsonOb
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaLeaderboardList::ToJson() const
+TSharedPtr<FJsonObject> FNakamaLeaderboardList::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (Leaderboards.Num() > 0)
@@ -2825,7 +2825,7 @@ TSharedPtr<FJsonObject> FNakamaLeaderboardList::ToJson() const
 	return Json;
 }
 
-FNakamaLeaderboardRecord FNakamaLeaderboardRecord::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaLeaderboardRecord FNakamaLeaderboardRecord::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaLeaderboardRecord Result;
 	if (!Json.IsValid())
@@ -2883,7 +2883,7 @@ FNakamaLeaderboardRecord FNakamaLeaderboardRecord::FromJson(const TSharedPtr<FJs
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaLeaderboardRecord::ToJson() const
+TSharedPtr<FJsonObject> FNakamaLeaderboardRecord::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (!LeaderboardId.IsEmpty())
@@ -2922,7 +2922,7 @@ TSharedPtr<FJsonObject> FNakamaLeaderboardRecord::ToJson() const
 	return Json;
 }
 
-FNakamaLeaderboardRecordList FNakamaLeaderboardRecordList::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaLeaderboardRecordList FNakamaLeaderboardRecordList::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaLeaderboardRecordList Result;
 	if (!Json.IsValid())
@@ -2974,7 +2974,7 @@ FNakamaLeaderboardRecordList FNakamaLeaderboardRecordList::FromJson(const TShare
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaLeaderboardRecordList::ToJson() const
+TSharedPtr<FJsonObject> FNakamaLeaderboardRecordList::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (Records.Num() > 0)
@@ -3007,7 +3007,7 @@ TSharedPtr<FJsonObject> FNakamaLeaderboardRecordList::ToJson() const
 	return Json;
 }
 
-FNakamaLeaveGroupRequest FNakamaLeaveGroupRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaLeaveGroupRequest FNakamaLeaveGroupRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaLeaveGroupRequest Result;
 	if (!Json.IsValid())
@@ -3021,7 +3021,7 @@ FNakamaLeaveGroupRequest FNakamaLeaveGroupRequest::FromJson(const TSharedPtr<FJs
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaLeaveGroupRequest::ToJson() const
+TSharedPtr<FJsonObject> FNakamaLeaveGroupRequest::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (!GroupId.IsEmpty())
@@ -3031,7 +3031,7 @@ TSharedPtr<FJsonObject> FNakamaLeaveGroupRequest::ToJson() const
 	return Json;
 }
 
-FNakamaLinkFacebookRequest FNakamaLinkFacebookRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaLinkFacebookRequest FNakamaLinkFacebookRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaLinkFacebookRequest Result;
 	if (!Json.IsValid())
@@ -3053,7 +3053,7 @@ FNakamaLinkFacebookRequest FNakamaLinkFacebookRequest::FromJson(const TSharedPtr
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaLinkFacebookRequest::ToJson() const
+TSharedPtr<FJsonObject> FNakamaLinkFacebookRequest::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	Json->SetObjectField(TEXT("account"), Account.ToJson());
@@ -3061,7 +3061,7 @@ TSharedPtr<FJsonObject> FNakamaLinkFacebookRequest::ToJson() const
 	return Json;
 }
 
-FNakamaLinkSteamRequest FNakamaLinkSteamRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaLinkSteamRequest FNakamaLinkSteamRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaLinkSteamRequest Result;
 	if (!Json.IsValid())
@@ -3083,7 +3083,7 @@ FNakamaLinkSteamRequest FNakamaLinkSteamRequest::FromJson(const TSharedPtr<FJson
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaLinkSteamRequest::ToJson() const
+TSharedPtr<FJsonObject> FNakamaLinkSteamRequest::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	Json->SetObjectField(TEXT("account"), Account.ToJson());
@@ -3091,7 +3091,7 @@ TSharedPtr<FJsonObject> FNakamaLinkSteamRequest::ToJson() const
 	return Json;
 }
 
-FNakamaListChannelMessagesRequest FNakamaListChannelMessagesRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaListChannelMessagesRequest FNakamaListChannelMessagesRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaListChannelMessagesRequest Result;
 	if (!Json.IsValid())
@@ -3117,7 +3117,7 @@ FNakamaListChannelMessagesRequest FNakamaListChannelMessagesRequest::FromJson(co
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaListChannelMessagesRequest::ToJson() const
+TSharedPtr<FJsonObject> FNakamaListChannelMessagesRequest::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (!ChannelId.IsEmpty())
@@ -3133,7 +3133,7 @@ TSharedPtr<FJsonObject> FNakamaListChannelMessagesRequest::ToJson() const
 	return Json;
 }
 
-FNakamaListFriendsRequest FNakamaListFriendsRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaListFriendsRequest FNakamaListFriendsRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaListFriendsRequest Result;
 	if (!Json.IsValid())
@@ -3155,7 +3155,7 @@ FNakamaListFriendsRequest FNakamaListFriendsRequest::FromJson(const TSharedPtr<F
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaListFriendsRequest::ToJson() const
+TSharedPtr<FJsonObject> FNakamaListFriendsRequest::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	Json->SetNumberField(TEXT("limit"), Limit);
@@ -3167,7 +3167,7 @@ TSharedPtr<FJsonObject> FNakamaListFriendsRequest::ToJson() const
 	return Json;
 }
 
-FNakamaListFriendsOfFriendsRequest FNakamaListFriendsOfFriendsRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaListFriendsOfFriendsRequest FNakamaListFriendsOfFriendsRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaListFriendsOfFriendsRequest Result;
 	if (!Json.IsValid())
@@ -3185,7 +3185,7 @@ FNakamaListFriendsOfFriendsRequest FNakamaListFriendsOfFriendsRequest::FromJson(
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaListFriendsOfFriendsRequest::ToJson() const
+TSharedPtr<FJsonObject> FNakamaListFriendsOfFriendsRequest::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	Json->SetNumberField(TEXT("limit"), Limit);
@@ -3196,7 +3196,7 @@ TSharedPtr<FJsonObject> FNakamaListFriendsOfFriendsRequest::ToJson() const
 	return Json;
 }
 
-FNakamaListGroupsRequest FNakamaListGroupsRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaListGroupsRequest FNakamaListGroupsRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaListGroupsRequest Result;
 	if (!Json.IsValid())
@@ -3230,7 +3230,7 @@ FNakamaListGroupsRequest FNakamaListGroupsRequest::FromJson(const TSharedPtr<FJs
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaListGroupsRequest::ToJson() const
+TSharedPtr<FJsonObject> FNakamaListGroupsRequest::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (!Name.IsEmpty())
@@ -3251,7 +3251,7 @@ TSharedPtr<FJsonObject> FNakamaListGroupsRequest::ToJson() const
 	return Json;
 }
 
-FNakamaListGroupUsersRequest FNakamaListGroupUsersRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaListGroupUsersRequest FNakamaListGroupUsersRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaListGroupUsersRequest Result;
 	if (!Json.IsValid())
@@ -3277,7 +3277,7 @@ FNakamaListGroupUsersRequest FNakamaListGroupUsersRequest::FromJson(const TShare
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaListGroupUsersRequest::ToJson() const
+TSharedPtr<FJsonObject> FNakamaListGroupUsersRequest::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (!GroupId.IsEmpty())
@@ -3293,7 +3293,7 @@ TSharedPtr<FJsonObject> FNakamaListGroupUsersRequest::ToJson() const
 	return Json;
 }
 
-FNakamaListLeaderboardRecordsAroundOwnerRequest FNakamaListLeaderboardRecordsAroundOwnerRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaListLeaderboardRecordsAroundOwnerRequest FNakamaListLeaderboardRecordsAroundOwnerRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaListLeaderboardRecordsAroundOwnerRequest Result;
 	if (!Json.IsValid())
@@ -3323,7 +3323,7 @@ FNakamaListLeaderboardRecordsAroundOwnerRequest FNakamaListLeaderboardRecordsAro
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaListLeaderboardRecordsAroundOwnerRequest::ToJson() const
+TSharedPtr<FJsonObject> FNakamaListLeaderboardRecordsAroundOwnerRequest::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (!LeaderboardId.IsEmpty())
@@ -3343,7 +3343,7 @@ TSharedPtr<FJsonObject> FNakamaListLeaderboardRecordsAroundOwnerRequest::ToJson(
 	return Json;
 }
 
-FNakamaListLeaderboardRecordsRequest FNakamaListLeaderboardRecordsRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaListLeaderboardRecordsRequest FNakamaListLeaderboardRecordsRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaListLeaderboardRecordsRequest Result;
 	if (!Json.IsValid())
@@ -3380,7 +3380,7 @@ FNakamaListLeaderboardRecordsRequest FNakamaListLeaderboardRecordsRequest::FromJ
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaListLeaderboardRecordsRequest::ToJson() const
+TSharedPtr<FJsonObject> FNakamaListLeaderboardRecordsRequest::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (!LeaderboardId.IsEmpty())
@@ -3405,7 +3405,7 @@ TSharedPtr<FJsonObject> FNakamaListLeaderboardRecordsRequest::ToJson() const
 	return Json;
 }
 
-FNakamaListMatchesRequest FNakamaListMatchesRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaListMatchesRequest FNakamaListMatchesRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaListMatchesRequest Result;
 	if (!Json.IsValid())
@@ -3439,7 +3439,7 @@ FNakamaListMatchesRequest FNakamaListMatchesRequest::FromJson(const TSharedPtr<F
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaListMatchesRequest::ToJson() const
+TSharedPtr<FJsonObject> FNakamaListMatchesRequest::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	Json->SetNumberField(TEXT("limit"), Limit);
@@ -3457,7 +3457,7 @@ TSharedPtr<FJsonObject> FNakamaListMatchesRequest::ToJson() const
 	return Json;
 }
 
-FNakamaListNotificationsRequest FNakamaListNotificationsRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaListNotificationsRequest FNakamaListNotificationsRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaListNotificationsRequest Result;
 	if (!Json.IsValid())
@@ -3475,7 +3475,7 @@ FNakamaListNotificationsRequest FNakamaListNotificationsRequest::FromJson(const 
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaListNotificationsRequest::ToJson() const
+TSharedPtr<FJsonObject> FNakamaListNotificationsRequest::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	Json->SetNumberField(TEXT("limit"), Limit);
@@ -3486,7 +3486,7 @@ TSharedPtr<FJsonObject> FNakamaListNotificationsRequest::ToJson() const
 	return Json;
 }
 
-FNakamaListStorageObjectsRequest FNakamaListStorageObjectsRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaListStorageObjectsRequest FNakamaListStorageObjectsRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaListStorageObjectsRequest Result;
 	if (!Json.IsValid())
@@ -3512,7 +3512,7 @@ FNakamaListStorageObjectsRequest FNakamaListStorageObjectsRequest::FromJson(cons
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaListStorageObjectsRequest::ToJson() const
+TSharedPtr<FJsonObject> FNakamaListStorageObjectsRequest::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (!UserId.IsEmpty())
@@ -3531,7 +3531,7 @@ TSharedPtr<FJsonObject> FNakamaListStorageObjectsRequest::ToJson() const
 	return Json;
 }
 
-FNakamaListSubscriptionsRequest FNakamaListSubscriptionsRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaListSubscriptionsRequest FNakamaListSubscriptionsRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaListSubscriptionsRequest Result;
 	if (!Json.IsValid())
@@ -3549,7 +3549,7 @@ FNakamaListSubscriptionsRequest FNakamaListSubscriptionsRequest::FromJson(const 
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaListSubscriptionsRequest::ToJson() const
+TSharedPtr<FJsonObject> FNakamaListSubscriptionsRequest::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	Json->SetNumberField(TEXT("limit"), Limit);
@@ -3560,7 +3560,7 @@ TSharedPtr<FJsonObject> FNakamaListSubscriptionsRequest::ToJson() const
 	return Json;
 }
 
-FNakamaListTournamentRecordsAroundOwnerRequest FNakamaListTournamentRecordsAroundOwnerRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaListTournamentRecordsAroundOwnerRequest FNakamaListTournamentRecordsAroundOwnerRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaListTournamentRecordsAroundOwnerRequest Result;
 	if (!Json.IsValid())
@@ -3590,7 +3590,7 @@ FNakamaListTournamentRecordsAroundOwnerRequest FNakamaListTournamentRecordsAroun
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaListTournamentRecordsAroundOwnerRequest::ToJson() const
+TSharedPtr<FJsonObject> FNakamaListTournamentRecordsAroundOwnerRequest::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (!TournamentId.IsEmpty())
@@ -3610,7 +3610,7 @@ TSharedPtr<FJsonObject> FNakamaListTournamentRecordsAroundOwnerRequest::ToJson()
 	return Json;
 }
 
-FNakamaListTournamentRecordsRequest FNakamaListTournamentRecordsRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaListTournamentRecordsRequest FNakamaListTournamentRecordsRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaListTournamentRecordsRequest Result;
 	if (!Json.IsValid())
@@ -3647,7 +3647,7 @@ FNakamaListTournamentRecordsRequest FNakamaListTournamentRecordsRequest::FromJso
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaListTournamentRecordsRequest::ToJson() const
+TSharedPtr<FJsonObject> FNakamaListTournamentRecordsRequest::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (!TournamentId.IsEmpty())
@@ -3672,7 +3672,7 @@ TSharedPtr<FJsonObject> FNakamaListTournamentRecordsRequest::ToJson() const
 	return Json;
 }
 
-FNakamaListTournamentsRequest FNakamaListTournamentsRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaListTournamentsRequest FNakamaListTournamentsRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaListTournamentsRequest Result;
 	if (!Json.IsValid())
@@ -3706,7 +3706,7 @@ FNakamaListTournamentsRequest FNakamaListTournamentsRequest::FromJson(const TSha
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaListTournamentsRequest::ToJson() const
+TSharedPtr<FJsonObject> FNakamaListTournamentsRequest::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	Json->SetNumberField(TEXT("category_start"), CategoryStart);
@@ -3721,7 +3721,7 @@ TSharedPtr<FJsonObject> FNakamaListTournamentsRequest::ToJson() const
 	return Json;
 }
 
-FNakamaListUserGroupsRequest FNakamaListUserGroupsRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaListUserGroupsRequest FNakamaListUserGroupsRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaListUserGroupsRequest Result;
 	if (!Json.IsValid())
@@ -3747,7 +3747,7 @@ FNakamaListUserGroupsRequest FNakamaListUserGroupsRequest::FromJson(const TShare
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaListUserGroupsRequest::ToJson() const
+TSharedPtr<FJsonObject> FNakamaListUserGroupsRequest::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (!UserId.IsEmpty())
@@ -3763,7 +3763,7 @@ TSharedPtr<FJsonObject> FNakamaListUserGroupsRequest::ToJson() const
 	return Json;
 }
 
-FNakamaMatch FNakamaMatch::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaMatch FNakamaMatch::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaMatch Result;
 	if (!Json.IsValid())
@@ -3797,7 +3797,7 @@ FNakamaMatch FNakamaMatch::FromJson(const TSharedPtr<FJsonObject>& Json)
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaMatch::ToJson() const
+TSharedPtr<FJsonObject> FNakamaMatch::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (!MatchId.IsEmpty())
@@ -3818,7 +3818,7 @@ TSharedPtr<FJsonObject> FNakamaMatch::ToJson() const
 	return Json;
 }
 
-FNakamaMatchList FNakamaMatchList::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaMatchList FNakamaMatchList::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaMatchList Result;
 	if (!Json.IsValid())
@@ -3843,7 +3843,7 @@ FNakamaMatchList FNakamaMatchList::FromJson(const TSharedPtr<FJsonObject>& Json)
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaMatchList::ToJson() const
+TSharedPtr<FJsonObject> FNakamaMatchList::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (Matches.Num() > 0)
@@ -3858,7 +3858,7 @@ TSharedPtr<FJsonObject> FNakamaMatchList::ToJson() const
 	return Json;
 }
 
-FNakamaMatchmakerCompletionStats FNakamaMatchmakerCompletionStats::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaMatchmakerCompletionStats FNakamaMatchmakerCompletionStats::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaMatchmakerCompletionStats Result;
 	if (!Json.IsValid())
@@ -3876,7 +3876,7 @@ FNakamaMatchmakerCompletionStats FNakamaMatchmakerCompletionStats::FromJson(cons
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaMatchmakerCompletionStats::ToJson() const
+TSharedPtr<FJsonObject> FNakamaMatchmakerCompletionStats::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (!CreateTime.IsEmpty())
@@ -3890,7 +3890,7 @@ TSharedPtr<FJsonObject> FNakamaMatchmakerCompletionStats::ToJson() const
 	return Json;
 }
 
-FNakamaMatchmakerStats FNakamaMatchmakerStats::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaMatchmakerStats FNakamaMatchmakerStats::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaMatchmakerStats Result;
 	if (!Json.IsValid())
@@ -3923,7 +3923,7 @@ FNakamaMatchmakerStats FNakamaMatchmakerStats::FromJson(const TSharedPtr<FJsonOb
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaMatchmakerStats::ToJson() const
+TSharedPtr<FJsonObject> FNakamaMatchmakerStats::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	Json->SetNumberField(TEXT("ticket_count"), TicketCount);
@@ -3943,7 +3943,7 @@ TSharedPtr<FJsonObject> FNakamaMatchmakerStats::ToJson() const
 	return Json;
 }
 
-FNakamaNotification FNakamaNotification::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaNotification FNakamaNotification::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaNotification Result;
 	if (!Json.IsValid())
@@ -3981,7 +3981,7 @@ FNakamaNotification FNakamaNotification::FromJson(const TSharedPtr<FJsonObject>&
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaNotification::ToJson() const
+TSharedPtr<FJsonObject> FNakamaNotification::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (!Id.IsEmpty())
@@ -4009,7 +4009,7 @@ TSharedPtr<FJsonObject> FNakamaNotification::ToJson() const
 	return Json;
 }
 
-FNakamaNotificationList FNakamaNotificationList::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaNotificationList FNakamaNotificationList::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaNotificationList Result;
 	if (!Json.IsValid())
@@ -4038,7 +4038,7 @@ FNakamaNotificationList FNakamaNotificationList::FromJson(const TSharedPtr<FJson
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaNotificationList::ToJson() const
+TSharedPtr<FJsonObject> FNakamaNotificationList::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (Notifications.Num() > 0)
@@ -4057,7 +4057,7 @@ TSharedPtr<FJsonObject> FNakamaNotificationList::ToJson() const
 	return Json;
 }
 
-FNakamaPromoteGroupUsersRequest FNakamaPromoteGroupUsersRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaPromoteGroupUsersRequest FNakamaPromoteGroupUsersRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaPromoteGroupUsersRequest Result;
 	if (!Json.IsValid())
@@ -4082,7 +4082,7 @@ FNakamaPromoteGroupUsersRequest FNakamaPromoteGroupUsersRequest::FromJson(const 
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaPromoteGroupUsersRequest::ToJson() const
+TSharedPtr<FJsonObject> FNakamaPromoteGroupUsersRequest::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (!GroupId.IsEmpty())
@@ -4101,7 +4101,7 @@ TSharedPtr<FJsonObject> FNakamaPromoteGroupUsersRequest::ToJson() const
 	return Json;
 }
 
-FNakamaDemoteGroupUsersRequest FNakamaDemoteGroupUsersRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaDemoteGroupUsersRequest FNakamaDemoteGroupUsersRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaDemoteGroupUsersRequest Result;
 	if (!Json.IsValid())
@@ -4126,7 +4126,7 @@ FNakamaDemoteGroupUsersRequest FNakamaDemoteGroupUsersRequest::FromJson(const TS
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaDemoteGroupUsersRequest::ToJson() const
+TSharedPtr<FJsonObject> FNakamaDemoteGroupUsersRequest::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (!GroupId.IsEmpty())
@@ -4145,7 +4145,7 @@ TSharedPtr<FJsonObject> FNakamaDemoteGroupUsersRequest::ToJson() const
 	return Json;
 }
 
-FNakamaReadStorageObjectId FNakamaReadStorageObjectId::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaReadStorageObjectId FNakamaReadStorageObjectId::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaReadStorageObjectId Result;
 	if (!Json.IsValid())
@@ -4167,7 +4167,7 @@ FNakamaReadStorageObjectId FNakamaReadStorageObjectId::FromJson(const TSharedPtr
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaReadStorageObjectId::ToJson() const
+TSharedPtr<FJsonObject> FNakamaReadStorageObjectId::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (!Collection.IsEmpty())
@@ -4185,7 +4185,7 @@ TSharedPtr<FJsonObject> FNakamaReadStorageObjectId::ToJson() const
 	return Json;
 }
 
-FNakamaReadStorageObjectsRequest FNakamaReadStorageObjectsRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaReadStorageObjectsRequest FNakamaReadStorageObjectsRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaReadStorageObjectsRequest Result;
 	if (!Json.IsValid())
@@ -4210,7 +4210,7 @@ FNakamaReadStorageObjectsRequest FNakamaReadStorageObjectsRequest::FromJson(cons
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaReadStorageObjectsRequest::ToJson() const
+TSharedPtr<FJsonObject> FNakamaReadStorageObjectsRequest::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (ObjectIds.Num() > 0)
@@ -4225,7 +4225,7 @@ TSharedPtr<FJsonObject> FNakamaReadStorageObjectsRequest::ToJson() const
 	return Json;
 }
 
-FNakamaRpc FNakamaRpc::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaRpc FNakamaRpc::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaRpc Result;
 	if (!Json.IsValid())
@@ -4247,7 +4247,7 @@ FNakamaRpc FNakamaRpc::FromJson(const TSharedPtr<FJsonObject>& Json)
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaRpc::ToJson() const
+TSharedPtr<FJsonObject> FNakamaRpc::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (!Id.IsEmpty())
@@ -4265,7 +4265,7 @@ TSharedPtr<FJsonObject> FNakamaRpc::ToJson() const
 	return Json;
 }
 
-FNakamaSession FNakamaSession::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaSession FNakamaSession::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaSession Result;
 	if (!Json.IsValid())
@@ -4288,7 +4288,7 @@ FNakamaSession FNakamaSession::FromJson(const TSharedPtr<FJsonObject>& Json)
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaSession::ToJson() const
+TSharedPtr<FJsonObject> FNakamaSession::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	Json->SetBoolField(TEXT("created"), Created);
@@ -4303,7 +4303,7 @@ TSharedPtr<FJsonObject> FNakamaSession::ToJson() const
 	return Json;
 }
 
-FNakamaStorageObject FNakamaStorageObject::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaStorageObject FNakamaStorageObject::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaStorageObject Result;
 	if (!Json.IsValid())
@@ -4349,7 +4349,7 @@ FNakamaStorageObject FNakamaStorageObject::FromJson(const TSharedPtr<FJsonObject
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaStorageObject::ToJson() const
+TSharedPtr<FJsonObject> FNakamaStorageObject::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (!Collection.IsEmpty())
@@ -4385,7 +4385,7 @@ TSharedPtr<FJsonObject> FNakamaStorageObject::ToJson() const
 	return Json;
 }
 
-FNakamaStorageObjectAck FNakamaStorageObjectAck::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaStorageObjectAck FNakamaStorageObjectAck::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaStorageObjectAck Result;
 	if (!Json.IsValid())
@@ -4419,7 +4419,7 @@ FNakamaStorageObjectAck FNakamaStorageObjectAck::FromJson(const TSharedPtr<FJson
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaStorageObjectAck::ToJson() const
+TSharedPtr<FJsonObject> FNakamaStorageObjectAck::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (!Collection.IsEmpty())
@@ -4449,7 +4449,7 @@ TSharedPtr<FJsonObject> FNakamaStorageObjectAck::ToJson() const
 	return Json;
 }
 
-FNakamaStorageObjectAcks FNakamaStorageObjectAcks::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaStorageObjectAcks FNakamaStorageObjectAcks::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaStorageObjectAcks Result;
 	if (!Json.IsValid())
@@ -4474,7 +4474,7 @@ FNakamaStorageObjectAcks FNakamaStorageObjectAcks::FromJson(const TSharedPtr<FJs
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaStorageObjectAcks::ToJson() const
+TSharedPtr<FJsonObject> FNakamaStorageObjectAcks::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (Acks.Num() > 0)
@@ -4489,7 +4489,7 @@ TSharedPtr<FJsonObject> FNakamaStorageObjectAcks::ToJson() const
 	return Json;
 }
 
-FNakamaStorageObjects FNakamaStorageObjects::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaStorageObjects FNakamaStorageObjects::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaStorageObjects Result;
 	if (!Json.IsValid())
@@ -4514,7 +4514,7 @@ FNakamaStorageObjects FNakamaStorageObjects::FromJson(const TSharedPtr<FJsonObje
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaStorageObjects::ToJson() const
+TSharedPtr<FJsonObject> FNakamaStorageObjects::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (Objects.Num() > 0)
@@ -4529,7 +4529,7 @@ TSharedPtr<FJsonObject> FNakamaStorageObjects::ToJson() const
 	return Json;
 }
 
-FNakamaStorageObjectList FNakamaStorageObjectList::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaStorageObjectList FNakamaStorageObjectList::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaStorageObjectList Result;
 	if (!Json.IsValid())
@@ -4558,7 +4558,7 @@ FNakamaStorageObjectList FNakamaStorageObjectList::FromJson(const TSharedPtr<FJs
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaStorageObjectList::ToJson() const
+TSharedPtr<FJsonObject> FNakamaStorageObjectList::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (Objects.Num() > 0)
@@ -4577,7 +4577,7 @@ TSharedPtr<FJsonObject> FNakamaStorageObjectList::ToJson() const
 	return Json;
 }
 
-FNakamaTournament FNakamaTournament::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaTournament FNakamaTournament::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaTournament Result;
 	if (!Json.IsValid())
@@ -4671,7 +4671,7 @@ FNakamaTournament FNakamaTournament::FromJson(const TSharedPtr<FJsonObject>& Jso
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaTournament::ToJson() const
+TSharedPtr<FJsonObject> FNakamaTournament::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (!Id.IsEmpty())
@@ -4719,7 +4719,7 @@ TSharedPtr<FJsonObject> FNakamaTournament::ToJson() const
 	return Json;
 }
 
-FNakamaTournamentList FNakamaTournamentList::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaTournamentList FNakamaTournamentList::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaTournamentList Result;
 	if (!Json.IsValid())
@@ -4748,7 +4748,7 @@ FNakamaTournamentList FNakamaTournamentList::FromJson(const TSharedPtr<FJsonObje
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaTournamentList::ToJson() const
+TSharedPtr<FJsonObject> FNakamaTournamentList::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (Tournaments.Num() > 0)
@@ -4767,7 +4767,7 @@ TSharedPtr<FJsonObject> FNakamaTournamentList::ToJson() const
 	return Json;
 }
 
-FNakamaTournamentRecordList FNakamaTournamentRecordList::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaTournamentRecordList FNakamaTournamentRecordList::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaTournamentRecordList Result;
 	if (!Json.IsValid())
@@ -4819,7 +4819,7 @@ FNakamaTournamentRecordList FNakamaTournamentRecordList::FromJson(const TSharedP
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaTournamentRecordList::ToJson() const
+TSharedPtr<FJsonObject> FNakamaTournamentRecordList::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (Records.Num() > 0)
@@ -4852,7 +4852,7 @@ TSharedPtr<FJsonObject> FNakamaTournamentRecordList::ToJson() const
 	return Json;
 }
 
-FNakamaUpdateAccountRequest FNakamaUpdateAccountRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaUpdateAccountRequest FNakamaUpdateAccountRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaUpdateAccountRequest Result;
 	if (!Json.IsValid())
@@ -4886,7 +4886,7 @@ FNakamaUpdateAccountRequest FNakamaUpdateAccountRequest::FromJson(const TSharedP
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaUpdateAccountRequest::ToJson() const
+TSharedPtr<FJsonObject> FNakamaUpdateAccountRequest::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (!Username.IsEmpty())
@@ -4916,7 +4916,7 @@ TSharedPtr<FJsonObject> FNakamaUpdateAccountRequest::ToJson() const
 	return Json;
 }
 
-FNakamaUpdateGroupRequest FNakamaUpdateGroupRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaUpdateGroupRequest FNakamaUpdateGroupRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaUpdateGroupRequest Result;
 	if (!Json.IsValid())
@@ -4950,7 +4950,7 @@ FNakamaUpdateGroupRequest FNakamaUpdateGroupRequest::FromJson(const TSharedPtr<F
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaUpdateGroupRequest::ToJson() const
+TSharedPtr<FJsonObject> FNakamaUpdateGroupRequest::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (!GroupId.IsEmpty())
@@ -4977,7 +4977,7 @@ TSharedPtr<FJsonObject> FNakamaUpdateGroupRequest::ToJson() const
 	return Json;
 }
 
-FNakamaUserGroupList_UserGroup FNakamaUserGroupList_UserGroup::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaUserGroupList_UserGroup FNakamaUserGroupList_UserGroup::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaUserGroupList_UserGroup Result;
 	if (!Json.IsValid())
@@ -4999,7 +4999,7 @@ FNakamaUserGroupList_UserGroup FNakamaUserGroupList_UserGroup::FromJson(const TS
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaUserGroupList_UserGroup::ToJson() const
+TSharedPtr<FJsonObject> FNakamaUserGroupList_UserGroup::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	Json->SetObjectField(TEXT("group"), Group.ToJson());
@@ -5007,7 +5007,7 @@ TSharedPtr<FJsonObject> FNakamaUserGroupList_UserGroup::ToJson() const
 	return Json;
 }
 
-FNakamaUserGroupList FNakamaUserGroupList::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaUserGroupList FNakamaUserGroupList::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaUserGroupList Result;
 	if (!Json.IsValid())
@@ -5036,7 +5036,7 @@ FNakamaUserGroupList FNakamaUserGroupList::FromJson(const TSharedPtr<FJsonObject
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaUserGroupList::ToJson() const
+TSharedPtr<FJsonObject> FNakamaUserGroupList::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (UserGroups.Num() > 0)
@@ -5055,7 +5055,7 @@ TSharedPtr<FJsonObject> FNakamaUserGroupList::ToJson() const
 	return Json;
 }
 
-FNakamaUsers FNakamaUsers::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaUsers FNakamaUsers::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaUsers Result;
 	if (!Json.IsValid())
@@ -5080,7 +5080,7 @@ FNakamaUsers FNakamaUsers::FromJson(const TSharedPtr<FJsonObject>& Json)
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaUsers::ToJson() const
+TSharedPtr<FJsonObject> FNakamaUsers::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (Users.Num() > 0)
@@ -5095,7 +5095,7 @@ TSharedPtr<FJsonObject> FNakamaUsers::ToJson() const
 	return Json;
 }
 
-FNakamaValidatePurchaseAppleRequest FNakamaValidatePurchaseAppleRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaValidatePurchaseAppleRequest FNakamaValidatePurchaseAppleRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaValidatePurchaseAppleRequest Result;
 	if (!Json.IsValid())
@@ -5113,7 +5113,7 @@ FNakamaValidatePurchaseAppleRequest FNakamaValidatePurchaseAppleRequest::FromJso
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaValidatePurchaseAppleRequest::ToJson() const
+TSharedPtr<FJsonObject> FNakamaValidatePurchaseAppleRequest::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (!Receipt.IsEmpty())
@@ -5124,7 +5124,7 @@ TSharedPtr<FJsonObject> FNakamaValidatePurchaseAppleRequest::ToJson() const
 	return Json;
 }
 
-FNakamaValidateSubscriptionAppleRequest FNakamaValidateSubscriptionAppleRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaValidateSubscriptionAppleRequest FNakamaValidateSubscriptionAppleRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaValidateSubscriptionAppleRequest Result;
 	if (!Json.IsValid())
@@ -5142,7 +5142,7 @@ FNakamaValidateSubscriptionAppleRequest FNakamaValidateSubscriptionAppleRequest:
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaValidateSubscriptionAppleRequest::ToJson() const
+TSharedPtr<FJsonObject> FNakamaValidateSubscriptionAppleRequest::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (!Receipt.IsEmpty())
@@ -5153,7 +5153,7 @@ TSharedPtr<FJsonObject> FNakamaValidateSubscriptionAppleRequest::ToJson() const
 	return Json;
 }
 
-FNakamaValidatePurchaseGoogleRequest FNakamaValidatePurchaseGoogleRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaValidatePurchaseGoogleRequest FNakamaValidatePurchaseGoogleRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaValidatePurchaseGoogleRequest Result;
 	if (!Json.IsValid())
@@ -5171,7 +5171,7 @@ FNakamaValidatePurchaseGoogleRequest FNakamaValidatePurchaseGoogleRequest::FromJ
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaValidatePurchaseGoogleRequest::ToJson() const
+TSharedPtr<FJsonObject> FNakamaValidatePurchaseGoogleRequest::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (!Purchase.IsEmpty())
@@ -5182,7 +5182,7 @@ TSharedPtr<FJsonObject> FNakamaValidatePurchaseGoogleRequest::ToJson() const
 	return Json;
 }
 
-FNakamaValidateSubscriptionGoogleRequest FNakamaValidateSubscriptionGoogleRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaValidateSubscriptionGoogleRequest FNakamaValidateSubscriptionGoogleRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaValidateSubscriptionGoogleRequest Result;
 	if (!Json.IsValid())
@@ -5200,7 +5200,7 @@ FNakamaValidateSubscriptionGoogleRequest FNakamaValidateSubscriptionGoogleReques
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaValidateSubscriptionGoogleRequest::ToJson() const
+TSharedPtr<FJsonObject> FNakamaValidateSubscriptionGoogleRequest::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (!Receipt.IsEmpty())
@@ -5211,7 +5211,7 @@ TSharedPtr<FJsonObject> FNakamaValidateSubscriptionGoogleRequest::ToJson() const
 	return Json;
 }
 
-FNakamaValidatePurchaseHuaweiRequest FNakamaValidatePurchaseHuaweiRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaValidatePurchaseHuaweiRequest FNakamaValidatePurchaseHuaweiRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaValidatePurchaseHuaweiRequest Result;
 	if (!Json.IsValid())
@@ -5233,7 +5233,7 @@ FNakamaValidatePurchaseHuaweiRequest FNakamaValidatePurchaseHuaweiRequest::FromJ
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaValidatePurchaseHuaweiRequest::ToJson() const
+TSharedPtr<FJsonObject> FNakamaValidatePurchaseHuaweiRequest::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (!Purchase.IsEmpty())
@@ -5248,7 +5248,7 @@ TSharedPtr<FJsonObject> FNakamaValidatePurchaseHuaweiRequest::ToJson() const
 	return Json;
 }
 
-FNakamaValidatePurchaseFacebookInstantRequest FNakamaValidatePurchaseFacebookInstantRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaValidatePurchaseFacebookInstantRequest FNakamaValidatePurchaseFacebookInstantRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaValidatePurchaseFacebookInstantRequest Result;
 	if (!Json.IsValid())
@@ -5266,7 +5266,7 @@ FNakamaValidatePurchaseFacebookInstantRequest FNakamaValidatePurchaseFacebookIns
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaValidatePurchaseFacebookInstantRequest::ToJson() const
+TSharedPtr<FJsonObject> FNakamaValidatePurchaseFacebookInstantRequest::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (!SignedRequest.IsEmpty())
@@ -5277,7 +5277,7 @@ TSharedPtr<FJsonObject> FNakamaValidatePurchaseFacebookInstantRequest::ToJson() 
 	return Json;
 }
 
-FNakamaValidatedPurchase FNakamaValidatedPurchase::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaValidatedPurchase FNakamaValidatedPurchase::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaValidatedPurchase Result;
 	if (!Json.IsValid())
@@ -5331,7 +5331,7 @@ FNakamaValidatedPurchase FNakamaValidatedPurchase::FromJson(const TSharedPtr<FJs
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaValidatedPurchase::ToJson() const
+TSharedPtr<FJsonObject> FNakamaValidatedPurchase::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (!UserId.IsEmpty())
@@ -5372,7 +5372,7 @@ TSharedPtr<FJsonObject> FNakamaValidatedPurchase::ToJson() const
 	return Json;
 }
 
-FNakamaValidatePurchaseResponse FNakamaValidatePurchaseResponse::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaValidatePurchaseResponse FNakamaValidatePurchaseResponse::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaValidatePurchaseResponse Result;
 	if (!Json.IsValid())
@@ -5397,7 +5397,7 @@ FNakamaValidatePurchaseResponse FNakamaValidatePurchaseResponse::FromJson(const 
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaValidatePurchaseResponse::ToJson() const
+TSharedPtr<FJsonObject> FNakamaValidatePurchaseResponse::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (ValidatedPurchases.Num() > 0)
@@ -5412,7 +5412,7 @@ TSharedPtr<FJsonObject> FNakamaValidatePurchaseResponse::ToJson() const
 	return Json;
 }
 
-FNakamaValidatedSubscription FNakamaValidatedSubscription::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaValidatedSubscription FNakamaValidatedSubscription::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaValidatedSubscription Result;
 	if (!Json.IsValid())
@@ -5474,7 +5474,7 @@ FNakamaValidatedSubscription FNakamaValidatedSubscription::FromJson(const TShare
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaValidatedSubscription::ToJson() const
+TSharedPtr<FJsonObject> FNakamaValidatedSubscription::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (!UserId.IsEmpty())
@@ -5523,7 +5523,7 @@ TSharedPtr<FJsonObject> FNakamaValidatedSubscription::ToJson() const
 	return Json;
 }
 
-FNakamaValidateSubscriptionResponse FNakamaValidateSubscriptionResponse::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaValidateSubscriptionResponse FNakamaValidateSubscriptionResponse::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaValidateSubscriptionResponse Result;
 	if (!Json.IsValid())
@@ -5541,14 +5541,14 @@ FNakamaValidateSubscriptionResponse FNakamaValidateSubscriptionResponse::FromJso
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaValidateSubscriptionResponse::ToJson() const
+TSharedPtr<FJsonObject> FNakamaValidateSubscriptionResponse::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	Json->SetObjectField(TEXT("validated_subscription"), ValidatedSubscription.ToJson());
 	return Json;
 }
 
-FNakamaPurchaseList FNakamaPurchaseList::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaPurchaseList FNakamaPurchaseList::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaPurchaseList Result;
 	if (!Json.IsValid())
@@ -5581,7 +5581,7 @@ FNakamaPurchaseList FNakamaPurchaseList::FromJson(const TSharedPtr<FJsonObject>&
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaPurchaseList::ToJson() const
+TSharedPtr<FJsonObject> FNakamaPurchaseList::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (ValidatedPurchases.Num() > 0)
@@ -5604,7 +5604,7 @@ TSharedPtr<FJsonObject> FNakamaPurchaseList::ToJson() const
 	return Json;
 }
 
-FNakamaSubscriptionList FNakamaSubscriptionList::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaSubscriptionList FNakamaSubscriptionList::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaSubscriptionList Result;
 	if (!Json.IsValid())
@@ -5637,7 +5637,7 @@ FNakamaSubscriptionList FNakamaSubscriptionList::FromJson(const TSharedPtr<FJson
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaSubscriptionList::ToJson() const
+TSharedPtr<FJsonObject> FNakamaSubscriptionList::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (ValidatedSubscriptions.Num() > 0)
@@ -5660,7 +5660,7 @@ TSharedPtr<FJsonObject> FNakamaSubscriptionList::ToJson() const
 	return Json;
 }
 
-FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite Result;
 	if (!Json.IsValid())
@@ -5686,7 +5686,7 @@ FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite FNakamaWriteLeaderbo
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite::ToJson() const
+TSharedPtr<FJsonObject> FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	Json->SetNumberField(TEXT("score"), Score);
@@ -5699,7 +5699,7 @@ TSharedPtr<FJsonObject> FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWr
 	return Json;
 }
 
-FNakamaWriteLeaderboardRecordRequest FNakamaWriteLeaderboardRecordRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaWriteLeaderboardRecordRequest FNakamaWriteLeaderboardRecordRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaWriteLeaderboardRecordRequest Result;
 	if (!Json.IsValid())
@@ -5721,7 +5721,7 @@ FNakamaWriteLeaderboardRecordRequest FNakamaWriteLeaderboardRecordRequest::FromJ
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaWriteLeaderboardRecordRequest::ToJson() const
+TSharedPtr<FJsonObject> FNakamaWriteLeaderboardRecordRequest::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (!LeaderboardId.IsEmpty())
@@ -5732,7 +5732,7 @@ TSharedPtr<FJsonObject> FNakamaWriteLeaderboardRecordRequest::ToJson() const
 	return Json;
 }
 
-FNakamaWriteStorageObject FNakamaWriteStorageObject::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaWriteStorageObject FNakamaWriteStorageObject::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaWriteStorageObject Result;
 	if (!Json.IsValid())
@@ -5766,7 +5766,7 @@ FNakamaWriteStorageObject FNakamaWriteStorageObject::FromJson(const TSharedPtr<F
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaWriteStorageObject::ToJson() const
+TSharedPtr<FJsonObject> FNakamaWriteStorageObject::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (!Collection.IsEmpty())
@@ -5790,7 +5790,7 @@ TSharedPtr<FJsonObject> FNakamaWriteStorageObject::ToJson() const
 	return Json;
 }
 
-FNakamaWriteStorageObjectsRequest FNakamaWriteStorageObjectsRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaWriteStorageObjectsRequest FNakamaWriteStorageObjectsRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaWriteStorageObjectsRequest Result;
 	if (!Json.IsValid())
@@ -5815,7 +5815,7 @@ FNakamaWriteStorageObjectsRequest FNakamaWriteStorageObjectsRequest::FromJson(co
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaWriteStorageObjectsRequest::ToJson() const
+TSharedPtr<FJsonObject> FNakamaWriteStorageObjectsRequest::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (Objects.Num() > 0)
@@ -5830,7 +5830,7 @@ TSharedPtr<FJsonObject> FNakamaWriteStorageObjectsRequest::ToJson() const
 	return Json;
 }
 
-FNakamaWriteTournamentRecordRequest_TournamentRecordWrite FNakamaWriteTournamentRecordRequest_TournamentRecordWrite::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaWriteTournamentRecordRequest_TournamentRecordWrite FNakamaWriteTournamentRecordRequest_TournamentRecordWrite::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaWriteTournamentRecordRequest_TournamentRecordWrite Result;
 	if (!Json.IsValid())
@@ -5856,7 +5856,7 @@ FNakamaWriteTournamentRecordRequest_TournamentRecordWrite FNakamaWriteTournament
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaWriteTournamentRecordRequest_TournamentRecordWrite::ToJson() const
+TSharedPtr<FJsonObject> FNakamaWriteTournamentRecordRequest_TournamentRecordWrite::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	Json->SetNumberField(TEXT("score"), Score);
@@ -5869,7 +5869,7 @@ TSharedPtr<FJsonObject> FNakamaWriteTournamentRecordRequest_TournamentRecordWrit
 	return Json;
 }
 
-FNakamaWriteTournamentRecordRequest FNakamaWriteTournamentRecordRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaWriteTournamentRecordRequest FNakamaWriteTournamentRecordRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaWriteTournamentRecordRequest Result;
 	if (!Json.IsValid())
@@ -5891,7 +5891,7 @@ FNakamaWriteTournamentRecordRequest FNakamaWriteTournamentRecordRequest::FromJso
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaWriteTournamentRecordRequest::ToJson() const
+TSharedPtr<FJsonObject> FNakamaWriteTournamentRecordRequest::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (!TournamentId.IsEmpty())
@@ -5902,7 +5902,7 @@ TSharedPtr<FJsonObject> FNakamaWriteTournamentRecordRequest::ToJson() const
 	return Json;
 }
 
-FNakamaListPartiesRequest FNakamaListPartiesRequest::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaListPartiesRequest FNakamaListPartiesRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaListPartiesRequest Result;
 	if (!Json.IsValid())
@@ -5928,7 +5928,7 @@ FNakamaListPartiesRequest FNakamaListPartiesRequest::FromJson(const TSharedPtr<F
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaListPartiesRequest::ToJson() const
+TSharedPtr<FJsonObject> FNakamaListPartiesRequest::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	Json->SetNumberField(TEXT("limit"), Limit);
@@ -5944,7 +5944,7 @@ TSharedPtr<FJsonObject> FNakamaListPartiesRequest::ToJson() const
 	return Json;
 }
 
-FNakamaParty FNakamaParty::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaParty FNakamaParty::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaParty Result;
 	if (!Json.IsValid())
@@ -5974,7 +5974,7 @@ FNakamaParty FNakamaParty::FromJson(const TSharedPtr<FJsonObject>& Json)
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaParty::ToJson() const
+TSharedPtr<FJsonObject> FNakamaParty::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (!PartyId.IsEmpty())
@@ -5991,7 +5991,7 @@ TSharedPtr<FJsonObject> FNakamaParty::ToJson() const
 	return Json;
 }
 
-FNakamaPartyList FNakamaPartyList::FromJson(const TSharedPtr<FJsonObject>& Json)
+FNakamaPartyList FNakamaPartyList::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
 	FNakamaPartyList Result;
 	if (!Json.IsValid())
@@ -6020,7 +6020,7 @@ FNakamaPartyList FNakamaPartyList::FromJson(const TSharedPtr<FJsonObject>& Json)
 	return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaPartyList::ToJson() const
+TSharedPtr<FJsonObject> FNakamaPartyList::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 	if (Parties.Num() > 0)
@@ -6041,7 +6041,7 @@ TSharedPtr<FJsonObject> FNakamaPartyList::ToJson() const
 
 // --- FNakamaApiConfig ---
 
-FString FNakamaApiConfig::GetBaseUrl() const
+FString FNakamaApiConfig::GetBaseUrl() const noexcept
 {
 	const FString Scheme = bUseSSL ? TEXT("https") : TEXT("http");
 	return FString::Printf(TEXT("%s://%s:%d"), *Scheme, *Host, Port);
@@ -6062,7 +6062,7 @@ void DoHttpRequest(
 	const FString& TokenString,
 	TFunction<void(TSharedPtr<FJsonObject>)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	SCOPE_CYCLE_COUNTER(STAT_Nakama_MakeRequest_Dispatch);
 	TRACE_CPUPROFILER_EVENT_SCOPE(Nakama_MakeRequest);
@@ -6199,7 +6199,7 @@ void SendRequest(
 	const FString& AuthValue,
 	TFunction<void(TSharedPtr<FJsonObject>)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	// Early cancellation check
 	if (CancellationToken && CancellationToken->IsCancelled())
@@ -6262,7 +6262,7 @@ void MakeRequest(
 	const FString& AuthValue,
 	TFunction<void(TSharedPtr<FJsonObject>)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString BodyString;
 	if (Body.IsValid() && Method != TEXT("GET"))
@@ -6283,7 +6283,7 @@ void NakamaApi::AddFriends(
 	FString Metadata,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/friend");
 	TArray<FString> QueryParams;
@@ -6325,7 +6325,7 @@ void NakamaApi::AddFriends(
 	FString Metadata,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/friend");
 	TArray<FString> QueryParams;
@@ -6364,7 +6364,7 @@ void NakamaApi::AddGroupUsers(
 	const TArray<FString>& UserIds,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/group/{group_id}/add");
 	Endpoint = Endpoint.Replace(TEXT("{group_id}"), *GroupId);
@@ -6398,7 +6398,7 @@ void NakamaApi::AddGroupUsers(
 	const TArray<FString>& UserIds,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/group/{group_id}/add");
 	Endpoint = Endpoint.Replace(TEXT("{group_id}"), *GroupId);
@@ -6429,7 +6429,7 @@ void NakamaApi::SessionRefresh(
 	const TMap<FString, FString>& Vars,
 	TFunction<void(const FNakamaSession&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/session/refresh");
 	TArray<FString> QueryParams;
@@ -6473,7 +6473,7 @@ void NakamaApi::SessionLogout(
 	FString RefreshToken,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/session/logout");
 	TArray<FString> QueryParams;
@@ -6511,7 +6511,7 @@ void NakamaApi::SessionLogout(
 	FString RefreshToken,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/session/logout");
 	TArray<FString> QueryParams;
@@ -6547,7 +6547,7 @@ void NakamaApi::AuthenticateApple(
 	FString Username,
 	TFunction<void(const FNakamaSession&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/authenticate/apple");
 	TArray<FString> QueryParams;
@@ -6583,7 +6583,7 @@ void NakamaApi::AuthenticateCustom(
 	FString Username,
 	TFunction<void(const FNakamaSession&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/authenticate/custom");
 	TArray<FString> QueryParams;
@@ -6619,7 +6619,7 @@ void NakamaApi::AuthenticateDevice(
 	FString Username,
 	TFunction<void(const FNakamaSession&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/authenticate/device");
 	TArray<FString> QueryParams;
@@ -6655,7 +6655,7 @@ void NakamaApi::AuthenticateEmail(
 	FString Username,
 	TFunction<void(const FNakamaSession&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/authenticate/email");
 	TArray<FString> QueryParams;
@@ -6692,7 +6692,7 @@ void NakamaApi::AuthenticateFacebook(
 	bool Sync,
 	TFunction<void(const FNakamaSession&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/authenticate/facebook");
 	TArray<FString> QueryParams;
@@ -6729,7 +6729,7 @@ void NakamaApi::AuthenticateFacebookInstantGame(
 	FString Username,
 	TFunction<void(const FNakamaSession&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/authenticate/facebookinstantgame");
 	TArray<FString> QueryParams;
@@ -6765,7 +6765,7 @@ void NakamaApi::AuthenticateGameCenter(
 	FString Username,
 	TFunction<void(const FNakamaSession&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/authenticate/gamecenter");
 	TArray<FString> QueryParams;
@@ -6801,7 +6801,7 @@ void NakamaApi::AuthenticateGoogle(
 	FString Username,
 	TFunction<void(const FNakamaSession&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/authenticate/google");
 	TArray<FString> QueryParams;
@@ -6838,7 +6838,7 @@ void NakamaApi::AuthenticateSteam(
 	bool Sync,
 	TFunction<void(const FNakamaSession&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/authenticate/steam");
 	TArray<FString> QueryParams;
@@ -6875,7 +6875,7 @@ void NakamaApi::BanGroupUsers(
 	const TArray<FString>& UserIds,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/group/{group_id}/ban");
 	Endpoint = Endpoint.Replace(TEXT("{group_id}"), *GroupId);
@@ -6909,7 +6909,7 @@ void NakamaApi::BanGroupUsers(
 	const TArray<FString>& UserIds,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/group/{group_id}/ban");
 	Endpoint = Endpoint.Replace(TEXT("{group_id}"), *GroupId);
@@ -6941,7 +6941,7 @@ void NakamaApi::BlockFriends(
 	const TArray<FString>& Usernames,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/friend/block");
 	TArray<FString> QueryParams;
@@ -6978,7 +6978,7 @@ void NakamaApi::BlockFriends(
 	const TArray<FString>& Usernames,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/friend/block");
 	TArray<FString> QueryParams;
@@ -7017,7 +7017,7 @@ void NakamaApi::CreateGroup(
 	int32 MaxCount,
 	TFunction<void(const FNakamaGroup&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/group");
 	TArray<FString> QueryParams;
@@ -7070,7 +7070,7 @@ void NakamaApi::CreateGroup(
 	int32 MaxCount,
 	TFunction<void(const FNakamaGroup&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/group");
 	TArray<FString> QueryParams;
@@ -7115,7 +7115,7 @@ void NakamaApi::DeleteAccount(
 	FNakamaSessionPtr Session,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account");
 
@@ -7137,7 +7137,7 @@ void NakamaApi::DeleteAccount(
 	const FString& HttpKey,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account");TSharedPtr<FJsonObject> Body;
 
@@ -7159,7 +7159,7 @@ void NakamaApi::DeleteFriends(
 	const TArray<FString>& Usernames,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/friend");
 	TArray<FString> QueryParams;
@@ -7196,7 +7196,7 @@ void NakamaApi::DeleteFriends(
 	const TArray<FString>& Usernames,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/friend");
 	TArray<FString> QueryParams;
@@ -7230,7 +7230,7 @@ void NakamaApi::DeleteGroup(
 	FString GroupId,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/group/{group_id}");
 	Endpoint = Endpoint.Replace(TEXT("{group_id}"), *GroupId);
@@ -7259,7 +7259,7 @@ void NakamaApi::DeleteGroup(
 	FString GroupId,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/group/{group_id}");
 	Endpoint = Endpoint.Replace(TEXT("{group_id}"), *GroupId);
@@ -7286,7 +7286,7 @@ void NakamaApi::DeleteLeaderboardRecord(
 	FString LeaderboardId,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/leaderboard/{leaderboard_id}");
 	Endpoint = Endpoint.Replace(TEXT("{leaderboard_id}"), *LeaderboardId);
@@ -7315,7 +7315,7 @@ void NakamaApi::DeleteLeaderboardRecord(
 	FString LeaderboardId,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/leaderboard/{leaderboard_id}");
 	Endpoint = Endpoint.Replace(TEXT("{leaderboard_id}"), *LeaderboardId);
@@ -7342,7 +7342,7 @@ void NakamaApi::DeleteNotifications(
 	const TArray<FString>& Ids,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/notification");
 	TArray<FString> QueryParams;
@@ -7374,7 +7374,7 @@ void NakamaApi::DeleteNotifications(
 	const TArray<FString>& Ids,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/notification");
 	TArray<FString> QueryParams;
@@ -7404,7 +7404,7 @@ void NakamaApi::DeleteTournamentRecord(
 	FString TournamentId,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/tournament/{tournament_id}");
 	Endpoint = Endpoint.Replace(TEXT("{tournament_id}"), *TournamentId);
@@ -7433,7 +7433,7 @@ void NakamaApi::DeleteTournamentRecord(
 	FString TournamentId,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/tournament/{tournament_id}");
 	Endpoint = Endpoint.Replace(TEXT("{tournament_id}"), *TournamentId);
@@ -7460,7 +7460,7 @@ void NakamaApi::DeleteStorageObjects(
 	const TArray<FNakamaDeleteStorageObjectId>& ObjectIds,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/storage/delete");
 	TArray<FString> QueryParams;
@@ -7498,7 +7498,7 @@ void NakamaApi::DeleteStorageObjects(
 	const TArray<FNakamaDeleteStorageObjectId>& ObjectIds,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/storage/delete");
 	TArray<FString> QueryParams;
@@ -7537,7 +7537,7 @@ void NakamaApi::Event(
 	const TMap<FString, FString>& Properties,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/event");
 	TArray<FString> QueryParams;
@@ -7584,7 +7584,7 @@ void NakamaApi::Event(
 	const TMap<FString, FString>& Properties,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/event");
 	TArray<FString> QueryParams;
@@ -7625,7 +7625,7 @@ void NakamaApi::GetAccount(
 	FNakamaSessionPtr Session,
 	TFunction<void(const FNakamaAccount&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account");
 
@@ -7648,7 +7648,7 @@ void NakamaApi::GetAccount(
 	const FString& HttpKey,
 	TFunction<void(const FNakamaAccount&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account");TSharedPtr<FJsonObject> Body;
 
@@ -7672,7 +7672,7 @@ void NakamaApi::GetUsers(
 	const TArray<FString>& FacebookIds,
 	TFunction<void(const FNakamaUsers&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/user");
 	TArray<FString> QueryParams;
@@ -7715,7 +7715,7 @@ void NakamaApi::GetUsers(
 	const TArray<FString>& FacebookIds,
 	TFunction<void(const FNakamaUsers&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/user");
 	TArray<FString> QueryParams;
@@ -7754,7 +7754,7 @@ void NakamaApi::GetSubscription(
 	FString ProductId,
 	TFunction<void(const FNakamaValidatedSubscription&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/iap/subscription/{product_id}");
 	Endpoint = Endpoint.Replace(TEXT("{product_id}"), *ProductId);
@@ -7784,7 +7784,7 @@ void NakamaApi::GetSubscription(
 	FString ProductId,
 	TFunction<void(const FNakamaValidatedSubscription&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/iap/subscription/{product_id}");
 	Endpoint = Endpoint.Replace(TEXT("{product_id}"), *ProductId);
@@ -7811,7 +7811,7 @@ void NakamaApi::GetMatchmakerStats(
 	FNakamaSessionPtr Session,
 	TFunction<void(const FNakamaMatchmakerStats&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/matchmaker/stats");
 
@@ -7834,7 +7834,7 @@ void NakamaApi::GetMatchmakerStats(
 	const FString& HttpKey,
 	TFunction<void(const FNakamaMatchmakerStats&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/matchmaker/stats");TSharedPtr<FJsonObject> Body;
 
@@ -7855,7 +7855,7 @@ void NakamaApi::Healthcheck(
 	FNakamaSessionPtr Session,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/healthcheck");
 
@@ -7877,7 +7877,7 @@ void NakamaApi::Healthcheck(
 	const FString& HttpKey,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/healthcheck");TSharedPtr<FJsonObject> Body;
 
@@ -7899,7 +7899,7 @@ void NakamaApi::ImportFacebookFriends(
 	bool Reset,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/friend/facebook");
 	TArray<FString> QueryParams;
@@ -7930,7 +7930,7 @@ void NakamaApi::ImportFacebookFriends(
 	bool Reset,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/friend/facebook");
 	TArray<FString> QueryParams;
@@ -7959,7 +7959,7 @@ void NakamaApi::ImportSteamFriends(
 	bool Reset,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/friend/steam");
 	TArray<FString> QueryParams;
@@ -7990,7 +7990,7 @@ void NakamaApi::ImportSteamFriends(
 	bool Reset,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/friend/steam");
 	TArray<FString> QueryParams;
@@ -8018,7 +8018,7 @@ void NakamaApi::JoinGroup(
 	FString GroupId,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/group/{group_id}/join");
 	Endpoint = Endpoint.Replace(TEXT("{group_id}"), *GroupId);
@@ -8047,7 +8047,7 @@ void NakamaApi::JoinGroup(
 	FString GroupId,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/group/{group_id}/join");
 	Endpoint = Endpoint.Replace(TEXT("{group_id}"), *GroupId);
@@ -8074,7 +8074,7 @@ void NakamaApi::JoinTournament(
 	FString TournamentId,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/tournament/{tournament_id}/join");
 	Endpoint = Endpoint.Replace(TEXT("{tournament_id}"), *TournamentId);
@@ -8103,7 +8103,7 @@ void NakamaApi::JoinTournament(
 	FString TournamentId,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/tournament/{tournament_id}/join");
 	Endpoint = Endpoint.Replace(TEXT("{tournament_id}"), *TournamentId);
@@ -8131,7 +8131,7 @@ void NakamaApi::KickGroupUsers(
 	const TArray<FString>& UserIds,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/group/{group_id}/kick");
 	Endpoint = Endpoint.Replace(TEXT("{group_id}"), *GroupId);
@@ -8165,7 +8165,7 @@ void NakamaApi::KickGroupUsers(
 	const TArray<FString>& UserIds,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/group/{group_id}/kick");
 	Endpoint = Endpoint.Replace(TEXT("{group_id}"), *GroupId);
@@ -8196,7 +8196,7 @@ void NakamaApi::LeaveGroup(
 	FString GroupId,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/group/{group_id}/leave");
 	Endpoint = Endpoint.Replace(TEXT("{group_id}"), *GroupId);
@@ -8225,7 +8225,7 @@ void NakamaApi::LeaveGroup(
 	FString GroupId,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/group/{group_id}/leave");
 	Endpoint = Endpoint.Replace(TEXT("{group_id}"), *GroupId);
@@ -8253,7 +8253,7 @@ void NakamaApi::LinkApple(
 	const TMap<FString, FString>& Vars,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/link/apple");
 	TArray<FString> QueryParams;
@@ -8296,7 +8296,7 @@ void NakamaApi::LinkApple(
 	const TMap<FString, FString>& Vars,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/link/apple");
 	TArray<FString> QueryParams;
@@ -8337,7 +8337,7 @@ void NakamaApi::LinkCustom(
 	const TMap<FString, FString>& Vars,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/link/custom");
 	TArray<FString> QueryParams;
@@ -8380,7 +8380,7 @@ void NakamaApi::LinkCustom(
 	const TMap<FString, FString>& Vars,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/link/custom");
 	TArray<FString> QueryParams;
@@ -8421,7 +8421,7 @@ void NakamaApi::LinkDevice(
 	const TMap<FString, FString>& Vars,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/link/device");
 	TArray<FString> QueryParams;
@@ -8464,7 +8464,7 @@ void NakamaApi::LinkDevice(
 	const TMap<FString, FString>& Vars,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/link/device");
 	TArray<FString> QueryParams;
@@ -8506,7 +8506,7 @@ void NakamaApi::LinkEmail(
 	const TMap<FString, FString>& Vars,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/link/email");
 	TArray<FString> QueryParams;
@@ -8554,7 +8554,7 @@ void NakamaApi::LinkEmail(
 	const TMap<FString, FString>& Vars,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/link/email");
 	TArray<FString> QueryParams;
@@ -8599,7 +8599,7 @@ void NakamaApi::LinkFacebook(
 	bool Sync,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/link/facebook");
 	TArray<FString> QueryParams;
@@ -8630,7 +8630,7 @@ void NakamaApi::LinkFacebook(
 	bool Sync,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/link/facebook");
 	TArray<FString> QueryParams;
@@ -8659,7 +8659,7 @@ void NakamaApi::LinkFacebookInstantGame(
 	const TMap<FString, FString>& Vars,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/link/facebookinstantgame");
 	TArray<FString> QueryParams;
@@ -8702,7 +8702,7 @@ void NakamaApi::LinkFacebookInstantGame(
 	const TMap<FString, FString>& Vars,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/link/facebookinstantgame");
 	TArray<FString> QueryParams;
@@ -8748,7 +8748,7 @@ void NakamaApi::LinkGameCenter(
 	const TMap<FString, FString>& Vars,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/link/gamecenter");
 	TArray<FString> QueryParams;
@@ -8813,7 +8813,7 @@ void NakamaApi::LinkGameCenter(
 	const TMap<FString, FString>& Vars,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/link/gamecenter");
 	TArray<FString> QueryParams;
@@ -8871,7 +8871,7 @@ void NakamaApi::LinkGoogle(
 	const TMap<FString, FString>& Vars,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/link/google");
 	TArray<FString> QueryParams;
@@ -8914,7 +8914,7 @@ void NakamaApi::LinkGoogle(
 	const TMap<FString, FString>& Vars,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/link/google");
 	TArray<FString> QueryParams;
@@ -8955,7 +8955,7 @@ void NakamaApi::LinkSteam(
 	bool Sync,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/link/steam");
 	TArray<FString> QueryParams;
@@ -8987,7 +8987,7 @@ void NakamaApi::LinkSteam(
 	bool Sync,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/link/steam");
 	TArray<FString> QueryParams;
@@ -9019,7 +9019,7 @@ void NakamaApi::ListChannelMessages(
 	FString Cursor,
 	TFunction<void(const FNakamaChannelMessageList&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/channel/{channel_id}");
 	Endpoint = Endpoint.Replace(TEXT("{channel_id}"), *ChannelId);
@@ -9061,7 +9061,7 @@ void NakamaApi::ListChannelMessages(
 	FString Cursor,
 	TFunction<void(const FNakamaChannelMessageList&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/channel/{channel_id}");
 	Endpoint = Endpoint.Replace(TEXT("{channel_id}"), *ChannelId);
@@ -9100,7 +9100,7 @@ void NakamaApi::ListFriends(
 	FString Cursor,
 	TFunction<void(const FNakamaFriendList&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/friend");
 	TArray<FString> QueryParams;
@@ -9143,7 +9143,7 @@ void NakamaApi::ListFriends(
 	FString Cursor,
 	TFunction<void(const FNakamaFriendList&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/friend");
 	TArray<FString> QueryParams;
@@ -9183,7 +9183,7 @@ void NakamaApi::ListFriendsOfFriends(
 	FString Cursor,
 	TFunction<void(const FNakamaFriendsOfFriendsList&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/friend/friends");
 	TArray<FString> QueryParams;
@@ -9221,7 +9221,7 @@ void NakamaApi::ListFriendsOfFriends(
 	FString Cursor,
 	TFunction<void(const FNakamaFriendsOfFriendsList&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/friend/friends");
 	TArray<FString> QueryParams;
@@ -9261,7 +9261,7 @@ void NakamaApi::ListGroups(
 	bool Open,
 	TFunction<void(const FNakamaGroupList&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/group");
 	TArray<FString> QueryParams;
@@ -9316,7 +9316,7 @@ void NakamaApi::ListGroups(
 	bool Open,
 	TFunction<void(const FNakamaGroupList&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/group");
 	TArray<FString> QueryParams;
@@ -9367,7 +9367,7 @@ void NakamaApi::ListGroupUsers(
 	FString Cursor,
 	TFunction<void(const FNakamaGroupUserList&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/group/{group_id}/user");
 	Endpoint = Endpoint.Replace(TEXT("{group_id}"), *GroupId);
@@ -9412,7 +9412,7 @@ void NakamaApi::ListGroupUsers(
 	FString Cursor,
 	TFunction<void(const FNakamaGroupUserList&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/group/{group_id}/user");
 	Endpoint = Endpoint.Replace(TEXT("{group_id}"), *GroupId);
@@ -9456,7 +9456,7 @@ void NakamaApi::ListLeaderboardRecords(
 	int64 Expiry,
 	TFunction<void(const FNakamaLeaderboardRecordList&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/leaderboard/{leaderboard_id}");
 	Endpoint = Endpoint.Replace(TEXT("{leaderboard_id}"), *LeaderboardId);
@@ -9506,7 +9506,7 @@ void NakamaApi::ListLeaderboardRecords(
 	int64 Expiry,
 	TFunction<void(const FNakamaLeaderboardRecordList&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/leaderboard/{leaderboard_id}");
 	Endpoint = Endpoint.Replace(TEXT("{leaderboard_id}"), *LeaderboardId);
@@ -9554,7 +9554,7 @@ void NakamaApi::ListLeaderboardRecordsAroundOwner(
 	FString Cursor,
 	TFunction<void(const FNakamaLeaderboardRecordList&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/leaderboard/{leaderboard_id}/owner/{owner_id}");
 	Endpoint = Endpoint.Replace(TEXT("{leaderboard_id}"), *LeaderboardId);
@@ -9601,7 +9601,7 @@ void NakamaApi::ListLeaderboardRecordsAroundOwner(
 	FString Cursor,
 	TFunction<void(const FNakamaLeaderboardRecordList&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/leaderboard/{leaderboard_id}/owner/{owner_id}");
 	Endpoint = Endpoint.Replace(TEXT("{leaderboard_id}"), *LeaderboardId);
@@ -9647,7 +9647,7 @@ void NakamaApi::ListMatches(
 	FString Query,
 	TFunction<void(const FNakamaMatchList&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/match");
 	TArray<FString> QueryParams;
@@ -9702,7 +9702,7 @@ void NakamaApi::ListMatches(
 	FString Query,
 	TFunction<void(const FNakamaMatchList&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/match");
 	TArray<FString> QueryParams;
@@ -9753,7 +9753,7 @@ void NakamaApi::ListParties(
 	FString Cursor,
 	TFunction<void(const FNakamaPartyList&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/party");
 	TArray<FString> QueryParams;
@@ -9798,7 +9798,7 @@ void NakamaApi::ListParties(
 	FString Cursor,
 	TFunction<void(const FNakamaPartyList&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/party");
 	TArray<FString> QueryParams;
@@ -9839,7 +9839,7 @@ void NakamaApi::ListNotifications(
 	FString CacheableCursor,
 	TFunction<void(const FNakamaNotificationList&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/notification");
 	TArray<FString> QueryParams;
@@ -9877,7 +9877,7 @@ void NakamaApi::ListNotifications(
 	FString CacheableCursor,
 	TFunction<void(const FNakamaNotificationList&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/notification");
 	TArray<FString> QueryParams;
@@ -9915,7 +9915,7 @@ void NakamaApi::ListStorageObjects(
 	FString Cursor,
 	TFunction<void(const FNakamaStorageObjectList&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/storage/{collection}");
 	Endpoint = Endpoint.Replace(TEXT("{collection}"), *Collection);
@@ -9960,7 +9960,7 @@ void NakamaApi::ListStorageObjects(
 	FString Cursor,
 	TFunction<void(const FNakamaStorageObjectList&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/storage/{collection}");
 	Endpoint = Endpoint.Replace(TEXT("{collection}"), *Collection);
@@ -10001,7 +10001,7 @@ void NakamaApi::ListSubscriptions(
 	FString Cursor,
 	TFunction<void(const FNakamaSubscriptionList&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/iap/subscription");
 	TArray<FString> QueryParams;
@@ -10037,7 +10037,7 @@ void NakamaApi::ListSubscriptions(
 	FString Cursor,
 	TFunction<void(const FNakamaSubscriptionList&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/iap/subscription");
 	TArray<FString> QueryParams;
@@ -10075,7 +10075,7 @@ void NakamaApi::ListTournaments(
 	FString Cursor,
 	TFunction<void(const FNakamaTournamentList&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/tournament");
 	TArray<FString> QueryParams;
@@ -10133,7 +10133,7 @@ void NakamaApi::ListTournaments(
 	FString Cursor,
 	TFunction<void(const FNakamaTournamentList&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/tournament");
 	TArray<FString> QueryParams;
@@ -10188,7 +10188,7 @@ void NakamaApi::ListTournamentRecords(
 	int64 Expiry,
 	TFunction<void(const FNakamaTournamentRecordList&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/tournament/{tournament_id}");
 	Endpoint = Endpoint.Replace(TEXT("{tournament_id}"), *TournamentId);
@@ -10238,7 +10238,7 @@ void NakamaApi::ListTournamentRecords(
 	int64 Expiry,
 	TFunction<void(const FNakamaTournamentRecordList&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/tournament/{tournament_id}");
 	Endpoint = Endpoint.Replace(TEXT("{tournament_id}"), *TournamentId);
@@ -10286,7 +10286,7 @@ void NakamaApi::ListTournamentRecordsAroundOwner(
 	FString Cursor,
 	TFunction<void(const FNakamaTournamentRecordList&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/tournament/{tournament_id}/owner/{owner_id}");
 	Endpoint = Endpoint.Replace(TEXT("{tournament_id}"), *TournamentId);
@@ -10333,7 +10333,7 @@ void NakamaApi::ListTournamentRecordsAroundOwner(
 	FString Cursor,
 	TFunction<void(const FNakamaTournamentRecordList&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/tournament/{tournament_id}/owner/{owner_id}");
 	Endpoint = Endpoint.Replace(TEXT("{tournament_id}"), *TournamentId);
@@ -10377,7 +10377,7 @@ void NakamaApi::ListUserGroups(
 	FString Cursor,
 	TFunction<void(const FNakamaUserGroupList&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/user/{user_id}/group");
 	Endpoint = Endpoint.Replace(TEXT("{user_id}"), *UserId);
@@ -10422,7 +10422,7 @@ void NakamaApi::ListUserGroups(
 	FString Cursor,
 	TFunction<void(const FNakamaUserGroupList&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/user/{user_id}/group");
 	Endpoint = Endpoint.Replace(TEXT("{user_id}"), *UserId);
@@ -10463,7 +10463,7 @@ void NakamaApi::PromoteGroupUsers(
 	const TArray<FString>& UserIds,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/group/{group_id}/promote");
 	Endpoint = Endpoint.Replace(TEXT("{group_id}"), *GroupId);
@@ -10497,7 +10497,7 @@ void NakamaApi::PromoteGroupUsers(
 	const TArray<FString>& UserIds,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/group/{group_id}/promote");
 	Endpoint = Endpoint.Replace(TEXT("{group_id}"), *GroupId);
@@ -10529,7 +10529,7 @@ void NakamaApi::DemoteGroupUsers(
 	const TArray<FString>& UserIds,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/group/{group_id}/demote");
 	Endpoint = Endpoint.Replace(TEXT("{group_id}"), *GroupId);
@@ -10563,7 +10563,7 @@ void NakamaApi::DemoteGroupUsers(
 	const TArray<FString>& UserIds,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/group/{group_id}/demote");
 	Endpoint = Endpoint.Replace(TEXT("{group_id}"), *GroupId);
@@ -10594,7 +10594,7 @@ void NakamaApi::ReadStorageObjects(
 	const TArray<FNakamaReadStorageObjectId>& ObjectIds,
 	TFunction<void(const FNakamaStorageObjects&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/storage");
 	TArray<FString> QueryParams;
@@ -10633,7 +10633,7 @@ void NakamaApi::ReadStorageObjects(
 	const TArray<FNakamaReadStorageObjectId>& ObjectIds,
 	TFunction<void(const FNakamaStorageObjects&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/storage");
 	TArray<FString> QueryParams;
@@ -10672,7 +10672,7 @@ void NakamaApi::RpcFunc(
 	FString HttpKey,
 	TFunction<void(const FNakamaRpc&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/rpc/{id}");
 	Endpoint = Endpoint.Replace(TEXT("{id}"), *Id);
@@ -10713,7 +10713,7 @@ void NakamaApi::RpcFunc(
 	TSharedPtr<FJsonObject> Payload,
 	TFunction<void(const FNakamaRpc&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/rpc/{id}");
 	Endpoint = Endpoint.Replace(TEXT("{id}"), *Id);
@@ -10748,7 +10748,7 @@ void NakamaApi::UnlinkApple(
 	const TMap<FString, FString>& Vars,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/unlink/apple");
 	TArray<FString> QueryParams;
@@ -10791,7 +10791,7 @@ void NakamaApi::UnlinkApple(
 	const TMap<FString, FString>& Vars,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/unlink/apple");
 	TArray<FString> QueryParams;
@@ -10832,7 +10832,7 @@ void NakamaApi::UnlinkCustom(
 	const TMap<FString, FString>& Vars,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/unlink/custom");
 	TArray<FString> QueryParams;
@@ -10875,7 +10875,7 @@ void NakamaApi::UnlinkCustom(
 	const TMap<FString, FString>& Vars,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/unlink/custom");
 	TArray<FString> QueryParams;
@@ -10916,7 +10916,7 @@ void NakamaApi::UnlinkDevice(
 	const TMap<FString, FString>& Vars,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/unlink/device");
 	TArray<FString> QueryParams;
@@ -10959,7 +10959,7 @@ void NakamaApi::UnlinkDevice(
 	const TMap<FString, FString>& Vars,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/unlink/device");
 	TArray<FString> QueryParams;
@@ -11001,7 +11001,7 @@ void NakamaApi::UnlinkEmail(
 	const TMap<FString, FString>& Vars,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/unlink/email");
 	TArray<FString> QueryParams;
@@ -11049,7 +11049,7 @@ void NakamaApi::UnlinkEmail(
 	const TMap<FString, FString>& Vars,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/unlink/email");
 	TArray<FString> QueryParams;
@@ -11094,7 +11094,7 @@ void NakamaApi::UnlinkFacebook(
 	const TMap<FString, FString>& Vars,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/unlink/facebook");
 	TArray<FString> QueryParams;
@@ -11137,7 +11137,7 @@ void NakamaApi::UnlinkFacebook(
 	const TMap<FString, FString>& Vars,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/unlink/facebook");
 	TArray<FString> QueryParams;
@@ -11178,7 +11178,7 @@ void NakamaApi::UnlinkFacebookInstantGame(
 	const TMap<FString, FString>& Vars,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/unlink/facebookinstantgame");
 	TArray<FString> QueryParams;
@@ -11221,7 +11221,7 @@ void NakamaApi::UnlinkFacebookInstantGame(
 	const TMap<FString, FString>& Vars,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/unlink/facebookinstantgame");
 	TArray<FString> QueryParams;
@@ -11267,7 +11267,7 @@ void NakamaApi::UnlinkGameCenter(
 	const TMap<FString, FString>& Vars,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/unlink/gamecenter");
 	TArray<FString> QueryParams;
@@ -11332,7 +11332,7 @@ void NakamaApi::UnlinkGameCenter(
 	const TMap<FString, FString>& Vars,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/unlink/gamecenter");
 	TArray<FString> QueryParams;
@@ -11390,7 +11390,7 @@ void NakamaApi::UnlinkGoogle(
 	const TMap<FString, FString>& Vars,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/unlink/google");
 	TArray<FString> QueryParams;
@@ -11433,7 +11433,7 @@ void NakamaApi::UnlinkGoogle(
 	const TMap<FString, FString>& Vars,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/unlink/google");
 	TArray<FString> QueryParams;
@@ -11474,7 +11474,7 @@ void NakamaApi::UnlinkSteam(
 	const TMap<FString, FString>& Vars,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/unlink/steam");
 	TArray<FString> QueryParams;
@@ -11517,7 +11517,7 @@ void NakamaApi::UnlinkSteam(
 	const TMap<FString, FString>& Vars,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/unlink/steam");
 	TArray<FString> QueryParams;
@@ -11562,7 +11562,7 @@ void NakamaApi::UpdateAccount(
 	FString Timezone,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account");
 	TArray<FString> QueryParams;
@@ -11620,7 +11620,7 @@ void NakamaApi::UpdateAccount(
 	FString Timezone,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account");
 	TArray<FString> QueryParams;
@@ -11676,7 +11676,7 @@ void NakamaApi::UpdateGroup(
 	bool Open,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/group/{group_id}");
 	Endpoint = Endpoint.Replace(TEXT("{group_id}"), *GroupId);
@@ -11732,7 +11732,7 @@ void NakamaApi::UpdateGroup(
 	bool Open,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/group/{group_id}");
 	Endpoint = Endpoint.Replace(TEXT("{group_id}"), *GroupId);
@@ -11782,7 +11782,7 @@ void NakamaApi::ValidatePurchaseApple(
 	bool Persist,
 	TFunction<void(const FNakamaValidatePurchaseResponse&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/iap/purchase/apple");
 	TArray<FString> QueryParams;
@@ -11818,7 +11818,7 @@ void NakamaApi::ValidatePurchaseApple(
 	bool Persist,
 	TFunction<void(const FNakamaValidatePurchaseResponse&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/iap/purchase/apple");
 	TArray<FString> QueryParams;
@@ -11852,7 +11852,7 @@ void NakamaApi::ValidateSubscriptionApple(
 	bool Persist,
 	TFunction<void(const FNakamaValidateSubscriptionResponse&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/iap/subscription/apple");
 	TArray<FString> QueryParams;
@@ -11888,7 +11888,7 @@ void NakamaApi::ValidateSubscriptionApple(
 	bool Persist,
 	TFunction<void(const FNakamaValidateSubscriptionResponse&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/iap/subscription/apple");
 	TArray<FString> QueryParams;
@@ -11922,7 +11922,7 @@ void NakamaApi::ValidatePurchaseGoogle(
 	bool Persist,
 	TFunction<void(const FNakamaValidatePurchaseResponse&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/iap/purchase/google");
 	TArray<FString> QueryParams;
@@ -11958,7 +11958,7 @@ void NakamaApi::ValidatePurchaseGoogle(
 	bool Persist,
 	TFunction<void(const FNakamaValidatePurchaseResponse&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/iap/purchase/google");
 	TArray<FString> QueryParams;
@@ -11992,7 +11992,7 @@ void NakamaApi::ValidateSubscriptionGoogle(
 	bool Persist,
 	TFunction<void(const FNakamaValidateSubscriptionResponse&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/iap/subscription/google");
 	TArray<FString> QueryParams;
@@ -12028,7 +12028,7 @@ void NakamaApi::ValidateSubscriptionGoogle(
 	bool Persist,
 	TFunction<void(const FNakamaValidateSubscriptionResponse&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/iap/subscription/google");
 	TArray<FString> QueryParams;
@@ -12063,7 +12063,7 @@ void NakamaApi::ValidatePurchaseHuawei(
 	bool Persist,
 	TFunction<void(const FNakamaValidatePurchaseResponse&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/iap/purchase/huawei");
 	TArray<FString> QueryParams;
@@ -12104,7 +12104,7 @@ void NakamaApi::ValidatePurchaseHuawei(
 	bool Persist,
 	TFunction<void(const FNakamaValidatePurchaseResponse&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/iap/purchase/huawei");
 	TArray<FString> QueryParams;
@@ -12142,7 +12142,7 @@ void NakamaApi::ValidatePurchaseFacebookInstant(
 	bool Persist,
 	TFunction<void(const FNakamaValidatePurchaseResponse&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/iap/purchase/facebookinstant");
 	TArray<FString> QueryParams;
@@ -12178,7 +12178,7 @@ void NakamaApi::ValidatePurchaseFacebookInstant(
 	bool Persist,
 	TFunction<void(const FNakamaValidatePurchaseResponse&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/iap/purchase/facebookinstant");
 	TArray<FString> QueryParams;
@@ -12212,7 +12212,7 @@ void NakamaApi::WriteLeaderboardRecord(
 	FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite Record,
 	TFunction<void(const FNakamaLeaderboardRecord&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/leaderboard/{leaderboard_id}");
 	Endpoint = Endpoint.Replace(TEXT("{leaderboard_id}"), *LeaderboardId);
@@ -12244,7 +12244,7 @@ void NakamaApi::WriteLeaderboardRecord(
 	FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite Record,
 	TFunction<void(const FNakamaLeaderboardRecord&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/leaderboard/{leaderboard_id}");
 	Endpoint = Endpoint.Replace(TEXT("{leaderboard_id}"), *LeaderboardId);
@@ -12273,7 +12273,7 @@ void NakamaApi::WriteStorageObjects(
 	const TArray<FNakamaWriteStorageObject>& Objects,
 	TFunction<void(const FNakamaStorageObjectAcks&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/storage");
 	TArray<FString> QueryParams;
@@ -12312,7 +12312,7 @@ void NakamaApi::WriteStorageObjects(
 	const TArray<FNakamaWriteStorageObject>& Objects,
 	TFunction<void(const FNakamaStorageObjectAcks&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/storage");
 	TArray<FString> QueryParams;
@@ -12350,7 +12350,7 @@ void NakamaApi::WriteTournamentRecord(
 	FNakamaWriteTournamentRecordRequest_TournamentRecordWrite Record,
 	TFunction<void(const FNakamaLeaderboardRecord&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/tournament/{tournament_id}");
 	Endpoint = Endpoint.Replace(TEXT("{tournament_id}"), *TournamentId);
@@ -12382,7 +12382,7 @@ void NakamaApi::WriteTournamentRecord(
 	FNakamaWriteTournamentRecordRequest_TournamentRecordWrite Record,
 	TFunction<void(const FNakamaLeaderboardRecord&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken)
+	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/tournament/{tournament_id}");
 	Endpoint = Endpoint.Replace(TEXT("{tournament_id}"), *TournamentId);
