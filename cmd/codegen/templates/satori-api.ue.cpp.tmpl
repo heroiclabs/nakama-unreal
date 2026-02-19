@@ -730,6 +730,7 @@ void MakeRequest(
 {{- $hasParams := ne $requestType nil }}
 {{- $hasReturn := ne $returnType nil }}
 {{- $isAuthenticate := containsString $rpc.Name "Authenticate" }}
+{{- $isAuthLogout := eq $rpc.Name "AuthenticateLogout" }}
 {{- $isSessionRefresh := eq $rpc.Name "SessionRefresh" }}
 {{- $needsSession := and (not $isAuthenticate) (not $isSessionRefresh) }}
 
@@ -824,7 +825,7 @@ void SatoriApi::{{ $rpc.Name }}(
 	}
 {{- end }}
 
-	ESatoriRequestAuth AuthType = {{ if or $isAuthenticate $isSessionRefresh }}ESatoriRequestAuth::Basic{{ else }}ESatoriRequestAuth::Bearer{{ end }};
+	ESatoriRequestAuth AuthType = {{ if and (or $isAuthenticate $isSessionRefresh) (not $isAuthLogout) }}ESatoriRequestAuth::Basic{{ else }}ESatoriRequestAuth::Bearer{{ end }};
 
 {{- /* Build request body and dispatch */ -}}
 {{- $scalarBodyField := "" }}
@@ -849,7 +850,7 @@ void SatoriApi::{{ $rpc.Name }}(
 		BodyString = SerializeJsonEscaped({{ $scalarBodyField }});
 	}
 
-	SendRequest(Config, Endpoint, TEXT("{{ $rpc.Method }}"), BodyString, AuthType, {{ if $needsSession }}Session{{ else }}nullptr{{ end }}, TEXT(""),
+	SendRequest(Config, Endpoint, TEXT("{{ $rpc.Method }}"), BodyString, AuthType, {{ if $needsSession }}Session{{ else }}nullptr{{ end }}, {{ if $isAuthLogout }}Token{{ else }}TEXT(""){{ end }},
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			{{- if $hasReturn }}
@@ -938,7 +939,7 @@ void SatoriApi::{{ $rpc.Name }}(
 {{- end }}
 {{- end }}
 
-	MakeRequest(Config, Endpoint, TEXT("{{ $rpc.Method }}"), Body, AuthType, {{ if $needsSession }}Session{{ else }}nullptr{{ end }}, TEXT(""),
+	MakeRequest(Config, Endpoint, TEXT("{{ $rpc.Method }}"), Body, AuthType, {{ if $needsSession }}Session{{ else }}nullptr{{ end }}, {{ if $isAuthLogout }}Token{{ else }}TEXT(""){{ end }},
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			{{- if $hasReturn }}

@@ -3299,7 +3299,8 @@ void FNakamaAsyncAuthValidationSpec::Define()
 		{
 			FNakamaAccountCustom Account;
 			Account.Id = GenerateId();
-			Nakama::AuthenticateCustom(Client, Account, true, TEXT("user@#$%^!")).Next([this, Done](FNakamaSessionResult Result)
+			FString Username = FString::Printf(TEXT("u@#$_%s"), *GenerateShortId());
+			Nakama::AuthenticateCustom(Client, Account, true, Username).Next([this, Done](FNakamaSessionResult Result)
 			{
 				ASYNC_FAIL_ON_ERROR(Result, Done);
 				TestTrue("Session is valid", !Result.Value.Token.IsEmpty());

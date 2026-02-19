@@ -58,6 +58,7 @@ services:
       dockerfile_inline: |
         FROM golang:1.25.5-trixie AS builder
         ENV CGO_ENABLED=1
+        RUN apt-get update && apt-get install -y --no-install-recommends postgresql-client && rm -rf /var/lib/apt/lists/*
         WORKDIR /satori
         COPY go.mod go.sum ./
         RUN go mod download
@@ -73,7 +74,9 @@ services:
         /satori/satori timescale-cont-agg pause --database.address postgres:localdb@postgres:5432/satori &&
         /satori/satori migrate up --database.address postgres:localdb@postgres:5432/satori &&
         /satori/satori timescale-cont-agg resume --database.address postgres:localdb@postgres:5432/satori &&
-        PGPASSWORD=localdb psql -h postgres -U postgres -d satori -c "INSERT INTO api_key (name, value) VALUES ('default', 'defaultkey') ON CONFLICT DO NOTHING;" &&
+        PGPASSWORD=localdb psql -h postgres -U postgres -d satori -c "INSERT INTO api_key (name, value) VALUES ('default', 'defaultkey') ON CONFLICT (name) DO UPDATE SET value = 'defaultkey';" &&
+        PGPASSWORD=localdb psql -h postgres -U postgres -d satori -c "INSERT INTO event_configuration (name) VALUES ('game_start'),('level_complete'),('purchase') ON CONFLICT (name) DO NOTHING;" &&
+        PGPASSWORD=localdb psql -h postgres -U postgres -d satori -c "INSERT INTO property_configuration (name) VALUES ('level'),('rank') ON CONFLICT (name) DO NOTHING;" &&
         exec /satori/satori --database.address postgres:localdb@postgres:5432/satori --logger.level DEBUG --metrics.prometheus_port 0
     expose:
       - "7450"

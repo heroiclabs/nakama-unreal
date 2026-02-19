@@ -157,9 +157,6 @@ tasks:
           fi
         fi
 
-        echo "Seeding Satori API key..."
-        docker exec unreal_integration_test_postgres psql -U postgres -d satori -c "INSERT INTO api_key (name, value) VALUES ('default', 'defaultkey') ON CONFLICT (name) DO UPDATE SET value = 'defaultkey';"
-
   build:
     desc: 'Build and cook a project via UAT (BuildCookRun).'
     deps:
@@ -327,6 +324,9 @@ tasks:
     - task: codegen
     - task: start-server
     - cmd: |
+        echo "Cleaning test data..."
+        docker exec unreal_integration_test_postgres psql -U postgres -d nakama -c "TRUNCATE users CASCADE;" 2>/dev/null || true
+    - cmd: |
         mkdir -p IntegrationTests/Plugins
         if [ ! -d "IntegrationTests/Plugins/Nakama" ]; then
             if command -v powershell &>/dev/null; then
@@ -371,7 +371,32 @@ tasks:
             -nosound \
             -abslog="$LOG_FILE" \
             -ReportOutputPath="$REPORT_DIR" \
-            -ExecCmds="Automation RunTests {{.TEST_SUITE}}; Quit"
+            -ExecCmds="Automation RunTests {{.TEST_SUITE}}; Quit" \
+            || EXIT_CODE=$?
+
+        python -c "
+        import json, sys
+        with open('{{.REPORT_PATH}}/index.json', 'r', encoding='utf-8-sig') as f:
+            data = json.load(f)
+        tests = data.get('tests', [])
+        failed = [t for t in tests if t.get('state') == 'Fail']
+        passed = [t for t in tests if t.get('state') == 'Success']
+        print()
+        print('=========================================')
+        print(f'  Passed: {len(passed)}  Failed: {len(failed)}')
+        print('=========================================')
+        for t in failed:
+            name = t.get('testDisplayName', 'unknown')
+            entries = t.get('entries', [])
+            errors = [e.get('event', {}).get('message', '') for e in entries if e.get('event', {}).get('type') == 'Error']
+            err = errors[0] if errors else ''
+            print(f'  FAIL: {name}')
+            if err:
+                print(f'        {err}')
+        print()
+        if failed:
+            sys.exit(1)
+        "
       platforms: [windows]
     - cmd: |
         if [ -z "$UNREAL_ENGINE" ]; then
@@ -401,5 +426,30 @@ tasks:
             -nosound \
             -abslog="$LOG_FILE" \
             -ReportOutputPath="$REPORT_DIR" \
-            -ExecCmds="Automation RunTests {{.TEST_SUITE}}; Quit"
+            -ExecCmds="Automation RunTests {{.TEST_SUITE}}; Quit" \
+            || EXIT_CODE=$?
+
+        python3 -c "
+        import json, sys
+        with open('{{.REPORT_PATH}}/index.json', 'r', encoding='utf-8-sig') as f:
+            data = json.load(f)
+        tests = data.get('tests', [])
+        failed = [t for t in tests if t.get('state') == 'Fail']
+        passed = [t for t in tests if t.get('state') == 'Success']
+        print()
+        print('=========================================')
+        print(f'  Passed: {len(passed)}  Failed: {len(failed)}')
+        print('=========================================')
+        for t in failed:
+            name = t.get('testDisplayName', 'unknown')
+            entries = t.get('entries', [])
+            errors = [e.get('event', {}).get('message', '') for e in entries if e.get('event', {}).get('type') == 'Error']
+            err = errors[0] if errors else ''
+            print(f'  FAIL: {name}')
+            if err:
+                print(f'        {err}')
+        print()
+        if failed:
+            sys.exit(1)
+        "
       platforms: [darwin, linux]

@@ -2007,7 +2007,7 @@ void SatoriApi::AuthenticateLogout(
 		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
 	}
 
-	ESatoriRequestAuth AuthType = ESatoriRequestAuth::Basic;TSharedPtr<FJsonObject> Body;
+	ESatoriRequestAuth AuthType = ESatoriRequestAuth::Bearer;TSharedPtr<FJsonObject> Body;
 	Body = MakeShared<FJsonObject>();
 	if (!Token.IsEmpty())
 	{
@@ -2018,7 +2018,7 @@ void SatoriApi::AuthenticateLogout(
 		Body->SetStringField(TEXT("refresh_token"), RefreshToken);
 	}
 
-	MakeRequest(Config, Endpoint, TEXT("POST"), Body, AuthType, nullptr, TEXT(""),
+	MakeRequest(Config, Endpoint, TEXT("POST"), Body, AuthType, nullptr, Token,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			if (OnSuccess)

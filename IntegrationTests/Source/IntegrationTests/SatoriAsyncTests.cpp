@@ -764,13 +764,13 @@ void FSatoriAsyncSessionSpec::Define()
 		LatentIt("should authenticate, use API, refresh, and logout", [this](const FDoneDelegate& Done)
 		{
 			const FString Id = GenerateId();
-			FSatoriSessionPtr Session;
+			auto Session = MakeShared<FSatoriSession>();
 
-			Satori::Authenticate(Client, Id, false, {}, {}).Next([this, &Session](const FSatoriSession& Sess)
+			Satori::Authenticate(Client, Id, false, {}, {}).Next([this, Session](const FSatoriSession& Sess)
 			{
-				Session = MakeShared<FSatoriSession>(Sess);
+				*Session = Sess;
 				return Satori::GetFlags(Client, Session, {}, {});
-			}).Next([this, &Session](const FSatoriFlagList&)
+			}).Next([this, Session](const FSatoriFlagList&)
 			{
 				return Satori::AuthenticateRefresh(Client, Session->RefreshToken);
 			}).Next([this, Done](FSatoriSessionResult Result)
