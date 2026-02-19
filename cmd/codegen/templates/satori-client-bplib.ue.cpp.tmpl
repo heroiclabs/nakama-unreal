@@ -73,6 +73,8 @@ void USatoriClient{{ $rpc.Name }}::Activate()
 	static const TCHAR* TraceScope_{{ $rpc.Name }} = TEXT("SatoriBP_{{ $rpc.Name }}");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_{{ $rpc.Name }});
 
+	AddToRoot();
+
 	SatoriApi::{{ $rpc.Name }}(
 		Client,
 {{- if $needsSession }}
@@ -102,18 +104,21 @@ void USatoriClient{{ $rpc.Name }}::Activate()
 		[this](const FSatori{{ $returnType.Name }}& Result)
 		{
 			OnSuccess.Broadcast(Result);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 {{- else }}
 		[this]()
 		{
 			OnSuccess.Broadcast();
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 {{- end }}
 		[this](const FSatoriError& Error)
 		{
 			OnError.Broadcast(Error);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		}
 	);

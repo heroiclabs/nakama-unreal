@@ -10,6 +10,7 @@ vars:
   SATORI_PROTO_FILE: "proto/satori-types.proto"
   SATORI_PROTO_SERVICE_FILE: "proto/satori-api.proto"
   CODEGEN: 'build/codegen{{if eq OS "windows"}}.exe{{end}}'
+  TESTRUNNER: 'build/testrunner{{if eq OS "windows"}}.exe{{end}}'
 
 tasks:
 
@@ -316,9 +317,6 @@ tasks:
 
   test-unreal:
     desc: 'Build and run IntegrationTests C++ automation suite.'
-    vars:
-      TEST_SUITE: '{{.TEST_SUITE | default "IntegrationTests"}}'
-      REPORT_PATH: '{{.REPORT_PATH | default "Reports/IntegrationTests"}}'
     cmds:
     - task: check-unreal-engine
     - task: codegen
@@ -344,10 +342,6 @@ tasks:
         fi
     - cmd: |
         PROJECT="$(pwd)/IntegrationTests/IntegrationTests.uproject"
-        REPORT_DIR="$(pwd)/{{.REPORT_PATH}}"
-        LOG_FILE="$REPORT_DIR/unreal.log"
-
-        mkdir -p "$REPORT_DIR"
 
         "$UNREAL_ENGINE/Engine/Build/BatchFiles/Build.bat" \
             IntegrationTestsEditor Win64 Development \
@@ -358,45 +352,9 @@ tasks:
             exit 1
         fi
 
-        "$UNREAL_ENGINE/Engine/Binaries/Win64/UnrealEditor-Cmd.exe" \
-            "$PROJECT" \
-            -nullrhi \
-            -stdout \
-            -FullStdOutLogOutput \
-            -forcelogflush \
-            -nosplash \
-            -buildmachine \
-            -unattended \
-            -nopause \
-            -nosound \
-            -abslog="$LOG_FILE" \
-            -ReportOutputPath="$REPORT_DIR" \
-            -ExecCmds="Automation RunTests {{.TEST_SUITE}}; Quit" \
-            || EXIT_CODE=$?
+        cd cmd/testrunner && go build -o ../../{{.TESTRUNNER}} && cd ../..
 
-        python -c "
-        import json, sys
-        with open('{{.REPORT_PATH}}/index.json', 'r', encoding='utf-8-sig') as f:
-            data = json.load(f)
-        tests = data.get('tests', [])
-        failed = [t for t in tests if t.get('state') == 'Fail']
-        passed = [t for t in tests if t.get('state') == 'Success']
-        print()
-        print('=========================================')
-        print(f'  Passed: {len(passed)}  Failed: {len(failed)}')
-        print('=========================================')
-        for t in failed:
-            name = t.get('testDisplayName', 'unknown')
-            entries = t.get('entries', [])
-            errors = [e.get('event', {}).get('message', '') for e in entries if e.get('event', {}).get('type') == 'Error']
-            err = errors[0] if errors else ''
-            print(f'  FAIL: {name}')
-            if err:
-                print(f'        {err}')
-        print()
-        if failed:
-            sys.exit(1)
-        "
+        ./{{.TESTRUNNER}}
       platforms: [windows]
     - cmd: |
         if [ -z "$UNREAL_ENGINE" ]; then
@@ -406,50 +364,7 @@ tasks:
             exit 1
         fi
 
-        PROJECT="$(pwd)/IntegrationTests/IntegrationTests.uproject"
-        REPORT_DIR="$(pwd)/{{.REPORT_PATH}}"
-        LOG_FILE="$REPORT_DIR/unreal.log"
+        cd cmd/testrunner && go build -o ../../{{.TESTRUNNER}} && cd ../..
 
-        mkdir -p "$REPORT_DIR"
-
-        echo "Running automation suite {{.TEST_SUITE}}..."
-        "$UNREAL_ENGINE/Engine/Binaries/Mac/UnrealEditor.app/Contents/MacOS/UnrealEditor" \
-            "$PROJECT" \
-            -nullrhi \
-            -stdout \
-            -FullStdOutLogOutput \
-            -forcelogflush \
-            -nosplash \
-            -buildmachine \
-            -unattended \
-            -nopause \
-            -nosound \
-            -abslog="$LOG_FILE" \
-            -ReportOutputPath="$REPORT_DIR" \
-            -ExecCmds="Automation RunTests {{.TEST_SUITE}}; Quit" \
-            || EXIT_CODE=$?
-
-        python3 -c "
-        import json, sys
-        with open('{{.REPORT_PATH}}/index.json', 'r', encoding='utf-8-sig') as f:
-            data = json.load(f)
-        tests = data.get('tests', [])
-        failed = [t for t in tests if t.get('state') == 'Fail']
-        passed = [t for t in tests if t.get('state') == 'Success']
-        print()
-        print('=========================================')
-        print(f'  Passed: {len(passed)}  Failed: {len(failed)}')
-        print('=========================================')
-        for t in failed:
-            name = t.get('testDisplayName', 'unknown')
-            entries = t.get('entries', [])
-            errors = [e.get('event', {}).get('message', '') for e in entries if e.get('event', {}).get('type') == 'Error']
-            err = errors[0] if errors else ''
-            print(f'  FAIL: {name}')
-            if err:
-                print(f'        {err}')
-        print()
-        if failed:
-            sys.exit(1)
-        "
+        ./{{.TESTRUNNER}}
       platforms: [darwin, linux]

@@ -46,6 +46,8 @@ void UNakamaClientAddFriends::Activate()
 	static const TCHAR* TraceScope_AddFriends = TEXT("NakamaBP_AddFriends");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_AddFriends);
 
+	AddToRoot();
+
 	NakamaApi::AddFriends(
 		Client,
 		MakeShared<FNakamaSession>(Session),
@@ -55,11 +57,13 @@ void UNakamaClientAddFriends::Activate()
 		[this]()
 		{
 			OnSuccess.Broadcast();
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 		[this](const FNakamaError& Error)
 		{
 			OnError.Broadcast(Error);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		}
 	);
@@ -87,6 +91,8 @@ void UNakamaClientAddGroupUsers::Activate()
 	static const TCHAR* TraceScope_AddGroupUsers = TEXT("NakamaBP_AddGroupUsers");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_AddGroupUsers);
 
+	AddToRoot();
+
 	NakamaApi::AddGroupUsers(
 		Client,
 		MakeShared<FNakamaSession>(Session),
@@ -95,11 +101,13 @@ void UNakamaClientAddGroupUsers::Activate()
 		[this]()
 		{
 			OnSuccess.Broadcast();
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 		[this](const FNakamaError& Error)
 		{
 			OnError.Broadcast(Error);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		}
 	);
@@ -125,6 +133,8 @@ void UNakamaClientSessionRefresh::Activate()
 	static const TCHAR* TraceScope_SessionRefresh = TEXT("NakamaBP_SessionRefresh");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_SessionRefresh);
 
+	AddToRoot();
+
 	NakamaApi::SessionRefresh(
 		Client,
 		StoredToken,
@@ -132,11 +142,13 @@ void UNakamaClientSessionRefresh::Activate()
 		[this](const FNakamaSession& Result)
 		{
 			OnSuccess.Broadcast(Result);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 		[this](const FNakamaError& Error)
 		{
 			OnError.Broadcast(Error);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		}
 	);
@@ -164,6 +176,8 @@ void UNakamaClientSessionLogout::Activate()
 	static const TCHAR* TraceScope_SessionLogout = TEXT("NakamaBP_SessionLogout");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_SessionLogout);
 
+	AddToRoot();
+
 	NakamaApi::SessionLogout(
 		Client,
 		MakeShared<FNakamaSession>(Session),
@@ -172,11 +186,13 @@ void UNakamaClientSessionLogout::Activate()
 		[this]()
 		{
 			OnSuccess.Broadcast();
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 		[this](const FNakamaError& Error)
 		{
 			OnError.Broadcast(Error);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		}
 	);
@@ -204,6 +220,8 @@ void UNakamaClientAuthenticateApple::Activate()
 	static const TCHAR* TraceScope_AuthenticateApple = TEXT("NakamaBP_AuthenticateApple");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_AuthenticateApple);
 
+	AddToRoot();
+
 	NakamaApi::AuthenticateApple(
 		Client,
 		StoredAccount,
@@ -212,11 +230,13 @@ void UNakamaClientAuthenticateApple::Activate()
 		[this](const FNakamaSession& Result)
 		{
 			OnSuccess.Broadcast(Result);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 		[this](const FNakamaError& Error)
 		{
 			OnError.Broadcast(Error);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		}
 	);
@@ -244,6 +264,8 @@ void UNakamaClientAuthenticateCustom::Activate()
 	static const TCHAR* TraceScope_AuthenticateCustom = TEXT("NakamaBP_AuthenticateCustom");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_AuthenticateCustom);
 
+	AddToRoot();
+
 	NakamaApi::AuthenticateCustom(
 		Client,
 		StoredAccount,
@@ -252,11 +274,13 @@ void UNakamaClientAuthenticateCustom::Activate()
 		[this](const FNakamaSession& Result)
 		{
 			OnSuccess.Broadcast(Result);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 		[this](const FNakamaError& Error)
 		{
 			OnError.Broadcast(Error);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		}
 	);
@@ -284,6 +308,8 @@ void UNakamaClientAuthenticateDevice::Activate()
 	static const TCHAR* TraceScope_AuthenticateDevice = TEXT("NakamaBP_AuthenticateDevice");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_AuthenticateDevice);
 
+	AddToRoot();
+
 	NakamaApi::AuthenticateDevice(
 		Client,
 		StoredAccount,
@@ -292,11 +318,13 @@ void UNakamaClientAuthenticateDevice::Activate()
 		[this](const FNakamaSession& Result)
 		{
 			OnSuccess.Broadcast(Result);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 		[this](const FNakamaError& Error)
 		{
 			OnError.Broadcast(Error);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		}
 	);
@@ -324,6 +352,8 @@ void UNakamaClientAuthenticateEmail::Activate()
 	static const TCHAR* TraceScope_AuthenticateEmail = TEXT("NakamaBP_AuthenticateEmail");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_AuthenticateEmail);
 
+	AddToRoot();
+
 	NakamaApi::AuthenticateEmail(
 		Client,
 		StoredAccount,
@@ -332,11 +362,13 @@ void UNakamaClientAuthenticateEmail::Activate()
 		[this](const FNakamaSession& Result)
 		{
 			OnSuccess.Broadcast(Result);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 		[this](const FNakamaError& Error)
 		{
 			OnError.Broadcast(Error);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		}
 	);
@@ -366,6 +398,8 @@ void UNakamaClientAuthenticateFacebook::Activate()
 	static const TCHAR* TraceScope_AuthenticateFacebook = TEXT("NakamaBP_AuthenticateFacebook");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_AuthenticateFacebook);
 
+	AddToRoot();
+
 	NakamaApi::AuthenticateFacebook(
 		Client,
 		StoredAccount,
@@ -375,11 +409,13 @@ void UNakamaClientAuthenticateFacebook::Activate()
 		[this](const FNakamaSession& Result)
 		{
 			OnSuccess.Broadcast(Result);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 		[this](const FNakamaError& Error)
 		{
 			OnError.Broadcast(Error);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		}
 	);
@@ -407,6 +443,8 @@ void UNakamaClientAuthenticateFacebookInstantGame::Activate()
 	static const TCHAR* TraceScope_AuthenticateFacebookInstantGame = TEXT("NakamaBP_AuthenticateFacebookInstantGame");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_AuthenticateFacebookInstantGame);
 
+	AddToRoot();
+
 	NakamaApi::AuthenticateFacebookInstantGame(
 		Client,
 		StoredAccount,
@@ -415,11 +453,13 @@ void UNakamaClientAuthenticateFacebookInstantGame::Activate()
 		[this](const FNakamaSession& Result)
 		{
 			OnSuccess.Broadcast(Result);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 		[this](const FNakamaError& Error)
 		{
 			OnError.Broadcast(Error);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		}
 	);
@@ -447,6 +487,8 @@ void UNakamaClientAuthenticateGameCenter::Activate()
 	static const TCHAR* TraceScope_AuthenticateGameCenter = TEXT("NakamaBP_AuthenticateGameCenter");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_AuthenticateGameCenter);
 
+	AddToRoot();
+
 	NakamaApi::AuthenticateGameCenter(
 		Client,
 		StoredAccount,
@@ -455,11 +497,13 @@ void UNakamaClientAuthenticateGameCenter::Activate()
 		[this](const FNakamaSession& Result)
 		{
 			OnSuccess.Broadcast(Result);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 		[this](const FNakamaError& Error)
 		{
 			OnError.Broadcast(Error);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		}
 	);
@@ -487,6 +531,8 @@ void UNakamaClientAuthenticateGoogle::Activate()
 	static const TCHAR* TraceScope_AuthenticateGoogle = TEXT("NakamaBP_AuthenticateGoogle");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_AuthenticateGoogle);
 
+	AddToRoot();
+
 	NakamaApi::AuthenticateGoogle(
 		Client,
 		StoredAccount,
@@ -495,11 +541,13 @@ void UNakamaClientAuthenticateGoogle::Activate()
 		[this](const FNakamaSession& Result)
 		{
 			OnSuccess.Broadcast(Result);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 		[this](const FNakamaError& Error)
 		{
 			OnError.Broadcast(Error);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		}
 	);
@@ -529,6 +577,8 @@ void UNakamaClientAuthenticateSteam::Activate()
 	static const TCHAR* TraceScope_AuthenticateSteam = TEXT("NakamaBP_AuthenticateSteam");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_AuthenticateSteam);
 
+	AddToRoot();
+
 	NakamaApi::AuthenticateSteam(
 		Client,
 		StoredAccount,
@@ -538,11 +588,13 @@ void UNakamaClientAuthenticateSteam::Activate()
 		[this](const FNakamaSession& Result)
 		{
 			OnSuccess.Broadcast(Result);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 		[this](const FNakamaError& Error)
 		{
 			OnError.Broadcast(Error);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		}
 	);
@@ -570,6 +622,8 @@ void UNakamaClientBanGroupUsers::Activate()
 	static const TCHAR* TraceScope_BanGroupUsers = TEXT("NakamaBP_BanGroupUsers");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_BanGroupUsers);
 
+	AddToRoot();
+
 	NakamaApi::BanGroupUsers(
 		Client,
 		MakeShared<FNakamaSession>(Session),
@@ -578,11 +632,13 @@ void UNakamaClientBanGroupUsers::Activate()
 		[this]()
 		{
 			OnSuccess.Broadcast();
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 		[this](const FNakamaError& Error)
 		{
 			OnError.Broadcast(Error);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		}
 	);
@@ -610,6 +666,8 @@ void UNakamaClientBlockFriends::Activate()
 	static const TCHAR* TraceScope_BlockFriends = TEXT("NakamaBP_BlockFriends");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_BlockFriends);
 
+	AddToRoot();
+
 	NakamaApi::BlockFriends(
 		Client,
 		MakeShared<FNakamaSession>(Session),
@@ -618,11 +676,13 @@ void UNakamaClientBlockFriends::Activate()
 		[this]()
 		{
 			OnSuccess.Broadcast();
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 		[this](const FNakamaError& Error)
 		{
 			OnError.Broadcast(Error);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		}
 	);
@@ -658,6 +718,8 @@ void UNakamaClientCreateGroup::Activate()
 	static const TCHAR* TraceScope_CreateGroup = TEXT("NakamaBP_CreateGroup");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_CreateGroup);
 
+	AddToRoot();
+
 	NakamaApi::CreateGroup(
 		Client,
 		MakeShared<FNakamaSession>(Session),
@@ -670,11 +732,13 @@ void UNakamaClientCreateGroup::Activate()
 		[this](const FNakamaGroup& Result)
 		{
 			OnSuccess.Broadcast(Result);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 		[this](const FNakamaError& Error)
 		{
 			OnError.Broadcast(Error);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		}
 	);
@@ -698,17 +762,21 @@ void UNakamaClientDeleteAccount::Activate()
 	static const TCHAR* TraceScope_DeleteAccount = TEXT("NakamaBP_DeleteAccount");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_DeleteAccount);
 
+	AddToRoot();
+
 	NakamaApi::DeleteAccount(
 		Client,
 		MakeShared<FNakamaSession>(Session),
 		[this]()
 		{
 			OnSuccess.Broadcast();
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 		[this](const FNakamaError& Error)
 		{
 			OnError.Broadcast(Error);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		}
 	);
@@ -736,6 +804,8 @@ void UNakamaClientDeleteFriends::Activate()
 	static const TCHAR* TraceScope_DeleteFriends = TEXT("NakamaBP_DeleteFriends");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_DeleteFriends);
 
+	AddToRoot();
+
 	NakamaApi::DeleteFriends(
 		Client,
 		MakeShared<FNakamaSession>(Session),
@@ -744,11 +814,13 @@ void UNakamaClientDeleteFriends::Activate()
 		[this]()
 		{
 			OnSuccess.Broadcast();
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 		[this](const FNakamaError& Error)
 		{
 			OnError.Broadcast(Error);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		}
 	);
@@ -774,6 +846,8 @@ void UNakamaClientDeleteGroup::Activate()
 	static const TCHAR* TraceScope_DeleteGroup = TEXT("NakamaBP_DeleteGroup");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_DeleteGroup);
 
+	AddToRoot();
+
 	NakamaApi::DeleteGroup(
 		Client,
 		MakeShared<FNakamaSession>(Session),
@@ -781,11 +855,13 @@ void UNakamaClientDeleteGroup::Activate()
 		[this]()
 		{
 			OnSuccess.Broadcast();
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 		[this](const FNakamaError& Error)
 		{
 			OnError.Broadcast(Error);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		}
 	);
@@ -811,6 +887,8 @@ void UNakamaClientDeleteLeaderboardRecord::Activate()
 	static const TCHAR* TraceScope_DeleteLeaderboardRecord = TEXT("NakamaBP_DeleteLeaderboardRecord");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_DeleteLeaderboardRecord);
 
+	AddToRoot();
+
 	NakamaApi::DeleteLeaderboardRecord(
 		Client,
 		MakeShared<FNakamaSession>(Session),
@@ -818,11 +896,13 @@ void UNakamaClientDeleteLeaderboardRecord::Activate()
 		[this]()
 		{
 			OnSuccess.Broadcast();
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 		[this](const FNakamaError& Error)
 		{
 			OnError.Broadcast(Error);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		}
 	);
@@ -848,6 +928,8 @@ void UNakamaClientDeleteNotifications::Activate()
 	static const TCHAR* TraceScope_DeleteNotifications = TEXT("NakamaBP_DeleteNotifications");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_DeleteNotifications);
 
+	AddToRoot();
+
 	NakamaApi::DeleteNotifications(
 		Client,
 		MakeShared<FNakamaSession>(Session),
@@ -855,11 +937,13 @@ void UNakamaClientDeleteNotifications::Activate()
 		[this]()
 		{
 			OnSuccess.Broadcast();
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 		[this](const FNakamaError& Error)
 		{
 			OnError.Broadcast(Error);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		}
 	);
@@ -885,6 +969,8 @@ void UNakamaClientDeleteTournamentRecord::Activate()
 	static const TCHAR* TraceScope_DeleteTournamentRecord = TEXT("NakamaBP_DeleteTournamentRecord");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_DeleteTournamentRecord);
 
+	AddToRoot();
+
 	NakamaApi::DeleteTournamentRecord(
 		Client,
 		MakeShared<FNakamaSession>(Session),
@@ -892,11 +978,13 @@ void UNakamaClientDeleteTournamentRecord::Activate()
 		[this]()
 		{
 			OnSuccess.Broadcast();
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 		[this](const FNakamaError& Error)
 		{
 			OnError.Broadcast(Error);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		}
 	);
@@ -922,6 +1010,8 @@ void UNakamaClientDeleteStorageObjects::Activate()
 	static const TCHAR* TraceScope_DeleteStorageObjects = TEXT("NakamaBP_DeleteStorageObjects");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_DeleteStorageObjects);
 
+	AddToRoot();
+
 	NakamaApi::DeleteStorageObjects(
 		Client,
 		MakeShared<FNakamaSession>(Session),
@@ -929,11 +1019,13 @@ void UNakamaClientDeleteStorageObjects::Activate()
 		[this]()
 		{
 			OnSuccess.Broadcast();
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 		[this](const FNakamaError& Error)
 		{
 			OnError.Broadcast(Error);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		}
 	);
@@ -965,6 +1057,8 @@ void UNakamaClientEvent::Activate()
 	static const TCHAR* TraceScope_Event = TEXT("NakamaBP_Event");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_Event);
 
+	AddToRoot();
+
 	NakamaApi::Event(
 		Client,
 		MakeShared<FNakamaSession>(Session),
@@ -975,11 +1069,13 @@ void UNakamaClientEvent::Activate()
 		[this]()
 		{
 			OnSuccess.Broadcast();
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 		[this](const FNakamaError& Error)
 		{
 			OnError.Broadcast(Error);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		}
 	);
@@ -1003,17 +1099,21 @@ void UNakamaClientGetAccount::Activate()
 	static const TCHAR* TraceScope_GetAccount = TEXT("NakamaBP_GetAccount");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_GetAccount);
 
+	AddToRoot();
+
 	NakamaApi::GetAccount(
 		Client,
 		MakeShared<FNakamaSession>(Session),
 		[this](const FNakamaAccount& Result)
 		{
 			OnSuccess.Broadcast(Result);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 		[this](const FNakamaError& Error)
 		{
 			OnError.Broadcast(Error);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		}
 	);
@@ -1043,6 +1143,8 @@ void UNakamaClientGetUsers::Activate()
 	static const TCHAR* TraceScope_GetUsers = TEXT("NakamaBP_GetUsers");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_GetUsers);
 
+	AddToRoot();
+
 	NakamaApi::GetUsers(
 		Client,
 		MakeShared<FNakamaSession>(Session),
@@ -1052,11 +1154,13 @@ void UNakamaClientGetUsers::Activate()
 		[this](const FNakamaUsers& Result)
 		{
 			OnSuccess.Broadcast(Result);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 		[this](const FNakamaError& Error)
 		{
 			OnError.Broadcast(Error);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		}
 	);
@@ -1082,6 +1186,8 @@ void UNakamaClientGetSubscription::Activate()
 	static const TCHAR* TraceScope_GetSubscription = TEXT("NakamaBP_GetSubscription");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_GetSubscription);
 
+	AddToRoot();
+
 	NakamaApi::GetSubscription(
 		Client,
 		MakeShared<FNakamaSession>(Session),
@@ -1089,11 +1195,13 @@ void UNakamaClientGetSubscription::Activate()
 		[this](const FNakamaValidatedSubscription& Result)
 		{
 			OnSuccess.Broadcast(Result);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 		[this](const FNakamaError& Error)
 		{
 			OnError.Broadcast(Error);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		}
 	);
@@ -1117,17 +1225,21 @@ void UNakamaClientGetMatchmakerStats::Activate()
 	static const TCHAR* TraceScope_GetMatchmakerStats = TEXT("NakamaBP_GetMatchmakerStats");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_GetMatchmakerStats);
 
+	AddToRoot();
+
 	NakamaApi::GetMatchmakerStats(
 		Client,
 		MakeShared<FNakamaSession>(Session),
 		[this](const FNakamaMatchmakerStats& Result)
 		{
 			OnSuccess.Broadcast(Result);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 		[this](const FNakamaError& Error)
 		{
 			OnError.Broadcast(Error);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		}
 	);
@@ -1151,17 +1263,21 @@ void UNakamaClientHealthcheck::Activate()
 	static const TCHAR* TraceScope_Healthcheck = TEXT("NakamaBP_Healthcheck");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_Healthcheck);
 
+	AddToRoot();
+
 	NakamaApi::Healthcheck(
 		Client,
 		MakeShared<FNakamaSession>(Session),
 		[this]()
 		{
 			OnSuccess.Broadcast();
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 		[this](const FNakamaError& Error)
 		{
 			OnError.Broadcast(Error);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		}
 	);
@@ -1189,6 +1305,8 @@ void UNakamaClientImportFacebookFriends::Activate()
 	static const TCHAR* TraceScope_ImportFacebookFriends = TEXT("NakamaBP_ImportFacebookFriends");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ImportFacebookFriends);
 
+	AddToRoot();
+
 	NakamaApi::ImportFacebookFriends(
 		Client,
 		MakeShared<FNakamaSession>(Session),
@@ -1197,11 +1315,13 @@ void UNakamaClientImportFacebookFriends::Activate()
 		[this]()
 		{
 			OnSuccess.Broadcast();
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 		[this](const FNakamaError& Error)
 		{
 			OnError.Broadcast(Error);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		}
 	);
@@ -1229,6 +1349,8 @@ void UNakamaClientImportSteamFriends::Activate()
 	static const TCHAR* TraceScope_ImportSteamFriends = TEXT("NakamaBP_ImportSteamFriends");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ImportSteamFriends);
 
+	AddToRoot();
+
 	NakamaApi::ImportSteamFriends(
 		Client,
 		MakeShared<FNakamaSession>(Session),
@@ -1237,11 +1359,13 @@ void UNakamaClientImportSteamFriends::Activate()
 		[this]()
 		{
 			OnSuccess.Broadcast();
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 		[this](const FNakamaError& Error)
 		{
 			OnError.Broadcast(Error);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		}
 	);
@@ -1267,6 +1391,8 @@ void UNakamaClientJoinGroup::Activate()
 	static const TCHAR* TraceScope_JoinGroup = TEXT("NakamaBP_JoinGroup");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_JoinGroup);
 
+	AddToRoot();
+
 	NakamaApi::JoinGroup(
 		Client,
 		MakeShared<FNakamaSession>(Session),
@@ -1274,11 +1400,13 @@ void UNakamaClientJoinGroup::Activate()
 		[this]()
 		{
 			OnSuccess.Broadcast();
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 		[this](const FNakamaError& Error)
 		{
 			OnError.Broadcast(Error);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		}
 	);
@@ -1304,6 +1432,8 @@ void UNakamaClientJoinTournament::Activate()
 	static const TCHAR* TraceScope_JoinTournament = TEXT("NakamaBP_JoinTournament");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_JoinTournament);
 
+	AddToRoot();
+
 	NakamaApi::JoinTournament(
 		Client,
 		MakeShared<FNakamaSession>(Session),
@@ -1311,11 +1441,13 @@ void UNakamaClientJoinTournament::Activate()
 		[this]()
 		{
 			OnSuccess.Broadcast();
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 		[this](const FNakamaError& Error)
 		{
 			OnError.Broadcast(Error);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		}
 	);
@@ -1343,6 +1475,8 @@ void UNakamaClientKickGroupUsers::Activate()
 	static const TCHAR* TraceScope_KickGroupUsers = TEXT("NakamaBP_KickGroupUsers");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_KickGroupUsers);
 
+	AddToRoot();
+
 	NakamaApi::KickGroupUsers(
 		Client,
 		MakeShared<FNakamaSession>(Session),
@@ -1351,11 +1485,13 @@ void UNakamaClientKickGroupUsers::Activate()
 		[this]()
 		{
 			OnSuccess.Broadcast();
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 		[this](const FNakamaError& Error)
 		{
 			OnError.Broadcast(Error);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		}
 	);
@@ -1381,6 +1517,8 @@ void UNakamaClientLeaveGroup::Activate()
 	static const TCHAR* TraceScope_LeaveGroup = TEXT("NakamaBP_LeaveGroup");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_LeaveGroup);
 
+	AddToRoot();
+
 	NakamaApi::LeaveGroup(
 		Client,
 		MakeShared<FNakamaSession>(Session),
@@ -1388,11 +1526,13 @@ void UNakamaClientLeaveGroup::Activate()
 		[this]()
 		{
 			OnSuccess.Broadcast();
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 		[this](const FNakamaError& Error)
 		{
 			OnError.Broadcast(Error);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		}
 	);
@@ -1420,6 +1560,8 @@ void UNakamaClientLinkApple::Activate()
 	static const TCHAR* TraceScope_LinkApple = TEXT("NakamaBP_LinkApple");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_LinkApple);
 
+	AddToRoot();
+
 	NakamaApi::LinkApple(
 		Client,
 		MakeShared<FNakamaSession>(Session),
@@ -1428,11 +1570,13 @@ void UNakamaClientLinkApple::Activate()
 		[this]()
 		{
 			OnSuccess.Broadcast();
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 		[this](const FNakamaError& Error)
 		{
 			OnError.Broadcast(Error);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		}
 	);
@@ -1460,6 +1604,8 @@ void UNakamaClientLinkCustom::Activate()
 	static const TCHAR* TraceScope_LinkCustom = TEXT("NakamaBP_LinkCustom");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_LinkCustom);
 
+	AddToRoot();
+
 	NakamaApi::LinkCustom(
 		Client,
 		MakeShared<FNakamaSession>(Session),
@@ -1468,11 +1614,13 @@ void UNakamaClientLinkCustom::Activate()
 		[this]()
 		{
 			OnSuccess.Broadcast();
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 		[this](const FNakamaError& Error)
 		{
 			OnError.Broadcast(Error);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		}
 	);
@@ -1500,6 +1648,8 @@ void UNakamaClientLinkDevice::Activate()
 	static const TCHAR* TraceScope_LinkDevice = TEXT("NakamaBP_LinkDevice");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_LinkDevice);
 
+	AddToRoot();
+
 	NakamaApi::LinkDevice(
 		Client,
 		MakeShared<FNakamaSession>(Session),
@@ -1508,11 +1658,13 @@ void UNakamaClientLinkDevice::Activate()
 		[this]()
 		{
 			OnSuccess.Broadcast();
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 		[this](const FNakamaError& Error)
 		{
 			OnError.Broadcast(Error);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		}
 	);
@@ -1542,6 +1694,8 @@ void UNakamaClientLinkEmail::Activate()
 	static const TCHAR* TraceScope_LinkEmail = TEXT("NakamaBP_LinkEmail");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_LinkEmail);
 
+	AddToRoot();
+
 	NakamaApi::LinkEmail(
 		Client,
 		MakeShared<FNakamaSession>(Session),
@@ -1551,11 +1705,13 @@ void UNakamaClientLinkEmail::Activate()
 		[this]()
 		{
 			OnSuccess.Broadcast();
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 		[this](const FNakamaError& Error)
 		{
 			OnError.Broadcast(Error);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		}
 	);
@@ -1583,6 +1739,8 @@ void UNakamaClientLinkFacebook::Activate()
 	static const TCHAR* TraceScope_LinkFacebook = TEXT("NakamaBP_LinkFacebook");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_LinkFacebook);
 
+	AddToRoot();
+
 	NakamaApi::LinkFacebook(
 		Client,
 		MakeShared<FNakamaSession>(Session),
@@ -1591,11 +1749,13 @@ void UNakamaClientLinkFacebook::Activate()
 		[this]()
 		{
 			OnSuccess.Broadcast();
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 		[this](const FNakamaError& Error)
 		{
 			OnError.Broadcast(Error);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		}
 	);
@@ -1623,6 +1783,8 @@ void UNakamaClientLinkFacebookInstantGame::Activate()
 	static const TCHAR* TraceScope_LinkFacebookInstantGame = TEXT("NakamaBP_LinkFacebookInstantGame");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_LinkFacebookInstantGame);
 
+	AddToRoot();
+
 	NakamaApi::LinkFacebookInstantGame(
 		Client,
 		MakeShared<FNakamaSession>(Session),
@@ -1631,11 +1793,13 @@ void UNakamaClientLinkFacebookInstantGame::Activate()
 		[this]()
 		{
 			OnSuccess.Broadcast();
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 		[this](const FNakamaError& Error)
 		{
 			OnError.Broadcast(Error);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		}
 	);
@@ -1673,6 +1837,8 @@ void UNakamaClientLinkGameCenter::Activate()
 	static const TCHAR* TraceScope_LinkGameCenter = TEXT("NakamaBP_LinkGameCenter");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_LinkGameCenter);
 
+	AddToRoot();
+
 	NakamaApi::LinkGameCenter(
 		Client,
 		MakeShared<FNakamaSession>(Session),
@@ -1686,11 +1852,13 @@ void UNakamaClientLinkGameCenter::Activate()
 		[this]()
 		{
 			OnSuccess.Broadcast();
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 		[this](const FNakamaError& Error)
 		{
 			OnError.Broadcast(Error);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		}
 	);
@@ -1718,6 +1886,8 @@ void UNakamaClientLinkGoogle::Activate()
 	static const TCHAR* TraceScope_LinkGoogle = TEXT("NakamaBP_LinkGoogle");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_LinkGoogle);
 
+	AddToRoot();
+
 	NakamaApi::LinkGoogle(
 		Client,
 		MakeShared<FNakamaSession>(Session),
@@ -1726,11 +1896,13 @@ void UNakamaClientLinkGoogle::Activate()
 		[this]()
 		{
 			OnSuccess.Broadcast();
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 		[this](const FNakamaError& Error)
 		{
 			OnError.Broadcast(Error);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		}
 	);
@@ -1758,6 +1930,8 @@ void UNakamaClientLinkSteam::Activate()
 	static const TCHAR* TraceScope_LinkSteam = TEXT("NakamaBP_LinkSteam");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_LinkSteam);
 
+	AddToRoot();
+
 	NakamaApi::LinkSteam(
 		Client,
 		MakeShared<FNakamaSession>(Session),
@@ -1766,11 +1940,13 @@ void UNakamaClientLinkSteam::Activate()
 		[this]()
 		{
 			OnSuccess.Broadcast();
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 		[this](const FNakamaError& Error)
 		{
 			OnError.Broadcast(Error);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		}
 	);
@@ -1802,6 +1978,8 @@ void UNakamaClientListChannelMessages::Activate()
 	static const TCHAR* TraceScope_ListChannelMessages = TEXT("NakamaBP_ListChannelMessages");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListChannelMessages);
 
+	AddToRoot();
+
 	NakamaApi::ListChannelMessages(
 		Client,
 		MakeShared<FNakamaSession>(Session),
@@ -1812,11 +1990,13 @@ void UNakamaClientListChannelMessages::Activate()
 		[this](const FNakamaChannelMessageList& Result)
 		{
 			OnSuccess.Broadcast(Result);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 		[this](const FNakamaError& Error)
 		{
 			OnError.Broadcast(Error);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		}
 	);
@@ -1846,6 +2026,8 @@ void UNakamaClientListFriends::Activate()
 	static const TCHAR* TraceScope_ListFriends = TEXT("NakamaBP_ListFriends");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListFriends);
 
+	AddToRoot();
+
 	NakamaApi::ListFriends(
 		Client,
 		MakeShared<FNakamaSession>(Session),
@@ -1855,11 +2037,13 @@ void UNakamaClientListFriends::Activate()
 		[this](const FNakamaFriendList& Result)
 		{
 			OnSuccess.Broadcast(Result);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 		[this](const FNakamaError& Error)
 		{
 			OnError.Broadcast(Error);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		}
 	);
@@ -1887,6 +2071,8 @@ void UNakamaClientListFriendsOfFriends::Activate()
 	static const TCHAR* TraceScope_ListFriendsOfFriends = TEXT("NakamaBP_ListFriendsOfFriends");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListFriendsOfFriends);
 
+	AddToRoot();
+
 	NakamaApi::ListFriendsOfFriends(
 		Client,
 		MakeShared<FNakamaSession>(Session),
@@ -1895,11 +2081,13 @@ void UNakamaClientListFriendsOfFriends::Activate()
 		[this](const FNakamaFriendsOfFriendsList& Result)
 		{
 			OnSuccess.Broadcast(Result);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 		[this](const FNakamaError& Error)
 		{
 			OnError.Broadcast(Error);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		}
 	);
@@ -1935,6 +2123,8 @@ void UNakamaClientListGroups::Activate()
 	static const TCHAR* TraceScope_ListGroups = TEXT("NakamaBP_ListGroups");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListGroups);
 
+	AddToRoot();
+
 	NakamaApi::ListGroups(
 		Client,
 		MakeShared<FNakamaSession>(Session),
@@ -1947,11 +2137,13 @@ void UNakamaClientListGroups::Activate()
 		[this](const FNakamaGroupList& Result)
 		{
 			OnSuccess.Broadcast(Result);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 		[this](const FNakamaError& Error)
 		{
 			OnError.Broadcast(Error);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		}
 	);
@@ -1983,6 +2175,8 @@ void UNakamaClientListGroupUsers::Activate()
 	static const TCHAR* TraceScope_ListGroupUsers = TEXT("NakamaBP_ListGroupUsers");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListGroupUsers);
 
+	AddToRoot();
+
 	NakamaApi::ListGroupUsers(
 		Client,
 		MakeShared<FNakamaSession>(Session),
@@ -1993,11 +2187,13 @@ void UNakamaClientListGroupUsers::Activate()
 		[this](const FNakamaGroupUserList& Result)
 		{
 			OnSuccess.Broadcast(Result);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 		[this](const FNakamaError& Error)
 		{
 			OnError.Broadcast(Error);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		}
 	);
@@ -2031,6 +2227,8 @@ void UNakamaClientListLeaderboardRecords::Activate()
 	static const TCHAR* TraceScope_ListLeaderboardRecords = TEXT("NakamaBP_ListLeaderboardRecords");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListLeaderboardRecords);
 
+	AddToRoot();
+
 	NakamaApi::ListLeaderboardRecords(
 		Client,
 		MakeShared<FNakamaSession>(Session),
@@ -2042,11 +2240,13 @@ void UNakamaClientListLeaderboardRecords::Activate()
 		[this](const FNakamaLeaderboardRecordList& Result)
 		{
 			OnSuccess.Broadcast(Result);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 		[this](const FNakamaError& Error)
 		{
 			OnError.Broadcast(Error);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		}
 	);
@@ -2080,6 +2280,8 @@ void UNakamaClientListLeaderboardRecordsAroundOwner::Activate()
 	static const TCHAR* TraceScope_ListLeaderboardRecordsAroundOwner = TEXT("NakamaBP_ListLeaderboardRecordsAroundOwner");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListLeaderboardRecordsAroundOwner);
 
+	AddToRoot();
+
 	NakamaApi::ListLeaderboardRecordsAroundOwner(
 		Client,
 		MakeShared<FNakamaSession>(Session),
@@ -2091,11 +2293,13 @@ void UNakamaClientListLeaderboardRecordsAroundOwner::Activate()
 		[this](const FNakamaLeaderboardRecordList& Result)
 		{
 			OnSuccess.Broadcast(Result);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 		[this](const FNakamaError& Error)
 		{
 			OnError.Broadcast(Error);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		}
 	);
@@ -2131,6 +2335,8 @@ void UNakamaClientListMatches::Activate()
 	static const TCHAR* TraceScope_ListMatches = TEXT("NakamaBP_ListMatches");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListMatches);
 
+	AddToRoot();
+
 	NakamaApi::ListMatches(
 		Client,
 		MakeShared<FNakamaSession>(Session),
@@ -2143,11 +2349,13 @@ void UNakamaClientListMatches::Activate()
 		[this](const FNakamaMatchList& Result)
 		{
 			OnSuccess.Broadcast(Result);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 		[this](const FNakamaError& Error)
 		{
 			OnError.Broadcast(Error);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		}
 	);
@@ -2179,6 +2387,8 @@ void UNakamaClientListParties::Activate()
 	static const TCHAR* TraceScope_ListParties = TEXT("NakamaBP_ListParties");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListParties);
 
+	AddToRoot();
+
 	NakamaApi::ListParties(
 		Client,
 		MakeShared<FNakamaSession>(Session),
@@ -2189,11 +2399,13 @@ void UNakamaClientListParties::Activate()
 		[this](const FNakamaPartyList& Result)
 		{
 			OnSuccess.Broadcast(Result);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 		[this](const FNakamaError& Error)
 		{
 			OnError.Broadcast(Error);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		}
 	);
@@ -2221,6 +2433,8 @@ void UNakamaClientListNotifications::Activate()
 	static const TCHAR* TraceScope_ListNotifications = TEXT("NakamaBP_ListNotifications");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListNotifications);
 
+	AddToRoot();
+
 	NakamaApi::ListNotifications(
 		Client,
 		MakeShared<FNakamaSession>(Session),
@@ -2229,11 +2443,13 @@ void UNakamaClientListNotifications::Activate()
 		[this](const FNakamaNotificationList& Result)
 		{
 			OnSuccess.Broadcast(Result);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 		[this](const FNakamaError& Error)
 		{
 			OnError.Broadcast(Error);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		}
 	);
@@ -2265,6 +2481,8 @@ void UNakamaClientListStorageObjects::Activate()
 	static const TCHAR* TraceScope_ListStorageObjects = TEXT("NakamaBP_ListStorageObjects");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListStorageObjects);
 
+	AddToRoot();
+
 	NakamaApi::ListStorageObjects(
 		Client,
 		MakeShared<FNakamaSession>(Session),
@@ -2275,11 +2493,13 @@ void UNakamaClientListStorageObjects::Activate()
 		[this](const FNakamaStorageObjectList& Result)
 		{
 			OnSuccess.Broadcast(Result);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 		[this](const FNakamaError& Error)
 		{
 			OnError.Broadcast(Error);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		}
 	);
@@ -2307,6 +2527,8 @@ void UNakamaClientListSubscriptions::Activate()
 	static const TCHAR* TraceScope_ListSubscriptions = TEXT("NakamaBP_ListSubscriptions");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListSubscriptions);
 
+	AddToRoot();
+
 	NakamaApi::ListSubscriptions(
 		Client,
 		MakeShared<FNakamaSession>(Session),
@@ -2315,11 +2537,13 @@ void UNakamaClientListSubscriptions::Activate()
 		[this](const FNakamaSubscriptionList& Result)
 		{
 			OnSuccess.Broadcast(Result);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 		[this](const FNakamaError& Error)
 		{
 			OnError.Broadcast(Error);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		}
 	);
@@ -2355,6 +2579,8 @@ void UNakamaClientListTournaments::Activate()
 	static const TCHAR* TraceScope_ListTournaments = TEXT("NakamaBP_ListTournaments");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListTournaments);
 
+	AddToRoot();
+
 	NakamaApi::ListTournaments(
 		Client,
 		MakeShared<FNakamaSession>(Session),
@@ -2367,11 +2593,13 @@ void UNakamaClientListTournaments::Activate()
 		[this](const FNakamaTournamentList& Result)
 		{
 			OnSuccess.Broadcast(Result);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 		[this](const FNakamaError& Error)
 		{
 			OnError.Broadcast(Error);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		}
 	);
@@ -2405,6 +2633,8 @@ void UNakamaClientListTournamentRecords::Activate()
 	static const TCHAR* TraceScope_ListTournamentRecords = TEXT("NakamaBP_ListTournamentRecords");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListTournamentRecords);
 
+	AddToRoot();
+
 	NakamaApi::ListTournamentRecords(
 		Client,
 		MakeShared<FNakamaSession>(Session),
@@ -2416,11 +2646,13 @@ void UNakamaClientListTournamentRecords::Activate()
 		[this](const FNakamaTournamentRecordList& Result)
 		{
 			OnSuccess.Broadcast(Result);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 		[this](const FNakamaError& Error)
 		{
 			OnError.Broadcast(Error);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		}
 	);
@@ -2454,6 +2686,8 @@ void UNakamaClientListTournamentRecordsAroundOwner::Activate()
 	static const TCHAR* TraceScope_ListTournamentRecordsAroundOwner = TEXT("NakamaBP_ListTournamentRecordsAroundOwner");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListTournamentRecordsAroundOwner);
 
+	AddToRoot();
+
 	NakamaApi::ListTournamentRecordsAroundOwner(
 		Client,
 		MakeShared<FNakamaSession>(Session),
@@ -2465,11 +2699,13 @@ void UNakamaClientListTournamentRecordsAroundOwner::Activate()
 		[this](const FNakamaTournamentRecordList& Result)
 		{
 			OnSuccess.Broadcast(Result);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 		[this](const FNakamaError& Error)
 		{
 			OnError.Broadcast(Error);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		}
 	);
@@ -2501,6 +2737,8 @@ void UNakamaClientListUserGroups::Activate()
 	static const TCHAR* TraceScope_ListUserGroups = TEXT("NakamaBP_ListUserGroups");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListUserGroups);
 
+	AddToRoot();
+
 	NakamaApi::ListUserGroups(
 		Client,
 		MakeShared<FNakamaSession>(Session),
@@ -2511,11 +2749,13 @@ void UNakamaClientListUserGroups::Activate()
 		[this](const FNakamaUserGroupList& Result)
 		{
 			OnSuccess.Broadcast(Result);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 		[this](const FNakamaError& Error)
 		{
 			OnError.Broadcast(Error);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		}
 	);
@@ -2543,6 +2783,8 @@ void UNakamaClientPromoteGroupUsers::Activate()
 	static const TCHAR* TraceScope_PromoteGroupUsers = TEXT("NakamaBP_PromoteGroupUsers");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_PromoteGroupUsers);
 
+	AddToRoot();
+
 	NakamaApi::PromoteGroupUsers(
 		Client,
 		MakeShared<FNakamaSession>(Session),
@@ -2551,11 +2793,13 @@ void UNakamaClientPromoteGroupUsers::Activate()
 		[this]()
 		{
 			OnSuccess.Broadcast();
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 		[this](const FNakamaError& Error)
 		{
 			OnError.Broadcast(Error);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		}
 	);
@@ -2583,6 +2827,8 @@ void UNakamaClientDemoteGroupUsers::Activate()
 	static const TCHAR* TraceScope_DemoteGroupUsers = TEXT("NakamaBP_DemoteGroupUsers");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_DemoteGroupUsers);
 
+	AddToRoot();
+
 	NakamaApi::DemoteGroupUsers(
 		Client,
 		MakeShared<FNakamaSession>(Session),
@@ -2591,11 +2837,13 @@ void UNakamaClientDemoteGroupUsers::Activate()
 		[this]()
 		{
 			OnSuccess.Broadcast();
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 		[this](const FNakamaError& Error)
 		{
 			OnError.Broadcast(Error);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		}
 	);
@@ -2621,6 +2869,8 @@ void UNakamaClientReadStorageObjects::Activate()
 	static const TCHAR* TraceScope_ReadStorageObjects = TEXT("NakamaBP_ReadStorageObjects");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ReadStorageObjects);
 
+	AddToRoot();
+
 	NakamaApi::ReadStorageObjects(
 		Client,
 		MakeShared<FNakamaSession>(Session),
@@ -2628,11 +2878,13 @@ void UNakamaClientReadStorageObjects::Activate()
 		[this](const FNakamaStorageObjects& Result)
 		{
 			OnSuccess.Broadcast(Result);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 		[this](const FNakamaError& Error)
 		{
 			OnError.Broadcast(Error);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		}
 	);
@@ -2662,6 +2914,8 @@ void UNakamaClientRpcFunc::Activate()
 	static const TCHAR* TraceScope_RpcFunc = TEXT("NakamaBP_RpcFunc");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_RpcFunc);
 
+	AddToRoot();
+
 	NakamaApi::RpcFunc(
 		Client,
 		MakeShared<FNakamaSession>(Session),
@@ -2679,11 +2933,13 @@ void UNakamaClientRpcFunc::Activate()
 		[this](const FNakamaRpc& Result)
 		{
 			OnSuccess.Broadcast(Result);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 		[this](const FNakamaError& Error)
 		{
 			OnError.Broadcast(Error);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		}
 	);
@@ -2711,6 +2967,8 @@ void UNakamaClientUnlinkApple::Activate()
 	static const TCHAR* TraceScope_UnlinkApple = TEXT("NakamaBP_UnlinkApple");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_UnlinkApple);
 
+	AddToRoot();
+
 	NakamaApi::UnlinkApple(
 		Client,
 		MakeShared<FNakamaSession>(Session),
@@ -2719,11 +2977,13 @@ void UNakamaClientUnlinkApple::Activate()
 		[this]()
 		{
 			OnSuccess.Broadcast();
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 		[this](const FNakamaError& Error)
 		{
 			OnError.Broadcast(Error);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		}
 	);
@@ -2751,6 +3011,8 @@ void UNakamaClientUnlinkCustom::Activate()
 	static const TCHAR* TraceScope_UnlinkCustom = TEXT("NakamaBP_UnlinkCustom");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_UnlinkCustom);
 
+	AddToRoot();
+
 	NakamaApi::UnlinkCustom(
 		Client,
 		MakeShared<FNakamaSession>(Session),
@@ -2759,11 +3021,13 @@ void UNakamaClientUnlinkCustom::Activate()
 		[this]()
 		{
 			OnSuccess.Broadcast();
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 		[this](const FNakamaError& Error)
 		{
 			OnError.Broadcast(Error);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		}
 	);
@@ -2791,6 +3055,8 @@ void UNakamaClientUnlinkDevice::Activate()
 	static const TCHAR* TraceScope_UnlinkDevice = TEXT("NakamaBP_UnlinkDevice");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_UnlinkDevice);
 
+	AddToRoot();
+
 	NakamaApi::UnlinkDevice(
 		Client,
 		MakeShared<FNakamaSession>(Session),
@@ -2799,11 +3065,13 @@ void UNakamaClientUnlinkDevice::Activate()
 		[this]()
 		{
 			OnSuccess.Broadcast();
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 		[this](const FNakamaError& Error)
 		{
 			OnError.Broadcast(Error);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		}
 	);
@@ -2833,6 +3101,8 @@ void UNakamaClientUnlinkEmail::Activate()
 	static const TCHAR* TraceScope_UnlinkEmail = TEXT("NakamaBP_UnlinkEmail");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_UnlinkEmail);
 
+	AddToRoot();
+
 	NakamaApi::UnlinkEmail(
 		Client,
 		MakeShared<FNakamaSession>(Session),
@@ -2842,11 +3112,13 @@ void UNakamaClientUnlinkEmail::Activate()
 		[this]()
 		{
 			OnSuccess.Broadcast();
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 		[this](const FNakamaError& Error)
 		{
 			OnError.Broadcast(Error);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		}
 	);
@@ -2874,6 +3146,8 @@ void UNakamaClientUnlinkFacebook::Activate()
 	static const TCHAR* TraceScope_UnlinkFacebook = TEXT("NakamaBP_UnlinkFacebook");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_UnlinkFacebook);
 
+	AddToRoot();
+
 	NakamaApi::UnlinkFacebook(
 		Client,
 		MakeShared<FNakamaSession>(Session),
@@ -2882,11 +3156,13 @@ void UNakamaClientUnlinkFacebook::Activate()
 		[this]()
 		{
 			OnSuccess.Broadcast();
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 		[this](const FNakamaError& Error)
 		{
 			OnError.Broadcast(Error);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		}
 	);
@@ -2914,6 +3190,8 @@ void UNakamaClientUnlinkFacebookInstantGame::Activate()
 	static const TCHAR* TraceScope_UnlinkFacebookInstantGame = TEXT("NakamaBP_UnlinkFacebookInstantGame");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_UnlinkFacebookInstantGame);
 
+	AddToRoot();
+
 	NakamaApi::UnlinkFacebookInstantGame(
 		Client,
 		MakeShared<FNakamaSession>(Session),
@@ -2922,11 +3200,13 @@ void UNakamaClientUnlinkFacebookInstantGame::Activate()
 		[this]()
 		{
 			OnSuccess.Broadcast();
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 		[this](const FNakamaError& Error)
 		{
 			OnError.Broadcast(Error);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		}
 	);
@@ -2964,6 +3244,8 @@ void UNakamaClientUnlinkGameCenter::Activate()
 	static const TCHAR* TraceScope_UnlinkGameCenter = TEXT("NakamaBP_UnlinkGameCenter");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_UnlinkGameCenter);
 
+	AddToRoot();
+
 	NakamaApi::UnlinkGameCenter(
 		Client,
 		MakeShared<FNakamaSession>(Session),
@@ -2977,11 +3259,13 @@ void UNakamaClientUnlinkGameCenter::Activate()
 		[this]()
 		{
 			OnSuccess.Broadcast();
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 		[this](const FNakamaError& Error)
 		{
 			OnError.Broadcast(Error);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		}
 	);
@@ -3009,6 +3293,8 @@ void UNakamaClientUnlinkGoogle::Activate()
 	static const TCHAR* TraceScope_UnlinkGoogle = TEXT("NakamaBP_UnlinkGoogle");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_UnlinkGoogle);
 
+	AddToRoot();
+
 	NakamaApi::UnlinkGoogle(
 		Client,
 		MakeShared<FNakamaSession>(Session),
@@ -3017,11 +3303,13 @@ void UNakamaClientUnlinkGoogle::Activate()
 		[this]()
 		{
 			OnSuccess.Broadcast();
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 		[this](const FNakamaError& Error)
 		{
 			OnError.Broadcast(Error);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		}
 	);
@@ -3049,6 +3337,8 @@ void UNakamaClientUnlinkSteam::Activate()
 	static const TCHAR* TraceScope_UnlinkSteam = TEXT("NakamaBP_UnlinkSteam");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_UnlinkSteam);
 
+	AddToRoot();
+
 	NakamaApi::UnlinkSteam(
 		Client,
 		MakeShared<FNakamaSession>(Session),
@@ -3057,11 +3347,13 @@ void UNakamaClientUnlinkSteam::Activate()
 		[this]()
 		{
 			OnSuccess.Broadcast();
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 		[this](const FNakamaError& Error)
 		{
 			OnError.Broadcast(Error);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		}
 	);
@@ -3097,6 +3389,8 @@ void UNakamaClientUpdateAccount::Activate()
 	static const TCHAR* TraceScope_UpdateAccount = TEXT("NakamaBP_UpdateAccount");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_UpdateAccount);
 
+	AddToRoot();
+
 	NakamaApi::UpdateAccount(
 		Client,
 		MakeShared<FNakamaSession>(Session),
@@ -3109,11 +3403,13 @@ void UNakamaClientUpdateAccount::Activate()
 		[this]()
 		{
 			OnSuccess.Broadcast();
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 		[this](const FNakamaError& Error)
 		{
 			OnError.Broadcast(Error);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		}
 	);
@@ -3149,6 +3445,8 @@ void UNakamaClientUpdateGroup::Activate()
 	static const TCHAR* TraceScope_UpdateGroup = TEXT("NakamaBP_UpdateGroup");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_UpdateGroup);
 
+	AddToRoot();
+
 	NakamaApi::UpdateGroup(
 		Client,
 		MakeShared<FNakamaSession>(Session),
@@ -3161,11 +3459,13 @@ void UNakamaClientUpdateGroup::Activate()
 		[this]()
 		{
 			OnSuccess.Broadcast();
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 		[this](const FNakamaError& Error)
 		{
 			OnError.Broadcast(Error);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		}
 	);
@@ -3193,6 +3493,8 @@ void UNakamaClientValidatePurchaseApple::Activate()
 	static const TCHAR* TraceScope_ValidatePurchaseApple = TEXT("NakamaBP_ValidatePurchaseApple");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ValidatePurchaseApple);
 
+	AddToRoot();
+
 	NakamaApi::ValidatePurchaseApple(
 		Client,
 		MakeShared<FNakamaSession>(Session),
@@ -3201,11 +3503,13 @@ void UNakamaClientValidatePurchaseApple::Activate()
 		[this](const FNakamaValidatePurchaseResponse& Result)
 		{
 			OnSuccess.Broadcast(Result);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 		[this](const FNakamaError& Error)
 		{
 			OnError.Broadcast(Error);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		}
 	);
@@ -3233,6 +3537,8 @@ void UNakamaClientValidateSubscriptionApple::Activate()
 	static const TCHAR* TraceScope_ValidateSubscriptionApple = TEXT("NakamaBP_ValidateSubscriptionApple");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ValidateSubscriptionApple);
 
+	AddToRoot();
+
 	NakamaApi::ValidateSubscriptionApple(
 		Client,
 		MakeShared<FNakamaSession>(Session),
@@ -3241,11 +3547,13 @@ void UNakamaClientValidateSubscriptionApple::Activate()
 		[this](const FNakamaValidateSubscriptionResponse& Result)
 		{
 			OnSuccess.Broadcast(Result);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 		[this](const FNakamaError& Error)
 		{
 			OnError.Broadcast(Error);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		}
 	);
@@ -3273,6 +3581,8 @@ void UNakamaClientValidatePurchaseGoogle::Activate()
 	static const TCHAR* TraceScope_ValidatePurchaseGoogle = TEXT("NakamaBP_ValidatePurchaseGoogle");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ValidatePurchaseGoogle);
 
+	AddToRoot();
+
 	NakamaApi::ValidatePurchaseGoogle(
 		Client,
 		MakeShared<FNakamaSession>(Session),
@@ -3281,11 +3591,13 @@ void UNakamaClientValidatePurchaseGoogle::Activate()
 		[this](const FNakamaValidatePurchaseResponse& Result)
 		{
 			OnSuccess.Broadcast(Result);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 		[this](const FNakamaError& Error)
 		{
 			OnError.Broadcast(Error);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		}
 	);
@@ -3313,6 +3625,8 @@ void UNakamaClientValidateSubscriptionGoogle::Activate()
 	static const TCHAR* TraceScope_ValidateSubscriptionGoogle = TEXT("NakamaBP_ValidateSubscriptionGoogle");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ValidateSubscriptionGoogle);
 
+	AddToRoot();
+
 	NakamaApi::ValidateSubscriptionGoogle(
 		Client,
 		MakeShared<FNakamaSession>(Session),
@@ -3321,11 +3635,13 @@ void UNakamaClientValidateSubscriptionGoogle::Activate()
 		[this](const FNakamaValidateSubscriptionResponse& Result)
 		{
 			OnSuccess.Broadcast(Result);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 		[this](const FNakamaError& Error)
 		{
 			OnError.Broadcast(Error);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		}
 	);
@@ -3355,6 +3671,8 @@ void UNakamaClientValidatePurchaseHuawei::Activate()
 	static const TCHAR* TraceScope_ValidatePurchaseHuawei = TEXT("NakamaBP_ValidatePurchaseHuawei");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ValidatePurchaseHuawei);
 
+	AddToRoot();
+
 	NakamaApi::ValidatePurchaseHuawei(
 		Client,
 		MakeShared<FNakamaSession>(Session),
@@ -3364,11 +3682,13 @@ void UNakamaClientValidatePurchaseHuawei::Activate()
 		[this](const FNakamaValidatePurchaseResponse& Result)
 		{
 			OnSuccess.Broadcast(Result);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 		[this](const FNakamaError& Error)
 		{
 			OnError.Broadcast(Error);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		}
 	);
@@ -3396,6 +3716,8 @@ void UNakamaClientValidatePurchaseFacebookInstant::Activate()
 	static const TCHAR* TraceScope_ValidatePurchaseFacebookInstant = TEXT("NakamaBP_ValidatePurchaseFacebookInstant");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ValidatePurchaseFacebookInstant);
 
+	AddToRoot();
+
 	NakamaApi::ValidatePurchaseFacebookInstant(
 		Client,
 		MakeShared<FNakamaSession>(Session),
@@ -3404,11 +3726,13 @@ void UNakamaClientValidatePurchaseFacebookInstant::Activate()
 		[this](const FNakamaValidatePurchaseResponse& Result)
 		{
 			OnSuccess.Broadcast(Result);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 		[this](const FNakamaError& Error)
 		{
 			OnError.Broadcast(Error);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		}
 	);
@@ -3436,6 +3760,8 @@ void UNakamaClientWriteLeaderboardRecord::Activate()
 	static const TCHAR* TraceScope_WriteLeaderboardRecord = TEXT("NakamaBP_WriteLeaderboardRecord");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_WriteLeaderboardRecord);
 
+	AddToRoot();
+
 	NakamaApi::WriteLeaderboardRecord(
 		Client,
 		MakeShared<FNakamaSession>(Session),
@@ -3444,11 +3770,13 @@ void UNakamaClientWriteLeaderboardRecord::Activate()
 		[this](const FNakamaLeaderboardRecord& Result)
 		{
 			OnSuccess.Broadcast(Result);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 		[this](const FNakamaError& Error)
 		{
 			OnError.Broadcast(Error);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		}
 	);
@@ -3474,6 +3802,8 @@ void UNakamaClientWriteStorageObjects::Activate()
 	static const TCHAR* TraceScope_WriteStorageObjects = TEXT("NakamaBP_WriteStorageObjects");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_WriteStorageObjects);
 
+	AddToRoot();
+
 	NakamaApi::WriteStorageObjects(
 		Client,
 		MakeShared<FNakamaSession>(Session),
@@ -3481,11 +3811,13 @@ void UNakamaClientWriteStorageObjects::Activate()
 		[this](const FNakamaStorageObjectAcks& Result)
 		{
 			OnSuccess.Broadcast(Result);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 		[this](const FNakamaError& Error)
 		{
 			OnError.Broadcast(Error);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		}
 	);
@@ -3513,6 +3845,8 @@ void UNakamaClientWriteTournamentRecord::Activate()
 	static const TCHAR* TraceScope_WriteTournamentRecord = TEXT("NakamaBP_WriteTournamentRecord");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_WriteTournamentRecord);
 
+	AddToRoot();
+
 	NakamaApi::WriteTournamentRecord(
 		Client,
 		MakeShared<FNakamaSession>(Session),
@@ -3521,11 +3855,13 @@ void UNakamaClientWriteTournamentRecord::Activate()
 		[this](const FNakamaLeaderboardRecord& Result)
 		{
 			OnSuccess.Broadcast(Result);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		},
 		[this](const FNakamaError& Error)
 		{
 			OnError.Broadcast(Error);
+			RemoveFromRoot();
 			SetReadyToDestroy();
 		}
 	);

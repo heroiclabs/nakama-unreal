@@ -14,32 +14,24 @@
 #include "Misc/Guid.h"
 #include "Containers/Ticker.h"
 
-// Delay before verifying server state after a BP action fires.
-// This must be long enough for the BP action's HTTP round-trip to complete.
-// If the action hasn't finished when the timer fires, RemoveFromRoot() makes
-// it eligible for GC while the HTTP callback still holds a raw `this` pointer.
-// 1.0s is generous for a local Nakama server (~5-20ms typical RTT).
-static constexpr float BP_VERIFY_DELAY = 1.0f;
-
-// Helper: schedule a verification callback after the BP action completes.
-// Uses TWeakObjectPtr so that RemoveFromRoot on an already-destroyed action
-// is safely skipped. Verification runs before unrooting to maximize the
-// window for the action's async work to finish.
-static void VerifyAfterDelay(UBlueprintAsyncActionBase* Action, TFunction<void()> VerifyFunc)
+// Helper: poll until the BP action's async work completes, then run verification.
+// Actions self-root in Activate() and self-unroot when done, so IsRooted()==false
+// signals completion. Polls every tick (~0s delay) for minimal latency.
+static void VerifyWhenComplete(UBlueprintAsyncActionBase* Action, TFunction<void()> VerifyFunc)
 {
 	TWeakObjectPtr<UBlueprintAsyncActionBase> WeakAction(Action);
 
 	FTSTicker::GetCoreTicker().AddTicker(
 		FTickerDelegate::CreateLambda([WeakAction, VerifyFunc = MoveTemp(VerifyFunc)](float) -> bool
 		{
-			VerifyFunc();
-			if (WeakAction.IsValid())
+			if (WeakAction.IsValid() && WeakAction->IsRooted())
 			{
-				WeakAction->RemoveFromRoot();
+				return true; // keep ticking
 			}
+			VerifyFunc();
 			return false;
 		}),
-		BP_VERIFY_DELAY
+		0.0f
 	);
 }
 
@@ -96,10 +88,9 @@ void FNakamaBPHealthcheckSpec::Define()
 		LatentIt("should pass healthcheck", [this](const FDoneDelegate& Done)
 		{
 			auto* Action = UNakamaClientHealthcheck::Healthcheck(nullptr, Client, *Session);
-			Action->AddToRoot();
 			Action->Activate();
 
-			VerifyAfterDelay(Action, [this, Done]()
+			VerifyWhenComplete(Action, [this, Done]()
 			{
 				NakamaApi::Healthcheck(Client, Session,
 					[Done]() { Done.Execute(); },
@@ -152,11 +143,10 @@ void FNakamaBPAuthSpec::Define()
 
 			auto* Action = UNakamaClientAuthenticateCustom::AuthenticateCustom(
 				nullptr, Client, Account, true, TEXT(""));
-			Action->AddToRoot();
 			Action->Activate();
 
 			// Verify: re-auth with create=false should succeed (account was created)
-			VerifyAfterDelay(Action, [this, Done, Account]()
+			VerifyWhenComplete(Action, [this, Done, Account]()
 			{
 				NakamaApi::AuthenticateCustom(Client, Account, false, TEXT(""),
 					[this, Done](const FNakamaSession& Result)
@@ -184,11 +174,10 @@ void FNakamaBPAuthSpec::Define()
 
 			auto* Action = UNakamaClientAuthenticateEmail::AuthenticateEmail(
 				nullptr, Client, Account, true, TEXT(""));
-			Action->AddToRoot();
 			Action->Activate();
 
 			// Verify: re-auth with create=false should succeed
-			VerifyAfterDelay(Action, [this, Done, Account]()
+			VerifyWhenComplete(Action, [this, Done, Account]()
 			{
 				NakamaApi::AuthenticateEmail(Client, Account, false, TEXT(""),
 					[this, Done](const FNakamaSession& Result)
@@ -215,11 +204,10 @@ void FNakamaBPAuthSpec::Define()
 
 			auto* Action = UNakamaClientAuthenticateDevice::AuthenticateDevice(
 				nullptr, Client, Account, true, TEXT(""));
-			Action->AddToRoot();
 			Action->Activate();
 
 			// Verify: re-auth with create=false should succeed
-			VerifyAfterDelay(Action, [this, Done, Account]()
+			VerifyWhenComplete(Action, [this, Done, Account]()
 			{
 				NakamaApi::AuthenticateDevice(Client, Account, false, TEXT(""),
 					[this, Done](const FNakamaSession& Result)
@@ -292,11 +280,10 @@ void FNakamaBPSessionSpec::Define()
 		{
 			auto* Action = UNakamaClientSessionRefresh::SessionRefresh(
 				nullptr, Client, Session->RefreshToken, TMap<FString, FString>());
-			Action->AddToRoot();
 			Action->Activate();
 
 			// Verify: original session token still works for API call
-			VerifyAfterDelay(Action, [this, Done]()
+			VerifyWhenComplete(Action, [this, Done]()
 			{
 				NakamaApi::GetAccount(Client, Session,
 					[this, Done](const FNakamaAccount& Result)
@@ -320,11 +307,10 @@ void FNakamaBPSessionSpec::Define()
 		{
 			auto* Action = UNakamaClientSessionLogout::SessionLogout(
 				nullptr, Client, *Session, Session->Token, Session->RefreshToken);
-			Action->AddToRoot();
 			Action->Activate();
 
 			// Verify: action completed without crash; server is still responsive
-			VerifyAfterDelay(Action, [this, Done]()
+			VerifyWhenComplete(Action, [this, Done]()
 			{
 				NakamaApi::Healthcheck(Client, Session,
 					[Done]() { Done.Execute(); },
@@ -404,11 +390,10 @@ void FNakamaBPAccountSpec::Define()
 		LatentIt("should get account", [this](const FDoneDelegate& Done)
 		{
 			auto* Action = UNakamaClientGetAccount::GetAccount(nullptr, Client, *Session);
-			Action->AddToRoot();
 			Action->Activate();
 
 			// Verify via C++ GetAccount
-			VerifyAfterDelay(Action, [this, Done]()
+			VerifyWhenComplete(Action, [this, Done]()
 			{
 				NakamaApi::GetAccount(Client, Session,
 					[this, Done](const FNakamaAccount& Result)
@@ -435,11 +420,10 @@ void FNakamaBPAccountSpec::Define()
 			auto* Action = UNakamaClientUpdateAccount::UpdateAccount(
 				nullptr, Client, *Session,
 				TEXT(""), NewDisplayName, TEXT(""), TEXT(""), TEXT(""), TEXT(""));
-			Action->AddToRoot();
 			Action->Activate();
 
 			// Verify via C++ GetAccount
-			VerifyAfterDelay(Action, [this, Done, NewDisplayName]()
+			VerifyWhenComplete(Action, [this, Done, NewDisplayName]()
 			{
 				NakamaApi::GetAccount(Client, Session,
 					[this, Done, NewDisplayName](const FNakamaAccount& Result)
@@ -467,11 +451,10 @@ void FNakamaBPAccountSpec::Define()
 
 			auto* Action = UNakamaClientGetUsers::GetUsers(
 				nullptr, Client, *Session, Ids, Usernames, FacebookIds);
-			Action->AddToRoot();
 			Action->Activate();
 
 			// Verify via C++ GetUsers
-			VerifyAfterDelay(Action, [this, Done]()
+			VerifyWhenComplete(Action, [this, Done]()
 			{
 				NakamaApi::GetUsers(Client, Session, { UserId }, {}, {},
 					[this, Done](const FNakamaUsers& Result)
@@ -595,11 +578,10 @@ void FNakamaBPFriendsSpec::Define()
 
 			auto* Action = UNakamaClientAddFriends::AddFriends(
 				nullptr, Client, *Session, Ids, Usernames, TEXT(""));
-			Action->AddToRoot();
 			Action->Activate();
 
 			// Verify via C++ ListFriends
-			VerifyAfterDelay(Action, [this, Done]()
+			VerifyWhenComplete(Action, [this, Done]()
 			{
 				NakamaApi::ListFriends(Client, Session, 10, 0, TEXT(""),
 					[this, Done](const FNakamaFriendList& Result)
@@ -628,11 +610,10 @@ void FNakamaBPFriendsSpec::Define()
 					// Fire BP ListFriends
 					auto* Action = UNakamaClientListFriends::ListFriends(
 						nullptr, Client, *Session, 10, 0, TEXT(""));
-					Action->AddToRoot();
 					Action->Activate();
 
 					// Verify via C++
-					VerifyAfterDelay(Action, [this, Done]()
+					VerifyWhenComplete(Action, [this, Done]()
 					{
 						NakamaApi::ListFriends(Client, Session, 10, 0, TEXT(""),
 							[this, Done](const FNakamaFriendList& Result)
@@ -666,11 +647,10 @@ void FNakamaBPFriendsSpec::Define()
 
 			auto* Action = UNakamaClientBlockFriends::BlockFriends(
 				nullptr, Client, *Session, Ids, Usernames);
-			Action->AddToRoot();
 			Action->Activate();
 
 			// Verify: blocked friend appears in friend list with state=3 (blocked)
-			VerifyAfterDelay(Action, [this, Done]()
+			VerifyWhenComplete(Action, [this, Done]()
 			{
 				NakamaApi::ListFriends(Client, Session, 10, 3, TEXT(""),
 					[this, Done](const FNakamaFriendList& Result)
@@ -702,11 +682,10 @@ void FNakamaBPFriendsSpec::Define()
 
 					auto* Action = UNakamaClientDeleteFriends::DeleteFriends(
 						nullptr, Client, *Session, Ids, Usernames);
-					Action->AddToRoot();
 					Action->Activate();
 
 					// Verify: friend list is now empty
-					VerifyAfterDelay(Action, [this, Done]()
+					VerifyWhenComplete(Action, [this, Done]()
 					{
 						NakamaApi::ListFriends(Client, Session, 10, 0, TEXT(""),
 							[this, Done](const FNakamaFriendList& Result)
@@ -850,11 +829,10 @@ void FNakamaBPGroupsSpec::Define()
 			auto* Action = UNakamaClientCreateGroup::CreateGroup(
 				nullptr, Client, *Session,
 				NewGroupName, TEXT("Test group"), TEXT("en"), TEXT(""), true, 100);
-			Action->AddToRoot();
 			Action->Activate();
 
 			// Verify via C++ ListGroups (open=true to match our created group)
-			VerifyAfterDelay(Action, [this, Done, NewGroupName]()
+			VerifyWhenComplete(Action, [this, Done, NewGroupName]()
 			{
 				NakamaApi::ListGroups(Client, Session,
 					TEXT(""), TEXT(""), 100, TEXT(""), 0, true,
@@ -891,11 +869,10 @@ void FNakamaBPGroupsSpec::Define()
 			auto* Action = UNakamaClientUpdateGroup::UpdateGroup(
 				nullptr, Client, *Session,
 				GroupId, GroupName, NewDesc, TEXT("en"), TEXT(""), true);
-			Action->AddToRoot();
 			Action->Activate();
 
 			// Verify: group still exists and is accessible
-			VerifyAfterDelay(Action, [this, Done]()
+			VerifyWhenComplete(Action, [this, Done]()
 			{
 				NakamaApi::ListGroupUsers(Client, Session, GroupId, 10, 0, TEXT(""),
 					[this, Done](const FNakamaGroupUserList& Result)
@@ -919,11 +896,10 @@ void FNakamaBPGroupsSpec::Define()
 		{
 			auto* Action = UNakamaClientDeleteGroup::DeleteGroup(
 				nullptr, Client, *Session, GroupId);
-			Action->AddToRoot();
 			Action->Activate();
 
 			// Verify: group no longer in user's groups
-			VerifyAfterDelay(Action, [this, Done]()
+			VerifyWhenComplete(Action, [this, Done]()
 			{
 				NakamaApi::ListUserGroups(Client, Session, UserId, 100, 0, TEXT(""),
 					[this, Done](const FNakamaUserGroupList& Result)
@@ -957,11 +933,10 @@ void FNakamaBPGroupsSpec::Define()
 			auto* Action = UNakamaClientListGroups::ListGroups(
 				nullptr, Client, *Session,
 				TEXT(""), TEXT(""), 100, TEXT(""), 0, true);
-			Action->AddToRoot();
 			Action->Activate();
 
 			// Verify via C++ ListGroups
-			VerifyAfterDelay(Action, [this, Done]()
+			VerifyWhenComplete(Action, [this, Done]()
 			{
 				NakamaApi::ListGroups(Client, Session, TEXT(""), TEXT(""), 100, TEXT(""), 0, true,
 					[this, Done](const FNakamaGroupList& Result)
@@ -986,11 +961,10 @@ void FNakamaBPGroupsSpec::Define()
 			// User2 fires BP JoinGroup on user1's open group
 			auto* Action = UNakamaClientJoinGroup::JoinGroup(
 				nullptr, Client, *Session2, GroupId);
-			Action->AddToRoot();
 			Action->Activate();
 
 			// Verify via C++ ListGroupUsers
-			VerifyAfterDelay(Action, [this, Done]()
+			VerifyWhenComplete(Action, [this, Done]()
 			{
 				NakamaApi::ListGroupUsers(Client, Session, GroupId, 10, 0, TEXT(""),
 					[this, Done](const FNakamaGroupUserList& Result)
@@ -1016,11 +990,10 @@ void FNakamaBPGroupsSpec::Define()
 
 			auto* Action = UNakamaClientAddGroupUsers::AddGroupUsers(
 				nullptr, Client, *Session, GroupId, UserIds);
-			Action->AddToRoot();
 			Action->Activate();
 
 			// Verify via C++ ListGroupUsers
-			VerifyAfterDelay(Action, [this, Done]()
+			VerifyWhenComplete(Action, [this, Done]()
 			{
 				NakamaApi::ListGroupUsers(Client, Session, GroupId, 10, 0, TEXT(""),
 					[this, Done](const FNakamaGroupUserList& Result)
@@ -1051,11 +1024,10 @@ void FNakamaBPGroupsSpec::Define()
 
 					auto* Action = UNakamaClientKickGroupUsers::KickGroupUsers(
 						nullptr, Client, *Session, GroupId, UserIds);
-					Action->AddToRoot();
 					Action->Activate();
 
 					// Verify user2 is no longer in group
-					VerifyAfterDelay(Action, [this, Done]()
+					VerifyWhenComplete(Action, [this, Done]()
 					{
 						NakamaApi::ListGroupUsers(Client, Session, GroupId, 10, 0, TEXT(""),
 							[this, Done](const FNakamaGroupUserList& Result)
@@ -1102,11 +1074,10 @@ void FNakamaBPGroupsSpec::Define()
 
 					auto* Action = UNakamaClientPromoteGroupUsers::PromoteGroupUsers(
 						nullptr, Client, *Session, GroupId, UserIds);
-					Action->AddToRoot();
 					Action->Activate();
 
 					// Verify: user2 is still in group (promotion doesn't remove)
-					VerifyAfterDelay(Action, [this, Done]()
+					VerifyWhenComplete(Action, [this, Done]()
 					{
 						NakamaApi::ListGroupUsers(Client, Session, GroupId, 10, 0, TEXT(""),
 							[this, Done](const FNakamaGroupUserList& Result)
@@ -1151,11 +1122,10 @@ void FNakamaBPGroupsSpec::Define()
 					// Fire BP LeaveGroup as user2
 					auto* Action = UNakamaClientLeaveGroup::LeaveGroup(
 						nullptr, Client, *Session2, GroupId);
-					Action->AddToRoot();
 					Action->Activate();
 
 					// Verify user2 no longer in group
-					VerifyAfterDelay(Action, [this, Done]()
+					VerifyWhenComplete(Action, [this, Done]()
 					{
 						NakamaApi::ListGroupUsers(Client, Session, GroupId, 10, 0, TEXT(""),
 							[this, Done](const FNakamaGroupUserList& Result)
@@ -1195,11 +1165,10 @@ void FNakamaBPGroupsSpec::Define()
 		{
 			auto* Action = UNakamaClientListGroupUsers::ListGroupUsers(
 				nullptr, Client, *Session, GroupId, 10, 0, TEXT(""));
-			Action->AddToRoot();
 			Action->Activate();
 
 			// Verify via C++
-			VerifyAfterDelay(Action, [this, Done]()
+			VerifyWhenComplete(Action, [this, Done]()
 			{
 				NakamaApi::ListGroupUsers(Client, Session, GroupId, 10, 0, TEXT(""),
 					[this, Done](const FNakamaGroupUserList& Result)
@@ -1223,11 +1192,10 @@ void FNakamaBPGroupsSpec::Define()
 		{
 			auto* Action = UNakamaClientListUserGroups::ListUserGroups(
 				nullptr, Client, *Session, UserId, 10, 0, TEXT(""));
-			Action->AddToRoot();
 			Action->Activate();
 
 			// Verify via C++
-			VerifyAfterDelay(Action, [this, Done]()
+			VerifyWhenComplete(Action, [this, Done]()
 			{
 				NakamaApi::ListUserGroups(Client, Session, UserId, 10, 0, TEXT(""),
 					[this, Done](const FNakamaUserGroupList& Result)
@@ -1323,11 +1291,10 @@ void FNakamaBPStorageSpec::Define()
 
 			auto* Action = UNakamaClientWriteStorageObjects::WriteStorageObjects(
 				nullptr, Client, *Session, Objects);
-			Action->AddToRoot();
 			Action->Activate();
 
 			// Verify via C++ ReadStorageObjects
-			VerifyAfterDelay(Action, [this, Done, Key]()
+			VerifyWhenComplete(Action, [this, Done, Key]()
 			{
 				FNakamaReadStorageObjectId ReadId;
 				ReadId.Collection = TEXT("bp_test");
@@ -1368,11 +1335,10 @@ void FNakamaBPStorageSpec::Define()
 
 			auto* Action = UNakamaClientWriteStorageObjects::WriteStorageObjects(
 				nullptr, Client, *Session, Objects);
-			Action->AddToRoot();
 			Action->Activate();
 
 			// Verify via C++ ReadStorageObjects
-			VerifyAfterDelay(Action, [this, Done, Key]()
+			VerifyWhenComplete(Action, [this, Done, Key]()
 			{
 				FNakamaReadStorageObjectId ReadId;
 				ReadId.Collection = TEXT("bp_test");
@@ -1425,11 +1391,10 @@ void FNakamaBPStorageSpec::Define()
 
 					auto* Action = UNakamaClientReadStorageObjects::ReadStorageObjects(
 						nullptr, Client, *Session, { ReadId });
-					Action->AddToRoot();
 					Action->Activate();
 
 					// Verify via C++ that object exists
-					VerifyAfterDelay(Action, [this, Done, Key]()
+					VerifyWhenComplete(Action, [this, Done, Key]()
 					{
 						FNakamaReadStorageObjectId VerifyId;
 						VerifyId.Collection = TEXT("bp_test");
@@ -1477,11 +1442,10 @@ void FNakamaBPStorageSpec::Define()
 					// Fire BP ListStorageObjects
 					auto* Action = UNakamaClientListStorageObjects::ListStorageObjects(
 						nullptr, Client, *Session, UserId, TEXT("bp_list_test"), 10, TEXT(""));
-					Action->AddToRoot();
 					Action->Activate();
 
 					// Verify via C++
-					VerifyAfterDelay(Action, [this, Done]()
+					VerifyWhenComplete(Action, [this, Done]()
 					{
 						NakamaApi::ListStorageObjects(Client, Session, UserId, TEXT("bp_list_test"), 10, TEXT(""),
 							[this, Done](const FNakamaStorageObjectList& Result)
@@ -1531,11 +1495,10 @@ void FNakamaBPStorageSpec::Define()
 
 					auto* Action = UNakamaClientDeleteStorageObjects::DeleteStorageObjects(
 						nullptr, Client, *Session, { DelId });
-					Action->AddToRoot();
 					Action->Activate();
 
 					// Verify: object is gone
-					VerifyAfterDelay(Action, [this, Done, Key]()
+					VerifyWhenComplete(Action, [this, Done, Key]()
 					{
 						FNakamaReadStorageObjectId ReadId;
 						ReadId.Collection = TEXT("bp_del_test");
@@ -1623,11 +1586,10 @@ void FNakamaBPLinkSpec::Define()
 
 			auto* Action = UNakamaClientLinkCustom::LinkCustom(
 				nullptr, Client, *Session, NewId, TMap<FString, FString>());
-			Action->AddToRoot();
 			Action->Activate();
 
 			// Verify: can authenticate with the linked ID
-			VerifyAfterDelay(Action, [this, Done, NewId]()
+			VerifyWhenComplete(Action, [this, Done, NewId]()
 			{
 				FNakamaAccountCustom LinkedAccount;
 				LinkedAccount.Id = NewId;
@@ -1666,11 +1628,10 @@ void FNakamaBPLinkSpec::Define()
 							// Fire BP UnlinkCustom
 							auto* Action = UNakamaClientUnlinkCustom::UnlinkCustom(
 								nullptr, Client, *Session, ExtraId, TMap<FString, FString>());
-							Action->AddToRoot();
 							Action->Activate();
 
 							// Verify: can no longer auth with the unlinked ID
-							VerifyAfterDelay(Action, [this, Done, ExtraId]()
+							VerifyWhenComplete(Action, [this, Done, ExtraId]()
 							{
 								FNakamaAccountCustom UnlinkedAccount;
 								UnlinkedAccount.Id = ExtraId;
@@ -1714,11 +1675,10 @@ void FNakamaBPLinkSpec::Define()
 
 			auto* Action = UNakamaClientLinkDevice::LinkDevice(
 				nullptr, Client, *Session, DeviceId, TMap<FString, FString>());
-			Action->AddToRoot();
 			Action->Activate();
 
 			// Verify: can authenticate with the linked device ID
-			VerifyAfterDelay(Action, [this, Done, DeviceId]()
+			VerifyWhenComplete(Action, [this, Done, DeviceId]()
 			{
 				FNakamaAccountDevice LinkedDevice;
 				LinkedDevice.Id = DeviceId;
@@ -1752,11 +1712,10 @@ void FNakamaBPLinkSpec::Define()
 					// Fire BP UnlinkDevice
 					auto* Action = UNakamaClientUnlinkDevice::UnlinkDevice(
 						nullptr, Client, *Session, DeviceId, TMap<FString, FString>());
-					Action->AddToRoot();
 					Action->Activate();
 
 					// Verify: can no longer auth with the unlinked device
-					VerifyAfterDelay(Action, [this, Done, DeviceId]()
+					VerifyWhenComplete(Action, [this, Done, DeviceId]()
 					{
 						FNakamaAccountDevice UnlinkedDevice;
 						UnlinkedDevice.Id = DeviceId;
@@ -1793,11 +1752,10 @@ void FNakamaBPLinkSpec::Define()
 
 			auto* Action = UNakamaClientLinkEmail::LinkEmail(
 				nullptr, Client, *Session, Email, Password, TMap<FString, FString>());
-			Action->AddToRoot();
 			Action->Activate();
 
 			// Verify: can authenticate with the linked email
-			VerifyAfterDelay(Action, [this, Done, Email, Password]()
+			VerifyWhenComplete(Action, [this, Done, Email, Password]()
 			{
 				FNakamaAccountEmail LinkedEmail;
 				LinkedEmail.Email = Email;
@@ -1833,11 +1791,10 @@ void FNakamaBPLinkSpec::Define()
 					// Fire BP UnlinkEmail
 					auto* Action = UNakamaClientUnlinkEmail::UnlinkEmail(
 						nullptr, Client, *Session, Email, Password, TMap<FString, FString>());
-					Action->AddToRoot();
 					Action->Activate();
 
 					// Verify: can no longer auth with the unlinked email
-					VerifyAfterDelay(Action, [this, Done, Email, Password]()
+					VerifyWhenComplete(Action, [this, Done, Email, Password]()
 					{
 						FNakamaAccountEmail UnlinkedEmail;
 						UnlinkedEmail.Email = Email;
@@ -1921,11 +1878,10 @@ void FNakamaBPNotificationsSpec::Define()
 		{
 			auto* Action = UNakamaClientListNotifications::ListNotifications(
 				nullptr, Client, *Session, 100, TEXT(""));
-			Action->AddToRoot();
 			Action->Activate();
 
 			// Verify via C++
-			VerifyAfterDelay(Action, [this, Done]()
+			VerifyWhenComplete(Action, [this, Done]()
 			{
 				NakamaApi::ListNotifications(Client, Session, 100, TEXT(""),
 					[this, Done](const FNakamaNotificationList& Result)
@@ -1999,11 +1955,10 @@ void FNakamaBPMatchesSpec::Define()
 		{
 			auto* Action = UNakamaClientListMatches::ListMatches(
 				nullptr, Client, *Session, 10, false, TEXT(""), 0, 100, TEXT(""));
-			Action->AddToRoot();
 			Action->Activate();
 
 			// Verify via C++
-			VerifyAfterDelay(Action, [this, Done]()
+			VerifyWhenComplete(Action, [this, Done]()
 			{
 				NakamaApi::ListMatches(Client, Session, 10, false, TEXT(""), 0, 100, TEXT(""),
 					[this, Done](const FNakamaMatchList& Result)
@@ -2079,11 +2034,10 @@ void FNakamaBPEventsSpec::Define()
 
 			auto* Action = UNakamaClientEvent::Event(
 				nullptr, Client, *Session, TEXT("bp_test_event"), TEXT(""), false, Properties);
-			Action->AddToRoot();
 			Action->Activate();
 
 			// Verify: server is still healthy after event
-			VerifyAfterDelay(Action, [this, Done]()
+			VerifyWhenComplete(Action, [this, Done]()
 			{
 				NakamaApi::Healthcheck(Client, Session,
 					[Done]() { Done.Execute(); },
