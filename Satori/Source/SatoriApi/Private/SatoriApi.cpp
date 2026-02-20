@@ -1857,8 +1857,7 @@ void SendRequest(
 	const FString& Method,
 	const FString& BodyString,
 	ESatoriRequestAuth AuthType,
-	FSatoriSessionPtr Session,
-	const FString& AuthValue,
+	const FString& BearerToken,
 	TFunction<void(TSharedPtr<FJsonObject>)> OnSuccess,
 	TFunction<void(const FSatoriError&)> OnError,
 	FSatoriCancellationTokenPtr CancellationToken) noexcept
@@ -1873,18 +1872,7 @@ void SendRequest(
 		return;
 	}
 
-	// Determine token string
-	FString TokenString;
-	if (AuthType == ESatoriRequestAuth::Bearer && Session.IsValid())
-	{
-		TokenString = Session->Token;
-	}
-	else
-	{
-		TokenString = AuthValue;
-	}
-
-	DoHttpRequest(Config, Endpoint, Method, BodyString, AuthType, TokenString, OnSuccess, OnError, CancellationToken);
+	DoHttpRequest(Config, Endpoint, Method, BodyString, AuthType, BearerToken, OnSuccess, OnError, CancellationToken);
 }
 FString SerializeJsonToString(const TSharedPtr<FJsonObject>& Json)
 {
@@ -1920,8 +1908,7 @@ void MakeRequest(
 	const FString& Method,
 	const TSharedPtr<FJsonObject>& Body,
 	ESatoriRequestAuth AuthType,
-	FSatoriSessionPtr Session,
-	const FString& AuthValue,
+	const FString& BearerToken,
 	TFunction<void(TSharedPtr<FJsonObject>)> OnSuccess,
 	TFunction<void(const FSatoriError&)> OnError,
 	FSatoriCancellationTokenPtr CancellationToken) noexcept
@@ -1932,7 +1919,7 @@ void MakeRequest(
 		SCOPE_CYCLE_COUNTER(STAT_Satori_JsonSerialize);
 		BodyString = SerializeJsonToString(Body);
 	}
-	SendRequest(Config, Endpoint, Method, BodyString, AuthType, Session, AuthValue, OnSuccess, OnError, CancellationToken);
+	SendRequest(Config, Endpoint, Method, BodyString, AuthType, BearerToken, OnSuccess, OnError, CancellationToken);
 }
 
 } // anonymous namespace
@@ -1980,7 +1967,7 @@ void SatoriApi::Authenticate(
 		Body->SetObjectField(TEXT("custom"), MapObj);
 	}
 
-	MakeRequest(Config, Endpoint, TEXT("POST"), Body, AuthType, nullptr, TEXT(""),
+	MakeRequest(Config, Endpoint, TEXT("POST"), Body, AuthType, TEXT(""),
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			FSatoriSession Result = FSatoriSession::FromJson(Json);
@@ -2018,7 +2005,7 @@ void SatoriApi::AuthenticateLogout(
 		Body->SetStringField(TEXT("refresh_token"), RefreshToken);
 	}
 
-	MakeRequest(Config, Endpoint, TEXT("POST"), Body, AuthType, nullptr, Token,
+	MakeRequest(Config, Endpoint, TEXT("POST"), Body, AuthType, Token,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			if (OnSuccess)
@@ -2050,7 +2037,7 @@ void SatoriApi::AuthenticateRefresh(
 		Body->SetStringField(TEXT("refresh_token"), RefreshToken);
 	}
 
-	MakeRequest(Config, Endpoint, TEXT("POST"), Body, AuthType, nullptr, TEXT(""),
+	MakeRequest(Config, Endpoint, TEXT("POST"), Body, AuthType, TEXT(""),
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			FSatoriSession Result = FSatoriSession::FromJson(Json);
@@ -2064,7 +2051,7 @@ void SatoriApi::AuthenticateRefresh(
 
 void SatoriApi::DeleteIdentity(
 	const FSatoriApiConfig& Config,
-	FSatoriSessionPtr Session,
+	const FSatoriSession& Session,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FSatoriError&)> OnError,
 	FSatoriCancellationTokenPtr CancellationToken) noexcept
@@ -2073,7 +2060,7 @@ void SatoriApi::DeleteIdentity(
 
 	ESatoriRequestAuth AuthType = ESatoriRequestAuth::Bearer;TSharedPtr<FJsonObject> Body;
 
-	MakeRequest(Config, Endpoint, TEXT("DELETE"), Body, AuthType, Session, TEXT(""),
+	MakeRequest(Config, Endpoint, TEXT("DELETE"), Body, AuthType, Session.Token,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			if (OnSuccess)
@@ -2086,7 +2073,7 @@ void SatoriApi::DeleteIdentity(
 
 void SatoriApi::Event(
 	const FSatoriApiConfig& Config,
-	FSatoriSessionPtr Session,
+	const FSatoriSession& Session,
 	const TArray<FSatoriEvent>& Events,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FSatoriError&)> OnError,
@@ -2111,7 +2098,7 @@ void SatoriApi::Event(
 		Body->SetArrayField(TEXT("events"), Array);
 	}
 
-	MakeRequest(Config, Endpoint, TEXT("POST"), Body, AuthType, Session, TEXT(""),
+	MakeRequest(Config, Endpoint, TEXT("POST"), Body, AuthType, Session.Token,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			if (OnSuccess)
@@ -2124,7 +2111,7 @@ void SatoriApi::Event(
 
 void SatoriApi::ServerEvent(
 	const FSatoriApiConfig& Config,
-	FSatoriSessionPtr Session,
+	const FSatoriSession& Session,
 	const TArray<FSatoriEvent>& Events,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FSatoriError&)> OnError,
@@ -2149,7 +2136,7 @@ void SatoriApi::ServerEvent(
 		Body->SetArrayField(TEXT("events"), Array);
 	}
 
-	MakeRequest(Config, Endpoint, TEXT("POST"), Body, AuthType, Session, TEXT(""),
+	MakeRequest(Config, Endpoint, TEXT("POST"), Body, AuthType, Session.Token,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			if (OnSuccess)
@@ -2162,7 +2149,7 @@ void SatoriApi::ServerEvent(
 
 void SatoriApi::GetExperiments(
 	const FSatoriApiConfig& Config,
-	FSatoriSessionPtr Session,
+	const FSatoriSession& Session,
 	const TArray<FString>& Names,
 	const TArray<FString>& Labels,
 	TFunction<void(const FSatoriExperimentList&)> OnSuccess,
@@ -2186,7 +2173,7 @@ void SatoriApi::GetExperiments(
 
 	ESatoriRequestAuth AuthType = ESatoriRequestAuth::Bearer;TSharedPtr<FJsonObject> Body;
 
-	MakeRequest(Config, Endpoint, TEXT("GET"), Body, AuthType, Session, TEXT(""),
+	MakeRequest(Config, Endpoint, TEXT("GET"), Body, AuthType, Session.Token,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			FSatoriExperimentList Result = FSatoriExperimentList::FromJson(Json);
@@ -2200,7 +2187,7 @@ void SatoriApi::GetExperiments(
 
 void SatoriApi::GetFlagOverrides(
 	const FSatoriApiConfig& Config,
-	FSatoriSessionPtr Session,
+	const FSatoriSession& Session,
 	const TArray<FString>& Names,
 	const TArray<FString>& Labels,
 	TFunction<void(const FSatoriFlagOverrideList&)> OnSuccess,
@@ -2224,7 +2211,7 @@ void SatoriApi::GetFlagOverrides(
 
 	ESatoriRequestAuth AuthType = ESatoriRequestAuth::Bearer;TSharedPtr<FJsonObject> Body;
 
-	MakeRequest(Config, Endpoint, TEXT("GET"), Body, AuthType, Session, TEXT(""),
+	MakeRequest(Config, Endpoint, TEXT("GET"), Body, AuthType, Session.Token,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			FSatoriFlagOverrideList Result = FSatoriFlagOverrideList::FromJson(Json);
@@ -2238,7 +2225,7 @@ void SatoriApi::GetFlagOverrides(
 
 void SatoriApi::GetFlags(
 	const FSatoriApiConfig& Config,
-	FSatoriSessionPtr Session,
+	const FSatoriSession& Session,
 	const TArray<FString>& Names,
 	const TArray<FString>& Labels,
 	TFunction<void(const FSatoriFlagList&)> OnSuccess,
@@ -2262,7 +2249,7 @@ void SatoriApi::GetFlags(
 
 	ESatoriRequestAuth AuthType = ESatoriRequestAuth::Bearer;TSharedPtr<FJsonObject> Body;
 
-	MakeRequest(Config, Endpoint, TEXT("GET"), Body, AuthType, Session, TEXT(""),
+	MakeRequest(Config, Endpoint, TEXT("GET"), Body, AuthType, Session.Token,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			FSatoriFlagList Result = FSatoriFlagList::FromJson(Json);
@@ -2276,7 +2263,7 @@ void SatoriApi::GetFlags(
 
 void SatoriApi::GetLiveEvents(
 	const FSatoriApiConfig& Config,
-	FSatoriSessionPtr Session,
+	const FSatoriSession& Session,
 	const TArray<FString>& Names,
 	const TArray<FString>& Labels,
 	int32 PastRunCount,
@@ -2320,7 +2307,7 @@ void SatoriApi::GetLiveEvents(
 
 	ESatoriRequestAuth AuthType = ESatoriRequestAuth::Bearer;TSharedPtr<FJsonObject> Body;
 
-	MakeRequest(Config, Endpoint, TEXT("GET"), Body, AuthType, Session, TEXT(""),
+	MakeRequest(Config, Endpoint, TEXT("GET"), Body, AuthType, Session.Token,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			FSatoriLiveEventList Result = FSatoriLiveEventList::FromJson(Json);
@@ -2334,7 +2321,7 @@ void SatoriApi::GetLiveEvents(
 
 void SatoriApi::JoinLiveEvent(
 	const FSatoriApiConfig& Config,
-	FSatoriSessionPtr Session,
+	const FSatoriSession& Session,
 	FString Id,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FSatoriError&)> OnError,
@@ -2350,7 +2337,7 @@ void SatoriApi::JoinLiveEvent(
 
 	ESatoriRequestAuth AuthType = ESatoriRequestAuth::Bearer;TSharedPtr<FJsonObject> Body;
 
-	MakeRequest(Config, Endpoint, TEXT("POST"), Body, AuthType, Session, TEXT(""),
+	MakeRequest(Config, Endpoint, TEXT("POST"), Body, AuthType, Session.Token,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			if (OnSuccess)
@@ -2363,7 +2350,7 @@ void SatoriApi::JoinLiveEvent(
 
 void SatoriApi::Healthcheck(
 	const FSatoriApiConfig& Config,
-	FSatoriSessionPtr Session,
+	const FSatoriSession& Session,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FSatoriError&)> OnError,
 	FSatoriCancellationTokenPtr CancellationToken) noexcept
@@ -2372,7 +2359,7 @@ void SatoriApi::Healthcheck(
 
 	ESatoriRequestAuth AuthType = ESatoriRequestAuth::Bearer;TSharedPtr<FJsonObject> Body;
 
-	MakeRequest(Config, Endpoint, TEXT("GET"), Body, AuthType, Session, TEXT(""),
+	MakeRequest(Config, Endpoint, TEXT("GET"), Body, AuthType, Session.Token,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			if (OnSuccess)
@@ -2385,7 +2372,7 @@ void SatoriApi::Healthcheck(
 
 void SatoriApi::Identify(
 	const FSatoriApiConfig& Config,
-	FSatoriSessionPtr Session,
+	const FSatoriSession& Session,
 	FString Id,
 	const TMap<FString, FString>& Default,
 	const TMap<FString, FString>& Custom,
@@ -2425,7 +2412,7 @@ void SatoriApi::Identify(
 		Body->SetObjectField(TEXT("custom"), MapObj);
 	}
 
-	MakeRequest(Config, Endpoint, TEXT("PUT"), Body, AuthType, Session, TEXT(""),
+	MakeRequest(Config, Endpoint, TEXT("PUT"), Body, AuthType, Session.Token,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			FSatoriSession Result = FSatoriSession::FromJson(Json);
@@ -2439,7 +2426,7 @@ void SatoriApi::Identify(
 
 void SatoriApi::ListProperties(
 	const FSatoriApiConfig& Config,
-	FSatoriSessionPtr Session,
+	const FSatoriSession& Session,
 	TFunction<void(const FSatoriProperties&)> OnSuccess,
 	TFunction<void(const FSatoriError&)> OnError,
 	FSatoriCancellationTokenPtr CancellationToken) noexcept
@@ -2448,7 +2435,7 @@ void SatoriApi::ListProperties(
 
 	ESatoriRequestAuth AuthType = ESatoriRequestAuth::Bearer;TSharedPtr<FJsonObject> Body;
 
-	MakeRequest(Config, Endpoint, TEXT("GET"), Body, AuthType, Session, TEXT(""),
+	MakeRequest(Config, Endpoint, TEXT("GET"), Body, AuthType, Session.Token,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			FSatoriProperties Result = FSatoriProperties::FromJson(Json);
@@ -2462,7 +2449,7 @@ void SatoriApi::ListProperties(
 
 void SatoriApi::Readycheck(
 	const FSatoriApiConfig& Config,
-	FSatoriSessionPtr Session,
+	const FSatoriSession& Session,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FSatoriError&)> OnError,
 	FSatoriCancellationTokenPtr CancellationToken) noexcept
@@ -2471,7 +2458,7 @@ void SatoriApi::Readycheck(
 
 	ESatoriRequestAuth AuthType = ESatoriRequestAuth::Bearer;TSharedPtr<FJsonObject> Body;
 
-	MakeRequest(Config, Endpoint, TEXT("GET"), Body, AuthType, Session, TEXT(""),
+	MakeRequest(Config, Endpoint, TEXT("GET"), Body, AuthType, Session.Token,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			if (OnSuccess)
@@ -2484,7 +2471,7 @@ void SatoriApi::Readycheck(
 
 void SatoriApi::UpdateProperties(
 	const FSatoriApiConfig& Config,
-	FSatoriSessionPtr Session,
+	const FSatoriSession& Session,
 	bool Recompute,
 	const TMap<FString, FString>& Default,
 	const TMap<FString, FString>& Custom,
@@ -2521,7 +2508,7 @@ void SatoriApi::UpdateProperties(
 		Body->SetObjectField(TEXT("custom"), MapObj);
 	}
 
-	MakeRequest(Config, Endpoint, TEXT("PUT"), Body, AuthType, Session, TEXT(""),
+	MakeRequest(Config, Endpoint, TEXT("PUT"), Body, AuthType, Session.Token,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			if (OnSuccess)
@@ -2534,7 +2521,7 @@ void SatoriApi::UpdateProperties(
 
 void SatoriApi::GetMessageList(
 	const FSatoriApiConfig& Config,
-	FSatoriSessionPtr Session,
+	const FSatoriSession& Session,
 	int32 Limit,
 	bool Forward,
 	FString Cursor,
@@ -2565,7 +2552,7 @@ void SatoriApi::GetMessageList(
 
 	ESatoriRequestAuth AuthType = ESatoriRequestAuth::Bearer;TSharedPtr<FJsonObject> Body;
 
-	MakeRequest(Config, Endpoint, TEXT("GET"), Body, AuthType, Session, TEXT(""),
+	MakeRequest(Config, Endpoint, TEXT("GET"), Body, AuthType, Session.Token,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			FSatoriGetMessageListResponse Result = FSatoriGetMessageListResponse::FromJson(Json);
@@ -2579,7 +2566,7 @@ void SatoriApi::GetMessageList(
 
 void SatoriApi::UpdateMessage(
 	const FSatoriApiConfig& Config,
-	FSatoriSessionPtr Session,
+	const FSatoriSession& Session,
 	FString Id,
 	int64 ReadTime,
 	int64 ConsumeTime,
@@ -2604,7 +2591,7 @@ void SatoriApi::UpdateMessage(
 	Body->SetNumberField(TEXT("read_time"), ReadTime);
 	Body->SetNumberField(TEXT("consume_time"), ConsumeTime);
 
-	MakeRequest(Config, Endpoint, TEXT("PUT"), Body, AuthType, Session, TEXT(""),
+	MakeRequest(Config, Endpoint, TEXT("PUT"), Body, AuthType, Session.Token,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			if (OnSuccess)
@@ -2617,7 +2604,7 @@ void SatoriApi::UpdateMessage(
 
 void SatoriApi::DeleteMessage(
 	const FSatoriApiConfig& Config,
-	FSatoriSessionPtr Session,
+	const FSatoriSession& Session,
 	FString Id,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FSatoriError&)> OnError,
@@ -2633,7 +2620,7 @@ void SatoriApi::DeleteMessage(
 
 	ESatoriRequestAuth AuthType = ESatoriRequestAuth::Bearer;TSharedPtr<FJsonObject> Body;
 
-	MakeRequest(Config, Endpoint, TEXT("DELETE"), Body, AuthType, Session, TEXT(""),
+	MakeRequest(Config, Endpoint, TEXT("DELETE"), Body, AuthType, Session.Token,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			if (OnSuccess)

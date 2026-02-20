@@ -175,7 +175,7 @@ namespace Nakama
 	NAKAMA_API TNakamaFuture<{{ $resultType }}Result> {{ $rpc.Name }}(
 		FNakamaClient Client,
 		{{- if $needsSession }}
-		FNakamaSessionPtr Session,
+		const FNakamaSession& Session,
 		{{- end }}
 		{{- if $hasParams -}}
 		{{- range $fidx, $field := $requestType.Fields }}

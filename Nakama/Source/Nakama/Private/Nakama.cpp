@@ -46,21 +46,20 @@ namespace
 /** Optionally refresh the session before calling the RPC. */
 void MaybeRefreshThenCall(
 	FNakamaClient Client,
-	FNakamaSessionPtr Session,
-	TFunction<void()> OnReady,
+	FNakamaSession Session,
+	TFunction<void(const FNakamaSession&)> OnReady,
 	TFunction<void(const FNakamaError&)> OnError,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	if (!Client.bAutoRefreshSession
-		|| !Session.IsValid()
-		|| Session->RefreshToken.IsEmpty()
-		|| !Session->IsExpired(Client.AutoRefreshBufferSeconds))
+		|| Session.RefreshToken.IsEmpty()
+		|| !Session.IsExpired(Client.AutoRefreshBufferSeconds))
 	{
-		OnReady();
+		OnReady(Session);
 		return;
 	}
 
-	if (Session->IsRefreshExpired())
+	if (Session.IsRefreshExpired())
 	{
 		if (OnError)
 		{
@@ -71,16 +70,16 @@ void MaybeRefreshThenCall(
 
 	NakamaApi::SessionRefresh(
 		Client.ApiConfig,
-		Session->RefreshToken,
+		Session.RefreshToken,
 		{},
-		[Client, Session, OnReady](const FNakamaSession& RefreshedSession)
+		[Client, Session, OnReady](const FNakamaSession& RefreshedSession) mutable
 		{
-			Session->Update(RefreshedSession.Token, RefreshedSession.RefreshToken);
+			Session.Update(RefreshedSession.Token, RefreshedSession.RefreshToken);
 			if (Client.OnSessionRefreshed)
 			{
-				Client.OnSessionRefreshed(*Session);
+				Client.OnSessionRefreshed(Session);
 			}
-			OnReady();
+			OnReady(Session);
 		},
 		[OnError](const FNakamaError& Error)
 		{
@@ -95,7 +94,7 @@ void MaybeRefreshThenCall(
 } // anonymous namespace
 TNakamaFuture<FNakamaVoidResult> Nakama::AddFriends(
 	FNakamaClient Client,
-	FNakamaSessionPtr Session,
+	const FNakamaSession& Session,
 	const TArray<FString>& Ids,
 	const TArray<FString>& Usernames,
 	FString Metadata,
@@ -134,11 +133,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::AddFriends(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
+			[Client, Promise, DoRequest, OnError,
 				Ids,
 				Usernames,
 				Metadata,
-				CancellationToken]()
+				CancellationToken](const FNakamaSession& Session)
 			{
 				NakamaApi::AddFriends(
 					Client.ApiConfig,
@@ -227,7 +226,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::AddFriends(
 }
 TNakamaFuture<FNakamaVoidResult> Nakama::AddGroupUsers(
 	FNakamaClient Client,
-	FNakamaSessionPtr Session,
+	const FNakamaSession& Session,
 	FString GroupId,
 	const TArray<FString>& UserIds,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
@@ -264,10 +263,10 @@ TNakamaFuture<FNakamaVoidResult> Nakama::AddGroupUsers(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
+			[Client, Promise, DoRequest, OnError,
 				GroupId,
 				UserIds,
-				CancellationToken]()
+				CancellationToken](const FNakamaSession& Session)
 			{
 				NakamaApi::AddGroupUsers(
 					Client.ApiConfig,
@@ -407,7 +406,7 @@ TNakamaFuture<FNakamaSessionResult> Nakama::SessionRefresh(
 }
 TNakamaFuture<FNakamaVoidResult> Nakama::SessionLogout(
 	FNakamaClient Client,
-	FNakamaSessionPtr Session,
+	const FNakamaSession& Session,
 	FString Token,
 	FString RefreshToken,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
@@ -444,10 +443,10 @@ TNakamaFuture<FNakamaVoidResult> Nakama::SessionLogout(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
+			[Client, Promise, DoRequest, OnError,
 				Token,
 				RefreshToken,
-				CancellationToken]()
+				CancellationToken](const FNakamaSession& Session)
 			{
 				NakamaApi::SessionLogout(
 					Client.ApiConfig,
@@ -1060,7 +1059,7 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateSteam(
 }
 TNakamaFuture<FNakamaVoidResult> Nakama::BanGroupUsers(
 	FNakamaClient Client,
-	FNakamaSessionPtr Session,
+	const FNakamaSession& Session,
 	FString GroupId,
 	const TArray<FString>& UserIds,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
@@ -1097,10 +1096,10 @@ TNakamaFuture<FNakamaVoidResult> Nakama::BanGroupUsers(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
+			[Client, Promise, DoRequest, OnError,
 				GroupId,
 				UserIds,
-				CancellationToken]()
+				CancellationToken](const FNakamaSession& Session)
 			{
 				NakamaApi::BanGroupUsers(
 					Client.ApiConfig,
@@ -1185,7 +1184,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::BanGroupUsers(
 }
 TNakamaFuture<FNakamaVoidResult> Nakama::BlockFriends(
 	FNakamaClient Client,
-	FNakamaSessionPtr Session,
+	const FNakamaSession& Session,
 	const TArray<FString>& Ids,
 	const TArray<FString>& Usernames,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
@@ -1222,10 +1221,10 @@ TNakamaFuture<FNakamaVoidResult> Nakama::BlockFriends(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
+			[Client, Promise, DoRequest, OnError,
 				Ids,
 				Usernames,
-				CancellationToken]()
+				CancellationToken](const FNakamaSession& Session)
 			{
 				NakamaApi::BlockFriends(
 					Client.ApiConfig,
@@ -1310,7 +1309,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::BlockFriends(
 }
 TNakamaFuture<FNakamaGroupResult> Nakama::CreateGroup(
 	FNakamaClient Client,
-	FNakamaSessionPtr Session,
+	const FNakamaSession& Session,
 	FString Name,
 	FString Description,
 	FString LangTag,
@@ -1355,14 +1354,14 @@ TNakamaFuture<FNakamaGroupResult> Nakama::CreateGroup(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
+			[Client, Promise, DoRequest, OnError,
 				Name,
 				Description,
 				LangTag,
 				AvatarUrl,
 				Open,
 				MaxCount,
-				CancellationToken]()
+				CancellationToken](const FNakamaSession& Session)
 			{
 				NakamaApi::CreateGroup(
 					Client.ApiConfig,
@@ -1463,7 +1462,7 @@ TNakamaFuture<FNakamaGroupResult> Nakama::CreateGroup(
 }
 TNakamaFuture<FNakamaVoidResult> Nakama::DeleteAccount(
 	FNakamaClient Client,
-	FNakamaSessionPtr Session,
+	const FNakamaSession& Session,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
@@ -1496,8 +1495,8 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteAccount(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
-				CancellationToken]()
+			[Client, Promise, DoRequest, OnError,
+				CancellationToken](const FNakamaSession& Session)
 			{
 				NakamaApi::DeleteAccount(
 					Client.ApiConfig,
@@ -1574,7 +1573,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteAccount(
 }
 TNakamaFuture<FNakamaVoidResult> Nakama::DeleteFriends(
 	FNakamaClient Client,
-	FNakamaSessionPtr Session,
+	const FNakamaSession& Session,
 	const TArray<FString>& Ids,
 	const TArray<FString>& Usernames,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
@@ -1611,10 +1610,10 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteFriends(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
+			[Client, Promise, DoRequest, OnError,
 				Ids,
 				Usernames,
-				CancellationToken]()
+				CancellationToken](const FNakamaSession& Session)
 			{
 				NakamaApi::DeleteFriends(
 					Client.ApiConfig,
@@ -1699,7 +1698,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteFriends(
 }
 TNakamaFuture<FNakamaVoidResult> Nakama::DeleteGroup(
 	FNakamaClient Client,
-	FNakamaSessionPtr Session,
+	const FNakamaSession& Session,
 	FString GroupId,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
@@ -1734,9 +1733,9 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteGroup(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
+			[Client, Promise, DoRequest, OnError,
 				GroupId,
-				CancellationToken]()
+				CancellationToken](const FNakamaSession& Session)
 			{
 				NakamaApi::DeleteGroup(
 					Client.ApiConfig,
@@ -1817,7 +1816,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteGroup(
 }
 TNakamaFuture<FNakamaVoidResult> Nakama::DeleteLeaderboardRecord(
 	FNakamaClient Client,
-	FNakamaSessionPtr Session,
+	const FNakamaSession& Session,
 	FString LeaderboardId,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
@@ -1852,9 +1851,9 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteLeaderboardRecord(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
+			[Client, Promise, DoRequest, OnError,
 				LeaderboardId,
-				CancellationToken]()
+				CancellationToken](const FNakamaSession& Session)
 			{
 				NakamaApi::DeleteLeaderboardRecord(
 					Client.ApiConfig,
@@ -1935,7 +1934,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteLeaderboardRecord(
 }
 TNakamaFuture<FNakamaVoidResult> Nakama::DeleteNotifications(
 	FNakamaClient Client,
-	FNakamaSessionPtr Session,
+	const FNakamaSession& Session,
 	const TArray<FString>& Ids,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
@@ -1970,9 +1969,9 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteNotifications(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
+			[Client, Promise, DoRequest, OnError,
 				Ids,
-				CancellationToken]()
+				CancellationToken](const FNakamaSession& Session)
 			{
 				NakamaApi::DeleteNotifications(
 					Client.ApiConfig,
@@ -2053,7 +2052,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteNotifications(
 }
 TNakamaFuture<FNakamaVoidResult> Nakama::DeleteTournamentRecord(
 	FNakamaClient Client,
-	FNakamaSessionPtr Session,
+	const FNakamaSession& Session,
 	FString TournamentId,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
@@ -2088,9 +2087,9 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteTournamentRecord(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
+			[Client, Promise, DoRequest, OnError,
 				TournamentId,
-				CancellationToken]()
+				CancellationToken](const FNakamaSession& Session)
 			{
 				NakamaApi::DeleteTournamentRecord(
 					Client.ApiConfig,
@@ -2171,7 +2170,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteTournamentRecord(
 }
 TNakamaFuture<FNakamaVoidResult> Nakama::DeleteStorageObjects(
 	FNakamaClient Client,
-	FNakamaSessionPtr Session,
+	const FNakamaSession& Session,
 	const TArray<FNakamaDeleteStorageObjectId>& ObjectIds,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
@@ -2206,9 +2205,9 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteStorageObjects(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
+			[Client, Promise, DoRequest, OnError,
 				ObjectIds,
-				CancellationToken]()
+				CancellationToken](const FNakamaSession& Session)
 			{
 				NakamaApi::DeleteStorageObjects(
 					Client.ApiConfig,
@@ -2289,7 +2288,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteStorageObjects(
 }
 TNakamaFuture<FNakamaVoidResult> Nakama::Event(
 	FNakamaClient Client,
-	FNakamaSessionPtr Session,
+	const FNakamaSession& Session,
 	FString Name,
 	FString Timestamp,
 	bool External,
@@ -2330,12 +2329,12 @@ TNakamaFuture<FNakamaVoidResult> Nakama::Event(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
+			[Client, Promise, DoRequest, OnError,
 				Name,
 				Timestamp,
 				External,
 				Properties,
-				CancellationToken]()
+				CancellationToken](const FNakamaSession& Session)
 			{
 				NakamaApi::Event(
 					Client.ApiConfig,
@@ -2428,7 +2427,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::Event(
 }
 TNakamaFuture<FNakamaAccountResult> Nakama::GetAccount(
 	FNakamaClient Client,
-	FNakamaSessionPtr Session,
+	const FNakamaSession& Session,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	auto Promise = MakeShared<TPromise<FNakamaAccountResult>>();
@@ -2461,8 +2460,8 @@ TNakamaFuture<FNakamaAccountResult> Nakama::GetAccount(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
-				CancellationToken]()
+			[Client, Promise, DoRequest, OnError,
+				CancellationToken](const FNakamaSession& Session)
 			{
 				NakamaApi::GetAccount(
 					Client.ApiConfig,
@@ -2539,7 +2538,7 @@ TNakamaFuture<FNakamaAccountResult> Nakama::GetAccount(
 }
 TNakamaFuture<FNakamaUsersResult> Nakama::GetUsers(
 	FNakamaClient Client,
-	FNakamaSessionPtr Session,
+	const FNakamaSession& Session,
 	const TArray<FString>& Ids,
 	const TArray<FString>& Usernames,
 	const TArray<FString>& FacebookIds,
@@ -2578,11 +2577,11 @@ TNakamaFuture<FNakamaUsersResult> Nakama::GetUsers(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
+			[Client, Promise, DoRequest, OnError,
 				Ids,
 				Usernames,
 				FacebookIds,
-				CancellationToken]()
+				CancellationToken](const FNakamaSession& Session)
 			{
 				NakamaApi::GetUsers(
 					Client.ApiConfig,
@@ -2671,7 +2670,7 @@ TNakamaFuture<FNakamaUsersResult> Nakama::GetUsers(
 }
 TNakamaFuture<FNakamaValidatedSubscriptionResult> Nakama::GetSubscription(
 	FNakamaClient Client,
-	FNakamaSessionPtr Session,
+	const FNakamaSession& Session,
 	FString ProductId,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
@@ -2706,9 +2705,9 @@ TNakamaFuture<FNakamaValidatedSubscriptionResult> Nakama::GetSubscription(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
+			[Client, Promise, DoRequest, OnError,
 				ProductId,
-				CancellationToken]()
+				CancellationToken](const FNakamaSession& Session)
 			{
 				NakamaApi::GetSubscription(
 					Client.ApiConfig,
@@ -2789,7 +2788,7 @@ TNakamaFuture<FNakamaValidatedSubscriptionResult> Nakama::GetSubscription(
 }
 TNakamaFuture<FNakamaMatchmakerStatsResult> Nakama::GetMatchmakerStats(
 	FNakamaClient Client,
-	FNakamaSessionPtr Session,
+	const FNakamaSession& Session,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	auto Promise = MakeShared<TPromise<FNakamaMatchmakerStatsResult>>();
@@ -2822,8 +2821,8 @@ TNakamaFuture<FNakamaMatchmakerStatsResult> Nakama::GetMatchmakerStats(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
-				CancellationToken]()
+			[Client, Promise, DoRequest, OnError,
+				CancellationToken](const FNakamaSession& Session)
 			{
 				NakamaApi::GetMatchmakerStats(
 					Client.ApiConfig,
@@ -2900,7 +2899,7 @@ TNakamaFuture<FNakamaMatchmakerStatsResult> Nakama::GetMatchmakerStats(
 }
 TNakamaFuture<FNakamaVoidResult> Nakama::Healthcheck(
 	FNakamaClient Client,
-	FNakamaSessionPtr Session,
+	const FNakamaSession& Session,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
@@ -2933,8 +2932,8 @@ TNakamaFuture<FNakamaVoidResult> Nakama::Healthcheck(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
-				CancellationToken]()
+			[Client, Promise, DoRequest, OnError,
+				CancellationToken](const FNakamaSession& Session)
 			{
 				NakamaApi::Healthcheck(
 					Client.ApiConfig,
@@ -3011,7 +3010,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::Healthcheck(
 }
 TNakamaFuture<FNakamaVoidResult> Nakama::ImportFacebookFriends(
 	FNakamaClient Client,
-	FNakamaSessionPtr Session,
+	const FNakamaSession& Session,
 	FNakamaAccountFacebook Account,
 	bool Reset,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
@@ -3048,10 +3047,10 @@ TNakamaFuture<FNakamaVoidResult> Nakama::ImportFacebookFriends(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
+			[Client, Promise, DoRequest, OnError,
 				Account,
 				Reset,
-				CancellationToken]()
+				CancellationToken](const FNakamaSession& Session)
 			{
 				NakamaApi::ImportFacebookFriends(
 					Client.ApiConfig,
@@ -3136,7 +3135,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::ImportFacebookFriends(
 }
 TNakamaFuture<FNakamaVoidResult> Nakama::ImportSteamFriends(
 	FNakamaClient Client,
-	FNakamaSessionPtr Session,
+	const FNakamaSession& Session,
 	FNakamaAccountSteam Account,
 	bool Reset,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
@@ -3173,10 +3172,10 @@ TNakamaFuture<FNakamaVoidResult> Nakama::ImportSteamFriends(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
+			[Client, Promise, DoRequest, OnError,
 				Account,
 				Reset,
-				CancellationToken]()
+				CancellationToken](const FNakamaSession& Session)
 			{
 				NakamaApi::ImportSteamFriends(
 					Client.ApiConfig,
@@ -3261,7 +3260,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::ImportSteamFriends(
 }
 TNakamaFuture<FNakamaVoidResult> Nakama::JoinGroup(
 	FNakamaClient Client,
-	FNakamaSessionPtr Session,
+	const FNakamaSession& Session,
 	FString GroupId,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
@@ -3296,9 +3295,9 @@ TNakamaFuture<FNakamaVoidResult> Nakama::JoinGroup(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
+			[Client, Promise, DoRequest, OnError,
 				GroupId,
-				CancellationToken]()
+				CancellationToken](const FNakamaSession& Session)
 			{
 				NakamaApi::JoinGroup(
 					Client.ApiConfig,
@@ -3379,7 +3378,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::JoinGroup(
 }
 TNakamaFuture<FNakamaVoidResult> Nakama::JoinTournament(
 	FNakamaClient Client,
-	FNakamaSessionPtr Session,
+	const FNakamaSession& Session,
 	FString TournamentId,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
@@ -3414,9 +3413,9 @@ TNakamaFuture<FNakamaVoidResult> Nakama::JoinTournament(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
+			[Client, Promise, DoRequest, OnError,
 				TournamentId,
-				CancellationToken]()
+				CancellationToken](const FNakamaSession& Session)
 			{
 				NakamaApi::JoinTournament(
 					Client.ApiConfig,
@@ -3497,7 +3496,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::JoinTournament(
 }
 TNakamaFuture<FNakamaVoidResult> Nakama::KickGroupUsers(
 	FNakamaClient Client,
-	FNakamaSessionPtr Session,
+	const FNakamaSession& Session,
 	FString GroupId,
 	const TArray<FString>& UserIds,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
@@ -3534,10 +3533,10 @@ TNakamaFuture<FNakamaVoidResult> Nakama::KickGroupUsers(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
+			[Client, Promise, DoRequest, OnError,
 				GroupId,
 				UserIds,
-				CancellationToken]()
+				CancellationToken](const FNakamaSession& Session)
 			{
 				NakamaApi::KickGroupUsers(
 					Client.ApiConfig,
@@ -3622,7 +3621,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::KickGroupUsers(
 }
 TNakamaFuture<FNakamaVoidResult> Nakama::LeaveGroup(
 	FNakamaClient Client,
-	FNakamaSessionPtr Session,
+	const FNakamaSession& Session,
 	FString GroupId,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
@@ -3657,9 +3656,9 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LeaveGroup(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
+			[Client, Promise, DoRequest, OnError,
 				GroupId,
-				CancellationToken]()
+				CancellationToken](const FNakamaSession& Session)
 			{
 				NakamaApi::LeaveGroup(
 					Client.ApiConfig,
@@ -3740,7 +3739,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LeaveGroup(
 }
 TNakamaFuture<FNakamaVoidResult> Nakama::LinkApple(
 	FNakamaClient Client,
-	FNakamaSessionPtr Session,
+	const FNakamaSession& Session,
 	FString Token,
 	const TMap<FString, FString>& Vars,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
@@ -3777,10 +3776,10 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkApple(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
+			[Client, Promise, DoRequest, OnError,
 				Token,
 				Vars,
-				CancellationToken]()
+				CancellationToken](const FNakamaSession& Session)
 			{
 				NakamaApi::LinkApple(
 					Client.ApiConfig,
@@ -3865,7 +3864,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkApple(
 }
 TNakamaFuture<FNakamaVoidResult> Nakama::LinkCustom(
 	FNakamaClient Client,
-	FNakamaSessionPtr Session,
+	const FNakamaSession& Session,
 	FString Id,
 	const TMap<FString, FString>& Vars,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
@@ -3902,10 +3901,10 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkCustom(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
+			[Client, Promise, DoRequest, OnError,
 				Id,
 				Vars,
-				CancellationToken]()
+				CancellationToken](const FNakamaSession& Session)
 			{
 				NakamaApi::LinkCustom(
 					Client.ApiConfig,
@@ -3990,7 +3989,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkCustom(
 }
 TNakamaFuture<FNakamaVoidResult> Nakama::LinkDevice(
 	FNakamaClient Client,
-	FNakamaSessionPtr Session,
+	const FNakamaSession& Session,
 	FString Id,
 	const TMap<FString, FString>& Vars,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
@@ -4027,10 +4026,10 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkDevice(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
+			[Client, Promise, DoRequest, OnError,
 				Id,
 				Vars,
-				CancellationToken]()
+				CancellationToken](const FNakamaSession& Session)
 			{
 				NakamaApi::LinkDevice(
 					Client.ApiConfig,
@@ -4115,7 +4114,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkDevice(
 }
 TNakamaFuture<FNakamaVoidResult> Nakama::LinkEmail(
 	FNakamaClient Client,
-	FNakamaSessionPtr Session,
+	const FNakamaSession& Session,
 	FString Email,
 	FString Password,
 	const TMap<FString, FString>& Vars,
@@ -4154,11 +4153,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkEmail(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
+			[Client, Promise, DoRequest, OnError,
 				Email,
 				Password,
 				Vars,
-				CancellationToken]()
+				CancellationToken](const FNakamaSession& Session)
 			{
 				NakamaApi::LinkEmail(
 					Client.ApiConfig,
@@ -4247,7 +4246,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkEmail(
 }
 TNakamaFuture<FNakamaVoidResult> Nakama::LinkFacebook(
 	FNakamaClient Client,
-	FNakamaSessionPtr Session,
+	const FNakamaSession& Session,
 	FNakamaAccountFacebook Account,
 	bool Sync,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
@@ -4284,10 +4283,10 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkFacebook(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
+			[Client, Promise, DoRequest, OnError,
 				Account,
 				Sync,
-				CancellationToken]()
+				CancellationToken](const FNakamaSession& Session)
 			{
 				NakamaApi::LinkFacebook(
 					Client.ApiConfig,
@@ -4372,7 +4371,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkFacebook(
 }
 TNakamaFuture<FNakamaVoidResult> Nakama::LinkFacebookInstantGame(
 	FNakamaClient Client,
-	FNakamaSessionPtr Session,
+	const FNakamaSession& Session,
 	FString SignedPlayerInfo,
 	const TMap<FString, FString>& Vars,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
@@ -4409,10 +4408,10 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkFacebookInstantGame(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
+			[Client, Promise, DoRequest, OnError,
 				SignedPlayerInfo,
 				Vars,
-				CancellationToken]()
+				CancellationToken](const FNakamaSession& Session)
 			{
 				NakamaApi::LinkFacebookInstantGame(
 					Client.ApiConfig,
@@ -4497,7 +4496,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkFacebookInstantGame(
 }
 TNakamaFuture<FNakamaVoidResult> Nakama::LinkGameCenter(
 	FNakamaClient Client,
-	FNakamaSessionPtr Session,
+	const FNakamaSession& Session,
 	FString PlayerId,
 	FString BundleId,
 	int64 TimestampSeconds,
@@ -4544,7 +4543,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkGameCenter(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
+			[Client, Promise, DoRequest, OnError,
 				PlayerId,
 				BundleId,
 				TimestampSeconds,
@@ -4552,7 +4551,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkGameCenter(
 				Signature,
 				PublicKeyUrl,
 				Vars,
-				CancellationToken]()
+				CancellationToken](const FNakamaSession& Session)
 			{
 				NakamaApi::LinkGameCenter(
 					Client.ApiConfig,
@@ -4657,7 +4656,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkGameCenter(
 }
 TNakamaFuture<FNakamaVoidResult> Nakama::LinkGoogle(
 	FNakamaClient Client,
-	FNakamaSessionPtr Session,
+	const FNakamaSession& Session,
 	FString Token,
 	const TMap<FString, FString>& Vars,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
@@ -4694,10 +4693,10 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkGoogle(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
+			[Client, Promise, DoRequest, OnError,
 				Token,
 				Vars,
-				CancellationToken]()
+				CancellationToken](const FNakamaSession& Session)
 			{
 				NakamaApi::LinkGoogle(
 					Client.ApiConfig,
@@ -4782,7 +4781,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkGoogle(
 }
 TNakamaFuture<FNakamaVoidResult> Nakama::LinkSteam(
 	FNakamaClient Client,
-	FNakamaSessionPtr Session,
+	const FNakamaSession& Session,
 	FNakamaAccountSteam Account,
 	bool Sync,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
@@ -4819,10 +4818,10 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkSteam(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
+			[Client, Promise, DoRequest, OnError,
 				Account,
 				Sync,
-				CancellationToken]()
+				CancellationToken](const FNakamaSession& Session)
 			{
 				NakamaApi::LinkSteam(
 					Client.ApiConfig,
@@ -4907,7 +4906,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkSteam(
 }
 TNakamaFuture<FNakamaChannelMessageListResult> Nakama::ListChannelMessages(
 	FNakamaClient Client,
-	FNakamaSessionPtr Session,
+	const FNakamaSession& Session,
 	FString ChannelId,
 	int32 Limit,
 	bool Forward,
@@ -4948,12 +4947,12 @@ TNakamaFuture<FNakamaChannelMessageListResult> Nakama::ListChannelMessages(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
+			[Client, Promise, DoRequest, OnError,
 				ChannelId,
 				Limit,
 				Forward,
 				Cursor,
-				CancellationToken]()
+				CancellationToken](const FNakamaSession& Session)
 			{
 				NakamaApi::ListChannelMessages(
 					Client.ApiConfig,
@@ -5046,7 +5045,7 @@ TNakamaFuture<FNakamaChannelMessageListResult> Nakama::ListChannelMessages(
 }
 TNakamaFuture<FNakamaFriendListResult> Nakama::ListFriends(
 	FNakamaClient Client,
-	FNakamaSessionPtr Session,
+	const FNakamaSession& Session,
 	int32 Limit,
 	int32 State,
 	FString Cursor,
@@ -5085,11 +5084,11 @@ TNakamaFuture<FNakamaFriendListResult> Nakama::ListFriends(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
+			[Client, Promise, DoRequest, OnError,
 				Limit,
 				State,
 				Cursor,
-				CancellationToken]()
+				CancellationToken](const FNakamaSession& Session)
 			{
 				NakamaApi::ListFriends(
 					Client.ApiConfig,
@@ -5178,7 +5177,7 @@ TNakamaFuture<FNakamaFriendListResult> Nakama::ListFriends(
 }
 TNakamaFuture<FNakamaFriendsOfFriendsListResult> Nakama::ListFriendsOfFriends(
 	FNakamaClient Client,
-	FNakamaSessionPtr Session,
+	const FNakamaSession& Session,
 	int32 Limit,
 	FString Cursor,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
@@ -5215,10 +5214,10 @@ TNakamaFuture<FNakamaFriendsOfFriendsListResult> Nakama::ListFriendsOfFriends(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
+			[Client, Promise, DoRequest, OnError,
 				Limit,
 				Cursor,
-				CancellationToken]()
+				CancellationToken](const FNakamaSession& Session)
 			{
 				NakamaApi::ListFriendsOfFriends(
 					Client.ApiConfig,
@@ -5303,7 +5302,7 @@ TNakamaFuture<FNakamaFriendsOfFriendsListResult> Nakama::ListFriendsOfFriends(
 }
 TNakamaFuture<FNakamaGroupListResult> Nakama::ListGroups(
 	FNakamaClient Client,
-	FNakamaSessionPtr Session,
+	const FNakamaSession& Session,
 	FString Name,
 	FString Cursor,
 	int32 Limit,
@@ -5348,14 +5347,14 @@ TNakamaFuture<FNakamaGroupListResult> Nakama::ListGroups(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
+			[Client, Promise, DoRequest, OnError,
 				Name,
 				Cursor,
 				Limit,
 				LangTag,
 				Members,
 				Open,
-				CancellationToken]()
+				CancellationToken](const FNakamaSession& Session)
 			{
 				NakamaApi::ListGroups(
 					Client.ApiConfig,
@@ -5456,7 +5455,7 @@ TNakamaFuture<FNakamaGroupListResult> Nakama::ListGroups(
 }
 TNakamaFuture<FNakamaGroupUserListResult> Nakama::ListGroupUsers(
 	FNakamaClient Client,
-	FNakamaSessionPtr Session,
+	const FNakamaSession& Session,
 	FString GroupId,
 	int32 Limit,
 	int32 State,
@@ -5497,12 +5496,12 @@ TNakamaFuture<FNakamaGroupUserListResult> Nakama::ListGroupUsers(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
+			[Client, Promise, DoRequest, OnError,
 				GroupId,
 				Limit,
 				State,
 				Cursor,
-				CancellationToken]()
+				CancellationToken](const FNakamaSession& Session)
 			{
 				NakamaApi::ListGroupUsers(
 					Client.ApiConfig,
@@ -5595,7 +5594,7 @@ TNakamaFuture<FNakamaGroupUserListResult> Nakama::ListGroupUsers(
 }
 TNakamaFuture<FNakamaLeaderboardRecordListResult> Nakama::ListLeaderboardRecords(
 	FNakamaClient Client,
-	FNakamaSessionPtr Session,
+	const FNakamaSession& Session,
 	FString LeaderboardId,
 	const TArray<FString>& OwnerIds,
 	int32 Limit,
@@ -5638,13 +5637,13 @@ TNakamaFuture<FNakamaLeaderboardRecordListResult> Nakama::ListLeaderboardRecords
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
+			[Client, Promise, DoRequest, OnError,
 				LeaderboardId,
 				OwnerIds,
 				Limit,
 				Cursor,
 				Expiry,
-				CancellationToken]()
+				CancellationToken](const FNakamaSession& Session)
 			{
 				NakamaApi::ListLeaderboardRecords(
 					Client.ApiConfig,
@@ -5741,7 +5740,7 @@ TNakamaFuture<FNakamaLeaderboardRecordListResult> Nakama::ListLeaderboardRecords
 }
 TNakamaFuture<FNakamaLeaderboardRecordListResult> Nakama::ListLeaderboardRecordsAroundOwner(
 	FNakamaClient Client,
-	FNakamaSessionPtr Session,
+	const FNakamaSession& Session,
 	FString LeaderboardId,
 	int32 Limit,
 	FString OwnerId,
@@ -5784,13 +5783,13 @@ TNakamaFuture<FNakamaLeaderboardRecordListResult> Nakama::ListLeaderboardRecords
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
+			[Client, Promise, DoRequest, OnError,
 				LeaderboardId,
 				Limit,
 				OwnerId,
 				Expiry,
 				Cursor,
-				CancellationToken]()
+				CancellationToken](const FNakamaSession& Session)
 			{
 				NakamaApi::ListLeaderboardRecordsAroundOwner(
 					Client.ApiConfig,
@@ -5887,7 +5886,7 @@ TNakamaFuture<FNakamaLeaderboardRecordListResult> Nakama::ListLeaderboardRecords
 }
 TNakamaFuture<FNakamaMatchListResult> Nakama::ListMatches(
 	FNakamaClient Client,
-	FNakamaSessionPtr Session,
+	const FNakamaSession& Session,
 	int32 Limit,
 	bool Authoritative,
 	FString Label,
@@ -5932,14 +5931,14 @@ TNakamaFuture<FNakamaMatchListResult> Nakama::ListMatches(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
+			[Client, Promise, DoRequest, OnError,
 				Limit,
 				Authoritative,
 				Label,
 				MinSize,
 				MaxSize,
 				Query,
-				CancellationToken]()
+				CancellationToken](const FNakamaSession& Session)
 			{
 				NakamaApi::ListMatches(
 					Client.ApiConfig,
@@ -6040,7 +6039,7 @@ TNakamaFuture<FNakamaMatchListResult> Nakama::ListMatches(
 }
 TNakamaFuture<FNakamaPartyListResult> Nakama::ListParties(
 	FNakamaClient Client,
-	FNakamaSessionPtr Session,
+	const FNakamaSession& Session,
 	int32 Limit,
 	bool Open,
 	FString Query,
@@ -6081,12 +6080,12 @@ TNakamaFuture<FNakamaPartyListResult> Nakama::ListParties(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
+			[Client, Promise, DoRequest, OnError,
 				Limit,
 				Open,
 				Query,
 				Cursor,
-				CancellationToken]()
+				CancellationToken](const FNakamaSession& Session)
 			{
 				NakamaApi::ListParties(
 					Client.ApiConfig,
@@ -6179,7 +6178,7 @@ TNakamaFuture<FNakamaPartyListResult> Nakama::ListParties(
 }
 TNakamaFuture<FNakamaNotificationListResult> Nakama::ListNotifications(
 	FNakamaClient Client,
-	FNakamaSessionPtr Session,
+	const FNakamaSession& Session,
 	int32 Limit,
 	FString CacheableCursor,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
@@ -6216,10 +6215,10 @@ TNakamaFuture<FNakamaNotificationListResult> Nakama::ListNotifications(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
+			[Client, Promise, DoRequest, OnError,
 				Limit,
 				CacheableCursor,
-				CancellationToken]()
+				CancellationToken](const FNakamaSession& Session)
 			{
 				NakamaApi::ListNotifications(
 					Client.ApiConfig,
@@ -6304,7 +6303,7 @@ TNakamaFuture<FNakamaNotificationListResult> Nakama::ListNotifications(
 }
 TNakamaFuture<FNakamaStorageObjectListResult> Nakama::ListStorageObjects(
 	FNakamaClient Client,
-	FNakamaSessionPtr Session,
+	const FNakamaSession& Session,
 	FString UserId,
 	FString Collection,
 	int32 Limit,
@@ -6345,12 +6344,12 @@ TNakamaFuture<FNakamaStorageObjectListResult> Nakama::ListStorageObjects(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
+			[Client, Promise, DoRequest, OnError,
 				UserId,
 				Collection,
 				Limit,
 				Cursor,
-				CancellationToken]()
+				CancellationToken](const FNakamaSession& Session)
 			{
 				NakamaApi::ListStorageObjects(
 					Client.ApiConfig,
@@ -6443,7 +6442,7 @@ TNakamaFuture<FNakamaStorageObjectListResult> Nakama::ListStorageObjects(
 }
 TNakamaFuture<FNakamaSubscriptionListResult> Nakama::ListSubscriptions(
 	FNakamaClient Client,
-	FNakamaSessionPtr Session,
+	const FNakamaSession& Session,
 	int32 Limit,
 	FString Cursor,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
@@ -6480,10 +6479,10 @@ TNakamaFuture<FNakamaSubscriptionListResult> Nakama::ListSubscriptions(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
+			[Client, Promise, DoRequest, OnError,
 				Limit,
 				Cursor,
-				CancellationToken]()
+				CancellationToken](const FNakamaSession& Session)
 			{
 				NakamaApi::ListSubscriptions(
 					Client.ApiConfig,
@@ -6568,7 +6567,7 @@ TNakamaFuture<FNakamaSubscriptionListResult> Nakama::ListSubscriptions(
 }
 TNakamaFuture<FNakamaTournamentListResult> Nakama::ListTournaments(
 	FNakamaClient Client,
-	FNakamaSessionPtr Session,
+	const FNakamaSession& Session,
 	int32 CategoryStart,
 	int32 CategoryEnd,
 	int32 StartTime,
@@ -6613,14 +6612,14 @@ TNakamaFuture<FNakamaTournamentListResult> Nakama::ListTournaments(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
+			[Client, Promise, DoRequest, OnError,
 				CategoryStart,
 				CategoryEnd,
 				StartTime,
 				EndTime,
 				Limit,
 				Cursor,
-				CancellationToken]()
+				CancellationToken](const FNakamaSession& Session)
 			{
 				NakamaApi::ListTournaments(
 					Client.ApiConfig,
@@ -6721,7 +6720,7 @@ TNakamaFuture<FNakamaTournamentListResult> Nakama::ListTournaments(
 }
 TNakamaFuture<FNakamaTournamentRecordListResult> Nakama::ListTournamentRecords(
 	FNakamaClient Client,
-	FNakamaSessionPtr Session,
+	const FNakamaSession& Session,
 	FString TournamentId,
 	const TArray<FString>& OwnerIds,
 	int32 Limit,
@@ -6764,13 +6763,13 @@ TNakamaFuture<FNakamaTournamentRecordListResult> Nakama::ListTournamentRecords(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
+			[Client, Promise, DoRequest, OnError,
 				TournamentId,
 				OwnerIds,
 				Limit,
 				Cursor,
 				Expiry,
-				CancellationToken]()
+				CancellationToken](const FNakamaSession& Session)
 			{
 				NakamaApi::ListTournamentRecords(
 					Client.ApiConfig,
@@ -6867,7 +6866,7 @@ TNakamaFuture<FNakamaTournamentRecordListResult> Nakama::ListTournamentRecords(
 }
 TNakamaFuture<FNakamaTournamentRecordListResult> Nakama::ListTournamentRecordsAroundOwner(
 	FNakamaClient Client,
-	FNakamaSessionPtr Session,
+	const FNakamaSession& Session,
 	FString TournamentId,
 	int32 Limit,
 	FString OwnerId,
@@ -6910,13 +6909,13 @@ TNakamaFuture<FNakamaTournamentRecordListResult> Nakama::ListTournamentRecordsAr
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
+			[Client, Promise, DoRequest, OnError,
 				TournamentId,
 				Limit,
 				OwnerId,
 				Expiry,
 				Cursor,
-				CancellationToken]()
+				CancellationToken](const FNakamaSession& Session)
 			{
 				NakamaApi::ListTournamentRecordsAroundOwner(
 					Client.ApiConfig,
@@ -7013,7 +7012,7 @@ TNakamaFuture<FNakamaTournamentRecordListResult> Nakama::ListTournamentRecordsAr
 }
 TNakamaFuture<FNakamaUserGroupListResult> Nakama::ListUserGroups(
 	FNakamaClient Client,
-	FNakamaSessionPtr Session,
+	const FNakamaSession& Session,
 	FString UserId,
 	int32 Limit,
 	int32 State,
@@ -7054,12 +7053,12 @@ TNakamaFuture<FNakamaUserGroupListResult> Nakama::ListUserGroups(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
+			[Client, Promise, DoRequest, OnError,
 				UserId,
 				Limit,
 				State,
 				Cursor,
-				CancellationToken]()
+				CancellationToken](const FNakamaSession& Session)
 			{
 				NakamaApi::ListUserGroups(
 					Client.ApiConfig,
@@ -7152,7 +7151,7 @@ TNakamaFuture<FNakamaUserGroupListResult> Nakama::ListUserGroups(
 }
 TNakamaFuture<FNakamaVoidResult> Nakama::PromoteGroupUsers(
 	FNakamaClient Client,
-	FNakamaSessionPtr Session,
+	const FNakamaSession& Session,
 	FString GroupId,
 	const TArray<FString>& UserIds,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
@@ -7189,10 +7188,10 @@ TNakamaFuture<FNakamaVoidResult> Nakama::PromoteGroupUsers(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
+			[Client, Promise, DoRequest, OnError,
 				GroupId,
 				UserIds,
-				CancellationToken]()
+				CancellationToken](const FNakamaSession& Session)
 			{
 				NakamaApi::PromoteGroupUsers(
 					Client.ApiConfig,
@@ -7277,7 +7276,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::PromoteGroupUsers(
 }
 TNakamaFuture<FNakamaVoidResult> Nakama::DemoteGroupUsers(
 	FNakamaClient Client,
-	FNakamaSessionPtr Session,
+	const FNakamaSession& Session,
 	FString GroupId,
 	const TArray<FString>& UserIds,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
@@ -7314,10 +7313,10 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DemoteGroupUsers(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
+			[Client, Promise, DoRequest, OnError,
 				GroupId,
 				UserIds,
-				CancellationToken]()
+				CancellationToken](const FNakamaSession& Session)
 			{
 				NakamaApi::DemoteGroupUsers(
 					Client.ApiConfig,
@@ -7402,7 +7401,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DemoteGroupUsers(
 }
 TNakamaFuture<FNakamaStorageObjectsResult> Nakama::ReadStorageObjects(
 	FNakamaClient Client,
-	FNakamaSessionPtr Session,
+	const FNakamaSession& Session,
 	const TArray<FNakamaReadStorageObjectId>& ObjectIds,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
@@ -7437,9 +7436,9 @@ TNakamaFuture<FNakamaStorageObjectsResult> Nakama::ReadStorageObjects(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
+			[Client, Promise, DoRequest, OnError,
 				ObjectIds,
-				CancellationToken]()
+				CancellationToken](const FNakamaSession& Session)
 			{
 				NakamaApi::ReadStorageObjects(
 					Client.ApiConfig,
@@ -7520,7 +7519,7 @@ TNakamaFuture<FNakamaStorageObjectsResult> Nakama::ReadStorageObjects(
 }
 TNakamaFuture<FNakamaRpcResult> Nakama::RpcFunc(
 	FNakamaClient Client,
-	FNakamaSessionPtr Session,
+	const FNakamaSession& Session,
 	FString Id,
 	TSharedPtr<FJsonObject> Payload,
 	FString HttpKey,
@@ -7559,11 +7558,11 @@ TNakamaFuture<FNakamaRpcResult> Nakama::RpcFunc(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
+			[Client, Promise, DoRequest, OnError,
 				Id,
 				Payload,
 				HttpKey,
-				CancellationToken]()
+				CancellationToken](const FNakamaSession& Session)
 			{
 				NakamaApi::RpcFunc(
 					Client.ApiConfig,
@@ -7649,7 +7648,7 @@ TNakamaFuture<FNakamaRpcResult> Nakama::RpcFunc(
 }
 TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkApple(
 	FNakamaClient Client,
-	FNakamaSessionPtr Session,
+	const FNakamaSession& Session,
 	FString Token,
 	const TMap<FString, FString>& Vars,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
@@ -7686,10 +7685,10 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkApple(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
+			[Client, Promise, DoRequest, OnError,
 				Token,
 				Vars,
-				CancellationToken]()
+				CancellationToken](const FNakamaSession& Session)
 			{
 				NakamaApi::UnlinkApple(
 					Client.ApiConfig,
@@ -7774,7 +7773,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkApple(
 }
 TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkCustom(
 	FNakamaClient Client,
-	FNakamaSessionPtr Session,
+	const FNakamaSession& Session,
 	FString Id,
 	const TMap<FString, FString>& Vars,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
@@ -7811,10 +7810,10 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkCustom(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
+			[Client, Promise, DoRequest, OnError,
 				Id,
 				Vars,
-				CancellationToken]()
+				CancellationToken](const FNakamaSession& Session)
 			{
 				NakamaApi::UnlinkCustom(
 					Client.ApiConfig,
@@ -7899,7 +7898,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkCustom(
 }
 TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkDevice(
 	FNakamaClient Client,
-	FNakamaSessionPtr Session,
+	const FNakamaSession& Session,
 	FString Id,
 	const TMap<FString, FString>& Vars,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
@@ -7936,10 +7935,10 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkDevice(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
+			[Client, Promise, DoRequest, OnError,
 				Id,
 				Vars,
-				CancellationToken]()
+				CancellationToken](const FNakamaSession& Session)
 			{
 				NakamaApi::UnlinkDevice(
 					Client.ApiConfig,
@@ -8024,7 +8023,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkDevice(
 }
 TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkEmail(
 	FNakamaClient Client,
-	FNakamaSessionPtr Session,
+	const FNakamaSession& Session,
 	FString Email,
 	FString Password,
 	const TMap<FString, FString>& Vars,
@@ -8063,11 +8062,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkEmail(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
+			[Client, Promise, DoRequest, OnError,
 				Email,
 				Password,
 				Vars,
-				CancellationToken]()
+				CancellationToken](const FNakamaSession& Session)
 			{
 				NakamaApi::UnlinkEmail(
 					Client.ApiConfig,
@@ -8156,7 +8155,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkEmail(
 }
 TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkFacebook(
 	FNakamaClient Client,
-	FNakamaSessionPtr Session,
+	const FNakamaSession& Session,
 	FString Token,
 	const TMap<FString, FString>& Vars,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
@@ -8193,10 +8192,10 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkFacebook(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
+			[Client, Promise, DoRequest, OnError,
 				Token,
 				Vars,
-				CancellationToken]()
+				CancellationToken](const FNakamaSession& Session)
 			{
 				NakamaApi::UnlinkFacebook(
 					Client.ApiConfig,
@@ -8281,7 +8280,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkFacebook(
 }
 TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkFacebookInstantGame(
 	FNakamaClient Client,
-	FNakamaSessionPtr Session,
+	const FNakamaSession& Session,
 	FString SignedPlayerInfo,
 	const TMap<FString, FString>& Vars,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
@@ -8318,10 +8317,10 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkFacebookInstantGame(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
+			[Client, Promise, DoRequest, OnError,
 				SignedPlayerInfo,
 				Vars,
-				CancellationToken]()
+				CancellationToken](const FNakamaSession& Session)
 			{
 				NakamaApi::UnlinkFacebookInstantGame(
 					Client.ApiConfig,
@@ -8406,7 +8405,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkFacebookInstantGame(
 }
 TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkGameCenter(
 	FNakamaClient Client,
-	FNakamaSessionPtr Session,
+	const FNakamaSession& Session,
 	FString PlayerId,
 	FString BundleId,
 	int64 TimestampSeconds,
@@ -8453,7 +8452,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkGameCenter(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
+			[Client, Promise, DoRequest, OnError,
 				PlayerId,
 				BundleId,
 				TimestampSeconds,
@@ -8461,7 +8460,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkGameCenter(
 				Signature,
 				PublicKeyUrl,
 				Vars,
-				CancellationToken]()
+				CancellationToken](const FNakamaSession& Session)
 			{
 				NakamaApi::UnlinkGameCenter(
 					Client.ApiConfig,
@@ -8566,7 +8565,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkGameCenter(
 }
 TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkGoogle(
 	FNakamaClient Client,
-	FNakamaSessionPtr Session,
+	const FNakamaSession& Session,
 	FString Token,
 	const TMap<FString, FString>& Vars,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
@@ -8603,10 +8602,10 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkGoogle(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
+			[Client, Promise, DoRequest, OnError,
 				Token,
 				Vars,
-				CancellationToken]()
+				CancellationToken](const FNakamaSession& Session)
 			{
 				NakamaApi::UnlinkGoogle(
 					Client.ApiConfig,
@@ -8691,7 +8690,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkGoogle(
 }
 TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkSteam(
 	FNakamaClient Client,
-	FNakamaSessionPtr Session,
+	const FNakamaSession& Session,
 	FString Token,
 	const TMap<FString, FString>& Vars,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
@@ -8728,10 +8727,10 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkSteam(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
+			[Client, Promise, DoRequest, OnError,
 				Token,
 				Vars,
-				CancellationToken]()
+				CancellationToken](const FNakamaSession& Session)
 			{
 				NakamaApi::UnlinkSteam(
 					Client.ApiConfig,
@@ -8816,7 +8815,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkSteam(
 }
 TNakamaFuture<FNakamaVoidResult> Nakama::UpdateAccount(
 	FNakamaClient Client,
-	FNakamaSessionPtr Session,
+	const FNakamaSession& Session,
 	FString Username,
 	FString DisplayName,
 	FString AvatarUrl,
@@ -8861,14 +8860,14 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UpdateAccount(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
+			[Client, Promise, DoRequest, OnError,
 				Username,
 				DisplayName,
 				AvatarUrl,
 				LangTag,
 				Location,
 				Timezone,
-				CancellationToken]()
+				CancellationToken](const FNakamaSession& Session)
 			{
 				NakamaApi::UpdateAccount(
 					Client.ApiConfig,
@@ -8969,7 +8968,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UpdateAccount(
 }
 TNakamaFuture<FNakamaVoidResult> Nakama::UpdateGroup(
 	FNakamaClient Client,
-	FNakamaSessionPtr Session,
+	const FNakamaSession& Session,
 	FString GroupId,
 	FString Name,
 	FString Description,
@@ -9014,14 +9013,14 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UpdateGroup(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
+			[Client, Promise, DoRequest, OnError,
 				GroupId,
 				Name,
 				Description,
 				LangTag,
 				AvatarUrl,
 				Open,
-				CancellationToken]()
+				CancellationToken](const FNakamaSession& Session)
 			{
 				NakamaApi::UpdateGroup(
 					Client.ApiConfig,
@@ -9122,7 +9121,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UpdateGroup(
 }
 TNakamaFuture<FNakamaValidatePurchaseResponseResult> Nakama::ValidatePurchaseApple(
 	FNakamaClient Client,
-	FNakamaSessionPtr Session,
+	const FNakamaSession& Session,
 	FString Receipt,
 	bool Persist,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
@@ -9159,10 +9158,10 @@ TNakamaFuture<FNakamaValidatePurchaseResponseResult> Nakama::ValidatePurchaseApp
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
+			[Client, Promise, DoRequest, OnError,
 				Receipt,
 				Persist,
-				CancellationToken]()
+				CancellationToken](const FNakamaSession& Session)
 			{
 				NakamaApi::ValidatePurchaseApple(
 					Client.ApiConfig,
@@ -9247,7 +9246,7 @@ TNakamaFuture<FNakamaValidatePurchaseResponseResult> Nakama::ValidatePurchaseApp
 }
 TNakamaFuture<FNakamaValidateSubscriptionResponseResult> Nakama::ValidateSubscriptionApple(
 	FNakamaClient Client,
-	FNakamaSessionPtr Session,
+	const FNakamaSession& Session,
 	FString Receipt,
 	bool Persist,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
@@ -9284,10 +9283,10 @@ TNakamaFuture<FNakamaValidateSubscriptionResponseResult> Nakama::ValidateSubscri
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
+			[Client, Promise, DoRequest, OnError,
 				Receipt,
 				Persist,
-				CancellationToken]()
+				CancellationToken](const FNakamaSession& Session)
 			{
 				NakamaApi::ValidateSubscriptionApple(
 					Client.ApiConfig,
@@ -9372,7 +9371,7 @@ TNakamaFuture<FNakamaValidateSubscriptionResponseResult> Nakama::ValidateSubscri
 }
 TNakamaFuture<FNakamaValidatePurchaseResponseResult> Nakama::ValidatePurchaseGoogle(
 	FNakamaClient Client,
-	FNakamaSessionPtr Session,
+	const FNakamaSession& Session,
 	FString Purchase,
 	bool Persist,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
@@ -9409,10 +9408,10 @@ TNakamaFuture<FNakamaValidatePurchaseResponseResult> Nakama::ValidatePurchaseGoo
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
+			[Client, Promise, DoRequest, OnError,
 				Purchase,
 				Persist,
-				CancellationToken]()
+				CancellationToken](const FNakamaSession& Session)
 			{
 				NakamaApi::ValidatePurchaseGoogle(
 					Client.ApiConfig,
@@ -9497,7 +9496,7 @@ TNakamaFuture<FNakamaValidatePurchaseResponseResult> Nakama::ValidatePurchaseGoo
 }
 TNakamaFuture<FNakamaValidateSubscriptionResponseResult> Nakama::ValidateSubscriptionGoogle(
 	FNakamaClient Client,
-	FNakamaSessionPtr Session,
+	const FNakamaSession& Session,
 	FString Receipt,
 	bool Persist,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
@@ -9534,10 +9533,10 @@ TNakamaFuture<FNakamaValidateSubscriptionResponseResult> Nakama::ValidateSubscri
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
+			[Client, Promise, DoRequest, OnError,
 				Receipt,
 				Persist,
-				CancellationToken]()
+				CancellationToken](const FNakamaSession& Session)
 			{
 				NakamaApi::ValidateSubscriptionGoogle(
 					Client.ApiConfig,
@@ -9622,7 +9621,7 @@ TNakamaFuture<FNakamaValidateSubscriptionResponseResult> Nakama::ValidateSubscri
 }
 TNakamaFuture<FNakamaValidatePurchaseResponseResult> Nakama::ValidatePurchaseHuawei(
 	FNakamaClient Client,
-	FNakamaSessionPtr Session,
+	const FNakamaSession& Session,
 	FString Purchase,
 	FString Signature,
 	bool Persist,
@@ -9661,11 +9660,11 @@ TNakamaFuture<FNakamaValidatePurchaseResponseResult> Nakama::ValidatePurchaseHua
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
+			[Client, Promise, DoRequest, OnError,
 				Purchase,
 				Signature,
 				Persist,
-				CancellationToken]()
+				CancellationToken](const FNakamaSession& Session)
 			{
 				NakamaApi::ValidatePurchaseHuawei(
 					Client.ApiConfig,
@@ -9754,7 +9753,7 @@ TNakamaFuture<FNakamaValidatePurchaseResponseResult> Nakama::ValidatePurchaseHua
 }
 TNakamaFuture<FNakamaValidatePurchaseResponseResult> Nakama::ValidatePurchaseFacebookInstant(
 	FNakamaClient Client,
-	FNakamaSessionPtr Session,
+	const FNakamaSession& Session,
 	FString SignedRequest,
 	bool Persist,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
@@ -9791,10 +9790,10 @@ TNakamaFuture<FNakamaValidatePurchaseResponseResult> Nakama::ValidatePurchaseFac
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
+			[Client, Promise, DoRequest, OnError,
 				SignedRequest,
 				Persist,
-				CancellationToken]()
+				CancellationToken](const FNakamaSession& Session)
 			{
 				NakamaApi::ValidatePurchaseFacebookInstant(
 					Client.ApiConfig,
@@ -9879,7 +9878,7 @@ TNakamaFuture<FNakamaValidatePurchaseResponseResult> Nakama::ValidatePurchaseFac
 }
 TNakamaFuture<FNakamaLeaderboardRecordResult> Nakama::WriteLeaderboardRecord(
 	FNakamaClient Client,
-	FNakamaSessionPtr Session,
+	const FNakamaSession& Session,
 	FString LeaderboardId,
 	FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite Record,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
@@ -9916,10 +9915,10 @@ TNakamaFuture<FNakamaLeaderboardRecordResult> Nakama::WriteLeaderboardRecord(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
+			[Client, Promise, DoRequest, OnError,
 				LeaderboardId,
 				Record,
-				CancellationToken]()
+				CancellationToken](const FNakamaSession& Session)
 			{
 				NakamaApi::WriteLeaderboardRecord(
 					Client.ApiConfig,
@@ -10004,7 +10003,7 @@ TNakamaFuture<FNakamaLeaderboardRecordResult> Nakama::WriteLeaderboardRecord(
 }
 TNakamaFuture<FNakamaStorageObjectAcksResult> Nakama::WriteStorageObjects(
 	FNakamaClient Client,
-	FNakamaSessionPtr Session,
+	const FNakamaSession& Session,
 	const TArray<FNakamaWriteStorageObject>& Objects,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
@@ -10039,9 +10038,9 @@ TNakamaFuture<FNakamaStorageObjectAcksResult> Nakama::WriteStorageObjects(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
+			[Client, Promise, DoRequest, OnError,
 				Objects,
-				CancellationToken]()
+				CancellationToken](const FNakamaSession& Session)
 			{
 				NakamaApi::WriteStorageObjects(
 					Client.ApiConfig,
@@ -10122,7 +10121,7 @@ TNakamaFuture<FNakamaStorageObjectAcksResult> Nakama::WriteStorageObjects(
 }
 TNakamaFuture<FNakamaLeaderboardRecordResult> Nakama::WriteTournamentRecord(
 	FNakamaClient Client,
-	FNakamaSessionPtr Session,
+	const FNakamaSession& Session,
 	FString TournamentId,
 	FNakamaWriteTournamentRecordRequest_TournamentRecordWrite Record,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
@@ -10159,10 +10158,10 @@ TNakamaFuture<FNakamaLeaderboardRecordResult> Nakama::WriteTournamentRecord(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
+			[Client, Promise, DoRequest, OnError,
 				TournamentId,
 				Record,
-				CancellationToken]()
+				CancellationToken](const FNakamaSession& Session)
 			{
 				NakamaApi::WriteTournamentRecord(
 					Client.ApiConfig,

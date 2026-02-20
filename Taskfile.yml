@@ -32,6 +32,7 @@ tasks:
         curl -o {{.PROTO_SERVICE_FILE}} "{{.PROTO_SERVICE_URL}}"
         curl -o {{.PROTO_RT_FILE}} "{{.PROTO_RT_URL}}"
 
+        rm -rf proto/satori
         git clone --depth 1 --branch feat/reorder-proto --filter=blob:none --sparse git@github.com:heroiclabs/satori.git proto/satori 2>/dev/null
         cd proto/satori && git sparse-checkout set api 2>/dev/null && cd -
         cp proto/satori/api/satori-types.proto {{.SATORI_PROTO_FILE}}
@@ -321,9 +322,6 @@ tasks:
     - task: check-unreal-engine
     - task: codegen
     - task: start-server
-    - cmd: |
-        echo "Cleaning test data..."
-        docker exec unreal_integration_test_postgres psql -U postgres -d nakama -c "TRUNCATE users CASCADE;" 2>/dev/null || true
     - cmd: |
         mkdir -p IntegrationTests/Plugins
         if [ ! -d "IntegrationTests/Plugins/Nakama" ]; then

@@ -691,8 +691,7 @@ void SendRequest(
 	const FString& Method,
 	const FString& BodyString,
 	ENakamaRequestAuth AuthType,
-	FNakamaSessionPtr Session,
-	const FString& AuthValue,
+	const FString& BearerToken,
 	TFunction<void(TSharedPtr<FJsonObject>)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
@@ -707,18 +706,7 @@ void SendRequest(
 		return;
 	}
 
-	// Determine token string
-	FString TokenString;
-	if (AuthType == ENakamaRequestAuth::Bearer && Session.IsValid())
-	{
-		TokenString = Session->Token;
-	}
-	else
-	{
-		TokenString = AuthValue;
-	}
-
-	DoHttpRequest(Config, Endpoint, Method, BodyString, AuthType, TokenString, OnSuccess, OnError, CancellationToken);
+	DoHttpRequest(Config, Endpoint, Method, BodyString, AuthType, BearerToken, OnSuccess, OnError, CancellationToken);
 }
 
 {{- template "serializejson" }}
@@ -729,8 +717,7 @@ void MakeRequest(
 	const FString& Method,
 	const TSharedPtr<FJsonObject>& Body,
 	ENakamaRequestAuth AuthType,
-	FNakamaSessionPtr Session,
-	const FString& AuthValue,
+	const FString& BearerToken,
 	TFunction<void(TSharedPtr<FJsonObject>)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
@@ -741,7 +728,7 @@ void MakeRequest(
 		SCOPE_CYCLE_COUNTER(STAT_Nakama_JsonSerialize);
 		BodyString = SerializeJsonToString(Body);
 	}
-	SendRequest(Config, Endpoint, Method, BodyString, AuthType, Session, AuthValue, OnSuccess, OnError, CancellationToken);
+	SendRequest(Config, Endpoint, Method, BodyString, AuthType, BearerToken, OnSuccess, OnError, CancellationToken);
 }
 
 } // anonymous namespace
@@ -760,7 +747,7 @@ void MakeRequest(
 void NakamaApi::{{ $rpc.Name }}(
 	const FNakamaApiConfig& Config,
 	{{- if $needsSession }}
-	FNakamaSessionPtr Session,
+	const FNakamaSession& Session,
 	{{- end }}
 	{{- if $hasParams -}}
 	{{- range $fidx, $field := $requestType.Fields }}
@@ -873,7 +860,7 @@ void NakamaApi::{{ $rpc.Name }}(
 		BodyString = SerializeJsonEscaped({{ $scalarBodyField }});
 	}
 
-	SendRequest(Config, Endpoint, TEXT("{{ $rpc.Method }}"), BodyString, AuthType, {{ if $needsSession }}Session{{ else }}nullptr{{ end }}, TEXT(""),
+	SendRequest(Config, Endpoint, TEXT("{{ $rpc.Method }}"), BodyString, AuthType, {{ if $needsSession }}Session.Token{{ else }}TEXT(""){{ end }},
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			{{- if $hasReturn }}
@@ -962,7 +949,7 @@ void NakamaApi::{{ $rpc.Name }}(
 {{- end }}
 {{- end }}
 
-	MakeRequest(Config, Endpoint, TEXT("{{ $rpc.Method }}"), Body, AuthType, {{ if $needsSession }}Session{{ else }}nullptr{{ end }}, TEXT(""),
+	MakeRequest(Config, Endpoint, TEXT("{{ $rpc.Method }}"), Body, AuthType, {{ if $needsSession }}Session.Token{{ else }}TEXT(""){{ end }},
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			{{- if $hasReturn }}
@@ -1101,7 +1088,7 @@ void NakamaApi::{{ $rpc.Name }}(
 		BodyString = SerializeJsonEscaped({{ $scalarBodyField2 }});
 	}
 
-	SendRequest(Config, Endpoint, TEXT("{{ $rpc.Method }}"), BodyString, ENakamaRequestAuth::HttpKey, nullptr, HttpKey,
+	SendRequest(Config, Endpoint, TEXT("{{ $rpc.Method }}"), BodyString, ENakamaRequestAuth::HttpKey, HttpKey,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			{{- if $hasReturn }}
@@ -1193,7 +1180,7 @@ void NakamaApi::{{ $rpc.Name }}(
 {{- end }}
 {{- end }}
 
-	MakeRequest(Config, Endpoint, TEXT("{{ $rpc.Method }}"), Body, ENakamaRequestAuth::HttpKey, nullptr, HttpKey,
+	MakeRequest(Config, Endpoint, TEXT("{{ $rpc.Method }}"), Body, ENakamaRequestAuth::HttpKey, HttpKey,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			{{- if $hasReturn }}

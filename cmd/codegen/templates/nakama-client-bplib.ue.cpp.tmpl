@@ -78,7 +78,7 @@ void UNakamaClient{{ $rpc.Name }}::Activate()
 	NakamaApi::{{ $rpc.Name }}(
 		Client,
 {{- if $needsSession }}
-		MakeShared<FNakamaSession>(Session),
+		Session,
 {{- end }}
 {{- if $hasParams }}
 {{- range $fidx, $field := $requestType.Fields }}

@@ -2819,8 +2819,6 @@ struct NAKAMAAPI_API FNakamaPartyList
 	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
-using FNakamaSessionPtr = TSharedPtr<FNakamaSession>;
-
 enum class ENakamaRequestAuth : uint8
 {
 	None,
@@ -2860,7 +2858,7 @@ namespace NakamaApi
 	/** Add friends by ID or username to a user's account. */
 	NAKAMAAPI_API void AddFriends(
 		const FNakamaApiConfig& Config,
-		FNakamaSessionPtr Session,
+		const FNakamaSession& Session,
 		const TArray<FString>& Ids,
 		const TArray<FString>& Usernames,
 		FString Metadata,
@@ -2882,7 +2880,7 @@ namespace NakamaApi
 	/** Add users to a group. */
 	NAKAMAAPI_API void AddGroupUsers(
 		const FNakamaApiConfig& Config,
-		FNakamaSessionPtr Session,
+		const FNakamaSession& Session,
 		FString GroupId,
 		const TArray<FString>& UserIds,
 		TFunction<void()> OnSuccess,
@@ -2911,7 +2909,7 @@ namespace NakamaApi
 	/** Log out a session, invalidate a refresh token, or log out all sessions/refresh tokens for a user. */
 	NAKAMAAPI_API void SessionLogout(
 		const FNakamaApiConfig& Config,
-		FNakamaSessionPtr Session,
+		const FNakamaSession& Session,
 		FString Token,
 		FString RefreshToken,
 		TFunction<void()> OnSuccess,
@@ -3023,7 +3021,7 @@ namespace NakamaApi
 	/** Ban a set of users from a group. */
 	NAKAMAAPI_API void BanGroupUsers(
 		const FNakamaApiConfig& Config,
-		FNakamaSessionPtr Session,
+		const FNakamaSession& Session,
 		FString GroupId,
 		const TArray<FString>& UserIds,
 		TFunction<void()> OnSuccess,
@@ -3043,7 +3041,7 @@ namespace NakamaApi
 	/** Block one or more users by ID or username. */
 	NAKAMAAPI_API void BlockFriends(
 		const FNakamaApiConfig& Config,
-		FNakamaSessionPtr Session,
+		const FNakamaSession& Session,
 		const TArray<FString>& Ids,
 		const TArray<FString>& Usernames,
 		TFunction<void()> OnSuccess,
@@ -3063,7 +3061,7 @@ namespace NakamaApi
 	/** Create a new group with the current user as the owner. */
 	NAKAMAAPI_API void CreateGroup(
 		const FNakamaApiConfig& Config,
-		FNakamaSessionPtr Session,
+		const FNakamaSession& Session,
 		FString Name,
 		FString Description,
 		FString LangTag,
@@ -3091,7 +3089,7 @@ namespace NakamaApi
 	/** Delete the current user's account. */
 	NAKAMAAPI_API void DeleteAccount(
 		const FNakamaApiConfig& Config,
-		FNakamaSessionPtr Session,
+		const FNakamaSession& Session,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
@@ -3107,7 +3105,7 @@ namespace NakamaApi
 	/** Delete one or more users by ID or username. */
 	NAKAMAAPI_API void DeleteFriends(
 		const FNakamaApiConfig& Config,
-		FNakamaSessionPtr Session,
+		const FNakamaSession& Session,
 		const TArray<FString>& Ids,
 		const TArray<FString>& Usernames,
 		TFunction<void()> OnSuccess,
@@ -3127,7 +3125,7 @@ namespace NakamaApi
 	/** Delete a group by ID. */
 	NAKAMAAPI_API void DeleteGroup(
 		const FNakamaApiConfig& Config,
-		FNakamaSessionPtr Session,
+		const FNakamaSession& Session,
 		FString GroupId,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
@@ -3145,7 +3143,7 @@ namespace NakamaApi
 	/** Delete a leaderboard record. */
 	NAKAMAAPI_API void DeleteLeaderboardRecord(
 		const FNakamaApiConfig& Config,
-		FNakamaSessionPtr Session,
+		const FNakamaSession& Session,
 		FString LeaderboardId,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
@@ -3163,7 +3161,7 @@ namespace NakamaApi
 	/** Delete one or more notifications for the current user. */
 	NAKAMAAPI_API void DeleteNotifications(
 		const FNakamaApiConfig& Config,
-		FNakamaSessionPtr Session,
+		const FNakamaSession& Session,
 		const TArray<FString>& Ids,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
@@ -3181,7 +3179,7 @@ namespace NakamaApi
 	/** Delete a tournament record. */
 	NAKAMAAPI_API void DeleteTournamentRecord(
 		const FNakamaApiConfig& Config,
-		FNakamaSessionPtr Session,
+		const FNakamaSession& Session,
 		FString TournamentId,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
@@ -3199,7 +3197,7 @@ namespace NakamaApi
 	/** Delete one or more objects by ID or username. */
 	NAKAMAAPI_API void DeleteStorageObjects(
 		const FNakamaApiConfig& Config,
-		FNakamaSessionPtr Session,
+		const FNakamaSession& Session,
 		const TArray<FNakamaDeleteStorageObjectId>& ObjectIds,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
@@ -3217,7 +3215,7 @@ namespace NakamaApi
 	/** Submit an event for processing in the server's registered runtime custom events handler. */
 	NAKAMAAPI_API void Event(
 		const FNakamaApiConfig& Config,
-		FNakamaSessionPtr Session,
+		const FNakamaSession& Session,
 		FString Name,
 		FString Timestamp,
 		bool External,
@@ -3241,7 +3239,7 @@ namespace NakamaApi
 	/** Fetch the current user's account. */
 	NAKAMAAPI_API void GetAccount(
 		const FNakamaApiConfig& Config,
-		FNakamaSessionPtr Session,
+		const FNakamaSession& Session,
 		TFunction<void(const FNakamaAccount&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
@@ -3257,7 +3255,7 @@ namespace NakamaApi
 	/** Fetch zero or more users by ID and/or username. */
 	NAKAMAAPI_API void GetUsers(
 		const FNakamaApiConfig& Config,
-		FNakamaSessionPtr Session,
+		const FNakamaSession& Session,
 		const TArray<FString>& Ids,
 		const TArray<FString>& Usernames,
 		const TArray<FString>& FacebookIds,
@@ -3279,7 +3277,7 @@ namespace NakamaApi
 	/** Get subscription by product id. */
 	NAKAMAAPI_API void GetSubscription(
 		const FNakamaApiConfig& Config,
-		FNakamaSessionPtr Session,
+		const FNakamaSession& Session,
 		FString ProductId,
 		TFunction<void(const FNakamaValidatedSubscription&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
@@ -3297,7 +3295,7 @@ namespace NakamaApi
 	/** Get matchmaker stats. */
 	NAKAMAAPI_API void GetMatchmakerStats(
 		const FNakamaApiConfig& Config,
-		FNakamaSessionPtr Session,
+		const FNakamaSession& Session,
 		TFunction<void(const FNakamaMatchmakerStats&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
@@ -3313,7 +3311,7 @@ namespace NakamaApi
 	/** A healthcheck which load balancers can use to check the service. */
 	NAKAMAAPI_API void Healthcheck(
 		const FNakamaApiConfig& Config,
-		FNakamaSessionPtr Session,
+		const FNakamaSession& Session,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
@@ -3329,7 +3327,7 @@ namespace NakamaApi
 	/** Import Facebook friends and add them to a user's account. */
 	NAKAMAAPI_API void ImportFacebookFriends(
 		const FNakamaApiConfig& Config,
-		FNakamaSessionPtr Session,
+		const FNakamaSession& Session,
 		FNakamaAccountFacebook Account,
 		bool Reset,
 		TFunction<void()> OnSuccess,
@@ -3349,7 +3347,7 @@ namespace NakamaApi
 	/** Import Steam friends and add them to a user's account. */
 	NAKAMAAPI_API void ImportSteamFriends(
 		const FNakamaApiConfig& Config,
-		FNakamaSessionPtr Session,
+		const FNakamaSession& Session,
 		FNakamaAccountSteam Account,
 		bool Reset,
 		TFunction<void()> OnSuccess,
@@ -3369,7 +3367,7 @@ namespace NakamaApi
 	/** Immediately join an open group, or request to join a closed one. */
 	NAKAMAAPI_API void JoinGroup(
 		const FNakamaApiConfig& Config,
-		FNakamaSessionPtr Session,
+		const FNakamaSession& Session,
 		FString GroupId,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
@@ -3387,7 +3385,7 @@ namespace NakamaApi
 	/** Attempt to join an open and running tournament. */
 	NAKAMAAPI_API void JoinTournament(
 		const FNakamaApiConfig& Config,
-		FNakamaSessionPtr Session,
+		const FNakamaSession& Session,
 		FString TournamentId,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
@@ -3405,7 +3403,7 @@ namespace NakamaApi
 	/** Kick a set of users from a group. */
 	NAKAMAAPI_API void KickGroupUsers(
 		const FNakamaApiConfig& Config,
-		FNakamaSessionPtr Session,
+		const FNakamaSession& Session,
 		FString GroupId,
 		const TArray<FString>& UserIds,
 		TFunction<void()> OnSuccess,
@@ -3425,7 +3423,7 @@ namespace NakamaApi
 	/** Leave a group the user is a member of. */
 	NAKAMAAPI_API void LeaveGroup(
 		const FNakamaApiConfig& Config,
-		FNakamaSessionPtr Session,
+		const FNakamaSession& Session,
 		FString GroupId,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
@@ -3443,7 +3441,7 @@ namespace NakamaApi
 	/** Add an Apple ID to the social profiles on the current user's account. */
 	NAKAMAAPI_API void LinkApple(
 		const FNakamaApiConfig& Config,
-		FNakamaSessionPtr Session,
+		const FNakamaSession& Session,
 		FString Token,
 		const TMap<FString, FString>& Vars,
 		TFunction<void()> OnSuccess,
@@ -3463,7 +3461,7 @@ namespace NakamaApi
 	/** Add a custom ID to the social profiles on the current user's account. */
 	NAKAMAAPI_API void LinkCustom(
 		const FNakamaApiConfig& Config,
-		FNakamaSessionPtr Session,
+		const FNakamaSession& Session,
 		FString Id,
 		const TMap<FString, FString>& Vars,
 		TFunction<void()> OnSuccess,
@@ -3483,7 +3481,7 @@ namespace NakamaApi
 	/** Add a device ID to the social profiles on the current user's account. */
 	NAKAMAAPI_API void LinkDevice(
 		const FNakamaApiConfig& Config,
-		FNakamaSessionPtr Session,
+		const FNakamaSession& Session,
 		FString Id,
 		const TMap<FString, FString>& Vars,
 		TFunction<void()> OnSuccess,
@@ -3503,7 +3501,7 @@ namespace NakamaApi
 	/** Add an email+password to the social profiles on the current user's account. */
 	NAKAMAAPI_API void LinkEmail(
 		const FNakamaApiConfig& Config,
-		FNakamaSessionPtr Session,
+		const FNakamaSession& Session,
 		FString Email,
 		FString Password,
 		const TMap<FString, FString>& Vars,
@@ -3525,7 +3523,7 @@ namespace NakamaApi
 	/** Add Facebook to the social profiles on the current user's account. */
 	NAKAMAAPI_API void LinkFacebook(
 		const FNakamaApiConfig& Config,
-		FNakamaSessionPtr Session,
+		const FNakamaSession& Session,
 		FNakamaAccountFacebook Account,
 		bool Sync,
 		TFunction<void()> OnSuccess,
@@ -3545,7 +3543,7 @@ namespace NakamaApi
 	/** Add Facebook Instant Game to the social profiles on the current user's account. */
 	NAKAMAAPI_API void LinkFacebookInstantGame(
 		const FNakamaApiConfig& Config,
-		FNakamaSessionPtr Session,
+		const FNakamaSession& Session,
 		FString SignedPlayerInfo,
 		const TMap<FString, FString>& Vars,
 		TFunction<void()> OnSuccess,
@@ -3565,7 +3563,7 @@ namespace NakamaApi
 	/** Add Apple's GameCenter to the social profiles on the current user's account. */
 	NAKAMAAPI_API void LinkGameCenter(
 		const FNakamaApiConfig& Config,
-		FNakamaSessionPtr Session,
+		const FNakamaSession& Session,
 		FString PlayerId,
 		FString BundleId,
 		int64 TimestampSeconds,
@@ -3595,7 +3593,7 @@ namespace NakamaApi
 	/** Add Google to the social profiles on the current user's account. */
 	NAKAMAAPI_API void LinkGoogle(
 		const FNakamaApiConfig& Config,
-		FNakamaSessionPtr Session,
+		const FNakamaSession& Session,
 		FString Token,
 		const TMap<FString, FString>& Vars,
 		TFunction<void()> OnSuccess,
@@ -3615,7 +3613,7 @@ namespace NakamaApi
 	/** Add Steam to the social profiles on the current user's account. */
 	NAKAMAAPI_API void LinkSteam(
 		const FNakamaApiConfig& Config,
-		FNakamaSessionPtr Session,
+		const FNakamaSession& Session,
 		FNakamaAccountSteam Account,
 		bool Sync,
 		TFunction<void()> OnSuccess,
@@ -3635,7 +3633,7 @@ namespace NakamaApi
 	/** List a channel's message history. */
 	NAKAMAAPI_API void ListChannelMessages(
 		const FNakamaApiConfig& Config,
-		FNakamaSessionPtr Session,
+		const FNakamaSession& Session,
 		FString ChannelId,
 		int32 Limit,
 		bool Forward,
@@ -3659,7 +3657,7 @@ namespace NakamaApi
 	/** List all friends for the current user. */
 	NAKAMAAPI_API void ListFriends(
 		const FNakamaApiConfig& Config,
-		FNakamaSessionPtr Session,
+		const FNakamaSession& Session,
 		int32 Limit,
 		int32 State,
 		FString Cursor,
@@ -3681,7 +3679,7 @@ namespace NakamaApi
 	/** List friends of friends for the current user. */
 	NAKAMAAPI_API void ListFriendsOfFriends(
 		const FNakamaApiConfig& Config,
-		FNakamaSessionPtr Session,
+		const FNakamaSession& Session,
 		int32 Limit,
 		FString Cursor,
 		TFunction<void(const FNakamaFriendsOfFriendsList&)> OnSuccess,
@@ -3701,7 +3699,7 @@ namespace NakamaApi
 	/** List groups based on given filters. */
 	NAKAMAAPI_API void ListGroups(
 		const FNakamaApiConfig& Config,
-		FNakamaSessionPtr Session,
+		const FNakamaSession& Session,
 		FString Name,
 		FString Cursor,
 		int32 Limit,
@@ -3729,7 +3727,7 @@ namespace NakamaApi
 	/** List all users that are part of a group. */
 	NAKAMAAPI_API void ListGroupUsers(
 		const FNakamaApiConfig& Config,
-		FNakamaSessionPtr Session,
+		const FNakamaSession& Session,
 		FString GroupId,
 		int32 Limit,
 		int32 State,
@@ -3753,7 +3751,7 @@ namespace NakamaApi
 	/** List leaderboard records. */
 	NAKAMAAPI_API void ListLeaderboardRecords(
 		const FNakamaApiConfig& Config,
-		FNakamaSessionPtr Session,
+		const FNakamaSession& Session,
 		FString LeaderboardId,
 		const TArray<FString>& OwnerIds,
 		int32 Limit,
@@ -3779,7 +3777,7 @@ namespace NakamaApi
 	/** List leaderboard records around the target ownerId. */
 	NAKAMAAPI_API void ListLeaderboardRecordsAroundOwner(
 		const FNakamaApiConfig& Config,
-		FNakamaSessionPtr Session,
+		const FNakamaSession& Session,
 		FString LeaderboardId,
 		int32 Limit,
 		FString OwnerId,
@@ -3805,7 +3803,7 @@ namespace NakamaApi
 	/** List running matches and optionally filter by matching criteria. */
 	NAKAMAAPI_API void ListMatches(
 		const FNakamaApiConfig& Config,
-		FNakamaSessionPtr Session,
+		const FNakamaSession& Session,
 		int32 Limit,
 		bool Authoritative,
 		FString Label,
@@ -3833,7 +3831,7 @@ namespace NakamaApi
 	/** List parties and optionally filter by matching criteria. */
 	NAKAMAAPI_API void ListParties(
 		const FNakamaApiConfig& Config,
-		FNakamaSessionPtr Session,
+		const FNakamaSession& Session,
 		int32 Limit,
 		bool Open,
 		FString Query,
@@ -3857,7 +3855,7 @@ namespace NakamaApi
 	/** Fetch list of notifications. */
 	NAKAMAAPI_API void ListNotifications(
 		const FNakamaApiConfig& Config,
-		FNakamaSessionPtr Session,
+		const FNakamaSession& Session,
 		int32 Limit,
 		FString CacheableCursor,
 		TFunction<void(const FNakamaNotificationList&)> OnSuccess,
@@ -3877,7 +3875,7 @@ namespace NakamaApi
 	/** List publicly readable storage objects in a given collection. */
 	NAKAMAAPI_API void ListStorageObjects(
 		const FNakamaApiConfig& Config,
-		FNakamaSessionPtr Session,
+		const FNakamaSession& Session,
 		FString UserId,
 		FString Collection,
 		int32 Limit,
@@ -3901,7 +3899,7 @@ namespace NakamaApi
 	/** List user's subscriptions. */
 	NAKAMAAPI_API void ListSubscriptions(
 		const FNakamaApiConfig& Config,
-		FNakamaSessionPtr Session,
+		const FNakamaSession& Session,
 		int32 Limit,
 		FString Cursor,
 		TFunction<void(const FNakamaSubscriptionList&)> OnSuccess,
@@ -3921,7 +3919,7 @@ namespace NakamaApi
 	/** List current or upcoming tournaments. */
 	NAKAMAAPI_API void ListTournaments(
 		const FNakamaApiConfig& Config,
-		FNakamaSessionPtr Session,
+		const FNakamaSession& Session,
 		int32 CategoryStart,
 		int32 CategoryEnd,
 		int32 StartTime,
@@ -3949,7 +3947,7 @@ namespace NakamaApi
 	/** List tournament records. */
 	NAKAMAAPI_API void ListTournamentRecords(
 		const FNakamaApiConfig& Config,
-		FNakamaSessionPtr Session,
+		const FNakamaSession& Session,
 		FString TournamentId,
 		const TArray<FString>& OwnerIds,
 		int32 Limit,
@@ -3975,7 +3973,7 @@ namespace NakamaApi
 	/** List tournament records for a given owner. */
 	NAKAMAAPI_API void ListTournamentRecordsAroundOwner(
 		const FNakamaApiConfig& Config,
-		FNakamaSessionPtr Session,
+		const FNakamaSession& Session,
 		FString TournamentId,
 		int32 Limit,
 		FString OwnerId,
@@ -4001,7 +3999,7 @@ namespace NakamaApi
 	/** List groups the current user belongs to. */
 	NAKAMAAPI_API void ListUserGroups(
 		const FNakamaApiConfig& Config,
-		FNakamaSessionPtr Session,
+		const FNakamaSession& Session,
 		FString UserId,
 		int32 Limit,
 		int32 State,
@@ -4025,7 +4023,7 @@ namespace NakamaApi
 	/** Promote a set of users in a group to the next role up. */
 	NAKAMAAPI_API void PromoteGroupUsers(
 		const FNakamaApiConfig& Config,
-		FNakamaSessionPtr Session,
+		const FNakamaSession& Session,
 		FString GroupId,
 		const TArray<FString>& UserIds,
 		TFunction<void()> OnSuccess,
@@ -4045,7 +4043,7 @@ namespace NakamaApi
 	/** Demote a set of users in a group to the next role down. */
 	NAKAMAAPI_API void DemoteGroupUsers(
 		const FNakamaApiConfig& Config,
-		FNakamaSessionPtr Session,
+		const FNakamaSession& Session,
 		FString GroupId,
 		const TArray<FString>& UserIds,
 		TFunction<void()> OnSuccess,
@@ -4065,7 +4063,7 @@ namespace NakamaApi
 	/** Get storage objects. */
 	NAKAMAAPI_API void ReadStorageObjects(
 		const FNakamaApiConfig& Config,
-		FNakamaSessionPtr Session,
+		const FNakamaSession& Session,
 		const TArray<FNakamaReadStorageObjectId>& ObjectIds,
 		TFunction<void(const FNakamaStorageObjects&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
@@ -4083,7 +4081,7 @@ namespace NakamaApi
 	/** Execute a Lua function on the server. */
 	NAKAMAAPI_API void RpcFunc(
 		const FNakamaApiConfig& Config,
-		FNakamaSessionPtr Session,
+		const FNakamaSession& Session,
 		FString Id,
 		TSharedPtr<FJsonObject> Payload,
 		FString HttpKey,
@@ -4104,7 +4102,7 @@ namespace NakamaApi
 	/** Remove the Apple ID from the social profiles on the current user's account. */
 	NAKAMAAPI_API void UnlinkApple(
 		const FNakamaApiConfig& Config,
-		FNakamaSessionPtr Session,
+		const FNakamaSession& Session,
 		FString Token,
 		const TMap<FString, FString>& Vars,
 		TFunction<void()> OnSuccess,
@@ -4124,7 +4122,7 @@ namespace NakamaApi
 	/** Remove the custom ID from the social profiles on the current user's account. */
 	NAKAMAAPI_API void UnlinkCustom(
 		const FNakamaApiConfig& Config,
-		FNakamaSessionPtr Session,
+		const FNakamaSession& Session,
 		FString Id,
 		const TMap<FString, FString>& Vars,
 		TFunction<void()> OnSuccess,
@@ -4144,7 +4142,7 @@ namespace NakamaApi
 	/** Remove the device ID from the social profiles on the current user's account. */
 	NAKAMAAPI_API void UnlinkDevice(
 		const FNakamaApiConfig& Config,
-		FNakamaSessionPtr Session,
+		const FNakamaSession& Session,
 		FString Id,
 		const TMap<FString, FString>& Vars,
 		TFunction<void()> OnSuccess,
@@ -4164,7 +4162,7 @@ namespace NakamaApi
 	/** Remove the email+password from the social profiles on the current user's account. */
 	NAKAMAAPI_API void UnlinkEmail(
 		const FNakamaApiConfig& Config,
-		FNakamaSessionPtr Session,
+		const FNakamaSession& Session,
 		FString Email,
 		FString Password,
 		const TMap<FString, FString>& Vars,
@@ -4186,7 +4184,7 @@ namespace NakamaApi
 	/** Remove Facebook from the social profiles on the current user's account. */
 	NAKAMAAPI_API void UnlinkFacebook(
 		const FNakamaApiConfig& Config,
-		FNakamaSessionPtr Session,
+		const FNakamaSession& Session,
 		FString Token,
 		const TMap<FString, FString>& Vars,
 		TFunction<void()> OnSuccess,
@@ -4206,7 +4204,7 @@ namespace NakamaApi
 	/** Remove Facebook Instant Game profile from the social profiles on the current user's account. */
 	NAKAMAAPI_API void UnlinkFacebookInstantGame(
 		const FNakamaApiConfig& Config,
-		FNakamaSessionPtr Session,
+		const FNakamaSession& Session,
 		FString SignedPlayerInfo,
 		const TMap<FString, FString>& Vars,
 		TFunction<void()> OnSuccess,
@@ -4226,7 +4224,7 @@ namespace NakamaApi
 	/** Remove Apple's GameCenter from the social profiles on the current user's account. */
 	NAKAMAAPI_API void UnlinkGameCenter(
 		const FNakamaApiConfig& Config,
-		FNakamaSessionPtr Session,
+		const FNakamaSession& Session,
 		FString PlayerId,
 		FString BundleId,
 		int64 TimestampSeconds,
@@ -4256,7 +4254,7 @@ namespace NakamaApi
 	/** Remove Google from the social profiles on the current user's account. */
 	NAKAMAAPI_API void UnlinkGoogle(
 		const FNakamaApiConfig& Config,
-		FNakamaSessionPtr Session,
+		const FNakamaSession& Session,
 		FString Token,
 		const TMap<FString, FString>& Vars,
 		TFunction<void()> OnSuccess,
@@ -4276,7 +4274,7 @@ namespace NakamaApi
 	/** Remove Steam from the social profiles on the current user's account. */
 	NAKAMAAPI_API void UnlinkSteam(
 		const FNakamaApiConfig& Config,
-		FNakamaSessionPtr Session,
+		const FNakamaSession& Session,
 		FString Token,
 		const TMap<FString, FString>& Vars,
 		TFunction<void()> OnSuccess,
@@ -4296,7 +4294,7 @@ namespace NakamaApi
 	/** Update fields in the current user's account. */
 	NAKAMAAPI_API void UpdateAccount(
 		const FNakamaApiConfig& Config,
-		FNakamaSessionPtr Session,
+		const FNakamaSession& Session,
 		FString Username,
 		FString DisplayName,
 		FString AvatarUrl,
@@ -4324,7 +4322,7 @@ namespace NakamaApi
 	/** Update fields in a given group. */
 	NAKAMAAPI_API void UpdateGroup(
 		const FNakamaApiConfig& Config,
-		FNakamaSessionPtr Session,
+		const FNakamaSession& Session,
 		FString GroupId,
 		FString Name,
 		FString Description,
@@ -4352,7 +4350,7 @@ namespace NakamaApi
 	/** Validate Apple IAP Receipt */
 	NAKAMAAPI_API void ValidatePurchaseApple(
 		const FNakamaApiConfig& Config,
-		FNakamaSessionPtr Session,
+		const FNakamaSession& Session,
 		FString Receipt,
 		bool Persist,
 		TFunction<void(const FNakamaValidatePurchaseResponse&)> OnSuccess,
@@ -4372,7 +4370,7 @@ namespace NakamaApi
 	/** Validate Apple Subscription Receipt */
 	NAKAMAAPI_API void ValidateSubscriptionApple(
 		const FNakamaApiConfig& Config,
-		FNakamaSessionPtr Session,
+		const FNakamaSession& Session,
 		FString Receipt,
 		bool Persist,
 		TFunction<void(const FNakamaValidateSubscriptionResponse&)> OnSuccess,
@@ -4392,7 +4390,7 @@ namespace NakamaApi
 	/** Validate Google IAP Receipt */
 	NAKAMAAPI_API void ValidatePurchaseGoogle(
 		const FNakamaApiConfig& Config,
-		FNakamaSessionPtr Session,
+		const FNakamaSession& Session,
 		FString Purchase,
 		bool Persist,
 		TFunction<void(const FNakamaValidatePurchaseResponse&)> OnSuccess,
@@ -4412,7 +4410,7 @@ namespace NakamaApi
 	/** Validate Google Subscription Receipt */
 	NAKAMAAPI_API void ValidateSubscriptionGoogle(
 		const FNakamaApiConfig& Config,
-		FNakamaSessionPtr Session,
+		const FNakamaSession& Session,
 		FString Receipt,
 		bool Persist,
 		TFunction<void(const FNakamaValidateSubscriptionResponse&)> OnSuccess,
@@ -4432,7 +4430,7 @@ namespace NakamaApi
 	/** Validate Huawei IAP Receipt */
 	NAKAMAAPI_API void ValidatePurchaseHuawei(
 		const FNakamaApiConfig& Config,
-		FNakamaSessionPtr Session,
+		const FNakamaSession& Session,
 		FString Purchase,
 		FString Signature,
 		bool Persist,
@@ -4454,7 +4452,7 @@ namespace NakamaApi
 	/** Validate FB Instant IAP Receipt */
 	NAKAMAAPI_API void ValidatePurchaseFacebookInstant(
 		const FNakamaApiConfig& Config,
-		FNakamaSessionPtr Session,
+		const FNakamaSession& Session,
 		FString SignedRequest,
 		bool Persist,
 		TFunction<void(const FNakamaValidatePurchaseResponse&)> OnSuccess,
@@ -4474,7 +4472,7 @@ namespace NakamaApi
 	/** Write a record to a leaderboard. */
 	NAKAMAAPI_API void WriteLeaderboardRecord(
 		const FNakamaApiConfig& Config,
-		FNakamaSessionPtr Session,
+		const FNakamaSession& Session,
 		FString LeaderboardId,
 		FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite Record,
 		TFunction<void(const FNakamaLeaderboardRecord&)> OnSuccess,
@@ -4494,7 +4492,7 @@ namespace NakamaApi
 	/** Write objects into the storage engine. */
 	NAKAMAAPI_API void WriteStorageObjects(
 		const FNakamaApiConfig& Config,
-		FNakamaSessionPtr Session,
+		const FNakamaSession& Session,
 		const TArray<FNakamaWriteStorageObject>& Objects,
 		TFunction<void(const FNakamaStorageObjectAcks&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
@@ -4512,7 +4510,7 @@ namespace NakamaApi
 	/** Write a record to a tournament. */
 	NAKAMAAPI_API void WriteTournamentRecord(
 		const FNakamaApiConfig& Config,
-		FNakamaSessionPtr Session,
+		const FNakamaSession& Session,
 		FString TournamentId,
 		FNakamaWriteTournamentRecordRequest_TournamentRecordWrite Record,
 		TFunction<void(const FNakamaLeaderboardRecord&)> OnSuccess,

@@ -193,7 +193,7 @@ void FSatoriAsyncHealthcheckSpec::Define()
 
 	LatentIt("should return healthy", [this](const FDoneDelegate& Done)
 	{
-		Satori::Healthcheck(Client, nullptr).Next([this, Done](FSatoriVoidResult Result)
+		Satori::Healthcheck(Client, FSatoriSession{}).Next([this, Done](FSatoriVoidResult Result)
 		{
 			SATORI_FAIL_ON_ERROR(Result, Done);
 			Done.Execute();
@@ -202,7 +202,7 @@ void FSatoriAsyncHealthcheckSpec::Define()
 
 	LatentIt("readycheck should return ready", [this](const FDoneDelegate& Done)
 	{
-		Satori::Readycheck(Client, nullptr).Next([this, Done](FSatoriVoidResult Result)
+		Satori::Readycheck(Client, FSatoriSession{}).Next([this, Done](FSatoriVoidResult Result)
 		{
 			SATORI_FAIL_ON_ERROR(Result, Done);
 			Done.Execute();
@@ -218,7 +218,7 @@ BEGIN_DEFINE_SPEC(FSatoriAsyncIdentitySpec, "IntegrationTests.Satori.Identity",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FSatoriClient Client;
-	FSatoriSessionPtr Session;
+	FSatoriSession Session;
 
 	static const FString ServerKey;
 	static const FString Host;
@@ -236,7 +236,7 @@ void FSatoriAsyncIdentitySpec::Define()
 	BeforeEach([this]()
 	{
 		Client = FSatoriClient{FSatoriApiConfig{ServerKey, Host, Port, false, 10.0f}};
-		Session = nullptr;
+		Session = FSatoriSession{};
 	});
 
 	Describe("Identify", [this]()
@@ -248,7 +248,7 @@ void FSatoriAsyncIdentitySpec::Define()
 
 			Satori::Authenticate(Client, InitialId, false, {}, {}).Next([this, NewId](const FSatoriSession& Sess)
 			{
-				Session = MakeShared<FSatoriSession>(Sess);
+				Session = Sess;
 				return Satori::Identify(Client, Session, NewId, {}, {});
 			}).Next([this, Done](FSatoriSessionResult Result)
 			{
@@ -267,7 +267,7 @@ void FSatoriAsyncIdentitySpec::Define()
 
 			Satori::Authenticate(Client, Id, false, {}, {}).Next([this](const FSatoriSession& Sess)
 			{
-				Session = MakeShared<FSatoriSession>(Sess);
+				Session = Sess;
 				return Satori::DeleteIdentity(Client, Session);
 			}).Next([this, Done](FSatoriVoidResult Result)
 			{
@@ -286,7 +286,7 @@ BEGIN_DEFINE_SPEC(FSatoriAsyncPropertiesSpec, "IntegrationTests.Satori.Propertie
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FSatoriClient Client;
-	FSatoriSessionPtr Session;
+	FSatoriSession Session;
 
 	static const FString ServerKey;
 	static const FString Host;
@@ -304,7 +304,7 @@ void FSatoriAsyncPropertiesSpec::Define()
 	BeforeEach([this]()
 	{
 		Client = FSatoriClient{FSatoriApiConfig{ServerKey, Host, Port, false, 10.0f}};
-		Session = nullptr;
+		Session = FSatoriSession{};
 	});
 
 	Describe("ListProperties", [this]()
@@ -317,7 +317,7 @@ void FSatoriAsyncPropertiesSpec::Define()
 
 			Satori::Authenticate(Client, Id, false, Defaults, {}).Next([this](const FSatoriSession& Sess)
 			{
-				Session = MakeShared<FSatoriSession>(Sess);
+				Session = Sess;
 				return Satori::ListProperties(Client, Session);
 			}).Next([this, Done](FSatoriPropertiesResult Result)
 			{
@@ -337,7 +337,7 @@ void FSatoriAsyncPropertiesSpec::Define()
 
 			Satori::Authenticate(Client, Id, false, {}, {}).Next([this](const FSatoriSession& Sess)
 			{
-				Session = MakeShared<FSatoriSession>(Sess);
+				Session = Sess;
 
 				TMap<FString, FString> Custom;
 				Custom.Add(TEXT("level"), TEXT("5"));
@@ -362,7 +362,7 @@ void FSatoriAsyncPropertiesSpec::Define()
 
 			Satori::Authenticate(Client, Id, false, {}, {}).Next([this](const FSatoriSession& Sess)
 			{
-				Session = MakeShared<FSatoriSession>(Sess);
+				Session = Sess;
 
 				TMap<FString, FString> Defaults;
 				Defaults.Add(TEXT("region"), TEXT("eu-west"));
@@ -388,7 +388,7 @@ BEGIN_DEFINE_SPEC(FSatoriAsyncEventSpec, "IntegrationTests.Satori.Event",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FSatoriClient Client;
-	FSatoriSessionPtr Session;
+	FSatoriSession Session;
 
 	static const FString ServerKey;
 	static const FString Host;
@@ -406,7 +406,7 @@ void FSatoriAsyncEventSpec::Define()
 	BeforeEach([this]()
 	{
 		Client = FSatoriClient{FSatoriApiConfig{ServerKey, Host, Port, false, 10.0f}};
-		Session = nullptr;
+		Session = FSatoriSession{};
 	});
 
 	Describe("Event", [this]()
@@ -415,7 +415,7 @@ void FSatoriAsyncEventSpec::Define()
 		{
 			Satori::Authenticate(Client, GenerateId(), false, {}, {}).Next([this](const FSatoriSession& Sess)
 			{
-				Session = MakeShared<FSatoriSession>(Sess);
+				Session = Sess;
 
 				FSatoriEvent Evt;
 				Evt.Name = TEXT("game_start");
@@ -433,7 +433,7 @@ void FSatoriAsyncEventSpec::Define()
 		{
 			Satori::Authenticate(Client, GenerateId(), false, {}, {}).Next([this](const FSatoriSession& Sess)
 			{
-				Session = MakeShared<FSatoriSession>(Sess);
+				Session = Sess;
 
 				FSatoriEvent Evt1;
 				Evt1.Name = TEXT("game_start");
@@ -456,7 +456,7 @@ void FSatoriAsyncEventSpec::Define()
 		{
 			Satori::Authenticate(Client, GenerateId(), false, {}, {}).Next([this](const FSatoriSession& Sess)
 			{
-				Session = MakeShared<FSatoriSession>(Sess);
+				Session = Sess;
 
 				FSatoriEvent Evt;
 				Evt.Name = TEXT("purchase");
@@ -482,7 +482,7 @@ BEGIN_DEFINE_SPEC(FSatoriAsyncFlagsSpec, "IntegrationTests.Satori.Flags",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FSatoriClient Client;
-	FSatoriSessionPtr Session;
+	FSatoriSession Session;
 
 	static const FString ServerKey;
 	static const FString Host;
@@ -500,7 +500,7 @@ void FSatoriAsyncFlagsSpec::Define()
 	BeforeEach([this]()
 	{
 		Client = FSatoriClient{FSatoriApiConfig{ServerKey, Host, Port, false, 10.0f}};
-		Session = nullptr;
+		Session = FSatoriSession{};
 	});
 
 	Describe("GetFlags", [this]()
@@ -509,7 +509,7 @@ void FSatoriAsyncFlagsSpec::Define()
 		{
 			Satori::Authenticate(Client, GenerateId(), false, {}, {}).Next([this](const FSatoriSession& Sess)
 			{
-				Session = MakeShared<FSatoriSession>(Sess);
+				Session = Sess;
 				return Satori::GetFlags(Client, Session, {}, {});
 			}).Next([this, Done](FSatoriFlagListResult Result)
 			{
@@ -523,7 +523,7 @@ void FSatoriAsyncFlagsSpec::Define()
 		{
 			Satori::Authenticate(Client, GenerateId(), false, {}, {}).Next([this](const FSatoriSession& Sess)
 			{
-				Session = MakeShared<FSatoriSession>(Sess);
+				Session = Sess;
 				return Satori::GetFlags(Client, Session, {TEXT("nonexistent_flag")}, {});
 			}).Next([this, Done](FSatoriFlagListResult Result)
 			{
@@ -540,7 +540,7 @@ void FSatoriAsyncFlagsSpec::Define()
 		{
 			Satori::Authenticate(Client, GenerateId(), false, {}, {}).Next([this](const FSatoriSession& Sess)
 			{
-				Session = MakeShared<FSatoriSession>(Sess);
+				Session = Sess;
 				return Satori::GetFlagOverrides(Client, Session, {}, {});
 			}).Next([this, Done](FSatoriFlagOverrideListResult Result)
 			{
@@ -559,7 +559,7 @@ BEGIN_DEFINE_SPEC(FSatoriAsyncExperimentsSpec, "IntegrationTests.Satori.Experime
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FSatoriClient Client;
-	FSatoriSessionPtr Session;
+	FSatoriSession Session;
 
 	static const FString ServerKey;
 	static const FString Host;
@@ -577,7 +577,7 @@ void FSatoriAsyncExperimentsSpec::Define()
 	BeforeEach([this]()
 	{
 		Client = FSatoriClient{FSatoriApiConfig{ServerKey, Host, Port, false, 10.0f}};
-		Session = nullptr;
+		Session = FSatoriSession{};
 	});
 
 	Describe("GetExperiments", [this]()
@@ -586,7 +586,7 @@ void FSatoriAsyncExperimentsSpec::Define()
 		{
 			Satori::Authenticate(Client, GenerateId(), false, {}, {}).Next([this](const FSatoriSession& Sess)
 			{
-				Session = MakeShared<FSatoriSession>(Sess);
+				Session = Sess;
 				return Satori::GetExperiments(Client, Session, {}, {});
 			}).Next([this, Done](FSatoriExperimentListResult Result)
 			{
@@ -599,7 +599,7 @@ void FSatoriAsyncExperimentsSpec::Define()
 		{
 			Satori::Authenticate(Client, GenerateId(), false, {}, {}).Next([this](const FSatoriSession& Sess)
 			{
-				Session = MakeShared<FSatoriSession>(Sess);
+				Session = Sess;
 				return Satori::GetExperiments(Client, Session, {TEXT("nonexistent_experiment")}, {});
 			}).Next([this, Done](FSatoriExperimentListResult Result)
 			{
@@ -619,7 +619,7 @@ BEGIN_DEFINE_SPEC(FSatoriAsyncLiveEventsSpec, "IntegrationTests.Satori.LiveEvent
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FSatoriClient Client;
-	FSatoriSessionPtr Session;
+	FSatoriSession Session;
 
 	static const FString ServerKey;
 	static const FString Host;
@@ -637,7 +637,7 @@ void FSatoriAsyncLiveEventsSpec::Define()
 	BeforeEach([this]()
 	{
 		Client = FSatoriClient{FSatoriApiConfig{ServerKey, Host, Port, false, 10.0f}};
-		Session = nullptr;
+		Session = FSatoriSession{};
 	});
 
 	Describe("GetLiveEvents", [this]()
@@ -646,7 +646,7 @@ void FSatoriAsyncLiveEventsSpec::Define()
 		{
 			Satori::Authenticate(Client, GenerateId(), false, {}, {}).Next([this](const FSatoriSession& Sess)
 			{
-				Session = MakeShared<FSatoriSession>(Sess);
+				Session = Sess;
 				return Satori::GetLiveEvents(Client, Session, {}, {}, 0, 0, 0, 0);
 			}).Next([this, Done](FSatoriLiveEventListResult Result)
 			{
@@ -659,7 +659,7 @@ void FSatoriAsyncLiveEventsSpec::Define()
 		{
 			Satori::Authenticate(Client, GenerateId(), false, {}, {}).Next([this](const FSatoriSession& Sess)
 			{
-				Session = MakeShared<FSatoriSession>(Sess);
+				Session = Sess;
 				return Satori::GetLiveEvents(Client, Session, {TEXT("nonexistent_event")}, {}, 0, 0, 0, 0);
 			}).Next([this, Done](FSatoriLiveEventListResult Result)
 			{
@@ -679,7 +679,7 @@ BEGIN_DEFINE_SPEC(FSatoriAsyncMessagesSpec, "IntegrationTests.Satori.Messages",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FSatoriClient Client;
-	FSatoriSessionPtr Session;
+	FSatoriSession Session;
 
 	static const FString ServerKey;
 	static const FString Host;
@@ -697,7 +697,7 @@ void FSatoriAsyncMessagesSpec::Define()
 	BeforeEach([this]()
 	{
 		Client = FSatoriClient{FSatoriApiConfig{ServerKey, Host, Port, false, 10.0f}};
-		Session = nullptr;
+		Session = FSatoriSession{};
 	});
 
 	Describe("GetMessageList", [this]()
@@ -706,7 +706,7 @@ void FSatoriAsyncMessagesSpec::Define()
 		{
 			Satori::Authenticate(Client, GenerateId(), false, {}, {}).Next([this](const FSatoriSession& Sess)
 			{
-				Session = MakeShared<FSatoriSession>(Sess);
+				Session = Sess;
 				return Satori::GetMessageList(Client, Session, 10, true, TEXT(""), {});
 			}).Next([this, Done](FSatoriGetMessageListResponseResult Result)
 			{
@@ -721,7 +721,7 @@ void FSatoriAsyncMessagesSpec::Define()
 		{
 			Satori::Authenticate(Client, GenerateId(), false, {}, {}).Next([this](const FSatoriSession& Sess)
 			{
-				Session = MakeShared<FSatoriSession>(Sess);
+				Session = Sess;
 				return Satori::GetMessageList(Client, Session, 10, false, TEXT(""), {});
 			}).Next([this, Done](FSatoriGetMessageListResponseResult Result)
 			{
@@ -740,6 +740,7 @@ BEGIN_DEFINE_SPEC(FSatoriAsyncSessionSpec, "IntegrationTests.Satori.Session",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FSatoriClient Client;
+	FSatoriSession Session;
 
 	static const FString ServerKey;
 	static const FString Host;
@@ -764,15 +765,14 @@ void FSatoriAsyncSessionSpec::Define()
 		LatentIt("should authenticate, use API, refresh, and logout", [this](const FDoneDelegate& Done)
 		{
 			const FString Id = GenerateId();
-			auto Session = MakeShared<FSatoriSession>();
 
-			Satori::Authenticate(Client, Id, false, {}, {}).Next([this, Session](const FSatoriSession& Sess)
+			Satori::Authenticate(Client, Id, false, {}, {}).Next([this](const FSatoriSession& Sess)
 			{
-				*Session = Sess;
+				Session = Sess;
 				return Satori::GetFlags(Client, Session, {}, {});
-			}).Next([this, Session](const FSatoriFlagList&)
+			}).Next([this](const FSatoriFlagList&)
 			{
-				return Satori::AuthenticateRefresh(Client, Session->RefreshToken);
+				return Satori::AuthenticateRefresh(Client, Session.RefreshToken);
 			}).Next([this, Done](FSatoriSessionResult Result)
 			{
 				SATORI_FAIL_ON_ERROR(Result, Done);
@@ -792,9 +792,9 @@ void FSatoriAsyncSessionSpec::Define()
 	{
 		LatentIt("should fail API call with invalid bearer token", [this](const FDoneDelegate& Done)
 		{
-			auto FakeSession = MakeShared<FSatoriSession>();
-			FakeSession->Token = TEXT("invalid.bearer.token");
-			FakeSession->RefreshToken = TEXT("invalid.refresh.token");
+			FSatoriSession FakeSession;
+			FakeSession.Token = TEXT("invalid.bearer.token");
+			FakeSession.RefreshToken = TEXT("invalid.refresh.token");
 
 			Satori::GetFlags(Client, FakeSession, {}, {}).Next([this, Done](FSatoriFlagListResult Result)
 			{

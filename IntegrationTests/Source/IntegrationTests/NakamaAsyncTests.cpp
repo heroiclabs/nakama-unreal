@@ -28,7 +28,7 @@ BEGIN_DEFINE_SPEC(FNakamaAsyncAuthSpec, "IntegrationTests.Async.Auth",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaClient Client;
-	FNakamaSessionPtr Session;
+	FNakamaSession Session;
 	FString TestCustomId;
 	FString TestDeviceId;
 	FString TestEmail;
@@ -259,7 +259,7 @@ BEGIN_DEFINE_SPEC(FNakamaAsyncAccountSpec, "IntegrationTests.Async.Account",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaClient Client;
-	FNakamaSessionPtr Session;
+	FNakamaSession Session;
 	FString UserId;
 
 	static const FString ServerKey;
@@ -289,7 +289,7 @@ void FNakamaAsyncAccountSpec::Define()
 		Nakama::AuthenticateCustom(Client, Account, true, TEXT("")).Next([this, Done](FNakamaSessionResult AuthResult)
 		{
 			if (AuthResult.bIsError) { AddError(FString::Printf(TEXT("Auth failed: %s"), *AuthResult.Error.Message)); Done.Execute(); return; }
-			Session = MakeShared<FNakamaSession>(AuthResult.Value);
+			Session = AuthResult.Value;
 			Done.Execute();
 		});
 	});
@@ -334,7 +334,7 @@ void FNakamaAsyncAccountSpec::Define()
 	{
 		LatentIt("should refresh session with valid token", [this](const FDoneDelegate& Done)
 		{
-			Nakama::SessionRefresh(Client, Session->RefreshToken, TMap<FString, FString>())
+			Nakama::SessionRefresh(Client, Session.RefreshToken, TMap<FString, FString>())
 			.Next([this, Done](FNakamaSessionResult Result)
 			{
 				ASYNC_FAIL_ON_ERROR(Result, Done);
@@ -370,8 +370,8 @@ BEGIN_DEFINE_SPEC(FNakamaAsyncFriendsSpec, "IntegrationTests.Async.Friends",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaClient Client;
-	FNakamaSessionPtr Session;
-	FNakamaSessionPtr FriendSession;
+	FNakamaSession Session;
+	FNakamaSession FriendSession;
 	FString UserId;
 	FString FriendUserId;
 
@@ -401,7 +401,7 @@ void FNakamaAsyncFriendsSpec::Define()
 		Nakama::AuthenticateCustom(Client, Account, true, TEXT(""))
 		.Next([this](const FNakamaSession& AuthResult)
 		{
-			Session = MakeShared<FNakamaSession>(AuthResult);
+			Session = AuthResult;
 			return Nakama::GetAccount(Client, Session);
 		})
 		.Next([this](const FNakamaAccount& AccResult)
@@ -413,7 +413,7 @@ void FNakamaAsyncFriendsSpec::Define()
 		})
 		.Next([this](const FNakamaSession& FriendAuthResult)
 		{
-			FriendSession = MakeShared<FNakamaSession>(FriendAuthResult);
+			FriendSession = FriendAuthResult;
 			return Nakama::GetAccount(Client, FriendSession);
 		})
 		.Next([this, Done](FNakamaAccountResult FriendAccResult)
@@ -514,7 +514,7 @@ BEGIN_DEFINE_SPEC(FNakamaAsyncGroupsSpec, "IntegrationTests.Async.Groups",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaClient Client;
-	FNakamaSessionPtr Session;
+	FNakamaSession Session;
 	FString UserId;
 	FString CreatedGroupId;
 
@@ -546,7 +546,7 @@ void FNakamaAsyncGroupsSpec::Define()
 		Nakama::AuthenticateCustom(Client, Account, true, TEXT(""))
 		.Next([this](const FNakamaSession& AuthResult)
 		{
-			Session = MakeShared<FNakamaSession>(AuthResult);
+			Session = AuthResult;
 			return Nakama::GetAccount(Client, Session);
 		})
 		.Next([this, Done](FNakamaAccountResult AccResult)
@@ -631,7 +631,7 @@ BEGIN_DEFINE_SPEC(FNakamaAsyncStorageSpec, "IntegrationTests.Async.Storage",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaClient Client;
-	FNakamaSessionPtr Session;
+	FNakamaSession Session;
 	FString UserId;
 
 	static const FString ServerKey;
@@ -661,7 +661,7 @@ void FNakamaAsyncStorageSpec::Define()
 		Nakama::AuthenticateCustom(Client, Account, true, TEXT(""))
 		.Next([this](const FNakamaSession& AuthResult)
 		{
-			Session = MakeShared<FNakamaSession>(AuthResult);
+			Session = AuthResult;
 			return Nakama::GetAccount(Client, Session);
 		})
 		.Next([this, Done](FNakamaAccountResult AccResult)
@@ -790,7 +790,7 @@ BEGIN_DEFINE_SPEC(FNakamaAsyncLeaderboardSpec, "IntegrationTests.Async.Leaderboa
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaClient Client;
-	FNakamaSessionPtr Session;
+	FNakamaSession Session;
 
 	static const FString ServerKey;
 	static const FString Host;
@@ -818,7 +818,7 @@ void FNakamaAsyncLeaderboardSpec::Define()
 		Nakama::AuthenticateCustom(Client, Account, true, TEXT("")).Next([this, Done](FNakamaSessionResult AuthResult)
 		{
 			if (AuthResult.bIsError) { AddError(FString::Printf(TEXT("Auth failed: %s"), *AuthResult.Error.Message)); Done.Execute(); return; }
-			Session = MakeShared<FNakamaSession>(AuthResult.Value);
+			Session = AuthResult.Value;
 			Done.Execute();
 		});
 	});
@@ -910,7 +910,7 @@ BEGIN_DEFINE_SPEC(FNakamaAsyncMatchesSpec, "IntegrationTests.Async.Matches",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaClient Client;
-	FNakamaSessionPtr Session;
+	FNakamaSession Session;
 
 	static const FString ServerKey;
 	static const FString Host;
@@ -938,7 +938,7 @@ void FNakamaAsyncMatchesSpec::Define()
 		Nakama::AuthenticateCustom(Client, Account, true, TEXT("")).Next([this, Done](FNakamaSessionResult AuthResult)
 		{
 			if (AuthResult.bIsError) { AddError(FString::Printf(TEXT("Auth failed: %s"), *AuthResult.Error.Message)); Done.Execute(); return; }
-			Session = MakeShared<FNakamaSession>(AuthResult.Value);
+			Session = AuthResult.Value;
 			Done.Execute();
 		});
 	});
@@ -979,7 +979,7 @@ BEGIN_DEFINE_SPEC(FNakamaAsyncNotificationsSpec, "IntegrationTests.Async.Notific
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaClient Client;
-	FNakamaSessionPtr Session;
+	FNakamaSession Session;
 
 	static const FString ServerKey;
 	static const FString Host;
@@ -1007,7 +1007,7 @@ void FNakamaAsyncNotificationsSpec::Define()
 		Nakama::AuthenticateCustom(Client, Account, true, TEXT("")).Next([this, Done](FNakamaSessionResult AuthResult)
 		{
 			if (AuthResult.bIsError) { AddError(FString::Printf(TEXT("Auth failed: %s"), *AuthResult.Error.Message)); Done.Execute(); return; }
-			Session = MakeShared<FNakamaSession>(AuthResult.Value);
+			Session = AuthResult.Value;
 			Done.Execute();
 		});
 	});
@@ -1037,7 +1037,7 @@ BEGIN_DEFINE_SPEC(FNakamaAsyncLinkSpec, "IntegrationTests.Async.Link",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaClient Client;
-	FNakamaSessionPtr Session;
+	FNakamaSession Session;
 	FString DeviceId;
 
 	static const FString ServerKey;
@@ -1068,7 +1068,7 @@ void FNakamaAsyncLinkSpec::Define()
 		Nakama::AuthenticateDevice(Client, Account, true, TEXT("")).Next([this, Done](FNakamaSessionResult AuthResult)
 		{
 			if (AuthResult.bIsError) { AddError(FString::Printf(TEXT("Auth failed: %s"), *AuthResult.Error.Message)); Done.Execute(); return; }
-			Session = MakeShared<FNakamaSession>(AuthResult.Value);
+			Session = AuthResult.Value;
 			Done.Execute();
 		});
 	});
@@ -1149,7 +1149,7 @@ BEGIN_DEFINE_SPEC(FNakamaAsyncTournamentSpec, "IntegrationTests.Async.Tournament
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaClient Client;
-	FNakamaSessionPtr Session;
+	FNakamaSession Session;
 
 	static const FString ServerKey;
 	static const FString Host;
@@ -1177,7 +1177,7 @@ void FNakamaAsyncTournamentSpec::Define()
 		Nakama::AuthenticateCustom(Client, Account, true, TEXT("")).Next([this, Done](FNakamaSessionResult AuthResult)
 		{
 			if (AuthResult.bIsError) { AddError(FString::Printf(TEXT("Auth failed: %s"), *AuthResult.Error.Message)); Done.Execute(); return; }
-			Session = MakeShared<FNakamaSession>(AuthResult.Value);
+			Session = AuthResult.Value;
 			Done.Execute();
 		});
 	});
@@ -1254,7 +1254,7 @@ BEGIN_DEFINE_SPEC(FNakamaAsyncUsersSpec, "IntegrationTests.Async.Users",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaClient Client;
-	FNakamaSessionPtr Session;
+	FNakamaSession Session;
 	FString UserId;
 	FString Username;
 
@@ -1286,7 +1286,7 @@ void FNakamaAsyncUsersSpec::Define()
 		Nakama::AuthenticateCustom(Client, Account, true, Username)
 		.Next([this](const FNakamaSession& AuthResult)
 		{
-			Session = MakeShared<FNakamaSession>(AuthResult);
+			Session = AuthResult;
 			return Nakama::GetAccount(Client, Session);
 		})
 		.Next([this, Done](FNakamaAccountResult AccResult)
@@ -1357,7 +1357,7 @@ BEGIN_DEFINE_SPEC(FNakamaAsyncSessionSpec, "IntegrationTests.Async.Session",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaClient Client;
-	FNakamaSessionPtr Session;
+	FNakamaSession Session;
 
 	static const FString ServerKey;
 	static const FString Host;
@@ -1385,7 +1385,7 @@ void FNakamaAsyncSessionSpec::Define()
 		Nakama::AuthenticateCustom(Client, Account, true, TEXT("")).Next([this, Done](FNakamaSessionResult AuthResult)
 		{
 			if (AuthResult.bIsError) { AddError(FString::Printf(TEXT("Auth failed: %s"), *AuthResult.Error.Message)); Done.Execute(); return; }
-			Session = MakeShared<FNakamaSession>(AuthResult.Value);
+			Session = AuthResult.Value;
 			Done.Execute();
 		});
 	});
@@ -1396,7 +1396,7 @@ void FNakamaAsyncSessionSpec::Define()
 	{
 		LatentIt("should logout successfully", [this](const FDoneDelegate& Done)
 		{
-			Nakama::SessionLogout(Client, Session, Session->Token, Session->RefreshToken)
+			Nakama::SessionLogout(Client, Session, Session.Token, Session.RefreshToken)
 			.Next([this, Done](FNakamaVoidResult Result)
 			{
 				ASYNC_FAIL_ON_ERROR(Result, Done);
@@ -1415,7 +1415,7 @@ BEGIN_DEFINE_SPEC(FNakamaAsyncDeleteStorageSpec, "IntegrationTests.Async.DeleteS
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaClient Client;
-	FNakamaSessionPtr Session;
+	FNakamaSession Session;
 	FString UserId;
 
 	static const FString ServerKey;
@@ -1445,7 +1445,7 @@ void FNakamaAsyncDeleteStorageSpec::Define()
 		Nakama::AuthenticateCustom(Client, Account, true, TEXT(""))
 		.Next([this](const FNakamaSession& AuthResult)
 		{
-			Session = MakeShared<FNakamaSession>(AuthResult);
+			Session = AuthResult;
 			return Nakama::GetAccount(Client, Session);
 		})
 		.Next([this, Done](FNakamaAccountResult AccResult)
@@ -1502,8 +1502,8 @@ BEGIN_DEFINE_SPEC(FNakamaAsyncGroupOpsSpec, "IntegrationTests.Async.GroupOps",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaClient Client;
-	FNakamaSessionPtr Session;
-	FNakamaSessionPtr MemberSession;
+	FNakamaSession Session;
+	FNakamaSession MemberSession;
 	FString UserId;
 	FString MemberUserId;
 	FString GroupId;
@@ -1536,7 +1536,7 @@ void FNakamaAsyncGroupOpsSpec::Define()
 		Nakama::AuthenticateCustom(Client, Account, true, TEXT(""))
 		.Next([this](const FNakamaSession& AuthResult)
 		{
-			Session = MakeShared<FNakamaSession>(AuthResult);
+			Session = AuthResult;
 			return Nakama::GetAccount(Client, Session);
 		})
 		.Next([this](const FNakamaAccount& AccResult)
@@ -1548,7 +1548,7 @@ void FNakamaAsyncGroupOpsSpec::Define()
 		})
 		.Next([this](const FNakamaSession& MemberAuthResult)
 		{
-			MemberSession = MakeShared<FNakamaSession>(MemberAuthResult);
+			MemberSession = MemberAuthResult;
 			return Nakama::GetAccount(Client, MemberSession);
 		})
 		.Next([this, Done](FNakamaAccountResult MemberAccResult)
@@ -1688,7 +1688,7 @@ BEGIN_DEFINE_SPEC(FNakamaAsyncRpcSpec, "IntegrationTests.Async.RPC",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaClient Client;
-	FNakamaSessionPtr Session;
+	FNakamaSession Session;
 
 	static const FString ServerKey;
 	static const FString Host;
@@ -1716,7 +1716,7 @@ void FNakamaAsyncRpcSpec::Define()
 		Nakama::AuthenticateCustom(Client, Account, true, TEXT("")).Next([this, Done](FNakamaSessionResult AuthResult)
 		{
 			if (AuthResult.bIsError) { AddError(FString::Printf(TEXT("Auth failed: %s"), *AuthResult.Error.Message)); Done.Execute(); return; }
-			Session = MakeShared<FNakamaSession>(AuthResult.Value);
+			Session = AuthResult.Value;
 			Done.Execute();
 		});
 	});
@@ -1902,8 +1902,8 @@ BEGIN_DEFINE_SPEC(FNakamaAsyncDeleteFriendsSpec, "IntegrationTests.Async.DeleteF
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaClient Client;
-	FNakamaSessionPtr Session;
-	FNakamaSessionPtr FriendSession;
+	FNakamaSession Session;
+	FNakamaSession FriendSession;
 	FString UserId;
 	FString FriendUserId;
 
@@ -1933,7 +1933,7 @@ void FNakamaAsyncDeleteFriendsSpec::Define()
 		Nakama::AuthenticateCustom(Client, Account, true, TEXT(""))
 		.Next([this](const FNakamaSession& AuthResult)
 		{
-			Session = MakeShared<FNakamaSession>(AuthResult);
+			Session = AuthResult;
 			return Nakama::GetAccount(Client, Session);
 		})
 		.Next([this](const FNakamaAccount& AccResult)
@@ -1945,7 +1945,7 @@ void FNakamaAsyncDeleteFriendsSpec::Define()
 		})
 		.Next([this](const FNakamaSession& FriendAuthResult)
 		{
-			FriendSession = MakeShared<FNakamaSession>(FriendAuthResult);
+			FriendSession = FriendAuthResult;
 			return Nakama::GetAccount(Client, FriendSession);
 		})
 		.Next([this, Done](FNakamaAccountResult FriendAccResult)
@@ -2003,7 +2003,7 @@ BEGIN_DEFINE_SPEC(FNakamaAsyncImportSpec, "IntegrationTests.Async.Import",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaClient Client;
-	FNakamaSessionPtr Session;
+	FNakamaSession Session;
 
 	static const FString ServerKey;
 	static const FString Host;
@@ -2031,7 +2031,7 @@ void FNakamaAsyncImportSpec::Define()
 		Nakama::AuthenticateCustom(Client, Account, true, TEXT("")).Next([this, Done](FNakamaSessionResult AuthResult)
 		{
 			if (AuthResult.bIsError) { AddError(FString::Printf(TEXT("Auth failed: %s"), *AuthResult.Error.Message)); Done.Execute(); return; }
-			Session = MakeShared<FNakamaSession>(AuthResult.Value);
+			Session = AuthResult.Value;
 			Done.Execute();
 		});
 	});
@@ -2081,7 +2081,7 @@ BEGIN_DEFINE_SPEC(FNakamaAsyncAccountExtSpec, "IntegrationTests.Async.AccountExt
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaClient Client;
-	FNakamaSessionPtr Session;
+	FNakamaSession Session;
 	FString UserId;
 
 	static const FString ServerKey;
@@ -2111,7 +2111,7 @@ void FNakamaAsyncAccountExtSpec::Define()
 		Nakama::AuthenticateCustom(Client, Account, true, TEXT(""))
 		.Next([this](const FNakamaSession& AuthResult)
 		{
-			Session = MakeShared<FNakamaSession>(AuthResult);
+			Session = AuthResult;
 			return Nakama::GetAccount(Client, Session);
 		})
 		.Next([this, Done](FNakamaAccountResult AccResult)
@@ -2222,8 +2222,8 @@ BEGIN_DEFINE_SPEC(FNakamaAsyncFriendsExtSpec, "IntegrationTests.Async.FriendsExt
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaClient Client;
-	FNakamaSessionPtr Session;
-	FNakamaSessionPtr FriendSession;
+	FNakamaSession Session;
+	FNakamaSession FriendSession;
 	FString UserId;
 	FString FriendUserId;
 	FString FriendUsername;
@@ -2256,7 +2256,7 @@ void FNakamaAsyncFriendsExtSpec::Define()
 		Nakama::AuthenticateCustom(Client, Account, true, TEXT(""))
 		.Next([this](const FNakamaSession& AuthResult)
 		{
-			Session = MakeShared<FNakamaSession>(AuthResult);
+			Session = AuthResult;
 			return Nakama::GetAccount(Client, Session);
 		})
 		.Next([this](const FNakamaAccount& AccResult)
@@ -2268,7 +2268,7 @@ void FNakamaAsyncFriendsExtSpec::Define()
 		})
 		.Next([this](const FNakamaSession& FriendResult)
 		{
-			FriendSession = MakeShared<FNakamaSession>(FriendResult);
+			FriendSession = FriendResult;
 			return Nakama::GetAccount(Client, FriendSession);
 		})
 		.Next([this, Done](FNakamaAccountResult FriendAccResult)
@@ -2386,7 +2386,7 @@ BEGIN_DEFINE_SPEC(FNakamaAsyncStorageExtSpec, "IntegrationTests.Async.StorageExt
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaClient Client;
-	FNakamaSessionPtr Session;
+	FNakamaSession Session;
 	FString UserId;
 
 	static const FString ServerKey;
@@ -2415,7 +2415,7 @@ void FNakamaAsyncStorageExtSpec::Define()
 		Nakama::AuthenticateCustom(Client, Account, true, TEXT(""))
 		.Next([this](const FNakamaSession& AuthResult)
 		{
-			Session = MakeShared<FNakamaSession>(AuthResult);
+			Session = AuthResult;
 			return Nakama::GetAccount(Client, Session);
 		})
 		.Next([this, Done](FNakamaAccountResult AccResult)
@@ -2656,8 +2656,8 @@ BEGIN_DEFINE_SPEC(FNakamaAsyncGroupExtSpec, "IntegrationTests.Async.GroupExt",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaClient Client;
-	FNakamaSessionPtr Session;
-	FNakamaSessionPtr MemberSession;
+	FNakamaSession Session;
+	FNakamaSession MemberSession;
 	FString UserId;
 	FString MemberUserId;
 
@@ -2687,7 +2687,7 @@ void FNakamaAsyncGroupExtSpec::Define()
 		Nakama::AuthenticateCustom(Client, Account, true, TEXT(""))
 		.Next([this](const FNakamaSession& AuthResult)
 		{
-			Session = MakeShared<FNakamaSession>(AuthResult);
+			Session = AuthResult;
 			return Nakama::GetAccount(Client, Session);
 		})
 		.Next([this](const FNakamaAccount& AccResult)
@@ -2699,7 +2699,7 @@ void FNakamaAsyncGroupExtSpec::Define()
 		})
 		.Next([this](const FNakamaSession& MemberResult)
 		{
-			MemberSession = MakeShared<FNakamaSession>(MemberResult);
+			MemberSession = MemberResult;
 			return Nakama::GetAccount(Client, MemberSession);
 		})
 		.Next([this, Done](FNakamaAccountResult MemberAccResult)
@@ -2912,7 +2912,7 @@ BEGIN_DEFINE_SPEC(FNakamaAsyncUnlinkSpec, "IntegrationTests.Async.Unlink",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaClient Client;
-	FNakamaSessionPtr Session;
+	FNakamaSession Session;
 	FString DeviceId;
 	FString CustomId;
 
@@ -2944,7 +2944,7 @@ void FNakamaAsyncUnlinkSpec::Define()
 		Nakama::AuthenticateDevice(Client, Account, true, TEXT("")).Next([this, Done](FNakamaSessionResult AuthResult)
 		{
 			if (AuthResult.bIsError) { AddError(FString::Printf(TEXT("Auth failed: %s"), *AuthResult.Error.Message)); Done.Execute(); return; }
-			Session = MakeShared<FNakamaSession>(AuthResult.Value);
+			Session = AuthResult.Value;
 			Done.Execute();
 		});
 	});
@@ -3016,7 +3016,7 @@ BEGIN_DEFINE_SPEC(FNakamaAsyncMatchesExtSpec, "IntegrationTests.Async.MatchesExt
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaClient Client;
-	FNakamaSessionPtr Session;
+	FNakamaSession Session;
 
 	static const FString ServerKey;
 	static const FString Host;
@@ -3043,7 +3043,7 @@ void FNakamaAsyncMatchesExtSpec::Define()
 		Nakama::AuthenticateCustom(Client, Account, true, TEXT("")).Next([this, Done](FNakamaSessionResult AuthResult)
 		{
 			if (AuthResult.bIsError) { AddError(FString::Printf(TEXT("Auth failed: %s"), *AuthResult.Error.Message)); Done.Execute(); return; }
-			Session = MakeShared<FNakamaSession>(AuthResult.Value);
+			Session = AuthResult.Value;
 			Done.Execute();
 		});
 	});
@@ -3092,7 +3092,7 @@ BEGIN_DEFINE_SPEC(FNakamaAsyncChannelSpec, "IntegrationTests.Async.Channel",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaClient Client;
-	FNakamaSessionPtr Session;
+	FNakamaSession Session;
 
 	static const FString ServerKey;
 	static const FString Host;
@@ -3120,7 +3120,7 @@ void FNakamaAsyncChannelSpec::Define()
 		Nakama::AuthenticateCustom(Client, Account, true, TEXT("")).Next([this, Done](FNakamaSessionResult AuthResult)
 		{
 			if (AuthResult.bIsError) { AddError(FString::Printf(TEXT("Auth failed: %s"), *AuthResult.Error.Message)); Done.Execute(); return; }
-			Session = MakeShared<FNakamaSession>(AuthResult.Value);
+			Session = AuthResult.Value;
 			Done.Execute();
 		});
 	});
@@ -3170,7 +3170,7 @@ BEGIN_DEFINE_SPEC(FNakamaAsyncNotificationsExtSpec, "IntegrationTests.Async.Noti
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaClient Client;
-	FNakamaSessionPtr Session;
+	FNakamaSession Session;
 
 	static const FString ServerKey;
 	static const FString Host;
@@ -3197,7 +3197,7 @@ void FNakamaAsyncNotificationsExtSpec::Define()
 		Nakama::AuthenticateCustom(Client, Account, true, TEXT("")).Next([this, Done](FNakamaSessionResult AuthResult)
 		{
 			if (AuthResult.bIsError) { AddError(FString::Printf(TEXT("Auth failed: %s"), *AuthResult.Error.Message)); Done.Execute(); return; }
-			Session = MakeShared<FNakamaSession>(AuthResult.Value);
+			Session = AuthResult.Value;
 			Done.Execute();
 		});
 	});
@@ -3299,12 +3299,20 @@ void FNakamaAsyncAuthValidationSpec::Define()
 		{
 			FNakamaAccountCustom Account;
 			Account.Id = GenerateId();
-			FString Username = FString::Printf(TEXT("u@#$_%s"), *GenerateShortId());
+			FString Username = TEXT("u@$^!~+");
 			Nakama::AuthenticateCustom(Client, Account, true, Username).Next([this, Done](FNakamaSessionResult Result)
 			{
-				ASYNC_FAIL_ON_ERROR(Result, Done);
+				if (Result.bIsError)
+				{
+					AddError(FString::Printf(TEXT("Unexpected error %d: %s"), Result.Error.Code, *Result.Error.Message));
+					Done.Execute();
+					return;
+				}
 				TestTrue("Session is valid", !Result.Value.Token.IsEmpty());
-				Done.Execute();
+				Nakama::DeleteAccount(Client, Result.Value).Next([Done](FNakamaVoidResult)
+				{
+					Done.Execute();
+				});
 			});
 		});
 	});
@@ -3393,7 +3401,7 @@ BEGIN_DEFINE_SPEC(FNakamaAsyncAccountDeleteSpec, "IntegrationTests.Async.Account
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaClient Client;
-	FNakamaSessionPtr Session;
+	FNakamaSession Session;
 
 	static const FString ServerKey;
 	static const FString Host;
@@ -3420,7 +3428,7 @@ void FNakamaAsyncAccountDeleteSpec::Define()
 			Nakama::AuthenticateCustom(Client, Account, true, TEXT(""))
 			.Next([this](const FNakamaSession& AuthResult)
 			{
-				Session = MakeShared<FNakamaSession>(AuthResult);
+				Session = AuthResult;
 				return Nakama::DeleteAccount(Client, Session);
 			})
 			.Next([this, Done](FNakamaVoidResult Result)
@@ -3438,7 +3446,7 @@ void FNakamaAsyncAccountDeleteSpec::Define()
 			Nakama::AuthenticateCustom(Client, Account, true, TEXT(""))
 			.Next([this](const FNakamaSession& AuthResult)
 			{
-				Session = MakeShared<FNakamaSession>(AuthResult);
+				Session = AuthResult;
 				return Nakama::DeleteAccount(Client, Session);
 			})
 			.Next([this](const FNakamaVoid&)
@@ -3570,7 +3578,7 @@ BEGIN_DEFINE_SPEC(FNakamaAsyncSessionExtSpec, "IntegrationTests.Async.SessionExt
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaClient Client;
-	FNakamaSessionPtr Session;
+	FNakamaSession Session;
 
 	static const FString ServerKey;
 	static const FString Host;
@@ -3594,7 +3602,7 @@ void FNakamaAsyncSessionExtSpec::Define()
 		Nakama::AuthenticateCustom(Client, Account, true, TEXT("")).Next([this, Done](FNakamaSessionResult AuthResult)
 		{
 			if (AuthResult.bIsError) { AddError(FString::Printf(TEXT("Auth failed: %s"), *AuthResult.Error.Message)); Done.Execute(); return; }
-			Session = MakeShared<FNakamaSession>(AuthResult.Value);
+			Session = AuthResult.Value;
 			Done.Execute();
 		});
 	});
@@ -3605,7 +3613,7 @@ void FNakamaAsyncSessionExtSpec::Define()
 	{
 		LatentIt("should logout and invalidate session", [this](const FDoneDelegate& Done)
 		{
-			Nakama::SessionLogout(Client, Session, Session->Token, Session->RefreshToken)
+			Nakama::SessionLogout(Client, Session, Session.Token, Session.RefreshToken)
 			.Next([this](const FNakamaVoid&)
 			{
 				return Nakama::GetAccount(Client, Session);
@@ -3650,7 +3658,7 @@ BEGIN_DEFINE_SPEC(FNakamaAsyncUsersExtSpec, "IntegrationTests.Async.UsersExt",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaClient Client;
-	FNakamaSessionPtr Session;
+	FNakamaSession Session;
 	FString UserId;
 
 	static const FString ServerKey;
@@ -3675,7 +3683,7 @@ void FNakamaAsyncUsersExtSpec::Define()
 		Nakama::AuthenticateCustom(Client, Account, true, TEXT(""))
 		.Next([this](const FNakamaSession& AuthResult)
 		{
-			Session = MakeShared<FNakamaSession>(AuthResult);
+			Session = AuthResult;
 			return Nakama::GetAccount(Client, Session);
 		})
 		.Next([this, Done](FNakamaAccountResult AccResult)
@@ -3734,7 +3742,7 @@ BEGIN_DEFINE_SPEC(FNakamaAsyncFriendsOfFriendsSpec, "IntegrationTests.Async.Frie
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaClient Client;
-	FNakamaSessionPtr Session;
+	FNakamaSession Session;
 	FString UserId;
 
 	static const FString ServerKey;
@@ -3759,7 +3767,7 @@ void FNakamaAsyncFriendsOfFriendsSpec::Define()
 		Nakama::AuthenticateCustom(Client, Account, true, TEXT(""))
 		.Next([this](const FNakamaSession& AuthResult)
 		{
-			Session = MakeShared<FNakamaSession>(AuthResult);
+			Session = AuthResult;
 			return Nakama::GetAccount(Client, Session);
 		})
 		.Next([this, Done](FNakamaAccountResult AccResult)
@@ -3866,8 +3874,8 @@ BEGIN_DEFINE_SPEC(FNakamaAsyncGroupPermissionsSpec, "IntegrationTests.Async.Grou
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaClient Client;
-	FNakamaSessionPtr Session;
-	FNakamaSessionPtr Session2;
+	FNakamaSession Session;
+	FNakamaSession Session2;
 	FString UserId;
 	FString UserId2;
 
@@ -3897,7 +3905,7 @@ void FNakamaAsyncGroupPermissionsSpec::Define()
 		Nakama::AuthenticateCustom(Client, Account1, true, TEXT(""))
 		.Next([this](const FNakamaSession& Result)
 		{
-			Session = MakeShared<FNakamaSession>(Result);
+			Session = Result;
 			return Nakama::GetAccount(Client, Session);
 		})
 		.Next([this](const FNakamaAccount& AccResult)
@@ -3909,7 +3917,7 @@ void FNakamaAsyncGroupPermissionsSpec::Define()
 		})
 		.Next([this](const FNakamaSession& Result2)
 		{
-			Session2 = MakeShared<FNakamaSession>(Result2);
+			Session2 = Result2;
 			return Nakama::GetAccount(Client, Session2);
 		})
 		.Next([this, Done](FNakamaAccountResult AccResult2)
@@ -4087,8 +4095,8 @@ BEGIN_DEFINE_SPEC(FNakamaAsyncStoragePermissionsSpec, "IntegrationTests.Async.St
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaClient Client;
-	FNakamaSessionPtr Session;
-	FNakamaSessionPtr Session2;
+	FNakamaSession Session;
+	FNakamaSession Session2;
 	FString UserId;
 	FString UserId2;
 
@@ -4118,7 +4126,7 @@ void FNakamaAsyncStoragePermissionsSpec::Define()
 		Nakama::AuthenticateCustom(Client, Account1, true, TEXT(""))
 		.Next([this](const FNakamaSession& Result)
 		{
-			Session = MakeShared<FNakamaSession>(Result);
+			Session = Result;
 			return Nakama::GetAccount(Client, Session);
 		})
 		.Next([this](const FNakamaAccount& AccResult)
@@ -4130,7 +4138,7 @@ void FNakamaAsyncStoragePermissionsSpec::Define()
 		})
 		.Next([this](const FNakamaSession& Result2)
 		{
-			Session2 = MakeShared<FNakamaSession>(Result2);
+			Session2 = Result2;
 			return Nakama::GetAccount(Client, Session2);
 		})
 		.Next([this, Done](FNakamaAccountResult AccResult2)
@@ -4254,7 +4262,7 @@ BEGIN_DEFINE_SPEC(FNakamaAsyncChannelExtSpec, "IntegrationTests.Async.ChannelExt
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaClient Client;
-	FNakamaSessionPtr Session;
+	FNakamaSession Session;
 	FString UserId;
 	FString GroupId;
 
@@ -4281,7 +4289,7 @@ void FNakamaAsyncChannelExtSpec::Define()
 		Nakama::AuthenticateCustom(Client, Account, true, TEXT(""))
 		.Next([this](const FNakamaSession& AuthResult)
 		{
-			Session = MakeShared<FNakamaSession>(AuthResult);
+			Session = AuthResult;
 			return Nakama::GetAccount(Client, Session);
 		})
 		.Next([this](const FNakamaAccount& AccResult)
@@ -4352,8 +4360,8 @@ BEGIN_DEFINE_SPEC(FNakamaAsyncLinkExtSpec, "IntegrationTests.Async.LinkExt",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaClient Client;
-	FNakamaSessionPtr Session;
-	FNakamaSessionPtr Session2;
+	FNakamaSession Session;
+	FNakamaSession Session2;
 
 	static const FString ServerKey;
 	static const FString Host;
@@ -4381,7 +4389,7 @@ void FNakamaAsyncLinkExtSpec::Define()
 		Nakama::AuthenticateCustom(Client, Account1, true, TEXT(""))
 		.Next([this](const FNakamaSession& Result)
 		{
-			Session = MakeShared<FNakamaSession>(Result);
+			Session = Result;
 			FNakamaAccountCustom Account2;
 			Account2.Id = GenerateId();
 			return Nakama::AuthenticateCustom(Client, Account2, true, TEXT(""));
@@ -4389,7 +4397,7 @@ void FNakamaAsyncLinkExtSpec::Define()
 		.Next([this, Done](FNakamaSessionResult Result2)
 		{
 			ASYNC_FAIL_ON_ERROR(Result2, Done);
-			Session2 = MakeShared<FNakamaSession>(Result2.Value);
+			Session2 = Result2.Value;
 			Done.Execute();
 		});
 	});
@@ -4492,7 +4500,7 @@ BEGIN_DEFINE_SPEC(FNakamaAsyncRpcExtSpec, "IntegrationTests.Async.RPCExt",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaClient Client;
-	FNakamaSessionPtr Session;
+	FNakamaSession Session;
 
 	static const FString ServerKey;
 	static const FString Host;
@@ -4518,7 +4526,7 @@ void FNakamaAsyncRpcExtSpec::Define()
 		Nakama::AuthenticateCustom(Client, Account, true, TEXT("")).Next([this, Done](FNakamaSessionResult AuthResult)
 		{
 			if (AuthResult.bIsError) { AddError(FString::Printf(TEXT("Auth failed: %s"), *AuthResult.Error.Message)); Done.Execute(); return; }
-			Session = MakeShared<FNakamaSession>(AuthResult.Value);
+			Session = AuthResult.Value;
 			Done.Execute();
 		});
 	});
@@ -4651,7 +4659,7 @@ BEGIN_DEFINE_SPEC(FNakamaAsyncMatchesValidationSpec, "IntegrationTests.Async.Mat
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaClient Client;
-	FNakamaSessionPtr Session;
+	FNakamaSession Session;
 
 	static const FString ServerKey;
 	static const FString Host;
@@ -4674,7 +4682,7 @@ void FNakamaAsyncMatchesValidationSpec::Define()
 		Nakama::AuthenticateCustom(Client, Account, true, TEXT("")).Next([this, Done](FNakamaSessionResult AuthResult)
 		{
 			if (AuthResult.bIsError) { AddError(FString::Printf(TEXT("Auth failed: %s"), *AuthResult.Error.Message)); Done.Execute(); return; }
-			Session = MakeShared<FNakamaSession>(AuthResult.Value);
+			Session = AuthResult.Value;
 			Done.Execute();
 		});
 	});
@@ -4717,7 +4725,7 @@ BEGIN_DEFINE_SPEC(FNakamaAsyncPurchasesSpec, "IntegrationTests.Async.Purchases",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaClient Client;
-	FNakamaSessionPtr Session;
+	FNakamaSession Session;
 
 	static const FString ServerKey;
 	static const FString Host;
@@ -4740,7 +4748,7 @@ void FNakamaAsyncPurchasesSpec::Define()
 		Nakama::AuthenticateCustom(Client, Account, true, TEXT("")).Next([this, Done](FNakamaSessionResult AuthResult)
 		{
 			if (AuthResult.bIsError) { AddError(FString::Printf(TEXT("Auth failed: %s"), *AuthResult.Error.Message)); Done.Execute(); return; }
-			Session = MakeShared<FNakamaSession>(AuthResult.Value);
+			Session = AuthResult.Value;
 			Done.Execute();
 		});
 	});
@@ -4820,7 +4828,7 @@ BEGIN_DEFINE_SPEC(FNakamaAsyncEventSpec, "IntegrationTests.Async.Event",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaClient Client;
-	FNakamaSessionPtr Session;
+	FNakamaSession Session;
 
 	static const FString ServerKey;
 	static const FString Host;
@@ -4843,7 +4851,7 @@ void FNakamaAsyncEventSpec::Define()
 		Nakama::AuthenticateCustom(Client, Account, true, TEXT("")).Next([this, Done](FNakamaSessionResult AuthResult)
 		{
 			if (AuthResult.bIsError) { AddError(FString::Printf(TEXT("Auth failed: %s"), *AuthResult.Error.Message)); Done.Execute(); return; }
-			Session = MakeShared<FNakamaSession>(AuthResult.Value);
+			Session = AuthResult.Value;
 			Done.Execute();
 		});
 	});
@@ -4884,7 +4892,7 @@ BEGIN_DEFINE_SPEC(FNakamaAsyncHealthcheckSpec, "IntegrationTests.Async.Healthche
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaClient Client;
-	FNakamaSessionPtr Session;
+	FNakamaSession Session;
 
 	static const FString ServerKey;
 	static const FString Host;
@@ -4909,7 +4917,7 @@ void FNakamaAsyncHealthcheckSpec::Define()
 		Nakama::AuthenticateCustom(Client, Account, true, TEXT("")).Next([this, Done](FNakamaSessionResult AuthResult)
 		{
 			if (AuthResult.bIsError) { AddError(FString::Printf(TEXT("Auth failed: %s"), *AuthResult.Error.Message)); Done.Execute(); return; }
-			Session = MakeShared<FNakamaSession>(AuthResult.Value);
+			Session = AuthResult.Value;
 			Done.Execute();
 		});
 	});
@@ -4947,9 +4955,9 @@ BEGIN_DEFINE_SPEC(FNakamaAsyncGroupUsersSpec, "IntegrationTests.Async.GroupUsers
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaClient Client;
-	FNakamaSessionPtr Session;
-	FNakamaSessionPtr Session2;
-	FNakamaSessionPtr Session3;
+	FNakamaSession Session;
+	FNakamaSession Session2;
+	FNakamaSession Session3;
 	FString UserId;
 	FString UserId2;
 	FString UserId3;
@@ -4981,7 +4989,7 @@ void FNakamaAsyncGroupUsersSpec::Define()
 		Nakama::AuthenticateCustom(Client, Account1, true, TEXT(""))
 		.Next([this](const FNakamaSession& Result)
 		{
-			Session = MakeShared<FNakamaSession>(Result);
+			Session = Result;
 			return Nakama::GetAccount(Client, Session);
 		})
 		.Next([this](const FNakamaAccount& AccResult)
@@ -4993,7 +5001,7 @@ void FNakamaAsyncGroupUsersSpec::Define()
 		})
 		.Next([this](const FNakamaSession& Result2)
 		{
-			Session2 = MakeShared<FNakamaSession>(Result2);
+			Session2 = Result2;
 			return Nakama::GetAccount(Client, Session2);
 		})
 		.Next([this](const FNakamaAccount& AccResult2)
@@ -5005,7 +5013,7 @@ void FNakamaAsyncGroupUsersSpec::Define()
 		})
 		.Next([this](const FNakamaSession& Result3)
 		{
-			Session3 = MakeShared<FNakamaSession>(Result3);
+			Session3 = Result3;
 			return Nakama::GetAccount(Client, Session3);
 		})
 		.Next([this, Done](FNakamaAccountResult AccResult3)

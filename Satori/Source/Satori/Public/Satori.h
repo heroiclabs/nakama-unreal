@@ -231,27 +231,27 @@ namespace Satori
 	/** Delete the caller's identity and associated data. */
 	SATORI_API TSatoriFuture<FSatoriVoidResult> DeleteIdentity(
 		FSatoriClient Client,
-		FSatoriSessionPtr Session,
+		const FSatoriSession& Session,
 		FSatoriCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Publish an event for this session. */
 	SATORI_API TSatoriFuture<FSatoriVoidResult> Event(
 		FSatoriClient Client,
-		FSatoriSessionPtr Session,
+		const FSatoriSession& Session,
 		const TArray<FSatoriEvent>& Events,
 		FSatoriCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Publish server events for multiple distinct identities. */
 	SATORI_API TSatoriFuture<FSatoriVoidResult> ServerEvent(
 		FSatoriClient Client,
-		FSatoriSessionPtr Session,
+		const FSatoriSession& Session,
 		const TArray<FSatoriEvent>& Events,
 		FSatoriCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Get or list all available experiments for this identity. */
 	SATORI_API TSatoriFuture<FSatoriExperimentListResult> GetExperiments(
 		FSatoriClient Client,
-		FSatoriSessionPtr Session,
+		const FSatoriSession& Session,
 		const TArray<FString>& Names,
 		const TArray<FString>& Labels,
 		FSatoriCancellationTokenPtr CancellationToken = nullptr) noexcept;
@@ -259,7 +259,7 @@ namespace Satori
 	/** List all available flags and their value overrides for this identity. */
 	SATORI_API TSatoriFuture<FSatoriFlagOverrideListResult> GetFlagOverrides(
 		FSatoriClient Client,
-		FSatoriSessionPtr Session,
+		const FSatoriSession& Session,
 		const TArray<FString>& Names,
 		const TArray<FString>& Labels,
 		FSatoriCancellationTokenPtr CancellationToken = nullptr) noexcept;
@@ -267,7 +267,7 @@ namespace Satori
 	/** List all available flags for this identity. */
 	SATORI_API TSatoriFuture<FSatoriFlagListResult> GetFlags(
 		FSatoriClient Client,
-		FSatoriSessionPtr Session,
+		const FSatoriSession& Session,
 		const TArray<FString>& Names,
 		const TArray<FString>& Labels,
 		FSatoriCancellationTokenPtr CancellationToken = nullptr) noexcept;
@@ -275,7 +275,7 @@ namespace Satori
 	/** List available live events. */
 	SATORI_API TSatoriFuture<FSatoriLiveEventListResult> GetLiveEvents(
 		FSatoriClient Client,
-		FSatoriSessionPtr Session,
+		const FSatoriSession& Session,
 		const TArray<FString>& Names,
 		const TArray<FString>& Labels,
 		int32 PastRunCount,
@@ -287,20 +287,20 @@ namespace Satori
 	/** Join an 'explicit join' live event. */
 	SATORI_API TSatoriFuture<FSatoriVoidResult> JoinLiveEvent(
 		FSatoriClient Client,
-		FSatoriSessionPtr Session,
+		const FSatoriSession& Session,
 		FString Id,
 		FSatoriCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** A healthcheck which load balancers can use to check the service. */
 	SATORI_API TSatoriFuture<FSatoriVoidResult> Healthcheck(
 		FSatoriClient Client,
-		FSatoriSessionPtr Session,
+		const FSatoriSession& Session,
 		FSatoriCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Enrich/replace the current session with new identifier. */
 	SATORI_API TSatoriFuture<FSatoriSessionResult> Identify(
 		FSatoriClient Client,
-		FSatoriSessionPtr Session,
+		const FSatoriSession& Session,
 		FString Id,
 		const TMap<FString, FString>& Default,
 		const TMap<FString, FString>& Custom,
@@ -309,19 +309,19 @@ namespace Satori
 	/** List properties associated with this identity. */
 	SATORI_API TSatoriFuture<FSatoriPropertiesResult> ListProperties(
 		FSatoriClient Client,
-		FSatoriSessionPtr Session,
+		const FSatoriSession& Session,
 		FSatoriCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** A readycheck which load balancers can use to check the service. */
 	SATORI_API TSatoriFuture<FSatoriVoidResult> Readycheck(
 		FSatoriClient Client,
-		FSatoriSessionPtr Session,
+		const FSatoriSession& Session,
 		FSatoriCancellationTokenPtr CancellationToken = nullptr) noexcept;
 
 	/** Update identity properties. */
 	SATORI_API TSatoriFuture<FSatoriVoidResult> UpdateProperties(
 		FSatoriClient Client,
-		FSatoriSessionPtr Session,
+		const FSatoriSession& Session,
 		bool Recompute,
 		const TMap<FString, FString>& Default,
 		const TMap<FString, FString>& Custom,
@@ -330,7 +330,7 @@ namespace Satori
 	/** Get the list of messages for the identity. */
 	SATORI_API TSatoriFuture<FSatoriGetMessageListResponseResult> GetMessageList(
 		FSatoriClient Client,
-		FSatoriSessionPtr Session,
+		const FSatoriSession& Session,
 		int32 Limit,
 		bool Forward,
 		FString Cursor,
@@ -340,7 +340,7 @@ namespace Satori
 	/** Updates a message for an identity. */
 	SATORI_API TSatoriFuture<FSatoriVoidResult> UpdateMessage(
 		FSatoriClient Client,
-		FSatoriSessionPtr Session,
+		const FSatoriSession& Session,
 		FString Id,
 		int64 ReadTime,
 		int64 ConsumeTime,
@@ -349,7 +349,7 @@ namespace Satori
 	/** Deletes a message for an identity. */
 	SATORI_API TSatoriFuture<FSatoriVoidResult> DeleteMessage(
 		FSatoriClient Client,
-		FSatoriSessionPtr Session,
+		const FSatoriSession& Session,
 		FString Id,
 		FSatoriCancellationTokenPtr CancellationToken = nullptr) noexcept;
 }

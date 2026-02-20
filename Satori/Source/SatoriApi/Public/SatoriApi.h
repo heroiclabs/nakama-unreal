@@ -749,8 +749,6 @@ struct SATORIAPI_API FSatoriUpdateMessageRequest
 	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
-using FSatoriSessionPtr = TSharedPtr<FSatoriSession>;
-
 enum class ESatoriRequestAuth : uint8
 {
 	None,
@@ -817,7 +815,7 @@ namespace SatoriApi
 	/** Delete the caller's identity and associated data. */
 	SATORIAPI_API void DeleteIdentity(
 		const FSatoriApiConfig& Config,
-		FSatoriSessionPtr Session,
+		const FSatoriSession& Session,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FSatoriError&)> OnError,
 		FSatoriCancellationTokenPtr CancellationToken = nullptr) noexcept;
@@ -825,7 +823,7 @@ namespace SatoriApi
 	/** Publish an event for this session. */
 	SATORIAPI_API void Event(
 		const FSatoriApiConfig& Config,
-		FSatoriSessionPtr Session,
+		const FSatoriSession& Session,
 		const TArray<FSatoriEvent>& Events,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FSatoriError&)> OnError,
@@ -834,7 +832,7 @@ namespace SatoriApi
 	/** Publish server events for multiple distinct identities. */
 	SATORIAPI_API void ServerEvent(
 		const FSatoriApiConfig& Config,
-		FSatoriSessionPtr Session,
+		const FSatoriSession& Session,
 		const TArray<FSatoriEvent>& Events,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FSatoriError&)> OnError,
@@ -843,7 +841,7 @@ namespace SatoriApi
 	/** Get or list all available experiments for this identity. */
 	SATORIAPI_API void GetExperiments(
 		const FSatoriApiConfig& Config,
-		FSatoriSessionPtr Session,
+		const FSatoriSession& Session,
 		const TArray<FString>& Names,
 		const TArray<FString>& Labels,
 		TFunction<void(const FSatoriExperimentList&)> OnSuccess,
@@ -853,7 +851,7 @@ namespace SatoriApi
 	/** List all available flags and their value overrides for this identity. */
 	SATORIAPI_API void GetFlagOverrides(
 		const FSatoriApiConfig& Config,
-		FSatoriSessionPtr Session,
+		const FSatoriSession& Session,
 		const TArray<FString>& Names,
 		const TArray<FString>& Labels,
 		TFunction<void(const FSatoriFlagOverrideList&)> OnSuccess,
@@ -863,7 +861,7 @@ namespace SatoriApi
 	/** List all available flags for this identity. */
 	SATORIAPI_API void GetFlags(
 		const FSatoriApiConfig& Config,
-		FSatoriSessionPtr Session,
+		const FSatoriSession& Session,
 		const TArray<FString>& Names,
 		const TArray<FString>& Labels,
 		TFunction<void(const FSatoriFlagList&)> OnSuccess,
@@ -873,7 +871,7 @@ namespace SatoriApi
 	/** List available live events. */
 	SATORIAPI_API void GetLiveEvents(
 		const FSatoriApiConfig& Config,
-		FSatoriSessionPtr Session,
+		const FSatoriSession& Session,
 		const TArray<FString>& Names,
 		const TArray<FString>& Labels,
 		int32 PastRunCount,
@@ -887,7 +885,7 @@ namespace SatoriApi
 	/** Join an 'explicit join' live event. */
 	SATORIAPI_API void JoinLiveEvent(
 		const FSatoriApiConfig& Config,
-		FSatoriSessionPtr Session,
+		const FSatoriSession& Session,
 		FString Id,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FSatoriError&)> OnError,
@@ -896,7 +894,7 @@ namespace SatoriApi
 	/** A healthcheck which load balancers can use to check the service. */
 	SATORIAPI_API void Healthcheck(
 		const FSatoriApiConfig& Config,
-		FSatoriSessionPtr Session,
+		const FSatoriSession& Session,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FSatoriError&)> OnError,
 		FSatoriCancellationTokenPtr CancellationToken = nullptr) noexcept;
@@ -904,7 +902,7 @@ namespace SatoriApi
 	/** Enrich/replace the current session with new identifier. */
 	SATORIAPI_API void Identify(
 		const FSatoriApiConfig& Config,
-		FSatoriSessionPtr Session,
+		const FSatoriSession& Session,
 		FString Id,
 		const TMap<FString, FString>& Default,
 		const TMap<FString, FString>& Custom,
@@ -915,7 +913,7 @@ namespace SatoriApi
 	/** List properties associated with this identity. */
 	SATORIAPI_API void ListProperties(
 		const FSatoriApiConfig& Config,
-		FSatoriSessionPtr Session,
+		const FSatoriSession& Session,
 		TFunction<void(const FSatoriProperties&)> OnSuccess,
 		TFunction<void(const FSatoriError&)> OnError,
 		FSatoriCancellationTokenPtr CancellationToken = nullptr) noexcept;
@@ -923,7 +921,7 @@ namespace SatoriApi
 	/** A readycheck which load balancers can use to check the service. */
 	SATORIAPI_API void Readycheck(
 		const FSatoriApiConfig& Config,
-		FSatoriSessionPtr Session,
+		const FSatoriSession& Session,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FSatoriError&)> OnError,
 		FSatoriCancellationTokenPtr CancellationToken = nullptr) noexcept;
@@ -931,7 +929,7 @@ namespace SatoriApi
 	/** Update identity properties. */
 	SATORIAPI_API void UpdateProperties(
 		const FSatoriApiConfig& Config,
-		FSatoriSessionPtr Session,
+		const FSatoriSession& Session,
 		bool Recompute,
 		const TMap<FString, FString>& Default,
 		const TMap<FString, FString>& Custom,
@@ -942,7 +940,7 @@ namespace SatoriApi
 	/** Get the list of messages for the identity. */
 	SATORIAPI_API void GetMessageList(
 		const FSatoriApiConfig& Config,
-		FSatoriSessionPtr Session,
+		const FSatoriSession& Session,
 		int32 Limit,
 		bool Forward,
 		FString Cursor,
@@ -954,7 +952,7 @@ namespace SatoriApi
 	/** Updates a message for an identity. */
 	SATORIAPI_API void UpdateMessage(
 		const FSatoriApiConfig& Config,
-		FSatoriSessionPtr Session,
+		const FSatoriSession& Session,
 		FString Id,
 		int64 ReadTime,
 		int64 ConsumeTime,
@@ -965,7 +963,7 @@ namespace SatoriApi
 	/** Deletes a message for an identity. */
 	SATORIAPI_API void DeleteMessage(
 		const FSatoriApiConfig& Config,
-		FSatoriSessionPtr Session,
+		const FSatoriSession& Session,
 		FString Id,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FSatoriError&)> OnError,

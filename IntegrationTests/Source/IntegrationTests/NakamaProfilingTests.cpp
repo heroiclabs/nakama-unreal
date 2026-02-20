@@ -32,7 +32,7 @@ BEGIN_DEFINE_SPEC(FNakamaProfilingMemorySpec, "IntegrationTests.Profiling.Memory
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaApiConfig Client;
-	FNakamaSessionPtr Session;
+	FNakamaSession Session;
 
 	static const FString ServerKey;
 	static const FString Host;
@@ -66,7 +66,7 @@ void FNakamaProfilingMemorySpec::Define()
 		NakamaApi::AuthenticateCustom(Client, Account, true, TEXT(""),
 			[this, Done](const FNakamaSession& Result)
 			{
-				Session = MakeShared<FNakamaSession>(Result);
+				Session = Result;
 				Done.Execute();
 			},
 			[this, Done](const FNakamaError& Error)
@@ -204,7 +204,7 @@ void FNakamaProfilingMemorySpec::Define()
 
 			for (int32 i = 0; i < NumActions; ++i)
 			{
-				auto* Action = UNakamaClientHealthcheck::Healthcheck(nullptr, Client, *Session);
+				auto* Action = UNakamaClientHealthcheck::Healthcheck(nullptr, Client, Session);
 				Action->AddToRoot();
 				Action->Activate();
 
@@ -240,7 +240,7 @@ BEGIN_DEFINE_SPEC(FNakamaProfilingPerformanceSpec, "IntegrationTests.Profiling.P
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaApiConfig Client;
-	FNakamaSessionPtr Session;
+	FNakamaSession Session;
 
 	static const FString ServerKey;
 	static const FString Host;
@@ -268,7 +268,7 @@ void FNakamaProfilingPerformanceSpec::Define()
 		NakamaApi::AuthenticateCustom(Client, Account, true, TEXT(""),
 			[this, Done](const FNakamaSession& Result)
 			{
-				Session = MakeShared<FNakamaSession>(Result);
+				Session = Result;
 				Done.Execute();
 			},
 			[this, Done](const FNakamaError& Error)
@@ -295,7 +295,7 @@ void FNakamaProfilingPerformanceSpec::Define()
 			struct FSequentialRequester : TSharedFromThis<FSequentialRequester>
 			{
 				FNakamaApiConfig Client;
-				FNakamaSessionPtr Session;
+				FNakamaSession Session;
 				TSharedPtr<TArray<double>> Latencies;
 				TSharedPtr<int32> CompletedCount;
 				int32 NumRequests;
@@ -483,7 +483,7 @@ void FNakamaProfilingPerformanceSpec::Define()
 					TSharedPtr<double> BpStart = MakeShared<double>(0.0);
 					TSharedPtr<double> BpElapsed = MakeShared<double>(0.0);
 
-					auto* Action = UNakamaClientGetAccount::GetAccount(nullptr, Client, *Session);
+					auto* Action = UNakamaClientGetAccount::GetAccount(nullptr, Client, Session);
 					Action->AddToRoot();
 
 					// Can't bind dynamic delegates to lambdas directly, so we time from
@@ -531,7 +531,7 @@ BEGIN_DEFINE_SPEC(FNakamaProfilingStressSpec, "IntegrationTests.Profiling.Stress
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaApiConfig Client;
-	FNakamaSessionPtr Session;
+	FNakamaSession Session;
 
 	static const FString ServerKey;
 	static const FString Host;
@@ -559,7 +559,7 @@ void FNakamaProfilingStressSpec::Define()
 		NakamaApi::AuthenticateCustom(Client, Account, true, TEXT(""),
 			[this, Done](const FNakamaSession& Result)
 			{
-				Session = MakeShared<FNakamaSession>(Result);
+				Session = Result;
 				Done.Execute();
 			},
 			[this, Done](const FNakamaError& Error)
@@ -667,7 +667,7 @@ void FNakamaProfilingStressSpec::Define()
 			NakamaApi::AuthenticateCustom(TempClient, Account, true, TEXT(""),
 				[this, TempClient, Done](const FNakamaSession& TempSession) mutable
 				{
-					NakamaApi::GetAccount(TempClient, MakeShared<FNakamaSession>(TempSession),
+					NakamaApi::GetAccount(TempClient, TempSession,
 						[Done](const FNakamaAccount& Result)
 						{
 							Done.Execute();
@@ -705,7 +705,7 @@ void FNakamaProfilingStressSpec::Define()
 				NakamaApi::AuthenticateCustom(IsoClient, Account, true, TEXT(""),
 					[this, IsoClient, CompletedCount, NumClients, UserIds, Done](const FNakamaSession& IsoSession)
 					{
-						NakamaApi::GetAccount(IsoClient, MakeShared<FNakamaSession>(IsoSession),
+						NakamaApi::GetAccount(IsoClient, IsoSession,
 							[this, CompletedCount, NumClients, UserIds, Done](const FNakamaAccount& Result)
 							{
 								UserIds->Add(Result.User.Id);

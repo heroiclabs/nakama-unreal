@@ -46,21 +46,20 @@ namespace
 /** Optionally refresh the session before calling the RPC. */
 void MaybeRefreshThenCall(
 	FNakamaClient Client,
-	FNakamaSessionPtr Session,
-	TFunction<void()> OnReady,
+	FNakamaSession Session,
+	TFunction<void(const FNakamaSession&)> OnReady,
 	TFunction<void(const FNakamaError&)> OnError,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
 	if (!Client.bAutoRefreshSession
-		|| !Session.IsValid()
-		|| Session->RefreshToken.IsEmpty()
-		|| !Session->IsExpired(Client.AutoRefreshBufferSeconds))
+		|| Session.RefreshToken.IsEmpty()
+		|| !Session.IsExpired(Client.AutoRefreshBufferSeconds))
 	{
-		OnReady();
+		OnReady(Session);
 		return;
 	}
 
-	if (Session->IsRefreshExpired())
+	if (Session.IsRefreshExpired())
 	{
 		if (OnError)
 		{
@@ -71,16 +70,16 @@ void MaybeRefreshThenCall(
 
 	NakamaApi::SessionRefresh(
 		Client.ApiConfig,
-		Session->RefreshToken,
+		Session.RefreshToken,
 		{},
-		[Client, Session, OnReady](const FNakamaSession& RefreshedSession)
+		[Client, Session, OnReady](const FNakamaSession& RefreshedSession) mutable
 		{
-			Session->Update(RefreshedSession.Token, RefreshedSession.RefreshToken);
+			Session.Update(RefreshedSession.Token, RefreshedSession.RefreshToken);
 			if (Client.OnSessionRefreshed)
 			{
-				Client.OnSessionRefreshed(*Session);
+				Client.OnSessionRefreshed(Session);
 			}
-			OnReady();
+			OnReady(Session);
 		},
 		[OnError](const FNakamaError& Error)
 		{
@@ -108,7 +107,7 @@ void MaybeRefreshThenCall(
 TNakamaFuture<{{ $resultType }}Result> Nakama::{{ $rpc.Name }}(
 	FNakamaClient Client,
 	{{- if $needsSession }}
-	FNakamaSessionPtr Session,
+	const FNakamaSession& Session,
 	{{- end }}
 	{{- if $hasParams -}}
 	{{- range $fidx, $field := $requestType.Fields }}
@@ -164,7 +163,7 @@ TNakamaFuture<{{ $resultType }}Result> Nakama::{{ $rpc.Name }}(
 	{
 {{- if $needsSession }}
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
+			[Client, Promise, DoRequest, OnError,
 				{{- if $hasParams -}}
 				{{- range $fidx, $field := $requestType.Fields }}
 				{{ $field.Name | pascalCase }},
@@ -173,7 +172,7 @@ TNakamaFuture<{{ $resultType }}Result> Nakama::{{ $rpc.Name }}(
 				{{ $field.Name | pascalCase }},
 				{{- end -}}
 				{{- end }}
-				CancellationToken]()
+				CancellationToken](const FNakamaSession& Session)
 			{
 				NakamaApi::{{ $rpc.Name }}(
 					Client.ApiConfig,

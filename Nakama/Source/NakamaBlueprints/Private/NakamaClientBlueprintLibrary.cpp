@@ -50,7 +50,7 @@ void UNakamaClientAddFriends::Activate()
 
 	NakamaApi::AddFriends(
 		Client,
-		MakeShared<FNakamaSession>(Session),
+		Session,
 		StoredIds,
 		StoredUsernames,
 		StoredMetadata,
@@ -95,7 +95,7 @@ void UNakamaClientAddGroupUsers::Activate()
 
 	NakamaApi::AddGroupUsers(
 		Client,
-		MakeShared<FNakamaSession>(Session),
+		Session,
 		StoredGroupId,
 		StoredUserIds,
 		[this]()
@@ -180,7 +180,7 @@ void UNakamaClientSessionLogout::Activate()
 
 	NakamaApi::SessionLogout(
 		Client,
-		MakeShared<FNakamaSession>(Session),
+		Session,
 		StoredToken,
 		StoredRefreshToken,
 		[this]()
@@ -626,7 +626,7 @@ void UNakamaClientBanGroupUsers::Activate()
 
 	NakamaApi::BanGroupUsers(
 		Client,
-		MakeShared<FNakamaSession>(Session),
+		Session,
 		StoredGroupId,
 		StoredUserIds,
 		[this]()
@@ -670,7 +670,7 @@ void UNakamaClientBlockFriends::Activate()
 
 	NakamaApi::BlockFriends(
 		Client,
-		MakeShared<FNakamaSession>(Session),
+		Session,
 		StoredIds,
 		StoredUsernames,
 		[this]()
@@ -722,7 +722,7 @@ void UNakamaClientCreateGroup::Activate()
 
 	NakamaApi::CreateGroup(
 		Client,
-		MakeShared<FNakamaSession>(Session),
+		Session,
 		StoredName,
 		StoredDescription,
 		StoredLangTag,
@@ -766,7 +766,7 @@ void UNakamaClientDeleteAccount::Activate()
 
 	NakamaApi::DeleteAccount(
 		Client,
-		MakeShared<FNakamaSession>(Session),
+		Session,
 		[this]()
 		{
 			OnSuccess.Broadcast();
@@ -808,7 +808,7 @@ void UNakamaClientDeleteFriends::Activate()
 
 	NakamaApi::DeleteFriends(
 		Client,
-		MakeShared<FNakamaSession>(Session),
+		Session,
 		StoredIds,
 		StoredUsernames,
 		[this]()
@@ -850,7 +850,7 @@ void UNakamaClientDeleteGroup::Activate()
 
 	NakamaApi::DeleteGroup(
 		Client,
-		MakeShared<FNakamaSession>(Session),
+		Session,
 		StoredGroupId,
 		[this]()
 		{
@@ -891,7 +891,7 @@ void UNakamaClientDeleteLeaderboardRecord::Activate()
 
 	NakamaApi::DeleteLeaderboardRecord(
 		Client,
-		MakeShared<FNakamaSession>(Session),
+		Session,
 		StoredLeaderboardId,
 		[this]()
 		{
@@ -932,7 +932,7 @@ void UNakamaClientDeleteNotifications::Activate()
 
 	NakamaApi::DeleteNotifications(
 		Client,
-		MakeShared<FNakamaSession>(Session),
+		Session,
 		StoredIds,
 		[this]()
 		{
@@ -973,7 +973,7 @@ void UNakamaClientDeleteTournamentRecord::Activate()
 
 	NakamaApi::DeleteTournamentRecord(
 		Client,
-		MakeShared<FNakamaSession>(Session),
+		Session,
 		StoredTournamentId,
 		[this]()
 		{
@@ -1014,7 +1014,7 @@ void UNakamaClientDeleteStorageObjects::Activate()
 
 	NakamaApi::DeleteStorageObjects(
 		Client,
-		MakeShared<FNakamaSession>(Session),
+		Session,
 		StoredObjectIds,
 		[this]()
 		{
@@ -1061,7 +1061,7 @@ void UNakamaClientEvent::Activate()
 
 	NakamaApi::Event(
 		Client,
-		MakeShared<FNakamaSession>(Session),
+		Session,
 		StoredName,
 		StoredTimestamp,
 		StoredExternal,
@@ -1103,7 +1103,7 @@ void UNakamaClientGetAccount::Activate()
 
 	NakamaApi::GetAccount(
 		Client,
-		MakeShared<FNakamaSession>(Session),
+		Session,
 		[this](const FNakamaAccount& Result)
 		{
 			OnSuccess.Broadcast(Result);
@@ -1147,7 +1147,7 @@ void UNakamaClientGetUsers::Activate()
 
 	NakamaApi::GetUsers(
 		Client,
-		MakeShared<FNakamaSession>(Session),
+		Session,
 		StoredIds,
 		StoredUsernames,
 		StoredFacebookIds,
@@ -1190,7 +1190,7 @@ void UNakamaClientGetSubscription::Activate()
 
 	NakamaApi::GetSubscription(
 		Client,
-		MakeShared<FNakamaSession>(Session),
+		Session,
 		StoredProductId,
 		[this](const FNakamaValidatedSubscription& Result)
 		{
@@ -1229,7 +1229,7 @@ void UNakamaClientGetMatchmakerStats::Activate()
 
 	NakamaApi::GetMatchmakerStats(
 		Client,
-		MakeShared<FNakamaSession>(Session),
+		Session,
 		[this](const FNakamaMatchmakerStats& Result)
 		{
 			OnSuccess.Broadcast(Result);
@@ -1267,7 +1267,7 @@ void UNakamaClientHealthcheck::Activate()
 
 	NakamaApi::Healthcheck(
 		Client,
-		MakeShared<FNakamaSession>(Session),
+		Session,
 		[this]()
 		{
 			OnSuccess.Broadcast();
@@ -1309,7 +1309,7 @@ void UNakamaClientImportFacebookFriends::Activate()
 
 	NakamaApi::ImportFacebookFriends(
 		Client,
-		MakeShared<FNakamaSession>(Session),
+		Session,
 		StoredAccount,
 		StoredReset,
 		[this]()
@@ -1353,7 +1353,7 @@ void UNakamaClientImportSteamFriends::Activate()
 
 	NakamaApi::ImportSteamFriends(
 		Client,
-		MakeShared<FNakamaSession>(Session),
+		Session,
 		StoredAccount,
 		StoredReset,
 		[this]()
@@ -1395,7 +1395,7 @@ void UNakamaClientJoinGroup::Activate()
 
 	NakamaApi::JoinGroup(
 		Client,
-		MakeShared<FNakamaSession>(Session),
+		Session,
 		StoredGroupId,
 		[this]()
 		{
@@ -1436,7 +1436,7 @@ void UNakamaClientJoinTournament::Activate()
 
 	NakamaApi::JoinTournament(
 		Client,
-		MakeShared<FNakamaSession>(Session),
+		Session,
 		StoredTournamentId,
 		[this]()
 		{
@@ -1479,7 +1479,7 @@ void UNakamaClientKickGroupUsers::Activate()
 
 	NakamaApi::KickGroupUsers(
 		Client,
-		MakeShared<FNakamaSession>(Session),
+		Session,
 		StoredGroupId,
 		StoredUserIds,
 		[this]()
@@ -1521,7 +1521,7 @@ void UNakamaClientLeaveGroup::Activate()
 
 	NakamaApi::LeaveGroup(
 		Client,
-		MakeShared<FNakamaSession>(Session),
+		Session,
 		StoredGroupId,
 		[this]()
 		{
@@ -1564,7 +1564,7 @@ void UNakamaClientLinkApple::Activate()
 
 	NakamaApi::LinkApple(
 		Client,
-		MakeShared<FNakamaSession>(Session),
+		Session,
 		StoredToken,
 		StoredVars,
 		[this]()
@@ -1608,7 +1608,7 @@ void UNakamaClientLinkCustom::Activate()
 
 	NakamaApi::LinkCustom(
 		Client,
-		MakeShared<FNakamaSession>(Session),
+		Session,
 		StoredId,
 		StoredVars,
 		[this]()
@@ -1652,7 +1652,7 @@ void UNakamaClientLinkDevice::Activate()
 
 	NakamaApi::LinkDevice(
 		Client,
-		MakeShared<FNakamaSession>(Session),
+		Session,
 		StoredId,
 		StoredVars,
 		[this]()
@@ -1698,7 +1698,7 @@ void UNakamaClientLinkEmail::Activate()
 
 	NakamaApi::LinkEmail(
 		Client,
-		MakeShared<FNakamaSession>(Session),
+		Session,
 		StoredEmail,
 		StoredPassword,
 		StoredVars,
@@ -1743,7 +1743,7 @@ void UNakamaClientLinkFacebook::Activate()
 
 	NakamaApi::LinkFacebook(
 		Client,
-		MakeShared<FNakamaSession>(Session),
+		Session,
 		StoredAccount,
 		StoredSync,
 		[this]()
@@ -1787,7 +1787,7 @@ void UNakamaClientLinkFacebookInstantGame::Activate()
 
 	NakamaApi::LinkFacebookInstantGame(
 		Client,
-		MakeShared<FNakamaSession>(Session),
+		Session,
 		StoredSignedPlayerInfo,
 		StoredVars,
 		[this]()
@@ -1841,7 +1841,7 @@ void UNakamaClientLinkGameCenter::Activate()
 
 	NakamaApi::LinkGameCenter(
 		Client,
-		MakeShared<FNakamaSession>(Session),
+		Session,
 		StoredPlayerId,
 		StoredBundleId,
 		StoredTimestampSeconds,
@@ -1890,7 +1890,7 @@ void UNakamaClientLinkGoogle::Activate()
 
 	NakamaApi::LinkGoogle(
 		Client,
-		MakeShared<FNakamaSession>(Session),
+		Session,
 		StoredToken,
 		StoredVars,
 		[this]()
@@ -1934,7 +1934,7 @@ void UNakamaClientLinkSteam::Activate()
 
 	NakamaApi::LinkSteam(
 		Client,
-		MakeShared<FNakamaSession>(Session),
+		Session,
 		StoredAccount,
 		StoredSync,
 		[this]()
@@ -1982,7 +1982,7 @@ void UNakamaClientListChannelMessages::Activate()
 
 	NakamaApi::ListChannelMessages(
 		Client,
-		MakeShared<FNakamaSession>(Session),
+		Session,
 		StoredChannelId,
 		StoredLimit,
 		StoredForward,
@@ -2030,7 +2030,7 @@ void UNakamaClientListFriends::Activate()
 
 	NakamaApi::ListFriends(
 		Client,
-		MakeShared<FNakamaSession>(Session),
+		Session,
 		StoredLimit,
 		StoredState,
 		StoredCursor,
@@ -2075,7 +2075,7 @@ void UNakamaClientListFriendsOfFriends::Activate()
 
 	NakamaApi::ListFriendsOfFriends(
 		Client,
-		MakeShared<FNakamaSession>(Session),
+		Session,
 		StoredLimit,
 		StoredCursor,
 		[this](const FNakamaFriendsOfFriendsList& Result)
@@ -2127,7 +2127,7 @@ void UNakamaClientListGroups::Activate()
 
 	NakamaApi::ListGroups(
 		Client,
-		MakeShared<FNakamaSession>(Session),
+		Session,
 		StoredName,
 		StoredCursor,
 		StoredLimit,
@@ -2179,7 +2179,7 @@ void UNakamaClientListGroupUsers::Activate()
 
 	NakamaApi::ListGroupUsers(
 		Client,
-		MakeShared<FNakamaSession>(Session),
+		Session,
 		StoredGroupId,
 		StoredLimit,
 		StoredState,
@@ -2231,7 +2231,7 @@ void UNakamaClientListLeaderboardRecords::Activate()
 
 	NakamaApi::ListLeaderboardRecords(
 		Client,
-		MakeShared<FNakamaSession>(Session),
+		Session,
 		StoredLeaderboardId,
 		StoredOwnerIds,
 		StoredLimit,
@@ -2284,7 +2284,7 @@ void UNakamaClientListLeaderboardRecordsAroundOwner::Activate()
 
 	NakamaApi::ListLeaderboardRecordsAroundOwner(
 		Client,
-		MakeShared<FNakamaSession>(Session),
+		Session,
 		StoredLeaderboardId,
 		StoredLimit,
 		StoredOwnerId,
@@ -2339,7 +2339,7 @@ void UNakamaClientListMatches::Activate()
 
 	NakamaApi::ListMatches(
 		Client,
-		MakeShared<FNakamaSession>(Session),
+		Session,
 		StoredLimit,
 		StoredAuthoritative,
 		StoredLabel,
@@ -2391,7 +2391,7 @@ void UNakamaClientListParties::Activate()
 
 	NakamaApi::ListParties(
 		Client,
-		MakeShared<FNakamaSession>(Session),
+		Session,
 		StoredLimit,
 		StoredOpen,
 		StoredQuery,
@@ -2437,7 +2437,7 @@ void UNakamaClientListNotifications::Activate()
 
 	NakamaApi::ListNotifications(
 		Client,
-		MakeShared<FNakamaSession>(Session),
+		Session,
 		StoredLimit,
 		StoredCacheableCursor,
 		[this](const FNakamaNotificationList& Result)
@@ -2485,7 +2485,7 @@ void UNakamaClientListStorageObjects::Activate()
 
 	NakamaApi::ListStorageObjects(
 		Client,
-		MakeShared<FNakamaSession>(Session),
+		Session,
 		StoredUserId,
 		StoredCollection,
 		StoredLimit,
@@ -2531,7 +2531,7 @@ void UNakamaClientListSubscriptions::Activate()
 
 	NakamaApi::ListSubscriptions(
 		Client,
-		MakeShared<FNakamaSession>(Session),
+		Session,
 		StoredLimit,
 		StoredCursor,
 		[this](const FNakamaSubscriptionList& Result)
@@ -2583,7 +2583,7 @@ void UNakamaClientListTournaments::Activate()
 
 	NakamaApi::ListTournaments(
 		Client,
-		MakeShared<FNakamaSession>(Session),
+		Session,
 		StoredCategoryStart,
 		StoredCategoryEnd,
 		StoredStartTime,
@@ -2637,7 +2637,7 @@ void UNakamaClientListTournamentRecords::Activate()
 
 	NakamaApi::ListTournamentRecords(
 		Client,
-		MakeShared<FNakamaSession>(Session),
+		Session,
 		StoredTournamentId,
 		StoredOwnerIds,
 		StoredLimit,
@@ -2690,7 +2690,7 @@ void UNakamaClientListTournamentRecordsAroundOwner::Activate()
 
 	NakamaApi::ListTournamentRecordsAroundOwner(
 		Client,
-		MakeShared<FNakamaSession>(Session),
+		Session,
 		StoredTournamentId,
 		StoredLimit,
 		StoredOwnerId,
@@ -2741,7 +2741,7 @@ void UNakamaClientListUserGroups::Activate()
 
 	NakamaApi::ListUserGroups(
 		Client,
-		MakeShared<FNakamaSession>(Session),
+		Session,
 		StoredUserId,
 		StoredLimit,
 		StoredState,
@@ -2787,7 +2787,7 @@ void UNakamaClientPromoteGroupUsers::Activate()
 
 	NakamaApi::PromoteGroupUsers(
 		Client,
-		MakeShared<FNakamaSession>(Session),
+		Session,
 		StoredGroupId,
 		StoredUserIds,
 		[this]()
@@ -2831,7 +2831,7 @@ void UNakamaClientDemoteGroupUsers::Activate()
 
 	NakamaApi::DemoteGroupUsers(
 		Client,
-		MakeShared<FNakamaSession>(Session),
+		Session,
 		StoredGroupId,
 		StoredUserIds,
 		[this]()
@@ -2873,7 +2873,7 @@ void UNakamaClientReadStorageObjects::Activate()
 
 	NakamaApi::ReadStorageObjects(
 		Client,
-		MakeShared<FNakamaSession>(Session),
+		Session,
 		StoredObjectIds,
 		[this](const FNakamaStorageObjects& Result)
 		{
@@ -2918,7 +2918,7 @@ void UNakamaClientRpcFunc::Activate()
 
 	NakamaApi::RpcFunc(
 		Client,
-		MakeShared<FNakamaSession>(Session),
+		Session,
 		StoredId,
 		[&]() -> TSharedPtr<FJsonObject> {
 			if (StoredPayload.Num() == 0) { return nullptr; }
@@ -2971,7 +2971,7 @@ void UNakamaClientUnlinkApple::Activate()
 
 	NakamaApi::UnlinkApple(
 		Client,
-		MakeShared<FNakamaSession>(Session),
+		Session,
 		StoredToken,
 		StoredVars,
 		[this]()
@@ -3015,7 +3015,7 @@ void UNakamaClientUnlinkCustom::Activate()
 
 	NakamaApi::UnlinkCustom(
 		Client,
-		MakeShared<FNakamaSession>(Session),
+		Session,
 		StoredId,
 		StoredVars,
 		[this]()
@@ -3059,7 +3059,7 @@ void UNakamaClientUnlinkDevice::Activate()
 
 	NakamaApi::UnlinkDevice(
 		Client,
-		MakeShared<FNakamaSession>(Session),
+		Session,
 		StoredId,
 		StoredVars,
 		[this]()
@@ -3105,7 +3105,7 @@ void UNakamaClientUnlinkEmail::Activate()
 
 	NakamaApi::UnlinkEmail(
 		Client,
-		MakeShared<FNakamaSession>(Session),
+		Session,
 		StoredEmail,
 		StoredPassword,
 		StoredVars,
@@ -3150,7 +3150,7 @@ void UNakamaClientUnlinkFacebook::Activate()
 
 	NakamaApi::UnlinkFacebook(
 		Client,
-		MakeShared<FNakamaSession>(Session),
+		Session,
 		StoredToken,
 		StoredVars,
 		[this]()
@@ -3194,7 +3194,7 @@ void UNakamaClientUnlinkFacebookInstantGame::Activate()
 
 	NakamaApi::UnlinkFacebookInstantGame(
 		Client,
-		MakeShared<FNakamaSession>(Session),
+		Session,
 		StoredSignedPlayerInfo,
 		StoredVars,
 		[this]()
@@ -3248,7 +3248,7 @@ void UNakamaClientUnlinkGameCenter::Activate()
 
 	NakamaApi::UnlinkGameCenter(
 		Client,
-		MakeShared<FNakamaSession>(Session),
+		Session,
 		StoredPlayerId,
 		StoredBundleId,
 		StoredTimestampSeconds,
@@ -3297,7 +3297,7 @@ void UNakamaClientUnlinkGoogle::Activate()
 
 	NakamaApi::UnlinkGoogle(
 		Client,
-		MakeShared<FNakamaSession>(Session),
+		Session,
 		StoredToken,
 		StoredVars,
 		[this]()
@@ -3341,7 +3341,7 @@ void UNakamaClientUnlinkSteam::Activate()
 
 	NakamaApi::UnlinkSteam(
 		Client,
-		MakeShared<FNakamaSession>(Session),
+		Session,
 		StoredToken,
 		StoredVars,
 		[this]()
@@ -3393,7 +3393,7 @@ void UNakamaClientUpdateAccount::Activate()
 
 	NakamaApi::UpdateAccount(
 		Client,
-		MakeShared<FNakamaSession>(Session),
+		Session,
 		StoredUsername,
 		StoredDisplayName,
 		StoredAvatarUrl,
@@ -3449,7 +3449,7 @@ void UNakamaClientUpdateGroup::Activate()
 
 	NakamaApi::UpdateGroup(
 		Client,
-		MakeShared<FNakamaSession>(Session),
+		Session,
 		StoredGroupId,
 		StoredName,
 		StoredDescription,
@@ -3497,7 +3497,7 @@ void UNakamaClientValidatePurchaseApple::Activate()
 
 	NakamaApi::ValidatePurchaseApple(
 		Client,
-		MakeShared<FNakamaSession>(Session),
+		Session,
 		StoredReceipt,
 		StoredPersist,
 		[this](const FNakamaValidatePurchaseResponse& Result)
@@ -3541,7 +3541,7 @@ void UNakamaClientValidateSubscriptionApple::Activate()
 
 	NakamaApi::ValidateSubscriptionApple(
 		Client,
-		MakeShared<FNakamaSession>(Session),
+		Session,
 		StoredReceipt,
 		StoredPersist,
 		[this](const FNakamaValidateSubscriptionResponse& Result)
@@ -3585,7 +3585,7 @@ void UNakamaClientValidatePurchaseGoogle::Activate()
 
 	NakamaApi::ValidatePurchaseGoogle(
 		Client,
-		MakeShared<FNakamaSession>(Session),
+		Session,
 		StoredPurchase,
 		StoredPersist,
 		[this](const FNakamaValidatePurchaseResponse& Result)
@@ -3629,7 +3629,7 @@ void UNakamaClientValidateSubscriptionGoogle::Activate()
 
 	NakamaApi::ValidateSubscriptionGoogle(
 		Client,
-		MakeShared<FNakamaSession>(Session),
+		Session,
 		StoredReceipt,
 		StoredPersist,
 		[this](const FNakamaValidateSubscriptionResponse& Result)
@@ -3675,7 +3675,7 @@ void UNakamaClientValidatePurchaseHuawei::Activate()
 
 	NakamaApi::ValidatePurchaseHuawei(
 		Client,
-		MakeShared<FNakamaSession>(Session),
+		Session,
 		StoredPurchase,
 		StoredSignature,
 		StoredPersist,
@@ -3720,7 +3720,7 @@ void UNakamaClientValidatePurchaseFacebookInstant::Activate()
 
 	NakamaApi::ValidatePurchaseFacebookInstant(
 		Client,
-		MakeShared<FNakamaSession>(Session),
+		Session,
 		StoredSignedRequest,
 		StoredPersist,
 		[this](const FNakamaValidatePurchaseResponse& Result)
@@ -3764,7 +3764,7 @@ void UNakamaClientWriteLeaderboardRecord::Activate()
 
 	NakamaApi::WriteLeaderboardRecord(
 		Client,
-		MakeShared<FNakamaSession>(Session),
+		Session,
 		StoredLeaderboardId,
 		StoredRecord,
 		[this](const FNakamaLeaderboardRecord& Result)
@@ -3806,7 +3806,7 @@ void UNakamaClientWriteStorageObjects::Activate()
 
 	NakamaApi::WriteStorageObjects(
 		Client,
-		MakeShared<FNakamaSession>(Session),
+		Session,
 		StoredObjects,
 		[this](const FNakamaStorageObjectAcks& Result)
 		{
@@ -3849,7 +3849,7 @@ void UNakamaClientWriteTournamentRecord::Activate()
 
 	NakamaApi::WriteTournamentRecord(
 		Client,
-		MakeShared<FNakamaSession>(Session),
+		Session,
 		StoredTournamentId,
 		StoredRecord,
 		[this](const FNakamaLeaderboardRecord& Result)

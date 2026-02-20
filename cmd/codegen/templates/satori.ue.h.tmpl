@@ -175,7 +175,7 @@ namespace Satori
 	SATORI_API TSatoriFuture<{{ $resultType }}Result> {{ $rpc.Name }}(
 		FSatoriClient Client,
 		{{- if $needsSession }}
-		FSatoriSessionPtr Session,
+		const FSatoriSession& Session,
 		{{- end }}
 		{{- if $hasParams -}}
 		{{- range $fidx, $field := $requestType.Fields }}

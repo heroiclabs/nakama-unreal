@@ -170,7 +170,7 @@ void USatoriClientDeleteIdentity::Activate()
 
 	SatoriApi::DeleteIdentity(
 		Client,
-		MakeShared<FSatoriSession>(Session),
+		Session,
 		[this]()
 		{
 			OnSuccess.Broadcast();
@@ -210,7 +210,7 @@ void USatoriClientEvent::Activate()
 
 	SatoriApi::Event(
 		Client,
-		MakeShared<FSatoriSession>(Session),
+		Session,
 		StoredEvents,
 		[this]()
 		{
@@ -251,7 +251,7 @@ void USatoriClientServerEvent::Activate()
 
 	SatoriApi::ServerEvent(
 		Client,
-		MakeShared<FSatoriSession>(Session),
+		Session,
 		StoredEvents,
 		[this]()
 		{
@@ -294,7 +294,7 @@ void USatoriClientGetExperiments::Activate()
 
 	SatoriApi::GetExperiments(
 		Client,
-		MakeShared<FSatoriSession>(Session),
+		Session,
 		StoredNames,
 		StoredLabels,
 		[this](const FSatoriExperimentList& Result)
@@ -338,7 +338,7 @@ void USatoriClientGetFlagOverrides::Activate()
 
 	SatoriApi::GetFlagOverrides(
 		Client,
-		MakeShared<FSatoriSession>(Session),
+		Session,
 		StoredNames,
 		StoredLabels,
 		[this](const FSatoriFlagOverrideList& Result)
@@ -382,7 +382,7 @@ void USatoriClientGetFlags::Activate()
 
 	SatoriApi::GetFlags(
 		Client,
-		MakeShared<FSatoriSession>(Session),
+		Session,
 		StoredNames,
 		StoredLabels,
 		[this](const FSatoriFlagList& Result)
@@ -434,7 +434,7 @@ void USatoriClientGetLiveEvents::Activate()
 
 	SatoriApi::GetLiveEvents(
 		Client,
-		MakeShared<FSatoriSession>(Session),
+		Session,
 		StoredNames,
 		StoredLabels,
 		StoredPastRunCount,
@@ -480,7 +480,7 @@ void USatoriClientJoinLiveEvent::Activate()
 
 	SatoriApi::JoinLiveEvent(
 		Client,
-		MakeShared<FSatoriSession>(Session),
+		Session,
 		StoredId,
 		[this]()
 		{
@@ -519,7 +519,7 @@ void USatoriClientHealthcheck::Activate()
 
 	SatoriApi::Healthcheck(
 		Client,
-		MakeShared<FSatoriSession>(Session),
+		Session,
 		[this]()
 		{
 			OnSuccess.Broadcast();
@@ -563,7 +563,7 @@ void USatoriClientIdentify::Activate()
 
 	SatoriApi::Identify(
 		Client,
-		MakeShared<FSatoriSession>(Session),
+		Session,
 		StoredId,
 		StoredDefault,
 		StoredCustom,
@@ -604,7 +604,7 @@ void USatoriClientListProperties::Activate()
 
 	SatoriApi::ListProperties(
 		Client,
-		MakeShared<FSatoriSession>(Session),
+		Session,
 		[this](const FSatoriProperties& Result)
 		{
 			OnSuccess.Broadcast(Result);
@@ -642,7 +642,7 @@ void USatoriClientReadycheck::Activate()
 
 	SatoriApi::Readycheck(
 		Client,
-		MakeShared<FSatoriSession>(Session),
+		Session,
 		[this]()
 		{
 			OnSuccess.Broadcast();
@@ -686,7 +686,7 @@ void USatoriClientUpdateProperties::Activate()
 
 	SatoriApi::UpdateProperties(
 		Client,
-		MakeShared<FSatoriSession>(Session),
+		Session,
 		StoredRecompute,
 		StoredDefault,
 		StoredCustom,
@@ -735,7 +735,7 @@ void USatoriClientGetMessageList::Activate()
 
 	SatoriApi::GetMessageList(
 		Client,
-		MakeShared<FSatoriSession>(Session),
+		Session,
 		StoredLimit,
 		StoredForward,
 		StoredCursor,
@@ -783,7 +783,7 @@ void USatoriClientUpdateMessage::Activate()
 
 	SatoriApi::UpdateMessage(
 		Client,
-		MakeShared<FSatoriSession>(Session),
+		Session,
 		StoredId,
 		StoredReadTime,
 		StoredConsumeTime,
@@ -826,7 +826,7 @@ void USatoriClientDeleteMessage::Activate()
 
 	SatoriApi::DeleteMessage(
 		Client,
-		MakeShared<FSatoriSession>(Session),
+		Session,
 		StoredId,
 		[this]()
 		{

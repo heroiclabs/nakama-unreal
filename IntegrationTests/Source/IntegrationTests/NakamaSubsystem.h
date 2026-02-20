@@ -52,10 +52,10 @@ public:
 	const FNakamaApiConfig& GetClient() const { return Client; }
 
 	/** Get the active session (the one selected in the dropdown). */
-	const FNakamaSession& GetActiveSession() const { return *Sessions[ActiveSessionIndex]; }
+	const FNakamaSession& GetActiveSession() const { return Sessions[ActiveSessionIndex]; }
 
 	/** Get a session by index (0..NumSessions-1). */
-	const FNakamaSession& GetSession(int32 Index) const { return *Sessions[Index]; }
+	const FNakamaSession& GetSession(int32 Index) const { return Sessions[Index]; }
 
 	/** Change the active session and refresh the account view. */
 	UFUNCTION(BlueprintCallable, Category = "Nakama")
@@ -97,7 +97,7 @@ private:
 	bool bUseSSL = false;
 
 	FNakamaApiConfig Client;
-	FNakamaSessionPtr Sessions[NumSessions];
+	FNakamaSession Sessions[NumSessions];
 	int32 AuthenticatedCount = 0;
 	int32 ActiveSessionIndex = 0;
 

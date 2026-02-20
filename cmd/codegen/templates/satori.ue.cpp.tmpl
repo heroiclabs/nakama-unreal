@@ -46,21 +46,20 @@ namespace
 /** Optionally refresh the session before calling the RPC. */
 void MaybeRefreshThenCall(
 	FSatoriClient Client,
-	FSatoriSessionPtr Session,
-	TFunction<void()> OnReady,
+	FSatoriSession Session,
+	TFunction<void(const FSatoriSession&)> OnReady,
 	TFunction<void(const FSatoriError&)> OnError,
 	FSatoriCancellationTokenPtr CancellationToken) noexcept
 {
 	if (!Client.bAutoRefreshSession
-		|| !Session.IsValid()
-		|| Session->RefreshToken.IsEmpty()
-		|| !Session->IsExpired(Client.AutoRefreshBufferSeconds))
+		|| Session.RefreshToken.IsEmpty()
+		|| !Session.IsExpired(Client.AutoRefreshBufferSeconds))
 	{
-		OnReady();
+		OnReady(Session);
 		return;
 	}
 
-	if (Session->IsRefreshExpired())
+	if (Session.IsRefreshExpired())
 	{
 		if (OnError)
 		{
@@ -71,15 +70,15 @@ void MaybeRefreshThenCall(
 
 	SatoriApi::AuthenticateRefresh(
 		Client.ApiConfig,
-		Session->RefreshToken,
-		[Client, Session, OnReady](const FSatoriSession& RefreshedSession)
+		Session.RefreshToken,
+		[Client, Session, OnReady](const FSatoriSession& RefreshedSession) mutable
 		{
-			Session->Update(RefreshedSession.Token, RefreshedSession.RefreshToken);
+			Session.Update(RefreshedSession.Token, RefreshedSession.RefreshToken);
 			if (Client.OnSessionRefreshed)
 			{
-				Client.OnSessionRefreshed(*Session);
+				Client.OnSessionRefreshed(Session);
 			}
-			OnReady();
+			OnReady(Session);
 		},
 		[OnError](const FSatoriError& Error)
 		{
@@ -107,7 +106,7 @@ void MaybeRefreshThenCall(
 TSatoriFuture<{{ $resultType }}Result> Satori::{{ $rpc.Name }}(
 	FSatoriClient Client,
 	{{- if $needsSession }}
-	FSatoriSessionPtr Session,
+	const FSatoriSession& Session,
 	{{- end }}
 	{{- if $hasParams -}}
 	{{- range $fidx, $field := $requestType.Fields }}
@@ -163,7 +162,7 @@ TSatoriFuture<{{ $resultType }}Result> Satori::{{ $rpc.Name }}(
 	{
 {{- if $needsSession }}
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
+			[Client, Promise, DoRequest, OnError,
 				{{- if $hasParams -}}
 				{{- range $fidx, $field := $requestType.Fields }}
 				{{ $field.Name | pascalCase }},
@@ -172,7 +171,7 @@ TSatoriFuture<{{ $resultType }}Result> Satori::{{ $rpc.Name }}(
 				{{ $field.Name | pascalCase }},
 				{{- end -}}
 				{{- end }}
-				CancellationToken]()
+				CancellationToken](const FSatoriSession& Session)
 			{
 				SatoriApi::{{ $rpc.Name }}(
 					Client.ApiConfig,

@@ -176,8 +176,6 @@ struct NAKAMAAPI_API FNakama{{ $msg.Name }}
 {{- end }}
 {{- end }}
 
-using FNakamaSessionPtr = TSharedPtr<FNakamaSession>;
-
 enum class ENakamaRequestAuth : uint8
 {
 	None,
@@ -229,7 +227,7 @@ namespace NakamaApi
 	NAKAMAAPI_API void {{ $rpc.Name }}(
 		const FNakamaApiConfig& Config,
 		{{- if $needsSession }}
-		FNakamaSessionPtr Session,
+		const FNakamaSession& Session,
 		{{- end }}
 		{{- if $hasParams -}}
 		{{- range $fidx, $field := $requestType.Fields }}

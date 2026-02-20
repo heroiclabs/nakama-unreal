@@ -78,7 +78,7 @@ void USatoriClient{{ $rpc.Name }}::Activate()
 	SatoriApi::{{ $rpc.Name }}(
 		Client,
 {{- if $needsSession }}
-		MakeShared<FSatoriSession>(Session),
+		Session,
 {{- end }}
 {{- if $hasParams }}
 {{- range $fidx, $field := $requestType.Fields }}

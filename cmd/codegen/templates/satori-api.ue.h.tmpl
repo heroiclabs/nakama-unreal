@@ -172,8 +172,6 @@ struct SATORIAPI_API FSatori{{ $msg.Name }}
 {{- end }}
 {{- end }}
 
-using FSatoriSessionPtr = TSharedPtr<FSatoriSession>;
-
 enum class ESatoriRequestAuth : uint8
 {
 	None,
@@ -224,7 +222,7 @@ namespace SatoriApi
 	SATORIAPI_API void {{ $rpc.Name }}(
 		const FSatoriApiConfig& Config,
 		{{- if $needsSession }}
-		FSatoriSessionPtr Session,
+		const FSatoriSession& Session,
 		{{- end }}
 		{{- if $hasParams -}}
 		{{- range $fidx, $field := $requestType.Fields }}

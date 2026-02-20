@@ -160,7 +160,7 @@ void UNakamaSubsystem::AuthenticateSession(int32 Index)
 
 void UNakamaSubsystem::OnSessionAuthenticated(int32 Index, const FNakamaSession& Result)
 {
-	Sessions[Index] = MakeShared<FNakamaSession>(Result);
+	Sessions[Index] = Result;
 	++AuthenticatedCount;
 
 	UE_LOG(LogTemp, Log, TEXT("NakamaSubsystem: Session %d authenticated [%d/%d]"),
@@ -169,7 +169,7 @@ void UNakamaSubsystem::OnSessionAuthenticated(int32 Index, const FNakamaSession&
 	if (AuthenticatedCount == NumSessions)
 	{
 		AccountVM->SetStatus(FString::Printf(TEXT("Authenticated (%d sessions)"), NumSessions));
-		OnAuthenticated.Broadcast(*Sessions[0]);
+		OnAuthenticated.Broadcast(Sessions[0]);
 
 		// Push session keys/display names into the ViewModel.
 		// Keys are device IDs (used as ComboBoxKey FName), display names are the visible text.

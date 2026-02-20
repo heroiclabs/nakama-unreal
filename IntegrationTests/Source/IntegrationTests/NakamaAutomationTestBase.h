@@ -63,7 +63,7 @@ public:
 
 protected:
 	FNakamaApiConfig NakamaClient;
-	FNakamaSessionPtr Session;
+	FNakamaSession Session;
 
 	// Test configuration
 	static constexpr float DefaultTimeout = 10.0f;

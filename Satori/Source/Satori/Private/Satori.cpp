@@ -46,21 +46,20 @@ namespace
 /** Optionally refresh the session before calling the RPC. */
 void MaybeRefreshThenCall(
 	FSatoriClient Client,
-	FSatoriSessionPtr Session,
-	TFunction<void()> OnReady,
+	FSatoriSession Session,
+	TFunction<void(const FSatoriSession&)> OnReady,
 	TFunction<void(const FSatoriError&)> OnError,
 	FSatoriCancellationTokenPtr CancellationToken) noexcept
 {
 	if (!Client.bAutoRefreshSession
-		|| !Session.IsValid()
-		|| Session->RefreshToken.IsEmpty()
-		|| !Session->IsExpired(Client.AutoRefreshBufferSeconds))
+		|| Session.RefreshToken.IsEmpty()
+		|| !Session.IsExpired(Client.AutoRefreshBufferSeconds))
 	{
-		OnReady();
+		OnReady(Session);
 		return;
 	}
 
-	if (Session->IsRefreshExpired())
+	if (Session.IsRefreshExpired())
 	{
 		if (OnError)
 		{
@@ -71,15 +70,15 @@ void MaybeRefreshThenCall(
 
 	SatoriApi::AuthenticateRefresh(
 		Client.ApiConfig,
-		Session->RefreshToken,
-		[Client, Session, OnReady](const FSatoriSession& RefreshedSession)
+		Session.RefreshToken,
+		[Client, Session, OnReady](const FSatoriSession& RefreshedSession) mutable
 		{
-			Session->Update(RefreshedSession.Token, RefreshedSession.RefreshToken);
+			Session.Update(RefreshedSession.Token, RefreshedSession.RefreshToken);
 			if (Client.OnSessionRefreshed)
 			{
-				Client.OnSessionRefreshed(*Session);
+				Client.OnSessionRefreshed(Session);
 			}
-			OnReady();
+			OnReady(Session);
 		},
 		[OnError](const FSatoriError& Error)
 		{
@@ -262,7 +261,7 @@ TSatoriFuture<FSatoriSessionResult> Satori::AuthenticateRefresh(
 }
 TSatoriFuture<FSatoriVoidResult> Satori::DeleteIdentity(
 	FSatoriClient Client,
-	FSatoriSessionPtr Session,
+	const FSatoriSession& Session,
 	FSatoriCancellationTokenPtr CancellationToken) noexcept
 {
 	auto Promise = MakeShared<TPromise<FSatoriVoidResult>>();
@@ -295,8 +294,8 @@ TSatoriFuture<FSatoriVoidResult> Satori::DeleteIdentity(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
-				CancellationToken]()
+			[Client, Promise, DoRequest, OnError,
+				CancellationToken](const FSatoriSession& Session)
 			{
 				SatoriApi::DeleteIdentity(
 					Client.ApiConfig,
@@ -320,7 +319,7 @@ TSatoriFuture<FSatoriVoidResult> Satori::DeleteIdentity(
 }
 TSatoriFuture<FSatoriVoidResult> Satori::Event(
 	FSatoriClient Client,
-	FSatoriSessionPtr Session,
+	const FSatoriSession& Session,
 	const TArray<FSatoriEvent>& Events,
 	FSatoriCancellationTokenPtr CancellationToken) noexcept
 {
@@ -355,9 +354,9 @@ TSatoriFuture<FSatoriVoidResult> Satori::Event(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
+			[Client, Promise, DoRequest, OnError,
 				Events,
-				CancellationToken]()
+				CancellationToken](const FSatoriSession& Session)
 			{
 				SatoriApi::Event(
 					Client.ApiConfig,
@@ -382,7 +381,7 @@ TSatoriFuture<FSatoriVoidResult> Satori::Event(
 }
 TSatoriFuture<FSatoriVoidResult> Satori::ServerEvent(
 	FSatoriClient Client,
-	FSatoriSessionPtr Session,
+	const FSatoriSession& Session,
 	const TArray<FSatoriEvent>& Events,
 	FSatoriCancellationTokenPtr CancellationToken) noexcept
 {
@@ -417,9 +416,9 @@ TSatoriFuture<FSatoriVoidResult> Satori::ServerEvent(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
+			[Client, Promise, DoRequest, OnError,
 				Events,
-				CancellationToken]()
+				CancellationToken](const FSatoriSession& Session)
 			{
 				SatoriApi::ServerEvent(
 					Client.ApiConfig,
@@ -444,7 +443,7 @@ TSatoriFuture<FSatoriVoidResult> Satori::ServerEvent(
 }
 TSatoriFuture<FSatoriExperimentListResult> Satori::GetExperiments(
 	FSatoriClient Client,
-	FSatoriSessionPtr Session,
+	const FSatoriSession& Session,
 	const TArray<FString>& Names,
 	const TArray<FString>& Labels,
 	FSatoriCancellationTokenPtr CancellationToken) noexcept
@@ -481,10 +480,10 @@ TSatoriFuture<FSatoriExperimentListResult> Satori::GetExperiments(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
+			[Client, Promise, DoRequest, OnError,
 				Names,
 				Labels,
-				CancellationToken]()
+				CancellationToken](const FSatoriSession& Session)
 			{
 				SatoriApi::GetExperiments(
 					Client.ApiConfig,
@@ -510,7 +509,7 @@ TSatoriFuture<FSatoriExperimentListResult> Satori::GetExperiments(
 }
 TSatoriFuture<FSatoriFlagOverrideListResult> Satori::GetFlagOverrides(
 	FSatoriClient Client,
-	FSatoriSessionPtr Session,
+	const FSatoriSession& Session,
 	const TArray<FString>& Names,
 	const TArray<FString>& Labels,
 	FSatoriCancellationTokenPtr CancellationToken) noexcept
@@ -547,10 +546,10 @@ TSatoriFuture<FSatoriFlagOverrideListResult> Satori::GetFlagOverrides(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
+			[Client, Promise, DoRequest, OnError,
 				Names,
 				Labels,
-				CancellationToken]()
+				CancellationToken](const FSatoriSession& Session)
 			{
 				SatoriApi::GetFlagOverrides(
 					Client.ApiConfig,
@@ -576,7 +575,7 @@ TSatoriFuture<FSatoriFlagOverrideListResult> Satori::GetFlagOverrides(
 }
 TSatoriFuture<FSatoriFlagListResult> Satori::GetFlags(
 	FSatoriClient Client,
-	FSatoriSessionPtr Session,
+	const FSatoriSession& Session,
 	const TArray<FString>& Names,
 	const TArray<FString>& Labels,
 	FSatoriCancellationTokenPtr CancellationToken) noexcept
@@ -613,10 +612,10 @@ TSatoriFuture<FSatoriFlagListResult> Satori::GetFlags(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
+			[Client, Promise, DoRequest, OnError,
 				Names,
 				Labels,
-				CancellationToken]()
+				CancellationToken](const FSatoriSession& Session)
 			{
 				SatoriApi::GetFlags(
 					Client.ApiConfig,
@@ -642,7 +641,7 @@ TSatoriFuture<FSatoriFlagListResult> Satori::GetFlags(
 }
 TSatoriFuture<FSatoriLiveEventListResult> Satori::GetLiveEvents(
 	FSatoriClient Client,
-	FSatoriSessionPtr Session,
+	const FSatoriSession& Session,
 	const TArray<FString>& Names,
 	const TArray<FString>& Labels,
 	int32 PastRunCount,
@@ -687,14 +686,14 @@ TSatoriFuture<FSatoriLiveEventListResult> Satori::GetLiveEvents(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
+			[Client, Promise, DoRequest, OnError,
 				Names,
 				Labels,
 				PastRunCount,
 				FutureRunCount,
 				StartTimeSec,
 				EndTimeSec,
-				CancellationToken]()
+				CancellationToken](const FSatoriSession& Session)
 			{
 				SatoriApi::GetLiveEvents(
 					Client.ApiConfig,
@@ -724,7 +723,7 @@ TSatoriFuture<FSatoriLiveEventListResult> Satori::GetLiveEvents(
 }
 TSatoriFuture<FSatoriVoidResult> Satori::JoinLiveEvent(
 	FSatoriClient Client,
-	FSatoriSessionPtr Session,
+	const FSatoriSession& Session,
 	FString Id,
 	FSatoriCancellationTokenPtr CancellationToken) noexcept
 {
@@ -759,9 +758,9 @@ TSatoriFuture<FSatoriVoidResult> Satori::JoinLiveEvent(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
+			[Client, Promise, DoRequest, OnError,
 				Id,
-				CancellationToken]()
+				CancellationToken](const FSatoriSession& Session)
 			{
 				SatoriApi::JoinLiveEvent(
 					Client.ApiConfig,
@@ -786,7 +785,7 @@ TSatoriFuture<FSatoriVoidResult> Satori::JoinLiveEvent(
 }
 TSatoriFuture<FSatoriVoidResult> Satori::Healthcheck(
 	FSatoriClient Client,
-	FSatoriSessionPtr Session,
+	const FSatoriSession& Session,
 	FSatoriCancellationTokenPtr CancellationToken) noexcept
 {
 	auto Promise = MakeShared<TPromise<FSatoriVoidResult>>();
@@ -819,8 +818,8 @@ TSatoriFuture<FSatoriVoidResult> Satori::Healthcheck(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
-				CancellationToken]()
+			[Client, Promise, DoRequest, OnError,
+				CancellationToken](const FSatoriSession& Session)
 			{
 				SatoriApi::Healthcheck(
 					Client.ApiConfig,
@@ -844,7 +843,7 @@ TSatoriFuture<FSatoriVoidResult> Satori::Healthcheck(
 }
 TSatoriFuture<FSatoriSessionResult> Satori::Identify(
 	FSatoriClient Client,
-	FSatoriSessionPtr Session,
+	const FSatoriSession& Session,
 	FString Id,
 	const TMap<FString, FString>& Default,
 	const TMap<FString, FString>& Custom,
@@ -883,11 +882,11 @@ TSatoriFuture<FSatoriSessionResult> Satori::Identify(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
+			[Client, Promise, DoRequest, OnError,
 				Id,
 				Default,
 				Custom,
-				CancellationToken]()
+				CancellationToken](const FSatoriSession& Session)
 			{
 				SatoriApi::Identify(
 					Client.ApiConfig,
@@ -914,7 +913,7 @@ TSatoriFuture<FSatoriSessionResult> Satori::Identify(
 }
 TSatoriFuture<FSatoriPropertiesResult> Satori::ListProperties(
 	FSatoriClient Client,
-	FSatoriSessionPtr Session,
+	const FSatoriSession& Session,
 	FSatoriCancellationTokenPtr CancellationToken) noexcept
 {
 	auto Promise = MakeShared<TPromise<FSatoriPropertiesResult>>();
@@ -947,8 +946,8 @@ TSatoriFuture<FSatoriPropertiesResult> Satori::ListProperties(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
-				CancellationToken]()
+			[Client, Promise, DoRequest, OnError,
+				CancellationToken](const FSatoriSession& Session)
 			{
 				SatoriApi::ListProperties(
 					Client.ApiConfig,
@@ -972,7 +971,7 @@ TSatoriFuture<FSatoriPropertiesResult> Satori::ListProperties(
 }
 TSatoriFuture<FSatoriVoidResult> Satori::Readycheck(
 	FSatoriClient Client,
-	FSatoriSessionPtr Session,
+	const FSatoriSession& Session,
 	FSatoriCancellationTokenPtr CancellationToken) noexcept
 {
 	auto Promise = MakeShared<TPromise<FSatoriVoidResult>>();
@@ -1005,8 +1004,8 @@ TSatoriFuture<FSatoriVoidResult> Satori::Readycheck(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
-				CancellationToken]()
+			[Client, Promise, DoRequest, OnError,
+				CancellationToken](const FSatoriSession& Session)
 			{
 				SatoriApi::Readycheck(
 					Client.ApiConfig,
@@ -1030,7 +1029,7 @@ TSatoriFuture<FSatoriVoidResult> Satori::Readycheck(
 }
 TSatoriFuture<FSatoriVoidResult> Satori::UpdateProperties(
 	FSatoriClient Client,
-	FSatoriSessionPtr Session,
+	const FSatoriSession& Session,
 	bool Recompute,
 	const TMap<FString, FString>& Default,
 	const TMap<FString, FString>& Custom,
@@ -1069,11 +1068,11 @@ TSatoriFuture<FSatoriVoidResult> Satori::UpdateProperties(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
+			[Client, Promise, DoRequest, OnError,
 				Recompute,
 				Default,
 				Custom,
-				CancellationToken]()
+				CancellationToken](const FSatoriSession& Session)
 			{
 				SatoriApi::UpdateProperties(
 					Client.ApiConfig,
@@ -1100,7 +1099,7 @@ TSatoriFuture<FSatoriVoidResult> Satori::UpdateProperties(
 }
 TSatoriFuture<FSatoriGetMessageListResponseResult> Satori::GetMessageList(
 	FSatoriClient Client,
-	FSatoriSessionPtr Session,
+	const FSatoriSession& Session,
 	int32 Limit,
 	bool Forward,
 	FString Cursor,
@@ -1141,12 +1140,12 @@ TSatoriFuture<FSatoriGetMessageListResponseResult> Satori::GetMessageList(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
+			[Client, Promise, DoRequest, OnError,
 				Limit,
 				Forward,
 				Cursor,
 				MessageIds,
-				CancellationToken]()
+				CancellationToken](const FSatoriSession& Session)
 			{
 				SatoriApi::GetMessageList(
 					Client.ApiConfig,
@@ -1174,7 +1173,7 @@ TSatoriFuture<FSatoriGetMessageListResponseResult> Satori::GetMessageList(
 }
 TSatoriFuture<FSatoriVoidResult> Satori::UpdateMessage(
 	FSatoriClient Client,
-	FSatoriSessionPtr Session,
+	const FSatoriSession& Session,
 	FString Id,
 	int64 ReadTime,
 	int64 ConsumeTime,
@@ -1213,11 +1212,11 @@ TSatoriFuture<FSatoriVoidResult> Satori::UpdateMessage(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
+			[Client, Promise, DoRequest, OnError,
 				Id,
 				ReadTime,
 				ConsumeTime,
-				CancellationToken]()
+				CancellationToken](const FSatoriSession& Session)
 			{
 				SatoriApi::UpdateMessage(
 					Client.ApiConfig,
@@ -1244,7 +1243,7 @@ TSatoriFuture<FSatoriVoidResult> Satori::UpdateMessage(
 }
 TSatoriFuture<FSatoriVoidResult> Satori::DeleteMessage(
 	FSatoriClient Client,
-	FSatoriSessionPtr Session,
+	const FSatoriSession& Session,
 	FString Id,
 	FSatoriCancellationTokenPtr CancellationToken) noexcept
 {
@@ -1279,9 +1278,9 @@ TSatoriFuture<FSatoriVoidResult> Satori::DeleteMessage(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Session, Promise, DoRequest, OnError,
+			[Client, Promise, DoRequest, OnError,
 				Id,
-				CancellationToken]()
+				CancellationToken](const FSatoriSession& Session)
 			{
 				SatoriApi::DeleteMessage(
 					Client.ApiConfig,
