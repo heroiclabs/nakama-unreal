@@ -303,7 +303,7 @@ tasks:
               Write-Host '  echo UNREAL_ENGINE=C:\Path\To\UE_5.x >> .env'
               Write-Host ''
               Write-Host 'Or pass it as an argument:'
-              Write-Host '  task test-unreal UNREAL_ENGINE=C:\Path\To\UE_5.x'
+              Write-Host '  task test UNREAL_ENGINE=C:\Path\To\UE_5.x'
               exit 1
             }
 
@@ -316,7 +316,7 @@ tasks:
         }"
       platforms: [windows]
 
-  test-unreal:
+  test:
     desc: 'Build and run IntegrationTests C++ automation suite.'
     cmds:
     - task: check-unreal-engine
@@ -358,7 +358,7 @@ tasks:
         if [ -z "$UNREAL_ENGINE" ]; then
             echo "Error: UNREAL_ENGINE is not set!"
             echo "Set it in .env or pass it as an argument:"
-            echo "  task test-unreal UNREAL_ENGINE=/path/to/engine"
+            echo "  task test UNREAL_ENGINE=/path/to/engine"
             exit 1
         fi
 
