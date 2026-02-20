@@ -104,7 +104,6 @@ struct SATORIAPI_API FSatoriError
 	FSatoriError(const FString& InMessage, int32 InCode)
 		: Message(InMessage), Code(InCode) {}
 };
-
 /** gRPC status codes returned by Satori in FSatoriError::Code. */
 namespace SatoriErrorCode
 {

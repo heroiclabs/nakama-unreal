@@ -222,7 +222,6 @@ struct NAKAMAAPI_API FNakamaError
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	int32 Code = 0;
 };
-
 /** gRPC status codes returned by Nakama in FNakamaError::Code. */
 namespace NakamaErrorCode
 {
