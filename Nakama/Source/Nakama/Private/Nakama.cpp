@@ -100,7 +100,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::AddFriends(
 	FString Metadata,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -108,7 +108,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::AddFriends(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -122,18 +122,18 @@ TNakamaFuture<FNakamaVoidResult> Nakama::AddFriends(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaVoidResult{{}, Error, true});
+			FutureState->Resolve(FNakamaVoidResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError, Session,
+	*DoRequest = [Client, FutureState, DoRequest, OnError, Session,
 		Ids,
 		Usernames,
 		Metadata,
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Promise, DoRequest, OnError,
+			[Client, FutureState, DoRequest, OnError,
 				Ids,
 				Usernames,
 				Metadata,
@@ -145,11 +145,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::AddFriends(
 					Ids,
 					Usernames,
 					Metadata,
-					[Promise, DoRequest, OnError]()
+					[FutureState, DoRequest, OnError]()
 					{
 						auto DR = DoRequest; auto OE = OnError;
 						DR->Reset(); OE->Reset();
-						Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+						FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 					},
 					*OnError,
 					CancellationToken);
@@ -160,7 +160,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::AddFriends(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaVoidResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaVoidResult>(FutureState);
 }
 
 TNakamaFuture<FNakamaVoidResult> Nakama::AddFriends(
@@ -171,7 +171,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::AddFriends(
 	FString Metadata,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -179,7 +179,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::AddFriends(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -193,11 +193,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::AddFriends(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaVoidResult{{}, Error, true});
+			FutureState->Resolve(FNakamaVoidResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		HttpKey,
 		Ids,
 		Usernames,
@@ -210,11 +210,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::AddFriends(
 			Ids,
 			Usernames,
 			Metadata,
-			[Promise, DoRequest, OnError]()
+			[FutureState, DoRequest, OnError]()
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+				FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 			},
 			*OnError,
 			CancellationToken);
@@ -222,7 +222,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::AddFriends(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaVoidResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaVoidResult>(FutureState);
 }
 TNakamaFuture<FNakamaVoidResult> Nakama::AddGroupUsers(
 	FNakamaClient Client,
@@ -231,7 +231,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::AddGroupUsers(
 	const TArray<FString>& UserIds,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -239,7 +239,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::AddGroupUsers(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -253,17 +253,17 @@ TNakamaFuture<FNakamaVoidResult> Nakama::AddGroupUsers(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaVoidResult{{}, Error, true});
+			FutureState->Resolve(FNakamaVoidResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError, Session,
+	*DoRequest = [Client, FutureState, DoRequest, OnError, Session,
 		GroupId,
 		UserIds,
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Promise, DoRequest, OnError,
+			[Client, FutureState, DoRequest, OnError,
 				GroupId,
 				UserIds,
 				CancellationToken](const FNakamaSession& Session)
@@ -273,11 +273,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::AddGroupUsers(
 					Session,
 					GroupId,
 					UserIds,
-					[Promise, DoRequest, OnError]()
+					[FutureState, DoRequest, OnError]()
 					{
 						auto DR = DoRequest; auto OE = OnError;
 						DR->Reset(); OE->Reset();
-						Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+						FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 					},
 					*OnError,
 					CancellationToken);
@@ -288,7 +288,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::AddGroupUsers(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaVoidResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaVoidResult>(FutureState);
 }
 
 TNakamaFuture<FNakamaVoidResult> Nakama::AddGroupUsers(
@@ -298,7 +298,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::AddGroupUsers(
 	const TArray<FString>& UserIds,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -306,7 +306,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::AddGroupUsers(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -320,11 +320,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::AddGroupUsers(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaVoidResult{{}, Error, true});
+			FutureState->Resolve(FNakamaVoidResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		HttpKey,
 		GroupId,
 		UserIds,
@@ -335,11 +335,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::AddGroupUsers(
 			HttpKey,
 			GroupId,
 			UserIds,
-			[Promise, DoRequest, OnError]()
+			[FutureState, DoRequest, OnError]()
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+				FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 			},
 			*OnError,
 			CancellationToken);
@@ -347,7 +347,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::AddGroupUsers(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaVoidResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaVoidResult>(FutureState);
 }
 TNakamaFuture<FNakamaSessionResult> Nakama::SessionRefresh(
 	FNakamaClient Client,
@@ -355,7 +355,7 @@ TNakamaFuture<FNakamaSessionResult> Nakama::SessionRefresh(
 	const TMap<FString, FString>& Vars,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaSessionResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaSessionResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -363,7 +363,7 @@ TNakamaFuture<FNakamaSessionResult> Nakama::SessionRefresh(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -377,11 +377,11 @@ TNakamaFuture<FNakamaSessionResult> Nakama::SessionRefresh(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaSessionResult{{}, Error, true});
+			FutureState->Resolve(FNakamaSessionResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		Token,
 		Vars,
 		CancellationToken]()
@@ -390,11 +390,11 @@ TNakamaFuture<FNakamaSessionResult> Nakama::SessionRefresh(
 			Client.ApiConfig,
 			Token,
 			Vars,
-			[Promise, DoRequest, OnError](const FNakamaSession& Result)
+			[FutureState, DoRequest, OnError](const FNakamaSession& Result)
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaSessionResult{Result, {}, false});
+				FutureState->Resolve(FNakamaSessionResult{Result, {}, false});
 			},
 			*OnError,
 			CancellationToken);
@@ -402,7 +402,7 @@ TNakamaFuture<FNakamaSessionResult> Nakama::SessionRefresh(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaSessionResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaSessionResult>(FutureState);
 }
 TNakamaFuture<FNakamaVoidResult> Nakama::SessionLogout(
 	FNakamaClient Client,
@@ -411,7 +411,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::SessionLogout(
 	FString RefreshToken,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -419,7 +419,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::SessionLogout(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -433,17 +433,17 @@ TNakamaFuture<FNakamaVoidResult> Nakama::SessionLogout(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaVoidResult{{}, Error, true});
+			FutureState->Resolve(FNakamaVoidResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError, Session,
+	*DoRequest = [Client, FutureState, DoRequest, OnError, Session,
 		Token,
 		RefreshToken,
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Promise, DoRequest, OnError,
+			[Client, FutureState, DoRequest, OnError,
 				Token,
 				RefreshToken,
 				CancellationToken](const FNakamaSession& Session)
@@ -453,11 +453,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::SessionLogout(
 					Session,
 					Token,
 					RefreshToken,
-					[Promise, DoRequest, OnError]()
+					[FutureState, DoRequest, OnError]()
 					{
 						auto DR = DoRequest; auto OE = OnError;
 						DR->Reset(); OE->Reset();
-						Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+						FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 					},
 					*OnError,
 					CancellationToken);
@@ -468,7 +468,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::SessionLogout(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaVoidResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaVoidResult>(FutureState);
 }
 
 TNakamaFuture<FNakamaVoidResult> Nakama::SessionLogout(
@@ -478,7 +478,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::SessionLogout(
 	FString RefreshToken,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -486,7 +486,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::SessionLogout(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -500,11 +500,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::SessionLogout(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaVoidResult{{}, Error, true});
+			FutureState->Resolve(FNakamaVoidResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		HttpKey,
 		Token,
 		RefreshToken,
@@ -515,11 +515,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::SessionLogout(
 			HttpKey,
 			Token,
 			RefreshToken,
-			[Promise, DoRequest, OnError]()
+			[FutureState, DoRequest, OnError]()
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+				FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 			},
 			*OnError,
 			CancellationToken);
@@ -527,7 +527,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::SessionLogout(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaVoidResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaVoidResult>(FutureState);
 }
 TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateApple(
 	FNakamaClient Client,
@@ -536,7 +536,7 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateApple(
 	FString Username,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaSessionResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaSessionResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -544,7 +544,7 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateApple(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -558,11 +558,11 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateApple(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaSessionResult{{}, Error, true});
+			FutureState->Resolve(FNakamaSessionResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		Account,
 		Create,
 		Username,
@@ -573,11 +573,11 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateApple(
 			Account,
 			Create,
 			Username,
-			[Promise, DoRequest, OnError](const FNakamaSession& Result)
+			[FutureState, DoRequest, OnError](const FNakamaSession& Result)
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaSessionResult{Result, {}, false});
+				FutureState->Resolve(FNakamaSessionResult{Result, {}, false});
 			},
 			*OnError,
 			CancellationToken);
@@ -585,7 +585,7 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateApple(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaSessionResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaSessionResult>(FutureState);
 }
 TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateCustom(
 	FNakamaClient Client,
@@ -594,7 +594,7 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateCustom(
 	FString Username,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaSessionResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaSessionResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -602,7 +602,7 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateCustom(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -616,11 +616,11 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateCustom(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaSessionResult{{}, Error, true});
+			FutureState->Resolve(FNakamaSessionResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		Account,
 		Create,
 		Username,
@@ -631,11 +631,11 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateCustom(
 			Account,
 			Create,
 			Username,
-			[Promise, DoRequest, OnError](const FNakamaSession& Result)
+			[FutureState, DoRequest, OnError](const FNakamaSession& Result)
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaSessionResult{Result, {}, false});
+				FutureState->Resolve(FNakamaSessionResult{Result, {}, false});
 			},
 			*OnError,
 			CancellationToken);
@@ -643,7 +643,7 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateCustom(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaSessionResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaSessionResult>(FutureState);
 }
 TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateDevice(
 	FNakamaClient Client,
@@ -652,7 +652,7 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateDevice(
 	FString Username,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaSessionResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaSessionResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -660,7 +660,7 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateDevice(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -674,11 +674,11 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateDevice(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaSessionResult{{}, Error, true});
+			FutureState->Resolve(FNakamaSessionResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		Account,
 		Create,
 		Username,
@@ -689,11 +689,11 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateDevice(
 			Account,
 			Create,
 			Username,
-			[Promise, DoRequest, OnError](const FNakamaSession& Result)
+			[FutureState, DoRequest, OnError](const FNakamaSession& Result)
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaSessionResult{Result, {}, false});
+				FutureState->Resolve(FNakamaSessionResult{Result, {}, false});
 			},
 			*OnError,
 			CancellationToken);
@@ -701,7 +701,7 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateDevice(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaSessionResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaSessionResult>(FutureState);
 }
 TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateEmail(
 	FNakamaClient Client,
@@ -710,7 +710,7 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateEmail(
 	FString Username,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaSessionResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaSessionResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -718,7 +718,7 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateEmail(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -732,11 +732,11 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateEmail(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaSessionResult{{}, Error, true});
+			FutureState->Resolve(FNakamaSessionResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		Account,
 		Create,
 		Username,
@@ -747,11 +747,11 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateEmail(
 			Account,
 			Create,
 			Username,
-			[Promise, DoRequest, OnError](const FNakamaSession& Result)
+			[FutureState, DoRequest, OnError](const FNakamaSession& Result)
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaSessionResult{Result, {}, false});
+				FutureState->Resolve(FNakamaSessionResult{Result, {}, false});
 			},
 			*OnError,
 			CancellationToken);
@@ -759,7 +759,7 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateEmail(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaSessionResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaSessionResult>(FutureState);
 }
 TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateFacebook(
 	FNakamaClient Client,
@@ -769,7 +769,7 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateFacebook(
 	bool Sync,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaSessionResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaSessionResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -777,7 +777,7 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateFacebook(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -791,11 +791,11 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateFacebook(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaSessionResult{{}, Error, true});
+			FutureState->Resolve(FNakamaSessionResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		Account,
 		Create,
 		Username,
@@ -808,11 +808,11 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateFacebook(
 			Create,
 			Username,
 			Sync,
-			[Promise, DoRequest, OnError](const FNakamaSession& Result)
+			[FutureState, DoRequest, OnError](const FNakamaSession& Result)
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaSessionResult{Result, {}, false});
+				FutureState->Resolve(FNakamaSessionResult{Result, {}, false});
 			},
 			*OnError,
 			CancellationToken);
@@ -820,7 +820,7 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateFacebook(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaSessionResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaSessionResult>(FutureState);
 }
 TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateFacebookInstantGame(
 	FNakamaClient Client,
@@ -829,7 +829,7 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateFacebookInstantGame(
 	FString Username,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaSessionResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaSessionResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -837,7 +837,7 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateFacebookInstantGame(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -851,11 +851,11 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateFacebookInstantGame(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaSessionResult{{}, Error, true});
+			FutureState->Resolve(FNakamaSessionResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		Account,
 		Create,
 		Username,
@@ -866,11 +866,11 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateFacebookInstantGame(
 			Account,
 			Create,
 			Username,
-			[Promise, DoRequest, OnError](const FNakamaSession& Result)
+			[FutureState, DoRequest, OnError](const FNakamaSession& Result)
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaSessionResult{Result, {}, false});
+				FutureState->Resolve(FNakamaSessionResult{Result, {}, false});
 			},
 			*OnError,
 			CancellationToken);
@@ -878,7 +878,7 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateFacebookInstantGame(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaSessionResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaSessionResult>(FutureState);
 }
 TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateGameCenter(
 	FNakamaClient Client,
@@ -887,7 +887,7 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateGameCenter(
 	FString Username,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaSessionResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaSessionResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -895,7 +895,7 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateGameCenter(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -909,11 +909,11 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateGameCenter(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaSessionResult{{}, Error, true});
+			FutureState->Resolve(FNakamaSessionResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		Account,
 		Create,
 		Username,
@@ -924,11 +924,11 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateGameCenter(
 			Account,
 			Create,
 			Username,
-			[Promise, DoRequest, OnError](const FNakamaSession& Result)
+			[FutureState, DoRequest, OnError](const FNakamaSession& Result)
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaSessionResult{Result, {}, false});
+				FutureState->Resolve(FNakamaSessionResult{Result, {}, false});
 			},
 			*OnError,
 			CancellationToken);
@@ -936,7 +936,7 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateGameCenter(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaSessionResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaSessionResult>(FutureState);
 }
 TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateGoogle(
 	FNakamaClient Client,
@@ -945,7 +945,7 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateGoogle(
 	FString Username,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaSessionResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaSessionResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -953,7 +953,7 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateGoogle(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -967,11 +967,11 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateGoogle(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaSessionResult{{}, Error, true});
+			FutureState->Resolve(FNakamaSessionResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		Account,
 		Create,
 		Username,
@@ -982,11 +982,11 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateGoogle(
 			Account,
 			Create,
 			Username,
-			[Promise, DoRequest, OnError](const FNakamaSession& Result)
+			[FutureState, DoRequest, OnError](const FNakamaSession& Result)
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaSessionResult{Result, {}, false});
+				FutureState->Resolve(FNakamaSessionResult{Result, {}, false});
 			},
 			*OnError,
 			CancellationToken);
@@ -994,7 +994,7 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateGoogle(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaSessionResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaSessionResult>(FutureState);
 }
 TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateSteam(
 	FNakamaClient Client,
@@ -1004,7 +1004,7 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateSteam(
 	bool Sync,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaSessionResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaSessionResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -1012,7 +1012,7 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateSteam(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -1026,11 +1026,11 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateSteam(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaSessionResult{{}, Error, true});
+			FutureState->Resolve(FNakamaSessionResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		Account,
 		Create,
 		Username,
@@ -1043,11 +1043,11 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateSteam(
 			Create,
 			Username,
 			Sync,
-			[Promise, DoRequest, OnError](const FNakamaSession& Result)
+			[FutureState, DoRequest, OnError](const FNakamaSession& Result)
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaSessionResult{Result, {}, false});
+				FutureState->Resolve(FNakamaSessionResult{Result, {}, false});
 			},
 			*OnError,
 			CancellationToken);
@@ -1055,7 +1055,7 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateSteam(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaSessionResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaSessionResult>(FutureState);
 }
 TNakamaFuture<FNakamaVoidResult> Nakama::BanGroupUsers(
 	FNakamaClient Client,
@@ -1064,7 +1064,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::BanGroupUsers(
 	const TArray<FString>& UserIds,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -1072,7 +1072,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::BanGroupUsers(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -1086,17 +1086,17 @@ TNakamaFuture<FNakamaVoidResult> Nakama::BanGroupUsers(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaVoidResult{{}, Error, true});
+			FutureState->Resolve(FNakamaVoidResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError, Session,
+	*DoRequest = [Client, FutureState, DoRequest, OnError, Session,
 		GroupId,
 		UserIds,
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Promise, DoRequest, OnError,
+			[Client, FutureState, DoRequest, OnError,
 				GroupId,
 				UserIds,
 				CancellationToken](const FNakamaSession& Session)
@@ -1106,11 +1106,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::BanGroupUsers(
 					Session,
 					GroupId,
 					UserIds,
-					[Promise, DoRequest, OnError]()
+					[FutureState, DoRequest, OnError]()
 					{
 						auto DR = DoRequest; auto OE = OnError;
 						DR->Reset(); OE->Reset();
-						Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+						FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 					},
 					*OnError,
 					CancellationToken);
@@ -1121,7 +1121,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::BanGroupUsers(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaVoidResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaVoidResult>(FutureState);
 }
 
 TNakamaFuture<FNakamaVoidResult> Nakama::BanGroupUsers(
@@ -1131,7 +1131,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::BanGroupUsers(
 	const TArray<FString>& UserIds,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -1139,7 +1139,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::BanGroupUsers(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -1153,11 +1153,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::BanGroupUsers(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaVoidResult{{}, Error, true});
+			FutureState->Resolve(FNakamaVoidResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		HttpKey,
 		GroupId,
 		UserIds,
@@ -1168,11 +1168,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::BanGroupUsers(
 			HttpKey,
 			GroupId,
 			UserIds,
-			[Promise, DoRequest, OnError]()
+			[FutureState, DoRequest, OnError]()
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+				FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 			},
 			*OnError,
 			CancellationToken);
@@ -1180,7 +1180,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::BanGroupUsers(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaVoidResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaVoidResult>(FutureState);
 }
 TNakamaFuture<FNakamaVoidResult> Nakama::BlockFriends(
 	FNakamaClient Client,
@@ -1189,7 +1189,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::BlockFriends(
 	const TArray<FString>& Usernames,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -1197,7 +1197,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::BlockFriends(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -1211,17 +1211,17 @@ TNakamaFuture<FNakamaVoidResult> Nakama::BlockFriends(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaVoidResult{{}, Error, true});
+			FutureState->Resolve(FNakamaVoidResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError, Session,
+	*DoRequest = [Client, FutureState, DoRequest, OnError, Session,
 		Ids,
 		Usernames,
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Promise, DoRequest, OnError,
+			[Client, FutureState, DoRequest, OnError,
 				Ids,
 				Usernames,
 				CancellationToken](const FNakamaSession& Session)
@@ -1231,11 +1231,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::BlockFriends(
 					Session,
 					Ids,
 					Usernames,
-					[Promise, DoRequest, OnError]()
+					[FutureState, DoRequest, OnError]()
 					{
 						auto DR = DoRequest; auto OE = OnError;
 						DR->Reset(); OE->Reset();
-						Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+						FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 					},
 					*OnError,
 					CancellationToken);
@@ -1246,7 +1246,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::BlockFriends(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaVoidResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaVoidResult>(FutureState);
 }
 
 TNakamaFuture<FNakamaVoidResult> Nakama::BlockFriends(
@@ -1256,7 +1256,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::BlockFriends(
 	const TArray<FString>& Usernames,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -1264,7 +1264,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::BlockFriends(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -1278,11 +1278,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::BlockFriends(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaVoidResult{{}, Error, true});
+			FutureState->Resolve(FNakamaVoidResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		HttpKey,
 		Ids,
 		Usernames,
@@ -1293,11 +1293,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::BlockFriends(
 			HttpKey,
 			Ids,
 			Usernames,
-			[Promise, DoRequest, OnError]()
+			[FutureState, DoRequest, OnError]()
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+				FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 			},
 			*OnError,
 			CancellationToken);
@@ -1305,7 +1305,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::BlockFriends(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaVoidResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaVoidResult>(FutureState);
 }
 TNakamaFuture<FNakamaGroupResult> Nakama::CreateGroup(
 	FNakamaClient Client,
@@ -1318,7 +1318,7 @@ TNakamaFuture<FNakamaGroupResult> Nakama::CreateGroup(
 	int32 MaxCount,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaGroupResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaGroupResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -1326,7 +1326,7 @@ TNakamaFuture<FNakamaGroupResult> Nakama::CreateGroup(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -1340,11 +1340,11 @@ TNakamaFuture<FNakamaGroupResult> Nakama::CreateGroup(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaGroupResult{{}, Error, true});
+			FutureState->Resolve(FNakamaGroupResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError, Session,
+	*DoRequest = [Client, FutureState, DoRequest, OnError, Session,
 		Name,
 		Description,
 		LangTag,
@@ -1354,7 +1354,7 @@ TNakamaFuture<FNakamaGroupResult> Nakama::CreateGroup(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Promise, DoRequest, OnError,
+			[Client, FutureState, DoRequest, OnError,
 				Name,
 				Description,
 				LangTag,
@@ -1372,11 +1372,11 @@ TNakamaFuture<FNakamaGroupResult> Nakama::CreateGroup(
 					AvatarUrl,
 					Open,
 					MaxCount,
-					[Promise, DoRequest, OnError](const FNakamaGroup& Result)
+					[FutureState, DoRequest, OnError](const FNakamaGroup& Result)
 					{
 						auto DR = DoRequest; auto OE = OnError;
 						DR->Reset(); OE->Reset();
-						Promise->SetValue(FNakamaGroupResult{Result, {}, false});
+						FutureState->Resolve(FNakamaGroupResult{Result, {}, false});
 					},
 					*OnError,
 					CancellationToken);
@@ -1387,7 +1387,7 @@ TNakamaFuture<FNakamaGroupResult> Nakama::CreateGroup(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaGroupResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaGroupResult>(FutureState);
 }
 
 TNakamaFuture<FNakamaGroupResult> Nakama::CreateGroup(
@@ -1401,7 +1401,7 @@ TNakamaFuture<FNakamaGroupResult> Nakama::CreateGroup(
 	int32 MaxCount,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaGroupResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaGroupResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -1409,7 +1409,7 @@ TNakamaFuture<FNakamaGroupResult> Nakama::CreateGroup(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -1423,11 +1423,11 @@ TNakamaFuture<FNakamaGroupResult> Nakama::CreateGroup(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaGroupResult{{}, Error, true});
+			FutureState->Resolve(FNakamaGroupResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		HttpKey,
 		Name,
 		Description,
@@ -1446,11 +1446,11 @@ TNakamaFuture<FNakamaGroupResult> Nakama::CreateGroup(
 			AvatarUrl,
 			Open,
 			MaxCount,
-			[Promise, DoRequest, OnError](const FNakamaGroup& Result)
+			[FutureState, DoRequest, OnError](const FNakamaGroup& Result)
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaGroupResult{Result, {}, false});
+				FutureState->Resolve(FNakamaGroupResult{Result, {}, false});
 			},
 			*OnError,
 			CancellationToken);
@@ -1458,14 +1458,14 @@ TNakamaFuture<FNakamaGroupResult> Nakama::CreateGroup(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaGroupResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaGroupResult>(FutureState);
 }
 TNakamaFuture<FNakamaVoidResult> Nakama::DeleteAccount(
 	FNakamaClient Client,
 	const FNakamaSession& Session,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -1473,7 +1473,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteAccount(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -1487,25 +1487,25 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteAccount(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaVoidResult{{}, Error, true});
+			FutureState->Resolve(FNakamaVoidResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError, Session,
+	*DoRequest = [Client, FutureState, DoRequest, OnError, Session,
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Promise, DoRequest, OnError,
+			[Client, FutureState, DoRequest, OnError,
 				CancellationToken](const FNakamaSession& Session)
 			{
 				NakamaApi::DeleteAccount(
 					Client.ApiConfig,
 					Session,
-					[Promise, DoRequest, OnError]()
+					[FutureState, DoRequest, OnError]()
 					{
 						auto DR = DoRequest; auto OE = OnError;
 						DR->Reset(); OE->Reset();
-						Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+						FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 					},
 					*OnError,
 					CancellationToken);
@@ -1516,7 +1516,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteAccount(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaVoidResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaVoidResult>(FutureState);
 }
 
 TNakamaFuture<FNakamaVoidResult> Nakama::DeleteAccount(
@@ -1524,7 +1524,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteAccount(
 	const FString& HttpKey,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -1532,7 +1532,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteAccount(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -1546,22 +1546,22 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteAccount(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaVoidResult{{}, Error, true});
+			FutureState->Resolve(FNakamaVoidResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		HttpKey,
 		CancellationToken]()
 	{
 		NakamaApi::DeleteAccount(
 			Client.ApiConfig,
 			HttpKey,
-			[Promise, DoRequest, OnError]()
+			[FutureState, DoRequest, OnError]()
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+				FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 			},
 			*OnError,
 			CancellationToken);
@@ -1569,7 +1569,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteAccount(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaVoidResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaVoidResult>(FutureState);
 }
 TNakamaFuture<FNakamaVoidResult> Nakama::DeleteFriends(
 	FNakamaClient Client,
@@ -1578,7 +1578,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteFriends(
 	const TArray<FString>& Usernames,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -1586,7 +1586,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteFriends(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -1600,17 +1600,17 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteFriends(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaVoidResult{{}, Error, true});
+			FutureState->Resolve(FNakamaVoidResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError, Session,
+	*DoRequest = [Client, FutureState, DoRequest, OnError, Session,
 		Ids,
 		Usernames,
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Promise, DoRequest, OnError,
+			[Client, FutureState, DoRequest, OnError,
 				Ids,
 				Usernames,
 				CancellationToken](const FNakamaSession& Session)
@@ -1620,11 +1620,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteFriends(
 					Session,
 					Ids,
 					Usernames,
-					[Promise, DoRequest, OnError]()
+					[FutureState, DoRequest, OnError]()
 					{
 						auto DR = DoRequest; auto OE = OnError;
 						DR->Reset(); OE->Reset();
-						Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+						FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 					},
 					*OnError,
 					CancellationToken);
@@ -1635,7 +1635,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteFriends(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaVoidResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaVoidResult>(FutureState);
 }
 
 TNakamaFuture<FNakamaVoidResult> Nakama::DeleteFriends(
@@ -1645,7 +1645,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteFriends(
 	const TArray<FString>& Usernames,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -1653,7 +1653,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteFriends(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -1667,11 +1667,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteFriends(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaVoidResult{{}, Error, true});
+			FutureState->Resolve(FNakamaVoidResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		HttpKey,
 		Ids,
 		Usernames,
@@ -1682,11 +1682,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteFriends(
 			HttpKey,
 			Ids,
 			Usernames,
-			[Promise, DoRequest, OnError]()
+			[FutureState, DoRequest, OnError]()
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+				FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 			},
 			*OnError,
 			CancellationToken);
@@ -1694,7 +1694,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteFriends(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaVoidResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaVoidResult>(FutureState);
 }
 TNakamaFuture<FNakamaVoidResult> Nakama::DeleteGroup(
 	FNakamaClient Client,
@@ -1702,7 +1702,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteGroup(
 	FString GroupId,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -1710,7 +1710,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteGroup(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -1724,16 +1724,16 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteGroup(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaVoidResult{{}, Error, true});
+			FutureState->Resolve(FNakamaVoidResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError, Session,
+	*DoRequest = [Client, FutureState, DoRequest, OnError, Session,
 		GroupId,
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Promise, DoRequest, OnError,
+			[Client, FutureState, DoRequest, OnError,
 				GroupId,
 				CancellationToken](const FNakamaSession& Session)
 			{
@@ -1741,11 +1741,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteGroup(
 					Client.ApiConfig,
 					Session,
 					GroupId,
-					[Promise, DoRequest, OnError]()
+					[FutureState, DoRequest, OnError]()
 					{
 						auto DR = DoRequest; auto OE = OnError;
 						DR->Reset(); OE->Reset();
-						Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+						FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 					},
 					*OnError,
 					CancellationToken);
@@ -1756,7 +1756,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteGroup(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaVoidResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaVoidResult>(FutureState);
 }
 
 TNakamaFuture<FNakamaVoidResult> Nakama::DeleteGroup(
@@ -1765,7 +1765,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteGroup(
 	FString GroupId,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -1773,7 +1773,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteGroup(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -1787,11 +1787,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteGroup(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaVoidResult{{}, Error, true});
+			FutureState->Resolve(FNakamaVoidResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		HttpKey,
 		GroupId,
 		CancellationToken]()
@@ -1800,11 +1800,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteGroup(
 			Client.ApiConfig,
 			HttpKey,
 			GroupId,
-			[Promise, DoRequest, OnError]()
+			[FutureState, DoRequest, OnError]()
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+				FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 			},
 			*OnError,
 			CancellationToken);
@@ -1812,7 +1812,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteGroup(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaVoidResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaVoidResult>(FutureState);
 }
 TNakamaFuture<FNakamaVoidResult> Nakama::DeleteLeaderboardRecord(
 	FNakamaClient Client,
@@ -1820,7 +1820,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteLeaderboardRecord(
 	FString LeaderboardId,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -1828,7 +1828,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteLeaderboardRecord(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -1842,16 +1842,16 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteLeaderboardRecord(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaVoidResult{{}, Error, true});
+			FutureState->Resolve(FNakamaVoidResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError, Session,
+	*DoRequest = [Client, FutureState, DoRequest, OnError, Session,
 		LeaderboardId,
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Promise, DoRequest, OnError,
+			[Client, FutureState, DoRequest, OnError,
 				LeaderboardId,
 				CancellationToken](const FNakamaSession& Session)
 			{
@@ -1859,11 +1859,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteLeaderboardRecord(
 					Client.ApiConfig,
 					Session,
 					LeaderboardId,
-					[Promise, DoRequest, OnError]()
+					[FutureState, DoRequest, OnError]()
 					{
 						auto DR = DoRequest; auto OE = OnError;
 						DR->Reset(); OE->Reset();
-						Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+						FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 					},
 					*OnError,
 					CancellationToken);
@@ -1874,7 +1874,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteLeaderboardRecord(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaVoidResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaVoidResult>(FutureState);
 }
 
 TNakamaFuture<FNakamaVoidResult> Nakama::DeleteLeaderboardRecord(
@@ -1883,7 +1883,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteLeaderboardRecord(
 	FString LeaderboardId,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -1891,7 +1891,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteLeaderboardRecord(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -1905,11 +1905,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteLeaderboardRecord(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaVoidResult{{}, Error, true});
+			FutureState->Resolve(FNakamaVoidResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		HttpKey,
 		LeaderboardId,
 		CancellationToken]()
@@ -1918,11 +1918,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteLeaderboardRecord(
 			Client.ApiConfig,
 			HttpKey,
 			LeaderboardId,
-			[Promise, DoRequest, OnError]()
+			[FutureState, DoRequest, OnError]()
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+				FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 			},
 			*OnError,
 			CancellationToken);
@@ -1930,7 +1930,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteLeaderboardRecord(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaVoidResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaVoidResult>(FutureState);
 }
 TNakamaFuture<FNakamaVoidResult> Nakama::DeleteNotifications(
 	FNakamaClient Client,
@@ -1938,7 +1938,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteNotifications(
 	const TArray<FString>& Ids,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -1946,7 +1946,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteNotifications(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -1960,16 +1960,16 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteNotifications(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaVoidResult{{}, Error, true});
+			FutureState->Resolve(FNakamaVoidResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError, Session,
+	*DoRequest = [Client, FutureState, DoRequest, OnError, Session,
 		Ids,
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Promise, DoRequest, OnError,
+			[Client, FutureState, DoRequest, OnError,
 				Ids,
 				CancellationToken](const FNakamaSession& Session)
 			{
@@ -1977,11 +1977,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteNotifications(
 					Client.ApiConfig,
 					Session,
 					Ids,
-					[Promise, DoRequest, OnError]()
+					[FutureState, DoRequest, OnError]()
 					{
 						auto DR = DoRequest; auto OE = OnError;
 						DR->Reset(); OE->Reset();
-						Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+						FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 					},
 					*OnError,
 					CancellationToken);
@@ -1992,7 +1992,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteNotifications(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaVoidResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaVoidResult>(FutureState);
 }
 
 TNakamaFuture<FNakamaVoidResult> Nakama::DeleteNotifications(
@@ -2001,7 +2001,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteNotifications(
 	const TArray<FString>& Ids,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -2009,7 +2009,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteNotifications(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -2023,11 +2023,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteNotifications(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaVoidResult{{}, Error, true});
+			FutureState->Resolve(FNakamaVoidResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		HttpKey,
 		Ids,
 		CancellationToken]()
@@ -2036,11 +2036,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteNotifications(
 			Client.ApiConfig,
 			HttpKey,
 			Ids,
-			[Promise, DoRequest, OnError]()
+			[FutureState, DoRequest, OnError]()
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+				FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 			},
 			*OnError,
 			CancellationToken);
@@ -2048,7 +2048,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteNotifications(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaVoidResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaVoidResult>(FutureState);
 }
 TNakamaFuture<FNakamaVoidResult> Nakama::DeleteTournamentRecord(
 	FNakamaClient Client,
@@ -2056,7 +2056,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteTournamentRecord(
 	FString TournamentId,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -2064,7 +2064,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteTournamentRecord(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -2078,16 +2078,16 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteTournamentRecord(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaVoidResult{{}, Error, true});
+			FutureState->Resolve(FNakamaVoidResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError, Session,
+	*DoRequest = [Client, FutureState, DoRequest, OnError, Session,
 		TournamentId,
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Promise, DoRequest, OnError,
+			[Client, FutureState, DoRequest, OnError,
 				TournamentId,
 				CancellationToken](const FNakamaSession& Session)
 			{
@@ -2095,11 +2095,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteTournamentRecord(
 					Client.ApiConfig,
 					Session,
 					TournamentId,
-					[Promise, DoRequest, OnError]()
+					[FutureState, DoRequest, OnError]()
 					{
 						auto DR = DoRequest; auto OE = OnError;
 						DR->Reset(); OE->Reset();
-						Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+						FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 					},
 					*OnError,
 					CancellationToken);
@@ -2110,7 +2110,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteTournamentRecord(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaVoidResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaVoidResult>(FutureState);
 }
 
 TNakamaFuture<FNakamaVoidResult> Nakama::DeleteTournamentRecord(
@@ -2119,7 +2119,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteTournamentRecord(
 	FString TournamentId,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -2127,7 +2127,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteTournamentRecord(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -2141,11 +2141,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteTournamentRecord(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaVoidResult{{}, Error, true});
+			FutureState->Resolve(FNakamaVoidResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		HttpKey,
 		TournamentId,
 		CancellationToken]()
@@ -2154,11 +2154,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteTournamentRecord(
 			Client.ApiConfig,
 			HttpKey,
 			TournamentId,
-			[Promise, DoRequest, OnError]()
+			[FutureState, DoRequest, OnError]()
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+				FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 			},
 			*OnError,
 			CancellationToken);
@@ -2166,7 +2166,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteTournamentRecord(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaVoidResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaVoidResult>(FutureState);
 }
 TNakamaFuture<FNakamaVoidResult> Nakama::DeleteStorageObjects(
 	FNakamaClient Client,
@@ -2174,7 +2174,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteStorageObjects(
 	const TArray<FNakamaDeleteStorageObjectId>& ObjectIds,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -2182,7 +2182,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteStorageObjects(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -2196,16 +2196,16 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteStorageObjects(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaVoidResult{{}, Error, true});
+			FutureState->Resolve(FNakamaVoidResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError, Session,
+	*DoRequest = [Client, FutureState, DoRequest, OnError, Session,
 		ObjectIds,
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Promise, DoRequest, OnError,
+			[Client, FutureState, DoRequest, OnError,
 				ObjectIds,
 				CancellationToken](const FNakamaSession& Session)
 			{
@@ -2213,11 +2213,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteStorageObjects(
 					Client.ApiConfig,
 					Session,
 					ObjectIds,
-					[Promise, DoRequest, OnError]()
+					[FutureState, DoRequest, OnError]()
 					{
 						auto DR = DoRequest; auto OE = OnError;
 						DR->Reset(); OE->Reset();
-						Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+						FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 					},
 					*OnError,
 					CancellationToken);
@@ -2228,7 +2228,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteStorageObjects(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaVoidResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaVoidResult>(FutureState);
 }
 
 TNakamaFuture<FNakamaVoidResult> Nakama::DeleteStorageObjects(
@@ -2237,7 +2237,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteStorageObjects(
 	const TArray<FNakamaDeleteStorageObjectId>& ObjectIds,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -2245,7 +2245,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteStorageObjects(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -2259,11 +2259,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteStorageObjects(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaVoidResult{{}, Error, true});
+			FutureState->Resolve(FNakamaVoidResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		HttpKey,
 		ObjectIds,
 		CancellationToken]()
@@ -2272,11 +2272,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteStorageObjects(
 			Client.ApiConfig,
 			HttpKey,
 			ObjectIds,
-			[Promise, DoRequest, OnError]()
+			[FutureState, DoRequest, OnError]()
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+				FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 			},
 			*OnError,
 			CancellationToken);
@@ -2284,7 +2284,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteStorageObjects(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaVoidResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaVoidResult>(FutureState);
 }
 TNakamaFuture<FNakamaVoidResult> Nakama::Event(
 	FNakamaClient Client,
@@ -2295,7 +2295,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::Event(
 	const TMap<FString, FString>& Properties,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -2303,7 +2303,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::Event(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -2317,11 +2317,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::Event(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaVoidResult{{}, Error, true});
+			FutureState->Resolve(FNakamaVoidResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError, Session,
+	*DoRequest = [Client, FutureState, DoRequest, OnError, Session,
 		Name,
 		Timestamp,
 		External,
@@ -2329,7 +2329,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::Event(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Promise, DoRequest, OnError,
+			[Client, FutureState, DoRequest, OnError,
 				Name,
 				Timestamp,
 				External,
@@ -2343,11 +2343,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::Event(
 					Timestamp,
 					External,
 					Properties,
-					[Promise, DoRequest, OnError]()
+					[FutureState, DoRequest, OnError]()
 					{
 						auto DR = DoRequest; auto OE = OnError;
 						DR->Reset(); OE->Reset();
-						Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+						FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 					},
 					*OnError,
 					CancellationToken);
@@ -2358,7 +2358,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::Event(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaVoidResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaVoidResult>(FutureState);
 }
 
 TNakamaFuture<FNakamaVoidResult> Nakama::Event(
@@ -2370,7 +2370,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::Event(
 	const TMap<FString, FString>& Properties,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -2378,7 +2378,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::Event(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -2392,11 +2392,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::Event(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaVoidResult{{}, Error, true});
+			FutureState->Resolve(FNakamaVoidResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		HttpKey,
 		Name,
 		Timestamp,
@@ -2411,11 +2411,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::Event(
 			Timestamp,
 			External,
 			Properties,
-			[Promise, DoRequest, OnError]()
+			[FutureState, DoRequest, OnError]()
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+				FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 			},
 			*OnError,
 			CancellationToken);
@@ -2423,14 +2423,14 @@ TNakamaFuture<FNakamaVoidResult> Nakama::Event(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaVoidResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaVoidResult>(FutureState);
 }
 TNakamaFuture<FNakamaAccountResult> Nakama::GetAccount(
 	FNakamaClient Client,
 	const FNakamaSession& Session,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaAccountResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaAccountResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -2438,7 +2438,7 @@ TNakamaFuture<FNakamaAccountResult> Nakama::GetAccount(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -2452,25 +2452,25 @@ TNakamaFuture<FNakamaAccountResult> Nakama::GetAccount(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaAccountResult{{}, Error, true});
+			FutureState->Resolve(FNakamaAccountResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError, Session,
+	*DoRequest = [Client, FutureState, DoRequest, OnError, Session,
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Promise, DoRequest, OnError,
+			[Client, FutureState, DoRequest, OnError,
 				CancellationToken](const FNakamaSession& Session)
 			{
 				NakamaApi::GetAccount(
 					Client.ApiConfig,
 					Session,
-					[Promise, DoRequest, OnError](const FNakamaAccount& Result)
+					[FutureState, DoRequest, OnError](const FNakamaAccount& Result)
 					{
 						auto DR = DoRequest; auto OE = OnError;
 						DR->Reset(); OE->Reset();
-						Promise->SetValue(FNakamaAccountResult{Result, {}, false});
+						FutureState->Resolve(FNakamaAccountResult{Result, {}, false});
 					},
 					*OnError,
 					CancellationToken);
@@ -2481,7 +2481,7 @@ TNakamaFuture<FNakamaAccountResult> Nakama::GetAccount(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaAccountResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaAccountResult>(FutureState);
 }
 
 TNakamaFuture<FNakamaAccountResult> Nakama::GetAccount(
@@ -2489,7 +2489,7 @@ TNakamaFuture<FNakamaAccountResult> Nakama::GetAccount(
 	const FString& HttpKey,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaAccountResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaAccountResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -2497,7 +2497,7 @@ TNakamaFuture<FNakamaAccountResult> Nakama::GetAccount(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -2511,22 +2511,22 @@ TNakamaFuture<FNakamaAccountResult> Nakama::GetAccount(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaAccountResult{{}, Error, true});
+			FutureState->Resolve(FNakamaAccountResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		HttpKey,
 		CancellationToken]()
 	{
 		NakamaApi::GetAccount(
 			Client.ApiConfig,
 			HttpKey,
-			[Promise, DoRequest, OnError](const FNakamaAccount& Result)
+			[FutureState, DoRequest, OnError](const FNakamaAccount& Result)
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaAccountResult{Result, {}, false});
+				FutureState->Resolve(FNakamaAccountResult{Result, {}, false});
 			},
 			*OnError,
 			CancellationToken);
@@ -2534,7 +2534,7 @@ TNakamaFuture<FNakamaAccountResult> Nakama::GetAccount(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaAccountResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaAccountResult>(FutureState);
 }
 TNakamaFuture<FNakamaUsersResult> Nakama::GetUsers(
 	FNakamaClient Client,
@@ -2544,7 +2544,7 @@ TNakamaFuture<FNakamaUsersResult> Nakama::GetUsers(
 	const TArray<FString>& FacebookIds,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaUsersResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaUsersResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -2552,7 +2552,7 @@ TNakamaFuture<FNakamaUsersResult> Nakama::GetUsers(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -2566,18 +2566,18 @@ TNakamaFuture<FNakamaUsersResult> Nakama::GetUsers(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaUsersResult{{}, Error, true});
+			FutureState->Resolve(FNakamaUsersResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError, Session,
+	*DoRequest = [Client, FutureState, DoRequest, OnError, Session,
 		Ids,
 		Usernames,
 		FacebookIds,
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Promise, DoRequest, OnError,
+			[Client, FutureState, DoRequest, OnError,
 				Ids,
 				Usernames,
 				FacebookIds,
@@ -2589,11 +2589,11 @@ TNakamaFuture<FNakamaUsersResult> Nakama::GetUsers(
 					Ids,
 					Usernames,
 					FacebookIds,
-					[Promise, DoRequest, OnError](const FNakamaUsers& Result)
+					[FutureState, DoRequest, OnError](const FNakamaUsers& Result)
 					{
 						auto DR = DoRequest; auto OE = OnError;
 						DR->Reset(); OE->Reset();
-						Promise->SetValue(FNakamaUsersResult{Result, {}, false});
+						FutureState->Resolve(FNakamaUsersResult{Result, {}, false});
 					},
 					*OnError,
 					CancellationToken);
@@ -2604,7 +2604,7 @@ TNakamaFuture<FNakamaUsersResult> Nakama::GetUsers(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaUsersResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaUsersResult>(FutureState);
 }
 
 TNakamaFuture<FNakamaUsersResult> Nakama::GetUsers(
@@ -2615,7 +2615,7 @@ TNakamaFuture<FNakamaUsersResult> Nakama::GetUsers(
 	const TArray<FString>& FacebookIds,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaUsersResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaUsersResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -2623,7 +2623,7 @@ TNakamaFuture<FNakamaUsersResult> Nakama::GetUsers(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -2637,11 +2637,11 @@ TNakamaFuture<FNakamaUsersResult> Nakama::GetUsers(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaUsersResult{{}, Error, true});
+			FutureState->Resolve(FNakamaUsersResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		HttpKey,
 		Ids,
 		Usernames,
@@ -2654,11 +2654,11 @@ TNakamaFuture<FNakamaUsersResult> Nakama::GetUsers(
 			Ids,
 			Usernames,
 			FacebookIds,
-			[Promise, DoRequest, OnError](const FNakamaUsers& Result)
+			[FutureState, DoRequest, OnError](const FNakamaUsers& Result)
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaUsersResult{Result, {}, false});
+				FutureState->Resolve(FNakamaUsersResult{Result, {}, false});
 			},
 			*OnError,
 			CancellationToken);
@@ -2666,7 +2666,7 @@ TNakamaFuture<FNakamaUsersResult> Nakama::GetUsers(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaUsersResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaUsersResult>(FutureState);
 }
 TNakamaFuture<FNakamaValidatedSubscriptionResult> Nakama::GetSubscription(
 	FNakamaClient Client,
@@ -2674,7 +2674,7 @@ TNakamaFuture<FNakamaValidatedSubscriptionResult> Nakama::GetSubscription(
 	FString ProductId,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaValidatedSubscriptionResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaValidatedSubscriptionResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -2682,7 +2682,7 @@ TNakamaFuture<FNakamaValidatedSubscriptionResult> Nakama::GetSubscription(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -2696,16 +2696,16 @@ TNakamaFuture<FNakamaValidatedSubscriptionResult> Nakama::GetSubscription(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaValidatedSubscriptionResult{{}, Error, true});
+			FutureState->Resolve(FNakamaValidatedSubscriptionResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError, Session,
+	*DoRequest = [Client, FutureState, DoRequest, OnError, Session,
 		ProductId,
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Promise, DoRequest, OnError,
+			[Client, FutureState, DoRequest, OnError,
 				ProductId,
 				CancellationToken](const FNakamaSession& Session)
 			{
@@ -2713,11 +2713,11 @@ TNakamaFuture<FNakamaValidatedSubscriptionResult> Nakama::GetSubscription(
 					Client.ApiConfig,
 					Session,
 					ProductId,
-					[Promise, DoRequest, OnError](const FNakamaValidatedSubscription& Result)
+					[FutureState, DoRequest, OnError](const FNakamaValidatedSubscription& Result)
 					{
 						auto DR = DoRequest; auto OE = OnError;
 						DR->Reset(); OE->Reset();
-						Promise->SetValue(FNakamaValidatedSubscriptionResult{Result, {}, false});
+						FutureState->Resolve(FNakamaValidatedSubscriptionResult{Result, {}, false});
 					},
 					*OnError,
 					CancellationToken);
@@ -2728,7 +2728,7 @@ TNakamaFuture<FNakamaValidatedSubscriptionResult> Nakama::GetSubscription(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaValidatedSubscriptionResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaValidatedSubscriptionResult>(FutureState);
 }
 
 TNakamaFuture<FNakamaValidatedSubscriptionResult> Nakama::GetSubscription(
@@ -2737,7 +2737,7 @@ TNakamaFuture<FNakamaValidatedSubscriptionResult> Nakama::GetSubscription(
 	FString ProductId,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaValidatedSubscriptionResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaValidatedSubscriptionResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -2745,7 +2745,7 @@ TNakamaFuture<FNakamaValidatedSubscriptionResult> Nakama::GetSubscription(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -2759,11 +2759,11 @@ TNakamaFuture<FNakamaValidatedSubscriptionResult> Nakama::GetSubscription(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaValidatedSubscriptionResult{{}, Error, true});
+			FutureState->Resolve(FNakamaValidatedSubscriptionResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		HttpKey,
 		ProductId,
 		CancellationToken]()
@@ -2772,11 +2772,11 @@ TNakamaFuture<FNakamaValidatedSubscriptionResult> Nakama::GetSubscription(
 			Client.ApiConfig,
 			HttpKey,
 			ProductId,
-			[Promise, DoRequest, OnError](const FNakamaValidatedSubscription& Result)
+			[FutureState, DoRequest, OnError](const FNakamaValidatedSubscription& Result)
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaValidatedSubscriptionResult{Result, {}, false});
+				FutureState->Resolve(FNakamaValidatedSubscriptionResult{Result, {}, false});
 			},
 			*OnError,
 			CancellationToken);
@@ -2784,14 +2784,14 @@ TNakamaFuture<FNakamaValidatedSubscriptionResult> Nakama::GetSubscription(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaValidatedSubscriptionResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaValidatedSubscriptionResult>(FutureState);
 }
 TNakamaFuture<FNakamaMatchmakerStatsResult> Nakama::GetMatchmakerStats(
 	FNakamaClient Client,
 	const FNakamaSession& Session,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaMatchmakerStatsResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaMatchmakerStatsResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -2799,7 +2799,7 @@ TNakamaFuture<FNakamaMatchmakerStatsResult> Nakama::GetMatchmakerStats(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -2813,25 +2813,25 @@ TNakamaFuture<FNakamaMatchmakerStatsResult> Nakama::GetMatchmakerStats(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaMatchmakerStatsResult{{}, Error, true});
+			FutureState->Resolve(FNakamaMatchmakerStatsResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError, Session,
+	*DoRequest = [Client, FutureState, DoRequest, OnError, Session,
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Promise, DoRequest, OnError,
+			[Client, FutureState, DoRequest, OnError,
 				CancellationToken](const FNakamaSession& Session)
 			{
 				NakamaApi::GetMatchmakerStats(
 					Client.ApiConfig,
 					Session,
-					[Promise, DoRequest, OnError](const FNakamaMatchmakerStats& Result)
+					[FutureState, DoRequest, OnError](const FNakamaMatchmakerStats& Result)
 					{
 						auto DR = DoRequest; auto OE = OnError;
 						DR->Reset(); OE->Reset();
-						Promise->SetValue(FNakamaMatchmakerStatsResult{Result, {}, false});
+						FutureState->Resolve(FNakamaMatchmakerStatsResult{Result, {}, false});
 					},
 					*OnError,
 					CancellationToken);
@@ -2842,7 +2842,7 @@ TNakamaFuture<FNakamaMatchmakerStatsResult> Nakama::GetMatchmakerStats(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaMatchmakerStatsResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaMatchmakerStatsResult>(FutureState);
 }
 
 TNakamaFuture<FNakamaMatchmakerStatsResult> Nakama::GetMatchmakerStats(
@@ -2850,7 +2850,7 @@ TNakamaFuture<FNakamaMatchmakerStatsResult> Nakama::GetMatchmakerStats(
 	const FString& HttpKey,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaMatchmakerStatsResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaMatchmakerStatsResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -2858,7 +2858,7 @@ TNakamaFuture<FNakamaMatchmakerStatsResult> Nakama::GetMatchmakerStats(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -2872,22 +2872,22 @@ TNakamaFuture<FNakamaMatchmakerStatsResult> Nakama::GetMatchmakerStats(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaMatchmakerStatsResult{{}, Error, true});
+			FutureState->Resolve(FNakamaMatchmakerStatsResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		HttpKey,
 		CancellationToken]()
 	{
 		NakamaApi::GetMatchmakerStats(
 			Client.ApiConfig,
 			HttpKey,
-			[Promise, DoRequest, OnError](const FNakamaMatchmakerStats& Result)
+			[FutureState, DoRequest, OnError](const FNakamaMatchmakerStats& Result)
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaMatchmakerStatsResult{Result, {}, false});
+				FutureState->Resolve(FNakamaMatchmakerStatsResult{Result, {}, false});
 			},
 			*OnError,
 			CancellationToken);
@@ -2895,14 +2895,14 @@ TNakamaFuture<FNakamaMatchmakerStatsResult> Nakama::GetMatchmakerStats(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaMatchmakerStatsResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaMatchmakerStatsResult>(FutureState);
 }
 TNakamaFuture<FNakamaVoidResult> Nakama::Healthcheck(
 	FNakamaClient Client,
 	const FNakamaSession& Session,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -2910,7 +2910,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::Healthcheck(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -2924,25 +2924,25 @@ TNakamaFuture<FNakamaVoidResult> Nakama::Healthcheck(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaVoidResult{{}, Error, true});
+			FutureState->Resolve(FNakamaVoidResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError, Session,
+	*DoRequest = [Client, FutureState, DoRequest, OnError, Session,
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Promise, DoRequest, OnError,
+			[Client, FutureState, DoRequest, OnError,
 				CancellationToken](const FNakamaSession& Session)
 			{
 				NakamaApi::Healthcheck(
 					Client.ApiConfig,
 					Session,
-					[Promise, DoRequest, OnError]()
+					[FutureState, DoRequest, OnError]()
 					{
 						auto DR = DoRequest; auto OE = OnError;
 						DR->Reset(); OE->Reset();
-						Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+						FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 					},
 					*OnError,
 					CancellationToken);
@@ -2953,7 +2953,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::Healthcheck(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaVoidResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaVoidResult>(FutureState);
 }
 
 TNakamaFuture<FNakamaVoidResult> Nakama::Healthcheck(
@@ -2961,7 +2961,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::Healthcheck(
 	const FString& HttpKey,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -2969,7 +2969,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::Healthcheck(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -2983,22 +2983,22 @@ TNakamaFuture<FNakamaVoidResult> Nakama::Healthcheck(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaVoidResult{{}, Error, true});
+			FutureState->Resolve(FNakamaVoidResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		HttpKey,
 		CancellationToken]()
 	{
 		NakamaApi::Healthcheck(
 			Client.ApiConfig,
 			HttpKey,
-			[Promise, DoRequest, OnError]()
+			[FutureState, DoRequest, OnError]()
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+				FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 			},
 			*OnError,
 			CancellationToken);
@@ -3006,7 +3006,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::Healthcheck(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaVoidResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaVoidResult>(FutureState);
 }
 TNakamaFuture<FNakamaVoidResult> Nakama::ImportFacebookFriends(
 	FNakamaClient Client,
@@ -3015,7 +3015,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::ImportFacebookFriends(
 	bool Reset,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -3023,7 +3023,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::ImportFacebookFriends(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -3037,17 +3037,17 @@ TNakamaFuture<FNakamaVoidResult> Nakama::ImportFacebookFriends(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaVoidResult{{}, Error, true});
+			FutureState->Resolve(FNakamaVoidResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError, Session,
+	*DoRequest = [Client, FutureState, DoRequest, OnError, Session,
 		Account,
 		Reset,
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Promise, DoRequest, OnError,
+			[Client, FutureState, DoRequest, OnError,
 				Account,
 				Reset,
 				CancellationToken](const FNakamaSession& Session)
@@ -3057,11 +3057,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::ImportFacebookFriends(
 					Session,
 					Account,
 					Reset,
-					[Promise, DoRequest, OnError]()
+					[FutureState, DoRequest, OnError]()
 					{
 						auto DR = DoRequest; auto OE = OnError;
 						DR->Reset(); OE->Reset();
-						Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+						FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 					},
 					*OnError,
 					CancellationToken);
@@ -3072,7 +3072,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::ImportFacebookFriends(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaVoidResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaVoidResult>(FutureState);
 }
 
 TNakamaFuture<FNakamaVoidResult> Nakama::ImportFacebookFriends(
@@ -3082,7 +3082,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::ImportFacebookFriends(
 	bool Reset,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -3090,7 +3090,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::ImportFacebookFriends(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -3104,11 +3104,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::ImportFacebookFriends(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaVoidResult{{}, Error, true});
+			FutureState->Resolve(FNakamaVoidResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		HttpKey,
 		Account,
 		Reset,
@@ -3119,11 +3119,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::ImportFacebookFriends(
 			HttpKey,
 			Account,
 			Reset,
-			[Promise, DoRequest, OnError]()
+			[FutureState, DoRequest, OnError]()
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+				FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 			},
 			*OnError,
 			CancellationToken);
@@ -3131,7 +3131,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::ImportFacebookFriends(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaVoidResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaVoidResult>(FutureState);
 }
 TNakamaFuture<FNakamaVoidResult> Nakama::ImportSteamFriends(
 	FNakamaClient Client,
@@ -3140,7 +3140,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::ImportSteamFriends(
 	bool Reset,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -3148,7 +3148,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::ImportSteamFriends(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -3162,17 +3162,17 @@ TNakamaFuture<FNakamaVoidResult> Nakama::ImportSteamFriends(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaVoidResult{{}, Error, true});
+			FutureState->Resolve(FNakamaVoidResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError, Session,
+	*DoRequest = [Client, FutureState, DoRequest, OnError, Session,
 		Account,
 		Reset,
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Promise, DoRequest, OnError,
+			[Client, FutureState, DoRequest, OnError,
 				Account,
 				Reset,
 				CancellationToken](const FNakamaSession& Session)
@@ -3182,11 +3182,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::ImportSteamFriends(
 					Session,
 					Account,
 					Reset,
-					[Promise, DoRequest, OnError]()
+					[FutureState, DoRequest, OnError]()
 					{
 						auto DR = DoRequest; auto OE = OnError;
 						DR->Reset(); OE->Reset();
-						Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+						FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 					},
 					*OnError,
 					CancellationToken);
@@ -3197,7 +3197,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::ImportSteamFriends(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaVoidResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaVoidResult>(FutureState);
 }
 
 TNakamaFuture<FNakamaVoidResult> Nakama::ImportSteamFriends(
@@ -3207,7 +3207,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::ImportSteamFriends(
 	bool Reset,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -3215,7 +3215,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::ImportSteamFriends(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -3229,11 +3229,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::ImportSteamFriends(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaVoidResult{{}, Error, true});
+			FutureState->Resolve(FNakamaVoidResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		HttpKey,
 		Account,
 		Reset,
@@ -3244,11 +3244,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::ImportSteamFriends(
 			HttpKey,
 			Account,
 			Reset,
-			[Promise, DoRequest, OnError]()
+			[FutureState, DoRequest, OnError]()
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+				FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 			},
 			*OnError,
 			CancellationToken);
@@ -3256,7 +3256,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::ImportSteamFriends(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaVoidResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaVoidResult>(FutureState);
 }
 TNakamaFuture<FNakamaVoidResult> Nakama::JoinGroup(
 	FNakamaClient Client,
@@ -3264,7 +3264,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::JoinGroup(
 	FString GroupId,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -3272,7 +3272,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::JoinGroup(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -3286,16 +3286,16 @@ TNakamaFuture<FNakamaVoidResult> Nakama::JoinGroup(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaVoidResult{{}, Error, true});
+			FutureState->Resolve(FNakamaVoidResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError, Session,
+	*DoRequest = [Client, FutureState, DoRequest, OnError, Session,
 		GroupId,
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Promise, DoRequest, OnError,
+			[Client, FutureState, DoRequest, OnError,
 				GroupId,
 				CancellationToken](const FNakamaSession& Session)
 			{
@@ -3303,11 +3303,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::JoinGroup(
 					Client.ApiConfig,
 					Session,
 					GroupId,
-					[Promise, DoRequest, OnError]()
+					[FutureState, DoRequest, OnError]()
 					{
 						auto DR = DoRequest; auto OE = OnError;
 						DR->Reset(); OE->Reset();
-						Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+						FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 					},
 					*OnError,
 					CancellationToken);
@@ -3318,7 +3318,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::JoinGroup(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaVoidResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaVoidResult>(FutureState);
 }
 
 TNakamaFuture<FNakamaVoidResult> Nakama::JoinGroup(
@@ -3327,7 +3327,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::JoinGroup(
 	FString GroupId,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -3335,7 +3335,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::JoinGroup(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -3349,11 +3349,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::JoinGroup(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaVoidResult{{}, Error, true});
+			FutureState->Resolve(FNakamaVoidResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		HttpKey,
 		GroupId,
 		CancellationToken]()
@@ -3362,11 +3362,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::JoinGroup(
 			Client.ApiConfig,
 			HttpKey,
 			GroupId,
-			[Promise, DoRequest, OnError]()
+			[FutureState, DoRequest, OnError]()
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+				FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 			},
 			*OnError,
 			CancellationToken);
@@ -3374,7 +3374,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::JoinGroup(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaVoidResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaVoidResult>(FutureState);
 }
 TNakamaFuture<FNakamaVoidResult> Nakama::JoinTournament(
 	FNakamaClient Client,
@@ -3382,7 +3382,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::JoinTournament(
 	FString TournamentId,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -3390,7 +3390,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::JoinTournament(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -3404,16 +3404,16 @@ TNakamaFuture<FNakamaVoidResult> Nakama::JoinTournament(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaVoidResult{{}, Error, true});
+			FutureState->Resolve(FNakamaVoidResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError, Session,
+	*DoRequest = [Client, FutureState, DoRequest, OnError, Session,
 		TournamentId,
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Promise, DoRequest, OnError,
+			[Client, FutureState, DoRequest, OnError,
 				TournamentId,
 				CancellationToken](const FNakamaSession& Session)
 			{
@@ -3421,11 +3421,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::JoinTournament(
 					Client.ApiConfig,
 					Session,
 					TournamentId,
-					[Promise, DoRequest, OnError]()
+					[FutureState, DoRequest, OnError]()
 					{
 						auto DR = DoRequest; auto OE = OnError;
 						DR->Reset(); OE->Reset();
-						Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+						FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 					},
 					*OnError,
 					CancellationToken);
@@ -3436,7 +3436,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::JoinTournament(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaVoidResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaVoidResult>(FutureState);
 }
 
 TNakamaFuture<FNakamaVoidResult> Nakama::JoinTournament(
@@ -3445,7 +3445,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::JoinTournament(
 	FString TournamentId,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -3453,7 +3453,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::JoinTournament(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -3467,11 +3467,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::JoinTournament(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaVoidResult{{}, Error, true});
+			FutureState->Resolve(FNakamaVoidResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		HttpKey,
 		TournamentId,
 		CancellationToken]()
@@ -3480,11 +3480,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::JoinTournament(
 			Client.ApiConfig,
 			HttpKey,
 			TournamentId,
-			[Promise, DoRequest, OnError]()
+			[FutureState, DoRequest, OnError]()
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+				FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 			},
 			*OnError,
 			CancellationToken);
@@ -3492,7 +3492,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::JoinTournament(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaVoidResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaVoidResult>(FutureState);
 }
 TNakamaFuture<FNakamaVoidResult> Nakama::KickGroupUsers(
 	FNakamaClient Client,
@@ -3501,7 +3501,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::KickGroupUsers(
 	const TArray<FString>& UserIds,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -3509,7 +3509,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::KickGroupUsers(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -3523,17 +3523,17 @@ TNakamaFuture<FNakamaVoidResult> Nakama::KickGroupUsers(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaVoidResult{{}, Error, true});
+			FutureState->Resolve(FNakamaVoidResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError, Session,
+	*DoRequest = [Client, FutureState, DoRequest, OnError, Session,
 		GroupId,
 		UserIds,
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Promise, DoRequest, OnError,
+			[Client, FutureState, DoRequest, OnError,
 				GroupId,
 				UserIds,
 				CancellationToken](const FNakamaSession& Session)
@@ -3543,11 +3543,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::KickGroupUsers(
 					Session,
 					GroupId,
 					UserIds,
-					[Promise, DoRequest, OnError]()
+					[FutureState, DoRequest, OnError]()
 					{
 						auto DR = DoRequest; auto OE = OnError;
 						DR->Reset(); OE->Reset();
-						Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+						FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 					},
 					*OnError,
 					CancellationToken);
@@ -3558,7 +3558,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::KickGroupUsers(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaVoidResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaVoidResult>(FutureState);
 }
 
 TNakamaFuture<FNakamaVoidResult> Nakama::KickGroupUsers(
@@ -3568,7 +3568,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::KickGroupUsers(
 	const TArray<FString>& UserIds,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -3576,7 +3576,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::KickGroupUsers(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -3590,11 +3590,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::KickGroupUsers(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaVoidResult{{}, Error, true});
+			FutureState->Resolve(FNakamaVoidResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		HttpKey,
 		GroupId,
 		UserIds,
@@ -3605,11 +3605,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::KickGroupUsers(
 			HttpKey,
 			GroupId,
 			UserIds,
-			[Promise, DoRequest, OnError]()
+			[FutureState, DoRequest, OnError]()
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+				FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 			},
 			*OnError,
 			CancellationToken);
@@ -3617,7 +3617,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::KickGroupUsers(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaVoidResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaVoidResult>(FutureState);
 }
 TNakamaFuture<FNakamaVoidResult> Nakama::LeaveGroup(
 	FNakamaClient Client,
@@ -3625,7 +3625,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LeaveGroup(
 	FString GroupId,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -3633,7 +3633,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LeaveGroup(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -3647,16 +3647,16 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LeaveGroup(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaVoidResult{{}, Error, true});
+			FutureState->Resolve(FNakamaVoidResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError, Session,
+	*DoRequest = [Client, FutureState, DoRequest, OnError, Session,
 		GroupId,
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Promise, DoRequest, OnError,
+			[Client, FutureState, DoRequest, OnError,
 				GroupId,
 				CancellationToken](const FNakamaSession& Session)
 			{
@@ -3664,11 +3664,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LeaveGroup(
 					Client.ApiConfig,
 					Session,
 					GroupId,
-					[Promise, DoRequest, OnError]()
+					[FutureState, DoRequest, OnError]()
 					{
 						auto DR = DoRequest; auto OE = OnError;
 						DR->Reset(); OE->Reset();
-						Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+						FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 					},
 					*OnError,
 					CancellationToken);
@@ -3679,7 +3679,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LeaveGroup(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaVoidResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaVoidResult>(FutureState);
 }
 
 TNakamaFuture<FNakamaVoidResult> Nakama::LeaveGroup(
@@ -3688,7 +3688,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LeaveGroup(
 	FString GroupId,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -3696,7 +3696,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LeaveGroup(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -3710,11 +3710,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LeaveGroup(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaVoidResult{{}, Error, true});
+			FutureState->Resolve(FNakamaVoidResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		HttpKey,
 		GroupId,
 		CancellationToken]()
@@ -3723,11 +3723,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LeaveGroup(
 			Client.ApiConfig,
 			HttpKey,
 			GroupId,
-			[Promise, DoRequest, OnError]()
+			[FutureState, DoRequest, OnError]()
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+				FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 			},
 			*OnError,
 			CancellationToken);
@@ -3735,7 +3735,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LeaveGroup(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaVoidResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaVoidResult>(FutureState);
 }
 TNakamaFuture<FNakamaVoidResult> Nakama::LinkApple(
 	FNakamaClient Client,
@@ -3744,7 +3744,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkApple(
 	const TMap<FString, FString>& Vars,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -3752,7 +3752,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkApple(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -3766,17 +3766,17 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkApple(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaVoidResult{{}, Error, true});
+			FutureState->Resolve(FNakamaVoidResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError, Session,
+	*DoRequest = [Client, FutureState, DoRequest, OnError, Session,
 		Token,
 		Vars,
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Promise, DoRequest, OnError,
+			[Client, FutureState, DoRequest, OnError,
 				Token,
 				Vars,
 				CancellationToken](const FNakamaSession& Session)
@@ -3786,11 +3786,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkApple(
 					Session,
 					Token,
 					Vars,
-					[Promise, DoRequest, OnError]()
+					[FutureState, DoRequest, OnError]()
 					{
 						auto DR = DoRequest; auto OE = OnError;
 						DR->Reset(); OE->Reset();
-						Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+						FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 					},
 					*OnError,
 					CancellationToken);
@@ -3801,7 +3801,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkApple(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaVoidResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaVoidResult>(FutureState);
 }
 
 TNakamaFuture<FNakamaVoidResult> Nakama::LinkApple(
@@ -3811,7 +3811,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkApple(
 	const TMap<FString, FString>& Vars,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -3819,7 +3819,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkApple(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -3833,11 +3833,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkApple(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaVoidResult{{}, Error, true});
+			FutureState->Resolve(FNakamaVoidResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		HttpKey,
 		Token,
 		Vars,
@@ -3848,11 +3848,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkApple(
 			HttpKey,
 			Token,
 			Vars,
-			[Promise, DoRequest, OnError]()
+			[FutureState, DoRequest, OnError]()
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+				FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 			},
 			*OnError,
 			CancellationToken);
@@ -3860,7 +3860,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkApple(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaVoidResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaVoidResult>(FutureState);
 }
 TNakamaFuture<FNakamaVoidResult> Nakama::LinkCustom(
 	FNakamaClient Client,
@@ -3869,7 +3869,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkCustom(
 	const TMap<FString, FString>& Vars,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -3877,7 +3877,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkCustom(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -3891,17 +3891,17 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkCustom(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaVoidResult{{}, Error, true});
+			FutureState->Resolve(FNakamaVoidResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError, Session,
+	*DoRequest = [Client, FutureState, DoRequest, OnError, Session,
 		Id,
 		Vars,
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Promise, DoRequest, OnError,
+			[Client, FutureState, DoRequest, OnError,
 				Id,
 				Vars,
 				CancellationToken](const FNakamaSession& Session)
@@ -3911,11 +3911,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkCustom(
 					Session,
 					Id,
 					Vars,
-					[Promise, DoRequest, OnError]()
+					[FutureState, DoRequest, OnError]()
 					{
 						auto DR = DoRequest; auto OE = OnError;
 						DR->Reset(); OE->Reset();
-						Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+						FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 					},
 					*OnError,
 					CancellationToken);
@@ -3926,7 +3926,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkCustom(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaVoidResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaVoidResult>(FutureState);
 }
 
 TNakamaFuture<FNakamaVoidResult> Nakama::LinkCustom(
@@ -3936,7 +3936,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkCustom(
 	const TMap<FString, FString>& Vars,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -3944,7 +3944,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkCustom(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -3958,11 +3958,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkCustom(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaVoidResult{{}, Error, true});
+			FutureState->Resolve(FNakamaVoidResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		HttpKey,
 		Id,
 		Vars,
@@ -3973,11 +3973,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkCustom(
 			HttpKey,
 			Id,
 			Vars,
-			[Promise, DoRequest, OnError]()
+			[FutureState, DoRequest, OnError]()
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+				FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 			},
 			*OnError,
 			CancellationToken);
@@ -3985,7 +3985,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkCustom(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaVoidResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaVoidResult>(FutureState);
 }
 TNakamaFuture<FNakamaVoidResult> Nakama::LinkDevice(
 	FNakamaClient Client,
@@ -3994,7 +3994,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkDevice(
 	const TMap<FString, FString>& Vars,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -4002,7 +4002,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkDevice(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -4016,17 +4016,17 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkDevice(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaVoidResult{{}, Error, true});
+			FutureState->Resolve(FNakamaVoidResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError, Session,
+	*DoRequest = [Client, FutureState, DoRequest, OnError, Session,
 		Id,
 		Vars,
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Promise, DoRequest, OnError,
+			[Client, FutureState, DoRequest, OnError,
 				Id,
 				Vars,
 				CancellationToken](const FNakamaSession& Session)
@@ -4036,11 +4036,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkDevice(
 					Session,
 					Id,
 					Vars,
-					[Promise, DoRequest, OnError]()
+					[FutureState, DoRequest, OnError]()
 					{
 						auto DR = DoRequest; auto OE = OnError;
 						DR->Reset(); OE->Reset();
-						Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+						FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 					},
 					*OnError,
 					CancellationToken);
@@ -4051,7 +4051,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkDevice(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaVoidResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaVoidResult>(FutureState);
 }
 
 TNakamaFuture<FNakamaVoidResult> Nakama::LinkDevice(
@@ -4061,7 +4061,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkDevice(
 	const TMap<FString, FString>& Vars,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -4069,7 +4069,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkDevice(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -4083,11 +4083,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkDevice(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaVoidResult{{}, Error, true});
+			FutureState->Resolve(FNakamaVoidResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		HttpKey,
 		Id,
 		Vars,
@@ -4098,11 +4098,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkDevice(
 			HttpKey,
 			Id,
 			Vars,
-			[Promise, DoRequest, OnError]()
+			[FutureState, DoRequest, OnError]()
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+				FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 			},
 			*OnError,
 			CancellationToken);
@@ -4110,7 +4110,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkDevice(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaVoidResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaVoidResult>(FutureState);
 }
 TNakamaFuture<FNakamaVoidResult> Nakama::LinkEmail(
 	FNakamaClient Client,
@@ -4120,7 +4120,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkEmail(
 	const TMap<FString, FString>& Vars,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -4128,7 +4128,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkEmail(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -4142,18 +4142,18 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkEmail(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaVoidResult{{}, Error, true});
+			FutureState->Resolve(FNakamaVoidResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError, Session,
+	*DoRequest = [Client, FutureState, DoRequest, OnError, Session,
 		Email,
 		Password,
 		Vars,
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Promise, DoRequest, OnError,
+			[Client, FutureState, DoRequest, OnError,
 				Email,
 				Password,
 				Vars,
@@ -4165,11 +4165,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkEmail(
 					Email,
 					Password,
 					Vars,
-					[Promise, DoRequest, OnError]()
+					[FutureState, DoRequest, OnError]()
 					{
 						auto DR = DoRequest; auto OE = OnError;
 						DR->Reset(); OE->Reset();
-						Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+						FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 					},
 					*OnError,
 					CancellationToken);
@@ -4180,7 +4180,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkEmail(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaVoidResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaVoidResult>(FutureState);
 }
 
 TNakamaFuture<FNakamaVoidResult> Nakama::LinkEmail(
@@ -4191,7 +4191,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkEmail(
 	const TMap<FString, FString>& Vars,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -4199,7 +4199,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkEmail(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -4213,11 +4213,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkEmail(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaVoidResult{{}, Error, true});
+			FutureState->Resolve(FNakamaVoidResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		HttpKey,
 		Email,
 		Password,
@@ -4230,11 +4230,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkEmail(
 			Email,
 			Password,
 			Vars,
-			[Promise, DoRequest, OnError]()
+			[FutureState, DoRequest, OnError]()
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+				FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 			},
 			*OnError,
 			CancellationToken);
@@ -4242,7 +4242,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkEmail(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaVoidResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaVoidResult>(FutureState);
 }
 TNakamaFuture<FNakamaVoidResult> Nakama::LinkFacebook(
 	FNakamaClient Client,
@@ -4251,7 +4251,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkFacebook(
 	bool Sync,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -4259,7 +4259,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkFacebook(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -4273,17 +4273,17 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkFacebook(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaVoidResult{{}, Error, true});
+			FutureState->Resolve(FNakamaVoidResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError, Session,
+	*DoRequest = [Client, FutureState, DoRequest, OnError, Session,
 		Account,
 		Sync,
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Promise, DoRequest, OnError,
+			[Client, FutureState, DoRequest, OnError,
 				Account,
 				Sync,
 				CancellationToken](const FNakamaSession& Session)
@@ -4293,11 +4293,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkFacebook(
 					Session,
 					Account,
 					Sync,
-					[Promise, DoRequest, OnError]()
+					[FutureState, DoRequest, OnError]()
 					{
 						auto DR = DoRequest; auto OE = OnError;
 						DR->Reset(); OE->Reset();
-						Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+						FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 					},
 					*OnError,
 					CancellationToken);
@@ -4308,7 +4308,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkFacebook(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaVoidResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaVoidResult>(FutureState);
 }
 
 TNakamaFuture<FNakamaVoidResult> Nakama::LinkFacebook(
@@ -4318,7 +4318,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkFacebook(
 	bool Sync,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -4326,7 +4326,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkFacebook(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -4340,11 +4340,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkFacebook(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaVoidResult{{}, Error, true});
+			FutureState->Resolve(FNakamaVoidResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		HttpKey,
 		Account,
 		Sync,
@@ -4355,11 +4355,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkFacebook(
 			HttpKey,
 			Account,
 			Sync,
-			[Promise, DoRequest, OnError]()
+			[FutureState, DoRequest, OnError]()
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+				FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 			},
 			*OnError,
 			CancellationToken);
@@ -4367,7 +4367,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkFacebook(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaVoidResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaVoidResult>(FutureState);
 }
 TNakamaFuture<FNakamaVoidResult> Nakama::LinkFacebookInstantGame(
 	FNakamaClient Client,
@@ -4376,7 +4376,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkFacebookInstantGame(
 	const TMap<FString, FString>& Vars,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -4384,7 +4384,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkFacebookInstantGame(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -4398,17 +4398,17 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkFacebookInstantGame(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaVoidResult{{}, Error, true});
+			FutureState->Resolve(FNakamaVoidResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError, Session,
+	*DoRequest = [Client, FutureState, DoRequest, OnError, Session,
 		SignedPlayerInfo,
 		Vars,
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Promise, DoRequest, OnError,
+			[Client, FutureState, DoRequest, OnError,
 				SignedPlayerInfo,
 				Vars,
 				CancellationToken](const FNakamaSession& Session)
@@ -4418,11 +4418,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkFacebookInstantGame(
 					Session,
 					SignedPlayerInfo,
 					Vars,
-					[Promise, DoRequest, OnError]()
+					[FutureState, DoRequest, OnError]()
 					{
 						auto DR = DoRequest; auto OE = OnError;
 						DR->Reset(); OE->Reset();
-						Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+						FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 					},
 					*OnError,
 					CancellationToken);
@@ -4433,7 +4433,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkFacebookInstantGame(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaVoidResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaVoidResult>(FutureState);
 }
 
 TNakamaFuture<FNakamaVoidResult> Nakama::LinkFacebookInstantGame(
@@ -4443,7 +4443,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkFacebookInstantGame(
 	const TMap<FString, FString>& Vars,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -4451,7 +4451,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkFacebookInstantGame(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -4465,11 +4465,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkFacebookInstantGame(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaVoidResult{{}, Error, true});
+			FutureState->Resolve(FNakamaVoidResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		HttpKey,
 		SignedPlayerInfo,
 		Vars,
@@ -4480,11 +4480,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkFacebookInstantGame(
 			HttpKey,
 			SignedPlayerInfo,
 			Vars,
-			[Promise, DoRequest, OnError]()
+			[FutureState, DoRequest, OnError]()
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+				FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 			},
 			*OnError,
 			CancellationToken);
@@ -4492,7 +4492,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkFacebookInstantGame(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaVoidResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaVoidResult>(FutureState);
 }
 TNakamaFuture<FNakamaVoidResult> Nakama::LinkGameCenter(
 	FNakamaClient Client,
@@ -4506,7 +4506,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkGameCenter(
 	const TMap<FString, FString>& Vars,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -4514,7 +4514,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkGameCenter(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -4528,11 +4528,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkGameCenter(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaVoidResult{{}, Error, true});
+			FutureState->Resolve(FNakamaVoidResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError, Session,
+	*DoRequest = [Client, FutureState, DoRequest, OnError, Session,
 		PlayerId,
 		BundleId,
 		TimestampSeconds,
@@ -4543,7 +4543,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkGameCenter(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Promise, DoRequest, OnError,
+			[Client, FutureState, DoRequest, OnError,
 				PlayerId,
 				BundleId,
 				TimestampSeconds,
@@ -4563,11 +4563,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkGameCenter(
 					Signature,
 					PublicKeyUrl,
 					Vars,
-					[Promise, DoRequest, OnError]()
+					[FutureState, DoRequest, OnError]()
 					{
 						auto DR = DoRequest; auto OE = OnError;
 						DR->Reset(); OE->Reset();
-						Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+						FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 					},
 					*OnError,
 					CancellationToken);
@@ -4578,7 +4578,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkGameCenter(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaVoidResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaVoidResult>(FutureState);
 }
 
 TNakamaFuture<FNakamaVoidResult> Nakama::LinkGameCenter(
@@ -4593,7 +4593,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkGameCenter(
 	const TMap<FString, FString>& Vars,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -4601,7 +4601,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkGameCenter(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -4615,11 +4615,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkGameCenter(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaVoidResult{{}, Error, true});
+			FutureState->Resolve(FNakamaVoidResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		HttpKey,
 		PlayerId,
 		BundleId,
@@ -4640,11 +4640,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkGameCenter(
 			Signature,
 			PublicKeyUrl,
 			Vars,
-			[Promise, DoRequest, OnError]()
+			[FutureState, DoRequest, OnError]()
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+				FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 			},
 			*OnError,
 			CancellationToken);
@@ -4652,7 +4652,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkGameCenter(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaVoidResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaVoidResult>(FutureState);
 }
 TNakamaFuture<FNakamaVoidResult> Nakama::LinkGoogle(
 	FNakamaClient Client,
@@ -4661,7 +4661,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkGoogle(
 	const TMap<FString, FString>& Vars,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -4669,7 +4669,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkGoogle(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -4683,17 +4683,17 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkGoogle(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaVoidResult{{}, Error, true});
+			FutureState->Resolve(FNakamaVoidResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError, Session,
+	*DoRequest = [Client, FutureState, DoRequest, OnError, Session,
 		Token,
 		Vars,
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Promise, DoRequest, OnError,
+			[Client, FutureState, DoRequest, OnError,
 				Token,
 				Vars,
 				CancellationToken](const FNakamaSession& Session)
@@ -4703,11 +4703,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkGoogle(
 					Session,
 					Token,
 					Vars,
-					[Promise, DoRequest, OnError]()
+					[FutureState, DoRequest, OnError]()
 					{
 						auto DR = DoRequest; auto OE = OnError;
 						DR->Reset(); OE->Reset();
-						Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+						FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 					},
 					*OnError,
 					CancellationToken);
@@ -4718,7 +4718,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkGoogle(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaVoidResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaVoidResult>(FutureState);
 }
 
 TNakamaFuture<FNakamaVoidResult> Nakama::LinkGoogle(
@@ -4728,7 +4728,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkGoogle(
 	const TMap<FString, FString>& Vars,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -4736,7 +4736,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkGoogle(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -4750,11 +4750,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkGoogle(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaVoidResult{{}, Error, true});
+			FutureState->Resolve(FNakamaVoidResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		HttpKey,
 		Token,
 		Vars,
@@ -4765,11 +4765,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkGoogle(
 			HttpKey,
 			Token,
 			Vars,
-			[Promise, DoRequest, OnError]()
+			[FutureState, DoRequest, OnError]()
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+				FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 			},
 			*OnError,
 			CancellationToken);
@@ -4777,7 +4777,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkGoogle(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaVoidResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaVoidResult>(FutureState);
 }
 TNakamaFuture<FNakamaVoidResult> Nakama::LinkSteam(
 	FNakamaClient Client,
@@ -4786,7 +4786,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkSteam(
 	bool Sync,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -4794,7 +4794,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkSteam(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -4808,17 +4808,17 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkSteam(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaVoidResult{{}, Error, true});
+			FutureState->Resolve(FNakamaVoidResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError, Session,
+	*DoRequest = [Client, FutureState, DoRequest, OnError, Session,
 		Account,
 		Sync,
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Promise, DoRequest, OnError,
+			[Client, FutureState, DoRequest, OnError,
 				Account,
 				Sync,
 				CancellationToken](const FNakamaSession& Session)
@@ -4828,11 +4828,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkSteam(
 					Session,
 					Account,
 					Sync,
-					[Promise, DoRequest, OnError]()
+					[FutureState, DoRequest, OnError]()
 					{
 						auto DR = DoRequest; auto OE = OnError;
 						DR->Reset(); OE->Reset();
-						Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+						FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 					},
 					*OnError,
 					CancellationToken);
@@ -4843,7 +4843,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkSteam(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaVoidResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaVoidResult>(FutureState);
 }
 
 TNakamaFuture<FNakamaVoidResult> Nakama::LinkSteam(
@@ -4853,7 +4853,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkSteam(
 	bool Sync,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -4861,7 +4861,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkSteam(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -4875,11 +4875,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkSteam(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaVoidResult{{}, Error, true});
+			FutureState->Resolve(FNakamaVoidResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		HttpKey,
 		Account,
 		Sync,
@@ -4890,11 +4890,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkSteam(
 			HttpKey,
 			Account,
 			Sync,
-			[Promise, DoRequest, OnError]()
+			[FutureState, DoRequest, OnError]()
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+				FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 			},
 			*OnError,
 			CancellationToken);
@@ -4902,7 +4902,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkSteam(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaVoidResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaVoidResult>(FutureState);
 }
 TNakamaFuture<FNakamaChannelMessageListResult> Nakama::ListChannelMessages(
 	FNakamaClient Client,
@@ -4913,7 +4913,7 @@ TNakamaFuture<FNakamaChannelMessageListResult> Nakama::ListChannelMessages(
 	FString Cursor,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaChannelMessageListResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaChannelMessageListResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -4921,7 +4921,7 @@ TNakamaFuture<FNakamaChannelMessageListResult> Nakama::ListChannelMessages(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -4935,11 +4935,11 @@ TNakamaFuture<FNakamaChannelMessageListResult> Nakama::ListChannelMessages(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaChannelMessageListResult{{}, Error, true});
+			FutureState->Resolve(FNakamaChannelMessageListResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError, Session,
+	*DoRequest = [Client, FutureState, DoRequest, OnError, Session,
 		ChannelId,
 		Limit,
 		Forward,
@@ -4947,7 +4947,7 @@ TNakamaFuture<FNakamaChannelMessageListResult> Nakama::ListChannelMessages(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Promise, DoRequest, OnError,
+			[Client, FutureState, DoRequest, OnError,
 				ChannelId,
 				Limit,
 				Forward,
@@ -4961,11 +4961,11 @@ TNakamaFuture<FNakamaChannelMessageListResult> Nakama::ListChannelMessages(
 					Limit,
 					Forward,
 					Cursor,
-					[Promise, DoRequest, OnError](const FNakamaChannelMessageList& Result)
+					[FutureState, DoRequest, OnError](const FNakamaChannelMessageList& Result)
 					{
 						auto DR = DoRequest; auto OE = OnError;
 						DR->Reset(); OE->Reset();
-						Promise->SetValue(FNakamaChannelMessageListResult{Result, {}, false});
+						FutureState->Resolve(FNakamaChannelMessageListResult{Result, {}, false});
 					},
 					*OnError,
 					CancellationToken);
@@ -4976,7 +4976,7 @@ TNakamaFuture<FNakamaChannelMessageListResult> Nakama::ListChannelMessages(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaChannelMessageListResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaChannelMessageListResult>(FutureState);
 }
 
 TNakamaFuture<FNakamaChannelMessageListResult> Nakama::ListChannelMessages(
@@ -4988,7 +4988,7 @@ TNakamaFuture<FNakamaChannelMessageListResult> Nakama::ListChannelMessages(
 	FString Cursor,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaChannelMessageListResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaChannelMessageListResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -4996,7 +4996,7 @@ TNakamaFuture<FNakamaChannelMessageListResult> Nakama::ListChannelMessages(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -5010,11 +5010,11 @@ TNakamaFuture<FNakamaChannelMessageListResult> Nakama::ListChannelMessages(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaChannelMessageListResult{{}, Error, true});
+			FutureState->Resolve(FNakamaChannelMessageListResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		HttpKey,
 		ChannelId,
 		Limit,
@@ -5029,11 +5029,11 @@ TNakamaFuture<FNakamaChannelMessageListResult> Nakama::ListChannelMessages(
 			Limit,
 			Forward,
 			Cursor,
-			[Promise, DoRequest, OnError](const FNakamaChannelMessageList& Result)
+			[FutureState, DoRequest, OnError](const FNakamaChannelMessageList& Result)
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaChannelMessageListResult{Result, {}, false});
+				FutureState->Resolve(FNakamaChannelMessageListResult{Result, {}, false});
 			},
 			*OnError,
 			CancellationToken);
@@ -5041,7 +5041,7 @@ TNakamaFuture<FNakamaChannelMessageListResult> Nakama::ListChannelMessages(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaChannelMessageListResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaChannelMessageListResult>(FutureState);
 }
 TNakamaFuture<FNakamaFriendListResult> Nakama::ListFriends(
 	FNakamaClient Client,
@@ -5051,7 +5051,7 @@ TNakamaFuture<FNakamaFriendListResult> Nakama::ListFriends(
 	FString Cursor,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaFriendListResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaFriendListResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -5059,7 +5059,7 @@ TNakamaFuture<FNakamaFriendListResult> Nakama::ListFriends(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -5073,18 +5073,18 @@ TNakamaFuture<FNakamaFriendListResult> Nakama::ListFriends(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaFriendListResult{{}, Error, true});
+			FutureState->Resolve(FNakamaFriendListResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError, Session,
+	*DoRequest = [Client, FutureState, DoRequest, OnError, Session,
 		Limit,
 		State,
 		Cursor,
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Promise, DoRequest, OnError,
+			[Client, FutureState, DoRequest, OnError,
 				Limit,
 				State,
 				Cursor,
@@ -5096,11 +5096,11 @@ TNakamaFuture<FNakamaFriendListResult> Nakama::ListFriends(
 					Limit,
 					State,
 					Cursor,
-					[Promise, DoRequest, OnError](const FNakamaFriendList& Result)
+					[FutureState, DoRequest, OnError](const FNakamaFriendList& Result)
 					{
 						auto DR = DoRequest; auto OE = OnError;
 						DR->Reset(); OE->Reset();
-						Promise->SetValue(FNakamaFriendListResult{Result, {}, false});
+						FutureState->Resolve(FNakamaFriendListResult{Result, {}, false});
 					},
 					*OnError,
 					CancellationToken);
@@ -5111,7 +5111,7 @@ TNakamaFuture<FNakamaFriendListResult> Nakama::ListFriends(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaFriendListResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaFriendListResult>(FutureState);
 }
 
 TNakamaFuture<FNakamaFriendListResult> Nakama::ListFriends(
@@ -5122,7 +5122,7 @@ TNakamaFuture<FNakamaFriendListResult> Nakama::ListFriends(
 	FString Cursor,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaFriendListResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaFriendListResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -5130,7 +5130,7 @@ TNakamaFuture<FNakamaFriendListResult> Nakama::ListFriends(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -5144,11 +5144,11 @@ TNakamaFuture<FNakamaFriendListResult> Nakama::ListFriends(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaFriendListResult{{}, Error, true});
+			FutureState->Resolve(FNakamaFriendListResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		HttpKey,
 		Limit,
 		State,
@@ -5161,11 +5161,11 @@ TNakamaFuture<FNakamaFriendListResult> Nakama::ListFriends(
 			Limit,
 			State,
 			Cursor,
-			[Promise, DoRequest, OnError](const FNakamaFriendList& Result)
+			[FutureState, DoRequest, OnError](const FNakamaFriendList& Result)
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaFriendListResult{Result, {}, false});
+				FutureState->Resolve(FNakamaFriendListResult{Result, {}, false});
 			},
 			*OnError,
 			CancellationToken);
@@ -5173,7 +5173,7 @@ TNakamaFuture<FNakamaFriendListResult> Nakama::ListFriends(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaFriendListResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaFriendListResult>(FutureState);
 }
 TNakamaFuture<FNakamaFriendsOfFriendsListResult> Nakama::ListFriendsOfFriends(
 	FNakamaClient Client,
@@ -5182,7 +5182,7 @@ TNakamaFuture<FNakamaFriendsOfFriendsListResult> Nakama::ListFriendsOfFriends(
 	FString Cursor,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaFriendsOfFriendsListResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaFriendsOfFriendsListResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -5190,7 +5190,7 @@ TNakamaFuture<FNakamaFriendsOfFriendsListResult> Nakama::ListFriendsOfFriends(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -5204,17 +5204,17 @@ TNakamaFuture<FNakamaFriendsOfFriendsListResult> Nakama::ListFriendsOfFriends(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaFriendsOfFriendsListResult{{}, Error, true});
+			FutureState->Resolve(FNakamaFriendsOfFriendsListResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError, Session,
+	*DoRequest = [Client, FutureState, DoRequest, OnError, Session,
 		Limit,
 		Cursor,
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Promise, DoRequest, OnError,
+			[Client, FutureState, DoRequest, OnError,
 				Limit,
 				Cursor,
 				CancellationToken](const FNakamaSession& Session)
@@ -5224,11 +5224,11 @@ TNakamaFuture<FNakamaFriendsOfFriendsListResult> Nakama::ListFriendsOfFriends(
 					Session,
 					Limit,
 					Cursor,
-					[Promise, DoRequest, OnError](const FNakamaFriendsOfFriendsList& Result)
+					[FutureState, DoRequest, OnError](const FNakamaFriendsOfFriendsList& Result)
 					{
 						auto DR = DoRequest; auto OE = OnError;
 						DR->Reset(); OE->Reset();
-						Promise->SetValue(FNakamaFriendsOfFriendsListResult{Result, {}, false});
+						FutureState->Resolve(FNakamaFriendsOfFriendsListResult{Result, {}, false});
 					},
 					*OnError,
 					CancellationToken);
@@ -5239,7 +5239,7 @@ TNakamaFuture<FNakamaFriendsOfFriendsListResult> Nakama::ListFriendsOfFriends(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaFriendsOfFriendsListResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaFriendsOfFriendsListResult>(FutureState);
 }
 
 TNakamaFuture<FNakamaFriendsOfFriendsListResult> Nakama::ListFriendsOfFriends(
@@ -5249,7 +5249,7 @@ TNakamaFuture<FNakamaFriendsOfFriendsListResult> Nakama::ListFriendsOfFriends(
 	FString Cursor,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaFriendsOfFriendsListResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaFriendsOfFriendsListResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -5257,7 +5257,7 @@ TNakamaFuture<FNakamaFriendsOfFriendsListResult> Nakama::ListFriendsOfFriends(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -5271,11 +5271,11 @@ TNakamaFuture<FNakamaFriendsOfFriendsListResult> Nakama::ListFriendsOfFriends(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaFriendsOfFriendsListResult{{}, Error, true});
+			FutureState->Resolve(FNakamaFriendsOfFriendsListResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		HttpKey,
 		Limit,
 		Cursor,
@@ -5286,11 +5286,11 @@ TNakamaFuture<FNakamaFriendsOfFriendsListResult> Nakama::ListFriendsOfFriends(
 			HttpKey,
 			Limit,
 			Cursor,
-			[Promise, DoRequest, OnError](const FNakamaFriendsOfFriendsList& Result)
+			[FutureState, DoRequest, OnError](const FNakamaFriendsOfFriendsList& Result)
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaFriendsOfFriendsListResult{Result, {}, false});
+				FutureState->Resolve(FNakamaFriendsOfFriendsListResult{Result, {}, false});
 			},
 			*OnError,
 			CancellationToken);
@@ -5298,7 +5298,7 @@ TNakamaFuture<FNakamaFriendsOfFriendsListResult> Nakama::ListFriendsOfFriends(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaFriendsOfFriendsListResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaFriendsOfFriendsListResult>(FutureState);
 }
 TNakamaFuture<FNakamaGroupListResult> Nakama::ListGroups(
 	FNakamaClient Client,
@@ -5311,7 +5311,7 @@ TNakamaFuture<FNakamaGroupListResult> Nakama::ListGroups(
 	bool Open,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaGroupListResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaGroupListResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -5319,7 +5319,7 @@ TNakamaFuture<FNakamaGroupListResult> Nakama::ListGroups(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -5333,11 +5333,11 @@ TNakamaFuture<FNakamaGroupListResult> Nakama::ListGroups(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaGroupListResult{{}, Error, true});
+			FutureState->Resolve(FNakamaGroupListResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError, Session,
+	*DoRequest = [Client, FutureState, DoRequest, OnError, Session,
 		Name,
 		Cursor,
 		Limit,
@@ -5347,7 +5347,7 @@ TNakamaFuture<FNakamaGroupListResult> Nakama::ListGroups(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Promise, DoRequest, OnError,
+			[Client, FutureState, DoRequest, OnError,
 				Name,
 				Cursor,
 				Limit,
@@ -5365,11 +5365,11 @@ TNakamaFuture<FNakamaGroupListResult> Nakama::ListGroups(
 					LangTag,
 					Members,
 					Open,
-					[Promise, DoRequest, OnError](const FNakamaGroupList& Result)
+					[FutureState, DoRequest, OnError](const FNakamaGroupList& Result)
 					{
 						auto DR = DoRequest; auto OE = OnError;
 						DR->Reset(); OE->Reset();
-						Promise->SetValue(FNakamaGroupListResult{Result, {}, false});
+						FutureState->Resolve(FNakamaGroupListResult{Result, {}, false});
 					},
 					*OnError,
 					CancellationToken);
@@ -5380,7 +5380,7 @@ TNakamaFuture<FNakamaGroupListResult> Nakama::ListGroups(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaGroupListResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaGroupListResult>(FutureState);
 }
 
 TNakamaFuture<FNakamaGroupListResult> Nakama::ListGroups(
@@ -5394,7 +5394,7 @@ TNakamaFuture<FNakamaGroupListResult> Nakama::ListGroups(
 	bool Open,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaGroupListResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaGroupListResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -5402,7 +5402,7 @@ TNakamaFuture<FNakamaGroupListResult> Nakama::ListGroups(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -5416,11 +5416,11 @@ TNakamaFuture<FNakamaGroupListResult> Nakama::ListGroups(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaGroupListResult{{}, Error, true});
+			FutureState->Resolve(FNakamaGroupListResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		HttpKey,
 		Name,
 		Cursor,
@@ -5439,11 +5439,11 @@ TNakamaFuture<FNakamaGroupListResult> Nakama::ListGroups(
 			LangTag,
 			Members,
 			Open,
-			[Promise, DoRequest, OnError](const FNakamaGroupList& Result)
+			[FutureState, DoRequest, OnError](const FNakamaGroupList& Result)
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaGroupListResult{Result, {}, false});
+				FutureState->Resolve(FNakamaGroupListResult{Result, {}, false});
 			},
 			*OnError,
 			CancellationToken);
@@ -5451,7 +5451,7 @@ TNakamaFuture<FNakamaGroupListResult> Nakama::ListGroups(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaGroupListResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaGroupListResult>(FutureState);
 }
 TNakamaFuture<FNakamaGroupUserListResult> Nakama::ListGroupUsers(
 	FNakamaClient Client,
@@ -5462,7 +5462,7 @@ TNakamaFuture<FNakamaGroupUserListResult> Nakama::ListGroupUsers(
 	FString Cursor,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaGroupUserListResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaGroupUserListResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -5470,7 +5470,7 @@ TNakamaFuture<FNakamaGroupUserListResult> Nakama::ListGroupUsers(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -5484,11 +5484,11 @@ TNakamaFuture<FNakamaGroupUserListResult> Nakama::ListGroupUsers(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaGroupUserListResult{{}, Error, true});
+			FutureState->Resolve(FNakamaGroupUserListResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError, Session,
+	*DoRequest = [Client, FutureState, DoRequest, OnError, Session,
 		GroupId,
 		Limit,
 		State,
@@ -5496,7 +5496,7 @@ TNakamaFuture<FNakamaGroupUserListResult> Nakama::ListGroupUsers(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Promise, DoRequest, OnError,
+			[Client, FutureState, DoRequest, OnError,
 				GroupId,
 				Limit,
 				State,
@@ -5510,11 +5510,11 @@ TNakamaFuture<FNakamaGroupUserListResult> Nakama::ListGroupUsers(
 					Limit,
 					State,
 					Cursor,
-					[Promise, DoRequest, OnError](const FNakamaGroupUserList& Result)
+					[FutureState, DoRequest, OnError](const FNakamaGroupUserList& Result)
 					{
 						auto DR = DoRequest; auto OE = OnError;
 						DR->Reset(); OE->Reset();
-						Promise->SetValue(FNakamaGroupUserListResult{Result, {}, false});
+						FutureState->Resolve(FNakamaGroupUserListResult{Result, {}, false});
 					},
 					*OnError,
 					CancellationToken);
@@ -5525,7 +5525,7 @@ TNakamaFuture<FNakamaGroupUserListResult> Nakama::ListGroupUsers(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaGroupUserListResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaGroupUserListResult>(FutureState);
 }
 
 TNakamaFuture<FNakamaGroupUserListResult> Nakama::ListGroupUsers(
@@ -5537,7 +5537,7 @@ TNakamaFuture<FNakamaGroupUserListResult> Nakama::ListGroupUsers(
 	FString Cursor,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaGroupUserListResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaGroupUserListResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -5545,7 +5545,7 @@ TNakamaFuture<FNakamaGroupUserListResult> Nakama::ListGroupUsers(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -5559,11 +5559,11 @@ TNakamaFuture<FNakamaGroupUserListResult> Nakama::ListGroupUsers(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaGroupUserListResult{{}, Error, true});
+			FutureState->Resolve(FNakamaGroupUserListResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		HttpKey,
 		GroupId,
 		Limit,
@@ -5578,11 +5578,11 @@ TNakamaFuture<FNakamaGroupUserListResult> Nakama::ListGroupUsers(
 			Limit,
 			State,
 			Cursor,
-			[Promise, DoRequest, OnError](const FNakamaGroupUserList& Result)
+			[FutureState, DoRequest, OnError](const FNakamaGroupUserList& Result)
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaGroupUserListResult{Result, {}, false});
+				FutureState->Resolve(FNakamaGroupUserListResult{Result, {}, false});
 			},
 			*OnError,
 			CancellationToken);
@@ -5590,7 +5590,7 @@ TNakamaFuture<FNakamaGroupUserListResult> Nakama::ListGroupUsers(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaGroupUserListResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaGroupUserListResult>(FutureState);
 }
 TNakamaFuture<FNakamaLeaderboardRecordListResult> Nakama::ListLeaderboardRecords(
 	FNakamaClient Client,
@@ -5602,7 +5602,7 @@ TNakamaFuture<FNakamaLeaderboardRecordListResult> Nakama::ListLeaderboardRecords
 	int64 Expiry,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaLeaderboardRecordListResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaLeaderboardRecordListResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -5610,7 +5610,7 @@ TNakamaFuture<FNakamaLeaderboardRecordListResult> Nakama::ListLeaderboardRecords
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -5624,11 +5624,11 @@ TNakamaFuture<FNakamaLeaderboardRecordListResult> Nakama::ListLeaderboardRecords
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaLeaderboardRecordListResult{{}, Error, true});
+			FutureState->Resolve(FNakamaLeaderboardRecordListResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError, Session,
+	*DoRequest = [Client, FutureState, DoRequest, OnError, Session,
 		LeaderboardId,
 		OwnerIds,
 		Limit,
@@ -5637,7 +5637,7 @@ TNakamaFuture<FNakamaLeaderboardRecordListResult> Nakama::ListLeaderboardRecords
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Promise, DoRequest, OnError,
+			[Client, FutureState, DoRequest, OnError,
 				LeaderboardId,
 				OwnerIds,
 				Limit,
@@ -5653,11 +5653,11 @@ TNakamaFuture<FNakamaLeaderboardRecordListResult> Nakama::ListLeaderboardRecords
 					Limit,
 					Cursor,
 					Expiry,
-					[Promise, DoRequest, OnError](const FNakamaLeaderboardRecordList& Result)
+					[FutureState, DoRequest, OnError](const FNakamaLeaderboardRecordList& Result)
 					{
 						auto DR = DoRequest; auto OE = OnError;
 						DR->Reset(); OE->Reset();
-						Promise->SetValue(FNakamaLeaderboardRecordListResult{Result, {}, false});
+						FutureState->Resolve(FNakamaLeaderboardRecordListResult{Result, {}, false});
 					},
 					*OnError,
 					CancellationToken);
@@ -5668,7 +5668,7 @@ TNakamaFuture<FNakamaLeaderboardRecordListResult> Nakama::ListLeaderboardRecords
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaLeaderboardRecordListResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaLeaderboardRecordListResult>(FutureState);
 }
 
 TNakamaFuture<FNakamaLeaderboardRecordListResult> Nakama::ListLeaderboardRecords(
@@ -5681,7 +5681,7 @@ TNakamaFuture<FNakamaLeaderboardRecordListResult> Nakama::ListLeaderboardRecords
 	int64 Expiry,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaLeaderboardRecordListResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaLeaderboardRecordListResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -5689,7 +5689,7 @@ TNakamaFuture<FNakamaLeaderboardRecordListResult> Nakama::ListLeaderboardRecords
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -5703,11 +5703,11 @@ TNakamaFuture<FNakamaLeaderboardRecordListResult> Nakama::ListLeaderboardRecords
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaLeaderboardRecordListResult{{}, Error, true});
+			FutureState->Resolve(FNakamaLeaderboardRecordListResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		HttpKey,
 		LeaderboardId,
 		OwnerIds,
@@ -5724,11 +5724,11 @@ TNakamaFuture<FNakamaLeaderboardRecordListResult> Nakama::ListLeaderboardRecords
 			Limit,
 			Cursor,
 			Expiry,
-			[Promise, DoRequest, OnError](const FNakamaLeaderboardRecordList& Result)
+			[FutureState, DoRequest, OnError](const FNakamaLeaderboardRecordList& Result)
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaLeaderboardRecordListResult{Result, {}, false});
+				FutureState->Resolve(FNakamaLeaderboardRecordListResult{Result, {}, false});
 			},
 			*OnError,
 			CancellationToken);
@@ -5736,7 +5736,7 @@ TNakamaFuture<FNakamaLeaderboardRecordListResult> Nakama::ListLeaderboardRecords
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaLeaderboardRecordListResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaLeaderboardRecordListResult>(FutureState);
 }
 TNakamaFuture<FNakamaLeaderboardRecordListResult> Nakama::ListLeaderboardRecordsAroundOwner(
 	FNakamaClient Client,
@@ -5748,7 +5748,7 @@ TNakamaFuture<FNakamaLeaderboardRecordListResult> Nakama::ListLeaderboardRecords
 	FString Cursor,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaLeaderboardRecordListResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaLeaderboardRecordListResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -5756,7 +5756,7 @@ TNakamaFuture<FNakamaLeaderboardRecordListResult> Nakama::ListLeaderboardRecords
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -5770,11 +5770,11 @@ TNakamaFuture<FNakamaLeaderboardRecordListResult> Nakama::ListLeaderboardRecords
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaLeaderboardRecordListResult{{}, Error, true});
+			FutureState->Resolve(FNakamaLeaderboardRecordListResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError, Session,
+	*DoRequest = [Client, FutureState, DoRequest, OnError, Session,
 		LeaderboardId,
 		Limit,
 		OwnerId,
@@ -5783,7 +5783,7 @@ TNakamaFuture<FNakamaLeaderboardRecordListResult> Nakama::ListLeaderboardRecords
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Promise, DoRequest, OnError,
+			[Client, FutureState, DoRequest, OnError,
 				LeaderboardId,
 				Limit,
 				OwnerId,
@@ -5799,11 +5799,11 @@ TNakamaFuture<FNakamaLeaderboardRecordListResult> Nakama::ListLeaderboardRecords
 					OwnerId,
 					Expiry,
 					Cursor,
-					[Promise, DoRequest, OnError](const FNakamaLeaderboardRecordList& Result)
+					[FutureState, DoRequest, OnError](const FNakamaLeaderboardRecordList& Result)
 					{
 						auto DR = DoRequest; auto OE = OnError;
 						DR->Reset(); OE->Reset();
-						Promise->SetValue(FNakamaLeaderboardRecordListResult{Result, {}, false});
+						FutureState->Resolve(FNakamaLeaderboardRecordListResult{Result, {}, false});
 					},
 					*OnError,
 					CancellationToken);
@@ -5814,7 +5814,7 @@ TNakamaFuture<FNakamaLeaderboardRecordListResult> Nakama::ListLeaderboardRecords
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaLeaderboardRecordListResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaLeaderboardRecordListResult>(FutureState);
 }
 
 TNakamaFuture<FNakamaLeaderboardRecordListResult> Nakama::ListLeaderboardRecordsAroundOwner(
@@ -5827,7 +5827,7 @@ TNakamaFuture<FNakamaLeaderboardRecordListResult> Nakama::ListLeaderboardRecords
 	FString Cursor,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaLeaderboardRecordListResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaLeaderboardRecordListResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -5835,7 +5835,7 @@ TNakamaFuture<FNakamaLeaderboardRecordListResult> Nakama::ListLeaderboardRecords
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -5849,11 +5849,11 @@ TNakamaFuture<FNakamaLeaderboardRecordListResult> Nakama::ListLeaderboardRecords
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaLeaderboardRecordListResult{{}, Error, true});
+			FutureState->Resolve(FNakamaLeaderboardRecordListResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		HttpKey,
 		LeaderboardId,
 		Limit,
@@ -5870,11 +5870,11 @@ TNakamaFuture<FNakamaLeaderboardRecordListResult> Nakama::ListLeaderboardRecords
 			OwnerId,
 			Expiry,
 			Cursor,
-			[Promise, DoRequest, OnError](const FNakamaLeaderboardRecordList& Result)
+			[FutureState, DoRequest, OnError](const FNakamaLeaderboardRecordList& Result)
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaLeaderboardRecordListResult{Result, {}, false});
+				FutureState->Resolve(FNakamaLeaderboardRecordListResult{Result, {}, false});
 			},
 			*OnError,
 			CancellationToken);
@@ -5882,7 +5882,7 @@ TNakamaFuture<FNakamaLeaderboardRecordListResult> Nakama::ListLeaderboardRecords
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaLeaderboardRecordListResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaLeaderboardRecordListResult>(FutureState);
 }
 TNakamaFuture<FNakamaMatchListResult> Nakama::ListMatches(
 	FNakamaClient Client,
@@ -5895,7 +5895,7 @@ TNakamaFuture<FNakamaMatchListResult> Nakama::ListMatches(
 	FString Query,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaMatchListResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaMatchListResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -5903,7 +5903,7 @@ TNakamaFuture<FNakamaMatchListResult> Nakama::ListMatches(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -5917,11 +5917,11 @@ TNakamaFuture<FNakamaMatchListResult> Nakama::ListMatches(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaMatchListResult{{}, Error, true});
+			FutureState->Resolve(FNakamaMatchListResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError, Session,
+	*DoRequest = [Client, FutureState, DoRequest, OnError, Session,
 		Limit,
 		Authoritative,
 		Label,
@@ -5931,7 +5931,7 @@ TNakamaFuture<FNakamaMatchListResult> Nakama::ListMatches(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Promise, DoRequest, OnError,
+			[Client, FutureState, DoRequest, OnError,
 				Limit,
 				Authoritative,
 				Label,
@@ -5949,11 +5949,11 @@ TNakamaFuture<FNakamaMatchListResult> Nakama::ListMatches(
 					MinSize,
 					MaxSize,
 					Query,
-					[Promise, DoRequest, OnError](const FNakamaMatchList& Result)
+					[FutureState, DoRequest, OnError](const FNakamaMatchList& Result)
 					{
 						auto DR = DoRequest; auto OE = OnError;
 						DR->Reset(); OE->Reset();
-						Promise->SetValue(FNakamaMatchListResult{Result, {}, false});
+						FutureState->Resolve(FNakamaMatchListResult{Result, {}, false});
 					},
 					*OnError,
 					CancellationToken);
@@ -5964,7 +5964,7 @@ TNakamaFuture<FNakamaMatchListResult> Nakama::ListMatches(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaMatchListResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaMatchListResult>(FutureState);
 }
 
 TNakamaFuture<FNakamaMatchListResult> Nakama::ListMatches(
@@ -5978,7 +5978,7 @@ TNakamaFuture<FNakamaMatchListResult> Nakama::ListMatches(
 	FString Query,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaMatchListResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaMatchListResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -5986,7 +5986,7 @@ TNakamaFuture<FNakamaMatchListResult> Nakama::ListMatches(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -6000,11 +6000,11 @@ TNakamaFuture<FNakamaMatchListResult> Nakama::ListMatches(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaMatchListResult{{}, Error, true});
+			FutureState->Resolve(FNakamaMatchListResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		HttpKey,
 		Limit,
 		Authoritative,
@@ -6023,11 +6023,11 @@ TNakamaFuture<FNakamaMatchListResult> Nakama::ListMatches(
 			MinSize,
 			MaxSize,
 			Query,
-			[Promise, DoRequest, OnError](const FNakamaMatchList& Result)
+			[FutureState, DoRequest, OnError](const FNakamaMatchList& Result)
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaMatchListResult{Result, {}, false});
+				FutureState->Resolve(FNakamaMatchListResult{Result, {}, false});
 			},
 			*OnError,
 			CancellationToken);
@@ -6035,7 +6035,7 @@ TNakamaFuture<FNakamaMatchListResult> Nakama::ListMatches(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaMatchListResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaMatchListResult>(FutureState);
 }
 TNakamaFuture<FNakamaPartyListResult> Nakama::ListParties(
 	FNakamaClient Client,
@@ -6046,7 +6046,7 @@ TNakamaFuture<FNakamaPartyListResult> Nakama::ListParties(
 	FString Cursor,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaPartyListResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaPartyListResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -6054,7 +6054,7 @@ TNakamaFuture<FNakamaPartyListResult> Nakama::ListParties(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -6068,11 +6068,11 @@ TNakamaFuture<FNakamaPartyListResult> Nakama::ListParties(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaPartyListResult{{}, Error, true});
+			FutureState->Resolve(FNakamaPartyListResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError, Session,
+	*DoRequest = [Client, FutureState, DoRequest, OnError, Session,
 		Limit,
 		Open,
 		Query,
@@ -6080,7 +6080,7 @@ TNakamaFuture<FNakamaPartyListResult> Nakama::ListParties(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Promise, DoRequest, OnError,
+			[Client, FutureState, DoRequest, OnError,
 				Limit,
 				Open,
 				Query,
@@ -6094,11 +6094,11 @@ TNakamaFuture<FNakamaPartyListResult> Nakama::ListParties(
 					Open,
 					Query,
 					Cursor,
-					[Promise, DoRequest, OnError](const FNakamaPartyList& Result)
+					[FutureState, DoRequest, OnError](const FNakamaPartyList& Result)
 					{
 						auto DR = DoRequest; auto OE = OnError;
 						DR->Reset(); OE->Reset();
-						Promise->SetValue(FNakamaPartyListResult{Result, {}, false});
+						FutureState->Resolve(FNakamaPartyListResult{Result, {}, false});
 					},
 					*OnError,
 					CancellationToken);
@@ -6109,7 +6109,7 @@ TNakamaFuture<FNakamaPartyListResult> Nakama::ListParties(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaPartyListResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaPartyListResult>(FutureState);
 }
 
 TNakamaFuture<FNakamaPartyListResult> Nakama::ListParties(
@@ -6121,7 +6121,7 @@ TNakamaFuture<FNakamaPartyListResult> Nakama::ListParties(
 	FString Cursor,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaPartyListResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaPartyListResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -6129,7 +6129,7 @@ TNakamaFuture<FNakamaPartyListResult> Nakama::ListParties(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -6143,11 +6143,11 @@ TNakamaFuture<FNakamaPartyListResult> Nakama::ListParties(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaPartyListResult{{}, Error, true});
+			FutureState->Resolve(FNakamaPartyListResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		HttpKey,
 		Limit,
 		Open,
@@ -6162,11 +6162,11 @@ TNakamaFuture<FNakamaPartyListResult> Nakama::ListParties(
 			Open,
 			Query,
 			Cursor,
-			[Promise, DoRequest, OnError](const FNakamaPartyList& Result)
+			[FutureState, DoRequest, OnError](const FNakamaPartyList& Result)
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaPartyListResult{Result, {}, false});
+				FutureState->Resolve(FNakamaPartyListResult{Result, {}, false});
 			},
 			*OnError,
 			CancellationToken);
@@ -6174,7 +6174,7 @@ TNakamaFuture<FNakamaPartyListResult> Nakama::ListParties(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaPartyListResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaPartyListResult>(FutureState);
 }
 TNakamaFuture<FNakamaNotificationListResult> Nakama::ListNotifications(
 	FNakamaClient Client,
@@ -6183,7 +6183,7 @@ TNakamaFuture<FNakamaNotificationListResult> Nakama::ListNotifications(
 	FString CacheableCursor,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaNotificationListResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaNotificationListResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -6191,7 +6191,7 @@ TNakamaFuture<FNakamaNotificationListResult> Nakama::ListNotifications(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -6205,17 +6205,17 @@ TNakamaFuture<FNakamaNotificationListResult> Nakama::ListNotifications(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaNotificationListResult{{}, Error, true});
+			FutureState->Resolve(FNakamaNotificationListResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError, Session,
+	*DoRequest = [Client, FutureState, DoRequest, OnError, Session,
 		Limit,
 		CacheableCursor,
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Promise, DoRequest, OnError,
+			[Client, FutureState, DoRequest, OnError,
 				Limit,
 				CacheableCursor,
 				CancellationToken](const FNakamaSession& Session)
@@ -6225,11 +6225,11 @@ TNakamaFuture<FNakamaNotificationListResult> Nakama::ListNotifications(
 					Session,
 					Limit,
 					CacheableCursor,
-					[Promise, DoRequest, OnError](const FNakamaNotificationList& Result)
+					[FutureState, DoRequest, OnError](const FNakamaNotificationList& Result)
 					{
 						auto DR = DoRequest; auto OE = OnError;
 						DR->Reset(); OE->Reset();
-						Promise->SetValue(FNakamaNotificationListResult{Result, {}, false});
+						FutureState->Resolve(FNakamaNotificationListResult{Result, {}, false});
 					},
 					*OnError,
 					CancellationToken);
@@ -6240,7 +6240,7 @@ TNakamaFuture<FNakamaNotificationListResult> Nakama::ListNotifications(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaNotificationListResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaNotificationListResult>(FutureState);
 }
 
 TNakamaFuture<FNakamaNotificationListResult> Nakama::ListNotifications(
@@ -6250,7 +6250,7 @@ TNakamaFuture<FNakamaNotificationListResult> Nakama::ListNotifications(
 	FString CacheableCursor,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaNotificationListResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaNotificationListResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -6258,7 +6258,7 @@ TNakamaFuture<FNakamaNotificationListResult> Nakama::ListNotifications(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -6272,11 +6272,11 @@ TNakamaFuture<FNakamaNotificationListResult> Nakama::ListNotifications(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaNotificationListResult{{}, Error, true});
+			FutureState->Resolve(FNakamaNotificationListResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		HttpKey,
 		Limit,
 		CacheableCursor,
@@ -6287,11 +6287,11 @@ TNakamaFuture<FNakamaNotificationListResult> Nakama::ListNotifications(
 			HttpKey,
 			Limit,
 			CacheableCursor,
-			[Promise, DoRequest, OnError](const FNakamaNotificationList& Result)
+			[FutureState, DoRequest, OnError](const FNakamaNotificationList& Result)
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaNotificationListResult{Result, {}, false});
+				FutureState->Resolve(FNakamaNotificationListResult{Result, {}, false});
 			},
 			*OnError,
 			CancellationToken);
@@ -6299,7 +6299,7 @@ TNakamaFuture<FNakamaNotificationListResult> Nakama::ListNotifications(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaNotificationListResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaNotificationListResult>(FutureState);
 }
 TNakamaFuture<FNakamaStorageObjectListResult> Nakama::ListStorageObjects(
 	FNakamaClient Client,
@@ -6310,7 +6310,7 @@ TNakamaFuture<FNakamaStorageObjectListResult> Nakama::ListStorageObjects(
 	FString Cursor,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaStorageObjectListResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaStorageObjectListResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -6318,7 +6318,7 @@ TNakamaFuture<FNakamaStorageObjectListResult> Nakama::ListStorageObjects(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -6332,11 +6332,11 @@ TNakamaFuture<FNakamaStorageObjectListResult> Nakama::ListStorageObjects(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaStorageObjectListResult{{}, Error, true});
+			FutureState->Resolve(FNakamaStorageObjectListResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError, Session,
+	*DoRequest = [Client, FutureState, DoRequest, OnError, Session,
 		UserId,
 		Collection,
 		Limit,
@@ -6344,7 +6344,7 @@ TNakamaFuture<FNakamaStorageObjectListResult> Nakama::ListStorageObjects(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Promise, DoRequest, OnError,
+			[Client, FutureState, DoRequest, OnError,
 				UserId,
 				Collection,
 				Limit,
@@ -6358,11 +6358,11 @@ TNakamaFuture<FNakamaStorageObjectListResult> Nakama::ListStorageObjects(
 					Collection,
 					Limit,
 					Cursor,
-					[Promise, DoRequest, OnError](const FNakamaStorageObjectList& Result)
+					[FutureState, DoRequest, OnError](const FNakamaStorageObjectList& Result)
 					{
 						auto DR = DoRequest; auto OE = OnError;
 						DR->Reset(); OE->Reset();
-						Promise->SetValue(FNakamaStorageObjectListResult{Result, {}, false});
+						FutureState->Resolve(FNakamaStorageObjectListResult{Result, {}, false});
 					},
 					*OnError,
 					CancellationToken);
@@ -6373,7 +6373,7 @@ TNakamaFuture<FNakamaStorageObjectListResult> Nakama::ListStorageObjects(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaStorageObjectListResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaStorageObjectListResult>(FutureState);
 }
 
 TNakamaFuture<FNakamaStorageObjectListResult> Nakama::ListStorageObjects(
@@ -6385,7 +6385,7 @@ TNakamaFuture<FNakamaStorageObjectListResult> Nakama::ListStorageObjects(
 	FString Cursor,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaStorageObjectListResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaStorageObjectListResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -6393,7 +6393,7 @@ TNakamaFuture<FNakamaStorageObjectListResult> Nakama::ListStorageObjects(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -6407,11 +6407,11 @@ TNakamaFuture<FNakamaStorageObjectListResult> Nakama::ListStorageObjects(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaStorageObjectListResult{{}, Error, true});
+			FutureState->Resolve(FNakamaStorageObjectListResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		HttpKey,
 		UserId,
 		Collection,
@@ -6426,11 +6426,11 @@ TNakamaFuture<FNakamaStorageObjectListResult> Nakama::ListStorageObjects(
 			Collection,
 			Limit,
 			Cursor,
-			[Promise, DoRequest, OnError](const FNakamaStorageObjectList& Result)
+			[FutureState, DoRequest, OnError](const FNakamaStorageObjectList& Result)
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaStorageObjectListResult{Result, {}, false});
+				FutureState->Resolve(FNakamaStorageObjectListResult{Result, {}, false});
 			},
 			*OnError,
 			CancellationToken);
@@ -6438,7 +6438,7 @@ TNakamaFuture<FNakamaStorageObjectListResult> Nakama::ListStorageObjects(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaStorageObjectListResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaStorageObjectListResult>(FutureState);
 }
 TNakamaFuture<FNakamaSubscriptionListResult> Nakama::ListSubscriptions(
 	FNakamaClient Client,
@@ -6447,7 +6447,7 @@ TNakamaFuture<FNakamaSubscriptionListResult> Nakama::ListSubscriptions(
 	FString Cursor,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaSubscriptionListResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaSubscriptionListResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -6455,7 +6455,7 @@ TNakamaFuture<FNakamaSubscriptionListResult> Nakama::ListSubscriptions(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -6469,17 +6469,17 @@ TNakamaFuture<FNakamaSubscriptionListResult> Nakama::ListSubscriptions(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaSubscriptionListResult{{}, Error, true});
+			FutureState->Resolve(FNakamaSubscriptionListResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError, Session,
+	*DoRequest = [Client, FutureState, DoRequest, OnError, Session,
 		Limit,
 		Cursor,
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Promise, DoRequest, OnError,
+			[Client, FutureState, DoRequest, OnError,
 				Limit,
 				Cursor,
 				CancellationToken](const FNakamaSession& Session)
@@ -6489,11 +6489,11 @@ TNakamaFuture<FNakamaSubscriptionListResult> Nakama::ListSubscriptions(
 					Session,
 					Limit,
 					Cursor,
-					[Promise, DoRequest, OnError](const FNakamaSubscriptionList& Result)
+					[FutureState, DoRequest, OnError](const FNakamaSubscriptionList& Result)
 					{
 						auto DR = DoRequest; auto OE = OnError;
 						DR->Reset(); OE->Reset();
-						Promise->SetValue(FNakamaSubscriptionListResult{Result, {}, false});
+						FutureState->Resolve(FNakamaSubscriptionListResult{Result, {}, false});
 					},
 					*OnError,
 					CancellationToken);
@@ -6504,7 +6504,7 @@ TNakamaFuture<FNakamaSubscriptionListResult> Nakama::ListSubscriptions(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaSubscriptionListResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaSubscriptionListResult>(FutureState);
 }
 
 TNakamaFuture<FNakamaSubscriptionListResult> Nakama::ListSubscriptions(
@@ -6514,7 +6514,7 @@ TNakamaFuture<FNakamaSubscriptionListResult> Nakama::ListSubscriptions(
 	FString Cursor,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaSubscriptionListResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaSubscriptionListResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -6522,7 +6522,7 @@ TNakamaFuture<FNakamaSubscriptionListResult> Nakama::ListSubscriptions(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -6536,11 +6536,11 @@ TNakamaFuture<FNakamaSubscriptionListResult> Nakama::ListSubscriptions(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaSubscriptionListResult{{}, Error, true});
+			FutureState->Resolve(FNakamaSubscriptionListResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		HttpKey,
 		Limit,
 		Cursor,
@@ -6551,11 +6551,11 @@ TNakamaFuture<FNakamaSubscriptionListResult> Nakama::ListSubscriptions(
 			HttpKey,
 			Limit,
 			Cursor,
-			[Promise, DoRequest, OnError](const FNakamaSubscriptionList& Result)
+			[FutureState, DoRequest, OnError](const FNakamaSubscriptionList& Result)
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaSubscriptionListResult{Result, {}, false});
+				FutureState->Resolve(FNakamaSubscriptionListResult{Result, {}, false});
 			},
 			*OnError,
 			CancellationToken);
@@ -6563,7 +6563,7 @@ TNakamaFuture<FNakamaSubscriptionListResult> Nakama::ListSubscriptions(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaSubscriptionListResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaSubscriptionListResult>(FutureState);
 }
 TNakamaFuture<FNakamaTournamentListResult> Nakama::ListTournaments(
 	FNakamaClient Client,
@@ -6576,7 +6576,7 @@ TNakamaFuture<FNakamaTournamentListResult> Nakama::ListTournaments(
 	FString Cursor,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaTournamentListResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaTournamentListResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -6584,7 +6584,7 @@ TNakamaFuture<FNakamaTournamentListResult> Nakama::ListTournaments(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -6598,11 +6598,11 @@ TNakamaFuture<FNakamaTournamentListResult> Nakama::ListTournaments(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaTournamentListResult{{}, Error, true});
+			FutureState->Resolve(FNakamaTournamentListResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError, Session,
+	*DoRequest = [Client, FutureState, DoRequest, OnError, Session,
 		CategoryStart,
 		CategoryEnd,
 		StartTime,
@@ -6612,7 +6612,7 @@ TNakamaFuture<FNakamaTournamentListResult> Nakama::ListTournaments(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Promise, DoRequest, OnError,
+			[Client, FutureState, DoRequest, OnError,
 				CategoryStart,
 				CategoryEnd,
 				StartTime,
@@ -6630,11 +6630,11 @@ TNakamaFuture<FNakamaTournamentListResult> Nakama::ListTournaments(
 					EndTime,
 					Limit,
 					Cursor,
-					[Promise, DoRequest, OnError](const FNakamaTournamentList& Result)
+					[FutureState, DoRequest, OnError](const FNakamaTournamentList& Result)
 					{
 						auto DR = DoRequest; auto OE = OnError;
 						DR->Reset(); OE->Reset();
-						Promise->SetValue(FNakamaTournamentListResult{Result, {}, false});
+						FutureState->Resolve(FNakamaTournamentListResult{Result, {}, false});
 					},
 					*OnError,
 					CancellationToken);
@@ -6645,7 +6645,7 @@ TNakamaFuture<FNakamaTournamentListResult> Nakama::ListTournaments(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaTournamentListResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaTournamentListResult>(FutureState);
 }
 
 TNakamaFuture<FNakamaTournamentListResult> Nakama::ListTournaments(
@@ -6659,7 +6659,7 @@ TNakamaFuture<FNakamaTournamentListResult> Nakama::ListTournaments(
 	FString Cursor,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaTournamentListResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaTournamentListResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -6667,7 +6667,7 @@ TNakamaFuture<FNakamaTournamentListResult> Nakama::ListTournaments(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -6681,11 +6681,11 @@ TNakamaFuture<FNakamaTournamentListResult> Nakama::ListTournaments(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaTournamentListResult{{}, Error, true});
+			FutureState->Resolve(FNakamaTournamentListResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		HttpKey,
 		CategoryStart,
 		CategoryEnd,
@@ -6704,11 +6704,11 @@ TNakamaFuture<FNakamaTournamentListResult> Nakama::ListTournaments(
 			EndTime,
 			Limit,
 			Cursor,
-			[Promise, DoRequest, OnError](const FNakamaTournamentList& Result)
+			[FutureState, DoRequest, OnError](const FNakamaTournamentList& Result)
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaTournamentListResult{Result, {}, false});
+				FutureState->Resolve(FNakamaTournamentListResult{Result, {}, false});
 			},
 			*OnError,
 			CancellationToken);
@@ -6716,7 +6716,7 @@ TNakamaFuture<FNakamaTournamentListResult> Nakama::ListTournaments(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaTournamentListResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaTournamentListResult>(FutureState);
 }
 TNakamaFuture<FNakamaTournamentRecordListResult> Nakama::ListTournamentRecords(
 	FNakamaClient Client,
@@ -6728,7 +6728,7 @@ TNakamaFuture<FNakamaTournamentRecordListResult> Nakama::ListTournamentRecords(
 	int64 Expiry,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaTournamentRecordListResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaTournamentRecordListResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -6736,7 +6736,7 @@ TNakamaFuture<FNakamaTournamentRecordListResult> Nakama::ListTournamentRecords(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -6750,11 +6750,11 @@ TNakamaFuture<FNakamaTournamentRecordListResult> Nakama::ListTournamentRecords(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaTournamentRecordListResult{{}, Error, true});
+			FutureState->Resolve(FNakamaTournamentRecordListResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError, Session,
+	*DoRequest = [Client, FutureState, DoRequest, OnError, Session,
 		TournamentId,
 		OwnerIds,
 		Limit,
@@ -6763,7 +6763,7 @@ TNakamaFuture<FNakamaTournamentRecordListResult> Nakama::ListTournamentRecords(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Promise, DoRequest, OnError,
+			[Client, FutureState, DoRequest, OnError,
 				TournamentId,
 				OwnerIds,
 				Limit,
@@ -6779,11 +6779,11 @@ TNakamaFuture<FNakamaTournamentRecordListResult> Nakama::ListTournamentRecords(
 					Limit,
 					Cursor,
 					Expiry,
-					[Promise, DoRequest, OnError](const FNakamaTournamentRecordList& Result)
+					[FutureState, DoRequest, OnError](const FNakamaTournamentRecordList& Result)
 					{
 						auto DR = DoRequest; auto OE = OnError;
 						DR->Reset(); OE->Reset();
-						Promise->SetValue(FNakamaTournamentRecordListResult{Result, {}, false});
+						FutureState->Resolve(FNakamaTournamentRecordListResult{Result, {}, false});
 					},
 					*OnError,
 					CancellationToken);
@@ -6794,7 +6794,7 @@ TNakamaFuture<FNakamaTournamentRecordListResult> Nakama::ListTournamentRecords(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaTournamentRecordListResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaTournamentRecordListResult>(FutureState);
 }
 
 TNakamaFuture<FNakamaTournamentRecordListResult> Nakama::ListTournamentRecords(
@@ -6807,7 +6807,7 @@ TNakamaFuture<FNakamaTournamentRecordListResult> Nakama::ListTournamentRecords(
 	int64 Expiry,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaTournamentRecordListResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaTournamentRecordListResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -6815,7 +6815,7 @@ TNakamaFuture<FNakamaTournamentRecordListResult> Nakama::ListTournamentRecords(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -6829,11 +6829,11 @@ TNakamaFuture<FNakamaTournamentRecordListResult> Nakama::ListTournamentRecords(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaTournamentRecordListResult{{}, Error, true});
+			FutureState->Resolve(FNakamaTournamentRecordListResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		HttpKey,
 		TournamentId,
 		OwnerIds,
@@ -6850,11 +6850,11 @@ TNakamaFuture<FNakamaTournamentRecordListResult> Nakama::ListTournamentRecords(
 			Limit,
 			Cursor,
 			Expiry,
-			[Promise, DoRequest, OnError](const FNakamaTournamentRecordList& Result)
+			[FutureState, DoRequest, OnError](const FNakamaTournamentRecordList& Result)
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaTournamentRecordListResult{Result, {}, false});
+				FutureState->Resolve(FNakamaTournamentRecordListResult{Result, {}, false});
 			},
 			*OnError,
 			CancellationToken);
@@ -6862,7 +6862,7 @@ TNakamaFuture<FNakamaTournamentRecordListResult> Nakama::ListTournamentRecords(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaTournamentRecordListResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaTournamentRecordListResult>(FutureState);
 }
 TNakamaFuture<FNakamaTournamentRecordListResult> Nakama::ListTournamentRecordsAroundOwner(
 	FNakamaClient Client,
@@ -6874,7 +6874,7 @@ TNakamaFuture<FNakamaTournamentRecordListResult> Nakama::ListTournamentRecordsAr
 	FString Cursor,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaTournamentRecordListResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaTournamentRecordListResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -6882,7 +6882,7 @@ TNakamaFuture<FNakamaTournamentRecordListResult> Nakama::ListTournamentRecordsAr
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -6896,11 +6896,11 @@ TNakamaFuture<FNakamaTournamentRecordListResult> Nakama::ListTournamentRecordsAr
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaTournamentRecordListResult{{}, Error, true});
+			FutureState->Resolve(FNakamaTournamentRecordListResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError, Session,
+	*DoRequest = [Client, FutureState, DoRequest, OnError, Session,
 		TournamentId,
 		Limit,
 		OwnerId,
@@ -6909,7 +6909,7 @@ TNakamaFuture<FNakamaTournamentRecordListResult> Nakama::ListTournamentRecordsAr
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Promise, DoRequest, OnError,
+			[Client, FutureState, DoRequest, OnError,
 				TournamentId,
 				Limit,
 				OwnerId,
@@ -6925,11 +6925,11 @@ TNakamaFuture<FNakamaTournamentRecordListResult> Nakama::ListTournamentRecordsAr
 					OwnerId,
 					Expiry,
 					Cursor,
-					[Promise, DoRequest, OnError](const FNakamaTournamentRecordList& Result)
+					[FutureState, DoRequest, OnError](const FNakamaTournamentRecordList& Result)
 					{
 						auto DR = DoRequest; auto OE = OnError;
 						DR->Reset(); OE->Reset();
-						Promise->SetValue(FNakamaTournamentRecordListResult{Result, {}, false});
+						FutureState->Resolve(FNakamaTournamentRecordListResult{Result, {}, false});
 					},
 					*OnError,
 					CancellationToken);
@@ -6940,7 +6940,7 @@ TNakamaFuture<FNakamaTournamentRecordListResult> Nakama::ListTournamentRecordsAr
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaTournamentRecordListResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaTournamentRecordListResult>(FutureState);
 }
 
 TNakamaFuture<FNakamaTournamentRecordListResult> Nakama::ListTournamentRecordsAroundOwner(
@@ -6953,7 +6953,7 @@ TNakamaFuture<FNakamaTournamentRecordListResult> Nakama::ListTournamentRecordsAr
 	FString Cursor,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaTournamentRecordListResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaTournamentRecordListResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -6961,7 +6961,7 @@ TNakamaFuture<FNakamaTournamentRecordListResult> Nakama::ListTournamentRecordsAr
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -6975,11 +6975,11 @@ TNakamaFuture<FNakamaTournamentRecordListResult> Nakama::ListTournamentRecordsAr
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaTournamentRecordListResult{{}, Error, true});
+			FutureState->Resolve(FNakamaTournamentRecordListResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		HttpKey,
 		TournamentId,
 		Limit,
@@ -6996,11 +6996,11 @@ TNakamaFuture<FNakamaTournamentRecordListResult> Nakama::ListTournamentRecordsAr
 			OwnerId,
 			Expiry,
 			Cursor,
-			[Promise, DoRequest, OnError](const FNakamaTournamentRecordList& Result)
+			[FutureState, DoRequest, OnError](const FNakamaTournamentRecordList& Result)
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaTournamentRecordListResult{Result, {}, false});
+				FutureState->Resolve(FNakamaTournamentRecordListResult{Result, {}, false});
 			},
 			*OnError,
 			CancellationToken);
@@ -7008,7 +7008,7 @@ TNakamaFuture<FNakamaTournamentRecordListResult> Nakama::ListTournamentRecordsAr
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaTournamentRecordListResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaTournamentRecordListResult>(FutureState);
 }
 TNakamaFuture<FNakamaUserGroupListResult> Nakama::ListUserGroups(
 	FNakamaClient Client,
@@ -7019,7 +7019,7 @@ TNakamaFuture<FNakamaUserGroupListResult> Nakama::ListUserGroups(
 	FString Cursor,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaUserGroupListResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaUserGroupListResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -7027,7 +7027,7 @@ TNakamaFuture<FNakamaUserGroupListResult> Nakama::ListUserGroups(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -7041,11 +7041,11 @@ TNakamaFuture<FNakamaUserGroupListResult> Nakama::ListUserGroups(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaUserGroupListResult{{}, Error, true});
+			FutureState->Resolve(FNakamaUserGroupListResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError, Session,
+	*DoRequest = [Client, FutureState, DoRequest, OnError, Session,
 		UserId,
 		Limit,
 		State,
@@ -7053,7 +7053,7 @@ TNakamaFuture<FNakamaUserGroupListResult> Nakama::ListUserGroups(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Promise, DoRequest, OnError,
+			[Client, FutureState, DoRequest, OnError,
 				UserId,
 				Limit,
 				State,
@@ -7067,11 +7067,11 @@ TNakamaFuture<FNakamaUserGroupListResult> Nakama::ListUserGroups(
 					Limit,
 					State,
 					Cursor,
-					[Promise, DoRequest, OnError](const FNakamaUserGroupList& Result)
+					[FutureState, DoRequest, OnError](const FNakamaUserGroupList& Result)
 					{
 						auto DR = DoRequest; auto OE = OnError;
 						DR->Reset(); OE->Reset();
-						Promise->SetValue(FNakamaUserGroupListResult{Result, {}, false});
+						FutureState->Resolve(FNakamaUserGroupListResult{Result, {}, false});
 					},
 					*OnError,
 					CancellationToken);
@@ -7082,7 +7082,7 @@ TNakamaFuture<FNakamaUserGroupListResult> Nakama::ListUserGroups(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaUserGroupListResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaUserGroupListResult>(FutureState);
 }
 
 TNakamaFuture<FNakamaUserGroupListResult> Nakama::ListUserGroups(
@@ -7094,7 +7094,7 @@ TNakamaFuture<FNakamaUserGroupListResult> Nakama::ListUserGroups(
 	FString Cursor,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaUserGroupListResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaUserGroupListResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -7102,7 +7102,7 @@ TNakamaFuture<FNakamaUserGroupListResult> Nakama::ListUserGroups(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -7116,11 +7116,11 @@ TNakamaFuture<FNakamaUserGroupListResult> Nakama::ListUserGroups(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaUserGroupListResult{{}, Error, true});
+			FutureState->Resolve(FNakamaUserGroupListResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		HttpKey,
 		UserId,
 		Limit,
@@ -7135,11 +7135,11 @@ TNakamaFuture<FNakamaUserGroupListResult> Nakama::ListUserGroups(
 			Limit,
 			State,
 			Cursor,
-			[Promise, DoRequest, OnError](const FNakamaUserGroupList& Result)
+			[FutureState, DoRequest, OnError](const FNakamaUserGroupList& Result)
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaUserGroupListResult{Result, {}, false});
+				FutureState->Resolve(FNakamaUserGroupListResult{Result, {}, false});
 			},
 			*OnError,
 			CancellationToken);
@@ -7147,7 +7147,7 @@ TNakamaFuture<FNakamaUserGroupListResult> Nakama::ListUserGroups(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaUserGroupListResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaUserGroupListResult>(FutureState);
 }
 TNakamaFuture<FNakamaVoidResult> Nakama::PromoteGroupUsers(
 	FNakamaClient Client,
@@ -7156,7 +7156,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::PromoteGroupUsers(
 	const TArray<FString>& UserIds,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -7164,7 +7164,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::PromoteGroupUsers(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -7178,17 +7178,17 @@ TNakamaFuture<FNakamaVoidResult> Nakama::PromoteGroupUsers(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaVoidResult{{}, Error, true});
+			FutureState->Resolve(FNakamaVoidResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError, Session,
+	*DoRequest = [Client, FutureState, DoRequest, OnError, Session,
 		GroupId,
 		UserIds,
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Promise, DoRequest, OnError,
+			[Client, FutureState, DoRequest, OnError,
 				GroupId,
 				UserIds,
 				CancellationToken](const FNakamaSession& Session)
@@ -7198,11 +7198,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::PromoteGroupUsers(
 					Session,
 					GroupId,
 					UserIds,
-					[Promise, DoRequest, OnError]()
+					[FutureState, DoRequest, OnError]()
 					{
 						auto DR = DoRequest; auto OE = OnError;
 						DR->Reset(); OE->Reset();
-						Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+						FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 					},
 					*OnError,
 					CancellationToken);
@@ -7213,7 +7213,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::PromoteGroupUsers(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaVoidResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaVoidResult>(FutureState);
 }
 
 TNakamaFuture<FNakamaVoidResult> Nakama::PromoteGroupUsers(
@@ -7223,7 +7223,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::PromoteGroupUsers(
 	const TArray<FString>& UserIds,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -7231,7 +7231,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::PromoteGroupUsers(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -7245,11 +7245,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::PromoteGroupUsers(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaVoidResult{{}, Error, true});
+			FutureState->Resolve(FNakamaVoidResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		HttpKey,
 		GroupId,
 		UserIds,
@@ -7260,11 +7260,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::PromoteGroupUsers(
 			HttpKey,
 			GroupId,
 			UserIds,
-			[Promise, DoRequest, OnError]()
+			[FutureState, DoRequest, OnError]()
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+				FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 			},
 			*OnError,
 			CancellationToken);
@@ -7272,7 +7272,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::PromoteGroupUsers(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaVoidResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaVoidResult>(FutureState);
 }
 TNakamaFuture<FNakamaVoidResult> Nakama::DemoteGroupUsers(
 	FNakamaClient Client,
@@ -7281,7 +7281,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DemoteGroupUsers(
 	const TArray<FString>& UserIds,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -7289,7 +7289,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DemoteGroupUsers(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -7303,17 +7303,17 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DemoteGroupUsers(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaVoidResult{{}, Error, true});
+			FutureState->Resolve(FNakamaVoidResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError, Session,
+	*DoRequest = [Client, FutureState, DoRequest, OnError, Session,
 		GroupId,
 		UserIds,
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Promise, DoRequest, OnError,
+			[Client, FutureState, DoRequest, OnError,
 				GroupId,
 				UserIds,
 				CancellationToken](const FNakamaSession& Session)
@@ -7323,11 +7323,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DemoteGroupUsers(
 					Session,
 					GroupId,
 					UserIds,
-					[Promise, DoRequest, OnError]()
+					[FutureState, DoRequest, OnError]()
 					{
 						auto DR = DoRequest; auto OE = OnError;
 						DR->Reset(); OE->Reset();
-						Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+						FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 					},
 					*OnError,
 					CancellationToken);
@@ -7338,7 +7338,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DemoteGroupUsers(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaVoidResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaVoidResult>(FutureState);
 }
 
 TNakamaFuture<FNakamaVoidResult> Nakama::DemoteGroupUsers(
@@ -7348,7 +7348,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DemoteGroupUsers(
 	const TArray<FString>& UserIds,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -7356,7 +7356,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DemoteGroupUsers(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -7370,11 +7370,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DemoteGroupUsers(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaVoidResult{{}, Error, true});
+			FutureState->Resolve(FNakamaVoidResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		HttpKey,
 		GroupId,
 		UserIds,
@@ -7385,11 +7385,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DemoteGroupUsers(
 			HttpKey,
 			GroupId,
 			UserIds,
-			[Promise, DoRequest, OnError]()
+			[FutureState, DoRequest, OnError]()
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+				FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 			},
 			*OnError,
 			CancellationToken);
@@ -7397,7 +7397,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DemoteGroupUsers(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaVoidResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaVoidResult>(FutureState);
 }
 TNakamaFuture<FNakamaStorageObjectsResult> Nakama::ReadStorageObjects(
 	FNakamaClient Client,
@@ -7405,7 +7405,7 @@ TNakamaFuture<FNakamaStorageObjectsResult> Nakama::ReadStorageObjects(
 	const TArray<FNakamaReadStorageObjectId>& ObjectIds,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaStorageObjectsResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaStorageObjectsResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -7413,7 +7413,7 @@ TNakamaFuture<FNakamaStorageObjectsResult> Nakama::ReadStorageObjects(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -7427,16 +7427,16 @@ TNakamaFuture<FNakamaStorageObjectsResult> Nakama::ReadStorageObjects(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaStorageObjectsResult{{}, Error, true});
+			FutureState->Resolve(FNakamaStorageObjectsResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError, Session,
+	*DoRequest = [Client, FutureState, DoRequest, OnError, Session,
 		ObjectIds,
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Promise, DoRequest, OnError,
+			[Client, FutureState, DoRequest, OnError,
 				ObjectIds,
 				CancellationToken](const FNakamaSession& Session)
 			{
@@ -7444,11 +7444,11 @@ TNakamaFuture<FNakamaStorageObjectsResult> Nakama::ReadStorageObjects(
 					Client.ApiConfig,
 					Session,
 					ObjectIds,
-					[Promise, DoRequest, OnError](const FNakamaStorageObjects& Result)
+					[FutureState, DoRequest, OnError](const FNakamaStorageObjects& Result)
 					{
 						auto DR = DoRequest; auto OE = OnError;
 						DR->Reset(); OE->Reset();
-						Promise->SetValue(FNakamaStorageObjectsResult{Result, {}, false});
+						FutureState->Resolve(FNakamaStorageObjectsResult{Result, {}, false});
 					},
 					*OnError,
 					CancellationToken);
@@ -7459,7 +7459,7 @@ TNakamaFuture<FNakamaStorageObjectsResult> Nakama::ReadStorageObjects(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaStorageObjectsResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaStorageObjectsResult>(FutureState);
 }
 
 TNakamaFuture<FNakamaStorageObjectsResult> Nakama::ReadStorageObjects(
@@ -7468,7 +7468,7 @@ TNakamaFuture<FNakamaStorageObjectsResult> Nakama::ReadStorageObjects(
 	const TArray<FNakamaReadStorageObjectId>& ObjectIds,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaStorageObjectsResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaStorageObjectsResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -7476,7 +7476,7 @@ TNakamaFuture<FNakamaStorageObjectsResult> Nakama::ReadStorageObjects(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -7490,11 +7490,11 @@ TNakamaFuture<FNakamaStorageObjectsResult> Nakama::ReadStorageObjects(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaStorageObjectsResult{{}, Error, true});
+			FutureState->Resolve(FNakamaStorageObjectsResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		HttpKey,
 		ObjectIds,
 		CancellationToken]()
@@ -7503,11 +7503,11 @@ TNakamaFuture<FNakamaStorageObjectsResult> Nakama::ReadStorageObjects(
 			Client.ApiConfig,
 			HttpKey,
 			ObjectIds,
-			[Promise, DoRequest, OnError](const FNakamaStorageObjects& Result)
+			[FutureState, DoRequest, OnError](const FNakamaStorageObjects& Result)
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaStorageObjectsResult{Result, {}, false});
+				FutureState->Resolve(FNakamaStorageObjectsResult{Result, {}, false});
 			},
 			*OnError,
 			CancellationToken);
@@ -7515,7 +7515,7 @@ TNakamaFuture<FNakamaStorageObjectsResult> Nakama::ReadStorageObjects(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaStorageObjectsResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaStorageObjectsResult>(FutureState);
 }
 TNakamaFuture<FNakamaRpcResult> Nakama::RpcFunc(
 	FNakamaClient Client,
@@ -7525,7 +7525,7 @@ TNakamaFuture<FNakamaRpcResult> Nakama::RpcFunc(
 	FString HttpKey,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaRpcResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaRpcResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -7533,7 +7533,7 @@ TNakamaFuture<FNakamaRpcResult> Nakama::RpcFunc(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -7547,18 +7547,18 @@ TNakamaFuture<FNakamaRpcResult> Nakama::RpcFunc(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaRpcResult{{}, Error, true});
+			FutureState->Resolve(FNakamaRpcResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError, Session,
+	*DoRequest = [Client, FutureState, DoRequest, OnError, Session,
 		Id,
 		Payload,
 		HttpKey,
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Promise, DoRequest, OnError,
+			[Client, FutureState, DoRequest, OnError,
 				Id,
 				Payload,
 				HttpKey,
@@ -7570,11 +7570,11 @@ TNakamaFuture<FNakamaRpcResult> Nakama::RpcFunc(
 					Id,
 					Payload,
 					HttpKey,
-					[Promise, DoRequest, OnError](const FNakamaRpc& Result)
+					[FutureState, DoRequest, OnError](const FNakamaRpc& Result)
 					{
 						auto DR = DoRequest; auto OE = OnError;
 						DR->Reset(); OE->Reset();
-						Promise->SetValue(FNakamaRpcResult{Result, {}, false});
+						FutureState->Resolve(FNakamaRpcResult{Result, {}, false});
 					},
 					*OnError,
 					CancellationToken);
@@ -7585,7 +7585,7 @@ TNakamaFuture<FNakamaRpcResult> Nakama::RpcFunc(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaRpcResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaRpcResult>(FutureState);
 }
 
 TNakamaFuture<FNakamaRpcResult> Nakama::RpcFunc(
@@ -7595,7 +7595,7 @@ TNakamaFuture<FNakamaRpcResult> Nakama::RpcFunc(
 	TSharedPtr<FJsonObject> Payload,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaRpcResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaRpcResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -7603,7 +7603,7 @@ TNakamaFuture<FNakamaRpcResult> Nakama::RpcFunc(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -7617,11 +7617,11 @@ TNakamaFuture<FNakamaRpcResult> Nakama::RpcFunc(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaRpcResult{{}, Error, true});
+			FutureState->Resolve(FNakamaRpcResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		HttpKey,
 		Id,
 		Payload,
@@ -7632,11 +7632,11 @@ TNakamaFuture<FNakamaRpcResult> Nakama::RpcFunc(
 			HttpKey,
 			Id,
 			Payload,
-			[Promise, DoRequest, OnError](const FNakamaRpc& Result)
+			[FutureState, DoRequest, OnError](const FNakamaRpc& Result)
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaRpcResult{Result, {}, false});
+				FutureState->Resolve(FNakamaRpcResult{Result, {}, false});
 			},
 			*OnError,
 			CancellationToken);
@@ -7644,7 +7644,7 @@ TNakamaFuture<FNakamaRpcResult> Nakama::RpcFunc(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaRpcResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaRpcResult>(FutureState);
 }
 TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkApple(
 	FNakamaClient Client,
@@ -7653,7 +7653,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkApple(
 	const TMap<FString, FString>& Vars,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -7661,7 +7661,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkApple(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -7675,17 +7675,17 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkApple(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaVoidResult{{}, Error, true});
+			FutureState->Resolve(FNakamaVoidResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError, Session,
+	*DoRequest = [Client, FutureState, DoRequest, OnError, Session,
 		Token,
 		Vars,
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Promise, DoRequest, OnError,
+			[Client, FutureState, DoRequest, OnError,
 				Token,
 				Vars,
 				CancellationToken](const FNakamaSession& Session)
@@ -7695,11 +7695,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkApple(
 					Session,
 					Token,
 					Vars,
-					[Promise, DoRequest, OnError]()
+					[FutureState, DoRequest, OnError]()
 					{
 						auto DR = DoRequest; auto OE = OnError;
 						DR->Reset(); OE->Reset();
-						Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+						FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 					},
 					*OnError,
 					CancellationToken);
@@ -7710,7 +7710,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkApple(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaVoidResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaVoidResult>(FutureState);
 }
 
 TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkApple(
@@ -7720,7 +7720,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkApple(
 	const TMap<FString, FString>& Vars,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -7728,7 +7728,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkApple(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -7742,11 +7742,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkApple(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaVoidResult{{}, Error, true});
+			FutureState->Resolve(FNakamaVoidResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		HttpKey,
 		Token,
 		Vars,
@@ -7757,11 +7757,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkApple(
 			HttpKey,
 			Token,
 			Vars,
-			[Promise, DoRequest, OnError]()
+			[FutureState, DoRequest, OnError]()
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+				FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 			},
 			*OnError,
 			CancellationToken);
@@ -7769,7 +7769,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkApple(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaVoidResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaVoidResult>(FutureState);
 }
 TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkCustom(
 	FNakamaClient Client,
@@ -7778,7 +7778,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkCustom(
 	const TMap<FString, FString>& Vars,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -7786,7 +7786,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkCustom(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -7800,17 +7800,17 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkCustom(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaVoidResult{{}, Error, true});
+			FutureState->Resolve(FNakamaVoidResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError, Session,
+	*DoRequest = [Client, FutureState, DoRequest, OnError, Session,
 		Id,
 		Vars,
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Promise, DoRequest, OnError,
+			[Client, FutureState, DoRequest, OnError,
 				Id,
 				Vars,
 				CancellationToken](const FNakamaSession& Session)
@@ -7820,11 +7820,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkCustom(
 					Session,
 					Id,
 					Vars,
-					[Promise, DoRequest, OnError]()
+					[FutureState, DoRequest, OnError]()
 					{
 						auto DR = DoRequest; auto OE = OnError;
 						DR->Reset(); OE->Reset();
-						Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+						FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 					},
 					*OnError,
 					CancellationToken);
@@ -7835,7 +7835,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkCustom(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaVoidResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaVoidResult>(FutureState);
 }
 
 TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkCustom(
@@ -7845,7 +7845,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkCustom(
 	const TMap<FString, FString>& Vars,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -7853,7 +7853,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkCustom(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -7867,11 +7867,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkCustom(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaVoidResult{{}, Error, true});
+			FutureState->Resolve(FNakamaVoidResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		HttpKey,
 		Id,
 		Vars,
@@ -7882,11 +7882,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkCustom(
 			HttpKey,
 			Id,
 			Vars,
-			[Promise, DoRequest, OnError]()
+			[FutureState, DoRequest, OnError]()
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+				FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 			},
 			*OnError,
 			CancellationToken);
@@ -7894,7 +7894,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkCustom(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaVoidResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaVoidResult>(FutureState);
 }
 TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkDevice(
 	FNakamaClient Client,
@@ -7903,7 +7903,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkDevice(
 	const TMap<FString, FString>& Vars,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -7911,7 +7911,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkDevice(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -7925,17 +7925,17 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkDevice(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaVoidResult{{}, Error, true});
+			FutureState->Resolve(FNakamaVoidResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError, Session,
+	*DoRequest = [Client, FutureState, DoRequest, OnError, Session,
 		Id,
 		Vars,
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Promise, DoRequest, OnError,
+			[Client, FutureState, DoRequest, OnError,
 				Id,
 				Vars,
 				CancellationToken](const FNakamaSession& Session)
@@ -7945,11 +7945,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkDevice(
 					Session,
 					Id,
 					Vars,
-					[Promise, DoRequest, OnError]()
+					[FutureState, DoRequest, OnError]()
 					{
 						auto DR = DoRequest; auto OE = OnError;
 						DR->Reset(); OE->Reset();
-						Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+						FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 					},
 					*OnError,
 					CancellationToken);
@@ -7960,7 +7960,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkDevice(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaVoidResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaVoidResult>(FutureState);
 }
 
 TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkDevice(
@@ -7970,7 +7970,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkDevice(
 	const TMap<FString, FString>& Vars,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -7978,7 +7978,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkDevice(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -7992,11 +7992,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkDevice(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaVoidResult{{}, Error, true});
+			FutureState->Resolve(FNakamaVoidResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		HttpKey,
 		Id,
 		Vars,
@@ -8007,11 +8007,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkDevice(
 			HttpKey,
 			Id,
 			Vars,
-			[Promise, DoRequest, OnError]()
+			[FutureState, DoRequest, OnError]()
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+				FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 			},
 			*OnError,
 			CancellationToken);
@@ -8019,7 +8019,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkDevice(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaVoidResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaVoidResult>(FutureState);
 }
 TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkEmail(
 	FNakamaClient Client,
@@ -8029,7 +8029,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkEmail(
 	const TMap<FString, FString>& Vars,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -8037,7 +8037,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkEmail(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -8051,18 +8051,18 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkEmail(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaVoidResult{{}, Error, true});
+			FutureState->Resolve(FNakamaVoidResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError, Session,
+	*DoRequest = [Client, FutureState, DoRequest, OnError, Session,
 		Email,
 		Password,
 		Vars,
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Promise, DoRequest, OnError,
+			[Client, FutureState, DoRequest, OnError,
 				Email,
 				Password,
 				Vars,
@@ -8074,11 +8074,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkEmail(
 					Email,
 					Password,
 					Vars,
-					[Promise, DoRequest, OnError]()
+					[FutureState, DoRequest, OnError]()
 					{
 						auto DR = DoRequest; auto OE = OnError;
 						DR->Reset(); OE->Reset();
-						Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+						FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 					},
 					*OnError,
 					CancellationToken);
@@ -8089,7 +8089,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkEmail(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaVoidResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaVoidResult>(FutureState);
 }
 
 TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkEmail(
@@ -8100,7 +8100,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkEmail(
 	const TMap<FString, FString>& Vars,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -8108,7 +8108,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkEmail(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -8122,11 +8122,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkEmail(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaVoidResult{{}, Error, true});
+			FutureState->Resolve(FNakamaVoidResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		HttpKey,
 		Email,
 		Password,
@@ -8139,11 +8139,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkEmail(
 			Email,
 			Password,
 			Vars,
-			[Promise, DoRequest, OnError]()
+			[FutureState, DoRequest, OnError]()
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+				FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 			},
 			*OnError,
 			CancellationToken);
@@ -8151,7 +8151,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkEmail(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaVoidResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaVoidResult>(FutureState);
 }
 TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkFacebook(
 	FNakamaClient Client,
@@ -8160,7 +8160,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkFacebook(
 	const TMap<FString, FString>& Vars,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -8168,7 +8168,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkFacebook(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -8182,17 +8182,17 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkFacebook(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaVoidResult{{}, Error, true});
+			FutureState->Resolve(FNakamaVoidResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError, Session,
+	*DoRequest = [Client, FutureState, DoRequest, OnError, Session,
 		Token,
 		Vars,
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Promise, DoRequest, OnError,
+			[Client, FutureState, DoRequest, OnError,
 				Token,
 				Vars,
 				CancellationToken](const FNakamaSession& Session)
@@ -8202,11 +8202,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkFacebook(
 					Session,
 					Token,
 					Vars,
-					[Promise, DoRequest, OnError]()
+					[FutureState, DoRequest, OnError]()
 					{
 						auto DR = DoRequest; auto OE = OnError;
 						DR->Reset(); OE->Reset();
-						Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+						FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 					},
 					*OnError,
 					CancellationToken);
@@ -8217,7 +8217,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkFacebook(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaVoidResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaVoidResult>(FutureState);
 }
 
 TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkFacebook(
@@ -8227,7 +8227,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkFacebook(
 	const TMap<FString, FString>& Vars,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -8235,7 +8235,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkFacebook(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -8249,11 +8249,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkFacebook(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaVoidResult{{}, Error, true});
+			FutureState->Resolve(FNakamaVoidResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		HttpKey,
 		Token,
 		Vars,
@@ -8264,11 +8264,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkFacebook(
 			HttpKey,
 			Token,
 			Vars,
-			[Promise, DoRequest, OnError]()
+			[FutureState, DoRequest, OnError]()
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+				FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 			},
 			*OnError,
 			CancellationToken);
@@ -8276,7 +8276,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkFacebook(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaVoidResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaVoidResult>(FutureState);
 }
 TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkFacebookInstantGame(
 	FNakamaClient Client,
@@ -8285,7 +8285,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkFacebookInstantGame(
 	const TMap<FString, FString>& Vars,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -8293,7 +8293,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkFacebookInstantGame(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -8307,17 +8307,17 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkFacebookInstantGame(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaVoidResult{{}, Error, true});
+			FutureState->Resolve(FNakamaVoidResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError, Session,
+	*DoRequest = [Client, FutureState, DoRequest, OnError, Session,
 		SignedPlayerInfo,
 		Vars,
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Promise, DoRequest, OnError,
+			[Client, FutureState, DoRequest, OnError,
 				SignedPlayerInfo,
 				Vars,
 				CancellationToken](const FNakamaSession& Session)
@@ -8327,11 +8327,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkFacebookInstantGame(
 					Session,
 					SignedPlayerInfo,
 					Vars,
-					[Promise, DoRequest, OnError]()
+					[FutureState, DoRequest, OnError]()
 					{
 						auto DR = DoRequest; auto OE = OnError;
 						DR->Reset(); OE->Reset();
-						Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+						FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 					},
 					*OnError,
 					CancellationToken);
@@ -8342,7 +8342,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkFacebookInstantGame(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaVoidResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaVoidResult>(FutureState);
 }
 
 TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkFacebookInstantGame(
@@ -8352,7 +8352,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkFacebookInstantGame(
 	const TMap<FString, FString>& Vars,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -8360,7 +8360,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkFacebookInstantGame(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -8374,11 +8374,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkFacebookInstantGame(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaVoidResult{{}, Error, true});
+			FutureState->Resolve(FNakamaVoidResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		HttpKey,
 		SignedPlayerInfo,
 		Vars,
@@ -8389,11 +8389,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkFacebookInstantGame(
 			HttpKey,
 			SignedPlayerInfo,
 			Vars,
-			[Promise, DoRequest, OnError]()
+			[FutureState, DoRequest, OnError]()
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+				FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 			},
 			*OnError,
 			CancellationToken);
@@ -8401,7 +8401,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkFacebookInstantGame(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaVoidResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaVoidResult>(FutureState);
 }
 TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkGameCenter(
 	FNakamaClient Client,
@@ -8415,7 +8415,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkGameCenter(
 	const TMap<FString, FString>& Vars,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -8423,7 +8423,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkGameCenter(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -8437,11 +8437,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkGameCenter(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaVoidResult{{}, Error, true});
+			FutureState->Resolve(FNakamaVoidResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError, Session,
+	*DoRequest = [Client, FutureState, DoRequest, OnError, Session,
 		PlayerId,
 		BundleId,
 		TimestampSeconds,
@@ -8452,7 +8452,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkGameCenter(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Promise, DoRequest, OnError,
+			[Client, FutureState, DoRequest, OnError,
 				PlayerId,
 				BundleId,
 				TimestampSeconds,
@@ -8472,11 +8472,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkGameCenter(
 					Signature,
 					PublicKeyUrl,
 					Vars,
-					[Promise, DoRequest, OnError]()
+					[FutureState, DoRequest, OnError]()
 					{
 						auto DR = DoRequest; auto OE = OnError;
 						DR->Reset(); OE->Reset();
-						Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+						FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 					},
 					*OnError,
 					CancellationToken);
@@ -8487,7 +8487,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkGameCenter(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaVoidResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaVoidResult>(FutureState);
 }
 
 TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkGameCenter(
@@ -8502,7 +8502,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkGameCenter(
 	const TMap<FString, FString>& Vars,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -8510,7 +8510,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkGameCenter(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -8524,11 +8524,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkGameCenter(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaVoidResult{{}, Error, true});
+			FutureState->Resolve(FNakamaVoidResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		HttpKey,
 		PlayerId,
 		BundleId,
@@ -8549,11 +8549,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkGameCenter(
 			Signature,
 			PublicKeyUrl,
 			Vars,
-			[Promise, DoRequest, OnError]()
+			[FutureState, DoRequest, OnError]()
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+				FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 			},
 			*OnError,
 			CancellationToken);
@@ -8561,7 +8561,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkGameCenter(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaVoidResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaVoidResult>(FutureState);
 }
 TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkGoogle(
 	FNakamaClient Client,
@@ -8570,7 +8570,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkGoogle(
 	const TMap<FString, FString>& Vars,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -8578,7 +8578,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkGoogle(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -8592,17 +8592,17 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkGoogle(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaVoidResult{{}, Error, true});
+			FutureState->Resolve(FNakamaVoidResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError, Session,
+	*DoRequest = [Client, FutureState, DoRequest, OnError, Session,
 		Token,
 		Vars,
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Promise, DoRequest, OnError,
+			[Client, FutureState, DoRequest, OnError,
 				Token,
 				Vars,
 				CancellationToken](const FNakamaSession& Session)
@@ -8612,11 +8612,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkGoogle(
 					Session,
 					Token,
 					Vars,
-					[Promise, DoRequest, OnError]()
+					[FutureState, DoRequest, OnError]()
 					{
 						auto DR = DoRequest; auto OE = OnError;
 						DR->Reset(); OE->Reset();
-						Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+						FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 					},
 					*OnError,
 					CancellationToken);
@@ -8627,7 +8627,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkGoogle(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaVoidResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaVoidResult>(FutureState);
 }
 
 TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkGoogle(
@@ -8637,7 +8637,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkGoogle(
 	const TMap<FString, FString>& Vars,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -8645,7 +8645,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkGoogle(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -8659,11 +8659,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkGoogle(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaVoidResult{{}, Error, true});
+			FutureState->Resolve(FNakamaVoidResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		HttpKey,
 		Token,
 		Vars,
@@ -8674,11 +8674,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkGoogle(
 			HttpKey,
 			Token,
 			Vars,
-			[Promise, DoRequest, OnError]()
+			[FutureState, DoRequest, OnError]()
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+				FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 			},
 			*OnError,
 			CancellationToken);
@@ -8686,7 +8686,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkGoogle(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaVoidResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaVoidResult>(FutureState);
 }
 TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkSteam(
 	FNakamaClient Client,
@@ -8695,7 +8695,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkSteam(
 	const TMap<FString, FString>& Vars,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -8703,7 +8703,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkSteam(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -8717,17 +8717,17 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkSteam(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaVoidResult{{}, Error, true});
+			FutureState->Resolve(FNakamaVoidResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError, Session,
+	*DoRequest = [Client, FutureState, DoRequest, OnError, Session,
 		Token,
 		Vars,
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Promise, DoRequest, OnError,
+			[Client, FutureState, DoRequest, OnError,
 				Token,
 				Vars,
 				CancellationToken](const FNakamaSession& Session)
@@ -8737,11 +8737,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkSteam(
 					Session,
 					Token,
 					Vars,
-					[Promise, DoRequest, OnError]()
+					[FutureState, DoRequest, OnError]()
 					{
 						auto DR = DoRequest; auto OE = OnError;
 						DR->Reset(); OE->Reset();
-						Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+						FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 					},
 					*OnError,
 					CancellationToken);
@@ -8752,7 +8752,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkSteam(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaVoidResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaVoidResult>(FutureState);
 }
 
 TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkSteam(
@@ -8762,7 +8762,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkSteam(
 	const TMap<FString, FString>& Vars,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -8770,7 +8770,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkSteam(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -8784,11 +8784,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkSteam(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaVoidResult{{}, Error, true});
+			FutureState->Resolve(FNakamaVoidResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		HttpKey,
 		Token,
 		Vars,
@@ -8799,11 +8799,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkSteam(
 			HttpKey,
 			Token,
 			Vars,
-			[Promise, DoRequest, OnError]()
+			[FutureState, DoRequest, OnError]()
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+				FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 			},
 			*OnError,
 			CancellationToken);
@@ -8811,7 +8811,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkSteam(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaVoidResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaVoidResult>(FutureState);
 }
 TNakamaFuture<FNakamaVoidResult> Nakama::UpdateAccount(
 	FNakamaClient Client,
@@ -8824,7 +8824,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UpdateAccount(
 	FString Timezone,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -8832,7 +8832,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UpdateAccount(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -8846,11 +8846,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UpdateAccount(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaVoidResult{{}, Error, true});
+			FutureState->Resolve(FNakamaVoidResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError, Session,
+	*DoRequest = [Client, FutureState, DoRequest, OnError, Session,
 		Username,
 		DisplayName,
 		AvatarUrl,
@@ -8860,7 +8860,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UpdateAccount(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Promise, DoRequest, OnError,
+			[Client, FutureState, DoRequest, OnError,
 				Username,
 				DisplayName,
 				AvatarUrl,
@@ -8878,11 +8878,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UpdateAccount(
 					LangTag,
 					Location,
 					Timezone,
-					[Promise, DoRequest, OnError]()
+					[FutureState, DoRequest, OnError]()
 					{
 						auto DR = DoRequest; auto OE = OnError;
 						DR->Reset(); OE->Reset();
-						Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+						FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 					},
 					*OnError,
 					CancellationToken);
@@ -8893,7 +8893,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UpdateAccount(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaVoidResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaVoidResult>(FutureState);
 }
 
 TNakamaFuture<FNakamaVoidResult> Nakama::UpdateAccount(
@@ -8907,7 +8907,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UpdateAccount(
 	FString Timezone,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -8915,7 +8915,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UpdateAccount(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -8929,11 +8929,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UpdateAccount(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaVoidResult{{}, Error, true});
+			FutureState->Resolve(FNakamaVoidResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		HttpKey,
 		Username,
 		DisplayName,
@@ -8952,11 +8952,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UpdateAccount(
 			LangTag,
 			Location,
 			Timezone,
-			[Promise, DoRequest, OnError]()
+			[FutureState, DoRequest, OnError]()
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+				FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 			},
 			*OnError,
 			CancellationToken);
@@ -8964,7 +8964,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UpdateAccount(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaVoidResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaVoidResult>(FutureState);
 }
 TNakamaFuture<FNakamaVoidResult> Nakama::UpdateGroup(
 	FNakamaClient Client,
@@ -8977,7 +8977,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UpdateGroup(
 	bool Open,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -8985,7 +8985,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UpdateGroup(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -8999,11 +8999,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UpdateGroup(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaVoidResult{{}, Error, true});
+			FutureState->Resolve(FNakamaVoidResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError, Session,
+	*DoRequest = [Client, FutureState, DoRequest, OnError, Session,
 		GroupId,
 		Name,
 		Description,
@@ -9013,7 +9013,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UpdateGroup(
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Promise, DoRequest, OnError,
+			[Client, FutureState, DoRequest, OnError,
 				GroupId,
 				Name,
 				Description,
@@ -9031,11 +9031,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UpdateGroup(
 					LangTag,
 					AvatarUrl,
 					Open,
-					[Promise, DoRequest, OnError]()
+					[FutureState, DoRequest, OnError]()
 					{
 						auto DR = DoRequest; auto OE = OnError;
 						DR->Reset(); OE->Reset();
-						Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+						FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 					},
 					*OnError,
 					CancellationToken);
@@ -9046,7 +9046,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UpdateGroup(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaVoidResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaVoidResult>(FutureState);
 }
 
 TNakamaFuture<FNakamaVoidResult> Nakama::UpdateGroup(
@@ -9060,7 +9060,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UpdateGroup(
 	bool Open,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaVoidResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -9068,7 +9068,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UpdateGroup(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -9082,11 +9082,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UpdateGroup(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaVoidResult{{}, Error, true});
+			FutureState->Resolve(FNakamaVoidResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		HttpKey,
 		GroupId,
 		Name,
@@ -9105,11 +9105,11 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UpdateGroup(
 			LangTag,
 			AvatarUrl,
 			Open,
-			[Promise, DoRequest, OnError]()
+			[FutureState, DoRequest, OnError]()
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+				FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 			},
 			*OnError,
 			CancellationToken);
@@ -9117,7 +9117,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::UpdateGroup(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaVoidResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaVoidResult>(FutureState);
 }
 TNakamaFuture<FNakamaValidatePurchaseResponseResult> Nakama::ValidatePurchaseApple(
 	FNakamaClient Client,
@@ -9126,7 +9126,7 @@ TNakamaFuture<FNakamaValidatePurchaseResponseResult> Nakama::ValidatePurchaseApp
 	bool Persist,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaValidatePurchaseResponseResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaValidatePurchaseResponseResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -9134,7 +9134,7 @@ TNakamaFuture<FNakamaValidatePurchaseResponseResult> Nakama::ValidatePurchaseApp
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -9148,17 +9148,17 @@ TNakamaFuture<FNakamaValidatePurchaseResponseResult> Nakama::ValidatePurchaseApp
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaValidatePurchaseResponseResult{{}, Error, true});
+			FutureState->Resolve(FNakamaValidatePurchaseResponseResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError, Session,
+	*DoRequest = [Client, FutureState, DoRequest, OnError, Session,
 		Receipt,
 		Persist,
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Promise, DoRequest, OnError,
+			[Client, FutureState, DoRequest, OnError,
 				Receipt,
 				Persist,
 				CancellationToken](const FNakamaSession& Session)
@@ -9168,11 +9168,11 @@ TNakamaFuture<FNakamaValidatePurchaseResponseResult> Nakama::ValidatePurchaseApp
 					Session,
 					Receipt,
 					Persist,
-					[Promise, DoRequest, OnError](const FNakamaValidatePurchaseResponse& Result)
+					[FutureState, DoRequest, OnError](const FNakamaValidatePurchaseResponse& Result)
 					{
 						auto DR = DoRequest; auto OE = OnError;
 						DR->Reset(); OE->Reset();
-						Promise->SetValue(FNakamaValidatePurchaseResponseResult{Result, {}, false});
+						FutureState->Resolve(FNakamaValidatePurchaseResponseResult{Result, {}, false});
 					},
 					*OnError,
 					CancellationToken);
@@ -9183,7 +9183,7 @@ TNakamaFuture<FNakamaValidatePurchaseResponseResult> Nakama::ValidatePurchaseApp
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaValidatePurchaseResponseResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaValidatePurchaseResponseResult>(FutureState);
 }
 
 TNakamaFuture<FNakamaValidatePurchaseResponseResult> Nakama::ValidatePurchaseApple(
@@ -9193,7 +9193,7 @@ TNakamaFuture<FNakamaValidatePurchaseResponseResult> Nakama::ValidatePurchaseApp
 	bool Persist,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaValidatePurchaseResponseResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaValidatePurchaseResponseResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -9201,7 +9201,7 @@ TNakamaFuture<FNakamaValidatePurchaseResponseResult> Nakama::ValidatePurchaseApp
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -9215,11 +9215,11 @@ TNakamaFuture<FNakamaValidatePurchaseResponseResult> Nakama::ValidatePurchaseApp
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaValidatePurchaseResponseResult{{}, Error, true});
+			FutureState->Resolve(FNakamaValidatePurchaseResponseResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		HttpKey,
 		Receipt,
 		Persist,
@@ -9230,11 +9230,11 @@ TNakamaFuture<FNakamaValidatePurchaseResponseResult> Nakama::ValidatePurchaseApp
 			HttpKey,
 			Receipt,
 			Persist,
-			[Promise, DoRequest, OnError](const FNakamaValidatePurchaseResponse& Result)
+			[FutureState, DoRequest, OnError](const FNakamaValidatePurchaseResponse& Result)
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaValidatePurchaseResponseResult{Result, {}, false});
+				FutureState->Resolve(FNakamaValidatePurchaseResponseResult{Result, {}, false});
 			},
 			*OnError,
 			CancellationToken);
@@ -9242,7 +9242,7 @@ TNakamaFuture<FNakamaValidatePurchaseResponseResult> Nakama::ValidatePurchaseApp
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaValidatePurchaseResponseResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaValidatePurchaseResponseResult>(FutureState);
 }
 TNakamaFuture<FNakamaValidateSubscriptionResponseResult> Nakama::ValidateSubscriptionApple(
 	FNakamaClient Client,
@@ -9251,7 +9251,7 @@ TNakamaFuture<FNakamaValidateSubscriptionResponseResult> Nakama::ValidateSubscri
 	bool Persist,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaValidateSubscriptionResponseResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaValidateSubscriptionResponseResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -9259,7 +9259,7 @@ TNakamaFuture<FNakamaValidateSubscriptionResponseResult> Nakama::ValidateSubscri
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -9273,17 +9273,17 @@ TNakamaFuture<FNakamaValidateSubscriptionResponseResult> Nakama::ValidateSubscri
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaValidateSubscriptionResponseResult{{}, Error, true});
+			FutureState->Resolve(FNakamaValidateSubscriptionResponseResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError, Session,
+	*DoRequest = [Client, FutureState, DoRequest, OnError, Session,
 		Receipt,
 		Persist,
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Promise, DoRequest, OnError,
+			[Client, FutureState, DoRequest, OnError,
 				Receipt,
 				Persist,
 				CancellationToken](const FNakamaSession& Session)
@@ -9293,11 +9293,11 @@ TNakamaFuture<FNakamaValidateSubscriptionResponseResult> Nakama::ValidateSubscri
 					Session,
 					Receipt,
 					Persist,
-					[Promise, DoRequest, OnError](const FNakamaValidateSubscriptionResponse& Result)
+					[FutureState, DoRequest, OnError](const FNakamaValidateSubscriptionResponse& Result)
 					{
 						auto DR = DoRequest; auto OE = OnError;
 						DR->Reset(); OE->Reset();
-						Promise->SetValue(FNakamaValidateSubscriptionResponseResult{Result, {}, false});
+						FutureState->Resolve(FNakamaValidateSubscriptionResponseResult{Result, {}, false});
 					},
 					*OnError,
 					CancellationToken);
@@ -9308,7 +9308,7 @@ TNakamaFuture<FNakamaValidateSubscriptionResponseResult> Nakama::ValidateSubscri
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaValidateSubscriptionResponseResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaValidateSubscriptionResponseResult>(FutureState);
 }
 
 TNakamaFuture<FNakamaValidateSubscriptionResponseResult> Nakama::ValidateSubscriptionApple(
@@ -9318,7 +9318,7 @@ TNakamaFuture<FNakamaValidateSubscriptionResponseResult> Nakama::ValidateSubscri
 	bool Persist,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaValidateSubscriptionResponseResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaValidateSubscriptionResponseResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -9326,7 +9326,7 @@ TNakamaFuture<FNakamaValidateSubscriptionResponseResult> Nakama::ValidateSubscri
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -9340,11 +9340,11 @@ TNakamaFuture<FNakamaValidateSubscriptionResponseResult> Nakama::ValidateSubscri
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaValidateSubscriptionResponseResult{{}, Error, true});
+			FutureState->Resolve(FNakamaValidateSubscriptionResponseResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		HttpKey,
 		Receipt,
 		Persist,
@@ -9355,11 +9355,11 @@ TNakamaFuture<FNakamaValidateSubscriptionResponseResult> Nakama::ValidateSubscri
 			HttpKey,
 			Receipt,
 			Persist,
-			[Promise, DoRequest, OnError](const FNakamaValidateSubscriptionResponse& Result)
+			[FutureState, DoRequest, OnError](const FNakamaValidateSubscriptionResponse& Result)
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaValidateSubscriptionResponseResult{Result, {}, false});
+				FutureState->Resolve(FNakamaValidateSubscriptionResponseResult{Result, {}, false});
 			},
 			*OnError,
 			CancellationToken);
@@ -9367,7 +9367,7 @@ TNakamaFuture<FNakamaValidateSubscriptionResponseResult> Nakama::ValidateSubscri
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaValidateSubscriptionResponseResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaValidateSubscriptionResponseResult>(FutureState);
 }
 TNakamaFuture<FNakamaValidatePurchaseResponseResult> Nakama::ValidatePurchaseGoogle(
 	FNakamaClient Client,
@@ -9376,7 +9376,7 @@ TNakamaFuture<FNakamaValidatePurchaseResponseResult> Nakama::ValidatePurchaseGoo
 	bool Persist,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaValidatePurchaseResponseResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaValidatePurchaseResponseResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -9384,7 +9384,7 @@ TNakamaFuture<FNakamaValidatePurchaseResponseResult> Nakama::ValidatePurchaseGoo
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -9398,17 +9398,17 @@ TNakamaFuture<FNakamaValidatePurchaseResponseResult> Nakama::ValidatePurchaseGoo
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaValidatePurchaseResponseResult{{}, Error, true});
+			FutureState->Resolve(FNakamaValidatePurchaseResponseResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError, Session,
+	*DoRequest = [Client, FutureState, DoRequest, OnError, Session,
 		Purchase,
 		Persist,
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Promise, DoRequest, OnError,
+			[Client, FutureState, DoRequest, OnError,
 				Purchase,
 				Persist,
 				CancellationToken](const FNakamaSession& Session)
@@ -9418,11 +9418,11 @@ TNakamaFuture<FNakamaValidatePurchaseResponseResult> Nakama::ValidatePurchaseGoo
 					Session,
 					Purchase,
 					Persist,
-					[Promise, DoRequest, OnError](const FNakamaValidatePurchaseResponse& Result)
+					[FutureState, DoRequest, OnError](const FNakamaValidatePurchaseResponse& Result)
 					{
 						auto DR = DoRequest; auto OE = OnError;
 						DR->Reset(); OE->Reset();
-						Promise->SetValue(FNakamaValidatePurchaseResponseResult{Result, {}, false});
+						FutureState->Resolve(FNakamaValidatePurchaseResponseResult{Result, {}, false});
 					},
 					*OnError,
 					CancellationToken);
@@ -9433,7 +9433,7 @@ TNakamaFuture<FNakamaValidatePurchaseResponseResult> Nakama::ValidatePurchaseGoo
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaValidatePurchaseResponseResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaValidatePurchaseResponseResult>(FutureState);
 }
 
 TNakamaFuture<FNakamaValidatePurchaseResponseResult> Nakama::ValidatePurchaseGoogle(
@@ -9443,7 +9443,7 @@ TNakamaFuture<FNakamaValidatePurchaseResponseResult> Nakama::ValidatePurchaseGoo
 	bool Persist,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaValidatePurchaseResponseResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaValidatePurchaseResponseResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -9451,7 +9451,7 @@ TNakamaFuture<FNakamaValidatePurchaseResponseResult> Nakama::ValidatePurchaseGoo
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -9465,11 +9465,11 @@ TNakamaFuture<FNakamaValidatePurchaseResponseResult> Nakama::ValidatePurchaseGoo
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaValidatePurchaseResponseResult{{}, Error, true});
+			FutureState->Resolve(FNakamaValidatePurchaseResponseResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		HttpKey,
 		Purchase,
 		Persist,
@@ -9480,11 +9480,11 @@ TNakamaFuture<FNakamaValidatePurchaseResponseResult> Nakama::ValidatePurchaseGoo
 			HttpKey,
 			Purchase,
 			Persist,
-			[Promise, DoRequest, OnError](const FNakamaValidatePurchaseResponse& Result)
+			[FutureState, DoRequest, OnError](const FNakamaValidatePurchaseResponse& Result)
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaValidatePurchaseResponseResult{Result, {}, false});
+				FutureState->Resolve(FNakamaValidatePurchaseResponseResult{Result, {}, false});
 			},
 			*OnError,
 			CancellationToken);
@@ -9492,7 +9492,7 @@ TNakamaFuture<FNakamaValidatePurchaseResponseResult> Nakama::ValidatePurchaseGoo
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaValidatePurchaseResponseResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaValidatePurchaseResponseResult>(FutureState);
 }
 TNakamaFuture<FNakamaValidateSubscriptionResponseResult> Nakama::ValidateSubscriptionGoogle(
 	FNakamaClient Client,
@@ -9501,7 +9501,7 @@ TNakamaFuture<FNakamaValidateSubscriptionResponseResult> Nakama::ValidateSubscri
 	bool Persist,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaValidateSubscriptionResponseResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaValidateSubscriptionResponseResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -9509,7 +9509,7 @@ TNakamaFuture<FNakamaValidateSubscriptionResponseResult> Nakama::ValidateSubscri
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -9523,17 +9523,17 @@ TNakamaFuture<FNakamaValidateSubscriptionResponseResult> Nakama::ValidateSubscri
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaValidateSubscriptionResponseResult{{}, Error, true});
+			FutureState->Resolve(FNakamaValidateSubscriptionResponseResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError, Session,
+	*DoRequest = [Client, FutureState, DoRequest, OnError, Session,
 		Receipt,
 		Persist,
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Promise, DoRequest, OnError,
+			[Client, FutureState, DoRequest, OnError,
 				Receipt,
 				Persist,
 				CancellationToken](const FNakamaSession& Session)
@@ -9543,11 +9543,11 @@ TNakamaFuture<FNakamaValidateSubscriptionResponseResult> Nakama::ValidateSubscri
 					Session,
 					Receipt,
 					Persist,
-					[Promise, DoRequest, OnError](const FNakamaValidateSubscriptionResponse& Result)
+					[FutureState, DoRequest, OnError](const FNakamaValidateSubscriptionResponse& Result)
 					{
 						auto DR = DoRequest; auto OE = OnError;
 						DR->Reset(); OE->Reset();
-						Promise->SetValue(FNakamaValidateSubscriptionResponseResult{Result, {}, false});
+						FutureState->Resolve(FNakamaValidateSubscriptionResponseResult{Result, {}, false});
 					},
 					*OnError,
 					CancellationToken);
@@ -9558,7 +9558,7 @@ TNakamaFuture<FNakamaValidateSubscriptionResponseResult> Nakama::ValidateSubscri
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaValidateSubscriptionResponseResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaValidateSubscriptionResponseResult>(FutureState);
 }
 
 TNakamaFuture<FNakamaValidateSubscriptionResponseResult> Nakama::ValidateSubscriptionGoogle(
@@ -9568,7 +9568,7 @@ TNakamaFuture<FNakamaValidateSubscriptionResponseResult> Nakama::ValidateSubscri
 	bool Persist,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaValidateSubscriptionResponseResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaValidateSubscriptionResponseResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -9576,7 +9576,7 @@ TNakamaFuture<FNakamaValidateSubscriptionResponseResult> Nakama::ValidateSubscri
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -9590,11 +9590,11 @@ TNakamaFuture<FNakamaValidateSubscriptionResponseResult> Nakama::ValidateSubscri
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaValidateSubscriptionResponseResult{{}, Error, true});
+			FutureState->Resolve(FNakamaValidateSubscriptionResponseResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		HttpKey,
 		Receipt,
 		Persist,
@@ -9605,11 +9605,11 @@ TNakamaFuture<FNakamaValidateSubscriptionResponseResult> Nakama::ValidateSubscri
 			HttpKey,
 			Receipt,
 			Persist,
-			[Promise, DoRequest, OnError](const FNakamaValidateSubscriptionResponse& Result)
+			[FutureState, DoRequest, OnError](const FNakamaValidateSubscriptionResponse& Result)
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaValidateSubscriptionResponseResult{Result, {}, false});
+				FutureState->Resolve(FNakamaValidateSubscriptionResponseResult{Result, {}, false});
 			},
 			*OnError,
 			CancellationToken);
@@ -9617,7 +9617,7 @@ TNakamaFuture<FNakamaValidateSubscriptionResponseResult> Nakama::ValidateSubscri
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaValidateSubscriptionResponseResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaValidateSubscriptionResponseResult>(FutureState);
 }
 TNakamaFuture<FNakamaValidatePurchaseResponseResult> Nakama::ValidatePurchaseHuawei(
 	FNakamaClient Client,
@@ -9627,7 +9627,7 @@ TNakamaFuture<FNakamaValidatePurchaseResponseResult> Nakama::ValidatePurchaseHua
 	bool Persist,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaValidatePurchaseResponseResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaValidatePurchaseResponseResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -9635,7 +9635,7 @@ TNakamaFuture<FNakamaValidatePurchaseResponseResult> Nakama::ValidatePurchaseHua
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -9649,18 +9649,18 @@ TNakamaFuture<FNakamaValidatePurchaseResponseResult> Nakama::ValidatePurchaseHua
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaValidatePurchaseResponseResult{{}, Error, true});
+			FutureState->Resolve(FNakamaValidatePurchaseResponseResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError, Session,
+	*DoRequest = [Client, FutureState, DoRequest, OnError, Session,
 		Purchase,
 		Signature,
 		Persist,
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Promise, DoRequest, OnError,
+			[Client, FutureState, DoRequest, OnError,
 				Purchase,
 				Signature,
 				Persist,
@@ -9672,11 +9672,11 @@ TNakamaFuture<FNakamaValidatePurchaseResponseResult> Nakama::ValidatePurchaseHua
 					Purchase,
 					Signature,
 					Persist,
-					[Promise, DoRequest, OnError](const FNakamaValidatePurchaseResponse& Result)
+					[FutureState, DoRequest, OnError](const FNakamaValidatePurchaseResponse& Result)
 					{
 						auto DR = DoRequest; auto OE = OnError;
 						DR->Reset(); OE->Reset();
-						Promise->SetValue(FNakamaValidatePurchaseResponseResult{Result, {}, false});
+						FutureState->Resolve(FNakamaValidatePurchaseResponseResult{Result, {}, false});
 					},
 					*OnError,
 					CancellationToken);
@@ -9687,7 +9687,7 @@ TNakamaFuture<FNakamaValidatePurchaseResponseResult> Nakama::ValidatePurchaseHua
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaValidatePurchaseResponseResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaValidatePurchaseResponseResult>(FutureState);
 }
 
 TNakamaFuture<FNakamaValidatePurchaseResponseResult> Nakama::ValidatePurchaseHuawei(
@@ -9698,7 +9698,7 @@ TNakamaFuture<FNakamaValidatePurchaseResponseResult> Nakama::ValidatePurchaseHua
 	bool Persist,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaValidatePurchaseResponseResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaValidatePurchaseResponseResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -9706,7 +9706,7 @@ TNakamaFuture<FNakamaValidatePurchaseResponseResult> Nakama::ValidatePurchaseHua
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -9720,11 +9720,11 @@ TNakamaFuture<FNakamaValidatePurchaseResponseResult> Nakama::ValidatePurchaseHua
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaValidatePurchaseResponseResult{{}, Error, true});
+			FutureState->Resolve(FNakamaValidatePurchaseResponseResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		HttpKey,
 		Purchase,
 		Signature,
@@ -9737,11 +9737,11 @@ TNakamaFuture<FNakamaValidatePurchaseResponseResult> Nakama::ValidatePurchaseHua
 			Purchase,
 			Signature,
 			Persist,
-			[Promise, DoRequest, OnError](const FNakamaValidatePurchaseResponse& Result)
+			[FutureState, DoRequest, OnError](const FNakamaValidatePurchaseResponse& Result)
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaValidatePurchaseResponseResult{Result, {}, false});
+				FutureState->Resolve(FNakamaValidatePurchaseResponseResult{Result, {}, false});
 			},
 			*OnError,
 			CancellationToken);
@@ -9749,7 +9749,7 @@ TNakamaFuture<FNakamaValidatePurchaseResponseResult> Nakama::ValidatePurchaseHua
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaValidatePurchaseResponseResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaValidatePurchaseResponseResult>(FutureState);
 }
 TNakamaFuture<FNakamaValidatePurchaseResponseResult> Nakama::ValidatePurchaseFacebookInstant(
 	FNakamaClient Client,
@@ -9758,7 +9758,7 @@ TNakamaFuture<FNakamaValidatePurchaseResponseResult> Nakama::ValidatePurchaseFac
 	bool Persist,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaValidatePurchaseResponseResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaValidatePurchaseResponseResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -9766,7 +9766,7 @@ TNakamaFuture<FNakamaValidatePurchaseResponseResult> Nakama::ValidatePurchaseFac
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -9780,17 +9780,17 @@ TNakamaFuture<FNakamaValidatePurchaseResponseResult> Nakama::ValidatePurchaseFac
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaValidatePurchaseResponseResult{{}, Error, true});
+			FutureState->Resolve(FNakamaValidatePurchaseResponseResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError, Session,
+	*DoRequest = [Client, FutureState, DoRequest, OnError, Session,
 		SignedRequest,
 		Persist,
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Promise, DoRequest, OnError,
+			[Client, FutureState, DoRequest, OnError,
 				SignedRequest,
 				Persist,
 				CancellationToken](const FNakamaSession& Session)
@@ -9800,11 +9800,11 @@ TNakamaFuture<FNakamaValidatePurchaseResponseResult> Nakama::ValidatePurchaseFac
 					Session,
 					SignedRequest,
 					Persist,
-					[Promise, DoRequest, OnError](const FNakamaValidatePurchaseResponse& Result)
+					[FutureState, DoRequest, OnError](const FNakamaValidatePurchaseResponse& Result)
 					{
 						auto DR = DoRequest; auto OE = OnError;
 						DR->Reset(); OE->Reset();
-						Promise->SetValue(FNakamaValidatePurchaseResponseResult{Result, {}, false});
+						FutureState->Resolve(FNakamaValidatePurchaseResponseResult{Result, {}, false});
 					},
 					*OnError,
 					CancellationToken);
@@ -9815,7 +9815,7 @@ TNakamaFuture<FNakamaValidatePurchaseResponseResult> Nakama::ValidatePurchaseFac
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaValidatePurchaseResponseResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaValidatePurchaseResponseResult>(FutureState);
 }
 
 TNakamaFuture<FNakamaValidatePurchaseResponseResult> Nakama::ValidatePurchaseFacebookInstant(
@@ -9825,7 +9825,7 @@ TNakamaFuture<FNakamaValidatePurchaseResponseResult> Nakama::ValidatePurchaseFac
 	bool Persist,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaValidatePurchaseResponseResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaValidatePurchaseResponseResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -9833,7 +9833,7 @@ TNakamaFuture<FNakamaValidatePurchaseResponseResult> Nakama::ValidatePurchaseFac
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -9847,11 +9847,11 @@ TNakamaFuture<FNakamaValidatePurchaseResponseResult> Nakama::ValidatePurchaseFac
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaValidatePurchaseResponseResult{{}, Error, true});
+			FutureState->Resolve(FNakamaValidatePurchaseResponseResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		HttpKey,
 		SignedRequest,
 		Persist,
@@ -9862,11 +9862,11 @@ TNakamaFuture<FNakamaValidatePurchaseResponseResult> Nakama::ValidatePurchaseFac
 			HttpKey,
 			SignedRequest,
 			Persist,
-			[Promise, DoRequest, OnError](const FNakamaValidatePurchaseResponse& Result)
+			[FutureState, DoRequest, OnError](const FNakamaValidatePurchaseResponse& Result)
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaValidatePurchaseResponseResult{Result, {}, false});
+				FutureState->Resolve(FNakamaValidatePurchaseResponseResult{Result, {}, false});
 			},
 			*OnError,
 			CancellationToken);
@@ -9874,7 +9874,7 @@ TNakamaFuture<FNakamaValidatePurchaseResponseResult> Nakama::ValidatePurchaseFac
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaValidatePurchaseResponseResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaValidatePurchaseResponseResult>(FutureState);
 }
 TNakamaFuture<FNakamaLeaderboardRecordResult> Nakama::WriteLeaderboardRecord(
 	FNakamaClient Client,
@@ -9883,7 +9883,7 @@ TNakamaFuture<FNakamaLeaderboardRecordResult> Nakama::WriteLeaderboardRecord(
 	FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite Record,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaLeaderboardRecordResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaLeaderboardRecordResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -9891,7 +9891,7 @@ TNakamaFuture<FNakamaLeaderboardRecordResult> Nakama::WriteLeaderboardRecord(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -9905,17 +9905,17 @@ TNakamaFuture<FNakamaLeaderboardRecordResult> Nakama::WriteLeaderboardRecord(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaLeaderboardRecordResult{{}, Error, true});
+			FutureState->Resolve(FNakamaLeaderboardRecordResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError, Session,
+	*DoRequest = [Client, FutureState, DoRequest, OnError, Session,
 		LeaderboardId,
 		Record,
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Promise, DoRequest, OnError,
+			[Client, FutureState, DoRequest, OnError,
 				LeaderboardId,
 				Record,
 				CancellationToken](const FNakamaSession& Session)
@@ -9925,11 +9925,11 @@ TNakamaFuture<FNakamaLeaderboardRecordResult> Nakama::WriteLeaderboardRecord(
 					Session,
 					LeaderboardId,
 					Record,
-					[Promise, DoRequest, OnError](const FNakamaLeaderboardRecord& Result)
+					[FutureState, DoRequest, OnError](const FNakamaLeaderboardRecord& Result)
 					{
 						auto DR = DoRequest; auto OE = OnError;
 						DR->Reset(); OE->Reset();
-						Promise->SetValue(FNakamaLeaderboardRecordResult{Result, {}, false});
+						FutureState->Resolve(FNakamaLeaderboardRecordResult{Result, {}, false});
 					},
 					*OnError,
 					CancellationToken);
@@ -9940,7 +9940,7 @@ TNakamaFuture<FNakamaLeaderboardRecordResult> Nakama::WriteLeaderboardRecord(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaLeaderboardRecordResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaLeaderboardRecordResult>(FutureState);
 }
 
 TNakamaFuture<FNakamaLeaderboardRecordResult> Nakama::WriteLeaderboardRecord(
@@ -9950,7 +9950,7 @@ TNakamaFuture<FNakamaLeaderboardRecordResult> Nakama::WriteLeaderboardRecord(
 	FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite Record,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaLeaderboardRecordResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaLeaderboardRecordResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -9958,7 +9958,7 @@ TNakamaFuture<FNakamaLeaderboardRecordResult> Nakama::WriteLeaderboardRecord(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -9972,11 +9972,11 @@ TNakamaFuture<FNakamaLeaderboardRecordResult> Nakama::WriteLeaderboardRecord(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaLeaderboardRecordResult{{}, Error, true});
+			FutureState->Resolve(FNakamaLeaderboardRecordResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		HttpKey,
 		LeaderboardId,
 		Record,
@@ -9987,11 +9987,11 @@ TNakamaFuture<FNakamaLeaderboardRecordResult> Nakama::WriteLeaderboardRecord(
 			HttpKey,
 			LeaderboardId,
 			Record,
-			[Promise, DoRequest, OnError](const FNakamaLeaderboardRecord& Result)
+			[FutureState, DoRequest, OnError](const FNakamaLeaderboardRecord& Result)
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaLeaderboardRecordResult{Result, {}, false});
+				FutureState->Resolve(FNakamaLeaderboardRecordResult{Result, {}, false});
 			},
 			*OnError,
 			CancellationToken);
@@ -9999,7 +9999,7 @@ TNakamaFuture<FNakamaLeaderboardRecordResult> Nakama::WriteLeaderboardRecord(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaLeaderboardRecordResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaLeaderboardRecordResult>(FutureState);
 }
 TNakamaFuture<FNakamaStorageObjectAcksResult> Nakama::WriteStorageObjects(
 	FNakamaClient Client,
@@ -10007,7 +10007,7 @@ TNakamaFuture<FNakamaStorageObjectAcksResult> Nakama::WriteStorageObjects(
 	const TArray<FNakamaWriteStorageObject>& Objects,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaStorageObjectAcksResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaStorageObjectAcksResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -10015,7 +10015,7 @@ TNakamaFuture<FNakamaStorageObjectAcksResult> Nakama::WriteStorageObjects(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -10029,16 +10029,16 @@ TNakamaFuture<FNakamaStorageObjectAcksResult> Nakama::WriteStorageObjects(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaStorageObjectAcksResult{{}, Error, true});
+			FutureState->Resolve(FNakamaStorageObjectAcksResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError, Session,
+	*DoRequest = [Client, FutureState, DoRequest, OnError, Session,
 		Objects,
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Promise, DoRequest, OnError,
+			[Client, FutureState, DoRequest, OnError,
 				Objects,
 				CancellationToken](const FNakamaSession& Session)
 			{
@@ -10046,11 +10046,11 @@ TNakamaFuture<FNakamaStorageObjectAcksResult> Nakama::WriteStorageObjects(
 					Client.ApiConfig,
 					Session,
 					Objects,
-					[Promise, DoRequest, OnError](const FNakamaStorageObjectAcks& Result)
+					[FutureState, DoRequest, OnError](const FNakamaStorageObjectAcks& Result)
 					{
 						auto DR = DoRequest; auto OE = OnError;
 						DR->Reset(); OE->Reset();
-						Promise->SetValue(FNakamaStorageObjectAcksResult{Result, {}, false});
+						FutureState->Resolve(FNakamaStorageObjectAcksResult{Result, {}, false});
 					},
 					*OnError,
 					CancellationToken);
@@ -10061,7 +10061,7 @@ TNakamaFuture<FNakamaStorageObjectAcksResult> Nakama::WriteStorageObjects(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaStorageObjectAcksResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaStorageObjectAcksResult>(FutureState);
 }
 
 TNakamaFuture<FNakamaStorageObjectAcksResult> Nakama::WriteStorageObjects(
@@ -10070,7 +10070,7 @@ TNakamaFuture<FNakamaStorageObjectAcksResult> Nakama::WriteStorageObjects(
 	const TArray<FNakamaWriteStorageObject>& Objects,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaStorageObjectAcksResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaStorageObjectAcksResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -10078,7 +10078,7 @@ TNakamaFuture<FNakamaStorageObjectAcksResult> Nakama::WriteStorageObjects(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -10092,11 +10092,11 @@ TNakamaFuture<FNakamaStorageObjectAcksResult> Nakama::WriteStorageObjects(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaStorageObjectAcksResult{{}, Error, true});
+			FutureState->Resolve(FNakamaStorageObjectAcksResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		HttpKey,
 		Objects,
 		CancellationToken]()
@@ -10105,11 +10105,11 @@ TNakamaFuture<FNakamaStorageObjectAcksResult> Nakama::WriteStorageObjects(
 			Client.ApiConfig,
 			HttpKey,
 			Objects,
-			[Promise, DoRequest, OnError](const FNakamaStorageObjectAcks& Result)
+			[FutureState, DoRequest, OnError](const FNakamaStorageObjectAcks& Result)
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaStorageObjectAcksResult{Result, {}, false});
+				FutureState->Resolve(FNakamaStorageObjectAcksResult{Result, {}, false});
 			},
 			*OnError,
 			CancellationToken);
@@ -10117,7 +10117,7 @@ TNakamaFuture<FNakamaStorageObjectAcksResult> Nakama::WriteStorageObjects(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaStorageObjectAcksResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaStorageObjectAcksResult>(FutureState);
 }
 TNakamaFuture<FNakamaLeaderboardRecordResult> Nakama::WriteTournamentRecord(
 	FNakamaClient Client,
@@ -10126,7 +10126,7 @@ TNakamaFuture<FNakamaLeaderboardRecordResult> Nakama::WriteTournamentRecord(
 	FNakamaWriteTournamentRecordRequest_TournamentRecordWrite Record,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaLeaderboardRecordResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaLeaderboardRecordResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -10134,7 +10134,7 @@ TNakamaFuture<FNakamaLeaderboardRecordResult> Nakama::WriteTournamentRecord(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -10148,17 +10148,17 @@ TNakamaFuture<FNakamaLeaderboardRecordResult> Nakama::WriteTournamentRecord(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaLeaderboardRecordResult{{}, Error, true});
+			FutureState->Resolve(FNakamaLeaderboardRecordResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError, Session,
+	*DoRequest = [Client, FutureState, DoRequest, OnError, Session,
 		TournamentId,
 		Record,
 		CancellationToken]()
 	{
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Promise, DoRequest, OnError,
+			[Client, FutureState, DoRequest, OnError,
 				TournamentId,
 				Record,
 				CancellationToken](const FNakamaSession& Session)
@@ -10168,11 +10168,11 @@ TNakamaFuture<FNakamaLeaderboardRecordResult> Nakama::WriteTournamentRecord(
 					Session,
 					TournamentId,
 					Record,
-					[Promise, DoRequest, OnError](const FNakamaLeaderboardRecord& Result)
+					[FutureState, DoRequest, OnError](const FNakamaLeaderboardRecord& Result)
 					{
 						auto DR = DoRequest; auto OE = OnError;
 						DR->Reset(); OE->Reset();
-						Promise->SetValue(FNakamaLeaderboardRecordResult{Result, {}, false});
+						FutureState->Resolve(FNakamaLeaderboardRecordResult{Result, {}, false});
 					},
 					*OnError,
 					CancellationToken);
@@ -10183,7 +10183,7 @@ TNakamaFuture<FNakamaLeaderboardRecordResult> Nakama::WriteTournamentRecord(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaLeaderboardRecordResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaLeaderboardRecordResult>(FutureState);
 }
 
 TNakamaFuture<FNakamaLeaderboardRecordResult> Nakama::WriteTournamentRecord(
@@ -10193,7 +10193,7 @@ TNakamaFuture<FNakamaLeaderboardRecordResult> Nakama::WriteTournamentRecord(
 	FNakamaWriteTournamentRecordRequest_TournamentRecordWrite Record,
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<FNakamaLeaderboardRecordResult>>();
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaLeaderboardRecordResult>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -10201,7 +10201,7 @@ TNakamaFuture<FNakamaLeaderboardRecordResult> Nakama::WriteTournamentRecord(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -10215,11 +10215,11 @@ TNakamaFuture<FNakamaLeaderboardRecordResult> Nakama::WriteTournamentRecord(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue(FNakamaLeaderboardRecordResult{{}, Error, true});
+			FutureState->Resolve(FNakamaLeaderboardRecordResult{{}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		HttpKey,
 		TournamentId,
 		Record,
@@ -10230,11 +10230,11 @@ TNakamaFuture<FNakamaLeaderboardRecordResult> Nakama::WriteTournamentRecord(
 			HttpKey,
 			TournamentId,
 			Record,
-			[Promise, DoRequest, OnError](const FNakamaLeaderboardRecord& Result)
+			[FutureState, DoRequest, OnError](const FNakamaLeaderboardRecord& Result)
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaLeaderboardRecordResult{Result, {}, false});
+				FutureState->Resolve(FNakamaLeaderboardRecordResult{Result, {}, false});
 			},
 			*OnError,
 			CancellationToken);
@@ -10242,7 +10242,7 @@ TNakamaFuture<FNakamaLeaderboardRecordResult> Nakama::WriteTournamentRecord(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<FNakamaLeaderboardRecordResult>(Promise->GetFuture());
+	return TNakamaFuture<FNakamaLeaderboardRecordResult>(FutureState);
 }
 
 // Module implementation

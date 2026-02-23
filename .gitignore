@@ -533,6 +533,7 @@ NakamaBlueprintsTest/Saved
 NakamaBlueprintsTest/Binaries
 
 IntegrationTests/Plugins/Nakama
+IntegrationTests/Plugins/Satori
 IntegrationTests/Intermediate
 IntegrationTests/DerivedDataCache
 IntegrationTests/Saved

@@ -123,7 +123,7 @@ TNakamaFuture<{{ $resultType }}Result> Nakama::{{ $rpc.Name }}(
 	{{- end }}
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<{{ $resultType }}Result>>();
+	auto FutureState = MakeShared<TNakamaFuture<{{ $resultType }}Result>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -131,7 +131,7 @@ TNakamaFuture<{{ $resultType }}Result> Nakama::{{ $rpc.Name }}(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -145,11 +145,11 @@ TNakamaFuture<{{ $resultType }}Result> Nakama::{{ $rpc.Name }}(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue({{ $resultType }}Result{{ "{{" }}}, Error, true});
+			FutureState->Resolve({{ $resultType }}Result{{ "{{" }}}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		{{- if $needsSession }} Session, {{- end }}
 		{{- if $hasParams -}}
 		{{- range $fidx, $field := $requestType.Fields }}
@@ -163,7 +163,7 @@ TNakamaFuture<{{ $resultType }}Result> Nakama::{{ $rpc.Name }}(
 	{
 {{- if $needsSession }}
 		MaybeRefreshThenCall(Client, Session,
-			[Client, Promise, DoRequest, OnError,
+			[Client, FutureState, DoRequest, OnError,
 				{{- if $hasParams -}}
 				{{- range $fidx, $field := $requestType.Fields }}
 				{{ $field.Name | pascalCase }},
@@ -186,18 +186,18 @@ TNakamaFuture<{{ $resultType }}Result> Nakama::{{ $rpc.Name }}(
 					{{- end -}}
 					{{- end }}
 					{{- if $hasReturn }}
-					[Promise, DoRequest, OnError](const FNakama{{ $returnType.Name }}& Result)
+					[FutureState, DoRequest, OnError](const FNakama{{ $returnType.Name }}& Result)
 					{
 						auto DR = DoRequest; auto OE = OnError;
 						DR->Reset(); OE->Reset();
-						Promise->SetValue({{ $resultType }}Result{Result, {}, false});
+						FutureState->Resolve({{ $resultType }}Result{Result, {}, false});
 					},
 					{{- else }}
-					[Promise, DoRequest, OnError]()
+					[FutureState, DoRequest, OnError]()
 					{
 						auto DR = DoRequest; auto OE = OnError;
 						DR->Reset(); OE->Reset();
-						Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+						FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 					},
 					{{- end }}
 					*OnError,
@@ -217,18 +217,18 @@ TNakamaFuture<{{ $resultType }}Result> Nakama::{{ $rpc.Name }}(
 			{{- end -}}
 			{{- end }}
 			{{- if $hasReturn }}
-			[Promise, DoRequest, OnError](const FNakama{{ $returnType.Name }}& Result)
+			[FutureState, DoRequest, OnError](const FNakama{{ $returnType.Name }}& Result)
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue({{ $resultType }}Result{Result, {}, false});
+				FutureState->Resolve({{ $resultType }}Result{Result, {}, false});
 			},
 			{{- else }}
-			[Promise, DoRequest, OnError]()
+			[FutureState, DoRequest, OnError]()
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+				FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 			},
 			{{- end }}
 			*OnError,
@@ -238,7 +238,7 @@ TNakamaFuture<{{ $resultType }}Result> Nakama::{{ $rpc.Name }}(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<{{ $resultType }}Result>(Promise->GetFuture());
+	return TNakamaFuture<{{ $resultType }}Result>(FutureState);
 }
 {{- if $needsSession }}
 
@@ -261,7 +261,7 @@ TNakamaFuture<{{ $resultType }}Result> Nakama::{{ $rpc.Name }}(
 	{{- end }}
 	FNakamaCancellationTokenPtr CancellationToken) noexcept
 {
-	auto Promise = MakeShared<TPromise<{{ $resultType }}Result>>();
+	auto FutureState = MakeShared<TNakamaFuture<{{ $resultType }}Result>::FState>();
 
 	auto RetryState = MakeShared<int32>(0);
 	auto Cfg = Client.RetryConfiguration;
@@ -269,7 +269,7 @@ TNakamaFuture<{{ $resultType }}Result> Nakama::{{ $rpc.Name }}(
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [Promise, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
 	{
 		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
 		{
@@ -283,11 +283,11 @@ TNakamaFuture<{{ $resultType }}Result> Nakama::{{ $rpc.Name }}(
 		{
 			auto DR = DoRequest; auto OE = OnError;
 			DR->Reset(); OE->Reset();
-			Promise->SetValue({{ $resultType }}Result{{ "{{" }}}, Error, true});
+			FutureState->Resolve({{ $resultType }}Result{{ "{{" }}}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, Promise, DoRequest, OnError,
+	*DoRequest = [Client, FutureState, DoRequest, OnError,
 		HttpKey,
 		{{- if $hasParams -}}
 		{{- range $fidx, $field := $requestType.Fields }}
@@ -315,18 +315,18 @@ TNakamaFuture<{{ $resultType }}Result> Nakama::{{ $rpc.Name }}(
 			{{- end -}}
 			{{- end }}
 			{{- if $hasReturn }}
-			[Promise, DoRequest, OnError](const FNakama{{ $returnType.Name }}& Result)
+			[FutureState, DoRequest, OnError](const FNakama{{ $returnType.Name }}& Result)
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue({{ $resultType }}Result{Result, {}, false});
+				FutureState->Resolve({{ $resultType }}Result{Result, {}, false});
 			},
 			{{- else }}
-			[Promise, DoRequest, OnError]()
+			[FutureState, DoRequest, OnError]()
 			{
 				auto DR = DoRequest; auto OE = OnError;
 				DR->Reset(); OE->Reset();
-				Promise->SetValue(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+				FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 			},
 			{{- end }}
 			*OnError,
@@ -335,7 +335,7 @@ TNakamaFuture<{{ $resultType }}Result> Nakama::{{ $rpc.Name }}(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<{{ $resultType }}Result>(Promise->GetFuture());
+	return TNakamaFuture<{{ $resultType }}Result>(FutureState);
 }
 {{- end }}
 {{- end }}

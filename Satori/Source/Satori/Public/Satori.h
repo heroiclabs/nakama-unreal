@@ -19,7 +19,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Async/Future.h"
+#include "Tasks/Task.h"
 #include "SatoriApi.h"
 #include <type_traits>
 
@@ -110,13 +110,22 @@ struct TSatoriFuture
 	using ValueType = typename ResultT::ValueType;
 	using WrappedResultType = ResultT;
 
-	TFuture<ResultT> Future;
+	struct FState
+	{
+		ResultT Result{};
+		UE::Tasks::FTaskEvent Event{ UE_SOURCE_LOCATION };
+		void Resolve(ResultT&& InResult)
+		{
+			Result = MoveTemp(InResult);
+			Event.Trigger();
+		}
+	};
+
+	TSharedPtr<FState> State;
 
 	TSatoriFuture() = default;
-
-	explicit TSatoriFuture(TFuture<ResultT>&& InFuture) noexcept
-		: Future(MoveTemp(InFuture)) {}
-
+	explicit TSatoriFuture(TSharedPtr<FState> InState) noexcept
+		: State(MoveTemp(InState)) {}
 	TSatoriFuture(TSatoriFuture&& Other) noexcept = default;
 	TSatoriFuture& operator=(TSatoriFuture&& Other) noexcept = default;
 	TSatoriFuture(const TSatoriFuture&) = delete;
@@ -129,24 +138,28 @@ struct TSatoriFuture
 	Ret Next(Func&& Callback) && noexcept
 	{
 		using InnerResultT = typename Ret::WrappedResultType;
-		auto OuterPromise = MakeShared<TPromise<InnerResultT>>();
-		Ret ResultFuture(OuterPromise->GetFuture());
-
-		MoveTemp(Future).Next([Cb = Forward<Func>(Callback), OuterPromise](ResultT Result) mutable
-		{
-			if (Result.bIsError)
+		auto OuterState = MakeShared<typename TSatoriFuture<InnerResultT>::FState>();
+		auto CapturedState = State;
+		UE::Tasks::Launch(UE_SOURCE_LOCATION,
+			[Cb = Forward<Func>(Callback), CapturedState, OuterState]() mutable
 			{
-				OuterPromise->SetValue(InnerResultT{{}, Result.Error, true});
-				return;
-			}
-			Ret Inner = Cb(Result.Value);
-			MoveTemp(Inner.Future).Next([OuterPromise](InnerResultT InnerResult) mutable
-			{
-				OuterPromise->SetValue(MoveTemp(InnerResult));
-			});
-		});
-
-		return ResultFuture;
+				if (CapturedState->Result.bIsError)
+				{
+					OuterState->Resolve(InnerResultT{{}, CapturedState->Result.Error, true});
+					return;
+				}
+				Ret Inner = Cb(CapturedState->Result.Value);
+				auto InnerState = Inner.State;
+				UE::Tasks::Launch(UE_SOURCE_LOCATION,
+					[InnerState, OuterState]()
+					{
+						OuterState->Resolve(MoveTemp(InnerState->Result));
+					},
+					InnerState->Event);
+			},
+			CapturedState->Event);
+		State.Reset();
+		return TSatoriFuture<InnerResultT>(OuterState);
 	}
 
 	/** Terminal Next: callback(ResultT) -> void */
@@ -155,10 +168,14 @@ struct TSatoriFuture
 		std::enable_if_t<!TIsTSatoriFuture<Ret>::value, int> = 0>
 	void Next(Func&& Callback) && noexcept
 	{
-		MoveTemp(Future).Next([Cb = Forward<Func>(Callback)](ResultT Result) mutable
-		{
-			Cb(MoveTemp(Result));
-		});
+		auto CapturedState = State;
+		UE::Tasks::Launch(UE_SOURCE_LOCATION,
+			[Cb = Forward<Func>(Callback), CapturedState]() mutable
+			{
+				Cb(MoveTemp(CapturedState->Result));
+			},
+			CapturedState->Event);
+		State.Reset();
 	}
 };
 
