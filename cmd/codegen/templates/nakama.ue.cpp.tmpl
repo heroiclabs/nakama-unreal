@@ -20,7 +20,7 @@
 #include "Containers/Ticker.h"
 #include "Modules/ModuleManager.h"
 
-bool Nakama::IsTransientError(const FNakamaError& Error) noexcept
+bool Nakama::IsTransientError(const FNakamaApiError& Error) noexcept
 {
 	switch (Error.Code)
 	{
@@ -81,7 +81,7 @@ void MaybeRefreshThenCall(
 			}
 			OnReady();
 		},
-		[OnError](const FNakamaError& Error)
+		[OnError](const FNakamaApiError& Error)
 		{
 			(*OnError)(FNakamaError(FString::Printf(TEXT("Session refresh failed: %s"), *Error.Message), Error.Code));
 		},
@@ -128,7 +128,7 @@ TNakamaFuture<{{ $resultType }}Result> Nakama::{{ $rpc.Name }}(
 	{{- end }}
 	auto RetryCount = MakeShared<int32>(0);
 	auto DoRequest = MakeShared<TFunction<void()>>();
-	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
+	auto OnError = MakeShared<TFunction<void(const FNakamaApiError&)>>();
 
 	*OnError = [FutureState, RetryCount, DoRequest, OnError, RetryConfig](const FNakamaError& Error)
 	{
@@ -263,7 +263,7 @@ TNakamaFuture<{{ $resultType }}Result> Nakama::{{ $rpc.Name }}(
 	auto FutureState = MakeShared<TNakamaFuture<{{ $resultType }}Result>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
 	auto DoRequest = MakeShared<TFunction<void()>>();
-	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
+	auto OnError = MakeShared<TFunction<void(const FNakamaApiError&)>>();
 
 	*OnError = [FutureState, RetryCount, DoRequest, OnError, RetryConfig](const FNakamaError& Error)
 	{

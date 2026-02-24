@@ -29,7 +29,7 @@
 // Dynamic delegates for async actions
 // ============================================================================
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaError, const FNakamaError&, Error);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaError, const FNakamaApiError&, Error);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnNakamaSuccess);
 
 {{- /* Generate success delegates for each unique return type */ -}}

@@ -623,7 +623,7 @@ void DoHttpRequest(
 			{
 				if (OnError)
 				{
-					OnError(FNakamaError(TEXT("Request cancelled"), -1));
+					OnError(FNakamaApiError(TEXT("Request cancelled"), -1));
 				}
 				return;
 			}
@@ -633,7 +633,7 @@ void DoHttpRequest(
 				INC_DWORD_STAT(STAT_Nakama_TotalErrors);
 				if (OnError)
 				{
-					OnError(FNakamaError(TEXT("Connection failed"), 0));
+					OnError(FNakamaApiError(TEXT("Connection failed"), 0));
 				}
 				return;
 			}
@@ -676,7 +676,7 @@ void DoHttpRequest(
 					INC_DWORD_STAT(STAT_Nakama_TotalErrors);
 					if (OnError)
 					{
-						OnError(FNakamaError(TEXT("Invalid JSON response"), 500));
+						OnError(FNakamaApiError(TEXT("Invalid JSON response"), 500));
 					}
 					return;
 				}
@@ -708,7 +708,7 @@ void SendRequest(
 	{
 		if (OnError)
 		{
-			OnError(FNakamaError(TEXT("Request cancelled"), -1));
+			OnError(FNakamaApiError(TEXT("Request cancelled"), -1));
 		}
 		return;
 	}

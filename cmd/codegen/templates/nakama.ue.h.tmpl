@@ -30,7 +30,7 @@ struct NAKAMA_API FNakamaVoidResult
 {
 	using ValueType = FNakamaVoid;
 	FNakamaVoid Value{};
-	FNakamaError Error;
+	FNakamaApiError Error;
 	bool bIsError = true;
 };
 {{- range $idx, $typeName := uniqueReturnTypes $.Rpcs }}
@@ -39,7 +39,7 @@ struct NAKAMA_API FNakama{{ $typeName }}Result
 {
 	using ValueType = FNakama{{ $typeName }};
 	FNakama{{ $typeName }} Value{};
-	FNakamaError Error;
+	FNakamaApiError Error;
 	bool bIsError = true;
 };
 {{- end }}
@@ -164,7 +164,7 @@ struct NAKAMA_API FNakamaRetryConfig
 namespace Nakama
 {
 	/** Returns true if the error code is considered transient (eligible for retry). */
-	NAKAMA_API bool IsTransientError(const FNakamaError& Error) noexcept;
+	NAKAMA_API bool IsTransientError(const FNakamaApiError& Error) noexcept;
 
 	/** Compute backoff delay in seconds for a given attempt using exponential backoff with full jitter. */
 	NAKAMA_API float CalculateBackoff(int32 Attempt, const FNakamaRetryConfig& Config) noexcept;
