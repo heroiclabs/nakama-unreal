@@ -48,7 +48,7 @@ void UWebSocketSubsystem::Close()
     }
 }
 
-TFuture<FRealtimeConnectionResult> UWebSocketSubsystem::Connect(FWebSocketConnectionParams Params)
+TFuture<FRealtimeConnectionResult> UWebSocketSubsystem::Connect(FRealtimeConnectionParams Params)
 {
     ConnectionParams = Params;
 
@@ -167,7 +167,7 @@ bool UWebSocketSubsystem::SendPing()
     return true;
 }
 
-TFuture<FRealtimeRequestResult> UWebSocketSubsystem::Send(const FString& RequestName, const TSharedPtr<FJsonObject>& Data)
+TFuture<FRealtimeResponse> UWebSocketSubsystem::Send(const FString& RequestName, const TSharedPtr<FJsonObject>& Data)
 {
     if (!WebSocket || !WebSocket->IsConnected())
     {
@@ -188,7 +188,7 @@ TFuture<FRealtimeRequestResult> UWebSocketSubsystem::Send(const FString& Request
 
     //
     // Create promise, associate it with the Cid.
-    TSharedRef<TPromise<FRealtimeRequestResult>> Promise = MakeShared<TPromise<FRealtimeRequestResult>>();
+    TSharedRef<TPromise<FRealtimeResponse>> Promise = MakeShared<TPromise<FRealtimeResponse>>();
 
     FScopeLock Lock(&RequestsLock);
 
@@ -268,8 +268,8 @@ void UWebSocketSubsystem::OnMessage(const FString& Message)
         // We should have a pending request for this CID.
         if (auto* RequestPtr = Requests.Find(Cid))
         {
-            TSharedRef<TPromise<FRealtimeRequestResult>> Request = *RequestPtr;
-            Request->EmplaceValue(FRealtimeRequestResult
+            TSharedRef<TPromise<FRealtimeResponse>> Request = *RequestPtr;
+            Request->EmplaceValue(FRealtimeResponse
             {
                 .bError = false,
                 .Data = JsonObject
@@ -337,7 +337,7 @@ void UWebSocketSubsystem::OnClosed(int32 StatusCode, const FString& Reason, bool
 
     for (const auto& Request : Requests)
     {
-        Request.Value->EmplaceValue(FRealtimeRequestResult
+        Request.Value->EmplaceValue(FRealtimeResponse
         {
             .bError = !bWasClean,
             .Data = MakeShared<FJsonObject>()
@@ -364,3 +364,4 @@ void UWebSocketSubsystem::OnClosed(int32 StatusCode, const FString& Reason, bool
 
     WebSocket.Reset();
 }
+

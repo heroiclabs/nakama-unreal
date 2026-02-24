@@ -25,7 +25,7 @@
 #include "IWebSocket.h"
 #include "WebSocketSubsystem.generated.h"
 
-struct FRealtimeRequestResult
+struct FRealtimeResponse
 {
     bool                    bError = false;
     TSharedPtr<FJsonObject> Data;
@@ -34,7 +34,7 @@ struct FRealtimeConnectionResult
 {
     bool bError = false;
 };
-struct FWebSocketConnectionParams
+struct FRealtimeConnectionParams
 {
     FString Host;
     int32   Port;
@@ -80,9 +80,9 @@ public:
     FDelegateMessageError           MessageError;
     FDelegateClosed                 Closed;
 
-    TFuture<FRealtimeConnectionResult> Connect(FWebSocketConnectionParams Params);
+    TFuture<FRealtimeConnectionResult> Connect(FRealtimeConnectionParams Params);
 
-    TFuture<FRealtimeRequestResult> Send(const FString& RequestName, const TSharedPtr<FJsonObject>& Data);
+    TFuture<FRealtimeResponse> Send(const FString& RequestName, const TSharedPtr<FJsonObject>& Data);
 
     void Close();
 
@@ -93,11 +93,11 @@ private:
     TSharedPtr<TPromise<FRealtimeConnectionResult>> PromiseConnected;
 
     // Current ongoing requests
-    TMap<FString, TSharedRef<TPromise<FRealtimeRequestResult>>> Requests;
+    TMap<FString, TSharedRef<TPromise<FRealtimeResponse>>> Requests;
     FCriticalSection RequestsLock;
 
     // Params for current connection
-    FWebSocketConnectionParams ConnectionParams;
+    FRealtimeConnectionParams ConnectionParams;
 
     FTSTicker::FDelegateHandle PingTimerHandle;
 
