@@ -39,7 +39,7 @@ static void VerifyWhenComplete(UBlueprintAsyncActionBase* Action, TFunction<void
 // HEALTHCHECK TESTS
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FNakamaBPHealthcheckSpec, "IntegrationTests.BP.Healthcheck",
+BEGIN_DEFINE_SPEC(FNakamaBPHealthcheckSpec, "IntegrationTests.NakamaBlueprint.Healthcheck",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 
@@ -109,7 +109,7 @@ void FNakamaBPHealthcheckSpec::Define()
 // AUTHENTICATION TESTS
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FNakamaBPAuthSpec, "IntegrationTests.BP.Auth",
+BEGIN_DEFINE_SPEC(FNakamaBPAuthSpec, "IntegrationTests.NakamaBlueprint.Auth",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 
@@ -230,7 +230,7 @@ void FNakamaBPAuthSpec::Define()
 // SESSION TESTS
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FNakamaBPSessionSpec, "IntegrationTests.BP.Session",
+BEGIN_DEFINE_SPEC(FNakamaBPSessionSpec, "IntegrationTests.NakamaBlueprint.Session",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 
@@ -329,7 +329,7 @@ void FNakamaBPSessionSpec::Define()
 // ACCOUNT TESTS
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FNakamaBPAccountSpec, "IntegrationTests.BP.Account",
+BEGIN_DEFINE_SPEC(FNakamaBPAccountSpec, "IntegrationTests.NakamaBlueprint.Account",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 
@@ -481,7 +481,7 @@ void FNakamaBPAccountSpec::Define()
 // FRIENDS TESTS
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FNakamaBPFriendsSpec, "IntegrationTests.BP.Friends",
+BEGIN_DEFINE_SPEC(FNakamaBPFriendsSpec, "IntegrationTests.NakamaBlueprint.Friends",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 
@@ -715,7 +715,7 @@ void FNakamaBPFriendsSpec::Define()
 // GROUPS TESTS
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FNakamaBPGroupsSpec, "IntegrationTests.BP.Groups",
+BEGIN_DEFINE_SPEC(FNakamaBPGroupsSpec, "IntegrationTests.NakamaBlueprint.Groups",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 
@@ -1273,7 +1273,7 @@ void FNakamaBPGroupsSpec::Define()
 // STORAGE TESTS
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FNakamaBPStorageSpec, "IntegrationTests.BP.Storage",
+BEGIN_DEFINE_SPEC(FNakamaBPStorageSpec, "IntegrationTests.NakamaBlueprint.Storage",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 
@@ -1588,7 +1588,7 @@ void FNakamaBPStorageSpec::Define()
 // LINK / UNLINK TESTS
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FNakamaBPLinkSpec, "IntegrationTests.BP.Link",
+BEGIN_DEFINE_SPEC(FNakamaBPLinkSpec, "IntegrationTests.NakamaBlueprint.Link",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 
@@ -1883,7 +1883,7 @@ void FNakamaBPLinkSpec::Define()
 // NOTIFICATIONS TESTS
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FNakamaBPNotificationsSpec, "IntegrationTests.BP.Notifications",
+BEGIN_DEFINE_SPEC(FNakamaBPNotificationsSpec, "IntegrationTests.NakamaBlueprint.Notifications",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 
@@ -1960,7 +1960,7 @@ void FNakamaBPNotificationsSpec::Define()
 // MATCHES TESTS
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FNakamaBPMatchesSpec, "IntegrationTests.BP.Matches",
+BEGIN_DEFINE_SPEC(FNakamaBPMatchesSpec, "IntegrationTests.NakamaBlueprint.Matches",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 
@@ -2036,7 +2036,7 @@ void FNakamaBPMatchesSpec::Define()
 // EVENTS TESTS
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FNakamaBPEventsSpec, "IntegrationTests.BP.Events",
+BEGIN_DEFINE_SPEC(FNakamaBPEventsSpec, "IntegrationTests.NakamaBlueprint.Events",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 

@@ -11,10 +11,10 @@ import (
 )
 
 var shards = []string{
-	"IntegrationTests.Async",
-	"IntegrationTests.NakamaAPI",
-	"IntegrationTests.BP",
+	"IntegrationTests.Nakama",
+	"IntegrationTests.NakamaBlueprint",
 	"IntegrationTests.Satori",
+	"IntegrationTests.SatoriBlueprint",
 	"IntegrationTests.Profiling",
 }
 

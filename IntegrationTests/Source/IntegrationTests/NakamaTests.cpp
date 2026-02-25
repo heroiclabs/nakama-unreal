@@ -1,7 +1,7 @@
 /**
  * Nakama Async API Integration Test Suite
  *
- * Mirror of NakamaAutomationTests.cpp using the TFuture-based Nakama:: free-function API.
+ * Mirror of NakamaApiTests.cpp using the TFuture-based Nakama:: free-function API.
  * Each test uses F*Result types instead of separate success/error callback pairs.
  */
 
@@ -24,7 +24,7 @@
 // AUTHENTICATION TESTS
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FNakamaAsyncAuthSpec, "IntegrationTests.Async.Auth",
+BEGIN_DEFINE_SPEC(FNakamaAsyncAuthSpec, "IntegrationTests.Nakama.Auth",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaClientConfig ClientConfig;
@@ -256,7 +256,7 @@ void FNakamaAsyncAuthSpec::Define()
 // ACCOUNT TESTS
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FNakamaAsyncAccountSpec, "IntegrationTests.Async.Account",
+BEGIN_DEFINE_SPEC(FNakamaAsyncAccountSpec, "IntegrationTests.Nakama.Account",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaClientConfig ClientConfig;
@@ -368,7 +368,7 @@ void FNakamaAsyncAccountSpec::Define()
 // FRIENDS TESTS
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FNakamaAsyncFriendsSpec, "IntegrationTests.Async.Friends",
+BEGIN_DEFINE_SPEC(FNakamaAsyncFriendsSpec, "IntegrationTests.Nakama.Friends",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaClientConfig ClientConfig;
@@ -513,7 +513,7 @@ void FNakamaAsyncFriendsSpec::Define()
 // GROUPS TESTS
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FNakamaAsyncGroupsSpec, "IntegrationTests.Async.Groups",
+BEGIN_DEFINE_SPEC(FNakamaAsyncGroupsSpec, "IntegrationTests.Nakama.Groups",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaClientConfig ClientConfig;
@@ -631,7 +631,7 @@ void FNakamaAsyncGroupsSpec::Define()
 // STORAGE TESTS
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FNakamaAsyncStorageSpec, "IntegrationTests.Async.Storage",
+BEGIN_DEFINE_SPEC(FNakamaAsyncStorageSpec, "IntegrationTests.Nakama.Storage",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaClientConfig ClientConfig;
@@ -791,7 +791,7 @@ void FNakamaAsyncStorageSpec::Define()
 // LEADERBOARD TESTS
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FNakamaAsyncLeaderboardSpec, "IntegrationTests.Async.Leaderboard",
+BEGIN_DEFINE_SPEC(FNakamaAsyncLeaderboardSpec, "IntegrationTests.Nakama.Leaderboard",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaClientConfig ClientConfig;
@@ -912,7 +912,7 @@ void FNakamaAsyncLeaderboardSpec::Define()
 // MATCHES TESTS
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FNakamaAsyncMatchesSpec, "IntegrationTests.Async.Matches",
+BEGIN_DEFINE_SPEC(FNakamaAsyncMatchesSpec, "IntegrationTests.Nakama.Matches",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaClientConfig ClientConfig;
@@ -982,7 +982,7 @@ void FNakamaAsyncMatchesSpec::Define()
 // NOTIFICATIONS TESTS
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FNakamaAsyncNotificationsSpec, "IntegrationTests.Async.Notifications",
+BEGIN_DEFINE_SPEC(FNakamaAsyncNotificationsSpec, "IntegrationTests.Nakama.Notifications",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaClientConfig ClientConfig;
@@ -1041,7 +1041,7 @@ void FNakamaAsyncNotificationsSpec::Define()
 // LINK TESTS
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FNakamaAsyncLinkSpec, "IntegrationTests.Async.Link",
+BEGIN_DEFINE_SPEC(FNakamaAsyncLinkSpec, "IntegrationTests.Nakama.Link",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaClientConfig ClientConfig;
@@ -1154,7 +1154,7 @@ void FNakamaAsyncLinkSpec::Define()
 // TOURNAMENT TESTS
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FNakamaAsyncTournamentSpec, "IntegrationTests.Async.Tournament",
+BEGIN_DEFINE_SPEC(FNakamaAsyncTournamentSpec, "IntegrationTests.Nakama.Tournament",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaClientConfig ClientConfig;
@@ -1260,7 +1260,7 @@ void FNakamaAsyncTournamentSpec::Define()
 // USERS TESTS
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FNakamaAsyncUsersSpec, "IntegrationTests.Async.Users",
+BEGIN_DEFINE_SPEC(FNakamaAsyncUsersSpec, "IntegrationTests.Nakama.Users",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaClientConfig ClientConfig;
@@ -1364,7 +1364,7 @@ void FNakamaAsyncUsersSpec::Define()
 // SESSION LOGOUT TESTS
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FNakamaAsyncSessionSpec, "IntegrationTests.Async.Session",
+BEGIN_DEFINE_SPEC(FNakamaAsyncSessionSpec, "IntegrationTests.Nakama.Session",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaClientConfig ClientConfig;
@@ -1423,7 +1423,7 @@ void FNakamaAsyncSessionSpec::Define()
 // DELETE STORAGE TESTS
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FNakamaAsyncDeleteStorageSpec, "IntegrationTests.Async.DeleteStorage",
+BEGIN_DEFINE_SPEC(FNakamaAsyncDeleteStorageSpec, "IntegrationTests.Nakama.DeleteStorage",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaClientConfig ClientConfig;
@@ -1511,7 +1511,7 @@ void FNakamaAsyncDeleteStorageSpec::Define()
 // GROUP OPERATIONS TESTS
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FNakamaAsyncGroupOpsSpec, "IntegrationTests.Async.GroupOps",
+BEGIN_DEFINE_SPEC(FNakamaAsyncGroupOpsSpec, "IntegrationTests.Nakama.GroupOps",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaClientConfig ClientConfig;
@@ -1698,7 +1698,7 @@ void FNakamaAsyncGroupOpsSpec::Define()
 // RPC TESTS
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FNakamaAsyncRpcSpec, "IntegrationTests.Async.RPC",
+BEGIN_DEFINE_SPEC(FNakamaAsyncRpcSpec, "IntegrationTests.Nakama.RPC",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaClientConfig ClientConfig;
@@ -1768,7 +1768,7 @@ void FNakamaAsyncRpcSpec::Define()
 // AUTH EXTENDED TESTS
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FNakamaAsyncAuthExtSpec, "IntegrationTests.Async.AuthExt",
+BEGIN_DEFINE_SPEC(FNakamaAsyncAuthExtSpec, "IntegrationTests.Nakama.AuthExt",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaClientConfig ClientConfig;
@@ -1914,7 +1914,7 @@ void FNakamaAsyncAuthExtSpec::Define()
 // DELETE FRIENDS TESTS
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FNakamaAsyncDeleteFriendsSpec, "IntegrationTests.Async.DeleteFriends",
+BEGIN_DEFINE_SPEC(FNakamaAsyncDeleteFriendsSpec, "IntegrationTests.Nakama.DeleteFriends",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaClientConfig ClientConfig;
@@ -2016,7 +2016,7 @@ void FNakamaAsyncDeleteFriendsSpec::Define()
 // IMPORT TESTS
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FNakamaAsyncImportSpec, "IntegrationTests.Async.Import",
+BEGIN_DEFINE_SPEC(FNakamaAsyncImportSpec, "IntegrationTests.Nakama.Import",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaClientConfig ClientConfig;
@@ -2095,7 +2095,7 @@ void FNakamaAsyncImportSpec::Define()
 // ADDITIONAL ACCOUNT TESTS (Async)
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FNakamaAsyncAccountExtSpec, "IntegrationTests.Async.AccountExt",
+BEGIN_DEFINE_SPEC(FNakamaAsyncAccountExtSpec, "IntegrationTests.Nakama.AccountExt",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaClientConfig ClientConfig;
@@ -2237,7 +2237,7 @@ void FNakamaAsyncAccountExtSpec::Define()
 // ADDITIONAL FRIENDS TESTS (Async)
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FNakamaAsyncFriendsExtSpec, "IntegrationTests.Async.FriendsExt",
+BEGIN_DEFINE_SPEC(FNakamaAsyncFriendsExtSpec, "IntegrationTests.Nakama.FriendsExt",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaClientConfig ClientConfig;
@@ -2402,7 +2402,7 @@ void FNakamaAsyncFriendsExtSpec::Define()
 // ADDITIONAL STORAGE TESTS (Async)
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FNakamaAsyncStorageExtSpec, "IntegrationTests.Async.StorageExt",
+BEGIN_DEFINE_SPEC(FNakamaAsyncStorageExtSpec, "IntegrationTests.Nakama.StorageExt",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaClientConfig ClientConfig;
@@ -2673,7 +2673,7 @@ void FNakamaAsyncStorageExtSpec::Define()
 // ADDITIONAL GROUP TESTS (Async)
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FNakamaAsyncGroupExtSpec, "IntegrationTests.Async.GroupExt",
+BEGIN_DEFINE_SPEC(FNakamaAsyncGroupExtSpec, "IntegrationTests.Nakama.GroupExt",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaClientConfig ClientConfig;
@@ -2930,7 +2930,7 @@ void FNakamaAsyncGroupExtSpec::Define()
 // ADDITIONAL UNLINK TESTS (Async)
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FNakamaAsyncUnlinkSpec, "IntegrationTests.Async.Unlink",
+BEGIN_DEFINE_SPEC(FNakamaAsyncUnlinkSpec, "IntegrationTests.Nakama.Unlink",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaClientConfig ClientConfig;
@@ -3035,7 +3035,7 @@ void FNakamaAsyncUnlinkSpec::Define()
 // ADDITIONAL MATCHES TESTS (Async)
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FNakamaAsyncMatchesExtSpec, "IntegrationTests.Async.MatchesExt",
+BEGIN_DEFINE_SPEC(FNakamaAsyncMatchesExtSpec, "IntegrationTests.Nakama.MatchesExt",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaClientConfig ClientConfig;
@@ -3112,7 +3112,7 @@ void FNakamaAsyncMatchesExtSpec::Define()
 // CHANNEL MESSAGES TESTS (Async)
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FNakamaAsyncChannelSpec, "IntegrationTests.Async.Channel",
+BEGIN_DEFINE_SPEC(FNakamaAsyncChannelSpec, "IntegrationTests.Nakama.Channel",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaClientConfig ClientConfig;
@@ -3191,7 +3191,7 @@ void FNakamaAsyncChannelSpec::Define()
 // ADDITIONAL NOTIFICATION TESTS (Async)
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FNakamaAsyncNotificationsExtSpec, "IntegrationTests.Async.NotificationsExt",
+BEGIN_DEFINE_SPEC(FNakamaAsyncNotificationsExtSpec, "IntegrationTests.Nakama.NotificationsExt",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaClientConfig ClientConfig;
@@ -3273,7 +3273,7 @@ void FNakamaAsyncNotificationsExtSpec::Define()
 // ADDITIONAL AUTH VALIDATION TESTS (Async)
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FNakamaAsyncAuthValidationSpec, "IntegrationTests.Async.Auth.Validation",
+BEGIN_DEFINE_SPEC(FNakamaAsyncAuthValidationSpec, "IntegrationTests.Nakama.Auth.Validation",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaClientConfig ClientConfig;
@@ -3424,7 +3424,7 @@ void FNakamaAsyncAuthValidationSpec::Define()
 // ACCOUNT DELETE TESTS (Async)
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FNakamaAsyncAccountDeleteSpec, "IntegrationTests.Async.Account.Delete",
+BEGIN_DEFINE_SPEC(FNakamaAsyncAccountDeleteSpec, "IntegrationTests.Nakama.Account.Delete",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaClientConfig ClientConfig;
@@ -3498,7 +3498,7 @@ void FNakamaAsyncAccountDeleteSpec::Define()
 // SOCIAL AUTH VALIDATION TESTS (Async)
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FNakamaAsyncSocialAuthSpec, "IntegrationTests.Async.Auth.Social",
+BEGIN_DEFINE_SPEC(FNakamaAsyncSocialAuthSpec, "IntegrationTests.Nakama.Auth.Social",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaClientConfig ClientConfig;
@@ -3603,7 +3603,7 @@ void FNakamaAsyncSocialAuthSpec::Define()
 // SESSION EXTENDED TESTS (Async)
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FNakamaAsyncSessionExtSpec, "IntegrationTests.Async.SessionExt",
+BEGIN_DEFINE_SPEC(FNakamaAsyncSessionExtSpec, "IntegrationTests.Nakama.SessionExt",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaClientConfig ClientConfig;
@@ -3684,7 +3684,7 @@ void FNakamaAsyncSessionExtSpec::Define()
 // USERS EXTENDED TESTS (Async)
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FNakamaAsyncUsersExtSpec, "IntegrationTests.Async.UsersExt",
+BEGIN_DEFINE_SPEC(FNakamaAsyncUsersExtSpec, "IntegrationTests.Nakama.UsersExt",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaClientConfig ClientConfig;
@@ -3769,7 +3769,7 @@ void FNakamaAsyncUsersExtSpec::Define()
 // FRIENDS OF FRIENDS TESTS (Async)
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FNakamaAsyncFriendsOfFriendsSpec, "IntegrationTests.Async.FriendsOfFriends",
+BEGIN_DEFINE_SPEC(FNakamaAsyncFriendsOfFriendsSpec, "IntegrationTests.Nakama.FriendsOfFriends",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaClientConfig ClientConfig;
@@ -3902,7 +3902,7 @@ void FNakamaAsyncFriendsOfFriendsSpec::Define()
 // GROUPS PERMISSIONS AND EDGE CASES TESTS (Async)
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FNakamaAsyncGroupPermissionsSpec, "IntegrationTests.Async.GroupPermissions",
+BEGIN_DEFINE_SPEC(FNakamaAsyncGroupPermissionsSpec, "IntegrationTests.Nakama.GroupPermissions",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaClientConfig ClientConfig;
@@ -4124,7 +4124,7 @@ void FNakamaAsyncGroupPermissionsSpec::Define()
 // STORAGE PERMISSIONS TESTS (Async)
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FNakamaAsyncStoragePermissionsSpec, "IntegrationTests.Async.StoragePermissions",
+BEGIN_DEFINE_SPEC(FNakamaAsyncStoragePermissionsSpec, "IntegrationTests.Nakama.StoragePermissions",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaClientConfig ClientConfig;
@@ -4292,7 +4292,7 @@ void FNakamaAsyncStoragePermissionsSpec::Define()
 // CHANNEL EXTENDED TESTS (Async)
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FNakamaAsyncChannelExtSpec, "IntegrationTests.Async.ChannelExt",
+BEGIN_DEFINE_SPEC(FNakamaAsyncChannelExtSpec, "IntegrationTests.Nakama.ChannelExt",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaClientConfig ClientConfig;
@@ -4391,7 +4391,7 @@ void FNakamaAsyncChannelExtSpec::Define()
 // LINKING EXTENDED TESTS (Async)
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FNakamaAsyncLinkExtSpec, "IntegrationTests.Async.LinkExt",
+BEGIN_DEFINE_SPEC(FNakamaAsyncLinkExtSpec, "IntegrationTests.Nakama.LinkExt",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaClientConfig ClientConfig;
@@ -4532,7 +4532,7 @@ void FNakamaAsyncLinkExtSpec::Define()
 // RPC EXTENDED TESTS (Async)
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FNakamaAsyncRpcExtSpec, "IntegrationTests.Async.RPCExt",
+BEGIN_DEFINE_SPEC(FNakamaAsyncRpcExtSpec, "IntegrationTests.Nakama.RPCExt",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaClientConfig ClientConfig;
@@ -4692,7 +4692,7 @@ void FNakamaAsyncRpcExtSpec::Define()
 // MATCHES VALIDATION TESTS (Async)
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FNakamaAsyncMatchesValidationSpec, "IntegrationTests.Async.MatchesValidation",
+BEGIN_DEFINE_SPEC(FNakamaAsyncMatchesValidationSpec, "IntegrationTests.Nakama.MatchesValidation",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaClientConfig ClientConfig;
@@ -4759,7 +4759,7 @@ void FNakamaAsyncMatchesValidationSpec::Define()
 // PURCHASES/SUBSCRIPTIONS TESTS (Async)
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FNakamaAsyncPurchasesSpec, "IntegrationTests.Async.Purchases",
+BEGIN_DEFINE_SPEC(FNakamaAsyncPurchasesSpec, "IntegrationTests.Nakama.Purchases",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaClientConfig ClientConfig;
@@ -4863,7 +4863,7 @@ void FNakamaAsyncPurchasesSpec::Define()
 // EVENT TESTS (Async)
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FNakamaAsyncEventSpec, "IntegrationTests.Async.Event",
+BEGIN_DEFINE_SPEC(FNakamaAsyncEventSpec, "IntegrationTests.Nakama.Event",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaClientConfig ClientConfig;
@@ -4928,7 +4928,7 @@ void FNakamaAsyncEventSpec::Define()
 // HEALTHCHECK TESTS (Async)
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FNakamaAsyncHealthcheckSpec, "IntegrationTests.Async.Healthcheck",
+BEGIN_DEFINE_SPEC(FNakamaAsyncHealthcheckSpec, "IntegrationTests.Nakama.Healthcheck",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaClientConfig ClientConfig;
@@ -4992,7 +4992,7 @@ void FNakamaAsyncHealthcheckSpec::Define()
 // GROUP USER MANAGEMENT TESTS (Async)
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FNakamaAsyncGroupUsersSpec, "IntegrationTests.Async.GroupUsers",
+BEGIN_DEFINE_SPEC(FNakamaAsyncGroupUsersSpec, "IntegrationTests.Nakama.GroupUsers",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaClientConfig ClientConfig;
@@ -5240,7 +5240,7 @@ void FNakamaAsyncGroupUsersSpec::Define()
 // CANCELLATION TOKEN TESTS
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FNakamaAsyncCancellationSpec, "IntegrationTests.Async.Cancellation",
+BEGIN_DEFINE_SPEC(FNakamaAsyncCancellationSpec, "IntegrationTests.Nakama.Cancellation",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaClientConfig ClientConfig;
@@ -5321,7 +5321,7 @@ void FNakamaAsyncCancellationSpec::Define()
 // RETRY TESTS
 // ============================================================================
 
-BEGIN_DEFINE_SPEC(FNakamaAsyncRetrySpec, "IntegrationTests.Async.Retry",
+BEGIN_DEFINE_SPEC(FNakamaAsyncRetrySpec, "IntegrationTests.Nakama.Retry",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FNakamaClientConfig ClientConfig;
