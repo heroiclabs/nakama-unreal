@@ -25,7 +25,7 @@
 // Authenticate
 USatoriClientAuthenticate* USatoriClientAuthenticate::Authenticate(
 	UObject* WorldContextObject,
-	FSatoriApiConfig Client,
+	FSatoriClientConfig Client,
 	FString Id,
 	bool NoSession,
 	const TMap<FString, FString>& Default,
@@ -72,7 +72,7 @@ void USatoriClientAuthenticate::Activate()
 // AuthenticateLogout
 USatoriClientAuthenticateLogout* USatoriClientAuthenticateLogout::AuthenticateLogout(
 	UObject* WorldContextObject,
-	FSatoriApiConfig Client,
+	FSatoriClientConfig Client,
 	FString Token,
 	FString RefreshToken)
 {
@@ -113,7 +113,7 @@ void USatoriClientAuthenticateLogout::Activate()
 // AuthenticateRefresh
 USatoriClientAuthenticateRefresh* USatoriClientAuthenticateRefresh::AuthenticateRefresh(
 	UObject* WorldContextObject,
-	FSatoriApiConfig Client,
+	FSatoriClientConfig Client,
 	FString RefreshToken)
 {
 	USatoriClientAuthenticateRefresh* Action = NewObject<USatoriClientAuthenticateRefresh>();
@@ -151,7 +151,7 @@ void USatoriClientAuthenticateRefresh::Activate()
 // DeleteIdentity
 USatoriClientDeleteIdentity* USatoriClientDeleteIdentity::DeleteIdentity(
 	UObject* WorldContextObject,
-	FSatoriApiConfig Client,
+	FSatoriClientConfig Client,
 	const FSatoriSession& Session)
 {
 	USatoriClientDeleteIdentity* Action = NewObject<USatoriClientDeleteIdentity>();
@@ -189,7 +189,7 @@ void USatoriClientDeleteIdentity::Activate()
 // Event
 USatoriClientEvent* USatoriClientEvent::Event(
 	UObject* WorldContextObject,
-	FSatoriApiConfig Client,
+	FSatoriClientConfig Client,
 	const FSatoriSession& Session,
 	const TArray<FSatoriEvent>& Events)
 {
@@ -230,7 +230,7 @@ void USatoriClientEvent::Activate()
 // ServerEvent
 USatoriClientServerEvent* USatoriClientServerEvent::ServerEvent(
 	UObject* WorldContextObject,
-	FSatoriApiConfig Client,
+	FSatoriClientConfig Client,
 	const FSatoriSession& Session,
 	const TArray<FSatoriEvent>& Events)
 {
@@ -271,7 +271,7 @@ void USatoriClientServerEvent::Activate()
 // GetExperiments
 USatoriClientGetExperiments* USatoriClientGetExperiments::GetExperiments(
 	UObject* WorldContextObject,
-	FSatoriApiConfig Client,
+	FSatoriClientConfig Client,
 	const FSatoriSession& Session,
 	const TArray<FString>& Names,
 	const TArray<FString>& Labels)
@@ -315,7 +315,7 @@ void USatoriClientGetExperiments::Activate()
 // GetFlagOverrides
 USatoriClientGetFlagOverrides* USatoriClientGetFlagOverrides::GetFlagOverrides(
 	UObject* WorldContextObject,
-	FSatoriApiConfig Client,
+	FSatoriClientConfig Client,
 	const FSatoriSession& Session,
 	const TArray<FString>& Names,
 	const TArray<FString>& Labels)
@@ -359,7 +359,7 @@ void USatoriClientGetFlagOverrides::Activate()
 // GetFlags
 USatoriClientGetFlags* USatoriClientGetFlags::GetFlags(
 	UObject* WorldContextObject,
-	FSatoriApiConfig Client,
+	FSatoriClientConfig Client,
 	const FSatoriSession& Session,
 	const TArray<FString>& Names,
 	const TArray<FString>& Labels)
@@ -403,7 +403,7 @@ void USatoriClientGetFlags::Activate()
 // GetLiveEvents
 USatoriClientGetLiveEvents* USatoriClientGetLiveEvents::GetLiveEvents(
 	UObject* WorldContextObject,
-	FSatoriApiConfig Client,
+	FSatoriClientConfig Client,
 	const FSatoriSession& Session,
 	const TArray<FString>& Names,
 	const TArray<FString>& Labels,
@@ -459,7 +459,7 @@ void USatoriClientGetLiveEvents::Activate()
 // JoinLiveEvent
 USatoriClientJoinLiveEvent* USatoriClientJoinLiveEvent::JoinLiveEvent(
 	UObject* WorldContextObject,
-	FSatoriApiConfig Client,
+	FSatoriClientConfig Client,
 	const FSatoriSession& Session,
 	FString Id)
 {
@@ -500,7 +500,7 @@ void USatoriClientJoinLiveEvent::Activate()
 // Healthcheck
 USatoriClientHealthcheck* USatoriClientHealthcheck::Healthcheck(
 	UObject* WorldContextObject,
-	FSatoriApiConfig Client,
+	FSatoriClientConfig Client,
 	const FSatoriSession& Session)
 {
 	USatoriClientHealthcheck* Action = NewObject<USatoriClientHealthcheck>();
@@ -538,7 +538,7 @@ void USatoriClientHealthcheck::Activate()
 // Identify
 USatoriClientIdentify* USatoriClientIdentify::Identify(
 	UObject* WorldContextObject,
-	FSatoriApiConfig Client,
+	FSatoriClientConfig Client,
 	const FSatoriSession& Session,
 	FString Id,
 	const TMap<FString, FString>& Default,
@@ -585,7 +585,7 @@ void USatoriClientIdentify::Activate()
 // ListProperties
 USatoriClientListProperties* USatoriClientListProperties::ListProperties(
 	UObject* WorldContextObject,
-	FSatoriApiConfig Client,
+	FSatoriClientConfig Client,
 	const FSatoriSession& Session)
 {
 	USatoriClientListProperties* Action = NewObject<USatoriClientListProperties>();
@@ -623,7 +623,7 @@ void USatoriClientListProperties::Activate()
 // Readycheck
 USatoriClientReadycheck* USatoriClientReadycheck::Readycheck(
 	UObject* WorldContextObject,
-	FSatoriApiConfig Client,
+	FSatoriClientConfig Client,
 	const FSatoriSession& Session)
 {
 	USatoriClientReadycheck* Action = NewObject<USatoriClientReadycheck>();
@@ -661,7 +661,7 @@ void USatoriClientReadycheck::Activate()
 // UpdateProperties
 USatoriClientUpdateProperties* USatoriClientUpdateProperties::UpdateProperties(
 	UObject* WorldContextObject,
-	FSatoriApiConfig Client,
+	FSatoriClientConfig Client,
 	const FSatoriSession& Session,
 	bool Recompute,
 	const TMap<FString, FString>& Default,
@@ -708,7 +708,7 @@ void USatoriClientUpdateProperties::Activate()
 // GetMessageList
 USatoriClientGetMessageList* USatoriClientGetMessageList::GetMessageList(
 	UObject* WorldContextObject,
-	FSatoriApiConfig Client,
+	FSatoriClientConfig Client,
 	const FSatoriSession& Session,
 	int32 Limit,
 	bool Forward,
@@ -758,7 +758,7 @@ void USatoriClientGetMessageList::Activate()
 // UpdateMessage
 USatoriClientUpdateMessage* USatoriClientUpdateMessage::UpdateMessage(
 	UObject* WorldContextObject,
-	FSatoriApiConfig Client,
+	FSatoriClientConfig Client,
 	const FSatoriSession& Session,
 	FString Id,
 	int64 ReadTime,
@@ -805,7 +805,7 @@ void USatoriClientUpdateMessage::Activate()
 // DeleteMessage
 USatoriClientDeleteMessage* USatoriClientDeleteMessage::DeleteMessage(
 	UObject* WorldContextObject,
-	FSatoriApiConfig Client,
+	FSatoriClientConfig Client,
 	const FSatoriSession& Session,
 	FString Id)
 {

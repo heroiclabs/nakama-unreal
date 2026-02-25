@@ -25,7 +25,7 @@
 // AddFriends
 UNakamaClientAddFriends* UNakamaClientAddFriends::AddFriends(
 	UObject* WorldContextObject,
-	FNakamaApiConfig Client,
+	FNakamaClientConfig Client,
 	const FNakamaSession& Session,
 	const TArray<FString>& Ids,
 	const TArray<FString>& Usernames,
@@ -72,7 +72,7 @@ void UNakamaClientAddFriends::Activate()
 // AddGroupUsers
 UNakamaClientAddGroupUsers* UNakamaClientAddGroupUsers::AddGroupUsers(
 	UObject* WorldContextObject,
-	FNakamaApiConfig Client,
+	FNakamaClientConfig Client,
 	const FNakamaSession& Session,
 	FString GroupId,
 	const TArray<FString>& UserIds)
@@ -116,7 +116,7 @@ void UNakamaClientAddGroupUsers::Activate()
 // SessionRefresh
 UNakamaClientSessionRefresh* UNakamaClientSessionRefresh::SessionRefresh(
 	UObject* WorldContextObject,
-	FNakamaApiConfig Client,
+	FNakamaClientConfig Client,
 	FString Token,
 	const TMap<FString, FString>& Vars)
 {
@@ -157,7 +157,7 @@ void UNakamaClientSessionRefresh::Activate()
 // SessionLogout
 UNakamaClientSessionLogout* UNakamaClientSessionLogout::SessionLogout(
 	UObject* WorldContextObject,
-	FNakamaApiConfig Client,
+	FNakamaClientConfig Client,
 	const FNakamaSession& Session,
 	FString Token,
 	FString RefreshToken)
@@ -201,7 +201,7 @@ void UNakamaClientSessionLogout::Activate()
 // AuthenticateApple
 UNakamaClientAuthenticateApple* UNakamaClientAuthenticateApple::AuthenticateApple(
 	UObject* WorldContextObject,
-	FNakamaApiConfig Client,
+	FNakamaClientConfig Client,
 	FNakamaAccountApple Account,
 	bool Create,
 	FString Username)
@@ -245,7 +245,7 @@ void UNakamaClientAuthenticateApple::Activate()
 // AuthenticateCustom
 UNakamaClientAuthenticateCustom* UNakamaClientAuthenticateCustom::AuthenticateCustom(
 	UObject* WorldContextObject,
-	FNakamaApiConfig Client,
+	FNakamaClientConfig Client,
 	FNakamaAccountCustom Account,
 	bool Create,
 	FString Username)
@@ -289,7 +289,7 @@ void UNakamaClientAuthenticateCustom::Activate()
 // AuthenticateDevice
 UNakamaClientAuthenticateDevice* UNakamaClientAuthenticateDevice::AuthenticateDevice(
 	UObject* WorldContextObject,
-	FNakamaApiConfig Client,
+	FNakamaClientConfig Client,
 	FNakamaAccountDevice Account,
 	bool Create,
 	FString Username)
@@ -333,7 +333,7 @@ void UNakamaClientAuthenticateDevice::Activate()
 // AuthenticateEmail
 UNakamaClientAuthenticateEmail* UNakamaClientAuthenticateEmail::AuthenticateEmail(
 	UObject* WorldContextObject,
-	FNakamaApiConfig Client,
+	FNakamaClientConfig Client,
 	FNakamaAccountEmail Account,
 	bool Create,
 	FString Username)
@@ -377,7 +377,7 @@ void UNakamaClientAuthenticateEmail::Activate()
 // AuthenticateFacebook
 UNakamaClientAuthenticateFacebook* UNakamaClientAuthenticateFacebook::AuthenticateFacebook(
 	UObject* WorldContextObject,
-	FNakamaApiConfig Client,
+	FNakamaClientConfig Client,
 	FNakamaAccountFacebook Account,
 	bool Create,
 	FString Username,
@@ -424,7 +424,7 @@ void UNakamaClientAuthenticateFacebook::Activate()
 // AuthenticateFacebookInstantGame
 UNakamaClientAuthenticateFacebookInstantGame* UNakamaClientAuthenticateFacebookInstantGame::AuthenticateFacebookInstantGame(
 	UObject* WorldContextObject,
-	FNakamaApiConfig Client,
+	FNakamaClientConfig Client,
 	FNakamaAccountFacebookInstantGame Account,
 	bool Create,
 	FString Username)
@@ -468,7 +468,7 @@ void UNakamaClientAuthenticateFacebookInstantGame::Activate()
 // AuthenticateGameCenter
 UNakamaClientAuthenticateGameCenter* UNakamaClientAuthenticateGameCenter::AuthenticateGameCenter(
 	UObject* WorldContextObject,
-	FNakamaApiConfig Client,
+	FNakamaClientConfig Client,
 	FNakamaAccountGameCenter Account,
 	bool Create,
 	FString Username)
@@ -512,7 +512,7 @@ void UNakamaClientAuthenticateGameCenter::Activate()
 // AuthenticateGoogle
 UNakamaClientAuthenticateGoogle* UNakamaClientAuthenticateGoogle::AuthenticateGoogle(
 	UObject* WorldContextObject,
-	FNakamaApiConfig Client,
+	FNakamaClientConfig Client,
 	FNakamaAccountGoogle Account,
 	bool Create,
 	FString Username)
@@ -556,7 +556,7 @@ void UNakamaClientAuthenticateGoogle::Activate()
 // AuthenticateSteam
 UNakamaClientAuthenticateSteam* UNakamaClientAuthenticateSteam::AuthenticateSteam(
 	UObject* WorldContextObject,
-	FNakamaApiConfig Client,
+	FNakamaClientConfig Client,
 	FNakamaAccountSteam Account,
 	bool Create,
 	FString Username,
@@ -603,7 +603,7 @@ void UNakamaClientAuthenticateSteam::Activate()
 // BanGroupUsers
 UNakamaClientBanGroupUsers* UNakamaClientBanGroupUsers::BanGroupUsers(
 	UObject* WorldContextObject,
-	FNakamaApiConfig Client,
+	FNakamaClientConfig Client,
 	const FNakamaSession& Session,
 	FString GroupId,
 	const TArray<FString>& UserIds)
@@ -647,7 +647,7 @@ void UNakamaClientBanGroupUsers::Activate()
 // BlockFriends
 UNakamaClientBlockFriends* UNakamaClientBlockFriends::BlockFriends(
 	UObject* WorldContextObject,
-	FNakamaApiConfig Client,
+	FNakamaClientConfig Client,
 	const FNakamaSession& Session,
 	const TArray<FString>& Ids,
 	const TArray<FString>& Usernames)
@@ -691,7 +691,7 @@ void UNakamaClientBlockFriends::Activate()
 // CreateGroup
 UNakamaClientCreateGroup* UNakamaClientCreateGroup::CreateGroup(
 	UObject* WorldContextObject,
-	FNakamaApiConfig Client,
+	FNakamaClientConfig Client,
 	const FNakamaSession& Session,
 	FString Name,
 	FString Description,
@@ -747,7 +747,7 @@ void UNakamaClientCreateGroup::Activate()
 // DeleteAccount
 UNakamaClientDeleteAccount* UNakamaClientDeleteAccount::DeleteAccount(
 	UObject* WorldContextObject,
-	FNakamaApiConfig Client,
+	FNakamaClientConfig Client,
 	const FNakamaSession& Session)
 {
 	UNakamaClientDeleteAccount* Action = NewObject<UNakamaClientDeleteAccount>();
@@ -785,7 +785,7 @@ void UNakamaClientDeleteAccount::Activate()
 // DeleteFriends
 UNakamaClientDeleteFriends* UNakamaClientDeleteFriends::DeleteFriends(
 	UObject* WorldContextObject,
-	FNakamaApiConfig Client,
+	FNakamaClientConfig Client,
 	const FNakamaSession& Session,
 	const TArray<FString>& Ids,
 	const TArray<FString>& Usernames)
@@ -829,7 +829,7 @@ void UNakamaClientDeleteFriends::Activate()
 // DeleteGroup
 UNakamaClientDeleteGroup* UNakamaClientDeleteGroup::DeleteGroup(
 	UObject* WorldContextObject,
-	FNakamaApiConfig Client,
+	FNakamaClientConfig Client,
 	const FNakamaSession& Session,
 	FString GroupId)
 {
@@ -870,7 +870,7 @@ void UNakamaClientDeleteGroup::Activate()
 // DeleteLeaderboardRecord
 UNakamaClientDeleteLeaderboardRecord* UNakamaClientDeleteLeaderboardRecord::DeleteLeaderboardRecord(
 	UObject* WorldContextObject,
-	FNakamaApiConfig Client,
+	FNakamaClientConfig Client,
 	const FNakamaSession& Session,
 	FString LeaderboardId)
 {
@@ -911,7 +911,7 @@ void UNakamaClientDeleteLeaderboardRecord::Activate()
 // DeleteNotifications
 UNakamaClientDeleteNotifications* UNakamaClientDeleteNotifications::DeleteNotifications(
 	UObject* WorldContextObject,
-	FNakamaApiConfig Client,
+	FNakamaClientConfig Client,
 	const FNakamaSession& Session,
 	const TArray<FString>& Ids)
 {
@@ -952,7 +952,7 @@ void UNakamaClientDeleteNotifications::Activate()
 // DeleteTournamentRecord
 UNakamaClientDeleteTournamentRecord* UNakamaClientDeleteTournamentRecord::DeleteTournamentRecord(
 	UObject* WorldContextObject,
-	FNakamaApiConfig Client,
+	FNakamaClientConfig Client,
 	const FNakamaSession& Session,
 	FString TournamentId)
 {
@@ -993,7 +993,7 @@ void UNakamaClientDeleteTournamentRecord::Activate()
 // DeleteStorageObjects
 UNakamaClientDeleteStorageObjects* UNakamaClientDeleteStorageObjects::DeleteStorageObjects(
 	UObject* WorldContextObject,
-	FNakamaApiConfig Client,
+	FNakamaClientConfig Client,
 	const FNakamaSession& Session,
 	const TArray<FNakamaDeleteStorageObjectId>& ObjectIds)
 {
@@ -1034,7 +1034,7 @@ void UNakamaClientDeleteStorageObjects::Activate()
 // Event
 UNakamaClientEvent* UNakamaClientEvent::Event(
 	UObject* WorldContextObject,
-	FNakamaApiConfig Client,
+	FNakamaClientConfig Client,
 	const FNakamaSession& Session,
 	FString Name,
 	FString Timestamp,
@@ -1084,7 +1084,7 @@ void UNakamaClientEvent::Activate()
 // GetAccount
 UNakamaClientGetAccount* UNakamaClientGetAccount::GetAccount(
 	UObject* WorldContextObject,
-	FNakamaApiConfig Client,
+	FNakamaClientConfig Client,
 	const FNakamaSession& Session)
 {
 	UNakamaClientGetAccount* Action = NewObject<UNakamaClientGetAccount>();
@@ -1122,7 +1122,7 @@ void UNakamaClientGetAccount::Activate()
 // GetUsers
 UNakamaClientGetUsers* UNakamaClientGetUsers::GetUsers(
 	UObject* WorldContextObject,
-	FNakamaApiConfig Client,
+	FNakamaClientConfig Client,
 	const FNakamaSession& Session,
 	const TArray<FString>& Ids,
 	const TArray<FString>& Usernames,
@@ -1169,7 +1169,7 @@ void UNakamaClientGetUsers::Activate()
 // GetSubscription
 UNakamaClientGetSubscription* UNakamaClientGetSubscription::GetSubscription(
 	UObject* WorldContextObject,
-	FNakamaApiConfig Client,
+	FNakamaClientConfig Client,
 	const FNakamaSession& Session,
 	FString ProductId)
 {
@@ -1210,7 +1210,7 @@ void UNakamaClientGetSubscription::Activate()
 // GetMatchmakerStats
 UNakamaClientGetMatchmakerStats* UNakamaClientGetMatchmakerStats::GetMatchmakerStats(
 	UObject* WorldContextObject,
-	FNakamaApiConfig Client,
+	FNakamaClientConfig Client,
 	const FNakamaSession& Session)
 {
 	UNakamaClientGetMatchmakerStats* Action = NewObject<UNakamaClientGetMatchmakerStats>();
@@ -1248,7 +1248,7 @@ void UNakamaClientGetMatchmakerStats::Activate()
 // Healthcheck
 UNakamaClientHealthcheck* UNakamaClientHealthcheck::Healthcheck(
 	UObject* WorldContextObject,
-	FNakamaApiConfig Client,
+	FNakamaClientConfig Client,
 	const FNakamaSession& Session)
 {
 	UNakamaClientHealthcheck* Action = NewObject<UNakamaClientHealthcheck>();
@@ -1286,7 +1286,7 @@ void UNakamaClientHealthcheck::Activate()
 // ImportFacebookFriends
 UNakamaClientImportFacebookFriends* UNakamaClientImportFacebookFriends::ImportFacebookFriends(
 	UObject* WorldContextObject,
-	FNakamaApiConfig Client,
+	FNakamaClientConfig Client,
 	const FNakamaSession& Session,
 	FNakamaAccountFacebook Account,
 	bool Reset)
@@ -1330,7 +1330,7 @@ void UNakamaClientImportFacebookFriends::Activate()
 // ImportSteamFriends
 UNakamaClientImportSteamFriends* UNakamaClientImportSteamFriends::ImportSteamFriends(
 	UObject* WorldContextObject,
-	FNakamaApiConfig Client,
+	FNakamaClientConfig Client,
 	const FNakamaSession& Session,
 	FNakamaAccountSteam Account,
 	bool Reset)
@@ -1374,7 +1374,7 @@ void UNakamaClientImportSteamFriends::Activate()
 // JoinGroup
 UNakamaClientJoinGroup* UNakamaClientJoinGroup::JoinGroup(
 	UObject* WorldContextObject,
-	FNakamaApiConfig Client,
+	FNakamaClientConfig Client,
 	const FNakamaSession& Session,
 	FString GroupId)
 {
@@ -1415,7 +1415,7 @@ void UNakamaClientJoinGroup::Activate()
 // JoinTournament
 UNakamaClientJoinTournament* UNakamaClientJoinTournament::JoinTournament(
 	UObject* WorldContextObject,
-	FNakamaApiConfig Client,
+	FNakamaClientConfig Client,
 	const FNakamaSession& Session,
 	FString TournamentId)
 {
@@ -1456,7 +1456,7 @@ void UNakamaClientJoinTournament::Activate()
 // KickGroupUsers
 UNakamaClientKickGroupUsers* UNakamaClientKickGroupUsers::KickGroupUsers(
 	UObject* WorldContextObject,
-	FNakamaApiConfig Client,
+	FNakamaClientConfig Client,
 	const FNakamaSession& Session,
 	FString GroupId,
 	const TArray<FString>& UserIds)
@@ -1500,7 +1500,7 @@ void UNakamaClientKickGroupUsers::Activate()
 // LeaveGroup
 UNakamaClientLeaveGroup* UNakamaClientLeaveGroup::LeaveGroup(
 	UObject* WorldContextObject,
-	FNakamaApiConfig Client,
+	FNakamaClientConfig Client,
 	const FNakamaSession& Session,
 	FString GroupId)
 {
@@ -1541,7 +1541,7 @@ void UNakamaClientLeaveGroup::Activate()
 // LinkApple
 UNakamaClientLinkApple* UNakamaClientLinkApple::LinkApple(
 	UObject* WorldContextObject,
-	FNakamaApiConfig Client,
+	FNakamaClientConfig Client,
 	const FNakamaSession& Session,
 	FString Token,
 	const TMap<FString, FString>& Vars)
@@ -1585,7 +1585,7 @@ void UNakamaClientLinkApple::Activate()
 // LinkCustom
 UNakamaClientLinkCustom* UNakamaClientLinkCustom::LinkCustom(
 	UObject* WorldContextObject,
-	FNakamaApiConfig Client,
+	FNakamaClientConfig Client,
 	const FNakamaSession& Session,
 	FString Id,
 	const TMap<FString, FString>& Vars)
@@ -1629,7 +1629,7 @@ void UNakamaClientLinkCustom::Activate()
 // LinkDevice
 UNakamaClientLinkDevice* UNakamaClientLinkDevice::LinkDevice(
 	UObject* WorldContextObject,
-	FNakamaApiConfig Client,
+	FNakamaClientConfig Client,
 	const FNakamaSession& Session,
 	FString Id,
 	const TMap<FString, FString>& Vars)
@@ -1673,7 +1673,7 @@ void UNakamaClientLinkDevice::Activate()
 // LinkEmail
 UNakamaClientLinkEmail* UNakamaClientLinkEmail::LinkEmail(
 	UObject* WorldContextObject,
-	FNakamaApiConfig Client,
+	FNakamaClientConfig Client,
 	const FNakamaSession& Session,
 	FString Email,
 	FString Password,
@@ -1720,7 +1720,7 @@ void UNakamaClientLinkEmail::Activate()
 // LinkFacebook
 UNakamaClientLinkFacebook* UNakamaClientLinkFacebook::LinkFacebook(
 	UObject* WorldContextObject,
-	FNakamaApiConfig Client,
+	FNakamaClientConfig Client,
 	const FNakamaSession& Session,
 	FNakamaAccountFacebook Account,
 	bool Sync)
@@ -1764,7 +1764,7 @@ void UNakamaClientLinkFacebook::Activate()
 // LinkFacebookInstantGame
 UNakamaClientLinkFacebookInstantGame* UNakamaClientLinkFacebookInstantGame::LinkFacebookInstantGame(
 	UObject* WorldContextObject,
-	FNakamaApiConfig Client,
+	FNakamaClientConfig Client,
 	const FNakamaSession& Session,
 	FString SignedPlayerInfo,
 	const TMap<FString, FString>& Vars)
@@ -1808,7 +1808,7 @@ void UNakamaClientLinkFacebookInstantGame::Activate()
 // LinkGameCenter
 UNakamaClientLinkGameCenter* UNakamaClientLinkGameCenter::LinkGameCenter(
 	UObject* WorldContextObject,
-	FNakamaApiConfig Client,
+	FNakamaClientConfig Client,
 	const FNakamaSession& Session,
 	FString PlayerId,
 	FString BundleId,
@@ -1867,7 +1867,7 @@ void UNakamaClientLinkGameCenter::Activate()
 // LinkGoogle
 UNakamaClientLinkGoogle* UNakamaClientLinkGoogle::LinkGoogle(
 	UObject* WorldContextObject,
-	FNakamaApiConfig Client,
+	FNakamaClientConfig Client,
 	const FNakamaSession& Session,
 	FString Token,
 	const TMap<FString, FString>& Vars)
@@ -1911,7 +1911,7 @@ void UNakamaClientLinkGoogle::Activate()
 // LinkSteam
 UNakamaClientLinkSteam* UNakamaClientLinkSteam::LinkSteam(
 	UObject* WorldContextObject,
-	FNakamaApiConfig Client,
+	FNakamaClientConfig Client,
 	const FNakamaSession& Session,
 	FNakamaAccountSteam Account,
 	bool Sync)
@@ -1955,7 +1955,7 @@ void UNakamaClientLinkSteam::Activate()
 // ListChannelMessages
 UNakamaClientListChannelMessages* UNakamaClientListChannelMessages::ListChannelMessages(
 	UObject* WorldContextObject,
-	FNakamaApiConfig Client,
+	FNakamaClientConfig Client,
 	const FNakamaSession& Session,
 	FString ChannelId,
 	int32 Limit,
@@ -2005,7 +2005,7 @@ void UNakamaClientListChannelMessages::Activate()
 // ListFriends
 UNakamaClientListFriends* UNakamaClientListFriends::ListFriends(
 	UObject* WorldContextObject,
-	FNakamaApiConfig Client,
+	FNakamaClientConfig Client,
 	const FNakamaSession& Session,
 	int32 Limit,
 	int32 State,
@@ -2052,7 +2052,7 @@ void UNakamaClientListFriends::Activate()
 // ListFriendsOfFriends
 UNakamaClientListFriendsOfFriends* UNakamaClientListFriendsOfFriends::ListFriendsOfFriends(
 	UObject* WorldContextObject,
-	FNakamaApiConfig Client,
+	FNakamaClientConfig Client,
 	const FNakamaSession& Session,
 	int32 Limit,
 	FString Cursor)
@@ -2096,7 +2096,7 @@ void UNakamaClientListFriendsOfFriends::Activate()
 // ListGroups
 UNakamaClientListGroups* UNakamaClientListGroups::ListGroups(
 	UObject* WorldContextObject,
-	FNakamaApiConfig Client,
+	FNakamaClientConfig Client,
 	const FNakamaSession& Session,
 	FString Name,
 	FString Cursor,
@@ -2152,7 +2152,7 @@ void UNakamaClientListGroups::Activate()
 // ListGroupUsers
 UNakamaClientListGroupUsers* UNakamaClientListGroupUsers::ListGroupUsers(
 	UObject* WorldContextObject,
-	FNakamaApiConfig Client,
+	FNakamaClientConfig Client,
 	const FNakamaSession& Session,
 	FString GroupId,
 	int32 Limit,
@@ -2202,7 +2202,7 @@ void UNakamaClientListGroupUsers::Activate()
 // ListLeaderboardRecords
 UNakamaClientListLeaderboardRecords* UNakamaClientListLeaderboardRecords::ListLeaderboardRecords(
 	UObject* WorldContextObject,
-	FNakamaApiConfig Client,
+	FNakamaClientConfig Client,
 	const FNakamaSession& Session,
 	FString LeaderboardId,
 	const TArray<FString>& OwnerIds,
@@ -2255,7 +2255,7 @@ void UNakamaClientListLeaderboardRecords::Activate()
 // ListLeaderboardRecordsAroundOwner
 UNakamaClientListLeaderboardRecordsAroundOwner* UNakamaClientListLeaderboardRecordsAroundOwner::ListLeaderboardRecordsAroundOwner(
 	UObject* WorldContextObject,
-	FNakamaApiConfig Client,
+	FNakamaClientConfig Client,
 	const FNakamaSession& Session,
 	FString LeaderboardId,
 	int32 Limit,
@@ -2308,7 +2308,7 @@ void UNakamaClientListLeaderboardRecordsAroundOwner::Activate()
 // ListMatches
 UNakamaClientListMatches* UNakamaClientListMatches::ListMatches(
 	UObject* WorldContextObject,
-	FNakamaApiConfig Client,
+	FNakamaClientConfig Client,
 	const FNakamaSession& Session,
 	int32 Limit,
 	bool Authoritative,
@@ -2364,7 +2364,7 @@ void UNakamaClientListMatches::Activate()
 // ListParties
 UNakamaClientListParties* UNakamaClientListParties::ListParties(
 	UObject* WorldContextObject,
-	FNakamaApiConfig Client,
+	FNakamaClientConfig Client,
 	const FNakamaSession& Session,
 	int32 Limit,
 	bool Open,
@@ -2414,7 +2414,7 @@ void UNakamaClientListParties::Activate()
 // ListNotifications
 UNakamaClientListNotifications* UNakamaClientListNotifications::ListNotifications(
 	UObject* WorldContextObject,
-	FNakamaApiConfig Client,
+	FNakamaClientConfig Client,
 	const FNakamaSession& Session,
 	int32 Limit,
 	FString CacheableCursor)
@@ -2458,7 +2458,7 @@ void UNakamaClientListNotifications::Activate()
 // ListStorageObjects
 UNakamaClientListStorageObjects* UNakamaClientListStorageObjects::ListStorageObjects(
 	UObject* WorldContextObject,
-	FNakamaApiConfig Client,
+	FNakamaClientConfig Client,
 	const FNakamaSession& Session,
 	FString UserId,
 	FString Collection,
@@ -2508,7 +2508,7 @@ void UNakamaClientListStorageObjects::Activate()
 // ListSubscriptions
 UNakamaClientListSubscriptions* UNakamaClientListSubscriptions::ListSubscriptions(
 	UObject* WorldContextObject,
-	FNakamaApiConfig Client,
+	FNakamaClientConfig Client,
 	const FNakamaSession& Session,
 	int32 Limit,
 	FString Cursor)
@@ -2552,7 +2552,7 @@ void UNakamaClientListSubscriptions::Activate()
 // ListTournaments
 UNakamaClientListTournaments* UNakamaClientListTournaments::ListTournaments(
 	UObject* WorldContextObject,
-	FNakamaApiConfig Client,
+	FNakamaClientConfig Client,
 	const FNakamaSession& Session,
 	int32 CategoryStart,
 	int32 CategoryEnd,
@@ -2608,7 +2608,7 @@ void UNakamaClientListTournaments::Activate()
 // ListTournamentRecords
 UNakamaClientListTournamentRecords* UNakamaClientListTournamentRecords::ListTournamentRecords(
 	UObject* WorldContextObject,
-	FNakamaApiConfig Client,
+	FNakamaClientConfig Client,
 	const FNakamaSession& Session,
 	FString TournamentId,
 	const TArray<FString>& OwnerIds,
@@ -2661,7 +2661,7 @@ void UNakamaClientListTournamentRecords::Activate()
 // ListTournamentRecordsAroundOwner
 UNakamaClientListTournamentRecordsAroundOwner* UNakamaClientListTournamentRecordsAroundOwner::ListTournamentRecordsAroundOwner(
 	UObject* WorldContextObject,
-	FNakamaApiConfig Client,
+	FNakamaClientConfig Client,
 	const FNakamaSession& Session,
 	FString TournamentId,
 	int32 Limit,
@@ -2714,7 +2714,7 @@ void UNakamaClientListTournamentRecordsAroundOwner::Activate()
 // ListUserGroups
 UNakamaClientListUserGroups* UNakamaClientListUserGroups::ListUserGroups(
 	UObject* WorldContextObject,
-	FNakamaApiConfig Client,
+	FNakamaClientConfig Client,
 	const FNakamaSession& Session,
 	FString UserId,
 	int32 Limit,
@@ -2764,7 +2764,7 @@ void UNakamaClientListUserGroups::Activate()
 // PromoteGroupUsers
 UNakamaClientPromoteGroupUsers* UNakamaClientPromoteGroupUsers::PromoteGroupUsers(
 	UObject* WorldContextObject,
-	FNakamaApiConfig Client,
+	FNakamaClientConfig Client,
 	const FNakamaSession& Session,
 	FString GroupId,
 	const TArray<FString>& UserIds)
@@ -2808,7 +2808,7 @@ void UNakamaClientPromoteGroupUsers::Activate()
 // DemoteGroupUsers
 UNakamaClientDemoteGroupUsers* UNakamaClientDemoteGroupUsers::DemoteGroupUsers(
 	UObject* WorldContextObject,
-	FNakamaApiConfig Client,
+	FNakamaClientConfig Client,
 	const FNakamaSession& Session,
 	FString GroupId,
 	const TArray<FString>& UserIds)
@@ -2852,7 +2852,7 @@ void UNakamaClientDemoteGroupUsers::Activate()
 // ReadStorageObjects
 UNakamaClientReadStorageObjects* UNakamaClientReadStorageObjects::ReadStorageObjects(
 	UObject* WorldContextObject,
-	FNakamaApiConfig Client,
+	FNakamaClientConfig Client,
 	const FNakamaSession& Session,
 	const TArray<FNakamaReadStorageObjectId>& ObjectIds)
 {
@@ -2893,7 +2893,7 @@ void UNakamaClientReadStorageObjects::Activate()
 // RpcFunc
 UNakamaClientRpcFunc* UNakamaClientRpcFunc::RpcFunc(
 	UObject* WorldContextObject,
-	FNakamaApiConfig Client,
+	FNakamaClientConfig Client,
 	const FNakamaSession& Session,
 	FString Id,
 	const TMap<FString, FString>& Payload,
@@ -2948,7 +2948,7 @@ void UNakamaClientRpcFunc::Activate()
 // UnlinkApple
 UNakamaClientUnlinkApple* UNakamaClientUnlinkApple::UnlinkApple(
 	UObject* WorldContextObject,
-	FNakamaApiConfig Client,
+	FNakamaClientConfig Client,
 	const FNakamaSession& Session,
 	FString Token,
 	const TMap<FString, FString>& Vars)
@@ -2992,7 +2992,7 @@ void UNakamaClientUnlinkApple::Activate()
 // UnlinkCustom
 UNakamaClientUnlinkCustom* UNakamaClientUnlinkCustom::UnlinkCustom(
 	UObject* WorldContextObject,
-	FNakamaApiConfig Client,
+	FNakamaClientConfig Client,
 	const FNakamaSession& Session,
 	FString Id,
 	const TMap<FString, FString>& Vars)
@@ -3036,7 +3036,7 @@ void UNakamaClientUnlinkCustom::Activate()
 // UnlinkDevice
 UNakamaClientUnlinkDevice* UNakamaClientUnlinkDevice::UnlinkDevice(
 	UObject* WorldContextObject,
-	FNakamaApiConfig Client,
+	FNakamaClientConfig Client,
 	const FNakamaSession& Session,
 	FString Id,
 	const TMap<FString, FString>& Vars)
@@ -3080,7 +3080,7 @@ void UNakamaClientUnlinkDevice::Activate()
 // UnlinkEmail
 UNakamaClientUnlinkEmail* UNakamaClientUnlinkEmail::UnlinkEmail(
 	UObject* WorldContextObject,
-	FNakamaApiConfig Client,
+	FNakamaClientConfig Client,
 	const FNakamaSession& Session,
 	FString Email,
 	FString Password,
@@ -3127,7 +3127,7 @@ void UNakamaClientUnlinkEmail::Activate()
 // UnlinkFacebook
 UNakamaClientUnlinkFacebook* UNakamaClientUnlinkFacebook::UnlinkFacebook(
 	UObject* WorldContextObject,
-	FNakamaApiConfig Client,
+	FNakamaClientConfig Client,
 	const FNakamaSession& Session,
 	FString Token,
 	const TMap<FString, FString>& Vars)
@@ -3171,7 +3171,7 @@ void UNakamaClientUnlinkFacebook::Activate()
 // UnlinkFacebookInstantGame
 UNakamaClientUnlinkFacebookInstantGame* UNakamaClientUnlinkFacebookInstantGame::UnlinkFacebookInstantGame(
 	UObject* WorldContextObject,
-	FNakamaApiConfig Client,
+	FNakamaClientConfig Client,
 	const FNakamaSession& Session,
 	FString SignedPlayerInfo,
 	const TMap<FString, FString>& Vars)
@@ -3215,7 +3215,7 @@ void UNakamaClientUnlinkFacebookInstantGame::Activate()
 // UnlinkGameCenter
 UNakamaClientUnlinkGameCenter* UNakamaClientUnlinkGameCenter::UnlinkGameCenter(
 	UObject* WorldContextObject,
-	FNakamaApiConfig Client,
+	FNakamaClientConfig Client,
 	const FNakamaSession& Session,
 	FString PlayerId,
 	FString BundleId,
@@ -3274,7 +3274,7 @@ void UNakamaClientUnlinkGameCenter::Activate()
 // UnlinkGoogle
 UNakamaClientUnlinkGoogle* UNakamaClientUnlinkGoogle::UnlinkGoogle(
 	UObject* WorldContextObject,
-	FNakamaApiConfig Client,
+	FNakamaClientConfig Client,
 	const FNakamaSession& Session,
 	FString Token,
 	const TMap<FString, FString>& Vars)
@@ -3318,7 +3318,7 @@ void UNakamaClientUnlinkGoogle::Activate()
 // UnlinkSteam
 UNakamaClientUnlinkSteam* UNakamaClientUnlinkSteam::UnlinkSteam(
 	UObject* WorldContextObject,
-	FNakamaApiConfig Client,
+	FNakamaClientConfig Client,
 	const FNakamaSession& Session,
 	FString Token,
 	const TMap<FString, FString>& Vars)
@@ -3362,7 +3362,7 @@ void UNakamaClientUnlinkSteam::Activate()
 // UpdateAccount
 UNakamaClientUpdateAccount* UNakamaClientUpdateAccount::UpdateAccount(
 	UObject* WorldContextObject,
-	FNakamaApiConfig Client,
+	FNakamaClientConfig Client,
 	const FNakamaSession& Session,
 	FString Username,
 	FString DisplayName,
@@ -3418,7 +3418,7 @@ void UNakamaClientUpdateAccount::Activate()
 // UpdateGroup
 UNakamaClientUpdateGroup* UNakamaClientUpdateGroup::UpdateGroup(
 	UObject* WorldContextObject,
-	FNakamaApiConfig Client,
+	FNakamaClientConfig Client,
 	const FNakamaSession& Session,
 	FString GroupId,
 	FString Name,
@@ -3474,7 +3474,7 @@ void UNakamaClientUpdateGroup::Activate()
 // ValidatePurchaseApple
 UNakamaClientValidatePurchaseApple* UNakamaClientValidatePurchaseApple::ValidatePurchaseApple(
 	UObject* WorldContextObject,
-	FNakamaApiConfig Client,
+	FNakamaClientConfig Client,
 	const FNakamaSession& Session,
 	FString Receipt,
 	bool Persist)
@@ -3518,7 +3518,7 @@ void UNakamaClientValidatePurchaseApple::Activate()
 // ValidateSubscriptionApple
 UNakamaClientValidateSubscriptionApple* UNakamaClientValidateSubscriptionApple::ValidateSubscriptionApple(
 	UObject* WorldContextObject,
-	FNakamaApiConfig Client,
+	FNakamaClientConfig Client,
 	const FNakamaSession& Session,
 	FString Receipt,
 	bool Persist)
@@ -3562,7 +3562,7 @@ void UNakamaClientValidateSubscriptionApple::Activate()
 // ValidatePurchaseGoogle
 UNakamaClientValidatePurchaseGoogle* UNakamaClientValidatePurchaseGoogle::ValidatePurchaseGoogle(
 	UObject* WorldContextObject,
-	FNakamaApiConfig Client,
+	FNakamaClientConfig Client,
 	const FNakamaSession& Session,
 	FString Purchase,
 	bool Persist)
@@ -3606,7 +3606,7 @@ void UNakamaClientValidatePurchaseGoogle::Activate()
 // ValidateSubscriptionGoogle
 UNakamaClientValidateSubscriptionGoogle* UNakamaClientValidateSubscriptionGoogle::ValidateSubscriptionGoogle(
 	UObject* WorldContextObject,
-	FNakamaApiConfig Client,
+	FNakamaClientConfig Client,
 	const FNakamaSession& Session,
 	FString Receipt,
 	bool Persist)
@@ -3650,7 +3650,7 @@ void UNakamaClientValidateSubscriptionGoogle::Activate()
 // ValidatePurchaseHuawei
 UNakamaClientValidatePurchaseHuawei* UNakamaClientValidatePurchaseHuawei::ValidatePurchaseHuawei(
 	UObject* WorldContextObject,
-	FNakamaApiConfig Client,
+	FNakamaClientConfig Client,
 	const FNakamaSession& Session,
 	FString Purchase,
 	FString Signature,
@@ -3697,7 +3697,7 @@ void UNakamaClientValidatePurchaseHuawei::Activate()
 // ValidatePurchaseFacebookInstant
 UNakamaClientValidatePurchaseFacebookInstant* UNakamaClientValidatePurchaseFacebookInstant::ValidatePurchaseFacebookInstant(
 	UObject* WorldContextObject,
-	FNakamaApiConfig Client,
+	FNakamaClientConfig Client,
 	const FNakamaSession& Session,
 	FString SignedRequest,
 	bool Persist)
@@ -3741,7 +3741,7 @@ void UNakamaClientValidatePurchaseFacebookInstant::Activate()
 // WriteLeaderboardRecord
 UNakamaClientWriteLeaderboardRecord* UNakamaClientWriteLeaderboardRecord::WriteLeaderboardRecord(
 	UObject* WorldContextObject,
-	FNakamaApiConfig Client,
+	FNakamaClientConfig Client,
 	const FNakamaSession& Session,
 	FString LeaderboardId,
 	FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite Record)
@@ -3785,7 +3785,7 @@ void UNakamaClientWriteLeaderboardRecord::Activate()
 // WriteStorageObjects
 UNakamaClientWriteStorageObjects* UNakamaClientWriteStorageObjects::WriteStorageObjects(
 	UObject* WorldContextObject,
-	FNakamaApiConfig Client,
+	FNakamaClientConfig Client,
 	const FNakamaSession& Session,
 	const TArray<FNakamaWriteStorageObject>& Objects)
 {
@@ -3826,7 +3826,7 @@ void UNakamaClientWriteStorageObjects::Activate()
 // WriteTournamentRecord
 UNakamaClientWriteTournamentRecord* UNakamaClientWriteTournamentRecord::WriteTournamentRecord(
 	UObject* WorldContextObject,
-	FNakamaApiConfig Client,
+	FNakamaClientConfig Client,
 	const FNakamaSession& Session,
 	FString TournamentId,
 	FNakamaWriteTournamentRecordRequest_TournamentRecordWrite Record)

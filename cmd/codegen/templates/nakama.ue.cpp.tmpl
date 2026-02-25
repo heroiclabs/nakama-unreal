@@ -24,6 +24,7 @@ bool Nakama::IsTransientError(const FNakamaError& Error) noexcept
 {
 	switch (Error.Code)
 	{
+	case 0:  // Connection failed (TCP refused, DNS timeout, etc.)
 	case 4:  // DEADLINE_EXCEEDED
 	case 13: // INTERNAL
 	case 14: // UNAVAILABLE
@@ -33,7 +34,7 @@ bool Nakama::IsTransientError(const FNakamaError& Error) noexcept
 	}
 }
 
-float Nakama::CalculateBackoff(int32 Attempt, const FNakamaRetryConfiguration& Config) noexcept
+float Nakama::CalculateBackoff(int32 Attempt, const FNakamaRetryConfig& Config) noexcept
 {
 	const float ExponentialDelay = FMath::Pow(2.0f, static_cast<float>(Attempt - 1)) * Config.BaseDelayMs;
 	const float Jitter = FMath::FRand() * ExponentialDelay;
@@ -45,49 +46,46 @@ namespace
 
 /** Optionally refresh the session before calling the RPC. */
 void MaybeRefreshThenCall(
-	FNakamaClient Client,
-	FNakamaSession Session,
-	TFunction<void(const FNakamaSession&)> OnReady,
-	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	const TSharedRef<FNakamaSession>& SessionState,
+	const FNakamaClientConfig& ClientConfig,
+	const FNakamaRetryConfig& RetryConfig,
+	const TSharedRef<TAtomic<bool>>& CancellationToken,
+	const TSharedRef<TFunction<void(const FNakamaError&)>>& OnError,
+	TFunction<void()> OnReady) noexcept
 {
-	if (!Client.bAutoRefreshSession
-		|| Session.RefreshToken.IsEmpty()
-		|| !Session.IsExpired(Client.AutoRefreshBufferSeconds))
+	if (!RetryConfig.bAutoRefreshSession
+		|| SessionState->RefreshToken.IsEmpty()
+		|| !SessionState->IsExpired(RetryConfig.AutoRefreshBufferSeconds))
 	{
-		OnReady(Session);
+		OnReady();
 		return;
 	}
 
-	if (Session.IsRefreshExpired())
+	if (SessionState->IsRefreshExpired())
 	{
-		if (OnError)
-		{
-			OnError(FNakamaError(TEXT("Refresh token has expired"), 401));
-		}
+		(*OnError)(FNakamaError(TEXT("Refresh token has expired"), 401));
 		return;
 	}
 
+	auto OnSessionRefreshed = RetryConfig.OnSessionRefreshed;
 	NakamaApi::SessionRefresh(
-		Client.ApiConfig,
-		Session.RefreshToken,
+		ClientConfig,
+		SessionState->RefreshToken,
 		{},
-		[Client, Session, OnReady](const FNakamaSession& RefreshedSession) mutable
+		[SessionState, OnSessionRefreshed, OnReady = MoveTemp(OnReady)](const FNakamaSession& RefreshedSession) mutable
 		{
-			Session.Update(RefreshedSession.Token, RefreshedSession.RefreshToken);
-			if (Client.OnSessionRefreshed)
+			SessionState->Update(RefreshedSession.Token, RefreshedSession.RefreshToken);
+			if (OnSessionRefreshed)
 			{
-				Client.OnSessionRefreshed(Session);
+				OnSessionRefreshed(*SessionState);
 			}
-			OnReady(Session);
+			OnReady();
 		},
 		[OnError](const FNakamaError& Error)
 		{
-			if (OnError)
-			{
-				OnError(FNakamaError(FString::Printf(TEXT("Session refresh failed: %s"), *Error.Message), Error.Code));
-			}
+			(*OnError)(FNakamaError(FString::Printf(TEXT("Session refresh failed: %s"), *Error.Message), Error.Code));
 		},
+		RetryConfig.Timeout,
 		CancellationToken);
 }
 
@@ -105,7 +103,7 @@ void MaybeRefreshThenCall(
 {{- $needsSession := and (not $isAuthenticate) (not $isSessionRefresh) }}
 {{- $resultType := asyncResultType $returnType }}
 TNakamaFuture<{{ $resultType }}Result> Nakama::{{ $rpc.Name }}(
-	FNakamaClient Client,
+	const FNakamaClientConfig& ClientConfig,
 	{{- if $needsSession }}
 	const FNakamaSession& Session,
 	{{- end }}
@@ -121,62 +119,62 @@ TNakamaFuture<{{ $resultType }}Result> Nakama::{{ $rpc.Name }}(
 	const {{ getUnrealMapType $field.Type }}& {{ $field.Name | pascalCase }},
 	{{- end -}}
 	{{- end }}
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	const FNakamaRetryConfig& RetryConfig,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	auto FutureState = MakeShared<TNakamaFuture<{{ $resultType }}Result>::FState>();
-
-	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client.RetryConfiguration;
-
+	{{- if $needsSession }}
+	auto SessionState = MakeShared<FNakamaSession>(Session);
+	{{- end }}
+	auto RetryCount = MakeShared<int32>(0);
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryCount, DoRequest, OnError, RetryConfig](const FNakamaError& Error)
 	{
-		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
+		if (Nakama::IsTransientError(Error) && *RetryCount < RetryConfig.MaxRetries)
 		{
-			(*RetryState)++;
-			float Delay = Nakama::CalculateBackoff(*RetryState, Cfg);
+			(*RetryCount)++;
+			float Delay = Nakama::CalculateBackoff(*RetryCount, RetryConfig);
 			FTSTicker::GetCoreTicker().AddTicker(
 				FTickerDelegate::CreateLambda([DoRequest](float) -> bool { (*DoRequest)(); return false; }),
 				Delay);
 		}
 		else
 		{
-			auto DR = DoRequest; auto OE = OnError;
-			DR->Reset(); OE->Reset();
+			*DoRequest = nullptr;
+			*OnError = nullptr;
 			FutureState->Resolve({{ $resultType }}Result{{ "{{" }}}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, FutureState, DoRequest, OnError,
-		{{- if $needsSession }} Session, {{- end }}
+	*DoRequest = [FutureState, {{- if $needsSession }}SessionState, {{- end }}DoRequest, OnError, ClientConfig, RetryConfig, CancellationToken
 		{{- if $hasParams -}}
 		{{- range $fidx, $field := $requestType.Fields }}
-		{{ $field.Name | pascalCase }},
+		, {{ $field.Name | pascalCase }}
 		{{- end -}}
 		{{- range $fidx, $field := $requestType.MapFields }}
-		{{ $field.Name | pascalCase }},
+		, {{ $field.Name | pascalCase }}
 		{{- end -}}
 		{{- end }}
-		CancellationToken]()
+		]()
 	{
 {{- if $needsSession }}
-		MaybeRefreshThenCall(Client, Session,
-			[Client, FutureState, DoRequest, OnError,
+		MaybeRefreshThenCall(SessionState, ClientConfig, RetryConfig, CancellationToken, OnError,
+			[FutureState, SessionState, DoRequest, OnError, ClientConfig, RetryConfig, CancellationToken
 				{{- if $hasParams -}}
 				{{- range $fidx, $field := $requestType.Fields }}
-				{{ $field.Name | pascalCase }},
+				, {{ $field.Name | pascalCase }}
 				{{- end -}}
 				{{- range $fidx, $field := $requestType.MapFields }}
-				{{ $field.Name | pascalCase }},
+				, {{ $field.Name | pascalCase }}
 				{{- end -}}
 				{{- end }}
-				CancellationToken](const FNakamaSession& Session)
+				]()
 			{
 				NakamaApi::{{ $rpc.Name }}(
-					Client.ApiConfig,
-					Session,
+					ClientConfig,
+					*SessionState,
 					{{- if $hasParams -}}
 					{{- range $fidx, $field := $requestType.Fields }}
 					{{ $field.Name | pascalCase }},
@@ -188,26 +186,25 @@ TNakamaFuture<{{ $resultType }}Result> Nakama::{{ $rpc.Name }}(
 					{{- if $hasReturn }}
 					[FutureState, DoRequest, OnError](const FNakama{{ $returnType.Name }}& Result)
 					{
-						auto DR = DoRequest; auto OE = OnError;
-						DR->Reset(); OE->Reset();
+						*DoRequest = nullptr;
+						*OnError = nullptr;
 						FutureState->Resolve({{ $resultType }}Result{Result, {}, false});
 					},
 					{{- else }}
 					[FutureState, DoRequest, OnError]()
 					{
-						auto DR = DoRequest; auto OE = OnError;
-						DR->Reset(); OE->Reset();
+						*DoRequest = nullptr;
+						*OnError = nullptr;
 						FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 					},
 					{{- end }}
 					*OnError,
+					RetryConfig.Timeout,
 					CancellationToken);
-			},
-			*OnError,
-			CancellationToken);
+			});
 {{- else }}
 		NakamaApi::{{ $rpc.Name }}(
-			Client.ApiConfig,
+			ClientConfig,
 			{{- if $hasParams -}}
 			{{- range $fidx, $field := $requestType.Fields }}
 			{{ $field.Name | pascalCase }},
@@ -219,19 +216,20 @@ TNakamaFuture<{{ $resultType }}Result> Nakama::{{ $rpc.Name }}(
 			{{- if $hasReturn }}
 			[FutureState, DoRequest, OnError](const FNakama{{ $returnType.Name }}& Result)
 			{
-				auto DR = DoRequest; auto OE = OnError;
-				DR->Reset(); OE->Reset();
+				*DoRequest = nullptr;
+				*OnError = nullptr;
 				FutureState->Resolve({{ $resultType }}Result{Result, {}, false});
 			},
 			{{- else }}
 			[FutureState, DoRequest, OnError]()
 			{
-				auto DR = DoRequest; auto OE = OnError;
-				DR->Reset(); OE->Reset();
+				*DoRequest = nullptr;
+				*OnError = nullptr;
 				FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 			},
 			{{- end }}
 			*OnError,
+			RetryConfig.Timeout,
 			CancellationToken);
 {{- end }}
 	};
@@ -243,7 +241,7 @@ TNakamaFuture<{{ $resultType }}Result> Nakama::{{ $rpc.Name }}(
 {{- if $needsSession }}
 
 TNakamaFuture<{{ $resultType }}Result> Nakama::{{ $rpc.Name }}(
-	FNakamaClient Client,
+	const FNakamaClientConfig& ClientConfig,
 	const FString& HttpKey,
 	{{- if $hasParams -}}
 	{{- range $fidx, $field := $requestType.Fields }}
@@ -259,50 +257,47 @@ TNakamaFuture<{{ $resultType }}Result> Nakama::{{ $rpc.Name }}(
 	const {{ getUnrealMapType $field.Type }}& {{ $field.Name | pascalCase }},
 	{{- end -}}
 	{{- end }}
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	const FNakamaRetryConfig& RetryConfig,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	auto FutureState = MakeShared<TNakamaFuture<{{ $resultType }}Result>::FState>();
-
-	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client.RetryConfiguration;
-
+	auto RetryCount = MakeShared<int32>(0);
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
 
-	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FNakamaError& Error)
+	*OnError = [FutureState, RetryCount, DoRequest, OnError, RetryConfig](const FNakamaError& Error)
 	{
-		if (Nakama::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
+		if (Nakama::IsTransientError(Error) && *RetryCount < RetryConfig.MaxRetries)
 		{
-			(*RetryState)++;
-			float Delay = Nakama::CalculateBackoff(*RetryState, Cfg);
+			(*RetryCount)++;
+			float Delay = Nakama::CalculateBackoff(*RetryCount, RetryConfig);
 			FTSTicker::GetCoreTicker().AddTicker(
 				FTickerDelegate::CreateLambda([DoRequest](float) -> bool { (*DoRequest)(); return false; }),
 				Delay);
 		}
 		else
 		{
-			auto DR = DoRequest; auto OE = OnError;
-			DR->Reset(); OE->Reset();
+			*DoRequest = nullptr;
+			*OnError = nullptr;
 			FutureState->Resolve({{ $resultType }}Result{{ "{{" }}}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, FutureState, DoRequest, OnError,
-		HttpKey,
+	*DoRequest = [FutureState, DoRequest, OnError, ClientConfig, RetryConfig, CancellationToken, HttpKey
 		{{- if $hasParams -}}
 		{{- range $fidx, $field := $requestType.Fields }}
 		{{- if ne $field.Name "http_key" }}
-		{{ $field.Name | pascalCase }},
+		, {{ $field.Name | pascalCase }}
 		{{- end }}
 		{{- end -}}
 		{{- range $fidx, $field := $requestType.MapFields }}
-		{{ $field.Name | pascalCase }},
+		, {{ $field.Name | pascalCase }}
 		{{- end -}}
 		{{- end }}
-		CancellationToken]()
+		]()
 	{
 		NakamaApi::{{ $rpc.Name }}(
-			Client.ApiConfig,
+			ClientConfig,
 			HttpKey,
 			{{- if $hasParams -}}
 			{{- range $fidx, $field := $requestType.Fields }}
@@ -317,19 +312,20 @@ TNakamaFuture<{{ $resultType }}Result> Nakama::{{ $rpc.Name }}(
 			{{- if $hasReturn }}
 			[FutureState, DoRequest, OnError](const FNakama{{ $returnType.Name }}& Result)
 			{
-				auto DR = DoRequest; auto OE = OnError;
-				DR->Reset(); OE->Reset();
+				*DoRequest = nullptr;
+				*OnError = nullptr;
 				FutureState->Resolve({{ $resultType }}Result{Result, {}, false});
 			},
 			{{- else }}
 			[FutureState, DoRequest, OnError]()
 			{
-				auto DR = DoRequest; auto OE = OnError;
-				DR->Reset(); OE->Reset();
+				*DoRequest = nullptr;
+				*OnError = nullptr;
 				FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
 			},
 			{{- end }}
 			*OnError,
+			RetryConfig.Timeout,
 			CancellationToken);
 	};
 

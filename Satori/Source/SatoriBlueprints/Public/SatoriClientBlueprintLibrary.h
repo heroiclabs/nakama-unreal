@@ -61,7 +61,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "Authenticate"), Category = "Satori|Client")
 	static USatoriClientAuthenticate* Authenticate(
 		UObject* WorldContextObject,
-		FSatoriApiConfig Client,
+		FSatoriClientConfig Client,
 		FString Id,
 		bool NoSession,
 		const TMap<FString, FString>& Default,
@@ -70,7 +70,7 @@ public:
 	virtual void Activate() override;
 
 private:
-	FSatoriApiConfig Client;
+	FSatoriClientConfig Client;
 	FString StoredId;
 	bool StoredNoSession;
 	TMap<FString, FString> StoredDefault;
@@ -95,14 +95,14 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "AuthenticateLogout"), Category = "Satori|Client")
 	static USatoriClientAuthenticateLogout* AuthenticateLogout(
 		UObject* WorldContextObject,
-		FSatoriApiConfig Client,
+		FSatoriClientConfig Client,
 		FString Token,
 		FString RefreshToken);
 
 	virtual void Activate() override;
 
 private:
-	FSatoriApiConfig Client;
+	FSatoriClientConfig Client;
 	FString StoredToken;
 	FString StoredRefreshToken;
 };
@@ -125,13 +125,13 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "AuthenticateRefresh"), Category = "Satori|Client")
 	static USatoriClientAuthenticateRefresh* AuthenticateRefresh(
 		UObject* WorldContextObject,
-		FSatoriApiConfig Client,
+		FSatoriClientConfig Client,
 		FString RefreshToken);
 
 	virtual void Activate() override;
 
 private:
-	FSatoriApiConfig Client;
+	FSatoriClientConfig Client;
 	FString StoredRefreshToken;
 };
 
@@ -153,13 +153,13 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "DeleteIdentity"), Category = "Satori|Client")
 	static USatoriClientDeleteIdentity* DeleteIdentity(
 		UObject* WorldContextObject,
-		FSatoriApiConfig Client,
+		FSatoriClientConfig Client,
 		const FSatoriSession& Session);
 
 	virtual void Activate() override;
 
 private:
-	FSatoriApiConfig Client;
+	FSatoriClientConfig Client;
 	FSatoriSession Session;
 };
 
@@ -181,14 +181,14 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "Event"), Category = "Satori|Client")
 	static USatoriClientEvent* Event(
 		UObject* WorldContextObject,
-		FSatoriApiConfig Client,
+		FSatoriClientConfig Client,
 		const FSatoriSession& Session,
 		const TArray<FSatoriEvent>& Events);
 
 	virtual void Activate() override;
 
 private:
-	FSatoriApiConfig Client;
+	FSatoriClientConfig Client;
 	FSatoriSession Session;
 	TArray<FSatoriEvent> StoredEvents;
 };
@@ -211,14 +211,14 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ServerEvent"), Category = "Satori|Client")
 	static USatoriClientServerEvent* ServerEvent(
 		UObject* WorldContextObject,
-		FSatoriApiConfig Client,
+		FSatoriClientConfig Client,
 		const FSatoriSession& Session,
 		const TArray<FSatoriEvent>& Events);
 
 	virtual void Activate() override;
 
 private:
-	FSatoriApiConfig Client;
+	FSatoriClientConfig Client;
 	FSatoriSession Session;
 	TArray<FSatoriEvent> StoredEvents;
 };
@@ -241,7 +241,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "GetExperiments"), Category = "Satori|Client")
 	static USatoriClientGetExperiments* GetExperiments(
 		UObject* WorldContextObject,
-		FSatoriApiConfig Client,
+		FSatoriClientConfig Client,
 		const FSatoriSession& Session,
 		const TArray<FString>& Names,
 		const TArray<FString>& Labels);
@@ -249,7 +249,7 @@ public:
 	virtual void Activate() override;
 
 private:
-	FSatoriApiConfig Client;
+	FSatoriClientConfig Client;
 	FSatoriSession Session;
 	TArray<FString> StoredNames;
 	TArray<FString> StoredLabels;
@@ -273,7 +273,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "GetFlagOverrides"), Category = "Satori|Client")
 	static USatoriClientGetFlagOverrides* GetFlagOverrides(
 		UObject* WorldContextObject,
-		FSatoriApiConfig Client,
+		FSatoriClientConfig Client,
 		const FSatoriSession& Session,
 		const TArray<FString>& Names,
 		const TArray<FString>& Labels);
@@ -281,7 +281,7 @@ public:
 	virtual void Activate() override;
 
 private:
-	FSatoriApiConfig Client;
+	FSatoriClientConfig Client;
 	FSatoriSession Session;
 	TArray<FString> StoredNames;
 	TArray<FString> StoredLabels;
@@ -305,7 +305,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "GetFlags"), Category = "Satori|Client")
 	static USatoriClientGetFlags* GetFlags(
 		UObject* WorldContextObject,
-		FSatoriApiConfig Client,
+		FSatoriClientConfig Client,
 		const FSatoriSession& Session,
 		const TArray<FString>& Names,
 		const TArray<FString>& Labels);
@@ -313,7 +313,7 @@ public:
 	virtual void Activate() override;
 
 private:
-	FSatoriApiConfig Client;
+	FSatoriClientConfig Client;
 	FSatoriSession Session;
 	TArray<FString> StoredNames;
 	TArray<FString> StoredLabels;
@@ -337,7 +337,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "GetLiveEvents"), Category = "Satori|Client")
 	static USatoriClientGetLiveEvents* GetLiveEvents(
 		UObject* WorldContextObject,
-		FSatoriApiConfig Client,
+		FSatoriClientConfig Client,
 		const FSatoriSession& Session,
 		const TArray<FString>& Names,
 		const TArray<FString>& Labels,
@@ -349,7 +349,7 @@ public:
 	virtual void Activate() override;
 
 private:
-	FSatoriApiConfig Client;
+	FSatoriClientConfig Client;
 	FSatoriSession Session;
 	TArray<FString> StoredNames;
 	TArray<FString> StoredLabels;
@@ -377,14 +377,14 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "JoinLiveEvent"), Category = "Satori|Client")
 	static USatoriClientJoinLiveEvent* JoinLiveEvent(
 		UObject* WorldContextObject,
-		FSatoriApiConfig Client,
+		FSatoriClientConfig Client,
 		const FSatoriSession& Session,
 		FString Id);
 
 	virtual void Activate() override;
 
 private:
-	FSatoriApiConfig Client;
+	FSatoriClientConfig Client;
 	FSatoriSession Session;
 	FString StoredId;
 };
@@ -407,13 +407,13 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "Healthcheck"), Category = "Satori|Client")
 	static USatoriClientHealthcheck* Healthcheck(
 		UObject* WorldContextObject,
-		FSatoriApiConfig Client,
+		FSatoriClientConfig Client,
 		const FSatoriSession& Session);
 
 	virtual void Activate() override;
 
 private:
-	FSatoriApiConfig Client;
+	FSatoriClientConfig Client;
 	FSatoriSession Session;
 };
 
@@ -435,7 +435,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "Identify"), Category = "Satori|Client")
 	static USatoriClientIdentify* Identify(
 		UObject* WorldContextObject,
-		FSatoriApiConfig Client,
+		FSatoriClientConfig Client,
 		const FSatoriSession& Session,
 		FString Id,
 		const TMap<FString, FString>& Default,
@@ -444,7 +444,7 @@ public:
 	virtual void Activate() override;
 
 private:
-	FSatoriApiConfig Client;
+	FSatoriClientConfig Client;
 	FSatoriSession Session;
 	FString StoredId;
 	TMap<FString, FString> StoredDefault;
@@ -469,13 +469,13 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ListProperties"), Category = "Satori|Client")
 	static USatoriClientListProperties* ListProperties(
 		UObject* WorldContextObject,
-		FSatoriApiConfig Client,
+		FSatoriClientConfig Client,
 		const FSatoriSession& Session);
 
 	virtual void Activate() override;
 
 private:
-	FSatoriApiConfig Client;
+	FSatoriClientConfig Client;
 	FSatoriSession Session;
 };
 
@@ -497,13 +497,13 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "Readycheck"), Category = "Satori|Client")
 	static USatoriClientReadycheck* Readycheck(
 		UObject* WorldContextObject,
-		FSatoriApiConfig Client,
+		FSatoriClientConfig Client,
 		const FSatoriSession& Session);
 
 	virtual void Activate() override;
 
 private:
-	FSatoriApiConfig Client;
+	FSatoriClientConfig Client;
 	FSatoriSession Session;
 };
 
@@ -525,7 +525,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "UpdateProperties"), Category = "Satori|Client")
 	static USatoriClientUpdateProperties* UpdateProperties(
 		UObject* WorldContextObject,
-		FSatoriApiConfig Client,
+		FSatoriClientConfig Client,
 		const FSatoriSession& Session,
 		bool Recompute,
 		const TMap<FString, FString>& Default,
@@ -534,7 +534,7 @@ public:
 	virtual void Activate() override;
 
 private:
-	FSatoriApiConfig Client;
+	FSatoriClientConfig Client;
 	FSatoriSession Session;
 	bool StoredRecompute;
 	TMap<FString, FString> StoredDefault;
@@ -559,7 +559,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "GetMessageList"), Category = "Satori|Client")
 	static USatoriClientGetMessageList* GetMessageList(
 		UObject* WorldContextObject,
-		FSatoriApiConfig Client,
+		FSatoriClientConfig Client,
 		const FSatoriSession& Session,
 		int32 Limit,
 		bool Forward,
@@ -569,7 +569,7 @@ public:
 	virtual void Activate() override;
 
 private:
-	FSatoriApiConfig Client;
+	FSatoriClientConfig Client;
 	FSatoriSession Session;
 	int32 StoredLimit;
 	bool StoredForward;
@@ -595,7 +595,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "UpdateMessage"), Category = "Satori|Client")
 	static USatoriClientUpdateMessage* UpdateMessage(
 		UObject* WorldContextObject,
-		FSatoriApiConfig Client,
+		FSatoriClientConfig Client,
 		const FSatoriSession& Session,
 		FString Id,
 		int64 ReadTime,
@@ -604,7 +604,7 @@ public:
 	virtual void Activate() override;
 
 private:
-	FSatoriApiConfig Client;
+	FSatoriClientConfig Client;
 	FSatoriSession Session;
 	FString StoredId;
 	int64 StoredReadTime;
@@ -629,14 +629,14 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "DeleteMessage"), Category = "Satori|Client")
 	static USatoriClientDeleteMessage* DeleteMessage(
 		UObject* WorldContextObject,
-		FSatoriApiConfig Client,
+		FSatoriClientConfig Client,
 		const FSatoriSession& Session,
 		FString Id);
 
 	virtual void Activate() override;
 
 private:
-	FSatoriApiConfig Client;
+	FSatoriClientConfig Client;
 	FSatoriSession Session;
 	FString StoredId;
 };

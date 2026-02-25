@@ -57,22 +57,9 @@ struct SATORIAPI_API FSatoriError
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	int32 Code = 0;
 
-	FSatoriError() = default;
-	FSatoriError(const FString& InMessage, int32 InCode)
-		: Message(InMessage), Code(InCode) {}
 };
 
 {{- template "errorcodes" "Satori" }}
-
-struct SATORIAPI_API FSatoriCancellationToken
-{
-	void Cancel() { bCancelled.Store(true); }
-	bool IsCancelled() const { return bCancelled.Load(); }
-	static TSharedPtr<FSatoriCancellationToken> Create() { return MakeShared<FSatoriCancellationToken>(); }
-private:
-	TAtomic<bool> bCancelled{false};
-};
-using FSatoriCancellationTokenPtr = TSharedPtr<FSatoriCancellationToken>;
 
 {{- /* Generate struct definitions for each proto message */ -}}
 {{- range $idx, $msg := $.Messages }}
@@ -161,7 +148,7 @@ enum class ESatoriRequestAuth : uint8
 
 /** Low-level API client configuration. */
 USTRUCT(BlueprintType)
-struct SATORIAPI_API FSatoriApiConfig
+struct SATORIAPI_API FSatoriClientConfig
 {
 	GENERATED_BODY()
 
@@ -176,9 +163,6 @@ struct SATORIAPI_API FSatoriApiConfig
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Satori")
 	bool bUseSSL = false;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Satori")
-	float Timeout = 10.0f;
 
 	FString GetBaseUrl() const noexcept;
 };
@@ -200,7 +184,7 @@ namespace SatoriApi
 
 	/** {{ $rpc.Comment }} */
 	SATORIAPI_API void {{ $rpc.Name }}(
-		const FSatoriApiConfig& Config,
+		const FSatoriClientConfig& Config,
 		{{- if $needsSession }}
 		const FSatoriSession& Session,
 		{{- end }}
@@ -222,6 +206,7 @@ namespace SatoriApi
 		TFunction<void()> OnSuccess,
 		{{- end }}
 		TFunction<void(const FSatoriError&)> OnError,
-		FSatoriCancellationTokenPtr CancellationToken = nullptr) noexcept;
+		float Timeout = 10.0f,
+		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
 {{- end }}
 }

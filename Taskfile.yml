@@ -324,19 +324,15 @@ tasks:
     - task: start-server
     - cmd: |
         mkdir -p IntegrationTests/Plugins
-        if [ ! -d "IntegrationTests/Plugins/Nakama" ]; then
-            if command -v powershell &>/dev/null; then
-                powershell -NoProfile -Command "New-Item -ItemType Junction -Force -Path 'IntegrationTests\Plugins\Nakama' -Target (Join-Path (Get-Location) 'Nakama') | Out-Null"
-            else
-                ln -sfn "$(pwd)/Nakama" "IntegrationTests/Plugins/Nakama"
-            fi
-        fi
-        if [ ! -d "IntegrationTests/Plugins/Satori" ]; then
-            if command -v powershell &>/dev/null; then
-                powershell -NoProfile -Command "New-Item -ItemType Junction -Force -Path 'IntegrationTests\Plugins\Satori' -Target (Join-Path (Get-Location) 'Satori') | Out-Null"
-            else
-                ln -sfn "$(pwd)/Satori" "IntegrationTests/Plugins/Satori"
-            fi
+        if command -v robocopy &>/dev/null; then
+            export MSYS_NO_PATHCONV=1
+            robocopy Nakama IntegrationTests/Plugins/Nakama /MIR /NFL /NDL /NJH /NJS /NP || test $? -lt 8
+            robocopy Satori IntegrationTests/Plugins/Satori /MIR /NFL /NDL /NJH /NJS /NP || test $? -lt 8
+            unset MSYS_NO_PATHCONV
+        else
+            rm -rf "IntegrationTests/Plugins/Nakama" "IntegrationTests/Plugins/Satori"
+            cp -r Nakama "IntegrationTests/Plugins/Nakama"
+            cp -r Satori "IntegrationTests/Plugins/Satori"
         fi
     - cmd: |
         PROJECT="$(pwd)/IntegrationTests/IntegrationTests.uproject"

@@ -24,6 +24,7 @@ bool Satori::IsTransientError(const FSatoriError& Error) noexcept
 {
 	switch (Error.Code)
 	{
+	case 0:  // Connection failed (TCP refused, DNS timeout, etc.)
 	case 4:  // DEADLINE_EXCEEDED
 	case 13: // INTERNAL
 	case 14: // UNAVAILABLE
@@ -33,7 +34,7 @@ bool Satori::IsTransientError(const FSatoriError& Error) noexcept
 	}
 }
 
-float Satori::CalculateBackoff(int32 Attempt, const FSatoriRetryConfiguration& Config) noexcept
+float Satori::CalculateBackoff(int32 Attempt, const FSatoriRetryConfig& Config) noexcept
 {
 	const float ExponentialDelay = FMath::Pow(2.0f, static_cast<float>(Attempt - 1)) * Config.BaseDelayMs;
 	const float Jitter = FMath::FRand() * ExponentialDelay;
@@ -45,48 +46,45 @@ namespace
 
 /** Optionally refresh the session before calling the RPC. */
 void MaybeRefreshThenCall(
-	FSatoriClient Client,
-	FSatoriSession Session,
-	TFunction<void(const FSatoriSession&)> OnReady,
-	TFunction<void(const FSatoriError&)> OnError,
-	FSatoriCancellationTokenPtr CancellationToken) noexcept
+	const TSharedRef<FSatoriSession>& SessionState,
+	const FSatoriClientConfig& ClientConfig,
+	const FSatoriRetryConfig& RetryConfig,
+	const TSharedRef<TAtomic<bool>>& CancellationToken,
+	const TSharedRef<TFunction<void(const FSatoriError&)>>& OnError,
+	TFunction<void()> OnReady) noexcept
 {
-	if (!Client.bAutoRefreshSession
-		|| Session.RefreshToken.IsEmpty()
-		|| !Session.IsExpired(Client.AutoRefreshBufferSeconds))
+	if (!RetryConfig.bAutoRefreshSession
+		|| SessionState->RefreshToken.IsEmpty()
+		|| !SessionState->IsExpired(RetryConfig.AutoRefreshBufferSeconds))
 	{
-		OnReady(Session);
+		OnReady();
 		return;
 	}
 
-	if (Session.IsRefreshExpired())
+	if (SessionState->IsRefreshExpired())
 	{
-		if (OnError)
-		{
-			OnError(FSatoriError(TEXT("Refresh token has expired"), 401));
-		}
+		(*OnError)(FSatoriError(TEXT("Refresh token has expired"), 401));
 		return;
 	}
 
+	auto OnSessionRefreshed = RetryConfig.OnSessionRefreshed;
 	SatoriApi::AuthenticateRefresh(
-		Client.ApiConfig,
-		Session.RefreshToken,
-		[Client, Session, OnReady](const FSatoriSession& RefreshedSession) mutable
+		ClientConfig,
+		SessionState->RefreshToken,
+		[SessionState, OnSessionRefreshed, OnReady = MoveTemp(OnReady)](const FSatoriSession& RefreshedSession) mutable
 		{
-			Session.Update(RefreshedSession.Token, RefreshedSession.RefreshToken);
-			if (Client.OnSessionRefreshed)
+			SessionState->Update(RefreshedSession.Token, RefreshedSession.RefreshToken);
+			if (OnSessionRefreshed)
 			{
-				Client.OnSessionRefreshed(Session);
+				OnSessionRefreshed(*SessionState);
 			}
-			OnReady(Session);
+			OnReady();
 		},
 		[OnError](const FSatoriError& Error)
 		{
-			if (OnError)
-			{
-				OnError(FSatoriError(FString::Printf(TEXT("Session refresh failed: %s"), *Error.Message), Error.Code));
-			}
+			(*OnError)(FSatoriError(FString::Printf(TEXT("Session refresh failed: %s"), *Error.Message), Error.Code));
 		},
+		RetryConfig.Timeout,
 		CancellationToken);
 }
 
@@ -104,7 +102,7 @@ void MaybeRefreshThenCall(
 {{- $needsSession := and (not $isAuthenticate) (not $isSessionRefresh) }}
 {{- $resultType := asyncResultType $returnType }}
 TSatoriFuture<{{ $resultType }}Result> Satori::{{ $rpc.Name }}(
-	FSatoriClient Client,
+	const FSatoriClientConfig& ClientConfig,
 	{{- if $needsSession }}
 	const FSatoriSession& Session,
 	{{- end }}
@@ -120,62 +118,62 @@ TSatoriFuture<{{ $resultType }}Result> Satori::{{ $rpc.Name }}(
 	const {{ getUnrealMapType $field.Type }}& {{ $field.Name | pascalCase }},
 	{{- end -}}
 	{{- end }}
-	FSatoriCancellationTokenPtr CancellationToken) noexcept
+	const FSatoriRetryConfig& RetryConfig,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	auto FutureState = MakeShared<TSatoriFuture<{{ $resultType }}Result>::FState>();
-
-	auto RetryState = MakeShared<int32>(0);
-	auto Cfg = Client.RetryConfiguration;
-
+	{{- if $needsSession }}
+	auto SessionState = MakeShared<FSatoriSession>(Session);
+	{{- end }}
+	auto RetryCount = MakeShared<int32>(0);
 	auto DoRequest = MakeShared<TFunction<void()>>();
 	auto OnError = MakeShared<TFunction<void(const FSatoriError&)>>();
 
-	*OnError = [FutureState, RetryState, DoRequest, OnError, Cfg](const FSatoriError& Error)
+	*OnError = [FutureState, RetryCount, DoRequest, OnError, RetryConfig](const FSatoriError& Error)
 	{
-		if (Satori::IsTransientError(Error) && *RetryState < Cfg.MaxRetries)
+		if (Satori::IsTransientError(Error) && *RetryCount < RetryConfig.MaxRetries)
 		{
-			(*RetryState)++;
-			float Delay = Satori::CalculateBackoff(*RetryState, Cfg);
+			(*RetryCount)++;
+			float Delay = Satori::CalculateBackoff(*RetryCount, RetryConfig);
 			FTSTicker::GetCoreTicker().AddTicker(
 				FTickerDelegate::CreateLambda([DoRequest](float) -> bool { (*DoRequest)(); return false; }),
 				Delay);
 		}
 		else
 		{
-			auto DR = DoRequest; auto OE = OnError;
-			DR->Reset(); OE->Reset();
+			*DoRequest = nullptr;
+			*OnError = nullptr;
 			FutureState->Resolve({{ $resultType }}Result{{ "{{" }}}, Error, true});
 		}
 	};
 
-	*DoRequest = [Client, FutureState, DoRequest, OnError,
-		{{- if $needsSession }} Session, {{- end }}
+	*DoRequest = [FutureState, {{- if $needsSession }}SessionState, {{- end }}DoRequest, OnError, ClientConfig, RetryConfig, CancellationToken
 		{{- if $hasParams -}}
 		{{- range $fidx, $field := $requestType.Fields }}
-		{{ $field.Name | pascalCase }},
+		, {{ $field.Name | pascalCase }}
 		{{- end -}}
 		{{- range $fidx, $field := $requestType.MapFields }}
-		{{ $field.Name | pascalCase }},
+		, {{ $field.Name | pascalCase }}
 		{{- end -}}
 		{{- end }}
-		CancellationToken]()
+		]()
 	{
 {{- if $needsSession }}
-		MaybeRefreshThenCall(Client, Session,
-			[Client, FutureState, DoRequest, OnError,
+		MaybeRefreshThenCall(SessionState, ClientConfig, RetryConfig, CancellationToken, OnError,
+			[FutureState, SessionState, DoRequest, OnError, ClientConfig, RetryConfig, CancellationToken
 				{{- if $hasParams -}}
 				{{- range $fidx, $field := $requestType.Fields }}
-				{{ $field.Name | pascalCase }},
+				, {{ $field.Name | pascalCase }}
 				{{- end -}}
 				{{- range $fidx, $field := $requestType.MapFields }}
-				{{ $field.Name | pascalCase }},
+				, {{ $field.Name | pascalCase }}
 				{{- end -}}
 				{{- end }}
-				CancellationToken](const FSatoriSession& Session)
+				]()
 			{
 				SatoriApi::{{ $rpc.Name }}(
-					Client.ApiConfig,
-					Session,
+					ClientConfig,
+					*SessionState,
 					{{- if $hasParams -}}
 					{{- range $fidx, $field := $requestType.Fields }}
 					{{ $field.Name | pascalCase }},
@@ -187,26 +185,25 @@ TSatoriFuture<{{ $resultType }}Result> Satori::{{ $rpc.Name }}(
 					{{- if $hasReturn }}
 					[FutureState, DoRequest, OnError](const FSatori{{ $returnType.Name }}& Result)
 					{
-						auto DR = DoRequest; auto OE = OnError;
-						DR->Reset(); OE->Reset();
+						*DoRequest = nullptr;
+						*OnError = nullptr;
 						FutureState->Resolve({{ $resultType }}Result{Result, {}, false});
 					},
 					{{- else }}
 					[FutureState, DoRequest, OnError]()
 					{
-						auto DR = DoRequest; auto OE = OnError;
-						DR->Reset(); OE->Reset();
+						*DoRequest = nullptr;
+						*OnError = nullptr;
 						FutureState->Resolve(FSatoriVoidResult{FSatoriVoid{}, {}, false});
 					},
 					{{- end }}
 					*OnError,
+					RetryConfig.Timeout,
 					CancellationToken);
-			},
-			*OnError,
-			CancellationToken);
+			});
 {{- else }}
 		SatoriApi::{{ $rpc.Name }}(
-			Client.ApiConfig,
+			ClientConfig,
 			{{- if $hasParams -}}
 			{{- range $fidx, $field := $requestType.Fields }}
 			{{ $field.Name | pascalCase }},
@@ -218,19 +215,20 @@ TSatoriFuture<{{ $resultType }}Result> Satori::{{ $rpc.Name }}(
 			{{- if $hasReturn }}
 			[FutureState, DoRequest, OnError](const FSatori{{ $returnType.Name }}& Result)
 			{
-				auto DR = DoRequest; auto OE = OnError;
-				DR->Reset(); OE->Reset();
+				*DoRequest = nullptr;
+				*OnError = nullptr;
 				FutureState->Resolve({{ $resultType }}Result{Result, {}, false});
 			},
 			{{- else }}
 			[FutureState, DoRequest, OnError]()
 			{
-				auto DR = DoRequest; auto OE = OnError;
-				DR->Reset(); OE->Reset();
+				*DoRequest = nullptr;
+				*OnError = nullptr;
 				FutureState->Resolve(FSatoriVoidResult{FSatoriVoid{}, {}, false});
 			},
 			{{- end }}
 			*OnError,
+			RetryConfig.Timeout,
 			CancellationToken);
 {{- end }}
 	};

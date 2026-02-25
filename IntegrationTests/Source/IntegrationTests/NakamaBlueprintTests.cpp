@@ -44,7 +44,7 @@ BEGIN_DEFINE_SPEC(FNakamaBPHealthcheckSpec, "IntegrationTests.BP.Healthcheck",
 
 
 	FNakamaSession Session;
-	FNakamaApiConfig Client;
+	FNakamaClientConfig Client;
 
 	static const FString ServerKey;
 	static const FString Host;
@@ -61,7 +61,7 @@ void FNakamaBPHealthcheckSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = FNakamaApiConfig{ServerKey, Host, Port, false, 10.0f};
+		Client = FNakamaClientConfig{ServerKey, Host, Port, false};
 	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
@@ -113,7 +113,7 @@ BEGIN_DEFINE_SPEC(FNakamaBPAuthSpec, "IntegrationTests.BP.Auth",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 
-	FNakamaApiConfig Client;
+	FNakamaClientConfig Client;
 
 	static const FString ServerKey;
 	static const FString Host;
@@ -131,7 +131,7 @@ void FNakamaBPAuthSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = FNakamaApiConfig{ServerKey, Host, Port, false, 10.0f};
+		Client = FNakamaClientConfig{ServerKey, Host, Port, false};
 	});
 
 	Describe("AuthenticateCustom", [this]()
@@ -234,7 +234,7 @@ BEGIN_DEFINE_SPEC(FNakamaBPSessionSpec, "IntegrationTests.BP.Session",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 
-	FNakamaApiConfig Client;
+	FNakamaClientConfig Client;
 	FNakamaSession Session;
 
 	static const FString ServerKey;
@@ -252,7 +252,7 @@ void FNakamaBPSessionSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = FNakamaApiConfig{ServerKey, Host, Port, false, 10.0f};
+		Client = FNakamaClientConfig{ServerKey, Host, Port, false};
 	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
@@ -333,7 +333,7 @@ BEGIN_DEFINE_SPEC(FNakamaBPAccountSpec, "IntegrationTests.BP.Account",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 
-	FNakamaApiConfig Client;
+	FNakamaClientConfig Client;
 	FNakamaSession Session;
 	FString UserId;
 
@@ -352,7 +352,7 @@ void FNakamaBPAccountSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = FNakamaApiConfig{ServerKey, Host, Port, false, 10.0f};
+		Client = FNakamaClientConfig{ServerKey, Host, Port, false};
 	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
@@ -485,11 +485,11 @@ BEGIN_DEFINE_SPEC(FNakamaBPFriendsSpec, "IntegrationTests.BP.Friends",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 
-	FNakamaApiConfig Client;
+	FNakamaClientConfig Client;
 	FNakamaSession Session;
 	FString UserId;
 
-	FNakamaApiConfig FriendClient;
+	FNakamaClientConfig FriendClient;
 	FNakamaSession FriendSession;
 	FString FriendUserId;
 
@@ -508,9 +508,9 @@ void FNakamaBPFriendsSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = FNakamaApiConfig{ServerKey, Host, Port, false, 10.0f};
+		Client = FNakamaClientConfig{ServerKey, Host, Port, false};
 
-		FriendClient = FNakamaApiConfig{ServerKey, Host, Port, false, 10.0f};
+		FriendClient = FNakamaClientConfig{ServerKey, Host, Port, false};
 	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
@@ -719,7 +719,7 @@ BEGIN_DEFINE_SPEC(FNakamaBPGroupsSpec, "IntegrationTests.BP.Groups",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 
-	FNakamaApiConfig Client;
+	FNakamaClientConfig Client;
 	FNakamaSession Session;
 	FString UserId;
 
@@ -746,7 +746,7 @@ void FNakamaBPGroupsSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = FNakamaApiConfig{ServerKey, Host, Port, false, 10.0f};
+		Client = FNakamaClientConfig{ServerKey, Host, Port, false};
 	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
@@ -1277,7 +1277,7 @@ BEGIN_DEFINE_SPEC(FNakamaBPStorageSpec, "IntegrationTests.BP.Storage",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 
-	FNakamaApiConfig Client;
+	FNakamaClientConfig Client;
 	FNakamaSession Session;
 	FString UserId;
 
@@ -1296,7 +1296,7 @@ void FNakamaBPStorageSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = FNakamaApiConfig{ServerKey, Host, Port, false, 10.0f};
+		Client = FNakamaClientConfig{ServerKey, Host, Port, false};
 	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
@@ -1592,7 +1592,7 @@ BEGIN_DEFINE_SPEC(FNakamaBPLinkSpec, "IntegrationTests.BP.Link",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 
-	FNakamaApiConfig Client;
+	FNakamaClientConfig Client;
 	FNakamaSession Session;
 
 	static const FString ServerKey;
@@ -1611,7 +1611,7 @@ void FNakamaBPLinkSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = FNakamaApiConfig{ServerKey, Host, Port, false, 10.0f};
+		Client = FNakamaClientConfig{ServerKey, Host, Port, false};
 	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
@@ -1887,7 +1887,7 @@ BEGIN_DEFINE_SPEC(FNakamaBPNotificationsSpec, "IntegrationTests.BP.Notifications
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 
-	FNakamaApiConfig Client;
+	FNakamaClientConfig Client;
 	FNakamaSession Session;
 
 	static const FString ServerKey;
@@ -1905,7 +1905,7 @@ void FNakamaBPNotificationsSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = FNakamaApiConfig{ServerKey, Host, Port, false, 10.0f};
+		Client = FNakamaClientConfig{ServerKey, Host, Port, false};
 	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
@@ -1964,7 +1964,7 @@ BEGIN_DEFINE_SPEC(FNakamaBPMatchesSpec, "IntegrationTests.BP.Matches",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 
-	FNakamaApiConfig Client;
+	FNakamaClientConfig Client;
 	FNakamaSession Session;
 
 	static const FString ServerKey;
@@ -1982,7 +1982,7 @@ void FNakamaBPMatchesSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = FNakamaApiConfig{ServerKey, Host, Port, false, 10.0f};
+		Client = FNakamaClientConfig{ServerKey, Host, Port, false};
 	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
@@ -2040,7 +2040,7 @@ BEGIN_DEFINE_SPEC(FNakamaBPEventsSpec, "IntegrationTests.BP.Events",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 
-	FNakamaApiConfig Client;
+	FNakamaClientConfig Client;
 	FNakamaSession Session;
 
 	static const FString ServerKey;
@@ -2058,7 +2058,7 @@ void FNakamaBPEventsSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = FNakamaApiConfig{ServerKey, Host, Port, false, 10.0f};
+		Client = FNakamaClientConfig{ServerKey, Host, Port, false};
 	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)

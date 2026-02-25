@@ -133,8 +133,8 @@ struct TNakamaFuture
 	}
 };
 
-/** Retry configuration for transient error handling. */
-struct NAKAMA_API FNakamaRetryConfiguration
+/** Retry configuration for transient error handling + session auto-refresh. */
+struct NAKAMA_API FNakamaRetryConfig
 {
 	/** Maximum number of retry attempts (0 = no retries). */
 	int32 MaxRetries = 4;
@@ -142,25 +142,17 @@ struct NAKAMA_API FNakamaRetryConfiguration
 	/** Base delay in milliseconds before first retry. Actual delay uses exponential backoff with full jitter. */
 	int32 BaseDelayMs = 500;
 
-	FNakamaRetryConfiguration() = default;
-	FNakamaRetryConfiguration(int32 InMaxRetries, int32 InBaseDelayMs)
-		: MaxRetries(InMaxRetries), BaseDelayMs(InBaseDelayMs) {}
-};
-
-/**
- * High-level Nakama client configuration.
- * Holds an API config plus retry and session auto-refresh settings.
- */
-struct NAKAMA_API FNakamaClient
-{
-	FNakamaApiConfig ApiConfig;
-	FNakamaRetryConfiguration RetryConfiguration;
+	/** Whether to automatically refresh expired sessions before making API calls. */
 	bool bAutoRefreshSession = true;
+
+	/** How many seconds before expiry a session is considered "about to expire" and gets refreshed. */
 	int64 AutoRefreshBufferSeconds = 300;
+
+	/** HTTP request timeout in seconds. */
+	float Timeout = 10.0f;
 
 	/** Called after a session is automatically refreshed, so callers can persist the updated session. */
 	TFunction<void(const FNakamaSession&)> OnSessionRefreshed;
-
 };
 
 /**
@@ -175,7 +167,7 @@ namespace Nakama
 	NAKAMA_API bool IsTransientError(const FNakamaError& Error) noexcept;
 
 	/** Compute backoff delay in seconds for a given attempt using exponential backoff with full jitter. */
-	NAKAMA_API float CalculateBackoff(int32 Attempt, const FNakamaRetryConfiguration& Config) noexcept;
+	NAKAMA_API float CalculateBackoff(int32 Attempt, const FNakamaRetryConfig& Config) noexcept;
 
 {{- /* Generate free function declarations for each RPC */ -}}
 {{- range $idx, $rpc := $.Rpcs }}
@@ -190,7 +182,7 @@ namespace Nakama
 
 	/** {{ $rpc.Comment }} */
 	NAKAMA_API TNakamaFuture<{{ $resultType }}Result> {{ $rpc.Name }}(
-		FNakamaClient Client,
+		const FNakamaClientConfig& ClientConfig,
 		{{- if $needsSession }}
 		const FNakamaSession& Session,
 		{{- end }}
@@ -206,12 +198,13 @@ namespace Nakama
 		const {{ getUnrealMapType $field.Type }}& {{ $field.Name | pascalCase }},
 		{{- end -}}
 		{{- end }}
-		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
+		const FNakamaRetryConfig& RetryConfig = {},
+		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
 {{- if $needsSession }}
 
 	/** {{ $rpc.Comment }} (Server-to-server with HTTP key) */
 	NAKAMA_API TNakamaFuture<{{ $resultType }}Result> {{ $rpc.Name }}(
-		FNakamaClient Client,
+		const FNakamaClientConfig& ClientConfig,
 		const FString& HttpKey,
 		{{- if $hasParams -}}
 		{{- range $fidx, $field := $requestType.Fields }}
@@ -227,7 +220,8 @@ namespace Nakama
 		const {{ getUnrealMapType $field.Type }}& {{ $field.Name | pascalCase }},
 		{{- end -}}
 		{{- end }}
-		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
+		const FNakamaRetryConfig& RetryConfig = {},
+		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
 {{- end }}
 {{- end }}
 }

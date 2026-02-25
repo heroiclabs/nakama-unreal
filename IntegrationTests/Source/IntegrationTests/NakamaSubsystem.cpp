@@ -12,7 +12,7 @@ void UNakamaSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
 
-	Client = FNakamaApiConfig{ServerKey, Host, Port, bUseSSL, 10.0f};
+	Client = FNakamaClientConfig{ServerKey, Host, Port, bUseSSL};
 
 	AccountVM = NewObject<UVM_NakamaAccount>(this);
 

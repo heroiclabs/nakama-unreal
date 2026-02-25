@@ -49,7 +49,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Nakama|UI")
 	void HideMenu();
 
-	const FNakamaApiConfig& GetClient() const { return Client; }
+	const FNakamaClientConfig& GetClient() const { return Client; }
 
 	/** Get the active session (the one selected in the dropdown). */
 	const FNakamaSession& GetActiveSession() const { return Sessions[ActiveSessionIndex]; }
@@ -96,7 +96,7 @@ private:
 	UPROPERTY()
 	bool bUseSSL = false;
 
-	FNakamaApiConfig Client;
+	FNakamaClientConfig Client;
 	FNakamaSession Sessions[NumSessions];
 	int32 AuthenticatedCount = 0;
 	int32 ActiveSessionIndex = 0;

@@ -73,7 +73,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "{{ $rpc.Name }}"), Category = "Nakama|Client")
 	static UNakamaClient{{ $rpc.Name }}* {{ $rpc.Name }}(
 		UObject* WorldContextObject,
-		FNakamaApiConfig Client
+		FNakamaClientConfig Client
 {{- if $needsSession }},
 		const FNakamaSession& Session
 {{- end }}
@@ -93,7 +93,7 @@ public:
 	virtual void Activate() override;
 
 private:
-	FNakamaApiConfig Client;
+	FNakamaClientConfig Client;
 
 {{- if $needsSession }}
 	FNakamaSession Session;

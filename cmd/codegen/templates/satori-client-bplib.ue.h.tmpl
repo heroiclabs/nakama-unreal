@@ -73,7 +73,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "{{ $rpc.Name }}"), Category = "Satori|Client")
 	static USatoriClient{{ $rpc.Name }}* {{ $rpc.Name }}(
 		UObject* WorldContextObject,
-		FSatoriApiConfig Client
+		FSatoriClientConfig Client
 {{- if $needsSession }},
 		const FSatoriSession& Session
 {{- end }}
@@ -93,7 +93,7 @@ public:
 	virtual void Activate() override;
 
 private:
-	FSatoriApiConfig Client;
+	FSatoriClientConfig Client;
 
 {{- if $needsSession }}
 	FSatoriSession Session;

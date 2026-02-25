@@ -31,7 +31,7 @@ DEFINE_LOG_CATEGORY_STATIC(LogNakamaProfile, Log, All);
 BEGIN_DEFINE_SPEC(FNakamaProfilingMemorySpec, "IntegrationTests.Profiling.Memory",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaApiConfig Client;
+	FNakamaClientConfig Client;
 	FNakamaSession Session;
 
 	static const FString ServerKey;
@@ -55,7 +55,7 @@ void FNakamaProfilingMemorySpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = FNakamaApiConfig{ServerKey, Host, Port, false, 10.0f};
+		Client = FNakamaClientConfig{ServerKey, Host, Port, false};
 	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
@@ -93,7 +93,7 @@ void FNakamaProfilingMemorySpec::Define()
 			constexpr int32 NumClients = 100;
 			for (int32 i = 0; i < NumClients; ++i)
 			{
-				FNakamaApiConfig TempClient = FNakamaApiConfig{ServerKey, Host, Port, false};
+				FNakamaClientConfig TempClient = FNakamaClientConfig{ServerKey, Host, Port, false};
 				TempClient = {};
 			}
 
@@ -239,7 +239,7 @@ void FNakamaProfilingMemorySpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaProfilingPerformanceSpec, "IntegrationTests.Profiling.Performance",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaApiConfig Client;
+	FNakamaClientConfig Client;
 	FNakamaSession Session;
 
 	static const FString ServerKey;
@@ -257,7 +257,7 @@ void FNakamaProfilingPerformanceSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = FNakamaApiConfig{ServerKey, Host, Port, false, 10.0f};
+		Client = FNakamaClientConfig{ServerKey, Host, Port, false};
 	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
@@ -294,7 +294,7 @@ void FNakamaProfilingPerformanceSpec::Define()
 
 			struct FSequentialRequester : TSharedFromThis<FSequentialRequester>
 			{
-				FNakamaApiConfig Client;
+				FNakamaClientConfig Client;
 				FNakamaSession Session;
 				TSharedPtr<TArray<double>> Latencies;
 				TSharedPtr<int32> CompletedCount;
@@ -455,7 +455,7 @@ void FNakamaProfilingPerformanceSpec::Define()
 			const double StartTime = FPlatformTime::Seconds();
 			for (int32 i = 0; i < NumIterations; ++i)
 			{
-				FNakamaApiConfig TempClient = FNakamaApiConfig{ServerKey, Host, Port, false};
+				FNakamaClientConfig TempClient = FNakamaClientConfig{ServerKey, Host, Port, false};
 			}
 			const double Elapsed = (FPlatformTime::Seconds() - StartTime) * 1000000.0;
 
@@ -530,7 +530,7 @@ void FNakamaProfilingPerformanceSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaProfilingStressSpec, "IntegrationTests.Profiling.Stress",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaApiConfig Client;
+	FNakamaClientConfig Client;
 	FNakamaSession Session;
 
 	static const FString ServerKey;
@@ -548,7 +548,7 @@ void FNakamaProfilingStressSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = FNakamaApiConfig{ServerKey, Host, Port, false, 15.0f};
+		Client = FNakamaClientConfig{ServerKey, Host, Port, false};
 	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
@@ -659,7 +659,7 @@ void FNakamaProfilingStressSpec::Define()
 	{
 		LatentIt("should handle abandoned requests gracefully", [this](const FDoneDelegate& Done)
 		{
-			FNakamaApiConfig TempClient = FNakamaApiConfig{ServerKey, Host, Port, false, 10.0f};
+			FNakamaClientConfig TempClient = FNakamaClientConfig{ServerKey, Host, Port, false};
 
 			FNakamaAccountCustom Account;
 			Account.Id = GenerateId();
@@ -697,7 +697,7 @@ void FNakamaProfilingStressSpec::Define()
 
 			for (int32 i = 0; i < NumClients; ++i)
 			{
-				FNakamaApiConfig IsoClient = FNakamaApiConfig{ServerKey, Host, Port, false, 10.0f};
+				FNakamaClientConfig IsoClient = FNakamaClientConfig{ServerKey, Host, Port, false};
 
 				FNakamaAccountCustom Account;
 				Account.Id = GenerateId();
@@ -759,7 +759,7 @@ void FNakamaProfilingStressSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaProfilingLeakSpec, "IntegrationTests.Profiling.LeakDetection",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaApiConfig Client;
+	FNakamaClientConfig Client;
 
 	static const FString ServerKey;
 	static const FString Host;
@@ -782,7 +782,7 @@ void FNakamaProfilingLeakSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		Client = FNakamaApiConfig{ServerKey, Host, Port, false, 10.0f};
+		Client = FNakamaClientConfig{ServerKey, Host, Port, false};
 	});
 
 	Describe("SharedPointers", [this]()
@@ -922,12 +922,12 @@ void FNakamaProfilingDiagnosticsSpec::Define()
 
 		It("should report Nakama client defaults", [this]()
 		{
-			FNakamaApiConfig TestClient = FNakamaApiConfig{TEXT("defaultkey"), TEXT("127.0.0.1"), 7350, false};
+			FNakamaClientConfig TestClient = FNakamaClientConfig{TEXT("defaultkey"), TEXT("127.0.0.1"), 7350, false};
 
 			UE_LOG(LogNakamaProfile, Log, TEXT("[Profiling.Diagnostics] NakamaClient:"));
-			UE_LOG(LogNakamaProfile, Log, TEXT("  DefaultTimeout=%.1f"), TestClient.Timeout);
+			UE_LOG(LogNakamaProfile, Log, TEXT("  Host=%s Port=%d SSL=%d"), *TestClient.Host, TestClient.Port, TestClient.bUseSSL);
 
-			TestTrue("Client should have positive timeout", TestClient.Timeout > 0.0f);
+			TestTrue("Client should have valid host", !TestClient.Host.IsEmpty());
 		});
 	});
 }

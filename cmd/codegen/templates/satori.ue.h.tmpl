@@ -133,8 +133,8 @@ struct TSatoriFuture
 	}
 };
 
-/** Retry configuration for transient error handling. */
-struct SATORI_API FSatoriRetryConfiguration
+/** Retry configuration for transient error handling + session auto-refresh. */
+struct SATORI_API FSatoriRetryConfig
 {
 	/** Maximum number of retry attempts (0 = no retries). */
 	int32 MaxRetries = 4;
@@ -142,25 +142,17 @@ struct SATORI_API FSatoriRetryConfiguration
 	/** Base delay in milliseconds before first retry. Actual delay uses exponential backoff with full jitter. */
 	int32 BaseDelayMs = 500;
 
-	FSatoriRetryConfiguration() = default;
-	FSatoriRetryConfiguration(int32 InMaxRetries, int32 InBaseDelayMs)
-		: MaxRetries(InMaxRetries), BaseDelayMs(InBaseDelayMs) {}
-};
-
-/**
- * High-level Satori client configuration.
- * Holds an API config plus retry and session auto-refresh settings.
- */
-struct SATORI_API FSatoriClient
-{
-	FSatoriApiConfig ApiConfig;
-	FSatoriRetryConfiguration RetryConfiguration;
+	/** Whether to automatically refresh expired sessions before making API calls. */
 	bool bAutoRefreshSession = true;
+
+	/** How many seconds before expiry a session is considered "about to expire" and gets refreshed. */
 	int64 AutoRefreshBufferSeconds = 300;
+
+	/** HTTP request timeout in seconds. */
+	float Timeout = 10.0f;
 
 	/** Called after a session is automatically refreshed, so callers can persist the updated session. */
 	TFunction<void(const FSatoriSession&)> OnSessionRefreshed;
-
 };
 
 /**
@@ -175,7 +167,7 @@ namespace Satori
 	SATORI_API bool IsTransientError(const FSatoriError& Error) noexcept;
 
 	/** Compute backoff delay in seconds for a given attempt using exponential backoff with full jitter. */
-	SATORI_API float CalculateBackoff(int32 Attempt, const FSatoriRetryConfiguration& Config) noexcept;
+	SATORI_API float CalculateBackoff(int32 Attempt, const FSatoriRetryConfig& Config) noexcept;
 
 {{- /* Generate free function declarations for each RPC */ -}}
 {{- range $idx, $rpc := $.Rpcs }}
@@ -190,7 +182,7 @@ namespace Satori
 
 	/** {{ $rpc.Comment }} */
 	SATORI_API TSatoriFuture<{{ $resultType }}Result> {{ $rpc.Name }}(
-		FSatoriClient Client,
+		const FSatoriClientConfig& ClientConfig,
 		{{- if $needsSession }}
 		const FSatoriSession& Session,
 		{{- end }}
@@ -206,6 +198,7 @@ namespace Satori
 		const {{ getUnrealMapType $field.Type }}& {{ $field.Name | pascalCase }},
 		{{- end -}}
 		{{- end }}
-		FSatoriCancellationTokenPtr CancellationToken = nullptr) noexcept;
+		const FSatoriRetryConfig& RetryConfig = {},
+		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
 {{- end }}
 }

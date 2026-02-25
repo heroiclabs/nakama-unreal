@@ -12,7 +12,7 @@ FNakamaAutomationTestBase::FNakamaAutomationTestBase(const FString& InName, cons
 
 void FNakamaAutomationTestBase::Initialize()
 {
-	NakamaClient = FNakamaApiConfig{ServerKey, Host, Port, false, 5.0f};
+	NakamaClient = FNakamaClientConfig{ServerKey, Host, Port, false};
 }
 
 FString FNakamaAutomationTestBase::GenerateUniqueId()

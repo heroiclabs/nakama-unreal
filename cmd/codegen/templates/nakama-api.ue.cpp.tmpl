@@ -535,9 +535,9 @@ TSharedPtr<FJsonObject> FNakama{{ $msg.Name }}::ToJson() const noexcept
 {{- end }}
 {{- end }}
 
-// --- FNakamaApiConfig ---
+// --- FNakamaClientConfig ---
 
-FString FNakamaApiConfig::GetBaseUrl() const noexcept
+FString FNakamaClientConfig::GetBaseUrl() const noexcept
 {
 	const FString Scheme = bUseSSL ? TEXT("https") : TEXT("http");
 	return FString::Printf(TEXT("%s://%s:%d"), *Scheme, *Host, Port);
@@ -550,7 +550,7 @@ namespace
 {
 
 void DoHttpRequest(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FString& Endpoint,
 	const FString& Method,
 	const FString& BodyString,
@@ -558,7 +558,8 @@ void DoHttpRequest(
 	const FString& TokenString,
 	TFunction<void(TSharedPtr<FJsonObject>)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	SCOPE_CYCLE_COUNTER(STAT_Nakama_MakeRequest_Dispatch);
 	TRACE_CPUPROFILER_EVENT_SCOPE(Nakama_MakeRequest);
@@ -609,7 +610,7 @@ void DoHttpRequest(
 		UE_LOG(LogNakama, Log, TEXT("Request %s %s"), *Method, *Url);
 	}
 
-	Request->SetTimeout(Config.Timeout);
+	Request->SetTimeout(Timeout);
 
 	Request->OnProcessRequestComplete().BindLambda(
 		[OnSuccess, OnError, CancellationToken](FHttpRequestPtr Req, FHttpResponsePtr Res, bool bSuccess)
@@ -618,7 +619,7 @@ void DoHttpRequest(
 			TRACE_CPUPROFILER_EVENT_SCOPE(Nakama_OnResponse);
 			DEC_DWORD_STAT(STAT_Nakama_ActiveRequests);
 
-			if (CancellationToken && CancellationToken->IsCancelled())
+			if (CancellationToken->Load())
 			{
 				if (OnError)
 				{
@@ -646,6 +647,7 @@ void DoHttpRequest(
 			{
 				INC_DWORD_STAT(STAT_Nakama_TotalErrors);
 				FString ErrorMsg = FString::Printf(TEXT("HTTP %d"), Code);
+				int32 ErrorCode = Code;
 				TSharedPtr<FJsonObject> Json;
 				if (FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Content), Json) && Json.IsValid())
 				{
@@ -653,10 +655,14 @@ void DoHttpRequest(
 					{
 						ErrorMsg = Json->GetStringField(TEXT("message"));
 					}
+					if (Json->HasField(TEXT("code")))
+					{
+						ErrorCode = static_cast<int32>(Json->GetNumberField(TEXT("code")));
+					}
 				}
 				if (OnError)
 				{
-					OnError(FNakamaError(ErrorMsg, Code));
+					OnError(FNakamaError(ErrorMsg, ErrorCode));
 				}
 				return;
 			}
@@ -686,7 +692,7 @@ void DoHttpRequest(
 }
 
 void SendRequest(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FString& Endpoint,
 	const FString& Method,
 	const FString& BodyString,
@@ -694,10 +700,11 @@ void SendRequest(
 	const FString& BearerToken,
 	TFunction<void(TSharedPtr<FJsonObject>)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	// Early cancellation check
-	if (CancellationToken && CancellationToken->IsCancelled())
+	if (CancellationToken->Load())
 	{
 		if (OnError)
 		{
@@ -706,13 +713,13 @@ void SendRequest(
 		return;
 	}
 
-	DoHttpRequest(Config, Endpoint, Method, BodyString, AuthType, BearerToken, OnSuccess, OnError, CancellationToken);
+	DoHttpRequest(Config, Endpoint, Method, BodyString, AuthType, BearerToken, OnSuccess, OnError, Timeout, CancellationToken);
 }
 
 {{- template "serializejson" }}
 
 void MakeRequest(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FString& Endpoint,
 	const FString& Method,
 	const TSharedPtr<FJsonObject>& Body,
@@ -720,7 +727,8 @@ void MakeRequest(
 	const FString& BearerToken,
 	TFunction<void(TSharedPtr<FJsonObject>)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString BodyString;
 	if (Body.IsValid() && Method != TEXT("GET"))
@@ -728,7 +736,7 @@ void MakeRequest(
 		SCOPE_CYCLE_COUNTER(STAT_Nakama_JsonSerialize);
 		BodyString = SerializeJsonToString(Body);
 	}
-	SendRequest(Config, Endpoint, Method, BodyString, AuthType, BearerToken, OnSuccess, OnError, CancellationToken);
+	SendRequest(Config, Endpoint, Method, BodyString, AuthType, BearerToken, OnSuccess, OnError, Timeout, CancellationToken);
 }
 
 } // anonymous namespace
@@ -745,7 +753,7 @@ void MakeRequest(
 {{- $needsSession := and (not $isAuthenticate) (not $isSessionRefresh) }}
 
 void NakamaApi::{{ $rpc.Name }}(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	{{- if $needsSession }}
 	const FNakamaSession& Session,
 	{{- end }}
@@ -767,7 +775,8 @@ void NakamaApi::{{ $rpc.Name }}(
 	TFunction<void()> OnSuccess,
 	{{- end }}
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("{{ $rpc.Endpoint }}");
 	{{- /* Handle path parameters like {group_id} */ -}}
@@ -876,7 +885,7 @@ void NakamaApi::{{ $rpc.Name }}(
 			}
 			{{- end }}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 {{- else }}
 {{- /* Object body or no body */ -}}
 	TSharedPtr<FJsonObject> Body;
@@ -965,13 +974,13 @@ void NakamaApi::{{ $rpc.Name }}(
 			}
 			{{- end }}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 {{- end }}
 }
 {{- if $needsSession }}
 
 void NakamaApi::{{ $rpc.Name }}(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FString& HttpKey,
 	{{- if $hasParams -}}
 	{{- range $fidx, $field := $requestType.Fields }}
@@ -994,7 +1003,8 @@ void NakamaApi::{{ $rpc.Name }}(
 	TFunction<void()> OnSuccess,
 	{{- end }}
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("{{ $rpc.Endpoint }}");
 	{{- /* Handle path parameters like {group_id} */ -}}
@@ -1104,7 +1114,7 @@ void NakamaApi::{{ $rpc.Name }}(
 			}
 			{{- end }}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 {{- else }}
 {{- /* Object body or no body */ -}}
 	TSharedPtr<FJsonObject> Body;
@@ -1196,7 +1206,7 @@ void NakamaApi::{{ $rpc.Name }}(
 			}
 			{{- end }}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 {{- end }}
 }
 {{- end }}

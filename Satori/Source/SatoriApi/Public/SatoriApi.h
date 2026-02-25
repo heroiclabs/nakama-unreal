@@ -100,9 +100,6 @@ struct SATORIAPI_API FSatoriError
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	int32 Code = 0;
 
-	FSatoriError() = default;
-	FSatoriError(const FString& InMessage, int32 InCode)
-		: Message(InMessage), Code(InCode) {}
 };
 /** gRPC status codes returned by Satori in FSatoriError::Code. */
 namespace SatoriErrorCode
@@ -125,16 +122,6 @@ namespace SatoriErrorCode
 	constexpr int32 DataLoss = 15;
 	constexpr int32 Unauthenticated = 16;
 }
-
-struct SATORIAPI_API FSatoriCancellationToken
-{
-	void Cancel() { bCancelled.Store(true); }
-	bool IsCancelled() const { return bCancelled.Load(); }
-	static TSharedPtr<FSatoriCancellationToken> Create() { return MakeShared<FSatoriCancellationToken>(); }
-private:
-	TAtomic<bool> bCancelled{false};
-};
-using FSatoriCancellationTokenPtr = TSharedPtr<FSatoriCancellationToken>;
 
 /**  Log out a session, invalidate a refresh token, or log out all sessions/refresh tokens for a user. */
 USTRUCT(BlueprintType)
@@ -757,7 +744,7 @@ enum class ESatoriRequestAuth : uint8
 
 /** Low-level API client configuration. */
 USTRUCT(BlueprintType)
-struct SATORIAPI_API FSatoriApiConfig
+struct SATORIAPI_API FSatoriClientConfig
 {
 	GENERATED_BODY()
 
@@ -773,9 +760,6 @@ struct SATORIAPI_API FSatoriApiConfig
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Satori")
 	bool bUseSSL = false;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Satori")
-	float Timeout = 10.0f;
-
 	FString GetBaseUrl() const noexcept;
 };
 
@@ -785,91 +769,100 @@ namespace SatoriApi
 
 	/** Authenticate against the server. */
 	SATORIAPI_API void Authenticate(
-		const FSatoriApiConfig& Config,
+		const FSatoriClientConfig& Config,
 		FString Id,
 		bool NoSession,
 		const TMap<FString, FString>& Default,
 		const TMap<FString, FString>& Custom,
 		TFunction<void(const FSatoriSession&)> OnSuccess,
 		TFunction<void(const FSatoriError&)> OnError,
-		FSatoriCancellationTokenPtr CancellationToken = nullptr) noexcept;
+		float Timeout = 10.0f,
+		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
 
 	/** Log out a session, invalidate a refresh token, or log out all sessions/refresh tokens for a user. */
 	SATORIAPI_API void AuthenticateLogout(
-		const FSatoriApiConfig& Config,
+		const FSatoriClientConfig& Config,
 		FString Token,
 		FString RefreshToken,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FSatoriError&)> OnError,
-		FSatoriCancellationTokenPtr CancellationToken = nullptr) noexcept;
+		float Timeout = 10.0f,
+		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
 
 	/** Refresh a user's session using a refresh token retrieved from a previous authentication request. */
 	SATORIAPI_API void AuthenticateRefresh(
-		const FSatoriApiConfig& Config,
+		const FSatoriClientConfig& Config,
 		FString RefreshToken,
 		TFunction<void(const FSatoriSession&)> OnSuccess,
 		TFunction<void(const FSatoriError&)> OnError,
-		FSatoriCancellationTokenPtr CancellationToken = nullptr) noexcept;
+		float Timeout = 10.0f,
+		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
 
 	/** Delete the caller's identity and associated data. */
 	SATORIAPI_API void DeleteIdentity(
-		const FSatoriApiConfig& Config,
+		const FSatoriClientConfig& Config,
 		const FSatoriSession& Session,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FSatoriError&)> OnError,
-		FSatoriCancellationTokenPtr CancellationToken = nullptr) noexcept;
+		float Timeout = 10.0f,
+		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
 
 	/** Publish an event for this session. */
 	SATORIAPI_API void Event(
-		const FSatoriApiConfig& Config,
+		const FSatoriClientConfig& Config,
 		const FSatoriSession& Session,
 		const TArray<FSatoriEvent>& Events,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FSatoriError&)> OnError,
-		FSatoriCancellationTokenPtr CancellationToken = nullptr) noexcept;
+		float Timeout = 10.0f,
+		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
 
 	/** Publish server events for multiple distinct identities. */
 	SATORIAPI_API void ServerEvent(
-		const FSatoriApiConfig& Config,
+		const FSatoriClientConfig& Config,
 		const FSatoriSession& Session,
 		const TArray<FSatoriEvent>& Events,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FSatoriError&)> OnError,
-		FSatoriCancellationTokenPtr CancellationToken = nullptr) noexcept;
+		float Timeout = 10.0f,
+		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
 
 	/** Get or list all available experiments for this identity. */
 	SATORIAPI_API void GetExperiments(
-		const FSatoriApiConfig& Config,
+		const FSatoriClientConfig& Config,
 		const FSatoriSession& Session,
 		const TArray<FString>& Names,
 		const TArray<FString>& Labels,
 		TFunction<void(const FSatoriExperimentList&)> OnSuccess,
 		TFunction<void(const FSatoriError&)> OnError,
-		FSatoriCancellationTokenPtr CancellationToken = nullptr) noexcept;
+		float Timeout = 10.0f,
+		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
 
 	/** List all available flags and their value overrides for this identity. */
 	SATORIAPI_API void GetFlagOverrides(
-		const FSatoriApiConfig& Config,
+		const FSatoriClientConfig& Config,
 		const FSatoriSession& Session,
 		const TArray<FString>& Names,
 		const TArray<FString>& Labels,
 		TFunction<void(const FSatoriFlagOverrideList&)> OnSuccess,
 		TFunction<void(const FSatoriError&)> OnError,
-		FSatoriCancellationTokenPtr CancellationToken = nullptr) noexcept;
+		float Timeout = 10.0f,
+		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
 
 	/** List all available flags for this identity. */
 	SATORIAPI_API void GetFlags(
-		const FSatoriApiConfig& Config,
+		const FSatoriClientConfig& Config,
 		const FSatoriSession& Session,
 		const TArray<FString>& Names,
 		const TArray<FString>& Labels,
 		TFunction<void(const FSatoriFlagList&)> OnSuccess,
 		TFunction<void(const FSatoriError&)> OnError,
-		FSatoriCancellationTokenPtr CancellationToken = nullptr) noexcept;
+		float Timeout = 10.0f,
+		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
 
 	/** List available live events. */
 	SATORIAPI_API void GetLiveEvents(
-		const FSatoriApiConfig& Config,
+		const FSatoriClientConfig& Config,
 		const FSatoriSession& Session,
 		const TArray<FString>& Names,
 		const TArray<FString>& Labels,
@@ -879,66 +872,73 @@ namespace SatoriApi
 		int64 EndTimeSec,
 		TFunction<void(const FSatoriLiveEventList&)> OnSuccess,
 		TFunction<void(const FSatoriError&)> OnError,
-		FSatoriCancellationTokenPtr CancellationToken = nullptr) noexcept;
+		float Timeout = 10.0f,
+		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
 
 	/** Join an 'explicit join' live event. */
 	SATORIAPI_API void JoinLiveEvent(
-		const FSatoriApiConfig& Config,
+		const FSatoriClientConfig& Config,
 		const FSatoriSession& Session,
 		FString Id,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FSatoriError&)> OnError,
-		FSatoriCancellationTokenPtr CancellationToken = nullptr) noexcept;
+		float Timeout = 10.0f,
+		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
 
 	/** A healthcheck which load balancers can use to check the service. */
 	SATORIAPI_API void Healthcheck(
-		const FSatoriApiConfig& Config,
+		const FSatoriClientConfig& Config,
 		const FSatoriSession& Session,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FSatoriError&)> OnError,
-		FSatoriCancellationTokenPtr CancellationToken = nullptr) noexcept;
+		float Timeout = 10.0f,
+		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
 
 	/** Enrich/replace the current session with new identifier. */
 	SATORIAPI_API void Identify(
-		const FSatoriApiConfig& Config,
+		const FSatoriClientConfig& Config,
 		const FSatoriSession& Session,
 		FString Id,
 		const TMap<FString, FString>& Default,
 		const TMap<FString, FString>& Custom,
 		TFunction<void(const FSatoriSession&)> OnSuccess,
 		TFunction<void(const FSatoriError&)> OnError,
-		FSatoriCancellationTokenPtr CancellationToken = nullptr) noexcept;
+		float Timeout = 10.0f,
+		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
 
 	/** List properties associated with this identity. */
 	SATORIAPI_API void ListProperties(
-		const FSatoriApiConfig& Config,
+		const FSatoriClientConfig& Config,
 		const FSatoriSession& Session,
 		TFunction<void(const FSatoriProperties&)> OnSuccess,
 		TFunction<void(const FSatoriError&)> OnError,
-		FSatoriCancellationTokenPtr CancellationToken = nullptr) noexcept;
+		float Timeout = 10.0f,
+		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
 
 	/** A readycheck which load balancers can use to check the service. */
 	SATORIAPI_API void Readycheck(
-		const FSatoriApiConfig& Config,
+		const FSatoriClientConfig& Config,
 		const FSatoriSession& Session,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FSatoriError&)> OnError,
-		FSatoriCancellationTokenPtr CancellationToken = nullptr) noexcept;
+		float Timeout = 10.0f,
+		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
 
 	/** Update identity properties. */
 	SATORIAPI_API void UpdateProperties(
-		const FSatoriApiConfig& Config,
+		const FSatoriClientConfig& Config,
 		const FSatoriSession& Session,
 		bool Recompute,
 		const TMap<FString, FString>& Default,
 		const TMap<FString, FString>& Custom,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FSatoriError&)> OnError,
-		FSatoriCancellationTokenPtr CancellationToken = nullptr) noexcept;
+		float Timeout = 10.0f,
+		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
 
 	/** Get the list of messages for the identity. */
 	SATORIAPI_API void GetMessageList(
-		const FSatoriApiConfig& Config,
+		const FSatoriClientConfig& Config,
 		const FSatoriSession& Session,
 		int32 Limit,
 		bool Forward,
@@ -946,25 +946,28 @@ namespace SatoriApi
 		const TArray<FString>& MessageIds,
 		TFunction<void(const FSatoriGetMessageListResponse&)> OnSuccess,
 		TFunction<void(const FSatoriError&)> OnError,
-		FSatoriCancellationTokenPtr CancellationToken = nullptr) noexcept;
+		float Timeout = 10.0f,
+		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
 
 	/** Updates a message for an identity. */
 	SATORIAPI_API void UpdateMessage(
-		const FSatoriApiConfig& Config,
+		const FSatoriClientConfig& Config,
 		const FSatoriSession& Session,
 		FString Id,
 		int64 ReadTime,
 		int64 ConsumeTime,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FSatoriError&)> OnError,
-		FSatoriCancellationTokenPtr CancellationToken = nullptr) noexcept;
+		float Timeout = 10.0f,
+		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
 
 	/** Deletes a message for an identity. */
 	SATORIAPI_API void DeleteMessage(
-		const FSatoriApiConfig& Config,
+		const FSatoriClientConfig& Config,
 		const FSatoriSession& Session,
 		FString Id,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FSatoriError&)> OnError,
-		FSatoriCancellationTokenPtr CancellationToken = nullptr) noexcept;
+		float Timeout = 10.0f,
+		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
 }

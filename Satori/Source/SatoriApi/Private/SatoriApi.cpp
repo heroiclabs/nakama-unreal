@@ -1708,9 +1708,9 @@ TSharedPtr<FJsonObject> FSatoriUpdateMessageRequest::ToJson() const noexcept
 	return Json;
 }
 
-// --- FSatoriApiConfig ---
+// --- FSatoriClientConfig ---
 
-FString FSatoriApiConfig::GetBaseUrl() const noexcept
+FString FSatoriClientConfig::GetBaseUrl() const noexcept
 {
 	const FString Scheme = bUseSSL ? TEXT("https") : TEXT("http");
 	return FString::Printf(TEXT("%s://%s:%d"), *Scheme, *Host, Port);
@@ -1723,7 +1723,7 @@ namespace
 {
 
 void DoHttpRequest(
-	const FSatoriApiConfig& Config,
+	const FSatoriClientConfig& Config,
 	const FString& Endpoint,
 	const FString& Method,
 	const FString& BodyString,
@@ -1731,7 +1731,8 @@ void DoHttpRequest(
 	const FString& TokenString,
 	TFunction<void(TSharedPtr<FJsonObject>)> OnSuccess,
 	TFunction<void(const FSatoriError&)> OnError,
-	FSatoriCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	SCOPE_CYCLE_COUNTER(STAT_Satori_MakeRequest_Dispatch);
 	TRACE_CPUPROFILER_EVENT_SCOPE(Satori_MakeRequest);
@@ -1775,7 +1776,7 @@ void DoHttpRequest(
 		UE_LOG(LogSatori, Log, TEXT("Request %s %s"), *Method, *Url);
 	}
 
-	Request->SetTimeout(Config.Timeout);
+	Request->SetTimeout(Timeout);
 
 	Request->OnProcessRequestComplete().BindLambda(
 		[OnSuccess, OnError, CancellationToken](FHttpRequestPtr Req, FHttpResponsePtr Res, bool bSuccess)
@@ -1784,7 +1785,7 @@ void DoHttpRequest(
 			TRACE_CPUPROFILER_EVENT_SCOPE(Satori_OnResponse);
 			DEC_DWORD_STAT(STAT_Satori_ActiveRequests);
 
-			if (CancellationToken && CancellationToken->IsCancelled())
+			if (CancellationToken->Load())
 			{
 				if (OnError)
 				{
@@ -1812,6 +1813,7 @@ void DoHttpRequest(
 			{
 				INC_DWORD_STAT(STAT_Satori_TotalErrors);
 				FString ErrorMsg = FString::Printf(TEXT("HTTP %d"), Code);
+				int32 ErrorCode = Code;
 				TSharedPtr<FJsonObject> Json;
 				if (FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Content), Json) && Json.IsValid())
 				{
@@ -1819,10 +1821,14 @@ void DoHttpRequest(
 					{
 						ErrorMsg = Json->GetStringField(TEXT("message"));
 					}
+					if (Json->HasField(TEXT("code")))
+					{
+						ErrorCode = static_cast<int32>(Json->GetNumberField(TEXT("code")));
+					}
 				}
 				if (OnError)
 				{
-					OnError(FSatoriError(ErrorMsg, Code));
+					OnError(FSatoriError(ErrorMsg, ErrorCode));
 				}
 				return;
 			}
@@ -1852,7 +1858,7 @@ void DoHttpRequest(
 }
 
 void SendRequest(
-	const FSatoriApiConfig& Config,
+	const FSatoriClientConfig& Config,
 	const FString& Endpoint,
 	const FString& Method,
 	const FString& BodyString,
@@ -1860,10 +1866,11 @@ void SendRequest(
 	const FString& BearerToken,
 	TFunction<void(TSharedPtr<FJsonObject>)> OnSuccess,
 	TFunction<void(const FSatoriError&)> OnError,
-	FSatoriCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	// Early cancellation check
-	if (CancellationToken && CancellationToken->IsCancelled())
+	if (CancellationToken->Load())
 	{
 		if (OnError)
 		{
@@ -1872,7 +1879,7 @@ void SendRequest(
 		return;
 	}
 
-	DoHttpRequest(Config, Endpoint, Method, BodyString, AuthType, BearerToken, OnSuccess, OnError, CancellationToken);
+	DoHttpRequest(Config, Endpoint, Method, BodyString, AuthType, BearerToken, OnSuccess, OnError, Timeout, CancellationToken);
 }
 FString SerializeJsonToString(const TSharedPtr<FJsonObject>& Json)
 {
@@ -1903,7 +1910,7 @@ FString SerializeJsonEscaped(const TSharedPtr<FJsonObject>& Json)
 }
 
 void MakeRequest(
-	const FSatoriApiConfig& Config,
+	const FSatoriClientConfig& Config,
 	const FString& Endpoint,
 	const FString& Method,
 	const TSharedPtr<FJsonObject>& Body,
@@ -1911,7 +1918,8 @@ void MakeRequest(
 	const FString& BearerToken,
 	TFunction<void(TSharedPtr<FJsonObject>)> OnSuccess,
 	TFunction<void(const FSatoriError&)> OnError,
-	FSatoriCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString BodyString;
 	if (Body.IsValid() && Method != TEXT("GET"))
@@ -1919,20 +1927,21 @@ void MakeRequest(
 		SCOPE_CYCLE_COUNTER(STAT_Satori_JsonSerialize);
 		BodyString = SerializeJsonToString(Body);
 	}
-	SendRequest(Config, Endpoint, Method, BodyString, AuthType, BearerToken, OnSuccess, OnError, CancellationToken);
+	SendRequest(Config, Endpoint, Method, BodyString, AuthType, BearerToken, OnSuccess, OnError, Timeout, CancellationToken);
 }
 
 } // anonymous namespace
 
 void SatoriApi::Authenticate(
-	const FSatoriApiConfig& Config,
+	const FSatoriClientConfig& Config,
 	FString Id,
 	bool NoSession,
 	const TMap<FString, FString>& Default,
 	const TMap<FString, FString>& Custom,
 	TFunction<void(const FSatoriSession&)> OnSuccess,
 	TFunction<void(const FSatoriError&)> OnError,
-	FSatoriCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v1/authenticate");
 	TArray<FString> QueryParams;
@@ -1976,16 +1985,17 @@ void SatoriApi::Authenticate(
 				OnSuccess(Result);
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void SatoriApi::AuthenticateLogout(
-	const FSatoriApiConfig& Config,
+	const FSatoriClientConfig& Config,
 	FString Token,
 	FString RefreshToken,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FSatoriError&)> OnError,
-	FSatoriCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v1/authenticate/logout");
 	TArray<FString> QueryParams;
@@ -2013,15 +2023,16 @@ void SatoriApi::AuthenticateLogout(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void SatoriApi::AuthenticateRefresh(
-	const FSatoriApiConfig& Config,
+	const FSatoriClientConfig& Config,
 	FString RefreshToken,
 	TFunction<void(const FSatoriSession&)> OnSuccess,
 	TFunction<void(const FSatoriError&)> OnError,
-	FSatoriCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v1/authenticate/refresh");
 	TArray<FString> QueryParams;
@@ -2046,15 +2057,16 @@ void SatoriApi::AuthenticateRefresh(
 				OnSuccess(Result);
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void SatoriApi::DeleteIdentity(
-	const FSatoriApiConfig& Config,
+	const FSatoriClientConfig& Config,
 	const FSatoriSession& Session,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FSatoriError&)> OnError,
-	FSatoriCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v1/identity");
 
@@ -2068,16 +2080,17 @@ void SatoriApi::DeleteIdentity(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void SatoriApi::Event(
-	const FSatoriApiConfig& Config,
+	const FSatoriClientConfig& Config,
 	const FSatoriSession& Session,
 	const TArray<FSatoriEvent>& Events,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FSatoriError&)> OnError,
-	FSatoriCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v1/event");
 	TArray<FString> QueryParams;
@@ -2106,16 +2119,17 @@ void SatoriApi::Event(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void SatoriApi::ServerEvent(
-	const FSatoriApiConfig& Config,
+	const FSatoriClientConfig& Config,
 	const FSatoriSession& Session,
 	const TArray<FSatoriEvent>& Events,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FSatoriError&)> OnError,
-	FSatoriCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v1/server-event");
 	TArray<FString> QueryParams;
@@ -2144,17 +2158,18 @@ void SatoriApi::ServerEvent(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void SatoriApi::GetExperiments(
-	const FSatoriApiConfig& Config,
+	const FSatoriClientConfig& Config,
 	const FSatoriSession& Session,
 	const TArray<FString>& Names,
 	const TArray<FString>& Labels,
 	TFunction<void(const FSatoriExperimentList&)> OnSuccess,
 	TFunction<void(const FSatoriError&)> OnError,
-	FSatoriCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v1/experiment");
 	TArray<FString> QueryParams;
@@ -2182,17 +2197,18 @@ void SatoriApi::GetExperiments(
 				OnSuccess(Result);
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void SatoriApi::GetFlagOverrides(
-	const FSatoriApiConfig& Config,
+	const FSatoriClientConfig& Config,
 	const FSatoriSession& Session,
 	const TArray<FString>& Names,
 	const TArray<FString>& Labels,
 	TFunction<void(const FSatoriFlagOverrideList&)> OnSuccess,
 	TFunction<void(const FSatoriError&)> OnError,
-	FSatoriCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v1/flag/override");
 	TArray<FString> QueryParams;
@@ -2220,17 +2236,18 @@ void SatoriApi::GetFlagOverrides(
 				OnSuccess(Result);
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void SatoriApi::GetFlags(
-	const FSatoriApiConfig& Config,
+	const FSatoriClientConfig& Config,
 	const FSatoriSession& Session,
 	const TArray<FString>& Names,
 	const TArray<FString>& Labels,
 	TFunction<void(const FSatoriFlagList&)> OnSuccess,
 	TFunction<void(const FSatoriError&)> OnError,
-	FSatoriCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v1/flag");
 	TArray<FString> QueryParams;
@@ -2258,11 +2275,11 @@ void SatoriApi::GetFlags(
 				OnSuccess(Result);
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void SatoriApi::GetLiveEvents(
-	const FSatoriApiConfig& Config,
+	const FSatoriClientConfig& Config,
 	const FSatoriSession& Session,
 	const TArray<FString>& Names,
 	const TArray<FString>& Labels,
@@ -2272,7 +2289,8 @@ void SatoriApi::GetLiveEvents(
 	int64 EndTimeSec,
 	TFunction<void(const FSatoriLiveEventList&)> OnSuccess,
 	TFunction<void(const FSatoriError&)> OnError,
-	FSatoriCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v1/live-event");
 	TArray<FString> QueryParams;
@@ -2316,16 +2334,17 @@ void SatoriApi::GetLiveEvents(
 				OnSuccess(Result);
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void SatoriApi::JoinLiveEvent(
-	const FSatoriApiConfig& Config,
+	const FSatoriClientConfig& Config,
 	const FSatoriSession& Session,
 	FString Id,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FSatoriError&)> OnError,
-	FSatoriCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v1/live-event/{id}/participation");
 	Endpoint = Endpoint.Replace(TEXT("{id}"), *Id);
@@ -2345,15 +2364,16 @@ void SatoriApi::JoinLiveEvent(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void SatoriApi::Healthcheck(
-	const FSatoriApiConfig& Config,
+	const FSatoriClientConfig& Config,
 	const FSatoriSession& Session,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FSatoriError&)> OnError,
-	FSatoriCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/healthcheck");
 
@@ -2367,18 +2387,19 @@ void SatoriApi::Healthcheck(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void SatoriApi::Identify(
-	const FSatoriApiConfig& Config,
+	const FSatoriClientConfig& Config,
 	const FSatoriSession& Session,
 	FString Id,
 	const TMap<FString, FString>& Default,
 	const TMap<FString, FString>& Custom,
 	TFunction<void(const FSatoriSession&)> OnSuccess,
 	TFunction<void(const FSatoriError&)> OnError,
-	FSatoriCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v1/identify");
 	TArray<FString> QueryParams;
@@ -2421,15 +2442,16 @@ void SatoriApi::Identify(
 				OnSuccess(Result);
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void SatoriApi::ListProperties(
-	const FSatoriApiConfig& Config,
+	const FSatoriClientConfig& Config,
 	const FSatoriSession& Session,
 	TFunction<void(const FSatoriProperties&)> OnSuccess,
 	TFunction<void(const FSatoriError&)> OnError,
-	FSatoriCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v1/properties");
 
@@ -2444,15 +2466,16 @@ void SatoriApi::ListProperties(
 				OnSuccess(Result);
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void SatoriApi::Readycheck(
-	const FSatoriApiConfig& Config,
+	const FSatoriClientConfig& Config,
 	const FSatoriSession& Session,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FSatoriError&)> OnError,
-	FSatoriCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/readycheck");
 
@@ -2466,18 +2489,19 @@ void SatoriApi::Readycheck(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void SatoriApi::UpdateProperties(
-	const FSatoriApiConfig& Config,
+	const FSatoriClientConfig& Config,
 	const FSatoriSession& Session,
 	bool Recompute,
 	const TMap<FString, FString>& Default,
 	const TMap<FString, FString>& Custom,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FSatoriError&)> OnError,
-	FSatoriCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v1/properties");
 	TArray<FString> QueryParams;
@@ -2516,11 +2540,11 @@ void SatoriApi::UpdateProperties(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void SatoriApi::GetMessageList(
-	const FSatoriApiConfig& Config,
+	const FSatoriClientConfig& Config,
 	const FSatoriSession& Session,
 	int32 Limit,
 	bool Forward,
@@ -2528,7 +2552,8 @@ void SatoriApi::GetMessageList(
 	const TArray<FString>& MessageIds,
 	TFunction<void(const FSatoriGetMessageListResponse&)> OnSuccess,
 	TFunction<void(const FSatoriError&)> OnError,
-	FSatoriCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v1/message");
 	TArray<FString> QueryParams;
@@ -2561,18 +2586,19 @@ void SatoriApi::GetMessageList(
 				OnSuccess(Result);
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void SatoriApi::UpdateMessage(
-	const FSatoriApiConfig& Config,
+	const FSatoriClientConfig& Config,
 	const FSatoriSession& Session,
 	FString Id,
 	int64 ReadTime,
 	int64 ConsumeTime,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FSatoriError&)> OnError,
-	FSatoriCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v1/message/{id}");
 	Endpoint = Endpoint.Replace(TEXT("{id}"), *Id);
@@ -2599,16 +2625,17 @@ void SatoriApi::UpdateMessage(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void SatoriApi::DeleteMessage(
-	const FSatoriApiConfig& Config,
+	const FSatoriClientConfig& Config,
 	const FSatoriSession& Session,
 	FString Id,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FSatoriError&)> OnError,
-	FSatoriCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v1/message/{id}");
 	Endpoint = Endpoint.Replace(TEXT("{id}"), *Id);
@@ -2628,7 +2655,7 @@ void SatoriApi::DeleteMessage(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 // Module implementation

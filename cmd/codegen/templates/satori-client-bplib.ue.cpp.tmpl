@@ -34,7 +34,7 @@
 // {{ $rpc.Name }}
 USatoriClient{{ $rpc.Name }}* USatoriClient{{ $rpc.Name }}::{{ $rpc.Name }}(
 	UObject* WorldContextObject,
-	FSatoriApiConfig Client
+	FSatoriClientConfig Client
 {{- if $needsSession }},
 	const FSatoriSession& Session
 {{- end }}
