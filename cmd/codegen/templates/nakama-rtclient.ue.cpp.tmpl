@@ -53,6 +53,8 @@ TFuture<FRealtimeResponse> NakamaRealtimeClient::{{ $rpcType.Name | pascalCase }
         Array.Add(MakeShared<FJsonValueNumber>(Item));
   {{- else if or (eq $fieldType "bool") (containsString $fieldType "BoolValue") }}
         Array.Add(MakeShared<FJsonValueBoolean>(Item));
+  {{- else if or (eq $fieldType "bytes") (containsString $fieldType "BytesValue") }}
+        Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
   {{- else if isMessageType $fieldType }}
         Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
   {{- else }}
@@ -85,13 +87,20 @@ TFuture<FRealtimeResponse> NakamaRealtimeClient::{{ $rpcType.Name | pascalCase }
   {{- end }}
   {{- range $fidx, $field := $rpcType.MapFields }}
     {{- $fieldName := $field.Name | pascalCase }}
+    {{- $fieldType := $field.Type }}
     {{- $jsonFieldName := $field.Name }}
     if ({{ $fieldName }}.Num() > 0)
     {
       TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
       for (const auto& Pair : {{ $fieldName }})
       {
+        {{- if or (eq $fieldType "int32") (eq $fieldType "int64") (eq $fieldType "uint32") (eq $fieldType "uint64") (eq $fieldType "float") (eq $fieldType "double") (containsString $fieldType "Int32Value") (containsString $fieldType "Int64Value") (containsString $fieldType "UInt32Value") (containsString $fieldType "UInt64Value") (containsString $fieldType "FloatValue") (containsString $fieldType "DoubleValue") }}
+        MapObj->SetNumberField(Pair.Key, Pair.Value);
+        {{- else if or (eq $fieldType "bytes") (containsString $fieldType "BytesValue") }}
+        MapObj->SetObjectField(Pair.Key, Pair.Value);
+        {{- else -}}
         MapObj->SetStringField(Pair.Key, Pair.Value);
+        {{- end -}}
       }
       Json->SetObjectField(TEXT("{{ $jsonFieldName }}"), MapObj);
     }

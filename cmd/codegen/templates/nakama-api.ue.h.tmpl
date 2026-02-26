@@ -23,7 +23,7 @@
 #include "Templates/SharedPointer.h"
 #include "Dom/JsonObject.h"
 #include "HAL/ThreadSafeBool.h"
-#include "NakamaApi/NakamaTypes.h"
+#include "NakamaTypes.h"
 
 #include "NakamaApi.generated.h"
 
@@ -48,7 +48,7 @@ enum class ENakama{{ $enum.Name }} : uint8
 {{- end }}
 
 USTRUCT(BlueprintType)
-struct NAKAMAAPI_API FNakamaApiError
+struct NAKAMAAPI_API FNakamaError
 {
 	GENERATED_BODY()
 

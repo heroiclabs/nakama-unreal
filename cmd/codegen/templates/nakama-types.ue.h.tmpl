@@ -20,6 +20,8 @@
 
 #include "CoreMinimal.h"
 
+#include "NakamaTypes.generated.h"
+
 {{- /* Generate struct definitions for each proto message */ -}}
 {{- range $idx, $msg := $.Messages }}
 {{- if eq $msg.Name "Session" }}

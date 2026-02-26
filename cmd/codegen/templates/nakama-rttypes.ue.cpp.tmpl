@@ -127,6 +127,7 @@ FNakamaRtSession FNakamaRtSession::FromJson(const TSharedPtr<FJsonObject>& Json)
 {{- end }}
 {{- range $fidx, $field := $msg.MapFields }}
 {{- $fieldName := $field.Name | pascalCase }}
+{{- $fieldType := $field.Type }}
 {{- $jsonFieldName := $field.Name }}
 	if (Json->HasField(TEXT("{{ $jsonFieldName }}")))
 	{
@@ -135,7 +136,11 @@ FNakamaRtSession FNakamaRtSession::FromJson(const TSharedPtr<FJsonObject>& Json)
 		{
 			for (const auto& Pair : (*MapObj)->Values)
 			{
+        {{- if or (eq $fieldType "bytes") (containsString $fieldType "BytesValue") }}
+				Result.{{ $fieldName }}.Add(Pair.Key, Pair.Value->ToNumber());
+        {{- else -}}
 				Result.{{ $fieldName }}.Add(Pair.Key, Pair.Value->AsString());
+        {{- end -}}
 			}
 		}
 	}
@@ -342,7 +347,7 @@ TSharedPtr<FJsonObject> FNakamaRt{{ $msg.Name }}::ToJson() const noexcept
 	if ({{ $fieldName }}.Num() > 0)
 	{
 		TArray<TSharedPtr<FJsonValue>> Array;
-		for (const auto& Item : {{ $fieldName }})
+		for (const a/uto& Item : {{ $fieldName }})
 		{
 {{- if or (eq $fieldType "string") (containsString $fieldType "StringValue") (containsString $fieldType "Timestamp") }}
 			Array.Add(MakeShared<FJsonValueString>(Item));

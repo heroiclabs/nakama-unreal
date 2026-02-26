@@ -115,7 +115,7 @@ void UNakamaClient{{ $rpc.Name }}::Activate()
 			SetReadyToDestroy();
 		},
 {{- end }}
-		[this](const FNakamaApiError& Error)
+		[this](const FNakamaError& Error)
 		{
 			OnError.Broadcast(Error);
 			RemoveFromRoot();
