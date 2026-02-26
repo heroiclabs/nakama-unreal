@@ -360,8 +360,11 @@ tasks:
     desc: 'Build and run IntegrationTests C++ automation suite.'
     cmds:
     - task: check-unreal-engine
-    - task: codegen
-    - task: start-server
+    #- task: codegen
+    #- task: start-server
+    #- cmd: |
+    #    echo "Cleaning test data..."
+    #     docker exec unreal_integration_test_postgres psql -U postgres -d nakama -c "TRUNCATE users CASCADE;" 2>/dev/null || true
     - cmd: |
         mkdir -p IntegrationTests/Plugins
         if command -v robocopy &>/dev/null; then
