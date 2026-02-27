@@ -14,11 +14,6 @@
  * limitations under the License.
  */
 
-// TODO:
-//  
-// - [test] Application context mask macro
-// - Look into removing Nakama Log Level
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -57,10 +52,6 @@ DECLARE_MULTICAST_DELEGATE_OneParam(FDelegateMessageSent, const FString&);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FDelegateMessageError, EWebSocketMessageError, const FString&);
 DECLARE_MULTICAST_DELEGATE_ThreeParams(FDelegateClosed, int32, const FString&, bool);
 
-/*
-* 
-* - Only supports JSON
-*/
 UCLASS()
 class NAKAMA_API UWebSocketSubsystem : public UGameInstanceSubsystem
 {
