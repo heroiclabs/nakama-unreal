@@ -24,14 +24,14 @@
 namespace Nakama
 {
 TFuture<FRealtimeResponse> NakamaRealtimeClient::Channel(
-  const FString& Id,            
-  const FNakamaUserPresence& Presences,            
-  const FNakamaUserPresence& Self,            
-  const FString& RoomName,            
-  const FString& GroupId,            
-  const FString& UserIdOne,            
-  const FString& UserIdTwo
-)
+    const FString& Id,
+    const TArray<FNakamaRtUserPresence>& Presences,
+    const FNakamaRtUserPresence& Self,
+    const FString& RoomName,
+    const FString& GroupId,
+    const FString& UserIdOne,
+    const FString& UserIdTwo
+) noexcept
 {
     TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
     if (!Id.IsEmpty())
@@ -69,11 +69,11 @@ TFuture<FRealtimeResponse> NakamaRealtimeClient::Channel(
 }
 
 TFuture<FRealtimeResponse> NakamaRealtimeClient::ChannelJoin(
-  const FString& Target,            
-  const int32& Type,            
-  const bool& Persistence,            
-  const bool& Hidden
-)
+    const FString& Target,
+    const int32& Type,
+    const bool& Persistence,
+    const bool& Hidden
+) noexcept
 {
     TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
     if (!Target.IsEmpty())
@@ -88,8 +88,8 @@ TFuture<FRealtimeResponse> NakamaRealtimeClient::ChannelJoin(
 }
 
 TFuture<FRealtimeResponse> NakamaRealtimeClient::ChannelLeave(
-  const FString& ChannelId
-)
+    const FString& ChannelId
+) noexcept
 {
     TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
     if (!ChannelId.IsEmpty())
@@ -101,20 +101,20 @@ TFuture<FRealtimeResponse> NakamaRealtimeClient::ChannelLeave(
 }
 
 TFuture<FRealtimeResponse> NakamaRealtimeClient::ChannelMessage(
-  const FString& ChannelId,            
-  const FString& MessageId,            
-  const int32& Code,            
-  const FString& SenderId,            
-  const FString& Username,            
-  const FString& Content,            
-  const FString& CreateTime,            
-  const FString& UpdateTime,            
-  const bool& Persistent,            
-  const FString& RoomName,            
-  const FString& GroupId,            
-  const FString& UserIdOne,            
-  const FString& UserIdTwo
-)
+    const FString& ChannelId,
+    const FString& MessageId,
+    const int32& Code,
+    const FString& SenderId,
+    const FString& Username,
+    const FString& Content,
+    const FString& CreateTime,
+    const FString& UpdateTime,
+    const bool& Persistent,
+    const FString& RoomName,
+    const FString& GroupId,
+    const FString& UserIdOne,
+    const FString& UserIdTwo
+) noexcept
 {
     TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
     if (!ChannelId.IsEmpty())
@@ -168,18 +168,18 @@ TFuture<FRealtimeResponse> NakamaRealtimeClient::ChannelMessage(
 }
 
 TFuture<FRealtimeResponse> NakamaRealtimeClient::ChannelMessageAck(
-  const FString& ChannelId,            
-  const FString& MessageId,            
-  const int32& Code,            
-  const FString& Username,            
-  const FString& CreateTime,            
-  const FString& UpdateTime,            
-  const bool& Persistent,            
-  const FString& RoomName,            
-  const FString& GroupId,            
-  const FString& UserIdOne,            
-  const FString& UserIdTwo
-)
+    const FString& ChannelId,
+    const FString& MessageId,
+    const int32& Code,
+    const FString& Username,
+    const FString& CreateTime,
+    const FString& UpdateTime,
+    const bool& Persistent,
+    const FString& RoomName,
+    const FString& GroupId,
+    const FString& UserIdOne,
+    const FString& UserIdTwo
+) noexcept
 {
     TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
     if (!ChannelId.IsEmpty())
@@ -225,9 +225,9 @@ TFuture<FRealtimeResponse> NakamaRealtimeClient::ChannelMessageAck(
 }
 
 TFuture<FRealtimeResponse> NakamaRealtimeClient::ChannelMessageSend(
-  const FString& ChannelId,            
-  const FString& Content
-)
+    const FString& ChannelId,
+    const FString& Content
+) noexcept
 {
     TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
     if (!ChannelId.IsEmpty())
@@ -243,10 +243,10 @@ TFuture<FRealtimeResponse> NakamaRealtimeClient::ChannelMessageSend(
 }
 
 TFuture<FRealtimeResponse> NakamaRealtimeClient::ChannelMessageUpdate(
-  const FString& ChannelId,            
-  const FString& MessageId,            
-  const FString& Content
-)
+    const FString& ChannelId,
+    const FString& MessageId,
+    const FString& Content
+) noexcept
 {
     TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
     if (!ChannelId.IsEmpty())
@@ -266,9 +266,9 @@ TFuture<FRealtimeResponse> NakamaRealtimeClient::ChannelMessageUpdate(
 }
 
 TFuture<FRealtimeResponse> NakamaRealtimeClient::ChannelMessageRemove(
-  const FString& ChannelId,            
-  const FString& MessageId
-)
+    const FString& ChannelId,
+    const FString& MessageId
+) noexcept
 {
     TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
     if (!ChannelId.IsEmpty())
@@ -284,14 +284,14 @@ TFuture<FRealtimeResponse> NakamaRealtimeClient::ChannelMessageRemove(
 }
 
 TFuture<FRealtimeResponse> NakamaRealtimeClient::ChannelPresenceEvent(
-  const FString& ChannelId,            
-  const FNakamaUserPresence& Joins,            
-  const FNakamaUserPresence& Leaves,            
-  const FString& RoomName,            
-  const FString& GroupId,            
-  const FString& UserIdOne,            
-  const FString& UserIdTwo
-)
+    const FString& ChannelId,
+    const TArray<FNakamaRtUserPresence>& Joins,
+    const TArray<FNakamaRtUserPresence>& Leaves,
+    const FString& RoomName,
+    const FString& GroupId,
+    const FString& UserIdOne,
+    const FString& UserIdTwo
+) noexcept
 {
     TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
     if (!ChannelId.IsEmpty())
@@ -337,11 +337,10 @@ TFuture<FRealtimeResponse> NakamaRealtimeClient::ChannelPresenceEvent(
 }
 
 TFuture<FRealtimeResponse> NakamaRealtimeClient::Error(
-  const int32& Code,            
-  const FString& Message
-  const TArray<FString>& Context
-  
-)
+    const int32& Code,
+    const FString& Message,
+    const TMap<FString, FString>& Context
+) noexcept
 {
     TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
     Json->SetNumberField(TEXT("code"), Code);
@@ -361,13 +360,13 @@ TFuture<FRealtimeResponse> NakamaRealtimeClient::Error(
 }
 
 TFuture<FRealtimeResponse> NakamaRealtimeClient::Match(
-  const FString& MatchId,            
-  const bool& Authoritative,            
-  const FString& Label,            
-  const int32& Size,            
-  const FNakamaUserPresence& Presences,            
-  const FNakamaUserPresence& Self
-)
+    const FString& MatchId,
+    const bool& Authoritative,
+    const FString& Label,
+    const int32& Size,
+    const TArray<FNakamaRtUserPresence>& Presences,
+    const FNakamaRtUserPresence& Self
+) noexcept
 {
     TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
     if (!MatchId.IsEmpty())
@@ -395,8 +394,8 @@ TFuture<FRealtimeResponse> NakamaRealtimeClient::Match(
 }
 
 TFuture<FRealtimeResponse> NakamaRealtimeClient::MatchCreate(
-  const FString& Name
-)
+    const FString& Name
+) noexcept
 {
     TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
     if (!Name.IsEmpty())
@@ -408,12 +407,12 @@ TFuture<FRealtimeResponse> NakamaRealtimeClient::MatchCreate(
 }
 
 TFuture<FRealtimeResponse> NakamaRealtimeClient::MatchData(
-  const FString& MatchId,            
-  const FNakamaUserPresence& Presence,            
-  const int64& OpCode,            
-  const FString& Data,            
-  const bool& Reliable
-)
+    const FString& MatchId,
+    const FNakamaRtUserPresence& Presence,
+    const int64& OpCode,
+    const TArray<uint8>& Data,
+    const bool& Reliable
+) noexcept
 {
     TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
     if (!MatchId.IsEmpty())
@@ -422,19 +421,19 @@ TFuture<FRealtimeResponse> NakamaRealtimeClient::MatchData(
     }
     Json->SetObjectField(TEXT("presence"), Presence.ToJson());
     Json->SetNumberField(TEXT("op_code"), OpCode);
-    Json->SetObjectField(TEXT("data"), Data.ToJson());
+    Json->SetStringField(TEXT("data"), FBase64::Encode(Data));
     Json->SetBoolField(TEXT("reliable"), Reliable);
 
     return WebSocketSubsystem->Send(TEXT("match_data"), Json);
 }
 
 TFuture<FRealtimeResponse> NakamaRealtimeClient::MatchDataSend(
-  const FString& MatchId,            
-  const int64& OpCode,            
-  const FString& Data,            
-  const FNakamaUserPresence& Presences,            
-  const bool& Reliable
-)
+    const FString& MatchId,
+    const int64& OpCode,
+    const TArray<uint8>& Data,
+    const TArray<FNakamaRtUserPresence>& Presences,
+    const bool& Reliable
+) noexcept
 {
     TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
     if (!MatchId.IsEmpty())
@@ -442,7 +441,7 @@ TFuture<FRealtimeResponse> NakamaRealtimeClient::MatchDataSend(
       Json->SetStringField(TEXT("match_id"), MatchId);
     }
     Json->SetNumberField(TEXT("op_code"), OpCode);
-    Json->SetObjectField(TEXT("data"), Data.ToJson());
+    Json->SetStringField(TEXT("data"), FBase64::Encode(Data));
     if (Presences.Num() > 0)
     {
       TArray<TSharedPtr<FJsonValue>> Array;
@@ -458,9 +457,8 @@ TFuture<FRealtimeResponse> NakamaRealtimeClient::MatchDataSend(
 }
 
 TFuture<FRealtimeResponse> NakamaRealtimeClient::MatchJoin(
-  const TArray<FString>& Metadata
-  
-)
+    const TMap<FString, FString>& Metadata
+) noexcept
 {
     TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
     if (Metadata.Num() > 0)
@@ -475,8 +473,8 @@ TFuture<FRealtimeResponse> NakamaRealtimeClient::MatchJoin(
 }
 
 TFuture<FRealtimeResponse> NakamaRealtimeClient::MatchLeave(
-  const FString& MatchId
-)
+    const FString& MatchId
+) noexcept
 {
     TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
     if (!MatchId.IsEmpty())
@@ -488,10 +486,10 @@ TFuture<FRealtimeResponse> NakamaRealtimeClient::MatchLeave(
 }
 
 TFuture<FRealtimeResponse> NakamaRealtimeClient::MatchPresenceEvent(
-  const FString& MatchId,            
-  const FNakamaUserPresence& Joins,            
-  const FNakamaUserPresence& Leaves
-)
+    const FString& MatchId,
+    const TArray<FNakamaRtUserPresence>& Joins,
+    const TArray<FNakamaRtUserPresence>& Leaves
+) noexcept
 {
     TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
     if (!MatchId.IsEmpty())
@@ -521,15 +519,13 @@ TFuture<FRealtimeResponse> NakamaRealtimeClient::MatchPresenceEvent(
 }
 
 TFuture<FRealtimeResponse> NakamaRealtimeClient::MatchmakerAdd(
-  const int32& MinCount,            
-  const int32& MaxCount,            
-  const FString& Query,            
-  const int32& CountMultiple
-  const TArray<FString>& StringProperties
-  ,            
-  const TArray<double>& NumericProperties
-  
-)
+    const int32& MinCount,
+    const int32& MaxCount,
+    const FString& Query,
+    const int32& CountMultiple,
+    const TMap<FString, FString>& StringProperties,
+    const TMap<FString, double>& NumericProperties
+) noexcept
 {
     TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
     Json->SetNumberField(TEXT("min_count"), MinCount);
@@ -559,10 +555,10 @@ TFuture<FRealtimeResponse> NakamaRealtimeClient::MatchmakerAdd(
 }
 
 TFuture<FRealtimeResponse> NakamaRealtimeClient::MatchmakerMatched(
-  const FString& Ticket,            
-  const FNakamaMatchmakerMatched_MatchmakerUser& Users,            
-  const FNakamaMatchmakerMatched_MatchmakerUser& Self
-)
+    const FString& Ticket,
+    const TArray<FNakamaRtMatchmakerMatched_MatchmakerUser>& Users,
+    const FNakamaRtMatchmakerMatched_MatchmakerUser& Self
+) noexcept
 {
     TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
     if (!Ticket.IsEmpty())
@@ -584,8 +580,8 @@ TFuture<FRealtimeResponse> NakamaRealtimeClient::MatchmakerMatched(
 }
 
 TFuture<FRealtimeResponse> NakamaRealtimeClient::MatchmakerRemove(
-  const FString& Ticket
-)
+    const FString& Ticket
+) noexcept
 {
     TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
     if (!Ticket.IsEmpty())
@@ -597,8 +593,8 @@ TFuture<FRealtimeResponse> NakamaRealtimeClient::MatchmakerRemove(
 }
 
 TFuture<FRealtimeResponse> NakamaRealtimeClient::MatchmakerTicket(
-  const FString& Ticket
-)
+    const FString& Ticket
+) noexcept
 {
     TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
     if (!Ticket.IsEmpty())
@@ -610,8 +606,8 @@ TFuture<FRealtimeResponse> NakamaRealtimeClient::MatchmakerTicket(
 }
 
 TFuture<FRealtimeResponse> NakamaRealtimeClient::Notifications(
-  const FString& Notifications
-)
+    const TArray<FString>& Notifications
+) noexcept
 {
     TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
     if (Notifications.Num() > 0)
@@ -628,10 +624,10 @@ TFuture<FRealtimeResponse> NakamaRealtimeClient::Notifications(
 }
 
 TFuture<FRealtimeResponse> NakamaRealtimeClient::Rpc(
-  const FString& Id,            
-  const FString& Payload,            
-  const FString& HttpKey
-)
+    const FString& Id,
+    const FString& Payload,
+    const FString& HttpKey
+) noexcept
 {
     TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
     if (!Id.IsEmpty())
@@ -651,8 +647,8 @@ TFuture<FRealtimeResponse> NakamaRealtimeClient::Rpc(
 }
 
 TFuture<FRealtimeResponse> NakamaRealtimeClient::Status(
-  const FNakamaUserPresence& Presences
-)
+    const TArray<FNakamaRtUserPresence>& Presences
+) noexcept
 {
     TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
     if (Presences.Num() > 0)
@@ -669,9 +665,9 @@ TFuture<FRealtimeResponse> NakamaRealtimeClient::Status(
 }
 
 TFuture<FRealtimeResponse> NakamaRealtimeClient::StatusFollow(
-  const FString& UserIds,            
-  const FString& Usernames
-)
+    const TArray<FString>& UserIds,
+    const TArray<FString>& Usernames
+) noexcept
 {
     TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
     if (UserIds.Num() > 0)
@@ -697,9 +693,9 @@ TFuture<FRealtimeResponse> NakamaRealtimeClient::StatusFollow(
 }
 
 TFuture<FRealtimeResponse> NakamaRealtimeClient::StatusPresenceEvent(
-  const FNakamaUserPresence& Joins,            
-  const FNakamaUserPresence& Leaves
-)
+    const TArray<FNakamaRtUserPresence>& Joins,
+    const TArray<FNakamaRtUserPresence>& Leaves
+) noexcept
 {
     TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
     if (Joins.Num() > 0)
@@ -725,8 +721,8 @@ TFuture<FRealtimeResponse> NakamaRealtimeClient::StatusPresenceEvent(
 }
 
 TFuture<FRealtimeResponse> NakamaRealtimeClient::StatusUnfollow(
-  const FString& UserIds
-)
+    const TArray<FString>& UserIds
+) noexcept
 {
     TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
     if (UserIds.Num() > 0)
@@ -743,8 +739,8 @@ TFuture<FRealtimeResponse> NakamaRealtimeClient::StatusUnfollow(
 }
 
 TFuture<FRealtimeResponse> NakamaRealtimeClient::StatusUpdate(
-  const FString& Status
-)
+    const FString& Status
+) noexcept
 {
     TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
     if (!Status.IsEmpty())
@@ -756,11 +752,11 @@ TFuture<FRealtimeResponse> NakamaRealtimeClient::StatusUpdate(
 }
 
 TFuture<FRealtimeResponse> NakamaRealtimeClient::StreamData(
-  const FNakamaStream& Stream,            
-  const FNakamaUserPresence& Sender,            
-  const FString& Data,            
-  const bool& Reliable
-)
+    const FNakamaRtStream& Stream,
+    const FNakamaRtUserPresence& Sender,
+    const FString& Data,
+    const bool& Reliable
+) noexcept
 {
     TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
     Json->SetObjectField(TEXT("stream"), Stream.ToJson());
@@ -775,10 +771,10 @@ TFuture<FRealtimeResponse> NakamaRealtimeClient::StreamData(
 }
 
 TFuture<FRealtimeResponse> NakamaRealtimeClient::StreamPresenceEvent(
-  const FNakamaStream& Stream,            
-  const FNakamaUserPresence& Joins,            
-  const FNakamaUserPresence& Leaves
-)
+    const FNakamaRtStream& Stream,
+    const TArray<FNakamaRtUserPresence>& Joins,
+    const TArray<FNakamaRtUserPresence>& Leaves
+) noexcept
 {
     TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
     Json->SetObjectField(TEXT("stream"), Stream.ToJson());
@@ -805,7 +801,8 @@ TFuture<FRealtimeResponse> NakamaRealtimeClient::StreamPresenceEvent(
 }
 
 TFuture<FRealtimeResponse> NakamaRealtimeClient::Ping(
-)
+    
+) noexcept
 {
     TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 
@@ -813,7 +810,8 @@ TFuture<FRealtimeResponse> NakamaRealtimeClient::Ping(
 }
 
 TFuture<FRealtimeResponse> NakamaRealtimeClient::Pong(
-)
+    
+) noexcept
 {
     TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 
@@ -821,15 +819,15 @@ TFuture<FRealtimeResponse> NakamaRealtimeClient::Pong(
 }
 
 TFuture<FRealtimeResponse> NakamaRealtimeClient::Party(
-  const FString& PartyId,            
-  const bool& Open,            
-  const bool& Hidden,            
-  const int32& MaxSize,            
-  const FNakamaUserPresence& Self,            
-  const FNakamaUserPresence& Leader,            
-  const FNakamaUserPresence& Presences,            
-  const FString& Label
-)
+    const FString& PartyId,
+    const bool& Open,
+    const bool& Hidden,
+    const int32& MaxSize,
+    const FNakamaRtUserPresence& Self,
+    const FNakamaRtUserPresence& Leader,
+    const TArray<FNakamaRtUserPresence>& Presences,
+    const FString& Label
+) noexcept
 {
     TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
     if (!PartyId.IsEmpty())
@@ -859,11 +857,11 @@ TFuture<FRealtimeResponse> NakamaRealtimeClient::Party(
 }
 
 TFuture<FRealtimeResponse> NakamaRealtimeClient::PartyCreate(
-  const bool& Open,            
-  const int32& MaxSize,            
-  const FString& Label,            
-  const bool& Hidden
-)
+    const bool& Open,
+    const int32& MaxSize,
+    const FString& Label,
+    const bool& Hidden
+) noexcept
 {
     TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
     Json->SetBoolField(TEXT("open"), Open);
@@ -878,8 +876,8 @@ TFuture<FRealtimeResponse> NakamaRealtimeClient::PartyCreate(
 }
 
 TFuture<FRealtimeResponse> NakamaRealtimeClient::PartyJoin(
-  const FString& PartyId
-)
+    const FString& PartyId
+) noexcept
 {
     TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
     if (!PartyId.IsEmpty())
@@ -891,8 +889,8 @@ TFuture<FRealtimeResponse> NakamaRealtimeClient::PartyJoin(
 }
 
 TFuture<FRealtimeResponse> NakamaRealtimeClient::PartyLeave(
-  const FString& PartyId
-)
+    const FString& PartyId
+) noexcept
 {
     TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
     if (!PartyId.IsEmpty())
@@ -904,9 +902,9 @@ TFuture<FRealtimeResponse> NakamaRealtimeClient::PartyLeave(
 }
 
 TFuture<FRealtimeResponse> NakamaRealtimeClient::PartyPromote(
-  const FString& PartyId,            
-  const FNakamaUserPresence& Presence
-)
+    const FString& PartyId,
+    const FNakamaRtUserPresence& Presence
+) noexcept
 {
     TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
     if (!PartyId.IsEmpty())
@@ -919,9 +917,9 @@ TFuture<FRealtimeResponse> NakamaRealtimeClient::PartyPromote(
 }
 
 TFuture<FRealtimeResponse> NakamaRealtimeClient::PartyLeader(
-  const FString& PartyId,            
-  const FNakamaUserPresence& Presence
-)
+    const FString& PartyId,
+    const FNakamaRtUserPresence& Presence
+) noexcept
 {
     TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
     if (!PartyId.IsEmpty())
@@ -934,9 +932,9 @@ TFuture<FRealtimeResponse> NakamaRealtimeClient::PartyLeader(
 }
 
 TFuture<FRealtimeResponse> NakamaRealtimeClient::PartyAccept(
-  const FString& PartyId,            
-  const FNakamaUserPresence& Presence
-)
+    const FString& PartyId,
+    const FNakamaRtUserPresence& Presence
+) noexcept
 {
     TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
     if (!PartyId.IsEmpty())
@@ -949,9 +947,9 @@ TFuture<FRealtimeResponse> NakamaRealtimeClient::PartyAccept(
 }
 
 TFuture<FRealtimeResponse> NakamaRealtimeClient::PartyRemove(
-  const FString& PartyId,            
-  const FNakamaUserPresence& Presence
-)
+    const FString& PartyId,
+    const FNakamaRtUserPresence& Presence
+) noexcept
 {
     TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
     if (!PartyId.IsEmpty())
@@ -964,8 +962,8 @@ TFuture<FRealtimeResponse> NakamaRealtimeClient::PartyRemove(
 }
 
 TFuture<FRealtimeResponse> NakamaRealtimeClient::PartyClose(
-  const FString& PartyId
-)
+    const FString& PartyId
+) noexcept
 {
     TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
     if (!PartyId.IsEmpty())
@@ -977,8 +975,8 @@ TFuture<FRealtimeResponse> NakamaRealtimeClient::PartyClose(
 }
 
 TFuture<FRealtimeResponse> NakamaRealtimeClient::PartyJoinRequestList(
-  const FString& PartyId
-)
+    const FString& PartyId
+) noexcept
 {
     TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
     if (!PartyId.IsEmpty())
@@ -990,9 +988,9 @@ TFuture<FRealtimeResponse> NakamaRealtimeClient::PartyJoinRequestList(
 }
 
 TFuture<FRealtimeResponse> NakamaRealtimeClient::PartyJoinRequest(
-  const FString& PartyId,            
-  const FNakamaUserPresence& Presences
-)
+    const FString& PartyId,
+    const TArray<FNakamaRtUserPresence>& Presences
+) noexcept
 {
     TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
     if (!PartyId.IsEmpty())
@@ -1013,16 +1011,14 @@ TFuture<FRealtimeResponse> NakamaRealtimeClient::PartyJoinRequest(
 }
 
 TFuture<FRealtimeResponse> NakamaRealtimeClient::PartyMatchmakerAdd(
-  const FString& PartyId,            
-  const int32& MinCount,            
-  const int32& MaxCount,            
-  const FString& Query,            
-  const int32& CountMultiple
-  const TArray<FString>& StringProperties
-  ,            
-  const TArray<double>& NumericProperties
-  
-)
+    const FString& PartyId,
+    const int32& MinCount,
+    const int32& MaxCount,
+    const FString& Query,
+    const int32& CountMultiple,
+    const TMap<FString, FString>& StringProperties,
+    const TMap<FString, double>& NumericProperties
+) noexcept
 {
     TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
     if (!PartyId.IsEmpty())
@@ -1056,9 +1052,9 @@ TFuture<FRealtimeResponse> NakamaRealtimeClient::PartyMatchmakerAdd(
 }
 
 TFuture<FRealtimeResponse> NakamaRealtimeClient::PartyMatchmakerRemove(
-  const FString& PartyId,            
-  const FString& Ticket
-)
+    const FString& PartyId,
+    const FString& Ticket
+) noexcept
 {
     TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
     if (!PartyId.IsEmpty())
@@ -1074,9 +1070,9 @@ TFuture<FRealtimeResponse> NakamaRealtimeClient::PartyMatchmakerRemove(
 }
 
 TFuture<FRealtimeResponse> NakamaRealtimeClient::PartyMatchmakerTicket(
-  const FString& PartyId,            
-  const FString& Ticket
-)
+    const FString& PartyId,
+    const FString& Ticket
+) noexcept
 {
     TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
     if (!PartyId.IsEmpty())
@@ -1092,11 +1088,11 @@ TFuture<FRealtimeResponse> NakamaRealtimeClient::PartyMatchmakerTicket(
 }
 
 TFuture<FRealtimeResponse> NakamaRealtimeClient::PartyData(
-  const FString& PartyId,            
-  const FNakamaUserPresence& Presence,            
-  const int64& OpCode,            
-  const FString& Data
-)
+    const FString& PartyId,
+    const FNakamaRtUserPresence& Presence,
+    const int64& OpCode,
+    const TArray<uint8>& Data
+) noexcept
 {
     TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
     if (!PartyId.IsEmpty())
@@ -1105,16 +1101,16 @@ TFuture<FRealtimeResponse> NakamaRealtimeClient::PartyData(
     }
     Json->SetObjectField(TEXT("presence"), Presence.ToJson());
     Json->SetNumberField(TEXT("op_code"), OpCode);
-    Json->SetObjectField(TEXT("data"), Data.ToJson());
+    Json->SetStringField(TEXT("data"), FBase64::Encode(Data));
 
     return WebSocketSubsystem->Send(TEXT("party_data"), Json);
 }
 
 TFuture<FRealtimeResponse> NakamaRealtimeClient::PartyDataSend(
-  const FString& PartyId,            
-  const int64& OpCode,            
-  const FString& Data
-)
+    const FString& PartyId,
+    const int64& OpCode,
+    const TArray<uint8>& Data
+) noexcept
 {
     TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
     if (!PartyId.IsEmpty())
@@ -1122,16 +1118,16 @@ TFuture<FRealtimeResponse> NakamaRealtimeClient::PartyDataSend(
       Json->SetStringField(TEXT("party_id"), PartyId);
     }
     Json->SetNumberField(TEXT("op_code"), OpCode);
-    Json->SetObjectField(TEXT("data"), Data.ToJson());
+    Json->SetStringField(TEXT("data"), FBase64::Encode(Data));
 
     return WebSocketSubsystem->Send(TEXT("party_data_send"), Json);
 }
 
 TFuture<FRealtimeResponse> NakamaRealtimeClient::PartyPresenceEvent(
-  const FString& PartyId,            
-  const FNakamaUserPresence& Joins,            
-  const FNakamaUserPresence& Leaves
-)
+    const FString& PartyId,
+    const TArray<FNakamaRtUserPresence>& Joins,
+    const TArray<FNakamaRtUserPresence>& Leaves
+) noexcept
 {
     TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
     if (!PartyId.IsEmpty())
@@ -1161,11 +1157,11 @@ TFuture<FRealtimeResponse> NakamaRealtimeClient::PartyPresenceEvent(
 }
 
 TFuture<FRealtimeResponse> NakamaRealtimeClient::PartyUpdate(
-  const FString& PartyId,            
-  const FString& Label,            
-  const bool& Open,            
-  const bool& Hidden
-)
+    const FString& PartyId,
+    const FString& Label,
+    const bool& Open,
+    const bool& Hidden
+) noexcept
 {
     TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
     if (!PartyId.IsEmpty())

@@ -22,6 +22,60 @@
 
 #include "NakamaRtTypes.generated.h"
 
+// Forward declarations
+struct FNakamaRtEnvelope;
+struct FNakamaRtUserPresence;
+struct FNakamaRtChannel;
+struct FNakamaRtChannelJoin;
+struct FNakamaRtChannelLeave;
+struct FNakamaRtChannelMessageAck;
+struct FNakamaRtChannelMessageSend;
+struct FNakamaRtChannelMessageUpdate;
+struct FNakamaRtChannelMessageRemove;
+struct FNakamaRtChannelPresenceEvent;
+struct FNakamaRtError;
+struct FNakamaRtMatch;
+struct FNakamaRtMatchCreate;
+struct FNakamaRtMatchData;
+struct FNakamaRtMatchDataSend;
+struct FNakamaRtMatchJoin;
+struct FNakamaRtMatchLeave;
+struct FNakamaRtMatchPresenceEvent;
+struct FNakamaRtMatchmakerAdd;
+struct FNakamaRtMatchmakerMatched_MatchmakerUser;
+struct FNakamaRtMatchmakerMatched;
+struct FNakamaRtMatchmakerRemove;
+struct FNakamaRtMatchmakerTicket;
+struct FNakamaRtNotifications;
+struct FNakamaRtParty;
+struct FNakamaRtPartyCreate;
+struct FNakamaRtPartyUpdate;
+struct FNakamaRtPartyJoin;
+struct FNakamaRtPartyLeave;
+struct FNakamaRtPartyPromote;
+struct FNakamaRtPartyLeader;
+struct FNakamaRtPartyAccept;
+struct FNakamaRtPartyRemove;
+struct FNakamaRtPartyClose;
+struct FNakamaRtPartyJoinRequestList;
+struct FNakamaRtPartyJoinRequest;
+struct FNakamaRtPartyMatchmakerAdd;
+struct FNakamaRtPartyMatchmakerRemove;
+struct FNakamaRtPartyMatchmakerTicket;
+struct FNakamaRtPartyData;
+struct FNakamaRtPartyDataSend;
+struct FNakamaRtPartyPresenceEvent;
+struct FNakamaRtPing;
+struct FNakamaRtPong;
+struct FNakamaRtStatus;
+struct FNakamaRtStatusFollow;
+struct FNakamaRtStatusPresenceEvent;
+struct FNakamaRtStatusUnfollow;
+struct FNakamaRtStatusUpdate;
+struct FNakamaRtStream;
+struct FNakamaRtStreamData;
+struct FNakamaRtStreamPresenceEvent;
+
 /**  An envelope for a realtime message. */
 USTRUCT(BlueprintType)
 struct NAKAMAAPI_API FNakamaRtEnvelope
@@ -327,7 +381,7 @@ struct NAKAMAAPI_API FNakamaRtMatchData
 	int64 OpCode = 0;
 	/**  Data payload, if any. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	FString Data;
+	TArray<uint8> Data;
 	/**  True if this data was delivered reliably, false otherwise. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	bool Reliable = false;
@@ -349,7 +403,7 @@ struct NAKAMAAPI_API FNakamaRtMatchDataSend
 	int64 OpCode = 0;
 	/**  Data payload, if any. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	FString Data;
+	TArray<uint8> Data;
 	/**  List of presences in the match to deliver to, if filtering is required. Otherwise deliver to everyone in the match. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	TArray<FNakamaRtUserPresence> Presences;
@@ -803,7 +857,7 @@ struct NAKAMAAPI_API FNakamaRtPartyData
 	int64 OpCode = 0;
 	/**  Data payload, if any. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	FString Data;
+	TArray<uint8> Data;
 
 	static FNakamaRtPartyData FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
 	TSharedPtr<FJsonObject> ToJson() const noexcept;
@@ -822,7 +876,7 @@ struct NAKAMAAPI_API FNakamaRtPartyDataSend
 	int64 OpCode = 0;
 	/**  Data payload, if any. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	FString Data;
+	TArray<uint8> Data;
 
 	static FNakamaRtPartyDataSend FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
 	TSharedPtr<FJsonObject> ToJson() const noexcept;
@@ -1000,6 +1054,4 @@ struct NAKAMAAPI_API FNakamaRtStreamPresenceEvent
 	static FNakamaRtStreamPresenceEvent FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
 	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
-
-using FNakamaRtSessionPtr = TSharedPtr<FNakamaRtSession>;
 

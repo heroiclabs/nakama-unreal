@@ -58,7 +58,7 @@ struct FSatoriSession;
 struct FSatoriUpdatePropertiesRequest;
 struct FSatoriUpdateMessageRequest;
 
-/** The type of configuration that overrides a flag value. */
+/** The type of configuration that overrides a flag value. */
 UENUM(BlueprintType)
 enum class ESatoriValueChangeReasonType : uint8
 {
@@ -68,7 +68,7 @@ enum class ESatoriValueChangeReasonType : uint8
 	VCR_EXPERIMENT = 3
 };
 
-/** The type of configuration that overrides a flag value. */
+/** The type of configuration that overrides a flag value. */
 UENUM(BlueprintType)
 enum class ESatoriFlagOverrideType : uint8
 {
@@ -79,7 +79,7 @@ enum class ESatoriFlagOverrideType : uint8
 	FOT_EXPERIMENT_PHASE_VARIANT_FLAG = 4
 };
 
-/** The status variants of a live event. */
+/** The status variants of a live event. */
 UENUM(BlueprintType)
 enum class ESatoriLiveEventStatus : uint8
 {
@@ -100,9 +100,6 @@ struct SATORIAPI_API FSatoriError
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	int32 Code = 0;
 
-	FSatoriError() = default;
-	FSatoriError(const FString& InMessage, int32 InCode)
-		: Message(InMessage), Code(InCode) {}
 };
 /** gRPC status codes returned by Satori in FSatoriError::Code. */
 namespace SatoriErrorCode
@@ -126,25 +123,15 @@ namespace SatoriErrorCode
 	constexpr int32 Unauthenticated = 16;
 }
 
-struct SATORIAPI_API FSatoriCancellationToken
-{
-	void Cancel() { bCancelled.Store(true); }
-	bool IsCancelled() const { return bCancelled.Load(); }
-	static TSharedPtr<FSatoriCancellationToken> Create() { return MakeShared<FSatoriCancellationToken>(); }
-private:
-	TAtomic<bool> bCancelled{false};
-};
-using FSatoriCancellationTokenPtr = TSharedPtr<FSatoriCancellationToken>;
-
-/**  Log out a session, invalidate a refresh token, or log out all sessions/refresh tokens for a user. */
+/**  Log out a session, invalidate a refresh token, or log out all sessions/refresh tokens for a user. */
 USTRUCT(BlueprintType)
 struct SATORIAPI_API FSatoriAuthenticateLogoutRequest
 {
 	GENERATED_BODY()
-	/**  Session token to log out. */
+	/**  Session token to log out. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	FString Token;
-	/**  Refresh token to invalidate. */
+	/**  Refresh token to invalidate. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	FString RefreshToken;
 
@@ -152,12 +139,12 @@ struct SATORIAPI_API FSatoriAuthenticateLogoutRequest
 	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
-/**  Authenticate against the server with a refresh token. */
+/**  Authenticate against the server with a refresh token. */
 USTRUCT(BlueprintType)
 struct SATORIAPI_API FSatoriAuthenticateRefreshRequest
 {
 	GENERATED_BODY()
-	/**  Refresh token. */
+	/**  Refresh token. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	FString RefreshToken;
 
@@ -165,21 +152,21 @@ struct SATORIAPI_API FSatoriAuthenticateRefreshRequest
 	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
-/**  Authentication request */
+/**  Authentication request */
 USTRUCT(BlueprintType)
 struct SATORIAPI_API FSatoriAuthenticateRequest
 {
 	GENERATED_BODY()
-	/**  Identity ID. Must be between eight and 128 characters (inclusive). */
+	/**  Identity ID. Must be between eight and 128 characters (inclusive). */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	FString Id;
-	/**  Optional no_session modifies the request to only create/update */
+	/**  Optional no_session modifies the request to only create/update */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	bool NoSession = false;
-	/**  Optional default properties to update with this call. */
+	/**  Optional default properties to update with this call. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	TMap<FString, FString> Default;
-	/**  Optional custom properties to update with this call. */
+	/**  Optional custom properties to update with this call. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	TMap<FString, FString> Custom;
 
@@ -187,12 +174,12 @@ struct SATORIAPI_API FSatoriAuthenticateRequest
 	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
-/**  The request to delete a scheduled message. */
+/**  The request to delete a scheduled message. */
 USTRUCT(BlueprintType)
 struct SATORIAPI_API FSatoriDeleteMessageRequest
 {
 	GENERATED_BODY()
-	/**  The identifier of the message. */
+	/**  The identifier of the message. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	FString Id;
 
@@ -200,36 +187,36 @@ struct SATORIAPI_API FSatoriDeleteMessageRequest
 	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
-/**  A single event. Usually, but not necessarily, part of a batch. */
+/**  A single event. Usually, but not necessarily, part of a batch. */
 USTRUCT(BlueprintType)
 struct SATORIAPI_API FSatoriEvent
 {
 	GENERATED_BODY()
-	/**  Event name. */
+	/**  Event name. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	FString Name;
-	/**  Optional event ID assigned by the client, used to de-duplicate in retransmission scenarios. */
+	/**  Optional event ID assigned by the client, used to de-duplicate in retransmission scenarios. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	FString Id;
-	/**  Optional value. */
+	/**  Optional value. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	FString Value;
-	/**  The time when the event was triggered on the producer side. */
+	/**  The time when the event was triggered on the producer side. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	FString Timestamp;
-	/**  The identity id associated with the event. Ignored if the event is published as part of a session. */
+	/**  The identity id associated with the event. Ignored if the event is published as part of a session. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	FString IdentityId;
-	/**  The session id associated with the event. Ignored if the event is published as part of a session. */
+	/**  The session id associated with the event. Ignored if the event is published as part of a session. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	FString SessionId;
-	/**  The session issued at associated with the event. Ignored if the event is published as part of a session. */
+	/**  The session issued at associated with the event. Ignored if the event is published as part of a session. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	int64 SessionIssuedAt = 0;
-	/**  The session expires at associated with the event. Ignored if the event is published as part of a session. */
+	/**  The session expires at associated with the event. Ignored if the event is published as part of a session. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	int64 SessionExpiresAt = 0;
-	/**  Event metadata, if any. */
+	/**  Event metadata, if any. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	TMap<FString, FString> Metadata;
 
@@ -237,12 +224,12 @@ struct SATORIAPI_API FSatoriEvent
 	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
-/**  Publish an event to the server */
+/**  Publish an event to the server */
 USTRUCT(BlueprintType)
 struct SATORIAPI_API FSatoriEventRequest
 {
 	GENERATED_BODY()
-	/**  Some number of events produced by a client. */
+	/**  Some number of events produced by a client. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	TArray<FSatoriEvent> Events;
 
@@ -250,24 +237,24 @@ struct SATORIAPI_API FSatoriEventRequest
 	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
-/**  An experiment that this user is partaking. */
+/**  An experiment that this user is partaking. */
 USTRUCT(BlueprintType)
 struct SATORIAPI_API FSatoriExperiment
 {
 	GENERATED_BODY()
-	/**  Experiment name */
+	/**  Experiment name */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	FString Name;
-	/**  Value associated with this Experiment. */
+	/**  Value associated with this Experiment. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	FString Value;
-	/**  The labels associated with this experiment. */
+	/**  The labels associated with this experiment. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	TArray<FString> Labels;
-	/**  Experiment Phase name */
+	/**  Experiment Phase name */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	FString PhaseName;
-	/**  Experiment Phase Variant name */
+	/**  Experiment Phase Variant name */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	FString PhaseVariantName;
 
@@ -275,12 +262,12 @@ struct SATORIAPI_API FSatoriExperiment
 	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
-/**  All experiments that this identity is involved with. */
+/**  All experiments that this identity is involved with. */
 USTRUCT(BlueprintType)
 struct SATORIAPI_API FSatoriExperimentList
 {
 	GENERATED_BODY()
-	/**  All experiments for this identity. */
+	/**  All experiments for this identity. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	TArray<FSatoriExperiment> Experiments;
 
@@ -288,18 +275,18 @@ struct SATORIAPI_API FSatoriExperimentList
 	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
-/**  The origin of change on a flag value. */
+/**  The origin of change on a flag value. */
 USTRUCT(BlueprintType)
 struct SATORIAPI_API FSatoriValueChangeReason
 {
 	GENERATED_BODY()
-	/**  The type of the configuration that declared the override. */
+	/**  The type of the configuration that declared the override. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	int32 Type = 0;
-	/**  The name of the configuration that overrides the flag value. */
+	/**  The name of the configuration that overrides the flag value. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	FString Name;
-	/**  The variant name of the configuration that overrides the flag value. */
+	/**  The variant name of the configuration that overrides the flag value. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	FString VariantName;
 
@@ -307,24 +294,24 @@ struct SATORIAPI_API FSatoriValueChangeReason
 	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
-/**  Feature flag available to the identity. */
+/**  Feature flag available to the identity. */
 USTRUCT(BlueprintType)
 struct SATORIAPI_API FSatoriFlag
 {
 	GENERATED_BODY()
-	/**  Flag name */
+	/**  Flag name */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	FString Name;
-	/**  Value associated with this flag. */
+	/**  Value associated with this flag. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	FString Value;
-	/**  Whether the value for this flag has conditionally changed from the default state. */
+	/**  Whether the value for this flag has conditionally changed from the default state. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	bool ConditionChanged = false;
-	/**  The origin of change on the flag value returned. */
+	/**  The origin of change on the flag value returned. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	FSatoriValueChangeReason ChangeReason;
-	/**  The labels associated with this flag. */
+	/**  The labels associated with this flag. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	TArray<FString> Labels;
 
@@ -332,12 +319,12 @@ struct SATORIAPI_API FSatoriFlag
 	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
-/**  All flags available to the identity */
+/**  All flags available to the identity */
 USTRUCT(BlueprintType)
 struct SATORIAPI_API FSatoriFlagList
 {
 	GENERATED_BODY()
-	/**  All flags */
+	/**  All flags */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	TArray<FSatoriFlag> Flags;
 
@@ -345,24 +332,24 @@ struct SATORIAPI_API FSatoriFlagList
 	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
-/**  The details of a flag value override. */
+/**  The details of a flag value override. */
 USTRUCT(BlueprintType)
 struct SATORIAPI_API FSatoriFlagOverrideValue
 {
 	GENERATED_BODY()
-	/**  The type of the configuration that declared the override. */
+	/**  The type of the configuration that declared the override. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	int32 Type = 0;
-	/**  The name of the configuration that overrides the flag value. */
+	/**  The name of the configuration that overrides the flag value. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	FString Name;
-	/**  The variant name of the configuration that overrides the flag value. */
+	/**  The variant name of the configuration that overrides the flag value. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	FString VariantName;
-	/**  The value of the configuration that overrides the flag. */
+	/**  The value of the configuration that overrides the flag. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	FString Value;
-	/**  The create time of the configuration that overrides the flag. */
+	/**  The create time of the configuration that overrides the flag. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	int64 CreateTimeSec = 0;
 
@@ -370,18 +357,18 @@ struct SATORIAPI_API FSatoriFlagOverrideValue
 	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
-/**  Feature flag available to the identity. */
+/**  Feature flag available to the identity. */
 USTRUCT(BlueprintType)
 struct SATORIAPI_API FSatoriFlagOverride
 {
 	GENERATED_BODY()
-	/**  Flag name */
+	/**  Flag name */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	FString FlagName;
-	/**  The list of configuration that affect the value of the flag. */
+	/**  The list of configuration that affect the value of the flag. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	TArray<FSatoriFlagOverrideValue> Overrides;
-	/**  The labels associated with this flag. */
+	/**  The labels associated with this flag. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	TArray<FString> Labels;
 
@@ -389,12 +376,12 @@ struct SATORIAPI_API FSatoriFlagOverride
 	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
-/**  All flags available to the identity and their value overrides */
+/**  All flags available to the identity and their value overrides */
 USTRUCT(BlueprintType)
 struct SATORIAPI_API FSatoriFlagOverrideList
 {
 	GENERATED_BODY()
-	/**  All flags */
+	/**  All flags */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	TArray<FSatoriFlagOverride> Flags;
 
@@ -402,15 +389,15 @@ struct SATORIAPI_API FSatoriFlagOverrideList
 	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
-/**  Request to get all experiments data. */
+/**  Request to get all experiments data. */
 USTRUCT(BlueprintType)
 struct SATORIAPI_API FSatoriGetExperimentsRequest
 {
 	GENERATED_BODY()
-	/**  Experiment names; if empty string, all experiments are returned based on the remaining filters. */
+	/**  Experiment names; if empty string, all experiments are returned based on the remaining filters. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	TArray<FString> Names;
-	/**  Label names that must be defined for each Experiment; if empty string, all experiments are returned based on the remaining filters. */
+	/**  Label names that must be defined for each Experiment; if empty string, all experiments are returned based on the remaining filters. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	TArray<FString> Labels;
 
@@ -418,15 +405,15 @@ struct SATORIAPI_API FSatoriGetExperimentsRequest
 	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
-/**  Request to get all flags data. */
+/**  Request to get all flags data. */
 USTRUCT(BlueprintType)
 struct SATORIAPI_API FSatoriGetFlagsRequest
 {
 	GENERATED_BODY()
-	/**  Flag names; if empty string, all flags are returned based on the remaining filters. */
+	/**  Flag names; if empty string, all flags are returned based on the remaining filters. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	TArray<FString> Names;
-	/**  Label names that must be defined for each Flag; if empty string, all flags are returned based on the remaining filters. */
+	/**  Label names that must be defined for each Flag; if empty string, all flags are returned based on the remaining filters. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	TArray<FString> Labels;
 
@@ -434,27 +421,27 @@ struct SATORIAPI_API FSatoriGetFlagsRequest
 	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
-/**  Request to get all live events. */
+/**  Request to get all live events. */
 USTRUCT(BlueprintType)
 struct SATORIAPI_API FSatoriGetLiveEventsRequest
 {
 	GENERATED_BODY()
-	/**  Live event names; if empty string, all live events are returned based on the remaining filters. */
+	/**  Live event names; if empty string, all live events are returned based on the remaining filters. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	TArray<FString> Names;
-	/**  Label names that must be defined for each Live Event; if empty string, all live events are returned based on the remaining filters. */
+	/**  Label names that must be defined for each Live Event; if empty string, all live events are returned based on the remaining filters. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	TArray<FString> Labels;
-	/**  The maximum number of past event runs to return for each live event. */
+	/**  The maximum number of past event runs to return for each live event. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	int32 PastRunCount = 0;
-	/**  The maximum number of future event runs to return for each live event. */
+	/**  The maximum number of future event runs to return for each live event. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	int32 FutureRunCount = 0;
-	/**  Start time of the time window filter to apply. */
+	/**  Start time of the time window filter to apply. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	int64 StartTimeSec = 0;
-	/**  End time of the time window filter to apply. */
+	/**  End time of the time window filter to apply. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	int64 EndTimeSec = 0;
 
@@ -462,42 +449,42 @@ struct SATORIAPI_API FSatoriGetLiveEventsRequest
 	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
-/**  A scheduled message. */
+/**  A scheduled message. */
 USTRUCT(BlueprintType)
 struct SATORIAPI_API FSatoriMessage
 {
 	GENERATED_BODY()
-	/**  The identifier of the schedule. */
+	/**  The identifier of the schedule. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	FString ScheduleId;
-	/**  The send time for the message. */
+	/**  The send time for the message. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	int64 SendTime = 0;
-	/**  The time the message was created. */
+	/**  The time the message was created. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	int64 CreateTime = 0;
-	/**  The time the message was updated. */
+	/**  The time the message was updated. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	int64 UpdateTime = 0;
-	/**  The time the message was read by the client. */
+	/**  The time the message was read by the client. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	int64 ReadTime = 0;
-	/**  The time the message was consumed by the identity. */
+	/**  The time the message was consumed by the identity. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	int64 ConsumeTime = 0;
-	/**  The message's text. */
+	/**  The message's text. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	FString Text;
-	/**  The message's unique identifier. */
+	/**  The message's unique identifier. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	FString Id;
-	/**  The message's title. */
+	/**  The message's title. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	FString Title;
-	/**  The message's image url. */
+	/**  The message's image url. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	FString ImageUrl;
-	/**  A key-value pairs of metadata. */
+	/**  A key-value pairs of metadata. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	TMap<FString, FString> Metadata;
 
@@ -510,16 +497,16 @@ USTRUCT(BlueprintType)
 struct SATORIAPI_API FSatoriGetMessageListRequest
 {
 	GENERATED_BODY()
-	/**  Max number of messages to return. Between 1 and 100. */
+	/**  Max number of messages to return. Between 1 and 100. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	int32 Limit = 0;
-	/**  True if listing should be older messages to newer, false if reverse. */
+	/**  True if listing should be older messages to newer, false if reverse. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	bool Forward = false;
-	/**  A pagination cursor, if any. */
+	/**  A pagination cursor, if any. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	FString Cursor;
-	/**  A list of message identifiers to be returned. If these are given as inputs, the pagination will be disabled. */
+	/**  A list of message identifiers to be returned. If these are given as inputs, the pagination will be disabled. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	TArray<FString> MessageIds;
 
@@ -527,21 +514,21 @@ struct SATORIAPI_API FSatoriGetMessageListRequest
 	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
-/**  A response containing all the messages for an identity. */
+/**  A response containing all the messages for an identity. */
 USTRUCT(BlueprintType)
 struct SATORIAPI_API FSatoriGetMessageListResponse
 {
 	GENERATED_BODY()
-	/**  The list of messages. */
+	/**  The list of messages. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	TArray<FSatoriMessage> Messages;
-	/**  The cursor to send when retrieving the next page, if any. */
+	/**  The cursor to send when retrieving the next page, if any. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	FString NextCursor;
-	/**  The cursor to send when retrieving the previous page, if any. */
+	/**  The cursor to send when retrieving the previous page, if any. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	FString PrevCursor;
-	/**  Cacheable cursor to list newer messages. Durable and designed to be stored, unlike next/prev cursors. */
+	/**  Cacheable cursor to list newer messages. Durable and designed to be stored, unlike next/prev cursors. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	FString CacheableCursor;
 
@@ -549,18 +536,18 @@ struct SATORIAPI_API FSatoriGetMessageListResponse
 	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
-/**  Enrich/replace the current session with a new ID. */
+/**  Enrich/replace the current session with a new ID. */
 USTRUCT(BlueprintType)
 struct SATORIAPI_API FSatoriIdentifyRequest
 {
 	GENERATED_BODY()
-	/**  Identity ID to enrich the current session and return a new session. Old session will no longer be usable. */
+	/**  Identity ID to enrich the current session and return a new session. Old session will no longer be usable. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	FString Id;
-	/**  Optional default properties to update with this call. */
+	/**  Optional default properties to update with this call. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	TMap<FString, FString> Default;
-	/**  Optional custom properties to update with this call. */
+	/**  Optional custom properties to update with this call. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	TMap<FString, FString> Custom;
 
@@ -568,12 +555,12 @@ struct SATORIAPI_API FSatoriIdentifyRequest
 	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
-/**  Request to join a 'explicit join' live event. */
+/**  Request to join a 'explicit join' live event. */
 USTRUCT(BlueprintType)
 struct SATORIAPI_API FSatoriJoinLiveEventRequest
 {
 	GENERATED_BODY()
-	/**  Live event id to join. */
+	/**  Live event id to join. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	FString Id;
 
@@ -581,45 +568,45 @@ struct SATORIAPI_API FSatoriJoinLiveEventRequest
 	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
-/**  A single live event. */
+/**  A single live event. */
 USTRUCT(BlueprintType)
 struct SATORIAPI_API FSatoriLiveEvent
 {
 	GENERATED_BODY()
-	/**  Name. */
+	/**  Name. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	FString Name;
-	/**  Description. */
+	/**  Description. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	FString Description;
-	/**  Event value. */
+	/**  Event value. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	FString Value;
-	/**  Start time of current event run. */
+	/**  Start time of current event run. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	int64 ActiveStartTimeSec = 0;
-	/**  End time of current event run. */
+	/**  End time of current event run. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	int64 ActiveEndTimeSec = 0;
-	/**  The live event identifier. */
+	/**  The live event identifier. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	FString Id;
-	/**  Start time. */
+	/**  Start time. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	int64 StartTimeSec = 0;
-	/**  End time, 0 if it repeats forever. */
+	/**  End time, 0 if it repeats forever. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	int64 EndTimeSec = 0;
-	/**  Duration in seconds. */
+	/**  Duration in seconds. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	int64 DurationSec = 0;
-	/**  Reset CRON schedule, if configured. */
+	/**  Reset CRON schedule, if configured. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	FString ResetCron;
-	/**  The status of this live event run. */
+	/**  The status of this live event run. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	int32 Status = 0;
-	/**  The labels associated with this live event. */
+	/**  The labels associated with this live event. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	TArray<FString> Labels;
 
@@ -627,15 +614,15 @@ struct SATORIAPI_API FSatoriLiveEvent
 	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
-/**  List of Live events. */
+/**  List of Live events. */
 USTRUCT(BlueprintType)
 struct SATORIAPI_API FSatoriLiveEventList
 {
 	GENERATED_BODY()
-	/**  Live events. */
+	/**  Live events. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	TArray<FSatoriLiveEvent> LiveEvents;
-	/**  Live events that require explicit join. */
+	/**  Live events that require explicit join. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	TArray<FSatoriLiveEvent> ExplicitJoinLiveEvents;
 
@@ -643,18 +630,18 @@ struct SATORIAPI_API FSatoriLiveEventList
 	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
-/**  Properties associated with an identity. */
+/**  Properties associated with an identity. */
 USTRUCT(BlueprintType)
 struct SATORIAPI_API FSatoriProperties
 {
 	GENERATED_BODY()
-	/**  Event default properties. */
+	/**  Event default properties. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	TMap<FString, FString> Default;
-	/**  Event computed properties. */
+	/**  Event computed properties. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	TMap<FString, FString> Computed;
-	/**  Event custom properties. */
+	/**  Event custom properties. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	TMap<FString, FString> Custom;
 
@@ -662,18 +649,18 @@ struct SATORIAPI_API FSatoriProperties
 	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
-/**  A session. */
+/**  A session. */
 USTRUCT(BlueprintType)
 struct SATORIAPI_API FSatoriSession
 {
 	GENERATED_BODY()
-	/**  Token credential. */
+	/**  Token credential. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	FString Token;
-	/**  Refresh token. */
+	/**  Refresh token. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	FString RefreshToken;
-	/**  Properties associated with this identity. */
+	/**  Properties associated with this identity. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	FSatoriProperties Properties;
 
@@ -710,18 +697,18 @@ private:
 	void ParseTokens() noexcept;
 };
 
-/**  Update Properties associated with this identity. */
+/**  Update Properties associated with this identity. */
 USTRUCT(BlueprintType)
 struct SATORIAPI_API FSatoriUpdatePropertiesRequest
 {
 	GENERATED_BODY()
-	/**  Informs the server to recompute the audience membership of the identity. */
+	/**  Informs the server to recompute the audience membership of the identity. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	bool Recompute = false;
-	/**  Event default properties. */
+	/**  Event default properties. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	TMap<FString, FString> Default;
-	/**  Event custom properties. */
+	/**  Event custom properties. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	TMap<FString, FString> Custom;
 
@@ -729,18 +716,18 @@ struct SATORIAPI_API FSatoriUpdatePropertiesRequest
 	TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
-/**  The request to update the status of a message. */
+/**  The request to update the status of a message. */
 USTRUCT(BlueprintType)
 struct SATORIAPI_API FSatoriUpdateMessageRequest
 {
 	GENERATED_BODY()
-	/**  The identifier of the messages. */
+	/**  The identifier of the messages. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	FString Id;
-	/**  The time the message was read at the client. */
+	/**  The time the message was read at the client. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	int64 ReadTime = 0;
-	/**  The time the message was consumed by the identity. */
+	/**  The time the message was consumed by the identity. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	int64 ConsumeTime = 0;
 
@@ -757,7 +744,7 @@ enum class ESatoriRequestAuth : uint8
 
 /** Low-level API client configuration. */
 USTRUCT(BlueprintType)
-struct SATORIAPI_API FSatoriApiConfig
+struct SATORIAPI_API FSatoriClientConfig
 {
 	GENERATED_BODY()
 
@@ -773,9 +760,6 @@ struct SATORIAPI_API FSatoriApiConfig
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Satori")
 	bool bUseSSL = false;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Satori")
-	float Timeout = 10.0f;
-
 	FString GetBaseUrl() const noexcept;
 };
 
@@ -785,91 +769,100 @@ namespace SatoriApi
 
 	/** Authenticate against the server. */
 	SATORIAPI_API void Authenticate(
-		const FSatoriApiConfig& Config,
+		const FSatoriClientConfig& Config,
 		FString Id,
 		bool NoSession,
 		const TMap<FString, FString>& Default,
 		const TMap<FString, FString>& Custom,
 		TFunction<void(const FSatoriSession&)> OnSuccess,
 		TFunction<void(const FSatoriError&)> OnError,
-		FSatoriCancellationTokenPtr CancellationToken = nullptr) noexcept;
+		float Timeout = 10.0f,
+		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
 
 	/** Log out a session, invalidate a refresh token, or log out all sessions/refresh tokens for a user. */
 	SATORIAPI_API void AuthenticateLogout(
-		const FSatoriApiConfig& Config,
+		const FSatoriClientConfig& Config,
 		FString Token,
 		FString RefreshToken,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FSatoriError&)> OnError,
-		FSatoriCancellationTokenPtr CancellationToken = nullptr) noexcept;
+		float Timeout = 10.0f,
+		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
 
 	/** Refresh a user's session using a refresh token retrieved from a previous authentication request. */
 	SATORIAPI_API void AuthenticateRefresh(
-		const FSatoriApiConfig& Config,
+		const FSatoriClientConfig& Config,
 		FString RefreshToken,
 		TFunction<void(const FSatoriSession&)> OnSuccess,
 		TFunction<void(const FSatoriError&)> OnError,
-		FSatoriCancellationTokenPtr CancellationToken = nullptr) noexcept;
+		float Timeout = 10.0f,
+		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
 
 	/** Delete the caller's identity and associated data. */
 	SATORIAPI_API void DeleteIdentity(
-		const FSatoriApiConfig& Config,
+		const FSatoriClientConfig& Config,
 		const FSatoriSession& Session,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FSatoriError&)> OnError,
-		FSatoriCancellationTokenPtr CancellationToken = nullptr) noexcept;
+		float Timeout = 10.0f,
+		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
 
 	/** Publish an event for this session. */
 	SATORIAPI_API void Event(
-		const FSatoriApiConfig& Config,
+		const FSatoriClientConfig& Config,
 		const FSatoriSession& Session,
 		const TArray<FSatoriEvent>& Events,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FSatoriError&)> OnError,
-		FSatoriCancellationTokenPtr CancellationToken = nullptr) noexcept;
+		float Timeout = 10.0f,
+		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
 
 	/** Publish server events for multiple distinct identities. */
 	SATORIAPI_API void ServerEvent(
-		const FSatoriApiConfig& Config,
+		const FSatoriClientConfig& Config,
 		const FSatoriSession& Session,
 		const TArray<FSatoriEvent>& Events,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FSatoriError&)> OnError,
-		FSatoriCancellationTokenPtr CancellationToken = nullptr) noexcept;
+		float Timeout = 10.0f,
+		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
 
 	/** Get or list all available experiments for this identity. */
 	SATORIAPI_API void GetExperiments(
-		const FSatoriApiConfig& Config,
+		const FSatoriClientConfig& Config,
 		const FSatoriSession& Session,
 		const TArray<FString>& Names,
 		const TArray<FString>& Labels,
 		TFunction<void(const FSatoriExperimentList&)> OnSuccess,
 		TFunction<void(const FSatoriError&)> OnError,
-		FSatoriCancellationTokenPtr CancellationToken = nullptr) noexcept;
+		float Timeout = 10.0f,
+		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
 
 	/** List all available flags and their value overrides for this identity. */
 	SATORIAPI_API void GetFlagOverrides(
-		const FSatoriApiConfig& Config,
+		const FSatoriClientConfig& Config,
 		const FSatoriSession& Session,
 		const TArray<FString>& Names,
 		const TArray<FString>& Labels,
 		TFunction<void(const FSatoriFlagOverrideList&)> OnSuccess,
 		TFunction<void(const FSatoriError&)> OnError,
-		FSatoriCancellationTokenPtr CancellationToken = nullptr) noexcept;
+		float Timeout = 10.0f,
+		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
 
 	/** List all available flags for this identity. */
 	SATORIAPI_API void GetFlags(
-		const FSatoriApiConfig& Config,
+		const FSatoriClientConfig& Config,
 		const FSatoriSession& Session,
 		const TArray<FString>& Names,
 		const TArray<FString>& Labels,
 		TFunction<void(const FSatoriFlagList&)> OnSuccess,
 		TFunction<void(const FSatoriError&)> OnError,
-		FSatoriCancellationTokenPtr CancellationToken = nullptr) noexcept;
+		float Timeout = 10.0f,
+		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
 
 	/** List available live events. */
 	SATORIAPI_API void GetLiveEvents(
-		const FSatoriApiConfig& Config,
+		const FSatoriClientConfig& Config,
 		const FSatoriSession& Session,
 		const TArray<FString>& Names,
 		const TArray<FString>& Labels,
@@ -879,66 +872,73 @@ namespace SatoriApi
 		int64 EndTimeSec,
 		TFunction<void(const FSatoriLiveEventList&)> OnSuccess,
 		TFunction<void(const FSatoriError&)> OnError,
-		FSatoriCancellationTokenPtr CancellationToken = nullptr) noexcept;
+		float Timeout = 10.0f,
+		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
 
 	/** Join an 'explicit join' live event. */
 	SATORIAPI_API void JoinLiveEvent(
-		const FSatoriApiConfig& Config,
+		const FSatoriClientConfig& Config,
 		const FSatoriSession& Session,
 		FString Id,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FSatoriError&)> OnError,
-		FSatoriCancellationTokenPtr CancellationToken = nullptr) noexcept;
+		float Timeout = 10.0f,
+		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
 
 	/** A healthcheck which load balancers can use to check the service. */
 	SATORIAPI_API void Healthcheck(
-		const FSatoriApiConfig& Config,
+		const FSatoriClientConfig& Config,
 		const FSatoriSession& Session,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FSatoriError&)> OnError,
-		FSatoriCancellationTokenPtr CancellationToken = nullptr) noexcept;
+		float Timeout = 10.0f,
+		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
 
 	/** Enrich/replace the current session with new identifier. */
 	SATORIAPI_API void Identify(
-		const FSatoriApiConfig& Config,
+		const FSatoriClientConfig& Config,
 		const FSatoriSession& Session,
 		FString Id,
 		const TMap<FString, FString>& Default,
 		const TMap<FString, FString>& Custom,
 		TFunction<void(const FSatoriSession&)> OnSuccess,
 		TFunction<void(const FSatoriError&)> OnError,
-		FSatoriCancellationTokenPtr CancellationToken = nullptr) noexcept;
+		float Timeout = 10.0f,
+		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
 
 	/** List properties associated with this identity. */
 	SATORIAPI_API void ListProperties(
-		const FSatoriApiConfig& Config,
+		const FSatoriClientConfig& Config,
 		const FSatoriSession& Session,
 		TFunction<void(const FSatoriProperties&)> OnSuccess,
 		TFunction<void(const FSatoriError&)> OnError,
-		FSatoriCancellationTokenPtr CancellationToken = nullptr) noexcept;
+		float Timeout = 10.0f,
+		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
 
 	/** A readycheck which load balancers can use to check the service. */
 	SATORIAPI_API void Readycheck(
-		const FSatoriApiConfig& Config,
+		const FSatoriClientConfig& Config,
 		const FSatoriSession& Session,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FSatoriError&)> OnError,
-		FSatoriCancellationTokenPtr CancellationToken = nullptr) noexcept;
+		float Timeout = 10.0f,
+		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
 
 	/** Update identity properties. */
 	SATORIAPI_API void UpdateProperties(
-		const FSatoriApiConfig& Config,
+		const FSatoriClientConfig& Config,
 		const FSatoriSession& Session,
 		bool Recompute,
 		const TMap<FString, FString>& Default,
 		const TMap<FString, FString>& Custom,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FSatoriError&)> OnError,
-		FSatoriCancellationTokenPtr CancellationToken = nullptr) noexcept;
+		float Timeout = 10.0f,
+		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
 
 	/** Get the list of messages for the identity. */
 	SATORIAPI_API void GetMessageList(
-		const FSatoriApiConfig& Config,
+		const FSatoriClientConfig& Config,
 		const FSatoriSession& Session,
 		int32 Limit,
 		bool Forward,
@@ -946,25 +946,28 @@ namespace SatoriApi
 		const TArray<FString>& MessageIds,
 		TFunction<void(const FSatoriGetMessageListResponse&)> OnSuccess,
 		TFunction<void(const FSatoriError&)> OnError,
-		FSatoriCancellationTokenPtr CancellationToken = nullptr) noexcept;
+		float Timeout = 10.0f,
+		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
 
 	/** Updates a message for an identity. */
 	SATORIAPI_API void UpdateMessage(
-		const FSatoriApiConfig& Config,
+		const FSatoriClientConfig& Config,
 		const FSatoriSession& Session,
 		FString Id,
 		int64 ReadTime,
 		int64 ConsumeTime,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FSatoriError&)> OnError,
-		FSatoriCancellationTokenPtr CancellationToken = nullptr) noexcept;
+		float Timeout = 10.0f,
+		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
 
 	/** Deletes a message for an identity. */
 	SATORIAPI_API void DeleteMessage(
-		const FSatoriApiConfig& Config,
+		const FSatoriClientConfig& Config,
 		const FSatoriSession& Session,
 		FString Id,
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FSatoriError&)> OnError,
-		FSatoriCancellationTokenPtr CancellationToken = nullptr) noexcept;
+		float Timeout = 10.0f,
+		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
 }

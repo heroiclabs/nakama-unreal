@@ -16,7 +16,7 @@
 
 /* This code is auto-generated. DO NOT EDIT. */
 
-#include "NakamaTypes.h"
+#include "NakamaRtTypes.h"
 
 FNakamaRtEnvelope FNakamaRtEnvelope::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
@@ -158,7 +158,7 @@ TSharedPtr<FJsonObject> FNakamaRtChannel::ToJson() const noexcept
 	if (Presences.Num() > 0)
 	{
 		TArray<TSharedPtr<FJsonValue>> Array;
-		for (const a/uto& Item : Presences)
+		for (const auto& Item : Presences)
 		{
 			Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
 		}
@@ -519,7 +519,7 @@ TSharedPtr<FJsonObject> FNakamaRtChannelPresenceEvent::ToJson() const noexcept
 	if (Joins.Num() > 0)
 	{
 		TArray<TSharedPtr<FJsonValue>> Array;
-		for (const a/uto& Item : Joins)
+		for (const auto& Item : Joins)
 		{
 			Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
 		}
@@ -528,7 +528,7 @@ TSharedPtr<FJsonObject> FNakamaRtChannelPresenceEvent::ToJson() const noexcept
 	if (Leaves.Num() > 0)
 	{
 		TArray<TSharedPtr<FJsonValue>> Array;
-		for (const a/uto& Item : Leaves)
+		for (const auto& Item : Leaves)
 		{
 			Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
 		}
@@ -575,7 +575,9 @@ FNakamaRtError FNakamaRtError::FromJson(const TSharedPtr<FJsonObject>& Json) noe
 		{
 			for (const auto& Pair : (*MapObj)->Values)
 			{
+        
 				Result.Context.Add(Pair.Key, Pair.Value->AsString());
+        
 			}
 		}
 	}
@@ -595,7 +597,9 @@ TSharedPtr<FJsonObject> FNakamaRtError::ToJson() const noexcept
 		TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
 		for (const auto& Pair : Context)
 		{
+      
 			MapObj->SetStringField(Pair.Key, Pair.Value);
+      
 		}
 		Json->SetObjectField(TEXT("context"), MapObj);
 	}
@@ -667,7 +671,7 @@ TSharedPtr<FJsonObject> FNakamaRtMatch::ToJson() const noexcept
 	if (Presences.Num() > 0)
 	{
 		TArray<TSharedPtr<FJsonValue>> Array;
-		for (const a/uto& Item : Presences)
+		for (const auto& Item : Presences)
 		{
 			Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
 		}
@@ -725,13 +729,13 @@ FNakamaRtMatchData FNakamaRtMatchData::FromJson(const TSharedPtr<FJsonObject>& J
 		Result.OpCode = static_cast<int64>(Json->GetNumberField(TEXT("op_code")));
 	}
 	if (Json->HasField(TEXT("data")))
-	{
-		const TSharedPtr<FJsonObject>* NestedObj;
-		if (Json->TryGetObjectField(TEXT("data"), NestedObj))
-		{
-			Result.Data = FNakamaRtbytes::FromJson(*NestedObj);
-		}
-	}
+  {
+		FString Base64 = Json->GetStringField(TEXT("data"));
+    if (!FBase64::Decode(Base64, Result.Data))
+    {
+			UE_LOG(LogNakama, Warning, TEXT("Couldn't parse bytes: %s"), *Base64);
+    }
+  }
 	if (Json->HasField(TEXT("reliable")))
 	{
 		Result.Reliable = Json->GetBoolField(TEXT("reliable"));
@@ -748,7 +752,7 @@ TSharedPtr<FJsonObject> FNakamaRtMatchData::ToJson() const noexcept
 	}
 	Json->SetObjectField(TEXT("presence"), Presence.ToJson());
 	Json->SetNumberField(TEXT("op_code"), OpCode);
-	Json->SetObjectField(TEXT("data"), Data.ToJson());
+	Json->SetStringField(TEXT("data"), FBase64::Encode("Data"));
 	Json->SetBoolField(TEXT("reliable"), Reliable);
 	return Json;
 }
@@ -769,13 +773,13 @@ FNakamaRtMatchDataSend FNakamaRtMatchDataSend::FromJson(const TSharedPtr<FJsonOb
 		Result.OpCode = static_cast<int64>(Json->GetNumberField(TEXT("op_code")));
 	}
 	if (Json->HasField(TEXT("data")))
-	{
-		const TSharedPtr<FJsonObject>* NestedObj;
-		if (Json->TryGetObjectField(TEXT("data"), NestedObj))
-		{
-			Result.Data = FNakamaRtbytes::FromJson(*NestedObj);
-		}
-	}
+  {
+		FString Base64 = Json->GetStringField(TEXT("data"));
+    if (!FBase64::Decode(Base64, Result.Data))
+    {
+			UE_LOG(LogNakama, Warning, TEXT("Couldn't parse bytes: %s"), *Base64);
+    }
+  }
 	if (Json->HasField(TEXT("presences")))
 	{
 		const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
@@ -806,11 +810,11 @@ TSharedPtr<FJsonObject> FNakamaRtMatchDataSend::ToJson() const noexcept
 		Json->SetStringField(TEXT("match_id"), MatchId);
 	}
 	Json->SetNumberField(TEXT("op_code"), OpCode);
-	Json->SetObjectField(TEXT("data"), Data.ToJson());
+	Json->SetStringField(TEXT("data"), FBase64::Encode("Data"));
 	if (Presences.Num() > 0)
 	{
 		TArray<TSharedPtr<FJsonValue>> Array;
-		for (const a/uto& Item : Presences)
+		for (const auto& Item : Presences)
 		{
 			Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
 		}
@@ -834,7 +838,9 @@ FNakamaRtMatchJoin FNakamaRtMatchJoin::FromJson(const TSharedPtr<FJsonObject>& J
 		{
 			for (const auto& Pair : (*MapObj)->Values)
 			{
+        
 				Result.Metadata.Add(Pair.Key, Pair.Value->AsString());
+        
 			}
 		}
 	}
@@ -849,7 +855,9 @@ TSharedPtr<FJsonObject> FNakamaRtMatchJoin::ToJson() const noexcept
 		TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
 		for (const auto& Pair : Metadata)
 		{
+      
 			MapObj->SetStringField(Pair.Key, Pair.Value);
+      
 		}
 		Json->SetObjectField(TEXT("metadata"), MapObj);
 	}
@@ -934,7 +942,7 @@ TSharedPtr<FJsonObject> FNakamaRtMatchPresenceEvent::ToJson() const noexcept
 	if (Joins.Num() > 0)
 	{
 		TArray<TSharedPtr<FJsonValue>> Array;
-		for (const a/uto& Item : Joins)
+		for (const auto& Item : Joins)
 		{
 			Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
 		}
@@ -943,7 +951,7 @@ TSharedPtr<FJsonObject> FNakamaRtMatchPresenceEvent::ToJson() const noexcept
 	if (Leaves.Num() > 0)
 	{
 		TArray<TSharedPtr<FJsonValue>> Array;
-		for (const a/uto& Item : Leaves)
+		for (const auto& Item : Leaves)
 		{
 			Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
 		}
@@ -982,7 +990,9 @@ FNakamaRtMatchmakerAdd FNakamaRtMatchmakerAdd::FromJson(const TSharedPtr<FJsonOb
 		{
 			for (const auto& Pair : (*MapObj)->Values)
 			{
+        
 				Result.StringProperties.Add(Pair.Key, Pair.Value->AsString());
+        
 			}
 		}
 	}
@@ -993,7 +1003,9 @@ FNakamaRtMatchmakerAdd FNakamaRtMatchmakerAdd::FromJson(const TSharedPtr<FJsonOb
 		{
 			for (const auto& Pair : (*MapObj)->Values)
 			{
-				Result.NumericProperties.Add(Pair.Key, Pair.Value->AsString());
+        
+				Result.NumericProperties.Add(Pair.Key, Pair.Value->AsNumber());
+        
 			}
 		}
 	}
@@ -1015,7 +1027,9 @@ TSharedPtr<FJsonObject> FNakamaRtMatchmakerAdd::ToJson() const noexcept
 		TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
 		for (const auto& Pair : StringProperties)
 		{
+      
 			MapObj->SetStringField(Pair.Key, Pair.Value);
+      
 		}
 		Json->SetObjectField(TEXT("string_properties"), MapObj);
 	}
@@ -1024,7 +1038,9 @@ TSharedPtr<FJsonObject> FNakamaRtMatchmakerAdd::ToJson() const noexcept
 		TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
 		for (const auto& Pair : NumericProperties)
 		{
-			MapObj->SetStringField(Pair.Key, Pair.Value);
+      
+			MapObj->SetNumberField(Pair.Key, Pair.Value);
+      
 		}
 		Json->SetObjectField(TEXT("numeric_properties"), MapObj);
 	}
@@ -1057,7 +1073,9 @@ FNakamaRtMatchmakerMatched_MatchmakerUser FNakamaRtMatchmakerMatched_MatchmakerU
 		{
 			for (const auto& Pair : (*MapObj)->Values)
 			{
+        
 				Result.StringProperties.Add(Pair.Key, Pair.Value->AsString());
+        
 			}
 		}
 	}
@@ -1068,7 +1086,9 @@ FNakamaRtMatchmakerMatched_MatchmakerUser FNakamaRtMatchmakerMatched_MatchmakerU
 		{
 			for (const auto& Pair : (*MapObj)->Values)
 			{
-				Result.NumericProperties.Add(Pair.Key, Pair.Value->AsString());
+        
+				Result.NumericProperties.Add(Pair.Key, Pair.Value->AsNumber());
+        
 			}
 		}
 	}
@@ -1088,7 +1108,9 @@ TSharedPtr<FJsonObject> FNakamaRtMatchmakerMatched_MatchmakerUser::ToJson() cons
 		TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
 		for (const auto& Pair : StringProperties)
 		{
+      
 			MapObj->SetStringField(Pair.Key, Pair.Value);
+      
 		}
 		Json->SetObjectField(TEXT("string_properties"), MapObj);
 	}
@@ -1097,7 +1119,9 @@ TSharedPtr<FJsonObject> FNakamaRtMatchmakerMatched_MatchmakerUser::ToJson() cons
 		TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
 		for (const auto& Pair : NumericProperties)
 		{
-			MapObj->SetStringField(Pair.Key, Pair.Value);
+      
+			MapObj->SetNumberField(Pair.Key, Pair.Value);
+      
 		}
 		Json->SetObjectField(TEXT("numeric_properties"), MapObj);
 	}
@@ -1151,7 +1175,7 @@ TSharedPtr<FJsonObject> FNakamaRtMatchmakerMatched::ToJson() const noexcept
 	if (Users.Num() > 0)
 	{
 		TArray<TSharedPtr<FJsonValue>> Array;
-		for (const a/uto& Item : Users)
+		for (const auto& Item : Users)
 		{
 			Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
 		}
@@ -1236,7 +1260,7 @@ TSharedPtr<FJsonObject> FNakamaRtNotifications::ToJson() const noexcept
 	if (Notifications.Num() > 0)
 	{
 		TArray<TSharedPtr<FJsonValue>> Array;
-		for (const a/uto& Item : Notifications)
+		for (const auto& Item : Notifications)
 		{
 			Array.Add(MakeShared<FJsonValueString>(Item));
 		}
@@ -1321,7 +1345,7 @@ TSharedPtr<FJsonObject> FNakamaRtParty::ToJson() const noexcept
 	if (Presences.Num() > 0)
 	{
 		TArray<TSharedPtr<FJsonValue>> Array;
-		for (const a/uto& Item : Presences)
+		for (const auto& Item : Presences)
 		{
 			Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
 		}
@@ -1682,7 +1706,7 @@ TSharedPtr<FJsonObject> FNakamaRtPartyJoinRequest::ToJson() const noexcept
 	if (Presences.Num() > 0)
 	{
 		TArray<TSharedPtr<FJsonValue>> Array;
-		for (const a/uto& Item : Presences)
+		for (const auto& Item : Presences)
 		{
 			Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
 		}
@@ -1725,7 +1749,9 @@ FNakamaRtPartyMatchmakerAdd FNakamaRtPartyMatchmakerAdd::FromJson(const TSharedP
 		{
 			for (const auto& Pair : (*MapObj)->Values)
 			{
+        
 				Result.StringProperties.Add(Pair.Key, Pair.Value->AsString());
+        
 			}
 		}
 	}
@@ -1736,7 +1762,9 @@ FNakamaRtPartyMatchmakerAdd FNakamaRtPartyMatchmakerAdd::FromJson(const TSharedP
 		{
 			for (const auto& Pair : (*MapObj)->Values)
 			{
-				Result.NumericProperties.Add(Pair.Key, Pair.Value->AsString());
+        
+				Result.NumericProperties.Add(Pair.Key, Pair.Value->AsNumber());
+        
 			}
 		}
 	}
@@ -1762,7 +1790,9 @@ TSharedPtr<FJsonObject> FNakamaRtPartyMatchmakerAdd::ToJson() const noexcept
 		TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
 		for (const auto& Pair : StringProperties)
 		{
+      
 			MapObj->SetStringField(Pair.Key, Pair.Value);
+      
 		}
 		Json->SetObjectField(TEXT("string_properties"), MapObj);
 	}
@@ -1771,7 +1801,9 @@ TSharedPtr<FJsonObject> FNakamaRtPartyMatchmakerAdd::ToJson() const noexcept
 		TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
 		for (const auto& Pair : NumericProperties)
 		{
-			MapObj->SetStringField(Pair.Key, Pair.Value);
+      
+			MapObj->SetNumberField(Pair.Key, Pair.Value);
+      
 		}
 		Json->SetObjectField(TEXT("numeric_properties"), MapObj);
 	}
@@ -1866,13 +1898,13 @@ FNakamaRtPartyData FNakamaRtPartyData::FromJson(const TSharedPtr<FJsonObject>& J
 		Result.OpCode = static_cast<int64>(Json->GetNumberField(TEXT("op_code")));
 	}
 	if (Json->HasField(TEXT("data")))
-	{
-		const TSharedPtr<FJsonObject>* NestedObj;
-		if (Json->TryGetObjectField(TEXT("data"), NestedObj))
-		{
-			Result.Data = FNakamaRtbytes::FromJson(*NestedObj);
-		}
-	}
+  {
+		FString Base64 = Json->GetStringField(TEXT("data"));
+    if (!FBase64::Decode(Base64, Result.Data))
+    {
+			UE_LOG(LogNakama, Warning, TEXT("Couldn't parse bytes: %s"), *Base64);
+    }
+  }
 	return Result;
 }
 
@@ -1885,7 +1917,7 @@ TSharedPtr<FJsonObject> FNakamaRtPartyData::ToJson() const noexcept
 	}
 	Json->SetObjectField(TEXT("presence"), Presence.ToJson());
 	Json->SetNumberField(TEXT("op_code"), OpCode);
-	Json->SetObjectField(TEXT("data"), Data.ToJson());
+	Json->SetStringField(TEXT("data"), FBase64::Encode("Data"));
 	return Json;
 }
 
@@ -1905,13 +1937,13 @@ FNakamaRtPartyDataSend FNakamaRtPartyDataSend::FromJson(const TSharedPtr<FJsonOb
 		Result.OpCode = static_cast<int64>(Json->GetNumberField(TEXT("op_code")));
 	}
 	if (Json->HasField(TEXT("data")))
-	{
-		const TSharedPtr<FJsonObject>* NestedObj;
-		if (Json->TryGetObjectField(TEXT("data"), NestedObj))
-		{
-			Result.Data = FNakamaRtbytes::FromJson(*NestedObj);
-		}
-	}
+  {
+		FString Base64 = Json->GetStringField(TEXT("data"));
+    if (!FBase64::Decode(Base64, Result.Data))
+    {
+			UE_LOG(LogNakama, Warning, TEXT("Couldn't parse bytes: %s"), *Base64);
+    }
+  }
 	return Result;
 }
 
@@ -1923,7 +1955,7 @@ TSharedPtr<FJsonObject> FNakamaRtPartyDataSend::ToJson() const noexcept
 		Json->SetStringField(TEXT("party_id"), PartyId);
 	}
 	Json->SetNumberField(TEXT("op_code"), OpCode);
-	Json->SetObjectField(TEXT("data"), Data.ToJson());
+	Json->SetStringField(TEXT("data"), FBase64::Encode("Data"));
 	return Json;
 }
 
@@ -1981,7 +2013,7 @@ TSharedPtr<FJsonObject> FNakamaRtPartyPresenceEvent::ToJson() const noexcept
 	if (Joins.Num() > 0)
 	{
 		TArray<TSharedPtr<FJsonValue>> Array;
-		for (const a/uto& Item : Joins)
+		for (const auto& Item : Joins)
 		{
 			Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
 		}
@@ -1990,7 +2022,7 @@ TSharedPtr<FJsonObject> FNakamaRtPartyPresenceEvent::ToJson() const noexcept
 	if (Leaves.Num() > 0)
 	{
 		TArray<TSharedPtr<FJsonValue>> Array;
-		for (const a/uto& Item : Leaves)
+		for (const auto& Item : Leaves)
 		{
 			Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
 		}
@@ -2062,7 +2094,7 @@ TSharedPtr<FJsonObject> FNakamaRtStatus::ToJson() const noexcept
 	if (Presences.Num() > 0)
 	{
 		TArray<TSharedPtr<FJsonValue>> Array;
-		for (const a/uto& Item : Presences)
+		for (const auto& Item : Presences)
 		{
 			Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
 		}
@@ -2109,7 +2141,7 @@ TSharedPtr<FJsonObject> FNakamaRtStatusFollow::ToJson() const noexcept
 	if (UserIds.Num() > 0)
 	{
 		TArray<TSharedPtr<FJsonValue>> Array;
-		for (const a/uto& Item : UserIds)
+		for (const auto& Item : UserIds)
 		{
 			Array.Add(MakeShared<FJsonValueString>(Item));
 		}
@@ -2118,7 +2150,7 @@ TSharedPtr<FJsonObject> FNakamaRtStatusFollow::ToJson() const noexcept
 	if (Usernames.Num() > 0)
 	{
 		TArray<TSharedPtr<FJsonValue>> Array;
-		for (const a/uto& Item : Usernames)
+		for (const auto& Item : Usernames)
 		{
 			Array.Add(MakeShared<FJsonValueString>(Item));
 		}
@@ -2173,7 +2205,7 @@ TSharedPtr<FJsonObject> FNakamaRtStatusPresenceEvent::ToJson() const noexcept
 	if (Joins.Num() > 0)
 	{
 		TArray<TSharedPtr<FJsonValue>> Array;
-		for (const a/uto& Item : Joins)
+		for (const auto& Item : Joins)
 		{
 			Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
 		}
@@ -2182,7 +2214,7 @@ TSharedPtr<FJsonObject> FNakamaRtStatusPresenceEvent::ToJson() const noexcept
 	if (Leaves.Num() > 0)
 	{
 		TArray<TSharedPtr<FJsonValue>> Array;
-		for (const a/uto& Item : Leaves)
+		for (const auto& Item : Leaves)
 		{
 			Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
 		}
@@ -2218,7 +2250,7 @@ TSharedPtr<FJsonObject> FNakamaRtStatusUnfollow::ToJson() const noexcept
 	if (UserIds.Num() > 0)
 	{
 		TArray<TSharedPtr<FJsonValue>> Array;
-		for (const a/uto& Item : UserIds)
+		for (const auto& Item : UserIds)
 		{
 			Array.Add(MakeShared<FJsonValueString>(Item));
 		}
@@ -2398,7 +2430,7 @@ TSharedPtr<FJsonObject> FNakamaRtStreamPresenceEvent::ToJson() const noexcept
 	if (Joins.Num() > 0)
 	{
 		TArray<TSharedPtr<FJsonValue>> Array;
-		for (const a/uto& Item : Joins)
+		for (const auto& Item : Joins)
 		{
 			Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
 		}
@@ -2407,7 +2439,7 @@ TSharedPtr<FJsonObject> FNakamaRtStreamPresenceEvent::ToJson() const noexcept
 	if (Leaves.Num() > 0)
 	{
 		TArray<TSharedPtr<FJsonValue>> Array;
-		for (const a/uto& Item : Leaves)
+		for (const auto& Item : Leaves)
 		{
 			Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
 		}

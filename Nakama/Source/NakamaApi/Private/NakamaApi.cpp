@@ -42,126 +42,6 @@ DECLARE_DWORD_ACCUMULATOR_STAT(TEXT("ActiveRequests"), STAT_Nakama_ActiveRequest
 DECLARE_DWORD_ACCUMULATOR_STAT(TEXT("TotalRequests"), STAT_Nakama_TotalRequests, STATGROUP_Nakama);
 DECLARE_DWORD_ACCUMULATOR_STAT(TEXT("TotalErrors"), STAT_Nakama_TotalErrors, STATGROUP_Nakama);
 
-// --- FNakamaSession JWT helpers ---
-
-bool FNakamaSession::ParseJwtPayload(const FString& Jwt, TSharedPtr<FJsonObject>& Out) noexcept
-{
-	TArray<FString> Parts;
-	Jwt.ParseIntoArray(Parts, TEXT("."));
-	if (Parts.Num() < 2)
-	{
-		return false;
-	}
-
-	// Base64url -> standard Base64
-	FString Payload = Parts[1];
-	Payload.ReplaceInline(TEXT("-"), TEXT("+"));
-	Payload.ReplaceInline(TEXT("_"), TEXT("/"));
-
-	// Pad to multiple of 4
-	while (Payload.Len() % 4 != 0)
-	{
-		Payload += TEXT("=");
-	}
-
-	TArray<uint8> DecodedBytes;
-	if (!FBase64::Decode(Payload, DecodedBytes))
-	{
-		return false;
-	}
-
-	const FUTF8ToTCHAR Converter(reinterpret_cast<const ANSICHAR*>(DecodedBytes.GetData()), DecodedBytes.Num());
-	FString JsonString(Converter.Length(), Converter.Get());
-
-	TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(JsonString);
-	return FJsonSerializer::Deserialize(Reader, Out) && Out.IsValid();
-}
-
-void FNakamaSession::ParseTokens() noexcept
-{
-	UserId.Empty();
-	Username.Empty();
-	TokenExpiresAt = 0;
-	TokenIssuedAt = 0;
-	RefreshTokenExpiresAt = 0;
-	Vars.Empty();
-
-	// Parse auth token
-	TSharedPtr<FJsonObject> TokenPayload;
-	if (!Token.IsEmpty() && ParseJwtPayload(Token, TokenPayload))
-	{
-		if (TokenPayload->HasField(TEXT("uid")))
-		{
-			UserId = TokenPayload->GetStringField(TEXT("uid"));
-		}
-		if (TokenPayload->HasField(TEXT("usn")))
-		{
-			Username = TokenPayload->GetStringField(TEXT("usn"));
-		}
-		if (TokenPayload->HasField(TEXT("exp")))
-		{
-			TokenExpiresAt = static_cast<int64>(TokenPayload->GetNumberField(TEXT("exp")));
-		}
-		if (TokenPayload->HasField(TEXT("iat")))
-		{
-			TokenIssuedAt = static_cast<int64>(TokenPayload->GetNumberField(TEXT("iat")));
-		}
-		if (TokenPayload->HasField(TEXT("vrs")))
-		{
-			const TSharedPtr<FJsonObject>* VrsObj;
-			if (TokenPayload->TryGetObjectField(TEXT("vrs"), VrsObj))
-			{
-				for (const auto& Pair : (*VrsObj)->Values)
-				{
-					Vars.Add(Pair.Key, Pair.Value->AsString());
-				}
-			}
-		}
-	}
-
-	// Parse refresh token
-	TSharedPtr<FJsonObject> RefreshPayload;
-	if (!RefreshToken.IsEmpty() && ParseJwtPayload(RefreshToken, RefreshPayload))
-	{
-		if (RefreshPayload->HasField(TEXT("exp")))
-		{
-			RefreshTokenExpiresAt = static_cast<int64>(RefreshPayload->GetNumberField(TEXT("exp")));
-		}
-	}
-}
-
-bool FNakamaSession::IsExpired(int64 BufferSeconds) const noexcept
-{
-	if (TokenExpiresAt == 0)
-	{
-		return true;
-	}
-	return (TokenExpiresAt - BufferSeconds) <= FDateTime::UtcNow().ToUnixTimestamp();
-}
-
-bool FNakamaSession::IsRefreshExpired(int64 BufferSeconds) const noexcept
-{
-	if (RefreshTokenExpiresAt == 0)
-	{
-		return true;
-	}
-	return (RefreshTokenExpiresAt - BufferSeconds) <= FDateTime::UtcNow().ToUnixTimestamp();
-}
-
-void FNakamaSession::Update(const FString& NewToken, const FString& NewRefreshToken) noexcept
-{
-	Token = NewToken;
-	RefreshToken = NewRefreshToken;
-	ParseTokens();
-}
-// --- FNakamaApiConfig ---
-
-FString FNakamaApiConfig::GetBaseUrl() const noexcept
-{
-	const FString Scheme = bUseSSL ? TEXT("https") : TEXT("http");
-	return FString::Printf(TEXT("%s://%s:%d"), *Scheme, *Host, Port);
-}
-
 
 // --- File-local HTTP helpers ---
 
@@ -169,7 +49,7 @@ namespace
 {
 
 void DoHttpRequest(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FString& Endpoint,
 	const FString& Method,
 	const FString& BodyString,
@@ -177,7 +57,8 @@ void DoHttpRequest(
 	const FString& TokenString,
 	TFunction<void(TSharedPtr<FJsonObject>)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	SCOPE_CYCLE_COUNTER(STAT_Nakama_MakeRequest_Dispatch);
 	TRACE_CPUPROFILER_EVENT_SCOPE(Nakama_MakeRequest);
@@ -228,7 +109,7 @@ void DoHttpRequest(
 		UE_LOG(LogNakama, Log, TEXT("Request %s %s"), *Method, *Url);
 	}
 
-	Request->SetTimeout(Config.Timeout);
+	Request->SetTimeout(Timeout);
 
 	Request->OnProcessRequestComplete().BindLambda(
 		[OnSuccess, OnError, CancellationToken](FHttpRequestPtr Req, FHttpResponsePtr Res, bool bSuccess)
@@ -237,7 +118,7 @@ void DoHttpRequest(
 			TRACE_CPUPROFILER_EVENT_SCOPE(Nakama_OnResponse);
 			DEC_DWORD_STAT(STAT_Nakama_ActiveRequests);
 
-			if (CancellationToken && CancellationToken->IsCancelled())
+			if (CancellationToken->Load())
 			{
 				if (OnError)
 				{
@@ -265,6 +146,7 @@ void DoHttpRequest(
 			{
 				INC_DWORD_STAT(STAT_Nakama_TotalErrors);
 				FString ErrorMsg = FString::Printf(TEXT("HTTP %d"), Code);
+				int32 ErrorCode = Code;
 				TSharedPtr<FJsonObject> Json;
 				if (FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Content), Json) && Json.IsValid())
 				{
@@ -272,10 +154,14 @@ void DoHttpRequest(
 					{
 						ErrorMsg = Json->GetStringField(TEXT("message"));
 					}
+					if (Json->HasField(TEXT("code")))
+					{
+						ErrorCode = static_cast<int32>(Json->GetNumberField(TEXT("code")));
+					}
 				}
 				if (OnError)
 				{
-					OnError(FNakamaError(ErrorMsg, Code));
+					OnError(FNakamaError(ErrorMsg, ErrorCode));
 				}
 				return;
 			}
@@ -305,7 +191,7 @@ void DoHttpRequest(
 }
 
 void SendRequest(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FString& Endpoint,
 	const FString& Method,
 	const FString& BodyString,
@@ -313,10 +199,11 @@ void SendRequest(
 	const FString& BearerToken,
 	TFunction<void(TSharedPtr<FJsonObject>)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	// Early cancellation check
-	if (CancellationToken && CancellationToken->IsCancelled())
+	if (CancellationToken->Load())
 	{
 		if (OnError)
 		{
@@ -325,7 +212,7 @@ void SendRequest(
 		return;
 	}
 
-	DoHttpRequest(Config, Endpoint, Method, BodyString, AuthType, BearerToken, OnSuccess, OnError, CancellationToken);
+	DoHttpRequest(Config, Endpoint, Method, BodyString, AuthType, BearerToken, OnSuccess, OnError, Timeout, CancellationToken);
 }
 FString SerializeJsonToString(const TSharedPtr<FJsonObject>& Json)
 {
@@ -356,7 +243,7 @@ FString SerializeJsonEscaped(const TSharedPtr<FJsonObject>& Json)
 }
 
 void MakeRequest(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FString& Endpoint,
 	const FString& Method,
 	const TSharedPtr<FJsonObject>& Body,
@@ -364,7 +251,8 @@ void MakeRequest(
 	const FString& BearerToken,
 	TFunction<void(TSharedPtr<FJsonObject>)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString BodyString;
 	if (Body.IsValid() && Method != TEXT("GET"))
@@ -372,20 +260,21 @@ void MakeRequest(
 		SCOPE_CYCLE_COUNTER(STAT_Nakama_JsonSerialize);
 		BodyString = SerializeJsonToString(Body);
 	}
-	SendRequest(Config, Endpoint, Method, BodyString, AuthType, BearerToken, OnSuccess, OnError, CancellationToken);
+	SendRequest(Config, Endpoint, Method, BodyString, AuthType, BearerToken, OnSuccess, OnError, Timeout, CancellationToken);
 }
 
 } // anonymous namespace
 
 void NakamaApi::AddFriends(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FNakamaSession& Session,
 	const TArray<FString>& Ids,
 	const TArray<FString>& Usernames,
 	FString Metadata,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/friend");
 	TArray<FString> QueryParams;
@@ -416,18 +305,19 @@ void NakamaApi::AddFriends(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::AddFriends(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FString& HttpKey,
 	const TArray<FString>& Ids,
 	const TArray<FString>& Usernames,
 	FString Metadata,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/friend");
 	TArray<FString> QueryParams;
@@ -456,17 +346,18 @@ void NakamaApi::AddFriends(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::AddGroupUsers(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FNakamaSession& Session,
 	FString GroupId,
 	const TArray<FString>& UserIds,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/group/{group_id}/add");
 	Endpoint = Endpoint.Replace(TEXT("{group_id}"), *GroupId);
@@ -490,17 +381,18 @@ void NakamaApi::AddGroupUsers(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::AddGroupUsers(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FString& HttpKey,
 	FString GroupId,
 	const TArray<FString>& UserIds,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/group/{group_id}/add");
 	Endpoint = Endpoint.Replace(TEXT("{group_id}"), *GroupId);
@@ -522,16 +414,17 @@ void NakamaApi::AddGroupUsers(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::SessionRefresh(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	FString Token,
 	const TMap<FString, FString>& Vars,
 	TFunction<void(const FNakamaSession&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/session/refresh");
 	TArray<FString> QueryParams;
@@ -565,17 +458,18 @@ void NakamaApi::SessionRefresh(
 				OnSuccess(Result);
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::SessionLogout(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FNakamaSession& Session,
 	FString Token,
 	FString RefreshToken,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/session/logout");
 	TArray<FString> QueryParams;
@@ -603,17 +497,18 @@ void NakamaApi::SessionLogout(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::SessionLogout(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FString& HttpKey,
 	FString Token,
 	FString RefreshToken,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/session/logout");
 	TArray<FString> QueryParams;
@@ -639,17 +534,18 @@ void NakamaApi::SessionLogout(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::AuthenticateApple(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	FNakamaAccountApple Account,
 	bool Create,
 	FString Username,
 	TFunction<void(const FNakamaSession&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/authenticate/apple");
 	TArray<FString> QueryParams;
@@ -675,17 +571,18 @@ void NakamaApi::AuthenticateApple(
 				OnSuccess(Result);
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::AuthenticateCustom(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	FNakamaAccountCustom Account,
 	bool Create,
 	FString Username,
 	TFunction<void(const FNakamaSession&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/authenticate/custom");
 	TArray<FString> QueryParams;
@@ -711,17 +608,18 @@ void NakamaApi::AuthenticateCustom(
 				OnSuccess(Result);
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::AuthenticateDevice(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	FNakamaAccountDevice Account,
 	bool Create,
 	FString Username,
 	TFunction<void(const FNakamaSession&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/authenticate/device");
 	TArray<FString> QueryParams;
@@ -747,17 +645,18 @@ void NakamaApi::AuthenticateDevice(
 				OnSuccess(Result);
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::AuthenticateEmail(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	FNakamaAccountEmail Account,
 	bool Create,
 	FString Username,
 	TFunction<void(const FNakamaSession&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/authenticate/email");
 	TArray<FString> QueryParams;
@@ -783,18 +682,19 @@ void NakamaApi::AuthenticateEmail(
 				OnSuccess(Result);
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::AuthenticateFacebook(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	FNakamaAccountFacebook Account,
 	bool Create,
 	FString Username,
 	bool Sync,
 	TFunction<void(const FNakamaSession&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/authenticate/facebook");
 	TArray<FString> QueryParams;
@@ -821,17 +721,18 @@ void NakamaApi::AuthenticateFacebook(
 				OnSuccess(Result);
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::AuthenticateFacebookInstantGame(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	FNakamaAccountFacebookInstantGame Account,
 	bool Create,
 	FString Username,
 	TFunction<void(const FNakamaSession&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/authenticate/facebookinstantgame");
 	TArray<FString> QueryParams;
@@ -857,17 +758,18 @@ void NakamaApi::AuthenticateFacebookInstantGame(
 				OnSuccess(Result);
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::AuthenticateGameCenter(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	FNakamaAccountGameCenter Account,
 	bool Create,
 	FString Username,
 	TFunction<void(const FNakamaSession&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/authenticate/gamecenter");
 	TArray<FString> QueryParams;
@@ -893,17 +795,18 @@ void NakamaApi::AuthenticateGameCenter(
 				OnSuccess(Result);
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::AuthenticateGoogle(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	FNakamaAccountGoogle Account,
 	bool Create,
 	FString Username,
 	TFunction<void(const FNakamaSession&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/authenticate/google");
 	TArray<FString> QueryParams;
@@ -929,18 +832,19 @@ void NakamaApi::AuthenticateGoogle(
 				OnSuccess(Result);
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::AuthenticateSteam(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	FNakamaAccountSteam Account,
 	bool Create,
 	FString Username,
 	bool Sync,
 	TFunction<void(const FNakamaSession&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/authenticate/steam");
 	TArray<FString> QueryParams;
@@ -967,17 +871,18 @@ void NakamaApi::AuthenticateSteam(
 				OnSuccess(Result);
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::BanGroupUsers(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FNakamaSession& Session,
 	FString GroupId,
 	const TArray<FString>& UserIds,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/group/{group_id}/ban");
 	Endpoint = Endpoint.Replace(TEXT("{group_id}"), *GroupId);
@@ -1001,17 +906,18 @@ void NakamaApi::BanGroupUsers(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::BanGroupUsers(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FString& HttpKey,
 	FString GroupId,
 	const TArray<FString>& UserIds,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/group/{group_id}/ban");
 	Endpoint = Endpoint.Replace(TEXT("{group_id}"), *GroupId);
@@ -1033,17 +939,18 @@ void NakamaApi::BanGroupUsers(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::BlockFriends(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FNakamaSession& Session,
 	const TArray<FString>& Ids,
 	const TArray<FString>& Usernames,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/friend/block");
 	TArray<FString> QueryParams;
@@ -1070,17 +977,18 @@ void NakamaApi::BlockFriends(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::BlockFriends(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FString& HttpKey,
 	const TArray<FString>& Ids,
 	const TArray<FString>& Usernames,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/friend/block");
 	TArray<FString> QueryParams;
@@ -1105,11 +1013,11 @@ void NakamaApi::BlockFriends(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::CreateGroup(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FNakamaSession& Session,
 	FString Name,
 	FString Description,
@@ -1119,7 +1027,8 @@ void NakamaApi::CreateGroup(
 	int32 MaxCount,
 	TFunction<void(const FNakamaGroup&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/group");
 	TArray<FString> QueryParams;
@@ -1158,11 +1067,11 @@ void NakamaApi::CreateGroup(
 				OnSuccess(Result);
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::CreateGroup(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FString& HttpKey,
 	FString Name,
 	FString Description,
@@ -1172,7 +1081,8 @@ void NakamaApi::CreateGroup(
 	int32 MaxCount,
 	TFunction<void(const FNakamaGroup&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/group");
 	TArray<FString> QueryParams;
@@ -1209,15 +1119,16 @@ void NakamaApi::CreateGroup(
 				OnSuccess(Result);
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::DeleteAccount(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FNakamaSession& Session,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account");
 
@@ -1231,15 +1142,16 @@ void NakamaApi::DeleteAccount(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::DeleteAccount(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FString& HttpKey,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account");TSharedPtr<FJsonObject> Body;
 
@@ -1251,17 +1163,18 @@ void NakamaApi::DeleteAccount(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::DeleteFriends(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FNakamaSession& Session,
 	const TArray<FString>& Ids,
 	const TArray<FString>& Usernames,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/friend");
 	TArray<FString> QueryParams;
@@ -1288,17 +1201,18 @@ void NakamaApi::DeleteFriends(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::DeleteFriends(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FString& HttpKey,
 	const TArray<FString>& Ids,
 	const TArray<FString>& Usernames,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/friend");
 	TArray<FString> QueryParams;
@@ -1323,16 +1237,17 @@ void NakamaApi::DeleteFriends(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::DeleteGroup(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FNakamaSession& Session,
 	FString GroupId,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/group/{group_id}");
 	Endpoint = Endpoint.Replace(TEXT("{group_id}"), *GroupId);
@@ -1352,16 +1267,17 @@ void NakamaApi::DeleteGroup(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::DeleteGroup(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FString& HttpKey,
 	FString GroupId,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/group/{group_id}");
 	Endpoint = Endpoint.Replace(TEXT("{group_id}"), *GroupId);
@@ -1379,16 +1295,17 @@ void NakamaApi::DeleteGroup(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::DeleteLeaderboardRecord(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FNakamaSession& Session,
 	FString LeaderboardId,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/leaderboard/{leaderboard_id}");
 	Endpoint = Endpoint.Replace(TEXT("{leaderboard_id}"), *LeaderboardId);
@@ -1408,16 +1325,17 @@ void NakamaApi::DeleteLeaderboardRecord(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::DeleteLeaderboardRecord(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FString& HttpKey,
 	FString LeaderboardId,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/leaderboard/{leaderboard_id}");
 	Endpoint = Endpoint.Replace(TEXT("{leaderboard_id}"), *LeaderboardId);
@@ -1435,16 +1353,17 @@ void NakamaApi::DeleteLeaderboardRecord(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::DeleteNotifications(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FNakamaSession& Session,
 	const TArray<FString>& Ids,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/notification");
 	TArray<FString> QueryParams;
@@ -1467,16 +1386,17 @@ void NakamaApi::DeleteNotifications(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::DeleteNotifications(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FString& HttpKey,
 	const TArray<FString>& Ids,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/notification");
 	TArray<FString> QueryParams;
@@ -1497,16 +1417,17 @@ void NakamaApi::DeleteNotifications(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::DeleteTournamentRecord(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FNakamaSession& Session,
 	FString TournamentId,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/tournament/{tournament_id}");
 	Endpoint = Endpoint.Replace(TEXT("{tournament_id}"), *TournamentId);
@@ -1526,16 +1447,17 @@ void NakamaApi::DeleteTournamentRecord(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::DeleteTournamentRecord(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FString& HttpKey,
 	FString TournamentId,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/tournament/{tournament_id}");
 	Endpoint = Endpoint.Replace(TEXT("{tournament_id}"), *TournamentId);
@@ -1553,16 +1475,17 @@ void NakamaApi::DeleteTournamentRecord(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::DeleteStorageObjects(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FNakamaSession& Session,
 	const TArray<FNakamaDeleteStorageObjectId>& ObjectIds,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/storage/delete");
 	TArray<FString> QueryParams;
@@ -1591,16 +1514,17 @@ void NakamaApi::DeleteStorageObjects(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::DeleteStorageObjects(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FString& HttpKey,
 	const TArray<FNakamaDeleteStorageObjectId>& ObjectIds,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/storage/delete");
 	TArray<FString> QueryParams;
@@ -1627,11 +1551,11 @@ void NakamaApi::DeleteStorageObjects(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::Event(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FNakamaSession& Session,
 	FString Name,
 	FString Timestamp,
@@ -1639,7 +1563,8 @@ void NakamaApi::Event(
 	const TMap<FString, FString>& Properties,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/event");
 	TArray<FString> QueryParams;
@@ -1674,11 +1599,11 @@ void NakamaApi::Event(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::Event(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FString& HttpKey,
 	FString Name,
 	FString Timestamp,
@@ -1686,7 +1611,8 @@ void NakamaApi::Event(
 	const TMap<FString, FString>& Properties,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/event");
 	TArray<FString> QueryParams;
@@ -1719,15 +1645,16 @@ void NakamaApi::Event(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::GetAccount(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FNakamaSession& Session,
 	TFunction<void(const FNakamaAccount&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account");
 
@@ -1742,15 +1669,16 @@ void NakamaApi::GetAccount(
 				OnSuccess(Result);
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::GetAccount(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FString& HttpKey,
 	TFunction<void(const FNakamaAccount&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account");TSharedPtr<FJsonObject> Body;
 
@@ -1763,18 +1691,19 @@ void NakamaApi::GetAccount(
 				OnSuccess(Result);
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::GetUsers(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FNakamaSession& Session,
 	const TArray<FString>& Ids,
 	const TArray<FString>& Usernames,
 	const TArray<FString>& FacebookIds,
 	TFunction<void(const FNakamaUsers&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/user");
 	TArray<FString> QueryParams;
@@ -1806,18 +1735,19 @@ void NakamaApi::GetUsers(
 				OnSuccess(Result);
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::GetUsers(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FString& HttpKey,
 	const TArray<FString>& Ids,
 	const TArray<FString>& Usernames,
 	const TArray<FString>& FacebookIds,
 	TFunction<void(const FNakamaUsers&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/user");
 	TArray<FString> QueryParams;
@@ -1847,16 +1777,17 @@ void NakamaApi::GetUsers(
 				OnSuccess(Result);
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::GetSubscription(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FNakamaSession& Session,
 	FString ProductId,
 	TFunction<void(const FNakamaValidatedSubscription&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/iap/subscription/{product_id}");
 	Endpoint = Endpoint.Replace(TEXT("{product_id}"), *ProductId);
@@ -1877,16 +1808,17 @@ void NakamaApi::GetSubscription(
 				OnSuccess(Result);
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::GetSubscription(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FString& HttpKey,
 	FString ProductId,
 	TFunction<void(const FNakamaValidatedSubscription&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/iap/subscription/{product_id}");
 	Endpoint = Endpoint.Replace(TEXT("{product_id}"), *ProductId);
@@ -1905,15 +1837,16 @@ void NakamaApi::GetSubscription(
 				OnSuccess(Result);
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::GetMatchmakerStats(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FNakamaSession& Session,
 	TFunction<void(const FNakamaMatchmakerStats&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/matchmaker/stats");
 
@@ -1928,15 +1861,16 @@ void NakamaApi::GetMatchmakerStats(
 				OnSuccess(Result);
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::GetMatchmakerStats(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FString& HttpKey,
 	TFunction<void(const FNakamaMatchmakerStats&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/matchmaker/stats");TSharedPtr<FJsonObject> Body;
 
@@ -1949,15 +1883,16 @@ void NakamaApi::GetMatchmakerStats(
 				OnSuccess(Result);
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::Healthcheck(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FNakamaSession& Session,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/healthcheck");
 
@@ -1971,15 +1906,16 @@ void NakamaApi::Healthcheck(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::Healthcheck(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FString& HttpKey,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/healthcheck");TSharedPtr<FJsonObject> Body;
 
@@ -1991,17 +1927,18 @@ void NakamaApi::Healthcheck(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::ImportFacebookFriends(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FNakamaSession& Session,
 	FNakamaAccountFacebook Account,
 	bool Reset,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/friend/facebook");
 	TArray<FString> QueryParams;
@@ -2022,17 +1959,18 @@ void NakamaApi::ImportFacebookFriends(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::ImportFacebookFriends(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FString& HttpKey,
 	FNakamaAccountFacebook Account,
 	bool Reset,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/friend/facebook");
 	TArray<FString> QueryParams;
@@ -2051,17 +1989,18 @@ void NakamaApi::ImportFacebookFriends(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::ImportSteamFriends(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FNakamaSession& Session,
 	FNakamaAccountSteam Account,
 	bool Reset,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/friend/steam");
 	TArray<FString> QueryParams;
@@ -2082,17 +2021,18 @@ void NakamaApi::ImportSteamFriends(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::ImportSteamFriends(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FString& HttpKey,
 	FNakamaAccountSteam Account,
 	bool Reset,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/friend/steam");
 	TArray<FString> QueryParams;
@@ -2111,16 +2051,17 @@ void NakamaApi::ImportSteamFriends(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::JoinGroup(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FNakamaSession& Session,
 	FString GroupId,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/group/{group_id}/join");
 	Endpoint = Endpoint.Replace(TEXT("{group_id}"), *GroupId);
@@ -2140,16 +2081,17 @@ void NakamaApi::JoinGroup(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::JoinGroup(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FString& HttpKey,
 	FString GroupId,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/group/{group_id}/join");
 	Endpoint = Endpoint.Replace(TEXT("{group_id}"), *GroupId);
@@ -2167,16 +2109,17 @@ void NakamaApi::JoinGroup(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::JoinTournament(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FNakamaSession& Session,
 	FString TournamentId,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/tournament/{tournament_id}/join");
 	Endpoint = Endpoint.Replace(TEXT("{tournament_id}"), *TournamentId);
@@ -2196,16 +2139,17 @@ void NakamaApi::JoinTournament(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::JoinTournament(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FString& HttpKey,
 	FString TournamentId,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/tournament/{tournament_id}/join");
 	Endpoint = Endpoint.Replace(TEXT("{tournament_id}"), *TournamentId);
@@ -2223,17 +2167,18 @@ void NakamaApi::JoinTournament(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::KickGroupUsers(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FNakamaSession& Session,
 	FString GroupId,
 	const TArray<FString>& UserIds,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/group/{group_id}/kick");
 	Endpoint = Endpoint.Replace(TEXT("{group_id}"), *GroupId);
@@ -2257,17 +2202,18 @@ void NakamaApi::KickGroupUsers(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::KickGroupUsers(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FString& HttpKey,
 	FString GroupId,
 	const TArray<FString>& UserIds,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/group/{group_id}/kick");
 	Endpoint = Endpoint.Replace(TEXT("{group_id}"), *GroupId);
@@ -2289,16 +2235,17 @@ void NakamaApi::KickGroupUsers(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::LeaveGroup(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FNakamaSession& Session,
 	FString GroupId,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/group/{group_id}/leave");
 	Endpoint = Endpoint.Replace(TEXT("{group_id}"), *GroupId);
@@ -2318,16 +2265,17 @@ void NakamaApi::LeaveGroup(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::LeaveGroup(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FString& HttpKey,
 	FString GroupId,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/group/{group_id}/leave");
 	Endpoint = Endpoint.Replace(TEXT("{group_id}"), *GroupId);
@@ -2345,17 +2293,18 @@ void NakamaApi::LeaveGroup(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::LinkApple(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FNakamaSession& Session,
 	FString Token,
 	const TMap<FString, FString>& Vars,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/link/apple");
 	TArray<FString> QueryParams;
@@ -2388,17 +2337,18 @@ void NakamaApi::LinkApple(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::LinkApple(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FString& HttpKey,
 	FString Token,
 	const TMap<FString, FString>& Vars,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/link/apple");
 	TArray<FString> QueryParams;
@@ -2429,17 +2379,18 @@ void NakamaApi::LinkApple(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::LinkCustom(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FNakamaSession& Session,
 	FString Id,
 	const TMap<FString, FString>& Vars,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/link/custom");
 	TArray<FString> QueryParams;
@@ -2472,17 +2423,18 @@ void NakamaApi::LinkCustom(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::LinkCustom(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FString& HttpKey,
 	FString Id,
 	const TMap<FString, FString>& Vars,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/link/custom");
 	TArray<FString> QueryParams;
@@ -2513,17 +2465,18 @@ void NakamaApi::LinkCustom(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::LinkDevice(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FNakamaSession& Session,
 	FString Id,
 	const TMap<FString, FString>& Vars,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/link/device");
 	TArray<FString> QueryParams;
@@ -2556,17 +2509,18 @@ void NakamaApi::LinkDevice(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::LinkDevice(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FString& HttpKey,
 	FString Id,
 	const TMap<FString, FString>& Vars,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/link/device");
 	TArray<FString> QueryParams;
@@ -2597,18 +2551,19 @@ void NakamaApi::LinkDevice(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::LinkEmail(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FNakamaSession& Session,
 	FString Email,
 	FString Password,
 	const TMap<FString, FString>& Vars,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/link/email");
 	TArray<FString> QueryParams;
@@ -2645,18 +2600,19 @@ void NakamaApi::LinkEmail(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::LinkEmail(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FString& HttpKey,
 	FString Email,
 	FString Password,
 	const TMap<FString, FString>& Vars,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/link/email");
 	TArray<FString> QueryParams;
@@ -2691,17 +2647,18 @@ void NakamaApi::LinkEmail(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::LinkFacebook(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FNakamaSession& Session,
 	FNakamaAccountFacebook Account,
 	bool Sync,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/link/facebook");
 	TArray<FString> QueryParams;
@@ -2722,17 +2679,18 @@ void NakamaApi::LinkFacebook(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::LinkFacebook(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FString& HttpKey,
 	FNakamaAccountFacebook Account,
 	bool Sync,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/link/facebook");
 	TArray<FString> QueryParams;
@@ -2751,17 +2709,18 @@ void NakamaApi::LinkFacebook(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::LinkFacebookInstantGame(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FNakamaSession& Session,
 	FString SignedPlayerInfo,
 	const TMap<FString, FString>& Vars,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/link/facebookinstantgame");
 	TArray<FString> QueryParams;
@@ -2794,17 +2753,18 @@ void NakamaApi::LinkFacebookInstantGame(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::LinkFacebookInstantGame(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FString& HttpKey,
 	FString SignedPlayerInfo,
 	const TMap<FString, FString>& Vars,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/link/facebookinstantgame");
 	TArray<FString> QueryParams;
@@ -2835,11 +2795,11 @@ void NakamaApi::LinkFacebookInstantGame(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::LinkGameCenter(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FNakamaSession& Session,
 	FString PlayerId,
 	FString BundleId,
@@ -2850,7 +2810,8 @@ void NakamaApi::LinkGameCenter(
 	const TMap<FString, FString>& Vars,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/link/gamecenter");
 	TArray<FString> QueryParams;
@@ -2900,11 +2861,11 @@ void NakamaApi::LinkGameCenter(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::LinkGameCenter(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FString& HttpKey,
 	FString PlayerId,
 	FString BundleId,
@@ -2915,7 +2876,8 @@ void NakamaApi::LinkGameCenter(
 	const TMap<FString, FString>& Vars,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/link/gamecenter");
 	TArray<FString> QueryParams;
@@ -2963,17 +2925,18 @@ void NakamaApi::LinkGameCenter(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::LinkGoogle(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FNakamaSession& Session,
 	FString Token,
 	const TMap<FString, FString>& Vars,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/link/google");
 	TArray<FString> QueryParams;
@@ -3006,17 +2969,18 @@ void NakamaApi::LinkGoogle(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::LinkGoogle(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FString& HttpKey,
 	FString Token,
 	const TMap<FString, FString>& Vars,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/link/google");
 	TArray<FString> QueryParams;
@@ -3047,17 +3011,18 @@ void NakamaApi::LinkGoogle(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::LinkSteam(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FNakamaSession& Session,
 	FNakamaAccountSteam Account,
 	bool Sync,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/link/steam");
 	TArray<FString> QueryParams;
@@ -3079,17 +3044,18 @@ void NakamaApi::LinkSteam(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::LinkSteam(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FString& HttpKey,
 	FNakamaAccountSteam Account,
 	bool Sync,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/link/steam");
 	TArray<FString> QueryParams;
@@ -3109,11 +3075,11 @@ void NakamaApi::LinkSteam(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::ListChannelMessages(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FNakamaSession& Session,
 	FString ChannelId,
 	int32 Limit,
@@ -3121,7 +3087,8 @@ void NakamaApi::ListChannelMessages(
 	FString Cursor,
 	TFunction<void(const FNakamaChannelMessageList&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/channel/{channel_id}");
 	Endpoint = Endpoint.Replace(TEXT("{channel_id}"), *ChannelId);
@@ -3151,11 +3118,11 @@ void NakamaApi::ListChannelMessages(
 				OnSuccess(Result);
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::ListChannelMessages(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FString& HttpKey,
 	FString ChannelId,
 	int32 Limit,
@@ -3163,7 +3130,8 @@ void NakamaApi::ListChannelMessages(
 	FString Cursor,
 	TFunction<void(const FNakamaChannelMessageList&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/channel/{channel_id}");
 	Endpoint = Endpoint.Replace(TEXT("{channel_id}"), *ChannelId);
@@ -3191,18 +3159,19 @@ void NakamaApi::ListChannelMessages(
 				OnSuccess(Result);
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::ListFriends(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FNakamaSession& Session,
 	int32 Limit,
 	int32 State,
 	FString Cursor,
 	TFunction<void(const FNakamaFriendList&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/friend");
 	TArray<FString> QueryParams;
@@ -3234,18 +3203,19 @@ void NakamaApi::ListFriends(
 				OnSuccess(Result);
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::ListFriends(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FString& HttpKey,
 	int32 Limit,
 	int32 State,
 	FString Cursor,
 	TFunction<void(const FNakamaFriendList&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/friend");
 	TArray<FString> QueryParams;
@@ -3275,17 +3245,18 @@ void NakamaApi::ListFriends(
 				OnSuccess(Result);
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::ListFriendsOfFriends(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FNakamaSession& Session,
 	int32 Limit,
 	FString Cursor,
 	TFunction<void(const FNakamaFriendsOfFriendsList&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/friend/friends");
 	TArray<FString> QueryParams;
@@ -3313,17 +3284,18 @@ void NakamaApi::ListFriendsOfFriends(
 				OnSuccess(Result);
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::ListFriendsOfFriends(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FString& HttpKey,
 	int32 Limit,
 	FString Cursor,
 	TFunction<void(const FNakamaFriendsOfFriendsList&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/friend/friends");
 	TArray<FString> QueryParams;
@@ -3349,11 +3321,11 @@ void NakamaApi::ListFriendsOfFriends(
 				OnSuccess(Result);
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::ListGroups(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FNakamaSession& Session,
 	FString Name,
 	FString Cursor,
@@ -3363,7 +3335,8 @@ void NakamaApi::ListGroups(
 	bool Open,
 	TFunction<void(const FNakamaGroupList&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/group");
 	TArray<FString> QueryParams;
@@ -3404,11 +3377,11 @@ void NakamaApi::ListGroups(
 				OnSuccess(Result);
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::ListGroups(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FString& HttpKey,
 	FString Name,
 	FString Cursor,
@@ -3418,7 +3391,8 @@ void NakamaApi::ListGroups(
 	bool Open,
 	TFunction<void(const FNakamaGroupList&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/group");
 	TArray<FString> QueryParams;
@@ -3457,11 +3431,11 @@ void NakamaApi::ListGroups(
 				OnSuccess(Result);
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::ListGroupUsers(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FNakamaSession& Session,
 	FString GroupId,
 	int32 Limit,
@@ -3469,7 +3443,8 @@ void NakamaApi::ListGroupUsers(
 	FString Cursor,
 	TFunction<void(const FNakamaGroupUserList&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/group/{group_id}/user");
 	Endpoint = Endpoint.Replace(TEXT("{group_id}"), *GroupId);
@@ -3502,11 +3477,11 @@ void NakamaApi::ListGroupUsers(
 				OnSuccess(Result);
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::ListGroupUsers(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FString& HttpKey,
 	FString GroupId,
 	int32 Limit,
@@ -3514,7 +3489,8 @@ void NakamaApi::ListGroupUsers(
 	FString Cursor,
 	TFunction<void(const FNakamaGroupUserList&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/group/{group_id}/user");
 	Endpoint = Endpoint.Replace(TEXT("{group_id}"), *GroupId);
@@ -3545,11 +3521,11 @@ void NakamaApi::ListGroupUsers(
 				OnSuccess(Result);
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::ListLeaderboardRecords(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FNakamaSession& Session,
 	FString LeaderboardId,
 	const TArray<FString>& OwnerIds,
@@ -3558,7 +3534,8 @@ void NakamaApi::ListLeaderboardRecords(
 	int64 Expiry,
 	TFunction<void(const FNakamaLeaderboardRecordList&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/leaderboard/{leaderboard_id}");
 	Endpoint = Endpoint.Replace(TEXT("{leaderboard_id}"), *LeaderboardId);
@@ -3595,11 +3572,11 @@ void NakamaApi::ListLeaderboardRecords(
 				OnSuccess(Result);
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::ListLeaderboardRecords(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FString& HttpKey,
 	FString LeaderboardId,
 	const TArray<FString>& OwnerIds,
@@ -3608,7 +3585,8 @@ void NakamaApi::ListLeaderboardRecords(
 	int64 Expiry,
 	TFunction<void(const FNakamaLeaderboardRecordList&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/leaderboard/{leaderboard_id}");
 	Endpoint = Endpoint.Replace(TEXT("{leaderboard_id}"), *LeaderboardId);
@@ -3643,11 +3621,11 @@ void NakamaApi::ListLeaderboardRecords(
 				OnSuccess(Result);
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::ListLeaderboardRecordsAroundOwner(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FNakamaSession& Session,
 	FString LeaderboardId,
 	int32 Limit,
@@ -3656,7 +3634,8 @@ void NakamaApi::ListLeaderboardRecordsAroundOwner(
 	FString Cursor,
 	TFunction<void(const FNakamaLeaderboardRecordList&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/leaderboard/{leaderboard_id}/owner/{owner_id}");
 	Endpoint = Endpoint.Replace(TEXT("{leaderboard_id}"), *LeaderboardId);
@@ -3690,11 +3669,11 @@ void NakamaApi::ListLeaderboardRecordsAroundOwner(
 				OnSuccess(Result);
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::ListLeaderboardRecordsAroundOwner(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FString& HttpKey,
 	FString LeaderboardId,
 	int32 Limit,
@@ -3703,7 +3682,8 @@ void NakamaApi::ListLeaderboardRecordsAroundOwner(
 	FString Cursor,
 	TFunction<void(const FNakamaLeaderboardRecordList&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/leaderboard/{leaderboard_id}/owner/{owner_id}");
 	Endpoint = Endpoint.Replace(TEXT("{leaderboard_id}"), *LeaderboardId);
@@ -3735,11 +3715,11 @@ void NakamaApi::ListLeaderboardRecordsAroundOwner(
 				OnSuccess(Result);
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::ListMatches(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FNakamaSession& Session,
 	int32 Limit,
 	bool Authoritative,
@@ -3749,7 +3729,8 @@ void NakamaApi::ListMatches(
 	FString Query,
 	TFunction<void(const FNakamaMatchList&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/match");
 	TArray<FString> QueryParams;
@@ -3790,11 +3771,11 @@ void NakamaApi::ListMatches(
 				OnSuccess(Result);
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::ListMatches(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FString& HttpKey,
 	int32 Limit,
 	bool Authoritative,
@@ -3804,7 +3785,8 @@ void NakamaApi::ListMatches(
 	FString Query,
 	TFunction<void(const FNakamaMatchList&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/match");
 	TArray<FString> QueryParams;
@@ -3843,11 +3825,11 @@ void NakamaApi::ListMatches(
 				OnSuccess(Result);
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::ListParties(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FNakamaSession& Session,
 	int32 Limit,
 	bool Open,
@@ -3855,7 +3837,8 @@ void NakamaApi::ListParties(
 	FString Cursor,
 	TFunction<void(const FNakamaPartyList&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/party");
 	TArray<FString> QueryParams;
@@ -3888,11 +3871,11 @@ void NakamaApi::ListParties(
 				OnSuccess(Result);
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::ListParties(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FString& HttpKey,
 	int32 Limit,
 	bool Open,
@@ -3900,7 +3883,8 @@ void NakamaApi::ListParties(
 	FString Cursor,
 	TFunction<void(const FNakamaPartyList&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/party");
 	TArray<FString> QueryParams;
@@ -3931,17 +3915,18 @@ void NakamaApi::ListParties(
 				OnSuccess(Result);
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::ListNotifications(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FNakamaSession& Session,
 	int32 Limit,
 	FString CacheableCursor,
 	TFunction<void(const FNakamaNotificationList&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/notification");
 	TArray<FString> QueryParams;
@@ -3969,17 +3954,18 @@ void NakamaApi::ListNotifications(
 				OnSuccess(Result);
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::ListNotifications(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FString& HttpKey,
 	int32 Limit,
 	FString CacheableCursor,
 	TFunction<void(const FNakamaNotificationList&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/notification");
 	TArray<FString> QueryParams;
@@ -4005,11 +3991,11 @@ void NakamaApi::ListNotifications(
 				OnSuccess(Result);
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::ListStorageObjects(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FNakamaSession& Session,
 	FString UserId,
 	FString Collection,
@@ -4017,7 +4003,8 @@ void NakamaApi::ListStorageObjects(
 	FString Cursor,
 	TFunction<void(const FNakamaStorageObjectList&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/storage/{collection}");
 	Endpoint = Endpoint.Replace(TEXT("{collection}"), *Collection);
@@ -4050,11 +4037,11 @@ void NakamaApi::ListStorageObjects(
 				OnSuccess(Result);
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::ListStorageObjects(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FString& HttpKey,
 	FString UserId,
 	FString Collection,
@@ -4062,7 +4049,8 @@ void NakamaApi::ListStorageObjects(
 	FString Cursor,
 	TFunction<void(const FNakamaStorageObjectList&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/storage/{collection}");
 	Endpoint = Endpoint.Replace(TEXT("{collection}"), *Collection);
@@ -4093,17 +4081,18 @@ void NakamaApi::ListStorageObjects(
 				OnSuccess(Result);
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::ListSubscriptions(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FNakamaSession& Session,
 	int32 Limit,
 	FString Cursor,
 	TFunction<void(const FNakamaSubscriptionList&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/iap/subscription");
 	TArray<FString> QueryParams;
@@ -4129,17 +4118,18 @@ void NakamaApi::ListSubscriptions(
 				OnSuccess(Result);
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::ListSubscriptions(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FString& HttpKey,
 	int32 Limit,
 	FString Cursor,
 	TFunction<void(const FNakamaSubscriptionList&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/iap/subscription");
 	TArray<FString> QueryParams;
@@ -4163,11 +4153,11 @@ void NakamaApi::ListSubscriptions(
 				OnSuccess(Result);
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::ListTournaments(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FNakamaSession& Session,
 	int32 CategoryStart,
 	int32 CategoryEnd,
@@ -4177,7 +4167,8 @@ void NakamaApi::ListTournaments(
 	FString Cursor,
 	TFunction<void(const FNakamaTournamentList&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/tournament");
 	TArray<FString> QueryParams;
@@ -4221,11 +4212,11 @@ void NakamaApi::ListTournaments(
 				OnSuccess(Result);
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::ListTournaments(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FString& HttpKey,
 	int32 CategoryStart,
 	int32 CategoryEnd,
@@ -4235,7 +4226,8 @@ void NakamaApi::ListTournaments(
 	FString Cursor,
 	TFunction<void(const FNakamaTournamentList&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/tournament");
 	TArray<FString> QueryParams;
@@ -4277,11 +4269,11 @@ void NakamaApi::ListTournaments(
 				OnSuccess(Result);
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::ListTournamentRecords(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FNakamaSession& Session,
 	FString TournamentId,
 	const TArray<FString>& OwnerIds,
@@ -4290,7 +4282,8 @@ void NakamaApi::ListTournamentRecords(
 	int64 Expiry,
 	TFunction<void(const FNakamaTournamentRecordList&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/tournament/{tournament_id}");
 	Endpoint = Endpoint.Replace(TEXT("{tournament_id}"), *TournamentId);
@@ -4327,11 +4320,11 @@ void NakamaApi::ListTournamentRecords(
 				OnSuccess(Result);
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::ListTournamentRecords(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FString& HttpKey,
 	FString TournamentId,
 	const TArray<FString>& OwnerIds,
@@ -4340,7 +4333,8 @@ void NakamaApi::ListTournamentRecords(
 	int64 Expiry,
 	TFunction<void(const FNakamaTournamentRecordList&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/tournament/{tournament_id}");
 	Endpoint = Endpoint.Replace(TEXT("{tournament_id}"), *TournamentId);
@@ -4375,11 +4369,11 @@ void NakamaApi::ListTournamentRecords(
 				OnSuccess(Result);
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::ListTournamentRecordsAroundOwner(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FNakamaSession& Session,
 	FString TournamentId,
 	int32 Limit,
@@ -4388,7 +4382,8 @@ void NakamaApi::ListTournamentRecordsAroundOwner(
 	FString Cursor,
 	TFunction<void(const FNakamaTournamentRecordList&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/tournament/{tournament_id}/owner/{owner_id}");
 	Endpoint = Endpoint.Replace(TEXT("{tournament_id}"), *TournamentId);
@@ -4422,11 +4417,11 @@ void NakamaApi::ListTournamentRecordsAroundOwner(
 				OnSuccess(Result);
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::ListTournamentRecordsAroundOwner(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FString& HttpKey,
 	FString TournamentId,
 	int32 Limit,
@@ -4435,7 +4430,8 @@ void NakamaApi::ListTournamentRecordsAroundOwner(
 	FString Cursor,
 	TFunction<void(const FNakamaTournamentRecordList&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/tournament/{tournament_id}/owner/{owner_id}");
 	Endpoint = Endpoint.Replace(TEXT("{tournament_id}"), *TournamentId);
@@ -4467,11 +4463,11 @@ void NakamaApi::ListTournamentRecordsAroundOwner(
 				OnSuccess(Result);
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::ListUserGroups(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FNakamaSession& Session,
 	FString UserId,
 	int32 Limit,
@@ -4479,7 +4475,8 @@ void NakamaApi::ListUserGroups(
 	FString Cursor,
 	TFunction<void(const FNakamaUserGroupList&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/user/{user_id}/group");
 	Endpoint = Endpoint.Replace(TEXT("{user_id}"), *UserId);
@@ -4512,11 +4509,11 @@ void NakamaApi::ListUserGroups(
 				OnSuccess(Result);
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::ListUserGroups(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FString& HttpKey,
 	FString UserId,
 	int32 Limit,
@@ -4524,7 +4521,8 @@ void NakamaApi::ListUserGroups(
 	FString Cursor,
 	TFunction<void(const FNakamaUserGroupList&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/user/{user_id}/group");
 	Endpoint = Endpoint.Replace(TEXT("{user_id}"), *UserId);
@@ -4555,17 +4553,18 @@ void NakamaApi::ListUserGroups(
 				OnSuccess(Result);
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::PromoteGroupUsers(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FNakamaSession& Session,
 	FString GroupId,
 	const TArray<FString>& UserIds,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/group/{group_id}/promote");
 	Endpoint = Endpoint.Replace(TEXT("{group_id}"), *GroupId);
@@ -4589,17 +4588,18 @@ void NakamaApi::PromoteGroupUsers(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::PromoteGroupUsers(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FString& HttpKey,
 	FString GroupId,
 	const TArray<FString>& UserIds,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/group/{group_id}/promote");
 	Endpoint = Endpoint.Replace(TEXT("{group_id}"), *GroupId);
@@ -4621,17 +4621,18 @@ void NakamaApi::PromoteGroupUsers(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::DemoteGroupUsers(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FNakamaSession& Session,
 	FString GroupId,
 	const TArray<FString>& UserIds,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/group/{group_id}/demote");
 	Endpoint = Endpoint.Replace(TEXT("{group_id}"), *GroupId);
@@ -4655,17 +4656,18 @@ void NakamaApi::DemoteGroupUsers(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::DemoteGroupUsers(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FString& HttpKey,
 	FString GroupId,
 	const TArray<FString>& UserIds,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/group/{group_id}/demote");
 	Endpoint = Endpoint.Replace(TEXT("{group_id}"), *GroupId);
@@ -4687,16 +4689,17 @@ void NakamaApi::DemoteGroupUsers(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::ReadStorageObjects(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FNakamaSession& Session,
 	const TArray<FNakamaReadStorageObjectId>& ObjectIds,
 	TFunction<void(const FNakamaStorageObjects&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/storage");
 	TArray<FString> QueryParams;
@@ -4726,16 +4729,17 @@ void NakamaApi::ReadStorageObjects(
 				OnSuccess(Result);
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::ReadStorageObjects(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FString& HttpKey,
 	const TArray<FNakamaReadStorageObjectId>& ObjectIds,
 	TFunction<void(const FNakamaStorageObjects&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/storage");
 	TArray<FString> QueryParams;
@@ -4763,18 +4767,19 @@ void NakamaApi::ReadStorageObjects(
 				OnSuccess(Result);
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::RpcFunc(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FNakamaSession& Session,
 	FString Id,
 	TSharedPtr<FJsonObject> Payload,
 	FString HttpKey,
 	TFunction<void(const FNakamaRpc&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/rpc/{id}");
 	Endpoint = Endpoint.Replace(TEXT("{id}"), *Id);
@@ -4805,17 +4810,18 @@ void NakamaApi::RpcFunc(
 				OnSuccess(Result);
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::RpcFunc(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FString& HttpKey,
 	FString Id,
 	TSharedPtr<FJsonObject> Payload,
 	TFunction<void(const FNakamaRpc&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/rpc/{id}");
 	Endpoint = Endpoint.Replace(TEXT("{id}"), *Id);
@@ -4840,17 +4846,18 @@ void NakamaApi::RpcFunc(
 				OnSuccess(Result);
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::UnlinkApple(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FNakamaSession& Session,
 	FString Token,
 	const TMap<FString, FString>& Vars,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/unlink/apple");
 	TArray<FString> QueryParams;
@@ -4883,17 +4890,18 @@ void NakamaApi::UnlinkApple(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::UnlinkApple(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FString& HttpKey,
 	FString Token,
 	const TMap<FString, FString>& Vars,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/unlink/apple");
 	TArray<FString> QueryParams;
@@ -4924,17 +4932,18 @@ void NakamaApi::UnlinkApple(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::UnlinkCustom(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FNakamaSession& Session,
 	FString Id,
 	const TMap<FString, FString>& Vars,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/unlink/custom");
 	TArray<FString> QueryParams;
@@ -4967,17 +4976,18 @@ void NakamaApi::UnlinkCustom(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::UnlinkCustom(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FString& HttpKey,
 	FString Id,
 	const TMap<FString, FString>& Vars,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/unlink/custom");
 	TArray<FString> QueryParams;
@@ -5008,17 +5018,18 @@ void NakamaApi::UnlinkCustom(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::UnlinkDevice(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FNakamaSession& Session,
 	FString Id,
 	const TMap<FString, FString>& Vars,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/unlink/device");
 	TArray<FString> QueryParams;
@@ -5051,17 +5062,18 @@ void NakamaApi::UnlinkDevice(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::UnlinkDevice(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FString& HttpKey,
 	FString Id,
 	const TMap<FString, FString>& Vars,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/unlink/device");
 	TArray<FString> QueryParams;
@@ -5092,18 +5104,19 @@ void NakamaApi::UnlinkDevice(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::UnlinkEmail(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FNakamaSession& Session,
 	FString Email,
 	FString Password,
 	const TMap<FString, FString>& Vars,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/unlink/email");
 	TArray<FString> QueryParams;
@@ -5140,18 +5153,19 @@ void NakamaApi::UnlinkEmail(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::UnlinkEmail(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FString& HttpKey,
 	FString Email,
 	FString Password,
 	const TMap<FString, FString>& Vars,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/unlink/email");
 	TArray<FString> QueryParams;
@@ -5186,17 +5200,18 @@ void NakamaApi::UnlinkEmail(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::UnlinkFacebook(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FNakamaSession& Session,
 	FString Token,
 	const TMap<FString, FString>& Vars,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/unlink/facebook");
 	TArray<FString> QueryParams;
@@ -5229,17 +5244,18 @@ void NakamaApi::UnlinkFacebook(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::UnlinkFacebook(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FString& HttpKey,
 	FString Token,
 	const TMap<FString, FString>& Vars,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/unlink/facebook");
 	TArray<FString> QueryParams;
@@ -5270,17 +5286,18 @@ void NakamaApi::UnlinkFacebook(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::UnlinkFacebookInstantGame(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FNakamaSession& Session,
 	FString SignedPlayerInfo,
 	const TMap<FString, FString>& Vars,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/unlink/facebookinstantgame");
 	TArray<FString> QueryParams;
@@ -5313,17 +5330,18 @@ void NakamaApi::UnlinkFacebookInstantGame(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::UnlinkFacebookInstantGame(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FString& HttpKey,
 	FString SignedPlayerInfo,
 	const TMap<FString, FString>& Vars,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/unlink/facebookinstantgame");
 	TArray<FString> QueryParams;
@@ -5354,11 +5372,11 @@ void NakamaApi::UnlinkFacebookInstantGame(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::UnlinkGameCenter(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FNakamaSession& Session,
 	FString PlayerId,
 	FString BundleId,
@@ -5369,7 +5387,8 @@ void NakamaApi::UnlinkGameCenter(
 	const TMap<FString, FString>& Vars,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/unlink/gamecenter");
 	TArray<FString> QueryParams;
@@ -5419,11 +5438,11 @@ void NakamaApi::UnlinkGameCenter(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::UnlinkGameCenter(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FString& HttpKey,
 	FString PlayerId,
 	FString BundleId,
@@ -5434,7 +5453,8 @@ void NakamaApi::UnlinkGameCenter(
 	const TMap<FString, FString>& Vars,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/unlink/gamecenter");
 	TArray<FString> QueryParams;
@@ -5482,17 +5502,18 @@ void NakamaApi::UnlinkGameCenter(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::UnlinkGoogle(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FNakamaSession& Session,
 	FString Token,
 	const TMap<FString, FString>& Vars,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/unlink/google");
 	TArray<FString> QueryParams;
@@ -5525,17 +5546,18 @@ void NakamaApi::UnlinkGoogle(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::UnlinkGoogle(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FString& HttpKey,
 	FString Token,
 	const TMap<FString, FString>& Vars,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/unlink/google");
 	TArray<FString> QueryParams;
@@ -5566,17 +5588,18 @@ void NakamaApi::UnlinkGoogle(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::UnlinkSteam(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FNakamaSession& Session,
 	FString Token,
 	const TMap<FString, FString>& Vars,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/unlink/steam");
 	TArray<FString> QueryParams;
@@ -5609,17 +5632,18 @@ void NakamaApi::UnlinkSteam(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::UnlinkSteam(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FString& HttpKey,
 	FString Token,
 	const TMap<FString, FString>& Vars,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account/unlink/steam");
 	TArray<FString> QueryParams;
@@ -5650,11 +5674,11 @@ void NakamaApi::UnlinkSteam(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::UpdateAccount(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FNakamaSession& Session,
 	FString Username,
 	FString DisplayName,
@@ -5664,7 +5688,8 @@ void NakamaApi::UpdateAccount(
 	FString Timezone,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account");
 	TArray<FString> QueryParams;
@@ -5708,11 +5733,11 @@ void NakamaApi::UpdateAccount(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::UpdateAccount(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FString& HttpKey,
 	FString Username,
 	FString DisplayName,
@@ -5722,7 +5747,8 @@ void NakamaApi::UpdateAccount(
 	FString Timezone,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/account");
 	TArray<FString> QueryParams;
@@ -5764,11 +5790,11 @@ void NakamaApi::UpdateAccount(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::UpdateGroup(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FNakamaSession& Session,
 	FString GroupId,
 	FString Name,
@@ -5778,7 +5804,8 @@ void NakamaApi::UpdateGroup(
 	bool Open,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/group/{group_id}");
 	Endpoint = Endpoint.Replace(TEXT("{group_id}"), *GroupId);
@@ -5820,11 +5847,11 @@ void NakamaApi::UpdateGroup(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::UpdateGroup(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FString& HttpKey,
 	FString GroupId,
 	FString Name,
@@ -5834,7 +5861,8 @@ void NakamaApi::UpdateGroup(
 	bool Open,
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/group/{group_id}");
 	Endpoint = Endpoint.Replace(TEXT("{group_id}"), *GroupId);
@@ -5874,17 +5902,18 @@ void NakamaApi::UpdateGroup(
 				OnSuccess();
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::ValidatePurchaseApple(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FNakamaSession& Session,
 	FString Receipt,
 	bool Persist,
 	TFunction<void(const FNakamaValidatePurchaseResponse&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/iap/purchase/apple");
 	TArray<FString> QueryParams;
@@ -5910,17 +5939,18 @@ void NakamaApi::ValidatePurchaseApple(
 				OnSuccess(Result);
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::ValidatePurchaseApple(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FString& HttpKey,
 	FString Receipt,
 	bool Persist,
 	TFunction<void(const FNakamaValidatePurchaseResponse&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/iap/purchase/apple");
 	TArray<FString> QueryParams;
@@ -5944,17 +5974,18 @@ void NakamaApi::ValidatePurchaseApple(
 				OnSuccess(Result);
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::ValidateSubscriptionApple(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FNakamaSession& Session,
 	FString Receipt,
 	bool Persist,
 	TFunction<void(const FNakamaValidateSubscriptionResponse&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/iap/subscription/apple");
 	TArray<FString> QueryParams;
@@ -5980,17 +6011,18 @@ void NakamaApi::ValidateSubscriptionApple(
 				OnSuccess(Result);
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::ValidateSubscriptionApple(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FString& HttpKey,
 	FString Receipt,
 	bool Persist,
 	TFunction<void(const FNakamaValidateSubscriptionResponse&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/iap/subscription/apple");
 	TArray<FString> QueryParams;
@@ -6014,17 +6046,18 @@ void NakamaApi::ValidateSubscriptionApple(
 				OnSuccess(Result);
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::ValidatePurchaseGoogle(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FNakamaSession& Session,
 	FString Purchase,
 	bool Persist,
 	TFunction<void(const FNakamaValidatePurchaseResponse&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/iap/purchase/google");
 	TArray<FString> QueryParams;
@@ -6050,17 +6083,18 @@ void NakamaApi::ValidatePurchaseGoogle(
 				OnSuccess(Result);
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::ValidatePurchaseGoogle(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FString& HttpKey,
 	FString Purchase,
 	bool Persist,
 	TFunction<void(const FNakamaValidatePurchaseResponse&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/iap/purchase/google");
 	TArray<FString> QueryParams;
@@ -6084,17 +6118,18 @@ void NakamaApi::ValidatePurchaseGoogle(
 				OnSuccess(Result);
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::ValidateSubscriptionGoogle(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FNakamaSession& Session,
 	FString Receipt,
 	bool Persist,
 	TFunction<void(const FNakamaValidateSubscriptionResponse&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/iap/subscription/google");
 	TArray<FString> QueryParams;
@@ -6120,17 +6155,18 @@ void NakamaApi::ValidateSubscriptionGoogle(
 				OnSuccess(Result);
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::ValidateSubscriptionGoogle(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FString& HttpKey,
 	FString Receipt,
 	bool Persist,
 	TFunction<void(const FNakamaValidateSubscriptionResponse&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/iap/subscription/google");
 	TArray<FString> QueryParams;
@@ -6154,18 +6190,19 @@ void NakamaApi::ValidateSubscriptionGoogle(
 				OnSuccess(Result);
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::ValidatePurchaseHuawei(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FNakamaSession& Session,
 	FString Purchase,
 	FString Signature,
 	bool Persist,
 	TFunction<void(const FNakamaValidatePurchaseResponse&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/iap/purchase/huawei");
 	TArray<FString> QueryParams;
@@ -6195,18 +6232,19 @@ void NakamaApi::ValidatePurchaseHuawei(
 				OnSuccess(Result);
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::ValidatePurchaseHuawei(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FString& HttpKey,
 	FString Purchase,
 	FString Signature,
 	bool Persist,
 	TFunction<void(const FNakamaValidatePurchaseResponse&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/iap/purchase/huawei");
 	TArray<FString> QueryParams;
@@ -6234,17 +6272,18 @@ void NakamaApi::ValidatePurchaseHuawei(
 				OnSuccess(Result);
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::ValidatePurchaseFacebookInstant(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FNakamaSession& Session,
 	FString SignedRequest,
 	bool Persist,
 	TFunction<void(const FNakamaValidatePurchaseResponse&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/iap/purchase/facebookinstant");
 	TArray<FString> QueryParams;
@@ -6270,17 +6309,18 @@ void NakamaApi::ValidatePurchaseFacebookInstant(
 				OnSuccess(Result);
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::ValidatePurchaseFacebookInstant(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FString& HttpKey,
 	FString SignedRequest,
 	bool Persist,
 	TFunction<void(const FNakamaValidatePurchaseResponse&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/iap/purchase/facebookinstant");
 	TArray<FString> QueryParams;
@@ -6304,17 +6344,18 @@ void NakamaApi::ValidatePurchaseFacebookInstant(
 				OnSuccess(Result);
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::WriteLeaderboardRecord(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FNakamaSession& Session,
 	FString LeaderboardId,
 	FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite Record,
 	TFunction<void(const FNakamaLeaderboardRecord&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/leaderboard/{leaderboard_id}");
 	Endpoint = Endpoint.Replace(TEXT("{leaderboard_id}"), *LeaderboardId);
@@ -6336,17 +6377,18 @@ void NakamaApi::WriteLeaderboardRecord(
 				OnSuccess(Result);
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::WriteLeaderboardRecord(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FString& HttpKey,
 	FString LeaderboardId,
 	FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite Record,
 	TFunction<void(const FNakamaLeaderboardRecord&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/leaderboard/{leaderboard_id}");
 	Endpoint = Endpoint.Replace(TEXT("{leaderboard_id}"), *LeaderboardId);
@@ -6366,16 +6408,17 @@ void NakamaApi::WriteLeaderboardRecord(
 				OnSuccess(Result);
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::WriteStorageObjects(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FNakamaSession& Session,
 	const TArray<FNakamaWriteStorageObject>& Objects,
 	TFunction<void(const FNakamaStorageObjectAcks&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/storage");
 	TArray<FString> QueryParams;
@@ -6405,16 +6448,17 @@ void NakamaApi::WriteStorageObjects(
 				OnSuccess(Result);
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::WriteStorageObjects(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FString& HttpKey,
 	const TArray<FNakamaWriteStorageObject>& Objects,
 	TFunction<void(const FNakamaStorageObjectAcks&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/storage");
 	TArray<FString> QueryParams;
@@ -6442,17 +6486,18 @@ void NakamaApi::WriteStorageObjects(
 				OnSuccess(Result);
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::WriteTournamentRecord(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FNakamaSession& Session,
 	FString TournamentId,
 	FNakamaWriteTournamentRecordRequest_TournamentRecordWrite Record,
 	TFunction<void(const FNakamaLeaderboardRecord&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/tournament/{tournament_id}");
 	Endpoint = Endpoint.Replace(TEXT("{tournament_id}"), *TournamentId);
@@ -6474,17 +6519,18 @@ void NakamaApi::WriteTournamentRecord(
 				OnSuccess(Result);
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void NakamaApi::WriteTournamentRecord(
-	const FNakamaApiConfig& Config,
+	const FNakamaClientConfig& Config,
 	const FString& HttpKey,
 	FString TournamentId,
 	FNakamaWriteTournamentRecordRequest_TournamentRecordWrite Record,
 	TFunction<void(const FNakamaLeaderboardRecord&)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
-	FNakamaCancellationTokenPtr CancellationToken) noexcept
+	float Timeout,
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/tournament/{tournament_id}");
 	Endpoint = Endpoint.Replace(TEXT("{tournament_id}"), *TournamentId);
@@ -6504,7 +6550,7 @@ void NakamaApi::WriteTournamentRecord(
 				OnSuccess(Result);
 			}
 		},
-		OnError, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 // Module implementation
