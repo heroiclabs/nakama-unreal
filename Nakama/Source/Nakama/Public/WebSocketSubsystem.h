@@ -20,6 +20,8 @@
 #include "IWebSocket.h"
 #include "WebSocketSubsystem.generated.h"
 
+NAKAMA_API DECLARE_LOG_CATEGORY_EXTERN(LogNakamaWebSocket, Log, All);
+
 struct FRealtimeResponse
 {
     bool                    bError = false;

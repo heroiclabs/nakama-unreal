@@ -17,7 +17,6 @@
 #include "WebSocketSubsystem.h"
 #include "WebSocketsModule.h"
 #include "GenericPlatform/GenericPlatformHttp.h"
-#include "NakamaApi.h" // Temp For logging...
 
 void UWebSocketSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
@@ -54,7 +53,7 @@ TFuture<FRealtimeConnectionResult> UWebSocketSubsystem::Connect(FRealtimeConnect
 
     if (WebSocket.IsValid())
     {
-        UE_LOG(LogNakama, Warning, TEXT("WebSocket was active. Closing the old connection."))
+        UE_LOG(LogNakamaWebSocket, Warning, TEXT("WebSocket was active. Closing the old connection."))
         Close();
     }
 
@@ -171,7 +170,7 @@ TFuture<FRealtimeResponse> UWebSocketSubsystem::Send(const FString& RequestName,
 {
     if (!WebSocket || !WebSocket->IsConnected())
     {
-        UE_LOG(LogNakama, Error, TEXT("WebSocket is not connected or invalid."))
+        UE_LOG(LogNakamaWebSocket, Error, TEXT("WebSocket is not connected or invalid."))
     }
 
     //
@@ -204,7 +203,7 @@ TFuture<FRealtimeResponse> UWebSocketSubsystem::Send(const FString& RequestName,
 
 void UWebSocketSubsystem::OnConnected()
 {
-    UE_LOG(LogNakama, Display, TEXT("WebSocket Connected."));
+    UE_LOG(LogNakamaWebSocket, Display, TEXT("WebSocket Connected."));
 
     StartPingLoop();
 
@@ -216,7 +215,7 @@ void UWebSocketSubsystem::OnConnected()
 
 void UWebSocketSubsystem::OnConnectionError(const FString& Error)
 {
-    UE_LOG(LogNakama, Error, TEXT("WebSocket Connection Error: %s"), *Error);
+    UE_LOG(LogNakamaWebSocket, Error, TEXT("WebSocket Connection Error: %s"), *Error);
 
     PromiseConnected->EmplaceValue(FRealtimeConnectionResult
     {
@@ -243,7 +242,7 @@ void UWebSocketSubsystem::OnMessage(const FString& Message)
     // Log message (unless it's a pong).
     if (!JsonObject->HasField(TEXT("pong")))
     {
-        UE_LOG(LogNakama, Verbose, TEXT("WebSocket Message Received: %s"), *Message);
+        UE_LOG(LogNakamaWebSocket, Verbose, TEXT("WebSocket Message Received: %s"), *Message);
     }
 
     //
@@ -279,7 +278,7 @@ void UWebSocketSubsystem::OnMessage(const FString& Message)
         }
         else
         {
-            UE_LOG(LogNakama, Error, TEXT("No matching request for CID %s"), *Cid);
+            UE_LOG(LogNakamaWebSocket, Error, TEXT("No matching request for CID %s"), *Cid);
             if (MessageError.IsBound())
             {
                 MessageError.Broadcast(EWebSocketMessageError::WS_ERROR_RESPONSE_NOCID, TEXT("No matching request for CID"));
@@ -303,7 +302,7 @@ void UWebSocketSubsystem::OnMessage(const FString& Message)
 
 void UWebSocketSubsystem::OnMessageSent(const FString& Message)
 {
-    UE_LOG(LogNakama, Verbose, TEXT("Message Sent: %s"), *Message);
+    UE_LOG(LogNakamaWebSocket, Verbose, TEXT("Message Sent: %s"), *Message);
 
     if (MessageSent.IsBound())
     {
@@ -319,7 +318,7 @@ void UWebSocketSubsystem::OnClosed(int32 StatusCode, const FString& Reason, bool
     if (bWasClean)
     {
         UE_LOG(
-            LogNakama,
+            LogNakamaWebSocket,
             Display,
             TEXT("WebSocket closed cleanly with status code: %d."),
             StatusCode,
@@ -328,7 +327,7 @@ void UWebSocketSubsystem::OnClosed(int32 StatusCode, const FString& Reason, bool
     else
     {
         UE_LOG(
-            LogNakama,
+            LogNakamaWebSocket,
             Warning,
             TEXT("Web Socket closed non-cleanly with status code: %d. Reason: %s."),
             StatusCode,
