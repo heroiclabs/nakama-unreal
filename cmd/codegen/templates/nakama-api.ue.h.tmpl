@@ -81,7 +81,6 @@ namespace NakamaApi
 		{{- if and (eq $field.Name $rpc.BodyField) (not (isMessageType $field.Type)) }}
 		TSharedPtr<FJsonObject> {{ $field.Name | pascalCase }},
 		{{- else }}
-
 		{{ getUnrealType $field.Type $field.Repeated }} {{ $field.Name | pascalCase }},
 		{{- end }}
 		{{- end }}
