@@ -19,8 +19,39 @@
 #pragma once
 
 #include "CoreMinimal.h"
-
 #include "NakamaTypes.generated.h"
+
+// Forward declarations
+{{- range $idx, $msg := $.Messages }}
+struct FNakama{{ $msg.Name }};
+{{- end }}
+
+{{- /* Generate enum definitions */ -}}
+{{- range $idx, $enum := $.Enums }}
+
+/** {{ $enum.Comment }} */
+UENUM(BlueprintType)
+enum class ENakama{{ $enum.Name }} : uint8
+{
+	{{- range $fidx, $field := $enum.Fields }}
+	{{ $field.Name }} = {{ $field.Integer }}{{ if not (isLastEnumField $enum.Fields $fidx) }},{{ end }}
+	{{- end }}
+};
+{{- end }}
+
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaError
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
+	FString Message;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
+	int32 Code = 0;
+};
+
+{{- template "errorcodes" "Nakama" }}
 
 {{- /* Generate struct definitions for each proto message */ -}}
 {{- range $idx, $msg := $.Messages }}
@@ -108,5 +139,32 @@ struct NAKAMAAPI_API FNakama{{ $msg.Name }}
 {{- end }}
 {{- end }}
 
-using FNakamaSessionPtr = TSharedPtr<FNakamaSession>;
+enum class ENakamaRequestAuth : uint8
+{
+	None,
+	Basic,
+	Bearer,
+	HttpKey
+};
+
+/** Low-level API client configuration. */
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaClientConfig
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Nakama")
+	FString ServerKey;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Nakama")
+	FString Host;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Nakama")
+	int32 Port = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Nakama")
+	bool bUseSSL = false;
+
+	FString GetBaseUrl() const noexcept;
+};
 

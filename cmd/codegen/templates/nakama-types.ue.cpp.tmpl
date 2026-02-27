@@ -18,6 +18,119 @@
 
 #include "NakamaTypes.h"
 
+// --- FNakamaSession JWT helpers ---
+
+bool FNakamaSession::ParseJwtPayload(const FString& Jwt, TSharedPtr<FJsonObject>& Out) noexcept
+{
+	TArray<FString> Parts;
+	Jwt.ParseIntoArray(Parts, TEXT("."));
+	if (Parts.Num() < 2)
+	{
+		return false;
+	}
+
+	// Base64url -> standard Base64
+	FString Payload = Parts[1];
+	Payload.ReplaceInline(TEXT("-"), TEXT("+"));
+	Payload.ReplaceInline(TEXT("_"), TEXT("/"));
+
+	// Pad to multiple of 4
+	while (Payload.Len() % 4 != 0)
+	{
+		Payload += TEXT("=");
+	}
+
+	TArray<uint8> DecodedBytes;
+	if (!FBase64::Decode(Payload, DecodedBytes))
+	{
+		return false;
+	}
+
+	const FUTF8ToTCHAR Converter(reinterpret_cast<const ANSICHAR*>(DecodedBytes.GetData()), DecodedBytes.Num());
+	FString JsonString(Converter.Length(), Converter.Get());
+
+	TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(JsonString);
+	return FJsonSerializer::Deserialize(Reader, Out) && Out.IsValid();
+}
+
+void FNakamaSession::ParseTokens() noexcept
+{
+	UserId.Empty();
+	Username.Empty();
+	TokenExpiresAt = 0;
+	TokenIssuedAt = 0;
+	RefreshTokenExpiresAt = 0;
+	Vars.Empty();
+
+	// Parse auth token
+	TSharedPtr<FJsonObject> TokenPayload;
+	if (!Token.IsEmpty() && ParseJwtPayload(Token, TokenPayload))
+	{
+		if (TokenPayload->HasField(TEXT("uid")))
+		{
+			UserId = TokenPayload->GetStringField(TEXT("uid"));
+		}
+		if (TokenPayload->HasField(TEXT("usn")))
+		{
+			Username = TokenPayload->GetStringField(TEXT("usn"));
+		}
+		if (TokenPayload->HasField(TEXT("exp")))
+		{
+			TokenExpiresAt = static_cast<int64>(TokenPayload->GetNumberField(TEXT("exp")));
+		}
+		if (TokenPayload->HasField(TEXT("iat")))
+		{
+			TokenIssuedAt = static_cast<int64>(TokenPayload->GetNumberField(TEXT("iat")));
+		}
+		if (TokenPayload->HasField(TEXT("vrs")))
+		{
+			const TSharedPtr<FJsonObject>* VrsObj;
+			if (TokenPayload->TryGetObjectField(TEXT("vrs"), VrsObj))
+			{
+				for (const auto& Pair : (*VrsObj)->Values)
+				{
+					Vars.Add(Pair.Key, Pair.Value->AsString());
+				}
+			}
+		}
+	}
+
+	// Parse refresh token
+	TSharedPtr<FJsonObject> RefreshPayload;
+	if (!RefreshToken.IsEmpty() && ParseJwtPayload(RefreshToken, RefreshPayload))
+	{
+		if (RefreshPayload->HasField(TEXT("exp")))
+		{
+			RefreshTokenExpiresAt = static_cast<int64>(RefreshPayload->GetNumberField(TEXT("exp")));
+		}
+	}
+}
+
+bool FNakamaSession::IsExpired(int64 BufferSeconds) const noexcept
+{
+	if (TokenExpiresAt == 0)
+	{
+		return true;
+	}
+	return (TokenExpiresAt - BufferSeconds) <= FDateTime::UtcNow().ToUnixTimestamp();
+}
+
+bool FNakamaSession::IsRefreshExpired(int64 BufferSeconds) const noexcept
+{
+	if (RefreshTokenExpiresAt == 0)
+	{
+		return true;
+	}
+	return (RefreshTokenExpiresAt - BufferSeconds) <= FDateTime::UtcNow().ToUnixTimestamp();
+}
+
+void FNakamaSession::Update(const FString& NewToken, const FString& NewRefreshToken) noexcept
+{
+	Token = NewToken;
+	RefreshToken = NewRefreshToken;
+	ParseTokens();
+}
+
 {{- /* Generate FromJson/ToJson implementations for each message */ -}}
 {{- range $idx, $msg := $.Messages }}
 {{- if eq $msg.Name "Session" }}
@@ -398,4 +511,11 @@ TSharedPtr<FJsonObject> FNakama{{ $msg.Name }}::ToJson() const noexcept
 {{- end }}
 {{- end }}
 
+// --- FNakamaClientConfig ---
+
+FString FNakamaClientConfig::GetBaseUrl() const noexcept
+{
+	const FString Scheme = bUseSSL ? TEXT("https") : TEXT("http");
+	return FString::Printf(TEXT("%s://%s:%d"), *Scheme, *Host, Port);
+}
 
