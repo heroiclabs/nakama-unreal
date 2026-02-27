@@ -27,7 +27,7 @@ namespace Nakama
 {{- $rpcType := getMessage (stripDot $rpc.Type) }}
 TFuture<FRealtimeResponse> NakamaRealtimeClient::{{ $rpcType.Name | pascalCase }}(
     {{ getUnrealParamList 4 $rpcType.Fields $rpcType.MapFields }}
-)
+) noexcept
 {
     TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
   {{- range $fidx, $field := $rpcType.Fields }}
@@ -47,7 +47,7 @@ TFuture<FRealtimeResponse> NakamaRealtimeClient::{{ $rpcType.Name | pascalCase }
   {{- else if or (eq $fieldType "bool") (containsString $fieldType "BoolValue") }}
         Array.Add(MakeShared<FJsonValueBoolean>(Item));
   {{- else if or (eq $fieldType "bytes") (containsString $fieldType "BytesValue") }}
-        Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
+        Array.Add(MakeShared<FJsonValueObject>(FBase64::Encode(Item));
   {{- else if isMessageType $fieldType }}
         Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
   {{- else }}
@@ -66,6 +66,8 @@ TFuture<FRealtimeResponse> NakamaRealtimeClient::{{ $rpcType.Name | pascalCase }
     Json->SetNumberField(TEXT("{{ $jsonFieldName }}"), {{ $fieldName }});
   {{- else if or (eq $fieldType "bool") (containsString $fieldType "BoolValue") }}
     Json->SetBoolField(TEXT("{{ $jsonFieldName }}"), {{ $fieldName }});
+  {{- else if or (eq $fieldType "bytes") (containsString $fieldType "BytesValue") }}
+    Json->SetStringField(TEXT("{{ $jsonFieldName }}"), FBase64::Encode({{ $fieldName }}));
   {{- else if containsString $fieldType "Timestamp" }}
     if (!{{ $fieldName }}.IsEmpty())
     {

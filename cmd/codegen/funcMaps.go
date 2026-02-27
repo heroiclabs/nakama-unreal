@@ -399,10 +399,10 @@ func getUnrealFuncMap(api Api) template.FuncMap {
 
 		params := make([]string, 0, len(fields)+len(mapFields))
 		for _, f := range fields {
-			params = append(params, fmt.Sprintf("const %s& %s", getUnrealFieldType(f.Type, false), textcase.PascalCase(f.Name)))
+			params = append(params, fmt.Sprintf("const %s& %s", getUnrealFieldType(f.Type, f.Repeated), textcase.PascalCase(f.Name)))
 		}
 		for _, f := range mapFields {
-			params = append(params, fmt.Sprintf("const %s& %s", getUnrealFieldType(f.Type, true), textcase.PascalCase(f.Name)))
+			params = append(params, fmt.Sprintf("const %s& %s", getUnrealMapType(f.Type), textcase.PascalCase(f.Name)))
 		}
 
 		output := strings.Join(params, ",\n"+indent)
