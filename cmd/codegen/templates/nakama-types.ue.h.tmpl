@@ -53,8 +53,6 @@ struct NAKAMAAPI_API FNakamaError
 
 {{- template "errorcodes" "Nakama" }}
 
-#include "NakamaTypes.generated.h"
-
 // Forward declarations
 {{- range $idx, $msg := $.Messages }}
 struct FNakama{{ $msg.Name }};
