@@ -244,6 +244,9 @@ func getUnrealFuncMap(api Api) template.FuncMap {
 			case "double", "google.protobuf.DoubleValue":
 				unrealType = "TArray<double>"
 
+			case "bytes", "google.protobuf.BytesValue":
+				unrealType = "TArray<uint8>"
+
 			case "bool", "google.protobuf.BoolValue":
 				unrealType = "TArray<bool>"
 
@@ -284,6 +287,9 @@ func getUnrealFuncMap(api Api) template.FuncMap {
 				"google.protobuf.StringValue",
 				"google.protobuf.Timestamp":
 				unrealType = "FString"
+
+			case "bytes", "google.protobuf.BytesValue":
+				unrealType = "TArray<uint8>"
 
 			default:
 				// For message types (starts with uppercase), use FNakama prefix
