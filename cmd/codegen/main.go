@@ -263,16 +263,16 @@ func main() {
 
 	bytes, err := os.ReadFile(*argTmpl)
 	if err != nil {
-		log.Fatalf("Failed to read template file: %s", err.Error())
+		log.Fatalf("Failed to read template file '%s': %s", *argTmpl, err.Error())
 	}
 
 	if _, err = tmpl.Parse(string(bytes)); err != nil {
-		log.Fatalf("Failed to parse template: %s", err.Error())
+		log.Fatalf("Failed to parse template '%s': %s", *argTmpl, err.Error())
 	}
 
 	//
 	// Generate the code from parsed API using the parsed Template.
 	if err := tmpl.Execute(os.Stdout, api); err != nil {
-		log.Printf("Failed to execute template: %s", err)
+		log.Printf("Failed to execute template '%s': %s", *argTmpl, err.Error())
 	}
 }
