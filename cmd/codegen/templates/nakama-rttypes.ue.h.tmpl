@@ -22,6 +22,11 @@
 
 #include "NakamaRtTypes.generated.h"
 
+// Forward declarations
+{{- range $idx, $msg := $.Messages }}
+struct FNakamaRt{{ $msg.Name }};
+{{- end }}
+
 {{- /* Generate struct definitions for each proto message */ -}}
 {{- range $idx, $msg := $.Messages }}
 {{- if eq $msg.Name "Session" }}

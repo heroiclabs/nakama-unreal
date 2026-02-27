@@ -20,8 +20,7 @@
 
 #include "CoreMinimal.h"
 #include "WebSocketSubsystem.h"
-#include "NakamaApi/NakamaTypes.h"
-#include "NakamaRt.generated.h"
+#include "NakamaTypes.h"
 
 namespace Nakama
 {
@@ -60,24 +59,10 @@ namespace Nakama
         {{- range $idx, $rpc := $envelope.OneofFields -}}
         {{- $rpcType := getMessage (stripDot $rpc.Type) }}
         /**
-         *{{ $rpc.Comment.Message }}
-        {{ " *\n         * " }} 
-        {{- range $idx, $rpcTypeField := $rpcType.Fields -}}
-        @param {{ $rpcTypeField.Name | pascalCase }} {{ $rpcTypeField.Comment.Message }}{{ "\n         * " }}
-        {{- end -}}
-        {{- range $idx, $rpcTypeField := $rpcType.MapFields -}}
-        @param {{ $rpcTypeField.Name | pascalCase }} {{ $rpcTypeField.Comment.Message }}{{ "\n         * " }}
-        {{- end -}}
-         */
-        TFuture<FRealtimeResponse> {{ $rpcType.Name | pascalCase }}(
-          {{- range $idx, $rpcTypeField := $rpcType.Fields -}}
-          {{- if $idx }},            {{ end }}
-          const {{ getUnrealFieldType $rpcTypeField.Type false }}& {{ $rpcTypeField.Name | pascalCase }}
-          {{- end -}}
-          {{- range $idx, $rpcTypeField := $rpcType.MapFields -}}
-          {{- if $idx }},            {{ end }}
-          const {{ getUnrealFieldType $rpcTypeField.Type true }}& {{ $rpcTypeField.Name | pascalCase }}
-          {{ end }}
+        {{ getUnrealMethodCommentBlock 8 $rpc.Comment.Message $rpcType.Fields $rpcType.MapFields }}
+        */
+        NAKAMA_API TFuture<FRealtimeResponse> {{ $rpcType.Name | pascalCase }}(
+            {{ getUnrealParamList 12 $rpcType.Fields $rpcType.MapFields }}
         ) noexcept;
         {{ end }}
     };

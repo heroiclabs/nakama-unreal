@@ -68,8 +68,12 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		{{- end }}
 		TFunction<void(const FNakamaError&)> OnError,
+<<<<<<< Updated upstream
 		float Timeout = 10.0f,
 		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+=======
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
+>>>>>>> Stashed changes
 {{- if $needsSession }}
 
 	/** {{ $rpc.Comment }} (Server-to-server with HTTP key) */
@@ -98,8 +102,12 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		{{- end }}
 		TFunction<void(const FNakamaError&)> OnError,
+<<<<<<< Updated upstream
 		float Timeout = 10.0f,
 		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+=======
+		FNakamaCancellationTokenPtr CancellationToken = nullptr) noexcept;
+>>>>>>> Stashed changes
 {{- end }}
 {{- end }}
 }

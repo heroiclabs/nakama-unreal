@@ -16,7 +16,7 @@
 
 /* This code is auto-generated. DO NOT EDIT. */
 
-#include "NakamaTypes.h"
+#include "NakamaRtTypes.h"
 
 {{- /* Generate FromJson/ToJson implementations for each message */ -}}
 {{- range $idx, $msg := $.Messages }}
@@ -68,61 +68,36 @@ FNakamaRtSession FNakamaRtSession::FromJson(const TSharedPtr<FJsonObject>& Json)
 		}
 	}
 {{- else }}
-{{- if or (eq $fieldType "string") (containsString $fieldType "StringValue") }}
+  {{/* ------------------ */}}
 	if (Json->HasField(TEXT("{{ $jsonFieldName }}")))
-	{
+  {
+  {{- if or (eq $fieldType "string") (containsString $fieldType "StringValue") }}
 		Result.{{ $fieldName }} = Json->GetStringField(TEXT("{{ $jsonFieldName }}"));
-	}
-{{- else if or (eq $fieldType "int32") (containsString $fieldType "Int32Value") }}
-	if (Json->HasField(TEXT("{{ $jsonFieldName }}")))
-	{
+  {{- else if or (eq $fieldType "int32") (containsString $fieldType "Int32Value") }}
 		Result.{{ $fieldName }} = Json->GetIntegerField(TEXT("{{ $jsonFieldName }}"));
-	}
-{{- else if or (eq $fieldType "int64") (containsString $fieldType "Int64Value") }}
-	if (Json->HasField(TEXT("{{ $jsonFieldName }}")))
-	{
+  {{- else if or (eq $fieldType "int64") (containsString $fieldType "Int64Value") }}
 		Result.{{ $fieldName }} = static_cast<int64>(Json->GetNumberField(TEXT("{{ $jsonFieldName }}")));
-	}
-{{- else if or (eq $fieldType "uint32") (containsString $fieldType "UInt32Value") }}
-	if (Json->HasField(TEXT("{{ $jsonFieldName }}")))
-	{
+  {{- else if or (eq $fieldType "uint32") (containsString $fieldType "UInt32Value") }}
 		Result.{{ $fieldName }} = static_cast<uint32>(Json->GetNumberField(TEXT("{{ $jsonFieldName }}")));
-	}
-{{- else if or (eq $fieldType "uint64") (containsString $fieldType "UInt64Value") }}
-	if (Json->HasField(TEXT("{{ $jsonFieldName }}")))
-	{
+  {{- else if or (eq $fieldType "uint64") (containsString $fieldType "UInt64Value") }}
 		Result.{{ $fieldName }} = static_cast<uint64>(Json->GetNumberField(TEXT("{{ $jsonFieldName }}")));
-	}
-{{- else if or (eq $fieldType "bool") (containsString $fieldType "BoolValue") }}
-	if (Json->HasField(TEXT("{{ $jsonFieldName }}")))
-	{
+  {{- else if or (eq $fieldType "bool") (containsString $fieldType "BoolValue") }}
 		Result.{{ $fieldName }} = Json->GetBoolField(TEXT("{{ $jsonFieldName }}"));
-	}
-{{- else if or (eq $fieldType "float") (eq $fieldType "double") }}
-	if (Json->HasField(TEXT("{{ $jsonFieldName }}")))
-	{
+  {{- else if or (eq $fieldType "float") (eq $fieldType "double") }}
 		Result.{{ $fieldName }} = Json->GetNumberField(TEXT("{{ $jsonFieldName }}"));
-	}
-{{- else if containsString $fieldType "Timestamp" }}
-	if (Json->HasField(TEXT("{{ $jsonFieldName }}")))
-	{
+  {{- else if containsString $fieldType "Timestamp" }}
 		Result.{{ $fieldName }} = Json->GetStringField(TEXT("{{ $jsonFieldName }}"));
-	}
-{{- else if isEnumType $fieldType }}
-	if (Json->HasField(TEXT("{{ $jsonFieldName }}")))
-	{
+  {{- else if isEnumType $fieldType }}
 		Result.{{ $fieldName }} = Json->GetIntegerField(TEXT("{{ $jsonFieldName }}"));
-	}
-{{- else }}
-	if (Json->HasField(TEXT("{{ $jsonFieldName }}")))
-	{
+  {{- else }}
 		const TSharedPtr<FJsonObject>* NestedObj;
 		if (Json->TryGetObjectField(TEXT("{{ $jsonFieldName }}"), NestedObj))
 		{
 			Result.{{ $fieldName }} = FNakamaRt{{ $fieldType }}::FromJson(*NestedObj);
 		}
-	}
 {{- end }}
+  }
+  {{/* ------------------ */}}
 {{- end }}
 {{- end }}
 {{- range $fidx, $field := $msg.MapFields }}

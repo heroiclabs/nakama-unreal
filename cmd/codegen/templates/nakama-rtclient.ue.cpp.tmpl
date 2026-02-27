@@ -26,14 +26,7 @@ namespace Nakama
 {{- range $idx, $rpc := $envelope.OneofFields -}}
 {{- $rpcType := getMessage (stripDot $rpc.Type) }}
 TFuture<FRealtimeResponse> NakamaRealtimeClient::{{ $rpcType.Name | pascalCase }}(
-  {{- range $idx, $rpcTypeField := $rpcType.Fields -}}
-  {{- if $idx }},            {{ end }}
-  const {{ getUnrealFieldType $rpcTypeField.Type false }}& {{ $rpcTypeField.Name | pascalCase }}
-  {{- end -}}
-  {{- range $idx, $rpcTypeField := $rpcType.MapFields -}}
-  {{- if $idx }},            {{ end }}
-  const {{ getUnrealFieldType $rpcTypeField.Type true }}& {{ $rpcTypeField.Name | pascalCase }}
-  {{ end }}
+    {{ getUnrealParamList 4 $rpcType.Fields $rpcType.MapFields }}
 )
 {
     TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
