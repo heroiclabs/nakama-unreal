@@ -244,6 +244,9 @@ func getUnrealFuncMap(api Api) template.FuncMap {
 			case "double", "google.protobuf.DoubleValue":
 				unrealType = "TArray<double>"
 
+			case "bytes", "google.protobuf.BytesValue":
+				unrealType = "TArray<uint8>"
+
 			case "bool", "google.protobuf.BoolValue":
 				unrealType = "TArray<bool>"
 
@@ -284,6 +287,9 @@ func getUnrealFuncMap(api Api) template.FuncMap {
 				"google.protobuf.StringValue",
 				"google.protobuf.Timestamp":
 				unrealType = "FString"
+
+			case "bytes", "google.protobuf.BytesValue":
+				unrealType = "TArray<uint8>"
 
 			default:
 				// For message types (starts with uppercase), use FNakama prefix
@@ -361,21 +367,58 @@ func getUnrealFuncMap(api Api) template.FuncMap {
 		return getUnrealType(fieldType, isRepeated)
 	}
 
+	getUnrealFieldType := func(fieldType string, isRepeated bool) string {
+		// For struct members: no const&, just TArray<T> or T
+		if isRepeated {
+			baseType := getUnrealBaseType(fieldType, false)
+			return fmt.Sprintf("TArray<%s>", baseType)
+		}
+		return getUnrealBaseType(fieldType, false)
+	}
+
+	getUnrealMethodCommentBlock := func(numIndent int, headerComment string, fields []*proto.NormalField, mapFields []*proto.MapField) string {
+		indent := strings.Repeat(" ", numIndent)
+
+		// Extra 1 length for first line and gap
+		commentStrings := make([]string, 0, 1+len(fields)+len(mapFields))
+		commentStrings = append(commentStrings, fmt.Sprintf("* %s\n%s*", strings.Trim(headerComment, " "), indent))
+
+		for _, f := range fields {
+			commentStrings = append(commentStrings, fmt.Sprintf("@param %s %s", textcase.PascalCase(f.Name), f.Comment.Message()))
+		}
+		for _, f := range mapFields {
+			commentStrings = append(commentStrings, fmt.Sprintf("@param %s %s", textcase.PascalCase(f.Name), f.Comment.Message()))
+		}
+
+		comment := strings.Join(commentStrings, "\n"+indent+"* ")
+		return comment
+	}
+
+	getUnrealParamList := func(numIndent int, fields []*proto.NormalField, mapFields []*proto.MapField) string {
+		indent := strings.Repeat(" ", numIndent)
+
+		params := make([]string, 0, len(fields)+len(mapFields))
+		for _, f := range fields {
+			params = append(params, fmt.Sprintf("const %s& %s", getUnrealFieldType(f.Type, f.Repeated), textcase.PascalCase(f.Name)))
+		}
+		for _, f := range mapFields {
+			params = append(params, fmt.Sprintf("const %s& %s", getUnrealMapType(f.Type), textcase.PascalCase(f.Name)))
+		}
+
+		output := strings.Join(params, ",\n"+indent)
+		return output
+	}
+
 	fnMap := template.FuncMap{
-		"getUnrealType":    getUnrealType,
-		"getUnrealMapType": getUnrealMapType,
-		"getUnrealBPType":  getUnrealBPType,
+		"getUnrealType":               getUnrealType,
+		"getUnrealMapType":            getUnrealMapType,
+		"getUnrealBPType":             getUnrealBPType,
+		"getUnrealMethodCommentBlock": getUnrealMethodCommentBlock,
+		"getUnrealParamList":          getUnrealParamList,
 		"getUnrealReturnType": func(fieldType string) string {
 			return getUnrealBaseType(fieldType, false)
 		},
-		"getUnrealFieldType": func(fieldType string, isRepeated bool) string {
-			// For struct members: no const&, just TArray<T> or T
-			if isRepeated {
-				baseType := getUnrealBaseType(fieldType, false)
-				return fmt.Sprintf("TArray<%s>", baseType)
-			}
-			return getUnrealBaseType(fieldType, false)
-		},
+		"getUnrealFieldType": getUnrealFieldType,
 		"getUnrealFieldDefault": func(fieldType string, isRepeated bool) string {
 			// Return a default initializer for primitive UPROPERTY fields.
 			// UE requires all UPROPERTY primitives to be initialized.

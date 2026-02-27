@@ -13,8 +13,6 @@ vars:
   TESTRUNNER: 'build/testrunner{{if eq OS "windows"}}.exe{{end}}'
 
 tasks:
-
-
   codegen:
     desc: 'Fetch protos, build codegen tool, and generate all Nakama + Satori modules.'
     vars:
@@ -40,6 +38,28 @@ tasks:
         rm -rf proto/satori
 
         ./{{.CODEGEN}} \
+        --template cmd/codegen/templates/nakama-types.ue.h.tmpl \
+        --proto {{.PROTO_FILE}} \
+        > Nakama/Source/NakamaApi/Public/NakamaTypes.h
+
+        ./{{.CODEGEN}} \
+        --template cmd/codegen/templates/nakama-types.ue.cpp.tmpl \
+        --proto {{.PROTO_FILE}} \
+        > Nakama/Source/NakamaApi/Private/NakamaTypes.cpp
+
+        ./{{.CODEGEN}} \
+        --template cmd/codegen/templates/nakama-rttypes.ue.h.tmpl \
+        --proto {{.PROTO_RT_FILE}} \
+        --prefix FNakamaRt \
+        > Nakama/Source/NakamaApi/Public/NakamaRtTypes.h
+
+        ./{{.CODEGEN}} \
+        --template cmd/codegen/templates/nakama-rttypes.ue.cpp.tmpl \
+        --proto {{.PROTO_RT_FILE}} \
+        --prefix FNakamaRt \
+        > Nakama/Source/NakamaApi/Private/NakamaRtTypes.cpp
+
+        ./{{.CODEGEN}} \
         --template cmd/codegen/templates/nakama-api.ue.h.tmpl \
         --proto {{.PROTO_FILE}} \
         --proto {{.PROTO_SERVICE_FILE}} \
@@ -56,6 +76,26 @@ tasks:
         --proto {{.PROTO_FILE}} \
         --proto {{.PROTO_SERVICE_FILE}} \
         > Nakama/Source/Nakama/Public/Nakama.h
+
+        ./{{.CODEGEN}} \
+        --template cmd/codegen/templates/nakama.ue.cpp.tmpl \
+        --proto {{.PROTO_FILE}} \
+        --proto {{.PROTO_SERVICE_FILE}} \
+        > Nakama/Source/Nakama/Private/Nakama.cpp
+
+        ./{{.CODEGEN}} \
+        --template cmd/codegen/templates/nakama-rtclient.ue.h.tmpl \
+        --proto {{.PROTO_FILE}} \
+        --proto {{.PROTO_RT_FILE}} \
+        --prefix FNakamaRt \
+        > Nakama/Source/Nakama/Public/NakamaRt.h
+
+        ./{{.CODEGEN}} \
+        --template cmd/codegen/templates/nakama-rtclient.ue.cpp.tmpl \
+        --proto {{.PROTO_FILE}} \
+        --proto {{.PROTO_RT_FILE}} \
+        --prefix FNakamaRt \
+        > Nakama/Source/Nakama/Private/NakamaRt.cpp
 
         ./{{.CODEGEN}} \
         --template cmd/codegen/templates/nakama.ue.cpp.tmpl \
@@ -322,6 +362,9 @@ tasks:
     - task: check-unreal-engine
     - task: codegen
     - task: start-server
+    - cmd: |
+        echo "Cleaning test data..."
+         docker exec unreal_integration_test_postgres psql -U postgres -d nakama -c "TRUNCATE users CASCADE;" 2>/dev/null || true
     - cmd: |
         mkdir -p IntegrationTests/Plugins
         if command -v robocopy &>/dev/null; then

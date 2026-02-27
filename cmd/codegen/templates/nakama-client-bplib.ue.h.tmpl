@@ -21,6 +21,7 @@
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintAsyncActionBase.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
+#include "NakamaTypes.h"
 #include "NakamaApi.h"
 
 #include "NakamaClientBlueprintLibrary.generated.h"

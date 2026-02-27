@@ -1,0 +1,232 @@
+/*
+ * Copyright {{currentYear}} The Nakama Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/* This code is auto-generated. DO NOT EDIT. */
+
+#include "NakamaRtTypes.h"
+
+{{- /* Generate FromJson/ToJson implementations for each message */ -}}
+{{- range $idx, $msg := $.Messages }}
+
+FNakamaRt{{ $msg.Name }} FNakamaRt{{ $msg.Name }}::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
+{
+	FNakamaRt{{ $msg.Name }} Result;
+	if (!Json.IsValid())
+	{
+		return Result;
+	}
+{{- range $fidx, $field := $msg.Fields }}
+{{- $fieldName := $field.Name | pascalCase }}
+{{- $jsonFieldName := $field.Name }}
+{{- $fieldType := $field.Type }}
+{{- if $field.Repeated }}
+	if (Json->HasField(TEXT("{{ $jsonFieldName }}")))
+	{
+		const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
+		if (Json->TryGetArrayField(TEXT("{{ $jsonFieldName }}"), ArrayPtr))
+		{
+			for (const auto& Item : *ArrayPtr)
+			{
+{{- if or (eq $fieldType "string") (containsString $fieldType "StringValue") }}
+				Result.{{ $fieldName }}.Add(Item->AsString());
+{{- else if or (eq $fieldType "int32") (containsString $fieldType "Int32Value") }}
+				Result.{{ $fieldName }}.Add(static_cast<int32>(Item->AsNumber()));
+{{- else if or (eq $fieldType "int64") (containsString $fieldType "Int64Value") }}
+				Result.{{ $fieldName }}.Add(static_cast<int64>(Item->AsNumber()));
+{{- else if or (eq $fieldType "uint32") (containsString $fieldType "UInt32Value") }}
+				Result.{{ $fieldName }}.Add(static_cast<uint32>(Item->AsNumber()));
+{{- else if or (eq $fieldType "uint64") (containsString $fieldType "UInt64Value") }}
+				Result.{{ $fieldName }}.Add(static_cast<uint64>(Item->AsNumber()));
+{{- else if or (eq $fieldType "float") (eq $fieldType "double") }}
+				Result.{{ $fieldName }}.Add(Item->AsNumber());
+{{- else if or (eq $fieldType "bool") (containsString $fieldType "BoolValue") }}
+				Result.{{ $fieldName }}.Add(Item->AsBool());
+{{- else if isMessageType $fieldType }}
+				const TSharedPtr<FJsonObject>* ItemObj = nullptr;
+				if (Item->TryGetObject(ItemObj) && ItemObj)
+				{
+					Result.{{ $fieldName }}.Add(FNakamaRt{{ $fieldType }}::FromJson(*ItemObj));
+				}
+{{- else }}
+				Result.{{ $fieldName }}.Add(Item->AsString());
+{{- end }}
+			}
+		}
+	}
+{{- else }}
+{{- if or (eq $fieldType "string") (containsString $fieldType "StringValue") }}
+	if (Json->HasField(TEXT("{{ $jsonFieldName }}")))
+	{
+		Result.{{ $fieldName }} = Json->GetStringField(TEXT("{{ $jsonFieldName }}"));
+	}
+{{- else if or (eq $fieldType "int32") (containsString $fieldType "Int32Value") }}
+	if (Json->HasField(TEXT("{{ $jsonFieldName }}")))
+	{
+		Result.{{ $fieldName }} = Json->GetIntegerField(TEXT("{{ $jsonFieldName }}"));
+	}
+{{- else if or (eq $fieldType "int64") (containsString $fieldType "Int64Value") }}
+	if (Json->HasField(TEXT("{{ $jsonFieldName }}")))
+	{
+		Result.{{ $fieldName }} = static_cast<int64>(Json->GetNumberField(TEXT("{{ $jsonFieldName }}")));
+	}
+{{- else if or (eq $fieldType "uint32") (containsString $fieldType "UInt32Value") }}
+	if (Json->HasField(TEXT("{{ $jsonFieldName }}")))
+	{
+		Result.{{ $fieldName }} = static_cast<uint32>(Json->GetNumberField(TEXT("{{ $jsonFieldName }}")));
+	}
+{{- else if or (eq $fieldType "uint64") (containsString $fieldType "UInt64Value") }}
+	if (Json->HasField(TEXT("{{ $jsonFieldName }}")))
+	{
+		Result.{{ $fieldName }} = static_cast<uint64>(Json->GetNumberField(TEXT("{{ $jsonFieldName }}")));
+	}
+{{- else if or (eq $fieldType "bool") (containsString $fieldType "BoolValue") }}
+	if (Json->HasField(TEXT("{{ $jsonFieldName }}")))
+	{
+		Result.{{ $fieldName }} = Json->GetBoolField(TEXT("{{ $jsonFieldName }}"));
+	}
+{{- else if or (eq $fieldType "float") (eq $fieldType "double") }}
+	if (Json->HasField(TEXT("{{ $jsonFieldName }}")))
+	{
+		Result.{{ $fieldName }} = Json->GetNumberField(TEXT("{{ $jsonFieldName }}"));
+	}
+{{- else if or (eq $fieldType "bytes") (containsString $fieldType "BytesValue") }}
+	if (Json->HasField(TEXT("{{ $jsonFieldName }}")))
+  {
+		FString Base64 = Json->GetStringField(TEXT("data"));
+    if (!FBase64::Decode(Base64, Result.Data))
+    {
+			UE_LOG(LogNakama, Warning, TEXT("Couldn't parse bytes: %s"), *Base64);
+    }
+  }
+{{- else if containsString $fieldType "Timestamp" }}
+	if (Json->HasField(TEXT("{{ $jsonFieldName }}")))
+	{
+		Result.{{ $fieldName }} = Json->GetStringField(TEXT("{{ $jsonFieldName }}"));
+	}
+{{- else if isEnumType $fieldType }}
+	if (Json->HasField(TEXT("{{ $jsonFieldName }}")))
+	{
+		Result.{{ $fieldName }} = Json->GetIntegerField(TEXT("{{ $jsonFieldName }}"));
+	}
+{{- else }}
+	if (Json->HasField(TEXT("{{ $jsonFieldName }}")))
+	{
+		const TSharedPtr<FJsonObject>* NestedObj;
+		if (Json->TryGetObjectField(TEXT("{{ $jsonFieldName }}"), NestedObj))
+		{
+			Result.{{ $fieldName }} = FNakamaRt{{ $fieldType }}::FromJson(*NestedObj);
+		}
+	}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- range $fidx, $field := $msg.MapFields }}
+{{- $fieldName := $field.Name | pascalCase }}
+{{- $fieldType := $field.Type }}
+{{- $jsonFieldName := $field.Name }}
+	if (Json->HasField(TEXT("{{ $jsonFieldName }}")))
+	{
+		const TSharedPtr<FJsonObject>* MapObj;
+		if (Json->TryGetObjectField(TEXT("{{ $jsonFieldName }}"), MapObj))
+		{
+			for (const auto& Pair : (*MapObj)->Values)
+			{
+        {{ if or (eq $fieldType "int32") (eq $fieldType "int64") (eq $fieldType "uint32") (eq $fieldType "uint64") (eq $fieldType "float") (eq $fieldType "double") (containsString $fieldType "Int32Value") (containsString $fieldType "Int64Value") (containsString $fieldType "UInt32Value") (containsString $fieldType "UInt64Value") (containsString $fieldType "FloatValue") (containsString $fieldType "DoubleValue") }}
+				Result.{{ $fieldName }}.Add(Pair.Key, Pair.Value->AsNumber());
+        {{ else }}
+				Result.{{ $fieldName }}.Add(Pair.Key, Pair.Value->AsString());
+        {{ end }}
+			}
+		}
+	}
+	{{- end }}
+	return Result;
+}
+
+TSharedPtr<FJsonObject> FNakamaRt{{ $msg.Name }}::ToJson() const noexcept
+{
+	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+{{- range $fidx, $field := $msg.Fields }}
+{{- $fieldName := $field.Name | pascalCase }}
+{{- $jsonFieldName := $field.Name }}
+{{- $fieldType := $field.Type }}
+{{- if $field.Repeated }}
+	if ({{ $fieldName }}.Num() > 0)
+	{
+		TArray<TSharedPtr<FJsonValue>> Array;
+		for (const auto& Item : {{ $fieldName }})
+		{
+{{- if or (eq $fieldType "string") (containsString $fieldType "StringValue") (containsString $fieldType "Timestamp") }}
+			Array.Add(MakeShared<FJsonValueString>(Item));
+{{- else if or (eq $fieldType "int32") (eq $fieldType "int64") (eq $fieldType "uint32") (eq $fieldType "uint64") (eq $fieldType "float") (eq $fieldType "double") (containsString $fieldType "Int32Value") (containsString $fieldType "Int64Value") (containsString $fieldType "UInt32Value") (containsString $fieldType "UInt64Value") (containsString $fieldType "FloatValue") (containsString $fieldType "DoubleValue") }}
+			Array.Add(MakeShared<FJsonValueNumber>(Item));
+{{- else if or (eq $fieldType "bool") (containsString $fieldType "BoolValue") }}
+			Array.Add(MakeShared<FJsonValueBoolean>(Item));
+{{- else if isMessageType $fieldType }}
+			Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
+{{- else }}
+			Array.Add(MakeShared<FJsonValueString>(Item));
+{{- end }}
+		}
+		Json->SetArrayField(TEXT("{{ $jsonFieldName }}"), Array);
+	}
+{{- else }}
+{{- if or (eq $fieldType "string") (containsString $fieldType "StringValue") }}
+	if (!{{ $fieldName }}.IsEmpty())
+	{
+		Json->SetStringField(TEXT("{{ $jsonFieldName }}"), {{ $fieldName }});
+	}
+{{- else if or (eq $fieldType "int32") (eq $fieldType "int64") (eq $fieldType "uint32") (eq $fieldType "uint64") (eq $fieldType "float") (eq $fieldType "double") (containsString $fieldType "Int32Value") (containsString $fieldType "Int64Value") (containsString $fieldType "UInt32Value") (containsString $fieldType "UInt64Value") (containsString $fieldType "FloatValue") (containsString $fieldType "DoubleValue") }}
+	Json->SetNumberField(TEXT("{{ $jsonFieldName }}"), {{ $fieldName }});
+{{- else if or (eq $fieldType "bool") (containsString $fieldType "BoolValue") }}
+	Json->SetBoolField(TEXT("{{ $jsonFieldName }}"), {{ $fieldName }});
+{{- else if or (eq $fieldType "bytes") (containsString $fieldType "BytesValue") }}
+	Json->SetStringField(TEXT("{{ $jsonFieldName }}"), FBase64::Encode("{{ $fieldName }}"));
+{{- else if containsString $fieldType "Timestamp" }}
+	if (!{{ $fieldName }}.IsEmpty())
+	{
+		Json->SetStringField(TEXT("{{ $jsonFieldName }}"), {{ $fieldName }});
+	}
+{{- else if isEnumType $fieldType }}
+	Json->SetNumberField(TEXT("{{ $jsonFieldName }}"), {{ $fieldName }});
+{{- else }}
+	Json->SetObjectField(TEXT("{{ $jsonFieldName }}"), {{ $fieldName }}.ToJson());
+{{- end }}
+{{- end }}
+{{- end }}
+{{- range $fidx, $field := $msg.MapFields }}
+	{{- $fieldName := $field.Name | pascalCase }}
+	{{- $fieldType := $field.Type }}
+	{{- $jsonFieldName := $field.Name }}
+	if ({{ $fieldName }}.Num() > 0)
+	{
+		TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
+		for (const auto& Pair : {{ $fieldName }})
+		{
+      {{ if or (eq $fieldType "int32") (eq $fieldType "int64") (eq $fieldType "uint32") (eq $fieldType "uint64") (eq $fieldType "float") (eq $fieldType "double") (containsString $fieldType "Int32Value") (containsString $fieldType "Int64Value") (containsString $fieldType "UInt32Value") (containsString $fieldType "UInt64Value") (containsString $fieldType "FloatValue") (containsString $fieldType "DoubleValue") }}
+			MapObj->SetNumberField(Pair.Key, Pair.Value);
+      {{ else }}
+			MapObj->SetStringField(Pair.Key, Pair.Value);
+      {{ end }}
+		}
+		Json->SetObjectField(TEXT("{{ $jsonFieldName }}"), MapObj);
+	}
+	{{- end }}
+	return Json;
+}
+{{- end }}
+
+
