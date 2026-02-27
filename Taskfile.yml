@@ -30,12 +30,12 @@ tasks:
         curl -o {{.PROTO_SERVICE_FILE}} "{{.PROTO_SERVICE_URL}}"
         curl -o {{.PROTO_RT_FILE}} "{{.PROTO_RT_URL}}"
 
-        #rm -rf proto/satori
-        #git clone --depth 1 --branch feat/reorder-proto --filter=blob:none --sparse git@github.com:heroiclabs/satori.git proto/satori 2>/dev/null
-        #cd proto/satori && git sparse-checkout set api 2>/dev/null && cd -
-        #cp proto/satori/api/satori-types.proto {{.SATORI_PROTO_FILE}}
-        #cp proto/satori/api/satori-api.proto {{.SATORI_PROTO_SERVICE_FILE}}
-        #rm -rf proto/satori
+        rm -rf proto/satori
+        git clone --depth 1 --branch feat/reorder-proto --filter=blob:none --sparse git@github.com:heroiclabs/satori.git proto/satori 2>/dev/null
+        cd proto/satori && git sparse-checkout set api 2>/dev/null && cd -
+        cp proto/satori/api/satori-types.proto {{.SATORI_PROTO_FILE}}
+        cp proto/satori/api/satori-api.proto {{.SATORI_PROTO_SERVICE_FILE}}
+        rm -rf proto/satori
 
         ./{{.CODEGEN}} \
         --template cmd/codegen/templates/nakama-types.ue.h.tmpl \
