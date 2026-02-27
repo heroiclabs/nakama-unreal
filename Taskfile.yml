@@ -13,8 +13,6 @@ vars:
   TESTRUNNER: 'build/testrunner{{if eq OS "windows"}}.exe{{end}}'
 
 tasks:
-
-
   codegen:
     desc: 'Fetch protos, build codegen tool, and generate all Nakama + Satori modules.'
     vars:
@@ -32,12 +30,12 @@ tasks:
         curl -o {{.PROTO_SERVICE_FILE}} "{{.PROTO_SERVICE_URL}}"
         curl -o {{.PROTO_RT_FILE}} "{{.PROTO_RT_URL}}"
 
-        rm -rf proto/satori
-        git clone --depth 1 --branch feat/reorder-proto --filter=blob:none --sparse git@github.com:heroiclabs/satori.git proto/satori 2>/dev/null
-        cd proto/satori && git sparse-checkout set api 2>/dev/null && cd -
-        cp proto/satori/api/satori-types.proto {{.SATORI_PROTO_FILE}}
-        cp proto/satori/api/satori-api.proto {{.SATORI_PROTO_SERVICE_FILE}}
-        rm -rf proto/satori
+        #rm -rf proto/satori
+        #git clone --depth 1 --branch feat/reorder-proto --filter=blob:none --sparse git@github.com:heroiclabs/satori.git proto/satori 2>/dev/null
+        #cd proto/satori && git sparse-checkout set api 2>/dev/null && cd -
+        #cp proto/satori/api/satori-types.proto {{.SATORI_PROTO_FILE}}
+        #cp proto/satori/api/satori-api.proto {{.SATORI_PROTO_SERVICE_FILE}}
+        #rm -rf proto/satori
 
         ./{{.CODEGEN}} \
         --template cmd/codegen/templates/nakama-types.ue.h.tmpl \
@@ -89,12 +87,14 @@ tasks:
         --template cmd/codegen/templates/nakama-rtclient.ue.h.tmpl \
         --proto {{.PROTO_FILE}} \
         --proto {{.PROTO_RT_FILE}} \
+        --prefix FNakamaRt \
         > Nakama/Source/Nakama/Public/NakamaRt.h
 
         ./{{.CODEGEN}} \
         --template cmd/codegen/templates/nakama-rtclient.ue.cpp.tmpl \
         --proto {{.PROTO_FILE}} \
         --proto {{.PROTO_RT_FILE}} \
+        --prefix FNakamaRt \
         > Nakama/Source/Nakama/Private/NakamaRt.cpp
 
         ./{{.CODEGEN}} \
@@ -360,11 +360,11 @@ tasks:
     desc: 'Build and run IntegrationTests C++ automation suite.'
     cmds:
     - task: check-unreal-engine
-    #- task: codegen
-    #- task: start-server
-    #- cmd: |
-    #    echo "Cleaning test data..."
-    #     docker exec unreal_integration_test_postgres psql -U postgres -d nakama -c "TRUNCATE users CASCADE;" 2>/dev/null || true
+    - task: codegen
+    - task: start-server
+    - cmd: |
+        echo "Cleaning test data..."
+         docker exec unreal_integration_test_postgres psql -U postgres -d nakama -c "TRUNCATE users CASCADE;" 2>/dev/null || true
     - cmd: |
         mkdir -p IntegrationTests/Plugins
         if command -v robocopy &>/dev/null; then
