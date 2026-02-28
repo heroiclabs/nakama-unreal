@@ -7,35 +7,40 @@ vars:
   PROTO_FILE: "proto/nakama-types.proto"
   PROTO_SERVICE_FILE: "proto/nakama-api.proto"
   PROTO_RT_FILE: "proto/realtime.proto"
-  SATORI_PROTO_FILE: "proto/satori-types.proto"
-  SATORI_PROTO_SERVICE_FILE: "proto/satori-api.proto"
+  PROTO_SATORI_FILE: "proto/satori-types.proto"
+  PROTO_SATORI_SERVICE_FILE: "proto/satori-api.proto"
   CODEGEN: 'build/codegen{{if eq OS "windows"}}.exe{{end}}'
   TESTRUNNER: 'build/testrunner{{if eq OS "windows"}}.exe{{end}}'
+  GITHUB_TOKEN:
+    sh: |
+      if [ -n "$GITHUB_TOKEN" ]; then
+        echo "$GITHUB_TOKEN"
+      else
+        printf "protocol=https\nhost=github.com\n" | git credential fill | grep "^password=" | cut -d= -f2
+      fi
 
 tasks:
   codegen:
     desc: 'Fetch protos, build codegen tool, and generate all Nakama + Satori modules.'
-    vars:
-      PROTO_API_URL: 'https://raw.githubusercontent.com/heroiclabs/nakama-common/feat/flatten-proto-v2/api/api.proto'
-      PROTO_SERVICE_URL: 'https://raw.githubusercontent.com/heroiclabs/nakama/feat/flatten-proto/apigrpc/apigrpc.proto'
-      PROTO_RT_URL: 'https://raw.githubusercontent.com/heroiclabs/nakama-common/feat/flatten-proto-v2/rtapi/realtime.proto'
     cmds:
+    - task: fetch-protos
     - cmd: |
         mkdir -p build
         cd cmd/codegen && go build -o ../../{{.CODEGEN}} && cd ../..
 
-        mkdir -p proto Satori/Source/SatoriApi/Public Satori/Source/SatoriApi/Private
-
-        curl -o {{.PROTO_FILE}} "{{.PROTO_API_URL}}"
-        curl -o {{.PROTO_SERVICE_FILE}} "{{.PROTO_SERVICE_URL}}"
-        curl -o {{.PROTO_RT_FILE}} "{{.PROTO_RT_URL}}"
-
-        rm -rf proto/satori
-        git clone --depth 1 --branch feat/reorder-proto --filter=blob:none --sparse git@github.com:heroiclabs/satori.git proto/satori 2>/dev/null
-        cd proto/satori && git sparse-checkout set api 2>/dev/null && cd -
-        cp proto/satori/api/satori-types.proto {{.SATORI_PROTO_FILE}}
-        cp proto/satori/api/satori-api.proto {{.SATORI_PROTO_SERVICE_FILE}}
-        rm -rf proto/satori
+        mkdir -p \
+          Nakama/Source/NakamaApi/Public \
+          Nakama/Source/NakamaApi/Private \
+          Nakama/Source/Nakama/Public \
+          Nakama/Source/Nakama/Private \
+          Nakama/Source/NakamaBlueprints/Public \
+          Nakama/Source/NakamaBlueprints/Private \
+          Satori/Source/SatoriApi/Public \
+          Satori/Source/SatoriApi/Private \
+          Satori/Source/Satori/Public \
+          Satori/Source/Satori/Private \
+          Satori/Source/SatoriBlueprints/Public \
+          Satori/Source/SatoriBlueprints/Private \
 
         ./{{.CODEGEN}} \
         --template cmd/codegen/templates/nakama-types.ue.h.tmpl \
@@ -117,43 +122,43 @@ tasks:
 
         ./{{.CODEGEN}} \
         --template cmd/codegen/templates/satori-api.ue.h.tmpl \
-        --proto {{.SATORI_PROTO_FILE}} \
-        --proto {{.SATORI_PROTO_SERVICE_FILE}} \
+        --proto {{.PROTO_SATORI_FILE}} \
+        --proto {{.PROTO_SATORI_SERVICE_FILE}} \
         --prefix FSatori \
         > Satori/Source/SatoriApi/Public/SatoriApi.h
 
         ./{{.CODEGEN}} \
         --template cmd/codegen/templates/satori-api.ue.cpp.tmpl \
-        --proto {{.SATORI_PROTO_FILE}} \
-        --proto {{.SATORI_PROTO_SERVICE_FILE}} \
+        --proto {{.PROTO_SATORI_FILE}} \
+        --proto {{.PROTO_SATORI_SERVICE_FILE}} \
         --prefix FSatori \
         > Satori/Source/SatoriApi/Private/SatoriApi.cpp
 
         ./{{.CODEGEN}} \
         --template cmd/codegen/templates/satori.ue.h.tmpl \
-        --proto {{.SATORI_PROTO_FILE}} \
-        --proto {{.SATORI_PROTO_SERVICE_FILE}} \
+        --proto {{.PROTO_SATORI_FILE}} \
+        --proto {{.PROTO_SATORI_SERVICE_FILE}} \
         --prefix FSatori \
         > Satori/Source/Satori/Public/Satori.h
 
         ./{{.CODEGEN}} \
         --template cmd/codegen/templates/satori.ue.cpp.tmpl \
-        --proto {{.SATORI_PROTO_FILE}} \
-        --proto {{.SATORI_PROTO_SERVICE_FILE}} \
+        --proto {{.PROTO_SATORI_FILE}} \
+        --proto {{.PROTO_SATORI_SERVICE_FILE}} \
         --prefix FSatori \
         > Satori/Source/Satori/Private/Satori.cpp
 
         ./{{.CODEGEN}} \
         --template cmd/codegen/templates/satori-client-bplib.ue.h.tmpl \
-        --proto {{.SATORI_PROTO_FILE}} \
-        --proto {{.SATORI_PROTO_SERVICE_FILE}} \
+        --proto {{.PROTO_SATORI_FILE}} \
+        --proto {{.PROTO_SATORI_SERVICE_FILE}} \
         --prefix FSatori \
         > Satori/Source/SatoriBlueprints/Public/SatoriClientBlueprintLibrary.h
 
         ./{{.CODEGEN}} \
         --template cmd/codegen/templates/satori-client-bplib.ue.cpp.tmpl \
-        --proto {{.SATORI_PROTO_FILE}} \
-        --proto {{.SATORI_PROTO_SERVICE_FILE}} \
+        --proto {{.PROTO_SATORI_FILE}} \
+        --proto {{.PROTO_SATORI_SERVICE_FILE}} \
         --prefix FSatori \
         > Satori/Source/SatoriBlueprints/Private/SatoriClientBlueprintLibrary.cpp
 
@@ -405,3 +410,31 @@ tasks:
 
         ./{{.TESTRUNNER}}
       platforms: [darwin, linux]
+
+  fetch-protos:
+    internal: true
+    vars:
+      PROTO_API_URL: 'https://raw.githubusercontent.com/heroiclabs/nakama-common/feat/flatten-proto-v2/api/api.proto'
+      PROTO_SERVICE_URL: 'https://raw.githubusercontent.com/heroiclabs/nakama/feat/flatten-proto/apigrpc/apigrpc.proto'
+      PROTO_RT_URL: 'https://raw.githubusercontent.com/heroiclabs/nakama-common/feat/flatten-proto-v2/rtapi/realtime.proto'
+      PROTO_SATORI_API_URL: 'https://api.github.com/repos/heroiclabs/satori/contents/api/satori-api.proto?ref=feat%2Freorder-proto'
+      PROTO_SATORI_TYPES_URL: 'https://api.github.com/repos/heroiclabs/satori/contents/api/satori-types.proto?ref=feat%2Freorder-proto'
+    cmds:
+    - cmd: |
+        mkdir -p proto
+
+        curl -o {{.PROTO_FILE}} "{{.PROTO_API_URL}}"
+        curl -o {{.PROTO_SERVICE_FILE}} "{{.PROTO_SERVICE_URL}}"
+        curl -o {{.PROTO_RT_FILE}} "{{.PROTO_RT_URL}}"
+
+        # Satori is private, so need credentials 
+        curl -o "{{.PROTO_SATORI_FILE}}" \
+          -H "Authorization: token {{.GITHUB_TOKEN}}" \
+          -H "Accept: application/vnd.github.v3.raw" \
+          "{{.PROTO_SATORI_TYPES_URL}}"    
+
+        curl -o "{{.PROTO_SATORI_SERVICE_FILE}}" \
+          -H "Authorization: token {{.GITHUB_TOKEN}}" \
+          -H "Accept: application/vnd.github.v3.raw" \
+          "{{.PROTO_SATORI_API_URL}}"    
+
