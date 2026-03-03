@@ -16,7 +16,12 @@ vars:
       if [ -n "$GITHUB_TOKEN" ]; then
         echo "$GITHUB_TOKEN"
       else
-        printf "protocol=https\nhost=github.com\n" | git credential fill | grep "^password=" | cut -d= -f2
+        creds=$(printf "protocol=https\nhost=github.com\n" | git credential fill)
+        for line in $creds; do
+          case $line in
+            password=*) echo "${line#password=}" ;;
+          esac
+        done
       fi
 
 tasks:
