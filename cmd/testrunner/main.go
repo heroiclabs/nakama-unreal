@@ -9,6 +9,8 @@ import (
 	"runtime"
 	"sync"
 	"time"
+
+	"golang.org/x/term"
 )
 
 var shards []*TestShard
@@ -238,6 +240,8 @@ func main() {
 
 	fmt.Printf("Launching %d test shards in parallel...\n", len(shards))
 
+	// Do fancy stuff with logs if we're in a capable terminal.
+	isRichOutput := term.IsTerminal(int(os.Stdout.Fd()))
 	var wg sync.WaitGroup
 	for _, shard := range shards {
 		logDone := make(chan struct{})
@@ -253,9 +257,11 @@ func main() {
 
 		//
 		// Watch for log file changes to update shard output.
-		go func(shard *TestShard, done <-chan struct{}) {
-			updateShardLog(shard, done)
-		}(shard, logDone)
+		if isRichOutput {
+			go func(shard *TestShard, done <-chan struct{}) {
+				updateShardLog(shard, done)
+			}(shard, logDone)
+		}
 	}
 
 	//
@@ -266,31 +272,7 @@ func main() {
 		close(testsComplete)
 	}()
 
-	//
-	// Rate limit for UI output
-	ticker := time.NewTicker(100 * time.Millisecond)
-	defer ticker.Stop()
-
-	hideCursor()
-ui:
-	for {
-		select {
-		case <-testsComplete:
-			// Break the outer loop when done
-			break ui
-		case <-ticker.C:
-			// Basically redraw UI every tick
-			for _, s := range shards {
-				s.draw()
-			}
-			moveCursorUp(len(shards) * (NumLogLines + 2))
-		}
-	}
-
-	//
-	// Reset the cursor and final report
-	moveCursorDown(len(shards) * (NumLogLines + 2))
-	showCursor()
+	drawStatusLoop(isRichOutput, shards, testsComplete)
 
 	fmt.Println("All shards complete.")
 	mergeReports(reportDir)

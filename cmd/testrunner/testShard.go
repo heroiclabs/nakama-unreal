@@ -73,6 +73,42 @@ func (s *TestShard) draw() {
 	}
 }
 
+func drawStatusLoop(isRichOutput bool, shards []*TestShard, testsComplete <-chan struct{}) {
+	if !isRichOutput {
+		for _, s := range shards {
+			fmt.Printf("  Shard %d: %s\n", s.Index, s.Name)
+		}
+		<-testsComplete
+	} else {
+		//
+		// Rate limit for UI output
+		ticker := time.NewTicker(100 * time.Millisecond)
+		defer ticker.Stop()
+
+		hideCursor()
+
+	ui:
+		for {
+			select {
+			case <-testsComplete:
+				// Break the outer loop when done
+				break ui
+			case <-ticker.C:
+				// Basically redraw UI every tick
+				for _, s := range shards {
+					s.draw()
+				}
+				moveCursorUp(len(shards) * (NumLogLines + 2))
+			}
+		}
+
+		//
+		// Reset the cursor and final report
+		moveCursorDown(len(shards) * (NumLogLines + 2))
+		showCursor()
+	}
+}
+
 func (s *TestShard) addLine(line string) {
 	s.lock.Lock()
 	defer s.lock.Unlock()
