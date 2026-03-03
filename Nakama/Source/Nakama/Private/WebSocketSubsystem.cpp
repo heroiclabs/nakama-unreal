@@ -18,6 +18,8 @@
 #include "WebSocketsModule.h"
 #include "GenericPlatform/GenericPlatformHttp.h"
 
+DEFINE_LOG_CATEGORY(LogNakamaWebSocket);
+
 void UWebSocketSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
     Super::Initialize(Collection);
