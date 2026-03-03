@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"sync"
+	"time"
 )
 
 var shards = []string{
@@ -75,7 +76,7 @@ func main() {
 
 	cwd, _ := os.Getwd()
 	project := filepath.Join(cwd, "IntegrationTests", "IntegrationTests.uproject")
-	reportDir := filepath.Join(cwd, "Reports", "IntegrationTests")
+	reportDir := filepath.Join(cwd, "Reports", fmt.Sprintf("IntegrationTests_%s", time.Now().Format("2006-01-02_15-04-05")))
 
 	os.MkdirAll(reportDir, 0755)
 
@@ -110,6 +111,9 @@ func runEditor(editor, project, reportDir, filter string) {
 	)
 
 	cmd := exec.Command(editor, args...)
+	if cmd.Err != nil {
+		fmt.Errorf("Error creating cmd `%s %s`: %s", editor, args, cmd.Err)
+	}
 
 	logFile := filepath.Join(reportDir, "stdout.log")
 	if f, err := os.Create(logFile); err == nil {
@@ -118,7 +122,9 @@ func runEditor(editor, project, reportDir, filter string) {
 		defer f.Close()
 	}
 
-	cmd.Run()
+	if err := cmd.Run(); err != nil {
+		fmt.Errorf("Error running `%s %s`: %s", editor, args, err)
+	}
 }
 
 func mergeReports(dir string) {
