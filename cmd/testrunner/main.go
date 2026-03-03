@@ -11,11 +11,27 @@ import (
 	"time"
 )
 
-var shards = []string{
+var shards []*TestShard
+
+func addTestShard(name string, reportDir string) {
+	logFile := filepath.Join(reportDir, "stdout.log")
+	shards = append(shards, &TestShard{
+		Index:     len(shards),
+		Name:      name,
+		ReportDir: reportDir,
+
+		LogFile:    logFile,
+		LogLines:   make([]string, NumLogLines),
+		LogLineIdx: 0,
+	})
+}
+
+// TODO: Take these from cmd args?
+var shardNames = []string{
 	"IntegrationTests.Nakama",
 	"IntegrationTests.NakamaBlueprint",
-	"IntegrationTests.Satori",
-	"IntegrationTests.SatoriBlueprint",
+	// "IntegrationTests.Satori",
+	// "IntegrationTests.SatoriBlueprint",
 	"IntegrationTests.Profiling",
 }
 
@@ -57,57 +73,13 @@ type TestEntry struct {
 	} `json:"entries"`
 }
 
-func main() {
-	ueRoot := os.Getenv("UNREAL_ENGINE")
-	if ueRoot == "" {
-		fmt.Fprintln(os.Stderr, "UNREAL_ENGINE is not set")
-		os.Exit(1)
-	}
-
-	var editor string
-	switch runtime.GOOS {
-	case "windows":
-		editor = filepath.Join(ueRoot, "Engine", "Binaries", "Win64", "UnrealEditor-Cmd.exe")
-	case "darwin":
-		editor = filepath.Join(ueRoot, "Engine", "Binaries", "Mac", "UnrealEditor.app", "Contents", "MacOS", "UnrealEditor")
-	default:
-		editor = filepath.Join(ueRoot, "Engine", "Binaries", "Linux", "UnrealEditor")
-	}
-
-	cwd, _ := os.Getwd()
-	project := filepath.Join(cwd, "IntegrationTests", "IntegrationTests.uproject")
-	reportDir := filepath.Join(cwd, "Reports", fmt.Sprintf("IntegrationTests_%s", time.Now().Format("2006-01-02_15-04-05")))
-
-	os.MkdirAll(reportDir, 0755)
-
-	fmt.Printf("Launching %d test shards in parallel...\n", len(shards))
-
-	var wg sync.WaitGroup
-	for i, shard := range shards {
-		shardDir := filepath.Join(reportDir, fmt.Sprintf("shard-%d", i))
-		os.MkdirAll(shardDir, 0755)
-
-		wg.Add(1)
-		go func(idx int, filter, dir string) {
-			defer wg.Done()
-			fmt.Printf("  Shard %d: %s\n", idx, filter)
-			runEditor(editor, project, dir, filter)
-		}(i, shard, shardDir)
-	}
-	wg.Wait()
-	fmt.Println("All shards complete.")
-
-	mergeReports(reportDir)
-	printSummary(filepath.Join(reportDir, "index.json"))
-}
-
-func runEditor(editor, project, reportDir, filter string) {
+func runEditor(editor, project string, testShard *TestShard) {
 	args := []string{project}
 	args = append(args, editorFlags...)
 	args = append(args,
-		fmt.Sprintf("-abslog=%s", filepath.Join(reportDir, "unreal.log")),
-		fmt.Sprintf("-ReportOutputPath=%s", reportDir),
-		fmt.Sprintf("-ExecCmds=Automation RunTests %s; Quit", filter),
+		fmt.Sprintf("-abslog=%s", filepath.Join(testShard.ReportDir, "unreal.log")),
+		fmt.Sprintf("-ReportOutputPath=%s", testShard.ReportDir),
+		fmt.Sprintf("-ExecCmds=Automation RunTests %s; Quit", testShard.Name),
 	)
 
 	cmd := exec.Command(editor, args...)
@@ -115,8 +87,7 @@ func runEditor(editor, project, reportDir, filter string) {
 		fmt.Errorf("Error creating cmd `%s %s`: %s", editor, args, cmd.Err)
 	}
 
-	logFile := filepath.Join(reportDir, "stdout.log")
-	if f, err := os.Create(logFile); err == nil {
+	if f, err := os.Create(testShard.LogFile); err == nil {
 		cmd.Stdout = f
 		cmd.Stderr = f
 		defer f.Close()
@@ -234,4 +205,94 @@ func stripBOM(data []byte) []byte {
 		return data[3:]
 	}
 	return data
+}
+
+func main() {
+	ueRoot := os.Getenv("UNREAL_ENGINE")
+	if ueRoot == "" {
+		fmt.Fprintln(os.Stderr, "UNREAL_ENGINE is not set")
+		os.Exit(1)
+	}
+
+	var editor string
+	switch runtime.GOOS {
+	case "windows":
+		editor = filepath.Join(ueRoot, "Engine", "Binaries", "Win64", "UnrealEditor-Cmd.exe")
+	case "darwin":
+		editor = filepath.Join(ueRoot, "Engine", "Binaries", "Mac", "UnrealEditor.app", "Contents", "MacOS", "UnrealEditor")
+	default:
+		editor = filepath.Join(ueRoot, "Engine", "Binaries", "Linux", "UnrealEditor")
+	}
+
+	cwd, _ := os.Getwd()
+	project := filepath.Join(cwd, "IntegrationTests", "IntegrationTests.uproject")
+	reportDir := filepath.Join(cwd, "Reports", fmt.Sprintf("IntegrationTests_%s", time.Now().Format("2006-01-02_15-04-05")))
+
+	os.MkdirAll(reportDir, 0755)
+
+	for i, shardName := range shardNames {
+		shardDir := filepath.Join(reportDir, fmt.Sprintf("shard-%d", i))
+		os.MkdirAll(shardDir, 0755)
+		addTestShard(shardName, shardDir)
+	}
+
+	fmt.Printf("Launching %d test shards in parallel...\n", len(shards))
+
+	var wg sync.WaitGroup
+	for _, shard := range shards {
+		logDone := make(chan struct{})
+
+		//
+		// Start a test goroutine.
+		wg.Add(1)
+		go func(shard *TestShard) {
+			defer wg.Done()
+			defer close(logDone)
+			runEditor(editor, project, shard)
+		}(shard)
+
+		//
+		// Watch for log file changes to update shard output.
+		go func(shard *TestShard, done <-chan struct{}) {
+			updateShardLog(shard, done)
+		}(shard, logDone)
+	}
+
+	//
+	// Make channel for when the tests wait group completes
+	testsComplete := make(chan struct{})
+	go func() {
+		wg.Wait()
+		close(testsComplete)
+	}()
+
+	//
+	// Rate limit for UI output
+	ticker := time.NewTicker(100 * time.Millisecond)
+	defer ticker.Stop()
+
+	hideCursor()
+ui:
+	for {
+		select {
+		case <-testsComplete:
+			// Break the outer loop when done
+			break ui
+		case <-ticker.C:
+			// Basically redraw UI every tick
+			for _, s := range shards {
+				s.draw()
+			}
+			moveCursorUp(len(shards) * (NumLogLines + 2))
+		}
+	}
+
+	//
+	// Reset the cursor and final report
+	moveCursorDown(len(shards) * (NumLogLines + 2))
+	showCursor()
+
+	fmt.Println("All shards complete.")
+	mergeReports(reportDir)
+	printSummary(filepath.Join(reportDir, "index.json"))
 }
