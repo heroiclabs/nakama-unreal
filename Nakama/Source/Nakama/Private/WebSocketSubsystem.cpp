@@ -41,8 +41,6 @@ void UWebSocketSubsystem::Close()
 {
     if (WebSocket.IsValid())
     {
-        StopPingLoop();
-
         WebSocket->Close();
 
         WebSocket.Reset();
@@ -170,11 +168,6 @@ bool UWebSocketSubsystem::SendPing()
 
 TFuture<FRealtimeResponse> UWebSocketSubsystem::Send(const FString& RequestName, const TSharedPtr<FJsonObject>& Data)
 {
-    if (!WebSocket || !WebSocket->IsConnected())
-    {
-        UE_LOG(LogNakamaWebSocket, Error, TEXT("WebSocket is not connected or invalid."))
-    }
-
     //
     // Create an Envelope, embed a new guid as Cid.
     const FString Cid = FGuid::NewGuid().ToString();
@@ -192,6 +185,16 @@ TFuture<FRealtimeResponse> UWebSocketSubsystem::Send(const FString& RequestName,
     TSharedRef<TPromise<FRealtimeResponse>> Promise = MakeShared<TPromise<FRealtimeResponse>>();
 
     FScopeLock Lock(&RequestsLock);
+
+    if (!WebSocket || !WebSocket->IsConnected())
+    {
+        UE_LOG(LogNakamaWebSocket, Error, TEXT("WebSocket is not connected or invalid."));
+        return MakeFulfilledPromise<FRealtimeResponse>(FRealtimeResponse
+        {
+            .bError = true,
+            .Data = MakeShared<FJsonObject>()
+        }).GetFuture();
+    }
 
     Requests.Add(Cid, Promise);
 
@@ -217,7 +220,7 @@ void UWebSocketSubsystem::OnConnected()
 
 void UWebSocketSubsystem::OnConnectionError(const FString& Error)
 {
-    UE_LOG(LogNakamaWebSocket, Error, TEXT("WebSocket Connection Error: %s"), *Error);
+    UE_LOG(LogNakamaWebSocket, Warning, TEXT("WebSocket Connection Error: %s"), *Error);
 
     PromiseConnected->EmplaceValue(FRealtimeConnectionResult
     {
@@ -280,7 +283,7 @@ void UWebSocketSubsystem::OnMessage(const FString& Message)
         }
         else
         {
-            UE_LOG(LogNakamaWebSocket, Error, TEXT("No matching request for CID %s"), *Cid);
+            UE_LOG(LogNakamaWebSocket, Warning, TEXT("No matching request for CID %s"), *Cid);
             if (MessageError.IsBound())
             {
                 MessageError.Broadcast(EWebSocketMessageError::WS_ERROR_RESPONSE_NOCID, TEXT("No matching request for CID"));
@@ -314,7 +317,7 @@ void UWebSocketSubsystem::OnMessageSent(const FString& Message)
 
 void UWebSocketSubsystem::OnClosed(int32 StatusCode, const FString& Reason, bool bWasClean)
 {
-    FScopeLock Lock(&RequestsLock);
+    StopPingLoop();
 
     ELogVerbosity::Type Verbosity = bWasClean ? ELogVerbosity::Display : ELogVerbosity::Warning;
     if (bWasClean)
@@ -336,32 +339,30 @@ void UWebSocketSubsystem::OnClosed(int32 StatusCode, const FString& Reason, bool
             *Reason);
     }
 
-    for (const auto& Request : Requests)
     {
-        Request.Value->EmplaceValue(FRealtimeResponse
+        FScopeLock Lock(&RequestsLock);
+
+        for (const auto& Request : Requests)
         {
-            .bError = !bWasClean,
-            .Data = MakeShared<FJsonObject>()
-        });
+            Request.Value->EmplaceValue(FRealtimeResponse
+            {
+                .bError = !bWasClean,
+                .Data = MakeShared<FJsonObject>()
+            });
+        }
+        Requests.Empty();
     }
-    Requests.Empty();
-
-    if (Closed.IsBound())
-    {
-        Closed.Broadcast(StatusCode, Reason, bWasClean);
-    }
-
-    WebSocket->OnConnected().Clear();
-    WebSocket->OnConnectionError().Clear();
-    WebSocket->OnMessage().Clear();
-    WebSocket->OnMessageSent().Clear();
-    WebSocket->OnClosed().Clear();
 
     ServerResponseReceived.Clear();
     ServerEventReceived.Clear();
     MessageSent.Clear();
     MessageError.Clear();
     Closed.Clear();
+
+    if (Closed.IsBound())
+    {
+        Closed.Broadcast(StatusCode, Reason, bWasClean);
+    }
 
     WebSocket.Reset();
 }
