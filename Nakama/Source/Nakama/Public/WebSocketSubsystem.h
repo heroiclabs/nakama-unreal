@@ -84,6 +84,7 @@ private:
     TSharedPtr<IWebSocket> WebSocket;
 
     TSharedPtr<TPromise<FRealtimeConnectionResult>> PromiseConnected;
+    bool bIsConnected = false;
 
     // Current ongoing requests
     TMap<FString, TSharedRef<TPromise<FRealtimeResponse>>> Requests;

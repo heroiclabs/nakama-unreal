@@ -51,9 +51,18 @@ TFuture<FRealtimeConnectionResult> UWebSocketSubsystem::Connect(FRealtimeConnect
 {
     ConnectionParams = Params;
 
+    // Do we already have a connection?
     if (WebSocket.IsValid())
     {
-        UE_LOG(LogNakamaWebSocket, Warning, TEXT("WebSocket was active. Closing the old connection."))
+        // If we have a pending connection, return failure.
+        if (PromiseConnected.IsValid())
+        {
+            UE_LOG(LogNakamaWebSocket, Warning, TEXT("Another WebSocket connection is in progress."));
+            return MakeFulfilledPromise<FRealtimeConnectionResult>(FRealtimeConnectionResult{ .bError = true }).GetFuture();
+        }
+
+        // Otherwise, we have an active connection. Close it and start a new one.
+        UE_LOG(LogNakamaWebSocket, Warning, TEXT("Another WebSocket connection was active. Closing the old connection."));
         Close();
     }
 
@@ -116,11 +125,15 @@ TFuture<FRealtimeConnectionResult> UWebSocketSubsystem::Connect(FRealtimeConnect
 
     //
     // Disconnections
-    WebSocket->OnClosed().AddLambda([WeakThis](int32 StatusCode, const FString& Reason, bool bWasClean)
+    WebSocket->OnClosed().AddLambda([WeakThis, ThisSocket = WebSocket](int32 StatusCode, const FString& Reason, bool bWasClean)
     {
         if (UWebSocketSubsystem* StrongThis = WeakThis.Get())
         {
-            StrongThis->OnClosed(StatusCode, Reason, bWasClean);
+            // Ignore stale OnClosed from an old socket.
+            if (StrongThis->WebSocket == ThisSocket)
+            {
+                StrongThis->OnClosed(StatusCode, Reason, bWasClean);
+            }
         }
     });
 
@@ -180,13 +193,9 @@ TFuture<FRealtimeResponse> UWebSocketSubsystem::Send(const FString& RequestName,
     const TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&EnvelopeJson);
     FJsonSerializer::Serialize(Envelope.ToSharedRef(), Writer);
 
-    //
-    // Create promise, associate it with the Cid.
-    TSharedRef<TPromise<FRealtimeResponse>> Promise = MakeShared<TPromise<FRealtimeResponse>>();
-
     FScopeLock Lock(&RequestsLock);
 
-    if (!WebSocket || !WebSocket->IsConnected())
+    if (!bIsConnected)
     {
         UE_LOG(LogNakamaWebSocket, Error, TEXT("WebSocket is not connected or invalid."));
         return MakeFulfilledPromise<FRealtimeResponse>(FRealtimeResponse
@@ -195,6 +204,10 @@ TFuture<FRealtimeResponse> UWebSocketSubsystem::Send(const FString& RequestName,
             .Data = MakeShared<FJsonObject>()
         }).GetFuture();
     }
+
+    //
+    // Create promise, associate it with the Cid.
+    TSharedRef<TPromise<FRealtimeResponse>> Promise = MakeShared<TPromise<FRealtimeResponse>>();
 
     Requests.Add(Cid, Promise);
 
@@ -212,20 +225,28 @@ void UWebSocketSubsystem::OnConnected()
 
     StartPingLoop();
 
-    PromiseConnected->EmplaceValue(FRealtimeConnectionResult
+    bIsConnected = true;
+
+    TSharedPtr<TPromise<FRealtimeConnectionResult>> LocalPromise = MoveTemp(PromiseConnected);
+    FTSTicker::GetCoreTicker().AddTicker(FTickerDelegate::CreateLambda([LocalPromise](float) -> bool
     {
-        .bError = false
-    });
+        LocalPromise->EmplaceValue(FRealtimeConnectionResult{ .bError = false });
+        return false;
+    }), 0.0f);
 }
 
 void UWebSocketSubsystem::OnConnectionError(const FString& Error)
 {
     UE_LOG(LogNakamaWebSocket, Warning, TEXT("WebSocket Connection Error: %s"), *Error);
 
-    PromiseConnected->EmplaceValue(FRealtimeConnectionResult
+    bIsConnected = false;
+
+    TSharedPtr<TPromise<FRealtimeConnectionResult>> LocalPromise = MoveTemp(PromiseConnected);
+    FTSTicker::GetCoreTicker().AddTicker(FTickerDelegate::CreateLambda([LocalPromise](float) -> bool
     {
-        .bError = true
-    });
+        LocalPromise->EmplaceValue(FRealtimeConnectionResult{ .bError = true });
+        return false;
+    }), 0.0f);
 }
 
 void UWebSocketSubsystem::OnMessage(const FString& Message)
@@ -317,6 +338,8 @@ void UWebSocketSubsystem::OnMessageSent(const FString& Message)
 
 void UWebSocketSubsystem::OnClosed(int32 StatusCode, const FString& Reason, bool bWasClean)
 {
+    bIsConnected = false;
+
     StopPingLoop();
 
     ELogVerbosity::Type Verbosity = bWasClean ? ELogVerbosity::Display : ELogVerbosity::Warning;
@@ -353,17 +376,24 @@ void UWebSocketSubsystem::OnClosed(int32 StatusCode, const FString& Reason, bool
         Requests.Empty();
     }
 
+    if (Closed.IsBound())
+    {
+        Closed.Broadcast(StatusCode, Reason, bWasClean);
+    }
+
     ServerResponseReceived.Clear();
     ServerEventReceived.Clear();
     MessageSent.Clear();
     MessageError.Clear();
     Closed.Clear();
 
-    if (Closed.IsBound())
+    /*
+    if (PromiseConnected.IsValid())
     {
-        Closed.Broadcast(StatusCode, Reason, bWasClean);
+        PromiseConnected->EmplaceValue(FRealtimeConnectionResult{ .bError = true });
+        PromiseConnected.Reset();
     }
+    */
 
-    WebSocket.Reset();
 }
 
