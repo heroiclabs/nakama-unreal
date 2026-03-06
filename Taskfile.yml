@@ -108,12 +108,6 @@ tasks:
         > Nakama/Source/Nakama/Private/NakamaRt.cpp
 
         ./{{.CODEGEN}} \
-        --template cmd/codegen/templates/nakama.ue.cpp.tmpl \
-        --proto {{.PROTO_FILE}} \
-        --proto {{.PROTO_SERVICE_FILE}} \
-        > Nakama/Source/Nakama/Private/Nakama.cpp
-
-        ./{{.CODEGEN}} \
         --template cmd/codegen/templates/nakama-client-bplib.ue.h.tmpl \
         --proto {{.PROTO_FILE}} \
         --proto {{.PROTO_SERVICE_FILE}} \
