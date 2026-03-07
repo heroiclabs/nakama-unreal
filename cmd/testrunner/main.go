@@ -30,12 +30,13 @@ func addTestShard(name string, reportDir string) {
 
 // TODO: Take these from cmd args?
 var shardNames = []string{
-	// "IntegrationTests.Nakama",
-	// "IntegrationTests.NakamaBlueprint",
+	"IntegrationTests.Nakama",
+	"IntegrationTests.NakamaBlueprint",
 	"IntegrationTests.NakamaWebSocketSubsystem",
-	// "IntegrationTests.Satori",
-	// "IntegrationTests.SatoriBlueprint",
-	// "IntegrationTests.Profiling",
+	"IntegrationTests.NakamaRt",
+	"IntegrationTests.Satori",
+	"IntegrationTests.SatoriBlueprint",
+	"IntegrationTests.Profiling",
 }
 
 var editorFlags = []string{
