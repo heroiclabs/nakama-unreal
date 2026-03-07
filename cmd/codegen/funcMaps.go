@@ -445,6 +445,12 @@ func getUnrealFuncMap(api Api) template.FuncMap {
 				return "" // FString, FNakama* structs are default-constructed
 			}
 		},
+		"ueReservedParamNamePostfix": func(name string) string {
+			if _, reserved := ueParamKeywords[name]; reserved {
+				return name + "_"
+			}
+			return name
+		},
 		"isMessageType":   isMessageType,
 		"isBPWrapperType": isMessageType, // Alias for template clarity
 		"getBaseType": func(fieldType string) string {
@@ -527,6 +533,11 @@ func isPrimitiveOrWrapperType(fieldType string) bool {
 		return true
 	}
 	return false
+}
+
+// ueParamKeywords lists names that UHT rejects as UFUNCTION parameter names.
+var ueParamKeywords = map[string]struct{}{
+	"Self": {},
 }
 
 var cppKeywords = map[string]struct{}{

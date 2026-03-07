@@ -120,6 +120,22 @@ tasks:
         > Nakama/Source/NakamaBlueprints/Private/NakamaClientBlueprintLibrary.cpp
 
         ./{{.CODEGEN}} \
+        --template cmd/codegen/templates/nakama-rtclient-bplib.ue.h.tmpl \
+        --proto {{.PROTO_FILE}} \
+        --proto {{.PROTO_SERVICE_FILE}} \
+        --proto {{.PROTO_RT_FILE}} \
+        --prefix FNakamaRt \
+        > Nakama/Source/NakamaBlueprints/Public/NakamaRtClientBlueprintLibrary.h
+
+        ./{{.CODEGEN}} \
+        --template cmd/codegen/templates/nakama-rtclient-bplib.ue.cpp.tmpl \
+        --proto {{.PROTO_FILE}} \
+        --proto {{.PROTO_SERVICE_FILE}} \
+        --proto {{.PROTO_RT_FILE}} \
+        --prefix FNakamaRt \
+        > Nakama/Source/NakamaBlueprints/Private/NakamaRtClientBlueprintLibrary.cpp
+
+        ./{{.CODEGEN}} \
         --template cmd/codegen/templates/satori-api.ue.h.tmpl \
         --proto {{.PROTO_SATORI_FILE}} \
         --proto {{.PROTO_SATORI_SERVICE_FILE}} \
