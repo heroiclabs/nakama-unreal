@@ -202,64 +202,56 @@ void FNakamaWebSocketSubsystemConnectionSpec::Define()
     {
         LatentIt("should reconnect successfully after an explicit Close", [this](const FDoneDelegate& Done)
         {
-            WSSub->Connect(MakeConnParams(Session)).Next([this, Done](FNakamaWebSocketConnectionResult First)
-            {
-                if (!TestFalse("First connection should succeed", First.ErrorCode != ENakamaWebSocketError::None))
+            WSSub->Connect(MakeConnParams(Session))
+                .Next([this](FNakamaWebSocketConnectionResult First) -> TNakamaFuture<FNakamaWebSocketConnectionResult>
                 {
-                    Done.Execute();
-                    return;
-                }
-
-                WSSub->Close();
-
-                WSSub->Connect(MakeConnParams(Session)).Next([this, Done](FNakamaWebSocketConnectionResult Second)
+                    TestFalse("First connection should succeed", First.ErrorCode != ENakamaWebSocketError::None);
+                    WSSub->Close();
+                    return WSSub->Connect(MakeConnParams(Session));
+                })
+                .Next([this, Done](FNakamaWebSocketConnectionResult Second)
                 {
                     TestFalse("Connection after explicit Close should succeed", Second.ErrorCode != ENakamaWebSocketError::None);
                     Done.Execute();
                 });
-            });
         });
 
         LatentIt("should accept a new Connect while already connected", [this](const FDoneDelegate& Done)
         {
-            WSSub->Connect(MakeConnParams(Session)).Next([this, Done](FNakamaWebSocketConnectionResult First)
-            {
-                if (!TestFalse("First connection should succeed", First.ErrorCode != ENakamaWebSocketError::None))
+            // A second Connect while already connected — the subsystem should
+            // auto-close the old socket and open a new one.
+            WSSub->Connect(MakeConnParams(Session))
+                .Next([this](FNakamaWebSocketConnectionResult First) -> TNakamaFuture<FNakamaWebSocketConnectionResult>
                 {
+                    TestFalse("First connection should succeed", First.ErrorCode != ENakamaWebSocketError::None);
+                    return WSSub->Connect(MakeConnParams(Session));
+                })
+                .Next([this, Done](FNakamaWebSocketConnectionResult Second)
+                {
+                    TestFalse("Second Connect while already connected should succeed", Second.ErrorCode != ENakamaWebSocketError::None);
                     Done.Execute();
-                    return;
-                }
-
-                // A second Connect while already connected — the subsystem should
-                // auto-close the old socket and open a new one.
-                WSSub->Connect(MakeConnParams(Session)).Next([this, Done](FNakamaWebSocketConnectionResult Second)
-                    {
-                        TestFalse("Second Connect while already connected should succeed", Second.ErrorCode != ENakamaWebSocketError::None);
-                        Done.Execute();
-                    });
-            });
+                });
         });
 
         LatentIt("should be usable after reconnect (ping round-trip)", [this](const FDoneDelegate& Done)
         {
-            WSSub->Connect(MakeConnParams(Session)).Next([this, Done](FNakamaWebSocketConnectionResult First)
-            {
-                if (!TestFalse("First connection", First.ErrorCode != ENakamaWebSocketError::None)) { Done.Execute(); return; }
-
-                WSSub->Close();
-
-                WSSub->Connect(MakeConnParams(Session)).Next([this, Done](FNakamaWebSocketConnectionResult Second)
+            WSSub->Connect(MakeConnParams(Session))
+                .Next([this](FNakamaWebSocketConnectionResult First) -> TNakamaFuture<FNakamaWebSocketConnectionResult>
                 {
-                    if (!TestFalse("Reconnection", Second.ErrorCode != ENakamaWebSocketError::None)) { Done.Execute(); return; }
-
-                    WSSub->Send(TEXT("ping"), MakeShared<FJsonObject>())
-                        .Next([this, Done](FNakamaWebSocketResponse Resp)
-                        {
-                            TestFalse("Ping after reconnect should succeed", Resp.ErrorCode != ENakamaWebSocketError::None);
-                            Done.Execute();
-                        });
+                    TestFalse("First connection", First.ErrorCode != ENakamaWebSocketError::None);
+                    WSSub->Close();
+                    return WSSub->Connect(MakeConnParams(Session));
+                })
+                .Next([this](FNakamaWebSocketConnectionResult Second) -> TNakamaFuture<FNakamaWebSocketResponse>
+                {
+                    TestFalse("Reconnection", Second.ErrorCode != ENakamaWebSocketError::None);
+                    return WSSub->Send(TEXT("ping"), MakeShared<FJsonObject>());
+                })
+                .Next([this, Done](FNakamaWebSocketResponse Resp)
+                {
+                    TestFalse("Ping after reconnect should succeed", Resp.ErrorCode != ENakamaWebSocketError::None);
+                    Done.Execute();
                 });
-            });
         });
     });
 }
@@ -310,17 +302,17 @@ void FNakamaWebSocketSubsystemPingSpec::Define()
     {
         LatentIt("should receive a pong response to a single ping", [this](const FDoneDelegate& Done)
         {
-            WSSub->Connect(MakeConnParams(Session)).Next([this, Done](FNakamaWebSocketConnectionResult CR)
-            {
-                if (!TestFalse("Connect", CR.ErrorCode != ENakamaWebSocketError::None)) { Done.Execute(); return; }
-
-                WSSub->Send(TEXT("ping"), MakeShared<FJsonObject>())
-                    .Next([this, Done](FNakamaWebSocketResponse Resp)
-                    {
-                        TestFalse("Ping should receive a non-error pong response", Resp.ErrorCode != ENakamaWebSocketError::None);
-                        Done.Execute();
-                    });
-            });
+            WSSub->Connect(MakeConnParams(Session))
+                .Next([this](FNakamaWebSocketConnectionResult CR) -> TNakamaFuture<FNakamaWebSocketResponse>
+                {
+                    TestFalse("Connect", CR.ErrorCode != ENakamaWebSocketError::None);
+                    return WSSub->Send(TEXT("ping"), MakeShared<FJsonObject>());
+                })
+                .Next([this, Done](FNakamaWebSocketResponse Resp)
+                {
+                    TestFalse("Ping should receive a non-error pong response", Resp.ErrorCode != ENakamaWebSocketError::None);
+                    Done.Execute();
+                });
         });
     });
 
@@ -328,52 +320,54 @@ void FNakamaWebSocketSubsystemPingSpec::Define()
     {
         LatentIt("should handle multiple concurrent pings and resolve all of them", [this](const FDoneDelegate& Done)
         {
-            WSSub->Connect(MakeConnParams(Session)).Next([this, Done](FNakamaWebSocketConnectionResult CR)
-            {
-                if (!TestFalse("Connect", CR.ErrorCode != ENakamaWebSocketError::None)) { Done.Execute(); return; }
-
-                // Fire several pings simultaneously; track completions with a shared counter.
-                constexpr int32 NumPings = 5;
-                TSharedRef<TAtomic<int32>> Remaining = MakeShared<TAtomic<int32>>(NumPings);
-
-                for (int32 i = 0; i < NumPings; ++i)
+            WSSub->Connect(MakeConnParams(Session))
+                .Next([this, Done](FNakamaWebSocketConnectionResult CR)
                 {
-                    WSSub->Send(TEXT("ping"), MakeShared<FJsonObject>())
-                        .Next([this, Done, Remaining](FNakamaWebSocketResponse Resp)
-                        {
-                            if (Resp.ErrorCode != ENakamaWebSocketError::None)
+                    TestFalse("Connect", CR.ErrorCode != ENakamaWebSocketError::None);
+
+                    // Fire several pings simultaneously; track completions with a shared counter.
+                    constexpr int32 NumPings = 5;
+                    TSharedRef<TAtomic<int32>> Remaining = MakeShared<TAtomic<int32>>(NumPings);
+
+                    for (int32 i = 0; i < NumPings; ++i)
+                    {
+                        WSSub->Send(TEXT("ping"), MakeShared<FJsonObject>())
+                            .Next([this, Done, Remaining](FNakamaWebSocketResponse Resp)
                             {
-                                AddError(TEXT("A concurrent ping returned an error"));
-                            }
-                            if (--(*Remaining) == 0)
-                            {
-                                Done.Execute();
-                            }
-                        });
-                }
-            });
+                                if (Resp.ErrorCode != ENakamaWebSocketError::None)
+                                {
+                                    AddError(TEXT("A concurrent ping returned an error"));
+                                }
+                                if (--(*Remaining) == 0)
+                                {
+                                    Done.Execute();
+                                }
+                            });
+                    }
+                });
         });
 
         LatentIt("should handle pings interleaved with other requests", [this](const FDoneDelegate& Done)
         {
-            WSSub->Connect(MakeConnParams(Session)).Next([this, Done](FNakamaWebSocketConnectionResult CR)
-            {
-                if (!TestFalse("Connect", CR.ErrorCode != ENakamaWebSocketError::None)) { Done.Execute(); return; }
-
-                // Send a match_create and two pings simultaneously; all three
-                // must resolve without error.
-                TSharedRef<TAtomic<int32>> Remaining = MakeShared<TAtomic<int32>>(3);
-
-                auto Decrement = [this, Done, Remaining](FNakamaWebSocketResponse Resp)
+            WSSub->Connect(MakeConnParams(Session))
+                .Next([this, Done](FNakamaWebSocketConnectionResult CR)
                 {
-                    if (Resp.ErrorCode != ENakamaWebSocketError::None) AddError(TEXT("Interleaved request returned an error"));
-                    if (--(*Remaining) == 0) Done.Execute();
-                };
+                    TestFalse("Connect", CR.ErrorCode != ENakamaWebSocketError::None);
 
-                WSSub->Send(TEXT("match_create"), MakeShared<FJsonObject>()).Next(Decrement);
-                WSSub->Send(TEXT("ping"),         MakeShared<FJsonObject>()).Next(Decrement);
-                WSSub->Send(TEXT("ping"),         MakeShared<FJsonObject>()).Next(Decrement);
-            });
+                    // Send a match_create and two pings simultaneously; all three
+                    // must resolve without error.
+                    TSharedRef<TAtomic<int32>> Remaining = MakeShared<TAtomic<int32>>(3);
+
+                    auto Decrement = [this, Done, Remaining](FNakamaWebSocketResponse Resp)
+                    {
+                        if (Resp.ErrorCode != ENakamaWebSocketError::None) AddError(TEXT("Interleaved request returned an error"));
+                        if (--(*Remaining) == 0) Done.Execute();
+                    };
+
+                    WSSub->Send(TEXT("match_create"), MakeShared<FJsonObject>()).Next(Decrement);
+                    WSSub->Send(TEXT("ping"),         MakeShared<FJsonObject>()).Next(Decrement);
+                    WSSub->Send(TEXT("ping"),         MakeShared<FJsonObject>()).Next(Decrement);
+                });
         });
     });
 }
@@ -446,19 +440,19 @@ void FNakamaWebSocketSubsystemChannelSpec::Define()
     {
         LatentIt("should join a room channel and receive a channel response", [this](const FDoneDelegate& Done)
         {
-            WSSub->Connect(MakeConnParams(Session)).Next([this, Done](FNakamaWebSocketConnectionResult CR)
-            {
-                if (!TestFalse("Connect", CR.ErrorCode != ENakamaWebSocketError::None)) { Done.Execute(); return; }
-
-                WSSub->Send(TEXT("channel_join"), MakeChannelJoinJson(GenerateRoomName()))
-                    .Next([this, Done](FNakamaWebSocketResponse Resp)
-                    {
-                        WSS_FAIL_ON_ERROR(Resp, Done);
-                        FString ChannelId = ExtractChannelId(Resp);
-                        TestFalse("Joined channel should have a non-empty ID", ChannelId.IsEmpty());
-                        Done.Execute();
-                    });
-            });
+            WSSub->Connect(MakeConnParams(Session))
+                .Next([this](FNakamaWebSocketConnectionResult CR) -> TNakamaFuture<FNakamaWebSocketResponse>
+                {
+                    TestFalse("Connect", CR.ErrorCode != ENakamaWebSocketError::None);
+                    return WSSub->Send(TEXT("channel_join"), MakeChannelJoinJson(GenerateRoomName()));
+                })
+                .Next([this, Done](FNakamaWebSocketResponse Resp)
+                {
+                    WSS_FAIL_ON_ERROR(Resp, Done);
+                    FString ChannelId = ExtractChannelId(Resp);
+                    TestFalse("Joined channel should have a non-empty ID", ChannelId.IsEmpty());
+                    Done.Execute();
+                });
         });
     });
 
@@ -466,31 +460,33 @@ void FNakamaWebSocketSubsystemChannelSpec::Define()
     {
         LatentIt("should send a message to a room channel and receive an ack", [this](const FDoneDelegate& Done)
         {
-            WSSub->Connect(MakeConnParams(Session)).Next([this, Done](FNakamaWebSocketConnectionResult CR)
-            {
-                if (!TestFalse("Connect", CR.ErrorCode != ENakamaWebSocketError::None)) { Done.Execute(); return; }
-
-                WSSub->Send(TEXT("channel_join"), MakeChannelJoinJson(GenerateRoomName()))
-                    .Next([this, Done](FNakamaWebSocketResponse JoinResp)
+            WSSub->Connect(MakeConnParams(Session))
+                .Next([this](FNakamaWebSocketConnectionResult CR) -> TNakamaFuture<FNakamaWebSocketResponse>
+                {
+                    TestFalse("Connect", CR.ErrorCode != ENakamaWebSocketError::None);
+                    return WSSub->Send(TEXT("channel_join"), MakeChannelJoinJson(GenerateRoomName()));
+                })
+                .Next([this](FNakamaWebSocketResponse JoinResp) -> TNakamaFuture<FNakamaWebSocketResponse>
+                {
+                    if (JoinResp.ErrorCode != ENakamaWebSocketError::None)
                     {
-                        WSS_FAIL_ON_ERROR(JoinResp, Done);
+                        AddError(TEXT("channel_join failed"));
+                        return MakeCompletedFuture<FNakamaWebSocketResponse>(JoinResp);
+                    }
+                    FString ChannelId = ExtractChannelId(JoinResp);
+                    TestFalse("Channel ID from join", ChannelId.IsEmpty());
 
-                        FString ChannelId = ExtractChannelId(JoinResp);
-                        if (!TestFalse("Channel ID from join", ChannelId.IsEmpty())) { Done.Execute(); return; }
-
-                        TSharedPtr<FJsonObject> SendJson = MakeShared<FJsonObject>();
-                        SendJson->SetStringField(TEXT("channel_id"), ChannelId);
-                        SendJson->SetStringField(TEXT("content"),    TEXT("{\"msg\":\"hello\"}"));
-
-                        WSSub->Send(TEXT("channel_message_send"), SendJson)
-                            .Next([this, Done](FNakamaWebSocketResponse SendResp)
-                            {
-                                WSS_FAIL_ON_ERROR(SendResp, Done);
-                                TestTrue("Send ack response has data", SendResp.Data.IsValid());
-                                Done.Execute();
-                            });
-                    });
-            });
+                    TSharedPtr<FJsonObject> SendJson = MakeShared<FJsonObject>();
+                    SendJson->SetStringField(TEXT("channel_id"), ChannelId);
+                    SendJson->SetStringField(TEXT("content"),    TEXT("{\"msg\":\"hello\"}"));
+                    return WSSub->Send(TEXT("channel_message_send"), SendJson);
+                })
+                .Next([this, Done](FNakamaWebSocketResponse SendResp)
+                {
+                    WSS_FAIL_ON_ERROR(SendResp, Done);
+                    TestTrue("Send ack response has data", SendResp.Data.IsValid());
+                    Done.Execute();
+                });
         });
     });
 
@@ -498,29 +494,31 @@ void FNakamaWebSocketSubsystemChannelSpec::Define()
     {
         LatentIt("should leave a channel successfully", [this](const FDoneDelegate& Done)
         {
-            WSSub->Connect(MakeConnParams(Session)).Next([this, Done](FNakamaWebSocketConnectionResult CR)
-            {
-                if (!TestFalse("Connect", CR.ErrorCode != ENakamaWebSocketError::None)) { Done.Execute(); return; }
-
-                WSSub->Send(TEXT("channel_join"), MakeChannelJoinJson(GenerateRoomName()))
-                    .Next([this, Done](FNakamaWebSocketResponse JoinResp)
+            WSSub->Connect(MakeConnParams(Session))
+                .Next([this](FNakamaWebSocketConnectionResult CR) -> TNakamaFuture<FNakamaWebSocketResponse>
+                {
+                    TestFalse("Connect", CR.ErrorCode != ENakamaWebSocketError::None);
+                    return WSSub->Send(TEXT("channel_join"), MakeChannelJoinJson(GenerateRoomName()));
+                })
+                .Next([this](FNakamaWebSocketResponse JoinResp) -> TNakamaFuture<FNakamaWebSocketResponse>
+                {
+                    if (JoinResp.ErrorCode != ENakamaWebSocketError::None)
                     {
-                        WSS_FAIL_ON_ERROR(JoinResp, Done);
+                        AddError(TEXT("channel_join failed"));
+                        return MakeCompletedFuture<FNakamaWebSocketResponse>(JoinResp);
+                    }
+                    FString ChannelId = ExtractChannelId(JoinResp);
+                    TestFalse("Channel ID from join", ChannelId.IsEmpty());
 
-                        FString ChannelId = ExtractChannelId(JoinResp);
-                        if (!TestFalse("Channel ID from join", ChannelId.IsEmpty())) { Done.Execute(); return; }
-
-                        TSharedPtr<FJsonObject> LeaveJson = MakeShared<FJsonObject>();
-                        LeaveJson->SetStringField(TEXT("channel_id"), ChannelId);
-
-                        WSSub->Send(TEXT("channel_leave"), LeaveJson)
-                            .Next([this, Done](FNakamaWebSocketResponse LeaveResp)
-                            {
-                                WSS_FAIL_ON_ERROR(LeaveResp, Done);
-                                Done.Execute();
-                            });
-                    });
-            });
+                    TSharedPtr<FJsonObject> LeaveJson = MakeShared<FJsonObject>();
+                    LeaveJson->SetStringField(TEXT("channel_id"), ChannelId);
+                    return WSSub->Send(TEXT("channel_leave"), LeaveJson);
+                })
+                .Next([this, Done](FNakamaWebSocketResponse LeaveResp)
+                {
+                    WSS_FAIL_ON_ERROR(LeaveResp, Done);
+                    Done.Execute();
+                });
         });
     });
 }
@@ -582,19 +580,19 @@ void FNakamaWebSocketSubsystemMatchSpec::Define()
     {
         LatentIt("should create a relayed match and receive a match_id", [this](const FDoneDelegate& Done)
         {
-            WSSub->Connect(MakeConnParams(Session)).Next([this, Done](FNakamaWebSocketConnectionResult CR)
-            {
-                if (!TestFalse("Connect", CR.ErrorCode != ENakamaWebSocketError::None)) { Done.Execute(); return; }
-
-                WSSub->Send(TEXT("match_create"), MakeShared<FJsonObject>())
-                    .Next([this, Done](FNakamaWebSocketResponse Resp)
-                    {
-                        WSS_FAIL_ON_ERROR(Resp, Done);
-                        FString MatchId = ExtractMatchId(Resp);
-                        TestFalse("Created match should have a non-empty match_id", MatchId.IsEmpty());
-                        Done.Execute();
-                    });
-            });
+            WSSub->Connect(MakeConnParams(Session))
+                .Next([this](FNakamaWebSocketConnectionResult CR) -> TNakamaFuture<FNakamaWebSocketResponse>
+                {
+                    TestFalse("Connect", CR.ErrorCode != ENakamaWebSocketError::None);
+                    return WSSub->Send(TEXT("match_create"), MakeShared<FJsonObject>());
+                })
+                .Next([this, Done](FNakamaWebSocketResponse Resp)
+                {
+                    WSS_FAIL_ON_ERROR(Resp, Done);
+                    FString MatchId = ExtractMatchId(Resp);
+                    TestFalse("Created match should have a non-empty match_id", MatchId.IsEmpty());
+                    Done.Execute();
+                });
         });
     });
 
@@ -602,29 +600,31 @@ void FNakamaWebSocketSubsystemMatchSpec::Define()
     {
         LatentIt("should leave a match without error", [this](const FDoneDelegate& Done)
         {
-            WSSub->Connect(MakeConnParams(Session)).Next([this, Done](FNakamaWebSocketConnectionResult CR)
-            {
-                if (!TestFalse("Connect", CR.ErrorCode != ENakamaWebSocketError::None)) { Done.Execute(); return; }
-
-                WSSub->Send(TEXT("match_create"), MakeShared<FJsonObject>())
-                    .Next([this, Done](FNakamaWebSocketResponse CreateResp)
+            WSSub->Connect(MakeConnParams(Session))
+                .Next([this](FNakamaWebSocketConnectionResult CR) -> TNakamaFuture<FNakamaWebSocketResponse>
+                {
+                    TestFalse("Connect", CR.ErrorCode != ENakamaWebSocketError::None);
+                    return WSSub->Send(TEXT("match_create"), MakeShared<FJsonObject>());
+                })
+                .Next([this](FNakamaWebSocketResponse CreateResp) -> TNakamaFuture<FNakamaWebSocketResponse>
+                {
+                    if (CreateResp.ErrorCode != ENakamaWebSocketError::None)
                     {
-                        WSS_FAIL_ON_ERROR(CreateResp, Done);
+                        AddError(TEXT("match_create failed"));
+                        return MakeCompletedFuture<FNakamaWebSocketResponse>(CreateResp);
+                    }
+                    FString MatchId = ExtractMatchId(CreateResp);
+                    TestFalse("Match ID from create", MatchId.IsEmpty());
 
-                        FString MatchId = ExtractMatchId(CreateResp);
-                        if (!TestFalse("Match ID from create", MatchId.IsEmpty())) { Done.Execute(); return; }
-
-                        TSharedPtr<FJsonObject> LeaveJson = MakeShared<FJsonObject>();
-                        LeaveJson->SetStringField(TEXT("match_id"), MatchId);
-
-                        WSSub->Send(TEXT("match_leave"), LeaveJson)
-                            .Next([this, Done](FNakamaWebSocketResponse LeaveResp)
-                            {
-                                WSS_FAIL_ON_ERROR(LeaveResp, Done);
-                                Done.Execute();
-                            });
-                    });
-            });
+                    TSharedPtr<FJsonObject> LeaveJson = MakeShared<FJsonObject>();
+                    LeaveJson->SetStringField(TEXT("match_id"), MatchId);
+                    return WSSub->Send(TEXT("match_leave"), LeaveJson);
+                })
+                .Next([this, Done](FNakamaWebSocketResponse LeaveResp)
+                {
+                    WSS_FAIL_ON_ERROR(LeaveResp, Done);
+                    Done.Execute();
+                });
         });
     });
 }
@@ -695,19 +695,19 @@ void FNakamaWebSocketSubsystemMatchmakerSpec::Define()
     {
         LatentIt("should add to matchmaker and receive a ticket", [this](const FDoneDelegate& Done)
         {
-            WSSub->Connect(MakeConnParams(Session)).Next([this, Done](FNakamaWebSocketConnectionResult CR)
-            {
-                if (!TestFalse("Connect", CR.ErrorCode != ENakamaWebSocketError::None)) { Done.Execute(); return; }
-
-                WSSub->Send(TEXT("matchmaker_add"), MakeMatchmakerAddJson())
-                    .Next([this, Done](FNakamaWebSocketResponse Resp)
-                    {
-                        WSS_FAIL_ON_ERROR(Resp, Done);
-                        FString Ticket = ExtractTicket(Resp);
-                        TestFalse("Matchmaker ticket should not be empty", Ticket.IsEmpty());
-                        Done.Execute();
-                    });
-            });
+            WSSub->Connect(MakeConnParams(Session))
+                .Next([this](FNakamaWebSocketConnectionResult CR) -> TNakamaFuture<FNakamaWebSocketResponse>
+                {
+                    TestFalse("Connect", CR.ErrorCode != ENakamaWebSocketError::None);
+                    return WSSub->Send(TEXT("matchmaker_add"), MakeMatchmakerAddJson());
+                })
+                .Next([this, Done](FNakamaWebSocketResponse Resp)
+                {
+                    WSS_FAIL_ON_ERROR(Resp, Done);
+                    FString Ticket = ExtractTicket(Resp);
+                    TestFalse("Matchmaker ticket should not be empty", Ticket.IsEmpty());
+                    Done.Execute();
+                });
         });
     });
 
@@ -715,29 +715,31 @@ void FNakamaWebSocketSubsystemMatchmakerSpec::Define()
     {
         LatentIt("should add to matchmaker and then cancel with the ticket", [this](const FDoneDelegate& Done)
         {
-            WSSub->Connect(MakeConnParams(Session)).Next([this, Done](FNakamaWebSocketConnectionResult CR)
-            {
-                if (!TestFalse("Connect", CR.ErrorCode != ENakamaWebSocketError::None)) { Done.Execute(); return; }
-
-                WSSub->Send(TEXT("matchmaker_add"), MakeMatchmakerAddJson())
-                    .Next([this, Done](FNakamaWebSocketResponse AddResp)
+            WSSub->Connect(MakeConnParams(Session))
+                .Next([this](FNakamaWebSocketConnectionResult CR) -> TNakamaFuture<FNakamaWebSocketResponse>
+                {
+                    TestFalse("Connect", CR.ErrorCode != ENakamaWebSocketError::None);
+                    return WSSub->Send(TEXT("matchmaker_add"), MakeMatchmakerAddJson());
+                })
+                .Next([this](FNakamaWebSocketResponse AddResp) -> TNakamaFuture<FNakamaWebSocketResponse>
+                {
+                    if (AddResp.ErrorCode != ENakamaWebSocketError::None)
                     {
-                        WSS_FAIL_ON_ERROR(AddResp, Done);
+                        AddError(TEXT("matchmaker_add failed"));
+                        return MakeCompletedFuture<FNakamaWebSocketResponse>(AddResp);
+                    }
+                    FString Ticket = ExtractTicket(AddResp);
+                    TestFalse("Ticket before remove", Ticket.IsEmpty());
 
-                        FString Ticket = ExtractTicket(AddResp);
-                        if (!TestFalse("Ticket before remove", Ticket.IsEmpty())) { Done.Execute(); return; }
-
-                        TSharedPtr<FJsonObject> RemoveJson = MakeShared<FJsonObject>();
-                        RemoveJson->SetStringField(TEXT("ticket"), Ticket);
-
-                        WSSub->Send(TEXT("matchmaker_remove"), RemoveJson)
-                            .Next([this, Done](FNakamaWebSocketResponse RemoveResp)
-                            {
-                                WSS_FAIL_ON_ERROR(RemoveResp, Done);
-                                Done.Execute();
-                            });
-                    });
-            });
+                    TSharedPtr<FJsonObject> RemoveJson = MakeShared<FJsonObject>();
+                    RemoveJson->SetStringField(TEXT("ticket"), Ticket);
+                    return WSSub->Send(TEXT("matchmaker_remove"), RemoveJson);
+                })
+                .Next([this, Done](FNakamaWebSocketResponse RemoveResp)
+                {
+                    WSS_FAIL_ON_ERROR(RemoveResp, Done);
+                    Done.Execute();
+                });
         });
     });
 }
@@ -788,36 +790,36 @@ void FNakamaWebSocketSubsystemStatusSpec::Define()
     {
         LatentIt("should set a user status string", [this](const FDoneDelegate& Done)
         {
-            WSSub->Connect(MakeConnParams(Session)).Next([this, Done](FNakamaWebSocketConnectionResult CR)
-            {
-                if (!TestFalse("Connect", CR.ErrorCode != ENakamaWebSocketError::None)) { Done.Execute(); return; }
+            TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+            Json->SetStringField(TEXT("status"), TEXT("Playing a game"));
 
-                TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-                Json->SetStringField(TEXT("status"), TEXT("Playing a game"));
-
-                WSSub->Send(TEXT("status_update"), Json)
-                    .Next([this, Done](FNakamaWebSocketResponse Resp)
-                    {
-                        WSS_FAIL_ON_ERROR(Resp, Done);
-                        Done.Execute();
-                    });
-            });
+            WSSub->Connect(MakeConnParams(Session))
+                .Next([this, Json](FNakamaWebSocketConnectionResult CR) -> TNakamaFuture<FNakamaWebSocketResponse>
+                {
+                    TestFalse("Connect", CR.ErrorCode != ENakamaWebSocketError::None);
+                    return WSSub->Send(TEXT("status_update"), Json);
+                })
+                .Next([this, Done](FNakamaWebSocketResponse Resp)
+                {
+                    WSS_FAIL_ON_ERROR(Resp, Done);
+                    Done.Execute();
+                });
         });
 
         LatentIt("should clear user status by omitting the status field", [this](const FDoneDelegate& Done)
         {
-            WSSub->Connect(MakeConnParams(Session)).Next([this, Done](FNakamaWebSocketConnectionResult CR)
-            {
-                if (!TestFalse("Connect", CR.ErrorCode != ENakamaWebSocketError::None)) { Done.Execute(); return; }
-
-                // Sending status_update with no "status" field signals going offline.
-                WSSub->Send(TEXT("status_update"), MakeShared<FJsonObject>())
-                    .Next([this, Done](FNakamaWebSocketResponse Resp)
-                    {
-                        WSS_FAIL_ON_ERROR(Resp, Done);
-                        Done.Execute();
-                    });
-            });
+            // Sending status_update with no "status" field signals going offline.
+            WSSub->Connect(MakeConnParams(Session))
+                .Next([this](FNakamaWebSocketConnectionResult CR) -> TNakamaFuture<FNakamaWebSocketResponse>
+                {
+                    TestFalse("Connect", CR.ErrorCode != ENakamaWebSocketError::None);
+                    return WSSub->Send(TEXT("status_update"), MakeShared<FJsonObject>());
+                })
+                .Next([this, Done](FNakamaWebSocketResponse Resp)
+                {
+                    WSS_FAIL_ON_ERROR(Resp, Done);
+                    Done.Execute();
+                });
         });
     });
 
@@ -825,60 +827,59 @@ void FNakamaWebSocketSubsystemStatusSpec::Define()
     {
         LatentIt("should follow a user ID without error", [this](const FDoneDelegate& Done)
         {
-            WSSub->Connect(MakeConnParams(Session)).Next([this, Done](FNakamaWebSocketConnectionResult CR)
-            {
-                if (!TestFalse("Connect", CR.ErrorCode != ENakamaWebSocketError::None)) { Done.Execute(); return; }
+            // Use a random UUID — Nakama accepts follow requests for
+            // non-existent users and returns an empty presence list.
+            TArray<TSharedPtr<FJsonValue>> Ids;
+            Ids.Add(MakeShared<FJsonValueString>(GenerateId()));
+            TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+            Json->SetArrayField(TEXT("user_ids"), Ids);
 
-                // Use a random UUID — Nakama accepts follow requests for
-                // non-existent users and returns an empty presence list.
-                TArray<TSharedPtr<FJsonValue>> Ids;
-                Ids.Add(MakeShared<FJsonValueString>(GenerateId()));
-
-                TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-                Json->SetArrayField(TEXT("user_ids"), Ids);
-
-                WSSub->Send(TEXT("status_follow"), Json)
-                    .Next([this, Done](FNakamaWebSocketResponse Resp)
-                    {
-                        WSS_FAIL_ON_ERROR(Resp, Done);
-                        Done.Execute();
-                    });
-            });
+            WSSub->Connect(MakeConnParams(Session))
+                .Next([this, Json](FNakamaWebSocketConnectionResult CR) -> TNakamaFuture<FNakamaWebSocketResponse>
+                {
+                    TestFalse("Connect", CR.ErrorCode != ENakamaWebSocketError::None);
+                    return WSSub->Send(TEXT("status_follow"), Json);
+                })
+                .Next([this, Done](FNakamaWebSocketResponse Resp)
+                {
+                    WSS_FAIL_ON_ERROR(Resp, Done);
+                    Done.Execute();
+                });
         });
 
         LatentIt("should follow and then unfollow a user ID", [this](const FDoneDelegate& Done)
         {
-            WSSub->Connect(MakeConnParams(Session)).Next([this, Done](FNakamaWebSocketConnectionResult CR)
-            {
-                if (!TestFalse("Connect", CR.ErrorCode != ENakamaWebSocketError::None)) { Done.Execute(); return; }
+            FString FakeUserId = GenerateId();
 
-                FString FakeUserId = GenerateId();
+            TArray<TSharedPtr<FJsonValue>> FollowIds;
+            FollowIds.Add(MakeShared<FJsonValueString>(FakeUserId));
+            TSharedPtr<FJsonObject> FollowJson = MakeShared<FJsonObject>();
+            FollowJson->SetArrayField(TEXT("user_ids"), FollowIds);
 
-                TArray<TSharedPtr<FJsonValue>> FollowIds;
-                FollowIds.Add(MakeShared<FJsonValueString>(FakeUserId));
-
-                TSharedPtr<FJsonObject> FollowJson = MakeShared<FJsonObject>();
-                FollowJson->SetArrayField(TEXT("user_ids"), FollowIds);
-
-                WSSub->Send(TEXT("status_follow"), FollowJson)
-                    .Next([this, Done, FakeUserId](FNakamaWebSocketResponse FollowResp)
+            WSSub->Connect(MakeConnParams(Session))
+                .Next([this, FollowJson](FNakamaWebSocketConnectionResult CR) -> TNakamaFuture<FNakamaWebSocketResponse>
+                {
+                    TestFalse("Connect", CR.ErrorCode != ENakamaWebSocketError::None);
+                    return WSSub->Send(TEXT("status_follow"), FollowJson);
+                })
+                .Next([this, FakeUserId](FNakamaWebSocketResponse FollowResp) -> TNakamaFuture<FNakamaWebSocketResponse>
+                {
+                    if (FollowResp.ErrorCode != ENakamaWebSocketError::None)
                     {
-                        WSS_FAIL_ON_ERROR(FollowResp, Done);
-
-                        TArray<TSharedPtr<FJsonValue>> UnfollowIds;
-                        UnfollowIds.Add(MakeShared<FJsonValueString>(FakeUserId));
-
-                        TSharedPtr<FJsonObject> UnfollowJson = MakeShared<FJsonObject>();
-                        UnfollowJson->SetArrayField(TEXT("user_ids"), UnfollowIds);
-
-                        WSSub->Send(TEXT("status_unfollow"), UnfollowJson)
-                            .Next([this, Done](FNakamaWebSocketResponse UnfollowResp)
-                            {
-                                WSS_FAIL_ON_ERROR(UnfollowResp, Done);
-                                Done.Execute();
-                            });
-                    });
-            });
+                        AddError(TEXT("status_follow failed"));
+                        return MakeCompletedFuture<FNakamaWebSocketResponse>(FollowResp);
+                    }
+                    TArray<TSharedPtr<FJsonValue>> UnfollowIds;
+                    UnfollowIds.Add(MakeShared<FJsonValueString>(FakeUserId));
+                    TSharedPtr<FJsonObject> UnfollowJson = MakeShared<FJsonObject>();
+                    UnfollowJson->SetArrayField(TEXT("user_ids"), UnfollowIds);
+                    return WSSub->Send(TEXT("status_unfollow"), UnfollowJson);
+                })
+                .Next([this, Done](FNakamaWebSocketResponse UnfollowResp)
+                {
+                    WSS_FAIL_ON_ERROR(UnfollowResp, Done);
+                    Done.Execute();
+                });
         });
     });
 }
@@ -929,27 +930,28 @@ void FNakamaWebSocketSubsystemDelegatesSpec::Define()
     {
         LatentIt("should fire the MessageSent delegate when a message is dispatched", [this](const FDoneDelegate& Done)
         {
-            WSSub->Connect(MakeConnParams(Session)).Next([this, Done](FNakamaWebSocketConnectionResult CR)
-            {
-                if (!TestFalse("Connect", CR.ErrorCode != ENakamaWebSocketError::None)) { Done.Execute(); return; }
+            WSSub->Connect(MakeConnParams(Session))
+                .Next([this, Done](FNakamaWebSocketConnectionResult CR)
+                {
+                    TestFalse("Connect", CR.ErrorCode != ENakamaWebSocketError::None);
 
-                // Use a shared handle so we can self-remove; a shared bool prevents
-                // double-completion if the delegate fires more than once during the test.
-                TSharedRef<FDelegateHandle> Handle = MakeShared<FDelegateHandle>();
-                TSharedRef<bool> bFired = MakeShared<bool>(false);
+                    // Use a shared handle so we can self-remove; a shared bool prevents
+                    // double-completion if the delegate fires more than once during the test.
+                    TSharedRef<FDelegateHandle> Handle = MakeShared<FDelegateHandle>();
+                    TSharedRef<bool> bFired = MakeShared<bool>(false);
 
-                *Handle = WSSub->MessageSent.AddLambda(
-                    [this, Done, Handle, bFired](const FString& Message)
-                    {
-                        if (*bFired) return;
-                        *bFired = true;
-                        TestFalse("MessageSent payload should not be empty", Message.IsEmpty());
-                        Done.Execute();
-                    });
+                    *Handle = WSSub->MessageSent.AddLambda(
+                        [this, Done, Handle, bFired](const FString& Message)
+                        {
+                            if (*bFired) return;
+                            *bFired = true;
+                            TestFalse("MessageSent payload should not be empty", Message.IsEmpty());
+                            Done.Execute();
+                        });
 
-                // Trigger a send — we don't await the response future here.
-                WSSub->Send(TEXT("ping"), MakeShared<FJsonObject>());
-            });
+                    // Trigger a send — we don't await the response future here.
+                    WSSub->Send(TEXT("ping"), MakeShared<FJsonObject>());
+                });
         });
     });
 
@@ -957,50 +959,52 @@ void FNakamaWebSocketSubsystemDelegatesSpec::Define()
     {
         LatentIt("should fire ServerResponseReceived when the server replies", [this](const FDoneDelegate& Done)
         {
-            WSSub->Connect(MakeConnParams(Session)).Next([this, Done](FNakamaWebSocketConnectionResult CR)
-            {
-                if (!TestFalse("Connect", CR.ErrorCode != ENakamaWebSocketError::None)) { Done.Execute(); return; }
+            WSSub->Connect(MakeConnParams(Session))
+                .Next([this, Done](FNakamaWebSocketConnectionResult CR)
+                {
+                    TestFalse("Connect", CR.ErrorCode != ENakamaWebSocketError::None);
 
-                TSharedRef<FDelegateHandle> Handle = MakeShared<FDelegateHandle>();
-                TSharedRef<bool> bFired = MakeShared<bool>(false);
+                    TSharedRef<FDelegateHandle> Handle = MakeShared<FDelegateHandle>();
+                    TSharedRef<bool> bFired = MakeShared<bool>(false);
 
-                *Handle = WSSub->ServerResponseReceived.AddLambda(
-                    [this, Done, Handle, bFired](const FString& Message)
-                    {
-                        if (*bFired) return;
-                        *bFired = true;
-                        TestFalse("ServerResponseReceived payload should not be empty", Message.IsEmpty());
-                        Done.Execute();
-                    });
+                    *Handle = WSSub->ServerResponseReceived.AddLambda(
+                        [this, Done, Handle, bFired](const FString& Message)
+                        {
+                            if (*bFired) return;
+                            *bFired = true;
+                            TestFalse("ServerResponseReceived payload should not be empty", Message.IsEmpty());
+                            Done.Execute();
+                        });
 
-                WSSub->Send(TEXT("ping"), MakeShared<FJsonObject>());
-            });
+                    WSSub->Send(TEXT("ping"), MakeShared<FJsonObject>());
+                });
         });
 
         LatentIt("should fire ServerResponseReceived for every distinct response", [this](const FDoneDelegate& Done)
         {
-            WSSub->Connect(MakeConnParams(Session)).Next([this, Done](FNakamaWebSocketConnectionResult CR)
-            {
-                if (!TestFalse("Connect", CR.ErrorCode != ENakamaWebSocketError::None)) { Done.Execute(); return; }
-
-                constexpr int32 NumSends = 3;
-                TSharedRef<TAtomic<int32>> FireCount = MakeShared<TAtomic<int32>>(0);
-                TSharedRef<FDelegateHandle> Handle   = MakeShared<FDelegateHandle>();
-
-                *Handle = WSSub->ServerResponseReceived.AddLambda(
-                    [this, Done, Handle, FireCount](const FString&)
-                    {
-                        if (++(*FireCount) == NumSends)
-                        {
-                            Done.Execute();
-                        }
-                    });
-
-                for (int32 i = 0; i < NumSends; ++i)
+            WSSub->Connect(MakeConnParams(Session))
+                .Next([this, Done](FNakamaWebSocketConnectionResult CR)
                 {
-                    WSSub->Send(TEXT("ping"), MakeShared<FJsonObject>());
-                }
-            });
+                    TestFalse("Connect", CR.ErrorCode != ENakamaWebSocketError::None);
+
+                    constexpr int32 NumSends = 3;
+                    TSharedRef<TAtomic<int32>> FireCount = MakeShared<TAtomic<int32>>(0);
+                    TSharedRef<FDelegateHandle> Handle   = MakeShared<FDelegateHandle>();
+
+                    *Handle = WSSub->ServerResponseReceived.AddLambda(
+                        [this, Done, Handle, FireCount](const FString&)
+                        {
+                            if (++(*FireCount) == NumSends)
+                            {
+                                Done.Execute();
+                            }
+                        });
+
+                    for (int32 i = 0; i < NumSends; ++i)
+                    {
+                        WSSub->Send(TEXT("ping"), MakeShared<FJsonObject>());
+                    }
+                });
         });
     });
 }
