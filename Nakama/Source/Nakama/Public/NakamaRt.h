@@ -64,7 +64,7 @@ namespace Nakama
         * @param UserIdOne  The ID of the first DM user, or an empty string if this message was not sent through a DM chat.
         * @param UserIdTwo  The ID of the second DM user, or an empty string if this message was not sent through a DM chat.
         */
-        NAKAMA_API TFuture<FNakamaWebSocketResponse> Channel(
+        NAKAMA_API TNakamaFuture<FNakamaWebSocketResponse> Channel(
             const FString& Id,
             const TArray<FNakamaRtUserPresence>& Presences,
             const FNakamaRtUserPresence& Self,
@@ -82,7 +82,7 @@ namespace Nakama
         * @param Persistence  Whether messages sent on this channel should be persistent.
         * @param Hidden  Whether the user should appear in the channel's presence list and events.
         */
-        NAKAMA_API TFuture<FNakamaWebSocketResponse> ChannelJoin(
+        NAKAMA_API TNakamaFuture<FNakamaWebSocketResponse> ChannelJoin(
             const FString& Target,
             const int32& Type,
             const bool& Persistence,
@@ -94,7 +94,7 @@ namespace Nakama
         *
         * @param ChannelId  The ID of the channel to leave.
         */
-        NAKAMA_API TFuture<FNakamaWebSocketResponse> ChannelLeave(
+        NAKAMA_API TNakamaFuture<FNakamaWebSocketResponse> ChannelLeave(
             const FString& ChannelId
         ) noexcept;
         
@@ -115,7 +115,7 @@ namespace Nakama
         * @param UserIdOne  The ID of the first DM user, or an empty string if this message was not sent through a DM chat.
         * @param UserIdTwo  The ID of the second DM user, or an empty string if this message was not sent through a DM chat.
         */
-        NAKAMA_API TFuture<FNakamaWebSocketResponse> ChannelMessage(
+        NAKAMA_API TNakamaFuture<FNakamaWebSocketResponse> ChannelMessage(
             const FString& ChannelId,
             const FString& MessageId,
             const int32& Code,
@@ -146,7 +146,7 @@ namespace Nakama
         * @param UserIdOne  The ID of the first DM user, or an empty string if this message was not sent through a DM chat.
         * @param UserIdTwo  The ID of the second DM user, or an empty string if this message was not sent through a DM chat.
         */
-        NAKAMA_API TFuture<FNakamaWebSocketResponse> ChannelMessageAck(
+        NAKAMA_API TNakamaFuture<FNakamaWebSocketResponse> ChannelMessageAck(
             const FString& ChannelId,
             const FString& MessageId,
             const int32& Code,
@@ -166,7 +166,7 @@ namespace Nakama
         * @param ChannelId  The channel to sent to.
         * @param Content  Message content.
         */
-        NAKAMA_API TFuture<FNakamaWebSocketResponse> ChannelMessageSend(
+        NAKAMA_API TNakamaFuture<FNakamaWebSocketResponse> ChannelMessageSend(
             const FString& ChannelId,
             const FString& Content
         ) noexcept;
@@ -178,7 +178,7 @@ namespace Nakama
         * @param MessageId  The ID assigned to the message to update.
         * @param Content  New message content.
         */
-        NAKAMA_API TFuture<FNakamaWebSocketResponse> ChannelMessageUpdate(
+        NAKAMA_API TNakamaFuture<FNakamaWebSocketResponse> ChannelMessageUpdate(
             const FString& ChannelId,
             const FString& MessageId,
             const FString& Content
@@ -190,7 +190,7 @@ namespace Nakama
         * @param ChannelId  The channel the message was sent to.
         * @param MessageId  The ID assigned to the message to update.
         */
-        NAKAMA_API TFuture<FNakamaWebSocketResponse> ChannelMessageRemove(
+        NAKAMA_API TNakamaFuture<FNakamaWebSocketResponse> ChannelMessageRemove(
             const FString& ChannelId,
             const FString& MessageId
         ) noexcept;
@@ -206,7 +206,7 @@ namespace Nakama
         * @param UserIdOne  The ID of the first DM user, or an empty string if this message was not sent through a DM chat.
         * @param UserIdTwo  The ID of the second DM user, or an empty string if this message was not sent through a DM chat.
         */
-        NAKAMA_API TFuture<FNakamaWebSocketResponse> ChannelPresenceEvent(
+        NAKAMA_API TNakamaFuture<FNakamaWebSocketResponse> ChannelPresenceEvent(
             const FString& ChannelId,
             const TArray<FNakamaRtUserPresence>& Joins,
             const TArray<FNakamaRtUserPresence>& Leaves,
@@ -223,7 +223,7 @@ namespace Nakama
         * @param Message  A message in English to help developers debug the response.
         * @param Context  Additional error details which may be different for each response.
         */
-        NAKAMA_API TFuture<FNakamaWebSocketResponse> Error(
+        NAKAMA_API TNakamaFuture<FNakamaWebSocketResponse> Error(
             const int32& Code,
             const FString& Message,
             const TMap<FString, FString>& Context
@@ -239,7 +239,7 @@ namespace Nakama
         * @param Presences  The users currently in the match.
         * @param Self  A reference to the current user's presence in the match.
         */
-        NAKAMA_API TFuture<FNakamaWebSocketResponse> Match(
+        NAKAMA_API TNakamaFuture<FNakamaWebSocketResponse> Match(
             const FString& MatchId,
             const bool& Authoritative,
             const FString& Label,
@@ -253,7 +253,7 @@ namespace Nakama
         *
         * @param Name  Optional name to use when creating the match.
         */
-        NAKAMA_API TFuture<FNakamaWebSocketResponse> MatchCreate(
+        NAKAMA_API TNakamaFuture<FNakamaWebSocketResponse> MatchCreate(
             const FString& Name
         ) noexcept;
         
@@ -266,7 +266,7 @@ namespace Nakama
         * @param Data  Data payload, if any.
         * @param Reliable  True if this data was delivered reliably, false otherwise.
         */
-        NAKAMA_API TFuture<FNakamaWebSocketResponse> MatchData(
+        NAKAMA_API TNakamaFuture<FNakamaWebSocketResponse> MatchData(
             const FString& MatchId,
             const FNakamaRtUserPresence& Presence,
             const int64& OpCode,
@@ -283,7 +283,7 @@ namespace Nakama
         * @param Presences  List of presences in the match to deliver to, if filtering is required. Otherwise deliver to everyone in the match.
         * @param Reliable  True if the data should be sent reliably, false otherwise.
         */
-        NAKAMA_API TFuture<FNakamaWebSocketResponse> MatchDataSend(
+        NAKAMA_API TNakamaFuture<FNakamaWebSocketResponse> MatchDataSend(
             const FString& MatchId,
             const int64& OpCode,
             const TArray<uint8>& Data,
@@ -296,7 +296,7 @@ namespace Nakama
         *
         * @param Metadata  An optional set of key-value metadata pairs to be passed to the match handler, if any.
         */
-        NAKAMA_API TFuture<FNakamaWebSocketResponse> MatchJoin(
+        NAKAMA_API TNakamaFuture<FNakamaWebSocketResponse> MatchJoin(
             const TMap<FString, FString>& Metadata
         ) noexcept;
         
@@ -305,7 +305,7 @@ namespace Nakama
         *
         * @param MatchId  The match unique ID.
         */
-        NAKAMA_API TFuture<FNakamaWebSocketResponse> MatchLeave(
+        NAKAMA_API TNakamaFuture<FNakamaWebSocketResponse> MatchLeave(
             const FString& MatchId
         ) noexcept;
         
@@ -316,7 +316,7 @@ namespace Nakama
         * @param Joins  User presences that have just joined the match.
         * @param Leaves  User presences that have just left the match.
         */
-        NAKAMA_API TFuture<FNakamaWebSocketResponse> MatchPresenceEvent(
+        NAKAMA_API TNakamaFuture<FNakamaWebSocketResponse> MatchPresenceEvent(
             const FString& MatchId,
             const TArray<FNakamaRtUserPresence>& Joins,
             const TArray<FNakamaRtUserPresence>& Leaves
@@ -332,7 +332,7 @@ namespace Nakama
         * @param StringProperties  String properties.
         * @param NumericProperties  Numeric properties.
         */
-        NAKAMA_API TFuture<FNakamaWebSocketResponse> MatchmakerAdd(
+        NAKAMA_API TNakamaFuture<FNakamaWebSocketResponse> MatchmakerAdd(
             const int32& MinCount,
             const int32& MaxCount,
             const FString& Query,
@@ -348,7 +348,7 @@ namespace Nakama
         * @param Users  The users that have been matched together, and information about their matchmaking data.
         * @param Self  A reference to the current user and their properties.
         */
-        NAKAMA_API TFuture<FNakamaWebSocketResponse> MatchmakerMatched(
+        NAKAMA_API TNakamaFuture<FNakamaWebSocketResponse> MatchmakerMatched(
             const FString& Ticket,
             const TArray<FNakamaRtMatchmakerMatched_MatchmakerUser>& Users,
             const FNakamaRtMatchmakerMatched_MatchmakerUser& Self
@@ -359,7 +359,7 @@ namespace Nakama
         *
         * @param Ticket  The ticket to cancel.
         */
-        NAKAMA_API TFuture<FNakamaWebSocketResponse> MatchmakerRemove(
+        NAKAMA_API TNakamaFuture<FNakamaWebSocketResponse> MatchmakerRemove(
             const FString& Ticket
         ) noexcept;
         
@@ -368,7 +368,7 @@ namespace Nakama
         *
         * @param Ticket  The ticket that can be used to cancel matchmaking.
         */
-        NAKAMA_API TFuture<FNakamaWebSocketResponse> MatchmakerTicket(
+        NAKAMA_API TNakamaFuture<FNakamaWebSocketResponse> MatchmakerTicket(
             const FString& Ticket
         ) noexcept;
         
@@ -377,7 +377,7 @@ namespace Nakama
         *
         * @param Notifications  Collection of notifications.
         */
-        NAKAMA_API TFuture<FNakamaWebSocketResponse> Notifications(
+        NAKAMA_API TNakamaFuture<FNakamaWebSocketResponse> Notifications(
             const TArray<FString>& Notifications
         ) noexcept;
         
@@ -388,7 +388,7 @@ namespace Nakama
         * @param Payload  The payload of the function which must be a JSON object.
         * @param HttpKey  The authentication key used when executed as a non-client HTTP request.
         */
-        NAKAMA_API TFuture<FNakamaWebSocketResponse> Rpc(
+        NAKAMA_API TNakamaFuture<FNakamaWebSocketResponse> Rpc(
             const FString& Id,
             const FString& Payload,
             const FString& HttpKey
@@ -399,7 +399,7 @@ namespace Nakama
         *
         * @param Presences  User statuses.
         */
-        NAKAMA_API TFuture<FNakamaWebSocketResponse> Status(
+        NAKAMA_API TNakamaFuture<FNakamaWebSocketResponse> Status(
             const TArray<FNakamaRtUserPresence>& Presences
         ) noexcept;
         
@@ -409,7 +409,7 @@ namespace Nakama
         * @param UserIds  User IDs to follow.
         * @param Usernames  Usernames to follow.
         */
-        NAKAMA_API TFuture<FNakamaWebSocketResponse> StatusFollow(
+        NAKAMA_API TNakamaFuture<FNakamaWebSocketResponse> StatusFollow(
             const TArray<FString>& UserIds,
             const TArray<FString>& Usernames
         ) noexcept;
@@ -420,7 +420,7 @@ namespace Nakama
         * @param Joins  New statuses for the user.
         * @param Leaves  Previous statuses for the user.
         */
-        NAKAMA_API TFuture<FNakamaWebSocketResponse> StatusPresenceEvent(
+        NAKAMA_API TNakamaFuture<FNakamaWebSocketResponse> StatusPresenceEvent(
             const TArray<FNakamaRtUserPresence>& Joins,
             const TArray<FNakamaRtUserPresence>& Leaves
         ) noexcept;
@@ -430,7 +430,7 @@ namespace Nakama
         *
         * @param UserIds  Users to unfollow.
         */
-        NAKAMA_API TFuture<FNakamaWebSocketResponse> StatusUnfollow(
+        NAKAMA_API TNakamaFuture<FNakamaWebSocketResponse> StatusUnfollow(
             const TArray<FString>& UserIds
         ) noexcept;
         
@@ -439,7 +439,7 @@ namespace Nakama
         *
         * @param Status  Status string to set, if not present the user will appear offline.
         */
-        NAKAMA_API TFuture<FNakamaWebSocketResponse> StatusUpdate(
+        NAKAMA_API TNakamaFuture<FNakamaWebSocketResponse> StatusUpdate(
             const FString& Status
         ) noexcept;
         
@@ -451,7 +451,7 @@ namespace Nakama
         * @param Data  Arbitrary contents of the data message.
         * @param Reliable  True if this data was delivered reliably, false otherwise.
         */
-        NAKAMA_API TFuture<FNakamaWebSocketResponse> StreamData(
+        NAKAMA_API TNakamaFuture<FNakamaWebSocketResponse> StreamData(
             const FNakamaRtStream& Stream,
             const FNakamaRtUserPresence& Sender,
             const FString& Data,
@@ -465,7 +465,7 @@ namespace Nakama
         * @param Joins  Presences joining the stream as part of this event, if any.
         * @param Leaves  Presences leaving the stream as part of this event, if any.
         */
-        NAKAMA_API TFuture<FNakamaWebSocketResponse> StreamPresenceEvent(
+        NAKAMA_API TNakamaFuture<FNakamaWebSocketResponse> StreamPresenceEvent(
             const FNakamaRtStream& Stream,
             const TArray<FNakamaRtUserPresence>& Joins,
             const TArray<FNakamaRtUserPresence>& Leaves
@@ -475,7 +475,7 @@ namespace Nakama
         * Application-level heartbeat and connection check.
         *
         */
-        NAKAMA_API TFuture<FNakamaWebSocketResponse> Ping(
+        NAKAMA_API TNakamaFuture<FNakamaWebSocketResponse> Ping(
             
         ) noexcept;
         
@@ -483,7 +483,7 @@ namespace Nakama
         * Application-level heartbeat and connection check response.
         *
         */
-        NAKAMA_API TFuture<FNakamaWebSocketResponse> Pong(
+        NAKAMA_API TNakamaFuture<FNakamaWebSocketResponse> Pong(
             
         ) noexcept;
         
@@ -499,7 +499,7 @@ namespace Nakama
         * @param Presences  All current party members.
         * @param Label  Label for party listing.
         */
-        NAKAMA_API TFuture<FNakamaWebSocketResponse> Party(
+        NAKAMA_API TNakamaFuture<FNakamaWebSocketResponse> Party(
             const FString& PartyId,
             const bool& Open,
             const bool& Hidden,
@@ -518,7 +518,7 @@ namespace Nakama
         * @param Label  Label
         * @param Hidden  Whether the party is visible in party listings.
         */
-        NAKAMA_API TFuture<FNakamaWebSocketResponse> PartyCreate(
+        NAKAMA_API TNakamaFuture<FNakamaWebSocketResponse> PartyCreate(
             const bool& Open,
             const int32& MaxSize,
             const FString& Label,
@@ -530,7 +530,7 @@ namespace Nakama
         *
         * @param PartyId  Party ID to join.
         */
-        NAKAMA_API TFuture<FNakamaWebSocketResponse> PartyJoin(
+        NAKAMA_API TNakamaFuture<FNakamaWebSocketResponse> PartyJoin(
             const FString& PartyId
         ) noexcept;
         
@@ -539,7 +539,7 @@ namespace Nakama
         *
         * @param PartyId  Party ID to leave.
         */
-        NAKAMA_API TFuture<FNakamaWebSocketResponse> PartyLeave(
+        NAKAMA_API TNakamaFuture<FNakamaWebSocketResponse> PartyLeave(
             const FString& PartyId
         ) noexcept;
         
@@ -549,7 +549,7 @@ namespace Nakama
         * @param PartyId  Party ID to promote a new leader for.
         * @param Presence  The presence of an existing party member to promote as the new leader.
         */
-        NAKAMA_API TFuture<FNakamaWebSocketResponse> PartyPromote(
+        NAKAMA_API TNakamaFuture<FNakamaWebSocketResponse> PartyPromote(
             const FString& PartyId,
             const FNakamaRtUserPresence& Presence
         ) noexcept;
@@ -560,7 +560,7 @@ namespace Nakama
         * @param PartyId  Party ID to announce the new leader for.
         * @param Presence  The presence of the new party leader.
         */
-        NAKAMA_API TFuture<FNakamaWebSocketResponse> PartyLeader(
+        NAKAMA_API TNakamaFuture<FNakamaWebSocketResponse> PartyLeader(
             const FString& PartyId,
             const FNakamaRtUserPresence& Presence
         ) noexcept;
@@ -571,7 +571,7 @@ namespace Nakama
         * @param PartyId  Party ID to accept a join request for.
         * @param Presence  The presence to accept as a party member.
         */
-        NAKAMA_API TFuture<FNakamaWebSocketResponse> PartyAccept(
+        NAKAMA_API TNakamaFuture<FNakamaWebSocketResponse> PartyAccept(
             const FString& PartyId,
             const FNakamaRtUserPresence& Presence
         ) noexcept;
@@ -582,7 +582,7 @@ namespace Nakama
         * @param PartyId  Party ID to remove/reject from.
         * @param Presence  The presence to remove or reject.
         */
-        NAKAMA_API TFuture<FNakamaWebSocketResponse> PartyRemove(
+        NAKAMA_API TNakamaFuture<FNakamaWebSocketResponse> PartyRemove(
             const FString& PartyId,
             const FNakamaRtUserPresence& Presence
         ) noexcept;
@@ -592,7 +592,7 @@ namespace Nakama
         *
         * @param PartyId  Party ID to close.
         */
-        NAKAMA_API TFuture<FNakamaWebSocketResponse> PartyClose(
+        NAKAMA_API TNakamaFuture<FNakamaWebSocketResponse> PartyClose(
             const FString& PartyId
         ) noexcept;
         
@@ -601,7 +601,7 @@ namespace Nakama
         *
         * @param PartyId  Party ID to get a list of join requests for.
         */
-        NAKAMA_API TFuture<FNakamaWebSocketResponse> PartyJoinRequestList(
+        NAKAMA_API TNakamaFuture<FNakamaWebSocketResponse> PartyJoinRequestList(
             const FString& PartyId
         ) noexcept;
         
@@ -611,7 +611,7 @@ namespace Nakama
         * @param PartyId  Party ID these presences are attempting to join.
         * @param Presences  Presences attempting to join.
         */
-        NAKAMA_API TFuture<FNakamaWebSocketResponse> PartyJoinRequest(
+        NAKAMA_API TNakamaFuture<FNakamaWebSocketResponse> PartyJoinRequest(
             const FString& PartyId,
             const TArray<FNakamaRtUserPresence>& Presences
         ) noexcept;
@@ -627,7 +627,7 @@ namespace Nakama
         * @param StringProperties  String properties.
         * @param NumericProperties  Numeric properties.
         */
-        NAKAMA_API TFuture<FNakamaWebSocketResponse> PartyMatchmakerAdd(
+        NAKAMA_API TNakamaFuture<FNakamaWebSocketResponse> PartyMatchmakerAdd(
             const FString& PartyId,
             const int32& MinCount,
             const int32& MaxCount,
@@ -643,7 +643,7 @@ namespace Nakama
         * @param PartyId  Party ID.
         * @param Ticket  The ticket to cancel.
         */
-        NAKAMA_API TFuture<FNakamaWebSocketResponse> PartyMatchmakerRemove(
+        NAKAMA_API TNakamaFuture<FNakamaWebSocketResponse> PartyMatchmakerRemove(
             const FString& PartyId,
             const FString& Ticket
         ) noexcept;
@@ -654,7 +654,7 @@ namespace Nakama
         * @param PartyId  Party ID.
         * @param Ticket  The ticket that can be used to cancel matchmaking.
         */
-        NAKAMA_API TFuture<FNakamaWebSocketResponse> PartyMatchmakerTicket(
+        NAKAMA_API TNakamaFuture<FNakamaWebSocketResponse> PartyMatchmakerTicket(
             const FString& PartyId,
             const FString& Ticket
         ) noexcept;
@@ -667,7 +667,7 @@ namespace Nakama
         * @param OpCode  Op code value.
         * @param Data  Data payload, if any.
         */
-        NAKAMA_API TFuture<FNakamaWebSocketResponse> PartyData(
+        NAKAMA_API TNakamaFuture<FNakamaWebSocketResponse> PartyData(
             const FString& PartyId,
             const FNakamaRtUserPresence& Presence,
             const int64& OpCode,
@@ -681,7 +681,7 @@ namespace Nakama
         * @param OpCode  Op code value.
         * @param Data  Data payload, if any.
         */
-        NAKAMA_API TFuture<FNakamaWebSocketResponse> PartyDataSend(
+        NAKAMA_API TNakamaFuture<FNakamaWebSocketResponse> PartyDataSend(
             const FString& PartyId,
             const int64& OpCode,
             const TArray<uint8>& Data
@@ -694,7 +694,7 @@ namespace Nakama
         * @param Joins  User presences that have just joined the party.
         * @param Leaves  User presences that have just left the party.
         */
-        NAKAMA_API TFuture<FNakamaWebSocketResponse> PartyPresenceEvent(
+        NAKAMA_API TNakamaFuture<FNakamaWebSocketResponse> PartyPresenceEvent(
             const FString& PartyId,
             const TArray<FNakamaRtUserPresence>& Joins,
             const TArray<FNakamaRtUserPresence>& Leaves
@@ -708,7 +708,7 @@ namespace Nakama
         * @param Open  Change the party to open or closed.
         * @param Hidden  Whether the party is visible in party listings.
         */
-        NAKAMA_API TFuture<FNakamaWebSocketResponse> PartyUpdate(
+        NAKAMA_API TNakamaFuture<FNakamaWebSocketResponse> PartyUpdate(
             const FString& PartyId,
             const FString& Label,
             const bool& Open,

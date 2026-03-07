@@ -25,7 +25,7 @@ namespace Nakama
 {
 {{- range $idx, $rpc := $envelope.OneofFields -}}
 {{- $rpcType := getMessage (stripDot $rpc.Type) }}
-TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::{{ $rpcType.Name | pascalCase }}(
+TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::{{ $rpcType.Name | pascalCase }}(
     {{ getUnrealParamList 4 $rpcType.Fields $rpcType.MapFields }}
 ) noexcept
 {

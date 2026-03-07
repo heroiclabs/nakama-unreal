@@ -47,7 +47,7 @@ void UNakamaWebSocketSubsystem::Close()
     }
 }
 
-TFuture<FNakamaWebSocketConnectionResult> UNakamaWebSocketSubsystem::Connect(FNakamaWebSocketConnectionParams Params)
+TNakamaFuture<FNakamaWebSocketConnectionResult> UNakamaWebSocketSubsystem::Connect(FNakamaWebSocketConnectionParams Params)
 {
     ConnectionParams = Params;
 
@@ -55,10 +55,10 @@ TFuture<FNakamaWebSocketConnectionResult> UNakamaWebSocketSubsystem::Connect(FNa
     if (WebSocket.IsValid())
     {
         // If we have a pending connection, return failure.
-        if (PromiseConnected.IsValid())
+        if (ConnectionState.IsValid())
         {
             UE_LOG(LogNakamaWebSocket, Warning, TEXT("Another WebSocket connection is in progress."));
-            return MakeFulfilledPromise<FNakamaWebSocketConnectionResult>(FNakamaWebSocketConnectionResult{ .ErrorCode = ENakamaWebSocketError::ConnectionAlreadyInProgress }).GetFuture();
+            return MakeCompletedFuture<FNakamaWebSocketConnectionResult>({ .ErrorCode = ENakamaWebSocketError::ConnectionAlreadyInProgress });
         }
 
         // Otherwise, we have an active connection. Close it and start a new one.
@@ -141,8 +141,8 @@ TFuture<FNakamaWebSocketConnectionResult> UNakamaWebSocketSubsystem::Connect(FNa
     // Connect
     WebSocket->Connect();
 
-    PromiseConnected = MakeShared<TPromise<FNakamaWebSocketConnectionResult>>();
-    return PromiseConnected->GetFuture();
+    ConnectionState = MakeShared<TNakamaFuture<FNakamaWebSocketConnectionResult>::FState>();
+    return TNakamaFuture<FNakamaWebSocketConnectionResult>(ConnectionState);
 }
 
 
@@ -179,7 +179,7 @@ bool UNakamaWebSocketSubsystem::SendPing()
     return true;
 }
 
-TFuture<FNakamaWebSocketResponse> UNakamaWebSocketSubsystem::Send(const FString& RequestName, const TSharedPtr<FJsonObject>& Data)
+TNakamaFuture<FNakamaWebSocketResponse> UNakamaWebSocketSubsystem::Send(const FString& RequestName, const TSharedPtr<FJsonObject>& Data)
 {
     //
     // Create an Envelope, embed a new guid as Cid.
@@ -198,24 +198,22 @@ TFuture<FNakamaWebSocketResponse> UNakamaWebSocketSubsystem::Send(const FString&
     if (!bIsConnected)
     {
         UE_LOG(LogNakamaWebSocket, Error, TEXT("WebSocket is not connected or invalid."));
-        return MakeFulfilledPromise<FNakamaWebSocketResponse>(FNakamaWebSocketResponse
-        {
-            .ErrorCode = ENakamaWebSocketError::NotConnected
-        }).GetFuture();
+        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::NotConnected });
     }
 
     //
-    // Create promise, associate it with the Cid.
-    TSharedRef<TPromise<FNakamaWebSocketResponse>> Promise = MakeShared<TPromise<FNakamaWebSocketResponse>>();
+    // Create state, associate it with the Cid.
+    TSharedRef<TNakamaFuture<FNakamaWebSocketResponse>::FState> ResponseState =
+        MakeShared<TNakamaFuture<FNakamaWebSocketResponse>::FState>();
 
-    Requests.Add(Cid, Promise);
+    Requests.Add(Cid, ResponseState);
 
     //
     // Send the envelope and return the future.
     // Will activate it on message received.
     WebSocket->Send(EnvelopeJson);
 
-    return Promise->GetFuture();
+    return TNakamaFuture<FNakamaWebSocketResponse>(ResponseState);
 }
 
 void UNakamaWebSocketSubsystem::OnConnected()
@@ -226,10 +224,10 @@ void UNakamaWebSocketSubsystem::OnConnected()
 
     bIsConnected = true;
 
-    TSharedPtr<TPromise<FNakamaWebSocketConnectionResult>> LocalPromise = MoveTemp(PromiseConnected);
-    FTSTicker::GetCoreTicker().AddTicker(FTickerDelegate::CreateLambda([LocalPromise](float) -> bool
+    TSharedPtr<TNakamaFuture<FNakamaWebSocketConnectionResult>::FState> LocalState = MoveTemp(ConnectionState);
+    FTSTicker::GetCoreTicker().AddTicker(FTickerDelegate::CreateLambda([LocalState](float) -> bool
     {
-        LocalPromise->EmplaceValue(FNakamaWebSocketConnectionResult{});
+        LocalState->Resolve(FNakamaWebSocketConnectionResult{});
         return false;
     }), 0.0f);
 }
@@ -240,10 +238,10 @@ void UNakamaWebSocketSubsystem::OnConnectionError(const FString& Error)
 
     bIsConnected = false;
 
-    TSharedPtr<TPromise<FNakamaWebSocketConnectionResult>> LocalPromise = MoveTemp(PromiseConnected);
-    FTSTicker::GetCoreTicker().AddTicker(FTickerDelegate::CreateLambda([LocalPromise](float) -> bool
+    TSharedPtr<TNakamaFuture<FNakamaWebSocketConnectionResult>::FState> LocalState = MoveTemp(ConnectionState);
+    FTSTicker::GetCoreTicker().AddTicker(FTickerDelegate::CreateLambda([LocalState](float) -> bool
     {
-        LocalPromise->EmplaceValue(FNakamaWebSocketConnectionResult{ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+        LocalState->Resolve(FNakamaWebSocketConnectionResult{ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
         return false;
     }), 0.0f);
 }
@@ -292,11 +290,8 @@ void UNakamaWebSocketSubsystem::OnMessage(const FString& Message)
         // We should have a pending request for this CID.
         if (auto* RequestPtr = Requests.Find(Cid))
         {
-            TSharedRef<TPromise<FNakamaWebSocketResponse>> Request = *RequestPtr;
-            Request->EmplaceValue(FNakamaWebSocketResponse
-            {
-                .Data = JsonObject
-            });
+            TSharedRef<TNakamaFuture<FNakamaWebSocketResponse>::FState> Request = *RequestPtr;
+            Request->Resolve(FNakamaWebSocketResponse{ .Data = JsonObject });
 
             Requests.Remove(Cid);
         }
@@ -368,7 +363,7 @@ void UNakamaWebSocketSubsystem::OnClosed(int32 StatusCode, const FString& Reason
             : ENakamaWebSocketError::ConnectionClosed;
         for (const auto& Request : Requests)
         {
-            Request.Value->EmplaceValue(FNakamaWebSocketResponse{ .ErrorCode = Code });
+            Request.Value->Resolve(FNakamaWebSocketResponse{ .ErrorCode = Code });
         }
         Requests.Empty();
     }

@@ -19,9 +19,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Tasks/Task.h"
 #include "NakamaApi.h"
-#include <type_traits>
+#include "NakamaFuture.h"
 
 /** Tag type used as the value type for RPCs that return no data. */
 struct NAKAMA_API FNakamaVoid {};
@@ -240,95 +239,6 @@ struct NAKAMA_API FNakamaStorageObjectAcksResult
 	FNakamaStorageObjectAcks Value{};
 	FNakamaError Error;
 	bool bIsError = true;
-};
-
-// Forward declaration
-template<typename T> struct TNakamaFuture;
-
-/** Type trait: is T a TNakamaFuture<U>? */
-template<typename T> struct TIsTNakamaFuture : std::false_type {};
-template<typename T> struct TIsTNakamaFuture<TNakamaFuture<T>> : std::true_type {};
-
-/**
- * Chainable future wrapper for async Nakama operations.
- * Parameterized by concrete result type (e.g. FNakamaSessionResult).
- *
- * Chaining: Next(callback(const ValueType&) -> TNakamaFuture<OtherResult>) — flattens and propagates errors
- * Terminal: Next(callback(ResultT) -> void) — receives the full result
- */
-template<typename ResultT>
-struct TNakamaFuture
-{
-	using ValueType = typename ResultT::ValueType;
-	using WrappedResultType = ResultT;
-
-	struct FState
-	{
-		ResultT Result{};
-		UE::Tasks::FTaskEvent Event{ UE_SOURCE_LOCATION };
-		void Resolve(ResultT&& InResult)
-		{
-			Result = MoveTemp(InResult);
-			Event.Trigger();
-		}
-	};
-
-	TSharedPtr<FState> State;
-
-	TNakamaFuture() = default;
-	explicit TNakamaFuture(TSharedPtr<FState> InState) noexcept
-		: State(MoveTemp(InState)) {}
-	TNakamaFuture(TNakamaFuture&& Other) noexcept = default;
-	TNakamaFuture& operator=(TNakamaFuture&& Other) noexcept = default;
-	TNakamaFuture(const TNakamaFuture&) = delete;
-	TNakamaFuture& operator=(const TNakamaFuture&) = delete;
-
-	/** Chaining Next: callback(const ValueType&) -> TNakamaFuture<OtherResult> */
-	template<typename Func,
-		typename Ret = std::invoke_result_t<std::decay_t<Func>, const ValueType&>,
-		std::enable_if_t<TIsTNakamaFuture<Ret>::value, int> = 0>
-	Ret Next(Func&& Callback) && noexcept
-	{
-		using InnerResultT = typename Ret::WrappedResultType;
-		auto OuterState = MakeShared<typename TNakamaFuture<InnerResultT>::FState>();
-		auto CapturedState = State;
-		UE::Tasks::Launch(UE_SOURCE_LOCATION,
-			[Cb = Forward<Func>(Callback), CapturedState, OuterState]() mutable
-			{
-				if (CapturedState->Result.bIsError)
-				{
-					OuterState->Resolve(InnerResultT{{}, CapturedState->Result.Error, true});
-					return;
-				}
-				Ret Inner = Cb(CapturedState->Result.Value);
-				auto InnerState = Inner.State;
-				UE::Tasks::Launch(UE_SOURCE_LOCATION,
-					[InnerState, OuterState]()
-					{
-						OuterState->Resolve(MoveTemp(InnerState->Result));
-					},
-					InnerState->Event);
-			},
-			CapturedState->Event);
-		State.Reset();
-		return TNakamaFuture<InnerResultT>(OuterState);
-	}
-
-	/** Terminal Next: callback(ResultT) -> void */
-	template<typename Func,
-		typename Ret = std::invoke_result_t<std::decay_t<Func>, ResultT>,
-		std::enable_if_t<!TIsTNakamaFuture<Ret>::value, int> = 0>
-	void Next(Func&& Callback) && noexcept
-	{
-		auto CapturedState = State;
-		UE::Tasks::Launch(UE_SOURCE_LOCATION,
-			[Cb = Forward<Func>(Callback), CapturedState]() mutable
-			{
-				Cb(MoveTemp(CapturedState->Result));
-			},
-			CapturedState->Event);
-		State.Reset();
-	}
 };
 
 /** Retry configuration for transient error handling + session auto-refresh. */

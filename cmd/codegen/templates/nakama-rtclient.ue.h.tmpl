@@ -61,7 +61,7 @@ namespace Nakama
         /**
         {{ getUnrealMethodCommentBlock 8 $rpc.Comment.Message $rpcType.Fields $rpcType.MapFields }}
         */
-        NAKAMA_API TFuture<FNakamaWebSocketResponse> {{ $rpcType.Name | pascalCase }}(
+        NAKAMA_API TNakamaFuture<FNakamaWebSocketResponse> {{ $rpcType.Name | pascalCase }}(
             {{ getUnrealParamList 12 $rpcType.Fields $rpcType.MapFields }}
         ) noexcept;
         {{ end }}

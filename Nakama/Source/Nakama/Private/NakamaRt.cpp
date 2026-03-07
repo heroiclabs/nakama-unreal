@@ -23,7 +23,7 @@
 
 namespace Nakama
 {
-TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::Channel(
+TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::Channel(
     const FString& Id,
     const TArray<FNakamaRtUserPresence>& Presences,
     const FNakamaRtUserPresence& Self,
@@ -68,7 +68,7 @@ TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::Channel(
     return WebSocketSubsystem->Send(TEXT("channel"), Json);
 }
 
-TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::ChannelJoin(
+TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::ChannelJoin(
     const FString& Target,
     const int32& Type,
     const bool& Persistence,
@@ -87,7 +87,7 @@ TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::ChannelJoin(
     return WebSocketSubsystem->Send(TEXT("channel_join"), Json);
 }
 
-TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::ChannelLeave(
+TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::ChannelLeave(
     const FString& ChannelId
 ) noexcept
 {
@@ -100,7 +100,7 @@ TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::ChannelLeave(
     return WebSocketSubsystem->Send(TEXT("channel_leave"), Json);
 }
 
-TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::ChannelMessage(
+TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::ChannelMessage(
     const FString& ChannelId,
     const FString& MessageId,
     const int32& Code,
@@ -167,7 +167,7 @@ TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::ChannelMessage(
     return WebSocketSubsystem->Send(TEXT("channel_message"), Json);
 }
 
-TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::ChannelMessageAck(
+TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::ChannelMessageAck(
     const FString& ChannelId,
     const FString& MessageId,
     const int32& Code,
@@ -224,7 +224,7 @@ TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::ChannelMessageAck(
     return WebSocketSubsystem->Send(TEXT("channel_message_ack"), Json);
 }
 
-TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::ChannelMessageSend(
+TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::ChannelMessageSend(
     const FString& ChannelId,
     const FString& Content
 ) noexcept
@@ -242,7 +242,7 @@ TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::ChannelMessageSend(
     return WebSocketSubsystem->Send(TEXT("channel_message_send"), Json);
 }
 
-TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::ChannelMessageUpdate(
+TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::ChannelMessageUpdate(
     const FString& ChannelId,
     const FString& MessageId,
     const FString& Content
@@ -265,7 +265,7 @@ TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::ChannelMessageUpdate(
     return WebSocketSubsystem->Send(TEXT("channel_message_update"), Json);
 }
 
-TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::ChannelMessageRemove(
+TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::ChannelMessageRemove(
     const FString& ChannelId,
     const FString& MessageId
 ) noexcept
@@ -283,7 +283,7 @@ TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::ChannelMessageRemove(
     return WebSocketSubsystem->Send(TEXT("channel_message_remove"), Json);
 }
 
-TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::ChannelPresenceEvent(
+TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::ChannelPresenceEvent(
     const FString& ChannelId,
     const TArray<FNakamaRtUserPresence>& Joins,
     const TArray<FNakamaRtUserPresence>& Leaves,
@@ -336,7 +336,7 @@ TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::ChannelPresenceEvent(
     return WebSocketSubsystem->Send(TEXT("channel_presence_event"), Json);
 }
 
-TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::Error(
+TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::Error(
     const int32& Code,
     const FString& Message,
     const TMap<FString, FString>& Context
@@ -359,7 +359,7 @@ TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::Error(
     return WebSocketSubsystem->Send(TEXT("error"), Json);
 }
 
-TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::Match(
+TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::Match(
     const FString& MatchId,
     const bool& Authoritative,
     const FString& Label,
@@ -393,7 +393,7 @@ TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::Match(
     return WebSocketSubsystem->Send(TEXT("match"), Json);
 }
 
-TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::MatchCreate(
+TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::MatchCreate(
     const FString& Name
 ) noexcept
 {
@@ -406,7 +406,7 @@ TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::MatchCreate(
     return WebSocketSubsystem->Send(TEXT("match_create"), Json);
 }
 
-TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::MatchData(
+TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::MatchData(
     const FString& MatchId,
     const FNakamaRtUserPresence& Presence,
     const int64& OpCode,
@@ -427,7 +427,7 @@ TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::MatchData(
     return WebSocketSubsystem->Send(TEXT("match_data"), Json);
 }
 
-TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::MatchDataSend(
+TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::MatchDataSend(
     const FString& MatchId,
     const int64& OpCode,
     const TArray<uint8>& Data,
@@ -456,7 +456,7 @@ TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::MatchDataSend(
     return WebSocketSubsystem->Send(TEXT("match_data_send"), Json);
 }
 
-TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::MatchJoin(
+TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::MatchJoin(
     const TMap<FString, FString>& Metadata
 ) noexcept
 {
@@ -472,7 +472,7 @@ TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::MatchJoin(
     return WebSocketSubsystem->Send(TEXT("match_join"), Json);
 }
 
-TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::MatchLeave(
+TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::MatchLeave(
     const FString& MatchId
 ) noexcept
 {
@@ -485,7 +485,7 @@ TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::MatchLeave(
     return WebSocketSubsystem->Send(TEXT("match_leave"), Json);
 }
 
-TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::MatchPresenceEvent(
+TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::MatchPresenceEvent(
     const FString& MatchId,
     const TArray<FNakamaRtUserPresence>& Joins,
     const TArray<FNakamaRtUserPresence>& Leaves
@@ -518,7 +518,7 @@ TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::MatchPresenceEvent(
     return WebSocketSubsystem->Send(TEXT("match_presence_event"), Json);
 }
 
-TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::MatchmakerAdd(
+TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::MatchmakerAdd(
     const int32& MinCount,
     const int32& MaxCount,
     const FString& Query,
@@ -554,7 +554,7 @@ TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::MatchmakerAdd(
     return WebSocketSubsystem->Send(TEXT("matchmaker_add"), Json);
 }
 
-TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::MatchmakerMatched(
+TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::MatchmakerMatched(
     const FString& Ticket,
     const TArray<FNakamaRtMatchmakerMatched_MatchmakerUser>& Users,
     const FNakamaRtMatchmakerMatched_MatchmakerUser& Self
@@ -579,7 +579,7 @@ TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::MatchmakerMatched(
     return WebSocketSubsystem->Send(TEXT("matchmaker_matched"), Json);
 }
 
-TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::MatchmakerRemove(
+TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::MatchmakerRemove(
     const FString& Ticket
 ) noexcept
 {
@@ -592,7 +592,7 @@ TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::MatchmakerRemove(
     return WebSocketSubsystem->Send(TEXT("matchmaker_remove"), Json);
 }
 
-TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::MatchmakerTicket(
+TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::MatchmakerTicket(
     const FString& Ticket
 ) noexcept
 {
@@ -605,7 +605,7 @@ TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::MatchmakerTicket(
     return WebSocketSubsystem->Send(TEXT("matchmaker_ticket"), Json);
 }
 
-TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::Notifications(
+TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::Notifications(
     const TArray<FString>& Notifications
 ) noexcept
 {
@@ -623,7 +623,7 @@ TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::Notifications(
     return WebSocketSubsystem->Send(TEXT("notifications"), Json);
 }
 
-TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::Rpc(
+TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::Rpc(
     const FString& Id,
     const FString& Payload,
     const FString& HttpKey
@@ -646,7 +646,7 @@ TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::Rpc(
     return WebSocketSubsystem->Send(TEXT("rpc"), Json);
 }
 
-TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::Status(
+TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::Status(
     const TArray<FNakamaRtUserPresence>& Presences
 ) noexcept
 {
@@ -664,7 +664,7 @@ TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::Status(
     return WebSocketSubsystem->Send(TEXT("status"), Json);
 }
 
-TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::StatusFollow(
+TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::StatusFollow(
     const TArray<FString>& UserIds,
     const TArray<FString>& Usernames
 ) noexcept
@@ -692,7 +692,7 @@ TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::StatusFollow(
     return WebSocketSubsystem->Send(TEXT("status_follow"), Json);
 }
 
-TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::StatusPresenceEvent(
+TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::StatusPresenceEvent(
     const TArray<FNakamaRtUserPresence>& Joins,
     const TArray<FNakamaRtUserPresence>& Leaves
 ) noexcept
@@ -720,7 +720,7 @@ TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::StatusPresenceEvent(
     return WebSocketSubsystem->Send(TEXT("status_presence_event"), Json);
 }
 
-TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::StatusUnfollow(
+TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::StatusUnfollow(
     const TArray<FString>& UserIds
 ) noexcept
 {
@@ -738,7 +738,7 @@ TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::StatusUnfollow(
     return WebSocketSubsystem->Send(TEXT("status_unfollow"), Json);
 }
 
-TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::StatusUpdate(
+TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::StatusUpdate(
     const FString& Status
 ) noexcept
 {
@@ -751,7 +751,7 @@ TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::StatusUpdate(
     return WebSocketSubsystem->Send(TEXT("status_update"), Json);
 }
 
-TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::StreamData(
+TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::StreamData(
     const FNakamaRtStream& Stream,
     const FNakamaRtUserPresence& Sender,
     const FString& Data,
@@ -770,7 +770,7 @@ TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::StreamData(
     return WebSocketSubsystem->Send(TEXT("stream_data"), Json);
 }
 
-TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::StreamPresenceEvent(
+TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::StreamPresenceEvent(
     const FNakamaRtStream& Stream,
     const TArray<FNakamaRtUserPresence>& Joins,
     const TArray<FNakamaRtUserPresence>& Leaves
@@ -800,7 +800,7 @@ TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::StreamPresenceEvent(
     return WebSocketSubsystem->Send(TEXT("stream_presence_event"), Json);
 }
 
-TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::Ping(
+TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::Ping(
     
 ) noexcept
 {
@@ -809,7 +809,7 @@ TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::Ping(
     return WebSocketSubsystem->Send(TEXT("ping"), Json);
 }
 
-TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::Pong(
+TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::Pong(
     
 ) noexcept
 {
@@ -818,7 +818,7 @@ TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::Pong(
     return WebSocketSubsystem->Send(TEXT("pong"), Json);
 }
 
-TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::Party(
+TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::Party(
     const FString& PartyId,
     const bool& Open,
     const bool& Hidden,
@@ -856,7 +856,7 @@ TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::Party(
     return WebSocketSubsystem->Send(TEXT("party"), Json);
 }
 
-TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyCreate(
+TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyCreate(
     const bool& Open,
     const int32& MaxSize,
     const FString& Label,
@@ -875,7 +875,7 @@ TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyCreate(
     return WebSocketSubsystem->Send(TEXT("party_create"), Json);
 }
 
-TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyJoin(
+TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyJoin(
     const FString& PartyId
 ) noexcept
 {
@@ -888,7 +888,7 @@ TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyJoin(
     return WebSocketSubsystem->Send(TEXT("party_join"), Json);
 }
 
-TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyLeave(
+TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyLeave(
     const FString& PartyId
 ) noexcept
 {
@@ -901,7 +901,7 @@ TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyLeave(
     return WebSocketSubsystem->Send(TEXT("party_leave"), Json);
 }
 
-TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyPromote(
+TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyPromote(
     const FString& PartyId,
     const FNakamaRtUserPresence& Presence
 ) noexcept
@@ -916,7 +916,7 @@ TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyPromote(
     return WebSocketSubsystem->Send(TEXT("party_promote"), Json);
 }
 
-TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyLeader(
+TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyLeader(
     const FString& PartyId,
     const FNakamaRtUserPresence& Presence
 ) noexcept
@@ -931,7 +931,7 @@ TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyLeader(
     return WebSocketSubsystem->Send(TEXT("party_leader"), Json);
 }
 
-TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyAccept(
+TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyAccept(
     const FString& PartyId,
     const FNakamaRtUserPresence& Presence
 ) noexcept
@@ -946,7 +946,7 @@ TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyAccept(
     return WebSocketSubsystem->Send(TEXT("party_accept"), Json);
 }
 
-TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyRemove(
+TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyRemove(
     const FString& PartyId,
     const FNakamaRtUserPresence& Presence
 ) noexcept
@@ -961,7 +961,7 @@ TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyRemove(
     return WebSocketSubsystem->Send(TEXT("party_remove"), Json);
 }
 
-TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyClose(
+TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyClose(
     const FString& PartyId
 ) noexcept
 {
@@ -974,7 +974,7 @@ TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyClose(
     return WebSocketSubsystem->Send(TEXT("party_close"), Json);
 }
 
-TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyJoinRequestList(
+TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyJoinRequestList(
     const FString& PartyId
 ) noexcept
 {
@@ -987,7 +987,7 @@ TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyJoinRequestList(
     return WebSocketSubsystem->Send(TEXT("party_join_request_list"), Json);
 }
 
-TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyJoinRequest(
+TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyJoinRequest(
     const FString& PartyId,
     const TArray<FNakamaRtUserPresence>& Presences
 ) noexcept
@@ -1010,7 +1010,7 @@ TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyJoinRequest(
     return WebSocketSubsystem->Send(TEXT("party_join_request"), Json);
 }
 
-TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyMatchmakerAdd(
+TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyMatchmakerAdd(
     const FString& PartyId,
     const int32& MinCount,
     const int32& MaxCount,
@@ -1051,7 +1051,7 @@ TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyMatchmakerAdd(
     return WebSocketSubsystem->Send(TEXT("party_matchmaker_add"), Json);
 }
 
-TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyMatchmakerRemove(
+TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyMatchmakerRemove(
     const FString& PartyId,
     const FString& Ticket
 ) noexcept
@@ -1069,7 +1069,7 @@ TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyMatchmakerRemove(
     return WebSocketSubsystem->Send(TEXT("party_matchmaker_remove"), Json);
 }
 
-TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyMatchmakerTicket(
+TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyMatchmakerTicket(
     const FString& PartyId,
     const FString& Ticket
 ) noexcept
@@ -1087,7 +1087,7 @@ TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyMatchmakerTicket(
     return WebSocketSubsystem->Send(TEXT("party_matchmaker_ticket"), Json);
 }
 
-TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyData(
+TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyData(
     const FString& PartyId,
     const FNakamaRtUserPresence& Presence,
     const int64& OpCode,
@@ -1106,7 +1106,7 @@ TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyData(
     return WebSocketSubsystem->Send(TEXT("party_data"), Json);
 }
 
-TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyDataSend(
+TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyDataSend(
     const FString& PartyId,
     const int64& OpCode,
     const TArray<uint8>& Data
@@ -1123,7 +1123,7 @@ TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyDataSend(
     return WebSocketSubsystem->Send(TEXT("party_data_send"), Json);
 }
 
-TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyPresenceEvent(
+TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyPresenceEvent(
     const FString& PartyId,
     const TArray<FNakamaRtUserPresence>& Joins,
     const TArray<FNakamaRtUserPresence>& Leaves
@@ -1156,7 +1156,7 @@ TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyPresenceEvent(
     return WebSocketSubsystem->Send(TEXT("party_presence_event"), Json);
 }
 
-TFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyUpdate(
+TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyUpdate(
     const FString& PartyId,
     const FString& Label,
     const bool& Open,

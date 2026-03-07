@@ -18,6 +18,7 @@
 
 #include "CoreMinimal.h"
 #include "IWebSocket.h"
+#include "NakamaFuture.h"
 #include "NakamaWebSocketSubsystem.generated.h"
 
 NAKAMA_API DECLARE_LOG_CATEGORY_EXTERN(LogNakamaWebSocket, Log, All);
@@ -84,9 +85,9 @@ public:
     FDelegateMessageError           MessageError;
     FDelegateClosed                 Closed;
 
-    TFuture<FNakamaWebSocketConnectionResult> Connect(FNakamaWebSocketConnectionParams Params);
+    TNakamaFuture<FNakamaWebSocketConnectionResult> Connect(FNakamaWebSocketConnectionParams Params);
 
-    TFuture<FNakamaWebSocketResponse> Send(const FString& RequestName, const TSharedPtr<FJsonObject>& Data);
+    TNakamaFuture<FNakamaWebSocketResponse> Send(const FString& RequestName, const TSharedPtr<FJsonObject>& Data);
 
     void Close();
 
@@ -94,11 +95,11 @@ private:
 
     TSharedPtr<IWebSocket> WebSocket;
 
-    TSharedPtr<TPromise<FNakamaWebSocketConnectionResult>> PromiseConnected;
+    TSharedPtr<TNakamaFuture<FNakamaWebSocketConnectionResult>::FState> ConnectionState;
     bool bIsConnected = false;
 
     // Current ongoing requests
-    TMap<FString, TSharedRef<TPromise<FNakamaWebSocketResponse>>> Requests;
+    TMap<FString, TSharedRef<TNakamaFuture<FNakamaWebSocketResponse>::FState>> Requests;
     FCriticalSection RequestsLock;
 
     // Params for current connection
