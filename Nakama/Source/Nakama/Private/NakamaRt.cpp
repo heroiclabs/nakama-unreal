@@ -23,6 +23,12 @@
 
 namespace Nakama
 {
+TNakamaFuture<FNakamaWebSocketConnectionResult> NakamaRealtimeClient::Connect(
+    const FNakamaWebSocketConnectionParams& Params
+) noexcept
+{
+    return WebSocketSubsystem->Connect(Params);
+}
 TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::Channel(
     const FString& Id,
     const TArray<FNakamaRtUserPresence>& Presences,

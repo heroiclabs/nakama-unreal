@@ -30,7 +30,7 @@ namespace Nakama
         TWeakObjectPtr<UNakamaWebSocketSubsystem> WebSocketSubsystem;
 
     public:
-        NakamaRealtimeClient(UGameInstance* InGi, FNakamaWebSocketConnectionParams Params)
+        explicit NakamaRealtimeClient(UGameInstance* InGi)
         {
             if (InGi == nullptr)
             {
@@ -38,7 +38,6 @@ namespace Nakama
                 return;
             }
             WebSocketSubsystem = InGi->GetSubsystem<UNakamaWebSocketSubsystem>();
-            WebSocketSubsystem->Connect(Params);
         }
         ~NakamaRealtimeClient()
         {
@@ -52,6 +51,12 @@ namespace Nakama
         NakamaRealtimeClient& operator=(const NakamaRealtimeClient&) = delete;
         NakamaRealtimeClient(NakamaRealtimeClient&&) = delete;
         NakamaRealtimeClient& operator=(NakamaRealtimeClient&&) = delete;
+
+        /** Connect (or reconnect) the WebSocket. Returns a future that resolves once the
+         *  handshake completes or fails. */
+        NAKAMA_API TNakamaFuture<FNakamaWebSocketConnectionResult> Connect(
+            const FNakamaWebSocketConnectionParams& Params
+        ) noexcept;
 
         /**
         * A response from a channel join operation.

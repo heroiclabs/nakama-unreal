@@ -39,10 +39,12 @@ void UNakamaWebSocketSubsystem::Deinitialize()
 
 void UNakamaWebSocketSubsystem::Close()
 {
+    StopPingLoop();
+    bIsConnected = false;
+
     if (WebSocket.IsValid())
     {
         WebSocket->Close();
-
         WebSocket.Reset();
     }
 }
@@ -269,21 +271,44 @@ void UNakamaWebSocketSubsystem::OnMessage(const FString& Message)
     }
 
     //
+    // Try get the Cid from the message before anything else.
+    // Error responses from the server also carry a Cid.
+    FString Cid;
+    JsonObject->TryGetStringField(TEXT("cid"), Cid);
+
+    //
     // Handle possible error.
     if (JsonObject->HasField(TEXT("error")))
     {
+        // If there is a pending request for this Cid, resolve it with an error
+        // so callers are not left waiting forever.
+        if (!Cid.IsEmpty())
+        {
+            FScopeLock Lock(&RequestsLock);
+            if (auto* RequestPtr = Requests.Find(Cid))
+            {
+                TSharedRef<TNakamaFuture<FNakamaWebSocketResponse>::FState> Request = *RequestPtr;
+                Request->Resolve(FNakamaWebSocketResponse{ .ErrorCode = ENakamaWebSocketError::ServerError });
+                Requests.Remove(Cid);
+            }
+        }
+
         if (MessageError.IsBound())
         {
-            MessageError.Broadcast(EWebSocketMessageError::WS_ERROR_MESSAGE_HASERROR, JsonObject->GetStringField(TEXT("error")));
+            const TSharedPtr<FJsonObject>* ErrorObj;
+            FString ErrorMsg;
+            if (JsonObject->TryGetObjectField(TEXT("error"), ErrorObj))
+            {
+                (*ErrorObj)->TryGetStringField(TEXT("message"), ErrorMsg);
+            }
+            MessageError.Broadcast(EWebSocketMessageError::WS_ERROR_MESSAGE_HASERROR, ErrorMsg);
         }
         return;
     }
 
     //
-    // Try get the Cid from the message.
     // If we have a Cid, this is a response to a request.
-    FString Cid;
-    if (JsonObject->TryGetStringField(TEXT("cid"), Cid))
+    if (!Cid.IsEmpty())
     {
         FScopeLock Lock(&RequestsLock);
 
@@ -332,7 +357,6 @@ void UNakamaWebSocketSubsystem::OnMessageSent(const FString& Message)
 void UNakamaWebSocketSubsystem::OnClosed(int32 StatusCode, const FString& Reason, bool bWasClean)
 {
     bIsConnected = false;
-
     StopPingLoop();
 
     ELogVerbosity::Type Verbosity = bWasClean ? ELogVerbosity::Display : ELogVerbosity::Warning;
@@ -378,14 +402,5 @@ void UNakamaWebSocketSubsystem::OnClosed(int32 StatusCode, const FString& Reason
     MessageSent.Clear();
     MessageError.Clear();
     Closed.Clear();
-
-    /*
-    if (PromiseConnected.IsValid())
-    {
-        PromiseConnected->EmplaceValue(FNakamaWebSocketConnectionResult{ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
-        PromiseConnected.Reset();
-    }
-    */
-
 }
 

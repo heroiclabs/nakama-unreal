@@ -23,6 +23,13 @@
 
 namespace Nakama
 {
+TNakamaFuture<FNakamaWebSocketConnectionResult> NakamaRealtimeClient::Connect(
+    const FNakamaWebSocketConnectionParams& Params
+) noexcept
+{
+    return WebSocketSubsystem->Connect(Params);
+}
+
 {{- range $idx, $rpc := $envelope.OneofFields -}}
 {{- $rpcType := getMessage (stripDot $rpc.Type) }}
 TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::{{ $rpcType.Name | pascalCase }}(

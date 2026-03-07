@@ -30,6 +30,7 @@ enum class ENakamaWebSocketError : uint8
     ConnectionFailed = 2,
     NotConnected = 3,
     ConnectionClosed = 4,
+    ServerError = 5,
 };
 
 /** Result of a realtime send operation. Check ErrorCode before accessing Data —
