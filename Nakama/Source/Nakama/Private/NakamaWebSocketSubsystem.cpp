@@ -222,9 +222,8 @@ void UNakamaWebSocketSubsystem::OnConnected()
 {
     UE_LOG(LogNakamaWebSocket, Display, TEXT("WebSocket Connected."));
 
-    StartPingLoop();
-
     bIsConnected = true;
+    StartPingLoop();
 
     TSharedPtr<TNakamaFuture<FNakamaWebSocketConnectionResult>::FState> LocalState = MoveTemp(ConnectionState);
     FTSTicker::GetCoreTicker().AddTicker(FTickerDelegate::CreateLambda([LocalState](float) -> bool
@@ -265,7 +264,8 @@ void UNakamaWebSocketSubsystem::OnMessage(const FString& Message)
 
     //
     // Log message (unless it's a pong).
-    if (!JsonObject->HasField(TEXT("pong")))
+    const bool bIsPong = JsonObject->HasField(TEXT("pong"));
+    if (!bIsPong)
     {
         UE_LOG(LogNakamaWebSocket, Verbose, TEXT("WebSocket Message Received: %s"), *Message);
     }
@@ -329,7 +329,7 @@ void UNakamaWebSocketSubsystem::OnMessage(const FString& Message)
             }
         }
 
-        if (ServerResponseReceived.IsBound())
+        if (ServerResponseReceived.IsBound() && !bIsPong)
         {
             ServerResponseReceived.Broadcast(Message);
         }

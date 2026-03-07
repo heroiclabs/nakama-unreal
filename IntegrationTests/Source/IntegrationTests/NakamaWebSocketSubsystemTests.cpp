@@ -976,7 +976,7 @@ void FNakamaWebSocketSubsystemDelegatesSpec::Define()
                             Done.Execute();
                         });
 
-                    WSSub->Send(TEXT("ping"), MakeShared<FJsonObject>());
+                    WSSub->Send(TEXT("match_create"), MakeShared<FJsonObject>());
                 });
         });
 
@@ -1002,7 +1002,7 @@ void FNakamaWebSocketSubsystemDelegatesSpec::Define()
 
                     for (int32 i = 0; i < NumSends; ++i)
                     {
-                        WSSub->Send(TEXT("ping"), MakeShared<FJsonObject>());
+                        WSSub->Send(TEXT("match_create"), MakeShared<FJsonObject>());
                     }
                 });
         });
