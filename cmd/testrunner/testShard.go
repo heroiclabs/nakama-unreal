@@ -28,7 +28,7 @@ func getTerminalWidth() int {
 	return width - 10
 }
 
-var NumLogLines int = 10
+var NumLogLines int = 5
 
 type TestShard struct {
 	lock sync.RWMutex
