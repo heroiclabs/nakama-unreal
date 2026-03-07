@@ -19,7 +19,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "WebSocketSubsystem.h"
+#include "NakamaWebSocketSubsystem.h"
 #include "NakamaRtTypes.h"
 
 namespace Nakama
@@ -27,17 +27,17 @@ namespace Nakama
     class NakamaRealtimeClient
     {
     private:
-        TWeakObjectPtr<UWebSocketSubsystem> WebSocketSubsystem;
+        TWeakObjectPtr<UNakamaWebSocketSubsystem> WebSocketSubsystem;
 
     public:
-        NakamaRealtimeClient(UGameInstance* InGi, FRealtimeConnectionParams Params)
+        NakamaRealtimeClient(UGameInstance* InGi, FNakamaWebSocketConnectionParams Params)
         {
             if (InGi == nullptr)
             {
                 UE_LOG(LogNakama, Error, TEXT("NakamaRealtimeClient constructor received null GameInstance pointer."));
                 return;
             }
-            WebSocketSubsystem = InGi->GetSubsystem<UWebSocketSubsystem>();
+            WebSocketSubsystem = InGi->GetSubsystem<UNakamaWebSocketSubsystem>();
             WebSocketSubsystem->Connect(Params);
         }
         ~NakamaRealtimeClient()
@@ -61,7 +61,7 @@ namespace Nakama
         /**
         {{ getUnrealMethodCommentBlock 8 $rpc.Comment.Message $rpcType.Fields $rpcType.MapFields }}
         */
-        NAKAMA_API TFuture<FRealtimeResponse> {{ $rpcType.Name | pascalCase }}(
+        NAKAMA_API TFuture<FNakamaWebSocketResponse> {{ $rpcType.Name | pascalCase }}(
             {{ getUnrealParamList 12 $rpcType.Fields $rpcType.MapFields }}
         ) noexcept;
         {{ end }}

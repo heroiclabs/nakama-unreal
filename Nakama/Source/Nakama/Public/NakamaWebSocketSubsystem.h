@@ -18,20 +18,31 @@
 
 #include "CoreMinimal.h"
 #include "IWebSocket.h"
-#include "WebSocketSubsystem.generated.h"
+#include "NakamaWebSocketSubsystem.generated.h"
 
 NAKAMA_API DECLARE_LOG_CATEGORY_EXTERN(LogNakamaWebSocket, Log, All);
 
-struct FRealtimeResponse
+enum class ENakamaWebSocketError : uint8
 {
-    bool                    bError = false;
+    None = 0,
+    ConnectionAlreadyInProgress = 1,
+    ConnectionFailed = 2,
+    NotConnected = 3,
+    ConnectionClosed = 4,
+};
+
+/** Result of a realtime send operation. Check ErrorCode before accessing Data —
+ *  Data is nullptr when ErrorCode != ENakamaWebSocketError::None. */
+struct FNakamaWebSocketResponse
+{
+    ENakamaWebSocketError   ErrorCode = ENakamaWebSocketError::None;
     TSharedPtr<FJsonObject> Data;
 };
-struct FRealtimeConnectionResult
+struct FNakamaWebSocketConnectionResult
 {
-    bool bError = false;
+    ENakamaWebSocketError ErrorCode = ENakamaWebSocketError::None;
 };
-struct FRealtimeConnectionParams
+struct FNakamaWebSocketConnectionParams
 {
     FString Host;
     int32   Port;
@@ -55,7 +66,7 @@ DECLARE_MULTICAST_DELEGATE_TwoParams(FDelegateMessageError, EWebSocketMessageErr
 DECLARE_MULTICAST_DELEGATE_ThreeParams(FDelegateClosed, int32, const FString&, bool);
 
 UCLASS()
-class NAKAMA_API UWebSocketSubsystem : public UGameInstanceSubsystem
+class NAKAMA_API UNakamaWebSocketSubsystem : public UGameInstanceSubsystem
 {
     GENERATED_BODY()
 
@@ -73,9 +84,9 @@ public:
     FDelegateMessageError           MessageError;
     FDelegateClosed                 Closed;
 
-    TFuture<FRealtimeConnectionResult> Connect(FRealtimeConnectionParams Params);
+    TFuture<FNakamaWebSocketConnectionResult> Connect(FNakamaWebSocketConnectionParams Params);
 
-    TFuture<FRealtimeResponse> Send(const FString& RequestName, const TSharedPtr<FJsonObject>& Data);
+    TFuture<FNakamaWebSocketResponse> Send(const FString& RequestName, const TSharedPtr<FJsonObject>& Data);
 
     void Close();
 
@@ -83,15 +94,15 @@ private:
 
     TSharedPtr<IWebSocket> WebSocket;
 
-    TSharedPtr<TPromise<FRealtimeConnectionResult>> PromiseConnected;
+    TSharedPtr<TPromise<FNakamaWebSocketConnectionResult>> PromiseConnected;
     bool bIsConnected = false;
 
     // Current ongoing requests
-    TMap<FString, TSharedRef<TPromise<FRealtimeResponse>>> Requests;
+    TMap<FString, TSharedRef<TPromise<FNakamaWebSocketResponse>>> Requests;
     FCriticalSection RequestsLock;
 
     // Params for current connection
-    FRealtimeConnectionParams ConnectionParams;
+    FNakamaWebSocketConnectionParams ConnectionParams;
 
     FTSTicker::FDelegateHandle PingTimerHandle;
 
