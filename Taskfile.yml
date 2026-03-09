@@ -185,6 +185,7 @@ tasks:
            docker exec unreal_integration_test_satori curl -sf http://localhost:7450/ >/dev/null 2>&1; then
           echo "Nakama and Satori are already running."
         else
+          docker compose -f IntegrationTests/server/docker-compose.yml down
           docker compose -f IntegrationTests/server/docker-compose.yml up --build -d
           echo "Waiting for Nakama to be healthy..."
           timeout=60

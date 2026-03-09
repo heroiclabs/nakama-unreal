@@ -1,7 +1,7 @@
 services:
   postgres:
     container_name: unreal_integration_test_postgres
-    image: timescale/timescaledb-ha:pg17.6-ts2.21.4-all
+    image: timescale/timescaledb-ha:pg18.1-ts2.23.1-all
     platform: "linux/amd64"
     environment:
       - POSTGRES_DB=nakama
@@ -9,7 +9,7 @@ services:
     expose:
       - "5432"
     healthcheck:
-      test: [ "CMD", "pg_isready", "-U", "postgres", "-d", "nakama" ]
+      test: ["CMD", "pg_isready", "-U", "postgres", "-d", "nakama"]
       interval: 3s
       timeout: 3s
       retries: 5
@@ -23,6 +23,7 @@ services:
     container_name: unreal_integration_test_nakama
     build:
       context: .
+      dockerfile: NakamaDockerfile
       args:
         NAKAMA_VERSION: "3.36.0"
     depends_on:
@@ -53,17 +54,7 @@ services:
 
   satori:
     container_name: unreal_integration_test_satori
-    build:
-      context: ${SATORI_PATH:-../../../satori}
-      dockerfile_inline: |
-        FROM golang:1.25.5-trixie AS builder
-        ENV CGO_ENABLED=1
-        RUN apt-get update && apt-get install -y --no-install-recommends postgresql-client && rm -rf /var/lib/apt/lists/*
-        WORKDIR /satori
-        COPY go.mod go.sum ./
-        RUN go mod download
-        COPY . .
-        RUN go build --trimpath -buildvcs=false -o ./satori
+    image: us.gcr.io/heroiclabs-shared/satori:2.1.7-r3-hc
     depends_on:
       postgres:
         condition: service_healthy
@@ -71,24 +62,20 @@ services:
       - "/bin/sh"
       - "-ecx"
       - >
-        /satori/satori timescale-cont-agg pause --database.address postgres:localdb@postgres:5432/satori &&
-        /satori/satori migrate up --database.address postgres:localdb@postgres:5432/satori &&
-        /satori/satori timescale-cont-agg resume --database.address postgres:localdb@postgres:5432/satori &&
-        PGPASSWORD=localdb psql -h postgres -U postgres -d satori -c "INSERT INTO api_key (name, value) VALUES ('default', 'defaultkey') ON CONFLICT (name) DO UPDATE SET value = 'defaultkey';" &&
-        PGPASSWORD=localdb psql -h postgres -U postgres -d satori -c "INSERT INTO event_configuration (name) VALUES ('game_start'),('level_complete'),('purchase') ON CONFLICT (name) DO NOTHING;" &&
-        PGPASSWORD=localdb psql -h postgres -U postgres -d satori -c "INSERT INTO property_configuration (name) VALUES ('level'),('rank') ON CONFLICT (name) DO NOTHING;" &&
-        exec /satori/satori --database.address postgres:localdb@postgres:5432/satori --logger.level DEBUG --metrics.prometheus_port 0
-    expose:
-      - "7450"
+        /satori/satori migrate up --database.address postgres:localdb@db:5432/satori &&
+        exec /satori/satori --database.address postgres:localdb@db:5432/satori --logger.level ERROR --metrics.prometheus_port 0
+    ports:
+      - "7448:7448"
+      - "7449:7449"
+      - "7450:7450"
+      - "7451:7451"
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:7450/" ]
+      test: ["CMD-SHELL", "wget -qO /dev/null http://localhost:7450/healthcheck"]
       interval: 10s
       timeout: 5s
       retries: 5
     links:
       - "postgres:db"
-    ports:
-      - "7450:7450"
     restart: unless-stopped
 
 volumes:

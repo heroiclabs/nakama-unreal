@@ -13,6 +13,7 @@
 #include "SatoriClientBlueprintLibrary.h"
 #include "Misc/Guid.h"
 #include "Containers/Ticker.h"
+#include "SatoriConsoleHelper.h"
 
 // Helper: poll until the BP action's async work completes, then run verification.
 // Actions self-root in Activate() and self-unroot when done, so IsRooted()==false
@@ -45,7 +46,7 @@ BEGIN_DEFINE_SPEC(FSatoriBPHealthcheckSpec, "IntegrationTests.SatoriBlueprint.He
 	FSatoriSession Session;
 	FSatoriClientConfig ClientConfig;
 
-	static const FString ServerKey;
+	static FString ServerKey;
 	static const FString Host;
 	static constexpr int32 Port = 7450;
 
@@ -53,14 +54,19 @@ BEGIN_DEFINE_SPEC(FSatoriBPHealthcheckSpec, "IntegrationTests.SatoriBlueprint.He
 
 END_DEFINE_SPEC(FSatoriBPHealthcheckSpec)
 
-const FString FSatoriBPHealthcheckSpec::ServerKey = TEXT("defaultkey");
+FString FSatoriBPHealthcheckSpec::ServerKey;
 const FString FSatoriBPHealthcheckSpec::Host = TEXT("127.0.0.1");
 
 void FSatoriBPHealthcheckSpec::Define()
 {
-	BeforeEach([this]()
+	LatentBeforeEach([this](const FDoneDelegate& Done)
 	{
-		ClientConfig = FSatoriClientConfig{ServerKey, Host, Port, false};
+		GetSatoriApiKey().Next([this, Done](FString Key)
+		{
+			ServerKey = Key;
+			ClientConfig = FSatoriClientConfig{ServerKey, Host, Port, false};
+			Done.Execute();
+		});
 	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
@@ -131,7 +137,7 @@ BEGIN_DEFINE_SPEC(FSatoriBPAuthSpec, "IntegrationTests.SatoriBlueprint.Auth",
 
 	FSatoriClientConfig ClientConfig;
 
-	static const FString ServerKey;
+	static FString ServerKey;
 	static const FString Host;
 	static constexpr int32 Port = 7450;
 
@@ -139,14 +145,19 @@ BEGIN_DEFINE_SPEC(FSatoriBPAuthSpec, "IntegrationTests.SatoriBlueprint.Auth",
 
 END_DEFINE_SPEC(FSatoriBPAuthSpec)
 
-const FString FSatoriBPAuthSpec::ServerKey = TEXT("defaultkey");
+FString FSatoriBPAuthSpec::ServerKey;
 const FString FSatoriBPAuthSpec::Host = TEXT("127.0.0.1");
 
 void FSatoriBPAuthSpec::Define()
 {
-	BeforeEach([this]()
+	LatentBeforeEach([this](const FDoneDelegate& Done)
 	{
-		ClientConfig = FSatoriClientConfig{ServerKey, Host, Port, false};
+		GetSatoriApiKey().Next([this, Done](FString Key)
+		{
+			ServerKey = Key;
+			ClientConfig = FSatoriClientConfig{ServerKey, Host, Port, false};
+			Done.Execute();
+		});
 	});
 
 	Describe("Authenticate", [this]()
@@ -257,7 +268,7 @@ BEGIN_DEFINE_SPEC(FSatoriBPIdentitySpec, "IntegrationTests.SatoriBlueprint.Ident
 	FSatoriClientConfig ClientConfig;
 	FSatoriSession Session;
 
-	static const FString ServerKey;
+	static FString ServerKey;
 	static const FString Host;
 	static constexpr int32 Port = 7450;
 
@@ -265,14 +276,19 @@ BEGIN_DEFINE_SPEC(FSatoriBPIdentitySpec, "IntegrationTests.SatoriBlueprint.Ident
 
 END_DEFINE_SPEC(FSatoriBPIdentitySpec)
 
-const FString FSatoriBPIdentitySpec::ServerKey = TEXT("defaultkey");
+FString FSatoriBPIdentitySpec::ServerKey;
 const FString FSatoriBPIdentitySpec::Host = TEXT("127.0.0.1");
 
 void FSatoriBPIdentitySpec::Define()
 {
-	BeforeEach([this]()
+	LatentBeforeEach([this](const FDoneDelegate& Done)
 	{
-		ClientConfig = FSatoriClientConfig{ServerKey, Host, Port, false};
+		GetSatoriApiKey().Next([this, Done](FString Key)
+		{
+			ServerKey = Key;
+			ClientConfig = FSatoriClientConfig{ServerKey, Host, Port, false};
+			Done.Execute();
+		});
 	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
@@ -336,7 +352,7 @@ BEGIN_DEFINE_SPEC(FSatoriBPPropertiesSpec, "IntegrationTests.SatoriBlueprint.Pro
 	FSatoriClientConfig ClientConfig;
 	FSatoriSession Session;
 
-	static const FString ServerKey;
+	static FString ServerKey;
 	static const FString Host;
 	static constexpr int32 Port = 7450;
 
@@ -344,14 +360,19 @@ BEGIN_DEFINE_SPEC(FSatoriBPPropertiesSpec, "IntegrationTests.SatoriBlueprint.Pro
 
 END_DEFINE_SPEC(FSatoriBPPropertiesSpec)
 
-const FString FSatoriBPPropertiesSpec::ServerKey = TEXT("defaultkey");
+FString FSatoriBPPropertiesSpec::ServerKey;
 const FString FSatoriBPPropertiesSpec::Host = TEXT("127.0.0.1");
 
 void FSatoriBPPropertiesSpec::Define()
 {
-	BeforeEach([this]()
+	LatentBeforeEach([this](const FDoneDelegate& Done)
 	{
-		ClientConfig = FSatoriClientConfig{ServerKey, Host, Port, false};
+		GetSatoriApiKey().Next([this, Done](FString Key)
+		{
+			ServerKey = Key;
+			ClientConfig = FSatoriClientConfig{ServerKey, Host, Port, false};
+			Done.Execute();
+		});
 	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
@@ -437,7 +458,7 @@ BEGIN_DEFINE_SPEC(FSatoriBPEventSpec, "IntegrationTests.SatoriBlueprint.Event",
 	FSatoriClientConfig ClientConfig;
 	FSatoriSession Session;
 
-	static const FString ServerKey;
+	static FString ServerKey;
 	static const FString Host;
 	static constexpr int32 Port = 7450;
 
@@ -445,14 +466,19 @@ BEGIN_DEFINE_SPEC(FSatoriBPEventSpec, "IntegrationTests.SatoriBlueprint.Event",
 
 END_DEFINE_SPEC(FSatoriBPEventSpec)
 
-const FString FSatoriBPEventSpec::ServerKey = TEXT("defaultkey");
+FString FSatoriBPEventSpec::ServerKey;
 const FString FSatoriBPEventSpec::Host = TEXT("127.0.0.1");
 
 void FSatoriBPEventSpec::Define()
 {
-	BeforeEach([this]()
+	LatentBeforeEach([this](const FDoneDelegate& Done)
 	{
-		ClientConfig = FSatoriClientConfig{ServerKey, Host, Port, false};
+		GetSatoriApiKey().Next([this, Done](FString Key)
+		{
+			ServerKey = Key;
+			ClientConfig = FSatoriClientConfig{ServerKey, Host, Port, false};
+			Done.Execute();
+		});
 	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
@@ -509,7 +535,7 @@ BEGIN_DEFINE_SPEC(FSatoriBPFlagsSpec, "IntegrationTests.SatoriBlueprint.Flags",
 	FSatoriClientConfig ClientConfig;
 	FSatoriSession Session;
 
-	static const FString ServerKey;
+	static FString ServerKey;
 	static const FString Host;
 	static constexpr int32 Port = 7450;
 
@@ -517,14 +543,19 @@ BEGIN_DEFINE_SPEC(FSatoriBPFlagsSpec, "IntegrationTests.SatoriBlueprint.Flags",
 
 END_DEFINE_SPEC(FSatoriBPFlagsSpec)
 
-const FString FSatoriBPFlagsSpec::ServerKey = TEXT("defaultkey");
+FString FSatoriBPFlagsSpec::ServerKey;
 const FString FSatoriBPFlagsSpec::Host = TEXT("127.0.0.1");
 
 void FSatoriBPFlagsSpec::Define()
 {
-	BeforeEach([this]()
+	LatentBeforeEach([this](const FDoneDelegate& Done)
 	{
-		ClientConfig = FSatoriClientConfig{ServerKey, Host, Port, false};
+		GetSatoriApiKey().Next([this, Done](FString Key)
+		{
+			ServerKey = Key;
+			ClientConfig = FSatoriClientConfig{ServerKey, Host, Port, false};
+			Done.Execute();
+		});
 	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
@@ -606,7 +637,7 @@ BEGIN_DEFINE_SPEC(FSatoriBPExperimentsSpec, "IntegrationTests.SatoriBlueprint.Ex
 	FSatoriClientConfig ClientConfig;
 	FSatoriSession Session;
 
-	static const FString ServerKey;
+	static FString ServerKey;
 	static const FString Host;
 	static constexpr int32 Port = 7450;
 
@@ -614,14 +645,19 @@ BEGIN_DEFINE_SPEC(FSatoriBPExperimentsSpec, "IntegrationTests.SatoriBlueprint.Ex
 
 END_DEFINE_SPEC(FSatoriBPExperimentsSpec)
 
-const FString FSatoriBPExperimentsSpec::ServerKey = TEXT("defaultkey");
+FString FSatoriBPExperimentsSpec::ServerKey;
 const FString FSatoriBPExperimentsSpec::Host = TEXT("127.0.0.1");
 
 void FSatoriBPExperimentsSpec::Define()
 {
-	BeforeEach([this]()
+	LatentBeforeEach([this](const FDoneDelegate& Done)
 	{
-		ClientConfig = FSatoriClientConfig{ServerKey, Host, Port, false};
+		GetSatoriApiKey().Next([this, Done](FString Key)
+		{
+			ServerKey = Key;
+			ClientConfig = FSatoriClientConfig{ServerKey, Host, Port, false};
+			Done.Execute();
+		});
 	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
@@ -677,7 +713,7 @@ BEGIN_DEFINE_SPEC(FSatoriBPLiveEventsSpec, "IntegrationTests.SatoriBlueprint.Liv
 	FSatoriClientConfig ClientConfig;
 	FSatoriSession Session;
 
-	static const FString ServerKey;
+	static FString ServerKey;
 	static const FString Host;
 	static constexpr int32 Port = 7450;
 
@@ -685,14 +721,19 @@ BEGIN_DEFINE_SPEC(FSatoriBPLiveEventsSpec, "IntegrationTests.SatoriBlueprint.Liv
 
 END_DEFINE_SPEC(FSatoriBPLiveEventsSpec)
 
-const FString FSatoriBPLiveEventsSpec::ServerKey = TEXT("defaultkey");
+FString FSatoriBPLiveEventsSpec::ServerKey;
 const FString FSatoriBPLiveEventsSpec::Host = TEXT("127.0.0.1");
 
 void FSatoriBPLiveEventsSpec::Define()
 {
-	BeforeEach([this]()
+	LatentBeforeEach([this](const FDoneDelegate& Done)
 	{
-		ClientConfig = FSatoriClientConfig{ServerKey, Host, Port, false};
+		GetSatoriApiKey().Next([this, Done](FString Key)
+		{
+			ServerKey = Key;
+			ClientConfig = FSatoriClientConfig{ServerKey, Host, Port, false};
+			Done.Execute();
+		});
 	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
@@ -748,7 +789,7 @@ BEGIN_DEFINE_SPEC(FSatoriBPMessagesSpec, "IntegrationTests.SatoriBlueprint.Messa
 	FSatoriClientConfig ClientConfig;
 	FSatoriSession Session;
 
-	static const FString ServerKey;
+	static FString ServerKey;
 	static const FString Host;
 	static constexpr int32 Port = 7450;
 
@@ -756,14 +797,19 @@ BEGIN_DEFINE_SPEC(FSatoriBPMessagesSpec, "IntegrationTests.SatoriBlueprint.Messa
 
 END_DEFINE_SPEC(FSatoriBPMessagesSpec)
 
-const FString FSatoriBPMessagesSpec::ServerKey = TEXT("defaultkey");
+FString FSatoriBPMessagesSpec::ServerKey;
 const FString FSatoriBPMessagesSpec::Host = TEXT("127.0.0.1");
 
 void FSatoriBPMessagesSpec::Define()
 {
-	BeforeEach([this]()
+	LatentBeforeEach([this](const FDoneDelegate& Done)
 	{
-		ClientConfig = FSatoriClientConfig{ServerKey, Host, Port, false};
+		GetSatoriApiKey().Next([this, Done](FString Key)
+		{
+			ServerKey = Key;
+			ClientConfig = FSatoriClientConfig{ServerKey, Host, Port, false};
+			Done.Execute();
+		});
 	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)

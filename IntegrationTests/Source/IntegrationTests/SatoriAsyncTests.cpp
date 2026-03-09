@@ -8,6 +8,7 @@
 
 #include "Satori.h"
 #include "Misc/Guid.h"
+#include "SatoriConsoleHelper.h"
 
 /**
  * Helper macro: early-return on unexpected error inside a .Next() callback.
@@ -30,7 +31,7 @@ BEGIN_DEFINE_SPEC(FSatoriAsyncAuthSpec, "IntegrationTests.Satori.Auth",
 	FSatoriRetryConfig RetryConfig;
 	FString TestIdentityId;
 
-	static const FString ServerKey;
+	static FString ServerKey;
 	static const FString Host;
 	static constexpr int32 Port = 7450;
 
@@ -38,11 +39,20 @@ BEGIN_DEFINE_SPEC(FSatoriAsyncAuthSpec, "IntegrationTests.Satori.Auth",
 
 END_DEFINE_SPEC(FSatoriAsyncAuthSpec)
 
-const FString FSatoriAsyncAuthSpec::ServerKey = TEXT("defaultkey");
+FString FSatoriAsyncAuthSpec::ServerKey;
 const FString FSatoriAsyncAuthSpec::Host = TEXT("127.0.0.1");
 
 void FSatoriAsyncAuthSpec::Define()
 {
+	LatentBeforeEach([this](const FDoneDelegate& Done)
+	{
+		GetSatoriApiKey().Next([this, Done](FString Key)
+		{
+			ServerKey = Key;
+			Done.Execute();
+		});
+	});
+
 	BeforeEach([this]()
 	{
 		ClientConfig = FSatoriClientConfig{ServerKey, Host, Port, false};
@@ -177,17 +187,26 @@ BEGIN_DEFINE_SPEC(FSatoriAsyncHealthcheckSpec, "IntegrationTests.Satori.Healthch
 	FSatoriClientConfig ClientConfig;
 	FSatoriRetryConfig RetryConfig;
 
-	static const FString ServerKey;
+	static FString ServerKey;
 	static const FString Host;
 	static constexpr int32 Port = 7450;
 
 END_DEFINE_SPEC(FSatoriAsyncHealthcheckSpec)
 
-const FString FSatoriAsyncHealthcheckSpec::ServerKey = TEXT("defaultkey");
+FString FSatoriAsyncHealthcheckSpec::ServerKey;
 const FString FSatoriAsyncHealthcheckSpec::Host = TEXT("127.0.0.1");
 
 void FSatoriAsyncHealthcheckSpec::Define()
 {
+	LatentBeforeEach([this](const FDoneDelegate& Done)
+	{
+		GetSatoriApiKey().Next([this, Done](FString Key)
+		{
+			ServerKey = Key;
+			Done.Execute();
+		});
+	});
+
 	BeforeEach([this]()
 	{
 		ClientConfig = FSatoriClientConfig{ServerKey, Host, Port, false};
@@ -223,7 +242,7 @@ BEGIN_DEFINE_SPEC(FSatoriAsyncIdentitySpec, "IntegrationTests.Satori.Identity",
 	FSatoriRetryConfig RetryConfig;
 	FSatoriSession Session;
 
-	static const FString ServerKey;
+	static FString ServerKey;
 	static const FString Host;
 	static constexpr int32 Port = 7450;
 
@@ -231,11 +250,20 @@ BEGIN_DEFINE_SPEC(FSatoriAsyncIdentitySpec, "IntegrationTests.Satori.Identity",
 
 END_DEFINE_SPEC(FSatoriAsyncIdentitySpec)
 
-const FString FSatoriAsyncIdentitySpec::ServerKey = TEXT("defaultkey");
+FString FSatoriAsyncIdentitySpec::ServerKey;
 const FString FSatoriAsyncIdentitySpec::Host = TEXT("127.0.0.1");
 
 void FSatoriAsyncIdentitySpec::Define()
 {
+	LatentBeforeEach([this](const FDoneDelegate& Done)
+	{
+		GetSatoriApiKey().Next([this, Done](FString Key)
+		{
+			ServerKey = Key;
+			Done.Execute();
+		});
+	});
+
 	BeforeEach([this]()
 	{
 		ClientConfig = FSatoriClientConfig{ServerKey, Host, Port, false};
@@ -292,7 +320,7 @@ BEGIN_DEFINE_SPEC(FSatoriAsyncPropertiesSpec, "IntegrationTests.Satori.Propertie
 	FSatoriRetryConfig RetryConfig;
 	FSatoriSession Session;
 
-	static const FString ServerKey;
+	static FString ServerKey;
 	static const FString Host;
 	static constexpr int32 Port = 7450;
 
@@ -300,11 +328,20 @@ BEGIN_DEFINE_SPEC(FSatoriAsyncPropertiesSpec, "IntegrationTests.Satori.Propertie
 
 END_DEFINE_SPEC(FSatoriAsyncPropertiesSpec)
 
-const FString FSatoriAsyncPropertiesSpec::ServerKey = TEXT("defaultkey");
+FString FSatoriAsyncPropertiesSpec::ServerKey;
 const FString FSatoriAsyncPropertiesSpec::Host = TEXT("127.0.0.1");
 
 void FSatoriAsyncPropertiesSpec::Define()
 {
+	LatentBeforeEach([this](const FDoneDelegate& Done)
+	{
+		GetSatoriApiKey().Next([this, Done](FString Key)
+		{
+			ServerKey = Key;
+			Done.Execute();
+		});
+	});
+
 	BeforeEach([this]()
 	{
 		ClientConfig = FSatoriClientConfig{ServerKey, Host, Port, false};
@@ -395,7 +432,7 @@ BEGIN_DEFINE_SPEC(FSatoriAsyncEventSpec, "IntegrationTests.Satori.Event",
 	FSatoriRetryConfig RetryConfig;
 	FSatoriSession Session;
 
-	static const FString ServerKey;
+	static FString ServerKey;
 	static const FString Host;
 	static constexpr int32 Port = 7450;
 
@@ -403,11 +440,20 @@ BEGIN_DEFINE_SPEC(FSatoriAsyncEventSpec, "IntegrationTests.Satori.Event",
 
 END_DEFINE_SPEC(FSatoriAsyncEventSpec)
 
-const FString FSatoriAsyncEventSpec::ServerKey = TEXT("defaultkey");
+FString FSatoriAsyncEventSpec::ServerKey;
 const FString FSatoriAsyncEventSpec::Host = TEXT("127.0.0.1");
 
 void FSatoriAsyncEventSpec::Define()
 {
+	LatentBeforeEach([this](const FDoneDelegate& Done)
+	{
+		GetSatoriApiKey().Next([this, Done](FString Key)
+		{
+			ServerKey = Key;
+			Done.Execute();
+		});
+	});
+
 	BeforeEach([this]()
 	{
 		ClientConfig = FSatoriClientConfig{ServerKey, Host, Port, false};
@@ -490,7 +536,7 @@ BEGIN_DEFINE_SPEC(FSatoriAsyncFlagsSpec, "IntegrationTests.Satori.Flags",
 	FSatoriRetryConfig RetryConfig;
 	FSatoriSession Session;
 
-	static const FString ServerKey;
+	static FString ServerKey;
 	static const FString Host;
 	static constexpr int32 Port = 7450;
 
@@ -498,11 +544,20 @@ BEGIN_DEFINE_SPEC(FSatoriAsyncFlagsSpec, "IntegrationTests.Satori.Flags",
 
 END_DEFINE_SPEC(FSatoriAsyncFlagsSpec)
 
-const FString FSatoriAsyncFlagsSpec::ServerKey = TEXT("defaultkey");
+FString FSatoriAsyncFlagsSpec::ServerKey;
 const FString FSatoriAsyncFlagsSpec::Host = TEXT("127.0.0.1");
 
 void FSatoriAsyncFlagsSpec::Define()
 {
+	LatentBeforeEach([this](const FDoneDelegate& Done)
+	{
+		GetSatoriApiKey().Next([this, Done](FString Key)
+		{
+			ServerKey = Key;
+			Done.Execute();
+		});
+	});
+
 	BeforeEach([this]()
 	{
 		ClientConfig = FSatoriClientConfig{ServerKey, Host, Port, false};
@@ -568,7 +623,7 @@ BEGIN_DEFINE_SPEC(FSatoriAsyncExperimentsSpec, "IntegrationTests.Satori.Experime
 	FSatoriRetryConfig RetryConfig;
 	FSatoriSession Session;
 
-	static const FString ServerKey;
+	static FString ServerKey;
 	static const FString Host;
 	static constexpr int32 Port = 7450;
 
@@ -576,11 +631,20 @@ BEGIN_DEFINE_SPEC(FSatoriAsyncExperimentsSpec, "IntegrationTests.Satori.Experime
 
 END_DEFINE_SPEC(FSatoriAsyncExperimentsSpec)
 
-const FString FSatoriAsyncExperimentsSpec::ServerKey = TEXT("defaultkey");
+FString FSatoriAsyncExperimentsSpec::ServerKey;
 const FString FSatoriAsyncExperimentsSpec::Host = TEXT("127.0.0.1");
 
 void FSatoriAsyncExperimentsSpec::Define()
 {
+	LatentBeforeEach([this](const FDoneDelegate& Done)
+	{
+		GetSatoriApiKey().Next([this, Done](FString Key)
+		{
+			ServerKey = Key;
+			Done.Execute();
+		});
+	});
+
 	BeforeEach([this]()
 	{
 		ClientConfig = FSatoriClientConfig{ServerKey, Host, Port, false};
@@ -629,7 +693,7 @@ BEGIN_DEFINE_SPEC(FSatoriAsyncLiveEventsSpec, "IntegrationTests.Satori.LiveEvent
 	FSatoriRetryConfig RetryConfig;
 	FSatoriSession Session;
 
-	static const FString ServerKey;
+	static FString ServerKey;
 	static const FString Host;
 	static constexpr int32 Port = 7450;
 
@@ -637,11 +701,20 @@ BEGIN_DEFINE_SPEC(FSatoriAsyncLiveEventsSpec, "IntegrationTests.Satori.LiveEvent
 
 END_DEFINE_SPEC(FSatoriAsyncLiveEventsSpec)
 
-const FString FSatoriAsyncLiveEventsSpec::ServerKey = TEXT("defaultkey");
+FString FSatoriAsyncLiveEventsSpec::ServerKey;
 const FString FSatoriAsyncLiveEventsSpec::Host = TEXT("127.0.0.1");
 
 void FSatoriAsyncLiveEventsSpec::Define()
 {
+	LatentBeforeEach([this](const FDoneDelegate& Done)
+	{
+		GetSatoriApiKey().Next([this, Done](FString Key)
+		{
+			ServerKey = Key;
+			Done.Execute();
+		});
+	});
+
 	BeforeEach([this]()
 	{
 		ClientConfig = FSatoriClientConfig{ServerKey, Host, Port, false};
@@ -690,7 +763,7 @@ BEGIN_DEFINE_SPEC(FSatoriAsyncMessagesSpec, "IntegrationTests.Satori.Messages",
 	FSatoriRetryConfig RetryConfig;
 	FSatoriSession Session;
 
-	static const FString ServerKey;
+	static FString ServerKey;
 	static const FString Host;
 	static constexpr int32 Port = 7450;
 
@@ -698,11 +771,20 @@ BEGIN_DEFINE_SPEC(FSatoriAsyncMessagesSpec, "IntegrationTests.Satori.Messages",
 
 END_DEFINE_SPEC(FSatoriAsyncMessagesSpec)
 
-const FString FSatoriAsyncMessagesSpec::ServerKey = TEXT("defaultkey");
+FString FSatoriAsyncMessagesSpec::ServerKey;
 const FString FSatoriAsyncMessagesSpec::Host = TEXT("127.0.0.1");
 
 void FSatoriAsyncMessagesSpec::Define()
 {
+	LatentBeforeEach([this](const FDoneDelegate& Done)
+	{
+		GetSatoriApiKey().Next([this, Done](FString Key)
+		{
+			ServerKey = Key;
+			Done.Execute();
+		});
+	});
+
 	BeforeEach([this]()
 	{
 		ClientConfig = FSatoriClientConfig{ServerKey, Host, Port, false};
@@ -752,7 +834,7 @@ BEGIN_DEFINE_SPEC(FSatoriAsyncSessionSpec, "IntegrationTests.Satori.Session",
 	FSatoriRetryConfig RetryConfig;
 	FSatoriSession Session;
 
-	static const FString ServerKey;
+	static FString ServerKey;
 	static const FString Host;
 	static constexpr int32 Port = 7450;
 
@@ -760,11 +842,20 @@ BEGIN_DEFINE_SPEC(FSatoriAsyncSessionSpec, "IntegrationTests.Satori.Session",
 
 END_DEFINE_SPEC(FSatoriAsyncSessionSpec)
 
-const FString FSatoriAsyncSessionSpec::ServerKey = TEXT("defaultkey");
+FString FSatoriAsyncSessionSpec::ServerKey;
 const FString FSatoriAsyncSessionSpec::Host = TEXT("127.0.0.1");
 
 void FSatoriAsyncSessionSpec::Define()
 {
+	LatentBeforeEach([this](const FDoneDelegate& Done)
+	{
+		GetSatoriApiKey().Next([this, Done](FString Key)
+		{
+			ServerKey = Key;
+			Done.Execute();
+		});
+	});
+
 	BeforeEach([this]()
 	{
 		ClientConfig = FSatoriClientConfig{ServerKey, Host, Port, false};
