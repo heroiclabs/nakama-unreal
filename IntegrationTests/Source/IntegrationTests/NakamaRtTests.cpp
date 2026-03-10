@@ -575,7 +575,7 @@ void FNakamaRtMatchmakerSpec::Define()
                 .Next([this](FNakamaWebSocketConnectionResult CR) -> TNakamaFuture<FNakamaWebSocketResponse>
                 {
                     TestFalse("Connect", CR.ErrorCode != ENakamaWebSocketError::None);
-                    return RtClient->MatchmakerAdd(2, 4, TEXT("*"), 0, {}, {});
+                    return RtClient->MatchmakerAdd(2, 4, TEXT("*"), 2, {}, {});
                 })
                 .Next([this, Done](FNakamaWebSocketResponse Resp)
                 {
@@ -595,7 +595,7 @@ void FNakamaRtMatchmakerSpec::Define()
                 .Next([this](FNakamaWebSocketConnectionResult CR) -> TNakamaFuture<FNakamaWebSocketResponse>
                 {
                     TestFalse("Connect", CR.ErrorCode != ENakamaWebSocketError::None);
-                    return RtClient->MatchmakerAdd(2, 4, TEXT("*"), 0, {}, {});
+                    return RtClient->MatchmakerAdd(2, 4, TEXT("*"), 2, {}, {});
                 })
                 .Next([this](FNakamaWebSocketResponse AddResp) -> TNakamaFuture<FNakamaWebSocketResponse>
                 {
