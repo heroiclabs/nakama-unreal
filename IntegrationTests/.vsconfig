@@ -13,6 +13,7 @@
     "Microsoft.VisualStudio.Component.Windows11SDK.22621",
     "Microsoft.VisualStudio.Workload.CoreEditor",
     "Microsoft.VisualStudio.Workload.ManagedDesktop",
+    "Microsoft.VisualStudio.Workload.NativeCrossPlat",
     "Microsoft.VisualStudio.Workload.NativeDesktop",
     "Microsoft.VisualStudio.Workload.NativeGame"
   ]
