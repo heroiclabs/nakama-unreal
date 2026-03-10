@@ -5,6 +5,7 @@ services:
     platform: "linux/amd64"
     environment:
       - POSTGRES_DB=nakama
+      - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=localdb
     expose:
       - "5432"
@@ -63,7 +64,7 @@ services:
       - "-ecx"
       - >
         /satori/satori migrate up --database.address postgres:localdb@db:5432/satori &&
-        exec /satori/satori --database.address postgres:localdb@db:5432/satori --logger.level ERROR --metrics.prometheus_port 0
+        exec /satori/satori --database.address postgres:localdb@db:5432/satori --cache_watcher.debounce_refresh_millisec=0
     ports:
       - "7448:7448"
       - "7449:7449"

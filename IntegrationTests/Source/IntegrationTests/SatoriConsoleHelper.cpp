@@ -1,5 +1,6 @@
 #include "SatoriConsoleHelper.h"
 
+#include "Misc/Guid.h"
 #include "HttpModule.h"
 #include "Interfaces/IHttpRequest.h"
 #include "Interfaces/IHttpResponse.h"
@@ -69,12 +70,19 @@ static void SeedConfigAndFinish(
 
 static void GetKeyThenSeed(const FString& Token, const FString& KeyValue, TSharedPtr<TPromise<FString>> Promise)
 {
+	// Schema UUIDs defined in Satori source (console_schema.go):
+	// SchemaCoreObjectId = "00000000-0000-0000-0000-000000000001" (object/metadata)
+	// SchemaCoreStringId = "00000000-0000-0000-0000-000000000002" (string value)
+	const FString EventBody = TEXT("{\"value_schema_id\":\"00000000-0000-0000-0000-000000000002\",\"metadata_schema_id\":\"00000000-0000-0000-0000-000000000001\"");
+	const FString PropBody  = TEXT("{\"schema_id\":\"00000000-0000-0000-0000-000000000002\"");
+
 	TArray<TPair<FString, FString>> Steps = {
-		{TEXT("/v1/console/event"),    TEXT("{\"name\":\"game_start\"}")},
-		{TEXT("/v1/console/event"),    TEXT("{\"name\":\"level_complete\"}")},
-		{TEXT("/v1/console/event"),    TEXT("{\"name\":\"purchase\"}")},
-		{TEXT("/v1/console/property"), TEXT("{\"name\":\"level\"}")},
-		{TEXT("/v1/console/property"), TEXT("{\"name\":\"rank\"}")},
+		{TEXT("/v1/console/event"),    FString::Printf(TEXT("{\"name\":\"game_start\",%s}"),    *EventBody.Mid(1))},
+		{TEXT("/v1/console/event"),    FString::Printf(TEXT("{\"name\":\"level_complete\",%s}"), *EventBody.Mid(1))},
+		{TEXT("/v1/console/event"),    FString::Printf(TEXT("{\"name\":\"purchase\",%s}"),      *EventBody.Mid(1))},
+		{TEXT("/v1/console/property"), FString::Printf(TEXT("{\"name\":\"level\",%s}"),          *PropBody.Mid(1))},
+		{TEXT("/v1/console/property"), FString::Printf(TEXT("{\"name\":\"rank\",%s}"),           *PropBody.Mid(1))},
+		{TEXT("/v1/console/property"), FString::Printf(TEXT("{\"name\":\"preferred_mode\",%s}"), *PropBody.Mid(1))},
 	};
 	SeedConfigAndFinish(Token, KeyValue, Promise, MoveTemp(Steps), 0);
 }
@@ -104,34 +112,17 @@ TFuture<FString> GetSatoriApiKey()
 				return;
 			}
 
-			// Step 2: List existing API keys.
-			MakeConsoleRequest(TEXT("http://127.0.0.1:7451/v1/console/apikey"), TEXT("GET"), Token, TEXT(""),
+			// Step 2: Create a unique key for this test session.
+			// Each shard runs as a separate process with its own GCachedApiKey, so using a
+			// shared key (list + rotate) causes race conditions. A unique name per shard avoids conflicts.
+			const FString KeyName = FGuid::NewGuid().ToString(EGuidFormats::Digits).ToLower();
+			MakeConsoleRequest(TEXT("http://127.0.0.1:7451/v1/console/apikey"), TEXT("POST"), Token,
+				FString::Printf(TEXT("{\"name\":\"%s\"}"), *KeyName),
 				[Promise, Token](TSharedPtr<FJsonObject> Json)
 				{
 					FString KeyValue;
-					const TArray<TSharedPtr<FJsonValue>>* Keys;
-					if (Json.IsValid() && Json->TryGetArrayField(TEXT("keys"), Keys) && Keys->Num() > 0)
-					{
-						(*Keys)[0]->AsObject()->TryGetStringField(TEXT("value"), KeyValue);
-					}
-
-					if (KeyValue.IsEmpty())
-					{
-						// Step 3: No key exists — create one, then seed config.
-						MakeConsoleRequest(TEXT("http://127.0.0.1:7451/v1/console/apikey"), TEXT("POST"), Token,
-							TEXT("{\"name\":\"default\"}"),
-							[Promise, Token](TSharedPtr<FJsonObject> Json)
-							{
-								FString KeyValue;
-								if (Json.IsValid()) Json->TryGetStringField(TEXT("value"), KeyValue);
-								GetKeyThenSeed(Token, KeyValue, Promise);
-							});
-					}
-					else
-					{
-						// Step 3: Key already exists — just seed config.
-						GetKeyThenSeed(Token, KeyValue, Promise);
-					}
+					if (Json.IsValid()) Json->TryGetStringField(TEXT("value"), KeyValue);
+					GetKeyThenSeed(Token, KeyValue, Promise);
 				});
 		});
 

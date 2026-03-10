@@ -178,47 +178,10 @@ tasks:
         > Satori/Source/SatoriBlueprints/Private/SatoriClientBlueprintLibrary.cpp
 
   start-server:
-    desc: 'Start Nakama + Satori servers via Docker Compose (skipped if already healthy).'
     cmds:
     - cmd: |
-        if docker exec unreal_integration_test_nakama /nakama/nakama healthcheck 2>/dev/null &&
-           docker exec unreal_integration_test_satori curl -sf http://localhost:7450/ >/dev/null 2>&1; then
-          echo "Nakama and Satori are already running."
-        else
-          docker compose -f IntegrationTests/server/docker-compose.yml down
-          docker compose -f IntegrationTests/server/docker-compose.yml up --build -d
-          echo "Waiting for Nakama to be healthy..."
-          timeout=60
-          while [ $timeout -gt 0 ]; do
-            if docker exec unreal_integration_test_nakama /nakama/nakama healthcheck 2>/dev/null; then
-              echo "Nakama is ready!"
-              break
-            fi
-            powershell -NoProfile -Command "Start-Sleep -Seconds 2" 2>/dev/null || sleep 2
-            timeout=$((timeout - 2))
-          done
-          if [ $timeout -le 0 ]; then
-            echo "Error: Nakama failed to start within 60 seconds"
-            docker compose -f IntegrationTests/server/docker-compose.yml logs nakama
-            exit 1
-          fi
-
-          echo "Waiting for Satori to be healthy..."
-          timeout=60
-          while [ $timeout -gt 0 ]; do
-            if docker exec unreal_integration_test_satori curl -sf http://localhost:7450/ >/dev/null 2>&1; then
-              echo "Satori is ready!"
-              break
-            fi
-            powershell -NoProfile -Command "Start-Sleep -Seconds 2" 2>/dev/null || sleep 2
-            timeout=$((timeout - 2))
-          done
-          if [ $timeout -le 0 ]; then
-            echo "Error: Satori failed to start within 60 seconds"
-            docker compose -f IntegrationTests/server/docker-compose.yml logs satori
-            exit 1
-          fi
-        fi
+        docker compose -f IntegrationTests/server/docker-compose.yml down
+        docker compose -f IntegrationTests/server/docker-compose.yml up --build -d
 
   build:
     desc: 'Build and cook a project via UAT (BuildCookRun).'
@@ -384,9 +347,6 @@ tasks:
     - task: codegen
     - task: start-server
     - cmd: |
-        echo "Cleaning test data..."
-         docker exec unreal_integration_test_postgres psql -U postgres -d nakama -c "TRUNCATE users CASCADE;" 2>/dev/null || true
-    - cmd: |
         mkdir -p IntegrationTests/Plugins
         if command -v robocopy &>/dev/null; then
             export MSYS_NO_PATHCONV=1
@@ -443,14 +403,14 @@ tasks:
         curl -o {{.PROTO_SERVICE_FILE}} "{{.PROTO_SERVICE_URL}}"
         curl -o {{.PROTO_RT_FILE}} "{{.PROTO_RT_URL}}"
 
-        # Satori is private, so need credentials 
+        # Satori is private, so need credentials
         curl -o "{{.PROTO_SATORI_FILE}}" \
           -H "Authorization: token {{.GITHUB_TOKEN}}" \
           -H "Accept: application/vnd.github.v3.raw" \
-          "{{.PROTO_SATORI_TYPES_URL}}"    
+          "{{.PROTO_SATORI_TYPES_URL}}"
 
         curl -o "{{.PROTO_SATORI_SERVICE_FILE}}" \
           -H "Authorization: token {{.GITHUB_TOKEN}}" \
           -H "Accept: application/vnd.github.v3.raw" \
-          "{{.PROTO_SATORI_API_URL}}"    
+          "{{.PROTO_SATORI_API_URL}}"
 
