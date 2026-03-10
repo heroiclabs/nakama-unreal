@@ -4,13 +4,13 @@ services:
     image: timescale/timescaledb-ha:pg18.1-ts2.23.1-all
     platform: "linux/amd64"
     environment:
-      - POSTGRES_DB=nakama
+      - POSTGRES_DB=satori
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=localdb
     expose:
       - "5432"
     healthcheck:
-      test: ["CMD", "pg_isready", "-U", "postgres", "-d", "nakama"]
+      test: ["CMD", "pg_isready", "-U", "postgres", "-d", "satori"]
       interval: 3s
       timeout: 3s
       retries: 5
@@ -18,15 +18,12 @@ services:
       - "5432:5432"
     volumes:
       - data:/var/lib/postgresql/data
-      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
 
   nakama:
     container_name: unreal_integration_test_nakama
     build:
       context: .
-      dockerfile: NakamaDockerfile
-      args:
-        NAKAMA_VERSION: "3.36.0"
+      dockerfile: Dockerfile
     depends_on:
       postgres:
         condition: service_healthy
@@ -55,7 +52,9 @@ services:
 
   satori:
     container_name: unreal_integration_test_satori
-    image: us.gcr.io/heroiclabs-shared/satori:2.1.7-r3-hc
+    build:
+      context: ..
+      dockerfile: satori/Dockerfile
     depends_on:
       postgres:
         condition: service_healthy

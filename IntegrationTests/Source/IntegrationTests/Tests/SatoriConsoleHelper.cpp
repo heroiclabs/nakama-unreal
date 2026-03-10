@@ -102,7 +102,7 @@ TFuture<FString> GetSatoriApiKey()
 	MakeConsoleRequest(
 		TEXT("http://127.0.0.1:7451/v1/console/authenticate"),
 		TEXT("POST"), TEXT(""),
-		TEXT("{\"email\":\"admin@satoriserver.com\",\"password\":\"password\"}"),
+		TEXT("{\"email\":\"admin@satoriserver.com\",\"password\":\"satoripassword\"}"),
 		[Promise](TSharedPtr<FJsonObject> Json)
 		{
 			FString Token;

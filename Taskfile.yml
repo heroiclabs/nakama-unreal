@@ -345,6 +345,18 @@ tasks:
     cmds:
     - task: check-unreal-engine
     - task: codegen
+    - cmd: |
+        if [ ! -d "IntegrationTests/satori/.git" ]; then
+          git clone git@github.com:heroiclabs/satori.git IntegrationTests/satori
+          git -C IntegrationTests/satori lfs pull
+        else
+          echo "Satori already cloned, skipping."
+        fi
+        if [ ! -d "IntegrationTests/dashboards/.git" ]; then
+          git clone git@github.com:heroiclabs/dashboards.git IntegrationTests/dashboards
+        else
+          echo "Dashboards already cloned, skipping."
+        fi
     - task: start-server
     - cmd: |
         mkdir -p IntegrationTests/Plugins

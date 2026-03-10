@@ -36,7 +36,6 @@ var shardNames = []string{
 	"IntegrationTests.NakamaRt",
 	"IntegrationTests.Satori",
 	"IntegrationTests.SatoriBlueprint",
-	"IntegrationTests.Profiling",
 }
 
 var editorFlags = []string{

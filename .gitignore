@@ -561,3 +561,5 @@ NakamaTest/DerivedDataCache
 NakamaTest/Intermediate/
 NakamaTest/Saved/
 Reports
+IntegrationTests/satori/
+IntegrationTests/dashboards/
