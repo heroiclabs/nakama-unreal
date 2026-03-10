@@ -70,9 +70,6 @@ static void SeedConfigAndFinish(
 
 static void GetKeyThenSeed(const FString& Token, const FString& KeyValue, TSharedPtr<TPromise<FString>> Promise)
 {
-	// Schema UUIDs defined in Satori source (console_schema.go):
-	// SchemaCoreObjectId = "00000000-0000-0000-0000-000000000001" (object/metadata)
-	// SchemaCoreStringId = "00000000-0000-0000-0000-000000000002" (string value)
 	const FString EventBody = TEXT("{\"value_schema_id\":\"00000000-0000-0000-0000-000000000002\",\"metadata_schema_id\":\"00000000-0000-0000-0000-000000000001\"");
 	const FString PropBody  = TEXT("{\"schema_id\":\"00000000-0000-0000-0000-000000000002\"");
 

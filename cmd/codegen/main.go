@@ -51,10 +51,6 @@ func (api *Api) addFile(protoFile string) error {
 		return fmt.Errorf("failed to parse proto file %s: %s", protoFile, err.Error())
 	}
 
-	enums := make([]*visitedEnum, 0)
-	messages := make([]*visitedMessage, 0)
-	rpcs := make([]*visitedRpc, 0)
-
 	proto.Walk(
 		parsedProto,
 		proto.WithEnum(
@@ -90,7 +86,8 @@ func (api *Api) addFile(protoFile string) error {
 				for _, each := range enum.Elements {
 					each.Accept(visitor)
 				}
-				enums = append(enums, visitor.Enum)
+				api.Enums = append(api.Enums, visitor.Enum)
+				api.EnumsByName[visitor.Enum.Name] = visitor.Enum
 			},
 		),
 		proto.WithMessage(
@@ -114,7 +111,8 @@ func (api *Api) addFile(protoFile string) error {
 				for _, each := range message.Elements {
 					each.Accept(visitor)
 				}
-				messages = append(messages, visitor.Message)
+				api.Messages = append(api.Messages, visitor.Message)
+				api.MessagesByName[visitor.Message.Name] = visitor.Message
 			},
 		),
 		proto.WithRPC(
@@ -155,25 +153,11 @@ func (api *Api) addFile(protoFile string) error {
 				for _, each := range rpc.Elements {
 					each.Accept(visitor)
 				}
-				rpcs = append(rpcs, visitor.Rpc)
+				api.Rpcs = append(api.Rpcs, visitor.Rpc)
+				api.RpcsByName[visitor.Rpc.Name] = visitor.Rpc
 			},
 		),
 	)
-
-	//
-	// Update maps...
-	for _, enum := range enums {
-		api.Enums = append(api.Enums, enum)
-		api.EnumsByName[enum.Name] = enum
-	}
-	for _, message := range messages {
-		api.Messages = append(api.Messages, message)
-		api.MessagesByName[message.Name] = message
-	}
-	for _, rpc := range rpcs {
-		api.Rpcs = append(api.Rpcs, rpc)
-		api.RpcsByName[rpc.Name] = rpc
-	}
 
 	return nil
 }
