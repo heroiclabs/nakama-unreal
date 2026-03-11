@@ -73,7 +73,7 @@ void USatoriClient{{ $rpc.Name }}::Activate()
 	static const TCHAR* TraceScope_{{ $rpc.Name }} = TEXT("SatoriBP_{{ $rpc.Name }}");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_{{ $rpc.Name }});
 
-	AddToRoot();
+	TWeakObjectPtr<USatoriClient{{ $rpc.Name }}> WeakThis(this);
 
 	SatoriApi::{{ $rpc.Name }}(
 		Client,
@@ -101,25 +101,31 @@ void USatoriClient{{ $rpc.Name }}::Activate()
 {{- end }}
 {{- end }}
 {{- if $hasReturn }}
-		[this](const FSatori{{ $returnType.Name }}& Result)
+		[WeakThis](const FSatori{{ $returnType.Name }}& Result)
 		{
-			OnSuccess.Broadcast(Result);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast(Result);
+				Self->SetReadyToDestroy();
+			}
 		},
 {{- else }}
-		[this]()
+		[WeakThis]()
 		{
-			OnSuccess.Broadcast();
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast();
+				Self->SetReadyToDestroy();
+			}
 		},
 {{- end }}
-		[this](const FSatoriError& Error)
+		[WeakThis](const FSatoriError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }

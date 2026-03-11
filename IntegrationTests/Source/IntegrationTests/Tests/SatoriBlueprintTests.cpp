@@ -15,20 +15,24 @@
 #include "Containers/Ticker.h"
 #include "SatoriConsoleHelper.h"
 
-// Helper: poll until the BP action's async work completes, then run verification.
-// Actions self-root in Activate() and self-unroot when done, so IsRooted()==false
-// signals completion. Polls every tick (~0s delay) for minimal latency.
+// Helper: keep the BP action alive for the duration of the async call (tests pass
+// nullptr as WorldContextObject so RegisterWithGameInstance is a no-op), then run
+// verification once the action completes.
+// The base class constructor sets RF_StrongRefOnFrame, and SetReadyToDestroy()
+// clears it. We AddToRoot() to prevent GC across frames, then poll until
+// RF_StrongRefOnFrame is cleared (signalling the action called SetReadyToDestroy).
 static void VerifyWhenComplete(UBlueprintAsyncActionBase* Action, TFunction<void()> VerifyFunc)
 {
-	TWeakObjectPtr<UBlueprintAsyncActionBase> WeakAction(Action);
+	Action->AddToRoot();
 
 	FTSTicker::GetCoreTicker().AddTicker(
-		FTickerDelegate::CreateLambda([WeakAction, VerifyFunc = MoveTemp(VerifyFunc)](float) -> bool
+		FTickerDelegate::CreateLambda([Action, VerifyFunc = MoveTemp(VerifyFunc)](float) -> bool
 		{
-			if (WeakAction.IsValid() && WeakAction->IsRooted())
+			if (Action->HasAnyFlags(RF_StrongRefOnFrame))
 			{
-				return true; // keep ticking
+				return true; // keep ticking — action hasn't called SetReadyToDestroy yet
 			}
+			Action->RemoveFromRoot();
 			VerifyFunc();
 			return false;
 		}),

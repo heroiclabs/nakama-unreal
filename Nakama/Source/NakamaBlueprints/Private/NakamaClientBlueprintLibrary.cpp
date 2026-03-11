@@ -46,7 +46,7 @@ void UNakamaClientAddFriends::Activate()
 	static const TCHAR* TraceScope_AddFriends = TEXT("NakamaBP_AddFriends");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_AddFriends);
 
-	AddToRoot();
+	TWeakObjectPtr<UNakamaClientAddFriends> WeakThis(this);
 
 	NakamaApi::AddFriends(
 		Client,
@@ -54,17 +54,21 @@ void UNakamaClientAddFriends::Activate()
 		StoredIds,
 		StoredUsernames,
 		StoredMetadata,
-		[this]()
+		[WeakThis]()
 		{
-			OnSuccess.Broadcast();
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast();
+				Self->SetReadyToDestroy();
+			}
 		},
-		[this](const FNakamaError& Error)
+		[WeakThis](const FNakamaError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }
@@ -91,24 +95,28 @@ void UNakamaClientAddGroupUsers::Activate()
 	static const TCHAR* TraceScope_AddGroupUsers = TEXT("NakamaBP_AddGroupUsers");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_AddGroupUsers);
 
-	AddToRoot();
+	TWeakObjectPtr<UNakamaClientAddGroupUsers> WeakThis(this);
 
 	NakamaApi::AddGroupUsers(
 		Client,
 		Session,
 		StoredGroupId,
 		StoredUserIds,
-		[this]()
+		[WeakThis]()
 		{
-			OnSuccess.Broadcast();
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast();
+				Self->SetReadyToDestroy();
+			}
 		},
-		[this](const FNakamaError& Error)
+		[WeakThis](const FNakamaError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }
@@ -133,23 +141,27 @@ void UNakamaClientSessionRefresh::Activate()
 	static const TCHAR* TraceScope_SessionRefresh = TEXT("NakamaBP_SessionRefresh");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_SessionRefresh);
 
-	AddToRoot();
+	TWeakObjectPtr<UNakamaClientSessionRefresh> WeakThis(this);
 
 	NakamaApi::SessionRefresh(
 		Client,
 		StoredToken,
 		StoredVars,
-		[this](const FNakamaSession& Result)
+		[WeakThis](const FNakamaSession& Result)
 		{
-			OnSuccess.Broadcast(Result);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast(Result);
+				Self->SetReadyToDestroy();
+			}
 		},
-		[this](const FNakamaError& Error)
+		[WeakThis](const FNakamaError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }
@@ -176,24 +188,28 @@ void UNakamaClientSessionLogout::Activate()
 	static const TCHAR* TraceScope_SessionLogout = TEXT("NakamaBP_SessionLogout");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_SessionLogout);
 
-	AddToRoot();
+	TWeakObjectPtr<UNakamaClientSessionLogout> WeakThis(this);
 
 	NakamaApi::SessionLogout(
 		Client,
 		Session,
 		StoredToken,
 		StoredRefreshToken,
-		[this]()
+		[WeakThis]()
 		{
-			OnSuccess.Broadcast();
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast();
+				Self->SetReadyToDestroy();
+			}
 		},
-		[this](const FNakamaError& Error)
+		[WeakThis](const FNakamaError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }
@@ -220,24 +236,28 @@ void UNakamaClientAuthenticateApple::Activate()
 	static const TCHAR* TraceScope_AuthenticateApple = TEXT("NakamaBP_AuthenticateApple");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_AuthenticateApple);
 
-	AddToRoot();
+	TWeakObjectPtr<UNakamaClientAuthenticateApple> WeakThis(this);
 
 	NakamaApi::AuthenticateApple(
 		Client,
 		StoredAccount,
 		StoredCreate,
 		StoredUsername,
-		[this](const FNakamaSession& Result)
+		[WeakThis](const FNakamaSession& Result)
 		{
-			OnSuccess.Broadcast(Result);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast(Result);
+				Self->SetReadyToDestroy();
+			}
 		},
-		[this](const FNakamaError& Error)
+		[WeakThis](const FNakamaError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }
@@ -264,24 +284,28 @@ void UNakamaClientAuthenticateCustom::Activate()
 	static const TCHAR* TraceScope_AuthenticateCustom = TEXT("NakamaBP_AuthenticateCustom");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_AuthenticateCustom);
 
-	AddToRoot();
+	TWeakObjectPtr<UNakamaClientAuthenticateCustom> WeakThis(this);
 
 	NakamaApi::AuthenticateCustom(
 		Client,
 		StoredAccount,
 		StoredCreate,
 		StoredUsername,
-		[this](const FNakamaSession& Result)
+		[WeakThis](const FNakamaSession& Result)
 		{
-			OnSuccess.Broadcast(Result);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast(Result);
+				Self->SetReadyToDestroy();
+			}
 		},
-		[this](const FNakamaError& Error)
+		[WeakThis](const FNakamaError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }
@@ -308,24 +332,28 @@ void UNakamaClientAuthenticateDevice::Activate()
 	static const TCHAR* TraceScope_AuthenticateDevice = TEXT("NakamaBP_AuthenticateDevice");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_AuthenticateDevice);
 
-	AddToRoot();
+	TWeakObjectPtr<UNakamaClientAuthenticateDevice> WeakThis(this);
 
 	NakamaApi::AuthenticateDevice(
 		Client,
 		StoredAccount,
 		StoredCreate,
 		StoredUsername,
-		[this](const FNakamaSession& Result)
+		[WeakThis](const FNakamaSession& Result)
 		{
-			OnSuccess.Broadcast(Result);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast(Result);
+				Self->SetReadyToDestroy();
+			}
 		},
-		[this](const FNakamaError& Error)
+		[WeakThis](const FNakamaError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }
@@ -352,24 +380,28 @@ void UNakamaClientAuthenticateEmail::Activate()
 	static const TCHAR* TraceScope_AuthenticateEmail = TEXT("NakamaBP_AuthenticateEmail");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_AuthenticateEmail);
 
-	AddToRoot();
+	TWeakObjectPtr<UNakamaClientAuthenticateEmail> WeakThis(this);
 
 	NakamaApi::AuthenticateEmail(
 		Client,
 		StoredAccount,
 		StoredCreate,
 		StoredUsername,
-		[this](const FNakamaSession& Result)
+		[WeakThis](const FNakamaSession& Result)
 		{
-			OnSuccess.Broadcast(Result);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast(Result);
+				Self->SetReadyToDestroy();
+			}
 		},
-		[this](const FNakamaError& Error)
+		[WeakThis](const FNakamaError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }
@@ -398,7 +430,7 @@ void UNakamaClientAuthenticateFacebook::Activate()
 	static const TCHAR* TraceScope_AuthenticateFacebook = TEXT("NakamaBP_AuthenticateFacebook");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_AuthenticateFacebook);
 
-	AddToRoot();
+	TWeakObjectPtr<UNakamaClientAuthenticateFacebook> WeakThis(this);
 
 	NakamaApi::AuthenticateFacebook(
 		Client,
@@ -406,17 +438,21 @@ void UNakamaClientAuthenticateFacebook::Activate()
 		StoredCreate,
 		StoredUsername,
 		StoredSync,
-		[this](const FNakamaSession& Result)
+		[WeakThis](const FNakamaSession& Result)
 		{
-			OnSuccess.Broadcast(Result);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast(Result);
+				Self->SetReadyToDestroy();
+			}
 		},
-		[this](const FNakamaError& Error)
+		[WeakThis](const FNakamaError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }
@@ -443,24 +479,28 @@ void UNakamaClientAuthenticateFacebookInstantGame::Activate()
 	static const TCHAR* TraceScope_AuthenticateFacebookInstantGame = TEXT("NakamaBP_AuthenticateFacebookInstantGame");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_AuthenticateFacebookInstantGame);
 
-	AddToRoot();
+	TWeakObjectPtr<UNakamaClientAuthenticateFacebookInstantGame> WeakThis(this);
 
 	NakamaApi::AuthenticateFacebookInstantGame(
 		Client,
 		StoredAccount,
 		StoredCreate,
 		StoredUsername,
-		[this](const FNakamaSession& Result)
+		[WeakThis](const FNakamaSession& Result)
 		{
-			OnSuccess.Broadcast(Result);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast(Result);
+				Self->SetReadyToDestroy();
+			}
 		},
-		[this](const FNakamaError& Error)
+		[WeakThis](const FNakamaError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }
@@ -487,24 +527,28 @@ void UNakamaClientAuthenticateGameCenter::Activate()
 	static const TCHAR* TraceScope_AuthenticateGameCenter = TEXT("NakamaBP_AuthenticateGameCenter");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_AuthenticateGameCenter);
 
-	AddToRoot();
+	TWeakObjectPtr<UNakamaClientAuthenticateGameCenter> WeakThis(this);
 
 	NakamaApi::AuthenticateGameCenter(
 		Client,
 		StoredAccount,
 		StoredCreate,
 		StoredUsername,
-		[this](const FNakamaSession& Result)
+		[WeakThis](const FNakamaSession& Result)
 		{
-			OnSuccess.Broadcast(Result);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast(Result);
+				Self->SetReadyToDestroy();
+			}
 		},
-		[this](const FNakamaError& Error)
+		[WeakThis](const FNakamaError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }
@@ -531,24 +575,28 @@ void UNakamaClientAuthenticateGoogle::Activate()
 	static const TCHAR* TraceScope_AuthenticateGoogle = TEXT("NakamaBP_AuthenticateGoogle");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_AuthenticateGoogle);
 
-	AddToRoot();
+	TWeakObjectPtr<UNakamaClientAuthenticateGoogle> WeakThis(this);
 
 	NakamaApi::AuthenticateGoogle(
 		Client,
 		StoredAccount,
 		StoredCreate,
 		StoredUsername,
-		[this](const FNakamaSession& Result)
+		[WeakThis](const FNakamaSession& Result)
 		{
-			OnSuccess.Broadcast(Result);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast(Result);
+				Self->SetReadyToDestroy();
+			}
 		},
-		[this](const FNakamaError& Error)
+		[WeakThis](const FNakamaError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }
@@ -577,7 +625,7 @@ void UNakamaClientAuthenticateSteam::Activate()
 	static const TCHAR* TraceScope_AuthenticateSteam = TEXT("NakamaBP_AuthenticateSteam");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_AuthenticateSteam);
 
-	AddToRoot();
+	TWeakObjectPtr<UNakamaClientAuthenticateSteam> WeakThis(this);
 
 	NakamaApi::AuthenticateSteam(
 		Client,
@@ -585,17 +633,21 @@ void UNakamaClientAuthenticateSteam::Activate()
 		StoredCreate,
 		StoredUsername,
 		StoredSync,
-		[this](const FNakamaSession& Result)
+		[WeakThis](const FNakamaSession& Result)
 		{
-			OnSuccess.Broadcast(Result);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast(Result);
+				Self->SetReadyToDestroy();
+			}
 		},
-		[this](const FNakamaError& Error)
+		[WeakThis](const FNakamaError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }
@@ -622,24 +674,28 @@ void UNakamaClientBanGroupUsers::Activate()
 	static const TCHAR* TraceScope_BanGroupUsers = TEXT("NakamaBP_BanGroupUsers");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_BanGroupUsers);
 
-	AddToRoot();
+	TWeakObjectPtr<UNakamaClientBanGroupUsers> WeakThis(this);
 
 	NakamaApi::BanGroupUsers(
 		Client,
 		Session,
 		StoredGroupId,
 		StoredUserIds,
-		[this]()
+		[WeakThis]()
 		{
-			OnSuccess.Broadcast();
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast();
+				Self->SetReadyToDestroy();
+			}
 		},
-		[this](const FNakamaError& Error)
+		[WeakThis](const FNakamaError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }
@@ -666,24 +722,28 @@ void UNakamaClientBlockFriends::Activate()
 	static const TCHAR* TraceScope_BlockFriends = TEXT("NakamaBP_BlockFriends");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_BlockFriends);
 
-	AddToRoot();
+	TWeakObjectPtr<UNakamaClientBlockFriends> WeakThis(this);
 
 	NakamaApi::BlockFriends(
 		Client,
 		Session,
 		StoredIds,
 		StoredUsernames,
-		[this]()
+		[WeakThis]()
 		{
-			OnSuccess.Broadcast();
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast();
+				Self->SetReadyToDestroy();
+			}
 		},
-		[this](const FNakamaError& Error)
+		[WeakThis](const FNakamaError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }
@@ -718,7 +778,7 @@ void UNakamaClientCreateGroup::Activate()
 	static const TCHAR* TraceScope_CreateGroup = TEXT("NakamaBP_CreateGroup");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_CreateGroup);
 
-	AddToRoot();
+	TWeakObjectPtr<UNakamaClientCreateGroup> WeakThis(this);
 
 	NakamaApi::CreateGroup(
 		Client,
@@ -729,17 +789,21 @@ void UNakamaClientCreateGroup::Activate()
 		StoredAvatarUrl,
 		StoredOpen,
 		StoredMaxCount,
-		[this](const FNakamaGroup& Result)
+		[WeakThis](const FNakamaGroup& Result)
 		{
-			OnSuccess.Broadcast(Result);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast(Result);
+				Self->SetReadyToDestroy();
+			}
 		},
-		[this](const FNakamaError& Error)
+		[WeakThis](const FNakamaError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }
@@ -762,22 +826,26 @@ void UNakamaClientDeleteAccount::Activate()
 	static const TCHAR* TraceScope_DeleteAccount = TEXT("NakamaBP_DeleteAccount");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_DeleteAccount);
 
-	AddToRoot();
+	TWeakObjectPtr<UNakamaClientDeleteAccount> WeakThis(this);
 
 	NakamaApi::DeleteAccount(
 		Client,
 		Session,
-		[this]()
+		[WeakThis]()
 		{
-			OnSuccess.Broadcast();
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast();
+				Self->SetReadyToDestroy();
+			}
 		},
-		[this](const FNakamaError& Error)
+		[WeakThis](const FNakamaError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }
@@ -804,24 +872,28 @@ void UNakamaClientDeleteFriends::Activate()
 	static const TCHAR* TraceScope_DeleteFriends = TEXT("NakamaBP_DeleteFriends");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_DeleteFriends);
 
-	AddToRoot();
+	TWeakObjectPtr<UNakamaClientDeleteFriends> WeakThis(this);
 
 	NakamaApi::DeleteFriends(
 		Client,
 		Session,
 		StoredIds,
 		StoredUsernames,
-		[this]()
+		[WeakThis]()
 		{
-			OnSuccess.Broadcast();
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast();
+				Self->SetReadyToDestroy();
+			}
 		},
-		[this](const FNakamaError& Error)
+		[WeakThis](const FNakamaError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }
@@ -846,23 +918,27 @@ void UNakamaClientDeleteGroup::Activate()
 	static const TCHAR* TraceScope_DeleteGroup = TEXT("NakamaBP_DeleteGroup");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_DeleteGroup);
 
-	AddToRoot();
+	TWeakObjectPtr<UNakamaClientDeleteGroup> WeakThis(this);
 
 	NakamaApi::DeleteGroup(
 		Client,
 		Session,
 		StoredGroupId,
-		[this]()
+		[WeakThis]()
 		{
-			OnSuccess.Broadcast();
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast();
+				Self->SetReadyToDestroy();
+			}
 		},
-		[this](const FNakamaError& Error)
+		[WeakThis](const FNakamaError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }
@@ -887,23 +963,27 @@ void UNakamaClientDeleteLeaderboardRecord::Activate()
 	static const TCHAR* TraceScope_DeleteLeaderboardRecord = TEXT("NakamaBP_DeleteLeaderboardRecord");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_DeleteLeaderboardRecord);
 
-	AddToRoot();
+	TWeakObjectPtr<UNakamaClientDeleteLeaderboardRecord> WeakThis(this);
 
 	NakamaApi::DeleteLeaderboardRecord(
 		Client,
 		Session,
 		StoredLeaderboardId,
-		[this]()
+		[WeakThis]()
 		{
-			OnSuccess.Broadcast();
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast();
+				Self->SetReadyToDestroy();
+			}
 		},
-		[this](const FNakamaError& Error)
+		[WeakThis](const FNakamaError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }
@@ -928,23 +1008,27 @@ void UNakamaClientDeleteNotifications::Activate()
 	static const TCHAR* TraceScope_DeleteNotifications = TEXT("NakamaBP_DeleteNotifications");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_DeleteNotifications);
 
-	AddToRoot();
+	TWeakObjectPtr<UNakamaClientDeleteNotifications> WeakThis(this);
 
 	NakamaApi::DeleteNotifications(
 		Client,
 		Session,
 		StoredIds,
-		[this]()
+		[WeakThis]()
 		{
-			OnSuccess.Broadcast();
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast();
+				Self->SetReadyToDestroy();
+			}
 		},
-		[this](const FNakamaError& Error)
+		[WeakThis](const FNakamaError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }
@@ -969,23 +1053,27 @@ void UNakamaClientDeleteTournamentRecord::Activate()
 	static const TCHAR* TraceScope_DeleteTournamentRecord = TEXT("NakamaBP_DeleteTournamentRecord");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_DeleteTournamentRecord);
 
-	AddToRoot();
+	TWeakObjectPtr<UNakamaClientDeleteTournamentRecord> WeakThis(this);
 
 	NakamaApi::DeleteTournamentRecord(
 		Client,
 		Session,
 		StoredTournamentId,
-		[this]()
+		[WeakThis]()
 		{
-			OnSuccess.Broadcast();
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast();
+				Self->SetReadyToDestroy();
+			}
 		},
-		[this](const FNakamaError& Error)
+		[WeakThis](const FNakamaError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }
@@ -1010,23 +1098,27 @@ void UNakamaClientDeleteStorageObjects::Activate()
 	static const TCHAR* TraceScope_DeleteStorageObjects = TEXT("NakamaBP_DeleteStorageObjects");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_DeleteStorageObjects);
 
-	AddToRoot();
+	TWeakObjectPtr<UNakamaClientDeleteStorageObjects> WeakThis(this);
 
 	NakamaApi::DeleteStorageObjects(
 		Client,
 		Session,
 		StoredObjectIds,
-		[this]()
+		[WeakThis]()
 		{
-			OnSuccess.Broadcast();
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast();
+				Self->SetReadyToDestroy();
+			}
 		},
-		[this](const FNakamaError& Error)
+		[WeakThis](const FNakamaError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }
@@ -1057,7 +1149,7 @@ void UNakamaClientEvent::Activate()
 	static const TCHAR* TraceScope_Event = TEXT("NakamaBP_Event");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_Event);
 
-	AddToRoot();
+	TWeakObjectPtr<UNakamaClientEvent> WeakThis(this);
 
 	NakamaApi::Event(
 		Client,
@@ -1066,17 +1158,21 @@ void UNakamaClientEvent::Activate()
 		StoredTimestamp,
 		StoredExternal,
 		StoredProperties,
-		[this]()
+		[WeakThis]()
 		{
-			OnSuccess.Broadcast();
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast();
+				Self->SetReadyToDestroy();
+			}
 		},
-		[this](const FNakamaError& Error)
+		[WeakThis](const FNakamaError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }
@@ -1099,22 +1195,26 @@ void UNakamaClientGetAccount::Activate()
 	static const TCHAR* TraceScope_GetAccount = TEXT("NakamaBP_GetAccount");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_GetAccount);
 
-	AddToRoot();
+	TWeakObjectPtr<UNakamaClientGetAccount> WeakThis(this);
 
 	NakamaApi::GetAccount(
 		Client,
 		Session,
-		[this](const FNakamaAccount& Result)
+		[WeakThis](const FNakamaAccount& Result)
 		{
-			OnSuccess.Broadcast(Result);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast(Result);
+				Self->SetReadyToDestroy();
+			}
 		},
-		[this](const FNakamaError& Error)
+		[WeakThis](const FNakamaError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }
@@ -1143,7 +1243,7 @@ void UNakamaClientGetUsers::Activate()
 	static const TCHAR* TraceScope_GetUsers = TEXT("NakamaBP_GetUsers");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_GetUsers);
 
-	AddToRoot();
+	TWeakObjectPtr<UNakamaClientGetUsers> WeakThis(this);
 
 	NakamaApi::GetUsers(
 		Client,
@@ -1151,17 +1251,21 @@ void UNakamaClientGetUsers::Activate()
 		StoredIds,
 		StoredUsernames,
 		StoredFacebookIds,
-		[this](const FNakamaUsers& Result)
+		[WeakThis](const FNakamaUsers& Result)
 		{
-			OnSuccess.Broadcast(Result);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast(Result);
+				Self->SetReadyToDestroy();
+			}
 		},
-		[this](const FNakamaError& Error)
+		[WeakThis](const FNakamaError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }
@@ -1186,23 +1290,27 @@ void UNakamaClientGetSubscription::Activate()
 	static const TCHAR* TraceScope_GetSubscription = TEXT("NakamaBP_GetSubscription");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_GetSubscription);
 
-	AddToRoot();
+	TWeakObjectPtr<UNakamaClientGetSubscription> WeakThis(this);
 
 	NakamaApi::GetSubscription(
 		Client,
 		Session,
 		StoredProductId,
-		[this](const FNakamaValidatedSubscription& Result)
+		[WeakThis](const FNakamaValidatedSubscription& Result)
 		{
-			OnSuccess.Broadcast(Result);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast(Result);
+				Self->SetReadyToDestroy();
+			}
 		},
-		[this](const FNakamaError& Error)
+		[WeakThis](const FNakamaError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }
@@ -1225,22 +1333,26 @@ void UNakamaClientGetMatchmakerStats::Activate()
 	static const TCHAR* TraceScope_GetMatchmakerStats = TEXT("NakamaBP_GetMatchmakerStats");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_GetMatchmakerStats);
 
-	AddToRoot();
+	TWeakObjectPtr<UNakamaClientGetMatchmakerStats> WeakThis(this);
 
 	NakamaApi::GetMatchmakerStats(
 		Client,
 		Session,
-		[this](const FNakamaMatchmakerStats& Result)
+		[WeakThis](const FNakamaMatchmakerStats& Result)
 		{
-			OnSuccess.Broadcast(Result);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast(Result);
+				Self->SetReadyToDestroy();
+			}
 		},
-		[this](const FNakamaError& Error)
+		[WeakThis](const FNakamaError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }
@@ -1263,22 +1375,26 @@ void UNakamaClientHealthcheck::Activate()
 	static const TCHAR* TraceScope_Healthcheck = TEXT("NakamaBP_Healthcheck");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_Healthcheck);
 
-	AddToRoot();
+	TWeakObjectPtr<UNakamaClientHealthcheck> WeakThis(this);
 
 	NakamaApi::Healthcheck(
 		Client,
 		Session,
-		[this]()
+		[WeakThis]()
 		{
-			OnSuccess.Broadcast();
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast();
+				Self->SetReadyToDestroy();
+			}
 		},
-		[this](const FNakamaError& Error)
+		[WeakThis](const FNakamaError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }
@@ -1305,24 +1421,28 @@ void UNakamaClientImportFacebookFriends::Activate()
 	static const TCHAR* TraceScope_ImportFacebookFriends = TEXT("NakamaBP_ImportFacebookFriends");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ImportFacebookFriends);
 
-	AddToRoot();
+	TWeakObjectPtr<UNakamaClientImportFacebookFriends> WeakThis(this);
 
 	NakamaApi::ImportFacebookFriends(
 		Client,
 		Session,
 		StoredAccount,
 		StoredReset,
-		[this]()
+		[WeakThis]()
 		{
-			OnSuccess.Broadcast();
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast();
+				Self->SetReadyToDestroy();
+			}
 		},
-		[this](const FNakamaError& Error)
+		[WeakThis](const FNakamaError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }
@@ -1349,24 +1469,28 @@ void UNakamaClientImportSteamFriends::Activate()
 	static const TCHAR* TraceScope_ImportSteamFriends = TEXT("NakamaBP_ImportSteamFriends");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ImportSteamFriends);
 
-	AddToRoot();
+	TWeakObjectPtr<UNakamaClientImportSteamFriends> WeakThis(this);
 
 	NakamaApi::ImportSteamFriends(
 		Client,
 		Session,
 		StoredAccount,
 		StoredReset,
-		[this]()
+		[WeakThis]()
 		{
-			OnSuccess.Broadcast();
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast();
+				Self->SetReadyToDestroy();
+			}
 		},
-		[this](const FNakamaError& Error)
+		[WeakThis](const FNakamaError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }
@@ -1391,23 +1515,27 @@ void UNakamaClientJoinGroup::Activate()
 	static const TCHAR* TraceScope_JoinGroup = TEXT("NakamaBP_JoinGroup");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_JoinGroup);
 
-	AddToRoot();
+	TWeakObjectPtr<UNakamaClientJoinGroup> WeakThis(this);
 
 	NakamaApi::JoinGroup(
 		Client,
 		Session,
 		StoredGroupId,
-		[this]()
+		[WeakThis]()
 		{
-			OnSuccess.Broadcast();
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast();
+				Self->SetReadyToDestroy();
+			}
 		},
-		[this](const FNakamaError& Error)
+		[WeakThis](const FNakamaError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }
@@ -1432,23 +1560,27 @@ void UNakamaClientJoinTournament::Activate()
 	static const TCHAR* TraceScope_JoinTournament = TEXT("NakamaBP_JoinTournament");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_JoinTournament);
 
-	AddToRoot();
+	TWeakObjectPtr<UNakamaClientJoinTournament> WeakThis(this);
 
 	NakamaApi::JoinTournament(
 		Client,
 		Session,
 		StoredTournamentId,
-		[this]()
+		[WeakThis]()
 		{
-			OnSuccess.Broadcast();
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast();
+				Self->SetReadyToDestroy();
+			}
 		},
-		[this](const FNakamaError& Error)
+		[WeakThis](const FNakamaError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }
@@ -1475,24 +1607,28 @@ void UNakamaClientKickGroupUsers::Activate()
 	static const TCHAR* TraceScope_KickGroupUsers = TEXT("NakamaBP_KickGroupUsers");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_KickGroupUsers);
 
-	AddToRoot();
+	TWeakObjectPtr<UNakamaClientKickGroupUsers> WeakThis(this);
 
 	NakamaApi::KickGroupUsers(
 		Client,
 		Session,
 		StoredGroupId,
 		StoredUserIds,
-		[this]()
+		[WeakThis]()
 		{
-			OnSuccess.Broadcast();
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast();
+				Self->SetReadyToDestroy();
+			}
 		},
-		[this](const FNakamaError& Error)
+		[WeakThis](const FNakamaError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }
@@ -1517,23 +1653,27 @@ void UNakamaClientLeaveGroup::Activate()
 	static const TCHAR* TraceScope_LeaveGroup = TEXT("NakamaBP_LeaveGroup");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_LeaveGroup);
 
-	AddToRoot();
+	TWeakObjectPtr<UNakamaClientLeaveGroup> WeakThis(this);
 
 	NakamaApi::LeaveGroup(
 		Client,
 		Session,
 		StoredGroupId,
-		[this]()
+		[WeakThis]()
 		{
-			OnSuccess.Broadcast();
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast();
+				Self->SetReadyToDestroy();
+			}
 		},
-		[this](const FNakamaError& Error)
+		[WeakThis](const FNakamaError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }
@@ -1560,24 +1700,28 @@ void UNakamaClientLinkApple::Activate()
 	static const TCHAR* TraceScope_LinkApple = TEXT("NakamaBP_LinkApple");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_LinkApple);
 
-	AddToRoot();
+	TWeakObjectPtr<UNakamaClientLinkApple> WeakThis(this);
 
 	NakamaApi::LinkApple(
 		Client,
 		Session,
 		StoredToken,
 		StoredVars,
-		[this]()
+		[WeakThis]()
 		{
-			OnSuccess.Broadcast();
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast();
+				Self->SetReadyToDestroy();
+			}
 		},
-		[this](const FNakamaError& Error)
+		[WeakThis](const FNakamaError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }
@@ -1604,24 +1748,28 @@ void UNakamaClientLinkCustom::Activate()
 	static const TCHAR* TraceScope_LinkCustom = TEXT("NakamaBP_LinkCustom");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_LinkCustom);
 
-	AddToRoot();
+	TWeakObjectPtr<UNakamaClientLinkCustom> WeakThis(this);
 
 	NakamaApi::LinkCustom(
 		Client,
 		Session,
 		StoredId,
 		StoredVars,
-		[this]()
+		[WeakThis]()
 		{
-			OnSuccess.Broadcast();
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast();
+				Self->SetReadyToDestroy();
+			}
 		},
-		[this](const FNakamaError& Error)
+		[WeakThis](const FNakamaError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }
@@ -1648,24 +1796,28 @@ void UNakamaClientLinkDevice::Activate()
 	static const TCHAR* TraceScope_LinkDevice = TEXT("NakamaBP_LinkDevice");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_LinkDevice);
 
-	AddToRoot();
+	TWeakObjectPtr<UNakamaClientLinkDevice> WeakThis(this);
 
 	NakamaApi::LinkDevice(
 		Client,
 		Session,
 		StoredId,
 		StoredVars,
-		[this]()
+		[WeakThis]()
 		{
-			OnSuccess.Broadcast();
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast();
+				Self->SetReadyToDestroy();
+			}
 		},
-		[this](const FNakamaError& Error)
+		[WeakThis](const FNakamaError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }
@@ -1694,7 +1846,7 @@ void UNakamaClientLinkEmail::Activate()
 	static const TCHAR* TraceScope_LinkEmail = TEXT("NakamaBP_LinkEmail");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_LinkEmail);
 
-	AddToRoot();
+	TWeakObjectPtr<UNakamaClientLinkEmail> WeakThis(this);
 
 	NakamaApi::LinkEmail(
 		Client,
@@ -1702,17 +1854,21 @@ void UNakamaClientLinkEmail::Activate()
 		StoredEmail,
 		StoredPassword,
 		StoredVars,
-		[this]()
+		[WeakThis]()
 		{
-			OnSuccess.Broadcast();
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast();
+				Self->SetReadyToDestroy();
+			}
 		},
-		[this](const FNakamaError& Error)
+		[WeakThis](const FNakamaError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }
@@ -1739,24 +1895,28 @@ void UNakamaClientLinkFacebook::Activate()
 	static const TCHAR* TraceScope_LinkFacebook = TEXT("NakamaBP_LinkFacebook");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_LinkFacebook);
 
-	AddToRoot();
+	TWeakObjectPtr<UNakamaClientLinkFacebook> WeakThis(this);
 
 	NakamaApi::LinkFacebook(
 		Client,
 		Session,
 		StoredAccount,
 		StoredSync,
-		[this]()
+		[WeakThis]()
 		{
-			OnSuccess.Broadcast();
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast();
+				Self->SetReadyToDestroy();
+			}
 		},
-		[this](const FNakamaError& Error)
+		[WeakThis](const FNakamaError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }
@@ -1783,24 +1943,28 @@ void UNakamaClientLinkFacebookInstantGame::Activate()
 	static const TCHAR* TraceScope_LinkFacebookInstantGame = TEXT("NakamaBP_LinkFacebookInstantGame");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_LinkFacebookInstantGame);
 
-	AddToRoot();
+	TWeakObjectPtr<UNakamaClientLinkFacebookInstantGame> WeakThis(this);
 
 	NakamaApi::LinkFacebookInstantGame(
 		Client,
 		Session,
 		StoredSignedPlayerInfo,
 		StoredVars,
-		[this]()
+		[WeakThis]()
 		{
-			OnSuccess.Broadcast();
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast();
+				Self->SetReadyToDestroy();
+			}
 		},
-		[this](const FNakamaError& Error)
+		[WeakThis](const FNakamaError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }
@@ -1837,7 +2001,7 @@ void UNakamaClientLinkGameCenter::Activate()
 	static const TCHAR* TraceScope_LinkGameCenter = TEXT("NakamaBP_LinkGameCenter");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_LinkGameCenter);
 
-	AddToRoot();
+	TWeakObjectPtr<UNakamaClientLinkGameCenter> WeakThis(this);
 
 	NakamaApi::LinkGameCenter(
 		Client,
@@ -1849,17 +2013,21 @@ void UNakamaClientLinkGameCenter::Activate()
 		StoredSignature,
 		StoredPublicKeyUrl,
 		StoredVars,
-		[this]()
+		[WeakThis]()
 		{
-			OnSuccess.Broadcast();
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast();
+				Self->SetReadyToDestroy();
+			}
 		},
-		[this](const FNakamaError& Error)
+		[WeakThis](const FNakamaError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }
@@ -1886,24 +2054,28 @@ void UNakamaClientLinkGoogle::Activate()
 	static const TCHAR* TraceScope_LinkGoogle = TEXT("NakamaBP_LinkGoogle");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_LinkGoogle);
 
-	AddToRoot();
+	TWeakObjectPtr<UNakamaClientLinkGoogle> WeakThis(this);
 
 	NakamaApi::LinkGoogle(
 		Client,
 		Session,
 		StoredToken,
 		StoredVars,
-		[this]()
+		[WeakThis]()
 		{
-			OnSuccess.Broadcast();
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast();
+				Self->SetReadyToDestroy();
+			}
 		},
-		[this](const FNakamaError& Error)
+		[WeakThis](const FNakamaError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }
@@ -1930,24 +2102,28 @@ void UNakamaClientLinkSteam::Activate()
 	static const TCHAR* TraceScope_LinkSteam = TEXT("NakamaBP_LinkSteam");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_LinkSteam);
 
-	AddToRoot();
+	TWeakObjectPtr<UNakamaClientLinkSteam> WeakThis(this);
 
 	NakamaApi::LinkSteam(
 		Client,
 		Session,
 		StoredAccount,
 		StoredSync,
-		[this]()
+		[WeakThis]()
 		{
-			OnSuccess.Broadcast();
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast();
+				Self->SetReadyToDestroy();
+			}
 		},
-		[this](const FNakamaError& Error)
+		[WeakThis](const FNakamaError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }
@@ -1978,7 +2154,7 @@ void UNakamaClientListChannelMessages::Activate()
 	static const TCHAR* TraceScope_ListChannelMessages = TEXT("NakamaBP_ListChannelMessages");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListChannelMessages);
 
-	AddToRoot();
+	TWeakObjectPtr<UNakamaClientListChannelMessages> WeakThis(this);
 
 	NakamaApi::ListChannelMessages(
 		Client,
@@ -1987,17 +2163,21 @@ void UNakamaClientListChannelMessages::Activate()
 		StoredLimit,
 		StoredForward,
 		StoredCursor,
-		[this](const FNakamaChannelMessageList& Result)
+		[WeakThis](const FNakamaChannelMessageList& Result)
 		{
-			OnSuccess.Broadcast(Result);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast(Result);
+				Self->SetReadyToDestroy();
+			}
 		},
-		[this](const FNakamaError& Error)
+		[WeakThis](const FNakamaError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }
@@ -2026,7 +2206,7 @@ void UNakamaClientListFriends::Activate()
 	static const TCHAR* TraceScope_ListFriends = TEXT("NakamaBP_ListFriends");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListFriends);
 
-	AddToRoot();
+	TWeakObjectPtr<UNakamaClientListFriends> WeakThis(this);
 
 	NakamaApi::ListFriends(
 		Client,
@@ -2034,17 +2214,21 @@ void UNakamaClientListFriends::Activate()
 		StoredLimit,
 		StoredState,
 		StoredCursor,
-		[this](const FNakamaFriendList& Result)
+		[WeakThis](const FNakamaFriendList& Result)
 		{
-			OnSuccess.Broadcast(Result);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast(Result);
+				Self->SetReadyToDestroy();
+			}
 		},
-		[this](const FNakamaError& Error)
+		[WeakThis](const FNakamaError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }
@@ -2071,24 +2255,28 @@ void UNakamaClientListFriendsOfFriends::Activate()
 	static const TCHAR* TraceScope_ListFriendsOfFriends = TEXT("NakamaBP_ListFriendsOfFriends");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListFriendsOfFriends);
 
-	AddToRoot();
+	TWeakObjectPtr<UNakamaClientListFriendsOfFriends> WeakThis(this);
 
 	NakamaApi::ListFriendsOfFriends(
 		Client,
 		Session,
 		StoredLimit,
 		StoredCursor,
-		[this](const FNakamaFriendsOfFriendsList& Result)
+		[WeakThis](const FNakamaFriendsOfFriendsList& Result)
 		{
-			OnSuccess.Broadcast(Result);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast(Result);
+				Self->SetReadyToDestroy();
+			}
 		},
-		[this](const FNakamaError& Error)
+		[WeakThis](const FNakamaError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }
@@ -2123,7 +2311,7 @@ void UNakamaClientListGroups::Activate()
 	static const TCHAR* TraceScope_ListGroups = TEXT("NakamaBP_ListGroups");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListGroups);
 
-	AddToRoot();
+	TWeakObjectPtr<UNakamaClientListGroups> WeakThis(this);
 
 	NakamaApi::ListGroups(
 		Client,
@@ -2134,17 +2322,21 @@ void UNakamaClientListGroups::Activate()
 		StoredLangTag,
 		StoredMembers,
 		StoredOpen,
-		[this](const FNakamaGroupList& Result)
+		[WeakThis](const FNakamaGroupList& Result)
 		{
-			OnSuccess.Broadcast(Result);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast(Result);
+				Self->SetReadyToDestroy();
+			}
 		},
-		[this](const FNakamaError& Error)
+		[WeakThis](const FNakamaError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }
@@ -2175,7 +2367,7 @@ void UNakamaClientListGroupUsers::Activate()
 	static const TCHAR* TraceScope_ListGroupUsers = TEXT("NakamaBP_ListGroupUsers");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListGroupUsers);
 
-	AddToRoot();
+	TWeakObjectPtr<UNakamaClientListGroupUsers> WeakThis(this);
 
 	NakamaApi::ListGroupUsers(
 		Client,
@@ -2184,17 +2376,21 @@ void UNakamaClientListGroupUsers::Activate()
 		StoredLimit,
 		StoredState,
 		StoredCursor,
-		[this](const FNakamaGroupUserList& Result)
+		[WeakThis](const FNakamaGroupUserList& Result)
 		{
-			OnSuccess.Broadcast(Result);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast(Result);
+				Self->SetReadyToDestroy();
+			}
 		},
-		[this](const FNakamaError& Error)
+		[WeakThis](const FNakamaError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }
@@ -2227,7 +2423,7 @@ void UNakamaClientListLeaderboardRecords::Activate()
 	static const TCHAR* TraceScope_ListLeaderboardRecords = TEXT("NakamaBP_ListLeaderboardRecords");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListLeaderboardRecords);
 
-	AddToRoot();
+	TWeakObjectPtr<UNakamaClientListLeaderboardRecords> WeakThis(this);
 
 	NakamaApi::ListLeaderboardRecords(
 		Client,
@@ -2237,17 +2433,21 @@ void UNakamaClientListLeaderboardRecords::Activate()
 		StoredLimit,
 		StoredCursor,
 		StoredExpiry,
-		[this](const FNakamaLeaderboardRecordList& Result)
+		[WeakThis](const FNakamaLeaderboardRecordList& Result)
 		{
-			OnSuccess.Broadcast(Result);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast(Result);
+				Self->SetReadyToDestroy();
+			}
 		},
-		[this](const FNakamaError& Error)
+		[WeakThis](const FNakamaError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }
@@ -2280,7 +2480,7 @@ void UNakamaClientListLeaderboardRecordsAroundOwner::Activate()
 	static const TCHAR* TraceScope_ListLeaderboardRecordsAroundOwner = TEXT("NakamaBP_ListLeaderboardRecordsAroundOwner");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListLeaderboardRecordsAroundOwner);
 
-	AddToRoot();
+	TWeakObjectPtr<UNakamaClientListLeaderboardRecordsAroundOwner> WeakThis(this);
 
 	NakamaApi::ListLeaderboardRecordsAroundOwner(
 		Client,
@@ -2290,17 +2490,21 @@ void UNakamaClientListLeaderboardRecordsAroundOwner::Activate()
 		StoredOwnerId,
 		StoredExpiry,
 		StoredCursor,
-		[this](const FNakamaLeaderboardRecordList& Result)
+		[WeakThis](const FNakamaLeaderboardRecordList& Result)
 		{
-			OnSuccess.Broadcast(Result);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast(Result);
+				Self->SetReadyToDestroy();
+			}
 		},
-		[this](const FNakamaError& Error)
+		[WeakThis](const FNakamaError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }
@@ -2335,7 +2539,7 @@ void UNakamaClientListMatches::Activate()
 	static const TCHAR* TraceScope_ListMatches = TEXT("NakamaBP_ListMatches");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListMatches);
 
-	AddToRoot();
+	TWeakObjectPtr<UNakamaClientListMatches> WeakThis(this);
 
 	NakamaApi::ListMatches(
 		Client,
@@ -2346,17 +2550,21 @@ void UNakamaClientListMatches::Activate()
 		StoredMinSize,
 		StoredMaxSize,
 		StoredQuery,
-		[this](const FNakamaMatchList& Result)
+		[WeakThis](const FNakamaMatchList& Result)
 		{
-			OnSuccess.Broadcast(Result);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast(Result);
+				Self->SetReadyToDestroy();
+			}
 		},
-		[this](const FNakamaError& Error)
+		[WeakThis](const FNakamaError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }
@@ -2387,7 +2595,7 @@ void UNakamaClientListParties::Activate()
 	static const TCHAR* TraceScope_ListParties = TEXT("NakamaBP_ListParties");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListParties);
 
-	AddToRoot();
+	TWeakObjectPtr<UNakamaClientListParties> WeakThis(this);
 
 	NakamaApi::ListParties(
 		Client,
@@ -2396,17 +2604,21 @@ void UNakamaClientListParties::Activate()
 		StoredOpen,
 		StoredQuery,
 		StoredCursor,
-		[this](const FNakamaPartyList& Result)
+		[WeakThis](const FNakamaPartyList& Result)
 		{
-			OnSuccess.Broadcast(Result);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast(Result);
+				Self->SetReadyToDestroy();
+			}
 		},
-		[this](const FNakamaError& Error)
+		[WeakThis](const FNakamaError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }
@@ -2433,24 +2645,28 @@ void UNakamaClientListNotifications::Activate()
 	static const TCHAR* TraceScope_ListNotifications = TEXT("NakamaBP_ListNotifications");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListNotifications);
 
-	AddToRoot();
+	TWeakObjectPtr<UNakamaClientListNotifications> WeakThis(this);
 
 	NakamaApi::ListNotifications(
 		Client,
 		Session,
 		StoredLimit,
 		StoredCacheableCursor,
-		[this](const FNakamaNotificationList& Result)
+		[WeakThis](const FNakamaNotificationList& Result)
 		{
-			OnSuccess.Broadcast(Result);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast(Result);
+				Self->SetReadyToDestroy();
+			}
 		},
-		[this](const FNakamaError& Error)
+		[WeakThis](const FNakamaError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }
@@ -2481,7 +2697,7 @@ void UNakamaClientListStorageObjects::Activate()
 	static const TCHAR* TraceScope_ListStorageObjects = TEXT("NakamaBP_ListStorageObjects");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListStorageObjects);
 
-	AddToRoot();
+	TWeakObjectPtr<UNakamaClientListStorageObjects> WeakThis(this);
 
 	NakamaApi::ListStorageObjects(
 		Client,
@@ -2490,17 +2706,21 @@ void UNakamaClientListStorageObjects::Activate()
 		StoredCollection,
 		StoredLimit,
 		StoredCursor,
-		[this](const FNakamaStorageObjectList& Result)
+		[WeakThis](const FNakamaStorageObjectList& Result)
 		{
-			OnSuccess.Broadcast(Result);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast(Result);
+				Self->SetReadyToDestroy();
+			}
 		},
-		[this](const FNakamaError& Error)
+		[WeakThis](const FNakamaError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }
@@ -2527,24 +2747,28 @@ void UNakamaClientListSubscriptions::Activate()
 	static const TCHAR* TraceScope_ListSubscriptions = TEXT("NakamaBP_ListSubscriptions");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListSubscriptions);
 
-	AddToRoot();
+	TWeakObjectPtr<UNakamaClientListSubscriptions> WeakThis(this);
 
 	NakamaApi::ListSubscriptions(
 		Client,
 		Session,
 		StoredLimit,
 		StoredCursor,
-		[this](const FNakamaSubscriptionList& Result)
+		[WeakThis](const FNakamaSubscriptionList& Result)
 		{
-			OnSuccess.Broadcast(Result);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast(Result);
+				Self->SetReadyToDestroy();
+			}
 		},
-		[this](const FNakamaError& Error)
+		[WeakThis](const FNakamaError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }
@@ -2579,7 +2803,7 @@ void UNakamaClientListTournaments::Activate()
 	static const TCHAR* TraceScope_ListTournaments = TEXT("NakamaBP_ListTournaments");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListTournaments);
 
-	AddToRoot();
+	TWeakObjectPtr<UNakamaClientListTournaments> WeakThis(this);
 
 	NakamaApi::ListTournaments(
 		Client,
@@ -2590,17 +2814,21 @@ void UNakamaClientListTournaments::Activate()
 		StoredEndTime,
 		StoredLimit,
 		StoredCursor,
-		[this](const FNakamaTournamentList& Result)
+		[WeakThis](const FNakamaTournamentList& Result)
 		{
-			OnSuccess.Broadcast(Result);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast(Result);
+				Self->SetReadyToDestroy();
+			}
 		},
-		[this](const FNakamaError& Error)
+		[WeakThis](const FNakamaError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }
@@ -2633,7 +2861,7 @@ void UNakamaClientListTournamentRecords::Activate()
 	static const TCHAR* TraceScope_ListTournamentRecords = TEXT("NakamaBP_ListTournamentRecords");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListTournamentRecords);
 
-	AddToRoot();
+	TWeakObjectPtr<UNakamaClientListTournamentRecords> WeakThis(this);
 
 	NakamaApi::ListTournamentRecords(
 		Client,
@@ -2643,17 +2871,21 @@ void UNakamaClientListTournamentRecords::Activate()
 		StoredLimit,
 		StoredCursor,
 		StoredExpiry,
-		[this](const FNakamaTournamentRecordList& Result)
+		[WeakThis](const FNakamaTournamentRecordList& Result)
 		{
-			OnSuccess.Broadcast(Result);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast(Result);
+				Self->SetReadyToDestroy();
+			}
 		},
-		[this](const FNakamaError& Error)
+		[WeakThis](const FNakamaError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }
@@ -2686,7 +2918,7 @@ void UNakamaClientListTournamentRecordsAroundOwner::Activate()
 	static const TCHAR* TraceScope_ListTournamentRecordsAroundOwner = TEXT("NakamaBP_ListTournamentRecordsAroundOwner");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListTournamentRecordsAroundOwner);
 
-	AddToRoot();
+	TWeakObjectPtr<UNakamaClientListTournamentRecordsAroundOwner> WeakThis(this);
 
 	NakamaApi::ListTournamentRecordsAroundOwner(
 		Client,
@@ -2696,17 +2928,21 @@ void UNakamaClientListTournamentRecordsAroundOwner::Activate()
 		StoredOwnerId,
 		StoredExpiry,
 		StoredCursor,
-		[this](const FNakamaTournamentRecordList& Result)
+		[WeakThis](const FNakamaTournamentRecordList& Result)
 		{
-			OnSuccess.Broadcast(Result);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast(Result);
+				Self->SetReadyToDestroy();
+			}
 		},
-		[this](const FNakamaError& Error)
+		[WeakThis](const FNakamaError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }
@@ -2737,7 +2973,7 @@ void UNakamaClientListUserGroups::Activate()
 	static const TCHAR* TraceScope_ListUserGroups = TEXT("NakamaBP_ListUserGroups");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListUserGroups);
 
-	AddToRoot();
+	TWeakObjectPtr<UNakamaClientListUserGroups> WeakThis(this);
 
 	NakamaApi::ListUserGroups(
 		Client,
@@ -2746,17 +2982,21 @@ void UNakamaClientListUserGroups::Activate()
 		StoredLimit,
 		StoredState,
 		StoredCursor,
-		[this](const FNakamaUserGroupList& Result)
+		[WeakThis](const FNakamaUserGroupList& Result)
 		{
-			OnSuccess.Broadcast(Result);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast(Result);
+				Self->SetReadyToDestroy();
+			}
 		},
-		[this](const FNakamaError& Error)
+		[WeakThis](const FNakamaError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }
@@ -2783,24 +3023,28 @@ void UNakamaClientPromoteGroupUsers::Activate()
 	static const TCHAR* TraceScope_PromoteGroupUsers = TEXT("NakamaBP_PromoteGroupUsers");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_PromoteGroupUsers);
 
-	AddToRoot();
+	TWeakObjectPtr<UNakamaClientPromoteGroupUsers> WeakThis(this);
 
 	NakamaApi::PromoteGroupUsers(
 		Client,
 		Session,
 		StoredGroupId,
 		StoredUserIds,
-		[this]()
+		[WeakThis]()
 		{
-			OnSuccess.Broadcast();
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast();
+				Self->SetReadyToDestroy();
+			}
 		},
-		[this](const FNakamaError& Error)
+		[WeakThis](const FNakamaError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }
@@ -2827,24 +3071,28 @@ void UNakamaClientDemoteGroupUsers::Activate()
 	static const TCHAR* TraceScope_DemoteGroupUsers = TEXT("NakamaBP_DemoteGroupUsers");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_DemoteGroupUsers);
 
-	AddToRoot();
+	TWeakObjectPtr<UNakamaClientDemoteGroupUsers> WeakThis(this);
 
 	NakamaApi::DemoteGroupUsers(
 		Client,
 		Session,
 		StoredGroupId,
 		StoredUserIds,
-		[this]()
+		[WeakThis]()
 		{
-			OnSuccess.Broadcast();
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast();
+				Self->SetReadyToDestroy();
+			}
 		},
-		[this](const FNakamaError& Error)
+		[WeakThis](const FNakamaError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }
@@ -2869,23 +3117,27 @@ void UNakamaClientReadStorageObjects::Activate()
 	static const TCHAR* TraceScope_ReadStorageObjects = TEXT("NakamaBP_ReadStorageObjects");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ReadStorageObjects);
 
-	AddToRoot();
+	TWeakObjectPtr<UNakamaClientReadStorageObjects> WeakThis(this);
 
 	NakamaApi::ReadStorageObjects(
 		Client,
 		Session,
 		StoredObjectIds,
-		[this](const FNakamaStorageObjects& Result)
+		[WeakThis](const FNakamaStorageObjects& Result)
 		{
-			OnSuccess.Broadcast(Result);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast(Result);
+				Self->SetReadyToDestroy();
+			}
 		},
-		[this](const FNakamaError& Error)
+		[WeakThis](const FNakamaError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }
@@ -2914,7 +3166,7 @@ void UNakamaClientRpcFunc::Activate()
 	static const TCHAR* TraceScope_RpcFunc = TEXT("NakamaBP_RpcFunc");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_RpcFunc);
 
-	AddToRoot();
+	TWeakObjectPtr<UNakamaClientRpcFunc> WeakThis(this);
 
 	NakamaApi::RpcFunc(
 		Client,
@@ -2930,17 +3182,21 @@ void UNakamaClientRpcFunc::Activate()
 			return Json;
 		}(),
 		StoredHttpKey,
-		[this](const FNakamaRpc& Result)
+		[WeakThis](const FNakamaRpc& Result)
 		{
-			OnSuccess.Broadcast(Result);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast(Result);
+				Self->SetReadyToDestroy();
+			}
 		},
-		[this](const FNakamaError& Error)
+		[WeakThis](const FNakamaError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }
@@ -2967,24 +3223,28 @@ void UNakamaClientUnlinkApple::Activate()
 	static const TCHAR* TraceScope_UnlinkApple = TEXT("NakamaBP_UnlinkApple");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_UnlinkApple);
 
-	AddToRoot();
+	TWeakObjectPtr<UNakamaClientUnlinkApple> WeakThis(this);
 
 	NakamaApi::UnlinkApple(
 		Client,
 		Session,
 		StoredToken,
 		StoredVars,
-		[this]()
+		[WeakThis]()
 		{
-			OnSuccess.Broadcast();
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast();
+				Self->SetReadyToDestroy();
+			}
 		},
-		[this](const FNakamaError& Error)
+		[WeakThis](const FNakamaError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }
@@ -3011,24 +3271,28 @@ void UNakamaClientUnlinkCustom::Activate()
 	static const TCHAR* TraceScope_UnlinkCustom = TEXT("NakamaBP_UnlinkCustom");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_UnlinkCustom);
 
-	AddToRoot();
+	TWeakObjectPtr<UNakamaClientUnlinkCustom> WeakThis(this);
 
 	NakamaApi::UnlinkCustom(
 		Client,
 		Session,
 		StoredId,
 		StoredVars,
-		[this]()
+		[WeakThis]()
 		{
-			OnSuccess.Broadcast();
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast();
+				Self->SetReadyToDestroy();
+			}
 		},
-		[this](const FNakamaError& Error)
+		[WeakThis](const FNakamaError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }
@@ -3055,24 +3319,28 @@ void UNakamaClientUnlinkDevice::Activate()
 	static const TCHAR* TraceScope_UnlinkDevice = TEXT("NakamaBP_UnlinkDevice");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_UnlinkDevice);
 
-	AddToRoot();
+	TWeakObjectPtr<UNakamaClientUnlinkDevice> WeakThis(this);
 
 	NakamaApi::UnlinkDevice(
 		Client,
 		Session,
 		StoredId,
 		StoredVars,
-		[this]()
+		[WeakThis]()
 		{
-			OnSuccess.Broadcast();
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast();
+				Self->SetReadyToDestroy();
+			}
 		},
-		[this](const FNakamaError& Error)
+		[WeakThis](const FNakamaError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }
@@ -3101,7 +3369,7 @@ void UNakamaClientUnlinkEmail::Activate()
 	static const TCHAR* TraceScope_UnlinkEmail = TEXT("NakamaBP_UnlinkEmail");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_UnlinkEmail);
 
-	AddToRoot();
+	TWeakObjectPtr<UNakamaClientUnlinkEmail> WeakThis(this);
 
 	NakamaApi::UnlinkEmail(
 		Client,
@@ -3109,17 +3377,21 @@ void UNakamaClientUnlinkEmail::Activate()
 		StoredEmail,
 		StoredPassword,
 		StoredVars,
-		[this]()
+		[WeakThis]()
 		{
-			OnSuccess.Broadcast();
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast();
+				Self->SetReadyToDestroy();
+			}
 		},
-		[this](const FNakamaError& Error)
+		[WeakThis](const FNakamaError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }
@@ -3146,24 +3418,28 @@ void UNakamaClientUnlinkFacebook::Activate()
 	static const TCHAR* TraceScope_UnlinkFacebook = TEXT("NakamaBP_UnlinkFacebook");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_UnlinkFacebook);
 
-	AddToRoot();
+	TWeakObjectPtr<UNakamaClientUnlinkFacebook> WeakThis(this);
 
 	NakamaApi::UnlinkFacebook(
 		Client,
 		Session,
 		StoredToken,
 		StoredVars,
-		[this]()
+		[WeakThis]()
 		{
-			OnSuccess.Broadcast();
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast();
+				Self->SetReadyToDestroy();
+			}
 		},
-		[this](const FNakamaError& Error)
+		[WeakThis](const FNakamaError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }
@@ -3190,24 +3466,28 @@ void UNakamaClientUnlinkFacebookInstantGame::Activate()
 	static const TCHAR* TraceScope_UnlinkFacebookInstantGame = TEXT("NakamaBP_UnlinkFacebookInstantGame");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_UnlinkFacebookInstantGame);
 
-	AddToRoot();
+	TWeakObjectPtr<UNakamaClientUnlinkFacebookInstantGame> WeakThis(this);
 
 	NakamaApi::UnlinkFacebookInstantGame(
 		Client,
 		Session,
 		StoredSignedPlayerInfo,
 		StoredVars,
-		[this]()
+		[WeakThis]()
 		{
-			OnSuccess.Broadcast();
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast();
+				Self->SetReadyToDestroy();
+			}
 		},
-		[this](const FNakamaError& Error)
+		[WeakThis](const FNakamaError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }
@@ -3244,7 +3524,7 @@ void UNakamaClientUnlinkGameCenter::Activate()
 	static const TCHAR* TraceScope_UnlinkGameCenter = TEXT("NakamaBP_UnlinkGameCenter");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_UnlinkGameCenter);
 
-	AddToRoot();
+	TWeakObjectPtr<UNakamaClientUnlinkGameCenter> WeakThis(this);
 
 	NakamaApi::UnlinkGameCenter(
 		Client,
@@ -3256,17 +3536,21 @@ void UNakamaClientUnlinkGameCenter::Activate()
 		StoredSignature,
 		StoredPublicKeyUrl,
 		StoredVars,
-		[this]()
+		[WeakThis]()
 		{
-			OnSuccess.Broadcast();
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast();
+				Self->SetReadyToDestroy();
+			}
 		},
-		[this](const FNakamaError& Error)
+		[WeakThis](const FNakamaError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }
@@ -3293,24 +3577,28 @@ void UNakamaClientUnlinkGoogle::Activate()
 	static const TCHAR* TraceScope_UnlinkGoogle = TEXT("NakamaBP_UnlinkGoogle");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_UnlinkGoogle);
 
-	AddToRoot();
+	TWeakObjectPtr<UNakamaClientUnlinkGoogle> WeakThis(this);
 
 	NakamaApi::UnlinkGoogle(
 		Client,
 		Session,
 		StoredToken,
 		StoredVars,
-		[this]()
+		[WeakThis]()
 		{
-			OnSuccess.Broadcast();
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast();
+				Self->SetReadyToDestroy();
+			}
 		},
-		[this](const FNakamaError& Error)
+		[WeakThis](const FNakamaError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }
@@ -3337,24 +3625,28 @@ void UNakamaClientUnlinkSteam::Activate()
 	static const TCHAR* TraceScope_UnlinkSteam = TEXT("NakamaBP_UnlinkSteam");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_UnlinkSteam);
 
-	AddToRoot();
+	TWeakObjectPtr<UNakamaClientUnlinkSteam> WeakThis(this);
 
 	NakamaApi::UnlinkSteam(
 		Client,
 		Session,
 		StoredToken,
 		StoredVars,
-		[this]()
+		[WeakThis]()
 		{
-			OnSuccess.Broadcast();
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast();
+				Self->SetReadyToDestroy();
+			}
 		},
-		[this](const FNakamaError& Error)
+		[WeakThis](const FNakamaError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }
@@ -3389,7 +3681,7 @@ void UNakamaClientUpdateAccount::Activate()
 	static const TCHAR* TraceScope_UpdateAccount = TEXT("NakamaBP_UpdateAccount");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_UpdateAccount);
 
-	AddToRoot();
+	TWeakObjectPtr<UNakamaClientUpdateAccount> WeakThis(this);
 
 	NakamaApi::UpdateAccount(
 		Client,
@@ -3400,17 +3692,21 @@ void UNakamaClientUpdateAccount::Activate()
 		StoredLangTag,
 		StoredLocation,
 		StoredTimezone,
-		[this]()
+		[WeakThis]()
 		{
-			OnSuccess.Broadcast();
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast();
+				Self->SetReadyToDestroy();
+			}
 		},
-		[this](const FNakamaError& Error)
+		[WeakThis](const FNakamaError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }
@@ -3445,7 +3741,7 @@ void UNakamaClientUpdateGroup::Activate()
 	static const TCHAR* TraceScope_UpdateGroup = TEXT("NakamaBP_UpdateGroup");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_UpdateGroup);
 
-	AddToRoot();
+	TWeakObjectPtr<UNakamaClientUpdateGroup> WeakThis(this);
 
 	NakamaApi::UpdateGroup(
 		Client,
@@ -3456,17 +3752,21 @@ void UNakamaClientUpdateGroup::Activate()
 		StoredLangTag,
 		StoredAvatarUrl,
 		StoredOpen,
-		[this]()
+		[WeakThis]()
 		{
-			OnSuccess.Broadcast();
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast();
+				Self->SetReadyToDestroy();
+			}
 		},
-		[this](const FNakamaError& Error)
+		[WeakThis](const FNakamaError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }
@@ -3493,24 +3793,28 @@ void UNakamaClientValidatePurchaseApple::Activate()
 	static const TCHAR* TraceScope_ValidatePurchaseApple = TEXT("NakamaBP_ValidatePurchaseApple");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ValidatePurchaseApple);
 
-	AddToRoot();
+	TWeakObjectPtr<UNakamaClientValidatePurchaseApple> WeakThis(this);
 
 	NakamaApi::ValidatePurchaseApple(
 		Client,
 		Session,
 		StoredReceipt,
 		StoredPersist,
-		[this](const FNakamaValidatePurchaseResponse& Result)
+		[WeakThis](const FNakamaValidatePurchaseResponse& Result)
 		{
-			OnSuccess.Broadcast(Result);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast(Result);
+				Self->SetReadyToDestroy();
+			}
 		},
-		[this](const FNakamaError& Error)
+		[WeakThis](const FNakamaError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }
@@ -3537,24 +3841,28 @@ void UNakamaClientValidateSubscriptionApple::Activate()
 	static const TCHAR* TraceScope_ValidateSubscriptionApple = TEXT("NakamaBP_ValidateSubscriptionApple");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ValidateSubscriptionApple);
 
-	AddToRoot();
+	TWeakObjectPtr<UNakamaClientValidateSubscriptionApple> WeakThis(this);
 
 	NakamaApi::ValidateSubscriptionApple(
 		Client,
 		Session,
 		StoredReceipt,
 		StoredPersist,
-		[this](const FNakamaValidateSubscriptionResponse& Result)
+		[WeakThis](const FNakamaValidateSubscriptionResponse& Result)
 		{
-			OnSuccess.Broadcast(Result);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast(Result);
+				Self->SetReadyToDestroy();
+			}
 		},
-		[this](const FNakamaError& Error)
+		[WeakThis](const FNakamaError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }
@@ -3581,24 +3889,28 @@ void UNakamaClientValidatePurchaseGoogle::Activate()
 	static const TCHAR* TraceScope_ValidatePurchaseGoogle = TEXT("NakamaBP_ValidatePurchaseGoogle");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ValidatePurchaseGoogle);
 
-	AddToRoot();
+	TWeakObjectPtr<UNakamaClientValidatePurchaseGoogle> WeakThis(this);
 
 	NakamaApi::ValidatePurchaseGoogle(
 		Client,
 		Session,
 		StoredPurchase,
 		StoredPersist,
-		[this](const FNakamaValidatePurchaseResponse& Result)
+		[WeakThis](const FNakamaValidatePurchaseResponse& Result)
 		{
-			OnSuccess.Broadcast(Result);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast(Result);
+				Self->SetReadyToDestroy();
+			}
 		},
-		[this](const FNakamaError& Error)
+		[WeakThis](const FNakamaError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }
@@ -3625,24 +3937,28 @@ void UNakamaClientValidateSubscriptionGoogle::Activate()
 	static const TCHAR* TraceScope_ValidateSubscriptionGoogle = TEXT("NakamaBP_ValidateSubscriptionGoogle");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ValidateSubscriptionGoogle);
 
-	AddToRoot();
+	TWeakObjectPtr<UNakamaClientValidateSubscriptionGoogle> WeakThis(this);
 
 	NakamaApi::ValidateSubscriptionGoogle(
 		Client,
 		Session,
 		StoredReceipt,
 		StoredPersist,
-		[this](const FNakamaValidateSubscriptionResponse& Result)
+		[WeakThis](const FNakamaValidateSubscriptionResponse& Result)
 		{
-			OnSuccess.Broadcast(Result);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast(Result);
+				Self->SetReadyToDestroy();
+			}
 		},
-		[this](const FNakamaError& Error)
+		[WeakThis](const FNakamaError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }
@@ -3671,7 +3987,7 @@ void UNakamaClientValidatePurchaseHuawei::Activate()
 	static const TCHAR* TraceScope_ValidatePurchaseHuawei = TEXT("NakamaBP_ValidatePurchaseHuawei");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ValidatePurchaseHuawei);
 
-	AddToRoot();
+	TWeakObjectPtr<UNakamaClientValidatePurchaseHuawei> WeakThis(this);
 
 	NakamaApi::ValidatePurchaseHuawei(
 		Client,
@@ -3679,17 +3995,21 @@ void UNakamaClientValidatePurchaseHuawei::Activate()
 		StoredPurchase,
 		StoredSignature,
 		StoredPersist,
-		[this](const FNakamaValidatePurchaseResponse& Result)
+		[WeakThis](const FNakamaValidatePurchaseResponse& Result)
 		{
-			OnSuccess.Broadcast(Result);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast(Result);
+				Self->SetReadyToDestroy();
+			}
 		},
-		[this](const FNakamaError& Error)
+		[WeakThis](const FNakamaError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }
@@ -3716,24 +4036,28 @@ void UNakamaClientValidatePurchaseFacebookInstant::Activate()
 	static const TCHAR* TraceScope_ValidatePurchaseFacebookInstant = TEXT("NakamaBP_ValidatePurchaseFacebookInstant");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ValidatePurchaseFacebookInstant);
 
-	AddToRoot();
+	TWeakObjectPtr<UNakamaClientValidatePurchaseFacebookInstant> WeakThis(this);
 
 	NakamaApi::ValidatePurchaseFacebookInstant(
 		Client,
 		Session,
 		StoredSignedRequest,
 		StoredPersist,
-		[this](const FNakamaValidatePurchaseResponse& Result)
+		[WeakThis](const FNakamaValidatePurchaseResponse& Result)
 		{
-			OnSuccess.Broadcast(Result);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast(Result);
+				Self->SetReadyToDestroy();
+			}
 		},
-		[this](const FNakamaError& Error)
+		[WeakThis](const FNakamaError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }
@@ -3760,24 +4084,28 @@ void UNakamaClientWriteLeaderboardRecord::Activate()
 	static const TCHAR* TraceScope_WriteLeaderboardRecord = TEXT("NakamaBP_WriteLeaderboardRecord");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_WriteLeaderboardRecord);
 
-	AddToRoot();
+	TWeakObjectPtr<UNakamaClientWriteLeaderboardRecord> WeakThis(this);
 
 	NakamaApi::WriteLeaderboardRecord(
 		Client,
 		Session,
 		StoredLeaderboardId,
 		StoredRecord,
-		[this](const FNakamaLeaderboardRecord& Result)
+		[WeakThis](const FNakamaLeaderboardRecord& Result)
 		{
-			OnSuccess.Broadcast(Result);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast(Result);
+				Self->SetReadyToDestroy();
+			}
 		},
-		[this](const FNakamaError& Error)
+		[WeakThis](const FNakamaError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }
@@ -3802,23 +4130,27 @@ void UNakamaClientWriteStorageObjects::Activate()
 	static const TCHAR* TraceScope_WriteStorageObjects = TEXT("NakamaBP_WriteStorageObjects");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_WriteStorageObjects);
 
-	AddToRoot();
+	TWeakObjectPtr<UNakamaClientWriteStorageObjects> WeakThis(this);
 
 	NakamaApi::WriteStorageObjects(
 		Client,
 		Session,
 		StoredObjects,
-		[this](const FNakamaStorageObjectAcks& Result)
+		[WeakThis](const FNakamaStorageObjectAcks& Result)
 		{
-			OnSuccess.Broadcast(Result);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast(Result);
+				Self->SetReadyToDestroy();
+			}
 		},
-		[this](const FNakamaError& Error)
+		[WeakThis](const FNakamaError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }
@@ -3845,24 +4177,28 @@ void UNakamaClientWriteTournamentRecord::Activate()
 	static const TCHAR* TraceScope_WriteTournamentRecord = TEXT("NakamaBP_WriteTournamentRecord");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_WriteTournamentRecord);
 
-	AddToRoot();
+	TWeakObjectPtr<UNakamaClientWriteTournamentRecord> WeakThis(this);
 
 	NakamaApi::WriteTournamentRecord(
 		Client,
 		Session,
 		StoredTournamentId,
 		StoredRecord,
-		[this](const FNakamaLeaderboardRecord& Result)
+		[WeakThis](const FNakamaLeaderboardRecord& Result)
 		{
-			OnSuccess.Broadcast(Result);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast(Result);
+				Self->SetReadyToDestroy();
+			}
 		},
-		[this](const FNakamaError& Error)
+		[WeakThis](const FNakamaError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }

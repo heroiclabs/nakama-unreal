@@ -73,7 +73,7 @@ void UNakamaClient{{ $rpc.Name }}::Activate()
 	static const TCHAR* TraceScope_{{ $rpc.Name }} = TEXT("NakamaBP_{{ $rpc.Name }}");
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_{{ $rpc.Name }});
 
-	AddToRoot();
+	TWeakObjectPtr<UNakamaClient{{ $rpc.Name }}> WeakThis(this);
 
 	NakamaApi::{{ $rpc.Name }}(
 		Client,
@@ -101,25 +101,31 @@ void UNakamaClient{{ $rpc.Name }}::Activate()
 {{- end }}
 {{- end }}
 {{- if $hasReturn }}
-		[this](const FNakama{{ $returnType.Name }}& Result)
+		[WeakThis](const FNakama{{ $returnType.Name }}& Result)
 		{
-			OnSuccess.Broadcast(Result);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast(Result);
+				Self->SetReadyToDestroy();
+			}
 		},
 {{- else }}
-		[this]()
+		[WeakThis]()
 		{
-			OnSuccess.Broadcast();
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast();
+				Self->SetReadyToDestroy();
+			}
 		},
 {{- end }}
-		[this](const FNakamaError& Error)
+		[WeakThis](const FNakamaError& Error)
 		{
-			OnError.Broadcast(Error);
-			RemoveFromRoot();
-			SetReadyToDestroy();
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
 		}
 	);
 }
