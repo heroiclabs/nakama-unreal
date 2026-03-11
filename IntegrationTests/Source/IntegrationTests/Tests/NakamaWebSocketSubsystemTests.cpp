@@ -118,7 +118,7 @@ void FNakamaWebSocketSubsystemConnectionSpec::Define()
             });
     });
 
-    AfterEach([this]()
+    LatentAfterEach([this](const FDoneDelegate& Done)
     {
         if (WSSub)
         {
@@ -126,6 +126,9 @@ void FNakamaWebSocketSubsystemConnectionSpec::Define()
             WSSub->RemoveFromRoot();
             WSSub = nullptr;
         }
+
+        if (Session.Token.IsEmpty()) { Done.Execute(); return; }
+        Nakama::DeleteAccount(ClientConfig, Session).Next([Done](FNakamaVoidResult) { Done.Execute(); });
     });
 
     // -----------------------------------------------------------------------
@@ -293,9 +296,17 @@ void FNakamaWebSocketSubsystemPingSpec::Define()
             });
     });
 
-    AfterEach([this]()
+    LatentAfterEach([this](const FDoneDelegate& Done)
     {
-        if (WSSub) { WSSub->Close(); WSSub->RemoveFromRoot(); WSSub = nullptr; }
+        if (WSSub)
+        {
+            WSSub->Close();
+            WSSub->RemoveFromRoot();
+            WSSub = nullptr;
+        }
+
+        if (Session.Token.IsEmpty()) { Done.Execute(); return; }
+        Nakama::DeleteAccount(ClientConfig, Session).Next([Done](FNakamaVoidResult) { Done.Execute(); });
     });
 
     Describe("Single", [this]()
@@ -431,9 +442,17 @@ void FNakamaWebSocketSubsystemChannelSpec::Define()
             });
     });
 
-    AfterEach([this]()
+    LatentAfterEach([this](const FDoneDelegate& Done)
     {
-        if (WSSub) { WSSub->Close(); WSSub->RemoveFromRoot(); WSSub = nullptr; }
+        if (WSSub)
+        {
+            WSSub->Close();
+            WSSub->RemoveFromRoot();
+            WSSub = nullptr;
+        }
+
+        if (Session.Token.IsEmpty()) { Done.Execute(); return; }
+        Nakama::DeleteAccount(ClientConfig, Session).Next([Done](FNakamaVoidResult) { Done.Execute(); });
     });
 
     Describe("Join", [this]()
@@ -571,9 +590,17 @@ void FNakamaWebSocketSubsystemMatchSpec::Define()
             });
     });
 
-    AfterEach([this]()
+    LatentAfterEach([this](const FDoneDelegate& Done)
     {
-        if (WSSub) { WSSub->Close(); WSSub->RemoveFromRoot(); WSSub = nullptr; }
+        if (WSSub)
+        {
+            WSSub->Close();
+            WSSub->RemoveFromRoot();
+            WSSub = nullptr;
+        }
+
+        if (Session.Token.IsEmpty()) { Done.Execute(); return; }
+        Nakama::DeleteAccount(ClientConfig, Session).Next([Done](FNakamaVoidResult) { Done.Execute(); });
     });
 
     Describe("Create", [this]()
@@ -686,9 +713,17 @@ void FNakamaWebSocketSubsystemMatchmakerSpec::Define()
             });
     });
 
-    AfterEach([this]()
+    LatentAfterEach([this](const FDoneDelegate& Done)
     {
-        if (WSSub) { WSSub->Close(); WSSub->RemoveFromRoot(); WSSub = nullptr; }
+        if (WSSub)
+        {
+            WSSub->Close();
+            WSSub->RemoveFromRoot();
+            WSSub = nullptr;
+        }
+
+        if (Session.Token.IsEmpty()) { Done.Execute(); return; }
+        Nakama::DeleteAccount(ClientConfig, Session).Next([Done](FNakamaVoidResult) { Done.Execute(); });
     });
 
     Describe("Add", [this]()
@@ -781,9 +816,17 @@ void FNakamaWebSocketSubsystemStatusSpec::Define()
             });
     });
 
-    AfterEach([this]()
+    LatentAfterEach([this](const FDoneDelegate& Done)
     {
-        if (WSSub) { WSSub->Close(); WSSub->RemoveFromRoot(); WSSub = nullptr; }
+        if (WSSub)
+        {
+            WSSub->Close();
+            WSSub->RemoveFromRoot();
+            WSSub = nullptr;
+        }
+
+        if (Session.Token.IsEmpty()) { Done.Execute(); return; }
+        Nakama::DeleteAccount(ClientConfig, Session).Next([Done](FNakamaVoidResult) { Done.Execute(); });
     });
 
     Describe("Update", [this]()
@@ -921,9 +964,17 @@ void FNakamaWebSocketSubsystemDelegatesSpec::Define()
             });
     });
 
-    AfterEach([this]()
+    LatentAfterEach([this](const FDoneDelegate& Done)
     {
-        if (WSSub) { WSSub->Close(); WSSub->RemoveFromRoot(); WSSub = nullptr; }
+        if (WSSub)
+        {
+            WSSub->Close();
+            WSSub->RemoveFromRoot();
+            WSSub = nullptr;
+        }
+
+        if (Session.Token.IsEmpty()) { Done.Execute(); return; }
+        Nakama::DeleteAccount(ClientConfig, Session).Next([Done](FNakamaVoidResult) { Done.Execute(); });
     });
 
     Describe("MessageSent", [this]()

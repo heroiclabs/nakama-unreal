@@ -30,6 +30,7 @@ BEGIN_DEFINE_SPEC(FSatoriAsyncAuthSpec, "IntegrationTests.Satori.Auth",
 	FSatoriClientConfig ClientConfig;
 	FSatoriRetryConfig RetryConfig;
 	FString TestIdentityId;
+	FSatoriSession Session;
 
 	static FString ServerKey;
 	static const FString Host;
@@ -59,6 +60,12 @@ void FSatoriAsyncAuthSpec::Define()
 		TestIdentityId = GenerateId();
 	});
 
+	LatentAfterEach([this](const FDoneDelegate& Done)
+	{
+		if (Session.Token.IsEmpty()) { Done.Execute(); return; }
+		Satori::DeleteIdentity(ClientConfig, Session).Next([Done](FSatoriVoidResult) { Done.Execute(); });
+	});
+
 	Describe("Authenticate", [this]()
 	{
 		LatentIt("should authenticate with valid identity ID", [this](const FDoneDelegate& Done)
@@ -68,6 +75,7 @@ void FSatoriAsyncAuthSpec::Define()
 				SATORI_FAIL_ON_ERROR(Result, Done);
 				TestTrue("Session has token", !Result.Value.Token.IsEmpty());
 				TestTrue("Session has refresh token", !Result.Value.RefreshToken.IsEmpty());
+				Session = Result.Value;
 				Done.Execute();
 			});
 		});
@@ -92,6 +100,7 @@ void FSatoriAsyncAuthSpec::Define()
 			{
 				SATORI_FAIL_ON_ERROR(Result, Done);
 				TestTrue("Session has token", !Result.Value.Token.IsEmpty());
+				Session = Result.Value;
 				Done.Execute();
 			});
 		});
@@ -105,6 +114,7 @@ void FSatoriAsyncAuthSpec::Define()
 			{
 				SATORI_FAIL_ON_ERROR(Result, Done);
 				TestTrue("Session has token", !Result.Value.Token.IsEmpty());
+				Session = Result.Value;
 				Done.Execute();
 			});
 		});
@@ -135,6 +145,7 @@ void FSatoriAsyncAuthSpec::Define()
 			Satori::Authenticate(ClientConfig, TestIdentityId, false, {}, {}).Next([this, Done](FSatoriSessionResult Result)
 			{
 				SATORI_FAIL_ON_ERROR(Result, Done);
+				Session = Result.Value;
 				const FString RefreshToken = Result.Value.RefreshToken;
 
 				Satori::AuthenticateRefresh(ClientConfig, RefreshToken).Next([this, Done](FSatoriSessionResult Result)
@@ -164,6 +175,7 @@ void FSatoriAsyncAuthSpec::Define()
 			Satori::Authenticate(ClientConfig, TestIdentityId, false, {}, {}).Next([this, Done](FSatoriSessionResult Result)
 			{
 				SATORI_FAIL_ON_ERROR(Result, Done);
+				Session = Result.Value;
 				const FString Token = Result.Value.Token;
 				const FString RefreshToken = Result.Value.RefreshToken;
 
@@ -186,6 +198,7 @@ BEGIN_DEFINE_SPEC(FSatoriAsyncHealthcheckSpec, "IntegrationTests.Satori.Healthch
 
 	FSatoriClientConfig ClientConfig;
 	FSatoriRetryConfig RetryConfig;
+	FSatoriSession Session;
 
 	static FString ServerKey;
 	static const FString Host;
@@ -210,6 +223,12 @@ void FSatoriAsyncHealthcheckSpec::Define()
 	BeforeEach([this]()
 	{
 		ClientConfig = FSatoriClientConfig{ServerKey, Host, Port, false};
+	});
+
+	LatentAfterEach([this](const FDoneDelegate& Done)
+	{
+		if (Session.Token.IsEmpty()) { Done.Execute(); return; }
+		Satori::DeleteIdentity(ClientConfig, Session).Next([Done](FSatoriVoidResult) { Done.Execute(); });
 	});
 
 	LatentIt("should return healthy", [this](const FDoneDelegate& Done)
@@ -268,6 +287,12 @@ void FSatoriAsyncIdentitySpec::Define()
 	{
 		ClientConfig = FSatoriClientConfig{ServerKey, Host, Port, false};
 		Session = FSatoriSession{};
+	});
+
+	LatentAfterEach([this](const FDoneDelegate& Done)
+	{
+		if (Session.Token.IsEmpty()) { Done.Execute(); return; }
+		Satori::DeleteIdentity(ClientConfig, Session).Next([Done](FSatoriVoidResult) { Done.Execute(); });
 	});
 
 	Describe("Identify", [this]()
@@ -346,6 +371,12 @@ void FSatoriAsyncPropertiesSpec::Define()
 	{
 		ClientConfig = FSatoriClientConfig{ServerKey, Host, Port, false};
 		Session = FSatoriSession{};
+	});
+
+	LatentAfterEach([this](const FDoneDelegate& Done)
+	{
+		if (Session.Token.IsEmpty()) { Done.Execute(); return; }
+		Satori::DeleteIdentity(ClientConfig, Session).Next([Done](FSatoriVoidResult) { Done.Execute(); });
 	});
 
 	Describe("ListProperties", [this]()
@@ -460,6 +491,12 @@ void FSatoriAsyncEventSpec::Define()
 		Session = FSatoriSession{};
 	});
 
+	LatentAfterEach([this](const FDoneDelegate& Done)
+	{
+		if (Session.Token.IsEmpty()) { Done.Execute(); return; }
+		Satori::DeleteIdentity(ClientConfig, Session).Next([Done](FSatoriVoidResult) { Done.Execute(); });
+	});
+
 	Describe("Event", [this]()
 	{
 		LatentIt("should publish a single event", [this](const FDoneDelegate& Done)
@@ -564,6 +601,12 @@ void FSatoriAsyncFlagsSpec::Define()
 		Session = FSatoriSession{};
 	});
 
+	LatentAfterEach([this](const FDoneDelegate& Done)
+	{
+		if (Session.Token.IsEmpty()) { Done.Execute(); return; }
+		Satori::DeleteIdentity(ClientConfig, Session).Next([Done](FSatoriVoidResult) { Done.Execute(); });
+	});
+
 	Describe("GetFlags", [this]()
 	{
 		LatentIt("should list all flags", [this](const FDoneDelegate& Done)
@@ -651,6 +694,12 @@ void FSatoriAsyncExperimentsSpec::Define()
 		Session = FSatoriSession{};
 	});
 
+	LatentAfterEach([this](const FDoneDelegate& Done)
+	{
+		if (Session.Token.IsEmpty()) { Done.Execute(); return; }
+		Satori::DeleteIdentity(ClientConfig, Session).Next([Done](FSatoriVoidResult) { Done.Execute(); });
+	});
+
 	Describe("GetExperiments", [this]()
 	{
 		LatentIt("should list all experiments", [this](const FDoneDelegate& Done)
@@ -719,6 +768,12 @@ void FSatoriAsyncLiveEventsSpec::Define()
 	{
 		ClientConfig = FSatoriClientConfig{ServerKey, Host, Port, false};
 		Session = FSatoriSession{};
+	});
+
+	LatentAfterEach([this](const FDoneDelegate& Done)
+	{
+		if (Session.Token.IsEmpty()) { Done.Execute(); return; }
+		Satori::DeleteIdentity(ClientConfig, Session).Next([Done](FSatoriVoidResult) { Done.Execute(); });
 	});
 
 	Describe("GetLiveEvents", [this]()
@@ -791,6 +846,12 @@ void FSatoriAsyncMessagesSpec::Define()
 		Session = FSatoriSession{};
 	});
 
+	LatentAfterEach([this](const FDoneDelegate& Done)
+	{
+		if (Session.Token.IsEmpty()) { Done.Execute(); return; }
+		Satori::DeleteIdentity(ClientConfig, Session).Next([Done](FSatoriVoidResult) { Done.Execute(); });
+	});
+
 	Describe("GetMessageList", [this]()
 	{
 		LatentIt("should list messages for identity", [this](const FDoneDelegate& Done)
@@ -859,6 +920,12 @@ void FSatoriAsyncSessionSpec::Define()
 	BeforeEach([this]()
 	{
 		ClientConfig = FSatoriClientConfig{ServerKey, Host, Port, false};
+	});
+
+	LatentAfterEach([this](const FDoneDelegate& Done)
+	{
+		if (Session.Token.IsEmpty()) { Done.Execute(); return; }
+		Satori::DeleteIdentity(ClientConfig, Session).Next([Done](FSatoriVoidResult) { Done.Execute(); });
 	});
 
 	Describe("Full lifecycle", [this]()

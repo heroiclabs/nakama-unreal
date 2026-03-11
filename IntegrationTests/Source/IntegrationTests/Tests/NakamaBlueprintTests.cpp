@@ -87,6 +87,14 @@ void FNakamaBPHealthcheckSpec::Define()
 		);
 	});
 
+	LatentAfterEach([this](const FDoneDelegate& Done)
+	{
+		NakamaApi::DeleteAccount(Client, Session,
+			[Done]() { Done.Execute(); },
+			[Done](const FNakamaError&) { Done.Execute(); }
+		);
+	});
+
 	Describe("Healthcheck", [this]()
 	{
 		LatentIt("should pass healthcheck", [this](const FDoneDelegate& Done)
@@ -118,6 +126,7 @@ BEGIN_DEFINE_SPEC(FNakamaBPAuthSpec, "IntegrationTests.NakamaBlueprint.Auth",
 
 
 	FNakamaClientConfig Client;
+	FNakamaSession Session;
 
 	static const FString ServerKey;
 	static const FString Host;
@@ -136,6 +145,20 @@ void FNakamaBPAuthSpec::Define()
 	BeforeEach([this]()
 	{
 		Client = FNakamaClientConfig{ServerKey, Host, Port, false};
+		Session = FNakamaSession();
+	});
+
+	LatentAfterEach([this](const FDoneDelegate& Done)
+	{
+		if (Session.Token.IsEmpty())
+		{
+			Done.Execute();
+			return;
+		}
+		NakamaApi::DeleteAccount(Client, Session,
+			[Done]() { Done.Execute(); },
+			[Done](const FNakamaError&) { Done.Execute(); }
+		);
 	});
 
 	Describe("AuthenticateCustom", [this]()
@@ -155,6 +178,7 @@ void FNakamaBPAuthSpec::Define()
 				NakamaApi::AuthenticateCustom(Client, Account, false, TEXT(""),
 					[this, Done](const FNakamaSession& Result)
 					{
+						Session = Result;
 						TestTrue("Session has token", !Result.Token.IsEmpty());
 						Done.Execute();
 					},
@@ -186,6 +210,7 @@ void FNakamaBPAuthSpec::Define()
 				NakamaApi::AuthenticateEmail(Client, Account, false, TEXT(""),
 					[this, Done](const FNakamaSession& Result)
 					{
+						Session = Result;
 						TestTrue("Session has token", !Result.Token.IsEmpty());
 						Done.Execute();
 					},
@@ -216,6 +241,7 @@ void FNakamaBPAuthSpec::Define()
 				NakamaApi::AuthenticateDevice(Client, Account, false, TEXT(""),
 					[this, Done](const FNakamaSession& Result)
 					{
+						Session = Result;
 						TestTrue("Session has token", !Result.Token.IsEmpty());
 						Done.Execute();
 					},
@@ -275,6 +301,14 @@ void FNakamaBPSessionSpec::Define()
 				AddError(FString::Printf(TEXT("Setup auth failed: %s"), *Error.Message));
 				Done.Execute();
 			}
+		);
+	});
+
+	LatentAfterEach([this](const FDoneDelegate& Done)
+	{
+		NakamaApi::DeleteAccount(Client, Session,
+			[Done]() { Done.Execute(); },
+			[Done](const FNakamaError&) { Done.Execute(); }
 		);
 	});
 
@@ -386,6 +420,14 @@ void FNakamaBPAccountSpec::Define()
 				AddError(FString::Printf(TEXT("Setup auth failed: %s"), *Error.Message));
 				Done.Execute();
 			}
+		);
+	});
+
+	LatentAfterEach([this](const FDoneDelegate& Done)
+	{
+		NakamaApi::DeleteAccount(Client, Session,
+			[Done]() { Done.Execute(); },
+			[Done](const FNakamaError&) { Done.Execute(); }
 		);
 	});
 
@@ -569,6 +611,26 @@ void FNakamaBPFriendsSpec::Define()
 			{
 				AddError(FString::Printf(TEXT("Setup auth failed: %s"), *Error.Message));
 				Done.Execute();
+			}
+		);
+	});
+
+	LatentAfterEach([this](const FDoneDelegate& Done)
+	{
+		NakamaApi::DeleteAccount(Client, Session,
+			[this, Done]()
+			{
+				NakamaApi::DeleteAccount(Client, FriendSession,
+					[Done]() { Done.Execute(); },
+					[Done](const FNakamaError&) { Done.Execute(); }
+				);
+			},
+			[this, Done](const FNakamaError&)
+			{
+				NakamaApi::DeleteAccount(Client, FriendSession,
+					[Done]() { Done.Execute(); },
+					[Done](const FNakamaError&) { Done.Execute(); }
+				);
 			}
 		);
 	});
@@ -1333,6 +1395,14 @@ void FNakamaBPStorageSpec::Define()
 		);
 	});
 
+	LatentAfterEach([this](const FDoneDelegate& Done)
+	{
+		NakamaApi::DeleteAccount(Client, Session,
+			[Done]() { Done.Execute(); },
+			[Done](const FNakamaError&) { Done.Execute(); }
+		);
+	});
+
 	Describe("WriteStorageObjects", [this]()
 	{
 		LatentIt("should write and read back storage objects", [this](const FDoneDelegate& Done)
@@ -1637,6 +1707,14 @@ void FNakamaBPLinkSpec::Define()
 		);
 	});
 
+	LatentAfterEach([this](const FDoneDelegate& Done)
+	{
+		NakamaApi::DeleteAccount(Client, Session,
+			[Done]() { Done.Execute(); },
+			[Done](const FNakamaError&) { Done.Execute(); }
+		);
+	});
+
 	Describe("LinkCustom", [this]()
 	{
 		LatentIt("should link a custom ID", [this](const FDoneDelegate& Done)
@@ -1931,6 +2009,14 @@ void FNakamaBPNotificationsSpec::Define()
 		);
 	});
 
+	LatentAfterEach([this](const FDoneDelegate& Done)
+	{
+		NakamaApi::DeleteAccount(Client, Session,
+			[Done]() { Done.Execute(); },
+			[Done](const FNakamaError&) { Done.Execute(); }
+		);
+	});
+
 	Describe("ListNotifications", [this]()
 	{
 		LatentIt("should list notifications", [this](const FDoneDelegate& Done)
@@ -2008,6 +2094,14 @@ void FNakamaBPMatchesSpec::Define()
 		);
 	});
 
+	LatentAfterEach([this](const FDoneDelegate& Done)
+	{
+		NakamaApi::DeleteAccount(Client, Session,
+			[Done]() { Done.Execute(); },
+			[Done](const FNakamaError&) { Done.Execute(); }
+		);
+	});
+
 	Describe("ListMatches", [this]()
 	{
 		LatentIt("should list matches", [this](const FDoneDelegate& Done)
@@ -2081,6 +2175,14 @@ void FNakamaBPEventsSpec::Define()
 				AddError(FString::Printf(TEXT("Setup auth failed: %s"), *Error.Message));
 				Done.Execute();
 			}
+		);
+	});
+
+	LatentAfterEach([this](const FDoneDelegate& Done)
+	{
+		NakamaApi::DeleteAccount(Client, Session,
+			[Done]() { Done.Execute(); },
+			[Done](const FNakamaError&) { Done.Execute(); }
 		);
 	});
 

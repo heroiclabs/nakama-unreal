@@ -112,10 +112,13 @@ void FNakamaRtPingSpec::Define()
             });
     });
 
-    AfterEach([this]()
+    LatentAfterEach([this](const FDoneDelegate& Done)
     {
         RtClient.Reset();
         if (GI) { GI->Shutdown(); GI->RemoveFromRoot(); GI = nullptr; }
+
+        if (Session.Token.IsEmpty()) { Done.Execute(); return; }
+        Nakama::DeleteAccount(ClientConfig, Session).Next([Done](FNakamaVoidResult) { Done.Execute(); });
     });
 
     Describe("Single", [this]()
@@ -199,10 +202,13 @@ void FNakamaRtChannelSpec::Define()
             });
     });
 
-    AfterEach([this]()
+    LatentAfterEach([this](const FDoneDelegate& Done)
     {
         RtClient.Reset();
         if (GI) { GI->Shutdown(); GI->RemoveFromRoot(); GI = nullptr; }
+
+        if (Session.Token.IsEmpty()) { Done.Execute(); return; }
+        Nakama::DeleteAccount(ClientConfig, Session).Next([Done](FNakamaVoidResult) { Done.Execute(); });
     });
 
     // -----------------------------------------------------------------------
@@ -427,10 +433,13 @@ void FNakamaRtMatchSpec::Define()
             });
     });
 
-    AfterEach([this]()
+    LatentAfterEach([this](const FDoneDelegate& Done)
     {
         RtClient.Reset();
         if (GI) { GI->Shutdown(); GI->RemoveFromRoot(); GI = nullptr; }
+
+        if (Session.Token.IsEmpty()) { Done.Execute(); return; }
+        Nakama::DeleteAccount(ClientConfig, Session).Next([Done](FNakamaVoidResult) { Done.Execute(); });
     });
 
     // -----------------------------------------------------------------------
@@ -558,10 +567,13 @@ void FNakamaRtMatchmakerSpec::Define()
             });
     });
 
-    AfterEach([this]()
+    LatentAfterEach([this](const FDoneDelegate& Done)
     {
         RtClient.Reset();
         if (GI) { GI->Shutdown(); GI->RemoveFromRoot(); GI = nullptr; }
+
+        if (Session.Token.IsEmpty()) { Done.Execute(); return; }
+        Nakama::DeleteAccount(ClientConfig, Session).Next([Done](FNakamaVoidResult) { Done.Execute(); });
     });
 
     // -----------------------------------------------------------------------
@@ -655,10 +667,13 @@ void FNakamaRtStatusSpec::Define()
             });
     });
 
-    AfterEach([this]()
+    LatentAfterEach([this](const FDoneDelegate& Done)
     {
         RtClient.Reset();
         if (GI) { GI->Shutdown(); GI->RemoveFromRoot(); GI = nullptr; }
+
+        if (Session.Token.IsEmpty()) { Done.Execute(); return; }
+        Nakama::DeleteAccount(ClientConfig, Session).Next([Done](FNakamaVoidResult) { Done.Execute(); });
     });
 
     // -----------------------------------------------------------------------
@@ -795,10 +810,13 @@ void FNakamaRtPartySpec::Define()
             });
     });
 
-    AfterEach([this]()
+    LatentAfterEach([this](const FDoneDelegate& Done)
     {
         RtClient.Reset();
         if (GI) { GI->Shutdown(); GI->RemoveFromRoot(); GI = nullptr; }
+
+        if (Session.Token.IsEmpty()) { Done.Execute(); return; }
+        Nakama::DeleteAccount(ClientConfig, Session).Next([Done](FNakamaVoidResult) { Done.Execute(); });
     });
 
     // -----------------------------------------------------------------------

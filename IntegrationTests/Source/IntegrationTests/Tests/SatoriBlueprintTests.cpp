@@ -89,6 +89,14 @@ void FSatoriBPHealthcheckSpec::Define()
 		);
 	});
 
+	LatentAfterEach([this](const FDoneDelegate& Done)
+	{
+		SatoriApi::DeleteIdentity(ClientConfig, Session,
+			[Done]() { Done.Execute(); },
+			[Done](const FSatoriError&) { Done.Execute(); }
+		);
+	});
+
 	Describe("Healthcheck", [this]()
 	{
 		LatentIt("should pass healthcheck", [this](const FDoneDelegate& Done)
@@ -140,6 +148,7 @@ BEGIN_DEFINE_SPEC(FSatoriBPAuthSpec, "IntegrationTests.SatoriBlueprint.Auth",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
 	FSatoriClientConfig ClientConfig;
+	FSatoriSession Session;
 
 	static FString ServerKey;
 	static const FString Host;
@@ -156,12 +165,26 @@ void FSatoriBPAuthSpec::Define()
 {
 	LatentBeforeEach([this](const FDoneDelegate& Done)
 	{
+		Session = FSatoriSession();
 		GetSatoriApiKey().Next([this, Done](FString Key)
 		{
 			ServerKey = Key;
 			ClientConfig = FSatoriClientConfig{ServerKey, Host, Port, false};
 			Done.Execute();
 		});
+	});
+
+	LatentAfterEach([this](const FDoneDelegate& Done)
+	{
+		if (Session.Token.IsEmpty())
+		{
+			Done.Execute();
+			return;
+		}
+		SatoriApi::DeleteIdentity(ClientConfig, Session,
+			[Done]() { Done.Execute(); },
+			[Done](const FSatoriError&) { Done.Execute(); }
+		);
 	});
 
 	Describe("Authenticate", [this]()
@@ -180,6 +203,7 @@ void FSatoriBPAuthSpec::Define()
 				SatoriApi::Authenticate(ClientConfig, Id, false, {}, {},
 					[this, Done](const FSatoriSession& Result)
 					{
+						Session = Result;
 						TestTrue("Session has token", !Result.Token.IsEmpty());
 						Done.Execute();
 					},
@@ -201,6 +225,7 @@ void FSatoriBPAuthSpec::Define()
 			SatoriApi::Authenticate(ClientConfig, GenerateId(), false, {}, {},
 				[this, Done](const FSatoriSession& Result)
 				{
+					Session = Result;
 					auto* Action = USatoriClientAuthenticateRefresh::AuthenticateRefresh(
 						nullptr, ClientConfig, Result.RefreshToken);
 					Action->Activate();
@@ -235,6 +260,7 @@ void FSatoriBPAuthSpec::Define()
 			SatoriApi::Authenticate(ClientConfig, GenerateId(), false, {}, {},
 				[this, Done](const FSatoriSession& Result)
 				{
+					Session = Result;
 					auto* Action = USatoriClientAuthenticateLogout::AuthenticateLogout(
 						nullptr, ClientConfig, Result.Token, Result.RefreshToken);
 					Action->Activate();
@@ -308,6 +334,14 @@ void FSatoriBPIdentitySpec::Define()
 				AddError(FString::Printf(TEXT("Setup auth failed: %s"), *Error.Message));
 				Done.Execute();
 			}
+		);
+	});
+
+	LatentAfterEach([this](const FDoneDelegate& Done)
+	{
+		SatoriApi::DeleteIdentity(ClientConfig, Session,
+			[Done]() { Done.Execute(); },
+			[Done](const FSatoriError&) { Done.Execute(); }
 		);
 	});
 
@@ -392,6 +426,14 @@ void FSatoriBPPropertiesSpec::Define()
 				AddError(FString::Printf(TEXT("Setup auth failed: %s"), *Error.Message));
 				Done.Execute();
 			}
+		);
+	});
+
+	LatentAfterEach([this](const FDoneDelegate& Done)
+	{
+		SatoriApi::DeleteIdentity(ClientConfig, Session,
+			[Done]() { Done.Execute(); },
+			[Done](const FSatoriError&) { Done.Execute(); }
 		);
 	});
 
@@ -501,6 +543,14 @@ void FSatoriBPEventSpec::Define()
 		);
 	});
 
+	LatentAfterEach([this](const FDoneDelegate& Done)
+	{
+		SatoriApi::DeleteIdentity(ClientConfig, Session,
+			[Done]() { Done.Execute(); },
+			[Done](const FSatoriError&) { Done.Execute(); }
+		);
+	});
+
 	Describe("Event", [this]()
 	{
 		LatentIt("should publish an event via BP action", [this](const FDoneDelegate& Done)
@@ -575,6 +625,14 @@ void FSatoriBPFlagsSpec::Define()
 				AddError(FString::Printf(TEXT("Setup auth failed: %s"), *Error.Message));
 				Done.Execute();
 			}
+		);
+	});
+
+	LatentAfterEach([this](const FDoneDelegate& Done)
+	{
+		SatoriApi::DeleteIdentity(ClientConfig, Session,
+			[Done]() { Done.Execute(); },
+			[Done](const FSatoriError&) { Done.Execute(); }
 		);
 	});
 
@@ -680,6 +738,14 @@ void FSatoriBPExperimentsSpec::Define()
 		);
 	});
 
+	LatentAfterEach([this](const FDoneDelegate& Done)
+	{
+		SatoriApi::DeleteIdentity(ClientConfig, Session,
+			[Done]() { Done.Execute(); },
+			[Done](const FSatoriError&) { Done.Execute(); }
+		);
+	});
+
 	Describe("GetExperiments", [this]()
 	{
 		LatentIt("should list all experiments via BP action", [this](const FDoneDelegate& Done)
@@ -756,6 +822,14 @@ void FSatoriBPLiveEventsSpec::Define()
 		);
 	});
 
+	LatentAfterEach([this](const FDoneDelegate& Done)
+	{
+		SatoriApi::DeleteIdentity(ClientConfig, Session,
+			[Done]() { Done.Execute(); },
+			[Done](const FSatoriError&) { Done.Execute(); }
+		);
+	});
+
 	Describe("GetLiveEvents", [this]()
 	{
 		LatentIt("should list all live events via BP action", [this](const FDoneDelegate& Done)
@@ -829,6 +903,14 @@ void FSatoriBPMessagesSpec::Define()
 				AddError(FString::Printf(TEXT("Setup auth failed: %s"), *Error.Message));
 				Done.Execute();
 			}
+		);
+	});
+
+	LatentAfterEach([this](const FDoneDelegate& Done)
+	{
+		SatoriApi::DeleteIdentity(ClientConfig, Session,
+			[Done]() { Done.Execute(); },
+			[Done](const FSatoriError&) { Done.Execute(); }
 		);
 	});
 

@@ -9,6 +9,8 @@
 #include "Misc/Guid.h"
 #include "Serialization/JsonSerializer.h"
 
+const FNakamaClientConfig ClientConfig = FNakamaClientConfig{TEXT("defaultkey"), TEXT("127.0.0.1"), 7350, false};
+
 /**
  * Helper macro: early-return on unexpected error inside a callback.
  * Use in tests that expect success.
@@ -27,36 +29,25 @@
 BEGIN_DEFINE_SPEC(FNakamaAsyncAuthSpec, "IntegrationTests.Nakama.Auth",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientConfig ClientConfig;
 	FNakamaRetryConfig RetryConfig;
-	FNakamaSession Session;
+
 	FString TestCustomId;
 	FString TestDeviceId;
 	FString TestEmail;
-
-	static const FString ServerKey;
-	static const FString Host;
-	static constexpr int32 Port = 7350;
 
 	FString GenerateId() { return FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphens); }
 	FString GenerateShortId() { return FGuid::NewGuid().ToString(EGuidFormats::Short).Left(8); }
 
 END_DEFINE_SPEC(FNakamaAsyncAuthSpec)
 
-const FString FNakamaAsyncAuthSpec::ServerKey = TEXT("defaultkey");
-const FString FNakamaAsyncAuthSpec::Host = TEXT("127.0.0.1");
-
 void FNakamaAsyncAuthSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		ClientConfig = FNakamaClientConfig{ServerKey, Host, Port, false};
 		TestCustomId = GenerateId();
 		TestDeviceId = GenerateId();
 		TestEmail = FString::Printf(TEXT("test_%s@example.com"), *GenerateShortId());
 	});
-
-
 
 	Describe("CustomAuth", [this]()
 	{
@@ -70,8 +61,8 @@ void FNakamaAsyncAuthSpec::Define()
 				ASYNC_FAIL_ON_ERROR(Result, Done);
 				TestTrue("Session has token", !Result.Value.Token.IsEmpty());
 				TestTrue("Session has refresh token", !Result.Value.RefreshToken.IsEmpty());
-				Done.Execute();
-			});
+				return Nakama::DeleteAccount(ClientConfig, Session)
+			}).Next([Done](FNakamaVoidResult) { Done.Execute(); });;
 		});
 
 		LatentIt("should fail with empty custom ID", [this](const FDoneDelegate& Done)
@@ -138,8 +129,9 @@ void FNakamaAsyncAuthSpec::Define()
 			{
 				ASYNC_FAIL_ON_ERROR(Result, Done);
 				TestTrue("Session has token", !Result.Value.Token.IsEmpty());
-				Done.Execute();
-			});
+				Session = Result.Value;
+				return Nakama::DeleteAccount(ClientConfig, Session);
+			}).Next([Done](FNakamaVoidResult) { Done.Execute(); });
 		});
 	});
 
@@ -155,8 +147,9 @@ void FNakamaAsyncAuthSpec::Define()
 				ASYNC_FAIL_ON_ERROR(Result, Done);
 				TestTrue("Session has token", !Result.Value.Token.IsEmpty());
 				TestTrue("Session has refresh token", !Result.Value.RefreshToken.IsEmpty());
-				Done.Execute();
-			});
+				Session = Result.Value;
+				return Nakama::DeleteAccount(ClientConfig, Session);
+			}).Next([Done](FNakamaVoidResult) { Done.Execute(); });
 		});
 
 		LatentIt("should fail with empty device ID", [this](const FDoneDelegate& Done)
@@ -208,8 +201,9 @@ void FNakamaAsyncAuthSpec::Define()
 			{
 				ASYNC_FAIL_ON_ERROR(Result, Done);
 				TestTrue("Session has token", !Result.Value.Token.IsEmpty());
-				Done.Execute();
-			});
+				Session = Result.Value;
+				return Nakama::DeleteAccount(ClientConfig, Session);
+			}).Next([Done](FNakamaVoidResult) { Done.Execute(); });
 		});
 
 		LatentIt("should fail with invalid email format", [this](const FDoneDelegate& Done)
@@ -259,29 +253,19 @@ void FNakamaAsyncAuthSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAsyncAccountSpec, "IntegrationTests.Nakama.Account",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientConfig ClientConfig;
 	FNakamaRetryConfig RetryConfig;
 	FNakamaSession Session;
 	FString UserId;
 
-	static const FString ServerKey;
-	static const FString Host;
-	static constexpr int32 Port = 7350;
 
 	FString GenerateId() { return FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphens); }
 	FString GenerateShortId() { return FGuid::NewGuid().ToString(EGuidFormats::Short).Left(8); }
 
 END_DEFINE_SPEC(FNakamaAsyncAccountSpec)
 
-const FString FNakamaAsyncAccountSpec::ServerKey = TEXT("defaultkey");
-const FString FNakamaAsyncAccountSpec::Host = TEXT("127.0.0.1");
 
 void FNakamaAsyncAccountSpec::Define()
 {
-	BeforeEach([this]()
-	{
-		ClientConfig = FNakamaClientConfig{ServerKey, Host, Port, false};
-	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
 	{
@@ -296,7 +280,11 @@ void FNakamaAsyncAccountSpec::Define()
 		});
 	});
 
-
+	LatentAfterEach([this](const FDoneDelegate& Done)
+	{
+		if (Session.Token.IsEmpty()) { Done.Execute(); return; }
+		Nakama::DeleteAccount(ClientConfig, Session).Next([Done](FNakamaVoidResult) { Done.Execute(); });
+	});
 
 	Describe("GetAccount", [this]()
 	{
@@ -371,30 +359,20 @@ void FNakamaAsyncAccountSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAsyncFriendsSpec, "IntegrationTests.Nakama.Friends",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientConfig ClientConfig;
 	FNakamaRetryConfig RetryConfig;
 	FNakamaSession Session;
 	FNakamaSession FriendSession;
 	FString UserId;
 	FString FriendUserId;
 
-	static const FString ServerKey;
-	static const FString Host;
-	static constexpr int32 Port = 7350;
 
 	FString GenerateId() { return FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphens); }
 
 END_DEFINE_SPEC(FNakamaAsyncFriendsSpec)
 
-const FString FNakamaAsyncFriendsSpec::ServerKey = TEXT("defaultkey");
-const FString FNakamaAsyncFriendsSpec::Host = TEXT("127.0.0.1");
 
 void FNakamaAsyncFriendsSpec::Define()
 {
-	BeforeEach([this]()
-	{
-		ClientConfig = FNakamaClientConfig{ServerKey, Host, Port, false};
-	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
 	{
@@ -425,6 +403,18 @@ void FNakamaAsyncFriendsSpec::Define()
 			FriendUserId = FriendAccResult.Value.User.Id;
 			Done.Execute();
 		});
+	});
+
+	LatentAfterEach([this](const FDoneDelegate& Done)
+	{
+		auto DeleteMain = [this, Done]()
+		{
+			if (Session.Token.IsEmpty()) { Done.Execute(); return; }
+			Nakama::DeleteAccount(ClientConfig, Session).Next([Done](FNakamaVoidResult) { Done.Execute(); });
+		};
+
+		if (FriendSession.Token.IsEmpty()) { DeleteMain(); return; }
+		Nakama::DeleteAccount(ClientConfig, FriendSession).Next([DeleteMain](FNakamaVoidResult) { DeleteMain(); });
 	});
 
 
@@ -516,29 +506,22 @@ void FNakamaAsyncFriendsSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAsyncGroupsSpec, "IntegrationTests.Nakama.Groups",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientConfig ClientConfig;
 	FNakamaRetryConfig RetryConfig;
 	FNakamaSession Session;
 	FString UserId;
 	FString CreatedGroupId;
 
-	static const FString ServerKey;
-	static const FString Host;
-	static constexpr int32 Port = 7350;
 
 	FString GenerateId() { return FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphens); }
 	FString GenerateShortId() { return FGuid::NewGuid().ToString(EGuidFormats::Short).Left(8); }
 
 END_DEFINE_SPEC(FNakamaAsyncGroupsSpec)
 
-const FString FNakamaAsyncGroupsSpec::ServerKey = TEXT("defaultkey");
-const FString FNakamaAsyncGroupsSpec::Host = TEXT("127.0.0.1");
 
 void FNakamaAsyncGroupsSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		ClientConfig = FNakamaClientConfig{ServerKey, Host, Port, false};
 		CreatedGroupId.Empty();
 	});
 
@@ -559,6 +542,12 @@ void FNakamaAsyncGroupsSpec::Define()
 			UserId = AccResult.Value.User.Id;
 			Done.Execute();
 		});
+	});
+
+	LatentAfterEach([this](const FDoneDelegate& Done)
+	{
+		if (Session.Token.IsEmpty()) { Done.Execute(); return; }
+		Nakama::DeleteAccount(ClientConfig, Session).Next([Done](FNakamaVoidResult) { Done.Execute(); });
 	});
 
 
@@ -634,29 +623,19 @@ void FNakamaAsyncGroupsSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAsyncStorageSpec, "IntegrationTests.Nakama.Storage",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientConfig ClientConfig;
 	FNakamaRetryConfig RetryConfig;
 	FNakamaSession Session;
 	FString UserId;
 
-	static const FString ServerKey;
-	static const FString Host;
-	static constexpr int32 Port = 7350;
 
 	FString GenerateId() { return FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphens); }
 	FString GenerateShortId() { return FGuid::NewGuid().ToString(EGuidFormats::Short).Left(8); }
 
 END_DEFINE_SPEC(FNakamaAsyncStorageSpec)
 
-const FString FNakamaAsyncStorageSpec::ServerKey = TEXT("defaultkey");
-const FString FNakamaAsyncStorageSpec::Host = TEXT("127.0.0.1");
 
 void FNakamaAsyncStorageSpec::Define()
 {
-	BeforeEach([this]()
-	{
-		ClientConfig = FNakamaClientConfig{ServerKey, Host, Port, false};
-	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
 	{
@@ -675,6 +654,12 @@ void FNakamaAsyncStorageSpec::Define()
 			UserId = AccResult.Value.User.Id;
 			Done.Execute();
 		});
+	});
+
+	LatentAfterEach([this](const FDoneDelegate& Done)
+	{
+		if (Session.Token.IsEmpty()) { Done.Execute(); return; }
+		Nakama::DeleteAccount(ClientConfig, Session).Next([Done](FNakamaVoidResult) { Done.Execute(); });
 	});
 
 
@@ -794,27 +779,17 @@ void FNakamaAsyncStorageSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAsyncLeaderboardSpec, "IntegrationTests.Nakama.Leaderboard",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientConfig ClientConfig;
 	FNakamaRetryConfig RetryConfig;
 	FNakamaSession Session;
 
-	static const FString ServerKey;
-	static const FString Host;
-	static constexpr int32 Port = 7350;
 
 	FString GenerateId() { return FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphens); }
 
 END_DEFINE_SPEC(FNakamaAsyncLeaderboardSpec)
 
-const FString FNakamaAsyncLeaderboardSpec::ServerKey = TEXT("defaultkey");
-const FString FNakamaAsyncLeaderboardSpec::Host = TEXT("127.0.0.1");
 
 void FNakamaAsyncLeaderboardSpec::Define()
 {
-	BeforeEach([this]()
-	{
-		ClientConfig = FNakamaClientConfig{ServerKey, Host, Port, false};
-	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
 	{
@@ -827,6 +802,12 @@ void FNakamaAsyncLeaderboardSpec::Define()
 			Session = AuthResult.Value;
 			Done.Execute();
 		});
+	});
+
+	LatentAfterEach([this](const FDoneDelegate& Done)
+	{
+		if (Session.Token.IsEmpty()) { Done.Execute(); return; }
+		Nakama::DeleteAccount(ClientConfig, Session).Next([Done](FNakamaVoidResult) { Done.Execute(); });
 	});
 
 
@@ -915,27 +896,17 @@ void FNakamaAsyncLeaderboardSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAsyncMatchesSpec, "IntegrationTests.Nakama.Matches",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientConfig ClientConfig;
 	FNakamaRetryConfig RetryConfig;
 	FNakamaSession Session;
 
-	static const FString ServerKey;
-	static const FString Host;
-	static constexpr int32 Port = 7350;
 
 	FString GenerateId() { return FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphens); }
 
 END_DEFINE_SPEC(FNakamaAsyncMatchesSpec)
 
-const FString FNakamaAsyncMatchesSpec::ServerKey = TEXT("defaultkey");
-const FString FNakamaAsyncMatchesSpec::Host = TEXT("127.0.0.1");
 
 void FNakamaAsyncMatchesSpec::Define()
 {
-	BeforeEach([this]()
-	{
-		ClientConfig = FNakamaClientConfig{ServerKey, Host, Port, false};
-	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
 	{
@@ -948,6 +919,12 @@ void FNakamaAsyncMatchesSpec::Define()
 			Session = AuthResult.Value;
 			Done.Execute();
 		});
+	});
+
+	LatentAfterEach([this](const FDoneDelegate& Done)
+	{
+		if (Session.Token.IsEmpty()) { Done.Execute(); return; }
+		Nakama::DeleteAccount(ClientConfig, Session).Next([Done](FNakamaVoidResult) { Done.Execute(); });
 	});
 
 
@@ -985,27 +962,17 @@ void FNakamaAsyncMatchesSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAsyncNotificationsSpec, "IntegrationTests.Nakama.Notifications",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientConfig ClientConfig;
 	FNakamaRetryConfig RetryConfig;
 	FNakamaSession Session;
 
-	static const FString ServerKey;
-	static const FString Host;
-	static constexpr int32 Port = 7350;
 
 	FString GenerateId() { return FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphens); }
 
 END_DEFINE_SPEC(FNakamaAsyncNotificationsSpec)
 
-const FString FNakamaAsyncNotificationsSpec::ServerKey = TEXT("defaultkey");
-const FString FNakamaAsyncNotificationsSpec::Host = TEXT("127.0.0.1");
 
 void FNakamaAsyncNotificationsSpec::Define()
 {
-	BeforeEach([this]()
-	{
-		ClientConfig = FNakamaClientConfig{ServerKey, Host, Port, false};
-	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
 	{
@@ -1018,6 +985,12 @@ void FNakamaAsyncNotificationsSpec::Define()
 			Session = AuthResult.Value;
 			Done.Execute();
 		});
+	});
+
+	LatentAfterEach([this](const FDoneDelegate& Done)
+	{
+		if (Session.Token.IsEmpty()) { Done.Execute(); return; }
+		Nakama::DeleteAccount(ClientConfig, Session).Next([Done](FNakamaVoidResult) { Done.Execute(); });
 	});
 
 
@@ -1044,28 +1017,21 @@ void FNakamaAsyncNotificationsSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAsyncLinkSpec, "IntegrationTests.Nakama.Link",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientConfig ClientConfig;
 	FNakamaRetryConfig RetryConfig;
 	FNakamaSession Session;
 	FString DeviceId;
 
-	static const FString ServerKey;
-	static const FString Host;
-	static constexpr int32 Port = 7350;
 
 	FString GenerateId() { return FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphens); }
 	FString GenerateShortId() { return FGuid::NewGuid().ToString(EGuidFormats::Short).Left(8); }
 
 END_DEFINE_SPEC(FNakamaAsyncLinkSpec)
 
-const FString FNakamaAsyncLinkSpec::ServerKey = TEXT("defaultkey");
-const FString FNakamaAsyncLinkSpec::Host = TEXT("127.0.0.1");
 
 void FNakamaAsyncLinkSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		ClientConfig = FNakamaClientConfig{ServerKey, Host, Port, false};
 		DeviceId = GenerateId();
 	});
 
@@ -1080,6 +1046,12 @@ void FNakamaAsyncLinkSpec::Define()
 			Session = AuthResult.Value;
 			Done.Execute();
 		});
+	});
+
+	LatentAfterEach([this](const FDoneDelegate& Done)
+	{
+		if (Session.Token.IsEmpty()) { Done.Execute(); return; }
+		Nakama::DeleteAccount(ClientConfig, Session).Next([Done](FNakamaVoidResult) { Done.Execute(); });
 	});
 
 
@@ -1157,27 +1129,17 @@ void FNakamaAsyncLinkSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAsyncTournamentSpec, "IntegrationTests.Nakama.Tournament",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientConfig ClientConfig;
 	FNakamaRetryConfig RetryConfig;
 	FNakamaSession Session;
 
-	static const FString ServerKey;
-	static const FString Host;
-	static constexpr int32 Port = 7350;
 
 	FString GenerateId() { return FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphens); }
 
 END_DEFINE_SPEC(FNakamaAsyncTournamentSpec)
 
-const FString FNakamaAsyncTournamentSpec::ServerKey = TEXT("defaultkey");
-const FString FNakamaAsyncTournamentSpec::Host = TEXT("127.0.0.1");
 
 void FNakamaAsyncTournamentSpec::Define()
 {
-	BeforeEach([this]()
-	{
-		ClientConfig = FNakamaClientConfig{ServerKey, Host, Port, false};
-	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
 	{
@@ -1190,6 +1152,12 @@ void FNakamaAsyncTournamentSpec::Define()
 			Session = AuthResult.Value;
 			Done.Execute();
 		});
+	});
+
+	LatentAfterEach([this](const FDoneDelegate& Done)
+	{
+		if (Session.Token.IsEmpty()) { Done.Execute(); return; }
+		Nakama::DeleteAccount(ClientConfig, Session).Next([Done](FNakamaVoidResult) { Done.Execute(); });
 	});
 
 
@@ -1263,30 +1231,20 @@ void FNakamaAsyncTournamentSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAsyncUsersSpec, "IntegrationTests.Nakama.Users",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientConfig ClientConfig;
 	FNakamaRetryConfig RetryConfig;
 	FNakamaSession Session;
 	FString UserId;
 	FString Username;
 
-	static const FString ServerKey;
-	static const FString Host;
-	static constexpr int32 Port = 7350;
 
 	FString GenerateId() { return FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphens); }
 	FString GenerateShortId() { return FGuid::NewGuid().ToString(EGuidFormats::Short).Left(8); }
 
 END_DEFINE_SPEC(FNakamaAsyncUsersSpec)
 
-const FString FNakamaAsyncUsersSpec::ServerKey = TEXT("defaultkey");
-const FString FNakamaAsyncUsersSpec::Host = TEXT("127.0.0.1");
 
 void FNakamaAsyncUsersSpec::Define()
 {
-	BeforeEach([this]()
-	{
-		ClientConfig = FNakamaClientConfig{ServerKey, Host, Port, false};
-	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
 	{
@@ -1306,6 +1264,12 @@ void FNakamaAsyncUsersSpec::Define()
 			UserId = AccResult.Value.User.Id;
 			Done.Execute();
 		});
+	});
+
+	LatentAfterEach([this](const FDoneDelegate& Done)
+	{
+		if (Session.Token.IsEmpty()) { Done.Execute(); return; }
+		Nakama::DeleteAccount(ClientConfig, Session).Next([Done](FNakamaVoidResult) { Done.Execute(); });
 	});
 
 
@@ -1367,27 +1331,17 @@ void FNakamaAsyncUsersSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAsyncSessionSpec, "IntegrationTests.Nakama.Session",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientConfig ClientConfig;
 	FNakamaRetryConfig RetryConfig;
 	FNakamaSession Session;
 
-	static const FString ServerKey;
-	static const FString Host;
-	static constexpr int32 Port = 7350;
 
 	FString GenerateId() { return FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphens); }
 
 END_DEFINE_SPEC(FNakamaAsyncSessionSpec)
 
-const FString FNakamaAsyncSessionSpec::ServerKey = TEXT("defaultkey");
-const FString FNakamaAsyncSessionSpec::Host = TEXT("127.0.0.1");
 
 void FNakamaAsyncSessionSpec::Define()
 {
-	BeforeEach([this]()
-	{
-		ClientConfig = FNakamaClientConfig{ServerKey, Host, Port, false};
-	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
 	{
@@ -1400,6 +1354,12 @@ void FNakamaAsyncSessionSpec::Define()
 			Session = AuthResult.Value;
 			Done.Execute();
 		});
+	});
+
+	LatentAfterEach([this](const FDoneDelegate& Done)
+	{
+		if (Session.Token.IsEmpty()) { Done.Execute(); return; }
+		Nakama::DeleteAccount(ClientConfig, Session).Next([Done](FNakamaVoidResult) { Done.Execute(); });
 	});
 
 
@@ -1426,29 +1386,19 @@ void FNakamaAsyncSessionSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAsyncDeleteStorageSpec, "IntegrationTests.Nakama.DeleteStorage",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientConfig ClientConfig;
 	FNakamaRetryConfig RetryConfig;
 	FNakamaSession Session;
 	FString UserId;
 
-	static const FString ServerKey;
-	static const FString Host;
-	static constexpr int32 Port = 7350;
 
 	FString GenerateId() { return FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphens); }
 	FString GenerateShortId() { return FGuid::NewGuid().ToString(EGuidFormats::Short).Left(8); }
 
 END_DEFINE_SPEC(FNakamaAsyncDeleteStorageSpec)
 
-const FString FNakamaAsyncDeleteStorageSpec::ServerKey = TEXT("defaultkey");
-const FString FNakamaAsyncDeleteStorageSpec::Host = TEXT("127.0.0.1");
 
 void FNakamaAsyncDeleteStorageSpec::Define()
 {
-	BeforeEach([this]()
-	{
-		ClientConfig = FNakamaClientConfig{ServerKey, Host, Port, false};
-	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
 	{
@@ -1467,6 +1417,12 @@ void FNakamaAsyncDeleteStorageSpec::Define()
 			UserId = AccResult.Value.User.Id;
 			Done.Execute();
 		});
+	});
+
+	LatentAfterEach([this](const FDoneDelegate& Done)
+	{
+		if (Session.Token.IsEmpty()) { Done.Execute(); return; }
+		Nakama::DeleteAccount(ClientConfig, Session).Next([Done](FNakamaVoidResult) { Done.Execute(); });
 	});
 
 
@@ -1514,7 +1470,6 @@ void FNakamaAsyncDeleteStorageSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAsyncGroupOpsSpec, "IntegrationTests.Nakama.GroupOps",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientConfig ClientConfig;
 	FNakamaRetryConfig RetryConfig;
 	FNakamaSession Session;
 	FNakamaSession MemberSession;
@@ -1522,23 +1477,17 @@ BEGIN_DEFINE_SPEC(FNakamaAsyncGroupOpsSpec, "IntegrationTests.Nakama.GroupOps",
 	FString MemberUserId;
 	FString GroupId;
 
-	static const FString ServerKey;
-	static const FString Host;
-	static constexpr int32 Port = 7350;
 
 	FString GenerateId() { return FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphens); }
 	FString GenerateShortId() { return FGuid::NewGuid().ToString(EGuidFormats::Short).Left(8); }
 
 END_DEFINE_SPEC(FNakamaAsyncGroupOpsSpec)
 
-const FString FNakamaAsyncGroupOpsSpec::ServerKey = TEXT("defaultkey");
-const FString FNakamaAsyncGroupOpsSpec::Host = TEXT("127.0.0.1");
 
 void FNakamaAsyncGroupOpsSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		ClientConfig = FNakamaClientConfig{ServerKey, Host, Port, false};
 		GroupId.Empty();
 	});
 
@@ -1571,6 +1520,13 @@ void FNakamaAsyncGroupOpsSpec::Define()
 			MemberUserId = MemberAccResult.Value.User.Id;
 			Done.Execute();
 		});
+	});
+
+	LatentAfterEach([this](const FDoneDelegate& Done)
+	{
+		Nakama::DeleteAccount(ClientConfig, MemberSession)
+		.Next([this](FNakamaVoidResult) { return Nakama::DeleteAccount(ClientConfig, Session); })
+		.Next([Done](FNakamaVoidResult) { Done.Execute(); });
 	});
 
 
@@ -1701,27 +1657,17 @@ void FNakamaAsyncGroupOpsSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAsyncRpcSpec, "IntegrationTests.Nakama.RPC",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientConfig ClientConfig;
 	FNakamaRetryConfig RetryConfig;
 	FNakamaSession Session;
 
-	static const FString ServerKey;
-	static const FString Host;
-	static constexpr int32 Port = 7350;
 
 	FString GenerateId() { return FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphens); }
 
 END_DEFINE_SPEC(FNakamaAsyncRpcSpec)
 
-const FString FNakamaAsyncRpcSpec::ServerKey = TEXT("defaultkey");
-const FString FNakamaAsyncRpcSpec::Host = TEXT("127.0.0.1");
 
 void FNakamaAsyncRpcSpec::Define()
 {
-	BeforeEach([this]()
-	{
-		ClientConfig = FNakamaClientConfig{ServerKey, Host, Port, false};
-	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
 	{
@@ -1734,6 +1680,12 @@ void FNakamaAsyncRpcSpec::Define()
 			Session = AuthResult.Value;
 			Done.Execute();
 		});
+	});
+
+	LatentAfterEach([this](const FDoneDelegate& Done)
+	{
+		if (Session.Token.IsEmpty()) { Done.Execute(); return; }
+		Nakama::DeleteAccount(ClientConfig, Session).Next([Done](FNakamaVoidResult) { Done.Execute(); });
 	});
 
 
@@ -1771,29 +1723,24 @@ void FNakamaAsyncRpcSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAsyncAuthExtSpec, "IntegrationTests.Nakama.AuthExt",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientConfig ClientConfig;
 	FNakamaRetryConfig RetryConfig;
+	FNakamaSession Session;
 
-	static const FString ServerKey;
-	static const FString Host;
-	static constexpr int32 Port = 7350;
 
 	FString GenerateId() { return FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphens); }
 	FString GenerateShortId() { return FGuid::NewGuid().ToString(EGuidFormats::Short).Left(8); }
 
 END_DEFINE_SPEC(FNakamaAsyncAuthExtSpec)
 
-const FString FNakamaAsyncAuthExtSpec::ServerKey = TEXT("defaultkey");
-const FString FNakamaAsyncAuthExtSpec::Host = TEXT("127.0.0.1");
 
 void FNakamaAsyncAuthExtSpec::Define()
 {
-	BeforeEach([this]()
+
+	LatentAfterEach([this](const FDoneDelegate& Done)
 	{
-		ClientConfig = FNakamaClientConfig{ServerKey, Host, Port, false};
+		if (Session.Token.IsEmpty()) { Done.Execute(); return; }
+		Nakama::DeleteAccount(ClientConfig, Session).Next([Done](FNakamaVoidResult) { Done.Execute(); });
 	});
-
-
 
 	Describe("CustomAuthExtended", [this]()
 	{
@@ -1824,6 +1771,7 @@ void FNakamaAsyncAuthExtSpec::Define()
 			{
 				ASYNC_FAIL_ON_ERROR(SecondResult, Done);
 				TestTrue("Session has token", !SecondResult.Value.Token.IsEmpty());
+				Session = SecondResult.Value;
 				Done.Execute();
 			});
 		});
@@ -1917,30 +1865,20 @@ void FNakamaAsyncAuthExtSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAsyncDeleteFriendsSpec, "IntegrationTests.Nakama.DeleteFriends",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientConfig ClientConfig;
 	FNakamaRetryConfig RetryConfig;
 	FNakamaSession Session;
 	FNakamaSession FriendSession;
 	FString UserId;
 	FString FriendUserId;
 
-	static const FString ServerKey;
-	static const FString Host;
-	static constexpr int32 Port = 7350;
 
 	FString GenerateId() { return FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphens); }
 
 END_DEFINE_SPEC(FNakamaAsyncDeleteFriendsSpec)
 
-const FString FNakamaAsyncDeleteFriendsSpec::ServerKey = TEXT("defaultkey");
-const FString FNakamaAsyncDeleteFriendsSpec::Host = TEXT("127.0.0.1");
 
 void FNakamaAsyncDeleteFriendsSpec::Define()
 {
-	BeforeEach([this]()
-	{
-		ClientConfig = FNakamaClientConfig{ServerKey, Host, Port, false};
-	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
 	{
@@ -1971,6 +1909,18 @@ void FNakamaAsyncDeleteFriendsSpec::Define()
 			FriendUserId = FriendAccResult.Value.User.Id;
 			Done.Execute();
 		});
+	});
+
+	LatentAfterEach([this](const FDoneDelegate& Done)
+	{
+		auto DeleteMain = [this, Done]()
+		{
+			if (Session.Token.IsEmpty()) { Done.Execute(); return; }
+			Nakama::DeleteAccount(ClientConfig, Session).Next([Done](FNakamaVoidResult) { Done.Execute(); });
+		};
+
+		if (FriendSession.Token.IsEmpty()) { DeleteMain(); return; }
+		Nakama::DeleteAccount(ClientConfig, FriendSession).Next([DeleteMain](FNakamaVoidResult) { DeleteMain(); });
 	});
 
 
@@ -2019,27 +1969,17 @@ void FNakamaAsyncDeleteFriendsSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAsyncImportSpec, "IntegrationTests.Nakama.Import",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientConfig ClientConfig;
 	FNakamaRetryConfig RetryConfig;
 	FNakamaSession Session;
 
-	static const FString ServerKey;
-	static const FString Host;
-	static constexpr int32 Port = 7350;
 
 	FString GenerateId() { return FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphens); }
 
 END_DEFINE_SPEC(FNakamaAsyncImportSpec)
 
-const FString FNakamaAsyncImportSpec::ServerKey = TEXT("defaultkey");
-const FString FNakamaAsyncImportSpec::Host = TEXT("127.0.0.1");
 
 void FNakamaAsyncImportSpec::Define()
 {
-	BeforeEach([this]()
-	{
-		ClientConfig = FNakamaClientConfig{ServerKey, Host, Port, false};
-	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
 	{
@@ -2052,6 +1992,12 @@ void FNakamaAsyncImportSpec::Define()
 			Session = AuthResult.Value;
 			Done.Execute();
 		});
+	});
+
+	LatentAfterEach([this](const FDoneDelegate& Done)
+	{
+		if (Session.Token.IsEmpty()) { Done.Execute(); return; }
+		Nakama::DeleteAccount(ClientConfig, Session).Next([Done](FNakamaVoidResult) { Done.Execute(); });
 	});
 
 
@@ -2098,29 +2044,19 @@ void FNakamaAsyncImportSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAsyncAccountExtSpec, "IntegrationTests.Nakama.AccountExt",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientConfig ClientConfig;
 	FNakamaRetryConfig RetryConfig;
 	FNakamaSession Session;
 	FString UserId;
 
-	static const FString ServerKey;
-	static const FString Host;
-	static constexpr int32 Port = 7350;
 
 	FString GenerateId() { return FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphens); }
 	FString GenerateShortId() { return FGuid::NewGuid().ToString(EGuidFormats::Short).Left(8); }
 
 END_DEFINE_SPEC(FNakamaAsyncAccountExtSpec)
 
-const FString FNakamaAsyncAccountExtSpec::ServerKey = TEXT("defaultkey");
-const FString FNakamaAsyncAccountExtSpec::Host = TEXT("127.0.0.1");
 
 void FNakamaAsyncAccountExtSpec::Define()
 {
-	BeforeEach([this]()
-	{
-		ClientConfig = FNakamaClientConfig{ServerKey, Host, Port, false};
-	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
 	{
@@ -2139,6 +2075,12 @@ void FNakamaAsyncAccountExtSpec::Define()
 			UserId = AccResult.Value.User.Id;
 			Done.Execute();
 		});
+	});
+
+	LatentAfterEach([this](const FDoneDelegate& Done)
+	{
+		if (Session.Token.IsEmpty()) { Done.Execute(); return; }
+		Nakama::DeleteAccount(ClientConfig, Session).Next([Done](FNakamaVoidResult) { Done.Execute(); });
 	});
 
 
@@ -2240,7 +2182,6 @@ void FNakamaAsyncAccountExtSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAsyncFriendsExtSpec, "IntegrationTests.Nakama.FriendsExt",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientConfig ClientConfig;
 	FNakamaRetryConfig RetryConfig;
 	FNakamaSession Session;
 	FNakamaSession FriendSession;
@@ -2248,24 +2189,15 @@ BEGIN_DEFINE_SPEC(FNakamaAsyncFriendsExtSpec, "IntegrationTests.Nakama.FriendsEx
 	FString FriendUserId;
 	FString FriendUsername;
 
-	static const FString ServerKey;
-	static const FString Host;
-	static constexpr int32 Port = 7350;
 
 	FString GenerateId() { return FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphens); }
 	FString GenerateShortId() { return FGuid::NewGuid().ToString(EGuidFormats::Short).Left(8); }
 
 END_DEFINE_SPEC(FNakamaAsyncFriendsExtSpec)
 
-const FString FNakamaAsyncFriendsExtSpec::ServerKey = TEXT("defaultkey");
-const FString FNakamaAsyncFriendsExtSpec::Host = TEXT("127.0.0.1");
 
 void FNakamaAsyncFriendsExtSpec::Define()
 {
-	BeforeEach([this]()
-	{
-		ClientConfig = FNakamaClientConfig{ServerKey, Host, Port, false};
-	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
 	{
@@ -2297,6 +2229,18 @@ void FNakamaAsyncFriendsExtSpec::Define()
 			FriendUserId = FriendAccResult.Value.User.Id;
 			Done.Execute();
 		});
+	});
+
+	LatentAfterEach([this](const FDoneDelegate& Done)
+	{
+		auto DeleteMain = [this, Done]()
+		{
+			if (Session.Token.IsEmpty()) { Done.Execute(); return; }
+			Nakama::DeleteAccount(ClientConfig, Session).Next([Done](FNakamaVoidResult) { Done.Execute(); });
+		};
+
+		if (FriendSession.Token.IsEmpty()) { DeleteMain(); return; }
+		Nakama::DeleteAccount(ClientConfig, FriendSession).Next([DeleteMain](FNakamaVoidResult) { DeleteMain(); });
 	});
 
 
@@ -2405,29 +2349,19 @@ void FNakamaAsyncFriendsExtSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAsyncStorageExtSpec, "IntegrationTests.Nakama.StorageExt",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientConfig ClientConfig;
 	FNakamaRetryConfig RetryConfig;
 	FNakamaSession Session;
 	FString UserId;
 
-	static const FString ServerKey;
-	static const FString Host;
-	static constexpr int32 Port = 7350;
 
 	FString GenerateId() { return FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphens); }
 	FString GenerateShortId() { return FGuid::NewGuid().ToString(EGuidFormats::Short).Left(8); }
 
 END_DEFINE_SPEC(FNakamaAsyncStorageExtSpec)
 
-const FString FNakamaAsyncStorageExtSpec::ServerKey = TEXT("defaultkey");
-const FString FNakamaAsyncStorageExtSpec::Host = TEXT("127.0.0.1");
 
 void FNakamaAsyncStorageExtSpec::Define()
 {
-	BeforeEach([this]()
-	{
-		ClientConfig = FNakamaClientConfig{ServerKey, Host, Port, false};
-	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
 	{
@@ -2445,6 +2379,12 @@ void FNakamaAsyncStorageExtSpec::Define()
 			UserId = AccResult.Value.User.Id;
 			Done.Execute();
 		});
+	});
+
+	LatentAfterEach([this](const FDoneDelegate& Done)
+	{
+		if (Session.Token.IsEmpty()) { Done.Execute(); return; }
+		Nakama::DeleteAccount(ClientConfig, Session).Next([Done](FNakamaVoidResult) { Done.Execute(); });
 	});
 
 
@@ -2676,31 +2616,21 @@ void FNakamaAsyncStorageExtSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAsyncGroupExtSpec, "IntegrationTests.Nakama.GroupExt",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientConfig ClientConfig;
 	FNakamaRetryConfig RetryConfig;
 	FNakamaSession Session;
 	FNakamaSession MemberSession;
 	FString UserId;
 	FString MemberUserId;
 
-	static const FString ServerKey;
-	static const FString Host;
-	static constexpr int32 Port = 7350;
 
 	FString GenerateId() { return FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphens); }
 	FString GenerateShortId() { return FGuid::NewGuid().ToString(EGuidFormats::Short).Left(8); }
 
 END_DEFINE_SPEC(FNakamaAsyncGroupExtSpec)
 
-const FString FNakamaAsyncGroupExtSpec::ServerKey = TEXT("defaultkey");
-const FString FNakamaAsyncGroupExtSpec::Host = TEXT("127.0.0.1");
 
 void FNakamaAsyncGroupExtSpec::Define()
 {
-	BeforeEach([this]()
-	{
-		ClientConfig = FNakamaClientConfig{ServerKey, Host, Port, false};
-	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
 	{
@@ -2730,6 +2660,13 @@ void FNakamaAsyncGroupExtSpec::Define()
 			MemberUserId = MemberAccResult.Value.User.Id;
 			Done.Execute();
 		});
+	});
+
+	LatentAfterEach([this](const FDoneDelegate& Done)
+	{
+		Nakama::DeleteAccount(ClientConfig, MemberSession)
+		.Next([this](FNakamaVoidResult) { return Nakama::DeleteAccount(ClientConfig, Session); })
+		.Next([Done](FNakamaVoidResult) { Done.Execute(); });
 	});
 
 
@@ -2933,29 +2870,22 @@ void FNakamaAsyncGroupExtSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAsyncUnlinkSpec, "IntegrationTests.Nakama.Unlink",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientConfig ClientConfig;
 	FNakamaRetryConfig RetryConfig;
 	FNakamaSession Session;
 	FString DeviceId;
 	FString CustomId;
 
-	static const FString ServerKey;
-	static const FString Host;
-	static constexpr int32 Port = 7350;
 
 	FString GenerateId() { return FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphens); }
 	FString GenerateShortId() { return FGuid::NewGuid().ToString(EGuidFormats::Short).Left(8); }
 
 END_DEFINE_SPEC(FNakamaAsyncUnlinkSpec)
 
-const FString FNakamaAsyncUnlinkSpec::ServerKey = TEXT("defaultkey");
-const FString FNakamaAsyncUnlinkSpec::Host = TEXT("127.0.0.1");
 
 void FNakamaAsyncUnlinkSpec::Define()
 {
 	BeforeEach([this]()
 	{
-		ClientConfig = FNakamaClientConfig{ServerKey, Host, Port, false};
 		DeviceId = GenerateId();
 		CustomId = GenerateId();
 	});
@@ -2970,6 +2900,12 @@ void FNakamaAsyncUnlinkSpec::Define()
 			Session = AuthResult.Value;
 			Done.Execute();
 		});
+	});
+
+	LatentAfterEach([this](const FDoneDelegate& Done)
+	{
+		if (Session.Token.IsEmpty()) { Done.Execute(); return; }
+		Nakama::DeleteAccount(ClientConfig, Session).Next([Done](FNakamaVoidResult) { Done.Execute(); });
 	});
 
 
@@ -3038,27 +2974,17 @@ void FNakamaAsyncUnlinkSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAsyncMatchesExtSpec, "IntegrationTests.Nakama.MatchesExt",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientConfig ClientConfig;
 	FNakamaRetryConfig RetryConfig;
 	FNakamaSession Session;
 
-	static const FString ServerKey;
-	static const FString Host;
-	static constexpr int32 Port = 7350;
 
 	FString GenerateId() { return FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphens); }
 
 END_DEFINE_SPEC(FNakamaAsyncMatchesExtSpec)
 
-const FString FNakamaAsyncMatchesExtSpec::ServerKey = TEXT("defaultkey");
-const FString FNakamaAsyncMatchesExtSpec::Host = TEXT("127.0.0.1");
 
 void FNakamaAsyncMatchesExtSpec::Define()
 {
-	BeforeEach([this]()
-	{
-		ClientConfig = FNakamaClientConfig{ServerKey, Host, Port, false};
-	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
 	{
@@ -3070,6 +2996,12 @@ void FNakamaAsyncMatchesExtSpec::Define()
 			Session = AuthResult.Value;
 			Done.Execute();
 		});
+	});
+
+	LatentAfterEach([this](const FDoneDelegate& Done)
+	{
+		if (Session.Token.IsEmpty()) { Done.Execute(); return; }
+		Nakama::DeleteAccount(ClientConfig, Session).Next([Done](FNakamaVoidResult) { Done.Execute(); });
 	});
 
 
@@ -3115,28 +3047,18 @@ void FNakamaAsyncMatchesExtSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAsyncChannelSpec, "IntegrationTests.Nakama.Channel",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientConfig ClientConfig;
 	FNakamaRetryConfig RetryConfig;
 	FNakamaSession Session;
 
-	static const FString ServerKey;
-	static const FString Host;
-	static constexpr int32 Port = 7350;
 
 	FString GenerateId() { return FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphens); }
 	FString GenerateShortId() { return FGuid::NewGuid().ToString(EGuidFormats::Short).Left(8); }
 
 END_DEFINE_SPEC(FNakamaAsyncChannelSpec)
 
-const FString FNakamaAsyncChannelSpec::ServerKey = TEXT("defaultkey");
-const FString FNakamaAsyncChannelSpec::Host = TEXT("127.0.0.1");
 
 void FNakamaAsyncChannelSpec::Define()
 {
-	BeforeEach([this]()
-	{
-		ClientConfig = FNakamaClientConfig{ServerKey, Host, Port, false};
-	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
 	{
@@ -3148,6 +3070,12 @@ void FNakamaAsyncChannelSpec::Define()
 			Session = AuthResult.Value;
 			Done.Execute();
 		});
+	});
+
+	LatentAfterEach([this](const FDoneDelegate& Done)
+	{
+		if (Session.Token.IsEmpty()) { Done.Execute(); return; }
+		Nakama::DeleteAccount(ClientConfig, Session).Next([Done](FNakamaVoidResult) { Done.Execute(); });
 	});
 
 
@@ -3194,27 +3122,17 @@ void FNakamaAsyncChannelSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAsyncNotificationsExtSpec, "IntegrationTests.Nakama.NotificationsExt",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientConfig ClientConfig;
 	FNakamaRetryConfig RetryConfig;
 	FNakamaSession Session;
 
-	static const FString ServerKey;
-	static const FString Host;
-	static constexpr int32 Port = 7350;
 
 	FString GenerateId() { return FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphens); }
 
 END_DEFINE_SPEC(FNakamaAsyncNotificationsExtSpec)
 
-const FString FNakamaAsyncNotificationsExtSpec::ServerKey = TEXT("defaultkey");
-const FString FNakamaAsyncNotificationsExtSpec::Host = TEXT("127.0.0.1");
 
 void FNakamaAsyncNotificationsExtSpec::Define()
 {
-	BeforeEach([this]()
-	{
-		ClientConfig = FNakamaClientConfig{ServerKey, Host, Port, false};
-	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
 	{
@@ -3226,6 +3144,12 @@ void FNakamaAsyncNotificationsExtSpec::Define()
 			Session = AuthResult.Value;
 			Done.Execute();
 		});
+	});
+
+	LatentAfterEach([this](const FDoneDelegate& Done)
+	{
+		if (Session.Token.IsEmpty()) { Done.Execute(); return; }
+		Nakama::DeleteAccount(ClientConfig, Session).Next([Done](FNakamaVoidResult) { Done.Execute(); });
 	});
 
 
@@ -3276,24 +3200,17 @@ void FNakamaAsyncNotificationsExtSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAsyncAuthValidationSpec, "IntegrationTests.Nakama.Auth.Validation",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientConfig ClientConfig;
 	FNakamaRetryConfig RetryConfig;
 
-	static const FString ServerKey;
-	static const FString Host;
-	static constexpr int32 Port = 7350;
 
 	FString GenerateId() { return FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphens); }
 	FString GenerateShortId() { return FGuid::NewGuid().ToString(EGuidFormats::Short).Left(8); }
 
 END_DEFINE_SPEC(FNakamaAsyncAuthValidationSpec)
 
-const FString FNakamaAsyncAuthValidationSpec::ServerKey = TEXT("defaultkey");
-const FString FNakamaAsyncAuthValidationSpec::Host = TEXT("127.0.0.1");
 
 void FNakamaAsyncAuthValidationSpec::Define()
 {
-	BeforeEach([this]() { ClientConfig = FNakamaClientConfig{ServerKey, Host, Port, false}; });
 
 
 	Describe("CustomAuth.Validation", [this]()
@@ -3414,7 +3331,7 @@ void FNakamaAsyncAuthValidationSpec::Define()
 			{
 				ASYNC_FAIL_ON_ERROR(Result, Done);
 				TestTrue("Session has token", !Result.Value.Token.IsEmpty());
-				Done.Execute();
+				Nakama::DeleteAccount(ClientConfig, Result.Value).Next([Done](FNakamaVoidResult) { Done.Execute(); });
 			});
 		});
 	});
@@ -3427,24 +3344,17 @@ void FNakamaAsyncAuthValidationSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAsyncAccountDeleteSpec, "IntegrationTests.Nakama.Account.Delete",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientConfig ClientConfig;
 	FNakamaRetryConfig RetryConfig;
 	FNakamaSession Session;
 
-	static const FString ServerKey;
-	static const FString Host;
-	static constexpr int32 Port = 7350;
 
 	FString GenerateId() { return FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphens); }
 
 END_DEFINE_SPEC(FNakamaAsyncAccountDeleteSpec)
 
-const FString FNakamaAsyncAccountDeleteSpec::ServerKey = TEXT("defaultkey");
-const FString FNakamaAsyncAccountDeleteSpec::Host = TEXT("127.0.0.1");
 
 void FNakamaAsyncAccountDeleteSpec::Define()
 {
-	BeforeEach([this]() { ClientConfig = FNakamaClientConfig{ServerKey, Host, Port, false}; });
 
 
 	Describe("DeleteAccount", [this]()
@@ -3501,21 +3411,14 @@ void FNakamaAsyncAccountDeleteSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAsyncSocialAuthSpec, "IntegrationTests.Nakama.Auth.Social",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientConfig ClientConfig;
 	FNakamaRetryConfig RetryConfig;
 
-	static const FString ServerKey;
-	static const FString Host;
-	static constexpr int32 Port = 7350;
 
 END_DEFINE_SPEC(FNakamaAsyncSocialAuthSpec)
 
-const FString FNakamaAsyncSocialAuthSpec::ServerKey = TEXT("defaultkey");
-const FString FNakamaAsyncSocialAuthSpec::Host = TEXT("127.0.0.1");
 
 void FNakamaAsyncSocialAuthSpec::Define()
 {
-	BeforeEach([this]() { ClientConfig = FNakamaClientConfig{ServerKey, Host, Port, false}; });
 
 
 	Describe("FacebookAuth.Validation", [this]()
@@ -3606,24 +3509,17 @@ void FNakamaAsyncSocialAuthSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAsyncSessionExtSpec, "IntegrationTests.Nakama.SessionExt",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientConfig ClientConfig;
 	FNakamaRetryConfig RetryConfig;
 	FNakamaSession Session;
 
-	static const FString ServerKey;
-	static const FString Host;
-	static constexpr int32 Port = 7350;
 
 	FString GenerateId() { return FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphens); }
 
 END_DEFINE_SPEC(FNakamaAsyncSessionExtSpec)
 
-const FString FNakamaAsyncSessionExtSpec::ServerKey = TEXT("defaultkey");
-const FString FNakamaAsyncSessionExtSpec::Host = TEXT("127.0.0.1");
 
 void FNakamaAsyncSessionExtSpec::Define()
 {
-	BeforeEach([this]() { ClientConfig = FNakamaClientConfig{ServerKey, Host, Port, false}; });
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
 	{
@@ -3635,6 +3531,12 @@ void FNakamaAsyncSessionExtSpec::Define()
 			Session = AuthResult.Value;
 			Done.Execute();
 		});
+	});
+
+	LatentAfterEach([this](const FDoneDelegate& Done)
+	{
+		if (Session.Token.IsEmpty()) { Done.Execute(); return; }
+		Nakama::DeleteAccount(ClientConfig, Session).Next([Done](FNakamaVoidResult) { Done.Execute(); });
 	});
 
 
@@ -3687,25 +3589,18 @@ void FNakamaAsyncSessionExtSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAsyncUsersExtSpec, "IntegrationTests.Nakama.UsersExt",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientConfig ClientConfig;
 	FNakamaRetryConfig RetryConfig;
 	FNakamaSession Session;
 	FString UserId;
 
-	static const FString ServerKey;
-	static const FString Host;
-	static constexpr int32 Port = 7350;
 
 	FString GenerateId() { return FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphens); }
 
 END_DEFINE_SPEC(FNakamaAsyncUsersExtSpec)
 
-const FString FNakamaAsyncUsersExtSpec::ServerKey = TEXT("defaultkey");
-const FString FNakamaAsyncUsersExtSpec::Host = TEXT("127.0.0.1");
 
 void FNakamaAsyncUsersExtSpec::Define()
 {
-	BeforeEach([this]() { ClientConfig = FNakamaClientConfig{ServerKey, Host, Port, false}; });
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
 	{
@@ -3723,6 +3618,12 @@ void FNakamaAsyncUsersExtSpec::Define()
 			UserId = AccResult.Value.User.Id;
 			Done.Execute();
 		});
+	});
+
+	LatentAfterEach([this](const FDoneDelegate& Done)
+	{
+		if (Session.Token.IsEmpty()) { Done.Execute(); return; }
+		Nakama::DeleteAccount(ClientConfig, Session).Next([Done](FNakamaVoidResult) { Done.Execute(); });
 	});
 
 
@@ -3772,25 +3673,18 @@ void FNakamaAsyncUsersExtSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAsyncFriendsOfFriendsSpec, "IntegrationTests.Nakama.FriendsOfFriends",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientConfig ClientConfig;
 	FNakamaRetryConfig RetryConfig;
 	FNakamaSession Session;
 	FString UserId;
 
-	static const FString ServerKey;
-	static const FString Host;
-	static constexpr int32 Port = 7350;
 
 	FString GenerateId() { return FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphens); }
 
 END_DEFINE_SPEC(FNakamaAsyncFriendsOfFriendsSpec)
 
-const FString FNakamaAsyncFriendsOfFriendsSpec::ServerKey = TEXT("defaultkey");
-const FString FNakamaAsyncFriendsOfFriendsSpec::Host = TEXT("127.0.0.1");
 
 void FNakamaAsyncFriendsOfFriendsSpec::Define()
 {
-	BeforeEach([this]() { ClientConfig = FNakamaClientConfig{ServerKey, Host, Port, false}; });
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
 	{
@@ -3808,6 +3702,12 @@ void FNakamaAsyncFriendsOfFriendsSpec::Define()
 			UserId = AccResult.Value.User.Id;
 			Done.Execute();
 		});
+	});
+
+	LatentAfterEach([this](const FDoneDelegate& Done)
+	{
+		if (Session.Token.IsEmpty()) { Done.Execute(); return; }
+		Nakama::DeleteAccount(ClientConfig, Session).Next([Done](FNakamaVoidResult) { Done.Execute(); });
 	});
 
 
@@ -3905,31 +3805,21 @@ void FNakamaAsyncFriendsOfFriendsSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAsyncGroupPermissionsSpec, "IntegrationTests.Nakama.GroupPermissions",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientConfig ClientConfig;
 	FNakamaRetryConfig RetryConfig;
 	FNakamaSession Session;
 	FNakamaSession Session2;
 	FString UserId;
 	FString UserId2;
 
-	static const FString ServerKey;
-	static const FString Host;
-	static constexpr int32 Port = 7350;
 
 	FString GenerateId() { return FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphens); }
 	FString GenerateShortId() { return FGuid::NewGuid().ToString(EGuidFormats::Short).Left(8); }
 
 END_DEFINE_SPEC(FNakamaAsyncGroupPermissionsSpec)
 
-const FString FNakamaAsyncGroupPermissionsSpec::ServerKey = TEXT("defaultkey");
-const FString FNakamaAsyncGroupPermissionsSpec::Host = TEXT("127.0.0.1");
 
 void FNakamaAsyncGroupPermissionsSpec::Define()
 {
-	BeforeEach([this]()
-	{
-		ClientConfig = FNakamaClientConfig{ServerKey, Host, Port, false};
-	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
 	{
@@ -3959,6 +3849,21 @@ void FNakamaAsyncGroupPermissionsSpec::Define()
 			UserId2 = AccResult2.Value.User.Id;
 			Done.Execute();
 		});
+	});
+
+	LatentAfterEach([this](const FDoneDelegate& Done)
+	{	
+
+		Nakama::DeleteAccount(ClientConfig, Session).Next(
+			return Nakama::DeleteAccount(ClientConfig, Session2)
+		).Next([done](result){
+			.Next([DeleteMain](FNakamaVoidResult) { 
+				Done.Execute(); 
+			});
+		});
+		
+
+		
 	});
 
 
@@ -4127,31 +4032,21 @@ void FNakamaAsyncGroupPermissionsSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAsyncStoragePermissionsSpec, "IntegrationTests.Nakama.StoragePermissions",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientConfig ClientConfig;
 	FNakamaRetryConfig RetryConfig;
 	FNakamaSession Session;
 	FNakamaSession Session2;
 	FString UserId;
 	FString UserId2;
 
-	static const FString ServerKey;
-	static const FString Host;
-	static constexpr int32 Port = 7350;
 
 	FString GenerateId() { return FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphens); }
 	FString GenerateShortId() { return FGuid::NewGuid().ToString(EGuidFormats::Short).Left(8); }
 
 END_DEFINE_SPEC(FNakamaAsyncStoragePermissionsSpec)
 
-const FString FNakamaAsyncStoragePermissionsSpec::ServerKey = TEXT("defaultkey");
-const FString FNakamaAsyncStoragePermissionsSpec::Host = TEXT("127.0.0.1");
 
 void FNakamaAsyncStoragePermissionsSpec::Define()
 {
-	BeforeEach([this]()
-	{
-		ClientConfig = FNakamaClientConfig{ServerKey, Host, Port, false};
-	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
 	{
@@ -4181,6 +4076,18 @@ void FNakamaAsyncStoragePermissionsSpec::Define()
 			UserId2 = AccResult2.Value.User.Id;
 			Done.Execute();
 		});
+	});
+
+	LatentAfterEach([this](const FDoneDelegate& Done)
+	{
+		auto DeleteMain = [this, Done]()
+		{
+			if (Session.Token.IsEmpty()) { Done.Execute(); return; }
+			Nakama::DeleteAccount(ClientConfig, Session).Next([Done](FNakamaVoidResult) { Done.Execute(); });
+		};
+
+		if (Session2.Token.IsEmpty()) { DeleteMain(); return; }
+		Nakama::DeleteAccount(ClientConfig, Session2).Next([DeleteMain](FNakamaVoidResult) { DeleteMain(); });
 	});
 
 
@@ -4295,27 +4202,20 @@ void FNakamaAsyncStoragePermissionsSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAsyncChannelExtSpec, "IntegrationTests.Nakama.ChannelExt",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientConfig ClientConfig;
 	FNakamaRetryConfig RetryConfig;
 	FNakamaSession Session;
 	FString UserId;
 	FString GroupId;
 
-	static const FString ServerKey;
-	static const FString Host;
-	static constexpr int32 Port = 7350;
 
 	FString GenerateId() { return FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphens); }
 	FString GenerateShortId() { return FGuid::NewGuid().ToString(EGuidFormats::Short).Left(8); }
 
 END_DEFINE_SPEC(FNakamaAsyncChannelExtSpec)
 
-const FString FNakamaAsyncChannelExtSpec::ServerKey = TEXT("defaultkey");
-const FString FNakamaAsyncChannelExtSpec::Host = TEXT("127.0.0.1");
 
 void FNakamaAsyncChannelExtSpec::Define()
 {
-	BeforeEach([this]() { ClientConfig = FNakamaClientConfig{ServerKey, Host, Port, false}; });
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
 	{
@@ -4338,6 +4238,12 @@ void FNakamaAsyncChannelExtSpec::Define()
 			GroupId = GroupResult.Value.Id;
 			Done.Execute();
 		});
+	});
+
+	LatentAfterEach([this](const FDoneDelegate& Done)
+	{
+		if (Session.Token.IsEmpty()) { Done.Execute(); return; }
+		Nakama::DeleteAccount(ClientConfig, Session).Next([Done](FNakamaVoidResult) { Done.Execute(); });
 	});
 
 
@@ -4394,29 +4300,19 @@ void FNakamaAsyncChannelExtSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAsyncLinkExtSpec, "IntegrationTests.Nakama.LinkExt",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientConfig ClientConfig;
 	FNakamaRetryConfig RetryConfig;
 	FNakamaSession Session;
 	FNakamaSession Session2;
 
-	static const FString ServerKey;
-	static const FString Host;
-	static constexpr int32 Port = 7350;
 
 	FString GenerateId() { return FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphens); }
 	FString GenerateShortId() { return FGuid::NewGuid().ToString(EGuidFormats::Short).Left(8); }
 
 END_DEFINE_SPEC(FNakamaAsyncLinkExtSpec)
 
-const FString FNakamaAsyncLinkExtSpec::ServerKey = TEXT("defaultkey");
-const FString FNakamaAsyncLinkExtSpec::Host = TEXT("127.0.0.1");
 
 void FNakamaAsyncLinkExtSpec::Define()
 {
-	BeforeEach([this]()
-	{
-		ClientConfig = FNakamaClientConfig{ServerKey, Host, Port, false};
-	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
 	{
@@ -4436,6 +4332,18 @@ void FNakamaAsyncLinkExtSpec::Define()
 			Session2 = Result2.Value;
 			Done.Execute();
 		});
+	});
+
+	LatentAfterEach([this](const FDoneDelegate& Done)
+	{
+		auto DeleteMain = [this, Done]()
+		{
+			if (Session.Token.IsEmpty()) { Done.Execute(); return; }
+			Nakama::DeleteAccount(ClientConfig, Session).Next([Done](FNakamaVoidResult) { Done.Execute(); });
+		};
+
+		if (Session2.Token.IsEmpty()) { DeleteMain(); return; }
+		Nakama::DeleteAccount(ClientConfig, Session2).Next([DeleteMain](FNakamaVoidResult) { DeleteMain(); });
 	});
 
 
@@ -4535,26 +4443,19 @@ void FNakamaAsyncLinkExtSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAsyncRpcExtSpec, "IntegrationTests.Nakama.RPCExt",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientConfig ClientConfig;
 	FNakamaRetryConfig RetryConfig;
 	FNakamaSession Session;
 
-	static const FString ServerKey;
-	static const FString Host;
 	static const FString HttpKey;
-	static constexpr int32 Port = 7350;
 
 	FString GenerateId() { return FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphens); }
 
 END_DEFINE_SPEC(FNakamaAsyncRpcExtSpec)
 
-const FString FNakamaAsyncRpcExtSpec::ServerKey = TEXT("defaultkey");
-const FString FNakamaAsyncRpcExtSpec::Host = TEXT("127.0.0.1");
 const FString FNakamaAsyncRpcExtSpec::HttpKey = TEXT("defaulthttpkey");
 
 void FNakamaAsyncRpcExtSpec::Define()
 {
-	BeforeEach([this]() { ClientConfig = FNakamaClientConfig{ServerKey, Host, Port, false}; });
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
 	{
@@ -4566,6 +4467,12 @@ void FNakamaAsyncRpcExtSpec::Define()
 			Session = AuthResult.Value;
 			Done.Execute();
 		});
+	});
+
+	LatentAfterEach([this](const FDoneDelegate& Done)
+	{
+		if (Session.Token.IsEmpty()) { Done.Execute(); return; }
+		Nakama::DeleteAccount(ClientConfig, Session).Next([Done](FNakamaVoidResult) { Done.Execute(); });
 	});
 
 
@@ -4695,24 +4602,17 @@ void FNakamaAsyncRpcExtSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAsyncMatchesValidationSpec, "IntegrationTests.Nakama.MatchesValidation",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientConfig ClientConfig;
 	FNakamaRetryConfig RetryConfig;
 	FNakamaSession Session;
 
-	static const FString ServerKey;
-	static const FString Host;
-	static constexpr int32 Port = 7350;
 
 	FString GenerateId() { return FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphens); }
 
 END_DEFINE_SPEC(FNakamaAsyncMatchesValidationSpec)
 
-const FString FNakamaAsyncMatchesValidationSpec::ServerKey = TEXT("defaultkey");
-const FString FNakamaAsyncMatchesValidationSpec::Host = TEXT("127.0.0.1");
 
 void FNakamaAsyncMatchesValidationSpec::Define()
 {
-	BeforeEach([this]() { ClientConfig = FNakamaClientConfig{ServerKey, Host, Port, false}; });
 	LatentBeforeEach([this](const FDoneDelegate& Done)
 	{
 		FNakamaAccountCustom Account;
@@ -4723,6 +4623,12 @@ void FNakamaAsyncMatchesValidationSpec::Define()
 			Session = AuthResult.Value;
 			Done.Execute();
 		});
+	});
+
+	LatentAfterEach([this](const FDoneDelegate& Done)
+	{
+		if (Session.Token.IsEmpty()) { Done.Execute(); return; }
+		Nakama::DeleteAccount(ClientConfig, Session).Next([Done](FNakamaVoidResult) { Done.Execute(); });
 	});
 
 
@@ -4762,24 +4668,17 @@ void FNakamaAsyncMatchesValidationSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAsyncPurchasesSpec, "IntegrationTests.Nakama.Purchases",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientConfig ClientConfig;
 	FNakamaRetryConfig RetryConfig;
 	FNakamaSession Session;
 
-	static const FString ServerKey;
-	static const FString Host;
-	static constexpr int32 Port = 7350;
 
 	FString GenerateId() { return FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphens); }
 
 END_DEFINE_SPEC(FNakamaAsyncPurchasesSpec)
 
-const FString FNakamaAsyncPurchasesSpec::ServerKey = TEXT("defaultkey");
-const FString FNakamaAsyncPurchasesSpec::Host = TEXT("127.0.0.1");
 
 void FNakamaAsyncPurchasesSpec::Define()
 {
-	BeforeEach([this]() { ClientConfig = FNakamaClientConfig{ServerKey, Host, Port, false}; });
 	LatentBeforeEach([this](const FDoneDelegate& Done)
 	{
 		FNakamaAccountCustom Account;
@@ -4790,6 +4689,12 @@ void FNakamaAsyncPurchasesSpec::Define()
 			Session = AuthResult.Value;
 			Done.Execute();
 		});
+	});
+
+	LatentAfterEach([this](const FDoneDelegate& Done)
+	{
+		if (Session.Token.IsEmpty()) { Done.Execute(); return; }
+		Nakama::DeleteAccount(ClientConfig, Session).Next([Done](FNakamaVoidResult) { Done.Execute(); });
 	});
 
 
@@ -4866,24 +4771,17 @@ void FNakamaAsyncPurchasesSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAsyncEventSpec, "IntegrationTests.Nakama.Event",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientConfig ClientConfig;
 	FNakamaRetryConfig RetryConfig;
 	FNakamaSession Session;
 
-	static const FString ServerKey;
-	static const FString Host;
-	static constexpr int32 Port = 7350;
 
 	FString GenerateId() { return FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphens); }
 
 END_DEFINE_SPEC(FNakamaAsyncEventSpec)
 
-const FString FNakamaAsyncEventSpec::ServerKey = TEXT("defaultkey");
-const FString FNakamaAsyncEventSpec::Host = TEXT("127.0.0.1");
 
 void FNakamaAsyncEventSpec::Define()
 {
-	BeforeEach([this]() { ClientConfig = FNakamaClientConfig{ServerKey, Host, Port, false}; });
 	LatentBeforeEach([this](const FDoneDelegate& Done)
 	{
 		FNakamaAccountCustom Account;
@@ -4894,6 +4792,12 @@ void FNakamaAsyncEventSpec::Define()
 			Session = AuthResult.Value;
 			Done.Execute();
 		});
+	});
+
+	LatentAfterEach([this](const FDoneDelegate& Done)
+	{
+		if (Session.Token.IsEmpty()) { Done.Execute(); return; }
+		Nakama::DeleteAccount(ClientConfig, Session).Next([Done](FNakamaVoidResult) { Done.Execute(); });
 	});
 
 
@@ -4931,26 +4835,19 @@ void FNakamaAsyncEventSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAsyncHealthcheckSpec, "IntegrationTests.Nakama.Healthcheck",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientConfig ClientConfig;
 	FNakamaRetryConfig RetryConfig;
 	FNakamaSession Session;
 
-	static const FString ServerKey;
-	static const FString Host;
 	static const FString HttpKey;
-	static constexpr int32 Port = 7350;
 
 	FString GenerateId() { return FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphens); }
 
 END_DEFINE_SPEC(FNakamaAsyncHealthcheckSpec)
 
-const FString FNakamaAsyncHealthcheckSpec::ServerKey = TEXT("defaultkey");
-const FString FNakamaAsyncHealthcheckSpec::Host = TEXT("127.0.0.1");
 const FString FNakamaAsyncHealthcheckSpec::HttpKey = TEXT("defaulthttpkey");
 
 void FNakamaAsyncHealthcheckSpec::Define()
 {
-	BeforeEach([this]() { ClientConfig = FNakamaClientConfig{ServerKey, Host, Port, false}; });
 	LatentBeforeEach([this](const FDoneDelegate& Done)
 	{
 		FNakamaAccountCustom Account;
@@ -4961,6 +4858,12 @@ void FNakamaAsyncHealthcheckSpec::Define()
 			Session = AuthResult.Value;
 			Done.Execute();
 		});
+	});
+
+	LatentAfterEach([this](const FDoneDelegate& Done)
+	{
+		if (Session.Token.IsEmpty()) { Done.Execute(); return; }
+		Nakama::DeleteAccount(ClientConfig, Session).Next([Done](FNakamaVoidResult) { Done.Execute(); });
 	});
 
 
@@ -4995,7 +4898,6 @@ void FNakamaAsyncHealthcheckSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAsyncGroupUsersSpec, "IntegrationTests.Nakama.GroupUsers",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientConfig ClientConfig;
 	FNakamaRetryConfig RetryConfig;
 	FNakamaSession Session;
 	FNakamaSession Session2;
@@ -5005,24 +4907,15 @@ BEGIN_DEFINE_SPEC(FNakamaAsyncGroupUsersSpec, "IntegrationTests.Nakama.GroupUser
 	FString UserId3;
 	FString GroupId;
 
-	static const FString ServerKey;
-	static const FString Host;
-	static constexpr int32 Port = 7350;
 
 	FString GenerateId() { return FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphens); }
 	FString GenerateShortId() { return FGuid::NewGuid().ToString(EGuidFormats::Short).Left(8); }
 
 END_DEFINE_SPEC(FNakamaAsyncGroupUsersSpec)
 
-const FString FNakamaAsyncGroupUsersSpec::ServerKey = TEXT("defaultkey");
-const FString FNakamaAsyncGroupUsersSpec::Host = TEXT("127.0.0.1");
 
 void FNakamaAsyncGroupUsersSpec::Define()
 {
-	BeforeEach([this]()
-	{
-		ClientConfig = FNakamaClientConfig{ServerKey, Host, Port, false};
-	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
 	{
@@ -5064,6 +4957,14 @@ void FNakamaAsyncGroupUsersSpec::Define()
 			UserId3 = AccResult3.Value.User.Id;
 			Done.Execute();
 		});
+	});
+
+	LatentAfterEach([this](const FDoneDelegate& Done)
+	{
+		Nakama::DeleteAccount(ClientConfig, Session3)
+		.Next([this](FNakamaVoidResult) { return Nakama::DeleteAccount(ClientConfig, Session2); })
+		.Next([this](FNakamaVoidResult) { return Nakama::DeleteAccount(ClientConfig, Session); })
+		.Next([Done](FNakamaVoidResult) { Done.Execute(); });
 	});
 
 
@@ -5243,27 +5144,17 @@ void FNakamaAsyncGroupUsersSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAsyncCancellationSpec, "IntegrationTests.Nakama.Cancellation",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientConfig ClientConfig;
 	FNakamaRetryConfig RetryConfig;
 	FNakamaSession Session;
 
-	static const FString ServerKey;
-	static const FString Host;
-	static constexpr int32 Port = 7350;
 
 	FString GenerateId() { return FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphens); }
 
 END_DEFINE_SPEC(FNakamaAsyncCancellationSpec)
 
-const FString FNakamaAsyncCancellationSpec::ServerKey = TEXT("defaultkey");
-const FString FNakamaAsyncCancellationSpec::Host = TEXT("127.0.0.1");
 
 void FNakamaAsyncCancellationSpec::Define()
 {
-	BeforeEach([this]()
-	{
-		ClientConfig = FNakamaClientConfig{ServerKey, Host, Port, false};
-	});
 
 	LatentBeforeEach([this](const FDoneDelegate& Done)
 	{
@@ -5276,6 +5167,12 @@ void FNakamaAsyncCancellationSpec::Define()
 			Session = AuthResult.Value;
 			Done.Execute();
 		});
+	});
+
+	LatentAfterEach([this](const FDoneDelegate& Done)
+	{
+		if (Session.Token.IsEmpty()) { Done.Execute(); return; }
+		Nakama::DeleteAccount(ClientConfig, Session).Next([Done](FNakamaVoidResult) { Done.Execute(); });
 	});
 
 	Describe("CancellationToken", [this]()
@@ -5324,26 +5221,19 @@ void FNakamaAsyncCancellationSpec::Define()
 BEGIN_DEFINE_SPEC(FNakamaAsyncRetrySpec, "IntegrationTests.Nakama.Retry",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
 
-	FNakamaClientConfig ClientConfig;
 	FNakamaRetryConfig RetryConfig;
 	FNakamaSession Session;
 
-	static const FString ServerKey;
-	static const FString Host;
-	static constexpr int32 Port = 7350;
 
 	FString GenerateId() { return FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphens); }
 
 END_DEFINE_SPEC(FNakamaAsyncRetrySpec)
 
-const FString FNakamaAsyncRetrySpec::ServerKey = TEXT("defaultkey");
-const FString FNakamaAsyncRetrySpec::Host = TEXT("127.0.0.1");
 
 void FNakamaAsyncRetrySpec::Define()
 {
 	BeforeEach([this]()
 	{
-		ClientConfig = FNakamaClientConfig{ServerKey, Host, Port, false};
 		RetryConfig.MaxRetries = 2;
 		RetryConfig.BaseDelayMs = 100;
 	});
@@ -5359,6 +5249,12 @@ void FNakamaAsyncRetrySpec::Define()
 			Session = AuthResult.Value;
 			Done.Execute();
 		});
+	});
+
+	LatentAfterEach([this](const FDoneDelegate& Done)
+	{
+		if (Session.Token.IsEmpty()) { Done.Execute(); return; }
+		Nakama::DeleteAccount(ClientConfig, Session).Next([Done](FNakamaVoidResult) { Done.Execute(); });
 	});
 
 	Describe("Retry", [this]()
@@ -5424,7 +5320,7 @@ void FNakamaAsyncRetrySpec::Define()
 
 		LatentIt("should retry on connection failure (unreachable host)", [this](const FDoneDelegate& Done)
 		{
-			FNakamaClientConfig BadConfig{ServerKey, TEXT("127.0.0.1"), 19999, false};
+			FNakamaClientConfig BadConfig{TEXT("defaultkey"), TEXT("127.0.0.1"), 19999, false};
 			FNakamaRetryConfig ConnRetryConfig;
 			ConnRetryConfig.MaxRetries = 1;
 			ConnRetryConfig.BaseDelayMs = 100;
