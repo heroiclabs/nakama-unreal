@@ -195,7 +195,20 @@ void UNakamaWebSocketSubsystem::StopPingLoop()
 }
 bool UNakamaWebSocketSubsystem::SendPing()
 {
-    Send(TEXT("ping"), MakeShareable(new FJsonObject()));
+    FScopeLock Lock(&RequestsLock);
+    if (!bIsConnected)
+    {
+        return false;
+    }
+
+    TSharedPtr<FJsonObject> Envelope = MakeShareable(new FJsonObject());
+    Envelope->SetObjectField(TEXT("ping"), MakeShareable(new FJsonObject()));
+
+    FString EnvelopeJson;
+    const TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&EnvelopeJson);
+    FJsonSerializer::Serialize(Envelope.ToSharedRef(), Writer);
+
+    WebSocket->Send(EnvelopeJson);
     return true;
 }
 

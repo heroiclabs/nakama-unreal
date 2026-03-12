@@ -327,6 +327,37 @@ void FNakamaWebSocketSubsystemPingSpec::Define()
         });
     });
 
+    Describe("AutoPing", [this]()
+    {
+        LatentIt("should not accumulate pending requests (memory leak regression)", [this](const FDoneDelegate& Done)
+        {
+            // Use a fast ping interval so ~10 pings fire within 1 second.
+            FNakamaWebSocketConnectionParams P = MakeConnParams(Session);
+            P.PingIntervalSeconds = 0.1f;
+
+            WSSub->Connect(P).Next([this, Done](FNakamaWebSocketConnectionResult CR)
+            {
+                TestFalse("Connect", CR.ErrorCode != ENakamaWebSocketError::None);
+                if (CR.ErrorCode != ENakamaWebSocketError::None) { Done.Execute(); return; }
+
+                // After 1 s, ~10 auto-pings will have fired. Requests must still be empty.
+                TWeakObjectPtr<UNakamaWebSocketSubsystem> WeakSub = WSSub;
+                FTSTicker::GetCoreTicker().AddTicker(
+                    FTickerDelegate::CreateLambda([this, Done, WeakSub](float) -> bool
+                    {
+                        if (UNakamaWebSocketSubsystem* Sub = WeakSub.Get())
+                        {
+                            TestEqual(TEXT("Auto-ping must not leak entries into Requests"), Sub->GetPendingRequestCount(), 0);
+                        }
+                        Done.Execute();
+                        return false;
+                    }),
+                    1.0f
+                );
+            });
+        });
+    });
+
     Describe("Concurrent", [this]()
     {
         LatentIt("should handle multiple concurrent pings and resolve all of them", [this](const FDoneDelegate& Done)

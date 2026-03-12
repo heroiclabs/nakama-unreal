@@ -92,6 +92,12 @@ public:
 
     void Close();
 
+    int32 GetPendingRequestCount()
+    {
+        FScopeLock Lock(&RequestsLock);
+        return Requests.Num();
+    }
+
 private:
 
     TSharedPtr<IWebSocket> WebSocket;
