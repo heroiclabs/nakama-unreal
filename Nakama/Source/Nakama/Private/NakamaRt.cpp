@@ -27,6 +27,10 @@ TNakamaFuture<FNakamaWebSocketConnectionResult> NakamaRealtimeClient::Connect(
     const FNakamaWebSocketConnectionParams& Params
 ) noexcept
 {
+    if (!WebSocketSubsystem.IsValid())
+    {
+        return MakeCompletedFuture<FNakamaWebSocketConnectionResult>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+    }
     return WebSocketSubsystem->Connect(Params);
 }
 TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::Channel(
@@ -71,6 +75,10 @@ TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::Channel(
       Json->SetStringField(TEXT("user_id_two"), UserIdTwo);
     }
 
+    if (!WebSocketSubsystem.IsValid())
+    {
+        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+    }
     return WebSocketSubsystem->Send(TEXT("channel"), Json);
 }
 
@@ -90,6 +98,10 @@ TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::ChannelJoin(
     Json->SetBoolField(TEXT("persistence"), Persistence);
     Json->SetBoolField(TEXT("hidden"), Hidden);
 
+    if (!WebSocketSubsystem.IsValid())
+    {
+        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+    }
     return WebSocketSubsystem->Send(TEXT("channel_join"), Json);
 }
 
@@ -103,6 +115,10 @@ TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::ChannelLeave(
       Json->SetStringField(TEXT("channel_id"), ChannelId);
     }
 
+    if (!WebSocketSubsystem.IsValid())
+    {
+        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+    }
     return WebSocketSubsystem->Send(TEXT("channel_leave"), Json);
 }
 
@@ -173,6 +189,10 @@ TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::ChannelMessage(
       Json->SetStringField(TEXT("user_id_two"), UserIdTwo);
     }
 
+    if (!WebSocketSubsystem.IsValid())
+    {
+        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+    }
     return WebSocketSubsystem->Send(TEXT("channel_message"), Json);
 }
 
@@ -233,6 +253,10 @@ TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::ChannelMessageAck(
       Json->SetStringField(TEXT("user_id_two"), UserIdTwo);
     }
 
+    if (!WebSocketSubsystem.IsValid())
+    {
+        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+    }
     return WebSocketSubsystem->Send(TEXT("channel_message_ack"), Json);
 }
 
@@ -251,6 +275,10 @@ TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::ChannelMessageSend
       Json->SetStringField(TEXT("content"), Content);
     }
 
+    if (!WebSocketSubsystem.IsValid())
+    {
+        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+    }
     return WebSocketSubsystem->Send(TEXT("channel_message_send"), Json);
 }
 
@@ -274,6 +302,10 @@ TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::ChannelMessageUpda
       Json->SetStringField(TEXT("content"), Content);
     }
 
+    if (!WebSocketSubsystem.IsValid())
+    {
+        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+    }
     return WebSocketSubsystem->Send(TEXT("channel_message_update"), Json);
 }
 
@@ -292,6 +324,10 @@ TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::ChannelMessageRemo
       Json->SetStringField(TEXT("message_id"), MessageId);
     }
 
+    if (!WebSocketSubsystem.IsValid())
+    {
+        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+    }
     return WebSocketSubsystem->Send(TEXT("channel_message_remove"), Json);
 }
 
@@ -345,6 +381,10 @@ TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::ChannelPresenceEve
       Json->SetStringField(TEXT("user_id_two"), UserIdTwo);
     }
 
+    if (!WebSocketSubsystem.IsValid())
+    {
+        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+    }
     return WebSocketSubsystem->Send(TEXT("channel_presence_event"), Json);
 }
 
@@ -368,6 +408,10 @@ TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::Error(
       Json->SetObjectField(TEXT("context"), MapObj);
     }
 
+    if (!WebSocketSubsystem.IsValid())
+    {
+        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+    }
     return WebSocketSubsystem->Send(TEXT("error"), Json);
 }
 
@@ -402,6 +446,10 @@ TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::Match(
     }
     Json->SetObjectField(TEXT("self"), Self.ToJson());
 
+    if (!WebSocketSubsystem.IsValid())
+    {
+        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+    }
     return WebSocketSubsystem->Send(TEXT("match"), Json);
 }
 
@@ -415,6 +463,10 @@ TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::MatchCreate(
       Json->SetStringField(TEXT("name"), Name);
     }
 
+    if (!WebSocketSubsystem.IsValid())
+    {
+        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+    }
     return WebSocketSubsystem->Send(TEXT("match_create"), Json);
 }
 
@@ -436,6 +488,10 @@ TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::MatchData(
     Json->SetStringField(TEXT("data"), FBase64::Encode(Data));
     Json->SetBoolField(TEXT("reliable"), Reliable);
 
+    if (!WebSocketSubsystem.IsValid())
+    {
+        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+    }
     return WebSocketSubsystem->Send(TEXT("match_data"), Json);
 }
 
@@ -465,6 +521,10 @@ TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::MatchDataSend(
     }
     Json->SetBoolField(TEXT("reliable"), Reliable);
 
+    if (!WebSocketSubsystem.IsValid())
+    {
+        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+    }
     return WebSocketSubsystem->Send(TEXT("match_data_send"), Json);
 }
 
@@ -491,6 +551,10 @@ TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::MatchJoin(
       Json->SetObjectField(TEXT("metadata"), MapObj);
     }
 
+    if (!WebSocketSubsystem.IsValid())
+    {
+        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+    }
     return WebSocketSubsystem->Send(TEXT("match_join"), Json);
 }
 
@@ -504,6 +568,10 @@ TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::MatchLeave(
       Json->SetStringField(TEXT("match_id"), MatchId);
     }
 
+    if (!WebSocketSubsystem.IsValid())
+    {
+        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+    }
     return WebSocketSubsystem->Send(TEXT("match_leave"), Json);
 }
 
@@ -537,6 +605,10 @@ TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::MatchPresenceEvent
       Json->SetArrayField(TEXT("leaves"), Array);
     }
 
+    if (!WebSocketSubsystem.IsValid())
+    {
+        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+    }
     return WebSocketSubsystem->Send(TEXT("match_presence_event"), Json);
 }
 
@@ -576,6 +648,10 @@ TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::MatchmakerAdd(
       Json->SetObjectField(TEXT("numeric_properties"), MapObj);
     }
 
+    if (!WebSocketSubsystem.IsValid())
+    {
+        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+    }
     return WebSocketSubsystem->Send(TEXT("matchmaker_add"), Json);
 }
 
@@ -611,6 +687,10 @@ TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::MatchmakerMatched(
     }
     Json->SetObjectField(TEXT("self"), Self.ToJson());
 
+    if (!WebSocketSubsystem.IsValid())
+    {
+        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+    }
     return WebSocketSubsystem->Send(TEXT("matchmaker_matched"), Json);
 }
 
@@ -624,6 +704,10 @@ TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::MatchmakerRemove(
       Json->SetStringField(TEXT("ticket"), Ticket);
     }
 
+    if (!WebSocketSubsystem.IsValid())
+    {
+        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+    }
     return WebSocketSubsystem->Send(TEXT("matchmaker_remove"), Json);
 }
 
@@ -637,6 +721,10 @@ TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::MatchmakerTicket(
       Json->SetStringField(TEXT("ticket"), Ticket);
     }
 
+    if (!WebSocketSubsystem.IsValid())
+    {
+        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+    }
     return WebSocketSubsystem->Send(TEXT("matchmaker_ticket"), Json);
 }
 
@@ -655,6 +743,10 @@ TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::Notifications(
       Json->SetArrayField(TEXT("notifications"), Array);
     }
 
+    if (!WebSocketSubsystem.IsValid())
+    {
+        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+    }
     return WebSocketSubsystem->Send(TEXT("notifications"), Json);
 }
 
@@ -678,6 +770,10 @@ TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::Rpc(
       Json->SetStringField(TEXT("http_key"), HttpKey);
     }
 
+    if (!WebSocketSubsystem.IsValid())
+    {
+        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+    }
     return WebSocketSubsystem->Send(TEXT("rpc"), Json);
 }
 
@@ -696,6 +792,10 @@ TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::Status(
       Json->SetArrayField(TEXT("presences"), Array);
     }
 
+    if (!WebSocketSubsystem.IsValid())
+    {
+        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+    }
     return WebSocketSubsystem->Send(TEXT("status"), Json);
 }
 
@@ -724,6 +824,10 @@ TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::StatusFollow(
       Json->SetArrayField(TEXT("usernames"), Array);
     }
 
+    if (!WebSocketSubsystem.IsValid())
+    {
+        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+    }
     return WebSocketSubsystem->Send(TEXT("status_follow"), Json);
 }
 
@@ -752,6 +856,10 @@ TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::StatusPresenceEven
       Json->SetArrayField(TEXT("leaves"), Array);
     }
 
+    if (!WebSocketSubsystem.IsValid())
+    {
+        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+    }
     return WebSocketSubsystem->Send(TEXT("status_presence_event"), Json);
 }
 
@@ -770,6 +878,10 @@ TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::StatusUnfollow(
       Json->SetArrayField(TEXT("user_ids"), Array);
     }
 
+    if (!WebSocketSubsystem.IsValid())
+    {
+        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+    }
     return WebSocketSubsystem->Send(TEXT("status_unfollow"), Json);
 }
 
@@ -783,6 +895,10 @@ TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::StatusUpdate(
       Json->SetStringField(TEXT("status"), Status);
     }
 
+    if (!WebSocketSubsystem.IsValid())
+    {
+        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+    }
     return WebSocketSubsystem->Send(TEXT("status_update"), Json);
 }
 
@@ -802,6 +918,10 @@ TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::StreamData(
     }
     Json->SetBoolField(TEXT("reliable"), Reliable);
 
+    if (!WebSocketSubsystem.IsValid())
+    {
+        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+    }
     return WebSocketSubsystem->Send(TEXT("stream_data"), Json);
 }
 
@@ -832,6 +952,10 @@ TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::StreamPresenceEven
       Json->SetArrayField(TEXT("leaves"), Array);
     }
 
+    if (!WebSocketSubsystem.IsValid())
+    {
+        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+    }
     return WebSocketSubsystem->Send(TEXT("stream_presence_event"), Json);
 }
 
@@ -841,6 +965,10 @@ TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::Ping(
 {
     TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 
+    if (!WebSocketSubsystem.IsValid())
+    {
+        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+    }
     return WebSocketSubsystem->Send(TEXT("ping"), Json);
 }
 
@@ -850,6 +978,10 @@ TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::Pong(
 {
     TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
 
+    if (!WebSocketSubsystem.IsValid())
+    {
+        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+    }
     return WebSocketSubsystem->Send(TEXT("pong"), Json);
 }
 
@@ -888,6 +1020,10 @@ TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::Party(
       Json->SetStringField(TEXT("label"), Label);
     }
 
+    if (!WebSocketSubsystem.IsValid())
+    {
+        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+    }
     return WebSocketSubsystem->Send(TEXT("party"), Json);
 }
 
@@ -907,6 +1043,10 @@ TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyCreate(
     }
     Json->SetBoolField(TEXT("hidden"), Hidden);
 
+    if (!WebSocketSubsystem.IsValid())
+    {
+        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+    }
     return WebSocketSubsystem->Send(TEXT("party_create"), Json);
 }
 
@@ -920,6 +1060,10 @@ TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyJoin(
       Json->SetStringField(TEXT("party_id"), PartyId);
     }
 
+    if (!WebSocketSubsystem.IsValid())
+    {
+        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+    }
     return WebSocketSubsystem->Send(TEXT("party_join"), Json);
 }
 
@@ -933,6 +1077,10 @@ TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyLeave(
       Json->SetStringField(TEXT("party_id"), PartyId);
     }
 
+    if (!WebSocketSubsystem.IsValid())
+    {
+        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+    }
     return WebSocketSubsystem->Send(TEXT("party_leave"), Json);
 }
 
@@ -948,6 +1096,10 @@ TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyPromote(
     }
     Json->SetObjectField(TEXT("presence"), Presence.ToJson());
 
+    if (!WebSocketSubsystem.IsValid())
+    {
+        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+    }
     return WebSocketSubsystem->Send(TEXT("party_promote"), Json);
 }
 
@@ -963,6 +1115,10 @@ TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyLeader(
     }
     Json->SetObjectField(TEXT("presence"), Presence.ToJson());
 
+    if (!WebSocketSubsystem.IsValid())
+    {
+        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+    }
     return WebSocketSubsystem->Send(TEXT("party_leader"), Json);
 }
 
@@ -978,6 +1134,10 @@ TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyAccept(
     }
     Json->SetObjectField(TEXT("presence"), Presence.ToJson());
 
+    if (!WebSocketSubsystem.IsValid())
+    {
+        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+    }
     return WebSocketSubsystem->Send(TEXT("party_accept"), Json);
 }
 
@@ -993,6 +1153,10 @@ TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyRemove(
     }
     Json->SetObjectField(TEXT("presence"), Presence.ToJson());
 
+    if (!WebSocketSubsystem.IsValid())
+    {
+        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+    }
     return WebSocketSubsystem->Send(TEXT("party_remove"), Json);
 }
 
@@ -1006,6 +1170,10 @@ TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyClose(
       Json->SetStringField(TEXT("party_id"), PartyId);
     }
 
+    if (!WebSocketSubsystem.IsValid())
+    {
+        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+    }
     return WebSocketSubsystem->Send(TEXT("party_close"), Json);
 }
 
@@ -1019,6 +1187,10 @@ TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyJoinRequestLi
       Json->SetStringField(TEXT("party_id"), PartyId);
     }
 
+    if (!WebSocketSubsystem.IsValid())
+    {
+        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+    }
     return WebSocketSubsystem->Send(TEXT("party_join_request_list"), Json);
 }
 
@@ -1042,6 +1214,10 @@ TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyJoinRequest(
       Json->SetArrayField(TEXT("presences"), Array);
     }
 
+    if (!WebSocketSubsystem.IsValid())
+    {
+        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+    }
     return WebSocketSubsystem->Send(TEXT("party_join_request"), Json);
 }
 
@@ -1086,6 +1262,10 @@ TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyMatchmakerAdd
       Json->SetObjectField(TEXT("numeric_properties"), MapObj);
     }
 
+    if (!WebSocketSubsystem.IsValid())
+    {
+        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+    }
     return WebSocketSubsystem->Send(TEXT("party_matchmaker_add"), Json);
 }
 
@@ -1104,6 +1284,10 @@ TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyMatchmakerRem
       Json->SetStringField(TEXT("ticket"), Ticket);
     }
 
+    if (!WebSocketSubsystem.IsValid())
+    {
+        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+    }
     return WebSocketSubsystem->Send(TEXT("party_matchmaker_remove"), Json);
 }
 
@@ -1122,6 +1306,10 @@ TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyMatchmakerTic
       Json->SetStringField(TEXT("ticket"), Ticket);
     }
 
+    if (!WebSocketSubsystem.IsValid())
+    {
+        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+    }
     return WebSocketSubsystem->Send(TEXT("party_matchmaker_ticket"), Json);
 }
 
@@ -1141,6 +1329,10 @@ TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyData(
     Json->SetNumberField(TEXT("op_code"), OpCode);
     Json->SetStringField(TEXT("data"), FBase64::Encode(Data));
 
+    if (!WebSocketSubsystem.IsValid())
+    {
+        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+    }
     return WebSocketSubsystem->Send(TEXT("party_data"), Json);
 }
 
@@ -1158,6 +1350,10 @@ TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyDataSend(
     Json->SetNumberField(TEXT("op_code"), OpCode);
     Json->SetStringField(TEXT("data"), FBase64::Encode(Data));
 
+    if (!WebSocketSubsystem.IsValid())
+    {
+        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+    }
     return WebSocketSubsystem->Send(TEXT("party_data_send"), Json);
 }
 
@@ -1191,6 +1387,10 @@ TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyPresenceEvent
       Json->SetArrayField(TEXT("leaves"), Array);
     }
 
+    if (!WebSocketSubsystem.IsValid())
+    {
+        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+    }
     return WebSocketSubsystem->Send(TEXT("party_presence_event"), Json);
 }
 
@@ -1213,6 +1413,10 @@ TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyUpdate(
     Json->SetBoolField(TEXT("open"), Open);
     Json->SetBoolField(TEXT("hidden"), Hidden);
 
+    if (!WebSocketSubsystem.IsValid())
+    {
+        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+    }
     return WebSocketSubsystem->Send(TEXT("party_update"), Json);
 }
 

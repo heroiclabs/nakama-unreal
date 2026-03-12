@@ -1119,3 +1119,56 @@ void FNakamaRtPartySpec::Define()
         });
     });
 }
+
+// ============================================================================
+// SUBSYSTEM LIFETIME TESTS (no server required)
+// ============================================================================
+
+BEGIN_DEFINE_SPEC(FNakamaRtSubsystemLifetimeSpec, "IntegrationTests.NakamaRt.SubsystemLifetime",
+    EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
+
+    TUniquePtr<Nakama::NakamaRealtimeClient> RtClient;
+
+END_DEFINE_SPEC(FNakamaRtSubsystemLifetimeSpec)
+
+void FNakamaRtSubsystemLifetimeSpec::Define()
+{
+    AfterEach([this]()
+    {
+        RtClient.Reset();
+    });
+
+    Describe("StaledSubsystem", [this]()
+    {
+        LatentIt("should return an error future instead of crashing when subsystem is destroyed", [this](const FDoneDelegate& Done)
+        {
+            // 1. Stand up a fresh GameInstance — this creates UNakamaWebSocketSubsystem.
+            UGameInstance* GI = CreateTestGameInstance();
+            GI->AddToRoot();
+            RtClient = MakeUnique<Nakama::NakamaRealtimeClient>(GI);
+
+            // 2. Tear down the GameInstance, simulating a level transition or PIE stop.
+            //    UNakamaWebSocketSubsystem is marked for GC; the TWeakObjectPtr
+            //    inside RtClient goes stale on the next collection pass.
+            GI->Shutdown();
+            GI->RemoveFromRoot();
+            GI = nullptr;
+            CollectGarbage(GARBAGE_COLLECTION_KEEPFLAGS);
+
+            // 3. Call a method while the subsystem is stale.
+            //    Without the validity guard the generated template emits
+            //      WebSocketSubsystem->Send(...)
+            //    on a null/stale pointer — guaranteed crash.
+            //    After the fix it must immediately resolve to an error.
+            RtClient->Ping()
+                .Next([this, Done](FNakamaWebSocketResponse Resp)
+                {
+                    TestNotEqual(
+                        TEXT("Stale-subsystem call must return an error, not None"),
+                        Resp.ErrorCode,
+                        ENakamaWebSocketError::None);
+                    Done.Execute();
+                });
+        });
+    });
+}

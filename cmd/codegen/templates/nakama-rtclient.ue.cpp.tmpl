@@ -27,6 +27,10 @@ TNakamaFuture<FNakamaWebSocketConnectionResult> NakamaRealtimeClient::Connect(
     const FNakamaWebSocketConnectionParams& Params
 ) noexcept
 {
+    if (!WebSocketSubsystem.IsValid())
+    {
+        return MakeCompletedFuture<FNakamaWebSocketConnectionResult>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+    }
     return WebSocketSubsystem->Connect(Params);
 }
 
@@ -121,6 +125,10 @@ TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::{{ $rpcType.Name |
     }
     {{- end }}
 
+    if (!WebSocketSubsystem.IsValid())
+    {
+        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+    }
     return WebSocketSubsystem->Send(TEXT("{{ $rpc.Name }}"), Json);
 }
 {{ end }}
