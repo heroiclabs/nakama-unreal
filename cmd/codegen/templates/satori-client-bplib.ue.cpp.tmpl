@@ -51,7 +51,7 @@ USatoriClient{{ $rpc.Name }}* USatoriClient{{ $rpc.Name }}::{{ $rpc.Name }}(
 {{- end }}
 {{- end }})
 {
-	USatoriClient{{ $rpc.Name }}* Action = NewObject<USatoriClient{{ $rpc.Name }}>();
+	USatoriClient{{ $rpc.Name }}* Action = NewObject<USatoriClient{{ $rpc.Name }}>(WorldContextObject);
 	Action->Client = Client;
 {{- if $needsSession }}
 	Action->Session = Session;

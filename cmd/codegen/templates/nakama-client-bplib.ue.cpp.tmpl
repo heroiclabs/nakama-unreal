@@ -51,7 +51,7 @@ UNakamaClient{{ $rpc.Name }}* UNakamaClient{{ $rpc.Name }}::{{ $rpc.Name }}(
 {{- end }}
 {{- end }})
 {
-	UNakamaClient{{ $rpc.Name }}* Action = NewObject<UNakamaClient{{ $rpc.Name }}>();
+	UNakamaClient{{ $rpc.Name }}* Action = NewObject<UNakamaClient{{ $rpc.Name }}>(WorldContextObject);
 	Action->Client = Client;
 {{- if $needsSession }}
 	Action->Session = Session;
