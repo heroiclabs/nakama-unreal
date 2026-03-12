@@ -17,30 +17,38 @@
 /* This code is auto-generated. DO NOT EDIT. */
 
 #include "SatoriApi.h"
+#include "NakamaHttpHelper.h"
 
-#include "HttpModule.h"
-#include "Interfaces/IHttpRequest.h"
-#include "Interfaces/IHttpResponse.h"
-#include "Misc/Base64.h"
-#include "Misc/DateTime.h"
 #include "Modules/ModuleManager.h"
-#include "Serialization/JsonReader.h"
-#include "Serialization/JsonSerializer.h"
-#include "Serialization/JsonWriter.h"
-#include "Serialization/MemoryWriter.h"
-#include "Stats/Stats.h"
 
 DEFINE_LOG_CATEGORY(LogSatori);
 
-// Stat group: use "stat Satori" in console
-DECLARE_STATS_GROUP(TEXT("Satori"), STATGROUP_Satori, STATCAT_Advanced);
-DECLARE_CYCLE_STAT(TEXT("MakeRequest Dispatch"), STAT_Satori_MakeRequest_Dispatch, STATGROUP_Satori);
-DECLARE_CYCLE_STAT(TEXT("OnResponse"), STAT_Satori_OnResponse, STATGROUP_Satori);
-DECLARE_CYCLE_STAT(TEXT("JsonSerialize"), STAT_Satori_JsonSerialize, STATGROUP_Satori);
-DECLARE_CYCLE_STAT(TEXT("JsonDeserialize"), STAT_Satori_JsonDeserialize, STATGROUP_Satori);
-DECLARE_DWORD_ACCUMULATOR_STAT(TEXT("ActiveRequests"), STAT_Satori_ActiveRequests, STATGROUP_Satori);
-DECLARE_DWORD_ACCUMULATOR_STAT(TEXT("TotalRequests"), STAT_Satori_TotalRequests, STATGROUP_Satori);
-DECLARE_DWORD_ACCUMULATOR_STAT(TEXT("TotalErrors"), STAT_Satori_TotalErrors, STATGROUP_Satori);
+using namespace NakamaHttpInternal;
+
+// Adapts FNakamaError -> FSatoriError for use with Satori RPC OnError callbacks.
+namespace
+{
+	inline TFunction<void(const FNakamaError&)> MakeSatoriErrorAdapter(TFunction<void(const FSatoriError&)> OnError)
+	{
+		return [OnError = MoveTemp(OnError)](const FNakamaError& E)
+		{
+			if (OnError)
+			{
+				OnError(FSatoriError{E.Message, E.Code});
+			}
+		};
+	}
+
+	inline FNakamaClientConfig ToNakamaConfig(const FSatoriClientConfig& Cfg)
+	{
+		FNakamaClientConfig Out;
+		Out.ServerKey = Cfg.ServerKey;
+		Out.Host = Cfg.Host;
+		Out.Port = Cfg.Port;
+		Out.bUseSSL = Cfg.bUseSSL;
+		return Out;
+	}
+} // anonymous namespace
 
 // --- FSatoriSession JWT helpers ---
 
@@ -527,195 +535,6 @@ FString FSatoriClientConfig::GetBaseUrl() const noexcept
 }
 
 
-// --- File-local HTTP helpers ---
-
-namespace
-{
-
-void DoHttpRequest(
-	const FSatoriClientConfig& Config,
-	const FString& Endpoint,
-	const FString& Method,
-	const FString& BodyString,
-	ESatoriRequestAuth AuthType,
-	const FString& TokenString,
-	TFunction<void(TSharedPtr<FJsonObject>)> OnSuccess,
-	TFunction<void(const FSatoriError&)> OnError,
-	float Timeout,
-	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
-{
-	SCOPE_CYCLE_COUNTER(STAT_Satori_MakeRequest_Dispatch);
-	TRACE_CPUPROFILER_EVENT_SCOPE(Satori_MakeRequest);
-	INC_DWORD_STAT(STAT_Satori_ActiveRequests);
-	INC_DWORD_STAT(STAT_Satori_TotalRequests);
-
-	const FString Url = Config.GetBaseUrl() + Endpoint;
-
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> Request = FHttpModule::Get().CreateRequest();
-	Request->SetURL(Url);
-	Request->SetVerb(Method);
-	Request->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
-	Request->SetHeader(TEXT("Accept"), TEXT("application/json"));
-
-	switch (AuthType)
-	{
-	case ESatoriRequestAuth::Basic:
-		{
-			const FString Auth = FString::Printf(TEXT("%s:"), *Config.ServerKey);
-			Request->SetHeader(TEXT("Authorization"), FString::Printf(TEXT("Basic %s"), *FBase64::Encode(Auth)));
-		}
-		break;
-	case ESatoriRequestAuth::Bearer:
-		if (!TokenString.IsEmpty())
-		{
-			Request->SetHeader(TEXT("Authorization"), FString::Printf(TEXT("Bearer %s"), *TokenString));
-		}
-		break;
-	case ESatoriRequestAuth::None:
-	default:
-		break;
-	}
-
-	if (!BodyString.IsEmpty() && Method != TEXT("GET"))
-	{
-		Request->SetContentAsString(BodyString);
-		UE_LOG(LogSatori, Log, TEXT("Request %s %s: %s"), *Method, *Url, *BodyString);
-	}
-	else
-	{
-		UE_LOG(LogSatori, Log, TEXT("Request %s %s"), *Method, *Url);
-	}
-
-	Request->SetTimeout(Timeout);
-
-	Request->OnProcessRequestComplete().BindLambda(
-		[OnSuccess, OnError, CancellationToken](FHttpRequestPtr Req, FHttpResponsePtr Res, bool bSuccess)
-		{
-			SCOPE_CYCLE_COUNTER(STAT_Satori_OnResponse);
-			TRACE_CPUPROFILER_EVENT_SCOPE(Satori_OnResponse);
-			DEC_DWORD_STAT(STAT_Satori_ActiveRequests);
-
-			if (CancellationToken->Load())
-			{
-				if (OnError)
-				{
-					OnError(FSatoriError(TEXT("Request cancelled"), -1));
-				}
-				return;
-			}
-
-			if (!bSuccess || !Res.IsValid())
-			{
-				INC_DWORD_STAT(STAT_Satori_TotalErrors);
-				if (OnError)
-				{
-					OnError(FSatoriError(TEXT("Connection failed"), 0));
-				}
-				return;
-			}
-
-			const int32 Code = Res->GetResponseCode();
-			const FString Content = Res->GetContentAsString();
-
-			UE_LOG(LogSatori, Log, TEXT("Response %d: %s"), Code, *Content);
-
-			if (Code < 200 || Code >= 300)
-			{
-				INC_DWORD_STAT(STAT_Satori_TotalErrors);
-				FString ErrorMsg = FString::Printf(TEXT("HTTP %d"), Code);
-				int32 ErrorCode = Code;
-				TSharedPtr<FJsonObject> Json;
-				if (FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Content), Json) && Json.IsValid())
-				{
-					if (Json->HasField(TEXT("message")))
-					{
-						ErrorMsg = Json->GetStringField(TEXT("message"));
-					}
-					if (Json->HasField(TEXT("code")))
-					{
-						ErrorCode = static_cast<int32>(Json->GetNumberField(TEXT("code")));
-					}
-				}
-				if (OnError)
-				{
-					OnError(FSatoriError(ErrorMsg, ErrorCode));
-				}
-				return;
-			}
-
-			TSharedPtr<FJsonObject> Json;
-			if (!Content.IsEmpty())
-			{
-				SCOPE_CYCLE_COUNTER(STAT_Satori_JsonDeserialize);
-				if (!FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Content), Json) || !Json.IsValid())
-				{
-					INC_DWORD_STAT(STAT_Satori_TotalErrors);
-					if (OnError)
-					{
-						OnError(FSatoriError(TEXT("Invalid JSON response"), 500));
-					}
-					return;
-				}
-			}
-
-			if (OnSuccess)
-			{
-				OnSuccess(Json);
-			}
-		});
-
-	Request->ProcessRequest();
-}
-
-void SendRequest(
-	const FSatoriClientConfig& Config,
-	const FString& Endpoint,
-	const FString& Method,
-	const FString& BodyString,
-	ESatoriRequestAuth AuthType,
-	const FString& BearerToken,
-	TFunction<void(TSharedPtr<FJsonObject>)> OnSuccess,
-	TFunction<void(const FSatoriError&)> OnError,
-	float Timeout,
-	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
-{
-	// Early cancellation check
-	if (CancellationToken->Load())
-	{
-		if (OnError)
-		{
-			OnError(FSatoriError(TEXT("Request cancelled"), -1));
-		}
-		return;
-	}
-
-	DoHttpRequest(Config, Endpoint, Method, BodyString, AuthType, BearerToken, OnSuccess, OnError, Timeout, CancellationToken);
-}
-
-{{- template "serializejson" }}
-
-void MakeRequest(
-	const FSatoriClientConfig& Config,
-	const FString& Endpoint,
-	const FString& Method,
-	const TSharedPtr<FJsonObject>& Body,
-	ESatoriRequestAuth AuthType,
-	const FString& BearerToken,
-	TFunction<void(TSharedPtr<FJsonObject>)> OnSuccess,
-	TFunction<void(const FSatoriError&)> OnError,
-	float Timeout,
-	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
-{
-	FString BodyString;
-	if (Body.IsValid() && Method != TEXT("GET"))
-	{
-		SCOPE_CYCLE_COUNTER(STAT_Satori_JsonSerialize);
-		BodyString = SerializeJsonToString(Body);
-	}
-	SendRequest(Config, Endpoint, Method, BodyString, AuthType, BearerToken, OnSuccess, OnError, Timeout, CancellationToken);
-}
-
-} // anonymous namespace
 
 {{- /* Generate free function implementations for each RPC */ -}}
 {{- range $idx, $rpc := $.Rpcs }}
@@ -821,7 +640,7 @@ void SatoriApi::{{ $rpc.Name }}(
 	}
 {{- end }}
 
-	ESatoriRequestAuth AuthType = {{ if and (or $isAuthenticate $isSessionRefresh) (not $isAuthLogout) }}ESatoriRequestAuth::Basic{{ else }}ESatoriRequestAuth::Bearer{{ end }};
+	ENakamaRequestAuth AuthType = {{ if and (or $isAuthenticate $isSessionRefresh) (not $isAuthLogout) }}ENakamaRequestAuth::Basic{{ else }}ENakamaRequestAuth::Bearer{{ end }};
 
 {{- /* Build request body and dispatch */ -}}
 {{- $scalarBodyField := "" }}
@@ -846,7 +665,7 @@ void SatoriApi::{{ $rpc.Name }}(
 		BodyString = SerializeJsonEscaped({{ $scalarBodyField }});
 	}
 
-	SendRequest(Config, Endpoint, TEXT("{{ $rpc.Method }}"), BodyString, AuthType, {{ if $needsSession }}Session.Token{{ else if $isAuthLogout }}Token{{ else }}TEXT(""){{ end }},
+	SendRequest(ToNakamaConfig(Config), Endpoint, TEXT("{{ $rpc.Method }}"), BodyString, AuthType, {{ if $needsSession }}Session.Token{{ else if $isAuthLogout }}Token{{ else }}TEXT(""){{ end }},
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			{{- if $hasReturn }}
@@ -862,7 +681,7 @@ void SatoriApi::{{ $rpc.Name }}(
 			}
 			{{- end }}
 		},
-		OnError, Timeout, CancellationToken);
+		MakeSatoriErrorAdapter(OnError), Timeout, CancellationToken);
 {{- else }}
 {{- /* Object body or no body */ -}}
 	TSharedPtr<FJsonObject> Body;
@@ -935,7 +754,7 @@ void SatoriApi::{{ $rpc.Name }}(
 {{- end }}
 {{- end }}
 
-	MakeRequest(Config, Endpoint, TEXT("{{ $rpc.Method }}"), Body, AuthType, {{ if $needsSession }}Session.Token{{ else if $isAuthLogout }}Token{{ else }}TEXT(""){{ end }},
+	MakeRequest(ToNakamaConfig(Config), Endpoint, TEXT("{{ $rpc.Method }}"), Body, AuthType, {{ if $needsSession }}Session.Token{{ else if $isAuthLogout }}Token{{ else }}TEXT(""){{ end }},
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			{{- if $hasReturn }}
@@ -951,7 +770,7 @@ void SatoriApi::{{ $rpc.Name }}(
 			}
 			{{- end }}
 		},
-		OnError, Timeout, CancellationToken);
+		MakeSatoriErrorAdapter(OnError), Timeout, CancellationToken);
 {{- end }}
 }
 {{- end }}

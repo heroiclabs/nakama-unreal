@@ -14,9 +14,10 @@
 #include "Misc/Guid.h"
 #include "Containers/Ticker.h"
 
-// Helper: keep the BP action alive for the duration of the async call (tests pass
-// nullptr as WorldContextObject so RegisterWithGameInstance is a no-op), then run
-// verification once the action completes.
+// Helper: keep the BP action alive for the duration of the async call. Tests pass
+// GetTransientPackage() as WorldContextObject — this satisfies UE 5.7's requirement
+// that NewObject<> receives a valid packaged outer, while RegisterWithGameInstance
+// remains effectively a no-op (transient package has no GameInstance).
 // The base class constructor sets RF_StrongRefOnFrame, and SetReadyToDestroy()
 // clears it. We AddToRoot() to prevent GC across frames, then poll until
 // RF_StrongRefOnFrame is cleared (signalling the action called SetReadyToDestroy).
@@ -99,7 +100,7 @@ void FNakamaBPHealthcheckSpec::Define()
 	{
 		LatentIt("should pass healthcheck", [this](const FDoneDelegate& Done)
 		{
-			auto* Action = UNakamaClientHealthcheck::Healthcheck(nullptr, Client, Session);
+			auto* Action = UNakamaClientHealthcheck::Healthcheck(GetTransientPackage(), Client, Session);
 			Action->Activate();
 
 			VerifyWhenComplete(Action, [this, Done]()
@@ -169,7 +170,7 @@ void FNakamaBPAuthSpec::Define()
 			Account.Id = GenerateId();
 
 			auto* Action = UNakamaClientAuthenticateCustom::AuthenticateCustom(
-				nullptr, Client, Account, true, TEXT(""));
+				GetTransientPackage(), Client, Account, true, TEXT(""));
 			Action->Activate();
 
 			// Verify: re-auth with create=false should succeed (account was created)
@@ -201,7 +202,7 @@ void FNakamaBPAuthSpec::Define()
 			Account.Password = TEXT("password123!");
 
 			auto* Action = UNakamaClientAuthenticateEmail::AuthenticateEmail(
-				nullptr, Client, Account, true, TEXT(""));
+				GetTransientPackage(), Client, Account, true, TEXT(""));
 			Action->Activate();
 
 			// Verify: re-auth with create=false should succeed
@@ -232,7 +233,7 @@ void FNakamaBPAuthSpec::Define()
 			Account.Id = GenerateId();
 
 			auto* Action = UNakamaClientAuthenticateDevice::AuthenticateDevice(
-				nullptr, Client, Account, true, TEXT(""));
+				GetTransientPackage(), Client, Account, true, TEXT(""));
 			Action->Activate();
 
 			// Verify: re-auth with create=false should succeed
@@ -317,7 +318,7 @@ void FNakamaBPSessionSpec::Define()
 		LatentIt("should refresh session", [this](const FDoneDelegate& Done)
 		{
 			auto* Action = UNakamaClientSessionRefresh::SessionRefresh(
-				nullptr, Client, Session.RefreshToken, TMap<FString, FString>());
+				GetTransientPackage(), Client, Session.RefreshToken, TMap<FString, FString>());
 			Action->Activate();
 
 			// Verify: original session token still works for API call
@@ -344,7 +345,7 @@ void FNakamaBPSessionSpec::Define()
 		LatentIt("should logout session", [this](const FDoneDelegate& Done)
 		{
 			auto* Action = UNakamaClientSessionLogout::SessionLogout(
-				nullptr, Client, Session, Session.Token, Session.RefreshToken);
+				GetTransientPackage(), Client, Session, Session.Token, Session.RefreshToken);
 			Action->Activate();
 
 			// Verify: action completed without crash; server is still responsive
@@ -435,7 +436,7 @@ void FNakamaBPAccountSpec::Define()
 	{
 		LatentIt("should get account", [this](const FDoneDelegate& Done)
 		{
-			auto* Action = UNakamaClientGetAccount::GetAccount(nullptr, Client, Session);
+			auto* Action = UNakamaClientGetAccount::GetAccount(GetTransientPackage(), Client, Session);
 			Action->Activate();
 
 			// Verify via C++ GetAccount
@@ -464,7 +465,7 @@ void FNakamaBPAccountSpec::Define()
 			FString NewDisplayName = TEXT("BPTestUser");
 
 			auto* Action = UNakamaClientUpdateAccount::UpdateAccount(
-				nullptr, Client, Session,
+				GetTransientPackage(), Client, Session,
 				TEXT(""), NewDisplayName, TEXT(""), TEXT(""), TEXT(""), TEXT(""));
 			Action->Activate();
 
@@ -496,7 +497,7 @@ void FNakamaBPAccountSpec::Define()
 			TArray<FString> FacebookIds;
 
 			auto* Action = UNakamaClientGetUsers::GetUsers(
-				nullptr, Client, Session, Ids, Usernames, FacebookIds);
+				GetTransientPackage(), Client, Session, Ids, Usernames, FacebookIds);
 			Action->Activate();
 
 			// Verify via C++ GetUsers
@@ -643,7 +644,7 @@ void FNakamaBPFriendsSpec::Define()
 			TArray<FString> Usernames;
 
 			auto* Action = UNakamaClientAddFriends::AddFriends(
-				nullptr, Client, Session, Ids, Usernames, TEXT(""));
+				GetTransientPackage(), Client, Session, Ids, Usernames, TEXT(""));
 			Action->Activate();
 
 			// Verify via C++ ListFriends
@@ -675,7 +676,7 @@ void FNakamaBPFriendsSpec::Define()
 				{
 					// Fire BP ListFriends
 					auto* Action = UNakamaClientListFriends::ListFriends(
-						nullptr, Client, Session, 10, 0, TEXT(""));
+						GetTransientPackage(), Client, Session, 10, 0, TEXT(""));
 					Action->Activate();
 
 					// Verify via C++
@@ -712,7 +713,7 @@ void FNakamaBPFriendsSpec::Define()
 			TArray<FString> Usernames;
 
 			auto* Action = UNakamaClientBlockFriends::BlockFriends(
-				nullptr, Client, Session, Ids, Usernames);
+				GetTransientPackage(), Client, Session, Ids, Usernames);
 			Action->Activate();
 
 			// Verify: blocked friend appears in friend list with state=3 (blocked)
@@ -747,7 +748,7 @@ void FNakamaBPFriendsSpec::Define()
 					TArray<FString> Usernames;
 
 					auto* Action = UNakamaClientDeleteFriends::DeleteFriends(
-						nullptr, Client, Session, Ids, Usernames);
+						GetTransientPackage(), Client, Session, Ids, Usernames);
 					Action->Activate();
 
 					// Verify: friend list is now empty
@@ -937,7 +938,7 @@ void FNakamaBPGroupsSpec::Define()
 			FString NewGroupName = FString::Printf(TEXT("bp_new_%s"), *GenerateShortId());
 
 			auto* Action = UNakamaClientCreateGroup::CreateGroup(
-				nullptr, Client, Session,
+				GetTransientPackage(), Client, Session,
 				NewGroupName, TEXT("Test group"), TEXT("en"), TEXT(""), true, 100);
 			Action->Activate();
 
@@ -988,7 +989,7 @@ void FNakamaBPGroupsSpec::Define()
 			FString NewDesc = TEXT("Updated description");
 
 			auto* Action = UNakamaClientUpdateGroup::UpdateGroup(
-				nullptr, Client, Session,
+				GetTransientPackage(), Client, Session,
 				GroupId, GroupName, NewDesc, TEXT("en"), TEXT(""), true);
 			Action->Activate();
 
@@ -1016,7 +1017,7 @@ void FNakamaBPGroupsSpec::Define()
 		LatentIt("should delete a group", [this](const FDoneDelegate& Done)
 		{
 			auto* Action = UNakamaClientDeleteGroup::DeleteGroup(
-				nullptr, Client, Session, GroupId);
+				GetTransientPackage(), Client, Session, GroupId);
 			Action->Activate();
 
 			// Verify: group no longer in user's groups
@@ -1052,7 +1053,7 @@ void FNakamaBPGroupsSpec::Define()
 		LatentIt("should list groups", [this](const FDoneDelegate& Done)
 		{
 			auto* Action = UNakamaClientListGroups::ListGroups(
-				nullptr, Client, Session,
+				GetTransientPackage(), Client, Session,
 				TEXT(""), TEXT(""), 100, TEXT(""), 0, true);
 			Action->Activate();
 
@@ -1081,7 +1082,7 @@ void FNakamaBPGroupsSpec::Define()
 		{
 			// User2 fires BP JoinGroup on user1's open group
 			auto* Action = UNakamaClientJoinGroup::JoinGroup(
-				nullptr, Client, Session2, GroupId);
+				GetTransientPackage(), Client, Session2, GroupId);
 			Action->Activate();
 
 			// Verify via C++ ListGroupUsers
@@ -1110,7 +1111,7 @@ void FNakamaBPGroupsSpec::Define()
 			TArray<FString> UserIds = { UserId2 };
 
 			auto* Action = UNakamaClientAddGroupUsers::AddGroupUsers(
-				nullptr, Client, Session, GroupId, UserIds);
+				GetTransientPackage(), Client, Session, GroupId, UserIds);
 			Action->Activate();
 
 			// Verify via C++ ListGroupUsers
@@ -1144,7 +1145,7 @@ void FNakamaBPGroupsSpec::Define()
 					TArray<FString> UserIds = { UserId2 };
 
 					auto* Action = UNakamaClientKickGroupUsers::KickGroupUsers(
-						nullptr, Client, Session, GroupId, UserIds);
+						GetTransientPackage(), Client, Session, GroupId, UserIds);
 					Action->Activate();
 
 					// Verify user2 is no longer in group
@@ -1194,7 +1195,7 @@ void FNakamaBPGroupsSpec::Define()
 					TArray<FString> UserIds = { UserId2 };
 
 					auto* Action = UNakamaClientPromoteGroupUsers::PromoteGroupUsers(
-						nullptr, Client, Session, GroupId, UserIds);
+						GetTransientPackage(), Client, Session, GroupId, UserIds);
 					Action->Activate();
 
 					// Verify: user2 is still in group (promotion doesn't remove)
@@ -1242,7 +1243,7 @@ void FNakamaBPGroupsSpec::Define()
 				{
 					// Fire BP LeaveGroup as user2
 					auto* Action = UNakamaClientLeaveGroup::LeaveGroup(
-						nullptr, Client, Session2, GroupId);
+						GetTransientPackage(), Client, Session2, GroupId);
 					Action->Activate();
 
 					// Verify user2 no longer in group
@@ -1285,7 +1286,7 @@ void FNakamaBPGroupsSpec::Define()
 		LatentIt("should list group users", [this](const FDoneDelegate& Done)
 		{
 			auto* Action = UNakamaClientListGroupUsers::ListGroupUsers(
-				nullptr, Client, Session, GroupId, 10, 0, TEXT(""));
+				GetTransientPackage(), Client, Session, GroupId, 10, 0, TEXT(""));
 			Action->Activate();
 
 			// Verify via C++
@@ -1312,7 +1313,7 @@ void FNakamaBPGroupsSpec::Define()
 		LatentIt("should list user groups", [this](const FDoneDelegate& Done)
 		{
 			auto* Action = UNakamaClientListUserGroups::ListUserGroups(
-				nullptr, Client, Session, UserId, 10, 0, TEXT(""));
+				GetTransientPackage(), Client, Session, UserId, 10, 0, TEXT(""));
 			Action->Activate();
 
 			// Verify via C++
@@ -1419,7 +1420,7 @@ void FNakamaBPStorageSpec::Define()
 			TArray<FNakamaWriteStorageObject> Objects = { Obj };
 
 			auto* Action = UNakamaClientWriteStorageObjects::WriteStorageObjects(
-				nullptr, Client, Session, Objects);
+				GetTransientPackage(), Client, Session, Objects);
 			Action->Activate();
 
 			// Verify via C++ ReadStorageObjects
@@ -1463,7 +1464,7 @@ void FNakamaBPStorageSpec::Define()
 			TArray<FNakamaWriteStorageObject> Objects = { Obj };
 
 			auto* Action = UNakamaClientWriteStorageObjects::WriteStorageObjects(
-				nullptr, Client, Session, Objects);
+				GetTransientPackage(), Client, Session, Objects);
 			Action->Activate();
 
 			// Verify via C++ ReadStorageObjects
@@ -1519,7 +1520,7 @@ void FNakamaBPStorageSpec::Define()
 					ReadId.UserId = UserId;
 
 					auto* Action = UNakamaClientReadStorageObjects::ReadStorageObjects(
-						nullptr, Client, Session, { ReadId });
+						GetTransientPackage(), Client, Session, { ReadId });
 					Action->Activate();
 
 					// Verify via C++ that object exists
@@ -1570,7 +1571,7 @@ void FNakamaBPStorageSpec::Define()
 				{
 					// Fire BP ListStorageObjects
 					auto* Action = UNakamaClientListStorageObjects::ListStorageObjects(
-						nullptr, Client, Session, UserId, TEXT("bp_list_test"), 10, TEXT(""));
+						GetTransientPackage(), Client, Session, UserId, TEXT("bp_list_test"), 10, TEXT(""));
 					Action->Activate();
 
 					// Verify via C++
@@ -1623,7 +1624,7 @@ void FNakamaBPStorageSpec::Define()
 					DelId.Version = Acks.Acks.Num() > 0 ? Acks.Acks[0].Version : TEXT("");
 
 					auto* Action = UNakamaClientDeleteStorageObjects::DeleteStorageObjects(
-						nullptr, Client, Session, { DelId });
+						GetTransientPackage(), Client, Session, { DelId });
 					Action->Activate();
 
 					// Verify: object is gone
@@ -1722,7 +1723,7 @@ void FNakamaBPLinkSpec::Define()
 			FString NewId = GenerateId();
 
 			auto* Action = UNakamaClientLinkCustom::LinkCustom(
-				nullptr, Client, Session, NewId, TMap<FString, FString>());
+				GetTransientPackage(), Client, Session, NewId, TMap<FString, FString>());
 			Action->Activate();
 
 			// Verify: can authenticate with the linked ID
@@ -1764,7 +1765,7 @@ void FNakamaBPLinkSpec::Define()
 						{
 							// Fire BP UnlinkCustom
 							auto* Action = UNakamaClientUnlinkCustom::UnlinkCustom(
-								nullptr, Client, Session, ExtraId, TMap<FString, FString>());
+								GetTransientPackage(), Client, Session, ExtraId, TMap<FString, FString>());
 							Action->Activate();
 
 							// Verify: can no longer auth with the unlinked ID
@@ -1811,7 +1812,7 @@ void FNakamaBPLinkSpec::Define()
 			FString DeviceId = GenerateId();
 
 			auto* Action = UNakamaClientLinkDevice::LinkDevice(
-				nullptr, Client, Session, DeviceId, TMap<FString, FString>());
+				GetTransientPackage(), Client, Session, DeviceId, TMap<FString, FString>());
 			Action->Activate();
 
 			// Verify: can authenticate with the linked device ID
@@ -1848,7 +1849,7 @@ void FNakamaBPLinkSpec::Define()
 				{
 					// Fire BP UnlinkDevice
 					auto* Action = UNakamaClientUnlinkDevice::UnlinkDevice(
-						nullptr, Client, Session, DeviceId, TMap<FString, FString>());
+						GetTransientPackage(), Client, Session, DeviceId, TMap<FString, FString>());
 					Action->Activate();
 
 					// Verify: can no longer auth with the unlinked device
@@ -1888,7 +1889,7 @@ void FNakamaBPLinkSpec::Define()
 			FString Password = TEXT("password123!");
 
 			auto* Action = UNakamaClientLinkEmail::LinkEmail(
-				nullptr, Client, Session, Email, Password, TMap<FString, FString>());
+				GetTransientPackage(), Client, Session, Email, Password, TMap<FString, FString>());
 			Action->Activate();
 
 			// Verify: can authenticate with the linked email
@@ -1927,7 +1928,7 @@ void FNakamaBPLinkSpec::Define()
 				{
 					// Fire BP UnlinkEmail
 					auto* Action = UNakamaClientUnlinkEmail::UnlinkEmail(
-						nullptr, Client, Session, Email, Password, TMap<FString, FString>());
+						GetTransientPackage(), Client, Session, Email, Password, TMap<FString, FString>());
 					Action->Activate();
 
 					// Verify: can no longer auth with the unlinked email
@@ -2022,7 +2023,7 @@ void FNakamaBPNotificationsSpec::Define()
 		LatentIt("should list notifications", [this](const FDoneDelegate& Done)
 		{
 			auto* Action = UNakamaClientListNotifications::ListNotifications(
-				nullptr, Client, Session, 100, TEXT(""));
+				GetTransientPackage(), Client, Session, 100, TEXT(""));
 			Action->Activate();
 
 			// Verify via C++
@@ -2107,7 +2108,7 @@ void FNakamaBPMatchesSpec::Define()
 		LatentIt("should list matches", [this](const FDoneDelegate& Done)
 		{
 			auto* Action = UNakamaClientListMatches::ListMatches(
-				nullptr, Client, Session, 10, false, TEXT(""), 0, 100, TEXT(""));
+				GetTransientPackage(), Client, Session, 10, false, TEXT(""), 0, 100, TEXT(""));
 			Action->Activate();
 
 			// Verify via C++
@@ -2194,7 +2195,7 @@ void FNakamaBPEventsSpec::Define()
 			Properties.Add(TEXT("key1"), TEXT("value1"));
 
 			auto* Action = UNakamaClientEvent::Event(
-				nullptr, Client, Session, TEXT("bp_test_event"), TEXT(""), false, Properties);
+				GetTransientPackage(), Client, Session, TEXT("bp_test_event"), TEXT(""), false, Properties);
 			Action->Activate();
 
 			// Verify: server is still healthy after event

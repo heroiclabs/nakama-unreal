@@ -19,9 +19,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Tasks/Task.h"
+#include "AsyncFuture.h"
 #include "SatoriApi.h"
-#include <type_traits>
 
 /** Tag type used as the value type for RPCs that return no data. */
 struct SATORI_API FSatoriVoid {};
@@ -90,94 +89,17 @@ struct SATORI_API FSatoriGetMessageListResponseResult
 	bool bIsError = true;
 };
 
-// Forward declaration
-template<typename T> struct TSatoriFuture;
-
-/** Type trait: is T a TSatoriFuture<U>? */
-template<typename T> struct TIsTSatoriFuture : std::false_type {};
-template<typename T> struct TIsTSatoriFuture<TSatoriFuture<T>> : std::true_type {};
-
 /**
- * Chainable future wrapper for async Satori operations.
- * Parameterized by concrete result type (e.g. FSatoriSessionResult).
- *
- * Chaining: Next(callback(const ValueType&) -> TSatoriFuture<OtherResult>) — flattens and propagates errors
- * Terminal: Next(callback(ResultT) -> void) — receives the full result
+ * Satori-flavoured alias for TAsyncFuture.
+ * All three .Next() overloads are inherited from TAsyncFuture and dispatch
+ * user callbacks to the game thread, making it safe to touch UObject*,
+ * fire delegates, or update UI from any .Next() callback.
  */
 template<typename ResultT>
-struct TSatoriFuture
-{
-	using ValueType = typename ResultT::ValueType;
-	using WrappedResultType = ResultT;
+using TSatoriFuture = TAsyncFuture<ResultT>;
 
-	struct FState
-	{
-		ResultT Result{};
-		UE::Tasks::FTaskEvent Event{ UE_SOURCE_LOCATION };
-		void Resolve(ResultT&& InResult)
-		{
-			Result = MoveTemp(InResult);
-			Event.Trigger();
-		}
-	};
-
-	TSharedPtr<FState> State;
-
-	TSatoriFuture() = default;
-	explicit TSatoriFuture(TSharedPtr<FState> InState) noexcept
-		: State(MoveTemp(InState)) {}
-	TSatoriFuture(TSatoriFuture&& Other) noexcept = default;
-	TSatoriFuture& operator=(TSatoriFuture&& Other) noexcept = default;
-	TSatoriFuture(const TSatoriFuture&) = delete;
-	TSatoriFuture& operator=(const TSatoriFuture&) = delete;
-
-	/** Chaining Next: callback(const ValueType&) -> TSatoriFuture<OtherResult> */
-	template<typename Func,
-		typename Ret = std::invoke_result_t<std::decay_t<Func>, const ValueType&>,
-		std::enable_if_t<TIsTSatoriFuture<Ret>::value, int> = 0>
-	Ret Next(Func&& Callback) && noexcept
-	{
-		using InnerResultT = typename Ret::WrappedResultType;
-		auto OuterState = MakeShared<typename TSatoriFuture<InnerResultT>::FState>();
-		auto CapturedState = State;
-		UE::Tasks::Launch(UE_SOURCE_LOCATION,
-			[Cb = Forward<Func>(Callback), CapturedState, OuterState]() mutable
-			{
-				if (CapturedState->Result.bIsError)
-				{
-					OuterState->Resolve(InnerResultT{{}, CapturedState->Result.Error, true});
-					return;
-				}
-				Ret Inner = Cb(CapturedState->Result.Value);
-				auto InnerState = Inner.State;
-				UE::Tasks::Launch(UE_SOURCE_LOCATION,
-					[InnerState, OuterState]()
-					{
-						OuterState->Resolve(MoveTemp(InnerState->Result));
-					},
-					InnerState->Event);
-			},
-			CapturedState->Event);
-		State.Reset();
-		return TSatoriFuture<InnerResultT>(OuterState);
-	}
-
-	/** Terminal Next: callback(ResultT) -> void */
-	template<typename Func,
-		typename Ret = std::invoke_result_t<std::decay_t<Func>, ResultT>,
-		std::enable_if_t<!TIsTSatoriFuture<Ret>::value, int> = 0>
-	void Next(Func&& Callback) && noexcept
-	{
-		auto CapturedState = State;
-		UE::Tasks::Launch(UE_SOURCE_LOCATION,
-			[Cb = Forward<Func>(Callback), CapturedState]() mutable
-			{
-				Cb(MoveTemp(CapturedState->Result));
-			},
-			CapturedState->Event);
-		State.Reset();
-	}
-};
+/** Type trait for TSatoriFuture (delegates to TIsTAsyncFuture). */
+template<typename T> using TIsTSatoriFuture = TIsTAsyncFuture<T>;
 
 /** Retry configuration for transient error handling + session auto-refresh. */
 struct SATORI_API FSatoriRetryConfig
