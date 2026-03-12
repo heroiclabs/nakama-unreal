@@ -1090,3 +1090,76 @@ void FNakamaWebSocketSubsystemDelegatesSpec::Define()
         });
     });
 }
+
+// ============================================================================
+// DATA RACE REGRESSION TEST
+// ============================================================================
+
+BEGIN_DEFINE_SPEC(FNakamaWebSocketSubsystemDataRaceSpec,
+    "IntegrationTests.NakamaWebSocketSubsystem.DataRace",
+    EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
+
+    FNakamaClientConfig  ClientConfig;
+    FNakamaSession       Session;
+    UNakamaWebSocketSubsystem* WSSub = nullptr;
+
+    FString GenerateId() { return FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphens); }
+
+END_DEFINE_SPEC(FNakamaWebSocketSubsystemDataRaceSpec)
+
+void FNakamaWebSocketSubsystemDataRaceSpec::Define()
+{
+    BeforeEach([this]()
+    {
+        ClientConfig = FNakamaClientConfig{ RtServerKey, RtHost, RtPort, false };
+        WSSub = CreateTestSubsystem();
+        WSSub->AddToRoot();
+    });
+
+    LatentBeforeEach([this](const FDoneDelegate& Done)
+    {
+        FNakamaAccountCustom Account;
+        Account.Id = GenerateId();
+        Nakama::AuthenticateCustom(ClientConfig, Account, true, TEXT(""))
+            .Next([this, Done](FNakamaSessionResult R)
+            {
+                if (R.bIsError) { AddError(FString::Printf(TEXT("Auth: %s"), *R.Error.Message)); Done.Execute(); return; }
+                Session = R.Value;
+                Done.Execute();
+            });
+    });
+
+    LatentAfterEach([this](const FDoneDelegate& Done)
+    {
+        if (WSSub)
+        {
+            WSSub->Close();
+            WSSub->RemoveFromRoot();
+            WSSub = nullptr;
+        }
+        if (Session.Token.IsEmpty()) { Done.Execute(); return; }
+        Nakama::DeleteAccount(ClientConfig, Session).Next([Done](FNakamaVoidResult) { Done.Execute(); });
+    });
+
+    Describe("bIsConnected", [this]()
+    {
+        LatentIt("should not crash when Send races with Connect on bIsConnected",
+            [this](const FDoneDelegate& Done)
+        {
+            // Stress test: Connect fires on the WS thread while the game thread
+            // hammers Send(). With std::atomic<bool> bIsConnected this is safe;
+            // with a plain bool it would be a C++11 data race (UB).
+            WSSub->Connect(MakeConnParams(Session));
+
+            constexpr int32 Iterations = 500;
+            for (int32 i = 0; i < Iterations; ++i)
+            {
+                WSSub->Send(TEXT("match_create"), MakeShared<FJsonObject>());
+                FPlatformProcess::SleepNoStats(0.0f);
+            }
+
+            WSSub->Close();
+            Done.Execute();
+        });
+    });
+}

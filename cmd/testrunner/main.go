@@ -28,8 +28,7 @@ func addTestShard(name string, reportDir string) {
 	})
 }
 
-// TODO: Take these from cmd args?
-var shardNames = []string{
+var defaultShardNames = []string{
 	"IntegrationTests.Nakama",
 	"IntegrationTests.NakamaBlueprint",
 	"IntegrationTests.NakamaWebSocketSubsystem",
@@ -232,6 +231,11 @@ func main() {
 	reportDir := filepath.Join(cwd, "Reports", fmt.Sprintf("IntegrationTests_%s", time.Now().Format("2006-01-02_15-04-05")))
 
 	os.MkdirAll(reportDir, 0755)
+
+	shardNames := defaultShardNames
+	if len(os.Args) > 1 {
+		shardNames = os.Args[1:]
+	}
 
 	for i, shardName := range shardNames {
 		shardDir := filepath.Join(reportDir, fmt.Sprintf("shard-%d", i))

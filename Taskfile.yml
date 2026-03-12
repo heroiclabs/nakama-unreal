@@ -369,7 +369,7 @@ tasks:
 
         cd cmd/testrunner && go build -o ../../{{.TESTRUNNER}} && cd ../..
 
-        ./{{.TESTRUNNER}}
+        ./{{.TESTRUNNER}} {{.FILTER}}
       platforms: [windows]
     - cmd: |
         if [ -z "$UNREAL_ENGINE" ]; then
@@ -381,7 +381,7 @@ tasks:
 
         cd cmd/testrunner && go build -o ../../{{.TESTRUNNER}} && cd ../..
 
-        ./{{.TESTRUNNER}}
+        ./{{.TESTRUNNER}} {{.FILTER}}
       platforms: [darwin, linux]
 
   fetch-protos:

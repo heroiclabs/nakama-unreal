@@ -19,6 +19,7 @@
 #include "CoreMinimal.h"
 #include "IWebSocket.h"
 #include "NakamaFuture.h"
+#include <atomic>
 #include "NakamaWebSocketSubsystem.generated.h"
 
 NAKAMA_API DECLARE_LOG_CATEGORY_EXTERN(LogNakamaWebSocket, Log, All);
@@ -103,7 +104,7 @@ private:
     TSharedPtr<IWebSocket> WebSocket;
 
     TSharedPtr<TNakamaFuture<FNakamaWebSocketConnectionResult>::FState> ConnectionState;
-    bool bIsConnected = false;
+    std::atomic<bool> bIsConnected{false};
 
     // Current ongoing requests
     TMap<FString, TSharedRef<TNakamaFuture<FNakamaWebSocketResponse>::FState>> Requests;

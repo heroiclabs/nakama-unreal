@@ -230,7 +230,7 @@ TNakamaFuture<FNakamaWebSocketResponse> UNakamaWebSocketSubsystem::Send(const FS
 
     if (!bIsConnected)
     {
-        UE_LOG(LogNakamaWebSocket, Error, TEXT("WebSocket is not connected or invalid."));
+        UE_LOG(LogNakamaWebSocket, Warning, TEXT("WebSocket is not connected or invalid."));
         return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::NotConnected });
     }
 
