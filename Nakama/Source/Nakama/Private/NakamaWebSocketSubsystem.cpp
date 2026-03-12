@@ -118,11 +118,15 @@ TNakamaFuture<FNakamaWebSocketConnectionResult> UNakamaWebSocketSubsystem::Conne
             StrongThis->OnConnected();
         }
     });
-    WebSocket->OnConnectionError().AddLambda([WeakThis](const FString& Error)
+    WebSocket->OnConnectionError().AddLambda([WeakThis, ThisSocket = WebSocket](const FString& Error)
     {
         if (UNakamaWebSocketSubsystem* StrongThis = WeakThis.Get())
         {
-            StrongThis->OnConnectionError(Error);
+            // Ignore stale OnConnectionError from an old socket.
+            if (StrongThis->WebSocket == ThisSocket)
+            {
+                StrongThis->OnConnectionError(Error);
+            }
         }
     });
 
