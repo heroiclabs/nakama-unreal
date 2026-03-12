@@ -61,8 +61,8 @@ void FNakamaAsyncAuthSpec::Define()
 				ASYNC_FAIL_ON_ERROR(Result, Done);
 				TestTrue("Session has token", !Result.Value.Token.IsEmpty());
 				TestTrue("Session has refresh token", !Result.Value.RefreshToken.IsEmpty());
-				return Nakama::DeleteAccount(ClientConfig, Session)
-			}).Next([Done](FNakamaVoidResult) { Done.Execute(); });;
+				Nakama::DeleteAccount(ClientConfig, Result.Value).Next([Done](FNakamaVoidResult) { Done.Execute(); });
+			});
 		});
 
 		LatentIt("should fail with empty custom ID", [this](const FDoneDelegate& Done)
@@ -129,9 +129,8 @@ void FNakamaAsyncAuthSpec::Define()
 			{
 				ASYNC_FAIL_ON_ERROR(Result, Done);
 				TestTrue("Session has token", !Result.Value.Token.IsEmpty());
-				Session = Result.Value;
-				return Nakama::DeleteAccount(ClientConfig, Session);
-			}).Next([Done](FNakamaVoidResult) { Done.Execute(); });
+				Nakama::DeleteAccount(ClientConfig, Result.Value).Next([Done](FNakamaVoidResult) { Done.Execute(); });
+			});
 		});
 	});
 
@@ -147,9 +146,8 @@ void FNakamaAsyncAuthSpec::Define()
 				ASYNC_FAIL_ON_ERROR(Result, Done);
 				TestTrue("Session has token", !Result.Value.Token.IsEmpty());
 				TestTrue("Session has refresh token", !Result.Value.RefreshToken.IsEmpty());
-				Session = Result.Value;
-				return Nakama::DeleteAccount(ClientConfig, Session);
-			}).Next([Done](FNakamaVoidResult) { Done.Execute(); });
+				Nakama::DeleteAccount(ClientConfig, Result.Value).Next([Done](FNakamaVoidResult) { Done.Execute(); });
+			});
 		});
 
 		LatentIt("should fail with empty device ID", [this](const FDoneDelegate& Done)
@@ -201,9 +199,8 @@ void FNakamaAsyncAuthSpec::Define()
 			{
 				ASYNC_FAIL_ON_ERROR(Result, Done);
 				TestTrue("Session has token", !Result.Value.Token.IsEmpty());
-				Session = Result.Value;
-				return Nakama::DeleteAccount(ClientConfig, Session);
-			}).Next([Done](FNakamaVoidResult) { Done.Execute(); });
+				Nakama::DeleteAccount(ClientConfig, Result.Value).Next([Done](FNakamaVoidResult) { Done.Execute(); });
+			});
 		});
 
 		LatentIt("should fail with invalid email format", [this](const FDoneDelegate& Done)
@@ -3852,18 +3849,13 @@ void FNakamaAsyncGroupPermissionsSpec::Define()
 	});
 
 	LatentAfterEach([this](const FDoneDelegate& Done)
-	{	
-
-		Nakama::DeleteAccount(ClientConfig, Session).Next(
-			return Nakama::DeleteAccount(ClientConfig, Session2)
-		).Next([done](result){
-			.Next([DeleteMain](FNakamaVoidResult) { 
-				Done.Execute(); 
-			});
-		});
-		
-
-		
+	{
+		Nakama::DeleteAccount(ClientConfig, Session)
+			.Next([this](FNakamaVoidResult) -> TNakamaFuture<FNakamaVoidResult>
+			{
+				return Nakama::DeleteAccount(ClientConfig, Session2);
+			})
+			.Next([Done](FNakamaVoidResult) { Done.Execute(); });
 	});
 
 

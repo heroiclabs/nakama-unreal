@@ -18,6 +18,7 @@
 
 #include "CoreMinimal.h"
 #include "Tasks/Task.h"
+#include "Async/TaskGraphInterfaces.h"
 #include <type_traits>
 
 // Forward declaration
@@ -90,17 +91,23 @@ struct TNakamaFuture
 			{
 				if (CapturedState->Result.bIsError)
 				{
+					// Error propagation: no user code, safe on any thread.
 					OuterState->Resolve(InnerResultT{{}, CapturedState->Result.Error, true});
 					return;
 				}
-				Ret Inner = Cb(CapturedState->Result.Value);
-				auto InnerState = Inner.State;
-				UE::Tasks::Launch(UE_SOURCE_LOCATION,
-					[InnerState, OuterState]()
+				// User callback may call game-thread-only UE APIs — dispatch to game thread.
+				AsyncTask(ENamedThreads::GameThread,
+					[Cb = MoveTemp(Cb), CapturedState, OuterState]() mutable
 					{
-						OuterState->Resolve(MoveTemp(InnerState->Result));
-					},
-					InnerState->Event);
+						Ret Inner = Cb(CapturedState->Result.Value);
+						auto InnerState = Inner.State;
+						UE::Tasks::Launch(UE_SOURCE_LOCATION,
+							[InnerState, OuterState]()
+							{
+								OuterState->Resolve(MoveTemp(InnerState->Result));
+							},
+							InnerState->Event);
+					});
 			},
 			CapturedState->Event);
 		State.Reset();
@@ -124,14 +131,19 @@ struct TNakamaFuture
 		UE::Tasks::Launch(UE_SOURCE_LOCATION,
 			[Cb = Forward<Func>(Callback), CapturedState, OuterState]() mutable
 			{
-				Ret Inner = Cb(MoveTemp(CapturedState->Result));
-				auto InnerState = Inner.State;
-				UE::Tasks::Launch(UE_SOURCE_LOCATION,
-					[InnerState, OuterState]()
+				// User callback may call game-thread-only UE APIs — dispatch to game thread.
+				AsyncTask(ENamedThreads::GameThread,
+					[Cb = MoveTemp(Cb), CapturedState, OuterState]() mutable
 					{
-						OuterState->Resolve(MoveTemp(InnerState->Result));
-					},
-					InnerState->Event);
+						Ret Inner = Cb(MoveTemp(CapturedState->Result));
+						auto InnerState = Inner.State;
+						UE::Tasks::Launch(UE_SOURCE_LOCATION,
+							[InnerState, OuterState]()
+							{
+								OuterState->Resolve(MoveTemp(InnerState->Result));
+							},
+							InnerState->Event);
+					});
 			},
 			CapturedState->Event);
 		State.Reset();
@@ -148,7 +160,12 @@ struct TNakamaFuture
 		UE::Tasks::Launch(UE_SOURCE_LOCATION,
 			[Cb = Forward<Func>(Callback), CapturedState]() mutable
 			{
-				Cb(MoveTemp(CapturedState->Result));
+				// User callback may call game-thread-only UE APIs — dispatch to game thread.
+				AsyncTask(ENamedThreads::GameThread,
+					[Cb = MoveTemp(Cb), CapturedState]() mutable
+					{
+						Cb(MoveTemp(CapturedState->Result));
+					});
 			},
 			CapturedState->Event);
 		State.Reset();

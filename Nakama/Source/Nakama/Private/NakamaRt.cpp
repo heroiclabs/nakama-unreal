@@ -131,7 +131,10 @@ TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::ChannelMessage(
     {
       Json->SetStringField(TEXT("message_id"), MessageId);
     }
-    Json->SetNumberField(TEXT("code"), Code);
+    if (Code != 0)
+    {
+      Json->SetNumberField(TEXT("code"), Code);
+    }
     if (!SenderId.IsEmpty())
     {
       Json->SetStringField(TEXT("sender_id"), SenderId);
@@ -196,7 +199,10 @@ TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::ChannelMessageAck(
     {
       Json->SetStringField(TEXT("message_id"), MessageId);
     }
-    Json->SetNumberField(TEXT("code"), Code);
+    if (Code != 0)
+    {
+      Json->SetNumberField(TEXT("code"), Code);
+    }
     if (!Username.IsEmpty())
     {
       Json->SetStringField(TEXT("username"), Username);
@@ -463,10 +469,20 @@ TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::MatchDataSend(
 }
 
 TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::MatchJoin(
+    const FString& MatchId,
+    const FString& Token,
     const TMap<FString, FString>& Metadata
 ) noexcept
 {
     TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+    if (!MatchId.IsEmpty())
+    {
+      Json->SetStringField(TEXT("match_id"), MatchId);
+    }
+    if (!Token.IsEmpty())
+    {
+      Json->SetStringField(TEXT("token"), Token);
+    }
     if (Metadata.Num() > 0)
     {
       TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
@@ -540,7 +556,10 @@ TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::MatchmakerAdd(
     {
       Json->SetStringField(TEXT("query"), Query);
     }
-    Json->SetNumberField(TEXT("count_multiple"), CountMultiple);
+    if (CountMultiple != 0)
+    {
+      Json->SetNumberField(TEXT("count_multiple"), CountMultiple);
+    }
     if (StringProperties.Num() > 0)
     {
       TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
@@ -563,10 +582,20 @@ TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::MatchmakerAdd(
 TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::MatchmakerMatched(
     const FString& Ticket,
     const TArray<FNakamaRtMatchmakerMatched_MatchmakerUser>& Users,
-    const FNakamaRtMatchmakerMatched_MatchmakerUser& Self
+    const FNakamaRtMatchmakerMatched_MatchmakerUser& Self,
+    const FString& MatchId,
+    const FString& Token
 ) noexcept
 {
     TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+    if (!MatchId.IsEmpty())
+    {
+      Json->SetStringField(TEXT("match_id"), MatchId);
+    }
+    if (!Token.IsEmpty())
+    {
+      Json->SetStringField(TEXT("token"), Token);
+    }
     if (!Ticket.IsEmpty())
     {
       Json->SetStringField(TEXT("ticket"), Ticket);
@@ -1037,7 +1066,10 @@ TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyMatchmakerAdd
     {
       Json->SetStringField(TEXT("query"), Query);
     }
-    Json->SetNumberField(TEXT("count_multiple"), CountMultiple);
+    if (CountMultiple != 0)
+    {
+      Json->SetNumberField(TEXT("count_multiple"), CountMultiple);
+    }
     if (StringProperties.Num() > 0)
     {
       TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();

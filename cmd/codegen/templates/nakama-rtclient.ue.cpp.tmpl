@@ -33,10 +33,18 @@ TNakamaFuture<FNakamaWebSocketConnectionResult> NakamaRealtimeClient::Connect(
 {{- range $idx, $rpc := $envelope.OneofFields -}}
 {{- $rpcType := getMessage (stripDot $rpc.Type) }}
 TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::{{ $rpcType.Name | pascalCase }}(
-    {{ getUnrealParamList 4 $rpcType.Fields $rpcType.MapFields }}
+    {{ getUnrealParamList 4 $rpcType.Fields $rpcType.MapFields $rpcType.OneofFields }}
 ) noexcept
 {
     TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  {{- range $fidx, $field := $rpcType.OneofFields }}
+  {{- $fieldName := $field.Name | pascalCase }}
+  {{- $jsonFieldName := $field.Name }}
+    if (!{{ $fieldName }}.IsEmpty())
+    {
+      Json->SetStringField(TEXT("{{ $jsonFieldName }}"), {{ $fieldName }});
+    }
+  {{- end }}
   {{- range $fidx, $field := $rpcType.Fields }}
   {{- $fieldName := $field.Name | pascalCase }}
   {{- $jsonFieldName := $field.Name }}
@@ -69,8 +77,13 @@ TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::{{ $rpcType.Name |
     {
       Json->SetStringField(TEXT("{{ $jsonFieldName }}"), {{ $fieldName }});
     }
-  {{- else if or (eq $fieldType "int32") (eq $fieldType "int64") (eq $fieldType "uint32") (eq $fieldType "uint64") (eq $fieldType "float") (eq $fieldType "double") (containsString $fieldType "Int32Value") (containsString $fieldType "Int64Value") (containsString $fieldType "UInt32Value") (containsString $fieldType "UInt64Value") (containsString $fieldType "FloatValue") (containsString $fieldType "DoubleValue") }}
+  {{- else if or (eq $fieldType "int32") (eq $fieldType "int64") (eq $fieldType "uint32") (eq $fieldType "uint64") (eq $fieldType "float") (eq $fieldType "double") }}
     Json->SetNumberField(TEXT("{{ $jsonFieldName }}"), {{ $fieldName }});
+  {{- else if or (containsString $fieldType "Int32Value") (containsString $fieldType "Int64Value") (containsString $fieldType "UInt32Value") (containsString $fieldType "UInt64Value") (containsString $fieldType "FloatValue") (containsString $fieldType "DoubleValue") }}
+    if ({{ $fieldName }} != 0)
+    {
+      Json->SetNumberField(TEXT("{{ $jsonFieldName }}"), {{ $fieldName }});
+    }
   {{- else if or (eq $fieldType "bool") (containsString $fieldType "BoolValue") }}
     Json->SetBoolField(TEXT("{{ $jsonFieldName }}"), {{ $fieldName }});
   {{- else if or (eq $fieldType "bytes") (containsString $fieldType "BytesValue") }}

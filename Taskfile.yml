@@ -352,17 +352,9 @@ tasks:
         fi
     - task: start-server
     - cmd: |
-        mkdir -p IntegrationTests/Plugins
-        if command -v robocopy &>/dev/null; then
-            export MSYS_NO_PATHCONV=1
-            robocopy Nakama IntegrationTests/Plugins/Nakama /MIR /NFL /NDL /NJH /NJS /NP || test $? -lt 8
-            robocopy Satori IntegrationTests/Plugins/Satori /MIR /NFL /NDL /NJH /NJS /NP || test $? -lt 8
-            unset MSYS_NO_PATHCONV
-        else
-            rm -rf "IntegrationTests/Plugins/Nakama" "IntegrationTests/Plugins/Satori"
-            cp -r Nakama "IntegrationTests/Plugins/Nakama"
-            cp -r Satori "IntegrationTests/Plugins/Satori"
-        fi
+        cmd /c "if exist IntegrationTests\Plugins\Nakama rmdir /s /q IntegrationTests\Plugins\Nakama"
+        cmd /c "mklink /J IntegrationTests\Plugins\Nakama Nakama"
+      platforms: [windows]
     - cmd: |
         PROJECT="$(pwd)/IntegrationTests/IntegrationTests.uproject"
 

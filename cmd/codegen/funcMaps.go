@@ -394,12 +394,17 @@ func getUnrealFuncMap(api Api) template.FuncMap {
 		return comment
 	}
 
-	getUnrealParamList := func(numIndent int, fields []*proto.NormalField, mapFields []*proto.MapField) string {
+	getUnrealParamList := func(numIndent int, fields []*proto.NormalField, mapFields []*proto.MapField, oneofSlices ...[]*proto.OneOfField) string {
 		indent := strings.Repeat(" ", numIndent)
 
 		params := make([]string, 0, len(fields)+len(mapFields))
 		for _, f := range fields {
 			params = append(params, fmt.Sprintf("const %s& %s", getUnrealFieldType(f.Type, f.Repeated), textcase.PascalCase(f.Name)))
+		}
+		for _, oneofFields := range oneofSlices {
+			for _, f := range oneofFields {
+				params = append(params, fmt.Sprintf("const %s& %s", getUnrealFieldType(f.Type, false), textcase.PascalCase(f.Name)))
+			}
 		}
 		for _, f := range mapFields {
 			params = append(params, fmt.Sprintf("const %s& %s", getUnrealMapType(f.Type), textcase.PascalCase(f.Name)))

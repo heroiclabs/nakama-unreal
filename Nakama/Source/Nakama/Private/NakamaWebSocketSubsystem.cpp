@@ -42,6 +42,24 @@ void UNakamaWebSocketSubsystem::Close()
     StopPingLoop();
     bIsConnected = false;
 
+    // Eagerly resolve all pending futures so their tasks don't become zombies
+    // that fire UE_LOG during engine teardown.
+    // (The async OnClosed path is skipped by the stale-socket guard when we
+    // call WebSocket.Reset() before the close handshake completes.)
+    if (ConnectionState.IsValid())
+    {
+        auto LocalState = MoveTemp(ConnectionState);
+        LocalState->Resolve(FNakamaWebSocketConnectionResult{ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+    }
+    {
+        FScopeLock Lock(&RequestsLock);
+        for (const auto& Request : Requests)
+        {
+            Request.Value->Resolve(FNakamaWebSocketResponse{ .ErrorCode = ENakamaWebSocketError::ConnectionClosed });
+        }
+        Requests.Empty();
+    }
+
     if (WebSocket.IsValid())
     {
         WebSocket->Close();

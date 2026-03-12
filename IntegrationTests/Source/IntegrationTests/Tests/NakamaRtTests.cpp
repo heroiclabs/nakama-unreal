@@ -17,6 +17,8 @@
 #include "Misc/AutomationTest.h"
 #include "Misc/Guid.h"
 #include "Dom/JsonObject.h"
+#include "Serialization/JsonReader.h"
+#include "Serialization/JsonSerializer.h"
 #include "Nakama.h"
 #include "NakamaRt.h"
 #include "NakamaWebSocketSubsystem.h"
@@ -624,6 +626,252 @@ void FNakamaRtMatchmakerSpec::Define()
                 {
                     RT_FAIL_ON_ERROR(Resp, Done);
                     Done.Execute();
+                });
+        });
+    });
+}
+
+// ============================================================================
+// MATCH JOIN TESTS  (two-client: match_id path and matchmaker-token path)
+// ============================================================================
+
+BEGIN_DEFINE_SPEC(FNakamaRtMatchJoinSpec, "IntegrationTests.NakamaRt.MatchJoin",
+    EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter)
+
+    FNakamaClientConfig ClientConfig;
+
+    // Client A — set up by BeforeEach
+    FNakamaSession      Session;
+    UGameInstance*      GI      = nullptr;
+    TUniquePtr<Nakama::NakamaRealtimeClient> RtClient;
+
+    // Client B — set up inline per test
+    FNakamaSession      Session2;
+    UGameInstance*      GI2     = nullptr;
+    TUniquePtr<Nakama::NakamaRealtimeClient> RtClient2;
+
+    // Shared state threaded through the JoinByMatchId chain via a member
+    FString PendingMatchId;
+
+    // Counter used by the JoinByToken test — Done fires when both clients joined
+    int32 MatchJoinedCount = 0;
+
+    FString GenerateId() { return FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphens); }
+
+    FString ExtractMatchId(const FNakamaWebSocketResponse& Resp) const
+    {
+        FString Id;
+        const TSharedPtr<FJsonObject>* Obj;
+        if (Resp.Data.IsValid() && Resp.Data->TryGetObjectField(TEXT("match"), Obj))
+        {
+            (*Obj)->TryGetStringField(TEXT("match_id"), Id);
+        }
+        return Id;
+    }
+
+    /** Extract the matchmaker token from a raw server-push JSON string. */
+    FString ExtractMatchmakerToken(const FString& RawJson) const
+    {
+        TSharedPtr<FJsonObject> Root;
+        TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(RawJson);
+        if (!FJsonSerializer::Deserialize(Reader, Root) || !Root.IsValid())
+        {
+            return TEXT("");
+        }
+        const TSharedPtr<FJsonObject>* MatchedObj;
+        if (!Root->TryGetObjectField(TEXT("matchmaker_matched"), MatchedObj))
+        {
+            return TEXT("");
+        }
+        FString Token;
+        (*MatchedObj)->TryGetStringField(TEXT("token"), Token);
+        return Token;
+    }
+
+END_DEFINE_SPEC(FNakamaRtMatchJoinSpec)
+
+void FNakamaRtMatchJoinSpec::Define()
+{
+    BeforeEach([this]()
+    {
+        ClientConfig     = FNakamaClientConfig{ RtServerKey, RtHost, RtPort, false };
+        GI               = CreateTestGameInstance();
+        GI->AddToRoot();
+        PendingMatchId   = TEXT("");
+        MatchJoinedCount = 0;
+    });
+
+    LatentBeforeEach([this](const FDoneDelegate& Done)
+    {
+        FNakamaAccountCustom Account;
+        Account.Id = GenerateId();
+        Nakama::AuthenticateCustom(ClientConfig, Account, true, TEXT(""))
+            .Next([this, Done](FNakamaSessionResult R)
+            {
+                if (R.bIsError) { AddError(FString::Printf(TEXT("Auth A: %s"), *R.Error.Message)); Done.Execute(); return; }
+                Session = R.Value;
+                Done.Execute();
+            });
+    });
+
+    LatentAfterEach([this](const FDoneDelegate& Done)
+    {
+        RtClient.Reset();
+        RtClient2.Reset();
+        if (GI)  { GI->Shutdown();  GI->RemoveFromRoot();  GI  = nullptr; }
+        if (GI2) { GI2->Shutdown(); GI2->RemoveFromRoot(); GI2 = nullptr; }
+
+        if (Session.Token.IsEmpty()) { Done.Execute(); return; }
+        Nakama::DeleteAccount(ClientConfig, Session)
+            .Next([this, Done](FNakamaVoidResult)
+            {
+                Session = {};
+                if (Session2.Token.IsEmpty()) { Done.Execute(); return; }
+                Nakama::DeleteAccount(ClientConfig, Session2)
+                    .Next([this, Done](FNakamaVoidResult) { Session2 = {}; Done.Execute(); });
+            });
+    });
+
+    // -----------------------------------------------------------------------
+
+    Describe("JoinByMatchId", [this]()
+    {
+        LatentIt("should join a relayed match created by another client using match_id", [this](const FDoneDelegate& Done)
+        {
+            // Chain: Connect A → Create Match → Auth B → Connect B → MatchJoin(match_id)
+            // PendingMatchId threads the match_id through the chain via spec member state.
+            RtClient = MakeUnique<Nakama::NakamaRealtimeClient>(GI);
+            RtClient->Connect(MakeConnParams(Session))
+                .Next([this](FNakamaWebSocketConnectionResult CR) -> TNakamaFuture<FNakamaWebSocketResponse>
+                {
+                    TestFalse("Connect A", CR.ErrorCode != ENakamaWebSocketError::None);
+                    return RtClient->MatchCreate(TEXT(""));
+                })
+                .Next([this, Done](FNakamaWebSocketResponse CreateResp) -> TNakamaFuture<FNakamaSessionResult>
+                {
+                    if (CreateResp.ErrorCode != ENakamaWebSocketError::None)
+                    {
+                        AddError(TEXT("MatchCreate failed"));
+                        return MakeCompletedFuture<FNakamaSessionResult>(FNakamaSessionResult{});
+                    }
+                    PendingMatchId = ExtractMatchId(CreateResp);
+                    TestFalse("match_id from MatchCreate", PendingMatchId.IsEmpty());
+
+                    FNakamaAccountCustom Account2;
+                    Account2.Id = GenerateId();
+                    return Nakama::AuthenticateCustom(ClientConfig, Account2, true, TEXT(""));
+                })
+                .Next([this, Done](FNakamaSessionResult R2) -> TNakamaFuture<FNakamaWebSocketConnectionResult>
+                {
+                    if (R2.bIsError)
+                    {
+                        AddError(FString::Printf(TEXT("Auth B: %s"), *R2.Error.Message));
+                        Done.Execute();
+                        return MakeCompletedFuture<FNakamaWebSocketConnectionResult>(FNakamaWebSocketConnectionResult{});
+                    }
+                    Session2 = R2.Value;
+                    GI2 = CreateTestGameInstance();
+                    GI2->AddToRoot();
+                    RtClient2 = MakeUnique<Nakama::NakamaRealtimeClient>(GI2);
+                    return RtClient2->Connect(MakeConnParams(Session2));
+                })
+                .Next([this](FNakamaWebSocketConnectionResult CR2) -> TNakamaFuture<FNakamaWebSocketResponse>
+                {
+                    TestFalse("Connect B", CR2.ErrorCode != ENakamaWebSocketError::None);
+                    return RtClient2->MatchJoin(PendingMatchId, TEXT(""), {});
+                })
+                .Next([this, Done](FNakamaWebSocketResponse JoinResp)
+                {
+                    RT_FAIL_ON_ERROR(JoinResp, Done);
+                    TestFalse("Client B joined with non-empty match_id", ExtractMatchId(JoinResp).IsEmpty());
+                    Done.Execute();
+                });
+        });
+    });
+
+    Describe("JoinByToken", [this]()
+    {
+        LatentIt("should join a match via matchmaker token when two clients are matched", [this](const FDoneDelegate& Done)
+        {
+            // Chain: Auth B → Connect B → Connect A → subscribe push events → MatchmakerAdd A → MatchmakerAdd B
+            // The server fires "matchmaker_matched" (no CID, push) to both clients.
+            // ServerEventReceived handlers extract the token and call MatchJoin; Done fires when both joined.
+            FNakamaAccountCustom Account2;
+            Account2.Id = GenerateId();
+            Nakama::AuthenticateCustom(ClientConfig, Account2, true, TEXT(""))
+                .Next([this, Done](FNakamaSessionResult R2) -> TNakamaFuture<FNakamaWebSocketConnectionResult>
+                {
+                    if (R2.bIsError) { AddError(FString::Printf(TEXT("Auth B: %s"), *R2.Error.Message)); Done.Execute(); return MakeCompletedFuture<FNakamaWebSocketConnectionResult>(FNakamaWebSocketConnectionResult{}); }
+                    Session2 = R2.Value;
+                    GI2 = CreateTestGameInstance();
+                    GI2->AddToRoot();
+                    RtClient2 = MakeUnique<Nakama::NakamaRealtimeClient>(GI2);
+                    return RtClient2->Connect(MakeConnParams(Session2));
+                })
+                .Next([this, Done](FNakamaWebSocketConnectionResult CR2) -> TNakamaFuture<FNakamaWebSocketConnectionResult>
+                {
+                    TestFalse("Connect B", CR2.ErrorCode != ENakamaWebSocketError::None);
+                    RtClient = MakeUnique<Nakama::NakamaRealtimeClient>(GI);
+                    return RtClient->Connect(MakeConnParams(Session));
+                })
+                .Next([this, Done](FNakamaWebSocketConnectionResult CR1) -> TNakamaFuture<FNakamaWebSocketResponse>
+                {
+                    TestFalse("Connect A", CR1.ErrorCode != ENakamaWebSocketError::None);
+
+                    // Helper: subscribe a subsystem to matchmaker_matched push events and call MatchJoin.
+                    // Both clients subscribe before either adds to the matchmaker queue.
+                    auto SubscribeAndJoin = [this, Done](
+                        UNakamaWebSocketSubsystem* Sub,
+                        Nakama::NakamaRealtimeClient* Client,
+                        const FString& ClientLabel)
+                    {
+                        Sub->ServerEventReceived.AddLambda(
+                            [this, Done, Client, ClientLabel](const FString& Msg)
+                            {
+                                FString Token = ExtractMatchmakerToken(Msg);
+                                if (Token.IsEmpty()) { return; } // not a matchmaker_matched event
+                                Client->MatchJoin(TEXT(""), Token, {})
+                                    .Next([this, Done, ClientLabel](FNakamaWebSocketResponse JoinResp)
+                                    {
+                                        if (JoinResp.ErrorCode != ENakamaWebSocketError::None)
+                                        {
+                                            AddError(FString::Printf(TEXT("%s MatchJoin failed: %d"), *ClientLabel, JoinResp.ErrorCode));
+                                            Done.Execute();
+                                            return;
+                                        }
+                                        if (++MatchJoinedCount == 2)
+                                        {
+                                            Done.Execute();
+                                        }
+                                    });
+                            });
+                    };
+
+                    SubscribeAndJoin(GI->GetSubsystem<UNakamaWebSocketSubsystem>(),   RtClient.Get(),  TEXT("Client A"));
+                    SubscribeAndJoin(GI2->GetSubsystem<UNakamaWebSocketSubsystem>(),  RtClient2.Get(), TEXT("Client B"));
+
+                    return RtClient->MatchmakerAdd(2, 2, TEXT("*"), 0, {}, {});
+                })
+                .Next([this, Done](FNakamaWebSocketResponse AddAResp) -> TNakamaFuture<FNakamaWebSocketResponse>
+                {
+                    if (AddAResp.ErrorCode != ENakamaWebSocketError::None)
+                    {
+                        AddError(FString::Printf(TEXT("MatchmakerAdd A failed: %d"), AddAResp.ErrorCode));
+                        Done.Execute();
+                        return MakeCompletedFuture<FNakamaWebSocketResponse>(AddAResp);
+                    }
+                    return RtClient2->MatchmakerAdd(2, 2, TEXT("*"), 0, {}, {});
+                })
+                .Next([this, Done](FNakamaWebSocketResponse AddBResp)
+                {
+                    if (AddBResp.ErrorCode != ENakamaWebSocketError::None)
+                    {
+                        AddError(FString::Printf(TEXT("MatchmakerAdd B failed: %d"), AddBResp.ErrorCode));
+                        Done.Execute();
+                    }
+                    // Both clients are now queued. The server will push matchmaker_matched to each.
+                    // The ServerEventReceived handlers extract the token, call MatchJoin, and
+                    // call Done once MatchJoinedCount reaches 2.
                 });
         });
     });

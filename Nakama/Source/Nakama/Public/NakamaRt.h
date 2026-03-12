@@ -302,6 +302,8 @@ namespace Nakama
         * @param Metadata  An optional set of key-value metadata pairs to be passed to the match handler, if any.
         */
         NAKAMA_API TNakamaFuture<FNakamaWebSocketResponse> MatchJoin(
+            const FString& MatchId,
+            const FString& Token,
             const TMap<FString, FString>& Metadata
         ) noexcept;
         
@@ -356,7 +358,9 @@ namespace Nakama
         NAKAMA_API TNakamaFuture<FNakamaWebSocketResponse> MatchmakerMatched(
             const FString& Ticket,
             const TArray<FNakamaRtMatchmakerMatched_MatchmakerUser>& Users,
-            const FNakamaRtMatchmakerMatched_MatchmakerUser& Self
+            const FNakamaRtMatchmakerMatched_MatchmakerUser& Self,
+            const FString& MatchId,
+            const FString& Token
         ) noexcept;
         
         /**
