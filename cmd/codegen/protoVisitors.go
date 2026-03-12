@@ -170,7 +170,7 @@ func (v *rpcVisitor) VisitOption(o *proto.Option) {
 	paramRegex := regexp.MustCompile(`\{([a-zA-Z0-9_]*)\}`)
 	matches := paramRegex.FindAllStringSubmatch(v.Rpc.Endpoint, -1)
 
-	v.Rpc.QueryParams = make([]string, len(matches))
+	v.Rpc.QueryParams = make([]string, 0, len(matches))
 	for _, m := range matches {
 		v.Rpc.QueryParams = append(v.Rpc.QueryParams, m[1])
 	}
