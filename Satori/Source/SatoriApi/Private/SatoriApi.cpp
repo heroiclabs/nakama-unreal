@@ -1733,7 +1733,7 @@ void SatoriApi::Authenticate(
 	TFunction<void(const FSatoriSession&)> OnSuccess,
 	TFunction<void(const FSatoriError&)> OnError,
 	float Timeout,
-	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
+	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v1/authenticate");
 	TArray<FString> QueryParams;
@@ -1787,7 +1787,7 @@ void SatoriApi::AuthenticateLogout(
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FSatoriError&)> OnError,
 	float Timeout,
-	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
+	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v1/authenticate/logout");
 	TArray<FString> QueryParams;
@@ -1824,7 +1824,7 @@ void SatoriApi::AuthenticateRefresh(
 	TFunction<void(const FSatoriSession&)> OnSuccess,
 	TFunction<void(const FSatoriError&)> OnError,
 	float Timeout,
-	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
+	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v1/authenticate/refresh");
 	TArray<FString> QueryParams;
@@ -1858,7 +1858,7 @@ void SatoriApi::DeleteIdentity(
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FSatoriError&)> OnError,
 	float Timeout,
-	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
+	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v1/identity");
 
@@ -1882,7 +1882,7 @@ void SatoriApi::Event(
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FSatoriError&)> OnError,
 	float Timeout,
-	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
+	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v1/event");
 	TArray<FString> QueryParams;
@@ -1921,7 +1921,7 @@ void SatoriApi::ServerEvent(
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FSatoriError&)> OnError,
 	float Timeout,
-	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
+	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v1/server-event");
 	TArray<FString> QueryParams;
@@ -1961,7 +1961,7 @@ void SatoriApi::GetExperiments(
 	TFunction<void(const FSatoriExperimentList&)> OnSuccess,
 	TFunction<void(const FSatoriError&)> OnError,
 	float Timeout,
-	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
+	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v1/experiment");
 	TArray<FString> QueryParams;
@@ -2000,7 +2000,7 @@ void SatoriApi::GetFlagOverrides(
 	TFunction<void(const FSatoriFlagOverrideList&)> OnSuccess,
 	TFunction<void(const FSatoriError&)> OnError,
 	float Timeout,
-	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
+	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v1/flag/override");
 	TArray<FString> QueryParams;
@@ -2039,7 +2039,7 @@ void SatoriApi::GetFlags(
 	TFunction<void(const FSatoriFlagList&)> OnSuccess,
 	TFunction<void(const FSatoriError&)> OnError,
 	float Timeout,
-	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
+	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v1/flag");
 	TArray<FString> QueryParams;
@@ -2082,7 +2082,7 @@ void SatoriApi::GetLiveEvents(
 	TFunction<void(const FSatoriLiveEventList&)> OnSuccess,
 	TFunction<void(const FSatoriError&)> OnError,
 	float Timeout,
-	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
+	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v1/live-event");
 	TArray<FString> QueryParams;
@@ -2136,7 +2136,7 @@ void SatoriApi::JoinLiveEvent(
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FSatoriError&)> OnError,
 	float Timeout,
-	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
+	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v1/live-event/{id}/participation");
 	Endpoint = Endpoint.Replace(TEXT("{id}"), *Id);
@@ -2165,7 +2165,7 @@ void SatoriApi::Healthcheck(
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FSatoriError&)> OnError,
 	float Timeout,
-	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
+	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/healthcheck");
 
@@ -2191,7 +2191,7 @@ void SatoriApi::Identify(
 	TFunction<void(const FSatoriSession&)> OnSuccess,
 	TFunction<void(const FSatoriError&)> OnError,
 	float Timeout,
-	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
+	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v1/identify");
 	TArray<FString> QueryParams;
@@ -2243,7 +2243,7 @@ void SatoriApi::ListProperties(
 	TFunction<void(const FSatoriProperties&)> OnSuccess,
 	TFunction<void(const FSatoriError&)> OnError,
 	float Timeout,
-	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
+	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v1/properties");
 
@@ -2267,7 +2267,7 @@ void SatoriApi::Readycheck(
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FSatoriError&)> OnError,
 	float Timeout,
-	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
+	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/readycheck");
 
@@ -2293,7 +2293,7 @@ void SatoriApi::UpdateProperties(
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FSatoriError&)> OnError,
 	float Timeout,
-	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
+	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v1/properties");
 	TArray<FString> QueryParams;
@@ -2345,7 +2345,7 @@ void SatoriApi::GetMessageList(
 	TFunction<void(const FSatoriGetMessageListResponse&)> OnSuccess,
 	TFunction<void(const FSatoriError&)> OnError,
 	float Timeout,
-	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
+	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v1/message");
 	TArray<FString> QueryParams;
@@ -2390,7 +2390,7 @@ void SatoriApi::UpdateMessage(
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FSatoriError&)> OnError,
 	float Timeout,
-	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
+	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v1/message/{id}");
 	Endpoint = Endpoint.Replace(TEXT("{id}"), *Id);
@@ -2427,7 +2427,7 @@ void SatoriApi::DeleteMessage(
 	TFunction<void()> OnSuccess,
 	TFunction<void(const FSatoriError&)> OnError,
 	float Timeout,
-	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
+	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v1/message/{id}");
 	Endpoint = Endpoint.Replace(TEXT("{id}"), *Id);

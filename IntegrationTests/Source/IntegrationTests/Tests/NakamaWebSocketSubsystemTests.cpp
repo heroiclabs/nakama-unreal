@@ -10,6 +10,7 @@
  *   -ExecCmds="Automation RunTests IntegrationTests.NakamaWebSocketSubsystem"
  */
 
+#include <atomic>
 #include "Misc/AutomationTest.h"
 #include "Misc/Guid.h"
 #include "Dom/JsonObject.h"
@@ -369,7 +370,7 @@ void FNakamaWebSocketSubsystemPingSpec::Define()
 
                     // Fire several pings simultaneously; track completions with a shared counter.
                     constexpr int32 NumPings = 5;
-                    TSharedRef<TAtomic<int32>> Remaining = MakeShared<TAtomic<int32>>(NumPings);
+                    TSharedRef<std::atomic<int32>> Remaining = MakeShared<std::atomic<int32>>(NumPings);
 
                     for (int32 i = 0; i < NumPings; ++i)
                     {
@@ -398,7 +399,7 @@ void FNakamaWebSocketSubsystemPingSpec::Define()
 
                     // Send a match_create and two pings simultaneously; all three
                     // must resolve without error.
-                    TSharedRef<TAtomic<int32>> Remaining = MakeShared<TAtomic<int32>>(3);
+                    TSharedRef<std::atomic<int32>> Remaining = MakeShared<std::atomic<int32>>(3);
 
                     auto Decrement = [this, Done, Remaining](FNakamaWebSocketResponse Resp)
                     {
@@ -1070,7 +1071,7 @@ void FNakamaWebSocketSubsystemDelegatesSpec::Define()
                     TestFalse("Connect", CR.ErrorCode != ENakamaWebSocketError::None);
 
                     constexpr int32 NumSends = 3;
-                    TSharedRef<TAtomic<int32>> FireCount = MakeShared<TAtomic<int32>>(0);
+                    TSharedRef<std::atomic<int32>> FireCount = MakeShared<std::atomic<int32>>(0);
                     TSharedRef<FDelegateHandle> Handle   = MakeShared<FDelegateHandle>();
 
                     *Handle = WSSub->ServerResponseReceived.AddLambda(

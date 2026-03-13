@@ -285,7 +285,7 @@ namespace Nakama
 		const TArray<FString>& Usernames,
 		FString Metadata,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Add friends by ID or username to a user's account. (Server-to-server with HTTP key) */
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> AddFriends(
@@ -295,7 +295,7 @@ namespace Nakama
 		const TArray<FString>& Usernames,
 		FString Metadata,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Add users to a group. */
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> AddGroupUsers(
@@ -304,7 +304,7 @@ namespace Nakama
 		FString GroupId,
 		const TArray<FString>& UserIds,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Add users to a group. (Server-to-server with HTTP key) */
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> AddGroupUsers(
@@ -313,7 +313,7 @@ namespace Nakama
 		FString GroupId,
 		const TArray<FString>& UserIds,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Refresh a user's session using a refresh token retrieved from a previous authentication request. */
 	NAKAMA_API TNakamaFuture<FNakamaSessionResult> SessionRefresh(
@@ -321,7 +321,7 @@ namespace Nakama
 		FString Token,
 		const TMap<FString, FString>& Vars,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Log out a session, invalidate a refresh token, or log out all sessions/refresh tokens for a user. */
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> SessionLogout(
@@ -330,7 +330,7 @@ namespace Nakama
 		FString Token,
 		FString RefreshToken,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Log out a session, invalidate a refresh token, or log out all sessions/refresh tokens for a user. (Server-to-server with HTTP key) */
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> SessionLogout(
@@ -339,7 +339,7 @@ namespace Nakama
 		FString Token,
 		FString RefreshToken,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Authenticate a user with an Apple ID against the server. */
 	NAKAMA_API TNakamaFuture<FNakamaSessionResult> AuthenticateApple(
@@ -348,7 +348,7 @@ namespace Nakama
 		bool Create,
 		FString Username,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Authenticate a user with a custom id against the server. */
 	NAKAMA_API TNakamaFuture<FNakamaSessionResult> AuthenticateCustom(
@@ -357,7 +357,7 @@ namespace Nakama
 		bool Create,
 		FString Username,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Authenticate a user with a device id against the server. */
 	NAKAMA_API TNakamaFuture<FNakamaSessionResult> AuthenticateDevice(
@@ -366,7 +366,7 @@ namespace Nakama
 		bool Create,
 		FString Username,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Authenticate a user with an email+password against the server. */
 	NAKAMA_API TNakamaFuture<FNakamaSessionResult> AuthenticateEmail(
@@ -375,7 +375,7 @@ namespace Nakama
 		bool Create,
 		FString Username,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Authenticate a user with a Facebook OAuth token against the server. */
 	NAKAMA_API TNakamaFuture<FNakamaSessionResult> AuthenticateFacebook(
@@ -385,7 +385,7 @@ namespace Nakama
 		FString Username,
 		bool Sync,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Authenticate a user with a Facebook Instant Game token against the server. */
 	NAKAMA_API TNakamaFuture<FNakamaSessionResult> AuthenticateFacebookInstantGame(
@@ -394,7 +394,7 @@ namespace Nakama
 		bool Create,
 		FString Username,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Authenticate a user with Apple's GameCenter against the server. */
 	NAKAMA_API TNakamaFuture<FNakamaSessionResult> AuthenticateGameCenter(
@@ -403,7 +403,7 @@ namespace Nakama
 		bool Create,
 		FString Username,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Authenticate a user with Google against the server. */
 	NAKAMA_API TNakamaFuture<FNakamaSessionResult> AuthenticateGoogle(
@@ -412,7 +412,7 @@ namespace Nakama
 		bool Create,
 		FString Username,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Authenticate a user with Steam against the server. */
 	NAKAMA_API TNakamaFuture<FNakamaSessionResult> AuthenticateSteam(
@@ -422,7 +422,7 @@ namespace Nakama
 		FString Username,
 		bool Sync,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Ban a set of users from a group. */
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> BanGroupUsers(
@@ -431,7 +431,7 @@ namespace Nakama
 		FString GroupId,
 		const TArray<FString>& UserIds,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Ban a set of users from a group. (Server-to-server with HTTP key) */
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> BanGroupUsers(
@@ -440,7 +440,7 @@ namespace Nakama
 		FString GroupId,
 		const TArray<FString>& UserIds,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Block one or more users by ID or username. */
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> BlockFriends(
@@ -449,7 +449,7 @@ namespace Nakama
 		const TArray<FString>& Ids,
 		const TArray<FString>& Usernames,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Block one or more users by ID or username. (Server-to-server with HTTP key) */
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> BlockFriends(
@@ -458,7 +458,7 @@ namespace Nakama
 		const TArray<FString>& Ids,
 		const TArray<FString>& Usernames,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Create a new group with the current user as the owner. */
 	NAKAMA_API TNakamaFuture<FNakamaGroupResult> CreateGroup(
@@ -471,7 +471,7 @@ namespace Nakama
 		bool Open,
 		int32 MaxCount,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Create a new group with the current user as the owner. (Server-to-server with HTTP key) */
 	NAKAMA_API TNakamaFuture<FNakamaGroupResult> CreateGroup(
@@ -484,21 +484,21 @@ namespace Nakama
 		bool Open,
 		int32 MaxCount,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Delete the current user's account. */
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> DeleteAccount(
 		const FNakamaClientConfig& ClientConfig,
 		const FNakamaSession& Session,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Delete the current user's account. (Server-to-server with HTTP key) */
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> DeleteAccount(
 		const FNakamaClientConfig& ClientConfig,
 		const FString& HttpKey,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Delete one or more users by ID or username. */
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> DeleteFriends(
@@ -507,7 +507,7 @@ namespace Nakama
 		const TArray<FString>& Ids,
 		const TArray<FString>& Usernames,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Delete one or more users by ID or username. (Server-to-server with HTTP key) */
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> DeleteFriends(
@@ -516,7 +516,7 @@ namespace Nakama
 		const TArray<FString>& Ids,
 		const TArray<FString>& Usernames,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Delete a group by ID. */
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> DeleteGroup(
@@ -524,7 +524,7 @@ namespace Nakama
 		const FNakamaSession& Session,
 		FString GroupId,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Delete a group by ID. (Server-to-server with HTTP key) */
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> DeleteGroup(
@@ -532,7 +532,7 @@ namespace Nakama
 		const FString& HttpKey,
 		FString GroupId,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Delete a leaderboard record. */
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> DeleteLeaderboardRecord(
@@ -540,7 +540,7 @@ namespace Nakama
 		const FNakamaSession& Session,
 		FString LeaderboardId,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Delete a leaderboard record. (Server-to-server with HTTP key) */
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> DeleteLeaderboardRecord(
@@ -548,7 +548,7 @@ namespace Nakama
 		const FString& HttpKey,
 		FString LeaderboardId,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Delete one or more notifications for the current user. */
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> DeleteNotifications(
@@ -556,7 +556,7 @@ namespace Nakama
 		const FNakamaSession& Session,
 		const TArray<FString>& Ids,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Delete one or more notifications for the current user. (Server-to-server with HTTP key) */
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> DeleteNotifications(
@@ -564,7 +564,7 @@ namespace Nakama
 		const FString& HttpKey,
 		const TArray<FString>& Ids,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Delete a tournament record. */
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> DeleteTournamentRecord(
@@ -572,7 +572,7 @@ namespace Nakama
 		const FNakamaSession& Session,
 		FString TournamentId,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Delete a tournament record. (Server-to-server with HTTP key) */
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> DeleteTournamentRecord(
@@ -580,7 +580,7 @@ namespace Nakama
 		const FString& HttpKey,
 		FString TournamentId,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Delete one or more objects by ID or username. */
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> DeleteStorageObjects(
@@ -588,7 +588,7 @@ namespace Nakama
 		const FNakamaSession& Session,
 		const TArray<FNakamaDeleteStorageObjectId>& ObjectIds,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Delete one or more objects by ID or username. (Server-to-server with HTTP key) */
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> DeleteStorageObjects(
@@ -596,7 +596,7 @@ namespace Nakama
 		const FString& HttpKey,
 		const TArray<FNakamaDeleteStorageObjectId>& ObjectIds,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Submit an event for processing in the server's registered runtime custom events handler. */
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> Event(
@@ -607,7 +607,7 @@ namespace Nakama
 		bool External,
 		const TMap<FString, FString>& Properties,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Submit an event for processing in the server's registered runtime custom events handler. (Server-to-server with HTTP key) */
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> Event(
@@ -618,21 +618,21 @@ namespace Nakama
 		bool External,
 		const TMap<FString, FString>& Properties,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Fetch the current user's account. */
 	NAKAMA_API TNakamaFuture<FNakamaAccountResult> GetAccount(
 		const FNakamaClientConfig& ClientConfig,
 		const FNakamaSession& Session,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Fetch the current user's account. (Server-to-server with HTTP key) */
 	NAKAMA_API TNakamaFuture<FNakamaAccountResult> GetAccount(
 		const FNakamaClientConfig& ClientConfig,
 		const FString& HttpKey,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Fetch zero or more users by ID and/or username. */
 	NAKAMA_API TNakamaFuture<FNakamaUsersResult> GetUsers(
@@ -642,7 +642,7 @@ namespace Nakama
 		const TArray<FString>& Usernames,
 		const TArray<FString>& FacebookIds,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Fetch zero or more users by ID and/or username. (Server-to-server with HTTP key) */
 	NAKAMA_API TNakamaFuture<FNakamaUsersResult> GetUsers(
@@ -652,7 +652,7 @@ namespace Nakama
 		const TArray<FString>& Usernames,
 		const TArray<FString>& FacebookIds,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Get subscription by product id. */
 	NAKAMA_API TNakamaFuture<FNakamaValidatedSubscriptionResult> GetSubscription(
@@ -660,7 +660,7 @@ namespace Nakama
 		const FNakamaSession& Session,
 		FString ProductId,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Get subscription by product id. (Server-to-server with HTTP key) */
 	NAKAMA_API TNakamaFuture<FNakamaValidatedSubscriptionResult> GetSubscription(
@@ -668,35 +668,35 @@ namespace Nakama
 		const FString& HttpKey,
 		FString ProductId,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Get matchmaker stats. */
 	NAKAMA_API TNakamaFuture<FNakamaMatchmakerStatsResult> GetMatchmakerStats(
 		const FNakamaClientConfig& ClientConfig,
 		const FNakamaSession& Session,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Get matchmaker stats. (Server-to-server with HTTP key) */
 	NAKAMA_API TNakamaFuture<FNakamaMatchmakerStatsResult> GetMatchmakerStats(
 		const FNakamaClientConfig& ClientConfig,
 		const FString& HttpKey,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** A healthcheck which load balancers can use to check the service. */
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> Healthcheck(
 		const FNakamaClientConfig& ClientConfig,
 		const FNakamaSession& Session,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** A healthcheck which load balancers can use to check the service. (Server-to-server with HTTP key) */
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> Healthcheck(
 		const FNakamaClientConfig& ClientConfig,
 		const FString& HttpKey,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Import Facebook friends and add them to a user's account. */
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> ImportFacebookFriends(
@@ -705,7 +705,7 @@ namespace Nakama
 		FNakamaAccountFacebook Account,
 		bool Reset,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Import Facebook friends and add them to a user's account. (Server-to-server with HTTP key) */
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> ImportFacebookFriends(
@@ -714,7 +714,7 @@ namespace Nakama
 		FNakamaAccountFacebook Account,
 		bool Reset,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Import Steam friends and add them to a user's account. */
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> ImportSteamFriends(
@@ -723,7 +723,7 @@ namespace Nakama
 		FNakamaAccountSteam Account,
 		bool Reset,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Import Steam friends and add them to a user's account. (Server-to-server with HTTP key) */
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> ImportSteamFriends(
@@ -732,7 +732,7 @@ namespace Nakama
 		FNakamaAccountSteam Account,
 		bool Reset,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Immediately join an open group, or request to join a closed one. */
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> JoinGroup(
@@ -740,7 +740,7 @@ namespace Nakama
 		const FNakamaSession& Session,
 		FString GroupId,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Immediately join an open group, or request to join a closed one. (Server-to-server with HTTP key) */
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> JoinGroup(
@@ -748,7 +748,7 @@ namespace Nakama
 		const FString& HttpKey,
 		FString GroupId,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Attempt to join an open and running tournament. */
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> JoinTournament(
@@ -756,7 +756,7 @@ namespace Nakama
 		const FNakamaSession& Session,
 		FString TournamentId,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Attempt to join an open and running tournament. (Server-to-server with HTTP key) */
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> JoinTournament(
@@ -764,7 +764,7 @@ namespace Nakama
 		const FString& HttpKey,
 		FString TournamentId,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Kick a set of users from a group. */
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> KickGroupUsers(
@@ -773,7 +773,7 @@ namespace Nakama
 		FString GroupId,
 		const TArray<FString>& UserIds,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Kick a set of users from a group. (Server-to-server with HTTP key) */
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> KickGroupUsers(
@@ -782,7 +782,7 @@ namespace Nakama
 		FString GroupId,
 		const TArray<FString>& UserIds,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Leave a group the user is a member of. */
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> LeaveGroup(
@@ -790,7 +790,7 @@ namespace Nakama
 		const FNakamaSession& Session,
 		FString GroupId,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Leave a group the user is a member of. (Server-to-server with HTTP key) */
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> LeaveGroup(
@@ -798,7 +798,7 @@ namespace Nakama
 		const FString& HttpKey,
 		FString GroupId,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Add an Apple ID to the social profiles on the current user's account. */
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> LinkApple(
@@ -807,7 +807,7 @@ namespace Nakama
 		FString Token,
 		const TMap<FString, FString>& Vars,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Add an Apple ID to the social profiles on the current user's account. (Server-to-server with HTTP key) */
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> LinkApple(
@@ -816,7 +816,7 @@ namespace Nakama
 		FString Token,
 		const TMap<FString, FString>& Vars,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Add a custom ID to the social profiles on the current user's account. */
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> LinkCustom(
@@ -825,7 +825,7 @@ namespace Nakama
 		FString Id,
 		const TMap<FString, FString>& Vars,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Add a custom ID to the social profiles on the current user's account. (Server-to-server with HTTP key) */
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> LinkCustom(
@@ -834,7 +834,7 @@ namespace Nakama
 		FString Id,
 		const TMap<FString, FString>& Vars,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Add a device ID to the social profiles on the current user's account. */
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> LinkDevice(
@@ -843,7 +843,7 @@ namespace Nakama
 		FString Id,
 		const TMap<FString, FString>& Vars,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Add a device ID to the social profiles on the current user's account. (Server-to-server with HTTP key) */
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> LinkDevice(
@@ -852,7 +852,7 @@ namespace Nakama
 		FString Id,
 		const TMap<FString, FString>& Vars,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Add an email+password to the social profiles on the current user's account. */
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> LinkEmail(
@@ -862,7 +862,7 @@ namespace Nakama
 		FString Password,
 		const TMap<FString, FString>& Vars,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Add an email+password to the social profiles on the current user's account. (Server-to-server with HTTP key) */
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> LinkEmail(
@@ -872,7 +872,7 @@ namespace Nakama
 		FString Password,
 		const TMap<FString, FString>& Vars,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Add Facebook to the social profiles on the current user's account. */
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> LinkFacebook(
@@ -881,7 +881,7 @@ namespace Nakama
 		FNakamaAccountFacebook Account,
 		bool Sync,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Add Facebook to the social profiles on the current user's account. (Server-to-server with HTTP key) */
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> LinkFacebook(
@@ -890,7 +890,7 @@ namespace Nakama
 		FNakamaAccountFacebook Account,
 		bool Sync,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Add Facebook Instant Game to the social profiles on the current user's account. */
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> LinkFacebookInstantGame(
@@ -899,7 +899,7 @@ namespace Nakama
 		FString SignedPlayerInfo,
 		const TMap<FString, FString>& Vars,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Add Facebook Instant Game to the social profiles on the current user's account. (Server-to-server with HTTP key) */
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> LinkFacebookInstantGame(
@@ -908,7 +908,7 @@ namespace Nakama
 		FString SignedPlayerInfo,
 		const TMap<FString, FString>& Vars,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Add Apple's GameCenter to the social profiles on the current user's account. */
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> LinkGameCenter(
@@ -922,7 +922,7 @@ namespace Nakama
 		FString PublicKeyUrl,
 		const TMap<FString, FString>& Vars,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Add Apple's GameCenter to the social profiles on the current user's account. (Server-to-server with HTTP key) */
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> LinkGameCenter(
@@ -936,7 +936,7 @@ namespace Nakama
 		FString PublicKeyUrl,
 		const TMap<FString, FString>& Vars,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Add Google to the social profiles on the current user's account. */
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> LinkGoogle(
@@ -945,7 +945,7 @@ namespace Nakama
 		FString Token,
 		const TMap<FString, FString>& Vars,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Add Google to the social profiles on the current user's account. (Server-to-server with HTTP key) */
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> LinkGoogle(
@@ -954,7 +954,7 @@ namespace Nakama
 		FString Token,
 		const TMap<FString, FString>& Vars,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Add Steam to the social profiles on the current user's account. */
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> LinkSteam(
@@ -963,7 +963,7 @@ namespace Nakama
 		FNakamaAccountSteam Account,
 		bool Sync,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Add Steam to the social profiles on the current user's account. (Server-to-server with HTTP key) */
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> LinkSteam(
@@ -972,7 +972,7 @@ namespace Nakama
 		FNakamaAccountSteam Account,
 		bool Sync,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** List a channel's message history. */
 	NAKAMA_API TNakamaFuture<FNakamaChannelMessageListResult> ListChannelMessages(
@@ -983,7 +983,7 @@ namespace Nakama
 		bool Forward,
 		FString Cursor,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** List a channel's message history. (Server-to-server with HTTP key) */
 	NAKAMA_API TNakamaFuture<FNakamaChannelMessageListResult> ListChannelMessages(
@@ -994,7 +994,7 @@ namespace Nakama
 		bool Forward,
 		FString Cursor,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** List all friends for the current user. */
 	NAKAMA_API TNakamaFuture<FNakamaFriendListResult> ListFriends(
@@ -1004,7 +1004,7 @@ namespace Nakama
 		int32 State,
 		FString Cursor,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** List all friends for the current user. (Server-to-server with HTTP key) */
 	NAKAMA_API TNakamaFuture<FNakamaFriendListResult> ListFriends(
@@ -1014,7 +1014,7 @@ namespace Nakama
 		int32 State,
 		FString Cursor,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** List friends of friends for the current user. */
 	NAKAMA_API TNakamaFuture<FNakamaFriendsOfFriendsListResult> ListFriendsOfFriends(
@@ -1023,7 +1023,7 @@ namespace Nakama
 		int32 Limit,
 		FString Cursor,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** List friends of friends for the current user. (Server-to-server with HTTP key) */
 	NAKAMA_API TNakamaFuture<FNakamaFriendsOfFriendsListResult> ListFriendsOfFriends(
@@ -1032,7 +1032,7 @@ namespace Nakama
 		int32 Limit,
 		FString Cursor,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** List groups based on given filters. */
 	NAKAMA_API TNakamaFuture<FNakamaGroupListResult> ListGroups(
@@ -1045,7 +1045,7 @@ namespace Nakama
 		int32 Members,
 		bool Open,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** List groups based on given filters. (Server-to-server with HTTP key) */
 	NAKAMA_API TNakamaFuture<FNakamaGroupListResult> ListGroups(
@@ -1058,7 +1058,7 @@ namespace Nakama
 		int32 Members,
 		bool Open,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** List all users that are part of a group. */
 	NAKAMA_API TNakamaFuture<FNakamaGroupUserListResult> ListGroupUsers(
@@ -1069,7 +1069,7 @@ namespace Nakama
 		int32 State,
 		FString Cursor,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** List all users that are part of a group. (Server-to-server with HTTP key) */
 	NAKAMA_API TNakamaFuture<FNakamaGroupUserListResult> ListGroupUsers(
@@ -1080,7 +1080,7 @@ namespace Nakama
 		int32 State,
 		FString Cursor,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** List leaderboard records. */
 	NAKAMA_API TNakamaFuture<FNakamaLeaderboardRecordListResult> ListLeaderboardRecords(
@@ -1092,7 +1092,7 @@ namespace Nakama
 		FString Cursor,
 		int64 Expiry,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** List leaderboard records. (Server-to-server with HTTP key) */
 	NAKAMA_API TNakamaFuture<FNakamaLeaderboardRecordListResult> ListLeaderboardRecords(
@@ -1104,7 +1104,7 @@ namespace Nakama
 		FString Cursor,
 		int64 Expiry,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** List leaderboard records around the target ownerId. */
 	NAKAMA_API TNakamaFuture<FNakamaLeaderboardRecordListResult> ListLeaderboardRecordsAroundOwner(
@@ -1116,7 +1116,7 @@ namespace Nakama
 		int64 Expiry,
 		FString Cursor,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** List leaderboard records around the target ownerId. (Server-to-server with HTTP key) */
 	NAKAMA_API TNakamaFuture<FNakamaLeaderboardRecordListResult> ListLeaderboardRecordsAroundOwner(
@@ -1128,7 +1128,7 @@ namespace Nakama
 		int64 Expiry,
 		FString Cursor,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** List running matches and optionally filter by matching criteria. */
 	NAKAMA_API TNakamaFuture<FNakamaMatchListResult> ListMatches(
@@ -1141,7 +1141,7 @@ namespace Nakama
 		int32 MaxSize,
 		FString Query,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** List running matches and optionally filter by matching criteria. (Server-to-server with HTTP key) */
 	NAKAMA_API TNakamaFuture<FNakamaMatchListResult> ListMatches(
@@ -1154,7 +1154,7 @@ namespace Nakama
 		int32 MaxSize,
 		FString Query,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** List parties and optionally filter by matching criteria. */
 	NAKAMA_API TNakamaFuture<FNakamaPartyListResult> ListParties(
@@ -1165,7 +1165,7 @@ namespace Nakama
 		FString Query,
 		FString Cursor,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** List parties and optionally filter by matching criteria. (Server-to-server with HTTP key) */
 	NAKAMA_API TNakamaFuture<FNakamaPartyListResult> ListParties(
@@ -1176,7 +1176,7 @@ namespace Nakama
 		FString Query,
 		FString Cursor,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Fetch list of notifications. */
 	NAKAMA_API TNakamaFuture<FNakamaNotificationListResult> ListNotifications(
@@ -1185,7 +1185,7 @@ namespace Nakama
 		int32 Limit,
 		FString CacheableCursor,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Fetch list of notifications. (Server-to-server with HTTP key) */
 	NAKAMA_API TNakamaFuture<FNakamaNotificationListResult> ListNotifications(
@@ -1194,7 +1194,7 @@ namespace Nakama
 		int32 Limit,
 		FString CacheableCursor,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** List publicly readable storage objects in a given collection. */
 	NAKAMA_API TNakamaFuture<FNakamaStorageObjectListResult> ListStorageObjects(
@@ -1205,7 +1205,7 @@ namespace Nakama
 		int32 Limit,
 		FString Cursor,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** List publicly readable storage objects in a given collection. (Server-to-server with HTTP key) */
 	NAKAMA_API TNakamaFuture<FNakamaStorageObjectListResult> ListStorageObjects(
@@ -1216,7 +1216,7 @@ namespace Nakama
 		int32 Limit,
 		FString Cursor,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** List user's subscriptions. */
 	NAKAMA_API TNakamaFuture<FNakamaSubscriptionListResult> ListSubscriptions(
@@ -1225,7 +1225,7 @@ namespace Nakama
 		int32 Limit,
 		FString Cursor,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** List user's subscriptions. (Server-to-server with HTTP key) */
 	NAKAMA_API TNakamaFuture<FNakamaSubscriptionListResult> ListSubscriptions(
@@ -1234,7 +1234,7 @@ namespace Nakama
 		int32 Limit,
 		FString Cursor,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** List current or upcoming tournaments. */
 	NAKAMA_API TNakamaFuture<FNakamaTournamentListResult> ListTournaments(
@@ -1247,7 +1247,7 @@ namespace Nakama
 		int32 Limit,
 		FString Cursor,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** List current or upcoming tournaments. (Server-to-server with HTTP key) */
 	NAKAMA_API TNakamaFuture<FNakamaTournamentListResult> ListTournaments(
@@ -1260,7 +1260,7 @@ namespace Nakama
 		int32 Limit,
 		FString Cursor,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** List tournament records. */
 	NAKAMA_API TNakamaFuture<FNakamaTournamentRecordListResult> ListTournamentRecords(
@@ -1272,7 +1272,7 @@ namespace Nakama
 		FString Cursor,
 		int64 Expiry,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** List tournament records. (Server-to-server with HTTP key) */
 	NAKAMA_API TNakamaFuture<FNakamaTournamentRecordListResult> ListTournamentRecords(
@@ -1284,7 +1284,7 @@ namespace Nakama
 		FString Cursor,
 		int64 Expiry,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** List tournament records for a given owner. */
 	NAKAMA_API TNakamaFuture<FNakamaTournamentRecordListResult> ListTournamentRecordsAroundOwner(
@@ -1296,7 +1296,7 @@ namespace Nakama
 		int64 Expiry,
 		FString Cursor,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** List tournament records for a given owner. (Server-to-server with HTTP key) */
 	NAKAMA_API TNakamaFuture<FNakamaTournamentRecordListResult> ListTournamentRecordsAroundOwner(
@@ -1308,7 +1308,7 @@ namespace Nakama
 		int64 Expiry,
 		FString Cursor,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** List groups the current user belongs to. */
 	NAKAMA_API TNakamaFuture<FNakamaUserGroupListResult> ListUserGroups(
@@ -1319,7 +1319,7 @@ namespace Nakama
 		int32 State,
 		FString Cursor,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** List groups the current user belongs to. (Server-to-server with HTTP key) */
 	NAKAMA_API TNakamaFuture<FNakamaUserGroupListResult> ListUserGroups(
@@ -1330,7 +1330,7 @@ namespace Nakama
 		int32 State,
 		FString Cursor,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Promote a set of users in a group to the next role up. */
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> PromoteGroupUsers(
@@ -1339,7 +1339,7 @@ namespace Nakama
 		FString GroupId,
 		const TArray<FString>& UserIds,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Promote a set of users in a group to the next role up. (Server-to-server with HTTP key) */
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> PromoteGroupUsers(
@@ -1348,7 +1348,7 @@ namespace Nakama
 		FString GroupId,
 		const TArray<FString>& UserIds,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Demote a set of users in a group to the next role down. */
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> DemoteGroupUsers(
@@ -1357,7 +1357,7 @@ namespace Nakama
 		FString GroupId,
 		const TArray<FString>& UserIds,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Demote a set of users in a group to the next role down. (Server-to-server with HTTP key) */
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> DemoteGroupUsers(
@@ -1366,7 +1366,7 @@ namespace Nakama
 		FString GroupId,
 		const TArray<FString>& UserIds,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Get storage objects. */
 	NAKAMA_API TNakamaFuture<FNakamaStorageObjectsResult> ReadStorageObjects(
@@ -1374,7 +1374,7 @@ namespace Nakama
 		const FNakamaSession& Session,
 		const TArray<FNakamaReadStorageObjectId>& ObjectIds,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Get storage objects. (Server-to-server with HTTP key) */
 	NAKAMA_API TNakamaFuture<FNakamaStorageObjectsResult> ReadStorageObjects(
@@ -1382,7 +1382,7 @@ namespace Nakama
 		const FString& HttpKey,
 		const TArray<FNakamaReadStorageObjectId>& ObjectIds,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Execute a Lua function on the server. */
 	NAKAMA_API TNakamaFuture<FNakamaRpcResult> RpcFunc(
@@ -1392,7 +1392,7 @@ namespace Nakama
 		TSharedPtr<FJsonObject> Payload,
 		FString HttpKey,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Execute a Lua function on the server. (Server-to-server with HTTP key) */
 	NAKAMA_API TNakamaFuture<FNakamaRpcResult> RpcFunc(
@@ -1401,7 +1401,7 @@ namespace Nakama
 		FString Id,
 		TSharedPtr<FJsonObject> Payload,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Remove the Apple ID from the social profiles on the current user's account. */
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> UnlinkApple(
@@ -1410,7 +1410,7 @@ namespace Nakama
 		FString Token,
 		const TMap<FString, FString>& Vars,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Remove the Apple ID from the social profiles on the current user's account. (Server-to-server with HTTP key) */
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> UnlinkApple(
@@ -1419,7 +1419,7 @@ namespace Nakama
 		FString Token,
 		const TMap<FString, FString>& Vars,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Remove the custom ID from the social profiles on the current user's account. */
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> UnlinkCustom(
@@ -1428,7 +1428,7 @@ namespace Nakama
 		FString Id,
 		const TMap<FString, FString>& Vars,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Remove the custom ID from the social profiles on the current user's account. (Server-to-server with HTTP key) */
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> UnlinkCustom(
@@ -1437,7 +1437,7 @@ namespace Nakama
 		FString Id,
 		const TMap<FString, FString>& Vars,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Remove the device ID from the social profiles on the current user's account. */
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> UnlinkDevice(
@@ -1446,7 +1446,7 @@ namespace Nakama
 		FString Id,
 		const TMap<FString, FString>& Vars,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Remove the device ID from the social profiles on the current user's account. (Server-to-server with HTTP key) */
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> UnlinkDevice(
@@ -1455,7 +1455,7 @@ namespace Nakama
 		FString Id,
 		const TMap<FString, FString>& Vars,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Remove the email+password from the social profiles on the current user's account. */
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> UnlinkEmail(
@@ -1465,7 +1465,7 @@ namespace Nakama
 		FString Password,
 		const TMap<FString, FString>& Vars,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Remove the email+password from the social profiles on the current user's account. (Server-to-server with HTTP key) */
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> UnlinkEmail(
@@ -1475,7 +1475,7 @@ namespace Nakama
 		FString Password,
 		const TMap<FString, FString>& Vars,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Remove Facebook from the social profiles on the current user's account. */
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> UnlinkFacebook(
@@ -1484,7 +1484,7 @@ namespace Nakama
 		FString Token,
 		const TMap<FString, FString>& Vars,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Remove Facebook from the social profiles on the current user's account. (Server-to-server with HTTP key) */
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> UnlinkFacebook(
@@ -1493,7 +1493,7 @@ namespace Nakama
 		FString Token,
 		const TMap<FString, FString>& Vars,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Remove Facebook Instant Game profile from the social profiles on the current user's account. */
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> UnlinkFacebookInstantGame(
@@ -1502,7 +1502,7 @@ namespace Nakama
 		FString SignedPlayerInfo,
 		const TMap<FString, FString>& Vars,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Remove Facebook Instant Game profile from the social profiles on the current user's account. (Server-to-server with HTTP key) */
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> UnlinkFacebookInstantGame(
@@ -1511,7 +1511,7 @@ namespace Nakama
 		FString SignedPlayerInfo,
 		const TMap<FString, FString>& Vars,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Remove Apple's GameCenter from the social profiles on the current user's account. */
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> UnlinkGameCenter(
@@ -1525,7 +1525,7 @@ namespace Nakama
 		FString PublicKeyUrl,
 		const TMap<FString, FString>& Vars,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Remove Apple's GameCenter from the social profiles on the current user's account. (Server-to-server with HTTP key) */
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> UnlinkGameCenter(
@@ -1539,7 +1539,7 @@ namespace Nakama
 		FString PublicKeyUrl,
 		const TMap<FString, FString>& Vars,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Remove Google from the social profiles on the current user's account. */
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> UnlinkGoogle(
@@ -1548,7 +1548,7 @@ namespace Nakama
 		FString Token,
 		const TMap<FString, FString>& Vars,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Remove Google from the social profiles on the current user's account. (Server-to-server with HTTP key) */
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> UnlinkGoogle(
@@ -1557,7 +1557,7 @@ namespace Nakama
 		FString Token,
 		const TMap<FString, FString>& Vars,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Remove Steam from the social profiles on the current user's account. */
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> UnlinkSteam(
@@ -1566,7 +1566,7 @@ namespace Nakama
 		FString Token,
 		const TMap<FString, FString>& Vars,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Remove Steam from the social profiles on the current user's account. (Server-to-server with HTTP key) */
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> UnlinkSteam(
@@ -1575,7 +1575,7 @@ namespace Nakama
 		FString Token,
 		const TMap<FString, FString>& Vars,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Update fields in the current user's account. */
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> UpdateAccount(
@@ -1588,7 +1588,7 @@ namespace Nakama
 		FString Location,
 		FString Timezone,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Update fields in the current user's account. (Server-to-server with HTTP key) */
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> UpdateAccount(
@@ -1601,7 +1601,7 @@ namespace Nakama
 		FString Location,
 		FString Timezone,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Update fields in a given group. */
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> UpdateGroup(
@@ -1614,7 +1614,7 @@ namespace Nakama
 		FString AvatarUrl,
 		bool Open,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Update fields in a given group. (Server-to-server with HTTP key) */
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> UpdateGroup(
@@ -1627,7 +1627,7 @@ namespace Nakama
 		FString AvatarUrl,
 		bool Open,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Validate Apple IAP Receipt */
 	NAKAMA_API TNakamaFuture<FNakamaValidatePurchaseResponseResult> ValidatePurchaseApple(
@@ -1636,7 +1636,7 @@ namespace Nakama
 		FString Receipt,
 		bool Persist,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Validate Apple IAP Receipt (Server-to-server with HTTP key) */
 	NAKAMA_API TNakamaFuture<FNakamaValidatePurchaseResponseResult> ValidatePurchaseApple(
@@ -1645,7 +1645,7 @@ namespace Nakama
 		FString Receipt,
 		bool Persist,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Validate Apple Subscription Receipt */
 	NAKAMA_API TNakamaFuture<FNakamaValidateSubscriptionResponseResult> ValidateSubscriptionApple(
@@ -1654,7 +1654,7 @@ namespace Nakama
 		FString Receipt,
 		bool Persist,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Validate Apple Subscription Receipt (Server-to-server with HTTP key) */
 	NAKAMA_API TNakamaFuture<FNakamaValidateSubscriptionResponseResult> ValidateSubscriptionApple(
@@ -1663,7 +1663,7 @@ namespace Nakama
 		FString Receipt,
 		bool Persist,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Validate Google IAP Receipt */
 	NAKAMA_API TNakamaFuture<FNakamaValidatePurchaseResponseResult> ValidatePurchaseGoogle(
@@ -1672,7 +1672,7 @@ namespace Nakama
 		FString Purchase,
 		bool Persist,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Validate Google IAP Receipt (Server-to-server with HTTP key) */
 	NAKAMA_API TNakamaFuture<FNakamaValidatePurchaseResponseResult> ValidatePurchaseGoogle(
@@ -1681,7 +1681,7 @@ namespace Nakama
 		FString Purchase,
 		bool Persist,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Validate Google Subscription Receipt */
 	NAKAMA_API TNakamaFuture<FNakamaValidateSubscriptionResponseResult> ValidateSubscriptionGoogle(
@@ -1690,7 +1690,7 @@ namespace Nakama
 		FString Receipt,
 		bool Persist,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Validate Google Subscription Receipt (Server-to-server with HTTP key) */
 	NAKAMA_API TNakamaFuture<FNakamaValidateSubscriptionResponseResult> ValidateSubscriptionGoogle(
@@ -1699,7 +1699,7 @@ namespace Nakama
 		FString Receipt,
 		bool Persist,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Validate Huawei IAP Receipt */
 	NAKAMA_API TNakamaFuture<FNakamaValidatePurchaseResponseResult> ValidatePurchaseHuawei(
@@ -1709,7 +1709,7 @@ namespace Nakama
 		FString Signature,
 		bool Persist,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Validate Huawei IAP Receipt (Server-to-server with HTTP key) */
 	NAKAMA_API TNakamaFuture<FNakamaValidatePurchaseResponseResult> ValidatePurchaseHuawei(
@@ -1719,7 +1719,7 @@ namespace Nakama
 		FString Signature,
 		bool Persist,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Validate FB Instant IAP Receipt */
 	NAKAMA_API TNakamaFuture<FNakamaValidatePurchaseResponseResult> ValidatePurchaseFacebookInstant(
@@ -1728,7 +1728,7 @@ namespace Nakama
 		FString SignedRequest,
 		bool Persist,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Validate FB Instant IAP Receipt (Server-to-server with HTTP key) */
 	NAKAMA_API TNakamaFuture<FNakamaValidatePurchaseResponseResult> ValidatePurchaseFacebookInstant(
@@ -1737,7 +1737,7 @@ namespace Nakama
 		FString SignedRequest,
 		bool Persist,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Write a record to a leaderboard. */
 	NAKAMA_API TNakamaFuture<FNakamaLeaderboardRecordResult> WriteLeaderboardRecord(
@@ -1746,7 +1746,7 @@ namespace Nakama
 		FString LeaderboardId,
 		FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite Record,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Write a record to a leaderboard. (Server-to-server with HTTP key) */
 	NAKAMA_API TNakamaFuture<FNakamaLeaderboardRecordResult> WriteLeaderboardRecord(
@@ -1755,7 +1755,7 @@ namespace Nakama
 		FString LeaderboardId,
 		FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite Record,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Write objects into the storage engine. */
 	NAKAMA_API TNakamaFuture<FNakamaStorageObjectAcksResult> WriteStorageObjects(
@@ -1763,7 +1763,7 @@ namespace Nakama
 		const FNakamaSession& Session,
 		const TArray<FNakamaWriteStorageObject>& Objects,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Write objects into the storage engine. (Server-to-server with HTTP key) */
 	NAKAMA_API TNakamaFuture<FNakamaStorageObjectAcksResult> WriteStorageObjects(
@@ -1771,7 +1771,7 @@ namespace Nakama
 		const FString& HttpKey,
 		const TArray<FNakamaWriteStorageObject>& Objects,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Write a record to a tournament. */
 	NAKAMA_API TNakamaFuture<FNakamaLeaderboardRecordResult> WriteTournamentRecord(
@@ -1780,7 +1780,7 @@ namespace Nakama
 		FString TournamentId,
 		FNakamaWriteTournamentRecordRequest_TournamentRecordWrite Record,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Write a record to a tournament. (Server-to-server with HTTP key) */
 	NAKAMA_API TNakamaFuture<FNakamaLeaderboardRecordResult> WriteTournamentRecord(
@@ -1789,5 +1789,5 @@ namespace Nakama
 		FString TournamentId,
 		FNakamaWriteTournamentRecordRequest_TournamentRecordWrite Record,
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 }

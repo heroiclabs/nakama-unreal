@@ -18,6 +18,7 @@
  * passing before the consolidation.
  */
 
+#include <atomic>
 #include "Misc/AutomationTest.h"
 #include "AsyncFuture.h"
 
@@ -38,21 +39,21 @@ struct FSatoriThreadingTestResult
 
 bool FSatoriTerminalNextOnGameThreadTest::RunTest(const FString& Parameters)
 {
-	TSharedRef<TAtomic<bool>> bCallbackRanOnGameThread = MakeShared<TAtomic<bool>>(false);
-	TSharedRef<TAtomic<bool>> bCallbackInvoked        = MakeShared<TAtomic<bool>>(false);
+	TSharedRef<std::atomic<bool>> bCallbackRanOnGameThread = MakeShared<std::atomic<bool>>(false);
+	TSharedRef<std::atomic<bool>> bCallbackInvoked        = MakeShared<std::atomic<bool>>(false);
 
 	MakeCompletedAsyncFuture(FSatoriThreadingTestResult{}).Next(
 		[bCallbackRanOnGameThread, bCallbackInvoked](FSatoriThreadingTestResult)
 		{
-			bCallbackRanOnGameThread->Store(IsInGameThread());
-			bCallbackInvoked->Store(true);
+			bCallbackRanOnGameThread->store(IsInGameThread());
+			bCallbackInvoked->store(true);
 		});
 
 	// Spin-wait up to 5 s, pumping the game-thread task queue each iteration
 	// so the AsyncTask dispatch can actually execute.
 	constexpr double TimeoutSeconds = 5.0;
 	const double Deadline = FPlatformTime::Seconds() + TimeoutSeconds;
-	while (!bCallbackInvoked->Load())
+	while (!bCallbackInvoked->load())
 	{
 		FTaskGraphInterface::Get().ProcessThreadUntilIdle(ENamedThreads::GameThread);
 		if (FPlatformTime::Seconds() > Deadline)
@@ -65,7 +66,7 @@ bool FSatoriTerminalNextOnGameThreadTest::RunTest(const FString& Parameters)
 
 	TestTrue(
 		TEXT("TSatoriFuture terminal .Next() callback must run on the game thread"),
-		bCallbackRanOnGameThread->Load()
+		bCallbackRanOnGameThread->load()
 	);
 
 	return true;
@@ -88,19 +89,19 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(
 
 bool FNakamaTerminalNextOnGameThreadTest::RunTest(const FString& Parameters)
 {
-	TSharedRef<TAtomic<bool>> bCallbackRanOnGameThread = MakeShared<TAtomic<bool>>(false);
-	TSharedRef<TAtomic<bool>> bCallbackInvoked        = MakeShared<TAtomic<bool>>(false);
+	TSharedRef<std::atomic<bool>> bCallbackRanOnGameThread = MakeShared<std::atomic<bool>>(false);
+	TSharedRef<std::atomic<bool>> bCallbackInvoked        = MakeShared<std::atomic<bool>>(false);
 
 	MakeCompletedAsyncFuture(FNakamaThreadingTestResult{}).Next(
 		[bCallbackRanOnGameThread, bCallbackInvoked](FNakamaThreadingTestResult)
 		{
-			bCallbackRanOnGameThread->Store(IsInGameThread());
-			bCallbackInvoked->Store(true);
+			bCallbackRanOnGameThread->store(IsInGameThread());
+			bCallbackInvoked->store(true);
 		});
 
 	constexpr double TimeoutSeconds = 5.0;
 	const double Deadline = FPlatformTime::Seconds() + TimeoutSeconds;
-	while (!bCallbackInvoked->Load())
+	while (!bCallbackInvoked->load())
 	{
 		FTaskGraphInterface::Get().ProcessThreadUntilIdle(ENamedThreads::GameThread);
 		if (FPlatformTime::Seconds() > Deadline)
@@ -113,7 +114,7 @@ bool FNakamaTerminalNextOnGameThreadTest::RunTest(const FString& Parameters)
 
 	TestTrue(
 		TEXT("TNakamaFuture terminal .Next() callback must run on the game thread"),
-		bCallbackRanOnGameThread->Load()
+		bCallbackRanOnGameThread->load()
 	);
 
 	return true;

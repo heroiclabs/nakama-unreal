@@ -18,11 +18,11 @@
 
 #pragma once
 
+#include <atomic>
 #include "CoreMinimal.h"
 #include "Templates/Function.h"
 #include "Templates/SharedPointer.h"
 #include "Dom/JsonObject.h"
-#include "HAL/ThreadSafeBool.h"
 
 #include "SatoriApi.generated.h"
 
@@ -777,7 +777,7 @@ namespace SatoriApi
 		TFunction<void(const FSatoriSession&)> OnSuccess,
 		TFunction<void(const FSatoriError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Log out a session, invalidate a refresh token, or log out all sessions/refresh tokens for a user. */
 	SATORIAPI_API void AuthenticateLogout(
@@ -787,7 +787,7 @@ namespace SatoriApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FSatoriError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Refresh a user's session using a refresh token retrieved from a previous authentication request. */
 	SATORIAPI_API void AuthenticateRefresh(
@@ -796,7 +796,7 @@ namespace SatoriApi
 		TFunction<void(const FSatoriSession&)> OnSuccess,
 		TFunction<void(const FSatoriError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Delete the caller's identity and associated data. */
 	SATORIAPI_API void DeleteIdentity(
@@ -805,7 +805,7 @@ namespace SatoriApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FSatoriError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Publish an event for this session. */
 	SATORIAPI_API void Event(
@@ -815,7 +815,7 @@ namespace SatoriApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FSatoriError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Publish server events for multiple distinct identities. */
 	SATORIAPI_API void ServerEvent(
@@ -825,7 +825,7 @@ namespace SatoriApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FSatoriError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Get or list all available experiments for this identity. */
 	SATORIAPI_API void GetExperiments(
@@ -836,7 +836,7 @@ namespace SatoriApi
 		TFunction<void(const FSatoriExperimentList&)> OnSuccess,
 		TFunction<void(const FSatoriError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** List all available flags and their value overrides for this identity. */
 	SATORIAPI_API void GetFlagOverrides(
@@ -847,7 +847,7 @@ namespace SatoriApi
 		TFunction<void(const FSatoriFlagOverrideList&)> OnSuccess,
 		TFunction<void(const FSatoriError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** List all available flags for this identity. */
 	SATORIAPI_API void GetFlags(
@@ -858,7 +858,7 @@ namespace SatoriApi
 		TFunction<void(const FSatoriFlagList&)> OnSuccess,
 		TFunction<void(const FSatoriError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** List available live events. */
 	SATORIAPI_API void GetLiveEvents(
@@ -873,7 +873,7 @@ namespace SatoriApi
 		TFunction<void(const FSatoriLiveEventList&)> OnSuccess,
 		TFunction<void(const FSatoriError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Join an 'explicit join' live event. */
 	SATORIAPI_API void JoinLiveEvent(
@@ -883,7 +883,7 @@ namespace SatoriApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FSatoriError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** A healthcheck which load balancers can use to check the service. */
 	SATORIAPI_API void Healthcheck(
@@ -892,7 +892,7 @@ namespace SatoriApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FSatoriError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Enrich/replace the current session with new identifier. */
 	SATORIAPI_API void Identify(
@@ -904,7 +904,7 @@ namespace SatoriApi
 		TFunction<void(const FSatoriSession&)> OnSuccess,
 		TFunction<void(const FSatoriError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** List properties associated with this identity. */
 	SATORIAPI_API void ListProperties(
@@ -913,7 +913,7 @@ namespace SatoriApi
 		TFunction<void(const FSatoriProperties&)> OnSuccess,
 		TFunction<void(const FSatoriError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** A readycheck which load balancers can use to check the service. */
 	SATORIAPI_API void Readycheck(
@@ -922,7 +922,7 @@ namespace SatoriApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FSatoriError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Update identity properties. */
 	SATORIAPI_API void UpdateProperties(
@@ -934,7 +934,7 @@ namespace SatoriApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FSatoriError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Get the list of messages for the identity. */
 	SATORIAPI_API void GetMessageList(
@@ -947,7 +947,7 @@ namespace SatoriApi
 		TFunction<void(const FSatoriGetMessageListResponse&)> OnSuccess,
 		TFunction<void(const FSatoriError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Updates a message for an identity. */
 	SATORIAPI_API void UpdateMessage(
@@ -959,7 +959,7 @@ namespace SatoriApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FSatoriError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Deletes a message for an identity. */
 	SATORIAPI_API void DeleteMessage(
@@ -969,5 +969,5 @@ namespace SatoriApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FSatoriError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 }

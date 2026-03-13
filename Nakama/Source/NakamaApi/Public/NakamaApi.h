@@ -18,11 +18,11 @@
 
 #pragma once
 
+#include <atomic>
 #include "CoreMinimal.h"
 #include "Templates/Function.h"
 #include "Templates/SharedPointer.h"
 #include "Dom/JsonObject.h"
-#include "HAL/ThreadSafeBool.h"
 #include "NakamaTypes.h"
 
 NAKAMAAPI_API DECLARE_LOG_CATEGORY_EXTERN(LogNakama, Log, All);
@@ -41,7 +41,7 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Add friends by ID or username to a user's account. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void AddFriends(
@@ -53,7 +53,7 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Add users to a group. */
 	NAKAMAAPI_API void AddGroupUsers(
@@ -64,7 +64,7 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Add users to a group. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void AddGroupUsers(
@@ -75,7 +75,7 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Refresh a user's session using a refresh token retrieved from a previous authentication request. */
 	NAKAMAAPI_API void SessionRefresh(
@@ -85,7 +85,7 @@ namespace NakamaApi
 		TFunction<void(const FNakamaSession&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Log out a session, invalidate a refresh token, or log out all sessions/refresh tokens for a user. */
 	NAKAMAAPI_API void SessionLogout(
@@ -96,7 +96,7 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Log out a session, invalidate a refresh token, or log out all sessions/refresh tokens for a user. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void SessionLogout(
@@ -107,7 +107,7 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Authenticate a user with an Apple ID against the server. */
 	NAKAMAAPI_API void AuthenticateApple(
@@ -118,7 +118,7 @@ namespace NakamaApi
 		TFunction<void(const FNakamaSession&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Authenticate a user with a custom id against the server. */
 	NAKAMAAPI_API void AuthenticateCustom(
@@ -129,7 +129,7 @@ namespace NakamaApi
 		TFunction<void(const FNakamaSession&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Authenticate a user with a device id against the server. */
 	NAKAMAAPI_API void AuthenticateDevice(
@@ -140,7 +140,7 @@ namespace NakamaApi
 		TFunction<void(const FNakamaSession&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Authenticate a user with an email+password against the server. */
 	NAKAMAAPI_API void AuthenticateEmail(
@@ -151,7 +151,7 @@ namespace NakamaApi
 		TFunction<void(const FNakamaSession&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Authenticate a user with a Facebook OAuth token against the server. */
 	NAKAMAAPI_API void AuthenticateFacebook(
@@ -163,7 +163,7 @@ namespace NakamaApi
 		TFunction<void(const FNakamaSession&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Authenticate a user with a Facebook Instant Game token against the server. */
 	NAKAMAAPI_API void AuthenticateFacebookInstantGame(
@@ -174,7 +174,7 @@ namespace NakamaApi
 		TFunction<void(const FNakamaSession&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Authenticate a user with Apple's GameCenter against the server. */
 	NAKAMAAPI_API void AuthenticateGameCenter(
@@ -185,7 +185,7 @@ namespace NakamaApi
 		TFunction<void(const FNakamaSession&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Authenticate a user with Google against the server. */
 	NAKAMAAPI_API void AuthenticateGoogle(
@@ -196,7 +196,7 @@ namespace NakamaApi
 		TFunction<void(const FNakamaSession&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Authenticate a user with Steam against the server. */
 	NAKAMAAPI_API void AuthenticateSteam(
@@ -208,7 +208,7 @@ namespace NakamaApi
 		TFunction<void(const FNakamaSession&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Ban a set of users from a group. */
 	NAKAMAAPI_API void BanGroupUsers(
@@ -219,7 +219,7 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Ban a set of users from a group. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void BanGroupUsers(
@@ -230,7 +230,7 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Block one or more users by ID or username. */
 	NAKAMAAPI_API void BlockFriends(
@@ -241,7 +241,7 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Block one or more users by ID or username. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void BlockFriends(
@@ -252,7 +252,7 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Create a new group with the current user as the owner. */
 	NAKAMAAPI_API void CreateGroup(
@@ -267,7 +267,7 @@ namespace NakamaApi
 		TFunction<void(const FNakamaGroup&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Create a new group with the current user as the owner. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void CreateGroup(
@@ -282,7 +282,7 @@ namespace NakamaApi
 		TFunction<void(const FNakamaGroup&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Delete the current user's account. */
 	NAKAMAAPI_API void DeleteAccount(
@@ -291,7 +291,7 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Delete the current user's account. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void DeleteAccount(
@@ -300,7 +300,7 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Delete one or more users by ID or username. */
 	NAKAMAAPI_API void DeleteFriends(
@@ -311,7 +311,7 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Delete one or more users by ID or username. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void DeleteFriends(
@@ -322,7 +322,7 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Delete a group by ID. */
 	NAKAMAAPI_API void DeleteGroup(
@@ -332,7 +332,7 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Delete a group by ID. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void DeleteGroup(
@@ -342,7 +342,7 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Delete a leaderboard record. */
 	NAKAMAAPI_API void DeleteLeaderboardRecord(
@@ -352,7 +352,7 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Delete a leaderboard record. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void DeleteLeaderboardRecord(
@@ -362,7 +362,7 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Delete one or more notifications for the current user. */
 	NAKAMAAPI_API void DeleteNotifications(
@@ -372,7 +372,7 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Delete one or more notifications for the current user. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void DeleteNotifications(
@@ -382,7 +382,7 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Delete a tournament record. */
 	NAKAMAAPI_API void DeleteTournamentRecord(
@@ -392,7 +392,7 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Delete a tournament record. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void DeleteTournamentRecord(
@@ -402,7 +402,7 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Delete one or more objects by ID or username. */
 	NAKAMAAPI_API void DeleteStorageObjects(
@@ -412,7 +412,7 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Delete one or more objects by ID or username. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void DeleteStorageObjects(
@@ -422,7 +422,7 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Submit an event for processing in the server's registered runtime custom events handler. */
 	NAKAMAAPI_API void Event(
@@ -435,7 +435,7 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Submit an event for processing in the server's registered runtime custom events handler. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void Event(
@@ -448,7 +448,7 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Fetch the current user's account. */
 	NAKAMAAPI_API void GetAccount(
@@ -457,7 +457,7 @@ namespace NakamaApi
 		TFunction<void(const FNakamaAccount&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Fetch the current user's account. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void GetAccount(
@@ -466,7 +466,7 @@ namespace NakamaApi
 		TFunction<void(const FNakamaAccount&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Fetch zero or more users by ID and/or username. */
 	NAKAMAAPI_API void GetUsers(
@@ -478,7 +478,7 @@ namespace NakamaApi
 		TFunction<void(const FNakamaUsers&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Fetch zero or more users by ID and/or username. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void GetUsers(
@@ -490,7 +490,7 @@ namespace NakamaApi
 		TFunction<void(const FNakamaUsers&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Get subscription by product id. */
 	NAKAMAAPI_API void GetSubscription(
@@ -500,7 +500,7 @@ namespace NakamaApi
 		TFunction<void(const FNakamaValidatedSubscription&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Get subscription by product id. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void GetSubscription(
@@ -510,7 +510,7 @@ namespace NakamaApi
 		TFunction<void(const FNakamaValidatedSubscription&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Get matchmaker stats. */
 	NAKAMAAPI_API void GetMatchmakerStats(
@@ -519,7 +519,7 @@ namespace NakamaApi
 		TFunction<void(const FNakamaMatchmakerStats&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Get matchmaker stats. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void GetMatchmakerStats(
@@ -528,7 +528,7 @@ namespace NakamaApi
 		TFunction<void(const FNakamaMatchmakerStats&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** A healthcheck which load balancers can use to check the service. */
 	NAKAMAAPI_API void Healthcheck(
@@ -537,7 +537,7 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** A healthcheck which load balancers can use to check the service. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void Healthcheck(
@@ -546,7 +546,7 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Import Facebook friends and add them to a user's account. */
 	NAKAMAAPI_API void ImportFacebookFriends(
@@ -557,7 +557,7 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Import Facebook friends and add them to a user's account. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void ImportFacebookFriends(
@@ -568,7 +568,7 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Import Steam friends and add them to a user's account. */
 	NAKAMAAPI_API void ImportSteamFriends(
@@ -579,7 +579,7 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Import Steam friends and add them to a user's account. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void ImportSteamFriends(
@@ -590,7 +590,7 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Immediately join an open group, or request to join a closed one. */
 	NAKAMAAPI_API void JoinGroup(
@@ -600,7 +600,7 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Immediately join an open group, or request to join a closed one. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void JoinGroup(
@@ -610,7 +610,7 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Attempt to join an open and running tournament. */
 	NAKAMAAPI_API void JoinTournament(
@@ -620,7 +620,7 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Attempt to join an open and running tournament. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void JoinTournament(
@@ -630,7 +630,7 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Kick a set of users from a group. */
 	NAKAMAAPI_API void KickGroupUsers(
@@ -641,7 +641,7 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Kick a set of users from a group. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void KickGroupUsers(
@@ -652,7 +652,7 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Leave a group the user is a member of. */
 	NAKAMAAPI_API void LeaveGroup(
@@ -662,7 +662,7 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Leave a group the user is a member of. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void LeaveGroup(
@@ -672,7 +672,7 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Add an Apple ID to the social profiles on the current user's account. */
 	NAKAMAAPI_API void LinkApple(
@@ -683,7 +683,7 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Add an Apple ID to the social profiles on the current user's account. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void LinkApple(
@@ -694,7 +694,7 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Add a custom ID to the social profiles on the current user's account. */
 	NAKAMAAPI_API void LinkCustom(
@@ -705,7 +705,7 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Add a custom ID to the social profiles on the current user's account. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void LinkCustom(
@@ -716,7 +716,7 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Add a device ID to the social profiles on the current user's account. */
 	NAKAMAAPI_API void LinkDevice(
@@ -727,7 +727,7 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Add a device ID to the social profiles on the current user's account. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void LinkDevice(
@@ -738,7 +738,7 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Add an email+password to the social profiles on the current user's account. */
 	NAKAMAAPI_API void LinkEmail(
@@ -750,7 +750,7 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Add an email+password to the social profiles on the current user's account. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void LinkEmail(
@@ -762,7 +762,7 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Add Facebook to the social profiles on the current user's account. */
 	NAKAMAAPI_API void LinkFacebook(
@@ -773,7 +773,7 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Add Facebook to the social profiles on the current user's account. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void LinkFacebook(
@@ -784,7 +784,7 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Add Facebook Instant Game to the social profiles on the current user's account. */
 	NAKAMAAPI_API void LinkFacebookInstantGame(
@@ -795,7 +795,7 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Add Facebook Instant Game to the social profiles on the current user's account. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void LinkFacebookInstantGame(
@@ -806,7 +806,7 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Add Apple's GameCenter to the social profiles on the current user's account. */
 	NAKAMAAPI_API void LinkGameCenter(
@@ -822,7 +822,7 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Add Apple's GameCenter to the social profiles on the current user's account. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void LinkGameCenter(
@@ -838,7 +838,7 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Add Google to the social profiles on the current user's account. */
 	NAKAMAAPI_API void LinkGoogle(
@@ -849,7 +849,7 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Add Google to the social profiles on the current user's account. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void LinkGoogle(
@@ -860,7 +860,7 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Add Steam to the social profiles on the current user's account. */
 	NAKAMAAPI_API void LinkSteam(
@@ -871,7 +871,7 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Add Steam to the social profiles on the current user's account. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void LinkSteam(
@@ -882,7 +882,7 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** List a channel's message history. */
 	NAKAMAAPI_API void ListChannelMessages(
@@ -895,7 +895,7 @@ namespace NakamaApi
 		TFunction<void(const FNakamaChannelMessageList&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** List a channel's message history. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void ListChannelMessages(
@@ -908,7 +908,7 @@ namespace NakamaApi
 		TFunction<void(const FNakamaChannelMessageList&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** List all friends for the current user. */
 	NAKAMAAPI_API void ListFriends(
@@ -920,7 +920,7 @@ namespace NakamaApi
 		TFunction<void(const FNakamaFriendList&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** List all friends for the current user. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void ListFriends(
@@ -932,7 +932,7 @@ namespace NakamaApi
 		TFunction<void(const FNakamaFriendList&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** List friends of friends for the current user. */
 	NAKAMAAPI_API void ListFriendsOfFriends(
@@ -943,7 +943,7 @@ namespace NakamaApi
 		TFunction<void(const FNakamaFriendsOfFriendsList&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** List friends of friends for the current user. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void ListFriendsOfFriends(
@@ -954,7 +954,7 @@ namespace NakamaApi
 		TFunction<void(const FNakamaFriendsOfFriendsList&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** List groups based on given filters. */
 	NAKAMAAPI_API void ListGroups(
@@ -969,7 +969,7 @@ namespace NakamaApi
 		TFunction<void(const FNakamaGroupList&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** List groups based on given filters. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void ListGroups(
@@ -984,7 +984,7 @@ namespace NakamaApi
 		TFunction<void(const FNakamaGroupList&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** List all users that are part of a group. */
 	NAKAMAAPI_API void ListGroupUsers(
@@ -997,7 +997,7 @@ namespace NakamaApi
 		TFunction<void(const FNakamaGroupUserList&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** List all users that are part of a group. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void ListGroupUsers(
@@ -1010,7 +1010,7 @@ namespace NakamaApi
 		TFunction<void(const FNakamaGroupUserList&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** List leaderboard records. */
 	NAKAMAAPI_API void ListLeaderboardRecords(
@@ -1024,7 +1024,7 @@ namespace NakamaApi
 		TFunction<void(const FNakamaLeaderboardRecordList&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** List leaderboard records. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void ListLeaderboardRecords(
@@ -1038,7 +1038,7 @@ namespace NakamaApi
 		TFunction<void(const FNakamaLeaderboardRecordList&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** List leaderboard records around the target ownerId. */
 	NAKAMAAPI_API void ListLeaderboardRecordsAroundOwner(
@@ -1052,7 +1052,7 @@ namespace NakamaApi
 		TFunction<void(const FNakamaLeaderboardRecordList&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** List leaderboard records around the target ownerId. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void ListLeaderboardRecordsAroundOwner(
@@ -1066,7 +1066,7 @@ namespace NakamaApi
 		TFunction<void(const FNakamaLeaderboardRecordList&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** List running matches and optionally filter by matching criteria. */
 	NAKAMAAPI_API void ListMatches(
@@ -1081,7 +1081,7 @@ namespace NakamaApi
 		TFunction<void(const FNakamaMatchList&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** List running matches and optionally filter by matching criteria. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void ListMatches(
@@ -1096,7 +1096,7 @@ namespace NakamaApi
 		TFunction<void(const FNakamaMatchList&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** List parties and optionally filter by matching criteria. */
 	NAKAMAAPI_API void ListParties(
@@ -1109,7 +1109,7 @@ namespace NakamaApi
 		TFunction<void(const FNakamaPartyList&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** List parties and optionally filter by matching criteria. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void ListParties(
@@ -1122,7 +1122,7 @@ namespace NakamaApi
 		TFunction<void(const FNakamaPartyList&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Fetch list of notifications. */
 	NAKAMAAPI_API void ListNotifications(
@@ -1133,7 +1133,7 @@ namespace NakamaApi
 		TFunction<void(const FNakamaNotificationList&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Fetch list of notifications. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void ListNotifications(
@@ -1144,7 +1144,7 @@ namespace NakamaApi
 		TFunction<void(const FNakamaNotificationList&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** List publicly readable storage objects in a given collection. */
 	NAKAMAAPI_API void ListStorageObjects(
@@ -1157,7 +1157,7 @@ namespace NakamaApi
 		TFunction<void(const FNakamaStorageObjectList&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** List publicly readable storage objects in a given collection. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void ListStorageObjects(
@@ -1170,7 +1170,7 @@ namespace NakamaApi
 		TFunction<void(const FNakamaStorageObjectList&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** List user's subscriptions. */
 	NAKAMAAPI_API void ListSubscriptions(
@@ -1181,7 +1181,7 @@ namespace NakamaApi
 		TFunction<void(const FNakamaSubscriptionList&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** List user's subscriptions. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void ListSubscriptions(
@@ -1192,7 +1192,7 @@ namespace NakamaApi
 		TFunction<void(const FNakamaSubscriptionList&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** List current or upcoming tournaments. */
 	NAKAMAAPI_API void ListTournaments(
@@ -1207,7 +1207,7 @@ namespace NakamaApi
 		TFunction<void(const FNakamaTournamentList&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** List current or upcoming tournaments. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void ListTournaments(
@@ -1222,7 +1222,7 @@ namespace NakamaApi
 		TFunction<void(const FNakamaTournamentList&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** List tournament records. */
 	NAKAMAAPI_API void ListTournamentRecords(
@@ -1236,7 +1236,7 @@ namespace NakamaApi
 		TFunction<void(const FNakamaTournamentRecordList&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** List tournament records. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void ListTournamentRecords(
@@ -1250,7 +1250,7 @@ namespace NakamaApi
 		TFunction<void(const FNakamaTournamentRecordList&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** List tournament records for a given owner. */
 	NAKAMAAPI_API void ListTournamentRecordsAroundOwner(
@@ -1264,7 +1264,7 @@ namespace NakamaApi
 		TFunction<void(const FNakamaTournamentRecordList&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** List tournament records for a given owner. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void ListTournamentRecordsAroundOwner(
@@ -1278,7 +1278,7 @@ namespace NakamaApi
 		TFunction<void(const FNakamaTournamentRecordList&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** List groups the current user belongs to. */
 	NAKAMAAPI_API void ListUserGroups(
@@ -1291,7 +1291,7 @@ namespace NakamaApi
 		TFunction<void(const FNakamaUserGroupList&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** List groups the current user belongs to. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void ListUserGroups(
@@ -1304,7 +1304,7 @@ namespace NakamaApi
 		TFunction<void(const FNakamaUserGroupList&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Promote a set of users in a group to the next role up. */
 	NAKAMAAPI_API void PromoteGroupUsers(
@@ -1315,7 +1315,7 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Promote a set of users in a group to the next role up. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void PromoteGroupUsers(
@@ -1326,7 +1326,7 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Demote a set of users in a group to the next role down. */
 	NAKAMAAPI_API void DemoteGroupUsers(
@@ -1337,7 +1337,7 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Demote a set of users in a group to the next role down. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void DemoteGroupUsers(
@@ -1348,7 +1348,7 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Get storage objects. */
 	NAKAMAAPI_API void ReadStorageObjects(
@@ -1358,7 +1358,7 @@ namespace NakamaApi
 		TFunction<void(const FNakamaStorageObjects&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Get storage objects. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void ReadStorageObjects(
@@ -1368,7 +1368,7 @@ namespace NakamaApi
 		TFunction<void(const FNakamaStorageObjects&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Execute a Lua function on the server. */
 	NAKAMAAPI_API void RpcFunc(
@@ -1380,7 +1380,7 @@ namespace NakamaApi
 		TFunction<void(const FNakamaRpc&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Execute a Lua function on the server. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void RpcFunc(
@@ -1391,7 +1391,7 @@ namespace NakamaApi
 		TFunction<void(const FNakamaRpc&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Remove the Apple ID from the social profiles on the current user's account. */
 	NAKAMAAPI_API void UnlinkApple(
@@ -1402,7 +1402,7 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Remove the Apple ID from the social profiles on the current user's account. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void UnlinkApple(
@@ -1413,7 +1413,7 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Remove the custom ID from the social profiles on the current user's account. */
 	NAKAMAAPI_API void UnlinkCustom(
@@ -1424,7 +1424,7 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Remove the custom ID from the social profiles on the current user's account. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void UnlinkCustom(
@@ -1435,7 +1435,7 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Remove the device ID from the social profiles on the current user's account. */
 	NAKAMAAPI_API void UnlinkDevice(
@@ -1446,7 +1446,7 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Remove the device ID from the social profiles on the current user's account. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void UnlinkDevice(
@@ -1457,7 +1457,7 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Remove the email+password from the social profiles on the current user's account. */
 	NAKAMAAPI_API void UnlinkEmail(
@@ -1469,7 +1469,7 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Remove the email+password from the social profiles on the current user's account. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void UnlinkEmail(
@@ -1481,7 +1481,7 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Remove Facebook from the social profiles on the current user's account. */
 	NAKAMAAPI_API void UnlinkFacebook(
@@ -1492,7 +1492,7 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Remove Facebook from the social profiles on the current user's account. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void UnlinkFacebook(
@@ -1503,7 +1503,7 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Remove Facebook Instant Game profile from the social profiles on the current user's account. */
 	NAKAMAAPI_API void UnlinkFacebookInstantGame(
@@ -1514,7 +1514,7 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Remove Facebook Instant Game profile from the social profiles on the current user's account. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void UnlinkFacebookInstantGame(
@@ -1525,7 +1525,7 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Remove Apple's GameCenter from the social profiles on the current user's account. */
 	NAKAMAAPI_API void UnlinkGameCenter(
@@ -1541,7 +1541,7 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Remove Apple's GameCenter from the social profiles on the current user's account. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void UnlinkGameCenter(
@@ -1557,7 +1557,7 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Remove Google from the social profiles on the current user's account. */
 	NAKAMAAPI_API void UnlinkGoogle(
@@ -1568,7 +1568,7 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Remove Google from the social profiles on the current user's account. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void UnlinkGoogle(
@@ -1579,7 +1579,7 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Remove Steam from the social profiles on the current user's account. */
 	NAKAMAAPI_API void UnlinkSteam(
@@ -1590,7 +1590,7 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Remove Steam from the social profiles on the current user's account. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void UnlinkSteam(
@@ -1601,7 +1601,7 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Update fields in the current user's account. */
 	NAKAMAAPI_API void UpdateAccount(
@@ -1616,7 +1616,7 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Update fields in the current user's account. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void UpdateAccount(
@@ -1631,7 +1631,7 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Update fields in a given group. */
 	NAKAMAAPI_API void UpdateGroup(
@@ -1646,7 +1646,7 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Update fields in a given group. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void UpdateGroup(
@@ -1661,7 +1661,7 @@ namespace NakamaApi
 		TFunction<void()> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Validate Apple IAP Receipt */
 	NAKAMAAPI_API void ValidatePurchaseApple(
@@ -1672,7 +1672,7 @@ namespace NakamaApi
 		TFunction<void(const FNakamaValidatePurchaseResponse&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Validate Apple IAP Receipt (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void ValidatePurchaseApple(
@@ -1683,7 +1683,7 @@ namespace NakamaApi
 		TFunction<void(const FNakamaValidatePurchaseResponse&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Validate Apple Subscription Receipt */
 	NAKAMAAPI_API void ValidateSubscriptionApple(
@@ -1694,7 +1694,7 @@ namespace NakamaApi
 		TFunction<void(const FNakamaValidateSubscriptionResponse&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Validate Apple Subscription Receipt (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void ValidateSubscriptionApple(
@@ -1705,7 +1705,7 @@ namespace NakamaApi
 		TFunction<void(const FNakamaValidateSubscriptionResponse&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Validate Google IAP Receipt */
 	NAKAMAAPI_API void ValidatePurchaseGoogle(
@@ -1716,7 +1716,7 @@ namespace NakamaApi
 		TFunction<void(const FNakamaValidatePurchaseResponse&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Validate Google IAP Receipt (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void ValidatePurchaseGoogle(
@@ -1727,7 +1727,7 @@ namespace NakamaApi
 		TFunction<void(const FNakamaValidatePurchaseResponse&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Validate Google Subscription Receipt */
 	NAKAMAAPI_API void ValidateSubscriptionGoogle(
@@ -1738,7 +1738,7 @@ namespace NakamaApi
 		TFunction<void(const FNakamaValidateSubscriptionResponse&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Validate Google Subscription Receipt (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void ValidateSubscriptionGoogle(
@@ -1749,7 +1749,7 @@ namespace NakamaApi
 		TFunction<void(const FNakamaValidateSubscriptionResponse&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Validate Huawei IAP Receipt */
 	NAKAMAAPI_API void ValidatePurchaseHuawei(
@@ -1761,7 +1761,7 @@ namespace NakamaApi
 		TFunction<void(const FNakamaValidatePurchaseResponse&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Validate Huawei IAP Receipt (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void ValidatePurchaseHuawei(
@@ -1773,7 +1773,7 @@ namespace NakamaApi
 		TFunction<void(const FNakamaValidatePurchaseResponse&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Validate FB Instant IAP Receipt */
 	NAKAMAAPI_API void ValidatePurchaseFacebookInstant(
@@ -1784,7 +1784,7 @@ namespace NakamaApi
 		TFunction<void(const FNakamaValidatePurchaseResponse&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Validate FB Instant IAP Receipt (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void ValidatePurchaseFacebookInstant(
@@ -1795,7 +1795,7 @@ namespace NakamaApi
 		TFunction<void(const FNakamaValidatePurchaseResponse&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Write a record to a leaderboard. */
 	NAKAMAAPI_API void WriteLeaderboardRecord(
@@ -1806,7 +1806,7 @@ namespace NakamaApi
 		TFunction<void(const FNakamaLeaderboardRecord&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Write a record to a leaderboard. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void WriteLeaderboardRecord(
@@ -1817,7 +1817,7 @@ namespace NakamaApi
 		TFunction<void(const FNakamaLeaderboardRecord&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Write objects into the storage engine. */
 	NAKAMAAPI_API void WriteStorageObjects(
@@ -1827,7 +1827,7 @@ namespace NakamaApi
 		TFunction<void(const FNakamaStorageObjectAcks&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Write objects into the storage engine. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void WriteStorageObjects(
@@ -1837,7 +1837,7 @@ namespace NakamaApi
 		TFunction<void(const FNakamaStorageObjectAcks&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Write a record to a tournament. */
 	NAKAMAAPI_API void WriteTournamentRecord(
@@ -1848,7 +1848,7 @@ namespace NakamaApi
 		TFunction<void(const FNakamaLeaderboardRecord&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Write a record to a tournament. (Server-to-server with HTTP key) */
 	NAKAMAAPI_API void WriteTournamentRecord(
@@ -1859,5 +1859,5 @@ namespace NakamaApi
 		TFunction<void(const FNakamaLeaderboardRecord&)> OnSuccess,
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 }

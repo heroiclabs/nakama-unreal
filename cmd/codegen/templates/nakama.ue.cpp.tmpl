@@ -49,7 +49,7 @@ void MaybeRefreshThenCall(
 	const TSharedRef<FNakamaSession>& SessionState,
 	const FNakamaClientConfig& ClientConfig,
 	const FNakamaRetryConfig& RetryConfig,
-	const TSharedRef<TAtomic<bool>>& CancellationToken,
+	const TSharedRef<std::atomic<bool>>& CancellationToken,
 	const TSharedRef<TFunction<void(const FNakamaError&)>>& OnError,
 	TFunction<void()> OnReady) noexcept
 {
@@ -120,7 +120,7 @@ TNakamaFuture<{{ $resultType }}Result> Nakama::{{ $rpc.Name }}(
 	{{- end -}}
 	{{- end }}
 	const FNakamaRetryConfig& RetryConfig,
-	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
+	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	auto FutureState = MakeShared<TNakamaFuture<{{ $resultType }}Result>::FState>();
 	{{- if $needsSession }}
@@ -258,7 +258,7 @@ TNakamaFuture<{{ $resultType }}Result> Nakama::{{ $rpc.Name }}(
 	{{- end -}}
 	{{- end }}
 	const FNakamaRetryConfig& RetryConfig,
-	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
+	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	auto FutureState = MakeShared<TNakamaFuture<{{ $resultType }}Result>::FState>();
 	auto RetryCount = MakeShared<int32>(0);

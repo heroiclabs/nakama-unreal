@@ -121,6 +121,6 @@ namespace Satori
 		{{- end -}}
 		{{- end }}
 		const FSatoriRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 {{- end }}
 }

@@ -572,7 +572,7 @@ void SatoriApi::{{ $rpc.Name }}(
 	{{- end }}
 	TFunction<void(const FSatoriError&)> OnError,
 	float Timeout,
-	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
+	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("{{ $rpc.Endpoint }}");
 	{{- /* Handle path parameters like {group_id} */ -}}

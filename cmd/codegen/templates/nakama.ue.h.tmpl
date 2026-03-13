@@ -109,7 +109,7 @@ namespace Nakama
 		{{- end -}}
 		{{- end }}
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 {{- if $needsSession }}
 
 	/** {{ $rpc.Comment }} (Server-to-server with HTTP key) */
@@ -131,7 +131,7 @@ namespace Nakama
 		{{- end -}}
 		{{- end }}
 		const FNakamaRetryConfig& RetryConfig = {},
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 {{- end }}
 {{- end }}
 }

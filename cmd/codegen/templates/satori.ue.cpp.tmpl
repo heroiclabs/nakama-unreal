@@ -49,7 +49,7 @@ void MaybeRefreshThenCall(
 	const TSharedRef<FSatoriSession>& SessionState,
 	const FSatoriClientConfig& ClientConfig,
 	const FSatoriRetryConfig& RetryConfig,
-	const TSharedRef<TAtomic<bool>>& CancellationToken,
+	const TSharedRef<std::atomic<bool>>& CancellationToken,
 	const TSharedRef<TFunction<void(const FSatoriError&)>>& OnError,
 	TFunction<void()> OnReady) noexcept
 {
@@ -119,7 +119,7 @@ TSatoriFuture<{{ $resultType }}Result> Satori::{{ $rpc.Name }}(
 	{{- end -}}
 	{{- end }}
 	const FSatoriRetryConfig& RetryConfig,
-	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
+	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	auto FutureState = MakeShared<TSatoriFuture<{{ $resultType }}Result>::FState>();
 	{{- if $needsSession }}

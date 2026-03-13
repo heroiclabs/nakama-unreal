@@ -49,7 +49,7 @@ void MaybeRefreshThenCall(
 	const TSharedRef<FSatoriSession>& SessionState,
 	const FSatoriClientConfig& ClientConfig,
 	const FSatoriRetryConfig& RetryConfig,
-	const TSharedRef<TAtomic<bool>>& CancellationToken,
+	const TSharedRef<std::atomic<bool>>& CancellationToken,
 	const TSharedRef<TFunction<void(const FSatoriError&)>>& OnError,
 	TFunction<void()> OnReady) noexcept
 {
@@ -96,7 +96,7 @@ TSatoriFuture<FSatoriSessionResult> Satori::Authenticate(
 	const TMap<FString, FString>& Default,
 	const TMap<FString, FString>& Custom,
 	const FSatoriRetryConfig& RetryConfig,
-	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
+	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	auto FutureState = MakeShared<TSatoriFuture<FSatoriSessionResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -154,7 +154,7 @@ TSatoriFuture<FSatoriVoidResult> Satori::AuthenticateLogout(
 	FString Token,
 	FString RefreshToken,
 	const FSatoriRetryConfig& RetryConfig,
-	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
+	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	auto FutureState = MakeShared<TSatoriFuture<FSatoriVoidResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -207,7 +207,7 @@ TSatoriFuture<FSatoriSessionResult> Satori::AuthenticateRefresh(
 	const FSatoriClientConfig& ClientConfig,
 	FString RefreshToken,
 	const FSatoriRetryConfig& RetryConfig,
-	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
+	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	auto FutureState = MakeShared<TSatoriFuture<FSatoriSessionResult>::FState>();
 	auto RetryCount = MakeShared<int32>(0);
@@ -258,7 +258,7 @@ TSatoriFuture<FSatoriVoidResult> Satori::DeleteIdentity(
 	const FSatoriClientConfig& ClientConfig,
 	const FSatoriSession& Session,
 	const FSatoriRetryConfig& RetryConfig,
-	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
+	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	auto FutureState = MakeShared<TSatoriFuture<FSatoriVoidResult>::FState>();
 	auto SessionState = MakeShared<FSatoriSession>(Session);
@@ -315,7 +315,7 @@ TSatoriFuture<FSatoriVoidResult> Satori::Event(
 	const FSatoriSession& Session,
 	const TArray<FSatoriEvent>& Events,
 	const FSatoriRetryConfig& RetryConfig,
-	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
+	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	auto FutureState = MakeShared<TSatoriFuture<FSatoriVoidResult>::FState>();
 	auto SessionState = MakeShared<FSatoriSession>(Session);
@@ -375,7 +375,7 @@ TSatoriFuture<FSatoriVoidResult> Satori::ServerEvent(
 	const FSatoriSession& Session,
 	const TArray<FSatoriEvent>& Events,
 	const FSatoriRetryConfig& RetryConfig,
-	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
+	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	auto FutureState = MakeShared<TSatoriFuture<FSatoriVoidResult>::FState>();
 	auto SessionState = MakeShared<FSatoriSession>(Session);
@@ -436,7 +436,7 @@ TSatoriFuture<FSatoriExperimentListResult> Satori::GetExperiments(
 	const TArray<FString>& Names,
 	const TArray<FString>& Labels,
 	const FSatoriRetryConfig& RetryConfig,
-	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
+	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	auto FutureState = MakeShared<TSatoriFuture<FSatoriExperimentListResult>::FState>();
 	auto SessionState = MakeShared<FSatoriSession>(Session);
@@ -500,7 +500,7 @@ TSatoriFuture<FSatoriFlagOverrideListResult> Satori::GetFlagOverrides(
 	const TArray<FString>& Names,
 	const TArray<FString>& Labels,
 	const FSatoriRetryConfig& RetryConfig,
-	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
+	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	auto FutureState = MakeShared<TSatoriFuture<FSatoriFlagOverrideListResult>::FState>();
 	auto SessionState = MakeShared<FSatoriSession>(Session);
@@ -564,7 +564,7 @@ TSatoriFuture<FSatoriFlagListResult> Satori::GetFlags(
 	const TArray<FString>& Names,
 	const TArray<FString>& Labels,
 	const FSatoriRetryConfig& RetryConfig,
-	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
+	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	auto FutureState = MakeShared<TSatoriFuture<FSatoriFlagListResult>::FState>();
 	auto SessionState = MakeShared<FSatoriSession>(Session);
@@ -632,7 +632,7 @@ TSatoriFuture<FSatoriLiveEventListResult> Satori::GetLiveEvents(
 	int64 StartTimeSec,
 	int64 EndTimeSec,
 	const FSatoriRetryConfig& RetryConfig,
-	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
+	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	auto FutureState = MakeShared<TSatoriFuture<FSatoriLiveEventListResult>::FState>();
 	auto SessionState = MakeShared<FSatoriSession>(Session);
@@ -707,7 +707,7 @@ TSatoriFuture<FSatoriVoidResult> Satori::JoinLiveEvent(
 	const FSatoriSession& Session,
 	FString Id,
 	const FSatoriRetryConfig& RetryConfig,
-	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
+	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	auto FutureState = MakeShared<TSatoriFuture<FSatoriVoidResult>::FState>();
 	auto SessionState = MakeShared<FSatoriSession>(Session);
@@ -766,7 +766,7 @@ TSatoriFuture<FSatoriVoidResult> Satori::Healthcheck(
 	const FSatoriClientConfig& ClientConfig,
 	const FSatoriSession& Session,
 	const FSatoriRetryConfig& RetryConfig,
-	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
+	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	auto FutureState = MakeShared<TSatoriFuture<FSatoriVoidResult>::FState>();
 	auto SessionState = MakeShared<FSatoriSession>(Session);
@@ -825,7 +825,7 @@ TSatoriFuture<FSatoriSessionResult> Satori::Identify(
 	const TMap<FString, FString>& Default,
 	const TMap<FString, FString>& Custom,
 	const FSatoriRetryConfig& RetryConfig,
-	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
+	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	auto FutureState = MakeShared<TSatoriFuture<FSatoriSessionResult>::FState>();
 	auto SessionState = MakeShared<FSatoriSession>(Session);
@@ -890,7 +890,7 @@ TSatoriFuture<FSatoriPropertiesResult> Satori::ListProperties(
 	const FSatoriClientConfig& ClientConfig,
 	const FSatoriSession& Session,
 	const FSatoriRetryConfig& RetryConfig,
-	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
+	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	auto FutureState = MakeShared<TSatoriFuture<FSatoriPropertiesResult>::FState>();
 	auto SessionState = MakeShared<FSatoriSession>(Session);
@@ -946,7 +946,7 @@ TSatoriFuture<FSatoriVoidResult> Satori::Readycheck(
 	const FSatoriClientConfig& ClientConfig,
 	const FSatoriSession& Session,
 	const FSatoriRetryConfig& RetryConfig,
-	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
+	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	auto FutureState = MakeShared<TSatoriFuture<FSatoriVoidResult>::FState>();
 	auto SessionState = MakeShared<FSatoriSession>(Session);
@@ -1005,7 +1005,7 @@ TSatoriFuture<FSatoriVoidResult> Satori::UpdateProperties(
 	const TMap<FString, FString>& Default,
 	const TMap<FString, FString>& Custom,
 	const FSatoriRetryConfig& RetryConfig,
-	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
+	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	auto FutureState = MakeShared<TSatoriFuture<FSatoriVoidResult>::FState>();
 	auto SessionState = MakeShared<FSatoriSession>(Session);
@@ -1074,7 +1074,7 @@ TSatoriFuture<FSatoriGetMessageListResponseResult> Satori::GetMessageList(
 	FString Cursor,
 	const TArray<FString>& MessageIds,
 	const FSatoriRetryConfig& RetryConfig,
-	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
+	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	auto FutureState = MakeShared<TSatoriFuture<FSatoriGetMessageListResponseResult>::FState>();
 	auto SessionState = MakeShared<FSatoriSession>(Session);
@@ -1145,7 +1145,7 @@ TSatoriFuture<FSatoriVoidResult> Satori::UpdateMessage(
 	int64 ReadTime,
 	int64 ConsumeTime,
 	const FSatoriRetryConfig& RetryConfig,
-	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
+	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	auto FutureState = MakeShared<TSatoriFuture<FSatoriVoidResult>::FState>();
 	auto SessionState = MakeShared<FSatoriSession>(Session);
@@ -1211,7 +1211,7 @@ TSatoriFuture<FSatoriVoidResult> Satori::DeleteMessage(
 	const FSatoriSession& Session,
 	FString Id,
 	const FSatoriRetryConfig& RetryConfig,
-	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
+	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	auto FutureState = MakeShared<TSatoriFuture<FSatoriVoidResult>::FState>();
 	auto SessionState = MakeShared<FSatoriSession>(Session);

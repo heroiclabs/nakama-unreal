@@ -5,6 +5,7 @@
  * Each test uses F*Result types instead of separate success/error callback pairs.
  */
 
+#include <atomic>
 #include "Nakama.h"
 #include "Misc/Guid.h"
 #include "Serialization/JsonSerializer.h"
@@ -5171,7 +5172,7 @@ void FNakamaAsyncCancellationSpec::Define()
 	{
 		LatentIt("should return error immediately with pre-cancelled token on GetAccount", [this](const FDoneDelegate& Done)
 		{
-			TSharedRef<TAtomic<bool>> Token = MakeShared<TAtomic<bool>>(true);
+			TSharedRef<std::atomic<bool>> Token = MakeShared<std::atomic<bool>>(true);
 			Nakama::GetAccount(ClientConfig, Session, {}, Token).Next([this, Done](FNakamaAccountResult Result)
 			{
 				TestTrue("Request is error", Result.bIsError);
@@ -5182,7 +5183,7 @@ void FNakamaAsyncCancellationSpec::Define()
 
 		LatentIt("should succeed with uncancelled token", [this](const FDoneDelegate& Done)
 		{
-			TSharedRef<TAtomic<bool>> Token = MakeShared<TAtomic<bool>>(false);
+			TSharedRef<std::atomic<bool>> Token = MakeShared<std::atomic<bool>>(false);
 			Nakama::GetAccount(ClientConfig, Session, {}, Token).Next([this, Done](FNakamaAccountResult Result)
 			{
 				ASYNC_FAIL_ON_ERROR(Result, Done);
@@ -5193,7 +5194,7 @@ void FNakamaAsyncCancellationSpec::Define()
 
 		LatentIt("should return error with pre-cancelled token on RpcFunc", [this](const FDoneDelegate& Done)
 		{
-			TSharedRef<TAtomic<bool>> Token = MakeShared<TAtomic<bool>>(true);
+			TSharedRef<std::atomic<bool>> Token = MakeShared<std::atomic<bool>>(true);
 			TSharedPtr<FJsonObject> Payload = MakeShared<FJsonObject>();
 			Payload->SetStringField(TEXT("message"), TEXT("hello"));
 			Nakama::RpcFunc(ClientConfig, Session, TEXT("transform"), Payload, TEXT(""), {}, Token).Next([this, Done](FNakamaRpcResult Result)

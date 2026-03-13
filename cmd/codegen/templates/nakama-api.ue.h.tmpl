@@ -18,11 +18,11 @@
 
 #pragma once
 
+#include <atomic>
 #include "CoreMinimal.h"
 #include "Templates/Function.h"
 #include "Templates/SharedPointer.h"
 #include "Dom/JsonObject.h"
-#include "HAL/ThreadSafeBool.h"
 #include "NakamaTypes.h"
 
 NAKAMAAPI_API DECLARE_LOG_CATEGORY_EXTERN(LogNakama, Log, All);
@@ -67,7 +67,7 @@ namespace NakamaApi
 		{{- end }}
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 {{- if $needsSession }}
 
 	/** {{ $rpc.Comment }} (Server-to-server with HTTP key) */
@@ -96,7 +96,7 @@ namespace NakamaApi
 		{{- end }}
 		TFunction<void(const FNakamaError&)> OnError,
 		float Timeout = 10.0f,
-		TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)) noexcept;
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 {{- end }}
 {{- end }}
 }

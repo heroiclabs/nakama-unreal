@@ -60,7 +60,7 @@ void NakamaApi::{{ $rpc.Name }}(
 	{{- end }}
 	TFunction<void(const FNakamaError&)> OnError,
 	float Timeout,
-	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
+	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("{{ $rpc.Endpoint }}");
 	{{- /* Handle path parameters like {group_id} */ -}}
@@ -288,7 +288,7 @@ void NakamaApi::{{ $rpc.Name }}(
 	{{- end }}
 	TFunction<void(const FNakamaError&)> OnError,
 	float Timeout,
-	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
+	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("{{ $rpc.Endpoint }}");
 	{{- /* Handle path parameters like {group_id} */ -}}
