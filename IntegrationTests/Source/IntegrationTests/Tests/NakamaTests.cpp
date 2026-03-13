@@ -5328,5 +5328,24 @@ void FNakamaAsyncRetrySpec::Define()
 				Done.Execute();
 			});
 		});
+
+		LatentIt("should report expired refresh token as UNAUTHENTICATED (code 16)", [this](const FDoneDelegate& Done)
+		{
+			// Force both tokens to appear expired so MaybeRefreshThenCall
+			// hits the IsRefreshExpired() path.
+			Session.TokenExpiresAt = 1;          // auth token expired (Unix epoch + 1s)
+			Session.RefreshTokenExpiresAt = 1;    // refresh token also expired
+
+			FNakamaRetryConfig RefreshRetryConfig;
+			RefreshRetryConfig.MaxRetries = 0;
+			RefreshRetryConfig.bAutoRefreshSession = true;
+
+			Nakama::GetAccount(ClientConfig, Session, RefreshRetryConfig).Next([this, Done](FNakamaAccountResult Result)
+			{
+				TestTrue("Request failed", Result.bIsError);
+				TestEqual("Error code is UNAUTHENTICATED (16)", Result.Error.Code, 16);
+				Done.Execute();
+			});
+		});
 	});
 }

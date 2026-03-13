@@ -63,7 +63,7 @@ void MaybeRefreshThenCall(
 
 	if (SessionState->IsRefreshExpired())
 	{
-		(*OnError)(FNakamaError(TEXT("Refresh token has expired"), 401));
+		(*OnError)(FNakamaError(TEXT("Refresh token has expired"), 16));
 		return;
 	}
 

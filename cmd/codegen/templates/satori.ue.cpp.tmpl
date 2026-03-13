@@ -63,7 +63,7 @@ void MaybeRefreshThenCall(
 
 	if (SessionState->IsRefreshExpired())
 	{
-		(*OnError)(FSatoriError(TEXT("Refresh token has expired"), 401));
+		(*OnError)(FSatoriError(TEXT("Refresh token has expired"), 16));
 		return;
 	}
 

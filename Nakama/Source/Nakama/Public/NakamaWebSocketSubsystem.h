@@ -59,7 +59,7 @@ enum class EWebSocketMessageError : uint8
     WS_ERROR_NONE = 0,
     WS_ERROR_MESSAGE_MALFORMED = 1,
     WS_ERROR_MESSAGE_HASERROR = 2,
-    WS_ERROR_RESPONSE_NOCID = 2,
+    WS_ERROR_RESPONSE_NOCID = 3,
 };
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FDelegateServerResponseReceived, const FString&);
