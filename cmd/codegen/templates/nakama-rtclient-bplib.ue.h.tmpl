@@ -71,7 +71,7 @@ private:
 	UPROPERTY()
 	UNakamaWebSocketSubsystem* StoredWebSocketSubsystem = nullptr;
 {{- range $fidx, $field := $msgType.Fields }}
-	{{ getUnrealFieldType $field.Type $field.Repeated }} Stored{{ $field.Name | pascalCase }};
+	{{ getUnrealFieldType $field.Type $field.Repeated }} Stored{{ $field.Name | pascalCase }}{{ getUnrealFieldDefault $field.Type $field.Repeated }};
 {{- end }}
 {{- range $fidx, $field := $msgType.MapFields }}
 	{{ getUnrealMapType $field.Type }} Stored{{ $field.Name | pascalCase }};

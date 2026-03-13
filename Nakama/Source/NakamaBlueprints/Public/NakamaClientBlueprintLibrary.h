@@ -219,7 +219,7 @@ public:
 private:
 	FNakamaClientConfig Client;
 	FNakamaAccountApple StoredAccount;
-	bool StoredCreate;
+	bool StoredCreate = false;
 	FString StoredUsername;
 };
 
@@ -251,7 +251,7 @@ public:
 private:
 	FNakamaClientConfig Client;
 	FNakamaAccountCustom StoredAccount;
-	bool StoredCreate;
+	bool StoredCreate = false;
 	FString StoredUsername;
 };
 
@@ -283,7 +283,7 @@ public:
 private:
 	FNakamaClientConfig Client;
 	FNakamaAccountDevice StoredAccount;
-	bool StoredCreate;
+	bool StoredCreate = false;
 	FString StoredUsername;
 };
 
@@ -315,7 +315,7 @@ public:
 private:
 	FNakamaClientConfig Client;
 	FNakamaAccountEmail StoredAccount;
-	bool StoredCreate;
+	bool StoredCreate = false;
 	FString StoredUsername;
 };
 
@@ -348,9 +348,9 @@ public:
 private:
 	FNakamaClientConfig Client;
 	FNakamaAccountFacebook StoredAccount;
-	bool StoredCreate;
+	bool StoredCreate = false;
 	FString StoredUsername;
-	bool StoredSync;
+	bool StoredSync = false;
 };
 
 /**
@@ -381,7 +381,7 @@ public:
 private:
 	FNakamaClientConfig Client;
 	FNakamaAccountFacebookInstantGame StoredAccount;
-	bool StoredCreate;
+	bool StoredCreate = false;
 	FString StoredUsername;
 };
 
@@ -413,7 +413,7 @@ public:
 private:
 	FNakamaClientConfig Client;
 	FNakamaAccountGameCenter StoredAccount;
-	bool StoredCreate;
+	bool StoredCreate = false;
 	FString StoredUsername;
 };
 
@@ -445,7 +445,7 @@ public:
 private:
 	FNakamaClientConfig Client;
 	FNakamaAccountGoogle StoredAccount;
-	bool StoredCreate;
+	bool StoredCreate = false;
 	FString StoredUsername;
 };
 
@@ -478,9 +478,9 @@ public:
 private:
 	FNakamaClientConfig Client;
 	FNakamaAccountSteam StoredAccount;
-	bool StoredCreate;
+	bool StoredCreate = false;
 	FString StoredUsername;
-	bool StoredSync;
+	bool StoredSync = false;
 };
 
 /**
@@ -583,8 +583,8 @@ private:
 	FString StoredDescription;
 	FString StoredLangTag;
 	FString StoredAvatarUrl;
-	bool StoredOpen;
-	int32 StoredMaxCount;
+	bool StoredOpen = false;
+	int32 StoredMaxCount = 0;
 };
 
 /**
@@ -829,7 +829,7 @@ private:
 	FNakamaSession Session;
 	FString StoredName;
 	FString StoredTimestamp;
-	bool StoredExternal;
+	bool StoredExternal = false;
 	TMap<FString, FString> StoredProperties;
 };
 
@@ -1010,7 +1010,7 @@ private:
 	FNakamaClientConfig Client;
 	FNakamaSession Session;
 	FNakamaAccountFacebook StoredAccount;
-	bool StoredReset;
+	bool StoredReset = false;
 };
 
 /**
@@ -1042,7 +1042,7 @@ private:
 	FNakamaClientConfig Client;
 	FNakamaSession Session;
 	FNakamaAccountSteam StoredAccount;
-	bool StoredReset;
+	bool StoredReset = false;
 };
 
 /**
@@ -1326,7 +1326,7 @@ private:
 	FNakamaClientConfig Client;
 	FNakamaSession Session;
 	FNakamaAccountFacebook StoredAccount;
-	bool StoredSync;
+	bool StoredSync = false;
 };
 
 /**
@@ -1396,7 +1396,7 @@ private:
 	FNakamaSession Session;
 	FString StoredPlayerId;
 	FString StoredBundleId;
-	int64 StoredTimestampSeconds;
+	int64 StoredTimestampSeconds = 0;
 	FString StoredSalt;
 	FString StoredSignature;
 	FString StoredPublicKeyUrl;
@@ -1464,7 +1464,7 @@ private:
 	FNakamaClientConfig Client;
 	FNakamaSession Session;
 	FNakamaAccountSteam StoredAccount;
-	bool StoredSync;
+	bool StoredSync = false;
 };
 
 /**
@@ -1498,8 +1498,8 @@ private:
 	FNakamaClientConfig Client;
 	FNakamaSession Session;
 	FString StoredChannelId;
-	int32 StoredLimit;
-	bool StoredForward;
+	int32 StoredLimit = 0;
+	bool StoredForward = false;
 	FString StoredCursor;
 };
 
@@ -1532,8 +1532,8 @@ public:
 private:
 	FNakamaClientConfig Client;
 	FNakamaSession Session;
-	int32 StoredLimit;
-	int32 StoredState;
+	int32 StoredLimit = 0;
+	int32 StoredState = 0;
 	FString StoredCursor;
 };
 
@@ -1565,7 +1565,7 @@ public:
 private:
 	FNakamaClientConfig Client;
 	FNakamaSession Session;
-	int32 StoredLimit;
+	int32 StoredLimit = 0;
 	FString StoredCursor;
 };
 
@@ -1603,10 +1603,10 @@ private:
 	FNakamaSession Session;
 	FString StoredName;
 	FString StoredCursor;
-	int32 StoredLimit;
+	int32 StoredLimit = 0;
 	FString StoredLangTag;
-	int32 StoredMembers;
-	bool StoredOpen;
+	int32 StoredMembers = 0;
+	bool StoredOpen = false;
 };
 
 /**
@@ -1640,8 +1640,8 @@ private:
 	FNakamaClientConfig Client;
 	FNakamaSession Session;
 	FString StoredGroupId;
-	int32 StoredLimit;
-	int32 StoredState;
+	int32 StoredLimit = 0;
+	int32 StoredState = 0;
 	FString StoredCursor;
 };
 
@@ -1678,9 +1678,9 @@ private:
 	FNakamaSession Session;
 	FString StoredLeaderboardId;
 	TArray<FString> StoredOwnerIds;
-	int32 StoredLimit;
+	int32 StoredLimit = 0;
 	FString StoredCursor;
-	int64 StoredExpiry;
+	int64 StoredExpiry = 0;
 };
 
 /**
@@ -1715,9 +1715,9 @@ private:
 	FNakamaClientConfig Client;
 	FNakamaSession Session;
 	FString StoredLeaderboardId;
-	int32 StoredLimit;
+	int32 StoredLimit = 0;
 	FString StoredOwnerId;
-	int64 StoredExpiry;
+	int64 StoredExpiry = 0;
 	FString StoredCursor;
 };
 
@@ -1753,11 +1753,11 @@ public:
 private:
 	FNakamaClientConfig Client;
 	FNakamaSession Session;
-	int32 StoredLimit;
-	bool StoredAuthoritative;
+	int32 StoredLimit = 0;
+	bool StoredAuthoritative = false;
 	FString StoredLabel;
-	int32 StoredMinSize;
-	int32 StoredMaxSize;
+	int32 StoredMinSize = 0;
+	int32 StoredMaxSize = 0;
 	FString StoredQuery;
 };
 
@@ -1791,8 +1791,8 @@ public:
 private:
 	FNakamaClientConfig Client;
 	FNakamaSession Session;
-	int32 StoredLimit;
-	bool StoredOpen;
+	int32 StoredLimit = 0;
+	bool StoredOpen = false;
 	FString StoredQuery;
 	FString StoredCursor;
 };
@@ -1825,7 +1825,7 @@ public:
 private:
 	FNakamaClientConfig Client;
 	FNakamaSession Session;
-	int32 StoredLimit;
+	int32 StoredLimit = 0;
 	FString StoredCacheableCursor;
 };
 
@@ -1861,7 +1861,7 @@ private:
 	FNakamaSession Session;
 	FString StoredUserId;
 	FString StoredCollection;
-	int32 StoredLimit;
+	int32 StoredLimit = 0;
 	FString StoredCursor;
 };
 
@@ -1893,7 +1893,7 @@ public:
 private:
 	FNakamaClientConfig Client;
 	FNakamaSession Session;
-	int32 StoredLimit;
+	int32 StoredLimit = 0;
 	FString StoredCursor;
 };
 
@@ -1929,11 +1929,11 @@ public:
 private:
 	FNakamaClientConfig Client;
 	FNakamaSession Session;
-	int32 StoredCategoryStart;
-	int32 StoredCategoryEnd;
-	int32 StoredStartTime;
-	int32 StoredEndTime;
-	int32 StoredLimit;
+	int32 StoredCategoryStart = 0;
+	int32 StoredCategoryEnd = 0;
+	int32 StoredStartTime = 0;
+	int32 StoredEndTime = 0;
+	int32 StoredLimit = 0;
 	FString StoredCursor;
 };
 
@@ -1970,9 +1970,9 @@ private:
 	FNakamaSession Session;
 	FString StoredTournamentId;
 	TArray<FString> StoredOwnerIds;
-	int32 StoredLimit;
+	int32 StoredLimit = 0;
 	FString StoredCursor;
-	int64 StoredExpiry;
+	int64 StoredExpiry = 0;
 };
 
 /**
@@ -2007,9 +2007,9 @@ private:
 	FNakamaClientConfig Client;
 	FNakamaSession Session;
 	FString StoredTournamentId;
-	int32 StoredLimit;
+	int32 StoredLimit = 0;
 	FString StoredOwnerId;
-	int64 StoredExpiry;
+	int64 StoredExpiry = 0;
 	FString StoredCursor;
 };
 
@@ -2044,8 +2044,8 @@ private:
 	FNakamaClientConfig Client;
 	FNakamaSession Session;
 	FString StoredUserId;
-	int32 StoredLimit;
-	int32 StoredState;
+	int32 StoredLimit = 0;
+	int32 StoredState = 0;
 	FString StoredCursor;
 };
 
@@ -2406,7 +2406,7 @@ private:
 	FNakamaSession Session;
 	FString StoredPlayerId;
 	FString StoredBundleId;
-	int64 StoredTimestampSeconds;
+	int64 StoredTimestampSeconds = 0;
 	FString StoredSalt;
 	FString StoredSignature;
 	FString StoredPublicKeyUrl;
@@ -2554,7 +2554,7 @@ private:
 	FString StoredDescription;
 	FString StoredLangTag;
 	FString StoredAvatarUrl;
-	bool StoredOpen;
+	bool StoredOpen = false;
 };
 
 /**
@@ -2586,7 +2586,7 @@ private:
 	FNakamaClientConfig Client;
 	FNakamaSession Session;
 	FString StoredReceipt;
-	bool StoredPersist;
+	bool StoredPersist = false;
 };
 
 /**
@@ -2618,7 +2618,7 @@ private:
 	FNakamaClientConfig Client;
 	FNakamaSession Session;
 	FString StoredReceipt;
-	bool StoredPersist;
+	bool StoredPersist = false;
 };
 
 /**
@@ -2650,7 +2650,7 @@ private:
 	FNakamaClientConfig Client;
 	FNakamaSession Session;
 	FString StoredPurchase;
-	bool StoredPersist;
+	bool StoredPersist = false;
 };
 
 /**
@@ -2682,7 +2682,7 @@ private:
 	FNakamaClientConfig Client;
 	FNakamaSession Session;
 	FString StoredReceipt;
-	bool StoredPersist;
+	bool StoredPersist = false;
 };
 
 /**
@@ -2716,7 +2716,7 @@ private:
 	FNakamaSession Session;
 	FString StoredPurchase;
 	FString StoredSignature;
-	bool StoredPersist;
+	bool StoredPersist = false;
 };
 
 /**
@@ -2748,7 +2748,7 @@ private:
 	FNakamaClientConfig Client;
 	FNakamaSession Session;
 	FString StoredSignedRequest;
-	bool StoredPersist;
+	bool StoredPersist = false;
 };
 
 /**

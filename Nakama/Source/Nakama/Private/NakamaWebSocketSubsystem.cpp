@@ -431,11 +431,5 @@ void UNakamaWebSocketSubsystem::OnClosed(int32 StatusCode, const FString& Reason
     {
         Closed.Broadcast(StatusCode, Reason, bWasClean);
     }
-
-    ServerResponseReceived.Clear();
-    ServerEventReceived.Clear();
-    MessageSent.Clear();
-    MessageError.Clear();
-    Closed.Clear();
 }
 

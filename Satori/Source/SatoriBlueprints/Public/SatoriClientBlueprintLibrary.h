@@ -72,7 +72,7 @@ public:
 private:
 	FSatoriClientConfig Client;
 	FString StoredId;
-	bool StoredNoSession;
+	bool StoredNoSession = false;
 	TMap<FString, FString> StoredDefault;
 	TMap<FString, FString> StoredCustom;
 };
@@ -353,10 +353,10 @@ private:
 	FSatoriSession Session;
 	TArray<FString> StoredNames;
 	TArray<FString> StoredLabels;
-	int32 StoredPastRunCount;
-	int32 StoredFutureRunCount;
-	int64 StoredStartTimeSec;
-	int64 StoredEndTimeSec;
+	int32 StoredPastRunCount = 0;
+	int32 StoredFutureRunCount = 0;
+	int64 StoredStartTimeSec = 0;
+	int64 StoredEndTimeSec = 0;
 };
 
 /**
@@ -536,7 +536,7 @@ public:
 private:
 	FSatoriClientConfig Client;
 	FSatoriSession Session;
-	bool StoredRecompute;
+	bool StoredRecompute = false;
 	TMap<FString, FString> StoredDefault;
 	TMap<FString, FString> StoredCustom;
 };
@@ -571,8 +571,8 @@ public:
 private:
 	FSatoriClientConfig Client;
 	FSatoriSession Session;
-	int32 StoredLimit;
-	bool StoredForward;
+	int32 StoredLimit = 0;
+	bool StoredForward = false;
 	FString StoredCursor;
 	TArray<FString> StoredMessageIds;
 };
@@ -607,8 +607,8 @@ private:
 	FSatoriClientConfig Client;
 	FSatoriSession Session;
 	FString StoredId;
-	int64 StoredReadTime;
-	int64 StoredConsumeTime;
+	int64 StoredReadTime = 0;
+	int64 StoredConsumeTime = 0;
 };
 
 /**

@@ -104,7 +104,7 @@ private:
 {{- if and (eq $field.Name $rpc.BodyField) (not (isMessageType $field.Type)) }}
 	TMap<FString, FString> Stored{{ $field.Name | pascalCase }};
 {{- else }}
-	{{ getUnrealFieldType $field.Type $field.Repeated }} Stored{{ $field.Name | pascalCase }};
+	{{ getUnrealFieldType $field.Type $field.Repeated }} Stored{{ $field.Name | pascalCase }}{{ getUnrealFieldDefault $field.Type $field.Repeated }};
 {{- end }}
 {{- end }}
 {{- range $fidx, $field := $requestType.MapFields }}

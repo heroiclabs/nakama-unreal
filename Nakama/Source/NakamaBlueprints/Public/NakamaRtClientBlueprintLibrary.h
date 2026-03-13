@@ -107,9 +107,9 @@ private:
 	UPROPERTY()
 	UNakamaWebSocketSubsystem* StoredWebSocketSubsystem = nullptr;
 	FString StoredTarget;
-	int32 StoredType;
-	bool StoredPersistence;
-	bool StoredHidden;
+	int32 StoredType = 0;
+	bool StoredPersistence = false;
+	bool StoredHidden = false;
 };
 
 /**
@@ -181,13 +181,13 @@ private:
 	UNakamaWebSocketSubsystem* StoredWebSocketSubsystem = nullptr;
 	FString StoredChannelId;
 	FString StoredMessageId;
-	int32 StoredCode;
+	int32 StoredCode = 0;
 	FString StoredSenderId;
 	FString StoredUsername;
 	FString StoredContent;
 	FString StoredCreateTime;
 	FString StoredUpdateTime;
-	bool StoredPersistent;
+	bool StoredPersistent = false;
 	FString StoredRoomName;
 	FString StoredGroupId;
 	FString StoredUserIdOne;
@@ -232,11 +232,11 @@ private:
 	UNakamaWebSocketSubsystem* StoredWebSocketSubsystem = nullptr;
 	FString StoredChannelId;
 	FString StoredMessageId;
-	int32 StoredCode;
+	int32 StoredCode = 0;
 	FString StoredUsername;
 	FString StoredCreateTime;
 	FString StoredUpdateTime;
-	bool StoredPersistent;
+	bool StoredPersistent = false;
 	FString StoredRoomName;
 	FString StoredGroupId;
 	FString StoredUserIdOne;
@@ -407,7 +407,7 @@ public:
 private:
 	UPROPERTY()
 	UNakamaWebSocketSubsystem* StoredWebSocketSubsystem = nullptr;
-	int32 StoredCode;
+	int32 StoredCode = 0;
 	FString StoredMessage;
 	TMap<FString, FString> StoredContext;
 };
@@ -444,9 +444,9 @@ private:
 	UPROPERTY()
 	UNakamaWebSocketSubsystem* StoredWebSocketSubsystem = nullptr;
 	FString StoredMatchId;
-	bool StoredAuthoritative;
+	bool StoredAuthoritative = false;
 	FString StoredLabel;
-	int32 StoredSize;
+	int32 StoredSize = 0;
 	TArray<FNakamaRtUserPresence> StoredPresences;
 	FNakamaRtUserPresence StoredSelf;
 };
@@ -512,9 +512,9 @@ private:
 	UNakamaWebSocketSubsystem* StoredWebSocketSubsystem = nullptr;
 	FString StoredMatchId;
 	FNakamaRtUserPresence StoredPresence;
-	int64 StoredOpCode;
+	int64 StoredOpCode = 0;
 	TArray<uint8> StoredData;
-	bool StoredReliable;
+	bool StoredReliable = false;
 };
 
 /**
@@ -548,10 +548,10 @@ private:
 	UPROPERTY()
 	UNakamaWebSocketSubsystem* StoredWebSocketSubsystem = nullptr;
 	FString StoredMatchId;
-	int64 StoredOpCode;
+	int64 StoredOpCode = 0;
 	TArray<uint8> StoredData;
 	TArray<FNakamaRtUserPresence> StoredPresences;
-	bool StoredReliable;
+	bool StoredReliable = false;
 };
 
 /**
@@ -676,10 +676,10 @@ public:
 private:
 	UPROPERTY()
 	UNakamaWebSocketSubsystem* StoredWebSocketSubsystem = nullptr;
-	int32 StoredMinCount;
-	int32 StoredMaxCount;
+	int32 StoredMinCount = 0;
+	int32 StoredMaxCount = 0;
 	FString StoredQuery;
-	int32 StoredCountMultiple;
+	int32 StoredCountMultiple = 0;
 	TMap<FString, FString> StoredStringProperties;
 	TMap<FString, double> StoredNumericProperties;
 };
@@ -1018,7 +1018,7 @@ private:
 	FNakamaRtStream StoredStream;
 	FNakamaRtUserPresence StoredSender;
 	FString StoredData;
-	bool StoredReliable;
+	bool StoredReliable = false;
 };
 
 /**
@@ -1142,9 +1142,9 @@ private:
 	UPROPERTY()
 	UNakamaWebSocketSubsystem* StoredWebSocketSubsystem = nullptr;
 	FString StoredPartyId;
-	bool StoredOpen;
-	bool StoredHidden;
-	int32 StoredMaxSize;
+	bool StoredOpen = false;
+	bool StoredHidden = false;
+	int32 StoredMaxSize = 0;
 	FNakamaRtUserPresence StoredSelf;
 	FNakamaRtUserPresence StoredLeader;
 	TArray<FNakamaRtUserPresence> StoredPresences;
@@ -1180,10 +1180,10 @@ public:
 private:
 	UPROPERTY()
 	UNakamaWebSocketSubsystem* StoredWebSocketSubsystem = nullptr;
-	bool StoredOpen;
-	int32 StoredMaxSize;
+	bool StoredOpen = false;
+	int32 StoredMaxSize = 0;
 	FString StoredLabel;
-	bool StoredHidden;
+	bool StoredHidden = false;
 };
 
 /**
@@ -1490,10 +1490,10 @@ private:
 	UPROPERTY()
 	UNakamaWebSocketSubsystem* StoredWebSocketSubsystem = nullptr;
 	FString StoredPartyId;
-	int32 StoredMinCount;
-	int32 StoredMaxCount;
+	int32 StoredMinCount = 0;
+	int32 StoredMaxCount = 0;
 	FString StoredQuery;
-	int32 StoredCountMultiple;
+	int32 StoredCountMultiple = 0;
 	TMap<FString, FString> StoredStringProperties;
 	TMap<FString, double> StoredNumericProperties;
 };
@@ -1591,7 +1591,7 @@ private:
 	UNakamaWebSocketSubsystem* StoredWebSocketSubsystem = nullptr;
 	FString StoredPartyId;
 	FNakamaRtUserPresence StoredPresence;
-	int64 StoredOpCode;
+	int64 StoredOpCode = 0;
 	TArray<uint8> StoredData;
 };
 
@@ -1624,7 +1624,7 @@ private:
 	UPROPERTY()
 	UNakamaWebSocketSubsystem* StoredWebSocketSubsystem = nullptr;
 	FString StoredPartyId;
-	int64 StoredOpCode;
+	int64 StoredOpCode = 0;
 	TArray<uint8> StoredData;
 };
 
@@ -1692,6 +1692,6 @@ private:
 	UNakamaWebSocketSubsystem* StoredWebSocketSubsystem = nullptr;
 	FString StoredPartyId;
 	FString StoredLabel;
-	bool StoredOpen;
-	bool StoredHidden;
+	bool StoredOpen = false;
+	bool StoredHidden = false;
 };
