@@ -54,7 +54,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakama{{ $typeName }}, const FNak
 /**
  * {{ $rpc.Comment }}
  */
-UCLASS()
+UCLASS(Transient)
 class NAKAMABLUEPRINTS_API UNakamaClient{{ $rpc.Name }} : public UBlueprintAsyncActionBase
 {
 	GENERATED_BODY()

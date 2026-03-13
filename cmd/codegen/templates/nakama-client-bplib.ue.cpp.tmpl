@@ -130,15 +130,3 @@ void UNakamaClient{{ $rpc.Name }}::Activate()
 	);
 }
 {{- end }}
-
-// ============================================================================
-// Module Implementation
-// ============================================================================
-
-#include "Modules/ModuleManager.h"
-
-class FNakamaBlueprintsModule : public IModuleInterface
-{
-};
-
-IMPLEMENT_MODULE(FNakamaBlueprintsModule, NakamaBlueprints)

@@ -46,7 +46,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSatoriGetMessageListResponse, con
 /**
  * Authenticate against the server.
  */
-UCLASS()
+UCLASS(Transient)
 class SATORIBLUEPRINTS_API USatoriClientAuthenticate : public UBlueprintAsyncActionBase
 {
 	GENERATED_BODY()
@@ -80,7 +80,7 @@ private:
 /**
  * Log out a session, invalidate a refresh token, or log out all sessions/refresh tokens for a user.
  */
-UCLASS()
+UCLASS(Transient)
 class SATORIBLUEPRINTS_API USatoriClientAuthenticateLogout : public UBlueprintAsyncActionBase
 {
 	GENERATED_BODY()
@@ -110,7 +110,7 @@ private:
 /**
  * Refresh a user's session using a refresh token retrieved from a previous authentication request.
  */
-UCLASS()
+UCLASS(Transient)
 class SATORIBLUEPRINTS_API USatoriClientAuthenticateRefresh : public UBlueprintAsyncActionBase
 {
 	GENERATED_BODY()
@@ -138,7 +138,7 @@ private:
 /**
  * Delete the caller's identity and associated data.
  */
-UCLASS()
+UCLASS(Transient)
 class SATORIBLUEPRINTS_API USatoriClientDeleteIdentity : public UBlueprintAsyncActionBase
 {
 	GENERATED_BODY()
@@ -166,7 +166,7 @@ private:
 /**
  * Publish an event for this session.
  */
-UCLASS()
+UCLASS(Transient)
 class SATORIBLUEPRINTS_API USatoriClientEvent : public UBlueprintAsyncActionBase
 {
 	GENERATED_BODY()
@@ -196,7 +196,7 @@ private:
 /**
  * Publish server events for multiple distinct identities.
  */
-UCLASS()
+UCLASS(Transient)
 class SATORIBLUEPRINTS_API USatoriClientServerEvent : public UBlueprintAsyncActionBase
 {
 	GENERATED_BODY()
@@ -226,7 +226,7 @@ private:
 /**
  * Get or list all available experiments for this identity.
  */
-UCLASS()
+UCLASS(Transient)
 class SATORIBLUEPRINTS_API USatoriClientGetExperiments : public UBlueprintAsyncActionBase
 {
 	GENERATED_BODY()
@@ -258,7 +258,7 @@ private:
 /**
  * List all available flags and their value overrides for this identity.
  */
-UCLASS()
+UCLASS(Transient)
 class SATORIBLUEPRINTS_API USatoriClientGetFlagOverrides : public UBlueprintAsyncActionBase
 {
 	GENERATED_BODY()
@@ -290,7 +290,7 @@ private:
 /**
  * List all available flags for this identity.
  */
-UCLASS()
+UCLASS(Transient)
 class SATORIBLUEPRINTS_API USatoriClientGetFlags : public UBlueprintAsyncActionBase
 {
 	GENERATED_BODY()
@@ -322,7 +322,7 @@ private:
 /**
  * List available live events.
  */
-UCLASS()
+UCLASS(Transient)
 class SATORIBLUEPRINTS_API USatoriClientGetLiveEvents : public UBlueprintAsyncActionBase
 {
 	GENERATED_BODY()
@@ -362,7 +362,7 @@ private:
 /**
  * Join an 'explicit join' live event.
  */
-UCLASS()
+UCLASS(Transient)
 class SATORIBLUEPRINTS_API USatoriClientJoinLiveEvent : public UBlueprintAsyncActionBase
 {
 	GENERATED_BODY()
@@ -392,7 +392,7 @@ private:
 /**
  * A healthcheck which load balancers can use to check the service.
  */
-UCLASS()
+UCLASS(Transient)
 class SATORIBLUEPRINTS_API USatoriClientHealthcheck : public UBlueprintAsyncActionBase
 {
 	GENERATED_BODY()
@@ -420,7 +420,7 @@ private:
 /**
  * Enrich/replace the current session with new identifier.
  */
-UCLASS()
+UCLASS(Transient)
 class SATORIBLUEPRINTS_API USatoriClientIdentify : public UBlueprintAsyncActionBase
 {
 	GENERATED_BODY()
@@ -454,7 +454,7 @@ private:
 /**
  * List properties associated with this identity.
  */
-UCLASS()
+UCLASS(Transient)
 class SATORIBLUEPRINTS_API USatoriClientListProperties : public UBlueprintAsyncActionBase
 {
 	GENERATED_BODY()
@@ -482,7 +482,7 @@ private:
 /**
  * A readycheck which load balancers can use to check the service.
  */
-UCLASS()
+UCLASS(Transient)
 class SATORIBLUEPRINTS_API USatoriClientReadycheck : public UBlueprintAsyncActionBase
 {
 	GENERATED_BODY()
@@ -510,7 +510,7 @@ private:
 /**
  * Update identity properties.
  */
-UCLASS()
+UCLASS(Transient)
 class SATORIBLUEPRINTS_API USatoriClientUpdateProperties : public UBlueprintAsyncActionBase
 {
 	GENERATED_BODY()
@@ -544,7 +544,7 @@ private:
 /**
  * Get the list of messages for the identity.
  */
-UCLASS()
+UCLASS(Transient)
 class SATORIBLUEPRINTS_API USatoriClientGetMessageList : public UBlueprintAsyncActionBase
 {
 	GENERATED_BODY()
@@ -580,7 +580,7 @@ private:
 /**
  * Updates a message for an identity.
  */
-UCLASS()
+UCLASS(Transient)
 class SATORIBLUEPRINTS_API USatoriClientUpdateMessage : public UBlueprintAsyncActionBase
 {
 	GENERATED_BODY()
@@ -614,7 +614,7 @@ private:
 /**
  * Deletes a message for an identity.
  */
-UCLASS()
+UCLASS(Transient)
 class SATORIBLUEPRINTS_API USatoriClientDeleteMessage : public UBlueprintAsyncActionBase
 {
 	GENERATED_BODY()
