@@ -259,8 +259,17 @@ struct NAKAMA_API FNakamaRetryConfig
 	/** HTTP request timeout in seconds. */
 	float Timeout = 10.0f;
 
-	/** Called after a session is automatically refreshed, so callers can persist the updated session. */
+	/**
+	 * Called after a session is automatically refreshed, so callers can persist the updated session.
+	 *
+	 * If the callback captures a UObject pointer, set OnSessionRefreshedOwner to that object.
+	 * The callback will be skipped if the owner has been garbage-collected, preventing
+	 * dangling-pointer crashes during in-flight retries.
+	 */
 	TFunction<void(const FNakamaSession&)> OnSessionRefreshed;
+
+	/** Optional weak owner for OnSessionRefreshed. When set, the callback is skipped if the owner is stale. */
+	TWeakObjectPtr<UObject> OnSessionRefreshedOwner;
 };
 
 /**

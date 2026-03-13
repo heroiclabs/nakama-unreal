@@ -68,14 +68,15 @@ void MaybeRefreshThenCall(
 	}
 
 	auto OnSessionRefreshed = RetryConfig.OnSessionRefreshed;
+	auto OnSessionRefreshedOwner = RetryConfig.OnSessionRefreshedOwner;
 	NakamaApi::SessionRefresh(
 		ClientConfig,
 		SessionState->RefreshToken,
 		{},
-		[SessionState, OnSessionRefreshed, OnReady = MoveTemp(OnReady)](const FNakamaSession& RefreshedSession) mutable
+		[SessionState, OnSessionRefreshed, OnSessionRefreshedOwner, OnReady = MoveTemp(OnReady)](const FNakamaSession& RefreshedSession) mutable
 		{
 			SessionState->Update(RefreshedSession.Token, RefreshedSession.RefreshToken);
-			if (OnSessionRefreshed)
+			if (OnSessionRefreshed && (OnSessionRefreshedOwner.IsExplicitlyNull() || OnSessionRefreshedOwner.IsValid()))
 			{
 				OnSessionRefreshed(*SessionState);
 			}

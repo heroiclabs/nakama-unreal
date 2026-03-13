@@ -86,7 +86,9 @@ func runEditor(editor, project string, testShard *TestShard) {
 
 	cmd := exec.Command(editor, args...)
 	if cmd.Err != nil {
-		fmt.Errorf("Error creating cmd `%s %s`: %s", editor, args, cmd.Err)
+		testShard.addLine(fmt.Sprintf("Error creating cmd: %s", cmd.Err))
+		testShard.Status = ShardFailed
+		return
 	}
 
 	if f, err := os.Create(testShard.LogFile); err == nil {
@@ -96,16 +98,20 @@ func runEditor(editor, project string, testShard *TestShard) {
 	}
 
 	if err := cmd.Run(); err != nil {
-		fmt.Errorf("Error running `%s %s`: %s", editor, args, err)
+		testShard.addLine(fmt.Sprintf("Editor exited with error: %s", err))
+		testShard.Status = ShardFailed
+		return
 	}
+
+	testShard.Status = ShardPassed
 }
 
 func mergeReports(dir string) {
 	pattern := filepath.Join(dir, "shard-*", "index.json")
 	matches, _ := filepath.Glob(pattern)
+
 	if len(matches) == 0 {
-		fmt.Fprintf(os.Stderr, "No shard reports found matching %s\n", pattern)
-		os.Exit(1)
+		return
 	}
 
 	var merged Report
@@ -113,7 +119,7 @@ func mergeReports(dir string) {
 		data, err := os.ReadFile(path)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Error reading %s: %v\n", path, err)
-			os.Exit(1)
+			continue
 		}
 
 		data = stripBOM(data)
@@ -121,7 +127,7 @@ func mergeReports(dir string) {
 		var report Report
 		if err := json.Unmarshal(data, &report); err != nil {
 			fmt.Fprintf(os.Stderr, "Error parsing %s: %v\n", path, err)
-			os.Exit(1)
+			continue
 		}
 
 		if i == 0 {
@@ -141,53 +147,65 @@ func mergeReports(dir string) {
 	out, err := json.MarshalIndent(merged, "", "\t")
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error marshaling merged report: %v\n", err)
-		os.Exit(1)
+		return
 	}
 
 	outPath := filepath.Join(dir, "index.json")
 	if err := os.WriteFile(outPath, out, 0644); err != nil {
 		fmt.Fprintf(os.Stderr, "Error writing %s: %v\n", outPath, err)
-		os.Exit(1)
+		return
 	}
 
 	fmt.Printf("Merged %d shards (%d tests) -> %s\n", len(matches), len(merged.Tests), outPath)
 }
 
-func printSummary(reportPath string) {
-	data, err := os.ReadFile(reportPath)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error reading %s: %v\n", reportPath, err)
-		os.Exit(1)
-	}
-
-	data = stripBOM(data)
-
-	var report Report
-	if err := json.Unmarshal(data, &report); err != nil {
-		fmt.Fprintf(os.Stderr, "Error parsing %s: %v\n", reportPath, err)
-		os.Exit(1)
-	}
-
+func printSummary(reportDir string, shards []*TestShard) {
 	var failed []TestEntry
 	passed := 0
-	for _, raw := range report.Tests {
-		var t TestEntry
-		if err := json.Unmarshal(raw, &t); err != nil {
+	var crashedShards []string
+
+	// Collect results from each shard's report (if it exists)
+	for _, s := range shards {
+		reportPath := filepath.Join(s.ReportDir, "index.json")
+		data, err := os.ReadFile(reportPath)
+		if err != nil {
+			// No report — shard crashed before writing results
+			if s.Status == ShardFailed {
+				crashedShards = append(crashedShards, s.Name)
+			}
 			continue
 		}
-		if t.State == "Fail" {
-			failed = append(failed, t)
-		} else {
-			passed++
+
+		data = stripBOM(data)
+
+		var report Report
+		if err := json.Unmarshal(data, &report); err != nil {
+			crashedShards = append(crashedShards, s.Name)
+			continue
+		}
+
+		for _, raw := range report.Tests {
+			var t TestEntry
+			if err := json.Unmarshal(raw, &t); err != nil {
+				continue
+			}
+			if t.State == "Fail" {
+				failed = append(failed, t)
+			} else {
+				passed++
+			}
 		}
 	}
 
 	fmt.Println()
 	fmt.Println("=========================================")
-	fmt.Printf("  Passed: %d  Failed: %d\n", passed, len(failed))
+
+	totalFailed := len(failed) + len(crashedShards)
+	fmt.Printf("  Passed: %d  Failed: %d\n", passed, totalFailed)
 	fmt.Println("=========================================")
+
 	for _, t := range failed {
-		fmt.Printf("  FAIL: %s\n", t.TestDisplayName)
+		fmt.Printf("  \033[31mFAIL:\033[0m %s\n", t.TestDisplayName)
 		for _, e := range t.Entries {
 			if e.Event.Type == "Error" {
 				fmt.Printf("        %s\n", e.Event.Message)
@@ -195,9 +213,14 @@ func printSummary(reportPath string) {
 			}
 		}
 	}
+
+	for _, name := range crashedShards {
+		fmt.Printf("  \033[31mCRASH:\033[0m %s (shard exited before producing results)\n", name)
+	}
+
 	fmt.Println()
 
-	if len(failed) > 0 {
+	if totalFailed > 0 {
 		os.Exit(1)
 	}
 }
@@ -281,5 +304,5 @@ func main() {
 
 	fmt.Println("All shards complete.")
 	mergeReports(reportDir)
-	printSummary(filepath.Join(reportDir, "index.json"))
+	printSummary(reportDir, shards)
 }

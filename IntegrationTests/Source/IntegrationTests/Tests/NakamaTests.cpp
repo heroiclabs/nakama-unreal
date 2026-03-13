@@ -5348,5 +5348,50 @@ void FNakamaAsyncRetrySpec::Define()
 				Done.Execute();
 			});
 		});
+
+		LatentIt("should safely skip OnSessionRefreshed when owner UObject is GC'd", [this](const FDoneDelegate& Done)
+		{
+			// Create a temporary UObject that we will destroy before the callback fires.
+			// This simulates a common pattern: a UObject (e.g. a GameInstance subsystem
+			// or controller) captures `this` in OnSessionRefreshed, then gets GC'd while
+			// a retry/refresh is in-flight.
+			UObject* Victim = NewObject<UPackage>(nullptr, TEXT("/Temp/NakamaTestVictim"), RF_Transient);
+			Victim->AddToRoot(); // prevent premature GC so we control the lifetime
+
+			// Capture the raw pointer but also set OnSessionRefreshedOwner so the
+			// retry logic can detect when the owner has been collected.
+			TSharedRef<bool> CallbackFired = MakeShared<bool>(false);
+			FNakamaRetryConfig RefreshRetryConfig;
+			RefreshRetryConfig.MaxRetries = 0;
+			RefreshRetryConfig.bAutoRefreshSession = true;
+			RefreshRetryConfig.OnSessionRefreshedOwner = Victim;
+			RefreshRetryConfig.OnSessionRefreshed = [Victim, CallbackFired](const FNakamaSession& RefreshedSession)
+			{
+				*CallbackFired = true;
+				// If we get here with a GC'd Victim, this would crash.
+				// The weak owner guard should prevent this from ever executing.
+				UE_LOG(LogTemp, Log, TEXT("OnSessionRefreshed called, Victim class: %s"),
+					*Victim->GetClass()->GetName());
+			};
+
+			// Force the auth token to appear expired so the retry logic triggers
+			// a session refresh (but keep the refresh token valid).
+			Session.TokenExpiresAt = 1;
+
+			// Remove the root reference and force GC so the weak pointer becomes stale.
+			// TWeakObjectPtr only invalidates after the GC clears the weak reference table.
+			Victim->RemoveFromRoot();
+			Victim->MarkAsGarbage();
+			CollectGarbage(GARBAGE_COLLECTION_KEEPFLAGS);
+
+			// The weak pointer is now stale. The API call will trigger
+			// MaybeRefreshThenCall -> SessionRefresh, but OnSessionRefreshed
+			// should be skipped because OnSessionRefreshedOwner is no longer valid.
+			Nakama::GetAccount(ClientConfig, Session, RefreshRetryConfig).Next([this, Done, CallbackFired](FNakamaAccountResult Result)
+			{
+				TestFalse("OnSessionRefreshed should NOT have fired after owner was GC'd", *CallbackFired);
+				Done.Execute();
+			});
+		});
 	});
 }

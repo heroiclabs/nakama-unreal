@@ -30,6 +30,14 @@ func getTerminalWidth() int {
 
 var NumLogLines int = 5
 
+type ShardStatus int
+
+const (
+	ShardRunning ShardStatus = iota
+	ShardPassed
+	ShardFailed
+)
+
 type TestShard struct {
 	lock sync.RWMutex
 
@@ -41,17 +49,38 @@ type TestShard struct {
 	LogLines   []string
 	LogLineIdx int
 
-	HeaderDrawn bool
+	Status        ShardStatus
+	DrawnStatus   ShardStatus
+	HeaderDrawn   bool
+}
+
+func (s *TestShard) statusIndicator() string {
+	switch s.Status {
+	case ShardPassed:
+		return "\033[32m✓\033[0m" // green check
+	case ShardFailed:
+		return "\033[31m✗\033[0m" // red X
+	default:
+		return "\033[33m⋯\033[0m" // yellow ellipsis
+	}
 }
 
 func (s *TestShard) draw() {
 	if !s.HeaderDrawn {
-		fmt.Printf("  \033[1mShard %d:\033[0m %s\n", s.Index, s.Name)
+		clearLine()
+		fmt.Printf("  %s \033[1mShard %d:\033[0m %s\n", s.statusIndicator(), s.Index+1, s.Name)
 		fmt.Printf("    log: \033]8;;file://%s\033\\\033[2m%s\033[0m\033]8;;\033\\\n", s.LogFile, truncateString(s.LogFile, getTerminalWidth()))
 
-		// To keep the file link pretty
 		s.HeaderDrawn = true
+		s.DrawnStatus = s.Status
+	} else if s.Status != s.DrawnStatus {
+		// Status changed — redraw only the header line, skip past the log link
+		clearLine()
+		fmt.Printf("  %s \033[1mShard %d:\033[0m %s\n", s.statusIndicator(), s.Index+1, s.Name)
+		moveCursorDown(1)
+		s.DrawnStatus = s.Status
 	} else {
+		// No change — skip past header + log link
 		moveCursorDown(2)
 	}
 
@@ -76,9 +105,12 @@ func (s *TestShard) draw() {
 func drawStatusLoop(isRichOutput bool, shards []*TestShard, testsComplete <-chan struct{}) {
 	if !isRichOutput {
 		for _, s := range shards {
-			fmt.Printf("  Shard %d: %s\n", s.Index, s.Name)
+			fmt.Printf("  %s Shard %d: %s\n", s.statusIndicator(), s.Index+1, s.Name)
 		}
 		<-testsComplete
+		for _, s := range shards {
+			fmt.Printf("  %s Shard %d: %s\n", s.statusIndicator(), s.Index+1, s.Name)
+		}
 	} else {
 		//
 		// Rate limit for UI output
@@ -101,6 +133,13 @@ func drawStatusLoop(isRichOutput bool, shards []*TestShard, testsComplete <-chan
 				moveCursorUp(len(shards) * (NumLogLines + 2))
 			}
 		}
+
+		// Final redraw to pick up any status changes that occurred
+		// between the last tick and testsComplete closing.
+		for _, s := range shards {
+			s.draw()
+		}
+		moveCursorUp(len(shards) * (NumLogLines + 2))
 
 		//
 		// Reset the cursor and final report
