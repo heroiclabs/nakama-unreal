@@ -18,6 +18,7 @@
 
 #include "SatoriApi.h"
 #include "NakamaHttpHelper.h"
+#include "GenericPlatform/GenericPlatformHttp.h"
 
 #include "Modules/ModuleManager.h"
 
@@ -1967,11 +1968,11 @@ void SatoriApi::GetExperiments(
 	TArray<FString> QueryParams;
 	for (const FString& Item : Names)
 	{
-		QueryParams.Add(FString::Printf(TEXT("names=%s"), *Item));
+		QueryParams.Add(TEXT("names=") + FGenericPlatformHttp::UrlEncode(Item));
 	}
 	for (const FString& Item : Labels)
 	{
-		QueryParams.Add(FString::Printf(TEXT("labels=%s"), *Item));
+		QueryParams.Add(TEXT("labels=") + FGenericPlatformHttp::UrlEncode(Item));
 	}
 	if (QueryParams.Num() > 0)
 	{
@@ -2006,11 +2007,11 @@ void SatoriApi::GetFlagOverrides(
 	TArray<FString> QueryParams;
 	for (const FString& Item : Names)
 	{
-		QueryParams.Add(FString::Printf(TEXT("names=%s"), *Item));
+		QueryParams.Add(TEXT("names=") + FGenericPlatformHttp::UrlEncode(Item));
 	}
 	for (const FString& Item : Labels)
 	{
-		QueryParams.Add(FString::Printf(TEXT("labels=%s"), *Item));
+		QueryParams.Add(TEXT("labels=") + FGenericPlatformHttp::UrlEncode(Item));
 	}
 	if (QueryParams.Num() > 0)
 	{
@@ -2045,11 +2046,11 @@ void SatoriApi::GetFlags(
 	TArray<FString> QueryParams;
 	for (const FString& Item : Names)
 	{
-		QueryParams.Add(FString::Printf(TEXT("names=%s"), *Item));
+		QueryParams.Add(TEXT("names=") + FGenericPlatformHttp::UrlEncode(Item));
 	}
 	for (const FString& Item : Labels)
 	{
-		QueryParams.Add(FString::Printf(TEXT("labels=%s"), *Item));
+		QueryParams.Add(TEXT("labels=") + FGenericPlatformHttp::UrlEncode(Item));
 	}
 	if (QueryParams.Num() > 0)
 	{
@@ -2088,11 +2089,11 @@ void SatoriApi::GetLiveEvents(
 	TArray<FString> QueryParams;
 	for (const FString& Item : Names)
 	{
-		QueryParams.Add(FString::Printf(TEXT("names=%s"), *Item));
+		QueryParams.Add(TEXT("names=") + FGenericPlatformHttp::UrlEncode(Item));
 	}
 	for (const FString& Item : Labels)
 	{
-		QueryParams.Add(FString::Printf(TEXT("labels=%s"), *Item));
+		QueryParams.Add(TEXT("labels=") + FGenericPlatformHttp::UrlEncode(Item));
 	}
 	if (PastRunCount != 0)
 	{
@@ -2139,7 +2140,7 @@ void SatoriApi::JoinLiveEvent(
 	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v1/live-event/{id}/participation");
-	Endpoint = Endpoint.Replace(TEXT("{id}"), *Id);
+	{ const FString Encoded_Id = FGenericPlatformHttp::UrlEncode(Id); Endpoint = Endpoint.Replace(TEXT("{id}"), *Encoded_Id); }
 	TArray<FString> QueryParams;
 	if (QueryParams.Num() > 0)
 	{
@@ -2356,11 +2357,11 @@ void SatoriApi::GetMessageList(
 	QueryParams.Add(FString::Printf(TEXT("forward=%s"), Forward ? TEXT("true") : TEXT("false")));
 	if (!Cursor.IsEmpty())
 	{
-		QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *Cursor));
+		QueryParams.Add(TEXT("cursor=") + FGenericPlatformHttp::UrlEncode(Cursor));
 	}
 	for (const FString& Item : MessageIds)
 	{
-		QueryParams.Add(FString::Printf(TEXT("message_ids=%s"), *Item));
+		QueryParams.Add(TEXT("message_ids=") + FGenericPlatformHttp::UrlEncode(Item));
 	}
 	if (QueryParams.Num() > 0)
 	{
@@ -2393,7 +2394,7 @@ void SatoriApi::UpdateMessage(
 	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v1/message/{id}");
-	Endpoint = Endpoint.Replace(TEXT("{id}"), *Id);
+	{ const FString Encoded_Id = FGenericPlatformHttp::UrlEncode(Id); Endpoint = Endpoint.Replace(TEXT("{id}"), *Encoded_Id); }
 	TArray<FString> QueryParams;
 	if (QueryParams.Num() > 0)
 	{
@@ -2430,7 +2431,7 @@ void SatoriApi::DeleteMessage(
 	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v1/message/{id}");
-	Endpoint = Endpoint.Replace(TEXT("{id}"), *Id);
+	{ const FString Encoded_Id = FGenericPlatformHttp::UrlEncode(Id); Endpoint = Endpoint.Replace(TEXT("{id}"), *Encoded_Id); }
 	TArray<FString> QueryParams;
 	if (QueryParams.Num() > 0)
 	{

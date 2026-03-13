@@ -20,6 +20,7 @@
 #include "NakamaHttpHelper.h"
 
 #include "Modules/ModuleManager.h"
+#include "GenericPlatform/GenericPlatformHttp.h"
 
 DEFINE_LOG_CATEGORY(LogNakama);
 
@@ -40,15 +41,15 @@ void NakamaApi::AddFriends(
 	TArray<FString> QueryParams;
 	for (const FString& Item : Ids)
 	{
-		QueryParams.Add(FString::Printf(TEXT("ids=%s"), *Item));
+		QueryParams.Add(TEXT("ids=") + FGenericPlatformHttp::UrlEncode(Item));
 	}
 	for (const FString& Item : Usernames)
 	{
-		QueryParams.Add(FString::Printf(TEXT("usernames=%s"), *Item));
+		QueryParams.Add(TEXT("usernames=") + FGenericPlatformHttp::UrlEncode(Item));
 	}
 	if (!Metadata.IsEmpty())
 	{
-		QueryParams.Add(FString::Printf(TEXT("metadata=%s"), *Metadata));
+		QueryParams.Add(TEXT("metadata=") + FGenericPlatformHttp::UrlEncode(Metadata));
 	}
 	if (QueryParams.Num() > 0)
 	{
@@ -83,15 +84,15 @@ void NakamaApi::AddFriends(
 	TArray<FString> QueryParams;
 	for (const FString& Item : Ids)
 	{
-		QueryParams.Add(FString::Printf(TEXT("ids=%s"), *Item));
+		QueryParams.Add(TEXT("ids=") + FGenericPlatformHttp::UrlEncode(Item));
 	}
 	for (const FString& Item : Usernames)
 	{
-		QueryParams.Add(FString::Printf(TEXT("usernames=%s"), *Item));
+		QueryParams.Add(TEXT("usernames=") + FGenericPlatformHttp::UrlEncode(Item));
 	}
 	if (!Metadata.IsEmpty())
 	{
-		QueryParams.Add(FString::Printf(TEXT("metadata=%s"), *Metadata));
+		QueryParams.Add(TEXT("metadata=") + FGenericPlatformHttp::UrlEncode(Metadata));
 	}
 	if (QueryParams.Num() > 0)
 	{
@@ -120,11 +121,11 @@ void NakamaApi::AddGroupUsers(
 	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/group/{group_id}/add");
-	Endpoint = Endpoint.Replace(TEXT("{group_id}"), *GroupId);
+	{ const FString Encoded_GroupId = FGenericPlatformHttp::UrlEncode(GroupId); Endpoint = Endpoint.Replace(TEXT("{group_id}"), *Encoded_GroupId); }
 	TArray<FString> QueryParams;
 	for (const FString& Item : UserIds)
 	{
-		QueryParams.Add(FString::Printf(TEXT("user_ids=%s"), *Item));
+		QueryParams.Add(TEXT("user_ids=") + FGenericPlatformHttp::UrlEncode(Item));
 	}
 	if (QueryParams.Num() > 0)
 	{
@@ -155,11 +156,11 @@ void NakamaApi::AddGroupUsers(
 	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/group/{group_id}/add");
-	Endpoint = Endpoint.Replace(TEXT("{group_id}"), *GroupId);
+	{ const FString Encoded_GroupId = FGenericPlatformHttp::UrlEncode(GroupId); Endpoint = Endpoint.Replace(TEXT("{group_id}"), *Encoded_GroupId); }
 	TArray<FString> QueryParams;
 	for (const FString& Item : UserIds)
 	{
-		QueryParams.Add(FString::Printf(TEXT("user_ids=%s"), *Item));
+		QueryParams.Add(TEXT("user_ids=") + FGenericPlatformHttp::UrlEncode(Item));
 	}
 	if (QueryParams.Num() > 0)
 	{
@@ -312,7 +313,7 @@ void NakamaApi::AuthenticateApple(
 	QueryParams.Add(FString::Printf(TEXT("create=%s"), Create ? TEXT("true") : TEXT("false")));
 	if (!Username.IsEmpty())
 	{
-		QueryParams.Add(FString::Printf(TEXT("username=%s"), *Username));
+		QueryParams.Add(TEXT("username=") + FGenericPlatformHttp::UrlEncode(Username));
 	}
 	if (QueryParams.Num() > 0)
 	{
@@ -349,7 +350,7 @@ void NakamaApi::AuthenticateCustom(
 	QueryParams.Add(FString::Printf(TEXT("create=%s"), Create ? TEXT("true") : TEXT("false")));
 	if (!Username.IsEmpty())
 	{
-		QueryParams.Add(FString::Printf(TEXT("username=%s"), *Username));
+		QueryParams.Add(TEXT("username=") + FGenericPlatformHttp::UrlEncode(Username));
 	}
 	if (QueryParams.Num() > 0)
 	{
@@ -386,7 +387,7 @@ void NakamaApi::AuthenticateDevice(
 	QueryParams.Add(FString::Printf(TEXT("create=%s"), Create ? TEXT("true") : TEXT("false")));
 	if (!Username.IsEmpty())
 	{
-		QueryParams.Add(FString::Printf(TEXT("username=%s"), *Username));
+		QueryParams.Add(TEXT("username=") + FGenericPlatformHttp::UrlEncode(Username));
 	}
 	if (QueryParams.Num() > 0)
 	{
@@ -423,7 +424,7 @@ void NakamaApi::AuthenticateEmail(
 	QueryParams.Add(FString::Printf(TEXT("create=%s"), Create ? TEXT("true") : TEXT("false")));
 	if (!Username.IsEmpty())
 	{
-		QueryParams.Add(FString::Printf(TEXT("username=%s"), *Username));
+		QueryParams.Add(TEXT("username=") + FGenericPlatformHttp::UrlEncode(Username));
 	}
 	if (QueryParams.Num() > 0)
 	{
@@ -461,7 +462,7 @@ void NakamaApi::AuthenticateFacebook(
 	QueryParams.Add(FString::Printf(TEXT("create=%s"), Create ? TEXT("true") : TEXT("false")));
 	if (!Username.IsEmpty())
 	{
-		QueryParams.Add(FString::Printf(TEXT("username=%s"), *Username));
+		QueryParams.Add(TEXT("username=") + FGenericPlatformHttp::UrlEncode(Username));
 	}
 	QueryParams.Add(FString::Printf(TEXT("sync=%s"), Sync ? TEXT("true") : TEXT("false")));
 	if (QueryParams.Num() > 0)
@@ -499,7 +500,7 @@ void NakamaApi::AuthenticateFacebookInstantGame(
 	QueryParams.Add(FString::Printf(TEXT("create=%s"), Create ? TEXT("true") : TEXT("false")));
 	if (!Username.IsEmpty())
 	{
-		QueryParams.Add(FString::Printf(TEXT("username=%s"), *Username));
+		QueryParams.Add(TEXT("username=") + FGenericPlatformHttp::UrlEncode(Username));
 	}
 	if (QueryParams.Num() > 0)
 	{
@@ -536,7 +537,7 @@ void NakamaApi::AuthenticateGameCenter(
 	QueryParams.Add(FString::Printf(TEXT("create=%s"), Create ? TEXT("true") : TEXT("false")));
 	if (!Username.IsEmpty())
 	{
-		QueryParams.Add(FString::Printf(TEXT("username=%s"), *Username));
+		QueryParams.Add(TEXT("username=") + FGenericPlatformHttp::UrlEncode(Username));
 	}
 	if (QueryParams.Num() > 0)
 	{
@@ -573,7 +574,7 @@ void NakamaApi::AuthenticateGoogle(
 	QueryParams.Add(FString::Printf(TEXT("create=%s"), Create ? TEXT("true") : TEXT("false")));
 	if (!Username.IsEmpty())
 	{
-		QueryParams.Add(FString::Printf(TEXT("username=%s"), *Username));
+		QueryParams.Add(TEXT("username=") + FGenericPlatformHttp::UrlEncode(Username));
 	}
 	if (QueryParams.Num() > 0)
 	{
@@ -611,7 +612,7 @@ void NakamaApi::AuthenticateSteam(
 	QueryParams.Add(FString::Printf(TEXT("create=%s"), Create ? TEXT("true") : TEXT("false")));
 	if (!Username.IsEmpty())
 	{
-		QueryParams.Add(FString::Printf(TEXT("username=%s"), *Username));
+		QueryParams.Add(TEXT("username=") + FGenericPlatformHttp::UrlEncode(Username));
 	}
 	QueryParams.Add(FString::Printf(TEXT("sync=%s"), Sync ? TEXT("true") : TEXT("false")));
 	if (QueryParams.Num() > 0)
@@ -645,11 +646,11 @@ void NakamaApi::BanGroupUsers(
 	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/group/{group_id}/ban");
-	Endpoint = Endpoint.Replace(TEXT("{group_id}"), *GroupId);
+	{ const FString Encoded_GroupId = FGenericPlatformHttp::UrlEncode(GroupId); Endpoint = Endpoint.Replace(TEXT("{group_id}"), *Encoded_GroupId); }
 	TArray<FString> QueryParams;
 	for (const FString& Item : UserIds)
 	{
-		QueryParams.Add(FString::Printf(TEXT("user_ids=%s"), *Item));
+		QueryParams.Add(TEXT("user_ids=") + FGenericPlatformHttp::UrlEncode(Item));
 	}
 	if (QueryParams.Num() > 0)
 	{
@@ -680,11 +681,11 @@ void NakamaApi::BanGroupUsers(
 	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/group/{group_id}/ban");
-	Endpoint = Endpoint.Replace(TEXT("{group_id}"), *GroupId);
+	{ const FString Encoded_GroupId = FGenericPlatformHttp::UrlEncode(GroupId); Endpoint = Endpoint.Replace(TEXT("{group_id}"), *Encoded_GroupId); }
 	TArray<FString> QueryParams;
 	for (const FString& Item : UserIds)
 	{
-		QueryParams.Add(FString::Printf(TEXT("user_ids=%s"), *Item));
+		QueryParams.Add(TEXT("user_ids=") + FGenericPlatformHttp::UrlEncode(Item));
 	}
 	if (QueryParams.Num() > 0)
 	{
@@ -716,11 +717,11 @@ void NakamaApi::BlockFriends(
 	TArray<FString> QueryParams;
 	for (const FString& Item : Ids)
 	{
-		QueryParams.Add(FString::Printf(TEXT("ids=%s"), *Item));
+		QueryParams.Add(TEXT("ids=") + FGenericPlatformHttp::UrlEncode(Item));
 	}
 	for (const FString& Item : Usernames)
 	{
-		QueryParams.Add(FString::Printf(TEXT("usernames=%s"), *Item));
+		QueryParams.Add(TEXT("usernames=") + FGenericPlatformHttp::UrlEncode(Item));
 	}
 	if (QueryParams.Num() > 0)
 	{
@@ -754,11 +755,11 @@ void NakamaApi::BlockFriends(
 	TArray<FString> QueryParams;
 	for (const FString& Item : Ids)
 	{
-		QueryParams.Add(FString::Printf(TEXT("ids=%s"), *Item));
+		QueryParams.Add(TEXT("ids=") + FGenericPlatformHttp::UrlEncode(Item));
 	}
 	for (const FString& Item : Usernames)
 	{
-		QueryParams.Add(FString::Printf(TEXT("usernames=%s"), *Item));
+		QueryParams.Add(TEXT("usernames=") + FGenericPlatformHttp::UrlEncode(Item));
 	}
 	if (QueryParams.Num() > 0)
 	{
@@ -940,11 +941,11 @@ void NakamaApi::DeleteFriends(
 	TArray<FString> QueryParams;
 	for (const FString& Item : Ids)
 	{
-		QueryParams.Add(FString::Printf(TEXT("ids=%s"), *Item));
+		QueryParams.Add(TEXT("ids=") + FGenericPlatformHttp::UrlEncode(Item));
 	}
 	for (const FString& Item : Usernames)
 	{
-		QueryParams.Add(FString::Printf(TEXT("usernames=%s"), *Item));
+		QueryParams.Add(TEXT("usernames=") + FGenericPlatformHttp::UrlEncode(Item));
 	}
 	if (QueryParams.Num() > 0)
 	{
@@ -978,11 +979,11 @@ void NakamaApi::DeleteFriends(
 	TArray<FString> QueryParams;
 	for (const FString& Item : Ids)
 	{
-		QueryParams.Add(FString::Printf(TEXT("ids=%s"), *Item));
+		QueryParams.Add(TEXT("ids=") + FGenericPlatformHttp::UrlEncode(Item));
 	}
 	for (const FString& Item : Usernames)
 	{
-		QueryParams.Add(FString::Printf(TEXT("usernames=%s"), *Item));
+		QueryParams.Add(TEXT("usernames=") + FGenericPlatformHttp::UrlEncode(Item));
 	}
 	if (QueryParams.Num() > 0)
 	{
@@ -1010,7 +1011,7 @@ void NakamaApi::DeleteGroup(
 	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/group/{group_id}");
-	Endpoint = Endpoint.Replace(TEXT("{group_id}"), *GroupId);
+	{ const FString Encoded_GroupId = FGenericPlatformHttp::UrlEncode(GroupId); Endpoint = Endpoint.Replace(TEXT("{group_id}"), *Encoded_GroupId); }
 	TArray<FString> QueryParams;
 	if (QueryParams.Num() > 0)
 	{
@@ -1040,7 +1041,7 @@ void NakamaApi::DeleteGroup(
 	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/group/{group_id}");
-	Endpoint = Endpoint.Replace(TEXT("{group_id}"), *GroupId);
+	{ const FString Encoded_GroupId = FGenericPlatformHttp::UrlEncode(GroupId); Endpoint = Endpoint.Replace(TEXT("{group_id}"), *Encoded_GroupId); }
 	TArray<FString> QueryParams;
 	if (QueryParams.Num() > 0)
 	{
@@ -1068,7 +1069,7 @@ void NakamaApi::DeleteLeaderboardRecord(
 	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/leaderboard/{leaderboard_id}");
-	Endpoint = Endpoint.Replace(TEXT("{leaderboard_id}"), *LeaderboardId);
+	{ const FString Encoded_LeaderboardId = FGenericPlatformHttp::UrlEncode(LeaderboardId); Endpoint = Endpoint.Replace(TEXT("{leaderboard_id}"), *Encoded_LeaderboardId); }
 	TArray<FString> QueryParams;
 	if (QueryParams.Num() > 0)
 	{
@@ -1098,7 +1099,7 @@ void NakamaApi::DeleteLeaderboardRecord(
 	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/leaderboard/{leaderboard_id}");
-	Endpoint = Endpoint.Replace(TEXT("{leaderboard_id}"), *LeaderboardId);
+	{ const FString Encoded_LeaderboardId = FGenericPlatformHttp::UrlEncode(LeaderboardId); Endpoint = Endpoint.Replace(TEXT("{leaderboard_id}"), *Encoded_LeaderboardId); }
 	TArray<FString> QueryParams;
 	if (QueryParams.Num() > 0)
 	{
@@ -1129,7 +1130,7 @@ void NakamaApi::DeleteNotifications(
 	TArray<FString> QueryParams;
 	for (const FString& Item : Ids)
 	{
-		QueryParams.Add(FString::Printf(TEXT("ids=%s"), *Item));
+		QueryParams.Add(TEXT("ids=") + FGenericPlatformHttp::UrlEncode(Item));
 	}
 	if (QueryParams.Num() > 0)
 	{
@@ -1162,7 +1163,7 @@ void NakamaApi::DeleteNotifications(
 	TArray<FString> QueryParams;
 	for (const FString& Item : Ids)
 	{
-		QueryParams.Add(FString::Printf(TEXT("ids=%s"), *Item));
+		QueryParams.Add(TEXT("ids=") + FGenericPlatformHttp::UrlEncode(Item));
 	}
 	if (QueryParams.Num() > 0)
 	{
@@ -1190,7 +1191,7 @@ void NakamaApi::DeleteTournamentRecord(
 	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/tournament/{tournament_id}");
-	Endpoint = Endpoint.Replace(TEXT("{tournament_id}"), *TournamentId);
+	{ const FString Encoded_TournamentId = FGenericPlatformHttp::UrlEncode(TournamentId); Endpoint = Endpoint.Replace(TEXT("{tournament_id}"), *Encoded_TournamentId); }
 	TArray<FString> QueryParams;
 	if (QueryParams.Num() > 0)
 	{
@@ -1220,7 +1221,7 @@ void NakamaApi::DeleteTournamentRecord(
 	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/tournament/{tournament_id}");
-	Endpoint = Endpoint.Replace(TEXT("{tournament_id}"), *TournamentId);
+	{ const FString Encoded_TournamentId = FGenericPlatformHttp::UrlEncode(TournamentId); Endpoint = Endpoint.Replace(TEXT("{tournament_id}"), *Encoded_TournamentId); }
 	TArray<FString> QueryParams;
 	if (QueryParams.Num() > 0)
 	{
@@ -1469,15 +1470,15 @@ void NakamaApi::GetUsers(
 	TArray<FString> QueryParams;
 	for (const FString& Item : Ids)
 	{
-		QueryParams.Add(FString::Printf(TEXT("ids=%s"), *Item));
+		QueryParams.Add(TEXT("ids=") + FGenericPlatformHttp::UrlEncode(Item));
 	}
 	for (const FString& Item : Usernames)
 	{
-		QueryParams.Add(FString::Printf(TEXT("usernames=%s"), *Item));
+		QueryParams.Add(TEXT("usernames=") + FGenericPlatformHttp::UrlEncode(Item));
 	}
 	for (const FString& Item : FacebookIds)
 	{
-		QueryParams.Add(FString::Printf(TEXT("facebook_ids=%s"), *Item));
+		QueryParams.Add(TEXT("facebook_ids=") + FGenericPlatformHttp::UrlEncode(Item));
 	}
 	if (QueryParams.Num() > 0)
 	{
@@ -1513,15 +1514,15 @@ void NakamaApi::GetUsers(
 	TArray<FString> QueryParams;
 	for (const FString& Item : Ids)
 	{
-		QueryParams.Add(FString::Printf(TEXT("ids=%s"), *Item));
+		QueryParams.Add(TEXT("ids=") + FGenericPlatformHttp::UrlEncode(Item));
 	}
 	for (const FString& Item : Usernames)
 	{
-		QueryParams.Add(FString::Printf(TEXT("usernames=%s"), *Item));
+		QueryParams.Add(TEXT("usernames=") + FGenericPlatformHttp::UrlEncode(Item));
 	}
 	for (const FString& Item : FacebookIds)
 	{
-		QueryParams.Add(FString::Printf(TEXT("facebook_ids=%s"), *Item));
+		QueryParams.Add(TEXT("facebook_ids=") + FGenericPlatformHttp::UrlEncode(Item));
 	}
 	if (QueryParams.Num() > 0)
 	{
@@ -1550,7 +1551,7 @@ void NakamaApi::GetSubscription(
 	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/iap/subscription/{product_id}");
-	Endpoint = Endpoint.Replace(TEXT("{product_id}"), *ProductId);
+	{ const FString Encoded_ProductId = FGenericPlatformHttp::UrlEncode(ProductId); Endpoint = Endpoint.Replace(TEXT("{product_id}"), *Encoded_ProductId); }
 	TArray<FString> QueryParams;
 	if (QueryParams.Num() > 0)
 	{
@@ -1581,7 +1582,7 @@ void NakamaApi::GetSubscription(
 	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/iap/subscription/{product_id}");
-	Endpoint = Endpoint.Replace(TEXT("{product_id}"), *ProductId);
+	{ const FString Encoded_ProductId = FGenericPlatformHttp::UrlEncode(ProductId); Endpoint = Endpoint.Replace(TEXT("{product_id}"), *Encoded_ProductId); }
 	TArray<FString> QueryParams;
 	if (QueryParams.Num() > 0)
 	{
@@ -1824,7 +1825,7 @@ void NakamaApi::JoinGroup(
 	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/group/{group_id}/join");
-	Endpoint = Endpoint.Replace(TEXT("{group_id}"), *GroupId);
+	{ const FString Encoded_GroupId = FGenericPlatformHttp::UrlEncode(GroupId); Endpoint = Endpoint.Replace(TEXT("{group_id}"), *Encoded_GroupId); }
 	TArray<FString> QueryParams;
 	if (QueryParams.Num() > 0)
 	{
@@ -1854,7 +1855,7 @@ void NakamaApi::JoinGroup(
 	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/group/{group_id}/join");
-	Endpoint = Endpoint.Replace(TEXT("{group_id}"), *GroupId);
+	{ const FString Encoded_GroupId = FGenericPlatformHttp::UrlEncode(GroupId); Endpoint = Endpoint.Replace(TEXT("{group_id}"), *Encoded_GroupId); }
 	TArray<FString> QueryParams;
 	if (QueryParams.Num() > 0)
 	{
@@ -1882,7 +1883,7 @@ void NakamaApi::JoinTournament(
 	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/tournament/{tournament_id}/join");
-	Endpoint = Endpoint.Replace(TEXT("{tournament_id}"), *TournamentId);
+	{ const FString Encoded_TournamentId = FGenericPlatformHttp::UrlEncode(TournamentId); Endpoint = Endpoint.Replace(TEXT("{tournament_id}"), *Encoded_TournamentId); }
 	TArray<FString> QueryParams;
 	if (QueryParams.Num() > 0)
 	{
@@ -1912,7 +1913,7 @@ void NakamaApi::JoinTournament(
 	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/tournament/{tournament_id}/join");
-	Endpoint = Endpoint.Replace(TEXT("{tournament_id}"), *TournamentId);
+	{ const FString Encoded_TournamentId = FGenericPlatformHttp::UrlEncode(TournamentId); Endpoint = Endpoint.Replace(TEXT("{tournament_id}"), *Encoded_TournamentId); }
 	TArray<FString> QueryParams;
 	if (QueryParams.Num() > 0)
 	{
@@ -1941,11 +1942,11 @@ void NakamaApi::KickGroupUsers(
 	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/group/{group_id}/kick");
-	Endpoint = Endpoint.Replace(TEXT("{group_id}"), *GroupId);
+	{ const FString Encoded_GroupId = FGenericPlatformHttp::UrlEncode(GroupId); Endpoint = Endpoint.Replace(TEXT("{group_id}"), *Encoded_GroupId); }
 	TArray<FString> QueryParams;
 	for (const FString& Item : UserIds)
 	{
-		QueryParams.Add(FString::Printf(TEXT("user_ids=%s"), *Item));
+		QueryParams.Add(TEXT("user_ids=") + FGenericPlatformHttp::UrlEncode(Item));
 	}
 	if (QueryParams.Num() > 0)
 	{
@@ -1976,11 +1977,11 @@ void NakamaApi::KickGroupUsers(
 	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/group/{group_id}/kick");
-	Endpoint = Endpoint.Replace(TEXT("{group_id}"), *GroupId);
+	{ const FString Encoded_GroupId = FGenericPlatformHttp::UrlEncode(GroupId); Endpoint = Endpoint.Replace(TEXT("{group_id}"), *Encoded_GroupId); }
 	TArray<FString> QueryParams;
 	for (const FString& Item : UserIds)
 	{
-		QueryParams.Add(FString::Printf(TEXT("user_ids=%s"), *Item));
+		QueryParams.Add(TEXT("user_ids=") + FGenericPlatformHttp::UrlEncode(Item));
 	}
 	if (QueryParams.Num() > 0)
 	{
@@ -2008,7 +2009,7 @@ void NakamaApi::LeaveGroup(
 	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/group/{group_id}/leave");
-	Endpoint = Endpoint.Replace(TEXT("{group_id}"), *GroupId);
+	{ const FString Encoded_GroupId = FGenericPlatformHttp::UrlEncode(GroupId); Endpoint = Endpoint.Replace(TEXT("{group_id}"), *Encoded_GroupId); }
 	TArray<FString> QueryParams;
 	if (QueryParams.Num() > 0)
 	{
@@ -2038,7 +2039,7 @@ void NakamaApi::LeaveGroup(
 	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/group/{group_id}/leave");
-	Endpoint = Endpoint.Replace(TEXT("{group_id}"), *GroupId);
+	{ const FString Encoded_GroupId = FGenericPlatformHttp::UrlEncode(GroupId); Endpoint = Endpoint.Replace(TEXT("{group_id}"), *Encoded_GroupId); }
 	TArray<FString> QueryParams;
 	if (QueryParams.Num() > 0)
 	{
@@ -2851,7 +2852,7 @@ void NakamaApi::ListChannelMessages(
 	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/channel/{channel_id}");
-	Endpoint = Endpoint.Replace(TEXT("{channel_id}"), *ChannelId);
+	{ const FString Encoded_ChannelId = FGenericPlatformHttp::UrlEncode(ChannelId); Endpoint = Endpoint.Replace(TEXT("{channel_id}"), *Encoded_ChannelId); }
 	TArray<FString> QueryParams;
 	if (Limit != 0)
 	{
@@ -2860,7 +2861,7 @@ void NakamaApi::ListChannelMessages(
 	QueryParams.Add(FString::Printf(TEXT("forward=%s"), Forward ? TEXT("true") : TEXT("false")));
 	if (!Cursor.IsEmpty())
 	{
-		QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *Cursor));
+		QueryParams.Add(TEXT("cursor=") + FGenericPlatformHttp::UrlEncode(Cursor));
 	}
 	if (QueryParams.Num() > 0)
 	{
@@ -2894,7 +2895,7 @@ void NakamaApi::ListChannelMessages(
 	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/channel/{channel_id}");
-	Endpoint = Endpoint.Replace(TEXT("{channel_id}"), *ChannelId);
+	{ const FString Encoded_ChannelId = FGenericPlatformHttp::UrlEncode(ChannelId); Endpoint = Endpoint.Replace(TEXT("{channel_id}"), *Encoded_ChannelId); }
 	TArray<FString> QueryParams;
 	if (Limit != 0)
 	{
@@ -2903,7 +2904,7 @@ void NakamaApi::ListChannelMessages(
 	QueryParams.Add(FString::Printf(TEXT("forward=%s"), Forward ? TEXT("true") : TEXT("false")));
 	if (!Cursor.IsEmpty())
 	{
-		QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *Cursor));
+		QueryParams.Add(TEXT("cursor=") + FGenericPlatformHttp::UrlEncode(Cursor));
 	}
 	if (QueryParams.Num() > 0)
 	{
@@ -2945,7 +2946,7 @@ void NakamaApi::ListFriends(
 	}
 	if (!Cursor.IsEmpty())
 	{
-		QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *Cursor));
+		QueryParams.Add(TEXT("cursor=") + FGenericPlatformHttp::UrlEncode(Cursor));
 	}
 	if (QueryParams.Num() > 0)
 	{
@@ -2989,7 +2990,7 @@ void NakamaApi::ListFriends(
 	}
 	if (!Cursor.IsEmpty())
 	{
-		QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *Cursor));
+		QueryParams.Add(TEXT("cursor=") + FGenericPlatformHttp::UrlEncode(Cursor));
 	}
 	if (QueryParams.Num() > 0)
 	{
@@ -3026,7 +3027,7 @@ void NakamaApi::ListFriendsOfFriends(
 	}
 	if (!Cursor.IsEmpty())
 	{
-		QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *Cursor));
+		QueryParams.Add(TEXT("cursor=") + FGenericPlatformHttp::UrlEncode(Cursor));
 	}
 	if (QueryParams.Num() > 0)
 	{
@@ -3065,7 +3066,7 @@ void NakamaApi::ListFriendsOfFriends(
 	}
 	if (!Cursor.IsEmpty())
 	{
-		QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *Cursor));
+		QueryParams.Add(TEXT("cursor=") + FGenericPlatformHttp::UrlEncode(Cursor));
 	}
 	if (QueryParams.Num() > 0)
 	{
@@ -3102,11 +3103,11 @@ void NakamaApi::ListGroups(
 	TArray<FString> QueryParams;
 	if (!Name.IsEmpty())
 	{
-		QueryParams.Add(FString::Printf(TEXT("name=%s"), *Name));
+		QueryParams.Add(TEXT("name=") + FGenericPlatformHttp::UrlEncode(Name));
 	}
 	if (!Cursor.IsEmpty())
 	{
-		QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *Cursor));
+		QueryParams.Add(TEXT("cursor=") + FGenericPlatformHttp::UrlEncode(Cursor));
 	}
 	if (Limit != 0)
 	{
@@ -3114,7 +3115,7 @@ void NakamaApi::ListGroups(
 	}
 	if (!LangTag.IsEmpty())
 	{
-		QueryParams.Add(FString::Printf(TEXT("lang_tag=%s"), *LangTag));
+		QueryParams.Add(TEXT("lang_tag=") + FGenericPlatformHttp::UrlEncode(LangTag));
 	}
 	if (Members != 0)
 	{
@@ -3158,11 +3159,11 @@ void NakamaApi::ListGroups(
 	TArray<FString> QueryParams;
 	if (!Name.IsEmpty())
 	{
-		QueryParams.Add(FString::Printf(TEXT("name=%s"), *Name));
+		QueryParams.Add(TEXT("name=") + FGenericPlatformHttp::UrlEncode(Name));
 	}
 	if (!Cursor.IsEmpty())
 	{
-		QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *Cursor));
+		QueryParams.Add(TEXT("cursor=") + FGenericPlatformHttp::UrlEncode(Cursor));
 	}
 	if (Limit != 0)
 	{
@@ -3170,7 +3171,7 @@ void NakamaApi::ListGroups(
 	}
 	if (!LangTag.IsEmpty())
 	{
-		QueryParams.Add(FString::Printf(TEXT("lang_tag=%s"), *LangTag));
+		QueryParams.Add(TEXT("lang_tag=") + FGenericPlatformHttp::UrlEncode(LangTag));
 	}
 	if (Members != 0)
 	{
@@ -3207,7 +3208,7 @@ void NakamaApi::ListGroupUsers(
 	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/group/{group_id}/user");
-	Endpoint = Endpoint.Replace(TEXT("{group_id}"), *GroupId);
+	{ const FString Encoded_GroupId = FGenericPlatformHttp::UrlEncode(GroupId); Endpoint = Endpoint.Replace(TEXT("{group_id}"), *Encoded_GroupId); }
 	TArray<FString> QueryParams;
 	if (Limit != 0)
 	{
@@ -3219,7 +3220,7 @@ void NakamaApi::ListGroupUsers(
 	}
 	if (!Cursor.IsEmpty())
 	{
-		QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *Cursor));
+		QueryParams.Add(TEXT("cursor=") + FGenericPlatformHttp::UrlEncode(Cursor));
 	}
 	if (QueryParams.Num() > 0)
 	{
@@ -3253,7 +3254,7 @@ void NakamaApi::ListGroupUsers(
 	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/group/{group_id}/user");
-	Endpoint = Endpoint.Replace(TEXT("{group_id}"), *GroupId);
+	{ const FString Encoded_GroupId = FGenericPlatformHttp::UrlEncode(GroupId); Endpoint = Endpoint.Replace(TEXT("{group_id}"), *Encoded_GroupId); }
 	TArray<FString> QueryParams;
 	if (Limit != 0)
 	{
@@ -3265,7 +3266,7 @@ void NakamaApi::ListGroupUsers(
 	}
 	if (!Cursor.IsEmpty())
 	{
-		QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *Cursor));
+		QueryParams.Add(TEXT("cursor=") + FGenericPlatformHttp::UrlEncode(Cursor));
 	}
 	if (QueryParams.Num() > 0)
 	{
@@ -3298,11 +3299,11 @@ void NakamaApi::ListLeaderboardRecords(
 	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/leaderboard/{leaderboard_id}");
-	Endpoint = Endpoint.Replace(TEXT("{leaderboard_id}"), *LeaderboardId);
+	{ const FString Encoded_LeaderboardId = FGenericPlatformHttp::UrlEncode(LeaderboardId); Endpoint = Endpoint.Replace(TEXT("{leaderboard_id}"), *Encoded_LeaderboardId); }
 	TArray<FString> QueryParams;
 	for (const FString& Item : OwnerIds)
 	{
-		QueryParams.Add(FString::Printf(TEXT("owner_ids=%s"), *Item));
+		QueryParams.Add(TEXT("owner_ids=") + FGenericPlatformHttp::UrlEncode(Item));
 	}
 	if (Limit != 0)
 	{
@@ -3310,7 +3311,7 @@ void NakamaApi::ListLeaderboardRecords(
 	}
 	if (!Cursor.IsEmpty())
 	{
-		QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *Cursor));
+		QueryParams.Add(TEXT("cursor=") + FGenericPlatformHttp::UrlEncode(Cursor));
 	}
 	if (Expiry != 0)
 	{
@@ -3349,11 +3350,11 @@ void NakamaApi::ListLeaderboardRecords(
 	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/leaderboard/{leaderboard_id}");
-	Endpoint = Endpoint.Replace(TEXT("{leaderboard_id}"), *LeaderboardId);
+	{ const FString Encoded_LeaderboardId = FGenericPlatformHttp::UrlEncode(LeaderboardId); Endpoint = Endpoint.Replace(TEXT("{leaderboard_id}"), *Encoded_LeaderboardId); }
 	TArray<FString> QueryParams;
 	for (const FString& Item : OwnerIds)
 	{
-		QueryParams.Add(FString::Printf(TEXT("owner_ids=%s"), *Item));
+		QueryParams.Add(TEXT("owner_ids=") + FGenericPlatformHttp::UrlEncode(Item));
 	}
 	if (Limit != 0)
 	{
@@ -3361,7 +3362,7 @@ void NakamaApi::ListLeaderboardRecords(
 	}
 	if (!Cursor.IsEmpty())
 	{
-		QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *Cursor));
+		QueryParams.Add(TEXT("cursor=") + FGenericPlatformHttp::UrlEncode(Cursor));
 	}
 	if (Expiry != 0)
 	{
@@ -3398,8 +3399,8 @@ void NakamaApi::ListLeaderboardRecordsAroundOwner(
 	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/leaderboard/{leaderboard_id}/owner/{owner_id}");
-	Endpoint = Endpoint.Replace(TEXT("{leaderboard_id}"), *LeaderboardId);
-	Endpoint = Endpoint.Replace(TEXT("{owner_id}"), *OwnerId);
+	{ const FString Encoded_LeaderboardId = FGenericPlatformHttp::UrlEncode(LeaderboardId); Endpoint = Endpoint.Replace(TEXT("{leaderboard_id}"), *Encoded_LeaderboardId); }
+	{ const FString Encoded_OwnerId = FGenericPlatformHttp::UrlEncode(OwnerId); Endpoint = Endpoint.Replace(TEXT("{owner_id}"), *Encoded_OwnerId); }
 	TArray<FString> QueryParams;
 	if (Limit != 0)
 	{
@@ -3411,7 +3412,7 @@ void NakamaApi::ListLeaderboardRecordsAroundOwner(
 	}
 	if (!Cursor.IsEmpty())
 	{
-		QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *Cursor));
+		QueryParams.Add(TEXT("cursor=") + FGenericPlatformHttp::UrlEncode(Cursor));
 	}
 	if (QueryParams.Num() > 0)
 	{
@@ -3446,8 +3447,8 @@ void NakamaApi::ListLeaderboardRecordsAroundOwner(
 	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/leaderboard/{leaderboard_id}/owner/{owner_id}");
-	Endpoint = Endpoint.Replace(TEXT("{leaderboard_id}"), *LeaderboardId);
-	Endpoint = Endpoint.Replace(TEXT("{owner_id}"), *OwnerId);
+	{ const FString Encoded_LeaderboardId = FGenericPlatformHttp::UrlEncode(LeaderboardId); Endpoint = Endpoint.Replace(TEXT("{leaderboard_id}"), *Encoded_LeaderboardId); }
+	{ const FString Encoded_OwnerId = FGenericPlatformHttp::UrlEncode(OwnerId); Endpoint = Endpoint.Replace(TEXT("{owner_id}"), *Encoded_OwnerId); }
 	TArray<FString> QueryParams;
 	if (Limit != 0)
 	{
@@ -3459,7 +3460,7 @@ void NakamaApi::ListLeaderboardRecordsAroundOwner(
 	}
 	if (!Cursor.IsEmpty())
 	{
-		QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *Cursor));
+		QueryParams.Add(TEXT("cursor=") + FGenericPlatformHttp::UrlEncode(Cursor));
 	}
 	if (QueryParams.Num() > 0)
 	{
@@ -3501,7 +3502,7 @@ void NakamaApi::ListMatches(
 	QueryParams.Add(FString::Printf(TEXT("authoritative=%s"), Authoritative ? TEXT("true") : TEXT("false")));
 	if (!Label.IsEmpty())
 	{
-		QueryParams.Add(FString::Printf(TEXT("label=%s"), *Label));
+		QueryParams.Add(TEXT("label=") + FGenericPlatformHttp::UrlEncode(Label));
 	}
 	if (MinSize != 0)
 	{
@@ -3513,7 +3514,7 @@ void NakamaApi::ListMatches(
 	}
 	if (!Query.IsEmpty())
 	{
-		QueryParams.Add(FString::Printf(TEXT("query=%s"), *Query));
+		QueryParams.Add(TEXT("query=") + FGenericPlatformHttp::UrlEncode(Query));
 	}
 	if (QueryParams.Num() > 0)
 	{
@@ -3557,7 +3558,7 @@ void NakamaApi::ListMatches(
 	QueryParams.Add(FString::Printf(TEXT("authoritative=%s"), Authoritative ? TEXT("true") : TEXT("false")));
 	if (!Label.IsEmpty())
 	{
-		QueryParams.Add(FString::Printf(TEXT("label=%s"), *Label));
+		QueryParams.Add(TEXT("label=") + FGenericPlatformHttp::UrlEncode(Label));
 	}
 	if (MinSize != 0)
 	{
@@ -3569,7 +3570,7 @@ void NakamaApi::ListMatches(
 	}
 	if (!Query.IsEmpty())
 	{
-		QueryParams.Add(FString::Printf(TEXT("query=%s"), *Query));
+		QueryParams.Add(TEXT("query=") + FGenericPlatformHttp::UrlEncode(Query));
 	}
 	if (QueryParams.Num() > 0)
 	{
@@ -3609,11 +3610,11 @@ void NakamaApi::ListParties(
 	QueryParams.Add(FString::Printf(TEXT("open=%s"), Open ? TEXT("true") : TEXT("false")));
 	if (!Query.IsEmpty())
 	{
-		QueryParams.Add(FString::Printf(TEXT("query=%s"), *Query));
+		QueryParams.Add(TEXT("query=") + FGenericPlatformHttp::UrlEncode(Query));
 	}
 	if (!Cursor.IsEmpty())
 	{
-		QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *Cursor));
+		QueryParams.Add(TEXT("cursor=") + FGenericPlatformHttp::UrlEncode(Cursor));
 	}
 	if (QueryParams.Num() > 0)
 	{
@@ -3655,11 +3656,11 @@ void NakamaApi::ListParties(
 	QueryParams.Add(FString::Printf(TEXT("open=%s"), Open ? TEXT("true") : TEXT("false")));
 	if (!Query.IsEmpty())
 	{
-		QueryParams.Add(FString::Printf(TEXT("query=%s"), *Query));
+		QueryParams.Add(TEXT("query=") + FGenericPlatformHttp::UrlEncode(Query));
 	}
 	if (!Cursor.IsEmpty())
 	{
-		QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *Cursor));
+		QueryParams.Add(TEXT("cursor=") + FGenericPlatformHttp::UrlEncode(Cursor));
 	}
 	if (QueryParams.Num() > 0)
 	{
@@ -3696,7 +3697,7 @@ void NakamaApi::ListNotifications(
 	}
 	if (!CacheableCursor.IsEmpty())
 	{
-		QueryParams.Add(FString::Printf(TEXT("cacheable_cursor=%s"), *CacheableCursor));
+		QueryParams.Add(TEXT("cacheable_cursor=") + FGenericPlatformHttp::UrlEncode(CacheableCursor));
 	}
 	if (QueryParams.Num() > 0)
 	{
@@ -3735,7 +3736,7 @@ void NakamaApi::ListNotifications(
 	}
 	if (!CacheableCursor.IsEmpty())
 	{
-		QueryParams.Add(FString::Printf(TEXT("cacheable_cursor=%s"), *CacheableCursor));
+		QueryParams.Add(TEXT("cacheable_cursor=") + FGenericPlatformHttp::UrlEncode(CacheableCursor));
 	}
 	if (QueryParams.Num() > 0)
 	{
@@ -3767,11 +3768,11 @@ void NakamaApi::ListStorageObjects(
 	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/storage/{collection}");
-	Endpoint = Endpoint.Replace(TEXT("{collection}"), *Collection);
+	{ const FString Encoded_Collection = FGenericPlatformHttp::UrlEncode(Collection); Endpoint = Endpoint.Replace(TEXT("{collection}"), *Encoded_Collection); }
 	TArray<FString> QueryParams;
 	if (!UserId.IsEmpty())
 	{
-		QueryParams.Add(FString::Printf(TEXT("user_id=%s"), *UserId));
+		QueryParams.Add(TEXT("user_id=") + FGenericPlatformHttp::UrlEncode(UserId));
 	}
 	if (Limit != 0)
 	{
@@ -3779,7 +3780,7 @@ void NakamaApi::ListStorageObjects(
 	}
 	if (!Cursor.IsEmpty())
 	{
-		QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *Cursor));
+		QueryParams.Add(TEXT("cursor=") + FGenericPlatformHttp::UrlEncode(Cursor));
 	}
 	if (QueryParams.Num() > 0)
 	{
@@ -3813,11 +3814,11 @@ void NakamaApi::ListStorageObjects(
 	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/storage/{collection}");
-	Endpoint = Endpoint.Replace(TEXT("{collection}"), *Collection);
+	{ const FString Encoded_Collection = FGenericPlatformHttp::UrlEncode(Collection); Endpoint = Endpoint.Replace(TEXT("{collection}"), *Encoded_Collection); }
 	TArray<FString> QueryParams;
 	if (!UserId.IsEmpty())
 	{
-		QueryParams.Add(FString::Printf(TEXT("user_id=%s"), *UserId));
+		QueryParams.Add(TEXT("user_id=") + FGenericPlatformHttp::UrlEncode(UserId));
 	}
 	if (Limit != 0)
 	{
@@ -3825,7 +3826,7 @@ void NakamaApi::ListStorageObjects(
 	}
 	if (!Cursor.IsEmpty())
 	{
-		QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *Cursor));
+		QueryParams.Add(TEXT("cursor=") + FGenericPlatformHttp::UrlEncode(Cursor));
 	}
 	if (QueryParams.Num() > 0)
 	{
@@ -3954,7 +3955,7 @@ void NakamaApi::ListTournaments(
 	}
 	if (!Cursor.IsEmpty())
 	{
-		QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *Cursor));
+		QueryParams.Add(TEXT("cursor=") + FGenericPlatformHttp::UrlEncode(Cursor));
 	}
 	if (QueryParams.Num() > 0)
 	{
@@ -4013,7 +4014,7 @@ void NakamaApi::ListTournaments(
 	}
 	if (!Cursor.IsEmpty())
 	{
-		QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *Cursor));
+		QueryParams.Add(TEXT("cursor=") + FGenericPlatformHttp::UrlEncode(Cursor));
 	}
 	if (QueryParams.Num() > 0)
 	{
@@ -4046,11 +4047,11 @@ void NakamaApi::ListTournamentRecords(
 	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/tournament/{tournament_id}");
-	Endpoint = Endpoint.Replace(TEXT("{tournament_id}"), *TournamentId);
+	{ const FString Encoded_TournamentId = FGenericPlatformHttp::UrlEncode(TournamentId); Endpoint = Endpoint.Replace(TEXT("{tournament_id}"), *Encoded_TournamentId); }
 	TArray<FString> QueryParams;
 	for (const FString& Item : OwnerIds)
 	{
-		QueryParams.Add(FString::Printf(TEXT("owner_ids=%s"), *Item));
+		QueryParams.Add(TEXT("owner_ids=") + FGenericPlatformHttp::UrlEncode(Item));
 	}
 	if (Limit != 0)
 	{
@@ -4058,7 +4059,7 @@ void NakamaApi::ListTournamentRecords(
 	}
 	if (!Cursor.IsEmpty())
 	{
-		QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *Cursor));
+		QueryParams.Add(TEXT("cursor=") + FGenericPlatformHttp::UrlEncode(Cursor));
 	}
 	if (Expiry != 0)
 	{
@@ -4097,11 +4098,11 @@ void NakamaApi::ListTournamentRecords(
 	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/tournament/{tournament_id}");
-	Endpoint = Endpoint.Replace(TEXT("{tournament_id}"), *TournamentId);
+	{ const FString Encoded_TournamentId = FGenericPlatformHttp::UrlEncode(TournamentId); Endpoint = Endpoint.Replace(TEXT("{tournament_id}"), *Encoded_TournamentId); }
 	TArray<FString> QueryParams;
 	for (const FString& Item : OwnerIds)
 	{
-		QueryParams.Add(FString::Printf(TEXT("owner_ids=%s"), *Item));
+		QueryParams.Add(TEXT("owner_ids=") + FGenericPlatformHttp::UrlEncode(Item));
 	}
 	if (Limit != 0)
 	{
@@ -4109,7 +4110,7 @@ void NakamaApi::ListTournamentRecords(
 	}
 	if (!Cursor.IsEmpty())
 	{
-		QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *Cursor));
+		QueryParams.Add(TEXT("cursor=") + FGenericPlatformHttp::UrlEncode(Cursor));
 	}
 	if (Expiry != 0)
 	{
@@ -4146,8 +4147,8 @@ void NakamaApi::ListTournamentRecordsAroundOwner(
 	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/tournament/{tournament_id}/owner/{owner_id}");
-	Endpoint = Endpoint.Replace(TEXT("{tournament_id}"), *TournamentId);
-	Endpoint = Endpoint.Replace(TEXT("{owner_id}"), *OwnerId);
+	{ const FString Encoded_TournamentId = FGenericPlatformHttp::UrlEncode(TournamentId); Endpoint = Endpoint.Replace(TEXT("{tournament_id}"), *Encoded_TournamentId); }
+	{ const FString Encoded_OwnerId = FGenericPlatformHttp::UrlEncode(OwnerId); Endpoint = Endpoint.Replace(TEXT("{owner_id}"), *Encoded_OwnerId); }
 	TArray<FString> QueryParams;
 	if (Limit != 0)
 	{
@@ -4159,7 +4160,7 @@ void NakamaApi::ListTournamentRecordsAroundOwner(
 	}
 	if (!Cursor.IsEmpty())
 	{
-		QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *Cursor));
+		QueryParams.Add(TEXT("cursor=") + FGenericPlatformHttp::UrlEncode(Cursor));
 	}
 	if (QueryParams.Num() > 0)
 	{
@@ -4194,8 +4195,8 @@ void NakamaApi::ListTournamentRecordsAroundOwner(
 	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/tournament/{tournament_id}/owner/{owner_id}");
-	Endpoint = Endpoint.Replace(TEXT("{tournament_id}"), *TournamentId);
-	Endpoint = Endpoint.Replace(TEXT("{owner_id}"), *OwnerId);
+	{ const FString Encoded_TournamentId = FGenericPlatformHttp::UrlEncode(TournamentId); Endpoint = Endpoint.Replace(TEXT("{tournament_id}"), *Encoded_TournamentId); }
+	{ const FString Encoded_OwnerId = FGenericPlatformHttp::UrlEncode(OwnerId); Endpoint = Endpoint.Replace(TEXT("{owner_id}"), *Encoded_OwnerId); }
 	TArray<FString> QueryParams;
 	if (Limit != 0)
 	{
@@ -4207,7 +4208,7 @@ void NakamaApi::ListTournamentRecordsAroundOwner(
 	}
 	if (!Cursor.IsEmpty())
 	{
-		QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *Cursor));
+		QueryParams.Add(TEXT("cursor=") + FGenericPlatformHttp::UrlEncode(Cursor));
 	}
 	if (QueryParams.Num() > 0)
 	{
@@ -4239,7 +4240,7 @@ void NakamaApi::ListUserGroups(
 	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/user/{user_id}/group");
-	Endpoint = Endpoint.Replace(TEXT("{user_id}"), *UserId);
+	{ const FString Encoded_UserId = FGenericPlatformHttp::UrlEncode(UserId); Endpoint = Endpoint.Replace(TEXT("{user_id}"), *Encoded_UserId); }
 	TArray<FString> QueryParams;
 	if (Limit != 0)
 	{
@@ -4251,7 +4252,7 @@ void NakamaApi::ListUserGroups(
 	}
 	if (!Cursor.IsEmpty())
 	{
-		QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *Cursor));
+		QueryParams.Add(TEXT("cursor=") + FGenericPlatformHttp::UrlEncode(Cursor));
 	}
 	if (QueryParams.Num() > 0)
 	{
@@ -4285,7 +4286,7 @@ void NakamaApi::ListUserGroups(
 	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/user/{user_id}/group");
-	Endpoint = Endpoint.Replace(TEXT("{user_id}"), *UserId);
+	{ const FString Encoded_UserId = FGenericPlatformHttp::UrlEncode(UserId); Endpoint = Endpoint.Replace(TEXT("{user_id}"), *Encoded_UserId); }
 	TArray<FString> QueryParams;
 	if (Limit != 0)
 	{
@@ -4297,7 +4298,7 @@ void NakamaApi::ListUserGroups(
 	}
 	if (!Cursor.IsEmpty())
 	{
-		QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *Cursor));
+		QueryParams.Add(TEXT("cursor=") + FGenericPlatformHttp::UrlEncode(Cursor));
 	}
 	if (QueryParams.Num() > 0)
 	{
@@ -4327,11 +4328,11 @@ void NakamaApi::PromoteGroupUsers(
 	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/group/{group_id}/promote");
-	Endpoint = Endpoint.Replace(TEXT("{group_id}"), *GroupId);
+	{ const FString Encoded_GroupId = FGenericPlatformHttp::UrlEncode(GroupId); Endpoint = Endpoint.Replace(TEXT("{group_id}"), *Encoded_GroupId); }
 	TArray<FString> QueryParams;
 	for (const FString& Item : UserIds)
 	{
-		QueryParams.Add(FString::Printf(TEXT("user_ids=%s"), *Item));
+		QueryParams.Add(TEXT("user_ids=") + FGenericPlatformHttp::UrlEncode(Item));
 	}
 	if (QueryParams.Num() > 0)
 	{
@@ -4362,11 +4363,11 @@ void NakamaApi::PromoteGroupUsers(
 	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/group/{group_id}/promote");
-	Endpoint = Endpoint.Replace(TEXT("{group_id}"), *GroupId);
+	{ const FString Encoded_GroupId = FGenericPlatformHttp::UrlEncode(GroupId); Endpoint = Endpoint.Replace(TEXT("{group_id}"), *Encoded_GroupId); }
 	TArray<FString> QueryParams;
 	for (const FString& Item : UserIds)
 	{
-		QueryParams.Add(FString::Printf(TEXT("user_ids=%s"), *Item));
+		QueryParams.Add(TEXT("user_ids=") + FGenericPlatformHttp::UrlEncode(Item));
 	}
 	if (QueryParams.Num() > 0)
 	{
@@ -4395,11 +4396,11 @@ void NakamaApi::DemoteGroupUsers(
 	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/group/{group_id}/demote");
-	Endpoint = Endpoint.Replace(TEXT("{group_id}"), *GroupId);
+	{ const FString Encoded_GroupId = FGenericPlatformHttp::UrlEncode(GroupId); Endpoint = Endpoint.Replace(TEXT("{group_id}"), *Encoded_GroupId); }
 	TArray<FString> QueryParams;
 	for (const FString& Item : UserIds)
 	{
-		QueryParams.Add(FString::Printf(TEXT("user_ids=%s"), *Item));
+		QueryParams.Add(TEXT("user_ids=") + FGenericPlatformHttp::UrlEncode(Item));
 	}
 	if (QueryParams.Num() > 0)
 	{
@@ -4430,11 +4431,11 @@ void NakamaApi::DemoteGroupUsers(
 	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/group/{group_id}/demote");
-	Endpoint = Endpoint.Replace(TEXT("{group_id}"), *GroupId);
+	{ const FString Encoded_GroupId = FGenericPlatformHttp::UrlEncode(GroupId); Endpoint = Endpoint.Replace(TEXT("{group_id}"), *Encoded_GroupId); }
 	TArray<FString> QueryParams;
 	for (const FString& Item : UserIds)
 	{
-		QueryParams.Add(FString::Printf(TEXT("user_ids=%s"), *Item));
+		QueryParams.Add(TEXT("user_ids=") + FGenericPlatformHttp::UrlEncode(Item));
 	}
 	if (QueryParams.Num() > 0)
 	{
@@ -4542,11 +4543,11 @@ void NakamaApi::RpcFunc(
 	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/rpc/{id}");
-	Endpoint = Endpoint.Replace(TEXT("{id}"), *Id);
+	{ const FString Encoded_Id = FGenericPlatformHttp::UrlEncode(Id); Endpoint = Endpoint.Replace(TEXT("{id}"), *Encoded_Id); }
 	TArray<FString> QueryParams;
 	if (!HttpKey.IsEmpty())
 	{
-		QueryParams.Add(FString::Printf(TEXT("http_key=%s"), *HttpKey));
+		QueryParams.Add(TEXT("http_key=") + FGenericPlatformHttp::UrlEncode(HttpKey));
 	}
 	if (QueryParams.Num() > 0)
 	{
@@ -4584,7 +4585,7 @@ void NakamaApi::RpcFunc(
 	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/rpc/{id}");
-	Endpoint = Endpoint.Replace(TEXT("{id}"), *Id);
+	{ const FString Encoded_Id = FGenericPlatformHttp::UrlEncode(Id); Endpoint = Endpoint.Replace(TEXT("{id}"), *Encoded_Id); }
 	TArray<FString> QueryParams;
 	if (QueryParams.Num() > 0)
 	{
@@ -5568,7 +5569,7 @@ void NakamaApi::UpdateGroup(
 	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/group/{group_id}");
-	Endpoint = Endpoint.Replace(TEXT("{group_id}"), *GroupId);
+	{ const FString Encoded_GroupId = FGenericPlatformHttp::UrlEncode(GroupId); Endpoint = Endpoint.Replace(TEXT("{group_id}"), *Encoded_GroupId); }
 	TArray<FString> QueryParams;
 	if (QueryParams.Num() > 0)
 	{
@@ -5625,7 +5626,7 @@ void NakamaApi::UpdateGroup(
 	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/group/{group_id}");
-	Endpoint = Endpoint.Replace(TEXT("{group_id}"), *GroupId);
+	{ const FString Encoded_GroupId = FGenericPlatformHttp::UrlEncode(GroupId); Endpoint = Endpoint.Replace(TEXT("{group_id}"), *Encoded_GroupId); }
 	TArray<FString> QueryParams;
 	if (QueryParams.Num() > 0)
 	{
@@ -6118,7 +6119,7 @@ void NakamaApi::WriteLeaderboardRecord(
 	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/leaderboard/{leaderboard_id}");
-	Endpoint = Endpoint.Replace(TEXT("{leaderboard_id}"), *LeaderboardId);
+	{ const FString Encoded_LeaderboardId = FGenericPlatformHttp::UrlEncode(LeaderboardId); Endpoint = Endpoint.Replace(TEXT("{leaderboard_id}"), *Encoded_LeaderboardId); }
 	TArray<FString> QueryParams;
 	if (QueryParams.Num() > 0)
 	{
@@ -6151,7 +6152,7 @@ void NakamaApi::WriteLeaderboardRecord(
 	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/leaderboard/{leaderboard_id}");
-	Endpoint = Endpoint.Replace(TEXT("{leaderboard_id}"), *LeaderboardId);
+	{ const FString Encoded_LeaderboardId = FGenericPlatformHttp::UrlEncode(LeaderboardId); Endpoint = Endpoint.Replace(TEXT("{leaderboard_id}"), *Encoded_LeaderboardId); }
 	TArray<FString> QueryParams;
 	if (QueryParams.Num() > 0)
 	{
@@ -6260,7 +6261,7 @@ void NakamaApi::WriteTournamentRecord(
 	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/tournament/{tournament_id}");
-	Endpoint = Endpoint.Replace(TEXT("{tournament_id}"), *TournamentId);
+	{ const FString Encoded_TournamentId = FGenericPlatformHttp::UrlEncode(TournamentId); Endpoint = Endpoint.Replace(TEXT("{tournament_id}"), *Encoded_TournamentId); }
 	TArray<FString> QueryParams;
 	if (QueryParams.Num() > 0)
 	{
@@ -6293,7 +6294,7 @@ void NakamaApi::WriteTournamentRecord(
 	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
 	FString Endpoint = TEXT("/v2/tournament/{tournament_id}");
-	Endpoint = Endpoint.Replace(TEXT("{tournament_id}"), *TournamentId);
+	{ const FString Encoded_TournamentId = FGenericPlatformHttp::UrlEncode(TournamentId); Endpoint = Endpoint.Replace(TEXT("{tournament_id}"), *Encoded_TournamentId); }
 	TArray<FString> QueryParams;
 	if (QueryParams.Num() > 0)
 	{

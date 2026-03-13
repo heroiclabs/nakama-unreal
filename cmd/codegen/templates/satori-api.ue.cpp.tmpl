@@ -18,6 +18,7 @@
 
 #include "SatoriApi.h"
 #include "NakamaHttpHelper.h"
+#include "GenericPlatform/GenericPlatformHttp.h"
 
 #include "Modules/ModuleManager.h"
 
@@ -578,7 +579,7 @@ void SatoriApi::{{ $rpc.Name }}(
 	{{- /* Handle path parameters like {group_id} */ -}}
 	{{- range $pidx, $param := $rpc.QueryParams }}
 	{{- if ne $param "" }}
-	Endpoint = Endpoint.Replace(TEXT("{{ printf "{%s}" $param }}"), *{{ $param | pascalCase }});
+	{ const FString Encoded_{{ $param | pascalCase }} = FGenericPlatformHttp::UrlEncode({{ $param | pascalCase }}); Endpoint = Endpoint.Replace(TEXT("{{ printf "{%s}" $param }}"), *Encoded_{{ $param | pascalCase }}); }
 	{{- end }}
 	{{- end }}
 
@@ -599,7 +600,7 @@ void SatoriApi::{{ $rpc.Name }}(
 {{- if or (eq $fieldType "string") (containsString $fieldType "StringValue") }}
 	for (const FString& Item : {{ $fieldName }})
 	{
-		QueryParams.Add(FString::Printf(TEXT("{{ $jsonFieldName }}=%s"), *Item));
+		QueryParams.Add(TEXT("{{ $jsonFieldName }}=") + FGenericPlatformHttp::UrlEncode(Item));
 	}
 {{- else if or (eq $fieldType "int32") (containsString $fieldType "Int32Value") }}
 	for (const int32& Item : {{ $fieldName }})
@@ -616,7 +617,7 @@ void SatoriApi::{{ $rpc.Name }}(
 {{- if or (eq $fieldType "string") (containsString $fieldType "StringValue") }}
 	if (!{{ $fieldName }}.IsEmpty())
 	{
-		QueryParams.Add(FString::Printf(TEXT("{{ $jsonFieldName }}=%s"), *{{ $fieldName }}));
+		QueryParams.Add(TEXT("{{ $jsonFieldName }}=") + FGenericPlatformHttp::UrlEncode({{ $fieldName }}));
 	}
 {{- else if or (eq $fieldType "bool") (containsString $fieldType "BoolValue") }}
 	QueryParams.Add(FString::Printf(TEXT("{{ $jsonFieldName }}=%s"), {{ $fieldName }} ? TEXT("true") : TEXT("false")));
