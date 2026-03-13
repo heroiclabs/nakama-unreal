@@ -1413,7 +1413,7 @@ struct NAKAMAAPI_API FNakamaLeaderboard
 	int32 SortOrder = 0;
 	/**  BEST, SET, INCREMENT or DECREMENT operator mode of the leaderboard. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int32 Operator = 0;
+	ENakamaOperator Operator = static_cast<ENakamaOperator>(0);
 	/**  The UNIX time when the leaderboard was previously reset. A computed value. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	int32 PrevReset = 0;
@@ -2335,7 +2335,7 @@ struct NAKAMAAPI_API FNakamaTournament
 	int32 PrevReset = 0;
 	/**  Operator. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int32 Operator = 0;
+	ENakamaOperator Operator = static_cast<ENakamaOperator>(0);
 	/**  Whether the leaderboard was created authoritatively or not. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	bool Authoritative = false;
@@ -2604,7 +2604,7 @@ struct NAKAMAAPI_API FNakamaValidatedPurchase
 	FString TransactionId;
 	/**  Store identifier */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int32 Store = 0;
+	ENakamaStoreProvider Store = static_cast<ENakamaStoreProvider>(0);
 	/**  Timestamp when the purchase was done. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString PurchaseTime;
@@ -2622,7 +2622,7 @@ struct NAKAMAAPI_API FNakamaValidatedPurchase
 	FString ProviderResponse;
 	/**  Whether the purchase was done in production or sandbox environment. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int32 Environment = 0;
+	ENakamaStoreEnvironment Environment = static_cast<ENakamaStoreEnvironment>(0);
 	/**  Whether the purchase had already been validated by Nakama before. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	bool SeenBefore = false;
@@ -2660,7 +2660,7 @@ struct NAKAMAAPI_API FNakamaValidatedSubscription
 	FString OriginalTransactionId;
 	/**  Store identifier */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int32 Store = 0;
+	ENakamaStoreProvider Store = static_cast<ENakamaStoreProvider>(0);
 	/**  UNIX Timestamp when the purchase was done. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString PurchaseTime;
@@ -2672,7 +2672,7 @@ struct NAKAMAAPI_API FNakamaValidatedSubscription
 	FString UpdateTime;
 	/**  Whether the purchase was done in production or sandbox environment. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int32 Environment = 0;
+	ENakamaStoreEnvironment Environment = static_cast<ENakamaStoreEnvironment>(0);
 	/**  Subscription expiration time. The subscription can still be auto-renewed to extend the expiration time further. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
 	FString ExpiryTime;
@@ -2760,7 +2760,7 @@ struct NAKAMAAPI_API FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite
 	FString Metadata;
 	/**  Operator override. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int32 Operator = 0;
+	ENakamaOperator Operator = static_cast<ENakamaOperator>(0);
 
 	static FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
 	TSharedPtr<FJsonObject> ToJson() const noexcept;
@@ -2839,7 +2839,7 @@ struct NAKAMAAPI_API FNakamaWriteTournamentRecordRequest_TournamentRecordWrite
 	FString Metadata;
 	/**  Operator override. */
 	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int32 Operator = 0;
+	ENakamaOperator Operator = static_cast<ENakamaOperator>(0);
 
 	static FNakamaWriteTournamentRecordRequest_TournamentRecordWrite FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
 	TSharedPtr<FJsonObject> ToJson() const noexcept;

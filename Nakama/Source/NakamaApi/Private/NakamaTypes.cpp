@@ -2705,7 +2705,7 @@ FNakamaLeaderboard FNakamaLeaderboard::FromJson(const TSharedPtr<FJsonObject>& J
 	}
 	if (Json->HasField(TEXT("operator")))
 	{
-		Result.Operator = Json->GetIntegerField(TEXT("operator"));
+		Result.Operator = static_cast<ENakamaOperator>(Json->GetIntegerField(TEXT("operator")));
 	}
 	if (Json->HasField(TEXT("prev_reset")))
 	{
@@ -2738,7 +2738,7 @@ TSharedPtr<FJsonObject> FNakamaLeaderboard::ToJson() const noexcept
 		Json->SetStringField(TEXT("id"), Id);
 	}
 	Json->SetNumberField(TEXT("sort_order"), SortOrder);
-	Json->SetNumberField(TEXT("operator"), Operator);
+	Json->SetNumberField(TEXT("operator"), static_cast<int32>(Operator));
 	Json->SetNumberField(TEXT("prev_reset"), PrevReset);
 	Json->SetNumberField(TEXT("next_reset"), NextReset);
 	if (!Metadata.IsEmpty())
@@ -4634,7 +4634,7 @@ FNakamaTournament FNakamaTournament::FromJson(const TSharedPtr<FJsonObject>& Jso
 	}
 	if (Json->HasField(TEXT("operator")))
 	{
-		Result.Operator = Json->GetIntegerField(TEXT("operator"));
+		Result.Operator = static_cast<ENakamaOperator>(Json->GetIntegerField(TEXT("operator")));
 	}
 	if (Json->HasField(TEXT("authoritative")))
 	{
@@ -4689,7 +4689,7 @@ TSharedPtr<FJsonObject> FNakamaTournament::ToJson() const noexcept
 	Json->SetNumberField(TEXT("duration"), Duration);
 	Json->SetNumberField(TEXT("start_active"), StartActive);
 	Json->SetNumberField(TEXT("prev_reset"), PrevReset);
-	Json->SetNumberField(TEXT("operator"), Operator);
+	Json->SetNumberField(TEXT("operator"), static_cast<int32>(Operator));
 	Json->SetBoolField(TEXT("authoritative"), Authoritative);
 	Json->SetBoolField(TEXT("join_required"), JoinRequired);
 	return Json;
@@ -5274,7 +5274,7 @@ FNakamaValidatedPurchase FNakamaValidatedPurchase::FromJson(const TSharedPtr<FJs
 	}
 	if (Json->HasField(TEXT("store")))
 	{
-		Result.Store = Json->GetIntegerField(TEXT("store"));
+		Result.Store = static_cast<ENakamaStoreProvider>(Json->GetIntegerField(TEXT("store")));
 	}
 	if (Json->HasField(TEXT("purchase_time")))
 	{
@@ -5298,7 +5298,7 @@ FNakamaValidatedPurchase FNakamaValidatedPurchase::FromJson(const TSharedPtr<FJs
 	}
 	if (Json->HasField(TEXT("environment")))
 	{
-		Result.Environment = Json->GetIntegerField(TEXT("environment"));
+		Result.Environment = static_cast<ENakamaStoreEnvironment>(Json->GetIntegerField(TEXT("environment")));
 	}
 	if (Json->HasField(TEXT("seen_before")))
 	{
@@ -5322,7 +5322,7 @@ TSharedPtr<FJsonObject> FNakamaValidatedPurchase::ToJson() const noexcept
 	{
 		Json->SetStringField(TEXT("transaction_id"), TransactionId);
 	}
-	Json->SetNumberField(TEXT("store"), Store);
+	Json->SetNumberField(TEXT("store"), static_cast<int32>(Store));
 	if (!PurchaseTime.IsEmpty())
 	{
 		Json->SetStringField(TEXT("purchase_time"), PurchaseTime);
@@ -5343,7 +5343,7 @@ TSharedPtr<FJsonObject> FNakamaValidatedPurchase::ToJson() const noexcept
 	{
 		Json->SetStringField(TEXT("provider_response"), ProviderResponse);
 	}
-	Json->SetNumberField(TEXT("environment"), Environment);
+	Json->SetNumberField(TEXT("environment"), static_cast<int32>(Environment));
 	Json->SetBoolField(TEXT("seen_before"), SeenBefore);
 	return Json;
 }
@@ -5409,7 +5409,7 @@ FNakamaValidatedSubscription FNakamaValidatedSubscription::FromJson(const TShare
 	}
 	if (Json->HasField(TEXT("store")))
 	{
-		Result.Store = Json->GetIntegerField(TEXT("store"));
+		Result.Store = static_cast<ENakamaStoreProvider>(Json->GetIntegerField(TEXT("store")));
 	}
 	if (Json->HasField(TEXT("purchase_time")))
 	{
@@ -5425,7 +5425,7 @@ FNakamaValidatedSubscription FNakamaValidatedSubscription::FromJson(const TShare
 	}
 	if (Json->HasField(TEXT("environment")))
 	{
-		Result.Environment = Json->GetIntegerField(TEXT("environment"));
+		Result.Environment = static_cast<ENakamaStoreEnvironment>(Json->GetIntegerField(TEXT("environment")));
 	}
 	if (Json->HasField(TEXT("expiry_time")))
 	{
@@ -5465,7 +5465,7 @@ TSharedPtr<FJsonObject> FNakamaValidatedSubscription::ToJson() const noexcept
 	{
 		Json->SetStringField(TEXT("original_transaction_id"), OriginalTransactionId);
 	}
-	Json->SetNumberField(TEXT("store"), Store);
+	Json->SetNumberField(TEXT("store"), static_cast<int32>(Store));
 	if (!PurchaseTime.IsEmpty())
 	{
 		Json->SetStringField(TEXT("purchase_time"), PurchaseTime);
@@ -5478,7 +5478,7 @@ TSharedPtr<FJsonObject> FNakamaValidatedSubscription::ToJson() const noexcept
 	{
 		Json->SetStringField(TEXT("update_time"), UpdateTime);
 	}
-	Json->SetNumberField(TEXT("environment"), Environment);
+	Json->SetNumberField(TEXT("environment"), static_cast<int32>(Environment));
 	if (!ExpiryTime.IsEmpty())
 	{
 		Json->SetStringField(TEXT("expiry_time"), ExpiryTime);
@@ -5657,7 +5657,7 @@ FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite FNakamaWriteLeaderbo
 	}
 	if (Json->HasField(TEXT("operator")))
 	{
-		Result.Operator = Json->GetIntegerField(TEXT("operator"));
+		Result.Operator = static_cast<ENakamaOperator>(Json->GetIntegerField(TEXT("operator")));
 	}
 	return Result;
 }
@@ -5671,7 +5671,7 @@ TSharedPtr<FJsonObject> FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWr
 	{
 		Json->SetStringField(TEXT("metadata"), Metadata);
 	}
-	Json->SetNumberField(TEXT("operator"), Operator);
+	Json->SetNumberField(TEXT("operator"), static_cast<int32>(Operator));
 	return Json;
 }
 
@@ -5827,7 +5827,7 @@ FNakamaWriteTournamentRecordRequest_TournamentRecordWrite FNakamaWriteTournament
 	}
 	if (Json->HasField(TEXT("operator")))
 	{
-		Result.Operator = Json->GetIntegerField(TEXT("operator"));
+		Result.Operator = static_cast<ENakamaOperator>(Json->GetIntegerField(TEXT("operator")));
 	}
 	return Result;
 }
@@ -5841,7 +5841,7 @@ TSharedPtr<FJsonObject> FNakamaWriteTournamentRecordRequest_TournamentRecordWrit
 	{
 		Json->SetStringField(TEXT("metadata"), Metadata);
 	}
-	Json->SetNumberField(TEXT("operator"), Operator);
+	Json->SetNumberField(TEXT("operator"), static_cast<int32>(Operator));
 	return Json;
 }
 

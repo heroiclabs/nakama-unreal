@@ -546,7 +546,7 @@ FSatoriValueChangeReason FSatoriValueChangeReason::FromJson(const TSharedPtr<FJs
 	}
 	if (Json->HasField(TEXT("type")))
 	{
-		Result.Type = Json->GetIntegerField(TEXT("type"));
+		Result.Type = static_cast<ESatoriValueChangeReasonType>(Json->GetIntegerField(TEXT("type")));
 	}
 	if (Json->HasField(TEXT("name")))
 	{
@@ -562,7 +562,7 @@ FSatoriValueChangeReason FSatoriValueChangeReason::FromJson(const TSharedPtr<FJs
 TSharedPtr<FJsonObject> FSatoriValueChangeReason::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-	Json->SetNumberField(TEXT("type"), Type);
+	Json->SetNumberField(TEXT("type"), static_cast<int32>(Type));
 	if (!Name.IsEmpty())
 	{
 		Json->SetStringField(TEXT("name"), Name);
@@ -689,7 +689,7 @@ FSatoriFlagOverrideValue FSatoriFlagOverrideValue::FromJson(const TSharedPtr<FJs
 	}
 	if (Json->HasField(TEXT("type")))
 	{
-		Result.Type = Json->GetIntegerField(TEXT("type"));
+		Result.Type = static_cast<ESatoriFlagOverrideType>(Json->GetIntegerField(TEXT("type")));
 	}
 	if (Json->HasField(TEXT("name")))
 	{
@@ -713,7 +713,7 @@ FSatoriFlagOverrideValue FSatoriFlagOverrideValue::FromJson(const TSharedPtr<FJs
 TSharedPtr<FJsonObject> FSatoriFlagOverrideValue::ToJson() const noexcept
 {
 	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-	Json->SetNumberField(TEXT("type"), Type);
+	Json->SetNumberField(TEXT("type"), static_cast<int32>(Type));
 	if (!Name.IsEmpty())
 	{
 		Json->SetStringField(TEXT("name"), Name);
@@ -1382,7 +1382,7 @@ FSatoriLiveEvent FSatoriLiveEvent::FromJson(const TSharedPtr<FJsonObject>& Json)
 	}
 	if (Json->HasField(TEXT("status")))
 	{
-		Result.Status = Json->GetIntegerField(TEXT("status"));
+		Result.Status = static_cast<ESatoriLiveEventStatus>(Json->GetIntegerField(TEXT("status")));
 	}
 	if (Json->HasField(TEXT("labels")))
 	{
@@ -1426,7 +1426,7 @@ TSharedPtr<FJsonObject> FSatoriLiveEvent::ToJson() const noexcept
 	{
 		Json->SetStringField(TEXT("reset_cron"), ResetCron);
 	}
-	Json->SetNumberField(TEXT("status"), Status);
+	Json->SetNumberField(TEXT("status"), static_cast<int32>(Status));
 	if (Labels.Num() > 0)
 	{
 		TArray<TSharedPtr<FJsonValue>> Array;

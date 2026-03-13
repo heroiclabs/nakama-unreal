@@ -107,7 +107,7 @@ void UNakamaRealtimeClient{{ $msgType.Name }}::Activate()
 		Json->SetStringField(TEXT("{{ $jsonFieldName }}"), Stored{{ $fieldPascal }});
 	}
 {{- else if isEnumType $fieldType }}
-	Json->SetNumberField(TEXT("{{ $jsonFieldName }}"), Stored{{ $fieldPascal }});
+	Json->SetNumberField(TEXT("{{ $jsonFieldName }}"), static_cast<int32>(Stored{{ $fieldPascal }}));
 {{- else }}
 	Json->SetObjectField(TEXT("{{ $jsonFieldName }}"), Stored{{ $fieldPascal }}.ToJson());
 {{- end }}

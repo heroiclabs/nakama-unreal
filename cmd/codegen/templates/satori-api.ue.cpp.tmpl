@@ -239,7 +239,7 @@ FSatoriSession FSatoriSession::FromJson(const TSharedPtr<FJsonObject>& Json) noe
 {{- else if isEnumType $fieldType }}
 	if (Json->HasField(TEXT("{{ $jsonFieldName }}")))
 	{
-		Result.{{ $fieldName }} = Json->GetIntegerField(TEXT("{{ $jsonFieldName }}"));
+		Result.{{ $fieldName }} = static_cast<{{ enumUEName $fieldType }}>(Json->GetIntegerField(TEXT("{{ $jsonFieldName }}")));
 	}
 {{- else }}
 	if (Json->HasField(TEXT("{{ $jsonFieldName }}")))
@@ -315,7 +315,7 @@ TSharedPtr<FJsonObject> FSatoriSession::ToJson() const noexcept
 		Json->SetStringField(TEXT("{{ $jsonFieldName }}"), {{ $fieldName }});
 	}
 {{- else if isEnumType $fieldType }}
-	Json->SetNumberField(TEXT("{{ $jsonFieldName }}"), {{ $fieldName }});
+	Json->SetNumberField(TEXT("{{ $jsonFieldName }}"), static_cast<int32>({{ $fieldName }}));
 {{- else }}
 	Json->SetObjectField(TEXT("{{ $jsonFieldName }}"), {{ $fieldName }}.ToJson());
 {{- end }}
@@ -427,7 +427,7 @@ FSatori{{ $msg.Name }} FSatori{{ $msg.Name }}::FromJson(const TSharedPtr<FJsonOb
 {{- else if isEnumType $fieldType }}
 	if (Json->HasField(TEXT("{{ $jsonFieldName }}")))
 	{
-		Result.{{ $fieldName }} = Json->GetIntegerField(TEXT("{{ $jsonFieldName }}"));
+		Result.{{ $fieldName }} = static_cast<{{ enumUEName $fieldType }}>(Json->GetIntegerField(TEXT("{{ $jsonFieldName }}")));
 	}
 {{- else }}
 	if (Json->HasField(TEXT("{{ $jsonFieldName }}")))
@@ -502,7 +502,7 @@ TSharedPtr<FJsonObject> FSatori{{ $msg.Name }}::ToJson() const noexcept
 		Json->SetStringField(TEXT("{{ $jsonFieldName }}"), {{ $fieldName }});
 	}
 {{- else if isEnumType $fieldType }}
-	Json->SetNumberField(TEXT("{{ $jsonFieldName }}"), {{ $fieldName }});
+	Json->SetNumberField(TEXT("{{ $jsonFieldName }}"), static_cast<int32>({{ $fieldName }}));
 {{- else }}
 	Json->SetObjectField(TEXT("{{ $jsonFieldName }}"), {{ $fieldName }}.ToJson());
 {{- end }}
@@ -731,7 +731,7 @@ void SatoriApi::{{ $rpc.Name }}(
 {{- else if or (eq $fieldType "int32") (eq $fieldType "int64") (eq $fieldType "uint32") (eq $fieldType "uint64") (eq $fieldType "float") (eq $fieldType "double") (containsString $fieldType "Int32Value") (containsString $fieldType "Int64Value") (containsString $fieldType "UInt32Value") (containsString $fieldType "UInt64Value") }}
 	Body->SetNumberField(TEXT("{{ $jsonFieldName }}"), {{ $fieldName }});
 {{- else if isEnumType $fieldType }}
-	Body->SetNumberField(TEXT("{{ $jsonFieldName }}"), {{ $fieldName }});
+	Body->SetNumberField(TEXT("{{ $jsonFieldName }}"), static_cast<int32>({{ $fieldName }}));
 {{- else if isMessageType $fieldType }}
 	Body->SetObjectField(TEXT("{{ $jsonFieldName }}"), {{ $fieldName }}.ToJson());
 {{- else }}

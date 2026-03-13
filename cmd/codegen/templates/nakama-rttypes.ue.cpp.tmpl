@@ -119,7 +119,7 @@ FNakamaRt{{ $msg.Name }} FNakamaRt{{ $msg.Name }}::FromJson(const TSharedPtr<FJs
 {{- else if isEnumType $fieldType }}
 	if (Json->HasField(TEXT("{{ $jsonFieldName }}")))
 	{
-		Result.{{ $fieldName }} = Json->GetIntegerField(TEXT("{{ $jsonFieldName }}"));
+		Result.{{ $fieldName }} = static_cast<{{ enumUEName $fieldType }}>(Json->GetIntegerField(TEXT("{{ $jsonFieldName }}")));
 	}
 {{- else }}
 	if (Json->HasField(TEXT("{{ $jsonFieldName }}")))
@@ -201,7 +201,7 @@ TSharedPtr<FJsonObject> FNakamaRt{{ $msg.Name }}::ToJson() const noexcept
 		Json->SetStringField(TEXT("{{ $jsonFieldName }}"), {{ $fieldName }});
 	}
 {{- else if isEnumType $fieldType }}
-	Json->SetNumberField(TEXT("{{ $jsonFieldName }}"), {{ $fieldName }});
+	Json->SetNumberField(TEXT("{{ $jsonFieldName }}"), static_cast<int32>({{ $fieldName }}));
 {{- else }}
 	Json->SetObjectField(TEXT("{{ $jsonFieldName }}"), {{ $fieldName }}.ToJson());
 {{- end }}

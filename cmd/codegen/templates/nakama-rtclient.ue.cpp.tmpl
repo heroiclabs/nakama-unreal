@@ -98,7 +98,7 @@ TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::{{ $rpcType.Name |
       Json->SetStringField(TEXT("{{ $jsonFieldName }}"), {{ $fieldName }});
     }
   {{- else if isEnumType $fieldType }}
-    Json->SetNumberField(TEXT("{{ $jsonFieldName }}"), {{ $fieldName }});
+    Json->SetNumberField(TEXT("{{ $jsonFieldName }}"), static_cast<int32>({{ $fieldName }}));
   {{- else }}
     Json->SetObjectField(TEXT("{{ $jsonFieldName }}"), {{ $fieldName }}.ToJson());
   {{- end }}

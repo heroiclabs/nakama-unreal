@@ -219,7 +219,7 @@ void NakamaApi::{{ $rpc.Name }}(
 {{- else if or (eq $fieldType "int32") (eq $fieldType "int64") (eq $fieldType "uint32") (eq $fieldType "uint64") (eq $fieldType "float") (eq $fieldType "double") (containsString $fieldType "Int32Value") (containsString $fieldType "Int64Value") (containsString $fieldType "UInt32Value") (containsString $fieldType "UInt64Value") }}
 	Body->SetNumberField(TEXT("{{ $jsonFieldName }}"), {{ $fieldName }});
 {{- else if isEnumType $fieldType }}
-	Body->SetNumberField(TEXT("{{ $jsonFieldName }}"), {{ $fieldName }});
+	Body->SetNumberField(TEXT("{{ $jsonFieldName }}"), static_cast<int32>({{ $fieldName }}));
 {{- else if isMessageType $fieldType }}
 	Body->SetObjectField(TEXT("{{ $jsonFieldName }}"), {{ $fieldName }}.ToJson());
 {{- else }}
@@ -450,7 +450,7 @@ void NakamaApi::{{ $rpc.Name }}(
 {{- else if or (eq $fieldType "int32") (eq $fieldType "int64") (eq $fieldType "uint32") (eq $fieldType "uint64") (eq $fieldType "float") (eq $fieldType "double") (containsString $fieldType "Int32Value") (containsString $fieldType "Int64Value") (containsString $fieldType "UInt32Value") (containsString $fieldType "UInt64Value") }}
 	Body->SetNumberField(TEXT("{{ $jsonFieldName }}"), {{ $fieldName }});
 {{- else if isEnumType $fieldType }}
-	Body->SetNumberField(TEXT("{{ $jsonFieldName }}"), {{ $fieldName }});
+	Body->SetNumberField(TEXT("{{ $jsonFieldName }}"), static_cast<int32>({{ $fieldName }}));
 {{- else if isMessageType $fieldType }}
 	Body->SetObjectField(TEXT("{{ $jsonFieldName }}"), {{ $fieldName }}.ToJson());
 {{- else }}

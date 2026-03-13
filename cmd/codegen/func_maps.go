@@ -208,15 +208,22 @@ func getUnrealFuncMap(api Api) template.FuncMap {
 		return ok
 	}
 
+	// enumUEName returns the Unreal enum type name, e.g. "ESatoriValueChangeReasonType".
+	// TypePrefix is "FSatori" or "FNakama"; we replace the leading "F" with "E".
+	enumUEName := func(fieldType string) string {
+		return "E" + api.TypePrefix[1:] + fieldType
+	}
+
 	getUnrealBaseType := func(fieldType string, isRepeated bool) string {
 		var unrealType string
 
-		// Handle enums as int32
+		// Handle enums as their typed UE enum
 		if isEnum(fieldType) {
+			eName := enumUEName(fieldType)
 			if isRepeated {
-				return "TArray<int32>"
+				return fmt.Sprintf("TArray<%s>", eName)
 			}
-			return "int32"
+			return eName
 		}
 
 		if isRepeated {
@@ -431,7 +438,7 @@ func getUnrealFuncMap(api Api) template.FuncMap {
 				return "" // TArray, TMap etc. are default-constructed
 			}
 			if isEnum(fieldType) {
-				return " = 0"
+				return fmt.Sprintf(" = static_cast<%s>(0)", enumUEName(fieldType))
 			}
 			switch fieldType {
 			case "int32", "google.protobuf.Int32Value",
@@ -456,6 +463,7 @@ func getUnrealFuncMap(api Api) template.FuncMap {
 			}
 			return name
 		},
+		"enumUEName":      enumUEName,
 		"isMessageType":   isMessageType,
 		"isBPWrapperType": isMessageType, // Alias for template clarity
 		"getBaseType": func(fieldType string) string {

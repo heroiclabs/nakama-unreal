@@ -817,7 +817,7 @@ void FNakamaAsyncLeaderboardSpec::Define()
 			Record.Score = 100;
 			Record.Subscore = 0;
 			Record.Metadata = TEXT("{}");
-			Record.Operator = 0;
+			Record.Operator = ENakamaOperator::NO_OVERRIDE;
 
 			Nakama::WriteLeaderboardRecord(ClientConfig, Session, TEXT(""), Record)
 			.Next([this, Done](FNakamaLeaderboardRecordResult Result)
@@ -834,7 +834,7 @@ void FNakamaAsyncLeaderboardSpec::Define()
 			Record.Score = 100;
 			Record.Subscore = 0;
 			Record.Metadata = TEXT("{}");
-			Record.Operator = 0;
+			Record.Operator = ENakamaOperator::NO_OVERRIDE;
 
 			Nakama::WriteLeaderboardRecord(ClientConfig, Session, TEXT("nonexistent_leaderboard_12345"), Record)
 			.Next([this, Done](FNakamaLeaderboardRecordResult Result)

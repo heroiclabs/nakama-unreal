@@ -282,7 +282,7 @@ struct SATORIAPI_API FSatoriValueChangeReason
 	GENERATED_BODY()
 	/**  The type of the configuration that declared the override. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
-	int32 Type = 0;
+	ESatoriValueChangeReasonType Type = static_cast<ESatoriValueChangeReasonType>(0);
 	/**  The name of the configuration that overrides the flag value. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	FString Name;
@@ -339,7 +339,7 @@ struct SATORIAPI_API FSatoriFlagOverrideValue
 	GENERATED_BODY()
 	/**  The type of the configuration that declared the override. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
-	int32 Type = 0;
+	ESatoriFlagOverrideType Type = static_cast<ESatoriFlagOverrideType>(0);
 	/**  The name of the configuration that overrides the flag value. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	FString Name;
@@ -605,7 +605,7 @@ struct SATORIAPI_API FSatoriLiveEvent
 	FString ResetCron;
 	/**  The status of this live event run. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
-	int32 Status = 0;
+	ESatoriLiveEventStatus Status = static_cast<ESatoriLiveEventStatus>(0);
 	/**  The labels associated with this live event. */
 	UPROPERTY(BlueprintReadWrite, Category = "Satori")
 	TArray<FString> Labels;
