@@ -69,8 +69,6 @@ void UNakamaWebSocketSubsystem::Close()
 
 TNakamaFuture<FNakamaWebSocketConnectionResult> UNakamaWebSocketSubsystem::Connect(FNakamaWebSocketConnectionParams Params)
 {
-    ConnectionParams = Params;
-
     // Do we already have a connection?
     if (WebSocket.IsValid())
     {
@@ -85,6 +83,8 @@ TNakamaFuture<FNakamaWebSocketConnectionResult> UNakamaWebSocketSubsystem::Conne
         UE_LOG(LogNakamaWebSocket, Warning, TEXT("Another WebSocket connection was active. Closing the old connection."));
         Close();
     }
+
+    ConnectionParams = Params;
 
     //
     // Construct the URL
