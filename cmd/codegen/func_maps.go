@@ -443,17 +443,101 @@ func getUnrealFuncMap(api Api) template.FuncMap {
 		return output
 	}
 
+	// shouldFlattenMessage returns true if a message type should be flattened into
+	// individual function parameters rather than passed as a struct. A message is
+	// flattenable if it is not repeated and all its fields are primitives, enums,
+	// or maps (no nested messages). Repeated message fields must remain as arrays.
+	shouldFlattenMessage := func(fieldType string, isRepeated bool) bool {
+		if isRepeated {
+			return false
+		}
+		if !isMessageType(fieldType) {
+			return false
+		}
+		msg, ok := api.MessagesByName[fieldType]
+		if !ok {
+			return false
+		}
+		for _, f := range msg.Fields {
+			if isMessageType(f.Type) {
+				return false
+			}
+		}
+		return true
+	}
+
+	// getMessageFields returns the NormalFields of a message type (for flattening).
+	getMessageFields := func(fieldType string) []*proto.NormalField {
+		msg, ok := api.MessagesByName[fieldType]
+		if !ok {
+			return nil
+		}
+		return msg.Fields
+	}
+
+	// getMessageMapFields returns the MapFields of a message type (for flattening).
+	getMessageMapFields := func(fieldType string) []*proto.MapField {
+		msg, ok := api.MessagesByName[fieldType]
+		if !ok {
+			return nil
+		}
+		return msg.MapFields
+	}
+
 	fnMap := template.FuncMap{
 		"getUnrealType":               getUnrealType,
 		"getUnrealMapType":            getUnrealMapType,
 		"getUnrealBPType":             getUnrealBPType,
 		"getUnrealMethodCommentBlock": getUnrealMethodCommentBlock,
 		"getUnrealParamList":          getUnrealParamList,
+		"shouldFlattenMessage": shouldFlattenMessage,
+		"getMessageFields":     getMessageFields,
+		"getMessageMapFields":  getMessageMapFields,
+		// canDefaultFlattenedFields returns true if it's safe to add default values to
+		// flattened sub-fields at the given index. This is only safe when all subsequent
+		// fields are themselves flattenable (and will also get defaults) or are maps.
+		"canDefaultFlattenedFields": func(fields []*proto.NormalField, currentIdx int) bool {
+			for i := currentIdx + 1; i < len(fields); i++ {
+				f := fields[i]
+				if !shouldFlattenMessage(f.Type, f.Repeated) {
+					return false
+				}
+			}
+			return true
+		},
 		"getUnrealReturnType": func(fieldType string) string {
 			return getUnrealBaseType(fieldType, false)
 		},
-		"getUnrealFieldType":    getUnrealFieldType,
-		"isWrapperType":         isWrapperType,
+		"getUnrealFieldType": getUnrealFieldType,
+		"isWrapperType":      isWrapperType,
+		// getUnrealParamDefault returns a default value suffix for flattened sub-field function parameters.
+		// Unlike getUnrealFieldDefault (for struct members), this also covers FString with = TEXT("").
+		"getUnrealParamDefault": func(fieldType string, isRepeated bool) string {
+			if isRepeated {
+				return " = {}"
+			}
+			if isEnum(fieldType) {
+				return fmt.Sprintf(" = static_cast<%s>(0)", enumUEName(fieldType))
+			}
+			switch fieldType {
+			case "int32", "google.protobuf.Int32Value",
+				"uint32", "google.protobuf.UInt32Value":
+				return " = 0"
+			case "int64", "google.protobuf.Int64Value",
+				"uint64", "google.protobuf.UInt64Value":
+				return " = 0"
+			case "float", "google.protobuf.FloatValue":
+				return " = 0.0f"
+			case "double", "google.protobuf.DoubleValue":
+				return " = 0.0"
+			case "bool", "google.protobuf.BoolValue":
+				return " = false"
+			case "string", "google.protobuf.StringValue", "google.protobuf.Timestamp":
+				return " = TEXT(\"\")"
+			default:
+				return " = {}"
+			}
+		},
 		"getUnrealFieldDefault": func(fieldType string, isRepeated bool) string {
 			// Return a default initializer for primitive UPROPERTY fields.
 			// UE requires all UPROPERTY primitives to be initialized.

@@ -106,8 +106,13 @@ namespace Nakama
 		const FNakamaSession& Session,
 		{{- end }}
 		{{- if $hasParams -}}
+		{{- /* Pass 1: non-map fields (flattening message types) */ -}}
 		{{- range $fidx, $field := $requestType.Fields }}
-		{{- if and (eq $field.Name $rpc.BodyField) (not (isMessageType $field.Type)) }}
+		{{- if shouldFlattenMessage $field.Type $field.Repeated }}
+		{{- range $sf := getMessageFields $field.Type }}
+		{{ getUnrealType $sf.Type $sf.Repeated }} {{ $sf.Name | pascalCase }}{{ if canDefaultFlattenedFields $requestType.Fields $fidx }}{{ getUnrealParamDefault $sf.Type $sf.Repeated }}{{ end }},
+		{{- end }}
+		{{- else if and (eq $field.Name $rpc.BodyField) (not (isMessageType $field.Type)) }}
 		TSharedPtr<FJsonObject> {{ $field.Name | pascalCase }},
 		{{- else }}
 		{{ getUnrealType $field.Type $field.Repeated }} {{ $field.Name | pascalCase }},
@@ -115,6 +120,14 @@ namespace Nakama
 		{{- end -}}
 		{{- range $fidx, $field := $requestType.MapFields }}
 		const {{ getUnrealMapType $field.Type }}& {{ $field.Name | pascalCase }},
+		{{- end -}}
+		{{- /* Pass 2: map fields from flattened messages (with defaults, right before RetryConfig) */ -}}
+		{{- range $fidx, $field := $requestType.Fields }}
+		{{- if shouldFlattenMessage $field.Type $field.Repeated }}
+		{{- range $sf := getMessageMapFields $field.Type }}
+		const {{ getUnrealMapType $sf.Type }}& {{ $sf.Name | pascalCase }} = {},
+		{{- end }}
+		{{- end }}
 		{{- end -}}
 		{{- end }}
 		const FNakamaRetryConfig& RetryConfig = {},
@@ -128,7 +141,11 @@ namespace Nakama
 		{{- if $hasParams -}}
 		{{- range $fidx, $field := $requestType.Fields }}
 		{{- if ne $field.Name "http_key" }}
-		{{- if and (eq $field.Name $rpc.BodyField) (not (isMessageType $field.Type)) }}
+		{{- if shouldFlattenMessage $field.Type $field.Repeated }}
+		{{- range $sf := getMessageFields $field.Type }}
+		{{ getUnrealType $sf.Type $sf.Repeated }} {{ $sf.Name | pascalCase }}{{ if canDefaultFlattenedFields $requestType.Fields $fidx }}{{ getUnrealParamDefault $sf.Type $sf.Repeated }}{{ end }},
+		{{- end }}
+		{{- else if and (eq $field.Name $rpc.BodyField) (not (isMessageType $field.Type)) }}
 		TSharedPtr<FJsonObject> {{ $field.Name | pascalCase }},
 		{{- else }}
 		{{ getUnrealType $field.Type $field.Repeated }} {{ $field.Name | pascalCase }},
@@ -137,6 +154,13 @@ namespace Nakama
 		{{- end -}}
 		{{- range $fidx, $field := $requestType.MapFields }}
 		const {{ getUnrealMapType $field.Type }}& {{ $field.Name | pascalCase }},
+		{{- end -}}
+		{{- range $fidx, $field := $requestType.Fields }}
+		{{- if and (ne $field.Name "http_key") (shouldFlattenMessage $field.Type $field.Repeated) }}
+		{{- range $sf := getMessageMapFields $field.Type }}
+		const {{ getUnrealMapType $sf.Type }}& {{ $sf.Name | pascalCase }} = {},
+		{{- end }}
+		{{- end }}
 		{{- end -}}
 		{{- end }}
 		const FNakamaRetryConfig& RetryConfig = {},

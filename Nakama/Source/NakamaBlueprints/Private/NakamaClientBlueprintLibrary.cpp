@@ -218,13 +218,15 @@ void UNakamaClientSessionLogout::Activate()
 UNakamaClientAuthenticateApple* UNakamaClientAuthenticateApple::AuthenticateApple(
 	UObject* WorldContextObject,
 	FNakamaClientConfig Client,
-	FNakamaAccountApple Account,
+	FString Token,
 	bool Create,
-	FString Username)
+	FString Username,
+	const TMap<FString, FString>& Vars)
 {
 	UNakamaClientAuthenticateApple* Action = NewObject<UNakamaClientAuthenticateApple>(WorldContextObject);
 	Action->Client = Client;
-	Action->StoredAccount = Account;
+	Action->StoredToken = Token;
+	Action->StoredVars = Vars;
 	Action->StoredCreate = Create;
 	Action->StoredUsername = Username;
 	Action->RegisterWithGameInstance(WorldContextObject);
@@ -237,6 +239,9 @@ void UNakamaClientAuthenticateApple::Activate()
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_AuthenticateApple);
 
 	TWeakObjectPtr<UNakamaClientAuthenticateApple> WeakThis(this);
+	FNakamaAccountApple StoredAccount;
+	StoredAccount.Token = StoredToken;
+	StoredAccount.Vars = StoredVars;
 
 	NakamaApi::AuthenticateApple(
 		Client,
@@ -266,13 +271,15 @@ void UNakamaClientAuthenticateApple::Activate()
 UNakamaClientAuthenticateCustom* UNakamaClientAuthenticateCustom::AuthenticateCustom(
 	UObject* WorldContextObject,
 	FNakamaClientConfig Client,
-	FNakamaAccountCustom Account,
+	FString Id,
 	bool Create,
-	FString Username)
+	FString Username,
+	const TMap<FString, FString>& Vars)
 {
 	UNakamaClientAuthenticateCustom* Action = NewObject<UNakamaClientAuthenticateCustom>(WorldContextObject);
 	Action->Client = Client;
-	Action->StoredAccount = Account;
+	Action->StoredId = Id;
+	Action->StoredVars = Vars;
 	Action->StoredCreate = Create;
 	Action->StoredUsername = Username;
 	Action->RegisterWithGameInstance(WorldContextObject);
@@ -285,6 +292,9 @@ void UNakamaClientAuthenticateCustom::Activate()
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_AuthenticateCustom);
 
 	TWeakObjectPtr<UNakamaClientAuthenticateCustom> WeakThis(this);
+	FNakamaAccountCustom StoredAccount;
+	StoredAccount.Id = StoredId;
+	StoredAccount.Vars = StoredVars;
 
 	NakamaApi::AuthenticateCustom(
 		Client,
@@ -314,13 +324,15 @@ void UNakamaClientAuthenticateCustom::Activate()
 UNakamaClientAuthenticateDevice* UNakamaClientAuthenticateDevice::AuthenticateDevice(
 	UObject* WorldContextObject,
 	FNakamaClientConfig Client,
-	FNakamaAccountDevice Account,
+	FString Id,
 	bool Create,
-	FString Username)
+	FString Username,
+	const TMap<FString, FString>& Vars)
 {
 	UNakamaClientAuthenticateDevice* Action = NewObject<UNakamaClientAuthenticateDevice>(WorldContextObject);
 	Action->Client = Client;
-	Action->StoredAccount = Account;
+	Action->StoredId = Id;
+	Action->StoredVars = Vars;
 	Action->StoredCreate = Create;
 	Action->StoredUsername = Username;
 	Action->RegisterWithGameInstance(WorldContextObject);
@@ -333,6 +345,9 @@ void UNakamaClientAuthenticateDevice::Activate()
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_AuthenticateDevice);
 
 	TWeakObjectPtr<UNakamaClientAuthenticateDevice> WeakThis(this);
+	FNakamaAccountDevice StoredAccount;
+	StoredAccount.Id = StoredId;
+	StoredAccount.Vars = StoredVars;
 
 	NakamaApi::AuthenticateDevice(
 		Client,
@@ -362,13 +377,17 @@ void UNakamaClientAuthenticateDevice::Activate()
 UNakamaClientAuthenticateEmail* UNakamaClientAuthenticateEmail::AuthenticateEmail(
 	UObject* WorldContextObject,
 	FNakamaClientConfig Client,
-	FNakamaAccountEmail Account,
+	FString Email,
+	FString Password,
 	bool Create,
-	FString Username)
+	FString Username,
+	const TMap<FString, FString>& Vars)
 {
 	UNakamaClientAuthenticateEmail* Action = NewObject<UNakamaClientAuthenticateEmail>(WorldContextObject);
 	Action->Client = Client;
-	Action->StoredAccount = Account;
+	Action->StoredEmail = Email;
+	Action->StoredPassword = Password;
+	Action->StoredVars = Vars;
 	Action->StoredCreate = Create;
 	Action->StoredUsername = Username;
 	Action->RegisterWithGameInstance(WorldContextObject);
@@ -381,6 +400,10 @@ void UNakamaClientAuthenticateEmail::Activate()
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_AuthenticateEmail);
 
 	TWeakObjectPtr<UNakamaClientAuthenticateEmail> WeakThis(this);
+	FNakamaAccountEmail StoredAccount;
+	StoredAccount.Email = StoredEmail;
+	StoredAccount.Password = StoredPassword;
+	StoredAccount.Vars = StoredVars;
 
 	NakamaApi::AuthenticateEmail(
 		Client,
@@ -410,14 +433,16 @@ void UNakamaClientAuthenticateEmail::Activate()
 UNakamaClientAuthenticateFacebook* UNakamaClientAuthenticateFacebook::AuthenticateFacebook(
 	UObject* WorldContextObject,
 	FNakamaClientConfig Client,
-	FNakamaAccountFacebook Account,
+	FString Token,
 	bool Create,
 	FString Username,
-	bool Sync)
+	bool Sync,
+	const TMap<FString, FString>& Vars)
 {
 	UNakamaClientAuthenticateFacebook* Action = NewObject<UNakamaClientAuthenticateFacebook>(WorldContextObject);
 	Action->Client = Client;
-	Action->StoredAccount = Account;
+	Action->StoredToken = Token;
+	Action->StoredVars = Vars;
 	Action->StoredCreate = Create;
 	Action->StoredUsername = Username;
 	Action->StoredSync = Sync;
@@ -431,6 +456,9 @@ void UNakamaClientAuthenticateFacebook::Activate()
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_AuthenticateFacebook);
 
 	TWeakObjectPtr<UNakamaClientAuthenticateFacebook> WeakThis(this);
+	FNakamaAccountFacebook StoredAccount;
+	StoredAccount.Token = StoredToken;
+	StoredAccount.Vars = StoredVars;
 
 	NakamaApi::AuthenticateFacebook(
 		Client,
@@ -461,13 +489,15 @@ void UNakamaClientAuthenticateFacebook::Activate()
 UNakamaClientAuthenticateFacebookInstantGame* UNakamaClientAuthenticateFacebookInstantGame::AuthenticateFacebookInstantGame(
 	UObject* WorldContextObject,
 	FNakamaClientConfig Client,
-	FNakamaAccountFacebookInstantGame Account,
+	FString SignedPlayerInfo,
 	bool Create,
-	FString Username)
+	FString Username,
+	const TMap<FString, FString>& Vars)
 {
 	UNakamaClientAuthenticateFacebookInstantGame* Action = NewObject<UNakamaClientAuthenticateFacebookInstantGame>(WorldContextObject);
 	Action->Client = Client;
-	Action->StoredAccount = Account;
+	Action->StoredSignedPlayerInfo = SignedPlayerInfo;
+	Action->StoredVars = Vars;
 	Action->StoredCreate = Create;
 	Action->StoredUsername = Username;
 	Action->RegisterWithGameInstance(WorldContextObject);
@@ -480,6 +510,9 @@ void UNakamaClientAuthenticateFacebookInstantGame::Activate()
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_AuthenticateFacebookInstantGame);
 
 	TWeakObjectPtr<UNakamaClientAuthenticateFacebookInstantGame> WeakThis(this);
+	FNakamaAccountFacebookInstantGame StoredAccount;
+	StoredAccount.SignedPlayerInfo = StoredSignedPlayerInfo;
+	StoredAccount.Vars = StoredVars;
 
 	NakamaApi::AuthenticateFacebookInstantGame(
 		Client,
@@ -509,13 +542,25 @@ void UNakamaClientAuthenticateFacebookInstantGame::Activate()
 UNakamaClientAuthenticateGameCenter* UNakamaClientAuthenticateGameCenter::AuthenticateGameCenter(
 	UObject* WorldContextObject,
 	FNakamaClientConfig Client,
-	FNakamaAccountGameCenter Account,
+	FString PlayerId,
+	FString BundleId,
+	int64 TimestampSeconds,
+	FString Salt,
+	FString Signature,
+	FString PublicKeyUrl,
 	bool Create,
-	FString Username)
+	FString Username,
+	const TMap<FString, FString>& Vars)
 {
 	UNakamaClientAuthenticateGameCenter* Action = NewObject<UNakamaClientAuthenticateGameCenter>(WorldContextObject);
 	Action->Client = Client;
-	Action->StoredAccount = Account;
+	Action->StoredPlayerId = PlayerId;
+	Action->StoredBundleId = BundleId;
+	Action->StoredTimestampSeconds = TimestampSeconds;
+	Action->StoredSalt = Salt;
+	Action->StoredSignature = Signature;
+	Action->StoredPublicKeyUrl = PublicKeyUrl;
+	Action->StoredVars = Vars;
 	Action->StoredCreate = Create;
 	Action->StoredUsername = Username;
 	Action->RegisterWithGameInstance(WorldContextObject);
@@ -528,6 +573,14 @@ void UNakamaClientAuthenticateGameCenter::Activate()
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_AuthenticateGameCenter);
 
 	TWeakObjectPtr<UNakamaClientAuthenticateGameCenter> WeakThis(this);
+	FNakamaAccountGameCenter StoredAccount;
+	StoredAccount.PlayerId = StoredPlayerId;
+	StoredAccount.BundleId = StoredBundleId;
+	StoredAccount.TimestampSeconds = StoredTimestampSeconds;
+	StoredAccount.Salt = StoredSalt;
+	StoredAccount.Signature = StoredSignature;
+	StoredAccount.PublicKeyUrl = StoredPublicKeyUrl;
+	StoredAccount.Vars = StoredVars;
 
 	NakamaApi::AuthenticateGameCenter(
 		Client,
@@ -557,13 +610,15 @@ void UNakamaClientAuthenticateGameCenter::Activate()
 UNakamaClientAuthenticateGoogle* UNakamaClientAuthenticateGoogle::AuthenticateGoogle(
 	UObject* WorldContextObject,
 	FNakamaClientConfig Client,
-	FNakamaAccountGoogle Account,
+	FString Token,
 	bool Create,
-	FString Username)
+	FString Username,
+	const TMap<FString, FString>& Vars)
 {
 	UNakamaClientAuthenticateGoogle* Action = NewObject<UNakamaClientAuthenticateGoogle>(WorldContextObject);
 	Action->Client = Client;
-	Action->StoredAccount = Account;
+	Action->StoredToken = Token;
+	Action->StoredVars = Vars;
 	Action->StoredCreate = Create;
 	Action->StoredUsername = Username;
 	Action->RegisterWithGameInstance(WorldContextObject);
@@ -576,6 +631,9 @@ void UNakamaClientAuthenticateGoogle::Activate()
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_AuthenticateGoogle);
 
 	TWeakObjectPtr<UNakamaClientAuthenticateGoogle> WeakThis(this);
+	FNakamaAccountGoogle StoredAccount;
+	StoredAccount.Token = StoredToken;
+	StoredAccount.Vars = StoredVars;
 
 	NakamaApi::AuthenticateGoogle(
 		Client,
@@ -605,14 +663,16 @@ void UNakamaClientAuthenticateGoogle::Activate()
 UNakamaClientAuthenticateSteam* UNakamaClientAuthenticateSteam::AuthenticateSteam(
 	UObject* WorldContextObject,
 	FNakamaClientConfig Client,
-	FNakamaAccountSteam Account,
+	FString Token,
 	bool Create,
 	FString Username,
-	bool Sync)
+	bool Sync,
+	const TMap<FString, FString>& Vars)
 {
 	UNakamaClientAuthenticateSteam* Action = NewObject<UNakamaClientAuthenticateSteam>(WorldContextObject);
 	Action->Client = Client;
-	Action->StoredAccount = Account;
+	Action->StoredToken = Token;
+	Action->StoredVars = Vars;
 	Action->StoredCreate = Create;
 	Action->StoredUsername = Username;
 	Action->StoredSync = Sync;
@@ -626,6 +686,9 @@ void UNakamaClientAuthenticateSteam::Activate()
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_AuthenticateSteam);
 
 	TWeakObjectPtr<UNakamaClientAuthenticateSteam> WeakThis(this);
+	FNakamaAccountSteam StoredAccount;
+	StoredAccount.Token = StoredToken;
+	StoredAccount.Vars = StoredVars;
 
 	NakamaApi::AuthenticateSteam(
 		Client,
@@ -1404,13 +1467,15 @@ UNakamaClientImportFacebookFriends* UNakamaClientImportFacebookFriends::ImportFa
 	UObject* WorldContextObject,
 	FNakamaClientConfig Client,
 	const FNakamaSession& Session,
-	FNakamaAccountFacebook Account,
-	bool Reset)
+	FString Token,
+	bool Reset,
+	const TMap<FString, FString>& Vars)
 {
 	UNakamaClientImportFacebookFriends* Action = NewObject<UNakamaClientImportFacebookFriends>(WorldContextObject);
 	Action->Client = Client;
 	Action->Session = Session;
-	Action->StoredAccount = Account;
+	Action->StoredToken = Token;
+	Action->StoredVars = Vars;
 	Action->StoredReset = Reset;
 	Action->RegisterWithGameInstance(WorldContextObject);
 	return Action;
@@ -1422,6 +1487,9 @@ void UNakamaClientImportFacebookFriends::Activate()
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ImportFacebookFriends);
 
 	TWeakObjectPtr<UNakamaClientImportFacebookFriends> WeakThis(this);
+	FNakamaAccountFacebook StoredAccount;
+	StoredAccount.Token = StoredToken;
+	StoredAccount.Vars = StoredVars;
 
 	NakamaApi::ImportFacebookFriends(
 		Client,
@@ -1452,13 +1520,15 @@ UNakamaClientImportSteamFriends* UNakamaClientImportSteamFriends::ImportSteamFri
 	UObject* WorldContextObject,
 	FNakamaClientConfig Client,
 	const FNakamaSession& Session,
-	FNakamaAccountSteam Account,
-	bool Reset)
+	FString Token,
+	bool Reset,
+	const TMap<FString, FString>& Vars)
 {
 	UNakamaClientImportSteamFriends* Action = NewObject<UNakamaClientImportSteamFriends>(WorldContextObject);
 	Action->Client = Client;
 	Action->Session = Session;
-	Action->StoredAccount = Account;
+	Action->StoredToken = Token;
+	Action->StoredVars = Vars;
 	Action->StoredReset = Reset;
 	Action->RegisterWithGameInstance(WorldContextObject);
 	return Action;
@@ -1470,6 +1540,9 @@ void UNakamaClientImportSteamFriends::Activate()
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ImportSteamFriends);
 
 	TWeakObjectPtr<UNakamaClientImportSteamFriends> WeakThis(this);
+	FNakamaAccountSteam StoredAccount;
+	StoredAccount.Token = StoredToken;
+	StoredAccount.Vars = StoredVars;
 
 	NakamaApi::ImportSteamFriends(
 		Client,
@@ -1878,13 +1951,15 @@ UNakamaClientLinkFacebook* UNakamaClientLinkFacebook::LinkFacebook(
 	UObject* WorldContextObject,
 	FNakamaClientConfig Client,
 	const FNakamaSession& Session,
-	FNakamaAccountFacebook Account,
-	bool Sync)
+	FString Token,
+	bool Sync,
+	const TMap<FString, FString>& Vars)
 {
 	UNakamaClientLinkFacebook* Action = NewObject<UNakamaClientLinkFacebook>(WorldContextObject);
 	Action->Client = Client;
 	Action->Session = Session;
-	Action->StoredAccount = Account;
+	Action->StoredToken = Token;
+	Action->StoredVars = Vars;
 	Action->StoredSync = Sync;
 	Action->RegisterWithGameInstance(WorldContextObject);
 	return Action;
@@ -1896,6 +1971,9 @@ void UNakamaClientLinkFacebook::Activate()
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_LinkFacebook);
 
 	TWeakObjectPtr<UNakamaClientLinkFacebook> WeakThis(this);
+	FNakamaAccountFacebook StoredAccount;
+	StoredAccount.Token = StoredToken;
+	StoredAccount.Vars = StoredVars;
 
 	NakamaApi::LinkFacebook(
 		Client,
@@ -2085,13 +2163,15 @@ UNakamaClientLinkSteam* UNakamaClientLinkSteam::LinkSteam(
 	UObject* WorldContextObject,
 	FNakamaClientConfig Client,
 	const FNakamaSession& Session,
-	FNakamaAccountSteam Account,
-	bool Sync)
+	FString Token,
+	bool Sync,
+	const TMap<FString, FString>& Vars)
 {
 	UNakamaClientLinkSteam* Action = NewObject<UNakamaClientLinkSteam>(WorldContextObject);
 	Action->Client = Client;
 	Action->Session = Session;
-	Action->StoredAccount = Account;
+	Action->StoredToken = Token;
+	Action->StoredVars = Vars;
 	Action->StoredSync = Sync;
 	Action->RegisterWithGameInstance(WorldContextObject);
 	return Action;
@@ -2103,6 +2183,9 @@ void UNakamaClientLinkSteam::Activate()
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_LinkSteam);
 
 	TWeakObjectPtr<UNakamaClientLinkSteam> WeakThis(this);
+	FNakamaAccountSteam StoredAccount;
+	StoredAccount.Token = StoredToken;
+	StoredAccount.Vars = StoredVars;
 
 	NakamaApi::LinkSteam(
 		Client,
@@ -4068,13 +4151,19 @@ UNakamaClientWriteLeaderboardRecord* UNakamaClientWriteLeaderboardRecord::WriteL
 	FNakamaClientConfig Client,
 	const FNakamaSession& Session,
 	FString LeaderboardId,
-	FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite Record)
+	int64 Score,
+	int64 Subscore,
+	FString Metadata,
+	ENakamaOperator Operator)
 {
 	UNakamaClientWriteLeaderboardRecord* Action = NewObject<UNakamaClientWriteLeaderboardRecord>(WorldContextObject);
 	Action->Client = Client;
 	Action->Session = Session;
 	Action->StoredLeaderboardId = LeaderboardId;
-	Action->StoredRecord = Record;
+	Action->StoredScore = Score;
+	Action->StoredSubscore = Subscore;
+	Action->StoredMetadata = Metadata;
+	Action->StoredOperator = Operator;
 	Action->RegisterWithGameInstance(WorldContextObject);
 	return Action;
 }
@@ -4085,6 +4174,11 @@ void UNakamaClientWriteLeaderboardRecord::Activate()
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_WriteLeaderboardRecord);
 
 	TWeakObjectPtr<UNakamaClientWriteLeaderboardRecord> WeakThis(this);
+	FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite StoredRecord;
+	StoredRecord.Score = StoredScore;
+	StoredRecord.Subscore = StoredSubscore;
+	StoredRecord.Metadata = StoredMetadata;
+	StoredRecord.Operator = StoredOperator;
 
 	NakamaApi::WriteLeaderboardRecord(
 		Client,
@@ -4161,13 +4255,19 @@ UNakamaClientWriteTournamentRecord* UNakamaClientWriteTournamentRecord::WriteTou
 	FNakamaClientConfig Client,
 	const FNakamaSession& Session,
 	FString TournamentId,
-	FNakamaWriteTournamentRecordRequest_TournamentRecordWrite Record)
+	int64 Score,
+	int64 Subscore,
+	FString Metadata,
+	ENakamaOperator Operator)
 {
 	UNakamaClientWriteTournamentRecord* Action = NewObject<UNakamaClientWriteTournamentRecord>(WorldContextObject);
 	Action->Client = Client;
 	Action->Session = Session;
 	Action->StoredTournamentId = TournamentId;
-	Action->StoredRecord = Record;
+	Action->StoredScore = Score;
+	Action->StoredSubscore = Subscore;
+	Action->StoredMetadata = Metadata;
+	Action->StoredOperator = Operator;
 	Action->RegisterWithGameInstance(WorldContextObject);
 	return Action;
 }
@@ -4178,6 +4278,11 @@ void UNakamaClientWriteTournamentRecord::Activate()
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_WriteTournamentRecord);
 
 	TWeakObjectPtr<UNakamaClientWriteTournamentRecord> WeakThis(this);
+	FNakamaWriteTournamentRecordRequest_TournamentRecordWrite StoredRecord;
+	StoredRecord.Score = StoredScore;
+	StoredRecord.Subscore = StoredSubscore;
+	StoredRecord.Metadata = StoredMetadata;
+	StoredRecord.Operator = StoredOperator;
 
 	NakamaApi::WriteTournamentRecord(
 		Client,

@@ -177,76 +177,34 @@ tasks:
         docker compose -f IntegrationTests/server/docker-compose.yml up --build -d
 
   build:
-    desc: 'Build and cook a project via UAT (BuildCookRun).'
+    desc: 'Build the IntegrationTests editor target.'
     deps:
     - task: check-unreal-engine
-    vars:
-      PROJECT: '{{.PROJECT}}'
-      CONFIG: '{{.CONFIG | default "Development"}}'
     cmds:
     - cmd: |
-        if [ -z "$UNREAL_ENGINE" ]; then
-            echo "Error: UNREAL_ENGINE is not set!"
-            exit 1
-        fi
-        if [ -z "{{.PROJECT}}" ]; then
-            echo "Error: PROJECT is required. Example:"
-            echo "  task build-project PROJECT=NakamaBlueprintsDemo/NakamaBlueprintsDemo.uproject"
-            exit 1
-        fi
+        PROJECT="$(pwd)/IntegrationTests/IntegrationTests.uproject"
 
-        PROJECT="$(pwd)/{{.PROJECT}}"
-
-        echo "Building project $PROJECT ({{.CONFIG}})..."
-        "$UNREAL_ENGINE/Engine/Build/BatchFiles/RunUAT.bat" \
-            BuildCookRun \
-            -Platform=Win64 \
-            -Project="$PROJECT" \
-            -ClientConfig={{.CONFIG}} \
-            -Cook -Build
+        echo "Building IntegrationTestsEditor (Development)..."
+        "$UNREAL_ENGINE/Engine/Build/BatchFiles/Build.bat" \
+            IntegrationTestsEditor Win64 Development \
+            -Project="$PROJECT"
       platforms: [windows]
     - cmd: |
-        if [ -z "$UNREAL_ENGINE" ]; then
-            echo "Error: UNREAL_ENGINE is not set!"
-            exit 1
-        fi
-        if [ -z "{{.PROJECT}}" ]; then
-            echo "Error: PROJECT is required. Example:"
-            echo "  task build-project PROJECT=NakamaBlueprintsDemo/NakamaBlueprintsDemo.uproject"
-            exit 1
-        fi
+        PROJECT="$(pwd)/IntegrationTests/IntegrationTests.uproject"
 
-        PROJECT="$(pwd)/{{.PROJECT}}"
-
-        echo "Building project $PROJECT ({{.CONFIG}})..."
-        "$UNREAL_ENGINE/Engine/Build/BatchFiles/RunUAT.sh" \
-            BuildCookRun \
-            -Platform=Mac \
+        echo "Building IntegrationTestsEditor (Development)..."
+        "$UNREAL_ENGINE/Engine/Build/BatchFiles/Build.sh" \
+            IntegrationTestsEditor Mac Development \
             -Project="$PROJECT" \
-            -ClientConfig={{.CONFIG}} \
-            -Cook -Build \
             -Architecture_Mac=arm64
       platforms: [darwin]
     - cmd: |
-        if [ -z "$UNREAL_ENGINE" ]; then
-            echo "Error: UNREAL_ENGINE is not set!"
-            exit 1
-        fi
-        if [ -z "{{.PROJECT}}" ]; then
-            echo "Error: PROJECT is required. Example:"
-            echo "  task build-project PROJECT=NakamaBlueprintsDemo/NakamaBlueprintsDemo.uproject"
-            exit 1
-        fi
+        PROJECT="$(pwd)/IntegrationTests/IntegrationTests.uproject"
 
-        PROJECT="$(pwd)/{{.PROJECT}}"
-
-        echo "Building project $PROJECT ({{.CONFIG}})..."
-        "$UNREAL_ENGINE/Engine/Build/BatchFiles/RunUAT.sh" \
-            BuildCookRun \
-            -Platform=Linux \
-            -Project="$PROJECT" \
-            -ClientConfig={{.CONFIG}} \
-            -Cook -Build
+        echo "Building IntegrationTestsEditor (Development)..."
+        "$UNREAL_ENGINE/Engine/Build/BatchFiles/Build.sh" \
+            IntegrationTestsEditor Linux Development \
+            -Project="$PROJECT"
       platforms: [linux]
 
   check-unreal-engine:
@@ -355,18 +313,8 @@ tasks:
         cmd /c "if exist IntegrationTests\Plugins\Nakama rmdir /s /q IntegrationTests\Plugins\Nakama"
         cmd /c "mklink /J IntegrationTests\Plugins\Nakama Nakama"
       platforms: [windows]
+    - task: build
     - cmd: |
-        PROJECT="$(pwd)/IntegrationTests/IntegrationTests.uproject"
-
-        "$UNREAL_ENGINE/Engine/Build/BatchFiles/Build.bat" \
-            IntegrationTestsEditor Win64 Development \
-            -Project="$PROJECT"
-
-        if [ $? -ne 0 ]; then
-            echo "Build failed!"
-            exit 1
-        fi
-
         cd cmd/testrunner && go build -o ../../{{.TESTRUNNER}} && cd ../..
 
         ./{{.TESTRUNNER}} {{.FILTER}}

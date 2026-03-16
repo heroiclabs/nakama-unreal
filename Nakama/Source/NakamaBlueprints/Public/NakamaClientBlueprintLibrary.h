@@ -210,15 +210,17 @@ public:
 	static UNakamaClientAuthenticateApple* AuthenticateApple(
 		UObject* WorldContextObject,
 		FNakamaClientConfig Client,
-		FNakamaAccountApple Account,
+		FString Token,
 		bool Create,
-		FString Username);
+		FString Username,
+		const TMap<FString, FString>& Vars);
 
 	virtual void Activate() override;
 
 private:
 	FNakamaClientConfig Client;
-	FNakamaAccountApple StoredAccount;
+	FString StoredToken;
+	TMap<FString, FString> StoredVars;
 	bool StoredCreate = false;
 	FString StoredUsername;
 };
@@ -242,15 +244,17 @@ public:
 	static UNakamaClientAuthenticateCustom* AuthenticateCustom(
 		UObject* WorldContextObject,
 		FNakamaClientConfig Client,
-		FNakamaAccountCustom Account,
+		FString Id,
 		bool Create,
-		FString Username);
+		FString Username,
+		const TMap<FString, FString>& Vars);
 
 	virtual void Activate() override;
 
 private:
 	FNakamaClientConfig Client;
-	FNakamaAccountCustom StoredAccount;
+	FString StoredId;
+	TMap<FString, FString> StoredVars;
 	bool StoredCreate = false;
 	FString StoredUsername;
 };
@@ -274,15 +278,17 @@ public:
 	static UNakamaClientAuthenticateDevice* AuthenticateDevice(
 		UObject* WorldContextObject,
 		FNakamaClientConfig Client,
-		FNakamaAccountDevice Account,
+		FString Id,
 		bool Create,
-		FString Username);
+		FString Username,
+		const TMap<FString, FString>& Vars);
 
 	virtual void Activate() override;
 
 private:
 	FNakamaClientConfig Client;
-	FNakamaAccountDevice StoredAccount;
+	FString StoredId;
+	TMap<FString, FString> StoredVars;
 	bool StoredCreate = false;
 	FString StoredUsername;
 };
@@ -306,15 +312,19 @@ public:
 	static UNakamaClientAuthenticateEmail* AuthenticateEmail(
 		UObject* WorldContextObject,
 		FNakamaClientConfig Client,
-		FNakamaAccountEmail Account,
+		FString Email,
+		FString Password,
 		bool Create,
-		FString Username);
+		FString Username,
+		const TMap<FString, FString>& Vars);
 
 	virtual void Activate() override;
 
 private:
 	FNakamaClientConfig Client;
-	FNakamaAccountEmail StoredAccount;
+	FString StoredEmail;
+	FString StoredPassword;
+	TMap<FString, FString> StoredVars;
 	bool StoredCreate = false;
 	FString StoredUsername;
 };
@@ -338,16 +348,18 @@ public:
 	static UNakamaClientAuthenticateFacebook* AuthenticateFacebook(
 		UObject* WorldContextObject,
 		FNakamaClientConfig Client,
-		FNakamaAccountFacebook Account,
+		FString Token,
 		bool Create,
 		FString Username,
-		bool Sync);
+		bool Sync,
+		const TMap<FString, FString>& Vars);
 
 	virtual void Activate() override;
 
 private:
 	FNakamaClientConfig Client;
-	FNakamaAccountFacebook StoredAccount;
+	FString StoredToken;
+	TMap<FString, FString> StoredVars;
 	bool StoredCreate = false;
 	FString StoredUsername;
 	bool StoredSync = false;
@@ -372,15 +384,17 @@ public:
 	static UNakamaClientAuthenticateFacebookInstantGame* AuthenticateFacebookInstantGame(
 		UObject* WorldContextObject,
 		FNakamaClientConfig Client,
-		FNakamaAccountFacebookInstantGame Account,
+		FString SignedPlayerInfo,
 		bool Create,
-		FString Username);
+		FString Username,
+		const TMap<FString, FString>& Vars);
 
 	virtual void Activate() override;
 
 private:
 	FNakamaClientConfig Client;
-	FNakamaAccountFacebookInstantGame StoredAccount;
+	FString StoredSignedPlayerInfo;
+	TMap<FString, FString> StoredVars;
 	bool StoredCreate = false;
 	FString StoredUsername;
 };
@@ -404,15 +418,27 @@ public:
 	static UNakamaClientAuthenticateGameCenter* AuthenticateGameCenter(
 		UObject* WorldContextObject,
 		FNakamaClientConfig Client,
-		FNakamaAccountGameCenter Account,
+		FString PlayerId,
+		FString BundleId,
+		int64 TimestampSeconds,
+		FString Salt,
+		FString Signature,
+		FString PublicKeyUrl,
 		bool Create,
-		FString Username);
+		FString Username,
+		const TMap<FString, FString>& Vars);
 
 	virtual void Activate() override;
 
 private:
 	FNakamaClientConfig Client;
-	FNakamaAccountGameCenter StoredAccount;
+	FString StoredPlayerId;
+	FString StoredBundleId;
+	int64 StoredTimestampSeconds = 0;
+	FString StoredSalt;
+	FString StoredSignature;
+	FString StoredPublicKeyUrl;
+	TMap<FString, FString> StoredVars;
 	bool StoredCreate = false;
 	FString StoredUsername;
 };
@@ -436,15 +462,17 @@ public:
 	static UNakamaClientAuthenticateGoogle* AuthenticateGoogle(
 		UObject* WorldContextObject,
 		FNakamaClientConfig Client,
-		FNakamaAccountGoogle Account,
+		FString Token,
 		bool Create,
-		FString Username);
+		FString Username,
+		const TMap<FString, FString>& Vars);
 
 	virtual void Activate() override;
 
 private:
 	FNakamaClientConfig Client;
-	FNakamaAccountGoogle StoredAccount;
+	FString StoredToken;
+	TMap<FString, FString> StoredVars;
 	bool StoredCreate = false;
 	FString StoredUsername;
 };
@@ -468,16 +496,18 @@ public:
 	static UNakamaClientAuthenticateSteam* AuthenticateSteam(
 		UObject* WorldContextObject,
 		FNakamaClientConfig Client,
-		FNakamaAccountSteam Account,
+		FString Token,
 		bool Create,
 		FString Username,
-		bool Sync);
+		bool Sync,
+		const TMap<FString, FString>& Vars);
 
 	virtual void Activate() override;
 
 private:
 	FNakamaClientConfig Client;
-	FNakamaAccountSteam StoredAccount;
+	FString StoredToken;
+	TMap<FString, FString> StoredVars;
 	bool StoredCreate = false;
 	FString StoredUsername;
 	bool StoredSync = false;
@@ -1001,15 +1031,17 @@ public:
 		UObject* WorldContextObject,
 		FNakamaClientConfig Client,
 		const FNakamaSession& Session,
-		FNakamaAccountFacebook Account,
-		bool Reset);
+		FString Token,
+		bool Reset,
+		const TMap<FString, FString>& Vars);
 
 	virtual void Activate() override;
 
 private:
 	FNakamaClientConfig Client;
 	FNakamaSession Session;
-	FNakamaAccountFacebook StoredAccount;
+	FString StoredToken;
+	TMap<FString, FString> StoredVars;
 	bool StoredReset = false;
 };
 
@@ -1033,15 +1065,17 @@ public:
 		UObject* WorldContextObject,
 		FNakamaClientConfig Client,
 		const FNakamaSession& Session,
-		FNakamaAccountSteam Account,
-		bool Reset);
+		FString Token,
+		bool Reset,
+		const TMap<FString, FString>& Vars);
 
 	virtual void Activate() override;
 
 private:
 	FNakamaClientConfig Client;
 	FNakamaSession Session;
-	FNakamaAccountSteam StoredAccount;
+	FString StoredToken;
+	TMap<FString, FString> StoredVars;
 	bool StoredReset = false;
 };
 
@@ -1317,15 +1351,17 @@ public:
 		UObject* WorldContextObject,
 		FNakamaClientConfig Client,
 		const FNakamaSession& Session,
-		FNakamaAccountFacebook Account,
-		bool Sync);
+		FString Token,
+		bool Sync,
+		const TMap<FString, FString>& Vars);
 
 	virtual void Activate() override;
 
 private:
 	FNakamaClientConfig Client;
 	FNakamaSession Session;
-	FNakamaAccountFacebook StoredAccount;
+	FString StoredToken;
+	TMap<FString, FString> StoredVars;
 	bool StoredSync = false;
 };
 
@@ -1455,15 +1491,17 @@ public:
 		UObject* WorldContextObject,
 		FNakamaClientConfig Client,
 		const FNakamaSession& Session,
-		FNakamaAccountSteam Account,
-		bool Sync);
+		FString Token,
+		bool Sync,
+		const TMap<FString, FString>& Vars);
 
 	virtual void Activate() override;
 
 private:
 	FNakamaClientConfig Client;
 	FNakamaSession Session;
-	FNakamaAccountSteam StoredAccount;
+	FString StoredToken;
+	TMap<FString, FString> StoredVars;
 	bool StoredSync = false;
 };
 
@@ -2772,7 +2810,10 @@ public:
 		FNakamaClientConfig Client,
 		const FNakamaSession& Session,
 		FString LeaderboardId,
-		FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite Record);
+		int64 Score,
+		int64 Subscore,
+		FString Metadata,
+		ENakamaOperator Operator);
 
 	virtual void Activate() override;
 
@@ -2780,7 +2821,10 @@ private:
 	FNakamaClientConfig Client;
 	FNakamaSession Session;
 	FString StoredLeaderboardId;
-	FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite StoredRecord;
+	int64 StoredScore = 0;
+	int64 StoredSubscore = 0;
+	FString StoredMetadata;
+	ENakamaOperator StoredOperator = static_cast<ENakamaOperator>(0);
 };
 
 /**
@@ -2834,7 +2878,10 @@ public:
 		FNakamaClientConfig Client,
 		const FNakamaSession& Session,
 		FString TournamentId,
-		FNakamaWriteTournamentRecordRequest_TournamentRecordWrite Record);
+		int64 Score,
+		int64 Subscore,
+		FString Metadata,
+		ENakamaOperator Operator);
 
 	virtual void Activate() override;
 
@@ -2842,5 +2889,8 @@ private:
 	FNakamaClientConfig Client;
 	FNakamaSession Session;
 	FString StoredTournamentId;
-	FNakamaWriteTournamentRecordRequest_TournamentRecordWrite StoredRecord;
+	int64 StoredScore = 0;
+	int64 StoredSubscore = 0;
+	FString StoredMetadata;
+	ENakamaOperator StoredOperator = static_cast<ENakamaOperator>(0);
 };

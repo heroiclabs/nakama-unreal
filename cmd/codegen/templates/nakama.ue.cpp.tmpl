@@ -109,8 +109,13 @@ TNakamaFuture<{{ $resultType }}Result> Nakama::{{ $rpc.Name }}(
 	const FNakamaSession& Session,
 	{{- end }}
 	{{- if $hasParams -}}
+	{{- /* Pass 1: non-map fields (flattening message types) */ -}}
 	{{- range $fidx, $field := $requestType.Fields }}
-	{{- if and (eq $field.Name $rpc.BodyField) (not (isMessageType $field.Type)) }}
+	{{- if shouldFlattenMessage $field.Type $field.Repeated }}
+	{{- range $sf := getMessageFields $field.Type }}
+	{{ getUnrealType $sf.Type $sf.Repeated }} {{ $sf.Name | pascalCase }},
+	{{- end }}
+	{{- else if and (eq $field.Name $rpc.BodyField) (not (isMessageType $field.Type)) }}
 	TSharedPtr<FJsonObject> {{ $field.Name | pascalCase }},
 	{{- else }}
 	{{ getUnrealType $field.Type $field.Repeated }} {{ $field.Name | pascalCase }},
@@ -118,6 +123,14 @@ TNakamaFuture<{{ $resultType }}Result> Nakama::{{ $rpc.Name }}(
 	{{- end -}}
 	{{- range $fidx, $field := $requestType.MapFields }}
 	const {{ getUnrealMapType $field.Type }}& {{ $field.Name | pascalCase }},
+	{{- end -}}
+	{{- /* Pass 2: map fields from flattened messages */ -}}
+	{{- range $fidx, $field := $requestType.Fields }}
+	{{- if shouldFlattenMessage $field.Type $field.Repeated }}
+	{{- range $sf := getMessageMapFields $field.Type }}
+	const {{ getUnrealMapType $sf.Type }}& {{ $sf.Name | pascalCase }},
+	{{- end }}
+	{{- end }}
 	{{- end -}}
 	{{- end }}
 	const FNakamaRetryConfig& RetryConfig,
@@ -152,7 +165,16 @@ TNakamaFuture<{{ $resultType }}Result> Nakama::{{ $rpc.Name }}(
 	*DoRequest = [FutureState, {{- if $needsSession }}SessionState, {{- end }}DoRequest, OnError, ClientConfig, RetryConfig, CancellationToken
 		{{- if $hasParams -}}
 		{{- range $fidx, $field := $requestType.Fields }}
+		{{- if shouldFlattenMessage $field.Type $field.Repeated }}
+		{{- range $sf := getMessageFields $field.Type }}
+		, {{ $sf.Name | pascalCase }}
+		{{- end }}
+		{{- range $sf := getMessageMapFields $field.Type }}
+		, {{ $sf.Name | pascalCase }}
+		{{- end }}
+		{{- else }}
 		, {{ $field.Name | pascalCase }}
+		{{- end }}
 		{{- end -}}
 		{{- range $fidx, $field := $requestType.MapFields }}
 		, {{ $field.Name | pascalCase }}
@@ -165,7 +187,16 @@ TNakamaFuture<{{ $resultType }}Result> Nakama::{{ $rpc.Name }}(
 			[FutureState, SessionState, DoRequest, OnError, ClientConfig, RetryConfig, CancellationToken
 				{{- if $hasParams -}}
 				{{- range $fidx, $field := $requestType.Fields }}
+				{{- if shouldFlattenMessage $field.Type $field.Repeated }}
+				{{- range $sf := getMessageFields $field.Type }}
+				, {{ $sf.Name | pascalCase }}
+				{{- end }}
+				{{- range $sf := getMessageMapFields $field.Type }}
+				, {{ $sf.Name | pascalCase }}
+				{{- end }}
+				{{- else }}
 				, {{ $field.Name | pascalCase }}
+				{{- end }}
 				{{- end -}}
 				{{- range $fidx, $field := $requestType.MapFields }}
 				, {{ $field.Name | pascalCase }}
@@ -173,6 +204,20 @@ TNakamaFuture<{{ $resultType }}Result> Nakama::{{ $rpc.Name }}(
 				{{- end }}
 				]()
 			{
+				{{- /* Reconstruct structs from flattened params for the NakamaApi call */ -}}
+				{{- if $hasParams }}
+				{{- range $fidx, $field := $requestType.Fields }}
+				{{- if shouldFlattenMessage $field.Type $field.Repeated }}
+				{{ getUnrealReturnType $field.Type }} {{ $field.Name | pascalCase }};
+				{{- range $sf := getMessageFields $field.Type }}
+				{{ $field.Name | pascalCase }}.{{ $sf.Name | pascalCase }} = {{ $sf.Name | pascalCase }};
+				{{- end }}
+				{{- range $sf := getMessageMapFields $field.Type }}
+				{{ $field.Name | pascalCase }}.{{ $sf.Name | pascalCase }} = {{ $sf.Name | pascalCase }};
+				{{- end }}
+				{{- end }}
+				{{- end }}
+				{{- end }}
 				NakamaApi::{{ $rpc.Name }}(
 					ClientConfig,
 					*SessionState,
@@ -204,6 +249,20 @@ TNakamaFuture<{{ $resultType }}Result> Nakama::{{ $rpc.Name }}(
 					CancellationToken);
 			});
 {{- else }}
+		{{- /* Reconstruct structs from flattened params for the NakamaApi call */ -}}
+		{{- if $hasParams }}
+		{{- range $fidx, $field := $requestType.Fields }}
+		{{- if shouldFlattenMessage $field.Type $field.Repeated }}
+		{{ getUnrealReturnType $field.Type }} {{ $field.Name | pascalCase }};
+		{{- range $sf := getMessageFields $field.Type }}
+		{{ $field.Name | pascalCase }}.{{ $sf.Name | pascalCase }} = {{ $sf.Name | pascalCase }};
+		{{- end }}
+		{{- range $sf := getMessageMapFields $field.Type }}
+		{{ $field.Name | pascalCase }}.{{ $sf.Name | pascalCase }} = {{ $sf.Name | pascalCase }};
+		{{- end }}
+		{{- end }}
+		{{- end }}
+		{{- end }}
 		NakamaApi::{{ $rpc.Name }}(
 			ClientConfig,
 			{{- if $hasParams -}}
@@ -247,7 +306,11 @@ TNakamaFuture<{{ $resultType }}Result> Nakama::{{ $rpc.Name }}(
 	{{- if $hasParams -}}
 	{{- range $fidx, $field := $requestType.Fields }}
 	{{- if ne $field.Name "http_key" }}
-	{{- if and (eq $field.Name $rpc.BodyField) (not (isMessageType $field.Type)) }}
+	{{- if shouldFlattenMessage $field.Type $field.Repeated }}
+	{{- range $sf := getMessageFields $field.Type }}
+	{{ getUnrealType $sf.Type $sf.Repeated }} {{ $sf.Name | pascalCase }},
+	{{- end }}
+	{{- else if and (eq $field.Name $rpc.BodyField) (not (isMessageType $field.Type)) }}
 	TSharedPtr<FJsonObject> {{ $field.Name | pascalCase }},
 	{{- else }}
 	{{ getUnrealType $field.Type $field.Repeated }} {{ $field.Name | pascalCase }},
@@ -256,6 +319,13 @@ TNakamaFuture<{{ $resultType }}Result> Nakama::{{ $rpc.Name }}(
 	{{- end -}}
 	{{- range $fidx, $field := $requestType.MapFields }}
 	const {{ getUnrealMapType $field.Type }}& {{ $field.Name | pascalCase }},
+	{{- end -}}
+	{{- range $fidx, $field := $requestType.Fields }}
+	{{- if and (ne $field.Name "http_key") (shouldFlattenMessage $field.Type $field.Repeated) }}
+	{{- range $sf := getMessageMapFields $field.Type }}
+	const {{ getUnrealMapType $sf.Type }}& {{ $sf.Name | pascalCase }},
+	{{- end }}
+	{{- end }}
 	{{- end -}}
 	{{- end }}
 	const FNakamaRetryConfig& RetryConfig,
@@ -288,7 +358,16 @@ TNakamaFuture<{{ $resultType }}Result> Nakama::{{ $rpc.Name }}(
 		{{- if $hasParams -}}
 		{{- range $fidx, $field := $requestType.Fields }}
 		{{- if ne $field.Name "http_key" }}
+		{{- if shouldFlattenMessage $field.Type $field.Repeated }}
+		{{- range $sf := getMessageFields $field.Type }}
+		, {{ $sf.Name | pascalCase }}
+		{{- end }}
+		{{- range $sf := getMessageMapFields $field.Type }}
+		, {{ $sf.Name | pascalCase }}
+		{{- end }}
+		{{- else }}
 		, {{ $field.Name | pascalCase }}
+		{{- end }}
 		{{- end }}
 		{{- end -}}
 		{{- range $fidx, $field := $requestType.MapFields }}
@@ -297,6 +376,20 @@ TNakamaFuture<{{ $resultType }}Result> Nakama::{{ $rpc.Name }}(
 		{{- end }}
 		]()
 	{
+		{{- /* Reconstruct structs from flattened params for the NakamaApi call */ -}}
+		{{- if $hasParams }}
+		{{- range $fidx, $field := $requestType.Fields }}
+		{{- if and (ne $field.Name "http_key") (shouldFlattenMessage $field.Type $field.Repeated) }}
+		{{ getUnrealReturnType $field.Type }} {{ $field.Name | pascalCase }};
+		{{- range $sf := getMessageFields $field.Type }}
+		{{ $field.Name | pascalCase }}.{{ $sf.Name | pascalCase }} = {{ $sf.Name | pascalCase }};
+		{{- end }}
+		{{- range $sf := getMessageMapFields $field.Type }}
+		{{ $field.Name | pascalCase }}.{{ $sf.Name | pascalCase }} = {{ $sf.Name | pascalCase }};
+		{{- end }}
+		{{- end }}
+		{{- end }}
+		{{- end }}
 		NakamaApi::{{ $rpc.Name }}(
 			ClientConfig,
 			HttpKey,

@@ -80,7 +80,12 @@ public:
 {{- end }}
 {{- if $hasParams }}
 {{- range $fidx, $field := $requestType.Fields }},
-{{- if and (eq $field.Name $rpc.BodyField) (not (isMessageType $field.Type)) }}
+{{- if shouldFlattenMessage $field.Type $field.Repeated }}
+{{- range $sfidx, $sf := getMessageFields $field.Type }}
+{{- if $sfidx }},{{- end }}
+		{{ getUnrealType $sf.Type $sf.Repeated }} {{ $sf.Name | pascalCase }}
+{{- end }}
+{{- else if and (eq $field.Name $rpc.BodyField) (not (isMessageType $field.Type)) }}
 		const TMap<FString, FString>& {{ $field.Name | pascalCase }}
 {{- else }}
 		{{ getUnrealType $field.Type $field.Repeated }} {{ $field.Name | pascalCase }}
@@ -88,6 +93,13 @@ public:
 {{- end }}
 {{- range $fidx, $field := $requestType.MapFields }},
 		const {{ getUnrealMapType $field.Type }}& {{ $field.Name | pascalCase }}
+{{- end }}
+{{- range $fidx, $field := $requestType.Fields }}
+{{- if shouldFlattenMessage $field.Type $field.Repeated }}
+{{- range $sf := getMessageMapFields $field.Type }},
+		const {{ getUnrealMapType $sf.Type }}& {{ $sf.Name | pascalCase }}
+{{- end }}
+{{- end }}
 {{- end }}
 {{- end }});
 
@@ -101,7 +113,14 @@ private:
 {{- end }}
 {{- if $hasParams }}
 {{- range $fidx, $field := $requestType.Fields }}
-{{- if and (eq $field.Name $rpc.BodyField) (not (isMessageType $field.Type)) }}
+{{- if shouldFlattenMessage $field.Type $field.Repeated }}
+{{- range $sf := getMessageFields $field.Type }}
+	{{ getUnrealFieldType $sf.Type $sf.Repeated }} Stored{{ $sf.Name | pascalCase }}{{ getUnrealFieldDefault $sf.Type $sf.Repeated }};
+{{- end }}
+{{- range $sf := getMessageMapFields $field.Type }}
+	{{ getUnrealMapType $sf.Type }} Stored{{ $sf.Name | pascalCase }};
+{{- end }}
+{{- else if and (eq $field.Name $rpc.BodyField) (not (isMessageType $field.Type)) }}
 	TMap<FString, FString> Stored{{ $field.Name | pascalCase }};
 {{- else }}
 	{{ getUnrealFieldType $field.Type $field.Repeated }} Stored{{ $field.Name | pascalCase }}{{ getUnrealFieldDefault $field.Type $field.Repeated }};

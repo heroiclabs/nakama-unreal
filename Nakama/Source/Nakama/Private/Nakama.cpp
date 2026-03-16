@@ -517,9 +517,10 @@ TNakamaFuture<FNakamaVoidResult> Nakama::SessionLogout(
 }
 TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateApple(
 	const FNakamaClientConfig& ClientConfig,
-	FNakamaAccountApple Account,
+	FString Token,
 	bool Create,
 	FString Username,
+	const TMap<FString, FString>& Vars,
 	const FNakamaRetryConfig& RetryConfig,
 	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
@@ -547,11 +548,15 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateApple(
 	};
 
 	*DoRequest = [FutureState,DoRequest, OnError, ClientConfig, RetryConfig, CancellationToken
-		, Account
+		, Token
+		, Vars
 		, Create
 		, Username
 		]()
 	{
+		FNakamaAccountApple Account;
+		Account.Token = Token;
+		Account.Vars = Vars;
 		NakamaApi::AuthenticateApple(
 			ClientConfig,
 			Account,
@@ -574,9 +579,10 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateApple(
 }
 TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateCustom(
 	const FNakamaClientConfig& ClientConfig,
-	FNakamaAccountCustom Account,
+	FString Id,
 	bool Create,
 	FString Username,
+	const TMap<FString, FString>& Vars,
 	const FNakamaRetryConfig& RetryConfig,
 	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
@@ -604,11 +610,15 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateCustom(
 	};
 
 	*DoRequest = [FutureState,DoRequest, OnError, ClientConfig, RetryConfig, CancellationToken
-		, Account
+		, Id
+		, Vars
 		, Create
 		, Username
 		]()
 	{
+		FNakamaAccountCustom Account;
+		Account.Id = Id;
+		Account.Vars = Vars;
 		NakamaApi::AuthenticateCustom(
 			ClientConfig,
 			Account,
@@ -631,9 +641,10 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateCustom(
 }
 TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateDevice(
 	const FNakamaClientConfig& ClientConfig,
-	FNakamaAccountDevice Account,
+	FString Id,
 	bool Create,
 	FString Username,
+	const TMap<FString, FString>& Vars,
 	const FNakamaRetryConfig& RetryConfig,
 	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
@@ -661,11 +672,15 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateDevice(
 	};
 
 	*DoRequest = [FutureState,DoRequest, OnError, ClientConfig, RetryConfig, CancellationToken
-		, Account
+		, Id
+		, Vars
 		, Create
 		, Username
 		]()
 	{
+		FNakamaAccountDevice Account;
+		Account.Id = Id;
+		Account.Vars = Vars;
 		NakamaApi::AuthenticateDevice(
 			ClientConfig,
 			Account,
@@ -688,9 +703,11 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateDevice(
 }
 TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateEmail(
 	const FNakamaClientConfig& ClientConfig,
-	FNakamaAccountEmail Account,
+	FString Email,
+	FString Password,
 	bool Create,
 	FString Username,
+	const TMap<FString, FString>& Vars,
 	const FNakamaRetryConfig& RetryConfig,
 	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
@@ -718,11 +735,17 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateEmail(
 	};
 
 	*DoRequest = [FutureState,DoRequest, OnError, ClientConfig, RetryConfig, CancellationToken
-		, Account
+		, Email
+		, Password
+		, Vars
 		, Create
 		, Username
 		]()
 	{
+		FNakamaAccountEmail Account;
+		Account.Email = Email;
+		Account.Password = Password;
+		Account.Vars = Vars;
 		NakamaApi::AuthenticateEmail(
 			ClientConfig,
 			Account,
@@ -745,10 +768,11 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateEmail(
 }
 TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateFacebook(
 	const FNakamaClientConfig& ClientConfig,
-	FNakamaAccountFacebook Account,
+	FString Token,
 	bool Create,
 	FString Username,
 	bool Sync,
+	const TMap<FString, FString>& Vars,
 	const FNakamaRetryConfig& RetryConfig,
 	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
@@ -776,12 +800,16 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateFacebook(
 	};
 
 	*DoRequest = [FutureState,DoRequest, OnError, ClientConfig, RetryConfig, CancellationToken
-		, Account
+		, Token
+		, Vars
 		, Create
 		, Username
 		, Sync
 		]()
 	{
+		FNakamaAccountFacebook Account;
+		Account.Token = Token;
+		Account.Vars = Vars;
 		NakamaApi::AuthenticateFacebook(
 			ClientConfig,
 			Account,
@@ -805,9 +833,10 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateFacebook(
 }
 TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateFacebookInstantGame(
 	const FNakamaClientConfig& ClientConfig,
-	FNakamaAccountFacebookInstantGame Account,
+	FString SignedPlayerInfo,
 	bool Create,
 	FString Username,
+	const TMap<FString, FString>& Vars,
 	const FNakamaRetryConfig& RetryConfig,
 	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
@@ -835,11 +864,15 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateFacebookInstantGame(
 	};
 
 	*DoRequest = [FutureState,DoRequest, OnError, ClientConfig, RetryConfig, CancellationToken
-		, Account
+		, SignedPlayerInfo
+		, Vars
 		, Create
 		, Username
 		]()
 	{
+		FNakamaAccountFacebookInstantGame Account;
+		Account.SignedPlayerInfo = SignedPlayerInfo;
+		Account.Vars = Vars;
 		NakamaApi::AuthenticateFacebookInstantGame(
 			ClientConfig,
 			Account,
@@ -862,9 +895,15 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateFacebookInstantGame(
 }
 TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateGameCenter(
 	const FNakamaClientConfig& ClientConfig,
-	FNakamaAccountGameCenter Account,
+	FString PlayerId,
+	FString BundleId,
+	int64 TimestampSeconds,
+	FString Salt,
+	FString Signature,
+	FString PublicKeyUrl,
 	bool Create,
 	FString Username,
+	const TMap<FString, FString>& Vars,
 	const FNakamaRetryConfig& RetryConfig,
 	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
@@ -892,11 +931,25 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateGameCenter(
 	};
 
 	*DoRequest = [FutureState,DoRequest, OnError, ClientConfig, RetryConfig, CancellationToken
-		, Account
+		, PlayerId
+		, BundleId
+		, TimestampSeconds
+		, Salt
+		, Signature
+		, PublicKeyUrl
+		, Vars
 		, Create
 		, Username
 		]()
 	{
+		FNakamaAccountGameCenter Account;
+		Account.PlayerId = PlayerId;
+		Account.BundleId = BundleId;
+		Account.TimestampSeconds = TimestampSeconds;
+		Account.Salt = Salt;
+		Account.Signature = Signature;
+		Account.PublicKeyUrl = PublicKeyUrl;
+		Account.Vars = Vars;
 		NakamaApi::AuthenticateGameCenter(
 			ClientConfig,
 			Account,
@@ -919,9 +972,10 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateGameCenter(
 }
 TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateGoogle(
 	const FNakamaClientConfig& ClientConfig,
-	FNakamaAccountGoogle Account,
+	FString Token,
 	bool Create,
 	FString Username,
+	const TMap<FString, FString>& Vars,
 	const FNakamaRetryConfig& RetryConfig,
 	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
@@ -949,11 +1003,15 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateGoogle(
 	};
 
 	*DoRequest = [FutureState,DoRequest, OnError, ClientConfig, RetryConfig, CancellationToken
-		, Account
+		, Token
+		, Vars
 		, Create
 		, Username
 		]()
 	{
+		FNakamaAccountGoogle Account;
+		Account.Token = Token;
+		Account.Vars = Vars;
 		NakamaApi::AuthenticateGoogle(
 			ClientConfig,
 			Account,
@@ -976,10 +1034,11 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateGoogle(
 }
 TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateSteam(
 	const FNakamaClientConfig& ClientConfig,
-	FNakamaAccountSteam Account,
+	FString Token,
 	bool Create,
 	FString Username,
 	bool Sync,
+	const TMap<FString, FString>& Vars,
 	const FNakamaRetryConfig& RetryConfig,
 	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
@@ -1007,12 +1066,16 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateSteam(
 	};
 
 	*DoRequest = [FutureState,DoRequest, OnError, ClientConfig, RetryConfig, CancellationToken
-		, Account
+		, Token
+		, Vars
 		, Create
 		, Username
 		, Sync
 		]()
 	{
+		FNakamaAccountSteam Account;
+		Account.Token = Token;
+		Account.Vars = Vars;
 		NakamaApi::AuthenticateSteam(
 			ClientConfig,
 			Account,
@@ -2924,8 +2987,9 @@ TNakamaFuture<FNakamaVoidResult> Nakama::Healthcheck(
 TNakamaFuture<FNakamaVoidResult> Nakama::ImportFacebookFriends(
 	const FNakamaClientConfig& ClientConfig,
 	const FNakamaSession& Session,
-	FNakamaAccountFacebook Account,
+	FString Token,
 	bool Reset,
+	const TMap<FString, FString>& Vars,
 	const FNakamaRetryConfig& RetryConfig,
 	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
@@ -2954,16 +3018,21 @@ TNakamaFuture<FNakamaVoidResult> Nakama::ImportFacebookFriends(
 	};
 
 	*DoRequest = [FutureState,SessionState,DoRequest, OnError, ClientConfig, RetryConfig, CancellationToken
-		, Account
+		, Token
+		, Vars
 		, Reset
 		]()
 	{
 		MaybeRefreshThenCall(SessionState, ClientConfig, RetryConfig, CancellationToken, OnError,
 			[FutureState, SessionState, DoRequest, OnError, ClientConfig, RetryConfig, CancellationToken
-				, Account
+				, Token
+				, Vars
 				, Reset
 				]()
 			{
+				FNakamaAccountFacebook Account;
+				Account.Token = Token;
+				Account.Vars = Vars;
 				NakamaApi::ImportFacebookFriends(
 					ClientConfig,
 					*SessionState,
@@ -2989,8 +3058,9 @@ TNakamaFuture<FNakamaVoidResult> Nakama::ImportFacebookFriends(
 TNakamaFuture<FNakamaVoidResult> Nakama::ImportFacebookFriends(
 	const FNakamaClientConfig& ClientConfig,
 	const FString& HttpKey,
-	FNakamaAccountFacebook Account,
+	FString Token,
 	bool Reset,
+	const TMap<FString, FString>& Vars,
 	const FNakamaRetryConfig& RetryConfig,
 	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
@@ -3018,10 +3088,14 @@ TNakamaFuture<FNakamaVoidResult> Nakama::ImportFacebookFriends(
 	};
 
 	*DoRequest = [FutureState, DoRequest, OnError, ClientConfig, RetryConfig, CancellationToken, HttpKey
-		, Account
+		, Token
+		, Vars
 		, Reset
 		]()
 	{
+		FNakamaAccountFacebook Account;
+		Account.Token = Token;
+		Account.Vars = Vars;
 		NakamaApi::ImportFacebookFriends(
 			ClientConfig,
 			HttpKey,
@@ -3045,8 +3119,9 @@ TNakamaFuture<FNakamaVoidResult> Nakama::ImportFacebookFriends(
 TNakamaFuture<FNakamaVoidResult> Nakama::ImportSteamFriends(
 	const FNakamaClientConfig& ClientConfig,
 	const FNakamaSession& Session,
-	FNakamaAccountSteam Account,
+	FString Token,
 	bool Reset,
+	const TMap<FString, FString>& Vars,
 	const FNakamaRetryConfig& RetryConfig,
 	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
@@ -3075,16 +3150,21 @@ TNakamaFuture<FNakamaVoidResult> Nakama::ImportSteamFriends(
 	};
 
 	*DoRequest = [FutureState,SessionState,DoRequest, OnError, ClientConfig, RetryConfig, CancellationToken
-		, Account
+		, Token
+		, Vars
 		, Reset
 		]()
 	{
 		MaybeRefreshThenCall(SessionState, ClientConfig, RetryConfig, CancellationToken, OnError,
 			[FutureState, SessionState, DoRequest, OnError, ClientConfig, RetryConfig, CancellationToken
-				, Account
+				, Token
+				, Vars
 				, Reset
 				]()
 			{
+				FNakamaAccountSteam Account;
+				Account.Token = Token;
+				Account.Vars = Vars;
 				NakamaApi::ImportSteamFriends(
 					ClientConfig,
 					*SessionState,
@@ -3110,8 +3190,9 @@ TNakamaFuture<FNakamaVoidResult> Nakama::ImportSteamFriends(
 TNakamaFuture<FNakamaVoidResult> Nakama::ImportSteamFriends(
 	const FNakamaClientConfig& ClientConfig,
 	const FString& HttpKey,
-	FNakamaAccountSteam Account,
+	FString Token,
 	bool Reset,
+	const TMap<FString, FString>& Vars,
 	const FNakamaRetryConfig& RetryConfig,
 	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
@@ -3139,10 +3220,14 @@ TNakamaFuture<FNakamaVoidResult> Nakama::ImportSteamFriends(
 	};
 
 	*DoRequest = [FutureState, DoRequest, OnError, ClientConfig, RetryConfig, CancellationToken, HttpKey
-		, Account
+		, Token
+		, Vars
 		, Reset
 		]()
 	{
+		FNakamaAccountSteam Account;
+		Account.Token = Token;
+		Account.Vars = Vars;
 		NakamaApi::ImportSteamFriends(
 			ClientConfig,
 			HttpKey,
@@ -4120,8 +4205,9 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkEmail(
 TNakamaFuture<FNakamaVoidResult> Nakama::LinkFacebook(
 	const FNakamaClientConfig& ClientConfig,
 	const FNakamaSession& Session,
-	FNakamaAccountFacebook Account,
+	FString Token,
 	bool Sync,
+	const TMap<FString, FString>& Vars,
 	const FNakamaRetryConfig& RetryConfig,
 	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
@@ -4150,16 +4236,21 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkFacebook(
 	};
 
 	*DoRequest = [FutureState,SessionState,DoRequest, OnError, ClientConfig, RetryConfig, CancellationToken
-		, Account
+		, Token
+		, Vars
 		, Sync
 		]()
 	{
 		MaybeRefreshThenCall(SessionState, ClientConfig, RetryConfig, CancellationToken, OnError,
 			[FutureState, SessionState, DoRequest, OnError, ClientConfig, RetryConfig, CancellationToken
-				, Account
+				, Token
+				, Vars
 				, Sync
 				]()
 			{
+				FNakamaAccountFacebook Account;
+				Account.Token = Token;
+				Account.Vars = Vars;
 				NakamaApi::LinkFacebook(
 					ClientConfig,
 					*SessionState,
@@ -4185,8 +4276,9 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkFacebook(
 TNakamaFuture<FNakamaVoidResult> Nakama::LinkFacebook(
 	const FNakamaClientConfig& ClientConfig,
 	const FString& HttpKey,
-	FNakamaAccountFacebook Account,
+	FString Token,
 	bool Sync,
+	const TMap<FString, FString>& Vars,
 	const FNakamaRetryConfig& RetryConfig,
 	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
@@ -4214,10 +4306,14 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkFacebook(
 	};
 
 	*DoRequest = [FutureState, DoRequest, OnError, ClientConfig, RetryConfig, CancellationToken, HttpKey
-		, Account
+		, Token
+		, Vars
 		, Sync
 		]()
 	{
+		FNakamaAccountFacebook Account;
+		Account.Token = Token;
+		Account.Vars = Vars;
 		NakamaApi::LinkFacebook(
 			ClientConfig,
 			HttpKey,
@@ -4639,8 +4735,9 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkGoogle(
 TNakamaFuture<FNakamaVoidResult> Nakama::LinkSteam(
 	const FNakamaClientConfig& ClientConfig,
 	const FNakamaSession& Session,
-	FNakamaAccountSteam Account,
+	FString Token,
 	bool Sync,
+	const TMap<FString, FString>& Vars,
 	const FNakamaRetryConfig& RetryConfig,
 	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
@@ -4669,16 +4766,21 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkSteam(
 	};
 
 	*DoRequest = [FutureState,SessionState,DoRequest, OnError, ClientConfig, RetryConfig, CancellationToken
-		, Account
+		, Token
+		, Vars
 		, Sync
 		]()
 	{
 		MaybeRefreshThenCall(SessionState, ClientConfig, RetryConfig, CancellationToken, OnError,
 			[FutureState, SessionState, DoRequest, OnError, ClientConfig, RetryConfig, CancellationToken
-				, Account
+				, Token
+				, Vars
 				, Sync
 				]()
 			{
+				FNakamaAccountSteam Account;
+				Account.Token = Token;
+				Account.Vars = Vars;
 				NakamaApi::LinkSteam(
 					ClientConfig,
 					*SessionState,
@@ -4704,8 +4806,9 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkSteam(
 TNakamaFuture<FNakamaVoidResult> Nakama::LinkSteam(
 	const FNakamaClientConfig& ClientConfig,
 	const FString& HttpKey,
-	FNakamaAccountSteam Account,
+	FString Token,
 	bool Sync,
+	const TMap<FString, FString>& Vars,
 	const FNakamaRetryConfig& RetryConfig,
 	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
@@ -4733,10 +4836,14 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkSteam(
 	};
 
 	*DoRequest = [FutureState, DoRequest, OnError, ClientConfig, RetryConfig, CancellationToken, HttpKey
-		, Account
+		, Token
+		, Vars
 		, Sync
 		]()
 	{
+		FNakamaAccountSteam Account;
+		Account.Token = Token;
+		Account.Vars = Vars;
 		NakamaApi::LinkSteam(
 			ClientConfig,
 			HttpKey,
@@ -9585,7 +9692,10 @@ TNakamaFuture<FNakamaLeaderboardRecordResult> Nakama::WriteLeaderboardRecord(
 	const FNakamaClientConfig& ClientConfig,
 	const FNakamaSession& Session,
 	FString LeaderboardId,
-	FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite Record,
+	int64 Score,
+	int64 Subscore,
+	FString Metadata,
+	ENakamaOperator Operator,
 	const FNakamaRetryConfig& RetryConfig,
 	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
@@ -9615,15 +9725,26 @@ TNakamaFuture<FNakamaLeaderboardRecordResult> Nakama::WriteLeaderboardRecord(
 
 	*DoRequest = [FutureState,SessionState,DoRequest, OnError, ClientConfig, RetryConfig, CancellationToken
 		, LeaderboardId
-		, Record
+		, Score
+		, Subscore
+		, Metadata
+		, Operator
 		]()
 	{
 		MaybeRefreshThenCall(SessionState, ClientConfig, RetryConfig, CancellationToken, OnError,
 			[FutureState, SessionState, DoRequest, OnError, ClientConfig, RetryConfig, CancellationToken
 				, LeaderboardId
-				, Record
+				, Score
+				, Subscore
+				, Metadata
+				, Operator
 				]()
 			{
+				FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite Record;
+				Record.Score = Score;
+				Record.Subscore = Subscore;
+				Record.Metadata = Metadata;
+				Record.Operator = Operator;
 				NakamaApi::WriteLeaderboardRecord(
 					ClientConfig,
 					*SessionState,
@@ -9650,7 +9771,10 @@ TNakamaFuture<FNakamaLeaderboardRecordResult> Nakama::WriteLeaderboardRecord(
 	const FNakamaClientConfig& ClientConfig,
 	const FString& HttpKey,
 	FString LeaderboardId,
-	FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite Record,
+	int64 Score,
+	int64 Subscore,
+	FString Metadata,
+	ENakamaOperator Operator,
 	const FNakamaRetryConfig& RetryConfig,
 	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
@@ -9679,9 +9803,17 @@ TNakamaFuture<FNakamaLeaderboardRecordResult> Nakama::WriteLeaderboardRecord(
 
 	*DoRequest = [FutureState, DoRequest, OnError, ClientConfig, RetryConfig, CancellationToken, HttpKey
 		, LeaderboardId
-		, Record
+		, Score
+		, Subscore
+		, Metadata
+		, Operator
 		]()
 	{
+		FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite Record;
+		Record.Score = Score;
+		Record.Subscore = Subscore;
+		Record.Metadata = Metadata;
+		Record.Operator = Operator;
 		NakamaApi::WriteLeaderboardRecord(
 			ClientConfig,
 			HttpKey,
@@ -9820,7 +9952,10 @@ TNakamaFuture<FNakamaLeaderboardRecordResult> Nakama::WriteTournamentRecord(
 	const FNakamaClientConfig& ClientConfig,
 	const FNakamaSession& Session,
 	FString TournamentId,
-	FNakamaWriteTournamentRecordRequest_TournamentRecordWrite Record,
+	int64 Score,
+	int64 Subscore,
+	FString Metadata,
+	ENakamaOperator Operator,
 	const FNakamaRetryConfig& RetryConfig,
 	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
@@ -9850,15 +9985,26 @@ TNakamaFuture<FNakamaLeaderboardRecordResult> Nakama::WriteTournamentRecord(
 
 	*DoRequest = [FutureState,SessionState,DoRequest, OnError, ClientConfig, RetryConfig, CancellationToken
 		, TournamentId
-		, Record
+		, Score
+		, Subscore
+		, Metadata
+		, Operator
 		]()
 	{
 		MaybeRefreshThenCall(SessionState, ClientConfig, RetryConfig, CancellationToken, OnError,
 			[FutureState, SessionState, DoRequest, OnError, ClientConfig, RetryConfig, CancellationToken
 				, TournamentId
-				, Record
+				, Score
+				, Subscore
+				, Metadata
+				, Operator
 				]()
 			{
+				FNakamaWriteTournamentRecordRequest_TournamentRecordWrite Record;
+				Record.Score = Score;
+				Record.Subscore = Subscore;
+				Record.Metadata = Metadata;
+				Record.Operator = Operator;
 				NakamaApi::WriteTournamentRecord(
 					ClientConfig,
 					*SessionState,
@@ -9885,7 +10031,10 @@ TNakamaFuture<FNakamaLeaderboardRecordResult> Nakama::WriteTournamentRecord(
 	const FNakamaClientConfig& ClientConfig,
 	const FString& HttpKey,
 	FString TournamentId,
-	FNakamaWriteTournamentRecordRequest_TournamentRecordWrite Record,
+	int64 Score,
+	int64 Subscore,
+	FString Metadata,
+	ENakamaOperator Operator,
 	const FNakamaRetryConfig& RetryConfig,
 	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
@@ -9914,9 +10063,17 @@ TNakamaFuture<FNakamaLeaderboardRecordResult> Nakama::WriteTournamentRecord(
 
 	*DoRequest = [FutureState, DoRequest, OnError, ClientConfig, RetryConfig, CancellationToken, HttpKey
 		, TournamentId
-		, Record
+		, Score
+		, Subscore
+		, Metadata
+		, Operator
 		]()
 	{
+		FNakamaWriteTournamentRecordRequest_TournamentRecordWrite Record;
+		Record.Score = Score;
+		Record.Subscore = Subscore;
+		Record.Metadata = Metadata;
+		Record.Operator = Operator;
 		NakamaApi::WriteTournamentRecord(
 			ClientConfig,
 			HttpKey,

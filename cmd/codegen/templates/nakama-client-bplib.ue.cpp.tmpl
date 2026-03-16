@@ -40,7 +40,12 @@ UNakamaClient{{ $rpc.Name }}* UNakamaClient{{ $rpc.Name }}::{{ $rpc.Name }}(
 {{- end }}
 {{- if $hasParams }}
 {{- range $fidx, $field := $requestType.Fields }},
-{{- if and (eq $field.Name $rpc.BodyField) (not (isMessageType $field.Type)) }}
+{{- if shouldFlattenMessage $field.Type $field.Repeated }}
+{{- range $sfidx, $sf := getMessageFields $field.Type }}
+{{- if $sfidx }},{{- end }}
+	{{ getUnrealType $sf.Type $sf.Repeated }} {{ $sf.Name | pascalCase }}
+{{- end }}
+{{- else if and (eq $field.Name $rpc.BodyField) (not (isMessageType $field.Type)) }}
 	const TMap<FString, FString>& {{ $field.Name | pascalCase }}
 {{- else }}
 	{{ getUnrealType $field.Type $field.Repeated }} {{ $field.Name | pascalCase }}
@@ -48,6 +53,13 @@ UNakamaClient{{ $rpc.Name }}* UNakamaClient{{ $rpc.Name }}::{{ $rpc.Name }}(
 {{- end }}
 {{- range $fidx, $field := $requestType.MapFields }},
 	const {{ getUnrealMapType $field.Type }}& {{ $field.Name | pascalCase }}
+{{- end }}
+{{- range $fidx, $field := $requestType.Fields }}
+{{- if shouldFlattenMessage $field.Type $field.Repeated }}
+{{- range $sf := getMessageMapFields $field.Type }},
+	const {{ getUnrealMapType $sf.Type }}& {{ $sf.Name | pascalCase }}
+{{- end }}
+{{- end }}
 {{- end }}
 {{- end }})
 {
@@ -58,7 +70,16 @@ UNakamaClient{{ $rpc.Name }}* UNakamaClient{{ $rpc.Name }}::{{ $rpc.Name }}(
 {{- end }}
 {{- if $hasParams }}
 {{- range $fidx, $field := $requestType.Fields }}
+{{- if shouldFlattenMessage $field.Type $field.Repeated }}
+{{- range $sf := getMessageFields $field.Type }}
+	Action->Stored{{ $sf.Name | pascalCase }} = {{ $sf.Name | pascalCase }};
+{{- end }}
+{{- range $sf := getMessageMapFields $field.Type }}
+	Action->Stored{{ $sf.Name | pascalCase }} = {{ $sf.Name | pascalCase }};
+{{- end }}
+{{- else }}
 	Action->Stored{{ $field.Name | pascalCase }} = {{ $field.Name | pascalCase }};
+{{- end }}
 {{- end }}
 {{- range $fidx, $field := $requestType.MapFields }}
 	Action->Stored{{ $field.Name | pascalCase }} = {{ $field.Name | pascalCase }};
@@ -74,6 +95,21 @@ void UNakamaClient{{ $rpc.Name }}::Activate()
 	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_{{ $rpc.Name }});
 
 	TWeakObjectPtr<UNakamaClient{{ $rpc.Name }}> WeakThis(this);
+
+	{{- /* Reconstruct structs from flattened stored params for the NakamaApi call */ -}}
+	{{- if $hasParams }}
+	{{- range $fidx, $field := $requestType.Fields }}
+	{{- if shouldFlattenMessage $field.Type $field.Repeated }}
+	{{ getUnrealReturnType $field.Type }} Stored{{ $field.Name | pascalCase }};
+	{{- range $sf := getMessageFields $field.Type }}
+	Stored{{ $field.Name | pascalCase }}.{{ $sf.Name | pascalCase }} = Stored{{ $sf.Name | pascalCase }};
+	{{- end }}
+	{{- range $sf := getMessageMapFields $field.Type }}
+	Stored{{ $field.Name | pascalCase }}.{{ $sf.Name | pascalCase }} = Stored{{ $sf.Name | pascalCase }};
+	{{- end }}
+	{{- end }}
+	{{- end }}
+	{{- end }}
 
 	NakamaApi::{{ $rpc.Name }}(
 		Client,

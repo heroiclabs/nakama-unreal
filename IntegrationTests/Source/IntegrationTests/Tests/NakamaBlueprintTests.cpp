@@ -166,16 +166,17 @@ void FNakamaBPAuthSpec::Define()
 	{
 		LatentIt("should authenticate with custom ID", [this](const FDoneDelegate& Done)
 		{
-			FNakamaAccountCustom Account;
-			Account.Id = GenerateId();
+			FString CustomId = GenerateId();
 
 			auto* Action = UNakamaClientAuthenticateCustom::AuthenticateCustom(
-				GetTransientPackage(), Client, Account, true, TEXT(""));
+				GetTransientPackage(), Client, CustomId, true, TEXT(""), {});
 			Action->Activate();
 
 			// Verify: re-auth with create=false should succeed (account was created)
-			VerifyWhenComplete(Action, [this, Done, Account]()
+			VerifyWhenComplete(Action, [this, Done, CustomId]()
 			{
+				FNakamaAccountCustom Account;
+				Account.Id = CustomId;
 				NakamaApi::AuthenticateCustom(Client, Account, false, TEXT(""),
 					[this, Done](const FNakamaSession& Result)
 					{
@@ -197,17 +198,19 @@ void FNakamaBPAuthSpec::Define()
 	{
 		LatentIt("should authenticate with email", [this](const FDoneDelegate& Done)
 		{
-			FNakamaAccountEmail Account;
-			Account.Email = FString::Printf(TEXT("test_%s@example.com"), *GenerateShortId());
-			Account.Password = TEXT("password123!");
+			FString Email = FString::Printf(TEXT("test_%s@example.com"), *GenerateShortId());
+			FString Password = TEXT("password123!");
 
 			auto* Action = UNakamaClientAuthenticateEmail::AuthenticateEmail(
-				GetTransientPackage(), Client, Account, true, TEXT(""));
+				GetTransientPackage(), Client, Email, Password, true, TEXT(""), {});
 			Action->Activate();
 
 			// Verify: re-auth with create=false should succeed
-			VerifyWhenComplete(Action, [this, Done, Account]()
+			VerifyWhenComplete(Action, [this, Done, Email, Password]()
 			{
+				FNakamaAccountEmail Account;
+				Account.Email = Email;
+				Account.Password = Password;
 				NakamaApi::AuthenticateEmail(Client, Account, false, TEXT(""),
 					[this, Done](const FNakamaSession& Result)
 					{
@@ -229,16 +232,16 @@ void FNakamaBPAuthSpec::Define()
 	{
 		LatentIt("should authenticate with device ID", [this](const FDoneDelegate& Done)
 		{
-			FNakamaAccountDevice Account;
-			Account.Id = GenerateId();
-
+			FString DeviceId = GenerateId();
 			auto* Action = UNakamaClientAuthenticateDevice::AuthenticateDevice(
-				GetTransientPackage(), Client, Account, true, TEXT(""));
+				GetTransientPackage(), Client, DeviceId, true, TEXT(""), {});
 			Action->Activate();
 
 			// Verify: re-auth with create=false should succeed
-			VerifyWhenComplete(Action, [this, Done, Account]()
+			VerifyWhenComplete(Action, [this, Done, DeviceId]()
 			{
+				FNakamaAccountDevice Account;
+				Account.Id = DeviceId;
 				NakamaApi::AuthenticateDevice(Client, Account, false, TEXT(""),
 					[this, Done](const FNakamaSession& Result)
 					{

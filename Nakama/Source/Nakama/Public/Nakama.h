@@ -353,83 +353,98 @@ namespace Nakama
 	/** Authenticate a user with an Apple ID against the server. */
 	NAKAMA_API TNakamaFuture<FNakamaSessionResult> AuthenticateApple(
 		const FNakamaClientConfig& ClientConfig,
-		FNakamaAccountApple Account,
+		FString Token,
 		bool Create,
 		FString Username,
+		const TMap<FString, FString>& Vars = {},
 		const FNakamaRetryConfig& RetryConfig = {},
 		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Authenticate a user with a custom id against the server. */
 	NAKAMA_API TNakamaFuture<FNakamaSessionResult> AuthenticateCustom(
 		const FNakamaClientConfig& ClientConfig,
-		FNakamaAccountCustom Account,
+		FString Id,
 		bool Create,
 		FString Username,
+		const TMap<FString, FString>& Vars = {},
 		const FNakamaRetryConfig& RetryConfig = {},
 		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Authenticate a user with a device id against the server. */
 	NAKAMA_API TNakamaFuture<FNakamaSessionResult> AuthenticateDevice(
 		const FNakamaClientConfig& ClientConfig,
-		FNakamaAccountDevice Account,
+		FString Id,
 		bool Create,
 		FString Username,
+		const TMap<FString, FString>& Vars = {},
 		const FNakamaRetryConfig& RetryConfig = {},
 		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Authenticate a user with an email+password against the server. */
 	NAKAMA_API TNakamaFuture<FNakamaSessionResult> AuthenticateEmail(
 		const FNakamaClientConfig& ClientConfig,
-		FNakamaAccountEmail Account,
+		FString Email,
+		FString Password,
 		bool Create,
 		FString Username,
+		const TMap<FString, FString>& Vars = {},
 		const FNakamaRetryConfig& RetryConfig = {},
 		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Authenticate a user with a Facebook OAuth token against the server. */
 	NAKAMA_API TNakamaFuture<FNakamaSessionResult> AuthenticateFacebook(
 		const FNakamaClientConfig& ClientConfig,
-		FNakamaAccountFacebook Account,
+		FString Token,
 		bool Create,
 		FString Username,
 		bool Sync,
+		const TMap<FString, FString>& Vars = {},
 		const FNakamaRetryConfig& RetryConfig = {},
 		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Authenticate a user with a Facebook Instant Game token against the server. */
 	NAKAMA_API TNakamaFuture<FNakamaSessionResult> AuthenticateFacebookInstantGame(
 		const FNakamaClientConfig& ClientConfig,
-		FNakamaAccountFacebookInstantGame Account,
+		FString SignedPlayerInfo,
 		bool Create,
 		FString Username,
+		const TMap<FString, FString>& Vars = {},
 		const FNakamaRetryConfig& RetryConfig = {},
 		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Authenticate a user with Apple's GameCenter against the server. */
 	NAKAMA_API TNakamaFuture<FNakamaSessionResult> AuthenticateGameCenter(
 		const FNakamaClientConfig& ClientConfig,
-		FNakamaAccountGameCenter Account,
+		FString PlayerId,
+		FString BundleId,
+		int64 TimestampSeconds,
+		FString Salt,
+		FString Signature,
+		FString PublicKeyUrl,
 		bool Create,
 		FString Username,
+		const TMap<FString, FString>& Vars = {},
 		const FNakamaRetryConfig& RetryConfig = {},
 		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Authenticate a user with Google against the server. */
 	NAKAMA_API TNakamaFuture<FNakamaSessionResult> AuthenticateGoogle(
 		const FNakamaClientConfig& ClientConfig,
-		FNakamaAccountGoogle Account,
+		FString Token,
 		bool Create,
 		FString Username,
+		const TMap<FString, FString>& Vars = {},
 		const FNakamaRetryConfig& RetryConfig = {},
 		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
 	/** Authenticate a user with Steam against the server. */
 	NAKAMA_API TNakamaFuture<FNakamaSessionResult> AuthenticateSteam(
 		const FNakamaClientConfig& ClientConfig,
-		FNakamaAccountSteam Account,
+		FString Token,
 		bool Create,
 		FString Username,
 		bool Sync,
+		const TMap<FString, FString>& Vars = {},
 		const FNakamaRetryConfig& RetryConfig = {},
 		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
@@ -711,8 +726,9 @@ namespace Nakama
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> ImportFacebookFriends(
 		const FNakamaClientConfig& ClientConfig,
 		const FNakamaSession& Session,
-		FNakamaAccountFacebook Account,
+		FString Token,
 		bool Reset,
+		const TMap<FString, FString>& Vars = {},
 		const FNakamaRetryConfig& RetryConfig = {},
 		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
@@ -720,8 +736,9 @@ namespace Nakama
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> ImportFacebookFriends(
 		const FNakamaClientConfig& ClientConfig,
 		const FString& HttpKey,
-		FNakamaAccountFacebook Account,
+		FString Token,
 		bool Reset,
+		const TMap<FString, FString>& Vars = {},
 		const FNakamaRetryConfig& RetryConfig = {},
 		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
@@ -729,8 +746,9 @@ namespace Nakama
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> ImportSteamFriends(
 		const FNakamaClientConfig& ClientConfig,
 		const FNakamaSession& Session,
-		FNakamaAccountSteam Account,
+		FString Token,
 		bool Reset,
+		const TMap<FString, FString>& Vars = {},
 		const FNakamaRetryConfig& RetryConfig = {},
 		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
@@ -738,8 +756,9 @@ namespace Nakama
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> ImportSteamFriends(
 		const FNakamaClientConfig& ClientConfig,
 		const FString& HttpKey,
-		FNakamaAccountSteam Account,
+		FString Token,
 		bool Reset,
+		const TMap<FString, FString>& Vars = {},
 		const FNakamaRetryConfig& RetryConfig = {},
 		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
@@ -887,8 +906,9 @@ namespace Nakama
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> LinkFacebook(
 		const FNakamaClientConfig& ClientConfig,
 		const FNakamaSession& Session,
-		FNakamaAccountFacebook Account,
+		FString Token,
 		bool Sync,
+		const TMap<FString, FString>& Vars = {},
 		const FNakamaRetryConfig& RetryConfig = {},
 		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
@@ -896,8 +916,9 @@ namespace Nakama
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> LinkFacebook(
 		const FNakamaClientConfig& ClientConfig,
 		const FString& HttpKey,
-		FNakamaAccountFacebook Account,
+		FString Token,
 		bool Sync,
+		const TMap<FString, FString>& Vars = {},
 		const FNakamaRetryConfig& RetryConfig = {},
 		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
@@ -969,8 +990,9 @@ namespace Nakama
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> LinkSteam(
 		const FNakamaClientConfig& ClientConfig,
 		const FNakamaSession& Session,
-		FNakamaAccountSteam Account,
+		FString Token,
 		bool Sync,
+		const TMap<FString, FString>& Vars = {},
 		const FNakamaRetryConfig& RetryConfig = {},
 		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
@@ -978,8 +1000,9 @@ namespace Nakama
 	NAKAMA_API TNakamaFuture<FNakamaVoidResult> LinkSteam(
 		const FNakamaClientConfig& ClientConfig,
 		const FString& HttpKey,
-		FNakamaAccountSteam Account,
+		FString Token,
 		bool Sync,
+		const TMap<FString, FString>& Vars = {},
 		const FNakamaRetryConfig& RetryConfig = {},
 		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
@@ -1753,7 +1776,10 @@ namespace Nakama
 		const FNakamaClientConfig& ClientConfig,
 		const FNakamaSession& Session,
 		FString LeaderboardId,
-		FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite Record,
+		int64 Score = 0,
+		int64 Subscore = 0,
+		FString Metadata = TEXT(""),
+		ENakamaOperator Operator = static_cast<ENakamaOperator>(0),
 		const FNakamaRetryConfig& RetryConfig = {},
 		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
@@ -1762,7 +1788,10 @@ namespace Nakama
 		const FNakamaClientConfig& ClientConfig,
 		const FString& HttpKey,
 		FString LeaderboardId,
-		FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite Record,
+		int64 Score = 0,
+		int64 Subscore = 0,
+		FString Metadata = TEXT(""),
+		ENakamaOperator Operator = static_cast<ENakamaOperator>(0),
 		const FNakamaRetryConfig& RetryConfig = {},
 		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
@@ -1787,7 +1816,10 @@ namespace Nakama
 		const FNakamaClientConfig& ClientConfig,
 		const FNakamaSession& Session,
 		FString TournamentId,
-		FNakamaWriteTournamentRecordRequest_TournamentRecordWrite Record,
+		int64 Score = 0,
+		int64 Subscore = 0,
+		FString Metadata = TEXT(""),
+		ENakamaOperator Operator = static_cast<ENakamaOperator>(0),
 		const FNakamaRetryConfig& RetryConfig = {},
 		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 
@@ -1796,7 +1828,10 @@ namespace Nakama
 		const FNakamaClientConfig& ClientConfig,
 		const FString& HttpKey,
 		FString TournamentId,
-		FNakamaWriteTournamentRecordRequest_TournamentRecordWrite Record,
+		int64 Score = 0,
+		int64 Subscore = 0,
+		FString Metadata = TEXT(""),
+		ENakamaOperator Operator = static_cast<ENakamaOperator>(0),
 		const FNakamaRetryConfig& RetryConfig = {},
 		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
 }
