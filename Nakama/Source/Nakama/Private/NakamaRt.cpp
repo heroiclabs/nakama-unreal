@@ -85,8 +85,8 @@ TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::Channel(
 TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::ChannelJoin(
     const FString& Target,
     const int32& Type,
-    const bool& Persistence,
-    const bool& Hidden
+    const TOptional<bool>& Persistence,
+    const TOptional<bool>& Hidden
 ) noexcept
 {
     TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
@@ -95,8 +95,14 @@ TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::ChannelJoin(
       Json->SetStringField(TEXT("target"), Target);
     }
     Json->SetNumberField(TEXT("type"), Type);
-    Json->SetBoolField(TEXT("persistence"), Persistence);
-    Json->SetBoolField(TEXT("hidden"), Hidden);
+    if (Persistence.IsSet())
+    {
+      Json->SetBoolField(TEXT("persistence"), Persistence.GetValue());
+    }
+    if (Hidden.IsSet())
+    {
+      Json->SetBoolField(TEXT("hidden"), Hidden.GetValue());
+    }
 
     if (!WebSocketSubsystem.IsValid())
     {
@@ -125,13 +131,13 @@ TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::ChannelLeave(
 TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::ChannelMessage(
     const FString& ChannelId,
     const FString& MessageId,
-    const int32& Code,
+    const TOptional<int32>& Code,
     const FString& SenderId,
     const FString& Username,
     const FString& Content,
     const FString& CreateTime,
     const FString& UpdateTime,
-    const bool& Persistent,
+    const TOptional<bool>& Persistent,
     const FString& RoomName,
     const FString& GroupId,
     const FString& UserIdOne,
@@ -147,9 +153,9 @@ TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::ChannelMessage(
     {
       Json->SetStringField(TEXT("message_id"), MessageId);
     }
-    if (Code != 0)
+    if (Code.IsSet())
     {
-      Json->SetNumberField(TEXT("code"), Code);
+      Json->SetNumberField(TEXT("code"), Code.GetValue());
     }
     if (!SenderId.IsEmpty())
     {
@@ -171,7 +177,10 @@ TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::ChannelMessage(
     {
       Json->SetStringField(TEXT("update_time"), UpdateTime);
     }
-    Json->SetBoolField(TEXT("persistent"), Persistent);
+    if (Persistent.IsSet())
+    {
+      Json->SetBoolField(TEXT("persistent"), Persistent.GetValue());
+    }
     if (!RoomName.IsEmpty())
     {
       Json->SetStringField(TEXT("room_name"), RoomName);
@@ -199,11 +208,11 @@ TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::ChannelMessage(
 TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::ChannelMessageAck(
     const FString& ChannelId,
     const FString& MessageId,
-    const int32& Code,
+    const TOptional<int32>& Code,
     const FString& Username,
     const FString& CreateTime,
     const FString& UpdateTime,
-    const bool& Persistent,
+    const TOptional<bool>& Persistent,
     const FString& RoomName,
     const FString& GroupId,
     const FString& UserIdOne,
@@ -219,9 +228,9 @@ TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::ChannelMessageAck(
     {
       Json->SetStringField(TEXT("message_id"), MessageId);
     }
-    if (Code != 0)
+    if (Code.IsSet())
     {
-      Json->SetNumberField(TEXT("code"), Code);
+      Json->SetNumberField(TEXT("code"), Code.GetValue());
     }
     if (!Username.IsEmpty())
     {
@@ -235,7 +244,10 @@ TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::ChannelMessageAck(
     {
       Json->SetStringField(TEXT("update_time"), UpdateTime);
     }
-    Json->SetBoolField(TEXT("persistent"), Persistent);
+    if (Persistent.IsSet())
+    {
+      Json->SetBoolField(TEXT("persistent"), Persistent.GetValue());
+    }
     if (!RoomName.IsEmpty())
     {
       Json->SetStringField(TEXT("room_name"), RoomName);
@@ -616,7 +628,7 @@ TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::MatchmakerAdd(
     const int32& MinCount,
     const int32& MaxCount,
     const FString& Query,
-    const int32& CountMultiple,
+    const TOptional<int32>& CountMultiple,
     const TMap<FString, FString>& StringProperties,
     const TMap<FString, double>& NumericProperties
 ) noexcept
@@ -628,9 +640,9 @@ TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::MatchmakerAdd(
     {
       Json->SetStringField(TEXT("query"), Query);
     }
-    if (CountMultiple != 0)
+    if (CountMultiple.IsSet())
     {
-      Json->SetNumberField(TEXT("count_multiple"), CountMultiple);
+      Json->SetNumberField(TEXT("count_multiple"), CountMultiple.GetValue());
     }
     if (StringProperties.Num() > 0)
     {
@@ -1226,7 +1238,7 @@ TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyMatchmakerAdd
     const int32& MinCount,
     const int32& MaxCount,
     const FString& Query,
-    const int32& CountMultiple,
+    const TOptional<int32>& CountMultiple,
     const TMap<FString, FString>& StringProperties,
     const TMap<FString, double>& NumericProperties
 ) noexcept
@@ -1242,9 +1254,9 @@ TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyMatchmakerAdd
     {
       Json->SetStringField(TEXT("query"), Query);
     }
-    if (CountMultiple != 0)
+    if (CountMultiple.IsSet())
     {
-      Json->SetNumberField(TEXT("count_multiple"), CountMultiple);
+      Json->SetNumberField(TEXT("count_multiple"), CountMultiple.GetValue());
     }
     if (StringProperties.Num() > 0)
     {

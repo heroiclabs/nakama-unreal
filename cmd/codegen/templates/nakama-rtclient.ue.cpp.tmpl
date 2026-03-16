@@ -84,12 +84,17 @@ TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::{{ $rpcType.Name |
   {{- else if or (eq $fieldType "int32") (eq $fieldType "int64") (eq $fieldType "uint32") (eq $fieldType "uint64") (eq $fieldType "float") (eq $fieldType "double") }}
     Json->SetNumberField(TEXT("{{ $jsonFieldName }}"), {{ $fieldName }});
   {{- else if or (containsString $fieldType "Int32Value") (containsString $fieldType "Int64Value") (containsString $fieldType "UInt32Value") (containsString $fieldType "UInt64Value") (containsString $fieldType "FloatValue") (containsString $fieldType "DoubleValue") }}
-    if ({{ $fieldName }} != 0)
+    if ({{ $fieldName }}.IsSet())
     {
-      Json->SetNumberField(TEXT("{{ $jsonFieldName }}"), {{ $fieldName }});
+      Json->SetNumberField(TEXT("{{ $jsonFieldName }}"), {{ $fieldName }}.GetValue());
     }
-  {{- else if or (eq $fieldType "bool") (containsString $fieldType "BoolValue") }}
+  {{- else if eq $fieldType "bool" }}
     Json->SetBoolField(TEXT("{{ $jsonFieldName }}"), {{ $fieldName }});
+  {{- else if containsString $fieldType "BoolValue" }}
+    if ({{ $fieldName }}.IsSet())
+    {
+      Json->SetBoolField(TEXT("{{ $jsonFieldName }}"), {{ $fieldName }}.GetValue());
+    }
   {{- else if or (eq $fieldType "bytes") (containsString $fieldType "BytesValue") }}
     Json->SetStringField(TEXT("{{ $jsonFieldName }}"), FBase64::Encode({{ $fieldName }}));
   {{- else if containsString $fieldType "Timestamp" }}

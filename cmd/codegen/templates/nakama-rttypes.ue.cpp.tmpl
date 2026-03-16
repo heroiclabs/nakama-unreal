@@ -189,8 +189,13 @@ TSharedPtr<FJsonObject> FNakamaRt{{ $msg.Name }}::ToJson() const noexcept
 	{
 		Json->SetStringField(TEXT("{{ $jsonFieldName }}"), {{ $fieldName }});
 	}
-{{- else if or (eq $fieldType "int32") (eq $fieldType "int64") (eq $fieldType "uint32") (eq $fieldType "uint64") (eq $fieldType "float") (eq $fieldType "double") (containsString $fieldType "Int32Value") (containsString $fieldType "Int64Value") (containsString $fieldType "UInt32Value") (containsString $fieldType "UInt64Value") (containsString $fieldType "FloatValue") (containsString $fieldType "DoubleValue") }}
+{{- else if or (eq $fieldType "int32") (eq $fieldType "int64") (eq $fieldType "uint32") (eq $fieldType "uint64") (eq $fieldType "float") (eq $fieldType "double") }}
 	Json->SetNumberField(TEXT("{{ $jsonFieldName }}"), {{ $fieldName }});
+{{- else if or (containsString $fieldType "Int32Value") (containsString $fieldType "Int64Value") (containsString $fieldType "UInt32Value") (containsString $fieldType "UInt64Value") (containsString $fieldType "FloatValue") (containsString $fieldType "DoubleValue") }}
+	if ({{ $fieldName }} != 0)
+	{
+		Json->SetNumberField(TEXT("{{ $jsonFieldName }}"), {{ $fieldName }});
+	}
 {{- else if or (eq $fieldType "bool") (containsString $fieldType "BoolValue") }}
 	Json->SetBoolField(TEXT("{{ $jsonFieldName }}"), {{ $fieldName }});
 {{- else if or (eq $fieldType "bytes") (containsString $fieldType "BytesValue") }}

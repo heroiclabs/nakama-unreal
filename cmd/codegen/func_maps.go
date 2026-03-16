@@ -401,16 +401,38 @@ func getUnrealFuncMap(api Api) template.FuncMap {
 		return comment
 	}
 
+	// isWrapperType returns true for google.protobuf.*Value types, which are optional by nature.
+	// StringValue and Timestamp are excluded — they use FString with IsEmpty() as sentinel.
+	isWrapperType := func(fieldType string) bool {
+		switch fieldType {
+		case "google.protobuf.Int32Value", "google.protobuf.Int64Value",
+			"google.protobuf.UInt32Value", "google.protobuf.UInt64Value",
+			"google.protobuf.FloatValue", "google.protobuf.DoubleValue",
+			"google.protobuf.BoolValue":
+			return true
+		}
+		return false
+	}
+
+	// getUnrealOptionalType wraps wrapper proto types in TOptional<> for C++ function parameters,
+	// expressing true three-state optionality rather than relying on zero-value sentinels.
+	getUnrealOptionalType := func(fieldType string, isRepeated bool) string {
+		if !isRepeated && isWrapperType(fieldType) {
+			return fmt.Sprintf("TOptional<%s>", getUnrealBaseType(fieldType, false))
+		}
+		return getUnrealFieldType(fieldType, isRepeated)
+	}
+
 	getUnrealParamList := func(numIndent int, fields []*proto.NormalField, mapFields []*proto.MapField, oneofSlices ...[]*proto.OneOfField) string {
 		indent := strings.Repeat(" ", numIndent)
 
 		params := make([]string, 0, len(fields)+len(mapFields))
 		for _, f := range fields {
-			params = append(params, fmt.Sprintf("const %s& %s", getUnrealFieldType(f.Type, f.Repeated), textcase.PascalCase(f.Name)))
+			params = append(params, fmt.Sprintf("const %s& %s", getUnrealOptionalType(f.Type, f.Repeated), textcase.PascalCase(f.Name)))
 		}
 		for _, oneofFields := range oneofSlices {
 			for _, f := range oneofFields {
-				params = append(params, fmt.Sprintf("const %s& %s", getUnrealFieldType(f.Type, false), textcase.PascalCase(f.Name)))
+				params = append(params, fmt.Sprintf("const %s& %s", getUnrealOptionalType(f.Type, false), textcase.PascalCase(f.Name)))
 			}
 		}
 		for _, f := range mapFields {
@@ -430,7 +452,8 @@ func getUnrealFuncMap(api Api) template.FuncMap {
 		"getUnrealReturnType": func(fieldType string) string {
 			return getUnrealBaseType(fieldType, false)
 		},
-		"getUnrealFieldType": getUnrealFieldType,
+		"getUnrealFieldType":    getUnrealFieldType,
+		"isWrapperType":         isWrapperType,
 		"getUnrealFieldDefault": func(fieldType string, isRepeated bool) string {
 			// Return a default initializer for primitive UPROPERTY fields.
 			// UE requires all UPROPERTY primitives to be initialized.

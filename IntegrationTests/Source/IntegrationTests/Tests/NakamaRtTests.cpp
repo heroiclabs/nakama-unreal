@@ -850,7 +850,7 @@ void FNakamaRtMatchJoinSpec::Define()
                     SubscribeAndJoin(GI->GetSubsystem<UNakamaWebSocketSubsystem>(),   RtClient.Get(),  TEXT("Client A"));
                     SubscribeAndJoin(GI2->GetSubsystem<UNakamaWebSocketSubsystem>(),  RtClient2.Get(), TEXT("Client B"));
 
-                    return RtClient->MatchmakerAdd(2, 2, TEXT("*"), 0, {}, {});
+                    return RtClient->MatchmakerAdd(2, 2, TEXT("*"), {}, {}, {});
                 })
                 .Next([this, Done](FNakamaWebSocketResponse AddAResp) -> TNakamaFuture<FNakamaWebSocketResponse>
                 {
@@ -860,7 +860,7 @@ void FNakamaRtMatchJoinSpec::Define()
                         Done.Execute();
                         return MakeCompletedFuture<FNakamaWebSocketResponse>(AddAResp);
                     }
-                    return RtClient2->MatchmakerAdd(2, 2, TEXT("*"), 0, {}, {});
+                    return RtClient2->MatchmakerAdd(2, 2, TEXT("*"), {}, {}, {});
                 })
                 .Next([this, Done](FNakamaWebSocketResponse AddBResp)
                 {

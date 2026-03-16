@@ -90,8 +90,8 @@ namespace Nakama
         NAKAMA_API TNakamaFuture<FNakamaWebSocketResponse> ChannelJoin(
             const FString& Target,
             const int32& Type,
-            const bool& Persistence,
-            const bool& Hidden
+            const TOptional<bool>& Persistence,
+            const TOptional<bool>& Hidden
         ) noexcept;
         
         /**
@@ -123,13 +123,13 @@ namespace Nakama
         NAKAMA_API TNakamaFuture<FNakamaWebSocketResponse> ChannelMessage(
             const FString& ChannelId,
             const FString& MessageId,
-            const int32& Code,
+            const TOptional<int32>& Code,
             const FString& SenderId,
             const FString& Username,
             const FString& Content,
             const FString& CreateTime,
             const FString& UpdateTime,
-            const bool& Persistent,
+            const TOptional<bool>& Persistent,
             const FString& RoomName,
             const FString& GroupId,
             const FString& UserIdOne,
@@ -154,11 +154,11 @@ namespace Nakama
         NAKAMA_API TNakamaFuture<FNakamaWebSocketResponse> ChannelMessageAck(
             const FString& ChannelId,
             const FString& MessageId,
-            const int32& Code,
+            const TOptional<int32>& Code,
             const FString& Username,
             const FString& CreateTime,
             const FString& UpdateTime,
-            const bool& Persistent,
+            const TOptional<bool>& Persistent,
             const FString& RoomName,
             const FString& GroupId,
             const FString& UserIdOne,
@@ -343,7 +343,7 @@ namespace Nakama
             const int32& MinCount,
             const int32& MaxCount,
             const FString& Query,
-            const int32& CountMultiple,
+            const TOptional<int32>& CountMultiple,
             const TMap<FString, FString>& StringProperties,
             const TMap<FString, double>& NumericProperties
         ) noexcept;
@@ -641,7 +641,7 @@ namespace Nakama
             const int32& MinCount,
             const int32& MaxCount,
             const FString& Query,
-            const int32& CountMultiple,
+            const TOptional<int32>& CountMultiple,
             const TMap<FString, FString>& StringProperties,
             const TMap<FString, double>& NumericProperties
         ) noexcept;

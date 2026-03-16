@@ -326,7 +326,10 @@ void UNakamaRealtimeClientChannelMessage::Activate()
 	{
 		Json->SetStringField(TEXT("message_id"), StoredMessageId);
 	}
-	Json->SetNumberField(TEXT("code"), StoredCode);
+	if (StoredCode != 0)
+	{
+		Json->SetNumberField(TEXT("code"), StoredCode);
+	}
 	if (!StoredSenderId.IsEmpty())
 	{
 		Json->SetStringField(TEXT("sender_id"), StoredSenderId);
@@ -453,7 +456,10 @@ void UNakamaRealtimeClientChannelMessageAck::Activate()
 	{
 		Json->SetStringField(TEXT("message_id"), StoredMessageId);
 	}
-	Json->SetNumberField(TEXT("code"), StoredCode);
+	if (StoredCode != 0)
+	{
+		Json->SetNumberField(TEXT("code"), StoredCode);
+	}
 	if (!StoredUsername.IsEmpty())
 	{
 		Json->SetStringField(TEXT("username"), StoredUsername);
@@ -1509,7 +1515,10 @@ void UNakamaRealtimeClientMatchmakerAdd::Activate()
 	{
 		Json->SetStringField(TEXT("query"), StoredQuery);
 	}
-	Json->SetNumberField(TEXT("count_multiple"), StoredCountMultiple);
+	if (StoredCountMultiple != 0)
+	{
+		Json->SetNumberField(TEXT("count_multiple"), StoredCountMultiple);
+	}
 	if (StoredStringProperties.Num() > 0)
 	{
 		TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
@@ -3389,7 +3398,10 @@ void UNakamaRealtimeClientPartyMatchmakerAdd::Activate()
 	{
 		Json->SetStringField(TEXT("query"), StoredQuery);
 	}
-	Json->SetNumberField(TEXT("count_multiple"), StoredCountMultiple);
+	if (StoredCountMultiple != 0)
+	{
+		Json->SetNumberField(TEXT("count_multiple"), StoredCountMultiple);
+	}
 	if (StoredStringProperties.Num() > 0)
 	{
 		TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();

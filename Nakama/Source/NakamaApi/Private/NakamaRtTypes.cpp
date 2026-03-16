@@ -312,7 +312,10 @@ TSharedPtr<FJsonObject> FNakamaRtChannelMessageAck::ToJson() const noexcept
 	{
 		Json->SetStringField(TEXT("message_id"), MessageId);
 	}
-	Json->SetNumberField(TEXT("code"), Code);
+	if (Code != 0)
+	{
+		Json->SetNumberField(TEXT("code"), Code);
+	}
 	if (!Username.IsEmpty())
 	{
 		Json->SetStringField(TEXT("username"), Username);
@@ -1021,7 +1024,10 @@ TSharedPtr<FJsonObject> FNakamaRtMatchmakerAdd::ToJson() const noexcept
 	{
 		Json->SetStringField(TEXT("query"), Query);
 	}
-	Json->SetNumberField(TEXT("count_multiple"), CountMultiple);
+	if (CountMultiple != 0)
+	{
+		Json->SetNumberField(TEXT("count_multiple"), CountMultiple);
+	}
 	if (StringProperties.Num() > 0)
 	{
 		TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
@@ -1784,7 +1790,10 @@ TSharedPtr<FJsonObject> FNakamaRtPartyMatchmakerAdd::ToJson() const noexcept
 	{
 		Json->SetStringField(TEXT("query"), Query);
 	}
-	Json->SetNumberField(TEXT("count_multiple"), CountMultiple);
+	if (CountMultiple != 0)
+	{
+		Json->SetNumberField(TEXT("count_multiple"), CountMultiple);
+	}
 	if (StringProperties.Num() > 0)
 	{
 		TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
