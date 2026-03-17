@@ -1,0 +1,368 @@
+// Copyright 2022 GameUp Online, Inc. d/b/a Heroic Labs
+//
+// NOTICE: All information contained herein is, and remains the property of Heroic
+// Labs. and its suppliers, if any. The intellectual and technical concepts contained
+// herein are proprietary to Heroic Labs. and its suppliers and may be covered by U.S.
+// and Foreign Patents, patents in process, and are protected by trade secret or
+// copyright law. Dissemination of this information or reproduction of this material
+// is strictly forbidden unless prior written permission is obtained from Heroic Labs.
+
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
+
+option go_package = "github.com/heroiclabs/satori/api";
+
+option java_multiple_files = true;
+option java_outer_classname = "SatoriApi";
+option java_package = "com.heroiclabs.satori.api";
+
+package satori.api;
+
+// Log out a session, invalidate a refresh token, or log out all sessions/refresh tokens for a user.
+message AuthenticateLogoutRequest {
+  // Session token to log out.
+  string token = 1;
+  // Refresh token to invalidate.
+  string refresh_token = 2;
+}
+
+// Authenticate against the server with a refresh token.
+message AuthenticateRefreshRequest {
+  // Refresh token.
+  string refresh_token = 1;
+}
+
+// Authentication request
+message AuthenticateRequest {
+  // Identity ID. Must be between eight and 128 characters (inclusive).
+  // Must be an alphanumeric string with only underscores and hyphens allowed.
+  string id = 1;
+  // Optional default properties to update with this call.
+  // If not set, properties are left as they are on the server.
+  map<string,string> default = 2;
+  // Optional custom properties to update with this call.
+  // If not set, properties are left as they are on the server.
+  map<string,string> custom = 3;
+  // Optional no_session modifies the request to only create/update
+  // an identity without creating a new session. If set to 'true'
+  // the response won't include a token and a refresh token.
+  bool no_session = 4;
+}
+
+// The request to delete a scheduled message.
+message DeleteMessageRequest {
+  // The identifier of the message.
+  string id = 1;
+}
+
+// A single event. Usually, but not necessarily, part of a batch.
+message Event {
+  // Event name.
+  string name = 1;
+  // Optional event ID assigned by the client, used to de-duplicate in retransmission scenarios.
+  // If not supplied the server will assign a randomly generated unique event identifier.
+  string id = 2;
+  // Event metadata, if any.
+  map<string,string> metadata = 3;
+  // Optional value.
+  string value = 4;
+  // The time when the event was triggered on the producer side.
+  google.protobuf.Timestamp timestamp = 5;
+  // The identity id associated with the event. Ignored if the event is published as part of a session.
+  string identity_id = 6;
+  // The session id associated with the event. Ignored if the event is published as part of a session.
+  string session_id = 7;
+  // The session issued at associated with the event. Ignored if the event is published as part of a session.
+  int64 session_issued_at = 8;
+  // The session expires at associated with the event. Ignored if the event is published as part of a session.
+  int64 session_expires_at = 9;
+}
+
+// Publish an event to the server
+message EventRequest {
+  // Some number of events produced by a client.
+  repeated Event events = 1;
+}
+
+// An experiment that this user is partaking.
+message Experiment {
+  // Experiment name
+  string name = 1;
+  // Value associated with this Experiment.
+  string value = 2;
+  // The labels associated with this experiment.
+  repeated string labels = 3;
+  // Experiment Phase name
+  string phase_name = 4;
+  // Experiment Phase Variant name
+  string phase_variant_name = 5;
+}
+
+// All experiments that this identity is involved with.
+message ExperimentList {
+  // All experiments for this identity.
+  repeated Experiment experiments = 1;
+}
+
+// The type of configuration that overrides a flag value.
+enum ValueChangeReasonType {
+  VCR_UNKNOWN = 0;
+  VCR_FLAG_VARIANT = 1;
+  VCR_LIVE_EVENT = 2;
+  VCR_EXPERIMENT = 3;
+}
+
+// The origin of change on a flag value.
+message ValueChangeReason {
+  // The type of the configuration that declared the override.
+  ValueChangeReasonType type = 1;
+  // The name of the configuration that overrides the flag value.
+  string name = 2;
+  // The variant name of the configuration that overrides the flag value.
+  string variant_name = 3;
+}
+
+// Feature flag available to the identity.
+message Flag {
+  // Flag name
+  string name = 1;
+  // Value associated with this flag.
+  string value = 2;
+  // Whether the value for this flag has conditionally changed from the default state.
+  bool condition_changed = 3;
+  // The origin of change on the flag value returned.
+  ValueChangeReason change_reason = 4;
+  // The labels associated with this flag.
+  repeated string labels = 5;
+}
+
+// All flags available to the identity
+message FlagList {
+  // All flags
+  repeated Flag flags = 1;
+}
+
+// The type of configuration that overrides a flag value.
+enum FlagOverrideType {
+  FOT_FLAG = 0;
+  FOT_FLAG_VARIANT = 1;
+  FOT_LIVE_EVENT_FLAG = 2;
+  FOT_LIVE_EVENT_FLAG_VARIANT = 3;
+  FOT_EXPERIMENT_PHASE_VARIANT_FLAG = 4;
+}
+
+// The details of a flag value override.
+message FlagOverrideValue {
+  // The type of the configuration that declared the override.
+  FlagOverrideType type = 1;
+  // The name of the configuration that overrides the flag value.
+  string name = 2;
+  // The variant name of the configuration that overrides the flag value.
+  string variant_name = 3;
+  // The value of the configuration that overrides the flag.
+  string value = 4;
+  // The create time of the configuration that overrides the flag.
+  int64 create_time_sec = 5;
+}
+
+// Feature flag available to the identity.
+message FlagOverride {
+  // Flag name
+  string flag_name = 1;
+  // The list of configuration that affect the value of the flag.
+  repeated FlagOverrideValue overrides = 2;
+  // The labels associated with this flag.
+  repeated string labels = 3;
+}
+
+// All flags available to the identity and their value overrides
+message FlagOverrideList {
+  // All flags
+  repeated FlagOverride flags = 1;
+}
+
+// Request to get all experiments data.
+message GetExperimentsRequest {
+  // Experiment names; if empty string, all experiments are returned based on the remaining filters.
+  repeated string names = 1;
+  // Label names that must be defined for each Experiment; if empty string, all experiments are returned based on the remaining filters.
+  repeated string labels = 2;
+}
+
+// Request to get all flags data.
+message GetFlagsRequest {
+  // Flag names; if empty string, all flags are returned based on the remaining filters.
+  repeated string names = 1;
+  // Label names that must be defined for each Flag; if empty string, all flags are returned based on the remaining filters.
+  repeated string labels = 2;
+}
+
+// Request to get all live events.
+message GetLiveEventsRequest {
+  // Live event names; if empty string, all live events are returned based on the remaining filters.
+  repeated string names = 1;
+  // Label names that must be defined for each Live Event; if empty string, all live events are returned based on the remaining filters.
+  repeated string labels = 2;
+  // The maximum number of past event runs to return for each live event.
+  int32 past_run_count = 3;
+  // The maximum number of future event runs to return for each live event.
+  int32 future_run_count = 4;
+  // Start time of the time window filter to apply.
+  int64 start_time_sec = 5;
+  // End time of the time window filter to apply.
+  int64 end_time_sec = 6;
+}
+
+// A scheduled message.
+message Message {
+  // The identifier of the schedule.
+  string schedule_id = 1;
+  // The send time for the message.
+  int64 send_time = 2;
+  // A key-value pairs of metadata.
+  map<string, string> metadata = 3;
+  // The time the message was created.
+  int64 create_time = 4;
+  // The time the message was updated.
+  int64 update_time = 5;
+  // The time the message was read by the client.
+  int64 read_time = 6;
+  // The time the message was consumed by the identity.
+  int64 consume_time = 7;
+  // The message's text.
+  string text = 8;
+  // The message's unique identifier.
+  string id = 9;
+  // The message's title.
+  string title = 10;
+  // The message's image url.
+  string image_url = 11;
+}
+
+message GetMessageListRequest {
+  // Max number of messages to return. Between 1 and 100.
+  int32 limit = 1;
+  // True if listing should be older messages to newer, false if reverse.
+  bool forward = 2;
+  // A pagination cursor, if any.
+  string cursor = 3;
+  // A list of message identifiers to be returned. If these are given as inputs, the pagination will be disabled.
+  repeated string message_ids = 4;
+}
+
+// A response containing all the messages for an identity.
+message GetMessageListResponse {
+  // The list of messages.
+  repeated Message messages = 1;
+  // The cursor to send when retrieving the next page, if any.
+  string next_cursor = 2;
+  // The cursor to send when retrieving the previous page, if any.
+  string prev_cursor = 3;
+  // Cacheable cursor to list newer messages. Durable and designed to be stored, unlike next/prev cursors.
+  string cacheable_cursor = 4;
+}
+
+// Enrich/replace the current session with a new ID.
+message IdentifyRequest {
+  // Identity ID to enrich the current session and return a new session. Old session will no longer be usable.
+  string id = 1;
+  // Optional default properties to update with this call.
+  // If not set, properties are left as they are on the server.
+  map<string,string> default = 2;
+  // Optional custom properties to update with this call.
+  // If not set, properties are left as they are on the server.
+  map<string,string> custom = 3;
+}
+
+// Request to join a 'explicit join' live event.
+message JoinLiveEventRequest {
+  // Live event id to join.
+  string id = 1;
+}
+
+// The status variants of a live event.
+enum LiveEventStatus {
+  LES_UNKNOWN = 0;
+  LES_ACTIVE = 1;
+  LES_UPCOMING = 2;
+  LES_TERMINATED = 3;
+}
+
+// A single live event.
+message LiveEvent {
+  // Name.
+  string name = 1;
+  // Description.
+  string description = 2;
+  // Event value.
+  string value = 3;
+  // Start time of current event run.
+  int64 active_start_time_sec = 4;
+  // End time of current event run.
+  int64 active_end_time_sec = 5;
+  // The live event identifier.
+  string id = 6;
+  // Start time.
+  int64 start_time_sec = 7;
+  // End time, 0 if it repeats forever.
+  int64 end_time_sec = 8;
+  // Duration in seconds.
+  int64 duration_sec = 9;
+  // Reset CRON schedule, if configured.
+  string reset_cron = 10;
+  // The status of this live event run.
+  LiveEventStatus status = 11;
+  // The labels associated with this live event.
+  repeated string labels = 12;
+}
+
+// List of Live events.
+message LiveEventList {
+  // Live events.
+  repeated LiveEvent live_events = 1;
+  // Live events that require explicit join.
+  repeated LiveEvent explicit_join_live_events = 2;
+}
+
+// Properties associated with an identity.
+message Properties {
+  // Event default properties.
+  map<string,string> default = 1;
+  // Event computed properties.
+  map<string,string> computed = 2;
+  // Event custom properties.
+  map<string,string> custom = 3;
+}
+
+// A session.
+message Session {
+  // Token credential.
+  string token = 1;
+  // Refresh token.
+  string refresh_token = 2;
+  // Properties associated with this identity.
+  Properties properties = 3;
+}
+
+// Update Properties associated with this identity.
+message UpdatePropertiesRequest {
+  // Event default properties.
+  map<string,string> default = 1;
+  // Event custom properties.
+  map<string,string> custom = 2;
+  // Informs the server to recompute the audience membership of the identity.
+  google.protobuf.BoolValue recompute = 3;
+}
+
+// The request to update the status of a message.
+message UpdateMessageRequest {
+  // The identifier of the messages.
+  string id = 1;
+  // The time the message was read at the client.
+  int64 read_time = 2;
+  // The time the message was consumed by the identity.
+  int64 consume_time = 3;
+}
