@@ -99,7 +99,7 @@ func (v *messageVisitor) VisitOneof(oneof *proto.Oneof) {
 func (v *messageVisitor) VisitOneofField(oneof *proto.OneOfField) {
 	// Sometimes we can get types like more qualified
 	// types like api.MyMessage, so take only the bit after last dot.
-	oneof.Name = oneof.Name[strings.LastIndex(oneof.Name, ".")+1:]
+	oneof.Name = stripAfterLastDot(oneof.Name)
 
 	v.Message.OneofFields = append(v.Message.OneofFields, oneof)
 }

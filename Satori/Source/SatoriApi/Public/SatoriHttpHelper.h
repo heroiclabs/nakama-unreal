@@ -30,15 +30,16 @@
 #include "Serialization/MemoryWriter.h"
 #include "Templates/Function.h"
 #include "Templates/SharedPointer.h"
-#include "NakamaTypes.h"
+#include "SatoriApi.h"
 
 /**
- * Internal HTTP helpers for NakamaApi.
- * All functions are typed against FNakamaClientConfig and ENakamaRequestAuth.
+ * Internal HTTP helpers for SatoriApi.
+ * All functions are typed against FSatoriClientConfig, ESatoriRequestAuth, and FSatoriError
+ * so SatoriApi does not depend on Nakama modules.
  *
  * Include this header in generated .cpp files only — not in public API headers.
  */
-namespace NakamaHttpInternal
+namespace SatoriHttpInternal
 {
 
 inline FString SerializeJsonToString(const TSharedPtr<FJsonObject>& Json)
@@ -70,14 +71,14 @@ inline FString SerializeJsonEscaped(const TSharedPtr<FJsonObject>& Json)
 }
 
 inline void DoHttpRequest(
-	const FNakamaClientConfig& Config,
+	const FSatoriClientConfig& Config,
 	const FString& Endpoint,
 	const FString& Method,
 	const FString& BodyString,
-	ENakamaRequestAuth AuthType,
+	ESatoriRequestAuth AuthType,
 	const FString& TokenString,
 	TFunction<void(TSharedPtr<FJsonObject>)> OnSuccess,
-	TFunction<void(const FNakamaError&)> OnError,
+	TFunction<void(const FSatoriError&)> OnError,
 	float Timeout,
 	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
@@ -91,26 +92,19 @@ inline void DoHttpRequest(
 
 	switch (AuthType)
 	{
-	case ENakamaRequestAuth::Basic:
+	case ESatoriRequestAuth::Basic:
 		{
 			const FString Auth = FString::Printf(TEXT("%s:"), *Config.ServerKey);
 			Request->SetHeader(TEXT("Authorization"), FString::Printf(TEXT("Basic %s"), *FBase64::Encode(Auth)));
 		}
 		break;
-	case ENakamaRequestAuth::Bearer:
+	case ESatoriRequestAuth::Bearer:
 		if (!TokenString.IsEmpty())
 		{
 			Request->SetHeader(TEXT("Authorization"), FString::Printf(TEXT("Bearer %s"), *TokenString));
 		}
 		break;
-	case ENakamaRequestAuth::HttpKey:
-		if (!TokenString.IsEmpty())
-		{
-			const FString Auth = FString::Printf(TEXT("%s:"), *TokenString);
-			Request->SetHeader(TEXT("Authorization"), FString::Printf(TEXT("Basic %s"), *FBase64::Encode(Auth)));
-		}
-		break;
-	case ENakamaRequestAuth::None:
+	case ESatoriRequestAuth::None:
 	default:
 		break;
 	}
@@ -129,7 +123,7 @@ inline void DoHttpRequest(
 			{
 				if (OnError)
 				{
-					OnError(FNakamaError(TEXT("Request cancelled"), -1));
+					OnError(FSatoriError{TEXT("Request cancelled"), -1});
 				}
 				return;
 			}
@@ -138,7 +132,7 @@ inline void DoHttpRequest(
 			{
 				if (OnError)
 				{
-					OnError(FNakamaError(TEXT("Connection failed"), 0));
+					OnError(FSatoriError{TEXT("Connection failed"), 0});
 				}
 				return;
 			}
@@ -164,7 +158,7 @@ inline void DoHttpRequest(
 				}
 				if (OnError)
 				{
-					OnError(FNakamaError(ErrorMsg, ErrorCode));
+					OnError(FSatoriError{ErrorMsg, ErrorCode});
 				}
 				return;
 			}
@@ -176,7 +170,7 @@ inline void DoHttpRequest(
 				{
 					if (OnError)
 					{
-						OnError(FNakamaError(TEXT("Invalid JSON response"), 500));
+						OnError(FSatoriError{TEXT("Invalid JSON response"), 500});
 					}
 					return;
 				}
@@ -192,14 +186,14 @@ inline void DoHttpRequest(
 }
 
 inline void SendRequest(
-	const FNakamaClientConfig& Config,
+	const FSatoriClientConfig& Config,
 	const FString& Endpoint,
 	const FString& Method,
 	const FString& BodyString,
-	ENakamaRequestAuth AuthType,
+	ESatoriRequestAuth AuthType,
 	const FString& BearerToken,
 	TFunction<void(TSharedPtr<FJsonObject>)> OnSuccess,
-	TFunction<void(const FNakamaError&)> OnError,
+	TFunction<void(const FSatoriError&)> OnError,
 	float Timeout,
 	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
@@ -207,7 +201,7 @@ inline void SendRequest(
 	{
 		if (OnError)
 		{
-			OnError(FNakamaError(TEXT("Request cancelled"), -1));
+			OnError(FSatoriError{TEXT("Request cancelled"), -1});
 		}
 		return;
 	}
@@ -216,14 +210,14 @@ inline void SendRequest(
 }
 
 inline void MakeRequest(
-	const FNakamaClientConfig& Config,
+	const FSatoriClientConfig& Config,
 	const FString& Endpoint,
 	const FString& Method,
 	const TSharedPtr<FJsonObject>& Body,
-	ENakamaRequestAuth AuthType,
+	ESatoriRequestAuth AuthType,
 	const FString& BearerToken,
 	TFunction<void(TSharedPtr<FJsonObject>)> OnSuccess,
-	TFunction<void(const FNakamaError&)> OnError,
+	TFunction<void(const FSatoriError&)> OnError,
 	float Timeout,
 	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
@@ -235,4 +229,4 @@ inline void MakeRequest(
 	SendRequest(Config, Endpoint, Method, BodyString, AuthType, BearerToken, OnSuccess, OnError, Timeout, CancellationToken);
 }
 
-} // namespace NakamaHttpInternal
+} // namespace SatoriHttpInternal

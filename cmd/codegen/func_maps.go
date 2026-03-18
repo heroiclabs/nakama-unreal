@@ -12,6 +12,14 @@ import (
 	"github.com/golang-cz/textcase"
 )
 
+// stripAfterLastDot returns the substring after the last dot, or the full string if there is no dot.
+func stripAfterLastDot(s string) string {
+	if i := strings.LastIndex(s, "."); i >= 0 {
+		return s[i+1:]
+	}
+	return s
+}
+
 func getGeneralFuncMap(api Api) template.FuncMap {
 	fnMap := template.FuncMap{
 		"camelCase":      textcase.CamelCase,
@@ -44,6 +52,9 @@ func getGeneralFuncMap(api Api) template.FuncMap {
 			return a - b
 		},
 		"lowerCase": func(s string) string {
+			if len(s) == 0 {
+				return s
+			}
 			return strings.ToLower(s[:1]) + s[1:]
 		},
 		"appendString": func(s1 string, s2 string) bool {
@@ -86,9 +97,7 @@ func getGeneralFuncMap(api Api) template.FuncMap {
 			}
 			return result
 		},
-		"stripDot": func(s string) string {
-			return s[strings.LastIndex(s, ".")+1:]
-		},
+		"stripDot": stripAfterLastDot,
 	}
 
 	return fnMap

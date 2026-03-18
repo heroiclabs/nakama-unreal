@@ -128,7 +128,7 @@ func (api *Api) addFile(protoFile string) error {
 						return nil
 					} else {
 						// We get something like `api.MyRequestType`, so strip after the last dot.
-						stripped := fullTypeName[strings.LastIndex(fullTypeName, ".")+1:]
+						stripped := stripAfterLastDot(fullTypeName)
 
 						t, ok := api.MessagesByName[stripped]
 						if !ok {

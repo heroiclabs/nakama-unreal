@@ -17,39 +17,14 @@
 /* This code is auto-generated. DO NOT EDIT. */
 
 #include "SatoriApi.h"
-#include "NakamaHttpHelper.h"
+#include "SatoriHttpHelper.h"
 #include "GenericPlatform/GenericPlatformHttp.h"
 
 #include "Modules/ModuleManager.h"
 
 DEFINE_LOG_CATEGORY(LogSatori);
 
-using namespace NakamaHttpInternal;
-
-// Adapts FNakamaError -> FSatoriError for use with Satori RPC OnError callbacks.
-namespace
-{
-	inline TFunction<void(const FNakamaError&)> MakeSatoriErrorAdapter(TFunction<void(const FSatoriError&)> OnError)
-	{
-		return [OnError = MoveTemp(OnError)](const FNakamaError& E)
-		{
-			if (OnError)
-			{
-				OnError(FSatoriError{E.Message, E.Code});
-			}
-		};
-	}
-
-	inline FNakamaClientConfig ToNakamaConfig(const FSatoriClientConfig& Cfg)
-	{
-		FNakamaClientConfig Out;
-		Out.ServerKey = Cfg.ServerKey;
-		Out.Host = Cfg.Host;
-		Out.Port = Cfg.Port;
-		Out.bUseSSL = Cfg.bUseSSL;
-		return Out;
-	}
-} // anonymous namespace
+using namespace SatoriHttpInternal;
 
 // --- FSatoriSession JWT helpers ---
 
@@ -1743,7 +1718,7 @@ void SatoriApi::Authenticate(
 		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
 	}
 
-	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Basic;TSharedPtr<FJsonObject> Body;
+	ESatoriRequestAuth AuthType = ESatoriRequestAuth::Basic;TSharedPtr<FJsonObject> Body;
 	Body = MakeShared<FJsonObject>();
 	if (!Id.IsEmpty())
 	{
@@ -1769,7 +1744,7 @@ void SatoriApi::Authenticate(
 		Body->SetObjectField(TEXT("custom"), MapObj);
 	}
 
-	MakeRequest(ToNakamaConfig(Config), Endpoint, TEXT("POST"), Body, AuthType, TEXT(""),
+	MakeRequest(Config, Endpoint, TEXT("POST"), Body, AuthType, TEXT(""),
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			FSatoriSession Result = FSatoriSession::FromJson(Json);
@@ -1778,7 +1753,7 @@ void SatoriApi::Authenticate(
 				OnSuccess(Result);
 			}
 		},
-		MakeSatoriErrorAdapter(OnError), Timeout, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void SatoriApi::AuthenticateLogout(
@@ -1797,7 +1772,7 @@ void SatoriApi::AuthenticateLogout(
 		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
 	}
 
-	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;TSharedPtr<FJsonObject> Body;
+	ESatoriRequestAuth AuthType = ESatoriRequestAuth::Bearer;TSharedPtr<FJsonObject> Body;
 	Body = MakeShared<FJsonObject>();
 	if (!Token.IsEmpty())
 	{
@@ -1808,7 +1783,7 @@ void SatoriApi::AuthenticateLogout(
 		Body->SetStringField(TEXT("refresh_token"), RefreshToken);
 	}
 
-	MakeRequest(ToNakamaConfig(Config), Endpoint, TEXT("POST"), Body, AuthType, Token,
+	MakeRequest(Config, Endpoint, TEXT("POST"), Body, AuthType, Token,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			if (OnSuccess)
@@ -1816,7 +1791,7 @@ void SatoriApi::AuthenticateLogout(
 				OnSuccess();
 			}
 		},
-		MakeSatoriErrorAdapter(OnError), Timeout, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void SatoriApi::AuthenticateRefresh(
@@ -1834,14 +1809,14 @@ void SatoriApi::AuthenticateRefresh(
 		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
 	}
 
-	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Basic;TSharedPtr<FJsonObject> Body;
+	ESatoriRequestAuth AuthType = ESatoriRequestAuth::Basic;TSharedPtr<FJsonObject> Body;
 	Body = MakeShared<FJsonObject>();
 	if (!RefreshToken.IsEmpty())
 	{
 		Body->SetStringField(TEXT("refresh_token"), RefreshToken);
 	}
 
-	MakeRequest(ToNakamaConfig(Config), Endpoint, TEXT("POST"), Body, AuthType, TEXT(""),
+	MakeRequest(Config, Endpoint, TEXT("POST"), Body, AuthType, TEXT(""),
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			FSatoriSession Result = FSatoriSession::FromJson(Json);
@@ -1850,7 +1825,7 @@ void SatoriApi::AuthenticateRefresh(
 				OnSuccess(Result);
 			}
 		},
-		MakeSatoriErrorAdapter(OnError), Timeout, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void SatoriApi::DeleteIdentity(
@@ -1863,9 +1838,9 @@ void SatoriApi::DeleteIdentity(
 {
 	FString Endpoint = TEXT("/v1/identity");
 
-	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;TSharedPtr<FJsonObject> Body;
+	ESatoriRequestAuth AuthType = ESatoriRequestAuth::Bearer;TSharedPtr<FJsonObject> Body;
 
-	MakeRequest(ToNakamaConfig(Config), Endpoint, TEXT("DELETE"), Body, AuthType, Session.Token,
+	MakeRequest(Config, Endpoint, TEXT("DELETE"), Body, AuthType, Session.Token,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			if (OnSuccess)
@@ -1873,7 +1848,7 @@ void SatoriApi::DeleteIdentity(
 				OnSuccess();
 			}
 		},
-		MakeSatoriErrorAdapter(OnError), Timeout, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void SatoriApi::Event(
@@ -1892,7 +1867,7 @@ void SatoriApi::Event(
 		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
 	}
 
-	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;TSharedPtr<FJsonObject> Body;
+	ESatoriRequestAuth AuthType = ESatoriRequestAuth::Bearer;TSharedPtr<FJsonObject> Body;
 	Body = MakeShared<FJsonObject>();
 	if (Events.Num() > 0)
 	{
@@ -1904,7 +1879,7 @@ void SatoriApi::Event(
 		Body->SetArrayField(TEXT("events"), Array);
 	}
 
-	MakeRequest(ToNakamaConfig(Config), Endpoint, TEXT("POST"), Body, AuthType, Session.Token,
+	MakeRequest(Config, Endpoint, TEXT("POST"), Body, AuthType, Session.Token,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			if (OnSuccess)
@@ -1912,7 +1887,7 @@ void SatoriApi::Event(
 				OnSuccess();
 			}
 		},
-		MakeSatoriErrorAdapter(OnError), Timeout, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void SatoriApi::ServerEvent(
@@ -1931,7 +1906,7 @@ void SatoriApi::ServerEvent(
 		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
 	}
 
-	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;TSharedPtr<FJsonObject> Body;
+	ESatoriRequestAuth AuthType = ESatoriRequestAuth::Bearer;TSharedPtr<FJsonObject> Body;
 	Body = MakeShared<FJsonObject>();
 	if (Events.Num() > 0)
 	{
@@ -1943,7 +1918,7 @@ void SatoriApi::ServerEvent(
 		Body->SetArrayField(TEXT("events"), Array);
 	}
 
-	MakeRequest(ToNakamaConfig(Config), Endpoint, TEXT("POST"), Body, AuthType, Session.Token,
+	MakeRequest(Config, Endpoint, TEXT("POST"), Body, AuthType, Session.Token,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			if (OnSuccess)
@@ -1951,7 +1926,7 @@ void SatoriApi::ServerEvent(
 				OnSuccess();
 			}
 		},
-		MakeSatoriErrorAdapter(OnError), Timeout, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void SatoriApi::GetExperiments(
@@ -1979,9 +1954,9 @@ void SatoriApi::GetExperiments(
 		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
 	}
 
-	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;TSharedPtr<FJsonObject> Body;
+	ESatoriRequestAuth AuthType = ESatoriRequestAuth::Bearer;TSharedPtr<FJsonObject> Body;
 
-	MakeRequest(ToNakamaConfig(Config), Endpoint, TEXT("GET"), Body, AuthType, Session.Token,
+	MakeRequest(Config, Endpoint, TEXT("GET"), Body, AuthType, Session.Token,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			FSatoriExperimentList Result = FSatoriExperimentList::FromJson(Json);
@@ -1990,7 +1965,7 @@ void SatoriApi::GetExperiments(
 				OnSuccess(Result);
 			}
 		},
-		MakeSatoriErrorAdapter(OnError), Timeout, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void SatoriApi::GetFlagOverrides(
@@ -2018,9 +1993,9 @@ void SatoriApi::GetFlagOverrides(
 		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
 	}
 
-	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;TSharedPtr<FJsonObject> Body;
+	ESatoriRequestAuth AuthType = ESatoriRequestAuth::Bearer;TSharedPtr<FJsonObject> Body;
 
-	MakeRequest(ToNakamaConfig(Config), Endpoint, TEXT("GET"), Body, AuthType, Session.Token,
+	MakeRequest(Config, Endpoint, TEXT("GET"), Body, AuthType, Session.Token,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			FSatoriFlagOverrideList Result = FSatoriFlagOverrideList::FromJson(Json);
@@ -2029,7 +2004,7 @@ void SatoriApi::GetFlagOverrides(
 				OnSuccess(Result);
 			}
 		},
-		MakeSatoriErrorAdapter(OnError), Timeout, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void SatoriApi::GetFlags(
@@ -2057,9 +2032,9 @@ void SatoriApi::GetFlags(
 		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
 	}
 
-	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;TSharedPtr<FJsonObject> Body;
+	ESatoriRequestAuth AuthType = ESatoriRequestAuth::Bearer;TSharedPtr<FJsonObject> Body;
 
-	MakeRequest(ToNakamaConfig(Config), Endpoint, TEXT("GET"), Body, AuthType, Session.Token,
+	MakeRequest(Config, Endpoint, TEXT("GET"), Body, AuthType, Session.Token,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			FSatoriFlagList Result = FSatoriFlagList::FromJson(Json);
@@ -2068,7 +2043,7 @@ void SatoriApi::GetFlags(
 				OnSuccess(Result);
 			}
 		},
-		MakeSatoriErrorAdapter(OnError), Timeout, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void SatoriApi::GetLiveEvents(
@@ -2116,9 +2091,9 @@ void SatoriApi::GetLiveEvents(
 		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
 	}
 
-	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;TSharedPtr<FJsonObject> Body;
+	ESatoriRequestAuth AuthType = ESatoriRequestAuth::Bearer;TSharedPtr<FJsonObject> Body;
 
-	MakeRequest(ToNakamaConfig(Config), Endpoint, TEXT("GET"), Body, AuthType, Session.Token,
+	MakeRequest(Config, Endpoint, TEXT("GET"), Body, AuthType, Session.Token,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			FSatoriLiveEventList Result = FSatoriLiveEventList::FromJson(Json);
@@ -2127,7 +2102,7 @@ void SatoriApi::GetLiveEvents(
 				OnSuccess(Result);
 			}
 		},
-		MakeSatoriErrorAdapter(OnError), Timeout, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void SatoriApi::JoinLiveEvent(
@@ -2147,9 +2122,9 @@ void SatoriApi::JoinLiveEvent(
 		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
 	}
 
-	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;TSharedPtr<FJsonObject> Body;
+	ESatoriRequestAuth AuthType = ESatoriRequestAuth::Bearer;TSharedPtr<FJsonObject> Body;
 
-	MakeRequest(ToNakamaConfig(Config), Endpoint, TEXT("POST"), Body, AuthType, Session.Token,
+	MakeRequest(Config, Endpoint, TEXT("POST"), Body, AuthType, Session.Token,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			if (OnSuccess)
@@ -2157,7 +2132,7 @@ void SatoriApi::JoinLiveEvent(
 				OnSuccess();
 			}
 		},
-		MakeSatoriErrorAdapter(OnError), Timeout, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void SatoriApi::Healthcheck(
@@ -2170,9 +2145,9 @@ void SatoriApi::Healthcheck(
 {
 	FString Endpoint = TEXT("/healthcheck");
 
-	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;TSharedPtr<FJsonObject> Body;
+	ESatoriRequestAuth AuthType = ESatoriRequestAuth::Bearer;TSharedPtr<FJsonObject> Body;
 
-	MakeRequest(ToNakamaConfig(Config), Endpoint, TEXT("GET"), Body, AuthType, Session.Token,
+	MakeRequest(Config, Endpoint, TEXT("GET"), Body, AuthType, Session.Token,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			if (OnSuccess)
@@ -2180,7 +2155,7 @@ void SatoriApi::Healthcheck(
 				OnSuccess();
 			}
 		},
-		MakeSatoriErrorAdapter(OnError), Timeout, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void SatoriApi::Identify(
@@ -2201,7 +2176,7 @@ void SatoriApi::Identify(
 		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
 	}
 
-	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;TSharedPtr<FJsonObject> Body;
+	ESatoriRequestAuth AuthType = ESatoriRequestAuth::Bearer;TSharedPtr<FJsonObject> Body;
 	Body = MakeShared<FJsonObject>();
 	if (!Id.IsEmpty())
 	{
@@ -2226,7 +2201,7 @@ void SatoriApi::Identify(
 		Body->SetObjectField(TEXT("custom"), MapObj);
 	}
 
-	MakeRequest(ToNakamaConfig(Config), Endpoint, TEXT("PUT"), Body, AuthType, Session.Token,
+	MakeRequest(Config, Endpoint, TEXT("PUT"), Body, AuthType, Session.Token,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			FSatoriSession Result = FSatoriSession::FromJson(Json);
@@ -2235,7 +2210,7 @@ void SatoriApi::Identify(
 				OnSuccess(Result);
 			}
 		},
-		MakeSatoriErrorAdapter(OnError), Timeout, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void SatoriApi::ListProperties(
@@ -2248,9 +2223,9 @@ void SatoriApi::ListProperties(
 {
 	FString Endpoint = TEXT("/v1/properties");
 
-	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;TSharedPtr<FJsonObject> Body;
+	ESatoriRequestAuth AuthType = ESatoriRequestAuth::Bearer;TSharedPtr<FJsonObject> Body;
 
-	MakeRequest(ToNakamaConfig(Config), Endpoint, TEXT("GET"), Body, AuthType, Session.Token,
+	MakeRequest(Config, Endpoint, TEXT("GET"), Body, AuthType, Session.Token,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			FSatoriProperties Result = FSatoriProperties::FromJson(Json);
@@ -2259,7 +2234,7 @@ void SatoriApi::ListProperties(
 				OnSuccess(Result);
 			}
 		},
-		MakeSatoriErrorAdapter(OnError), Timeout, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void SatoriApi::Readycheck(
@@ -2272,9 +2247,9 @@ void SatoriApi::Readycheck(
 {
 	FString Endpoint = TEXT("/readycheck");
 
-	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;TSharedPtr<FJsonObject> Body;
+	ESatoriRequestAuth AuthType = ESatoriRequestAuth::Bearer;TSharedPtr<FJsonObject> Body;
 
-	MakeRequest(ToNakamaConfig(Config), Endpoint, TEXT("GET"), Body, AuthType, Session.Token,
+	MakeRequest(Config, Endpoint, TEXT("GET"), Body, AuthType, Session.Token,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			if (OnSuccess)
@@ -2282,7 +2257,7 @@ void SatoriApi::Readycheck(
 				OnSuccess();
 			}
 		},
-		MakeSatoriErrorAdapter(OnError), Timeout, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void SatoriApi::UpdateProperties(
@@ -2303,7 +2278,7 @@ void SatoriApi::UpdateProperties(
 		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
 	}
 
-	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;TSharedPtr<FJsonObject> Body;
+	ESatoriRequestAuth AuthType = ESatoriRequestAuth::Bearer;TSharedPtr<FJsonObject> Body;
 	Body = MakeShared<FJsonObject>();
 	Body->SetBoolField(TEXT("recompute"), Recompute);
 	if (Default.Num() > 0)
@@ -2325,7 +2300,7 @@ void SatoriApi::UpdateProperties(
 		Body->SetObjectField(TEXT("custom"), MapObj);
 	}
 
-	MakeRequest(ToNakamaConfig(Config), Endpoint, TEXT("PUT"), Body, AuthType, Session.Token,
+	MakeRequest(Config, Endpoint, TEXT("PUT"), Body, AuthType, Session.Token,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			if (OnSuccess)
@@ -2333,7 +2308,7 @@ void SatoriApi::UpdateProperties(
 				OnSuccess();
 			}
 		},
-		MakeSatoriErrorAdapter(OnError), Timeout, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void SatoriApi::GetMessageList(
@@ -2368,9 +2343,9 @@ void SatoriApi::GetMessageList(
 		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
 	}
 
-	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;TSharedPtr<FJsonObject> Body;
+	ESatoriRequestAuth AuthType = ESatoriRequestAuth::Bearer;TSharedPtr<FJsonObject> Body;
 
-	MakeRequest(ToNakamaConfig(Config), Endpoint, TEXT("GET"), Body, AuthType, Session.Token,
+	MakeRequest(Config, Endpoint, TEXT("GET"), Body, AuthType, Session.Token,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			FSatoriGetMessageListResponse Result = FSatoriGetMessageListResponse::FromJson(Json);
@@ -2379,7 +2354,7 @@ void SatoriApi::GetMessageList(
 				OnSuccess(Result);
 			}
 		},
-		MakeSatoriErrorAdapter(OnError), Timeout, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void SatoriApi::UpdateMessage(
@@ -2401,7 +2376,7 @@ void SatoriApi::UpdateMessage(
 		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
 	}
 
-	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;TSharedPtr<FJsonObject> Body;
+	ESatoriRequestAuth AuthType = ESatoriRequestAuth::Bearer;TSharedPtr<FJsonObject> Body;
 	Body = MakeShared<FJsonObject>();
 	if (!Id.IsEmpty())
 	{
@@ -2410,7 +2385,7 @@ void SatoriApi::UpdateMessage(
 	Body->SetNumberField(TEXT("read_time"), ReadTime);
 	Body->SetNumberField(TEXT("consume_time"), ConsumeTime);
 
-	MakeRequest(ToNakamaConfig(Config), Endpoint, TEXT("PUT"), Body, AuthType, Session.Token,
+	MakeRequest(Config, Endpoint, TEXT("PUT"), Body, AuthType, Session.Token,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			if (OnSuccess)
@@ -2418,7 +2393,7 @@ void SatoriApi::UpdateMessage(
 				OnSuccess();
 			}
 		},
-		MakeSatoriErrorAdapter(OnError), Timeout, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 void SatoriApi::DeleteMessage(
@@ -2438,9 +2413,9 @@ void SatoriApi::DeleteMessage(
 		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
 	}
 
-	ENakamaRequestAuth AuthType = ENakamaRequestAuth::Bearer;TSharedPtr<FJsonObject> Body;
+	ESatoriRequestAuth AuthType = ESatoriRequestAuth::Bearer;TSharedPtr<FJsonObject> Body;
 
-	MakeRequest(ToNakamaConfig(Config), Endpoint, TEXT("DELETE"), Body, AuthType, Session.Token,
+	MakeRequest(Config, Endpoint, TEXT("DELETE"), Body, AuthType, Session.Token,
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			if (OnSuccess)
@@ -2448,7 +2423,7 @@ void SatoriApi::DeleteMessage(
 				OnSuccess();
 			}
 		},
-		MakeSatoriErrorAdapter(OnError), Timeout, CancellationToken);
+		OnError, Timeout, CancellationToken);
 }
 
 // Module implementation

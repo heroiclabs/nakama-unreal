@@ -17,39 +17,14 @@
 /* This code is auto-generated. DO NOT EDIT. */
 
 #include "SatoriApi.h"
-#include "NakamaHttpHelper.h"
+#include "SatoriHttpHelper.h"
 #include "GenericPlatform/GenericPlatformHttp.h"
 
 #include "Modules/ModuleManager.h"
 
 DEFINE_LOG_CATEGORY(LogSatori);
 
-using namespace NakamaHttpInternal;
-
-// Adapts FNakamaError -> FSatoriError for use with Satori RPC OnError callbacks.
-namespace
-{
-	inline TFunction<void(const FNakamaError&)> MakeSatoriErrorAdapter(TFunction<void(const FSatoriError&)> OnError)
-	{
-		return [OnError = MoveTemp(OnError)](const FNakamaError& E)
-		{
-			if (OnError)
-			{
-				OnError(FSatoriError{E.Message, E.Code});
-			}
-		};
-	}
-
-	inline FNakamaClientConfig ToNakamaConfig(const FSatoriClientConfig& Cfg)
-	{
-		FNakamaClientConfig Out;
-		Out.ServerKey = Cfg.ServerKey;
-		Out.Host = Cfg.Host;
-		Out.Port = Cfg.Port;
-		Out.bUseSSL = Cfg.bUseSSL;
-		return Out;
-	}
-} // anonymous namespace
+using namespace SatoriHttpInternal;
 
 // --- FSatoriSession JWT helpers ---
 
@@ -641,7 +616,7 @@ void SatoriApi::{{ $rpc.Name }}(
 	}
 {{- end }}
 
-	ENakamaRequestAuth AuthType = {{ if and (or $isAuthenticate $isSessionRefresh) (not $isAuthLogout) }}ENakamaRequestAuth::Basic{{ else }}ENakamaRequestAuth::Bearer{{ end }};
+	ESatoriRequestAuth AuthType = {{ if and (or $isAuthenticate $isSessionRefresh) (not $isAuthLogout) }}ESatoriRequestAuth::Basic{{ else }}ESatoriRequestAuth::Bearer{{ end }};
 
 {{- /* Build request body and dispatch */ -}}
 {{- $scalarBodyField := "" }}
@@ -666,7 +641,7 @@ void SatoriApi::{{ $rpc.Name }}(
 		BodyString = SerializeJsonEscaped({{ $scalarBodyField }});
 	}
 
-	SendRequest(ToNakamaConfig(Config), Endpoint, TEXT("{{ $rpc.Method }}"), BodyString, AuthType, {{ if $needsSession }}Session.Token{{ else if $isAuthLogout }}Token{{ else }}TEXT(""){{ end }},
+	SendRequest(Config, Endpoint, TEXT("{{ $rpc.Method }}"), BodyString, AuthType, {{ if $needsSession }}Session.Token{{ else if $isAuthLogout }}Token{{ else }}TEXT(""){{ end }},
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			{{- if $hasReturn }}
@@ -682,7 +657,7 @@ void SatoriApi::{{ $rpc.Name }}(
 			}
 			{{- end }}
 		},
-		MakeSatoriErrorAdapter(OnError), Timeout, CancellationToken);
+		OnError, Timeout, CancellationToken);
 {{- else }}
 {{- /* Object body or no body */ -}}
 	TSharedPtr<FJsonObject> Body;
@@ -755,7 +730,7 @@ void SatoriApi::{{ $rpc.Name }}(
 {{- end }}
 {{- end }}
 
-	MakeRequest(ToNakamaConfig(Config), Endpoint, TEXT("{{ $rpc.Method }}"), Body, AuthType, {{ if $needsSession }}Session.Token{{ else if $isAuthLogout }}Token{{ else }}TEXT(""){{ end }},
+	MakeRequest(Config, Endpoint, TEXT("{{ $rpc.Method }}"), Body, AuthType, {{ if $needsSession }}Session.Token{{ else if $isAuthLogout }}Token{{ else }}TEXT(""){{ end }},
 		[OnSuccess](TSharedPtr<FJsonObject> Json)
 		{
 			{{- if $hasReturn }}
@@ -771,7 +746,7 @@ void SatoriApi::{{ $rpc.Name }}(
 			}
 			{{- end }}
 		},
-		MakeSatoriErrorAdapter(OnError), Timeout, CancellationToken);
+		OnError, Timeout, CancellationToken);
 {{- end }}
 }
 {{- end }}

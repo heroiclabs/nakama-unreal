@@ -312,6 +312,8 @@ tasks:
     - cmd: |
         cmd /c "if exist IntegrationTests\Plugins\Nakama rmdir /s /q IntegrationTests\Plugins\Nakama"
         cmd /c "mklink /J IntegrationTests\Plugins\Nakama Nakama"
+        cmd /c "if exist IntegrationTests\Plugins\Satori rmdir /s /q IntegrationTests\Plugins\Satori"
+        cmd /c "mklink /J IntegrationTests\Plugins\Satori Satori"
       platforms: [windows]
     - task: build
     - cmd: |

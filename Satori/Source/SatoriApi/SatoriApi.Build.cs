@@ -40,7 +40,7 @@ public class SatoriApi : ModuleRules
 		PublicDependencyModuleNames.AddRange(
 			new string[]
 			{
-				"Core", "HTTP", "JsonUtilities", "NakamaApi"
+				"Core", "HTTP", "JsonUtilities"
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);
