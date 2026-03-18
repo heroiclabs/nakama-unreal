@@ -97,11 +97,12 @@ func (v *messageVisitor) VisitOneof(oneof *proto.Oneof) {
 }
 
 func (v *messageVisitor) VisitOneofField(oneof *proto.OneOfField) {
-	// Sometimes we can get types like more qualified
-	// types like api.MyMessage, so take only the bit after last dot.
-	oneof.Name = stripAfterLastDot(oneof.Name)
+	// Sometimes we can get more qualified types like api.MyMessage,
+	// so take only the bit after last dot. Copy to avoid mutating the parsed proto.
+	field := *oneof
+	field.Name = stripAfterLastDot(field.Name)
 
-	v.Message.OneofFields = append(v.Message.OneofFields, oneof)
+	v.Message.OneofFields = append(v.Message.OneofFields, &field)
 }
 
 // --------------------
@@ -122,20 +123,25 @@ type rpcVisitor struct {
 	Rpc *visitedRpc
 }
 
-func tryGetHttpMethod(str string) (string, bool) {
-	if strings.Contains(str, "post") {
-		return "POST", true
-	}
-	if strings.Contains(str, "get") {
-		return "GET", true
-	}
-	if strings.Contains(str, "delete") {
-		return "DELETE", true
-	}
-	if strings.Contains(str, "put") {
-		return "PUT", true
-	}
+var httpMethods = map[string]string{
+	"get":    "GET",
+	"post":   "POST",
+	"put":    "PUT",
+	"delete": "DELETE",
+	"patch":  "PATCH",
+}
 
+func tryGetHttpMethod(str string) (string, bool) {
+	// Exact match first (e.g. "post" from OrderedMap keys).
+	if method, ok := httpMethods[str]; ok {
+		return method, true
+	}
+	// Suffix match for qualified names like "(google.api.http).post".
+	if i := strings.LastIndex(str, "."); i >= 0 {
+		if method, ok := httpMethods[str[i+1:]]; ok {
+			return method, true
+		}
+	}
 	return "", false
 }
 

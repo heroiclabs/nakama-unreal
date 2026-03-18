@@ -42,7 +42,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnNakamaRtSuccess);
 /**
  * {{ $msgType.Comment }}
  */
-UCLASS()
+UCLASS(Transient)
 class NAKAMABLUEPRINTS_API UNakamaRealtimeClient{{ $msgType.Name }} : public UBlueprintAsyncActionBase
 {
 	GENERATED_BODY()

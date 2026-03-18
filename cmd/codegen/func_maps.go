@@ -25,7 +25,6 @@ func getGeneralFuncMap(api Api) template.FuncMap {
 		"camelCase":      textcase.CamelCase,
 		"pascalCase":     textcase.PascalCase,
 		"snakeCase":      textcase.SnakeCase,
-		"title":          strings.Title,
 		"upperCase":      strings.ToUpper,
 		"trimPrefix":     strings.TrimPrefix,
 		"containsString": strings.Contains,
@@ -57,11 +56,7 @@ func getGeneralFuncMap(api Api) template.FuncMap {
 			}
 			return strings.ToLower(s[:1]) + s[1:]
 		},
-		"appendString": func(s1 string, s2 string) bool {
-			s1 += s2
-			return true
-		},
-		"appendStringNew": func(s1 string, s2 string) string {
+		"appendString": func(s1 string, s2 string) string {
 			return s1 + s2
 		},
 		"isEnumInput": func(messageName string) bool {
@@ -504,7 +499,8 @@ func getUnrealFuncMap(api Api) template.FuncMap {
 		"getMessageMapFields":  getMessageMapFields,
 		// canDefaultFlattenedFields returns true if it's safe to add default values to
 		// flattened sub-fields at the given index. This is only safe when all subsequent
-		// fields are themselves flattenable (and will also get defaults) or are maps.
+		// NormalFields are themselves flattenable (and will also get defaults).
+		// MapFields are emitted in a separate template pass and always have defaults.
 		"canDefaultFlattenedFields": func(fields []*proto.NormalField, currentIdx int) bool {
 			for i := currentIdx + 1; i < len(fields); i++ {
 				f := fields[i]

@@ -34,7 +34,7 @@ UNakamaRealtimeClientChannel* UNakamaRealtimeClientChannel::Channel(
 	FString UserIdOne,
 	FString UserIdTwo)
 {
-	UNakamaRealtimeClientChannel* Action = NewObject<UNakamaRealtimeClientChannel>(WorldContextObject);
+	UNakamaRealtimeClientChannel* Action = NewObject<UNakamaRealtimeClientChannel>(GetTransientPackage());
 	Action->StoredWebSocketSubsystem = WebSocketSubsystem;
 	Action->StoredId = Id;
 	Action->StoredPresences = Presences;
@@ -134,7 +134,7 @@ UNakamaRealtimeClientChannelJoin* UNakamaRealtimeClientChannelJoin::ChannelJoin(
 	bool Persistence,
 	bool Hidden)
 {
-	UNakamaRealtimeClientChannelJoin* Action = NewObject<UNakamaRealtimeClientChannelJoin>(WorldContextObject);
+	UNakamaRealtimeClientChannelJoin* Action = NewObject<UNakamaRealtimeClientChannelJoin>(GetTransientPackage());
 	Action->StoredWebSocketSubsystem = WebSocketSubsystem;
 	Action->StoredTarget = Target;
 	Action->StoredType = Type;
@@ -205,7 +205,7 @@ UNakamaRealtimeClientChannelLeave* UNakamaRealtimeClientChannelLeave::ChannelLea
 	UNakamaWebSocketSubsystem* WebSocketSubsystem,
 	FString ChannelId)
 {
-	UNakamaRealtimeClientChannelLeave* Action = NewObject<UNakamaRealtimeClientChannelLeave>(WorldContextObject);
+	UNakamaRealtimeClientChannelLeave* Action = NewObject<UNakamaRealtimeClientChannelLeave>(GetTransientPackage());
 	Action->StoredWebSocketSubsystem = WebSocketSubsystem;
 	Action->StoredChannelId = ChannelId;
 	Action->RegisterWithGameInstance(WorldContextObject);
@@ -282,7 +282,7 @@ UNakamaRealtimeClientChannelMessage* UNakamaRealtimeClientChannelMessage::Channe
 	FString UserIdOne,
 	FString UserIdTwo)
 {
-	UNakamaRealtimeClientChannelMessage* Action = NewObject<UNakamaRealtimeClientChannelMessage>(WorldContextObject);
+	UNakamaRealtimeClientChannelMessage* Action = NewObject<UNakamaRealtimeClientChannelMessage>(GetTransientPackage());
 	Action->StoredWebSocketSubsystem = WebSocketSubsystem;
 	Action->StoredChannelId = ChannelId;
 	Action->StoredMessageId = MessageId;
@@ -414,7 +414,7 @@ UNakamaRealtimeClientChannelMessageAck* UNakamaRealtimeClientChannelMessageAck::
 	FString UserIdOne,
 	FString UserIdTwo)
 {
-	UNakamaRealtimeClientChannelMessageAck* Action = NewObject<UNakamaRealtimeClientChannelMessageAck>(WorldContextObject);
+	UNakamaRealtimeClientChannelMessageAck* Action = NewObject<UNakamaRealtimeClientChannelMessageAck>(GetTransientPackage());
 	Action->StoredWebSocketSubsystem = WebSocketSubsystem;
 	Action->StoredChannelId = ChannelId;
 	Action->StoredMessageId = MessageId;
@@ -527,7 +527,7 @@ UNakamaRealtimeClientChannelMessageSend* UNakamaRealtimeClientChannelMessageSend
 	FString ChannelId,
 	FString Content)
 {
-	UNakamaRealtimeClientChannelMessageSend* Action = NewObject<UNakamaRealtimeClientChannelMessageSend>(WorldContextObject);
+	UNakamaRealtimeClientChannelMessageSend* Action = NewObject<UNakamaRealtimeClientChannelMessageSend>(GetTransientPackage());
 	Action->StoredWebSocketSubsystem = WebSocketSubsystem;
 	Action->StoredChannelId = ChannelId;
 	Action->StoredContent = Content;
@@ -599,7 +599,7 @@ UNakamaRealtimeClientChannelMessageUpdate* UNakamaRealtimeClientChannelMessageUp
 	FString MessageId,
 	FString Content)
 {
-	UNakamaRealtimeClientChannelMessageUpdate* Action = NewObject<UNakamaRealtimeClientChannelMessageUpdate>(WorldContextObject);
+	UNakamaRealtimeClientChannelMessageUpdate* Action = NewObject<UNakamaRealtimeClientChannelMessageUpdate>(GetTransientPackage());
 	Action->StoredWebSocketSubsystem = WebSocketSubsystem;
 	Action->StoredChannelId = ChannelId;
 	Action->StoredMessageId = MessageId;
@@ -675,7 +675,7 @@ UNakamaRealtimeClientChannelMessageRemove* UNakamaRealtimeClientChannelMessageRe
 	FString ChannelId,
 	FString MessageId)
 {
-	UNakamaRealtimeClientChannelMessageRemove* Action = NewObject<UNakamaRealtimeClientChannelMessageRemove>(WorldContextObject);
+	UNakamaRealtimeClientChannelMessageRemove* Action = NewObject<UNakamaRealtimeClientChannelMessageRemove>(GetTransientPackage());
 	Action->StoredWebSocketSubsystem = WebSocketSubsystem;
 	Action->StoredChannelId = ChannelId;
 	Action->StoredMessageId = MessageId;
@@ -751,7 +751,7 @@ UNakamaRealtimeClientChannelPresenceEvent* UNakamaRealtimeClientChannelPresenceE
 	FString UserIdOne,
 	FString UserIdTwo)
 {
-	UNakamaRealtimeClientChannelPresenceEvent* Action = NewObject<UNakamaRealtimeClientChannelPresenceEvent>(WorldContextObject);
+	UNakamaRealtimeClientChannelPresenceEvent* Action = NewObject<UNakamaRealtimeClientChannelPresenceEvent>(GetTransientPackage());
 	Action->StoredWebSocketSubsystem = WebSocketSubsystem;
 	Action->StoredChannelId = ChannelId;
 	Action->StoredJoins = Joins;
@@ -858,7 +858,7 @@ UNakamaRealtimeClientError* UNakamaRealtimeClientError::Error(
 	FString Message,
 	const TMap<FString, FString>& Context)
 {
-	UNakamaRealtimeClientError* Action = NewObject<UNakamaRealtimeClientError>(WorldContextObject);
+	UNakamaRealtimeClientError* Action = NewObject<UNakamaRealtimeClientError>(GetTransientPackage());
 	Action->StoredWebSocketSubsystem = WebSocketSubsystem;
 	Action->StoredCode = Code;
 	Action->StoredMessage = Message;
@@ -940,7 +940,7 @@ UNakamaRealtimeClientMatch* UNakamaRealtimeClientMatch::Match(
 	const TArray<FNakamaRtUserPresence>& Presences,
 	FNakamaRtUserPresence Self_)
 {
-	UNakamaRealtimeClientMatch* Action = NewObject<UNakamaRealtimeClientMatch>(WorldContextObject);
+	UNakamaRealtimeClientMatch* Action = NewObject<UNakamaRealtimeClientMatch>(GetTransientPackage());
 	Action->StoredWebSocketSubsystem = WebSocketSubsystem;
 	Action->StoredMatchId = MatchId;
 	Action->StoredAuthoritative = Authoritative;
@@ -1026,7 +1026,7 @@ UNakamaRealtimeClientMatchCreate* UNakamaRealtimeClientMatchCreate::MatchCreate(
 	UNakamaWebSocketSubsystem* WebSocketSubsystem,
 	FString Name)
 {
-	UNakamaRealtimeClientMatchCreate* Action = NewObject<UNakamaRealtimeClientMatchCreate>(WorldContextObject);
+	UNakamaRealtimeClientMatchCreate* Action = NewObject<UNakamaRealtimeClientMatchCreate>(GetTransientPackage());
 	Action->StoredWebSocketSubsystem = WebSocketSubsystem;
 	Action->StoredName = Name;
 	Action->RegisterWithGameInstance(WorldContextObject);
@@ -1095,7 +1095,7 @@ UNakamaRealtimeClientMatchData* UNakamaRealtimeClientMatchData::MatchData(
 	const TArray<uint8>& Data,
 	bool Reliable)
 {
-	UNakamaRealtimeClientMatchData* Action = NewObject<UNakamaRealtimeClientMatchData>(WorldContextObject);
+	UNakamaRealtimeClientMatchData* Action = NewObject<UNakamaRealtimeClientMatchData>(GetTransientPackage());
 	Action->StoredWebSocketSubsystem = WebSocketSubsystem;
 	Action->StoredMatchId = MatchId;
 	Action->StoredPresence = Presence;
@@ -1172,7 +1172,7 @@ UNakamaRealtimeClientMatchDataSend* UNakamaRealtimeClientMatchDataSend::MatchDat
 	const TArray<FNakamaRtUserPresence>& Presences,
 	bool Reliable)
 {
-	UNakamaRealtimeClientMatchDataSend* Action = NewObject<UNakamaRealtimeClientMatchDataSend>(WorldContextObject);
+	UNakamaRealtimeClientMatchDataSend* Action = NewObject<UNakamaRealtimeClientMatchDataSend>(GetTransientPackage());
 	Action->StoredWebSocketSubsystem = WebSocketSubsystem;
 	Action->StoredMatchId = MatchId;
 	Action->StoredOpCode = OpCode;
@@ -1253,7 +1253,7 @@ UNakamaRealtimeClientMatchJoin* UNakamaRealtimeClientMatchJoin::MatchJoin(
 	UNakamaWebSocketSubsystem* WebSocketSubsystem,
 	const TMap<FString, FString>& Metadata)
 {
-	UNakamaRealtimeClientMatchJoin* Action = NewObject<UNakamaRealtimeClientMatchJoin>(WorldContextObject);
+	UNakamaRealtimeClientMatchJoin* Action = NewObject<UNakamaRealtimeClientMatchJoin>(GetTransientPackage());
 	Action->StoredWebSocketSubsystem = WebSocketSubsystem;
 	Action->StoredMetadata = Metadata;
 	Action->RegisterWithGameInstance(WorldContextObject);
@@ -1323,7 +1323,7 @@ UNakamaRealtimeClientMatchLeave* UNakamaRealtimeClientMatchLeave::MatchLeave(
 	UNakamaWebSocketSubsystem* WebSocketSubsystem,
 	FString MatchId)
 {
-	UNakamaRealtimeClientMatchLeave* Action = NewObject<UNakamaRealtimeClientMatchLeave>(WorldContextObject);
+	UNakamaRealtimeClientMatchLeave* Action = NewObject<UNakamaRealtimeClientMatchLeave>(GetTransientPackage());
 	Action->StoredWebSocketSubsystem = WebSocketSubsystem;
 	Action->StoredMatchId = MatchId;
 	Action->RegisterWithGameInstance(WorldContextObject);
@@ -1390,7 +1390,7 @@ UNakamaRealtimeClientMatchPresenceEvent* UNakamaRealtimeClientMatchPresenceEvent
 	const TArray<FNakamaRtUserPresence>& Joins,
 	const TArray<FNakamaRtUserPresence>& Leaves)
 {
-	UNakamaRealtimeClientMatchPresenceEvent* Action = NewObject<UNakamaRealtimeClientMatchPresenceEvent>(WorldContextObject);
+	UNakamaRealtimeClientMatchPresenceEvent* Action = NewObject<UNakamaRealtimeClientMatchPresenceEvent>(GetTransientPackage());
 	Action->StoredWebSocketSubsystem = WebSocketSubsystem;
 	Action->StoredMatchId = MatchId;
 	Action->StoredJoins = Joins;
@@ -1480,7 +1480,7 @@ UNakamaRealtimeClientMatchmakerAdd* UNakamaRealtimeClientMatchmakerAdd::Matchmak
 	const TMap<FString, FString>& StringProperties,
 	const TMap<FString, double>& NumericProperties)
 {
-	UNakamaRealtimeClientMatchmakerAdd* Action = NewObject<UNakamaRealtimeClientMatchmakerAdd>(WorldContextObject);
+	UNakamaRealtimeClientMatchmakerAdd* Action = NewObject<UNakamaRealtimeClientMatchmakerAdd>(GetTransientPackage());
 	Action->StoredWebSocketSubsystem = WebSocketSubsystem;
 	Action->StoredMinCount = MinCount;
 	Action->StoredMaxCount = MaxCount;
@@ -1576,7 +1576,7 @@ UNakamaRealtimeClientMatchmakerMatched* UNakamaRealtimeClientMatchmakerMatched::
 	const TArray<FNakamaRtMatchmakerMatched_MatchmakerUser>& Users,
 	FNakamaRtMatchmakerMatched_MatchmakerUser Self_)
 {
-	UNakamaRealtimeClientMatchmakerMatched* Action = NewObject<UNakamaRealtimeClientMatchmakerMatched>(WorldContextObject);
+	UNakamaRealtimeClientMatchmakerMatched* Action = NewObject<UNakamaRealtimeClientMatchmakerMatched>(GetTransientPackage());
 	Action->StoredWebSocketSubsystem = WebSocketSubsystem;
 	Action->StoredTicket = Ticket;
 	Action->StoredUsers = Users;
@@ -1653,7 +1653,7 @@ UNakamaRealtimeClientMatchmakerRemove* UNakamaRealtimeClientMatchmakerRemove::Ma
 	UNakamaWebSocketSubsystem* WebSocketSubsystem,
 	FString Ticket)
 {
-	UNakamaRealtimeClientMatchmakerRemove* Action = NewObject<UNakamaRealtimeClientMatchmakerRemove>(WorldContextObject);
+	UNakamaRealtimeClientMatchmakerRemove* Action = NewObject<UNakamaRealtimeClientMatchmakerRemove>(GetTransientPackage());
 	Action->StoredWebSocketSubsystem = WebSocketSubsystem;
 	Action->StoredTicket = Ticket;
 	Action->RegisterWithGameInstance(WorldContextObject);
@@ -1718,7 +1718,7 @@ UNakamaRealtimeClientMatchmakerTicket* UNakamaRealtimeClientMatchmakerTicket::Ma
 	UNakamaWebSocketSubsystem* WebSocketSubsystem,
 	FString Ticket)
 {
-	UNakamaRealtimeClientMatchmakerTicket* Action = NewObject<UNakamaRealtimeClientMatchmakerTicket>(WorldContextObject);
+	UNakamaRealtimeClientMatchmakerTicket* Action = NewObject<UNakamaRealtimeClientMatchmakerTicket>(GetTransientPackage());
 	Action->StoredWebSocketSubsystem = WebSocketSubsystem;
 	Action->StoredTicket = Ticket;
 	Action->RegisterWithGameInstance(WorldContextObject);
@@ -1783,7 +1783,7 @@ UNakamaRealtimeClientNotifications* UNakamaRealtimeClientNotifications::Notifica
 	UNakamaWebSocketSubsystem* WebSocketSubsystem,
 	const TArray<FString>& Notifications)
 {
-	UNakamaRealtimeClientNotifications* Action = NewObject<UNakamaRealtimeClientNotifications>(WorldContextObject);
+	UNakamaRealtimeClientNotifications* Action = NewObject<UNakamaRealtimeClientNotifications>(GetTransientPackage());
 	Action->StoredWebSocketSubsystem = WebSocketSubsystem;
 	Action->StoredNotifications = Notifications;
 	Action->RegisterWithGameInstance(WorldContextObject);
@@ -1855,7 +1855,7 @@ UNakamaRealtimeClientRpc* UNakamaRealtimeClientRpc::Rpc(
 	FString Payload,
 	FString HttpKey)
 {
-	UNakamaRealtimeClientRpc* Action = NewObject<UNakamaRealtimeClientRpc>(WorldContextObject);
+	UNakamaRealtimeClientRpc* Action = NewObject<UNakamaRealtimeClientRpc>(GetTransientPackage());
 	Action->StoredWebSocketSubsystem = WebSocketSubsystem;
 	Action->StoredId = Id;
 	Action->StoredPayload = Payload;
@@ -1930,7 +1930,7 @@ UNakamaRealtimeClientStatus* UNakamaRealtimeClientStatus::Status(
 	UNakamaWebSocketSubsystem* WebSocketSubsystem,
 	const TArray<FNakamaRtUserPresence>& Presences)
 {
-	UNakamaRealtimeClientStatus* Action = NewObject<UNakamaRealtimeClientStatus>(WorldContextObject);
+	UNakamaRealtimeClientStatus* Action = NewObject<UNakamaRealtimeClientStatus>(GetTransientPackage());
 	Action->StoredWebSocketSubsystem = WebSocketSubsystem;
 	Action->StoredPresences = Presences;
 	Action->RegisterWithGameInstance(WorldContextObject);
@@ -2001,7 +2001,7 @@ UNakamaRealtimeClientStatusFollow* UNakamaRealtimeClientStatusFollow::StatusFoll
 	const TArray<FString>& UserIds,
 	const TArray<FString>& Usernames)
 {
-	UNakamaRealtimeClientStatusFollow* Action = NewObject<UNakamaRealtimeClientStatusFollow>(WorldContextObject);
+	UNakamaRealtimeClientStatusFollow* Action = NewObject<UNakamaRealtimeClientStatusFollow>(GetTransientPackage());
 	Action->StoredWebSocketSubsystem = WebSocketSubsystem;
 	Action->StoredUserIds = UserIds;
 	Action->StoredUsernames = Usernames;
@@ -2082,7 +2082,7 @@ UNakamaRealtimeClientStatusPresenceEvent* UNakamaRealtimeClientStatusPresenceEve
 	const TArray<FNakamaRtUserPresence>& Joins,
 	const TArray<FNakamaRtUserPresence>& Leaves)
 {
-	UNakamaRealtimeClientStatusPresenceEvent* Action = NewObject<UNakamaRealtimeClientStatusPresenceEvent>(WorldContextObject);
+	UNakamaRealtimeClientStatusPresenceEvent* Action = NewObject<UNakamaRealtimeClientStatusPresenceEvent>(GetTransientPackage());
 	Action->StoredWebSocketSubsystem = WebSocketSubsystem;
 	Action->StoredJoins = Joins;
 	Action->StoredLeaves = Leaves;
@@ -2162,7 +2162,7 @@ UNakamaRealtimeClientStatusUnfollow* UNakamaRealtimeClientStatusUnfollow::Status
 	UNakamaWebSocketSubsystem* WebSocketSubsystem,
 	const TArray<FString>& UserIds)
 {
-	UNakamaRealtimeClientStatusUnfollow* Action = NewObject<UNakamaRealtimeClientStatusUnfollow>(WorldContextObject);
+	UNakamaRealtimeClientStatusUnfollow* Action = NewObject<UNakamaRealtimeClientStatusUnfollow>(GetTransientPackage());
 	Action->StoredWebSocketSubsystem = WebSocketSubsystem;
 	Action->StoredUserIds = UserIds;
 	Action->RegisterWithGameInstance(WorldContextObject);
@@ -2232,7 +2232,7 @@ UNakamaRealtimeClientStatusUpdate* UNakamaRealtimeClientStatusUpdate::StatusUpda
 	UNakamaWebSocketSubsystem* WebSocketSubsystem,
 	FString Status)
 {
-	UNakamaRealtimeClientStatusUpdate* Action = NewObject<UNakamaRealtimeClientStatusUpdate>(WorldContextObject);
+	UNakamaRealtimeClientStatusUpdate* Action = NewObject<UNakamaRealtimeClientStatusUpdate>(GetTransientPackage());
 	Action->StoredWebSocketSubsystem = WebSocketSubsystem;
 	Action->StoredStatus = Status;
 	Action->RegisterWithGameInstance(WorldContextObject);
@@ -2300,7 +2300,7 @@ UNakamaRealtimeClientStreamData* UNakamaRealtimeClientStreamData::StreamData(
 	FString Data,
 	bool Reliable)
 {
-	UNakamaRealtimeClientStreamData* Action = NewObject<UNakamaRealtimeClientStreamData>(WorldContextObject);
+	UNakamaRealtimeClientStreamData* Action = NewObject<UNakamaRealtimeClientStreamData>(GetTransientPackage());
 	Action->StoredWebSocketSubsystem = WebSocketSubsystem;
 	Action->StoredStream = Stream;
 	Action->StoredSender = Sender;
@@ -2373,7 +2373,7 @@ UNakamaRealtimeClientStreamPresenceEvent* UNakamaRealtimeClientStreamPresenceEve
 	const TArray<FNakamaRtUserPresence>& Joins,
 	const TArray<FNakamaRtUserPresence>& Leaves)
 {
-	UNakamaRealtimeClientStreamPresenceEvent* Action = NewObject<UNakamaRealtimeClientStreamPresenceEvent>(WorldContextObject);
+	UNakamaRealtimeClientStreamPresenceEvent* Action = NewObject<UNakamaRealtimeClientStreamPresenceEvent>(GetTransientPackage());
 	Action->StoredWebSocketSubsystem = WebSocketSubsystem;
 	Action->StoredStream = Stream;
 	Action->StoredJoins = Joins;
@@ -2454,7 +2454,7 @@ UNakamaRealtimeClientPing* UNakamaRealtimeClientPing::Ping(
 	UObject* WorldContextObject,
 	UNakamaWebSocketSubsystem* WebSocketSubsystem)
 {
-	UNakamaRealtimeClientPing* Action = NewObject<UNakamaRealtimeClientPing>(WorldContextObject);
+	UNakamaRealtimeClientPing* Action = NewObject<UNakamaRealtimeClientPing>(GetTransientPackage());
 	Action->StoredWebSocketSubsystem = WebSocketSubsystem;
 	Action->RegisterWithGameInstance(WorldContextObject);
 	return Action;
@@ -2513,7 +2513,7 @@ UNakamaRealtimeClientPong* UNakamaRealtimeClientPong::Pong(
 	UObject* WorldContextObject,
 	UNakamaWebSocketSubsystem* WebSocketSubsystem)
 {
-	UNakamaRealtimeClientPong* Action = NewObject<UNakamaRealtimeClientPong>(WorldContextObject);
+	UNakamaRealtimeClientPong* Action = NewObject<UNakamaRealtimeClientPong>(GetTransientPackage());
 	Action->StoredWebSocketSubsystem = WebSocketSubsystem;
 	Action->RegisterWithGameInstance(WorldContextObject);
 	return Action;
@@ -2580,7 +2580,7 @@ UNakamaRealtimeClientParty* UNakamaRealtimeClientParty::Party(
 	const TArray<FNakamaRtUserPresence>& Presences,
 	FString Label)
 {
-	UNakamaRealtimeClientParty* Action = NewObject<UNakamaRealtimeClientParty>(WorldContextObject);
+	UNakamaRealtimeClientParty* Action = NewObject<UNakamaRealtimeClientParty>(GetTransientPackage());
 	Action->StoredWebSocketSubsystem = WebSocketSubsystem;
 	Action->StoredPartyId = PartyId;
 	Action->StoredOpen = Open;
@@ -2673,7 +2673,7 @@ UNakamaRealtimeClientPartyCreate* UNakamaRealtimeClientPartyCreate::PartyCreate(
 	FString Label,
 	bool Hidden)
 {
-	UNakamaRealtimeClientPartyCreate* Action = NewObject<UNakamaRealtimeClientPartyCreate>(WorldContextObject);
+	UNakamaRealtimeClientPartyCreate* Action = NewObject<UNakamaRealtimeClientPartyCreate>(GetTransientPackage());
 	Action->StoredWebSocketSubsystem = WebSocketSubsystem;
 	Action->StoredOpen = Open;
 	Action->StoredMaxSize = MaxSize;
@@ -2744,7 +2744,7 @@ UNakamaRealtimeClientPartyJoin* UNakamaRealtimeClientPartyJoin::PartyJoin(
 	UNakamaWebSocketSubsystem* WebSocketSubsystem,
 	FString PartyId)
 {
-	UNakamaRealtimeClientPartyJoin* Action = NewObject<UNakamaRealtimeClientPartyJoin>(WorldContextObject);
+	UNakamaRealtimeClientPartyJoin* Action = NewObject<UNakamaRealtimeClientPartyJoin>(GetTransientPackage());
 	Action->StoredWebSocketSubsystem = WebSocketSubsystem;
 	Action->StoredPartyId = PartyId;
 	Action->RegisterWithGameInstance(WorldContextObject);
@@ -2809,7 +2809,7 @@ UNakamaRealtimeClientPartyLeave* UNakamaRealtimeClientPartyLeave::PartyLeave(
 	UNakamaWebSocketSubsystem* WebSocketSubsystem,
 	FString PartyId)
 {
-	UNakamaRealtimeClientPartyLeave* Action = NewObject<UNakamaRealtimeClientPartyLeave>(WorldContextObject);
+	UNakamaRealtimeClientPartyLeave* Action = NewObject<UNakamaRealtimeClientPartyLeave>(GetTransientPackage());
 	Action->StoredWebSocketSubsystem = WebSocketSubsystem;
 	Action->StoredPartyId = PartyId;
 	Action->RegisterWithGameInstance(WorldContextObject);
@@ -2875,7 +2875,7 @@ UNakamaRealtimeClientPartyPromote* UNakamaRealtimeClientPartyPromote::PartyPromo
 	FString PartyId,
 	FNakamaRtUserPresence Presence)
 {
-	UNakamaRealtimeClientPartyPromote* Action = NewObject<UNakamaRealtimeClientPartyPromote>(WorldContextObject);
+	UNakamaRealtimeClientPartyPromote* Action = NewObject<UNakamaRealtimeClientPartyPromote>(GetTransientPackage());
 	Action->StoredWebSocketSubsystem = WebSocketSubsystem;
 	Action->StoredPartyId = PartyId;
 	Action->StoredPresence = Presence;
@@ -2943,7 +2943,7 @@ UNakamaRealtimeClientPartyLeader* UNakamaRealtimeClientPartyLeader::PartyLeader(
 	FString PartyId,
 	FNakamaRtUserPresence Presence)
 {
-	UNakamaRealtimeClientPartyLeader* Action = NewObject<UNakamaRealtimeClientPartyLeader>(WorldContextObject);
+	UNakamaRealtimeClientPartyLeader* Action = NewObject<UNakamaRealtimeClientPartyLeader>(GetTransientPackage());
 	Action->StoredWebSocketSubsystem = WebSocketSubsystem;
 	Action->StoredPartyId = PartyId;
 	Action->StoredPresence = Presence;
@@ -3011,7 +3011,7 @@ UNakamaRealtimeClientPartyAccept* UNakamaRealtimeClientPartyAccept::PartyAccept(
 	FString PartyId,
 	FNakamaRtUserPresence Presence)
 {
-	UNakamaRealtimeClientPartyAccept* Action = NewObject<UNakamaRealtimeClientPartyAccept>(WorldContextObject);
+	UNakamaRealtimeClientPartyAccept* Action = NewObject<UNakamaRealtimeClientPartyAccept>(GetTransientPackage());
 	Action->StoredWebSocketSubsystem = WebSocketSubsystem;
 	Action->StoredPartyId = PartyId;
 	Action->StoredPresence = Presence;
@@ -3079,7 +3079,7 @@ UNakamaRealtimeClientPartyRemove* UNakamaRealtimeClientPartyRemove::PartyRemove(
 	FString PartyId,
 	FNakamaRtUserPresence Presence)
 {
-	UNakamaRealtimeClientPartyRemove* Action = NewObject<UNakamaRealtimeClientPartyRemove>(WorldContextObject);
+	UNakamaRealtimeClientPartyRemove* Action = NewObject<UNakamaRealtimeClientPartyRemove>(GetTransientPackage());
 	Action->StoredWebSocketSubsystem = WebSocketSubsystem;
 	Action->StoredPartyId = PartyId;
 	Action->StoredPresence = Presence;
@@ -3146,7 +3146,7 @@ UNakamaRealtimeClientPartyClose* UNakamaRealtimeClientPartyClose::PartyClose(
 	UNakamaWebSocketSubsystem* WebSocketSubsystem,
 	FString PartyId)
 {
-	UNakamaRealtimeClientPartyClose* Action = NewObject<UNakamaRealtimeClientPartyClose>(WorldContextObject);
+	UNakamaRealtimeClientPartyClose* Action = NewObject<UNakamaRealtimeClientPartyClose>(GetTransientPackage());
 	Action->StoredWebSocketSubsystem = WebSocketSubsystem;
 	Action->StoredPartyId = PartyId;
 	Action->RegisterWithGameInstance(WorldContextObject);
@@ -3211,7 +3211,7 @@ UNakamaRealtimeClientPartyJoinRequestList* UNakamaRealtimeClientPartyJoinRequest
 	UNakamaWebSocketSubsystem* WebSocketSubsystem,
 	FString PartyId)
 {
-	UNakamaRealtimeClientPartyJoinRequestList* Action = NewObject<UNakamaRealtimeClientPartyJoinRequestList>(WorldContextObject);
+	UNakamaRealtimeClientPartyJoinRequestList* Action = NewObject<UNakamaRealtimeClientPartyJoinRequestList>(GetTransientPackage());
 	Action->StoredWebSocketSubsystem = WebSocketSubsystem;
 	Action->StoredPartyId = PartyId;
 	Action->RegisterWithGameInstance(WorldContextObject);
@@ -3277,7 +3277,7 @@ UNakamaRealtimeClientPartyJoinRequest* UNakamaRealtimeClientPartyJoinRequest::Pa
 	FString PartyId,
 	const TArray<FNakamaRtUserPresence>& Presences)
 {
-	UNakamaRealtimeClientPartyJoinRequest* Action = NewObject<UNakamaRealtimeClientPartyJoinRequest>(WorldContextObject);
+	UNakamaRealtimeClientPartyJoinRequest* Action = NewObject<UNakamaRealtimeClientPartyJoinRequest>(GetTransientPackage());
 	Action->StoredWebSocketSubsystem = WebSocketSubsystem;
 	Action->StoredPartyId = PartyId;
 	Action->StoredPresences = Presences;
@@ -3358,7 +3358,7 @@ UNakamaRealtimeClientPartyMatchmakerAdd* UNakamaRealtimeClientPartyMatchmakerAdd
 	const TMap<FString, FString>& StringProperties,
 	const TMap<FString, double>& NumericProperties)
 {
-	UNakamaRealtimeClientPartyMatchmakerAdd* Action = NewObject<UNakamaRealtimeClientPartyMatchmakerAdd>(WorldContextObject);
+	UNakamaRealtimeClientPartyMatchmakerAdd* Action = NewObject<UNakamaRealtimeClientPartyMatchmakerAdd>(GetTransientPackage());
 	Action->StoredWebSocketSubsystem = WebSocketSubsystem;
 	Action->StoredPartyId = PartyId;
 	Action->StoredMinCount = MinCount;
@@ -3458,7 +3458,7 @@ UNakamaRealtimeClientPartyMatchmakerRemove* UNakamaRealtimeClientPartyMatchmaker
 	FString PartyId,
 	FString Ticket)
 {
-	UNakamaRealtimeClientPartyMatchmakerRemove* Action = NewObject<UNakamaRealtimeClientPartyMatchmakerRemove>(WorldContextObject);
+	UNakamaRealtimeClientPartyMatchmakerRemove* Action = NewObject<UNakamaRealtimeClientPartyMatchmakerRemove>(GetTransientPackage());
 	Action->StoredWebSocketSubsystem = WebSocketSubsystem;
 	Action->StoredPartyId = PartyId;
 	Action->StoredTicket = Ticket;
@@ -3529,7 +3529,7 @@ UNakamaRealtimeClientPartyMatchmakerTicket* UNakamaRealtimeClientPartyMatchmaker
 	FString PartyId,
 	FString Ticket)
 {
-	UNakamaRealtimeClientPartyMatchmakerTicket* Action = NewObject<UNakamaRealtimeClientPartyMatchmakerTicket>(WorldContextObject);
+	UNakamaRealtimeClientPartyMatchmakerTicket* Action = NewObject<UNakamaRealtimeClientPartyMatchmakerTicket>(GetTransientPackage());
 	Action->StoredWebSocketSubsystem = WebSocketSubsystem;
 	Action->StoredPartyId = PartyId;
 	Action->StoredTicket = Ticket;
@@ -3602,7 +3602,7 @@ UNakamaRealtimeClientPartyData* UNakamaRealtimeClientPartyData::PartyData(
 	int64 OpCode,
 	const TArray<uint8>& Data)
 {
-	UNakamaRealtimeClientPartyData* Action = NewObject<UNakamaRealtimeClientPartyData>(WorldContextObject);
+	UNakamaRealtimeClientPartyData* Action = NewObject<UNakamaRealtimeClientPartyData>(GetTransientPackage());
 	Action->StoredWebSocketSubsystem = WebSocketSubsystem;
 	Action->StoredPartyId = PartyId;
 	Action->StoredPresence = Presence;
@@ -3675,7 +3675,7 @@ UNakamaRealtimeClientPartyDataSend* UNakamaRealtimeClientPartyDataSend::PartyDat
 	int64 OpCode,
 	const TArray<uint8>& Data)
 {
-	UNakamaRealtimeClientPartyDataSend* Action = NewObject<UNakamaRealtimeClientPartyDataSend>(WorldContextObject);
+	UNakamaRealtimeClientPartyDataSend* Action = NewObject<UNakamaRealtimeClientPartyDataSend>(GetTransientPackage());
 	Action->StoredWebSocketSubsystem = WebSocketSubsystem;
 	Action->StoredPartyId = PartyId;
 	Action->StoredOpCode = OpCode;
@@ -3746,7 +3746,7 @@ UNakamaRealtimeClientPartyPresenceEvent* UNakamaRealtimeClientPartyPresenceEvent
 	const TArray<FNakamaRtUserPresence>& Joins,
 	const TArray<FNakamaRtUserPresence>& Leaves)
 {
-	UNakamaRealtimeClientPartyPresenceEvent* Action = NewObject<UNakamaRealtimeClientPartyPresenceEvent>(WorldContextObject);
+	UNakamaRealtimeClientPartyPresenceEvent* Action = NewObject<UNakamaRealtimeClientPartyPresenceEvent>(GetTransientPackage());
 	Action->StoredWebSocketSubsystem = WebSocketSubsystem;
 	Action->StoredPartyId = PartyId;
 	Action->StoredJoins = Joins;
@@ -3834,7 +3834,7 @@ UNakamaRealtimeClientPartyUpdate* UNakamaRealtimeClientPartyUpdate::PartyUpdate(
 	bool Open,
 	bool Hidden)
 {
-	UNakamaRealtimeClientPartyUpdate* Action = NewObject<UNakamaRealtimeClientPartyUpdate>(WorldContextObject);
+	UNakamaRealtimeClientPartyUpdate* Action = NewObject<UNakamaRealtimeClientPartyUpdate>(GetTransientPackage());
 	Action->StoredWebSocketSubsystem = WebSocketSubsystem;
 	Action->StoredPartyId = PartyId;
 	Action->StoredLabel = Label;

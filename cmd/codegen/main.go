@@ -25,6 +25,8 @@ import (
 	"github.com/emicklei/proto"
 )
 
+var bracketContentRe = regexp.MustCompile(`\[(.*?)\]`)
+
 type Api struct {
 	// Use slices to preserve order of proto messages
 	Enums    []*visitedEnum
@@ -60,8 +62,7 @@ func (api *Api) addFile(protoFile string) error {
 					comment = enum.Comment.Message()
 
 					// Find everything between square brackets
-					re := regexp.MustCompile(`\[(.*?)\]`)
-					matches := re.FindAllStringSubmatch(comment, -1)
+					matches := bracketContentRe.FindAllStringSubmatch(comment, -1)
 					for _, match := range matches {
 						// match[0] is the entire match, match[1] is the first submatch.
 						comment = match[1]
@@ -179,7 +180,9 @@ func loadApi(protoFiles []string, prefix string) (Api, error) {
 	// Updates maps internally, so each subsequent
 	// file will have previous context to work with.
 	for _, f := range protoFiles {
-		api.addFile(f)
+		if err := api.addFile(f); err != nil {
+			return api, err
+		}
 	}
 
 	return api, nil
@@ -234,7 +237,10 @@ func main() {
 
 	// Load partial templates (_*.tmpl) from the same directory as the main template
 	partialPattern := filepath.Join(filepath.Dir(*argTmpl), "_*.tmpl")
-	partials, _ := filepath.Glob(partialPattern)
+	partials, err := filepath.Glob(partialPattern)
+	if err != nil {
+		log.Fatalf("Failed to glob partial templates %s: %s", partialPattern, err.Error())
+	}
 	for _, p := range partials {
 		pBytes, err := os.ReadFile(p)
 		if err != nil {
@@ -257,6 +263,6 @@ func main() {
 	//
 	// Generate the code from parsed API using the parsed Template.
 	if err := tmpl.Execute(os.Stdout, api); err != nil {
-		log.Printf("Failed to execute template '%s': %s", *argTmpl, err.Error())
+		log.Fatalf("Failed to execute template '%s': %s", *argTmpl, err.Error())
 	}
 }

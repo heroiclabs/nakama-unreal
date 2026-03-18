@@ -36,7 +36,7 @@ UNakamaRealtimeClient{{ $msgType.Name }}* UNakamaRealtimeClient{{ $msgType.Name 
 	const {{ getUnrealMapType $field.Type }}& {{ $field.Name | pascalCase | ueReservedParamNamePostfix }}
 {{- end }})
 {
-	UNakamaRealtimeClient{{ $msgType.Name }}* Action = NewObject<UNakamaRealtimeClient{{ $msgType.Name }}>(WorldContextObject);
+	UNakamaRealtimeClient{{ $msgType.Name }}* Action = NewObject<UNakamaRealtimeClient{{ $msgType.Name }}>(GetTransientPackage());
 	Action->StoredWebSocketSubsystem = WebSocketSubsystem;
 {{- range $fidx, $field := $msgType.Fields }}
 	Action->Stored{{ $field.Name | pascalCase }} = {{ $field.Name | pascalCase | ueReservedParamNamePostfix }};
