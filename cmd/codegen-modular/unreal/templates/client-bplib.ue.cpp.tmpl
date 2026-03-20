@@ -16,31 +16,6 @@
 
 /* This code is auto-generated. DO NOT EDIT. */
 
-#include "NakamaApi.h"
-#include "NakamaHttpHelper.h"
+#include "{{ $.Name }}ClientBlueprintLibrary.h"
 
-#include "Modules/ModuleManager.h"
-#include "GenericPlatform/GenericPlatformHttp.h"
-
-DEFINE_LOG_CATEGORY(LogNakama);
-
-using namespace NakamaHttpInternal;
-
-{{- template "api_method_implementations" . }}
-
-// Module implementation
-class FNakamaApiModule : public IModuleInterface
-{
-public:
-	virtual void StartupModule() override
-	{
-		UE_LOG(LogNakama, Log, TEXT("NakamaApi module starting"));
-	}
-
-	virtual void ShutdownModule() override
-	{
-		UE_LOG(LogNakama, Log, TEXT("NakamaApi module shutting down"));
-	}
-};
-
-IMPLEMENT_MODULE(FNakamaApiModule, NakamaApi)
+{{- template "bp_action_class_implementations" . }}

@@ -16,11 +16,11 @@
 
 /* This code is auto-generated. DO NOT EDIT. */
 
-#include "Nakama.h"
+#include "{{ $.Name }}.h"
 #include "Containers/Ticker.h"
 #include "Modules/ModuleManager.h"
 
-bool Nakama::IsTransientError(const FNakamaError& Error) noexcept
+bool {{ $.Name }}::IsTransientError(const {{ $.TypePrefix }}Error& Error) noexcept
 {
 	switch (Error.Code)
 	{
@@ -34,90 +34,41 @@ bool Nakama::IsTransientError(const FNakamaError& Error) noexcept
 	}
 }
 
-float Nakama::CalculateBackoff(int32 Attempt, const FNakamaRetryConfig& Config) noexcept
+float {{ $.Name }}::CalculateBackoff(int32 Attempt, const {{ $.TypePrefix }}RetryConfig& Config) noexcept
 {
 	const float ExponentialDelay = FMath::Pow(2.0f, static_cast<float>(Attempt - 1)) * Config.BaseDelayMs;
 	const float Jitter = FMath::FRand() * ExponentialDelay;
 	return Jitter / 1000.0f;
 }
 
-namespace
-{
-
-/** Optionally refresh the session before calling the RPC. */
-void MaybeRefreshThenCall(
-	const TSharedRef<FNakamaSession>& SessionState,
-	const FNakamaClientConfig& ClientConfig,
-	const FNakamaRetryConfig& RetryConfig,
-	const TSharedRef<std::atomic<bool>>& CancellationToken,
-	const TSharedRef<TFunction<void(const FNakamaError&)>>& OnError,
-	TFunction<void()> OnReady) noexcept
-{
-	if (!RetryConfig.bAutoRefreshSession
-		|| SessionState->RefreshToken.IsEmpty()
-		|| !SessionState->IsExpired(RetryConfig.AutoRefreshBufferSeconds))
-	{
-		OnReady();
-		return;
-	}
-
-	if (SessionState->IsRefreshExpired())
-	{
-		(*OnError)(FNakamaError(TEXT("Refresh token has expired"), 16));
-		return;
-	}
-
-	auto OnSessionRefreshed = RetryConfig.OnSessionRefreshed;
-	auto OnSessionRefreshedOwner = RetryConfig.OnSessionRefreshedOwner;
-	NakamaApi::SessionRefresh(
-		ClientConfig,
-		SessionState->RefreshToken,
-		{},
-		[SessionState, OnSessionRefreshed, OnSessionRefreshedOwner, OnReady = MoveTemp(OnReady)](const FNakamaSession& RefreshedSession) mutable
-		{
-			SessionState->Update(RefreshedSession.Token, RefreshedSession.RefreshToken);
-			if (OnSessionRefreshed && (OnSessionRefreshedOwner.IsExplicitlyNull() || OnSessionRefreshedOwner.IsValid()))
-			{
-				OnSessionRefreshed(*SessionState);
-			}
-			OnReady();
-		},
-		[OnError](const FNakamaError& Error)
-		{
-			(*OnError)(FNakamaError(FString::Printf(TEXT("Session refresh failed: %s"), *Error.Message), Error.Code));
-		},
-		RetryConfig.Timeout,
-		CancellationToken);
-}
-
-} // anonymous namespace
+{{- template "maybe_refresh_then_call" . }}
 {{- range $m := $.Methods }}
 
-TNakamaFuture<{{ $m.AsyncResultType }}Result> Nakama::{{ $m.Name }}(
-	const FNakamaClientConfig& ClientConfig,
+T{{ $.Name }}Future<{{ $m.AsyncResultType }}Result> {{ $.Name }}::{{ $m.Name }}(
+	const {{ $.TypePrefix }}ClientConfig& ClientConfig,
 	{{- if $m.LeadParam }}
 	{{ $m.LeadParam.Type }} {{ $m.LeadParam.Name }},
 	{{- end }}
 	{{- range $m.HighLevelParams }}
 	{{ .ParamType }} {{ .Name }},
 	{{- end }}
-	const FNakamaRetryConfig& RetryConfig,
+	const {{ $.TypePrefix }}RetryConfig& RetryConfig,
 	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
 {
-	auto FutureState = MakeShared<TNakamaFuture<{{ $m.AsyncResultType }}Result>::FState>();
+	auto FutureState = MakeShared<T{{ $.Name }}Future<{{ $m.AsyncResultType }}Result>::FState>();
 {{- if eq $m.AuthType "Bearer" }}
-	auto SessionState = MakeShared<FNakamaSession>(Session);
+	auto SessionState = MakeShared<{{ $.TypePrefix }}Session>(Session);
 {{- end }}
 	auto RetryCount = MakeShared<int32>(0);
 	auto DoRequest = MakeShared<TFunction<void()>>();
-	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
+	auto OnError = MakeShared<TFunction<void(const {{ $.TypePrefix }}Error&)>>();
 
-	*OnError = [FutureState, RetryCount, DoRequest, OnError, RetryConfig](const FNakamaError& Error)
+	*OnError = [FutureState, RetryCount, DoRequest, OnError, RetryConfig](const {{ $.TypePrefix }}Error& Error)
 	{
-		if (Nakama::IsTransientError(Error) && *RetryCount < RetryConfig.MaxRetries)
+		if ({{ $.Name }}::IsTransientError(Error) && *RetryCount < RetryConfig.MaxRetries)
 		{
 			(*RetryCount)++;
-			float Delay = Nakama::CalculateBackoff(*RetryCount, RetryConfig);
+			float Delay = {{ $.Name }}::CalculateBackoff(*RetryCount, RetryConfig);
 			FTSTicker::GetCoreTicker().AddTicker(
 				FTickerDelegate::CreateLambda([DoRequest](float) -> bool { (*DoRequest)(); return false; }),
 				Delay);
@@ -145,7 +96,7 @@ TNakamaFuture<{{ $m.AsyncResultType }}Result> Nakama::{{ $m.Name }}(
 				{{ $g.FieldName }}.{{ . }} = {{ . }};
 				{{- end }}
 				{{- end }}
-				NakamaApi::{{ $m.Name }}(
+				{{ $.Name }}Api::{{ $m.Name }}(
 					ClientConfig,
 					*SessionState,
 					{{- range $m.Fields }}
@@ -155,7 +106,7 @@ TNakamaFuture<{{ $m.AsyncResultType }}Result> Nakama::{{ $m.Name }}(
 					{{ .Name }},
 					{{- end }}
 					{{- if $m.HasReturn }}
-					[FutureState, DoRequest, OnError](const FNakama{{ $m.ReturnType }}& Result)
+					[FutureState, DoRequest, OnError](const {{ $.TypePrefix }}{{ $m.ReturnType }}& Result)
 					{
 						*DoRequest = nullptr;
 						*OnError = nullptr;
@@ -166,7 +117,7 @@ TNakamaFuture<{{ $m.AsyncResultType }}Result> Nakama::{{ $m.Name }}(
 					{
 						*DoRequest = nullptr;
 						*OnError = nullptr;
-						FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+						FutureState->Resolve({{ $.TypePrefix }}VoidResult{{ "{" }}{{ $.TypePrefix }}Void{}, {}, false});
 					},
 					{{- end }}
 					*OnError,
@@ -180,7 +131,7 @@ TNakamaFuture<{{ $m.AsyncResultType }}Result> Nakama::{{ $m.Name }}(
 		{{ $g.FieldName }}.{{ . }} = {{ . }};
 		{{- end }}
 		{{- end }}
-		NakamaApi::{{ $m.Name }}(
+		{{ $.Name }}Api::{{ $m.Name }}(
 			ClientConfig,
 			{{- if eq $m.AuthType "HttpKey" }}
 			HttpKey,
@@ -192,7 +143,7 @@ TNakamaFuture<{{ $m.AsyncResultType }}Result> Nakama::{{ $m.Name }}(
 			{{ .Name }},
 			{{- end }}
 			{{- if $m.HasReturn }}
-			[FutureState, DoRequest, OnError](const FNakama{{ $m.ReturnType }}& Result)
+			[FutureState, DoRequest, OnError](const {{ $.TypePrefix }}{{ $m.ReturnType }}& Result)
 			{
 				*DoRequest = nullptr;
 				*OnError = nullptr;
@@ -203,7 +154,7 @@ TNakamaFuture<{{ $m.AsyncResultType }}Result> Nakama::{{ $m.Name }}(
 			{
 				*DoRequest = nullptr;
 				*OnError = nullptr;
-				FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+				FutureState->Resolve({{ $.TypePrefix }}VoidResult{{ "{" }}{{ $.TypePrefix }}Void{}, {}, false});
 			},
 			{{- end }}
 			*OnError,
@@ -214,23 +165,23 @@ TNakamaFuture<{{ $m.AsyncResultType }}Result> Nakama::{{ $m.Name }}(
 
 	(*DoRequest)();
 
-	return TNakamaFuture<{{ $m.AsyncResultType }}Result>(FutureState);
+	return T{{ $.Name }}Future<{{ $m.AsyncResultType }}Result>(FutureState);
 }
 {{- end }}
 
 // Module implementation
-class FNakamaModule : public IModuleInterface
+class F{{ $.Name }}Module : public IModuleInterface
 {
 public:
 	virtual void StartupModule() override
 	{
-		UE_LOG(LogNakama, Log, TEXT("Nakama module starting"));
+		UE_LOG(Log{{ $.Name }}, Log, TEXT("{{ $.Name }} module starting"));
 	}
 
 	virtual void ShutdownModule() override
 	{
-		UE_LOG(LogNakama, Log, TEXT("Nakama module shutting down"));
+		UE_LOG(Log{{ $.Name }}, Log, TEXT("{{ $.Name }} module shutting down"));
 	}
 };
 
-IMPLEMENT_MODULE(FNakamaModule, Nakama)
+IMPLEMENT_MODULE(F{{ $.Name }}Module, {{ $.Name }})

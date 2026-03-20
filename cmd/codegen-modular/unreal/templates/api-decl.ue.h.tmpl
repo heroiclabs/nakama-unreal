@@ -1,0 +1,56 @@
+/*
+ * Copyright {{currentYear}} The Nakama Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/* This code is auto-generated. DO NOT EDIT. */
+
+#pragma once
+
+#include <atomic>
+#include "CoreMinimal.h"
+#include "Templates/Function.h"
+#include "Templates/SharedPointer.h"
+#include "Dom/JsonObject.h"
+#include "{{ $.Name }}Types.h"
+
+{{ $.ApiExport }} DECLARE_LOG_CATEGORY_EXTERN(Log{{ $.Name }}, Log, All);
+
+/** Low-level {{ $.Name }} API: free functions for HTTP RPCs (callback-based). */
+namespace {{ $.Name }}Api
+{
+{{- range $m := $.Methods }}
+
+	/** {{ $m.Comment }} */
+	{{ $.ApiExport }} void {{ $m.Name }}(
+		const {{ $.TypePrefix }}ClientConfig& Config,
+		{{- if $m.LeadParam }}
+		{{ $m.LeadParam.Type }} {{ $m.LeadParam.Name }},
+		{{- end }}
+		{{- range $m.Fields }}
+		{{ .ParamType }} {{ .Name }},
+		{{- end }}
+		{{- range $m.MapFields }}
+		{{ .ParamType }} {{ .Name }},
+		{{- end }}
+		{{- if $m.HasReturn }}
+		TFunction<void(const {{ $.TypePrefix }}{{ $m.ReturnType }}&)> OnSuccess,
+		{{- else }}
+		TFunction<void()> OnSuccess,
+		{{- end }}
+		TFunction<void(const {{ $.TypePrefix }}Error&)> OnError,
+		float Timeout = 10.0f,
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
+{{- end }}
+}

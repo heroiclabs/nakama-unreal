@@ -17,6 +17,7 @@
 package codegen
 
 import (
+	"embed"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -24,6 +25,13 @@ import (
 
 	"heroiclabs.com/modular-codegen/schema"
 )
+
+// StaticFile maps an embedded file to its output name.
+type StaticFile struct {
+	FS     embed.FS // Embedded filesystem containing the file.
+	Source string   // Path within the embedded FS (e.g., "static/NakamaHttpHelper.h").
+	Output string   // Output file name (e.g., "NakamaHttpHelper.h").
+}
 
 type Production struct {
 	TemplateContent  string // Template source text (not a file path)
@@ -37,9 +45,10 @@ type Production struct {
 }
 
 type Module struct {
-	TypeMap  any // Target-specific type map; passed through to ViewModelFactory.
-	Partials []string // Shared partial template contents (define blocks) available to all productions.
-	Produces []Production
+	TypeMap     any          // Target-specific type map; passed through to ViewModelFactory.
+	Partials   []string     // Shared partial template contents (define blocks) available to all productions.
+	Produces   []Production
+	StaticFiles []StaticFile // Hand-written files to copy verbatim into the output directory.
 }
 
 func (m Module) Generate(api schema.Api, outPath string) error {
@@ -53,7 +62,21 @@ func (m Module) Generate(api schema.Api, outPath string) error {
 		}
 	}
 
+	for _, sf := range m.StaticFiles {
+		if err := copyStaticFile(sf, outPath); err != nil {
+			return fmt.Errorf("copying static file %s: %w", sf.Output, err)
+		}
+	}
+
 	return nil
+}
+
+func copyStaticFile(sf StaticFile, outPath string) error {
+	data, err := sf.FS.ReadFile(sf.Source)
+	if err != nil {
+		return fmt.Errorf("reading %s: %w", sf.Source, err)
+	}
+	return os.WriteFile(filepath.Join(outPath, sf.Output), data, 0644)
 }
 
 func (m Module) generateOne(p Production, api schema.Api, outPath string) error {

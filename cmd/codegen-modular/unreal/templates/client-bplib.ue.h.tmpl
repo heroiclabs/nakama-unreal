@@ -16,6 +16,15 @@
 
 /* This code is auto-generated. DO NOT EDIT. */
 
-#include "SatoriClientBlueprintLibrary.h"
+#pragma once
 
-{{- template "bp_action_class_implementations" . }}
+#include "CoreMinimal.h"
+#include "Kismet/BlueprintAsyncActionBase.h"
+#include "Kismet/BlueprintFunctionLibrary.h"
+#include "{{ $.Name }}Types.h"
+#include "{{ $.Name }}Api.h"
+
+#include "{{ $.Name }}ClientBlueprintLibrary.generated.h"
+
+{{- template "bp_delegates" . }}
+{{- template "bp_action_class_declarations" . }}

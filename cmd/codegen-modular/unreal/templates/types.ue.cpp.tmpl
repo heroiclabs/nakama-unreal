@@ -16,15 +16,10 @@
 
 /* This code is auto-generated. DO NOT EDIT. */
 
-#pragma once
+#include "{{ $.Name }}Types.h"
 
-#include "CoreMinimal.h"
-#include "Kismet/BlueprintAsyncActionBase.h"
-#include "Kismet/BlueprintFunctionLibrary.h"
-#include "NakamaTypes.h"
-#include "NakamaApi.h"
+{{- template "session_jwt_helpers" . }}
 
-#include "NakamaClientBlueprintLibrary.generated.h"
+{{- template "all_fromjson_tojson" . }}
 
-{{- template "bp_delegates" . }}
-{{- template "bp_action_class_declarations" . }}
+{{- template "clientconfig_getbaseurl" . }}
