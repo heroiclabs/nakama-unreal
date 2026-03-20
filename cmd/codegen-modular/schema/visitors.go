@@ -131,16 +131,16 @@ type rpcVisitor struct {
 }
 
 func tryGetHttpMethod(str string) (string, bool) {
-	if strings.Contains(str, "post") {
+	if str == "post" || strings.HasSuffix(str, ".post") {
 		return "POST", true
 	}
-	if strings.Contains(str, "get") {
+	if str == "get" || strings.HasSuffix(str, ".get") {
 		return "GET", true
 	}
-	if strings.Contains(str, "delete") {
+	if str == "delete" || strings.HasSuffix(str, ".delete") {
 		return "DELETE", true
 	}
-	if strings.Contains(str, "put") {
+	if str == "put" || strings.HasSuffix(str, ".put") {
 		return "PUT", true
 	}
 
