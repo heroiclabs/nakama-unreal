@@ -21,44 +21,15 @@
 #include "CoreMinimal.h"
 #include "NakamaTypes.generated.h"
 
-// Forward declarations
-{{- range $.Messages }}
-struct FNakama{{ .Name }};
-{{- end }}
+{{- template "forward_declarations" . }}
 
-{{- /* Generate enum definitions */ -}}
-{{- range $enum := $.Enums }}
+{{- template "enum_declarations" . }}
 
-/** {{ $enum.Comment }} */
-UENUM(BlueprintType)
-enum class ENakama{{ $enum.Name }} : uint8
-{
-	{{- range $enum.Fields }}
-	{{ .Name }} = {{ .Value }}{{ if not .IsLast }},{{ end }}
-	{{- end }}
-};
-{{- end }}
-
-USTRUCT(BlueprintType)
-struct NAKAMAAPI_API FNakamaError
-{
-	GENERATED_BODY()
-
-	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	FString Message;
-
-	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	int32 Code = 0;
-};
+{{- template "error_struct" . }}
 
 {{- template "errorcodes" "Nakama" }}
 
-// Forward declarations
-{{- range $.Messages }}
-struct FNakama{{ .Name }};
-{{- end }}
-
-{{- /* Generate struct definitions for each proto message */ -}}
+{{- /* Session struct — Nakama-specific JWT-parsed fields */ -}}
 {{- range $msg := $.Messages }}
 {{- if $msg.IsSession }}
 
@@ -119,30 +90,10 @@ private:
 	static bool ParseJwtPayload(const FString& Jwt, TSharedPtr<FJsonObject>& Out) noexcept;
 	void ParseTokens() noexcept;
 };
-{{- else }}
-
-/** {{ $msg.Comment }} */
-USTRUCT(BlueprintType)
-struct NAKAMAAPI_API FNakama{{ $msg.Name }}
-{
-	GENERATED_BODY()
-
-	{{- range $msg.Fields }}
-	/** {{ .Comment }} */
-	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	{{ .FieldType }} {{ .Name }}{{ .FieldDefault }};
-	{{- end }}
-	{{- range $msg.MapFields }}
-	/** {{ .Comment }} */
-	UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-	{{ .FieldType }} {{ .Name }};
-	{{- end }}
-
-	static FNakama{{ $msg.Name }} FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
-	TSharedPtr<FJsonObject> ToJson() const noexcept;
-};
 {{- end }}
 {{- end }}
+
+{{- template "non_session_struct_declarations" . }}
 
 enum class ENakamaRequestAuth : uint8
 {

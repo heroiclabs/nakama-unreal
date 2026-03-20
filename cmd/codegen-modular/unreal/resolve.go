@@ -10,8 +10,6 @@ import (
 	"heroiclabs.com/modular-codegen/schema"
 )
 
-const typePrefix = "FNakama"
-const enumPrefix = "ENakama"
 
 // resolveMessages converts all proto messages into pre-resolved structs.
 func resolveMessages(api schema.Api, tm codegen.TypeMap, prefix, enumPfx string) []codegen.ResolvedMessage {
@@ -235,7 +233,7 @@ func resolveRtOperations(api schema.Api, tm codegen.TypeMap, prefix, enumPfx str
 // a primary variant (with Session if auth-gated) and an optional HttpKey overload.
 // All type resolution and field classification is performed here so that
 // templates operate on pre-resolved metadata rather than raw proto types.
-func resolveRpcMethods(rpc *schema.VisitedRpc, tm codegen.TypeMap, api schema.Api, prefix string, flatten bool) []codegen.MethodImpl {
+func resolveRpcMethods(rpc *schema.VisitedRpc, tm codegen.TypeMap, api schema.Api, prefix, enumPfx string, flatten bool) []codegen.MethodImpl {
 	isAuth := strings.Contains(rpc.Name, "Authenticate")
 	isSessionRefresh := rpc.Name == "SessionRefresh"
 	needsSession := !isAuth && !isSessionRefresh
@@ -384,7 +382,7 @@ func resolveRpcMethods(rpc *schema.VisitedRpc, tm codegen.TypeMap, api schema.Ap
 				}
 				for _, sf := range msg.Fields {
 					rf := resolveFieldType(sf.Name, sf.Type, sf.Repeated, tm, api, prefix)
-					ssf := resolveStructField(sf.Name, sf.Type, sf.Repeated, "", tm, api, prefix, enumPrefix)
+					ssf := resolveStructField(sf.Name, sf.Type, sf.Repeated, "", tm, api, prefix, enumPfx)
 					p := codegen.HighLevelParam{
 						Name:         rf.Name,
 						ParamType:    rf.ParamType,
@@ -411,7 +409,7 @@ func resolveRpcMethods(rpc *schema.VisitedRpc, tm codegen.TypeMap, api schema.Ap
 					})
 				} else {
 					rf := resolveFieldType(f.Name, f.Type, f.Repeated, tm, api, prefix)
-					ssf := resolveStructField(f.Name, f.Type, f.Repeated, "", tm, api, prefix, enumPrefix)
+					ssf := resolveStructField(f.Name, f.Type, f.Repeated, "", tm, api, prefix, enumPfx)
 					highLevelParams = append(highLevelParams, codegen.HighLevelParam{
 						Name:      rf.Name,
 						ParamType: rf.ParamType,
@@ -420,7 +418,7 @@ func resolveRpcMethods(rpc *schema.VisitedRpc, tm codegen.TypeMap, api schema.Ap
 				}
 			} else {
 				rf := resolveFieldType(f.Name, f.Type, f.Repeated, tm, api, prefix)
-				ssf := resolveStructField(f.Name, f.Type, f.Repeated, "", tm, api, prefix, enumPrefix)
+				ssf := resolveStructField(f.Name, f.Type, f.Repeated, "", tm, api, prefix, enumPfx)
 				highLevelParams = append(highLevelParams, codegen.HighLevelParam{
 					Name:         rf.Name,
 					ParamType:    rf.ParamType,

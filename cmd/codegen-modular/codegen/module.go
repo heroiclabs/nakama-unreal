@@ -31,6 +31,7 @@ type Production struct {
 
 type Module struct {
 	TypeMap  TypeMap
+	Partials []string // Shared partial template contents (define blocks) available to all productions.
 	Produces []Production
 }
 
@@ -50,6 +51,13 @@ func (m Module) Generate(api schema.Api, outPath string) error {
 
 func (m Module) generateOne(p Production, api schema.Api, outPath string) error {
 	tmpl := template.New("codegen").Funcs(p.FuncMap)
+
+	// Parse shared partial templates first so their define blocks are available.
+	for i, partial := range m.Partials {
+		if _, err := tmpl.Parse(partial); err != nil {
+			return fmt.Errorf("parsing partial %d for %s: %w", i, p.Output, err)
+		}
+	}
 
 	if _, err := tmpl.Parse(p.TemplateContent); err != nil {
 		return fmt.Errorf("parsing template for %s: %w", p.Output, err)

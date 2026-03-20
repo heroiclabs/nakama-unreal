@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"log"
+	"strings"
 	"text/template"
 	"time"
 
@@ -27,6 +28,27 @@ func mustReadTemplate(name string) string {
 	return string(b)
 }
 
+// mustReadPartials reads all partial template files (names starting with "_")
+// from the embedded templates directory. Their define blocks become available
+// to every Production template.
+func mustReadPartials() []string {
+	entries, err := unreal.Templates.ReadDir("templates")
+	if err != nil {
+		log.Fatalf("Failed to read templates directory: %s", err)
+	}
+	var partials []string
+	for _, e := range entries {
+		if strings.HasPrefix(e.Name(), "_") {
+			b, err := unreal.Templates.ReadFile("templates/" + e.Name())
+			if err != nil {
+				log.Fatalf("Failed to read partial %s: %s", e.Name(), err)
+			}
+			partials = append(partials, string(b))
+		}
+	}
+	return partials
+}
+
 func main() {
 	outDir := flag.String("out", "out", "output directory")
 	flag.Parse()
@@ -42,7 +64,8 @@ func main() {
 	}
 
 	module := codegen.Module{
-		TypeMap: unreal.NewUnrealTypeMap(),
+		TypeMap:  unreal.NewUnrealTypeMap(),
+		Partials: mustReadPartials(),
 		Produces: []codegen.Production{
 			{
 				TemplateContent:  mustReadTemplate("templates/Nakama.h.tmpl"),
