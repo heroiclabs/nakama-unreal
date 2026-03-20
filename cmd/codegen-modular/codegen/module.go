@@ -9,6 +9,11 @@
 // this material is strictly forbidden unless prior written permission is obtained
 // from GameUp Online, Inc.
 
+// Package codegen is a target-agnostic template orchestration engine.
+// It knows how to parse templates, invoke view-model factories, and write
+// output files — but has no knowledge of any specific target language.
+// All target-specific types (type maps, resolved fields, view models)
+// live in their respective target packages (e.g., unreal).
 package codegen
 
 import (
@@ -25,12 +30,13 @@ type Production struct {
 	// ViewModelFactory builds the data object passed to the template.
 	// Templates call methods on the concrete type via reflection, so the
 	// factory can return any type — there is no shared interface constraint.
-	ViewModelFactory func(tm TypeMap, api schema.Api) (any, error)
+	// The first argument is the Module's TypeMap (opaque to codegen).
+	ViewModelFactory func(tm any, api schema.Api) (any, error)
 	Output           string
 }
 
 type Module struct {
-	TypeMap  TypeMap
+	TypeMap  any // Target-specific type map; passed through to ViewModelFactory.
 	Partials []string // Shared partial template contents (define blocks) available to all productions.
 	Produces []Production
 }

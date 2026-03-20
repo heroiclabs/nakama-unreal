@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"log"
+	"path/filepath"
 	"strings"
 	"text/template"
 	"time"
@@ -49,40 +50,115 @@ func mustReadPartials() []string {
 	return partials
 }
 
+func mustLoadApi(protosDir string, files ...string) schema.Api {
+	paths := make([]string, len(files))
+	for i, f := range files {
+		paths[i] = filepath.Join(protosDir, f)
+	}
+	api, err := schema.LoadApi(paths)
+	if err != nil {
+		log.Fatalf("Failed to load protos %v: %s", files, err)
+	}
+	return api
+}
+
+// prod is shorthand for building a Production with common defaults.
+func prod(tmpl, output string, factory func(any, schema.Api) (any, error)) codegen.Production {
+	return codegen.Production{
+		TemplateContent:  mustReadTemplate("templates/" + tmpl),
+		FuncMap:          getFuncMap(),
+		ViewModelFactory: factory,
+		Output:           output,
+	}
+}
+
+// protoGroup represents a set of proto files and the productions that consume them.
+type protoGroup struct {
+	protos     []string
+	produces   []codegen.Production
+}
+
 func main() {
 	outDir := flag.String("out", "out", "output directory")
+	protosDir := flag.String("protos", "protos", "directory containing .proto files")
 	flag.Parse()
 
-	protos := flag.Args()
-	if len(protos) == 0 {
-		log.Fatal("Usage: modular-codegen [-out dir] <proto files...>")
-	}
+	partials := mustReadPartials()
+	typeMap := unreal.NewUnrealTypeMap()
 
-	api, err := schema.LoadApi(protos)
-	if err != nil {
-		log.Fatalf("Failed to load protos: %s", err)
-	}
+	nakamaApi := unreal.MakeViewModelFactory("FNakama", "ENakama", true)
+	nakamaRt := unreal.MakeViewModelFactory("FNakama", "ENakama", false)
+	satoriApi := unreal.MakeViewModelFactory("FSatori", "ESatori", false)
 
-	module := codegen.Module{
-		TypeMap:  unreal.NewUnrealTypeMap(),
-		Partials: mustReadPartials(),
-		Produces: []codegen.Production{
-			{
-				TemplateContent:  mustReadTemplate("templates/Nakama.h.tmpl"),
-				FuncMap:          getFuncMap(),
-				ViewModelFactory: unreal.MakeViewModelFactory("FNakama", "ENakama", true),
-				Output:           "Nakama.h",
+	groups := []protoGroup{
+		// ── Nakama API ──────────────────────────────────────────
+		{
+			protos: []string{"nakama-types.proto", "nakama-api.proto"},
+			produces: []codegen.Production{
+				// Low-level API (NakamaApi module)
+				prod("Nakama.h.tmpl", "NakamaApi.h", nakamaApi),
+				prod("nakama-api.ue.cpp.tmpl", "NakamaApi.cpp", nakamaApi),
+
+				// Types (NakamaApi module)
+				prod("nakama-types.ue.h.tmpl", "NakamaTypes.h", nakamaApi),
+				prod("nakama-types.ue.cpp.tmpl", "NakamaTypes.cpp", nakamaApi),
+
+				// High-level API with retry (Nakama module)
+				prod("nakama.ue.h.tmpl", "Nakama.h", nakamaApi),
+				prod("nakama.ue.cpp.tmpl", "Nakama.cpp", nakamaApi),
+
+				// Blueprint library (NakamaBlueprints module)
+				prod("nakama-client-bplib.ue.h.tmpl", "NakamaClientBlueprintLibrary.h", nakamaApi),
+				prod("nakama-client-bplib.ue.cpp.tmpl", "NakamaClientBlueprintLibrary.cpp", nakamaApi),
 			},
-			{
-				TemplateContent:  mustReadTemplate("templates/nakama-api.ue.cpp.tmpl"),
-				FuncMap:          getFuncMap(),
-				ViewModelFactory: unreal.MakeViewModelFactory("FNakama", "ENakama", true),
-				Output:           "NakamaApi.cpp",
+		},
+		// ── Nakama Realtime ─────────────────────────────────────
+		{
+			protos: []string{"nakama-types.proto", "nakama-api.proto", "realtime.proto"},
+			produces: []codegen.Production{
+				// RT types (NakamaApi module)
+				prod("nakama-rttypes.ue.h.tmpl", "NakamaRtTypes.h", nakamaRt),
+				prod("nakama-rttypes.ue.cpp.tmpl", "NakamaRtTypes.cpp", nakamaRt),
+
+				// RT client (Nakama module)
+				prod("nakama-rtclient.ue.h.tmpl", "NakamaRt.h", nakamaRt),
+				prod("nakama-rtclient.ue.cpp.tmpl", "NakamaRt.cpp", nakamaRt),
+
+				// RT Blueprint library (NakamaBlueprints module)
+				prod("nakama-rtclient-bplib.ue.h.tmpl", "NakamaRtClientBlueprintLibrary.h", nakamaRt),
+				prod("nakama-rtclient-bplib.ue.cpp.tmpl", "NakamaRtClientBlueprintLibrary.cpp", nakamaRt),
+			},
+		},
+		// ── Satori API ──────────────────────────────────────────
+		{
+			protos: []string{"satori-types.proto", "satori-api.proto"},
+			produces: []codegen.Production{
+				// Types + low-level API (SatoriApi module)
+				prod("satori-api.ue.h.tmpl", "SatoriApi.h", satoriApi),
+				prod("satori-api.ue.cpp.tmpl", "SatoriApi.cpp", satoriApi),
+
+				// High-level API with retry (Satori module)
+				prod("satori.ue.h.tmpl", "Satori.h", satoriApi),
+				prod("satori.ue.cpp.tmpl", "Satori.cpp", satoriApi),
+
+				// Blueprint library (SatoriBlueprints module)
+				prod("satori-client-bplib.ue.h.tmpl", "SatoriClientBlueprintLibrary.h", satoriApi),
+				prod("satori-client-bplib.ue.cpp.tmpl", "SatoriClientBlueprintLibrary.cpp", satoriApi),
 			},
 		},
 	}
 
-	if err := module.Generate(api, *outDir); err != nil {
-		log.Fatalf("Failed to generate: %s", err)
+	for _, g := range groups {
+		api := mustLoadApi(*protosDir, g.protos...)
+
+		module := codegen.Module{
+			TypeMap:  typeMap,
+			Partials: partials,
+			Produces: g.produces,
+		}
+
+		if err := module.Generate(api, *outDir); err != nil {
+			log.Fatalf("Failed to generate: %s", err)
+		}
 	}
 }

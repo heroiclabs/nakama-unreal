@@ -1,13 +1,47 @@
 package unreal
 
-import "heroiclabs.com/modular-codegen/codegen"
+// TypeEntry contains all traits for mapping a proto type to a target language.
+type TypeEntry struct {
+	// Function signature types
+	Param         string // Scalar parameter form (e.g., "const FString&", "int32")
+	RepeatedParam string // Repeated field parameter form (e.g., "const TArray<FString>&")
+	MapParam      string // Map field parameter form (e.g., "const TMap<FString, FString>&")
+	MapType       string // Map type name without const/ref (e.g., "TMap<FString, FString>")
+
+	// JSON serialization (body building)
+	JsonMethod     string // SetXxxField suffix: "String", "Number", "Bool", "Object"
+	JsonArrayValue string // FJsonValue subclass: "String", "Number", "Boolean", "Object"
+
+	// Query string
+	QueryFormat string // Printf verb: "%s", "%d", "%lld"
+	EmptyCheck  string // Guard strategy: "IsEmpty", "NonZero", "None", "NumEmpty"
+
+	// Struct field declarations (UPROPERTY)
+	FieldType         string // Scalar UPROPERTY type (e.g., "FString", "int32")
+	RepeatedFieldType string // Array UPROPERTY type (e.g., "TArray<FString>")
+	FieldDefault      string // Default initializer (e.g., "", " = 0", " = false")
+
+	// JSON deserialization (FromJson)
+	JsonGetter     string // Getter method: "GetStringField", "GetIntegerField", etc.
+	CastFromJson   string // Optional cast: "" or "static_cast<int64>"
+	ArrayItemExpr  string // Repeated item read: "Item->AsString()", "static_cast<int32>(Item->AsNumber())"
+	NeedsHasCheck  bool   // Whether FromJson needs HasField guard (false for none-check types)
+
+	// ToJson extras
+	NeedsEmptyGuard bool // true for strings/timestamps in ToJson
+}
+
+// TypeMap resolves proto type names to target-language type traits.
+type TypeMap interface {
+	Resolve(protoType string) (*TypeEntry, bool)
+}
 
 type UnrealTypeMap struct {
-	entries map[string]*codegen.TypeEntry
+	entries map[string]*TypeEntry
 }
 
 func NewUnrealTypeMap() *UnrealTypeMap {
-	stringEntry := &codegen.TypeEntry{
+	stringEntry := &TypeEntry{
 		Param:         "const FString&",
 		RepeatedParam: "const TArray<FString>&",
 		MapParam:      "const TMap<FString, FString>&",
@@ -29,7 +63,7 @@ func NewUnrealTypeMap() *UnrealTypeMap {
 		NeedsEmptyGuard: true,
 	}
 
-	boolEntry := &codegen.TypeEntry{
+	boolEntry := &TypeEntry{
 		Param:         "bool",
 		RepeatedParam: "const TArray<bool>&",
 		MapParam:      "const TMap<FString, bool>&",
@@ -51,7 +85,7 @@ func NewUnrealTypeMap() *UnrealTypeMap {
 		NeedsEmptyGuard: false,
 	}
 
-	int32Entry := &codegen.TypeEntry{
+	int32Entry := &TypeEntry{
 		Param:         "int32",
 		RepeatedParam: "const TArray<int32>&",
 		MapParam:      "const TMap<FString, int32>&",
@@ -78,7 +112,7 @@ func NewUnrealTypeMap() *UnrealTypeMap {
 	uint32Entry.JsonGetter = "GetNumberField"
 	uint32Entry.ArrayItemExpr = "static_cast<uint32>(Item->AsNumber())"
 
-	int64Entry := &codegen.TypeEntry{
+	int64Entry := &TypeEntry{
 		Param:         "int64",
 		RepeatedParam: "const TArray<int64>&",
 		MapParam:      "const TMap<FString, int64>&",
@@ -104,7 +138,7 @@ func NewUnrealTypeMap() *UnrealTypeMap {
 	uint64Entry.CastFromJson = "static_cast<uint64>"
 	uint64Entry.ArrayItemExpr = "static_cast<uint64>(Item->AsNumber())"
 
-	floatEntry := &codegen.TypeEntry{
+	floatEntry := &TypeEntry{
 		Param:         "float",
 		RepeatedParam: "const TArray<float>&",
 		MapParam:      "const TMap<FString, float>&",
@@ -126,7 +160,7 @@ func NewUnrealTypeMap() *UnrealTypeMap {
 		NeedsEmptyGuard: false,
 	}
 
-	doubleEntry := &codegen.TypeEntry{
+	doubleEntry := &TypeEntry{
 		Param:         "double",
 		RepeatedParam: "const TArray<double>&",
 		MapParam:      "const TMap<FString, double>&",
@@ -148,7 +182,7 @@ func NewUnrealTypeMap() *UnrealTypeMap {
 		NeedsEmptyGuard: false,
 	}
 
-	bytesEntry := &codegen.TypeEntry{
+	bytesEntry := &TypeEntry{
 		Param:         "const TArray<uint8>&",
 		RepeatedParam: "const TArray<TArray<uint8>>&",
 		MapParam:      "const TMap<FString, TArray<uint8>>&",
@@ -175,7 +209,7 @@ func NewUnrealTypeMap() *UnrealTypeMap {
 	enumEntry.CastFromJson = ""
 
 	return &UnrealTypeMap{
-		entries: map[string]*codegen.TypeEntry{
+		entries: map[string]*TypeEntry{
 			"string":                      stringEntry,
 			"google.protobuf.StringValue": stringEntry,
 			"google.protobuf.Timestamp":   stringEntry,
@@ -211,7 +245,7 @@ func NewUnrealTypeMap() *UnrealTypeMap {
 	}
 }
 
-func (m *UnrealTypeMap) Resolve(protoType string) (*codegen.TypeEntry, bool) {
+func (m *UnrealTypeMap) Resolve(protoType string) (*TypeEntry, bool) {
 	e, ok := m.entries[protoType]
 	return e, ok
 }

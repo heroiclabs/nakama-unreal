@@ -3,17 +3,16 @@ package unreal
 import (
 	"strings"
 
-	"heroiclabs.com/modular-codegen/codegen"
 	"heroiclabs.com/modular-codegen/schema"
 )
 
 // ApiViewModel is the unified data model consumed by all templates.
 // Each template accesses the methods it needs via reflection.
 type ApiViewModel struct {
-	methods      []codegen.MethodImpl
-	messages     []codegen.ResolvedMessage
-	enums        []codegen.ResolvedEnum
-	rtOperations []codegen.ResolvedRtOperation
+	methods      []MethodImpl
+	messages     []ResolvedMessage
+	enums        []ResolvedEnum
+	rtOperations []ResolvedRtOperation
 
 	// Naming configuration for shared (parameterized) templates.
 	name       string // "Nakama" or "Satori"
@@ -21,10 +20,10 @@ type ApiViewModel struct {
 	enumPrefix string // "ENakama" or "ESatori"
 }
 
-func (vm ApiViewModel) Methods() []codegen.MethodImpl               { return vm.methods }
-func (vm ApiViewModel) Messages() []codegen.ResolvedMessage         { return vm.messages }
-func (vm ApiViewModel) Enums() []codegen.ResolvedEnum               { return vm.enums }
-func (vm ApiViewModel) RtOperations() []codegen.ResolvedRtOperation { return vm.rtOperations }
+func (vm ApiViewModel) Methods() []MethodImpl               { return vm.methods }
+func (vm ApiViewModel) Messages() []ResolvedMessage         { return vm.messages }
+func (vm ApiViewModel) Enums() []ResolvedEnum               { return vm.enums }
+func (vm ApiViewModel) RtOperations() []ResolvedRtOperation { return vm.rtOperations }
 
 // Naming accessors used by shared templates.
 func (vm ApiViewModel) Name() string       { return vm.name }
@@ -52,12 +51,13 @@ func (vm ApiViewModel) UniqueReturnTypes() []string {
 // MakeViewModelFactory returns a Production-compatible factory.
 // flatten controls whether non-repeated message fields are inlined
 // as individual function parameters in the high-level API.
-func MakeViewModelFactory(typePfx, enumPfx string, flatten bool) func(codegen.TypeMap, schema.Api) (any, error) {
+func MakeViewModelFactory(typePfx, enumPfx string, flatten bool) func(any, schema.Api) (any, error) {
 	// Derive product name from type prefix: "FNakama" -> "Nakama"
 	name := strings.TrimPrefix(typePfx, "F")
 
-	return func(tm codegen.TypeMap, api schema.Api) (any, error) {
-		var methods []codegen.MethodImpl
+	return func(tmRaw any, api schema.Api) (any, error) {
+		tm := tmRaw.(TypeMap)
+		var methods []MethodImpl
 		for _, rpc := range api.Rpcs {
 			methods = append(methods, resolveRpcMethods(rpc, tm, api, typePfx, enumPfx, flatten)...)
 		}

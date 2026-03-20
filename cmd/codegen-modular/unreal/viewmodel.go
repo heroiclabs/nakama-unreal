@@ -1,4 +1,4 @@
-package codegen
+package unreal
 
 // Param represents a leading function parameter (Session or HttpKey) in generated code.
 type Param struct {
@@ -7,20 +7,52 @@ type Param struct {
 	Comment string
 }
 
-// ResolvedField represents a proto field with all target-language type metadata pre-resolved.
+// ResolvedField contains all metadata for a proto field after target-language
+// type resolution. Used for both struct declarations (UPROPERTY, FromJson, ToJson)
+// and method signatures (API functions, query params, body serialization).
 type ResolvedField struct {
-	Name           string // PascalCase name for use in generated code
-	JsonName       string // Original proto field name for JSON serialization
-	Comment        string // Documentation comment from the proto definition
-	ParamType      string // Full C++ parameter type (e.g., "const FString&", "int32")
-	IsRepeated     bool
-	IsMap          bool
-	IsMessage      bool
-	IsEnum         bool
-	JsonMethod     string // JSON setter suffix: "String", "Bool", "Number", "Object"
-	JsonArrayValue string // FJsonValue subclass suffix: "String", "Number", "Boolean", "Object"
-	QueryFormat    string // Printf format for query string: "%s", "%d", "%lld"
-	EmptyCheck     string // How to check emptiness: "IsEmpty", "NonZero", "None"
+	Name     string // PascalCase name for use in generated code
+	JsonName string // Original proto field name for JSON serialization
+	Comment  string // Documentation comment from the proto definition
+
+	// Classification
+	IsRepeated bool
+	IsMap      bool
+	IsMessage  bool
+	IsEnum     bool
+
+	// Function signature / struct declaration
+	ParamType    string // Full C++ parameter type (e.g., "const FString&", "int32")
+	FieldType    string // UE field type for UPROPERTY (e.g., "FString", "int32", "TArray<FString>")
+	FieldDefault string // Default initializer (e.g., "", " = 0", " = false")
+
+	// JSON method suffix (used by API method body templates for composition)
+	JsonMethod string // Setter suffix: "String", "Bool", "Number", "Object"
+
+	// JSON full-form names (used by struct FromJson/ToJson templates directly)
+	JsonGetter     string // "GetStringField", "GetIntegerField", "GetNumberField", "GetBoolField"
+	JsonSetter     string // "SetStringField", "SetNumberField", "SetBoolField"
+	JsonArrayValue string // "FJsonValueString", "FJsonValueNumber", "FJsonValueBoolean"
+
+	// JSON deserialization helpers (FromJson)
+	CastFromJson  string // Optional cast: "" or "static_cast<int64>"
+	ArrayItemExpr string // Repeated item read: "Item->AsString()", "static_cast<int32>(Item->AsNumber())"
+
+	// ToJson guard
+	ToJsonGuard string // Guard in ToJson: "" (always), "IsEmpty", "NonZero"
+
+	// Query string / API method body
+	QueryFormat string // Printf verb for query string: "%s", "%d", "%lld"
+	EmptyCheck  string // Guard strategy for query/body: "IsEmpty", "NonZero", "None", "NumEmpty"
+
+	// Special types
+	IsBytes        bool   // bytes field needing Base64 encode/decode
+	MapValueSetter string // For map fields: "SetStringField" or "SetNumberField"
+	MapValueReader string // For map fields: "Pair.Value->AsString()" or "Pair.Value->AsNumber()"
+
+	// Type references (message/enum fields only)
+	MessageType string // "FNakamaXxx" for message fields
+	EnumType    string // "ENakamaXxx" for enum fields
 }
 
 // MethodImpl describes a single generated function with all type resolution
@@ -85,51 +117,13 @@ type FlattenedGroup struct {
 	SubFields []string // PascalCase names of sub-fields to assign
 }
 
-// ResolvedStructField contains all metadata for generating struct declarations,
-// FromJson, and ToJson for a single proto message field.
-type ResolvedStructField struct {
-	Name     string // PascalCase
-	JsonName string // Original proto field name
-	Comment  string
-
-	// Declaration (UPROPERTY)
-	FieldType    string // UE field type (e.g., "FString", "int32", "TArray<FString>")
-	FieldDefault string // Default initializer (e.g., "", " = 0")
-	ParamType    string // Function parameter type (e.g., "const FString&", "int32")
-
-	// Classification
-	IsRepeated bool
-	IsMap      bool
-	IsMessage  bool
-	IsEnum     bool
-
-	// FromJson
-	JsonGetter    string // "GetStringField", "GetIntegerField", "GetNumberField", "GetBoolField"
-	CastFromJson  string // Optional cast: "" or "static_cast<int64>"
-	ArrayItemExpr string // Repeated item read: "Item->AsString()", "static_cast<int32>(Item->AsNumber())"
-
-	// ToJson
-	JsonSetter     string // "SetStringField", "SetNumberField", "SetBoolField"
-	JsonArrayValue string // "FJsonValueString", "FJsonValueNumber", "FJsonValueBoolean"
-	ToJsonGuard    string // Guard in ToJson: "" (always), "IsEmpty", "NonZero"
-
-	// Special types
-	IsBytes        bool   // bytes field needing Base64 encode/decode
-	MapValueSetter string // For map fields: "SetStringField" or "SetNumberField"
-	MapValueReader string // For map fields: "Pair.Value->AsString()" or "Pair.Value->AsNumber()"
-
-	// Type references (message/enum fields only)
-	MessageType string // "FNakamaXxx" for message fields
-	EnumType    string // "ENakamaXxx" for enum fields
-}
-
 // ResolvedMessage is a pre-resolved proto message with all field metadata computed.
 type ResolvedMessage struct {
 	Name      string
 	Comment   string
-	Fields    []ResolvedStructField
-	MapFields []ResolvedStructField
-	IsSession bool // Special handling for FNakamaSession
+	Fields    []ResolvedField
+	MapFields []ResolvedField
+	IsSession bool // Special handling for Session types
 }
 
 // ResolvedEnumField is a single value in a resolved enum.
@@ -149,10 +143,10 @@ type ResolvedEnum struct {
 // ResolvedRtOperation represents a single realtime WebSocket message handler,
 // derived from a oneof field in the Envelope message.
 type ResolvedRtOperation struct {
-	CaseName    string               // The oneof case name (used in the WebSocket protocol)
-	MessageName string               // PascalCase message type name
-	Comment     string               // Documentation comment
-	Fields      []ResolvedStructField // Pre-resolved normal fields
-	MapFields   []ResolvedStructField // Pre-resolved map fields
-	OneofFields []ResolvedStructField // Pre-resolved oneof sub-fields (treated as optional strings)
+	CaseName    string          // The oneof case name (used in the WebSocket protocol)
+	MessageName string          // PascalCase message type name
+	Comment     string          // Documentation comment
+	Fields      []ResolvedField // Pre-resolved normal fields
+	MapFields   []ResolvedField // Pre-resolved map fields
+	OneofFields []ResolvedField // Pre-resolved oneof sub-fields (treated as optional strings)
 }

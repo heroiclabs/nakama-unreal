@@ -90,7 +90,7 @@ void {{ $.Name }}Api::{{ $m.Name }}(
 {{- if .IsMessage }}
 			Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
 {{- else }}
-			Array.Add(MakeShared<FJsonValue{{ .JsonArrayValue }}>(Item));
+			Array.Add(MakeShared<{{ .JsonArrayValue }}>(Item));
 {{- end }}
 		}
 		Body->SetArrayField(TEXT("{{ .JsonName }}"), Array);
