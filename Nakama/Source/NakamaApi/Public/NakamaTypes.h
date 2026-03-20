@@ -216,7 +216,7 @@ struct NAKAMAAPI_API FNakamaError
 	int32 Code = 0;
 };
 /** gRPC status codes returned by Nakama in FNakamaError::Code. */
-namespace NakamaErrorCode
+namespace ENakamaErrorCode
 {
 	constexpr int32 OK = 0;
 	constexpr int32 Cancelled = 1;

@@ -1,6 +1,6 @@
 {{- define "errorcodes" }}
 /** gRPC status codes returned by {{ . }} in F{{ . }}Error::Code. */
-namespace {{ . }}ErrorCode
+namespace E{{ . }}ErrorCode
 {
 	constexpr int32 OK = 0;
 	constexpr int32 Cancelled = 1;

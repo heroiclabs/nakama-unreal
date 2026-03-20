@@ -3357,8 +3357,8 @@ void FNakamaAsyncAccountDeleteSpec::Define()
 			{
 				if (!Result.bIsError) { AddError(TEXT("Expected error but got account after deletion")); Done.Execute(); return; }
 				TestTrue("Got error when accessing deleted account",
-					Result.Error.Code == NakamaErrorCode::Unauthenticated ||
-					Result.Error.Code == NakamaErrorCode::NotFound ||
+					Result.Error.Code == ENakamaErrorCode::Unauthenticated ||
+					Result.Error.Code == ENakamaErrorCode::NotFound ||
 					!Result.Error.Message.IsEmpty());
 				Done.Execute();
 			});
@@ -3908,7 +3908,7 @@ void FNakamaAsyncGroupPermissionsSpec::Define()
 			Nakama::JoinGroup(ClientConfig, Session, TEXT("ffffffff-ffff-ffff-ffff-ffffffffffff")).Next([this, Done](FNakamaVoidResult Result)
 			{
 				if (!Result.bIsError) { AddError(TEXT("Expected error but got success")); Done.Execute(); return; }
-				TestTrue("Got error for non-existent group", Result.Error.Code == NakamaErrorCode::NotFound || !Result.Error.Message.IsEmpty());
+				TestTrue("Got error for non-existent group", Result.Error.Code == ENakamaErrorCode::NotFound || !Result.Error.Message.IsEmpty());
 				Done.Execute();
 			});
 		});
@@ -4318,7 +4318,7 @@ void FNakamaAsyncLinkExtSpec::Define()
 			.Next([this, Done](FNakamaVoidResult Result)
 			{
 				if (!Result.bIsError) { AddError(TEXT("Expected error but got success")); Done.Execute(); return; }
-				TestTrue("Got ALREADY_EXISTS error", Result.Error.Code == NakamaErrorCode::AlreadyExists || !Result.Error.Message.IsEmpty());
+				TestTrue("Got ALREADY_EXISTS error", Result.Error.Code == ENakamaErrorCode::AlreadyExists || !Result.Error.Message.IsEmpty());
 				Done.Execute();
 			});
 		});
@@ -4337,7 +4337,7 @@ void FNakamaAsyncLinkExtSpec::Define()
 			.Next([this, Done](FNakamaVoidResult Result)
 			{
 				if (!Result.bIsError) { AddError(TEXT("Expected error but got success")); Done.Execute(); return; }
-				TestTrue("Got ALREADY_EXISTS error", Result.Error.Code == NakamaErrorCode::AlreadyExists || !Result.Error.Message.IsEmpty());
+				TestTrue("Got ALREADY_EXISTS error", Result.Error.Code == ENakamaErrorCode::AlreadyExists || !Result.Error.Message.IsEmpty());
 				Done.Execute();
 			});
 		});
@@ -4356,7 +4356,7 @@ void FNakamaAsyncLinkExtSpec::Define()
 			.Next([this, Done](FNakamaVoidResult Result)
 			{
 				if (!Result.bIsError) { AddError(TEXT("Expected error but got success")); Done.Execute(); return; }
-				TestTrue("Got ALREADY_EXISTS error", Result.Error.Code == NakamaErrorCode::AlreadyExists || !Result.Error.Message.IsEmpty());
+				TestTrue("Got ALREADY_EXISTS error", Result.Error.Code == ENakamaErrorCode::AlreadyExists || !Result.Error.Message.IsEmpty());
 				Done.Execute();
 			});
 		});
@@ -4444,7 +4444,7 @@ void FNakamaAsyncRpcExtSpec::Define()
 			{
 				if (!Result.bIsError) { AddError(TEXT("Expected NOT_FOUND error but RPC succeeded")); Done.Execute(); return; }
 				TestTrue("Got NOT_FOUND for non-existent RPC",
-					Result.Error.Code == NakamaErrorCode::NotFound ||
+					Result.Error.Code == ENakamaErrorCode::NotFound ||
 					Result.Error.Message.Contains(TEXT("not found"), ESearchCase::IgnoreCase));
 				Done.Execute();
 			});
@@ -4456,7 +4456,7 @@ void FNakamaAsyncRpcExtSpec::Define()
 			{
 				if (!Result.bIsError) { AddError(TEXT("Expected NOT_FOUND error but RPC succeeded")); Done.Execute(); return; }
 				TestTrue("Got NOT_FOUND for non-existent RPC",
-					Result.Error.Code == NakamaErrorCode::NotFound ||
+					Result.Error.Code == ENakamaErrorCode::NotFound ||
 					Result.Error.Message.Contains(TEXT("not found"), ESearchCase::IgnoreCase));
 				Done.Execute();
 			});

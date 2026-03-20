@@ -102,7 +102,7 @@ struct SATORIAPI_API FSatoriError
 
 };
 /** gRPC status codes returned by Satori in FSatoriError::Code. */
-namespace SatoriErrorCode
+namespace ESatoriErrorCode
 {
 	constexpr int32 OK = 0;
 	constexpr int32 Cancelled = 1;

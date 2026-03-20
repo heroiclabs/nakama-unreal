@@ -9,7 +9,7 @@
 // this material is strictly forbidden unless prior written permission is obtained
 // from GameUp Online, Inc.
 
-package yacg
+package schema
 
 import (
 	"regexp"
@@ -19,11 +19,11 @@ import (
 	"github.com/emicklei/proto"
 )
 
-/* TODO: Review struct/func privacy */
+var endpointParamRegex = regexp.MustCompile(`\{([a-zA-Z0-9_]*)\}`)
 
 // --------------------
 // Enums
-type enumField struct {
+type EnumField struct {
 	*proto.EnumField
 	Input  string
 	Output string
@@ -31,7 +31,7 @@ type enumField struct {
 
 type VisitedEnum struct {
 	Comment string
-	Fields  []*enumField
+	Fields  []*EnumField
 	Name    string
 }
 
@@ -59,7 +59,7 @@ func (v *enumVisitor) VisitEnumField(ef *proto.EnumField) {
 		}
 	}
 
-	v.Enum.Fields = append(v.Enum.Fields, &enumField{
+	v.Enum.Fields = append(v.Enum.Fields, &EnumField{
 		EnumField: ef,
 		Input:     input,
 		Output:    output,
@@ -72,8 +72,7 @@ type VisitedMessage struct {
 	Comment     string
 	Fields      []*proto.NormalField
 	MapFields   []*proto.MapField
-	OneofFields []*proto.OneOfField
-	Name        string
+	Name string
 }
 
 type messageVisitor struct {
@@ -101,20 +100,6 @@ func (v *messageVisitor) VisitNormalField(nf *proto.NormalField) {
 	v.Message.Fields = append(v.Message.Fields, nf)
 }
 
-func (v *messageVisitor) VisitOneof(oneof *proto.Oneof) {
-	for _, o := range oneof.Elements {
-		o.Accept(v)
-	}
-}
-
-func (v *messageVisitor) VisitOneofField(oneof *proto.OneOfField) {
-	// Sometimes we can get types like more qualified
-	// types like api.MyMessage, so take only the bit after last dot.
-	oneof.Name = oneof.Name[strings.LastIndex(oneof.Name, ".")+1:]
-
-	v.Message.OneofFields = append(v.Message.OneofFields, oneof)
-}
-
 // --------------------
 // RPCs
 type VisitedRpc struct {
@@ -124,7 +109,7 @@ type VisitedRpc struct {
 	ReturnType  *VisitedMessage
 	Endpoint    string
 	Method      string
-	QueryParams []string
+	PathParams []string // Parameter names extracted from endpoint URL patterns like /v2/group/{group_id}
 	BodyField   string // The field name to use as the body (from google.api.http body option)
 }
 
@@ -178,11 +163,10 @@ func (v *rpcVisitor) VisitOption(o *proto.Option) {
 		}
 	}
 
-	paramRegex := regexp.MustCompile(`\{([a-zA-Z0-9_]*)\}`)
-	matches := paramRegex.FindAllStringSubmatch(v.Rpc.Endpoint, -1)
+	matches := endpointParamRegex.FindAllStringSubmatch(v.Rpc.Endpoint, -1)
 
-	v.Rpc.QueryParams = make([]string, 0)
+	v.Rpc.PathParams = make([]string, 0)
 	for _, m := range matches {
-		v.Rpc.QueryParams = append(v.Rpc.QueryParams, m[1])
+		v.Rpc.PathParams = append(v.Rpc.PathParams, m[1])
 	}
 }

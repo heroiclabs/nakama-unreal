@@ -1,0 +1,181 @@
+/*
+ * Copyright {{currentYear}} The Nakama Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/* This code is auto-generated. DO NOT EDIT. */
+
+#include "NakamaApi.h"
+#include "NakamaHttpHelper.h"
+
+#include "Modules/ModuleManager.h"
+#include "GenericPlatform/GenericPlatformHttp.h"
+
+DEFINE_LOG_CATEGORY(LogNakama);
+
+using namespace NakamaHttpInternal;
+{{- range $m := $.Methods }}
+
+void NakamaApi::{{ $m.Name }}(
+	const FNakamaClientConfig& Config,
+{{- if $m.LeadParam }}
+	{{ $m.LeadParam.Type }} {{ $m.LeadParam.Name }},
+{{- end }}
+{{- range $m.Fields }}
+	{{ .ParamType }} {{ .Name }},
+{{- end }}
+{{- range $m.MapFields }}
+	{{ .ParamType }} {{ .Name }},
+{{- end }}
+{{- if $m.HasReturn }}
+	TFunction<void(const FNakama{{ $m.ReturnType }}&)> OnSuccess,
+{{- else }}
+	TFunction<void()> OnSuccess,
+{{- end }}
+	TFunction<void(const FNakamaError&)> OnError,
+	float Timeout,
+	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
+{
+	FString Endpoint = TEXT("{{ $m.Endpoint }}");
+{{- range $m.PathParams }}
+	{ const FString Encoded_{{ .Name }} = FGenericPlatformHttp::UrlEncode({{ .Name }}); Endpoint = Endpoint.Replace(TEXT("{{ printf "{%s}" .JsonName }}"), *Encoded_{{ .Name }}); }
+{{- end }}
+{{- if $m.QueryFields }}
+
+	TArray<FString> QueryParams;
+{{- range $m.QueryFields }}
+{{- if .IsRepeated }}
+	for (const auto& Item : {{ .Name }})
+	{
+{{- if eq .JsonMethod "String" }}
+		QueryParams.Add(TEXT("{{ .JsonName }}=") + FGenericPlatformHttp::UrlEncode(Item));
+{{- else }}
+		QueryParams.Add(FString::Printf(TEXT("{{ .JsonName }}={{ .QueryFormat }}"), Item));
+{{- end }}
+	}
+{{- else if eq .JsonMethod "Bool" }}
+	QueryParams.Add(FString::Printf(TEXT("{{ .JsonName }}=%s"), {{ .Name }} ? TEXT("true") : TEXT("false")));
+{{- else if eq .EmptyCheck "IsEmpty" }}
+	if (!{{ .Name }}.IsEmpty())
+	{
+		QueryParams.Add(TEXT("{{ .JsonName }}=") + FGenericPlatformHttp::UrlEncode({{ .Name }}));
+	}
+{{- else if eq .EmptyCheck "NonZero" }}
+	if ({{ .Name }} != 0)
+	{
+		QueryParams.Add(FString::Printf(TEXT("{{ .JsonName }}={{ .QueryFormat }}"), {{ .Name }}));
+	}
+{{- end }}
+{{- end }}
+	if (QueryParams.Num() > 0)
+	{
+		Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+	}
+{{- end }}
+
+	ENakamaRequestAuth AuthType = ENakamaRequestAuth::{{ $m.AuthType }};
+{{- if $m.UseStringBody }}
+
+	FString BodyString;
+	if ({{ $m.BodyFieldName }}.IsValid())
+	{
+		BodyString = SerializeJsonEscaped({{ $m.BodyFieldName }});
+	}
+
+	SendRequest(Config, Endpoint, TEXT("{{ $m.HttpMethod }}"), BodyString, AuthType, {{ $m.AuthToken }},
+{{- else }}
+
+	TSharedPtr<FJsonObject> Body;
+{{- if eq $m.BodyMode "object" }}
+	Body = {{ $m.BodyFieldName }}.ToJson();
+{{- else if eq $m.BodyMode "wildcard" }}
+	Body = MakeShared<FJsonObject>();
+{{- range $m.WildcardFields }}
+{{- if .IsRepeated }}
+	if ({{ .Name }}.Num() > 0)
+	{
+		TArray<TSharedPtr<FJsonValue>> Array;
+		for (const auto& Item : {{ .Name }})
+		{
+{{- if .IsMessage }}
+			Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
+{{- else }}
+			Array.Add(MakeShared<FJsonValue{{ .JsonArrayValue }}>(Item));
+{{- end }}
+		}
+		Body->SetArrayField(TEXT("{{ .JsonName }}"), Array);
+	}
+{{- else if .IsMessage }}
+	Body->SetObjectField(TEXT("{{ .JsonName }}"), {{ .Name }}.ToJson());
+{{- else if .IsEnum }}
+	Body->SetNumberField(TEXT("{{ .JsonName }}"), static_cast<int32>({{ .Name }}));
+{{- else if eq .EmptyCheck "IsEmpty" }}
+	if (!{{ .Name }}.IsEmpty())
+	{
+		Body->Set{{ .JsonMethod }}Field(TEXT("{{ .JsonName }}"), {{ .Name }});
+	}
+{{- else }}
+	Body->Set{{ .JsonMethod }}Field(TEXT("{{ .JsonName }}"), {{ .Name }});
+{{- end }}
+{{- end }}
+{{- range $m.WildcardMapFields }}
+	if ({{ .Name }}.Num() > 0)
+	{
+		TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
+		for (const auto& Pair : {{ .Name }})
+		{
+			MapObj->SetStringField(Pair.Key, Pair.Value);
+		}
+		Body->SetObjectField(TEXT("{{ .JsonName }}"), MapObj);
+	}
+{{- end }}
+{{- end }}
+
+	MakeRequest(Config, Endpoint, TEXT("{{ $m.HttpMethod }}"), Body, AuthType, {{ $m.AuthToken }},
+{{- end }}
+		[OnSuccess](TSharedPtr<FJsonObject> Json)
+		{
+{{- if $m.HasReturn }}
+			FNakama{{ $m.ReturnType }} Result = FNakama{{ $m.ReturnType }}::FromJson(Json);
+			if (OnSuccess)
+			{
+				OnSuccess(Result);
+			}
+{{- else }}
+			if (OnSuccess)
+			{
+				OnSuccess();
+			}
+{{- end }}
+		},
+		OnError, Timeout, CancellationToken);
+}
+{{- end }}
+
+// Module implementation
+class FNakamaApiModule : public IModuleInterface
+{
+public:
+	virtual void StartupModule() override
+	{
+		UE_LOG(LogNakama, Log, TEXT("NakamaApi module starting"));
+	}
+
+	virtual void ShutdownModule() override
+	{
+		UE_LOG(LogNakama, Log, TEXT("NakamaApi module shutting down"));
+	}
+};
+
+IMPLEMENT_MODULE(FNakamaApiModule, NakamaApi)

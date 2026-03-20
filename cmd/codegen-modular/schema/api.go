@@ -9,18 +9,19 @@
 // this material is strictly forbidden unless prior written permission is obtained
 // from GameUp Online, Inc.
 
-package yacg
+package schema
 
 import (
 	"bytes"
 	"fmt"
-	"log"
 	"os"
 	"regexp"
 	"strings"
 
 	"github.com/emicklei/proto"
 )
+
+var commentBracketRegex = regexp.MustCompile(`\[(.*?)\]`)
 
 type Api struct {
 	// Use slices to preserve order of proto messages
@@ -45,19 +46,27 @@ func (api *Api) addFile(protoFile string) error {
 		return fmt.Errorf("failed to parse proto file %s: %s", protoFile, err.Error())
 	}
 
+	// proto.Walk callbacks can't return errors, so capture the first error here.
+	var walkErr error
+
 	proto.Walk(
 		parsedProto,
 		proto.WithEnum(
 			func(enum *proto.Enum) {
+				if walkErr != nil {
+					return
+				}
+
 				comment := ""
 				if enum.Comment != nil {
 					comment = enum.Comment.Message()
 
-					// Find everything between square brackets
-					re := regexp.MustCompile(`\[(.*?)\]`)
-					matches := re.FindAllStringSubmatch(comment, -1)
+					// Extract descriptive text from proto comments like:
+					//   // [The operator to combine properties.] ...
+					// The bracketed text becomes the enum's display comment.
+					// If multiple brackets exist, only the last match is kept.
+					matches := commentBracketRegex.FindAllStringSubmatch(comment, -1)
 					for _, match := range matches {
-						// match[0] is the entire match, match[1] is the first submatch.
 						comment = match[1]
 					}
 				}
@@ -73,7 +82,7 @@ func (api *Api) addFile(protoFile string) error {
 				visitor := &enumVisitor{
 					Enum: &VisitedEnum{
 						Comment: strings.Trim(comment, " "),
-						Fields:  make([]*enumField, 0),
+						Fields:  make([]*EnumField, 0),
 						Name:    enumName,
 					},
 				}
@@ -86,6 +95,10 @@ func (api *Api) addFile(protoFile string) error {
 		),
 		proto.WithMessage(
 			func(message *proto.Message) {
+				if walkErr != nil {
+					return
+				}
+
 				if message.Name == "google.protobuf.EnumValueOptions" {
 					return
 				}
@@ -111,6 +124,10 @@ func (api *Api) addFile(protoFile string) error {
 		),
 		proto.WithRPC(
 			func(rpc *proto.RPC) {
+				if walkErr != nil {
+					return
+				}
+
 				comment := ""
 				if rpc.Comment != nil {
 					comment = rpc.Comment.Message()
@@ -120,20 +137,23 @@ func (api *Api) addFile(protoFile string) error {
 				resolveType := func(fullTypeName string) *VisitedMessage {
 					if fullTypeName == "google.protobuf.Empty" {
 						return nil
-					} else {
-						// We get something like `api.MyRequestType`, so strip after the last dot.
-						stripped := fullTypeName[strings.LastIndex(fullTypeName, ".")+1:]
-
-						t, ok := api.MessagesByName[stripped]
-						if !ok {
-							log.Fatalf("Unable to find type %s for %s", fullTypeName, rpc.Name)
-						}
-						return t
 					}
+					// We get something like `api.MyRequestType`, so strip after the last dot.
+					stripped := fullTypeName[strings.LastIndex(fullTypeName, ".")+1:]
+
+					t, ok := api.MessagesByName[stripped]
+					if !ok {
+						walkErr = fmt.Errorf("unable to find type %s for RPC %s", fullTypeName, rpc.Name)
+						return nil
+					}
+					return t
 				}
 
 				requestType := resolveType(rpc.RequestType)
 				returnType := resolveType(rpc.ReturnsType)
+				if walkErr != nil {
+					return
+				}
 
 				visitor := &rpcVisitor{
 					Rpc: &VisitedRpc{
@@ -153,10 +173,10 @@ func (api *Api) addFile(protoFile string) error {
 		),
 	)
 
-	return nil
+	return walkErr
 }
 
-func LoadApi(protoFiles []string, prefix string) (Api, error) {
+func LoadApi(protoFiles []string) (Api, error) {
 	api := Api{
 		Enums:    make([]*VisitedEnum, 0),
 		Messages: make([]*VisitedMessage, 0),
@@ -171,7 +191,9 @@ func LoadApi(protoFiles []string, prefix string) (Api, error) {
 	// Updates maps internally, so each subsequent
 	// file will have previous context to work with.
 	for _, f := range protoFiles {
-		api.addFile(f)
+		if err := api.addFile(f); err != nil {
+			return Api{}, fmt.Errorf("loading %s: %w", f, err)
+		}
 	}
 
 	return api, nil

@@ -27,20 +27,20 @@
 
 namespace NakamaApi
 {
-  {{ range $rpc := $.FuncDecls }}
+  {{ range $fn := $.Funcs }}
   /*
-  * {{ $rpc.FuncComment }}
+  * {{ $fn.Comment }}
   *
   * Config	The client configuration.
-  {{- range $rpc.FuncParamDocs }}
+  {{- range $fn.ParamDocs }}
   * {{ . }}{{ end }}
   * OnError	Called when the operation fails.
   * Timeout Request timeout in seconds.
   * CancellationToken	Set to true to cancel the in-flight request.
   **/
-  NAKAMAAPI_API void {{ $rpc.FuncName }}(
+  NAKAMAAPI_API void {{ $fn.Name }}(
     const FNakamaClientConfig& Config,
-    {{- range $idx, $param := $rpc.FuncParams }}
+    {{- range $idx, $param := $fn.Params }}
     {{ $param.Type }} {{ $param.Name }},
     {{- end }}
     TFunction<void(const FNakamaError&)> OnError,
