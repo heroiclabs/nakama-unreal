@@ -19,6 +19,7 @@ package codegen
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"text/template"
 
 	"heroiclabs.com/modular-codegen/schema"
@@ -74,7 +75,7 @@ func (m Module) generateOne(p Production, api schema.Api, outPath string) error 
 		return fmt.Errorf("creating view model: %w", err)
 	}
 
-	outFilePath := fmt.Sprintf("%s/%s", outPath, p.Output)
+	outFilePath := filepath.Join(outPath, p.Output)
 	outFile, err := os.Create(outFilePath)
 	if err != nil {
 		return fmt.Errorf("creating file %s: %w", outFilePath, err)

@@ -38,6 +38,9 @@ struct {{ $.ApiExport }} {{ $.TypePrefix }}Error
 {
 	GENERATED_BODY()
 
+	{{ $.TypePrefix }}Error() = default;
+	{{ $.TypePrefix }}Error(const FString& InMessage, int32 InCode) : Message(InMessage), Code(InCode) {}
+
 	UPROPERTY(BlueprintReadWrite, Category = "{{ $.Name }}")
 	FString Message;
 

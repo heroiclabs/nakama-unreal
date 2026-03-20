@@ -204,10 +204,6 @@ func NewUnrealTypeMap() *UnrealTypeMap {
 		NeedsEmptyGuard: false,
 	}
 
-	// Sentinel: default traits for any enum type
-	enumEntry := *int32Entry
-	enumEntry.CastFromJson = ""
-
 	return &UnrealTypeMap{
 		entries: map[string]*TypeEntry{
 			"string":                      stringEntry,
@@ -235,12 +231,6 @@ func NewUnrealTypeMap() *UnrealTypeMap {
 			"bytes":                       bytesEntry,
 			"google.protobuf.BytesValue":  bytesEntry,
 
-			"__enum__": &enumEntry,
-			"__message__": {
-				JsonMethod:     "Object",
-				JsonArrayValue: "Object",
-				EmptyCheck:     "None",
-			},
 		},
 	}
 }
