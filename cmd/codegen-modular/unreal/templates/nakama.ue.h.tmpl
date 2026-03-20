@@ -1,0 +1,105 @@
+/*
+ * Copyright {{currentYear}} The Nakama Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/* This code is auto-generated. DO NOT EDIT. */
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "NakamaApi.h"
+#include "NakamaFuture.h"
+
+/** Tag type used as the value type for RPCs that return no data. */
+struct NAKAMA_API FNakamaVoid {};
+
+struct NAKAMA_API FNakamaVoidResult
+{
+	using ValueType = FNakamaVoid;
+	FNakamaVoid Value{};
+	FNakamaError Error;
+	bool bIsError = true;
+};
+{{- range $.UniqueReturnTypes }}
+
+struct NAKAMA_API FNakama{{ . }}Result
+{
+	using ValueType = FNakama{{ . }};
+	FNakama{{ . }} Value{};
+	FNakamaError Error;
+	bool bIsError = true;
+};
+{{- end }}
+
+/** Retry configuration for transient error handling + session auto-refresh. */
+struct NAKAMA_API FNakamaRetryConfig
+{
+	/** Maximum number of retry attempts (0 = no retries). */
+	int32 MaxRetries = 4;
+
+	/** Base delay in milliseconds before first retry. Actual delay uses exponential backoff with full jitter. */
+	int32 BaseDelayMs = 500;
+
+	/** Whether to automatically refresh expired sessions before making API calls. */
+	bool bAutoRefreshSession = true;
+
+	/** How many seconds before expiry a session is considered "about to expire" and gets refreshed. */
+	int64 AutoRefreshBufferSeconds = 300;
+
+	/** HTTP request timeout in seconds. */
+	float Timeout = 10.0f;
+
+	/**
+	 * Called after a session is automatically refreshed, so callers can persist the updated session.
+	 *
+	 * If the callback captures a UObject pointer, set OnSessionRefreshedOwner to that object.
+	 * The callback will be skipped if the owner has been garbage-collected, preventing
+	 * dangling-pointer crashes during in-flight retries.
+	 */
+	TFunction<void(const FNakamaSession&)> OnSessionRefreshed;
+
+	/** Optional weak owner for OnSessionRefreshed. When set, the callback is skipped if the owner is stale. */
+	TWeakObjectPtr<UObject> OnSessionRefreshedOwner;
+};
+
+/**
+ * High-level Nakama API: free functions with retry logic + session auto-refresh.
+ *
+ * Transient errors (UNAVAILABLE, INTERNAL, DEADLINE_EXCEEDED) are
+ * automatically retried with exponential backoff and full jitter.
+ */
+namespace Nakama
+{
+	/** Returns true if the error code is considered transient (eligible for retry). */
+	NAKAMA_API bool IsTransientError(const FNakamaError& Error) noexcept;
+
+	/** Compute backoff delay in seconds for a given attempt using exponential backoff with full jitter. */
+	NAKAMA_API float CalculateBackoff(int32 Attempt, const FNakamaRetryConfig& Config) noexcept;
+
+{{- range $m := $.Methods }}
+
+	/** {{ $m.Comment }} */
+	NAKAMA_API TNakamaFuture<{{ $m.AsyncResultType }}Result> {{ $m.Name }}(
+		const FNakamaClientConfig& ClientConfig,
+		{{- if $m.LeadParam }}
+		{{ $m.LeadParam.Type }} {{ $m.LeadParam.Name }},
+		{{- end }}
+		{{- range $m.HighLevelParams }}
+		{{ .ParamType }} {{ .Name }}{{ .Default }},
+		{{- end }}
+		const FNakamaRetryConfig& RetryConfig = {},
+		TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)) noexcept;
+{{- end }}
+}

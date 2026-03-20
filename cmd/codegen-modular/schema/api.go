@@ -37,13 +37,13 @@ type Api struct {
 func (api *Api) addFile(protoFile string) error {
 	fileBytes, err := os.ReadFile(protoFile)
 	if err != nil {
-		return fmt.Errorf("failed to read file %s: %s", protoFile, err.Error())
+		return fmt.Errorf("reading %s: %w", protoFile, err)
 	}
 
 	parser := proto.NewParser(bytes.NewReader(fileBytes))
 	parsedProto, err := parser.Parse()
 	if err != nil {
-		return fmt.Errorf("failed to parse proto file %s: %s", protoFile, err.Error())
+		return fmt.Errorf("parsing %s: %w", protoFile, err)
 	}
 
 	// proto.Walk callbacks can't return errors, so capture the first error here.

@@ -27,21 +27,44 @@
 
 namespace NakamaApi
 {
-  {{ range $fn := $.Funcs }}
+  {{ range $m := $.Methods }}
   /*
-  * {{ $fn.Comment }}
+  * {{ $m.Comment }}
   *
   * Config	The client configuration.
-  {{- range $fn.ParamDocs }}
-  * {{ . }}{{ end }}
+  {{- if $m.LeadParam }}
+  * {{ $m.LeadParam.Name }}	{{ $m.LeadParam.Comment }}
+  {{- end }}
+  {{- range $m.Fields }}
+  * {{ .Name }}	{{ .Comment }}
+  {{- end }}
+  {{- range $m.MapFields }}
+  * {{ .Name }}	{{ .Comment }}
+  {{- end }}
+  {{- if $m.HasReturn }}
+  * OnSuccess	Called on success with the {{ $m.ReturnType }}.
+  {{- else }}
+  * OnSuccess	Called on success.
+  {{- end }}
   * OnError	Called when the operation fails.
   * Timeout Request timeout in seconds.
   * CancellationToken	Set to true to cancel the in-flight request.
   **/
-  NAKAMAAPI_API void {{ $fn.Name }}(
+  NAKAMAAPI_API void {{ $m.Name }}(
     const FNakamaClientConfig& Config,
-    {{- range $idx, $param := $fn.Params }}
-    {{ $param.Type }} {{ $param.Name }},
+    {{- if $m.LeadParam }}
+    {{ $m.LeadParam.Type }} {{ $m.LeadParam.Name }},
+    {{- end }}
+    {{- range $m.Fields }}
+    {{ .ParamType }} {{ .Name }},
+    {{- end }}
+    {{- range $m.MapFields }}
+    {{ .ParamType }} {{ .Name }},
+    {{- end }}
+    {{- if $m.HasReturn }}
+    TFunction<void(const FNakama{{ $m.ReturnType }}&)> OnSuccess,
+    {{- else }}
+    TFunction<void()> OnSuccess,
     {{- end }}
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,

@@ -1,0 +1,93 @@
+/*
+ * Copyright {{currentYear}} The Nakama Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/* This code is auto-generated. DO NOT EDIT. */
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "Kismet/BlueprintAsyncActionBase.h"
+#include "Kismet/BlueprintFunctionLibrary.h"
+#include "SatoriApi.h"
+
+#include "SatoriClientBlueprintLibrary.generated.h"
+
+// ============================================================================
+// Dynamic delegates for async actions
+// ============================================================================
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSatoriError, const FSatoriError&, Error);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSatoriSuccess);
+
+{{- range $.UniqueReturnTypes }}
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSatori{{ . }}, const FSatori{{ . }}&, Result);
+{{- end }}
+
+// ============================================================================
+// Async Action Classes (one per RPC)
+// ============================================================================
+{{- range $m := $.Methods }}
+
+/**
+ * {{ $m.Comment }}
+ */
+UCLASS(Transient)
+class SATORIBLUEPRINTS_API USatoriClient{{ $m.Name }} : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+{{- if $m.HasReturn }}
+	UPROPERTY(BlueprintAssignable)
+	FOnSatori{{ $m.ReturnType }} OnSuccess;
+{{- else }}
+	UPROPERTY(BlueprintAssignable)
+	FOnSatoriSuccess OnSuccess;
+{{- end }}
+
+	UPROPERTY(BlueprintAssignable)
+	FOnSatoriError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "{{ $m.Name }}"), Category = "Satori|Client")
+	static USatoriClient{{ $m.Name }}* {{ $m.Name }}(
+		UObject* WorldContextObject,
+		FSatoriClientConfig Client
+{{- if $m.LeadParam }},
+		{{ $m.LeadParam.Type }} {{ $m.LeadParam.Name }}
+{{- end }}
+{{- range $m.HighLevelParams }},
+		{{ .ParamType }} {{ .Name }}
+{{- end }});
+
+	virtual void Activate() override;
+
+private:
+	FSatoriClientConfig Client;
+
+{{- if $m.LeadParam }}
+{{- if eq $m.AuthType "Bearer" }}
+	FSatoriSession Session;
+{{- end }}
+{{- end }}
+{{- range $m.HighLevelParams }}
+{{- if .IsScalarBody }}
+	TMap<FString, FString> Stored{{ .Name }};
+{{- else }}
+	{{ .FieldType }} Stored{{ .Name }}{{ .FieldDefault }};
+{{- end }}
+{{- end }}
+};
+{{- end }}

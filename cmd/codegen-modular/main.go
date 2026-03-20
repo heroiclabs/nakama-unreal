@@ -47,13 +47,13 @@ func main() {
 			{
 				TemplateContent:  mustReadTemplate("templates/Nakama.h.tmpl"),
 				FuncMap:          getFuncMap(),
-				ViewModelFactory: unreal.MakeNakamaApiDeclarationViewModel,
+				ViewModelFactory: unreal.MakeViewModelFactory("FNakama", "ENakama", true),
 				Output:           "Nakama.h",
 			},
 			{
 				TemplateContent:  mustReadTemplate("templates/nakama-api.ue.cpp.tmpl"),
 				FuncMap:          getFuncMap(),
-				ViewModelFactory: unreal.MakeNakamaApiDefinitionViewModel,
+				ViewModelFactory: unreal.MakeViewModelFactory("FNakama", "ENakama", true),
 				Output:           "NakamaApi.cpp",
 			},
 		},

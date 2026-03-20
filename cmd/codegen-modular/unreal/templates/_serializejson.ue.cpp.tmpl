@@ -1,0 +1,29 @@
+{{- define "serializejson" }}
+FString SerializeJsonToString(const TSharedPtr<FJsonObject>& Json)
+{
+	TArray<uint8> JsonBytes;
+	JsonBytes.Reserve(1024);
+	FMemoryWriter Archive(JsonBytes);
+	TSharedRef<TJsonWriter<UTF8CHAR, TCondensedJsonPrintPolicy<UTF8CHAR>>> Writer =
+		TJsonWriterFactory<UTF8CHAR, TCondensedJsonPrintPolicy<UTF8CHAR>>::Create(&Archive);
+	FJsonSerializer::Serialize(Json.ToSharedRef(), Writer);
+	Writer->Close();
+	FUTF8ToTCHAR Converter(reinterpret_cast<const ANSICHAR*>(JsonBytes.GetData()), JsonBytes.Num());
+	return FString(Converter.Length(), Converter.Get());
+}
+
+FString SerializeJsonEscaped(const TSharedPtr<FJsonObject>& Json)
+{
+	TArray<uint8> JsonBytes;
+	JsonBytes.Reserve(2048);
+	FMemoryWriter Archive(JsonBytes);
+	TSharedRef<TJsonWriter<UTF8CHAR, TCondensedJsonPrintPolicy<UTF8CHAR>>> Writer =
+		TJsonWriterFactory<UTF8CHAR, TCondensedJsonPrintPolicy<UTF8CHAR>>::Create(&Archive);
+	FJsonSerializer::Serialize(Json.ToSharedRef(), Writer);
+	Writer->Close();
+	FUTF8ToTCHAR Converter(reinterpret_cast<const ANSICHAR*>(JsonBytes.GetData()), JsonBytes.Num());
+	FString Condensed(Converter.Length(), Converter.Get());
+	FString Escaped = Condensed.Replace(TEXT("\\"), TEXT("\\\\")).Replace(TEXT("\""), TEXT("\\\""));
+	return TEXT("\"") + Escaped + TEXT("\"");
+}
+{{- end }}

@@ -1,0 +1,154 @@
+/*
+ * Copyright {{currentYear}} The Nakama Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/* This code is auto-generated. DO NOT EDIT. */
+
+#include "NakamaRtTypes.h"
+
+{{- /* Generate FromJson/ToJson implementations for each message */ -}}
+{{- range $msg := $.Messages }}
+
+FNakamaRt{{ $msg.Name }} FNakamaRt{{ $msg.Name }}::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
+{
+	FNakamaRt{{ $msg.Name }} Result;
+	if (!Json.IsValid())
+	{
+		return Result;
+	}
+{{- range $msg.Fields }}
+{{- if .IsRepeated }}
+	if (Json->HasField(TEXT("{{ .JsonName }}")))
+	{
+		const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
+		if (Json->TryGetArrayField(TEXT("{{ .JsonName }}"), ArrayPtr))
+		{
+			for (const auto& Item : *ArrayPtr)
+			{
+{{- if .IsMessage }}
+				const TSharedPtr<FJsonObject>* ItemObj = nullptr;
+				if (Item->TryGetObject(ItemObj) && ItemObj)
+				{
+					Result.{{ .Name }}.Add({{ .MessageType }}::FromJson(*ItemObj));
+				}
+{{- else }}
+				Result.{{ .Name }}.Add({{ .ArrayItemExpr }});
+{{- end }}
+			}
+		}
+	}
+{{- else if .IsBytes }}
+	if (Json->HasField(TEXT("{{ .JsonName }}")))
+	{
+		FString Base64 = Json->GetStringField(TEXT("{{ .JsonName }}"));
+		if (!FBase64::Decode(Base64, Result.{{ .Name }}))
+		{
+			UE_LOG(LogNakama, Warning, TEXT("Couldn't parse bytes: %s"), *Base64);
+		}
+	}
+{{- else if .IsMessage }}
+	if (Json->HasField(TEXT("{{ .JsonName }}")))
+	{
+		const TSharedPtr<FJsonObject>* NestedObj;
+		if (Json->TryGetObjectField(TEXT("{{ .JsonName }}"), NestedObj))
+		{
+			Result.{{ .Name }} = {{ .MessageType }}::FromJson(*NestedObj);
+		}
+	}
+{{- else if .IsEnum }}
+	if (Json->HasField(TEXT("{{ .JsonName }}")))
+	{
+		Result.{{ .Name }} = static_cast<{{ .EnumType }}>(Json->GetIntegerField(TEXT("{{ .JsonName }}")));
+	}
+{{- else if ne .CastFromJson "" }}
+	if (Json->HasField(TEXT("{{ .JsonName }}")))
+	{
+		Result.{{ .Name }} = {{ .CastFromJson }}(Json->{{ .JsonGetter }}(TEXT("{{ .JsonName }}")));
+	}
+{{- else }}
+	if (Json->HasField(TEXT("{{ .JsonName }}")))
+	{
+		Result.{{ .Name }} = Json->{{ .JsonGetter }}(TEXT("{{ .JsonName }}"));
+	}
+{{- end }}
+{{- end }}
+{{- range $msg.MapFields }}
+	if (Json->HasField(TEXT("{{ .JsonName }}")))
+	{
+		const TSharedPtr<FJsonObject>* MapObj;
+		if (Json->TryGetObjectField(TEXT("{{ .JsonName }}"), MapObj))
+		{
+			for (const auto& Pair : (*MapObj)->Values)
+			{
+				Result.{{ .Name }}.Add(Pair.Key, {{ .MapValueReader }});
+			}
+		}
+	}
+{{- end }}
+	return Result;
+}
+
+TSharedPtr<FJsonObject> FNakamaRt{{ $msg.Name }}::ToJson() const noexcept
+{
+	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+{{- range $msg.Fields }}
+{{- if .IsRepeated }}
+	if ({{ .Name }}.Num() > 0)
+	{
+		TArray<TSharedPtr<FJsonValue>> Array;
+		for (const auto& Item : {{ .Name }})
+		{
+{{- if .IsMessage }}
+			Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
+{{- else }}
+			Array.Add(MakeShared<{{ .JsonArrayValue }}>(Item));
+{{- end }}
+		}
+		Json->SetArrayField(TEXT("{{ .JsonName }}"), Array);
+	}
+{{- else if .IsBytes }}
+	Json->SetStringField(TEXT("{{ .JsonName }}"), FBase64::Encode({{ .Name }}));
+{{- else if .IsMessage }}
+	Json->SetObjectField(TEXT("{{ .JsonName }}"), {{ .Name }}.ToJson());
+{{- else if .IsEnum }}
+	Json->SetNumberField(TEXT("{{ .JsonName }}"), static_cast<int32>({{ .Name }}));
+{{- else if eq .ToJsonGuard "IsEmpty" }}
+	if (!{{ .Name }}.IsEmpty())
+	{
+		Json->{{ .JsonSetter }}(TEXT("{{ .JsonName }}"), {{ .Name }});
+	}
+{{- else if eq .ToJsonGuard "NonZero" }}
+	if ({{ .Name }} != 0)
+	{
+		Json->{{ .JsonSetter }}(TEXT("{{ .JsonName }}"), {{ .Name }});
+	}
+{{- else }}
+	Json->{{ .JsonSetter }}(TEXT("{{ .JsonName }}"), {{ .Name }});
+{{- end }}
+{{- end }}
+{{- range $msg.MapFields }}
+	if ({{ .Name }}.Num() > 0)
+	{
+		TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
+		for (const auto& Pair : {{ .Name }})
+		{
+			MapObj->{{ .MapValueSetter }}(Pair.Key, Pair.Value);
+		}
+		Json->SetObjectField(TEXT("{{ .JsonName }}"), MapObj);
+	}
+{{- end }}
+	return Json;
+}
+{{- end }}

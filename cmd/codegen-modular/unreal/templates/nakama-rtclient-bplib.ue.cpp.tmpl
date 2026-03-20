@@ -1,0 +1,142 @@
+/*
+ * Copyright {{currentYear}} The Nakama Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/* This code is auto-generated. DO NOT EDIT. */
+
+#include "NakamaRtClientBlueprintLibrary.h"
+
+// ============================================================================
+// Async Action Classes Implementation
+// ============================================================================
+{{- range $op := $.RtOperations }}
+
+// {{ $op.MessageName }}
+UNakamaRealtimeClient{{ $op.MessageName }}* UNakamaRealtimeClient{{ $op.MessageName }}::{{ $op.MessageName }}(
+	UObject* WorldContextObject,
+	UNakamaWebSocketSubsystem* WebSocketSubsystem
+{{- range $op.Fields }},
+	{{ .ParamType }} {{ .Name }}
+{{- end }}
+{{- range $op.MapFields }},
+	const {{ .FieldType }}& {{ .Name }}
+{{- end }})
+{
+	UNakamaRealtimeClient{{ $op.MessageName }}* Action = NewObject<UNakamaRealtimeClient{{ $op.MessageName }}>(GetTransientPackage());
+	Action->StoredWebSocketSubsystem = WebSocketSubsystem;
+{{- range $op.Fields }}
+	Action->Stored{{ .Name }} = {{ .Name }};
+{{- end }}
+{{- range $op.MapFields }}
+	Action->Stored{{ .Name }} = {{ .Name }};
+{{- end }}
+	Action->RegisterWithGameInstance(WorldContextObject);
+	return Action;
+}
+
+void UNakamaRealtimeClient{{ $op.MessageName }}::Activate()
+{
+	static const TCHAR* TraceScope_{{ $op.MessageName }} = TEXT("NakamaRTBP_{{ $op.MessageName }}");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_{{ $op.MessageName }});
+
+	if (!StoredWebSocketSubsystem)
+	{
+		FNakamaRtError Err;
+		Err.Message = TEXT("WebSocket subsystem is null");
+		OnError.Broadcast(Err);
+		SetReadyToDestroy();
+		return;
+	}
+
+	TWeakObjectPtr<UNakamaRealtimeClient{{ $op.MessageName }}> WeakThis(this);
+
+	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+{{- range $op.Fields }}
+{{- if .IsRepeated }}
+	if (Stored{{ .Name }}.Num() > 0)
+	{
+		TArray<TSharedPtr<FJsonValue>> Array;
+		for (const auto& Item : Stored{{ .Name }})
+		{
+{{- if .IsMessage }}
+			Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
+{{- else }}
+			Array.Add(MakeShared<{{ .JsonArrayValue }}>(Item));
+{{- end }}
+		}
+		Json->SetArrayField(TEXT("{{ .JsonName }}"), Array);
+	}
+{{- else if .IsBytes }}
+	Json->SetStringField(TEXT("{{ .JsonName }}"), FBase64::Encode(Stored{{ .Name }}));
+{{- else if .IsMessage }}
+	Json->SetObjectField(TEXT("{{ .JsonName }}"), Stored{{ .Name }}.ToJson());
+{{- else if .IsEnum }}
+	Json->SetNumberField(TEXT("{{ .JsonName }}"), static_cast<int32>(Stored{{ .Name }}));
+{{- else if eq .ToJsonGuard "IsEmpty" }}
+	if (!Stored{{ .Name }}.IsEmpty())
+	{
+		Json->{{ .JsonSetter }}(TEXT("{{ .JsonName }}"), Stored{{ .Name }});
+	}
+{{- else if eq .ToJsonGuard "NonZero" }}
+	if (Stored{{ .Name }} != 0)
+	{
+		Json->{{ .JsonSetter }}(TEXT("{{ .JsonName }}"), Stored{{ .Name }});
+	}
+{{- else }}
+	Json->{{ .JsonSetter }}(TEXT("{{ .JsonName }}"), Stored{{ .Name }});
+{{- end }}
+{{- end }}
+{{- range $op.MapFields }}
+	if (Stored{{ .Name }}.Num() > 0)
+	{
+		TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
+		for (const auto& Pair : Stored{{ .Name }})
+		{
+			MapObj->{{ .MapValueSetter }}(Pair.Key, Pair.Value);
+		}
+		Json->SetObjectField(TEXT("{{ .JsonName }}"), MapObj);
+	}
+{{- end }}
+
+	StoredWebSocketSubsystem->Send(TEXT("{{ $op.CaseName }}"), Json)
+		.Next([WeakThis](FNakamaWebSocketResponse Resp)
+		{
+			auto* Self = WeakThis.Get();
+			if (!Self)
+			{
+				return;
+			}
+
+			if (Resp.ErrorCode == ENakamaWebSocketError::None)
+			{
+				Self->OnSuccess.Broadcast();
+			}
+			else
+			{
+				FNakamaRtError Err;
+				if (Resp.Data.IsValid())
+				{
+					Err = FNakamaRtError::FromJson(Resp.Data);
+				}
+				else
+				{
+					Err.Code = static_cast<int32>(Resp.ErrorCode);
+				}
+				Self->OnError.Broadcast(Err);
+			}
+			Self->SetReadyToDestroy();
+		});
+}
+{{- end }}
