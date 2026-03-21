@@ -1,0 +1,165 @@
+{{- /*
+  Shared FromJson field-reading logic for a single message.
+  Receives a codegen.ResolvedMessage as dot context.
+  All type references (.MessageType, .EnumType, etc.) are pre-resolved
+  by the Go code and already contain the correct prefix.
+*/ -}}
+{{- define "fromjson_read_fields" }}
+{{- range .Fields }}
+{{- if .IsRepeated }}
+	if (Json->HasField(TEXT("{{ .JsonName }}")))
+	{
+		const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
+		if (Json->TryGetArrayField(TEXT("{{ .JsonName }}"), ArrayPtr))
+		{
+			for (const auto& Item : *ArrayPtr)
+			{
+{{- if .IsMessage }}
+				const TSharedPtr<FJsonObject>* ItemObj = nullptr;
+				if (Item->TryGetObject(ItemObj) && ItemObj)
+				{
+					Result.{{ .Name }}.Add({{ .MessageType }}::FromJson(*ItemObj));
+				}
+{{- else }}
+				Result.{{ .Name }}.Add({{ .ArrayItemExpr }});
+{{- end }}
+			}
+		}
+	}
+{{- else if .IsMessage }}
+	if (Json->HasField(TEXT("{{ .JsonName }}")))
+	{
+		const TSharedPtr<FJsonObject>* NestedObj;
+		if (Json->TryGetObjectField(TEXT("{{ .JsonName }}"), NestedObj))
+		{
+			Result.{{ .Name }} = {{ .MessageType }}::FromJson(*NestedObj);
+		}
+	}
+{{- else if .IsEnum }}
+	if (Json->HasField(TEXT("{{ .JsonName }}")))
+	{
+		Result.{{ .Name }} = static_cast<{{ .EnumType }}>(Json->GetIntegerField(TEXT("{{ .JsonName }}")));
+	}
+{{- else if ne .CastFromJson "" }}
+	if (Json->HasField(TEXT("{{ .JsonName }}")))
+	{
+		Result.{{ .Name }} = {{ .CastFromJson }}(Json->{{ .JsonGetter }}(TEXT("{{ .JsonName }}")));
+	}
+{{- else }}
+	if (Json->HasField(TEXT("{{ .JsonName }}")))
+	{
+		Result.{{ .Name }} = Json->{{ .JsonGetter }}(TEXT("{{ .JsonName }}"));
+	}
+{{- end }}
+{{- end }}
+{{- range .MapFields }}
+	if (Json->HasField(TEXT("{{ .JsonName }}")))
+	{
+		const TSharedPtr<FJsonObject>* MapObj;
+		if (Json->TryGetObjectField(TEXT("{{ .JsonName }}"), MapObj))
+		{
+			for (const auto& Pair : (*MapObj)->Values)
+			{
+				Result.{{ .Name }}.Add(Pair.Key, {{ .MapValueReader }});
+			}
+		}
+	}
+{{- end }}
+{{- end }}
+
+{{- /*
+  Shared ToJson field-writing logic for a single message.
+  Receives a codegen.ResolvedMessage as dot context.
+*/ -}}
+{{- define "tojson_write_fields" }}
+{{- range .Fields }}
+{{- if .IsRepeated }}
+	if ({{ .Name }}.Num() > 0)
+	{
+		TArray<TSharedPtr<FJsonValue>> Array;
+		for (const auto& Item : {{ .Name }})
+		{
+{{- if .IsMessage }}
+			Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
+{{- else }}
+			Array.Add(MakeShared<{{ .JsonArrayValue }}>(Item));
+{{- end }}
+		}
+		Json->SetArrayField(TEXT("{{ .JsonName }}"), Array);
+	}
+{{- else if .IsMessage }}
+	Json->SetObjectField(TEXT("{{ .JsonName }}"), {{ .Name }}.ToJson());
+{{- else if .IsEnum }}
+	Json->SetNumberField(TEXT("{{ .JsonName }}"), static_cast<int32>({{ .Name }}));
+{{- else if eq .ToJsonGuard "IsEmpty" }}
+	if (!{{ .Name }}.IsEmpty())
+	{
+		Json->{{ .JsonSetter }}(TEXT("{{ .JsonName }}"), {{ .Name }});
+	}
+{{- else if eq .ToJsonGuard "NonZero" }}
+	if ({{ .Name }} != 0)
+	{
+		Json->{{ .JsonSetter }}(TEXT("{{ .JsonName }}"), {{ .Name }});
+	}
+{{- else }}
+	Json->{{ .JsonSetter }}(TEXT("{{ .JsonName }}"), {{ .Name }});
+{{- end }}
+{{- end }}
+{{- range .MapFields }}
+	if ({{ .Name }}.Num() > 0)
+	{
+		TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
+		for (const auto& Pair : {{ .Name }})
+		{
+			MapObj->{{ .MapValueSetter }}(Pair.Key, Pair.Value);
+		}
+		Json->SetObjectField(TEXT("{{ .JsonName }}"), MapObj);
+	}
+{{- end }}
+{{- end }}
+
+{{- /*
+  Generates all FromJson + ToJson implementations for every message.
+  Receives the full ApiViewModel as dot context.
+  Handles both Session (with ParseTokens) and non-session messages.
+*/ -}}
+{{- define "all_fromjson_tojson" }}
+{{- range $msg := $.Messages }}
+
+{{ $.TypePrefix }}{{ $msg.Name }} {{ $.TypePrefix }}{{ $msg.Name }}::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
+{
+	{{ $.TypePrefix }}{{ $msg.Name }} Result;
+	if (!Json.IsValid())
+	{
+		return Result;
+	}
+{{- template "fromjson_read_fields" $msg }}
+{{- if $msg.IsSession }}
+	Result.ParseTokens();
+{{- end }}
+	return Result;
+}
+
+TSharedPtr<FJsonObject> {{ $.TypePrefix }}{{ $msg.Name }}::ToJson() const noexcept
+{
+	TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+{{- template "tojson_write_fields" $msg }}
+	return Json;
+}
+{{- end }}
+{{- end }}
+
+{{- /*
+  Generates the ClientConfig::GetBaseUrl implementation.
+  Receives the full ApiViewModel as dot context.
+*/ -}}
+{{- define "clientconfig_getbaseurl" }}
+
+// --- {{ $.TypePrefix }}ClientConfig ---
+
+FString {{ $.TypePrefix }}ClientConfig::GetBaseUrl() const noexcept
+{
+	const FString Scheme = bUseSSL ? TEXT("https") : TEXT("http");
+	return FString::Printf(TEXT("%s://%s:%d"), *Scheme, *Host, Port);
+}
+{{- end }}

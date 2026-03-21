@@ -1,0 +1,190 @@
+{{- /*
+  Shared Blueprint delegate declarations.
+  Receives the full ApiViewModel as dot context.
+*/ -}}
+{{- define "bp_delegates" }}
+
+// ============================================================================
+// Dynamic delegates for async actions
+// ============================================================================
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOn{{ $.Name }}Error, const {{ $.TypePrefix }}Error&, Error);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOn{{ $.Name }}Success);
+
+{{- /* Generate success delegates for each unique return type */ -}}
+{{- range $.UniqueReturnTypes }}
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOn{{ $.Name }}{{ . }}, const {{ $.TypePrefix }}{{ . }}&, Result);
+{{- end }}
+{{- end }}
+
+{{- /*
+  Shared Blueprint async action class declarations.
+  Receives the full ApiViewModel as dot context.
+*/ -}}
+{{- define "bp_action_class_declarations" }}
+
+// ============================================================================
+// Async Action Classes (one per RPC)
+// ============================================================================
+{{- range $m := $.Methods }}
+
+/**
+ * {{ $m.Comment }}
+ */
+UCLASS(Transient)
+class {{ $.BpExport }} U{{ $.Name }}Client{{ $m.Name }} : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+{{- if $m.HasReturn }}
+	UPROPERTY(BlueprintAssignable)
+	FOn{{ $.Name }}{{ $m.ReturnType }} OnSuccess;
+{{- else }}
+	UPROPERTY(BlueprintAssignable)
+	FOn{{ $.Name }}Success OnSuccess;
+{{- end }}
+
+	UPROPERTY(BlueprintAssignable)
+	FOn{{ $.Name }}Error OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "{{ $m.Name }}"), Category = "{{ $.Name }}|Client")
+	static U{{ $.Name }}Client{{ $m.Name }}* {{ $m.Name }}(
+		UObject* WorldContextObject,
+		{{ $.TypePrefix }}ClientConfig Client
+{{- if $m.LeadParam }},
+		{{ $m.LeadParam.Type }} {{ $m.LeadParam.Name }}
+{{- end }}
+{{- range $m.HighLevelParams }},
+		{{ .ParamType }} {{ .Name }}
+{{- end }});
+
+	virtual void Activate() override;
+
+private:
+	{{ $.TypePrefix }}ClientConfig Client;
+
+{{- if $m.LeadParam }}
+{{- if eq $m.AuthType "Bearer" }}
+	{{ $.TypePrefix }}Session Session;
+{{- end }}
+{{- end }}
+{{- range $m.HighLevelParams }}
+{{- if .IsScalarBody }}
+	TMap<FString, FString> Stored{{ .Name }};
+{{- else }}
+	{{ .FieldType }} Stored{{ .Name }}{{ .FieldDefault }};
+{{- end }}
+{{- end }}
+};
+{{- end }}
+{{- end }}
+
+{{- /*
+  Shared Blueprint async action class implementations.
+  Receives the full ApiViewModel as dot context.
+*/ -}}
+{{- define "bp_action_class_implementations" }}
+
+// ============================================================================
+// Async Action Classes Implementation
+// ============================================================================
+{{- range $m := $.Methods }}
+
+// {{ $m.Name }}
+U{{ $.Name }}Client{{ $m.Name }}* U{{ $.Name }}Client{{ $m.Name }}::{{ $m.Name }}(
+	UObject* WorldContextObject,
+	{{ $.TypePrefix }}ClientConfig Client
+{{- if $m.LeadParam }},
+	{{ $m.LeadParam.Type }} {{ $m.LeadParam.Name }}
+{{- end }}
+{{- range $m.HighLevelParams }},
+	{{ .ParamType }} {{ .Name }}
+{{- end }})
+{
+	U{{ $.Name }}Client{{ $m.Name }}* Action = NewObject<U{{ $.Name }}Client{{ $m.Name }}>(GetTransientPackage());
+	Action->Client = Client;
+{{- if $m.LeadParam }}
+{{- if eq $m.AuthType "Bearer" }}
+	Action->Session = Session;
+{{- end }}
+{{- end }}
+{{- range $m.HighLevelParams }}
+	Action->Stored{{ .Name }} = {{ .Name }};
+{{- end }}
+	Action->RegisterWithGameInstance(WorldContextObject);
+	return Action;
+}
+
+void U{{ $.Name }}Client{{ $m.Name }}::Activate()
+{
+	static const TCHAR* TraceScope_{{ $m.Name }} = TEXT("{{ $.Name }}BP_{{ $m.Name }}");
+	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_{{ $m.Name }});
+
+	TWeakObjectPtr<U{{ $.Name }}Client{{ $m.Name }}> WeakThis(this);
+
+	{{- range $g := $m.FlattenedGroups }}
+	{{ $g.FieldType }} Stored{{ $g.FieldName }};
+	{{- range $g.SubFields }}
+	Stored{{ $g.FieldName }}.{{ . }} = Stored{{ . }};
+	{{- end }}
+	{{- end }}
+
+	{{ $.Name }}Api::{{ $m.Name }}(
+		Client,
+{{- if $m.LeadParam }}
+{{- if eq $m.AuthType "Bearer" }}
+		Session,
+{{- else if eq $m.AuthType "HttpKey" }}
+		Stored{{ $m.LeadParam.Name }},
+{{- end }}
+{{- end }}
+{{- range $m.Fields }}
+{{- if and $m.UseStringBody (eq .Name $m.BodyFieldName) }}
+		[&]() -> TSharedPtr<FJsonObject> {
+			if (Stored{{ .Name }}.Num() == 0) { return nullptr; }
+			TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+			for (const auto& Pair : Stored{{ .Name }})
+			{
+				Json->SetStringField(Pair.Key, Pair.Value);
+			}
+			return Json;
+		}(),
+{{- else }}
+		Stored{{ .Name }},
+{{- end }}
+{{- end }}
+{{- range $m.MapFields }}
+		Stored{{ .Name }},
+{{- end }}
+{{- if $m.HasReturn }}
+		[WeakThis](const {{ $.TypePrefix }}{{ $m.ReturnType }}& Result)
+		{
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast(Result);
+				Self->SetReadyToDestroy();
+			}
+		},
+{{- else }}
+		[WeakThis]()
+		{
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnSuccess.Broadcast();
+				Self->SetReadyToDestroy();
+			}
+		},
+{{- end }}
+		[WeakThis](const {{ $.TypePrefix }}Error& Error)
+		{
+			if (auto* Self = WeakThis.Get())
+			{
+				Self->OnError.Broadcast(Error);
+				Self->SetReadyToDestroy();
+			}
+		}
+	);
+}
+{{- end }}
+{{- end }}

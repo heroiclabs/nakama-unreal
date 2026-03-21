@@ -1,0 +1,125 @@
+● Good — go vet is clean. Here's my review:
+
+  ---
+  Code Review — cmd/codegen
+
+  1. Bug: lowerCase panics on empty string
+
+  func_maps.go:47 — strings.ToLower(s[:1]) + s[1:] will panic with an index-out-of-range if s is empty. Template functions are especially susceptible to unexpected inputs.
+
+  "lowerCase": func(s string) string {
+      return strings.ToLower(s[:1]) + s[1:]  // panic if s == ""
+  },
+
+  Fix: guard with if len(s) == 0 { return s }.
+
+  ---
+  2. Bug: stripDot panics on strings without a dot
+
+  func_maps.go:90 — s[strings.LastIndex(s, ".")+1:] works by coincidence when there's no dot (LastIndex returns -1, so +1 = 0, giving the full string). This is the same pattern used in VisitOneofField at proto_visitors.go:102.
+  While it technically works, the resolveType closure at main.go:131 uses the same trick — it's fragile and unclear to readers.
+
+  ★ Insight ─────────────────────────────────────
+  This LastIndex + 1 trick is a known Go idiom — strings.LastIndex returns -1 on miss, so +1 yields 0, giving the full string. It's correct but reads like a bug. A strings.Cut or explicit check makes intent clearer.
+  ─────────────────────────────────────────────────
+
+  ---
+  3. Bug: appendString is a no-op
+
+  func_maps.go:49-52 — This function appends to a local copy of the string and returns true. The caller's string is never modified. Go strings are immutable values; s1 += s2 only changes the local parameter.
+
+  "appendString": func(s1 string, s2 string) bool {
+      s1 += s2      // modifies local copy only
+      return true   // always returns true, never the string
+  },
+
+  This looks like it was an attempt at mutation from templates. The appendStringNew right below it is the working version. If appendString is still referenced in templates it's silently doing nothing; if not, it's dead code.
+
+  ---
+  4. Deprecated API: strings.Title
+
+  func_maps.go:20 — strings.Title has been deprecated since Go 1.18. It has known issues with Unicode word boundaries (e.g., handling apostrophes). Use cases.Title(language.English).String() from golang.org/x/text or
+  textcase.PascalCase which you already import.
+
+  ---
+  5. Swallowed error on partial template glob
+
+  main.go:237 — filepath.Glob returns an error that's discarded:
+
+  partials, _ := filepath.Glob(partialPattern)
+
+  filepath.Glob only errors on malformed patterns (not missing files), so in practice this is unlikely to bite. But if someone introduces a bad pattern string, the error vanishes silently.
+
+  ---
+  6. loadApi error return value is never used
+
+  main.go:165-186 — loadApi returns (Api, error) but addFile failures are returned into it, and the caller at main.go:218-221 does handle it. However, inside loadApi, the loop at line 182 silently discards the error from addFile:
+
+  Wait — actually, looking again: there's no if err check — but there's no error variable either. Let me re-read:
+
+  for _, f := range protoFiles {
+      api.addFile(f)   // error is discarded
+  }
+  return api, nil      // always returns nil error
+
+  addFile returns an error, but the loop never checks it. The function signature promises an error return but it's always nil. Any proto parse failure is silently swallowed.
+
+  ★ Insight ─────────────────────────────────────
+  This is a classic Go mistake — having an error return for the "interface" but forgetting to wire it up internally. The addFile method properly returns fmt.Errorf(...) on failure, but loadApi throws that away. A failing proto
+  file would produce a partial Api with no indication anything went wrong.
+  ─────────────────────────────────────────────────
+
+  ---
+  7. Template execution error is logged, not fatal
+
+  main.go:259-261 — Template execution failures use log.Printf while every other error path uses log.Fatalf. This means a partial/corrupt output is written to stdout and the process exits 0. Downstream consumers (piping output to
+   a file) get a broken generated file with no error signal.
+
+  if err := tmpl.Execute(os.Stdout, api); err != nil {
+      log.Printf(...)  // should be log.Fatalf
+  }
+
+  ---
+  8. Regex compiled inside a loop on every addFile call
+
+  main.go:63 — regexp.MustCompile([(.*?)]) is called inside the enum visitor callback, which runs for every enum in every file. This should be a package-level var compiled once.
+
+  ---
+  9. canDefaultFlattenedFields doesn't account for map fields
+
+  func_maps.go:499-507 — This function checks whether all subsequent NormalFields are flattenable, but it ignores MapFields entirely. If the message has map fields after the current index, they aren't checked. Depending on how
+  the template uses this, map fields trailing the normal fields might not get default values, or the logic is incomplete.
+
+  ---
+  10. tryGetHttpMethod is fragile with substring matching
+
+  proto_visitors.go:125-140 — strings.Contains(str, "get") will match any option name containing "get" as a substring (e.g., a hypothetical "budget" or "target"). This works today because the option names are google.api.http
+  sub-fields like "get", "post", etc. — but it's one refactor away from a subtle bug. Equality checks or prefix matching would be safer.
+
+  ★ Insight ─────────────────────────────────────
+  The google.api.http annotation fields are always exactly get, post, put, delete, patch, custom. Using == instead of Contains would be both more correct and more readable. The current code would misclassify a field named
+  "forget" as GET.
+  ─────────────────────────────────────────────────
+
+  ---
+  11. VisitOneofField mutates the proto library's struct in place
+
+  proto_visitors.go:102 — oneof.Name = oneof.Name[...] mutates the proto.OneOfField struct directly. If the same parsed proto is walked twice or inspected later, the name is already stripped. This is a side-effect that couples
+  the visitor to single-use walks.
+
+  ---
+  Summary by severity
+
+  ┌─────────────────────┬─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+  │      Severity       │                                                                           Issues                                                                            │
+  ├─────────────────────┼─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+  │ Bug (will bite you) │ #3 (appendString no-op), #6 (swallowed addFile error), #7 (partial output on template error exits 0)                                                        │
+  ├─────────────────────┼─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+  │ Bug (edge case)     │ #1 (lowerCase empty-string panic), #10 (substring HTTP method matching)                                                                                     │
+  ├─────────────────────┼─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+  │ Code smell          │ #4 (deprecated strings.Title), #5 (swallowed glob error), #8 (regex in hot path), #9 (canDefaultFlattenedFields ignores maps), #11 (mutating proto structs) │
+  ├─────────────────────┼─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+  │ Readability         │ #2 (LastIndex+1 idiom)                                                                                                                                      │
+  └─────────────────────┴─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+  The highest-priority fixes are #6 and #7 — they can cause silent data corruption in generated output. #3 is dead-code-level but confusing to future readers.

@@ -1,0 +1,187 @@
+/*
+ * Copyright {{currentYear}} The Nakama Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/* This code is auto-generated. DO NOT EDIT. */
+
+#include "{{ $.Name }}.h"
+#include "Containers/Ticker.h"
+#include "Modules/ModuleManager.h"
+
+bool {{ $.Name }}::IsTransientError(const {{ $.TypePrefix }}Error& Error) noexcept
+{
+	switch (Error.Code)
+	{
+	case 0:  // Connection failed (TCP refused, DNS timeout, etc.)
+	case 4:  // DEADLINE_EXCEEDED
+	case 13: // INTERNAL
+	case 14: // UNAVAILABLE
+		return true;
+	default:
+		return false;
+	}
+}
+
+float {{ $.Name }}::CalculateBackoff(int32 Attempt, const {{ $.TypePrefix }}RetryConfig& Config) noexcept
+{
+	const float ExponentialDelay = FMath::Pow(2.0f, static_cast<float>(Attempt - 1)) * Config.BaseDelayMs;
+	const float Jitter = FMath::FRand() * ExponentialDelay;
+	return Jitter / 1000.0f;
+}
+
+{{- template "maybe_refresh_then_call" . }}
+{{- range $m := $.Methods }}
+
+T{{ $.Name }}Future<{{ $m.AsyncResultType }}Result> {{ $.Name }}::{{ $m.Name }}(
+	const {{ $.TypePrefix }}ClientConfig& ClientConfig,
+	{{- if $m.LeadParam }}
+	{{ $m.LeadParam.Type }} {{ $m.LeadParam.Name }},
+	{{- end }}
+	{{- range $m.HighLevelParams }}
+	{{ .ParamType }} {{ .Name }},
+	{{- end }}
+	const {{ $.TypePrefix }}RetryConfig& RetryConfig,
+	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
+{
+	auto FutureState = MakeShared<T{{ $.Name }}Future<{{ $m.AsyncResultType }}Result>::FState>();
+{{- if eq $m.AuthType "Bearer" }}
+	auto SessionState = MakeShared<{{ $.TypePrefix }}Session>(Session);
+{{- end }}
+	auto RetryCount = MakeShared<int32>(0);
+	auto DoRequest = MakeShared<TFunction<void()>>();
+	auto OnError = MakeShared<TFunction<void(const {{ $.TypePrefix }}Error&)>>();
+
+	*OnError = [FutureState, RetryCount, DoRequest, OnError, RetryConfig](const {{ $.TypePrefix }}Error& Error)
+	{
+		if ({{ $.Name }}::IsTransientError(Error) && *RetryCount < RetryConfig.MaxRetries)
+		{
+			(*RetryCount)++;
+			float Delay = {{ $.Name }}::CalculateBackoff(*RetryCount, RetryConfig);
+			FTSTicker::GetCoreTicker().AddTicker(
+				FTickerDelegate::CreateLambda([DoRequest](float) -> bool { (*DoRequest)(); return false; }),
+				Delay);
+		}
+		else
+		{
+			*DoRequest = nullptr;
+			*OnError = nullptr;
+			FutureState->Resolve({{ $m.AsyncResultType }}Result{{ "{{" }}}, Error, true});
+		}
+	};
+
+	*DoRequest = [FutureState, {{- if eq $m.AuthType "Bearer" }}SessionState, {{- end }}DoRequest, OnError, ClientConfig, RetryConfig, CancellationToken
+		{{- if eq $m.AuthType "HttpKey" }}, HttpKey{{- end }}
+		{{- range $m.HighLevelParams }}, {{ .Name }}{{- end }}]()
+	{
+{{- if eq $m.AuthType "Bearer" }}
+		MaybeRefreshThenCall(SessionState, ClientConfig, RetryConfig, CancellationToken, OnError,
+			[FutureState, SessionState, DoRequest, OnError, ClientConfig, RetryConfig, CancellationToken
+				{{- range $m.HighLevelParams }}, {{ .Name }}{{- end }}]()
+			{
+				{{- range $g := $m.FlattenedGroups }}
+				{{ $g.FieldType }} {{ $g.FieldName }};
+				{{- range $g.SubFields }}
+				{{ $g.FieldName }}.{{ . }} = {{ . }};
+				{{- end }}
+				{{- end }}
+				{{ $.Name }}Api::{{ $m.Name }}(
+					ClientConfig,
+					*SessionState,
+					{{- range $m.Fields }}
+					{{ .Name }},
+					{{- end }}
+					{{- range $m.MapFields }}
+					{{ .Name }},
+					{{- end }}
+					{{- if $m.HasReturn }}
+					[FutureState, DoRequest, OnError](const {{ $.TypePrefix }}{{ $m.ReturnType }}& Result)
+					{
+						*DoRequest = nullptr;
+						*OnError = nullptr;
+						FutureState->Resolve({{ $m.AsyncResultType }}Result{Result, {}, false});
+					},
+					{{- else }}
+					[FutureState, DoRequest, OnError]()
+					{
+						*DoRequest = nullptr;
+						*OnError = nullptr;
+						FutureState->Resolve({{ $.TypePrefix }}VoidResult{{ "{" }}{{ $.TypePrefix }}Void{}, {}, false});
+					},
+					{{- end }}
+					*OnError,
+					RetryConfig.Timeout,
+					CancellationToken);
+			});
+{{- else }}
+		{{- range $g := $m.FlattenedGroups }}
+		{{ $g.FieldType }} {{ $g.FieldName }};
+		{{- range $g.SubFields }}
+		{{ $g.FieldName }}.{{ . }} = {{ . }};
+		{{- end }}
+		{{- end }}
+		{{ $.Name }}Api::{{ $m.Name }}(
+			ClientConfig,
+			{{- if eq $m.AuthType "HttpKey" }}
+			HttpKey,
+			{{- end }}
+			{{- range $m.Fields }}
+			{{ .Name }},
+			{{- end }}
+			{{- range $m.MapFields }}
+			{{ .Name }},
+			{{- end }}
+			{{- if $m.HasReturn }}
+			[FutureState, DoRequest, OnError](const {{ $.TypePrefix }}{{ $m.ReturnType }}& Result)
+			{
+				*DoRequest = nullptr;
+				*OnError = nullptr;
+				FutureState->Resolve({{ $m.AsyncResultType }}Result{Result, {}, false});
+			},
+			{{- else }}
+			[FutureState, DoRequest, OnError]()
+			{
+				*DoRequest = nullptr;
+				*OnError = nullptr;
+				FutureState->Resolve({{ $.TypePrefix }}VoidResult{{ "{" }}{{ $.TypePrefix }}Void{}, {}, false});
+			},
+			{{- end }}
+			*OnError,
+			RetryConfig.Timeout,
+			CancellationToken);
+{{- end }}
+	};
+
+	(*DoRequest)();
+
+	return T{{ $.Name }}Future<{{ $m.AsyncResultType }}Result>(FutureState);
+}
+{{- end }}
+
+// Module implementation
+class F{{ $.Name }}Module : public IModuleInterface
+{
+public:
+	virtual void StartupModule() override
+	{
+		UE_LOG(Log{{ $.Name }}, Log, TEXT("{{ $.Name }} module starting"));
+	}
+
+	virtual void ShutdownModule() override
+	{
+		UE_LOG(Log{{ $.Name }}, Log, TEXT("{{ $.Name }} module shutting down"));
+	}
+};
+
+IMPLEMENT_MODULE(F{{ $.Name }}Module, {{ $.Name }})

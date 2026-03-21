@@ -16,7 +16,19 @@
 	"Installed": false,
 	"Modules": [
 		{
-			"Name": "SatoriUnreal",
+			"Name": "SatoriApi",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"WhitelistPlatforms": [
+				"Win64",
+				"Linux",
+				"IOS",
+				"Mac",
+				"Android"
+			]
+		},
+		{
+			"Name": "Satori",
 			"Type": "Runtime",
 			"LoadingPhase": "Default",
 			"WhitelistPlatforms": [

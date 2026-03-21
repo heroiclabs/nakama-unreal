@@ -1,0 +1,448 @@
+/*
+ * Copyright {{currentYear}} The Nakama Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/* This code is auto-generated. DO NOT EDIT. */
+
+#include "Nakama.h"
+#include "Containers/Ticker.h"
+#include "Modules/ModuleManager.h"
+
+bool Nakama::IsTransientError(const FNakamaError& Error) noexcept
+{
+	switch (Error.Code)
+	{
+	case 0:  // Connection failed (TCP refused, DNS timeout, etc.)
+	case 4:  // DEADLINE_EXCEEDED
+	case 13: // INTERNAL
+	case 14: // UNAVAILABLE
+		return true;
+	default:
+		return false;
+	}
+}
+
+float Nakama::CalculateBackoff(int32 Attempt, const FNakamaRetryConfig& Config) noexcept
+{
+	const float ExponentialDelay = FMath::Pow(2.0f, static_cast<float>(Attempt - 1)) * Config.BaseDelayMs;
+	const float Jitter = FMath::FRand() * ExponentialDelay;
+	return Jitter / 1000.0f;
+}
+
+namespace
+{
+
+/** Optionally refresh the session before calling the RPC. */
+void MaybeRefreshThenCall(
+	const TSharedRef<FNakamaSession>& SessionState,
+	const FNakamaClientConfig& ClientConfig,
+	const FNakamaRetryConfig& RetryConfig,
+	const TSharedRef<std::atomic<bool>>& CancellationToken,
+	const TSharedRef<TFunction<void(const FNakamaError&)>>& OnError,
+	TFunction<void()> OnReady) noexcept
+{
+	if (!RetryConfig.bAutoRefreshSession
+		|| SessionState->RefreshToken.IsEmpty()
+		|| !SessionState->IsExpired(RetryConfig.AutoRefreshBufferSeconds))
+	{
+		OnReady();
+		return;
+	}
+
+	if (SessionState->IsRefreshExpired())
+	{
+		(*OnError)(FNakamaError(TEXT("Refresh token has expired"), 16));
+		return;
+	}
+
+	auto OnSessionRefreshed = RetryConfig.OnSessionRefreshed;
+	auto OnSessionRefreshedOwner = RetryConfig.OnSessionRefreshedOwner;
+	NakamaApi::SessionRefresh(
+		ClientConfig,
+		SessionState->RefreshToken,
+		{},
+		[SessionState, OnSessionRefreshed, OnSessionRefreshedOwner, OnReady = MoveTemp(OnReady)](const FNakamaSession& RefreshedSession) mutable
+		{
+			SessionState->Update(RefreshedSession.Token, RefreshedSession.RefreshToken);
+			if (OnSessionRefreshed && (OnSessionRefreshedOwner.IsExplicitlyNull() || OnSessionRefreshedOwner.IsValid()))
+			{
+				OnSessionRefreshed(*SessionState);
+			}
+			OnReady();
+		},
+		[OnError](const FNakamaError& Error)
+		{
+			(*OnError)(FNakamaError(FString::Printf(TEXT("Session refresh failed: %s"), *Error.Message), Error.Code));
+		},
+		RetryConfig.Timeout,
+		CancellationToken);
+}
+
+} // anonymous namespace
+
+{{- /* Generate free function implementations for each RPC */ -}}
+{{- range $idx, $rpc := $.Rpcs }}
+
+{{- $requestType := $rpc.RequestType -}}
+{{- $returnType := $rpc.ReturnType -}}
+{{- $hasParams := ne $requestType nil }}
+{{- $hasReturn := ne $returnType nil }}
+{{- $isAuthenticate := containsString $rpc.Name "Authenticate" }}
+{{- $isSessionRefresh := eq $rpc.Name "SessionRefresh" }}
+{{- $needsSession := and (not $isAuthenticate) (not $isSessionRefresh) }}
+{{- $resultType := asyncResultType $returnType }}
+TNakamaFuture<{{ $resultType }}Result> Nakama::{{ $rpc.Name }}(
+	const FNakamaClientConfig& ClientConfig,
+	{{- if $needsSession }}
+	const FNakamaSession& Session,
+	{{- end }}
+	{{- if $hasParams -}}
+	{{- /* Pass 1: non-map fields (flattening message types) */ -}}
+	{{- range $fidx, $field := $requestType.Fields }}
+	{{- if shouldFlattenMessage $field.Type $field.Repeated }}
+	{{- range $sf := getMessageFields $field.Type }}
+	{{ getUnrealType $sf.Type $sf.Repeated }} {{ $sf.Name | pascalCase }},
+	{{- end }}
+	{{- else if and (eq $field.Name $rpc.BodyField) (not (isMessageType $field.Type)) }}
+	TSharedPtr<FJsonObject> {{ $field.Name | pascalCase }},
+	{{- else }}
+	{{ getUnrealType $field.Type $field.Repeated }} {{ $field.Name | pascalCase }},
+	{{- end }}
+	{{- end -}}
+	{{- range $fidx, $field := $requestType.MapFields }}
+	const {{ getUnrealMapType $field.Type }}& {{ $field.Name | pascalCase }},
+	{{- end -}}
+	{{- /* Pass 2: map fields from flattened messages */ -}}
+	{{- range $fidx, $field := $requestType.Fields }}
+	{{- if shouldFlattenMessage $field.Type $field.Repeated }}
+	{{- range $sf := getMessageMapFields $field.Type }}
+	const {{ getUnrealMapType $sf.Type }}& {{ $sf.Name | pascalCase }},
+	{{- end }}
+	{{- end }}
+	{{- end -}}
+	{{- end }}
+	const FNakamaRetryConfig& RetryConfig,
+	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
+{
+	auto FutureState = MakeShared<TNakamaFuture<{{ $resultType }}Result>::FState>();
+	{{- if $needsSession }}
+	auto SessionState = MakeShared<FNakamaSession>(Session);
+	{{- end }}
+	auto RetryCount = MakeShared<int32>(0);
+	auto DoRequest = MakeShared<TFunction<void()>>();
+	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
+
+	*OnError = [FutureState, RetryCount, DoRequest, OnError, RetryConfig](const FNakamaError& Error)
+	{
+		if (Nakama::IsTransientError(Error) && *RetryCount < RetryConfig.MaxRetries)
+		{
+			(*RetryCount)++;
+			float Delay = Nakama::CalculateBackoff(*RetryCount, RetryConfig);
+			FTSTicker::GetCoreTicker().AddTicker(
+				FTickerDelegate::CreateLambda([DoRequest](float) -> bool { (*DoRequest)(); return false; }),
+				Delay);
+		}
+		else
+		{
+			*DoRequest = nullptr;
+			*OnError = nullptr;
+			FutureState->Resolve({{ $resultType }}Result{{ "{{" }}}, Error, true});
+		}
+	};
+
+	*DoRequest = [FutureState, {{- if $needsSession }}SessionState, {{- end }}DoRequest, OnError, ClientConfig, RetryConfig, CancellationToken
+		{{- if $hasParams -}}
+		{{- range $fidx, $field := $requestType.Fields }}
+		{{- if shouldFlattenMessage $field.Type $field.Repeated }}
+		{{- range $sf := getMessageFields $field.Type }}
+		, {{ $sf.Name | pascalCase }}
+		{{- end }}
+		{{- range $sf := getMessageMapFields $field.Type }}
+		, {{ $sf.Name | pascalCase }}
+		{{- end }}
+		{{- else }}
+		, {{ $field.Name | pascalCase }}
+		{{- end }}
+		{{- end -}}
+		{{- range $fidx, $field := $requestType.MapFields }}
+		, {{ $field.Name | pascalCase }}
+		{{- end -}}
+		{{- end }}
+		]()
+	{
+{{- if $needsSession }}
+		MaybeRefreshThenCall(SessionState, ClientConfig, RetryConfig, CancellationToken, OnError,
+			[FutureState, SessionState, DoRequest, OnError, ClientConfig, RetryConfig, CancellationToken
+				{{- if $hasParams -}}
+				{{- range $fidx, $field := $requestType.Fields }}
+				{{- if shouldFlattenMessage $field.Type $field.Repeated }}
+				{{- range $sf := getMessageFields $field.Type }}
+				, {{ $sf.Name | pascalCase }}
+				{{- end }}
+				{{- range $sf := getMessageMapFields $field.Type }}
+				, {{ $sf.Name | pascalCase }}
+				{{- end }}
+				{{- else }}
+				, {{ $field.Name | pascalCase }}
+				{{- end }}
+				{{- end -}}
+				{{- range $fidx, $field := $requestType.MapFields }}
+				, {{ $field.Name | pascalCase }}
+				{{- end -}}
+				{{- end }}
+				]()
+			{
+				{{- /* Reconstruct structs from flattened params for the NakamaApi call */ -}}
+				{{- if $hasParams }}
+				{{- range $fidx, $field := $requestType.Fields }}
+				{{- if shouldFlattenMessage $field.Type $field.Repeated }}
+				{{ getUnrealReturnType $field.Type }} {{ $field.Name | pascalCase }};
+				{{- range $sf := getMessageFields $field.Type }}
+				{{ $field.Name | pascalCase }}.{{ $sf.Name | pascalCase }} = {{ $sf.Name | pascalCase }};
+				{{- end }}
+				{{- range $sf := getMessageMapFields $field.Type }}
+				{{ $field.Name | pascalCase }}.{{ $sf.Name | pascalCase }} = {{ $sf.Name | pascalCase }};
+				{{- end }}
+				{{- end }}
+				{{- end }}
+				{{- end }}
+				NakamaApi::{{ $rpc.Name }}(
+					ClientConfig,
+					*SessionState,
+					{{- if $hasParams -}}
+					{{- range $fidx, $field := $requestType.Fields }}
+					{{ $field.Name | pascalCase }},
+					{{- end -}}
+					{{- range $fidx, $field := $requestType.MapFields }}
+					{{ $field.Name | pascalCase }},
+					{{- end -}}
+					{{- end }}
+					{{- if $hasReturn }}
+					[FutureState, DoRequest, OnError](const FNakama{{ $returnType.Name }}& Result)
+					{
+						*DoRequest = nullptr;
+						*OnError = nullptr;
+						FutureState->Resolve({{ $resultType }}Result{Result, {}, false});
+					},
+					{{- else }}
+					[FutureState, DoRequest, OnError]()
+					{
+						*DoRequest = nullptr;
+						*OnError = nullptr;
+						FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+					},
+					{{- end }}
+					*OnError,
+					RetryConfig.Timeout,
+					CancellationToken);
+			});
+{{- else }}
+		{{- /* Reconstruct structs from flattened params for the NakamaApi call */ -}}
+		{{- if $hasParams }}
+		{{- range $fidx, $field := $requestType.Fields }}
+		{{- if shouldFlattenMessage $field.Type $field.Repeated }}
+		{{ getUnrealReturnType $field.Type }} {{ $field.Name | pascalCase }};
+		{{- range $sf := getMessageFields $field.Type }}
+		{{ $field.Name | pascalCase }}.{{ $sf.Name | pascalCase }} = {{ $sf.Name | pascalCase }};
+		{{- end }}
+		{{- range $sf := getMessageMapFields $field.Type }}
+		{{ $field.Name | pascalCase }}.{{ $sf.Name | pascalCase }} = {{ $sf.Name | pascalCase }};
+		{{- end }}
+		{{- end }}
+		{{- end }}
+		{{- end }}
+		NakamaApi::{{ $rpc.Name }}(
+			ClientConfig,
+			{{- if $hasParams -}}
+			{{- range $fidx, $field := $requestType.Fields }}
+			{{ $field.Name | pascalCase }},
+			{{- end -}}
+			{{- range $fidx, $field := $requestType.MapFields }}
+			{{ $field.Name | pascalCase }},
+			{{- end -}}
+			{{- end }}
+			{{- if $hasReturn }}
+			[FutureState, DoRequest, OnError](const FNakama{{ $returnType.Name }}& Result)
+			{
+				*DoRequest = nullptr;
+				*OnError = nullptr;
+				FutureState->Resolve({{ $resultType }}Result{Result, {}, false});
+			},
+			{{- else }}
+			[FutureState, DoRequest, OnError]()
+			{
+				*DoRequest = nullptr;
+				*OnError = nullptr;
+				FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+			},
+			{{- end }}
+			*OnError,
+			RetryConfig.Timeout,
+			CancellationToken);
+{{- end }}
+	};
+
+	(*DoRequest)();
+
+	return TNakamaFuture<{{ $resultType }}Result>(FutureState);
+}
+{{- if $needsSession }}
+
+TNakamaFuture<{{ $resultType }}Result> Nakama::{{ $rpc.Name }}(
+	const FNakamaClientConfig& ClientConfig,
+	const FString& HttpKey,
+	{{- if $hasParams -}}
+	{{- range $fidx, $field := $requestType.Fields }}
+	{{- if ne $field.Name "http_key" }}
+	{{- if shouldFlattenMessage $field.Type $field.Repeated }}
+	{{- range $sf := getMessageFields $field.Type }}
+	{{ getUnrealType $sf.Type $sf.Repeated }} {{ $sf.Name | pascalCase }},
+	{{- end }}
+	{{- else if and (eq $field.Name $rpc.BodyField) (not (isMessageType $field.Type)) }}
+	TSharedPtr<FJsonObject> {{ $field.Name | pascalCase }},
+	{{- else }}
+	{{ getUnrealType $field.Type $field.Repeated }} {{ $field.Name | pascalCase }},
+	{{- end }}
+	{{- end }}
+	{{- end -}}
+	{{- range $fidx, $field := $requestType.MapFields }}
+	const {{ getUnrealMapType $field.Type }}& {{ $field.Name | pascalCase }},
+	{{- end -}}
+	{{- range $fidx, $field := $requestType.Fields }}
+	{{- if and (ne $field.Name "http_key") (shouldFlattenMessage $field.Type $field.Repeated) }}
+	{{- range $sf := getMessageMapFields $field.Type }}
+	const {{ getUnrealMapType $sf.Type }}& {{ $sf.Name | pascalCase }},
+	{{- end }}
+	{{- end }}
+	{{- end -}}
+	{{- end }}
+	const FNakamaRetryConfig& RetryConfig,
+	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
+{
+	auto FutureState = MakeShared<TNakamaFuture<{{ $resultType }}Result>::FState>();
+	auto RetryCount = MakeShared<int32>(0);
+	auto DoRequest = MakeShared<TFunction<void()>>();
+	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
+
+	*OnError = [FutureState, RetryCount, DoRequest, OnError, RetryConfig](const FNakamaError& Error)
+	{
+		if (Nakama::IsTransientError(Error) && *RetryCount < RetryConfig.MaxRetries)
+		{
+			(*RetryCount)++;
+			float Delay = Nakama::CalculateBackoff(*RetryCount, RetryConfig);
+			FTSTicker::GetCoreTicker().AddTicker(
+				FTickerDelegate::CreateLambda([DoRequest](float) -> bool { (*DoRequest)(); return false; }),
+				Delay);
+		}
+		else
+		{
+			*DoRequest = nullptr;
+			*OnError = nullptr;
+			FutureState->Resolve({{ $resultType }}Result{{ "{{" }}}, Error, true});
+		}
+	};
+
+	*DoRequest = [FutureState, DoRequest, OnError, ClientConfig, RetryConfig, CancellationToken, HttpKey
+		{{- if $hasParams -}}
+		{{- range $fidx, $field := $requestType.Fields }}
+		{{- if ne $field.Name "http_key" }}
+		{{- if shouldFlattenMessage $field.Type $field.Repeated }}
+		{{- range $sf := getMessageFields $field.Type }}
+		, {{ $sf.Name | pascalCase }}
+		{{- end }}
+		{{- range $sf := getMessageMapFields $field.Type }}
+		, {{ $sf.Name | pascalCase }}
+		{{- end }}
+		{{- else }}
+		, {{ $field.Name | pascalCase }}
+		{{- end }}
+		{{- end }}
+		{{- end -}}
+		{{- range $fidx, $field := $requestType.MapFields }}
+		, {{ $field.Name | pascalCase }}
+		{{- end -}}
+		{{- end }}
+		]()
+	{
+		{{- /* Reconstruct structs from flattened params for the NakamaApi call */ -}}
+		{{- if $hasParams }}
+		{{- range $fidx, $field := $requestType.Fields }}
+		{{- if and (ne $field.Name "http_key") (shouldFlattenMessage $field.Type $field.Repeated) }}
+		{{ getUnrealReturnType $field.Type }} {{ $field.Name | pascalCase }};
+		{{- range $sf := getMessageFields $field.Type }}
+		{{ $field.Name | pascalCase }}.{{ $sf.Name | pascalCase }} = {{ $sf.Name | pascalCase }};
+		{{- end }}
+		{{- range $sf := getMessageMapFields $field.Type }}
+		{{ $field.Name | pascalCase }}.{{ $sf.Name | pascalCase }} = {{ $sf.Name | pascalCase }};
+		{{- end }}
+		{{- end }}
+		{{- end }}
+		{{- end }}
+		NakamaApi::{{ $rpc.Name }}(
+			ClientConfig,
+			HttpKey,
+			{{- if $hasParams -}}
+			{{- range $fidx, $field := $requestType.Fields }}
+			{{- if ne $field.Name "http_key" }}
+			{{ $field.Name | pascalCase }},
+			{{- end }}
+			{{- end -}}
+			{{- range $fidx, $field := $requestType.MapFields }}
+			{{ $field.Name | pascalCase }},
+			{{- end -}}
+			{{- end }}
+			{{- if $hasReturn }}
+			[FutureState, DoRequest, OnError](const FNakama{{ $returnType.Name }}& Result)
+			{
+				*DoRequest = nullptr;
+				*OnError = nullptr;
+				FutureState->Resolve({{ $resultType }}Result{Result, {}, false});
+			},
+			{{- else }}
+			[FutureState, DoRequest, OnError]()
+			{
+				*DoRequest = nullptr;
+				*OnError = nullptr;
+				FutureState->Resolve(FNakamaVoidResult{FNakamaVoid{}, {}, false});
+			},
+			{{- end }}
+			*OnError,
+			RetryConfig.Timeout,
+			CancellationToken);
+	};
+
+	(*DoRequest)();
+
+	return TNakamaFuture<{{ $resultType }}Result>(FutureState);
+}
+{{- end }}
+{{- end }}
+
+// Module implementation
+class FNakamaModule : public IModuleInterface
+{
+public:
+	virtual void StartupModule() override
+	{
+		UE_LOG(LogNakama, Log, TEXT("Nakama module starting"));
+	}
+
+	virtual void ShutdownModule() override
+	{
+		UE_LOG(LogNakama, Log, TEXT("Nakama module shutting down"));
+	}
+};
+
+IMPLEMENT_MODULE(FNakamaModule, Nakama)

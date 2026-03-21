@@ -1,0 +1,357 @@
+version: '3'
+
+silent: true
+dotenv: ['.env']
+
+vars:
+  PROTO_FILE: "proto/nakama-types.proto"
+  PROTO_SERVICE_FILE: "proto/nakama-api.proto"
+  PROTO_RT_FILE: "proto/realtime.proto"
+  PROTO_SATORI_FILE: "proto/satori.proto"
+  CODEGEN: 'build/codegen{{if eq OS "windows"}}.exe{{end}}'
+  TESTRUNNER: 'build/testrunner{{if eq OS "windows"}}.exe{{end}}'
+  GITHUB_TOKEN:
+    sh: |
+      if [ -n "$GITHUB_TOKEN" ]; then
+        echo "$GITHUB_TOKEN"
+      else
+        creds=$(printf "protocol=https\nhost=github.com\n" | git credential fill)
+        for line in $creds; do
+          case $line in
+            password=*) echo "${line#password=}" ;;
+          esac
+        done
+      fi
+
+tasks:
+  codegen:
+    desc: 'Fetch protos, build codegen tool, and generate all Nakama + Satori modules.'
+    cmds:
+    - task: fetch-protos
+    - cmd: |
+        mkdir -p build
+        cd cmd/codegen && go build -o ../../{{.CODEGEN}} && cd ../..
+
+        mkdir -p \
+          Nakama/Source/NakamaApi/Public \
+          Nakama/Source/NakamaApi/Private \
+          Nakama/Source/Nakama/Public \
+          Nakama/Source/Nakama/Private \
+          Nakama/Source/NakamaBlueprints/Public \
+          Nakama/Source/NakamaBlueprints/Private \
+          Satori/Source/SatoriApi/Public \
+          Satori/Source/SatoriApi/Private \
+          Satori/Source/Satori/Public \
+          Satori/Source/Satori/Private \
+          Satori/Source/SatoriBlueprints/Public \
+          Satori/Source/SatoriBlueprints/Private \
+
+        ./{{.CODEGEN}} \
+        --template cmd/codegen/templates/nakama-types.ue.h.tmpl \
+        --proto {{.PROTO_FILE}} \
+        > Nakama/Source/NakamaApi/Public/NakamaTypes.h
+
+        ./{{.CODEGEN}} \
+        --template cmd/codegen/templates/nakama-types.ue.cpp.tmpl \
+        --proto {{.PROTO_FILE}} \
+        > Nakama/Source/NakamaApi/Private/NakamaTypes.cpp
+
+        ./{{.CODEGEN}} \
+        --template cmd/codegen/templates/nakama-rttypes.ue.h.tmpl \
+        --proto {{.PROTO_RT_FILE}} \
+        --prefix FNakamaRt \
+        > Nakama/Source/NakamaApi/Public/NakamaRtTypes.h
+
+        ./{{.CODEGEN}} \
+        --template cmd/codegen/templates/nakama-rttypes.ue.cpp.tmpl \
+        --proto {{.PROTO_RT_FILE}} \
+        --prefix FNakamaRt \
+        > Nakama/Source/NakamaApi/Private/NakamaRtTypes.cpp
+
+        ./{{.CODEGEN}} \
+        --template cmd/codegen/templates/nakama-api.ue.h.tmpl \
+        --proto {{.PROTO_FILE}} \
+        --proto {{.PROTO_SERVICE_FILE}} \
+        > Nakama/Source/NakamaApi/Public/NakamaApi.h
+
+        ./{{.CODEGEN}} \
+        --template cmd/codegen/templates/nakama-api.ue.cpp.tmpl \
+        --proto {{.PROTO_FILE}} \
+        --proto {{.PROTO_SERVICE_FILE}} \
+        > Nakama/Source/NakamaApi/Private/NakamaApi.cpp
+
+        ./{{.CODEGEN}} \
+        --template cmd/codegen/templates/nakama.ue.h.tmpl \
+        --proto {{.PROTO_FILE}} \
+        --proto {{.PROTO_SERVICE_FILE}} \
+        > Nakama/Source/Nakama/Public/Nakama.h
+
+        ./{{.CODEGEN}} \
+        --template cmd/codegen/templates/nakama.ue.cpp.tmpl \
+        --proto {{.PROTO_FILE}} \
+        --proto {{.PROTO_SERVICE_FILE}} \
+        > Nakama/Source/Nakama/Private/Nakama.cpp
+
+        ./{{.CODEGEN}} \
+        --template cmd/codegen/templates/nakama-rtclient.ue.h.tmpl \
+        --proto {{.PROTO_FILE}} \
+        --proto {{.PROTO_RT_FILE}} \
+        --prefix FNakamaRt \
+        > Nakama/Source/Nakama/Public/NakamaRt.h
+
+        ./{{.CODEGEN}} \
+        --template cmd/codegen/templates/nakama-rtclient.ue.cpp.tmpl \
+        --proto {{.PROTO_FILE}} \
+        --proto {{.PROTO_RT_FILE}} \
+        --prefix FNakamaRt \
+        > Nakama/Source/Nakama/Private/NakamaRt.cpp
+
+        ./{{.CODEGEN}} \
+        --template cmd/codegen/templates/nakama-client-bplib.ue.h.tmpl \
+        --proto {{.PROTO_FILE}} \
+        --proto {{.PROTO_SERVICE_FILE}} \
+        > Nakama/Source/NakamaBlueprints/Public/NakamaClientBlueprintLibrary.h
+
+        ./{{.CODEGEN}} \
+        --template cmd/codegen/templates/nakama-client-bplib.ue.cpp.tmpl \
+        --proto {{.PROTO_FILE}} \
+        --proto {{.PROTO_SERVICE_FILE}} \
+        > Nakama/Source/NakamaBlueprints/Private/NakamaClientBlueprintLibrary.cpp
+
+        ./{{.CODEGEN}} \
+        --template cmd/codegen/templates/nakama-rtclient-bplib.ue.h.tmpl \
+        --proto {{.PROTO_FILE}} \
+        --proto {{.PROTO_SERVICE_FILE}} \
+        --proto {{.PROTO_RT_FILE}} \
+        --prefix FNakamaRt \
+        > Nakama/Source/NakamaBlueprints/Public/NakamaRtClientBlueprintLibrary.h
+
+        ./{{.CODEGEN}} \
+        --template cmd/codegen/templates/nakama-rtclient-bplib.ue.cpp.tmpl \
+        --proto {{.PROTO_FILE}} \
+        --proto {{.PROTO_SERVICE_FILE}} \
+        --proto {{.PROTO_RT_FILE}} \
+        --prefix FNakamaRt \
+        > Nakama/Source/NakamaBlueprints/Private/NakamaRtClientBlueprintLibrary.cpp
+
+        ./{{.CODEGEN}} \
+        --template cmd/codegen/templates/satori-api.ue.h.tmpl \
+        --proto {{.PROTO_SATORI_FILE}} \
+        --prefix FSatori \
+        > Satori/Source/SatoriApi/Public/SatoriApi.h
+
+        ./{{.CODEGEN}} \
+        --template cmd/codegen/templates/satori-api.ue.cpp.tmpl \
+        --proto {{.PROTO_SATORI_FILE}} \
+        --prefix FSatori \
+        > Satori/Source/SatoriApi/Private/SatoriApi.cpp
+
+        ./{{.CODEGEN}} \
+        --template cmd/codegen/templates/satori.ue.h.tmpl \
+        --proto {{.PROTO_SATORI_FILE}} \
+        --prefix FSatori \
+        > Satori/Source/Satori/Public/Satori.h
+
+        ./{{.CODEGEN}} \
+        --template cmd/codegen/templates/satori.ue.cpp.tmpl \
+        --proto {{.PROTO_SATORI_FILE}} \
+        --prefix FSatori \
+        > Satori/Source/Satori/Private/Satori.cpp
+
+        ./{{.CODEGEN}} \
+        --template cmd/codegen/templates/satori-client-bplib.ue.h.tmpl \
+        --proto {{.PROTO_SATORI_FILE}} \
+        --prefix FSatori \
+        > Satori/Source/SatoriBlueprints/Public/SatoriClientBlueprintLibrary.h
+
+        ./{{.CODEGEN}} \
+        --template cmd/codegen/templates/satori-client-bplib.ue.cpp.tmpl \
+        --proto {{.PROTO_SATORI_FILE}} \
+        --prefix FSatori \
+        > Satori/Source/SatoriBlueprints/Private/SatoriClientBlueprintLibrary.cpp
+
+  start-server:
+    cmds:
+    - cmd: |
+        docker compose -f IntegrationTests/server/docker-compose.yml down
+        docker compose -f IntegrationTests/server/docker-compose.yml up --build -d
+
+  build:
+    desc: 'Build the IntegrationTests editor target.'
+    deps:
+    - task: check-unreal-engine
+    cmds:
+    - cmd: |
+        PROJECT="$(pwd)/IntegrationTests/IntegrationTests.uproject"
+
+        echo "Building IntegrationTestsEditor (Development)..."
+        "$UNREAL_ENGINE/Engine/Build/BatchFiles/Build.bat" \
+            IntegrationTestsEditor Win64 Development \
+            -Project="$PROJECT"
+      platforms: [windows]
+    - cmd: |
+        PROJECT="$(pwd)/IntegrationTests/IntegrationTests.uproject"
+
+        echo "Building IntegrationTestsEditor (Development)..."
+        "$UNREAL_ENGINE/Engine/Build/BatchFiles/Build.sh" \
+            IntegrationTestsEditor Mac Development \
+            -Project="$PROJECT" \
+            -Architecture_Mac=arm64
+      platforms: [darwin]
+    - cmd: |
+        PROJECT="$(pwd)/IntegrationTests/IntegrationTests.uproject"
+
+        echo "Building IntegrationTestsEditor (Development)..."
+        "$UNREAL_ENGINE/Engine/Build/BatchFiles/Build.sh" \
+            IntegrationTestsEditor Linux Development \
+            -Project="$PROJECT"
+      platforms: [linux]
+
+  check-unreal-engine:
+    desc: 'Check or auto-detect UNREAL_ENGINE environment variable.'
+    cmds:
+    - cmd: |
+        if [ -z "$UNREAL_ENGINE" ]; then
+            echo "UNREAL_ENGINE not set, searching for Unreal Engine installations..."
+
+            FOUND=""
+            # macOS: use mdfind (Spotlight)
+            if command -v mdfind &> /dev/null; then
+                CANDIDATE=$(mdfind -name "RunUAT.sh" 2>/dev/null | grep "Engine/Build/BatchFiles/RunUAT.sh" | head -1)
+                if [ -n "$CANDIDATE" ]; then
+                    FOUND="${CANDIDATE%/Engine/Build/BatchFiles/RunUAT.sh}"
+                fi
+            # Linux: use locate
+            elif command -v locate &> /dev/null; then
+                CANDIDATE=$(locate "Engine/Build/BatchFiles/RunUAT.sh" 2>/dev/null | head -1)
+                if [ -n "$CANDIDATE" ]; then
+                    FOUND="${CANDIDATE%/Engine/Build/BatchFiles/RunUAT.sh}"
+                fi
+            fi
+
+            if [ -z "$FOUND" ]; then
+                echo "Error: Could not find Unreal Engine installation!"
+                echo ""
+                echo "Set UNREAL_ENGINE manually in .env file:"
+                echo "  echo 'UNREAL_ENGINE=/path/to/UnrealEngine' >> .env"
+                exit 1
+            fi
+
+            echo "Found Unreal Engine at: $FOUND"
+            echo "Saving to .env file..."
+            echo "UNREAL_ENGINE=$FOUND" >> .env
+            export UNREAL_ENGINE="$FOUND"
+        fi
+        echo "UNREAL_ENGINE=$UNREAL_ENGINE"
+      platforms: [darwin, linux]
+    - cmd: |
+        powershell -NoProfile -Command "& {
+          if (-not \$env:UNREAL_ENGINE) {
+            Write-Host 'UNREAL_ENGINE not set, searching for Unreal Engine installations...'
+
+            \$searchPaths = @(
+              'C:\Program Files\Epic Games',
+              'D:\Program Files\Epic Games',
+              'E:\Program Files\Epic Games',
+              \"\$env:USERPROFILE\UnrealEngine\"
+            )
+
+            \$found = \$null
+            foreach (\$basePath in \$searchPaths) {
+              if (Test-Path \$basePath) {
+                \$candidates = Get-ChildItem -Path \$basePath -Directory -Filter 'UE_*' -ErrorAction SilentlyContinue | Sort-Object Name -Descending
+                foreach (\$candidate in \$candidates) {
+                  \$uatPath = Join-Path \$candidate.FullName 'Engine\Build\BatchFiles\RunUAT.bat'
+                  if (Test-Path \$uatPath) {
+                    \$found = \$candidate.FullName
+                    break
+                  }
+                }
+                if (\$found) { break }
+              }
+            }
+
+            if (-not \$found) {
+              Write-Host 'Error: Could not find Unreal Engine installation!'
+              Write-Host ''
+              Write-Host 'Please set UNREAL_ENGINE in .env file:'
+              Write-Host '  echo UNREAL_ENGINE=C:\Path\To\UE_5.x >> .env'
+              Write-Host ''
+              Write-Host 'Or pass it as an argument:'
+              Write-Host '  task test UNREAL_ENGINE=C:\Path\To\UE_5.x'
+              exit 1
+            }
+
+            Write-Host \"Found Unreal Engine at: \$found\"
+            Write-Host 'Saving to .env file...'
+            Add-Content -Path '.env' -Value \"UNREAL_ENGINE=\$found\"
+            \$env:UNREAL_ENGINE = \$found
+          }
+          Write-Host \"UNREAL_ENGINE=\$env:UNREAL_ENGINE\"
+        }"
+      platforms: [windows]
+
+  test:
+    desc: 'Build and run IntegrationTests C++ automation suite.'
+    cmds:
+    - task: check-unreal-engine
+    - task: codegen
+    - cmd: |
+        if [ ! -d "IntegrationTests/satori/.git" ]; then
+          git clone git@github.com:heroiclabs/satori.git IntegrationTests/satori
+          git -C IntegrationTests/satori lfs pull
+        else
+          echo "Satori already cloned, skipping."
+        fi
+        if [ ! -d "IntegrationTests/dashboards/.git" ]; then
+          git clone git@github.com:heroiclabs/dashboards.git IntegrationTests/dashboards
+        else
+          echo "Dashboards already cloned, skipping."
+        fi
+    - task: start-server
+    - cmd: |
+        cmd /c "if exist IntegrationTests\Plugins\Nakama rmdir /s /q IntegrationTests\Plugins\Nakama"
+        cmd /c "mklink /J IntegrationTests\Plugins\Nakama Nakama"
+        cmd /c "if exist IntegrationTests\Plugins\Satori rmdir /s /q IntegrationTests\Plugins\Satori"
+        cmd /c "mklink /J IntegrationTests\Plugins\Satori Satori"
+      platforms: [windows]
+    - task: build
+    - cmd: |
+        cd cmd/testrunner && go build -o ../../{{.TESTRUNNER}} && cd ../..
+
+        ./{{.TESTRUNNER}} {{.FILTER}}
+      platforms: [windows]
+    - cmd: |
+        if [ -z "$UNREAL_ENGINE" ]; then
+            echo "Error: UNREAL_ENGINE is not set!"
+            echo "Set it in .env or pass it as an argument:"
+            echo "  task test UNREAL_ENGINE=/path/to/engine"
+            exit 1
+        fi
+
+        cd cmd/testrunner && go build -o ../../{{.TESTRUNNER}} && cd ../..
+
+        ./{{.TESTRUNNER}} {{.FILTER}}
+      platforms: [darwin, linux]
+
+  fetch-protos:
+    internal: true
+    vars:
+      PROTO_API_URL: 'https://raw.githubusercontent.com/heroiclabs/nakama-common/feat/flatten-proto-v2/api/api.proto'
+      PROTO_SERVICE_URL: 'https://raw.githubusercontent.com/heroiclabs/nakama/feat/flatten-proto/apigrpc/apigrpc.proto'
+      PROTO_RT_URL: 'https://raw.githubusercontent.com/heroiclabs/nakama-common/feat/flatten-proto-v2/rtapi/realtime.proto'
+      PROTO_SATORI_URL: 'https://api.github.com/repos/heroiclabs/satori/contents/api/satori.proto?ref=feat%2Freorder-proto'
+    cmds:
+    - cmd: |
+        mkdir -p proto
+
+        curl -o {{.PROTO_FILE}} "{{.PROTO_API_URL}}"
+        curl -o {{.PROTO_SERVICE_FILE}} "{{.PROTO_SERVICE_URL}}"
+        curl -o {{.PROTO_RT_FILE}} "{{.PROTO_RT_URL}}"
+
+        # Satori is private, so need credentials
+        curl -o "{{.PROTO_SATORI_FILE}}" \
+          -H "Authorization: token {{.GITHUB_TOKEN}}" \
+          -H "Accept: application/vnd.github.v3.raw" \
+          "{{.PROTO_SATORI_URL}}"
+

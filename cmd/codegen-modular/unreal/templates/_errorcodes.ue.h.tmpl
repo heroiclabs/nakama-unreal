@@ -1,0 +1,23 @@
+{{- define "errorcodes" }}
+/** gRPC status codes returned by {{ . }} in F{{ . }}Error::Code. */
+namespace E{{ . }}ErrorCode
+{
+	constexpr int32 OK = 0;
+	constexpr int32 Cancelled = 1;
+	constexpr int32 Unknown = 2;
+	constexpr int32 InvalidArgument = 3;
+	constexpr int32 DeadlineExceeded = 4;
+	constexpr int32 NotFound = 5;
+	constexpr int32 AlreadyExists = 6;
+	constexpr int32 PermissionDenied = 7;
+	constexpr int32 ResourceExhausted = 8;
+	constexpr int32 FailedPrecondition = 9;
+	constexpr int32 Aborted = 10;
+	constexpr int32 OutOfRange = 11;
+	constexpr int32 Unimplemented = 12;
+	constexpr int32 Internal = 13;
+	constexpr int32 Unavailable = 14;
+	constexpr int32 DataLoss = 15;
+	constexpr int32 Unauthenticated = 16;
+}
+{{- end }}

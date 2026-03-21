@@ -1,0 +1,134 @@
+/*
+ * Copyright {{currentYear}} The Nakama Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/* This code is auto-generated. DO NOT EDIT. */
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "Kismet/BlueprintAsyncActionBase.h"
+#include "Kismet/BlueprintFunctionLibrary.h"
+#include "NakamaTypes.h"
+#include "NakamaApi.h"
+
+#include "NakamaClientBlueprintLibrary.generated.h"
+
+// ============================================================================
+// Dynamic delegates for async actions
+// ============================================================================
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaError, const FNakamaError&, Error);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnNakamaSuccess);
+
+{{- /* Generate success delegates for each unique return type */ -}}
+{{- range $idx, $typeName := uniqueReturnTypes $.Rpcs }}
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakama{{ $typeName }}, const FNakama{{ $typeName }}&, Result);
+{{- end }}
+
+// ============================================================================
+// Async Action Classes (one per RPC)
+// ============================================================================
+{{- range $idx, $rpc := $.Rpcs }}
+
+{{- $requestType := $rpc.RequestType -}}
+{{- $returnType := $rpc.ReturnType -}}
+{{- $hasParams := ne $requestType nil }}
+{{- $hasReturn := ne $returnType nil }}
+{{- $isAuthenticate := containsString $rpc.Name "Authenticate" }}
+{{- $isSessionRefresh := eq $rpc.Name "SessionRefresh" }}
+{{- $needsSession := and (not $isAuthenticate) (not $isSessionRefresh) }}
+
+/**
+ * {{ $rpc.Comment }}
+ */
+UCLASS(Transient)
+class NAKAMABLUEPRINTS_API UNakamaClient{{ $rpc.Name }} : public UBlueprintAsyncActionBase
+{
+	GENERATED_BODY()
+
+public:
+{{- if $hasReturn }}
+	UPROPERTY(BlueprintAssignable)
+	FOnNakama{{ $returnType.Name }} OnSuccess;
+{{- else }}
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaSuccess OnSuccess;
+{{- end }}
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNakamaError OnError;
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "{{ $rpc.Name }}"), Category = "Nakama|Client")
+	static UNakamaClient{{ $rpc.Name }}* {{ $rpc.Name }}(
+		UObject* WorldContextObject,
+		FNakamaClientConfig Client
+{{- if $needsSession }},
+		const FNakamaSession& Session
+{{- end }}
+{{- if $hasParams }}
+{{- range $fidx, $field := $requestType.Fields }},
+{{- if shouldFlattenMessage $field.Type $field.Repeated }}
+{{- range $sfidx, $sf := getMessageFields $field.Type }}
+{{- if $sfidx }},{{- end }}
+		{{ getUnrealType $sf.Type $sf.Repeated }} {{ $sf.Name | pascalCase }}
+{{- end }}
+{{- else if and (eq $field.Name $rpc.BodyField) (not (isMessageType $field.Type)) }}
+		const TMap<FString, FString>& {{ $field.Name | pascalCase }}
+{{- else }}
+		{{ getUnrealType $field.Type $field.Repeated }} {{ $field.Name | pascalCase }}
+{{- end }}
+{{- end }}
+{{- range $fidx, $field := $requestType.MapFields }},
+		const {{ getUnrealMapType $field.Type }}& {{ $field.Name | pascalCase }}
+{{- end }}
+{{- range $fidx, $field := $requestType.Fields }}
+{{- if shouldFlattenMessage $field.Type $field.Repeated }}
+{{- range $sf := getMessageMapFields $field.Type }},
+		const {{ getUnrealMapType $sf.Type }}& {{ $sf.Name | pascalCase }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }});
+
+	virtual void Activate() override;
+
+private:
+	FNakamaClientConfig Client;
+
+{{- if $needsSession }}
+	FNakamaSession Session;
+{{- end }}
+{{- if $hasParams }}
+{{- range $fidx, $field := $requestType.Fields }}
+{{- if shouldFlattenMessage $field.Type $field.Repeated }}
+{{- range $sf := getMessageFields $field.Type }}
+	{{ getUnrealFieldType $sf.Type $sf.Repeated }} Stored{{ $sf.Name | pascalCase }}{{ getUnrealFieldDefault $sf.Type $sf.Repeated }};
+{{- end }}
+{{- range $sf := getMessageMapFields $field.Type }}
+	{{ getUnrealMapType $sf.Type }} Stored{{ $sf.Name | pascalCase }};
+{{- end }}
+{{- else if and (eq $field.Name $rpc.BodyField) (not (isMessageType $field.Type)) }}
+	TMap<FString, FString> Stored{{ $field.Name | pascalCase }};
+{{- else }}
+	{{ getUnrealFieldType $field.Type $field.Repeated }} Stored{{ $field.Name | pascalCase }}{{ getUnrealFieldDefault $field.Type $field.Repeated }};
+{{- end }}
+{{- end }}
+{{- range $fidx, $field := $requestType.MapFields }}
+	{{ getUnrealMapType $field.Type }} Stored{{ $field.Name | pascalCase }};
+{{- end }}
+{{- end }}
+};
+{{- end }}

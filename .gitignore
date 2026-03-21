@@ -33,7 +33,6 @@
 *.idb
 
 # Kernel Module Compile Results
-*.mod*
 *.cmd
 modules.order
 Module.symvers
@@ -49,10 +48,6 @@ dkms.conf
 # Precompiled Headers
 
 # Compiled Dynamic libraries
-
-# Fortran module files
-*.mod
-*.smod
 
 # Compiled Static libraries
 *.lai
@@ -164,16 +159,6 @@ Temporary Items
 
 # Visual Studio 2015 database file
 *.VC.db
-
-# Compiled Object files
-
-# Precompiled Headers
-
-# Compiled Dynamic libraries
-
-# Fortran module files
-
-# Compiled Static libraries
 
 # Executables
 *.ipa
@@ -547,10 +532,12 @@ NakamaBlueprintsTest/DerivedDataCache
 NakamaBlueprintsTest/Saved
 NakamaBlueprintsTest/Binaries
 
-NakamaTest/Plugins/Nakama
-NakamaTest/Intermediate
-NakamaTest/Saved
-NakamaTest/Binaries
+IntegrationTests/Plugins/Nakama
+IntegrationTests/Plugins/Satori
+IntegrationTests/Intermediate
+IntegrationTests/DerivedDataCache
+IntegrationTests/Saved
+IntegrationTests/Binaries
 
 Nakama/Intermediate
 Nakama/Saved
@@ -563,3 +550,16 @@ Satori/Binaries
 vcpkg_installed/
 /NakamaBlueprintsTest/Content/Developers
 /NakamaBlueprintsTest/Content/Collections
+.env
+proto/
+Reports/IntegrationTests/index.html
+Reports/IntegrationTests/index.json
+Reports/NakamaProfile/
+/IntegrationTests/Reports
+NakamaTest/Binaries
+NakamaTest/DerivedDataCache
+NakamaTest/Intermediate/
+NakamaTest/Saved/
+Reports
+IntegrationTests/satori/
+IntegrationTests/dashboards/
