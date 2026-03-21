@@ -9,6 +9,8 @@ import (
 	"text/template"
 	"time"
 
+	"github.com/golang-cz/textcase"
+	"heroiclabs.com/modular-codegen/c89"
 	"heroiclabs.com/modular-codegen/codegen"
 	"heroiclabs.com/modular-codegen/dotnet"
 	"heroiclabs.com/modular-codegen/schema"
@@ -21,6 +23,9 @@ func getFuncMap() template.FuncMap {
 			return time.Now().Year()
 		},
 		"toLower": strings.ToLower,
+		"toSnake": func(s string) string {
+			return strings.ToLower(textcase.SnakeCase(s))
+		},
 	}
 }
 
@@ -105,6 +110,16 @@ func csProd(tmpl, output string, factory func(any, schema.Api) (any, error)) cod
 	}
 }
 
+// cProd builds a Production from a C89 template.
+func cProd(tmpl, output string, factory func(any, schema.Api) (any, error)) codegen.Production {
+	return codegen.Production{
+		TemplateContent:  mustReadTemplate(c89.Templates, "templates/"+tmpl),
+		FuncMap:          getFuncMap(),
+		ViewModelFactory: factory,
+		Output:           output,
+	}
+}
+
 func main() {
 	outDir := flag.String("out", "out", "output directory")
 	protosDir := flag.String("protos", "protos", "directory containing .proto files")
@@ -118,6 +133,7 @@ func main() {
 
 	ueTypeMap := unreal.NewUnrealTypeMap()
 	csTypeMap := dotnet.NewDotnetTypeMap()
+	cTypeMap := c89.NewCTypeMap()
 
 	// Static (hand-written) files bundled into the output.
 	ueStatic := func(name string) codegen.StaticFile {
@@ -130,6 +146,9 @@ func main() {
 
 	nakamaCS := dotnet.MakeViewModelFactory("Api", "Nakama")
 	satoriCS := dotnet.MakeViewModelFactory("Api", "Satori")
+
+	nakamaC := c89.MakeViewModelFactory("Nk", "nk", "NK")
+	satoriC := c89.MakeViewModelFactory("Satori", "satori", "SATORI")
 
 	groups := []protoGroup{
 		// ── Nakama API (Unreal) ─────────────────────────────────
@@ -200,6 +219,16 @@ func main() {
 				csProd("api-client.cs.tmpl", "NakamaApiClient.g.cs", nakamaCS),
 			},
 		},
+		// ── Nakama Realtime (.NET) ──────────────────────────────
+		{
+			subdir:  "dotnet",
+			protos:  []string{"nakama-types.proto", "nakama-api.proto", "realtime.proto"},
+			typeMap: csTypeMap,
+			produces: []codegen.Production{
+				csProd("rt-types.cs.tmpl", "NakamaRtTypes.g.cs", nakamaCS),
+				csProd("rt-client.cs.tmpl", "NakamaRtClient.g.cs", nakamaCS),
+			},
+		},
 		// ── Satori API (.NET) ───────────────────────────────────
 		{
 			subdir:  "dotnet",
@@ -209,6 +238,42 @@ func main() {
 				csProd("types.cs.tmpl", "SatoriTypes.g.cs", satoriCS),
 				csProd("enums.cs.tmpl", "SatoriEnums.g.cs", satoriCS),
 				csProd("api-client.cs.tmpl", "SatoriApiClient.g.cs", satoriCS),
+			},
+		},
+		// ── Nakama API (C89) ────────────────────────────────────
+		{
+			subdir:  "c",
+			protos:  []string{"nakama-types.proto", "nakama-api.proto"},
+			typeMap: cTypeMap,
+			produces: []codegen.Production{
+				cProd("types.h.tmpl", "nk_types.h", nakamaC),
+				cProd("types.c.tmpl", "nk_types.c", nakamaC),
+				cProd("enums.h.tmpl", "nk_enums.h", nakamaC),
+				cProd("api.h.tmpl", "nk_api.h", nakamaC),
+				cProd("api.c.tmpl", "nk_api.c", nakamaC),
+			},
+		},
+		// ── Nakama Realtime (C89) ───────────────────────────────
+		{
+			subdir:  "c",
+			protos:  []string{"nakama-types.proto", "nakama-api.proto", "realtime.proto"},
+			typeMap: cTypeMap,
+			produces: []codegen.Production{
+				cProd("rt-types.h.tmpl", "nk_rt_types.h", nakamaC),
+				cProd("rt-client.h.tmpl", "nk_rt_client.h", nakamaC),
+			},
+		},
+		// ── Satori API (C89) ────────────────────────────────────
+		{
+			subdir:  "c",
+			protos:  []string{"satori-types.proto", "satori-api.proto"},
+			typeMap: cTypeMap,
+			produces: []codegen.Production{
+				cProd("types.h.tmpl", "satori_types.h", satoriC),
+				cProd("types.c.tmpl", "satori_types.c", satoriC),
+				cProd("enums.h.tmpl", "satori_enums.h", satoriC),
+				cProd("api.h.tmpl", "satori_api.h", satoriC),
+				cProd("api.c.tmpl", "satori_api.c", satoriC),
 			},
 		},
 	}

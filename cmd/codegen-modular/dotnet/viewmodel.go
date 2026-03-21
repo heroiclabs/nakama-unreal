@@ -62,17 +62,29 @@ type Method struct {
 	ReturnType string // C# type name without prefix (e.g., "Account")
 }
 
-// ViewModel is the top-level data object passed to all C# templates.
-type ViewModel struct {
-	namespace  string // "Nakama" or "Satori"
-	typePrefix string // "Api" or product-specific
-	messages   []Message
-	enums      []Enum
-	methods    []Method
+// RtOperation is a resolved realtime WebSocket operation.
+type RtOperation struct {
+	CaseName    string  // The oneof case name (WebSocket protocol key)
+	MessageName string  // PascalCase type name
+	Comment     string
+	Fields      []Field
+	MapFields   []Field
+	OneofFields []Field
 }
 
-func (vm ViewModel) Namespace() string    { return vm.namespace }
-func (vm ViewModel) TypePrefix() string   { return vm.typePrefix }
-func (vm ViewModel) Messages() []Message  { return vm.messages }
-func (vm ViewModel) Enums() []Enum        { return vm.enums }
-func (vm ViewModel) Methods() []Method    { return vm.methods }
+// ViewModel is the top-level data object passed to all C# templates.
+type ViewModel struct {
+	namespace    string
+	typePrefix   string // "Api" or product-specific
+	messages     []Message
+	enums        []Enum
+	methods      []Method
+	rtOperations []RtOperation
+}
+
+func (vm ViewModel) Namespace() string          { return vm.namespace }
+func (vm ViewModel) TypePrefix() string         { return vm.typePrefix }
+func (vm ViewModel) Messages() []Message        { return vm.messages }
+func (vm ViewModel) Enums() []Enum              { return vm.enums }
+func (vm ViewModel) Methods() []Method          { return vm.methods }
+func (vm ViewModel) RtOperations() []RtOperation { return vm.rtOperations }
