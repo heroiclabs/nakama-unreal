@@ -1,0 +1,51 @@
+/*
+ * Copyright {{currentYear}} The Nakama Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/* This code is auto-generated. DO NOT EDIT. */
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "Templates/Function.h"
+#include "Templates/SharedPointer.h"
+#include "Dom/JsonObject.h"
+#include "HAL/ThreadSafeBool.h"
+#include "NakamaTypes.h"
+
+namespace NakamaApi
+{
+  {{ range $rpc := $.FuncDecls }}
+  /*
+  * {{ $rpc.FuncComment }}
+  *
+  * Config	The client configuration.
+  {{- range $rpc.FuncParamDocs }}
+  * {{ . }}{{ end }}
+  * OnError	Called when the operation fails.
+  * Timeout Request timeout in seconds.
+  * CancellationToken	Set to true to cancel the in-flight request.
+  **/
+  NAKAMAAPI_API void {{ $rpc.FuncName }}(
+    const FNakamaClientConfig& Config,
+    {{- range $idx, $param := $rpc.FuncParams }}
+    {{ $param.Type }} {{ $param.Name }},
+    {{- end }}
+    TFunction<void(const FNakamaError&)> OnError,
+    float Timeout = 10.0f,
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
+  ) noexcept;
+  {{ end }}
+}
