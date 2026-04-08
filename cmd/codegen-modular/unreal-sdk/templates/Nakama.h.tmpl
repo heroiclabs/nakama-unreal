@@ -27,22 +27,24 @@
 
 namespace NakamaApi
 {
-  {{ range $rpc := $.FuncDecls }}
+  {{ range $func := $.Funcs }}
   /*
-  * {{ $rpc.FuncComment }}
+  * {{ $func.Comment }}
   *
   * Config	The client configuration.
-  {{- range $rpc.FuncParamDocs }}
-  * {{ . }}{{ end }}
+  {{- range $func.Params }}
+  * {{ .Name }}{{ "\t" }}{{ .Comment }}{{ end }}
+  * OnSuccess	Called when the operation succeeds.
   * OnError	Called when the operation fails.
   * Timeout Request timeout in seconds.
   * CancellationToken	Set to true to cancel the in-flight request.
   **/
-  NAKAMAAPI_API void {{ $rpc.FuncName }}(
+  NAKAMAAPI_API void {{ $func.Name }}(
     const FNakamaClientConfig& Config,
-    {{- range $idx, $param := $rpc.FuncParams }}
+    {{- range $idx, $param := $func.Params }}
     {{ $param.Type }} {{ $param.Name }},
     {{- end }}
+    TFunction<void({{ $func.Locals.SuccessLambdaType }})> OnSuccess,
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)

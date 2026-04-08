@@ -124,7 +124,9 @@ type VisitedRpc struct {
 	ReturnType  *VisitedMessage
 	Endpoint    string
 	Method      string
+	PathParams  []string
 	QueryParams []string
+	BodyParams  []string
 	BodyField   string // The field name to use as the body (from google.api.http body option)
 }
 
@@ -181,6 +183,11 @@ func (v *rpcVisitor) VisitOption(o *proto.Option) {
 	paramRegex := regexp.MustCompile(`\{([a-zA-Z0-9_]*)\}`)
 	matches := paramRegex.FindAllStringSubmatch(v.Rpc.Endpoint, -1)
 
+	// TODO
+	v.Rpc.PathParams = make([]string, 0)
+	v.Rpc.BodyParams = make([]string, 0)
+
+	// TODO: Actually Path params here
 	v.Rpc.QueryParams = make([]string, 0)
 	for _, m := range matches {
 		v.Rpc.QueryParams = append(v.Rpc.QueryParams, m[1])

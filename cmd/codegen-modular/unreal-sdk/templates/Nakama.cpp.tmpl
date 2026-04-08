@@ -1,0 +1,84 @@
+/*
+ * Copyright {{currentYear}} The Nakama Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/* This code is auto-generated. DO NOT EDIT. */
+
+#include "Nakama.h"
+
+{{ range $func := $.Funcs }}
+
+NAKAMAAPI_API void NakamaApi::{{ $func.Name }} (
+  const FNakamaClientConfig& Config,
+  {{- range $idx, $param := $func.Params }}
+  {{ $param.Type }} {{ $param.Name }},
+  {{- end }}
+  TFunction<void({{ $func.Locals.SuccessLambdaType }})> OnSuccess,
+  TFunction<void(const FNakamaError&)> OnError,
+  float Timeout,
+  TSharedRef<TAtomic<bool>> CancellationToken
+) noexcept
+{
+  // 
+  // Fill Path Params
+  FString Endpoint = TEXT("{{ $func.Locals.Endpoint }}")
+  {{ range $pathParam := $func.Locals.PathParams }}
+  // Replace {{ $pathParam }}
+  {{ end }}
+
+  // 
+  // Fill Query Params
+  TArray<FString> QueryParams;
+  {{ range $queryParam := $func.Locals.QueryParams }}
+  // Fill {{ $queryParam }}
+  {{ end }}
+  if (QueryParams.Num() > 0)
+  {
+    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+  }
+
+  // 
+  // Fill Body Params
+  TSharedPtr<FJsonObject> Body;
+  {{ range $bodyParam := $func.Locals.BodyParams }}
+  // Fill {{ $bodyParam }}
+  {{ end }}
+
+  //
+  // Make the request
+  MakeRequest(
+    Config,
+    Endpoint,
+    TEXT("{{ $func.Locals.Method }}"),
+    Body,
+    ENakamaRequestAuth::{{ $func.Locals.AuthType }},
+    {{ $func.Locals.AuthKey }},
+    [OnSuccess](TSharedPtr<FJsonObject> Json)
+  )
+  {
+    if (OnSuccess)
+    {
+    {{ if ne "" $func.Locals.ReturnTypeName }}
+      {{ $func.Locals.ReturnTypeName }} Result = {{ $func.Locals.ReturnTypeName }}::FromJson(Json);
+      OnSuccess(Result);
+    {{ else }}
+      OnSuccess();
+    {{ end }}
+    }
+  },
+  OnError, Timeout, CancellationToken);
+}
+
+{{ end }}

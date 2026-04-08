@@ -5,7 +5,6 @@ import (
 	"text/template"
 	"time"
 
-	"heroiclabs.com/yacg-modules/unrealsdk/viewmodels"
 	"heroiclabs.com/yacg/modules"
 )
 
@@ -18,6 +17,9 @@ func getFuncMap() template.FuncMap {
 }
 
 func main() {
+	mapper := UnrealHttpApiMapper{}
+	funcMap := getFuncMap()
+
 	module := modules.Module{
 		DictionaryPath: "dict.conf",
 		Requires: modules.Requirements{
@@ -28,12 +30,16 @@ func main() {
 		},
 		Produces: []modules.Production{
 			{
-				// TODO: Provide templates path above and pass just the name?
-				//       could get a cached template.
-				Template:         "templates/Nakama.h.tmpl",
-				FuncMap:          getFuncMap(),
-				ViewModelFactory: viewmodels.MakeNakamaApiDeclarationViewModel,
-				Output:           "Nakama.h",
+				Template: "templates/Nakama.h.tmpl",
+				FuncMap:  funcMap,
+				Mapper:   mapper,
+				Output:   "Nakama.h",
+			},
+			{
+				Template: "templates/Nakama.cpp.tmpl",
+				FuncMap:  funcMap,
+				Mapper:   mapper,
+				Output:   "Nakama.cpp",
 			},
 		},
 	}

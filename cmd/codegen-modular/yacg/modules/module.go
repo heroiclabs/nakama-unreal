@@ -25,10 +25,10 @@ type Requirements struct {
 }
 
 type Production struct {
-	Template         string
-	FuncMap          template.FuncMap
-	ViewModelFactory func(dict Dictionary, api yacg.Api) (ViewModel, error)
-	Output           string
+	Template string
+	FuncMap  template.FuncMap
+	Mapper   ApiMapper
+	Output   string
 }
 
 type Module struct {
@@ -106,11 +106,12 @@ func (cm CompiledModule) Generate(outPath string) error {
 		if err != nil {
 			log.Fatalf("Failed to create file %s: %s", outFilePath, err)
 		}
-		vm, err := p.ViewModelFactory(cm.Dictionary, cm.Api)
+		apiMap, err := p.Mapper.MapApi(cm.Api)
 		if err != nil {
 			log.Fatalf("Failed to create view model: %s", err)
 		}
-		if err := tmpl.Execute(outFile, vm); err != nil {
+
+		if err := tmpl.Execute(outFile, apiMap); err != nil {
 			log.Printf("Failed to execute template '%s': %s", p.Template, err.Error())
 		}
 	}
