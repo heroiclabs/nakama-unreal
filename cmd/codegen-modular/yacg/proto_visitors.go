@@ -23,21 +23,21 @@ import (
 
 // --------------------
 // Enums
+type ProtoEnum struct {
+	Comment string
+	Fields  []*enumField
+	Name    string
+}
+
 type enumField struct {
 	*proto.EnumField
 	Input  string
 	Output string
 }
 
-type VisitedEnum struct {
-	Comment string
-	Fields  []*enumField
-	Name    string
-}
-
 type enumVisitor struct {
 	proto.NoopVisitor
-	Enum *VisitedEnum
+	Enum *ProtoEnum
 }
 
 func (v *enumVisitor) VisitEnumField(ef *proto.EnumField) {
@@ -68,7 +68,7 @@ func (v *enumVisitor) VisitEnumField(ef *proto.EnumField) {
 
 // --------------------
 // Messages
-type VisitedMessage struct {
+type ProtoMessage struct {
 	Comment     string
 	Fields      []*proto.NormalField
 	MapFields   []*proto.MapField
@@ -78,7 +78,7 @@ type VisitedMessage struct {
 
 type messageVisitor struct {
 	proto.NoopVisitor
-	Message *VisitedMessage
+	Message *ProtoMessage
 }
 
 func (v *messageVisitor) VisitMapField(mf *proto.MapField) {
@@ -117,11 +117,11 @@ func (v *messageVisitor) VisitOneofField(oneof *proto.OneOfField) {
 
 // --------------------
 // RPCs
-type VisitedRpc struct {
+type ProtoRpc struct {
 	Name        string
 	Comment     string
-	RequestType *VisitedMessage
-	ReturnType  *VisitedMessage
+	RequestType *ProtoMessage
+	ReturnType  *ProtoMessage
 	Endpoint    string
 	Method      string
 	PathParams  []string
@@ -132,7 +132,7 @@ type VisitedRpc struct {
 
 type rpcVisitor struct {
 	proto.NoopVisitor
-	Rpc *VisitedRpc
+	Rpc *ProtoRpc
 }
 
 func tryGetHttpMethod(str string) (string, bool) {

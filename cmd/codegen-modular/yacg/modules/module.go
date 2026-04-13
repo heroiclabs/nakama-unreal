@@ -27,6 +27,7 @@ type Requirements struct {
 type Production struct {
 	Template string
 	FuncMap  template.FuncMap
+	TypeMap  TypeMap
 	Mapper   ApiMapper
 	Output   string
 }
@@ -38,27 +39,19 @@ type Module struct {
 }
 
 type CompiledModule struct {
-	Dictionary Dictionary
-	Api        yacg.Api
-	Produces   []Production
+	Api      yacg.Api
+	Produces []Production
 }
 
 func (m Module) Compile() (CompiledModule, error) {
-	dictPath := "dict.conf"
-	dictionary, err := LoadDictionary(dictPath)
-	if err != nil {
-		return CompiledModule{}, err
-	}
-
 	api, err := yacg.LoadApi(m.Requires.Protos, "")
 	if err != nil {
 		return CompiledModule{}, err
 	}
 
 	compiled := CompiledModule{
-		Dictionary: dictionary,
-		Api:        api,
-		Produces:   m.Produces,
+		Api:      api,
+		Produces: m.Produces,
 	}
 
 	return compiled, nil
@@ -69,21 +62,6 @@ func (cm CompiledModule) Generate(outPath string) error {
 	if err != nil {
 		return err
 	}
-
-	// Load partial templates (_*.tmpl) from the same directory as the main template
-	/*
-		partialPattern := filepath.Join(filepath.Dir(*argTmpl), "_*.tmpl")
-		partials, _ := filepath.Glob(partialPattern)
-		for _, p := range partials {
-			pBytes, err := os.ReadFile(p)
-			if err != nil {
-				log.Fatalf("Failed to read partial template %s: %s", p, err.Error())
-			}
-			if _, err = tmpl.Parse(string(pBytes)); err != nil {
-				log.Fatalf("Failed to parse partial template %s: %s", p, err.Error())
-			}
-		}
-	*/
 
 	for _, p := range cm.Produces {
 		//
@@ -100,13 +78,13 @@ func (cm CompiledModule) Generate(outPath string) error {
 		}
 
 		//
-		// Generate the code from view model using the parsed Template.
+		// Generate the code from the mapper using the parsed Template.
 		outFilePath := fmt.Sprintf("%s/%s", outPath, p.Output)
 		outFile, err := os.Create(outFilePath)
 		if err != nil {
 			log.Fatalf("Failed to create file %s: %s", outFilePath, err)
 		}
-		apiMap, err := p.Mapper.MapApi(cm.Api)
+		apiMap, err := p.Mapper.MapApi(cm.Api, p.TypeMap)
 		if err != nil {
 			log.Fatalf("Failed to create view model: %s", err)
 		}

@@ -24,13 +24,13 @@ import (
 
 type Api struct {
 	// Use slices to preserve order of proto messages
-	Enums    []*VisitedEnum
-	Messages []*VisitedMessage
-	Rpcs     []*VisitedRpc
+	Enums    []*ProtoEnum
+	Messages []*ProtoMessage
+	Rpcs     []*ProtoRpc
 
-	EnumsByName    map[string]*VisitedEnum
-	MessagesByName map[string]*VisitedMessage
-	RpcsByName     map[string]*VisitedRpc
+	EnumsByName    map[string]*ProtoEnum
+	MessagesByName map[string]*ProtoMessage
+	RpcsByName     map[string]*ProtoRpc
 }
 
 func (api *Api) addFile(protoFile string) error {
@@ -71,7 +71,7 @@ func (api *Api) addFile(protoFile string) error {
 				}
 
 				visitor := &enumVisitor{
-					Enum: &VisitedEnum{
+					Enum: &ProtoEnum{
 						Comment: strings.Trim(comment, " "),
 						Fields:  make([]*enumField, 0),
 						Name:    enumName,
@@ -95,7 +95,7 @@ func (api *Api) addFile(protoFile string) error {
 					comment = message.Comment.Message()
 				}
 				visitor := &messageVisitor{
-					Message: &VisitedMessage{
+					Message: &ProtoMessage{
 						Comment:   comment,
 						Fields:    make([]*proto.NormalField, 0),
 						MapFields: make([]*proto.MapField, 0),
@@ -117,7 +117,7 @@ func (api *Api) addFile(protoFile string) error {
 					comment = strings.TrimSpace(comment)
 				}
 
-				resolveType := func(fullTypeName string) *VisitedMessage {
+				resolveType := func(fullTypeName string) *ProtoMessage {
 					if fullTypeName == "google.protobuf.Empty" {
 						return nil
 					} else {
@@ -136,7 +136,7 @@ func (api *Api) addFile(protoFile string) error {
 				returnType := resolveType(rpc.ReturnsType)
 
 				visitor := &rpcVisitor{
-					Rpc: &VisitedRpc{
+					Rpc: &ProtoRpc{
 						Comment:     comment,
 						RequestType: requestType,
 						ReturnType:  returnType,
@@ -158,13 +158,13 @@ func (api *Api) addFile(protoFile string) error {
 
 func LoadApi(protoFiles []string, prefix string) (Api, error) {
 	api := Api{
-		Enums:    make([]*VisitedEnum, 0),
-		Messages: make([]*VisitedMessage, 0),
-		Rpcs:     make([]*VisitedRpc, 0),
+		Enums:    make([]*ProtoEnum, 0),
+		Messages: make([]*ProtoMessage, 0),
+		Rpcs:     make([]*ProtoRpc, 0),
 
-		EnumsByName:    make(map[string]*VisitedEnum, 0),
-		MessagesByName: make(map[string]*VisitedMessage, 0),
-		RpcsByName:     make(map[string]*VisitedRpc, 0),
+		EnumsByName:    make(map[string]*ProtoEnum, 0),
+		MessagesByName: make(map[string]*ProtoMessage, 0),
+		RpcsByName:     make(map[string]*ProtoRpc, 0),
 	}
 
 	// Load file by file...
