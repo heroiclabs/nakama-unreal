@@ -66,19 +66,18 @@ NAKAMAAPI_API void NakamaApi::{{ $func.Name }} (
     ENakamaRequestAuth::{{ $func.Locals.AuthType }},
     {{ $func.Locals.AuthKey }},
     [OnSuccess](TSharedPtr<FJsonObject> Json)
-  )
-  {
-    if (OnSuccess)
     {
-    {{ if ne "" $func.Locals.ReturnTypeName }}
-      {{ $func.Locals.ReturnTypeName }} Result = {{ $func.Locals.ReturnTypeName }}::FromJson(Json);
-      OnSuccess(Result);
-    {{ else }}
-      OnSuccess();
-    {{ end }}
-    }
-  },
-  OnError, Timeout, CancellationToken);
+      if (OnSuccess)
+      {
+      {{ if ne "" $func.Locals.ReturnTypeName }}
+        {{ $func.Locals.ReturnTypeName }} Result = {{ $func.Locals.ReturnTypeName }}::FromJson(Json);
+        OnSuccess(Result);
+      {{ else }}
+        OnSuccess();
+      {{ end }}
+      }
+    },
+    OnError, Timeout, CancellationToken);
 }
 
 {{ end }}
