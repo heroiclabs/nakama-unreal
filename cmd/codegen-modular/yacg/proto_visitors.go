@@ -178,20 +178,31 @@ func (v *rpcVisitor) VisitOption(o *proto.Option) {
 		}
 	}
 
+	v.Rpc.PathParams = make([]string, 0)
+	v.Rpc.QueryParams = make([]string, 0)
+	v.Rpc.BodyParams = make([]string, 0)
+
 	//
 	// Path params
 	paramRegex := regexp.MustCompile(`\{([a-zA-Z0-9_]*)\}`)
 	matches := paramRegex.FindAllStringSubmatch(v.Rpc.Endpoint, -1)
-	v.Rpc.PathParams = make([]string, 0)
 	for _, m := range matches {
 		v.Rpc.PathParams = append(v.Rpc.PathParams, m[1])
 	}
 
 	//
-	// Query Params
-	v.Rpc.QueryParams = make([]string, 0)
-
-	//
-	// Body Params
-	v.Rpc.BodyParams = make([]string, 0)
+	// Body/Query Params
+	if v.Rpc.BodyField == "*" {
+		for _, f := range v.Rpc.RequestType.Fields {
+			v.Rpc.BodyParams = append(v.Rpc.BodyParams, f.Name)
+		}
+	} else if method == "GET" || v.Rpc.BodyField == "" {
+		if v.Rpc.RequestType != nil {
+			for _, f := range v.Rpc.RequestType.Fields {
+				v.Rpc.QueryParams = append(v.Rpc.QueryParams, f.Name)
+			}
+		}
+	} else if v.Rpc.BodyField != "" {
+		v.Rpc.BodyParams = append(v.Rpc.BodyParams, v.Rpc.BodyField)
+	}
 }
