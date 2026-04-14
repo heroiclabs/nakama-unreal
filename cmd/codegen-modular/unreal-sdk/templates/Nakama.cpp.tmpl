@@ -31,19 +31,27 @@ NAKAMAAPI_API void NakamaApi::{{ $func.Name }} (
   TSharedRef<TAtomic<bool>> CancellationToken
 ) noexcept
 {
+  FString Endpoint = TEXT("{{ $func.Locals.Endpoint }}")
   // 
   // Fill Path Params
-  FString Endpoint = TEXT("{{ $func.Locals.Endpoint }}")
-  {{ range $pathParam := $func.Locals.PathParams }}
-  // Replace {{ $pathParam }}
-  {{ end }}
+  {{- range $pathParam := $func.Locals.PathParams }}
+  const FString Encoded_{{ $pathParam.Name }} = FGenericPlatformHttp::UrlEncode({{ $pathParam.Name }});
+  Endpoint = Endpoint.Replace("{{ $pathParam.PathName }}", *Encoded_{{ $pathParam.Name }});
+  {{- end }}
 
   // 
   // Fill Query Params
   TArray<FString> QueryParams;
-  {{ range $queryParam := $func.Locals.QueryParams }}
-  // Fill {{ $queryParam }}
-  {{ end }}
+  {{- range $queryParam := $func.Locals.QueryParams }}
+  {{- if $queryParam.Repeated }}
+  for ({{ $queryParam.IterationType }} Item : {{ $queryParam.Name }})
+	{
+    QueryParams.Add(FString::Printf(TEXT("{{ $queryParam.Name }}={{ $queryParam.QueryFormat }}", {{ $queryParam.QueryValueSetter }}(Item)));
+  }
+  {{- else }}
+  QueryParams.Add(FString::Printf(TEXT("{{ $queryParam.Name }}={{ $queryParam.QueryFormat }}", {{ $queryParam.QueryValueSetter }}({{ $queryParam.Name }})));
+  {{- end }}
+  {{- end }}
   if (QueryParams.Num() > 0)
   {
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
@@ -52,9 +60,33 @@ NAKAMAAPI_API void NakamaApi::{{ $func.Name }} (
   // 
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
-  {{ range $bodyParam := $func.Locals.BodyParams }}
-  // Fill {{ $bodyParam }}
-  {{ end }}
+  {{- range $bodyParam := $func.Locals.BodyParams }}
+
+  {{- if $bodyParam.Repeated }}
+  if ({{ $bodyParam.Name }}.Num() > 0)
+  {
+    TArray<TSharedPtr<FJsonValue>> Array;
+    for ({{ $bodyParam.IterationType }} Item : {{ $bodyParam.Name }})
+    {
+      Array.Add(MakeShared<{{ $bodyParam.JsonArrayType }}>(Item{{ $bodyParam.MaybeToJson }}));
+    }
+    Body->SetArrayField(TEXT("{{ $bodyParam.JsonFieldName }}"), Array);
+  }
+  {{- else if $bodyParam.IsMap }}
+  if ({{ $bodyParam.Name }}.Num() > 0)
+  {
+    TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
+    for (const auto& Pair : {{ $bodyParam.Name }})
+    {
+      MapObj->SetStringField(Pair.Key, Pair.Value);
+    }
+    Body->SetObjectField(TEXT("{{ $bodyParam.JsonFieldName }}"), MapObj);
+  }
+  {{- else }}
+  Body->{{ $bodyParam.JsonSetter }}(TEXT({{ $bodyParam.JsonFieldName }}), {{ $bodyParam.Name }}{{ $bodyParam.MaybeToJson }});
+  {{- end }}
+
+  {{- end }}
 
   //
   // Make the request

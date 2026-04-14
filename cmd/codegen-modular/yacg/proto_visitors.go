@@ -13,6 +13,7 @@ package yacg
 
 import (
 	"regexp"
+	"slices"
 	"strings"
 	"text/scanner"
 
@@ -115,6 +116,7 @@ func (v *messageVisitor) VisitOneofField(oneof *proto.OneOfField) {
 
 // --------------------
 // RPCs
+
 type ProtoRpc struct {
 	Name        string
 	Comment     string
@@ -194,12 +196,16 @@ func (v *rpcVisitor) VisitOption(o *proto.Option) {
 	// Body/Query Params
 	if v.Rpc.BodyField == "*" {
 		for _, f := range v.Rpc.RequestType.Fields {
-			v.Rpc.BodyParams = append(v.Rpc.BodyParams, f.Name)
+			if !slices.Contains(v.Rpc.PathParams, f.Name) {
+				v.Rpc.BodyParams = append(v.Rpc.BodyParams, f.Name)
+			}
 		}
 	} else if method == "GET" || v.Rpc.BodyField == "" {
 		if v.Rpc.RequestType != nil {
 			for _, f := range v.Rpc.RequestType.Fields {
-				v.Rpc.QueryParams = append(v.Rpc.QueryParams, f.Name)
+				if !slices.Contains(v.Rpc.PathParams, f.Name) {
+					v.Rpc.QueryParams = append(v.Rpc.QueryParams, f.Name)
+				}
 			}
 		}
 	} else if v.Rpc.BodyField != "" {

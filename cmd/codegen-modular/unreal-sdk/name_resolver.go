@@ -208,6 +208,10 @@ const (
 	Extended modules.NameResolveContext = iota + modules.SENTINEL_STD_RESOLVE_CTX
 	FuncReturnTypeName
 	SuccessLambdaType
+
+	QueryValueSetter
+
+	MaybeToJson
 )
 
 func (r *UnrealNameResolver) Resolve(input string, ctx modules.NameResolveContext) string {

@@ -83,9 +83,11 @@ func (cm CompiledModule) Generate(outPath string) error {
 		if err != nil {
 			log.Fatalf("Failed to create file %s: %s", outFilePath, err)
 		}
+
+		// TODO: Move to compile step
 		apiMap, err := p.Mapper.MapApi(cm.Api, p.NameResolver)
 		if err != nil {
-			log.Fatalf("Failed to create view model: %s", err)
+			log.Fatalf("Failed to create the API map: %s", err)
 		}
 
 		if err := tmpl.Execute(outFile, apiMap); err != nil {

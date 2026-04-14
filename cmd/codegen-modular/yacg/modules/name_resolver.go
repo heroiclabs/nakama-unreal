@@ -51,11 +51,13 @@ const (
 	MapParam
 
 	JsonMethod
+	JsonArrayType
 	JsonArrayValue
 	QueryFormat
 	EmptyCheck
 
 	JsonGetter
+	JsonSetter
 	CastFromJson
 	ArrayItemExpr
 	// NeedsHasCheck

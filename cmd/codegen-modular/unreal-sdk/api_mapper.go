@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"strings"
 
 	"heroiclabs.com/yacg"
@@ -61,28 +62,166 @@ func (m UnrealHttpApiMapper) MapEnum(enum *yacg.ProtoEnum, api yacg.Api, nameRes
 	}, nil
 }
 
+type PathParam struct {
+	Name     string // Like GroupId
+	PathName string // Like `group_id`
+}
+
+type QueryParam struct {
+	Repeated         bool   // Whether or not this is a collection
+	IterationType    string // For repeated collections, a singular type we iterate over
+	Name             string // Like QueryParam
+	QueryFormat      string // Like %d
+	QueryValueSetter string // None or FGenericPlatformHttp::UrlEncode
+}
+
+type BodyParam struct {
+	Name          string
+	Repeated      bool
+	IsMap         bool
+	IterationType string
+	JsonArrayType string
+	MaybeToJson   string // "" or ".ToJson()"
+	JsonFieldName string
+	JsonSetter    string
+}
+
+func makeFuncLocals(rpc *yacg.ProtoRpc, nameResolver modules.NameResolver, authType string, authKey string) map[string]any {
+	funcLocals := make(map[string]any, 0)
+	funcLocals["Endpoint"] = rpc.Endpoint
+	funcLocals["Method"] = rpc.Method
+
+	if rpc.RequestType == nil {
+		if len(rpc.PathParams) != 0 || len(rpc.QueryParams) != 0 || len(rpc.BodyParams) != 0 {
+			log.Fatalf("Request has parameters, but rpc.RequestType is nil.")
+		}
+	}
+
+	queryParams := make([]QueryParam, 0, len(rpc.QueryParams))
+	pathParams := make([]PathParam, 0, len(rpc.PathParams))
+	bodyParams := make([]BodyParam, 0, len(rpc.BodyParams))
+	for _, qp := range rpc.QueryParams {
+		for _, f := range rpc.RequestType.Fields {
+			if f.Name == qp {
+				queryParams = append(queryParams, QueryParam{
+					Repeated:         f.Repeated,
+					IterationType:    nameResolver.Resolve(f.Type, modules.Param),
+					Name:             nameResolver.Resolve(qp, modules.Param),
+					QueryFormat:      nameResolver.Resolve(f.Type, modules.QueryFormat),
+					QueryValueSetter: nameResolver.Resolve(f.Type, QueryValueSetter),
+				})
+			}
+		}
+		for _, f := range rpc.RequestType.MapFields {
+			if f.Name == qp {
+				queryParams = append(queryParams, QueryParam{
+					Repeated:         false,
+					Name:             nameResolver.Resolve(qp, modules.Param),
+					QueryFormat:      nameResolver.Resolve(f.Type, modules.QueryFormat),
+					QueryValueSetter: nameResolver.Resolve(f.Type, QueryValueSetter),
+				})
+			}
+		}
+		for _, f := range rpc.RequestType.OneofFields {
+			if f.Name == qp {
+				queryParams = append(queryParams, QueryParam{
+					Repeated:         false,
+					Name:             nameResolver.Resolve(qp, modules.Param),
+					QueryFormat:      nameResolver.Resolve(f.Type, modules.QueryFormat),
+					QueryValueSetter: nameResolver.Resolve(f.Type, QueryValueSetter),
+				})
+			}
+		}
+	}
+	for _, pp := range rpc.PathParams {
+		for _, f := range rpc.RequestType.Fields {
+			if f.Name == pp {
+				pathParams = append(pathParams, PathParam{
+					PathName: pp,
+					Name:     nameResolver.Resolve(pp, modules.FieldName),
+				})
+			}
+		}
+		for _, f := range rpc.RequestType.MapFields {
+			if f.Name == pp {
+				pathParams = append(pathParams, PathParam{
+					PathName: pp,
+					Name:     nameResolver.Resolve(pp, modules.FieldName),
+				})
+			}
+		}
+		for _, f := range rpc.RequestType.OneofFields {
+			if f.Name == pp {
+				pathParams = append(pathParams, PathParam{
+					PathName: pp,
+					Name:     nameResolver.Resolve(pp, modules.FieldName),
+				})
+			}
+		}
+	}
+	for _, bp := range rpc.BodyParams {
+		for _, f := range rpc.RequestType.Fields {
+			if f.Name == bp {
+				bodyParams = append(bodyParams, BodyParam{
+					Name:          nameResolver.Resolve(bp, modules.FieldName),
+					Repeated:      f.Repeated,
+					IsMap:         false,
+					IterationType: nameResolver.Resolve(f.Type, modules.Param),
+					JsonArrayType: nameResolver.Resolve(f.Type, modules.JsonArrayType),
+					MaybeToJson:   nameResolver.Resolve(f.Type, MaybeToJson),
+					JsonFieldName: bp,
+					JsonSetter:    nameResolver.Resolve(f.Type, modules.JsonSetter),
+				})
+			}
+		}
+		for _, f := range rpc.RequestType.MapFields {
+			if f.Name == bp {
+				bodyParams = append(bodyParams, BodyParam{
+					Name:          nameResolver.Resolve(bp, modules.FieldName),
+					Repeated:      false,
+					IsMap:         true,
+					IterationType: nameResolver.Resolve(f.Type, modules.Param),
+					JsonArrayType: nameResolver.Resolve(f.Type, modules.JsonArrayType),
+					MaybeToJson:   nameResolver.Resolve(f.Type, MaybeToJson),
+					JsonFieldName: bp,
+					JsonSetter:    nameResolver.Resolve(f.Type, modules.JsonSetter),
+				})
+			}
+		}
+		for _, f := range rpc.RequestType.OneofFields {
+			if f.Name == bp {
+				bodyParams = append(bodyParams, BodyParam{
+					Name:          nameResolver.Resolve(bp, modules.FieldName),
+					Repeated:      false,
+					IsMap:         false,
+					IterationType: nameResolver.Resolve(f.Type, modules.Param),
+					JsonArrayType: nameResolver.Resolve(f.Type, modules.JsonArrayType),
+					MaybeToJson:   nameResolver.Resolve(f.Type, MaybeToJson),
+					JsonFieldName: bp,
+					JsonSetter:    nameResolver.Resolve(f.Type, modules.JsonSetter),
+				})
+			}
+		}
+	}
+
+	funcLocals["QueryParams"] = queryParams
+	funcLocals["PathParams"] = pathParams
+	funcLocals["BodyParams"] = bodyParams
+
+	funcLocals["ReturnTypeName"] = ""
+	funcLocals["SuccessLambdaType"] = ""
+	if rpc.ReturnType != nil {
+		funcLocals["ReturnTypeName"] = nameResolver.Resolve(rpc.ReturnType.Name, FuncReturnTypeName)
+		funcLocals["SuccessLambdaType"] = nameResolver.Resolve(rpc.ReturnType.Name, SuccessLambdaType)
+	}
+
+	funcLocals["AuthType"] = authType // Basic | HttpKey | Bearer
+	funcLocals["AuthKey"] = authKey   // TEXT("") | HttpKey | Session.Token
+	return funcLocals
+}
+
 func (m UnrealHttpApiMapper) MapRpc(rpc *yacg.ProtoRpc, api yacg.Api, nameResolver modules.NameResolver) ([]modules.Function, error) {
 	funcOverloads := make([]modules.Function, 0, 1)
-
-	makeFuncLocals := func(authType string, authKey string) map[string]any {
-		funcLocals := make(map[string]any, 0)
-		funcLocals["Endpoint"] = rpc.Endpoint
-		funcLocals["Method"] = rpc.Method
-		funcLocals["QueryParams"] = rpc.QueryParams
-		funcLocals["PathParams"] = rpc.PathParams
-		funcLocals["BodyParams"] = rpc.BodyParams
-
-		funcLocals["ReturnTypeName"] = ""
-		funcLocals["SuccessLambdaType"] = ""
-		if rpc.ReturnType != nil {
-			funcLocals["ReturnTypeName"] = nameResolver.Resolve(rpc.ReturnType.Name, FuncReturnTypeName)
-			funcLocals["SuccessLambdaType"] = nameResolver.Resolve(rpc.ReturnType.Name, SuccessLambdaType)
-		}
-
-		funcLocals["AuthType"] = authType // Basic | HttpKey | Bearer
-		funcLocals["AuthKey"] = authKey   // TEXT("") | HttpKey | Session.Token
-		return funcLocals
-	}
 
 	isAuth := strings.Contains(rpc.Name, "Authenticate")
 	isSessionRefresh := rpc.Name == "SessionRefresh"
@@ -115,7 +254,7 @@ func (m UnrealHttpApiMapper) MapRpc(rpc *yacg.ProtoRpc, api yacg.Api, nameResolv
 			DataDecl:   funcDataDecl,
 			Params:     paramsType.Members,
 			ReturnType: returns,
-			Locals:     makeFuncLocals("Basic", "TEXT(\"\")"),
+			Locals:     makeFuncLocals(rpc, nameResolver, "Basic", "TEXT(\"\")"),
 		})
 
 		return funcOverloads, nil
@@ -145,7 +284,7 @@ func (m UnrealHttpApiMapper) MapRpc(rpc *yacg.ProtoRpc, api yacg.Api, nameResolv
 			DataDecl:   funcDataDecl,
 			Params:     paramsMembers,
 			ReturnType: returns,
-			Locals:     makeFuncLocals("HttpKey", "HttpKey"),
+			Locals:     makeFuncLocals(rpc, nameResolver, "HttpKey", "HttpKey"),
 		})
 	}
 	// Session overload
@@ -165,7 +304,7 @@ func (m UnrealHttpApiMapper) MapRpc(rpc *yacg.ProtoRpc, api yacg.Api, nameResolv
 			DataDecl:   funcDataDecl,
 			Params:     paramsMembers,
 			ReturnType: returns,
-			Locals:     makeFuncLocals("Bearer", "Session.Token"),
+			Locals:     makeFuncLocals(rpc, nameResolver, "Bearer", "Session.Token"),
 		})
 	}
 
