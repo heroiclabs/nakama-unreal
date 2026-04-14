@@ -6,11 +6,11 @@ import (
 	"heroiclabs.com/yacg/modules"
 )
 
-type UnrealTypeMap struct {
+type UnrealNameResolver struct {
 	entries map[string]*modules.TypeEntry
 }
 
-func NewUnrealTypeMap() *UnrealTypeMap {
+func NewUnrealNameResolver() *UnrealNameResolver {
 	stringEntry := &modules.TypeEntry{
 		Param:         "const FString&",
 		RepeatedParam: "const TArray<FString>&",
@@ -174,7 +174,7 @@ func NewUnrealTypeMap() *UnrealTypeMap {
 		NeedsEmptyGuard: false,
 	}
 
-	return &UnrealTypeMap{
+	return &UnrealNameResolver{
 		entries: map[string]*modules.TypeEntry{
 			"string":                      stringEntry,
 			"google.protobuf.StringValue": stringEntry,
@@ -204,10 +204,65 @@ func NewUnrealTypeMap() *UnrealTypeMap {
 	}
 }
 
-func (m *UnrealTypeMap) Resolve(protoType string) (*modules.TypeEntry, error) {
-	e, ok := m.entries[protoType]
-	if !ok {
-		return nil, fmt.Errorf("type lookup failed for type %s", protoType)
-	}
-	return e, nil
+const (
+	Extended modules.NameResolveContext = iota + modules.SENTINEL_STD_RESOLVE_CTX
+	FuncReturnTypeName
+	SuccessLambdaType
+)
+
+func (r *UnrealNameResolver) Resolve(input string, ctx modules.NameResolveContext) string {
+	return fmt.Sprintf("RESOLVED_%s", input)
 }
+
+/*
+
+Param:         "const FString&",
+RepeatedParam: "const TArray<FString>&",
+MapParam:      "const TMap<FString, FString>&",
+MapType:       "TMap<FString, FString>",
+
+JsonMethod:     "String",
+JsonArrayValue: "String",
+QueryFormat:    "%s",
+EmptyCheck:     "IsEmpty",
+
+FieldType:         "FString",
+RepeatedFieldType: "TArray<FString>",
+FieldDefault:      "",
+
+JsonGetter:      "GetStringField",
+CastFromJson:    "",
+ArrayItemExpr:   "Item->AsString()",
+NeedsHasCheck:   true,
+NeedsEmptyGuard: true,
+
+func (m *UnrealTypeMap) _Resolve(protoType string) *modules.TypeEntry {
+	e, ok := m.entries[protoType]
+	if ok {
+		return e
+	}
+
+	unrealType := textcase.PascalCase(protoType)
+	return &modules.TypeEntry{
+		Param:         fmt.Sprintf("const %s&", unrealType),
+		RepeatedParam: fmt.Sprintf("const TArray<%s>&", unrealType),
+		MapParam:      fmt.Sprintf("const TMap<FString, %s>&", unrealType),
+		MapType:       fmt.Sprintf("TMap<FString, %s>", unrealType),
+
+		JsonMethod:     "String",
+		JsonArrayValue: "String",
+		QueryFormat:    "%s",
+		EmptyCheck:     "NumEmpty",
+
+		FieldType:         unrealType,
+		RepeatedFieldType: fmt.Sprintf("TArray<%s>", unrealType),
+		FieldDefault:      "",
+
+		JsonGetter:      "GetStringField",
+		CastFromJson:    "",
+		ArrayItemExpr:   "Item->AsString()",
+		NeedsHasCheck:   false,
+		NeedsEmptyGuard: true,
+	}
+}
+*/

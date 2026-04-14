@@ -31,7 +31,40 @@ type TypeEntry struct {
 	NeedsEmptyGuard bool // true for strings/timestamps in ToJson
 }
 
-// TypeMap resolves proto type names to target-language type traits.
-type TypeMap interface {
-	Resolve(protoType string) (*TypeEntry, error)
+type NameResolveContext int
+
+const (
+	TypeName NameResolveContext = iota
+	FuncName
+	FieldName
+
+	EnumType
+
+	FieldType
+	RepeatedFieldType
+	FieldDefault
+
+	MapType
+
+	Param
+	RepeatedParam
+	MapParam
+
+	JsonMethod
+	JsonArrayValue
+	QueryFormat
+	EmptyCheck
+
+	JsonGetter
+	CastFromJson
+	ArrayItemExpr
+	// NeedsHasCheck
+	// NeedsEmptyGuard
+
+	SENTINEL_STD_RESOLVE_CTX // Used for extending the ResolveContext
+)
+
+// NameResolver transforms strings to target language with a given context.
+type NameResolver interface {
+	Resolve(input string, ctx NameResolveContext) string
 }

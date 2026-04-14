@@ -25,17 +25,16 @@ type Requirements struct {
 }
 
 type Production struct {
-	Template string
-	FuncMap  template.FuncMap
-	TypeMap  TypeMap
-	Mapper   ApiMapper
-	Output   string
+	Template     string
+	FuncMap      template.FuncMap
+	NameResolver NameResolver
+	Mapper       ApiMapper
+	Output       string
 }
 
 type Module struct {
-	DictionaryPath string
-	Requires       Requirements
-	Produces       []Production
+	Requires Requirements
+	Produces []Production
 }
 
 type CompiledModule struct {
@@ -44,7 +43,7 @@ type CompiledModule struct {
 }
 
 func (m Module) Compile() (CompiledModule, error) {
-	api, err := yacg.LoadApi(m.Requires.Protos, "")
+	api, err := yacg.LoadApi(m.Requires.Protos)
 	if err != nil {
 		return CompiledModule{}, err
 	}
@@ -84,7 +83,7 @@ func (cm CompiledModule) Generate(outPath string) error {
 		if err != nil {
 			log.Fatalf("Failed to create file %s: %s", outFilePath, err)
 		}
-		apiMap, err := p.Mapper.MapApi(cm.Api, p.TypeMap)
+		apiMap, err := p.Mapper.MapApi(cm.Api, p.NameResolver)
 		if err != nil {
 			log.Fatalf("Failed to create view model: %s", err)
 		}

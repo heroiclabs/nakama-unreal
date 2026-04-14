@@ -19,8 +19,6 @@ import (
 	"github.com/emicklei/proto"
 )
 
-/* TODO: Review struct/func privacy */
-
 // --------------------
 // Enums
 type ProtoEnum struct {
@@ -180,16 +178,20 @@ func (v *rpcVisitor) VisitOption(o *proto.Option) {
 		}
 	}
 
+	//
+	// Path params
 	paramRegex := regexp.MustCompile(`\{([a-zA-Z0-9_]*)\}`)
 	matches := paramRegex.FindAllStringSubmatch(v.Rpc.Endpoint, -1)
-
-	// TODO
 	v.Rpc.PathParams = make([]string, 0)
-	v.Rpc.BodyParams = make([]string, 0)
-
-	// TODO: Actually Path params here
-	v.Rpc.QueryParams = make([]string, 0)
 	for _, m := range matches {
-		v.Rpc.QueryParams = append(v.Rpc.QueryParams, m[1])
+		v.Rpc.PathParams = append(v.Rpc.PathParams, m[1])
 	}
+
+	//
+	// Query Params
+	v.Rpc.QueryParams = make([]string, 0)
+
+	//
+	// Body Params
+	v.Rpc.BodyParams = make([]string, 0)
 }

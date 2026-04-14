@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/golang-cz/textcase"
 	"heroiclabs.com/yacg"
 	"heroiclabs.com/yacg/modules"
 )
@@ -12,10 +11,10 @@ import (
 // Implements HttpApiMapper
 type UnrealHttpApiMapper struct{}
 
-func (m UnrealHttpApiMapper) MapApi(api yacg.Api, typeMap modules.TypeMap) (modules.ApiMap, error) {
+func (m UnrealHttpApiMapper) MapApi(api yacg.Api, nameResolver modules.NameResolver) (modules.ApiMap, error) {
 	enums := make([]modules.Enum, 0, len(api.Enums))
 	for _, enum := range api.Enums {
-		e, err := m.MapEnum(enum, api, typeMap)
+		e, err := m.MapEnum(enum, api, nameResolver)
 		if err != nil {
 			return modules.ApiMap{}, err
 		}
@@ -24,7 +23,7 @@ func (m UnrealHttpApiMapper) MapApi(api yacg.Api, typeMap modules.TypeMap) (modu
 
 	types := make([]modules.Type, 0, len(api.Messages))
 	for _, message := range api.Messages {
-		m, err := m.MapMessage(message, api, typeMap)
+		m, err := m.MapMessage(message, api, nameResolver)
 		if err != nil {
 			return modules.ApiMap{}, err
 		}
@@ -33,7 +32,7 @@ func (m UnrealHttpApiMapper) MapApi(api yacg.Api, typeMap modules.TypeMap) (modu
 
 	funcs := make([]modules.Function, 0, len(api.Rpcs))
 	for _, rpc := range api.Rpcs {
-		f, err := m.MapRpc(rpc, api, typeMap)
+		f, err := m.MapRpc(rpc, api, nameResolver)
 		if err != nil {
 			return modules.ApiMap{}, err
 		}
@@ -43,7 +42,7 @@ func (m UnrealHttpApiMapper) MapApi(api yacg.Api, typeMap modules.TypeMap) (modu
 	return modules.ApiMap{Enums: enums, Funcs: funcs}, nil
 }
 
-func (m UnrealHttpApiMapper) MapEnum(enum *yacg.ProtoEnum, api yacg.Api, typeMap modules.TypeMap) (modules.Enum, error) {
+func (m UnrealHttpApiMapper) MapEnum(enum *yacg.ProtoEnum, api yacg.Api, nameResolver modules.NameResolver) (modules.Enum, error) {
 	values := make(map[string]modules.EnumValue, len(enum.Fields))
 	for _, f := range enum.Fields {
 		values[f.Name] = modules.EnumValue{
@@ -52,24 +51,20 @@ func (m UnrealHttpApiMapper) MapEnum(enum *yacg.ProtoEnum, api yacg.Api, typeMap
 		}
 	}
 
-	intType, err := typeMap.Resolve("int")
-	if err != nil {
-		return modules.Enum{}, err
-	}
 	return modules.Enum{
 		DataDecl: modules.DataDecl{
 			Name:    enum.Name,
 			Comment: enum.Comment,
-			Type:    intType.FieldType,
+			Type:    nameResolver.Resolve("int", modules.EnumType),
 		},
 		Values: values,
 	}, nil
 }
 
-func (m UnrealHttpApiMapper) MapRpc(rpc *yacg.ProtoRpc, api yacg.Api, typeMap modules.TypeMap) ([]modules.Function, error) {
+func (m UnrealHttpApiMapper) MapRpc(rpc *yacg.ProtoRpc, api yacg.Api, nameResolver modules.NameResolver) ([]modules.Function, error) {
 	funcOverloads := make([]modules.Function, 0, 1)
 
-	makeFuncLocals := func(authType string, authKey string, returnTypeName string, successLambdaType string) map[string]any {
+	makeFuncLocals := func(authType string, authKey string) map[string]any {
 		funcLocals := make(map[string]any, 0)
 		funcLocals["Endpoint"] = rpc.Endpoint
 		funcLocals["Method"] = rpc.Method
@@ -77,8 +72,12 @@ func (m UnrealHttpApiMapper) MapRpc(rpc *yacg.ProtoRpc, api yacg.Api, typeMap mo
 		funcLocals["PathParams"] = rpc.PathParams
 		funcLocals["BodyParams"] = rpc.BodyParams
 
-		funcLocals["ReturnTypeName"] = returnTypeName
-		funcLocals["SuccessLambdaType"] = successLambdaType
+		funcLocals["ReturnTypeName"] = ""
+		funcLocals["SuccessLambdaType"] = ""
+		if rpc.ReturnType != nil {
+			funcLocals["ReturnTypeName"] = nameResolver.Resolve(rpc.ReturnType.Name, FuncReturnTypeName)
+			funcLocals["SuccessLambdaType"] = nameResolver.Resolve(rpc.ReturnType.Name, SuccessLambdaType)
+		}
 
 		funcLocals["AuthType"] = authType // Basic | HttpKey | Bearer
 		funcLocals["AuthKey"] = authKey   // TEXT("") | HttpKey | Session.Token
@@ -91,14 +90,10 @@ func (m UnrealHttpApiMapper) MapRpc(rpc *yacg.ProtoRpc, api yacg.Api, typeMap mo
 
 	funcReturnTypeName := ""
 	if rpc.ReturnType != nil {
-		returnType, err := typeMap.Resolve(rpc.ReturnType.Name)
-		if err != nil {
-			return nil, err
-		}
-		funcReturnTypeName = returnType.FieldType
+		funcReturnTypeName = nameResolver.Resolve(rpc.ReturnType.Name, FuncReturnTypeName)
 	}
 	funcDataDecl := modules.DataDecl{
-		Name:    textcase.PascalCase(rpc.Name), // TODO From dict
+		Name:    nameResolver.Resolve(rpc.Name, modules.FuncName),
 		Comment: rpc.Comment,
 		Type:    funcReturnTypeName,
 	}
@@ -106,12 +101,12 @@ func (m UnrealHttpApiMapper) MapRpc(rpc *yacg.ProtoRpc, api yacg.Api, typeMap mo
 	//
 	// Without a session, we have just one overload
 	if !needsSession {
-		paramsType, err := m.MapMessage(rpc.RequestType, api, typeMap)
+		paramsType, err := m.MapMessage(rpc.RequestType, api, nameResolver)
 		if err != nil {
 			return nil, err
 		}
 
-		returns, err := m.MapMessage(rpc.ReturnType, api, typeMap)
+		returns, err := m.MapMessage(rpc.ReturnType, api, nameResolver)
 		if err != nil {
 			return nil, err
 		}
@@ -128,14 +123,14 @@ func (m UnrealHttpApiMapper) MapRpc(rpc *yacg.ProtoRpc, api yacg.Api, typeMap mo
 
 	//
 	// If we need a session, there are two overloads: one with HttpKey, and other with session.
-	returns, err := m.MapMessage(rpc.ReturnType, api, typeMap)
+	returns, err := m.MapMessage(rpc.ReturnType, api, nameResolver)
 	if err != nil {
 		return nil, err
 	}
 
 	// HttpKey overload
 	{
-		params, err := m.MapMessage(rpc.RequestType, api, typeMap)
+		params, err := m.MapMessage(rpc.RequestType, api, nameResolver)
 		if err != nil {
 			return nil, err
 		}
@@ -155,7 +150,7 @@ func (m UnrealHttpApiMapper) MapRpc(rpc *yacg.ProtoRpc, api yacg.Api, typeMap mo
 	}
 	// Session overload
 	{
-		params, err := m.MapMessage(rpc.RequestType, api, typeMap)
+		params, err := m.MapMessage(rpc.RequestType, api, nameResolver)
 		if err != nil {
 			return nil, err
 		}
@@ -177,7 +172,7 @@ func (m UnrealHttpApiMapper) MapRpc(rpc *yacg.ProtoRpc, api yacg.Api, typeMap mo
 	return funcOverloads, nil
 }
 
-func (m UnrealHttpApiMapper) MapMessage(message *yacg.ProtoMessage, api yacg.Api, typeMap modules.TypeMap) (modules.Type, error) {
+func (m UnrealHttpApiMapper) MapMessage(message *yacg.ProtoMessage, api yacg.Api, nameResolver modules.NameResolver) (modules.Type, error) {
 	if message == nil {
 		return modules.Type{}, nil
 	}
@@ -189,26 +184,28 @@ func (m UnrealHttpApiMapper) MapMessage(message *yacg.ProtoMessage, api yacg.Api
 		return modules.Type{}, fmt.Errorf("type definition not found in proto schema: `%s`", message.Name)
 	}
 	for _, field := range message.Fields {
-		// TODO: Take field.Repeated into account
+		fieldTypeCtx := modules.FieldType
+		if field.Repeated {
+			fieldTypeCtx = modules.RepeatedFieldType
+		}
+
 		members = append(members, modules.DataDecl{
-			Name:    field.Name, // TODO: Possibly also type map or something.
-			Type:    field.Type, // TODO: Need to resolve here via dictionary. Plus repeated
+			Name:    nameResolver.Resolve(field.Name, modules.FieldName),
+			Type:    nameResolver.Resolve(field.Type, fieldTypeCtx),
 			Comment: field.Comment.Message(),
 		})
 	}
 	for _, field := range message.MapFields {
-		// TODO: Do we want to support repeated map fields?
 		members = append(members, modules.DataDecl{
-			Name:    field.Name, // TODO: Possibly also type map or something.
-			Type:    field.Type, // TODO: Need to resolve here via dictionary. Plus say it's a map
+			Name:    nameResolver.Resolve(field.Name, modules.FieldName),
+			Type:    nameResolver.Resolve(field.Type, modules.MapType),
 			Comment: field.Comment.Message(),
 		})
 	}
 	for _, field := range message.OneofFields {
-		// TODO: Do we want to support repeated map fields?
 		members = append(members, modules.DataDecl{
-			Name:    field.Name, // TODO: Possibly also type map or something.
-			Type:    field.Type, // TODO: Need to resolve here via dictionary. Plus say it's a map
+			Name:    nameResolver.Resolve(field.Name, modules.FieldName),
+			Type:    nameResolver.Resolve(field.Type, modules.FieldType),
 			Comment: field.Comment.Message(),
 		})
 	}

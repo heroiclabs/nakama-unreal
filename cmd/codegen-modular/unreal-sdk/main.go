@@ -18,10 +18,10 @@ func getFuncMap() template.FuncMap {
 
 func main() {
 	mapper := UnrealHttpApiMapper{}
+	nameResolver := NewUnrealNameResolver()
 	funcMap := getFuncMap()
 
 	module := modules.Module{
-		DictionaryPath: "dict.conf",
 		Requires: modules.Requirements{
 			Protos: []string{
 				"protos/nakama-types.proto",
@@ -30,16 +30,18 @@ func main() {
 		},
 		Produces: []modules.Production{
 			{
-				Template: "templates/Nakama.h.tmpl",
-				FuncMap:  funcMap,
-				Mapper:   mapper,
-				Output:   "Nakama.h",
+				Template:     "templates/Nakama.h.tmpl",
+				FuncMap:      funcMap,
+				Mapper:       mapper,
+				NameResolver: nameResolver,
+				Output:       "Nakama.h",
 			},
 			{
-				Template: "templates/Nakama.cpp.tmpl",
-				FuncMap:  funcMap,
-				Mapper:   mapper,
-				Output:   "Nakama.cpp",
+				Template:     "templates/Nakama.cpp.tmpl",
+				FuncMap:      funcMap,
+				Mapper:       mapper,
+				NameResolver: nameResolver,
+				Output:       "Nakama.cpp",
 			},
 		},
 	}

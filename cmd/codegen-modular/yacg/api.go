@@ -156,7 +156,7 @@ func (api *Api) addFile(protoFile string) error {
 	return nil
 }
 
-func LoadApi(protoFiles []string, prefix string) (Api, error) {
+func LoadApi(protoFiles []string) (Api, error) {
 	api := Api{
 		Enums:    make([]*ProtoEnum, 0),
 		Messages: make([]*ProtoMessage, 0),
