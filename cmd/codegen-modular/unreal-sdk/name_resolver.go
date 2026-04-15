@@ -1,8 +1,9 @@
 package main
 
 import (
-	"fmt"
+	"log"
 
+	"github.com/golang-cz/textcase"
 	"heroiclabs.com/yacg/modules"
 )
 
@@ -17,20 +18,17 @@ func NewUnrealNameResolver() *UnrealNameResolver {
 		MapParam:      "const TMap<FString, FString>&",
 		MapType:       "TMap<FString, FString>",
 
-		JsonMethod:     "String",
 		JsonArrayValue: "String",
 		QueryFormat:    "%s",
 		EmptyCheck:     "IsEmpty",
 
 		FieldType:         "FString",
 		RepeatedFieldType: "TArray<FString>",
-		FieldDefault:      "",
 
-		JsonGetter:      "GetStringField",
-		CastFromJson:    "",
-		ArrayItemExpr:   "Item->AsString()",
-		NeedsHasCheck:   true,
-		NeedsEmptyGuard: true,
+		JsonSetter:    "SetStringField",
+		JsonGetter:    "GetStringField",
+		CastFromJson:  "",
+		ArrayItemExpr: "Item->AsString()",
 	}
 
 	boolEntry := &modules.TypeEntry{
@@ -39,20 +37,17 @@ func NewUnrealNameResolver() *UnrealNameResolver {
 		MapParam:      "const TMap<FString, bool>&",
 		MapType:       "TMap<FString, bool>",
 
-		JsonMethod:     "Bool",
 		JsonArrayValue: "Boolean",
 		QueryFormat:    "%s_bool",
 		EmptyCheck:     "None",
 
 		FieldType:         "bool",
 		RepeatedFieldType: "TArray<bool>",
-		FieldDefault:      " = false",
 
-		JsonGetter:      "GetBoolField",
-		CastFromJson:    "",
-		ArrayItemExpr:   "Item->AsBool()",
-		NeedsHasCheck:   true,
-		NeedsEmptyGuard: false,
+		JsonSetter:    "SetBoolField",
+		JsonGetter:    "GetBoolField",
+		CastFromJson:  "",
+		ArrayItemExpr: "Item->AsBool()",
 	}
 
 	int32Entry := &modules.TypeEntry{
@@ -61,26 +56,37 @@ func NewUnrealNameResolver() *UnrealNameResolver {
 		MapParam:      "const TMap<FString, int32>&",
 		MapType:       "TMap<FString, int32>",
 
-		JsonMethod:     "Number",
 		JsonArrayValue: "Number",
 		QueryFormat:    "%d",
 		EmptyCheck:     "NonZero",
 
 		FieldType:         "int32",
 		RepeatedFieldType: "TArray<int32>",
-		FieldDefault:      " = 0",
 
-		JsonGetter:      "GetIntegerField",
-		CastFromJson:    "",
-		ArrayItemExpr:   "static_cast<int32>(Item->AsNumber())",
-		NeedsHasCheck:   true,
-		NeedsEmptyGuard: false,
+		JsonSetter:    "SetIntegerField",
+		JsonGetter:    "GetIntegerField",
+		CastFromJson:  "static_cast<int32>",
+		ArrayItemExpr: "static_cast<int32>(Item->AsNumber())",
 	}
 
-	uint32Entry := *int32Entry
-	uint32Entry.CastFromJson = "static_cast<uint32>"
-	uint32Entry.JsonGetter = "GetNumberField"
-	uint32Entry.ArrayItemExpr = "static_cast<uint32>(Item->AsNumber())"
+	uint32Entry := &modules.TypeEntry{
+		Param:         "int32",
+		RepeatedParam: "const TArray<int32>&",
+		MapParam:      "const TMap<FString, int32>&",
+		MapType:       "TMap<FString, int32>",
+
+		JsonArrayValue: "Number",
+		QueryFormat:    "%d",
+		EmptyCheck:     "NonZero",
+
+		FieldType:         "int32",
+		RepeatedFieldType: "TArray<int32>",
+
+		JsonSetter:    "SetNumberField",
+		JsonGetter:    "GetNumberField",
+		CastFromJson:  "static_cast<uint32>",
+		ArrayItemExpr: "static_cast<uint32>(Item->AsNumber())",
+	}
 
 	int64Entry := &modules.TypeEntry{
 		Param:         "int64",
@@ -88,25 +94,37 @@ func NewUnrealNameResolver() *UnrealNameResolver {
 		MapParam:      "const TMap<FString, int64>&",
 		MapType:       "TMap<FString, int64>",
 
-		JsonMethod:     "Number",
 		JsonArrayValue: "Number",
 		QueryFormat:    "%lld",
 		EmptyCheck:     "NonZero",
 
 		FieldType:         "int64",
 		RepeatedFieldType: "TArray<int64>",
-		FieldDefault:      " = 0",
 
-		JsonGetter:      "GetNumberField",
-		CastFromJson:    "static_cast<int64>",
-		ArrayItemExpr:   "static_cast<int64>(Item->AsNumber())",
-		NeedsHasCheck:   true,
-		NeedsEmptyGuard: false,
+		JsonSetter:    "SetNumberField",
+		JsonGetter:    "GetNumberField",
+		CastFromJson:  "static_cast<int64>",
+		ArrayItemExpr: "static_cast<int64>(Item->AsNumber())",
 	}
 
-	uint64Entry := *int64Entry
-	uint64Entry.CastFromJson = "static_cast<uint64>"
-	uint64Entry.ArrayItemExpr = "static_cast<uint64>(Item->AsNumber())"
+	uint64Entry := &modules.TypeEntry{
+		Param:         "int64",
+		RepeatedParam: "const TArray<int64>&",
+		MapParam:      "const TMap<FString, int64>&",
+		MapType:       "TMap<FString, int64>",
+
+		JsonArrayValue: "Number",
+		QueryFormat:    "%lld",
+		EmptyCheck:     "NonZero",
+
+		FieldType:         "int64",
+		RepeatedFieldType: "TArray<int64>",
+
+		JsonSetter:    "SetNumberField",
+		JsonGetter:    "GetNumberField",
+		CastFromJson:  "static_cast<uint64>",
+		ArrayItemExpr: "static_cast<uint64>(Item->AsNumber())",
+	}
 
 	floatEntry := &modules.TypeEntry{
 		Param:         "float",
@@ -114,20 +132,17 @@ func NewUnrealNameResolver() *UnrealNameResolver {
 		MapParam:      "const TMap<FString, float>&",
 		MapType:       "TMap<FString, float>",
 
-		JsonMethod:     "Number",
 		JsonArrayValue: "Number",
 		QueryFormat:    "%f",
 		EmptyCheck:     "NonZero",
 
 		FieldType:         "float",
 		RepeatedFieldType: "TArray<float>",
-		FieldDefault:      " = 0.0f",
 
-		JsonGetter:      "GetNumberField",
-		CastFromJson:    "",
-		ArrayItemExpr:   "Item->AsNumber()",
-		NeedsHasCheck:   true,
-		NeedsEmptyGuard: false,
+		JsonSetter:    "SetNumberField",
+		JsonGetter:    "GetNumberField",
+		CastFromJson:  "",
+		ArrayItemExpr: "Item->AsNumber()",
 	}
 
 	doubleEntry := &modules.TypeEntry{
@@ -136,20 +151,17 @@ func NewUnrealNameResolver() *UnrealNameResolver {
 		MapParam:      "const TMap<FString, double>&",
 		MapType:       "TMap<FString, double>",
 
-		JsonMethod:     "Number",
 		JsonArrayValue: "Number",
 		QueryFormat:    "%f",
 		EmptyCheck:     "NonZero",
 
 		FieldType:         "double",
 		RepeatedFieldType: "TArray<double>",
-		FieldDefault:      " = 0.0",
 
-		JsonGetter:      "GetNumberField",
-		CastFromJson:    "",
-		ArrayItemExpr:   "Item->AsNumber()",
-		NeedsHasCheck:   true,
-		NeedsEmptyGuard: false,
+		JsonSetter:    "SetNumberField",
+		JsonGetter:    "GetNumberField",
+		CastFromJson:  "",
+		ArrayItemExpr: "Item->AsNumber()",
 	}
 
 	bytesEntry := &modules.TypeEntry{
@@ -158,20 +170,17 @@ func NewUnrealNameResolver() *UnrealNameResolver {
 		MapParam:      "const TMap<FString, TArray<uint8>>&",
 		MapType:       "TMap<FString, TArray<uint8>>",
 
-		JsonMethod:     "String",
 		JsonArrayValue: "String",
 		QueryFormat:    "%s",
 		EmptyCheck:     "NumEmpty",
 
 		FieldType:         "TArray<uint8>",
 		RepeatedFieldType: "TArray<TArray<uint8>>",
-		FieldDefault:      "",
 
-		JsonGetter:      "GetStringField",
-		CastFromJson:    "",
-		ArrayItemExpr:   "Item->AsString()",
-		NeedsHasCheck:   true,
-		NeedsEmptyGuard: false,
+		JsonSetter:    "SetStringField",
+		JsonGetter:    "GetStringField",
+		CastFromJson:  "",
+		ArrayItemExpr: "Item->AsString()",
 	}
 
 	return &UnrealNameResolver{
@@ -183,15 +192,16 @@ func NewUnrealNameResolver() *UnrealNameResolver {
 			"bool":                      boolEntry,
 			"google.protobuf.BoolValue": boolEntry,
 
+			"int":                         int32Entry,
 			"int32":                       int32Entry,
 			"google.protobuf.Int32Value":  int32Entry,
-			"uint32":                      &uint32Entry,
-			"google.protobuf.UInt32Value": &uint32Entry,
+			"uint32":                      uint32Entry,
+			"google.protobuf.UInt32Value": uint32Entry,
 
 			"int64":                       int64Entry,
 			"google.protobuf.Int64Value":  int64Entry,
-			"uint64":                      &uint64Entry,
-			"google.protobuf.UInt64Value": &uint64Entry,
+			"uint64":                      uint64Entry,
+			"google.protobuf.UInt64Value": uint64Entry,
 
 			"float":                       floatEntry,
 			"google.protobuf.FloatValue":  floatEntry,
@@ -206,67 +216,96 @@ func NewUnrealNameResolver() *UnrealNameResolver {
 
 const (
 	Extended modules.NameResolveContext = iota + modules.SENTINEL_STD_RESOLVE_CTX
-	FuncReturnTypeName
-	SuccessLambdaType
 
 	QueryValueSetter
-
 	MaybeToJson
 )
 
-func (r *UnrealNameResolver) Resolve(input string, ctx modules.NameResolveContext) string {
-	return fmt.Sprintf("RESOLVED_%s", input)
+// ResolveIdentifier converts a proto identifier to the Unreal naming convention.
+func (r *UnrealNameResolver) ResolveIdentifier(input string) string {
+	// TODO: Check against reserved stuff here.
+
+	return textcase.PascalCase(input)
 }
 
-/*
-
-Param:         "const FString&",
-RepeatedParam: "const TArray<FString>&",
-MapParam:      "const TMap<FString, FString>&",
-MapType:       "TMap<FString, FString>",
-
-JsonMethod:     "String",
-JsonArrayValue: "String",
-QueryFormat:    "%s",
-EmptyCheck:     "IsEmpty",
-
-FieldType:         "FString",
-RepeatedFieldType: "TArray<FString>",
-FieldDefault:      "",
-
-JsonGetter:      "GetStringField",
-CastFromJson:    "",
-ArrayItemExpr:   "Item->AsString()",
-NeedsHasCheck:   true,
-NeedsEmptyGuard: true,
-
-func (m *UnrealTypeMap) _Resolve(protoType string) *modules.TypeEntry {
-	e, ok := m.entries[protoType]
-	if ok {
-		return e
+// ResolveType looks up a proto type name in the entries map and returns the
+// target-language string for the requested context.
+// Unknown types are generated as FNakama-prefixed Unreal structs.
+func (r *UnrealNameResolver) ResolveType(input string, ctx modules.NameResolveContext) string {
+	entry, hit := r.entries[input]
+	if !hit {
+		entry = r.generateEntry(input)
 	}
 
-	unrealType := textcase.PascalCase(protoType)
+	switch ctx {
+	case MaybeToJson:
+		if hit {
+			return "" // Primitives/well-known types serialize directly
+		}
+		return ".ToJson()" // Custom structs expose a ToJson() method
+
+	case QueryValueSetter:
+		if entry.EmptyCheck == "IsEmpty" {
+			return "FGenericPlatformHttp::UrlEncode" // strings need URL encoding
+		}
+		return "" // numerics/bools are formatted directly
+	}
+
+	return r.resolveEntry(entry, ctx)
+}
+
+// generateEntry builds a TypeEntry for a custom proto message type that is
+// not in the built-in entries map.
+func (r *UnrealNameResolver) generateEntry(input string) *modules.TypeEntry {
+	base := "FNakama" + textcase.PascalCase(input)
 	return &modules.TypeEntry{
-		Param:         fmt.Sprintf("const %s&", unrealType),
-		RepeatedParam: fmt.Sprintf("const TArray<%s>&", unrealType),
-		MapParam:      fmt.Sprintf("const TMap<FString, %s>&", unrealType),
-		MapType:       fmt.Sprintf("TMap<FString, %s>", unrealType),
-
-		JsonMethod:     "String",
-		JsonArrayValue: "String",
-		QueryFormat:    "%s",
-		EmptyCheck:     "NumEmpty",
-
-		FieldType:         unrealType,
-		RepeatedFieldType: fmt.Sprintf("TArray<%s>", unrealType),
-		FieldDefault:      "",
-
-		JsonGetter:      "GetStringField",
-		CastFromJson:    "",
-		ArrayItemExpr:   "Item->AsString()",
-		NeedsHasCheck:   false,
-		NeedsEmptyGuard: true,
+		Param:             "const " + base + "&",
+		RepeatedParam:     "const TArray<" + base + ">&",
+		MapParam:          "const TMap<FString, " + base + ">&",
+		MapType:           "TMap<FString, " + base + ">",
+		FieldType:         base,
+		RepeatedFieldType: "TArray<" + base + ">",
+		QueryFormat:       "%s",
+		EmptyCheck:        "NumEmpty",
+		JsonArrayValue:    "Object",
+		JsonSetter:        "SetObjectField",
+		JsonGetter:        "GetObjectField",
+		CastFromJson:      "",
+		ArrayItemExpr:     "/* TODO: custom array item */",
 	}
 }
-*/
+
+// resolveEntry dispatches a standard NameResolveContext to the matching TypeEntry field.
+func (r *UnrealNameResolver) resolveEntry(entry *modules.TypeEntry, ctx modules.NameResolveContext) string {
+	switch ctx {
+	case modules.Param:
+		return entry.Param
+	case modules.RepeatedParam:
+		return entry.RepeatedParam
+	case modules.MapParam:
+		return entry.MapParam
+	case modules.MapType:
+		return entry.MapType
+	case modules.FieldType:
+		return entry.FieldType
+	case modules.RepeatedFieldType:
+		return entry.RepeatedFieldType
+	case modules.QueryFormat:
+		return entry.QueryFormat
+	case modules.EmptyCheck:
+		return entry.EmptyCheck
+	case modules.JsonSetter:
+		return entry.JsonSetter
+	case modules.JsonArrayValue:
+		return entry.JsonArrayValue
+	case modules.JsonGetter:
+		return entry.JsonGetter
+	case modules.CastFromJson:
+		return entry.CastFromJson
+	case modules.ArrayItemExpr:
+		return entry.ArrayItemExpr
+	default:
+		log.Fatalf("resolveEntry: unhandled NameResolveContext %d", ctx)
+		return ""
+	}
+}

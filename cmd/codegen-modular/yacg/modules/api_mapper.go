@@ -27,9 +27,10 @@ type Function struct {
 
 type Enum struct {
 	DataDecl
-	Values map[string]EnumValue
+	Fields []EnumField
 }
-type EnumValue struct {
+type EnumField struct {
+	Name    string
 	Value   int
 	Comment string
 }

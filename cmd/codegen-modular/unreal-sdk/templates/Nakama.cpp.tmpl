@@ -49,7 +49,10 @@ NAKAMAAPI_API void NakamaApi::{{ $func.Name }} (
     QueryParams.Add(FString::Printf(TEXT("{{ $queryParam.Name }}={{ $queryParam.QueryFormat }}", {{ $queryParam.QueryValueSetter }}(Item)));
   }
   {{- else }}
-  QueryParams.Add(FString::Printf(TEXT("{{ $queryParam.Name }}={{ $queryParam.QueryFormat }}", {{ $queryParam.QueryValueSetter }}({{ $queryParam.Name }})));
+  {{ if ne "" $queryParam.EmptyCheck }}if ({{ $queryParam.Name }}.{{ $queryParam.EmptyCheck }}() == false){{ end }}
+  {
+    QueryParams.Add(FString::Printf(TEXT("{{ $queryParam.Name }}={{ $queryParam.QueryFormat }}", {{ $queryParam.QueryValueSetter }}({{ $queryParam.Name }})));
+  }
   {{- end }}
   {{- end }}
   if (QueryParams.Num() > 0)
@@ -83,7 +86,10 @@ NAKAMAAPI_API void NakamaApi::{{ $func.Name }} (
     Body->SetObjectField(TEXT("{{ $bodyParam.JsonFieldName }}"), MapObj);
   }
   {{- else }}
-  Body->{{ $bodyParam.JsonSetter }}(TEXT({{ $bodyParam.JsonFieldName }}), {{ $bodyParam.Name }}{{ $bodyParam.MaybeToJson }});
+  {{ if ne "" $bodyParam.EmptyCheck }}if ({{ $bodyParam.Name }}.{{ $bodyParam.EmptyCheck }}() == false){{ end }}
+  {
+    Body->{{ $bodyParam.JsonSetter }}(TEXT({{ $bodyParam.JsonFieldName }}), {{ $bodyParam.Name }}{{ $bodyParam.MaybeToJson }});
+  }
   {{- end }}
 
   {{- end }}

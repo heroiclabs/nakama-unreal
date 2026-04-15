@@ -12,6 +12,32 @@ import (
 // Implements HttpApiMapper
 type UnrealHttpApiMapper struct{}
 
+type PathParam struct {
+	Name     string // Like GroupId
+	PathName string // Like `group_id`
+}
+
+type QueryParam struct {
+	Repeated         bool   // Whether or not this is a collection
+	IterationType    string // For repeated collections, a singular type we iterate over
+	Name             string // Like QueryParam
+	EmptyCheck       string // "" or ".Empty()" or similar
+	QueryFormat      string // Like %d
+	QueryValueSetter string // None or FGenericPlatformHttp::UrlEncode
+}
+
+type BodyParam struct {
+	Name          string
+	Repeated      bool
+	IsMap         bool
+	IterationType string
+	JsonArrayType string
+	MaybeToJson   string // "" or ".ToJson()"
+	JsonFieldName string
+	JsonSetter    string
+	EmptyCheck    string // "" or ".Empty()" or similar
+}
+
 func (m UnrealHttpApiMapper) MapApi(api yacg.Api, nameResolver modules.NameResolver) (modules.ApiMap, error) {
 	enums := make([]modules.Enum, 0, len(api.Enums))
 	for _, enum := range api.Enums {
@@ -24,6 +50,11 @@ func (m UnrealHttpApiMapper) MapApi(api yacg.Api, nameResolver modules.NameResol
 
 	types := make([]modules.Type, 0, len(api.Messages))
 	for _, message := range api.Messages {
+		// Session is special, generate it from a static file.
+		if message.Name == "Session" {
+			continue
+		}
+
 		m, err := m.MapMessage(message, api, nameResolver)
 		if err != nil {
 			return modules.ApiMap{}, err
@@ -40,50 +71,27 @@ func (m UnrealHttpApiMapper) MapApi(api yacg.Api, nameResolver modules.NameResol
 		funcs = append(funcs, f...)
 	}
 
-	return modules.ApiMap{Enums: enums, Funcs: funcs}, nil
+	return modules.ApiMap{Enums: enums, Types: types, Funcs: funcs}, nil
 }
 
 func (m UnrealHttpApiMapper) MapEnum(enum *yacg.ProtoEnum, api yacg.Api, nameResolver modules.NameResolver) (modules.Enum, error) {
-	values := make(map[string]modules.EnumValue, len(enum.Fields))
+	values := make([]modules.EnumField, 0, len(enum.Fields))
 	for _, f := range enum.Fields {
-		values[f.Name] = modules.EnumValue{
+		values = append(values, modules.EnumField{
+			Name:    nameResolver.ResolveIdentifier(f.Name),
 			Value:   f.Integer,
 			Comment: f.Comment.Message(),
-		}
+		})
 	}
 
 	return modules.Enum{
 		DataDecl: modules.DataDecl{
-			Name:    enum.Name,
+			Name:    nameResolver.ResolveIdentifier(enum.Name),
 			Comment: enum.Comment,
-			Type:    nameResolver.Resolve("int", modules.EnumType),
+			Type:    nameResolver.ResolveType("int", modules.FieldType),
 		},
-		Values: values,
+		Fields: values,
 	}, nil
-}
-
-type PathParam struct {
-	Name     string // Like GroupId
-	PathName string // Like `group_id`
-}
-
-type QueryParam struct {
-	Repeated         bool   // Whether or not this is a collection
-	IterationType    string // For repeated collections, a singular type we iterate over
-	Name             string // Like QueryParam
-	QueryFormat      string // Like %d
-	QueryValueSetter string // None or FGenericPlatformHttp::UrlEncode
-}
-
-type BodyParam struct {
-	Name          string
-	Repeated      bool
-	IsMap         bool
-	IterationType string
-	JsonArrayType string
-	MaybeToJson   string // "" or ".ToJson()"
-	JsonFieldName string
-	JsonSetter    string
 }
 
 func makeFuncLocals(rpc *yacg.ProtoRpc, nameResolver modules.NameResolver, authType string, authKey string) map[string]any {
@@ -105,10 +113,11 @@ func makeFuncLocals(rpc *yacg.ProtoRpc, nameResolver modules.NameResolver, authT
 			if f.Name == qp {
 				queryParams = append(queryParams, QueryParam{
 					Repeated:         f.Repeated,
-					IterationType:    nameResolver.Resolve(f.Type, modules.Param),
-					Name:             nameResolver.Resolve(qp, modules.Param),
-					QueryFormat:      nameResolver.Resolve(f.Type, modules.QueryFormat),
-					QueryValueSetter: nameResolver.Resolve(f.Type, QueryValueSetter),
+					IterationType:    nameResolver.ResolveType(f.Type, modules.Param),
+					Name:             nameResolver.ResolveIdentifier(qp),
+					QueryFormat:      nameResolver.ResolveType(f.Type, modules.QueryFormat),
+					QueryValueSetter: nameResolver.ResolveType(f.Type, QueryValueSetter),
+					EmptyCheck:       nameResolver.ResolveType(f.Type, modules.EmptyCheck),
 				})
 			}
 		}
@@ -116,9 +125,11 @@ func makeFuncLocals(rpc *yacg.ProtoRpc, nameResolver modules.NameResolver, authT
 			if f.Name == qp {
 				queryParams = append(queryParams, QueryParam{
 					Repeated:         false,
-					Name:             nameResolver.Resolve(qp, modules.Param),
-					QueryFormat:      nameResolver.Resolve(f.Type, modules.QueryFormat),
-					QueryValueSetter: nameResolver.Resolve(f.Type, QueryValueSetter),
+					Name:             nameResolver.ResolveIdentifier(qp),
+					IterationType:    nameResolver.ResolveType(f.Type, modules.Param),
+					QueryFormat:      nameResolver.ResolveType(f.Type, modules.QueryFormat),
+					QueryValueSetter: nameResolver.ResolveType(f.Type, QueryValueSetter),
+					EmptyCheck:       nameResolver.ResolveType(f.Type, modules.EmptyCheck),
 				})
 			}
 		}
@@ -126,9 +137,11 @@ func makeFuncLocals(rpc *yacg.ProtoRpc, nameResolver modules.NameResolver, authT
 			if f.Name == qp {
 				queryParams = append(queryParams, QueryParam{
 					Repeated:         false,
-					Name:             nameResolver.Resolve(qp, modules.Param),
-					QueryFormat:      nameResolver.Resolve(f.Type, modules.QueryFormat),
-					QueryValueSetter: nameResolver.Resolve(f.Type, QueryValueSetter),
+					Name:             nameResolver.ResolveIdentifier(qp),
+					IterationType:    nameResolver.ResolveType(f.Type, modules.Param),
+					QueryFormat:      nameResolver.ResolveType(f.Type, modules.QueryFormat),
+					QueryValueSetter: nameResolver.ResolveType(f.Type, QueryValueSetter),
+					EmptyCheck:       nameResolver.ResolveType(f.Type, modules.EmptyCheck),
 				})
 			}
 		}
@@ -138,7 +151,7 @@ func makeFuncLocals(rpc *yacg.ProtoRpc, nameResolver modules.NameResolver, authT
 			if f.Name == pp {
 				pathParams = append(pathParams, PathParam{
 					PathName: pp,
-					Name:     nameResolver.Resolve(pp, modules.FieldName),
+					Name:     nameResolver.ResolveIdentifier(pp),
 				})
 			}
 		}
@@ -146,7 +159,7 @@ func makeFuncLocals(rpc *yacg.ProtoRpc, nameResolver modules.NameResolver, authT
 			if f.Name == pp {
 				pathParams = append(pathParams, PathParam{
 					PathName: pp,
-					Name:     nameResolver.Resolve(pp, modules.FieldName),
+					Name:     nameResolver.ResolveIdentifier(pp),
 				})
 			}
 		}
@@ -154,7 +167,7 @@ func makeFuncLocals(rpc *yacg.ProtoRpc, nameResolver modules.NameResolver, authT
 			if f.Name == pp {
 				pathParams = append(pathParams, PathParam{
 					PathName: pp,
-					Name:     nameResolver.Resolve(pp, modules.FieldName),
+					Name:     nameResolver.ResolveIdentifier(pp),
 				})
 			}
 		}
@@ -163,42 +176,45 @@ func makeFuncLocals(rpc *yacg.ProtoRpc, nameResolver modules.NameResolver, authT
 		for _, f := range rpc.RequestType.Fields {
 			if f.Name == bp {
 				bodyParams = append(bodyParams, BodyParam{
-					Name:          nameResolver.Resolve(bp, modules.FieldName),
+					Name:          nameResolver.ResolveIdentifier(bp),
 					Repeated:      f.Repeated,
 					IsMap:         false,
-					IterationType: nameResolver.Resolve(f.Type, modules.Param),
-					JsonArrayType: nameResolver.Resolve(f.Type, modules.JsonArrayType),
-					MaybeToJson:   nameResolver.Resolve(f.Type, MaybeToJson),
+					IterationType: nameResolver.ResolveType(f.Type, modules.Param),
+					JsonArrayType: nameResolver.ResolveType(f.Type, modules.JsonArrayValue),
+					MaybeToJson:   nameResolver.ResolveType(f.Type, MaybeToJson),
 					JsonFieldName: bp,
-					JsonSetter:    nameResolver.Resolve(f.Type, modules.JsonSetter),
+					JsonSetter:    nameResolver.ResolveType(f.Type, modules.JsonSetter),
+					EmptyCheck:    nameResolver.ResolveType(f.Type, modules.EmptyCheck),
 				})
 			}
 		}
 		for _, f := range rpc.RequestType.MapFields {
 			if f.Name == bp {
 				bodyParams = append(bodyParams, BodyParam{
-					Name:          nameResolver.Resolve(bp, modules.FieldName),
+					Name:          nameResolver.ResolveIdentifier(bp),
 					Repeated:      false,
 					IsMap:         true,
-					IterationType: nameResolver.Resolve(f.Type, modules.Param),
-					JsonArrayType: nameResolver.Resolve(f.Type, modules.JsonArrayType),
-					MaybeToJson:   nameResolver.Resolve(f.Type, MaybeToJson),
+					IterationType: nameResolver.ResolveType(f.Type, modules.Param),
+					JsonArrayType: nameResolver.ResolveType(f.Type, modules.JsonArrayValue),
+					MaybeToJson:   nameResolver.ResolveType(f.Type, MaybeToJson),
 					JsonFieldName: bp,
-					JsonSetter:    nameResolver.Resolve(f.Type, modules.JsonSetter),
+					JsonSetter:    nameResolver.ResolveType(f.Type, modules.JsonSetter),
+					EmptyCheck:    nameResolver.ResolveType(f.Type, modules.EmptyCheck),
 				})
 			}
 		}
 		for _, f := range rpc.RequestType.OneofFields {
 			if f.Name == bp {
 				bodyParams = append(bodyParams, BodyParam{
-					Name:          nameResolver.Resolve(bp, modules.FieldName),
+					Name:          nameResolver.ResolveIdentifier(bp),
 					Repeated:      false,
 					IsMap:         false,
-					IterationType: nameResolver.Resolve(f.Type, modules.Param),
-					JsonArrayType: nameResolver.Resolve(f.Type, modules.JsonArrayType),
-					MaybeToJson:   nameResolver.Resolve(f.Type, MaybeToJson),
+					IterationType: nameResolver.ResolveType(f.Type, modules.Param),
+					JsonArrayType: nameResolver.ResolveType(f.Type, modules.JsonArrayValue),
+					MaybeToJson:   nameResolver.ResolveType(f.Type, MaybeToJson),
 					JsonFieldName: bp,
-					JsonSetter:    nameResolver.Resolve(f.Type, modules.JsonSetter),
+					JsonSetter:    nameResolver.ResolveType(f.Type, modules.JsonSetter),
+					EmptyCheck:    nameResolver.ResolveType(f.Type, modules.EmptyCheck),
 				})
 			}
 		}
@@ -211,8 +227,8 @@ func makeFuncLocals(rpc *yacg.ProtoRpc, nameResolver modules.NameResolver, authT
 	funcLocals["ReturnTypeName"] = ""
 	funcLocals["SuccessLambdaType"] = ""
 	if rpc.ReturnType != nil {
-		funcLocals["ReturnTypeName"] = nameResolver.Resolve(rpc.ReturnType.Name, FuncReturnTypeName)
-		funcLocals["SuccessLambdaType"] = nameResolver.Resolve(rpc.ReturnType.Name, SuccessLambdaType)
+		funcLocals["ReturnTypeName"] = nameResolver.ResolveType(rpc.ReturnType.Name, modules.FieldType)
+		funcLocals["SuccessLambdaType"] = nameResolver.ResolveType(rpc.ReturnType.Name, modules.Param)
 	}
 
 	funcLocals["AuthType"] = authType // Basic | HttpKey | Bearer
@@ -229,10 +245,10 @@ func (m UnrealHttpApiMapper) MapRpc(rpc *yacg.ProtoRpc, api yacg.Api, nameResolv
 
 	funcReturnTypeName := ""
 	if rpc.ReturnType != nil {
-		funcReturnTypeName = nameResolver.Resolve(rpc.ReturnType.Name, FuncReturnTypeName)
+		funcReturnTypeName = nameResolver.ResolveType(rpc.ReturnType.Name, modules.FieldType)
 	}
 	funcDataDecl := modules.DataDecl{
-		Name:    nameResolver.Resolve(rpc.Name, modules.FuncName),
+		Name:    nameResolver.ResolveIdentifier(rpc.Name),
 		Comment: rpc.Comment,
 		Type:    funcReturnTypeName,
 	}
@@ -329,25 +345,31 @@ func (m UnrealHttpApiMapper) MapMessage(message *yacg.ProtoMessage, api yacg.Api
 		}
 
 		members = append(members, modules.DataDecl{
-			Name:    nameResolver.Resolve(field.Name, modules.FieldName),
-			Type:    nameResolver.Resolve(field.Type, fieldTypeCtx),
+			Name:    nameResolver.ResolveIdentifier(field.Name),
+			Type:    nameResolver.ResolveType(field.Type, fieldTypeCtx),
 			Comment: field.Comment.Message(),
 		})
 	}
 	for _, field := range message.MapFields {
 		members = append(members, modules.DataDecl{
-			Name:    nameResolver.Resolve(field.Name, modules.FieldName),
-			Type:    nameResolver.Resolve(field.Type, modules.MapType),
+			Name:    nameResolver.ResolveIdentifier(field.Name),
+			Type:    nameResolver.ResolveType(field.Type, modules.MapType),
 			Comment: field.Comment.Message(),
 		})
 	}
 	for _, field := range message.OneofFields {
 		members = append(members, modules.DataDecl{
-			Name:    nameResolver.Resolve(field.Name, modules.FieldName),
-			Type:    nameResolver.Resolve(field.Type, modules.FieldType),
+			Name:    nameResolver.ResolveIdentifier(field.Name),
+			Type:    nameResolver.ResolveType(field.Type, modules.FieldType),
 			Comment: field.Comment.Message(),
 		})
 	}
 
-	return modules.Type{Members: members}, nil
+	return modules.Type{
+		DataDecl: modules.DataDecl{
+			Name:    message.Name,
+			Comment: message.Comment,
+		},
+		Members: members,
+	}, nil
 }
