@@ -16,13 +16,13 @@
 
 /* This code is auto-generated. DO NOT EDIT. */
 
-#include "NakamaTypes.h"
+#include "NakamaRtTypes.h"
 
 {{- range $type := $.Types }}
 
-FNakama{{ $type.Name }} FNakama{{ $type.Name }}::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
+FNakamaRt{{ $type.Name }} FNakamaRt{{ $type.Name }}::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
-  FNakama{{ $type.Name }} Result;
+  FNakamaRt{{ $type.Name }} Result;
   if (!Json.IsValid())
   {
     return Result;
@@ -72,11 +72,12 @@ FNakama{{ $type.Name }} FNakama{{ $type.Name }}::FromJson(const TSharedPtr<FJson
     {{- end }}
   }
   {{- end }}
+
   Result.ParseTokens();
   return Result;
 }
 
-TSharedPtr<FJsonObject> FNakama{{ $type.Name }}::ToJson() const noexcept
+TSharedPtr<FJsonObject> FNakamaRt{{ $type.Name }}::ToJson() const noexcept
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
   {{- range $member := $type.Members }}

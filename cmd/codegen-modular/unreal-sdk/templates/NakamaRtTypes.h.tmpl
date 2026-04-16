@@ -19,41 +19,28 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "NakamaTypes.generated.h"
-
-{{- range $enum := $.Enums }}
-
-/*
-* {{ $enum.Comment }}
-*/
-UENUM(BlueprintType)
-enum class ENakama{{ $enum.Name }} : uint8
-{
-  {{- range $idx, $field := $enum.Fields }}
-  {{ if ne 0 $idx }}, {{ end }}{{ $field.Name }} = {{ $field.Value }} // {{ $field.Comment }}
-  {{- end }}
-};
-
-{{- end }}
+#include "NakamaRtTypes.generated.h"
 
 {{- range $type := $.Types }}
 
-/**
-*{{ $type.Comment }}
+/*
+* {{ $type.Comment }}
 */
-struct FNakama{{ $type.Name }}
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaRt{{ $type.Name }}
 {
   GENERATED_BODY()
 
   {{- range $member := $type.Members }}
 
   /** {{ $member.Comment }} */
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama")
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
   {{ $member.Type }} {{ $member.Name }};
+
   {{- end }}
 
-  static FNakama{{ $type.Name }} FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+  static FNakamaRt{{ $type.Name }} FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
   TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
-{{- end }}
 
+{{- end }}
