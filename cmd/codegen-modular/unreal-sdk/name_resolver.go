@@ -25,10 +25,10 @@ func NewUnrealNameResolver() *UnrealNameResolver {
 		FieldType:         "FString",
 		RepeatedFieldType: "TArray<FString>",
 
-		JsonSetter:    "SetStringField",
-		JsonGetter:    "GetStringField",
-		CastFromJson:  "",
-		ArrayItemExpr: "Item->AsString()",
+		JsonSetter:       "SetStringField",
+		JsonGetter:       "GetStringField",
+		JsonCast:         "",
+		JsonToTypeMethod: "AsString()",
 	}
 
 	boolEntry := &modules.TypeEntry{
@@ -44,10 +44,10 @@ func NewUnrealNameResolver() *UnrealNameResolver {
 		FieldType:         "bool",
 		RepeatedFieldType: "TArray<bool>",
 
-		JsonSetter:    "SetBoolField",
-		JsonGetter:    "GetBoolField",
-		CastFromJson:  "",
-		ArrayItemExpr: "Item->AsBool()",
+		JsonSetter:       "SetBoolField",
+		JsonGetter:       "GetBoolField",
+		JsonCast:         "",
+		JsonToTypeMethod: "AsBool()",
 	}
 
 	int32Entry := &modules.TypeEntry{
@@ -63,10 +63,10 @@ func NewUnrealNameResolver() *UnrealNameResolver {
 		FieldType:         "int32",
 		RepeatedFieldType: "TArray<int32>",
 
-		JsonSetter:    "SetIntegerField",
-		JsonGetter:    "GetIntegerField",
-		CastFromJson:  "static_cast<int32>",
-		ArrayItemExpr: "static_cast<int32>(Item->AsNumber())",
+		JsonSetter:       "SetIntegerField",
+		JsonGetter:       "GetIntegerField",
+		JsonCast:         "static_cast<int32>",
+		JsonToTypeMethod: "AsNumber()",
 	}
 
 	uint32Entry := &modules.TypeEntry{
@@ -82,10 +82,10 @@ func NewUnrealNameResolver() *UnrealNameResolver {
 		FieldType:         "int32",
 		RepeatedFieldType: "TArray<int32>",
 
-		JsonSetter:    "SetNumberField",
-		JsonGetter:    "GetNumberField",
-		CastFromJson:  "static_cast<uint32>",
-		ArrayItemExpr: "static_cast<uint32>(Item->AsNumber())",
+		JsonSetter:       "SetNumberField",
+		JsonGetter:       "GetNumberField",
+		JsonCast:         "static_cast<uint32>",
+		JsonToTypeMethod: "AsNumber()",
 	}
 
 	int64Entry := &modules.TypeEntry{
@@ -101,10 +101,10 @@ func NewUnrealNameResolver() *UnrealNameResolver {
 		FieldType:         "int64",
 		RepeatedFieldType: "TArray<int64>",
 
-		JsonSetter:    "SetNumberField",
-		JsonGetter:    "GetNumberField",
-		CastFromJson:  "static_cast<int64>",
-		ArrayItemExpr: "static_cast<int64>(Item->AsNumber())",
+		JsonSetter:       "SetNumberField",
+		JsonGetter:       "GetNumberField",
+		JsonCast:         "static_cast<int64>",
+		JsonToTypeMethod: "AsNumber()",
 	}
 
 	uint64Entry := &modules.TypeEntry{
@@ -120,10 +120,10 @@ func NewUnrealNameResolver() *UnrealNameResolver {
 		FieldType:         "int64",
 		RepeatedFieldType: "TArray<int64>",
 
-		JsonSetter:    "SetNumberField",
-		JsonGetter:    "GetNumberField",
-		CastFromJson:  "static_cast<uint64>",
-		ArrayItemExpr: "static_cast<uint64>(Item->AsNumber())",
+		JsonSetter:       "SetNumberField",
+		JsonGetter:       "GetNumberField",
+		JsonCast:         "static_cast<uint64>",
+		JsonToTypeMethod: "AsNumber()",
 	}
 
 	floatEntry := &modules.TypeEntry{
@@ -139,10 +139,10 @@ func NewUnrealNameResolver() *UnrealNameResolver {
 		FieldType:         "float",
 		RepeatedFieldType: "TArray<float>",
 
-		JsonSetter:    "SetNumberField",
-		JsonGetter:    "GetNumberField",
-		CastFromJson:  "",
-		ArrayItemExpr: "Item->AsNumber()",
+		JsonSetter:       "SetNumberField",
+		JsonGetter:       "GetNumberField",
+		JsonCast:         "",
+		JsonToTypeMethod: "AsNumber()",
 	}
 
 	doubleEntry := &modules.TypeEntry{
@@ -158,10 +158,10 @@ func NewUnrealNameResolver() *UnrealNameResolver {
 		FieldType:         "double",
 		RepeatedFieldType: "TArray<double>",
 
-		JsonSetter:    "SetNumberField",
-		JsonGetter:    "GetNumberField",
-		CastFromJson:  "",
-		ArrayItemExpr: "Item->AsNumber()",
+		JsonSetter:       "SetNumberField",
+		JsonGetter:       "GetNumberField",
+		JsonCast:         "",
+		JsonToTypeMethod: "AsNumber()",
 	}
 
 	bytesEntry := &modules.TypeEntry{
@@ -177,10 +177,10 @@ func NewUnrealNameResolver() *UnrealNameResolver {
 		FieldType:         "TArray<uint8>",
 		RepeatedFieldType: "TArray<TArray<uint8>>",
 
-		JsonSetter:    "SetStringField",
-		JsonGetter:    "GetStringField",
-		CastFromJson:  "",
-		ArrayItemExpr: "Item->AsString()",
+		JsonSetter:       "SetStringField",
+		JsonGetter:       "GetStringField",
+		JsonCast:         "",
+		JsonToTypeMethod: "AsString()",
 	}
 
 	return &UnrealNameResolver{
@@ -245,10 +245,11 @@ func (r *UnrealNameResolver) ResolveType(input string, ctx modules.NameResolveCo
 		return ".ToJson()" // Custom structs expose a ToJson() method
 
 	case QueryValueSetter:
+		// Strings need to be URL encoded
 		if entry.EmptyCheck == "IsEmpty" {
-			return "FGenericPlatformHttp::UrlEncode" // strings need URL encoding
+			return "FGenericPlatformHttp::UrlEncode"
 		}
-		return "" // numerics/bools are formatted directly
+		return "" // All else is formatted directly
 	}
 
 	return r.resolveEntry(entry, ctx)
@@ -270,8 +271,8 @@ func (r *UnrealNameResolver) generateEntry(input string) *modules.TypeEntry {
 		JsonArrayValue:    "Object",
 		JsonSetter:        "SetObjectField",
 		JsonGetter:        "GetObjectField",
-		CastFromJson:      "",
-		ArrayItemExpr:     "/* TODO: custom array item */",
+		JsonCast:          "",
+		JsonToTypeMethod:  "",
 	}
 }
 
@@ -300,10 +301,10 @@ func (r *UnrealNameResolver) resolveEntry(entry *modules.TypeEntry, ctx modules.
 		return entry.JsonArrayValue
 	case modules.JsonGetter:
 		return entry.JsonGetter
-	case modules.CastFromJson:
-		return entry.CastFromJson
-	case modules.ArrayItemExpr:
-		return entry.ArrayItemExpr
+	case modules.JsonCast:
+		return entry.JsonCast
+	case modules.JsonToTypeMethod:
+		return entry.JsonToTypeMethod
 	default:
 		log.Fatalf("resolveEntry: unhandled NameResolveContext %d", ctx)
 		return ""

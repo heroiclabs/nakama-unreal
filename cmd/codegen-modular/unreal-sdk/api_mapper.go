@@ -5,6 +5,7 @@ import (
 	"log"
 	"strings"
 
+	"github.com/emicklei/proto"
 	"heroiclabs.com/yacg"
 	"heroiclabs.com/yacg/modules"
 )
@@ -94,10 +95,178 @@ func (m UnrealHttpApiMapper) MapEnum(enum *yacg.ProtoEnum, api yacg.Api, nameRes
 	}, nil
 }
 
-func makeFuncLocals(rpc *yacg.ProtoRpc, nameResolver modules.NameResolver, authType string, authKey string) map[string]any {
-	funcLocals := make(map[string]any, 0)
-	funcLocals["Endpoint"] = rpc.Endpoint
-	funcLocals["Method"] = rpc.Method
+func (m UnrealHttpApiMapper) MapRpc(rpc *yacg.ProtoRpc, api yacg.Api, nameResolver modules.NameResolver) ([]modules.Function, error) {
+	funcOverloads := make([]modules.Function, 0, 1)
+
+	isAuth := strings.Contains(rpc.Name, "Authenticate")
+	isSessionRefresh := rpc.Name == "SessionRefresh"
+	needsSession := !isAuth && !isSessionRefresh
+
+	funcReturnTypeName := ""
+	if rpc.ReturnType != nil {
+		funcReturnTypeName = nameResolver.ResolveType(rpc.ReturnType.Name, modules.FieldType)
+	}
+
+	//
+	// Without a session, we have just one overload
+	if !needsSession {
+		paramsType, err := m.MapMessage(rpc.RequestType, api, nameResolver)
+		if err != nil {
+			return nil, err
+		}
+
+		returns, err := m.MapMessage(rpc.ReturnType, api, nameResolver)
+		if err != nil {
+			return nil, err
+		}
+
+		funcOverloads = append(funcOverloads, modules.Function{
+			DataDecl: modules.DataDecl{
+				Name:     nameResolver.ResolveIdentifier(rpc.Name),
+				Comment:  rpc.Comment,
+				Type:     funcReturnTypeName,
+				Metadata: makeFuncMetadata(rpc, nameResolver, "Basic", "TEXT(\"\")"),
+			},
+			Params:     paramsType.Members,
+			ReturnType: returns,
+		})
+
+		return funcOverloads, nil
+	}
+
+	//
+	// If we need a session, there are two overloads: one with HttpKey, and other with session.
+	returns, err := m.MapMessage(rpc.ReturnType, api, nameResolver)
+	if err != nil {
+		return nil, err
+	}
+
+	// HttpKey overload
+	{
+		params, err := m.MapMessage(rpc.RequestType, api, nameResolver)
+		if err != nil {
+			return nil, err
+		}
+		httpKeyParam := modules.DataDecl{
+			Type:    "const FString&",
+			Name:    "HttpKey",
+			Comment: "HttpKey for server-to-server communication",
+		}
+		paramsMembers := append([]modules.DataDecl{httpKeyParam}, params.Members...)
+
+		funcOverloads = append(funcOverloads, modules.Function{
+			DataDecl: modules.DataDecl{
+				Name:     nameResolver.ResolveIdentifier(rpc.Name),
+				Comment:  rpc.Comment,
+				Type:     funcReturnTypeName,
+				Metadata: makeFuncMetadata(rpc, nameResolver, "HttpKey", "HttpKey"),
+			},
+			Params:     paramsMembers,
+			ReturnType: returns,
+		})
+	}
+	// Session overload
+	{
+		params, err := m.MapMessage(rpc.RequestType, api, nameResolver)
+		if err != nil {
+			return nil, err
+		}
+		sessionParam := modules.DataDecl{
+			Type:    "const FNakamaSession&",
+			Name:    "Session",
+			Comment: "The session of the user.",
+		}
+		paramsMembers := append([]modules.DataDecl{sessionParam}, params.Members...)
+
+		funcOverloads = append(funcOverloads, modules.Function{
+			DataDecl: modules.DataDecl{
+				Name:     nameResolver.ResolveIdentifier(rpc.Name),
+				Comment:  rpc.Comment,
+				Type:     funcReturnTypeName,
+				Metadata: makeFuncMetadata(rpc, nameResolver, "Bearer", "Session.Token"),
+			},
+			Params:     paramsMembers,
+			ReturnType: returns,
+		})
+	}
+
+	return funcOverloads, nil
+}
+
+func (m UnrealHttpApiMapper) MapMessage(message *yacg.ProtoMessage, api yacg.Api, nameResolver modules.NameResolver) (modules.Type, error) {
+	if message == nil {
+		return modules.Type{}, nil
+	}
+
+	members := make([]modules.DataDecl, 0, len(message.Fields)+len(message.MapFields))
+
+	message, ok := api.MessagesByName[message.Name]
+	if !ok {
+		return modules.Type{}, fmt.Errorf("type definition not found in proto schema: `%s`", message.Name)
+	}
+	for _, field := range message.Fields {
+		fieldTypeCtx := modules.FieldType
+		if field.Repeated {
+			fieldTypeCtx = modules.RepeatedFieldType
+		}
+
+		members = append(members, modules.DataDecl{
+			Name:     nameResolver.ResolveIdentifier(field.Name),
+			Type:     nameResolver.ResolveType(field.Type, fieldTypeCtx),
+			Comment:  field.Comment.Message(),
+			Metadata: makeTypeMemberMetadata(field.Field, field.Repeated, false, api, nameResolver),
+		})
+	}
+	for _, field := range message.MapFields {
+		members = append(members, modules.DataDecl{
+			Name:     nameResolver.ResolveIdentifier(field.Name),
+			Type:     nameResolver.ResolveType(field.Type, modules.MapType),
+			Comment:  field.Comment.Message(),
+			Metadata: makeTypeMemberMetadata(field.Field, false, true, api, nameResolver),
+		})
+	}
+	for _, field := range message.OneofFields {
+		members = append(members, modules.DataDecl{
+			Name:     nameResolver.ResolveIdentifier(field.Name),
+			Type:     nameResolver.ResolveType(field.Type, modules.FieldType),
+			Comment:  field.Comment.Message(),
+			Metadata: makeTypeMemberMetadata(field.Field, false, false, api, nameResolver),
+		})
+	}
+
+	return modules.Type{
+		DataDecl: modules.DataDecl{
+			Name:    message.Name,
+			Comment: message.Comment,
+		},
+		Members: members,
+	}, nil
+}
+
+func makeTypeMemberMetadata(field *proto.Field, isRepeated bool, isMap bool, api yacg.Api, nameResolver modules.NameResolver) map[string]any {
+	fieldMeta := make(map[string]any, 0)
+
+	_, isMessageType := api.MessagesByName[field.Type]
+
+	fieldMeta["JsonFieldName"] = field.Name
+	fieldMeta["Repeated"] = isRepeated
+	fieldMeta["IsMap"] = isMap
+	fieldMeta["IsPrimitive"] = !isMessageType
+	fieldMeta["JsonCast"] = nameResolver.ResolveType(field.Type, modules.JsonCast)
+	fieldMeta["JsonToTypeMethod"] = nameResolver.ResolveType(field.Type, modules.JsonToTypeMethod)
+	fieldMeta["JsonGetter"] = nameResolver.ResolveType(field.Type, modules.JsonGetter)
+	fieldMeta["JsonArrayType"] = nameResolver.ResolveType(field.Type, modules.JsonArrayValue)
+	fieldMeta["MaybeToJson"] = nameResolver.ResolveType(field.Type, MaybeToJson)
+	fieldMeta["EmptyCheck"] = nameResolver.ResolveType(field.Type, modules.EmptyCheck)
+	fieldMeta["JsonSetter"] = nameResolver.ResolveType(field.Type, modules.JsonSetter)
+
+	return fieldMeta
+}
+
+func makeFuncMetadata(rpc *yacg.ProtoRpc, nameResolver modules.NameResolver, authType string, authKey string) map[string]any {
+	funcMeta := make(map[string]any, 0)
+	funcMeta["Endpoint"] = rpc.Endpoint
+	funcMeta["Method"] = rpc.Method
 
 	if rpc.RequestType == nil {
 		if len(rpc.PathParams) != 0 || len(rpc.QueryParams) != 0 || len(rpc.BodyParams) != 0 {
@@ -220,156 +389,18 @@ func makeFuncLocals(rpc *yacg.ProtoRpc, nameResolver modules.NameResolver, authT
 		}
 	}
 
-	funcLocals["QueryParams"] = queryParams
-	funcLocals["PathParams"] = pathParams
-	funcLocals["BodyParams"] = bodyParams
+	funcMeta["QueryParams"] = queryParams
+	funcMeta["PathParams"] = pathParams
+	funcMeta["BodyParams"] = bodyParams
 
-	funcLocals["ReturnTypeName"] = ""
-	funcLocals["SuccessLambdaType"] = ""
+	funcMeta["ReturnTypeName"] = ""
+	funcMeta["SuccessLambdaType"] = ""
 	if rpc.ReturnType != nil {
-		funcLocals["ReturnTypeName"] = nameResolver.ResolveType(rpc.ReturnType.Name, modules.FieldType)
-		funcLocals["SuccessLambdaType"] = nameResolver.ResolveType(rpc.ReturnType.Name, modules.Param)
+		funcMeta["ReturnTypeName"] = nameResolver.ResolveType(rpc.ReturnType.Name, modules.FieldType)
+		funcMeta["SuccessLambdaType"] = nameResolver.ResolveType(rpc.ReturnType.Name, modules.Param)
 	}
 
-	funcLocals["AuthType"] = authType // Basic | HttpKey | Bearer
-	funcLocals["AuthKey"] = authKey   // TEXT("") | HttpKey | Session.Token
-	return funcLocals
-}
-
-func (m UnrealHttpApiMapper) MapRpc(rpc *yacg.ProtoRpc, api yacg.Api, nameResolver modules.NameResolver) ([]modules.Function, error) {
-	funcOverloads := make([]modules.Function, 0, 1)
-
-	isAuth := strings.Contains(rpc.Name, "Authenticate")
-	isSessionRefresh := rpc.Name == "SessionRefresh"
-	needsSession := !isAuth && !isSessionRefresh
-
-	funcReturnTypeName := ""
-	if rpc.ReturnType != nil {
-		funcReturnTypeName = nameResolver.ResolveType(rpc.ReturnType.Name, modules.FieldType)
-	}
-	funcDataDecl := modules.DataDecl{
-		Name:    nameResolver.ResolveIdentifier(rpc.Name),
-		Comment: rpc.Comment,
-		Type:    funcReturnTypeName,
-	}
-
-	//
-	// Without a session, we have just one overload
-	if !needsSession {
-		paramsType, err := m.MapMessage(rpc.RequestType, api, nameResolver)
-		if err != nil {
-			return nil, err
-		}
-
-		returns, err := m.MapMessage(rpc.ReturnType, api, nameResolver)
-		if err != nil {
-			return nil, err
-		}
-
-		funcOverloads = append(funcOverloads, modules.Function{
-			DataDecl:   funcDataDecl,
-			Params:     paramsType.Members,
-			ReturnType: returns,
-			Locals:     makeFuncLocals(rpc, nameResolver, "Basic", "TEXT(\"\")"),
-		})
-
-		return funcOverloads, nil
-	}
-
-	//
-	// If we need a session, there are two overloads: one with HttpKey, and other with session.
-	returns, err := m.MapMessage(rpc.ReturnType, api, nameResolver)
-	if err != nil {
-		return nil, err
-	}
-
-	// HttpKey overload
-	{
-		params, err := m.MapMessage(rpc.RequestType, api, nameResolver)
-		if err != nil {
-			return nil, err
-		}
-		httpKeyParam := modules.DataDecl{
-			Type:    "const FString&",
-			Name:    "HttpKey",
-			Comment: "HttpKey for server-to-server communication",
-		}
-		paramsMembers := append([]modules.DataDecl{httpKeyParam}, params.Members...)
-
-		funcOverloads = append(funcOverloads, modules.Function{
-			DataDecl:   funcDataDecl,
-			Params:     paramsMembers,
-			ReturnType: returns,
-			Locals:     makeFuncLocals(rpc, nameResolver, "HttpKey", "HttpKey"),
-		})
-	}
-	// Session overload
-	{
-		params, err := m.MapMessage(rpc.RequestType, api, nameResolver)
-		if err != nil {
-			return nil, err
-		}
-		sessionParam := modules.DataDecl{
-			Type:    "const FNakamaSession&",
-			Name:    "Session",
-			Comment: "The session of the user.",
-		}
-		paramsMembers := append([]modules.DataDecl{sessionParam}, params.Members...)
-
-		funcOverloads = append(funcOverloads, modules.Function{
-			DataDecl:   funcDataDecl,
-			Params:     paramsMembers,
-			ReturnType: returns,
-			Locals:     makeFuncLocals(rpc, nameResolver, "Bearer", "Session.Token"),
-		})
-	}
-
-	return funcOverloads, nil
-}
-
-func (m UnrealHttpApiMapper) MapMessage(message *yacg.ProtoMessage, api yacg.Api, nameResolver modules.NameResolver) (modules.Type, error) {
-	if message == nil {
-		return modules.Type{}, nil
-	}
-
-	members := make([]modules.DataDecl, 0, len(message.Fields)+len(message.MapFields))
-
-	message, ok := api.MessagesByName[message.Name]
-	if !ok {
-		return modules.Type{}, fmt.Errorf("type definition not found in proto schema: `%s`", message.Name)
-	}
-	for _, field := range message.Fields {
-		fieldTypeCtx := modules.FieldType
-		if field.Repeated {
-			fieldTypeCtx = modules.RepeatedFieldType
-		}
-
-		members = append(members, modules.DataDecl{
-			Name:    nameResolver.ResolveIdentifier(field.Name),
-			Type:    nameResolver.ResolveType(field.Type, fieldTypeCtx),
-			Comment: field.Comment.Message(),
-		})
-	}
-	for _, field := range message.MapFields {
-		members = append(members, modules.DataDecl{
-			Name:    nameResolver.ResolveIdentifier(field.Name),
-			Type:    nameResolver.ResolveType(field.Type, modules.MapType),
-			Comment: field.Comment.Message(),
-		})
-	}
-	for _, field := range message.OneofFields {
-		members = append(members, modules.DataDecl{
-			Name:    nameResolver.ResolveIdentifier(field.Name),
-			Type:    nameResolver.ResolveType(field.Type, modules.FieldType),
-			Comment: field.Comment.Message(),
-		})
-	}
-
-	return modules.Type{
-		DataDecl: modules.DataDecl{
-			Name:    message.Name,
-			Comment: message.Comment,
-		},
-		Members: members,
-	}, nil
+	funcMeta["AuthType"] = authType // Basic | HttpKey | Bearer
+	funcMeta["AuthKey"] = authKey   // TEXT("") | HttpKey | Session.Token
+	return funcMeta
 }

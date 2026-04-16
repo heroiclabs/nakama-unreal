@@ -8,6 +8,8 @@ type DataDecl struct {
 	Type    string
 	Name    string
 	Comment string
+
+	Metadata map[string]any
 }
 
 type Type struct {
@@ -20,9 +22,6 @@ type Function struct {
 
 	Params     []DataDecl
 	ReturnType Type
-
-	// Local function variable declarations.
-	Locals map[string]any
 }
 
 type Enum struct {

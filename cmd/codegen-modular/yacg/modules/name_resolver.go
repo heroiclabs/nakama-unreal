@@ -20,10 +20,10 @@ type TypeEntry struct {
 	JsonArrayValue string // FJsonValue subclass: "String", "Number", "Boolean", "Object"
 
 	// JSON deserialization (FromJson)
-	JsonSetter    string // Setter method: "SetStringField", "SetIntegerField", etc
-	JsonGetter    string // Getter method: "GetStringField", "GetIntegerField", etc.
-	CastFromJson  string // Optional cast: "" or "static_cast<int64>"
-	ArrayItemExpr string // Repeated item read: "Item->AsString()", "static_cast<int32>(Item->AsNumber())"
+	JsonSetter       string // Setter method: "SetStringField", "SetIntegerField", etc
+	JsonGetter       string // Getter method: "GetStringField", "GetIntegerField", etc.
+	JsonCast         string // Custom casts, for example static_cast<int32>
+	JsonToTypeMethod string // e.g. AsString(), AsNumber()
 }
 
 type NameResolveContext int
@@ -35,7 +35,6 @@ const (
 
 	FieldType
 	RepeatedFieldType
-	FieldDefault
 	MapType
 
 	JsonArrayValue
@@ -44,8 +43,8 @@ const (
 
 	JsonSetter
 	JsonGetter
-	CastFromJson
-	ArrayItemExpr
+	JsonCast
+	JsonToTypeMethod
 
 	SENTINEL_STD_RESOLVE_CTX // Used for extending the ResolveContext
 )

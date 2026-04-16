@@ -29,28 +29,33 @@ func main() {
 			},
 		},
 		Produces: []modules.Production{
-			/*
-				{
-					Template:     "templates/Nakama.h.tmpl",
-					FuncMap:      funcMap,
-					Mapper:       mapper,
-					NameResolver: nameResolver,
-					Output:       "Nakama.h",
-				},
-				{
-					Template:     "templates/Nakama.cpp.tmpl",
-					FuncMap:      funcMap,
-					Mapper:       mapper,
-					NameResolver: nameResolver,
-					Output:       "Nakama.cpp",
-				},
-			*/
+			{
+				Template:     "templates/NakamaApi.h.tmpl",
+				FuncMap:      funcMap,
+				Mapper:       mapper,
+				NameResolver: nameResolver,
+				Output:       "NakamaApi.h",
+			},
+			{
+				Template:     "templates/NakamaApi.cpp.tmpl",
+				FuncMap:      funcMap,
+				Mapper:       mapper,
+				NameResolver: nameResolver,
+				Output:       "NakamaApi.cpp",
+			},
 			{
 				Template:     "templates/NakamaTypes.h.tmpl",
 				FuncMap:      funcMap,
 				Mapper:       mapper,
 				NameResolver: nameResolver,
 				Output:       "NakamaTypes.h",
+			},
+			{
+				Template:     "templates/NakamaTypes.cpp.tmpl",
+				FuncMap:      funcMap,
+				Mapper:       mapper,
+				NameResolver: nameResolver,
+				Output:       "NakamaTypes.cpp",
 			},
 		},
 	}
