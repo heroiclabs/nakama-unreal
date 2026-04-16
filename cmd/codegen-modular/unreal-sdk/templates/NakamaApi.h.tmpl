@@ -44,7 +44,7 @@ namespace NakamaApi
     {{- range $idx, $param := $func.Params }}
     {{ $param.Type }} {{ $param.Name }},
     {{- end }}
-    TFunction<void({{ $func.Locals.SuccessLambdaType }})> OnSuccess,
+    TFunction<void({{ $func.Metadata.SuccessLambdaType }})> OnSuccess,
     TFunction<void(const FNakamaError&)> OnError,
     float Timeout = 10.0f,
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)

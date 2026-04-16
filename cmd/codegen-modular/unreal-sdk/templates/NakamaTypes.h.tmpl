@@ -36,8 +36,24 @@ enum class ENakama{{ $enum.Name }} : uint8
 
 {{- end }}
 
-// Forward declarations
 {{- range $type := $.Types }}
-struct FNakama{{ $type.Name }};
+
+/**
+*{{ $type.Comment }}
+*/
+struct FNakama{{ $type.Name }}
+{
+  GENERATED_BODY()
+
+  {{- range $member := $type.Members }}
+
+  /** {{ $member.Comment }} */
+  UPROPERTY(BlueprintReadWrite, Category = "Nakama")
+  {{ $member.Type }} {{ $member.Name }};
+  {{- end }}
+
+  static FNakama{{ $type.Name }} FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+  TSharedPtr<FJsonObject> ToJson() const noexcept;
+}
 {{- end }}
 

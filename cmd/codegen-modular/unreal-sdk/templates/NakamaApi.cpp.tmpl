@@ -25,16 +25,16 @@ NAKAMAAPI_API void NakamaApi::{{ $func.Name }} (
   {{- range $idx, $param := $func.Params }}
   {{ $param.Type }} {{ $param.Name }},
   {{- end }}
-  TFunction<void({{ $func.Locals.SuccessLambdaType }})> OnSuccess,
+  TFunction<void({{ $func.Metadata.SuccessLambdaType }})> OnSuccess,
   TFunction<void(const FNakamaError&)> OnError,
   float Timeout,
   TSharedRef<TAtomic<bool>> CancellationToken
 ) noexcept
 {
-  FString Endpoint = TEXT("{{ $func.Locals.Endpoint }}")
+  FString Endpoint = TEXT("{{ $func.Metadata.Endpoint }}")
   // 
   // Fill Path Params
-  {{- range $pathParam := $func.Locals.PathParams }}
+  {{- range $pathParam := $func.Metadata.PathParams }}
   const FString Encoded_{{ $pathParam.Name }} = FGenericPlatformHttp::UrlEncode({{ $pathParam.Name }});
   Endpoint = Endpoint.Replace("{{ $pathParam.PathName }}", *Encoded_{{ $pathParam.Name }});
   {{- end }}
@@ -42,7 +42,7 @@ NAKAMAAPI_API void NakamaApi::{{ $func.Name }} (
   // 
   // Fill Query Params
   TArray<FString> QueryParams;
-  {{- range $queryParam := $func.Locals.QueryParams }}
+  {{- range $queryParam := $func.Metadata.QueryParams }}
   {{- if $queryParam.Repeated }}
   for ({{ $queryParam.IterationType }} Item : {{ $queryParam.Name }})
 	{
@@ -63,7 +63,7 @@ NAKAMAAPI_API void NakamaApi::{{ $func.Name }} (
   // 
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
-  {{- range $bodyParam := $func.Locals.BodyParams }}
+  {{- range $bodyParam := $func.Metadata.BodyParams }}
 
   {{- if $bodyParam.Repeated }}
   if ({{ $bodyParam.Name }}.Num() > 0)
@@ -99,16 +99,16 @@ NAKAMAAPI_API void NakamaApi::{{ $func.Name }} (
   MakeRequest(
     Config,
     Endpoint,
-    TEXT("{{ $func.Locals.Method }}"),
+    TEXT("{{ $func.Metadata.Method }}"),
     Body,
-    ENakamaRequestAuth::{{ $func.Locals.AuthType }},
-    {{ $func.Locals.AuthKey }},
+    ENakamaRequestAuth::{{ $func.Metadata.AuthType }},
+    {{ $func.Metadata.AuthKey }},
     [OnSuccess](TSharedPtr<FJsonObject> Json)
     {
       if (OnSuccess)
       {
-      {{ if ne "" $func.Locals.ReturnTypeName }}
-        {{ $func.Locals.ReturnTypeName }} Result = {{ $func.Locals.ReturnTypeName }}::FromJson(Json);
+      {{ if ne "" $func.Metadata.ReturnTypeName }}
+        {{ $func.Metadata.ReturnTypeName }} Result = {{ $func.Metadata.ReturnTypeName }}::FromJson(Json);
         OnSuccess(Result);
       {{ else }}
         OnSuccess();
