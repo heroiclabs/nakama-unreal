@@ -52,14 +52,26 @@ namespace Nakama
     NakamaRealtimeClient(NakamaRealtimeClient&&) = delete;
     NakamaRealtimeClient& operator=(NakamaRealtimeClient&&) = delete;
 
-    /** Connect (or reconnect) the WebSocket. Returns a future that resolves once the
-    *  handshake completes or fails. */
+    /*
+    *  Connect (or reconnect) the WebSocket.
+    *  Returns a future that resolves once the handshake completes or fails.
+    */
     NAKAMA_API TNakamaFuture<FNakamaWebSocketConnectionResult> Connect(
       const FNakamaWebSocketConnectionParams& Params
     ) noexcept;
 
     {{- range $func := $.Funcs }}
-    // Func {{ $func }}
+
+    /*
+    * {{ $func.Comment }}
+    * {{- range $param := $func.Params }}
+    * @param {{ $param.Name }}{{ "\t" }}{{ $param.Comment }}{{ end }}
+    */
+    NAKAMA_API TNakamaFuture<FNakamaWebSocketResponse> FNakamaRtClient::{{ $func.Name }}(
+      {{- range $idx, $param := $func.Params }}
+      {{ if $idx }}, {{ end }}{{ $param.Type }} {{ $param.Name }}
+      {{- end }}
+    ) noexcept;
     {{- end }}
   }
 }

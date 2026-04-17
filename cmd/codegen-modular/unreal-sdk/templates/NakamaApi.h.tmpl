@@ -31,13 +31,13 @@ namespace NakamaApi
   /*
   * {{ $func.Comment }}
   *
-  * Config	The client configuration.
+  * @param Config	The client configuration.
   {{- range $func.Params }}
-  * {{ .Name }}{{ "\t" }}{{ .Comment }}{{ end }}
-  * OnSuccess	Called when the operation succeeds.
-  * OnError	Called when the operation fails.
-  * Timeout Request timeout in seconds.
-  * CancellationToken	Set to true to cancel the in-flight request.
+  * @param {{ .Name }}{{ "\t" }}{{ .Comment }}{{ end }}
+  * @param OnSuccess	Called when the operation succeeds.
+  * @param OnError	Called when the operation fails.
+  * @param Timeout Request timeout in seconds.
+  * @param CancellationToken	Set to true to cancel the in-flight request.
   **/
   NAKAMAAPI_API void {{ $func.Name }}(
     const FNakamaClientConfig& Config,

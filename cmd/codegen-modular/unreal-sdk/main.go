@@ -17,7 +17,8 @@ func getFuncMap() template.FuncMap {
 }
 
 func main() {
-	mapper := UnrealHttpApiMapper{}
+	// httpMapper := UnrealHttpApiMapper{}
+	rtMapper := UnrealRtApiMapper{}
 	nameResolver := NewUnrealNameResolver()
 	funcMap := getFuncMap()
 
@@ -25,37 +26,68 @@ func main() {
 		Requires: modules.Requirements{
 			Protos: []string{
 				"protos/nakama-types.proto",
-				"protos/nakama-api.proto",
+				"protos/realtime.proto",
 			},
 		},
 		Produces: []modules.Production{
+			/*
+				{
+					Template:     "templates/NakamaApi.h.tmpl",
+					FuncMap:      funcMap,
+					Mapper:       mapper,
+					NameResolver: nameResolver,
+					Output:       "NakamaApi.h",
+				},
+				{
+					Template:     "templates/NakamaApi.cpp.tmpl",
+					FuncMap:      funcMap,
+					Mapper:       mapper,
+					NameResolver: nameResolver,
+					Output:       "NakamaApi.cpp",
+				},
+				{
+					Template:     "templates/NakamaTypes.h.tmpl",
+					FuncMap:      funcMap,
+					Mapper:       mapper,
+					NameResolver: nameResolver,
+					Output:       "NakamaTypes.h",
+				},
+				{
+					Template:     "templates/NakamaTypes.cpp.tmpl",
+					FuncMap:      funcMap,
+					Mapper:       mapper,
+					NameResolver: nameResolver,
+					Output:       "NakamaTypes.cpp",
+				},
+			*/
+			// Realtime
 			{
-				Template:     "templates/NakamaApi.h.tmpl",
+				Template:     "templates/NakamaRtTypes.h.tmpl",
 				FuncMap:      funcMap,
-				Mapper:       mapper,
+				Mapper:       rtMapper,
 				NameResolver: nameResolver,
-				Output:       "NakamaApi.h",
+				Output:       "NakamaRtTypes.h",
 			},
 			{
-				Template:     "templates/NakamaApi.cpp.tmpl",
+				Template:     "templates/NakamaRtTypes.cpp.tmpl",
 				FuncMap:      funcMap,
-				Mapper:       mapper,
+				Mapper:       rtMapper,
 				NameResolver: nameResolver,
-				Output:       "NakamaApi.cpp",
+				Output:       "NakamaRtTypes.cpp",
 			},
 			{
-				Template:     "templates/NakamaTypes.h.tmpl",
+				Template:     "templates/NakamaRtClient.h.tmpl",
 				FuncMap:      funcMap,
-				Mapper:       mapper,
+				Mapper:       rtMapper,
 				NameResolver: nameResolver,
-				Output:       "NakamaTypes.h",
+				Output:       "NakamaRtClient.h",
 			},
 			{
-				Template:     "templates/NakamaTypes.cpp.tmpl",
+				Template:     "templates/NakamaRtClient.cpp.tmpl",
 				FuncMap:      funcMap,
-				Mapper:       mapper,
+				Mapper:       rtMapper,
 				NameResolver: nameResolver,
-				Output:       "NakamaTypes.cpp",
+				Output:       "NakamaRtClient.cpp",
 			},
 		},
 	}

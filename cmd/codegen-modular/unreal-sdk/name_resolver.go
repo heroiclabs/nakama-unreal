@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"strings"
 
 	"github.com/golang-cz/textcase"
 	"heroiclabs.com/yacg/modules"
@@ -185,31 +186,31 @@ func NewUnrealNameResolver() *UnrealNameResolver {
 
 	return &UnrealNameResolver{
 		entries: map[string]*modules.TypeEntry{
-			"string":                      stringEntry,
-			"google.protobuf.StringValue": stringEntry,
-			"google.protobuf.Timestamp":   stringEntry,
+			"string":      stringEntry,
+			"StringValue": stringEntry,
+			"Timestamp":   stringEntry,
 
-			"bool":                      boolEntry,
-			"google.protobuf.BoolValue": boolEntry,
+			"bool":      boolEntry,
+			"BoolValue": boolEntry,
 
-			"int":                         int32Entry,
-			"int32":                       int32Entry,
-			"google.protobuf.Int32Value":  int32Entry,
-			"uint32":                      uint32Entry,
-			"google.protobuf.UInt32Value": uint32Entry,
+			"int":         int32Entry,
+			"int32":       int32Entry,
+			"Int32Value":  int32Entry,
+			"uint32":      uint32Entry,
+			"UInt32Value": uint32Entry,
 
-			"int64":                       int64Entry,
-			"google.protobuf.Int64Value":  int64Entry,
-			"uint64":                      uint64Entry,
-			"google.protobuf.UInt64Value": uint64Entry,
+			"int64":       int64Entry,
+			"Int64Value":  int64Entry,
+			"uint64":      uint64Entry,
+			"UInt64Value": uint64Entry,
 
-			"float":                       floatEntry,
-			"google.protobuf.FloatValue":  floatEntry,
-			"double":                      doubleEntry,
-			"google.protobuf.DoubleValue": doubleEntry,
+			"float":       floatEntry,
+			"FloatValue":  floatEntry,
+			"double":      doubleEntry,
+			"DoubleValue": doubleEntry,
 
-			"bytes":                      bytesEntry,
-			"google.protobuf.BytesValue": bytesEntry,
+			"bytes":      bytesEntry,
+			"BytesValue": bytesEntry,
 		},
 	}
 }
@@ -223,7 +224,9 @@ const (
 
 // ResolveIdentifier converts a proto identifier to the Unreal naming convention.
 func (r *UnrealNameResolver) ResolveIdentifier(input string) string {
-	// TODO: Check against reserved stuff here.
+	if isReservedWord(input) {
+		return textcase.PascalCase(input) + "_"
+	}
 
 	return textcase.PascalCase(input)
 }
@@ -265,14 +268,13 @@ func (r *UnrealNameResolver) generateEntry(input string) *modules.TypeEntry {
 		MapParam:          "const TMap<FString, " + base + ">&",
 		MapType:           "TMap<FString, " + base + ">",
 		FieldType:         base,
-		RepeatedFieldType: "TArray<" + base + ">",
-		QueryFormat:       "%s",
-		EmptyCheck:        "NumEmpty",
-		JsonArrayValue:    "Object",
-		JsonSetter:        "SetObjectField",
-		JsonGetter:        "GetObjectField",
-		JsonCast:          "",
-		JsonToTypeMethod:  "",
+		RepeatedFieldType: "TArray<" + base + ">", QueryFormat: "%s",
+		EmptyCheck:       "NumEmpty",
+		JsonArrayValue:   "Object",
+		JsonSetter:       "SetObjectField",
+		JsonGetter:       "GetObjectField",
+		JsonCast:         "",
+		JsonToTypeMethod: "",
 	}
 }
 
@@ -309,4 +311,127 @@ func (r *UnrealNameResolver) resolveEntry(entry *modules.TypeEntry, ctx modules.
 		log.Fatalf("resolveEntry: unhandled NameResolveContext %d", ctx)
 		return ""
 	}
+}
+
+// isReservedWord checks if a given string is reserved (e.g. is a language keyword)
+func isReservedWord(s string) bool {
+	lower := strings.ToLower(s)
+
+	_, isCppKeyword := cppKeywords[lower]
+	if isCppKeyword {
+		return true
+	}
+
+	_, isUeKeyword := ueParamKeywords[lower]
+	if isUeKeyword {
+		return true
+	}
+
+	return false
+}
+
+// ueParamKeywords lists names that UHT rejects as UFUNCTION parameter names.
+var ueParamKeywords = map[string]struct{}{
+	"self": {},
+}
+
+var cppKeywords = map[string]struct{}{
+	"alignas":          {},
+	"alignof":          {},
+	"and":              {},
+	"and_eq":           {},
+	"asm":              {},
+	"atomic_cancel":    {},
+	"atomic_commit":    {},
+	"atomic_noexcept":  {},
+	"auto":             {},
+	"bitand":           {},
+	"bitor":            {},
+	"bool":             {},
+	"break":            {},
+	"case":             {},
+	"catch":            {},
+	"char":             {},
+	"char8_t":          {},
+	"char16_t":         {},
+	"char32_t":         {},
+	"class":            {},
+	"compl":            {},
+	"concept":          {},
+	"const":            {},
+	"consteval":        {},
+	"constexpr":        {},
+	"constinit":        {},
+	"const_cast":       {},
+	"continue":         {},
+	"contract_assert":  {},
+	"co_await":         {},
+	"co_return":        {},
+	"co_yield":         {},
+	"decltype":         {},
+	"default":          {},
+	"delete":           {},
+	"do":               {},
+	"double":           {},
+	"dynamic_cast":     {},
+	"else":             {},
+	"enum":             {},
+	"explicit":         {},
+	"export":           {},
+	"extern":           {},
+	"false":            {},
+	"float":            {},
+	"for":              {},
+	"friend":           {},
+	"goto":             {},
+	"if":               {},
+	"inline":           {},
+	"int":              {},
+	"long":             {},
+	"mutable":          {},
+	"namespace":        {},
+	"new":              {},
+	"noexcept":         {},
+	"not":              {},
+	"not_eq":           {},
+	"nullptr":          {},
+	"operator":         {},
+	"or":               {},
+	"or_eq":            {},
+	"private":          {},
+	"protected":        {},
+	"public":           {},
+	"reflexpr":         {},
+	"register":         {},
+	"reinterpret_cast": {},
+	"requires":         {},
+	"return":           {},
+	"short":            {},
+	"signed":           {},
+	"sizeof":           {},
+	"static":           {},
+	"static_assert":    {},
+	"static_cast":      {},
+	"struct":           {},
+	"switch":           {},
+	"synchronized":     {},
+	"template":         {},
+	"this":             {},
+	"thread_local":     {},
+	"throw":            {},
+	"true":             {},
+	"try":              {},
+	"typedef":          {},
+	"typeid":           {},
+	"typename":         {},
+	"union":            {},
+	"unsigned":         {},
+	"using":            {},
+	"virtual":          {},
+	"void":             {},
+	"volatile":         {},
+	"wchar_t":          {},
+	"while":            {},
+	"xor":              {},
+	"xor_eq":           {},
 }

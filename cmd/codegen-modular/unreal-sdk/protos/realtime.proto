@@ -35,105 +35,105 @@ option csharp_namespace = "Nakama.Protobuf";
 message Envelope {
   string cid = 1;
   oneof message {
-    // A response from a channel join operation.
+    // [server] A response from a channel join operation.
     Channel channel = 2;
-    // Join a realtime chat channel.
+    // [client] Join a realtime chat channel.
     ChannelJoin channel_join = 3;
-    // Leave a realtime chat channel.
+    // [client] Leave a realtime chat channel.
     ChannelLeave channel_leave = 4;
-    // An incoming message on a realtime chat channel.
+    // [server] An incoming message on a realtime chat channel.
     api.ChannelMessage channel_message = 5;
-    // An acknowledgement received in response to sending a message on a chat channel.
+    // [server] An acknowledgement received in response to sending a message on a chat channel.
     ChannelMessageAck channel_message_ack = 6;
-    // Send a message to a realtime chat channel.
+    // [client] Send a message to a realtime chat channel.
     ChannelMessageSend channel_message_send = 7;
-    // Update a message previously sent to a realtime chat channel.
+    // [client] Update a message previously sent to a realtime chat channel.
     ChannelMessageUpdate channel_message_update = 8;
-    // Remove a message previously sent to a realtime chat channel.
+    // [client] Remove a message previously sent to a realtime chat channel.
     ChannelMessageRemove channel_message_remove = 9;
-    // Presence update for a particular realtime chat channel.
+    // [server] Presence update for a particular realtime chat channel.
     ChannelPresenceEvent channel_presence_event = 10;
-    // Describes an error which occurred on the server.
+    // [server] Describes an error which occurred on the server.
     Error error = 11;
-    // Incoming information about a realtime match.
+    // [server] Incoming information about a realtime match.
     Match match = 12;
-    // A client to server request to create a realtime match.
+    // [client] A client to server request to create a realtime match.
     MatchCreate match_create = 13;
-    // Incoming realtime match data delivered from the server.
+    // [server] Incoming realtime match data delivered from the server.
     MatchData match_data = 14;
-    // A client to server request to send data to a realtime match.
+    // [client] A client to server request to send data to a realtime match.
     MatchDataSend match_data_send = 15;
-    // A client to server request to join a realtime match.
+    // [client] A client to server request to join a realtime match.
     MatchJoin match_join = 16;
-    // A client to server request to leave a realtime match.
+    // [client] A client to server request to leave a realtime match.
     MatchLeave match_leave = 17;
-    // Presence update for a particular realtime match.
+    // [server] Presence update for a particular realtime match.
     MatchPresenceEvent match_presence_event = 18;
-    // Submit a new matchmaking process request.
+    // [client] Submit a new matchmaking process request.
     MatchmakerAdd matchmaker_add = 19;
-    // A successful matchmaking result.
+    // [server] A successful matchmaking result.
     MatchmakerMatched matchmaker_matched = 20;
-    // Cancel a matchmaking process using a ticket.
+    // [client] Cancel a matchmaking process using a ticket.
     MatchmakerRemove matchmaker_remove = 21;
-    // A response from starting a new matchmaking process.
+    // [server] A response from starting a new matchmaking process.
     MatchmakerTicket matchmaker_ticket = 22;
-    // Notifications send by the server.
+    // [server] Notifications send by the server.
     Notifications notifications = 23;
-    // RPC call or response.
+    // [client][server] RPC call or response.
     api.Rpc rpc = 24;
-    // An incoming status snapshot for some set of users.
+    // [server] An incoming status snapshot for some set of users.
     Status status = 25;
-    // Start following some set of users to receive their status updates.
+    // [client] Start following some set of users to receive their status updates.
     StatusFollow status_follow = 26;
-    // An incoming status update.
+    // [server] An incoming status update.
     StatusPresenceEvent status_presence_event = 27;
-    // Stop following some set of users to no longer receive their status updates.
+    // [client] Stop following some set of users to no longer receive their status updates.
     StatusUnfollow status_unfollow = 28;
-    // Set the user's own status.
+    // [client] Set the user's own status.
     StatusUpdate status_update = 29;
-    // A data message delivered over a stream.
+    // [server] A data message delivered over a stream.
     StreamData stream_data = 30;
-    // Presence update for a particular stream.
+    // [server] Presence update for a particular stream.
     StreamPresenceEvent stream_presence_event = 31;
-    // Application-level heartbeat and connection check.
+    // [server] Application-level heartbeat and connection check.
     Ping ping = 32;
-    // Application-level heartbeat and connection check response.
+    // [server] Application-level heartbeat and connection check response.
     Pong pong = 33;
-    // Incoming information about a party.
+    // [server] Incoming information about a party.
     Party party = 34;
-    // Create a party.
+    // [client] Create a party.
     PartyCreate party_create = 35;
-    // Join a party, or request to join if the party is not open.
+    // [client] Join a party, or request to join if the party is not open.
     PartyJoin party_join = 36;
-    // Leave a party.
+    // [client] Leave a party.
     PartyLeave party_leave = 37;
-    // Promote a new party leader.
+    // [client] Promote a new party leader.
     PartyPromote party_promote = 38;
-    // Announcement of a new party leader.
+    // [server] Announcement of a new party leader.
     PartyLeader party_leader = 39;
-    // Accept a request to join.
+    // [client] Accept a request to join.
     PartyAccept party_accept = 40;
-    // Kick a party member, or decline a request to join.
+    // [client] Kick a party member, or decline a request to join.
     PartyRemove party_remove = 41;
-    // End a party, kicking all party members and closing it.
+    // [client] End a party, kicking all party members and closing it.
     PartyClose party_close = 42;
-    // Request a list of pending join requests for a party.
+    // [client] Request a list of pending join requests for a party.
     PartyJoinRequestList party_join_request_list = 43;
-    // Incoming notification for one or more new presences attempting to join the party.
+    // [server] Incoming notification for one or more new presences attempting to join the party.
     PartyJoinRequest party_join_request = 44;
-    // Begin matchmaking as a party.
+    // [client] Begin matchmaking as a party.
     PartyMatchmakerAdd party_matchmaker_add = 45;
-    // Cancel a party matchmaking process using a ticket.
+    // [client] Cancel a party matchmaking process using a ticket.
     PartyMatchmakerRemove party_matchmaker_remove = 46;
-    // A response from starting a new party matchmaking process.
+    // [client] A response from starting a new party matchmaking process.
     PartyMatchmakerTicket party_matchmaker_ticket = 47;
-    // Incoming party data delivered from the server.
+    // [server] Incoming party data delivered from the server.
     PartyData party_data = 48;
-    // A client to server request to send data to a party.
+    // [client] A client to server request to send data to a party.
     PartyDataSend party_data_send = 49;
-    // Presence update for a particular party.
+    // [server] Presence update for a particular party.
     PartyPresenceEvent party_presence_event = 50;
-    // Update Party label and whether it's open or closed.
+    // [client] Update Party label and whether it's open or closed.
     PartyUpdate party_update = 51;
   }
 }

@@ -21,6 +21,19 @@
 #include "CoreMinimal.h"
 #include "NakamaRtTypes.generated.h"
 
+{{- range $enum := $.Enums }}
+/*
+* {{ $enum.Comment }}
+*/
+UENUM(BlueprintType)
+enum class ENakamaRt{{ $enum.Name }} : uint8
+{
+  {{- range $idx, $field := $enum.Fields }}
+  {{ if ne 0 $idx }}, {{ end }}{{ $field.Name }} = {{ $field.Value }} // {{ $field.Comment }}
+  {{- end }}
+};
+{{- end }}
+
 {{- range $type := $.Types }}
 
 /*

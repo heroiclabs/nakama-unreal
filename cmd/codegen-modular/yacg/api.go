@@ -20,6 +20,7 @@ import (
 	"strings"
 
 	"github.com/emicklei/proto"
+	"heroiclabs.com/yacg/internal"
 )
 
 type Api struct {
@@ -121,10 +122,8 @@ func (api *Api) addFile(protoFile string) error {
 					if fullTypeName == "google.protobuf.Empty" {
 						return nil
 					} else {
-						// We get something like `api.MyRequestType`, so strip after the last dot.
-						stripped := fullTypeName[strings.LastIndex(fullTypeName, ".")+1:]
-
-						t, ok := api.MessagesByName[stripped]
+						// We get something like `api.MyRequestType`, so trim until the last dot.
+						t, ok := api.MessagesByName[internal.TrimUntilLastDot(fullTypeName)]
 						if !ok {
 							log.Fatalf("Unable to find type %s for %s", fullTypeName, rpc.Name)
 						}

@@ -10,7 +10,7 @@ import (
 	"heroiclabs.com/yacg/modules"
 )
 
-// Implements HttpApiMapper
+// Implements ApiMapper
 type UnrealHttpApiMapper struct{}
 
 type PathParam struct {
@@ -125,7 +125,7 @@ func (m UnrealHttpApiMapper) MapRpc(rpc *yacg.ProtoRpc, api yacg.Api, nameResolv
 				Name:     nameResolver.ResolveIdentifier(rpc.Name),
 				Comment:  rpc.Comment,
 				Type:     funcReturnTypeName,
-				Metadata: makeFuncMetadata(rpc, nameResolver, "Basic", "TEXT(\"\")"),
+				Metadata: m.makeFuncMetadata(rpc, nameResolver, "Basic", "TEXT(\"\")"),
 			},
 			Params:     paramsType.Members,
 			ReturnType: returns,
@@ -159,7 +159,7 @@ func (m UnrealHttpApiMapper) MapRpc(rpc *yacg.ProtoRpc, api yacg.Api, nameResolv
 				Name:     nameResolver.ResolveIdentifier(rpc.Name),
 				Comment:  rpc.Comment,
 				Type:     funcReturnTypeName,
-				Metadata: makeFuncMetadata(rpc, nameResolver, "HttpKey", "HttpKey"),
+				Metadata: m.makeFuncMetadata(rpc, nameResolver, "HttpKey", "HttpKey"),
 			},
 			Params:     paramsMembers,
 			ReturnType: returns,
@@ -183,7 +183,7 @@ func (m UnrealHttpApiMapper) MapRpc(rpc *yacg.ProtoRpc, api yacg.Api, nameResolv
 				Name:     nameResolver.ResolveIdentifier(rpc.Name),
 				Comment:  rpc.Comment,
 				Type:     funcReturnTypeName,
-				Metadata: makeFuncMetadata(rpc, nameResolver, "Bearer", "Session.Token"),
+				Metadata: m.makeFuncMetadata(rpc, nameResolver, "Bearer", "Session.Token"),
 			},
 			Params:     paramsMembers,
 			ReturnType: returns,
@@ -214,7 +214,7 @@ func (m UnrealHttpApiMapper) MapMessage(message *yacg.ProtoMessage, api yacg.Api
 			Name:     nameResolver.ResolveIdentifier(field.Name),
 			Type:     nameResolver.ResolveType(field.Type, fieldTypeCtx),
 			Comment:  field.Comment.Message(),
-			Metadata: makeTypeMemberMetadata(field.Field, field.Repeated, false, api, nameResolver),
+			Metadata: m.makeTypeMemberMetadata(field.Field, field.Repeated, false, api, nameResolver),
 		})
 	}
 	for _, field := range message.MapFields {
@@ -222,7 +222,7 @@ func (m UnrealHttpApiMapper) MapMessage(message *yacg.ProtoMessage, api yacg.Api
 			Name:     nameResolver.ResolveIdentifier(field.Name),
 			Type:     nameResolver.ResolveType(field.Type, modules.MapType),
 			Comment:  field.Comment.Message(),
-			Metadata: makeTypeMemberMetadata(field.Field, false, true, api, nameResolver),
+			Metadata: m.makeTypeMemberMetadata(field.Field, false, true, api, nameResolver),
 		})
 	}
 	for _, field := range message.OneofFields {
@@ -230,7 +230,7 @@ func (m UnrealHttpApiMapper) MapMessage(message *yacg.ProtoMessage, api yacg.Api
 			Name:     nameResolver.ResolveIdentifier(field.Name),
 			Type:     nameResolver.ResolveType(field.Type, modules.FieldType),
 			Comment:  field.Comment.Message(),
-			Metadata: makeTypeMemberMetadata(field.Field, false, false, api, nameResolver),
+			Metadata: m.makeTypeMemberMetadata(field.Field, false, false, api, nameResolver),
 		})
 	}
 
@@ -243,7 +243,7 @@ func (m UnrealHttpApiMapper) MapMessage(message *yacg.ProtoMessage, api yacg.Api
 	}, nil
 }
 
-func makeTypeMemberMetadata(field *proto.Field, isRepeated bool, isMap bool, api yacg.Api, nameResolver modules.NameResolver) map[string]any {
+func (m UnrealHttpApiMapper) makeTypeMemberMetadata(field *proto.Field, isRepeated bool, isMap bool, api yacg.Api, nameResolver modules.NameResolver) map[string]any {
 	fieldMeta := make(map[string]any, 0)
 
 	_, isMessageType := api.MessagesByName[field.Type]
@@ -263,7 +263,7 @@ func makeTypeMemberMetadata(field *proto.Field, isRepeated bool, isMap bool, api
 	return fieldMeta
 }
 
-func makeFuncMetadata(rpc *yacg.ProtoRpc, nameResolver modules.NameResolver, authType string, authKey string) map[string]any {
+func (m UnrealHttpApiMapper) makeFuncMetadata(rpc *yacg.ProtoRpc, nameResolver modules.NameResolver, authType string, authKey string) map[string]any {
 	funcMeta := make(map[string]any, 0)
 	funcMeta["Endpoint"] = rpc.Endpoint
 	funcMeta["Method"] = rpc.Method

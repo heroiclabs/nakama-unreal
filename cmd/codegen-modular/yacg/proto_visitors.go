@@ -18,6 +18,7 @@ import (
 	"text/scanner"
 
 	"github.com/emicklei/proto"
+	"heroiclabs.com/yacg/internal"
 )
 
 // --------------------
@@ -80,16 +81,6 @@ type messageVisitor struct {
 	Message *ProtoMessage
 }
 
-func (v *messageVisitor) VisitMapField(mf *proto.MapField) {
-	if mf.Comment == nil {
-		mf.Comment = &proto.Comment{
-			Position: scanner.Position{},
-			Lines:    []string{},
-		}
-	}
-	v.Message.MapFields = append(v.Message.MapFields, mf)
-}
-
 func (v *messageVisitor) VisitNormalField(nf *proto.NormalField) {
 	if nf.Comment == nil {
 		nf.Comment = &proto.Comment{
@@ -97,7 +88,19 @@ func (v *messageVisitor) VisitNormalField(nf *proto.NormalField) {
 			Lines:    []string{},
 		}
 	}
+	nf.Type = internal.TrimUntilLastDot(nf.Type)
 	v.Message.Fields = append(v.Message.Fields, nf)
+}
+
+func (v *messageVisitor) VisitMapField(mf *proto.MapField) {
+	if mf.Comment == nil {
+		mf.Comment = &proto.Comment{
+			Position: scanner.Position{},
+			Lines:    []string{},
+		}
+	}
+	mf.Type = internal.TrimUntilLastDot(mf.Type)
+	v.Message.MapFields = append(v.Message.MapFields, mf)
 }
 
 func (v *messageVisitor) VisitOneof(oneof *proto.Oneof) {
@@ -107,9 +110,8 @@ func (v *messageVisitor) VisitOneof(oneof *proto.Oneof) {
 }
 
 func (v *messageVisitor) VisitOneofField(oneof *proto.OneOfField) {
-	// Sometimes we can get types like more qualified
-	// types like api.MyMessage, so take only the bit after last dot.
-	oneof.Name = oneof.Name[strings.LastIndex(oneof.Name, ".")+1:]
+	oneof.Name = internal.TrimUntilLastDot(oneof.Name)
+	oneof.Type = internal.TrimUntilLastDot(oneof.Type)
 
 	v.Message.OneofFields = append(v.Message.OneofFields, oneof)
 }
