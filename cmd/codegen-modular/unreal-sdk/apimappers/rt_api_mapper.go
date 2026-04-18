@@ -1,4 +1,4 @@
-package main
+package apimappers
 
 import (
 	"fmt"
@@ -6,6 +6,7 @@ import (
 
 	"github.com/emicklei/proto"
 	"heroiclabs.com/yacg"
+	"heroiclabs.com/yacg-modules/unrealsdk/nameresolvers"
 	"heroiclabs.com/yacg/modules"
 )
 
@@ -83,7 +84,7 @@ func (m UnrealRtApiMapper) MapRpc(rpc *yacg.ProtoRpc, api yacg.Api, nameResolver
 			Name:     nameResolver.ResolveIdentifier(rpc.Name),
 			Comment:  rpc.Comment,
 			Type:     funcReturnTypeName,
-			Metadata: m.makeFuncMetadata(rpc, nameResolver),
+			Metadata: m.makeFuncMetadata(rpc),
 		},
 		Params:     paramsType.Members,
 		ReturnType: modules.Type{}, // Return type will always be the same for RT
@@ -117,7 +118,7 @@ func (m UnrealRtApiMapper) MapMessage(message *yacg.ProtoMessage, api yacg.Api, 
 			Name:     nameResolver.ResolveIdentifier(field.Name),
 			Type:     nameResolver.ResolveType(field.Type, fieldTypeCtx),
 			Comment:  field.Comment.Message(),
-			Metadata: m.makeTypeMemberMetadata(field.Field, field.Repeated, false, api, nameResolver),
+			Metadata: m.makeTypeMemberMetadata(field.Field, field.Repeated, false, nameResolver),
 		})
 	}
 	for _, field := range message.MapFields {
@@ -125,7 +126,7 @@ func (m UnrealRtApiMapper) MapMessage(message *yacg.ProtoMessage, api yacg.Api, 
 			Name:     nameResolver.ResolveIdentifier(field.Name),
 			Type:     nameResolver.ResolveType(field.Type, modules.MapType),
 			Comment:  field.Comment.Message(),
-			Metadata: m.makeTypeMemberMetadata(field.Field, false, true, api, nameResolver),
+			Metadata: m.makeTypeMemberMetadata(field.Field, false, true, nameResolver),
 		})
 	}
 	for _, field := range message.OneofFields {
@@ -133,7 +134,7 @@ func (m UnrealRtApiMapper) MapMessage(message *yacg.ProtoMessage, api yacg.Api, 
 			Name:     nameResolver.ResolveIdentifier(field.Name),
 			Type:     nameResolver.ResolveType(field.Type, modules.FieldType),
 			Comment:  field.Comment.Message(),
-			Metadata: m.makeTypeMemberMetadata(field.Field, false, false, api, nameResolver),
+			Metadata: m.makeTypeMemberMetadata(field.Field, false, false, nameResolver),
 		})
 	}
 
@@ -146,19 +147,19 @@ func (m UnrealRtApiMapper) MapMessage(message *yacg.ProtoMessage, api yacg.Api, 
 	}, nil
 }
 
-func (m UnrealRtApiMapper) makeTypeMemberMetadata(field *proto.Field, isRepeated bool, isMap bool, api yacg.Api, nameResolver modules.NameResolver) map[string]any {
+func (m UnrealRtApiMapper) makeTypeMemberMetadata(field *proto.Field, isRepeated bool, isMap bool, nameResolver modules.NameResolver) map[string]any {
 	fieldMeta := make(map[string]any, 0)
 	fieldMeta["JsonFieldName"] = field.Name
 	fieldMeta["Repeated"] = isRepeated
 	fieldMeta["IsMap"] = isMap
 	fieldMeta["JsonArrayType"] = nameResolver.ResolveType(field.Type, modules.JsonArrayValue)
-	fieldMeta["MaybeToJson"] = nameResolver.ResolveType(field.Type, MaybeToJson)
+	fieldMeta["MaybeToJson"] = nameResolver.ResolveType(field.Type, nameresolvers.MaybeToJson)
 	fieldMeta["EmptyCheck"] = nameResolver.ResolveType(field.Type, modules.EmptyCheck)
 	fieldMeta["JsonSetter"] = nameResolver.ResolveType(field.Type, modules.JsonSetter)
 	return fieldMeta
 }
 
-func (m UnrealRtApiMapper) makeFuncMetadata(rpc *yacg.ProtoRpc, nameResolver modules.NameResolver) map[string]any {
+func (m UnrealRtApiMapper) makeFuncMetadata(rpc *yacg.ProtoRpc) map[string]any {
 	metadata := make(map[string]any, 0)
 	metadata["RpcName"] = rpc.Name
 	return metadata

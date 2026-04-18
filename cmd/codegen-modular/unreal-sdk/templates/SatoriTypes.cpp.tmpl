@@ -1,0 +1,114 @@
+/*
+ * Copyright {{currentYear}} The Nakama Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/* This code is auto-generated. DO NOT EDIT. */
+
+#include "SatoriTypes.h"
+
+{{- range $type := $.Types }}
+
+FSatori{{ $type.Name }} FSatori{{ $type.Name }}::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
+{
+  FSatori{{ $type.Name }} Result;
+  if (!Json.IsValid())
+  {
+    return Result;
+  }
+
+  {{- range $member := $type.Members }}
+  if (Json->HasField(TEXT("{{ $member.Metadata.JsonFieldName }}")))
+  {
+    {{- if $member.Metadata.Repeated }}
+      const TArray<TSharedPtr<FJsonValue>>* ArrayPtr;
+      if (Json->TryGetArrayField(TEXT("{{ $member.Metadata.JsonFieldName }}"), ArrayPtr))
+      {
+        for (const auto& Item : *ArrayPtr)
+        {
+          {{- if $member.Metadata.IsPrimitive }}
+          Result.{{ $member.Name }}.Add({{ $member.Metadata.JsonCast }}(Item->{{ $member.Metadata.JsonToTypeMethod }}));
+          {{- else }}
+          const TSharedPtr<FJsonObject>* ItemObj = nullptr;
+          if (Item->TryGetObject(ItemObj) && ItemObj)
+          {
+            Result.{{ $member.Name }}.Add(FSatori{{ $member.Type }}::FromJson(*ItemObj));
+          }
+          {{- end }}
+        }
+      }
+    {{- else if $member.Metadata.IsMap }}
+      const TSharedPtr<FJsonObject>* MapObj;
+      if (Json->TryGetObjectField(TEXT("{{ $member.Metadata.JsonFieldName }}"), MapObj))
+      {
+        for (const auto& Pair : (*MapObj)->Values)
+        {
+          Result.{{ $member.Name }}.Add(Pair.Key, Pair.Value->AsString());
+        }
+      }
+    {{- else }}
+      {{- if $member.Metadata.IsPrimitive }}
+      Result.{{ $member.Name }} = Json->{{ $member.Metadata.JsonGetter }}(TEXT("{{ $member.Metadata.JsonFieldName }}"))
+      {{/* TODO: ENUMS? */}}
+      {{/* Result.{{ $fieldName }} = static_cast<{{ enumUEName $fieldType }}>(Json->GetIntegerField(TEXT("{{ $jsonFieldName }}"))); */}}
+      {{- else }}
+      const TSharedPtr<FJsonObject>* NestedObj;
+      if (Json->TryGetObjectField(TEXT("{{ $member.Metadata.JsonFieldName }}"), NestedObj))
+      {
+        Result.{{ $member.Name }}.Add(FSatori{{ $member.Type }}::FromJson(*NestedObj));
+      }
+      {{- end }}
+    {{- end }}
+  }
+  {{- end }}
+  Result.ParseTokens();
+  return Result;
+}
+
+TSharedPtr<FJsonObject> FSatori{{ $type.Name }}::ToJson() const noexcept
+{
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  {{- range $member := $type.Members }}
+
+  {{- if $member.Metadata.Repeated }}
+  if ({{ $member.Name }}.Num() > 0)
+  {
+    TArray<TSharedPtr<FJsonValue>> Array;
+    for (const auto& Item : {{ $member.Name }})
+    {
+      Array.Add(MakeShared<{{ $member.Metadata.JsonArrayType }}>(Item{{ $member.Metadata.MaybeToJson }}));
+    }
+    Json->SetArrayField(TEXT("{{ $member.Metadata.JsonFieldName }}"), Array);
+  }
+  {{- else if $member.Metadata.IsMap }}
+  if ({{ $member.Name }}.Num() > 0)
+  {
+    TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
+    for (const auto& Pair : {{ $member.Name }})
+    {
+      MapObj->SetStringField(Pair.Key, Pair.Value);
+    }
+    Json->SetObjectField(TEXT("{{ $member.Metadata.JsonFieldName }}"), MapObj);
+  }
+  {{- else }}
+  {{ if ne "" $member.Metadata.EmptyCheck }}if ({{ $member.Name }}.{{ $member.Metadata.EmptyCheck }}() == false){{ end }}
+  {
+    Json->{{ $member.Metadata.JsonSetter }}(TEXT("{{ $member.Metadata.JsonFieldName }}"), {{ $member.Name }}{{ $member.Metadata.MaybeToJson }});
+  }
+  {{- end }}
+
+  {{- end }}
+}
+
+{{- end }}

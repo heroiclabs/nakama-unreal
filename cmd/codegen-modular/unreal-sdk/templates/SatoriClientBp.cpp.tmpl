@@ -1,0 +1,81 @@
+/*
+ * Copyright {{currentYear}} The Nakama Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/* This code is auto-generated. DO NOT EDIT. */
+
+#include "SatoriClientBlueprintLibrary.h"
+
+{{- range $func := $.Funcs }}
+
+USatoriClient{{ $func.Name }}* USatoriClient{{ $func.Name }}::{{ $func.Name }}(
+  UObject* WorldContextObject
+  , FSatoriClientConfig ClientConfig
+  {{- range $idx, $param := $func.Params }}
+  , {{ $param.Type }} {{ $param.Name }}
+  {{- end }}
+)
+{
+  USatoriClient{{ $func.Name }}* Action = NewObject<USatoriClient{{ $func.Name }}>(GetTransientPackage());
+  Action->StoredClientConfig = ClientConfig;
+
+  {{- range $param := $func.Params }}
+  Action->Stored{{ $param.Name }} = {{ $param.Name }};
+  {{- end }}
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
+}
+
+void USatoriClient{{ $func.Name }}::Activate()
+{
+  static const TCHAR* TraceScope_{{ $func.Name }} = TEXT("SatoriBP_{{ $func.Name }}");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_{{ $func.Name }});
+
+  TWeakObjectPtr<USatoriClient{{ $func.Name }}> WeakThis(this);
+
+  SatoriApi::{{ $func.Name }}(
+    StoredClientConfig,
+    {{- range $idx, $param := $func.Params }}
+    {{ $param.Name }},
+    {{- end }}
+    {{- if ne "FOnSatoriSuccess" $func.Metadata.BpDelegateName }}
+    [WeakThis](const {{ $func.Type }}& Result)
+    {{- else }}
+    [WeakThis]()
+    {{- end }}
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        {{- if ne "FOnSatoriSuccess" $func.Metadata.BpDelegateName }}
+        Self->OnSuccess.Broadcast(Result);
+        {{- else }}
+        Self->OnSuccess.Broadcast();
+        {{- end }}
+        Self->SetReadyToDestroy();
+      }
+    },
+  	[WeakThis](const FSatoriError& Error)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnError.Broadcast(Error);
+        Self->SetReadyToDestroy();
+      }
+    }
+  );
+}
+
+{{- end }}

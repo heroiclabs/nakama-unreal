@@ -1,4 +1,4 @@
-package main
+package nameresolvers
 
 import (
 	"log"
@@ -9,10 +9,13 @@ import (
 )
 
 type UnrealNameResolver struct {
-	entries map[string]*modules.TypeEntry
+	targetSystem string
+	entries      map[string]*modules.TypeEntry
 }
 
-func NewUnrealNameResolver() *UnrealNameResolver {
+// Make a new UnrealNameResolver.
+// Supply target system name: Nakama/Satori, etc.
+func NewUnrealNameResolver(targetSystem string) *UnrealNameResolver {
 	stringEntry := &modules.TypeEntry{
 		Param:         "const FString&",
 		RepeatedParam: "const TArray<FString>&",
@@ -185,6 +188,7 @@ func NewUnrealNameResolver() *UnrealNameResolver {
 	}
 
 	return &UnrealNameResolver{
+		targetSystem: targetSystem,
 		entries: map[string]*modules.TypeEntry{
 			"string":      stringEntry,
 			"StringValue": stringEntry,
@@ -220,6 +224,7 @@ const (
 
 	QueryValueSetter
 	MaybeToJson
+	WithCallbackPrefix
 )
 
 // ResolveIdentifier converts a proto identifier to the Unreal naming convention.
@@ -233,11 +238,28 @@ func (r *UnrealNameResolver) ResolveIdentifier(input string) string {
 
 // ResolveType looks up a proto type name in the entries map and returns the
 // target-language string for the requested context.
-// Unknown types are generated as FNakama-prefixed Unreal structs.
+// Unknown types are generated as prefixed-formatted Unreal structs.
 func (r *UnrealNameResolver) ResolveType(input string, ctx modules.NameResolveContext) string {
 	entry, hit := r.entries[input]
 	if !hit {
-		entry = r.generateEntry(input)
+		base := "F" + r.targetSystem + textcase.PascalCase(input)
+		if ctx == WithCallbackPrefix {
+			base = "FOn" + r.targetSystem + textcase.PascalCase(input)
+		}
+		entry = &modules.TypeEntry{
+			Param:             "const " + base + "&",
+			RepeatedParam:     "const TArray<" + base + ">&",
+			MapParam:          "const TMap<FString, " + base + ">&",
+			MapType:           "TMap<FString, " + base + ">",
+			FieldType:         base,
+			RepeatedFieldType: "TArray<" + base + ">", QueryFormat: "%s",
+			EmptyCheck:       "NumEmpty",
+			JsonArrayValue:   "Object",
+			JsonSetter:       "SetObjectField",
+			JsonGetter:       "GetObjectField",
+			JsonCast:         "",
+			JsonToTypeMethod: "",
+		}
 	}
 
 	switch ctx {
@@ -253,29 +275,12 @@ func (r *UnrealNameResolver) ResolveType(input string, ctx modules.NameResolveCo
 			return "FGenericPlatformHttp::UrlEncode"
 		}
 		return "" // All else is formatted directly
+
+	case WithCallbackPrefix:
+		return "FOn" + r.targetSystem + textcase.PascalCase(input)
 	}
 
 	return r.resolveEntry(entry, ctx)
-}
-
-// generateEntry builds a TypeEntry for a custom proto message type that is
-// not in the built-in entries map.
-func (r *UnrealNameResolver) generateEntry(input string) *modules.TypeEntry {
-	base := "FNakama" + textcase.PascalCase(input)
-	return &modules.TypeEntry{
-		Param:             "const " + base + "&",
-		RepeatedParam:     "const TArray<" + base + ">&",
-		MapParam:          "const TMap<FString, " + base + ">&",
-		MapType:           "TMap<FString, " + base + ">",
-		FieldType:         base,
-		RepeatedFieldType: "TArray<" + base + ">", QueryFormat: "%s",
-		EmptyCheck:       "NumEmpty",
-		JsonArrayValue:   "Object",
-		JsonSetter:       "SetObjectField",
-		JsonGetter:       "GetObjectField",
-		JsonCast:         "",
-		JsonToTypeMethod: "",
-	}
 }
 
 // resolveEntry dispatches a standard NameResolveContext to the matching TypeEntry field.

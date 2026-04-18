@@ -1,0 +1,74 @@
+/*
+ * Copyright {{currentYear}} The Nakama Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/* This code is auto-generated. DO NOT EDIT. */
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "Kismet/BlueprintAsyncActionBase.h"
+#include "NakamaRtTypes.h"
+#include "NakamaWebSocketSubsystem.h"
+#include "NakamaRtClientBlueprintLibrary.generated.h"
+
+// ============================================================================
+// Dynamic delegates for async actions
+// ============================================================================
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaRtError, const FNakamaRtError&, Error);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnNakamaRtSuccess);
+
+// ============================================================================
+// Async Action Classes (one per RPC)
+// ============================================================================
+
+{{- range $func := $.Funcs }}
+
+/**
+* {{ $func.Comment }}
+*/
+UCLASS(Transient)
+class NAKAMABLUEPRINTS_API UNakamaRealtimeClient{{ $func.Name }} : public UBlueprintAsyncActionBase
+{
+  GENERATED_BODY()
+
+public:
+  UPROPERTY(BlueprintAssignable)
+  FOnNakamaRtSuccess OnSuccess;
+
+  UPROPERTY(BlueprintAssignable)
+  FOnNakamaRtError OnError;
+
+  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "{{ $func.Name }}"), Category = "Nakama|Client")
+  static UNakamaRealtimeClient{{ $func.Name }}* {{ $func.Name }}(
+    UObject* WorldContextObject
+    , UNakamaWebSocketSubsystem* WebSocketSubsystem;
+    {{- range $idx, $param := $func.Params }}
+    , {{ $param.Type }} {{ $param.Name }}
+    {{- end }}
+  );
+
+  virtual void Activate() override;
+
+private:
+  TObjectPtr<UNakamaWebSocketSubsystem> StoredWebSocketSubsystem;
+
+  {{- range $param := $func.Params }}
+  {{ $param.Type }} Stored{{ $param.Name }};
+  {{- end }}
+}
+
+{{- end }}

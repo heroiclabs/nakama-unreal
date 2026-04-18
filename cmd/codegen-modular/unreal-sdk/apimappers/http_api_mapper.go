@@ -1,4 +1,4 @@
-package main
+package apimappers
 
 import (
 	"fmt"
@@ -7,6 +7,7 @@ import (
 
 	"github.com/emicklei/proto"
 	"heroiclabs.com/yacg"
+	"heroiclabs.com/yacg-modules/unrealsdk/nameresolvers"
 	"heroiclabs.com/yacg/modules"
 )
 
@@ -171,8 +172,9 @@ func (m UnrealHttpApiMapper) MapRpc(rpc *yacg.ProtoRpc, api yacg.Api, nameResolv
 		if err != nil {
 			return nil, err
 		}
+		sessionType := nameResolver.ResolveType("Session", modules.FieldType)
 		sessionParam := modules.DataDecl{
-			Type:    "const FNakamaSession&",
+			Type:    fmt.Sprintf("const %s&", sessionType),
 			Name:    "Session",
 			Comment: "The session of the user.",
 		}
@@ -256,7 +258,7 @@ func (m UnrealHttpApiMapper) makeTypeMemberMetadata(field *proto.Field, isRepeat
 	fieldMeta["JsonToTypeMethod"] = nameResolver.ResolveType(field.Type, modules.JsonToTypeMethod)
 	fieldMeta["JsonGetter"] = nameResolver.ResolveType(field.Type, modules.JsonGetter)
 	fieldMeta["JsonArrayType"] = nameResolver.ResolveType(field.Type, modules.JsonArrayValue)
-	fieldMeta["MaybeToJson"] = nameResolver.ResolveType(field.Type, MaybeToJson)
+	fieldMeta["MaybeToJson"] = nameResolver.ResolveType(field.Type, nameresolvers.MaybeToJson)
 	fieldMeta["EmptyCheck"] = nameResolver.ResolveType(field.Type, modules.EmptyCheck)
 	fieldMeta["JsonSetter"] = nameResolver.ResolveType(field.Type, modules.JsonSetter)
 
@@ -285,7 +287,7 @@ func (m UnrealHttpApiMapper) makeFuncMetadata(rpc *yacg.ProtoRpc, nameResolver m
 					IterationType:    nameResolver.ResolveType(f.Type, modules.Param),
 					Name:             nameResolver.ResolveIdentifier(qp),
 					QueryFormat:      nameResolver.ResolveType(f.Type, modules.QueryFormat),
-					QueryValueSetter: nameResolver.ResolveType(f.Type, QueryValueSetter),
+					QueryValueSetter: nameResolver.ResolveType(f.Type, nameresolvers.QueryValueSetter),
 					EmptyCheck:       nameResolver.ResolveType(f.Type, modules.EmptyCheck),
 				})
 			}
@@ -297,7 +299,7 @@ func (m UnrealHttpApiMapper) makeFuncMetadata(rpc *yacg.ProtoRpc, nameResolver m
 					Name:             nameResolver.ResolveIdentifier(qp),
 					IterationType:    nameResolver.ResolveType(f.Type, modules.Param),
 					QueryFormat:      nameResolver.ResolveType(f.Type, modules.QueryFormat),
-					QueryValueSetter: nameResolver.ResolveType(f.Type, QueryValueSetter),
+					QueryValueSetter: nameResolver.ResolveType(f.Type, nameresolvers.QueryValueSetter),
 					EmptyCheck:       nameResolver.ResolveType(f.Type, modules.EmptyCheck),
 				})
 			}
@@ -309,7 +311,7 @@ func (m UnrealHttpApiMapper) makeFuncMetadata(rpc *yacg.ProtoRpc, nameResolver m
 					Name:             nameResolver.ResolveIdentifier(qp),
 					IterationType:    nameResolver.ResolveType(f.Type, modules.Param),
 					QueryFormat:      nameResolver.ResolveType(f.Type, modules.QueryFormat),
-					QueryValueSetter: nameResolver.ResolveType(f.Type, QueryValueSetter),
+					QueryValueSetter: nameResolver.ResolveType(f.Type, nameresolvers.QueryValueSetter),
 					EmptyCheck:       nameResolver.ResolveType(f.Type, modules.EmptyCheck),
 				})
 			}
@@ -350,7 +352,7 @@ func (m UnrealHttpApiMapper) makeFuncMetadata(rpc *yacg.ProtoRpc, nameResolver m
 					IsMap:         false,
 					IterationType: nameResolver.ResolveType(f.Type, modules.Param),
 					JsonArrayType: nameResolver.ResolveType(f.Type, modules.JsonArrayValue),
-					MaybeToJson:   nameResolver.ResolveType(f.Type, MaybeToJson),
+					MaybeToJson:   nameResolver.ResolveType(f.Type, nameresolvers.MaybeToJson),
 					JsonFieldName: bp,
 					JsonSetter:    nameResolver.ResolveType(f.Type, modules.JsonSetter),
 					EmptyCheck:    nameResolver.ResolveType(f.Type, modules.EmptyCheck),
@@ -365,7 +367,7 @@ func (m UnrealHttpApiMapper) makeFuncMetadata(rpc *yacg.ProtoRpc, nameResolver m
 					IsMap:         true,
 					IterationType: nameResolver.ResolveType(f.Type, modules.Param),
 					JsonArrayType: nameResolver.ResolveType(f.Type, modules.JsonArrayValue),
-					MaybeToJson:   nameResolver.ResolveType(f.Type, MaybeToJson),
+					MaybeToJson:   nameResolver.ResolveType(f.Type, nameresolvers.MaybeToJson),
 					JsonFieldName: bp,
 					JsonSetter:    nameResolver.ResolveType(f.Type, modules.JsonSetter),
 					EmptyCheck:    nameResolver.ResolveType(f.Type, modules.EmptyCheck),
@@ -380,7 +382,7 @@ func (m UnrealHttpApiMapper) makeFuncMetadata(rpc *yacg.ProtoRpc, nameResolver m
 					IsMap:         false,
 					IterationType: nameResolver.ResolveType(f.Type, modules.Param),
 					JsonArrayType: nameResolver.ResolveType(f.Type, modules.JsonArrayValue),
-					MaybeToJson:   nameResolver.ResolveType(f.Type, MaybeToJson),
+					MaybeToJson:   nameResolver.ResolveType(f.Type, nameresolvers.MaybeToJson),
 					JsonFieldName: bp,
 					JsonSetter:    nameResolver.ResolveType(f.Type, modules.JsonSetter),
 					EmptyCheck:    nameResolver.ResolveType(f.Type, modules.EmptyCheck),

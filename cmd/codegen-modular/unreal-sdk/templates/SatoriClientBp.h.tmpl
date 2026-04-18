@@ -1,0 +1,78 @@
+/*
+ * Copyright {{currentYear}} The Nakama Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/* This code is auto-generated. DO NOT EDIT. */
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "SatoriClientBlueprintLibrary.generated.h"
+
+// ============================================================================
+// Dynamic delegates for async actions
+// ============================================================================
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSatoriError, const FSatoriError&, Error);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSatoriSuccess);
+
+{{- /* Generate success delegates for each unique return type */ -}}
+{{- range $func := $.Funcs }}
+{{- if ne "FOnSatoriSuccess" $func.Metadata.BpDelegateName }}
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam({{ $func.Metadata.BpDelegateName }}, const {{ $func.Type }}&, Result);
+{{- end }}
+{{- end }}
+
+// ============================================================================
+// Async Action Classes (one per RPC)
+// ============================================================================
+
+{{- range $func := $.Funcs }}
+
+/**
+* {{ $func.Comment }}
+*/
+UCLASS(Transient)
+class SATORIBLUEPRINTS_API USatoriClient{{ $func.Name }} : public UBlueprintAsyncActionBase
+{
+  GENERATED_BODY()
+
+public:
+
+  UPROPERTY(BlueprintAssignable)
+  {{ $func.Metadata.BpDelegateName }} OnSuccess;
+
+  UPROPERTY(BlueprintAssignable)
+  FOnSatoriError OnError;
+
+  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "{{ $func.Name }}"), Category = "Satori|Client")
+  static USatoriClient{{ $func.Name }}* {{ $func.Name }}(
+    UObject* WorldContextObject
+    , FSatoriClientConfig ClientConfig
+    {{- range $idx, $param := $func.Params }}
+    , {{ $param.Type }} {{ $param.Name }}
+    {{- end }}
+  );
+
+  virtual void Activate() override;
+
+private:
+  FSatoriClientConfig StoredClientConfig;
+  {{- range $param := $func.Params }}
+  {{ $param.Type }} Stored{{ $param.Name }};
+  {{- end }}
+}
+
+{{- end }}

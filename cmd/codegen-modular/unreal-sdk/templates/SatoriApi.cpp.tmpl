@@ -16,17 +16,17 @@
 
 /* This code is auto-generated. DO NOT EDIT. */
 
-#include "NakamaApi.h"
+#include "SatoriApi.h"
 
 {{ range $func := $.Funcs }}
 
-NAKAMAAPI_API void NakamaApi::{{ $func.Name }} (
-  const FNakamaClientConfig& Config,
+SATORIAPI_API void SatoriApi::{{ $func.Name }} (
+  const FSatoriClientConfig& Config,
   {{- range $idx, $param := $func.Params }}
   {{ $param.Type }} {{ $param.Name }},
   {{- end }}
   TFunction<void({{ $func.Metadata.SuccessLambdaType }})> OnSuccess,
-  TFunction<void(const FNakamaError&)> OnError,
+  TFunction<void(const FSatoriError&)> OnError,
   float Timeout,
   TSharedRef<TAtomic<bool>> CancellationToken
 ) noexcept
@@ -101,7 +101,7 @@ NAKAMAAPI_API void NakamaApi::{{ $func.Name }} (
     Endpoint,
     TEXT("{{ $func.Metadata.Method }}"),
     Body,
-    ENakamaRequestAuth::{{ $func.Metadata.AuthType }},
+    ESatoriRequestAuth::{{ $func.Metadata.AuthType }},
     {{ $func.Metadata.AuthKey }},
     [OnSuccess](TSharedPtr<FJsonObject> Json)
     {
