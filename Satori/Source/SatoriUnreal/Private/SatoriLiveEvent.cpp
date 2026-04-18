@@ -38,6 +38,7 @@ FSatoriLiveEvent::FSatoriLiveEvent(const TSharedPtr<FJsonObject> JsonObject)
 }
 
 FSatoriLiveEvent::FSatoriLiveEvent()
+	: ActiveStartTimeSec(-1), ActiveEndTimeSec(-1), StartTimeSec(-1), EndTimeSec(-1), DurationSec(-1)
 {
 }
 

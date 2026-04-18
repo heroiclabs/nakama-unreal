@@ -37,7 +37,7 @@ FSatoriFlagValueChangeReason::FSatoriFlagValueChangeReason(const TSharedPtr<FJso
 	}
 }
 
-FSatoriFlagValueChangeReason::FSatoriFlagValueChangeReason()
+FSatoriFlagValueChangeReason::FSatoriFlagValueChangeReason() : Type(FSatoriFlagValueChangeReasonType::UNKNOWN) 
 {
 }
 
@@ -59,7 +59,7 @@ FSatoriFlag::FSatoriFlag(const TSharedPtr<FJsonObject> JsonObject)
 	}
 }
 
-FSatoriFlag::FSatoriFlag()
+FSatoriFlag::FSatoriFlag() : bConditionChanged(false)
 {
 }
 
@@ -112,7 +112,7 @@ FSatoriFlagOverrideValue::FSatoriFlagOverrideValue(const TSharedPtr<FJsonObject>
 	}
 }
 
-FSatoriFlagOverrideValue::FSatoriFlagOverrideValue()
+FSatoriFlagOverrideValue::FSatoriFlagOverrideValue() : CreateTimeSec(-1), Type(FSatoriFlagOverrideType::FLAG) 
 {
 }
 
