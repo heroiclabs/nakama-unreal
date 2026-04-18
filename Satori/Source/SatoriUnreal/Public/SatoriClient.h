@@ -38,6 +38,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnAuthLogoutSent);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDeleteIdentitySent);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSatoriError, const FSatoriError&, ErrorData);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPostEventSent);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPostServerEventSent);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnGetExperiments, const FSatoriExperimentList&, Experiments);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnGetFlags, const FSatoriFlagList&, Flags);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnGetFlagOverrides, const FSatoriFlagOverrideList&, FlagOverrides);
@@ -265,6 +266,19 @@ public:
 
 
 	// --- Interface --- //
+	
+	UFUNCTION(Category = "Satori|Events")
+	void PostServerEvent(
+		const TArray<FSatoriEvent>& Events,
+		FOnPostServerEventSent Success,
+		FOnSatoriError Error
+	);
+
+	void PostServerEvent(
+		const TArray<FSatoriEvent>& Events,
+		TFunction<void()> SuccessCallback,
+		TFunction<void(const FSatoriError& Error)> ErrorCallback
+	);
 
 	UFUNCTION(Category = "Satori|Events")
 	void PostEvent(
