@@ -45,6 +45,6 @@ FSatoriEvent::FSatoriEvent(const TSharedPtr<FJsonObject> JsonObject)
 	}
 }
 
-FSatoriEvent::FSatoriEvent()
+FSatoriEvent::FSatoriEvent() : SessionIssuedAt(0), SessionExpiredAt(0)
 {
 }

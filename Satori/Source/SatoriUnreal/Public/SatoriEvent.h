@@ -43,10 +43,26 @@ struct SATORIUNREAL_API FSatoriEvent
 	// Optional value.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Satori|Events")
 	FString Value;
-
+	
+	// Optional identity ID for this event. (Ignored if published within a session)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Satori|Events")
+	FString IdentityId;
+	
+	// Optional session ID for this event. (Ignored if published within a session)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Satori|Events")
+	FString SessionId;
+	
 	// The time when the event was triggered on the producer side.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Satori|Events")
 	FDateTime Timestamp;
+	
+	// Optional session issued timestamp for this event. (Ignored if published within a session)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Satori|Events")
+	int64 SessionIssuedAt;
+	
+	// Optional session expiry timestamp for this event. (Ignored if published within a session)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Satori|Events")
+	int64 SessionExpiredAt;
 
 	FSatoriEvent(const FString& JsonString);
 	FSatoriEvent(const TSharedPtr<class FJsonObject> JsonObject);
