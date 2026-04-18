@@ -26,13 +26,13 @@ struct NAKAMAUNREAL_API FNakamaAccountDevice
 {
 	GENERATED_BODY()
 
-	// A device identifier. Should be obtained by a platform-specific device API.
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Account")
-	FString Id;
-
 	// Extra information that will be bundled in the session token.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Account")
 	TMap<FString, FString> Vars;
+
+	// A device identifier. Should be obtained by a platform-specific device API.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Account")
+	FString Id;
 
 	FNakamaAccountDevice(const FString& JsonString);
     FNakamaAccountDevice(const TSharedPtr<class FJsonObject> JsonObject);

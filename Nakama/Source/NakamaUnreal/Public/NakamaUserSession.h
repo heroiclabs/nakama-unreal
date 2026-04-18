@@ -24,6 +24,9 @@ struct NAKAMAUNREAL_API FNakamaUserSession
 {
 	GENERATED_BODY()
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Session")
+	TMap<FString, FString> Variables;
+
 	// The authentication token used to construct this session.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Session")
 	FString AuthToken;
@@ -31,10 +34,6 @@ struct NAKAMAUNREAL_API FNakamaUserSession
 	// The refresh token used to construct this session.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Session")
 	FString RefreshToken;
-
-	// True if the user account for this session was just created.
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Session")
-	bool IsCreated;
 
 	// The username of the user who owns this session.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Session")
@@ -56,6 +55,10 @@ struct NAKAMAUNREAL_API FNakamaUserSession
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Session")
 	FDateTime RefreshExpireTime;
 
+	// True if the user account for this session was just created.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Session")
+	bool IsCreated;
+
 	// True if the session has expired against the current time.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Session")
 	bool IsExpired;
@@ -63,9 +66,6 @@ struct NAKAMAUNREAL_API FNakamaUserSession
 	// True if the session has expired against the current time.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Session")
 	bool IsRefreshExpired;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Session")
-	TMap<FString, FString> Variables;
 	
 	FNakamaUserSession(); // Default Constructor
 };

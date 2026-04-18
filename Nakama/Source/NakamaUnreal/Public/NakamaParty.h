@@ -26,27 +26,7 @@ USTRUCT(BlueprintType)
 struct NAKAMAUNREAL_API FNakamaParty
 {
 	GENERATED_BODY()
-
-	// The unique party identifier.
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Parties")
-	FString PartyId;
-
-	// True if the party is open to join.
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Parties")
-	bool Open;
-
-	// True if the party is hidden from public listings and searches.
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Parties")
-	bool Hidden;
-
-	// The maximum number of party members.
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Parties")
-	int32 MaxSize;
-
-	// The party label, if any.
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Parties")
-	FString Label;
-
+	
 	// The current user in this party. i.e. Yourself.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, DisplayName = "Self", Category = "Nakama|Parties")
 	FNakamaUserPresence Me;
@@ -59,6 +39,26 @@ struct NAKAMAUNREAL_API FNakamaParty
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Parties")
 	TArray<FNakamaUserPresence> Presences;
 
+	// The unique party identifier.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Parties")
+	FString PartyId;
+	
+	// The party label, if any.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Parties")
+	FString Label;
+
+	// The maximum number of party members.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Parties")
+	int32 MaxSize;
+	
+	// True if the party is open to join.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Parties")
+	bool Open;
+
+	// True if the party is hidden from public listings and searches.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Parties")
+	bool Hidden;
+
 	FNakamaParty(const FString& JsonString);
     FNakamaParty(const TSharedPtr<class FJsonObject> JsonObject);
 	FNakamaParty(); // Default Constructor
@@ -70,13 +70,13 @@ struct NAKAMAUNREAL_API FNakamaPartyJoinRequest
 {
 	GENERATED_BODY()
 
-	// The ID of the party to get a list of join requests for.
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Parties")
-	FString PartyId;
-
 	// Presences attempting to join, or who have joined.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Parties")
 	TArray<FNakamaUserPresence> Presences;
+
+	// The ID of the party to get a list of join requests for.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Parties")
+	FString PartyId;
 
 	FNakamaPartyJoinRequest(const FString& JsonString);
 	FNakamaPartyJoinRequest(); // Default Constructor
@@ -120,21 +120,21 @@ struct NAKAMAUNREAL_API FNakamaPartyData
 {
 	GENERATED_BODY()
 
-	// The unique party identifier of the closing party.
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Parties")
-	FString PartyId;
-
 	// A reference to the user presence that sent this data, if any.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Parties")
 	FNakamaUserPresence Presence;
 
-	// A reference to the user presence that sent this data, if any.
+	// The unique party identifier of the closing party.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Parties")
-	int64 OpCode;
-
+	FString PartyId;
+	
 	// A reference to the user presence that sent this data, if any.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Parties")
 	FString Data; // NBytes
+
+	// A reference to the user presence that sent this data, if any.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Parties")
+	int64 OpCode;
 
 	FNakamaPartyData(const FString& JsonString);
 	FNakamaPartyData();
@@ -147,13 +147,13 @@ struct NAKAMAUNREAL_API FNakamaPartyLeader
 {
 	GENERATED_BODY()
 
-	// The ID of the party to announce the new leader for.
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Parties")
-	FString PartyId;
-
 	// The presence of the new party leader.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Parties")
 	FNakamaUserPresence Presence;
+
+	// The ID of the party to announce the new leader for.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Parties")
+	FString PartyId;
 
 	FNakamaPartyLeader(const FString& JsonString);
 	FNakamaPartyLeader();
@@ -166,10 +166,6 @@ struct NAKAMAUNREAL_API FNakamaPartyPresenceEvent
 {
 	GENERATED_BODY()
 
-	// The ID of the party.
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Parties")
-	FString PartyId;
-
 	// The user presences that have just joined the party.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Parties")
 	TArray<FNakamaUserPresence> Joins;
@@ -177,6 +173,10 @@ struct NAKAMAUNREAL_API FNakamaPartyPresenceEvent
 	// The user presences that have just left the party.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Parties")
 	TArray<FNakamaUserPresence> Leaves;
+	
+	// The ID of the party.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Parties")
+	FString PartyId;
 
 	FNakamaPartyPresenceEvent(const FString& JsonString);
 	FNakamaPartyPresenceEvent();

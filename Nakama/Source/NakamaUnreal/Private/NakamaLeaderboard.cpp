@@ -55,9 +55,8 @@ FNakamaLeaderboardRecord::FNakamaLeaderboardRecord(const TSharedPtr<FJsonObject>
 	}
 }
 
-FNakamaLeaderboardRecord::FNakamaLeaderboardRecord()
+FNakamaLeaderboardRecord::FNakamaLeaderboardRecord() : Score(0), SubScore(0), NumScore(0), Rank(0), MaxNumScore(0)
 {
-	
 }
 
 FNakamaLeaderboardRecordList::FNakamaLeaderboardRecordList(const FString& JsonString)

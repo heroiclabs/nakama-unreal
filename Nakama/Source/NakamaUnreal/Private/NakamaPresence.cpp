@@ -33,7 +33,7 @@ FNakamaUserPresence::FNakamaUserPresence(const TSharedPtr<FJsonObject> JsonObjec
 }
 
 
-FNakamaUserPresence::FNakamaUserPresence()
+FNakamaUserPresence::FNakamaUserPresence() : Persistence(false)
 {
 	
 }

@@ -49,10 +49,6 @@ struct NAKAMAUNREAL_API FNakamaChannelMessage
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Chat|Channel")
 	FString MessageId;
 
-	// The code representing a message type or category.
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Chat|Channel")
-	int32 code = 0;
-
 	// Message sender, usually a user ID.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Chat|Channel")
 	FString SenderId;
@@ -64,18 +60,6 @@ struct NAKAMAUNREAL_API FNakamaChannelMessage
 	// The content payload.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Chat|Channel")
 	FString Content;
-
-	// The UNIX time when the message was created.
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Chat|Channel")
-	FDateTime CreateTime = 0;
-
-	// The UNIX time when the message was last updated.
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Chat|Channel")
-	FDateTime UpdateTime = 0;
-
-	// True if the message was persisted to the channel's history, false otherwise.
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Chat|Channel")
-	bool Persistent = false;
 
 	// The name of the chat room, or an empty string if this message was not sent through a chat room.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Chat|Channel")
@@ -92,6 +76,22 @@ struct NAKAMAUNREAL_API FNakamaChannelMessage
 	// The ID of the second DM user, or an empty string if this message was not sent through a DM chat.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Chat|Channel")
 	FString UserIdTwo;
+
+	// The UNIX time when the message was created.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Chat|Channel")
+	FDateTime CreateTime;
+
+	// The UNIX time when the message was last updated.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Chat|Channel")
+	FDateTime UpdateTime;
+
+	// The code representing a message type or category.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Chat|Channel")
+	int32 code;
+
+	// True if the message was persisted to the channel's history, false otherwise.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Chat|Channel")
+	bool Persistent;
 
 	FNakamaChannelMessage(const FString& JsonString);
     FNakamaChannelMessage(const TSharedPtr<class FJsonObject> JsonObject);
@@ -116,22 +116,6 @@ struct NAKAMAUNREAL_API FNakamaChannelMessageAck
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Chat|Channel")
 	FString Username;
 
-	// The code representing a message type or category.
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Chat|Channel")
-	int32 code = 0;
-
-	// The UNIX time when the message was created.
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Chat|Channel")
-	FDateTime CreateTime = 0;
-
-	// The UNIX time when the message was last updated.
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Chat|Channel")
-	FDateTime UpdateTime = 0;
-
-	// True if the message was persisted to the channel's history, false otherwise.
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Chat|Channel")
-	bool Persistent = false;
-
 	// The name of the chat room, or an empty string if this message was not sent through a chat room.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Chat|Channel")
 	FString RoomName;
@@ -144,9 +128,25 @@ struct NAKAMAUNREAL_API FNakamaChannelMessageAck
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Chat|Channel")
 	FString UserIdOne;
 
-	//
+	// The ID of the second DM user, or an empty string if this message was not sent through a DM chat.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Chat|Channel")
 	FString UserIdTwo;
+	
+	// The UNIX time when the message was created.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Chat|Channel")
+	FDateTime CreateTime;
+
+	// The UNIX time when the message was last updated.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Chat|Channel")
+	FDateTime UpdateTime;
+
+	// The code representing a message type or category.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Chat|Channel")
+	int32 code;
+
+	// True if the message was persisted to the channel's history, false otherwise.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Chat|Channel")
+	bool Persistent;
 
 	FNakamaChannelMessageAck(const FString& JsonString);
 	FNakamaChannelMessageAck(); // Default Constructor
@@ -180,10 +180,6 @@ struct NAKAMAUNREAL_API FNakamaChannelPresenceEvent
 {
 	GENERATED_BODY()
 
-	// The channel identifier this event is for.
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Chat|Channel")
-	FString ChannelId;
-
 	// Presences joining the channel as part of this event, if any.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Chat|Channel")
 	TArray<FNakamaUserPresence> Joins;
@@ -191,6 +187,10 @@ struct NAKAMAUNREAL_API FNakamaChannelPresenceEvent
 	// Presences leaving the channel as part of this event, if any.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Chat|Channel")
 	TArray<FNakamaUserPresence> Leaves;
+
+	// The channel identifier this event is for.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Chat|Channel")
+	FString ChannelId;
 
 	// The name of the chat room, or an empty string if this message was not sent through a chat room.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Chat|Channel")

@@ -90,6 +90,10 @@ USTRUCT(BlueprintType)
 struct NAKAMAUNREAL_API FNakamaRtError
 {
 	GENERATED_BODY()
+	
+	// Additional error details which may be different for each response.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|RtError")
+	TMap<FString, FString> Context;
 
 	// A message in English to help developers debug the response.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|RtError")
@@ -99,13 +103,8 @@ struct NAKAMAUNREAL_API FNakamaRtError
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|RtError")
 	ENakamaRtErrorCode Code;
 
-	// Additional error details which may be different for each response.
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|RtError")
-	TMap<FString, FString> Context;
-
 	FNakamaRtError(const FString& JsonString);
 	FNakamaRtError(): Code(ENakamaRtErrorCode::UNKNOWN) { }
-
 };
 
 USTRUCT(BlueprintType)
@@ -125,7 +124,7 @@ struct NAKAMAUNREAL_API FNakamaDisconnectInfo
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Info")
 	bool Remote;
 	
-	FNakamaDisconnectInfo(): Code(), Remote(false) { }
+	FNakamaDisconnectInfo(): Code(ENakamaDisconnectCode::NORMAL_CLOSURE), Remote(false) { }
 
 	ENakamaDisconnectCode ConvertIntToDisconnectCode(int32 Value);
 };

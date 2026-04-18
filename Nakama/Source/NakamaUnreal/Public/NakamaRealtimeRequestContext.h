@@ -32,15 +32,13 @@ struct FNakamaRealtimeEnvelope
 {
 	GENERATED_BODY()
 	
-	UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-	int32 CID;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Nakama")
 	FString Payload;
 
-	FNakamaRealtimeEnvelope()
-		: CID(-1)
-		, Payload("")
+	UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
+	int32 CID;
+
+	FNakamaRealtimeEnvelope() : CID(-1)
 	{
 	}
 
@@ -67,8 +65,6 @@ class NAKAMAUNREAL_API UNakamaRealtimeRequestContext : public UObject
 
 
 public:
-	UNakamaRealtimeRequestContext() {}
-
 	// Note: In Nakama:
 	// Errors = RtErrorCallback (always)
 	// Success = std::function<void(::nakama::realtime::Envelope&)>
@@ -84,4 +80,6 @@ public:
 
 	// The CID for the request
 	int32 CID;
+	
+	UNakamaRealtimeRequestContext() : CID(-1) {}
 };
