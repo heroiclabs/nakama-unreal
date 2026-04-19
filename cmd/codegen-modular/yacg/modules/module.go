@@ -20,52 +20,47 @@ import (
 	"heroiclabs.com/yacg"
 )
 
-type Requirements struct {
-	Protos []string
+type ProductionRequirements struct {
+	Api          yacg.Api
+	ApiMapper    ApiMapper
+	NameResolver NameResolver
+	FuncMap      template.FuncMap
+}
+
+func MakeProductionRequirements(protos []string, apiMapper ApiMapper, nameResolver NameResolver, funcMap template.FuncMap) (ProductionRequirements, error) {
+	api, err := yacg.LoadApi(protos)
+	if err != nil {
+		return ProductionRequirements{}, err
+	}
+
+	return ProductionRequirements{
+		Api:          api,
+		ApiMapper:    apiMapper,
+		NameResolver: nameResolver,
+		FuncMap:      funcMap,
+	}, nil
 }
 
 type Production struct {
-	Template     string
-	FuncMap      template.FuncMap
-	NameResolver NameResolver
-	Mapper       ApiMapper
-	Output       string
+	Requires ProductionRequirements
+	Template string
+	Output   string
 }
 
 type Module struct {
-	Requires Requirements
 	Produces []Production
 }
 
-type CompiledModule struct {
-	Api      yacg.Api
-	Produces []Production
-}
-
-func (m Module) Compile() (CompiledModule, error) {
-	api, err := yacg.LoadApi(m.Requires.Protos)
-	if err != nil {
-		return CompiledModule{}, err
-	}
-
-	compiled := CompiledModule{
-		Api:      api,
-		Produces: m.Produces,
-	}
-
-	return compiled, nil
-}
-
-func (cm CompiledModule) Generate(outPath string) error {
+func (m Module) Generate(outPath string) error {
 	err := os.MkdirAll(outPath, 0755)
 	if err != nil {
 		return err
 	}
 
-	for _, p := range cm.Produces {
+	for _, p := range m.Produces {
 		//
 		// Read and parse the template file
-		tmpl := template.New("codegen").Funcs(p.FuncMap)
+		tmpl := template.New("codegen").Funcs(p.Requires.FuncMap)
 
 		tmplBytes, err := os.ReadFile(p.Template)
 		if err != nil {
@@ -84,8 +79,7 @@ func (cm CompiledModule) Generate(outPath string) error {
 			log.Fatalf("Failed to create file %s: %s", outFilePath, err)
 		}
 
-		// TODO: Move to compile step
-		apiMap, err := p.Mapper.MapApi(cm.Api, p.NameResolver)
+		apiMap, err := p.Requires.ApiMapper.MapApi(p.Requires.Api, p.Requires.NameResolver)
 		if err != nil {
 			log.Fatalf("Failed to create the API map: %s", err)
 		}

@@ -20,165 +20,144 @@ func getFuncMap() template.FuncMap {
 
 func main() {
 	httpMapper := apimappers.UnrealHttpApiMapper{}
-	// rtMapper := apimappers.UnrealRtApiMapper{}
+	rtMapper := apimappers.UnrealRtApiMapper{}
 	bpMapper := apimappers.UnrealBlueprintHttpApiMapper{}
-	// nakamaNameResolver := nameresolvers.NewUnrealNameResolver("Nakama")
+	nakamaNameResolver := nameresolvers.NewUnrealNameResolver("Nakama")
 	satoriNameResolver := nameresolvers.NewUnrealNameResolver("Satori")
 	funcMap := getFuncMap()
 
+	nakamaApiProtos := []string{"protos/nakama-types.proto", "protos/nakama-api.proto"}
+	nakamaHttpRequires, error := modules.MakeProductionRequirements(
+		nakamaApiProtos, httpMapper, nakamaNameResolver, funcMap,
+	)
+	if error != nil {
+		log.Fatalf("Failed to make production requirements: %s", error)
+	}
+
+	nakamaBpHttpRequires, error := modules.MakeProductionRequirements(
+		nakamaApiProtos, bpMapper, nakamaNameResolver, funcMap,
+	)
+	if error != nil {
+		log.Fatalf("Failed to make production requirements: %s", error)
+	}
+
+	nakamaRtApiProtos := []string{"protos/nakama-types.proto", "protos/realtime.proto"}
+	nakamaRtRequires, error := modules.MakeProductionRequirements(
+		nakamaRtApiProtos, rtMapper, nakamaNameResolver, funcMap,
+	)
+	if error != nil {
+		log.Fatalf("Failed to make production requirements: %s", error)
+	}
+
+	satoriApiProtos := []string{"protos/nakama-types.proto", "protos/realtime.proto"}
+	satoriRequires, error := modules.MakeProductionRequirements(
+		satoriApiProtos, httpMapper, satoriNameResolver, funcMap,
+	)
+	if error != nil {
+		log.Fatalf("Failed to make production requirements: %s", error)
+	}
+
+	satoriBpRequires, error := modules.MakeProductionRequirements(
+		satoriApiProtos, bpMapper, satoriNameResolver, funcMap,
+	)
+	if error != nil {
+		log.Fatalf("Failed to make production requirements: %s", error)
+	}
+
 	module := modules.Module{
-		Requires: modules.Requirements{
-			Protos: []string{
-				//"protos/nakama-types.proto",
-				// "protos/nakama-api.proto",
-				// "protos/realtime.proto",
-				"protos/satori.proto",
-			},
-		},
 		Produces: []modules.Production{
-			/*
-							{
-								Template:     "templates/NakamaApi.h.tmpl",
-								FuncMap:      funcMap,
-								Mapper:       mapper,
-								NameResolver: nameResolver,
-								Output:       "NakamaApi.h",
-							},
-							{
-								Template:     "templates/NakamaApi.cpp.tmpl",
-								FuncMap:      funcMap,
-								Mapper:       mapper,
-								NameResolver: nameResolver,
-								Output:       "NakamaApi.cpp",
-							},
-							{
-								Template:     "templates/NakamaTypes.h.tmpl",
-								FuncMap:      funcMap,
-								Mapper:       mapper,
-								NameResolver: nameResolver,
-								Output:       "NakamaTypes.h",
-							},
-							{
-								Template:     "templates/NakamaTypes.cpp.tmpl",
-								FuncMap:      funcMap,
-								Mapper:       mapper,
-								NameResolver: nameResolver,
-								Output:       "NakamaTypes.cpp",
-							},
-							// Realtime
-							{
-								Template:     "templates/NakamaRtTypes.h.tmpl",
-								FuncMap:      funcMap,
-								Mapper:       rtMapper,
-								NameResolver: nameResolver,
-								Output:       "NakamaRtTypes.h",
-							},
-							{
-								Template:     "templates/NakamaRtTypes.cpp.tmpl",
-								FuncMap:      funcMap,
-								Mapper:       rtMapper,
-								NameResolver: nameResolver,
-								Output:       "NakamaRtTypes.cpp",
-							},
-							{
-								Template:     "templates/NakamaRtClient.h.tmpl",
-								FuncMap:      funcMap,
-								Mapper:       rtMapper,
-								NameResolver: nameResolver,
-								Output:       "NakamaRtClient.h",
-							},
-							{
-								Template:     "templates/NakamaRtClient.cpp.tmpl",
-								FuncMap:      funcMap,
-								Mapper:       rtMapper,
-								NameResolver: nameResolver,
-								Output:       "NakamaRtClient.cpp",
-							},
-						{
-							Template:     "templates/NakamaClientBp.cpp.tmpl",
-							FuncMap:      funcMap,
-							Mapper:       httpMapper,
-							NameResolver: nameResolver,
-							Output:       "NakamaClientBlueprintLibrary.cpp",
-						},
-					{
-						Template:     "templates/NakamaClientBp.h.tmpl",
-						FuncMap:      funcMap,
-						Mapper:       bpMapper,
-						NameResolver: nameResolver,
-						Output:       "NakamaClientBlueprintLibrary.h",
-					},
-					{
-						Template:     "templates/NakamaClientBp.cpp.tmpl",
-						FuncMap:      funcMap,
-						Mapper:       bpMapper,
-						NameResolver: nameResolver,
-						Output:       "NakamaClientBlueprintLibrary.cpp",
-					},
-				{
-					Template:     "templates/NakamaRtClientBp.h.tmpl",
-					FuncMap:      funcMap,
-					Mapper:       rtMapper,
-					NameResolver: nameResolver,
-					Output:       "NakamaRtClientBlueprintLibrary.h",
-				},
-				{
-					Template:     "templates/NakamaRtClientBp.cpp.tmpl",
-					FuncMap:      funcMap,
-					Mapper:       rtMapper,
-					NameResolver: nameResolver,
-					Output:       "NakamaRtClientBlueprintLibrary.cpp",
-				},
-			*/
 			{
-				Template:     "templates/SatoriApi.h.tmpl",
-				FuncMap:      funcMap,
-				Mapper:       httpMapper,
-				NameResolver: satoriNameResolver,
-				Output:       "SatoriApi.h",
+				Requires: nakamaHttpRequires,
+				Template: "templates/NakamaApi.h.tmpl",
+				Output:   "NakamaApi.h",
 			},
 			{
-				Template:     "templates/SatoriApi.cpp.tmpl",
-				FuncMap:      funcMap,
-				Mapper:       httpMapper,
-				NameResolver: satoriNameResolver,
-				Output:       "SatoriApi.cpp",
+				Requires: nakamaHttpRequires,
+				Template: "templates/NakamaApi.cpp.tmpl",
+				Output:   "NakamaApi.cpp",
 			},
 			{
-				Template:     "templates/SatoriTypes.h.tmpl",
-				FuncMap:      funcMap,
-				Mapper:       httpMapper,
-				NameResolver: satoriNameResolver,
-				Output:       "SatoriTypes.h",
+				Requires: nakamaHttpRequires,
+				Template: "templates/NakamaTypes.h.tmpl",
+				Output:   "NakamaTypes.h",
 			},
 			{
-				Template:     "templates/SatoriTypes.cpp.tmpl",
-				FuncMap:      funcMap,
-				Mapper:       httpMapper,
-				NameResolver: satoriNameResolver,
-				Output:       "SatoriTypes.cpp",
+				Requires: nakamaHttpRequires,
+				Template: "templates/NakamaTypes.cpp.tmpl",
+				Output:   "NakamaTypes.cpp",
 			},
 			{
-				Template:     "templates/SatoriClientBp.h.tmpl",
-				FuncMap:      funcMap,
-				Mapper:       bpMapper,
-				NameResolver: satoriNameResolver,
-				Output:       "SatoriClientBlueprintLibrary.h",
+				Requires: nakamaBpHttpRequires,
+				Template: "templates/NakamaClientBp.h.tmpl",
+				Output:   "NakamaClientBlueprintLibrary.h",
 			},
 			{
-				Template:     "templates/SatoriClientBp.cpp.tmpl",
-				FuncMap:      funcMap,
-				Mapper:       bpMapper,
-				NameResolver: satoriNameResolver,
-				Output:       "SatoriClientBlueprintLibrary.cpp",
+				Requires: nakamaBpHttpRequires,
+				Template: "templates/NakamaClientBp.cpp.tmpl",
+				Output:   "NakamaClientBlueprintLibrary.cpp",
+			},
+			{
+				Requires: nakamaRtRequires,
+				Template: "templates/NakamaRtTypes.h.tmpl",
+				Output:   "NakamaRtTypes.h",
+			},
+			{
+				Requires: nakamaRtRequires,
+				Template: "templates/NakamaRtTypes.cpp.tmpl",
+				Output:   "NakamaRtTypes.cpp",
+			},
+			{
+				Requires: nakamaRtRequires,
+				Template: "templates/NakamaRtClient.h.tmpl",
+				Output:   "NakamaRtClient.h",
+			},
+			{
+				Requires: nakamaRtRequires,
+				Template: "templates/NakamaRtClient.cpp.tmpl",
+				Output:   "NakamaRtClient.cpp",
+			},
+			{
+				Requires: nakamaRtRequires,
+				Template: "templates/NakamaRtClientBp.h.tmpl",
+				Output:   "NakamaRtClientBlueprintLibrary.h",
+			},
+			{
+				Requires: nakamaRtRequires,
+				Template: "templates/NakamaRtClientBp.cpp.tmpl",
+				Output:   "NakamaRtClientBlueprintLibrary.cpp",
+			},
+			{
+				Requires: satoriRequires,
+				Template: "templates/SatoriApi.h.tmpl",
+				Output:   "SatoriApi.h",
+			},
+			{
+				Requires: satoriRequires,
+				Template: "templates/SatoriApi.cpp.tmpl",
+				Output:   "SatoriApi.cpp",
+			},
+			{
+				Requires: satoriRequires,
+				Template: "templates/SatoriTypes.h.tmpl",
+				Output:   "SatoriTypes.h",
+			},
+			{
+				Requires: satoriRequires,
+				Template: "templates/SatoriTypes.cpp.tmpl",
+				Output:   "SatoriTypes.cpp",
+			},
+			{
+				Requires: satoriBpRequires,
+				Template: "templates/SatoriClientBp.h.tmpl",
+				Output:   "SatoriClientBlueprintLibrary.h",
+			},
+			{
+				Requires: satoriBpRequires,
+				Template: "templates/SatoriClientBp.cpp.tmpl",
+				Output:   "SatoriClientBlueprintLibrary.cpp",
 			},
 		},
 	}
 
-	compiled, err := module.Compile()
-	if err != nil {
-		log.Fatalf("Failed to compile module: %s", err)
-	}
-
-	compiled.Generate("out")
+	module.Generate("out")
 }
