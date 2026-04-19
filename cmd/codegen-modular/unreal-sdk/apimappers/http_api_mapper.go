@@ -202,10 +202,6 @@ func (m UnrealHttpApiMapper) MapMessage(message *yacg.ProtoMessage, api yacg.Api
 
 	members := make([]modules.DataDecl, 0, len(message.Fields)+len(message.MapFields))
 
-	message, ok := api.MessagesByName[message.Name]
-	if !ok {
-		return modules.Type{}, fmt.Errorf("type definition not found in proto schema: `%s`", message.Name)
-	}
 	for _, field := range message.Fields {
 		fieldTypeCtx := modules.FieldType
 		if field.Repeated {
@@ -253,6 +249,13 @@ func (m UnrealHttpApiMapper) makeTypeMemberMetadata(field *proto.Field, isRepeat
 
 	message, isMessageType := api.MessagesByName[field.Type]
 	fieldMeta["IsMessageType"] = isMessageType
+	_, isEnumType := api.EnumsByName[field.Type]
+	fieldMeta["IsEnumType"] = isEnumType
+	if isEnumType {
+		fieldMeta["DefaultValue"] = fmt.Sprintf("static_cast<%s>(0)", nameResolver.ResolveType(field.Type, modules.FieldType))
+	} else {
+		fieldMeta["DefaultValue"] = nameResolver.ResolveType(field.Type, modules.DefaultValue)
+	}
 	if isMessageType && !isRepeated && !isMap {
 		mapped, _ := m.MapMessage(message, api, nameResolver)
 		fieldMeta["Members"] = mapped.Members

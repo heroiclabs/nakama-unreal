@@ -39,6 +39,9 @@ func (m UnrealRtApiMapper) MapApi(api yacg.Api, nameResolver modules.NameResolve
 		}
 		types = append(types, m)
 	}
+	if envelope == nil {
+		return modules.ApiMap{}, fmt.Errorf("envelope message is not found.")
+	}
 
 	funcs := make([]modules.Function, 0, len(api.Rpcs))
 	for _, field := range envelope.OneofFields {
@@ -120,10 +123,6 @@ func (m UnrealRtApiMapper) MapMessage(message *yacg.ProtoMessage, api yacg.Api, 
 
 	members := make([]modules.DataDecl, 0, len(message.Fields)+len(message.MapFields))
 
-	message, ok := api.MessagesByName[message.Name]
-	if !ok {
-		return modules.Type{}, fmt.Errorf("type definition not found in proto schema: `%s`", message.Name)
-	}
 	for _, field := range message.Fields {
 		fieldTypeCtx := modules.FieldType
 		if field.Repeated {
@@ -134,7 +133,7 @@ func (m UnrealRtApiMapper) MapMessage(message *yacg.ProtoMessage, api yacg.Api, 
 			Name:     nameResolver.ResolveIdentifier(field.Name),
 			Type:     nameResolver.ResolveType(field.Type, fieldTypeCtx),
 			Comment:  field.Comment.Message(),
-			Metadata: m.makeTypeMemberMetadata(field.Field, field.Repeated, false, nameResolver),
+			Metadata: m.makeTypeMemberMetadata(field.Field, field.Repeated, false, api, nameResolver),
 		})
 	}
 	for _, field := range message.MapFields {
@@ -142,7 +141,7 @@ func (m UnrealRtApiMapper) MapMessage(message *yacg.ProtoMessage, api yacg.Api, 
 			Name:     nameResolver.ResolveIdentifier(field.Name),
 			Type:     nameResolver.ResolveType(field.Type, modules.MapType),
 			Comment:  field.Comment.Message(),
-			Metadata: m.makeTypeMemberMetadata(field.Field, false, true, nameResolver),
+			Metadata: m.makeTypeMemberMetadata(field.Field, false, true, api, nameResolver),
 		})
 	}
 	for _, field := range message.OneofFields {
@@ -150,7 +149,7 @@ func (m UnrealRtApiMapper) MapMessage(message *yacg.ProtoMessage, api yacg.Api, 
 			Name:     nameResolver.ResolveIdentifier(field.Name),
 			Type:     nameResolver.ResolveType(field.Type, modules.FieldType),
 			Comment:  field.Comment.Message(),
-			Metadata: m.makeTypeMemberMetadata(field.Field, false, false, nameResolver),
+			Metadata: m.makeTypeMemberMetadata(field.Field, false, false, api, nameResolver),
 		})
 	}
 
@@ -163,9 +162,16 @@ func (m UnrealRtApiMapper) MapMessage(message *yacg.ProtoMessage, api yacg.Api, 
 	}, nil
 }
 
-func (m UnrealRtApiMapper) makeTypeMemberMetadata(field *proto.Field, isRepeated bool, isMap bool, nameResolver modules.NameResolver) map[string]any {
+func (m UnrealRtApiMapper) makeTypeMemberMetadata(field *proto.Field, isRepeated bool, isMap bool, api yacg.Api, nameResolver modules.NameResolver) map[string]any {
 	fieldMeta := make(map[string]any, 0)
 	fieldMeta["JsonFieldName"] = field.Name
+	_, isEnumType := api.EnumsByName[field.Type]
+	fieldMeta["IsEnumType"] = isEnumType
+	if isEnumType {
+		fieldMeta["DefaultValue"] = fmt.Sprintf("static_cast<%s>(0)", nameResolver.ResolveType(field.Type, modules.FieldType))
+	} else {
+		fieldMeta["DefaultValue"] = nameResolver.ResolveType(field.Type, modules.DefaultValue)
+	}
 	fieldMeta["Repeated"] = isRepeated
 	fieldMeta["IsMap"] = isMap
 	fieldMeta["JsonArrayType"] = nameResolver.ResolveType(field.Type, modules.JsonArrayValue)

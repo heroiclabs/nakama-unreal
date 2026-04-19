@@ -49,7 +49,7 @@ struct FNakama{{ $type.Name }}
 
   /** {{ $member.Comment }} */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-  {{ $member.Type }} {{ $member.Name }};
+  {{ $member.Type }} {{ $member.Name }}{{ if $member.Metadata.DefaultValue }} = {{ $member.Metadata.DefaultValue }}{{ end }};
   {{- end }}
 
   static FNakama{{ $type.Name }} FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;

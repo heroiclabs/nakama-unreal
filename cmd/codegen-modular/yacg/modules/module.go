@@ -78,6 +78,7 @@ func (m Module) Generate(outPath string) error {
 		if err != nil {
 			log.Fatalf("Failed to create file %s: %s", outFilePath, err)
 		}
+		defer outFile.Close()
 
 		apiMap, err := p.Requires.ApiMapper.MapApi(p.Requires.Api, p.Requires.NameResolver)
 		if err != nil {
@@ -85,7 +86,7 @@ func (m Module) Generate(outPath string) error {
 		}
 
 		if err := tmpl.Execute(outFile, apiMap); err != nil {
-			log.Printf("Failed to execute template '%s': %s", p.Template, err.Error())
+			log.Fatalf("Failed to execute template '%s': %s", p.Template, err.Error())
 		}
 	}
 

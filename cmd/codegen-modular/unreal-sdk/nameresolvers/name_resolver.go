@@ -52,6 +52,8 @@ func NewUnrealNameResolver(targetSystem string) *UnrealNameResolver {
 		JsonGetter:       "GetBoolField",
 		JsonCast:         "",
 		JsonToTypeMethod: "AsBool()",
+
+		DefaultValue: "false",
 	}
 
 	int32Entry := &modules.TypeEntry{
@@ -71,6 +73,8 @@ func NewUnrealNameResolver(targetSystem string) *UnrealNameResolver {
 		JsonGetter:       "GetIntegerField",
 		JsonCast:         "static_cast<int32>",
 		JsonToTypeMethod: "AsNumber()",
+
+		DefaultValue: "0",
 	}
 
 	uint32Entry := &modules.TypeEntry{
@@ -90,6 +94,8 @@ func NewUnrealNameResolver(targetSystem string) *UnrealNameResolver {
 		JsonGetter:       "GetNumberField",
 		JsonCast:         "static_cast<uint32>",
 		JsonToTypeMethod: "AsNumber()",
+
+		DefaultValue: "0",
 	}
 
 	int64Entry := &modules.TypeEntry{
@@ -109,6 +115,8 @@ func NewUnrealNameResolver(targetSystem string) *UnrealNameResolver {
 		JsonGetter:       "GetNumberField",
 		JsonCast:         "static_cast<int64>",
 		JsonToTypeMethod: "AsNumber()",
+
+		DefaultValue: "0",
 	}
 
 	uint64Entry := &modules.TypeEntry{
@@ -128,6 +136,8 @@ func NewUnrealNameResolver(targetSystem string) *UnrealNameResolver {
 		JsonGetter:       "GetNumberField",
 		JsonCast:         "static_cast<uint64>",
 		JsonToTypeMethod: "AsNumber()",
+
+		DefaultValue: "0",
 	}
 
 	floatEntry := &modules.TypeEntry{
@@ -147,6 +157,8 @@ func NewUnrealNameResolver(targetSystem string) *UnrealNameResolver {
 		JsonGetter:       "GetNumberField",
 		JsonCast:         "",
 		JsonToTypeMethod: "AsNumber()",
+
+		DefaultValue: "0.f",
 	}
 
 	doubleEntry := &modules.TypeEntry{
@@ -166,6 +178,8 @@ func NewUnrealNameResolver(targetSystem string) *UnrealNameResolver {
 		JsonGetter:       "GetNumberField",
 		JsonCast:         "",
 		JsonToTypeMethod: "AsNumber()",
+
+		DefaultValue: "0.0",
 	}
 
 	bytesEntry := &modules.TypeEntry{
@@ -312,6 +326,8 @@ func (r *UnrealNameResolver) resolveEntry(entry *modules.TypeEntry, ctx modules.
 		return entry.JsonCast
 	case modules.JsonToTypeMethod:
 		return entry.JsonToTypeMethod
+	case modules.DefaultValue:
+		return entry.DefaultValue
 	default:
 		log.Fatalf("resolveEntry: unhandled NameResolveContext %d", ctx)
 		return ""

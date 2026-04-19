@@ -140,6 +140,9 @@ func (api *Api) addFile(protoFile string) error {
 						RequestType: requestType,
 						ReturnType:  returnType,
 						Name:        rpc.Name,
+						PathParams:  make([]string, 0),
+						QueryParams: make([]string, 0),
+						BodyParams:  make([]string, 0),
 					},
 				}
 

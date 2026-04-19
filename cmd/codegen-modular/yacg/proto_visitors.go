@@ -170,7 +170,7 @@ func (v *rpcVisitor) VisitOption(o *proto.Option) {
 	// And sometimes the method is hidden inside option props.
 	if o.Name == "(google.api.http)" {
 		for _, l := range o.Constant.OrderedMap {
-			method, found := tryGetHttpMethod(l.Name)
+			method, found = tryGetHttpMethod(l.Name)
 			if found {
 				v.Rpc.Method = method
 				v.Rpc.Endpoint = l.Literal.Source
@@ -182,24 +182,24 @@ func (v *rpcVisitor) VisitOption(o *proto.Option) {
 		}
 	}
 
-	v.Rpc.PathParams = make([]string, 0)
-	v.Rpc.QueryParams = make([]string, 0)
-	v.Rpc.BodyParams = make([]string, 0)
-
 	//
 	// Path params
-	paramRegex := regexp.MustCompile(`\{([a-zA-Z0-9_]*)\}`)
-	matches := paramRegex.FindAllStringSubmatch(v.Rpc.Endpoint, -1)
-	for _, m := range matches {
-		v.Rpc.PathParams = append(v.Rpc.PathParams, m[1])
+	if len(v.Rpc.PathParams) == 0 {
+		paramRegex := regexp.MustCompile(`\{([a-zA-Z0-9_]*)\}`)
+		matches := paramRegex.FindAllStringSubmatch(v.Rpc.Endpoint, -1)
+		for _, m := range matches {
+			v.Rpc.PathParams = append(v.Rpc.PathParams, m[1])
+		}
 	}
 
 	//
 	// Body/Query Params
 	if v.Rpc.BodyField == "*" {
-		for _, f := range v.Rpc.RequestType.Fields {
-			if !slices.Contains(v.Rpc.PathParams, f.Name) {
-				v.Rpc.BodyParams = append(v.Rpc.BodyParams, f.Name)
+		if v.Rpc.RequestType != nil {
+			for _, f := range v.Rpc.RequestType.Fields {
+				if !slices.Contains(v.Rpc.PathParams, f.Name) {
+					v.Rpc.BodyParams = append(v.Rpc.BodyParams, f.Name)
+				}
 			}
 		}
 	} else if method == "GET" || v.Rpc.BodyField == "" {

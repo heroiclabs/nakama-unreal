@@ -48,7 +48,7 @@ struct NAKAMAAPI_API FNakamaRt{{ $type.Name }}
 
   /** {{ $member.Comment }} */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  {{ $member.Type }} {{ $member.Name }};
+  {{ $member.Type }} {{ $member.Name }}{{ if $member.Metadata.DefaultValue }} = {{ $member.Metadata.DefaultValue }}{{ end }};
 
   {{- end }}
 

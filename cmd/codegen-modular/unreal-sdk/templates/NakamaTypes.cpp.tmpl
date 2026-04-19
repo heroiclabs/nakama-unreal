@@ -58,10 +58,10 @@ FNakama{{ $type.Name }} FNakama{{ $type.Name }}::FromJson(const TSharedPtr<FJson
         }
       }
     {{- else }}
-      {{- if not $member.Metadata.IsMessageType }}
+      {{- if $member.Metadata.IsEnumType }}
+      Result.{{ $member.Name }} = static_cast<{{ $member.Type }}>(Json->GetIntegerField(TEXT("{{ $member.Metadata.JsonFieldName }}")));
+      {{- else if not $member.Metadata.IsMessageType }}
       Result.{{ $member.Name }} = Json->{{ $member.Metadata.JsonGetter }}(TEXT("{{ $member.Metadata.JsonFieldName }}"))
-      {{/* TODO: ENUMS? */}}
-      {{/* Result.{{ $fieldName }} = static_cast<{{ enumUEName $fieldType }}>(Json->GetIntegerField(TEXT("{{ $jsonFieldName }}"))); */}}
       {{- else }}
       const TSharedPtr<FJsonObject>* NestedObj;
       if (Json->TryGetObjectField(TEXT("{{ $member.Metadata.JsonFieldName }}"), NestedObj))

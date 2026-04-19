@@ -24,6 +24,9 @@ type TypeEntry struct {
 	JsonGetter       string // Getter method: "GetStringField", "GetIntegerField", etc.
 	JsonCast         string // Custom casts, for example static_cast<int32>
 	JsonToTypeMethod string // e.g. AsString(), AsNumber()
+
+	// Declaration default value (empty string means no initializer)
+	DefaultValue string // e.g. "false", "0", "0.f"
 }
 
 type NameResolveContext int
@@ -45,6 +48,8 @@ const (
 	JsonGetter
 	JsonCast
 	JsonToTypeMethod
+
+	DefaultValue
 
 	SENTINEL_STD_RESOLVE_CTX // Used for extending the ResolveContext
 )
