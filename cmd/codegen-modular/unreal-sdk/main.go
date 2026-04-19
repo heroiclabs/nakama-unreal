@@ -22,8 +22,8 @@ func main() {
 	httpMapper := apimappers.UnrealHttpApiMapper{}
 	// rtMapper := apimappers.UnrealRtApiMapper{}
 	bpMapper := apimappers.UnrealBlueprintHttpApiMapper{}
-	// nakamaNameResolver := nameresolvers.NewUnrealNameResolver("FNakama")
-	satoriNameResolver := nameresolvers.NewUnrealNameResolver("FSatori")
+	// nakamaNameResolver := nameresolvers.NewUnrealNameResolver("Nakama")
+	satoriNameResolver := nameresolvers.NewUnrealNameResolver("Satori")
 	funcMap := getFuncMap()
 
 	module := modules.Module{
