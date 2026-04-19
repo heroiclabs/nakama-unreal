@@ -15,6 +15,24 @@ func getFuncMap() template.FuncMap {
 		"currentYear": func() int {
 			return time.Now().Year()
 		},
+		"getUniqueFuncReturnTypes": func(funcs []modules.Function) []string {
+			set := make(map[string]bool)
+			result := make([]string, 0)
+			for _, f := range funcs {
+				if f.Type == "" {
+					continue
+				}
+
+				_, found := set[f.Type]
+				if found {
+					continue
+				}
+
+				result = append(result, f.Type)
+				set[f.Type] = true
+			}
+			return result
+		},
 	}
 }
 
@@ -97,6 +115,16 @@ func main() {
 				Output:   "NakamaTypes.cpp",
 			},
 			{
+				Requires: nakamaHttpRequires,
+				Template: "templates/Nakama.h.tmpl",
+				Output:   "Nakama.h",
+			},
+			{
+				Requires: nakamaHttpRequires,
+				Template: "templates/Nakama.cpp.tmpl",
+				Output:   "Nakama.cpp",
+			},
+			{
 				Requires: nakamaBpHttpRequires,
 				Template: "templates/NakamaClientBp.h.tmpl",
 				Output:   "NakamaClientBlueprintLibrary.h",
@@ -155,6 +183,16 @@ func main() {
 				Requires: satoriRequires,
 				Template: "templates/SatoriTypes.cpp.tmpl",
 				Output:   "SatoriTypes.cpp",
+			},
+			{
+				Requires: satoriRequires,
+				Template: "templates/Satori.h.tmpl",
+				Output:   "Satori.h",
+			},
+			{
+				Requires: satoriRequires,
+				Template: "templates/Satori.cpp.tmpl",
+				Output:   "Satori.cpp",
 			},
 			{
 				Requires: satoriBpRequires,

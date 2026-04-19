@@ -37,7 +37,7 @@ FSatori{{ $type.Name }} FSatori{{ $type.Name }}::FromJson(const TSharedPtr<FJson
       {
         for (const auto& Item : *ArrayPtr)
         {
-          {{- if $member.Metadata.IsPrimitive }}
+          {{- if not $member.Metadata.IsMessageType }}
           Result.{{ $member.Name }}.Add({{ $member.Metadata.JsonCast }}(Item->{{ $member.Metadata.JsonToTypeMethod }}));
           {{- else }}
           const TSharedPtr<FJsonObject>* ItemObj = nullptr;
@@ -58,7 +58,7 @@ FSatori{{ $type.Name }} FSatori{{ $type.Name }}::FromJson(const TSharedPtr<FJson
         }
       }
     {{- else }}
-      {{- if $member.Metadata.IsPrimitive }}
+      {{- if not $member.Metadata.IsMessageType }}
       Result.{{ $member.Name }} = Json->{{ $member.Metadata.JsonGetter }}(TEXT("{{ $member.Metadata.JsonFieldName }}"))
       {{/* TODO: ENUMS? */}}
       {{/* Result.{{ $fieldName }} = static_cast<{{ enumUEName $fieldType }}>(Json->GetIntegerField(TEXT("{{ $jsonFieldName }}"))); */}}

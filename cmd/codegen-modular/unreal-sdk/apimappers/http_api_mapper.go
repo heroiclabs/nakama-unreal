@@ -126,7 +126,7 @@ func (m UnrealHttpApiMapper) MapRpc(rpc *yacg.ProtoRpc, api yacg.Api, nameResolv
 				Name:     nameResolver.ResolveIdentifier(rpc.Name),
 				Comment:  rpc.Comment,
 				Type:     funcReturnTypeName,
-				Metadata: m.makeFuncMetadata(rpc, nameResolver, "Basic", "TEXT(\"\")"),
+				Metadata: m.makeFuncMetadata(rpc, nameResolver, false, "Basic", "TEXT(\"\")"),
 			},
 			Params:     paramsType.Members,
 			ReturnType: returns,
@@ -160,7 +160,7 @@ func (m UnrealHttpApiMapper) MapRpc(rpc *yacg.ProtoRpc, api yacg.Api, nameResolv
 				Name:     nameResolver.ResolveIdentifier(rpc.Name),
 				Comment:  rpc.Comment,
 				Type:     funcReturnTypeName,
-				Metadata: m.makeFuncMetadata(rpc, nameResolver, "HttpKey", "HttpKey"),
+				Metadata: m.makeFuncMetadata(rpc, nameResolver, false, "HttpKey", "HttpKey"),
 			},
 			Params:     paramsMembers,
 			ReturnType: returns,
@@ -185,7 +185,7 @@ func (m UnrealHttpApiMapper) MapRpc(rpc *yacg.ProtoRpc, api yacg.Api, nameResolv
 				Name:     nameResolver.ResolveIdentifier(rpc.Name),
 				Comment:  rpc.Comment,
 				Type:     funcReturnTypeName,
-				Metadata: m.makeFuncMetadata(rpc, nameResolver, "Bearer", "Session.Token"),
+				Metadata: m.makeFuncMetadata(rpc, nameResolver, true, "Bearer", "Session.Token"),
 			},
 			Params:     paramsMembers,
 			ReturnType: returns,
@@ -248,12 +248,16 @@ func (m UnrealHttpApiMapper) MapMessage(message *yacg.ProtoMessage, api yacg.Api
 func (m UnrealHttpApiMapper) makeTypeMemberMetadata(field *proto.Field, isRepeated bool, isMap bool, api yacg.Api, nameResolver modules.NameResolver) map[string]any {
 	fieldMeta := make(map[string]any, 0)
 
-	_, isMessageType := api.MessagesByName[field.Type]
-
-	fieldMeta["JsonFieldName"] = field.Name
 	fieldMeta["Repeated"] = isRepeated
 	fieldMeta["IsMap"] = isMap
-	fieldMeta["IsPrimitive"] = !isMessageType
+
+	message, isMessageType := api.MessagesByName[field.Type]
+	fieldMeta["IsMessageType"] = isMessageType
+	if isMessageType && !isRepeated && !isMap {
+		mapped, _ := m.MapMessage(message, api, nameResolver)
+		fieldMeta["Members"] = mapped.Members
+	}
+	fieldMeta["JsonFieldName"] = field.Name
 	fieldMeta["JsonCast"] = nameResolver.ResolveType(field.Type, modules.JsonCast)
 	fieldMeta["JsonToTypeMethod"] = nameResolver.ResolveType(field.Type, modules.JsonToTypeMethod)
 	fieldMeta["JsonGetter"] = nameResolver.ResolveType(field.Type, modules.JsonGetter)
@@ -265,7 +269,7 @@ func (m UnrealHttpApiMapper) makeTypeMemberMetadata(field *proto.Field, isRepeat
 	return fieldMeta
 }
 
-func (m UnrealHttpApiMapper) makeFuncMetadata(rpc *yacg.ProtoRpc, nameResolver modules.NameResolver, authType string, authKey string) map[string]any {
+func (m UnrealHttpApiMapper) makeFuncMetadata(rpc *yacg.ProtoRpc, nameResolver modules.NameResolver, hasSession bool, authType string, authKey string) map[string]any {
 	funcMeta := make(map[string]any, 0)
 	funcMeta["Endpoint"] = rpc.Endpoint
 	funcMeta["Method"] = rpc.Method
@@ -402,6 +406,7 @@ func (m UnrealHttpApiMapper) makeFuncMetadata(rpc *yacg.ProtoRpc, nameResolver m
 		funcMeta["SuccessLambdaType"] = nameResolver.ResolveType(rpc.ReturnType.Name, modules.Param)
 	}
 
+	funcMeta["HasSession"] = hasSession
 	funcMeta["AuthType"] = authType // Basic | HttpKey | Bearer
 	funcMeta["AuthKey"] = authKey   // TEXT("") | HttpKey | Session.Token
 	return funcMeta
