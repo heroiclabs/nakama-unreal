@@ -94,7 +94,23 @@ func (m UnrealRtApiMapper) MapRpc(rpc *yacg.ProtoRpc, api yacg.Api, nameResolver
 }
 
 func (m UnrealRtApiMapper) MapEnum(enum *yacg.ProtoEnum, api yacg.Api, nameResolver modules.NameResolver) (modules.Enum, error) {
-	return modules.Enum{}, nil
+	values := make([]modules.EnumField, 0, len(enum.Fields))
+	for _, f := range enum.Fields {
+		values = append(values, modules.EnumField{
+			Name:    nameResolver.ResolveIdentifier(f.Name),
+			Value:   f.Integer,
+			Comment: f.Comment.Message(),
+		})
+	}
+
+	return modules.Enum{
+		DataDecl: modules.DataDecl{
+			Name:    nameResolver.ResolveIdentifier(enum.Name),
+			Comment: enum.Comment,
+			Type:    nameResolver.ResolveType("int", modules.FieldType),
+		},
+		Fields: values,
+	}, nil
 }
 
 func (m UnrealRtApiMapper) MapMessage(message *yacg.ProtoMessage, api yacg.Api, nameResolver modules.NameResolver) (modules.Type, error) {

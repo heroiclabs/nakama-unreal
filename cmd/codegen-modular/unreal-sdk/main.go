@@ -26,6 +26,8 @@ func main() {
 	satoriNameResolver := nameresolvers.NewUnrealNameResolver("Satori")
 	funcMap := getFuncMap()
 
+	//
+	// Nakama HTTP
 	nakamaApiProtos := []string{"protos/nakama-types.proto", "protos/nakama-api.proto"}
 	nakamaHttpRequires, error := modules.MakeProductionRequirements(
 		nakamaApiProtos, httpMapper, nakamaNameResolver, funcMap,
@@ -34,6 +36,8 @@ func main() {
 		log.Fatalf("Failed to make production requirements: %s", error)
 	}
 
+	//
+	// Nakama BP
 	nakamaBpHttpRequires, error := modules.MakeProductionRequirements(
 		nakamaApiProtos, bpMapper, nakamaNameResolver, funcMap,
 	)
@@ -41,6 +45,8 @@ func main() {
 		log.Fatalf("Failed to make production requirements: %s", error)
 	}
 
+	//
+	// Nakama RT
 	nakamaRtApiProtos := []string{"protos/nakama-types.proto", "protos/realtime.proto"}
 	nakamaRtRequires, error := modules.MakeProductionRequirements(
 		nakamaRtApiProtos, rtMapper, nakamaNameResolver, funcMap,
@@ -49,7 +55,9 @@ func main() {
 		log.Fatalf("Failed to make production requirements: %s", error)
 	}
 
-	satoriApiProtos := []string{"protos/nakama-types.proto", "protos/realtime.proto"}
+	//
+	// Satori HTTP
+	satoriApiProtos := []string{"protos/satori.proto"}
 	satoriRequires, error := modules.MakeProductionRequirements(
 		satoriApiProtos, httpMapper, satoriNameResolver, funcMap,
 	)
@@ -57,6 +65,8 @@ func main() {
 		log.Fatalf("Failed to make production requirements: %s", error)
 	}
 
+	//
+	// Satori BP
 	satoriBpRequires, error := modules.MakeProductionRequirements(
 		satoriApiProtos, bpMapper, satoriNameResolver, funcMap,
 	)
