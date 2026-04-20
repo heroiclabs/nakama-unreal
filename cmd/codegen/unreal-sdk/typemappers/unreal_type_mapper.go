@@ -1,4 +1,4 @@
-package nameresolvers
+package typemappers
 
 import (
 	"strings"
@@ -7,14 +7,14 @@ import (
 	"heroiclabs.com/yacg/modules"
 )
 
-type UnrealNameResolver struct {
+type UnrealTypeMapper struct {
 	targetSystem string
 	entries      map[string]modules.TypeEntry
 }
 
-// NewUnrealNameResolver makes a new UnrealNameResolver.
+// NewUnrealTypeMapper makes a new UnrealTypeMapper.
 // Supply target system name: Nakama/Satori, etc.
-func NewUnrealNameResolver(targetSystem string) *UnrealNameResolver {
+func NewUnrealTypeMapper(targetSystem string) *UnrealTypeMapper {
 	stringEntry := modules.TypeEntry{
 		Param:         "const FString&",
 		RepeatedParam: "const TArray<FString>&",
@@ -201,7 +201,7 @@ func NewUnrealNameResolver(targetSystem string) *UnrealNameResolver {
 		JsonToTypeMethod: "AsString()",
 	}
 
-	return &UnrealNameResolver{
+	return &UnrealTypeMapper{
 		targetSystem: targetSystem,
 		entries: map[string]modules.TypeEntry{
 			"string":      stringEntry,
@@ -234,7 +234,7 @@ func NewUnrealNameResolver(targetSystem string) *UnrealNameResolver {
 }
 
 // ResolveIdentifier converts a proto identifier to the Unreal naming convention.
-func (r *UnrealNameResolver) ResolveIdentifier(input string) string {
+func (r *UnrealTypeMapper) ResolveIdentifier(input string) string {
 	if isReservedWord(input) {
 		return textcase.PascalCase(input) + "_"
 	}
@@ -243,7 +243,7 @@ func (r *UnrealNameResolver) ResolveIdentifier(input string) string {
 
 // ResolveEntry returns all type traits for a given proto type name.
 // Unknown types are treated as Unreal structs with an F-prefixed name.
-func (r *UnrealNameResolver) ResolveEntry(intype string) modules.TypeEntry {
+func (r *UnrealTypeMapper) ResolveEntry(intype string) modules.TypeEntry {
 	entry, hit := r.entries[intype]
 	if !hit {
 		base := "F" + r.targetSystem + textcase.PascalCase(intype)
@@ -266,7 +266,7 @@ func (r *UnrealNameResolver) ResolveEntry(intype string) modules.TypeEntry {
 }
 
 // ResolveDelegateName returns the Unreal delegate type name for a given proto name.
-func (r *UnrealNameResolver) ResolveDelegateName(name string) string {
+func (r *UnrealTypeMapper) ResolveDelegateName(name string) string {
 	return "FOn" + r.targetSystem + textcase.PascalCase(name)
 }
 

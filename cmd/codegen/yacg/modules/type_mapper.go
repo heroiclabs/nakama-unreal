@@ -31,8 +31,8 @@ type TypeEntry struct {
 	DefaultValue string // e.g. "false", "0", "0.f"
 }
 
-// NameResolver transforms proto identifiers and type names to the target language.
-type NameResolver interface {
+// TypeMapper transforms proto identifiers and type names to the target language.
+type TypeMapper interface {
 	// ResolveIdentifier converts a proto identifier to the target language's naming convention.
 	ResolveIdentifier(input string) string
 

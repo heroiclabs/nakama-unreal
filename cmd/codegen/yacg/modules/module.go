@@ -24,11 +24,11 @@ import (
 type ProductionRequirements struct {
 	Api          yacg.Api
 	ApiMapper    ApiMapper
-	NameResolver NameResolver
+	NameResolver TypeMapper
 	FuncMap      template.FuncMap
 }
 
-func MakeProductionRequirements(protos []string, apiMapper ApiMapper, nameResolver NameResolver, funcMap template.FuncMap) (ProductionRequirements, error) {
+func MakeProductionRequirements(protos []string, apiMapper ApiMapper, nameResolver TypeMapper, funcMap template.FuncMap) (ProductionRequirements, error) {
 	api, err := yacg.LoadApi(protos)
 	if err != nil {
 		return ProductionRequirements{}, err

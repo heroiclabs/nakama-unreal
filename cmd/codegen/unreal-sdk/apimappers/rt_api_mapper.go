@@ -12,10 +12,10 @@ import (
 // Implements ApiMapper
 type UnrealRtApiMapper struct{}
 
-func (m UnrealRtApiMapper) MapApi(api yacg.Api, nameResolver modules.NameResolver) (modules.ApiMap, error) {
+func (m UnrealRtApiMapper) MapApi(api yacg.Api, typeMapper modules.TypeMapper) (modules.ApiMap, error) {
 	enums := make([]modules.Enum, 0, len(api.Enums))
 	for _, enum := range api.Enums {
-		e, err := m.MapEnum(enum, api, nameResolver)
+		e, err := m.MapEnum(enum, api, typeMapper)
 		if err != nil {
 			return modules.ApiMap{}, err
 		}
@@ -32,7 +32,7 @@ func (m UnrealRtApiMapper) MapApi(api yacg.Api, nameResolver modules.NameResolve
 			continue
 		}
 
-		m, err := m.MapMessage(message, api, nameResolver)
+		m, err := m.MapMessage(message, api, typeMapper)
 		if err != nil {
 			return modules.ApiMap{}, err
 		}
@@ -57,7 +57,7 @@ func (m UnrealRtApiMapper) MapApi(api yacg.Api, nameResolver modules.NameResolve
 				Comment:     field.Comment.Message(),
 				RequestType: requestType,
 			}
-			f, err := m.MapRpc(rpc, api, nameResolver)
+			f, err := m.MapRpc(rpc, api, typeMapper)
 			if err != nil {
 				return modules.ApiMap{}, err
 			}
@@ -68,22 +68,22 @@ func (m UnrealRtApiMapper) MapApi(api yacg.Api, nameResolver modules.NameResolve
 	return modules.ApiMap{Enums: enums, Types: types, Funcs: funcs}, nil
 }
 
-func (m UnrealRtApiMapper) MapRpc(rpc *yacg.ProtoRpc, api yacg.Api, nameResolver modules.NameResolver) ([]modules.Function, error) {
+func (m UnrealRtApiMapper) MapRpc(rpc *yacg.ProtoRpc, api yacg.Api, typeMapper modules.TypeMapper) ([]modules.Function, error) {
 	funcOverloads := make([]modules.Function, 0, 1)
 
 	funcReturnTypeName := ""
 	if rpc.ReturnType != nil {
-		funcReturnTypeName = nameResolver.ResolveEntry(rpc.ReturnType.Name).FieldType
+		funcReturnTypeName = typeMapper.ResolveEntry(rpc.ReturnType.Name).FieldType
 	}
 
-	paramsType, err := m.MapMessage(rpc.RequestType, api, nameResolver)
+	paramsType, err := m.MapMessage(rpc.RequestType, api, typeMapper)
 	if err != nil {
 		return nil, err
 	}
 
 	funcOverloads = append(funcOverloads, modules.Function{
 		DataDecl: modules.DataDecl{
-			Name:     nameResolver.ResolveIdentifier(rpc.Name),
+			Name:     typeMapper.ResolveIdentifier(rpc.Name),
 			Comment:  rpc.Comment,
 			Type:     funcReturnTypeName,
 			Metadata: m.makeFuncMetadata(rpc),
@@ -95,11 +95,11 @@ func (m UnrealRtApiMapper) MapRpc(rpc *yacg.ProtoRpc, api yacg.Api, nameResolver
 	return funcOverloads, nil
 }
 
-func (m UnrealRtApiMapper) MapEnum(enum *yacg.ProtoEnum, api yacg.Api, nameResolver modules.NameResolver) (modules.Enum, error) {
+func (m UnrealRtApiMapper) MapEnum(enum *yacg.ProtoEnum, api yacg.Api, typeMapper modules.TypeMapper) (modules.Enum, error) {
 	values := make([]modules.EnumField, 0, len(enum.Fields))
 	for _, f := range enum.Fields {
 		values = append(values, modules.EnumField{
-			Name:    nameResolver.ResolveIdentifier(f.Name),
+			Name:    typeMapper.ResolveIdentifier(f.Name),
 			Value:   f.Integer,
 			Comment: f.Comment.Message(),
 		})
@@ -107,15 +107,15 @@ func (m UnrealRtApiMapper) MapEnum(enum *yacg.ProtoEnum, api yacg.Api, nameResol
 
 	return modules.Enum{
 		DataDecl: modules.DataDecl{
-			Name:    nameResolver.ResolveIdentifier(enum.Name),
+			Name:    typeMapper.ResolveIdentifier(enum.Name),
 			Comment: enum.Comment,
-			Type:    nameResolver.ResolveEntry("int").FieldType,
+			Type:    typeMapper.ResolveEntry("int").FieldType,
 		},
 		Fields: values,
 	}, nil
 }
 
-func (m UnrealRtApiMapper) MapMessage(message *yacg.ProtoMessage, api yacg.Api, nameResolver modules.NameResolver) (modules.Type, error) {
+func (m UnrealRtApiMapper) MapMessage(message *yacg.ProtoMessage, api yacg.Api, typeMapper modules.TypeMapper) (modules.Type, error) {
 	if message == nil {
 		return modules.Type{}, nil
 	}
@@ -123,13 +123,13 @@ func (m UnrealRtApiMapper) MapMessage(message *yacg.ProtoMessage, api yacg.Api, 
 	members := make([]modules.DataDecl, 0, len(message.Fields)+len(message.MapFields))
 
 	for _, field := range message.Fields {
-		entry := nameResolver.ResolveEntry(field.Type)
+		entry := typeMapper.ResolveEntry(field.Type)
 		_, isEnumType := api.EnumsByName[field.Type]
 		if isEnumType {
 			entry.DefaultValue = fmt.Sprintf("static_cast<%s>(0)", entry.FieldType)
 		}
 		dataDecl := modules.DataDecl{
-			Name:      nameResolver.ResolveIdentifier(field.Name),
+			Name:      typeMapper.ResolveIdentifier(field.Name),
 			Type:      entry.FieldType,
 			TypeEntry: entry,
 			Comment:   field.Comment.Message(),
@@ -143,9 +143,9 @@ func (m UnrealRtApiMapper) MapMessage(message *yacg.ProtoMessage, api yacg.Api, 
 		members = append(members, dataDecl)
 	}
 	for _, field := range message.MapFields {
-		entry := nameResolver.ResolveEntry(field.Type)
+		entry := typeMapper.ResolveEntry(field.Type)
 		dataDecl := modules.DataDecl{
-			Name:      nameResolver.ResolveIdentifier(field.Name),
+			Name:      typeMapper.ResolveIdentifier(field.Name),
 			Type:      entry.MapType,
 			TypeEntry: entry,
 			Comment:   field.Comment.Message(),
@@ -155,13 +155,13 @@ func (m UnrealRtApiMapper) MapMessage(message *yacg.ProtoMessage, api yacg.Api, 
 		members = append(members, dataDecl)
 	}
 	for _, field := range message.OneofFields {
-		entry := nameResolver.ResolveEntry(field.Type)
+		entry := typeMapper.ResolveEntry(field.Type)
 		_, isEnumType := api.EnumsByName[field.Type]
 		if isEnumType {
 			entry.DefaultValue = fmt.Sprintf("static_cast<%s>(0)", entry.FieldType)
 		}
 		dataDecl := modules.DataDecl{
-			Name:      nameResolver.ResolveIdentifier(field.Name),
+			Name:      typeMapper.ResolveIdentifier(field.Name),
 			Type:      entry.FieldType,
 			TypeEntry: entry,
 			Comment:   field.Comment.Message(),

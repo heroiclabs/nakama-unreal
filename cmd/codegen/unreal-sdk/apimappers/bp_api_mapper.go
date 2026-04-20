@@ -6,17 +6,17 @@ import (
 
 	"github.com/emicklei/proto"
 	"heroiclabs.com/yacg"
-	"heroiclabs.com/yacg-modules/unrealsdk/nameresolvers"
+	"heroiclabs.com/yacg-modules/unrealsdk/typemappers"
 	"heroiclabs.com/yacg/modules"
 )
 
 // Implements ApiMapper
 type UnrealBlueprintHttpApiMapper struct{}
 
-func (m UnrealBlueprintHttpApiMapper) MapApi(api yacg.Api, nameResolver modules.NameResolver) (modules.ApiMap, error) {
+func (m UnrealBlueprintHttpApiMapper) MapApi(api yacg.Api, typeMapper modules.TypeMapper) (modules.ApiMap, error) {
 	funcs := make([]modules.Function, 0, len(api.Rpcs))
 	for _, rpc := range api.Rpcs {
-		f, err := m.MapRpc(rpc, api, nameResolver)
+		f, err := m.MapRpc(rpc, api, typeMapper)
 		if err != nil {
 			return modules.ApiMap{}, err
 		}
@@ -43,25 +43,25 @@ func (m UnrealBlueprintHttpApiMapper) MapApi(api yacg.Api, nameResolver modules.
 	return modules.ApiMap{Funcs: funcs, Types: resultTypes}, nil
 }
 
-func (m UnrealBlueprintHttpApiMapper) MapEnum(enum *yacg.ProtoEnum, api yacg.Api, nameResolver modules.NameResolver) (modules.Enum, error) {
+func (m UnrealBlueprintHttpApiMapper) MapEnum(enum *yacg.ProtoEnum, api yacg.Api, typeMapper modules.TypeMapper) (modules.Enum, error) {
 	// Not needed for Blueprints
 	return modules.Enum{}, nil
 }
 
-func (m UnrealBlueprintHttpApiMapper) MapRpc(rpc *yacg.ProtoRpc, api yacg.Api, nameResolver modules.NameResolver) ([]modules.Function, error) {
+func (m UnrealBlueprintHttpApiMapper) MapRpc(rpc *yacg.ProtoRpc, api yacg.Api, typeMapper modules.TypeMapper) ([]modules.Function, error) {
 	funcOverloads := make([]modules.Function, 0, 1)
 
 	funcReturnTypeName := ""
 	if rpc.ReturnType != nil {
-		funcReturnTypeName = nameResolver.ResolveEntry(rpc.ReturnType.Name).FieldType
+		funcReturnTypeName = typeMapper.ResolveEntry(rpc.ReturnType.Name).FieldType
 	}
 
-	returns, err := m.MapMessage(rpc.ReturnType, api, nameResolver)
+	returns, err := m.MapMessage(rpc.ReturnType, api, typeMapper)
 	if err != nil {
 		return nil, err
 	}
 
-	paramsType, err := m.MapMessage(rpc.RequestType, api, nameResolver)
+	paramsType, err := m.MapMessage(rpc.RequestType, api, typeMapper)
 	if err != nil {
 		return nil, err
 	}
@@ -73,7 +73,7 @@ func (m UnrealBlueprintHttpApiMapper) MapRpc(rpc *yacg.ProtoRpc, api yacg.Api, n
 	isSessionRefresh := rpc.Name == "SessionRefresh"
 	needsSession := !isAuth && !isSessionRefresh
 	if needsSession {
-		sessionType := nameResolver.ResolveEntry("Session").FieldType
+		sessionType := typeMapper.ResolveEntry("Session").FieldType
 		sessionParam := modules.DataDecl{
 			Type:     sessionType,
 			Name:     "Session",
@@ -85,10 +85,10 @@ func (m UnrealBlueprintHttpApiMapper) MapRpc(rpc *yacg.ProtoRpc, api yacg.Api, n
 
 	funcOverloads = append(funcOverloads, modules.Function{
 		DataDecl: modules.DataDecl{
-			Name:     nameResolver.ResolveIdentifier(rpc.Name),
+			Name:     typeMapper.ResolveIdentifier(rpc.Name),
 			Comment:  rpc.Comment,
 			Type:     funcReturnTypeName,
-			Metadata: m.makeFuncMetadata(rpc, nameResolver),
+			Metadata: m.makeFuncMetadata(rpc, typeMapper),
 		},
 		Params:     paramsMembers,
 		ReturnType: returns,
@@ -97,7 +97,7 @@ func (m UnrealBlueprintHttpApiMapper) MapRpc(rpc *yacg.ProtoRpc, api yacg.Api, n
 	return funcOverloads, nil
 }
 
-func (m UnrealBlueprintHttpApiMapper) MapMessage(message *yacg.ProtoMessage, api yacg.Api, nameResolver modules.NameResolver) (modules.Type, error) {
+func (m UnrealBlueprintHttpApiMapper) MapMessage(message *yacg.ProtoMessage, api yacg.Api, typeMapper modules.TypeMapper) (modules.Type, error) {
 	if message == nil {
 		return modules.Type{}, nil
 	}
@@ -109,9 +109,9 @@ func (m UnrealBlueprintHttpApiMapper) MapMessage(message *yacg.ProtoMessage, api
 		return modules.Type{}, fmt.Errorf("type definition not found in proto schema: `%s`", message.Name)
 	}
 	for _, field := range message.Fields {
-		entry := nameResolver.ResolveEntry(field.Type)
+		entry := typeMapper.ResolveEntry(field.Type)
 		dataDecl := modules.DataDecl{
-			Name:      nameResolver.ResolveIdentifier(field.Name),
+			Name:      typeMapper.ResolveIdentifier(field.Name),
 			Type:      entry.FieldType,
 			TypeEntry: entry,
 			Comment:   field.Comment.Message(),
@@ -125,9 +125,9 @@ func (m UnrealBlueprintHttpApiMapper) MapMessage(message *yacg.ProtoMessage, api
 		members = append(members, dataDecl)
 	}
 	for _, field := range message.MapFields {
-		entry := nameResolver.ResolveEntry(field.Type)
+		entry := typeMapper.ResolveEntry(field.Type)
 		dataDecl := modules.DataDecl{
-			Name:      nameResolver.ResolveIdentifier(field.Name),
+			Name:      typeMapper.ResolveIdentifier(field.Name),
 			Type:      entry.MapType,
 			TypeEntry: entry,
 			Comment:   field.Comment.Message(),
@@ -137,9 +137,9 @@ func (m UnrealBlueprintHttpApiMapper) MapMessage(message *yacg.ProtoMessage, api
 		members = append(members, dataDecl)
 	}
 	for _, field := range message.OneofFields {
-		entry := nameResolver.ResolveEntry(field.Type)
+		entry := typeMapper.ResolveEntry(field.Type)
 		dataDecl := modules.DataDecl{
-			Name:      nameResolver.ResolveIdentifier(field.Name),
+			Name:      typeMapper.ResolveIdentifier(field.Name),
 			Type:      entry.FieldType,
 			TypeEntry: entry,
 			Comment:   field.Comment.Message(),
@@ -168,10 +168,10 @@ func (m UnrealBlueprintHttpApiMapper) makeTypeMemberMetadata(field *proto.Field,
 	return fieldMeta
 }
 
-func (m UnrealBlueprintHttpApiMapper) makeFuncMetadata(rpc *yacg.ProtoRpc, nameResolver modules.NameResolver) map[string]any {
+func (m UnrealBlueprintHttpApiMapper) makeFuncMetadata(rpc *yacg.ProtoRpc, typeMapper modules.TypeMapper) map[string]any {
 	funcMeta := make(map[string]any)
 
-	unr, ok := nameResolver.(*nameresolvers.UnrealNameResolver)
+	unr, ok := typeMapper.(*typemappers.UnrealTypeMapper)
 	if !ok {
 		return funcMeta
 	}
