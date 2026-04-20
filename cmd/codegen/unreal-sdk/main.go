@@ -75,8 +75,12 @@ func main() {
 	//
 	// Nakama RT
 	nakamaRtApiProtos := []string{"protos/nakama-types.proto", "protos/realtime.proto"}
-	nakamaRtRequires, error := modules.MakeProductionRequirements(
+	nakamaRtTypesProtos := []string{"protos/realtime.proto"}
+	nakamaRtApiRequires, error := modules.MakeProductionRequirements(
 		nakamaRtApiProtos, rtMapper, nakamaTypeMap, funcMap,
+	)
+	nakamaRtTypesRequires, error := modules.MakeProductionRequirements(
+		nakamaRtTypesProtos, httpMapper, nakamaTypeMap, funcMap,
 	)
 	if error != nil {
 		log.Fatalf("Failed to make production requirements: %s", error)
@@ -144,32 +148,32 @@ func main() {
 				Output:   "Nakama/Source/NakamaBlueprints/Private/NakamaClientBlueprintLibrary.cpp",
 			},
 			{
-				Requires: nakamaRtRequires,
+				Requires: nakamaRtTypesRequires,
 				Template: "templates/NakamaRtTypes.h.tmpl",
 				Output:   "Nakama/Source/NakamaApi/Public/NakamaRtTypes.h",
 			},
 			{
-				Requires: nakamaRtRequires,
+				Requires: nakamaRtTypesRequires,
 				Template: "templates/NakamaRtTypes.cpp.tmpl",
 				Output:   "Nakama/Source/NakamaApi/Private/NakamaRtTypes.cpp",
 			},
 			{
-				Requires: nakamaRtRequires,
+				Requires: nakamaRtApiRequires,
 				Template: "templates/NakamaRtClient.h.tmpl",
 				Output:   "Nakama/Source/Nakama/Public/NakamaRt.h",
 			},
 			{
-				Requires: nakamaRtRequires,
+				Requires: nakamaRtApiRequires,
 				Template: "templates/NakamaRtClient.cpp.tmpl",
 				Output:   "Nakama/Source/Nakama/Private/NakamaRt.cpp",
 			},
 			{
-				Requires: nakamaRtRequires,
+				Requires: nakamaRtApiRequires,
 				Template: "templates/NakamaRtClientBp.h.tmpl",
 				Output:   "Nakama/Source/NakamaBlueprints/Public/NakamaRtClientBlueprintLibrary.h",
 			},
 			{
-				Requires: nakamaRtRequires,
+				Requires: nakamaRtApiRequires,
 				Template: "templates/NakamaRtClientBp.cpp.tmpl",
 				Output:   "Nakama/Source/NakamaBlueprints/Private/NakamaRtClientBlueprintLibrary.cpp",
 			},
