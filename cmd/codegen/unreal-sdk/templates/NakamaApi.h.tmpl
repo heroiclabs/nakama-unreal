@@ -18,12 +18,15 @@
 
 #pragma once
 
+#include <atomic>
 #include "CoreMinimal.h"
 #include "Templates/Function.h"
 #include "Templates/SharedPointer.h"
 #include "Dom/JsonObject.h"
 #include "HAL/ThreadSafeBool.h"
 #include "NakamaTypes.h"
+
+NAKAMAAPI_API DECLARE_LOG_CATEGORY_EXTERN(LogNakama, Log, All);
 
 namespace NakamaApi
 {
