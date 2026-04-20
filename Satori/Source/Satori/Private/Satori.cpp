@@ -94,7 +94,7 @@ TSatoriFuture<FSatoriSessionResult> Satori::Authenticate(
   const FSatoriClientConfig& ClientConfig,
   const FString& Id,
   bool NoSession,
-  const TMap<FString, FString>& Default_,
+  const TMap<FString, FString>& Default,
   const TMap<FString, FString>& Custom,
   const FSatoriRetryConfig& RetryConfig,
   TSharedRef<std::atomic<bool>> CancellationToken
@@ -133,7 +133,7 @@ TSatoriFuture<FSatoriSessionResult> Satori::Authenticate(
     , CancellationToken
     , Id
     , NoSession
-    , Default_
+    , Default
     , Custom
   ]()
   {
@@ -142,7 +142,7 @@ TSatoriFuture<FSatoriSessionResult> Satori::Authenticate(
       ClientConfig,
       Id,
       NoSession,
-      Default_,
+      Default,
       Custom,
       [FutureState, DoRequest, OnError](const FSatoriSession& Result)
       {
@@ -1705,7 +1705,7 @@ TSatoriFuture<FSatoriSessionResult> Satori::Identify(
   const FSatoriClientConfig& ClientConfig,
   const FString& HttpKey,
   const FString& Id,
-  const TMap<FString, FString>& Default_,
+  const TMap<FString, FString>& Default,
   const TMap<FString, FString>& Custom,
   const FSatoriRetryConfig& RetryConfig,
   TSharedRef<std::atomic<bool>> CancellationToken
@@ -1744,7 +1744,7 @@ TSatoriFuture<FSatoriSessionResult> Satori::Identify(
     , CancellationToken
     , HttpKey
     , Id
-    , Default_
+    , Default
     , Custom
   ]()
   {
@@ -1753,7 +1753,7 @@ TSatoriFuture<FSatoriSessionResult> Satori::Identify(
       ClientConfig,
       HttpKey,
       Id,
-      Default_,
+      Default,
       Custom,
       [FutureState, DoRequest, OnError](const FSatoriSession& Result)
       {
@@ -1776,7 +1776,7 @@ TSatoriFuture<FSatoriSessionResult> Satori::Identify(
   const FSatoriClientConfig& ClientConfig,
   const FSatoriSession& Session,
   const FString& Id,
-  const TMap<FString, FString>& Default_,
+  const TMap<FString, FString>& Default,
   const TMap<FString, FString>& Custom,
   const FSatoriRetryConfig& RetryConfig,
   TSharedRef<std::atomic<bool>> CancellationToken
@@ -1817,7 +1817,7 @@ TSatoriFuture<FSatoriSessionResult> Satori::Identify(
     , CancellationToken
     , Session
     , Id
-    , Default_
+    , Default
     , Custom
   ]()
   { 
@@ -1837,7 +1837,7 @@ TSatoriFuture<FSatoriSessionResult> Satori::Identify(
         , CancellationToken
         , Session
         , Id
-        , Default_
+        , Default
         , Custom
         ]()
         {
@@ -1847,7 +1847,7 @@ TSatoriFuture<FSatoriSessionResult> Satori::Identify(
             *SessionState,
             Session,
             Id,
-            Default_,
+            Default,
             Custom,
             [FutureState, DoRequest, OnError](const FSatoriSession& Result)
             {
@@ -2164,7 +2164,7 @@ TSatoriFuture<Result> Satori::UpdateProperties(
   const FSatoriClientConfig& ClientConfig,
   const FString& HttpKey,
   bool Recompute,
-  const TMap<FString, FString>& Default_,
+  const TMap<FString, FString>& Default,
   const TMap<FString, FString>& Custom,
   const FSatoriRetryConfig& RetryConfig,
   TSharedRef<std::atomic<bool>> CancellationToken
@@ -2203,7 +2203,7 @@ TSatoriFuture<Result> Satori::UpdateProperties(
     , CancellationToken
     , HttpKey
     , Recompute
-    , Default_
+    , Default
     , Custom
   ]()
   {
@@ -2212,7 +2212,7 @@ TSatoriFuture<Result> Satori::UpdateProperties(
       ClientConfig,
       HttpKey,
       Recompute,
-      Default_,
+      Default,
       Custom,
       [FutureState, DoRequest, OnError]()
       {
@@ -2235,7 +2235,7 @@ TSatoriFuture<Result> Satori::UpdateProperties(
   const FSatoriClientConfig& ClientConfig,
   const FSatoriSession& Session,
   bool Recompute,
-  const TMap<FString, FString>& Default_,
+  const TMap<FString, FString>& Default,
   const TMap<FString, FString>& Custom,
   const FSatoriRetryConfig& RetryConfig,
   TSharedRef<std::atomic<bool>> CancellationToken
@@ -2276,7 +2276,7 @@ TSatoriFuture<Result> Satori::UpdateProperties(
     , CancellationToken
     , Session
     , Recompute
-    , Default_
+    , Default
     , Custom
   ]()
   { 
@@ -2296,7 +2296,7 @@ TSatoriFuture<Result> Satori::UpdateProperties(
         , CancellationToken
         , Session
         , Recompute
-        , Default_
+        , Default
         , Custom
         ]()
         {
@@ -2306,7 +2306,7 @@ TSatoriFuture<Result> Satori::UpdateProperties(
             *SessionState,
             Session,
             Recompute,
-            Default_,
+            Default,
             Custom,
             [FutureState, DoRequest, OnError]()
             {

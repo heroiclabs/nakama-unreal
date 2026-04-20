@@ -71,11 +71,14 @@ public:
       BlueprintInternalUseOnly = "true"
       , WorldContext = "WorldContextObject"
       , DisplayName = "{{ $func.Name }}"
-      {{- range $param := $func.Params }}
-      {{- if $param.Metadata.IsMap }}
-      , AutoCreateRefTerm = "{{ $param.Name }}"
-      {{- end }}
-      {{- end }}
+      {{- $firstAutoCreateParam := true -}}
+      {{- range $param := $func.Params -}}
+        {{- if $param.Metadata.IsMap -}}
+          {{- if $firstAutoCreateParam -}}, AutoCreateRefTerm = "{{- else -}}, {{- end -}}
+          {{- $param.Name -}}
+          {{- $firstAutoCreateParam = false -}}
+        {{- end -}}
+      {{- end -}}{{- if not $firstAutoCreateParam -}}"{{- end -}}
     )
     , Category = "Nakama|Client"
   )
@@ -94,6 +97,6 @@ private:
   {{- range $param := $func.Params }}
   {{ $param.Type }} Stored{{ $param.Name }};
   {{- end }}
-}
+};
 
 {{- end }}

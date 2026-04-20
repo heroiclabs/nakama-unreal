@@ -53,10 +53,26 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaRtError OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "{{ $func.Name }}"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "{{ $func.Name }}"
+      {{- $firstAutoCreateParam := true -}}
+      {{- range $param := $func.Params -}}
+        {{- if $param.Metadata.IsMap -}}
+          {{- if $firstAutoCreateParam -}}, AutoCreateRefTerm = "{{- else -}}, {{- end -}}
+          {{- $param.Name -}}
+          {{- $firstAutoCreateParam = false -}}
+        {{- end -}}
+      {{- end -}}{{- if not $firstAutoCreateParam -}}"{{- end -}}
+    )
+    , Category = "Nakama|RealtimeClient"
+  )
   static UNakamaRealtimeClient{{ $func.Name }}* {{ $func.Name }}(
     UObject* WorldContextObject
-    , UNakamaWebSocketSubsystem* WebSocketSubsystem;
+    , UNakamaWebSocketSubsystem* WebSocketSubsystem
     {{- range $idx, $param := $func.Params }}
     , {{ $param.Metadata.ParamType }} {{ $param.Name }}
     {{- end }}
@@ -70,6 +86,6 @@ private:
   {{- range $param := $func.Params }}
   {{ $param.Type }} Stored{{ $param.Name }};
   {{- end }}
-}
+};
 
 {{- end }}

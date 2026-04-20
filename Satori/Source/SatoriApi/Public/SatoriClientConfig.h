@@ -16,20 +16,20 @@
 
 /** Low-level API client configuration. */
 USTRUCT(BlueprintType)
-struct NAKAMAAPI_API FNakamaClientConfig
+struct NAKAMAAPI_API FSatoriClientConfig
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Nakama")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Satori")
 	FString ServerKey;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Nakama")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Satori")
 	FString Host;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Nakama")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Satori")
 	int32 Port = 0;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Nakama")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Satori")
 	bool bUseSSL = false;
 
 	FString GetBaseUrl() const noexcept;

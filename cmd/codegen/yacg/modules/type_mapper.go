@@ -6,6 +6,7 @@ type TypeEntry struct {
 	FieldType         string // Scalar field type (e.g., "FString", "int32")
 	RepeatedFieldType string // Array field type (e.g., "TArray<FString>")
 	MapType           string // Map type name without const/ref (e.g., "TMap<FString, FString>")
+	EnumType          string // Custom Enum type
 
 	// Function signature types
 	Param         string // Scalar parameter form (e.g., "const FString&", "int32")

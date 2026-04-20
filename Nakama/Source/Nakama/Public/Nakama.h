@@ -3384,7 +3384,7 @@ namespace Nakama
   * @param RecordScore	 The score value to submit.
   * @param RecordSubscore	 An optional secondary value.
   * @param RecordMetadata	 Optional record metadata.
-  * @param RecordOperator_	 Operator override.
+  * @param RecordOperator	 Operator override.
   * @param RetryConfig Retry configuration.
   * @param CancellationToken	Set to true to cancel the in-flight request.
   */
@@ -3395,7 +3395,7 @@ namespace Nakama
     int64 RecordScore,
     int64 RecordSubscore,
     const FString& RecordMetadata,
-    const FNakamaOperator& RecordOperator_,
+    const FNakamaOperator& RecordOperator,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
   ) noexcept;
@@ -3409,7 +3409,7 @@ namespace Nakama
   * @param RecordScore	 The score value to submit.
   * @param RecordSubscore	 An optional secondary value.
   * @param RecordMetadata	 Optional record metadata.
-  * @param RecordOperator_	 Operator override.
+  * @param RecordOperator	 Operator override.
   * @param RetryConfig Retry configuration.
   * @param CancellationToken	Set to true to cancel the in-flight request.
   */
@@ -3420,7 +3420,7 @@ namespace Nakama
     int64 RecordScore,
     int64 RecordSubscore,
     const FString& RecordMetadata,
-    const FNakamaOperator& RecordOperator_,
+    const FNakamaOperator& RecordOperator,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
   ) noexcept;
@@ -3464,7 +3464,7 @@ namespace Nakama
   * @param RecordScore	 The score value to submit.
   * @param RecordSubscore	 An optional secondary value.
   * @param RecordMetadata	 A JSON object of additional properties (optional).
-  * @param RecordOperator_	 Operator override.
+  * @param RecordOperator	 Operator override.
   * @param RetryConfig Retry configuration.
   * @param CancellationToken	Set to true to cancel the in-flight request.
   */
@@ -3475,7 +3475,7 @@ namespace Nakama
     int64 RecordScore,
     int64 RecordSubscore,
     const FString& RecordMetadata,
-    const FNakamaOperator& RecordOperator_,
+    const FNakamaOperator& RecordOperator,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
   ) noexcept;
@@ -3489,7 +3489,7 @@ namespace Nakama
   * @param RecordScore	 The score value to submit.
   * @param RecordSubscore	 An optional secondary value.
   * @param RecordMetadata	 A JSON object of additional properties (optional).
-  * @param RecordOperator_	 Operator override.
+  * @param RecordOperator	 Operator override.
   * @param RetryConfig Retry configuration.
   * @param CancellationToken	Set to true to cancel the in-flight request.
   */
@@ -3500,7 +3500,7 @@ namespace Nakama
     int64 RecordScore,
     int64 RecordSubscore,
     const FString& RecordMetadata,
-    const FNakamaOperator& RecordOperator_,
+    const FNakamaOperator& RecordOperator,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
   ) noexcept;

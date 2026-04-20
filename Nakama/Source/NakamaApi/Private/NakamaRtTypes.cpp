@@ -18,623 +18,6 @@
 
 #include "NakamaRtTypes.h"
 
-FNakamaRtEnvelope FNakamaRtEnvelope::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
-{
-  FNakamaRtEnvelope Result;
-  if (!Json.IsValid())
-  {
-    return Result;
-  }
-  if (Json->HasField(TEXT("cid")))
-  {
-      Result.Cid = Json->GetStringField(TEXT("cid"))
-  }
-  if (Json->HasField(TEXT("channel")))
-  {
-      const TSharedPtr<FJsonObject>* NestedObj;
-      if (Json->TryGetObjectField(TEXT("channel"), NestedObj))
-      {
-        Result.Channel.Add(FNakamaFNakamaChannel::FromJson(*NestedObj));
-      }
-  }
-  if (Json->HasField(TEXT("channel_join")))
-  {
-      const TSharedPtr<FJsonObject>* NestedObj;
-      if (Json->TryGetObjectField(TEXT("channel_join"), NestedObj))
-      {
-        Result.ChannelJoin.Add(FNakamaFNakamaChannelJoin::FromJson(*NestedObj));
-      }
-  }
-  if (Json->HasField(TEXT("channel_leave")))
-  {
-      const TSharedPtr<FJsonObject>* NestedObj;
-      if (Json->TryGetObjectField(TEXT("channel_leave"), NestedObj))
-      {
-        Result.ChannelLeave.Add(FNakamaFNakamaChannelLeave::FromJson(*NestedObj));
-      }
-  }
-  if (Json->HasField(TEXT("channel_message")))
-  {
-      Result.ChannelMessage = Json->GetObjectField(TEXT("channel_message"))
-  }
-  if (Json->HasField(TEXT("channel_message_ack")))
-  {
-      const TSharedPtr<FJsonObject>* NestedObj;
-      if (Json->TryGetObjectField(TEXT("channel_message_ack"), NestedObj))
-      {
-        Result.ChannelMessageAck.Add(FNakamaFNakamaChannelMessageAck::FromJson(*NestedObj));
-      }
-  }
-  if (Json->HasField(TEXT("channel_message_send")))
-  {
-      const TSharedPtr<FJsonObject>* NestedObj;
-      if (Json->TryGetObjectField(TEXT("channel_message_send"), NestedObj))
-      {
-        Result.ChannelMessageSend.Add(FNakamaFNakamaChannelMessageSend::FromJson(*NestedObj));
-      }
-  }
-  if (Json->HasField(TEXT("channel_message_update")))
-  {
-      const TSharedPtr<FJsonObject>* NestedObj;
-      if (Json->TryGetObjectField(TEXT("channel_message_update"), NestedObj))
-      {
-        Result.ChannelMessageUpdate.Add(FNakamaFNakamaChannelMessageUpdate::FromJson(*NestedObj));
-      }
-  }
-  if (Json->HasField(TEXT("channel_message_remove")))
-  {
-      const TSharedPtr<FJsonObject>* NestedObj;
-      if (Json->TryGetObjectField(TEXT("channel_message_remove"), NestedObj))
-      {
-        Result.ChannelMessageRemove.Add(FNakamaFNakamaChannelMessageRemove::FromJson(*NestedObj));
-      }
-  }
-  if (Json->HasField(TEXT("channel_presence_event")))
-  {
-      const TSharedPtr<FJsonObject>* NestedObj;
-      if (Json->TryGetObjectField(TEXT("channel_presence_event"), NestedObj))
-      {
-        Result.ChannelPresenceEvent.Add(FNakamaFNakamaChannelPresenceEvent::FromJson(*NestedObj));
-      }
-  }
-  if (Json->HasField(TEXT("error")))
-  {
-      const TSharedPtr<FJsonObject>* NestedObj;
-      if (Json->TryGetObjectField(TEXT("error"), NestedObj))
-      {
-        Result.Error.Add(FNakamaFNakamaError::FromJson(*NestedObj));
-      }
-  }
-  if (Json->HasField(TEXT("match")))
-  {
-      const TSharedPtr<FJsonObject>* NestedObj;
-      if (Json->TryGetObjectField(TEXT("match"), NestedObj))
-      {
-        Result.Match.Add(FNakamaFNakamaMatch::FromJson(*NestedObj));
-      }
-  }
-  if (Json->HasField(TEXT("match_create")))
-  {
-      const TSharedPtr<FJsonObject>* NestedObj;
-      if (Json->TryGetObjectField(TEXT("match_create"), NestedObj))
-      {
-        Result.MatchCreate.Add(FNakamaFNakamaMatchCreate::FromJson(*NestedObj));
-      }
-  }
-  if (Json->HasField(TEXT("match_data")))
-  {
-      const TSharedPtr<FJsonObject>* NestedObj;
-      if (Json->TryGetObjectField(TEXT("match_data"), NestedObj))
-      {
-        Result.MatchData.Add(FNakamaFNakamaMatchData::FromJson(*NestedObj));
-      }
-  }
-  if (Json->HasField(TEXT("match_data_send")))
-  {
-      const TSharedPtr<FJsonObject>* NestedObj;
-      if (Json->TryGetObjectField(TEXT("match_data_send"), NestedObj))
-      {
-        Result.MatchDataSend.Add(FNakamaFNakamaMatchDataSend::FromJson(*NestedObj));
-      }
-  }
-  if (Json->HasField(TEXT("match_join")))
-  {
-      const TSharedPtr<FJsonObject>* NestedObj;
-      if (Json->TryGetObjectField(TEXT("match_join"), NestedObj))
-      {
-        Result.MatchJoin.Add(FNakamaFNakamaMatchJoin::FromJson(*NestedObj));
-      }
-  }
-  if (Json->HasField(TEXT("match_leave")))
-  {
-      const TSharedPtr<FJsonObject>* NestedObj;
-      if (Json->TryGetObjectField(TEXT("match_leave"), NestedObj))
-      {
-        Result.MatchLeave.Add(FNakamaFNakamaMatchLeave::FromJson(*NestedObj));
-      }
-  }
-  if (Json->HasField(TEXT("match_presence_event")))
-  {
-      const TSharedPtr<FJsonObject>* NestedObj;
-      if (Json->TryGetObjectField(TEXT("match_presence_event"), NestedObj))
-      {
-        Result.MatchPresenceEvent.Add(FNakamaFNakamaMatchPresenceEvent::FromJson(*NestedObj));
-      }
-  }
-  if (Json->HasField(TEXT("matchmaker_add")))
-  {
-      const TSharedPtr<FJsonObject>* NestedObj;
-      if (Json->TryGetObjectField(TEXT("matchmaker_add"), NestedObj))
-      {
-        Result.MatchmakerAdd.Add(FNakamaFNakamaMatchmakerAdd::FromJson(*NestedObj));
-      }
-  }
-  if (Json->HasField(TEXT("matchmaker_matched")))
-  {
-      const TSharedPtr<FJsonObject>* NestedObj;
-      if (Json->TryGetObjectField(TEXT("matchmaker_matched"), NestedObj))
-      {
-        Result.MatchmakerMatched.Add(FNakamaFNakamaMatchmakerMatched::FromJson(*NestedObj));
-      }
-  }
-  if (Json->HasField(TEXT("matchmaker_remove")))
-  {
-      const TSharedPtr<FJsonObject>* NestedObj;
-      if (Json->TryGetObjectField(TEXT("matchmaker_remove"), NestedObj))
-      {
-        Result.MatchmakerRemove.Add(FNakamaFNakamaMatchmakerRemove::FromJson(*NestedObj));
-      }
-  }
-  if (Json->HasField(TEXT("matchmaker_ticket")))
-  {
-      const TSharedPtr<FJsonObject>* NestedObj;
-      if (Json->TryGetObjectField(TEXT("matchmaker_ticket"), NestedObj))
-      {
-        Result.MatchmakerTicket.Add(FNakamaFNakamaMatchmakerTicket::FromJson(*NestedObj));
-      }
-  }
-  if (Json->HasField(TEXT("notifications")))
-  {
-      const TSharedPtr<FJsonObject>* NestedObj;
-      if (Json->TryGetObjectField(TEXT("notifications"), NestedObj))
-      {
-        Result.Notifications.Add(FNakamaFNakamaNotifications::FromJson(*NestedObj));
-      }
-  }
-  if (Json->HasField(TEXT("rpc")))
-  {
-      Result.Rpc = Json->GetObjectField(TEXT("rpc"))
-  }
-  if (Json->HasField(TEXT("status")))
-  {
-      const TSharedPtr<FJsonObject>* NestedObj;
-      if (Json->TryGetObjectField(TEXT("status"), NestedObj))
-      {
-        Result.Status.Add(FNakamaFNakamaStatus::FromJson(*NestedObj));
-      }
-  }
-  if (Json->HasField(TEXT("status_follow")))
-  {
-      const TSharedPtr<FJsonObject>* NestedObj;
-      if (Json->TryGetObjectField(TEXT("status_follow"), NestedObj))
-      {
-        Result.StatusFollow.Add(FNakamaFNakamaStatusFollow::FromJson(*NestedObj));
-      }
-  }
-  if (Json->HasField(TEXT("status_presence_event")))
-  {
-      const TSharedPtr<FJsonObject>* NestedObj;
-      if (Json->TryGetObjectField(TEXT("status_presence_event"), NestedObj))
-      {
-        Result.StatusPresenceEvent.Add(FNakamaFNakamaStatusPresenceEvent::FromJson(*NestedObj));
-      }
-  }
-  if (Json->HasField(TEXT("status_unfollow")))
-  {
-      const TSharedPtr<FJsonObject>* NestedObj;
-      if (Json->TryGetObjectField(TEXT("status_unfollow"), NestedObj))
-      {
-        Result.StatusUnfollow.Add(FNakamaFNakamaStatusUnfollow::FromJson(*NestedObj));
-      }
-  }
-  if (Json->HasField(TEXT("status_update")))
-  {
-      const TSharedPtr<FJsonObject>* NestedObj;
-      if (Json->TryGetObjectField(TEXT("status_update"), NestedObj))
-      {
-        Result.StatusUpdate.Add(FNakamaFNakamaStatusUpdate::FromJson(*NestedObj));
-      }
-  }
-  if (Json->HasField(TEXT("stream_data")))
-  {
-      const TSharedPtr<FJsonObject>* NestedObj;
-      if (Json->TryGetObjectField(TEXT("stream_data"), NestedObj))
-      {
-        Result.StreamData.Add(FNakamaFNakamaStreamData::FromJson(*NestedObj));
-      }
-  }
-  if (Json->HasField(TEXT("stream_presence_event")))
-  {
-      const TSharedPtr<FJsonObject>* NestedObj;
-      if (Json->TryGetObjectField(TEXT("stream_presence_event"), NestedObj))
-      {
-        Result.StreamPresenceEvent.Add(FNakamaFNakamaStreamPresenceEvent::FromJson(*NestedObj));
-      }
-  }
-  if (Json->HasField(TEXT("ping")))
-  {
-      const TSharedPtr<FJsonObject>* NestedObj;
-      if (Json->TryGetObjectField(TEXT("ping"), NestedObj))
-      {
-        Result.Ping.Add(FNakamaFNakamaPing::FromJson(*NestedObj));
-      }
-  }
-  if (Json->HasField(TEXT("pong")))
-  {
-      const TSharedPtr<FJsonObject>* NestedObj;
-      if (Json->TryGetObjectField(TEXT("pong"), NestedObj))
-      {
-        Result.Pong.Add(FNakamaFNakamaPong::FromJson(*NestedObj));
-      }
-  }
-  if (Json->HasField(TEXT("party")))
-  {
-      const TSharedPtr<FJsonObject>* NestedObj;
-      if (Json->TryGetObjectField(TEXT("party"), NestedObj))
-      {
-        Result.Party.Add(FNakamaFNakamaParty::FromJson(*NestedObj));
-      }
-  }
-  if (Json->HasField(TEXT("party_create")))
-  {
-      const TSharedPtr<FJsonObject>* NestedObj;
-      if (Json->TryGetObjectField(TEXT("party_create"), NestedObj))
-      {
-        Result.PartyCreate.Add(FNakamaFNakamaPartyCreate::FromJson(*NestedObj));
-      }
-  }
-  if (Json->HasField(TEXT("party_join")))
-  {
-      const TSharedPtr<FJsonObject>* NestedObj;
-      if (Json->TryGetObjectField(TEXT("party_join"), NestedObj))
-      {
-        Result.PartyJoin.Add(FNakamaFNakamaPartyJoin::FromJson(*NestedObj));
-      }
-  }
-  if (Json->HasField(TEXT("party_leave")))
-  {
-      const TSharedPtr<FJsonObject>* NestedObj;
-      if (Json->TryGetObjectField(TEXT("party_leave"), NestedObj))
-      {
-        Result.PartyLeave.Add(FNakamaFNakamaPartyLeave::FromJson(*NestedObj));
-      }
-  }
-  if (Json->HasField(TEXT("party_promote")))
-  {
-      const TSharedPtr<FJsonObject>* NestedObj;
-      if (Json->TryGetObjectField(TEXT("party_promote"), NestedObj))
-      {
-        Result.PartyPromote.Add(FNakamaFNakamaPartyPromote::FromJson(*NestedObj));
-      }
-  }
-  if (Json->HasField(TEXT("party_leader")))
-  {
-      const TSharedPtr<FJsonObject>* NestedObj;
-      if (Json->TryGetObjectField(TEXT("party_leader"), NestedObj))
-      {
-        Result.PartyLeader.Add(FNakamaFNakamaPartyLeader::FromJson(*NestedObj));
-      }
-  }
-  if (Json->HasField(TEXT("party_accept")))
-  {
-      const TSharedPtr<FJsonObject>* NestedObj;
-      if (Json->TryGetObjectField(TEXT("party_accept"), NestedObj))
-      {
-        Result.PartyAccept.Add(FNakamaFNakamaPartyAccept::FromJson(*NestedObj));
-      }
-  }
-  if (Json->HasField(TEXT("party_remove")))
-  {
-      const TSharedPtr<FJsonObject>* NestedObj;
-      if (Json->TryGetObjectField(TEXT("party_remove"), NestedObj))
-      {
-        Result.PartyRemove.Add(FNakamaFNakamaPartyRemove::FromJson(*NestedObj));
-      }
-  }
-  if (Json->HasField(TEXT("party_close")))
-  {
-      const TSharedPtr<FJsonObject>* NestedObj;
-      if (Json->TryGetObjectField(TEXT("party_close"), NestedObj))
-      {
-        Result.PartyClose.Add(FNakamaFNakamaPartyClose::FromJson(*NestedObj));
-      }
-  }
-  if (Json->HasField(TEXT("party_join_request_list")))
-  {
-      const TSharedPtr<FJsonObject>* NestedObj;
-      if (Json->TryGetObjectField(TEXT("party_join_request_list"), NestedObj))
-      {
-        Result.PartyJoinRequestList.Add(FNakamaFNakamaPartyJoinRequestList::FromJson(*NestedObj));
-      }
-  }
-  if (Json->HasField(TEXT("party_join_request")))
-  {
-      const TSharedPtr<FJsonObject>* NestedObj;
-      if (Json->TryGetObjectField(TEXT("party_join_request"), NestedObj))
-      {
-        Result.PartyJoinRequest.Add(FNakamaFNakamaPartyJoinRequest::FromJson(*NestedObj));
-      }
-  }
-  if (Json->HasField(TEXT("party_matchmaker_add")))
-  {
-      const TSharedPtr<FJsonObject>* NestedObj;
-      if (Json->TryGetObjectField(TEXT("party_matchmaker_add"), NestedObj))
-      {
-        Result.PartyMatchmakerAdd.Add(FNakamaFNakamaPartyMatchmakerAdd::FromJson(*NestedObj));
-      }
-  }
-  if (Json->HasField(TEXT("party_matchmaker_remove")))
-  {
-      const TSharedPtr<FJsonObject>* NestedObj;
-      if (Json->TryGetObjectField(TEXT("party_matchmaker_remove"), NestedObj))
-      {
-        Result.PartyMatchmakerRemove.Add(FNakamaFNakamaPartyMatchmakerRemove::FromJson(*NestedObj));
-      }
-  }
-  if (Json->HasField(TEXT("party_matchmaker_ticket")))
-  {
-      const TSharedPtr<FJsonObject>* NestedObj;
-      if (Json->TryGetObjectField(TEXT("party_matchmaker_ticket"), NestedObj))
-      {
-        Result.PartyMatchmakerTicket.Add(FNakamaFNakamaPartyMatchmakerTicket::FromJson(*NestedObj));
-      }
-  }
-  if (Json->HasField(TEXT("party_data")))
-  {
-      const TSharedPtr<FJsonObject>* NestedObj;
-      if (Json->TryGetObjectField(TEXT("party_data"), NestedObj))
-      {
-        Result.PartyData.Add(FNakamaFNakamaPartyData::FromJson(*NestedObj));
-      }
-  }
-  if (Json->HasField(TEXT("party_data_send")))
-  {
-      const TSharedPtr<FJsonObject>* NestedObj;
-      if (Json->TryGetObjectField(TEXT("party_data_send"), NestedObj))
-      {
-        Result.PartyDataSend.Add(FNakamaFNakamaPartyDataSend::FromJson(*NestedObj));
-      }
-  }
-  if (Json->HasField(TEXT("party_presence_event")))
-  {
-      const TSharedPtr<FJsonObject>* NestedObj;
-      if (Json->TryGetObjectField(TEXT("party_presence_event"), NestedObj))
-      {
-        Result.PartyPresenceEvent.Add(FNakamaFNakamaPartyPresenceEvent::FromJson(*NestedObj));
-      }
-  }
-  if (Json->HasField(TEXT("party_update")))
-  {
-      const TSharedPtr<FJsonObject>* NestedObj;
-      if (Json->TryGetObjectField(TEXT("party_update"), NestedObj))
-      {
-        Result.PartyUpdate.Add(FNakamaFNakamaPartyUpdate::FromJson(*NestedObj));
-      }
-  }
-
-  Result.ParseTokens();
-  return Result;
-}
-
-TSharedPtr<FJsonObject> FNakamaRtEnvelope::ToJson() const noexcept
-{
-  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-  if (Cid.IsEmpty() == false)
-  {
-    Json->SetStringField(TEXT("cid"), Cid);
-  }
-  if (Channel.NumEmpty() == false)
-  {
-    Json->SetObjectField(TEXT("channel"), Channel.ToJson());
-  }
-  if (ChannelJoin.NumEmpty() == false)
-  {
-    Json->SetObjectField(TEXT("channel_join"), ChannelJoin.ToJson());
-  }
-  if (ChannelLeave.NumEmpty() == false)
-  {
-    Json->SetObjectField(TEXT("channel_leave"), ChannelLeave.ToJson());
-  }
-  if (ChannelMessage.NumEmpty() == false)
-  {
-    Json->SetObjectField(TEXT("channel_message"), ChannelMessage.ToJson());
-  }
-  if (ChannelMessageAck.NumEmpty() == false)
-  {
-    Json->SetObjectField(TEXT("channel_message_ack"), ChannelMessageAck.ToJson());
-  }
-  if (ChannelMessageSend.NumEmpty() == false)
-  {
-    Json->SetObjectField(TEXT("channel_message_send"), ChannelMessageSend.ToJson());
-  }
-  if (ChannelMessageUpdate.NumEmpty() == false)
-  {
-    Json->SetObjectField(TEXT("channel_message_update"), ChannelMessageUpdate.ToJson());
-  }
-  if (ChannelMessageRemove.NumEmpty() == false)
-  {
-    Json->SetObjectField(TEXT("channel_message_remove"), ChannelMessageRemove.ToJson());
-  }
-  if (ChannelPresenceEvent.NumEmpty() == false)
-  {
-    Json->SetObjectField(TEXT("channel_presence_event"), ChannelPresenceEvent.ToJson());
-  }
-  if (Error.NumEmpty() == false)
-  {
-    Json->SetObjectField(TEXT("error"), Error.ToJson());
-  }
-  if (Match.NumEmpty() == false)
-  {
-    Json->SetObjectField(TEXT("match"), Match.ToJson());
-  }
-  if (MatchCreate.NumEmpty() == false)
-  {
-    Json->SetObjectField(TEXT("match_create"), MatchCreate.ToJson());
-  }
-  if (MatchData.NumEmpty() == false)
-  {
-    Json->SetObjectField(TEXT("match_data"), MatchData.ToJson());
-  }
-  if (MatchDataSend.NumEmpty() == false)
-  {
-    Json->SetObjectField(TEXT("match_data_send"), MatchDataSend.ToJson());
-  }
-  if (MatchJoin.NumEmpty() == false)
-  {
-    Json->SetObjectField(TEXT("match_join"), MatchJoin.ToJson());
-  }
-  if (MatchLeave.NumEmpty() == false)
-  {
-    Json->SetObjectField(TEXT("match_leave"), MatchLeave.ToJson());
-  }
-  if (MatchPresenceEvent.NumEmpty() == false)
-  {
-    Json->SetObjectField(TEXT("match_presence_event"), MatchPresenceEvent.ToJson());
-  }
-  if (MatchmakerAdd.NumEmpty() == false)
-  {
-    Json->SetObjectField(TEXT("matchmaker_add"), MatchmakerAdd.ToJson());
-  }
-  if (MatchmakerMatched.NumEmpty() == false)
-  {
-    Json->SetObjectField(TEXT("matchmaker_matched"), MatchmakerMatched.ToJson());
-  }
-  if (MatchmakerRemove.NumEmpty() == false)
-  {
-    Json->SetObjectField(TEXT("matchmaker_remove"), MatchmakerRemove.ToJson());
-  }
-  if (MatchmakerTicket.NumEmpty() == false)
-  {
-    Json->SetObjectField(TEXT("matchmaker_ticket"), MatchmakerTicket.ToJson());
-  }
-  if (Notifications.NumEmpty() == false)
-  {
-    Json->SetObjectField(TEXT("notifications"), Notifications.ToJson());
-  }
-  if (Rpc.NumEmpty() == false)
-  {
-    Json->SetObjectField(TEXT("rpc"), Rpc.ToJson());
-  }
-  if (Status.NumEmpty() == false)
-  {
-    Json->SetObjectField(TEXT("status"), Status.ToJson());
-  }
-  if (StatusFollow.NumEmpty() == false)
-  {
-    Json->SetObjectField(TEXT("status_follow"), StatusFollow.ToJson());
-  }
-  if (StatusPresenceEvent.NumEmpty() == false)
-  {
-    Json->SetObjectField(TEXT("status_presence_event"), StatusPresenceEvent.ToJson());
-  }
-  if (StatusUnfollow.NumEmpty() == false)
-  {
-    Json->SetObjectField(TEXT("status_unfollow"), StatusUnfollow.ToJson());
-  }
-  if (StatusUpdate.NumEmpty() == false)
-  {
-    Json->SetObjectField(TEXT("status_update"), StatusUpdate.ToJson());
-  }
-  if (StreamData.NumEmpty() == false)
-  {
-    Json->SetObjectField(TEXT("stream_data"), StreamData.ToJson());
-  }
-  if (StreamPresenceEvent.NumEmpty() == false)
-  {
-    Json->SetObjectField(TEXT("stream_presence_event"), StreamPresenceEvent.ToJson());
-  }
-  if (Ping.NumEmpty() == false)
-  {
-    Json->SetObjectField(TEXT("ping"), Ping.ToJson());
-  }
-  if (Pong.NumEmpty() == false)
-  {
-    Json->SetObjectField(TEXT("pong"), Pong.ToJson());
-  }
-  if (Party.NumEmpty() == false)
-  {
-    Json->SetObjectField(TEXT("party"), Party.ToJson());
-  }
-  if (PartyCreate.NumEmpty() == false)
-  {
-    Json->SetObjectField(TEXT("party_create"), PartyCreate.ToJson());
-  }
-  if (PartyJoin.NumEmpty() == false)
-  {
-    Json->SetObjectField(TEXT("party_join"), PartyJoin.ToJson());
-  }
-  if (PartyLeave.NumEmpty() == false)
-  {
-    Json->SetObjectField(TEXT("party_leave"), PartyLeave.ToJson());
-  }
-  if (PartyPromote.NumEmpty() == false)
-  {
-    Json->SetObjectField(TEXT("party_promote"), PartyPromote.ToJson());
-  }
-  if (PartyLeader.NumEmpty() == false)
-  {
-    Json->SetObjectField(TEXT("party_leader"), PartyLeader.ToJson());
-  }
-  if (PartyAccept.NumEmpty() == false)
-  {
-    Json->SetObjectField(TEXT("party_accept"), PartyAccept.ToJson());
-  }
-  if (PartyRemove.NumEmpty() == false)
-  {
-    Json->SetObjectField(TEXT("party_remove"), PartyRemove.ToJson());
-  }
-  if (PartyClose.NumEmpty() == false)
-  {
-    Json->SetObjectField(TEXT("party_close"), PartyClose.ToJson());
-  }
-  if (PartyJoinRequestList.NumEmpty() == false)
-  {
-    Json->SetObjectField(TEXT("party_join_request_list"), PartyJoinRequestList.ToJson());
-  }
-  if (PartyJoinRequest.NumEmpty() == false)
-  {
-    Json->SetObjectField(TEXT("party_join_request"), PartyJoinRequest.ToJson());
-  }
-  if (PartyMatchmakerAdd.NumEmpty() == false)
-  {
-    Json->SetObjectField(TEXT("party_matchmaker_add"), PartyMatchmakerAdd.ToJson());
-  }
-  if (PartyMatchmakerRemove.NumEmpty() == false)
-  {
-    Json->SetObjectField(TEXT("party_matchmaker_remove"), PartyMatchmakerRemove.ToJson());
-  }
-  if (PartyMatchmakerTicket.NumEmpty() == false)
-  {
-    Json->SetObjectField(TEXT("party_matchmaker_ticket"), PartyMatchmakerTicket.ToJson());
-  }
-  if (PartyData.NumEmpty() == false)
-  {
-    Json->SetObjectField(TEXT("party_data"), PartyData.ToJson());
-  }
-  if (PartyDataSend.NumEmpty() == false)
-  {
-    Json->SetObjectField(TEXT("party_data_send"), PartyDataSend.ToJson());
-  }
-  if (PartyPresenceEvent.NumEmpty() == false)
-  {
-    Json->SetObjectField(TEXT("party_presence_event"), PartyPresenceEvent.ToJson());
-  }
-  if (PartyUpdate.NumEmpty() == false)
-  {
-    Json->SetObjectField(TEXT("party_update"), PartyUpdate.ToJson());
-  }
-}
-
 FNakamaRtUserPresence FNakamaRtUserPresence::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
   FNakamaRtUserPresence Result;
@@ -713,7 +96,7 @@ FNakamaRtChannel FNakamaRtChannel::FromJson(const TSharedPtr<FJsonObject>& Json)
           const TSharedPtr<FJsonObject>* ItemObj = nullptr;
           if (Item->TryGetObject(ItemObj) && ItemObj)
           {
-            Result.Presences.Add(FNakamaTArray<FNakamaUserPresence>::FromJson(*ItemObj));
+            Result.Presences.Add(FNakamaTArray<FNakamaRtUserPresence>::FromJson(*ItemObj));
           }
         }
       }
@@ -723,7 +106,7 @@ FNakamaRtChannel FNakamaRtChannel::FromJson(const TSharedPtr<FJsonObject>& Json)
       const TSharedPtr<FJsonObject>* NestedObj;
       if (Json->TryGetObjectField(TEXT("self"), NestedObj))
       {
-        Result.Self_.Add(FNakamaFNakamaUserPresence::FromJson(*NestedObj));
+        Result.Self_.Add(FNakamaFNakamaRtUserPresence::FromJson(*NestedObj));
       }
   }
   if (Json->HasField(TEXT("room_name")))
@@ -1092,7 +475,7 @@ FNakamaRtChannelPresenceEvent FNakamaRtChannelPresenceEvent::FromJson(const TSha
           const TSharedPtr<FJsonObject>* ItemObj = nullptr;
           if (Item->TryGetObject(ItemObj) && ItemObj)
           {
-            Result.Joins.Add(FNakamaTArray<FNakamaUserPresence>::FromJson(*ItemObj));
+            Result.Joins.Add(FNakamaTArray<FNakamaRtUserPresence>::FromJson(*ItemObj));
           }
         }
       }
@@ -1107,7 +490,7 @@ FNakamaRtChannelPresenceEvent FNakamaRtChannelPresenceEvent::FromJson(const TSha
           const TSharedPtr<FJsonObject>* ItemObj = nullptr;
           if (Item->TryGetObject(ItemObj) && ItemObj)
           {
-            Result.Leaves.Add(FNakamaTArray<FNakamaUserPresence>::FromJson(*ItemObj));
+            Result.Leaves.Add(FNakamaTArray<FNakamaRtUserPresence>::FromJson(*ItemObj));
           }
         }
       }
@@ -1262,7 +645,7 @@ FNakamaRtMatch FNakamaRtMatch::FromJson(const TSharedPtr<FJsonObject>& Json) noe
           const TSharedPtr<FJsonObject>* ItemObj = nullptr;
           if (Item->TryGetObject(ItemObj) && ItemObj)
           {
-            Result.Presences.Add(FNakamaTArray<FNakamaUserPresence>::FromJson(*ItemObj));
+            Result.Presences.Add(FNakamaTArray<FNakamaRtUserPresence>::FromJson(*ItemObj));
           }
         }
       }
@@ -1272,7 +655,7 @@ FNakamaRtMatch FNakamaRtMatch::FromJson(const TSharedPtr<FJsonObject>& Json) noe
       const TSharedPtr<FJsonObject>* NestedObj;
       if (Json->TryGetObjectField(TEXT("self"), NestedObj))
       {
-        Result.Self_.Add(FNakamaFNakamaUserPresence::FromJson(*NestedObj));
+        Result.Self_.Add(FNakamaFNakamaRtUserPresence::FromJson(*NestedObj));
       }
   }
 
@@ -1355,7 +738,7 @@ FNakamaRtMatchData FNakamaRtMatchData::FromJson(const TSharedPtr<FJsonObject>& J
       const TSharedPtr<FJsonObject>* NestedObj;
       if (Json->TryGetObjectField(TEXT("presence"), NestedObj))
       {
-        Result.Presence.Add(FNakamaFNakamaUserPresence::FromJson(*NestedObj));
+        Result.Presence.Add(FNakamaFNakamaRtUserPresence::FromJson(*NestedObj));
       }
   }
   if (Json->HasField(TEXT("op_code")))
@@ -1429,7 +812,7 @@ FNakamaRtMatchDataSend FNakamaRtMatchDataSend::FromJson(const TSharedPtr<FJsonOb
           const TSharedPtr<FJsonObject>* ItemObj = nullptr;
           if (Item->TryGetObject(ItemObj) && ItemObj)
           {
-            Result.Presences.Add(FNakamaTArray<FNakamaUserPresence>::FromJson(*ItemObj));
+            Result.Presences.Add(FNakamaTArray<FNakamaRtUserPresence>::FromJson(*ItemObj));
           }
         }
       }
@@ -1572,7 +955,7 @@ FNakamaRtMatchPresenceEvent FNakamaRtMatchPresenceEvent::FromJson(const TSharedP
           const TSharedPtr<FJsonObject>* ItemObj = nullptr;
           if (Item->TryGetObject(ItemObj) && ItemObj)
           {
-            Result.Joins.Add(FNakamaTArray<FNakamaUserPresence>::FromJson(*ItemObj));
+            Result.Joins.Add(FNakamaTArray<FNakamaRtUserPresence>::FromJson(*ItemObj));
           }
         }
       }
@@ -1587,7 +970,7 @@ FNakamaRtMatchPresenceEvent FNakamaRtMatchPresenceEvent::FromJson(const TSharedP
           const TSharedPtr<FJsonObject>* ItemObj = nullptr;
           if (Item->TryGetObject(ItemObj) && ItemObj)
           {
-            Result.Leaves.Add(FNakamaTArray<FNakamaUserPresence>::FromJson(*ItemObj));
+            Result.Leaves.Add(FNakamaTArray<FNakamaRtUserPresence>::FromJson(*ItemObj));
           }
         }
       }
@@ -1713,9 +1096,9 @@ TSharedPtr<FJsonObject> FNakamaRtMatchmakerAdd::ToJson() const noexcept
   }
 }
 
-FNakamaRtMatchmakerMatched_MatchmakerUser FNakamaRtMatchmakerMatched_MatchmakerUser::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
+FNakamaRtMatchmakerMatchedMatchmakerUser FNakamaRtMatchmakerMatchedMatchmakerUser::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
-  FNakamaRtMatchmakerMatched_MatchmakerUser Result;
+  FNakamaRtMatchmakerMatchedMatchmakerUser Result;
   if (!Json.IsValid())
   {
     return Result;
@@ -1725,7 +1108,7 @@ FNakamaRtMatchmakerMatched_MatchmakerUser FNakamaRtMatchmakerMatched_MatchmakerU
       const TSharedPtr<FJsonObject>* NestedObj;
       if (Json->TryGetObjectField(TEXT("presence"), NestedObj))
       {
-        Result.Presence.Add(FNakamaFNakamaUserPresence::FromJson(*NestedObj));
+        Result.Presence.Add(FNakamaFNakamaRtUserPresence::FromJson(*NestedObj));
       }
   }
   if (Json->HasField(TEXT("party_id")))
@@ -1759,7 +1142,7 @@ FNakamaRtMatchmakerMatched_MatchmakerUser FNakamaRtMatchmakerMatched_MatchmakerU
   return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaRtMatchmakerMatched_MatchmakerUser::ToJson() const noexcept
+TSharedPtr<FJsonObject> FNakamaRtMatchmakerMatchedMatchmakerUser::ToJson() const noexcept
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
   if (Presence.NumEmpty() == false)
@@ -1811,7 +1194,7 @@ FNakamaRtMatchmakerMatched FNakamaRtMatchmakerMatched::FromJson(const TSharedPtr
           const TSharedPtr<FJsonObject>* ItemObj = nullptr;
           if (Item->TryGetObject(ItemObj) && ItemObj)
           {
-            Result.Users.Add(FNakamaTArray<FNakamaMatchmakerMatchedMatchmakerUser>::FromJson(*ItemObj));
+            Result.Users.Add(FNakamaTArray<FNakamaRtMatchmakerMatchedMatchmakerUser>::FromJson(*ItemObj));
           }
         }
       }
@@ -1821,7 +1204,7 @@ FNakamaRtMatchmakerMatched FNakamaRtMatchmakerMatched::FromJson(const TSharedPtr
       const TSharedPtr<FJsonObject>* NestedObj;
       if (Json->TryGetObjectField(TEXT("self"), NestedObj))
       {
-        Result.Self_.Add(FNakamaFNakamaMatchmakerMatchedMatchmakerUser::FromJson(*NestedObj));
+        Result.Self_.Add(FNakamaFNakamaRtMatchmakerMatchedMatchmakerUser::FromJson(*NestedObj));
       }
   }
   if (Json->HasField(TEXT("match_id")))
@@ -1982,7 +1365,7 @@ FNakamaRtParty FNakamaRtParty::FromJson(const TSharedPtr<FJsonObject>& Json) noe
       const TSharedPtr<FJsonObject>* NestedObj;
       if (Json->TryGetObjectField(TEXT("self"), NestedObj))
       {
-        Result.Self_.Add(FNakamaFNakamaUserPresence::FromJson(*NestedObj));
+        Result.Self_.Add(FNakamaFNakamaRtUserPresence::FromJson(*NestedObj));
       }
   }
   if (Json->HasField(TEXT("leader")))
@@ -1990,7 +1373,7 @@ FNakamaRtParty FNakamaRtParty::FromJson(const TSharedPtr<FJsonObject>& Json) noe
       const TSharedPtr<FJsonObject>* NestedObj;
       if (Json->TryGetObjectField(TEXT("leader"), NestedObj))
       {
-        Result.Leader.Add(FNakamaFNakamaUserPresence::FromJson(*NestedObj));
+        Result.Leader.Add(FNakamaFNakamaRtUserPresence::FromJson(*NestedObj));
       }
   }
   if (Json->HasField(TEXT("presences")))
@@ -2003,7 +1386,7 @@ FNakamaRtParty FNakamaRtParty::FromJson(const TSharedPtr<FJsonObject>& Json) noe
           const TSharedPtr<FJsonObject>* ItemObj = nullptr;
           if (Item->TryGetObject(ItemObj) && ItemObj)
           {
-            Result.Presences.Add(FNakamaTArray<FNakamaUserPresence>::FromJson(*ItemObj));
+            Result.Presences.Add(FNakamaTArray<FNakamaRtUserPresence>::FromJson(*ItemObj));
           }
         }
       }
@@ -2223,7 +1606,7 @@ FNakamaRtPartyPromote FNakamaRtPartyPromote::FromJson(const TSharedPtr<FJsonObje
       const TSharedPtr<FJsonObject>* NestedObj;
       if (Json->TryGetObjectField(TEXT("presence"), NestedObj))
       {
-        Result.Presence.Add(FNakamaFNakamaUserPresence::FromJson(*NestedObj));
+        Result.Presence.Add(FNakamaFNakamaRtUserPresence::FromJson(*NestedObj));
       }
   }
 
@@ -2260,7 +1643,7 @@ FNakamaRtPartyLeader FNakamaRtPartyLeader::FromJson(const TSharedPtr<FJsonObject
       const TSharedPtr<FJsonObject>* NestedObj;
       if (Json->TryGetObjectField(TEXT("presence"), NestedObj))
       {
-        Result.Presence.Add(FNakamaFNakamaUserPresence::FromJson(*NestedObj));
+        Result.Presence.Add(FNakamaFNakamaRtUserPresence::FromJson(*NestedObj));
       }
   }
 
@@ -2297,7 +1680,7 @@ FNakamaRtPartyAccept FNakamaRtPartyAccept::FromJson(const TSharedPtr<FJsonObject
       const TSharedPtr<FJsonObject>* NestedObj;
       if (Json->TryGetObjectField(TEXT("presence"), NestedObj))
       {
-        Result.Presence.Add(FNakamaFNakamaUserPresence::FromJson(*NestedObj));
+        Result.Presence.Add(FNakamaFNakamaRtUserPresence::FromJson(*NestedObj));
       }
   }
 
@@ -2334,7 +1717,7 @@ FNakamaRtPartyRemove FNakamaRtPartyRemove::FromJson(const TSharedPtr<FJsonObject
       const TSharedPtr<FJsonObject>* NestedObj;
       if (Json->TryGetObjectField(TEXT("presence"), NestedObj))
       {
-        Result.Presence.Add(FNakamaFNakamaUserPresence::FromJson(*NestedObj));
+        Result.Presence.Add(FNakamaFNakamaRtUserPresence::FromJson(*NestedObj));
       }
   }
 
@@ -2426,7 +1809,7 @@ FNakamaRtPartyJoinRequest FNakamaRtPartyJoinRequest::FromJson(const TSharedPtr<F
           const TSharedPtr<FJsonObject>* ItemObj = nullptr;
           if (Item->TryGetObject(ItemObj) && ItemObj)
           {
-            Result.Presences.Add(FNakamaTArray<FNakamaUserPresence>::FromJson(*ItemObj));
+            Result.Presences.Add(FNakamaTArray<FNakamaRtUserPresence>::FromJson(*ItemObj));
           }
         }
       }
@@ -2633,7 +2016,7 @@ FNakamaRtPartyData FNakamaRtPartyData::FromJson(const TSharedPtr<FJsonObject>& J
       const TSharedPtr<FJsonObject>* NestedObj;
       if (Json->TryGetObjectField(TEXT("presence"), NestedObj))
       {
-        Result.Presence.Add(FNakamaFNakamaUserPresence::FromJson(*NestedObj));
+        Result.Presence.Add(FNakamaFNakamaRtUserPresence::FromJson(*NestedObj));
       }
   }
   if (Json->HasField(TEXT("op_code")))
@@ -2732,7 +2115,7 @@ FNakamaRtPartyPresenceEvent FNakamaRtPartyPresenceEvent::FromJson(const TSharedP
           const TSharedPtr<FJsonObject>* ItemObj = nullptr;
           if (Item->TryGetObject(ItemObj) && ItemObj)
           {
-            Result.Joins.Add(FNakamaTArray<FNakamaUserPresence>::FromJson(*ItemObj));
+            Result.Joins.Add(FNakamaTArray<FNakamaRtUserPresence>::FromJson(*ItemObj));
           }
         }
       }
@@ -2747,7 +2130,7 @@ FNakamaRtPartyPresenceEvent FNakamaRtPartyPresenceEvent::FromJson(const TSharedP
           const TSharedPtr<FJsonObject>* ItemObj = nullptr;
           if (Item->TryGetObject(ItemObj) && ItemObj)
           {
-            Result.Leaves.Add(FNakamaTArray<FNakamaUserPresence>::FromJson(*ItemObj));
+            Result.Leaves.Add(FNakamaTArray<FNakamaRtUserPresence>::FromJson(*ItemObj));
           }
         }
       }
@@ -2835,7 +2218,7 @@ FNakamaRtStatus FNakamaRtStatus::FromJson(const TSharedPtr<FJsonObject>& Json) n
           const TSharedPtr<FJsonObject>* ItemObj = nullptr;
           if (Item->TryGetObject(ItemObj) && ItemObj)
           {
-            Result.Presences.Add(FNakamaTArray<FNakamaUserPresence>::FromJson(*ItemObj));
+            Result.Presences.Add(FNakamaTArray<FNakamaRtUserPresence>::FromJson(*ItemObj));
           }
         }
       }
@@ -2933,7 +2316,7 @@ FNakamaRtStatusPresenceEvent FNakamaRtStatusPresenceEvent::FromJson(const TShare
           const TSharedPtr<FJsonObject>* ItemObj = nullptr;
           if (Item->TryGetObject(ItemObj) && ItemObj)
           {
-            Result.Joins.Add(FNakamaTArray<FNakamaUserPresence>::FromJson(*ItemObj));
+            Result.Joins.Add(FNakamaTArray<FNakamaRtUserPresence>::FromJson(*ItemObj));
           }
         }
       }
@@ -2948,7 +2331,7 @@ FNakamaRtStatusPresenceEvent FNakamaRtStatusPresenceEvent::FromJson(const TShare
           const TSharedPtr<FJsonObject>* ItemObj = nullptr;
           if (Item->TryGetObject(ItemObj) && ItemObj)
           {
-            Result.Leaves.Add(FNakamaTArray<FNakamaUserPresence>::FromJson(*ItemObj));
+            Result.Leaves.Add(FNakamaTArray<FNakamaRtUserPresence>::FromJson(*ItemObj));
           }
         }
       }
@@ -3104,7 +2487,7 @@ FNakamaRtStreamData FNakamaRtStreamData::FromJson(const TSharedPtr<FJsonObject>&
       const TSharedPtr<FJsonObject>* NestedObj;
       if (Json->TryGetObjectField(TEXT("stream"), NestedObj))
       {
-        Result.Stream.Add(FNakamaFNakamaStream::FromJson(*NestedObj));
+        Result.Stream.Add(FNakamaFNakamaRtStream::FromJson(*NestedObj));
       }
   }
   if (Json->HasField(TEXT("sender")))
@@ -3112,7 +2495,7 @@ FNakamaRtStreamData FNakamaRtStreamData::FromJson(const TSharedPtr<FJsonObject>&
       const TSharedPtr<FJsonObject>* NestedObj;
       if (Json->TryGetObjectField(TEXT("sender"), NestedObj))
       {
-        Result.Sender.Add(FNakamaFNakamaUserPresence::FromJson(*NestedObj));
+        Result.Sender.Add(FNakamaFNakamaRtUserPresence::FromJson(*NestedObj));
       }
   }
   if (Json->HasField(TEXT("data")))
@@ -3161,7 +2544,7 @@ FNakamaRtStreamPresenceEvent FNakamaRtStreamPresenceEvent::FromJson(const TShare
       const TSharedPtr<FJsonObject>* NestedObj;
       if (Json->TryGetObjectField(TEXT("stream"), NestedObj))
       {
-        Result.Stream.Add(FNakamaFNakamaStream::FromJson(*NestedObj));
+        Result.Stream.Add(FNakamaFNakamaRtStream::FromJson(*NestedObj));
       }
   }
   if (Json->HasField(TEXT("joins")))
@@ -3174,7 +2557,7 @@ FNakamaRtStreamPresenceEvent FNakamaRtStreamPresenceEvent::FromJson(const TShare
           const TSharedPtr<FJsonObject>* ItemObj = nullptr;
           if (Item->TryGetObject(ItemObj) && ItemObj)
           {
-            Result.Joins.Add(FNakamaTArray<FNakamaUserPresence>::FromJson(*ItemObj));
+            Result.Joins.Add(FNakamaTArray<FNakamaRtUserPresence>::FromJson(*ItemObj));
           }
         }
       }
@@ -3189,7 +2572,7 @@ FNakamaRtStreamPresenceEvent FNakamaRtStreamPresenceEvent::FromJson(const TShare
           const TSharedPtr<FJsonObject>* ItemObj = nullptr;
           if (Item->TryGetObject(ItemObj) && ItemObj)
           {
-            Result.Leaves.Add(FNakamaTArray<FNakamaUserPresence>::FromJson(*ItemObj));
+            Result.Leaves.Add(FNakamaTArray<FNakamaRtUserPresence>::FromJson(*ItemObj));
           }
         }
       }

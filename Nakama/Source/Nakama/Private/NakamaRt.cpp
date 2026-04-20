@@ -17,7 +17,6 @@
 /* This code is auto-generated. DO NOT EDIT. */
 
 #include "NakamaRt.h"
-#include "NakamaApi.h"
 
 namespace Nakama
 {
@@ -174,7 +173,7 @@ TNakamaFuture<FNakamaWebSocketResponse> FNakamaRtClient::MatchDataSend(
   const FString& MatchId
   , int64 OpCode
   , const TArray<uint8>& Data
-  , const TArray<FNakamaUserPresence>& Presences
+  , const TArray<FNakamaRtUserPresence>& Presences
   , bool Reliable
 ) noexcept
 {
@@ -496,7 +495,7 @@ TNakamaFuture<FNakamaWebSocketResponse> FNakamaRtClient::PartyLeave(
 
 TNakamaFuture<FNakamaWebSocketResponse> FNakamaRtClient::PartyPromote(
   const FString& PartyId
-  , const FNakamaUserPresence& Presence
+  , const FNakamaRtUserPresence& Presence
 ) noexcept
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
@@ -518,7 +517,7 @@ TNakamaFuture<FNakamaWebSocketResponse> FNakamaRtClient::PartyPromote(
 
 TNakamaFuture<FNakamaWebSocketResponse> FNakamaRtClient::PartyAccept(
   const FString& PartyId
-  , const FNakamaUserPresence& Presence
+  , const FNakamaRtUserPresence& Presence
 ) noexcept
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
@@ -540,7 +539,7 @@ TNakamaFuture<FNakamaWebSocketResponse> FNakamaRtClient::PartyAccept(
 
 TNakamaFuture<FNakamaWebSocketResponse> FNakamaRtClient::PartyRemove(
   const FString& PartyId
-  , const FNakamaUserPresence& Presence
+  , const FNakamaRtUserPresence& Presence
 ) noexcept
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();

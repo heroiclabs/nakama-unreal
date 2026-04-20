@@ -240,17 +240,19 @@ func (r *UnrealTypeMapper) ResolveIdentifier(input string, identifierType module
 	switch identifierType {
 	case modules.IdentifierTypeDefault:
 		{
-			if isReservedWord(input) {
-				return textcase.PascalCase(input) + "_"
+			out := textcase.PascalCase(input)
+			if isReservedWord(out) {
+				return out + "_"
 			}
-			return textcase.PascalCase(input)
+			return out
 		}
 	case modules.IdentifierTypeEnumMember:
 		{
-			if isReservedWord(input) {
-				return strings.ToUpper(textcase.SnakeCase(input) + "_")
+			out := strings.ToUpper(textcase.SnakeCase(input))
+			if isReservedWord(out) {
+				return out + "_"
 			}
-			return strings.ToUpper(textcase.SnakeCase(input))
+			return out
 		}
 	default:
 		{
@@ -272,6 +274,7 @@ func (r *UnrealTypeMapper) ResolveEntry(intype string) modules.TypeEntry {
 			MapParam:          "const TMap<FString, " + base + ">&",
 			MapType:           "TMap<FString, " + base + ">",
 			FieldType:         base,
+			EnumType:          "E" + r.targetSystem + textcase.PascalCase(intype),
 			RepeatedFieldType: "TArray<" + base + ">",
 			QueryFormat:       "%s",
 			EmptyCheck:        "NumEmpty",
@@ -291,14 +294,12 @@ func (r *UnrealTypeMapper) ResolveDelegateName(name string) string {
 
 // isReservedWord checks if a given string is reserved (e.g. is a language keyword)
 func isReservedWord(s string) bool {
-	lower := strings.ToLower(s)
-
-	_, isCppKeyword := cppKeywords[lower]
+	_, isCppKeyword := cppKeywords[s]
 	if isCppKeyword {
 		return true
 	}
 
-	_, isUeKeyword := ueParamKeywords[lower]
+	_, isUeKeyword := ueParamKeywords[s]
 	if isUeKeyword {
 		return true
 	}
@@ -308,7 +309,7 @@ func isReservedWord(s string) bool {
 
 // ueParamKeywords lists names that UHT rejects as UFUNCTION parameter names.
 var ueParamKeywords = map[string]struct{}{
-	"self": {},
+	"Self": {},
 }
 
 var cppKeywords = map[string]struct{}{

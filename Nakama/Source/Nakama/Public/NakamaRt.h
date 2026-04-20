@@ -20,6 +20,7 @@
 
 #include "CoreMinimal.h"
 #include "NakamaWebSocketSubsystem.h"
+#include "NakamaApi.h"
 #include "NakamaRtTypes.h"
 
 namespace Nakama
@@ -142,7 +143,7 @@ namespace Nakama
       const FString& MatchId
       , int64 OpCode
       , const TArray<uint8>& Data
-      , const TArray<FNakamaUserPresence>& Presences
+      , const TArray<FNakamaRtUserPresence>& Presences
       , bool Reliable
     ) noexcept;
 
@@ -279,7 +280,7 @@ namespace Nakama
     */
     NAKAMA_API TNakamaFuture<FNakamaWebSocketResponse> FNakamaRtClient::PartyPromote(
       const FString& PartyId
-      , const FNakamaUserPresence& Presence
+      , const FNakamaRtUserPresence& Presence
     ) noexcept;
 
     /*
@@ -290,7 +291,7 @@ namespace Nakama
     */
     NAKAMA_API TNakamaFuture<FNakamaWebSocketResponse> FNakamaRtClient::PartyAccept(
       const FString& PartyId
-      , const FNakamaUserPresence& Presence
+      , const FNakamaRtUserPresence& Presence
     ) noexcept;
 
     /*
@@ -301,7 +302,7 @@ namespace Nakama
     */
     NAKAMA_API TNakamaFuture<FNakamaWebSocketResponse> FNakamaRtClient::PartyRemove(
       const FString& PartyId
-      , const FNakamaUserPresence& Presence
+      , const FNakamaRtUserPresence& Presence
     ) noexcept;
 
     /*

@@ -50,6 +50,7 @@ func main() {
 	rtMapper := apimappers.UnrealRtApiMapper{}
 	bpMapper := apimappers.UnrealBlueprintHttpApiMapper{}
 	nakamaTypeMap := typemappers.NewUnrealTypeMapper("Nakama")
+	nakamaRtTypeMap := typemappers.NewUnrealTypeMapper("NakamaRt")
 	satoriTypeMap := typemappers.NewUnrealTypeMapper("Satori")
 	funcMap := getFuncMap()
 
@@ -77,11 +78,11 @@ func main() {
 	nakamaRtApiProtos := []string{"protos/nakama-types.proto", "protos/realtime.proto"}
 	nakamaRtTypesProtos := []string{"protos/realtime.proto"}
 	nakamaRtApiRequires, error := modules.MakeProductionRequirements(
-		nakamaRtApiProtos, rtMapper, nakamaTypeMap, funcMap,
+		nakamaRtApiProtos, rtMapper, nakamaRtTypeMap, funcMap,
 	)
 	// For type regeneration, do not use the nakama-types; can reuse httpMapper, too.
 	nakamaRtTypesRequires, error := modules.MakeProductionRequirements(
-		nakamaRtTypesProtos, httpMapper, nakamaTypeMap, funcMap,
+		nakamaRtTypesProtos, httpMapper, nakamaRtTypeMap, funcMap,
 	)
 	if error != nil {
 		log.Fatalf("Failed to make production requirements: %s", error)

@@ -19,7 +19,19 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "NakamaTypes.h"
 #include "NakamaRtTypes.generated.h"
+
+USTRUCT(BlueprintType)
+struct FNakamaRtNotification : public FNakamaNotification 
+{
+    GENERATED_BODY()
+};
+USTRUCT(BlueprintType)
+struct FNakamaRtRpc : public FNakamaRpc 
+{
+    GENERATED_BODY()
+};
 /*
 * The type of chat channel.
 */
@@ -45,222 +57,6 @@ enum class ENakamaRtErrorCode : uint8
   , MATCH_JOIN_REJECTED = 5 //  The match join was rejected.
   , RUNTIME_FUNCTION_NOT_FOUND = 6 //  The runtime function does not exist on the server.
   , RUNTIME_FUNCTION_EXCEPTION = 7 //  The runtime function executed with an error.
-};
-
-/*
-*  An envelope for a realtime message.
-*/
-USTRUCT(BlueprintType)
-struct NAKAMAAPI_API FNakamaRtEnvelope
-{
-  GENERATED_BODY()
-
-  /**  */
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  FString Cid;
-
-  /**  [server] A response from a channel join operation. */
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  FNakamaChannel Channel;
-
-  /**  [client] Join a realtime chat channel. */
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  FNakamaChannelJoin ChannelJoin;
-
-  /**  [client] Leave a realtime chat channel. */
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  FNakamaChannelLeave ChannelLeave;
-
-  /**  [server] An incoming message on a realtime chat channel. */
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  FNakamaChannelMessage ChannelMessage;
-
-  /**  [server] An acknowledgement received in response to sending a message on a chat channel. */
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  FNakamaChannelMessageAck ChannelMessageAck;
-
-  /**  [client] Send a message to a realtime chat channel. */
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  FNakamaChannelMessageSend ChannelMessageSend;
-
-  /**  [client] Update a message previously sent to a realtime chat channel. */
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  FNakamaChannelMessageUpdate ChannelMessageUpdate;
-
-  /**  [client] Remove a message previously sent to a realtime chat channel. */
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  FNakamaChannelMessageRemove ChannelMessageRemove;
-
-  /**  [server] Presence update for a particular realtime chat channel. */
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  FNakamaChannelPresenceEvent ChannelPresenceEvent;
-
-  /**  [server] Describes an error which occurred on the server. */
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  FNakamaError Error;
-
-  /**  [server] Incoming information about a realtime match. */
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  FNakamaMatch Match;
-
-  /**  [client] A client to server request to create a realtime match. */
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  FNakamaMatchCreate MatchCreate;
-
-  /**  [server] Incoming realtime match data delivered from the server. */
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  FNakamaMatchData MatchData;
-
-  /**  [client] A client to server request to send data to a realtime match. */
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  FNakamaMatchDataSend MatchDataSend;
-
-  /**  [client] A client to server request to join a realtime match. */
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  FNakamaMatchJoin MatchJoin;
-
-  /**  [client] A client to server request to leave a realtime match. */
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  FNakamaMatchLeave MatchLeave;
-
-  /**  [server] Presence update for a particular realtime match. */
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  FNakamaMatchPresenceEvent MatchPresenceEvent;
-
-  /**  [client] Submit a new matchmaking process request. */
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  FNakamaMatchmakerAdd MatchmakerAdd;
-
-  /**  [server] A successful matchmaking result. */
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  FNakamaMatchmakerMatched MatchmakerMatched;
-
-  /**  [client] Cancel a matchmaking process using a ticket. */
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  FNakamaMatchmakerRemove MatchmakerRemove;
-
-  /**  [server] A response from starting a new matchmaking process. */
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  FNakamaMatchmakerTicket MatchmakerTicket;
-
-  /**  [server] Notifications send by the server. */
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  FNakamaNotifications Notifications;
-
-  /**  [client][server] RPC call or response. */
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  FNakamaRpc Rpc;
-
-  /**  [server] An incoming status snapshot for some set of users. */
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  FNakamaStatus Status;
-
-  /**  [client] Start following some set of users to receive their status updates. */
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  FNakamaStatusFollow StatusFollow;
-
-  /**  [server] An incoming status update. */
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  FNakamaStatusPresenceEvent StatusPresenceEvent;
-
-  /**  [client] Stop following some set of users to no longer receive their status updates. */
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  FNakamaStatusUnfollow StatusUnfollow;
-
-  /**  [client] Set the user's own status. */
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  FNakamaStatusUpdate StatusUpdate;
-
-  /**  [server] A data message delivered over a stream. */
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  FNakamaStreamData StreamData;
-
-  /**  [server] Presence update for a particular stream. */
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  FNakamaStreamPresenceEvent StreamPresenceEvent;
-
-  /**  [server] Application-level heartbeat and connection check. */
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  FNakamaPing Ping;
-
-  /**  [server] Application-level heartbeat and connection check response. */
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  FNakamaPong Pong;
-
-  /**  [server] Incoming information about a party. */
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  FNakamaParty Party;
-
-  /**  [client] Create a party. */
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  FNakamaPartyCreate PartyCreate;
-
-  /**  [client] Join a party, or request to join if the party is not open. */
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  FNakamaPartyJoin PartyJoin;
-
-  /**  [client] Leave a party. */
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  FNakamaPartyLeave PartyLeave;
-
-  /**  [client] Promote a new party leader. */
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  FNakamaPartyPromote PartyPromote;
-
-  /**  [server] Announcement of a new party leader. */
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  FNakamaPartyLeader PartyLeader;
-
-  /**  [client] Accept a request to join. */
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  FNakamaPartyAccept PartyAccept;
-
-  /**  [client] Kick a party member, or decline a request to join. */
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  FNakamaPartyRemove PartyRemove;
-
-  /**  [client] End a party, kicking all party members and closing it. */
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  FNakamaPartyClose PartyClose;
-
-  /**  [client] Request a list of pending join requests for a party. */
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  FNakamaPartyJoinRequestList PartyJoinRequestList;
-
-  /**  [server] Incoming notification for one or more new presences attempting to join the party. */
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  FNakamaPartyJoinRequest PartyJoinRequest;
-
-  /**  [client] Begin matchmaking as a party. */
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  FNakamaPartyMatchmakerAdd PartyMatchmakerAdd;
-
-  /**  [client] Cancel a party matchmaking process using a ticket. */
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  FNakamaPartyMatchmakerRemove PartyMatchmakerRemove;
-
-  /**  [client] A response from starting a new party matchmaking process. */
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  FNakamaPartyMatchmakerTicket PartyMatchmakerTicket;
-
-  /**  [server] Incoming party data delivered from the server. */
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  FNakamaPartyData PartyData;
-
-  /**  [client] A client to server request to send data to a party. */
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  FNakamaPartyDataSend PartyDataSend;
-
-  /**  [server] Presence update for a particular party. */
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  FNakamaPartyPresenceEvent PartyPresenceEvent;
-
-  /**  [client] Update Party label and whether it's open or closed. */
-  UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  FNakamaPartyUpdate PartyUpdate;
-
-  static FNakamaRtEnvelope FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
-  TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /*
@@ -309,11 +105,11 @@ struct NAKAMAAPI_API FNakamaRtChannel
 
   /**  The users currently in the channel. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  TArray<FNakamaUserPresence> Presences;
+  TArray<FNakamaRtUserPresence> Presences;
 
   /**  A reference to the current user's presence in the channel. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  FNakamaUserPresence Self_;
+  FNakamaRtUserPresence Self_;
 
   /**  The name of the chat room, or an empty string if this message was not sent through a chat room. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
@@ -513,11 +309,11 @@ struct NAKAMAAPI_API FNakamaRtChannelPresenceEvent
 
   /**  Presences joining the channel as part of this event, if any. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  TArray<FNakamaUserPresence> Joins;
+  TArray<FNakamaRtUserPresence> Joins;
 
   /**  Presences leaving the channel as part of this event, if any. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  TArray<FNakamaUserPresence> Leaves;
+  TArray<FNakamaRtUserPresence> Leaves;
 
   /**  The name of the chat room, or an empty string if this message was not sent through a chat room. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
@@ -589,11 +385,11 @@ struct NAKAMAAPI_API FNakamaRtMatch
 
   /**  The users currently in the match. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  TArray<FNakamaUserPresence> Presences;
+  TArray<FNakamaRtUserPresence> Presences;
 
   /**  A reference to the current user's presence in the match. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  FNakamaUserPresence Self_;
+  FNakamaRtUserPresence Self_;
 
   static FNakamaRtMatch FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
   TSharedPtr<FJsonObject> ToJson() const noexcept;
@@ -629,7 +425,7 @@ struct NAKAMAAPI_API FNakamaRtMatchData
 
   /**  A reference to the user presence that sent this data, if any. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  FNakamaUserPresence Presence;
+  FNakamaRtUserPresence Presence;
 
   /**  Op code value. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
@@ -669,7 +465,7 @@ struct NAKAMAAPI_API FNakamaRtMatchDataSend
 
   /**  List of presences in the match to deliver to, if filtering is required. Otherwise deliver to everyone in the match. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  TArray<FNakamaUserPresence> Presences;
+  TArray<FNakamaRtUserPresence> Presences;
 
   /**  True if the data should be sent reliably, false otherwise. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
@@ -733,11 +529,11 @@ struct NAKAMAAPI_API FNakamaRtMatchPresenceEvent
 
   /**  User presences that have just joined the match. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  TArray<FNakamaUserPresence> Joins;
+  TArray<FNakamaRtUserPresence> Joins;
 
   /**  User presences that have just left the match. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  TArray<FNakamaUserPresence> Leaves;
+  TArray<FNakamaRtUserPresence> Leaves;
 
   static FNakamaRtMatchPresenceEvent FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
   TSharedPtr<FJsonObject> ToJson() const noexcept;
@@ -783,13 +579,13 @@ struct NAKAMAAPI_API FNakamaRtMatchmakerAdd
 * 
 */
 USTRUCT(BlueprintType)
-struct NAKAMAAPI_API FNakamaRtMatchmakerMatched_MatchmakerUser
+struct NAKAMAAPI_API FNakamaRtMatchmakerMatchedMatchmakerUser
 {
   GENERATED_BODY()
 
   /**  User info. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  FNakamaUserPresence Presence;
+  FNakamaRtUserPresence Presence;
 
   /**  Party identifier, if this user was matched as a party member. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
@@ -803,7 +599,7 @@ struct NAKAMAAPI_API FNakamaRtMatchmakerMatched_MatchmakerUser
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
   TMap<FString, double> NumericProperties = 0.0;
 
-  static FNakamaRtMatchmakerMatched_MatchmakerUser FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+  static FNakamaRtMatchmakerMatchedMatchmakerUser FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
   TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
@@ -821,11 +617,11 @@ struct NAKAMAAPI_API FNakamaRtMatchmakerMatched
 
   /**  The users that have been matched together, and information about their matchmaking data. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  TArray<FNakamaMatchmakerMatchedMatchmakerUser> Users;
+  TArray<FNakamaRtMatchmakerMatchedMatchmakerUser> Users;
 
   /**  A reference to the current user and their properties. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  FNakamaMatchmakerMatchedMatchmakerUser Self_;
+  FNakamaRtMatchmakerMatchedMatchmakerUser Self_;
 
   /**  Match ID. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
@@ -881,7 +677,7 @@ struct NAKAMAAPI_API FNakamaRtNotifications
 
   /**  Collection of notifications. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  TArray<FNakamaNotification> Notifications;
+  TArray<FNakamaRtNotification> Notifications;
 
   static FNakamaRtNotifications FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
   TSharedPtr<FJsonObject> ToJson() const noexcept;
@@ -913,15 +709,15 @@ struct NAKAMAAPI_API FNakamaRtParty
 
   /**  Self. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  FNakamaUserPresence Self_;
+  FNakamaRtUserPresence Self_;
 
   /**  Leader. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  FNakamaUserPresence Leader;
+  FNakamaRtUserPresence Leader;
 
   /**  All current party members. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  TArray<FNakamaUserPresence> Presences;
+  TArray<FNakamaRtUserPresence> Presences;
 
   /**  Label for party listing. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
@@ -1033,7 +829,7 @@ struct NAKAMAAPI_API FNakamaRtPartyPromote
 
   /**  The presence of an existing party member to promote as the new leader. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  FNakamaUserPresence Presence;
+  FNakamaRtUserPresence Presence;
 
   static FNakamaRtPartyPromote FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
   TSharedPtr<FJsonObject> ToJson() const noexcept;
@@ -1053,7 +849,7 @@ struct NAKAMAAPI_API FNakamaRtPartyLeader
 
   /**  The presence of the new party leader. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  FNakamaUserPresence Presence;
+  FNakamaRtUserPresence Presence;
 
   static FNakamaRtPartyLeader FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
   TSharedPtr<FJsonObject> ToJson() const noexcept;
@@ -1073,7 +869,7 @@ struct NAKAMAAPI_API FNakamaRtPartyAccept
 
   /**  The presence to accept as a party member. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  FNakamaUserPresence Presence;
+  FNakamaRtUserPresence Presence;
 
   static FNakamaRtPartyAccept FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
   TSharedPtr<FJsonObject> ToJson() const noexcept;
@@ -1093,7 +889,7 @@ struct NAKAMAAPI_API FNakamaRtPartyRemove
 
   /**  The presence to remove or reject. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  FNakamaUserPresence Presence;
+  FNakamaRtUserPresence Presence;
 
   static FNakamaRtPartyRemove FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
   TSharedPtr<FJsonObject> ToJson() const noexcept;
@@ -1145,7 +941,7 @@ struct NAKAMAAPI_API FNakamaRtPartyJoinRequest
 
   /**  Presences attempting to join. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  TArray<FNakamaUserPresence> Presences;
+  TArray<FNakamaRtUserPresence> Presences;
 
   static FNakamaRtPartyJoinRequest FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
   TSharedPtr<FJsonObject> ToJson() const noexcept;
@@ -1245,7 +1041,7 @@ struct NAKAMAAPI_API FNakamaRtPartyData
 
   /**  A reference to the user presence that sent this data, if any. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  FNakamaUserPresence Presence;
+  FNakamaRtUserPresence Presence;
 
   /**  Op code value. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
@@ -1297,11 +1093,11 @@ struct NAKAMAAPI_API FNakamaRtPartyPresenceEvent
 
   /**  User presences that have just joined the party. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  TArray<FNakamaUserPresence> Joins;
+  TArray<FNakamaRtUserPresence> Joins;
 
   /**  User presences that have just left the party. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  TArray<FNakamaUserPresence> Leaves;
+  TArray<FNakamaRtUserPresence> Leaves;
 
   static FNakamaRtPartyPresenceEvent FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
   TSharedPtr<FJsonObject> ToJson() const noexcept;
@@ -1341,7 +1137,7 @@ struct NAKAMAAPI_API FNakamaRtStatus
 
   /**  User statuses. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  TArray<FNakamaUserPresence> Presences;
+  TArray<FNakamaRtUserPresence> Presences;
 
   static FNakamaRtStatus FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
   TSharedPtr<FJsonObject> ToJson() const noexcept;
@@ -1377,11 +1173,11 @@ struct NAKAMAAPI_API FNakamaRtStatusPresenceEvent
 
   /**  New statuses for the user. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  TArray<FNakamaUserPresence> Joins;
+  TArray<FNakamaRtUserPresence> Joins;
 
   /**  Previous statuses for the user. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  TArray<FNakamaUserPresence> Leaves;
+  TArray<FNakamaRtUserPresence> Leaves;
 
   static FNakamaRtStatusPresenceEvent FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
   TSharedPtr<FJsonObject> ToJson() const noexcept;
@@ -1457,11 +1253,11 @@ struct NAKAMAAPI_API FNakamaRtStreamData
 
   /**  The stream this data message relates to. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  FNakamaStream Stream;
+  FNakamaRtStream Stream;
 
   /**  The sender, if any. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  FNakamaUserPresence Sender;
+  FNakamaRtUserPresence Sender;
 
   /**  Arbitrary contents of the data message. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
@@ -1485,15 +1281,15 @@ struct NAKAMAAPI_API FNakamaRtStreamPresenceEvent
 
   /**  The stream this event relates to. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  FNakamaStream Stream;
+  FNakamaRtStream Stream;
 
   /**  Presences joining the stream as part of this event, if any. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  TArray<FNakamaUserPresence> Joins;
+  TArray<FNakamaRtUserPresence> Joins;
 
   /**  Presences leaving the stream as part of this event, if any. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  TArray<FNakamaUserPresence> Leaves;
+  TArray<FNakamaRtUserPresence> Leaves;
 
   static FNakamaRtStreamPresenceEvent FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
   TSharedPtr<FJsonObject> ToJson() const noexcept;

@@ -12418,7 +12418,7 @@ TNakamaFuture<FNakamaLeaderboardRecordResult> Nakama::WriteLeaderboardRecord(
   int64 RecordScore,
   int64 RecordSubscore,
   const FString& RecordMetadata,
-  const FNakamaOperator& RecordOperator_,
+  const FNakamaOperator& RecordOperator,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<std::atomic<bool>> CancellationToken
 ) noexcept
@@ -12459,14 +12459,14 @@ TNakamaFuture<FNakamaLeaderboardRecordResult> Nakama::WriteLeaderboardRecord(
     , RecordScore
     , RecordSubscore
     , RecordMetadata
-    , RecordOperator_
+    , RecordOperator
   ]()
   {
     FNakamaWriteLeaderboardRecordRequestLeaderboardRecordWrite Record;
     Record.Score = RecordScore;
     Record.Subscore = RecordSubscore;
     Record.Metadata = RecordMetadata;
-    Record.Operator_ = RecordOperator_;
+    Record.Operator = RecordOperator;
 
     NakamaApi::WriteLeaderboardRecord(
       ClientConfig,
@@ -12496,7 +12496,7 @@ TNakamaFuture<FNakamaLeaderboardRecordResult> Nakama::WriteLeaderboardRecord(
   int64 RecordScore,
   int64 RecordSubscore,
   const FString& RecordMetadata,
-  const FNakamaOperator& RecordOperator_,
+  const FNakamaOperator& RecordOperator,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<std::atomic<bool>> CancellationToken
 ) noexcept
@@ -12539,7 +12539,7 @@ TNakamaFuture<FNakamaLeaderboardRecordResult> Nakama::WriteLeaderboardRecord(
     , RecordScore
     , RecordSubscore
     , RecordMetadata
-    , RecordOperator_
+    , RecordOperator
   ]()
   { 
     MaybeRefreshThenCall(
@@ -12561,14 +12561,14 @@ TNakamaFuture<FNakamaLeaderboardRecordResult> Nakama::WriteLeaderboardRecord(
         , RecordScore
         , RecordSubscore
         , RecordMetadata
-        , RecordOperator_
+        , RecordOperator
         ]()
         {
           FNakamaWriteLeaderboardRecordRequestLeaderboardRecordWrite Record;
           Record.Score = RecordScore;
           Record.Subscore = RecordSubscore;
           Record.Metadata = RecordMetadata;
-          Record.Operator_ = RecordOperator_;
+          Record.Operator = RecordOperator;
 
           NakamaApi::WriteLeaderboardRecord(
             ClientConfig,
@@ -12749,7 +12749,7 @@ TNakamaFuture<FNakamaLeaderboardRecordResult> Nakama::WriteTournamentRecord(
   int64 RecordScore,
   int64 RecordSubscore,
   const FString& RecordMetadata,
-  const FNakamaOperator& RecordOperator_,
+  const FNakamaOperator& RecordOperator,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<std::atomic<bool>> CancellationToken
 ) noexcept
@@ -12790,14 +12790,14 @@ TNakamaFuture<FNakamaLeaderboardRecordResult> Nakama::WriteTournamentRecord(
     , RecordScore
     , RecordSubscore
     , RecordMetadata
-    , RecordOperator_
+    , RecordOperator
   ]()
   {
     FNakamaWriteTournamentRecordRequestTournamentRecordWrite Record;
     Record.Score = RecordScore;
     Record.Subscore = RecordSubscore;
     Record.Metadata = RecordMetadata;
-    Record.Operator_ = RecordOperator_;
+    Record.Operator = RecordOperator;
 
     NakamaApi::WriteTournamentRecord(
       ClientConfig,
@@ -12827,7 +12827,7 @@ TNakamaFuture<FNakamaLeaderboardRecordResult> Nakama::WriteTournamentRecord(
   int64 RecordScore,
   int64 RecordSubscore,
   const FString& RecordMetadata,
-  const FNakamaOperator& RecordOperator_,
+  const FNakamaOperator& RecordOperator,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<std::atomic<bool>> CancellationToken
 ) noexcept
@@ -12870,7 +12870,7 @@ TNakamaFuture<FNakamaLeaderboardRecordResult> Nakama::WriteTournamentRecord(
     , RecordScore
     , RecordSubscore
     , RecordMetadata
-    , RecordOperator_
+    , RecordOperator
   ]()
   { 
     MaybeRefreshThenCall(
@@ -12892,14 +12892,14 @@ TNakamaFuture<FNakamaLeaderboardRecordResult> Nakama::WriteTournamentRecord(
         , RecordScore
         , RecordSubscore
         , RecordMetadata
-        , RecordOperator_
+        , RecordOperator
         ]()
         {
           FNakamaWriteTournamentRecordRequestTournamentRecordWrite Record;
           Record.Score = RecordScore;
           Record.Subscore = RecordSubscore;
           Record.Metadata = RecordMetadata;
-          Record.Operator_ = RecordOperator_;
+          Record.Operator = RecordOperator;
 
           NakamaApi::WriteTournamentRecord(
             ClientConfig,

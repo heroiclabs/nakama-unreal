@@ -99,8 +99,7 @@ public:
     , meta = (
       BlueprintInternalUseOnly = "true"
       , WorldContext = "WorldContextObject"
-      , DisplayName = "AddFriends"
-    )
+      , DisplayName = "AddFriends")
     , Category = "Nakama|Client"
   )
   static UNakamaClientAddFriends* AddFriends(
@@ -120,7 +119,7 @@ private:
   TArray<FString> StoredIds;
   TArray<FString> StoredUsernames;
   FString StoredMetadata;
-}
+};
 
 /**
 * Add users to a group.
@@ -143,8 +142,7 @@ public:
     , meta = (
       BlueprintInternalUseOnly = "true"
       , WorldContext = "WorldContextObject"
-      , DisplayName = "AddGroupUsers"
-    )
+      , DisplayName = "AddGroupUsers")
     , Category = "Nakama|Client"
   )
   static UNakamaClientAddGroupUsers* AddGroupUsers(
@@ -162,7 +160,7 @@ private:
   FNakamaSession StoredSession;
   FString StoredGroupId;
   TArray<FString> StoredUserIds;
-}
+};
 
 /**
 * Refresh a user's session using a refresh token retrieved from a previous authentication request.
@@ -185,9 +183,7 @@ public:
     , meta = (
       BlueprintInternalUseOnly = "true"
       , WorldContext = "WorldContextObject"
-      , DisplayName = "SessionRefresh"
-      , AutoCreateRefTerm = "Vars"
-    )
+      , DisplayName = "SessionRefresh", AutoCreateRefTerm = "Vars")
     , Category = "Nakama|Client"
   )
   static UNakamaClientSessionRefresh* SessionRefresh(
@@ -203,7 +199,7 @@ private:
   FNakamaClientConfig StoredClientConfig;
   FString StoredToken;
   TMap<FString, FString> StoredVars;
-}
+};
 
 /**
 * Log out a session, invalidate a refresh token, or log out all sessions/refresh tokens for a user.
@@ -226,8 +222,7 @@ public:
     , meta = (
       BlueprintInternalUseOnly = "true"
       , WorldContext = "WorldContextObject"
-      , DisplayName = "SessionLogout"
-    )
+      , DisplayName = "SessionLogout")
     , Category = "Nakama|Client"
   )
   static UNakamaClientSessionLogout* SessionLogout(
@@ -245,7 +240,7 @@ private:
   FNakamaSession StoredSession;
   FString StoredToken;
   FString StoredRefreshToken;
-}
+};
 
 /**
 * Authenticate a user with an Apple ID against the server.
@@ -268,8 +263,7 @@ public:
     , meta = (
       BlueprintInternalUseOnly = "true"
       , WorldContext = "WorldContextObject"
-      , DisplayName = "AuthenticateApple"
-    )
+      , DisplayName = "AuthenticateApple")
     , Category = "Nakama|Client"
   )
   static UNakamaClientAuthenticateApple* AuthenticateApple(
@@ -287,7 +281,7 @@ private:
   FNakamaAccountApple StoredAccount;
   bool StoredCreate;
   FString StoredUsername;
-}
+};
 
 /**
 * Authenticate a user with a custom id against the server.
@@ -310,8 +304,7 @@ public:
     , meta = (
       BlueprintInternalUseOnly = "true"
       , WorldContext = "WorldContextObject"
-      , DisplayName = "AuthenticateCustom"
-    )
+      , DisplayName = "AuthenticateCustom")
     , Category = "Nakama|Client"
   )
   static UNakamaClientAuthenticateCustom* AuthenticateCustom(
@@ -329,7 +322,7 @@ private:
   FNakamaAccountCustom StoredAccount;
   bool StoredCreate;
   FString StoredUsername;
-}
+};
 
 /**
 * Authenticate a user with a device id against the server.
@@ -352,8 +345,7 @@ public:
     , meta = (
       BlueprintInternalUseOnly = "true"
       , WorldContext = "WorldContextObject"
-      , DisplayName = "AuthenticateDevice"
-    )
+      , DisplayName = "AuthenticateDevice")
     , Category = "Nakama|Client"
   )
   static UNakamaClientAuthenticateDevice* AuthenticateDevice(
@@ -371,7 +363,7 @@ private:
   FNakamaAccountDevice StoredAccount;
   bool StoredCreate;
   FString StoredUsername;
-}
+};
 
 /**
 * Authenticate a user with an email+password against the server.
@@ -394,8 +386,7 @@ public:
     , meta = (
       BlueprintInternalUseOnly = "true"
       , WorldContext = "WorldContextObject"
-      , DisplayName = "AuthenticateEmail"
-    )
+      , DisplayName = "AuthenticateEmail")
     , Category = "Nakama|Client"
   )
   static UNakamaClientAuthenticateEmail* AuthenticateEmail(
@@ -413,7 +404,7 @@ private:
   FNakamaAccountEmail StoredAccount;
   bool StoredCreate;
   FString StoredUsername;
-}
+};
 
 /**
 * Authenticate a user with a Facebook OAuth token against the server.
@@ -436,8 +427,7 @@ public:
     , meta = (
       BlueprintInternalUseOnly = "true"
       , WorldContext = "WorldContextObject"
-      , DisplayName = "AuthenticateFacebook"
-    )
+      , DisplayName = "AuthenticateFacebook")
     , Category = "Nakama|Client"
   )
   static UNakamaClientAuthenticateFacebook* AuthenticateFacebook(
@@ -457,7 +447,7 @@ private:
   bool StoredCreate;
   FString StoredUsername;
   bool StoredSync;
-}
+};
 
 /**
 * Authenticate a user with a Facebook Instant Game token against the server.
@@ -480,8 +470,7 @@ public:
     , meta = (
       BlueprintInternalUseOnly = "true"
       , WorldContext = "WorldContextObject"
-      , DisplayName = "AuthenticateFacebookInstantGame"
-    )
+      , DisplayName = "AuthenticateFacebookInstantGame")
     , Category = "Nakama|Client"
   )
   static UNakamaClientAuthenticateFacebookInstantGame* AuthenticateFacebookInstantGame(
@@ -499,7 +488,7 @@ private:
   FNakamaAccountFacebookInstantGame StoredAccount;
   bool StoredCreate;
   FString StoredUsername;
-}
+};
 
 /**
 * Authenticate a user with Apple's GameCenter against the server.
@@ -522,8 +511,7 @@ public:
     , meta = (
       BlueprintInternalUseOnly = "true"
       , WorldContext = "WorldContextObject"
-      , DisplayName = "AuthenticateGameCenter"
-    )
+      , DisplayName = "AuthenticateGameCenter")
     , Category = "Nakama|Client"
   )
   static UNakamaClientAuthenticateGameCenter* AuthenticateGameCenter(
@@ -541,7 +529,7 @@ private:
   FNakamaAccountGameCenter StoredAccount;
   bool StoredCreate;
   FString StoredUsername;
-}
+};
 
 /**
 * Authenticate a user with Google against the server.
@@ -564,8 +552,7 @@ public:
     , meta = (
       BlueprintInternalUseOnly = "true"
       , WorldContext = "WorldContextObject"
-      , DisplayName = "AuthenticateGoogle"
-    )
+      , DisplayName = "AuthenticateGoogle")
     , Category = "Nakama|Client"
   )
   static UNakamaClientAuthenticateGoogle* AuthenticateGoogle(
@@ -583,7 +570,7 @@ private:
   FNakamaAccountGoogle StoredAccount;
   bool StoredCreate;
   FString StoredUsername;
-}
+};
 
 /**
 * Authenticate a user with Steam against the server.
@@ -606,8 +593,7 @@ public:
     , meta = (
       BlueprintInternalUseOnly = "true"
       , WorldContext = "WorldContextObject"
-      , DisplayName = "AuthenticateSteam"
-    )
+      , DisplayName = "AuthenticateSteam")
     , Category = "Nakama|Client"
   )
   static UNakamaClientAuthenticateSteam* AuthenticateSteam(
@@ -627,7 +613,7 @@ private:
   bool StoredCreate;
   FString StoredUsername;
   bool StoredSync;
-}
+};
 
 /**
 * Ban a set of users from a group.
@@ -650,8 +636,7 @@ public:
     , meta = (
       BlueprintInternalUseOnly = "true"
       , WorldContext = "WorldContextObject"
-      , DisplayName = "BanGroupUsers"
-    )
+      , DisplayName = "BanGroupUsers")
     , Category = "Nakama|Client"
   )
   static UNakamaClientBanGroupUsers* BanGroupUsers(
@@ -669,7 +654,7 @@ private:
   FNakamaSession StoredSession;
   FString StoredGroupId;
   TArray<FString> StoredUserIds;
-}
+};
 
 /**
 * Block one or more users by ID or username.
@@ -692,8 +677,7 @@ public:
     , meta = (
       BlueprintInternalUseOnly = "true"
       , WorldContext = "WorldContextObject"
-      , DisplayName = "BlockFriends"
-    )
+      , DisplayName = "BlockFriends")
     , Category = "Nakama|Client"
   )
   static UNakamaClientBlockFriends* BlockFriends(
@@ -711,7 +695,7 @@ private:
   FNakamaSession StoredSession;
   TArray<FString> StoredIds;
   TArray<FString> StoredUsernames;
-}
+};
 
 /**
 * Create a new group with the current user as the owner.
@@ -734,8 +718,7 @@ public:
     , meta = (
       BlueprintInternalUseOnly = "true"
       , WorldContext = "WorldContextObject"
-      , DisplayName = "CreateGroup"
-    )
+      , DisplayName = "CreateGroup")
     , Category = "Nakama|Client"
   )
   static UNakamaClientCreateGroup* CreateGroup(
@@ -761,7 +744,7 @@ private:
   FString StoredAvatarUrl;
   bool StoredOpen;
   int32 StoredMaxCount;
-}
+};
 
 /**
 * Delete the current user's account.
@@ -784,8 +767,7 @@ public:
     , meta = (
       BlueprintInternalUseOnly = "true"
       , WorldContext = "WorldContextObject"
-      , DisplayName = "DeleteAccount"
-    )
+      , DisplayName = "DeleteAccount")
     , Category = "Nakama|Client"
   )
   static UNakamaClientDeleteAccount* DeleteAccount(
@@ -799,7 +781,7 @@ public:
 private:
   FNakamaClientConfig StoredClientConfig;
   FNakamaSession StoredSession;
-}
+};
 
 /**
 * Delete one or more users by ID or username.
@@ -822,8 +804,7 @@ public:
     , meta = (
       BlueprintInternalUseOnly = "true"
       , WorldContext = "WorldContextObject"
-      , DisplayName = "DeleteFriends"
-    )
+      , DisplayName = "DeleteFriends")
     , Category = "Nakama|Client"
   )
   static UNakamaClientDeleteFriends* DeleteFriends(
@@ -841,7 +822,7 @@ private:
   FNakamaSession StoredSession;
   TArray<FString> StoredIds;
   TArray<FString> StoredUsernames;
-}
+};
 
 /**
 * Delete a group by ID.
@@ -864,8 +845,7 @@ public:
     , meta = (
       BlueprintInternalUseOnly = "true"
       , WorldContext = "WorldContextObject"
-      , DisplayName = "DeleteGroup"
-    )
+      , DisplayName = "DeleteGroup")
     , Category = "Nakama|Client"
   )
   static UNakamaClientDeleteGroup* DeleteGroup(
@@ -881,7 +861,7 @@ private:
   FNakamaClientConfig StoredClientConfig;
   FNakamaSession StoredSession;
   FString StoredGroupId;
-}
+};
 
 /**
 * Delete a leaderboard record.
@@ -904,8 +884,7 @@ public:
     , meta = (
       BlueprintInternalUseOnly = "true"
       , WorldContext = "WorldContextObject"
-      , DisplayName = "DeleteLeaderboardRecord"
-    )
+      , DisplayName = "DeleteLeaderboardRecord")
     , Category = "Nakama|Client"
   )
   static UNakamaClientDeleteLeaderboardRecord* DeleteLeaderboardRecord(
@@ -921,7 +900,7 @@ private:
   FNakamaClientConfig StoredClientConfig;
   FNakamaSession StoredSession;
   FString StoredLeaderboardId;
-}
+};
 
 /**
 * Delete one or more notifications for the current user.
@@ -944,8 +923,7 @@ public:
     , meta = (
       BlueprintInternalUseOnly = "true"
       , WorldContext = "WorldContextObject"
-      , DisplayName = "DeleteNotifications"
-    )
+      , DisplayName = "DeleteNotifications")
     , Category = "Nakama|Client"
   )
   static UNakamaClientDeleteNotifications* DeleteNotifications(
@@ -961,7 +939,7 @@ private:
   FNakamaClientConfig StoredClientConfig;
   FNakamaSession StoredSession;
   TArray<FString> StoredIds;
-}
+};
 
 /**
 * Delete a tournament record.
@@ -984,8 +962,7 @@ public:
     , meta = (
       BlueprintInternalUseOnly = "true"
       , WorldContext = "WorldContextObject"
-      , DisplayName = "DeleteTournamentRecord"
-    )
+      , DisplayName = "DeleteTournamentRecord")
     , Category = "Nakama|Client"
   )
   static UNakamaClientDeleteTournamentRecord* DeleteTournamentRecord(
@@ -1001,7 +978,7 @@ private:
   FNakamaClientConfig StoredClientConfig;
   FNakamaSession StoredSession;
   FString StoredTournamentId;
-}
+};
 
 /**
 * Delete one or more objects by ID or username.
@@ -1024,8 +1001,7 @@ public:
     , meta = (
       BlueprintInternalUseOnly = "true"
       , WorldContext = "WorldContextObject"
-      , DisplayName = "DeleteStorageObjects"
-    )
+      , DisplayName = "DeleteStorageObjects")
     , Category = "Nakama|Client"
   )
   static UNakamaClientDeleteStorageObjects* DeleteStorageObjects(
@@ -1041,7 +1017,7 @@ private:
   FNakamaClientConfig StoredClientConfig;
   FNakamaSession StoredSession;
   TArray<FNakamaDeleteStorageObjectId> StoredObjectIds;
-}
+};
 
 /**
 * Submit an event for processing in the server's registered runtime custom events handler.
@@ -1064,9 +1040,7 @@ public:
     , meta = (
       BlueprintInternalUseOnly = "true"
       , WorldContext = "WorldContextObject"
-      , DisplayName = "Event"
-      , AutoCreateRefTerm = "Properties"
-    )
+      , DisplayName = "Event", AutoCreateRefTerm = "Properties")
     , Category = "Nakama|Client"
   )
   static UNakamaClientEvent* Event(
@@ -1088,7 +1062,7 @@ private:
   FString StoredTimestamp;
   bool StoredExternal;
   TMap<FString, FString> StoredProperties;
-}
+};
 
 /**
 * Fetch the current user's account.
@@ -1111,8 +1085,7 @@ public:
     , meta = (
       BlueprintInternalUseOnly = "true"
       , WorldContext = "WorldContextObject"
-      , DisplayName = "GetAccount"
-    )
+      , DisplayName = "GetAccount")
     , Category = "Nakama|Client"
   )
   static UNakamaClientGetAccount* GetAccount(
@@ -1126,7 +1099,7 @@ public:
 private:
   FNakamaClientConfig StoredClientConfig;
   FNakamaSession StoredSession;
-}
+};
 
 /**
 * Fetch zero or more users by ID and/or username.
@@ -1149,8 +1122,7 @@ public:
     , meta = (
       BlueprintInternalUseOnly = "true"
       , WorldContext = "WorldContextObject"
-      , DisplayName = "GetUsers"
-    )
+      , DisplayName = "GetUsers")
     , Category = "Nakama|Client"
   )
   static UNakamaClientGetUsers* GetUsers(
@@ -1170,7 +1142,7 @@ private:
   TArray<FString> StoredIds;
   TArray<FString> StoredUsernames;
   TArray<FString> StoredFacebookIds;
-}
+};
 
 /**
 * Get subscription by product id.
@@ -1193,8 +1165,7 @@ public:
     , meta = (
       BlueprintInternalUseOnly = "true"
       , WorldContext = "WorldContextObject"
-      , DisplayName = "GetSubscription"
-    )
+      , DisplayName = "GetSubscription")
     , Category = "Nakama|Client"
   )
   static UNakamaClientGetSubscription* GetSubscription(
@@ -1210,7 +1181,7 @@ private:
   FNakamaClientConfig StoredClientConfig;
   FNakamaSession StoredSession;
   FString StoredProductId;
-}
+};
 
 /**
 * Get matchmaker stats.
@@ -1233,8 +1204,7 @@ public:
     , meta = (
       BlueprintInternalUseOnly = "true"
       , WorldContext = "WorldContextObject"
-      , DisplayName = "GetMatchmakerStats"
-    )
+      , DisplayName = "GetMatchmakerStats")
     , Category = "Nakama|Client"
   )
   static UNakamaClientGetMatchmakerStats* GetMatchmakerStats(
@@ -1248,7 +1218,7 @@ public:
 private:
   FNakamaClientConfig StoredClientConfig;
   FNakamaSession StoredSession;
-}
+};
 
 /**
 * A healthcheck which load balancers can use to check the service.
@@ -1271,8 +1241,7 @@ public:
     , meta = (
       BlueprintInternalUseOnly = "true"
       , WorldContext = "WorldContextObject"
-      , DisplayName = "Healthcheck"
-    )
+      , DisplayName = "Healthcheck")
     , Category = "Nakama|Client"
   )
   static UNakamaClientHealthcheck* Healthcheck(
@@ -1286,7 +1255,7 @@ public:
 private:
   FNakamaClientConfig StoredClientConfig;
   FNakamaSession StoredSession;
-}
+};
 
 /**
 * Import Facebook friends and add them to a user's account.
@@ -1309,8 +1278,7 @@ public:
     , meta = (
       BlueprintInternalUseOnly = "true"
       , WorldContext = "WorldContextObject"
-      , DisplayName = "ImportFacebookFriends"
-    )
+      , DisplayName = "ImportFacebookFriends")
     , Category = "Nakama|Client"
   )
   static UNakamaClientImportFacebookFriends* ImportFacebookFriends(
@@ -1328,7 +1296,7 @@ private:
   FNakamaSession StoredSession;
   FNakamaAccountFacebook StoredAccount;
   bool StoredReset;
-}
+};
 
 /**
 * Import Steam friends and add them to a user's account.
@@ -1351,8 +1319,7 @@ public:
     , meta = (
       BlueprintInternalUseOnly = "true"
       , WorldContext = "WorldContextObject"
-      , DisplayName = "ImportSteamFriends"
-    )
+      , DisplayName = "ImportSteamFriends")
     , Category = "Nakama|Client"
   )
   static UNakamaClientImportSteamFriends* ImportSteamFriends(
@@ -1370,7 +1337,7 @@ private:
   FNakamaSession StoredSession;
   FNakamaAccountSteam StoredAccount;
   bool StoredReset;
-}
+};
 
 /**
 * Immediately join an open group, or request to join a closed one.
@@ -1393,8 +1360,7 @@ public:
     , meta = (
       BlueprintInternalUseOnly = "true"
       , WorldContext = "WorldContextObject"
-      , DisplayName = "JoinGroup"
-    )
+      , DisplayName = "JoinGroup")
     , Category = "Nakama|Client"
   )
   static UNakamaClientJoinGroup* JoinGroup(
@@ -1410,7 +1376,7 @@ private:
   FNakamaClientConfig StoredClientConfig;
   FNakamaSession StoredSession;
   FString StoredGroupId;
-}
+};
 
 /**
 * Attempt to join an open and running tournament.
@@ -1433,8 +1399,7 @@ public:
     , meta = (
       BlueprintInternalUseOnly = "true"
       , WorldContext = "WorldContextObject"
-      , DisplayName = "JoinTournament"
-    )
+      , DisplayName = "JoinTournament")
     , Category = "Nakama|Client"
   )
   static UNakamaClientJoinTournament* JoinTournament(
@@ -1450,7 +1415,7 @@ private:
   FNakamaClientConfig StoredClientConfig;
   FNakamaSession StoredSession;
   FString StoredTournamentId;
-}
+};
 
 /**
 * Kick a set of users from a group.
@@ -1473,8 +1438,7 @@ public:
     , meta = (
       BlueprintInternalUseOnly = "true"
       , WorldContext = "WorldContextObject"
-      , DisplayName = "KickGroupUsers"
-    )
+      , DisplayName = "KickGroupUsers")
     , Category = "Nakama|Client"
   )
   static UNakamaClientKickGroupUsers* KickGroupUsers(
@@ -1492,7 +1456,7 @@ private:
   FNakamaSession StoredSession;
   FString StoredGroupId;
   TArray<FString> StoredUserIds;
-}
+};
 
 /**
 * Leave a group the user is a member of.
@@ -1515,8 +1479,7 @@ public:
     , meta = (
       BlueprintInternalUseOnly = "true"
       , WorldContext = "WorldContextObject"
-      , DisplayName = "LeaveGroup"
-    )
+      , DisplayName = "LeaveGroup")
     , Category = "Nakama|Client"
   )
   static UNakamaClientLeaveGroup* LeaveGroup(
@@ -1532,7 +1495,7 @@ private:
   FNakamaClientConfig StoredClientConfig;
   FNakamaSession StoredSession;
   FString StoredGroupId;
-}
+};
 
 /**
 * Add an Apple ID to the social profiles on the current user's account.
@@ -1555,9 +1518,7 @@ public:
     , meta = (
       BlueprintInternalUseOnly = "true"
       , WorldContext = "WorldContextObject"
-      , DisplayName = "LinkApple"
-      , AutoCreateRefTerm = "Vars"
-    )
+      , DisplayName = "LinkApple", AutoCreateRefTerm = "Vars")
     , Category = "Nakama|Client"
   )
   static UNakamaClientLinkApple* LinkApple(
@@ -1575,7 +1536,7 @@ private:
   FNakamaSession StoredSession;
   FString StoredToken;
   TMap<FString, FString> StoredVars;
-}
+};
 
 /**
 * Add a custom ID to the social profiles on the current user's account.
@@ -1598,9 +1559,7 @@ public:
     , meta = (
       BlueprintInternalUseOnly = "true"
       , WorldContext = "WorldContextObject"
-      , DisplayName = "LinkCustom"
-      , AutoCreateRefTerm = "Vars"
-    )
+      , DisplayName = "LinkCustom", AutoCreateRefTerm = "Vars")
     , Category = "Nakama|Client"
   )
   static UNakamaClientLinkCustom* LinkCustom(
@@ -1618,7 +1577,7 @@ private:
   FNakamaSession StoredSession;
   FString StoredId;
   TMap<FString, FString> StoredVars;
-}
+};
 
 /**
 * Add a device ID to the social profiles on the current user's account.
@@ -1641,9 +1600,7 @@ public:
     , meta = (
       BlueprintInternalUseOnly = "true"
       , WorldContext = "WorldContextObject"
-      , DisplayName = "LinkDevice"
-      , AutoCreateRefTerm = "Vars"
-    )
+      , DisplayName = "LinkDevice", AutoCreateRefTerm = "Vars")
     , Category = "Nakama|Client"
   )
   static UNakamaClientLinkDevice* LinkDevice(
@@ -1661,7 +1618,7 @@ private:
   FNakamaSession StoredSession;
   FString StoredId;
   TMap<FString, FString> StoredVars;
-}
+};
 
 /**
 * Add an email+password to the social profiles on the current user's account.
@@ -1684,9 +1641,7 @@ public:
     , meta = (
       BlueprintInternalUseOnly = "true"
       , WorldContext = "WorldContextObject"
-      , DisplayName = "LinkEmail"
-      , AutoCreateRefTerm = "Vars"
-    )
+      , DisplayName = "LinkEmail", AutoCreateRefTerm = "Vars")
     , Category = "Nakama|Client"
   )
   static UNakamaClientLinkEmail* LinkEmail(
@@ -1706,7 +1661,7 @@ private:
   FString StoredEmail;
   FString StoredPassword;
   TMap<FString, FString> StoredVars;
-}
+};
 
 /**
 * Add Facebook to the social profiles on the current user's account.
@@ -1729,8 +1684,7 @@ public:
     , meta = (
       BlueprintInternalUseOnly = "true"
       , WorldContext = "WorldContextObject"
-      , DisplayName = "LinkFacebook"
-    )
+      , DisplayName = "LinkFacebook")
     , Category = "Nakama|Client"
   )
   static UNakamaClientLinkFacebook* LinkFacebook(
@@ -1748,7 +1702,7 @@ private:
   FNakamaSession StoredSession;
   FNakamaAccountFacebook StoredAccount;
   bool StoredSync;
-}
+};
 
 /**
 * Add Facebook Instant Game to the social profiles on the current user's account.
@@ -1771,9 +1725,7 @@ public:
     , meta = (
       BlueprintInternalUseOnly = "true"
       , WorldContext = "WorldContextObject"
-      , DisplayName = "LinkFacebookInstantGame"
-      , AutoCreateRefTerm = "Vars"
-    )
+      , DisplayName = "LinkFacebookInstantGame", AutoCreateRefTerm = "Vars")
     , Category = "Nakama|Client"
   )
   static UNakamaClientLinkFacebookInstantGame* LinkFacebookInstantGame(
@@ -1791,7 +1743,7 @@ private:
   FNakamaSession StoredSession;
   FString StoredSignedPlayerInfo;
   TMap<FString, FString> StoredVars;
-}
+};
 
 /**
 * Add Apple's GameCenter to the social profiles on the current user's account.
@@ -1814,9 +1766,7 @@ public:
     , meta = (
       BlueprintInternalUseOnly = "true"
       , WorldContext = "WorldContextObject"
-      , DisplayName = "LinkGameCenter"
-      , AutoCreateRefTerm = "Vars"
-    )
+      , DisplayName = "LinkGameCenter", AutoCreateRefTerm = "Vars")
     , Category = "Nakama|Client"
   )
   static UNakamaClientLinkGameCenter* LinkGameCenter(
@@ -1844,7 +1794,7 @@ private:
   FString StoredSignature;
   FString StoredPublicKeyUrl;
   TMap<FString, FString> StoredVars;
-}
+};
 
 /**
 * Add Google to the social profiles on the current user's account.
@@ -1867,9 +1817,7 @@ public:
     , meta = (
       BlueprintInternalUseOnly = "true"
       , WorldContext = "WorldContextObject"
-      , DisplayName = "LinkGoogle"
-      , AutoCreateRefTerm = "Vars"
-    )
+      , DisplayName = "LinkGoogle", AutoCreateRefTerm = "Vars")
     , Category = "Nakama|Client"
   )
   static UNakamaClientLinkGoogle* LinkGoogle(
@@ -1887,7 +1835,7 @@ private:
   FNakamaSession StoredSession;
   FString StoredToken;
   TMap<FString, FString> StoredVars;
-}
+};
 
 /**
 * Add Steam to the social profiles on the current user's account.
@@ -1910,8 +1858,7 @@ public:
     , meta = (
       BlueprintInternalUseOnly = "true"
       , WorldContext = "WorldContextObject"
-      , DisplayName = "LinkSteam"
-    )
+      , DisplayName = "LinkSteam")
     , Category = "Nakama|Client"
   )
   static UNakamaClientLinkSteam* LinkSteam(
@@ -1929,7 +1876,7 @@ private:
   FNakamaSession StoredSession;
   FNakamaAccountSteam StoredAccount;
   bool StoredSync;
-}
+};
 
 /**
 * List a channel's message history.
@@ -1952,8 +1899,7 @@ public:
     , meta = (
       BlueprintInternalUseOnly = "true"
       , WorldContext = "WorldContextObject"
-      , DisplayName = "ListChannelMessages"
-    )
+      , DisplayName = "ListChannelMessages")
     , Category = "Nakama|Client"
   )
   static UNakamaClientListChannelMessages* ListChannelMessages(
@@ -1975,7 +1921,7 @@ private:
   int32 StoredLimit;
   bool StoredForward;
   FString StoredCursor;
-}
+};
 
 /**
 * List all friends for the current user.
@@ -1998,8 +1944,7 @@ public:
     , meta = (
       BlueprintInternalUseOnly = "true"
       , WorldContext = "WorldContextObject"
-      , DisplayName = "ListFriends"
-    )
+      , DisplayName = "ListFriends")
     , Category = "Nakama|Client"
   )
   static UNakamaClientListFriends* ListFriends(
@@ -2019,7 +1964,7 @@ private:
   int32 StoredLimit;
   int32 StoredState;
   FString StoredCursor;
-}
+};
 
 /**
 * List friends of friends for the current user.
@@ -2042,8 +1987,7 @@ public:
     , meta = (
       BlueprintInternalUseOnly = "true"
       , WorldContext = "WorldContextObject"
-      , DisplayName = "ListFriendsOfFriends"
-    )
+      , DisplayName = "ListFriendsOfFriends")
     , Category = "Nakama|Client"
   )
   static UNakamaClientListFriendsOfFriends* ListFriendsOfFriends(
@@ -2061,7 +2005,7 @@ private:
   FNakamaSession StoredSession;
   int32 StoredLimit;
   FString StoredCursor;
-}
+};
 
 /**
 * List groups based on given filters.
@@ -2084,8 +2028,7 @@ public:
     , meta = (
       BlueprintInternalUseOnly = "true"
       , WorldContext = "WorldContextObject"
-      , DisplayName = "ListGroups"
-    )
+      , DisplayName = "ListGroups")
     , Category = "Nakama|Client"
   )
   static UNakamaClientListGroups* ListGroups(
@@ -2111,7 +2054,7 @@ private:
   FString StoredLangTag;
   int32 StoredMembers;
   bool StoredOpen;
-}
+};
 
 /**
 * List all users that are part of a group.
@@ -2134,8 +2077,7 @@ public:
     , meta = (
       BlueprintInternalUseOnly = "true"
       , WorldContext = "WorldContextObject"
-      , DisplayName = "ListGroupUsers"
-    )
+      , DisplayName = "ListGroupUsers")
     , Category = "Nakama|Client"
   )
   static UNakamaClientListGroupUsers* ListGroupUsers(
@@ -2157,7 +2099,7 @@ private:
   int32 StoredLimit;
   int32 StoredState;
   FString StoredCursor;
-}
+};
 
 /**
 * List leaderboard records.
@@ -2180,8 +2122,7 @@ public:
     , meta = (
       BlueprintInternalUseOnly = "true"
       , WorldContext = "WorldContextObject"
-      , DisplayName = "ListLeaderboardRecords"
-    )
+      , DisplayName = "ListLeaderboardRecords")
     , Category = "Nakama|Client"
   )
   static UNakamaClientListLeaderboardRecords* ListLeaderboardRecords(
@@ -2205,7 +2146,7 @@ private:
   int32 StoredLimit;
   FString StoredCursor;
   int64 StoredExpiry;
-}
+};
 
 /**
 * List leaderboard records around the target ownerId.
@@ -2228,8 +2169,7 @@ public:
     , meta = (
       BlueprintInternalUseOnly = "true"
       , WorldContext = "WorldContextObject"
-      , DisplayName = "ListLeaderboardRecordsAroundOwner"
-    )
+      , DisplayName = "ListLeaderboardRecordsAroundOwner")
     , Category = "Nakama|Client"
   )
   static UNakamaClientListLeaderboardRecordsAroundOwner* ListLeaderboardRecordsAroundOwner(
@@ -2253,7 +2193,7 @@ private:
   FString StoredOwnerId;
   int64 StoredExpiry;
   FString StoredCursor;
-}
+};
 
 /**
 * List running matches and optionally filter by matching criteria.
@@ -2276,8 +2216,7 @@ public:
     , meta = (
       BlueprintInternalUseOnly = "true"
       , WorldContext = "WorldContextObject"
-      , DisplayName = "ListMatches"
-    )
+      , DisplayName = "ListMatches")
     , Category = "Nakama|Client"
   )
   static UNakamaClientListMatches* ListMatches(
@@ -2303,7 +2242,7 @@ private:
   int32 StoredMinSize;
   int32 StoredMaxSize;
   FString StoredQuery;
-}
+};
 
 /**
 * List parties and optionally filter by matching criteria.
@@ -2326,8 +2265,7 @@ public:
     , meta = (
       BlueprintInternalUseOnly = "true"
       , WorldContext = "WorldContextObject"
-      , DisplayName = "ListParties"
-    )
+      , DisplayName = "ListParties")
     , Category = "Nakama|Client"
   )
   static UNakamaClientListParties* ListParties(
@@ -2349,7 +2287,7 @@ private:
   bool StoredOpen;
   FString StoredQuery;
   FString StoredCursor;
-}
+};
 
 /**
 * Fetch list of notifications.
@@ -2372,8 +2310,7 @@ public:
     , meta = (
       BlueprintInternalUseOnly = "true"
       , WorldContext = "WorldContextObject"
-      , DisplayName = "ListNotifications"
-    )
+      , DisplayName = "ListNotifications")
     , Category = "Nakama|Client"
   )
   static UNakamaClientListNotifications* ListNotifications(
@@ -2391,7 +2328,7 @@ private:
   FNakamaSession StoredSession;
   int32 StoredLimit;
   FString StoredCacheableCursor;
-}
+};
 
 /**
 * List publicly readable storage objects in a given collection.
@@ -2414,8 +2351,7 @@ public:
     , meta = (
       BlueprintInternalUseOnly = "true"
       , WorldContext = "WorldContextObject"
-      , DisplayName = "ListStorageObjects"
-    )
+      , DisplayName = "ListStorageObjects")
     , Category = "Nakama|Client"
   )
   static UNakamaClientListStorageObjects* ListStorageObjects(
@@ -2437,7 +2373,7 @@ private:
   FString StoredCollection;
   int32 StoredLimit;
   FString StoredCursor;
-}
+};
 
 /**
 * List user's subscriptions.
@@ -2460,8 +2396,7 @@ public:
     , meta = (
       BlueprintInternalUseOnly = "true"
       , WorldContext = "WorldContextObject"
-      , DisplayName = "ListSubscriptions"
-    )
+      , DisplayName = "ListSubscriptions")
     , Category = "Nakama|Client"
   )
   static UNakamaClientListSubscriptions* ListSubscriptions(
@@ -2479,7 +2414,7 @@ private:
   FNakamaSession StoredSession;
   int32 StoredLimit;
   FString StoredCursor;
-}
+};
 
 /**
 * List current or upcoming tournaments.
@@ -2502,8 +2437,7 @@ public:
     , meta = (
       BlueprintInternalUseOnly = "true"
       , WorldContext = "WorldContextObject"
-      , DisplayName = "ListTournaments"
-    )
+      , DisplayName = "ListTournaments")
     , Category = "Nakama|Client"
   )
   static UNakamaClientListTournaments* ListTournaments(
@@ -2529,7 +2463,7 @@ private:
   int32 StoredEndTime;
   int32 StoredLimit;
   FString StoredCursor;
-}
+};
 
 /**
 * List tournament records.
@@ -2552,8 +2486,7 @@ public:
     , meta = (
       BlueprintInternalUseOnly = "true"
       , WorldContext = "WorldContextObject"
-      , DisplayName = "ListTournamentRecords"
-    )
+      , DisplayName = "ListTournamentRecords")
     , Category = "Nakama|Client"
   )
   static UNakamaClientListTournamentRecords* ListTournamentRecords(
@@ -2577,7 +2510,7 @@ private:
   int32 StoredLimit;
   FString StoredCursor;
   int64 StoredExpiry;
-}
+};
 
 /**
 * List tournament records for a given owner.
@@ -2600,8 +2533,7 @@ public:
     , meta = (
       BlueprintInternalUseOnly = "true"
       , WorldContext = "WorldContextObject"
-      , DisplayName = "ListTournamentRecordsAroundOwner"
-    )
+      , DisplayName = "ListTournamentRecordsAroundOwner")
     , Category = "Nakama|Client"
   )
   static UNakamaClientListTournamentRecordsAroundOwner* ListTournamentRecordsAroundOwner(
@@ -2625,7 +2557,7 @@ private:
   FString StoredOwnerId;
   int64 StoredExpiry;
   FString StoredCursor;
-}
+};
 
 /**
 * List groups the current user belongs to.
@@ -2648,8 +2580,7 @@ public:
     , meta = (
       BlueprintInternalUseOnly = "true"
       , WorldContext = "WorldContextObject"
-      , DisplayName = "ListUserGroups"
-    )
+      , DisplayName = "ListUserGroups")
     , Category = "Nakama|Client"
   )
   static UNakamaClientListUserGroups* ListUserGroups(
@@ -2671,7 +2602,7 @@ private:
   int32 StoredLimit;
   int32 StoredState;
   FString StoredCursor;
-}
+};
 
 /**
 * Promote a set of users in a group to the next role up.
@@ -2694,8 +2625,7 @@ public:
     , meta = (
       BlueprintInternalUseOnly = "true"
       , WorldContext = "WorldContextObject"
-      , DisplayName = "PromoteGroupUsers"
-    )
+      , DisplayName = "PromoteGroupUsers")
     , Category = "Nakama|Client"
   )
   static UNakamaClientPromoteGroupUsers* PromoteGroupUsers(
@@ -2713,7 +2643,7 @@ private:
   FNakamaSession StoredSession;
   FString StoredGroupId;
   TArray<FString> StoredUserIds;
-}
+};
 
 /**
 * Demote a set of users in a group to the next role down.
@@ -2736,8 +2666,7 @@ public:
     , meta = (
       BlueprintInternalUseOnly = "true"
       , WorldContext = "WorldContextObject"
-      , DisplayName = "DemoteGroupUsers"
-    )
+      , DisplayName = "DemoteGroupUsers")
     , Category = "Nakama|Client"
   )
   static UNakamaClientDemoteGroupUsers* DemoteGroupUsers(
@@ -2755,7 +2684,7 @@ private:
   FNakamaSession StoredSession;
   FString StoredGroupId;
   TArray<FString> StoredUserIds;
-}
+};
 
 /**
 * Get storage objects.
@@ -2778,8 +2707,7 @@ public:
     , meta = (
       BlueprintInternalUseOnly = "true"
       , WorldContext = "WorldContextObject"
-      , DisplayName = "ReadStorageObjects"
-    )
+      , DisplayName = "ReadStorageObjects")
     , Category = "Nakama|Client"
   )
   static UNakamaClientReadStorageObjects* ReadStorageObjects(
@@ -2795,7 +2723,7 @@ private:
   FNakamaClientConfig StoredClientConfig;
   FNakamaSession StoredSession;
   TArray<FNakamaReadStorageObjectId> StoredObjectIds;
-}
+};
 
 /**
 * Execute a Lua function on the server.
@@ -2818,8 +2746,7 @@ public:
     , meta = (
       BlueprintInternalUseOnly = "true"
       , WorldContext = "WorldContextObject"
-      , DisplayName = "RpcFunc"
-    )
+      , DisplayName = "RpcFunc")
     , Category = "Nakama|Client"
   )
   static UNakamaClientRpcFunc* RpcFunc(
@@ -2839,7 +2766,7 @@ private:
   FString StoredId;
   FString StoredPayload;
   FString StoredHttpKey;
-}
+};
 
 /**
 * Remove the Apple ID from the social profiles on the current user's account.
@@ -2862,9 +2789,7 @@ public:
     , meta = (
       BlueprintInternalUseOnly = "true"
       , WorldContext = "WorldContextObject"
-      , DisplayName = "UnlinkApple"
-      , AutoCreateRefTerm = "Vars"
-    )
+      , DisplayName = "UnlinkApple", AutoCreateRefTerm = "Vars")
     , Category = "Nakama|Client"
   )
   static UNakamaClientUnlinkApple* UnlinkApple(
@@ -2882,7 +2807,7 @@ private:
   FNakamaSession StoredSession;
   FString StoredToken;
   TMap<FString, FString> StoredVars;
-}
+};
 
 /**
 * Remove the custom ID from the social profiles on the current user's account.
@@ -2905,9 +2830,7 @@ public:
     , meta = (
       BlueprintInternalUseOnly = "true"
       , WorldContext = "WorldContextObject"
-      , DisplayName = "UnlinkCustom"
-      , AutoCreateRefTerm = "Vars"
-    )
+      , DisplayName = "UnlinkCustom", AutoCreateRefTerm = "Vars")
     , Category = "Nakama|Client"
   )
   static UNakamaClientUnlinkCustom* UnlinkCustom(
@@ -2925,7 +2848,7 @@ private:
   FNakamaSession StoredSession;
   FString StoredId;
   TMap<FString, FString> StoredVars;
-}
+};
 
 /**
 * Remove the device ID from the social profiles on the current user's account.
@@ -2948,9 +2871,7 @@ public:
     , meta = (
       BlueprintInternalUseOnly = "true"
       , WorldContext = "WorldContextObject"
-      , DisplayName = "UnlinkDevice"
-      , AutoCreateRefTerm = "Vars"
-    )
+      , DisplayName = "UnlinkDevice", AutoCreateRefTerm = "Vars")
     , Category = "Nakama|Client"
   )
   static UNakamaClientUnlinkDevice* UnlinkDevice(
@@ -2968,7 +2889,7 @@ private:
   FNakamaSession StoredSession;
   FString StoredId;
   TMap<FString, FString> StoredVars;
-}
+};
 
 /**
 * Remove the email+password from the social profiles on the current user's account.
@@ -2991,9 +2912,7 @@ public:
     , meta = (
       BlueprintInternalUseOnly = "true"
       , WorldContext = "WorldContextObject"
-      , DisplayName = "UnlinkEmail"
-      , AutoCreateRefTerm = "Vars"
-    )
+      , DisplayName = "UnlinkEmail", AutoCreateRefTerm = "Vars")
     , Category = "Nakama|Client"
   )
   static UNakamaClientUnlinkEmail* UnlinkEmail(
@@ -3013,7 +2932,7 @@ private:
   FString StoredEmail;
   FString StoredPassword;
   TMap<FString, FString> StoredVars;
-}
+};
 
 /**
 * Remove Facebook from the social profiles on the current user's account.
@@ -3036,9 +2955,7 @@ public:
     , meta = (
       BlueprintInternalUseOnly = "true"
       , WorldContext = "WorldContextObject"
-      , DisplayName = "UnlinkFacebook"
-      , AutoCreateRefTerm = "Vars"
-    )
+      , DisplayName = "UnlinkFacebook", AutoCreateRefTerm = "Vars")
     , Category = "Nakama|Client"
   )
   static UNakamaClientUnlinkFacebook* UnlinkFacebook(
@@ -3056,7 +2973,7 @@ private:
   FNakamaSession StoredSession;
   FString StoredToken;
   TMap<FString, FString> StoredVars;
-}
+};
 
 /**
 * Remove Facebook Instant Game profile from the social profiles on the current user's account.
@@ -3079,9 +2996,7 @@ public:
     , meta = (
       BlueprintInternalUseOnly = "true"
       , WorldContext = "WorldContextObject"
-      , DisplayName = "UnlinkFacebookInstantGame"
-      , AutoCreateRefTerm = "Vars"
-    )
+      , DisplayName = "UnlinkFacebookInstantGame", AutoCreateRefTerm = "Vars")
     , Category = "Nakama|Client"
   )
   static UNakamaClientUnlinkFacebookInstantGame* UnlinkFacebookInstantGame(
@@ -3099,7 +3014,7 @@ private:
   FNakamaSession StoredSession;
   FString StoredSignedPlayerInfo;
   TMap<FString, FString> StoredVars;
-}
+};
 
 /**
 * Remove Apple's GameCenter from the social profiles on the current user's account.
@@ -3122,9 +3037,7 @@ public:
     , meta = (
       BlueprintInternalUseOnly = "true"
       , WorldContext = "WorldContextObject"
-      , DisplayName = "UnlinkGameCenter"
-      , AutoCreateRefTerm = "Vars"
-    )
+      , DisplayName = "UnlinkGameCenter", AutoCreateRefTerm = "Vars")
     , Category = "Nakama|Client"
   )
   static UNakamaClientUnlinkGameCenter* UnlinkGameCenter(
@@ -3152,7 +3065,7 @@ private:
   FString StoredSignature;
   FString StoredPublicKeyUrl;
   TMap<FString, FString> StoredVars;
-}
+};
 
 /**
 * Remove Google from the social profiles on the current user's account.
@@ -3175,9 +3088,7 @@ public:
     , meta = (
       BlueprintInternalUseOnly = "true"
       , WorldContext = "WorldContextObject"
-      , DisplayName = "UnlinkGoogle"
-      , AutoCreateRefTerm = "Vars"
-    )
+      , DisplayName = "UnlinkGoogle", AutoCreateRefTerm = "Vars")
     , Category = "Nakama|Client"
   )
   static UNakamaClientUnlinkGoogle* UnlinkGoogle(
@@ -3195,7 +3106,7 @@ private:
   FNakamaSession StoredSession;
   FString StoredToken;
   TMap<FString, FString> StoredVars;
-}
+};
 
 /**
 * Remove Steam from the social profiles on the current user's account.
@@ -3218,9 +3129,7 @@ public:
     , meta = (
       BlueprintInternalUseOnly = "true"
       , WorldContext = "WorldContextObject"
-      , DisplayName = "UnlinkSteam"
-      , AutoCreateRefTerm = "Vars"
-    )
+      , DisplayName = "UnlinkSteam", AutoCreateRefTerm = "Vars")
     , Category = "Nakama|Client"
   )
   static UNakamaClientUnlinkSteam* UnlinkSteam(
@@ -3238,7 +3147,7 @@ private:
   FNakamaSession StoredSession;
   FString StoredToken;
   TMap<FString, FString> StoredVars;
-}
+};
 
 /**
 * Update fields in the current user's account.
@@ -3261,8 +3170,7 @@ public:
     , meta = (
       BlueprintInternalUseOnly = "true"
       , WorldContext = "WorldContextObject"
-      , DisplayName = "UpdateAccount"
-    )
+      , DisplayName = "UpdateAccount")
     , Category = "Nakama|Client"
   )
   static UNakamaClientUpdateAccount* UpdateAccount(
@@ -3288,7 +3196,7 @@ private:
   FString StoredLangTag;
   FString StoredLocation;
   FString StoredTimezone;
-}
+};
 
 /**
 * Update fields in a given group.
@@ -3311,8 +3219,7 @@ public:
     , meta = (
       BlueprintInternalUseOnly = "true"
       , WorldContext = "WorldContextObject"
-      , DisplayName = "UpdateGroup"
-    )
+      , DisplayName = "UpdateGroup")
     , Category = "Nakama|Client"
   )
   static UNakamaClientUpdateGroup* UpdateGroup(
@@ -3338,7 +3245,7 @@ private:
   FString StoredLangTag;
   FString StoredAvatarUrl;
   bool StoredOpen;
-}
+};
 
 /**
 * Validate Apple IAP Receipt
@@ -3361,8 +3268,7 @@ public:
     , meta = (
       BlueprintInternalUseOnly = "true"
       , WorldContext = "WorldContextObject"
-      , DisplayName = "ValidatePurchaseApple"
-    )
+      , DisplayName = "ValidatePurchaseApple")
     , Category = "Nakama|Client"
   )
   static UNakamaClientValidatePurchaseApple* ValidatePurchaseApple(
@@ -3380,7 +3286,7 @@ private:
   FNakamaSession StoredSession;
   FString StoredReceipt;
   bool StoredPersist;
-}
+};
 
 /**
 * Validate Apple Subscription Receipt
@@ -3403,8 +3309,7 @@ public:
     , meta = (
       BlueprintInternalUseOnly = "true"
       , WorldContext = "WorldContextObject"
-      , DisplayName = "ValidateSubscriptionApple"
-    )
+      , DisplayName = "ValidateSubscriptionApple")
     , Category = "Nakama|Client"
   )
   static UNakamaClientValidateSubscriptionApple* ValidateSubscriptionApple(
@@ -3422,7 +3327,7 @@ private:
   FNakamaSession StoredSession;
   FString StoredReceipt;
   bool StoredPersist;
-}
+};
 
 /**
 * Validate Google IAP Receipt
@@ -3445,8 +3350,7 @@ public:
     , meta = (
       BlueprintInternalUseOnly = "true"
       , WorldContext = "WorldContextObject"
-      , DisplayName = "ValidatePurchaseGoogle"
-    )
+      , DisplayName = "ValidatePurchaseGoogle")
     , Category = "Nakama|Client"
   )
   static UNakamaClientValidatePurchaseGoogle* ValidatePurchaseGoogle(
@@ -3464,7 +3368,7 @@ private:
   FNakamaSession StoredSession;
   FString StoredPurchase;
   bool StoredPersist;
-}
+};
 
 /**
 * Validate Google Subscription Receipt
@@ -3487,8 +3391,7 @@ public:
     , meta = (
       BlueprintInternalUseOnly = "true"
       , WorldContext = "WorldContextObject"
-      , DisplayName = "ValidateSubscriptionGoogle"
-    )
+      , DisplayName = "ValidateSubscriptionGoogle")
     , Category = "Nakama|Client"
   )
   static UNakamaClientValidateSubscriptionGoogle* ValidateSubscriptionGoogle(
@@ -3506,7 +3409,7 @@ private:
   FNakamaSession StoredSession;
   FString StoredReceipt;
   bool StoredPersist;
-}
+};
 
 /**
 * Validate Huawei IAP Receipt
@@ -3529,8 +3432,7 @@ public:
     , meta = (
       BlueprintInternalUseOnly = "true"
       , WorldContext = "WorldContextObject"
-      , DisplayName = "ValidatePurchaseHuawei"
-    )
+      , DisplayName = "ValidatePurchaseHuawei")
     , Category = "Nakama|Client"
   )
   static UNakamaClientValidatePurchaseHuawei* ValidatePurchaseHuawei(
@@ -3550,7 +3452,7 @@ private:
   FString StoredPurchase;
   FString StoredSignature;
   bool StoredPersist;
-}
+};
 
 /**
 * Validate FB Instant IAP Receipt
@@ -3573,8 +3475,7 @@ public:
     , meta = (
       BlueprintInternalUseOnly = "true"
       , WorldContext = "WorldContextObject"
-      , DisplayName = "ValidatePurchaseFacebookInstant"
-    )
+      , DisplayName = "ValidatePurchaseFacebookInstant")
     , Category = "Nakama|Client"
   )
   static UNakamaClientValidatePurchaseFacebookInstant* ValidatePurchaseFacebookInstant(
@@ -3592,7 +3493,7 @@ private:
   FNakamaSession StoredSession;
   FString StoredSignedRequest;
   bool StoredPersist;
-}
+};
 
 /**
 * Write a record to a leaderboard.
@@ -3615,8 +3516,7 @@ public:
     , meta = (
       BlueprintInternalUseOnly = "true"
       , WorldContext = "WorldContextObject"
-      , DisplayName = "WriteLeaderboardRecord"
-    )
+      , DisplayName = "WriteLeaderboardRecord")
     , Category = "Nakama|Client"
   )
   static UNakamaClientWriteLeaderboardRecord* WriteLeaderboardRecord(
@@ -3634,7 +3534,7 @@ private:
   FNakamaSession StoredSession;
   FString StoredLeaderboardId;
   FNakamaWriteLeaderboardRecordRequestLeaderboardRecordWrite StoredRecord;
-}
+};
 
 /**
 * Write objects into the storage engine.
@@ -3657,8 +3557,7 @@ public:
     , meta = (
       BlueprintInternalUseOnly = "true"
       , WorldContext = "WorldContextObject"
-      , DisplayName = "WriteStorageObjects"
-    )
+      , DisplayName = "WriteStorageObjects")
     , Category = "Nakama|Client"
   )
   static UNakamaClientWriteStorageObjects* WriteStorageObjects(
@@ -3674,7 +3573,7 @@ private:
   FNakamaClientConfig StoredClientConfig;
   FNakamaSession StoredSession;
   TArray<FNakamaWriteStorageObject> StoredObjects;
-}
+};
 
 /**
 * Write a record to a tournament.
@@ -3697,8 +3596,7 @@ public:
     , meta = (
       BlueprintInternalUseOnly = "true"
       , WorldContext = "WorldContextObject"
-      , DisplayName = "WriteTournamentRecord"
-    )
+      , DisplayName = "WriteTournamentRecord")
     , Category = "Nakama|Client"
   )
   static UNakamaClientWriteTournamentRecord* WriteTournamentRecord(
@@ -3716,4 +3614,4 @@ private:
   FNakamaSession StoredSession;
   FString StoredTournamentId;
   FNakamaWriteTournamentRecordRequestTournamentRecordWrite StoredRecord;
-}
+};

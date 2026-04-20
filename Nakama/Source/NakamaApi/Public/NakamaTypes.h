@@ -27,7 +27,7 @@
 UENUM(BlueprintType)
 enum class ENakamaFriendState : uint8
 {
-  FRIEND_ = 0 //  The user is a friend of the current user.
+  FRIEND = 0 //  The user is a friend of the current user.
   , INVITE_SENT = 1 //  The current user has sent an invite to the user.
   , INVITE_RECEIVED = 2 //  The current user has received an invite from this user.
   , BLOCKED = 3 //  The current user has blocked this user.
@@ -84,7 +84,7 @@ enum class ENakamaStoreEnvironment : uint8
 * Operator that can be used to override the one set in the leaderboard.
 */
 UENUM(BlueprintType)
-enum class ENakamaOperator_ : uint8
+enum class ENakamaOperator : uint8
 {
   NO_OVERRIDE = 0 //  Do not override the leaderboard operator.
   , BEST = 1 //  Override the leaderboard operator with BEST.
@@ -96,7 +96,8 @@ enum class ENakamaOperator_ : uint8
 /**
 * A user in the server.
 */
-struct FNakamaUser
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaUser
 {
   GENERATED_BODY()
 
@@ -179,7 +180,8 @@ struct FNakamaUser
 /**
 * Send a device to the server. Used with authenticate/link/unlink and user.
 */
-struct FNakamaAccountDevice
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaAccountDevice
 {
   GENERATED_BODY()
 
@@ -198,7 +200,8 @@ struct FNakamaAccountDevice
 /**
 * A user with additional account details. Always the current user.
 */
-struct FNakamaAccount
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaAccount
 {
   GENERATED_BODY()
 
@@ -237,7 +240,8 @@ struct FNakamaAccount
 /**
 * Obtain a new authentication token using a refresh token.
 */
-struct FNakamaAccountRefresh
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaAccountRefresh
 {
   GENERATED_BODY()
 
@@ -256,7 +260,8 @@ struct FNakamaAccountRefresh
 /**
 * Send a Apple Sign In token to the server. Used with authenticate/link/unlink.
 */
-struct FNakamaAccountApple
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaAccountApple
 {
   GENERATED_BODY()
 
@@ -275,7 +280,8 @@ struct FNakamaAccountApple
 /**
 * Send a custom ID to the server. Used with authenticate/link/unlink.
 */
-struct FNakamaAccountCustom
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaAccountCustom
 {
   GENERATED_BODY()
 
@@ -294,7 +300,8 @@ struct FNakamaAccountCustom
 /**
 * Send an email with password to the server. Used with authenticate/link/unlink.
 */
-struct FNakamaAccountEmail
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaAccountEmail
 {
   GENERATED_BODY()
 
@@ -317,7 +324,8 @@ struct FNakamaAccountEmail
 /**
 * Send a Facebook token to the server. Used with authenticate/link/unlink.
 */
-struct FNakamaAccountFacebook
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaAccountFacebook
 {
   GENERATED_BODY()
 
@@ -336,7 +344,8 @@ struct FNakamaAccountFacebook
 /**
 * Send a Facebook Instant Game token to the server. Used with authenticate/link/unlink.
 */
-struct FNakamaAccountFacebookInstantGame
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaAccountFacebookInstantGame
 {
   GENERATED_BODY()
 
@@ -355,7 +364,8 @@ struct FNakamaAccountFacebookInstantGame
 /**
 * Send Apple's Game Center account credentials to the server. Used with authenticate/link/unlink.
 */
-struct FNakamaAccountGameCenter
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaAccountGameCenter
 {
   GENERATED_BODY()
 
@@ -394,7 +404,8 @@ struct FNakamaAccountGameCenter
 /**
 * Send a Google token to the server. Used with authenticate/link/unlink.
 */
-struct FNakamaAccountGoogle
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaAccountGoogle
 {
   GENERATED_BODY()
 
@@ -413,7 +424,8 @@ struct FNakamaAccountGoogle
 /**
 * Send a Steam token to the server. Used with authenticate/link/unlink.
 */
-struct FNakamaAccountSteam
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaAccountSteam
 {
   GENERATED_BODY()
 
@@ -432,7 +444,8 @@ struct FNakamaAccountSteam
 /**
 * Add one or more friends to the current user.
 */
-struct FNakamaAddFriendsRequest
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaAddFriendsRequest
 {
   GENERATED_BODY()
 
@@ -455,7 +468,8 @@ struct FNakamaAddFriendsRequest
 /**
 * Add users to a group.
 */
-struct FNakamaAddGroupUsersRequest
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaAddGroupUsersRequest
 {
   GENERATED_BODY()
 
@@ -474,7 +488,8 @@ struct FNakamaAddGroupUsersRequest
 /**
 * Authenticate against the server with a refresh token.
 */
-struct FNakamaSessionRefreshRequest
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaSessionRefreshRequest
 {
   GENERATED_BODY()
 
@@ -493,7 +508,8 @@ struct FNakamaSessionRefreshRequest
 /**
 * Log out a session, invalidate a refresh token, or log out all sessions/refresh tokens for a user.
 */
-struct FNakamaSessionLogoutRequest
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaSessionLogoutRequest
 {
   GENERATED_BODY()
 
@@ -512,7 +528,8 @@ struct FNakamaSessionLogoutRequest
 /**
 * Authenticate against the server with Apple Sign In.
 */
-struct FNakamaAuthenticateAppleRequest
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaAuthenticateAppleRequest
 {
   GENERATED_BODY()
 
@@ -535,7 +552,8 @@ struct FNakamaAuthenticateAppleRequest
 /**
 * Authenticate against the server with a custom ID.
 */
-struct FNakamaAuthenticateCustomRequest
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaAuthenticateCustomRequest
 {
   GENERATED_BODY()
 
@@ -558,7 +576,8 @@ struct FNakamaAuthenticateCustomRequest
 /**
 * Authenticate against the server with a device ID.
 */
-struct FNakamaAuthenticateDeviceRequest
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaAuthenticateDeviceRequest
 {
   GENERATED_BODY()
 
@@ -581,7 +600,8 @@ struct FNakamaAuthenticateDeviceRequest
 /**
 * Authenticate against the server with email+password.
 */
-struct FNakamaAuthenticateEmailRequest
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaAuthenticateEmailRequest
 {
   GENERATED_BODY()
 
@@ -604,7 +624,8 @@ struct FNakamaAuthenticateEmailRequest
 /**
 * Authenticate against the server with Facebook.
 */
-struct FNakamaAuthenticateFacebookRequest
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaAuthenticateFacebookRequest
 {
   GENERATED_BODY()
 
@@ -631,7 +652,8 @@ struct FNakamaAuthenticateFacebookRequest
 /**
 * Authenticate against the server with Facebook Instant Game token.
 */
-struct FNakamaAuthenticateFacebookInstantGameRequest
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaAuthenticateFacebookInstantGameRequest
 {
   GENERATED_BODY()
 
@@ -654,7 +676,8 @@ struct FNakamaAuthenticateFacebookInstantGameRequest
 /**
 * Authenticate against the server with Apple's Game Center.
 */
-struct FNakamaAuthenticateGameCenterRequest
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaAuthenticateGameCenterRequest
 {
   GENERATED_BODY()
 
@@ -677,7 +700,8 @@ struct FNakamaAuthenticateGameCenterRequest
 /**
 * Authenticate against the server with Google.
 */
-struct FNakamaAuthenticateGoogleRequest
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaAuthenticateGoogleRequest
 {
   GENERATED_BODY()
 
@@ -700,7 +724,8 @@ struct FNakamaAuthenticateGoogleRequest
 /**
 * Authenticate against the server with Steam.
 */
-struct FNakamaAuthenticateSteamRequest
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaAuthenticateSteamRequest
 {
   GENERATED_BODY()
 
@@ -727,7 +752,8 @@ struct FNakamaAuthenticateSteamRequest
 /**
 * Ban users from a group.
 */
-struct FNakamaBanGroupUsersRequest
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaBanGroupUsersRequest
 {
   GENERATED_BODY()
 
@@ -746,7 +772,8 @@ struct FNakamaBanGroupUsersRequest
 /**
 * Block one or more friends for the current user.
 */
-struct FNakamaBlockFriendsRequest
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaBlockFriendsRequest
 {
   GENERATED_BODY()
 
@@ -765,7 +792,8 @@ struct FNakamaBlockFriendsRequest
 /**
 * A message sent on a channel.
 */
-struct FNakamaChannelMessage
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaChannelMessage
 {
   GENERATED_BODY()
 
@@ -828,7 +856,8 @@ struct FNakamaChannelMessage
 /**
 * A list of channel messages, usually a result of a list operation.
 */
-struct FNakamaChannelMessageList
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaChannelMessageList
 {
   GENERATED_BODY()
 
@@ -855,7 +884,8 @@ struct FNakamaChannelMessageList
 /**
 * Create a group with the current user as owner.
 */
-struct FNakamaCreateGroupRequest
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaCreateGroupRequest
 {
   GENERATED_BODY()
 
@@ -890,7 +920,8 @@ struct FNakamaCreateGroupRequest
 /**
 * Delete one or more friends for the current user.
 */
-struct FNakamaDeleteFriendsRequest
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaDeleteFriendsRequest
 {
   GENERATED_BODY()
 
@@ -909,7 +940,8 @@ struct FNakamaDeleteFriendsRequest
 /**
 * Delete a group the user has access to.
 */
-struct FNakamaDeleteGroupRequest
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaDeleteGroupRequest
 {
   GENERATED_BODY()
 
@@ -924,7 +956,8 @@ struct FNakamaDeleteGroupRequest
 /**
 * Delete a leaderboard record.
 */
-struct FNakamaDeleteLeaderboardRecordRequest
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaDeleteLeaderboardRecordRequest
 {
   GENERATED_BODY()
 
@@ -939,7 +972,8 @@ struct FNakamaDeleteLeaderboardRecordRequest
 /**
 * Delete one or more notifications for the current user.
 */
-struct FNakamaDeleteNotificationsRequest
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaDeleteNotificationsRequest
 {
   GENERATED_BODY()
 
@@ -954,7 +988,8 @@ struct FNakamaDeleteNotificationsRequest
 /**
 * Delete a leaderboard record.
 */
-struct FNakamaDeleteTournamentRecordRequest
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaDeleteTournamentRecordRequest
 {
   GENERATED_BODY()
 
@@ -969,7 +1004,8 @@ struct FNakamaDeleteTournamentRecordRequest
 /**
 * Storage objects to delete.
 */
-struct FNakamaDeleteStorageObjectId
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaDeleteStorageObjectId
 {
   GENERATED_BODY()
 
@@ -992,7 +1028,8 @@ struct FNakamaDeleteStorageObjectId
 /**
 * Batch delete storage objects.
 */
-struct FNakamaDeleteStorageObjectsRequest
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaDeleteStorageObjectsRequest
 {
   GENERATED_BODY()
 
@@ -1007,7 +1044,8 @@ struct FNakamaDeleteStorageObjectsRequest
 /**
 * Represents an event to be passed through the server to registered event handlers.
 */
-struct FNakamaEvent
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaEvent
 {
   GENERATED_BODY()
 
@@ -1034,7 +1072,8 @@ struct FNakamaEvent
 /**
 * A friend of a user.
 */
-struct FNakamaFriend
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaFriend
 {
   GENERATED_BODY()
 
@@ -1061,7 +1100,8 @@ struct FNakamaFriend
 /**
 * A collection of zero or more friends of the user.
 */
-struct FNakamaFriendList
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaFriendList
 {
   GENERATED_BODY()
 
@@ -1080,7 +1120,8 @@ struct FNakamaFriendList
 /**
 * A friend of a friend.
 */
-struct FNakamaFriendsOfFriendsList_FriendOfFriend
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaFriendsOfFriendsListFriendOfFriend
 {
   GENERATED_BODY()
 
@@ -1092,14 +1133,15 @@ struct FNakamaFriendsOfFriendsList_FriendOfFriend
   UPROPERTY(BlueprintReadWrite, Category = "Nakama")
   FNakamaUser User;
 
-  static FNakamaFriendsOfFriendsList_FriendOfFriend FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+  static FNakamaFriendsOfFriendsListFriendOfFriend FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
   TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**
 * A List of friends of friends
 */
-struct FNakamaFriendsOfFriendsList
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaFriendsOfFriendsList
 {
   GENERATED_BODY()
 
@@ -1118,7 +1160,8 @@ struct FNakamaFriendsOfFriendsList
 /**
 * Fetch a batch of zero or more users from the server.
 */
-struct FNakamaGetUsersRequest
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaGetUsersRequest
 {
   GENERATED_BODY()
 
@@ -1141,7 +1184,8 @@ struct FNakamaGetUsersRequest
 /**
 * Fetch a subscription by product id.
 */
-struct FNakamaGetSubscriptionRequest
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaGetSubscriptionRequest
 {
   GENERATED_BODY()
 
@@ -1156,7 +1200,8 @@ struct FNakamaGetSubscriptionRequest
 /**
 * A group in the server.
 */
-struct FNakamaGroup
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaGroup
 {
   GENERATED_BODY()
 
@@ -1215,7 +1260,8 @@ struct FNakamaGroup
 /**
 * One or more groups returned from a listing operation.
 */
-struct FNakamaGroupList
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaGroupList
 {
   GENERATED_BODY()
 
@@ -1234,7 +1280,8 @@ struct FNakamaGroupList
 /**
 *
 */
-struct FNakamaGroupUserList_GroupUser
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaGroupUserListGroupUser
 {
   GENERATED_BODY()
 
@@ -1246,14 +1293,15 @@ struct FNakamaGroupUserList_GroupUser
   UPROPERTY(BlueprintReadWrite, Category = "Nakama")
   int32 State = 0;
 
-  static FNakamaGroupUserList_GroupUser FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+  static FNakamaGroupUserListGroupUser FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
   TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**
 * A list of users belonging to a group, along with their role.
 */
-struct FNakamaGroupUserList
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaGroupUserList
 {
   GENERATED_BODY()
 
@@ -1272,7 +1320,8 @@ struct FNakamaGroupUserList
 /**
 * Import Facebook friends into the current user's account.
 */
-struct FNakamaImportFacebookFriendsRequest
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaImportFacebookFriendsRequest
 {
   GENERATED_BODY()
 
@@ -1291,7 +1340,8 @@ struct FNakamaImportFacebookFriendsRequest
 /**
 * Import Facebook friends into the current user's account.
 */
-struct FNakamaImportSteamFriendsRequest
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaImportSteamFriendsRequest
 {
   GENERATED_BODY()
 
@@ -1310,7 +1360,8 @@ struct FNakamaImportSteamFriendsRequest
 /**
 * Immediately join an open group, or request to join a closed one.
 */
-struct FNakamaJoinGroupRequest
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaJoinGroupRequest
 {
   GENERATED_BODY()
 
@@ -1325,7 +1376,8 @@ struct FNakamaJoinGroupRequest
 /**
 * The request to join a tournament.
 */
-struct FNakamaJoinTournamentRequest
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaJoinTournamentRequest
 {
   GENERATED_BODY()
 
@@ -1340,7 +1392,8 @@ struct FNakamaJoinTournamentRequest
 /**
 * Kick a set of users from a group.
 */
-struct FNakamaKickGroupUsersRequest
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaKickGroupUsersRequest
 {
   GENERATED_BODY()
 
@@ -1359,7 +1412,8 @@ struct FNakamaKickGroupUsersRequest
 /**
 * A leaderboard on the server.
 */
-struct FNakamaLeaderboard
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaLeaderboard
 {
   GENERATED_BODY()
 
@@ -1373,7 +1427,7 @@ struct FNakamaLeaderboard
 
   /**  BEST, SET, INCREMENT or DECREMENT operator mode of the leaderboard. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-  FNakamaOperator Operator_ = static_cast<FNakamaOperator>(0);
+  ENakamaOperator Operator = static_cast<ENakamaOperator>(0);
 
   /**  The UNIX time when the leaderboard was previously reset. A computed value. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama")
@@ -1402,7 +1456,8 @@ struct FNakamaLeaderboard
 /**
 * A list of leaderboards
 */
-struct FNakamaLeaderboardList
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaLeaderboardList
 {
   GENERATED_BODY()
 
@@ -1421,7 +1476,8 @@ struct FNakamaLeaderboardList
 /**
 * Represents a complete leaderboard record with all scores and associated metadata.
 */
-struct FNakamaLeaderboardRecord
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaLeaderboardRecord
 {
   GENERATED_BODY()
 
@@ -1480,7 +1536,8 @@ struct FNakamaLeaderboardRecord
 /**
 * A set of leaderboard records, may be part of a leaderboard records page or a batch of individual records.
 */
-struct FNakamaLeaderboardRecordList
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaLeaderboardRecordList
 {
   GENERATED_BODY()
 
@@ -1511,7 +1568,8 @@ struct FNakamaLeaderboardRecordList
 /**
 * Leave a group.
 */
-struct FNakamaLeaveGroupRequest
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaLeaveGroupRequest
 {
   GENERATED_BODY()
 
@@ -1526,7 +1584,8 @@ struct FNakamaLeaveGroupRequest
 /**
 * Link Facebook to the current user's account.
 */
-struct FNakamaLinkFacebookRequest
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaLinkFacebookRequest
 {
   GENERATED_BODY()
 
@@ -1545,7 +1604,8 @@ struct FNakamaLinkFacebookRequest
 /**
 * Link Steam to the current user's account.
 */
-struct FNakamaLinkSteamRequest
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaLinkSteamRequest
 {
   GENERATED_BODY()
 
@@ -1564,7 +1624,8 @@ struct FNakamaLinkSteamRequest
 /**
 * List a channel's message history.
 */
-struct FNakamaListChannelMessagesRequest
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaListChannelMessagesRequest
 {
   GENERATED_BODY()
 
@@ -1591,7 +1652,8 @@ struct FNakamaListChannelMessagesRequest
 /**
 * List friends for a user.
 */
-struct FNakamaListFriendsRequest
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaListFriendsRequest
 {
   GENERATED_BODY()
 
@@ -1614,7 +1676,8 @@ struct FNakamaListFriendsRequest
 /**
 *
 */
-struct FNakamaListFriendsOfFriendsRequest
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaListFriendsOfFriendsRequest
 {
   GENERATED_BODY()
 
@@ -1633,7 +1696,8 @@ struct FNakamaListFriendsOfFriendsRequest
 /**
 * List groups based on given filters.
 */
-struct FNakamaListGroupsRequest
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaListGroupsRequest
 {
   GENERATED_BODY()
 
@@ -1668,7 +1732,8 @@ struct FNakamaListGroupsRequest
 /**
 * List all users that are part of a group.
 */
-struct FNakamaListGroupUsersRequest
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaListGroupUsersRequest
 {
   GENERATED_BODY()
 
@@ -1695,7 +1760,8 @@ struct FNakamaListGroupUsersRequest
 /**
 * List leaerboard records from a given leaderboard around the owner.
 */
-struct FNakamaListLeaderboardRecordsAroundOwnerRequest
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaListLeaderboardRecordsAroundOwnerRequest
 {
   GENERATED_BODY()
 
@@ -1726,7 +1792,8 @@ struct FNakamaListLeaderboardRecordsAroundOwnerRequest
 /**
 * List leaderboard records from a given leaderboard.
 */
-struct FNakamaListLeaderboardRecordsRequest
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaListLeaderboardRecordsRequest
 {
   GENERATED_BODY()
 
@@ -1757,7 +1824,8 @@ struct FNakamaListLeaderboardRecordsRequest
 /**
 * List realtime matches.
 */
-struct FNakamaListMatchesRequest
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaListMatchesRequest
 {
   GENERATED_BODY()
 
@@ -1792,7 +1860,8 @@ struct FNakamaListMatchesRequest
 /**
 * Get a list of unexpired notifications.
 */
-struct FNakamaListNotificationsRequest
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaListNotificationsRequest
 {
   GENERATED_BODY()
 
@@ -1811,7 +1880,8 @@ struct FNakamaListNotificationsRequest
 /**
 * List publicly readable storage objects in a given collection.
 */
-struct FNakamaListStorageObjectsRequest
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaListStorageObjectsRequest
 {
   GENERATED_BODY()
 
@@ -1838,7 +1908,8 @@ struct FNakamaListStorageObjectsRequest
 /**
 * List user subscriptions.
 */
-struct FNakamaListSubscriptionsRequest
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaListSubscriptionsRequest
 {
   GENERATED_BODY()
 
@@ -1857,7 +1928,8 @@ struct FNakamaListSubscriptionsRequest
 /**
 * List tournament records from a given tournament around the owner.
 */
-struct FNakamaListTournamentRecordsAroundOwnerRequest
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaListTournamentRecordsAroundOwnerRequest
 {
   GENERATED_BODY()
 
@@ -1888,7 +1960,8 @@ struct FNakamaListTournamentRecordsAroundOwnerRequest
 /**
 * List tournament records from a given tournament.
 */
-struct FNakamaListTournamentRecordsRequest
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaListTournamentRecordsRequest
 {
   GENERATED_BODY()
 
@@ -1919,7 +1992,8 @@ struct FNakamaListTournamentRecordsRequest
 /**
 * List active/upcoming tournaments based on given filters.
 */
-struct FNakamaListTournamentsRequest
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaListTournamentsRequest
 {
   GENERATED_BODY()
 
@@ -1954,7 +2028,8 @@ struct FNakamaListTournamentsRequest
 /**
 * List the groups a user is part of, and their relationship to each.
 */
-struct FNakamaListUserGroupsRequest
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaListUserGroupsRequest
 {
   GENERATED_BODY()
 
@@ -1981,7 +2056,8 @@ struct FNakamaListUserGroupsRequest
 /**
 * Represents a realtime match.
 */
-struct FNakamaMatch
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaMatch
 {
   GENERATED_BODY()
 
@@ -2016,7 +2092,8 @@ struct FNakamaMatch
 /**
 * A list of realtime matches.
 */
-struct FNakamaMatchList
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaMatchList
 {
   GENERATED_BODY()
 
@@ -2031,7 +2108,8 @@ struct FNakamaMatchList
 /**
 * Matchmaker ticket completion stats
 */
-struct FNakamaMatchmakerCompletionStats
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaMatchmakerCompletionStats
 {
   GENERATED_BODY()
 
@@ -2050,7 +2128,8 @@ struct FNakamaMatchmakerCompletionStats
 /**
 * Matchmaker stats
 */
-struct FNakamaMatchmakerStats
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaMatchmakerStats
 {
   GENERATED_BODY()
 
@@ -2073,7 +2152,8 @@ struct FNakamaMatchmakerStats
 /**
 * A notification in the server.
 */
-struct FNakamaNotification
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaNotification
 {
   GENERATED_BODY()
 
@@ -2112,7 +2192,8 @@ struct FNakamaNotification
 /**
 * A collection of zero or more notifications.
 */
-struct FNakamaNotificationList
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaNotificationList
 {
   GENERATED_BODY()
 
@@ -2131,7 +2212,8 @@ struct FNakamaNotificationList
 /**
 * Promote a set of users in a group to the next role up.
 */
-struct FNakamaPromoteGroupUsersRequest
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaPromoteGroupUsersRequest
 {
   GENERATED_BODY()
 
@@ -2150,7 +2232,8 @@ struct FNakamaPromoteGroupUsersRequest
 /**
 * Demote a set of users in a group to the next role down.
 */
-struct FNakamaDemoteGroupUsersRequest
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaDemoteGroupUsersRequest
 {
   GENERATED_BODY()
 
@@ -2169,7 +2252,8 @@ struct FNakamaDemoteGroupUsersRequest
 /**
 * Storage objects to get.
 */
-struct FNakamaReadStorageObjectId
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaReadStorageObjectId
 {
   GENERATED_BODY()
 
@@ -2192,7 +2276,8 @@ struct FNakamaReadStorageObjectId
 /**
 * Batch get storage objects.
 */
-struct FNakamaReadStorageObjectsRequest
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaReadStorageObjectsRequest
 {
   GENERATED_BODY()
 
@@ -2207,7 +2292,8 @@ struct FNakamaReadStorageObjectsRequest
 /**
 * Execute an Lua function on the server.
 */
-struct FNakamaRpc
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaRpc
 {
   GENERATED_BODY()
 
@@ -2230,7 +2316,8 @@ struct FNakamaRpc
 /**
 * An object within the storage engine.
 */
-struct FNakamaStorageObject
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaStorageObject
 {
   GENERATED_BODY()
 
@@ -2277,7 +2364,8 @@ struct FNakamaStorageObject
 /**
 * A storage acknowledgement.
 */
-struct FNakamaStorageObjectAck
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaStorageObjectAck
 {
   GENERATED_BODY()
 
@@ -2312,7 +2400,8 @@ struct FNakamaStorageObjectAck
 /**
 * Batch of acknowledgements for the storage object write.
 */
-struct FNakamaStorageObjectAcks
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaStorageObjectAcks
 {
   GENERATED_BODY()
 
@@ -2327,7 +2416,8 @@ struct FNakamaStorageObjectAcks
 /**
 * Batch of storage objects.
 */
-struct FNakamaStorageObjects
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaStorageObjects
 {
   GENERATED_BODY()
 
@@ -2342,7 +2432,8 @@ struct FNakamaStorageObjects
 /**
 * List of storage objects.
 */
-struct FNakamaStorageObjectList
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaStorageObjectList
 {
   GENERATED_BODY()
 
@@ -2361,7 +2452,8 @@ struct FNakamaStorageObjectList
 /**
 * A tournament on the server.
 */
-struct FNakamaTournament
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaTournament
 {
   GENERATED_BODY()
 
@@ -2439,7 +2531,7 @@ struct FNakamaTournament
 
   /**  Operator. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-  FNakamaOperator Operator_ = static_cast<FNakamaOperator>(0);
+  ENakamaOperator Operator = static_cast<ENakamaOperator>(0);
 
   /**  Whether the leaderboard was created authoritatively or not. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama")
@@ -2456,7 +2548,8 @@ struct FNakamaTournament
 /**
 * A list of tournaments.
 */
-struct FNakamaTournamentList
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaTournamentList
 {
   GENERATED_BODY()
 
@@ -2475,7 +2568,8 @@ struct FNakamaTournamentList
 /**
 * A set of tournament records which may be part of a tournament records page or a batch of individual records.
 */
-struct FNakamaTournamentRecordList
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaTournamentRecordList
 {
   GENERATED_BODY()
 
@@ -2506,7 +2600,8 @@ struct FNakamaTournamentRecordList
 /**
 * Update a user's account details.
 */
-struct FNakamaUpdateAccountRequest
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaUpdateAccountRequest
 {
   GENERATED_BODY()
 
@@ -2541,7 +2636,8 @@ struct FNakamaUpdateAccountRequest
 /**
 * Update fields in a given group.
 */
-struct FNakamaUpdateGroupRequest
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaUpdateGroupRequest
 {
   GENERATED_BODY()
 
@@ -2576,7 +2672,8 @@ struct FNakamaUpdateGroupRequest
 /**
 * A single group-role pair.
 */
-struct FNakamaUserGroupList_UserGroup
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaUserGroupListUserGroup
 {
   GENERATED_BODY()
 
@@ -2588,14 +2685,15 @@ struct FNakamaUserGroupList_UserGroup
   UPROPERTY(BlueprintReadWrite, Category = "Nakama")
   int32 State = 0;
 
-  static FNakamaUserGroupList_UserGroup FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+  static FNakamaUserGroupListUserGroup FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
   TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**
 * A list of groups belonging to a user, along with the user's role in each group.
 */
-struct FNakamaUserGroupList
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaUserGroupList
 {
   GENERATED_BODY()
 
@@ -2614,7 +2712,8 @@ struct FNakamaUserGroupList
 /**
 * A collection of zero or more users.
 */
-struct FNakamaUsers
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaUsers
 {
   GENERATED_BODY()
 
@@ -2629,7 +2728,8 @@ struct FNakamaUsers
 /**
 * Apple IAP Purchases validation request
 */
-struct FNakamaValidatePurchaseAppleRequest
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaValidatePurchaseAppleRequest
 {
   GENERATED_BODY()
 
@@ -2648,7 +2748,8 @@ struct FNakamaValidatePurchaseAppleRequest
 /**
 * Apple Subscription validation request
 */
-struct FNakamaValidateSubscriptionAppleRequest
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaValidateSubscriptionAppleRequest
 {
   GENERATED_BODY()
 
@@ -2667,7 +2768,8 @@ struct FNakamaValidateSubscriptionAppleRequest
 /**
 * Google IAP Purchase validation request
 */
-struct FNakamaValidatePurchaseGoogleRequest
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaValidatePurchaseGoogleRequest
 {
   GENERATED_BODY()
 
@@ -2686,7 +2788,8 @@ struct FNakamaValidatePurchaseGoogleRequest
 /**
 * Google Subscription validation request
 */
-struct FNakamaValidateSubscriptionGoogleRequest
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaValidateSubscriptionGoogleRequest
 {
   GENERATED_BODY()
 
@@ -2705,7 +2808,8 @@ struct FNakamaValidateSubscriptionGoogleRequest
 /**
 * Huawei IAP Purchase validation request
 */
-struct FNakamaValidatePurchaseHuaweiRequest
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaValidatePurchaseHuaweiRequest
 {
   GENERATED_BODY()
 
@@ -2728,7 +2832,8 @@ struct FNakamaValidatePurchaseHuaweiRequest
 /**
 * Facebook Instant IAP Purchase validation request
 */
-struct FNakamaValidatePurchaseFacebookInstantRequest
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaValidatePurchaseFacebookInstantRequest
 {
   GENERATED_BODY()
 
@@ -2747,7 +2852,8 @@ struct FNakamaValidatePurchaseFacebookInstantRequest
 /**
 * Validated Purchase stored by Nakama.
 */
-struct FNakamaValidatedPurchase
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaValidatedPurchase
 {
   GENERATED_BODY()
 
@@ -2765,7 +2871,7 @@ struct FNakamaValidatedPurchase
 
   /**  Store identifier */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-  FNakamaStoreProvider Store = static_cast<FNakamaStoreProvider>(0);
+  ENakamaStoreProvider Store = static_cast<ENakamaStoreProvider>(0);
 
   /**  Timestamp when the purchase was done. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama")
@@ -2789,7 +2895,7 @@ struct FNakamaValidatedPurchase
 
   /**  Whether the purchase was done in production or sandbox environment. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-  FNakamaStoreEnvironment Environment = static_cast<FNakamaStoreEnvironment>(0);
+  ENakamaStoreEnvironment Environment = static_cast<ENakamaStoreEnvironment>(0);
 
   /**  Whether the purchase had already been validated by Nakama before. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama")
@@ -2802,7 +2908,8 @@ struct FNakamaValidatedPurchase
 /**
 * Validate IAP response.
 */
-struct FNakamaValidatePurchaseResponse
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaValidatePurchaseResponse
 {
   GENERATED_BODY()
 
@@ -2817,7 +2924,8 @@ struct FNakamaValidatePurchaseResponse
 /**
 *
 */
-struct FNakamaValidatedSubscription
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaValidatedSubscription
 {
   GENERATED_BODY()
 
@@ -2835,7 +2943,7 @@ struct FNakamaValidatedSubscription
 
   /**  Store identifier */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-  FNakamaStoreProvider Store = static_cast<FNakamaStoreProvider>(0);
+  ENakamaStoreProvider Store = static_cast<ENakamaStoreProvider>(0);
 
   /**  UNIX Timestamp when the purchase was done. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama")
@@ -2851,7 +2959,7 @@ struct FNakamaValidatedSubscription
 
   /**  Whether the purchase was done in production or sandbox environment. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-  FNakamaStoreEnvironment Environment = static_cast<FNakamaStoreEnvironment>(0);
+  ENakamaStoreEnvironment Environment = static_cast<ENakamaStoreEnvironment>(0);
 
   /**  Subscription expiration time. The subscription can still be auto-renewed to extend the expiration time further. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama")
@@ -2880,7 +2988,8 @@ struct FNakamaValidatedSubscription
 /**
 * Validate Subscription response.
 */
-struct FNakamaValidateSubscriptionResponse
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaValidateSubscriptionResponse
 {
   GENERATED_BODY()
 
@@ -2895,7 +3004,8 @@ struct FNakamaValidateSubscriptionResponse
 /**
 * A list of validated purchases stored by Nakama.
 */
-struct FNakamaPurchaseList
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaPurchaseList
 {
   GENERATED_BODY()
 
@@ -2918,7 +3028,8 @@ struct FNakamaPurchaseList
 /**
 * A list of validated subscriptions stored by Nakama.
 */
-struct FNakamaSubscriptionList
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaSubscriptionList
 {
   GENERATED_BODY()
 
@@ -2941,7 +3052,8 @@ struct FNakamaSubscriptionList
 /**
 * Record values to write.
 */
-struct FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaWriteLeaderboardRecordRequestLeaderboardRecordWrite
 {
   GENERATED_BODY()
 
@@ -2959,16 +3071,17 @@ struct FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite
 
   /**  Operator override. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-  FNakamaOperator Operator_ = static_cast<FNakamaOperator>(0);
+  ENakamaOperator Operator = static_cast<ENakamaOperator>(0);
 
-  static FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+  static FNakamaWriteLeaderboardRecordRequestLeaderboardRecordWrite FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
   TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**
 * A request to submit a score to a leaderboard.
 */
-struct FNakamaWriteLeaderboardRecordRequest
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaWriteLeaderboardRecordRequest
 {
   GENERATED_BODY()
 
@@ -2987,7 +3100,8 @@ struct FNakamaWriteLeaderboardRecordRequest
 /**
 * The object to store.
 */
-struct FNakamaWriteStorageObject
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaWriteStorageObject
 {
   GENERATED_BODY()
 
@@ -3022,7 +3136,8 @@ struct FNakamaWriteStorageObject
 /**
 * Write objects to the storage engine.
 */
-struct FNakamaWriteStorageObjectsRequest
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaWriteStorageObjectsRequest
 {
   GENERATED_BODY()
 
@@ -3037,7 +3152,8 @@ struct FNakamaWriteStorageObjectsRequest
 /**
 * Record values to write.
 */
-struct FNakamaWriteTournamentRecordRequest_TournamentRecordWrite
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaWriteTournamentRecordRequestTournamentRecordWrite
 {
   GENERATED_BODY()
 
@@ -3055,16 +3171,17 @@ struct FNakamaWriteTournamentRecordRequest_TournamentRecordWrite
 
   /**  Operator override. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-  FNakamaOperator Operator_ = static_cast<FNakamaOperator>(0);
+  ENakamaOperator Operator = static_cast<ENakamaOperator>(0);
 
-  static FNakamaWriteTournamentRecordRequest_TournamentRecordWrite FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+  static FNakamaWriteTournamentRecordRequestTournamentRecordWrite FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
   TSharedPtr<FJsonObject> ToJson() const noexcept;
 };
 
 /**
 * A request to submit a score to a tournament.
 */
-struct FNakamaWriteTournamentRecordRequest
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaWriteTournamentRecordRequest
 {
   GENERATED_BODY()
 
@@ -3083,7 +3200,8 @@ struct FNakamaWriteTournamentRecordRequest
 /**
 * A request to list parties.
 */
-struct FNakamaListPartiesRequest
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaListPartiesRequest
 {
   GENERATED_BODY()
 
@@ -3110,7 +3228,8 @@ struct FNakamaListPartiesRequest
 /**
 * Incoming information about a party.
 */
-struct FNakamaParty
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaParty
 {
   GENERATED_BODY()
 
@@ -3141,7 +3260,8 @@ struct FNakamaParty
 /**
 * A list of realtime matches.
 */
-struct FNakamaPartyList
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakamaPartyList
 {
   GENERATED_BODY()
 

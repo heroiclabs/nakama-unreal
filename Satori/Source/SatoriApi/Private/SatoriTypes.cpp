@@ -96,7 +96,7 @@ FSatoriAuthenticateRequest FSatoriAuthenticateRequest::FromJson(const TSharedPtr
       {
         for (const auto& Pair : (*MapObj)->Values)
         {
-          Result.Default_.Add(Pair.Key, Pair.Value->AsString());
+          Result.Default.Add(Pair.Key, Pair.Value->AsString());
         }
       }
   }
@@ -126,10 +126,10 @@ TSharedPtr<FJsonObject> FSatoriAuthenticateRequest::ToJson() const noexcept
   {
     Json->SetBoolField(TEXT("no_session"), NoSession);
   }
-  if (Default_.Num() > 0)
+  if (Default.Num() > 0)
   {
     TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
-    for (const auto& Pair : Default_)
+    for (const auto& Pair : Default)
     {
       MapObj->SetStringField(Pair.Key, Pair.Value);
     }
@@ -427,7 +427,7 @@ FSatoriValueChangeReason FSatoriValueChangeReason::FromJson(const TSharedPtr<FJs
   }
   if (Json->HasField(TEXT("type")))
   {
-      Result.Type = static_cast<FSatoriValueChangeReasonType>(Json->GetIntegerField(TEXT("type")));
+      Result.Type = static_cast<ESatoriValueChangeReasonType>(Json->GetIntegerField(TEXT("type")));
   }
   if (Json->HasField(TEXT("name")))
   {
@@ -579,7 +579,7 @@ FSatoriFlagOverrideValue FSatoriFlagOverrideValue::FromJson(const TSharedPtr<FJs
   }
   if (Json->HasField(TEXT("type")))
   {
-      Result.Type = static_cast<FSatoriFlagOverrideType>(Json->GetIntegerField(TEXT("type")));
+      Result.Type = static_cast<ESatoriFlagOverrideType>(Json->GetIntegerField(TEXT("type")));
   }
   if (Json->HasField(TEXT("name")))
   {
@@ -1192,7 +1192,7 @@ FSatoriIdentifyRequest FSatoriIdentifyRequest::FromJson(const TSharedPtr<FJsonOb
       {
         for (const auto& Pair : (*MapObj)->Values)
         {
-          Result.Default_.Add(Pair.Key, Pair.Value->AsString());
+          Result.Default.Add(Pair.Key, Pair.Value->AsString());
         }
       }
   }
@@ -1218,10 +1218,10 @@ TSharedPtr<FJsonObject> FSatoriIdentifyRequest::ToJson() const noexcept
   {
     Json->SetStringField(TEXT("id"), Id);
   }
-  if (Default_.Num() > 0)
+  if (Default.Num() > 0)
   {
     TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
-    for (const auto& Pair : Default_)
+    for (const auto& Pair : Default)
     {
       MapObj->SetStringField(Pair.Key, Pair.Value);
     }
@@ -1311,7 +1311,7 @@ FSatoriLiveEvent FSatoriLiveEvent::FromJson(const TSharedPtr<FJsonObject>& Json)
   }
   if (Json->HasField(TEXT("status")))
   {
-      Result.Status = static_cast<FSatoriLiveEventStatus>(Json->GetIntegerField(TEXT("status")));
+      Result.Status = static_cast<ESatoriLiveEventStatus>(Json->GetIntegerField(TEXT("status")));
   }
   if (Json->HasField(TEXT("labels")))
   {
@@ -1464,7 +1464,7 @@ FSatoriProperties FSatoriProperties::FromJson(const TSharedPtr<FJsonObject>& Jso
       {
         for (const auto& Pair : (*MapObj)->Values)
         {
-          Result.Default_.Add(Pair.Key, Pair.Value->AsString());
+          Result.Default.Add(Pair.Key, Pair.Value->AsString());
         }
       }
   }
@@ -1497,10 +1497,10 @@ FSatoriProperties FSatoriProperties::FromJson(const TSharedPtr<FJsonObject>& Jso
 TSharedPtr<FJsonObject> FSatoriProperties::ToJson() const noexcept
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-  if (Default_.Num() > 0)
+  if (Default.Num() > 0)
   {
     TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
-    for (const auto& Pair : Default_)
+    for (const auto& Pair : Default)
     {
       MapObj->SetStringField(Pair.Key, Pair.Value);
     }
@@ -1544,7 +1544,7 @@ FSatoriUpdatePropertiesRequest FSatoriUpdatePropertiesRequest::FromJson(const TS
       {
         for (const auto& Pair : (*MapObj)->Values)
         {
-          Result.Default_.Add(Pair.Key, Pair.Value->AsString());
+          Result.Default.Add(Pair.Key, Pair.Value->AsString());
         }
       }
   }
@@ -1570,10 +1570,10 @@ TSharedPtr<FJsonObject> FSatoriUpdatePropertiesRequest::ToJson() const noexcept
   {
     Json->SetBoolField(TEXT("recompute"), Recompute);
   }
-  if (Default_.Num() > 0)
+  if (Default.Num() > 0)
   {
     TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
-    for (const auto& Pair : Default_)
+    for (const auto& Pair : Default)
     {
       MapObj->SetStringField(Pair.Key, Pair.Value);
     }

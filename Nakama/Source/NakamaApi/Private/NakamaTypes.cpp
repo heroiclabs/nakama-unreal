@@ -2106,9 +2106,9 @@ TSharedPtr<FJsonObject> FNakamaFriendList::ToJson() const noexcept
   }
 }
 
-FNakamaFriendsOfFriendsList_FriendOfFriend FNakamaFriendsOfFriendsList_FriendOfFriend::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
+FNakamaFriendsOfFriendsListFriendOfFriend FNakamaFriendsOfFriendsListFriendOfFriend::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
-  FNakamaFriendsOfFriendsList_FriendOfFriend Result;
+  FNakamaFriendsOfFriendsListFriendOfFriend Result;
   if (!Json.IsValid())
   {
     return Result;
@@ -2129,7 +2129,7 @@ FNakamaFriendsOfFriendsList_FriendOfFriend FNakamaFriendsOfFriendsList_FriendOfF
   return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaFriendsOfFriendsList_FriendOfFriend::ToJson() const noexcept
+TSharedPtr<FJsonObject> FNakamaFriendsOfFriendsListFriendOfFriend::ToJson() const noexcept
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
   if (Referrer.IsEmpty() == false)
@@ -2450,9 +2450,9 @@ TSharedPtr<FJsonObject> FNakamaGroupList::ToJson() const noexcept
   }
 }
 
-FNakamaGroupUserList_GroupUser FNakamaGroupUserList_GroupUser::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
+FNakamaGroupUserListGroupUser FNakamaGroupUserListGroupUser::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
-  FNakamaGroupUserList_GroupUser Result;
+  FNakamaGroupUserListGroupUser Result;
   if (!Json.IsValid())
   {
     return Result;
@@ -2473,7 +2473,7 @@ FNakamaGroupUserList_GroupUser FNakamaGroupUserList_GroupUser::FromJson(const TS
   return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaGroupUserList_GroupUser::ToJson() const noexcept
+TSharedPtr<FJsonObject> FNakamaGroupUserListGroupUser::ToJson() const noexcept
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
   if (User.NumEmpty() == false)
@@ -2715,7 +2715,7 @@ FNakamaLeaderboard FNakamaLeaderboard::FromJson(const TSharedPtr<FJsonObject>& J
   }
   if (Json->HasField(TEXT("operator")))
   {
-      Result.Operator_ = static_cast<FNakamaOperator>(Json->GetIntegerField(TEXT("operator")));
+      Result.Operator = static_cast<ENakamaOperator>(Json->GetIntegerField(TEXT("operator")));
   }
   if (Json->HasField(TEXT("prev_reset")))
   {
@@ -2752,9 +2752,9 @@ TSharedPtr<FJsonObject> FNakamaLeaderboard::ToJson() const noexcept
   {
     Json->SetNumberField(TEXT("sort_order"), SortOrder);
   }
-  if (Operator_.NumEmpty() == false)
+  if (Operator.NumEmpty() == false)
   {
-    Json->SetObjectField(TEXT("operator"), Operator_.ToJson());
+    Json->SetObjectField(TEXT("operator"), Operator.ToJson());
   }
   if (PrevReset.NonZero() == false)
   {
@@ -4771,7 +4771,7 @@ FNakamaTournament FNakamaTournament::FromJson(const TSharedPtr<FJsonObject>& Jso
   }
   if (Json->HasField(TEXT("operator")))
   {
-      Result.Operator_ = static_cast<FNakamaOperator>(Json->GetIntegerField(TEXT("operator")));
+      Result.Operator = static_cast<ENakamaOperator>(Json->GetIntegerField(TEXT("operator")));
   }
   if (Json->HasField(TEXT("authoritative")))
   {
@@ -4860,9 +4860,9 @@ TSharedPtr<FJsonObject> FNakamaTournament::ToJson() const noexcept
   {
     Json->SetNumberField(TEXT("prev_reset"), PrevReset);
   }
-  if (Operator_.NumEmpty() == false)
+  if (Operator.NumEmpty() == false)
   {
-    Json->SetObjectField(TEXT("operator"), Operator_.ToJson());
+    Json->SetObjectField(TEXT("operator"), Operator.ToJson());
   }
   if (Authoritative.None() == false)
   {
@@ -5138,9 +5138,9 @@ TSharedPtr<FJsonObject> FNakamaUpdateGroupRequest::ToJson() const noexcept
   }
 }
 
-FNakamaUserGroupList_UserGroup FNakamaUserGroupList_UserGroup::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
+FNakamaUserGroupListUserGroup FNakamaUserGroupListUserGroup::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
-  FNakamaUserGroupList_UserGroup Result;
+  FNakamaUserGroupListUserGroup Result;
   if (!Json.IsValid())
   {
     return Result;
@@ -5161,7 +5161,7 @@ FNakamaUserGroupList_UserGroup FNakamaUserGroupList_UserGroup::FromJson(const TS
   return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaUserGroupList_UserGroup::ToJson() const noexcept
+TSharedPtr<FJsonObject> FNakamaUserGroupListUserGroup::ToJson() const noexcept
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
   if (Group.NumEmpty() == false)
@@ -5483,7 +5483,7 @@ FNakamaValidatedPurchase FNakamaValidatedPurchase::FromJson(const TSharedPtr<FJs
   }
   if (Json->HasField(TEXT("store")))
   {
-      Result.Store = static_cast<FNakamaStoreProvider>(Json->GetIntegerField(TEXT("store")));
+      Result.Store = static_cast<ENakamaStoreProvider>(Json->GetIntegerField(TEXT("store")));
   }
   if (Json->HasField(TEXT("purchase_time")))
   {
@@ -5507,7 +5507,7 @@ FNakamaValidatedPurchase FNakamaValidatedPurchase::FromJson(const TSharedPtr<FJs
   }
   if (Json->HasField(TEXT("environment")))
   {
-      Result.Environment = static_cast<FNakamaStoreEnvironment>(Json->GetIntegerField(TEXT("environment")));
+      Result.Environment = static_cast<ENakamaStoreEnvironment>(Json->GetIntegerField(TEXT("environment")));
   }
   if (Json->HasField(TEXT("seen_before")))
   {
@@ -5627,7 +5627,7 @@ FNakamaValidatedSubscription FNakamaValidatedSubscription::FromJson(const TShare
   }
   if (Json->HasField(TEXT("store")))
   {
-      Result.Store = static_cast<FNakamaStoreProvider>(Json->GetIntegerField(TEXT("store")));
+      Result.Store = static_cast<ENakamaStoreProvider>(Json->GetIntegerField(TEXT("store")));
   }
   if (Json->HasField(TEXT("purchase_time")))
   {
@@ -5643,7 +5643,7 @@ FNakamaValidatedSubscription FNakamaValidatedSubscription::FromJson(const TShare
   }
   if (Json->HasField(TEXT("environment")))
   {
-      Result.Environment = static_cast<FNakamaStoreEnvironment>(Json->GetIntegerField(TEXT("environment")));
+      Result.Environment = static_cast<ENakamaStoreEnvironment>(Json->GetIntegerField(TEXT("environment")));
   }
   if (Json->HasField(TEXT("expiry_time")))
   {
@@ -5866,9 +5866,9 @@ TSharedPtr<FJsonObject> FNakamaSubscriptionList::ToJson() const noexcept
   }
 }
 
-FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
+FNakamaWriteLeaderboardRecordRequestLeaderboardRecordWrite FNakamaWriteLeaderboardRecordRequestLeaderboardRecordWrite::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
-  FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite Result;
+  FNakamaWriteLeaderboardRecordRequestLeaderboardRecordWrite Result;
   if (!Json.IsValid())
   {
     return Result;
@@ -5887,13 +5887,13 @@ FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite FNakamaWriteLeaderbo
   }
   if (Json->HasField(TEXT("operator")))
   {
-      Result.Operator_ = static_cast<FNakamaOperator>(Json->GetIntegerField(TEXT("operator")));
+      Result.Operator = static_cast<ENakamaOperator>(Json->GetIntegerField(TEXT("operator")));
   }
   Result.ParseTokens();
   return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite::ToJson() const noexcept
+TSharedPtr<FJsonObject> FNakamaWriteLeaderboardRecordRequestLeaderboardRecordWrite::ToJson() const noexcept
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
   if (Score.NonZero() == false)
@@ -5908,9 +5908,9 @@ TSharedPtr<FJsonObject> FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWr
   {
     Json->SetStringField(TEXT("metadata"), Metadata);
   }
-  if (Operator_.NumEmpty() == false)
+  if (Operator.NumEmpty() == false)
   {
-    Json->SetObjectField(TEXT("operator"), Operator_.ToJson());
+    Json->SetObjectField(TEXT("operator"), Operator.ToJson());
   }
 }
 
@@ -6054,9 +6054,9 @@ TSharedPtr<FJsonObject> FNakamaWriteStorageObjectsRequest::ToJson() const noexce
   }
 }
 
-FNakamaWriteTournamentRecordRequest_TournamentRecordWrite FNakamaWriteTournamentRecordRequest_TournamentRecordWrite::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
+FNakamaWriteTournamentRecordRequestTournamentRecordWrite FNakamaWriteTournamentRecordRequestTournamentRecordWrite::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
 {
-  FNakamaWriteTournamentRecordRequest_TournamentRecordWrite Result;
+  FNakamaWriteTournamentRecordRequestTournamentRecordWrite Result;
   if (!Json.IsValid())
   {
     return Result;
@@ -6075,13 +6075,13 @@ FNakamaWriteTournamentRecordRequest_TournamentRecordWrite FNakamaWriteTournament
   }
   if (Json->HasField(TEXT("operator")))
   {
-      Result.Operator_ = static_cast<FNakamaOperator>(Json->GetIntegerField(TEXT("operator")));
+      Result.Operator = static_cast<ENakamaOperator>(Json->GetIntegerField(TEXT("operator")));
   }
   Result.ParseTokens();
   return Result;
 }
 
-TSharedPtr<FJsonObject> FNakamaWriteTournamentRecordRequest_TournamentRecordWrite::ToJson() const noexcept
+TSharedPtr<FJsonObject> FNakamaWriteTournamentRecordRequestTournamentRecordWrite::ToJson() const noexcept
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
   if (Score.NonZero() == false)
@@ -6096,9 +6096,9 @@ TSharedPtr<FJsonObject> FNakamaWriteTournamentRecordRequest_TournamentRecordWrit
   {
     Json->SetStringField(TEXT("metadata"), Metadata);
   }
-  if (Operator_.NumEmpty() == false)
+  if (Operator.NumEmpty() == false)
   {
-    Json->SetObjectField(TEXT("operator"), Operator_.ToJson());
+    Json->SetObjectField(TEXT("operator"), Operator.ToJson());
   }
 }
 

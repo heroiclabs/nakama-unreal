@@ -23,7 +23,7 @@ USatoriClientAuthenticate* USatoriClientAuthenticate::Authenticate(
   , FSatoriClientConfig ClientConfig
   , const FString& Id
   , bool NoSession
-  , const TMap<FString, FString>& Default_
+  , const TMap<FString, FString>& Default
   , const TMap<FString, FString>& Custom
 )
 {
@@ -31,7 +31,7 @@ USatoriClientAuthenticate* USatoriClientAuthenticate::Authenticate(
   Action->StoredClientConfig = ClientConfig;
   Action->StoredId = Id;
   Action->StoredNoSession = NoSession;
-  Action->StoredDefault_ = Default_;
+  Action->StoredDefault = Default;
   Action->StoredCustom = Custom;
 
   Action->RegisterWithGameInstance(WorldContextObject);
@@ -49,7 +49,7 @@ void USatoriClientAuthenticate::Activate()
     StoredClientConfig,
     Id,
     NoSession,
-    Default_,
+    Default,
     Custom,
     [WeakThis](const FSatoriSession& Result)
     {
@@ -596,7 +596,7 @@ USatoriClientIdentify* USatoriClientIdentify::Identify(
   , FSatoriClientConfig ClientConfig
   , const FSatoriSession& Session
   , const FString& Id
-  , const TMap<FString, FString>& Default_
+  , const TMap<FString, FString>& Default
   , const TMap<FString, FString>& Custom
 )
 {
@@ -604,7 +604,7 @@ USatoriClientIdentify* USatoriClientIdentify::Identify(
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
   Action->StoredId = Id;
-  Action->StoredDefault_ = Default_;
+  Action->StoredDefault = Default;
   Action->StoredCustom = Custom;
 
   Action->RegisterWithGameInstance(WorldContextObject);
@@ -622,7 +622,7 @@ void USatoriClientIdentify::Activate()
     StoredClientConfig,
     Session,
     Id,
-    Default_,
+    Default,
     Custom,
     [WeakThis](const FSatoriSession& Result)
     {
@@ -734,7 +734,7 @@ USatoriClientUpdateProperties* USatoriClientUpdateProperties::UpdateProperties(
   , FSatoriClientConfig ClientConfig
   , const FSatoriSession& Session
   , bool Recompute
-  , const TMap<FString, FString>& Default_
+  , const TMap<FString, FString>& Default
   , const TMap<FString, FString>& Custom
 )
 {
@@ -742,7 +742,7 @@ USatoriClientUpdateProperties* USatoriClientUpdateProperties::UpdateProperties(
   Action->StoredClientConfig = ClientConfig;
   Action->StoredSession = Session;
   Action->StoredRecompute = Recompute;
-  Action->StoredDefault_ = Default_;
+  Action->StoredDefault = Default;
   Action->StoredCustom = Custom;
 
   Action->RegisterWithGameInstance(WorldContextObject);
@@ -760,7 +760,7 @@ void USatoriClientUpdateProperties::Activate()
     StoredClientConfig,
     Session,
     Recompute,
-    Default_,
+    Default,
     Custom,
     [WeakThis]()
     {

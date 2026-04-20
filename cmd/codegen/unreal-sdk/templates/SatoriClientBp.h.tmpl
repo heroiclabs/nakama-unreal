@@ -21,6 +21,8 @@
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintAsyncActionBase.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
+#include "SatoriError.h"
+#include "SatoriTypes.h"
 #include "SatoriApi.h"
 
 #include "SatoriClientBlueprintLibrary.generated.h"
@@ -61,7 +63,23 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnSatoriError OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "{{ $func.Name }}"), Category = "Satori|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "{{ $func.Name }}"
+      {{- $firstAutoCreateParam := true -}}
+      {{- range $param := $func.Params -}}
+        {{- if $param.Metadata.IsMap -}}
+          {{- if $firstAutoCreateParam -}}, AutoCreateRefTerm = "{{- else -}}, {{- end -}}
+          {{- $param.Name -}}
+          {{- $firstAutoCreateParam = false -}}
+        {{- end -}}
+      {{- end -}}{{- if not $firstAutoCreateParam -}}"{{- end -}}
+    )
+    , Category = "Satori|Client"
+  )
   static USatoriClient{{ $func.Name }}* {{ $func.Name }}(
     UObject* WorldContextObject
     , FSatoriClientConfig ClientConfig
@@ -77,6 +95,6 @@ private:
   {{- range $param := $func.Params }}
   {{ $param.Type }} Stored{{ $param.Name }};
   {{- end }}
-}
+};
 
 {{- end }}

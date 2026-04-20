@@ -51,10 +51,17 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaRtError OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ChannelJoin"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "ChannelJoin")
+    , Category = "Nakama|RealtimeClient"
+  )
   static UNakamaRealtimeClientChannelJoin* ChannelJoin(
     UObject* WorldContextObject
-    , UNakamaWebSocketSubsystem* WebSocketSubsystem;
+    , UNakamaWebSocketSubsystem* WebSocketSubsystem
     , const FString& Target
     , int32 Type
     , bool Persistence
@@ -69,7 +76,7 @@ private:
   int32 StoredType;
   bool StoredPersistence;
   bool StoredHidden;
-}
+};
 
 /**
 *  [client] Leave a realtime chat channel.
@@ -86,10 +93,17 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaRtError OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ChannelLeave"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "ChannelLeave")
+    , Category = "Nakama|RealtimeClient"
+  )
   static UNakamaRealtimeClientChannelLeave* ChannelLeave(
     UObject* WorldContextObject
-    , UNakamaWebSocketSubsystem* WebSocketSubsystem;
+    , UNakamaWebSocketSubsystem* WebSocketSubsystem
     , const FString& ChannelId
   );
 
@@ -98,7 +112,7 @@ public:
 private:
   TObjectPtr<UNakamaWebSocketSubsystem> StoredWebSocketSubsystem;
   FString StoredChannelId;
-}
+};
 
 /**
 *  [client] Send a message to a realtime chat channel.
@@ -115,10 +129,17 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaRtError OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ChannelMessageSend"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "ChannelMessageSend")
+    , Category = "Nakama|RealtimeClient"
+  )
   static UNakamaRealtimeClientChannelMessageSend* ChannelMessageSend(
     UObject* WorldContextObject
-    , UNakamaWebSocketSubsystem* WebSocketSubsystem;
+    , UNakamaWebSocketSubsystem* WebSocketSubsystem
     , const FString& ChannelId
     , const FString& Content
   );
@@ -129,7 +150,7 @@ private:
   TObjectPtr<UNakamaWebSocketSubsystem> StoredWebSocketSubsystem;
   FString StoredChannelId;
   FString StoredContent;
-}
+};
 
 /**
 *  [client] Update a message previously sent to a realtime chat channel.
@@ -146,10 +167,17 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaRtError OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ChannelMessageUpdate"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "ChannelMessageUpdate")
+    , Category = "Nakama|RealtimeClient"
+  )
   static UNakamaRealtimeClientChannelMessageUpdate* ChannelMessageUpdate(
     UObject* WorldContextObject
-    , UNakamaWebSocketSubsystem* WebSocketSubsystem;
+    , UNakamaWebSocketSubsystem* WebSocketSubsystem
     , const FString& ChannelId
     , const FString& MessageId
     , const FString& Content
@@ -162,7 +190,7 @@ private:
   FString StoredChannelId;
   FString StoredMessageId;
   FString StoredContent;
-}
+};
 
 /**
 *  [client] Remove a message previously sent to a realtime chat channel.
@@ -179,10 +207,17 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaRtError OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ChannelMessageRemove"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "ChannelMessageRemove")
+    , Category = "Nakama|RealtimeClient"
+  )
   static UNakamaRealtimeClientChannelMessageRemove* ChannelMessageRemove(
     UObject* WorldContextObject
-    , UNakamaWebSocketSubsystem* WebSocketSubsystem;
+    , UNakamaWebSocketSubsystem* WebSocketSubsystem
     , const FString& ChannelId
     , const FString& MessageId
   );
@@ -193,7 +228,7 @@ private:
   TObjectPtr<UNakamaWebSocketSubsystem> StoredWebSocketSubsystem;
   FString StoredChannelId;
   FString StoredMessageId;
-}
+};
 
 /**
 *  [client] A client to server request to create a realtime match.
@@ -210,10 +245,17 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaRtError OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "MatchCreate"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "MatchCreate")
+    , Category = "Nakama|RealtimeClient"
+  )
   static UNakamaRealtimeClientMatchCreate* MatchCreate(
     UObject* WorldContextObject
-    , UNakamaWebSocketSubsystem* WebSocketSubsystem;
+    , UNakamaWebSocketSubsystem* WebSocketSubsystem
     , const FString& Name
   );
 
@@ -222,7 +264,7 @@ public:
 private:
   TObjectPtr<UNakamaWebSocketSubsystem> StoredWebSocketSubsystem;
   FString StoredName;
-}
+};
 
 /**
 *  [client] A client to server request to send data to a realtime match.
@@ -239,14 +281,21 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaRtError OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "MatchDataSend"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "MatchDataSend")
+    , Category = "Nakama|RealtimeClient"
+  )
   static UNakamaRealtimeClientMatchDataSend* MatchDataSend(
     UObject* WorldContextObject
-    , UNakamaWebSocketSubsystem* WebSocketSubsystem;
+    , UNakamaWebSocketSubsystem* WebSocketSubsystem
     , const FString& MatchId
     , int64 OpCode
     , const TArray<uint8>& Data
-    , const TArray<FNakamaUserPresence>& Presences
+    , const TArray<FNakamaRtUserPresence>& Presences
     , bool Reliable
   );
 
@@ -257,9 +306,9 @@ private:
   FString StoredMatchId;
   int64 StoredOpCode;
   TArray<uint8> StoredData;
-  TArray<FNakamaUserPresence> StoredPresences;
+  TArray<FNakamaRtUserPresence> StoredPresences;
   bool StoredReliable;
-}
+};
 
 /**
 *  [client] A client to server request to join a realtime match.
@@ -276,10 +325,17 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaRtError OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "MatchJoin"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "MatchJoin", AutoCreateRefTerm = "Metadata")
+    , Category = "Nakama|RealtimeClient"
+  )
   static UNakamaRealtimeClientMatchJoin* MatchJoin(
     UObject* WorldContextObject
-    , UNakamaWebSocketSubsystem* WebSocketSubsystem;
+    , UNakamaWebSocketSubsystem* WebSocketSubsystem
     , const TMap<FString, FString>& Metadata
     , const FString& MatchId
     , const FString& Token
@@ -292,7 +348,7 @@ private:
   TMap<FString, FString> StoredMetadata;
   FString StoredMatchId;
   FString StoredToken;
-}
+};
 
 /**
 *  [client] A client to server request to leave a realtime match.
@@ -309,10 +365,17 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaRtError OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "MatchLeave"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "MatchLeave")
+    , Category = "Nakama|RealtimeClient"
+  )
   static UNakamaRealtimeClientMatchLeave* MatchLeave(
     UObject* WorldContextObject
-    , UNakamaWebSocketSubsystem* WebSocketSubsystem;
+    , UNakamaWebSocketSubsystem* WebSocketSubsystem
     , const FString& MatchId
   );
 
@@ -321,7 +384,7 @@ public:
 private:
   TObjectPtr<UNakamaWebSocketSubsystem> StoredWebSocketSubsystem;
   FString StoredMatchId;
-}
+};
 
 /**
 *  [client] Submit a new matchmaking process request.
@@ -338,10 +401,17 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaRtError OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "MatchmakerAdd"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "MatchmakerAdd", AutoCreateRefTerm = "StringProperties,NumericProperties")
+    , Category = "Nakama|RealtimeClient"
+  )
   static UNakamaRealtimeClientMatchmakerAdd* MatchmakerAdd(
     UObject* WorldContextObject
-    , UNakamaWebSocketSubsystem* WebSocketSubsystem;
+    , UNakamaWebSocketSubsystem* WebSocketSubsystem
     , int32 MinCount
     , int32 MaxCount
     , const FString& Query
@@ -360,7 +430,7 @@ private:
   int32 StoredCountMultiple;
   TMap<FString, FString> StoredStringProperties;
   TMap<FString, double> StoredNumericProperties;
-}
+};
 
 /**
 *  [client] Cancel a matchmaking process using a ticket.
@@ -377,10 +447,17 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaRtError OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "MatchmakerRemove"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "MatchmakerRemove")
+    , Category = "Nakama|RealtimeClient"
+  )
   static UNakamaRealtimeClientMatchmakerRemove* MatchmakerRemove(
     UObject* WorldContextObject
-    , UNakamaWebSocketSubsystem* WebSocketSubsystem;
+    , UNakamaWebSocketSubsystem* WebSocketSubsystem
     , const FString& Ticket
   );
 
@@ -389,7 +466,7 @@ public:
 private:
   TObjectPtr<UNakamaWebSocketSubsystem> StoredWebSocketSubsystem;
   FString StoredTicket;
-}
+};
 
 /**
 *  [client][server] RPC call or response.
@@ -406,10 +483,17 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaRtError OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "Rpc"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "Rpc")
+    , Category = "Nakama|RealtimeClient"
+  )
   static UNakamaRealtimeClientRpc* Rpc(
     UObject* WorldContextObject
-    , UNakamaWebSocketSubsystem* WebSocketSubsystem;
+    , UNakamaWebSocketSubsystem* WebSocketSubsystem
     , const FString& Id
     , const FString& Payload
     , const FString& HttpKey
@@ -422,7 +506,7 @@ private:
   FString StoredId;
   FString StoredPayload;
   FString StoredHttpKey;
-}
+};
 
 /**
 *  [client] Start following some set of users to receive their status updates.
@@ -439,10 +523,17 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaRtError OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "StatusFollow"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "StatusFollow")
+    , Category = "Nakama|RealtimeClient"
+  )
   static UNakamaRealtimeClientStatusFollow* StatusFollow(
     UObject* WorldContextObject
-    , UNakamaWebSocketSubsystem* WebSocketSubsystem;
+    , UNakamaWebSocketSubsystem* WebSocketSubsystem
     , const TArray<FString>& UserIds
     , const TArray<FString>& Usernames
   );
@@ -453,7 +544,7 @@ private:
   TObjectPtr<UNakamaWebSocketSubsystem> StoredWebSocketSubsystem;
   TArray<FString> StoredUserIds;
   TArray<FString> StoredUsernames;
-}
+};
 
 /**
 *  [client] Stop following some set of users to no longer receive their status updates.
@@ -470,10 +561,17 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaRtError OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "StatusUnfollow"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "StatusUnfollow")
+    , Category = "Nakama|RealtimeClient"
+  )
   static UNakamaRealtimeClientStatusUnfollow* StatusUnfollow(
     UObject* WorldContextObject
-    , UNakamaWebSocketSubsystem* WebSocketSubsystem;
+    , UNakamaWebSocketSubsystem* WebSocketSubsystem
     , const TArray<FString>& UserIds
   );
 
@@ -482,7 +580,7 @@ public:
 private:
   TObjectPtr<UNakamaWebSocketSubsystem> StoredWebSocketSubsystem;
   TArray<FString> StoredUserIds;
-}
+};
 
 /**
 *  [client] Set the user's own status.
@@ -499,10 +597,17 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaRtError OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "StatusUpdate"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "StatusUpdate")
+    , Category = "Nakama|RealtimeClient"
+  )
   static UNakamaRealtimeClientStatusUpdate* StatusUpdate(
     UObject* WorldContextObject
-    , UNakamaWebSocketSubsystem* WebSocketSubsystem;
+    , UNakamaWebSocketSubsystem* WebSocketSubsystem
     , const FString& Status
   );
 
@@ -511,7 +616,7 @@ public:
 private:
   TObjectPtr<UNakamaWebSocketSubsystem> StoredWebSocketSubsystem;
   FString StoredStatus;
-}
+};
 
 /**
 *  [client] Create a party.
@@ -528,10 +633,17 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaRtError OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "PartyCreate"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "PartyCreate")
+    , Category = "Nakama|RealtimeClient"
+  )
   static UNakamaRealtimeClientPartyCreate* PartyCreate(
     UObject* WorldContextObject
-    , UNakamaWebSocketSubsystem* WebSocketSubsystem;
+    , UNakamaWebSocketSubsystem* WebSocketSubsystem
     , bool Open
     , int32 MaxSize
     , const FString& Label
@@ -546,7 +658,7 @@ private:
   int32 StoredMaxSize;
   FString StoredLabel;
   bool StoredHidden;
-}
+};
 
 /**
 *  [client] Join a party, or request to join if the party is not open.
@@ -563,10 +675,17 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaRtError OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "PartyJoin"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "PartyJoin")
+    , Category = "Nakama|RealtimeClient"
+  )
   static UNakamaRealtimeClientPartyJoin* PartyJoin(
     UObject* WorldContextObject
-    , UNakamaWebSocketSubsystem* WebSocketSubsystem;
+    , UNakamaWebSocketSubsystem* WebSocketSubsystem
     , const FString& PartyId
   );
 
@@ -575,7 +694,7 @@ public:
 private:
   TObjectPtr<UNakamaWebSocketSubsystem> StoredWebSocketSubsystem;
   FString StoredPartyId;
-}
+};
 
 /**
 *  [client] Leave a party.
@@ -592,10 +711,17 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaRtError OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "PartyLeave"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "PartyLeave")
+    , Category = "Nakama|RealtimeClient"
+  )
   static UNakamaRealtimeClientPartyLeave* PartyLeave(
     UObject* WorldContextObject
-    , UNakamaWebSocketSubsystem* WebSocketSubsystem;
+    , UNakamaWebSocketSubsystem* WebSocketSubsystem
     , const FString& PartyId
   );
 
@@ -604,7 +730,7 @@ public:
 private:
   TObjectPtr<UNakamaWebSocketSubsystem> StoredWebSocketSubsystem;
   FString StoredPartyId;
-}
+};
 
 /**
 *  [client] Promote a new party leader.
@@ -621,12 +747,19 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaRtError OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "PartyPromote"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "PartyPromote")
+    , Category = "Nakama|RealtimeClient"
+  )
   static UNakamaRealtimeClientPartyPromote* PartyPromote(
     UObject* WorldContextObject
-    , UNakamaWebSocketSubsystem* WebSocketSubsystem;
+    , UNakamaWebSocketSubsystem* WebSocketSubsystem
     , const FString& PartyId
-    , const FNakamaUserPresence& Presence
+    , const FNakamaRtUserPresence& Presence
   );
 
   virtual void Activate() override;
@@ -634,8 +767,8 @@ public:
 private:
   TObjectPtr<UNakamaWebSocketSubsystem> StoredWebSocketSubsystem;
   FString StoredPartyId;
-  FNakamaUserPresence StoredPresence;
-}
+  FNakamaRtUserPresence StoredPresence;
+};
 
 /**
 *  [client] Accept a request to join.
@@ -652,12 +785,19 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaRtError OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "PartyAccept"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "PartyAccept")
+    , Category = "Nakama|RealtimeClient"
+  )
   static UNakamaRealtimeClientPartyAccept* PartyAccept(
     UObject* WorldContextObject
-    , UNakamaWebSocketSubsystem* WebSocketSubsystem;
+    , UNakamaWebSocketSubsystem* WebSocketSubsystem
     , const FString& PartyId
-    , const FNakamaUserPresence& Presence
+    , const FNakamaRtUserPresence& Presence
   );
 
   virtual void Activate() override;
@@ -665,8 +805,8 @@ public:
 private:
   TObjectPtr<UNakamaWebSocketSubsystem> StoredWebSocketSubsystem;
   FString StoredPartyId;
-  FNakamaUserPresence StoredPresence;
-}
+  FNakamaRtUserPresence StoredPresence;
+};
 
 /**
 *  [client] Kick a party member, or decline a request to join.
@@ -683,12 +823,19 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaRtError OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "PartyRemove"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "PartyRemove")
+    , Category = "Nakama|RealtimeClient"
+  )
   static UNakamaRealtimeClientPartyRemove* PartyRemove(
     UObject* WorldContextObject
-    , UNakamaWebSocketSubsystem* WebSocketSubsystem;
+    , UNakamaWebSocketSubsystem* WebSocketSubsystem
     , const FString& PartyId
-    , const FNakamaUserPresence& Presence
+    , const FNakamaRtUserPresence& Presence
   );
 
   virtual void Activate() override;
@@ -696,8 +843,8 @@ public:
 private:
   TObjectPtr<UNakamaWebSocketSubsystem> StoredWebSocketSubsystem;
   FString StoredPartyId;
-  FNakamaUserPresence StoredPresence;
-}
+  FNakamaRtUserPresence StoredPresence;
+};
 
 /**
 *  [client] End a party, kicking all party members and closing it.
@@ -714,10 +861,17 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaRtError OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "PartyClose"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "PartyClose")
+    , Category = "Nakama|RealtimeClient"
+  )
   static UNakamaRealtimeClientPartyClose* PartyClose(
     UObject* WorldContextObject
-    , UNakamaWebSocketSubsystem* WebSocketSubsystem;
+    , UNakamaWebSocketSubsystem* WebSocketSubsystem
     , const FString& PartyId
   );
 
@@ -726,7 +880,7 @@ public:
 private:
   TObjectPtr<UNakamaWebSocketSubsystem> StoredWebSocketSubsystem;
   FString StoredPartyId;
-}
+};
 
 /**
 *  [client] Request a list of pending join requests for a party.
@@ -743,10 +897,17 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaRtError OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "PartyJoinRequestList"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "PartyJoinRequestList")
+    , Category = "Nakama|RealtimeClient"
+  )
   static UNakamaRealtimeClientPartyJoinRequestList* PartyJoinRequestList(
     UObject* WorldContextObject
-    , UNakamaWebSocketSubsystem* WebSocketSubsystem;
+    , UNakamaWebSocketSubsystem* WebSocketSubsystem
     , const FString& PartyId
   );
 
@@ -755,7 +916,7 @@ public:
 private:
   TObjectPtr<UNakamaWebSocketSubsystem> StoredWebSocketSubsystem;
   FString StoredPartyId;
-}
+};
 
 /**
 *  [client] Begin matchmaking as a party.
@@ -772,10 +933,17 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaRtError OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "PartyMatchmakerAdd"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "PartyMatchmakerAdd", AutoCreateRefTerm = "StringProperties,NumericProperties")
+    , Category = "Nakama|RealtimeClient"
+  )
   static UNakamaRealtimeClientPartyMatchmakerAdd* PartyMatchmakerAdd(
     UObject* WorldContextObject
-    , UNakamaWebSocketSubsystem* WebSocketSubsystem;
+    , UNakamaWebSocketSubsystem* WebSocketSubsystem
     , const FString& PartyId
     , int32 MinCount
     , int32 MaxCount
@@ -796,7 +964,7 @@ private:
   int32 StoredCountMultiple;
   TMap<FString, FString> StoredStringProperties;
   TMap<FString, double> StoredNumericProperties;
-}
+};
 
 /**
 *  [client] Cancel a party matchmaking process using a ticket.
@@ -813,10 +981,17 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaRtError OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "PartyMatchmakerRemove"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "PartyMatchmakerRemove")
+    , Category = "Nakama|RealtimeClient"
+  )
   static UNakamaRealtimeClientPartyMatchmakerRemove* PartyMatchmakerRemove(
     UObject* WorldContextObject
-    , UNakamaWebSocketSubsystem* WebSocketSubsystem;
+    , UNakamaWebSocketSubsystem* WebSocketSubsystem
     , const FString& PartyId
     , const FString& Ticket
   );
@@ -827,7 +1002,7 @@ private:
   TObjectPtr<UNakamaWebSocketSubsystem> StoredWebSocketSubsystem;
   FString StoredPartyId;
   FString StoredTicket;
-}
+};
 
 /**
 *  [client] A response from starting a new party matchmaking process.
@@ -844,10 +1019,17 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaRtError OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "PartyMatchmakerTicket"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "PartyMatchmakerTicket")
+    , Category = "Nakama|RealtimeClient"
+  )
   static UNakamaRealtimeClientPartyMatchmakerTicket* PartyMatchmakerTicket(
     UObject* WorldContextObject
-    , UNakamaWebSocketSubsystem* WebSocketSubsystem;
+    , UNakamaWebSocketSubsystem* WebSocketSubsystem
     , const FString& PartyId
     , const FString& Ticket
   );
@@ -858,7 +1040,7 @@ private:
   TObjectPtr<UNakamaWebSocketSubsystem> StoredWebSocketSubsystem;
   FString StoredPartyId;
   FString StoredTicket;
-}
+};
 
 /**
 *  [client] A client to server request to send data to a party.
@@ -875,10 +1057,17 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaRtError OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "PartyDataSend"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "PartyDataSend")
+    , Category = "Nakama|RealtimeClient"
+  )
   static UNakamaRealtimeClientPartyDataSend* PartyDataSend(
     UObject* WorldContextObject
-    , UNakamaWebSocketSubsystem* WebSocketSubsystem;
+    , UNakamaWebSocketSubsystem* WebSocketSubsystem
     , const FString& PartyId
     , int64 OpCode
     , const TArray<uint8>& Data
@@ -891,7 +1080,7 @@ private:
   FString StoredPartyId;
   int64 StoredOpCode;
   TArray<uint8> StoredData;
-}
+};
 
 /**
 *  [client] Update Party label and whether it's open or closed.
@@ -908,10 +1097,17 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaRtError OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "PartyUpdate"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "PartyUpdate")
+    , Category = "Nakama|RealtimeClient"
+  )
   static UNakamaRealtimeClientPartyUpdate* PartyUpdate(
     UObject* WorldContextObject
-    , UNakamaWebSocketSubsystem* WebSocketSubsystem;
+    , UNakamaWebSocketSubsystem* WebSocketSubsystem
     , const FString& PartyId
     , const FString& Label
     , bool Open
@@ -926,4 +1122,4 @@ private:
   FString StoredLabel;
   bool StoredOpen;
   bool StoredHidden;
-}
+};

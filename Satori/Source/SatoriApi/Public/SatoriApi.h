@@ -23,6 +23,7 @@
 #include "Templates/Function.h"
 #include "Templates/SharedPointer.h"
 #include "Dom/JsonObject.h"
+#include "SatoriTypes.h"
 
 #include "SatoriApi.generated.h"
 
@@ -37,7 +38,7 @@ namespace SatoriApi
   * @param Config	The client configuration.
   * @param Id	 Identity ID. Must be between eight and 128 characters (inclusive).
   * @param NoSession	 Optional no_session modifies the request to only create/update
-  * @param Default_	 Optional default properties to update with this call.
+  * @param Default	 Optional default properties to update with this call.
   * @param Custom	 Optional custom properties to update with this call.
   * @param OnSuccess	Called when the operation succeeds.
   * @param OnError	Called when the operation fails.
@@ -48,7 +49,7 @@ namespace SatoriApi
     const FSatoriClientConfig& Config,
     const FString& Id,
     bool NoSession,
-    const TMap<FString, FString>& Default_,
+    const TMap<FString, FString>& Default,
     const TMap<FString, FString>& Custom,
     TFunction<void(const FSatoriSession&)> OnSuccess,
     TFunction<void(const FSatoriError&)> OnError,
@@ -504,7 +505,7 @@ namespace SatoriApi
   * @param Config	The client configuration.
   * @param HttpKey	HttpKey for server-to-server communication
   * @param Id	 Identity ID to enrich the current session and return a new session. Old session will no longer be usable.
-  * @param Default_	 Optional default properties to update with this call.
+  * @param Default	 Optional default properties to update with this call.
   * @param Custom	 Optional custom properties to update with this call.
   * @param OnSuccess	Called when the operation succeeds.
   * @param OnError	Called when the operation fails.
@@ -515,7 +516,7 @@ namespace SatoriApi
     const FSatoriClientConfig& Config,
     const FString& HttpKey,
     const FString& Id,
-    const TMap<FString, FString>& Default_,
+    const TMap<FString, FString>& Default,
     const TMap<FString, FString>& Custom,
     TFunction<void(const FSatoriSession&)> OnSuccess,
     TFunction<void(const FSatoriError&)> OnError,
@@ -529,7 +530,7 @@ namespace SatoriApi
   * @param Config	The client configuration.
   * @param Session	The session of the user.
   * @param Id	 Identity ID to enrich the current session and return a new session. Old session will no longer be usable.
-  * @param Default_	 Optional default properties to update with this call.
+  * @param Default	 Optional default properties to update with this call.
   * @param Custom	 Optional custom properties to update with this call.
   * @param OnSuccess	Called when the operation succeeds.
   * @param OnError	Called when the operation fails.
@@ -540,7 +541,7 @@ namespace SatoriApi
     const FSatoriClientConfig& Config,
     const FSatoriSession& Session,
     const FString& Id,
-    const TMap<FString, FString>& Default_,
+    const TMap<FString, FString>& Default,
     const TMap<FString, FString>& Custom,
     TFunction<void(const FSatoriSession&)> OnSuccess,
     TFunction<void(const FSatoriError&)> OnError,
@@ -630,7 +631,7 @@ namespace SatoriApi
   * @param Config	The client configuration.
   * @param HttpKey	HttpKey for server-to-server communication
   * @param Recompute	 Informs the server to recompute the audience membership of the identity.
-  * @param Default_	 Event default properties.
+  * @param Default	 Event default properties.
   * @param Custom	 Event custom properties.
   * @param OnSuccess	Called when the operation succeeds.
   * @param OnError	Called when the operation fails.
@@ -641,7 +642,7 @@ namespace SatoriApi
     const FSatoriClientConfig& Config,
     const FString& HttpKey,
     bool Recompute,
-    const TMap<FString, FString>& Default_,
+    const TMap<FString, FString>& Default,
     const TMap<FString, FString>& Custom,
     TFunction<void()> OnSuccess,
     TFunction<void(const FSatoriError&)> OnError,
@@ -655,7 +656,7 @@ namespace SatoriApi
   * @param Config	The client configuration.
   * @param Session	The session of the user.
   * @param Recompute	 Informs the server to recompute the audience membership of the identity.
-  * @param Default_	 Event default properties.
+  * @param Default	 Event default properties.
   * @param Custom	 Event custom properties.
   * @param OnSuccess	Called when the operation succeeds.
   * @param OnError	Called when the operation fails.
@@ -666,7 +667,7 @@ namespace SatoriApi
     const FSatoriClientConfig& Config,
     const FSatoriSession& Session,
     bool Recompute,
-    const TMap<FString, FString>& Default_,
+    const TMap<FString, FString>& Default,
     const TMap<FString, FString>& Custom,
     TFunction<void()> OnSuccess,
     TFunction<void(const FSatoriError&)> OnError,

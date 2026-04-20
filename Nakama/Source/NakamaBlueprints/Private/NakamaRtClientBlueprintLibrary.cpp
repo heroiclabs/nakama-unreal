@@ -17,6 +17,7 @@
 /* This code is auto-generated. DO NOT EDIT. */
 
 #include "NakamaRtClientBlueprintLibrary.h"
+#include "NakamaApi.h"
 
 UNakamaRealtimeClientChannelJoin* UNakamaRealtimeClientChannelJoin::ChannelJoin(
   UObject* WorldContextObject
@@ -462,7 +463,7 @@ UNakamaRealtimeClientMatchDataSend* UNakamaRealtimeClientMatchDataSend::MatchDat
   , const FString& MatchId
   , int64 OpCode
   , const TArray<uint8>& Data
-  , const TArray<FNakamaUserPresence>& Presences
+  , const TArray<FNakamaRtUserPresence>& Presences
   , bool Reliable
 )
 {
@@ -1389,7 +1390,7 @@ UNakamaRealtimeClientPartyPromote* UNakamaRealtimeClientPartyPromote::PartyPromo
   UObject* WorldContextObject
   , UNakamaWebSocketSubsystem* WebSocketSubsystem;
   , const FString& PartyId
-  , const FNakamaUserPresence& Presence
+  , const FNakamaRtUserPresence& Presence
 )
 {
   UNakamaRealtimeClientPartyPromote* Action = NewObject<UNakamaRealtimeClientPartyPromote>(GetTransientPackage());
@@ -1461,7 +1462,7 @@ UNakamaRealtimeClientPartyAccept* UNakamaRealtimeClientPartyAccept::PartyAccept(
   UObject* WorldContextObject
   , UNakamaWebSocketSubsystem* WebSocketSubsystem;
   , const FString& PartyId
-  , const FNakamaUserPresence& Presence
+  , const FNakamaRtUserPresence& Presence
 )
 {
   UNakamaRealtimeClientPartyAccept* Action = NewObject<UNakamaRealtimeClientPartyAccept>(GetTransientPackage());
@@ -1533,7 +1534,7 @@ UNakamaRealtimeClientPartyRemove* UNakamaRealtimeClientPartyRemove::PartyRemove(
   UObject* WorldContextObject
   , UNakamaWebSocketSubsystem* WebSocketSubsystem;
   , const FString& PartyId
-  , const FNakamaUserPresence& Presence
+  , const FNakamaRtUserPresence& Presence
 )
 {
   UNakamaRealtimeClientPartyRemove* Action = NewObject<UNakamaRealtimeClientPartyRemove>(GetTransientPackage());

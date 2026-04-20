@@ -24,9 +24,18 @@
 #include "Templates/SharedPointer.h"
 #include "Dom/JsonObject.h"
 #include "HAL/ThreadSafeBool.h"
+#include "NakamaError.h"
 #include "NakamaTypes.h"
 
 NAKAMAAPI_API DECLARE_LOG_CATEGORY_EXTERN(LogNakama, Log, All);
+
+enum class ENakamaRequestAuth : uint8
+{
+  None,
+  Basic,
+  Bearer,
+  HttpKey
+};
 
 namespace NakamaApi
 {

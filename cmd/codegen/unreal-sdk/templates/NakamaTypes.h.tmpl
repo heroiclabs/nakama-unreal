@@ -41,7 +41,8 @@ enum class ENakama{{ $enum.Name }} : uint8
 /**
 *{{ $type.Comment }}
 */
-struct FNakama{{ $type.Name }}
+USTRUCT(BlueprintType)
+struct NAKAMAAPI_API FNakama{{ $type.Name }}
 {
   GENERATED_BODY()
 

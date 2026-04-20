@@ -14,47 +14,47 @@
  * limitations under the License.
  */
 
-#include "NakamaSession.generated.h"
+#include "SatoriSession.generated.h"
 
 USTRUCT(BlueprintType)
-struct NAKAMAAPI_API FNakamaSession
+struct NAKAMAAPI_API FSatoriSession
 {
 	GENERATED_BODY()
 
 	/** True if the corresponding account was just created, false otherwise. */
-	UPROPERTY(BlueprintReadOnly, Category = "Nakama")
+	UPROPERTY(BlueprintReadOnly, Category = "Satori")
 	bool Created;
 	
   /** Authentication credentials. */
-	UPROPERTY(BlueprintReadOnly, Category = "Nakama")
+	UPROPERTY(BlueprintReadOnly, Category = "Satori")
 	FString Token;
 
 	/** Refresh token that can be used for session token renewal. */
-	UPROPERTY(BlueprintReadOnly, Category = "Nakama")
+	UPROPERTY(BlueprintReadOnly, Category = "Satori")
 	FString RefreshToken;
 
 	/** User ID parsed from the auth token JWT. */
-	UPROPERTY(BlueprintReadOnly, Category = "Nakama")
+	UPROPERTY(BlueprintReadOnly, Category = "Satori")
 	FString UserId;
 
 	/** Username parsed from the auth token JWT. */
-	UPROPERTY(BlueprintReadOnly, Category = "Nakama")
+	UPROPERTY(BlueprintReadOnly, Category = "Satori")
 	FString Username;
 
 	/** Auth token expiry (Unix timestamp) parsed from JWT. */
-	UPROPERTY(BlueprintReadOnly, Category = "Nakama")
+	UPROPERTY(BlueprintReadOnly, Category = "Satori")
 	int64 TokenExpiresAt = 0;
 
 	/** Auth token issued-at (Unix timestamp) parsed from JWT. */
-	UPROPERTY(BlueprintReadOnly, Category = "Nakama")
+	UPROPERTY(BlueprintReadOnly, Category = "Satori")
 	int64 TokenIssuedAt = 0;
 
 	/** Refresh token expiry (Unix timestamp) parsed from JWT. */
-	UPROPERTY(BlueprintReadOnly, Category = "Nakama")
+	UPROPERTY(BlueprintReadOnly, Category = "Satori")
 	int64 RefreshTokenExpiresAt = 0;
 
 	/** Session variables from the auth token JWT. */
-	UPROPERTY(BlueprintReadOnly, Category = "Nakama")
+	UPROPERTY(BlueprintReadOnly, Category = "Satori")
 	TMap<FString, FString> Vars;
 
 	/** True if the auth token expires within BufferSeconds from now. */
@@ -66,7 +66,7 @@ struct NAKAMAAPI_API FNakamaSession
 	/** Replace tokens and re-parse JWT claims. */
 	void Update(const FString& NewToken, const FString& NewRefreshToken) noexcept;
 
-	static FNakamaSession FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
+	static FSatoriSession FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
 	TSharedPtr<FJsonObject> ToJson() const noexcept;
 
 private:

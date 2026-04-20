@@ -61,6 +61,7 @@ enum class ESatoriLiveEventStatus : uint8
 /**
 * Log out a session, invalidate a refresh token, or log out all sessions/refresh tokens for a user.
 */
+USTRUCT(BlueprintType)
 struct FSatoriAuthenticateLogoutRequest
 {
   GENERATED_BODY()
@@ -80,6 +81,7 @@ struct FSatoriAuthenticateLogoutRequest
 /**
 * Authenticate against the server with a refresh token.
 */
+USTRUCT(BlueprintType)
 struct FSatoriAuthenticateRefreshRequest
 {
   GENERATED_BODY()
@@ -95,6 +97,7 @@ struct FSatoriAuthenticateRefreshRequest
 /**
 * Authentication request
 */
+USTRUCT(BlueprintType)
 struct FSatoriAuthenticateRequest
 {
   GENERATED_BODY()
@@ -109,7 +112,7 @@ struct FSatoriAuthenticateRequest
 
   /**  Optional default properties to update with this call. */
   UPROPERTY(BlueprintReadWrite, Category = "Satori")
-  TMap<FString, FString> Default_;
+  TMap<FString, FString> Default;
 
   /**  Optional custom properties to update with this call. */
   UPROPERTY(BlueprintReadWrite, Category = "Satori")
@@ -122,6 +125,7 @@ struct FSatoriAuthenticateRequest
 /**
 * The request to delete a scheduled message.
 */
+USTRUCT(BlueprintType)
 struct FSatoriDeleteMessageRequest
 {
   GENERATED_BODY()
@@ -137,6 +141,7 @@ struct FSatoriDeleteMessageRequest
 /**
 * A single event. Usually, but not necessarily, part of a batch.
 */
+USTRUCT(BlueprintType)
 struct FSatoriEvent
 {
   GENERATED_BODY()
@@ -184,6 +189,7 @@ struct FSatoriEvent
 /**
 * Publish an event to the server
 */
+USTRUCT(BlueprintType)
 struct FSatoriEventRequest
 {
   GENERATED_BODY()
@@ -199,6 +205,7 @@ struct FSatoriEventRequest
 /**
 * An experiment that this user is partaking.
 */
+USTRUCT(BlueprintType)
 struct FSatoriExperiment
 {
   GENERATED_BODY()
@@ -230,6 +237,7 @@ struct FSatoriExperiment
 /**
 * All experiments that this identity is involved with.
 */
+USTRUCT(BlueprintType)
 struct FSatoriExperimentList
 {
   GENERATED_BODY()
@@ -245,13 +253,14 @@ struct FSatoriExperimentList
 /**
 * The origin of change on a flag value.
 */
+USTRUCT(BlueprintType)
 struct FSatoriValueChangeReason
 {
   GENERATED_BODY()
 
   /**  The type of the configuration that declared the override. */
   UPROPERTY(BlueprintReadWrite, Category = "Satori")
-  FSatoriValueChangeReasonType Type = static_cast<FSatoriValueChangeReasonType>(0);
+  ESatoriValueChangeReasonType Type = static_cast<ESatoriValueChangeReasonType>(0);
 
   /**  The name of the configuration that overrides the flag value. */
   UPROPERTY(BlueprintReadWrite, Category = "Satori")
@@ -268,6 +277,7 @@ struct FSatoriValueChangeReason
 /**
 * Feature flag available to the identity.
 */
+USTRUCT(BlueprintType)
 struct FSatoriFlag
 {
   GENERATED_BODY()
@@ -299,6 +309,7 @@ struct FSatoriFlag
 /**
 * All flags available to the identity
 */
+USTRUCT(BlueprintType)
 struct FSatoriFlagList
 {
   GENERATED_BODY()
@@ -314,13 +325,14 @@ struct FSatoriFlagList
 /**
 * The details of a flag value override.
 */
+USTRUCT(BlueprintType)
 struct FSatoriFlagOverrideValue
 {
   GENERATED_BODY()
 
   /**  The type of the configuration that declared the override. */
   UPROPERTY(BlueprintReadWrite, Category = "Satori")
-  FSatoriFlagOverrideType Type = static_cast<FSatoriFlagOverrideType>(0);
+  ESatoriFlagOverrideType Type = static_cast<ESatoriFlagOverrideType>(0);
 
   /**  The name of the configuration that overrides the flag value. */
   UPROPERTY(BlueprintReadWrite, Category = "Satori")
@@ -345,6 +357,7 @@ struct FSatoriFlagOverrideValue
 /**
 * Feature flag available to the identity.
 */
+USTRUCT(BlueprintType)
 struct FSatoriFlagOverride
 {
   GENERATED_BODY()
@@ -368,6 +381,7 @@ struct FSatoriFlagOverride
 /**
 * All flags available to the identity and their value overrides
 */
+USTRUCT(BlueprintType)
 struct FSatoriFlagOverrideList
 {
   GENERATED_BODY()
@@ -383,6 +397,7 @@ struct FSatoriFlagOverrideList
 /**
 * Request to get all experiments data.
 */
+USTRUCT(BlueprintType)
 struct FSatoriGetExperimentsRequest
 {
   GENERATED_BODY()
@@ -402,6 +417,7 @@ struct FSatoriGetExperimentsRequest
 /**
 * Request to get all flags data.
 */
+USTRUCT(BlueprintType)
 struct FSatoriGetFlagsRequest
 {
   GENERATED_BODY()
@@ -421,6 +437,7 @@ struct FSatoriGetFlagsRequest
 /**
 * Request to get all live events.
 */
+USTRUCT(BlueprintType)
 struct FSatoriGetLiveEventsRequest
 {
   GENERATED_BODY()
@@ -456,6 +473,7 @@ struct FSatoriGetLiveEventsRequest
 /**
 * A scheduled message.
 */
+USTRUCT(BlueprintType)
 struct FSatoriMessage
 {
   GENERATED_BODY()
@@ -511,6 +529,7 @@ struct FSatoriMessage
 /**
 *
 */
+USTRUCT(BlueprintType)
 struct FSatoriGetMessageListRequest
 {
   GENERATED_BODY()
@@ -538,6 +557,7 @@ struct FSatoriGetMessageListRequest
 /**
 * A response containing all the messages for an identity.
 */
+USTRUCT(BlueprintType)
 struct FSatoriGetMessageListResponse
 {
   GENERATED_BODY()
@@ -565,6 +585,7 @@ struct FSatoriGetMessageListResponse
 /**
 * Enrich/replace the current session with a new ID.
 */
+USTRUCT(BlueprintType)
 struct FSatoriIdentifyRequest
 {
   GENERATED_BODY()
@@ -575,7 +596,7 @@ struct FSatoriIdentifyRequest
 
   /**  Optional default properties to update with this call. */
   UPROPERTY(BlueprintReadWrite, Category = "Satori")
-  TMap<FString, FString> Default_;
+  TMap<FString, FString> Default;
 
   /**  Optional custom properties to update with this call. */
   UPROPERTY(BlueprintReadWrite, Category = "Satori")
@@ -588,6 +609,7 @@ struct FSatoriIdentifyRequest
 /**
 * Request to join a 'explicit join' live event.
 */
+USTRUCT(BlueprintType)
 struct FSatoriJoinLiveEventRequest
 {
   GENERATED_BODY()
@@ -603,6 +625,7 @@ struct FSatoriJoinLiveEventRequest
 /**
 * A single live event.
 */
+USTRUCT(BlueprintType)
 struct FSatoriLiveEvent
 {
   GENERATED_BODY()
@@ -649,7 +672,7 @@ struct FSatoriLiveEvent
 
   /**  The status of this live event run. */
   UPROPERTY(BlueprintReadWrite, Category = "Satori")
-  FSatoriLiveEventStatus Status = static_cast<FSatoriLiveEventStatus>(0);
+  ESatoriLiveEventStatus Status = static_cast<ESatoriLiveEventStatus>(0);
 
   /**  The labels associated with this live event. */
   UPROPERTY(BlueprintReadWrite, Category = "Satori")
@@ -662,6 +685,7 @@ struct FSatoriLiveEvent
 /**
 * List of Live events.
 */
+USTRUCT(BlueprintType)
 struct FSatoriLiveEventList
 {
   GENERATED_BODY()
@@ -681,13 +705,14 @@ struct FSatoriLiveEventList
 /**
 * Properties associated with an identity.
 */
+USTRUCT(BlueprintType)
 struct FSatoriProperties
 {
   GENERATED_BODY()
 
   /**  Event default properties. */
   UPROPERTY(BlueprintReadWrite, Category = "Satori")
-  TMap<FString, FString> Default_;
+  TMap<FString, FString> Default;
 
   /**  Event computed properties. */
   UPROPERTY(BlueprintReadWrite, Category = "Satori")
@@ -704,6 +729,7 @@ struct FSatoriProperties
 /**
 * Update Properties associated with this identity.
 */
+USTRUCT(BlueprintType)
 struct FSatoriUpdatePropertiesRequest
 {
   GENERATED_BODY()
@@ -714,7 +740,7 @@ struct FSatoriUpdatePropertiesRequest
 
   /**  Event default properties. */
   UPROPERTY(BlueprintReadWrite, Category = "Satori")
-  TMap<FString, FString> Default_;
+  TMap<FString, FString> Default;
 
   /**  Event custom properties. */
   UPROPERTY(BlueprintReadWrite, Category = "Satori")
@@ -727,6 +753,7 @@ struct FSatoriUpdatePropertiesRequest
 /**
 * The request to update the status of a message.
 */
+USTRUCT(BlueprintType)
 struct FSatoriUpdateMessageRequest
 {
   GENERATED_BODY()
