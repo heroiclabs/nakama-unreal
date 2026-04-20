@@ -19,6 +19,10 @@
 #include "NakamaApi.h"
 #include "NakamaHttpHelper.h"
 
+DEFINE_LOG_CATEGORY(LogNakama);
+
+using namespace NakamaHttpInternal;
+
 {{ range $func := $.Funcs }}
 
 NAKAMAAPI_API void NakamaApi::{{ $func.Name }} (
@@ -46,7 +50,7 @@ NAKAMAAPI_API void NakamaApi::{{ $func.Name }} (
   {{- range $queryParam := $func.Metadata.QueryParams }}
   {{- if $queryParam.Repeated }}
   for ({{ $queryParam.IterationType }} Item : {{ $queryParam.Name }})
-	{
+  {
     QueryParams.Add(FString::Printf(TEXT("{{ $queryParam.Name }}={{ $queryParam.QueryFormat }}", {{ $queryParam.QueryValueSetter }}(Item))));
   }
   {{- else }}
