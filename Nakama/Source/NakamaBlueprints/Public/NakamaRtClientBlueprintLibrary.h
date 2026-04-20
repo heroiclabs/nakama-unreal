@@ -22,6 +22,7 @@
 #include "Kismet/BlueprintAsyncActionBase.h"
 #include "NakamaRtTypes.h"
 #include "NakamaWebSocketSubsystem.h"
+
 #include "NakamaRtClientBlueprintLibrary.generated.h"
 
 // ============================================================================

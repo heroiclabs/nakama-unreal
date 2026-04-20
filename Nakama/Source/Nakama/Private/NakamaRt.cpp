@@ -16,7 +16,7 @@
 
 /* This code is auto-generated. DO NOT EDIT. */
 
-#include "NakamaRtClient.h"
+#include "NakamaRt.h"
 #include "NakamaApi.h"
 
 namespace Nakama

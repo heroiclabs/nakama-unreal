@@ -20,7 +20,7 @@
 
 #include "CoreMinimal.h"
 #include "NakamaWebSocketSubsystem.h"
-#include "NakamaRtClient.generated.h"
+#include "NakamaRtTypes.h"
 
 namespace Nakama
 {
