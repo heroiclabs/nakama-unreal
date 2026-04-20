@@ -83,7 +83,7 @@ func (m UnrealRtApiMapper) MapRpc(rpc *yacg.ProtoRpc, api yacg.Api, typeMapper m
 
 	funcOverloads = append(funcOverloads, modules.Function{
 		DataDecl: modules.DataDecl{
-			Name:     typeMapper.ResolveIdentifier(rpc.Name),
+			Name:     typeMapper.ResolveIdentifier(rpc.Name, modules.IdentifierTypeDefault),
 			Comment:  rpc.Comment,
 			Type:     funcReturnTypeName,
 			Metadata: m.makeFuncMetadata(rpc),
@@ -99,7 +99,7 @@ func (m UnrealRtApiMapper) MapEnum(enum *yacg.ProtoEnum, api yacg.Api, typeMappe
 	values := make([]modules.EnumField, 0, len(enum.Fields))
 	for _, f := range enum.Fields {
 		values = append(values, modules.EnumField{
-			Name:    typeMapper.ResolveIdentifier(f.Name),
+			Name:    typeMapper.ResolveIdentifier(f.Name, modules.IdentifierTypeEnumMember),
 			Value:   f.Integer,
 			Comment: f.Comment.Message(),
 		})
@@ -107,7 +107,7 @@ func (m UnrealRtApiMapper) MapEnum(enum *yacg.ProtoEnum, api yacg.Api, typeMappe
 
 	return modules.Enum{
 		DataDecl: modules.DataDecl{
-			Name:    typeMapper.ResolveIdentifier(enum.Name),
+			Name:    typeMapper.ResolveIdentifier(enum.Name, modules.IdentifierTypeDefault),
 			Comment: enum.Comment,
 			Type:    typeMapper.ResolveEntry("int").FieldType,
 		},
@@ -129,7 +129,7 @@ func (m UnrealRtApiMapper) MapMessage(message *yacg.ProtoMessage, api yacg.Api, 
 			entry.DefaultValue = fmt.Sprintf("static_cast<%s>(0)", entry.FieldType)
 		}
 		dataDecl := modules.DataDecl{
-			Name:      typeMapper.ResolveIdentifier(field.Name),
+			Name:      typeMapper.ResolveIdentifier(field.Name, modules.IdentifierTypeDefault),
 			Type:      entry.FieldType,
 			TypeEntry: entry,
 			Comment:   field.Comment.Message(),
@@ -145,7 +145,7 @@ func (m UnrealRtApiMapper) MapMessage(message *yacg.ProtoMessage, api yacg.Api, 
 	for _, field := range message.MapFields {
 		entry := typeMapper.ResolveEntry(field.Type)
 		dataDecl := modules.DataDecl{
-			Name:      typeMapper.ResolveIdentifier(field.Name),
+			Name:      typeMapper.ResolveIdentifier(field.Name, modules.IdentifierTypeDefault),
 			Type:      entry.MapType,
 			TypeEntry: entry,
 			Comment:   field.Comment.Message(),
@@ -161,7 +161,7 @@ func (m UnrealRtApiMapper) MapMessage(message *yacg.ProtoMessage, api yacg.Api, 
 			entry.DefaultValue = fmt.Sprintf("static_cast<%s>(0)", entry.FieldType)
 		}
 		dataDecl := modules.DataDecl{
-			Name:      typeMapper.ResolveIdentifier(field.Name),
+			Name:      typeMapper.ResolveIdentifier(field.Name, modules.IdentifierTypeDefault),
 			Type:      entry.FieldType,
 			TypeEntry: entry,
 			Comment:   field.Comment.Message(),

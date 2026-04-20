@@ -85,7 +85,7 @@ func (m UnrealBlueprintHttpApiMapper) MapRpc(rpc *yacg.ProtoRpc, api yacg.Api, t
 
 	funcOverloads = append(funcOverloads, modules.Function{
 		DataDecl: modules.DataDecl{
-			Name:     typeMapper.ResolveIdentifier(rpc.Name),
+			Name:     typeMapper.ResolveIdentifier(rpc.Name, modules.IdentifierTypeDefault),
 			Comment:  rpc.Comment,
 			Type:     funcReturnTypeName,
 			Metadata: m.makeFuncMetadata(rpc, typeMapper),
@@ -111,7 +111,7 @@ func (m UnrealBlueprintHttpApiMapper) MapMessage(message *yacg.ProtoMessage, api
 	for _, field := range message.Fields {
 		entry := typeMapper.ResolveEntry(field.Type)
 		dataDecl := modules.DataDecl{
-			Name:      typeMapper.ResolveIdentifier(field.Name),
+			Name:      typeMapper.ResolveIdentifier(field.Name, modules.IdentifierTypeDefault),
 			Type:      entry.FieldType,
 			TypeEntry: entry,
 			Comment:   field.Comment.Message(),
@@ -127,7 +127,7 @@ func (m UnrealBlueprintHttpApiMapper) MapMessage(message *yacg.ProtoMessage, api
 	for _, field := range message.MapFields {
 		entry := typeMapper.ResolveEntry(field.Type)
 		dataDecl := modules.DataDecl{
-			Name:      typeMapper.ResolveIdentifier(field.Name),
+			Name:      typeMapper.ResolveIdentifier(field.Name, modules.IdentifierTypeDefault),
 			Type:      entry.MapType,
 			TypeEntry: entry,
 			Comment:   field.Comment.Message(),
@@ -139,7 +139,7 @@ func (m UnrealBlueprintHttpApiMapper) MapMessage(message *yacg.ProtoMessage, api
 	for _, field := range message.OneofFields {
 		entry := typeMapper.ResolveEntry(field.Type)
 		dataDecl := modules.DataDecl{
-			Name:      typeMapper.ResolveIdentifier(field.Name),
+			Name:      typeMapper.ResolveIdentifier(field.Name, modules.IdentifierTypeDefault),
 			Type:      entry.FieldType,
 			TypeEntry: entry,
 			Comment:   field.Comment.Message(),

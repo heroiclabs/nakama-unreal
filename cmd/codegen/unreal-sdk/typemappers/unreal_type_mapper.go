@@ -1,6 +1,8 @@
 package typemappers
 
 import (
+	"fmt"
+	"log"
 	"strings"
 
 	"github.com/golang-cz/textcase"
@@ -234,11 +236,28 @@ func NewUnrealTypeMapper(targetSystem string) *UnrealTypeMapper {
 }
 
 // ResolveIdentifier converts a proto identifier to the Unreal naming convention.
-func (r *UnrealTypeMapper) ResolveIdentifier(input string) string {
-	if isReservedWord(input) {
-		return textcase.PascalCase(input) + "_"
+func (r *UnrealTypeMapper) ResolveIdentifier(input string, identifierType modules.IdentifierType) string {
+	switch identifierType {
+	case modules.IdentifierTypeDefault:
+		{
+			if isReservedWord(input) {
+				return textcase.PascalCase(input) + "_"
+			}
+			return textcase.PascalCase(input)
+		}
+	case modules.IdentifierTypeEnumMember:
+		{
+			if isReservedWord(input) {
+				return strings.ToUpper(textcase.SnakeCase(input) + "_")
+			}
+			return strings.ToUpper(textcase.SnakeCase(input))
+		}
+	default:
+		{
+			log.Fatalf(fmt.Sprintf("Invalid identifier type: %d", identifierType))
+			return ""
+		}
 	}
-	return textcase.PascalCase(input)
 }
 
 // ResolveEntry returns all type traits for a given proto type name.

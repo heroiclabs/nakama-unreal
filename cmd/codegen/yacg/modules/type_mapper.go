@@ -31,10 +31,17 @@ type TypeEntry struct {
 	DefaultValue string // e.g. "false", "0", "0.f"
 }
 
+type IdentifierType int
+
+const (
+	IdentifierTypeDefault IdentifierType = iota
+	IdentifierTypeEnumMember
+)
+
 // TypeMapper transforms proto identifiers and type names to the target language.
 type TypeMapper interface {
 	// ResolveIdentifier converts a proto identifier to the target language's naming convention.
-	ResolveIdentifier(input string) string
+	ResolveIdentifier(input string, identifierType IdentifierType) string
 
 	// ResolveEntry returns all type traits for a given proto type name.
 	ResolveEntry(intype string) TypeEntry

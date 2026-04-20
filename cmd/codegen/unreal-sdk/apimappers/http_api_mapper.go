@@ -72,7 +72,7 @@ func (m UnrealHttpApiMapper) MapEnum(enum *yacg.ProtoEnum, api yacg.Api, typeMap
 	values := make([]modules.EnumField, 0, len(enum.Fields))
 	for _, f := range enum.Fields {
 		values = append(values, modules.EnumField{
-			Name:    typeMapper.ResolveIdentifier(f.Name),
+			Name:    typeMapper.ResolveIdentifier(f.Name, modules.IdentifierTypeEnumMember),
 			Value:   f.Integer,
 			Comment: f.Comment.Message(),
 		})
@@ -80,7 +80,7 @@ func (m UnrealHttpApiMapper) MapEnum(enum *yacg.ProtoEnum, api yacg.Api, typeMap
 
 	return modules.Enum{
 		DataDecl: modules.DataDecl{
-			Name:    typeMapper.ResolveIdentifier(enum.Name),
+			Name:    typeMapper.ResolveIdentifier(enum.Name, modules.IdentifierTypeDefault),
 			Comment: enum.Comment,
 			Type:    typeMapper.ResolveEntry("int").FieldType,
 		},
@@ -115,7 +115,7 @@ func (m UnrealHttpApiMapper) MapRpc(rpc *yacg.ProtoRpc, api yacg.Api, typeMapper
 
 		funcOverloads = append(funcOverloads, modules.Function{
 			DataDecl: modules.DataDecl{
-				Name:     typeMapper.ResolveIdentifier(rpc.Name),
+				Name:     typeMapper.ResolveIdentifier(rpc.Name, modules.IdentifierTypeDefault),
 				Comment:  rpc.Comment,
 				Type:     funcReturnTypeName,
 				Metadata: m.makeFuncMetadata(rpc, typeMapper, false, "Basic", "TEXT(\"\")"),
@@ -150,7 +150,7 @@ func (m UnrealHttpApiMapper) MapRpc(rpc *yacg.ProtoRpc, api yacg.Api, typeMapper
 
 		funcOverloads = append(funcOverloads, modules.Function{
 			DataDecl: modules.DataDecl{
-				Name:     typeMapper.ResolveIdentifier(rpc.Name),
+				Name:     typeMapper.ResolveIdentifier(rpc.Name, modules.IdentifierTypeDefault),
 				Comment:  rpc.Comment,
 				Type:     funcReturnTypeName,
 				Metadata: m.makeFuncMetadata(rpc, typeMapper, false, "HttpKey", "HttpKey"),
@@ -176,7 +176,7 @@ func (m UnrealHttpApiMapper) MapRpc(rpc *yacg.ProtoRpc, api yacg.Api, typeMapper
 
 		funcOverloads = append(funcOverloads, modules.Function{
 			DataDecl: modules.DataDecl{
-				Name:     typeMapper.ResolveIdentifier(rpc.Name),
+				Name:     typeMapper.ResolveIdentifier(rpc.Name, modules.IdentifierTypeDefault),
 				Comment:  rpc.Comment,
 				Type:     funcReturnTypeName,
 				Metadata: m.makeFuncMetadata(rpc, typeMapper, true, "Bearer", "Session.Token"),
@@ -203,7 +203,7 @@ func (m UnrealHttpApiMapper) MapMessage(message *yacg.ProtoMessage, api yacg.Api
 			entry.DefaultValue = fmt.Sprintf("static_cast<%s>(0)", entry.FieldType)
 		}
 		dataDecl := modules.DataDecl{
-			Name:      typeMapper.ResolveIdentifier(field.Name),
+			Name:      typeMapper.ResolveIdentifier(field.Name, modules.IdentifierTypeDefault),
 			Type:      entry.FieldType,
 			TypeEntry: entry,
 			Comment:   field.Comment.Message(),
@@ -219,7 +219,7 @@ func (m UnrealHttpApiMapper) MapMessage(message *yacg.ProtoMessage, api yacg.Api
 	for _, field := range message.MapFields {
 		entry := typeMapper.ResolveEntry(field.Type)
 		dataDecl := modules.DataDecl{
-			Name:      typeMapper.ResolveIdentifier(field.Name),
+			Name:      typeMapper.ResolveIdentifier(field.Name, modules.IdentifierTypeDefault),
 			Type:      entry.MapType,
 			TypeEntry: entry,
 			Comment:   field.Comment.Message(),
@@ -235,7 +235,7 @@ func (m UnrealHttpApiMapper) MapMessage(message *yacg.ProtoMessage, api yacg.Api
 			entry.DefaultValue = fmt.Sprintf("static_cast<%s>(0)", entry.FieldType)
 		}
 		dataDecl := modules.DataDecl{
-			Name:      typeMapper.ResolveIdentifier(field.Name),
+			Name:      typeMapper.ResolveIdentifier(field.Name, modules.IdentifierTypeDefault),
 			Type:      entry.FieldType,
 			TypeEntry: entry,
 			Comment:   field.Comment.Message(),
@@ -294,7 +294,7 @@ func (m UnrealHttpApiMapper) makeFuncMetadata(rpc *yacg.ProtoRpc, typeMapper mod
 			if f.Name == qp {
 				queryParams = append(queryParams, QueryParam{
 					Repeated:  f.Repeated,
-					Name:      typeMapper.ResolveIdentifier(qp),
+					Name:      typeMapper.ResolveIdentifier(qp, modules.IdentifierTypeDefault),
 					TypeEntry: typeMapper.ResolveEntry(f.Type),
 				})
 			}
@@ -303,7 +303,7 @@ func (m UnrealHttpApiMapper) makeFuncMetadata(rpc *yacg.ProtoRpc, typeMapper mod
 			if f.Name == qp {
 				queryParams = append(queryParams, QueryParam{
 					Repeated:  false,
-					Name:      typeMapper.ResolveIdentifier(qp),
+					Name:      typeMapper.ResolveIdentifier(qp, modules.IdentifierTypeDefault),
 					TypeEntry: typeMapper.ResolveEntry(f.Type),
 				})
 			}
@@ -312,7 +312,7 @@ func (m UnrealHttpApiMapper) makeFuncMetadata(rpc *yacg.ProtoRpc, typeMapper mod
 			if f.Name == qp {
 				queryParams = append(queryParams, QueryParam{
 					Repeated:  false,
-					Name:      typeMapper.ResolveIdentifier(qp),
+					Name:      typeMapper.ResolveIdentifier(qp, modules.IdentifierTypeDefault),
 					TypeEntry: typeMapper.ResolveEntry(f.Type),
 				})
 			}
@@ -321,17 +321,17 @@ func (m UnrealHttpApiMapper) makeFuncMetadata(rpc *yacg.ProtoRpc, typeMapper mod
 	for _, pp := range rpc.PathParams {
 		for _, f := range rpc.RequestType.Fields {
 			if f.Name == pp {
-				pathParams = append(pathParams, PathParam{PathName: pp, Name: typeMapper.ResolveIdentifier(pp)})
+				pathParams = append(pathParams, PathParam{PathName: pp, Name: typeMapper.ResolveIdentifier(pp, modules.IdentifierTypeDefault)})
 			}
 		}
 		for _, f := range rpc.RequestType.MapFields {
 			if f.Name == pp {
-				pathParams = append(pathParams, PathParam{PathName: pp, Name: typeMapper.ResolveIdentifier(pp)})
+				pathParams = append(pathParams, PathParam{PathName: pp, Name: typeMapper.ResolveIdentifier(pp, modules.IdentifierTypeDefault)})
 			}
 		}
 		for _, f := range rpc.RequestType.OneofFields {
 			if f.Name == pp {
-				pathParams = append(pathParams, PathParam{PathName: pp, Name: typeMapper.ResolveIdentifier(pp)})
+				pathParams = append(pathParams, PathParam{PathName: pp, Name: typeMapper.ResolveIdentifier(pp, modules.IdentifierTypeDefault)})
 			}
 		}
 	}
@@ -339,7 +339,7 @@ func (m UnrealHttpApiMapper) makeFuncMetadata(rpc *yacg.ProtoRpc, typeMapper mod
 		for _, f := range rpc.RequestType.Fields {
 			if f.Name == bp {
 				bodyParams = append(bodyParams, BodyParam{
-					Name:          typeMapper.ResolveIdentifier(bp),
+					Name:          typeMapper.ResolveIdentifier(bp, modules.IdentifierTypeDefault),
 					Repeated:      f.Repeated,
 					IsMap:         false,
 					JsonFieldName: bp,
@@ -350,7 +350,7 @@ func (m UnrealHttpApiMapper) makeFuncMetadata(rpc *yacg.ProtoRpc, typeMapper mod
 		for _, f := range rpc.RequestType.MapFields {
 			if f.Name == bp {
 				bodyParams = append(bodyParams, BodyParam{
-					Name:          typeMapper.ResolveIdentifier(bp),
+					Name:          typeMapper.ResolveIdentifier(bp, modules.IdentifierTypeDefault),
 					Repeated:      false,
 					IsMap:         true,
 					JsonFieldName: bp,
@@ -361,7 +361,7 @@ func (m UnrealHttpApiMapper) makeFuncMetadata(rpc *yacg.ProtoRpc, typeMapper mod
 		for _, f := range rpc.RequestType.OneofFields {
 			if f.Name == bp {
 				bodyParams = append(bodyParams, BodyParam{
-					Name:          typeMapper.ResolveIdentifier(bp),
+					Name:          typeMapper.ResolveIdentifier(bp, modules.IdentifierTypeDefault),
 					Repeated:      false,
 					IsMap:         false,
 					JsonFieldName: bp,
