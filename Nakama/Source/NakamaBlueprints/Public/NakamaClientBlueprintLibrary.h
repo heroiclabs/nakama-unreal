@@ -31,48 +31,48 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaError, const FNakamaError&, Error);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnNakamaSuccess);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaSessionRefresh, const FNakamaSession&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaAuthenticateApple, const FNakamaSession&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaAuthenticateCustom, const FNakamaSession&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaAuthenticateDevice, const FNakamaSession&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaAuthenticateEmail, const FNakamaSession&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaAuthenticateFacebook, const FNakamaSession&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaAuthenticateFacebookInstantGame, const FNakamaSession&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaAuthenticateGameCenter, const FNakamaSession&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaAuthenticateGoogle, const FNakamaSession&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaAuthenticateSteam, const FNakamaSession&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaCreateGroup, const FNakamaGroup&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaGetAccount, const FNakamaAccount&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaGetUsers, const FNakamaUsers&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaGetSubscription, const FNakamaValidatedSubscription&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaGetMatchmakerStats, const FNakamaMatchmakerStats&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaListChannelMessages, const FNakamaChannelMessageList&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaListFriends, const FNakamaFriendList&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaListFriendsOfFriends, const FNakamaFriendsOfFriendsList&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaListGroups, const FNakamaGroupList&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaListGroupUsers, const FNakamaGroupUserList&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaListLeaderboardRecords, const FNakamaLeaderboardRecordList&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaListLeaderboardRecordsAroundOwner, const FNakamaLeaderboardRecordList&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaListMatches, const FNakamaMatchList&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaListParties, const FNakamaPartyList&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaListNotifications, const FNakamaNotificationList&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaListStorageObjects, const FNakamaStorageObjectList&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaListSubscriptions, const FNakamaSubscriptionList&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaListTournaments, const FNakamaTournamentList&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaListTournamentRecords, const FNakamaTournamentRecordList&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaListTournamentRecordsAroundOwner, const FNakamaTournamentRecordList&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaListUserGroups, const FNakamaUserGroupList&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaReadStorageObjects, const FNakamaStorageObjects&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaRpcFunc, const FNakamaRpc&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaValidatePurchaseApple, const FNakamaValidatePurchaseResponse&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaValidateSubscriptionApple, const FNakamaValidateSubscriptionResponse&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaValidatePurchaseGoogle, const FNakamaValidatePurchaseResponse&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaValidateSubscriptionGoogle, const FNakamaValidateSubscriptionResponse&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaValidatePurchaseHuawei, const FNakamaValidatePurchaseResponse&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaValidatePurchaseFacebookInstant, const FNakamaValidatePurchaseResponse&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaWriteLeaderboardRecord, const FNakamaLeaderboardRecord&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaWriteStorageObjects, const FNakamaStorageObjectAcks&, Result);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNakamaWriteTournamentRecord, const FNakamaLeaderboardRecord&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaSessionRefresh, FNakamaError, Error, const FNakamaSession&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaAuthenticateApple, FNakamaError, Error, const FNakamaSession&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaAuthenticateCustom, FNakamaError, Error, const FNakamaSession&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaAuthenticateDevice, FNakamaError, Error, const FNakamaSession&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaAuthenticateEmail, FNakamaError, Error, const FNakamaSession&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaAuthenticateFacebook, FNakamaError, Error, const FNakamaSession&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaAuthenticateFacebookInstantGame, FNakamaError, Error, const FNakamaSession&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaAuthenticateGameCenter, FNakamaError, Error, const FNakamaSession&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaAuthenticateGoogle, FNakamaError, Error, const FNakamaSession&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaAuthenticateSteam, FNakamaError, Error, const FNakamaSession&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaCreateGroup, FNakamaError, Error, const FNakamaGroup&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaGetAccount, FNakamaError, Error, const FNakamaAccount&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaGetUsers, FNakamaError, Error, const FNakamaUsers&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaGetSubscription, FNakamaError, Error, const FNakamaValidatedSubscription&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaGetMatchmakerStats, FNakamaError, Error, const FNakamaMatchmakerStats&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaListChannelMessages, FNakamaError, Error, const FNakamaChannelMessageList&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaListFriends, FNakamaError, Error, const FNakamaFriendList&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaListFriendsOfFriends, FNakamaError, Error, const FNakamaFriendsOfFriendsList&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaListGroups, FNakamaError, Error, const FNakamaGroupList&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaListGroupUsers, FNakamaError, Error, const FNakamaGroupUserList&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaListLeaderboardRecords, FNakamaError, Error, const FNakamaLeaderboardRecordList&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaListLeaderboardRecordsAroundOwner, FNakamaError, Error, const FNakamaLeaderboardRecordList&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaListMatches, FNakamaError, Error, const FNakamaMatchList&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaListParties, FNakamaError, Error, const FNakamaPartyList&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaListNotifications, FNakamaError, Error, const FNakamaNotificationList&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaListStorageObjects, FNakamaError, Error, const FNakamaStorageObjectList&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaListSubscriptions, FNakamaError, Error, const FNakamaSubscriptionList&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaListTournaments, FNakamaError, Error, const FNakamaTournamentList&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaListTournamentRecords, FNakamaError, Error, const FNakamaTournamentRecordList&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaListTournamentRecordsAroundOwner, FNakamaError, Error, const FNakamaTournamentRecordList&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaListUserGroups, FNakamaError, Error, const FNakamaUserGroupList&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaReadStorageObjects, FNakamaError, Error, const FNakamaStorageObjects&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaRpcFunc, FNakamaError, Error, const FNakamaRpc&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaValidatePurchaseApple, FNakamaError, Error, const FNakamaValidatePurchaseResponse&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaValidateSubscriptionApple, FNakamaError, Error, const FNakamaValidateSubscriptionResponse&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaValidatePurchaseGoogle, FNakamaError, Error, const FNakamaValidatePurchaseResponse&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaValidateSubscriptionGoogle, FNakamaError, Error, const FNakamaValidateSubscriptionResponse&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaValidatePurchaseHuawei, FNakamaError, Error, const FNakamaValidatePurchaseResponse&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaValidatePurchaseFacebookInstant, FNakamaError, Error, const FNakamaValidatePurchaseResponse&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaWriteLeaderboardRecord, FNakamaError, Error, const FNakamaLeaderboardRecord&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaWriteStorageObjects, FNakamaError, Error, const FNakamaStorageObjectAcks&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnNakamaWriteTournamentRecord, FNakamaError, Error, const FNakamaLeaderboardRecord&, Result);
 
 // ============================================================================
 // Async Action Classes (one per RPC)
@@ -162,7 +162,7 @@ public:
   FOnNakamaSessionRefresh OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaError OnError;
+  FOnNakamaSessionRefresh OnError;
 
   UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "SessionRefresh"), Category = "Nakama|Client")
   static UNakamaClientSessionRefresh* SessionRefresh(
@@ -228,7 +228,7 @@ public:
   FOnNakamaAuthenticateApple OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaError OnError;
+  FOnNakamaAuthenticateApple OnError;
 
   UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "AuthenticateApple"), Category = "Nakama|Client")
   static UNakamaClientAuthenticateApple* AuthenticateApple(
@@ -262,7 +262,7 @@ public:
   FOnNakamaAuthenticateCustom OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaError OnError;
+  FOnNakamaAuthenticateCustom OnError;
 
   UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "AuthenticateCustom"), Category = "Nakama|Client")
   static UNakamaClientAuthenticateCustom* AuthenticateCustom(
@@ -296,7 +296,7 @@ public:
   FOnNakamaAuthenticateDevice OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaError OnError;
+  FOnNakamaAuthenticateDevice OnError;
 
   UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "AuthenticateDevice"), Category = "Nakama|Client")
   static UNakamaClientAuthenticateDevice* AuthenticateDevice(
@@ -330,7 +330,7 @@ public:
   FOnNakamaAuthenticateEmail OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaError OnError;
+  FOnNakamaAuthenticateEmail OnError;
 
   UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "AuthenticateEmail"), Category = "Nakama|Client")
   static UNakamaClientAuthenticateEmail* AuthenticateEmail(
@@ -364,7 +364,7 @@ public:
   FOnNakamaAuthenticateFacebook OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaError OnError;
+  FOnNakamaAuthenticateFacebook OnError;
 
   UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "AuthenticateFacebook"), Category = "Nakama|Client")
   static UNakamaClientAuthenticateFacebook* AuthenticateFacebook(
@@ -400,7 +400,7 @@ public:
   FOnNakamaAuthenticateFacebookInstantGame OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaError OnError;
+  FOnNakamaAuthenticateFacebookInstantGame OnError;
 
   UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "AuthenticateFacebookInstantGame"), Category = "Nakama|Client")
   static UNakamaClientAuthenticateFacebookInstantGame* AuthenticateFacebookInstantGame(
@@ -434,7 +434,7 @@ public:
   FOnNakamaAuthenticateGameCenter OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaError OnError;
+  FOnNakamaAuthenticateGameCenter OnError;
 
   UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "AuthenticateGameCenter"), Category = "Nakama|Client")
   static UNakamaClientAuthenticateGameCenter* AuthenticateGameCenter(
@@ -468,7 +468,7 @@ public:
   FOnNakamaAuthenticateGoogle OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaError OnError;
+  FOnNakamaAuthenticateGoogle OnError;
 
   UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "AuthenticateGoogle"), Category = "Nakama|Client")
   static UNakamaClientAuthenticateGoogle* AuthenticateGoogle(
@@ -502,7 +502,7 @@ public:
   FOnNakamaAuthenticateSteam OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaError OnError;
+  FOnNakamaAuthenticateSteam OnError;
 
   UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "AuthenticateSteam"), Category = "Nakama|Client")
   static UNakamaClientAuthenticateSteam* AuthenticateSteam(
@@ -606,7 +606,7 @@ public:
   FOnNakamaCreateGroup OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaError OnError;
+  FOnNakamaCreateGroup OnError;
 
   UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "CreateGroup"), Category = "Nakama|Client")
   static UNakamaClientCreateGroup* CreateGroup(
@@ -910,7 +910,7 @@ public:
   FOnNakamaGetAccount OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaError OnError;
+  FOnNakamaGetAccount OnError;
 
   UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "GetAccount"), Category = "Nakama|Client")
   static UNakamaClientGetAccount* GetAccount(
@@ -940,7 +940,7 @@ public:
   FOnNakamaGetUsers OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaError OnError;
+  FOnNakamaGetUsers OnError;
 
   UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "GetUsers"), Category = "Nakama|Client")
   static UNakamaClientGetUsers* GetUsers(
@@ -976,7 +976,7 @@ public:
   FOnNakamaGetSubscription OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaError OnError;
+  FOnNakamaGetSubscription OnError;
 
   UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "GetSubscription"), Category = "Nakama|Client")
   static UNakamaClientGetSubscription* GetSubscription(
@@ -1008,7 +1008,7 @@ public:
   FOnNakamaGetMatchmakerStats OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaError OnError;
+  FOnNakamaGetMatchmakerStats OnError;
 
   UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "GetMatchmakerStats"), Category = "Nakama|Client")
   static UNakamaClientGetMatchmakerStats* GetMatchmakerStats(
@@ -1584,7 +1584,7 @@ public:
   FOnNakamaListChannelMessages OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaError OnError;
+  FOnNakamaListChannelMessages OnError;
 
   UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ListChannelMessages"), Category = "Nakama|Client")
   static UNakamaClientListChannelMessages* ListChannelMessages(
@@ -1622,7 +1622,7 @@ public:
   FOnNakamaListFriends OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaError OnError;
+  FOnNakamaListFriends OnError;
 
   UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ListFriends"), Category = "Nakama|Client")
   static UNakamaClientListFriends* ListFriends(
@@ -1658,7 +1658,7 @@ public:
   FOnNakamaListFriendsOfFriends OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaError OnError;
+  FOnNakamaListFriendsOfFriends OnError;
 
   UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ListFriendsOfFriends"), Category = "Nakama|Client")
   static UNakamaClientListFriendsOfFriends* ListFriendsOfFriends(
@@ -1692,7 +1692,7 @@ public:
   FOnNakamaListGroups OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaError OnError;
+  FOnNakamaListGroups OnError;
 
   UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ListGroups"), Category = "Nakama|Client")
   static UNakamaClientListGroups* ListGroups(
@@ -1734,7 +1734,7 @@ public:
   FOnNakamaListGroupUsers OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaError OnError;
+  FOnNakamaListGroupUsers OnError;
 
   UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ListGroupUsers"), Category = "Nakama|Client")
   static UNakamaClientListGroupUsers* ListGroupUsers(
@@ -1772,7 +1772,7 @@ public:
   FOnNakamaListLeaderboardRecords OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaError OnError;
+  FOnNakamaListLeaderboardRecords OnError;
 
   UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ListLeaderboardRecords"), Category = "Nakama|Client")
   static UNakamaClientListLeaderboardRecords* ListLeaderboardRecords(
@@ -1812,7 +1812,7 @@ public:
   FOnNakamaListLeaderboardRecordsAroundOwner OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaError OnError;
+  FOnNakamaListLeaderboardRecordsAroundOwner OnError;
 
   UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ListLeaderboardRecordsAroundOwner"), Category = "Nakama|Client")
   static UNakamaClientListLeaderboardRecordsAroundOwner* ListLeaderboardRecordsAroundOwner(
@@ -1852,7 +1852,7 @@ public:
   FOnNakamaListMatches OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaError OnError;
+  FOnNakamaListMatches OnError;
 
   UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ListMatches"), Category = "Nakama|Client")
   static UNakamaClientListMatches* ListMatches(
@@ -1894,7 +1894,7 @@ public:
   FOnNakamaListParties OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaError OnError;
+  FOnNakamaListParties OnError;
 
   UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ListParties"), Category = "Nakama|Client")
   static UNakamaClientListParties* ListParties(
@@ -1932,7 +1932,7 @@ public:
   FOnNakamaListNotifications OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaError OnError;
+  FOnNakamaListNotifications OnError;
 
   UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ListNotifications"), Category = "Nakama|Client")
   static UNakamaClientListNotifications* ListNotifications(
@@ -1966,7 +1966,7 @@ public:
   FOnNakamaListStorageObjects OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaError OnError;
+  FOnNakamaListStorageObjects OnError;
 
   UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ListStorageObjects"), Category = "Nakama|Client")
   static UNakamaClientListStorageObjects* ListStorageObjects(
@@ -2004,7 +2004,7 @@ public:
   FOnNakamaListSubscriptions OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaError OnError;
+  FOnNakamaListSubscriptions OnError;
 
   UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ListSubscriptions"), Category = "Nakama|Client")
   static UNakamaClientListSubscriptions* ListSubscriptions(
@@ -2038,7 +2038,7 @@ public:
   FOnNakamaListTournaments OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaError OnError;
+  FOnNakamaListTournaments OnError;
 
   UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ListTournaments"), Category = "Nakama|Client")
   static UNakamaClientListTournaments* ListTournaments(
@@ -2080,7 +2080,7 @@ public:
   FOnNakamaListTournamentRecords OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaError OnError;
+  FOnNakamaListTournamentRecords OnError;
 
   UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ListTournamentRecords"), Category = "Nakama|Client")
   static UNakamaClientListTournamentRecords* ListTournamentRecords(
@@ -2120,7 +2120,7 @@ public:
   FOnNakamaListTournamentRecordsAroundOwner OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaError OnError;
+  FOnNakamaListTournamentRecordsAroundOwner OnError;
 
   UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ListTournamentRecordsAroundOwner"), Category = "Nakama|Client")
   static UNakamaClientListTournamentRecordsAroundOwner* ListTournamentRecordsAroundOwner(
@@ -2160,7 +2160,7 @@ public:
   FOnNakamaListUserGroups OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaError OnError;
+  FOnNakamaListUserGroups OnError;
 
   UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ListUserGroups"), Category = "Nakama|Client")
   static UNakamaClientListUserGroups* ListUserGroups(
@@ -2266,7 +2266,7 @@ public:
   FOnNakamaReadStorageObjects OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaError OnError;
+  FOnNakamaReadStorageObjects OnError;
 
   UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ReadStorageObjects"), Category = "Nakama|Client")
   static UNakamaClientReadStorageObjects* ReadStorageObjects(
@@ -2298,7 +2298,7 @@ public:
   FOnNakamaRpcFunc OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaError OnError;
+  FOnNakamaRpcFunc OnError;
 
   UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "RpcFunc"), Category = "Nakama|Client")
   static UNakamaClientRpcFunc* RpcFunc(
@@ -2736,7 +2736,7 @@ public:
   FOnNakamaValidatePurchaseApple OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaError OnError;
+  FOnNakamaValidatePurchaseApple OnError;
 
   UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ValidatePurchaseApple"), Category = "Nakama|Client")
   static UNakamaClientValidatePurchaseApple* ValidatePurchaseApple(
@@ -2770,7 +2770,7 @@ public:
   FOnNakamaValidateSubscriptionApple OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaError OnError;
+  FOnNakamaValidateSubscriptionApple OnError;
 
   UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ValidateSubscriptionApple"), Category = "Nakama|Client")
   static UNakamaClientValidateSubscriptionApple* ValidateSubscriptionApple(
@@ -2804,7 +2804,7 @@ public:
   FOnNakamaValidatePurchaseGoogle OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaError OnError;
+  FOnNakamaValidatePurchaseGoogle OnError;
 
   UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ValidatePurchaseGoogle"), Category = "Nakama|Client")
   static UNakamaClientValidatePurchaseGoogle* ValidatePurchaseGoogle(
@@ -2838,7 +2838,7 @@ public:
   FOnNakamaValidateSubscriptionGoogle OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaError OnError;
+  FOnNakamaValidateSubscriptionGoogle OnError;
 
   UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ValidateSubscriptionGoogle"), Category = "Nakama|Client")
   static UNakamaClientValidateSubscriptionGoogle* ValidateSubscriptionGoogle(
@@ -2872,7 +2872,7 @@ public:
   FOnNakamaValidatePurchaseHuawei OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaError OnError;
+  FOnNakamaValidatePurchaseHuawei OnError;
 
   UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ValidatePurchaseHuawei"), Category = "Nakama|Client")
   static UNakamaClientValidatePurchaseHuawei* ValidatePurchaseHuawei(
@@ -2908,7 +2908,7 @@ public:
   FOnNakamaValidatePurchaseFacebookInstant OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaError OnError;
+  FOnNakamaValidatePurchaseFacebookInstant OnError;
 
   UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ValidatePurchaseFacebookInstant"), Category = "Nakama|Client")
   static UNakamaClientValidatePurchaseFacebookInstant* ValidatePurchaseFacebookInstant(
@@ -2942,7 +2942,7 @@ public:
   FOnNakamaWriteLeaderboardRecord OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaError OnError;
+  FOnNakamaWriteLeaderboardRecord OnError;
 
   UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "WriteLeaderboardRecord"), Category = "Nakama|Client")
   static UNakamaClientWriteLeaderboardRecord* WriteLeaderboardRecord(
@@ -2976,7 +2976,7 @@ public:
   FOnNakamaWriteStorageObjects OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaError OnError;
+  FOnNakamaWriteStorageObjects OnError;
 
   UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "WriteStorageObjects"), Category = "Nakama|Client")
   static UNakamaClientWriteStorageObjects* WriteStorageObjects(
@@ -3008,7 +3008,7 @@ public:
   FOnNakamaWriteTournamentRecord OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
-  FOnNakamaError OnError;
+  FOnNakamaWriteTournamentRecord OnError;
 
   UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "WriteTournamentRecord"), Category = "Nakama|Client")
   static UNakamaClientWriteTournamentRecord* WriteTournamentRecord(
