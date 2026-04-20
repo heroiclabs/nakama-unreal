@@ -67,29 +67,30 @@ struct NAKAMAUNREAL_API FNakamaGroup
 	// A URL for an avatar image.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Groups")
 	FString AvatarUrl;
-
-	// Anyone can join open groups, otherwise only admins can accept members.
+	
+	// The UNIX time when the group was created.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Groups")
-	bool open = false;
+	FDateTime CreateTime;
+	
+	// The UNIX time when the group was last updated.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Groups")
+	FDateTime UpdateTime;
 
 	// The current count of all members in the group.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Groups")
-	int32 EdgeCount = 0;
+	int32 EdgeCount;
 
 	// The maximum number of members allowed.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Groups")
-	int32 MaxCount = 0;
-
-	// The UNIX time when the group was created.
+	int32 MaxCount;
+	
+	// Anyone can join open groups, otherwise only admins can accept members.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Groups")
-	FDateTime CreateTime = 0;
-	// The UNIX time when the group was last updated.
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Groups")
-	FDateTime UpdateTime = 0;
+	bool open;
 
 	FNakamaGroup(const FString& JsonString);
     FNakamaGroup(const TSharedPtr<FJsonObject> JsonObject);
-	FNakamaGroup() { }
+	FNakamaGroup();
 };
 
 // Group States

@@ -38,66 +38,65 @@ struct NAKAMAUNREAL_API FNakamaTournament
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Tournaments")
 	FString Description;
 
-	// The category of the tournament. e.g. "vip" could be category 1.
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Tournaments")
-	int32 Category = 0;
-
-	// ASC or DESC sort mode of scores in the tournament.
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Tournaments")
-	int32 SortOrder = 0;
-
-	// The current number of players in the tournament.
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Tournaments")
-	int32 Size = 0;
-
-	// The maximum number of players for the tournament.
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Tournaments")
-	int32 MaxSize = 0;
-
-	// The maximum score updates allowed per player for the current tournament.
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Tournaments")
-	int32 MaxNumScore = 0;
-
-	// True if the tournament is active and can enter. A computed value.
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Tournaments")
-	bool CanEnter = false;
-
-	// The UNIX time when the tournament was created.
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Tournaments")
-	FDateTime CreateTime = 0;
-
-	// The UNIX time when the tournament will start.
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Tournaments")
-	FDateTime StartTime = 0;
-
-	// The UNIX time when the tournament will be stopped.
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Tournaments")
-	FDateTime EndTime = 0;
-
-	// The UNIX time when the tournament stops being active until next reset. A computed value.
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Tournaments")
-	int32 EndActive = 0;
-
-	// The UNIX time when the tournament is next playable. A computed value.
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Tournaments")
-	int32 NextReset = 0;
-
-	// Duration of the tournament in seconds.
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Tournaments")
-	int32 Duration = 0;
-
-	// The UNIX time when the tournament start being active. A computed value.
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Tournaments")
-	int32 StartActive = 0;
-
 	// Additional information stored as a JSON object.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Tournaments")
 	FString Metadata;
+	
+	// The UNIX time when the tournament was created.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Tournaments")
+	FDateTime CreateTime;
+
+	// The UNIX time when the tournament will start.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Tournaments")
+	FDateTime StartTime;
+
+	// The UNIX time when the tournament will be stopped.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Tournaments")
+	FDateTime EndTime;
+
+	// The category of the tournament. e.g. "vip" could be category 1.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Tournaments")
+	int32 Category;
+
+	// ASC or DESC sort mode of scores in the tournament.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Tournaments")
+	int32 SortOrder;
+
+	// The current number of players in the tournament.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Tournaments")
+	int32 Size;
+
+	// The maximum number of players for the tournament.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Tournaments")
+	int32 MaxSize;
+
+	// The maximum score updates allowed per player for the current tournament.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Tournaments")
+	int32 MaxNumScore;
+
+	// The UNIX time when the tournament stops being active until next reset. A computed value.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Tournaments")
+	int32 EndActive;
+
+	// The UNIX time when the tournament is next playable. A computed value.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Tournaments")
+	int32 NextReset;
+
+	// Duration of the tournament in seconds.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Tournaments")
+	int32 Duration;
+
+	// The UNIX time when the tournament start being active. A computed value.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Tournaments")
+	int32 StartActive;
+	
+	// True if the tournament is active and can enter. A computed value.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Tournaments")
+	bool CanEnter;
 
 	FNakamaTournament(const FString& JsonString);
 	FNakamaTournament(const TSharedPtr<class FJsonObject> JsonObject);
 	FNakamaTournament();
-	
 };
 
 // A set of tournament records which may be part of a tournament records page or a batch of individual records.

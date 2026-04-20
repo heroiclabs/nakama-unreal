@@ -36,47 +36,46 @@ struct NAKAMAUNREAL_API FNakamaLeaderboardRecord
 	// The username of the score owner, if the owner is a user.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Leaderboards")
 	FString Username;
-
-	// The score value.
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Leaderboards")
-	int64 Score = 0;
-
-	// An optional subscore value.
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Leaderboards")
-	int64 SubScore = 0;
-
-	// The number of submissions to this score record.
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Leaderboards")
-	int64 NumScore = 0;
-
-	// The maximum number of score updates allowed by the owner.
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Leaderboards")
-	int32 MaxNumScore = 0;
-
+	
 	// Metadata.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Leaderboards")
 	FString Metadata;
 
 	// The UNIX time when the leaderboard record was created.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Leaderboards")
-	FDateTime CreateTime = 0;
+	FDateTime CreateTime;
 
 	//The UNIX time when the leaderboard record was updated.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Leaderboards")
-	FDateTime UpdateTime = 0;
+	FDateTime UpdateTime;
 
 	//The UNIX time when the leaderboard record expires.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Leaderboards")
-	FDateTime ExpiryTime = 0;
+	FDateTime ExpiryTime;
 
+	// The score value.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Leaderboards")
+	int64 Score;
+
+	// An optional subscore value.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Leaderboards")
+	int64 SubScore;
+
+	// The number of submissions to this score record.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Leaderboards")
+	int64 NumScore;
+	
 	//The rank of this record.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Leaderboards")
-	int64 Rank = 0;
+	int64 Rank;
+
+	// The maximum number of score updates allowed by the owner.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Leaderboards")
+	int32 MaxNumScore;
 
 	FNakamaLeaderboardRecord(const FString& JsonString);
     FNakamaLeaderboardRecord(const TSharedPtr<class FJsonObject> JsonObject);
     FNakamaLeaderboardRecord();
-
 };
 
 

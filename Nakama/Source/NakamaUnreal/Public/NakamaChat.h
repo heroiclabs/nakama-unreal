@@ -35,16 +35,16 @@ struct NAKAMAUNREAL_API FNakamaChatMessage
 	// The Chat Message.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Nakama Chat")
 	FString ChatMessage;
-
-	// The Message Type.
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Nakama Chat")
-	ENakamaChannelType MessageType = ENakamaChannelType::TYPE_UNSPECIFIED;
-
+	
 	// Group Name to Send To.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Nakama Chat")
 	FString GroupName;
 
-	FNakamaChatMessage() : ChatMessage(TEXT("")), MessageType(ENakamaChannelType::DIRECT_MESSAGE), GroupName(TEXT(""))
+	// The Message Type.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Nakama Chat")
+	ENakamaChannelType MessageType;
+
+	FNakamaChatMessage() : MessageType(ENakamaChannelType::DIRECT_MESSAGE)
 	{ }
 };
 
@@ -55,17 +55,17 @@ struct NAKAMAUNREAL_API FNakamaChannel
 {
 	GENERATED_BODY()
 
-	// The ID of the channel.
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama Chat")
-	FString Id;
+	// A reference to the current user's presence in the channel.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, DisplayName = "Self", Category = "Nakama Chat")
+	FNakamaUserPresence Me;
 
 	// The users currently in the channel.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama Chat")
 	TArray<FNakamaUserPresence> Presences;
-
-	// A reference to the current user's presence in the channel.
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, DisplayName = "Self", Category = "Nakama Chat")
-	FNakamaUserPresence Me;
+	
+	// The ID of the channel.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama Chat")
+	FString Id;
 
 	// The name of the chat room, or an empty string if this message was not sent through a chat room.
 	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama Chat")
@@ -105,5 +105,4 @@ struct NAKAMAUNREAL_API FNakamaPrivateChat
 	// Channel Id.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama Chat")
 	FString ChannelId;
-
 };

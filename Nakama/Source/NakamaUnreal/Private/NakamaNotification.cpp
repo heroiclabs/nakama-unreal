@@ -40,9 +40,8 @@ FNakamaNotification::FNakamaNotification(const TSharedPtr<FJsonObject> JsonObjec
 	}
 }
 
-FNakamaNotification::FNakamaNotification()
+FNakamaNotification::FNakamaNotification() : Code(0), Persistent(false)
 {
-	
 }
 
 FNakamaNotificationList::FNakamaNotificationList(const FString& JsonString)

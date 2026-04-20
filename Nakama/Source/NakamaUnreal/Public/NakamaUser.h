@@ -75,15 +75,7 @@ struct NAKAMAUNREAL_API FNakamaUser
 	// The Steam ID in the user's account.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|User")
 	FString SteamId;
-
-	// Indicates whether the user is currently online.
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|User")
-	bool Online = false;
-
-	// Number of related edges to this user (friends).
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|User")
-	int32 EdgeCount;
-
+	
 	// The UNIX time when the user was created.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|User")
 	FDateTime CreatedAt;
@@ -92,9 +84,17 @@ struct NAKAMAUNREAL_API FNakamaUser
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|User")
 	FDateTime updatedAt;
 
+	// Number of related edges to this user (friends).
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|User")
+	int32 EdgeCount;
+	
+	// Indicates whether the user is currently online.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|User")
+	bool Online;
+
 	FNakamaUser(const FString& JsonString);
     FNakamaUser(const TSharedPtr<class FJsonObject> JsonObject);
-	FNakamaUser(): EdgeCount(0), CreatedAt(0), updatedAt(0) { }
+	FNakamaUser() : CreatedAt(0), updatedAt(0), EdgeCount(0), Online(false) { }
 
 };
 

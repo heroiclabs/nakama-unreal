@@ -82,6 +82,11 @@ FNakamaGroup::FNakamaGroup(const TSharedPtr<FJsonObject> JsonObject)
 	}
 }
 
+FNakamaGroup::FNakamaGroup() : CreateTime(-1), UpdateTime(-1), EdgeCount(0), MaxCount(0), open(false)
+{
+	
+}
+
 
 FNakamaGroupUser::FNakamaGroupUser(const FString& JsonString) : FNakamaGroupUser(FNakamaUtils::DeserializeJsonObject(JsonString))
 {

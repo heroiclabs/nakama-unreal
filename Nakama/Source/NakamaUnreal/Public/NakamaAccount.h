@@ -35,6 +35,10 @@ struct NAKAMAUNREAL_API FNakamaAccount
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Account", meta = (JsonProperty = "user"))
 	FNakamaUser User;
 
+	// The devices which belong to the user's account.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Account", meta = (JsonProperty = "devices"))
+	TArray<FNakamaAccountDevice> Devices;
+
 	// The user's wallet data.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Account", meta = (JsonProperty = "wallet"))
 	FString Wallet;
@@ -42,10 +46,6 @@ struct NAKAMAUNREAL_API FNakamaAccount
 	// The email address of the user.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Account", meta = (JsonProperty = "email"))
 	FString Email;
-
-	// The devices which belong to the user's account.
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Account", meta = (JsonProperty = "devices"))
-	TArray<FNakamaAccountDevice> Devices;
 
 	// The custom id in the user's account.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Account", meta = (JsonProperty = "custom_id"))

@@ -26,10 +26,6 @@ struct NAKAMAUNREAL_API FNakamaStream
 {
 	GENERATED_BODY()
 
-	// Mode identifies the type of stream.
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Streams")
-	int32 Mode = 0;
-
 	// Subject is the primary identifier, if any.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Streams")
 	FString Subject;
@@ -41,6 +37,10 @@ struct NAKAMAUNREAL_API FNakamaStream
 	// The label is an arbitrary identifying string, if the stream has one.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Streams")
 	FString Label;
+	
+	// Mode identifies the type of stream.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Streams")
+	int32 Mode;
 
 	FNakamaStream(const FString& JsonString);
     FNakamaStream(const TSharedPtr<class FJsonObject> JsonObject);

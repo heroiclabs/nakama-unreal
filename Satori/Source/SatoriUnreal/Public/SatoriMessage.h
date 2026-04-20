@@ -26,17 +26,33 @@ struct SATORIUNREAL_API FSatoriMessage
 {
 	GENERATED_BODY()
 
+	// A key-value pairs of metadata.
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Satori|Messages")
+	TMap<FString, FString> Metadata;
+
+	// The message's unique identifier.
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Satori|Messages")
+	FString ID;
+
+	// The message's text.
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Satori|Messages")
+	FString Text;
+
 	// The identifier of the schedule.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Satori|Messages")
 	FString ScheduleID;
 
+	// The message's title.
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Satori|Messages")
+	FString Title;
+
+	// The message's image url.
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Satori|Messages")
+	FString ImageURL;
+
 	// The send time for the message.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Satori|Messages")
 	int64 SendTime;
-
-	// A key-value pairs of metadata.
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Satori|Messages")
-	TMap<FString, FString> Metadata;
 
 	// The time the message was created.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Satori|Messages")
@@ -53,22 +69,6 @@ struct SATORIUNREAL_API FSatoriMessage
 	// The time the message was consumed by the identity.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Satori|Messages")
 	int64 ConsumeTime;
-
-	// The message's text.
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Satori|Messages")
-	FString Text;
-
-	// The message's unique identifier.
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Satori|Messages")
-	FString ID;
-
-	// The message's title.
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Satori|Messages")
-	FString Title;
-
-	// The message's image url.
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Satori|Messages")
-	FString ImageURL;
 
 	FSatoriMessage(const FString& JsonString);
 	FSatoriMessage(const TSharedPtr<class FJsonObject> JsonObject);
