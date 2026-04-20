@@ -15,6 +15,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 	"text/template"
 
 	"heroiclabs.com/yacg"
@@ -74,6 +75,9 @@ func (m Module) Generate(outPath string) error {
 		//
 		// Generate the code from the mapper using the parsed Template.
 		outFilePath := fmt.Sprintf("%s/%s", outPath, p.Output)
+		if err := os.MkdirAll(filepath.Dir(outFilePath), 0755); err != nil {
+			log.Fatalf("Failed to create output directory for %s: %s", outFilePath, err)
+		}
 		outFile, err := os.Create(outFilePath)
 		if err != nil {
 			log.Fatalf("Failed to create file %s: %s", outFilePath, err)
