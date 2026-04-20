@@ -27,10 +27,10 @@
 UENUM(BlueprintType)
 enum class ESatoriValueChangeReasonType : uint8
 {
-  VcrUnknown = 0 // 
-  , VcrFlagVariant = 1 // 
-  , VcrLiveEvent = 2 // 
-  , VcrExperiment = 3 // 
+  VCR_UNKNOWN = 0 // 
+  , VCR_FLAG_VARIANT = 1 // 
+  , VCR_LIVE_EVENT = 2 // 
+  , VCR_EXPERIMENT = 3 // 
 };
 
 /*
@@ -39,11 +39,11 @@ enum class ESatoriValueChangeReasonType : uint8
 UENUM(BlueprintType)
 enum class ESatoriFlagOverrideType : uint8
 {
-  FotFlag = 0 // 
-  , FotFlagVariant = 1 // 
-  , FotLiveEventFlag = 2 // 
-  , FotLiveEventFlagVariant = 3 // 
-  , FotExperimentPhaseVariantFlag = 4 // 
+  FOT_FLAG = 0 // 
+  , FOT_FLAG_VARIANT = 1 // 
+  , FOT_LIVE_EVENT_FLAG = 2 // 
+  , FOT_LIVE_EVENT_FLAG_VARIANT = 3 // 
+  , FOT_EXPERIMENT_PHASE_VARIANT_FLAG = 4 // 
 };
 
 /*
@@ -52,10 +52,10 @@ enum class ESatoriFlagOverrideType : uint8
 UENUM(BlueprintType)
 enum class ESatoriLiveEventStatus : uint8
 {
-  LesUnknown = 0 // 
-  , LesActive = 1 // 
-  , LesUpcoming = 2 // 
-  , LesTerminated = 3 // 
+  LES_UNKNOWN = 0 // 
+  , LES_ACTIVE = 1 // 
+  , LES_UPCOMING = 2 // 
+  , LES_TERMINATED = 3 // 
 };
 
 /**

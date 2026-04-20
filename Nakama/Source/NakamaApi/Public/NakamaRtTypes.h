@@ -26,10 +26,10 @@
 UENUM(BlueprintType)
 enum class ENakamaRtFriendState : uint8
 {
-  Friend_ = 0 //  The user is a friend of the current user.
-  , InviteSent = 1 //  The current user has sent an invite to the user.
-  , InviteReceived = 2 //  The current user has received an invite from this user.
-  , Blocked = 3 //  The current user has blocked this user.
+  FRIEND_ = 0 //  The user is a friend of the current user.
+  , INVITE_SENT = 1 //  The current user has sent an invite to the user.
+  , INVITE_RECEIVED = 2 //  The current user has received an invite from this user.
+  , BLOCKED = 3 //  The current user has blocked this user.
 };
 /*
 * The group role status.
@@ -37,10 +37,10 @@ enum class ENakamaRtFriendState : uint8
 UENUM(BlueprintType)
 enum class ENakamaRtGroupUserListGroupUserState : uint8
 {
-  Superadmin = 0 //  The user is a superadmin with full control of the group.
-  , Admin = 1 //  The user is an admin with additional privileges.
-  , Member = 2 //  The user is a regular member.
-  , JoinRequest = 3 //  The user has requested to join the group
+  SUPERADMIN = 0 //  The user is a superadmin with full control of the group.
+  , ADMIN = 1 //  The user is an admin with additional privileges.
+  , MEMBER = 2 //  The user is a regular member.
+  , JOIN_REQUEST = 3 //  The user has requested to join the group
 };
 /*
 * The group role status.
@@ -48,10 +48,10 @@ enum class ENakamaRtGroupUserListGroupUserState : uint8
 UENUM(BlueprintType)
 enum class ENakamaRtUserGroupListUserGroupState : uint8
 {
-  Superadmin = 0 //  The user is a superadmin with full control of the group.
-  , Admin = 1 //  The user is an admin with additional privileges.
-  , Member = 2 //  The user is a regular member.
-  , JoinRequest = 3 //  The user has requested to join the group
+  SUPERADMIN = 0 //  The user is a superadmin with full control of the group.
+  , ADMIN = 1 //  The user is an admin with additional privileges.
+  , MEMBER = 2 //  The user is a regular member.
+  , JOIN_REQUEST = 3 //  The user has requested to join the group
 };
 /*
 * Validation Provider,
@@ -59,10 +59,10 @@ enum class ENakamaRtUserGroupListUserGroupState : uint8
 UENUM(BlueprintType)
 enum class ENakamaRtStoreProvider : uint8
 {
-  AppleAppStore = 0 //  Apple App Store
-  , GooglePlayStore = 1 //  Google Play Store
-  , HuaweiAppGallery = 2 //  Huawei App Gallery
-  , FacebookInstantStore = 3 //  Facebook Instant Store
+  APPLE_APP_STORE = 0 //  Apple App Store
+  , GOOGLE_PLAY_STORE = 1 //  Google Play Store
+  , HUAWEI_APP_GALLERY = 2 //  Huawei App Gallery
+  , FACEBOOK_INSTANT_STORE = 3 //  Facebook Instant Store
 };
 /*
 * Environment where a purchase/subscription took place,
@@ -70,9 +70,9 @@ enum class ENakamaRtStoreProvider : uint8
 UENUM(BlueprintType)
 enum class ENakamaRtStoreEnvironment : uint8
 {
-  Unknown = 0 //  Unknown environment.
-  , Sandbox = 1 //  Sandbox/test environment.
-  , Production = 2 //  Production environment.
+  UNKNOWN = 0 //  Unknown environment.
+  , SANDBOX = 1 //  Sandbox/test environment.
+  , PRODUCTION = 2 //  Production environment.
 };
 /*
 * Operator that can be used to override the one set in the leaderboard.
@@ -80,11 +80,11 @@ enum class ENakamaRtStoreEnvironment : uint8
 UENUM(BlueprintType)
 enum class ENakamaRtOperator_ : uint8
 {
-  NoOverride = 0 //  Do not override the leaderboard operator.
-  , Best = 1 //  Override the leaderboard operator with BEST.
-  , Set = 2 //  Override the leaderboard operator with SET.
-  , Increment = 3 //  Override the leaderboard operator with INCREMENT.
-  , Decrement = 4 //  Override the leaderboard operator with DECREMENT.
+  NO_OVERRIDE = 0 //  Do not override the leaderboard operator.
+  , BEST = 1 //  Override the leaderboard operator with BEST.
+  , SET = 2 //  Override the leaderboard operator with SET.
+  , INCREMENT = 3 //  Override the leaderboard operator with INCREMENT.
+  , DECREMENT = 4 //  Override the leaderboard operator with DECREMENT.
 };
 /*
 * The type of chat channel.
@@ -92,10 +92,10 @@ enum class ENakamaRtOperator_ : uint8
 UENUM(BlueprintType)
 enum class ENakamaRtChannelJoinType : uint8
 {
-  TypeUnspecified = 0 //  Default case. Assumed as ROOM type.
-  , Room = 1 //  A room which anyone can join to chat.
-  , DirectMessage = 2 //  A private channel for 1-on-1 chat.
-  , Group = 3 //  A channel for group chat.
+  TYPE_UNSPECIFIED = 0 //  Default case. Assumed as ROOM type.
+  , ROOM = 1 //  A room which anyone can join to chat.
+  , DIRECT_MESSAGE = 2 //  A private channel for 1-on-1 chat.
+  , GROUP = 3 //  A channel for group chat.
 };
 /*
 * The selection of possible error codes.
@@ -103,14 +103,14 @@ enum class ENakamaRtChannelJoinType : uint8
 UENUM(BlueprintType)
 enum class ENakamaRtErrorCode : uint8
 {
-  RuntimeException = 0 //  An unexpected result from the server.
-  , UnrecognizedPayload = 1 //  The server received a message which is not recognised.
-  , MissingPayload = 2 //  A message was expected but contains no content.
-  , BadInput = 3 //  Fields in the message have an invalid format.
-  , MatchNotFound = 4 //  The match id was not found.
-  , MatchJoinRejected = 5 //  The match join was rejected.
-  , RuntimeFunctionNotFound = 6 //  The runtime function does not exist on the server.
-  , RuntimeFunctionException = 7 //  The runtime function executed with an error.
+  RUNTIME_EXCEPTION = 0 //  An unexpected result from the server.
+  , UNRECOGNIZED_PAYLOAD = 1 //  The server received a message which is not recognised.
+  , MISSING_PAYLOAD = 2 //  A message was expected but contains no content.
+  , BAD_INPUT = 3 //  Fields in the message have an invalid format.
+  , MATCH_NOT_FOUND = 4 //  The match id was not found.
+  , MATCH_JOIN_REJECTED = 5 //  The match join was rejected.
+  , RUNTIME_FUNCTION_NOT_FOUND = 6 //  The runtime function does not exist on the server.
+  , RUNTIME_FUNCTION_EXCEPTION = 7 //  The runtime function executed with an error.
 };
 
 /*
