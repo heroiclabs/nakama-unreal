@@ -18,4292 +18,4259 @@
 
 #include "NakamaClientBlueprintLibrary.h"
 
-// ============================================================================
-// Async Action Classes Implementation
-// ============================================================================
-
-// AddFriends
 UNakamaClientAddFriends* UNakamaClientAddFriends::AddFriends(
-	UObject* WorldContextObject,
-	FNakamaClientConfig Client,
-	const FNakamaSession& Session,
-	const TArray<FString>& Ids,
-	const TArray<FString>& Usernames,
-	FString Metadata)
+  UObject* WorldContextObject
+  , FNakamaClientConfig ClientConfig
+  , const FNakamaSession& Session
+  , const TArray<FString>& Ids
+  , const TArray<FString>& Usernames
+  , const FString& Metadata
+)
 {
-	UNakamaClientAddFriends* Action = NewObject<UNakamaClientAddFriends>(GetTransientPackage());
-	Action->Client = Client;
-	Action->Session = Session;
-	Action->StoredIds = Ids;
-	Action->StoredUsernames = Usernames;
-	Action->StoredMetadata = Metadata;
-	Action->RegisterWithGameInstance(WorldContextObject);
-	return Action;
+  UNakamaClientAddFriends* Action = NewObject<UNakamaClientAddFriends>(GetTransientPackage());
+  Action->StoredClientConfig = ClientConfig;
+  Action->StoredSession = Session;
+  Action->StoredIds = Ids;
+  Action->StoredUsernames = Usernames;
+  Action->StoredMetadata = Metadata;
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
 }
 
 void UNakamaClientAddFriends::Activate()
 {
-	static const TCHAR* TraceScope_AddFriends = TEXT("NakamaBP_AddFriends");
-	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_AddFriends);
+  static const TCHAR* TraceScope_AddFriends = TEXT("NakamaBP_AddFriends");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_AddFriends);
 
-	TWeakObjectPtr<UNakamaClientAddFriends> WeakThis(this);
+  TWeakObjectPtr<UNakamaClientAddFriends> WeakThis(this);
 
-	NakamaApi::AddFriends(
-		Client,
-		Session,
-		StoredIds,
-		StoredUsernames,
-		StoredMetadata,
-		[WeakThis]()
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnSuccess.Broadcast();
-				Self->SetReadyToDestroy();
-			}
-		},
-		[WeakThis](const FNakamaError& Error)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnError.Broadcast(Error);
-				Self->SetReadyToDestroy();
-			}
-		}
-	);
+  NakamaApi::AddFriends(
+    StoredClientConfig,
+    Session,
+    Ids,
+    Usernames,
+    Metadata,
+    [WeakThis]()
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnSuccess.Broadcast();
+        Self->SetReadyToDestroy();
+      }
+    },
+  	[WeakThis](const FNakamaError& Error)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnError.Broadcast(Error);
+        Self->SetReadyToDestroy();
+      }
+    }
+  );
 }
 
-// AddGroupUsers
 UNakamaClientAddGroupUsers* UNakamaClientAddGroupUsers::AddGroupUsers(
-	UObject* WorldContextObject,
-	FNakamaClientConfig Client,
-	const FNakamaSession& Session,
-	FString GroupId,
-	const TArray<FString>& UserIds)
+  UObject* WorldContextObject
+  , FNakamaClientConfig ClientConfig
+  , const FNakamaSession& Session
+  , const FString& GroupId
+  , const TArray<FString>& UserIds
+)
 {
-	UNakamaClientAddGroupUsers* Action = NewObject<UNakamaClientAddGroupUsers>(GetTransientPackage());
-	Action->Client = Client;
-	Action->Session = Session;
-	Action->StoredGroupId = GroupId;
-	Action->StoredUserIds = UserIds;
-	Action->RegisterWithGameInstance(WorldContextObject);
-	return Action;
+  UNakamaClientAddGroupUsers* Action = NewObject<UNakamaClientAddGroupUsers>(GetTransientPackage());
+  Action->StoredClientConfig = ClientConfig;
+  Action->StoredSession = Session;
+  Action->StoredGroupId = GroupId;
+  Action->StoredUserIds = UserIds;
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
 }
 
 void UNakamaClientAddGroupUsers::Activate()
 {
-	static const TCHAR* TraceScope_AddGroupUsers = TEXT("NakamaBP_AddGroupUsers");
-	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_AddGroupUsers);
+  static const TCHAR* TraceScope_AddGroupUsers = TEXT("NakamaBP_AddGroupUsers");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_AddGroupUsers);
 
-	TWeakObjectPtr<UNakamaClientAddGroupUsers> WeakThis(this);
+  TWeakObjectPtr<UNakamaClientAddGroupUsers> WeakThis(this);
 
-	NakamaApi::AddGroupUsers(
-		Client,
-		Session,
-		StoredGroupId,
-		StoredUserIds,
-		[WeakThis]()
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnSuccess.Broadcast();
-				Self->SetReadyToDestroy();
-			}
-		},
-		[WeakThis](const FNakamaError& Error)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnError.Broadcast(Error);
-				Self->SetReadyToDestroy();
-			}
-		}
-	);
+  NakamaApi::AddGroupUsers(
+    StoredClientConfig,
+    Session,
+    GroupId,
+    UserIds,
+    [WeakThis]()
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnSuccess.Broadcast();
+        Self->SetReadyToDestroy();
+      }
+    },
+  	[WeakThis](const FNakamaError& Error)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnError.Broadcast(Error);
+        Self->SetReadyToDestroy();
+      }
+    }
+  );
 }
 
-// SessionRefresh
 UNakamaClientSessionRefresh* UNakamaClientSessionRefresh::SessionRefresh(
-	UObject* WorldContextObject,
-	FNakamaClientConfig Client,
-	FString Token,
-	const TMap<FString, FString>& Vars)
+  UObject* WorldContextObject
+  , FNakamaClientConfig ClientConfig
+  , const FString& Token
+  , const TMap<FString, FString>& Vars
+)
 {
-	UNakamaClientSessionRefresh* Action = NewObject<UNakamaClientSessionRefresh>(GetTransientPackage());
-	Action->Client = Client;
-	Action->StoredToken = Token;
-	Action->StoredVars = Vars;
-	Action->RegisterWithGameInstance(WorldContextObject);
-	return Action;
+  UNakamaClientSessionRefresh* Action = NewObject<UNakamaClientSessionRefresh>(GetTransientPackage());
+  Action->StoredClientConfig = ClientConfig;
+  Action->StoredToken = Token;
+  Action->StoredVars = Vars;
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
 }
 
 void UNakamaClientSessionRefresh::Activate()
 {
-	static const TCHAR* TraceScope_SessionRefresh = TEXT("NakamaBP_SessionRefresh");
-	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_SessionRefresh);
+  static const TCHAR* TraceScope_SessionRefresh = TEXT("NakamaBP_SessionRefresh");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_SessionRefresh);
 
-	TWeakObjectPtr<UNakamaClientSessionRefresh> WeakThis(this);
+  TWeakObjectPtr<UNakamaClientSessionRefresh> WeakThis(this);
 
-	NakamaApi::SessionRefresh(
-		Client,
-		StoredToken,
-		StoredVars,
-		[WeakThis](const FNakamaSession& Result)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnSuccess.Broadcast(Result);
-				Self->SetReadyToDestroy();
-			}
-		},
-		[WeakThis](const FNakamaError& Error)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnError.Broadcast(Error);
-				Self->SetReadyToDestroy();
-			}
-		}
-	);
+  NakamaApi::SessionRefresh(
+    StoredClientConfig,
+    Token,
+    Vars,
+    [WeakThis](const FNakamaSession& Result)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnSuccess.Broadcast(Result);
+        Self->SetReadyToDestroy();
+      }
+    },
+  	[WeakThis](const FNakamaError& Error)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnError.Broadcast(Error);
+        Self->SetReadyToDestroy();
+      }
+    }
+  );
 }
 
-// SessionLogout
 UNakamaClientSessionLogout* UNakamaClientSessionLogout::SessionLogout(
-	UObject* WorldContextObject,
-	FNakamaClientConfig Client,
-	const FNakamaSession& Session,
-	FString Token,
-	FString RefreshToken)
+  UObject* WorldContextObject
+  , FNakamaClientConfig ClientConfig
+  , const FNakamaSession& Session
+  , const FString& Token
+  , const FString& RefreshToken
+)
 {
-	UNakamaClientSessionLogout* Action = NewObject<UNakamaClientSessionLogout>(GetTransientPackage());
-	Action->Client = Client;
-	Action->Session = Session;
-	Action->StoredToken = Token;
-	Action->StoredRefreshToken = RefreshToken;
-	Action->RegisterWithGameInstance(WorldContextObject);
-	return Action;
+  UNakamaClientSessionLogout* Action = NewObject<UNakamaClientSessionLogout>(GetTransientPackage());
+  Action->StoredClientConfig = ClientConfig;
+  Action->StoredSession = Session;
+  Action->StoredToken = Token;
+  Action->StoredRefreshToken = RefreshToken;
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
 }
 
 void UNakamaClientSessionLogout::Activate()
 {
-	static const TCHAR* TraceScope_SessionLogout = TEXT("NakamaBP_SessionLogout");
-	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_SessionLogout);
+  static const TCHAR* TraceScope_SessionLogout = TEXT("NakamaBP_SessionLogout");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_SessionLogout);
 
-	TWeakObjectPtr<UNakamaClientSessionLogout> WeakThis(this);
+  TWeakObjectPtr<UNakamaClientSessionLogout> WeakThis(this);
 
-	NakamaApi::SessionLogout(
-		Client,
-		Session,
-		StoredToken,
-		StoredRefreshToken,
-		[WeakThis]()
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnSuccess.Broadcast();
-				Self->SetReadyToDestroy();
-			}
-		},
-		[WeakThis](const FNakamaError& Error)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnError.Broadcast(Error);
-				Self->SetReadyToDestroy();
-			}
-		}
-	);
+  NakamaApi::SessionLogout(
+    StoredClientConfig,
+    Session,
+    Token,
+    RefreshToken,
+    [WeakThis]()
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnSuccess.Broadcast();
+        Self->SetReadyToDestroy();
+      }
+    },
+  	[WeakThis](const FNakamaError& Error)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnError.Broadcast(Error);
+        Self->SetReadyToDestroy();
+      }
+    }
+  );
 }
 
-// AuthenticateApple
 UNakamaClientAuthenticateApple* UNakamaClientAuthenticateApple::AuthenticateApple(
-	UObject* WorldContextObject,
-	FNakamaClientConfig Client,
-	FString Token,
-	bool Create,
-	FString Username,
-	const TMap<FString, FString>& Vars)
+  UObject* WorldContextObject
+  , FNakamaClientConfig ClientConfig
+  , const FNakamaAccountApple& Account
+  , bool Create
+  , const FString& Username
+)
 {
-	UNakamaClientAuthenticateApple* Action = NewObject<UNakamaClientAuthenticateApple>(GetTransientPackage());
-	Action->Client = Client;
-	Action->StoredToken = Token;
-	Action->StoredVars = Vars;
-	Action->StoredCreate = Create;
-	Action->StoredUsername = Username;
-	Action->RegisterWithGameInstance(WorldContextObject);
-	return Action;
+  UNakamaClientAuthenticateApple* Action = NewObject<UNakamaClientAuthenticateApple>(GetTransientPackage());
+  Action->StoredClientConfig = ClientConfig;
+  Action->StoredAccount = Account;
+  Action->StoredCreate = Create;
+  Action->StoredUsername = Username;
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
 }
 
 void UNakamaClientAuthenticateApple::Activate()
 {
-	static const TCHAR* TraceScope_AuthenticateApple = TEXT("NakamaBP_AuthenticateApple");
-	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_AuthenticateApple);
+  static const TCHAR* TraceScope_AuthenticateApple = TEXT("NakamaBP_AuthenticateApple");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_AuthenticateApple);
 
-	TWeakObjectPtr<UNakamaClientAuthenticateApple> WeakThis(this);
-	FNakamaAccountApple StoredAccount;
-	StoredAccount.Token = StoredToken;
-	StoredAccount.Vars = StoredVars;
+  TWeakObjectPtr<UNakamaClientAuthenticateApple> WeakThis(this);
 
-	NakamaApi::AuthenticateApple(
-		Client,
-		StoredAccount,
-		StoredCreate,
-		StoredUsername,
-		[WeakThis](const FNakamaSession& Result)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnSuccess.Broadcast(Result);
-				Self->SetReadyToDestroy();
-			}
-		},
-		[WeakThis](const FNakamaError& Error)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnError.Broadcast(Error);
-				Self->SetReadyToDestroy();
-			}
-		}
-	);
+  NakamaApi::AuthenticateApple(
+    StoredClientConfig,
+    Account,
+    Create,
+    Username,
+    [WeakThis](const FNakamaSession& Result)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnSuccess.Broadcast(Result);
+        Self->SetReadyToDestroy();
+      }
+    },
+  	[WeakThis](const FNakamaError& Error)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnError.Broadcast(Error);
+        Self->SetReadyToDestroy();
+      }
+    }
+  );
 }
 
-// AuthenticateCustom
 UNakamaClientAuthenticateCustom* UNakamaClientAuthenticateCustom::AuthenticateCustom(
-	UObject* WorldContextObject,
-	FNakamaClientConfig Client,
-	FString Id,
-	bool Create,
-	FString Username,
-	const TMap<FString, FString>& Vars)
+  UObject* WorldContextObject
+  , FNakamaClientConfig ClientConfig
+  , const FNakamaAccountCustom& Account
+  , bool Create
+  , const FString& Username
+)
 {
-	UNakamaClientAuthenticateCustom* Action = NewObject<UNakamaClientAuthenticateCustom>(GetTransientPackage());
-	Action->Client = Client;
-	Action->StoredId = Id;
-	Action->StoredVars = Vars;
-	Action->StoredCreate = Create;
-	Action->StoredUsername = Username;
-	Action->RegisterWithGameInstance(WorldContextObject);
-	return Action;
+  UNakamaClientAuthenticateCustom* Action = NewObject<UNakamaClientAuthenticateCustom>(GetTransientPackage());
+  Action->StoredClientConfig = ClientConfig;
+  Action->StoredAccount = Account;
+  Action->StoredCreate = Create;
+  Action->StoredUsername = Username;
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
 }
 
 void UNakamaClientAuthenticateCustom::Activate()
 {
-	static const TCHAR* TraceScope_AuthenticateCustom = TEXT("NakamaBP_AuthenticateCustom");
-	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_AuthenticateCustom);
+  static const TCHAR* TraceScope_AuthenticateCustom = TEXT("NakamaBP_AuthenticateCustom");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_AuthenticateCustom);
 
-	TWeakObjectPtr<UNakamaClientAuthenticateCustom> WeakThis(this);
-	FNakamaAccountCustom StoredAccount;
-	StoredAccount.Id = StoredId;
-	StoredAccount.Vars = StoredVars;
+  TWeakObjectPtr<UNakamaClientAuthenticateCustom> WeakThis(this);
 
-	NakamaApi::AuthenticateCustom(
-		Client,
-		StoredAccount,
-		StoredCreate,
-		StoredUsername,
-		[WeakThis](const FNakamaSession& Result)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnSuccess.Broadcast(Result);
-				Self->SetReadyToDestroy();
-			}
-		},
-		[WeakThis](const FNakamaError& Error)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnError.Broadcast(Error);
-				Self->SetReadyToDestroy();
-			}
-		}
-	);
+  NakamaApi::AuthenticateCustom(
+    StoredClientConfig,
+    Account,
+    Create,
+    Username,
+    [WeakThis](const FNakamaSession& Result)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnSuccess.Broadcast(Result);
+        Self->SetReadyToDestroy();
+      }
+    },
+  	[WeakThis](const FNakamaError& Error)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnError.Broadcast(Error);
+        Self->SetReadyToDestroy();
+      }
+    }
+  );
 }
 
-// AuthenticateDevice
 UNakamaClientAuthenticateDevice* UNakamaClientAuthenticateDevice::AuthenticateDevice(
-	UObject* WorldContextObject,
-	FNakamaClientConfig Client,
-	FString Id,
-	bool Create,
-	FString Username,
-	const TMap<FString, FString>& Vars)
+  UObject* WorldContextObject
+  , FNakamaClientConfig ClientConfig
+  , const FNakamaAccountDevice& Account
+  , bool Create
+  , const FString& Username
+)
 {
-	UNakamaClientAuthenticateDevice* Action = NewObject<UNakamaClientAuthenticateDevice>(GetTransientPackage());
-	Action->Client = Client;
-	Action->StoredId = Id;
-	Action->StoredVars = Vars;
-	Action->StoredCreate = Create;
-	Action->StoredUsername = Username;
-	Action->RegisterWithGameInstance(WorldContextObject);
-	return Action;
+  UNakamaClientAuthenticateDevice* Action = NewObject<UNakamaClientAuthenticateDevice>(GetTransientPackage());
+  Action->StoredClientConfig = ClientConfig;
+  Action->StoredAccount = Account;
+  Action->StoredCreate = Create;
+  Action->StoredUsername = Username;
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
 }
 
 void UNakamaClientAuthenticateDevice::Activate()
 {
-	static const TCHAR* TraceScope_AuthenticateDevice = TEXT("NakamaBP_AuthenticateDevice");
-	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_AuthenticateDevice);
+  static const TCHAR* TraceScope_AuthenticateDevice = TEXT("NakamaBP_AuthenticateDevice");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_AuthenticateDevice);
 
-	TWeakObjectPtr<UNakamaClientAuthenticateDevice> WeakThis(this);
-	FNakamaAccountDevice StoredAccount;
-	StoredAccount.Id = StoredId;
-	StoredAccount.Vars = StoredVars;
+  TWeakObjectPtr<UNakamaClientAuthenticateDevice> WeakThis(this);
 
-	NakamaApi::AuthenticateDevice(
-		Client,
-		StoredAccount,
-		StoredCreate,
-		StoredUsername,
-		[WeakThis](const FNakamaSession& Result)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnSuccess.Broadcast(Result);
-				Self->SetReadyToDestroy();
-			}
-		},
-		[WeakThis](const FNakamaError& Error)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnError.Broadcast(Error);
-				Self->SetReadyToDestroy();
-			}
-		}
-	);
+  NakamaApi::AuthenticateDevice(
+    StoredClientConfig,
+    Account,
+    Create,
+    Username,
+    [WeakThis](const FNakamaSession& Result)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnSuccess.Broadcast(Result);
+        Self->SetReadyToDestroy();
+      }
+    },
+  	[WeakThis](const FNakamaError& Error)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnError.Broadcast(Error);
+        Self->SetReadyToDestroy();
+      }
+    }
+  );
 }
 
-// AuthenticateEmail
 UNakamaClientAuthenticateEmail* UNakamaClientAuthenticateEmail::AuthenticateEmail(
-	UObject* WorldContextObject,
-	FNakamaClientConfig Client,
-	FString Email,
-	FString Password,
-	bool Create,
-	FString Username,
-	const TMap<FString, FString>& Vars)
+  UObject* WorldContextObject
+  , FNakamaClientConfig ClientConfig
+  , const FNakamaAccountEmail& Account
+  , bool Create
+  , const FString& Username
+)
 {
-	UNakamaClientAuthenticateEmail* Action = NewObject<UNakamaClientAuthenticateEmail>(GetTransientPackage());
-	Action->Client = Client;
-	Action->StoredEmail = Email;
-	Action->StoredPassword = Password;
-	Action->StoredVars = Vars;
-	Action->StoredCreate = Create;
-	Action->StoredUsername = Username;
-	Action->RegisterWithGameInstance(WorldContextObject);
-	return Action;
+  UNakamaClientAuthenticateEmail* Action = NewObject<UNakamaClientAuthenticateEmail>(GetTransientPackage());
+  Action->StoredClientConfig = ClientConfig;
+  Action->StoredAccount = Account;
+  Action->StoredCreate = Create;
+  Action->StoredUsername = Username;
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
 }
 
 void UNakamaClientAuthenticateEmail::Activate()
 {
-	static const TCHAR* TraceScope_AuthenticateEmail = TEXT("NakamaBP_AuthenticateEmail");
-	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_AuthenticateEmail);
+  static const TCHAR* TraceScope_AuthenticateEmail = TEXT("NakamaBP_AuthenticateEmail");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_AuthenticateEmail);
 
-	TWeakObjectPtr<UNakamaClientAuthenticateEmail> WeakThis(this);
-	FNakamaAccountEmail StoredAccount;
-	StoredAccount.Email = StoredEmail;
-	StoredAccount.Password = StoredPassword;
-	StoredAccount.Vars = StoredVars;
+  TWeakObjectPtr<UNakamaClientAuthenticateEmail> WeakThis(this);
 
-	NakamaApi::AuthenticateEmail(
-		Client,
-		StoredAccount,
-		StoredCreate,
-		StoredUsername,
-		[WeakThis](const FNakamaSession& Result)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnSuccess.Broadcast(Result);
-				Self->SetReadyToDestroy();
-			}
-		},
-		[WeakThis](const FNakamaError& Error)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnError.Broadcast(Error);
-				Self->SetReadyToDestroy();
-			}
-		}
-	);
+  NakamaApi::AuthenticateEmail(
+    StoredClientConfig,
+    Account,
+    Create,
+    Username,
+    [WeakThis](const FNakamaSession& Result)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnSuccess.Broadcast(Result);
+        Self->SetReadyToDestroy();
+      }
+    },
+  	[WeakThis](const FNakamaError& Error)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnError.Broadcast(Error);
+        Self->SetReadyToDestroy();
+      }
+    }
+  );
 }
 
-// AuthenticateFacebook
 UNakamaClientAuthenticateFacebook* UNakamaClientAuthenticateFacebook::AuthenticateFacebook(
-	UObject* WorldContextObject,
-	FNakamaClientConfig Client,
-	FString Token,
-	bool Create,
-	FString Username,
-	bool Sync,
-	const TMap<FString, FString>& Vars)
+  UObject* WorldContextObject
+  , FNakamaClientConfig ClientConfig
+  , const FNakamaAccountFacebook& Account
+  , bool Create
+  , const FString& Username
+  , bool Sync
+)
 {
-	UNakamaClientAuthenticateFacebook* Action = NewObject<UNakamaClientAuthenticateFacebook>(GetTransientPackage());
-	Action->Client = Client;
-	Action->StoredToken = Token;
-	Action->StoredVars = Vars;
-	Action->StoredCreate = Create;
-	Action->StoredUsername = Username;
-	Action->StoredSync = Sync;
-	Action->RegisterWithGameInstance(WorldContextObject);
-	return Action;
+  UNakamaClientAuthenticateFacebook* Action = NewObject<UNakamaClientAuthenticateFacebook>(GetTransientPackage());
+  Action->StoredClientConfig = ClientConfig;
+  Action->StoredAccount = Account;
+  Action->StoredCreate = Create;
+  Action->StoredUsername = Username;
+  Action->StoredSync = Sync;
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
 }
 
 void UNakamaClientAuthenticateFacebook::Activate()
 {
-	static const TCHAR* TraceScope_AuthenticateFacebook = TEXT("NakamaBP_AuthenticateFacebook");
-	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_AuthenticateFacebook);
+  static const TCHAR* TraceScope_AuthenticateFacebook = TEXT("NakamaBP_AuthenticateFacebook");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_AuthenticateFacebook);
 
-	TWeakObjectPtr<UNakamaClientAuthenticateFacebook> WeakThis(this);
-	FNakamaAccountFacebook StoredAccount;
-	StoredAccount.Token = StoredToken;
-	StoredAccount.Vars = StoredVars;
+  TWeakObjectPtr<UNakamaClientAuthenticateFacebook> WeakThis(this);
 
-	NakamaApi::AuthenticateFacebook(
-		Client,
-		StoredAccount,
-		StoredCreate,
-		StoredUsername,
-		StoredSync,
-		[WeakThis](const FNakamaSession& Result)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnSuccess.Broadcast(Result);
-				Self->SetReadyToDestroy();
-			}
-		},
-		[WeakThis](const FNakamaError& Error)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnError.Broadcast(Error);
-				Self->SetReadyToDestroy();
-			}
-		}
-	);
+  NakamaApi::AuthenticateFacebook(
+    StoredClientConfig,
+    Account,
+    Create,
+    Username,
+    Sync,
+    [WeakThis](const FNakamaSession& Result)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnSuccess.Broadcast(Result);
+        Self->SetReadyToDestroy();
+      }
+    },
+  	[WeakThis](const FNakamaError& Error)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnError.Broadcast(Error);
+        Self->SetReadyToDestroy();
+      }
+    }
+  );
 }
 
-// AuthenticateFacebookInstantGame
 UNakamaClientAuthenticateFacebookInstantGame* UNakamaClientAuthenticateFacebookInstantGame::AuthenticateFacebookInstantGame(
-	UObject* WorldContextObject,
-	FNakamaClientConfig Client,
-	FString SignedPlayerInfo,
-	bool Create,
-	FString Username,
-	const TMap<FString, FString>& Vars)
+  UObject* WorldContextObject
+  , FNakamaClientConfig ClientConfig
+  , const FNakamaAccountFacebookInstantGame& Account
+  , bool Create
+  , const FString& Username
+)
 {
-	UNakamaClientAuthenticateFacebookInstantGame* Action = NewObject<UNakamaClientAuthenticateFacebookInstantGame>(GetTransientPackage());
-	Action->Client = Client;
-	Action->StoredSignedPlayerInfo = SignedPlayerInfo;
-	Action->StoredVars = Vars;
-	Action->StoredCreate = Create;
-	Action->StoredUsername = Username;
-	Action->RegisterWithGameInstance(WorldContextObject);
-	return Action;
+  UNakamaClientAuthenticateFacebookInstantGame* Action = NewObject<UNakamaClientAuthenticateFacebookInstantGame>(GetTransientPackage());
+  Action->StoredClientConfig = ClientConfig;
+  Action->StoredAccount = Account;
+  Action->StoredCreate = Create;
+  Action->StoredUsername = Username;
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
 }
 
 void UNakamaClientAuthenticateFacebookInstantGame::Activate()
 {
-	static const TCHAR* TraceScope_AuthenticateFacebookInstantGame = TEXT("NakamaBP_AuthenticateFacebookInstantGame");
-	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_AuthenticateFacebookInstantGame);
+  static const TCHAR* TraceScope_AuthenticateFacebookInstantGame = TEXT("NakamaBP_AuthenticateFacebookInstantGame");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_AuthenticateFacebookInstantGame);
 
-	TWeakObjectPtr<UNakamaClientAuthenticateFacebookInstantGame> WeakThis(this);
-	FNakamaAccountFacebookInstantGame StoredAccount;
-	StoredAccount.SignedPlayerInfo = StoredSignedPlayerInfo;
-	StoredAccount.Vars = StoredVars;
+  TWeakObjectPtr<UNakamaClientAuthenticateFacebookInstantGame> WeakThis(this);
 
-	NakamaApi::AuthenticateFacebookInstantGame(
-		Client,
-		StoredAccount,
-		StoredCreate,
-		StoredUsername,
-		[WeakThis](const FNakamaSession& Result)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnSuccess.Broadcast(Result);
-				Self->SetReadyToDestroy();
-			}
-		},
-		[WeakThis](const FNakamaError& Error)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnError.Broadcast(Error);
-				Self->SetReadyToDestroy();
-			}
-		}
-	);
+  NakamaApi::AuthenticateFacebookInstantGame(
+    StoredClientConfig,
+    Account,
+    Create,
+    Username,
+    [WeakThis](const FNakamaSession& Result)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnSuccess.Broadcast(Result);
+        Self->SetReadyToDestroy();
+      }
+    },
+  	[WeakThis](const FNakamaError& Error)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnError.Broadcast(Error);
+        Self->SetReadyToDestroy();
+      }
+    }
+  );
 }
 
-// AuthenticateGameCenter
 UNakamaClientAuthenticateGameCenter* UNakamaClientAuthenticateGameCenter::AuthenticateGameCenter(
-	UObject* WorldContextObject,
-	FNakamaClientConfig Client,
-	FString PlayerId,
-	FString BundleId,
-	int64 TimestampSeconds,
-	FString Salt,
-	FString Signature,
-	FString PublicKeyUrl,
-	bool Create,
-	FString Username,
-	const TMap<FString, FString>& Vars)
+  UObject* WorldContextObject
+  , FNakamaClientConfig ClientConfig
+  , const FNakamaAccountGameCenter& Account
+  , bool Create
+  , const FString& Username
+)
 {
-	UNakamaClientAuthenticateGameCenter* Action = NewObject<UNakamaClientAuthenticateGameCenter>(GetTransientPackage());
-	Action->Client = Client;
-	Action->StoredPlayerId = PlayerId;
-	Action->StoredBundleId = BundleId;
-	Action->StoredTimestampSeconds = TimestampSeconds;
-	Action->StoredSalt = Salt;
-	Action->StoredSignature = Signature;
-	Action->StoredPublicKeyUrl = PublicKeyUrl;
-	Action->StoredVars = Vars;
-	Action->StoredCreate = Create;
-	Action->StoredUsername = Username;
-	Action->RegisterWithGameInstance(WorldContextObject);
-	return Action;
+  UNakamaClientAuthenticateGameCenter* Action = NewObject<UNakamaClientAuthenticateGameCenter>(GetTransientPackage());
+  Action->StoredClientConfig = ClientConfig;
+  Action->StoredAccount = Account;
+  Action->StoredCreate = Create;
+  Action->StoredUsername = Username;
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
 }
 
 void UNakamaClientAuthenticateGameCenter::Activate()
 {
-	static const TCHAR* TraceScope_AuthenticateGameCenter = TEXT("NakamaBP_AuthenticateGameCenter");
-	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_AuthenticateGameCenter);
+  static const TCHAR* TraceScope_AuthenticateGameCenter = TEXT("NakamaBP_AuthenticateGameCenter");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_AuthenticateGameCenter);
 
-	TWeakObjectPtr<UNakamaClientAuthenticateGameCenter> WeakThis(this);
-	FNakamaAccountGameCenter StoredAccount;
-	StoredAccount.PlayerId = StoredPlayerId;
-	StoredAccount.BundleId = StoredBundleId;
-	StoredAccount.TimestampSeconds = StoredTimestampSeconds;
-	StoredAccount.Salt = StoredSalt;
-	StoredAccount.Signature = StoredSignature;
-	StoredAccount.PublicKeyUrl = StoredPublicKeyUrl;
-	StoredAccount.Vars = StoredVars;
+  TWeakObjectPtr<UNakamaClientAuthenticateGameCenter> WeakThis(this);
 
-	NakamaApi::AuthenticateGameCenter(
-		Client,
-		StoredAccount,
-		StoredCreate,
-		StoredUsername,
-		[WeakThis](const FNakamaSession& Result)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnSuccess.Broadcast(Result);
-				Self->SetReadyToDestroy();
-			}
-		},
-		[WeakThis](const FNakamaError& Error)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnError.Broadcast(Error);
-				Self->SetReadyToDestroy();
-			}
-		}
-	);
+  NakamaApi::AuthenticateGameCenter(
+    StoredClientConfig,
+    Account,
+    Create,
+    Username,
+    [WeakThis](const FNakamaSession& Result)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnSuccess.Broadcast(Result);
+        Self->SetReadyToDestroy();
+      }
+    },
+  	[WeakThis](const FNakamaError& Error)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnError.Broadcast(Error);
+        Self->SetReadyToDestroy();
+      }
+    }
+  );
 }
 
-// AuthenticateGoogle
 UNakamaClientAuthenticateGoogle* UNakamaClientAuthenticateGoogle::AuthenticateGoogle(
-	UObject* WorldContextObject,
-	FNakamaClientConfig Client,
-	FString Token,
-	bool Create,
-	FString Username,
-	const TMap<FString, FString>& Vars)
+  UObject* WorldContextObject
+  , FNakamaClientConfig ClientConfig
+  , const FNakamaAccountGoogle& Account
+  , bool Create
+  , const FString& Username
+)
 {
-	UNakamaClientAuthenticateGoogle* Action = NewObject<UNakamaClientAuthenticateGoogle>(GetTransientPackage());
-	Action->Client = Client;
-	Action->StoredToken = Token;
-	Action->StoredVars = Vars;
-	Action->StoredCreate = Create;
-	Action->StoredUsername = Username;
-	Action->RegisterWithGameInstance(WorldContextObject);
-	return Action;
+  UNakamaClientAuthenticateGoogle* Action = NewObject<UNakamaClientAuthenticateGoogle>(GetTransientPackage());
+  Action->StoredClientConfig = ClientConfig;
+  Action->StoredAccount = Account;
+  Action->StoredCreate = Create;
+  Action->StoredUsername = Username;
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
 }
 
 void UNakamaClientAuthenticateGoogle::Activate()
 {
-	static const TCHAR* TraceScope_AuthenticateGoogle = TEXT("NakamaBP_AuthenticateGoogle");
-	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_AuthenticateGoogle);
+  static const TCHAR* TraceScope_AuthenticateGoogle = TEXT("NakamaBP_AuthenticateGoogle");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_AuthenticateGoogle);
 
-	TWeakObjectPtr<UNakamaClientAuthenticateGoogle> WeakThis(this);
-	FNakamaAccountGoogle StoredAccount;
-	StoredAccount.Token = StoredToken;
-	StoredAccount.Vars = StoredVars;
+  TWeakObjectPtr<UNakamaClientAuthenticateGoogle> WeakThis(this);
 
-	NakamaApi::AuthenticateGoogle(
-		Client,
-		StoredAccount,
-		StoredCreate,
-		StoredUsername,
-		[WeakThis](const FNakamaSession& Result)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnSuccess.Broadcast(Result);
-				Self->SetReadyToDestroy();
-			}
-		},
-		[WeakThis](const FNakamaError& Error)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnError.Broadcast(Error);
-				Self->SetReadyToDestroy();
-			}
-		}
-	);
+  NakamaApi::AuthenticateGoogle(
+    StoredClientConfig,
+    Account,
+    Create,
+    Username,
+    [WeakThis](const FNakamaSession& Result)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnSuccess.Broadcast(Result);
+        Self->SetReadyToDestroy();
+      }
+    },
+  	[WeakThis](const FNakamaError& Error)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnError.Broadcast(Error);
+        Self->SetReadyToDestroy();
+      }
+    }
+  );
 }
 
-// AuthenticateSteam
 UNakamaClientAuthenticateSteam* UNakamaClientAuthenticateSteam::AuthenticateSteam(
-	UObject* WorldContextObject,
-	FNakamaClientConfig Client,
-	FString Token,
-	bool Create,
-	FString Username,
-	bool Sync,
-	const TMap<FString, FString>& Vars)
+  UObject* WorldContextObject
+  , FNakamaClientConfig ClientConfig
+  , const FNakamaAccountSteam& Account
+  , bool Create
+  , const FString& Username
+  , bool Sync
+)
 {
-	UNakamaClientAuthenticateSteam* Action = NewObject<UNakamaClientAuthenticateSteam>(GetTransientPackage());
-	Action->Client = Client;
-	Action->StoredToken = Token;
-	Action->StoredVars = Vars;
-	Action->StoredCreate = Create;
-	Action->StoredUsername = Username;
-	Action->StoredSync = Sync;
-	Action->RegisterWithGameInstance(WorldContextObject);
-	return Action;
+  UNakamaClientAuthenticateSteam* Action = NewObject<UNakamaClientAuthenticateSteam>(GetTransientPackage());
+  Action->StoredClientConfig = ClientConfig;
+  Action->StoredAccount = Account;
+  Action->StoredCreate = Create;
+  Action->StoredUsername = Username;
+  Action->StoredSync = Sync;
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
 }
 
 void UNakamaClientAuthenticateSteam::Activate()
 {
-	static const TCHAR* TraceScope_AuthenticateSteam = TEXT("NakamaBP_AuthenticateSteam");
-	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_AuthenticateSteam);
+  static const TCHAR* TraceScope_AuthenticateSteam = TEXT("NakamaBP_AuthenticateSteam");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_AuthenticateSteam);
 
-	TWeakObjectPtr<UNakamaClientAuthenticateSteam> WeakThis(this);
-	FNakamaAccountSteam StoredAccount;
-	StoredAccount.Token = StoredToken;
-	StoredAccount.Vars = StoredVars;
+  TWeakObjectPtr<UNakamaClientAuthenticateSteam> WeakThis(this);
 
-	NakamaApi::AuthenticateSteam(
-		Client,
-		StoredAccount,
-		StoredCreate,
-		StoredUsername,
-		StoredSync,
-		[WeakThis](const FNakamaSession& Result)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnSuccess.Broadcast(Result);
-				Self->SetReadyToDestroy();
-			}
-		},
-		[WeakThis](const FNakamaError& Error)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnError.Broadcast(Error);
-				Self->SetReadyToDestroy();
-			}
-		}
-	);
+  NakamaApi::AuthenticateSteam(
+    StoredClientConfig,
+    Account,
+    Create,
+    Username,
+    Sync,
+    [WeakThis](const FNakamaSession& Result)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnSuccess.Broadcast(Result);
+        Self->SetReadyToDestroy();
+      }
+    },
+  	[WeakThis](const FNakamaError& Error)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnError.Broadcast(Error);
+        Self->SetReadyToDestroy();
+      }
+    }
+  );
 }
 
-// BanGroupUsers
 UNakamaClientBanGroupUsers* UNakamaClientBanGroupUsers::BanGroupUsers(
-	UObject* WorldContextObject,
-	FNakamaClientConfig Client,
-	const FNakamaSession& Session,
-	FString GroupId,
-	const TArray<FString>& UserIds)
+  UObject* WorldContextObject
+  , FNakamaClientConfig ClientConfig
+  , const FNakamaSession& Session
+  , const FString& GroupId
+  , const TArray<FString>& UserIds
+)
 {
-	UNakamaClientBanGroupUsers* Action = NewObject<UNakamaClientBanGroupUsers>(GetTransientPackage());
-	Action->Client = Client;
-	Action->Session = Session;
-	Action->StoredGroupId = GroupId;
-	Action->StoredUserIds = UserIds;
-	Action->RegisterWithGameInstance(WorldContextObject);
-	return Action;
+  UNakamaClientBanGroupUsers* Action = NewObject<UNakamaClientBanGroupUsers>(GetTransientPackage());
+  Action->StoredClientConfig = ClientConfig;
+  Action->StoredSession = Session;
+  Action->StoredGroupId = GroupId;
+  Action->StoredUserIds = UserIds;
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
 }
 
 void UNakamaClientBanGroupUsers::Activate()
 {
-	static const TCHAR* TraceScope_BanGroupUsers = TEXT("NakamaBP_BanGroupUsers");
-	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_BanGroupUsers);
+  static const TCHAR* TraceScope_BanGroupUsers = TEXT("NakamaBP_BanGroupUsers");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_BanGroupUsers);
 
-	TWeakObjectPtr<UNakamaClientBanGroupUsers> WeakThis(this);
+  TWeakObjectPtr<UNakamaClientBanGroupUsers> WeakThis(this);
 
-	NakamaApi::BanGroupUsers(
-		Client,
-		Session,
-		StoredGroupId,
-		StoredUserIds,
-		[WeakThis]()
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnSuccess.Broadcast();
-				Self->SetReadyToDestroy();
-			}
-		},
-		[WeakThis](const FNakamaError& Error)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnError.Broadcast(Error);
-				Self->SetReadyToDestroy();
-			}
-		}
-	);
+  NakamaApi::BanGroupUsers(
+    StoredClientConfig,
+    Session,
+    GroupId,
+    UserIds,
+    [WeakThis]()
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnSuccess.Broadcast();
+        Self->SetReadyToDestroy();
+      }
+    },
+  	[WeakThis](const FNakamaError& Error)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnError.Broadcast(Error);
+        Self->SetReadyToDestroy();
+      }
+    }
+  );
 }
 
-// BlockFriends
 UNakamaClientBlockFriends* UNakamaClientBlockFriends::BlockFriends(
-	UObject* WorldContextObject,
-	FNakamaClientConfig Client,
-	const FNakamaSession& Session,
-	const TArray<FString>& Ids,
-	const TArray<FString>& Usernames)
+  UObject* WorldContextObject
+  , FNakamaClientConfig ClientConfig
+  , const FNakamaSession& Session
+  , const TArray<FString>& Ids
+  , const TArray<FString>& Usernames
+)
 {
-	UNakamaClientBlockFriends* Action = NewObject<UNakamaClientBlockFriends>(GetTransientPackage());
-	Action->Client = Client;
-	Action->Session = Session;
-	Action->StoredIds = Ids;
-	Action->StoredUsernames = Usernames;
-	Action->RegisterWithGameInstance(WorldContextObject);
-	return Action;
+  UNakamaClientBlockFriends* Action = NewObject<UNakamaClientBlockFriends>(GetTransientPackage());
+  Action->StoredClientConfig = ClientConfig;
+  Action->StoredSession = Session;
+  Action->StoredIds = Ids;
+  Action->StoredUsernames = Usernames;
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
 }
 
 void UNakamaClientBlockFriends::Activate()
 {
-	static const TCHAR* TraceScope_BlockFriends = TEXT("NakamaBP_BlockFriends");
-	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_BlockFriends);
+  static const TCHAR* TraceScope_BlockFriends = TEXT("NakamaBP_BlockFriends");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_BlockFriends);
 
-	TWeakObjectPtr<UNakamaClientBlockFriends> WeakThis(this);
+  TWeakObjectPtr<UNakamaClientBlockFriends> WeakThis(this);
 
-	NakamaApi::BlockFriends(
-		Client,
-		Session,
-		StoredIds,
-		StoredUsernames,
-		[WeakThis]()
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnSuccess.Broadcast();
-				Self->SetReadyToDestroy();
-			}
-		},
-		[WeakThis](const FNakamaError& Error)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnError.Broadcast(Error);
-				Self->SetReadyToDestroy();
-			}
-		}
-	);
+  NakamaApi::BlockFriends(
+    StoredClientConfig,
+    Session,
+    Ids,
+    Usernames,
+    [WeakThis]()
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnSuccess.Broadcast();
+        Self->SetReadyToDestroy();
+      }
+    },
+  	[WeakThis](const FNakamaError& Error)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnError.Broadcast(Error);
+        Self->SetReadyToDestroy();
+      }
+    }
+  );
 }
 
-// CreateGroup
 UNakamaClientCreateGroup* UNakamaClientCreateGroup::CreateGroup(
-	UObject* WorldContextObject,
-	FNakamaClientConfig Client,
-	const FNakamaSession& Session,
-	FString Name,
-	FString Description,
-	FString LangTag,
-	FString AvatarUrl,
-	bool Open,
-	int32 MaxCount)
+  UObject* WorldContextObject
+  , FNakamaClientConfig ClientConfig
+  , const FNakamaSession& Session
+  , const FString& Name
+  , const FString& Description
+  , const FString& LangTag
+  , const FString& AvatarUrl
+  , bool Open
+  , int32 MaxCount
+)
 {
-	UNakamaClientCreateGroup* Action = NewObject<UNakamaClientCreateGroup>(GetTransientPackage());
-	Action->Client = Client;
-	Action->Session = Session;
-	Action->StoredName = Name;
-	Action->StoredDescription = Description;
-	Action->StoredLangTag = LangTag;
-	Action->StoredAvatarUrl = AvatarUrl;
-	Action->StoredOpen = Open;
-	Action->StoredMaxCount = MaxCount;
-	Action->RegisterWithGameInstance(WorldContextObject);
-	return Action;
+  UNakamaClientCreateGroup* Action = NewObject<UNakamaClientCreateGroup>(GetTransientPackage());
+  Action->StoredClientConfig = ClientConfig;
+  Action->StoredSession = Session;
+  Action->StoredName = Name;
+  Action->StoredDescription = Description;
+  Action->StoredLangTag = LangTag;
+  Action->StoredAvatarUrl = AvatarUrl;
+  Action->StoredOpen = Open;
+  Action->StoredMaxCount = MaxCount;
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
 }
 
 void UNakamaClientCreateGroup::Activate()
 {
-	static const TCHAR* TraceScope_CreateGroup = TEXT("NakamaBP_CreateGroup");
-	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_CreateGroup);
+  static const TCHAR* TraceScope_CreateGroup = TEXT("NakamaBP_CreateGroup");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_CreateGroup);
 
-	TWeakObjectPtr<UNakamaClientCreateGroup> WeakThis(this);
+  TWeakObjectPtr<UNakamaClientCreateGroup> WeakThis(this);
 
-	NakamaApi::CreateGroup(
-		Client,
-		Session,
-		StoredName,
-		StoredDescription,
-		StoredLangTag,
-		StoredAvatarUrl,
-		StoredOpen,
-		StoredMaxCount,
-		[WeakThis](const FNakamaGroup& Result)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnSuccess.Broadcast(Result);
-				Self->SetReadyToDestroy();
-			}
-		},
-		[WeakThis](const FNakamaError& Error)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnError.Broadcast(Error);
-				Self->SetReadyToDestroy();
-			}
-		}
-	);
+  NakamaApi::CreateGroup(
+    StoredClientConfig,
+    Session,
+    Name,
+    Description,
+    LangTag,
+    AvatarUrl,
+    Open,
+    MaxCount,
+    [WeakThis](const FNakamaGroup& Result)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnSuccess.Broadcast(Result);
+        Self->SetReadyToDestroy();
+      }
+    },
+  	[WeakThis](const FNakamaError& Error)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnError.Broadcast(Error);
+        Self->SetReadyToDestroy();
+      }
+    }
+  );
 }
 
-// DeleteAccount
 UNakamaClientDeleteAccount* UNakamaClientDeleteAccount::DeleteAccount(
-	UObject* WorldContextObject,
-	FNakamaClientConfig Client,
-	const FNakamaSession& Session)
+  UObject* WorldContextObject
+  , FNakamaClientConfig ClientConfig
+  , const FNakamaSession& Session
+)
 {
-	UNakamaClientDeleteAccount* Action = NewObject<UNakamaClientDeleteAccount>(GetTransientPackage());
-	Action->Client = Client;
-	Action->Session = Session;
-	Action->RegisterWithGameInstance(WorldContextObject);
-	return Action;
+  UNakamaClientDeleteAccount* Action = NewObject<UNakamaClientDeleteAccount>(GetTransientPackage());
+  Action->StoredClientConfig = ClientConfig;
+  Action->StoredSession = Session;
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
 }
 
 void UNakamaClientDeleteAccount::Activate()
 {
-	static const TCHAR* TraceScope_DeleteAccount = TEXT("NakamaBP_DeleteAccount");
-	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_DeleteAccount);
+  static const TCHAR* TraceScope_DeleteAccount = TEXT("NakamaBP_DeleteAccount");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_DeleteAccount);
 
-	TWeakObjectPtr<UNakamaClientDeleteAccount> WeakThis(this);
+  TWeakObjectPtr<UNakamaClientDeleteAccount> WeakThis(this);
 
-	NakamaApi::DeleteAccount(
-		Client,
-		Session,
-		[WeakThis]()
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnSuccess.Broadcast();
-				Self->SetReadyToDestroy();
-			}
-		},
-		[WeakThis](const FNakamaError& Error)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnError.Broadcast(Error);
-				Self->SetReadyToDestroy();
-			}
-		}
-	);
+  NakamaApi::DeleteAccount(
+    StoredClientConfig,
+    Session,
+    [WeakThis]()
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnSuccess.Broadcast();
+        Self->SetReadyToDestroy();
+      }
+    },
+  	[WeakThis](const FNakamaError& Error)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnError.Broadcast(Error);
+        Self->SetReadyToDestroy();
+      }
+    }
+  );
 }
 
-// DeleteFriends
 UNakamaClientDeleteFriends* UNakamaClientDeleteFriends::DeleteFriends(
-	UObject* WorldContextObject,
-	FNakamaClientConfig Client,
-	const FNakamaSession& Session,
-	const TArray<FString>& Ids,
-	const TArray<FString>& Usernames)
+  UObject* WorldContextObject
+  , FNakamaClientConfig ClientConfig
+  , const FNakamaSession& Session
+  , const TArray<FString>& Ids
+  , const TArray<FString>& Usernames
+)
 {
-	UNakamaClientDeleteFriends* Action = NewObject<UNakamaClientDeleteFriends>(GetTransientPackage());
-	Action->Client = Client;
-	Action->Session = Session;
-	Action->StoredIds = Ids;
-	Action->StoredUsernames = Usernames;
-	Action->RegisterWithGameInstance(WorldContextObject);
-	return Action;
+  UNakamaClientDeleteFriends* Action = NewObject<UNakamaClientDeleteFriends>(GetTransientPackage());
+  Action->StoredClientConfig = ClientConfig;
+  Action->StoredSession = Session;
+  Action->StoredIds = Ids;
+  Action->StoredUsernames = Usernames;
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
 }
 
 void UNakamaClientDeleteFriends::Activate()
 {
-	static const TCHAR* TraceScope_DeleteFriends = TEXT("NakamaBP_DeleteFriends");
-	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_DeleteFriends);
+  static const TCHAR* TraceScope_DeleteFriends = TEXT("NakamaBP_DeleteFriends");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_DeleteFriends);
 
-	TWeakObjectPtr<UNakamaClientDeleteFriends> WeakThis(this);
+  TWeakObjectPtr<UNakamaClientDeleteFriends> WeakThis(this);
 
-	NakamaApi::DeleteFriends(
-		Client,
-		Session,
-		StoredIds,
-		StoredUsernames,
-		[WeakThis]()
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnSuccess.Broadcast();
-				Self->SetReadyToDestroy();
-			}
-		},
-		[WeakThis](const FNakamaError& Error)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnError.Broadcast(Error);
-				Self->SetReadyToDestroy();
-			}
-		}
-	);
+  NakamaApi::DeleteFriends(
+    StoredClientConfig,
+    Session,
+    Ids,
+    Usernames,
+    [WeakThis]()
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnSuccess.Broadcast();
+        Self->SetReadyToDestroy();
+      }
+    },
+  	[WeakThis](const FNakamaError& Error)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnError.Broadcast(Error);
+        Self->SetReadyToDestroy();
+      }
+    }
+  );
 }
 
-// DeleteGroup
 UNakamaClientDeleteGroup* UNakamaClientDeleteGroup::DeleteGroup(
-	UObject* WorldContextObject,
-	FNakamaClientConfig Client,
-	const FNakamaSession& Session,
-	FString GroupId)
+  UObject* WorldContextObject
+  , FNakamaClientConfig ClientConfig
+  , const FNakamaSession& Session
+  , const FString& GroupId
+)
 {
-	UNakamaClientDeleteGroup* Action = NewObject<UNakamaClientDeleteGroup>(GetTransientPackage());
-	Action->Client = Client;
-	Action->Session = Session;
-	Action->StoredGroupId = GroupId;
-	Action->RegisterWithGameInstance(WorldContextObject);
-	return Action;
+  UNakamaClientDeleteGroup* Action = NewObject<UNakamaClientDeleteGroup>(GetTransientPackage());
+  Action->StoredClientConfig = ClientConfig;
+  Action->StoredSession = Session;
+  Action->StoredGroupId = GroupId;
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
 }
 
 void UNakamaClientDeleteGroup::Activate()
 {
-	static const TCHAR* TraceScope_DeleteGroup = TEXT("NakamaBP_DeleteGroup");
-	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_DeleteGroup);
+  static const TCHAR* TraceScope_DeleteGroup = TEXT("NakamaBP_DeleteGroup");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_DeleteGroup);
 
-	TWeakObjectPtr<UNakamaClientDeleteGroup> WeakThis(this);
+  TWeakObjectPtr<UNakamaClientDeleteGroup> WeakThis(this);
 
-	NakamaApi::DeleteGroup(
-		Client,
-		Session,
-		StoredGroupId,
-		[WeakThis]()
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnSuccess.Broadcast();
-				Self->SetReadyToDestroy();
-			}
-		},
-		[WeakThis](const FNakamaError& Error)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnError.Broadcast(Error);
-				Self->SetReadyToDestroy();
-			}
-		}
-	);
+  NakamaApi::DeleteGroup(
+    StoredClientConfig,
+    Session,
+    GroupId,
+    [WeakThis]()
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnSuccess.Broadcast();
+        Self->SetReadyToDestroy();
+      }
+    },
+  	[WeakThis](const FNakamaError& Error)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnError.Broadcast(Error);
+        Self->SetReadyToDestroy();
+      }
+    }
+  );
 }
 
-// DeleteLeaderboardRecord
 UNakamaClientDeleteLeaderboardRecord* UNakamaClientDeleteLeaderboardRecord::DeleteLeaderboardRecord(
-	UObject* WorldContextObject,
-	FNakamaClientConfig Client,
-	const FNakamaSession& Session,
-	FString LeaderboardId)
+  UObject* WorldContextObject
+  , FNakamaClientConfig ClientConfig
+  , const FNakamaSession& Session
+  , const FString& LeaderboardId
+)
 {
-	UNakamaClientDeleteLeaderboardRecord* Action = NewObject<UNakamaClientDeleteLeaderboardRecord>(GetTransientPackage());
-	Action->Client = Client;
-	Action->Session = Session;
-	Action->StoredLeaderboardId = LeaderboardId;
-	Action->RegisterWithGameInstance(WorldContextObject);
-	return Action;
+  UNakamaClientDeleteLeaderboardRecord* Action = NewObject<UNakamaClientDeleteLeaderboardRecord>(GetTransientPackage());
+  Action->StoredClientConfig = ClientConfig;
+  Action->StoredSession = Session;
+  Action->StoredLeaderboardId = LeaderboardId;
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
 }
 
 void UNakamaClientDeleteLeaderboardRecord::Activate()
 {
-	static const TCHAR* TraceScope_DeleteLeaderboardRecord = TEXT("NakamaBP_DeleteLeaderboardRecord");
-	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_DeleteLeaderboardRecord);
+  static const TCHAR* TraceScope_DeleteLeaderboardRecord = TEXT("NakamaBP_DeleteLeaderboardRecord");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_DeleteLeaderboardRecord);
 
-	TWeakObjectPtr<UNakamaClientDeleteLeaderboardRecord> WeakThis(this);
+  TWeakObjectPtr<UNakamaClientDeleteLeaderboardRecord> WeakThis(this);
 
-	NakamaApi::DeleteLeaderboardRecord(
-		Client,
-		Session,
-		StoredLeaderboardId,
-		[WeakThis]()
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnSuccess.Broadcast();
-				Self->SetReadyToDestroy();
-			}
-		},
-		[WeakThis](const FNakamaError& Error)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnError.Broadcast(Error);
-				Self->SetReadyToDestroy();
-			}
-		}
-	);
+  NakamaApi::DeleteLeaderboardRecord(
+    StoredClientConfig,
+    Session,
+    LeaderboardId,
+    [WeakThis]()
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnSuccess.Broadcast();
+        Self->SetReadyToDestroy();
+      }
+    },
+  	[WeakThis](const FNakamaError& Error)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnError.Broadcast(Error);
+        Self->SetReadyToDestroy();
+      }
+    }
+  );
 }
 
-// DeleteNotifications
 UNakamaClientDeleteNotifications* UNakamaClientDeleteNotifications::DeleteNotifications(
-	UObject* WorldContextObject,
-	FNakamaClientConfig Client,
-	const FNakamaSession& Session,
-	const TArray<FString>& Ids)
+  UObject* WorldContextObject
+  , FNakamaClientConfig ClientConfig
+  , const FNakamaSession& Session
+  , const TArray<FString>& Ids
+)
 {
-	UNakamaClientDeleteNotifications* Action = NewObject<UNakamaClientDeleteNotifications>(GetTransientPackage());
-	Action->Client = Client;
-	Action->Session = Session;
-	Action->StoredIds = Ids;
-	Action->RegisterWithGameInstance(WorldContextObject);
-	return Action;
+  UNakamaClientDeleteNotifications* Action = NewObject<UNakamaClientDeleteNotifications>(GetTransientPackage());
+  Action->StoredClientConfig = ClientConfig;
+  Action->StoredSession = Session;
+  Action->StoredIds = Ids;
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
 }
 
 void UNakamaClientDeleteNotifications::Activate()
 {
-	static const TCHAR* TraceScope_DeleteNotifications = TEXT("NakamaBP_DeleteNotifications");
-	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_DeleteNotifications);
+  static const TCHAR* TraceScope_DeleteNotifications = TEXT("NakamaBP_DeleteNotifications");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_DeleteNotifications);
 
-	TWeakObjectPtr<UNakamaClientDeleteNotifications> WeakThis(this);
+  TWeakObjectPtr<UNakamaClientDeleteNotifications> WeakThis(this);
 
-	NakamaApi::DeleteNotifications(
-		Client,
-		Session,
-		StoredIds,
-		[WeakThis]()
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnSuccess.Broadcast();
-				Self->SetReadyToDestroy();
-			}
-		},
-		[WeakThis](const FNakamaError& Error)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnError.Broadcast(Error);
-				Self->SetReadyToDestroy();
-			}
-		}
-	);
+  NakamaApi::DeleteNotifications(
+    StoredClientConfig,
+    Session,
+    Ids,
+    [WeakThis]()
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnSuccess.Broadcast();
+        Self->SetReadyToDestroy();
+      }
+    },
+  	[WeakThis](const FNakamaError& Error)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnError.Broadcast(Error);
+        Self->SetReadyToDestroy();
+      }
+    }
+  );
 }
 
-// DeleteTournamentRecord
 UNakamaClientDeleteTournamentRecord* UNakamaClientDeleteTournamentRecord::DeleteTournamentRecord(
-	UObject* WorldContextObject,
-	FNakamaClientConfig Client,
-	const FNakamaSession& Session,
-	FString TournamentId)
+  UObject* WorldContextObject
+  , FNakamaClientConfig ClientConfig
+  , const FNakamaSession& Session
+  , const FString& TournamentId
+)
 {
-	UNakamaClientDeleteTournamentRecord* Action = NewObject<UNakamaClientDeleteTournamentRecord>(GetTransientPackage());
-	Action->Client = Client;
-	Action->Session = Session;
-	Action->StoredTournamentId = TournamentId;
-	Action->RegisterWithGameInstance(WorldContextObject);
-	return Action;
+  UNakamaClientDeleteTournamentRecord* Action = NewObject<UNakamaClientDeleteTournamentRecord>(GetTransientPackage());
+  Action->StoredClientConfig = ClientConfig;
+  Action->StoredSession = Session;
+  Action->StoredTournamentId = TournamentId;
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
 }
 
 void UNakamaClientDeleteTournamentRecord::Activate()
 {
-	static const TCHAR* TraceScope_DeleteTournamentRecord = TEXT("NakamaBP_DeleteTournamentRecord");
-	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_DeleteTournamentRecord);
+  static const TCHAR* TraceScope_DeleteTournamentRecord = TEXT("NakamaBP_DeleteTournamentRecord");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_DeleteTournamentRecord);
 
-	TWeakObjectPtr<UNakamaClientDeleteTournamentRecord> WeakThis(this);
+  TWeakObjectPtr<UNakamaClientDeleteTournamentRecord> WeakThis(this);
 
-	NakamaApi::DeleteTournamentRecord(
-		Client,
-		Session,
-		StoredTournamentId,
-		[WeakThis]()
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnSuccess.Broadcast();
-				Self->SetReadyToDestroy();
-			}
-		},
-		[WeakThis](const FNakamaError& Error)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnError.Broadcast(Error);
-				Self->SetReadyToDestroy();
-			}
-		}
-	);
+  NakamaApi::DeleteTournamentRecord(
+    StoredClientConfig,
+    Session,
+    TournamentId,
+    [WeakThis]()
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnSuccess.Broadcast();
+        Self->SetReadyToDestroy();
+      }
+    },
+  	[WeakThis](const FNakamaError& Error)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnError.Broadcast(Error);
+        Self->SetReadyToDestroy();
+      }
+    }
+  );
 }
 
-// DeleteStorageObjects
 UNakamaClientDeleteStorageObjects* UNakamaClientDeleteStorageObjects::DeleteStorageObjects(
-	UObject* WorldContextObject,
-	FNakamaClientConfig Client,
-	const FNakamaSession& Session,
-	const TArray<FNakamaDeleteStorageObjectId>& ObjectIds)
+  UObject* WorldContextObject
+  , FNakamaClientConfig ClientConfig
+  , const FNakamaSession& Session
+  , const TArray<FNakamaDeleteStorageObjectId>& ObjectIds
+)
 {
-	UNakamaClientDeleteStorageObjects* Action = NewObject<UNakamaClientDeleteStorageObjects>(GetTransientPackage());
-	Action->Client = Client;
-	Action->Session = Session;
-	Action->StoredObjectIds = ObjectIds;
-	Action->RegisterWithGameInstance(WorldContextObject);
-	return Action;
+  UNakamaClientDeleteStorageObjects* Action = NewObject<UNakamaClientDeleteStorageObjects>(GetTransientPackage());
+  Action->StoredClientConfig = ClientConfig;
+  Action->StoredSession = Session;
+  Action->StoredObjectIds = ObjectIds;
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
 }
 
 void UNakamaClientDeleteStorageObjects::Activate()
 {
-	static const TCHAR* TraceScope_DeleteStorageObjects = TEXT("NakamaBP_DeleteStorageObjects");
-	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_DeleteStorageObjects);
+  static const TCHAR* TraceScope_DeleteStorageObjects = TEXT("NakamaBP_DeleteStorageObjects");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_DeleteStorageObjects);
 
-	TWeakObjectPtr<UNakamaClientDeleteStorageObjects> WeakThis(this);
+  TWeakObjectPtr<UNakamaClientDeleteStorageObjects> WeakThis(this);
 
-	NakamaApi::DeleteStorageObjects(
-		Client,
-		Session,
-		StoredObjectIds,
-		[WeakThis]()
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnSuccess.Broadcast();
-				Self->SetReadyToDestroy();
-			}
-		},
-		[WeakThis](const FNakamaError& Error)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnError.Broadcast(Error);
-				Self->SetReadyToDestroy();
-			}
-		}
-	);
+  NakamaApi::DeleteStorageObjects(
+    StoredClientConfig,
+    Session,
+    ObjectIds,
+    [WeakThis]()
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnSuccess.Broadcast();
+        Self->SetReadyToDestroy();
+      }
+    },
+  	[WeakThis](const FNakamaError& Error)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnError.Broadcast(Error);
+        Self->SetReadyToDestroy();
+      }
+    }
+  );
 }
 
-// Event
 UNakamaClientEvent* UNakamaClientEvent::Event(
-	UObject* WorldContextObject,
-	FNakamaClientConfig Client,
-	const FNakamaSession& Session,
-	FString Name,
-	FString Timestamp,
-	bool External,
-	const TMap<FString, FString>& Properties)
+  UObject* WorldContextObject
+  , FNakamaClientConfig ClientConfig
+  , const FNakamaSession& Session
+  , const FString& Name
+  , const FString& Timestamp
+  , bool External
+  , const TMap<FString, FString>& Properties
+)
 {
-	UNakamaClientEvent* Action = NewObject<UNakamaClientEvent>(GetTransientPackage());
-	Action->Client = Client;
-	Action->Session = Session;
-	Action->StoredName = Name;
-	Action->StoredTimestamp = Timestamp;
-	Action->StoredExternal = External;
-	Action->StoredProperties = Properties;
-	Action->RegisterWithGameInstance(WorldContextObject);
-	return Action;
+  UNakamaClientEvent* Action = NewObject<UNakamaClientEvent>(GetTransientPackage());
+  Action->StoredClientConfig = ClientConfig;
+  Action->StoredSession = Session;
+  Action->StoredName = Name;
+  Action->StoredTimestamp = Timestamp;
+  Action->StoredExternal = External;
+  Action->StoredProperties = Properties;
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
 }
 
 void UNakamaClientEvent::Activate()
 {
-	static const TCHAR* TraceScope_Event = TEXT("NakamaBP_Event");
-	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_Event);
+  static const TCHAR* TraceScope_Event = TEXT("NakamaBP_Event");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_Event);
 
-	TWeakObjectPtr<UNakamaClientEvent> WeakThis(this);
+  TWeakObjectPtr<UNakamaClientEvent> WeakThis(this);
 
-	NakamaApi::Event(
-		Client,
-		Session,
-		StoredName,
-		StoredTimestamp,
-		StoredExternal,
-		StoredProperties,
-		[WeakThis]()
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnSuccess.Broadcast();
-				Self->SetReadyToDestroy();
-			}
-		},
-		[WeakThis](const FNakamaError& Error)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnError.Broadcast(Error);
-				Self->SetReadyToDestroy();
-			}
-		}
-	);
+  NakamaApi::Event(
+    StoredClientConfig,
+    Session,
+    Name,
+    Timestamp,
+    External,
+    Properties,
+    [WeakThis]()
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnSuccess.Broadcast();
+        Self->SetReadyToDestroy();
+      }
+    },
+  	[WeakThis](const FNakamaError& Error)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnError.Broadcast(Error);
+        Self->SetReadyToDestroy();
+      }
+    }
+  );
 }
 
-// GetAccount
 UNakamaClientGetAccount* UNakamaClientGetAccount::GetAccount(
-	UObject* WorldContextObject,
-	FNakamaClientConfig Client,
-	const FNakamaSession& Session)
+  UObject* WorldContextObject
+  , FNakamaClientConfig ClientConfig
+  , const FNakamaSession& Session
+)
 {
-	UNakamaClientGetAccount* Action = NewObject<UNakamaClientGetAccount>(GetTransientPackage());
-	Action->Client = Client;
-	Action->Session = Session;
-	Action->RegisterWithGameInstance(WorldContextObject);
-	return Action;
+  UNakamaClientGetAccount* Action = NewObject<UNakamaClientGetAccount>(GetTransientPackage());
+  Action->StoredClientConfig = ClientConfig;
+  Action->StoredSession = Session;
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
 }
 
 void UNakamaClientGetAccount::Activate()
 {
-	static const TCHAR* TraceScope_GetAccount = TEXT("NakamaBP_GetAccount");
-	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_GetAccount);
+  static const TCHAR* TraceScope_GetAccount = TEXT("NakamaBP_GetAccount");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_GetAccount);
 
-	TWeakObjectPtr<UNakamaClientGetAccount> WeakThis(this);
+  TWeakObjectPtr<UNakamaClientGetAccount> WeakThis(this);
 
-	NakamaApi::GetAccount(
-		Client,
-		Session,
-		[WeakThis](const FNakamaAccount& Result)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnSuccess.Broadcast(Result);
-				Self->SetReadyToDestroy();
-			}
-		},
-		[WeakThis](const FNakamaError& Error)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnError.Broadcast(Error);
-				Self->SetReadyToDestroy();
-			}
-		}
-	);
+  NakamaApi::GetAccount(
+    StoredClientConfig,
+    Session,
+    [WeakThis](const FNakamaAccount& Result)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnSuccess.Broadcast(Result);
+        Self->SetReadyToDestroy();
+      }
+    },
+  	[WeakThis](const FNakamaError& Error)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnError.Broadcast(Error);
+        Self->SetReadyToDestroy();
+      }
+    }
+  );
 }
 
-// GetUsers
 UNakamaClientGetUsers* UNakamaClientGetUsers::GetUsers(
-	UObject* WorldContextObject,
-	FNakamaClientConfig Client,
-	const FNakamaSession& Session,
-	const TArray<FString>& Ids,
-	const TArray<FString>& Usernames,
-	const TArray<FString>& FacebookIds)
+  UObject* WorldContextObject
+  , FNakamaClientConfig ClientConfig
+  , const FNakamaSession& Session
+  , const TArray<FString>& Ids
+  , const TArray<FString>& Usernames
+  , const TArray<FString>& FacebookIds
+)
 {
-	UNakamaClientGetUsers* Action = NewObject<UNakamaClientGetUsers>(GetTransientPackage());
-	Action->Client = Client;
-	Action->Session = Session;
-	Action->StoredIds = Ids;
-	Action->StoredUsernames = Usernames;
-	Action->StoredFacebookIds = FacebookIds;
-	Action->RegisterWithGameInstance(WorldContextObject);
-	return Action;
+  UNakamaClientGetUsers* Action = NewObject<UNakamaClientGetUsers>(GetTransientPackage());
+  Action->StoredClientConfig = ClientConfig;
+  Action->StoredSession = Session;
+  Action->StoredIds = Ids;
+  Action->StoredUsernames = Usernames;
+  Action->StoredFacebookIds = FacebookIds;
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
 }
 
 void UNakamaClientGetUsers::Activate()
 {
-	static const TCHAR* TraceScope_GetUsers = TEXT("NakamaBP_GetUsers");
-	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_GetUsers);
+  static const TCHAR* TraceScope_GetUsers = TEXT("NakamaBP_GetUsers");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_GetUsers);
 
-	TWeakObjectPtr<UNakamaClientGetUsers> WeakThis(this);
+  TWeakObjectPtr<UNakamaClientGetUsers> WeakThis(this);
 
-	NakamaApi::GetUsers(
-		Client,
-		Session,
-		StoredIds,
-		StoredUsernames,
-		StoredFacebookIds,
-		[WeakThis](const FNakamaUsers& Result)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnSuccess.Broadcast(Result);
-				Self->SetReadyToDestroy();
-			}
-		},
-		[WeakThis](const FNakamaError& Error)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnError.Broadcast(Error);
-				Self->SetReadyToDestroy();
-			}
-		}
-	);
+  NakamaApi::GetUsers(
+    StoredClientConfig,
+    Session,
+    Ids,
+    Usernames,
+    FacebookIds,
+    [WeakThis](const FNakamaUsers& Result)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnSuccess.Broadcast(Result);
+        Self->SetReadyToDestroy();
+      }
+    },
+  	[WeakThis](const FNakamaError& Error)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnError.Broadcast(Error);
+        Self->SetReadyToDestroy();
+      }
+    }
+  );
 }
 
-// GetSubscription
 UNakamaClientGetSubscription* UNakamaClientGetSubscription::GetSubscription(
-	UObject* WorldContextObject,
-	FNakamaClientConfig Client,
-	const FNakamaSession& Session,
-	FString ProductId)
+  UObject* WorldContextObject
+  , FNakamaClientConfig ClientConfig
+  , const FNakamaSession& Session
+  , const FString& ProductId
+)
 {
-	UNakamaClientGetSubscription* Action = NewObject<UNakamaClientGetSubscription>(GetTransientPackage());
-	Action->Client = Client;
-	Action->Session = Session;
-	Action->StoredProductId = ProductId;
-	Action->RegisterWithGameInstance(WorldContextObject);
-	return Action;
+  UNakamaClientGetSubscription* Action = NewObject<UNakamaClientGetSubscription>(GetTransientPackage());
+  Action->StoredClientConfig = ClientConfig;
+  Action->StoredSession = Session;
+  Action->StoredProductId = ProductId;
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
 }
 
 void UNakamaClientGetSubscription::Activate()
 {
-	static const TCHAR* TraceScope_GetSubscription = TEXT("NakamaBP_GetSubscription");
-	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_GetSubscription);
+  static const TCHAR* TraceScope_GetSubscription = TEXT("NakamaBP_GetSubscription");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_GetSubscription);
 
-	TWeakObjectPtr<UNakamaClientGetSubscription> WeakThis(this);
+  TWeakObjectPtr<UNakamaClientGetSubscription> WeakThis(this);
 
-	NakamaApi::GetSubscription(
-		Client,
-		Session,
-		StoredProductId,
-		[WeakThis](const FNakamaValidatedSubscription& Result)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnSuccess.Broadcast(Result);
-				Self->SetReadyToDestroy();
-			}
-		},
-		[WeakThis](const FNakamaError& Error)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnError.Broadcast(Error);
-				Self->SetReadyToDestroy();
-			}
-		}
-	);
+  NakamaApi::GetSubscription(
+    StoredClientConfig,
+    Session,
+    ProductId,
+    [WeakThis](const FNakamaValidatedSubscription& Result)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnSuccess.Broadcast(Result);
+        Self->SetReadyToDestroy();
+      }
+    },
+  	[WeakThis](const FNakamaError& Error)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnError.Broadcast(Error);
+        Self->SetReadyToDestroy();
+      }
+    }
+  );
 }
 
-// GetMatchmakerStats
 UNakamaClientGetMatchmakerStats* UNakamaClientGetMatchmakerStats::GetMatchmakerStats(
-	UObject* WorldContextObject,
-	FNakamaClientConfig Client,
-	const FNakamaSession& Session)
+  UObject* WorldContextObject
+  , FNakamaClientConfig ClientConfig
+  , const FNakamaSession& Session
+)
 {
-	UNakamaClientGetMatchmakerStats* Action = NewObject<UNakamaClientGetMatchmakerStats>(GetTransientPackage());
-	Action->Client = Client;
-	Action->Session = Session;
-	Action->RegisterWithGameInstance(WorldContextObject);
-	return Action;
+  UNakamaClientGetMatchmakerStats* Action = NewObject<UNakamaClientGetMatchmakerStats>(GetTransientPackage());
+  Action->StoredClientConfig = ClientConfig;
+  Action->StoredSession = Session;
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
 }
 
 void UNakamaClientGetMatchmakerStats::Activate()
 {
-	static const TCHAR* TraceScope_GetMatchmakerStats = TEXT("NakamaBP_GetMatchmakerStats");
-	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_GetMatchmakerStats);
+  static const TCHAR* TraceScope_GetMatchmakerStats = TEXT("NakamaBP_GetMatchmakerStats");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_GetMatchmakerStats);
 
-	TWeakObjectPtr<UNakamaClientGetMatchmakerStats> WeakThis(this);
+  TWeakObjectPtr<UNakamaClientGetMatchmakerStats> WeakThis(this);
 
-	NakamaApi::GetMatchmakerStats(
-		Client,
-		Session,
-		[WeakThis](const FNakamaMatchmakerStats& Result)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnSuccess.Broadcast(Result);
-				Self->SetReadyToDestroy();
-			}
-		},
-		[WeakThis](const FNakamaError& Error)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnError.Broadcast(Error);
-				Self->SetReadyToDestroy();
-			}
-		}
-	);
+  NakamaApi::GetMatchmakerStats(
+    StoredClientConfig,
+    Session,
+    [WeakThis](const FNakamaMatchmakerStats& Result)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnSuccess.Broadcast(Result);
+        Self->SetReadyToDestroy();
+      }
+    },
+  	[WeakThis](const FNakamaError& Error)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnError.Broadcast(Error);
+        Self->SetReadyToDestroy();
+      }
+    }
+  );
 }
 
-// Healthcheck
 UNakamaClientHealthcheck* UNakamaClientHealthcheck::Healthcheck(
-	UObject* WorldContextObject,
-	FNakamaClientConfig Client,
-	const FNakamaSession& Session)
+  UObject* WorldContextObject
+  , FNakamaClientConfig ClientConfig
+  , const FNakamaSession& Session
+)
 {
-	UNakamaClientHealthcheck* Action = NewObject<UNakamaClientHealthcheck>(GetTransientPackage());
-	Action->Client = Client;
-	Action->Session = Session;
-	Action->RegisterWithGameInstance(WorldContextObject);
-	return Action;
+  UNakamaClientHealthcheck* Action = NewObject<UNakamaClientHealthcheck>(GetTransientPackage());
+  Action->StoredClientConfig = ClientConfig;
+  Action->StoredSession = Session;
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
 }
 
 void UNakamaClientHealthcheck::Activate()
 {
-	static const TCHAR* TraceScope_Healthcheck = TEXT("NakamaBP_Healthcheck");
-	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_Healthcheck);
+  static const TCHAR* TraceScope_Healthcheck = TEXT("NakamaBP_Healthcheck");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_Healthcheck);
 
-	TWeakObjectPtr<UNakamaClientHealthcheck> WeakThis(this);
+  TWeakObjectPtr<UNakamaClientHealthcheck> WeakThis(this);
 
-	NakamaApi::Healthcheck(
-		Client,
-		Session,
-		[WeakThis]()
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnSuccess.Broadcast();
-				Self->SetReadyToDestroy();
-			}
-		},
-		[WeakThis](const FNakamaError& Error)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnError.Broadcast(Error);
-				Self->SetReadyToDestroy();
-			}
-		}
-	);
+  NakamaApi::Healthcheck(
+    StoredClientConfig,
+    Session,
+    [WeakThis]()
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnSuccess.Broadcast();
+        Self->SetReadyToDestroy();
+      }
+    },
+  	[WeakThis](const FNakamaError& Error)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnError.Broadcast(Error);
+        Self->SetReadyToDestroy();
+      }
+    }
+  );
 }
 
-// ImportFacebookFriends
 UNakamaClientImportFacebookFriends* UNakamaClientImportFacebookFriends::ImportFacebookFriends(
-	UObject* WorldContextObject,
-	FNakamaClientConfig Client,
-	const FNakamaSession& Session,
-	FString Token,
-	bool Reset,
-	const TMap<FString, FString>& Vars)
+  UObject* WorldContextObject
+  , FNakamaClientConfig ClientConfig
+  , const FNakamaSession& Session
+  , const FNakamaAccountFacebook& Account
+  , bool Reset
+)
 {
-	UNakamaClientImportFacebookFriends* Action = NewObject<UNakamaClientImportFacebookFriends>(GetTransientPackage());
-	Action->Client = Client;
-	Action->Session = Session;
-	Action->StoredToken = Token;
-	Action->StoredVars = Vars;
-	Action->StoredReset = Reset;
-	Action->RegisterWithGameInstance(WorldContextObject);
-	return Action;
+  UNakamaClientImportFacebookFriends* Action = NewObject<UNakamaClientImportFacebookFriends>(GetTransientPackage());
+  Action->StoredClientConfig = ClientConfig;
+  Action->StoredSession = Session;
+  Action->StoredAccount = Account;
+  Action->StoredReset = Reset;
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
 }
 
 void UNakamaClientImportFacebookFriends::Activate()
 {
-	static const TCHAR* TraceScope_ImportFacebookFriends = TEXT("NakamaBP_ImportFacebookFriends");
-	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ImportFacebookFriends);
+  static const TCHAR* TraceScope_ImportFacebookFriends = TEXT("NakamaBP_ImportFacebookFriends");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ImportFacebookFriends);
 
-	TWeakObjectPtr<UNakamaClientImportFacebookFriends> WeakThis(this);
-	FNakamaAccountFacebook StoredAccount;
-	StoredAccount.Token = StoredToken;
-	StoredAccount.Vars = StoredVars;
+  TWeakObjectPtr<UNakamaClientImportFacebookFriends> WeakThis(this);
 
-	NakamaApi::ImportFacebookFriends(
-		Client,
-		Session,
-		StoredAccount,
-		StoredReset,
-		[WeakThis]()
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnSuccess.Broadcast();
-				Self->SetReadyToDestroy();
-			}
-		},
-		[WeakThis](const FNakamaError& Error)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnError.Broadcast(Error);
-				Self->SetReadyToDestroy();
-			}
-		}
-	);
+  NakamaApi::ImportFacebookFriends(
+    StoredClientConfig,
+    Session,
+    Account,
+    Reset,
+    [WeakThis]()
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnSuccess.Broadcast();
+        Self->SetReadyToDestroy();
+      }
+    },
+  	[WeakThis](const FNakamaError& Error)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnError.Broadcast(Error);
+        Self->SetReadyToDestroy();
+      }
+    }
+  );
 }
 
-// ImportSteamFriends
 UNakamaClientImportSteamFriends* UNakamaClientImportSteamFriends::ImportSteamFriends(
-	UObject* WorldContextObject,
-	FNakamaClientConfig Client,
-	const FNakamaSession& Session,
-	FString Token,
-	bool Reset,
-	const TMap<FString, FString>& Vars)
+  UObject* WorldContextObject
+  , FNakamaClientConfig ClientConfig
+  , const FNakamaSession& Session
+  , const FNakamaAccountSteam& Account
+  , bool Reset
+)
 {
-	UNakamaClientImportSteamFriends* Action = NewObject<UNakamaClientImportSteamFriends>(GetTransientPackage());
-	Action->Client = Client;
-	Action->Session = Session;
-	Action->StoredToken = Token;
-	Action->StoredVars = Vars;
-	Action->StoredReset = Reset;
-	Action->RegisterWithGameInstance(WorldContextObject);
-	return Action;
+  UNakamaClientImportSteamFriends* Action = NewObject<UNakamaClientImportSteamFriends>(GetTransientPackage());
+  Action->StoredClientConfig = ClientConfig;
+  Action->StoredSession = Session;
+  Action->StoredAccount = Account;
+  Action->StoredReset = Reset;
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
 }
 
 void UNakamaClientImportSteamFriends::Activate()
 {
-	static const TCHAR* TraceScope_ImportSteamFriends = TEXT("NakamaBP_ImportSteamFriends");
-	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ImportSteamFriends);
+  static const TCHAR* TraceScope_ImportSteamFriends = TEXT("NakamaBP_ImportSteamFriends");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ImportSteamFriends);
 
-	TWeakObjectPtr<UNakamaClientImportSteamFriends> WeakThis(this);
-	FNakamaAccountSteam StoredAccount;
-	StoredAccount.Token = StoredToken;
-	StoredAccount.Vars = StoredVars;
+  TWeakObjectPtr<UNakamaClientImportSteamFriends> WeakThis(this);
 
-	NakamaApi::ImportSteamFriends(
-		Client,
-		Session,
-		StoredAccount,
-		StoredReset,
-		[WeakThis]()
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnSuccess.Broadcast();
-				Self->SetReadyToDestroy();
-			}
-		},
-		[WeakThis](const FNakamaError& Error)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnError.Broadcast(Error);
-				Self->SetReadyToDestroy();
-			}
-		}
-	);
+  NakamaApi::ImportSteamFriends(
+    StoredClientConfig,
+    Session,
+    Account,
+    Reset,
+    [WeakThis]()
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnSuccess.Broadcast();
+        Self->SetReadyToDestroy();
+      }
+    },
+  	[WeakThis](const FNakamaError& Error)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnError.Broadcast(Error);
+        Self->SetReadyToDestroy();
+      }
+    }
+  );
 }
 
-// JoinGroup
 UNakamaClientJoinGroup* UNakamaClientJoinGroup::JoinGroup(
-	UObject* WorldContextObject,
-	FNakamaClientConfig Client,
-	const FNakamaSession& Session,
-	FString GroupId)
+  UObject* WorldContextObject
+  , FNakamaClientConfig ClientConfig
+  , const FNakamaSession& Session
+  , const FString& GroupId
+)
 {
-	UNakamaClientJoinGroup* Action = NewObject<UNakamaClientJoinGroup>(GetTransientPackage());
-	Action->Client = Client;
-	Action->Session = Session;
-	Action->StoredGroupId = GroupId;
-	Action->RegisterWithGameInstance(WorldContextObject);
-	return Action;
+  UNakamaClientJoinGroup* Action = NewObject<UNakamaClientJoinGroup>(GetTransientPackage());
+  Action->StoredClientConfig = ClientConfig;
+  Action->StoredSession = Session;
+  Action->StoredGroupId = GroupId;
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
 }
 
 void UNakamaClientJoinGroup::Activate()
 {
-	static const TCHAR* TraceScope_JoinGroup = TEXT("NakamaBP_JoinGroup");
-	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_JoinGroup);
+  static const TCHAR* TraceScope_JoinGroup = TEXT("NakamaBP_JoinGroup");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_JoinGroup);
 
-	TWeakObjectPtr<UNakamaClientJoinGroup> WeakThis(this);
+  TWeakObjectPtr<UNakamaClientJoinGroup> WeakThis(this);
 
-	NakamaApi::JoinGroup(
-		Client,
-		Session,
-		StoredGroupId,
-		[WeakThis]()
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnSuccess.Broadcast();
-				Self->SetReadyToDestroy();
-			}
-		},
-		[WeakThis](const FNakamaError& Error)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnError.Broadcast(Error);
-				Self->SetReadyToDestroy();
-			}
-		}
-	);
+  NakamaApi::JoinGroup(
+    StoredClientConfig,
+    Session,
+    GroupId,
+    [WeakThis]()
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnSuccess.Broadcast();
+        Self->SetReadyToDestroy();
+      }
+    },
+  	[WeakThis](const FNakamaError& Error)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnError.Broadcast(Error);
+        Self->SetReadyToDestroy();
+      }
+    }
+  );
 }
 
-// JoinTournament
 UNakamaClientJoinTournament* UNakamaClientJoinTournament::JoinTournament(
-	UObject* WorldContextObject,
-	FNakamaClientConfig Client,
-	const FNakamaSession& Session,
-	FString TournamentId)
+  UObject* WorldContextObject
+  , FNakamaClientConfig ClientConfig
+  , const FNakamaSession& Session
+  , const FString& TournamentId
+)
 {
-	UNakamaClientJoinTournament* Action = NewObject<UNakamaClientJoinTournament>(GetTransientPackage());
-	Action->Client = Client;
-	Action->Session = Session;
-	Action->StoredTournamentId = TournamentId;
-	Action->RegisterWithGameInstance(WorldContextObject);
-	return Action;
+  UNakamaClientJoinTournament* Action = NewObject<UNakamaClientJoinTournament>(GetTransientPackage());
+  Action->StoredClientConfig = ClientConfig;
+  Action->StoredSession = Session;
+  Action->StoredTournamentId = TournamentId;
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
 }
 
 void UNakamaClientJoinTournament::Activate()
 {
-	static const TCHAR* TraceScope_JoinTournament = TEXT("NakamaBP_JoinTournament");
-	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_JoinTournament);
+  static const TCHAR* TraceScope_JoinTournament = TEXT("NakamaBP_JoinTournament");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_JoinTournament);
 
-	TWeakObjectPtr<UNakamaClientJoinTournament> WeakThis(this);
+  TWeakObjectPtr<UNakamaClientJoinTournament> WeakThis(this);
 
-	NakamaApi::JoinTournament(
-		Client,
-		Session,
-		StoredTournamentId,
-		[WeakThis]()
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnSuccess.Broadcast();
-				Self->SetReadyToDestroy();
-			}
-		},
-		[WeakThis](const FNakamaError& Error)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnError.Broadcast(Error);
-				Self->SetReadyToDestroy();
-			}
-		}
-	);
+  NakamaApi::JoinTournament(
+    StoredClientConfig,
+    Session,
+    TournamentId,
+    [WeakThis]()
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnSuccess.Broadcast();
+        Self->SetReadyToDestroy();
+      }
+    },
+  	[WeakThis](const FNakamaError& Error)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnError.Broadcast(Error);
+        Self->SetReadyToDestroy();
+      }
+    }
+  );
 }
 
-// KickGroupUsers
 UNakamaClientKickGroupUsers* UNakamaClientKickGroupUsers::KickGroupUsers(
-	UObject* WorldContextObject,
-	FNakamaClientConfig Client,
-	const FNakamaSession& Session,
-	FString GroupId,
-	const TArray<FString>& UserIds)
+  UObject* WorldContextObject
+  , FNakamaClientConfig ClientConfig
+  , const FNakamaSession& Session
+  , const FString& GroupId
+  , const TArray<FString>& UserIds
+)
 {
-	UNakamaClientKickGroupUsers* Action = NewObject<UNakamaClientKickGroupUsers>(GetTransientPackage());
-	Action->Client = Client;
-	Action->Session = Session;
-	Action->StoredGroupId = GroupId;
-	Action->StoredUserIds = UserIds;
-	Action->RegisterWithGameInstance(WorldContextObject);
-	return Action;
+  UNakamaClientKickGroupUsers* Action = NewObject<UNakamaClientKickGroupUsers>(GetTransientPackage());
+  Action->StoredClientConfig = ClientConfig;
+  Action->StoredSession = Session;
+  Action->StoredGroupId = GroupId;
+  Action->StoredUserIds = UserIds;
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
 }
 
 void UNakamaClientKickGroupUsers::Activate()
 {
-	static const TCHAR* TraceScope_KickGroupUsers = TEXT("NakamaBP_KickGroupUsers");
-	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_KickGroupUsers);
+  static const TCHAR* TraceScope_KickGroupUsers = TEXT("NakamaBP_KickGroupUsers");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_KickGroupUsers);
 
-	TWeakObjectPtr<UNakamaClientKickGroupUsers> WeakThis(this);
+  TWeakObjectPtr<UNakamaClientKickGroupUsers> WeakThis(this);
 
-	NakamaApi::KickGroupUsers(
-		Client,
-		Session,
-		StoredGroupId,
-		StoredUserIds,
-		[WeakThis]()
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnSuccess.Broadcast();
-				Self->SetReadyToDestroy();
-			}
-		},
-		[WeakThis](const FNakamaError& Error)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnError.Broadcast(Error);
-				Self->SetReadyToDestroy();
-			}
-		}
-	);
+  NakamaApi::KickGroupUsers(
+    StoredClientConfig,
+    Session,
+    GroupId,
+    UserIds,
+    [WeakThis]()
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnSuccess.Broadcast();
+        Self->SetReadyToDestroy();
+      }
+    },
+  	[WeakThis](const FNakamaError& Error)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnError.Broadcast(Error);
+        Self->SetReadyToDestroy();
+      }
+    }
+  );
 }
 
-// LeaveGroup
 UNakamaClientLeaveGroup* UNakamaClientLeaveGroup::LeaveGroup(
-	UObject* WorldContextObject,
-	FNakamaClientConfig Client,
-	const FNakamaSession& Session,
-	FString GroupId)
+  UObject* WorldContextObject
+  , FNakamaClientConfig ClientConfig
+  , const FNakamaSession& Session
+  , const FString& GroupId
+)
 {
-	UNakamaClientLeaveGroup* Action = NewObject<UNakamaClientLeaveGroup>(GetTransientPackage());
-	Action->Client = Client;
-	Action->Session = Session;
-	Action->StoredGroupId = GroupId;
-	Action->RegisterWithGameInstance(WorldContextObject);
-	return Action;
+  UNakamaClientLeaveGroup* Action = NewObject<UNakamaClientLeaveGroup>(GetTransientPackage());
+  Action->StoredClientConfig = ClientConfig;
+  Action->StoredSession = Session;
+  Action->StoredGroupId = GroupId;
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
 }
 
 void UNakamaClientLeaveGroup::Activate()
 {
-	static const TCHAR* TraceScope_LeaveGroup = TEXT("NakamaBP_LeaveGroup");
-	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_LeaveGroup);
+  static const TCHAR* TraceScope_LeaveGroup = TEXT("NakamaBP_LeaveGroup");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_LeaveGroup);
 
-	TWeakObjectPtr<UNakamaClientLeaveGroup> WeakThis(this);
+  TWeakObjectPtr<UNakamaClientLeaveGroup> WeakThis(this);
 
-	NakamaApi::LeaveGroup(
-		Client,
-		Session,
-		StoredGroupId,
-		[WeakThis]()
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnSuccess.Broadcast();
-				Self->SetReadyToDestroy();
-			}
-		},
-		[WeakThis](const FNakamaError& Error)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnError.Broadcast(Error);
-				Self->SetReadyToDestroy();
-			}
-		}
-	);
+  NakamaApi::LeaveGroup(
+    StoredClientConfig,
+    Session,
+    GroupId,
+    [WeakThis]()
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnSuccess.Broadcast();
+        Self->SetReadyToDestroy();
+      }
+    },
+  	[WeakThis](const FNakamaError& Error)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnError.Broadcast(Error);
+        Self->SetReadyToDestroy();
+      }
+    }
+  );
 }
 
-// LinkApple
 UNakamaClientLinkApple* UNakamaClientLinkApple::LinkApple(
-	UObject* WorldContextObject,
-	FNakamaClientConfig Client,
-	const FNakamaSession& Session,
-	FString Token,
-	const TMap<FString, FString>& Vars)
+  UObject* WorldContextObject
+  , FNakamaClientConfig ClientConfig
+  , const FNakamaSession& Session
+  , const FString& Token
+  , const TMap<FString, FString>& Vars
+)
 {
-	UNakamaClientLinkApple* Action = NewObject<UNakamaClientLinkApple>(GetTransientPackage());
-	Action->Client = Client;
-	Action->Session = Session;
-	Action->StoredToken = Token;
-	Action->StoredVars = Vars;
-	Action->RegisterWithGameInstance(WorldContextObject);
-	return Action;
+  UNakamaClientLinkApple* Action = NewObject<UNakamaClientLinkApple>(GetTransientPackage());
+  Action->StoredClientConfig = ClientConfig;
+  Action->StoredSession = Session;
+  Action->StoredToken = Token;
+  Action->StoredVars = Vars;
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
 }
 
 void UNakamaClientLinkApple::Activate()
 {
-	static const TCHAR* TraceScope_LinkApple = TEXT("NakamaBP_LinkApple");
-	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_LinkApple);
+  static const TCHAR* TraceScope_LinkApple = TEXT("NakamaBP_LinkApple");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_LinkApple);
 
-	TWeakObjectPtr<UNakamaClientLinkApple> WeakThis(this);
+  TWeakObjectPtr<UNakamaClientLinkApple> WeakThis(this);
 
-	NakamaApi::LinkApple(
-		Client,
-		Session,
-		StoredToken,
-		StoredVars,
-		[WeakThis]()
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnSuccess.Broadcast();
-				Self->SetReadyToDestroy();
-			}
-		},
-		[WeakThis](const FNakamaError& Error)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnError.Broadcast(Error);
-				Self->SetReadyToDestroy();
-			}
-		}
-	);
+  NakamaApi::LinkApple(
+    StoredClientConfig,
+    Session,
+    Token,
+    Vars,
+    [WeakThis]()
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnSuccess.Broadcast();
+        Self->SetReadyToDestroy();
+      }
+    },
+  	[WeakThis](const FNakamaError& Error)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnError.Broadcast(Error);
+        Self->SetReadyToDestroy();
+      }
+    }
+  );
 }
 
-// LinkCustom
 UNakamaClientLinkCustom* UNakamaClientLinkCustom::LinkCustom(
-	UObject* WorldContextObject,
-	FNakamaClientConfig Client,
-	const FNakamaSession& Session,
-	FString Id,
-	const TMap<FString, FString>& Vars)
+  UObject* WorldContextObject
+  , FNakamaClientConfig ClientConfig
+  , const FNakamaSession& Session
+  , const FString& Id
+  , const TMap<FString, FString>& Vars
+)
 {
-	UNakamaClientLinkCustom* Action = NewObject<UNakamaClientLinkCustom>(GetTransientPackage());
-	Action->Client = Client;
-	Action->Session = Session;
-	Action->StoredId = Id;
-	Action->StoredVars = Vars;
-	Action->RegisterWithGameInstance(WorldContextObject);
-	return Action;
+  UNakamaClientLinkCustom* Action = NewObject<UNakamaClientLinkCustom>(GetTransientPackage());
+  Action->StoredClientConfig = ClientConfig;
+  Action->StoredSession = Session;
+  Action->StoredId = Id;
+  Action->StoredVars = Vars;
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
 }
 
 void UNakamaClientLinkCustom::Activate()
 {
-	static const TCHAR* TraceScope_LinkCustom = TEXT("NakamaBP_LinkCustom");
-	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_LinkCustom);
+  static const TCHAR* TraceScope_LinkCustom = TEXT("NakamaBP_LinkCustom");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_LinkCustom);
 
-	TWeakObjectPtr<UNakamaClientLinkCustom> WeakThis(this);
+  TWeakObjectPtr<UNakamaClientLinkCustom> WeakThis(this);
 
-	NakamaApi::LinkCustom(
-		Client,
-		Session,
-		StoredId,
-		StoredVars,
-		[WeakThis]()
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnSuccess.Broadcast();
-				Self->SetReadyToDestroy();
-			}
-		},
-		[WeakThis](const FNakamaError& Error)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnError.Broadcast(Error);
-				Self->SetReadyToDestroy();
-			}
-		}
-	);
+  NakamaApi::LinkCustom(
+    StoredClientConfig,
+    Session,
+    Id,
+    Vars,
+    [WeakThis]()
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnSuccess.Broadcast();
+        Self->SetReadyToDestroy();
+      }
+    },
+  	[WeakThis](const FNakamaError& Error)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnError.Broadcast(Error);
+        Self->SetReadyToDestroy();
+      }
+    }
+  );
 }
 
-// LinkDevice
 UNakamaClientLinkDevice* UNakamaClientLinkDevice::LinkDevice(
-	UObject* WorldContextObject,
-	FNakamaClientConfig Client,
-	const FNakamaSession& Session,
-	FString Id,
-	const TMap<FString, FString>& Vars)
+  UObject* WorldContextObject
+  , FNakamaClientConfig ClientConfig
+  , const FNakamaSession& Session
+  , const FString& Id
+  , const TMap<FString, FString>& Vars
+)
 {
-	UNakamaClientLinkDevice* Action = NewObject<UNakamaClientLinkDevice>(GetTransientPackage());
-	Action->Client = Client;
-	Action->Session = Session;
-	Action->StoredId = Id;
-	Action->StoredVars = Vars;
-	Action->RegisterWithGameInstance(WorldContextObject);
-	return Action;
+  UNakamaClientLinkDevice* Action = NewObject<UNakamaClientLinkDevice>(GetTransientPackage());
+  Action->StoredClientConfig = ClientConfig;
+  Action->StoredSession = Session;
+  Action->StoredId = Id;
+  Action->StoredVars = Vars;
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
 }
 
 void UNakamaClientLinkDevice::Activate()
 {
-	static const TCHAR* TraceScope_LinkDevice = TEXT("NakamaBP_LinkDevice");
-	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_LinkDevice);
+  static const TCHAR* TraceScope_LinkDevice = TEXT("NakamaBP_LinkDevice");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_LinkDevice);
 
-	TWeakObjectPtr<UNakamaClientLinkDevice> WeakThis(this);
+  TWeakObjectPtr<UNakamaClientLinkDevice> WeakThis(this);
 
-	NakamaApi::LinkDevice(
-		Client,
-		Session,
-		StoredId,
-		StoredVars,
-		[WeakThis]()
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnSuccess.Broadcast();
-				Self->SetReadyToDestroy();
-			}
-		},
-		[WeakThis](const FNakamaError& Error)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnError.Broadcast(Error);
-				Self->SetReadyToDestroy();
-			}
-		}
-	);
+  NakamaApi::LinkDevice(
+    StoredClientConfig,
+    Session,
+    Id,
+    Vars,
+    [WeakThis]()
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnSuccess.Broadcast();
+        Self->SetReadyToDestroy();
+      }
+    },
+  	[WeakThis](const FNakamaError& Error)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnError.Broadcast(Error);
+        Self->SetReadyToDestroy();
+      }
+    }
+  );
 }
 
-// LinkEmail
 UNakamaClientLinkEmail* UNakamaClientLinkEmail::LinkEmail(
-	UObject* WorldContextObject,
-	FNakamaClientConfig Client,
-	const FNakamaSession& Session,
-	FString Email,
-	FString Password,
-	const TMap<FString, FString>& Vars)
+  UObject* WorldContextObject
+  , FNakamaClientConfig ClientConfig
+  , const FNakamaSession& Session
+  , const FString& Email
+  , const FString& Password
+  , const TMap<FString, FString>& Vars
+)
 {
-	UNakamaClientLinkEmail* Action = NewObject<UNakamaClientLinkEmail>(GetTransientPackage());
-	Action->Client = Client;
-	Action->Session = Session;
-	Action->StoredEmail = Email;
-	Action->StoredPassword = Password;
-	Action->StoredVars = Vars;
-	Action->RegisterWithGameInstance(WorldContextObject);
-	return Action;
+  UNakamaClientLinkEmail* Action = NewObject<UNakamaClientLinkEmail>(GetTransientPackage());
+  Action->StoredClientConfig = ClientConfig;
+  Action->StoredSession = Session;
+  Action->StoredEmail = Email;
+  Action->StoredPassword = Password;
+  Action->StoredVars = Vars;
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
 }
 
 void UNakamaClientLinkEmail::Activate()
 {
-	static const TCHAR* TraceScope_LinkEmail = TEXT("NakamaBP_LinkEmail");
-	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_LinkEmail);
+  static const TCHAR* TraceScope_LinkEmail = TEXT("NakamaBP_LinkEmail");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_LinkEmail);
 
-	TWeakObjectPtr<UNakamaClientLinkEmail> WeakThis(this);
+  TWeakObjectPtr<UNakamaClientLinkEmail> WeakThis(this);
 
-	NakamaApi::LinkEmail(
-		Client,
-		Session,
-		StoredEmail,
-		StoredPassword,
-		StoredVars,
-		[WeakThis]()
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnSuccess.Broadcast();
-				Self->SetReadyToDestroy();
-			}
-		},
-		[WeakThis](const FNakamaError& Error)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnError.Broadcast(Error);
-				Self->SetReadyToDestroy();
-			}
-		}
-	);
+  NakamaApi::LinkEmail(
+    StoredClientConfig,
+    Session,
+    Email,
+    Password,
+    Vars,
+    [WeakThis]()
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnSuccess.Broadcast();
+        Self->SetReadyToDestroy();
+      }
+    },
+  	[WeakThis](const FNakamaError& Error)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnError.Broadcast(Error);
+        Self->SetReadyToDestroy();
+      }
+    }
+  );
 }
 
-// LinkFacebook
 UNakamaClientLinkFacebook* UNakamaClientLinkFacebook::LinkFacebook(
-	UObject* WorldContextObject,
-	FNakamaClientConfig Client,
-	const FNakamaSession& Session,
-	FString Token,
-	bool Sync,
-	const TMap<FString, FString>& Vars)
+  UObject* WorldContextObject
+  , FNakamaClientConfig ClientConfig
+  , const FNakamaSession& Session
+  , const FNakamaAccountFacebook& Account
+  , bool Sync
+)
 {
-	UNakamaClientLinkFacebook* Action = NewObject<UNakamaClientLinkFacebook>(GetTransientPackage());
-	Action->Client = Client;
-	Action->Session = Session;
-	Action->StoredToken = Token;
-	Action->StoredVars = Vars;
-	Action->StoredSync = Sync;
-	Action->RegisterWithGameInstance(WorldContextObject);
-	return Action;
+  UNakamaClientLinkFacebook* Action = NewObject<UNakamaClientLinkFacebook>(GetTransientPackage());
+  Action->StoredClientConfig = ClientConfig;
+  Action->StoredSession = Session;
+  Action->StoredAccount = Account;
+  Action->StoredSync = Sync;
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
 }
 
 void UNakamaClientLinkFacebook::Activate()
 {
-	static const TCHAR* TraceScope_LinkFacebook = TEXT("NakamaBP_LinkFacebook");
-	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_LinkFacebook);
+  static const TCHAR* TraceScope_LinkFacebook = TEXT("NakamaBP_LinkFacebook");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_LinkFacebook);
 
-	TWeakObjectPtr<UNakamaClientLinkFacebook> WeakThis(this);
-	FNakamaAccountFacebook StoredAccount;
-	StoredAccount.Token = StoredToken;
-	StoredAccount.Vars = StoredVars;
+  TWeakObjectPtr<UNakamaClientLinkFacebook> WeakThis(this);
 
-	NakamaApi::LinkFacebook(
-		Client,
-		Session,
-		StoredAccount,
-		StoredSync,
-		[WeakThis]()
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnSuccess.Broadcast();
-				Self->SetReadyToDestroy();
-			}
-		},
-		[WeakThis](const FNakamaError& Error)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnError.Broadcast(Error);
-				Self->SetReadyToDestroy();
-			}
-		}
-	);
+  NakamaApi::LinkFacebook(
+    StoredClientConfig,
+    Session,
+    Account,
+    Sync,
+    [WeakThis]()
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnSuccess.Broadcast();
+        Self->SetReadyToDestroy();
+      }
+    },
+  	[WeakThis](const FNakamaError& Error)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnError.Broadcast(Error);
+        Self->SetReadyToDestroy();
+      }
+    }
+  );
 }
 
-// LinkFacebookInstantGame
 UNakamaClientLinkFacebookInstantGame* UNakamaClientLinkFacebookInstantGame::LinkFacebookInstantGame(
-	UObject* WorldContextObject,
-	FNakamaClientConfig Client,
-	const FNakamaSession& Session,
-	FString SignedPlayerInfo,
-	const TMap<FString, FString>& Vars)
+  UObject* WorldContextObject
+  , FNakamaClientConfig ClientConfig
+  , const FNakamaSession& Session
+  , const FString& SignedPlayerInfo
+  , const TMap<FString, FString>& Vars
+)
 {
-	UNakamaClientLinkFacebookInstantGame* Action = NewObject<UNakamaClientLinkFacebookInstantGame>(GetTransientPackage());
-	Action->Client = Client;
-	Action->Session = Session;
-	Action->StoredSignedPlayerInfo = SignedPlayerInfo;
-	Action->StoredVars = Vars;
-	Action->RegisterWithGameInstance(WorldContextObject);
-	return Action;
+  UNakamaClientLinkFacebookInstantGame* Action = NewObject<UNakamaClientLinkFacebookInstantGame>(GetTransientPackage());
+  Action->StoredClientConfig = ClientConfig;
+  Action->StoredSession = Session;
+  Action->StoredSignedPlayerInfo = SignedPlayerInfo;
+  Action->StoredVars = Vars;
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
 }
 
 void UNakamaClientLinkFacebookInstantGame::Activate()
 {
-	static const TCHAR* TraceScope_LinkFacebookInstantGame = TEXT("NakamaBP_LinkFacebookInstantGame");
-	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_LinkFacebookInstantGame);
+  static const TCHAR* TraceScope_LinkFacebookInstantGame = TEXT("NakamaBP_LinkFacebookInstantGame");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_LinkFacebookInstantGame);
 
-	TWeakObjectPtr<UNakamaClientLinkFacebookInstantGame> WeakThis(this);
+  TWeakObjectPtr<UNakamaClientLinkFacebookInstantGame> WeakThis(this);
 
-	NakamaApi::LinkFacebookInstantGame(
-		Client,
-		Session,
-		StoredSignedPlayerInfo,
-		StoredVars,
-		[WeakThis]()
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnSuccess.Broadcast();
-				Self->SetReadyToDestroy();
-			}
-		},
-		[WeakThis](const FNakamaError& Error)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnError.Broadcast(Error);
-				Self->SetReadyToDestroy();
-			}
-		}
-	);
+  NakamaApi::LinkFacebookInstantGame(
+    StoredClientConfig,
+    Session,
+    SignedPlayerInfo,
+    Vars,
+    [WeakThis]()
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnSuccess.Broadcast();
+        Self->SetReadyToDestroy();
+      }
+    },
+  	[WeakThis](const FNakamaError& Error)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnError.Broadcast(Error);
+        Self->SetReadyToDestroy();
+      }
+    }
+  );
 }
 
-// LinkGameCenter
 UNakamaClientLinkGameCenter* UNakamaClientLinkGameCenter::LinkGameCenter(
-	UObject* WorldContextObject,
-	FNakamaClientConfig Client,
-	const FNakamaSession& Session,
-	FString PlayerId,
-	FString BundleId,
-	int64 TimestampSeconds,
-	FString Salt,
-	FString Signature,
-	FString PublicKeyUrl,
-	const TMap<FString, FString>& Vars)
+  UObject* WorldContextObject
+  , FNakamaClientConfig ClientConfig
+  , const FNakamaSession& Session
+  , const FString& PlayerId
+  , const FString& BundleId
+  , int64 TimestampSeconds
+  , const FString& Salt
+  , const FString& Signature
+  , const FString& PublicKeyUrl
+  , const TMap<FString, FString>& Vars
+)
 {
-	UNakamaClientLinkGameCenter* Action = NewObject<UNakamaClientLinkGameCenter>(GetTransientPackage());
-	Action->Client = Client;
-	Action->Session = Session;
-	Action->StoredPlayerId = PlayerId;
-	Action->StoredBundleId = BundleId;
-	Action->StoredTimestampSeconds = TimestampSeconds;
-	Action->StoredSalt = Salt;
-	Action->StoredSignature = Signature;
-	Action->StoredPublicKeyUrl = PublicKeyUrl;
-	Action->StoredVars = Vars;
-	Action->RegisterWithGameInstance(WorldContextObject);
-	return Action;
+  UNakamaClientLinkGameCenter* Action = NewObject<UNakamaClientLinkGameCenter>(GetTransientPackage());
+  Action->StoredClientConfig = ClientConfig;
+  Action->StoredSession = Session;
+  Action->StoredPlayerId = PlayerId;
+  Action->StoredBundleId = BundleId;
+  Action->StoredTimestampSeconds = TimestampSeconds;
+  Action->StoredSalt = Salt;
+  Action->StoredSignature = Signature;
+  Action->StoredPublicKeyUrl = PublicKeyUrl;
+  Action->StoredVars = Vars;
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
 }
 
 void UNakamaClientLinkGameCenter::Activate()
 {
-	static const TCHAR* TraceScope_LinkGameCenter = TEXT("NakamaBP_LinkGameCenter");
-	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_LinkGameCenter);
+  static const TCHAR* TraceScope_LinkGameCenter = TEXT("NakamaBP_LinkGameCenter");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_LinkGameCenter);
 
-	TWeakObjectPtr<UNakamaClientLinkGameCenter> WeakThis(this);
+  TWeakObjectPtr<UNakamaClientLinkGameCenter> WeakThis(this);
 
-	NakamaApi::LinkGameCenter(
-		Client,
-		Session,
-		StoredPlayerId,
-		StoredBundleId,
-		StoredTimestampSeconds,
-		StoredSalt,
-		StoredSignature,
-		StoredPublicKeyUrl,
-		StoredVars,
-		[WeakThis]()
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnSuccess.Broadcast();
-				Self->SetReadyToDestroy();
-			}
-		},
-		[WeakThis](const FNakamaError& Error)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnError.Broadcast(Error);
-				Self->SetReadyToDestroy();
-			}
-		}
-	);
+  NakamaApi::LinkGameCenter(
+    StoredClientConfig,
+    Session,
+    PlayerId,
+    BundleId,
+    TimestampSeconds,
+    Salt,
+    Signature,
+    PublicKeyUrl,
+    Vars,
+    [WeakThis]()
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnSuccess.Broadcast();
+        Self->SetReadyToDestroy();
+      }
+    },
+  	[WeakThis](const FNakamaError& Error)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnError.Broadcast(Error);
+        Self->SetReadyToDestroy();
+      }
+    }
+  );
 }
 
-// LinkGoogle
 UNakamaClientLinkGoogle* UNakamaClientLinkGoogle::LinkGoogle(
-	UObject* WorldContextObject,
-	FNakamaClientConfig Client,
-	const FNakamaSession& Session,
-	FString Token,
-	const TMap<FString, FString>& Vars)
+  UObject* WorldContextObject
+  , FNakamaClientConfig ClientConfig
+  , const FNakamaSession& Session
+  , const FString& Token
+  , const TMap<FString, FString>& Vars
+)
 {
-	UNakamaClientLinkGoogle* Action = NewObject<UNakamaClientLinkGoogle>(GetTransientPackage());
-	Action->Client = Client;
-	Action->Session = Session;
-	Action->StoredToken = Token;
-	Action->StoredVars = Vars;
-	Action->RegisterWithGameInstance(WorldContextObject);
-	return Action;
+  UNakamaClientLinkGoogle* Action = NewObject<UNakamaClientLinkGoogle>(GetTransientPackage());
+  Action->StoredClientConfig = ClientConfig;
+  Action->StoredSession = Session;
+  Action->StoredToken = Token;
+  Action->StoredVars = Vars;
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
 }
 
 void UNakamaClientLinkGoogle::Activate()
 {
-	static const TCHAR* TraceScope_LinkGoogle = TEXT("NakamaBP_LinkGoogle");
-	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_LinkGoogle);
+  static const TCHAR* TraceScope_LinkGoogle = TEXT("NakamaBP_LinkGoogle");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_LinkGoogle);
 
-	TWeakObjectPtr<UNakamaClientLinkGoogle> WeakThis(this);
+  TWeakObjectPtr<UNakamaClientLinkGoogle> WeakThis(this);
 
-	NakamaApi::LinkGoogle(
-		Client,
-		Session,
-		StoredToken,
-		StoredVars,
-		[WeakThis]()
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnSuccess.Broadcast();
-				Self->SetReadyToDestroy();
-			}
-		},
-		[WeakThis](const FNakamaError& Error)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnError.Broadcast(Error);
-				Self->SetReadyToDestroy();
-			}
-		}
-	);
+  NakamaApi::LinkGoogle(
+    StoredClientConfig,
+    Session,
+    Token,
+    Vars,
+    [WeakThis]()
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnSuccess.Broadcast();
+        Self->SetReadyToDestroy();
+      }
+    },
+  	[WeakThis](const FNakamaError& Error)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnError.Broadcast(Error);
+        Self->SetReadyToDestroy();
+      }
+    }
+  );
 }
 
-// LinkSteam
 UNakamaClientLinkSteam* UNakamaClientLinkSteam::LinkSteam(
-	UObject* WorldContextObject,
-	FNakamaClientConfig Client,
-	const FNakamaSession& Session,
-	FString Token,
-	bool Sync,
-	const TMap<FString, FString>& Vars)
+  UObject* WorldContextObject
+  , FNakamaClientConfig ClientConfig
+  , const FNakamaSession& Session
+  , const FNakamaAccountSteam& Account
+  , bool Sync
+)
 {
-	UNakamaClientLinkSteam* Action = NewObject<UNakamaClientLinkSteam>(GetTransientPackage());
-	Action->Client = Client;
-	Action->Session = Session;
-	Action->StoredToken = Token;
-	Action->StoredVars = Vars;
-	Action->StoredSync = Sync;
-	Action->RegisterWithGameInstance(WorldContextObject);
-	return Action;
+  UNakamaClientLinkSteam* Action = NewObject<UNakamaClientLinkSteam>(GetTransientPackage());
+  Action->StoredClientConfig = ClientConfig;
+  Action->StoredSession = Session;
+  Action->StoredAccount = Account;
+  Action->StoredSync = Sync;
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
 }
 
 void UNakamaClientLinkSteam::Activate()
 {
-	static const TCHAR* TraceScope_LinkSteam = TEXT("NakamaBP_LinkSteam");
-	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_LinkSteam);
+  static const TCHAR* TraceScope_LinkSteam = TEXT("NakamaBP_LinkSteam");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_LinkSteam);
 
-	TWeakObjectPtr<UNakamaClientLinkSteam> WeakThis(this);
-	FNakamaAccountSteam StoredAccount;
-	StoredAccount.Token = StoredToken;
-	StoredAccount.Vars = StoredVars;
+  TWeakObjectPtr<UNakamaClientLinkSteam> WeakThis(this);
 
-	NakamaApi::LinkSteam(
-		Client,
-		Session,
-		StoredAccount,
-		StoredSync,
-		[WeakThis]()
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnSuccess.Broadcast();
-				Self->SetReadyToDestroy();
-			}
-		},
-		[WeakThis](const FNakamaError& Error)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnError.Broadcast(Error);
-				Self->SetReadyToDestroy();
-			}
-		}
-	);
+  NakamaApi::LinkSteam(
+    StoredClientConfig,
+    Session,
+    Account,
+    Sync,
+    [WeakThis]()
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnSuccess.Broadcast();
+        Self->SetReadyToDestroy();
+      }
+    },
+  	[WeakThis](const FNakamaError& Error)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnError.Broadcast(Error);
+        Self->SetReadyToDestroy();
+      }
+    }
+  );
 }
 
-// ListChannelMessages
 UNakamaClientListChannelMessages* UNakamaClientListChannelMessages::ListChannelMessages(
-	UObject* WorldContextObject,
-	FNakamaClientConfig Client,
-	const FNakamaSession& Session,
-	FString ChannelId,
-	int32 Limit,
-	bool Forward,
-	FString Cursor)
+  UObject* WorldContextObject
+  , FNakamaClientConfig ClientConfig
+  , const FNakamaSession& Session
+  , const FString& ChannelId
+  , int32 Limit
+  , bool Forward
+  , const FString& Cursor
+)
 {
-	UNakamaClientListChannelMessages* Action = NewObject<UNakamaClientListChannelMessages>(GetTransientPackage());
-	Action->Client = Client;
-	Action->Session = Session;
-	Action->StoredChannelId = ChannelId;
-	Action->StoredLimit = Limit;
-	Action->StoredForward = Forward;
-	Action->StoredCursor = Cursor;
-	Action->RegisterWithGameInstance(WorldContextObject);
-	return Action;
+  UNakamaClientListChannelMessages* Action = NewObject<UNakamaClientListChannelMessages>(GetTransientPackage());
+  Action->StoredClientConfig = ClientConfig;
+  Action->StoredSession = Session;
+  Action->StoredChannelId = ChannelId;
+  Action->StoredLimit = Limit;
+  Action->StoredForward = Forward;
+  Action->StoredCursor = Cursor;
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
 }
 
 void UNakamaClientListChannelMessages::Activate()
 {
-	static const TCHAR* TraceScope_ListChannelMessages = TEXT("NakamaBP_ListChannelMessages");
-	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListChannelMessages);
+  static const TCHAR* TraceScope_ListChannelMessages = TEXT("NakamaBP_ListChannelMessages");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListChannelMessages);
 
-	TWeakObjectPtr<UNakamaClientListChannelMessages> WeakThis(this);
+  TWeakObjectPtr<UNakamaClientListChannelMessages> WeakThis(this);
 
-	NakamaApi::ListChannelMessages(
-		Client,
-		Session,
-		StoredChannelId,
-		StoredLimit,
-		StoredForward,
-		StoredCursor,
-		[WeakThis](const FNakamaChannelMessageList& Result)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnSuccess.Broadcast(Result);
-				Self->SetReadyToDestroy();
-			}
-		},
-		[WeakThis](const FNakamaError& Error)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnError.Broadcast(Error);
-				Self->SetReadyToDestroy();
-			}
-		}
-	);
+  NakamaApi::ListChannelMessages(
+    StoredClientConfig,
+    Session,
+    ChannelId,
+    Limit,
+    Forward,
+    Cursor,
+    [WeakThis](const FNakamaChannelMessageList& Result)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnSuccess.Broadcast(Result);
+        Self->SetReadyToDestroy();
+      }
+    },
+  	[WeakThis](const FNakamaError& Error)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnError.Broadcast(Error);
+        Self->SetReadyToDestroy();
+      }
+    }
+  );
 }
 
-// ListFriends
 UNakamaClientListFriends* UNakamaClientListFriends::ListFriends(
-	UObject* WorldContextObject,
-	FNakamaClientConfig Client,
-	const FNakamaSession& Session,
-	int32 Limit,
-	int32 State,
-	FString Cursor)
+  UObject* WorldContextObject
+  , FNakamaClientConfig ClientConfig
+  , const FNakamaSession& Session
+  , int32 Limit
+  , int32 State
+  , const FString& Cursor
+)
 {
-	UNakamaClientListFriends* Action = NewObject<UNakamaClientListFriends>(GetTransientPackage());
-	Action->Client = Client;
-	Action->Session = Session;
-	Action->StoredLimit = Limit;
-	Action->StoredState = State;
-	Action->StoredCursor = Cursor;
-	Action->RegisterWithGameInstance(WorldContextObject);
-	return Action;
+  UNakamaClientListFriends* Action = NewObject<UNakamaClientListFriends>(GetTransientPackage());
+  Action->StoredClientConfig = ClientConfig;
+  Action->StoredSession = Session;
+  Action->StoredLimit = Limit;
+  Action->StoredState = State;
+  Action->StoredCursor = Cursor;
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
 }
 
 void UNakamaClientListFriends::Activate()
 {
-	static const TCHAR* TraceScope_ListFriends = TEXT("NakamaBP_ListFriends");
-	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListFriends);
+  static const TCHAR* TraceScope_ListFriends = TEXT("NakamaBP_ListFriends");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListFriends);
 
-	TWeakObjectPtr<UNakamaClientListFriends> WeakThis(this);
+  TWeakObjectPtr<UNakamaClientListFriends> WeakThis(this);
 
-	NakamaApi::ListFriends(
-		Client,
-		Session,
-		StoredLimit,
-		StoredState,
-		StoredCursor,
-		[WeakThis](const FNakamaFriendList& Result)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnSuccess.Broadcast(Result);
-				Self->SetReadyToDestroy();
-			}
-		},
-		[WeakThis](const FNakamaError& Error)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnError.Broadcast(Error);
-				Self->SetReadyToDestroy();
-			}
-		}
-	);
+  NakamaApi::ListFriends(
+    StoredClientConfig,
+    Session,
+    Limit,
+    State,
+    Cursor,
+    [WeakThis](const FNakamaFriendList& Result)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnSuccess.Broadcast(Result);
+        Self->SetReadyToDestroy();
+      }
+    },
+  	[WeakThis](const FNakamaError& Error)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnError.Broadcast(Error);
+        Self->SetReadyToDestroy();
+      }
+    }
+  );
 }
 
-// ListFriendsOfFriends
 UNakamaClientListFriendsOfFriends* UNakamaClientListFriendsOfFriends::ListFriendsOfFriends(
-	UObject* WorldContextObject,
-	FNakamaClientConfig Client,
-	const FNakamaSession& Session,
-	int32 Limit,
-	FString Cursor)
+  UObject* WorldContextObject
+  , FNakamaClientConfig ClientConfig
+  , const FNakamaSession& Session
+  , int32 Limit
+  , const FString& Cursor
+)
 {
-	UNakamaClientListFriendsOfFriends* Action = NewObject<UNakamaClientListFriendsOfFriends>(GetTransientPackage());
-	Action->Client = Client;
-	Action->Session = Session;
-	Action->StoredLimit = Limit;
-	Action->StoredCursor = Cursor;
-	Action->RegisterWithGameInstance(WorldContextObject);
-	return Action;
+  UNakamaClientListFriendsOfFriends* Action = NewObject<UNakamaClientListFriendsOfFriends>(GetTransientPackage());
+  Action->StoredClientConfig = ClientConfig;
+  Action->StoredSession = Session;
+  Action->StoredLimit = Limit;
+  Action->StoredCursor = Cursor;
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
 }
 
 void UNakamaClientListFriendsOfFriends::Activate()
 {
-	static const TCHAR* TraceScope_ListFriendsOfFriends = TEXT("NakamaBP_ListFriendsOfFriends");
-	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListFriendsOfFriends);
+  static const TCHAR* TraceScope_ListFriendsOfFriends = TEXT("NakamaBP_ListFriendsOfFriends");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListFriendsOfFriends);
 
-	TWeakObjectPtr<UNakamaClientListFriendsOfFriends> WeakThis(this);
+  TWeakObjectPtr<UNakamaClientListFriendsOfFriends> WeakThis(this);
 
-	NakamaApi::ListFriendsOfFriends(
-		Client,
-		Session,
-		StoredLimit,
-		StoredCursor,
-		[WeakThis](const FNakamaFriendsOfFriendsList& Result)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnSuccess.Broadcast(Result);
-				Self->SetReadyToDestroy();
-			}
-		},
-		[WeakThis](const FNakamaError& Error)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnError.Broadcast(Error);
-				Self->SetReadyToDestroy();
-			}
-		}
-	);
+  NakamaApi::ListFriendsOfFriends(
+    StoredClientConfig,
+    Session,
+    Limit,
+    Cursor,
+    [WeakThis](const FNakamaFriendsOfFriendsList& Result)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnSuccess.Broadcast(Result);
+        Self->SetReadyToDestroy();
+      }
+    },
+  	[WeakThis](const FNakamaError& Error)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnError.Broadcast(Error);
+        Self->SetReadyToDestroy();
+      }
+    }
+  );
 }
 
-// ListGroups
 UNakamaClientListGroups* UNakamaClientListGroups::ListGroups(
-	UObject* WorldContextObject,
-	FNakamaClientConfig Client,
-	const FNakamaSession& Session,
-	FString Name,
-	FString Cursor,
-	int32 Limit,
-	FString LangTag,
-	int32 Members,
-	bool Open)
+  UObject* WorldContextObject
+  , FNakamaClientConfig ClientConfig
+  , const FNakamaSession& Session
+  , const FString& Name
+  , const FString& Cursor
+  , int32 Limit
+  , const FString& LangTag
+  , int32 Members
+  , bool Open
+)
 {
-	UNakamaClientListGroups* Action = NewObject<UNakamaClientListGroups>(GetTransientPackage());
-	Action->Client = Client;
-	Action->Session = Session;
-	Action->StoredName = Name;
-	Action->StoredCursor = Cursor;
-	Action->StoredLimit = Limit;
-	Action->StoredLangTag = LangTag;
-	Action->StoredMembers = Members;
-	Action->StoredOpen = Open;
-	Action->RegisterWithGameInstance(WorldContextObject);
-	return Action;
+  UNakamaClientListGroups* Action = NewObject<UNakamaClientListGroups>(GetTransientPackage());
+  Action->StoredClientConfig = ClientConfig;
+  Action->StoredSession = Session;
+  Action->StoredName = Name;
+  Action->StoredCursor = Cursor;
+  Action->StoredLimit = Limit;
+  Action->StoredLangTag = LangTag;
+  Action->StoredMembers = Members;
+  Action->StoredOpen = Open;
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
 }
 
 void UNakamaClientListGroups::Activate()
 {
-	static const TCHAR* TraceScope_ListGroups = TEXT("NakamaBP_ListGroups");
-	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListGroups);
+  static const TCHAR* TraceScope_ListGroups = TEXT("NakamaBP_ListGroups");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListGroups);
 
-	TWeakObjectPtr<UNakamaClientListGroups> WeakThis(this);
+  TWeakObjectPtr<UNakamaClientListGroups> WeakThis(this);
 
-	NakamaApi::ListGroups(
-		Client,
-		Session,
-		StoredName,
-		StoredCursor,
-		StoredLimit,
-		StoredLangTag,
-		StoredMembers,
-		StoredOpen,
-		[WeakThis](const FNakamaGroupList& Result)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnSuccess.Broadcast(Result);
-				Self->SetReadyToDestroy();
-			}
-		},
-		[WeakThis](const FNakamaError& Error)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnError.Broadcast(Error);
-				Self->SetReadyToDestroy();
-			}
-		}
-	);
+  NakamaApi::ListGroups(
+    StoredClientConfig,
+    Session,
+    Name,
+    Cursor,
+    Limit,
+    LangTag,
+    Members,
+    Open,
+    [WeakThis](const FNakamaGroupList& Result)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnSuccess.Broadcast(Result);
+        Self->SetReadyToDestroy();
+      }
+    },
+  	[WeakThis](const FNakamaError& Error)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnError.Broadcast(Error);
+        Self->SetReadyToDestroy();
+      }
+    }
+  );
 }
 
-// ListGroupUsers
 UNakamaClientListGroupUsers* UNakamaClientListGroupUsers::ListGroupUsers(
-	UObject* WorldContextObject,
-	FNakamaClientConfig Client,
-	const FNakamaSession& Session,
-	FString GroupId,
-	int32 Limit,
-	int32 State,
-	FString Cursor)
+  UObject* WorldContextObject
+  , FNakamaClientConfig ClientConfig
+  , const FNakamaSession& Session
+  , const FString& GroupId
+  , int32 Limit
+  , int32 State
+  , const FString& Cursor
+)
 {
-	UNakamaClientListGroupUsers* Action = NewObject<UNakamaClientListGroupUsers>(GetTransientPackage());
-	Action->Client = Client;
-	Action->Session = Session;
-	Action->StoredGroupId = GroupId;
-	Action->StoredLimit = Limit;
-	Action->StoredState = State;
-	Action->StoredCursor = Cursor;
-	Action->RegisterWithGameInstance(WorldContextObject);
-	return Action;
+  UNakamaClientListGroupUsers* Action = NewObject<UNakamaClientListGroupUsers>(GetTransientPackage());
+  Action->StoredClientConfig = ClientConfig;
+  Action->StoredSession = Session;
+  Action->StoredGroupId = GroupId;
+  Action->StoredLimit = Limit;
+  Action->StoredState = State;
+  Action->StoredCursor = Cursor;
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
 }
 
 void UNakamaClientListGroupUsers::Activate()
 {
-	static const TCHAR* TraceScope_ListGroupUsers = TEXT("NakamaBP_ListGroupUsers");
-	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListGroupUsers);
+  static const TCHAR* TraceScope_ListGroupUsers = TEXT("NakamaBP_ListGroupUsers");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListGroupUsers);
 
-	TWeakObjectPtr<UNakamaClientListGroupUsers> WeakThis(this);
+  TWeakObjectPtr<UNakamaClientListGroupUsers> WeakThis(this);
 
-	NakamaApi::ListGroupUsers(
-		Client,
-		Session,
-		StoredGroupId,
-		StoredLimit,
-		StoredState,
-		StoredCursor,
-		[WeakThis](const FNakamaGroupUserList& Result)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnSuccess.Broadcast(Result);
-				Self->SetReadyToDestroy();
-			}
-		},
-		[WeakThis](const FNakamaError& Error)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnError.Broadcast(Error);
-				Self->SetReadyToDestroy();
-			}
-		}
-	);
+  NakamaApi::ListGroupUsers(
+    StoredClientConfig,
+    Session,
+    GroupId,
+    Limit,
+    State,
+    Cursor,
+    [WeakThis](const FNakamaGroupUserList& Result)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnSuccess.Broadcast(Result);
+        Self->SetReadyToDestroy();
+      }
+    },
+  	[WeakThis](const FNakamaError& Error)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnError.Broadcast(Error);
+        Self->SetReadyToDestroy();
+      }
+    }
+  );
 }
 
-// ListLeaderboardRecords
 UNakamaClientListLeaderboardRecords* UNakamaClientListLeaderboardRecords::ListLeaderboardRecords(
-	UObject* WorldContextObject,
-	FNakamaClientConfig Client,
-	const FNakamaSession& Session,
-	FString LeaderboardId,
-	const TArray<FString>& OwnerIds,
-	int32 Limit,
-	FString Cursor,
-	int64 Expiry)
+  UObject* WorldContextObject
+  , FNakamaClientConfig ClientConfig
+  , const FNakamaSession& Session
+  , const FString& LeaderboardId
+  , const TArray<FString>& OwnerIds
+  , int32 Limit
+  , const FString& Cursor
+  , int64 Expiry
+)
 {
-	UNakamaClientListLeaderboardRecords* Action = NewObject<UNakamaClientListLeaderboardRecords>(GetTransientPackage());
-	Action->Client = Client;
-	Action->Session = Session;
-	Action->StoredLeaderboardId = LeaderboardId;
-	Action->StoredOwnerIds = OwnerIds;
-	Action->StoredLimit = Limit;
-	Action->StoredCursor = Cursor;
-	Action->StoredExpiry = Expiry;
-	Action->RegisterWithGameInstance(WorldContextObject);
-	return Action;
+  UNakamaClientListLeaderboardRecords* Action = NewObject<UNakamaClientListLeaderboardRecords>(GetTransientPackage());
+  Action->StoredClientConfig = ClientConfig;
+  Action->StoredSession = Session;
+  Action->StoredLeaderboardId = LeaderboardId;
+  Action->StoredOwnerIds = OwnerIds;
+  Action->StoredLimit = Limit;
+  Action->StoredCursor = Cursor;
+  Action->StoredExpiry = Expiry;
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
 }
 
 void UNakamaClientListLeaderboardRecords::Activate()
 {
-	static const TCHAR* TraceScope_ListLeaderboardRecords = TEXT("NakamaBP_ListLeaderboardRecords");
-	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListLeaderboardRecords);
+  static const TCHAR* TraceScope_ListLeaderboardRecords = TEXT("NakamaBP_ListLeaderboardRecords");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListLeaderboardRecords);
 
-	TWeakObjectPtr<UNakamaClientListLeaderboardRecords> WeakThis(this);
+  TWeakObjectPtr<UNakamaClientListLeaderboardRecords> WeakThis(this);
 
-	NakamaApi::ListLeaderboardRecords(
-		Client,
-		Session,
-		StoredLeaderboardId,
-		StoredOwnerIds,
-		StoredLimit,
-		StoredCursor,
-		StoredExpiry,
-		[WeakThis](const FNakamaLeaderboardRecordList& Result)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnSuccess.Broadcast(Result);
-				Self->SetReadyToDestroy();
-			}
-		},
-		[WeakThis](const FNakamaError& Error)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnError.Broadcast(Error);
-				Self->SetReadyToDestroy();
-			}
-		}
-	);
+  NakamaApi::ListLeaderboardRecords(
+    StoredClientConfig,
+    Session,
+    LeaderboardId,
+    OwnerIds,
+    Limit,
+    Cursor,
+    Expiry,
+    [WeakThis](const FNakamaLeaderboardRecordList& Result)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnSuccess.Broadcast(Result);
+        Self->SetReadyToDestroy();
+      }
+    },
+  	[WeakThis](const FNakamaError& Error)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnError.Broadcast(Error);
+        Self->SetReadyToDestroy();
+      }
+    }
+  );
 }
 
-// ListLeaderboardRecordsAroundOwner
 UNakamaClientListLeaderboardRecordsAroundOwner* UNakamaClientListLeaderboardRecordsAroundOwner::ListLeaderboardRecordsAroundOwner(
-	UObject* WorldContextObject,
-	FNakamaClientConfig Client,
-	const FNakamaSession& Session,
-	FString LeaderboardId,
-	int32 Limit,
-	FString OwnerId,
-	int64 Expiry,
-	FString Cursor)
+  UObject* WorldContextObject
+  , FNakamaClientConfig ClientConfig
+  , const FNakamaSession& Session
+  , const FString& LeaderboardId
+  , int32 Limit
+  , const FString& OwnerId
+  , int64 Expiry
+  , const FString& Cursor
+)
 {
-	UNakamaClientListLeaderboardRecordsAroundOwner* Action = NewObject<UNakamaClientListLeaderboardRecordsAroundOwner>(GetTransientPackage());
-	Action->Client = Client;
-	Action->Session = Session;
-	Action->StoredLeaderboardId = LeaderboardId;
-	Action->StoredLimit = Limit;
-	Action->StoredOwnerId = OwnerId;
-	Action->StoredExpiry = Expiry;
-	Action->StoredCursor = Cursor;
-	Action->RegisterWithGameInstance(WorldContextObject);
-	return Action;
+  UNakamaClientListLeaderboardRecordsAroundOwner* Action = NewObject<UNakamaClientListLeaderboardRecordsAroundOwner>(GetTransientPackage());
+  Action->StoredClientConfig = ClientConfig;
+  Action->StoredSession = Session;
+  Action->StoredLeaderboardId = LeaderboardId;
+  Action->StoredLimit = Limit;
+  Action->StoredOwnerId = OwnerId;
+  Action->StoredExpiry = Expiry;
+  Action->StoredCursor = Cursor;
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
 }
 
 void UNakamaClientListLeaderboardRecordsAroundOwner::Activate()
 {
-	static const TCHAR* TraceScope_ListLeaderboardRecordsAroundOwner = TEXT("NakamaBP_ListLeaderboardRecordsAroundOwner");
-	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListLeaderboardRecordsAroundOwner);
+  static const TCHAR* TraceScope_ListLeaderboardRecordsAroundOwner = TEXT("NakamaBP_ListLeaderboardRecordsAroundOwner");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListLeaderboardRecordsAroundOwner);
 
-	TWeakObjectPtr<UNakamaClientListLeaderboardRecordsAroundOwner> WeakThis(this);
+  TWeakObjectPtr<UNakamaClientListLeaderboardRecordsAroundOwner> WeakThis(this);
 
-	NakamaApi::ListLeaderboardRecordsAroundOwner(
-		Client,
-		Session,
-		StoredLeaderboardId,
-		StoredLimit,
-		StoredOwnerId,
-		StoredExpiry,
-		StoredCursor,
-		[WeakThis](const FNakamaLeaderboardRecordList& Result)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnSuccess.Broadcast(Result);
-				Self->SetReadyToDestroy();
-			}
-		},
-		[WeakThis](const FNakamaError& Error)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnError.Broadcast(Error);
-				Self->SetReadyToDestroy();
-			}
-		}
-	);
+  NakamaApi::ListLeaderboardRecordsAroundOwner(
+    StoredClientConfig,
+    Session,
+    LeaderboardId,
+    Limit,
+    OwnerId,
+    Expiry,
+    Cursor,
+    [WeakThis](const FNakamaLeaderboardRecordList& Result)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnSuccess.Broadcast(Result);
+        Self->SetReadyToDestroy();
+      }
+    },
+  	[WeakThis](const FNakamaError& Error)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnError.Broadcast(Error);
+        Self->SetReadyToDestroy();
+      }
+    }
+  );
 }
 
-// ListMatches
 UNakamaClientListMatches* UNakamaClientListMatches::ListMatches(
-	UObject* WorldContextObject,
-	FNakamaClientConfig Client,
-	const FNakamaSession& Session,
-	int32 Limit,
-	bool Authoritative,
-	FString Label,
-	int32 MinSize,
-	int32 MaxSize,
-	FString Query)
+  UObject* WorldContextObject
+  , FNakamaClientConfig ClientConfig
+  , const FNakamaSession& Session
+  , int32 Limit
+  , bool Authoritative
+  , const FString& Label
+  , int32 MinSize
+  , int32 MaxSize
+  , const FString& Query
+)
 {
-	UNakamaClientListMatches* Action = NewObject<UNakamaClientListMatches>(GetTransientPackage());
-	Action->Client = Client;
-	Action->Session = Session;
-	Action->StoredLimit = Limit;
-	Action->StoredAuthoritative = Authoritative;
-	Action->StoredLabel = Label;
-	Action->StoredMinSize = MinSize;
-	Action->StoredMaxSize = MaxSize;
-	Action->StoredQuery = Query;
-	Action->RegisterWithGameInstance(WorldContextObject);
-	return Action;
+  UNakamaClientListMatches* Action = NewObject<UNakamaClientListMatches>(GetTransientPackage());
+  Action->StoredClientConfig = ClientConfig;
+  Action->StoredSession = Session;
+  Action->StoredLimit = Limit;
+  Action->StoredAuthoritative = Authoritative;
+  Action->StoredLabel = Label;
+  Action->StoredMinSize = MinSize;
+  Action->StoredMaxSize = MaxSize;
+  Action->StoredQuery = Query;
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
 }
 
 void UNakamaClientListMatches::Activate()
 {
-	static const TCHAR* TraceScope_ListMatches = TEXT("NakamaBP_ListMatches");
-	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListMatches);
+  static const TCHAR* TraceScope_ListMatches = TEXT("NakamaBP_ListMatches");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListMatches);
 
-	TWeakObjectPtr<UNakamaClientListMatches> WeakThis(this);
+  TWeakObjectPtr<UNakamaClientListMatches> WeakThis(this);
 
-	NakamaApi::ListMatches(
-		Client,
-		Session,
-		StoredLimit,
-		StoredAuthoritative,
-		StoredLabel,
-		StoredMinSize,
-		StoredMaxSize,
-		StoredQuery,
-		[WeakThis](const FNakamaMatchList& Result)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnSuccess.Broadcast(Result);
-				Self->SetReadyToDestroy();
-			}
-		},
-		[WeakThis](const FNakamaError& Error)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnError.Broadcast(Error);
-				Self->SetReadyToDestroy();
-			}
-		}
-	);
+  NakamaApi::ListMatches(
+    StoredClientConfig,
+    Session,
+    Limit,
+    Authoritative,
+    Label,
+    MinSize,
+    MaxSize,
+    Query,
+    [WeakThis](const FNakamaMatchList& Result)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnSuccess.Broadcast(Result);
+        Self->SetReadyToDestroy();
+      }
+    },
+  	[WeakThis](const FNakamaError& Error)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnError.Broadcast(Error);
+        Self->SetReadyToDestroy();
+      }
+    }
+  );
 }
 
-// ListParties
 UNakamaClientListParties* UNakamaClientListParties::ListParties(
-	UObject* WorldContextObject,
-	FNakamaClientConfig Client,
-	const FNakamaSession& Session,
-	int32 Limit,
-	bool Open,
-	FString Query,
-	FString Cursor)
+  UObject* WorldContextObject
+  , FNakamaClientConfig ClientConfig
+  , const FNakamaSession& Session
+  , int32 Limit
+  , bool Open
+  , const FString& Query
+  , const FString& Cursor
+)
 {
-	UNakamaClientListParties* Action = NewObject<UNakamaClientListParties>(GetTransientPackage());
-	Action->Client = Client;
-	Action->Session = Session;
-	Action->StoredLimit = Limit;
-	Action->StoredOpen = Open;
-	Action->StoredQuery = Query;
-	Action->StoredCursor = Cursor;
-	Action->RegisterWithGameInstance(WorldContextObject);
-	return Action;
+  UNakamaClientListParties* Action = NewObject<UNakamaClientListParties>(GetTransientPackage());
+  Action->StoredClientConfig = ClientConfig;
+  Action->StoredSession = Session;
+  Action->StoredLimit = Limit;
+  Action->StoredOpen = Open;
+  Action->StoredQuery = Query;
+  Action->StoredCursor = Cursor;
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
 }
 
 void UNakamaClientListParties::Activate()
 {
-	static const TCHAR* TraceScope_ListParties = TEXT("NakamaBP_ListParties");
-	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListParties);
+  static const TCHAR* TraceScope_ListParties = TEXT("NakamaBP_ListParties");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListParties);
 
-	TWeakObjectPtr<UNakamaClientListParties> WeakThis(this);
+  TWeakObjectPtr<UNakamaClientListParties> WeakThis(this);
 
-	NakamaApi::ListParties(
-		Client,
-		Session,
-		StoredLimit,
-		StoredOpen,
-		StoredQuery,
-		StoredCursor,
-		[WeakThis](const FNakamaPartyList& Result)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnSuccess.Broadcast(Result);
-				Self->SetReadyToDestroy();
-			}
-		},
-		[WeakThis](const FNakamaError& Error)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnError.Broadcast(Error);
-				Self->SetReadyToDestroy();
-			}
-		}
-	);
+  NakamaApi::ListParties(
+    StoredClientConfig,
+    Session,
+    Limit,
+    Open,
+    Query,
+    Cursor,
+    [WeakThis](const FNakamaPartyList& Result)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnSuccess.Broadcast(Result);
+        Self->SetReadyToDestroy();
+      }
+    },
+  	[WeakThis](const FNakamaError& Error)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnError.Broadcast(Error);
+        Self->SetReadyToDestroy();
+      }
+    }
+  );
 }
 
-// ListNotifications
 UNakamaClientListNotifications* UNakamaClientListNotifications::ListNotifications(
-	UObject* WorldContextObject,
-	FNakamaClientConfig Client,
-	const FNakamaSession& Session,
-	int32 Limit,
-	FString CacheableCursor)
+  UObject* WorldContextObject
+  , FNakamaClientConfig ClientConfig
+  , const FNakamaSession& Session
+  , int32 Limit
+  , const FString& CacheableCursor
+)
 {
-	UNakamaClientListNotifications* Action = NewObject<UNakamaClientListNotifications>(GetTransientPackage());
-	Action->Client = Client;
-	Action->Session = Session;
-	Action->StoredLimit = Limit;
-	Action->StoredCacheableCursor = CacheableCursor;
-	Action->RegisterWithGameInstance(WorldContextObject);
-	return Action;
+  UNakamaClientListNotifications* Action = NewObject<UNakamaClientListNotifications>(GetTransientPackage());
+  Action->StoredClientConfig = ClientConfig;
+  Action->StoredSession = Session;
+  Action->StoredLimit = Limit;
+  Action->StoredCacheableCursor = CacheableCursor;
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
 }
 
 void UNakamaClientListNotifications::Activate()
 {
-	static const TCHAR* TraceScope_ListNotifications = TEXT("NakamaBP_ListNotifications");
-	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListNotifications);
+  static const TCHAR* TraceScope_ListNotifications = TEXT("NakamaBP_ListNotifications");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListNotifications);
 
-	TWeakObjectPtr<UNakamaClientListNotifications> WeakThis(this);
+  TWeakObjectPtr<UNakamaClientListNotifications> WeakThis(this);
 
-	NakamaApi::ListNotifications(
-		Client,
-		Session,
-		StoredLimit,
-		StoredCacheableCursor,
-		[WeakThis](const FNakamaNotificationList& Result)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnSuccess.Broadcast(Result);
-				Self->SetReadyToDestroy();
-			}
-		},
-		[WeakThis](const FNakamaError& Error)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnError.Broadcast(Error);
-				Self->SetReadyToDestroy();
-			}
-		}
-	);
+  NakamaApi::ListNotifications(
+    StoredClientConfig,
+    Session,
+    Limit,
+    CacheableCursor,
+    [WeakThis](const FNakamaNotificationList& Result)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnSuccess.Broadcast(Result);
+        Self->SetReadyToDestroy();
+      }
+    },
+  	[WeakThis](const FNakamaError& Error)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnError.Broadcast(Error);
+        Self->SetReadyToDestroy();
+      }
+    }
+  );
 }
 
-// ListStorageObjects
 UNakamaClientListStorageObjects* UNakamaClientListStorageObjects::ListStorageObjects(
-	UObject* WorldContextObject,
-	FNakamaClientConfig Client,
-	const FNakamaSession& Session,
-	FString UserId,
-	FString Collection,
-	int32 Limit,
-	FString Cursor)
+  UObject* WorldContextObject
+  , FNakamaClientConfig ClientConfig
+  , const FNakamaSession& Session
+  , const FString& UserId
+  , const FString& Collection
+  , int32 Limit
+  , const FString& Cursor
+)
 {
-	UNakamaClientListStorageObjects* Action = NewObject<UNakamaClientListStorageObjects>(GetTransientPackage());
-	Action->Client = Client;
-	Action->Session = Session;
-	Action->StoredUserId = UserId;
-	Action->StoredCollection = Collection;
-	Action->StoredLimit = Limit;
-	Action->StoredCursor = Cursor;
-	Action->RegisterWithGameInstance(WorldContextObject);
-	return Action;
+  UNakamaClientListStorageObjects* Action = NewObject<UNakamaClientListStorageObjects>(GetTransientPackage());
+  Action->StoredClientConfig = ClientConfig;
+  Action->StoredSession = Session;
+  Action->StoredUserId = UserId;
+  Action->StoredCollection = Collection;
+  Action->StoredLimit = Limit;
+  Action->StoredCursor = Cursor;
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
 }
 
 void UNakamaClientListStorageObjects::Activate()
 {
-	static const TCHAR* TraceScope_ListStorageObjects = TEXT("NakamaBP_ListStorageObjects");
-	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListStorageObjects);
+  static const TCHAR* TraceScope_ListStorageObjects = TEXT("NakamaBP_ListStorageObjects");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListStorageObjects);
 
-	TWeakObjectPtr<UNakamaClientListStorageObjects> WeakThis(this);
+  TWeakObjectPtr<UNakamaClientListStorageObjects> WeakThis(this);
 
-	NakamaApi::ListStorageObjects(
-		Client,
-		Session,
-		StoredUserId,
-		StoredCollection,
-		StoredLimit,
-		StoredCursor,
-		[WeakThis](const FNakamaStorageObjectList& Result)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnSuccess.Broadcast(Result);
-				Self->SetReadyToDestroy();
-			}
-		},
-		[WeakThis](const FNakamaError& Error)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnError.Broadcast(Error);
-				Self->SetReadyToDestroy();
-			}
-		}
-	);
+  NakamaApi::ListStorageObjects(
+    StoredClientConfig,
+    Session,
+    UserId,
+    Collection,
+    Limit,
+    Cursor,
+    [WeakThis](const FNakamaStorageObjectList& Result)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnSuccess.Broadcast(Result);
+        Self->SetReadyToDestroy();
+      }
+    },
+  	[WeakThis](const FNakamaError& Error)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnError.Broadcast(Error);
+        Self->SetReadyToDestroy();
+      }
+    }
+  );
 }
 
-// ListSubscriptions
 UNakamaClientListSubscriptions* UNakamaClientListSubscriptions::ListSubscriptions(
-	UObject* WorldContextObject,
-	FNakamaClientConfig Client,
-	const FNakamaSession& Session,
-	int32 Limit,
-	FString Cursor)
+  UObject* WorldContextObject
+  , FNakamaClientConfig ClientConfig
+  , const FNakamaSession& Session
+  , int32 Limit
+  , const FString& Cursor
+)
 {
-	UNakamaClientListSubscriptions* Action = NewObject<UNakamaClientListSubscriptions>(GetTransientPackage());
-	Action->Client = Client;
-	Action->Session = Session;
-	Action->StoredLimit = Limit;
-	Action->StoredCursor = Cursor;
-	Action->RegisterWithGameInstance(WorldContextObject);
-	return Action;
+  UNakamaClientListSubscriptions* Action = NewObject<UNakamaClientListSubscriptions>(GetTransientPackage());
+  Action->StoredClientConfig = ClientConfig;
+  Action->StoredSession = Session;
+  Action->StoredLimit = Limit;
+  Action->StoredCursor = Cursor;
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
 }
 
 void UNakamaClientListSubscriptions::Activate()
 {
-	static const TCHAR* TraceScope_ListSubscriptions = TEXT("NakamaBP_ListSubscriptions");
-	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListSubscriptions);
+  static const TCHAR* TraceScope_ListSubscriptions = TEXT("NakamaBP_ListSubscriptions");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListSubscriptions);
 
-	TWeakObjectPtr<UNakamaClientListSubscriptions> WeakThis(this);
+  TWeakObjectPtr<UNakamaClientListSubscriptions> WeakThis(this);
 
-	NakamaApi::ListSubscriptions(
-		Client,
-		Session,
-		StoredLimit,
-		StoredCursor,
-		[WeakThis](const FNakamaSubscriptionList& Result)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnSuccess.Broadcast(Result);
-				Self->SetReadyToDestroy();
-			}
-		},
-		[WeakThis](const FNakamaError& Error)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnError.Broadcast(Error);
-				Self->SetReadyToDestroy();
-			}
-		}
-	);
+  NakamaApi::ListSubscriptions(
+    StoredClientConfig,
+    Session,
+    Limit,
+    Cursor,
+    [WeakThis](const FNakamaSubscriptionList& Result)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnSuccess.Broadcast(Result);
+        Self->SetReadyToDestroy();
+      }
+    },
+  	[WeakThis](const FNakamaError& Error)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnError.Broadcast(Error);
+        Self->SetReadyToDestroy();
+      }
+    }
+  );
 }
 
-// ListTournaments
 UNakamaClientListTournaments* UNakamaClientListTournaments::ListTournaments(
-	UObject* WorldContextObject,
-	FNakamaClientConfig Client,
-	const FNakamaSession& Session,
-	int32 CategoryStart,
-	int32 CategoryEnd,
-	int32 StartTime,
-	int32 EndTime,
-	int32 Limit,
-	FString Cursor)
+  UObject* WorldContextObject
+  , FNakamaClientConfig ClientConfig
+  , const FNakamaSession& Session
+  , int32 CategoryStart
+  , int32 CategoryEnd
+  , int32 StartTime
+  , int32 EndTime
+  , int32 Limit
+  , const FString& Cursor
+)
 {
-	UNakamaClientListTournaments* Action = NewObject<UNakamaClientListTournaments>(GetTransientPackage());
-	Action->Client = Client;
-	Action->Session = Session;
-	Action->StoredCategoryStart = CategoryStart;
-	Action->StoredCategoryEnd = CategoryEnd;
-	Action->StoredStartTime = StartTime;
-	Action->StoredEndTime = EndTime;
-	Action->StoredLimit = Limit;
-	Action->StoredCursor = Cursor;
-	Action->RegisterWithGameInstance(WorldContextObject);
-	return Action;
+  UNakamaClientListTournaments* Action = NewObject<UNakamaClientListTournaments>(GetTransientPackage());
+  Action->StoredClientConfig = ClientConfig;
+  Action->StoredSession = Session;
+  Action->StoredCategoryStart = CategoryStart;
+  Action->StoredCategoryEnd = CategoryEnd;
+  Action->StoredStartTime = StartTime;
+  Action->StoredEndTime = EndTime;
+  Action->StoredLimit = Limit;
+  Action->StoredCursor = Cursor;
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
 }
 
 void UNakamaClientListTournaments::Activate()
 {
-	static const TCHAR* TraceScope_ListTournaments = TEXT("NakamaBP_ListTournaments");
-	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListTournaments);
+  static const TCHAR* TraceScope_ListTournaments = TEXT("NakamaBP_ListTournaments");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListTournaments);
 
-	TWeakObjectPtr<UNakamaClientListTournaments> WeakThis(this);
+  TWeakObjectPtr<UNakamaClientListTournaments> WeakThis(this);
 
-	NakamaApi::ListTournaments(
-		Client,
-		Session,
-		StoredCategoryStart,
-		StoredCategoryEnd,
-		StoredStartTime,
-		StoredEndTime,
-		StoredLimit,
-		StoredCursor,
-		[WeakThis](const FNakamaTournamentList& Result)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnSuccess.Broadcast(Result);
-				Self->SetReadyToDestroy();
-			}
-		},
-		[WeakThis](const FNakamaError& Error)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnError.Broadcast(Error);
-				Self->SetReadyToDestroy();
-			}
-		}
-	);
+  NakamaApi::ListTournaments(
+    StoredClientConfig,
+    Session,
+    CategoryStart,
+    CategoryEnd,
+    StartTime,
+    EndTime,
+    Limit,
+    Cursor,
+    [WeakThis](const FNakamaTournamentList& Result)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnSuccess.Broadcast(Result);
+        Self->SetReadyToDestroy();
+      }
+    },
+  	[WeakThis](const FNakamaError& Error)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnError.Broadcast(Error);
+        Self->SetReadyToDestroy();
+      }
+    }
+  );
 }
 
-// ListTournamentRecords
 UNakamaClientListTournamentRecords* UNakamaClientListTournamentRecords::ListTournamentRecords(
-	UObject* WorldContextObject,
-	FNakamaClientConfig Client,
-	const FNakamaSession& Session,
-	FString TournamentId,
-	const TArray<FString>& OwnerIds,
-	int32 Limit,
-	FString Cursor,
-	int64 Expiry)
+  UObject* WorldContextObject
+  , FNakamaClientConfig ClientConfig
+  , const FNakamaSession& Session
+  , const FString& TournamentId
+  , const TArray<FString>& OwnerIds
+  , int32 Limit
+  , const FString& Cursor
+  , int64 Expiry
+)
 {
-	UNakamaClientListTournamentRecords* Action = NewObject<UNakamaClientListTournamentRecords>(GetTransientPackage());
-	Action->Client = Client;
-	Action->Session = Session;
-	Action->StoredTournamentId = TournamentId;
-	Action->StoredOwnerIds = OwnerIds;
-	Action->StoredLimit = Limit;
-	Action->StoredCursor = Cursor;
-	Action->StoredExpiry = Expiry;
-	Action->RegisterWithGameInstance(WorldContextObject);
-	return Action;
+  UNakamaClientListTournamentRecords* Action = NewObject<UNakamaClientListTournamentRecords>(GetTransientPackage());
+  Action->StoredClientConfig = ClientConfig;
+  Action->StoredSession = Session;
+  Action->StoredTournamentId = TournamentId;
+  Action->StoredOwnerIds = OwnerIds;
+  Action->StoredLimit = Limit;
+  Action->StoredCursor = Cursor;
+  Action->StoredExpiry = Expiry;
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
 }
 
 void UNakamaClientListTournamentRecords::Activate()
 {
-	static const TCHAR* TraceScope_ListTournamentRecords = TEXT("NakamaBP_ListTournamentRecords");
-	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListTournamentRecords);
+  static const TCHAR* TraceScope_ListTournamentRecords = TEXT("NakamaBP_ListTournamentRecords");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListTournamentRecords);
 
-	TWeakObjectPtr<UNakamaClientListTournamentRecords> WeakThis(this);
+  TWeakObjectPtr<UNakamaClientListTournamentRecords> WeakThis(this);
 
-	NakamaApi::ListTournamentRecords(
-		Client,
-		Session,
-		StoredTournamentId,
-		StoredOwnerIds,
-		StoredLimit,
-		StoredCursor,
-		StoredExpiry,
-		[WeakThis](const FNakamaTournamentRecordList& Result)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnSuccess.Broadcast(Result);
-				Self->SetReadyToDestroy();
-			}
-		},
-		[WeakThis](const FNakamaError& Error)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnError.Broadcast(Error);
-				Self->SetReadyToDestroy();
-			}
-		}
-	);
+  NakamaApi::ListTournamentRecords(
+    StoredClientConfig,
+    Session,
+    TournamentId,
+    OwnerIds,
+    Limit,
+    Cursor,
+    Expiry,
+    [WeakThis](const FNakamaTournamentRecordList& Result)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnSuccess.Broadcast(Result);
+        Self->SetReadyToDestroy();
+      }
+    },
+  	[WeakThis](const FNakamaError& Error)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnError.Broadcast(Error);
+        Self->SetReadyToDestroy();
+      }
+    }
+  );
 }
 
-// ListTournamentRecordsAroundOwner
 UNakamaClientListTournamentRecordsAroundOwner* UNakamaClientListTournamentRecordsAroundOwner::ListTournamentRecordsAroundOwner(
-	UObject* WorldContextObject,
-	FNakamaClientConfig Client,
-	const FNakamaSession& Session,
-	FString TournamentId,
-	int32 Limit,
-	FString OwnerId,
-	int64 Expiry,
-	FString Cursor)
+  UObject* WorldContextObject
+  , FNakamaClientConfig ClientConfig
+  , const FNakamaSession& Session
+  , const FString& TournamentId
+  , int32 Limit
+  , const FString& OwnerId
+  , int64 Expiry
+  , const FString& Cursor
+)
 {
-	UNakamaClientListTournamentRecordsAroundOwner* Action = NewObject<UNakamaClientListTournamentRecordsAroundOwner>(GetTransientPackage());
-	Action->Client = Client;
-	Action->Session = Session;
-	Action->StoredTournamentId = TournamentId;
-	Action->StoredLimit = Limit;
-	Action->StoredOwnerId = OwnerId;
-	Action->StoredExpiry = Expiry;
-	Action->StoredCursor = Cursor;
-	Action->RegisterWithGameInstance(WorldContextObject);
-	return Action;
+  UNakamaClientListTournamentRecordsAroundOwner* Action = NewObject<UNakamaClientListTournamentRecordsAroundOwner>(GetTransientPackage());
+  Action->StoredClientConfig = ClientConfig;
+  Action->StoredSession = Session;
+  Action->StoredTournamentId = TournamentId;
+  Action->StoredLimit = Limit;
+  Action->StoredOwnerId = OwnerId;
+  Action->StoredExpiry = Expiry;
+  Action->StoredCursor = Cursor;
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
 }
 
 void UNakamaClientListTournamentRecordsAroundOwner::Activate()
 {
-	static const TCHAR* TraceScope_ListTournamentRecordsAroundOwner = TEXT("NakamaBP_ListTournamentRecordsAroundOwner");
-	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListTournamentRecordsAroundOwner);
+  static const TCHAR* TraceScope_ListTournamentRecordsAroundOwner = TEXT("NakamaBP_ListTournamentRecordsAroundOwner");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListTournamentRecordsAroundOwner);
 
-	TWeakObjectPtr<UNakamaClientListTournamentRecordsAroundOwner> WeakThis(this);
+  TWeakObjectPtr<UNakamaClientListTournamentRecordsAroundOwner> WeakThis(this);
 
-	NakamaApi::ListTournamentRecordsAroundOwner(
-		Client,
-		Session,
-		StoredTournamentId,
-		StoredLimit,
-		StoredOwnerId,
-		StoredExpiry,
-		StoredCursor,
-		[WeakThis](const FNakamaTournamentRecordList& Result)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnSuccess.Broadcast(Result);
-				Self->SetReadyToDestroy();
-			}
-		},
-		[WeakThis](const FNakamaError& Error)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnError.Broadcast(Error);
-				Self->SetReadyToDestroy();
-			}
-		}
-	);
+  NakamaApi::ListTournamentRecordsAroundOwner(
+    StoredClientConfig,
+    Session,
+    TournamentId,
+    Limit,
+    OwnerId,
+    Expiry,
+    Cursor,
+    [WeakThis](const FNakamaTournamentRecordList& Result)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnSuccess.Broadcast(Result);
+        Self->SetReadyToDestroy();
+      }
+    },
+  	[WeakThis](const FNakamaError& Error)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnError.Broadcast(Error);
+        Self->SetReadyToDestroy();
+      }
+    }
+  );
 }
 
-// ListUserGroups
 UNakamaClientListUserGroups* UNakamaClientListUserGroups::ListUserGroups(
-	UObject* WorldContextObject,
-	FNakamaClientConfig Client,
-	const FNakamaSession& Session,
-	FString UserId,
-	int32 Limit,
-	int32 State,
-	FString Cursor)
+  UObject* WorldContextObject
+  , FNakamaClientConfig ClientConfig
+  , const FNakamaSession& Session
+  , const FString& UserId
+  , int32 Limit
+  , int32 State
+  , const FString& Cursor
+)
 {
-	UNakamaClientListUserGroups* Action = NewObject<UNakamaClientListUserGroups>(GetTransientPackage());
-	Action->Client = Client;
-	Action->Session = Session;
-	Action->StoredUserId = UserId;
-	Action->StoredLimit = Limit;
-	Action->StoredState = State;
-	Action->StoredCursor = Cursor;
-	Action->RegisterWithGameInstance(WorldContextObject);
-	return Action;
+  UNakamaClientListUserGroups* Action = NewObject<UNakamaClientListUserGroups>(GetTransientPackage());
+  Action->StoredClientConfig = ClientConfig;
+  Action->StoredSession = Session;
+  Action->StoredUserId = UserId;
+  Action->StoredLimit = Limit;
+  Action->StoredState = State;
+  Action->StoredCursor = Cursor;
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
 }
 
 void UNakamaClientListUserGroups::Activate()
 {
-	static const TCHAR* TraceScope_ListUserGroups = TEXT("NakamaBP_ListUserGroups");
-	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListUserGroups);
+  static const TCHAR* TraceScope_ListUserGroups = TEXT("NakamaBP_ListUserGroups");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ListUserGroups);
 
-	TWeakObjectPtr<UNakamaClientListUserGroups> WeakThis(this);
+  TWeakObjectPtr<UNakamaClientListUserGroups> WeakThis(this);
 
-	NakamaApi::ListUserGroups(
-		Client,
-		Session,
-		StoredUserId,
-		StoredLimit,
-		StoredState,
-		StoredCursor,
-		[WeakThis](const FNakamaUserGroupList& Result)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnSuccess.Broadcast(Result);
-				Self->SetReadyToDestroy();
-			}
-		},
-		[WeakThis](const FNakamaError& Error)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnError.Broadcast(Error);
-				Self->SetReadyToDestroy();
-			}
-		}
-	);
+  NakamaApi::ListUserGroups(
+    StoredClientConfig,
+    Session,
+    UserId,
+    Limit,
+    State,
+    Cursor,
+    [WeakThis](const FNakamaUserGroupList& Result)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnSuccess.Broadcast(Result);
+        Self->SetReadyToDestroy();
+      }
+    },
+  	[WeakThis](const FNakamaError& Error)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnError.Broadcast(Error);
+        Self->SetReadyToDestroy();
+      }
+    }
+  );
 }
 
-// PromoteGroupUsers
 UNakamaClientPromoteGroupUsers* UNakamaClientPromoteGroupUsers::PromoteGroupUsers(
-	UObject* WorldContextObject,
-	FNakamaClientConfig Client,
-	const FNakamaSession& Session,
-	FString GroupId,
-	const TArray<FString>& UserIds)
+  UObject* WorldContextObject
+  , FNakamaClientConfig ClientConfig
+  , const FNakamaSession& Session
+  , const FString& GroupId
+  , const TArray<FString>& UserIds
+)
 {
-	UNakamaClientPromoteGroupUsers* Action = NewObject<UNakamaClientPromoteGroupUsers>(GetTransientPackage());
-	Action->Client = Client;
-	Action->Session = Session;
-	Action->StoredGroupId = GroupId;
-	Action->StoredUserIds = UserIds;
-	Action->RegisterWithGameInstance(WorldContextObject);
-	return Action;
+  UNakamaClientPromoteGroupUsers* Action = NewObject<UNakamaClientPromoteGroupUsers>(GetTransientPackage());
+  Action->StoredClientConfig = ClientConfig;
+  Action->StoredSession = Session;
+  Action->StoredGroupId = GroupId;
+  Action->StoredUserIds = UserIds;
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
 }
 
 void UNakamaClientPromoteGroupUsers::Activate()
 {
-	static const TCHAR* TraceScope_PromoteGroupUsers = TEXT("NakamaBP_PromoteGroupUsers");
-	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_PromoteGroupUsers);
+  static const TCHAR* TraceScope_PromoteGroupUsers = TEXT("NakamaBP_PromoteGroupUsers");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_PromoteGroupUsers);
 
-	TWeakObjectPtr<UNakamaClientPromoteGroupUsers> WeakThis(this);
+  TWeakObjectPtr<UNakamaClientPromoteGroupUsers> WeakThis(this);
 
-	NakamaApi::PromoteGroupUsers(
-		Client,
-		Session,
-		StoredGroupId,
-		StoredUserIds,
-		[WeakThis]()
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnSuccess.Broadcast();
-				Self->SetReadyToDestroy();
-			}
-		},
-		[WeakThis](const FNakamaError& Error)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnError.Broadcast(Error);
-				Self->SetReadyToDestroy();
-			}
-		}
-	);
+  NakamaApi::PromoteGroupUsers(
+    StoredClientConfig,
+    Session,
+    GroupId,
+    UserIds,
+    [WeakThis]()
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnSuccess.Broadcast();
+        Self->SetReadyToDestroy();
+      }
+    },
+  	[WeakThis](const FNakamaError& Error)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnError.Broadcast(Error);
+        Self->SetReadyToDestroy();
+      }
+    }
+  );
 }
 
-// DemoteGroupUsers
 UNakamaClientDemoteGroupUsers* UNakamaClientDemoteGroupUsers::DemoteGroupUsers(
-	UObject* WorldContextObject,
-	FNakamaClientConfig Client,
-	const FNakamaSession& Session,
-	FString GroupId,
-	const TArray<FString>& UserIds)
+  UObject* WorldContextObject
+  , FNakamaClientConfig ClientConfig
+  , const FNakamaSession& Session
+  , const FString& GroupId
+  , const TArray<FString>& UserIds
+)
 {
-	UNakamaClientDemoteGroupUsers* Action = NewObject<UNakamaClientDemoteGroupUsers>(GetTransientPackage());
-	Action->Client = Client;
-	Action->Session = Session;
-	Action->StoredGroupId = GroupId;
-	Action->StoredUserIds = UserIds;
-	Action->RegisterWithGameInstance(WorldContextObject);
-	return Action;
+  UNakamaClientDemoteGroupUsers* Action = NewObject<UNakamaClientDemoteGroupUsers>(GetTransientPackage());
+  Action->StoredClientConfig = ClientConfig;
+  Action->StoredSession = Session;
+  Action->StoredGroupId = GroupId;
+  Action->StoredUserIds = UserIds;
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
 }
 
 void UNakamaClientDemoteGroupUsers::Activate()
 {
-	static const TCHAR* TraceScope_DemoteGroupUsers = TEXT("NakamaBP_DemoteGroupUsers");
-	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_DemoteGroupUsers);
+  static const TCHAR* TraceScope_DemoteGroupUsers = TEXT("NakamaBP_DemoteGroupUsers");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_DemoteGroupUsers);
 
-	TWeakObjectPtr<UNakamaClientDemoteGroupUsers> WeakThis(this);
+  TWeakObjectPtr<UNakamaClientDemoteGroupUsers> WeakThis(this);
 
-	NakamaApi::DemoteGroupUsers(
-		Client,
-		Session,
-		StoredGroupId,
-		StoredUserIds,
-		[WeakThis]()
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnSuccess.Broadcast();
-				Self->SetReadyToDestroy();
-			}
-		},
-		[WeakThis](const FNakamaError& Error)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnError.Broadcast(Error);
-				Self->SetReadyToDestroy();
-			}
-		}
-	);
+  NakamaApi::DemoteGroupUsers(
+    StoredClientConfig,
+    Session,
+    GroupId,
+    UserIds,
+    [WeakThis]()
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnSuccess.Broadcast();
+        Self->SetReadyToDestroy();
+      }
+    },
+  	[WeakThis](const FNakamaError& Error)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnError.Broadcast(Error);
+        Self->SetReadyToDestroy();
+      }
+    }
+  );
 }
 
-// ReadStorageObjects
 UNakamaClientReadStorageObjects* UNakamaClientReadStorageObjects::ReadStorageObjects(
-	UObject* WorldContextObject,
-	FNakamaClientConfig Client,
-	const FNakamaSession& Session,
-	const TArray<FNakamaReadStorageObjectId>& ObjectIds)
+  UObject* WorldContextObject
+  , FNakamaClientConfig ClientConfig
+  , const FNakamaSession& Session
+  , const TArray<FNakamaReadStorageObjectId>& ObjectIds
+)
 {
-	UNakamaClientReadStorageObjects* Action = NewObject<UNakamaClientReadStorageObjects>(GetTransientPackage());
-	Action->Client = Client;
-	Action->Session = Session;
-	Action->StoredObjectIds = ObjectIds;
-	Action->RegisterWithGameInstance(WorldContextObject);
-	return Action;
+  UNakamaClientReadStorageObjects* Action = NewObject<UNakamaClientReadStorageObjects>(GetTransientPackage());
+  Action->StoredClientConfig = ClientConfig;
+  Action->StoredSession = Session;
+  Action->StoredObjectIds = ObjectIds;
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
 }
 
 void UNakamaClientReadStorageObjects::Activate()
 {
-	static const TCHAR* TraceScope_ReadStorageObjects = TEXT("NakamaBP_ReadStorageObjects");
-	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ReadStorageObjects);
+  static const TCHAR* TraceScope_ReadStorageObjects = TEXT("NakamaBP_ReadStorageObjects");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ReadStorageObjects);
 
-	TWeakObjectPtr<UNakamaClientReadStorageObjects> WeakThis(this);
+  TWeakObjectPtr<UNakamaClientReadStorageObjects> WeakThis(this);
 
-	NakamaApi::ReadStorageObjects(
-		Client,
-		Session,
-		StoredObjectIds,
-		[WeakThis](const FNakamaStorageObjects& Result)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnSuccess.Broadcast(Result);
-				Self->SetReadyToDestroy();
-			}
-		},
-		[WeakThis](const FNakamaError& Error)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnError.Broadcast(Error);
-				Self->SetReadyToDestroy();
-			}
-		}
-	);
+  NakamaApi::ReadStorageObjects(
+    StoredClientConfig,
+    Session,
+    ObjectIds,
+    [WeakThis](const FNakamaStorageObjects& Result)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnSuccess.Broadcast(Result);
+        Self->SetReadyToDestroy();
+      }
+    },
+  	[WeakThis](const FNakamaError& Error)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnError.Broadcast(Error);
+        Self->SetReadyToDestroy();
+      }
+    }
+  );
 }
 
-// RpcFunc
 UNakamaClientRpcFunc* UNakamaClientRpcFunc::RpcFunc(
-	UObject* WorldContextObject,
-	FNakamaClientConfig Client,
-	const FNakamaSession& Session,
-	FString Id,
-	const TMap<FString, FString>& Payload,
-	FString HttpKey)
+  UObject* WorldContextObject
+  , FNakamaClientConfig ClientConfig
+  , const FNakamaSession& Session
+  , const FString& Id
+  , const FString& Payload
+  , const FString& HttpKey
+)
 {
-	UNakamaClientRpcFunc* Action = NewObject<UNakamaClientRpcFunc>(GetTransientPackage());
-	Action->Client = Client;
-	Action->Session = Session;
-	Action->StoredId = Id;
-	Action->StoredPayload = Payload;
-	Action->StoredHttpKey = HttpKey;
-	Action->RegisterWithGameInstance(WorldContextObject);
-	return Action;
+  UNakamaClientRpcFunc* Action = NewObject<UNakamaClientRpcFunc>(GetTransientPackage());
+  Action->StoredClientConfig = ClientConfig;
+  Action->StoredSession = Session;
+  Action->StoredId = Id;
+  Action->StoredPayload = Payload;
+  Action->StoredHttpKey = HttpKey;
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
 }
 
 void UNakamaClientRpcFunc::Activate()
 {
-	static const TCHAR* TraceScope_RpcFunc = TEXT("NakamaBP_RpcFunc");
-	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_RpcFunc);
+  static const TCHAR* TraceScope_RpcFunc = TEXT("NakamaBP_RpcFunc");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_RpcFunc);
 
-	TWeakObjectPtr<UNakamaClientRpcFunc> WeakThis(this);
+  TWeakObjectPtr<UNakamaClientRpcFunc> WeakThis(this);
 
-	NakamaApi::RpcFunc(
-		Client,
-		Session,
-		StoredId,
-		[&]() -> TSharedPtr<FJsonObject> {
-			if (StoredPayload.Num() == 0) { return nullptr; }
-			TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-			for (const auto& Pair : StoredPayload)
-			{
-				Json->SetStringField(Pair.Key, Pair.Value);
-			}
-			return Json;
-		}(),
-		StoredHttpKey,
-		[WeakThis](const FNakamaRpc& Result)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnSuccess.Broadcast(Result);
-				Self->SetReadyToDestroy();
-			}
-		},
-		[WeakThis](const FNakamaError& Error)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnError.Broadcast(Error);
-				Self->SetReadyToDestroy();
-			}
-		}
-	);
+  NakamaApi::RpcFunc(
+    StoredClientConfig,
+    Session,
+    Id,
+    Payload,
+    HttpKey,
+    [WeakThis](const FNakamaRpc& Result)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnSuccess.Broadcast(Result);
+        Self->SetReadyToDestroy();
+      }
+    },
+  	[WeakThis](const FNakamaError& Error)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnError.Broadcast(Error);
+        Self->SetReadyToDestroy();
+      }
+    }
+  );
 }
 
-// UnlinkApple
 UNakamaClientUnlinkApple* UNakamaClientUnlinkApple::UnlinkApple(
-	UObject* WorldContextObject,
-	FNakamaClientConfig Client,
-	const FNakamaSession& Session,
-	FString Token,
-	const TMap<FString, FString>& Vars)
+  UObject* WorldContextObject
+  , FNakamaClientConfig ClientConfig
+  , const FNakamaSession& Session
+  , const FString& Token
+  , const TMap<FString, FString>& Vars
+)
 {
-	UNakamaClientUnlinkApple* Action = NewObject<UNakamaClientUnlinkApple>(GetTransientPackage());
-	Action->Client = Client;
-	Action->Session = Session;
-	Action->StoredToken = Token;
-	Action->StoredVars = Vars;
-	Action->RegisterWithGameInstance(WorldContextObject);
-	return Action;
+  UNakamaClientUnlinkApple* Action = NewObject<UNakamaClientUnlinkApple>(GetTransientPackage());
+  Action->StoredClientConfig = ClientConfig;
+  Action->StoredSession = Session;
+  Action->StoredToken = Token;
+  Action->StoredVars = Vars;
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
 }
 
 void UNakamaClientUnlinkApple::Activate()
 {
-	static const TCHAR* TraceScope_UnlinkApple = TEXT("NakamaBP_UnlinkApple");
-	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_UnlinkApple);
+  static const TCHAR* TraceScope_UnlinkApple = TEXT("NakamaBP_UnlinkApple");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_UnlinkApple);
 
-	TWeakObjectPtr<UNakamaClientUnlinkApple> WeakThis(this);
+  TWeakObjectPtr<UNakamaClientUnlinkApple> WeakThis(this);
 
-	NakamaApi::UnlinkApple(
-		Client,
-		Session,
-		StoredToken,
-		StoredVars,
-		[WeakThis]()
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnSuccess.Broadcast();
-				Self->SetReadyToDestroy();
-			}
-		},
-		[WeakThis](const FNakamaError& Error)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnError.Broadcast(Error);
-				Self->SetReadyToDestroy();
-			}
-		}
-	);
+  NakamaApi::UnlinkApple(
+    StoredClientConfig,
+    Session,
+    Token,
+    Vars,
+    [WeakThis]()
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnSuccess.Broadcast();
+        Self->SetReadyToDestroy();
+      }
+    },
+  	[WeakThis](const FNakamaError& Error)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnError.Broadcast(Error);
+        Self->SetReadyToDestroy();
+      }
+    }
+  );
 }
 
-// UnlinkCustom
 UNakamaClientUnlinkCustom* UNakamaClientUnlinkCustom::UnlinkCustom(
-	UObject* WorldContextObject,
-	FNakamaClientConfig Client,
-	const FNakamaSession& Session,
-	FString Id,
-	const TMap<FString, FString>& Vars)
+  UObject* WorldContextObject
+  , FNakamaClientConfig ClientConfig
+  , const FNakamaSession& Session
+  , const FString& Id
+  , const TMap<FString, FString>& Vars
+)
 {
-	UNakamaClientUnlinkCustom* Action = NewObject<UNakamaClientUnlinkCustom>(GetTransientPackage());
-	Action->Client = Client;
-	Action->Session = Session;
-	Action->StoredId = Id;
-	Action->StoredVars = Vars;
-	Action->RegisterWithGameInstance(WorldContextObject);
-	return Action;
+  UNakamaClientUnlinkCustom* Action = NewObject<UNakamaClientUnlinkCustom>(GetTransientPackage());
+  Action->StoredClientConfig = ClientConfig;
+  Action->StoredSession = Session;
+  Action->StoredId = Id;
+  Action->StoredVars = Vars;
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
 }
 
 void UNakamaClientUnlinkCustom::Activate()
 {
-	static const TCHAR* TraceScope_UnlinkCustom = TEXT("NakamaBP_UnlinkCustom");
-	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_UnlinkCustom);
+  static const TCHAR* TraceScope_UnlinkCustom = TEXT("NakamaBP_UnlinkCustom");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_UnlinkCustom);
 
-	TWeakObjectPtr<UNakamaClientUnlinkCustom> WeakThis(this);
+  TWeakObjectPtr<UNakamaClientUnlinkCustom> WeakThis(this);
 
-	NakamaApi::UnlinkCustom(
-		Client,
-		Session,
-		StoredId,
-		StoredVars,
-		[WeakThis]()
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnSuccess.Broadcast();
-				Self->SetReadyToDestroy();
-			}
-		},
-		[WeakThis](const FNakamaError& Error)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnError.Broadcast(Error);
-				Self->SetReadyToDestroy();
-			}
-		}
-	);
+  NakamaApi::UnlinkCustom(
+    StoredClientConfig,
+    Session,
+    Id,
+    Vars,
+    [WeakThis]()
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnSuccess.Broadcast();
+        Self->SetReadyToDestroy();
+      }
+    },
+  	[WeakThis](const FNakamaError& Error)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnError.Broadcast(Error);
+        Self->SetReadyToDestroy();
+      }
+    }
+  );
 }
 
-// UnlinkDevice
 UNakamaClientUnlinkDevice* UNakamaClientUnlinkDevice::UnlinkDevice(
-	UObject* WorldContextObject,
-	FNakamaClientConfig Client,
-	const FNakamaSession& Session,
-	FString Id,
-	const TMap<FString, FString>& Vars)
+  UObject* WorldContextObject
+  , FNakamaClientConfig ClientConfig
+  , const FNakamaSession& Session
+  , const FString& Id
+  , const TMap<FString, FString>& Vars
+)
 {
-	UNakamaClientUnlinkDevice* Action = NewObject<UNakamaClientUnlinkDevice>(GetTransientPackage());
-	Action->Client = Client;
-	Action->Session = Session;
-	Action->StoredId = Id;
-	Action->StoredVars = Vars;
-	Action->RegisterWithGameInstance(WorldContextObject);
-	return Action;
+  UNakamaClientUnlinkDevice* Action = NewObject<UNakamaClientUnlinkDevice>(GetTransientPackage());
+  Action->StoredClientConfig = ClientConfig;
+  Action->StoredSession = Session;
+  Action->StoredId = Id;
+  Action->StoredVars = Vars;
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
 }
 
 void UNakamaClientUnlinkDevice::Activate()
 {
-	static const TCHAR* TraceScope_UnlinkDevice = TEXT("NakamaBP_UnlinkDevice");
-	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_UnlinkDevice);
+  static const TCHAR* TraceScope_UnlinkDevice = TEXT("NakamaBP_UnlinkDevice");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_UnlinkDevice);
 
-	TWeakObjectPtr<UNakamaClientUnlinkDevice> WeakThis(this);
+  TWeakObjectPtr<UNakamaClientUnlinkDevice> WeakThis(this);
 
-	NakamaApi::UnlinkDevice(
-		Client,
-		Session,
-		StoredId,
-		StoredVars,
-		[WeakThis]()
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnSuccess.Broadcast();
-				Self->SetReadyToDestroy();
-			}
-		},
-		[WeakThis](const FNakamaError& Error)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnError.Broadcast(Error);
-				Self->SetReadyToDestroy();
-			}
-		}
-	);
+  NakamaApi::UnlinkDevice(
+    StoredClientConfig,
+    Session,
+    Id,
+    Vars,
+    [WeakThis]()
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnSuccess.Broadcast();
+        Self->SetReadyToDestroy();
+      }
+    },
+  	[WeakThis](const FNakamaError& Error)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnError.Broadcast(Error);
+        Self->SetReadyToDestroy();
+      }
+    }
+  );
 }
 
-// UnlinkEmail
 UNakamaClientUnlinkEmail* UNakamaClientUnlinkEmail::UnlinkEmail(
-	UObject* WorldContextObject,
-	FNakamaClientConfig Client,
-	const FNakamaSession& Session,
-	FString Email,
-	FString Password,
-	const TMap<FString, FString>& Vars)
+  UObject* WorldContextObject
+  , FNakamaClientConfig ClientConfig
+  , const FNakamaSession& Session
+  , const FString& Email
+  , const FString& Password
+  , const TMap<FString, FString>& Vars
+)
 {
-	UNakamaClientUnlinkEmail* Action = NewObject<UNakamaClientUnlinkEmail>(GetTransientPackage());
-	Action->Client = Client;
-	Action->Session = Session;
-	Action->StoredEmail = Email;
-	Action->StoredPassword = Password;
-	Action->StoredVars = Vars;
-	Action->RegisterWithGameInstance(WorldContextObject);
-	return Action;
+  UNakamaClientUnlinkEmail* Action = NewObject<UNakamaClientUnlinkEmail>(GetTransientPackage());
+  Action->StoredClientConfig = ClientConfig;
+  Action->StoredSession = Session;
+  Action->StoredEmail = Email;
+  Action->StoredPassword = Password;
+  Action->StoredVars = Vars;
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
 }
 
 void UNakamaClientUnlinkEmail::Activate()
 {
-	static const TCHAR* TraceScope_UnlinkEmail = TEXT("NakamaBP_UnlinkEmail");
-	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_UnlinkEmail);
+  static const TCHAR* TraceScope_UnlinkEmail = TEXT("NakamaBP_UnlinkEmail");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_UnlinkEmail);
 
-	TWeakObjectPtr<UNakamaClientUnlinkEmail> WeakThis(this);
+  TWeakObjectPtr<UNakamaClientUnlinkEmail> WeakThis(this);
 
-	NakamaApi::UnlinkEmail(
-		Client,
-		Session,
-		StoredEmail,
-		StoredPassword,
-		StoredVars,
-		[WeakThis]()
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnSuccess.Broadcast();
-				Self->SetReadyToDestroy();
-			}
-		},
-		[WeakThis](const FNakamaError& Error)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnError.Broadcast(Error);
-				Self->SetReadyToDestroy();
-			}
-		}
-	);
+  NakamaApi::UnlinkEmail(
+    StoredClientConfig,
+    Session,
+    Email,
+    Password,
+    Vars,
+    [WeakThis]()
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnSuccess.Broadcast();
+        Self->SetReadyToDestroy();
+      }
+    },
+  	[WeakThis](const FNakamaError& Error)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnError.Broadcast(Error);
+        Self->SetReadyToDestroy();
+      }
+    }
+  );
 }
 
-// UnlinkFacebook
 UNakamaClientUnlinkFacebook* UNakamaClientUnlinkFacebook::UnlinkFacebook(
-	UObject* WorldContextObject,
-	FNakamaClientConfig Client,
-	const FNakamaSession& Session,
-	FString Token,
-	const TMap<FString, FString>& Vars)
+  UObject* WorldContextObject
+  , FNakamaClientConfig ClientConfig
+  , const FNakamaSession& Session
+  , const FString& Token
+  , const TMap<FString, FString>& Vars
+)
 {
-	UNakamaClientUnlinkFacebook* Action = NewObject<UNakamaClientUnlinkFacebook>(GetTransientPackage());
-	Action->Client = Client;
-	Action->Session = Session;
-	Action->StoredToken = Token;
-	Action->StoredVars = Vars;
-	Action->RegisterWithGameInstance(WorldContextObject);
-	return Action;
+  UNakamaClientUnlinkFacebook* Action = NewObject<UNakamaClientUnlinkFacebook>(GetTransientPackage());
+  Action->StoredClientConfig = ClientConfig;
+  Action->StoredSession = Session;
+  Action->StoredToken = Token;
+  Action->StoredVars = Vars;
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
 }
 
 void UNakamaClientUnlinkFacebook::Activate()
 {
-	static const TCHAR* TraceScope_UnlinkFacebook = TEXT("NakamaBP_UnlinkFacebook");
-	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_UnlinkFacebook);
+  static const TCHAR* TraceScope_UnlinkFacebook = TEXT("NakamaBP_UnlinkFacebook");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_UnlinkFacebook);
 
-	TWeakObjectPtr<UNakamaClientUnlinkFacebook> WeakThis(this);
+  TWeakObjectPtr<UNakamaClientUnlinkFacebook> WeakThis(this);
 
-	NakamaApi::UnlinkFacebook(
-		Client,
-		Session,
-		StoredToken,
-		StoredVars,
-		[WeakThis]()
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnSuccess.Broadcast();
-				Self->SetReadyToDestroy();
-			}
-		},
-		[WeakThis](const FNakamaError& Error)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnError.Broadcast(Error);
-				Self->SetReadyToDestroy();
-			}
-		}
-	);
+  NakamaApi::UnlinkFacebook(
+    StoredClientConfig,
+    Session,
+    Token,
+    Vars,
+    [WeakThis]()
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnSuccess.Broadcast();
+        Self->SetReadyToDestroy();
+      }
+    },
+  	[WeakThis](const FNakamaError& Error)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnError.Broadcast(Error);
+        Self->SetReadyToDestroy();
+      }
+    }
+  );
 }
 
-// UnlinkFacebookInstantGame
 UNakamaClientUnlinkFacebookInstantGame* UNakamaClientUnlinkFacebookInstantGame::UnlinkFacebookInstantGame(
-	UObject* WorldContextObject,
-	FNakamaClientConfig Client,
-	const FNakamaSession& Session,
-	FString SignedPlayerInfo,
-	const TMap<FString, FString>& Vars)
+  UObject* WorldContextObject
+  , FNakamaClientConfig ClientConfig
+  , const FNakamaSession& Session
+  , const FString& SignedPlayerInfo
+  , const TMap<FString, FString>& Vars
+)
 {
-	UNakamaClientUnlinkFacebookInstantGame* Action = NewObject<UNakamaClientUnlinkFacebookInstantGame>(GetTransientPackage());
-	Action->Client = Client;
-	Action->Session = Session;
-	Action->StoredSignedPlayerInfo = SignedPlayerInfo;
-	Action->StoredVars = Vars;
-	Action->RegisterWithGameInstance(WorldContextObject);
-	return Action;
+  UNakamaClientUnlinkFacebookInstantGame* Action = NewObject<UNakamaClientUnlinkFacebookInstantGame>(GetTransientPackage());
+  Action->StoredClientConfig = ClientConfig;
+  Action->StoredSession = Session;
+  Action->StoredSignedPlayerInfo = SignedPlayerInfo;
+  Action->StoredVars = Vars;
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
 }
 
 void UNakamaClientUnlinkFacebookInstantGame::Activate()
 {
-	static const TCHAR* TraceScope_UnlinkFacebookInstantGame = TEXT("NakamaBP_UnlinkFacebookInstantGame");
-	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_UnlinkFacebookInstantGame);
+  static const TCHAR* TraceScope_UnlinkFacebookInstantGame = TEXT("NakamaBP_UnlinkFacebookInstantGame");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_UnlinkFacebookInstantGame);
 
-	TWeakObjectPtr<UNakamaClientUnlinkFacebookInstantGame> WeakThis(this);
+  TWeakObjectPtr<UNakamaClientUnlinkFacebookInstantGame> WeakThis(this);
 
-	NakamaApi::UnlinkFacebookInstantGame(
-		Client,
-		Session,
-		StoredSignedPlayerInfo,
-		StoredVars,
-		[WeakThis]()
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnSuccess.Broadcast();
-				Self->SetReadyToDestroy();
-			}
-		},
-		[WeakThis](const FNakamaError& Error)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnError.Broadcast(Error);
-				Self->SetReadyToDestroy();
-			}
-		}
-	);
+  NakamaApi::UnlinkFacebookInstantGame(
+    StoredClientConfig,
+    Session,
+    SignedPlayerInfo,
+    Vars,
+    [WeakThis]()
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnSuccess.Broadcast();
+        Self->SetReadyToDestroy();
+      }
+    },
+  	[WeakThis](const FNakamaError& Error)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnError.Broadcast(Error);
+        Self->SetReadyToDestroy();
+      }
+    }
+  );
 }
 
-// UnlinkGameCenter
 UNakamaClientUnlinkGameCenter* UNakamaClientUnlinkGameCenter::UnlinkGameCenter(
-	UObject* WorldContextObject,
-	FNakamaClientConfig Client,
-	const FNakamaSession& Session,
-	FString PlayerId,
-	FString BundleId,
-	int64 TimestampSeconds,
-	FString Salt,
-	FString Signature,
-	FString PublicKeyUrl,
-	const TMap<FString, FString>& Vars)
+  UObject* WorldContextObject
+  , FNakamaClientConfig ClientConfig
+  , const FNakamaSession& Session
+  , const FString& PlayerId
+  , const FString& BundleId
+  , int64 TimestampSeconds
+  , const FString& Salt
+  , const FString& Signature
+  , const FString& PublicKeyUrl
+  , const TMap<FString, FString>& Vars
+)
 {
-	UNakamaClientUnlinkGameCenter* Action = NewObject<UNakamaClientUnlinkGameCenter>(GetTransientPackage());
-	Action->Client = Client;
-	Action->Session = Session;
-	Action->StoredPlayerId = PlayerId;
-	Action->StoredBundleId = BundleId;
-	Action->StoredTimestampSeconds = TimestampSeconds;
-	Action->StoredSalt = Salt;
-	Action->StoredSignature = Signature;
-	Action->StoredPublicKeyUrl = PublicKeyUrl;
-	Action->StoredVars = Vars;
-	Action->RegisterWithGameInstance(WorldContextObject);
-	return Action;
+  UNakamaClientUnlinkGameCenter* Action = NewObject<UNakamaClientUnlinkGameCenter>(GetTransientPackage());
+  Action->StoredClientConfig = ClientConfig;
+  Action->StoredSession = Session;
+  Action->StoredPlayerId = PlayerId;
+  Action->StoredBundleId = BundleId;
+  Action->StoredTimestampSeconds = TimestampSeconds;
+  Action->StoredSalt = Salt;
+  Action->StoredSignature = Signature;
+  Action->StoredPublicKeyUrl = PublicKeyUrl;
+  Action->StoredVars = Vars;
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
 }
 
 void UNakamaClientUnlinkGameCenter::Activate()
 {
-	static const TCHAR* TraceScope_UnlinkGameCenter = TEXT("NakamaBP_UnlinkGameCenter");
-	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_UnlinkGameCenter);
+  static const TCHAR* TraceScope_UnlinkGameCenter = TEXT("NakamaBP_UnlinkGameCenter");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_UnlinkGameCenter);
 
-	TWeakObjectPtr<UNakamaClientUnlinkGameCenter> WeakThis(this);
+  TWeakObjectPtr<UNakamaClientUnlinkGameCenter> WeakThis(this);
 
-	NakamaApi::UnlinkGameCenter(
-		Client,
-		Session,
-		StoredPlayerId,
-		StoredBundleId,
-		StoredTimestampSeconds,
-		StoredSalt,
-		StoredSignature,
-		StoredPublicKeyUrl,
-		StoredVars,
-		[WeakThis]()
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnSuccess.Broadcast();
-				Self->SetReadyToDestroy();
-			}
-		},
-		[WeakThis](const FNakamaError& Error)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnError.Broadcast(Error);
-				Self->SetReadyToDestroy();
-			}
-		}
-	);
+  NakamaApi::UnlinkGameCenter(
+    StoredClientConfig,
+    Session,
+    PlayerId,
+    BundleId,
+    TimestampSeconds,
+    Salt,
+    Signature,
+    PublicKeyUrl,
+    Vars,
+    [WeakThis]()
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnSuccess.Broadcast();
+        Self->SetReadyToDestroy();
+      }
+    },
+  	[WeakThis](const FNakamaError& Error)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnError.Broadcast(Error);
+        Self->SetReadyToDestroy();
+      }
+    }
+  );
 }
 
-// UnlinkGoogle
 UNakamaClientUnlinkGoogle* UNakamaClientUnlinkGoogle::UnlinkGoogle(
-	UObject* WorldContextObject,
-	FNakamaClientConfig Client,
-	const FNakamaSession& Session,
-	FString Token,
-	const TMap<FString, FString>& Vars)
+  UObject* WorldContextObject
+  , FNakamaClientConfig ClientConfig
+  , const FNakamaSession& Session
+  , const FString& Token
+  , const TMap<FString, FString>& Vars
+)
 {
-	UNakamaClientUnlinkGoogle* Action = NewObject<UNakamaClientUnlinkGoogle>(GetTransientPackage());
-	Action->Client = Client;
-	Action->Session = Session;
-	Action->StoredToken = Token;
-	Action->StoredVars = Vars;
-	Action->RegisterWithGameInstance(WorldContextObject);
-	return Action;
+  UNakamaClientUnlinkGoogle* Action = NewObject<UNakamaClientUnlinkGoogle>(GetTransientPackage());
+  Action->StoredClientConfig = ClientConfig;
+  Action->StoredSession = Session;
+  Action->StoredToken = Token;
+  Action->StoredVars = Vars;
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
 }
 
 void UNakamaClientUnlinkGoogle::Activate()
 {
-	static const TCHAR* TraceScope_UnlinkGoogle = TEXT("NakamaBP_UnlinkGoogle");
-	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_UnlinkGoogle);
+  static const TCHAR* TraceScope_UnlinkGoogle = TEXT("NakamaBP_UnlinkGoogle");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_UnlinkGoogle);
 
-	TWeakObjectPtr<UNakamaClientUnlinkGoogle> WeakThis(this);
+  TWeakObjectPtr<UNakamaClientUnlinkGoogle> WeakThis(this);
 
-	NakamaApi::UnlinkGoogle(
-		Client,
-		Session,
-		StoredToken,
-		StoredVars,
-		[WeakThis]()
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnSuccess.Broadcast();
-				Self->SetReadyToDestroy();
-			}
-		},
-		[WeakThis](const FNakamaError& Error)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnError.Broadcast(Error);
-				Self->SetReadyToDestroy();
-			}
-		}
-	);
+  NakamaApi::UnlinkGoogle(
+    StoredClientConfig,
+    Session,
+    Token,
+    Vars,
+    [WeakThis]()
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnSuccess.Broadcast();
+        Self->SetReadyToDestroy();
+      }
+    },
+  	[WeakThis](const FNakamaError& Error)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnError.Broadcast(Error);
+        Self->SetReadyToDestroy();
+      }
+    }
+  );
 }
 
-// UnlinkSteam
 UNakamaClientUnlinkSteam* UNakamaClientUnlinkSteam::UnlinkSteam(
-	UObject* WorldContextObject,
-	FNakamaClientConfig Client,
-	const FNakamaSession& Session,
-	FString Token,
-	const TMap<FString, FString>& Vars)
+  UObject* WorldContextObject
+  , FNakamaClientConfig ClientConfig
+  , const FNakamaSession& Session
+  , const FString& Token
+  , const TMap<FString, FString>& Vars
+)
 {
-	UNakamaClientUnlinkSteam* Action = NewObject<UNakamaClientUnlinkSteam>(GetTransientPackage());
-	Action->Client = Client;
-	Action->Session = Session;
-	Action->StoredToken = Token;
-	Action->StoredVars = Vars;
-	Action->RegisterWithGameInstance(WorldContextObject);
-	return Action;
+  UNakamaClientUnlinkSteam* Action = NewObject<UNakamaClientUnlinkSteam>(GetTransientPackage());
+  Action->StoredClientConfig = ClientConfig;
+  Action->StoredSession = Session;
+  Action->StoredToken = Token;
+  Action->StoredVars = Vars;
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
 }
 
 void UNakamaClientUnlinkSteam::Activate()
 {
-	static const TCHAR* TraceScope_UnlinkSteam = TEXT("NakamaBP_UnlinkSteam");
-	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_UnlinkSteam);
+  static const TCHAR* TraceScope_UnlinkSteam = TEXT("NakamaBP_UnlinkSteam");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_UnlinkSteam);
 
-	TWeakObjectPtr<UNakamaClientUnlinkSteam> WeakThis(this);
+  TWeakObjectPtr<UNakamaClientUnlinkSteam> WeakThis(this);
 
-	NakamaApi::UnlinkSteam(
-		Client,
-		Session,
-		StoredToken,
-		StoredVars,
-		[WeakThis]()
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnSuccess.Broadcast();
-				Self->SetReadyToDestroy();
-			}
-		},
-		[WeakThis](const FNakamaError& Error)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnError.Broadcast(Error);
-				Self->SetReadyToDestroy();
-			}
-		}
-	);
+  NakamaApi::UnlinkSteam(
+    StoredClientConfig,
+    Session,
+    Token,
+    Vars,
+    [WeakThis]()
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnSuccess.Broadcast();
+        Self->SetReadyToDestroy();
+      }
+    },
+  	[WeakThis](const FNakamaError& Error)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnError.Broadcast(Error);
+        Self->SetReadyToDestroy();
+      }
+    }
+  );
 }
 
-// UpdateAccount
 UNakamaClientUpdateAccount* UNakamaClientUpdateAccount::UpdateAccount(
-	UObject* WorldContextObject,
-	FNakamaClientConfig Client,
-	const FNakamaSession& Session,
-	FString Username,
-	FString DisplayName,
-	FString AvatarUrl,
-	FString LangTag,
-	FString Location,
-	FString Timezone)
+  UObject* WorldContextObject
+  , FNakamaClientConfig ClientConfig
+  , const FNakamaSession& Session
+  , const FString& Username
+  , const FString& DisplayName
+  , const FString& AvatarUrl
+  , const FString& LangTag
+  , const FString& Location
+  , const FString& Timezone
+)
 {
-	UNakamaClientUpdateAccount* Action = NewObject<UNakamaClientUpdateAccount>(GetTransientPackage());
-	Action->Client = Client;
-	Action->Session = Session;
-	Action->StoredUsername = Username;
-	Action->StoredDisplayName = DisplayName;
-	Action->StoredAvatarUrl = AvatarUrl;
-	Action->StoredLangTag = LangTag;
-	Action->StoredLocation = Location;
-	Action->StoredTimezone = Timezone;
-	Action->RegisterWithGameInstance(WorldContextObject);
-	return Action;
+  UNakamaClientUpdateAccount* Action = NewObject<UNakamaClientUpdateAccount>(GetTransientPackage());
+  Action->StoredClientConfig = ClientConfig;
+  Action->StoredSession = Session;
+  Action->StoredUsername = Username;
+  Action->StoredDisplayName = DisplayName;
+  Action->StoredAvatarUrl = AvatarUrl;
+  Action->StoredLangTag = LangTag;
+  Action->StoredLocation = Location;
+  Action->StoredTimezone = Timezone;
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
 }
 
 void UNakamaClientUpdateAccount::Activate()
 {
-	static const TCHAR* TraceScope_UpdateAccount = TEXT("NakamaBP_UpdateAccount");
-	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_UpdateAccount);
+  static const TCHAR* TraceScope_UpdateAccount = TEXT("NakamaBP_UpdateAccount");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_UpdateAccount);
 
-	TWeakObjectPtr<UNakamaClientUpdateAccount> WeakThis(this);
+  TWeakObjectPtr<UNakamaClientUpdateAccount> WeakThis(this);
 
-	NakamaApi::UpdateAccount(
-		Client,
-		Session,
-		StoredUsername,
-		StoredDisplayName,
-		StoredAvatarUrl,
-		StoredLangTag,
-		StoredLocation,
-		StoredTimezone,
-		[WeakThis]()
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnSuccess.Broadcast();
-				Self->SetReadyToDestroy();
-			}
-		},
-		[WeakThis](const FNakamaError& Error)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnError.Broadcast(Error);
-				Self->SetReadyToDestroy();
-			}
-		}
-	);
+  NakamaApi::UpdateAccount(
+    StoredClientConfig,
+    Session,
+    Username,
+    DisplayName,
+    AvatarUrl,
+    LangTag,
+    Location,
+    Timezone,
+    [WeakThis]()
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnSuccess.Broadcast();
+        Self->SetReadyToDestroy();
+      }
+    },
+  	[WeakThis](const FNakamaError& Error)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnError.Broadcast(Error);
+        Self->SetReadyToDestroy();
+      }
+    }
+  );
 }
 
-// UpdateGroup
 UNakamaClientUpdateGroup* UNakamaClientUpdateGroup::UpdateGroup(
-	UObject* WorldContextObject,
-	FNakamaClientConfig Client,
-	const FNakamaSession& Session,
-	FString GroupId,
-	FString Name,
-	FString Description,
-	FString LangTag,
-	FString AvatarUrl,
-	bool Open)
+  UObject* WorldContextObject
+  , FNakamaClientConfig ClientConfig
+  , const FNakamaSession& Session
+  , const FString& GroupId
+  , const FString& Name
+  , const FString& Description
+  , const FString& LangTag
+  , const FString& AvatarUrl
+  , bool Open
+)
 {
-	UNakamaClientUpdateGroup* Action = NewObject<UNakamaClientUpdateGroup>(GetTransientPackage());
-	Action->Client = Client;
-	Action->Session = Session;
-	Action->StoredGroupId = GroupId;
-	Action->StoredName = Name;
-	Action->StoredDescription = Description;
-	Action->StoredLangTag = LangTag;
-	Action->StoredAvatarUrl = AvatarUrl;
-	Action->StoredOpen = Open;
-	Action->RegisterWithGameInstance(WorldContextObject);
-	return Action;
+  UNakamaClientUpdateGroup* Action = NewObject<UNakamaClientUpdateGroup>(GetTransientPackage());
+  Action->StoredClientConfig = ClientConfig;
+  Action->StoredSession = Session;
+  Action->StoredGroupId = GroupId;
+  Action->StoredName = Name;
+  Action->StoredDescription = Description;
+  Action->StoredLangTag = LangTag;
+  Action->StoredAvatarUrl = AvatarUrl;
+  Action->StoredOpen = Open;
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
 }
 
 void UNakamaClientUpdateGroup::Activate()
 {
-	static const TCHAR* TraceScope_UpdateGroup = TEXT("NakamaBP_UpdateGroup");
-	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_UpdateGroup);
+  static const TCHAR* TraceScope_UpdateGroup = TEXT("NakamaBP_UpdateGroup");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_UpdateGroup);
 
-	TWeakObjectPtr<UNakamaClientUpdateGroup> WeakThis(this);
+  TWeakObjectPtr<UNakamaClientUpdateGroup> WeakThis(this);
 
-	NakamaApi::UpdateGroup(
-		Client,
-		Session,
-		StoredGroupId,
-		StoredName,
-		StoredDescription,
-		StoredLangTag,
-		StoredAvatarUrl,
-		StoredOpen,
-		[WeakThis]()
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnSuccess.Broadcast();
-				Self->SetReadyToDestroy();
-			}
-		},
-		[WeakThis](const FNakamaError& Error)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnError.Broadcast(Error);
-				Self->SetReadyToDestroy();
-			}
-		}
-	);
+  NakamaApi::UpdateGroup(
+    StoredClientConfig,
+    Session,
+    GroupId,
+    Name,
+    Description,
+    LangTag,
+    AvatarUrl,
+    Open,
+    [WeakThis]()
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnSuccess.Broadcast();
+        Self->SetReadyToDestroy();
+      }
+    },
+  	[WeakThis](const FNakamaError& Error)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnError.Broadcast(Error);
+        Self->SetReadyToDestroy();
+      }
+    }
+  );
 }
 
-// ValidatePurchaseApple
 UNakamaClientValidatePurchaseApple* UNakamaClientValidatePurchaseApple::ValidatePurchaseApple(
-	UObject* WorldContextObject,
-	FNakamaClientConfig Client,
-	const FNakamaSession& Session,
-	FString Receipt,
-	bool Persist)
+  UObject* WorldContextObject
+  , FNakamaClientConfig ClientConfig
+  , const FNakamaSession& Session
+  , const FString& Receipt
+  , bool Persist
+)
 {
-	UNakamaClientValidatePurchaseApple* Action = NewObject<UNakamaClientValidatePurchaseApple>(GetTransientPackage());
-	Action->Client = Client;
-	Action->Session = Session;
-	Action->StoredReceipt = Receipt;
-	Action->StoredPersist = Persist;
-	Action->RegisterWithGameInstance(WorldContextObject);
-	return Action;
+  UNakamaClientValidatePurchaseApple* Action = NewObject<UNakamaClientValidatePurchaseApple>(GetTransientPackage());
+  Action->StoredClientConfig = ClientConfig;
+  Action->StoredSession = Session;
+  Action->StoredReceipt = Receipt;
+  Action->StoredPersist = Persist;
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
 }
 
 void UNakamaClientValidatePurchaseApple::Activate()
 {
-	static const TCHAR* TraceScope_ValidatePurchaseApple = TEXT("NakamaBP_ValidatePurchaseApple");
-	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ValidatePurchaseApple);
+  static const TCHAR* TraceScope_ValidatePurchaseApple = TEXT("NakamaBP_ValidatePurchaseApple");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ValidatePurchaseApple);
 
-	TWeakObjectPtr<UNakamaClientValidatePurchaseApple> WeakThis(this);
+  TWeakObjectPtr<UNakamaClientValidatePurchaseApple> WeakThis(this);
 
-	NakamaApi::ValidatePurchaseApple(
-		Client,
-		Session,
-		StoredReceipt,
-		StoredPersist,
-		[WeakThis](const FNakamaValidatePurchaseResponse& Result)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnSuccess.Broadcast(Result);
-				Self->SetReadyToDestroy();
-			}
-		},
-		[WeakThis](const FNakamaError& Error)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnError.Broadcast(Error);
-				Self->SetReadyToDestroy();
-			}
-		}
-	);
+  NakamaApi::ValidatePurchaseApple(
+    StoredClientConfig,
+    Session,
+    Receipt,
+    Persist,
+    [WeakThis](const FNakamaValidatePurchaseResponse& Result)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnSuccess.Broadcast(Result);
+        Self->SetReadyToDestroy();
+      }
+    },
+  	[WeakThis](const FNakamaError& Error)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnError.Broadcast(Error);
+        Self->SetReadyToDestroy();
+      }
+    }
+  );
 }
 
-// ValidateSubscriptionApple
 UNakamaClientValidateSubscriptionApple* UNakamaClientValidateSubscriptionApple::ValidateSubscriptionApple(
-	UObject* WorldContextObject,
-	FNakamaClientConfig Client,
-	const FNakamaSession& Session,
-	FString Receipt,
-	bool Persist)
+  UObject* WorldContextObject
+  , FNakamaClientConfig ClientConfig
+  , const FNakamaSession& Session
+  , const FString& Receipt
+  , bool Persist
+)
 {
-	UNakamaClientValidateSubscriptionApple* Action = NewObject<UNakamaClientValidateSubscriptionApple>(GetTransientPackage());
-	Action->Client = Client;
-	Action->Session = Session;
-	Action->StoredReceipt = Receipt;
-	Action->StoredPersist = Persist;
-	Action->RegisterWithGameInstance(WorldContextObject);
-	return Action;
+  UNakamaClientValidateSubscriptionApple* Action = NewObject<UNakamaClientValidateSubscriptionApple>(GetTransientPackage());
+  Action->StoredClientConfig = ClientConfig;
+  Action->StoredSession = Session;
+  Action->StoredReceipt = Receipt;
+  Action->StoredPersist = Persist;
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
 }
 
 void UNakamaClientValidateSubscriptionApple::Activate()
 {
-	static const TCHAR* TraceScope_ValidateSubscriptionApple = TEXT("NakamaBP_ValidateSubscriptionApple");
-	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ValidateSubscriptionApple);
+  static const TCHAR* TraceScope_ValidateSubscriptionApple = TEXT("NakamaBP_ValidateSubscriptionApple");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ValidateSubscriptionApple);
 
-	TWeakObjectPtr<UNakamaClientValidateSubscriptionApple> WeakThis(this);
+  TWeakObjectPtr<UNakamaClientValidateSubscriptionApple> WeakThis(this);
 
-	NakamaApi::ValidateSubscriptionApple(
-		Client,
-		Session,
-		StoredReceipt,
-		StoredPersist,
-		[WeakThis](const FNakamaValidateSubscriptionResponse& Result)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnSuccess.Broadcast(Result);
-				Self->SetReadyToDestroy();
-			}
-		},
-		[WeakThis](const FNakamaError& Error)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnError.Broadcast(Error);
-				Self->SetReadyToDestroy();
-			}
-		}
-	);
+  NakamaApi::ValidateSubscriptionApple(
+    StoredClientConfig,
+    Session,
+    Receipt,
+    Persist,
+    [WeakThis](const FNakamaValidateSubscriptionResponse& Result)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnSuccess.Broadcast(Result);
+        Self->SetReadyToDestroy();
+      }
+    },
+  	[WeakThis](const FNakamaError& Error)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnError.Broadcast(Error);
+        Self->SetReadyToDestroy();
+      }
+    }
+  );
 }
 
-// ValidatePurchaseGoogle
 UNakamaClientValidatePurchaseGoogle* UNakamaClientValidatePurchaseGoogle::ValidatePurchaseGoogle(
-	UObject* WorldContextObject,
-	FNakamaClientConfig Client,
-	const FNakamaSession& Session,
-	FString Purchase,
-	bool Persist)
+  UObject* WorldContextObject
+  , FNakamaClientConfig ClientConfig
+  , const FNakamaSession& Session
+  , const FString& Purchase
+  , bool Persist
+)
 {
-	UNakamaClientValidatePurchaseGoogle* Action = NewObject<UNakamaClientValidatePurchaseGoogle>(GetTransientPackage());
-	Action->Client = Client;
-	Action->Session = Session;
-	Action->StoredPurchase = Purchase;
-	Action->StoredPersist = Persist;
-	Action->RegisterWithGameInstance(WorldContextObject);
-	return Action;
+  UNakamaClientValidatePurchaseGoogle* Action = NewObject<UNakamaClientValidatePurchaseGoogle>(GetTransientPackage());
+  Action->StoredClientConfig = ClientConfig;
+  Action->StoredSession = Session;
+  Action->StoredPurchase = Purchase;
+  Action->StoredPersist = Persist;
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
 }
 
 void UNakamaClientValidatePurchaseGoogle::Activate()
 {
-	static const TCHAR* TraceScope_ValidatePurchaseGoogle = TEXT("NakamaBP_ValidatePurchaseGoogle");
-	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ValidatePurchaseGoogle);
+  static const TCHAR* TraceScope_ValidatePurchaseGoogle = TEXT("NakamaBP_ValidatePurchaseGoogle");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ValidatePurchaseGoogle);
 
-	TWeakObjectPtr<UNakamaClientValidatePurchaseGoogle> WeakThis(this);
+  TWeakObjectPtr<UNakamaClientValidatePurchaseGoogle> WeakThis(this);
 
-	NakamaApi::ValidatePurchaseGoogle(
-		Client,
-		Session,
-		StoredPurchase,
-		StoredPersist,
-		[WeakThis](const FNakamaValidatePurchaseResponse& Result)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnSuccess.Broadcast(Result);
-				Self->SetReadyToDestroy();
-			}
-		},
-		[WeakThis](const FNakamaError& Error)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnError.Broadcast(Error);
-				Self->SetReadyToDestroy();
-			}
-		}
-	);
+  NakamaApi::ValidatePurchaseGoogle(
+    StoredClientConfig,
+    Session,
+    Purchase,
+    Persist,
+    [WeakThis](const FNakamaValidatePurchaseResponse& Result)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnSuccess.Broadcast(Result);
+        Self->SetReadyToDestroy();
+      }
+    },
+  	[WeakThis](const FNakamaError& Error)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnError.Broadcast(Error);
+        Self->SetReadyToDestroy();
+      }
+    }
+  );
 }
 
-// ValidateSubscriptionGoogle
 UNakamaClientValidateSubscriptionGoogle* UNakamaClientValidateSubscriptionGoogle::ValidateSubscriptionGoogle(
-	UObject* WorldContextObject,
-	FNakamaClientConfig Client,
-	const FNakamaSession& Session,
-	FString Receipt,
-	bool Persist)
+  UObject* WorldContextObject
+  , FNakamaClientConfig ClientConfig
+  , const FNakamaSession& Session
+  , const FString& Receipt
+  , bool Persist
+)
 {
-	UNakamaClientValidateSubscriptionGoogle* Action = NewObject<UNakamaClientValidateSubscriptionGoogle>(GetTransientPackage());
-	Action->Client = Client;
-	Action->Session = Session;
-	Action->StoredReceipt = Receipt;
-	Action->StoredPersist = Persist;
-	Action->RegisterWithGameInstance(WorldContextObject);
-	return Action;
+  UNakamaClientValidateSubscriptionGoogle* Action = NewObject<UNakamaClientValidateSubscriptionGoogle>(GetTransientPackage());
+  Action->StoredClientConfig = ClientConfig;
+  Action->StoredSession = Session;
+  Action->StoredReceipt = Receipt;
+  Action->StoredPersist = Persist;
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
 }
 
 void UNakamaClientValidateSubscriptionGoogle::Activate()
 {
-	static const TCHAR* TraceScope_ValidateSubscriptionGoogle = TEXT("NakamaBP_ValidateSubscriptionGoogle");
-	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ValidateSubscriptionGoogle);
+  static const TCHAR* TraceScope_ValidateSubscriptionGoogle = TEXT("NakamaBP_ValidateSubscriptionGoogle");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ValidateSubscriptionGoogle);
 
-	TWeakObjectPtr<UNakamaClientValidateSubscriptionGoogle> WeakThis(this);
+  TWeakObjectPtr<UNakamaClientValidateSubscriptionGoogle> WeakThis(this);
 
-	NakamaApi::ValidateSubscriptionGoogle(
-		Client,
-		Session,
-		StoredReceipt,
-		StoredPersist,
-		[WeakThis](const FNakamaValidateSubscriptionResponse& Result)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnSuccess.Broadcast(Result);
-				Self->SetReadyToDestroy();
-			}
-		},
-		[WeakThis](const FNakamaError& Error)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnError.Broadcast(Error);
-				Self->SetReadyToDestroy();
-			}
-		}
-	);
+  NakamaApi::ValidateSubscriptionGoogle(
+    StoredClientConfig,
+    Session,
+    Receipt,
+    Persist,
+    [WeakThis](const FNakamaValidateSubscriptionResponse& Result)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnSuccess.Broadcast(Result);
+        Self->SetReadyToDestroy();
+      }
+    },
+  	[WeakThis](const FNakamaError& Error)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnError.Broadcast(Error);
+        Self->SetReadyToDestroy();
+      }
+    }
+  );
 }
 
-// ValidatePurchaseHuawei
 UNakamaClientValidatePurchaseHuawei* UNakamaClientValidatePurchaseHuawei::ValidatePurchaseHuawei(
-	UObject* WorldContextObject,
-	FNakamaClientConfig Client,
-	const FNakamaSession& Session,
-	FString Purchase,
-	FString Signature,
-	bool Persist)
+  UObject* WorldContextObject
+  , FNakamaClientConfig ClientConfig
+  , const FNakamaSession& Session
+  , const FString& Purchase
+  , const FString& Signature
+  , bool Persist
+)
 {
-	UNakamaClientValidatePurchaseHuawei* Action = NewObject<UNakamaClientValidatePurchaseHuawei>(GetTransientPackage());
-	Action->Client = Client;
-	Action->Session = Session;
-	Action->StoredPurchase = Purchase;
-	Action->StoredSignature = Signature;
-	Action->StoredPersist = Persist;
-	Action->RegisterWithGameInstance(WorldContextObject);
-	return Action;
+  UNakamaClientValidatePurchaseHuawei* Action = NewObject<UNakamaClientValidatePurchaseHuawei>(GetTransientPackage());
+  Action->StoredClientConfig = ClientConfig;
+  Action->StoredSession = Session;
+  Action->StoredPurchase = Purchase;
+  Action->StoredSignature = Signature;
+  Action->StoredPersist = Persist;
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
 }
 
 void UNakamaClientValidatePurchaseHuawei::Activate()
 {
-	static const TCHAR* TraceScope_ValidatePurchaseHuawei = TEXT("NakamaBP_ValidatePurchaseHuawei");
-	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ValidatePurchaseHuawei);
+  static const TCHAR* TraceScope_ValidatePurchaseHuawei = TEXT("NakamaBP_ValidatePurchaseHuawei");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ValidatePurchaseHuawei);
 
-	TWeakObjectPtr<UNakamaClientValidatePurchaseHuawei> WeakThis(this);
+  TWeakObjectPtr<UNakamaClientValidatePurchaseHuawei> WeakThis(this);
 
-	NakamaApi::ValidatePurchaseHuawei(
-		Client,
-		Session,
-		StoredPurchase,
-		StoredSignature,
-		StoredPersist,
-		[WeakThis](const FNakamaValidatePurchaseResponse& Result)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnSuccess.Broadcast(Result);
-				Self->SetReadyToDestroy();
-			}
-		},
-		[WeakThis](const FNakamaError& Error)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnError.Broadcast(Error);
-				Self->SetReadyToDestroy();
-			}
-		}
-	);
+  NakamaApi::ValidatePurchaseHuawei(
+    StoredClientConfig,
+    Session,
+    Purchase,
+    Signature,
+    Persist,
+    [WeakThis](const FNakamaValidatePurchaseResponse& Result)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnSuccess.Broadcast(Result);
+        Self->SetReadyToDestroy();
+      }
+    },
+  	[WeakThis](const FNakamaError& Error)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnError.Broadcast(Error);
+        Self->SetReadyToDestroy();
+      }
+    }
+  );
 }
 
-// ValidatePurchaseFacebookInstant
 UNakamaClientValidatePurchaseFacebookInstant* UNakamaClientValidatePurchaseFacebookInstant::ValidatePurchaseFacebookInstant(
-	UObject* WorldContextObject,
-	FNakamaClientConfig Client,
-	const FNakamaSession& Session,
-	FString SignedRequest,
-	bool Persist)
+  UObject* WorldContextObject
+  , FNakamaClientConfig ClientConfig
+  , const FNakamaSession& Session
+  , const FString& SignedRequest
+  , bool Persist
+)
 {
-	UNakamaClientValidatePurchaseFacebookInstant* Action = NewObject<UNakamaClientValidatePurchaseFacebookInstant>(GetTransientPackage());
-	Action->Client = Client;
-	Action->Session = Session;
-	Action->StoredSignedRequest = SignedRequest;
-	Action->StoredPersist = Persist;
-	Action->RegisterWithGameInstance(WorldContextObject);
-	return Action;
+  UNakamaClientValidatePurchaseFacebookInstant* Action = NewObject<UNakamaClientValidatePurchaseFacebookInstant>(GetTransientPackage());
+  Action->StoredClientConfig = ClientConfig;
+  Action->StoredSession = Session;
+  Action->StoredSignedRequest = SignedRequest;
+  Action->StoredPersist = Persist;
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
 }
 
 void UNakamaClientValidatePurchaseFacebookInstant::Activate()
 {
-	static const TCHAR* TraceScope_ValidatePurchaseFacebookInstant = TEXT("NakamaBP_ValidatePurchaseFacebookInstant");
-	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ValidatePurchaseFacebookInstant);
+  static const TCHAR* TraceScope_ValidatePurchaseFacebookInstant = TEXT("NakamaBP_ValidatePurchaseFacebookInstant");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ValidatePurchaseFacebookInstant);
 
-	TWeakObjectPtr<UNakamaClientValidatePurchaseFacebookInstant> WeakThis(this);
+  TWeakObjectPtr<UNakamaClientValidatePurchaseFacebookInstant> WeakThis(this);
 
-	NakamaApi::ValidatePurchaseFacebookInstant(
-		Client,
-		Session,
-		StoredSignedRequest,
-		StoredPersist,
-		[WeakThis](const FNakamaValidatePurchaseResponse& Result)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnSuccess.Broadcast(Result);
-				Self->SetReadyToDestroy();
-			}
-		},
-		[WeakThis](const FNakamaError& Error)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnError.Broadcast(Error);
-				Self->SetReadyToDestroy();
-			}
-		}
-	);
+  NakamaApi::ValidatePurchaseFacebookInstant(
+    StoredClientConfig,
+    Session,
+    SignedRequest,
+    Persist,
+    [WeakThis](const FNakamaValidatePurchaseResponse& Result)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnSuccess.Broadcast(Result);
+        Self->SetReadyToDestroy();
+      }
+    },
+  	[WeakThis](const FNakamaError& Error)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnError.Broadcast(Error);
+        Self->SetReadyToDestroy();
+      }
+    }
+  );
 }
 
-// WriteLeaderboardRecord
 UNakamaClientWriteLeaderboardRecord* UNakamaClientWriteLeaderboardRecord::WriteLeaderboardRecord(
-	UObject* WorldContextObject,
-	FNakamaClientConfig Client,
-	const FNakamaSession& Session,
-	FString LeaderboardId,
-	int64 Score,
-	int64 Subscore,
-	FString Metadata,
-	ENakamaOperator Operator)
+  UObject* WorldContextObject
+  , FNakamaClientConfig ClientConfig
+  , const FNakamaSession& Session
+  , const FString& LeaderboardId
+  , const FNakamaWriteLeaderboardRecordRequestLeaderboardRecordWrite& Record
+)
 {
-	UNakamaClientWriteLeaderboardRecord* Action = NewObject<UNakamaClientWriteLeaderboardRecord>(GetTransientPackage());
-	Action->Client = Client;
-	Action->Session = Session;
-	Action->StoredLeaderboardId = LeaderboardId;
-	Action->StoredScore = Score;
-	Action->StoredSubscore = Subscore;
-	Action->StoredMetadata = Metadata;
-	Action->StoredOperator = Operator;
-	Action->RegisterWithGameInstance(WorldContextObject);
-	return Action;
+  UNakamaClientWriteLeaderboardRecord* Action = NewObject<UNakamaClientWriteLeaderboardRecord>(GetTransientPackage());
+  Action->StoredClientConfig = ClientConfig;
+  Action->StoredSession = Session;
+  Action->StoredLeaderboardId = LeaderboardId;
+  Action->StoredRecord = Record;
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
 }
 
 void UNakamaClientWriteLeaderboardRecord::Activate()
 {
-	static const TCHAR* TraceScope_WriteLeaderboardRecord = TEXT("NakamaBP_WriteLeaderboardRecord");
-	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_WriteLeaderboardRecord);
+  static const TCHAR* TraceScope_WriteLeaderboardRecord = TEXT("NakamaBP_WriteLeaderboardRecord");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_WriteLeaderboardRecord);
 
-	TWeakObjectPtr<UNakamaClientWriteLeaderboardRecord> WeakThis(this);
-	FNakamaWriteLeaderboardRecordRequest_LeaderboardRecordWrite StoredRecord;
-	StoredRecord.Score = StoredScore;
-	StoredRecord.Subscore = StoredSubscore;
-	StoredRecord.Metadata = StoredMetadata;
-	StoredRecord.Operator = StoredOperator;
+  TWeakObjectPtr<UNakamaClientWriteLeaderboardRecord> WeakThis(this);
 
-	NakamaApi::WriteLeaderboardRecord(
-		Client,
-		Session,
-		StoredLeaderboardId,
-		StoredRecord,
-		[WeakThis](const FNakamaLeaderboardRecord& Result)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnSuccess.Broadcast(Result);
-				Self->SetReadyToDestroy();
-			}
-		},
-		[WeakThis](const FNakamaError& Error)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnError.Broadcast(Error);
-				Self->SetReadyToDestroy();
-			}
-		}
-	);
+  NakamaApi::WriteLeaderboardRecord(
+    StoredClientConfig,
+    Session,
+    LeaderboardId,
+    Record,
+    [WeakThis](const FNakamaLeaderboardRecord& Result)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnSuccess.Broadcast(Result);
+        Self->SetReadyToDestroy();
+      }
+    },
+  	[WeakThis](const FNakamaError& Error)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnError.Broadcast(Error);
+        Self->SetReadyToDestroy();
+      }
+    }
+  );
 }
 
-// WriteStorageObjects
 UNakamaClientWriteStorageObjects* UNakamaClientWriteStorageObjects::WriteStorageObjects(
-	UObject* WorldContextObject,
-	FNakamaClientConfig Client,
-	const FNakamaSession& Session,
-	const TArray<FNakamaWriteStorageObject>& Objects)
+  UObject* WorldContextObject
+  , FNakamaClientConfig ClientConfig
+  , const FNakamaSession& Session
+  , const TArray<FNakamaWriteStorageObject>& Objects
+)
 {
-	UNakamaClientWriteStorageObjects* Action = NewObject<UNakamaClientWriteStorageObjects>(GetTransientPackage());
-	Action->Client = Client;
-	Action->Session = Session;
-	Action->StoredObjects = Objects;
-	Action->RegisterWithGameInstance(WorldContextObject);
-	return Action;
+  UNakamaClientWriteStorageObjects* Action = NewObject<UNakamaClientWriteStorageObjects>(GetTransientPackage());
+  Action->StoredClientConfig = ClientConfig;
+  Action->StoredSession = Session;
+  Action->StoredObjects = Objects;
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
 }
 
 void UNakamaClientWriteStorageObjects::Activate()
 {
-	static const TCHAR* TraceScope_WriteStorageObjects = TEXT("NakamaBP_WriteStorageObjects");
-	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_WriteStorageObjects);
+  static const TCHAR* TraceScope_WriteStorageObjects = TEXT("NakamaBP_WriteStorageObjects");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_WriteStorageObjects);
 
-	TWeakObjectPtr<UNakamaClientWriteStorageObjects> WeakThis(this);
+  TWeakObjectPtr<UNakamaClientWriteStorageObjects> WeakThis(this);
 
-	NakamaApi::WriteStorageObjects(
-		Client,
-		Session,
-		StoredObjects,
-		[WeakThis](const FNakamaStorageObjectAcks& Result)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnSuccess.Broadcast(Result);
-				Self->SetReadyToDestroy();
-			}
-		},
-		[WeakThis](const FNakamaError& Error)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnError.Broadcast(Error);
-				Self->SetReadyToDestroy();
-			}
-		}
-	);
+  NakamaApi::WriteStorageObjects(
+    StoredClientConfig,
+    Session,
+    Objects,
+    [WeakThis](const FNakamaStorageObjectAcks& Result)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnSuccess.Broadcast(Result);
+        Self->SetReadyToDestroy();
+      }
+    },
+  	[WeakThis](const FNakamaError& Error)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnError.Broadcast(Error);
+        Self->SetReadyToDestroy();
+      }
+    }
+  );
 }
 
-// WriteTournamentRecord
 UNakamaClientWriteTournamentRecord* UNakamaClientWriteTournamentRecord::WriteTournamentRecord(
-	UObject* WorldContextObject,
-	FNakamaClientConfig Client,
-	const FNakamaSession& Session,
-	FString TournamentId,
-	int64 Score,
-	int64 Subscore,
-	FString Metadata,
-	ENakamaOperator Operator)
+  UObject* WorldContextObject
+  , FNakamaClientConfig ClientConfig
+  , const FNakamaSession& Session
+  , const FString& TournamentId
+  , const FNakamaWriteTournamentRecordRequestTournamentRecordWrite& Record
+)
 {
-	UNakamaClientWriteTournamentRecord* Action = NewObject<UNakamaClientWriteTournamentRecord>(GetTransientPackage());
-	Action->Client = Client;
-	Action->Session = Session;
-	Action->StoredTournamentId = TournamentId;
-	Action->StoredScore = Score;
-	Action->StoredSubscore = Subscore;
-	Action->StoredMetadata = Metadata;
-	Action->StoredOperator = Operator;
-	Action->RegisterWithGameInstance(WorldContextObject);
-	return Action;
+  UNakamaClientWriteTournamentRecord* Action = NewObject<UNakamaClientWriteTournamentRecord>(GetTransientPackage());
+  Action->StoredClientConfig = ClientConfig;
+  Action->StoredSession = Session;
+  Action->StoredTournamentId = TournamentId;
+  Action->StoredRecord = Record;
+
+  Action->RegisterWithGameInstance(WorldContextObject);
+  return Action;
 }
 
 void UNakamaClientWriteTournamentRecord::Activate()
 {
-	static const TCHAR* TraceScope_WriteTournamentRecord = TEXT("NakamaBP_WriteTournamentRecord");
-	TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_WriteTournamentRecord);
+  static const TCHAR* TraceScope_WriteTournamentRecord = TEXT("NakamaBP_WriteTournamentRecord");
+  TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_WriteTournamentRecord);
 
-	TWeakObjectPtr<UNakamaClientWriteTournamentRecord> WeakThis(this);
-	FNakamaWriteTournamentRecordRequest_TournamentRecordWrite StoredRecord;
-	StoredRecord.Score = StoredScore;
-	StoredRecord.Subscore = StoredSubscore;
-	StoredRecord.Metadata = StoredMetadata;
-	StoredRecord.Operator = StoredOperator;
+  TWeakObjectPtr<UNakamaClientWriteTournamentRecord> WeakThis(this);
 
-	NakamaApi::WriteTournamentRecord(
-		Client,
-		Session,
-		StoredTournamentId,
-		StoredRecord,
-		[WeakThis](const FNakamaLeaderboardRecord& Result)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnSuccess.Broadcast(Result);
-				Self->SetReadyToDestroy();
-			}
-		},
-		[WeakThis](const FNakamaError& Error)
-		{
-			if (auto* Self = WeakThis.Get())
-			{
-				Self->OnError.Broadcast(Error);
-				Self->SetReadyToDestroy();
-			}
-		}
-	);
+  NakamaApi::WriteTournamentRecord(
+    StoredClientConfig,
+    Session,
+    TournamentId,
+    Record,
+    [WeakThis](const FNakamaLeaderboardRecord& Result)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnSuccess.Broadcast(Result);
+        Self->SetReadyToDestroy();
+      }
+    },
+  	[WeakThis](const FNakamaError& Error)
+    {
+      if (auto* Self = WeakThis.Get())
+      {
+        Self->OnError.Broadcast(Error);
+        Self->SetReadyToDestroy();
+      }
+    }
+  );
 }

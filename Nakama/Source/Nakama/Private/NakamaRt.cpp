@@ -16,1420 +16,743 @@
 
 /* This code is auto-generated. DO NOT EDIT. */
 
-#include "NakamaRt.h"
+#include "NakamaRtClient.h"
 #include "NakamaApi.h"
-
-
 
 namespace Nakama
 {
-TNakamaFuture<FNakamaWebSocketConnectionResult> NakamaRealtimeClient::Connect(
-    const FNakamaWebSocketConnectionParams& Params
-) noexcept
-{
-    if (!WebSocketSubsystem.IsValid())
-    {
-        return MakeCompletedFuture<FNakamaWebSocketConnectionResult>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
-    }
-    return WebSocketSubsystem->Connect(Params);
-}
-TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::Channel(
-    const FString& Id,
-    const TArray<FNakamaRtUserPresence>& Presences,
-    const FNakamaRtUserPresence& Self,
-    const FString& RoomName,
-    const FString& GroupId,
-    const FString& UserIdOne,
-    const FString& UserIdTwo
-) noexcept
-{
-    TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-    if (!Id.IsEmpty())
-    {
-      Json->SetStringField(TEXT("id"), Id);
-    }
-    if (Presences.Num() > 0)
-    {
-      TArray<TSharedPtr<FJsonValue>> Array;
-      for (const auto& Item : Presences)
-      {
-        Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
-      }
-      Json->SetArrayField(TEXT("presences"), Array);
-    }
-    Json->SetObjectField(TEXT("self"), Self.ToJson());
-    if (!RoomName.IsEmpty())
-    {
-      Json->SetStringField(TEXT("room_name"), RoomName);
-    }
-    if (!GroupId.IsEmpty())
-    {
-      Json->SetStringField(TEXT("group_id"), GroupId);
-    }
-    if (!UserIdOne.IsEmpty())
-    {
-      Json->SetStringField(TEXT("user_id_one"), UserIdOne);
-    }
-    if (!UserIdTwo.IsEmpty())
-    {
-      Json->SetStringField(TEXT("user_id_two"), UserIdTwo);
-    }
 
-    if (!WebSocketSubsystem.IsValid())
-    {
-        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
-    }
-    return WebSocketSubsystem->Send(TEXT("channel"), Json);
+TNakamaFuture<FNakamaWebSocketConnectionResult> FNakamaRtClient::Connect(
+  const FNakamaWebSocketConnectionParams& Params
+) noexcept
+{
+  if (!WebSocketSubsystem.IsValid())
+  {
+    return MakeCompletedFuture<FNakamaWebSocketConnectionResult>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+  }
+  return WebSocketSubsystem->Connect(Params);
 }
 
-TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::ChannelJoin(
-    const FString& Target,
-    const int32& Type,
-    const TOptional<bool>& Persistence,
-    const TOptional<bool>& Hidden
+TNakamaFuture<FNakamaWebSocketResponse> FNakamaRtClient::ChannelJoin(
+  const FString& Target
+  , int32 Type
+  , bool Persistence
+  , bool Hidden
 ) noexcept
 {
-    TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-    if (!Target.IsEmpty())
-    {
-      Json->SetStringField(TEXT("target"), Target);
-    }
-    Json->SetNumberField(TEXT("type"), Type);
-    if (Persistence.IsSet())
-    {
-      Json->SetBoolField(TEXT("persistence"), Persistence.GetValue());
-    }
-    if (Hidden.IsSet())
-    {
-      Json->SetBoolField(TEXT("hidden"), Hidden.GetValue());
-    }
-
-    if (!WebSocketSubsystem.IsValid())
-    {
-        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
-    }
-    return WebSocketSubsystem->Send(TEXT("channel_join"), Json);
-}
-
-TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::ChannelLeave(
-    const FString& ChannelId
-) noexcept
-{
-    TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-    if (!ChannelId.IsEmpty())
-    {
-      Json->SetStringField(TEXT("channel_id"), ChannelId);
-    }
-
-    if (!WebSocketSubsystem.IsValid())
-    {
-        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
-    }
-    return WebSocketSubsystem->Send(TEXT("channel_leave"), Json);
-}
-
-TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::ChannelMessage(
-    const FString& ChannelId,
-    const FString& MessageId,
-    const TOptional<int32>& Code,
-    const FString& SenderId,
-    const FString& Username,
-    const FString& Content,
-    const FString& CreateTime,
-    const FString& UpdateTime,
-    const TOptional<bool>& Persistent,
-    const FString& RoomName,
-    const FString& GroupId,
-    const FString& UserIdOne,
-    const FString& UserIdTwo
-) noexcept
-{
-    TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-    if (!ChannelId.IsEmpty())
-    {
-      Json->SetStringField(TEXT("channel_id"), ChannelId);
-    }
-    if (!MessageId.IsEmpty())
-    {
-      Json->SetStringField(TEXT("message_id"), MessageId);
-    }
-    if (Code.IsSet())
-    {
-      Json->SetNumberField(TEXT("code"), Code.GetValue());
-    }
-    if (!SenderId.IsEmpty())
-    {
-      Json->SetStringField(TEXT("sender_id"), SenderId);
-    }
-    if (!Username.IsEmpty())
-    {
-      Json->SetStringField(TEXT("username"), Username);
-    }
-    if (!Content.IsEmpty())
-    {
-      Json->SetStringField(TEXT("content"), Content);
-    }
-    if (!CreateTime.IsEmpty())
-    {
-      Json->SetStringField(TEXT("create_time"), CreateTime);
-    }
-    if (!UpdateTime.IsEmpty())
-    {
-      Json->SetStringField(TEXT("update_time"), UpdateTime);
-    }
-    if (Persistent.IsSet())
-    {
-      Json->SetBoolField(TEXT("persistent"), Persistent.GetValue());
-    }
-    if (!RoomName.IsEmpty())
-    {
-      Json->SetStringField(TEXT("room_name"), RoomName);
-    }
-    if (!GroupId.IsEmpty())
-    {
-      Json->SetStringField(TEXT("group_id"), GroupId);
-    }
-    if (!UserIdOne.IsEmpty())
-    {
-      Json->SetStringField(TEXT("user_id_one"), UserIdOne);
-    }
-    if (!UserIdTwo.IsEmpty())
-    {
-      Json->SetStringField(TEXT("user_id_two"), UserIdTwo);
-    }
-
-    if (!WebSocketSubsystem.IsValid())
-    {
-        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
-    }
-    return WebSocketSubsystem->Send(TEXT("channel_message"), Json);
-}
-
-TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::ChannelMessageAck(
-    const FString& ChannelId,
-    const FString& MessageId,
-    const TOptional<int32>& Code,
-    const FString& Username,
-    const FString& CreateTime,
-    const FString& UpdateTime,
-    const TOptional<bool>& Persistent,
-    const FString& RoomName,
-    const FString& GroupId,
-    const FString& UserIdOne,
-    const FString& UserIdTwo
-) noexcept
-{
-    TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-    if (!ChannelId.IsEmpty())
-    {
-      Json->SetStringField(TEXT("channel_id"), ChannelId);
-    }
-    if (!MessageId.IsEmpty())
-    {
-      Json->SetStringField(TEXT("message_id"), MessageId);
-    }
-    if (Code.IsSet())
-    {
-      Json->SetNumberField(TEXT("code"), Code.GetValue());
-    }
-    if (!Username.IsEmpty())
-    {
-      Json->SetStringField(TEXT("username"), Username);
-    }
-    if (!CreateTime.IsEmpty())
-    {
-      Json->SetStringField(TEXT("create_time"), CreateTime);
-    }
-    if (!UpdateTime.IsEmpty())
-    {
-      Json->SetStringField(TEXT("update_time"), UpdateTime);
-    }
-    if (Persistent.IsSet())
-    {
-      Json->SetBoolField(TEXT("persistent"), Persistent.GetValue());
-    }
-    if (!RoomName.IsEmpty())
-    {
-      Json->SetStringField(TEXT("room_name"), RoomName);
-    }
-    if (!GroupId.IsEmpty())
-    {
-      Json->SetStringField(TEXT("group_id"), GroupId);
-    }
-    if (!UserIdOne.IsEmpty())
-    {
-      Json->SetStringField(TEXT("user_id_one"), UserIdOne);
-    }
-    if (!UserIdTwo.IsEmpty())
-    {
-      Json->SetStringField(TEXT("user_id_two"), UserIdTwo);
-    }
-
-    if (!WebSocketSubsystem.IsValid())
-    {
-        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
-    }
-    return WebSocketSubsystem->Send(TEXT("channel_message_ack"), Json);
-}
-
-TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::ChannelMessageSend(
-    const FString& ChannelId,
-    const FString& Content
-) noexcept
-{
-    TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-    if (!ChannelId.IsEmpty())
-    {
-      Json->SetStringField(TEXT("channel_id"), ChannelId);
-    }
-    if (!Content.IsEmpty())
-    {
-      Json->SetStringField(TEXT("content"), Content);
-    }
-
-    if (!WebSocketSubsystem.IsValid())
-    {
-        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
-    }
-    return WebSocketSubsystem->Send(TEXT("channel_message_send"), Json);
-}
-
-TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::ChannelMessageUpdate(
-    const FString& ChannelId,
-    const FString& MessageId,
-    const FString& Content
-) noexcept
-{
-    TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-    if (!ChannelId.IsEmpty())
-    {
-      Json->SetStringField(TEXT("channel_id"), ChannelId);
-    }
-    if (!MessageId.IsEmpty())
-    {
-      Json->SetStringField(TEXT("message_id"), MessageId);
-    }
-    if (!Content.IsEmpty())
-    {
-      Json->SetStringField(TEXT("content"), Content);
-    }
-
-    if (!WebSocketSubsystem.IsValid())
-    {
-        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
-    }
-    return WebSocketSubsystem->Send(TEXT("channel_message_update"), Json);
-}
-
-TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::ChannelMessageRemove(
-    const FString& ChannelId,
-    const FString& MessageId
-) noexcept
-{
-    TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-    if (!ChannelId.IsEmpty())
-    {
-      Json->SetStringField(TEXT("channel_id"), ChannelId);
-    }
-    if (!MessageId.IsEmpty())
-    {
-      Json->SetStringField(TEXT("message_id"), MessageId);
-    }
-
-    if (!WebSocketSubsystem.IsValid())
-    {
-        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
-    }
-    return WebSocketSubsystem->Send(TEXT("channel_message_remove"), Json);
-}
-
-TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::ChannelPresenceEvent(
-    const FString& ChannelId,
-    const TArray<FNakamaRtUserPresence>& Joins,
-    const TArray<FNakamaRtUserPresence>& Leaves,
-    const FString& RoomName,
-    const FString& GroupId,
-    const FString& UserIdOne,
-    const FString& UserIdTwo
-) noexcept
-{
-    TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-    if (!ChannelId.IsEmpty())
-    {
-      Json->SetStringField(TEXT("channel_id"), ChannelId);
-    }
-    if (Joins.Num() > 0)
-    {
-      TArray<TSharedPtr<FJsonValue>> Array;
-      for (const auto& Item : Joins)
-      {
-        Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
-      }
-      Json->SetArrayField(TEXT("joins"), Array);
-    }
-    if (Leaves.Num() > 0)
-    {
-      TArray<TSharedPtr<FJsonValue>> Array;
-      for (const auto& Item : Leaves)
-      {
-        Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
-      }
-      Json->SetArrayField(TEXT("leaves"), Array);
-    }
-    if (!RoomName.IsEmpty())
-    {
-      Json->SetStringField(TEXT("room_name"), RoomName);
-    }
-    if (!GroupId.IsEmpty())
-    {
-      Json->SetStringField(TEXT("group_id"), GroupId);
-    }
-    if (!UserIdOne.IsEmpty())
-    {
-      Json->SetStringField(TEXT("user_id_one"), UserIdOne);
-    }
-    if (!UserIdTwo.IsEmpty())
-    {
-      Json->SetStringField(TEXT("user_id_two"), UserIdTwo);
-    }
-
-    if (!WebSocketSubsystem.IsValid())
-    {
-        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
-    }
-    return WebSocketSubsystem->Send(TEXT("channel_presence_event"), Json);
-}
-
-TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::Error(
-    const int32& Code,
-    const FString& Message,
-    const TMap<FString, FString>& Context
-) noexcept
-{
-    TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-    Json->SetNumberField(TEXT("code"), Code);
-    if (!Message.IsEmpty())
-    {
-      Json->SetStringField(TEXT("message"), Message);
-    }
-    if (Context.Num() > 0)
-    {
-      TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
-      for (const auto& Pair : Context)
-      {MapObj->SetStringField(Pair.Key, Pair.Value);}
-      Json->SetObjectField(TEXT("context"), MapObj);
-    }
-
-    if (!WebSocketSubsystem.IsValid())
-    {
-        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
-    }
-    return WebSocketSubsystem->Send(TEXT("error"), Json);
-}
-
-TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::Match(
-    const FString& MatchId,
-    const bool& Authoritative,
-    const FString& Label,
-    const int32& Size,
-    const TArray<FNakamaRtUserPresence>& Presences,
-    const FNakamaRtUserPresence& Self
-) noexcept
-{
-    TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-    if (!MatchId.IsEmpty())
-    {
-      Json->SetStringField(TEXT("match_id"), MatchId);
-    }
-    Json->SetBoolField(TEXT("authoritative"), Authoritative);
-    if (!Label.IsEmpty())
-    {
-      Json->SetStringField(TEXT("label"), Label);
-    }
-    Json->SetNumberField(TEXT("size"), Size);
-    if (Presences.Num() > 0)
-    {
-      TArray<TSharedPtr<FJsonValue>> Array;
-      for (const auto& Item : Presences)
-      {
-        Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
-      }
-      Json->SetArrayField(TEXT("presences"), Array);
-    }
-    Json->SetObjectField(TEXT("self"), Self.ToJson());
-
-    if (!WebSocketSubsystem.IsValid())
-    {
-        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
-    }
-    return WebSocketSubsystem->Send(TEXT("match"), Json);
-}
-
-TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::MatchCreate(
-    const FString& Name
-) noexcept
-{
-    TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-    if (!Name.IsEmpty())
-    {
-      Json->SetStringField(TEXT("name"), Name);
-    }
-
-    if (!WebSocketSubsystem.IsValid())
-    {
-        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
-    }
-    return WebSocketSubsystem->Send(TEXT("match_create"), Json);
-}
-
-TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::MatchData(
-    const FString& MatchId,
-    const FNakamaRtUserPresence& Presence,
-    const int64& OpCode,
-    const TArray<uint8>& Data,
-    const bool& Reliable
-) noexcept
-{
-    TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-    if (!MatchId.IsEmpty())
-    {
-      Json->SetStringField(TEXT("match_id"), MatchId);
-    }
-    Json->SetObjectField(TEXT("presence"), Presence.ToJson());
-    Json->SetNumberField(TEXT("op_code"), OpCode);
-    Json->SetStringField(TEXT("data"), FBase64::Encode(Data));
-    Json->SetBoolField(TEXT("reliable"), Reliable);
-
-    if (!WebSocketSubsystem.IsValid())
-    {
-        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
-    }
-    return WebSocketSubsystem->Send(TEXT("match_data"), Json);
-}
-
-TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::MatchDataSend(
-    const FString& MatchId,
-    const int64& OpCode,
-    const TArray<uint8>& Data,
-    const TArray<FNakamaRtUserPresence>& Presences,
-    const bool& Reliable
-) noexcept
-{
-    TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-    if (!MatchId.IsEmpty())
-    {
-      Json->SetStringField(TEXT("match_id"), MatchId);
-    }
-    Json->SetNumberField(TEXT("op_code"), OpCode);
-    Json->SetStringField(TEXT("data"), FBase64::Encode(Data));
-    if (Presences.Num() > 0)
-    {
-      TArray<TSharedPtr<FJsonValue>> Array;
-      for (const auto& Item : Presences)
-      {
-        Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
-      }
-      Json->SetArrayField(TEXT("presences"), Array);
-    }
-    Json->SetBoolField(TEXT("reliable"), Reliable);
-
-    if (!WebSocketSubsystem.IsValid())
-    {
-        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
-    }
-    return WebSocketSubsystem->Send(TEXT("match_data_send"), Json);
-}
-
-TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::MatchJoin(
-    const FString& MatchId,
-    const FString& Token,
-    const TMap<FString, FString>& Metadata
-) noexcept
-{
-    TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-    if (!MatchId.IsEmpty())
-    {
-      Json->SetStringField(TEXT("match_id"), MatchId);
-    }
-    if (!Token.IsEmpty())
-    {
-      Json->SetStringField(TEXT("token"), Token);
-    }
-    if (Metadata.Num() > 0)
-    {
-      TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
-      for (const auto& Pair : Metadata)
-      {MapObj->SetStringField(Pair.Key, Pair.Value);}
-      Json->SetObjectField(TEXT("metadata"), MapObj);
-    }
-
-    if (!WebSocketSubsystem.IsValid())
-    {
-        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
-    }
-    return WebSocketSubsystem->Send(TEXT("match_join"), Json);
-}
-
-TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::MatchLeave(
-    const FString& MatchId
-) noexcept
-{
-    TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-    if (!MatchId.IsEmpty())
-    {
-      Json->SetStringField(TEXT("match_id"), MatchId);
-    }
-
-    if (!WebSocketSubsystem.IsValid())
-    {
-        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
-    }
-    return WebSocketSubsystem->Send(TEXT("match_leave"), Json);
-}
-
-TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::MatchPresenceEvent(
-    const FString& MatchId,
-    const TArray<FNakamaRtUserPresence>& Joins,
-    const TArray<FNakamaRtUserPresence>& Leaves
-) noexcept
-{
-    TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-    if (!MatchId.IsEmpty())
-    {
-      Json->SetStringField(TEXT("match_id"), MatchId);
-    }
-    if (Joins.Num() > 0)
-    {
-      TArray<TSharedPtr<FJsonValue>> Array;
-      for (const auto& Item : Joins)
-      {
-        Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
-      }
-      Json->SetArrayField(TEXT("joins"), Array);
-    }
-    if (Leaves.Num() > 0)
-    {
-      TArray<TSharedPtr<FJsonValue>> Array;
-      for (const auto& Item : Leaves)
-      {
-        Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
-      }
-      Json->SetArrayField(TEXT("leaves"), Array);
-    }
-
-    if (!WebSocketSubsystem.IsValid())
-    {
-        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
-    }
-    return WebSocketSubsystem->Send(TEXT("match_presence_event"), Json);
-}
-
-TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::MatchmakerAdd(
-    const int32& MinCount,
-    const int32& MaxCount,
-    const FString& Query,
-    const TOptional<int32>& CountMultiple,
-    const TMap<FString, FString>& StringProperties,
-    const TMap<FString, double>& NumericProperties
-) noexcept
-{
-    TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-    Json->SetNumberField(TEXT("min_count"), MinCount);
-    Json->SetNumberField(TEXT("max_count"), MaxCount);
-    if (!Query.IsEmpty())
-    {
-      Json->SetStringField(TEXT("query"), Query);
-    }
-    if (CountMultiple.IsSet())
-    {
-      Json->SetNumberField(TEXT("count_multiple"), CountMultiple.GetValue());
-    }
-    if (StringProperties.Num() > 0)
-    {
-      TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
-      for (const auto& Pair : StringProperties)
-      {MapObj->SetStringField(Pair.Key, Pair.Value);}
-      Json->SetObjectField(TEXT("string_properties"), MapObj);
-    }
-    if (NumericProperties.Num() > 0)
-    {
-      TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
-      for (const auto& Pair : NumericProperties)
-      {
-        MapObj->SetNumberField(Pair.Key, Pair.Value);}
-      Json->SetObjectField(TEXT("numeric_properties"), MapObj);
-    }
-
-    if (!WebSocketSubsystem.IsValid())
-    {
-        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
-    }
-    return WebSocketSubsystem->Send(TEXT("matchmaker_add"), Json);
-}
-
-TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::MatchmakerMatched(
-    const FString& Ticket,
-    const TArray<FNakamaRtMatchmakerMatched_MatchmakerUser>& Users,
-    const FNakamaRtMatchmakerMatched_MatchmakerUser& Self,
-    const FString& MatchId,
-    const FString& Token
-) noexcept
-{
-    TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-    if (!MatchId.IsEmpty())
-    {
-      Json->SetStringField(TEXT("match_id"), MatchId);
-    }
-    if (!Token.IsEmpty())
-    {
-      Json->SetStringField(TEXT("token"), Token);
-    }
-    if (!Ticket.IsEmpty())
-    {
-      Json->SetStringField(TEXT("ticket"), Ticket);
-    }
-    if (Users.Num() > 0)
-    {
-      TArray<TSharedPtr<FJsonValue>> Array;
-      for (const auto& Item : Users)
-      {
-        Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
-      }
-      Json->SetArrayField(TEXT("users"), Array);
-    }
-    Json->SetObjectField(TEXT("self"), Self.ToJson());
-
-    if (!WebSocketSubsystem.IsValid())
-    {
-        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
-    }
-    return WebSocketSubsystem->Send(TEXT("matchmaker_matched"), Json);
-}
-
-TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::MatchmakerRemove(
-    const FString& Ticket
-) noexcept
-{
-    TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-    if (!Ticket.IsEmpty())
-    {
-      Json->SetStringField(TEXT("ticket"), Ticket);
-    }
-
-    if (!WebSocketSubsystem.IsValid())
-    {
-        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
-    }
-    return WebSocketSubsystem->Send(TEXT("matchmaker_remove"), Json);
-}
-
-TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::MatchmakerTicket(
-    const FString& Ticket
-) noexcept
-{
-    TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-    if (!Ticket.IsEmpty())
-    {
-      Json->SetStringField(TEXT("ticket"), Ticket);
-    }
-
-    if (!WebSocketSubsystem.IsValid())
-    {
-        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
-    }
-    return WebSocketSubsystem->Send(TEXT("matchmaker_ticket"), Json);
-}
-
-TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::Notifications(
-    const TArray<FString>& Notifications
-) noexcept
-{
-    TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-    if (Notifications.Num() > 0)
-    {
-      TArray<TSharedPtr<FJsonValue>> Array;
-      for (const auto& Item : Notifications)
-      {
-        Array.Add(MakeShared<FJsonValueString>(Item));
-      }
-      Json->SetArrayField(TEXT("notifications"), Array);
-    }
-
-    if (!WebSocketSubsystem.IsValid())
-    {
-        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
-    }
-    return WebSocketSubsystem->Send(TEXT("notifications"), Json);
-}
-
-TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::Rpc(
-    const FString& Id,
-    const FString& Payload,
-    const FString& HttpKey
-) noexcept
-{
-    TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-    if (!Id.IsEmpty())
-    {
-      Json->SetStringField(TEXT("id"), Id);
-    }
-    if (!Payload.IsEmpty())
-    {
-      Json->SetStringField(TEXT("payload"), Payload);
-    }
-    if (!HttpKey.IsEmpty())
-    {
-      Json->SetStringField(TEXT("http_key"), HttpKey);
-    }
-
-    if (!WebSocketSubsystem.IsValid())
-    {
-        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
-    }
-    return WebSocketSubsystem->Send(TEXT("rpc"), Json);
-}
-
-TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::Status(
-    const TArray<FNakamaRtUserPresence>& Presences
-) noexcept
-{
-    TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-    if (Presences.Num() > 0)
-    {
-      TArray<TSharedPtr<FJsonValue>> Array;
-      for (const auto& Item : Presences)
-      {
-        Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
-      }
-      Json->SetArrayField(TEXT("presences"), Array);
-    }
-
-    if (!WebSocketSubsystem.IsValid())
-    {
-        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
-    }
-    return WebSocketSubsystem->Send(TEXT("status"), Json);
-}
-
-TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::StatusFollow(
-    const TArray<FString>& UserIds,
-    const TArray<FString>& Usernames
-) noexcept
-{
-    TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-    if (UserIds.Num() > 0)
-    {
-      TArray<TSharedPtr<FJsonValue>> Array;
-      for (const auto& Item : UserIds)
-      {
-        Array.Add(MakeShared<FJsonValueString>(Item));
-      }
-      Json->SetArrayField(TEXT("user_ids"), Array);
-    }
-    if (Usernames.Num() > 0)
-    {
-      TArray<TSharedPtr<FJsonValue>> Array;
-      for (const auto& Item : Usernames)
-      {
-        Array.Add(MakeShared<FJsonValueString>(Item));
-      }
-      Json->SetArrayField(TEXT("usernames"), Array);
-    }
-
-    if (!WebSocketSubsystem.IsValid())
-    {
-        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
-    }
-    return WebSocketSubsystem->Send(TEXT("status_follow"), Json);
-}
-
-TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::StatusPresenceEvent(
-    const TArray<FNakamaRtUserPresence>& Joins,
-    const TArray<FNakamaRtUserPresence>& Leaves
-) noexcept
-{
-    TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-    if (Joins.Num() > 0)
-    {
-      TArray<TSharedPtr<FJsonValue>> Array;
-      for (const auto& Item : Joins)
-      {
-        Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
-      }
-      Json->SetArrayField(TEXT("joins"), Array);
-    }
-    if (Leaves.Num() > 0)
-    {
-      TArray<TSharedPtr<FJsonValue>> Array;
-      for (const auto& Item : Leaves)
-      {
-        Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
-      }
-      Json->SetArrayField(TEXT("leaves"), Array);
-    }
-
-    if (!WebSocketSubsystem.IsValid())
-    {
-        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
-    }
-    return WebSocketSubsystem->Send(TEXT("status_presence_event"), Json);
-}
-
-TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::StatusUnfollow(
-    const TArray<FString>& UserIds
-) noexcept
-{
-    TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-    if (UserIds.Num() > 0)
-    {
-      TArray<TSharedPtr<FJsonValue>> Array;
-      for (const auto& Item : UserIds)
-      {
-        Array.Add(MakeShared<FJsonValueString>(Item));
-      }
-      Json->SetArrayField(TEXT("user_ids"), Array);
-    }
-
-    if (!WebSocketSubsystem.IsValid())
-    {
-        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
-    }
-    return WebSocketSubsystem->Send(TEXT("status_unfollow"), Json);
-}
-
-TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::StatusUpdate(
-    const FString& Status
-) noexcept
-{
-    TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-    if (!Status.IsEmpty())
-    {
-      Json->SetStringField(TEXT("status"), Status);
-    }
-
-    if (!WebSocketSubsystem.IsValid())
-    {
-        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
-    }
-    return WebSocketSubsystem->Send(TEXT("status_update"), Json);
-}
-
-TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::StreamData(
-    const FNakamaRtStream& Stream,
-    const FNakamaRtUserPresence& Sender,
-    const FString& Data,
-    const bool& Reliable
-) noexcept
-{
-    TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-    Json->SetObjectField(TEXT("stream"), Stream.ToJson());
-    Json->SetObjectField(TEXT("sender"), Sender.ToJson());
-    if (!Data.IsEmpty())
-    {
-      Json->SetStringField(TEXT("data"), Data);
-    }
-    Json->SetBoolField(TEXT("reliable"), Reliable);
-
-    if (!WebSocketSubsystem.IsValid())
-    {
-        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
-    }
-    return WebSocketSubsystem->Send(TEXT("stream_data"), Json);
-}
-
-TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::StreamPresenceEvent(
-    const FNakamaRtStream& Stream,
-    const TArray<FNakamaRtUserPresence>& Joins,
-    const TArray<FNakamaRtUserPresence>& Leaves
-) noexcept
-{
-    TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-    Json->SetObjectField(TEXT("stream"), Stream.ToJson());
-    if (Joins.Num() > 0)
-    {
-      TArray<TSharedPtr<FJsonValue>> Array;
-      for (const auto& Item : Joins)
-      {
-        Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
-      }
-      Json->SetArrayField(TEXT("joins"), Array);
-    }
-    if (Leaves.Num() > 0)
-    {
-      TArray<TSharedPtr<FJsonValue>> Array;
-      for (const auto& Item : Leaves)
-      {
-        Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
-      }
-      Json->SetArrayField(TEXT("leaves"), Array);
-    }
-
-    if (!WebSocketSubsystem.IsValid())
-    {
-        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
-    }
-    return WebSocketSubsystem->Send(TEXT("stream_presence_event"), Json);
-}
-
-TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::Ping(
-    
-) noexcept
-{
-    TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-
-    if (!WebSocketSubsystem.IsValid())
-    {
-        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
-    }
-    return WebSocketSubsystem->Send(TEXT("ping"), Json);
-}
-
-TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::Pong(
-    
-) noexcept
-{
-    TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-
-    if (!WebSocketSubsystem.IsValid())
-    {
-        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
-    }
-    return WebSocketSubsystem->Send(TEXT("pong"), Json);
-}
-
-TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::Party(
-    const FString& PartyId,
-    const bool& Open,
-    const bool& Hidden,
-    const int32& MaxSize,
-    const FNakamaRtUserPresence& Self,
-    const FNakamaRtUserPresence& Leader,
-    const TArray<FNakamaRtUserPresence>& Presences,
-    const FString& Label
-) noexcept
-{
-    TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-    if (!PartyId.IsEmpty())
-    {
-      Json->SetStringField(TEXT("party_id"), PartyId);
-    }
-    Json->SetBoolField(TEXT("open"), Open);
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (Target.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("target"), Target);
+  }
+  if (Type.NonZero() == false)
+  {
+    Json->SetIntegerField(TEXT("type"), Type);
+  }
+  if (Persistence.None() == false)
+  {
+    Json->SetBoolField(TEXT("persistence"), Persistence);
+  }
+  if (Hidden.None() == false)
+  {
     Json->SetBoolField(TEXT("hidden"), Hidden);
-    Json->SetNumberField(TEXT("max_size"), MaxSize);
-    Json->SetObjectField(TEXT("self"), Self.ToJson());
-    Json->SetObjectField(TEXT("leader"), Leader.ToJson());
-    if (Presences.Num() > 0)
-    {
-      TArray<TSharedPtr<FJsonValue>> Array;
-      for (const auto& Item : Presences)
-      {
-        Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
-      }
-      Json->SetArrayField(TEXT("presences"), Array);
-    }
-    if (!Label.IsEmpty())
-    {
-      Json->SetStringField(TEXT("label"), Label);
-    }
+  }
 
-    if (!WebSocketSubsystem.IsValid())
-    {
-        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
-    }
-    return WebSocketSubsystem->Send(TEXT("party"), Json);
+  if (!WebSocketSubsystem.IsValid())
+  {
+    return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+  }
+  return WebSocketSubsystem->Send(TEXT("channel_join"), Json);
 }
 
-TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyCreate(
-    const bool& Open,
-    const int32& MaxSize,
-    const FString& Label,
-    const bool& Hidden
+TNakamaFuture<FNakamaWebSocketResponse> FNakamaRtClient::ChannelLeave(
+  const FString& ChannelId
 ) noexcept
 {
-    TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-    Json->SetBoolField(TEXT("open"), Open);
-    Json->SetNumberField(TEXT("max_size"), MaxSize);
-    if (!Label.IsEmpty())
-    {
-      Json->SetStringField(TEXT("label"), Label);
-    }
-    Json->SetBoolField(TEXT("hidden"), Hidden);
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (ChannelId.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("channel_id"), ChannelId);
+  }
 
-    if (!WebSocketSubsystem.IsValid())
-    {
-        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
-    }
-    return WebSocketSubsystem->Send(TEXT("party_create"), Json);
+  if (!WebSocketSubsystem.IsValid())
+  {
+    return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+  }
+  return WebSocketSubsystem->Send(TEXT("channel_leave"), Json);
 }
 
-TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyJoin(
-    const FString& PartyId
+TNakamaFuture<FNakamaWebSocketResponse> FNakamaRtClient::ChannelMessageSend(
+  const FString& ChannelId
+  , const FString& Content
 ) noexcept
 {
-    TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-    if (!PartyId.IsEmpty())
-    {
-      Json->SetStringField(TEXT("party_id"), PartyId);
-    }
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (ChannelId.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("channel_id"), ChannelId);
+  }
+  if (Content.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("content"), Content);
+  }
 
-    if (!WebSocketSubsystem.IsValid())
-    {
-        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
-    }
-    return WebSocketSubsystem->Send(TEXT("party_join"), Json);
+  if (!WebSocketSubsystem.IsValid())
+  {
+    return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+  }
+  return WebSocketSubsystem->Send(TEXT("channel_message_send"), Json);
 }
 
-TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyLeave(
-    const FString& PartyId
+TNakamaFuture<FNakamaWebSocketResponse> FNakamaRtClient::ChannelMessageUpdate(
+  const FString& ChannelId
+  , const FString& MessageId
+  , const FString& Content
 ) noexcept
 {
-    TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-    if (!PartyId.IsEmpty())
-    {
-      Json->SetStringField(TEXT("party_id"), PartyId);
-    }
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (ChannelId.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("channel_id"), ChannelId);
+  }
+  if (MessageId.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("message_id"), MessageId);
+  }
+  if (Content.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("content"), Content);
+  }
 
-    if (!WebSocketSubsystem.IsValid())
-    {
-        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
-    }
-    return WebSocketSubsystem->Send(TEXT("party_leave"), Json);
+  if (!WebSocketSubsystem.IsValid())
+  {
+    return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+  }
+  return WebSocketSubsystem->Send(TEXT("channel_message_update"), Json);
 }
 
-TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyPromote(
-    const FString& PartyId,
-    const FNakamaRtUserPresence& Presence
+TNakamaFuture<FNakamaWebSocketResponse> FNakamaRtClient::ChannelMessageRemove(
+  const FString& ChannelId
+  , const FString& MessageId
 ) noexcept
 {
-    TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-    if (!PartyId.IsEmpty())
-    {
-      Json->SetStringField(TEXT("party_id"), PartyId);
-    }
-    Json->SetObjectField(TEXT("presence"), Presence.ToJson());
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (ChannelId.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("channel_id"), ChannelId);
+  }
+  if (MessageId.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("message_id"), MessageId);
+  }
 
-    if (!WebSocketSubsystem.IsValid())
-    {
-        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
-    }
-    return WebSocketSubsystem->Send(TEXT("party_promote"), Json);
+  if (!WebSocketSubsystem.IsValid())
+  {
+    return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+  }
+  return WebSocketSubsystem->Send(TEXT("channel_message_remove"), Json);
 }
 
-TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyLeader(
-    const FString& PartyId,
-    const FNakamaRtUserPresence& Presence
+TNakamaFuture<FNakamaWebSocketResponse> FNakamaRtClient::MatchCreate(
+  const FString& Name
 ) noexcept
 {
-    TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-    if (!PartyId.IsEmpty())
-    {
-      Json->SetStringField(TEXT("party_id"), PartyId);
-    }
-    Json->SetObjectField(TEXT("presence"), Presence.ToJson());
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (Name.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("name"), Name);
+  }
 
-    if (!WebSocketSubsystem.IsValid())
-    {
-        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
-    }
-    return WebSocketSubsystem->Send(TEXT("party_leader"), Json);
+  if (!WebSocketSubsystem.IsValid())
+  {
+    return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+  }
+  return WebSocketSubsystem->Send(TEXT("match_create"), Json);
 }
 
-TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyAccept(
-    const FString& PartyId,
-    const FNakamaRtUserPresence& Presence
+TNakamaFuture<FNakamaWebSocketResponse> FNakamaRtClient::MatchDataSend(
+  const FString& MatchId
+  , int64 OpCode
+  , const TArray<uint8>& Data
+  , const TArray<FNakamaUserPresence>& Presences
+  , bool Reliable
 ) noexcept
 {
-    TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-    if (!PartyId.IsEmpty())
-    {
-      Json->SetStringField(TEXT("party_id"), PartyId);
-    }
-    Json->SetObjectField(TEXT("presence"), Presence.ToJson());
-
-    if (!WebSocketSubsystem.IsValid())
-    {
-        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
-    }
-    return WebSocketSubsystem->Send(TEXT("party_accept"), Json);
-}
-
-TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyRemove(
-    const FString& PartyId,
-    const FNakamaRtUserPresence& Presence
-) noexcept
-{
-    TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-    if (!PartyId.IsEmpty())
-    {
-      Json->SetStringField(TEXT("party_id"), PartyId);
-    }
-    Json->SetObjectField(TEXT("presence"), Presence.ToJson());
-
-    if (!WebSocketSubsystem.IsValid())
-    {
-        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
-    }
-    return WebSocketSubsystem->Send(TEXT("party_remove"), Json);
-}
-
-TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyClose(
-    const FString& PartyId
-) noexcept
-{
-    TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-    if (!PartyId.IsEmpty())
-    {
-      Json->SetStringField(TEXT("party_id"), PartyId);
-    }
-
-    if (!WebSocketSubsystem.IsValid())
-    {
-        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
-    }
-    return WebSocketSubsystem->Send(TEXT("party_close"), Json);
-}
-
-TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyJoinRequestList(
-    const FString& PartyId
-) noexcept
-{
-    TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-    if (!PartyId.IsEmpty())
-    {
-      Json->SetStringField(TEXT("party_id"), PartyId);
-    }
-
-    if (!WebSocketSubsystem.IsValid())
-    {
-        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
-    }
-    return WebSocketSubsystem->Send(TEXT("party_join_request_list"), Json);
-}
-
-TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyJoinRequest(
-    const FString& PartyId,
-    const TArray<FNakamaRtUserPresence>& Presences
-) noexcept
-{
-    TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-    if (!PartyId.IsEmpty())
-    {
-      Json->SetStringField(TEXT("party_id"), PartyId);
-    }
-    if (Presences.Num() > 0)
-    {
-      TArray<TSharedPtr<FJsonValue>> Array;
-      for (const auto& Item : Presences)
-      {
-        Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
-      }
-      Json->SetArrayField(TEXT("presences"), Array);
-    }
-
-    if (!WebSocketSubsystem.IsValid())
-    {
-        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
-    }
-    return WebSocketSubsystem->Send(TEXT("party_join_request"), Json);
-}
-
-TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyMatchmakerAdd(
-    const FString& PartyId,
-    const int32& MinCount,
-    const int32& MaxCount,
-    const FString& Query,
-    const TOptional<int32>& CountMultiple,
-    const TMap<FString, FString>& StringProperties,
-    const TMap<FString, double>& NumericProperties
-) noexcept
-{
-    TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-    if (!PartyId.IsEmpty())
-    {
-      Json->SetStringField(TEXT("party_id"), PartyId);
-    }
-    Json->SetNumberField(TEXT("min_count"), MinCount);
-    Json->SetNumberField(TEXT("max_count"), MaxCount);
-    if (!Query.IsEmpty())
-    {
-      Json->SetStringField(TEXT("query"), Query);
-    }
-    if (CountMultiple.IsSet())
-    {
-      Json->SetNumberField(TEXT("count_multiple"), CountMultiple.GetValue());
-    }
-    if (StringProperties.Num() > 0)
-    {
-      TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
-      for (const auto& Pair : StringProperties)
-      {MapObj->SetStringField(Pair.Key, Pair.Value);}
-      Json->SetObjectField(TEXT("string_properties"), MapObj);
-    }
-    if (NumericProperties.Num() > 0)
-    {
-      TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
-      for (const auto& Pair : NumericProperties)
-      {
-        MapObj->SetNumberField(Pair.Key, Pair.Value);}
-      Json->SetObjectField(TEXT("numeric_properties"), MapObj);
-    }
-
-    if (!WebSocketSubsystem.IsValid())
-    {
-        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
-    }
-    return WebSocketSubsystem->Send(TEXT("party_matchmaker_add"), Json);
-}
-
-TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyMatchmakerRemove(
-    const FString& PartyId,
-    const FString& Ticket
-) noexcept
-{
-    TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-    if (!PartyId.IsEmpty())
-    {
-      Json->SetStringField(TEXT("party_id"), PartyId);
-    }
-    if (!Ticket.IsEmpty())
-    {
-      Json->SetStringField(TEXT("ticket"), Ticket);
-    }
-
-    if (!WebSocketSubsystem.IsValid())
-    {
-        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
-    }
-    return WebSocketSubsystem->Send(TEXT("party_matchmaker_remove"), Json);
-}
-
-TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyMatchmakerTicket(
-    const FString& PartyId,
-    const FString& Ticket
-) noexcept
-{
-    TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-    if (!PartyId.IsEmpty())
-    {
-      Json->SetStringField(TEXT("party_id"), PartyId);
-    }
-    if (!Ticket.IsEmpty())
-    {
-      Json->SetStringField(TEXT("ticket"), Ticket);
-    }
-
-    if (!WebSocketSubsystem.IsValid())
-    {
-        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
-    }
-    return WebSocketSubsystem->Send(TEXT("party_matchmaker_ticket"), Json);
-}
-
-TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyData(
-    const FString& PartyId,
-    const FNakamaRtUserPresence& Presence,
-    const int64& OpCode,
-    const TArray<uint8>& Data
-) noexcept
-{
-    TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-    if (!PartyId.IsEmpty())
-    {
-      Json->SetStringField(TEXT("party_id"), PartyId);
-    }
-    Json->SetObjectField(TEXT("presence"), Presence.ToJson());
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (MatchId.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("match_id"), MatchId);
+  }
+  if (OpCode.NonZero() == false)
+  {
     Json->SetNumberField(TEXT("op_code"), OpCode);
-    Json->SetStringField(TEXT("data"), FBase64::Encode(Data));
-
-    if (!WebSocketSubsystem.IsValid())
+  }
+  if (Data.NumEmpty() == false)
+  {
+    Json->SetStringField(TEXT("data"), Data);
+  }
+  if (Presences.Num() > 0)
+  {
+    TArray<TSharedPtr<FJsonValue>> Array;
+    for (const auto& Item : Presences)
     {
-        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+      Array.Add(MakeShared<Object>(Item.ToJson()));
     }
-    return WebSocketSubsystem->Send(TEXT("party_data"), Json);
+    Json->SetArrayField(TEXT("presences"), Array);
+  }
+  if (Reliable.None() == false)
+  {
+    Json->SetBoolField(TEXT("reliable"), Reliable);
+  }
+
+  if (!WebSocketSubsystem.IsValid())
+  {
+    return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+  }
+  return WebSocketSubsystem->Send(TEXT("match_data_send"), Json);
 }
 
-TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyDataSend(
-    const FString& PartyId,
-    const int64& OpCode,
-    const TArray<uint8>& Data
+TNakamaFuture<FNakamaWebSocketResponse> FNakamaRtClient::MatchJoin(
+  const TMap<FString, FString>& Metadata
+  , const FString& MatchId
+  , const FString& Token
 ) noexcept
 {
-    TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-    if (!PartyId.IsEmpty())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (Metadata.Num() > 0)
+  {
+    TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
+    for (const auto& Pair : Metadata)
     {
-      Json->SetStringField(TEXT("party_id"), PartyId);
+      MapObj->SetStringField(Pair.Key, Pair.Value);
     }
-    Json->SetNumberField(TEXT("op_code"), OpCode);
-    Json->SetStringField(TEXT("data"), FBase64::Encode(Data));
+    Json->SetObjectField(TEXT("metadata"), MapObj);
+  }
+  if (MatchId.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("match_id"), MatchId);
+  }
+  if (Token.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("token"), Token);
+  }
 
-    if (!WebSocketSubsystem.IsValid())
-    {
-        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
-    }
-    return WebSocketSubsystem->Send(TEXT("party_data_send"), Json);
+  if (!WebSocketSubsystem.IsValid())
+  {
+    return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+  }
+  return WebSocketSubsystem->Send(TEXT("match_join"), Json);
 }
 
-TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyPresenceEvent(
-    const FString& PartyId,
-    const TArray<FNakamaRtUserPresence>& Joins,
-    const TArray<FNakamaRtUserPresence>& Leaves
+TNakamaFuture<FNakamaWebSocketResponse> FNakamaRtClient::MatchLeave(
+  const FString& MatchId
 ) noexcept
 {
-    TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-    if (!PartyId.IsEmpty())
-    {
-      Json->SetStringField(TEXT("party_id"), PartyId);
-    }
-    if (Joins.Num() > 0)
-    {
-      TArray<TSharedPtr<FJsonValue>> Array;
-      for (const auto& Item : Joins)
-      {
-        Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
-      }
-      Json->SetArrayField(TEXT("joins"), Array);
-    }
-    if (Leaves.Num() > 0)
-    {
-      TArray<TSharedPtr<FJsonValue>> Array;
-      for (const auto& Item : Leaves)
-      {
-        Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
-      }
-      Json->SetArrayField(TEXT("leaves"), Array);
-    }
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (MatchId.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("match_id"), MatchId);
+  }
 
-    if (!WebSocketSubsystem.IsValid())
-    {
-        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
-    }
-    return WebSocketSubsystem->Send(TEXT("party_presence_event"), Json);
+  if (!WebSocketSubsystem.IsValid())
+  {
+    return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+  }
+  return WebSocketSubsystem->Send(TEXT("match_leave"), Json);
 }
 
-TNakamaFuture<FNakamaWebSocketResponse> NakamaRealtimeClient::PartyUpdate(
-    const FString& PartyId,
-    const FString& Label,
-    const bool& Open,
-    const bool& Hidden
+TNakamaFuture<FNakamaWebSocketResponse> FNakamaRtClient::MatchmakerAdd(
+  int32 MinCount
+  , int32 MaxCount
+  , const FString& Query
+  , int32 CountMultiple
+  , const TMap<FString, FString>& StringProperties
+  , const TMap<FString, double>& NumericProperties
 ) noexcept
 {
-    TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-    if (!PartyId.IsEmpty())
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (MinCount.NonZero() == false)
+  {
+    Json->SetIntegerField(TEXT("min_count"), MinCount);
+  }
+  if (MaxCount.NonZero() == false)
+  {
+    Json->SetIntegerField(TEXT("max_count"), MaxCount);
+  }
+  if (Query.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("query"), Query);
+  }
+  if (CountMultiple.NonZero() == false)
+  {
+    Json->SetIntegerField(TEXT("count_multiple"), CountMultiple);
+  }
+  if (StringProperties.Num() > 0)
+  {
+    TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
+    for (const auto& Pair : StringProperties)
     {
-      Json->SetStringField(TEXT("party_id"), PartyId);
+      MapObj->SetStringField(Pair.Key, Pair.Value);
     }
-    if (!Label.IsEmpty())
+    Json->SetObjectField(TEXT("string_properties"), MapObj);
+  }
+  if (NumericProperties.Num() > 0)
+  {
+    TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
+    for (const auto& Pair : NumericProperties)
     {
-      Json->SetStringField(TEXT("label"), Label);
+      MapObj->SetStringField(Pair.Key, Pair.Value);
     }
+    Json->SetObjectField(TEXT("numeric_properties"), MapObj);
+  }
+
+  if (!WebSocketSubsystem.IsValid())
+  {
+    return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+  }
+  return WebSocketSubsystem->Send(TEXT("matchmaker_add"), Json);
+}
+
+TNakamaFuture<FNakamaWebSocketResponse> FNakamaRtClient::MatchmakerRemove(
+  const FString& Ticket
+) noexcept
+{
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (Ticket.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("ticket"), Ticket);
+  }
+
+  if (!WebSocketSubsystem.IsValid())
+  {
+    return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+  }
+  return WebSocketSubsystem->Send(TEXT("matchmaker_remove"), Json);
+}
+
+TNakamaFuture<FNakamaWebSocketResponse> FNakamaRtClient::Rpc(
+  const FString& Id
+  , const FString& Payload
+  , const FString& HttpKey
+) noexcept
+{
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (Id.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("id"), Id);
+  }
+  if (Payload.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("payload"), Payload);
+  }
+  if (HttpKey.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("http_key"), HttpKey);
+  }
+
+  if (!WebSocketSubsystem.IsValid())
+  {
+    return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+  }
+  return WebSocketSubsystem->Send(TEXT("rpc"), Json);
+}
+
+TNakamaFuture<FNakamaWebSocketResponse> FNakamaRtClient::StatusFollow(
+  const TArray<FString>& UserIds
+  , const TArray<FString>& Usernames
+) noexcept
+{
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (UserIds.Num() > 0)
+  {
+    TArray<TSharedPtr<FJsonValue>> Array;
+    for (const auto& Item : UserIds)
+    {
+      Array.Add(MakeShared<String>(Item));
+    }
+    Json->SetArrayField(TEXT("user_ids"), Array);
+  }
+  if (Usernames.Num() > 0)
+  {
+    TArray<TSharedPtr<FJsonValue>> Array;
+    for (const auto& Item : Usernames)
+    {
+      Array.Add(MakeShared<String>(Item));
+    }
+    Json->SetArrayField(TEXT("usernames"), Array);
+  }
+
+  if (!WebSocketSubsystem.IsValid())
+  {
+    return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+  }
+  return WebSocketSubsystem->Send(TEXT("status_follow"), Json);
+}
+
+TNakamaFuture<FNakamaWebSocketResponse> FNakamaRtClient::StatusUnfollow(
+  const TArray<FString>& UserIds
+) noexcept
+{
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (UserIds.Num() > 0)
+  {
+    TArray<TSharedPtr<FJsonValue>> Array;
+    for (const auto& Item : UserIds)
+    {
+      Array.Add(MakeShared<String>(Item));
+    }
+    Json->SetArrayField(TEXT("user_ids"), Array);
+  }
+
+  if (!WebSocketSubsystem.IsValid())
+  {
+    return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+  }
+  return WebSocketSubsystem->Send(TEXT("status_unfollow"), Json);
+}
+
+TNakamaFuture<FNakamaWebSocketResponse> FNakamaRtClient::StatusUpdate(
+  const FString& Status
+) noexcept
+{
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (Status.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("status"), Status);
+  }
+
+  if (!WebSocketSubsystem.IsValid())
+  {
+    return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+  }
+  return WebSocketSubsystem->Send(TEXT("status_update"), Json);
+}
+
+TNakamaFuture<FNakamaWebSocketResponse> FNakamaRtClient::PartyCreate(
+  bool Open
+  , int32 MaxSize
+  , const FString& Label
+  , bool Hidden
+) noexcept
+{
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (Open.None() == false)
+  {
     Json->SetBoolField(TEXT("open"), Open);
+  }
+  if (MaxSize.NonZero() == false)
+  {
+    Json->SetIntegerField(TEXT("max_size"), MaxSize);
+  }
+  if (Label.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("label"), Label);
+  }
+  if (Hidden.None() == false)
+  {
     Json->SetBoolField(TEXT("hidden"), Hidden);
+  }
 
-    if (!WebSocketSubsystem.IsValid())
+  if (!WebSocketSubsystem.IsValid())
+  {
+    return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+  }
+  return WebSocketSubsystem->Send(TEXT("party_create"), Json);
+}
+
+TNakamaFuture<FNakamaWebSocketResponse> FNakamaRtClient::PartyJoin(
+  const FString& PartyId
+) noexcept
+{
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (PartyId.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("party_id"), PartyId);
+  }
+
+  if (!WebSocketSubsystem.IsValid())
+  {
+    return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+  }
+  return WebSocketSubsystem->Send(TEXT("party_join"), Json);
+}
+
+TNakamaFuture<FNakamaWebSocketResponse> FNakamaRtClient::PartyLeave(
+  const FString& PartyId
+) noexcept
+{
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (PartyId.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("party_id"), PartyId);
+  }
+
+  if (!WebSocketSubsystem.IsValid())
+  {
+    return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+  }
+  return WebSocketSubsystem->Send(TEXT("party_leave"), Json);
+}
+
+TNakamaFuture<FNakamaWebSocketResponse> FNakamaRtClient::PartyPromote(
+  const FString& PartyId
+  , const FNakamaUserPresence& Presence
+) noexcept
+{
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (PartyId.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("party_id"), PartyId);
+  }
+  if (Presence.NumEmpty() == false)
+  {
+    Json->SetObjectField(TEXT("presence"), Presence.ToJson());
+  }
+
+  if (!WebSocketSubsystem.IsValid())
+  {
+    return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+  }
+  return WebSocketSubsystem->Send(TEXT("party_promote"), Json);
+}
+
+TNakamaFuture<FNakamaWebSocketResponse> FNakamaRtClient::PartyAccept(
+  const FString& PartyId
+  , const FNakamaUserPresence& Presence
+) noexcept
+{
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (PartyId.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("party_id"), PartyId);
+  }
+  if (Presence.NumEmpty() == false)
+  {
+    Json->SetObjectField(TEXT("presence"), Presence.ToJson());
+  }
+
+  if (!WebSocketSubsystem.IsValid())
+  {
+    return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+  }
+  return WebSocketSubsystem->Send(TEXT("party_accept"), Json);
+}
+
+TNakamaFuture<FNakamaWebSocketResponse> FNakamaRtClient::PartyRemove(
+  const FString& PartyId
+  , const FNakamaUserPresence& Presence
+) noexcept
+{
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (PartyId.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("party_id"), PartyId);
+  }
+  if (Presence.NumEmpty() == false)
+  {
+    Json->SetObjectField(TEXT("presence"), Presence.ToJson());
+  }
+
+  if (!WebSocketSubsystem.IsValid())
+  {
+    return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+  }
+  return WebSocketSubsystem->Send(TEXT("party_remove"), Json);
+}
+
+TNakamaFuture<FNakamaWebSocketResponse> FNakamaRtClient::PartyClose(
+  const FString& PartyId
+) noexcept
+{
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (PartyId.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("party_id"), PartyId);
+  }
+
+  if (!WebSocketSubsystem.IsValid())
+  {
+    return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+  }
+  return WebSocketSubsystem->Send(TEXT("party_close"), Json);
+}
+
+TNakamaFuture<FNakamaWebSocketResponse> FNakamaRtClient::PartyJoinRequestList(
+  const FString& PartyId
+) noexcept
+{
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (PartyId.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("party_id"), PartyId);
+  }
+
+  if (!WebSocketSubsystem.IsValid())
+  {
+    return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+  }
+  return WebSocketSubsystem->Send(TEXT("party_join_request_list"), Json);
+}
+
+TNakamaFuture<FNakamaWebSocketResponse> FNakamaRtClient::PartyMatchmakerAdd(
+  const FString& PartyId
+  , int32 MinCount
+  , int32 MaxCount
+  , const FString& Query
+  , int32 CountMultiple
+  , const TMap<FString, FString>& StringProperties
+  , const TMap<FString, double>& NumericProperties
+) noexcept
+{
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (PartyId.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("party_id"), PartyId);
+  }
+  if (MinCount.NonZero() == false)
+  {
+    Json->SetIntegerField(TEXT("min_count"), MinCount);
+  }
+  if (MaxCount.NonZero() == false)
+  {
+    Json->SetIntegerField(TEXT("max_count"), MaxCount);
+  }
+  if (Query.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("query"), Query);
+  }
+  if (CountMultiple.NonZero() == false)
+  {
+    Json->SetIntegerField(TEXT("count_multiple"), CountMultiple);
+  }
+  if (StringProperties.Num() > 0)
+  {
+    TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
+    for (const auto& Pair : StringProperties)
     {
-        return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+      MapObj->SetStringField(Pair.Key, Pair.Value);
     }
-    return WebSocketSubsystem->Send(TEXT("party_update"), Json);
+    Json->SetObjectField(TEXT("string_properties"), MapObj);
+  }
+  if (NumericProperties.Num() > 0)
+  {
+    TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
+    for (const auto& Pair : NumericProperties)
+    {
+      MapObj->SetStringField(Pair.Key, Pair.Value);
+    }
+    Json->SetObjectField(TEXT("numeric_properties"), MapObj);
+  }
+
+  if (!WebSocketSubsystem.IsValid())
+  {
+    return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+  }
+  return WebSocketSubsystem->Send(TEXT("party_matchmaker_add"), Json);
+}
+
+TNakamaFuture<FNakamaWebSocketResponse> FNakamaRtClient::PartyMatchmakerRemove(
+  const FString& PartyId
+  , const FString& Ticket
+) noexcept
+{
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (PartyId.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("party_id"), PartyId);
+  }
+  if (Ticket.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("ticket"), Ticket);
+  }
+
+  if (!WebSocketSubsystem.IsValid())
+  {
+    return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+  }
+  return WebSocketSubsystem->Send(TEXT("party_matchmaker_remove"), Json);
+}
+
+TNakamaFuture<FNakamaWebSocketResponse> FNakamaRtClient::PartyMatchmakerTicket(
+  const FString& PartyId
+  , const FString& Ticket
+) noexcept
+{
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (PartyId.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("party_id"), PartyId);
+  }
+  if (Ticket.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("ticket"), Ticket);
+  }
+
+  if (!WebSocketSubsystem.IsValid())
+  {
+    return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+  }
+  return WebSocketSubsystem->Send(TEXT("party_matchmaker_ticket"), Json);
+}
+
+TNakamaFuture<FNakamaWebSocketResponse> FNakamaRtClient::PartyDataSend(
+  const FString& PartyId
+  , int64 OpCode
+  , const TArray<uint8>& Data
+) noexcept
+{
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (PartyId.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("party_id"), PartyId);
+  }
+  if (OpCode.NonZero() == false)
+  {
+    Json->SetNumberField(TEXT("op_code"), OpCode);
+  }
+  if (Data.NumEmpty() == false)
+  {
+    Json->SetStringField(TEXT("data"), Data);
+  }
+
+  if (!WebSocketSubsystem.IsValid())
+  {
+    return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+  }
+  return WebSocketSubsystem->Send(TEXT("party_data_send"), Json);
+}
+
+TNakamaFuture<FNakamaWebSocketResponse> FNakamaRtClient::PartyUpdate(
+  const FString& PartyId
+  , const FString& Label
+  , bool Open
+  , bool Hidden
+) noexcept
+{
+  TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (PartyId.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("party_id"), PartyId);
+  }
+  if (Label.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("label"), Label);
+  }
+  if (Open.None() == false)
+  {
+    Json->SetBoolField(TEXT("open"), Open);
+  }
+  if (Hidden.None() == false)
+  {
+    Json->SetBoolField(TEXT("hidden"), Hidden);
+  }
+
+  if (!WebSocketSubsystem.IsValid())
+  {
+    return MakeCompletedFuture<FNakamaWebSocketResponse>({ .ErrorCode = ENakamaWebSocketError::ConnectionFailed });
+  }
+  return WebSocketSubsystem->Send(TEXT("party_update"), Json);
 }
 
 }
+
