@@ -4,10 +4,10 @@ silent: true
 dotenv: ['.env']
 
 vars:
-  PROTO_FILE: "proto/nakama-types.proto"
-  PROTO_SERVICE_FILE: "proto/nakama-api.proto"
-  PROTO_RT_FILE: "proto/realtime.proto"
-  PROTO_SATORI_FILE: "proto/satori.proto"
+  PROTO_FILE: "cmd/codegen/unreal-sdk/protos/nakama-types.proto"
+  PROTO_SERVICE_FILE: "cmd/codegen/unreal-sdk/protos/nakama-api.proto"
+  PROTO_RT_FILE: "cmd/codegen/unreal-sdk/protos/realtime.proto"
+  PROTO_SATORI_FILE: "cmd/codegen/unreal-sdk/protos/satori.proto"
   CODEGEN: 'build/codegen{{if eq OS "windows"}}.exe{{end}}'
   TESTRUNNER: 'build/testrunner{{if eq OS "windows"}}.exe{{end}}'
   GITHUB_TOKEN:
@@ -29,146 +29,8 @@ tasks:
     cmds:
     - task: fetch-protos
     - cmd: |
-        mkdir -p build
-        cd cmd/codegen && go build -o ../../{{.CODEGEN}} && cd ../..
-
-        mkdir -p \
-          Nakama/Source/NakamaApi/Public \
-          Nakama/Source/NakamaApi/Private \
-          Nakama/Source/Nakama/Public \
-          Nakama/Source/Nakama/Private \
-          Nakama/Source/NakamaBlueprints/Public \
-          Nakama/Source/NakamaBlueprints/Private \
-          Satori/Source/SatoriApi/Public \
-          Satori/Source/SatoriApi/Private \
-          Satori/Source/Satori/Public \
-          Satori/Source/Satori/Private \
-          Satori/Source/SatoriBlueprints/Public \
-          Satori/Source/SatoriBlueprints/Private \
-
-        ./{{.CODEGEN}} \
-        --template cmd/codegen/templates/nakama-types.ue.h.tmpl \
-        --proto {{.PROTO_FILE}} \
-        > Nakama/Source/NakamaApi/Public/NakamaTypes.h
-
-        ./{{.CODEGEN}} \
-        --template cmd/codegen/templates/nakama-types.ue.cpp.tmpl \
-        --proto {{.PROTO_FILE}} \
-        > Nakama/Source/NakamaApi/Private/NakamaTypes.cpp
-
-        ./{{.CODEGEN}} \
-        --template cmd/codegen/templates/nakama-rttypes.ue.h.tmpl \
-        --proto {{.PROTO_RT_FILE}} \
-        --prefix FNakamaRt \
-        > Nakama/Source/NakamaApi/Public/NakamaRtTypes.h
-
-        ./{{.CODEGEN}} \
-        --template cmd/codegen/templates/nakama-rttypes.ue.cpp.tmpl \
-        --proto {{.PROTO_RT_FILE}} \
-        --prefix FNakamaRt \
-        > Nakama/Source/NakamaApi/Private/NakamaRtTypes.cpp
-
-        ./{{.CODEGEN}} \
-        --template cmd/codegen/templates/nakama-api.ue.h.tmpl \
-        --proto {{.PROTO_FILE}} \
-        --proto {{.PROTO_SERVICE_FILE}} \
-        > Nakama/Source/NakamaApi/Public/NakamaApi.h
-
-        ./{{.CODEGEN}} \
-        --template cmd/codegen/templates/nakama-api.ue.cpp.tmpl \
-        --proto {{.PROTO_FILE}} \
-        --proto {{.PROTO_SERVICE_FILE}} \
-        > Nakama/Source/NakamaApi/Private/NakamaApi.cpp
-
-        ./{{.CODEGEN}} \
-        --template cmd/codegen/templates/nakama.ue.h.tmpl \
-        --proto {{.PROTO_FILE}} \
-        --proto {{.PROTO_SERVICE_FILE}} \
-        > Nakama/Source/Nakama/Public/Nakama.h
-
-        ./{{.CODEGEN}} \
-        --template cmd/codegen/templates/nakama.ue.cpp.tmpl \
-        --proto {{.PROTO_FILE}} \
-        --proto {{.PROTO_SERVICE_FILE}} \
-        > Nakama/Source/Nakama/Private/Nakama.cpp
-
-        ./{{.CODEGEN}} \
-        --template cmd/codegen/templates/nakama-rtclient.ue.h.tmpl \
-        --proto {{.PROTO_FILE}} \
-        --proto {{.PROTO_RT_FILE}} \
-        --prefix FNakamaRt \
-        > Nakama/Source/Nakama/Public/NakamaRt.h
-
-        ./{{.CODEGEN}} \
-        --template cmd/codegen/templates/nakama-rtclient.ue.cpp.tmpl \
-        --proto {{.PROTO_FILE}} \
-        --proto {{.PROTO_RT_FILE}} \
-        --prefix FNakamaRt \
-        > Nakama/Source/Nakama/Private/NakamaRt.cpp
-
-        ./{{.CODEGEN}} \
-        --template cmd/codegen/templates/nakama-client-bplib.ue.h.tmpl \
-        --proto {{.PROTO_FILE}} \
-        --proto {{.PROTO_SERVICE_FILE}} \
-        > Nakama/Source/NakamaBlueprints/Public/NakamaClientBlueprintLibrary.h
-
-        ./{{.CODEGEN}} \
-        --template cmd/codegen/templates/nakama-client-bplib.ue.cpp.tmpl \
-        --proto {{.PROTO_FILE}} \
-        --proto {{.PROTO_SERVICE_FILE}} \
-        > Nakama/Source/NakamaBlueprints/Private/NakamaClientBlueprintLibrary.cpp
-
-        ./{{.CODEGEN}} \
-        --template cmd/codegen/templates/nakama-rtclient-bplib.ue.h.tmpl \
-        --proto {{.PROTO_FILE}} \
-        --proto {{.PROTO_SERVICE_FILE}} \
-        --proto {{.PROTO_RT_FILE}} \
-        --prefix FNakamaRt \
-        > Nakama/Source/NakamaBlueprints/Public/NakamaRtClientBlueprintLibrary.h
-
-        ./{{.CODEGEN}} \
-        --template cmd/codegen/templates/nakama-rtclient-bplib.ue.cpp.tmpl \
-        --proto {{.PROTO_FILE}} \
-        --proto {{.PROTO_SERVICE_FILE}} \
-        --proto {{.PROTO_RT_FILE}} \
-        --prefix FNakamaRt \
-        > Nakama/Source/NakamaBlueprints/Private/NakamaRtClientBlueprintLibrary.cpp
-
-        ./{{.CODEGEN}} \
-        --template cmd/codegen/templates/satori-api.ue.h.tmpl \
-        --proto {{.PROTO_SATORI_FILE}} \
-        --prefix FSatori \
-        > Satori/Source/SatoriApi/Public/SatoriApi.h
-
-        ./{{.CODEGEN}} \
-        --template cmd/codegen/templates/satori-api.ue.cpp.tmpl \
-        --proto {{.PROTO_SATORI_FILE}} \
-        --prefix FSatori \
-        > Satori/Source/SatoriApi/Private/SatoriApi.cpp
-
-        ./{{.CODEGEN}} \
-        --template cmd/codegen/templates/satori.ue.h.tmpl \
-        --proto {{.PROTO_SATORI_FILE}} \
-        --prefix FSatori \
-        > Satori/Source/Satori/Public/Satori.h
-
-        ./{{.CODEGEN}} \
-        --template cmd/codegen/templates/satori.ue.cpp.tmpl \
-        --proto {{.PROTO_SATORI_FILE}} \
-        --prefix FSatori \
-        > Satori/Source/Satori/Private/Satori.cpp
-
-        ./{{.CODEGEN}} \
-        --template cmd/codegen/templates/satori-client-bplib.ue.h.tmpl \
-        --proto {{.PROTO_SATORI_FILE}} \
-        --prefix FSatori \
-        > Satori/Source/SatoriBlueprints/Public/SatoriClientBlueprintLibrary.h
-
-        ./{{.CODEGEN}} \
-        --template cmd/codegen/templates/satori-client-bplib.ue.cpp.tmpl \
-        --proto {{.PROTO_SATORI_FILE}} \
-        --prefix FSatori \
-        > Satori/Source/SatoriBlueprints/Private/SatoriClientBlueprintLibrary.cpp
+        cd cmd/codegen/unreal-sdk && go build -o ../../../{{.CODEGEN}} && cd ../../..
+        cd cmd/codegen/unreal-sdk && ../../../{{.CODEGEN}} --outdir ../../..
 
   start-server:
     cmds:
