@@ -60,7 +60,7 @@ void UNakamaClient{{ $func.Name }}::Activate()
       if (auto* Self = WeakThis.Get())
       {
         {{- if ne "FOnNakamaSuccess" $func.Metadata.BpDelegateName }}
-        Self->OnSuccess.Broadcast(Result);
+        Self->OnSuccess.Broadcast({}, Result);
         {{- else }}
         Self->OnSuccess.Broadcast();
         {{- end }}
@@ -71,7 +71,11 @@ void UNakamaClient{{ $func.Name }}::Activate()
     {
       if (auto* Self = WeakThis.Get())
       {
+        {{- if ne "FOnNakamaSuccess" $func.Metadata.BpDelegateName }}
+        Self->OnError.Broadcast(Error, {});
+        {{- else }}
         Self->OnError.Broadcast(Error);
+        {{- end }}
         Self->SetReadyToDestroy();
       }
     }

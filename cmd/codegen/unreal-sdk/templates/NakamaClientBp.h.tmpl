@@ -35,7 +35,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnNakamaSuccess);
 {{- /* Generate success delegates for each unique return type */ -}}
 {{- range $func := $.Funcs }}
 {{- if ne "FOnNakamaSuccess" $func.Metadata.BpDelegateName }}
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam({{ $func.Metadata.BpDelegateName }}, const {{ $func.Type }}&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams({{ $func.Metadata.BpDelegateName }}, FNakamaError, Error, const {{ $func.Type }}&, Result);
 {{- end }}
 {{- end }}
 
@@ -59,7 +59,11 @@ public:
   {{ $func.Metadata.BpDelegateName }} OnSuccess;
 
   UPROPERTY(BlueprintAssignable)
+  {{- if ne "FOnNakamaSuccess" $func.Metadata.BpDelegateName }}
+  {{ $func.Metadata.BpDelegateName }} OnError;
+  {{- else }}
   FOnNakamaError OnError;
+  {{- end }}
 
   UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "{{ $func.Name }}"), Category = "Nakama|Client")
   static UNakamaClient{{ $func.Name }}* {{ $func.Name }}(
