@@ -180,5 +180,6 @@ func (m UnrealBlueprintHttpApiMapper) makeFuncMetadata(rpc *yacg.ProtoRpc, typeM
 	if rpc.ReturnType != nil {
 		funcMeta["BpDelegateName"] = unr.ResolveDelegateName(rpc.Name)
 	}
+
 	return funcMeta
 }

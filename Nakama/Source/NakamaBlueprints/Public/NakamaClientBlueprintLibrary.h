@@ -94,7 +94,15 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaError OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "AddFriends"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "AddFriends"
+    )
+    , Category = "Nakama|Client"
+  )
   static UNakamaClientAddFriends* AddFriends(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
@@ -130,7 +138,15 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaError OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "AddGroupUsers"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "AddGroupUsers"
+    )
+    , Category = "Nakama|Client"
+  )
   static UNakamaClientAddGroupUsers* AddGroupUsers(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
@@ -164,7 +180,16 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaSessionRefresh OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "SessionRefresh"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "SessionRefresh"
+      , AutoCreateRefTerm = "Vars"
+    )
+    , Category = "Nakama|Client"
+  )
   static UNakamaClientSessionRefresh* SessionRefresh(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
@@ -196,7 +221,15 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaError OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "SessionLogout"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "SessionLogout"
+    )
+    , Category = "Nakama|Client"
+  )
   static UNakamaClientSessionLogout* SessionLogout(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
@@ -230,7 +263,15 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaAuthenticateApple OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "AuthenticateApple"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "AuthenticateApple"
+    )
+    , Category = "Nakama|Client"
+  )
   static UNakamaClientAuthenticateApple* AuthenticateApple(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
@@ -264,7 +305,15 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaAuthenticateCustom OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "AuthenticateCustom"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "AuthenticateCustom"
+    )
+    , Category = "Nakama|Client"
+  )
   static UNakamaClientAuthenticateCustom* AuthenticateCustom(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
@@ -298,7 +347,15 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaAuthenticateDevice OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "AuthenticateDevice"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "AuthenticateDevice"
+    )
+    , Category = "Nakama|Client"
+  )
   static UNakamaClientAuthenticateDevice* AuthenticateDevice(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
@@ -332,7 +389,15 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaAuthenticateEmail OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "AuthenticateEmail"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "AuthenticateEmail"
+    )
+    , Category = "Nakama|Client"
+  )
   static UNakamaClientAuthenticateEmail* AuthenticateEmail(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
@@ -366,7 +431,15 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaAuthenticateFacebook OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "AuthenticateFacebook"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "AuthenticateFacebook"
+    )
+    , Category = "Nakama|Client"
+  )
   static UNakamaClientAuthenticateFacebook* AuthenticateFacebook(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
@@ -402,7 +475,15 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaAuthenticateFacebookInstantGame OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "AuthenticateFacebookInstantGame"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "AuthenticateFacebookInstantGame"
+    )
+    , Category = "Nakama|Client"
+  )
   static UNakamaClientAuthenticateFacebookInstantGame* AuthenticateFacebookInstantGame(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
@@ -436,7 +517,15 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaAuthenticateGameCenter OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "AuthenticateGameCenter"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "AuthenticateGameCenter"
+    )
+    , Category = "Nakama|Client"
+  )
   static UNakamaClientAuthenticateGameCenter* AuthenticateGameCenter(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
@@ -470,7 +559,15 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaAuthenticateGoogle OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "AuthenticateGoogle"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "AuthenticateGoogle"
+    )
+    , Category = "Nakama|Client"
+  )
   static UNakamaClientAuthenticateGoogle* AuthenticateGoogle(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
@@ -504,7 +601,15 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaAuthenticateSteam OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "AuthenticateSteam"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "AuthenticateSteam"
+    )
+    , Category = "Nakama|Client"
+  )
   static UNakamaClientAuthenticateSteam* AuthenticateSteam(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
@@ -540,7 +645,15 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaError OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "BanGroupUsers"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "BanGroupUsers"
+    )
+    , Category = "Nakama|Client"
+  )
   static UNakamaClientBanGroupUsers* BanGroupUsers(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
@@ -574,7 +687,15 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaError OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "BlockFriends"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "BlockFriends"
+    )
+    , Category = "Nakama|Client"
+  )
   static UNakamaClientBlockFriends* BlockFriends(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
@@ -608,7 +729,15 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaCreateGroup OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "CreateGroup"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "CreateGroup"
+    )
+    , Category = "Nakama|Client"
+  )
   static UNakamaClientCreateGroup* CreateGroup(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
@@ -650,7 +779,15 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaError OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "DeleteAccount"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "DeleteAccount"
+    )
+    , Category = "Nakama|Client"
+  )
   static UNakamaClientDeleteAccount* DeleteAccount(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
@@ -680,7 +817,15 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaError OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "DeleteFriends"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "DeleteFriends"
+    )
+    , Category = "Nakama|Client"
+  )
   static UNakamaClientDeleteFriends* DeleteFriends(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
@@ -714,7 +859,15 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaError OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "DeleteGroup"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "DeleteGroup"
+    )
+    , Category = "Nakama|Client"
+  )
   static UNakamaClientDeleteGroup* DeleteGroup(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
@@ -746,7 +899,15 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaError OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "DeleteLeaderboardRecord"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "DeleteLeaderboardRecord"
+    )
+    , Category = "Nakama|Client"
+  )
   static UNakamaClientDeleteLeaderboardRecord* DeleteLeaderboardRecord(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
@@ -778,7 +939,15 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaError OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "DeleteNotifications"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "DeleteNotifications"
+    )
+    , Category = "Nakama|Client"
+  )
   static UNakamaClientDeleteNotifications* DeleteNotifications(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
@@ -810,7 +979,15 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaError OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "DeleteTournamentRecord"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "DeleteTournamentRecord"
+    )
+    , Category = "Nakama|Client"
+  )
   static UNakamaClientDeleteTournamentRecord* DeleteTournamentRecord(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
@@ -842,7 +1019,15 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaError OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "DeleteStorageObjects"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "DeleteStorageObjects"
+    )
+    , Category = "Nakama|Client"
+  )
   static UNakamaClientDeleteStorageObjects* DeleteStorageObjects(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
@@ -874,7 +1059,16 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaError OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "Event"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "Event"
+      , AutoCreateRefTerm = "Properties"
+    )
+    , Category = "Nakama|Client"
+  )
   static UNakamaClientEvent* Event(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
@@ -912,7 +1106,15 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaGetAccount OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "GetAccount"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "GetAccount"
+    )
+    , Category = "Nakama|Client"
+  )
   static UNakamaClientGetAccount* GetAccount(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
@@ -942,7 +1144,15 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaGetUsers OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "GetUsers"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "GetUsers"
+    )
+    , Category = "Nakama|Client"
+  )
   static UNakamaClientGetUsers* GetUsers(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
@@ -978,7 +1188,15 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaGetSubscription OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "GetSubscription"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "GetSubscription"
+    )
+    , Category = "Nakama|Client"
+  )
   static UNakamaClientGetSubscription* GetSubscription(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
@@ -1010,7 +1228,15 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaGetMatchmakerStats OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "GetMatchmakerStats"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "GetMatchmakerStats"
+    )
+    , Category = "Nakama|Client"
+  )
   static UNakamaClientGetMatchmakerStats* GetMatchmakerStats(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
@@ -1040,7 +1266,15 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaError OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "Healthcheck"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "Healthcheck"
+    )
+    , Category = "Nakama|Client"
+  )
   static UNakamaClientHealthcheck* Healthcheck(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
@@ -1070,7 +1304,15 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaError OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ImportFacebookFriends"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "ImportFacebookFriends"
+    )
+    , Category = "Nakama|Client"
+  )
   static UNakamaClientImportFacebookFriends* ImportFacebookFriends(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
@@ -1104,7 +1346,15 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaError OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ImportSteamFriends"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "ImportSteamFriends"
+    )
+    , Category = "Nakama|Client"
+  )
   static UNakamaClientImportSteamFriends* ImportSteamFriends(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
@@ -1138,7 +1388,15 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaError OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "JoinGroup"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "JoinGroup"
+    )
+    , Category = "Nakama|Client"
+  )
   static UNakamaClientJoinGroup* JoinGroup(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
@@ -1170,7 +1428,15 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaError OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "JoinTournament"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "JoinTournament"
+    )
+    , Category = "Nakama|Client"
+  )
   static UNakamaClientJoinTournament* JoinTournament(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
@@ -1202,7 +1468,15 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaError OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "KickGroupUsers"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "KickGroupUsers"
+    )
+    , Category = "Nakama|Client"
+  )
   static UNakamaClientKickGroupUsers* KickGroupUsers(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
@@ -1236,7 +1510,15 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaError OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "LeaveGroup"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "LeaveGroup"
+    )
+    , Category = "Nakama|Client"
+  )
   static UNakamaClientLeaveGroup* LeaveGroup(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
@@ -1268,7 +1550,16 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaError OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "LinkApple"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "LinkApple"
+      , AutoCreateRefTerm = "Vars"
+    )
+    , Category = "Nakama|Client"
+  )
   static UNakamaClientLinkApple* LinkApple(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
@@ -1302,7 +1593,16 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaError OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "LinkCustom"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "LinkCustom"
+      , AutoCreateRefTerm = "Vars"
+    )
+    , Category = "Nakama|Client"
+  )
   static UNakamaClientLinkCustom* LinkCustom(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
@@ -1336,7 +1636,16 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaError OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "LinkDevice"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "LinkDevice"
+      , AutoCreateRefTerm = "Vars"
+    )
+    , Category = "Nakama|Client"
+  )
   static UNakamaClientLinkDevice* LinkDevice(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
@@ -1370,7 +1679,16 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaError OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "LinkEmail"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "LinkEmail"
+      , AutoCreateRefTerm = "Vars"
+    )
+    , Category = "Nakama|Client"
+  )
   static UNakamaClientLinkEmail* LinkEmail(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
@@ -1406,7 +1724,15 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaError OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "LinkFacebook"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "LinkFacebook"
+    )
+    , Category = "Nakama|Client"
+  )
   static UNakamaClientLinkFacebook* LinkFacebook(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
@@ -1440,7 +1766,16 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaError OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "LinkFacebookInstantGame"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "LinkFacebookInstantGame"
+      , AutoCreateRefTerm = "Vars"
+    )
+    , Category = "Nakama|Client"
+  )
   static UNakamaClientLinkFacebookInstantGame* LinkFacebookInstantGame(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
@@ -1474,7 +1809,16 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaError OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "LinkGameCenter"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "LinkGameCenter"
+      , AutoCreateRefTerm = "Vars"
+    )
+    , Category = "Nakama|Client"
+  )
   static UNakamaClientLinkGameCenter* LinkGameCenter(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
@@ -1518,7 +1862,16 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaError OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "LinkGoogle"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "LinkGoogle"
+      , AutoCreateRefTerm = "Vars"
+    )
+    , Category = "Nakama|Client"
+  )
   static UNakamaClientLinkGoogle* LinkGoogle(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
@@ -1552,7 +1905,15 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaError OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "LinkSteam"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "LinkSteam"
+    )
+    , Category = "Nakama|Client"
+  )
   static UNakamaClientLinkSteam* LinkSteam(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
@@ -1586,7 +1947,15 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaListChannelMessages OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ListChannelMessages"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "ListChannelMessages"
+    )
+    , Category = "Nakama|Client"
+  )
   static UNakamaClientListChannelMessages* ListChannelMessages(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
@@ -1624,7 +1993,15 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaListFriends OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ListFriends"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "ListFriends"
+    )
+    , Category = "Nakama|Client"
+  )
   static UNakamaClientListFriends* ListFriends(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
@@ -1660,7 +2037,15 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaListFriendsOfFriends OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ListFriendsOfFriends"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "ListFriendsOfFriends"
+    )
+    , Category = "Nakama|Client"
+  )
   static UNakamaClientListFriendsOfFriends* ListFriendsOfFriends(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
@@ -1694,7 +2079,15 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaListGroups OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ListGroups"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "ListGroups"
+    )
+    , Category = "Nakama|Client"
+  )
   static UNakamaClientListGroups* ListGroups(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
@@ -1736,7 +2129,15 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaListGroupUsers OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ListGroupUsers"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "ListGroupUsers"
+    )
+    , Category = "Nakama|Client"
+  )
   static UNakamaClientListGroupUsers* ListGroupUsers(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
@@ -1774,7 +2175,15 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaListLeaderboardRecords OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ListLeaderboardRecords"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "ListLeaderboardRecords"
+    )
+    , Category = "Nakama|Client"
+  )
   static UNakamaClientListLeaderboardRecords* ListLeaderboardRecords(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
@@ -1814,7 +2223,15 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaListLeaderboardRecordsAroundOwner OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ListLeaderboardRecordsAroundOwner"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "ListLeaderboardRecordsAroundOwner"
+    )
+    , Category = "Nakama|Client"
+  )
   static UNakamaClientListLeaderboardRecordsAroundOwner* ListLeaderboardRecordsAroundOwner(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
@@ -1854,7 +2271,15 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaListMatches OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ListMatches"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "ListMatches"
+    )
+    , Category = "Nakama|Client"
+  )
   static UNakamaClientListMatches* ListMatches(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
@@ -1896,7 +2321,15 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaListParties OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ListParties"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "ListParties"
+    )
+    , Category = "Nakama|Client"
+  )
   static UNakamaClientListParties* ListParties(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
@@ -1934,7 +2367,15 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaListNotifications OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ListNotifications"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "ListNotifications"
+    )
+    , Category = "Nakama|Client"
+  )
   static UNakamaClientListNotifications* ListNotifications(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
@@ -1968,7 +2409,15 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaListStorageObjects OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ListStorageObjects"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "ListStorageObjects"
+    )
+    , Category = "Nakama|Client"
+  )
   static UNakamaClientListStorageObjects* ListStorageObjects(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
@@ -2006,7 +2455,15 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaListSubscriptions OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ListSubscriptions"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "ListSubscriptions"
+    )
+    , Category = "Nakama|Client"
+  )
   static UNakamaClientListSubscriptions* ListSubscriptions(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
@@ -2040,7 +2497,15 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaListTournaments OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ListTournaments"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "ListTournaments"
+    )
+    , Category = "Nakama|Client"
+  )
   static UNakamaClientListTournaments* ListTournaments(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
@@ -2082,7 +2547,15 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaListTournamentRecords OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ListTournamentRecords"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "ListTournamentRecords"
+    )
+    , Category = "Nakama|Client"
+  )
   static UNakamaClientListTournamentRecords* ListTournamentRecords(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
@@ -2122,7 +2595,15 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaListTournamentRecordsAroundOwner OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ListTournamentRecordsAroundOwner"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "ListTournamentRecordsAroundOwner"
+    )
+    , Category = "Nakama|Client"
+  )
   static UNakamaClientListTournamentRecordsAroundOwner* ListTournamentRecordsAroundOwner(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
@@ -2162,7 +2643,15 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaListUserGroups OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ListUserGroups"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "ListUserGroups"
+    )
+    , Category = "Nakama|Client"
+  )
   static UNakamaClientListUserGroups* ListUserGroups(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
@@ -2200,7 +2689,15 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaError OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "PromoteGroupUsers"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "PromoteGroupUsers"
+    )
+    , Category = "Nakama|Client"
+  )
   static UNakamaClientPromoteGroupUsers* PromoteGroupUsers(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
@@ -2234,7 +2731,15 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaError OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "DemoteGroupUsers"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "DemoteGroupUsers"
+    )
+    , Category = "Nakama|Client"
+  )
   static UNakamaClientDemoteGroupUsers* DemoteGroupUsers(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
@@ -2268,7 +2773,15 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaReadStorageObjects OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ReadStorageObjects"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "ReadStorageObjects"
+    )
+    , Category = "Nakama|Client"
+  )
   static UNakamaClientReadStorageObjects* ReadStorageObjects(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
@@ -2300,7 +2813,15 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaRpcFunc OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "RpcFunc"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "RpcFunc"
+    )
+    , Category = "Nakama|Client"
+  )
   static UNakamaClientRpcFunc* RpcFunc(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
@@ -2336,7 +2857,16 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaError OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "UnlinkApple"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "UnlinkApple"
+      , AutoCreateRefTerm = "Vars"
+    )
+    , Category = "Nakama|Client"
+  )
   static UNakamaClientUnlinkApple* UnlinkApple(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
@@ -2370,7 +2900,16 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaError OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "UnlinkCustom"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "UnlinkCustom"
+      , AutoCreateRefTerm = "Vars"
+    )
+    , Category = "Nakama|Client"
+  )
   static UNakamaClientUnlinkCustom* UnlinkCustom(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
@@ -2404,7 +2943,16 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaError OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "UnlinkDevice"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "UnlinkDevice"
+      , AutoCreateRefTerm = "Vars"
+    )
+    , Category = "Nakama|Client"
+  )
   static UNakamaClientUnlinkDevice* UnlinkDevice(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
@@ -2438,7 +2986,16 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaError OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "UnlinkEmail"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "UnlinkEmail"
+      , AutoCreateRefTerm = "Vars"
+    )
+    , Category = "Nakama|Client"
+  )
   static UNakamaClientUnlinkEmail* UnlinkEmail(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
@@ -2474,7 +3031,16 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaError OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "UnlinkFacebook"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "UnlinkFacebook"
+      , AutoCreateRefTerm = "Vars"
+    )
+    , Category = "Nakama|Client"
+  )
   static UNakamaClientUnlinkFacebook* UnlinkFacebook(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
@@ -2508,7 +3074,16 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaError OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "UnlinkFacebookInstantGame"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "UnlinkFacebookInstantGame"
+      , AutoCreateRefTerm = "Vars"
+    )
+    , Category = "Nakama|Client"
+  )
   static UNakamaClientUnlinkFacebookInstantGame* UnlinkFacebookInstantGame(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
@@ -2542,7 +3117,16 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaError OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "UnlinkGameCenter"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "UnlinkGameCenter"
+      , AutoCreateRefTerm = "Vars"
+    )
+    , Category = "Nakama|Client"
+  )
   static UNakamaClientUnlinkGameCenter* UnlinkGameCenter(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
@@ -2586,7 +3170,16 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaError OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "UnlinkGoogle"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "UnlinkGoogle"
+      , AutoCreateRefTerm = "Vars"
+    )
+    , Category = "Nakama|Client"
+  )
   static UNakamaClientUnlinkGoogle* UnlinkGoogle(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
@@ -2620,7 +3213,16 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaError OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "UnlinkSteam"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "UnlinkSteam"
+      , AutoCreateRefTerm = "Vars"
+    )
+    , Category = "Nakama|Client"
+  )
   static UNakamaClientUnlinkSteam* UnlinkSteam(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
@@ -2654,7 +3256,15 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaError OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "UpdateAccount"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "UpdateAccount"
+    )
+    , Category = "Nakama|Client"
+  )
   static UNakamaClientUpdateAccount* UpdateAccount(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
@@ -2696,7 +3306,15 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaError OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "UpdateGroup"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "UpdateGroup"
+    )
+    , Category = "Nakama|Client"
+  )
   static UNakamaClientUpdateGroup* UpdateGroup(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
@@ -2738,7 +3356,15 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaValidatePurchaseApple OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ValidatePurchaseApple"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "ValidatePurchaseApple"
+    )
+    , Category = "Nakama|Client"
+  )
   static UNakamaClientValidatePurchaseApple* ValidatePurchaseApple(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
@@ -2772,7 +3398,15 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaValidateSubscriptionApple OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ValidateSubscriptionApple"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "ValidateSubscriptionApple"
+    )
+    , Category = "Nakama|Client"
+  )
   static UNakamaClientValidateSubscriptionApple* ValidateSubscriptionApple(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
@@ -2806,7 +3440,15 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaValidatePurchaseGoogle OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ValidatePurchaseGoogle"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "ValidatePurchaseGoogle"
+    )
+    , Category = "Nakama|Client"
+  )
   static UNakamaClientValidatePurchaseGoogle* ValidatePurchaseGoogle(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
@@ -2840,7 +3482,15 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaValidateSubscriptionGoogle OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ValidateSubscriptionGoogle"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "ValidateSubscriptionGoogle"
+    )
+    , Category = "Nakama|Client"
+  )
   static UNakamaClientValidateSubscriptionGoogle* ValidateSubscriptionGoogle(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
@@ -2874,7 +3524,15 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaValidatePurchaseHuawei OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ValidatePurchaseHuawei"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "ValidatePurchaseHuawei"
+    )
+    , Category = "Nakama|Client"
+  )
   static UNakamaClientValidatePurchaseHuawei* ValidatePurchaseHuawei(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
@@ -2910,7 +3568,15 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaValidatePurchaseFacebookInstant OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "ValidatePurchaseFacebookInstant"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "ValidatePurchaseFacebookInstant"
+    )
+    , Category = "Nakama|Client"
+  )
   static UNakamaClientValidatePurchaseFacebookInstant* ValidatePurchaseFacebookInstant(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
@@ -2944,7 +3610,15 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaWriteLeaderboardRecord OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "WriteLeaderboardRecord"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "WriteLeaderboardRecord"
+    )
+    , Category = "Nakama|Client"
+  )
   static UNakamaClientWriteLeaderboardRecord* WriteLeaderboardRecord(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
@@ -2978,7 +3652,15 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaWriteStorageObjects OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "WriteStorageObjects"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "WriteStorageObjects"
+    )
+    , Category = "Nakama|Client"
+  )
   static UNakamaClientWriteStorageObjects* WriteStorageObjects(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
@@ -3010,7 +3692,15 @@ public:
   UPROPERTY(BlueprintAssignable)
   FOnNakamaWriteTournamentRecord OnError;
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "WriteTournamentRecord"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "WriteTournamentRecord"
+    )
+    , Category = "Nakama|Client"
+  )
   static UNakamaClientWriteTournamentRecord* WriteTournamentRecord(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig

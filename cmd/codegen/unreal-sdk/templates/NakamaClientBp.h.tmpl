@@ -65,7 +65,20 @@ public:
   FOnNakamaError OnError;
   {{- end }}
 
-  UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", DisplayName = "{{ $func.Name }}"), Category = "Nakama|Client")
+  UFUNCTION(
+    BlueprintCallable
+    , meta = (
+      BlueprintInternalUseOnly = "true"
+      , WorldContext = "WorldContextObject"
+      , DisplayName = "{{ $func.Name }}"
+      {{- range $param := $func.Params }}
+      {{- if $param.Metadata.IsMap }}
+      , AutoCreateRefTerm = "{{ $param.Name }}"
+      {{- end }}
+      {{- end }}
+    )
+    , Category = "Nakama|Client"
+  )
   static UNakamaClient{{ $func.Name }}* {{ $func.Name }}(
     UObject* WorldContextObject
     , FNakamaClientConfig ClientConfig
