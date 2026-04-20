@@ -106,15 +106,19 @@ namespace Nakama
   * @param RetryConfig Retry configuration.
   * @param CancellationToken	Set to true to cancel the in-flight request.
   */
+  {{- if ne "" $func.Type }}
   NAKAMA_API TNakamaFuture<{{ $func.Type }}Result> {{ $func.Name }}(
+  {{- else }}
+  NAKAMA_API TNakamaFuture<FNakamaVoidResult> {{ $func.Name }}(
+  {{- end }}
     const FNakamaClientConfig& ClientConfig,
     {{- range $idx, $param := $func.Params }}
     {{- if $param.Metadata.IsMessageType }}
     {{- range $member := $param.Metadata.Members }}
-    {{ $member.Type }} {{ $param.Name }}{{ $member.Name }},
+    {{ $member.Metadata.ParamType }} {{ $param.Name }}{{ $member.Name }},
     {{- end }}
     {{- else }}
-    {{ $param.Type }} {{ $param.Name }},
+    {{ $param.Metadata.ParamType }} {{ $param.Name }},
     {{- end }}
     {{- end }}
     const FNakamaRetryConfig& RetryConfig = {},

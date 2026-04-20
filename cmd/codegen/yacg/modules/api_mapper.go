@@ -9,7 +9,8 @@ type DataDecl struct {
 	Name    string
 	Comment string
 
-	Metadata map[string]any
+	TypeEntry TypeEntry
+	Metadata  map[string]any
 }
 
 type Type struct {

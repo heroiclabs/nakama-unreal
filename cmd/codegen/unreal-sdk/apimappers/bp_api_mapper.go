@@ -53,7 +53,7 @@ func (m UnrealBlueprintHttpApiMapper) MapRpc(rpc *yacg.ProtoRpc, api yacg.Api, n
 
 	funcReturnTypeName := ""
 	if rpc.ReturnType != nil {
-		funcReturnTypeName = nameResolver.ResolveType(rpc.ReturnType.Name, modules.FieldType)
+		funcReturnTypeName = nameResolver.ResolveEntry(rpc.ReturnType.Name).FieldType
 	}
 
 	returns, err := m.MapMessage(rpc.ReturnType, api, nameResolver)
@@ -73,11 +73,12 @@ func (m UnrealBlueprintHttpApiMapper) MapRpc(rpc *yacg.ProtoRpc, api yacg.Api, n
 	isSessionRefresh := rpc.Name == "SessionRefresh"
 	needsSession := !isAuth && !isSessionRefresh
 	if needsSession {
-		sessionType := nameResolver.ResolveType("Session", modules.FieldType)
+		sessionType := nameResolver.ResolveEntry("Session").FieldType
 		sessionParam := modules.DataDecl{
-			Type:    fmt.Sprintf("const %s&", sessionType),
-			Name:    "Session",
-			Comment: "The session of the user.",
+			Type:     sessionType,
+			Name:     "Session",
+			Comment:  "The session of the user.",
+			Metadata: map[string]any{"ParamType": fmt.Sprintf("const %s&", sessionType)},
 		}
 		paramsMembers = append([]modules.DataDecl{sessionParam}, paramsType.Members...)
 	}
@@ -108,33 +109,44 @@ func (m UnrealBlueprintHttpApiMapper) MapMessage(message *yacg.ProtoMessage, api
 		return modules.Type{}, fmt.Errorf("type definition not found in proto schema: `%s`", message.Name)
 	}
 	for _, field := range message.Fields {
-		fieldTypeCtx := modules.FieldType
-		if field.Repeated {
-			fieldTypeCtx = modules.RepeatedFieldType
+		entry := nameResolver.ResolveEntry(field.Type)
+		dataDecl := modules.DataDecl{
+			Name:      nameResolver.ResolveIdentifier(field.Name),
+			Type:      entry.FieldType,
+			TypeEntry: entry,
+			Comment:   field.Comment.Message(),
+			Metadata:  m.makeTypeMemberMetadata(field.Field, field.Repeated, false, api),
 		}
-
-		members = append(members, modules.DataDecl{
-			Name:     nameResolver.ResolveIdentifier(field.Name),
-			Type:     nameResolver.ResolveType(field.Type, fieldTypeCtx),
-			Comment:  field.Comment.Message(),
-			Metadata: m.makeTypeMemberMetadata(field.Field, field.Repeated, false, api, nameResolver),
-		})
+		dataDecl.Metadata["ParamType"] = entry.Param
+		if field.Repeated {
+			dataDecl.Type = entry.RepeatedFieldType
+			dataDecl.Metadata["ParamType"] = entry.RepeatedParam
+		}
+		members = append(members, dataDecl)
 	}
 	for _, field := range message.MapFields {
-		members = append(members, modules.DataDecl{
-			Name:     nameResolver.ResolveIdentifier(field.Name),
-			Type:     nameResolver.ResolveType(field.Type, modules.MapType),
-			Comment:  field.Comment.Message(),
-			Metadata: m.makeTypeMemberMetadata(field.Field, false, true, api, nameResolver),
-		})
+		entry := nameResolver.ResolveEntry(field.Type)
+		dataDecl := modules.DataDecl{
+			Name:      nameResolver.ResolveIdentifier(field.Name),
+			Type:      entry.MapType,
+			TypeEntry: entry,
+			Comment:   field.Comment.Message(),
+			Metadata:  m.makeTypeMemberMetadata(field.Field, false, true, api),
+		}
+		dataDecl.Metadata["ParamType"] = entry.MapParam
+		members = append(members, dataDecl)
 	}
 	for _, field := range message.OneofFields {
-		members = append(members, modules.DataDecl{
-			Name:     nameResolver.ResolveIdentifier(field.Name),
-			Type:     nameResolver.ResolveType(field.Type, modules.FieldType),
-			Comment:  field.Comment.Message(),
-			Metadata: m.makeTypeMemberMetadata(field.Field, false, false, api, nameResolver),
-		})
+		entry := nameResolver.ResolveEntry(field.Type)
+		dataDecl := modules.DataDecl{
+			Name:      nameResolver.ResolveIdentifier(field.Name),
+			Type:      entry.FieldType,
+			TypeEntry: entry,
+			Comment:   field.Comment.Message(),
+			Metadata:  m.makeTypeMemberMetadata(field.Field, false, false, api),
+		}
+		dataDecl.Metadata["ParamType"] = entry.Param
+		members = append(members, dataDecl)
 	}
 
 	return modules.Type{
@@ -146,32 +158,27 @@ func (m UnrealBlueprintHttpApiMapper) MapMessage(message *yacg.ProtoMessage, api
 	}, nil
 }
 
-func (m UnrealBlueprintHttpApiMapper) makeTypeMemberMetadata(field *proto.Field, isRepeated bool, isMap bool, api yacg.Api, nameResolver modules.NameResolver) map[string]any {
-	fieldMeta := make(map[string]any, 0)
-
-	_, isMessageType := api.MessagesByName[field.Type]
-
+func (m UnrealBlueprintHttpApiMapper) makeTypeMemberMetadata(field *proto.Field, isRepeated bool, isMap bool, api yacg.Api) map[string]any {
+	fieldMeta := make(map[string]any)
 	fieldMeta["JsonFieldName"] = field.Name
 	fieldMeta["Repeated"] = isRepeated
 	fieldMeta["IsMap"] = isMap
-	fieldMeta["IsPrimitive"] = !isMessageType
-	fieldMeta["JsonCast"] = nameResolver.ResolveType(field.Type, modules.JsonCast)
-	fieldMeta["JsonToTypeMethod"] = nameResolver.ResolveType(field.Type, modules.JsonToTypeMethod)
-	fieldMeta["JsonGetter"] = nameResolver.ResolveType(field.Type, modules.JsonGetter)
-	fieldMeta["JsonArrayType"] = nameResolver.ResolveType(field.Type, modules.JsonArrayValue)
-	fieldMeta["MaybeToJson"] = nameResolver.ResolveType(field.Type, nameresolvers.MaybeToJson)
-	fieldMeta["EmptyCheck"] = nameResolver.ResolveType(field.Type, modules.EmptyCheck)
-	fieldMeta["JsonSetter"] = nameResolver.ResolveType(field.Type, modules.JsonSetter)
-
+	_, isMessageType := api.MessagesByName[field.Type]
+	fieldMeta["IsMessageType"] = isMessageType
 	return fieldMeta
 }
 
 func (m UnrealBlueprintHttpApiMapper) makeFuncMetadata(rpc *yacg.ProtoRpc, nameResolver modules.NameResolver) map[string]any {
-	funcMeta := make(map[string]any, 0)
+	funcMeta := make(map[string]any)
 
-	funcMeta["BpDelegateName"] = nameResolver.ResolveType("Success", nameresolvers.WithCallbackPrefix)
+	unr, ok := nameResolver.(*nameresolvers.UnrealNameResolver)
+	if !ok {
+		return funcMeta
+	}
+
+	funcMeta["BpDelegateName"] = unr.ResolveDelegateName("Success")
 	if rpc.ReturnType != nil {
-		funcMeta["BpDelegateName"] = nameResolver.ResolveType(rpc.Name, nameresolvers.WithCallbackPrefix)
+		funcMeta["BpDelegateName"] = unr.ResolveDelegateName(rpc.Name)
 	}
 	return funcMeta
 }

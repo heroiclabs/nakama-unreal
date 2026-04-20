@@ -24,7 +24,7 @@ USatoriClient{{ $func.Name }}* USatoriClient{{ $func.Name }}::{{ $func.Name }}(
   UObject* WorldContextObject
   , FSatoriClientConfig ClientConfig
   {{- range $idx, $param := $func.Params }}
-  , {{ $param.Type }} {{ $param.Name }}
+  , {{ $param.Metadata.ParamType }} {{ $param.Name }}
   {{- end }}
 )
 {

@@ -57,7 +57,7 @@ public:
     UObject* WorldContextObject
     , UNakamaWebSocketSubsystem* WebSocketSubsystem;
     {{- range $idx, $param := $func.Params }}
-    , {{ $param.Type }} {{ $param.Name }}
+    , {{ $param.Metadata.ParamType }} {{ $param.Name }}
     {{- end }}
   );
 

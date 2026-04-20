@@ -7,7 +7,6 @@ import (
 
 	"github.com/emicklei/proto"
 	"heroiclabs.com/yacg"
-	"heroiclabs.com/yacg-modules/unrealsdk/nameresolvers"
 	"heroiclabs.com/yacg/modules"
 )
 
@@ -20,24 +19,17 @@ type PathParam struct {
 }
 
 type QueryParam struct {
-	Repeated         bool   // Whether or not this is a collection
-	IterationType    string // For repeated collections, a singular type we iterate over
-	Name             string // Like QueryParam
-	EmptyCheck       string // "" or ".Empty()" or similar
-	QueryFormat      string // Like %d
-	QueryValueSetter string // None or FGenericPlatformHttp::UrlEncode
+	Repeated bool
+	Name     string
+	modules.TypeEntry
 }
 
 type BodyParam struct {
 	Name          string
 	Repeated      bool
 	IsMap         bool
-	IterationType string
-	JsonArrayType string
-	MaybeToJson   string // "" or ".ToJson()"
 	JsonFieldName string
-	JsonSetter    string
-	EmptyCheck    string // "" or ".Empty()" or similar
+	modules.TypeEntry
 }
 
 func (m UnrealHttpApiMapper) MapApi(api yacg.Api, nameResolver modules.NameResolver) (modules.ApiMap, error) {
@@ -90,7 +82,7 @@ func (m UnrealHttpApiMapper) MapEnum(enum *yacg.ProtoEnum, api yacg.Api, nameRes
 		DataDecl: modules.DataDecl{
 			Name:    nameResolver.ResolveIdentifier(enum.Name),
 			Comment: enum.Comment,
-			Type:    nameResolver.ResolveType("int", modules.FieldType),
+			Type:    nameResolver.ResolveEntry("int").FieldType,
 		},
 		Fields: values,
 	}, nil
@@ -105,7 +97,7 @@ func (m UnrealHttpApiMapper) MapRpc(rpc *yacg.ProtoRpc, api yacg.Api, nameResolv
 
 	funcReturnTypeName := ""
 	if rpc.ReturnType != nil {
-		funcReturnTypeName = nameResolver.ResolveType(rpc.ReturnType.Name, modules.FieldType)
+		funcReturnTypeName = nameResolver.ResolveEntry(rpc.ReturnType.Name).FieldType
 	}
 
 	//
@@ -149,9 +141,10 @@ func (m UnrealHttpApiMapper) MapRpc(rpc *yacg.ProtoRpc, api yacg.Api, nameResolv
 			return nil, err
 		}
 		httpKeyParam := modules.DataDecl{
-			Type:    "const FString&",
-			Name:    "HttpKey",
-			Comment: "HttpKey for server-to-server communication",
+			Type:     "FString",
+			Name:     "HttpKey",
+			Comment:  "HttpKey for server-to-server communication",
+			Metadata: map[string]any{"ParamType": "const FString&"},
 		}
 		paramsMembers := append([]modules.DataDecl{httpKeyParam}, params.Members...)
 
@@ -172,11 +165,12 @@ func (m UnrealHttpApiMapper) MapRpc(rpc *yacg.ProtoRpc, api yacg.Api, nameResolv
 		if err != nil {
 			return nil, err
 		}
-		sessionType := nameResolver.ResolveType("Session", modules.FieldType)
+		sessionType := nameResolver.ResolveEntry("Session").FieldType
 		sessionParam := modules.DataDecl{
-			Type:    fmt.Sprintf("const %s&", sessionType),
-			Name:    "Session",
-			Comment: "The session of the user.",
+			Type:     sessionType,
+			Name:     "Session",
+			Comment:  "The session of the user.",
+			Metadata: map[string]any{"ParamType": fmt.Sprintf("const %s&", sessionType)},
 		}
 		paramsMembers := append([]modules.DataDecl{sessionParam}, params.Members...)
 
@@ -203,33 +197,52 @@ func (m UnrealHttpApiMapper) MapMessage(message *yacg.ProtoMessage, api yacg.Api
 	members := make([]modules.DataDecl, 0, len(message.Fields)+len(message.MapFields))
 
 	for _, field := range message.Fields {
-		fieldTypeCtx := modules.FieldType
-		if field.Repeated {
-			fieldTypeCtx = modules.RepeatedFieldType
+		entry := nameResolver.ResolveEntry(field.Type)
+		_, isEnumType := api.EnumsByName[field.Type]
+		if isEnumType {
+			entry.DefaultValue = fmt.Sprintf("static_cast<%s>(0)", entry.FieldType)
 		}
-
-		members = append(members, modules.DataDecl{
-			Name:     nameResolver.ResolveIdentifier(field.Name),
-			Type:     nameResolver.ResolveType(field.Type, fieldTypeCtx),
-			Comment:  field.Comment.Message(),
-			Metadata: m.makeTypeMemberMetadata(field.Field, field.Repeated, false, api, nameResolver),
-		})
+		dataDecl := modules.DataDecl{
+			Name:      nameResolver.ResolveIdentifier(field.Name),
+			Type:      entry.FieldType,
+			TypeEntry: entry,
+			Comment:   field.Comment.Message(),
+			Metadata:  m.makeTypeMemberMetadata(field.Field, field.Repeated, false, api, nameResolver),
+		}
+		dataDecl.Metadata["ParamType"] = entry.Param
+		if field.Repeated {
+			dataDecl.Type = entry.RepeatedFieldType
+			dataDecl.Metadata["ParamType"] = entry.RepeatedParam
+		}
+		members = append(members, dataDecl)
 	}
 	for _, field := range message.MapFields {
-		members = append(members, modules.DataDecl{
-			Name:     nameResolver.ResolveIdentifier(field.Name),
-			Type:     nameResolver.ResolveType(field.Type, modules.MapType),
-			Comment:  field.Comment.Message(),
-			Metadata: m.makeTypeMemberMetadata(field.Field, false, true, api, nameResolver),
-		})
+		entry := nameResolver.ResolveEntry(field.Type)
+		dataDecl := modules.DataDecl{
+			Name:      nameResolver.ResolveIdentifier(field.Name),
+			Type:      entry.MapType,
+			TypeEntry: entry,
+			Comment:   field.Comment.Message(),
+			Metadata:  m.makeTypeMemberMetadata(field.Field, false, true, api, nameResolver),
+		}
+		dataDecl.Metadata["ParamType"] = entry.MapParam
+		members = append(members, dataDecl)
 	}
 	for _, field := range message.OneofFields {
-		members = append(members, modules.DataDecl{
-			Name:     nameResolver.ResolveIdentifier(field.Name),
-			Type:     nameResolver.ResolveType(field.Type, modules.FieldType),
-			Comment:  field.Comment.Message(),
-			Metadata: m.makeTypeMemberMetadata(field.Field, false, false, api, nameResolver),
-		})
+		entry := nameResolver.ResolveEntry(field.Type)
+		_, isEnumType := api.EnumsByName[field.Type]
+		if isEnumType {
+			entry.DefaultValue = fmt.Sprintf("static_cast<%s>(0)", entry.FieldType)
+		}
+		dataDecl := modules.DataDecl{
+			Name:      nameResolver.ResolveIdentifier(field.Name),
+			Type:      entry.FieldType,
+			TypeEntry: entry,
+			Comment:   field.Comment.Message(),
+			Metadata:  m.makeTypeMemberMetadata(field.Field, false, false, api, nameResolver),
+		}
+		dataDecl.Metadata["ParamType"] = entry.Param
+		members = append(members, dataDecl)
 	}
 
 	return modules.Type{
@@ -242,38 +255,27 @@ func (m UnrealHttpApiMapper) MapMessage(message *yacg.ProtoMessage, api yacg.Api
 }
 
 func (m UnrealHttpApiMapper) makeTypeMemberMetadata(field *proto.Field, isRepeated bool, isMap bool, api yacg.Api, nameResolver modules.NameResolver) map[string]any {
-	fieldMeta := make(map[string]any, 0)
-
+	fieldMeta := make(map[string]any)
 	fieldMeta["Repeated"] = isRepeated
 	fieldMeta["IsMap"] = isMap
+	fieldMeta["JsonFieldName"] = field.Name
 
 	message, isMessageType := api.MessagesByName[field.Type]
 	fieldMeta["IsMessageType"] = isMessageType
+
 	_, isEnumType := api.EnumsByName[field.Type]
 	fieldMeta["IsEnumType"] = isEnumType
-	if isEnumType {
-		fieldMeta["DefaultValue"] = fmt.Sprintf("static_cast<%s>(0)", nameResolver.ResolveType(field.Type, modules.FieldType))
-	} else {
-		fieldMeta["DefaultValue"] = nameResolver.ResolveType(field.Type, modules.DefaultValue)
-	}
+
 	if isMessageType && !isRepeated && !isMap {
 		mapped, _ := m.MapMessage(message, api, nameResolver)
 		fieldMeta["Members"] = mapped.Members
 	}
-	fieldMeta["JsonFieldName"] = field.Name
-	fieldMeta["JsonCast"] = nameResolver.ResolveType(field.Type, modules.JsonCast)
-	fieldMeta["JsonToTypeMethod"] = nameResolver.ResolveType(field.Type, modules.JsonToTypeMethod)
-	fieldMeta["JsonGetter"] = nameResolver.ResolveType(field.Type, modules.JsonGetter)
-	fieldMeta["JsonArrayType"] = nameResolver.ResolveType(field.Type, modules.JsonArrayValue)
-	fieldMeta["MaybeToJson"] = nameResolver.ResolveType(field.Type, nameresolvers.MaybeToJson)
-	fieldMeta["EmptyCheck"] = nameResolver.ResolveType(field.Type, modules.EmptyCheck)
-	fieldMeta["JsonSetter"] = nameResolver.ResolveType(field.Type, modules.JsonSetter)
 
 	return fieldMeta
 }
 
 func (m UnrealHttpApiMapper) makeFuncMetadata(rpc *yacg.ProtoRpc, nameResolver modules.NameResolver, hasSession bool, authType string, authKey string) map[string]any {
-	funcMeta := make(map[string]any, 0)
+	funcMeta := make(map[string]any)
 	funcMeta["Endpoint"] = rpc.Endpoint
 	funcMeta["Method"] = rpc.Method
 
@@ -286,40 +288,32 @@ func (m UnrealHttpApiMapper) makeFuncMetadata(rpc *yacg.ProtoRpc, nameResolver m
 	queryParams := make([]QueryParam, 0, len(rpc.QueryParams))
 	pathParams := make([]PathParam, 0, len(rpc.PathParams))
 	bodyParams := make([]BodyParam, 0, len(rpc.BodyParams))
+
 	for _, qp := range rpc.QueryParams {
 		for _, f := range rpc.RequestType.Fields {
 			if f.Name == qp {
 				queryParams = append(queryParams, QueryParam{
-					Repeated:         f.Repeated,
-					IterationType:    nameResolver.ResolveType(f.Type, modules.Param),
-					Name:             nameResolver.ResolveIdentifier(qp),
-					QueryFormat:      nameResolver.ResolveType(f.Type, modules.QueryFormat),
-					QueryValueSetter: nameResolver.ResolveType(f.Type, nameresolvers.QueryValueSetter),
-					EmptyCheck:       nameResolver.ResolveType(f.Type, modules.EmptyCheck),
+					Repeated:  f.Repeated,
+					Name:      nameResolver.ResolveIdentifier(qp),
+					TypeEntry: nameResolver.ResolveEntry(f.Type),
 				})
 			}
 		}
 		for _, f := range rpc.RequestType.MapFields {
 			if f.Name == qp {
 				queryParams = append(queryParams, QueryParam{
-					Repeated:         false,
-					Name:             nameResolver.ResolveIdentifier(qp),
-					IterationType:    nameResolver.ResolveType(f.Type, modules.Param),
-					QueryFormat:      nameResolver.ResolveType(f.Type, modules.QueryFormat),
-					QueryValueSetter: nameResolver.ResolveType(f.Type, nameresolvers.QueryValueSetter),
-					EmptyCheck:       nameResolver.ResolveType(f.Type, modules.EmptyCheck),
+					Repeated:  false,
+					Name:      nameResolver.ResolveIdentifier(qp),
+					TypeEntry: nameResolver.ResolveEntry(f.Type),
 				})
 			}
 		}
 		for _, f := range rpc.RequestType.OneofFields {
 			if f.Name == qp {
 				queryParams = append(queryParams, QueryParam{
-					Repeated:         false,
-					Name:             nameResolver.ResolveIdentifier(qp),
-					IterationType:    nameResolver.ResolveType(f.Type, modules.Param),
-					QueryFormat:      nameResolver.ResolveType(f.Type, modules.QueryFormat),
-					QueryValueSetter: nameResolver.ResolveType(f.Type, nameresolvers.QueryValueSetter),
-					EmptyCheck:       nameResolver.ResolveType(f.Type, modules.EmptyCheck),
+					Repeated:  false,
+					Name:      nameResolver.ResolveIdentifier(qp),
+					TypeEntry: nameResolver.ResolveEntry(f.Type),
 				})
 			}
 		}
@@ -327,26 +321,17 @@ func (m UnrealHttpApiMapper) makeFuncMetadata(rpc *yacg.ProtoRpc, nameResolver m
 	for _, pp := range rpc.PathParams {
 		for _, f := range rpc.RequestType.Fields {
 			if f.Name == pp {
-				pathParams = append(pathParams, PathParam{
-					PathName: pp,
-					Name:     nameResolver.ResolveIdentifier(pp),
-				})
+				pathParams = append(pathParams, PathParam{PathName: pp, Name: nameResolver.ResolveIdentifier(pp)})
 			}
 		}
 		for _, f := range rpc.RequestType.MapFields {
 			if f.Name == pp {
-				pathParams = append(pathParams, PathParam{
-					PathName: pp,
-					Name:     nameResolver.ResolveIdentifier(pp),
-				})
+				pathParams = append(pathParams, PathParam{PathName: pp, Name: nameResolver.ResolveIdentifier(pp)})
 			}
 		}
 		for _, f := range rpc.RequestType.OneofFields {
 			if f.Name == pp {
-				pathParams = append(pathParams, PathParam{
-					PathName: pp,
-					Name:     nameResolver.ResolveIdentifier(pp),
-				})
+				pathParams = append(pathParams, PathParam{PathName: pp, Name: nameResolver.ResolveIdentifier(pp)})
 			}
 		}
 	}
@@ -357,12 +342,8 @@ func (m UnrealHttpApiMapper) makeFuncMetadata(rpc *yacg.ProtoRpc, nameResolver m
 					Name:          nameResolver.ResolveIdentifier(bp),
 					Repeated:      f.Repeated,
 					IsMap:         false,
-					IterationType: nameResolver.ResolveType(f.Type, modules.Param),
-					JsonArrayType: nameResolver.ResolveType(f.Type, modules.JsonArrayValue),
-					MaybeToJson:   nameResolver.ResolveType(f.Type, nameresolvers.MaybeToJson),
 					JsonFieldName: bp,
-					JsonSetter:    nameResolver.ResolveType(f.Type, modules.JsonSetter),
-					EmptyCheck:    nameResolver.ResolveType(f.Type, modules.EmptyCheck),
+					TypeEntry:     nameResolver.ResolveEntry(f.Type),
 				})
 			}
 		}
@@ -372,12 +353,8 @@ func (m UnrealHttpApiMapper) makeFuncMetadata(rpc *yacg.ProtoRpc, nameResolver m
 					Name:          nameResolver.ResolveIdentifier(bp),
 					Repeated:      false,
 					IsMap:         true,
-					IterationType: nameResolver.ResolveType(f.Type, modules.Param),
-					JsonArrayType: nameResolver.ResolveType(f.Type, modules.JsonArrayValue),
-					MaybeToJson:   nameResolver.ResolveType(f.Type, nameresolvers.MaybeToJson),
 					JsonFieldName: bp,
-					JsonSetter:    nameResolver.ResolveType(f.Type, modules.JsonSetter),
-					EmptyCheck:    nameResolver.ResolveType(f.Type, modules.EmptyCheck),
+					TypeEntry:     nameResolver.ResolveEntry(f.Type),
 				})
 			}
 		}
@@ -387,12 +364,8 @@ func (m UnrealHttpApiMapper) makeFuncMetadata(rpc *yacg.ProtoRpc, nameResolver m
 					Name:          nameResolver.ResolveIdentifier(bp),
 					Repeated:      false,
 					IsMap:         false,
-					IterationType: nameResolver.ResolveType(f.Type, modules.Param),
-					JsonArrayType: nameResolver.ResolveType(f.Type, modules.JsonArrayValue),
-					MaybeToJson:   nameResolver.ResolveType(f.Type, nameresolvers.MaybeToJson),
 					JsonFieldName: bp,
-					JsonSetter:    nameResolver.ResolveType(f.Type, modules.JsonSetter),
-					EmptyCheck:    nameResolver.ResolveType(f.Type, modules.EmptyCheck),
+					TypeEntry:     nameResolver.ResolveEntry(f.Type),
 				})
 			}
 		}
@@ -405,8 +378,9 @@ func (m UnrealHttpApiMapper) makeFuncMetadata(rpc *yacg.ProtoRpc, nameResolver m
 	funcMeta["ReturnTypeName"] = ""
 	funcMeta["SuccessLambdaType"] = ""
 	if rpc.ReturnType != nil {
-		funcMeta["ReturnTypeName"] = nameResolver.ResolveType(rpc.ReturnType.Name, modules.FieldType)
-		funcMeta["SuccessLambdaType"] = nameResolver.ResolveType(rpc.ReturnType.Name, modules.Param)
+		entry := nameResolver.ResolveEntry(rpc.ReturnType.Name)
+		funcMeta["ReturnTypeName"] = entry.FieldType
+		funcMeta["SuccessLambdaType"] = entry.Param
 	}
 
 	funcMeta["HasSession"] = hasSession

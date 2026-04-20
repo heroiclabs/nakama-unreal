@@ -37,7 +37,7 @@ TNakamaFuture<FNakamaWebSocketConnectionResult> FNakamaRtClient::Connect(
 
 TNakamaFuture<FNakamaWebSocketResponse> FNakamaRtClient::{{ $func.Name }}(
   {{- range $idx, $param := $func.Params }}
-  {{ if $idx }}, {{ end }}{{ $param.Type }} {{ $param.Name }}
+  {{ if $idx }}, {{ end }}{{ $param.Metadata.ParamType }} {{ $param.Name }}
   {{- end }}
 ) noexcept
 {
@@ -50,7 +50,7 @@ TNakamaFuture<FNakamaWebSocketResponse> FNakamaRtClient::{{ $func.Name }}(
     TArray<TSharedPtr<FJsonValue>> Array;
     for (const auto& Item : {{ $param.Name }})
     {
-      Array.Add(MakeShared<{{ $param.Metadata.JsonArrayType }}>(Item{{ $param.Metadata.MaybeToJson }}));
+      Array.Add(MakeShared<{{ $param.TypeEntry.JsonArrayValue }}>(Item{{ $param.TypeEntry.MaybeToJson }}));
     }
     Json->SetArrayField(TEXT("{{ $param.Metadata.JsonFieldName }}"), Array);
   }
@@ -65,9 +65,9 @@ TNakamaFuture<FNakamaWebSocketResponse> FNakamaRtClient::{{ $func.Name }}(
     Json->SetObjectField(TEXT("{{ $param.Metadata.JsonFieldName }}"), MapObj);
   }
   {{- else }}
-  {{ if ne "" $param.Metadata.EmptyCheck }}if ({{ $param.Name }}.{{ $param.Metadata.EmptyCheck }}() == false){{ end }}
+  {{ if ne "" $param.TypeEntry.EmptyCheck }}if ({{ $param.Name }}.{{ $param.TypeEntry.EmptyCheck }}() == false){{ end }}
   {
-    Json->{{ $param.Metadata.JsonSetter }}(TEXT("{{ $param.Metadata.JsonFieldName }}"), {{ $param.Name }}{{ $param.Metadata.MaybeToJson }});
+    Json->{{ $param.TypeEntry.JsonSetter }}(TEXT("{{ $param.Metadata.JsonFieldName }}"), {{ $param.Name }}{{ $param.TypeEntry.MaybeToJson }});
   }
   {{- end }}
 

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"log"
 	"text/template"
 	"time"
@@ -37,6 +38,14 @@ func getFuncMap() template.FuncMap {
 }
 
 func main() {
+	outDir := flag.String("outdir", "", "base output directory")
+
+	flag.Parse()
+
+	if *outDir == "" {
+		log.Fatalf("Please provide `outdir`.")
+	}
+
 	httpMapper := apimappers.UnrealHttpApiMapper{}
 	rtMapper := apimappers.UnrealRtApiMapper{}
 	bpMapper := apimappers.UnrealBlueprintHttpApiMapper{}
@@ -97,115 +106,115 @@ func main() {
 			{
 				Requires: nakamaHttpRequires,
 				Template: "templates/NakamaApi.h.tmpl",
-				Output:   "NakamaApi.h",
+				Output:   "Nakama/Source/NakamaApi/Public/NakamaApi.h",
 			},
 			{
 				Requires: nakamaHttpRequires,
 				Template: "templates/NakamaApi.cpp.tmpl",
-				Output:   "NakamaApi.cpp",
+				Output:   "Nakama/Source/NakamaApi/Private/NakamaApi.cpp",
 			},
 			{
 				Requires: nakamaHttpRequires,
 				Template: "templates/NakamaTypes.h.tmpl",
-				Output:   "NakamaTypes.h",
+				Output:   "Nakama/Source/NakamaApi/Public/NakamaTypes.h",
 			},
 			{
 				Requires: nakamaHttpRequires,
 				Template: "templates/NakamaTypes.cpp.tmpl",
-				Output:   "NakamaTypes.cpp",
+				Output:   "Nakama/Source/NakamaApi/Private/NakamaTypes.cpp",
 			},
 			{
 				Requires: nakamaHttpRequires,
 				Template: "templates/Nakama.h.tmpl",
-				Output:   "Nakama.h",
+				Output:   "Nakama/Source/Nakama/Public/Nakama.h",
 			},
 			{
 				Requires: nakamaHttpRequires,
 				Template: "templates/Nakama.cpp.tmpl",
-				Output:   "Nakama.cpp",
+				Output:   "Nakama/Source/Nakama/Private/Nakama.cpp",
 			},
 			{
 				Requires: nakamaBpHttpRequires,
 				Template: "templates/NakamaClientBp.h.tmpl",
-				Output:   "NakamaClientBlueprintLibrary.h",
+				Output:   "Nakama/Source/NakamaBlueprints/Public/NakamaClientBlueprintLibrary.h",
 			},
 			{
 				Requires: nakamaBpHttpRequires,
 				Template: "templates/NakamaClientBp.cpp.tmpl",
-				Output:   "NakamaClientBlueprintLibrary.cpp",
+				Output:   "Nakama/Source/NakamaBlueprints/Private/NakamaClientBlueprintLibrary.cpp",
 			},
 			{
 				Requires: nakamaRtRequires,
 				Template: "templates/NakamaRtTypes.h.tmpl",
-				Output:   "NakamaRtTypes.h",
+				Output:   "Nakama/Source/NakamaApi/Public/NakamaRtTypes.h",
 			},
 			{
 				Requires: nakamaRtRequires,
 				Template: "templates/NakamaRtTypes.cpp.tmpl",
-				Output:   "NakamaRtTypes.cpp",
+				Output:   "Nakama/Source/NakamaApi/Private/NakamaRtTypes.cpp",
 			},
 			{
 				Requires: nakamaRtRequires,
 				Template: "templates/NakamaRtClient.h.tmpl",
-				Output:   "NakamaRtClient.h",
+				Output:   "Nakama/Source/Nakama/Public/NakamaRt.h",
 			},
 			{
 				Requires: nakamaRtRequires,
 				Template: "templates/NakamaRtClient.cpp.tmpl",
-				Output:   "NakamaRtClient.cpp",
+				Output:   "Nakama/Source/Nakama/Private/NakamaRt.cpp",
 			},
 			{
 				Requires: nakamaRtRequires,
 				Template: "templates/NakamaRtClientBp.h.tmpl",
-				Output:   "NakamaRtClientBlueprintLibrary.h",
+				Output:   "Nakama/Source/NakamaBlueprints/Public/NakamaRtClientBlueprintLibrary.h",
 			},
 			{
 				Requires: nakamaRtRequires,
 				Template: "templates/NakamaRtClientBp.cpp.tmpl",
-				Output:   "NakamaRtClientBlueprintLibrary.cpp",
+				Output:   "Nakama/Source/NakamaBlueprints/Private/NakamaRtClientBlueprintLibrary.cpp",
 			},
 			{
 				Requires: satoriRequires,
 				Template: "templates/SatoriApi.h.tmpl",
-				Output:   "SatoriApi.h",
+				Output:   "Satori/Source/SatoriApi/Public/SatoriApi.h",
 			},
 			{
 				Requires: satoriRequires,
 				Template: "templates/SatoriApi.cpp.tmpl",
-				Output:   "SatoriApi.cpp",
+				Output:   "Satori/Source/SatoriApi/Private/SatoriApi.cpp",
 			},
 			{
 				Requires: satoriRequires,
 				Template: "templates/SatoriTypes.h.tmpl",
-				Output:   "SatoriTypes.h",
+				Output:   "Satori/Source/SatoriApi/Public/SatoriTypes.h",
 			},
 			{
 				Requires: satoriRequires,
 				Template: "templates/SatoriTypes.cpp.tmpl",
-				Output:   "SatoriTypes.cpp",
+				Output:   "Satori/Source/SatoriApi/Private/SatoriTypes.cpp",
 			},
 			{
 				Requires: satoriRequires,
 				Template: "templates/Satori.h.tmpl",
-				Output:   "Satori.h",
+				Output:   "Satori/Source/Satori/Public/Satori.h",
 			},
 			{
 				Requires: satoriRequires,
 				Template: "templates/Satori.cpp.tmpl",
-				Output:   "Satori.cpp",
+				Output:   "Satori/Source/Satori/Private/Satori.cpp",
 			},
 			{
 				Requires: satoriBpRequires,
 				Template: "templates/SatoriClientBp.h.tmpl",
-				Output:   "SatoriClientBlueprintLibrary.h",
+				Output:   "Satori/Source/SatoriBlueprints/Public/SatoriClientBlueprintLibrary.h",
 			},
 			{
 				Requires: satoriBpRequires,
 				Template: "templates/SatoriClientBp.cpp.tmpl",
-				Output:   "SatoriClientBlueprintLibrary.cpp",
+				Output:   "Satori/Source/SatoriBlueprints/Private/SatoriClientBlueprintLibrary.cpp",
 			},
 		},
 	}
 
-	module.Generate("out")
+	module.Generate(*outDir)
 }

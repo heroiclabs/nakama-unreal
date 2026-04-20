@@ -49,7 +49,7 @@ struct FSatori{{ $type.Name }}
 
   /** {{ $member.Comment }} */
   UPROPERTY(BlueprintReadWrite, Category = "Satori")
-  {{ $member.Type }} {{ $member.Name }};
+  {{ $member.Type }} {{ $member.Name }}{{ if $member.TypeEntry.DefaultValue }} = {{ $member.TypeEntry.DefaultValue }}{{ end }};
   {{- end }}
 
   static FSatori{{ $type.Name }} FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;

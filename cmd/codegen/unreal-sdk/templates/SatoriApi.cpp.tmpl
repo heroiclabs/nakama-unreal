@@ -23,7 +23,7 @@
 SATORIAPI_API void SatoriApi::{{ $func.Name }} (
   const FSatoriClientConfig& Config,
   {{- range $idx, $param := $func.Params }}
-  {{ $param.Type }} {{ $param.Name }},
+  {{ $param.Metadata.ParamType }} {{ $param.Name }},
   {{- end }}
   TFunction<void({{ $func.Metadata.SuccessLambdaType }})> OnSuccess,
   TFunction<void(const FSatoriError&)> OnError,
@@ -44,7 +44,7 @@ SATORIAPI_API void SatoriApi::{{ $func.Name }} (
   TArray<FString> QueryParams;
   {{- range $queryParam := $func.Metadata.QueryParams }}
   {{- if $queryParam.Repeated }}
-  for ({{ $queryParam.IterationType }} Item : {{ $queryParam.Name }})
+  for ({{ $queryParam.Param }} Item : {{ $queryParam.Name }})
 	{
     QueryParams.Add(FString::Printf(TEXT("{{ $queryParam.Name }}={{ $queryParam.QueryFormat }}", {{ $queryParam.QueryValueSetter }}(Item))));
   }
@@ -69,9 +69,9 @@ SATORIAPI_API void SatoriApi::{{ $func.Name }} (
   if ({{ $bodyParam.Name }}.Num() > 0)
   {
     TArray<TSharedPtr<FJsonValue>> Array;
-    for ({{ $bodyParam.IterationType }} Item : {{ $bodyParam.Name }})
+    for ({{ $bodyParam.Param }} Item : {{ $bodyParam.Name }})
     {
-      Array.Add(MakeShared<{{ $bodyParam.JsonArrayType }}>(Item{{ $bodyParam.MaybeToJson }}));
+      Array.Add(MakeShared<{{ $bodyParam.JsonArrayValue }}>(Item{{ $bodyParam.MaybeToJson }}));
     }
     Body->SetArrayField(TEXT("{{ $bodyParam.JsonFieldName }}"), Array);
   }

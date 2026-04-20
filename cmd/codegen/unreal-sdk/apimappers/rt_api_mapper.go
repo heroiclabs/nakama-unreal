@@ -6,7 +6,6 @@ import (
 
 	"github.com/emicklei/proto"
 	"heroiclabs.com/yacg"
-	"heroiclabs.com/yacg-modules/unrealsdk/nameresolvers"
 	"heroiclabs.com/yacg/modules"
 )
 
@@ -74,7 +73,7 @@ func (m UnrealRtApiMapper) MapRpc(rpc *yacg.ProtoRpc, api yacg.Api, nameResolver
 
 	funcReturnTypeName := ""
 	if rpc.ReturnType != nil {
-		funcReturnTypeName = nameResolver.ResolveType(rpc.ReturnType.Name, modules.FieldType)
+		funcReturnTypeName = nameResolver.ResolveEntry(rpc.ReturnType.Name).FieldType
 	}
 
 	paramsType, err := m.MapMessage(rpc.RequestType, api, nameResolver)
@@ -110,7 +109,7 @@ func (m UnrealRtApiMapper) MapEnum(enum *yacg.ProtoEnum, api yacg.Api, nameResol
 		DataDecl: modules.DataDecl{
 			Name:    nameResolver.ResolveIdentifier(enum.Name),
 			Comment: enum.Comment,
-			Type:    nameResolver.ResolveType("int", modules.FieldType),
+			Type:    nameResolver.ResolveEntry("int").FieldType,
 		},
 		Fields: values,
 	}, nil
@@ -124,33 +123,52 @@ func (m UnrealRtApiMapper) MapMessage(message *yacg.ProtoMessage, api yacg.Api, 
 	members := make([]modules.DataDecl, 0, len(message.Fields)+len(message.MapFields))
 
 	for _, field := range message.Fields {
-		fieldTypeCtx := modules.FieldType
-		if field.Repeated {
-			fieldTypeCtx = modules.RepeatedFieldType
+		entry := nameResolver.ResolveEntry(field.Type)
+		_, isEnumType := api.EnumsByName[field.Type]
+		if isEnumType {
+			entry.DefaultValue = fmt.Sprintf("static_cast<%s>(0)", entry.FieldType)
 		}
-
-		members = append(members, modules.DataDecl{
-			Name:     nameResolver.ResolveIdentifier(field.Name),
-			Type:     nameResolver.ResolveType(field.Type, fieldTypeCtx),
-			Comment:  field.Comment.Message(),
-			Metadata: m.makeTypeMemberMetadata(field.Field, field.Repeated, false, api, nameResolver),
-		})
+		dataDecl := modules.DataDecl{
+			Name:      nameResolver.ResolveIdentifier(field.Name),
+			Type:      entry.FieldType,
+			TypeEntry: entry,
+			Comment:   field.Comment.Message(),
+			Metadata:  m.makeTypeMemberMetadata(field.Field, field.Repeated, false, api),
+		}
+		dataDecl.Metadata["ParamType"] = entry.Param
+		if field.Repeated {
+			dataDecl.Type = entry.RepeatedFieldType
+			dataDecl.Metadata["ParamType"] = entry.RepeatedParam
+		}
+		members = append(members, dataDecl)
 	}
 	for _, field := range message.MapFields {
-		members = append(members, modules.DataDecl{
-			Name:     nameResolver.ResolveIdentifier(field.Name),
-			Type:     nameResolver.ResolveType(field.Type, modules.MapType),
-			Comment:  field.Comment.Message(),
-			Metadata: m.makeTypeMemberMetadata(field.Field, false, true, api, nameResolver),
-		})
+		entry := nameResolver.ResolveEntry(field.Type)
+		dataDecl := modules.DataDecl{
+			Name:      nameResolver.ResolveIdentifier(field.Name),
+			Type:      entry.MapType,
+			TypeEntry: entry,
+			Comment:   field.Comment.Message(),
+			Metadata:  m.makeTypeMemberMetadata(field.Field, false, true, api),
+		}
+		dataDecl.Metadata["ParamType"] = entry.MapParam
+		members = append(members, dataDecl)
 	}
 	for _, field := range message.OneofFields {
-		members = append(members, modules.DataDecl{
-			Name:     nameResolver.ResolveIdentifier(field.Name),
-			Type:     nameResolver.ResolveType(field.Type, modules.FieldType),
-			Comment:  field.Comment.Message(),
-			Metadata: m.makeTypeMemberMetadata(field.Field, false, false, api, nameResolver),
-		})
+		entry := nameResolver.ResolveEntry(field.Type)
+		_, isEnumType := api.EnumsByName[field.Type]
+		if isEnumType {
+			entry.DefaultValue = fmt.Sprintf("static_cast<%s>(0)", entry.FieldType)
+		}
+		dataDecl := modules.DataDecl{
+			Name:      nameResolver.ResolveIdentifier(field.Name),
+			Type:      entry.FieldType,
+			TypeEntry: entry,
+			Comment:   field.Comment.Message(),
+			Metadata:  m.makeTypeMemberMetadata(field.Field, false, false, api),
+		}
+		dataDecl.Metadata["ParamType"] = entry.Param
+		members = append(members, dataDecl)
 	}
 
 	return modules.Type{
@@ -162,27 +180,18 @@ func (m UnrealRtApiMapper) MapMessage(message *yacg.ProtoMessage, api yacg.Api, 
 	}, nil
 }
 
-func (m UnrealRtApiMapper) makeTypeMemberMetadata(field *proto.Field, isRepeated bool, isMap bool, api yacg.Api, nameResolver modules.NameResolver) map[string]any {
-	fieldMeta := make(map[string]any, 0)
+func (m UnrealRtApiMapper) makeTypeMemberMetadata(field *proto.Field, isRepeated bool, isMap bool, api yacg.Api) map[string]any {
+	fieldMeta := make(map[string]any)
 	fieldMeta["JsonFieldName"] = field.Name
 	_, isEnumType := api.EnumsByName[field.Type]
 	fieldMeta["IsEnumType"] = isEnumType
-	if isEnumType {
-		fieldMeta["DefaultValue"] = fmt.Sprintf("static_cast<%s>(0)", nameResolver.ResolveType(field.Type, modules.FieldType))
-	} else {
-		fieldMeta["DefaultValue"] = nameResolver.ResolveType(field.Type, modules.DefaultValue)
-	}
 	fieldMeta["Repeated"] = isRepeated
 	fieldMeta["IsMap"] = isMap
-	fieldMeta["JsonArrayType"] = nameResolver.ResolveType(field.Type, modules.JsonArrayValue)
-	fieldMeta["MaybeToJson"] = nameResolver.ResolveType(field.Type, nameresolvers.MaybeToJson)
-	fieldMeta["EmptyCheck"] = nameResolver.ResolveType(field.Type, modules.EmptyCheck)
-	fieldMeta["JsonSetter"] = nameResolver.ResolveType(field.Type, modules.JsonSetter)
 	return fieldMeta
 }
 
 func (m UnrealRtApiMapper) makeFuncMetadata(rpc *yacg.ProtoRpc) map[string]any {
-	metadata := make(map[string]any, 0)
+	metadata := make(map[string]any)
 	metadata["RpcName"] = rpc.Name
 	return metadata
 }

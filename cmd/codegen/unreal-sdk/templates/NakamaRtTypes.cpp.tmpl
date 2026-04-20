@@ -38,7 +38,7 @@ FNakamaRt{{ $type.Name }} FNakamaRt{{ $type.Name }}::FromJson(const TSharedPtr<F
         for (const auto& Item : *ArrayPtr)
         {
           {{- if not $member.Metadata.IsMessageType }}
-          Result.{{ $member.Name }}.Add({{ $member.Metadata.JsonCast }}(Item->{{ $member.Metadata.JsonToTypeMethod }}));
+          Result.{{ $member.Name }}.Add({{ $member.TypeEntry.JsonCast }}(Item->{{ $member.TypeEntry.JsonToTypeMethod }}));
           {{- else }}
           const TSharedPtr<FJsonObject>* ItemObj = nullptr;
           if (Item->TryGetObject(ItemObj) && ItemObj)
@@ -61,7 +61,7 @@ FNakamaRt{{ $type.Name }} FNakamaRt{{ $type.Name }}::FromJson(const TSharedPtr<F
       {{- if $member.Metadata.IsEnumType }}
       Result.{{ $member.Name }} = static_cast<{{ $member.Type }}>(Json->GetIntegerField(TEXT("{{ $member.Metadata.JsonFieldName }}")));
       {{- else if not $member.Metadata.IsMessageType }}
-      Result.{{ $member.Name }} = Json->{{ $member.Metadata.JsonGetter }}(TEXT("{{ $member.Metadata.JsonFieldName }}"))
+      Result.{{ $member.Name }} = Json->{{ $member.TypeEntry.JsonGetter }}(TEXT("{{ $member.Metadata.JsonFieldName }}"))
       {{- else }}
       const TSharedPtr<FJsonObject>* NestedObj;
       if (Json->TryGetObjectField(TEXT("{{ $member.Metadata.JsonFieldName }}"), NestedObj))
@@ -88,7 +88,7 @@ TSharedPtr<FJsonObject> FNakamaRt{{ $type.Name }}::ToJson() const noexcept
     TArray<TSharedPtr<FJsonValue>> Array;
     for (const auto& Item : {{ $member.Name }})
     {
-      Array.Add(MakeShared<{{ $member.Metadata.JsonArrayType }}>(Item{{ $member.Metadata.MaybeToJson }}));
+      Array.Add(MakeShared<{{ $member.TypeEntry.JsonArrayValue }}>(Item{{ $member.TypeEntry.MaybeToJson }}));
     }
     Json->SetArrayField(TEXT("{{ $member.Metadata.JsonFieldName }}"), Array);
   }
@@ -103,9 +103,9 @@ TSharedPtr<FJsonObject> FNakamaRt{{ $type.Name }}::ToJson() const noexcept
     Json->SetObjectField(TEXT("{{ $member.Metadata.JsonFieldName }}"), MapObj);
   }
   {{- else }}
-  {{ if ne "" $member.Metadata.EmptyCheck }}if ({{ $member.Name }}.{{ $member.Metadata.EmptyCheck }}() == false){{ end }}
+  {{ if ne "" $member.TypeEntry.EmptyCheck }}if ({{ $member.Name }}.{{ $member.TypeEntry.EmptyCheck }}() == false){{ end }}
   {
-    Json->{{ $member.Metadata.JsonSetter }}(TEXT("{{ $member.Metadata.JsonFieldName }}"), {{ $member.Name }}{{ $member.Metadata.MaybeToJson }});
+    Json->{{ $member.TypeEntry.JsonSetter }}(TEXT("{{ $member.Metadata.JsonFieldName }}"), {{ $member.Name }}{{ $member.TypeEntry.MaybeToJson }});
   }
   {{- end }}
 

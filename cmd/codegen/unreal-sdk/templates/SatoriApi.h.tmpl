@@ -42,7 +42,7 @@ namespace SatoriApi
   SATORIAPI_API void {{ $func.Name }}(
     const FSatoriClientConfig& Config,
     {{- range $idx, $param := $func.Params }}
-    {{ $param.Type }} {{ $param.Name }},
+    {{ $param.Metadata.ParamType }} {{ $param.Name }},
     {{- end }}
     TFunction<void({{ $func.Metadata.SuccessLambdaType }})> OnSuccess,
     TFunction<void(const FSatoriError&)> OnError,

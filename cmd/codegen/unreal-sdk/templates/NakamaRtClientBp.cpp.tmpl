@@ -24,7 +24,7 @@ UNakamaRealtimeClient{{ $func.Name }}* UNakamaRealtimeClient{{ $func.Name }}::{{
   UObject* WorldContextObject
   , UNakamaWebSocketSubsystem* WebSocketSubsystem;
   {{- range $idx, $param := $func.Params }}
-  , {{ $param.Type }} {{ $param.Name }}
+  , {{ $param.Metadata.ParamType }} {{ $param.Name }}
   {{- end }}
 )
 {
@@ -64,7 +64,7 @@ void UNakamaClient{{ $func.Name }}::Activate()
     TArray<TSharedPtr<FJsonValue>> Array;
     for (const auto& Item : Stored{{ $param.Name }})
     {
-      Array.Add(MakeShared<{{ $param.Metadata.JsonArrayType }}>(Item{{ $param.Metadata.MaybeToJson }}));
+      Array.Add(MakeShared<{{ $param.TypeEntry.JsonArrayValue }}>(Item{{ $param.TypeEntry.MaybeToJson }}));
     }
     Json->SetArrayField(TEXT("{{ $param.Metadata.JsonFieldName }}"), Array);
   }
@@ -79,9 +79,9 @@ void UNakamaClient{{ $func.Name }}::Activate()
     Json->SetObjectField(TEXT("{{ $param.Metadata.JsonFieldName }}"), MapObj);
   }
   {{- else }}
-  {{ if ne "" $param.Metadata.EmptyCheck }}if (Stored{{ $param.Name }}.{{ $param.Metadata.EmptyCheck }}() == false){{ end }}
+  {{ if ne "" $param.TypeEntry.EmptyCheck }}if (Stored{{ $param.Name }}.{{ $param.TypeEntry.EmptyCheck }}() == false){{ end }}
   {
-    Json->{{ $param.Metadata.JsonSetter }}(TEXT("{{ $param.Metadata.JsonFieldName }}"), Stored{{ $param.Name }}{{ $param.Metadata.MaybeToJson }});
+    Json->{{ $param.TypeEntry.JsonSetter }}(TEXT("{{ $param.Metadata.JsonFieldName }}"), Stored{{ $param.Name }}{{ $param.TypeEntry.MaybeToJson }});
   }
   {{- end }}
 

@@ -70,7 +70,7 @@ namespace Nakama
     */
     NAKAMA_API TNakamaFuture<FNakamaWebSocketResponse> FNakamaRtClient::{{ $func.Name }}(
       {{- range $idx, $param := $func.Params }}
-      {{ if $idx }}, {{ end }}{{ $param.Type }} {{ $param.Name }}
+      {{ if $idx }}, {{ end }}{{ $param.Metadata.ParamType }} {{ $param.Name }}
       {{- end }}
     ) noexcept;
     {{- end }}

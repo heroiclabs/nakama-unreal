@@ -1,7 +1,6 @@
 package nameresolvers
 
 import (
-	"log"
 	"strings"
 
 	"github.com/golang-cz/textcase"
@@ -10,21 +9,22 @@ import (
 
 type UnrealNameResolver struct {
 	targetSystem string
-	entries      map[string]*modules.TypeEntry
+	entries      map[string]modules.TypeEntry
 }
 
-// Make a new UnrealNameResolver.
+// NewUnrealNameResolver makes a new UnrealNameResolver.
 // Supply target system name: Nakama/Satori, etc.
 func NewUnrealNameResolver(targetSystem string) *UnrealNameResolver {
-	stringEntry := &modules.TypeEntry{
+	stringEntry := modules.TypeEntry{
 		Param:         "const FString&",
 		RepeatedParam: "const TArray<FString>&",
 		MapParam:      "const TMap<FString, FString>&",
 		MapType:       "TMap<FString, FString>",
 
-		JsonArrayValue: "String",
-		QueryFormat:    "%s",
-		EmptyCheck:     "IsEmpty",
+		JsonArrayValue:   "String",
+		QueryFormat:      "%s",
+		QueryValueSetter: "FGenericPlatformHttp::UrlEncode",
+		EmptyCheck:       "IsEmpty",
 
 		FieldType:         "FString",
 		RepeatedFieldType: "TArray<FString>",
@@ -35,7 +35,7 @@ func NewUnrealNameResolver(targetSystem string) *UnrealNameResolver {
 		JsonToTypeMethod: "AsString()",
 	}
 
-	boolEntry := &modules.TypeEntry{
+	boolEntry := modules.TypeEntry{
 		Param:         "bool",
 		RepeatedParam: "const TArray<bool>&",
 		MapParam:      "const TMap<FString, bool>&",
@@ -56,7 +56,7 @@ func NewUnrealNameResolver(targetSystem string) *UnrealNameResolver {
 		DefaultValue: "false",
 	}
 
-	int32Entry := &modules.TypeEntry{
+	int32Entry := modules.TypeEntry{
 		Param:         "int32",
 		RepeatedParam: "const TArray<int32>&",
 		MapParam:      "const TMap<FString, int32>&",
@@ -77,7 +77,7 @@ func NewUnrealNameResolver(targetSystem string) *UnrealNameResolver {
 		DefaultValue: "0",
 	}
 
-	uint32Entry := &modules.TypeEntry{
+	uint32Entry := modules.TypeEntry{
 		Param:         "int32",
 		RepeatedParam: "const TArray<int32>&",
 		MapParam:      "const TMap<FString, int32>&",
@@ -98,7 +98,7 @@ func NewUnrealNameResolver(targetSystem string) *UnrealNameResolver {
 		DefaultValue: "0",
 	}
 
-	int64Entry := &modules.TypeEntry{
+	int64Entry := modules.TypeEntry{
 		Param:         "int64",
 		RepeatedParam: "const TArray<int64>&",
 		MapParam:      "const TMap<FString, int64>&",
@@ -119,7 +119,7 @@ func NewUnrealNameResolver(targetSystem string) *UnrealNameResolver {
 		DefaultValue: "0",
 	}
 
-	uint64Entry := &modules.TypeEntry{
+	uint64Entry := modules.TypeEntry{
 		Param:         "int64",
 		RepeatedParam: "const TArray<int64>&",
 		MapParam:      "const TMap<FString, int64>&",
@@ -140,7 +140,7 @@ func NewUnrealNameResolver(targetSystem string) *UnrealNameResolver {
 		DefaultValue: "0",
 	}
 
-	floatEntry := &modules.TypeEntry{
+	floatEntry := modules.TypeEntry{
 		Param:         "float",
 		RepeatedParam: "const TArray<float>&",
 		MapParam:      "const TMap<FString, float>&",
@@ -161,7 +161,7 @@ func NewUnrealNameResolver(targetSystem string) *UnrealNameResolver {
 		DefaultValue: "0.f",
 	}
 
-	doubleEntry := &modules.TypeEntry{
+	doubleEntry := modules.TypeEntry{
 		Param:         "double",
 		RepeatedParam: "const TArray<double>&",
 		MapParam:      "const TMap<FString, double>&",
@@ -182,7 +182,7 @@ func NewUnrealNameResolver(targetSystem string) *UnrealNameResolver {
 		DefaultValue: "0.0",
 	}
 
-	bytesEntry := &modules.TypeEntry{
+	bytesEntry := modules.TypeEntry{
 		Param:         "const TArray<uint8>&",
 		RepeatedParam: "const TArray<TArray<uint8>>&",
 		MapParam:      "const TMap<FString, TArray<uint8>>&",
@@ -203,7 +203,7 @@ func NewUnrealNameResolver(targetSystem string) *UnrealNameResolver {
 
 	return &UnrealNameResolver{
 		targetSystem: targetSystem,
-		entries: map[string]*modules.TypeEntry{
+		entries: map[string]modules.TypeEntry{
 			"string":      stringEntry,
 			"StringValue": stringEntry,
 			"Timestamp":   stringEntry,
@@ -233,105 +233,41 @@ func NewUnrealNameResolver(targetSystem string) *UnrealNameResolver {
 	}
 }
 
-const (
-	Extended modules.NameResolveContext = iota + modules.SENTINEL_STD_RESOLVE_CTX
-
-	QueryValueSetter
-	MaybeToJson
-	WithCallbackPrefix
-)
-
 // ResolveIdentifier converts a proto identifier to the Unreal naming convention.
 func (r *UnrealNameResolver) ResolveIdentifier(input string) string {
 	if isReservedWord(input) {
 		return textcase.PascalCase(input) + "_"
 	}
-
 	return textcase.PascalCase(input)
 }
 
-// ResolveType looks up a proto type name in the entries map and returns the
-// target-language string for the requested context.
-// Unknown types are generated as prefixed-formatted Unreal structs.
-func (r *UnrealNameResolver) ResolveType(input string, ctx modules.NameResolveContext) string {
-	entry, hit := r.entries[input]
+// ResolveEntry returns all type traits for a given proto type name.
+// Unknown types are treated as Unreal structs with an F-prefixed name.
+func (r *UnrealNameResolver) ResolveEntry(intype string) modules.TypeEntry {
+	entry, hit := r.entries[intype]
 	if !hit {
-		base := "F" + r.targetSystem + textcase.PascalCase(input)
-		if ctx == WithCallbackPrefix {
-			base = "FOn" + r.targetSystem + textcase.PascalCase(input)
-		}
-		entry = &modules.TypeEntry{
+		base := "F" + r.targetSystem + textcase.PascalCase(intype)
+		return modules.TypeEntry{
 			Param:             "const " + base + "&",
 			RepeatedParam:     "const TArray<" + base + ">&",
 			MapParam:          "const TMap<FString, " + base + ">&",
 			MapType:           "TMap<FString, " + base + ">",
 			FieldType:         base,
-			RepeatedFieldType: "TArray<" + base + ">", QueryFormat: "%s",
-			EmptyCheck:       "NumEmpty",
-			JsonArrayValue:   "Object",
-			JsonSetter:       "SetObjectField",
-			JsonGetter:       "GetObjectField",
-			JsonCast:         "",
-			JsonToTypeMethod: "",
+			RepeatedFieldType: "TArray<" + base + ">",
+			QueryFormat:       "%s",
+			EmptyCheck:        "NumEmpty",
+			JsonArrayValue:    "Object",
+			JsonSetter:        "SetObjectField",
+			JsonGetter:        "GetObjectField",
+			MaybeToJson:       ".ToJson()",
 		}
 	}
-
-	switch ctx {
-	case MaybeToJson:
-		if hit {
-			return "" // Primitives/well-known types serialize directly
-		}
-		return ".ToJson()" // Custom structs expose a ToJson() method
-
-	case QueryValueSetter:
-		// Strings need to be URL encoded
-		if entry.EmptyCheck == "IsEmpty" {
-			return "FGenericPlatformHttp::UrlEncode"
-		}
-		return "" // All else is formatted directly
-
-	case WithCallbackPrefix:
-		return "FOn" + r.targetSystem + textcase.PascalCase(input)
-	}
-
-	return r.resolveEntry(entry, ctx)
+	return entry
 }
 
-// resolveEntry dispatches a standard NameResolveContext to the matching TypeEntry field.
-func (r *UnrealNameResolver) resolveEntry(entry *modules.TypeEntry, ctx modules.NameResolveContext) string {
-	switch ctx {
-	case modules.Param:
-		return entry.Param
-	case modules.RepeatedParam:
-		return entry.RepeatedParam
-	case modules.MapParam:
-		return entry.MapParam
-	case modules.MapType:
-		return entry.MapType
-	case modules.FieldType:
-		return entry.FieldType
-	case modules.RepeatedFieldType:
-		return entry.RepeatedFieldType
-	case modules.QueryFormat:
-		return entry.QueryFormat
-	case modules.EmptyCheck:
-		return entry.EmptyCheck
-	case modules.JsonSetter:
-		return entry.JsonSetter
-	case modules.JsonArrayValue:
-		return entry.JsonArrayValue
-	case modules.JsonGetter:
-		return entry.JsonGetter
-	case modules.JsonCast:
-		return entry.JsonCast
-	case modules.JsonToTypeMethod:
-		return entry.JsonToTypeMethod
-	case modules.DefaultValue:
-		return entry.DefaultValue
-	default:
-		log.Fatalf("resolveEntry: unhandled NameResolveContext %d", ctx)
-		return ""
-	}
+// ResolveDelegateName returns the Unreal delegate type name for a given proto name.
+func (r *UnrealNameResolver) ResolveDelegateName(name string) string {
+	return "FOn" + r.targetSystem + textcase.PascalCase(name)
 }
 
 // isReservedWord checks if a given string is reserved (e.g. is a language keyword)

@@ -24,7 +24,7 @@ UNakamaClient{{ $func.Name }}* UNakamaClient{{ $func.Name }}::{{ $func.Name }}(
   UObject* WorldContextObject
   , FNakamaClientConfig ClientConfig
   {{- range $idx, $param := $func.Params }}
-  , {{ $param.Type }} {{ $param.Name }}
+  , {{ $param.Metadata.ParamType }} {{ $param.Name }}
   {{- end }}
 )
 {

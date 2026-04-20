@@ -93,15 +93,19 @@ void MaybeRefreshThenCall(
 
 {{- range $func := $.Funcs }}
 
+{{- if ne "" $func.Type }}
 TNakamaFuture<{{ $func.Type }}Result> Nakama::{{ $func.Name }}(
+{{- else }}
+TNakamaFuture<FNakamaVoidResult> Nakama::{{ $func.Name }}(
+{{- end }}
   const FNakamaClientConfig& ClientConfig,
   {{- range $idx, $param := $func.Params }}
   {{- if $param.Metadata.IsMessageType}}
   {{- range $member := $param.Metadata.Members }}
-  {{ $member.Type }} {{ $param.Name }}{{ $member.Name }},
+  {{ $member.Metadata.ParamType }} {{ $param.Name }}{{ $member.Name }},
   {{- end }}
   {{- else }}
-  {{ $param.Type }} {{ $param.Name }},
+  {{ $param.Metadata.ParamType }} {{ $param.Name }},
   {{- end }}
   {{- end }}
   const FNakamaRetryConfig& RetryConfig,
