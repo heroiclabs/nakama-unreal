@@ -17,6 +17,7 @@
 /* This code is auto-generated. DO NOT EDIT. */
 
 #include "Satori.h"
+#include "Containers/Ticker.h"
 
 bool Satori::IsTransientError(const FSatoriError& Error) noexcept
 {
