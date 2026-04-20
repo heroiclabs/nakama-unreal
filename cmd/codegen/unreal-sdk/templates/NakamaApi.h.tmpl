@@ -28,6 +28,14 @@
 
 NAKAMAAPI_API DECLARE_LOG_CATEGORY_EXTERN(LogNakama, Log, All);
 
+enum class ENakamaRequestAuth : uint8
+{
+  None,
+  Basic,
+  Bearer,
+  HttpKey
+};
+
 namespace NakamaApi
 {
   {{ range $func := $.Funcs }}

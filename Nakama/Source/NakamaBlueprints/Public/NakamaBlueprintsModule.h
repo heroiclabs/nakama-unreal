@@ -1,5 +1,5 @@
 /*
- * Copyright {{currentYear}} The Nakama Authors
+ * Copyright 2026 The Nakama Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,27 +14,10 @@
  * limitations under the License.
  */
 
-// TODO IMPORTS, copyright
-
 #pragma once
 
 #include "Modules/ModuleManager.h"
 
-//
-// Module implementation
-class FNakamaModule : public IModuleInterface
+class FNakamaBlueprintsModule : public IModuleInterface
 {
-public:
-	virtual void StartupModule() override
-	{
-		UE_LOG(LogNakama, Log, TEXT("Nakama module starting"));
-	}
-
-	virtual void ShutdownModule() override
-	{
-		UE_LOG(LogNakama, Log, TEXT("Nakama module shutting down"));
-	}
 };
-
-IMPLEMENT_MODULE(FNakamaModule, Nakama)
-

@@ -79,6 +79,7 @@ func main() {
 	nakamaRtApiRequires, error := modules.MakeProductionRequirements(
 		nakamaRtApiProtos, rtMapper, nakamaTypeMap, funcMap,
 	)
+	// For type regeneration, do not use the nakama-types; can reuse httpMapper, too.
 	nakamaRtTypesRequires, error := modules.MakeProductionRequirements(
 		nakamaRtTypesProtos, httpMapper, nakamaTypeMap, funcMap,
 	)

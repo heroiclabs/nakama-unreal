@@ -1,7 +1,3 @@
-#include "Modules/ModuleManager.h"
-
-class FSatoriBlueprintsModule : public IModuleInterface
-{
-};
+#include "SatoriBlueprintsModule.h"
 
 IMPLEMENT_MODULE(FSatoriBlueprintsModule, SatoriBlueprints)

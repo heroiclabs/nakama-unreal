@@ -1,7 +1,3 @@
-#include "Modules/ModuleManager.h"
-
-class FNakamaBlueprintsModule : public IModuleInterface
-{
-};
+#include "NakamaBlueprintsModule.h"
 
 IMPLEMENT_MODULE(FNakamaBlueprintsModule, NakamaBlueprints)

@@ -1,5 +1,5 @@
 /*
- * Copyright {{currentYear}} The Nakama Authors
+ * Copyright 2026 The Nakama Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,27 +14,13 @@
  * limitations under the License.
  */
 
-// TODO IMPORTS, copyright
-
 #pragma once
 
 #include "Modules/ModuleManager.h"
 
-//
-// Module implementation
-class FSatoriModule : public IModuleInterface
+class FNakamaApiModule : public IModuleInterface
 {
 public:
-	virtual void StartupModule() override
-	{
-		UE_LOG(LogSatori, Log, TEXT("Satori module starting"));
-	}
-
-	virtual void ShutdownModule() override
-	{
-		UE_LOG(LogSatori, Log, TEXT("Satori module shutting down"));
-	}
+	virtual void StartupModule() override;
+	virtual void ShutdownModule() override;
 };
-
-IMPLEMENT_MODULE(FSatoriModule, Satori)
-
