@@ -938,12 +938,14 @@ namespace Nakama
   *
   * @param Config	The client configuration.
   * @param HttpKey	HttpKey for server-to-server communication
+  * @param ObjectIds	 Batch of storage objects.
   * @param RetryConfig Retry configuration.
   * @param CancellationToken	Set to true to cancel the in-flight request.
   */
   NAKAMA_API TNakamaFuture<FNakamaVoidResult> DeleteStorageObjects(
     const FNakamaClientConfig& ClientConfig,
     const FString& HttpKey,
+    const TArray<FNakamaDeleteStorageObjectId>& ObjectIds,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
@@ -953,12 +955,14 @@ namespace Nakama
   *
   * @param Config	The client configuration.
   * @param Session	The session of the user.
+  * @param ObjectIds	 Batch of storage objects.
   * @param RetryConfig Retry configuration.
   * @param CancellationToken	Set to true to cancel the in-flight request.
   */
   NAKAMA_API TNakamaFuture<FNakamaVoidResult> DeleteStorageObjects(
     const FNakamaClientConfig& ClientConfig,
     const FNakamaSession& Session,
+    const TArray<FNakamaDeleteStorageObjectId>& ObjectIds,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
@@ -2602,12 +2606,14 @@ namespace Nakama
   *
   * @param Config	The client configuration.
   * @param HttpKey	HttpKey for server-to-server communication
+  * @param ObjectIds	 Batch of storage objects.
   * @param RetryConfig Retry configuration.
   * @param CancellationToken	Set to true to cancel the in-flight request.
   */
   NAKAMA_API TNakamaFuture<FNakamaStorageObjectsResult> ReadStorageObjects(
     const FNakamaClientConfig& ClientConfig,
     const FString& HttpKey,
+    const TArray<FNakamaReadStorageObjectId>& ObjectIds,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
@@ -2617,12 +2623,14 @@ namespace Nakama
   *
   * @param Config	The client configuration.
   * @param Session	The session of the user.
+  * @param ObjectIds	 Batch of storage objects.
   * @param RetryConfig Retry configuration.
   * @param CancellationToken	Set to true to cancel the in-flight request.
   */
   NAKAMA_API TNakamaFuture<FNakamaStorageObjectsResult> ReadStorageObjects(
     const FNakamaClientConfig& ClientConfig,
     const FNakamaSession& Session,
+    const TArray<FNakamaReadStorageObjectId>& ObjectIds,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
@@ -3407,12 +3415,14 @@ namespace Nakama
   *
   * @param Config	The client configuration.
   * @param HttpKey	HttpKey for server-to-server communication
+  * @param Objects	 The objects to store on the server.
   * @param RetryConfig Retry configuration.
   * @param CancellationToken	Set to true to cancel the in-flight request.
   */
   NAKAMA_API TNakamaFuture<FNakamaStorageObjectAcksResult> WriteStorageObjects(
     const FNakamaClientConfig& ClientConfig,
     const FString& HttpKey,
+    const TArray<FNakamaWriteStorageObject>& Objects,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
@@ -3422,12 +3432,14 @@ namespace Nakama
   *
   * @param Config	The client configuration.
   * @param Session	The session of the user.
+  * @param Objects	 The objects to store on the server.
   * @param RetryConfig Retry configuration.
   * @param CancellationToken	Set to true to cancel the in-flight request.
   */
   NAKAMA_API TNakamaFuture<FNakamaStorageObjectAcksResult> WriteStorageObjects(
     const FNakamaClientConfig& ClientConfig,
     const FNakamaSession& Session,
+    const TArray<FNakamaWriteStorageObject>& Objects,
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;

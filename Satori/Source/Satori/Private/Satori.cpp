@@ -420,6 +420,7 @@ TSatoriFuture<FSatoriVoidResult> Satori::DeleteIdentity(
 TSatoriFuture<FSatoriVoidResult> Satori::Event(
   const FSatoriClientConfig& ClientConfig,
   const FString& HttpKey,
+  const TArray<FSatoriEvent>& Events,
   const FSatoriRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
 ) noexcept
@@ -481,6 +482,7 @@ TSatoriFuture<FSatoriVoidResult> Satori::Event(
 TSatoriFuture<FSatoriVoidResult> Satori::Event(
   const FSatoriClientConfig& ClientConfig,
   const FSatoriSession& Session,
+  const TArray<FSatoriEvent>& Events,
   const FSatoriRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
 ) noexcept
@@ -563,6 +565,7 @@ TSatoriFuture<FSatoriVoidResult> Satori::Event(
 TSatoriFuture<FSatoriVoidResult> Satori::ServerEvent(
   const FSatoriClientConfig& ClientConfig,
   const FString& HttpKey,
+  const TArray<FSatoriEvent>& Events,
   const FSatoriRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
 ) noexcept
@@ -624,6 +627,7 @@ TSatoriFuture<FSatoriVoidResult> Satori::ServerEvent(
 TSatoriFuture<FSatoriVoidResult> Satori::ServerEvent(
   const FSatoriClientConfig& ClientConfig,
   const FSatoriSession& Session,
+  const TArray<FSatoriEvent>& Events,
   const FSatoriRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
 ) noexcept

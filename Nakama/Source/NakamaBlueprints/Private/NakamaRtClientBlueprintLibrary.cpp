@@ -557,16 +557,16 @@ void UNakamaRealtimeClientMatchDataSend::Activate()
 UNakamaRealtimeClientMatchJoin* UNakamaRealtimeClientMatchJoin::MatchJoin(
   UObject* WorldContextObject
   , UNakamaWebSocketSubsystem* WebSocketSubsystem
-  , const TMap<FString, FString>& Metadata
   , const FString& MatchId
   , const FString& Token
+  , const TMap<FString, FString>& Metadata
 )
 {
   UNakamaRealtimeClientMatchJoin* Action = NewObject<UNakamaRealtimeClientMatchJoin>(GetTransientPackage());
   Action->StoredWebSocketSubsystem = WebSocketSubsystem;
-  Action->StoredMetadata = Metadata;
   Action->StoredMatchId = MatchId;
   Action->StoredToken = Token;
+  Action->StoredMetadata = Metadata;
 
   Action->RegisterWithGameInstance(WorldContextObject);
   return Action;
@@ -589,6 +589,14 @@ void UNakamaRealtimeClientMatchJoin::Activate()
   TWeakObjectPtr<UNakamaRealtimeClientMatchJoin> WeakThis(this);
 
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (StoredMatchId.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("match_id"), StoredMatchId);
+  }
+  if (StoredToken.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("token"), StoredToken);
+  }
   if (StoredMetadata.Num() > 0)
   {
     TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
@@ -597,14 +605,6 @@ void UNakamaRealtimeClientMatchJoin::Activate()
       MapObj->SetStringField(Pair.Key, Pair.Value);
     }
     Json->SetObjectField(TEXT("metadata"), MapObj);
-  }
-  if (StoredMatchId.IsEmpty() == false)
-  {
-    Json->SetStringField(TEXT("match_id"), StoredMatchId);
-  }
-  if (StoredToken.IsEmpty() == false)
-  {
-    Json->SetStringField(TEXT("token"), StoredToken);
   }
 
   StoredWebSocketSubsystem->Send(TEXT("match_join"), Json)

@@ -2638,6 +2638,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteTournamentRecord(
 TNakamaFuture<FNakamaVoidResult> Nakama::DeleteStorageObjects(
   const FNakamaClientConfig& ClientConfig,
   const FString& HttpKey,
+  const TArray<FNakamaDeleteStorageObjectId>& ObjectIds,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
 ) noexcept
@@ -2699,6 +2700,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteStorageObjects(
 TNakamaFuture<FNakamaVoidResult> Nakama::DeleteStorageObjects(
   const FNakamaClientConfig& ClientConfig,
   const FNakamaSession& Session,
+  const TArray<FNakamaDeleteStorageObjectId>& ObjectIds,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
 ) noexcept
@@ -9030,6 +9032,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DemoteGroupUsers(
 TNakamaFuture<FNakamaStorageObjectsResult> Nakama::ReadStorageObjects(
   const FNakamaClientConfig& ClientConfig,
   const FString& HttpKey,
+  const TArray<FNakamaReadStorageObjectId>& ObjectIds,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
 ) noexcept
@@ -9091,6 +9094,7 @@ TNakamaFuture<FNakamaStorageObjectsResult> Nakama::ReadStorageObjects(
 TNakamaFuture<FNakamaStorageObjectsResult> Nakama::ReadStorageObjects(
   const FNakamaClientConfig& ClientConfig,
   const FNakamaSession& Session,
+  const TArray<FNakamaReadStorageObjectId>& ObjectIds,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
 ) noexcept
@@ -12122,6 +12126,7 @@ TNakamaFuture<FNakamaLeaderboardRecordResult> Nakama::WriteLeaderboardRecord(
 TNakamaFuture<FNakamaStorageObjectAcksResult> Nakama::WriteStorageObjects(
   const FNakamaClientConfig& ClientConfig,
   const FString& HttpKey,
+  const TArray<FNakamaWriteStorageObject>& Objects,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
 ) noexcept
@@ -12183,6 +12188,7 @@ TNakamaFuture<FNakamaStorageObjectAcksResult> Nakama::WriteStorageObjects(
 TNakamaFuture<FNakamaStorageObjectAcksResult> Nakama::WriteStorageObjects(
   const FNakamaClientConfig& ClientConfig,
   const FNakamaSession& Session,
+  const TArray<FNakamaWriteStorageObject>& Objects,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
 ) noexcept

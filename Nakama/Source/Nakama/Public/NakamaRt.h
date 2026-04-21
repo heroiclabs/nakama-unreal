@@ -150,14 +150,14 @@ namespace Nakama
     /*
     *  [client] A client to server request to join a realtime match.
     *
-    * @param Metadata	 An optional set of key-value metadata pairs to be passed to the match handler, if any.
     * @param MatchId	 The match unique ID.
     * @param Token	 A matchmaking result token.
+    * @param Metadata	 An optional set of key-value metadata pairs to be passed to the match handler, if any.
     */
     NAKAMA_API TNakamaFuture<FNakamaWebSocketResponse> MatchJoin(
-      const TMap<FString, FString>& Metadata
-      , const FString& MatchId
+      const FString& MatchId
       , const FString& Token
+      , const TMap<FString, FString>& Metadata
     ) noexcept;
 
     /*

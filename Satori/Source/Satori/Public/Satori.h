@@ -226,12 +226,14 @@ namespace Satori
   *
   * @param Config	The client configuration.
   * @param HttpKey	HttpKey for server-to-server communication
+  * @param Events	 Some number of events produced by a client.
   * @param RetryConfig Retry configuration.
   * @param CancellationToken	Set to true to cancel the in-flight request.
   */
   SATORI_API TSatoriFuture<FSatoriVoidResult> Event(
     const FSatoriClientConfig& ClientConfig,
     const FString& HttpKey,
+    const TArray<FSatoriEvent>& Events,
     const FSatoriRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
@@ -241,12 +243,14 @@ namespace Satori
   *
   * @param Config	The client configuration.
   * @param Session	The session of the user.
+  * @param Events	 Some number of events produced by a client.
   * @param RetryConfig Retry configuration.
   * @param CancellationToken	Set to true to cancel the in-flight request.
   */
   SATORI_API TSatoriFuture<FSatoriVoidResult> Event(
     const FSatoriClientConfig& ClientConfig,
     const FSatoriSession& Session,
+    const TArray<FSatoriEvent>& Events,
     const FSatoriRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
@@ -256,12 +260,14 @@ namespace Satori
   *
   * @param Config	The client configuration.
   * @param HttpKey	HttpKey for server-to-server communication
+  * @param Events	 Some number of events produced by a client.
   * @param RetryConfig Retry configuration.
   * @param CancellationToken	Set to true to cancel the in-flight request.
   */
   SATORI_API TSatoriFuture<FSatoriVoidResult> ServerEvent(
     const FSatoriClientConfig& ClientConfig,
     const FString& HttpKey,
+    const TArray<FSatoriEvent>& Events,
     const FSatoriRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
@@ -271,12 +277,14 @@ namespace Satori
   *
   * @param Config	The client configuration.
   * @param Session	The session of the user.
+  * @param Events	 Some number of events produced by a client.
   * @param RetryConfig Retry configuration.
   * @param CancellationToken	Set to true to cancel the in-flight request.
   */
   SATORI_API TSatoriFuture<FSatoriVoidResult> ServerEvent(
     const FSatoriClientConfig& ClientConfig,
     const FSatoriSession& Session,
+    const TArray<FSatoriEvent>& Events,
     const FSatoriRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;

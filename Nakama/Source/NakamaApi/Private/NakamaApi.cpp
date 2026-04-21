@@ -62,7 +62,7 @@ NAKAMAAPI_API void NakamaApi::AddFriends (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -125,7 +125,7 @@ NAKAMAAPI_API void NakamaApi::AddFriends (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -181,7 +181,7 @@ NAKAMAAPI_API void NakamaApi::AddGroupUsers (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -237,7 +237,7 @@ NAKAMAAPI_API void NakamaApi::AddGroupUsers (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -286,13 +286,10 @@ NAKAMAAPI_API void NakamaApi::SessionRefresh (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
-  if (Token.IsEmpty() == false)
-  {
-    Body->SetStringField(TEXT("token"), Token);
-  }
+  Body = MakeShared<FJsonObject>();
   if (Token.IsEmpty() == false)
   {
     Body->SetStringField(TEXT("token"), Token);
@@ -345,9 +342,10 @@ NAKAMAAPI_API void NakamaApi::SessionLogout (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  Body = MakeShared<FJsonObject>();
   if (Token.IsEmpty() == false)
   {
     Body->SetStringField(TEXT("token"), Token);
@@ -403,9 +401,10 @@ NAKAMAAPI_API void NakamaApi::SessionLogout (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  Body = MakeShared<FJsonObject>();
   if (Token.IsEmpty() == false)
   {
     Body->SetStringField(TEXT("token"), Token);
@@ -461,13 +460,10 @@ NAKAMAAPI_API void NakamaApi::AuthenticateApple (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
-  
-  {
-    Body->SetObjectField(TEXT("account"), Account.ToJson());
-  }
+  Body = MakeShared<FJsonObject>();
   
   {
     Body->SetObjectField(TEXT("account"), Account.ToJson());
@@ -520,13 +516,10 @@ NAKAMAAPI_API void NakamaApi::AuthenticateCustom (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
-  
-  {
-    Body->SetObjectField(TEXT("account"), Account.ToJson());
-  }
+  Body = MakeShared<FJsonObject>();
   
   {
     Body->SetObjectField(TEXT("account"), Account.ToJson());
@@ -579,13 +572,10 @@ NAKAMAAPI_API void NakamaApi::AuthenticateDevice (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
-  
-  {
-    Body->SetObjectField(TEXT("account"), Account.ToJson());
-  }
+  Body = MakeShared<FJsonObject>();
   
   {
     Body->SetObjectField(TEXT("account"), Account.ToJson());
@@ -638,13 +628,10 @@ NAKAMAAPI_API void NakamaApi::AuthenticateEmail (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
-  
-  {
-    Body->SetObjectField(TEXT("account"), Account.ToJson());
-  }
+  Body = MakeShared<FJsonObject>();
   
   {
     Body->SetObjectField(TEXT("account"), Account.ToJson());
@@ -698,13 +685,10 @@ NAKAMAAPI_API void NakamaApi::AuthenticateFacebook (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
-  
-  {
-    Body->SetObjectField(TEXT("account"), Account.ToJson());
-  }
+  Body = MakeShared<FJsonObject>();
   
   {
     Body->SetObjectField(TEXT("account"), Account.ToJson());
@@ -757,13 +741,10 @@ NAKAMAAPI_API void NakamaApi::AuthenticateFacebookInstantGame (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
-  
-  {
-    Body->SetObjectField(TEXT("account"), Account.ToJson());
-  }
+  Body = MakeShared<FJsonObject>();
   
   {
     Body->SetObjectField(TEXT("account"), Account.ToJson());
@@ -816,13 +797,10 @@ NAKAMAAPI_API void NakamaApi::AuthenticateGameCenter (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
-  
-  {
-    Body->SetObjectField(TEXT("account"), Account.ToJson());
-  }
+  Body = MakeShared<FJsonObject>();
   
   {
     Body->SetObjectField(TEXT("account"), Account.ToJson());
@@ -875,13 +853,10 @@ NAKAMAAPI_API void NakamaApi::AuthenticateGoogle (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
-  
-  {
-    Body->SetObjectField(TEXT("account"), Account.ToJson());
-  }
+  Body = MakeShared<FJsonObject>();
   
   {
     Body->SetObjectField(TEXT("account"), Account.ToJson());
@@ -935,13 +910,10 @@ NAKAMAAPI_API void NakamaApi::AuthenticateSteam (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
-  
-  {
-    Body->SetObjectField(TEXT("account"), Account.ToJson());
-  }
+  Body = MakeShared<FJsonObject>();
   
   {
     Body->SetObjectField(TEXT("account"), Account.ToJson());
@@ -1000,7 +972,7 @@ NAKAMAAPI_API void NakamaApi::BanGroupUsers (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -1056,7 +1028,7 @@ NAKAMAAPI_API void NakamaApi::BanGroupUsers (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -1114,7 +1086,7 @@ NAKAMAAPI_API void NakamaApi::BlockFriends (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -1172,7 +1144,7 @@ NAKAMAAPI_API void NakamaApi::BlockFriends (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -1226,9 +1198,10 @@ NAKAMAAPI_API void NakamaApi::CreateGroup (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  Body = MakeShared<FJsonObject>();
   if (Name.IsEmpty() == false)
   {
     Body->SetStringField(TEXT("name"), Name);
@@ -1306,9 +1279,10 @@ NAKAMAAPI_API void NakamaApi::CreateGroup (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  Body = MakeShared<FJsonObject>();
   if (Name.IsEmpty() == false)
   {
     Body->SetStringField(TEXT("name"), Name);
@@ -1380,7 +1354,7 @@ NAKAMAAPI_API void NakamaApi::DeleteAccount (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -1428,7 +1402,7 @@ NAKAMAAPI_API void NakamaApi::DeleteAccount (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -1486,7 +1460,7 @@ NAKAMAAPI_API void NakamaApi::DeleteFriends (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -1544,7 +1518,7 @@ NAKAMAAPI_API void NakamaApi::DeleteFriends (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -1595,7 +1569,7 @@ NAKAMAAPI_API void NakamaApi::DeleteGroup (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -1646,7 +1620,7 @@ NAKAMAAPI_API void NakamaApi::DeleteGroup (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -1697,7 +1671,7 @@ NAKAMAAPI_API void NakamaApi::DeleteLeaderboardRecord (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -1748,7 +1722,7 @@ NAKAMAAPI_API void NakamaApi::DeleteLeaderboardRecord (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -1801,7 +1775,7 @@ NAKAMAAPI_API void NakamaApi::DeleteNotifications (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -1854,7 +1828,7 @@ NAKAMAAPI_API void NakamaApi::DeleteNotifications (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -1905,7 +1879,7 @@ NAKAMAAPI_API void NakamaApi::DeleteTournamentRecord (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -1956,7 +1930,7 @@ NAKAMAAPI_API void NakamaApi::DeleteTournamentRecord (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -2005,9 +1979,10 @@ NAKAMAAPI_API void NakamaApi::DeleteStorageObjects (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  Body = MakeShared<FJsonObject>();
   if (ObjectIds.Num() > 0)
   {
     TArray<TSharedPtr<FJsonValue>> Array;
@@ -2063,9 +2038,10 @@ NAKAMAAPI_API void NakamaApi::DeleteStorageObjects (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  Body = MakeShared<FJsonObject>();
   if (ObjectIds.Num() > 0)
   {
     TArray<TSharedPtr<FJsonValue>> Array;
@@ -2124,9 +2100,10 @@ NAKAMAAPI_API void NakamaApi::Event (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  Body = MakeShared<FJsonObject>();
   if (Name.IsEmpty() == false)
   {
     Body->SetStringField(TEXT("name"), Name);
@@ -2188,9 +2165,10 @@ NAKAMAAPI_API void NakamaApi::Event (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  Body = MakeShared<FJsonObject>();
   if (Name.IsEmpty() == false)
   {
     Body->SetStringField(TEXT("name"), Name);
@@ -2248,7 +2226,7 @@ NAKAMAAPI_API void NakamaApi::GetAccount (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -2297,7 +2275,7 @@ NAKAMAAPI_API void NakamaApi::GetAccount (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -2361,7 +2339,7 @@ NAKAMAAPI_API void NakamaApi::GetUsers (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -2425,7 +2403,7 @@ NAKAMAAPI_API void NakamaApi::GetUsers (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -2477,7 +2455,7 @@ NAKAMAAPI_API void NakamaApi::GetSubscription (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -2529,7 +2507,7 @@ NAKAMAAPI_API void NakamaApi::GetSubscription (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -2578,7 +2556,7 @@ NAKAMAAPI_API void NakamaApi::GetMatchmakerStats (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -2627,7 +2605,7 @@ NAKAMAAPI_API void NakamaApi::GetMatchmakerStats (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -2676,7 +2654,7 @@ NAKAMAAPI_API void NakamaApi::Healthcheck (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -2724,7 +2702,7 @@ NAKAMAAPI_API void NakamaApi::Healthcheck (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -2774,9 +2752,10 @@ NAKAMAAPI_API void NakamaApi::ImportFacebookFriends (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  Body = MakeShared<FJsonObject>();
   
   {
     Body->SetObjectField(TEXT("account"), Account.ToJson());
@@ -2828,9 +2807,10 @@ NAKAMAAPI_API void NakamaApi::ImportFacebookFriends (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  Body = MakeShared<FJsonObject>();
   
   {
     Body->SetObjectField(TEXT("account"), Account.ToJson());
@@ -2882,9 +2862,10 @@ NAKAMAAPI_API void NakamaApi::ImportSteamFriends (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  Body = MakeShared<FJsonObject>();
   
   {
     Body->SetObjectField(TEXT("account"), Account.ToJson());
@@ -2936,9 +2917,10 @@ NAKAMAAPI_API void NakamaApi::ImportSteamFriends (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  Body = MakeShared<FJsonObject>();
   
   {
     Body->SetObjectField(TEXT("account"), Account.ToJson());
@@ -2991,7 +2973,7 @@ NAKAMAAPI_API void NakamaApi::JoinGroup (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -3042,7 +3024,7 @@ NAKAMAAPI_API void NakamaApi::JoinGroup (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -3093,7 +3075,7 @@ NAKAMAAPI_API void NakamaApi::JoinTournament (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -3144,7 +3126,7 @@ NAKAMAAPI_API void NakamaApi::JoinTournament (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -3200,7 +3182,7 @@ NAKAMAAPI_API void NakamaApi::KickGroupUsers (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -3256,7 +3238,7 @@ NAKAMAAPI_API void NakamaApi::KickGroupUsers (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -3307,7 +3289,7 @@ NAKAMAAPI_API void NakamaApi::LeaveGroup (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -3358,7 +3340,7 @@ NAKAMAAPI_API void NakamaApi::LeaveGroup (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -3408,9 +3390,10 @@ NAKAMAAPI_API void NakamaApi::LinkApple (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  Body = MakeShared<FJsonObject>();
   if (Token.IsEmpty() == false)
   {
     Body->SetStringField(TEXT("token"), Token);
@@ -3462,9 +3445,10 @@ NAKAMAAPI_API void NakamaApi::LinkApple (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  Body = MakeShared<FJsonObject>();
   if (Token.IsEmpty() == false)
   {
     Body->SetStringField(TEXT("token"), Token);
@@ -3516,9 +3500,10 @@ NAKAMAAPI_API void NakamaApi::LinkCustom (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  Body = MakeShared<FJsonObject>();
   if (Id.IsEmpty() == false)
   {
     Body->SetStringField(TEXT("id"), Id);
@@ -3570,9 +3555,10 @@ NAKAMAAPI_API void NakamaApi::LinkCustom (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  Body = MakeShared<FJsonObject>();
   if (Id.IsEmpty() == false)
   {
     Body->SetStringField(TEXT("id"), Id);
@@ -3624,9 +3610,10 @@ NAKAMAAPI_API void NakamaApi::LinkDevice (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  Body = MakeShared<FJsonObject>();
   if (Id.IsEmpty() == false)
   {
     Body->SetStringField(TEXT("id"), Id);
@@ -3678,9 +3665,10 @@ NAKAMAAPI_API void NakamaApi::LinkDevice (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  Body = MakeShared<FJsonObject>();
   if (Id.IsEmpty() == false)
   {
     Body->SetStringField(TEXT("id"), Id);
@@ -3733,9 +3721,10 @@ NAKAMAAPI_API void NakamaApi::LinkEmail (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  Body = MakeShared<FJsonObject>();
   if (Email.IsEmpty() == false)
   {
     Body->SetStringField(TEXT("email"), Email);
@@ -3792,9 +3781,10 @@ NAKAMAAPI_API void NakamaApi::LinkEmail (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  Body = MakeShared<FJsonObject>();
   if (Email.IsEmpty() == false)
   {
     Body->SetStringField(TEXT("email"), Email);
@@ -3850,9 +3840,10 @@ NAKAMAAPI_API void NakamaApi::LinkFacebook (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  Body = MakeShared<FJsonObject>();
   
   {
     Body->SetObjectField(TEXT("account"), Account.ToJson());
@@ -3904,9 +3895,10 @@ NAKAMAAPI_API void NakamaApi::LinkFacebook (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  Body = MakeShared<FJsonObject>();
   
   {
     Body->SetObjectField(TEXT("account"), Account.ToJson());
@@ -3958,9 +3950,10 @@ NAKAMAAPI_API void NakamaApi::LinkFacebookInstantGame (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  Body = MakeShared<FJsonObject>();
   if (SignedPlayerInfo.IsEmpty() == false)
   {
     Body->SetStringField(TEXT("signed_player_info"), SignedPlayerInfo);
@@ -4012,9 +4005,10 @@ NAKAMAAPI_API void NakamaApi::LinkFacebookInstantGame (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  Body = MakeShared<FJsonObject>();
   if (SignedPlayerInfo.IsEmpty() == false)
   {
     Body->SetStringField(TEXT("signed_player_info"), SignedPlayerInfo);
@@ -4071,9 +4065,10 @@ NAKAMAAPI_API void NakamaApi::LinkGameCenter (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  Body = MakeShared<FJsonObject>();
   if (PlayerId.IsEmpty() == false)
   {
     Body->SetStringField(TEXT("player_id"), PlayerId);
@@ -4151,9 +4146,10 @@ NAKAMAAPI_API void NakamaApi::LinkGameCenter (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  Body = MakeShared<FJsonObject>();
   if (PlayerId.IsEmpty() == false)
   {
     Body->SetStringField(TEXT("player_id"), PlayerId);
@@ -4226,9 +4222,10 @@ NAKAMAAPI_API void NakamaApi::LinkGoogle (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  Body = MakeShared<FJsonObject>();
   if (Token.IsEmpty() == false)
   {
     Body->SetStringField(TEXT("token"), Token);
@@ -4280,9 +4277,10 @@ NAKAMAAPI_API void NakamaApi::LinkGoogle (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  Body = MakeShared<FJsonObject>();
   if (Token.IsEmpty() == false)
   {
     Body->SetStringField(TEXT("token"), Token);
@@ -4334,9 +4332,10 @@ NAKAMAAPI_API void NakamaApi::LinkSteam (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  Body = MakeShared<FJsonObject>();
   
   {
     Body->SetObjectField(TEXT("account"), Account.ToJson());
@@ -4392,9 +4391,10 @@ NAKAMAAPI_API void NakamaApi::LinkSteam (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  Body = MakeShared<FJsonObject>();
   
   {
     Body->SetObjectField(TEXT("account"), Account.ToJson());
@@ -4467,7 +4467,7 @@ NAKAMAAPI_API void NakamaApi::ListChannelMessages (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -4535,7 +4535,7 @@ NAKAMAAPI_API void NakamaApi::ListChannelMessages (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -4601,7 +4601,7 @@ NAKAMAAPI_API void NakamaApi::ListFriends (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -4667,7 +4667,7 @@ NAKAMAAPI_API void NakamaApi::ListFriends (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -4727,7 +4727,7 @@ NAKAMAAPI_API void NakamaApi::ListFriendsOfFriends (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -4787,7 +4787,7 @@ NAKAMAAPI_API void NakamaApi::ListFriendsOfFriends (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -4868,7 +4868,7 @@ NAKAMAAPI_API void NakamaApi::ListGroups (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -4949,7 +4949,7 @@ NAKAMAAPI_API void NakamaApi::ListGroups (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -5018,7 +5018,7 @@ NAKAMAAPI_API void NakamaApi::ListGroupUsers (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -5087,7 +5087,7 @@ NAKAMAAPI_API void NakamaApi::ListGroupUsers (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -5161,7 +5161,7 @@ NAKAMAAPI_API void NakamaApi::ListLeaderboardRecords (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -5235,7 +5235,7 @@ NAKAMAAPI_API void NakamaApi::ListLeaderboardRecords (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -5307,7 +5307,7 @@ NAKAMAAPI_API void NakamaApi::ListLeaderboardRecordsAroundOwner (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -5379,7 +5379,7 @@ NAKAMAAPI_API void NakamaApi::ListLeaderboardRecordsAroundOwner (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -5461,7 +5461,7 @@ NAKAMAAPI_API void NakamaApi::ListMatches (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -5543,7 +5543,7 @@ NAKAMAAPI_API void NakamaApi::ListMatches (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -5613,7 +5613,7 @@ NAKAMAAPI_API void NakamaApi::ListParties (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -5683,7 +5683,7 @@ NAKAMAAPI_API void NakamaApi::ListParties (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -5743,7 +5743,7 @@ NAKAMAAPI_API void NakamaApi::ListNotifications (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -5803,7 +5803,7 @@ NAKAMAAPI_API void NakamaApi::ListNotifications (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -5871,7 +5871,7 @@ NAKAMAAPI_API void NakamaApi::ListStorageObjects (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -5939,7 +5939,7 @@ NAKAMAAPI_API void NakamaApi::ListStorageObjects (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -5990,9 +5990,10 @@ NAKAMAAPI_API void NakamaApi::ListSubscriptions (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  Body = MakeShared<FJsonObject>();
   if (Limit != 0)
   
   {
@@ -6050,9 +6051,10 @@ NAKAMAAPI_API void NakamaApi::ListSubscriptions (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  Body = MakeShared<FJsonObject>();
   if (Limit != 0)
   
   {
@@ -6143,7 +6145,7 @@ NAKAMAAPI_API void NakamaApi::ListTournaments (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -6227,7 +6229,7 @@ NAKAMAAPI_API void NakamaApi::ListTournaments (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -6301,7 +6303,7 @@ NAKAMAAPI_API void NakamaApi::ListTournamentRecords (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -6375,7 +6377,7 @@ NAKAMAAPI_API void NakamaApi::ListTournamentRecords (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -6447,7 +6449,7 @@ NAKAMAAPI_API void NakamaApi::ListTournamentRecordsAroundOwner (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -6519,7 +6521,7 @@ NAKAMAAPI_API void NakamaApi::ListTournamentRecordsAroundOwner (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -6588,7 +6590,7 @@ NAKAMAAPI_API void NakamaApi::ListUserGroups (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -6657,7 +6659,7 @@ NAKAMAAPI_API void NakamaApi::ListUserGroups (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -6714,7 +6716,7 @@ NAKAMAAPI_API void NakamaApi::PromoteGroupUsers (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -6770,7 +6772,7 @@ NAKAMAAPI_API void NakamaApi::PromoteGroupUsers (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -6826,7 +6828,7 @@ NAKAMAAPI_API void NakamaApi::DemoteGroupUsers (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -6882,7 +6884,7 @@ NAKAMAAPI_API void NakamaApi::DemoteGroupUsers (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -6931,9 +6933,10 @@ NAKAMAAPI_API void NakamaApi::ReadStorageObjects (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  Body = MakeShared<FJsonObject>();
   if (ObjectIds.Num() > 0)
   {
     TArray<TSharedPtr<FJsonValue>> Array;
@@ -6990,9 +6993,10 @@ NAKAMAAPI_API void NakamaApi::ReadStorageObjects (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  Body = MakeShared<FJsonObject>();
   if (ObjectIds.Num() > 0)
   {
     TArray<TSharedPtr<FJsonValue>> Array;
@@ -7052,13 +7056,10 @@ NAKAMAAPI_API void NakamaApi::RpcFunc (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
-  if (Payload.IsEmpty() == false)
-  {
-    Body->SetStringField(TEXT("payload"), Payload);
-  }
+  Body = MakeShared<FJsonObject>();
   if (Payload.IsEmpty() == false)
   {
     Body->SetStringField(TEXT("payload"), Payload);
@@ -7111,9 +7112,10 @@ NAKAMAAPI_API void NakamaApi::UnlinkApple (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  Body = MakeShared<FJsonObject>();
   if (Token.IsEmpty() == false)
   {
     Body->SetStringField(TEXT("token"), Token);
@@ -7165,9 +7167,10 @@ NAKAMAAPI_API void NakamaApi::UnlinkApple (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  Body = MakeShared<FJsonObject>();
   if (Token.IsEmpty() == false)
   {
     Body->SetStringField(TEXT("token"), Token);
@@ -7219,9 +7222,10 @@ NAKAMAAPI_API void NakamaApi::UnlinkCustom (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  Body = MakeShared<FJsonObject>();
   if (Id.IsEmpty() == false)
   {
     Body->SetStringField(TEXT("id"), Id);
@@ -7273,9 +7277,10 @@ NAKAMAAPI_API void NakamaApi::UnlinkCustom (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  Body = MakeShared<FJsonObject>();
   if (Id.IsEmpty() == false)
   {
     Body->SetStringField(TEXT("id"), Id);
@@ -7327,9 +7332,10 @@ NAKAMAAPI_API void NakamaApi::UnlinkDevice (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  Body = MakeShared<FJsonObject>();
   if (Id.IsEmpty() == false)
   {
     Body->SetStringField(TEXT("id"), Id);
@@ -7381,9 +7387,10 @@ NAKAMAAPI_API void NakamaApi::UnlinkDevice (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  Body = MakeShared<FJsonObject>();
   if (Id.IsEmpty() == false)
   {
     Body->SetStringField(TEXT("id"), Id);
@@ -7436,9 +7443,10 @@ NAKAMAAPI_API void NakamaApi::UnlinkEmail (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  Body = MakeShared<FJsonObject>();
   if (Email.IsEmpty() == false)
   {
     Body->SetStringField(TEXT("email"), Email);
@@ -7495,9 +7503,10 @@ NAKAMAAPI_API void NakamaApi::UnlinkEmail (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  Body = MakeShared<FJsonObject>();
   if (Email.IsEmpty() == false)
   {
     Body->SetStringField(TEXT("email"), Email);
@@ -7553,9 +7562,10 @@ NAKAMAAPI_API void NakamaApi::UnlinkFacebook (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  Body = MakeShared<FJsonObject>();
   if (Token.IsEmpty() == false)
   {
     Body->SetStringField(TEXT("token"), Token);
@@ -7607,9 +7617,10 @@ NAKAMAAPI_API void NakamaApi::UnlinkFacebook (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  Body = MakeShared<FJsonObject>();
   if (Token.IsEmpty() == false)
   {
     Body->SetStringField(TEXT("token"), Token);
@@ -7661,9 +7672,10 @@ NAKAMAAPI_API void NakamaApi::UnlinkFacebookInstantGame (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  Body = MakeShared<FJsonObject>();
   if (SignedPlayerInfo.IsEmpty() == false)
   {
     Body->SetStringField(TEXT("signed_player_info"), SignedPlayerInfo);
@@ -7715,9 +7727,10 @@ NAKAMAAPI_API void NakamaApi::UnlinkFacebookInstantGame (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  Body = MakeShared<FJsonObject>();
   if (SignedPlayerInfo.IsEmpty() == false)
   {
     Body->SetStringField(TEXT("signed_player_info"), SignedPlayerInfo);
@@ -7774,9 +7787,10 @@ NAKAMAAPI_API void NakamaApi::UnlinkGameCenter (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  Body = MakeShared<FJsonObject>();
   if (PlayerId.IsEmpty() == false)
   {
     Body->SetStringField(TEXT("player_id"), PlayerId);
@@ -7854,9 +7868,10 @@ NAKAMAAPI_API void NakamaApi::UnlinkGameCenter (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  Body = MakeShared<FJsonObject>();
   if (PlayerId.IsEmpty() == false)
   {
     Body->SetStringField(TEXT("player_id"), PlayerId);
@@ -7929,9 +7944,10 @@ NAKAMAAPI_API void NakamaApi::UnlinkGoogle (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  Body = MakeShared<FJsonObject>();
   if (Token.IsEmpty() == false)
   {
     Body->SetStringField(TEXT("token"), Token);
@@ -7983,9 +7999,10 @@ NAKAMAAPI_API void NakamaApi::UnlinkGoogle (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  Body = MakeShared<FJsonObject>();
   if (Token.IsEmpty() == false)
   {
     Body->SetStringField(TEXT("token"), Token);
@@ -8037,9 +8054,10 @@ NAKAMAAPI_API void NakamaApi::UnlinkSteam (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  Body = MakeShared<FJsonObject>();
   if (Token.IsEmpty() == false)
   {
     Body->SetStringField(TEXT("token"), Token);
@@ -8091,9 +8109,10 @@ NAKAMAAPI_API void NakamaApi::UnlinkSteam (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  Body = MakeShared<FJsonObject>();
   if (Token.IsEmpty() == false)
   {
     Body->SetStringField(TEXT("token"), Token);
@@ -8149,9 +8168,10 @@ NAKAMAAPI_API void NakamaApi::UpdateAccount (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  Body = MakeShared<FJsonObject>();
   if (Username.IsEmpty() == false)
   {
     Body->SetStringField(TEXT("username"), Username);
@@ -8227,9 +8247,10 @@ NAKAMAAPI_API void NakamaApi::UpdateAccount (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  Body = MakeShared<FJsonObject>();
   if (Username.IsEmpty() == false)
   {
     Body->SetStringField(TEXT("username"), Username);
@@ -8307,9 +8328,10 @@ NAKAMAAPI_API void NakamaApi::UpdateGroup (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  Body = MakeShared<FJsonObject>();
   if (Name.IsEmpty() == false)
   {
     Body->SetStringField(TEXT("name"), Name);
@@ -8383,9 +8405,10 @@ NAKAMAAPI_API void NakamaApi::UpdateGroup (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  Body = MakeShared<FJsonObject>();
   if (Name.IsEmpty() == false)
   {
     Body->SetStringField(TEXT("name"), Name);
@@ -8453,9 +8476,10 @@ NAKAMAAPI_API void NakamaApi::ValidatePurchaseApple (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  Body = MakeShared<FJsonObject>();
   if (Receipt.IsEmpty() == false)
   {
     Body->SetStringField(TEXT("receipt"), Receipt);
@@ -8512,9 +8536,10 @@ NAKAMAAPI_API void NakamaApi::ValidatePurchaseApple (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  Body = MakeShared<FJsonObject>();
   if (Receipt.IsEmpty() == false)
   {
     Body->SetStringField(TEXT("receipt"), Receipt);
@@ -8571,9 +8596,10 @@ NAKAMAAPI_API void NakamaApi::ValidateSubscriptionApple (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  Body = MakeShared<FJsonObject>();
   if (Receipt.IsEmpty() == false)
   {
     Body->SetStringField(TEXT("receipt"), Receipt);
@@ -8630,9 +8656,10 @@ NAKAMAAPI_API void NakamaApi::ValidateSubscriptionApple (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  Body = MakeShared<FJsonObject>();
   if (Receipt.IsEmpty() == false)
   {
     Body->SetStringField(TEXT("receipt"), Receipt);
@@ -8689,9 +8716,10 @@ NAKAMAAPI_API void NakamaApi::ValidatePurchaseGoogle (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  Body = MakeShared<FJsonObject>();
   if (Purchase.IsEmpty() == false)
   {
     Body->SetStringField(TEXT("purchase"), Purchase);
@@ -8748,9 +8776,10 @@ NAKAMAAPI_API void NakamaApi::ValidatePurchaseGoogle (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  Body = MakeShared<FJsonObject>();
   if (Purchase.IsEmpty() == false)
   {
     Body->SetStringField(TEXT("purchase"), Purchase);
@@ -8807,9 +8836,10 @@ NAKAMAAPI_API void NakamaApi::ValidateSubscriptionGoogle (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  Body = MakeShared<FJsonObject>();
   if (Receipt.IsEmpty() == false)
   {
     Body->SetStringField(TEXT("receipt"), Receipt);
@@ -8866,9 +8896,10 @@ NAKAMAAPI_API void NakamaApi::ValidateSubscriptionGoogle (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  Body = MakeShared<FJsonObject>();
   if (Receipt.IsEmpty() == false)
   {
     Body->SetStringField(TEXT("receipt"), Receipt);
@@ -8926,9 +8957,10 @@ NAKAMAAPI_API void NakamaApi::ValidatePurchaseHuawei (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  Body = MakeShared<FJsonObject>();
   if (Purchase.IsEmpty() == false)
   {
     Body->SetStringField(TEXT("purchase"), Purchase);
@@ -8990,9 +9022,10 @@ NAKAMAAPI_API void NakamaApi::ValidatePurchaseHuawei (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  Body = MakeShared<FJsonObject>();
   if (Purchase.IsEmpty() == false)
   {
     Body->SetStringField(TEXT("purchase"), Purchase);
@@ -9053,9 +9086,10 @@ NAKAMAAPI_API void NakamaApi::ValidatePurchaseFacebookInstant (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  Body = MakeShared<FJsonObject>();
   if (SignedRequest.IsEmpty() == false)
   {
     Body->SetStringField(TEXT("signed_request"), SignedRequest);
@@ -9112,9 +9146,10 @@ NAKAMAAPI_API void NakamaApi::ValidatePurchaseFacebookInstant (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  Body = MakeShared<FJsonObject>();
   if (SignedRequest.IsEmpty() == false)
   {
     Body->SetStringField(TEXT("signed_request"), SignedRequest);
@@ -9173,9 +9208,10 @@ NAKAMAAPI_API void NakamaApi::WriteLeaderboardRecord (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  Body = MakeShared<FJsonObject>();
   
   {
     Body->SetObjectField(TEXT("record"), Record.ToJson());
@@ -9230,9 +9266,10 @@ NAKAMAAPI_API void NakamaApi::WriteLeaderboardRecord (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  Body = MakeShared<FJsonObject>();
   
   {
     Body->SetObjectField(TEXT("record"), Record.ToJson());
@@ -9284,9 +9321,10 @@ NAKAMAAPI_API void NakamaApi::WriteStorageObjects (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  Body = MakeShared<FJsonObject>();
   if (Objects.Num() > 0)
   {
     TArray<TSharedPtr<FJsonValue>> Array;
@@ -9343,9 +9381,10 @@ NAKAMAAPI_API void NakamaApi::WriteStorageObjects (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  Body = MakeShared<FJsonObject>();
   if (Objects.Num() > 0)
   {
     TArray<TSharedPtr<FJsonValue>> Array;
@@ -9405,9 +9444,10 @@ NAKAMAAPI_API void NakamaApi::WriteTournamentRecord (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  Body = MakeShared<FJsonObject>();
   
   {
     Body->SetObjectField(TEXT("record"), Record.ToJson());
@@ -9462,9 +9502,10 @@ NAKAMAAPI_API void NakamaApi::WriteTournamentRecord (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  Body = MakeShared<FJsonObject>();
   
   {
     Body->SetObjectField(TEXT("record"), Record.ToJson());

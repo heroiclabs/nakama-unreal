@@ -336,18 +336,18 @@ public:
   static UNakamaRealtimeClientMatchJoin* MatchJoin(
     UObject* WorldContextObject
     , UNakamaWebSocketSubsystem* WebSocketSubsystem
-    , const TMap<FString, FString>& Metadata
     , const FString& MatchId
     , const FString& Token
+    , const TMap<FString, FString>& Metadata
   );
 
   virtual void Activate() override;
 
 private:
   TObjectPtr<UNakamaWebSocketSubsystem> StoredWebSocketSubsystem;
-  TMap<FString, FString> StoredMetadata;
   FString StoredMatchId;
   FString StoredToken;
+  TMap<FString, FString> StoredMetadata;
 };
 
 /**

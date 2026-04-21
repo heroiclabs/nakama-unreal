@@ -50,17 +50,10 @@ SATORIAPI_API void SatoriApi::Authenticate (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
-  if (Id.IsEmpty() == false)
-  {
-    Body->SetStringField(TEXT("id"), Id);
-  }
-  
-  {
-    Body->SetBoolField(TEXT("no_session"), NoSession);
-  }
+  Body = MakeShared<FJsonObject>();
   if (Id.IsEmpty() == false)
   {
     Body->SetStringField(TEXT("id"), Id);
@@ -116,9 +109,10 @@ SATORIAPI_API void SatoriApi::AuthenticateLogout (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  Body = MakeShared<FJsonObject>();
   if (Token.IsEmpty() == false)
   {
     Body->SetStringField(TEXT("token"), Token);
@@ -172,13 +166,10 @@ SATORIAPI_API void SatoriApi::AuthenticateRefresh (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
-  if (RefreshToken.IsEmpty() == false)
-  {
-    Body->SetStringField(TEXT("refresh_token"), RefreshToken);
-  }
+  Body = MakeShared<FJsonObject>();
   if (RefreshToken.IsEmpty() == false)
   {
     Body->SetStringField(TEXT("refresh_token"), RefreshToken);
@@ -229,7 +220,7 @@ SATORIAPI_API void SatoriApi::DeleteIdentity (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -277,7 +268,7 @@ SATORIAPI_API void SatoriApi::DeleteIdentity (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -326,9 +317,10 @@ SATORIAPI_API void SatoriApi::Event (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  Body = MakeShared<FJsonObject>();
   if (Events.Num() > 0)
   {
     TArray<TSharedPtr<FJsonValue>> Array;
@@ -384,9 +376,10 @@ SATORIAPI_API void SatoriApi::Event (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  Body = MakeShared<FJsonObject>();
   if (Events.Num() > 0)
   {
     TArray<TSharedPtr<FJsonValue>> Array;
@@ -442,9 +435,10 @@ SATORIAPI_API void SatoriApi::ServerEvent (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  Body = MakeShared<FJsonObject>();
   if (Events.Num() > 0)
   {
     TArray<TSharedPtr<FJsonValue>> Array;
@@ -500,9 +494,10 @@ SATORIAPI_API void SatoriApi::ServerEvent (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  Body = MakeShared<FJsonObject>();
   if (Events.Num() > 0)
   {
     TArray<TSharedPtr<FJsonValue>> Array;
@@ -567,7 +562,7 @@ SATORIAPI_API void SatoriApi::GetExperiments (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -626,7 +621,7 @@ SATORIAPI_API void SatoriApi::GetExperiments (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -680,20 +675,12 @@ SATORIAPI_API void SatoriApi::GetFlagOverrides (
 	{
     QueryParams.Add(FString::Printf(TEXT("Labels=%s"), *(Item)));
   }
-  for (const FString& Item : Names)
-	{
-    QueryParams.Add(FString::Printf(TEXT("Names=%s"), *(Item)));
-  }
-  for (const FString& Item : Labels)
-	{
-    QueryParams.Add(FString::Printf(TEXT("Labels=%s"), *(Item)));
-  }
   if (QueryParams.Num() > 0)
   {
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -747,20 +734,12 @@ SATORIAPI_API void SatoriApi::GetFlagOverrides (
 	{
     QueryParams.Add(FString::Printf(TEXT("Labels=%s"), *(Item)));
   }
-  for (const FString& Item : Names)
-	{
-    QueryParams.Add(FString::Printf(TEXT("Names=%s"), *(Item)));
-  }
-  for (const FString& Item : Labels)
-	{
-    QueryParams.Add(FString::Printf(TEXT("Labels=%s"), *(Item)));
-  }
   if (QueryParams.Num() > 0)
   {
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -814,20 +793,12 @@ SATORIAPI_API void SatoriApi::GetFlags (
 	{
     QueryParams.Add(FString::Printf(TEXT("Labels=%s"), *(Item)));
   }
-  for (const FString& Item : Names)
-	{
-    QueryParams.Add(FString::Printf(TEXT("Names=%s"), *(Item)));
-  }
-  for (const FString& Item : Labels)
-	{
-    QueryParams.Add(FString::Printf(TEXT("Labels=%s"), *(Item)));
-  }
   if (QueryParams.Num() > 0)
   {
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -881,20 +852,12 @@ SATORIAPI_API void SatoriApi::GetFlags (
 	{
     QueryParams.Add(FString::Printf(TEXT("Labels=%s"), *(Item)));
   }
-  for (const FString& Item : Names)
-	{
-    QueryParams.Add(FString::Printf(TEXT("Names=%s"), *(Item)));
-  }
-  for (const FString& Item : Labels)
-	{
-    QueryParams.Add(FString::Printf(TEXT("Labels=%s"), *(Item)));
-  }
   if (QueryParams.Num() > 0)
   {
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -977,7 +940,7 @@ SATORIAPI_API void SatoriApi::GetLiveEvents (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -1060,7 +1023,7 @@ SATORIAPI_API void SatoriApi::GetLiveEvents (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -1112,7 +1075,7 @@ SATORIAPI_API void SatoriApi::JoinLiveEvent (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -1163,7 +1126,7 @@ SATORIAPI_API void SatoriApi::JoinLiveEvent (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -1211,7 +1174,7 @@ SATORIAPI_API void SatoriApi::Healthcheck (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -1259,7 +1222,7 @@ SATORIAPI_API void SatoriApi::Healthcheck (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -1310,9 +1273,10 @@ SATORIAPI_API void SatoriApi::Identify (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  Body = MakeShared<FJsonObject>();
   if (Id.IsEmpty() == false)
   {
     Body->SetStringField(TEXT("id"), Id);
@@ -1366,9 +1330,10 @@ SATORIAPI_API void SatoriApi::Identify (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  Body = MakeShared<FJsonObject>();
   if (Id.IsEmpty() == false)
   {
     Body->SetStringField(TEXT("id"), Id);
@@ -1419,7 +1384,7 @@ SATORIAPI_API void SatoriApi::ListProperties (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -1468,7 +1433,7 @@ SATORIAPI_API void SatoriApi::ListProperties (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -1517,7 +1482,7 @@ SATORIAPI_API void SatoriApi::Readycheck (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -1565,7 +1530,7 @@ SATORIAPI_API void SatoriApi::Readycheck (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -1616,9 +1581,10 @@ SATORIAPI_API void SatoriApi::UpdateProperties (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  Body = MakeShared<FJsonObject>();
   
   {
     Body->SetBoolField(TEXT("recompute"), Recompute);
@@ -1671,9 +1637,10 @@ SATORIAPI_API void SatoriApi::UpdateProperties (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  Body = MakeShared<FJsonObject>();
   
   {
     Body->SetBoolField(TEXT("recompute"), Recompute);
@@ -1744,7 +1711,7 @@ SATORIAPI_API void SatoriApi::GetMessageList (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -1814,7 +1781,7 @@ SATORIAPI_API void SatoriApi::GetMessageList (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -1868,9 +1835,10 @@ SATORIAPI_API void SatoriApi::UpdateMessage (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  Body = MakeShared<FJsonObject>();
   if (ReadTime != 0)
   
   {
@@ -1931,9 +1899,10 @@ SATORIAPI_API void SatoriApi::UpdateMessage (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  Body = MakeShared<FJsonObject>();
   if (ReadTime != 0)
   
   {
@@ -1992,7 +1961,7 @@ SATORIAPI_API void SatoriApi::DeleteMessage (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 
@@ -2043,7 +2012,7 @@ SATORIAPI_API void SatoriApi::DeleteMessage (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
 

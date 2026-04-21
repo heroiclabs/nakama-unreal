@@ -214,12 +214,20 @@ TNakamaFuture<FNakamaWebSocketResponse> FNakamaRtClient::MatchDataSend(
 }
 
 TNakamaFuture<FNakamaWebSocketResponse> FNakamaRtClient::MatchJoin(
-  const TMap<FString, FString>& Metadata
-  , const FString& MatchId
+  const FString& MatchId
   , const FString& Token
+  , const TMap<FString, FString>& Metadata
 ) noexcept
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+  if (MatchId.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("match_id"), MatchId);
+  }
+  if (Token.IsEmpty() == false)
+  {
+    Json->SetStringField(TEXT("token"), Token);
+  }
   if (Metadata.Num() > 0)
   {
     TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
@@ -228,14 +236,6 @@ TNakamaFuture<FNakamaWebSocketResponse> FNakamaRtClient::MatchJoin(
       MapObj->SetStringField(Pair.Key, Pair.Value);
     }
     Json->SetObjectField(TEXT("metadata"), MapObj);
-  }
-  if (MatchId.IsEmpty() == false)
-  {
-    Json->SetStringField(TEXT("match_id"), MatchId);
-  }
-  if (Token.IsEmpty() == false)
-  {
-    Json->SetStringField(TEXT("token"), Token);
   }
 
   if (!WebSocketSubsystem.IsValid())
