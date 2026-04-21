@@ -5,12 +5,22 @@
  * Each test uses F*Result types instead of separate success/error callback pairs.
  */
 
-#include <atomic>
 #include "Nakama.h"
 #include "Misc/Guid.h"
 #include "Serialization/JsonSerializer.h"
 
 const FNakamaClientConfig ClientConfig = FNakamaClientConfig{TEXT("defaultkey"), TEXT("127.0.0.1"), 7350, false};
+static const FString DefaultHttpKey = TEXT("defaulthttpkey");
+
+/** Serialize a JSON object to a string for RpcFunc payloads. Returns "" for null. */
+static FString JsonToString(const TSharedPtr<FJsonObject>& Json)
+{
+	if (!Json.IsValid()) return TEXT("");
+	FString Out;
+	TSharedRef<TJsonWriter<>> W = TJsonWriterFactory<>::Create(&Out);
+	FJsonSerializer::Serialize(Json.ToSharedRef(), W);
+	return Out;
+}
 
 /**
  * Helper macro: early-return on unexpected error inside a callback.
@@ -54,7 +64,7 @@ void FNakamaAsyncAuthSpec::Define()
 	{
 		LatentIt("should authenticate with valid custom ID", [this](const FDoneDelegate& Done)
 		{
-			Nakama::AuthenticateCustom(ClientConfig, TestCustomId, true, TEXT("")).Next([this, Done](FNakamaSessionResult Result)
+			Nakama::AuthenticateCustom(ClientConfig, TestCustomId, { }, true, TEXT("")).Next([this, Done](FNakamaSessionResult Result)
 			{
 				ASYNC_FAIL_ON_ERROR(Result, Done);
 				TestTrue("Session has token", !Result.Value.Token.IsEmpty());
@@ -65,7 +75,7 @@ void FNakamaAsyncAuthSpec::Define()
 
 		LatentIt("should fail with empty custom ID", [this](const FDoneDelegate& Done)
 		{
-			Nakama::AuthenticateCustom(ClientConfig, TEXT(""), true, TEXT("")).Next([this, Done](FNakamaSessionResult Result)
+			Nakama::AuthenticateCustom(ClientConfig, TEXT(""), { }, true, TEXT("")).Next([this, Done](FNakamaSessionResult Result)
 			{
 				if (!Result.bIsError)
 				{
@@ -80,7 +90,7 @@ void FNakamaAsyncAuthSpec::Define()
 
 		LatentIt("should fail with custom ID too short < 6 chars", [this](const FDoneDelegate& Done)
 		{
-			Nakama::AuthenticateCustom(ClientConfig, TEXT("abc"), true, TEXT("")).Next([this, Done](FNakamaSessionResult Result)
+			Nakama::AuthenticateCustom(ClientConfig, TEXT("abc"), { }, true, TEXT("")).Next([this, Done](FNakamaSessionResult Result)
 			{
 				if (!Result.bIsError)
 				{
@@ -95,7 +105,7 @@ void FNakamaAsyncAuthSpec::Define()
 
 		LatentIt("should fail with custom ID too long > 128 chars", [this](const FDoneDelegate& Done)
 		{
-			Nakama::AuthenticateCustom(ClientConfig, FString::ChrN(150, 'a'), true, TEXT("")).Next([this, Done](FNakamaSessionResult Result)
+			Nakama::AuthenticateCustom(ClientConfig, FString::ChrN(150, 'a'), { }, true, TEXT("")).Next([this, Done](FNakamaSessionResult Result)
 			{
 				if (!Result.bIsError)
 				{
@@ -111,7 +121,7 @@ void FNakamaAsyncAuthSpec::Define()
 		LatentIt("should authenticate with username", [this](const FDoneDelegate& Done)
 		{
 			FString Username = FString::Printf(TEXT("user_%s"), *GenerateShortId());
-			Nakama::AuthenticateCustom(ClientConfig, TestCustomId, true, Username).Next([this, Done](FNakamaSessionResult Result)
+			Nakama::AuthenticateCustom(ClientConfig, TestCustomId, { }, true, Username).Next([this, Done](FNakamaSessionResult Result)
 			{
 				ASYNC_FAIL_ON_ERROR(Result, Done);
 				TestTrue("Session has token", !Result.Value.Token.IsEmpty());
@@ -124,7 +134,7 @@ void FNakamaAsyncAuthSpec::Define()
 	{
 		LatentIt("should authenticate with valid device ID", [this](const FDoneDelegate& Done)
 		{
-			Nakama::AuthenticateDevice(ClientConfig, TestDeviceId, true, TEXT("")).Next([this, Done](FNakamaSessionResult Result)
+			Nakama::AuthenticateDevice(ClientConfig, TestDeviceId, { }, true, TEXT("")).Next([this, Done](FNakamaSessionResult Result)
 			{
 				ASYNC_FAIL_ON_ERROR(Result, Done);
 				TestTrue("Session has token", !Result.Value.Token.IsEmpty());
@@ -135,7 +145,7 @@ void FNakamaAsyncAuthSpec::Define()
 
 		LatentIt("should fail with empty device ID", [this](const FDoneDelegate& Done)
 		{
-			Nakama::AuthenticateDevice(ClientConfig, TEXT(""), true, TEXT("")).Next([this, Done](FNakamaSessionResult Result)
+			Nakama::AuthenticateDevice(ClientConfig, TEXT(""), { }, true, TEXT("")).Next([this, Done](FNakamaSessionResult Result)
 			{
 				if (!Result.bIsError)
 				{
@@ -150,7 +160,7 @@ void FNakamaAsyncAuthSpec::Define()
 
 		LatentIt("should fail with device ID too short < 10 chars", [this](const FDoneDelegate& Done)
 		{
-			Nakama::AuthenticateDevice(ClientConfig, TEXT("short"), true, TEXT("")).Next([this, Done](FNakamaSessionResult Result)
+			Nakama::AuthenticateDevice(ClientConfig, TEXT("short"), { }, true, TEXT("")).Next([this, Done](FNakamaSessionResult Result)
 			{
 				if (!Result.bIsError)
 				{
@@ -168,7 +178,7 @@ void FNakamaAsyncAuthSpec::Define()
 	{
 		LatentIt("should authenticate with valid email and password", [this](const FDoneDelegate& Done)
 		{
-			Nakama::AuthenticateEmail(ClientConfig, TestEmail, TEXT("password123"), true, TEXT("")).Next([this, Done](FNakamaSessionResult Result)
+			Nakama::AuthenticateEmail(ClientConfig, TestEmail, TEXT("password123"), { }, true, TEXT("")).Next([this, Done](FNakamaSessionResult Result)
 			{
 				ASYNC_FAIL_ON_ERROR(Result, Done);
 				TestTrue("Session has token", !Result.Value.Token.IsEmpty());
@@ -178,7 +188,7 @@ void FNakamaAsyncAuthSpec::Define()
 
 		LatentIt("should fail with invalid email format", [this](const FDoneDelegate& Done)
 		{
-			Nakama::AuthenticateEmail(ClientConfig, TEXT("notanemail"), TEXT("password123"), true, TEXT("")).Next([this, Done](FNakamaSessionResult Result)
+			Nakama::AuthenticateEmail(ClientConfig, TEXT("notanemail"), TEXT("password123"), { }, true, TEXT("")).Next([this, Done](FNakamaSessionResult Result)
 			{
 				if (!Result.bIsError)
 				{
@@ -193,7 +203,7 @@ void FNakamaAsyncAuthSpec::Define()
 
 		LatentIt("should fail with password too short < 8 chars", [this](const FDoneDelegate& Done)
 		{
-			Nakama::AuthenticateEmail(ClientConfig, TestEmail, TEXT("short"), true, TEXT("")).Next([this, Done](FNakamaSessionResult Result)
+			Nakama::AuthenticateEmail(ClientConfig, TestEmail, TEXT("short"), { }, true, TEXT("")).Next([this, Done](FNakamaSessionResult Result)
 			{
 				if (!Result.bIsError)
 				{
@@ -234,7 +244,7 @@ void FNakamaAsyncAccountSpec::Define()
 		FNakamaAccountCustom Account;
 		Account.Id = GenerateId();
 
-		Nakama::AuthenticateCustom(ClientConfig, Account.Id, true, TEXT("")).Next([this, Done](FNakamaSessionResult AuthResult)
+		Nakama::AuthenticateCustom(ClientConfig, Account.Id, { }, true, TEXT("")).Next([this, Done](FNakamaSessionResult AuthResult)
 		{
 			if (AuthResult.bIsError) { AddError(FString::Printf(TEXT("Auth failed: %s"), *AuthResult.Error.Message)); Done.Execute(); return; }
 			Session = AuthResult.Value;
@@ -341,7 +351,7 @@ void FNakamaAsyncFriendsSpec::Define()
 		FNakamaAccountCustom Account;
 		Account.Id = GenerateId();
 
-		Nakama::AuthenticateCustom(ClientConfig, Account.Id, true, TEXT(""))
+		Nakama::AuthenticateCustom(ClientConfig, Account.Id, { }, true, TEXT(""))
 		.Next([this](const FNakamaSession& AuthResult)
 		{
 			Session = AuthResult;
@@ -352,7 +362,7 @@ void FNakamaAsyncFriendsSpec::Define()
 			UserId = AccResult.User.Id;
 			FNakamaAccountCustom FriendAccount;
 			FriendAccount.Id = GenerateId();
-			return Nakama::AuthenticateCustom(ClientConfig, FriendAccount.Id, true, TEXT(""));
+			return Nakama::AuthenticateCustom(ClientConfig, FriendAccount.Id, { }, true, TEXT(""));
 		})
 		.Next([this](const FNakamaSession& FriendAuthResult)
 		{
@@ -492,7 +502,7 @@ void FNakamaAsyncGroupsSpec::Define()
 		FNakamaAccountCustom Account;
 		Account.Id = GenerateId();
 
-		Nakama::AuthenticateCustom(ClientConfig, Account.Id, true, TEXT(""))
+		Nakama::AuthenticateCustom(ClientConfig, Account.Id, { }, true, TEXT(""))
 		.Next([this](const FNakamaSession& AuthResult)
 		{
 			Session = AuthResult;
@@ -604,7 +614,7 @@ void FNakamaAsyncStorageSpec::Define()
 		FNakamaAccountCustom Account;
 		Account.Id = GenerateId();
 
-		Nakama::AuthenticateCustom(ClientConfig, Account.Id, true, TEXT(""))
+		Nakama::AuthenticateCustom(ClientConfig, Account.Id, { }, true, TEXT(""))
 		.Next([this](const FNakamaSession& AuthResult)
 		{
 			Session = AuthResult;
@@ -758,7 +768,7 @@ void FNakamaAsyncLeaderboardSpec::Define()
 		FNakamaAccountCustom Account;
 		Account.Id = GenerateId();
 
-		Nakama::AuthenticateCustom(ClientConfig, Account.Id, true, TEXT("")).Next([this, Done](FNakamaSessionResult AuthResult)
+		Nakama::AuthenticateCustom(ClientConfig, Account.Id, { }, true, TEXT("")).Next([this, Done](FNakamaSessionResult AuthResult)
 		{
 			if (AuthResult.bIsError) { AddError(FString::Printf(TEXT("Auth failed: %s"), *AuthResult.Error.Message)); Done.Execute(); return; }
 			Session = AuthResult.Value;
@@ -801,14 +811,14 @@ void FNakamaAsyncLeaderboardSpec::Define()
 			//Record.Metadata = TEXT("{}");
 			//Record.Operator = ENakamaOperator::NO_OVERRIDE;
 
-			Nakama::WriteLeaderboardRecord(ClientConfig, Session, TEXT("nonexistent_leaderboard_12345"), 100)
-			.Next([this, Done](FNakamaLeaderboardRecordResult Result)
-			{
-				if (!Result.bIsError) { AddError(TEXT("Expected error but got success")); Done.Execute(); return; }
-				TestTrue("Got NOT_FOUND error", Result.Error.Code == 5 || Result.Error.Message.Contains(TEXT("not found")));
-				Done.Execute();
+			Nakama::WriteLeaderboardRecord(ClientConfig, Session, TEXT("nonexistent_leaderboard_12345"), 100, 0, TEXT(""), ENakamaOperator::BEST)
+				.Next([this, Done](FNakamaLeaderboardRecordResult Result)
+				{
+					if (!Result.bIsError) { AddError(TEXT("Expected error but got success")); Done.Execute(); return; }
+					TestTrue("Got NOT_FOUND error", Result.Error.Code == 5 || Result.Error.Message.Contains(TEXT("not found")));
+					Done.Execute();
+				});
 			});
-		});
 	});
 
 	Describe("ListLeaderboardRecords", [this]()
@@ -875,7 +885,7 @@ void FNakamaAsyncMatchesSpec::Define()
 		FNakamaAccountCustom Account;
 		Account.Id = GenerateId();
 
-		Nakama::AuthenticateCustom(ClientConfig, Account.Id, true, TEXT("")).Next([this, Done](FNakamaSessionResult AuthResult)
+		Nakama::AuthenticateCustom(ClientConfig, Account.Id, { }, true, TEXT("")).Next([this, Done](FNakamaSessionResult AuthResult)
 		{
 			if (AuthResult.bIsError) { AddError(FString::Printf(TEXT("Auth failed: %s"), *AuthResult.Error.Message)); Done.Execute(); return; }
 			Session = AuthResult.Value;
@@ -941,7 +951,7 @@ void FNakamaAsyncNotificationsSpec::Define()
 		FNakamaAccountCustom Account;
 		Account.Id = GenerateId();
 
-		Nakama::AuthenticateCustom(ClientConfig, Account.Id, true, TEXT("")).Next([this, Done](FNakamaSessionResult AuthResult)
+		Nakama::AuthenticateCustom(ClientConfig, Account.Id, { }, true, TEXT("")).Next([this, Done](FNakamaSessionResult AuthResult)
 		{
 			if (AuthResult.bIsError) { AddError(FString::Printf(TEXT("Auth failed: %s"), *AuthResult.Error.Message)); Done.Execute(); return; }
 			Session = AuthResult.Value;
@@ -1002,7 +1012,7 @@ void FNakamaAsyncLinkSpec::Define()
 		FNakamaAccountDevice Account;
 		Account.Id = DeviceId;
 
-		Nakama::AuthenticateDevice(ClientConfig, Account.Id, true, TEXT("")).Next([this, Done](FNakamaSessionResult AuthResult)
+		Nakama::AuthenticateDevice(ClientConfig, Account.Id, { }, true, TEXT("")).Next([this, Done](FNakamaSessionResult AuthResult)
 		{
 			if (AuthResult.bIsError) { AddError(FString::Printf(TEXT("Auth failed: %s"), *AuthResult.Error.Message)); Done.Execute(); return; }
 			Session = AuthResult.Value;
@@ -1108,7 +1118,7 @@ void FNakamaAsyncTournamentSpec::Define()
 		FNakamaAccountCustom Account;
 		Account.Id = GenerateId();
 
-		Nakama::AuthenticateCustom(ClientConfig, Account.Id, true, TEXT("")).Next([this, Done](FNakamaSessionResult AuthResult)
+		Nakama::AuthenticateCustom(ClientConfig, Account.Id, { }, true, TEXT("")).Next([this, Done](FNakamaSessionResult AuthResult)
 		{
 			if (AuthResult.bIsError) { AddError(FString::Printf(TEXT("Auth failed: %s"), *AuthResult.Error.Message)); Done.Execute(); return; }
 			Session = AuthResult.Value;
@@ -1214,7 +1224,7 @@ void FNakamaAsyncUsersSpec::Define()
 		FNakamaAccountCustom Account;
 		Account.Id = GenerateId();
 
-		Nakama::AuthenticateCustom(ClientConfig, Account.Id, true, Username)
+		Nakama::AuthenticateCustom(ClientConfig, Account.Id, { }, true, Username)
 		.Next([this](const FNakamaSession& AuthResult)
 		{
 			Session = AuthResult;
@@ -1310,7 +1320,7 @@ void FNakamaAsyncSessionSpec::Define()
 		FNakamaAccountCustom Account;
 		Account.Id = GenerateId();
 
-		Nakama::AuthenticateCustom(ClientConfig, Account.Id, true, TEXT("")).Next([this, Done](FNakamaSessionResult AuthResult)
+		Nakama::AuthenticateCustom(ClientConfig, Account.Id, { }, true, TEXT("")).Next([this, Done](FNakamaSessionResult AuthResult)
 		{
 			if (AuthResult.bIsError) { AddError(FString::Printf(TEXT("Auth failed: %s"), *AuthResult.Error.Message)); Done.Execute(); return; }
 			Session = AuthResult.Value;
@@ -1367,7 +1377,7 @@ void FNakamaAsyncDeleteStorageSpec::Define()
 		FNakamaAccountCustom Account;
 		Account.Id = GenerateId();
 
-		Nakama::AuthenticateCustom(ClientConfig, Account.Id, true, TEXT(""))
+		Nakama::AuthenticateCustom(ClientConfig, Account.Id, { }, true, TEXT(""))
 		.Next([this](const FNakamaSession& AuthResult)
 		{
 			Session = AuthResult;
@@ -1458,7 +1468,7 @@ void FNakamaAsyncGroupOpsSpec::Define()
 		FNakamaAccountCustom Account;
 		Account.Id = GenerateId();
 
-		Nakama::AuthenticateCustom(ClientConfig, Account.Id, true, TEXT(""))
+		Nakama::AuthenticateCustom(ClientConfig, Account.Id, { }, true, TEXT(""))
 		.Next([this](const FNakamaSession& AuthResult)
 		{
 			Session = AuthResult;
@@ -1469,7 +1479,7 @@ void FNakamaAsyncGroupOpsSpec::Define()
 			UserId = AccResult.User.Id;
 			FNakamaAccountCustom MemberAccount;
 			MemberAccount.Id = GenerateId();
-			return Nakama::AuthenticateCustom(ClientConfig, MemberAccount.Id, true, TEXT(""));
+			return Nakama::AuthenticateCustom(ClientConfig, MemberAccount.Id, { }, true, TEXT(""));
 		})
 		.Next([this](const FNakamaSession& MemberAuthResult)
 		{
@@ -1621,11 +1631,13 @@ BEGIN_DEFINE_SPEC(FNakamaAsyncRpcSpec, "IntegrationTests.Nakama.RPC",
 
 	FNakamaRetryConfig RetryConfig;
 	FNakamaSession Session;
-
+	static const FString HttpKey;
 
 	FString GenerateId() { return FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphens); }
 
 END_DEFINE_SPEC(FNakamaAsyncRpcSpec)
+
+const FString FNakamaAsyncRpcSpec::HttpKey = TEXT("defaulthttpkey");
 
 
 void FNakamaAsyncRpcSpec::Define()
@@ -1636,7 +1648,7 @@ void FNakamaAsyncRpcSpec::Define()
 		FNakamaAccountCustom Account;
 		Account.Id = GenerateId();
 
-		Nakama::AuthenticateCustom(ClientConfig, Account.Id, true, TEXT("")).Next([this, Done](FNakamaSessionResult AuthResult)
+		Nakama::AuthenticateCustom(ClientConfig, Account.Id, { }, true, TEXT("")).Next([this, Done](FNakamaSessionResult AuthResult)
 		{
 			if (AuthResult.bIsError) { AddError(FString::Printf(TEXT("Auth failed: %s"), *AuthResult.Error.Message)); Done.Execute(); return; }
 			Session = AuthResult.Value;
@@ -1656,18 +1668,18 @@ void FNakamaAsyncRpcSpec::Define()
 	{
 		LatentIt("should fail with empty RPC ID", [this](const FDoneDelegate& Done)
 		{
-			Nakama::RpcFunc(ClientConfig, Session, TEXT(""), nullptr, TEXT(""))
-			.Next([this, Done](FNakamaRpcResult Result)
-			{
-				if (!Result.bIsError) { AddError(TEXT("Expected error but got success")); Done.Execute(); return; }
-				TestTrue("Got error for empty RPC ID", Result.Error.Code != 0 || !Result.Error.Message.IsEmpty());
-				Done.Execute();
-			});
+			Nakama::RpcFunc(ClientConfig, TEXT(""), TEXT(""), HttpKey)
+				.Next([this, Done](FNakamaRpcResult Result)
+				{
+					if (!Result.bIsError) { AddError(TEXT("Expected error but got success")); Done.Execute(); return; }
+					TestTrue("Got error for empty RPC ID", Result.Error.Code != 0 || !Result.Error.Message.IsEmpty());
+					Done.Execute();
+				});
 		});
 
 		LatentIt("should fail with non-existent RPC", [this](const FDoneDelegate& Done)
 		{
-			Nakama::RpcFunc(ClientConfig, Session, TEXT("nonexistent_rpc_function"), nullptr, TEXT(""))
+			Nakama::RpcFunc(ClientConfig, TEXT("nonexistent_rpc_function"), TEXT(""), HttpKey)
 			.Next([this, Done](FNakamaRpcResult Result)
 			{
 				if (!Result.bIsError) { AddError(TEXT("Expected error but got success")); Done.Execute(); return; }
@@ -1711,7 +1723,7 @@ void FNakamaAsyncAuthExtSpec::Define()
 			FNakamaAccountCustom Account;
 			Account.Id = GenerateId();
 
-			Nakama::AuthenticateCustom(ClientConfig, Account.Id, false, TEXT("")).Next([this, Done](FNakamaSessionResult Result)
+			Nakama::AuthenticateCustom(ClientConfig, Account.Id, {}, false, TEXT("")).Next([this, Done](FNakamaSessionResult Result)
 			{
 				if (!Result.bIsError) { AddError(TEXT("Expected error but got success")); Done.Execute(); return; }
 				TestTrue("Got NOT_FOUND error", Result.Error.Code != 0 || !Result.Error.Message.IsEmpty());
@@ -1724,10 +1736,10 @@ void FNakamaAsyncAuthExtSpec::Define()
 			FNakamaAccountCustom Account;
 			Account.Id = GenerateId();
 
-			Nakama::AuthenticateCustom(ClientConfig, Account.Id, true, TEXT(""))
+			Nakama::AuthenticateCustom(ClientConfig, Account.Id, { }, true, TEXT(""))
 			.Next([this, Account](const FNakamaSession&)
 			{
-				return Nakama::AuthenticateCustom(ClientConfig, Account.Id, false, TEXT(""));
+				return Nakama::AuthenticateCustom(ClientConfig, Account.Id, {}, false, TEXT(""));
 			})
 			.Next([this, Done](FNakamaSessionResult SecondResult)
 			{
@@ -1746,7 +1758,7 @@ void FNakamaAsyncAuthExtSpec::Define()
 			FNakamaAccountDevice Account;
 			Account.Id = FString::ChrN(150, 'a');
 
-			Nakama::AuthenticateDevice(ClientConfig, Account.Id, true, TEXT("")).Next([this, Done](FNakamaSessionResult Result)
+			Nakama::AuthenticateDevice(ClientConfig, Account.Id, { }, true, TEXT("")).Next([this, Done](FNakamaSessionResult Result)
 			{
 				if (!Result.bIsError) { AddError(TEXT("Expected error but got success")); Done.Execute(); return; }
 				TestTrue("Got error for long device ID", Result.Error.Code != 0 || !Result.Error.Message.IsEmpty());
@@ -1762,7 +1774,7 @@ void FNakamaAsyncAuthExtSpec::Define()
 			FNakamaAccountFacebook Account;
 			Account.Token = TEXT("");
 
-			Nakama::AuthenticateFacebook(ClientConfig, Account.Token, true, TEXT(""), false).Next([this, Done](FNakamaSessionResult Result)
+			Nakama::AuthenticateFacebook(ClientConfig, Account.Token, { }, true, TEXT(""), false).Next([this, Done](FNakamaSessionResult Result)
 			{
 				if (!Result.bIsError) { AddError(TEXT("Expected error but got success")); Done.Execute(); return; }
 				TestTrue("Got error for empty token", Result.Error.Code != 0 || !Result.Error.Message.IsEmpty());
@@ -1778,7 +1790,7 @@ void FNakamaAsyncAuthExtSpec::Define()
 			FNakamaAccountGoogle Account;
 			Account.Token = TEXT("");
 
-			Nakama::AuthenticateGoogle(ClientConfig, Account.Token, true, TEXT("")).Next([this, Done](FNakamaSessionResult Result)
+			Nakama::AuthenticateGoogle(ClientConfig, Account.Token, { }, true, TEXT("")).Next([this, Done](FNakamaSessionResult Result)
 			{
 				if (!Result.bIsError) { AddError(TEXT("Expected error but got success")); Done.Execute(); return; }
 				TestTrue("Got error for empty token", Result.Error.Code != 0 || !Result.Error.Message.IsEmpty());
@@ -1794,7 +1806,7 @@ void FNakamaAsyncAuthExtSpec::Define()
 			FNakamaAccountSteam Account;
 			Account.Token = TEXT("");
 
-			Nakama::AuthenticateSteam(ClientConfig, Account.Token, true, TEXT(""), false).Next([this, Done](FNakamaSessionResult Result)
+			Nakama::AuthenticateSteam(ClientConfig, Account.Token, { }, true, TEXT(""), false).Next([this, Done](FNakamaSessionResult Result)
 			{
 				if (!Result.bIsError) { AddError(TEXT("Expected error but got success")); Done.Execute(); return; }
 				TestTrue("Got error for empty token", Result.Error.Code != 0 || !Result.Error.Message.IsEmpty());
@@ -1810,7 +1822,7 @@ void FNakamaAsyncAuthExtSpec::Define()
 			FNakamaAccountApple Account;
 			Account.Token = TEXT("");
 
-			Nakama::AuthenticateApple(ClientConfig, Account.Token, true, TEXT("")).Next([this, Done](FNakamaSessionResult Result)
+			Nakama::AuthenticateApple(ClientConfig, Account.Token, { }, true, TEXT("")).Next([this, Done](FNakamaSessionResult Result)
 			{
 				if (!Result.bIsError) { AddError(TEXT("Expected error but got success")); Done.Execute(); return; }
 				TestTrue("Got error for empty token", Result.Error.Code != 0 || !Result.Error.Message.IsEmpty());
@@ -1847,7 +1859,7 @@ void FNakamaAsyncDeleteFriendsSpec::Define()
 		FNakamaAccountCustom Account;
 		Account.Id = GenerateId();
 
-		Nakama::AuthenticateCustom(ClientConfig, Account.Id, true, TEXT(""))
+		Nakama::AuthenticateCustom(ClientConfig, Account.Id, { }, true, TEXT(""))
 		.Next([this](const FNakamaSession& AuthResult)
 		{
 			Session = AuthResult;
@@ -1858,7 +1870,7 @@ void FNakamaAsyncDeleteFriendsSpec::Define()
 			UserId = AccResult.User.Id;
 			FNakamaAccountCustom FriendAccount;
 			FriendAccount.Id = GenerateId();
-			return Nakama::AuthenticateCustom(ClientConfig, FriendAccount.Id, true, TEXT(""));
+			return Nakama::AuthenticateCustom(ClientConfig, FriendAccount.Id, { }, true, TEXT(""));
 		})
 		.Next([this](const FNakamaSession& FriendAuthResult)
 		{
@@ -1948,7 +1960,7 @@ void FNakamaAsyncImportSpec::Define()
 		FNakamaAccountCustom Account;
 		Account.Id = GenerateId();
 
-		Nakama::AuthenticateCustom(ClientConfig, Account.Id, true, TEXT("")).Next([this, Done](FNakamaSessionResult AuthResult)
+		Nakama::AuthenticateCustom(ClientConfig, Account.Id, { }, true, TEXT("")).Next([this, Done](FNakamaSessionResult AuthResult)
 		{
 			if (AuthResult.bIsError) { AddError(FString::Printf(TEXT("Auth failed: %s"), *AuthResult.Error.Message)); Done.Execute(); return; }
 			Session = AuthResult.Value;
@@ -1971,7 +1983,7 @@ void FNakamaAsyncImportSpec::Define()
 			FNakamaAccountSteam Account;
 			Account.Token = TEXT("");
 
-			Nakama::ImportSteamFriends(ClientConfig, Session, Account.Token, false)
+			Nakama::ImportSteamFriends(ClientConfig, Session, Account.Token, {}, false)
 			.Next([this, Done](FNakamaVoidResult Result)
 			{
 				if (!Result.bIsError) { AddError(TEXT("Expected error but got success")); Done.Execute(); return; }
@@ -1988,7 +2000,7 @@ void FNakamaAsyncImportSpec::Define()
 			FNakamaAccountFacebook Account;
 			Account.Token = TEXT("");
 
-			Nakama::ImportFacebookFriends(ClientConfig, Session, Account.Token, false)
+			Nakama::ImportFacebookFriends(ClientConfig, Session, Account.Token, {}, false)
 			.Next([this, Done](FNakamaVoidResult Result)
 			{
 				if (!Result.bIsError) { AddError(TEXT("Expected error but got success")); Done.Execute(); return; }
@@ -2025,7 +2037,7 @@ void FNakamaAsyncAccountExtSpec::Define()
 		FNakamaAccountCustom Account;
 		Account.Id = GenerateId();
 
-		Nakama::AuthenticateCustom(ClientConfig, Account.Id, true, TEXT(""))
+		Nakama::AuthenticateCustom(ClientConfig, Account.Id, { }, true, TEXT(""))
 		.Next([this](const FNakamaSession& AuthResult)
 		{
 			Session = AuthResult;
@@ -2167,7 +2179,7 @@ void FNakamaAsyncFriendsExtSpec::Define()
 		Account.Id = GenerateId();
 		FriendUsername = FString::Printf(TEXT("friend_%s"), *GenerateShortId());
 
-		Nakama::AuthenticateCustom(ClientConfig, Account.Id, true, TEXT(""))
+		Nakama::AuthenticateCustom(ClientConfig, Account.Id, { }, true, TEXT(""))
 		.Next([this](const FNakamaSession& AuthResult)
 		{
 			Session = AuthResult;
@@ -2178,7 +2190,7 @@ void FNakamaAsyncFriendsExtSpec::Define()
 			UserId = AccResult.User.Id;
 			FNakamaAccountCustom FriendAccount;
 			FriendAccount.Id = GenerateId();
-			return Nakama::AuthenticateCustom(ClientConfig, FriendAccount.Id, true, FriendUsername);
+			return Nakama::AuthenticateCustom(ClientConfig, FriendAccount.Id, { }, true, FriendUsername);
 		})
 		.Next([this](const FNakamaSession& FriendResult)
 		{
@@ -2329,7 +2341,7 @@ void FNakamaAsyncStorageExtSpec::Define()
 	{
 		FNakamaAccountCustom Account;
 		Account.Id = GenerateId();
-		Nakama::AuthenticateCustom(ClientConfig, Account.Id, true, TEXT(""))
+		Nakama::AuthenticateCustom(ClientConfig, Account.Id, { }, true, TEXT(""))
 		.Next([this](const FNakamaSession& AuthResult)
 		{
 			Session = AuthResult;
@@ -2598,7 +2610,7 @@ void FNakamaAsyncGroupExtSpec::Define()
 	{
 		FNakamaAccountCustom Account;
 		Account.Id = GenerateId();
-		Nakama::AuthenticateCustom(ClientConfig, Account.Id, true, TEXT(""))
+		Nakama::AuthenticateCustom(ClientConfig, Account.Id, { }, true, TEXT(""))
 		.Next([this](const FNakamaSession& AuthResult)
 		{
 			Session = AuthResult;
@@ -2609,7 +2621,7 @@ void FNakamaAsyncGroupExtSpec::Define()
 			UserId = AccResult.User.Id;
 			FNakamaAccountCustom MemberAccount;
 			MemberAccount.Id = GenerateId();
-			return Nakama::AuthenticateCustom(ClientConfig, MemberAccount.Id, true, TEXT(""));
+			return Nakama::AuthenticateCustom(ClientConfig, MemberAccount.Id, { }, true, TEXT(""));
 		})
 		.Next([this](const FNakamaSession& MemberResult)
 		{
@@ -2856,7 +2868,7 @@ void FNakamaAsyncUnlinkSpec::Define()
 	{
 		FNakamaAccountDevice Account;
 		Account.Id = DeviceId;
-		Nakama::AuthenticateDevice(ClientConfig, Account.Id, true, TEXT("")).Next([this, Done](FNakamaSessionResult AuthResult)
+		Nakama::AuthenticateDevice(ClientConfig, Account.Id, { }, true, TEXT("")).Next([this, Done](FNakamaSessionResult AuthResult)
 		{
 			if (AuthResult.bIsError) { AddError(FString::Printf(TEXT("Auth failed: %s"), *AuthResult.Error.Message)); Done.Execute(); return; }
 			Session = AuthResult.Value;
@@ -2952,7 +2964,7 @@ void FNakamaAsyncMatchesExtSpec::Define()
 	{
 		FNakamaAccountCustom Account;
 		Account.Id = GenerateId();
-		Nakama::AuthenticateCustom(ClientConfig, Account.Id, true, TEXT("")).Next([this, Done](FNakamaSessionResult AuthResult)
+		Nakama::AuthenticateCustom(ClientConfig, Account.Id, { }, true, TEXT("")).Next([this, Done](FNakamaSessionResult AuthResult)
 		{
 			if (AuthResult.bIsError) { AddError(FString::Printf(TEXT("Auth failed: %s"), *AuthResult.Error.Message)); Done.Execute(); return; }
 			Session = AuthResult.Value;
@@ -3026,7 +3038,7 @@ void FNakamaAsyncChannelSpec::Define()
 	{
 		FNakamaAccountCustom Account;
 		Account.Id = GenerateId();
-		Nakama::AuthenticateCustom(ClientConfig, Account.Id, true, TEXT("")).Next([this, Done](FNakamaSessionResult AuthResult)
+		Nakama::AuthenticateCustom(ClientConfig, Account.Id, { }, true, TEXT("")).Next([this, Done](FNakamaSessionResult AuthResult)
 		{
 			if (AuthResult.bIsError) { AddError(FString::Printf(TEXT("Auth failed: %s"), *AuthResult.Error.Message)); Done.Execute(); return; }
 			Session = AuthResult.Value;
@@ -3100,7 +3112,7 @@ void FNakamaAsyncNotificationsExtSpec::Define()
 	{
 		FNakamaAccountCustom Account;
 		Account.Id = GenerateId();
-		Nakama::AuthenticateCustom(ClientConfig, Account.Id, true, TEXT("")).Next([this, Done](FNakamaSessionResult AuthResult)
+		Nakama::AuthenticateCustom(ClientConfig, Account.Id, { }, true, TEXT("")).Next([this, Done](FNakamaSessionResult AuthResult)
 		{
 			if (AuthResult.bIsError) { AddError(FString::Printf(TEXT("Auth failed: %s"), *AuthResult.Error.Message)); Done.Execute(); return; }
 			Session = AuthResult.Value;
@@ -3181,7 +3193,7 @@ void FNakamaAsyncAuthValidationSpec::Define()
 		{
 			FNakamaAccountCustom Account;
 			Account.Id = TEXT("test id with spaces");
-			Nakama::AuthenticateCustom(ClientConfig, Account.Id, true, TEXT("")).Next([this, Done](FNakamaSessionResult Result)
+			Nakama::AuthenticateCustom(ClientConfig, Account.Id, { }, true, TEXT("")).Next([this, Done](FNakamaSessionResult Result)
 			{
 				if (!Result.bIsError) { AddError(TEXT("Expected error but got success")); Done.Execute(); return; }
 				TestTrue("Got error for ID with spaces", Result.Error.Code != 0 || !Result.Error.Message.IsEmpty());
@@ -3193,7 +3205,7 @@ void FNakamaAsyncAuthValidationSpec::Define()
 		{
 			FNakamaAccountCustom Account;
 			Account.Id = GenerateId();
-			Nakama::AuthenticateCustom(ClientConfig, Account.Id, true, FString::ChrN(150, 'x')).Next([this, Done](FNakamaSessionResult Result)
+			Nakama::AuthenticateCustom(ClientConfig, Account.Id, { }, true, FString::ChrN(150, 'x')).Next([this, Done](FNakamaSessionResult Result)
 			{
 				if (!Result.bIsError) { AddError(TEXT("Expected error but got success")); Done.Execute(); return; }
 				TestTrue("Got error for username too long", Result.Error.Code != 0 || !Result.Error.Message.IsEmpty());
@@ -3206,7 +3218,7 @@ void FNakamaAsyncAuthValidationSpec::Define()
 			FNakamaAccountCustom Account;
 			Account.Id = GenerateId();
 			FString Username = TEXT("u@$^!~+");
-			Nakama::AuthenticateCustom(ClientConfig, Account.Id, true, Username).Next([this, Done](FNakamaSessionResult Result)
+			Nakama::AuthenticateCustom(ClientConfig, Account.Id, { }, true, Username).Next([this, Done](FNakamaSessionResult Result)
 			{
 				if (Result.bIsError)
 				{
@@ -3229,7 +3241,7 @@ void FNakamaAsyncAuthValidationSpec::Define()
 		{
 			FNakamaAccountDevice Account;
 			Account.Id = TEXT("          ");
-			Nakama::AuthenticateDevice(ClientConfig, Account.Id, true, TEXT("")).Next([this, Done](FNakamaSessionResult Result)
+			Nakama::AuthenticateDevice(ClientConfig, Account.Id, { }, true, TEXT("")).Next([this, Done](FNakamaSessionResult Result)
 			{
 				if (!Result.bIsError) { AddError(TEXT("Expected error but got success")); Done.Execute(); return; }
 				TestTrue("Got error for spaces-only ID", Result.Error.Code != 0 || !Result.Error.Message.IsEmpty());
@@ -3245,7 +3257,7 @@ void FNakamaAsyncAuthValidationSpec::Define()
 			FNakamaAccountEmail Account;
 			Account.Email = TEXT("a@b.c");
 			Account.Password = TEXT("password123");
-			Nakama::AuthenticateEmail(ClientConfig, Account.Email, Account.Password, true, TEXT("")).Next([this, Done](FNakamaSessionResult Result)
+			Nakama::AuthenticateEmail(ClientConfig, Account.Email, Account.Password, { }, true, TEXT("")).Next([this, Done](FNakamaSessionResult Result)
 			{
 				if (!Result.bIsError) { AddError(TEXT("Expected error but got success")); Done.Execute(); return; }
 				TestTrue("Got error for email too short", Result.Error.Code != 0 || !Result.Error.Message.IsEmpty());
@@ -3258,7 +3270,7 @@ void FNakamaAsyncAuthValidationSpec::Define()
 			FNakamaAccountEmail Account;
 			Account.Email = TEXT("notanemailaddress.com");
 			Account.Password = TEXT("password123");
-			Nakama::AuthenticateEmail(ClientConfig, Account.Email, Account.Password, true, TEXT("")).Next([this, Done](FNakamaSessionResult Result)
+			Nakama::AuthenticateEmail(ClientConfig, Account.Email, Account.Password, { }, true, TEXT("")).Next([this, Done](FNakamaSessionResult Result)
 			{
 				if (!Result.bIsError) { AddError(TEXT("Expected error but got success")); Done.Execute(); return; }
 				TestTrue("Got error for missing @ in email", Result.Error.Code != 0 || !Result.Error.Message.IsEmpty());
@@ -3271,7 +3283,7 @@ void FNakamaAsyncAuthValidationSpec::Define()
 			FNakamaAccountEmail Account;
 			Account.Email = FString::Printf(TEXT("test_%s@example.com"), *GenerateShortId());
 			Account.Password = TEXT("");
-			Nakama::AuthenticateEmail(ClientConfig, Account.Email, Account.Password, true, TEXT("")).Next([this, Done](FNakamaSessionResult Result)
+			Nakama::AuthenticateEmail(ClientConfig, Account.Email, Account.Password, { }, true, TEXT("")).Next([this, Done](FNakamaSessionResult Result)
 			{
 				if (!Result.bIsError) { AddError(TEXT("Expected error but got success")); Done.Execute(); return; }
 				TestTrue("Got error for empty password", Result.Error.Code != 0 || !Result.Error.Message.IsEmpty());
@@ -3284,10 +3296,10 @@ void FNakamaAsyncAuthValidationSpec::Define()
 			FNakamaAccountEmail Account;
 			Account.Email = FString::Printf(TEXT("existing_%s@example.com"), *GenerateShortId());
 			Account.Password = TEXT("password123");
-			Nakama::AuthenticateEmail(ClientConfig, Account.Email, Account.Password, true, TEXT(""))
+			Nakama::AuthenticateEmail(ClientConfig, Account.Email, Account.Password, { }, true, TEXT(""))
 			.Next([this, Account](const FNakamaSession&)
 			{
-				return Nakama::AuthenticateEmail(ClientConfig, Account.Email, Account.Password, false, TEXT(""));
+				return Nakama::AuthenticateEmail(ClientConfig, Account.Email, Account.Password, {}, false, TEXT(""));
 			})
 			.Next([this, Done](FNakamaSessionResult Result)
 			{
@@ -3325,7 +3337,7 @@ void FNakamaAsyncAccountDeleteSpec::Define()
 		{
 			FNakamaAccountCustom Account;
 			Account.Id = GenerateId();
-			Nakama::AuthenticateCustom(ClientConfig, Account.Id, true, TEXT(""))
+			Nakama::AuthenticateCustom(ClientConfig, Account.Id, { }, true, TEXT(""))
 			.Next([this](const FNakamaSession& AuthResult)
 			{
 				Session = AuthResult;
@@ -3343,7 +3355,7 @@ void FNakamaAsyncAccountDeleteSpec::Define()
 		{
 			FNakamaAccountCustom Account;
 			Account.Id = GenerateId();
-			Nakama::AuthenticateCustom(ClientConfig, Account.Id, true, TEXT(""))
+			Nakama::AuthenticateCustom(ClientConfig, Account.Id, { }, true, TEXT(""))
 			.Next([this](const FNakamaSession& AuthResult)
 			{
 				Session = AuthResult;
@@ -3389,7 +3401,7 @@ void FNakamaAsyncSocialAuthSpec::Define()
 		{
 			FNakamaAccountFacebook Account;
 			Account.Token = TEXT("");
-			Nakama::AuthenticateFacebook(ClientConfig, Account.Token, true, TEXT(""), true).Next([this, Done](FNakamaSessionResult Result)
+			Nakama::AuthenticateFacebook(ClientConfig, Account.Token, { }, true, TEXT(""), true).Next([this, Done](FNakamaSessionResult Result)
 			{
 				if (!Result.bIsError) { AddError(TEXT("Expected error but got success")); Done.Execute(); return; }
 				TestTrue("Got error for empty Facebook token", Result.Error.Code != 0 || !Result.Error.Message.IsEmpty());
@@ -3404,7 +3416,7 @@ void FNakamaAsyncSocialAuthSpec::Define()
 		{
 			FNakamaAccountGoogle Account;
 			Account.Token = TEXT("");
-			Nakama::AuthenticateGoogle(ClientConfig, Account.Token, true, TEXT("")).Next([this, Done](FNakamaSessionResult Result)
+			Nakama::AuthenticateGoogle(ClientConfig, Account.Token, { }, true, TEXT("")).Next([this, Done](FNakamaSessionResult Result)
 			{
 				if (!Result.bIsError) { AddError(TEXT("Expected error but got success")); Done.Execute(); return; }
 				TestTrue("Got error for empty Google token", Result.Error.Code != 0 || !Result.Error.Message.IsEmpty());
@@ -3419,7 +3431,7 @@ void FNakamaAsyncSocialAuthSpec::Define()
 		{
 			FNakamaAccountSteam Account;
 			Account.Token = TEXT("");
-			Nakama::AuthenticateSteam(ClientConfig, Account.Token, true, TEXT(""), true).Next([this, Done](FNakamaSessionResult Result)
+			Nakama::AuthenticateSteam(ClientConfig, Account.Token, { }, true, TEXT(""), true).Next([this, Done](FNakamaSessionResult Result)
 			{
 				if (!Result.bIsError) { AddError(TEXT("Expected error but got success")); Done.Execute(); return; }
 				TestTrue("Got error for empty Steam token", Result.Error.Code != 0 || !Result.Error.Message.IsEmpty());
@@ -3434,7 +3446,7 @@ void FNakamaAsyncSocialAuthSpec::Define()
 		{
 			FNakamaAccountApple Account;
 			Account.Token = TEXT("");
-			Nakama::AuthenticateApple(ClientConfig, Account.Token, true, TEXT("")).Next([this, Done](FNakamaSessionResult Result)
+			Nakama::AuthenticateApple(ClientConfig, Account.Token, { }, true, TEXT("")).Next([this, Done](FNakamaSessionResult Result)
 			{
 				if (!Result.bIsError) { AddError(TEXT("Expected error but got success")); Done.Execute(); return; }
 				TestTrue("Got error for empty Apple token", Result.Error.Code != 0 || !Result.Error.Message.IsEmpty());
@@ -3454,7 +3466,7 @@ void FNakamaAsyncSocialAuthSpec::Define()
 			Account.Salt = TEXT("");
 			Account.Signature = TEXT("");
 			Account.PublicKeyUrl = TEXT("");
-			Nakama::AuthenticateGameCenter(ClientConfig, Account.PlayerId, Account.BundleId, Account.TimestampSeconds, Account.Salt, Account.Signature, Account.PublicKeyUrl, true, TEXT("")).Next([this, Done](FNakamaSessionResult Result)
+			Nakama::AuthenticateGameCenter(ClientConfig, Account.PlayerId, Account.BundleId, Account.TimestampSeconds, Account.Salt, Account.Signature, Account.PublicKeyUrl, { }, true, TEXT("")).Next([this, Done](FNakamaSessionResult Result)
 			{
 				if (!Result.bIsError) { AddError(TEXT("Expected error but got success")); Done.Execute(); return; }
 				TestTrue("Got error for missing GameCenter fields", Result.Error.Code != 0 || !Result.Error.Message.IsEmpty());
@@ -3487,7 +3499,7 @@ void FNakamaAsyncSessionExtSpec::Define()
 	{
 		FNakamaAccountCustom Account;
 		Account.Id = GenerateId();
-		Nakama::AuthenticateCustom(ClientConfig, Account.Id, true, TEXT("")).Next([this, Done](FNakamaSessionResult AuthResult)
+		Nakama::AuthenticateCustom(ClientConfig, Account.Id, { }, true, TEXT("")).Next([this, Done](FNakamaSessionResult AuthResult)
 		{
 			if (AuthResult.bIsError) { AddError(FString::Printf(TEXT("Auth failed: %s"), *AuthResult.Error.Message)); Done.Execute(); return; }
 			Session = AuthResult.Value;
@@ -3568,7 +3580,7 @@ void FNakamaAsyncUsersExtSpec::Define()
 	{
 		FNakamaAccountCustom Account;
 		Account.Id = GenerateId();
-		Nakama::AuthenticateCustom(ClientConfig, Account.Id, true, TEXT(""))
+		Nakama::AuthenticateCustom(ClientConfig, Account.Id, { }, true, TEXT(""))
 		.Next([this](const FNakamaSession& AuthResult)
 		{
 			Session = AuthResult;
@@ -3652,7 +3664,7 @@ void FNakamaAsyncFriendsOfFriendsSpec::Define()
 	{
 		FNakamaAccountCustom Account;
 		Account.Id = GenerateId();
-		Nakama::AuthenticateCustom(ClientConfig, Account.Id, true, TEXT(""))
+		Nakama::AuthenticateCustom(ClientConfig, Account.Id, { }, true, TEXT(""))
 		.Next([this](const FNakamaSession& AuthResult)
 		{
 			Session = AuthResult;
@@ -3787,7 +3799,7 @@ void FNakamaAsyncGroupPermissionsSpec::Define()
 	{
 		FNakamaAccountCustom Account1;
 		Account1.Id = GenerateId();
-		Nakama::AuthenticateCustom(ClientConfig, Account1.Id, true, TEXT(""))
+		Nakama::AuthenticateCustom(ClientConfig, Account1.Id, { }, true, TEXT(""))
 		.Next([this](const FNakamaSession& Result)
 		{
 			Session = Result;
@@ -3798,7 +3810,7 @@ void FNakamaAsyncGroupPermissionsSpec::Define()
 			UserId = AccResult.User.Id;
 			FNakamaAccountCustom Account2;
 			Account2.Id = GenerateId();
-			return Nakama::AuthenticateCustom(ClientConfig, Account2.Id, true, TEXT(""));
+			return Nakama::AuthenticateCustom(ClientConfig, Account2.Id, { }, true, TEXT(""));
 		})
 		.Next([this](const FNakamaSession& Result2)
 		{
@@ -4009,7 +4021,7 @@ void FNakamaAsyncStoragePermissionsSpec::Define()
 	{
 		FNakamaAccountCustom Account1;
 		Account1.Id = GenerateId();
-		Nakama::AuthenticateCustom(ClientConfig, Account1.Id, true, TEXT(""))
+		Nakama::AuthenticateCustom(ClientConfig, Account1.Id, { }, true, TEXT(""))
 		.Next([this](const FNakamaSession& Result)
 		{
 			Session = Result;
@@ -4020,7 +4032,7 @@ void FNakamaAsyncStoragePermissionsSpec::Define()
 			UserId = AccResult.User.Id;
 			FNakamaAccountCustom Account2;
 			Account2.Id = GenerateId();
-			return Nakama::AuthenticateCustom(ClientConfig, Account2.Id, true, TEXT(""));
+			return Nakama::AuthenticateCustom(ClientConfig, Account2.Id, { }, true, TEXT(""));
 		})
 		.Next([this](const FNakamaSession& Result2)
 		{
@@ -4178,7 +4190,7 @@ void FNakamaAsyncChannelExtSpec::Define()
 	{
 		FNakamaAccountCustom Account;
 		Account.Id = GenerateId();
-		Nakama::AuthenticateCustom(ClientConfig, Account.Id, true, TEXT(""))
+		Nakama::AuthenticateCustom(ClientConfig, Account.Id, { }, true, TEXT(""))
 		.Next([this](const FNakamaSession& AuthResult)
 		{
 			Session = AuthResult;
@@ -4275,13 +4287,13 @@ void FNakamaAsyncLinkExtSpec::Define()
 	{
 		FNakamaAccountCustom Account1;
 		Account1.Id = GenerateId();
-		Nakama::AuthenticateCustom(ClientConfig, Account1.Id, true, TEXT(""))
+		Nakama::AuthenticateCustom(ClientConfig, Account1.Id, { }, true, TEXT(""))
 		.Next([this](const FNakamaSession& Result)
 		{
 			Session = Result;
 			FNakamaAccountCustom Account2;
 			Account2.Id = GenerateId();
-			return Nakama::AuthenticateCustom(ClientConfig, Account2.Id, true, TEXT(""));
+			return Nakama::AuthenticateCustom(ClientConfig, Account2.Id, { }, true, TEXT(""));
 		})
 		.Next([this, Done](FNakamaSessionResult Result2)
 		{
@@ -4418,7 +4430,7 @@ void FNakamaAsyncRpcExtSpec::Define()
 	{
 		FNakamaAccountCustom Account;
 		Account.Id = GenerateId();
-		Nakama::AuthenticateCustom(ClientConfig, Account.Id, true, TEXT("")).Next([this, Done](FNakamaSessionResult AuthResult)
+		Nakama::AuthenticateCustom(ClientConfig, Account.Id, { }, true, TEXT("")).Next([this, Done](FNakamaSessionResult AuthResult)
 		{
 			if (AuthResult.bIsError) { AddError(FString::Printf(TEXT("Auth failed: %s"), *AuthResult.Error.Message)); Done.Execute(); return; }
 			Session = AuthResult.Value;
@@ -4440,7 +4452,7 @@ void FNakamaAsyncRpcExtSpec::Define()
 		{
 			TSharedPtr<FJsonObject> Payload = MakeShared<FJsonObject>();
 			Payload->SetStringField(TEXT("test"), TEXT("data"));
-			Nakama::RpcFunc(ClientConfig, Session, TEXT("test_echo"), Payload, TEXT("")).Next([this, Done](FNakamaRpcResult Result)
+			Nakama::RpcFunc(ClientConfig, TEXT("test_echo"), JsonToString(Payload), HttpKey).Next([this, Done](FNakamaRpcResult Result)
 			{
 				if (!Result.bIsError) { AddError(TEXT("Expected NOT_FOUND error but RPC succeeded")); Done.Execute(); return; }
 				TestTrue("Got NOT_FOUND for non-existent RPC",
@@ -4452,7 +4464,7 @@ void FNakamaAsyncRpcExtSpec::Define()
 
 		LatentIt("should return NOT_FOUND for non-existent RPC with empty payload", [this](const FDoneDelegate& Done)
 		{
-			Nakama::RpcFunc(ClientConfig, Session, TEXT("test_echo"), nullptr, TEXT("")).Next([this, Done](FNakamaRpcResult Result)
+			Nakama::RpcFunc(ClientConfig, TEXT("test_echo"), TEXT(""), HttpKey).Next([this, Done](FNakamaRpcResult Result)
 			{
 				if (!Result.bIsError) { AddError(TEXT("Expected NOT_FOUND error but RPC succeeded")); Done.Execute(); return; }
 				TestTrue("Got NOT_FOUND for non-existent RPC",
@@ -4469,7 +4481,7 @@ void FNakamaAsyncRpcExtSpec::Define()
 		{
 			TSharedPtr<FJsonObject> ServerPayload = MakeShared<FJsonObject>();
 			ServerPayload->SetStringField(TEXT("server"), TEXT("call"));
-			Nakama::RpcFunc(ClientConfig, HttpKey, TEXT("test_echo"), ServerPayload).Next([this, Done](FNakamaRpcResult Result)
+			Nakama::RpcFunc(ClientConfig, TEXT("test_echo"), JsonToString(ServerPayload), HttpKey).Next([this, Done](FNakamaRpcResult Result)
 			{
 				TestTrue("Got expected response", true);
 				Done.Execute();
@@ -4481,7 +4493,7 @@ void FNakamaAsyncRpcExtSpec::Define()
 	{
 		LatentIt("should fail with RPC that returns error", [this](const FDoneDelegate& Done)
 		{
-			Nakama::RpcFunc(ClientConfig, Session, TEXT("test_error"), nullptr, TEXT("")).Next([this, Done](FNakamaRpcResult Result)
+			Nakama::RpcFunc(ClientConfig, TEXT("test_error"), TEXT(""), HttpKey).Next([this, Done](FNakamaRpcResult Result)
 			{
 				if (Result.bIsError) { TestTrue("Got error as expected", Result.Error.Code != 0 || !Result.Error.Message.IsEmpty()); }
 				else { TestTrue("Got response", true); }
@@ -4496,7 +4508,7 @@ void FNakamaAsyncRpcExtSpec::Define()
 		{
 			TSharedPtr<FJsonObject> Payload = MakeShared<FJsonObject>();
 			Payload->SetStringField(TEXT("message"), TEXT("hello"));
-			Nakama::RpcFunc(ClientConfig, Session, TEXT("transform"), Payload, TEXT("")).Next([this, Done](FNakamaRpcResult Result)
+			Nakama::RpcFunc(ClientConfig, TEXT("transform"), JsonToString(Payload), HttpKey).Next([this, Done](FNakamaRpcResult Result)
 			{
 				ASYNC_FAIL_ON_ERROR(Result, Done);
 				TSharedPtr<FJsonObject> Response;
@@ -4519,7 +4531,7 @@ void FNakamaAsyncRpcExtSpec::Define()
 		{
 			TSharedPtr<FJsonObject> Payload = MakeShared<FJsonObject>();
 			Payload->SetStringField(TEXT("foo"), TEXT("bar"));
-			Nakama::RpcFunc(ClientConfig, Session, TEXT("transform"), Payload, TEXT("")).Next([this, Done](FNakamaRpcResult Result)
+			Nakama::RpcFunc(ClientConfig, TEXT("transform"), JsonToString(Payload), HttpKey).Next([this, Done](FNakamaRpcResult Result)
 			{
 				if (!Result.bIsError) { AddError(TEXT("Expected error for missing message field but RPC succeeded")); Done.Execute(); return; }
 				TestTrue("Got error for missing message field", Result.Error.Code != 0 || !Result.Error.Message.IsEmpty());
@@ -4531,7 +4543,7 @@ void FNakamaAsyncRpcExtSpec::Define()
 		{
 			TSharedPtr<FJsonObject> Payload = MakeShared<FJsonObject>();
 			Payload->SetStringField(TEXT("message"), TEXT("world"));
-			Nakama::RpcFunc(ClientConfig, HttpKey, TEXT("transform"), Payload).Next([this, Done](FNakamaRpcResult Result)
+			Nakama::RpcFunc(ClientConfig, TEXT("transform"), JsonToString(Payload), HttpKey).Next([this, Done](FNakamaRpcResult Result)
 			{
 				ASYNC_FAIL_ON_ERROR(Result, Done);
 				TSharedPtr<FJsonObject> Response;
@@ -4574,7 +4586,7 @@ void FNakamaAsyncMatchesValidationSpec::Define()
 	{
 		FNakamaAccountCustom Account;
 		Account.Id = GenerateId();
-		Nakama::AuthenticateCustom(ClientConfig, Account.Id, true, TEXT("")).Next([this, Done](FNakamaSessionResult AuthResult)
+		Nakama::AuthenticateCustom(ClientConfig, Account.Id, { }, true, TEXT("")).Next([this, Done](FNakamaSessionResult AuthResult)
 		{
 			if (AuthResult.bIsError) { AddError(FString::Printf(TEXT("Auth failed: %s"), *AuthResult.Error.Message)); Done.Execute(); return; }
 			Session = AuthResult.Value;
@@ -4640,7 +4652,7 @@ void FNakamaAsyncPurchasesSpec::Define()
 	{
 		FNakamaAccountCustom Account;
 		Account.Id = GenerateId();
-		Nakama::AuthenticateCustom(ClientConfig, Account.Id, true, TEXT("")).Next([this, Done](FNakamaSessionResult AuthResult)
+		Nakama::AuthenticateCustom(ClientConfig, Account.Id, { }, true, TEXT("")).Next([this, Done](FNakamaSessionResult AuthResult)
 		{
 			if (AuthResult.bIsError) { AddError(FString::Printf(TEXT("Auth failed: %s"), *AuthResult.Error.Message)); Done.Execute(); return; }
 			Session = AuthResult.Value;
@@ -4743,7 +4755,7 @@ void FNakamaAsyncEventSpec::Define()
 	{
 		FNakamaAccountCustom Account;
 		Account.Id = GenerateId();
-		Nakama::AuthenticateCustom(ClientConfig, Account.Id, true, TEXT("")).Next([this, Done](FNakamaSessionResult AuthResult)
+		Nakama::AuthenticateCustom(ClientConfig, Account.Id, { }, true, TEXT("")).Next([this, Done](FNakamaSessionResult AuthResult)
 		{
 			if (AuthResult.bIsError) { AddError(FString::Printf(TEXT("Auth failed: %s"), *AuthResult.Error.Message)); Done.Execute(); return; }
 			Session = AuthResult.Value;
@@ -4809,7 +4821,7 @@ void FNakamaAsyncHealthcheckSpec::Define()
 	{
 		FNakamaAccountCustom Account;
 		Account.Id = GenerateId();
-		Nakama::AuthenticateCustom(ClientConfig, Account.Id, true, TEXT("")).Next([this, Done](FNakamaSessionResult AuthResult)
+		Nakama::AuthenticateCustom(ClientConfig, Account.Id, { }, true, TEXT("")).Next([this, Done](FNakamaSessionResult AuthResult)
 		{
 			if (AuthResult.bIsError) { AddError(FString::Printf(TEXT("Auth failed: %s"), *AuthResult.Error.Message)); Done.Execute(); return; }
 			Session = AuthResult.Value;
@@ -4878,7 +4890,7 @@ void FNakamaAsyncGroupUsersSpec::Define()
 	{
 		FNakamaAccountCustom Account1;
 		Account1.Id = GenerateId();
-		Nakama::AuthenticateCustom(ClientConfig, Account1.Id, true, TEXT(""))
+		Nakama::AuthenticateCustom(ClientConfig, Account1.Id, { }, true, TEXT(""))
 		.Next([this](const FNakamaSession& Result)
 		{
 			Session = Result;
@@ -4889,7 +4901,7 @@ void FNakamaAsyncGroupUsersSpec::Define()
 			UserId = AccResult.User.Id;
 			FNakamaAccountCustom Account2;
 			Account2.Id = GenerateId();
-			return Nakama::AuthenticateCustom(ClientConfig, Account2.Id, true, TEXT(""));
+			return Nakama::AuthenticateCustom(ClientConfig, Account2.Id, { }, true, TEXT(""));
 		})
 		.Next([this](const FNakamaSession& Result2)
 		{
@@ -4901,7 +4913,7 @@ void FNakamaAsyncGroupUsersSpec::Define()
 			UserId2 = AccResult2.User.Id;
 			FNakamaAccountCustom Account3;
 			Account3.Id = GenerateId();
-			return Nakama::AuthenticateCustom(ClientConfig, Account3.Id, true, TEXT(""));
+			return Nakama::AuthenticateCustom(ClientConfig, Account3.Id, { }, true, TEXT(""));
 		})
 		.Next([this](const FNakamaSession& Result3)
 		{
@@ -5118,7 +5130,7 @@ void FNakamaAsyncCancellationSpec::Define()
 		FNakamaAccountCustom Account;
 		Account.Id = GenerateId();
 
-		Nakama::AuthenticateCustom(ClientConfig, Account.Id, true, TEXT("")).Next([this, Done](FNakamaSessionResult AuthResult)
+		Nakama::AuthenticateCustom(ClientConfig, Account.Id, { }, true, TEXT("")).Next([this, Done](FNakamaSessionResult AuthResult)
 		{
 			if (AuthResult.bIsError) { AddError(FString::Printf(TEXT("Auth failed: %s"), *AuthResult.Error.Message)); Done.Execute(); return; }
 			Session = AuthResult.Value;
@@ -5136,7 +5148,7 @@ void FNakamaAsyncCancellationSpec::Define()
 	{
 		LatentIt("should return error immediately with pre-cancelled token on GetAccount", [this](const FDoneDelegate& Done)
 		{
-			TSharedRef<std::atomic<bool>> Token = MakeShared<std::atomic<bool>>(true);
+			TSharedRef<TAtomic<bool>> Token = MakeShared<TAtomic<bool>>(true);
 			Nakama::GetAccount(ClientConfig, Session, {}, Token).Next([this, Done](FNakamaAccountResult Result)
 			{
 				TestTrue("Request is error", Result.bIsError);
@@ -5147,7 +5159,7 @@ void FNakamaAsyncCancellationSpec::Define()
 
 		LatentIt("should succeed with uncancelled token", [this](const FDoneDelegate& Done)
 		{
-			TSharedRef<std::atomic<bool>> Token = MakeShared<std::atomic<bool>>(false);
+			TSharedRef<TAtomic<bool>> Token = MakeShared<TAtomic<bool>>(false);
 			Nakama::GetAccount(ClientConfig, Session, {}, Token).Next([this, Done](FNakamaAccountResult Result)
 			{
 				ASYNC_FAIL_ON_ERROR(Result, Done);
@@ -5158,10 +5170,10 @@ void FNakamaAsyncCancellationSpec::Define()
 
 		LatentIt("should return error with pre-cancelled token on RpcFunc", [this](const FDoneDelegate& Done)
 		{
-			TSharedRef<std::atomic<bool>> Token = MakeShared<std::atomic<bool>>(true);
+			TSharedRef<TAtomic<bool>> Token = MakeShared<TAtomic<bool>>(true);
 			TSharedPtr<FJsonObject> Payload = MakeShared<FJsonObject>();
 			Payload->SetStringField(TEXT("message"), TEXT("hello"));
-			Nakama::RpcFunc(ClientConfig, Session, TEXT("transform"), Payload, TEXT(""), {}, Token).Next([this, Done](FNakamaRpcResult Result)
+			Nakama::RpcFunc(ClientConfig, TEXT("transform"), JsonToString(Payload), DefaultHttpKey, {}, Token).Next([this, Done](FNakamaRpcResult Result)
 			{
 				TestTrue("Request is error", Result.bIsError);
 				TestEqual("Error code is -1 (cancelled)", Result.Error.Code, -1);
@@ -5200,7 +5212,7 @@ void FNakamaAsyncRetrySpec::Define()
 		FNakamaAccountCustom Account;
 		Account.Id = GenerateId();
 
-		Nakama::AuthenticateCustom(ClientConfig, Account.Id, true, TEXT(""), {}, RetryConfig).Next([this, Done](FNakamaSessionResult AuthResult)
+		Nakama::AuthenticateCustom(ClientConfig, Account.Id, { }, true, TEXT(""), RetryConfig).Next([this, Done](FNakamaSessionResult AuthResult)
 		{
 			if (AuthResult.bIsError) { AddError(FString::Printf(TEXT("Auth failed: %s"), *AuthResult.Error.Message)); Done.Execute(); return; }
 			Session = AuthResult.Value;
@@ -5218,7 +5230,7 @@ void FNakamaAsyncRetrySpec::Define()
 	{
 		LatentIt("should exhaust retries on persistent transient error", [this](const FDoneDelegate& Done)
 		{
-			Nakama::RpcFunc(ClientConfig, Session, TEXT("always_fail"), nullptr, TEXT(""), RetryConfig).Next([this, Done](FNakamaRpcResult Result)
+			Nakama::RpcFunc(ClientConfig, TEXT("always_fail"), TEXT(""), DefaultHttpKey, RetryConfig).Next([this, Done](FNakamaRpcResult Result)
 			{
 				TestTrue("Request failed", Result.bIsError);
 				TestEqual("Error code is 14 (UNAVAILABLE)", Result.Error.Code, 14);
@@ -5232,7 +5244,7 @@ void FNakamaAsyncRetrySpec::Define()
 			Payload->SetStringField(TEXT("test_id"), GenerateId());
 			Payload->SetNumberField(TEXT("fail_count"), 2);
 
-			Nakama::RpcFunc(ClientConfig, Session, TEXT("retry_test"), Payload, TEXT(""), RetryConfig).Next([this, Done](FNakamaRpcResult Result)
+			Nakama::RpcFunc(ClientConfig, TEXT("retry_test"), JsonToString(Payload), TEXT(""), RetryConfig).Next([this, Done](FNakamaRpcResult Result)
 			{
 				ASYNC_FAIL_ON_ERROR(Result, Done);
 
@@ -5255,7 +5267,7 @@ void FNakamaAsyncRetrySpec::Define()
 			TSharedPtr<FJsonObject> Payload = MakeShared<FJsonObject>();
 			Payload->SetStringField(TEXT("foo"), TEXT("bar"));  // missing "message" field triggers INVALID_ARGUMENT
 
-			Nakama::RpcFunc(ClientConfig, Session, TEXT("transform"), Payload, TEXT(""), RetryConfig).Next([this, Done](FNakamaRpcResult Result)
+			Nakama::RpcFunc(ClientConfig, TEXT("transform"), JsonToString(Payload), DefaultHttpKey, RetryConfig).Next([this, Done](FNakamaRpcResult Result)
 			{
 				TestTrue("Request failed", Result.bIsError);
 				TestEqual("Error code is 3 (INVALID_ARGUMENT)", Result.Error.Code, 3);
@@ -5267,7 +5279,7 @@ void FNakamaAsyncRetrySpec::Define()
 		{
 			RetryConfig.MaxRetries = 0;
 
-			Nakama::RpcFunc(ClientConfig, Session, TEXT("always_fail"), nullptr, TEXT(""), RetryConfig).Next([this, Done](FNakamaRpcResult Result)
+			Nakama::RpcFunc(ClientConfig, TEXT("always_fail"), TEXT(""), DefaultHttpKey, RetryConfig).Next([this, Done](FNakamaRpcResult Result)
 			{
 				TestTrue("Request failed", Result.bIsError);
 				TestEqual("Error code is 14 (UNAVAILABLE)", Result.Error.Code, 14);

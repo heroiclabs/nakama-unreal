@@ -167,9 +167,11 @@ void FNakamaBPAuthSpec::Define()
 		LatentIt("should authenticate with custom ID", [this](const FDoneDelegate& Done)
 		{
 			FString CustomId = GenerateId();
-
+			
+			FNakamaAccountCustom Account;
+			Account.Id = CustomId;
 			auto* Action = UNakamaClientAuthenticateCustom::AuthenticateCustom(
-				GetTransientPackage(), Client, CustomId, true, TEXT(""), {});
+				GetTransientPackage(), Client, Account, true, TEXT(""));
 			Action->Activate();
 
 			// Verify: re-auth with create=false should succeed (account was created)
@@ -201,8 +203,11 @@ void FNakamaBPAuthSpec::Define()
 			FString Email = FString::Printf(TEXT("test_%s@example.com"), *GenerateShortId());
 			FString Password = TEXT("password123!");
 
+			FNakamaAccountEmail Account;
+			Account.Email = Email;
+			Account.Password = Password;
 			auto* Action = UNakamaClientAuthenticateEmail::AuthenticateEmail(
-				GetTransientPackage(), Client, Email, Password, true, TEXT(""), {});
+				GetTransientPackage(), Client, Account, true, TEXT(""));
 			Action->Activate();
 
 			// Verify: re-auth with create=false should succeed
@@ -233,8 +238,10 @@ void FNakamaBPAuthSpec::Define()
 		LatentIt("should authenticate with device ID", [this](const FDoneDelegate& Done)
 		{
 			FString DeviceId = GenerateId();
+			FNakamaAccountDevice Account;
+			Account.Id = DeviceId;
 			auto* Action = UNakamaClientAuthenticateDevice::AuthenticateDevice(
-				GetTransientPackage(), Client, DeviceId, true, TEXT(""), {});
+				GetTransientPackage(), Client, Account, true, TEXT(""));
 			Action->Activate();
 
 			// Verify: re-auth with create=false should succeed
