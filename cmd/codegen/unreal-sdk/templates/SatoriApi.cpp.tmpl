@@ -17,11 +17,12 @@
 /* This code is auto-generated. DO NOT EDIT. */
 
 #include "SatoriApi.h"
-#include "NakamaHttpHelper.h"
+#include "GenericPlatform/GenericPlatformHttp.h"
+#include "SatoriHttpHelper.h"
 
 DEFINE_LOG_CATEGORY(LogSatori);
 
-using namespace NakamaHttpInternal;
+using namespace SatoriHttpInternal;
 
 {{ range $func := $.Funcs }}
 
@@ -41,7 +42,7 @@ SATORIAPI_API void SatoriApi::{{ $func.Name }} (
   // Fill Path Params
   {{- range $pathParam := $func.Metadata.PathParams }}
   const FString Encoded_{{ $pathParam.Name }} = FGenericPlatformHttp::UrlEncode({{ $pathParam.Name }});
-  Endpoint = Endpoint.Replace("{{ $pathParam.PathName }}", *Encoded_{{ $pathParam.Name }});
+  Endpoint = Endpoint.Replace(TEXT("{ {{- $pathParam.PathName -}} }"), *Encoded_{{ $pathParam.Name }});
   {{- end }}
 
   // 
@@ -51,12 +52,13 @@ SATORIAPI_API void SatoriApi::{{ $func.Name }} (
   {{- if $queryParam.Repeated }}
   for ({{ $queryParam.Param }} Item : {{ $queryParam.Name }})
 	{
-    QueryParams.Add(FString::Printf(TEXT("{{ $queryParam.Name }}={{ $queryParam.QueryFormat }}", {{ $queryParam.QueryValueSetter }}(Item))));
+    QueryParams.Add(FString::Printf(TEXT("{{ $queryParam.Name }}={{ $queryParam.QueryFormat }}"), {{ $queryParam.QueryValueSetter }}(Item)));
   }
   {{- else }}
-  {{ if ne "" $queryParam.EmptyCheck }}if ({{ $queryParam.Name }}.{{ $queryParam.EmptyCheck }}() == false){{ end }}
+  {{ if eq "NonZero" $queryParam.EmptyCheck }}if ({{ $queryParam.Name }} != 0)
+  {{ else if ne "" $queryParam.EmptyCheck }}if ({{ $queryParam.Name }}.{{ $queryParam.EmptyCheck }}() == false){{ end }}
   {
-    QueryParams.Add(FString::Printf(TEXT("{{ $queryParam.Name }}={{ $queryParam.QueryFormat }}", {{ $queryParam.QueryValueSetter }}({{ $queryParam.Name }}))));
+    QueryParams.Add(FString::Printf(TEXT("{{ $queryParam.Name }}={{ $queryParam.QueryFormat }}"), {{ $queryParam.QueryValueSetter }}({{ $queryParam.Name }})));
   }
   {{- end }}
   {{- end }}
@@ -91,9 +93,10 @@ SATORIAPI_API void SatoriApi::{{ $func.Name }} (
     Body->SetObjectField(TEXT("{{ $bodyParam.JsonFieldName }}"), MapObj);
   }
   {{- else }}
-  {{ if ne "" $bodyParam.EmptyCheck }}if ({{ $bodyParam.Name }}.{{ $bodyParam.EmptyCheck }}() == false){{ end }}
+  {{ if eq "NonZero" $bodyParam.EmptyCheck }}if ({{ $bodyParam.Name }} != 0)
+  {{ else if ne "" $bodyParam.EmptyCheck }}if ({{ $bodyParam.Name }}.{{ $bodyParam.EmptyCheck }}() == false){{ end }}
   {
-    Body->{{ $bodyParam.JsonSetter }}(TEXT({{ $bodyParam.JsonFieldName }}), {{ $bodyParam.Name }}{{ $bodyParam.MaybeToJson }});
+    Body->{{ $bodyParam.JsonSetter }}(TEXT("{{ $bodyParam.JsonFieldName }}"), {{ $bodyParam.Name }}{{ $bodyParam.MaybeToJson }});
   }
   {{- end }}
 

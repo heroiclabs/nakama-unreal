@@ -23,9 +23,9 @@ func NewUnrealTypeMapper(targetSystem string) *UnrealTypeMapper {
 		MapParam:      "const TMap<FString, FString>&",
 		MapType:       "TMap<FString, FString>",
 
-		JsonArrayValue:   "String",
+		JsonArrayValue:   "FJsonValueString",
 		QueryFormat:      "%s",
-		QueryValueSetter: "FGenericPlatformHttp::UrlEncode",
+		QueryValueSetter: "*",
 		EmptyCheck:       "IsEmpty",
 
 		FieldType:         "FString",
@@ -45,7 +45,7 @@ func NewUnrealTypeMapper(targetSystem string) *UnrealTypeMapper {
 
 		JsonArrayValue: "Boolean",
 		QueryFormat:    "%s_bool",
-		EmptyCheck:     "None",
+		EmptyCheck:     "",
 
 		FieldType:         "bool",
 		RepeatedFieldType: "TArray<bool>",
@@ -71,8 +71,8 @@ func NewUnrealTypeMapper(targetSystem string) *UnrealTypeMapper {
 		FieldType:         "int32",
 		RepeatedFieldType: "TArray<int32>",
 
-		JsonSetter:       "SetIntegerField",
-		JsonGetter:       "GetIntegerField",
+		JsonSetter:       "SetNumberField",
+		JsonGetter:       "GetNumberField",
 		JsonCast:         "static_cast<int32>",
 		JsonToTypeMethod: "AsNumber()",
 
@@ -184,24 +184,26 @@ func NewUnrealTypeMapper(targetSystem string) *UnrealTypeMapper {
 		DefaultValue: "0.0",
 	}
 
-	bytesEntry := modules.TypeEntry{
-		Param:         "const TArray<uint8>&",
-		RepeatedParam: "const TArray<TArray<uint8>>&",
-		MapParam:      "const TMap<FString, TArray<uint8>>&",
-		MapType:       "TMap<FString, TArray<uint8>>",
+	/*
+		bytesEntry := modules.TypeEntry{
+			Param:         "const TArray<uint8>&",
+			RepeatedParam: "const TArray<TArray<uint8>>&",
+			MapParam:      "const TMap<FString, TArray<uint8>>&",
+			MapType:       "TMap<FString, TArray<uint8>>",
 
-		JsonArrayValue: "String",
-		QueryFormat:    "%s",
-		EmptyCheck:     "NumEmpty",
+			JsonArrayValue: "String",
+			QueryFormat:    "%s",
+			EmptyCheck:     "",
 
-		FieldType:         "TArray<uint8>",
-		RepeatedFieldType: "TArray<TArray<uint8>>",
+			FieldType:         "TArray<uint8>",
+			RepeatedFieldType: "TArray<TArray<uint8>>",
 
-		JsonSetter:       "SetStringField",
-		JsonGetter:       "GetStringField",
-		JsonCast:         "",
-		JsonToTypeMethod: "AsString()",
-	}
+			JsonSetter:       "SetStringField",
+			JsonGetter:       "GetStringField",
+			JsonCast:         "",
+			JsonToTypeMethod: "AsString()",
+		}
+	*/
 
 	return &UnrealTypeMapper{
 		targetSystem: targetSystem,
@@ -229,8 +231,8 @@ func NewUnrealTypeMapper(targetSystem string) *UnrealTypeMapper {
 			"double":      doubleEntry,
 			"DoubleValue": doubleEntry,
 
-			"bytes":      bytesEntry,
-			"BytesValue": bytesEntry,
+			"bytes":      stringEntry,
+			"BytesValue": stringEntry,
 		},
 	}
 }
@@ -277,11 +279,12 @@ func (r *UnrealTypeMapper) ResolveEntry(intype string) modules.TypeEntry {
 			EnumType:          "E" + r.targetSystem + textcase.PascalCase(intype),
 			RepeatedFieldType: "TArray<" + base + ">",
 			QueryFormat:       "%s",
-			EmptyCheck:        "NumEmpty",
-			JsonArrayValue:    "Object",
+			EmptyCheck:        "",
+			JsonArrayValue:    "FJsonValueObject",
 			JsonSetter:        "SetObjectField",
 			JsonGetter:        "GetObjectField",
 			MaybeToJson:       ".ToJson()",
+			JsonToTypeMethod:  "AsString()",
 		}
 	}
 	return entry

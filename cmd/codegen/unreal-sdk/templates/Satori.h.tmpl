@@ -118,7 +118,11 @@ namespace Satori
   * @param RetryConfig Retry configuration.
   * @param CancellationToken	Set to true to cancel the in-flight request.
   */
+  {{- if ne "" $func.Type }}
   SATORI_API TSatoriFuture<{{ $func.Type }}Result> {{ $func.Name }}(
+  {{- else }}
+  SATORI_API TSatoriFuture<FSatoriVoidResult> {{ $func.Name }}(
+  {{- end }}
     const FSatoriClientConfig& ClientConfig,
     {{- range $idx, $param := $func.Params }}
     {{- if $param.Metadata.IsMessageType }}
@@ -130,7 +134,7 @@ namespace Satori
     {{- end }}
     {{- end }}
     const FSatoriRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
   {{- end }}
 }

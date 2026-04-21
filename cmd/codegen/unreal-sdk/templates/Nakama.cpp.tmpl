@@ -48,7 +48,7 @@ void MaybeRefreshThenCall(
 	const TSharedRef<FNakamaSession>& SessionState,
 	const FNakamaClientConfig& ClientConfig,
 	const FNakamaRetryConfig& RetryConfig,
-	const TSharedRef<std::atomic<bool>>& CancellationToken,
+	const TSharedRef<TAtomic<bool>>& CancellationToken,
 	const TSharedRef<TFunction<void(const FNakamaError&)>>& OnError,
 	TFunction<void()> OnReady) noexcept
 {
@@ -109,10 +109,14 @@ TNakamaFuture<FNakamaVoidResult> Nakama::{{ $func.Name }}(
   {{- end }}
   {{- end }}
   const FNakamaRetryConfig& RetryConfig,
-  TSharedRef<std::atomic<bool>> CancellationToken
+  TSharedRef<TAtomic<bool>> CancellationToken
 ) noexcept
 {
+  {{- if ne "" $func.Type }}
 	auto FutureState = MakeShared<TNakamaFuture<{{ $func.Type }}Result>::FState>();
+  {{- else }}
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaVoidResult>::FState>();
+  {{- end }}
 	{{- if $func.Metadata.HasSession }}
 	auto SessionState = MakeShared<FNakamaSession>(Session);
 	{{- end }}
@@ -135,11 +139,10 @@ TNakamaFuture<FNakamaVoidResult> Nakama::{{ $func.Name }}(
       *DoRequest = nullptr;
       *OnError = nullptr;
       {{- if ne "" $func.Type }}
-      {{ $func.Type }}Result Result{ {}, Error, true };
+      FutureState->Resolve({{ $func.Type }}Result { {}, Error, true });
       {{- else }}
-      FNakamaVoidResult Result{ {}, Error, true };
+      FutureState->Resolve(FNakamaVoidResult { {}, Error, true });
       {{- end }}
-      FutureState->Resolve(Result);
     }
   };
 
@@ -201,7 +204,9 @@ TNakamaFuture<FNakamaVoidResult> Nakama::{{ $func.Name }}(
             ClientConfig,
             *SessionState,
             {{- range $idx, $param := $func.Params }}
+            {{- if ne "Session" $param.Name }}
             {{ $param.Name }},
+            {{- end }}
             {{- end }}
             {{- if eq "" $func.Type }}
             [FutureState, DoRequest, OnError]()
@@ -260,10 +265,14 @@ TNakamaFuture<FNakamaVoidResult> Nakama::{{ $func.Name }}(
       CancellationToken
     );
     {{- end }}
-  }
+  };
 
   (*DoRequest)();
 
+  {{- if ne "" $func.Type }}
   return TNakamaFuture<{{ $func.Type }}Result>(FutureState);
+  {{- else }}
+  return TNakamaFuture<FNakamaVoidResult>(FutureState);
+  {{- end }}
 }
 {{- end }}

@@ -97,7 +97,8 @@ func (m UnrealHttpApiMapper) MapRpc(rpc *yacg.ProtoRpc, api yacg.Api, typeMapper
 
 	isAuth := strings.Contains(rpc.Name, "Authenticate")
 	isSessionRefresh := rpc.Name == "SessionRefresh"
-	needsSession := !isAuth && !isSessionRefresh
+	isRpcFunc := rpc.Name == "RpcFunc"
+	needsSession := !isAuth && !isSessionRefresh && !isRpcFunc
 
 	funcReturnTypeName := ""
 	if rpc.ReturnType != nil {
@@ -202,6 +203,7 @@ func (m UnrealHttpApiMapper) MapMessage(message *yacg.ProtoMessage, api yacg.Api
 
 	for _, field := range message.Fields {
 		entry := typeMapper.ResolveEntry(field.Type)
+		_, isEnumType := api.EnumsByName[field.Type]
 		dataDecl := modules.DataDecl{
 			Name:      typeMapper.ResolveIdentifier(field.Name, modules.IdentifierTypeDefault),
 			Type:      entry.FieldType,
@@ -210,10 +212,10 @@ func (m UnrealHttpApiMapper) MapMessage(message *yacg.ProtoMessage, api yacg.Api
 			Metadata:  m.makeTypeMemberMetadata(field.Field, field.Repeated, false, api, typeMapper),
 		}
 		dataDecl.Metadata["ParamType"] = entry.Param
-		_, isEnumType := api.EnumsByName[field.Type]
 		if isEnumType {
 			dataDecl.Type = entry.EnumType
 			dataDecl.TypeEntry.DefaultValue = fmt.Sprintf("static_cast<%s>(0)", entry.EnumType)
+			dataDecl.Metadata["ParamType"] = entry.EnumType
 		} else if field.Repeated {
 			dataDecl.Type = entry.RepeatedFieldType
 			dataDecl.Metadata["ParamType"] = entry.RepeatedParam

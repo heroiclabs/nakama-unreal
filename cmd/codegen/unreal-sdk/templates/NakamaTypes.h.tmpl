@@ -21,6 +21,14 @@
 #include "CoreMinimal.h"
 #include "NakamaTypes.generated.h"
 
+enum class ENakamaRequestAuth : uint8
+{
+  None,
+  Basic,
+  Bearer,
+  HttpKey
+};
+
 {{- range $enum := $.Enums }}
 
 /*
@@ -50,7 +58,7 @@ struct NAKAMAAPI_API FNakama{{ $type.Name }}
 
   /** {{ $member.Comment }} */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama")
-  {{ $member.Type }} {{ $member.Name }}{{ if $member.TypeEntry.DefaultValue }} = {{ $member.TypeEntry.DefaultValue }}{{ end }};
+  {{ $member.Type }} {{ $member.Name }}{{ if and (not $member.Metadata.IsMap) (not $member.Metadata.Repeated) ($member.TypeEntry.DefaultValue) }} = {{ $member.TypeEntry.DefaultValue }}{{ end }};
   {{- end }}
 
   static FNakama{{ $type.Name }} FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;

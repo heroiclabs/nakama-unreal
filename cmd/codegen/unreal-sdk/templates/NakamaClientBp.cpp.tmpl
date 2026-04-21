@@ -49,7 +49,7 @@ void UNakamaClient{{ $func.Name }}::Activate()
   NakamaApi::{{ $func.Name }}(
     StoredClientConfig,
     {{- range $idx, $param := $func.Params }}
-    {{ $param.Name }},
+    Stored{{ $param.Name }},
     {{- end }}
     {{- if ne "FOnNakamaSuccess" $func.Metadata.BpDelegateName }}
     [WeakThis](const {{ $func.Type }}& Result)

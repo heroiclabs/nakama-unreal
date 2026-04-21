@@ -49,7 +49,7 @@ void USatoriClient{{ $func.Name }}::Activate()
   SatoriApi::{{ $func.Name }}(
     StoredClientConfig,
     {{- range $idx, $param := $func.Params }}
-    {{ $param.Name }},
+    Stored{{ $param.Name }},
     {{- end }}
     {{- if ne "FOnSatoriSuccess" $func.Metadata.BpDelegateName }}
     [WeakThis](const {{ $func.Type }}& Result)

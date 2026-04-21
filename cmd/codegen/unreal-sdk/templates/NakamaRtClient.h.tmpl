@@ -31,17 +31,17 @@ namespace Nakama
     TWeakObjectPtr<UNakamaWebSocketSubsystem> WebSocketSubsystem;
 
   public:
-    explicit NakamaRealtimeClient(UGameInstance* InGi)
+    explicit FNakamaRtClient(UGameInstance* InGi)
     {
       if (InGi == nullptr)
       {
-        UE_LOG(LogNakama, Error, TEXT("NakamaRealtimeClient constructor received null GameInstance pointer."));
+        UE_LOG(LogNakama, Error, TEXT("FNakamaRtClient constructor received null GameInstance pointer."));
         return;
       }
       WebSocketSubsystem = InGi->GetSubsystem<UNakamaWebSocketSubsystem>();
     }
 
-    ~NakamaRealtimeClient()
+    ~FNakamaRtClient()
     {
       if (WebSocketSubsystem.IsValid())
       {
@@ -49,10 +49,10 @@ namespace Nakama
       }
     }
 
-    NakamaRealtimeClient(const NakamaRealtimeClient&) = delete;
-    NakamaRealtimeClient& operator=(const NakamaRealtimeClient&) = delete;
-    NakamaRealtimeClient(NakamaRealtimeClient&&) = delete;
-    NakamaRealtimeClient& operator=(NakamaRealtimeClient&&) = delete;
+    FNakamaRtClient(const FNakamaRtClient&) = delete;
+    FNakamaRtClient& operator=(const FNakamaRtClient&) = delete;
+    FNakamaRtClient(FNakamaRtClient&&) = delete;
+    FNakamaRtClient& operator=(FNakamaRtClient&&) = delete;
 
     /*
     *  Connect (or reconnect) the WebSocket.
@@ -69,11 +69,11 @@ namespace Nakama
     * {{- range $param := $func.Params }}
     * @param {{ $param.Name }}{{ "\t" }}{{ $param.Comment }}{{ end }}
     */
-    NAKAMA_API TNakamaFuture<FNakamaWebSocketResponse> FNakamaRtClient::{{ $func.Name }}(
+    NAKAMA_API TNakamaFuture<FNakamaWebSocketResponse> {{ $func.Name }}(
       {{- range $idx, $param := $func.Params }}
       {{ if $idx }}, {{ end }}{{ $param.Metadata.ParamType }} {{ $param.Name }}
       {{- end }}
     ) noexcept;
     {{- end }}
-  }
+  };
 }

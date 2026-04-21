@@ -59,12 +59,13 @@ TNakamaFuture<FNakamaWebSocketResponse> FNakamaRtClient::{{ $func.Name }}(
     TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
     for (const auto& Pair : {{ $param.Name }})
     {
-      MapObj->SetStringField(Pair.Key, Pair.Value);
+      MapObj->{{ $param.TypeEntry.JsonSetter }}(Pair.Key, Pair.Value);
     }
     Json->SetObjectField(TEXT("{{ $param.Metadata.JsonFieldName }}"), MapObj);
   }
   {{- else }}
-  {{ if ne "" $param.TypeEntry.EmptyCheck }}if ({{ $param.Name }}.{{ $param.TypeEntry.EmptyCheck }}() == false){{ end }}
+  {{ if eq "NonZero" $param.TypeEntry.EmptyCheck }}if ({{ $param.Name }} != 0)
+  {{ else if ne "" $param.TypeEntry.EmptyCheck }}if ({{ $param.Name }}.{{ $param.TypeEntry.EmptyCheck }}() == false){{ end }}
   {
     Json->{{ $param.TypeEntry.JsonSetter }}(TEXT("{{ $param.Metadata.JsonFieldName }}"), {{ $param.Name }}{{ $param.TypeEntry.MaybeToJson }});
   }

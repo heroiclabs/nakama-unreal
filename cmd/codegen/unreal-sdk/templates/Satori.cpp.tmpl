@@ -47,7 +47,7 @@ void MaybeRefreshThenCall(
   const TSharedRef<FSatoriSession>& SessionState,
   const FSatoriClientConfig& ClientConfig,
   const FSatoriRetryConfig& RetryConfig,
-  const TSharedRef<std::atomic<bool>>& CancellationToken,
+  const TSharedRef<TAtomic<bool>>& CancellationToken,
   const TSharedRef<TFunction<void(const FSatoriError&)>>& OnError,
   TFunction<void()> OnReady
 ) noexcept
@@ -92,7 +92,11 @@ void MaybeRefreshThenCall(
 
 {{- range $func := $.Funcs }}
 
+{{- if ne "" $func.Type }}
 TSatoriFuture<{{ $func.Type }}Result> Satori::{{ $func.Name }}(
+{{- else }}
+TSatoriFuture<FSatoriVoidResult> Satori::{{ $func.Name }}(
+{{- end }}
   const FSatoriClientConfig& ClientConfig,
   {{- range $idx, $param := $func.Params }}
   {{- if $param.Metadata.IsMessageType}}
@@ -104,10 +108,14 @@ TSatoriFuture<{{ $func.Type }}Result> Satori::{{ $func.Name }}(
   {{- end }}
   {{- end }}
   const FSatoriRetryConfig& RetryConfig,
-  TSharedRef<std::atomic<bool>> CancellationToken
+  TSharedRef<TAtomic<bool>> CancellationToken
 ) noexcept
 {
+  {{- if ne "" $func.Type }}
 	auto FutureState = MakeShared<TSatoriFuture<{{ $func.Type }}Result>::FState>();
+  {{- else }}
+	auto FutureState = MakeShared<TSatoriFuture<FSatoriVoidResult>::FState>();
+  {{- end }}
 	{{- if $func.Metadata.HasSession }}
 	auto SessionState = MakeShared<FSatoriSession>(Session);
 	{{- end }}
@@ -130,11 +138,10 @@ TSatoriFuture<{{ $func.Type }}Result> Satori::{{ $func.Name }}(
       *DoRequest = nullptr;
       *OnError = nullptr;
       {{- if ne "" $func.Type }}
-      {{ $func.Type }}Result Result{ {}, Error, true };
+      FutureState->Resolve({{ $func.Type }}Result { {}, Error, true });
       {{- else }}
-      FSatoriVoidResult Result{ {}, Error, true };
+      FutureState->Resolve(FSatoriVoidResult { {}, Error, true });
       {{- end }}
-      FutureState->Resolve(Result);
     }
   };
 
@@ -196,7 +203,9 @@ TSatoriFuture<{{ $func.Type }}Result> Satori::{{ $func.Name }}(
             ClientConfig,
             *SessionState,
             {{- range $idx, $param := $func.Params }}
+            {{- if ne "Session" $param.Name }}
             {{ $param.Name }},
+            {{- end }}
             {{- end }}
             {{- if eq "" $func.Type }}
             [FutureState, DoRequest, OnError]()
@@ -255,10 +264,14 @@ TSatoriFuture<{{ $func.Type }}Result> Satori::{{ $func.Name }}(
       CancellationToken
     );
     {{- end }}
-  }
+  };
 
   (*DoRequest)();
 
+  {{- if ne "" $func.Type }}
   return TSatoriFuture<{{ $func.Type }}Result>(FutureState);
+  {{- else }}
+  return TSatoriFuture<FSatoriVoidResult>(FutureState);
+  {{- end }}
 }
 {{- end }}

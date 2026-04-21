@@ -122,7 +122,7 @@ namespace Nakama
     {{- end }}
     {{- end }}
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
   {{- end }}
 }
