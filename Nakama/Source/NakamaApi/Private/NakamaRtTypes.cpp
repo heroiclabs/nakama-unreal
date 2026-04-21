@@ -1323,7 +1323,11 @@ FNakamaRtNotifications FNakamaRtNotifications::FromJson(const TSharedPtr<FJsonOb
       {
         for (const auto& Item : *ArrayPtr)
         {
-          Result.Notifications.Add(FNakamaRtNotification::FromJson(Item));
+          const TSharedPtr<FJsonObject>* ItemObj = nullptr;
+          if (Item->TryGetObject(ItemObj) && ItemObj)
+          {
+            Result.Notifications.Add(FNakamaRtNotification::FromJson(*ItemObj));
+          }
         }
       }
   }

@@ -267,9 +267,13 @@ func (m UnrealHttpApiMapper) makeTypeMemberMetadata(field *proto.Field, isRepeat
 	fieldMeta["JsonFieldName"] = field.Name
 
 	message, isMessageType := api.MessagesByName[field.Type]
-	fieldMeta["IsMessageType"] = isMessageType
-
 	_, isEnumType := api.EnumsByName[field.Type]
+	// For cross-file references not present in api.MessagesByName, fall back to
+	// checking the TypeEntry: message types have MaybeToJson set, scalars/enums don't.
+	if !isMessageType && !isEnumType {
+		isMessageType = typeMapper.ResolveEntry(field.Type).MaybeToJson != ""
+	}
+	fieldMeta["IsMessageType"] = isMessageType
 	fieldMeta["IsEnumType"] = isEnumType
 
 	if isMessageType && !isRepeated && !isMap {
