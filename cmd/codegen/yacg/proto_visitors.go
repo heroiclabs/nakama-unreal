@@ -212,6 +212,11 @@ func (v *rpcVisitor) VisitOption(o *proto.Option) {
 					v.Rpc.BodyParams = append(v.Rpc.BodyParams, f.Name)
 				}
 			}
+			for _, f := range v.Rpc.RequestType.MapFields {
+				if !slices.Contains(v.Rpc.PathParams, f.Name) {
+					v.Rpc.BodyParams = append(v.Rpc.BodyParams, f.Name)
+				}
+			}
 		}
 	} else if method == "GET" || v.Rpc.BodyField == "" {
 		if v.Rpc.RequestType != nil {
@@ -223,5 +228,13 @@ func (v *rpcVisitor) VisitOption(o *proto.Option) {
 		}
 	} else if v.Rpc.BodyField != "" {
 		v.Rpc.BodyParams = append(v.Rpc.BodyParams, v.Rpc.BodyField)
+		// Non-path, non-body fields become query params (grpc-gateway named-body binding)
+		if v.Rpc.RequestType != nil {
+			for _, f := range v.Rpc.RequestType.Fields {
+				if !slices.Contains(v.Rpc.PathParams, f.Name) && f.Name != v.Rpc.BodyField {
+					v.Rpc.QueryParams = append(v.Rpc.QueryParams, f.Name)
+				}
+			}
+		}
 	}
 }

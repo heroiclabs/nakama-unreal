@@ -19,8 +19,9 @@ type PathParam struct {
 }
 
 type QueryParam struct {
-	Repeated bool
-	Name     string
+	Repeated       bool
+	Name           string
+	QueryStringKey string
 	modules.TypeEntry
 }
 
@@ -118,12 +119,24 @@ func (m UnrealHttpApiMapper) MapRpc(rpc *yacg.ProtoRpc, api yacg.Api, typeMapper
 			return nil, err
 		}
 
+		// AuthenticateLogout sends the session token as Bearer auth (not Basic like other auth endpoints).
+		// RpcFunc uses the HttpKey parameter for auth (empty = unauthenticated, non-empty = http_key auth).
+		authType := "Basic"
+		authKey := "TEXT(\"\")"
+		if rpc.Name == "AuthenticateLogout" {
+			authType = "Bearer"
+			authKey = "Token"
+		} else if isRpcFunc {
+			authType = "HttpKey"
+			authKey = "HttpKey"
+		}
+
 		funcOverloads = append(funcOverloads, modules.Function{
 			DataDecl: modules.DataDecl{
 				Name:     typeMapper.ResolveIdentifier(rpc.Name, modules.IdentifierTypeDefault),
 				Comment:  rpc.Comment,
 				Type:     funcReturnTypeName,
-				Metadata: m.makeFuncMetadata(rpc, typeMapper, false, "Basic", "TEXT(\"\")"),
+				Metadata: m.makeFuncMetadata(rpc, typeMapper, false, authType, authKey),
 			},
 			Params:     paramsType.Members,
 			ReturnType: returns,
@@ -302,27 +315,30 @@ func (m UnrealHttpApiMapper) makeFuncMetadata(rpc *yacg.ProtoRpc, typeMapper mod
 		for _, f := range rpc.RequestType.Fields {
 			if f.Name == qp {
 				queryParams = append(queryParams, QueryParam{
-					Repeated:  f.Repeated,
-					Name:      typeMapper.ResolveIdentifier(qp, modules.IdentifierTypeDefault),
-					TypeEntry: typeMapper.ResolveEntry(f.Type),
+					Repeated:       f.Repeated,
+					Name:           typeMapper.ResolveIdentifier(qp, modules.IdentifierTypeDefault),
+					QueryStringKey: qp,
+					TypeEntry:      typeMapper.ResolveEntry(f.Type),
 				})
 			}
 		}
 		for _, f := range rpc.RequestType.MapFields {
 			if f.Name == qp {
 				queryParams = append(queryParams, QueryParam{
-					Repeated:  false,
-					Name:      typeMapper.ResolveIdentifier(qp, modules.IdentifierTypeDefault),
-					TypeEntry: typeMapper.ResolveEntry(f.Type),
+					Repeated:       false,
+					Name:           typeMapper.ResolveIdentifier(qp, modules.IdentifierTypeDefault),
+					QueryStringKey: qp,
+					TypeEntry:      typeMapper.ResolveEntry(f.Type),
 				})
 			}
 		}
 		for _, f := range rpc.RequestType.OneofFields {
 			if f.Name == qp {
 				queryParams = append(queryParams, QueryParam{
-					Repeated:  false,
-					Name:      typeMapper.ResolveIdentifier(qp, modules.IdentifierTypeDefault),
-					TypeEntry: typeMapper.ResolveEntry(f.Type),
+					Repeated:       false,
+					Name:           typeMapper.ResolveIdentifier(qp, modules.IdentifierTypeDefault),
+					QueryStringKey: qp,
+					TypeEntry:      typeMapper.ResolveEntry(f.Type),
 				})
 			}
 		}
@@ -383,6 +399,7 @@ func (m UnrealHttpApiMapper) makeFuncMetadata(rpc *yacg.ProtoRpc, typeMapper mod
 	funcMeta["QueryParams"] = queryParams
 	funcMeta["PathParams"] = pathParams
 	funcMeta["BodyParams"] = bodyParams
+	funcMeta["IsScalarBody"] = rpc.BodyField != "" && rpc.BodyField != "*"
 
 	funcMeta["ReturnTypeName"] = ""
 	funcMeta["SuccessLambdaType"] = ""

@@ -52,13 +52,13 @@ NAKAMAAPI_API void NakamaApi::{{ $func.Name }} (
   {{- if $queryParam.Repeated }}
   for ({{ $queryParam.Param }} Item : {{ $queryParam.Name }})
   {
-    QueryParams.Add(FString::Printf(TEXT("{{ $queryParam.Name }}={{ $queryParam.QueryFormat }}"), {{ $queryParam.QueryValueSetter }}(Item)));
+    QueryParams.Add(FString::Printf(TEXT("{{ $queryParam.QueryStringKey }}={{ $queryParam.QueryFormat }}"), {{ $queryParam.QueryValueSetter }}(Item)));
   }
   {{- else }}
   {{ if eq "NonZero" $queryParam.EmptyCheck }}if ({{ $queryParam.Name }} != 0)
   {{ else if ne "" $queryParam.EmptyCheck }}if ({{ $queryParam.Name }}.{{ $queryParam.EmptyCheck }}() == false){{ end }}
   {
-    QueryParams.Add(FString::Printf(TEXT("{{ $queryParam.Name }}={{ $queryParam.QueryFormat }}"), {{ $queryParam.QueryValueSetter }}({{ $queryParam.Name }})));
+    QueryParams.Add(FString::Printf(TEXT("{{ $queryParam.QueryStringKey }}={{ $queryParam.QueryFormat }}"), {{ $queryParam.QueryValueSetter }}({{ $queryParam.Name }})));
   }
   {{- end }}
   {{- end }}
@@ -69,10 +69,23 @@ NAKAMAAPI_API void NakamaApi::{{ $func.Name }} (
 
   //
   // Fill Body Params
+  {{- if and $func.Metadata.IsScalarBody (ne (index $func.Metadata.BodyParams 0).JsonSetter "SetObjectField") }}
+  {{- $bodyParam := index $func.Metadata.BodyParams 0 }}
+  FString RawBody;
+  {{ if eq "NonZero" $bodyParam.EmptyCheck }}if ({{ $bodyParam.Name }} != 0)
+  {{ else if ne "" $bodyParam.EmptyCheck }}if ({{ $bodyParam.Name }}.{{ $bodyParam.EmptyCheck }}() == false){{ end }}
+  {
+    FString Escaped = {{ $bodyParam.Name }}.Replace(TEXT("\\"), TEXT("\\\\")).Replace(TEXT("\""), TEXT("\\\"")).Replace(TEXT("\n"), TEXT("\\n")).Replace(TEXT("\r"), TEXT("\\r")).Replace(TEXT("\t"), TEXT("\\t"));
+    RawBody = TEXT("\"") + Escaped + TEXT("\"");
+  }
+  {{- else }}
   TSharedPtr<FJsonObject> Body;
   {{- if $func.Metadata.BodyParams }}
+  {{- if $func.Metadata.IsScalarBody }}
+  {{- $bodyParam := index $func.Metadata.BodyParams 0 }}
+  Body = {{ $bodyParam.Name }}{{ $bodyParam.MaybeToJson }};
+  {{- else }}
   Body = MakeShared<FJsonObject>();
-  {{- end }}
   {{- range $bodyParam := $func.Metadata.BodyParams }}
 
   {{- if $bodyParam.Repeated }}
@@ -104,14 +117,25 @@ NAKAMAAPI_API void NakamaApi::{{ $func.Name }} (
   {{- end }}
 
   {{- end }}
+  {{- end }}
+  {{- end }}
+  {{- end }}
 
   //
   // Make the request
+  {{- if and $func.Metadata.IsScalarBody (ne (index $func.Metadata.BodyParams 0).JsonSetter "SetObjectField") }}
+  SendRequest(
+  {{- else }}
   MakeRequest(
+  {{- end }}
     Config,
     Endpoint,
     TEXT("{{ $func.Metadata.Method }}"),
+    {{- if and $func.Metadata.IsScalarBody (ne (index $func.Metadata.BodyParams 0).JsonSetter "SetObjectField") }}
+    RawBody,
+    {{- else }}
     Body,
+    {{- end }}
     ENakamaRequestAuth::{{ $func.Metadata.AuthType }},
     {{ $func.Metadata.AuthKey }},
     [OnSuccess](TSharedPtr<FJsonObject> Json)

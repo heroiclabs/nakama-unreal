@@ -155,7 +155,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::{{ $func.Name }}(
     , RetryConfig
     , CancellationToken
     {{- range $idx, $param := $func.Params }}
-    {{- if $param.Metadata.IsMessageType}}
+    {{- if and (not $param.Metadata.Repeated) ($param.Metadata.IsMessageType) }}
     {{- range $member := $param.Metadata.Members }}
     , {{ $param.Name }}{{ $member.Name }}
     {{- end }}
@@ -181,7 +181,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::{{ $func.Name }}(
         , RetryConfig
         , CancellationToken
         {{- range $idx, $param := $func.Params }}
-        {{- if $param.Metadata.IsMessageType}}
+        {{- if and (not $param.Metadata.Repeated) ($param.Metadata.IsMessageType) }}
         {{- range $member := $param.Metadata.Members }}
         , {{ $param.Name }}{{ $member.Name }}
         {{- end }}
@@ -192,7 +192,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::{{ $func.Name }}(
         ]()
         {
           {{- range $idx, $param := $func.Params }}{{/* Re-construct params for lower level call */}}
-          {{- if $param.Metadata.IsMessageType}}
+          {{- if and (not $param.Metadata.Repeated) ($param.Metadata.IsMessageType) }}
           {{ $param.Type }} {{ $param.Name }};
           {{- range $member := $param.Metadata.Members }}
           {{ $param.Name }}.{{ $member.Name }} = {{ $param.Name }}{{ $member.Name }};
@@ -232,7 +232,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::{{ $func.Name }}(
     {{- else }}{{/* No session -- Just do the call */}}
 
     {{- range $idx, $param := $func.Params }}{{/* Re-construct params for lower level call */}}
-    {{- if $param.Metadata.IsMessageType}}
+    {{- if and (not $param.Metadata.Repeated) ($param.Metadata.IsMessageType) }}
     {{ $param.Type }} {{ $param.Name }};
     {{- range $member := $param.Metadata.Members }}
     {{ $param.Name }}.{{ $member.Name }} = {{ $param.Name }}{{ $member.Name }};
