@@ -47,10 +47,10 @@ void USatoriClientAuthenticate::Activate()
 
   SatoriApi::Authenticate(
     StoredClientConfig,
-    Id,
-    NoSession,
-    Default,
-    Custom,
+    StoredId,
+    StoredNoSession,
+    StoredDefault,
+    StoredCustom,
     [WeakThis](const FSatoriSession& Result)
     {
       if (auto* Self = WeakThis.Get())
@@ -95,8 +95,8 @@ void USatoriClientAuthenticateLogout::Activate()
 
   SatoriApi::AuthenticateLogout(
     StoredClientConfig,
-    Token,
-    RefreshToken,
+    StoredToken,
+    StoredRefreshToken,
     [WeakThis]()
     {
       if (auto* Self = WeakThis.Get())
@@ -139,7 +139,7 @@ void USatoriClientAuthenticateRefresh::Activate()
 
   SatoriApi::AuthenticateRefresh(
     StoredClientConfig,
-    RefreshToken,
+    StoredRefreshToken,
     [WeakThis](const FSatoriSession& Result)
     {
       if (auto* Self = WeakThis.Get())
@@ -182,7 +182,7 @@ void USatoriClientDeleteIdentity::Activate()
 
   SatoriApi::DeleteIdentity(
     StoredClientConfig,
-    Session,
+    StoredSession,
     [WeakThis]()
     {
       if (auto* Self = WeakThis.Get())
@@ -227,8 +227,8 @@ void USatoriClientEvent::Activate()
 
   SatoriApi::Event(
     StoredClientConfig,
-    Session,
-    Events,
+    StoredSession,
+    StoredEvents,
     [WeakThis]()
     {
       if (auto* Self = WeakThis.Get())
@@ -273,8 +273,8 @@ void USatoriClientServerEvent::Activate()
 
   SatoriApi::ServerEvent(
     StoredClientConfig,
-    Session,
-    Events,
+    StoredSession,
+    StoredEvents,
     [WeakThis]()
     {
       if (auto* Self = WeakThis.Get())
@@ -321,9 +321,9 @@ void USatoriClientGetExperiments::Activate()
 
   SatoriApi::GetExperiments(
     StoredClientConfig,
-    Session,
-    Names,
-    Labels,
+    StoredSession,
+    StoredNames,
+    StoredLabels,
     [WeakThis](const FSatoriExperimentList& Result)
     {
       if (auto* Self = WeakThis.Get())
@@ -370,9 +370,9 @@ void USatoriClientGetFlagOverrides::Activate()
 
   SatoriApi::GetFlagOverrides(
     StoredClientConfig,
-    Session,
-    Names,
-    Labels,
+    StoredSession,
+    StoredNames,
+    StoredLabels,
     [WeakThis](const FSatoriFlagOverrideList& Result)
     {
       if (auto* Self = WeakThis.Get())
@@ -419,9 +419,9 @@ void USatoriClientGetFlags::Activate()
 
   SatoriApi::GetFlags(
     StoredClientConfig,
-    Session,
-    Names,
-    Labels,
+    StoredSession,
+    StoredNames,
+    StoredLabels,
     [WeakThis](const FSatoriFlagList& Result)
     {
       if (auto* Self = WeakThis.Get())
@@ -476,13 +476,13 @@ void USatoriClientGetLiveEvents::Activate()
 
   SatoriApi::GetLiveEvents(
     StoredClientConfig,
-    Session,
-    Names,
-    Labels,
-    PastRunCount,
-    FutureRunCount,
-    StartTimeSec,
-    EndTimeSec,
+    StoredSession,
+    StoredNames,
+    StoredLabels,
+    StoredPastRunCount,
+    StoredFutureRunCount,
+    StoredStartTimeSec,
+    StoredEndTimeSec,
     [WeakThis](const FSatoriLiveEventList& Result)
     {
       if (auto* Self = WeakThis.Get())
@@ -527,8 +527,8 @@ void USatoriClientJoinLiveEvent::Activate()
 
   SatoriApi::JoinLiveEvent(
     StoredClientConfig,
-    Session,
-    Id,
+    StoredSession,
+    StoredId,
     [WeakThis]()
     {
       if (auto* Self = WeakThis.Get())
@@ -571,7 +571,7 @@ void USatoriClientHealthcheck::Activate()
 
   SatoriApi::Healthcheck(
     StoredClientConfig,
-    Session,
+    StoredSession,
     [WeakThis]()
     {
       if (auto* Self = WeakThis.Get())
@@ -620,10 +620,10 @@ void USatoriClientIdentify::Activate()
 
   SatoriApi::Identify(
     StoredClientConfig,
-    Session,
-    Id,
-    Default,
-    Custom,
+    StoredSession,
+    StoredId,
+    StoredDefault,
+    StoredCustom,
     [WeakThis](const FSatoriSession& Result)
     {
       if (auto* Self = WeakThis.Get())
@@ -666,7 +666,7 @@ void USatoriClientListProperties::Activate()
 
   SatoriApi::ListProperties(
     StoredClientConfig,
-    Session,
+    StoredSession,
     [WeakThis](const FSatoriProperties& Result)
     {
       if (auto* Self = WeakThis.Get())
@@ -709,7 +709,7 @@ void USatoriClientReadycheck::Activate()
 
   SatoriApi::Readycheck(
     StoredClientConfig,
-    Session,
+    StoredSession,
     [WeakThis]()
     {
       if (auto* Self = WeakThis.Get())
@@ -758,10 +758,10 @@ void USatoriClientUpdateProperties::Activate()
 
   SatoriApi::UpdateProperties(
     StoredClientConfig,
-    Session,
-    Recompute,
-    Default,
-    Custom,
+    StoredSession,
+    StoredRecompute,
+    StoredDefault,
+    StoredCustom,
     [WeakThis]()
     {
       if (auto* Self = WeakThis.Get())
@@ -812,11 +812,11 @@ void USatoriClientGetMessageList::Activate()
 
   SatoriApi::GetMessageList(
     StoredClientConfig,
-    Session,
-    Limit,
-    Forward,
-    Cursor,
-    MessageIds,
+    StoredSession,
+    StoredLimit,
+    StoredForward,
+    StoredCursor,
+    StoredMessageIds,
     [WeakThis](const FSatoriGetMessageListResponse& Result)
     {
       if (auto* Self = WeakThis.Get())
@@ -865,10 +865,10 @@ void USatoriClientUpdateMessage::Activate()
 
   SatoriApi::UpdateMessage(
     StoredClientConfig,
-    Session,
-    Id,
-    ReadTime,
-    ConsumeTime,
+    StoredSession,
+    StoredId,
+    StoredReadTime,
+    StoredConsumeTime,
     [WeakThis]()
     {
       if (auto* Self = WeakThis.Get())
@@ -913,8 +913,8 @@ void USatoriClientDeleteMessage::Activate()
 
   SatoriApi::DeleteMessage(
     StoredClientConfig,
-    Session,
-    Id,
+    StoredSession,
+    StoredId,
     [WeakThis]()
     {
       if (auto* Self = WeakThis.Get())

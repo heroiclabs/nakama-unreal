@@ -277,7 +277,7 @@ namespace Nakama
     const TArray<FString>& Usernames,
     const FString& Metadata,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -298,7 +298,7 @@ namespace Nakama
     const TArray<FString>& Usernames,
     const FString& Metadata,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -317,7 +317,7 @@ namespace Nakama
     const FString& GroupId,
     const TArray<FString>& UserIds,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -336,7 +336,7 @@ namespace Nakama
     const FString& GroupId,
     const TArray<FString>& UserIds,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -353,7 +353,7 @@ namespace Nakama
     const FString& Token,
     const TMap<FString, FString>& Vars,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -372,7 +372,7 @@ namespace Nakama
     const FString& Token,
     const FString& RefreshToken,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -391,7 +391,7 @@ namespace Nakama
     const FString& Token,
     const FString& RefreshToken,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -412,7 +412,7 @@ namespace Nakama
     bool Create,
     const FString& Username,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -433,7 +433,7 @@ namespace Nakama
     bool Create,
     const FString& Username,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -454,7 +454,7 @@ namespace Nakama
     bool Create,
     const FString& Username,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -477,7 +477,7 @@ namespace Nakama
     bool Create,
     const FString& Username,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -500,7 +500,7 @@ namespace Nakama
     const FString& Username,
     bool Sync,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -521,7 +521,7 @@ namespace Nakama
     bool Create,
     const FString& Username,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -552,7 +552,7 @@ namespace Nakama
     bool Create,
     const FString& Username,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -573,7 +573,7 @@ namespace Nakama
     bool Create,
     const FString& Username,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -596,7 +596,7 @@ namespace Nakama
     const FString& Username,
     bool Sync,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -615,7 +615,7 @@ namespace Nakama
     const FString& GroupId,
     const TArray<FString>& UserIds,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -634,7 +634,7 @@ namespace Nakama
     const FString& GroupId,
     const TArray<FString>& UserIds,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -653,7 +653,7 @@ namespace Nakama
     const TArray<FString>& Ids,
     const TArray<FString>& Usernames,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -672,7 +672,7 @@ namespace Nakama
     const TArray<FString>& Ids,
     const TArray<FString>& Usernames,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -699,7 +699,7 @@ namespace Nakama
     bool Open,
     int32 MaxCount,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -726,7 +726,7 @@ namespace Nakama
     bool Open,
     int32 MaxCount,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -741,7 +741,7 @@ namespace Nakama
     const FNakamaClientConfig& ClientConfig,
     const FString& HttpKey,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -756,7 +756,7 @@ namespace Nakama
     const FNakamaClientConfig& ClientConfig,
     const FNakamaSession& Session,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -775,7 +775,7 @@ namespace Nakama
     const TArray<FString>& Ids,
     const TArray<FString>& Usernames,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -794,7 +794,7 @@ namespace Nakama
     const TArray<FString>& Ids,
     const TArray<FString>& Usernames,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -811,7 +811,7 @@ namespace Nakama
     const FString& HttpKey,
     const FString& GroupId,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -828,7 +828,7 @@ namespace Nakama
     const FNakamaSession& Session,
     const FString& GroupId,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -845,7 +845,7 @@ namespace Nakama
     const FString& HttpKey,
     const FString& LeaderboardId,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -862,7 +862,7 @@ namespace Nakama
     const FNakamaSession& Session,
     const FString& LeaderboardId,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -879,7 +879,7 @@ namespace Nakama
     const FString& HttpKey,
     const TArray<FString>& Ids,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -896,7 +896,7 @@ namespace Nakama
     const FNakamaSession& Session,
     const TArray<FString>& Ids,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -913,7 +913,7 @@ namespace Nakama
     const FString& HttpKey,
     const FString& TournamentId,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -930,7 +930,7 @@ namespace Nakama
     const FNakamaSession& Session,
     const FString& TournamentId,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -945,7 +945,7 @@ namespace Nakama
     const FNakamaClientConfig& ClientConfig,
     const FString& HttpKey,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -960,7 +960,7 @@ namespace Nakama
     const FNakamaClientConfig& ClientConfig,
     const FNakamaSession& Session,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -983,7 +983,7 @@ namespace Nakama
     bool External,
     const TMap<FString, FString>& Properties,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -1006,7 +1006,7 @@ namespace Nakama
     bool External,
     const TMap<FString, FString>& Properties,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -1021,7 +1021,7 @@ namespace Nakama
     const FNakamaClientConfig& ClientConfig,
     const FString& HttpKey,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -1036,7 +1036,7 @@ namespace Nakama
     const FNakamaClientConfig& ClientConfig,
     const FNakamaSession& Session,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -1057,7 +1057,7 @@ namespace Nakama
     const TArray<FString>& Usernames,
     const TArray<FString>& FacebookIds,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -1078,7 +1078,7 @@ namespace Nakama
     const TArray<FString>& Usernames,
     const TArray<FString>& FacebookIds,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -1095,7 +1095,7 @@ namespace Nakama
     const FString& HttpKey,
     const FString& ProductId,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -1112,7 +1112,7 @@ namespace Nakama
     const FNakamaSession& Session,
     const FString& ProductId,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -1127,7 +1127,7 @@ namespace Nakama
     const FNakamaClientConfig& ClientConfig,
     const FString& HttpKey,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -1142,7 +1142,7 @@ namespace Nakama
     const FNakamaClientConfig& ClientConfig,
     const FNakamaSession& Session,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -1157,7 +1157,7 @@ namespace Nakama
     const FNakamaClientConfig& ClientConfig,
     const FString& HttpKey,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -1172,7 +1172,7 @@ namespace Nakama
     const FNakamaClientConfig& ClientConfig,
     const FNakamaSession& Session,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -1193,7 +1193,7 @@ namespace Nakama
     const TMap<FString, FString>& AccountVars,
     bool Reset,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -1214,7 +1214,7 @@ namespace Nakama
     const TMap<FString, FString>& AccountVars,
     bool Reset,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -1235,7 +1235,7 @@ namespace Nakama
     const TMap<FString, FString>& AccountVars,
     bool Reset,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -1256,7 +1256,7 @@ namespace Nakama
     const TMap<FString, FString>& AccountVars,
     bool Reset,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -1273,7 +1273,7 @@ namespace Nakama
     const FString& HttpKey,
     const FString& GroupId,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -1290,7 +1290,7 @@ namespace Nakama
     const FNakamaSession& Session,
     const FString& GroupId,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -1307,7 +1307,7 @@ namespace Nakama
     const FString& HttpKey,
     const FString& TournamentId,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -1324,7 +1324,7 @@ namespace Nakama
     const FNakamaSession& Session,
     const FString& TournamentId,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -1343,7 +1343,7 @@ namespace Nakama
     const FString& GroupId,
     const TArray<FString>& UserIds,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -1362,7 +1362,7 @@ namespace Nakama
     const FString& GroupId,
     const TArray<FString>& UserIds,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -1379,7 +1379,7 @@ namespace Nakama
     const FString& HttpKey,
     const FString& GroupId,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -1396,7 +1396,7 @@ namespace Nakama
     const FNakamaSession& Session,
     const FString& GroupId,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -1415,7 +1415,7 @@ namespace Nakama
     const FString& Token,
     const TMap<FString, FString>& Vars,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -1434,7 +1434,7 @@ namespace Nakama
     const FString& Token,
     const TMap<FString, FString>& Vars,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -1453,7 +1453,7 @@ namespace Nakama
     const FString& Id,
     const TMap<FString, FString>& Vars,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -1472,7 +1472,7 @@ namespace Nakama
     const FString& Id,
     const TMap<FString, FString>& Vars,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -1491,7 +1491,7 @@ namespace Nakama
     const FString& Id,
     const TMap<FString, FString>& Vars,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -1510,7 +1510,7 @@ namespace Nakama
     const FString& Id,
     const TMap<FString, FString>& Vars,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -1531,7 +1531,7 @@ namespace Nakama
     const FString& Password,
     const TMap<FString, FString>& Vars,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -1552,7 +1552,7 @@ namespace Nakama
     const FString& Password,
     const TMap<FString, FString>& Vars,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -1573,7 +1573,7 @@ namespace Nakama
     const TMap<FString, FString>& AccountVars,
     bool Sync,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -1594,7 +1594,7 @@ namespace Nakama
     const TMap<FString, FString>& AccountVars,
     bool Sync,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -1613,7 +1613,7 @@ namespace Nakama
     const FString& SignedPlayerInfo,
     const TMap<FString, FString>& Vars,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -1632,7 +1632,7 @@ namespace Nakama
     const FString& SignedPlayerInfo,
     const TMap<FString, FString>& Vars,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -1661,7 +1661,7 @@ namespace Nakama
     const FString& PublicKeyUrl,
     const TMap<FString, FString>& Vars,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -1690,7 +1690,7 @@ namespace Nakama
     const FString& PublicKeyUrl,
     const TMap<FString, FString>& Vars,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -1709,7 +1709,7 @@ namespace Nakama
     const FString& Token,
     const TMap<FString, FString>& Vars,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -1728,7 +1728,7 @@ namespace Nakama
     const FString& Token,
     const TMap<FString, FString>& Vars,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -1749,7 +1749,7 @@ namespace Nakama
     const TMap<FString, FString>& AccountVars,
     bool Sync,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -1770,7 +1770,7 @@ namespace Nakama
     const TMap<FString, FString>& AccountVars,
     bool Sync,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -1793,7 +1793,7 @@ namespace Nakama
     bool Forward,
     const FString& Cursor,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -1816,7 +1816,7 @@ namespace Nakama
     bool Forward,
     const FString& Cursor,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -1837,7 +1837,7 @@ namespace Nakama
     int32 State,
     const FString& Cursor,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -1858,7 +1858,7 @@ namespace Nakama
     int32 State,
     const FString& Cursor,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -1877,7 +1877,7 @@ namespace Nakama
     int32 Limit,
     const FString& Cursor,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -1896,7 +1896,7 @@ namespace Nakama
     int32 Limit,
     const FString& Cursor,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -1923,7 +1923,7 @@ namespace Nakama
     int32 Members,
     bool Open,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -1950,7 +1950,7 @@ namespace Nakama
     int32 Members,
     bool Open,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -1973,7 +1973,7 @@ namespace Nakama
     int32 State,
     const FString& Cursor,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -1996,7 +1996,7 @@ namespace Nakama
     int32 State,
     const FString& Cursor,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -2021,7 +2021,7 @@ namespace Nakama
     const FString& Cursor,
     int64 Expiry,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -2046,7 +2046,7 @@ namespace Nakama
     const FString& Cursor,
     int64 Expiry,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -2071,7 +2071,7 @@ namespace Nakama
     int64 Expiry,
     const FString& Cursor,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -2096,7 +2096,7 @@ namespace Nakama
     int64 Expiry,
     const FString& Cursor,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -2123,7 +2123,7 @@ namespace Nakama
     int32 MaxSize,
     const FString& Query,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -2150,7 +2150,7 @@ namespace Nakama
     int32 MaxSize,
     const FString& Query,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -2173,7 +2173,7 @@ namespace Nakama
     const FString& Query,
     const FString& Cursor,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -2196,7 +2196,7 @@ namespace Nakama
     const FString& Query,
     const FString& Cursor,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -2215,7 +2215,7 @@ namespace Nakama
     int32 Limit,
     const FString& CacheableCursor,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -2234,7 +2234,7 @@ namespace Nakama
     int32 Limit,
     const FString& CacheableCursor,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -2257,7 +2257,7 @@ namespace Nakama
     int32 Limit,
     const FString& Cursor,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -2280,7 +2280,7 @@ namespace Nakama
     int32 Limit,
     const FString& Cursor,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -2299,7 +2299,7 @@ namespace Nakama
     int32 Limit,
     const FString& Cursor,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -2318,7 +2318,7 @@ namespace Nakama
     int32 Limit,
     const FString& Cursor,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -2345,7 +2345,7 @@ namespace Nakama
     int32 Limit,
     const FString& Cursor,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -2372,7 +2372,7 @@ namespace Nakama
     int32 Limit,
     const FString& Cursor,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -2397,7 +2397,7 @@ namespace Nakama
     const FString& Cursor,
     int64 Expiry,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -2422,7 +2422,7 @@ namespace Nakama
     const FString& Cursor,
     int64 Expiry,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -2447,7 +2447,7 @@ namespace Nakama
     int64 Expiry,
     const FString& Cursor,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -2472,7 +2472,7 @@ namespace Nakama
     int64 Expiry,
     const FString& Cursor,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -2495,7 +2495,7 @@ namespace Nakama
     int32 State,
     const FString& Cursor,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -2518,7 +2518,7 @@ namespace Nakama
     int32 State,
     const FString& Cursor,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -2537,7 +2537,7 @@ namespace Nakama
     const FString& GroupId,
     const TArray<FString>& UserIds,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -2556,7 +2556,7 @@ namespace Nakama
     const FString& GroupId,
     const TArray<FString>& UserIds,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -2575,7 +2575,7 @@ namespace Nakama
     const FString& GroupId,
     const TArray<FString>& UserIds,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -2594,7 +2594,7 @@ namespace Nakama
     const FString& GroupId,
     const TArray<FString>& UserIds,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -2609,7 +2609,7 @@ namespace Nakama
     const FNakamaClientConfig& ClientConfig,
     const FString& HttpKey,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -2624,14 +2624,13 @@ namespace Nakama
     const FNakamaClientConfig& ClientConfig,
     const FNakamaSession& Session,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
   * Execute a Lua function on the server.
   *
   * @param Config	The client configuration.
-  * @param HttpKey	HttpKey for server-to-server communication
   * @param Id	 The identifier of the function.
   * @param Payload	 The payload of the function which must be a JSON object.
   * @param HttpKey	 The authentication key used when executed as a non-client HTTP request.
@@ -2640,33 +2639,11 @@ namespace Nakama
   */
   NAKAMA_API TNakamaFuture<FNakamaRpcResult> RpcFunc(
     const FNakamaClientConfig& ClientConfig,
-    const FString& HttpKey,
     const FString& Id,
     const FString& Payload,
     const FString& HttpKey,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
-  ) noexcept;
-
-  /**
-  * Execute a Lua function on the server.
-  *
-  * @param Config	The client configuration.
-  * @param Session	The session of the user.
-  * @param Id	 The identifier of the function.
-  * @param Payload	 The payload of the function which must be a JSON object.
-  * @param HttpKey	 The authentication key used when executed as a non-client HTTP request.
-  * @param RetryConfig Retry configuration.
-  * @param CancellationToken	Set to true to cancel the in-flight request.
-  */
-  NAKAMA_API TNakamaFuture<FNakamaRpcResult> RpcFunc(
-    const FNakamaClientConfig& ClientConfig,
-    const FNakamaSession& Session,
-    const FString& Id,
-    const FString& Payload,
-    const FString& HttpKey,
-    const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -2685,7 +2662,7 @@ namespace Nakama
     const FString& Token,
     const TMap<FString, FString>& Vars,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -2704,7 +2681,7 @@ namespace Nakama
     const FString& Token,
     const TMap<FString, FString>& Vars,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -2723,7 +2700,7 @@ namespace Nakama
     const FString& Id,
     const TMap<FString, FString>& Vars,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -2742,7 +2719,7 @@ namespace Nakama
     const FString& Id,
     const TMap<FString, FString>& Vars,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -2761,7 +2738,7 @@ namespace Nakama
     const FString& Id,
     const TMap<FString, FString>& Vars,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -2780,7 +2757,7 @@ namespace Nakama
     const FString& Id,
     const TMap<FString, FString>& Vars,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -2801,7 +2778,7 @@ namespace Nakama
     const FString& Password,
     const TMap<FString, FString>& Vars,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -2822,7 +2799,7 @@ namespace Nakama
     const FString& Password,
     const TMap<FString, FString>& Vars,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -2841,7 +2818,7 @@ namespace Nakama
     const FString& Token,
     const TMap<FString, FString>& Vars,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -2860,7 +2837,7 @@ namespace Nakama
     const FString& Token,
     const TMap<FString, FString>& Vars,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -2879,7 +2856,7 @@ namespace Nakama
     const FString& SignedPlayerInfo,
     const TMap<FString, FString>& Vars,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -2898,7 +2875,7 @@ namespace Nakama
     const FString& SignedPlayerInfo,
     const TMap<FString, FString>& Vars,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -2927,7 +2904,7 @@ namespace Nakama
     const FString& PublicKeyUrl,
     const TMap<FString, FString>& Vars,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -2956,7 +2933,7 @@ namespace Nakama
     const FString& PublicKeyUrl,
     const TMap<FString, FString>& Vars,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -2975,7 +2952,7 @@ namespace Nakama
     const FString& Token,
     const TMap<FString, FString>& Vars,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -2994,7 +2971,7 @@ namespace Nakama
     const FString& Token,
     const TMap<FString, FString>& Vars,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -3013,7 +2990,7 @@ namespace Nakama
     const FString& Token,
     const TMap<FString, FString>& Vars,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -3032,7 +3009,7 @@ namespace Nakama
     const FString& Token,
     const TMap<FString, FString>& Vars,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -3059,7 +3036,7 @@ namespace Nakama
     const FString& Location,
     const FString& Timezone,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -3086,7 +3063,7 @@ namespace Nakama
     const FString& Location,
     const FString& Timezone,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -3113,7 +3090,7 @@ namespace Nakama
     const FString& AvatarUrl,
     bool Open,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -3140,7 +3117,7 @@ namespace Nakama
     const FString& AvatarUrl,
     bool Open,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -3159,7 +3136,7 @@ namespace Nakama
     const FString& Receipt,
     bool Persist,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -3178,7 +3155,7 @@ namespace Nakama
     const FString& Receipt,
     bool Persist,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -3197,7 +3174,7 @@ namespace Nakama
     const FString& Receipt,
     bool Persist,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -3216,7 +3193,7 @@ namespace Nakama
     const FString& Receipt,
     bool Persist,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -3235,7 +3212,7 @@ namespace Nakama
     const FString& Purchase,
     bool Persist,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -3254,7 +3231,7 @@ namespace Nakama
     const FString& Purchase,
     bool Persist,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -3273,7 +3250,7 @@ namespace Nakama
     const FString& Receipt,
     bool Persist,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -3292,7 +3269,7 @@ namespace Nakama
     const FString& Receipt,
     bool Persist,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -3313,7 +3290,7 @@ namespace Nakama
     const FString& Signature,
     bool Persist,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -3334,7 +3311,7 @@ namespace Nakama
     const FString& Signature,
     bool Persist,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -3353,7 +3330,7 @@ namespace Nakama
     const FString& SignedRequest,
     bool Persist,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -3372,7 +3349,7 @@ namespace Nakama
     const FString& SignedRequest,
     bool Persist,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -3395,9 +3372,9 @@ namespace Nakama
     int64 RecordScore,
     int64 RecordSubscore,
     const FString& RecordMetadata,
-    const FNakamaOperator& RecordOperator,
+    ENakamaOperator RecordOperator,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -3420,9 +3397,9 @@ namespace Nakama
     int64 RecordScore,
     int64 RecordSubscore,
     const FString& RecordMetadata,
-    const FNakamaOperator& RecordOperator,
+    ENakamaOperator RecordOperator,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -3437,7 +3414,7 @@ namespace Nakama
     const FNakamaClientConfig& ClientConfig,
     const FString& HttpKey,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -3452,7 +3429,7 @@ namespace Nakama
     const FNakamaClientConfig& ClientConfig,
     const FNakamaSession& Session,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -3475,9 +3452,9 @@ namespace Nakama
     int64 RecordScore,
     int64 RecordSubscore,
     const FString& RecordMetadata,
-    const FNakamaOperator& RecordOperator,
+    ENakamaOperator RecordOperator,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -3500,8 +3477,8 @@ namespace Nakama
     int64 RecordScore,
     int64 RecordSubscore,
     const FString& RecordMetadata,
-    const FNakamaOperator& RecordOperator,
+    ENakamaOperator RecordOperator,
     const FNakamaRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 }

@@ -47,10 +47,10 @@ void UNakamaClientAddFriends::Activate()
 
   NakamaApi::AddFriends(
     StoredClientConfig,
-    Session,
-    Ids,
-    Usernames,
-    Metadata,
+    StoredSession,
+    StoredIds,
+    StoredUsernames,
+    StoredMetadata,
     [WeakThis]()
     {
       if (auto* Self = WeakThis.Get())
@@ -97,9 +97,9 @@ void UNakamaClientAddGroupUsers::Activate()
 
   NakamaApi::AddGroupUsers(
     StoredClientConfig,
-    Session,
-    GroupId,
-    UserIds,
+    StoredSession,
+    StoredGroupId,
+    StoredUserIds,
     [WeakThis]()
     {
       if (auto* Self = WeakThis.Get())
@@ -144,8 +144,8 @@ void UNakamaClientSessionRefresh::Activate()
 
   NakamaApi::SessionRefresh(
     StoredClientConfig,
-    Token,
-    Vars,
+    StoredToken,
+    StoredVars,
     [WeakThis](const FNakamaSession& Result)
     {
       if (auto* Self = WeakThis.Get())
@@ -192,9 +192,9 @@ void UNakamaClientSessionLogout::Activate()
 
   NakamaApi::SessionLogout(
     StoredClientConfig,
-    Session,
-    Token,
-    RefreshToken,
+    StoredSession,
+    StoredToken,
+    StoredRefreshToken,
     [WeakThis]()
     {
       if (auto* Self = WeakThis.Get())
@@ -241,9 +241,9 @@ void UNakamaClientAuthenticateApple::Activate()
 
   NakamaApi::AuthenticateApple(
     StoredClientConfig,
-    Account,
-    Create,
-    Username,
+    StoredAccount,
+    StoredCreate,
+    StoredUsername,
     [WeakThis](const FNakamaSession& Result)
     {
       if (auto* Self = WeakThis.Get())
@@ -290,9 +290,9 @@ void UNakamaClientAuthenticateCustom::Activate()
 
   NakamaApi::AuthenticateCustom(
     StoredClientConfig,
-    Account,
-    Create,
-    Username,
+    StoredAccount,
+    StoredCreate,
+    StoredUsername,
     [WeakThis](const FNakamaSession& Result)
     {
       if (auto* Self = WeakThis.Get())
@@ -339,9 +339,9 @@ void UNakamaClientAuthenticateDevice::Activate()
 
   NakamaApi::AuthenticateDevice(
     StoredClientConfig,
-    Account,
-    Create,
-    Username,
+    StoredAccount,
+    StoredCreate,
+    StoredUsername,
     [WeakThis](const FNakamaSession& Result)
     {
       if (auto* Self = WeakThis.Get())
@@ -388,9 +388,9 @@ void UNakamaClientAuthenticateEmail::Activate()
 
   NakamaApi::AuthenticateEmail(
     StoredClientConfig,
-    Account,
-    Create,
-    Username,
+    StoredAccount,
+    StoredCreate,
+    StoredUsername,
     [WeakThis](const FNakamaSession& Result)
     {
       if (auto* Self = WeakThis.Get())
@@ -439,10 +439,10 @@ void UNakamaClientAuthenticateFacebook::Activate()
 
   NakamaApi::AuthenticateFacebook(
     StoredClientConfig,
-    Account,
-    Create,
-    Username,
-    Sync,
+    StoredAccount,
+    StoredCreate,
+    StoredUsername,
+    StoredSync,
     [WeakThis](const FNakamaSession& Result)
     {
       if (auto* Self = WeakThis.Get())
@@ -489,9 +489,9 @@ void UNakamaClientAuthenticateFacebookInstantGame::Activate()
 
   NakamaApi::AuthenticateFacebookInstantGame(
     StoredClientConfig,
-    Account,
-    Create,
-    Username,
+    StoredAccount,
+    StoredCreate,
+    StoredUsername,
     [WeakThis](const FNakamaSession& Result)
     {
       if (auto* Self = WeakThis.Get())
@@ -538,9 +538,9 @@ void UNakamaClientAuthenticateGameCenter::Activate()
 
   NakamaApi::AuthenticateGameCenter(
     StoredClientConfig,
-    Account,
-    Create,
-    Username,
+    StoredAccount,
+    StoredCreate,
+    StoredUsername,
     [WeakThis](const FNakamaSession& Result)
     {
       if (auto* Self = WeakThis.Get())
@@ -587,9 +587,9 @@ void UNakamaClientAuthenticateGoogle::Activate()
 
   NakamaApi::AuthenticateGoogle(
     StoredClientConfig,
-    Account,
-    Create,
-    Username,
+    StoredAccount,
+    StoredCreate,
+    StoredUsername,
     [WeakThis](const FNakamaSession& Result)
     {
       if (auto* Self = WeakThis.Get())
@@ -638,10 +638,10 @@ void UNakamaClientAuthenticateSteam::Activate()
 
   NakamaApi::AuthenticateSteam(
     StoredClientConfig,
-    Account,
-    Create,
-    Username,
-    Sync,
+    StoredAccount,
+    StoredCreate,
+    StoredUsername,
+    StoredSync,
     [WeakThis](const FNakamaSession& Result)
     {
       if (auto* Self = WeakThis.Get())
@@ -688,9 +688,9 @@ void UNakamaClientBanGroupUsers::Activate()
 
   NakamaApi::BanGroupUsers(
     StoredClientConfig,
-    Session,
-    GroupId,
-    UserIds,
+    StoredSession,
+    StoredGroupId,
+    StoredUserIds,
     [WeakThis]()
     {
       if (auto* Self = WeakThis.Get())
@@ -737,9 +737,9 @@ void UNakamaClientBlockFriends::Activate()
 
   NakamaApi::BlockFriends(
     StoredClientConfig,
-    Session,
-    Ids,
-    Usernames,
+    StoredSession,
+    StoredIds,
+    StoredUsernames,
     [WeakThis]()
     {
       if (auto* Self = WeakThis.Get())
@@ -794,13 +794,13 @@ void UNakamaClientCreateGroup::Activate()
 
   NakamaApi::CreateGroup(
     StoredClientConfig,
-    Session,
-    Name,
-    Description,
-    LangTag,
-    AvatarUrl,
-    Open,
-    MaxCount,
+    StoredSession,
+    StoredName,
+    StoredDescription,
+    StoredLangTag,
+    StoredAvatarUrl,
+    StoredOpen,
+    StoredMaxCount,
     [WeakThis](const FNakamaGroup& Result)
     {
       if (auto* Self = WeakThis.Get())
@@ -843,7 +843,7 @@ void UNakamaClientDeleteAccount::Activate()
 
   NakamaApi::DeleteAccount(
     StoredClientConfig,
-    Session,
+    StoredSession,
     [WeakThis]()
     {
       if (auto* Self = WeakThis.Get())
@@ -890,9 +890,9 @@ void UNakamaClientDeleteFriends::Activate()
 
   NakamaApi::DeleteFriends(
     StoredClientConfig,
-    Session,
-    Ids,
-    Usernames,
+    StoredSession,
+    StoredIds,
+    StoredUsernames,
     [WeakThis]()
     {
       if (auto* Self = WeakThis.Get())
@@ -937,8 +937,8 @@ void UNakamaClientDeleteGroup::Activate()
 
   NakamaApi::DeleteGroup(
     StoredClientConfig,
-    Session,
-    GroupId,
+    StoredSession,
+    StoredGroupId,
     [WeakThis]()
     {
       if (auto* Self = WeakThis.Get())
@@ -983,8 +983,8 @@ void UNakamaClientDeleteLeaderboardRecord::Activate()
 
   NakamaApi::DeleteLeaderboardRecord(
     StoredClientConfig,
-    Session,
-    LeaderboardId,
+    StoredSession,
+    StoredLeaderboardId,
     [WeakThis]()
     {
       if (auto* Self = WeakThis.Get())
@@ -1029,8 +1029,8 @@ void UNakamaClientDeleteNotifications::Activate()
 
   NakamaApi::DeleteNotifications(
     StoredClientConfig,
-    Session,
-    Ids,
+    StoredSession,
+    StoredIds,
     [WeakThis]()
     {
       if (auto* Self = WeakThis.Get())
@@ -1075,8 +1075,8 @@ void UNakamaClientDeleteTournamentRecord::Activate()
 
   NakamaApi::DeleteTournamentRecord(
     StoredClientConfig,
-    Session,
-    TournamentId,
+    StoredSession,
+    StoredTournamentId,
     [WeakThis]()
     {
       if (auto* Self = WeakThis.Get())
@@ -1121,8 +1121,8 @@ void UNakamaClientDeleteStorageObjects::Activate()
 
   NakamaApi::DeleteStorageObjects(
     StoredClientConfig,
-    Session,
-    ObjectIds,
+    StoredSession,
+    StoredObjectIds,
     [WeakThis]()
     {
       if (auto* Self = WeakThis.Get())
@@ -1173,11 +1173,11 @@ void UNakamaClientEvent::Activate()
 
   NakamaApi::Event(
     StoredClientConfig,
-    Session,
-    Name,
-    Timestamp,
-    External,
-    Properties,
+    StoredSession,
+    StoredName,
+    StoredTimestamp,
+    StoredExternal,
+    StoredProperties,
     [WeakThis]()
     {
       if (auto* Self = WeakThis.Get())
@@ -1220,7 +1220,7 @@ void UNakamaClientGetAccount::Activate()
 
   NakamaApi::GetAccount(
     StoredClientConfig,
-    Session,
+    StoredSession,
     [WeakThis](const FNakamaAccount& Result)
     {
       if (auto* Self = WeakThis.Get())
@@ -1269,10 +1269,10 @@ void UNakamaClientGetUsers::Activate()
 
   NakamaApi::GetUsers(
     StoredClientConfig,
-    Session,
-    Ids,
-    Usernames,
-    FacebookIds,
+    StoredSession,
+    StoredIds,
+    StoredUsernames,
+    StoredFacebookIds,
     [WeakThis](const FNakamaUsers& Result)
     {
       if (auto* Self = WeakThis.Get())
@@ -1317,8 +1317,8 @@ void UNakamaClientGetSubscription::Activate()
 
   NakamaApi::GetSubscription(
     StoredClientConfig,
-    Session,
-    ProductId,
+    StoredSession,
+    StoredProductId,
     [WeakThis](const FNakamaValidatedSubscription& Result)
     {
       if (auto* Self = WeakThis.Get())
@@ -1361,7 +1361,7 @@ void UNakamaClientGetMatchmakerStats::Activate()
 
   NakamaApi::GetMatchmakerStats(
     StoredClientConfig,
-    Session,
+    StoredSession,
     [WeakThis](const FNakamaMatchmakerStats& Result)
     {
       if (auto* Self = WeakThis.Get())
@@ -1404,7 +1404,7 @@ void UNakamaClientHealthcheck::Activate()
 
   NakamaApi::Healthcheck(
     StoredClientConfig,
-    Session,
+    StoredSession,
     [WeakThis]()
     {
       if (auto* Self = WeakThis.Get())
@@ -1451,9 +1451,9 @@ void UNakamaClientImportFacebookFriends::Activate()
 
   NakamaApi::ImportFacebookFriends(
     StoredClientConfig,
-    Session,
-    Account,
-    Reset,
+    StoredSession,
+    StoredAccount,
+    StoredReset,
     [WeakThis]()
     {
       if (auto* Self = WeakThis.Get())
@@ -1500,9 +1500,9 @@ void UNakamaClientImportSteamFriends::Activate()
 
   NakamaApi::ImportSteamFriends(
     StoredClientConfig,
-    Session,
-    Account,
-    Reset,
+    StoredSession,
+    StoredAccount,
+    StoredReset,
     [WeakThis]()
     {
       if (auto* Self = WeakThis.Get())
@@ -1547,8 +1547,8 @@ void UNakamaClientJoinGroup::Activate()
 
   NakamaApi::JoinGroup(
     StoredClientConfig,
-    Session,
-    GroupId,
+    StoredSession,
+    StoredGroupId,
     [WeakThis]()
     {
       if (auto* Self = WeakThis.Get())
@@ -1593,8 +1593,8 @@ void UNakamaClientJoinTournament::Activate()
 
   NakamaApi::JoinTournament(
     StoredClientConfig,
-    Session,
-    TournamentId,
+    StoredSession,
+    StoredTournamentId,
     [WeakThis]()
     {
       if (auto* Self = WeakThis.Get())
@@ -1641,9 +1641,9 @@ void UNakamaClientKickGroupUsers::Activate()
 
   NakamaApi::KickGroupUsers(
     StoredClientConfig,
-    Session,
-    GroupId,
-    UserIds,
+    StoredSession,
+    StoredGroupId,
+    StoredUserIds,
     [WeakThis]()
     {
       if (auto* Self = WeakThis.Get())
@@ -1688,8 +1688,8 @@ void UNakamaClientLeaveGroup::Activate()
 
   NakamaApi::LeaveGroup(
     StoredClientConfig,
-    Session,
-    GroupId,
+    StoredSession,
+    StoredGroupId,
     [WeakThis]()
     {
       if (auto* Self = WeakThis.Get())
@@ -1736,9 +1736,9 @@ void UNakamaClientLinkApple::Activate()
 
   NakamaApi::LinkApple(
     StoredClientConfig,
-    Session,
-    Token,
-    Vars,
+    StoredSession,
+    StoredToken,
+    StoredVars,
     [WeakThis]()
     {
       if (auto* Self = WeakThis.Get())
@@ -1785,9 +1785,9 @@ void UNakamaClientLinkCustom::Activate()
 
   NakamaApi::LinkCustom(
     StoredClientConfig,
-    Session,
-    Id,
-    Vars,
+    StoredSession,
+    StoredId,
+    StoredVars,
     [WeakThis]()
     {
       if (auto* Self = WeakThis.Get())
@@ -1834,9 +1834,9 @@ void UNakamaClientLinkDevice::Activate()
 
   NakamaApi::LinkDevice(
     StoredClientConfig,
-    Session,
-    Id,
-    Vars,
+    StoredSession,
+    StoredId,
+    StoredVars,
     [WeakThis]()
     {
       if (auto* Self = WeakThis.Get())
@@ -1885,10 +1885,10 @@ void UNakamaClientLinkEmail::Activate()
 
   NakamaApi::LinkEmail(
     StoredClientConfig,
-    Session,
-    Email,
-    Password,
-    Vars,
+    StoredSession,
+    StoredEmail,
+    StoredPassword,
+    StoredVars,
     [WeakThis]()
     {
       if (auto* Self = WeakThis.Get())
@@ -1935,9 +1935,9 @@ void UNakamaClientLinkFacebook::Activate()
 
   NakamaApi::LinkFacebook(
     StoredClientConfig,
-    Session,
-    Account,
-    Sync,
+    StoredSession,
+    StoredAccount,
+    StoredSync,
     [WeakThis]()
     {
       if (auto* Self = WeakThis.Get())
@@ -1984,9 +1984,9 @@ void UNakamaClientLinkFacebookInstantGame::Activate()
 
   NakamaApi::LinkFacebookInstantGame(
     StoredClientConfig,
-    Session,
-    SignedPlayerInfo,
-    Vars,
+    StoredSession,
+    StoredSignedPlayerInfo,
+    StoredVars,
     [WeakThis]()
     {
       if (auto* Self = WeakThis.Get())
@@ -2043,14 +2043,14 @@ void UNakamaClientLinkGameCenter::Activate()
 
   NakamaApi::LinkGameCenter(
     StoredClientConfig,
-    Session,
-    PlayerId,
-    BundleId,
-    TimestampSeconds,
-    Salt,
-    Signature,
-    PublicKeyUrl,
-    Vars,
+    StoredSession,
+    StoredPlayerId,
+    StoredBundleId,
+    StoredTimestampSeconds,
+    StoredSalt,
+    StoredSignature,
+    StoredPublicKeyUrl,
+    StoredVars,
     [WeakThis]()
     {
       if (auto* Self = WeakThis.Get())
@@ -2097,9 +2097,9 @@ void UNakamaClientLinkGoogle::Activate()
 
   NakamaApi::LinkGoogle(
     StoredClientConfig,
-    Session,
-    Token,
-    Vars,
+    StoredSession,
+    StoredToken,
+    StoredVars,
     [WeakThis]()
     {
       if (auto* Self = WeakThis.Get())
@@ -2146,9 +2146,9 @@ void UNakamaClientLinkSteam::Activate()
 
   NakamaApi::LinkSteam(
     StoredClientConfig,
-    Session,
-    Account,
-    Sync,
+    StoredSession,
+    StoredAccount,
+    StoredSync,
     [WeakThis]()
     {
       if (auto* Self = WeakThis.Get())
@@ -2199,11 +2199,11 @@ void UNakamaClientListChannelMessages::Activate()
 
   NakamaApi::ListChannelMessages(
     StoredClientConfig,
-    Session,
-    ChannelId,
-    Limit,
-    Forward,
-    Cursor,
+    StoredSession,
+    StoredChannelId,
+    StoredLimit,
+    StoredForward,
+    StoredCursor,
     [WeakThis](const FNakamaChannelMessageList& Result)
     {
       if (auto* Self = WeakThis.Get())
@@ -2252,10 +2252,10 @@ void UNakamaClientListFriends::Activate()
 
   NakamaApi::ListFriends(
     StoredClientConfig,
-    Session,
-    Limit,
-    State,
-    Cursor,
+    StoredSession,
+    StoredLimit,
+    StoredState,
+    StoredCursor,
     [WeakThis](const FNakamaFriendList& Result)
     {
       if (auto* Self = WeakThis.Get())
@@ -2302,9 +2302,9 @@ void UNakamaClientListFriendsOfFriends::Activate()
 
   NakamaApi::ListFriendsOfFriends(
     StoredClientConfig,
-    Session,
-    Limit,
-    Cursor,
+    StoredSession,
+    StoredLimit,
+    StoredCursor,
     [WeakThis](const FNakamaFriendsOfFriendsList& Result)
     {
       if (auto* Self = WeakThis.Get())
@@ -2359,13 +2359,13 @@ void UNakamaClientListGroups::Activate()
 
   NakamaApi::ListGroups(
     StoredClientConfig,
-    Session,
-    Name,
-    Cursor,
-    Limit,
-    LangTag,
-    Members,
-    Open,
+    StoredSession,
+    StoredName,
+    StoredCursor,
+    StoredLimit,
+    StoredLangTag,
+    StoredMembers,
+    StoredOpen,
     [WeakThis](const FNakamaGroupList& Result)
     {
       if (auto* Self = WeakThis.Get())
@@ -2416,11 +2416,11 @@ void UNakamaClientListGroupUsers::Activate()
 
   NakamaApi::ListGroupUsers(
     StoredClientConfig,
-    Session,
-    GroupId,
-    Limit,
-    State,
-    Cursor,
+    StoredSession,
+    StoredGroupId,
+    StoredLimit,
+    StoredState,
+    StoredCursor,
     [WeakThis](const FNakamaGroupUserList& Result)
     {
       if (auto* Self = WeakThis.Get())
@@ -2473,12 +2473,12 @@ void UNakamaClientListLeaderboardRecords::Activate()
 
   NakamaApi::ListLeaderboardRecords(
     StoredClientConfig,
-    Session,
-    LeaderboardId,
-    OwnerIds,
-    Limit,
-    Cursor,
-    Expiry,
+    StoredSession,
+    StoredLeaderboardId,
+    StoredOwnerIds,
+    StoredLimit,
+    StoredCursor,
+    StoredExpiry,
     [WeakThis](const FNakamaLeaderboardRecordList& Result)
     {
       if (auto* Self = WeakThis.Get())
@@ -2531,12 +2531,12 @@ void UNakamaClientListLeaderboardRecordsAroundOwner::Activate()
 
   NakamaApi::ListLeaderboardRecordsAroundOwner(
     StoredClientConfig,
-    Session,
-    LeaderboardId,
-    Limit,
-    OwnerId,
-    Expiry,
-    Cursor,
+    StoredSession,
+    StoredLeaderboardId,
+    StoredLimit,
+    StoredOwnerId,
+    StoredExpiry,
+    StoredCursor,
     [WeakThis](const FNakamaLeaderboardRecordList& Result)
     {
       if (auto* Self = WeakThis.Get())
@@ -2591,13 +2591,13 @@ void UNakamaClientListMatches::Activate()
 
   NakamaApi::ListMatches(
     StoredClientConfig,
-    Session,
-    Limit,
-    Authoritative,
-    Label,
-    MinSize,
-    MaxSize,
-    Query,
+    StoredSession,
+    StoredLimit,
+    StoredAuthoritative,
+    StoredLabel,
+    StoredMinSize,
+    StoredMaxSize,
+    StoredQuery,
     [WeakThis](const FNakamaMatchList& Result)
     {
       if (auto* Self = WeakThis.Get())
@@ -2648,11 +2648,11 @@ void UNakamaClientListParties::Activate()
 
   NakamaApi::ListParties(
     StoredClientConfig,
-    Session,
-    Limit,
-    Open,
-    Query,
-    Cursor,
+    StoredSession,
+    StoredLimit,
+    StoredOpen,
+    StoredQuery,
+    StoredCursor,
     [WeakThis](const FNakamaPartyList& Result)
     {
       if (auto* Self = WeakThis.Get())
@@ -2699,9 +2699,9 @@ void UNakamaClientListNotifications::Activate()
 
   NakamaApi::ListNotifications(
     StoredClientConfig,
-    Session,
-    Limit,
-    CacheableCursor,
+    StoredSession,
+    StoredLimit,
+    StoredCacheableCursor,
     [WeakThis](const FNakamaNotificationList& Result)
     {
       if (auto* Self = WeakThis.Get())
@@ -2752,11 +2752,11 @@ void UNakamaClientListStorageObjects::Activate()
 
   NakamaApi::ListStorageObjects(
     StoredClientConfig,
-    Session,
-    UserId,
-    Collection,
-    Limit,
-    Cursor,
+    StoredSession,
+    StoredUserId,
+    StoredCollection,
+    StoredLimit,
+    StoredCursor,
     [WeakThis](const FNakamaStorageObjectList& Result)
     {
       if (auto* Self = WeakThis.Get())
@@ -2803,9 +2803,9 @@ void UNakamaClientListSubscriptions::Activate()
 
   NakamaApi::ListSubscriptions(
     StoredClientConfig,
-    Session,
-    Limit,
-    Cursor,
+    StoredSession,
+    StoredLimit,
+    StoredCursor,
     [WeakThis](const FNakamaSubscriptionList& Result)
     {
       if (auto* Self = WeakThis.Get())
@@ -2860,13 +2860,13 @@ void UNakamaClientListTournaments::Activate()
 
   NakamaApi::ListTournaments(
     StoredClientConfig,
-    Session,
-    CategoryStart,
-    CategoryEnd,
-    StartTime,
-    EndTime,
-    Limit,
-    Cursor,
+    StoredSession,
+    StoredCategoryStart,
+    StoredCategoryEnd,
+    StoredStartTime,
+    StoredEndTime,
+    StoredLimit,
+    StoredCursor,
     [WeakThis](const FNakamaTournamentList& Result)
     {
       if (auto* Self = WeakThis.Get())
@@ -2919,12 +2919,12 @@ void UNakamaClientListTournamentRecords::Activate()
 
   NakamaApi::ListTournamentRecords(
     StoredClientConfig,
-    Session,
-    TournamentId,
-    OwnerIds,
-    Limit,
-    Cursor,
-    Expiry,
+    StoredSession,
+    StoredTournamentId,
+    StoredOwnerIds,
+    StoredLimit,
+    StoredCursor,
+    StoredExpiry,
     [WeakThis](const FNakamaTournamentRecordList& Result)
     {
       if (auto* Self = WeakThis.Get())
@@ -2977,12 +2977,12 @@ void UNakamaClientListTournamentRecordsAroundOwner::Activate()
 
   NakamaApi::ListTournamentRecordsAroundOwner(
     StoredClientConfig,
-    Session,
-    TournamentId,
-    Limit,
-    OwnerId,
-    Expiry,
-    Cursor,
+    StoredSession,
+    StoredTournamentId,
+    StoredLimit,
+    StoredOwnerId,
+    StoredExpiry,
+    StoredCursor,
     [WeakThis](const FNakamaTournamentRecordList& Result)
     {
       if (auto* Self = WeakThis.Get())
@@ -3033,11 +3033,11 @@ void UNakamaClientListUserGroups::Activate()
 
   NakamaApi::ListUserGroups(
     StoredClientConfig,
-    Session,
-    UserId,
-    Limit,
-    State,
-    Cursor,
+    StoredSession,
+    StoredUserId,
+    StoredLimit,
+    StoredState,
+    StoredCursor,
     [WeakThis](const FNakamaUserGroupList& Result)
     {
       if (auto* Self = WeakThis.Get())
@@ -3084,9 +3084,9 @@ void UNakamaClientPromoteGroupUsers::Activate()
 
   NakamaApi::PromoteGroupUsers(
     StoredClientConfig,
-    Session,
-    GroupId,
-    UserIds,
+    StoredSession,
+    StoredGroupId,
+    StoredUserIds,
     [WeakThis]()
     {
       if (auto* Self = WeakThis.Get())
@@ -3133,9 +3133,9 @@ void UNakamaClientDemoteGroupUsers::Activate()
 
   NakamaApi::DemoteGroupUsers(
     StoredClientConfig,
-    Session,
-    GroupId,
-    UserIds,
+    StoredSession,
+    StoredGroupId,
+    StoredUserIds,
     [WeakThis]()
     {
       if (auto* Self = WeakThis.Get())
@@ -3180,8 +3180,8 @@ void UNakamaClientReadStorageObjects::Activate()
 
   NakamaApi::ReadStorageObjects(
     StoredClientConfig,
-    Session,
-    ObjectIds,
+    StoredSession,
+    StoredObjectIds,
     [WeakThis](const FNakamaStorageObjects& Result)
     {
       if (auto* Self = WeakThis.Get())
@@ -3230,10 +3230,10 @@ void UNakamaClientRpcFunc::Activate()
 
   NakamaApi::RpcFunc(
     StoredClientConfig,
-    Session,
-    Id,
-    Payload,
-    HttpKey,
+    StoredSession,
+    StoredId,
+    StoredPayload,
+    StoredHttpKey,
     [WeakThis](const FNakamaRpc& Result)
     {
       if (auto* Self = WeakThis.Get())
@@ -3280,9 +3280,9 @@ void UNakamaClientUnlinkApple::Activate()
 
   NakamaApi::UnlinkApple(
     StoredClientConfig,
-    Session,
-    Token,
-    Vars,
+    StoredSession,
+    StoredToken,
+    StoredVars,
     [WeakThis]()
     {
       if (auto* Self = WeakThis.Get())
@@ -3329,9 +3329,9 @@ void UNakamaClientUnlinkCustom::Activate()
 
   NakamaApi::UnlinkCustom(
     StoredClientConfig,
-    Session,
-    Id,
-    Vars,
+    StoredSession,
+    StoredId,
+    StoredVars,
     [WeakThis]()
     {
       if (auto* Self = WeakThis.Get())
@@ -3378,9 +3378,9 @@ void UNakamaClientUnlinkDevice::Activate()
 
   NakamaApi::UnlinkDevice(
     StoredClientConfig,
-    Session,
-    Id,
-    Vars,
+    StoredSession,
+    StoredId,
+    StoredVars,
     [WeakThis]()
     {
       if (auto* Self = WeakThis.Get())
@@ -3429,10 +3429,10 @@ void UNakamaClientUnlinkEmail::Activate()
 
   NakamaApi::UnlinkEmail(
     StoredClientConfig,
-    Session,
-    Email,
-    Password,
-    Vars,
+    StoredSession,
+    StoredEmail,
+    StoredPassword,
+    StoredVars,
     [WeakThis]()
     {
       if (auto* Self = WeakThis.Get())
@@ -3479,9 +3479,9 @@ void UNakamaClientUnlinkFacebook::Activate()
 
   NakamaApi::UnlinkFacebook(
     StoredClientConfig,
-    Session,
-    Token,
-    Vars,
+    StoredSession,
+    StoredToken,
+    StoredVars,
     [WeakThis]()
     {
       if (auto* Self = WeakThis.Get())
@@ -3528,9 +3528,9 @@ void UNakamaClientUnlinkFacebookInstantGame::Activate()
 
   NakamaApi::UnlinkFacebookInstantGame(
     StoredClientConfig,
-    Session,
-    SignedPlayerInfo,
-    Vars,
+    StoredSession,
+    StoredSignedPlayerInfo,
+    StoredVars,
     [WeakThis]()
     {
       if (auto* Self = WeakThis.Get())
@@ -3587,14 +3587,14 @@ void UNakamaClientUnlinkGameCenter::Activate()
 
   NakamaApi::UnlinkGameCenter(
     StoredClientConfig,
-    Session,
-    PlayerId,
-    BundleId,
-    TimestampSeconds,
-    Salt,
-    Signature,
-    PublicKeyUrl,
-    Vars,
+    StoredSession,
+    StoredPlayerId,
+    StoredBundleId,
+    StoredTimestampSeconds,
+    StoredSalt,
+    StoredSignature,
+    StoredPublicKeyUrl,
+    StoredVars,
     [WeakThis]()
     {
       if (auto* Self = WeakThis.Get())
@@ -3641,9 +3641,9 @@ void UNakamaClientUnlinkGoogle::Activate()
 
   NakamaApi::UnlinkGoogle(
     StoredClientConfig,
-    Session,
-    Token,
-    Vars,
+    StoredSession,
+    StoredToken,
+    StoredVars,
     [WeakThis]()
     {
       if (auto* Self = WeakThis.Get())
@@ -3690,9 +3690,9 @@ void UNakamaClientUnlinkSteam::Activate()
 
   NakamaApi::UnlinkSteam(
     StoredClientConfig,
-    Session,
-    Token,
-    Vars,
+    StoredSession,
+    StoredToken,
+    StoredVars,
     [WeakThis]()
     {
       if (auto* Self = WeakThis.Get())
@@ -3747,13 +3747,13 @@ void UNakamaClientUpdateAccount::Activate()
 
   NakamaApi::UpdateAccount(
     StoredClientConfig,
-    Session,
-    Username,
-    DisplayName,
-    AvatarUrl,
-    LangTag,
-    Location,
-    Timezone,
+    StoredSession,
+    StoredUsername,
+    StoredDisplayName,
+    StoredAvatarUrl,
+    StoredLangTag,
+    StoredLocation,
+    StoredTimezone,
     [WeakThis]()
     {
       if (auto* Self = WeakThis.Get())
@@ -3808,13 +3808,13 @@ void UNakamaClientUpdateGroup::Activate()
 
   NakamaApi::UpdateGroup(
     StoredClientConfig,
-    Session,
-    GroupId,
-    Name,
-    Description,
-    LangTag,
-    AvatarUrl,
-    Open,
+    StoredSession,
+    StoredGroupId,
+    StoredName,
+    StoredDescription,
+    StoredLangTag,
+    StoredAvatarUrl,
+    StoredOpen,
     [WeakThis]()
     {
       if (auto* Self = WeakThis.Get())
@@ -3861,9 +3861,9 @@ void UNakamaClientValidatePurchaseApple::Activate()
 
   NakamaApi::ValidatePurchaseApple(
     StoredClientConfig,
-    Session,
-    Receipt,
-    Persist,
+    StoredSession,
+    StoredReceipt,
+    StoredPersist,
     [WeakThis](const FNakamaValidatePurchaseResponse& Result)
     {
       if (auto* Self = WeakThis.Get())
@@ -3910,9 +3910,9 @@ void UNakamaClientValidateSubscriptionApple::Activate()
 
   NakamaApi::ValidateSubscriptionApple(
     StoredClientConfig,
-    Session,
-    Receipt,
-    Persist,
+    StoredSession,
+    StoredReceipt,
+    StoredPersist,
     [WeakThis](const FNakamaValidateSubscriptionResponse& Result)
     {
       if (auto* Self = WeakThis.Get())
@@ -3959,9 +3959,9 @@ void UNakamaClientValidatePurchaseGoogle::Activate()
 
   NakamaApi::ValidatePurchaseGoogle(
     StoredClientConfig,
-    Session,
-    Purchase,
-    Persist,
+    StoredSession,
+    StoredPurchase,
+    StoredPersist,
     [WeakThis](const FNakamaValidatePurchaseResponse& Result)
     {
       if (auto* Self = WeakThis.Get())
@@ -4008,9 +4008,9 @@ void UNakamaClientValidateSubscriptionGoogle::Activate()
 
   NakamaApi::ValidateSubscriptionGoogle(
     StoredClientConfig,
-    Session,
-    Receipt,
-    Persist,
+    StoredSession,
+    StoredReceipt,
+    StoredPersist,
     [WeakThis](const FNakamaValidateSubscriptionResponse& Result)
     {
       if (auto* Self = WeakThis.Get())
@@ -4059,10 +4059,10 @@ void UNakamaClientValidatePurchaseHuawei::Activate()
 
   NakamaApi::ValidatePurchaseHuawei(
     StoredClientConfig,
-    Session,
-    Purchase,
-    Signature,
-    Persist,
+    StoredSession,
+    StoredPurchase,
+    StoredSignature,
+    StoredPersist,
     [WeakThis](const FNakamaValidatePurchaseResponse& Result)
     {
       if (auto* Self = WeakThis.Get())
@@ -4109,9 +4109,9 @@ void UNakamaClientValidatePurchaseFacebookInstant::Activate()
 
   NakamaApi::ValidatePurchaseFacebookInstant(
     StoredClientConfig,
-    Session,
-    SignedRequest,
-    Persist,
+    StoredSession,
+    StoredSignedRequest,
+    StoredPersist,
     [WeakThis](const FNakamaValidatePurchaseResponse& Result)
     {
       if (auto* Self = WeakThis.Get())
@@ -4158,9 +4158,9 @@ void UNakamaClientWriteLeaderboardRecord::Activate()
 
   NakamaApi::WriteLeaderboardRecord(
     StoredClientConfig,
-    Session,
-    LeaderboardId,
-    Record,
+    StoredSession,
+    StoredLeaderboardId,
+    StoredRecord,
     [WeakThis](const FNakamaLeaderboardRecord& Result)
     {
       if (auto* Self = WeakThis.Get())
@@ -4205,8 +4205,8 @@ void UNakamaClientWriteStorageObjects::Activate()
 
   NakamaApi::WriteStorageObjects(
     StoredClientConfig,
-    Session,
-    Objects,
+    StoredSession,
+    StoredObjects,
     [WeakThis](const FNakamaStorageObjectAcks& Result)
     {
       if (auto* Self = WeakThis.Get())
@@ -4253,9 +4253,9 @@ void UNakamaClientWriteTournamentRecord::Activate()
 
   NakamaApi::WriteTournamentRecord(
     StoredClientConfig,
-    Session,
-    TournamentId,
-    Record,
+    StoredSession,
+    StoredTournamentId,
+    StoredRecord,
     [WeakThis](const FNakamaLeaderboardRecord& Result)
     {
       if (auto* Self = WeakThis.Get())

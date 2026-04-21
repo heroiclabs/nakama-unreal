@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-// TODO IMPORTS
+#pragma once
+
+#include "NakamaError.generated.h"
 
 USTRUCT(BlueprintType)
 struct NAKAMAAPI_API FNakamaError

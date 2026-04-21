@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#include "SatoriClientConfig.generated.h"
+
 /** Low-level API client configuration. */
 USTRUCT(BlueprintType)
-struct NAKAMAAPI_API FSatoriClientConfig
+struct SATORIAPI_API FSatoriClientConfig
 {
 	GENERATED_BODY()
 

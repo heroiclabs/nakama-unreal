@@ -1,5 +1,5 @@
 /*
- * Copyright {{currentYear}} The Nakama Authors
+ * Copyright 2026 The Nakama Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-// TODO IMPORTS
+#include "NakamaClientConfig.h"
+
 FString FNakamaClientConfig::GetBaseUrl() const noexcept
 {
 	const FString Scheme = bUseSSL ? TEXT("https") : TEXT("http");

@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
+#pragma once
+
 #include "SatoriSession.generated.h"
 
 USTRUCT(BlueprintType)
-struct NAKAMAAPI_API FSatoriSession
+struct SATORIAPI_API FSatoriSession
 {
 	GENERATED_BODY()
 

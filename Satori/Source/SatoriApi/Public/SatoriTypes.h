@@ -21,6 +21,13 @@
 #include "CoreMinimal.h"
 #include "SatoriTypes.generated.h"
 
+enum class ESatoriRequestAuth : uint8
+{
+	None,
+	Basic,
+	Bearer
+};
+
 /*
 * The type of configuration that overrides a flag value.
 */

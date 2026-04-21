@@ -156,7 +156,7 @@ namespace Satori
     const TMap<FString, FString>& Default,
     const TMap<FString, FString>& Custom,
     const FSatoriRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -168,12 +168,12 @@ namespace Satori
   * @param RetryConfig Retry configuration.
   * @param CancellationToken	Set to true to cancel the in-flight request.
   */
-  SATORI_API TSatoriFuture<Result> AuthenticateLogout(
+  SATORI_API TSatoriFuture<FSatoriVoidResult> AuthenticateLogout(
     const FSatoriClientConfig& ClientConfig,
     const FString& Token,
     const FString& RefreshToken,
     const FSatoriRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -188,7 +188,7 @@ namespace Satori
     const FSatoriClientConfig& ClientConfig,
     const FString& RefreshToken,
     const FSatoriRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -199,11 +199,11 @@ namespace Satori
   * @param RetryConfig Retry configuration.
   * @param CancellationToken	Set to true to cancel the in-flight request.
   */
-  SATORI_API TSatoriFuture<Result> DeleteIdentity(
+  SATORI_API TSatoriFuture<FSatoriVoidResult> DeleteIdentity(
     const FSatoriClientConfig& ClientConfig,
     const FString& HttpKey,
     const FSatoriRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -214,11 +214,11 @@ namespace Satori
   * @param RetryConfig Retry configuration.
   * @param CancellationToken	Set to true to cancel the in-flight request.
   */
-  SATORI_API TSatoriFuture<Result> DeleteIdentity(
+  SATORI_API TSatoriFuture<FSatoriVoidResult> DeleteIdentity(
     const FSatoriClientConfig& ClientConfig,
     const FSatoriSession& Session,
     const FSatoriRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -229,11 +229,11 @@ namespace Satori
   * @param RetryConfig Retry configuration.
   * @param CancellationToken	Set to true to cancel the in-flight request.
   */
-  SATORI_API TSatoriFuture<Result> Event(
+  SATORI_API TSatoriFuture<FSatoriVoidResult> Event(
     const FSatoriClientConfig& ClientConfig,
     const FString& HttpKey,
     const FSatoriRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -244,11 +244,11 @@ namespace Satori
   * @param RetryConfig Retry configuration.
   * @param CancellationToken	Set to true to cancel the in-flight request.
   */
-  SATORI_API TSatoriFuture<Result> Event(
+  SATORI_API TSatoriFuture<FSatoriVoidResult> Event(
     const FSatoriClientConfig& ClientConfig,
     const FSatoriSession& Session,
     const FSatoriRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -259,11 +259,11 @@ namespace Satori
   * @param RetryConfig Retry configuration.
   * @param CancellationToken	Set to true to cancel the in-flight request.
   */
-  SATORI_API TSatoriFuture<Result> ServerEvent(
+  SATORI_API TSatoriFuture<FSatoriVoidResult> ServerEvent(
     const FSatoriClientConfig& ClientConfig,
     const FString& HttpKey,
     const FSatoriRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -274,11 +274,11 @@ namespace Satori
   * @param RetryConfig Retry configuration.
   * @param CancellationToken	Set to true to cancel the in-flight request.
   */
-  SATORI_API TSatoriFuture<Result> ServerEvent(
+  SATORI_API TSatoriFuture<FSatoriVoidResult> ServerEvent(
     const FSatoriClientConfig& ClientConfig,
     const FSatoriSession& Session,
     const FSatoriRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -297,7 +297,7 @@ namespace Satori
     const TArray<FString>& Names,
     const TArray<FString>& Labels,
     const FSatoriRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -316,7 +316,7 @@ namespace Satori
     const TArray<FString>& Names,
     const TArray<FString>& Labels,
     const FSatoriRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -335,7 +335,7 @@ namespace Satori
     const TArray<FString>& Names,
     const TArray<FString>& Labels,
     const FSatoriRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -354,7 +354,7 @@ namespace Satori
     const TArray<FString>& Names,
     const TArray<FString>& Labels,
     const FSatoriRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -373,7 +373,7 @@ namespace Satori
     const TArray<FString>& Names,
     const TArray<FString>& Labels,
     const FSatoriRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -392,7 +392,7 @@ namespace Satori
     const TArray<FString>& Names,
     const TArray<FString>& Labels,
     const FSatoriRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -419,7 +419,7 @@ namespace Satori
     int64 StartTimeSec,
     int64 EndTimeSec,
     const FSatoriRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -446,7 +446,7 @@ namespace Satori
     int64 StartTimeSec,
     int64 EndTimeSec,
     const FSatoriRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -458,12 +458,12 @@ namespace Satori
   * @param RetryConfig Retry configuration.
   * @param CancellationToken	Set to true to cancel the in-flight request.
   */
-  SATORI_API TSatoriFuture<Result> JoinLiveEvent(
+  SATORI_API TSatoriFuture<FSatoriVoidResult> JoinLiveEvent(
     const FSatoriClientConfig& ClientConfig,
     const FString& HttpKey,
     const FString& Id,
     const FSatoriRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -475,12 +475,12 @@ namespace Satori
   * @param RetryConfig Retry configuration.
   * @param CancellationToken	Set to true to cancel the in-flight request.
   */
-  SATORI_API TSatoriFuture<Result> JoinLiveEvent(
+  SATORI_API TSatoriFuture<FSatoriVoidResult> JoinLiveEvent(
     const FSatoriClientConfig& ClientConfig,
     const FSatoriSession& Session,
     const FString& Id,
     const FSatoriRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -491,11 +491,11 @@ namespace Satori
   * @param RetryConfig Retry configuration.
   * @param CancellationToken	Set to true to cancel the in-flight request.
   */
-  SATORI_API TSatoriFuture<Result> Healthcheck(
+  SATORI_API TSatoriFuture<FSatoriVoidResult> Healthcheck(
     const FSatoriClientConfig& ClientConfig,
     const FString& HttpKey,
     const FSatoriRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -506,11 +506,11 @@ namespace Satori
   * @param RetryConfig Retry configuration.
   * @param CancellationToken	Set to true to cancel the in-flight request.
   */
-  SATORI_API TSatoriFuture<Result> Healthcheck(
+  SATORI_API TSatoriFuture<FSatoriVoidResult> Healthcheck(
     const FSatoriClientConfig& ClientConfig,
     const FSatoriSession& Session,
     const FSatoriRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -531,7 +531,7 @@ namespace Satori
     const TMap<FString, FString>& Default,
     const TMap<FString, FString>& Custom,
     const FSatoriRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -552,7 +552,7 @@ namespace Satori
     const TMap<FString, FString>& Default,
     const TMap<FString, FString>& Custom,
     const FSatoriRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -567,7 +567,7 @@ namespace Satori
     const FSatoriClientConfig& ClientConfig,
     const FString& HttpKey,
     const FSatoriRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -582,7 +582,7 @@ namespace Satori
     const FSatoriClientConfig& ClientConfig,
     const FSatoriSession& Session,
     const FSatoriRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -593,11 +593,11 @@ namespace Satori
   * @param RetryConfig Retry configuration.
   * @param CancellationToken	Set to true to cancel the in-flight request.
   */
-  SATORI_API TSatoriFuture<Result> Readycheck(
+  SATORI_API TSatoriFuture<FSatoriVoidResult> Readycheck(
     const FSatoriClientConfig& ClientConfig,
     const FString& HttpKey,
     const FSatoriRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -608,11 +608,11 @@ namespace Satori
   * @param RetryConfig Retry configuration.
   * @param CancellationToken	Set to true to cancel the in-flight request.
   */
-  SATORI_API TSatoriFuture<Result> Readycheck(
+  SATORI_API TSatoriFuture<FSatoriVoidResult> Readycheck(
     const FSatoriClientConfig& ClientConfig,
     const FSatoriSession& Session,
     const FSatoriRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -626,14 +626,14 @@ namespace Satori
   * @param RetryConfig Retry configuration.
   * @param CancellationToken	Set to true to cancel the in-flight request.
   */
-  SATORI_API TSatoriFuture<Result> UpdateProperties(
+  SATORI_API TSatoriFuture<FSatoriVoidResult> UpdateProperties(
     const FSatoriClientConfig& ClientConfig,
     const FString& HttpKey,
     bool Recompute,
     const TMap<FString, FString>& Default,
     const TMap<FString, FString>& Custom,
     const FSatoriRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -647,14 +647,14 @@ namespace Satori
   * @param RetryConfig Retry configuration.
   * @param CancellationToken	Set to true to cancel the in-flight request.
   */
-  SATORI_API TSatoriFuture<Result> UpdateProperties(
+  SATORI_API TSatoriFuture<FSatoriVoidResult> UpdateProperties(
     const FSatoriClientConfig& ClientConfig,
     const FSatoriSession& Session,
     bool Recompute,
     const TMap<FString, FString>& Default,
     const TMap<FString, FString>& Custom,
     const FSatoriRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -677,7 +677,7 @@ namespace Satori
     const FString& Cursor,
     const TArray<FString>& MessageIds,
     const FSatoriRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -700,7 +700,7 @@ namespace Satori
     const FString& Cursor,
     const TArray<FString>& MessageIds,
     const FSatoriRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -714,14 +714,14 @@ namespace Satori
   * @param RetryConfig Retry configuration.
   * @param CancellationToken	Set to true to cancel the in-flight request.
   */
-  SATORI_API TSatoriFuture<Result> UpdateMessage(
+  SATORI_API TSatoriFuture<FSatoriVoidResult> UpdateMessage(
     const FSatoriClientConfig& ClientConfig,
     const FString& HttpKey,
     const FString& Id,
     int64 ReadTime,
     int64 ConsumeTime,
     const FSatoriRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -735,14 +735,14 @@ namespace Satori
   * @param RetryConfig Retry configuration.
   * @param CancellationToken	Set to true to cancel the in-flight request.
   */
-  SATORI_API TSatoriFuture<Result> UpdateMessage(
+  SATORI_API TSatoriFuture<FSatoriVoidResult> UpdateMessage(
     const FSatoriClientConfig& ClientConfig,
     const FSatoriSession& Session,
     const FString& Id,
     int64 ReadTime,
     int64 ConsumeTime,
     const FSatoriRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -754,12 +754,12 @@ namespace Satori
   * @param RetryConfig Retry configuration.
   * @param CancellationToken	Set to true to cancel the in-flight request.
   */
-  SATORI_API TSatoriFuture<Result> DeleteMessage(
+  SATORI_API TSatoriFuture<FSatoriVoidResult> DeleteMessage(
     const FSatoriClientConfig& ClientConfig,
     const FString& HttpKey,
     const FString& Id,
     const FSatoriRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 
   /**
@@ -771,11 +771,11 @@ namespace Satori
   * @param RetryConfig Retry configuration.
   * @param CancellationToken	Set to true to cancel the in-flight request.
   */
-  SATORI_API TSatoriFuture<Result> DeleteMessage(
+  SATORI_API TSatoriFuture<FSatoriVoidResult> DeleteMessage(
     const FSatoriClientConfig& ClientConfig,
     const FSatoriSession& Session,
     const FString& Id,
     const FSatoriRetryConfig& RetryConfig = {},
-    TSharedRef<std::atomic<bool>> CancellationToken = MakeShared<std::atomic<bool>>(false)
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
 }

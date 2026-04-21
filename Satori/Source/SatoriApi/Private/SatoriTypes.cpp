@@ -27,13 +27,12 @@ FSatoriAuthenticateLogoutRequest FSatoriAuthenticateLogoutRequest::FromJson(cons
   }
   if (Json->HasField(TEXT("token")))
   {
-      Result.Token = Json->GetStringField(TEXT("token"))
+      Result.Token = Json->GetStringField(TEXT("token"));
   }
   if (Json->HasField(TEXT("refresh_token")))
   {
-      Result.RefreshToken = Json->GetStringField(TEXT("refresh_token"))
+      Result.RefreshToken = Json->GetStringField(TEXT("refresh_token"));
   }
-  Result.ParseTokens();
   return Result;
 }
 
@@ -48,6 +47,8 @@ TSharedPtr<FJsonObject> FSatoriAuthenticateLogoutRequest::ToJson() const noexcep
   {
     Json->SetStringField(TEXT("refresh_token"), RefreshToken);
   }
+
+  return Json;
 }
 
 FSatoriAuthenticateRefreshRequest FSatoriAuthenticateRefreshRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
@@ -59,9 +60,8 @@ FSatoriAuthenticateRefreshRequest FSatoriAuthenticateRefreshRequest::FromJson(co
   }
   if (Json->HasField(TEXT("refresh_token")))
   {
-      Result.RefreshToken = Json->GetStringField(TEXT("refresh_token"))
+      Result.RefreshToken = Json->GetStringField(TEXT("refresh_token"));
   }
-  Result.ParseTokens();
   return Result;
 }
 
@@ -72,6 +72,8 @@ TSharedPtr<FJsonObject> FSatoriAuthenticateRefreshRequest::ToJson() const noexce
   {
     Json->SetStringField(TEXT("refresh_token"), RefreshToken);
   }
+
+  return Json;
 }
 
 FSatoriAuthenticateRequest FSatoriAuthenticateRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
@@ -83,11 +85,11 @@ FSatoriAuthenticateRequest FSatoriAuthenticateRequest::FromJson(const TSharedPtr
   }
   if (Json->HasField(TEXT("id")))
   {
-      Result.Id = Json->GetStringField(TEXT("id"))
+      Result.Id = Json->GetStringField(TEXT("id"));
   }
   if (Json->HasField(TEXT("no_session")))
   {
-      Result.NoSession = Json->GetBoolField(TEXT("no_session"))
+      Result.NoSession = Json->GetBoolField(TEXT("no_session"));
   }
   if (Json->HasField(TEXT("default")))
   {
@@ -111,7 +113,6 @@ FSatoriAuthenticateRequest FSatoriAuthenticateRequest::FromJson(const TSharedPtr
         }
       }
   }
-  Result.ParseTokens();
   return Result;
 }
 
@@ -122,7 +123,7 @@ TSharedPtr<FJsonObject> FSatoriAuthenticateRequest::ToJson() const noexcept
   {
     Json->SetStringField(TEXT("id"), Id);
   }
-  if (NoSession.None() == false)
+  
   {
     Json->SetBoolField(TEXT("no_session"), NoSession);
   }
@@ -144,6 +145,8 @@ TSharedPtr<FJsonObject> FSatoriAuthenticateRequest::ToJson() const noexcept
     }
     Json->SetObjectField(TEXT("custom"), MapObj);
   }
+
+  return Json;
 }
 
 FSatoriDeleteMessageRequest FSatoriDeleteMessageRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
@@ -155,9 +158,8 @@ FSatoriDeleteMessageRequest FSatoriDeleteMessageRequest::FromJson(const TSharedP
   }
   if (Json->HasField(TEXT("id")))
   {
-      Result.Id = Json->GetStringField(TEXT("id"))
+      Result.Id = Json->GetStringField(TEXT("id"));
   }
-  Result.ParseTokens();
   return Result;
 }
 
@@ -168,6 +170,8 @@ TSharedPtr<FJsonObject> FSatoriDeleteMessageRequest::ToJson() const noexcept
   {
     Json->SetStringField(TEXT("id"), Id);
   }
+
+  return Json;
 }
 
 FSatoriEvent FSatoriEvent::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
@@ -179,35 +183,35 @@ FSatoriEvent FSatoriEvent::FromJson(const TSharedPtr<FJsonObject>& Json) noexcep
   }
   if (Json->HasField(TEXT("name")))
   {
-      Result.Name = Json->GetStringField(TEXT("name"))
+      Result.Name = Json->GetStringField(TEXT("name"));
   }
   if (Json->HasField(TEXT("id")))
   {
-      Result.Id = Json->GetStringField(TEXT("id"))
+      Result.Id = Json->GetStringField(TEXT("id"));
   }
   if (Json->HasField(TEXT("value")))
   {
-      Result.Value = Json->GetStringField(TEXT("value"))
+      Result.Value = Json->GetStringField(TEXT("value"));
   }
   if (Json->HasField(TEXT("timestamp")))
   {
-      Result.Timestamp = Json->GetStringField(TEXT("timestamp"))
+      Result.Timestamp = Json->GetStringField(TEXT("timestamp"));
   }
   if (Json->HasField(TEXT("identity_id")))
   {
-      Result.IdentityId = Json->GetStringField(TEXT("identity_id"))
+      Result.IdentityId = Json->GetStringField(TEXT("identity_id"));
   }
   if (Json->HasField(TEXT("session_id")))
   {
-      Result.SessionId = Json->GetStringField(TEXT("session_id"))
+      Result.SessionId = Json->GetStringField(TEXT("session_id"));
   }
   if (Json->HasField(TEXT("session_issued_at")))
   {
-      Result.SessionIssuedAt = Json->GetNumberField(TEXT("session_issued_at"))
+      Result.SessionIssuedAt = Json->GetNumberField(TEXT("session_issued_at"));
   }
   if (Json->HasField(TEXT("session_expires_at")))
   {
-      Result.SessionExpiresAt = Json->GetNumberField(TEXT("session_expires_at"))
+      Result.SessionExpiresAt = Json->GetNumberField(TEXT("session_expires_at"));
   }
   if (Json->HasField(TEXT("metadata")))
   {
@@ -220,7 +224,6 @@ FSatoriEvent FSatoriEvent::FromJson(const TSharedPtr<FJsonObject>& Json) noexcep
         }
       }
   }
-  Result.ParseTokens();
   return Result;
 }
 
@@ -251,11 +254,13 @@ TSharedPtr<FJsonObject> FSatoriEvent::ToJson() const noexcept
   {
     Json->SetStringField(TEXT("session_id"), SessionId);
   }
-  if (SessionIssuedAt.NonZero() == false)
+  if (SessionIssuedAt != 0)
+  
   {
     Json->SetNumberField(TEXT("session_issued_at"), SessionIssuedAt);
   }
-  if (SessionExpiresAt.NonZero() == false)
+  if (SessionExpiresAt != 0)
+  
   {
     Json->SetNumberField(TEXT("session_expires_at"), SessionExpiresAt);
   }
@@ -268,6 +273,8 @@ TSharedPtr<FJsonObject> FSatoriEvent::ToJson() const noexcept
     }
     Json->SetObjectField(TEXT("metadata"), MapObj);
   }
+
+  return Json;
 }
 
 FSatoriEventRequest FSatoriEventRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
@@ -287,12 +294,11 @@ FSatoriEventRequest FSatoriEventRequest::FromJson(const TSharedPtr<FJsonObject>&
           const TSharedPtr<FJsonObject>* ItemObj = nullptr;
           if (Item->TryGetObject(ItemObj) && ItemObj)
           {
-            Result.Events.Add(FSatoriTArray<FSatoriEvent>::FromJson(*ItemObj));
+            Result.Events.Add(TArray<FSatoriEvent>::FromJson(*ItemObj));
           }
         }
       }
   }
-  Result.ParseTokens();
   return Result;
 }
 
@@ -304,10 +310,12 @@ TSharedPtr<FJsonObject> FSatoriEventRequest::ToJson() const noexcept
     TArray<TSharedPtr<FJsonValue>> Array;
     for (const auto& Item : Events)
     {
-      Array.Add(MakeShared<Object>(Item.ToJson()));
+      Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
     }
     Json->SetArrayField(TEXT("events"), Array);
   }
+
+  return Json;
 }
 
 FSatoriExperiment FSatoriExperiment::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
@@ -319,11 +327,11 @@ FSatoriExperiment FSatoriExperiment::FromJson(const TSharedPtr<FJsonObject>& Jso
   }
   if (Json->HasField(TEXT("name")))
   {
-      Result.Name = Json->GetStringField(TEXT("name"))
+      Result.Name = Json->GetStringField(TEXT("name"));
   }
   if (Json->HasField(TEXT("value")))
   {
-      Result.Value = Json->GetStringField(TEXT("value"))
+      Result.Value = Json->GetStringField(TEXT("value"));
   }
   if (Json->HasField(TEXT("labels")))
   {
@@ -338,13 +346,12 @@ FSatoriExperiment FSatoriExperiment::FromJson(const TSharedPtr<FJsonObject>& Jso
   }
   if (Json->HasField(TEXT("phase_name")))
   {
-      Result.PhaseName = Json->GetStringField(TEXT("phase_name"))
+      Result.PhaseName = Json->GetStringField(TEXT("phase_name"));
   }
   if (Json->HasField(TEXT("phase_variant_name")))
   {
-      Result.PhaseVariantName = Json->GetStringField(TEXT("phase_variant_name"))
+      Result.PhaseVariantName = Json->GetStringField(TEXT("phase_variant_name"));
   }
-  Result.ParseTokens();
   return Result;
 }
 
@@ -364,7 +371,7 @@ TSharedPtr<FJsonObject> FSatoriExperiment::ToJson() const noexcept
     TArray<TSharedPtr<FJsonValue>> Array;
     for (const auto& Item : Labels)
     {
-      Array.Add(MakeShared<String>(Item));
+      Array.Add(MakeShared<FJsonValueString>(Item));
     }
     Json->SetArrayField(TEXT("labels"), Array);
   }
@@ -376,6 +383,8 @@ TSharedPtr<FJsonObject> FSatoriExperiment::ToJson() const noexcept
   {
     Json->SetStringField(TEXT("phase_variant_name"), PhaseVariantName);
   }
+
+  return Json;
 }
 
 FSatoriExperimentList FSatoriExperimentList::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
@@ -395,12 +404,11 @@ FSatoriExperimentList FSatoriExperimentList::FromJson(const TSharedPtr<FJsonObje
           const TSharedPtr<FJsonObject>* ItemObj = nullptr;
           if (Item->TryGetObject(ItemObj) && ItemObj)
           {
-            Result.Experiments.Add(FSatoriTArray<FSatoriExperiment>::FromJson(*ItemObj));
+            Result.Experiments.Add(TArray<FSatoriExperiment>::FromJson(*ItemObj));
           }
         }
       }
   }
-  Result.ParseTokens();
   return Result;
 }
 
@@ -412,10 +420,12 @@ TSharedPtr<FJsonObject> FSatoriExperimentList::ToJson() const noexcept
     TArray<TSharedPtr<FJsonValue>> Array;
     for (const auto& Item : Experiments)
     {
-      Array.Add(MakeShared<Object>(Item.ToJson()));
+      Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
     }
     Json->SetArrayField(TEXT("experiments"), Array);
   }
+
+  return Json;
 }
 
 FSatoriValueChangeReason FSatoriValueChangeReason::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
@@ -431,22 +441,21 @@ FSatoriValueChangeReason FSatoriValueChangeReason::FromJson(const TSharedPtr<FJs
   }
   if (Json->HasField(TEXT("name")))
   {
-      Result.Name = Json->GetStringField(TEXT("name"))
+      Result.Name = Json->GetStringField(TEXT("name"));
   }
   if (Json->HasField(TEXT("variant_name")))
   {
-      Result.VariantName = Json->GetStringField(TEXT("variant_name"))
+      Result.VariantName = Json->GetStringField(TEXT("variant_name"));
   }
-  Result.ParseTokens();
   return Result;
 }
 
 TSharedPtr<FJsonObject> FSatoriValueChangeReason::ToJson() const noexcept
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-  if (Type.NumEmpty() == false)
+  
   {
-    Json->SetObjectField(TEXT("type"), Type.ToJson());
+    Json->SetNumberField(TEXT("type"), static_cast<int32>(Type));
   }
   if (Name.IsEmpty() == false)
   {
@@ -456,6 +465,8 @@ TSharedPtr<FJsonObject> FSatoriValueChangeReason::ToJson() const noexcept
   {
     Json->SetStringField(TEXT("variant_name"), VariantName);
   }
+
+  return Json;
 }
 
 FSatoriFlag FSatoriFlag::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
@@ -467,22 +478,22 @@ FSatoriFlag FSatoriFlag::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
   }
   if (Json->HasField(TEXT("name")))
   {
-      Result.Name = Json->GetStringField(TEXT("name"))
+      Result.Name = Json->GetStringField(TEXT("name"));
   }
   if (Json->HasField(TEXT("value")))
   {
-      Result.Value = Json->GetStringField(TEXT("value"))
+      Result.Value = Json->GetStringField(TEXT("value"));
   }
   if (Json->HasField(TEXT("condition_changed")))
   {
-      Result.ConditionChanged = Json->GetBoolField(TEXT("condition_changed"))
+      Result.ConditionChanged = Json->GetBoolField(TEXT("condition_changed"));
   }
   if (Json->HasField(TEXT("change_reason")))
   {
       const TSharedPtr<FJsonObject>* NestedObj;
       if (Json->TryGetObjectField(TEXT("change_reason"), NestedObj))
       {
-        Result.ChangeReason.Add(FSatoriFSatoriValueChangeReason::FromJson(*NestedObj));
+        Result.ChangeReason.Add(FSatoriValueChangeReason::FromJson(*ItemObj));
       }
   }
   if (Json->HasField(TEXT("labels")))
@@ -496,7 +507,6 @@ FSatoriFlag FSatoriFlag::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
         }
       }
   }
-  Result.ParseTokens();
   return Result;
 }
 
@@ -511,11 +521,11 @@ TSharedPtr<FJsonObject> FSatoriFlag::ToJson() const noexcept
   {
     Json->SetStringField(TEXT("value"), Value);
   }
-  if (ConditionChanged.None() == false)
+  
   {
     Json->SetBoolField(TEXT("condition_changed"), ConditionChanged);
   }
-  if (ChangeReason.NumEmpty() == false)
+  
   {
     Json->SetObjectField(TEXT("change_reason"), ChangeReason.ToJson());
   }
@@ -524,10 +534,12 @@ TSharedPtr<FJsonObject> FSatoriFlag::ToJson() const noexcept
     TArray<TSharedPtr<FJsonValue>> Array;
     for (const auto& Item : Labels)
     {
-      Array.Add(MakeShared<String>(Item));
+      Array.Add(MakeShared<FJsonValueString>(Item));
     }
     Json->SetArrayField(TEXT("labels"), Array);
   }
+
+  return Json;
 }
 
 FSatoriFlagList FSatoriFlagList::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
@@ -547,12 +559,11 @@ FSatoriFlagList FSatoriFlagList::FromJson(const TSharedPtr<FJsonObject>& Json) n
           const TSharedPtr<FJsonObject>* ItemObj = nullptr;
           if (Item->TryGetObject(ItemObj) && ItemObj)
           {
-            Result.Flags.Add(FSatoriTArray<FSatoriFlag>::FromJson(*ItemObj));
+            Result.Flags.Add(TArray<FSatoriFlag>::FromJson(*ItemObj));
           }
         }
       }
   }
-  Result.ParseTokens();
   return Result;
 }
 
@@ -564,10 +575,12 @@ TSharedPtr<FJsonObject> FSatoriFlagList::ToJson() const noexcept
     TArray<TSharedPtr<FJsonValue>> Array;
     for (const auto& Item : Flags)
     {
-      Array.Add(MakeShared<Object>(Item.ToJson()));
+      Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
     }
     Json->SetArrayField(TEXT("flags"), Array);
   }
+
+  return Json;
 }
 
 FSatoriFlagOverrideValue FSatoriFlagOverrideValue::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
@@ -583,30 +596,29 @@ FSatoriFlagOverrideValue FSatoriFlagOverrideValue::FromJson(const TSharedPtr<FJs
   }
   if (Json->HasField(TEXT("name")))
   {
-      Result.Name = Json->GetStringField(TEXT("name"))
+      Result.Name = Json->GetStringField(TEXT("name"));
   }
   if (Json->HasField(TEXT("variant_name")))
   {
-      Result.VariantName = Json->GetStringField(TEXT("variant_name"))
+      Result.VariantName = Json->GetStringField(TEXT("variant_name"));
   }
   if (Json->HasField(TEXT("value")))
   {
-      Result.Value = Json->GetStringField(TEXT("value"))
+      Result.Value = Json->GetStringField(TEXT("value"));
   }
   if (Json->HasField(TEXT("create_time_sec")))
   {
-      Result.CreateTimeSec = Json->GetNumberField(TEXT("create_time_sec"))
+      Result.CreateTimeSec = Json->GetNumberField(TEXT("create_time_sec"));
   }
-  Result.ParseTokens();
   return Result;
 }
 
 TSharedPtr<FJsonObject> FSatoriFlagOverrideValue::ToJson() const noexcept
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-  if (Type.NumEmpty() == false)
+  
   {
-    Json->SetObjectField(TEXT("type"), Type.ToJson());
+    Json->SetNumberField(TEXT("type"), static_cast<int32>(Type));
   }
   if (Name.IsEmpty() == false)
   {
@@ -620,10 +632,13 @@ TSharedPtr<FJsonObject> FSatoriFlagOverrideValue::ToJson() const noexcept
   {
     Json->SetStringField(TEXT("value"), Value);
   }
-  if (CreateTimeSec.NonZero() == false)
+  if (CreateTimeSec != 0)
+  
   {
     Json->SetNumberField(TEXT("create_time_sec"), CreateTimeSec);
   }
+
+  return Json;
 }
 
 FSatoriFlagOverride FSatoriFlagOverride::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
@@ -635,7 +650,7 @@ FSatoriFlagOverride FSatoriFlagOverride::FromJson(const TSharedPtr<FJsonObject>&
   }
   if (Json->HasField(TEXT("flag_name")))
   {
-      Result.FlagName = Json->GetStringField(TEXT("flag_name"))
+      Result.FlagName = Json->GetStringField(TEXT("flag_name"));
   }
   if (Json->HasField(TEXT("overrides")))
   {
@@ -647,7 +662,7 @@ FSatoriFlagOverride FSatoriFlagOverride::FromJson(const TSharedPtr<FJsonObject>&
           const TSharedPtr<FJsonObject>* ItemObj = nullptr;
           if (Item->TryGetObject(ItemObj) && ItemObj)
           {
-            Result.Overrides.Add(FSatoriTArray<FSatoriFlagOverrideValue>::FromJson(*ItemObj));
+            Result.Overrides.Add(TArray<FSatoriFlagOverrideValue>::FromJson(*ItemObj));
           }
         }
       }
@@ -663,7 +678,6 @@ FSatoriFlagOverride FSatoriFlagOverride::FromJson(const TSharedPtr<FJsonObject>&
         }
       }
   }
-  Result.ParseTokens();
   return Result;
 }
 
@@ -679,7 +693,7 @@ TSharedPtr<FJsonObject> FSatoriFlagOverride::ToJson() const noexcept
     TArray<TSharedPtr<FJsonValue>> Array;
     for (const auto& Item : Overrides)
     {
-      Array.Add(MakeShared<Object>(Item.ToJson()));
+      Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
     }
     Json->SetArrayField(TEXT("overrides"), Array);
   }
@@ -688,10 +702,12 @@ TSharedPtr<FJsonObject> FSatoriFlagOverride::ToJson() const noexcept
     TArray<TSharedPtr<FJsonValue>> Array;
     for (const auto& Item : Labels)
     {
-      Array.Add(MakeShared<String>(Item));
+      Array.Add(MakeShared<FJsonValueString>(Item));
     }
     Json->SetArrayField(TEXT("labels"), Array);
   }
+
+  return Json;
 }
 
 FSatoriFlagOverrideList FSatoriFlagOverrideList::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
@@ -711,12 +727,11 @@ FSatoriFlagOverrideList FSatoriFlagOverrideList::FromJson(const TSharedPtr<FJson
           const TSharedPtr<FJsonObject>* ItemObj = nullptr;
           if (Item->TryGetObject(ItemObj) && ItemObj)
           {
-            Result.Flags.Add(FSatoriTArray<FSatoriFlagOverride>::FromJson(*ItemObj));
+            Result.Flags.Add(TArray<FSatoriFlagOverride>::FromJson(*ItemObj));
           }
         }
       }
   }
-  Result.ParseTokens();
   return Result;
 }
 
@@ -728,10 +743,12 @@ TSharedPtr<FJsonObject> FSatoriFlagOverrideList::ToJson() const noexcept
     TArray<TSharedPtr<FJsonValue>> Array;
     for (const auto& Item : Flags)
     {
-      Array.Add(MakeShared<Object>(Item.ToJson()));
+      Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
     }
     Json->SetArrayField(TEXT("flags"), Array);
   }
+
+  return Json;
 }
 
 FSatoriGetExperimentsRequest FSatoriGetExperimentsRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
@@ -763,7 +780,6 @@ FSatoriGetExperimentsRequest FSatoriGetExperimentsRequest::FromJson(const TShare
         }
       }
   }
-  Result.ParseTokens();
   return Result;
 }
 
@@ -775,7 +791,7 @@ TSharedPtr<FJsonObject> FSatoriGetExperimentsRequest::ToJson() const noexcept
     TArray<TSharedPtr<FJsonValue>> Array;
     for (const auto& Item : Names)
     {
-      Array.Add(MakeShared<String>(Item));
+      Array.Add(MakeShared<FJsonValueString>(Item));
     }
     Json->SetArrayField(TEXT("names"), Array);
   }
@@ -784,10 +800,12 @@ TSharedPtr<FJsonObject> FSatoriGetExperimentsRequest::ToJson() const noexcept
     TArray<TSharedPtr<FJsonValue>> Array;
     for (const auto& Item : Labels)
     {
-      Array.Add(MakeShared<String>(Item));
+      Array.Add(MakeShared<FJsonValueString>(Item));
     }
     Json->SetArrayField(TEXT("labels"), Array);
   }
+
+  return Json;
 }
 
 FSatoriGetFlagsRequest FSatoriGetFlagsRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
@@ -819,7 +837,6 @@ FSatoriGetFlagsRequest FSatoriGetFlagsRequest::FromJson(const TSharedPtr<FJsonOb
         }
       }
   }
-  Result.ParseTokens();
   return Result;
 }
 
@@ -831,7 +848,7 @@ TSharedPtr<FJsonObject> FSatoriGetFlagsRequest::ToJson() const noexcept
     TArray<TSharedPtr<FJsonValue>> Array;
     for (const auto& Item : Names)
     {
-      Array.Add(MakeShared<String>(Item));
+      Array.Add(MakeShared<FJsonValueString>(Item));
     }
     Json->SetArrayField(TEXT("names"), Array);
   }
@@ -840,10 +857,12 @@ TSharedPtr<FJsonObject> FSatoriGetFlagsRequest::ToJson() const noexcept
     TArray<TSharedPtr<FJsonValue>> Array;
     for (const auto& Item : Labels)
     {
-      Array.Add(MakeShared<String>(Item));
+      Array.Add(MakeShared<FJsonValueString>(Item));
     }
     Json->SetArrayField(TEXT("labels"), Array);
   }
+
+  return Json;
 }
 
 FSatoriGetLiveEventsRequest FSatoriGetLiveEventsRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
@@ -877,21 +896,20 @@ FSatoriGetLiveEventsRequest FSatoriGetLiveEventsRequest::FromJson(const TSharedP
   }
   if (Json->HasField(TEXT("past_run_count")))
   {
-      Result.PastRunCount = Json->GetIntegerField(TEXT("past_run_count"))
+      Result.PastRunCount = Json->GetNumberField(TEXT("past_run_count"));
   }
   if (Json->HasField(TEXT("future_run_count")))
   {
-      Result.FutureRunCount = Json->GetIntegerField(TEXT("future_run_count"))
+      Result.FutureRunCount = Json->GetNumberField(TEXT("future_run_count"));
   }
   if (Json->HasField(TEXT("start_time_sec")))
   {
-      Result.StartTimeSec = Json->GetNumberField(TEXT("start_time_sec"))
+      Result.StartTimeSec = Json->GetNumberField(TEXT("start_time_sec"));
   }
   if (Json->HasField(TEXT("end_time_sec")))
   {
-      Result.EndTimeSec = Json->GetNumberField(TEXT("end_time_sec"))
+      Result.EndTimeSec = Json->GetNumberField(TEXT("end_time_sec"));
   }
-  Result.ParseTokens();
   return Result;
 }
 
@@ -903,7 +921,7 @@ TSharedPtr<FJsonObject> FSatoriGetLiveEventsRequest::ToJson() const noexcept
     TArray<TSharedPtr<FJsonValue>> Array;
     for (const auto& Item : Names)
     {
-      Array.Add(MakeShared<String>(Item));
+      Array.Add(MakeShared<FJsonValueString>(Item));
     }
     Json->SetArrayField(TEXT("names"), Array);
   }
@@ -912,26 +930,32 @@ TSharedPtr<FJsonObject> FSatoriGetLiveEventsRequest::ToJson() const noexcept
     TArray<TSharedPtr<FJsonValue>> Array;
     for (const auto& Item : Labels)
     {
-      Array.Add(MakeShared<String>(Item));
+      Array.Add(MakeShared<FJsonValueString>(Item));
     }
     Json->SetArrayField(TEXT("labels"), Array);
   }
-  if (PastRunCount.NonZero() == false)
+  if (PastRunCount != 0)
+  
   {
-    Json->SetIntegerField(TEXT("past_run_count"), PastRunCount);
+    Json->SetNumberField(TEXT("past_run_count"), PastRunCount);
   }
-  if (FutureRunCount.NonZero() == false)
+  if (FutureRunCount != 0)
+  
   {
-    Json->SetIntegerField(TEXT("future_run_count"), FutureRunCount);
+    Json->SetNumberField(TEXT("future_run_count"), FutureRunCount);
   }
-  if (StartTimeSec.NonZero() == false)
+  if (StartTimeSec != 0)
+  
   {
     Json->SetNumberField(TEXT("start_time_sec"), StartTimeSec);
   }
-  if (EndTimeSec.NonZero() == false)
+  if (EndTimeSec != 0)
+  
   {
     Json->SetNumberField(TEXT("end_time_sec"), EndTimeSec);
   }
+
+  return Json;
 }
 
 FSatoriMessage FSatoriMessage::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
@@ -943,43 +967,43 @@ FSatoriMessage FSatoriMessage::FromJson(const TSharedPtr<FJsonObject>& Json) noe
   }
   if (Json->HasField(TEXT("schedule_id")))
   {
-      Result.ScheduleId = Json->GetStringField(TEXT("schedule_id"))
+      Result.ScheduleId = Json->GetStringField(TEXT("schedule_id"));
   }
   if (Json->HasField(TEXT("send_time")))
   {
-      Result.SendTime = Json->GetNumberField(TEXT("send_time"))
+      Result.SendTime = Json->GetNumberField(TEXT("send_time"));
   }
   if (Json->HasField(TEXT("create_time")))
   {
-      Result.CreateTime = Json->GetNumberField(TEXT("create_time"))
+      Result.CreateTime = Json->GetNumberField(TEXT("create_time"));
   }
   if (Json->HasField(TEXT("update_time")))
   {
-      Result.UpdateTime = Json->GetNumberField(TEXT("update_time"))
+      Result.UpdateTime = Json->GetNumberField(TEXT("update_time"));
   }
   if (Json->HasField(TEXT("read_time")))
   {
-      Result.ReadTime = Json->GetNumberField(TEXT("read_time"))
+      Result.ReadTime = Json->GetNumberField(TEXT("read_time"));
   }
   if (Json->HasField(TEXT("consume_time")))
   {
-      Result.ConsumeTime = Json->GetNumberField(TEXT("consume_time"))
+      Result.ConsumeTime = Json->GetNumberField(TEXT("consume_time"));
   }
   if (Json->HasField(TEXT("text")))
   {
-      Result.Text = Json->GetStringField(TEXT("text"))
+      Result.Text = Json->GetStringField(TEXT("text"));
   }
   if (Json->HasField(TEXT("id")))
   {
-      Result.Id = Json->GetStringField(TEXT("id"))
+      Result.Id = Json->GetStringField(TEXT("id"));
   }
   if (Json->HasField(TEXT("title")))
   {
-      Result.Title = Json->GetStringField(TEXT("title"))
+      Result.Title = Json->GetStringField(TEXT("title"));
   }
   if (Json->HasField(TEXT("image_url")))
   {
-      Result.ImageUrl = Json->GetStringField(TEXT("image_url"))
+      Result.ImageUrl = Json->GetStringField(TEXT("image_url"));
   }
   if (Json->HasField(TEXT("metadata")))
   {
@@ -992,7 +1016,6 @@ FSatoriMessage FSatoriMessage::FromJson(const TSharedPtr<FJsonObject>& Json) noe
         }
       }
   }
-  Result.ParseTokens();
   return Result;
 }
 
@@ -1003,23 +1026,28 @@ TSharedPtr<FJsonObject> FSatoriMessage::ToJson() const noexcept
   {
     Json->SetStringField(TEXT("schedule_id"), ScheduleId);
   }
-  if (SendTime.NonZero() == false)
+  if (SendTime != 0)
+  
   {
     Json->SetNumberField(TEXT("send_time"), SendTime);
   }
-  if (CreateTime.NonZero() == false)
+  if (CreateTime != 0)
+  
   {
     Json->SetNumberField(TEXT("create_time"), CreateTime);
   }
-  if (UpdateTime.NonZero() == false)
+  if (UpdateTime != 0)
+  
   {
     Json->SetNumberField(TEXT("update_time"), UpdateTime);
   }
-  if (ReadTime.NonZero() == false)
+  if (ReadTime != 0)
+  
   {
     Json->SetNumberField(TEXT("read_time"), ReadTime);
   }
-  if (ConsumeTime.NonZero() == false)
+  if (ConsumeTime != 0)
+  
   {
     Json->SetNumberField(TEXT("consume_time"), ConsumeTime);
   }
@@ -1048,6 +1076,8 @@ TSharedPtr<FJsonObject> FSatoriMessage::ToJson() const noexcept
     }
     Json->SetObjectField(TEXT("metadata"), MapObj);
   }
+
+  return Json;
 }
 
 FSatoriGetMessageListRequest FSatoriGetMessageListRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
@@ -1059,15 +1089,15 @@ FSatoriGetMessageListRequest FSatoriGetMessageListRequest::FromJson(const TShare
   }
   if (Json->HasField(TEXT("limit")))
   {
-      Result.Limit = Json->GetIntegerField(TEXT("limit"))
+      Result.Limit = Json->GetNumberField(TEXT("limit"));
   }
   if (Json->HasField(TEXT("forward")))
   {
-      Result.Forward = Json->GetBoolField(TEXT("forward"))
+      Result.Forward = Json->GetBoolField(TEXT("forward"));
   }
   if (Json->HasField(TEXT("cursor")))
   {
-      Result.Cursor = Json->GetStringField(TEXT("cursor"))
+      Result.Cursor = Json->GetStringField(TEXT("cursor"));
   }
   if (Json->HasField(TEXT("message_ids")))
   {
@@ -1080,18 +1110,18 @@ FSatoriGetMessageListRequest FSatoriGetMessageListRequest::FromJson(const TShare
         }
       }
   }
-  Result.ParseTokens();
   return Result;
 }
 
 TSharedPtr<FJsonObject> FSatoriGetMessageListRequest::ToJson() const noexcept
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-  if (Limit.NonZero() == false)
+  if (Limit != 0)
+  
   {
-    Json->SetIntegerField(TEXT("limit"), Limit);
+    Json->SetNumberField(TEXT("limit"), Limit);
   }
-  if (Forward.None() == false)
+  
   {
     Json->SetBoolField(TEXT("forward"), Forward);
   }
@@ -1104,10 +1134,12 @@ TSharedPtr<FJsonObject> FSatoriGetMessageListRequest::ToJson() const noexcept
     TArray<TSharedPtr<FJsonValue>> Array;
     for (const auto& Item : MessageIds)
     {
-      Array.Add(MakeShared<String>(Item));
+      Array.Add(MakeShared<FJsonValueString>(Item));
     }
     Json->SetArrayField(TEXT("message_ids"), Array);
   }
+
+  return Json;
 }
 
 FSatoriGetMessageListResponse FSatoriGetMessageListResponse::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
@@ -1127,24 +1159,23 @@ FSatoriGetMessageListResponse FSatoriGetMessageListResponse::FromJson(const TSha
           const TSharedPtr<FJsonObject>* ItemObj = nullptr;
           if (Item->TryGetObject(ItemObj) && ItemObj)
           {
-            Result.Messages.Add(FSatoriTArray<FSatoriMessage>::FromJson(*ItemObj));
+            Result.Messages.Add(TArray<FSatoriMessage>::FromJson(*ItemObj));
           }
         }
       }
   }
   if (Json->HasField(TEXT("next_cursor")))
   {
-      Result.NextCursor = Json->GetStringField(TEXT("next_cursor"))
+      Result.NextCursor = Json->GetStringField(TEXT("next_cursor"));
   }
   if (Json->HasField(TEXT("prev_cursor")))
   {
-      Result.PrevCursor = Json->GetStringField(TEXT("prev_cursor"))
+      Result.PrevCursor = Json->GetStringField(TEXT("prev_cursor"));
   }
   if (Json->HasField(TEXT("cacheable_cursor")))
   {
-      Result.CacheableCursor = Json->GetStringField(TEXT("cacheable_cursor"))
+      Result.CacheableCursor = Json->GetStringField(TEXT("cacheable_cursor"));
   }
-  Result.ParseTokens();
   return Result;
 }
 
@@ -1156,7 +1187,7 @@ TSharedPtr<FJsonObject> FSatoriGetMessageListResponse::ToJson() const noexcept
     TArray<TSharedPtr<FJsonValue>> Array;
     for (const auto& Item : Messages)
     {
-      Array.Add(MakeShared<Object>(Item.ToJson()));
+      Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
     }
     Json->SetArrayField(TEXT("messages"), Array);
   }
@@ -1172,6 +1203,8 @@ TSharedPtr<FJsonObject> FSatoriGetMessageListResponse::ToJson() const noexcept
   {
     Json->SetStringField(TEXT("cacheable_cursor"), CacheableCursor);
   }
+
+  return Json;
 }
 
 FSatoriIdentifyRequest FSatoriIdentifyRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
@@ -1183,7 +1216,7 @@ FSatoriIdentifyRequest FSatoriIdentifyRequest::FromJson(const TSharedPtr<FJsonOb
   }
   if (Json->HasField(TEXT("id")))
   {
-      Result.Id = Json->GetStringField(TEXT("id"))
+      Result.Id = Json->GetStringField(TEXT("id"));
   }
   if (Json->HasField(TEXT("default")))
   {
@@ -1207,7 +1240,6 @@ FSatoriIdentifyRequest FSatoriIdentifyRequest::FromJson(const TSharedPtr<FJsonOb
         }
       }
   }
-  Result.ParseTokens();
   return Result;
 }
 
@@ -1236,6 +1268,8 @@ TSharedPtr<FJsonObject> FSatoriIdentifyRequest::ToJson() const noexcept
     }
     Json->SetObjectField(TEXT("custom"), MapObj);
   }
+
+  return Json;
 }
 
 FSatoriJoinLiveEventRequest FSatoriJoinLiveEventRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
@@ -1247,9 +1281,8 @@ FSatoriJoinLiveEventRequest FSatoriJoinLiveEventRequest::FromJson(const TSharedP
   }
   if (Json->HasField(TEXT("id")))
   {
-      Result.Id = Json->GetStringField(TEXT("id"))
+      Result.Id = Json->GetStringField(TEXT("id"));
   }
-  Result.ParseTokens();
   return Result;
 }
 
@@ -1260,6 +1293,8 @@ TSharedPtr<FJsonObject> FSatoriJoinLiveEventRequest::ToJson() const noexcept
   {
     Json->SetStringField(TEXT("id"), Id);
   }
+
+  return Json;
 }
 
 FSatoriLiveEvent FSatoriLiveEvent::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
@@ -1271,43 +1306,43 @@ FSatoriLiveEvent FSatoriLiveEvent::FromJson(const TSharedPtr<FJsonObject>& Json)
   }
   if (Json->HasField(TEXT("name")))
   {
-      Result.Name = Json->GetStringField(TEXT("name"))
+      Result.Name = Json->GetStringField(TEXT("name"));
   }
   if (Json->HasField(TEXT("description")))
   {
-      Result.Description = Json->GetStringField(TEXT("description"))
+      Result.Description = Json->GetStringField(TEXT("description"));
   }
   if (Json->HasField(TEXT("value")))
   {
-      Result.Value = Json->GetStringField(TEXT("value"))
+      Result.Value = Json->GetStringField(TEXT("value"));
   }
   if (Json->HasField(TEXT("active_start_time_sec")))
   {
-      Result.ActiveStartTimeSec = Json->GetNumberField(TEXT("active_start_time_sec"))
+      Result.ActiveStartTimeSec = Json->GetNumberField(TEXT("active_start_time_sec"));
   }
   if (Json->HasField(TEXT("active_end_time_sec")))
   {
-      Result.ActiveEndTimeSec = Json->GetNumberField(TEXT("active_end_time_sec"))
+      Result.ActiveEndTimeSec = Json->GetNumberField(TEXT("active_end_time_sec"));
   }
   if (Json->HasField(TEXT("id")))
   {
-      Result.Id = Json->GetStringField(TEXT("id"))
+      Result.Id = Json->GetStringField(TEXT("id"));
   }
   if (Json->HasField(TEXT("start_time_sec")))
   {
-      Result.StartTimeSec = Json->GetNumberField(TEXT("start_time_sec"))
+      Result.StartTimeSec = Json->GetNumberField(TEXT("start_time_sec"));
   }
   if (Json->HasField(TEXT("end_time_sec")))
   {
-      Result.EndTimeSec = Json->GetNumberField(TEXT("end_time_sec"))
+      Result.EndTimeSec = Json->GetNumberField(TEXT("end_time_sec"));
   }
   if (Json->HasField(TEXT("duration_sec")))
   {
-      Result.DurationSec = Json->GetNumberField(TEXT("duration_sec"))
+      Result.DurationSec = Json->GetNumberField(TEXT("duration_sec"));
   }
   if (Json->HasField(TEXT("reset_cron")))
   {
-      Result.ResetCron = Json->GetStringField(TEXT("reset_cron"))
+      Result.ResetCron = Json->GetStringField(TEXT("reset_cron"));
   }
   if (Json->HasField(TEXT("status")))
   {
@@ -1324,7 +1359,6 @@ FSatoriLiveEvent FSatoriLiveEvent::FromJson(const TSharedPtr<FJsonObject>& Json)
         }
       }
   }
-  Result.ParseTokens();
   return Result;
 }
 
@@ -1343,11 +1377,13 @@ TSharedPtr<FJsonObject> FSatoriLiveEvent::ToJson() const noexcept
   {
     Json->SetStringField(TEXT("value"), Value);
   }
-  if (ActiveStartTimeSec.NonZero() == false)
+  if (ActiveStartTimeSec != 0)
+  
   {
     Json->SetNumberField(TEXT("active_start_time_sec"), ActiveStartTimeSec);
   }
-  if (ActiveEndTimeSec.NonZero() == false)
+  if (ActiveEndTimeSec != 0)
+  
   {
     Json->SetNumberField(TEXT("active_end_time_sec"), ActiveEndTimeSec);
   }
@@ -1355,15 +1391,18 @@ TSharedPtr<FJsonObject> FSatoriLiveEvent::ToJson() const noexcept
   {
     Json->SetStringField(TEXT("id"), Id);
   }
-  if (StartTimeSec.NonZero() == false)
+  if (StartTimeSec != 0)
+  
   {
     Json->SetNumberField(TEXT("start_time_sec"), StartTimeSec);
   }
-  if (EndTimeSec.NonZero() == false)
+  if (EndTimeSec != 0)
+  
   {
     Json->SetNumberField(TEXT("end_time_sec"), EndTimeSec);
   }
-  if (DurationSec.NonZero() == false)
+  if (DurationSec != 0)
+  
   {
     Json->SetNumberField(TEXT("duration_sec"), DurationSec);
   }
@@ -1371,19 +1410,21 @@ TSharedPtr<FJsonObject> FSatoriLiveEvent::ToJson() const noexcept
   {
     Json->SetStringField(TEXT("reset_cron"), ResetCron);
   }
-  if (Status.NumEmpty() == false)
+  
   {
-    Json->SetObjectField(TEXT("status"), Status.ToJson());
+    Json->SetNumberField(TEXT("status"), static_cast<int32>(Status));
   }
   if (Labels.Num() > 0)
   {
     TArray<TSharedPtr<FJsonValue>> Array;
     for (const auto& Item : Labels)
     {
-      Array.Add(MakeShared<String>(Item));
+      Array.Add(MakeShared<FJsonValueString>(Item));
     }
     Json->SetArrayField(TEXT("labels"), Array);
   }
+
+  return Json;
 }
 
 FSatoriLiveEventList FSatoriLiveEventList::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
@@ -1403,7 +1444,7 @@ FSatoriLiveEventList FSatoriLiveEventList::FromJson(const TSharedPtr<FJsonObject
           const TSharedPtr<FJsonObject>* ItemObj = nullptr;
           if (Item->TryGetObject(ItemObj) && ItemObj)
           {
-            Result.LiveEvents.Add(FSatoriTArray<FSatoriLiveEvent>::FromJson(*ItemObj));
+            Result.LiveEvents.Add(TArray<FSatoriLiveEvent>::FromJson(*ItemObj));
           }
         }
       }
@@ -1418,12 +1459,11 @@ FSatoriLiveEventList FSatoriLiveEventList::FromJson(const TSharedPtr<FJsonObject
           const TSharedPtr<FJsonObject>* ItemObj = nullptr;
           if (Item->TryGetObject(ItemObj) && ItemObj)
           {
-            Result.ExplicitJoinLiveEvents.Add(FSatoriTArray<FSatoriLiveEvent>::FromJson(*ItemObj));
+            Result.ExplicitJoinLiveEvents.Add(TArray<FSatoriLiveEvent>::FromJson(*ItemObj));
           }
         }
       }
   }
-  Result.ParseTokens();
   return Result;
 }
 
@@ -1435,7 +1475,7 @@ TSharedPtr<FJsonObject> FSatoriLiveEventList::ToJson() const noexcept
     TArray<TSharedPtr<FJsonValue>> Array;
     for (const auto& Item : LiveEvents)
     {
-      Array.Add(MakeShared<Object>(Item.ToJson()));
+      Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
     }
     Json->SetArrayField(TEXT("live_events"), Array);
   }
@@ -1444,10 +1484,12 @@ TSharedPtr<FJsonObject> FSatoriLiveEventList::ToJson() const noexcept
     TArray<TSharedPtr<FJsonValue>> Array;
     for (const auto& Item : ExplicitJoinLiveEvents)
     {
-      Array.Add(MakeShared<Object>(Item.ToJson()));
+      Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
     }
     Json->SetArrayField(TEXT("explicit_join_live_events"), Array);
   }
+
+  return Json;
 }
 
 FSatoriProperties FSatoriProperties::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
@@ -1490,7 +1532,6 @@ FSatoriProperties FSatoriProperties::FromJson(const TSharedPtr<FJsonObject>& Jso
         }
       }
   }
-  Result.ParseTokens();
   return Result;
 }
 
@@ -1524,6 +1565,8 @@ TSharedPtr<FJsonObject> FSatoriProperties::ToJson() const noexcept
     }
     Json->SetObjectField(TEXT("custom"), MapObj);
   }
+
+  return Json;
 }
 
 FSatoriUpdatePropertiesRequest FSatoriUpdatePropertiesRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
@@ -1535,7 +1578,7 @@ FSatoriUpdatePropertiesRequest FSatoriUpdatePropertiesRequest::FromJson(const TS
   }
   if (Json->HasField(TEXT("recompute")))
   {
-      Result.Recompute = Json->GetBoolField(TEXT("recompute"))
+      Result.Recompute = Json->GetBoolField(TEXT("recompute"));
   }
   if (Json->HasField(TEXT("default")))
   {
@@ -1559,14 +1602,13 @@ FSatoriUpdatePropertiesRequest FSatoriUpdatePropertiesRequest::FromJson(const TS
         }
       }
   }
-  Result.ParseTokens();
   return Result;
 }
 
 TSharedPtr<FJsonObject> FSatoriUpdatePropertiesRequest::ToJson() const noexcept
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-  if (Recompute.None() == false)
+  
   {
     Json->SetBoolField(TEXT("recompute"), Recompute);
   }
@@ -1588,6 +1630,8 @@ TSharedPtr<FJsonObject> FSatoriUpdatePropertiesRequest::ToJson() const noexcept
     }
     Json->SetObjectField(TEXT("custom"), MapObj);
   }
+
+  return Json;
 }
 
 FSatoriUpdateMessageRequest FSatoriUpdateMessageRequest::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
@@ -1599,17 +1643,16 @@ FSatoriUpdateMessageRequest FSatoriUpdateMessageRequest::FromJson(const TSharedP
   }
   if (Json->HasField(TEXT("id")))
   {
-      Result.Id = Json->GetStringField(TEXT("id"))
+      Result.Id = Json->GetStringField(TEXT("id"));
   }
   if (Json->HasField(TEXT("read_time")))
   {
-      Result.ReadTime = Json->GetNumberField(TEXT("read_time"))
+      Result.ReadTime = Json->GetNumberField(TEXT("read_time"));
   }
   if (Json->HasField(TEXT("consume_time")))
   {
-      Result.ConsumeTime = Json->GetNumberField(TEXT("consume_time"))
+      Result.ConsumeTime = Json->GetNumberField(TEXT("consume_time"));
   }
-  Result.ParseTokens();
   return Result;
 }
 
@@ -1620,13 +1663,17 @@ TSharedPtr<FJsonObject> FSatoriUpdateMessageRequest::ToJson() const noexcept
   {
     Json->SetStringField(TEXT("id"), Id);
   }
-  if (ReadTime.NonZero() == false)
+  if (ReadTime != 0)
+  
   {
     Json->SetNumberField(TEXT("read_time"), ReadTime);
   }
-  if (ConsumeTime.NonZero() == false)
+  if (ConsumeTime != 0)
+  
   {
     Json->SetNumberField(TEXT("consume_time"), ConsumeTime);
   }
+
+  return Json;
 }
 

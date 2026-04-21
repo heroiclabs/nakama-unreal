@@ -62,13 +62,13 @@ void UNakamaClientChannelJoin::Activate()
   }
   if (StoredType.NonZero() == false)
   {
-    Json->SetIntegerField(TEXT("type"), StoredType);
+    Json->SetNumberField(TEXT("type"), StoredType);
   }
-  if (StoredPersistence.None() == false)
+  
   {
     Json->SetBoolField(TEXT("persistence"), StoredPersistence);
   }
-  if (StoredHidden.None() == false)
+  
   {
     Json->SetBoolField(TEXT("hidden"), StoredHidden);
   }
@@ -462,7 +462,7 @@ UNakamaRealtimeClientMatchDataSend* UNakamaRealtimeClientMatchDataSend::MatchDat
   , UNakamaWebSocketSubsystem* WebSocketSubsystem;
   , const FString& MatchId
   , int64 OpCode
-  , const TArray<uint8>& Data
+  , const FString& Data
   , const TArray<FNakamaRtUserPresence>& Presences
   , bool Reliable
 )
@@ -504,7 +504,7 @@ void UNakamaClientMatchDataSend::Activate()
   {
     Json->SetNumberField(TEXT("op_code"), StoredOpCode);
   }
-  if (StoredData.NumEmpty() == false)
+  if (StoredData.IsEmpty() == false)
   {
     Json->SetStringField(TEXT("data"), StoredData);
   }
@@ -513,11 +513,11 @@ void UNakamaClientMatchDataSend::Activate()
     TArray<TSharedPtr<FJsonValue>> Array;
     for (const auto& Item : StoredPresences)
     {
-      Array.Add(MakeShared<Object>(Item.ToJson()));
+      Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
     }
     Json->SetArrayField(TEXT("presences"), Array);
   }
-  if (StoredReliable.None() == false)
+  
   {
     Json->SetBoolField(TEXT("reliable"), StoredReliable);
   }
@@ -744,11 +744,11 @@ void UNakamaClientMatchmakerAdd::Activate()
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
   if (StoredMinCount.NonZero() == false)
   {
-    Json->SetIntegerField(TEXT("min_count"), StoredMinCount);
+    Json->SetNumberField(TEXT("min_count"), StoredMinCount);
   }
   if (StoredMaxCount.NonZero() == false)
   {
-    Json->SetIntegerField(TEXT("max_count"), StoredMaxCount);
+    Json->SetNumberField(TEXT("max_count"), StoredMaxCount);
   }
   if (StoredQuery.IsEmpty() == false)
   {
@@ -756,7 +756,7 @@ void UNakamaClientMatchmakerAdd::Activate()
   }
   if (StoredCountMultiple.NonZero() == false)
   {
-    Json->SetIntegerField(TEXT("count_multiple"), StoredCountMultiple);
+    Json->SetNumberField(TEXT("count_multiple"), StoredCountMultiple);
   }
   if (StoredStringProperties.Num() > 0)
   {
@@ -989,7 +989,7 @@ void UNakamaClientStatusFollow::Activate()
     TArray<TSharedPtr<FJsonValue>> Array;
     for (const auto& Item : StoredUserIds)
     {
-      Array.Add(MakeShared<String>(Item));
+      Array.Add(MakeShared<FJsonValueString>(Item));
     }
     Json->SetArrayField(TEXT("user_ids"), Array);
   }
@@ -998,7 +998,7 @@ void UNakamaClientStatusFollow::Activate()
     TArray<TSharedPtr<FJsonValue>> Array;
     for (const auto& Item : StoredUsernames)
     {
-      Array.Add(MakeShared<String>(Item));
+      Array.Add(MakeShared<FJsonValueString>(Item));
     }
     Json->SetArrayField(TEXT("usernames"), Array);
   }
@@ -1069,7 +1069,7 @@ void UNakamaClientStatusUnfollow::Activate()
     TArray<TSharedPtr<FJsonValue>> Array;
     for (const auto& Item : StoredUserIds)
     {
-      Array.Add(MakeShared<String>(Item));
+      Array.Add(MakeShared<FJsonValueString>(Item));
     }
     Json->SetArrayField(TEXT("user_ids"), Array);
   }
@@ -1207,19 +1207,19 @@ void UNakamaClientPartyCreate::Activate()
   TWeakObjectPtr<UNakamaRealtimeClientPartyCreate> WeakThis(this);
 
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-  if (StoredOpen.None() == false)
+  
   {
     Json->SetBoolField(TEXT("open"), StoredOpen);
   }
   if (StoredMaxSize.NonZero() == false)
   {
-    Json->SetIntegerField(TEXT("max_size"), StoredMaxSize);
+    Json->SetNumberField(TEXT("max_size"), StoredMaxSize);
   }
   if (StoredLabel.IsEmpty() == false)
   {
     Json->SetStringField(TEXT("label"), StoredLabel);
   }
-  if (StoredHidden.None() == false)
+  
   {
     Json->SetBoolField(TEXT("hidden"), StoredHidden);
   }
@@ -1423,7 +1423,7 @@ void UNakamaClientPartyPromote::Activate()
   {
     Json->SetStringField(TEXT("party_id"), StoredPartyId);
   }
-  if (StoredPresence.NumEmpty() == false)
+  
   {
     Json->SetObjectField(TEXT("presence"), StoredPresence.ToJson());
   }
@@ -1495,7 +1495,7 @@ void UNakamaClientPartyAccept::Activate()
   {
     Json->SetStringField(TEXT("party_id"), StoredPartyId);
   }
-  if (StoredPresence.NumEmpty() == false)
+  
   {
     Json->SetObjectField(TEXT("presence"), StoredPresence.ToJson());
   }
@@ -1567,7 +1567,7 @@ void UNakamaClientPartyRemove::Activate()
   {
     Json->SetStringField(TEXT("party_id"), StoredPartyId);
   }
-  if (StoredPresence.NumEmpty() == false)
+  
   {
     Json->SetObjectField(TEXT("presence"), StoredPresence.ToJson());
   }
@@ -1783,11 +1783,11 @@ void UNakamaClientPartyMatchmakerAdd::Activate()
   }
   if (StoredMinCount.NonZero() == false)
   {
-    Json->SetIntegerField(TEXT("min_count"), StoredMinCount);
+    Json->SetNumberField(TEXT("min_count"), StoredMinCount);
   }
   if (StoredMaxCount.NonZero() == false)
   {
-    Json->SetIntegerField(TEXT("max_count"), StoredMaxCount);
+    Json->SetNumberField(TEXT("max_count"), StoredMaxCount);
   }
   if (StoredQuery.IsEmpty() == false)
   {
@@ -1795,7 +1795,7 @@ void UNakamaClientPartyMatchmakerAdd::Activate()
   }
   if (StoredCountMultiple.NonZero() == false)
   {
-    Json->SetIntegerField(TEXT("count_multiple"), StoredCountMultiple);
+    Json->SetNumberField(TEXT("count_multiple"), StoredCountMultiple);
   }
   if (StoredStringProperties.Num() > 0)
   {
@@ -1995,7 +1995,7 @@ UNakamaRealtimeClientPartyDataSend* UNakamaRealtimeClientPartyDataSend::PartyDat
   , UNakamaWebSocketSubsystem* WebSocketSubsystem;
   , const FString& PartyId
   , int64 OpCode
-  , const TArray<uint8>& Data
+  , const FString& Data
 )
 {
   UNakamaRealtimeClientPartyDataSend* Action = NewObject<UNakamaRealtimeClientPartyDataSend>(GetTransientPackage());
@@ -2033,7 +2033,7 @@ void UNakamaClientPartyDataSend::Activate()
   {
     Json->SetNumberField(TEXT("op_code"), StoredOpCode);
   }
-  if (StoredData.NumEmpty() == false)
+  if (StoredData.IsEmpty() == false)
   {
     Json->SetStringField(TEXT("data"), StoredData);
   }
@@ -2113,11 +2113,11 @@ void UNakamaClientPartyUpdate::Activate()
   {
     Json->SetStringField(TEXT("label"), StoredLabel);
   }
-  if (StoredOpen.None() == false)
+  
   {
     Json->SetBoolField(TEXT("open"), StoredOpen);
   }
-  if (StoredHidden.None() == false)
+  
   {
     Json->SetBoolField(TEXT("hidden"), StoredHidden);
   }

@@ -25,17 +25,11 @@
 #include "Dom/JsonObject.h"
 #include "HAL/ThreadSafeBool.h"
 #include "NakamaError.h"
+#include "NakamaClientConfig.h"
+#include "NakamaSession.h"
 #include "NakamaTypes.h"
 
 NAKAMAAPI_API DECLARE_LOG_CATEGORY_EXTERN(LogNakama, Log, All);
-
-enum class ENakamaRequestAuth : uint8
-{
-  None,
-  Basic,
-  Bearer,
-  HttpKey
-};
 
 namespace NakamaApi
 {
@@ -2838,7 +2832,6 @@ namespace NakamaApi
   * Execute a Lua function on the server.
   *
   * @param Config	The client configuration.
-  * @param HttpKey	HttpKey for server-to-server communication
   * @param Id	 The identifier of the function.
   * @param Payload	 The payload of the function which must be a JSON object.
   * @param HttpKey	 The authentication key used when executed as a non-client HTTP request.
@@ -2849,32 +2842,6 @@ namespace NakamaApi
   **/
   NAKAMAAPI_API void RpcFunc(
     const FNakamaClientConfig& Config,
-    const FString& HttpKey,
-    const FString& Id,
-    const FString& Payload,
-    const FString& HttpKey,
-    TFunction<void(const FNakamaRpc&)> OnSuccess,
-    TFunction<void(const FNakamaError&)> OnError,
-    float Timeout = 10.0f,
-    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
-  ) noexcept;
-  
-  /*
-  * Execute a Lua function on the server.
-  *
-  * @param Config	The client configuration.
-  * @param Session	The session of the user.
-  * @param Id	 The identifier of the function.
-  * @param Payload	 The payload of the function which must be a JSON object.
-  * @param HttpKey	 The authentication key used when executed as a non-client HTTP request.
-  * @param OnSuccess	Called when the operation succeeds.
-  * @param OnError	Called when the operation fails.
-  * @param Timeout Request timeout in seconds.
-  * @param CancellationToken	Set to true to cancel the in-flight request.
-  **/
-  NAKAMAAPI_API void RpcFunc(
-    const FNakamaClientConfig& Config,
-    const FNakamaSession& Session,
     const FString& Id,
     const FString& Payload,
     const FString& HttpKey,

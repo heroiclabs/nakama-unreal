@@ -16,7 +16,6 @@
 
 #pragma once
 
-#include <atomic>
 #include "CoreMinimal.h"
 #include "Dom/JsonObject.h"
 #include "HttpModule.h"
@@ -30,6 +29,8 @@
 #include "Serialization/MemoryWriter.h"
 #include "Templates/Function.h"
 #include "Templates/SharedPointer.h"
+#include "NakamaError.h"
+#include "NakamaClientConfig.h"
 #include "NakamaTypes.h"
 
 /**
@@ -79,7 +80,7 @@ inline void DoHttpRequest(
 	TFunction<void(TSharedPtr<FJsonObject>)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
 	float Timeout,
-	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
 	const FString Url = Config.GetBaseUrl() + Endpoint;
 
@@ -125,7 +126,7 @@ inline void DoHttpRequest(
 	Request->OnProcessRequestComplete().BindLambda(
 		[OnSuccess, OnError, CancellationToken](FHttpRequestPtr Req, FHttpResponsePtr Res, bool bSuccess)
 		{
-			if (CancellationToken->load())
+			if (CancellationToken->Load())
 			{
 				if (OnError)
 				{
@@ -201,9 +202,9 @@ inline void SendRequest(
 	TFunction<void(TSharedPtr<FJsonObject>)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
 	float Timeout,
-	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
+	TSharedRef<TAtomic<bool>> CancellationToken) noexcept
 {
-	if (CancellationToken->load())
+	if (CancellationToken->Load())
 	{
 		if (OnError)
 		{
@@ -225,7 +226,8 @@ inline void MakeRequest(
 	TFunction<void(TSharedPtr<FJsonObject>)> OnSuccess,
 	TFunction<void(const FNakamaError&)> OnError,
 	float Timeout,
-	TSharedRef<std::atomic<bool>> CancellationToken) noexcept
+	TSharedRef<TAtomic<bool>> CancellationToken
+) noexcept
 {
 	FString BodyString;
 	if (Body.IsValid() && Method != TEXT("GET"))

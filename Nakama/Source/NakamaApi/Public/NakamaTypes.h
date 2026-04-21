@@ -21,6 +21,14 @@
 #include "CoreMinimal.h"
 #include "NakamaTypes.generated.h"
 
+enum class ENakamaRequestAuth : uint8
+{
+  None,
+  Basic,
+  Bearer,
+  HttpKey
+};
+
 /*
 * The friendship status.
 */

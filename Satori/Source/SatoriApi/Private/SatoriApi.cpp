@@ -17,11 +17,12 @@
 /* This code is auto-generated. DO NOT EDIT. */
 
 #include "SatoriApi.h"
-#include "NakamaHttpHelper.h"
+#include "GenericPlatform/GenericPlatformHttp.h"
+#include "SatoriHttpHelper.h"
 
 DEFINE_LOG_CATEGORY(LogSatori);
 
-using namespace NakamaHttpInternal;
+using namespace SatoriHttpInternal;
 
 
 
@@ -54,19 +55,19 @@ SATORIAPI_API void SatoriApi::Authenticate (
   TSharedPtr<FJsonObject> Body;
   if (Id.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(id), Id);
+    Body->SetStringField(TEXT("id"), Id);
   }
-  if (NoSession.None() == false)
+  
   {
-    Body->SetBoolField(TEXT(no_session), NoSession);
+    Body->SetBoolField(TEXT("no_session"), NoSession);
   }
   if (Id.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(id), Id);
+    Body->SetStringField(TEXT("id"), Id);
   }
-  if (NoSession.None() == false)
+  
   {
-    Body->SetBoolField(TEXT(no_session), NoSession);
+    Body->SetBoolField(TEXT("no_session"), NoSession);
   }
 
   //
@@ -120,11 +121,11 @@ SATORIAPI_API void SatoriApi::AuthenticateLogout (
   TSharedPtr<FJsonObject> Body;
   if (Token.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(token), Token);
+    Body->SetStringField(TEXT("token"), Token);
   }
   if (RefreshToken.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(refresh_token), RefreshToken);
+    Body->SetStringField(TEXT("refresh_token"), RefreshToken);
   }
 
   //
@@ -176,11 +177,11 @@ SATORIAPI_API void SatoriApi::AuthenticateRefresh (
   TSharedPtr<FJsonObject> Body;
   if (RefreshToken.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(refresh_token), RefreshToken);
+    Body->SetStringField(TEXT("refresh_token"), RefreshToken);
   }
   if (RefreshToken.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(refresh_token), RefreshToken);
+    Body->SetStringField(TEXT("refresh_token"), RefreshToken);
   }
 
   //
@@ -333,7 +334,7 @@ SATORIAPI_API void SatoriApi::Event (
     TArray<TSharedPtr<FJsonValue>> Array;
     for (const FSatoriEvent& Item : Events)
     {
-      Array.Add(MakeShared<Object>(Item.ToJson()));
+      Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
     }
     Body->SetArrayField(TEXT("events"), Array);
   }
@@ -391,7 +392,7 @@ SATORIAPI_API void SatoriApi::Event (
     TArray<TSharedPtr<FJsonValue>> Array;
     for (const FSatoriEvent& Item : Events)
     {
-      Array.Add(MakeShared<Object>(Item.ToJson()));
+      Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
     }
     Body->SetArrayField(TEXT("events"), Array);
   }
@@ -449,7 +450,7 @@ SATORIAPI_API void SatoriApi::ServerEvent (
     TArray<TSharedPtr<FJsonValue>> Array;
     for (const FSatoriEvent& Item : Events)
     {
-      Array.Add(MakeShared<Object>(Item.ToJson()));
+      Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
     }
     Body->SetArrayField(TEXT("events"), Array);
   }
@@ -507,7 +508,7 @@ SATORIAPI_API void SatoriApi::ServerEvent (
     TArray<TSharedPtr<FJsonValue>> Array;
     for (const FSatoriEvent& Item : Events)
     {
-      Array.Add(MakeShared<Object>(Item.ToJson()));
+      Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
     }
     Body->SetArrayField(TEXT("events"), Array);
   }
@@ -555,11 +556,11 @@ SATORIAPI_API void SatoriApi::GetExperiments (
   TArray<FString> QueryParams;
   for (const FString& Item : Names)
 	{
-    QueryParams.Add(FString::Printf(TEXT("Names=%s", FGenericPlatformHttp::UrlEncode(Item))));
+    QueryParams.Add(FString::Printf(TEXT("Names=%s"), *(Item)));
   }
   for (const FString& Item : Labels)
 	{
-    QueryParams.Add(FString::Printf(TEXT("Labels=%s", FGenericPlatformHttp::UrlEncode(Item))));
+    QueryParams.Add(FString::Printf(TEXT("Labels=%s"), *(Item)));
   }
   if (QueryParams.Num() > 0)
   {
@@ -614,11 +615,11 @@ SATORIAPI_API void SatoriApi::GetExperiments (
   TArray<FString> QueryParams;
   for (const FString& Item : Names)
 	{
-    QueryParams.Add(FString::Printf(TEXT("Names=%s", FGenericPlatformHttp::UrlEncode(Item))));
+    QueryParams.Add(FString::Printf(TEXT("Names=%s"), *(Item)));
   }
   for (const FString& Item : Labels)
 	{
-    QueryParams.Add(FString::Printf(TEXT("Labels=%s", FGenericPlatformHttp::UrlEncode(Item))));
+    QueryParams.Add(FString::Printf(TEXT("Labels=%s"), *(Item)));
   }
   if (QueryParams.Num() > 0)
   {
@@ -673,19 +674,19 @@ SATORIAPI_API void SatoriApi::GetFlagOverrides (
   TArray<FString> QueryParams;
   for (const FString& Item : Names)
 	{
-    QueryParams.Add(FString::Printf(TEXT("Names=%s", FGenericPlatformHttp::UrlEncode(Item))));
+    QueryParams.Add(FString::Printf(TEXT("Names=%s"), *(Item)));
   }
   for (const FString& Item : Labels)
 	{
-    QueryParams.Add(FString::Printf(TEXT("Labels=%s", FGenericPlatformHttp::UrlEncode(Item))));
+    QueryParams.Add(FString::Printf(TEXT("Labels=%s"), *(Item)));
   }
   for (const FString& Item : Names)
 	{
-    QueryParams.Add(FString::Printf(TEXT("Names=%s", FGenericPlatformHttp::UrlEncode(Item))));
+    QueryParams.Add(FString::Printf(TEXT("Names=%s"), *(Item)));
   }
   for (const FString& Item : Labels)
 	{
-    QueryParams.Add(FString::Printf(TEXT("Labels=%s", FGenericPlatformHttp::UrlEncode(Item))));
+    QueryParams.Add(FString::Printf(TEXT("Labels=%s"), *(Item)));
   }
   if (QueryParams.Num() > 0)
   {
@@ -740,19 +741,19 @@ SATORIAPI_API void SatoriApi::GetFlagOverrides (
   TArray<FString> QueryParams;
   for (const FString& Item : Names)
 	{
-    QueryParams.Add(FString::Printf(TEXT("Names=%s", FGenericPlatformHttp::UrlEncode(Item))));
+    QueryParams.Add(FString::Printf(TEXT("Names=%s"), *(Item)));
   }
   for (const FString& Item : Labels)
 	{
-    QueryParams.Add(FString::Printf(TEXT("Labels=%s", FGenericPlatformHttp::UrlEncode(Item))));
+    QueryParams.Add(FString::Printf(TEXT("Labels=%s"), *(Item)));
   }
   for (const FString& Item : Names)
 	{
-    QueryParams.Add(FString::Printf(TEXT("Names=%s", FGenericPlatformHttp::UrlEncode(Item))));
+    QueryParams.Add(FString::Printf(TEXT("Names=%s"), *(Item)));
   }
   for (const FString& Item : Labels)
 	{
-    QueryParams.Add(FString::Printf(TEXT("Labels=%s", FGenericPlatformHttp::UrlEncode(Item))));
+    QueryParams.Add(FString::Printf(TEXT("Labels=%s"), *(Item)));
   }
   if (QueryParams.Num() > 0)
   {
@@ -807,19 +808,19 @@ SATORIAPI_API void SatoriApi::GetFlags (
   TArray<FString> QueryParams;
   for (const FString& Item : Names)
 	{
-    QueryParams.Add(FString::Printf(TEXT("Names=%s", FGenericPlatformHttp::UrlEncode(Item))));
+    QueryParams.Add(FString::Printf(TEXT("Names=%s"), *(Item)));
   }
   for (const FString& Item : Labels)
 	{
-    QueryParams.Add(FString::Printf(TEXT("Labels=%s", FGenericPlatformHttp::UrlEncode(Item))));
+    QueryParams.Add(FString::Printf(TEXT("Labels=%s"), *(Item)));
   }
   for (const FString& Item : Names)
 	{
-    QueryParams.Add(FString::Printf(TEXT("Names=%s", FGenericPlatformHttp::UrlEncode(Item))));
+    QueryParams.Add(FString::Printf(TEXT("Names=%s"), *(Item)));
   }
   for (const FString& Item : Labels)
 	{
-    QueryParams.Add(FString::Printf(TEXT("Labels=%s", FGenericPlatformHttp::UrlEncode(Item))));
+    QueryParams.Add(FString::Printf(TEXT("Labels=%s"), *(Item)));
   }
   if (QueryParams.Num() > 0)
   {
@@ -874,19 +875,19 @@ SATORIAPI_API void SatoriApi::GetFlags (
   TArray<FString> QueryParams;
   for (const FString& Item : Names)
 	{
-    QueryParams.Add(FString::Printf(TEXT("Names=%s", FGenericPlatformHttp::UrlEncode(Item))));
+    QueryParams.Add(FString::Printf(TEXT("Names=%s"), *(Item)));
   }
   for (const FString& Item : Labels)
 	{
-    QueryParams.Add(FString::Printf(TEXT("Labels=%s", FGenericPlatformHttp::UrlEncode(Item))));
+    QueryParams.Add(FString::Printf(TEXT("Labels=%s"), *(Item)));
   }
   for (const FString& Item : Names)
 	{
-    QueryParams.Add(FString::Printf(TEXT("Names=%s", FGenericPlatformHttp::UrlEncode(Item))));
+    QueryParams.Add(FString::Printf(TEXT("Names=%s"), *(Item)));
   }
   for (const FString& Item : Labels)
 	{
-    QueryParams.Add(FString::Printf(TEXT("Labels=%s", FGenericPlatformHttp::UrlEncode(Item))));
+    QueryParams.Add(FString::Printf(TEXT("Labels=%s"), *(Item)));
   }
   if (QueryParams.Num() > 0)
   {
@@ -945,27 +946,31 @@ SATORIAPI_API void SatoriApi::GetLiveEvents (
   TArray<FString> QueryParams;
   for (const FString& Item : Names)
 	{
-    QueryParams.Add(FString::Printf(TEXT("Names=%s", FGenericPlatformHttp::UrlEncode(Item))));
+    QueryParams.Add(FString::Printf(TEXT("Names=%s"), *(Item)));
   }
   for (const FString& Item : Labels)
 	{
-    QueryParams.Add(FString::Printf(TEXT("Labels=%s", FGenericPlatformHttp::UrlEncode(Item))));
+    QueryParams.Add(FString::Printf(TEXT("Labels=%s"), *(Item)));
   }
-  if (PastRunCount.NonZero() == false)
+  if (PastRunCount != 0)
+  
   {
-    QueryParams.Add(FString::Printf(TEXT("PastRunCount=%d", (PastRunCount))));
+    QueryParams.Add(FString::Printf(TEXT("PastRunCount=%d"), (PastRunCount)));
   }
-  if (FutureRunCount.NonZero() == false)
+  if (FutureRunCount != 0)
+  
   {
-    QueryParams.Add(FString::Printf(TEXT("FutureRunCount=%d", (FutureRunCount))));
+    QueryParams.Add(FString::Printf(TEXT("FutureRunCount=%d"), (FutureRunCount)));
   }
-  if (StartTimeSec.NonZero() == false)
+  if (StartTimeSec != 0)
+  
   {
-    QueryParams.Add(FString::Printf(TEXT("StartTimeSec=%lld", (StartTimeSec))));
+    QueryParams.Add(FString::Printf(TEXT("StartTimeSec=%lld"), (StartTimeSec)));
   }
-  if (EndTimeSec.NonZero() == false)
+  if (EndTimeSec != 0)
+  
   {
-    QueryParams.Add(FString::Printf(TEXT("EndTimeSec=%lld", (EndTimeSec))));
+    QueryParams.Add(FString::Printf(TEXT("EndTimeSec=%lld"), (EndTimeSec)));
   }
   if (QueryParams.Num() > 0)
   {
@@ -1024,27 +1029,31 @@ SATORIAPI_API void SatoriApi::GetLiveEvents (
   TArray<FString> QueryParams;
   for (const FString& Item : Names)
 	{
-    QueryParams.Add(FString::Printf(TEXT("Names=%s", FGenericPlatformHttp::UrlEncode(Item))));
+    QueryParams.Add(FString::Printf(TEXT("Names=%s"), *(Item)));
   }
   for (const FString& Item : Labels)
 	{
-    QueryParams.Add(FString::Printf(TEXT("Labels=%s", FGenericPlatformHttp::UrlEncode(Item))));
+    QueryParams.Add(FString::Printf(TEXT("Labels=%s"), *(Item)));
   }
-  if (PastRunCount.NonZero() == false)
+  if (PastRunCount != 0)
+  
   {
-    QueryParams.Add(FString::Printf(TEXT("PastRunCount=%d", (PastRunCount))));
+    QueryParams.Add(FString::Printf(TEXT("PastRunCount=%d"), (PastRunCount)));
   }
-  if (FutureRunCount.NonZero() == false)
+  if (FutureRunCount != 0)
+  
   {
-    QueryParams.Add(FString::Printf(TEXT("FutureRunCount=%d", (FutureRunCount))));
+    QueryParams.Add(FString::Printf(TEXT("FutureRunCount=%d"), (FutureRunCount)));
   }
-  if (StartTimeSec.NonZero() == false)
+  if (StartTimeSec != 0)
+  
   {
-    QueryParams.Add(FString::Printf(TEXT("StartTimeSec=%lld", (StartTimeSec))));
+    QueryParams.Add(FString::Printf(TEXT("StartTimeSec=%lld"), (StartTimeSec)));
   }
-  if (EndTimeSec.NonZero() == false)
+  if (EndTimeSec != 0)
+  
   {
-    QueryParams.Add(FString::Printf(TEXT("EndTimeSec=%lld", (EndTimeSec))));
+    QueryParams.Add(FString::Printf(TEXT("EndTimeSec=%lld"), (EndTimeSec)));
   }
   if (QueryParams.Num() > 0)
   {
@@ -1093,7 +1102,7 @@ SATORIAPI_API void SatoriApi::JoinLiveEvent (
   // 
   // Fill Path Params
   const FString Encoded_Id = FGenericPlatformHttp::UrlEncode(Id);
-  Endpoint = Endpoint.Replace("id", *Encoded_Id);
+  Endpoint = Endpoint.Replace(TEXT("{id}"), *Encoded_Id);
 
   // 
   // Fill Query Params
@@ -1144,7 +1153,7 @@ SATORIAPI_API void SatoriApi::JoinLiveEvent (
   // 
   // Fill Path Params
   const FString Encoded_Id = FGenericPlatformHttp::UrlEncode(Id);
-  Endpoint = Endpoint.Replace("id", *Encoded_Id);
+  Endpoint = Endpoint.Replace(TEXT("{id}"), *Encoded_Id);
 
   // 
   // Fill Query Params
@@ -1306,7 +1315,7 @@ SATORIAPI_API void SatoriApi::Identify (
   TSharedPtr<FJsonObject> Body;
   if (Id.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(id), Id);
+    Body->SetStringField(TEXT("id"), Id);
   }
 
   //
@@ -1362,7 +1371,7 @@ SATORIAPI_API void SatoriApi::Identify (
   TSharedPtr<FJsonObject> Body;
   if (Id.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(id), Id);
+    Body->SetStringField(TEXT("id"), Id);
   }
 
   //
@@ -1610,9 +1619,9 @@ SATORIAPI_API void SatoriApi::UpdateProperties (
   // 
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
-  if (Recompute.None() == false)
+  
   {
-    Body->SetBoolField(TEXT(recompute), Recompute);
+    Body->SetBoolField(TEXT("recompute"), Recompute);
   }
 
   //
@@ -1665,9 +1674,9 @@ SATORIAPI_API void SatoriApi::UpdateProperties (
   // 
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
-  if (Recompute.None() == false)
+  
   {
-    Body->SetBoolField(TEXT(recompute), Recompute);
+    Body->SetBoolField(TEXT("recompute"), Recompute);
   }
 
   //
@@ -1713,21 +1722,22 @@ SATORIAPI_API void SatoriApi::GetMessageList (
   // 
   // Fill Query Params
   TArray<FString> QueryParams;
-  if (Limit.NonZero() == false)
+  if (Limit != 0)
+  
   {
-    QueryParams.Add(FString::Printf(TEXT("Limit=%d", (Limit))));
+    QueryParams.Add(FString::Printf(TEXT("Limit=%d"), (Limit)));
   }
-  if (Forward.None() == false)
+  
   {
-    QueryParams.Add(FString::Printf(TEXT("Forward=%s_bool", (Forward))));
+    QueryParams.Add(FString::Printf(TEXT("Forward=%s_bool"), (Forward)));
   }
   if (Cursor.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("Cursor=%s", FGenericPlatformHttp::UrlEncode(Cursor))));
+    QueryParams.Add(FString::Printf(TEXT("Cursor=%s"), *(Cursor)));
   }
   for (const FString& Item : MessageIds)
 	{
-    QueryParams.Add(FString::Printf(TEXT("MessageIds=%s", FGenericPlatformHttp::UrlEncode(Item))));
+    QueryParams.Add(FString::Printf(TEXT("MessageIds=%s"), *(Item)));
   }
   if (QueryParams.Num() > 0)
   {
@@ -1782,21 +1792,22 @@ SATORIAPI_API void SatoriApi::GetMessageList (
   // 
   // Fill Query Params
   TArray<FString> QueryParams;
-  if (Limit.NonZero() == false)
+  if (Limit != 0)
+  
   {
-    QueryParams.Add(FString::Printf(TEXT("Limit=%d", (Limit))));
+    QueryParams.Add(FString::Printf(TEXT("Limit=%d"), (Limit)));
   }
-  if (Forward.None() == false)
+  
   {
-    QueryParams.Add(FString::Printf(TEXT("Forward=%s_bool", (Forward))));
+    QueryParams.Add(FString::Printf(TEXT("Forward=%s_bool"), (Forward)));
   }
   if (Cursor.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("Cursor=%s", FGenericPlatformHttp::UrlEncode(Cursor))));
+    QueryParams.Add(FString::Printf(TEXT("Cursor=%s"), *(Cursor)));
   }
   for (const FString& Item : MessageIds)
 	{
-    QueryParams.Add(FString::Printf(TEXT("MessageIds=%s", FGenericPlatformHttp::UrlEncode(Item))));
+    QueryParams.Add(FString::Printf(TEXT("MessageIds=%s"), *(Item)));
   }
   if (QueryParams.Num() > 0)
   {
@@ -1847,7 +1858,7 @@ SATORIAPI_API void SatoriApi::UpdateMessage (
   // 
   // Fill Path Params
   const FString Encoded_Id = FGenericPlatformHttp::UrlEncode(Id);
-  Endpoint = Endpoint.Replace("id", *Encoded_Id);
+  Endpoint = Endpoint.Replace(TEXT("{id}"), *Encoded_Id);
 
   // 
   // Fill Query Params
@@ -1860,13 +1871,15 @@ SATORIAPI_API void SatoriApi::UpdateMessage (
   // 
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
-  if (ReadTime.NonZero() == false)
+  if (ReadTime != 0)
+  
   {
-    Body->SetNumberField(TEXT(read_time), ReadTime);
+    Body->SetNumberField(TEXT("read_time"), ReadTime);
   }
-  if (ConsumeTime.NonZero() == false)
+  if (ConsumeTime != 0)
+  
   {
-    Body->SetNumberField(TEXT(consume_time), ConsumeTime);
+    Body->SetNumberField(TEXT("consume_time"), ConsumeTime);
   }
 
   //
@@ -1908,7 +1921,7 @@ SATORIAPI_API void SatoriApi::UpdateMessage (
   // 
   // Fill Path Params
   const FString Encoded_Id = FGenericPlatformHttp::UrlEncode(Id);
-  Endpoint = Endpoint.Replace("id", *Encoded_Id);
+  Endpoint = Endpoint.Replace(TEXT("{id}"), *Encoded_Id);
 
   // 
   // Fill Query Params
@@ -1921,13 +1934,15 @@ SATORIAPI_API void SatoriApi::UpdateMessage (
   // 
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
-  if (ReadTime.NonZero() == false)
+  if (ReadTime != 0)
+  
   {
-    Body->SetNumberField(TEXT(read_time), ReadTime);
+    Body->SetNumberField(TEXT("read_time"), ReadTime);
   }
-  if (ConsumeTime.NonZero() == false)
+  if (ConsumeTime != 0)
+  
   {
-    Body->SetNumberField(TEXT(consume_time), ConsumeTime);
+    Body->SetNumberField(TEXT("consume_time"), ConsumeTime);
   }
 
   //
@@ -1967,7 +1982,7 @@ SATORIAPI_API void SatoriApi::DeleteMessage (
   // 
   // Fill Path Params
   const FString Encoded_Id = FGenericPlatformHttp::UrlEncode(Id);
-  Endpoint = Endpoint.Replace("id", *Encoded_Id);
+  Endpoint = Endpoint.Replace(TEXT("{id}"), *Encoded_Id);
 
   // 
   // Fill Query Params
@@ -2018,7 +2033,7 @@ SATORIAPI_API void SatoriApi::DeleteMessage (
   // 
   // Fill Path Params
   const FString Encoded_Id = FGenericPlatformHttp::UrlEncode(Id);
-  Endpoint = Endpoint.Replace("id", *Encoded_Id);
+  Endpoint = Endpoint.Replace(TEXT("{id}"), *Encoded_Id);
 
   // 
   // Fill Query Params

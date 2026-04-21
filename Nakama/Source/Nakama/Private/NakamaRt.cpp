@@ -44,15 +44,16 @@ TNakamaFuture<FNakamaWebSocketResponse> FNakamaRtClient::ChannelJoin(
   {
     Json->SetStringField(TEXT("target"), Target);
   }
-  if (Type.NonZero() == false)
+  if (Type != 0)
+  
   {
-    Json->SetIntegerField(TEXT("type"), Type);
+    Json->SetNumberField(TEXT("type"), Type);
   }
-  if (Persistence.None() == false)
+  
   {
     Json->SetBoolField(TEXT("persistence"), Persistence);
   }
-  if (Hidden.None() == false)
+  
   {
     Json->SetBoolField(TEXT("hidden"), Hidden);
   }
@@ -172,7 +173,7 @@ TNakamaFuture<FNakamaWebSocketResponse> FNakamaRtClient::MatchCreate(
 TNakamaFuture<FNakamaWebSocketResponse> FNakamaRtClient::MatchDataSend(
   const FString& MatchId
   , int64 OpCode
-  , const TArray<uint8>& Data
+  , const FString& Data
   , const TArray<FNakamaRtUserPresence>& Presences
   , bool Reliable
 ) noexcept
@@ -182,11 +183,12 @@ TNakamaFuture<FNakamaWebSocketResponse> FNakamaRtClient::MatchDataSend(
   {
     Json->SetStringField(TEXT("match_id"), MatchId);
   }
-  if (OpCode.NonZero() == false)
+  if (OpCode != 0)
+  
   {
     Json->SetNumberField(TEXT("op_code"), OpCode);
   }
-  if (Data.NumEmpty() == false)
+  if (Data.IsEmpty() == false)
   {
     Json->SetStringField(TEXT("data"), Data);
   }
@@ -195,11 +197,11 @@ TNakamaFuture<FNakamaWebSocketResponse> FNakamaRtClient::MatchDataSend(
     TArray<TSharedPtr<FJsonValue>> Array;
     for (const auto& Item : Presences)
     {
-      Array.Add(MakeShared<Object>(Item.ToJson()));
+      Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
     }
     Json->SetArrayField(TEXT("presences"), Array);
   }
-  if (Reliable.None() == false)
+  
   {
     Json->SetBoolField(TEXT("reliable"), Reliable);
   }
@@ -270,21 +272,24 @@ TNakamaFuture<FNakamaWebSocketResponse> FNakamaRtClient::MatchmakerAdd(
 ) noexcept
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-  if (MinCount.NonZero() == false)
+  if (MinCount != 0)
+  
   {
-    Json->SetIntegerField(TEXT("min_count"), MinCount);
+    Json->SetNumberField(TEXT("min_count"), MinCount);
   }
-  if (MaxCount.NonZero() == false)
+  if (MaxCount != 0)
+  
   {
-    Json->SetIntegerField(TEXT("max_count"), MaxCount);
+    Json->SetNumberField(TEXT("max_count"), MaxCount);
   }
   if (Query.IsEmpty() == false)
   {
     Json->SetStringField(TEXT("query"), Query);
   }
-  if (CountMultiple.NonZero() == false)
+  if (CountMultiple != 0)
+  
   {
-    Json->SetIntegerField(TEXT("count_multiple"), CountMultiple);
+    Json->SetNumberField(TEXT("count_multiple"), CountMultiple);
   }
   if (StringProperties.Num() > 0)
   {
@@ -300,7 +305,7 @@ TNakamaFuture<FNakamaWebSocketResponse> FNakamaRtClient::MatchmakerAdd(
     TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
     for (const auto& Pair : NumericProperties)
     {
-      MapObj->SetStringField(Pair.Key, Pair.Value);
+      MapObj->SetNumberField(Pair.Key, Pair.Value);
     }
     Json->SetObjectField(TEXT("numeric_properties"), MapObj);
   }
@@ -367,7 +372,7 @@ TNakamaFuture<FNakamaWebSocketResponse> FNakamaRtClient::StatusFollow(
     TArray<TSharedPtr<FJsonValue>> Array;
     for (const auto& Item : UserIds)
     {
-      Array.Add(MakeShared<String>(Item));
+      Array.Add(MakeShared<FJsonValueString>(Item));
     }
     Json->SetArrayField(TEXT("user_ids"), Array);
   }
@@ -376,7 +381,7 @@ TNakamaFuture<FNakamaWebSocketResponse> FNakamaRtClient::StatusFollow(
     TArray<TSharedPtr<FJsonValue>> Array;
     for (const auto& Item : Usernames)
     {
-      Array.Add(MakeShared<String>(Item));
+      Array.Add(MakeShared<FJsonValueString>(Item));
     }
     Json->SetArrayField(TEXT("usernames"), Array);
   }
@@ -398,7 +403,7 @@ TNakamaFuture<FNakamaWebSocketResponse> FNakamaRtClient::StatusUnfollow(
     TArray<TSharedPtr<FJsonValue>> Array;
     for (const auto& Item : UserIds)
     {
-      Array.Add(MakeShared<String>(Item));
+      Array.Add(MakeShared<FJsonValueString>(Item));
     }
     Json->SetArrayField(TEXT("user_ids"), Array);
   }
@@ -435,19 +440,20 @@ TNakamaFuture<FNakamaWebSocketResponse> FNakamaRtClient::PartyCreate(
 ) noexcept
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-  if (Open.None() == false)
+  
   {
     Json->SetBoolField(TEXT("open"), Open);
   }
-  if (MaxSize.NonZero() == false)
+  if (MaxSize != 0)
+  
   {
-    Json->SetIntegerField(TEXT("max_size"), MaxSize);
+    Json->SetNumberField(TEXT("max_size"), MaxSize);
   }
   if (Label.IsEmpty() == false)
   {
     Json->SetStringField(TEXT("label"), Label);
   }
-  if (Hidden.None() == false)
+  
   {
     Json->SetBoolField(TEXT("hidden"), Hidden);
   }
@@ -503,7 +509,7 @@ TNakamaFuture<FNakamaWebSocketResponse> FNakamaRtClient::PartyPromote(
   {
     Json->SetStringField(TEXT("party_id"), PartyId);
   }
-  if (Presence.NumEmpty() == false)
+  
   {
     Json->SetObjectField(TEXT("presence"), Presence.ToJson());
   }
@@ -525,7 +531,7 @@ TNakamaFuture<FNakamaWebSocketResponse> FNakamaRtClient::PartyAccept(
   {
     Json->SetStringField(TEXT("party_id"), PartyId);
   }
-  if (Presence.NumEmpty() == false)
+  
   {
     Json->SetObjectField(TEXT("presence"), Presence.ToJson());
   }
@@ -547,7 +553,7 @@ TNakamaFuture<FNakamaWebSocketResponse> FNakamaRtClient::PartyRemove(
   {
     Json->SetStringField(TEXT("party_id"), PartyId);
   }
-  if (Presence.NumEmpty() == false)
+  
   {
     Json->SetObjectField(TEXT("presence"), Presence.ToJson());
   }
@@ -608,21 +614,24 @@ TNakamaFuture<FNakamaWebSocketResponse> FNakamaRtClient::PartyMatchmakerAdd(
   {
     Json->SetStringField(TEXT("party_id"), PartyId);
   }
-  if (MinCount.NonZero() == false)
+  if (MinCount != 0)
+  
   {
-    Json->SetIntegerField(TEXT("min_count"), MinCount);
+    Json->SetNumberField(TEXT("min_count"), MinCount);
   }
-  if (MaxCount.NonZero() == false)
+  if (MaxCount != 0)
+  
   {
-    Json->SetIntegerField(TEXT("max_count"), MaxCount);
+    Json->SetNumberField(TEXT("max_count"), MaxCount);
   }
   if (Query.IsEmpty() == false)
   {
     Json->SetStringField(TEXT("query"), Query);
   }
-  if (CountMultiple.NonZero() == false)
+  if (CountMultiple != 0)
+  
   {
-    Json->SetIntegerField(TEXT("count_multiple"), CountMultiple);
+    Json->SetNumberField(TEXT("count_multiple"), CountMultiple);
   }
   if (StringProperties.Num() > 0)
   {
@@ -638,7 +647,7 @@ TNakamaFuture<FNakamaWebSocketResponse> FNakamaRtClient::PartyMatchmakerAdd(
     TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
     for (const auto& Pair : NumericProperties)
     {
-      MapObj->SetStringField(Pair.Key, Pair.Value);
+      MapObj->SetNumberField(Pair.Key, Pair.Value);
     }
     Json->SetObjectField(TEXT("numeric_properties"), MapObj);
   }
@@ -697,7 +706,7 @@ TNakamaFuture<FNakamaWebSocketResponse> FNakamaRtClient::PartyMatchmakerTicket(
 TNakamaFuture<FNakamaWebSocketResponse> FNakamaRtClient::PartyDataSend(
   const FString& PartyId
   , int64 OpCode
-  , const TArray<uint8>& Data
+  , const FString& Data
 ) noexcept
 {
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
@@ -705,11 +714,12 @@ TNakamaFuture<FNakamaWebSocketResponse> FNakamaRtClient::PartyDataSend(
   {
     Json->SetStringField(TEXT("party_id"), PartyId);
   }
-  if (OpCode.NonZero() == false)
+  if (OpCode != 0)
+  
   {
     Json->SetNumberField(TEXT("op_code"), OpCode);
   }
-  if (Data.NumEmpty() == false)
+  if (Data.IsEmpty() == false)
   {
     Json->SetStringField(TEXT("data"), Data);
   }
@@ -737,11 +747,11 @@ TNakamaFuture<FNakamaWebSocketResponse> FNakamaRtClient::PartyUpdate(
   {
     Json->SetStringField(TEXT("label"), Label);
   }
-  if (Open.None() == false)
+  
   {
     Json->SetBoolField(TEXT("open"), Open);
   }
-  if (Hidden.None() == false)
+  
   {
     Json->SetBoolField(TEXT("hidden"), Hidden);
   }

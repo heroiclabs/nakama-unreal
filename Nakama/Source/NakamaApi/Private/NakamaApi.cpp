@@ -17,6 +17,7 @@
 /* This code is auto-generated. DO NOT EDIT. */
 
 #include "NakamaApi.h"
+#include "GenericPlatform/GenericPlatformHttp.h"
 #include "NakamaHttpHelper.h"
 
 DEFINE_LOG_CATEGORY(LogNakama);
@@ -46,15 +47,15 @@ NAKAMAAPI_API void NakamaApi::AddFriends (
   TArray<FString> QueryParams;
   for (const FString& Item : Ids)
   {
-    QueryParams.Add(FString::Printf(TEXT("Ids=%s", FGenericPlatformHttp::UrlEncode(Item))));
+    QueryParams.Add(FString::Printf(TEXT("Ids=%s"), *(Item)));
   }
   for (const FString& Item : Usernames)
   {
-    QueryParams.Add(FString::Printf(TEXT("Usernames=%s", FGenericPlatformHttp::UrlEncode(Item))));
+    QueryParams.Add(FString::Printf(TEXT("Usernames=%s"), *(Item)));
   }
   if (Metadata.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("Metadata=%s", FGenericPlatformHttp::UrlEncode(Metadata))));
+    QueryParams.Add(FString::Printf(TEXT("Metadata=%s"), *(Metadata)));
   }
   if (QueryParams.Num() > 0)
   {
@@ -109,15 +110,15 @@ NAKAMAAPI_API void NakamaApi::AddFriends (
   TArray<FString> QueryParams;
   for (const FString& Item : Ids)
   {
-    QueryParams.Add(FString::Printf(TEXT("Ids=%s", FGenericPlatformHttp::UrlEncode(Item))));
+    QueryParams.Add(FString::Printf(TEXT("Ids=%s"), *(Item)));
   }
   for (const FString& Item : Usernames)
   {
-    QueryParams.Add(FString::Printf(TEXT("Usernames=%s", FGenericPlatformHttp::UrlEncode(Item))));
+    QueryParams.Add(FString::Printf(TEXT("Usernames=%s"), *(Item)));
   }
   if (Metadata.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("Metadata=%s", FGenericPlatformHttp::UrlEncode(Metadata))));
+    QueryParams.Add(FString::Printf(TEXT("Metadata=%s"), *(Metadata)));
   }
   if (QueryParams.Num() > 0)
   {
@@ -166,14 +167,14 @@ NAKAMAAPI_API void NakamaApi::AddGroupUsers (
   // 
   // Fill Path Params
   const FString Encoded_GroupId = FGenericPlatformHttp::UrlEncode(GroupId);
-  Endpoint = Endpoint.Replace("group_id", *Encoded_GroupId);
+  Endpoint = Endpoint.Replace(TEXT("{group_id}"), *Encoded_GroupId);
 
   // 
   // Fill Query Params
   TArray<FString> QueryParams;
   for (const FString& Item : UserIds)
   {
-    QueryParams.Add(FString::Printf(TEXT("UserIds=%s", FGenericPlatformHttp::UrlEncode(Item))));
+    QueryParams.Add(FString::Printf(TEXT("UserIds=%s"), *(Item)));
   }
   if (QueryParams.Num() > 0)
   {
@@ -222,14 +223,14 @@ NAKAMAAPI_API void NakamaApi::AddGroupUsers (
   // 
   // Fill Path Params
   const FString Encoded_GroupId = FGenericPlatformHttp::UrlEncode(GroupId);
-  Endpoint = Endpoint.Replace("group_id", *Encoded_GroupId);
+  Endpoint = Endpoint.Replace(TEXT("{group_id}"), *Encoded_GroupId);
 
   // 
   // Fill Query Params
   TArray<FString> QueryParams;
   for (const FString& Item : UserIds)
   {
-    QueryParams.Add(FString::Printf(TEXT("UserIds=%s", FGenericPlatformHttp::UrlEncode(Item))));
+    QueryParams.Add(FString::Printf(TEXT("UserIds=%s"), *(Item)));
   }
   if (QueryParams.Num() > 0)
   {
@@ -290,11 +291,11 @@ NAKAMAAPI_API void NakamaApi::SessionRefresh (
   TSharedPtr<FJsonObject> Body;
   if (Token.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(token), Token);
+    Body->SetStringField(TEXT("token"), Token);
   }
   if (Token.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(token), Token);
+    Body->SetStringField(TEXT("token"), Token);
   }
 
   //
@@ -349,11 +350,11 @@ NAKAMAAPI_API void NakamaApi::SessionLogout (
   TSharedPtr<FJsonObject> Body;
   if (Token.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(token), Token);
+    Body->SetStringField(TEXT("token"), Token);
   }
   if (RefreshToken.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(refresh_token), RefreshToken);
+    Body->SetStringField(TEXT("refresh_token"), RefreshToken);
   }
 
   //
@@ -407,11 +408,11 @@ NAKAMAAPI_API void NakamaApi::SessionLogout (
   TSharedPtr<FJsonObject> Body;
   if (Token.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(token), Token);
+    Body->SetStringField(TEXT("token"), Token);
   }
   if (RefreshToken.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(refresh_token), RefreshToken);
+    Body->SetStringField(TEXT("refresh_token"), RefreshToken);
   }
 
   //
@@ -463,13 +464,13 @@ NAKAMAAPI_API void NakamaApi::AuthenticateApple (
   // 
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
-  if (Account.NumEmpty() == false)
+  
   {
-    Body->SetObjectField(TEXT(account), Account.ToJson());
+    Body->SetObjectField(TEXT("account"), Account.ToJson());
   }
-  if (Account.NumEmpty() == false)
+  
   {
-    Body->SetObjectField(TEXT(account), Account.ToJson());
+    Body->SetObjectField(TEXT("account"), Account.ToJson());
   }
 
   //
@@ -522,13 +523,13 @@ NAKAMAAPI_API void NakamaApi::AuthenticateCustom (
   // 
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
-  if (Account.NumEmpty() == false)
+  
   {
-    Body->SetObjectField(TEXT(account), Account.ToJson());
+    Body->SetObjectField(TEXT("account"), Account.ToJson());
   }
-  if (Account.NumEmpty() == false)
+  
   {
-    Body->SetObjectField(TEXT(account), Account.ToJson());
+    Body->SetObjectField(TEXT("account"), Account.ToJson());
   }
 
   //
@@ -581,13 +582,13 @@ NAKAMAAPI_API void NakamaApi::AuthenticateDevice (
   // 
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
-  if (Account.NumEmpty() == false)
+  
   {
-    Body->SetObjectField(TEXT(account), Account.ToJson());
+    Body->SetObjectField(TEXT("account"), Account.ToJson());
   }
-  if (Account.NumEmpty() == false)
+  
   {
-    Body->SetObjectField(TEXT(account), Account.ToJson());
+    Body->SetObjectField(TEXT("account"), Account.ToJson());
   }
 
   //
@@ -640,13 +641,13 @@ NAKAMAAPI_API void NakamaApi::AuthenticateEmail (
   // 
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
-  if (Account.NumEmpty() == false)
+  
   {
-    Body->SetObjectField(TEXT(account), Account.ToJson());
+    Body->SetObjectField(TEXT("account"), Account.ToJson());
   }
-  if (Account.NumEmpty() == false)
+  
   {
-    Body->SetObjectField(TEXT(account), Account.ToJson());
+    Body->SetObjectField(TEXT("account"), Account.ToJson());
   }
 
   //
@@ -700,13 +701,13 @@ NAKAMAAPI_API void NakamaApi::AuthenticateFacebook (
   // 
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
-  if (Account.NumEmpty() == false)
+  
   {
-    Body->SetObjectField(TEXT(account), Account.ToJson());
+    Body->SetObjectField(TEXT("account"), Account.ToJson());
   }
-  if (Account.NumEmpty() == false)
+  
   {
-    Body->SetObjectField(TEXT(account), Account.ToJson());
+    Body->SetObjectField(TEXT("account"), Account.ToJson());
   }
 
   //
@@ -759,13 +760,13 @@ NAKAMAAPI_API void NakamaApi::AuthenticateFacebookInstantGame (
   // 
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
-  if (Account.NumEmpty() == false)
+  
   {
-    Body->SetObjectField(TEXT(account), Account.ToJson());
+    Body->SetObjectField(TEXT("account"), Account.ToJson());
   }
-  if (Account.NumEmpty() == false)
+  
   {
-    Body->SetObjectField(TEXT(account), Account.ToJson());
+    Body->SetObjectField(TEXT("account"), Account.ToJson());
   }
 
   //
@@ -818,13 +819,13 @@ NAKAMAAPI_API void NakamaApi::AuthenticateGameCenter (
   // 
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
-  if (Account.NumEmpty() == false)
+  
   {
-    Body->SetObjectField(TEXT(account), Account.ToJson());
+    Body->SetObjectField(TEXT("account"), Account.ToJson());
   }
-  if (Account.NumEmpty() == false)
+  
   {
-    Body->SetObjectField(TEXT(account), Account.ToJson());
+    Body->SetObjectField(TEXT("account"), Account.ToJson());
   }
 
   //
@@ -877,13 +878,13 @@ NAKAMAAPI_API void NakamaApi::AuthenticateGoogle (
   // 
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
-  if (Account.NumEmpty() == false)
+  
   {
-    Body->SetObjectField(TEXT(account), Account.ToJson());
+    Body->SetObjectField(TEXT("account"), Account.ToJson());
   }
-  if (Account.NumEmpty() == false)
+  
   {
-    Body->SetObjectField(TEXT(account), Account.ToJson());
+    Body->SetObjectField(TEXT("account"), Account.ToJson());
   }
 
   //
@@ -937,13 +938,13 @@ NAKAMAAPI_API void NakamaApi::AuthenticateSteam (
   // 
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
-  if (Account.NumEmpty() == false)
+  
   {
-    Body->SetObjectField(TEXT(account), Account.ToJson());
+    Body->SetObjectField(TEXT("account"), Account.ToJson());
   }
-  if (Account.NumEmpty() == false)
+  
   {
-    Body->SetObjectField(TEXT(account), Account.ToJson());
+    Body->SetObjectField(TEXT("account"), Account.ToJson());
   }
 
   //
@@ -985,14 +986,14 @@ NAKAMAAPI_API void NakamaApi::BanGroupUsers (
   // 
   // Fill Path Params
   const FString Encoded_GroupId = FGenericPlatformHttp::UrlEncode(GroupId);
-  Endpoint = Endpoint.Replace("group_id", *Encoded_GroupId);
+  Endpoint = Endpoint.Replace(TEXT("{group_id}"), *Encoded_GroupId);
 
   // 
   // Fill Query Params
   TArray<FString> QueryParams;
   for (const FString& Item : UserIds)
   {
-    QueryParams.Add(FString::Printf(TEXT("UserIds=%s", FGenericPlatformHttp::UrlEncode(Item))));
+    QueryParams.Add(FString::Printf(TEXT("UserIds=%s"), *(Item)));
   }
   if (QueryParams.Num() > 0)
   {
@@ -1041,14 +1042,14 @@ NAKAMAAPI_API void NakamaApi::BanGroupUsers (
   // 
   // Fill Path Params
   const FString Encoded_GroupId = FGenericPlatformHttp::UrlEncode(GroupId);
-  Endpoint = Endpoint.Replace("group_id", *Encoded_GroupId);
+  Endpoint = Endpoint.Replace(TEXT("{group_id}"), *Encoded_GroupId);
 
   // 
   // Fill Query Params
   TArray<FString> QueryParams;
   for (const FString& Item : UserIds)
   {
-    QueryParams.Add(FString::Printf(TEXT("UserIds=%s", FGenericPlatformHttp::UrlEncode(Item))));
+    QueryParams.Add(FString::Printf(TEXT("UserIds=%s"), *(Item)));
   }
   if (QueryParams.Num() > 0)
   {
@@ -1102,11 +1103,11 @@ NAKAMAAPI_API void NakamaApi::BlockFriends (
   TArray<FString> QueryParams;
   for (const FString& Item : Ids)
   {
-    QueryParams.Add(FString::Printf(TEXT("Ids=%s", FGenericPlatformHttp::UrlEncode(Item))));
+    QueryParams.Add(FString::Printf(TEXT("Ids=%s"), *(Item)));
   }
   for (const FString& Item : Usernames)
   {
-    QueryParams.Add(FString::Printf(TEXT("Usernames=%s", FGenericPlatformHttp::UrlEncode(Item))));
+    QueryParams.Add(FString::Printf(TEXT("Usernames=%s"), *(Item)));
   }
   if (QueryParams.Num() > 0)
   {
@@ -1160,11 +1161,11 @@ NAKAMAAPI_API void NakamaApi::BlockFriends (
   TArray<FString> QueryParams;
   for (const FString& Item : Ids)
   {
-    QueryParams.Add(FString::Printf(TEXT("Ids=%s", FGenericPlatformHttp::UrlEncode(Item))));
+    QueryParams.Add(FString::Printf(TEXT("Ids=%s"), *(Item)));
   }
   for (const FString& Item : Usernames)
   {
-    QueryParams.Add(FString::Printf(TEXT("Usernames=%s", FGenericPlatformHttp::UrlEncode(Item))));
+    QueryParams.Add(FString::Printf(TEXT("Usernames=%s"), *(Item)));
   }
   if (QueryParams.Num() > 0)
   {
@@ -1230,27 +1231,28 @@ NAKAMAAPI_API void NakamaApi::CreateGroup (
   TSharedPtr<FJsonObject> Body;
   if (Name.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(name), Name);
+    Body->SetStringField(TEXT("name"), Name);
   }
   if (Description.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(description), Description);
+    Body->SetStringField(TEXT("description"), Description);
   }
   if (LangTag.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(lang_tag), LangTag);
+    Body->SetStringField(TEXT("lang_tag"), LangTag);
   }
   if (AvatarUrl.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(avatar_url), AvatarUrl);
+    Body->SetStringField(TEXT("avatar_url"), AvatarUrl);
   }
-  if (Open.None() == false)
+  
   {
-    Body->SetBoolField(TEXT(open), Open);
+    Body->SetBoolField(TEXT("open"), Open);
   }
-  if (MaxCount.NonZero() == false)
+  if (MaxCount != 0)
+  
   {
-    Body->SetIntegerField(TEXT(max_count), MaxCount);
+    Body->SetNumberField(TEXT("max_count"), MaxCount);
   }
 
   //
@@ -1309,27 +1311,28 @@ NAKAMAAPI_API void NakamaApi::CreateGroup (
   TSharedPtr<FJsonObject> Body;
   if (Name.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(name), Name);
+    Body->SetStringField(TEXT("name"), Name);
   }
   if (Description.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(description), Description);
+    Body->SetStringField(TEXT("description"), Description);
   }
   if (LangTag.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(lang_tag), LangTag);
+    Body->SetStringField(TEXT("lang_tag"), LangTag);
   }
   if (AvatarUrl.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(avatar_url), AvatarUrl);
+    Body->SetStringField(TEXT("avatar_url"), AvatarUrl);
   }
-  if (Open.None() == false)
+  
   {
-    Body->SetBoolField(TEXT(open), Open);
+    Body->SetBoolField(TEXT("open"), Open);
   }
-  if (MaxCount.NonZero() == false)
+  if (MaxCount != 0)
+  
   {
-    Body->SetIntegerField(TEXT(max_count), MaxCount);
+    Body->SetNumberField(TEXT("max_count"), MaxCount);
   }
 
   //
@@ -1472,11 +1475,11 @@ NAKAMAAPI_API void NakamaApi::DeleteFriends (
   TArray<FString> QueryParams;
   for (const FString& Item : Ids)
   {
-    QueryParams.Add(FString::Printf(TEXT("Ids=%s", FGenericPlatformHttp::UrlEncode(Item))));
+    QueryParams.Add(FString::Printf(TEXT("Ids=%s"), *(Item)));
   }
   for (const FString& Item : Usernames)
   {
-    QueryParams.Add(FString::Printf(TEXT("Usernames=%s", FGenericPlatformHttp::UrlEncode(Item))));
+    QueryParams.Add(FString::Printf(TEXT("Usernames=%s"), *(Item)));
   }
   if (QueryParams.Num() > 0)
   {
@@ -1530,11 +1533,11 @@ NAKAMAAPI_API void NakamaApi::DeleteFriends (
   TArray<FString> QueryParams;
   for (const FString& Item : Ids)
   {
-    QueryParams.Add(FString::Printf(TEXT("Ids=%s", FGenericPlatformHttp::UrlEncode(Item))));
+    QueryParams.Add(FString::Printf(TEXT("Ids=%s"), *(Item)));
   }
   for (const FString& Item : Usernames)
   {
-    QueryParams.Add(FString::Printf(TEXT("Usernames=%s", FGenericPlatformHttp::UrlEncode(Item))));
+    QueryParams.Add(FString::Printf(TEXT("Usernames=%s"), *(Item)));
   }
   if (QueryParams.Num() > 0)
   {
@@ -1582,7 +1585,7 @@ NAKAMAAPI_API void NakamaApi::DeleteGroup (
   // 
   // Fill Path Params
   const FString Encoded_GroupId = FGenericPlatformHttp::UrlEncode(GroupId);
-  Endpoint = Endpoint.Replace("group_id", *Encoded_GroupId);
+  Endpoint = Endpoint.Replace(TEXT("{group_id}"), *Encoded_GroupId);
 
   // 
   // Fill Query Params
@@ -1633,7 +1636,7 @@ NAKAMAAPI_API void NakamaApi::DeleteGroup (
   // 
   // Fill Path Params
   const FString Encoded_GroupId = FGenericPlatformHttp::UrlEncode(GroupId);
-  Endpoint = Endpoint.Replace("group_id", *Encoded_GroupId);
+  Endpoint = Endpoint.Replace(TEXT("{group_id}"), *Encoded_GroupId);
 
   // 
   // Fill Query Params
@@ -1684,7 +1687,7 @@ NAKAMAAPI_API void NakamaApi::DeleteLeaderboardRecord (
   // 
   // Fill Path Params
   const FString Encoded_LeaderboardId = FGenericPlatformHttp::UrlEncode(LeaderboardId);
-  Endpoint = Endpoint.Replace("leaderboard_id", *Encoded_LeaderboardId);
+  Endpoint = Endpoint.Replace(TEXT("{leaderboard_id}"), *Encoded_LeaderboardId);
 
   // 
   // Fill Query Params
@@ -1735,7 +1738,7 @@ NAKAMAAPI_API void NakamaApi::DeleteLeaderboardRecord (
   // 
   // Fill Path Params
   const FString Encoded_LeaderboardId = FGenericPlatformHttp::UrlEncode(LeaderboardId);
-  Endpoint = Endpoint.Replace("leaderboard_id", *Encoded_LeaderboardId);
+  Endpoint = Endpoint.Replace(TEXT("{leaderboard_id}"), *Encoded_LeaderboardId);
 
   // 
   // Fill Query Params
@@ -1791,7 +1794,7 @@ NAKAMAAPI_API void NakamaApi::DeleteNotifications (
   TArray<FString> QueryParams;
   for (const FString& Item : Ids)
   {
-    QueryParams.Add(FString::Printf(TEXT("Ids=%s", FGenericPlatformHttp::UrlEncode(Item))));
+    QueryParams.Add(FString::Printf(TEXT("Ids=%s"), *(Item)));
   }
   if (QueryParams.Num() > 0)
   {
@@ -1844,7 +1847,7 @@ NAKAMAAPI_API void NakamaApi::DeleteNotifications (
   TArray<FString> QueryParams;
   for (const FString& Item : Ids)
   {
-    QueryParams.Add(FString::Printf(TEXT("Ids=%s", FGenericPlatformHttp::UrlEncode(Item))));
+    QueryParams.Add(FString::Printf(TEXT("Ids=%s"), *(Item)));
   }
   if (QueryParams.Num() > 0)
   {
@@ -1892,7 +1895,7 @@ NAKAMAAPI_API void NakamaApi::DeleteTournamentRecord (
   // 
   // Fill Path Params
   const FString Encoded_TournamentId = FGenericPlatformHttp::UrlEncode(TournamentId);
-  Endpoint = Endpoint.Replace("tournament_id", *Encoded_TournamentId);
+  Endpoint = Endpoint.Replace(TEXT("{tournament_id}"), *Encoded_TournamentId);
 
   // 
   // Fill Query Params
@@ -1943,7 +1946,7 @@ NAKAMAAPI_API void NakamaApi::DeleteTournamentRecord (
   // 
   // Fill Path Params
   const FString Encoded_TournamentId = FGenericPlatformHttp::UrlEncode(TournamentId);
-  Endpoint = Endpoint.Replace("tournament_id", *Encoded_TournamentId);
+  Endpoint = Endpoint.Replace(TEXT("{tournament_id}"), *Encoded_TournamentId);
 
   // 
   // Fill Query Params
@@ -2010,7 +2013,7 @@ NAKAMAAPI_API void NakamaApi::DeleteStorageObjects (
     TArray<TSharedPtr<FJsonValue>> Array;
     for (const FNakamaDeleteStorageObjectId& Item : ObjectIds)
     {
-      Array.Add(MakeShared<Object>(Item.ToJson()));
+      Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
     }
     Body->SetArrayField(TEXT("object_ids"), Array);
   }
@@ -2068,7 +2071,7 @@ NAKAMAAPI_API void NakamaApi::DeleteStorageObjects (
     TArray<TSharedPtr<FJsonValue>> Array;
     for (const FNakamaDeleteStorageObjectId& Item : ObjectIds)
     {
-      Array.Add(MakeShared<Object>(Item.ToJson()));
+      Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
     }
     Body->SetArrayField(TEXT("object_ids"), Array);
   }
@@ -2126,15 +2129,15 @@ NAKAMAAPI_API void NakamaApi::Event (
   TSharedPtr<FJsonObject> Body;
   if (Name.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(name), Name);
+    Body->SetStringField(TEXT("name"), Name);
   }
   if (Timestamp.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(timestamp), Timestamp);
+    Body->SetStringField(TEXT("timestamp"), Timestamp);
   }
-  if (External.None() == false)
+  
   {
-    Body->SetBoolField(TEXT(external), External);
+    Body->SetBoolField(TEXT("external"), External);
   }
 
   //
@@ -2190,15 +2193,15 @@ NAKAMAAPI_API void NakamaApi::Event (
   TSharedPtr<FJsonObject> Body;
   if (Name.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(name), Name);
+    Body->SetStringField(TEXT("name"), Name);
   }
   if (Timestamp.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(timestamp), Timestamp);
+    Body->SetStringField(TEXT("timestamp"), Timestamp);
   }
-  if (External.None() == false)
+  
   {
-    Body->SetBoolField(TEXT(external), External);
+    Body->SetBoolField(TEXT("external"), External);
   }
 
   //
@@ -2343,15 +2346,15 @@ NAKAMAAPI_API void NakamaApi::GetUsers (
   TArray<FString> QueryParams;
   for (const FString& Item : Ids)
   {
-    QueryParams.Add(FString::Printf(TEXT("Ids=%s", FGenericPlatformHttp::UrlEncode(Item))));
+    QueryParams.Add(FString::Printf(TEXT("Ids=%s"), *(Item)));
   }
   for (const FString& Item : Usernames)
   {
-    QueryParams.Add(FString::Printf(TEXT("Usernames=%s", FGenericPlatformHttp::UrlEncode(Item))));
+    QueryParams.Add(FString::Printf(TEXT("Usernames=%s"), *(Item)));
   }
   for (const FString& Item : FacebookIds)
   {
-    QueryParams.Add(FString::Printf(TEXT("FacebookIds=%s", FGenericPlatformHttp::UrlEncode(Item))));
+    QueryParams.Add(FString::Printf(TEXT("FacebookIds=%s"), *(Item)));
   }
   if (QueryParams.Num() > 0)
   {
@@ -2407,15 +2410,15 @@ NAKAMAAPI_API void NakamaApi::GetUsers (
   TArray<FString> QueryParams;
   for (const FString& Item : Ids)
   {
-    QueryParams.Add(FString::Printf(TEXT("Ids=%s", FGenericPlatformHttp::UrlEncode(Item))));
+    QueryParams.Add(FString::Printf(TEXT("Ids=%s"), *(Item)));
   }
   for (const FString& Item : Usernames)
   {
-    QueryParams.Add(FString::Printf(TEXT("Usernames=%s", FGenericPlatformHttp::UrlEncode(Item))));
+    QueryParams.Add(FString::Printf(TEXT("Usernames=%s"), *(Item)));
   }
   for (const FString& Item : FacebookIds)
   {
-    QueryParams.Add(FString::Printf(TEXT("FacebookIds=%s", FGenericPlatformHttp::UrlEncode(Item))));
+    QueryParams.Add(FString::Printf(TEXT("FacebookIds=%s"), *(Item)));
   }
   if (QueryParams.Num() > 0)
   {
@@ -2464,7 +2467,7 @@ NAKAMAAPI_API void NakamaApi::GetSubscription (
   // 
   // Fill Path Params
   const FString Encoded_ProductId = FGenericPlatformHttp::UrlEncode(ProductId);
-  Endpoint = Endpoint.Replace("product_id", *Encoded_ProductId);
+  Endpoint = Endpoint.Replace(TEXT("{product_id}"), *Encoded_ProductId);
 
   // 
   // Fill Query Params
@@ -2516,7 +2519,7 @@ NAKAMAAPI_API void NakamaApi::GetSubscription (
   // 
   // Fill Path Params
   const FString Encoded_ProductId = FGenericPlatformHttp::UrlEncode(ProductId);
-  Endpoint = Endpoint.Replace("product_id", *Encoded_ProductId);
+  Endpoint = Endpoint.Replace(TEXT("{product_id}"), *Encoded_ProductId);
 
   // 
   // Fill Query Params
@@ -2774,9 +2777,9 @@ NAKAMAAPI_API void NakamaApi::ImportFacebookFriends (
   // 
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
-  if (Account.NumEmpty() == false)
+  
   {
-    Body->SetObjectField(TEXT(account), Account.ToJson());
+    Body->SetObjectField(TEXT("account"), Account.ToJson());
   }
 
   //
@@ -2828,9 +2831,9 @@ NAKAMAAPI_API void NakamaApi::ImportFacebookFriends (
   // 
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
-  if (Account.NumEmpty() == false)
+  
   {
-    Body->SetObjectField(TEXT(account), Account.ToJson());
+    Body->SetObjectField(TEXT("account"), Account.ToJson());
   }
 
   //
@@ -2882,9 +2885,9 @@ NAKAMAAPI_API void NakamaApi::ImportSteamFriends (
   // 
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
-  if (Account.NumEmpty() == false)
+  
   {
-    Body->SetObjectField(TEXT(account), Account.ToJson());
+    Body->SetObjectField(TEXT("account"), Account.ToJson());
   }
 
   //
@@ -2936,9 +2939,9 @@ NAKAMAAPI_API void NakamaApi::ImportSteamFriends (
   // 
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
-  if (Account.NumEmpty() == false)
+  
   {
-    Body->SetObjectField(TEXT(account), Account.ToJson());
+    Body->SetObjectField(TEXT("account"), Account.ToJson());
   }
 
   //
@@ -2978,7 +2981,7 @@ NAKAMAAPI_API void NakamaApi::JoinGroup (
   // 
   // Fill Path Params
   const FString Encoded_GroupId = FGenericPlatformHttp::UrlEncode(GroupId);
-  Endpoint = Endpoint.Replace("group_id", *Encoded_GroupId);
+  Endpoint = Endpoint.Replace(TEXT("{group_id}"), *Encoded_GroupId);
 
   // 
   // Fill Query Params
@@ -3029,7 +3032,7 @@ NAKAMAAPI_API void NakamaApi::JoinGroup (
   // 
   // Fill Path Params
   const FString Encoded_GroupId = FGenericPlatformHttp::UrlEncode(GroupId);
-  Endpoint = Endpoint.Replace("group_id", *Encoded_GroupId);
+  Endpoint = Endpoint.Replace(TEXT("{group_id}"), *Encoded_GroupId);
 
   // 
   // Fill Query Params
@@ -3080,7 +3083,7 @@ NAKAMAAPI_API void NakamaApi::JoinTournament (
   // 
   // Fill Path Params
   const FString Encoded_TournamentId = FGenericPlatformHttp::UrlEncode(TournamentId);
-  Endpoint = Endpoint.Replace("tournament_id", *Encoded_TournamentId);
+  Endpoint = Endpoint.Replace(TEXT("{tournament_id}"), *Encoded_TournamentId);
 
   // 
   // Fill Query Params
@@ -3131,7 +3134,7 @@ NAKAMAAPI_API void NakamaApi::JoinTournament (
   // 
   // Fill Path Params
   const FString Encoded_TournamentId = FGenericPlatformHttp::UrlEncode(TournamentId);
-  Endpoint = Endpoint.Replace("tournament_id", *Encoded_TournamentId);
+  Endpoint = Endpoint.Replace(TEXT("{tournament_id}"), *Encoded_TournamentId);
 
   // 
   // Fill Query Params
@@ -3183,14 +3186,14 @@ NAKAMAAPI_API void NakamaApi::KickGroupUsers (
   // 
   // Fill Path Params
   const FString Encoded_GroupId = FGenericPlatformHttp::UrlEncode(GroupId);
-  Endpoint = Endpoint.Replace("group_id", *Encoded_GroupId);
+  Endpoint = Endpoint.Replace(TEXT("{group_id}"), *Encoded_GroupId);
 
   // 
   // Fill Query Params
   TArray<FString> QueryParams;
   for (const FString& Item : UserIds)
   {
-    QueryParams.Add(FString::Printf(TEXT("UserIds=%s", FGenericPlatformHttp::UrlEncode(Item))));
+    QueryParams.Add(FString::Printf(TEXT("UserIds=%s"), *(Item)));
   }
   if (QueryParams.Num() > 0)
   {
@@ -3239,14 +3242,14 @@ NAKAMAAPI_API void NakamaApi::KickGroupUsers (
   // 
   // Fill Path Params
   const FString Encoded_GroupId = FGenericPlatformHttp::UrlEncode(GroupId);
-  Endpoint = Endpoint.Replace("group_id", *Encoded_GroupId);
+  Endpoint = Endpoint.Replace(TEXT("{group_id}"), *Encoded_GroupId);
 
   // 
   // Fill Query Params
   TArray<FString> QueryParams;
   for (const FString& Item : UserIds)
   {
-    QueryParams.Add(FString::Printf(TEXT("UserIds=%s", FGenericPlatformHttp::UrlEncode(Item))));
+    QueryParams.Add(FString::Printf(TEXT("UserIds=%s"), *(Item)));
   }
   if (QueryParams.Num() > 0)
   {
@@ -3294,7 +3297,7 @@ NAKAMAAPI_API void NakamaApi::LeaveGroup (
   // 
   // Fill Path Params
   const FString Encoded_GroupId = FGenericPlatformHttp::UrlEncode(GroupId);
-  Endpoint = Endpoint.Replace("group_id", *Encoded_GroupId);
+  Endpoint = Endpoint.Replace(TEXT("{group_id}"), *Encoded_GroupId);
 
   // 
   // Fill Query Params
@@ -3345,7 +3348,7 @@ NAKAMAAPI_API void NakamaApi::LeaveGroup (
   // 
   // Fill Path Params
   const FString Encoded_GroupId = FGenericPlatformHttp::UrlEncode(GroupId);
-  Endpoint = Endpoint.Replace("group_id", *Encoded_GroupId);
+  Endpoint = Endpoint.Replace(TEXT("{group_id}"), *Encoded_GroupId);
 
   // 
   // Fill Query Params
@@ -3410,7 +3413,7 @@ NAKAMAAPI_API void NakamaApi::LinkApple (
   TSharedPtr<FJsonObject> Body;
   if (Token.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(token), Token);
+    Body->SetStringField(TEXT("token"), Token);
   }
 
   //
@@ -3464,7 +3467,7 @@ NAKAMAAPI_API void NakamaApi::LinkApple (
   TSharedPtr<FJsonObject> Body;
   if (Token.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(token), Token);
+    Body->SetStringField(TEXT("token"), Token);
   }
 
   //
@@ -3518,7 +3521,7 @@ NAKAMAAPI_API void NakamaApi::LinkCustom (
   TSharedPtr<FJsonObject> Body;
   if (Id.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(id), Id);
+    Body->SetStringField(TEXT("id"), Id);
   }
 
   //
@@ -3572,7 +3575,7 @@ NAKAMAAPI_API void NakamaApi::LinkCustom (
   TSharedPtr<FJsonObject> Body;
   if (Id.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(id), Id);
+    Body->SetStringField(TEXT("id"), Id);
   }
 
   //
@@ -3626,7 +3629,7 @@ NAKAMAAPI_API void NakamaApi::LinkDevice (
   TSharedPtr<FJsonObject> Body;
   if (Id.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(id), Id);
+    Body->SetStringField(TEXT("id"), Id);
   }
 
   //
@@ -3680,7 +3683,7 @@ NAKAMAAPI_API void NakamaApi::LinkDevice (
   TSharedPtr<FJsonObject> Body;
   if (Id.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(id), Id);
+    Body->SetStringField(TEXT("id"), Id);
   }
 
   //
@@ -3735,11 +3738,11 @@ NAKAMAAPI_API void NakamaApi::LinkEmail (
   TSharedPtr<FJsonObject> Body;
   if (Email.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(email), Email);
+    Body->SetStringField(TEXT("email"), Email);
   }
   if (Password.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(password), Password);
+    Body->SetStringField(TEXT("password"), Password);
   }
 
   //
@@ -3794,11 +3797,11 @@ NAKAMAAPI_API void NakamaApi::LinkEmail (
   TSharedPtr<FJsonObject> Body;
   if (Email.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(email), Email);
+    Body->SetStringField(TEXT("email"), Email);
   }
   if (Password.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(password), Password);
+    Body->SetStringField(TEXT("password"), Password);
   }
 
   //
@@ -3850,9 +3853,9 @@ NAKAMAAPI_API void NakamaApi::LinkFacebook (
   // 
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
-  if (Account.NumEmpty() == false)
+  
   {
-    Body->SetObjectField(TEXT(account), Account.ToJson());
+    Body->SetObjectField(TEXT("account"), Account.ToJson());
   }
 
   //
@@ -3904,9 +3907,9 @@ NAKAMAAPI_API void NakamaApi::LinkFacebook (
   // 
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
-  if (Account.NumEmpty() == false)
+  
   {
-    Body->SetObjectField(TEXT(account), Account.ToJson());
+    Body->SetObjectField(TEXT("account"), Account.ToJson());
   }
 
   //
@@ -3960,7 +3963,7 @@ NAKAMAAPI_API void NakamaApi::LinkFacebookInstantGame (
   TSharedPtr<FJsonObject> Body;
   if (SignedPlayerInfo.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(signed_player_info), SignedPlayerInfo);
+    Body->SetStringField(TEXT("signed_player_info"), SignedPlayerInfo);
   }
 
   //
@@ -4014,7 +4017,7 @@ NAKAMAAPI_API void NakamaApi::LinkFacebookInstantGame (
   TSharedPtr<FJsonObject> Body;
   if (SignedPlayerInfo.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(signed_player_info), SignedPlayerInfo);
+    Body->SetStringField(TEXT("signed_player_info"), SignedPlayerInfo);
   }
 
   //
@@ -4073,27 +4076,28 @@ NAKAMAAPI_API void NakamaApi::LinkGameCenter (
   TSharedPtr<FJsonObject> Body;
   if (PlayerId.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(player_id), PlayerId);
+    Body->SetStringField(TEXT("player_id"), PlayerId);
   }
   if (BundleId.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(bundle_id), BundleId);
+    Body->SetStringField(TEXT("bundle_id"), BundleId);
   }
-  if (TimestampSeconds.NonZero() == false)
+  if (TimestampSeconds != 0)
+  
   {
-    Body->SetNumberField(TEXT(timestamp_seconds), TimestampSeconds);
+    Body->SetNumberField(TEXT("timestamp_seconds"), TimestampSeconds);
   }
   if (Salt.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(salt), Salt);
+    Body->SetStringField(TEXT("salt"), Salt);
   }
   if (Signature.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(signature), Signature);
+    Body->SetStringField(TEXT("signature"), Signature);
   }
   if (PublicKeyUrl.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(public_key_url), PublicKeyUrl);
+    Body->SetStringField(TEXT("public_key_url"), PublicKeyUrl);
   }
 
   //
@@ -4152,27 +4156,28 @@ NAKAMAAPI_API void NakamaApi::LinkGameCenter (
   TSharedPtr<FJsonObject> Body;
   if (PlayerId.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(player_id), PlayerId);
+    Body->SetStringField(TEXT("player_id"), PlayerId);
   }
   if (BundleId.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(bundle_id), BundleId);
+    Body->SetStringField(TEXT("bundle_id"), BundleId);
   }
-  if (TimestampSeconds.NonZero() == false)
+  if (TimestampSeconds != 0)
+  
   {
-    Body->SetNumberField(TEXT(timestamp_seconds), TimestampSeconds);
+    Body->SetNumberField(TEXT("timestamp_seconds"), TimestampSeconds);
   }
   if (Salt.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(salt), Salt);
+    Body->SetStringField(TEXT("salt"), Salt);
   }
   if (Signature.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(signature), Signature);
+    Body->SetStringField(TEXT("signature"), Signature);
   }
   if (PublicKeyUrl.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(public_key_url), PublicKeyUrl);
+    Body->SetStringField(TEXT("public_key_url"), PublicKeyUrl);
   }
 
   //
@@ -4226,7 +4231,7 @@ NAKAMAAPI_API void NakamaApi::LinkGoogle (
   TSharedPtr<FJsonObject> Body;
   if (Token.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(token), Token);
+    Body->SetStringField(TEXT("token"), Token);
   }
 
   //
@@ -4280,7 +4285,7 @@ NAKAMAAPI_API void NakamaApi::LinkGoogle (
   TSharedPtr<FJsonObject> Body;
   if (Token.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(token), Token);
+    Body->SetStringField(TEXT("token"), Token);
   }
 
   //
@@ -4332,13 +4337,13 @@ NAKAMAAPI_API void NakamaApi::LinkSteam (
   // 
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
-  if (Account.NumEmpty() == false)
+  
   {
-    Body->SetObjectField(TEXT(account), Account.ToJson());
+    Body->SetObjectField(TEXT("account"), Account.ToJson());
   }
-  if (Sync.None() == false)
+  
   {
-    Body->SetBoolField(TEXT(sync), Sync);
+    Body->SetBoolField(TEXT("sync"), Sync);
   }
 
   //
@@ -4390,13 +4395,13 @@ NAKAMAAPI_API void NakamaApi::LinkSteam (
   // 
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
-  if (Account.NumEmpty() == false)
+  
   {
-    Body->SetObjectField(TEXT(account), Account.ToJson());
+    Body->SetObjectField(TEXT("account"), Account.ToJson());
   }
-  if (Sync.None() == false)
+  
   {
-    Body->SetBoolField(TEXT(sync), Sync);
+    Body->SetBoolField(TEXT("sync"), Sync);
   }
 
   //
@@ -4439,22 +4444,23 @@ NAKAMAAPI_API void NakamaApi::ListChannelMessages (
   // 
   // Fill Path Params
   const FString Encoded_ChannelId = FGenericPlatformHttp::UrlEncode(ChannelId);
-  Endpoint = Endpoint.Replace("channel_id", *Encoded_ChannelId);
+  Endpoint = Endpoint.Replace(TEXT("{channel_id}"), *Encoded_ChannelId);
 
   // 
   // Fill Query Params
   TArray<FString> QueryParams;
-  if (Limit.NonZero() == false)
+  if (Limit != 0)
+  
   {
-    QueryParams.Add(FString::Printf(TEXT("Limit=%d", (Limit))));
+    QueryParams.Add(FString::Printf(TEXT("Limit=%d"), (Limit)));
   }
-  if (Forward.None() == false)
+  
   {
-    QueryParams.Add(FString::Printf(TEXT("Forward=%s_bool", (Forward))));
+    QueryParams.Add(FString::Printf(TEXT("Forward=%s_bool"), (Forward)));
   }
   if (Cursor.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("Cursor=%s", FGenericPlatformHttp::UrlEncode(Cursor))));
+    QueryParams.Add(FString::Printf(TEXT("Cursor=%s"), *(Cursor)));
   }
   if (QueryParams.Num() > 0)
   {
@@ -4506,22 +4512,23 @@ NAKAMAAPI_API void NakamaApi::ListChannelMessages (
   // 
   // Fill Path Params
   const FString Encoded_ChannelId = FGenericPlatformHttp::UrlEncode(ChannelId);
-  Endpoint = Endpoint.Replace("channel_id", *Encoded_ChannelId);
+  Endpoint = Endpoint.Replace(TEXT("{channel_id}"), *Encoded_ChannelId);
 
   // 
   // Fill Query Params
   TArray<FString> QueryParams;
-  if (Limit.NonZero() == false)
+  if (Limit != 0)
+  
   {
-    QueryParams.Add(FString::Printf(TEXT("Limit=%d", (Limit))));
+    QueryParams.Add(FString::Printf(TEXT("Limit=%d"), (Limit)));
   }
-  if (Forward.None() == false)
+  
   {
-    QueryParams.Add(FString::Printf(TEXT("Forward=%s_bool", (Forward))));
+    QueryParams.Add(FString::Printf(TEXT("Forward=%s_bool"), (Forward)));
   }
   if (Cursor.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("Cursor=%s", FGenericPlatformHttp::UrlEncode(Cursor))));
+    QueryParams.Add(FString::Printf(TEXT("Cursor=%s"), *(Cursor)));
   }
   if (QueryParams.Num() > 0)
   {
@@ -4575,17 +4582,19 @@ NAKAMAAPI_API void NakamaApi::ListFriends (
   // 
   // Fill Query Params
   TArray<FString> QueryParams;
-  if (Limit.NonZero() == false)
+  if (Limit != 0)
+  
   {
-    QueryParams.Add(FString::Printf(TEXT("Limit=%d", (Limit))));
+    QueryParams.Add(FString::Printf(TEXT("Limit=%d"), (Limit)));
   }
-  if (State.NonZero() == false)
+  if (State != 0)
+  
   {
-    QueryParams.Add(FString::Printf(TEXT("State=%d", (State))));
+    QueryParams.Add(FString::Printf(TEXT("State=%d"), (State)));
   }
   if (Cursor.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("Cursor=%s", FGenericPlatformHttp::UrlEncode(Cursor))));
+    QueryParams.Add(FString::Printf(TEXT("Cursor=%s"), *(Cursor)));
   }
   if (QueryParams.Num() > 0)
   {
@@ -4639,17 +4648,19 @@ NAKAMAAPI_API void NakamaApi::ListFriends (
   // 
   // Fill Query Params
   TArray<FString> QueryParams;
-  if (Limit.NonZero() == false)
+  if (Limit != 0)
+  
   {
-    QueryParams.Add(FString::Printf(TEXT("Limit=%d", (Limit))));
+    QueryParams.Add(FString::Printf(TEXT("Limit=%d"), (Limit)));
   }
-  if (State.NonZero() == false)
+  if (State != 0)
+  
   {
-    QueryParams.Add(FString::Printf(TEXT("State=%d", (State))));
+    QueryParams.Add(FString::Printf(TEXT("State=%d"), (State)));
   }
   if (Cursor.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("Cursor=%s", FGenericPlatformHttp::UrlEncode(Cursor))));
+    QueryParams.Add(FString::Printf(TEXT("Cursor=%s"), *(Cursor)));
   }
   if (QueryParams.Num() > 0)
   {
@@ -4702,13 +4713,14 @@ NAKAMAAPI_API void NakamaApi::ListFriendsOfFriends (
   // 
   // Fill Query Params
   TArray<FString> QueryParams;
-  if (Limit.NonZero() == false)
+  if (Limit != 0)
+  
   {
-    QueryParams.Add(FString::Printf(TEXT("Limit=%d", (Limit))));
+    QueryParams.Add(FString::Printf(TEXT("Limit=%d"), (Limit)));
   }
   if (Cursor.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("Cursor=%s", FGenericPlatformHttp::UrlEncode(Cursor))));
+    QueryParams.Add(FString::Printf(TEXT("Cursor=%s"), *(Cursor)));
   }
   if (QueryParams.Num() > 0)
   {
@@ -4761,13 +4773,14 @@ NAKAMAAPI_API void NakamaApi::ListFriendsOfFriends (
   // 
   // Fill Query Params
   TArray<FString> QueryParams;
-  if (Limit.NonZero() == false)
+  if (Limit != 0)
+  
   {
-    QueryParams.Add(FString::Printf(TEXT("Limit=%d", (Limit))));
+    QueryParams.Add(FString::Printf(TEXT("Limit=%d"), (Limit)));
   }
   if (Cursor.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("Cursor=%s", FGenericPlatformHttp::UrlEncode(Cursor))));
+    QueryParams.Add(FString::Printf(TEXT("Cursor=%s"), *(Cursor)));
   }
   if (QueryParams.Num() > 0)
   {
@@ -4826,27 +4839,29 @@ NAKAMAAPI_API void NakamaApi::ListGroups (
   TArray<FString> QueryParams;
   if (Name.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("Name=%s", FGenericPlatformHttp::UrlEncode(Name))));
+    QueryParams.Add(FString::Printf(TEXT("Name=%s"), *(Name)));
   }
   if (Cursor.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("Cursor=%s", FGenericPlatformHttp::UrlEncode(Cursor))));
+    QueryParams.Add(FString::Printf(TEXT("Cursor=%s"), *(Cursor)));
   }
-  if (Limit.NonZero() == false)
+  if (Limit != 0)
+  
   {
-    QueryParams.Add(FString::Printf(TEXT("Limit=%d", (Limit))));
+    QueryParams.Add(FString::Printf(TEXT("Limit=%d"), (Limit)));
   }
   if (LangTag.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("LangTag=%s", FGenericPlatformHttp::UrlEncode(LangTag))));
+    QueryParams.Add(FString::Printf(TEXT("LangTag=%s"), *(LangTag)));
   }
-  if (Members.NonZero() == false)
+  if (Members != 0)
+  
   {
-    QueryParams.Add(FString::Printf(TEXT("Members=%d", (Members))));
+    QueryParams.Add(FString::Printf(TEXT("Members=%d"), (Members)));
   }
-  if (Open.None() == false)
+  
   {
-    QueryParams.Add(FString::Printf(TEXT("Open=%s_bool", (Open))));
+    QueryParams.Add(FString::Printf(TEXT("Open=%s_bool"), (Open)));
   }
   if (QueryParams.Num() > 0)
   {
@@ -4905,27 +4920,29 @@ NAKAMAAPI_API void NakamaApi::ListGroups (
   TArray<FString> QueryParams;
   if (Name.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("Name=%s", FGenericPlatformHttp::UrlEncode(Name))));
+    QueryParams.Add(FString::Printf(TEXT("Name=%s"), *(Name)));
   }
   if (Cursor.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("Cursor=%s", FGenericPlatformHttp::UrlEncode(Cursor))));
+    QueryParams.Add(FString::Printf(TEXT("Cursor=%s"), *(Cursor)));
   }
-  if (Limit.NonZero() == false)
+  if (Limit != 0)
+  
   {
-    QueryParams.Add(FString::Printf(TEXT("Limit=%d", (Limit))));
+    QueryParams.Add(FString::Printf(TEXT("Limit=%d"), (Limit)));
   }
   if (LangTag.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("LangTag=%s", FGenericPlatformHttp::UrlEncode(LangTag))));
+    QueryParams.Add(FString::Printf(TEXT("LangTag=%s"), *(LangTag)));
   }
-  if (Members.NonZero() == false)
+  if (Members != 0)
+  
   {
-    QueryParams.Add(FString::Printf(TEXT("Members=%d", (Members))));
+    QueryParams.Add(FString::Printf(TEXT("Members=%d"), (Members)));
   }
-  if (Open.None() == false)
+  
   {
-    QueryParams.Add(FString::Printf(TEXT("Open=%s_bool", (Open))));
+    QueryParams.Add(FString::Printf(TEXT("Open=%s_bool"), (Open)));
   }
   if (QueryParams.Num() > 0)
   {
@@ -4977,22 +4994,24 @@ NAKAMAAPI_API void NakamaApi::ListGroupUsers (
   // 
   // Fill Path Params
   const FString Encoded_GroupId = FGenericPlatformHttp::UrlEncode(GroupId);
-  Endpoint = Endpoint.Replace("group_id", *Encoded_GroupId);
+  Endpoint = Endpoint.Replace(TEXT("{group_id}"), *Encoded_GroupId);
 
   // 
   // Fill Query Params
   TArray<FString> QueryParams;
-  if (Limit.NonZero() == false)
+  if (Limit != 0)
+  
   {
-    QueryParams.Add(FString::Printf(TEXT("Limit=%d", (Limit))));
+    QueryParams.Add(FString::Printf(TEXT("Limit=%d"), (Limit)));
   }
-  if (State.NonZero() == false)
+  if (State != 0)
+  
   {
-    QueryParams.Add(FString::Printf(TEXT("State=%d", (State))));
+    QueryParams.Add(FString::Printf(TEXT("State=%d"), (State)));
   }
   if (Cursor.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("Cursor=%s", FGenericPlatformHttp::UrlEncode(Cursor))));
+    QueryParams.Add(FString::Printf(TEXT("Cursor=%s"), *(Cursor)));
   }
   if (QueryParams.Num() > 0)
   {
@@ -5044,22 +5063,24 @@ NAKAMAAPI_API void NakamaApi::ListGroupUsers (
   // 
   // Fill Path Params
   const FString Encoded_GroupId = FGenericPlatformHttp::UrlEncode(GroupId);
-  Endpoint = Endpoint.Replace("group_id", *Encoded_GroupId);
+  Endpoint = Endpoint.Replace(TEXT("{group_id}"), *Encoded_GroupId);
 
   // 
   // Fill Query Params
   TArray<FString> QueryParams;
-  if (Limit.NonZero() == false)
+  if (Limit != 0)
+  
   {
-    QueryParams.Add(FString::Printf(TEXT("Limit=%d", (Limit))));
+    QueryParams.Add(FString::Printf(TEXT("Limit=%d"), (Limit)));
   }
-  if (State.NonZero() == false)
+  if (State != 0)
+  
   {
-    QueryParams.Add(FString::Printf(TEXT("State=%d", (State))));
+    QueryParams.Add(FString::Printf(TEXT("State=%d"), (State)));
   }
   if (Cursor.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("Cursor=%s", FGenericPlatformHttp::UrlEncode(Cursor))));
+    QueryParams.Add(FString::Printf(TEXT("Cursor=%s"), *(Cursor)));
   }
   if (QueryParams.Num() > 0)
   {
@@ -5112,26 +5133,28 @@ NAKAMAAPI_API void NakamaApi::ListLeaderboardRecords (
   // 
   // Fill Path Params
   const FString Encoded_LeaderboardId = FGenericPlatformHttp::UrlEncode(LeaderboardId);
-  Endpoint = Endpoint.Replace("leaderboard_id", *Encoded_LeaderboardId);
+  Endpoint = Endpoint.Replace(TEXT("{leaderboard_id}"), *Encoded_LeaderboardId);
 
   // 
   // Fill Query Params
   TArray<FString> QueryParams;
   for (const FString& Item : OwnerIds)
   {
-    QueryParams.Add(FString::Printf(TEXT("OwnerIds=%s", FGenericPlatformHttp::UrlEncode(Item))));
+    QueryParams.Add(FString::Printf(TEXT("OwnerIds=%s"), *(Item)));
   }
-  if (Limit.NonZero() == false)
+  if (Limit != 0)
+  
   {
-    QueryParams.Add(FString::Printf(TEXT("Limit=%d", (Limit))));
+    QueryParams.Add(FString::Printf(TEXT("Limit=%d"), (Limit)));
   }
   if (Cursor.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("Cursor=%s", FGenericPlatformHttp::UrlEncode(Cursor))));
+    QueryParams.Add(FString::Printf(TEXT("Cursor=%s"), *(Cursor)));
   }
-  if (Expiry.NonZero() == false)
+  if (Expiry != 0)
+  
   {
-    QueryParams.Add(FString::Printf(TEXT("Expiry=%lld", (Expiry))));
+    QueryParams.Add(FString::Printf(TEXT("Expiry=%lld"), (Expiry)));
   }
   if (QueryParams.Num() > 0)
   {
@@ -5184,26 +5207,28 @@ NAKAMAAPI_API void NakamaApi::ListLeaderboardRecords (
   // 
   // Fill Path Params
   const FString Encoded_LeaderboardId = FGenericPlatformHttp::UrlEncode(LeaderboardId);
-  Endpoint = Endpoint.Replace("leaderboard_id", *Encoded_LeaderboardId);
+  Endpoint = Endpoint.Replace(TEXT("{leaderboard_id}"), *Encoded_LeaderboardId);
 
   // 
   // Fill Query Params
   TArray<FString> QueryParams;
   for (const FString& Item : OwnerIds)
   {
-    QueryParams.Add(FString::Printf(TEXT("OwnerIds=%s", FGenericPlatformHttp::UrlEncode(Item))));
+    QueryParams.Add(FString::Printf(TEXT("OwnerIds=%s"), *(Item)));
   }
-  if (Limit.NonZero() == false)
+  if (Limit != 0)
+  
   {
-    QueryParams.Add(FString::Printf(TEXT("Limit=%d", (Limit))));
+    QueryParams.Add(FString::Printf(TEXT("Limit=%d"), (Limit)));
   }
   if (Cursor.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("Cursor=%s", FGenericPlatformHttp::UrlEncode(Cursor))));
+    QueryParams.Add(FString::Printf(TEXT("Cursor=%s"), *(Cursor)));
   }
-  if (Expiry.NonZero() == false)
+  if (Expiry != 0)
+  
   {
-    QueryParams.Add(FString::Printf(TEXT("Expiry=%lld", (Expiry))));
+    QueryParams.Add(FString::Printf(TEXT("Expiry=%lld"), (Expiry)));
   }
   if (QueryParams.Num() > 0)
   {
@@ -5256,24 +5281,26 @@ NAKAMAAPI_API void NakamaApi::ListLeaderboardRecordsAroundOwner (
   // 
   // Fill Path Params
   const FString Encoded_LeaderboardId = FGenericPlatformHttp::UrlEncode(LeaderboardId);
-  Endpoint = Endpoint.Replace("leaderboard_id", *Encoded_LeaderboardId);
+  Endpoint = Endpoint.Replace(TEXT("{leaderboard_id}"), *Encoded_LeaderboardId);
   const FString Encoded_OwnerId = FGenericPlatformHttp::UrlEncode(OwnerId);
-  Endpoint = Endpoint.Replace("owner_id", *Encoded_OwnerId);
+  Endpoint = Endpoint.Replace(TEXT("{owner_id}"), *Encoded_OwnerId);
 
   // 
   // Fill Query Params
   TArray<FString> QueryParams;
-  if (Limit.NonZero() == false)
+  if (Limit != 0)
+  
   {
-    QueryParams.Add(FString::Printf(TEXT("Limit=%d", (Limit))));
+    QueryParams.Add(FString::Printf(TEXT("Limit=%d"), (Limit)));
   }
-  if (Expiry.NonZero() == false)
+  if (Expiry != 0)
+  
   {
-    QueryParams.Add(FString::Printf(TEXT("Expiry=%lld", (Expiry))));
+    QueryParams.Add(FString::Printf(TEXT("Expiry=%lld"), (Expiry)));
   }
   if (Cursor.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("Cursor=%s", FGenericPlatformHttp::UrlEncode(Cursor))));
+    QueryParams.Add(FString::Printf(TEXT("Cursor=%s"), *(Cursor)));
   }
   if (QueryParams.Num() > 0)
   {
@@ -5326,24 +5353,26 @@ NAKAMAAPI_API void NakamaApi::ListLeaderboardRecordsAroundOwner (
   // 
   // Fill Path Params
   const FString Encoded_LeaderboardId = FGenericPlatformHttp::UrlEncode(LeaderboardId);
-  Endpoint = Endpoint.Replace("leaderboard_id", *Encoded_LeaderboardId);
+  Endpoint = Endpoint.Replace(TEXT("{leaderboard_id}"), *Encoded_LeaderboardId);
   const FString Encoded_OwnerId = FGenericPlatformHttp::UrlEncode(OwnerId);
-  Endpoint = Endpoint.Replace("owner_id", *Encoded_OwnerId);
+  Endpoint = Endpoint.Replace(TEXT("{owner_id}"), *Encoded_OwnerId);
 
   // 
   // Fill Query Params
   TArray<FString> QueryParams;
-  if (Limit.NonZero() == false)
+  if (Limit != 0)
+  
   {
-    QueryParams.Add(FString::Printf(TEXT("Limit=%d", (Limit))));
+    QueryParams.Add(FString::Printf(TEXT("Limit=%d"), (Limit)));
   }
-  if (Expiry.NonZero() == false)
+  if (Expiry != 0)
+  
   {
-    QueryParams.Add(FString::Printf(TEXT("Expiry=%lld", (Expiry))));
+    QueryParams.Add(FString::Printf(TEXT("Expiry=%lld"), (Expiry)));
   }
   if (Cursor.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("Cursor=%s", FGenericPlatformHttp::UrlEncode(Cursor))));
+    QueryParams.Add(FString::Printf(TEXT("Cursor=%s"), *(Cursor)));
   }
   if (QueryParams.Num() > 0)
   {
@@ -5400,29 +5429,32 @@ NAKAMAAPI_API void NakamaApi::ListMatches (
   // 
   // Fill Query Params
   TArray<FString> QueryParams;
-  if (Limit.NonZero() == false)
+  if (Limit != 0)
+  
   {
-    QueryParams.Add(FString::Printf(TEXT("Limit=%d", (Limit))));
+    QueryParams.Add(FString::Printf(TEXT("Limit=%d"), (Limit)));
   }
-  if (Authoritative.None() == false)
+  
   {
-    QueryParams.Add(FString::Printf(TEXT("Authoritative=%s_bool", (Authoritative))));
+    QueryParams.Add(FString::Printf(TEXT("Authoritative=%s_bool"), (Authoritative)));
   }
   if (Label.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("Label=%s", FGenericPlatformHttp::UrlEncode(Label))));
+    QueryParams.Add(FString::Printf(TEXT("Label=%s"), *(Label)));
   }
-  if (MinSize.NonZero() == false)
+  if (MinSize != 0)
+  
   {
-    QueryParams.Add(FString::Printf(TEXT("MinSize=%d", (MinSize))));
+    QueryParams.Add(FString::Printf(TEXT("MinSize=%d"), (MinSize)));
   }
-  if (MaxSize.NonZero() == false)
+  if (MaxSize != 0)
+  
   {
-    QueryParams.Add(FString::Printf(TEXT("MaxSize=%d", (MaxSize))));
+    QueryParams.Add(FString::Printf(TEXT("MaxSize=%d"), (MaxSize)));
   }
   if (Query.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("Query=%s", FGenericPlatformHttp::UrlEncode(Query))));
+    QueryParams.Add(FString::Printf(TEXT("Query=%s"), *(Query)));
   }
   if (QueryParams.Num() > 0)
   {
@@ -5479,29 +5511,32 @@ NAKAMAAPI_API void NakamaApi::ListMatches (
   // 
   // Fill Query Params
   TArray<FString> QueryParams;
-  if (Limit.NonZero() == false)
+  if (Limit != 0)
+  
   {
-    QueryParams.Add(FString::Printf(TEXT("Limit=%d", (Limit))));
+    QueryParams.Add(FString::Printf(TEXT("Limit=%d"), (Limit)));
   }
-  if (Authoritative.None() == false)
+  
   {
-    QueryParams.Add(FString::Printf(TEXT("Authoritative=%s_bool", (Authoritative))));
+    QueryParams.Add(FString::Printf(TEXT("Authoritative=%s_bool"), (Authoritative)));
   }
   if (Label.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("Label=%s", FGenericPlatformHttp::UrlEncode(Label))));
+    QueryParams.Add(FString::Printf(TEXT("Label=%s"), *(Label)));
   }
-  if (MinSize.NonZero() == false)
+  if (MinSize != 0)
+  
   {
-    QueryParams.Add(FString::Printf(TEXT("MinSize=%d", (MinSize))));
+    QueryParams.Add(FString::Printf(TEXT("MinSize=%d"), (MinSize)));
   }
-  if (MaxSize.NonZero() == false)
+  if (MaxSize != 0)
+  
   {
-    QueryParams.Add(FString::Printf(TEXT("MaxSize=%d", (MaxSize))));
+    QueryParams.Add(FString::Printf(TEXT("MaxSize=%d"), (MaxSize)));
   }
   if (Query.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("Query=%s", FGenericPlatformHttp::UrlEncode(Query))));
+    QueryParams.Add(FString::Printf(TEXT("Query=%s"), *(Query)));
   }
   if (QueryParams.Num() > 0)
   {
@@ -5556,21 +5591,22 @@ NAKAMAAPI_API void NakamaApi::ListParties (
   // 
   // Fill Query Params
   TArray<FString> QueryParams;
-  if (Limit.NonZero() == false)
+  if (Limit != 0)
+  
   {
-    QueryParams.Add(FString::Printf(TEXT("Limit=%d", (Limit))));
+    QueryParams.Add(FString::Printf(TEXT("Limit=%d"), (Limit)));
   }
-  if (Open.None() == false)
+  
   {
-    QueryParams.Add(FString::Printf(TEXT("Open=%s_bool", (Open))));
+    QueryParams.Add(FString::Printf(TEXT("Open=%s_bool"), (Open)));
   }
   if (Query.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("Query=%s", FGenericPlatformHttp::UrlEncode(Query))));
+    QueryParams.Add(FString::Printf(TEXT("Query=%s"), *(Query)));
   }
   if (Cursor.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("Cursor=%s", FGenericPlatformHttp::UrlEncode(Cursor))));
+    QueryParams.Add(FString::Printf(TEXT("Cursor=%s"), *(Cursor)));
   }
   if (QueryParams.Num() > 0)
   {
@@ -5625,21 +5661,22 @@ NAKAMAAPI_API void NakamaApi::ListParties (
   // 
   // Fill Query Params
   TArray<FString> QueryParams;
-  if (Limit.NonZero() == false)
+  if (Limit != 0)
+  
   {
-    QueryParams.Add(FString::Printf(TEXT("Limit=%d", (Limit))));
+    QueryParams.Add(FString::Printf(TEXT("Limit=%d"), (Limit)));
   }
-  if (Open.None() == false)
+  
   {
-    QueryParams.Add(FString::Printf(TEXT("Open=%s_bool", (Open))));
+    QueryParams.Add(FString::Printf(TEXT("Open=%s_bool"), (Open)));
   }
   if (Query.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("Query=%s", FGenericPlatformHttp::UrlEncode(Query))));
+    QueryParams.Add(FString::Printf(TEXT("Query=%s"), *(Query)));
   }
   if (Cursor.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("Cursor=%s", FGenericPlatformHttp::UrlEncode(Cursor))));
+    QueryParams.Add(FString::Printf(TEXT("Cursor=%s"), *(Cursor)));
   }
   if (QueryParams.Num() > 0)
   {
@@ -5692,13 +5729,14 @@ NAKAMAAPI_API void NakamaApi::ListNotifications (
   // 
   // Fill Query Params
   TArray<FString> QueryParams;
-  if (Limit.NonZero() == false)
+  if (Limit != 0)
+  
   {
-    QueryParams.Add(FString::Printf(TEXT("Limit=%d", (Limit))));
+    QueryParams.Add(FString::Printf(TEXT("Limit=%d"), (Limit)));
   }
   if (CacheableCursor.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("CacheableCursor=%s", FGenericPlatformHttp::UrlEncode(CacheableCursor))));
+    QueryParams.Add(FString::Printf(TEXT("CacheableCursor=%s"), *(CacheableCursor)));
   }
   if (QueryParams.Num() > 0)
   {
@@ -5751,13 +5789,14 @@ NAKAMAAPI_API void NakamaApi::ListNotifications (
   // 
   // Fill Query Params
   TArray<FString> QueryParams;
-  if (Limit.NonZero() == false)
+  if (Limit != 0)
+  
   {
-    QueryParams.Add(FString::Printf(TEXT("Limit=%d", (Limit))));
+    QueryParams.Add(FString::Printf(TEXT("Limit=%d"), (Limit)));
   }
   if (CacheableCursor.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("CacheableCursor=%s", FGenericPlatformHttp::UrlEncode(CacheableCursor))));
+    QueryParams.Add(FString::Printf(TEXT("CacheableCursor=%s"), *(CacheableCursor)));
   }
   if (QueryParams.Num() > 0)
   {
@@ -5809,22 +5848,23 @@ NAKAMAAPI_API void NakamaApi::ListStorageObjects (
   // 
   // Fill Path Params
   const FString Encoded_Collection = FGenericPlatformHttp::UrlEncode(Collection);
-  Endpoint = Endpoint.Replace("collection", *Encoded_Collection);
+  Endpoint = Endpoint.Replace(TEXT("{collection}"), *Encoded_Collection);
 
   // 
   // Fill Query Params
   TArray<FString> QueryParams;
   if (UserId.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("UserId=%s", FGenericPlatformHttp::UrlEncode(UserId))));
+    QueryParams.Add(FString::Printf(TEXT("UserId=%s"), *(UserId)));
   }
-  if (Limit.NonZero() == false)
+  if (Limit != 0)
+  
   {
-    QueryParams.Add(FString::Printf(TEXT("Limit=%d", (Limit))));
+    QueryParams.Add(FString::Printf(TEXT("Limit=%d"), (Limit)));
   }
   if (Cursor.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("Cursor=%s", FGenericPlatformHttp::UrlEncode(Cursor))));
+    QueryParams.Add(FString::Printf(TEXT("Cursor=%s"), *(Cursor)));
   }
   if (QueryParams.Num() > 0)
   {
@@ -5876,22 +5916,23 @@ NAKAMAAPI_API void NakamaApi::ListStorageObjects (
   // 
   // Fill Path Params
   const FString Encoded_Collection = FGenericPlatformHttp::UrlEncode(Collection);
-  Endpoint = Endpoint.Replace("collection", *Encoded_Collection);
+  Endpoint = Endpoint.Replace(TEXT("{collection}"), *Encoded_Collection);
 
   // 
   // Fill Query Params
   TArray<FString> QueryParams;
   if (UserId.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("UserId=%s", FGenericPlatformHttp::UrlEncode(UserId))));
+    QueryParams.Add(FString::Printf(TEXT("UserId=%s"), *(UserId)));
   }
-  if (Limit.NonZero() == false)
+  if (Limit != 0)
+  
   {
-    QueryParams.Add(FString::Printf(TEXT("Limit=%d", (Limit))));
+    QueryParams.Add(FString::Printf(TEXT("Limit=%d"), (Limit)));
   }
   if (Cursor.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("Cursor=%s", FGenericPlatformHttp::UrlEncode(Cursor))));
+    QueryParams.Add(FString::Printf(TEXT("Cursor=%s"), *(Cursor)));
   }
   if (QueryParams.Num() > 0)
   {
@@ -5952,13 +5993,14 @@ NAKAMAAPI_API void NakamaApi::ListSubscriptions (
   // 
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
-  if (Limit.NonZero() == false)
+  if (Limit != 0)
+  
   {
-    Body->SetIntegerField(TEXT(limit), Limit);
+    Body->SetNumberField(TEXT("limit"), Limit);
   }
   if (Cursor.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(cursor), Cursor);
+    Body->SetStringField(TEXT("cursor"), Cursor);
   }
 
   //
@@ -6011,13 +6053,14 @@ NAKAMAAPI_API void NakamaApi::ListSubscriptions (
   // 
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
-  if (Limit.NonZero() == false)
+  if (Limit != 0)
+  
   {
-    Body->SetIntegerField(TEXT(limit), Limit);
+    Body->SetNumberField(TEXT("limit"), Limit);
   }
   if (Cursor.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(cursor), Cursor);
+    Body->SetStringField(TEXT("cursor"), Cursor);
   }
 
   //
@@ -6066,29 +6109,34 @@ NAKAMAAPI_API void NakamaApi::ListTournaments (
   // 
   // Fill Query Params
   TArray<FString> QueryParams;
-  if (CategoryStart.NonZero() == false)
+  if (CategoryStart != 0)
+  
   {
-    QueryParams.Add(FString::Printf(TEXT("CategoryStart=%d", (CategoryStart))));
+    QueryParams.Add(FString::Printf(TEXT("CategoryStart=%d"), (CategoryStart)));
   }
-  if (CategoryEnd.NonZero() == false)
+  if (CategoryEnd != 0)
+  
   {
-    QueryParams.Add(FString::Printf(TEXT("CategoryEnd=%d", (CategoryEnd))));
+    QueryParams.Add(FString::Printf(TEXT("CategoryEnd=%d"), (CategoryEnd)));
   }
-  if (StartTime.NonZero() == false)
+  if (StartTime != 0)
+  
   {
-    QueryParams.Add(FString::Printf(TEXT("StartTime=%d", (StartTime))));
+    QueryParams.Add(FString::Printf(TEXT("StartTime=%d"), (StartTime)));
   }
-  if (EndTime.NonZero() == false)
+  if (EndTime != 0)
+  
   {
-    QueryParams.Add(FString::Printf(TEXT("EndTime=%d", (EndTime))));
+    QueryParams.Add(FString::Printf(TEXT("EndTime=%d"), (EndTime)));
   }
-  if (Limit.NonZero() == false)
+  if (Limit != 0)
+  
   {
-    QueryParams.Add(FString::Printf(TEXT("Limit=%d", (Limit))));
+    QueryParams.Add(FString::Printf(TEXT("Limit=%d"), (Limit)));
   }
   if (Cursor.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("Cursor=%s", FGenericPlatformHttp::UrlEncode(Cursor))));
+    QueryParams.Add(FString::Printf(TEXT("Cursor=%s"), *(Cursor)));
   }
   if (QueryParams.Num() > 0)
   {
@@ -6145,29 +6193,34 @@ NAKAMAAPI_API void NakamaApi::ListTournaments (
   // 
   // Fill Query Params
   TArray<FString> QueryParams;
-  if (CategoryStart.NonZero() == false)
+  if (CategoryStart != 0)
+  
   {
-    QueryParams.Add(FString::Printf(TEXT("CategoryStart=%d", (CategoryStart))));
+    QueryParams.Add(FString::Printf(TEXT("CategoryStart=%d"), (CategoryStart)));
   }
-  if (CategoryEnd.NonZero() == false)
+  if (CategoryEnd != 0)
+  
   {
-    QueryParams.Add(FString::Printf(TEXT("CategoryEnd=%d", (CategoryEnd))));
+    QueryParams.Add(FString::Printf(TEXT("CategoryEnd=%d"), (CategoryEnd)));
   }
-  if (StartTime.NonZero() == false)
+  if (StartTime != 0)
+  
   {
-    QueryParams.Add(FString::Printf(TEXT("StartTime=%d", (StartTime))));
+    QueryParams.Add(FString::Printf(TEXT("StartTime=%d"), (StartTime)));
   }
-  if (EndTime.NonZero() == false)
+  if (EndTime != 0)
+  
   {
-    QueryParams.Add(FString::Printf(TEXT("EndTime=%d", (EndTime))));
+    QueryParams.Add(FString::Printf(TEXT("EndTime=%d"), (EndTime)));
   }
-  if (Limit.NonZero() == false)
+  if (Limit != 0)
+  
   {
-    QueryParams.Add(FString::Printf(TEXT("Limit=%d", (Limit))));
+    QueryParams.Add(FString::Printf(TEXT("Limit=%d"), (Limit)));
   }
   if (Cursor.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("Cursor=%s", FGenericPlatformHttp::UrlEncode(Cursor))));
+    QueryParams.Add(FString::Printf(TEXT("Cursor=%s"), *(Cursor)));
   }
   if (QueryParams.Num() > 0)
   {
@@ -6220,26 +6273,28 @@ NAKAMAAPI_API void NakamaApi::ListTournamentRecords (
   // 
   // Fill Path Params
   const FString Encoded_TournamentId = FGenericPlatformHttp::UrlEncode(TournamentId);
-  Endpoint = Endpoint.Replace("tournament_id", *Encoded_TournamentId);
+  Endpoint = Endpoint.Replace(TEXT("{tournament_id}"), *Encoded_TournamentId);
 
   // 
   // Fill Query Params
   TArray<FString> QueryParams;
   for (const FString& Item : OwnerIds)
   {
-    QueryParams.Add(FString::Printf(TEXT("OwnerIds=%s", FGenericPlatformHttp::UrlEncode(Item))));
+    QueryParams.Add(FString::Printf(TEXT("OwnerIds=%s"), *(Item)));
   }
-  if (Limit.NonZero() == false)
+  if (Limit != 0)
+  
   {
-    QueryParams.Add(FString::Printf(TEXT("Limit=%d", (Limit))));
+    QueryParams.Add(FString::Printf(TEXT("Limit=%d"), (Limit)));
   }
   if (Cursor.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("Cursor=%s", FGenericPlatformHttp::UrlEncode(Cursor))));
+    QueryParams.Add(FString::Printf(TEXT("Cursor=%s"), *(Cursor)));
   }
-  if (Expiry.NonZero() == false)
+  if (Expiry != 0)
+  
   {
-    QueryParams.Add(FString::Printf(TEXT("Expiry=%lld", (Expiry))));
+    QueryParams.Add(FString::Printf(TEXT("Expiry=%lld"), (Expiry)));
   }
   if (QueryParams.Num() > 0)
   {
@@ -6292,26 +6347,28 @@ NAKAMAAPI_API void NakamaApi::ListTournamentRecords (
   // 
   // Fill Path Params
   const FString Encoded_TournamentId = FGenericPlatformHttp::UrlEncode(TournamentId);
-  Endpoint = Endpoint.Replace("tournament_id", *Encoded_TournamentId);
+  Endpoint = Endpoint.Replace(TEXT("{tournament_id}"), *Encoded_TournamentId);
 
   // 
   // Fill Query Params
   TArray<FString> QueryParams;
   for (const FString& Item : OwnerIds)
   {
-    QueryParams.Add(FString::Printf(TEXT("OwnerIds=%s", FGenericPlatformHttp::UrlEncode(Item))));
+    QueryParams.Add(FString::Printf(TEXT("OwnerIds=%s"), *(Item)));
   }
-  if (Limit.NonZero() == false)
+  if (Limit != 0)
+  
   {
-    QueryParams.Add(FString::Printf(TEXT("Limit=%d", (Limit))));
+    QueryParams.Add(FString::Printf(TEXT("Limit=%d"), (Limit)));
   }
   if (Cursor.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("Cursor=%s", FGenericPlatformHttp::UrlEncode(Cursor))));
+    QueryParams.Add(FString::Printf(TEXT("Cursor=%s"), *(Cursor)));
   }
-  if (Expiry.NonZero() == false)
+  if (Expiry != 0)
+  
   {
-    QueryParams.Add(FString::Printf(TEXT("Expiry=%lld", (Expiry))));
+    QueryParams.Add(FString::Printf(TEXT("Expiry=%lld"), (Expiry)));
   }
   if (QueryParams.Num() > 0)
   {
@@ -6364,24 +6421,26 @@ NAKAMAAPI_API void NakamaApi::ListTournamentRecordsAroundOwner (
   // 
   // Fill Path Params
   const FString Encoded_TournamentId = FGenericPlatformHttp::UrlEncode(TournamentId);
-  Endpoint = Endpoint.Replace("tournament_id", *Encoded_TournamentId);
+  Endpoint = Endpoint.Replace(TEXT("{tournament_id}"), *Encoded_TournamentId);
   const FString Encoded_OwnerId = FGenericPlatformHttp::UrlEncode(OwnerId);
-  Endpoint = Endpoint.Replace("owner_id", *Encoded_OwnerId);
+  Endpoint = Endpoint.Replace(TEXT("{owner_id}"), *Encoded_OwnerId);
 
   // 
   // Fill Query Params
   TArray<FString> QueryParams;
-  if (Limit.NonZero() == false)
+  if (Limit != 0)
+  
   {
-    QueryParams.Add(FString::Printf(TEXT("Limit=%d", (Limit))));
+    QueryParams.Add(FString::Printf(TEXT("Limit=%d"), (Limit)));
   }
-  if (Expiry.NonZero() == false)
+  if (Expiry != 0)
+  
   {
-    QueryParams.Add(FString::Printf(TEXT("Expiry=%lld", (Expiry))));
+    QueryParams.Add(FString::Printf(TEXT("Expiry=%lld"), (Expiry)));
   }
   if (Cursor.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("Cursor=%s", FGenericPlatformHttp::UrlEncode(Cursor))));
+    QueryParams.Add(FString::Printf(TEXT("Cursor=%s"), *(Cursor)));
   }
   if (QueryParams.Num() > 0)
   {
@@ -6434,24 +6493,26 @@ NAKAMAAPI_API void NakamaApi::ListTournamentRecordsAroundOwner (
   // 
   // Fill Path Params
   const FString Encoded_TournamentId = FGenericPlatformHttp::UrlEncode(TournamentId);
-  Endpoint = Endpoint.Replace("tournament_id", *Encoded_TournamentId);
+  Endpoint = Endpoint.Replace(TEXT("{tournament_id}"), *Encoded_TournamentId);
   const FString Encoded_OwnerId = FGenericPlatformHttp::UrlEncode(OwnerId);
-  Endpoint = Endpoint.Replace("owner_id", *Encoded_OwnerId);
+  Endpoint = Endpoint.Replace(TEXT("{owner_id}"), *Encoded_OwnerId);
 
   // 
   // Fill Query Params
   TArray<FString> QueryParams;
-  if (Limit.NonZero() == false)
+  if (Limit != 0)
+  
   {
-    QueryParams.Add(FString::Printf(TEXT("Limit=%d", (Limit))));
+    QueryParams.Add(FString::Printf(TEXT("Limit=%d"), (Limit)));
   }
-  if (Expiry.NonZero() == false)
+  if (Expiry != 0)
+  
   {
-    QueryParams.Add(FString::Printf(TEXT("Expiry=%lld", (Expiry))));
+    QueryParams.Add(FString::Printf(TEXT("Expiry=%lld"), (Expiry)));
   }
   if (Cursor.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("Cursor=%s", FGenericPlatformHttp::UrlEncode(Cursor))));
+    QueryParams.Add(FString::Printf(TEXT("Cursor=%s"), *(Cursor)));
   }
   if (QueryParams.Num() > 0)
   {
@@ -6503,22 +6564,24 @@ NAKAMAAPI_API void NakamaApi::ListUserGroups (
   // 
   // Fill Path Params
   const FString Encoded_UserId = FGenericPlatformHttp::UrlEncode(UserId);
-  Endpoint = Endpoint.Replace("user_id", *Encoded_UserId);
+  Endpoint = Endpoint.Replace(TEXT("{user_id}"), *Encoded_UserId);
 
   // 
   // Fill Query Params
   TArray<FString> QueryParams;
-  if (Limit.NonZero() == false)
+  if (Limit != 0)
+  
   {
-    QueryParams.Add(FString::Printf(TEXT("Limit=%d", (Limit))));
+    QueryParams.Add(FString::Printf(TEXT("Limit=%d"), (Limit)));
   }
-  if (State.NonZero() == false)
+  if (State != 0)
+  
   {
-    QueryParams.Add(FString::Printf(TEXT("State=%d", (State))));
+    QueryParams.Add(FString::Printf(TEXT("State=%d"), (State)));
   }
   if (Cursor.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("Cursor=%s", FGenericPlatformHttp::UrlEncode(Cursor))));
+    QueryParams.Add(FString::Printf(TEXT("Cursor=%s"), *(Cursor)));
   }
   if (QueryParams.Num() > 0)
   {
@@ -6570,22 +6633,24 @@ NAKAMAAPI_API void NakamaApi::ListUserGroups (
   // 
   // Fill Path Params
   const FString Encoded_UserId = FGenericPlatformHttp::UrlEncode(UserId);
-  Endpoint = Endpoint.Replace("user_id", *Encoded_UserId);
+  Endpoint = Endpoint.Replace(TEXT("{user_id}"), *Encoded_UserId);
 
   // 
   // Fill Query Params
   TArray<FString> QueryParams;
-  if (Limit.NonZero() == false)
+  if (Limit != 0)
+  
   {
-    QueryParams.Add(FString::Printf(TEXT("Limit=%d", (Limit))));
+    QueryParams.Add(FString::Printf(TEXT("Limit=%d"), (Limit)));
   }
-  if (State.NonZero() == false)
+  if (State != 0)
+  
   {
-    QueryParams.Add(FString::Printf(TEXT("State=%d", (State))));
+    QueryParams.Add(FString::Printf(TEXT("State=%d"), (State)));
   }
   if (Cursor.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("Cursor=%s", FGenericPlatformHttp::UrlEncode(Cursor))));
+    QueryParams.Add(FString::Printf(TEXT("Cursor=%s"), *(Cursor)));
   }
   if (QueryParams.Num() > 0)
   {
@@ -6635,14 +6700,14 @@ NAKAMAAPI_API void NakamaApi::PromoteGroupUsers (
   // 
   // Fill Path Params
   const FString Encoded_GroupId = FGenericPlatformHttp::UrlEncode(GroupId);
-  Endpoint = Endpoint.Replace("group_id", *Encoded_GroupId);
+  Endpoint = Endpoint.Replace(TEXT("{group_id}"), *Encoded_GroupId);
 
   // 
   // Fill Query Params
   TArray<FString> QueryParams;
   for (const FString& Item : UserIds)
   {
-    QueryParams.Add(FString::Printf(TEXT("UserIds=%s", FGenericPlatformHttp::UrlEncode(Item))));
+    QueryParams.Add(FString::Printf(TEXT("UserIds=%s"), *(Item)));
   }
   if (QueryParams.Num() > 0)
   {
@@ -6691,14 +6756,14 @@ NAKAMAAPI_API void NakamaApi::PromoteGroupUsers (
   // 
   // Fill Path Params
   const FString Encoded_GroupId = FGenericPlatformHttp::UrlEncode(GroupId);
-  Endpoint = Endpoint.Replace("group_id", *Encoded_GroupId);
+  Endpoint = Endpoint.Replace(TEXT("{group_id}"), *Encoded_GroupId);
 
   // 
   // Fill Query Params
   TArray<FString> QueryParams;
   for (const FString& Item : UserIds)
   {
-    QueryParams.Add(FString::Printf(TEXT("UserIds=%s", FGenericPlatformHttp::UrlEncode(Item))));
+    QueryParams.Add(FString::Printf(TEXT("UserIds=%s"), *(Item)));
   }
   if (QueryParams.Num() > 0)
   {
@@ -6747,14 +6812,14 @@ NAKAMAAPI_API void NakamaApi::DemoteGroupUsers (
   // 
   // Fill Path Params
   const FString Encoded_GroupId = FGenericPlatformHttp::UrlEncode(GroupId);
-  Endpoint = Endpoint.Replace("group_id", *Encoded_GroupId);
+  Endpoint = Endpoint.Replace(TEXT("{group_id}"), *Encoded_GroupId);
 
   // 
   // Fill Query Params
   TArray<FString> QueryParams;
   for (const FString& Item : UserIds)
   {
-    QueryParams.Add(FString::Printf(TEXT("UserIds=%s", FGenericPlatformHttp::UrlEncode(Item))));
+    QueryParams.Add(FString::Printf(TEXT("UserIds=%s"), *(Item)));
   }
   if (QueryParams.Num() > 0)
   {
@@ -6803,14 +6868,14 @@ NAKAMAAPI_API void NakamaApi::DemoteGroupUsers (
   // 
   // Fill Path Params
   const FString Encoded_GroupId = FGenericPlatformHttp::UrlEncode(GroupId);
-  Endpoint = Endpoint.Replace("group_id", *Encoded_GroupId);
+  Endpoint = Endpoint.Replace(TEXT("{group_id}"), *Encoded_GroupId);
 
   // 
   // Fill Query Params
   TArray<FString> QueryParams;
   for (const FString& Item : UserIds)
   {
-    QueryParams.Add(FString::Printf(TEXT("UserIds=%s", FGenericPlatformHttp::UrlEncode(Item))));
+    QueryParams.Add(FString::Printf(TEXT("UserIds=%s"), *(Item)));
   }
   if (QueryParams.Num() > 0)
   {
@@ -6874,7 +6939,7 @@ NAKAMAAPI_API void NakamaApi::ReadStorageObjects (
     TArray<TSharedPtr<FJsonValue>> Array;
     for (const FNakamaReadStorageObjectId& Item : ObjectIds)
     {
-      Array.Add(MakeShared<Object>(Item.ToJson()));
+      Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
     }
     Body->SetArrayField(TEXT("object_ids"), Array);
   }
@@ -6933,7 +6998,7 @@ NAKAMAAPI_API void NakamaApi::ReadStorageObjects (
     TArray<TSharedPtr<FJsonValue>> Array;
     for (const FNakamaReadStorageObjectId& Item : ObjectIds)
     {
-      Array.Add(MakeShared<Object>(Item.ToJson()));
+      Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
     }
     Body->SetArrayField(TEXT("object_ids"), Array);
   }
@@ -6964,7 +7029,6 @@ NAKAMAAPI_API void NakamaApi::ReadStorageObjects (
 
 NAKAMAAPI_API void NakamaApi::RpcFunc (
   const FNakamaClientConfig& Config,
-  const FString& HttpKey,
   const FString& Id,
   const FString& Payload,
   const FString& HttpKey,
@@ -6978,7 +7042,7 @@ NAKAMAAPI_API void NakamaApi::RpcFunc (
   // 
   // Fill Path Params
   const FString Encoded_Id = FGenericPlatformHttp::UrlEncode(Id);
-  Endpoint = Endpoint.Replace("id", *Encoded_Id);
+  Endpoint = Endpoint.Replace(TEXT("{id}"), *Encoded_Id);
 
   // 
   // Fill Query Params
@@ -6993,11 +7057,11 @@ NAKAMAAPI_API void NakamaApi::RpcFunc (
   TSharedPtr<FJsonObject> Body;
   if (Payload.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(payload), Payload);
+    Body->SetStringField(TEXT("payload"), Payload);
   }
   if (Payload.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(payload), Payload);
+    Body->SetStringField(TEXT("payload"), Payload);
   }
 
   //
@@ -7007,70 +7071,8 @@ NAKAMAAPI_API void NakamaApi::RpcFunc (
     Endpoint,
     TEXT("POST"),
     Body,
-    ENakamaRequestAuth::HttpKey,
-    HttpKey,
-    [OnSuccess](TSharedPtr<FJsonObject> Json)
-    {
-      if (OnSuccess)
-      {
-      
-        FNakamaRpc Result = FNakamaRpc::FromJson(Json);
-        OnSuccess(Result);
-      
-      }
-    },
-    OnError, Timeout, CancellationToken);
-}
-
-
-
-NAKAMAAPI_API void NakamaApi::RpcFunc (
-  const FNakamaClientConfig& Config,
-  const FNakamaSession& Session,
-  const FString& Id,
-  const FString& Payload,
-  const FString& HttpKey,
-  TFunction<void(const FNakamaRpc&)> OnSuccess,
-  TFunction<void(const FNakamaError&)> OnError,
-  float Timeout,
-  TSharedRef<TAtomic<bool>> CancellationToken
-) noexcept
-{
-  FString Endpoint = TEXT("/v2/rpc/{id}");
-  // 
-  // Fill Path Params
-  const FString Encoded_Id = FGenericPlatformHttp::UrlEncode(Id);
-  Endpoint = Endpoint.Replace("id", *Encoded_Id);
-
-  // 
-  // Fill Query Params
-  TArray<FString> QueryParams;
-  if (QueryParams.Num() > 0)
-  {
-    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
-  }
-
-  // 
-  // Fill Body Params
-  TSharedPtr<FJsonObject> Body;
-  if (Payload.IsEmpty() == false)
-  {
-    Body->SetStringField(TEXT(payload), Payload);
-  }
-  if (Payload.IsEmpty() == false)
-  {
-    Body->SetStringField(TEXT(payload), Payload);
-  }
-
-  //
-  // Make the request
-  MakeRequest(
-    Config,
-    Endpoint,
-    TEXT("POST"),
-    Body,
-    ENakamaRequestAuth::Bearer,
-    Session.Token,
+    ENakamaRequestAuth::Basic,
+    TEXT(""),
     [OnSuccess](TSharedPtr<FJsonObject> Json)
     {
       if (OnSuccess)
@@ -7114,7 +7116,7 @@ NAKAMAAPI_API void NakamaApi::UnlinkApple (
   TSharedPtr<FJsonObject> Body;
   if (Token.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(token), Token);
+    Body->SetStringField(TEXT("token"), Token);
   }
 
   //
@@ -7168,7 +7170,7 @@ NAKAMAAPI_API void NakamaApi::UnlinkApple (
   TSharedPtr<FJsonObject> Body;
   if (Token.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(token), Token);
+    Body->SetStringField(TEXT("token"), Token);
   }
 
   //
@@ -7222,7 +7224,7 @@ NAKAMAAPI_API void NakamaApi::UnlinkCustom (
   TSharedPtr<FJsonObject> Body;
   if (Id.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(id), Id);
+    Body->SetStringField(TEXT("id"), Id);
   }
 
   //
@@ -7276,7 +7278,7 @@ NAKAMAAPI_API void NakamaApi::UnlinkCustom (
   TSharedPtr<FJsonObject> Body;
   if (Id.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(id), Id);
+    Body->SetStringField(TEXT("id"), Id);
   }
 
   //
@@ -7330,7 +7332,7 @@ NAKAMAAPI_API void NakamaApi::UnlinkDevice (
   TSharedPtr<FJsonObject> Body;
   if (Id.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(id), Id);
+    Body->SetStringField(TEXT("id"), Id);
   }
 
   //
@@ -7384,7 +7386,7 @@ NAKAMAAPI_API void NakamaApi::UnlinkDevice (
   TSharedPtr<FJsonObject> Body;
   if (Id.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(id), Id);
+    Body->SetStringField(TEXT("id"), Id);
   }
 
   //
@@ -7439,11 +7441,11 @@ NAKAMAAPI_API void NakamaApi::UnlinkEmail (
   TSharedPtr<FJsonObject> Body;
   if (Email.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(email), Email);
+    Body->SetStringField(TEXT("email"), Email);
   }
   if (Password.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(password), Password);
+    Body->SetStringField(TEXT("password"), Password);
   }
 
   //
@@ -7498,11 +7500,11 @@ NAKAMAAPI_API void NakamaApi::UnlinkEmail (
   TSharedPtr<FJsonObject> Body;
   if (Email.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(email), Email);
+    Body->SetStringField(TEXT("email"), Email);
   }
   if (Password.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(password), Password);
+    Body->SetStringField(TEXT("password"), Password);
   }
 
   //
@@ -7556,7 +7558,7 @@ NAKAMAAPI_API void NakamaApi::UnlinkFacebook (
   TSharedPtr<FJsonObject> Body;
   if (Token.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(token), Token);
+    Body->SetStringField(TEXT("token"), Token);
   }
 
   //
@@ -7610,7 +7612,7 @@ NAKAMAAPI_API void NakamaApi::UnlinkFacebook (
   TSharedPtr<FJsonObject> Body;
   if (Token.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(token), Token);
+    Body->SetStringField(TEXT("token"), Token);
   }
 
   //
@@ -7664,7 +7666,7 @@ NAKAMAAPI_API void NakamaApi::UnlinkFacebookInstantGame (
   TSharedPtr<FJsonObject> Body;
   if (SignedPlayerInfo.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(signed_player_info), SignedPlayerInfo);
+    Body->SetStringField(TEXT("signed_player_info"), SignedPlayerInfo);
   }
 
   //
@@ -7718,7 +7720,7 @@ NAKAMAAPI_API void NakamaApi::UnlinkFacebookInstantGame (
   TSharedPtr<FJsonObject> Body;
   if (SignedPlayerInfo.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(signed_player_info), SignedPlayerInfo);
+    Body->SetStringField(TEXT("signed_player_info"), SignedPlayerInfo);
   }
 
   //
@@ -7777,27 +7779,28 @@ NAKAMAAPI_API void NakamaApi::UnlinkGameCenter (
   TSharedPtr<FJsonObject> Body;
   if (PlayerId.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(player_id), PlayerId);
+    Body->SetStringField(TEXT("player_id"), PlayerId);
   }
   if (BundleId.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(bundle_id), BundleId);
+    Body->SetStringField(TEXT("bundle_id"), BundleId);
   }
-  if (TimestampSeconds.NonZero() == false)
+  if (TimestampSeconds != 0)
+  
   {
-    Body->SetNumberField(TEXT(timestamp_seconds), TimestampSeconds);
+    Body->SetNumberField(TEXT("timestamp_seconds"), TimestampSeconds);
   }
   if (Salt.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(salt), Salt);
+    Body->SetStringField(TEXT("salt"), Salt);
   }
   if (Signature.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(signature), Signature);
+    Body->SetStringField(TEXT("signature"), Signature);
   }
   if (PublicKeyUrl.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(public_key_url), PublicKeyUrl);
+    Body->SetStringField(TEXT("public_key_url"), PublicKeyUrl);
   }
 
   //
@@ -7856,27 +7859,28 @@ NAKAMAAPI_API void NakamaApi::UnlinkGameCenter (
   TSharedPtr<FJsonObject> Body;
   if (PlayerId.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(player_id), PlayerId);
+    Body->SetStringField(TEXT("player_id"), PlayerId);
   }
   if (BundleId.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(bundle_id), BundleId);
+    Body->SetStringField(TEXT("bundle_id"), BundleId);
   }
-  if (TimestampSeconds.NonZero() == false)
+  if (TimestampSeconds != 0)
+  
   {
-    Body->SetNumberField(TEXT(timestamp_seconds), TimestampSeconds);
+    Body->SetNumberField(TEXT("timestamp_seconds"), TimestampSeconds);
   }
   if (Salt.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(salt), Salt);
+    Body->SetStringField(TEXT("salt"), Salt);
   }
   if (Signature.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(signature), Signature);
+    Body->SetStringField(TEXT("signature"), Signature);
   }
   if (PublicKeyUrl.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(public_key_url), PublicKeyUrl);
+    Body->SetStringField(TEXT("public_key_url"), PublicKeyUrl);
   }
 
   //
@@ -7930,7 +7934,7 @@ NAKAMAAPI_API void NakamaApi::UnlinkGoogle (
   TSharedPtr<FJsonObject> Body;
   if (Token.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(token), Token);
+    Body->SetStringField(TEXT("token"), Token);
   }
 
   //
@@ -7984,7 +7988,7 @@ NAKAMAAPI_API void NakamaApi::UnlinkGoogle (
   TSharedPtr<FJsonObject> Body;
   if (Token.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(token), Token);
+    Body->SetStringField(TEXT("token"), Token);
   }
 
   //
@@ -8038,7 +8042,7 @@ NAKAMAAPI_API void NakamaApi::UnlinkSteam (
   TSharedPtr<FJsonObject> Body;
   if (Token.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(token), Token);
+    Body->SetStringField(TEXT("token"), Token);
   }
 
   //
@@ -8092,7 +8096,7 @@ NAKAMAAPI_API void NakamaApi::UnlinkSteam (
   TSharedPtr<FJsonObject> Body;
   if (Token.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(token), Token);
+    Body->SetStringField(TEXT("token"), Token);
   }
 
   //
@@ -8150,27 +8154,27 @@ NAKAMAAPI_API void NakamaApi::UpdateAccount (
   TSharedPtr<FJsonObject> Body;
   if (Username.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(username), Username);
+    Body->SetStringField(TEXT("username"), Username);
   }
   if (DisplayName.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(display_name), DisplayName);
+    Body->SetStringField(TEXT("display_name"), DisplayName);
   }
   if (AvatarUrl.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(avatar_url), AvatarUrl);
+    Body->SetStringField(TEXT("avatar_url"), AvatarUrl);
   }
   if (LangTag.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(lang_tag), LangTag);
+    Body->SetStringField(TEXT("lang_tag"), LangTag);
   }
   if (Location.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(location), Location);
+    Body->SetStringField(TEXT("location"), Location);
   }
   if (Timezone.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(timezone), Timezone);
+    Body->SetStringField(TEXT("timezone"), Timezone);
   }
 
   //
@@ -8228,27 +8232,27 @@ NAKAMAAPI_API void NakamaApi::UpdateAccount (
   TSharedPtr<FJsonObject> Body;
   if (Username.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(username), Username);
+    Body->SetStringField(TEXT("username"), Username);
   }
   if (DisplayName.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(display_name), DisplayName);
+    Body->SetStringField(TEXT("display_name"), DisplayName);
   }
   if (AvatarUrl.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(avatar_url), AvatarUrl);
+    Body->SetStringField(TEXT("avatar_url"), AvatarUrl);
   }
   if (LangTag.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(lang_tag), LangTag);
+    Body->SetStringField(TEXT("lang_tag"), LangTag);
   }
   if (Location.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(location), Location);
+    Body->SetStringField(TEXT("location"), Location);
   }
   if (Timezone.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(timezone), Timezone);
+    Body->SetStringField(TEXT("timezone"), Timezone);
   }
 
   //
@@ -8293,7 +8297,7 @@ NAKAMAAPI_API void NakamaApi::UpdateGroup (
   // 
   // Fill Path Params
   const FString Encoded_GroupId = FGenericPlatformHttp::UrlEncode(GroupId);
-  Endpoint = Endpoint.Replace("group_id", *Encoded_GroupId);
+  Endpoint = Endpoint.Replace(TEXT("{group_id}"), *Encoded_GroupId);
 
   // 
   // Fill Query Params
@@ -8308,23 +8312,23 @@ NAKAMAAPI_API void NakamaApi::UpdateGroup (
   TSharedPtr<FJsonObject> Body;
   if (Name.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(name), Name);
+    Body->SetStringField(TEXT("name"), Name);
   }
   if (Description.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(description), Description);
+    Body->SetStringField(TEXT("description"), Description);
   }
   if (LangTag.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(lang_tag), LangTag);
+    Body->SetStringField(TEXT("lang_tag"), LangTag);
   }
   if (AvatarUrl.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(avatar_url), AvatarUrl);
+    Body->SetStringField(TEXT("avatar_url"), AvatarUrl);
   }
-  if (Open.None() == false)
+  
   {
-    Body->SetBoolField(TEXT(open), Open);
+    Body->SetBoolField(TEXT("open"), Open);
   }
 
   //
@@ -8369,7 +8373,7 @@ NAKAMAAPI_API void NakamaApi::UpdateGroup (
   // 
   // Fill Path Params
   const FString Encoded_GroupId = FGenericPlatformHttp::UrlEncode(GroupId);
-  Endpoint = Endpoint.Replace("group_id", *Encoded_GroupId);
+  Endpoint = Endpoint.Replace(TEXT("{group_id}"), *Encoded_GroupId);
 
   // 
   // Fill Query Params
@@ -8384,23 +8388,23 @@ NAKAMAAPI_API void NakamaApi::UpdateGroup (
   TSharedPtr<FJsonObject> Body;
   if (Name.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(name), Name);
+    Body->SetStringField(TEXT("name"), Name);
   }
   if (Description.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(description), Description);
+    Body->SetStringField(TEXT("description"), Description);
   }
   if (LangTag.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(lang_tag), LangTag);
+    Body->SetStringField(TEXT("lang_tag"), LangTag);
   }
   if (AvatarUrl.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(avatar_url), AvatarUrl);
+    Body->SetStringField(TEXT("avatar_url"), AvatarUrl);
   }
-  if (Open.None() == false)
+  
   {
-    Body->SetBoolField(TEXT(open), Open);
+    Body->SetBoolField(TEXT("open"), Open);
   }
 
   //
@@ -8454,11 +8458,11 @@ NAKAMAAPI_API void NakamaApi::ValidatePurchaseApple (
   TSharedPtr<FJsonObject> Body;
   if (Receipt.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(receipt), Receipt);
+    Body->SetStringField(TEXT("receipt"), Receipt);
   }
-  if (Persist.None() == false)
+  
   {
-    Body->SetBoolField(TEXT(persist), Persist);
+    Body->SetBoolField(TEXT("persist"), Persist);
   }
 
   //
@@ -8513,11 +8517,11 @@ NAKAMAAPI_API void NakamaApi::ValidatePurchaseApple (
   TSharedPtr<FJsonObject> Body;
   if (Receipt.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(receipt), Receipt);
+    Body->SetStringField(TEXT("receipt"), Receipt);
   }
-  if (Persist.None() == false)
+  
   {
-    Body->SetBoolField(TEXT(persist), Persist);
+    Body->SetBoolField(TEXT("persist"), Persist);
   }
 
   //
@@ -8572,11 +8576,11 @@ NAKAMAAPI_API void NakamaApi::ValidateSubscriptionApple (
   TSharedPtr<FJsonObject> Body;
   if (Receipt.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(receipt), Receipt);
+    Body->SetStringField(TEXT("receipt"), Receipt);
   }
-  if (Persist.None() == false)
+  
   {
-    Body->SetBoolField(TEXT(persist), Persist);
+    Body->SetBoolField(TEXT("persist"), Persist);
   }
 
   //
@@ -8631,11 +8635,11 @@ NAKAMAAPI_API void NakamaApi::ValidateSubscriptionApple (
   TSharedPtr<FJsonObject> Body;
   if (Receipt.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(receipt), Receipt);
+    Body->SetStringField(TEXT("receipt"), Receipt);
   }
-  if (Persist.None() == false)
+  
   {
-    Body->SetBoolField(TEXT(persist), Persist);
+    Body->SetBoolField(TEXT("persist"), Persist);
   }
 
   //
@@ -8690,11 +8694,11 @@ NAKAMAAPI_API void NakamaApi::ValidatePurchaseGoogle (
   TSharedPtr<FJsonObject> Body;
   if (Purchase.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(purchase), Purchase);
+    Body->SetStringField(TEXT("purchase"), Purchase);
   }
-  if (Persist.None() == false)
+  
   {
-    Body->SetBoolField(TEXT(persist), Persist);
+    Body->SetBoolField(TEXT("persist"), Persist);
   }
 
   //
@@ -8749,11 +8753,11 @@ NAKAMAAPI_API void NakamaApi::ValidatePurchaseGoogle (
   TSharedPtr<FJsonObject> Body;
   if (Purchase.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(purchase), Purchase);
+    Body->SetStringField(TEXT("purchase"), Purchase);
   }
-  if (Persist.None() == false)
+  
   {
-    Body->SetBoolField(TEXT(persist), Persist);
+    Body->SetBoolField(TEXT("persist"), Persist);
   }
 
   //
@@ -8808,11 +8812,11 @@ NAKAMAAPI_API void NakamaApi::ValidateSubscriptionGoogle (
   TSharedPtr<FJsonObject> Body;
   if (Receipt.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(receipt), Receipt);
+    Body->SetStringField(TEXT("receipt"), Receipt);
   }
-  if (Persist.None() == false)
+  
   {
-    Body->SetBoolField(TEXT(persist), Persist);
+    Body->SetBoolField(TEXT("persist"), Persist);
   }
 
   //
@@ -8867,11 +8871,11 @@ NAKAMAAPI_API void NakamaApi::ValidateSubscriptionGoogle (
   TSharedPtr<FJsonObject> Body;
   if (Receipt.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(receipt), Receipt);
+    Body->SetStringField(TEXT("receipt"), Receipt);
   }
-  if (Persist.None() == false)
+  
   {
-    Body->SetBoolField(TEXT(persist), Persist);
+    Body->SetBoolField(TEXT("persist"), Persist);
   }
 
   //
@@ -8927,15 +8931,15 @@ NAKAMAAPI_API void NakamaApi::ValidatePurchaseHuawei (
   TSharedPtr<FJsonObject> Body;
   if (Purchase.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(purchase), Purchase);
+    Body->SetStringField(TEXT("purchase"), Purchase);
   }
   if (Signature.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(signature), Signature);
+    Body->SetStringField(TEXT("signature"), Signature);
   }
-  if (Persist.None() == false)
+  
   {
-    Body->SetBoolField(TEXT(persist), Persist);
+    Body->SetBoolField(TEXT("persist"), Persist);
   }
 
   //
@@ -8991,15 +8995,15 @@ NAKAMAAPI_API void NakamaApi::ValidatePurchaseHuawei (
   TSharedPtr<FJsonObject> Body;
   if (Purchase.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(purchase), Purchase);
+    Body->SetStringField(TEXT("purchase"), Purchase);
   }
   if (Signature.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(signature), Signature);
+    Body->SetStringField(TEXT("signature"), Signature);
   }
-  if (Persist.None() == false)
+  
   {
-    Body->SetBoolField(TEXT(persist), Persist);
+    Body->SetBoolField(TEXT("persist"), Persist);
   }
 
   //
@@ -9054,11 +9058,11 @@ NAKAMAAPI_API void NakamaApi::ValidatePurchaseFacebookInstant (
   TSharedPtr<FJsonObject> Body;
   if (SignedRequest.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(signed_request), SignedRequest);
+    Body->SetStringField(TEXT("signed_request"), SignedRequest);
   }
-  if (Persist.None() == false)
+  
   {
-    Body->SetBoolField(TEXT(persist), Persist);
+    Body->SetBoolField(TEXT("persist"), Persist);
   }
 
   //
@@ -9113,11 +9117,11 @@ NAKAMAAPI_API void NakamaApi::ValidatePurchaseFacebookInstant (
   TSharedPtr<FJsonObject> Body;
   if (SignedRequest.IsEmpty() == false)
   {
-    Body->SetStringField(TEXT(signed_request), SignedRequest);
+    Body->SetStringField(TEXT("signed_request"), SignedRequest);
   }
-  if (Persist.None() == false)
+  
   {
-    Body->SetBoolField(TEXT(persist), Persist);
+    Body->SetBoolField(TEXT("persist"), Persist);
   }
 
   //
@@ -9159,7 +9163,7 @@ NAKAMAAPI_API void NakamaApi::WriteLeaderboardRecord (
   // 
   // Fill Path Params
   const FString Encoded_LeaderboardId = FGenericPlatformHttp::UrlEncode(LeaderboardId);
-  Endpoint = Endpoint.Replace("leaderboard_id", *Encoded_LeaderboardId);
+  Endpoint = Endpoint.Replace(TEXT("{leaderboard_id}"), *Encoded_LeaderboardId);
 
   // 
   // Fill Query Params
@@ -9172,9 +9176,9 @@ NAKAMAAPI_API void NakamaApi::WriteLeaderboardRecord (
   // 
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
-  if (Record.NumEmpty() == false)
+  
   {
-    Body->SetObjectField(TEXT(record), Record.ToJson());
+    Body->SetObjectField(TEXT("record"), Record.ToJson());
   }
 
   //
@@ -9216,7 +9220,7 @@ NAKAMAAPI_API void NakamaApi::WriteLeaderboardRecord (
   // 
   // Fill Path Params
   const FString Encoded_LeaderboardId = FGenericPlatformHttp::UrlEncode(LeaderboardId);
-  Endpoint = Endpoint.Replace("leaderboard_id", *Encoded_LeaderboardId);
+  Endpoint = Endpoint.Replace(TEXT("{leaderboard_id}"), *Encoded_LeaderboardId);
 
   // 
   // Fill Query Params
@@ -9229,9 +9233,9 @@ NAKAMAAPI_API void NakamaApi::WriteLeaderboardRecord (
   // 
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
-  if (Record.NumEmpty() == false)
+  
   {
-    Body->SetObjectField(TEXT(record), Record.ToJson());
+    Body->SetObjectField(TEXT("record"), Record.ToJson());
   }
 
   //
@@ -9288,7 +9292,7 @@ NAKAMAAPI_API void NakamaApi::WriteStorageObjects (
     TArray<TSharedPtr<FJsonValue>> Array;
     for (const FNakamaWriteStorageObject& Item : Objects)
     {
-      Array.Add(MakeShared<Object>(Item.ToJson()));
+      Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
     }
     Body->SetArrayField(TEXT("objects"), Array);
   }
@@ -9347,7 +9351,7 @@ NAKAMAAPI_API void NakamaApi::WriteStorageObjects (
     TArray<TSharedPtr<FJsonValue>> Array;
     for (const FNakamaWriteStorageObject& Item : Objects)
     {
-      Array.Add(MakeShared<Object>(Item.ToJson()));
+      Array.Add(MakeShared<FJsonValueObject>(Item.ToJson()));
     }
     Body->SetArrayField(TEXT("objects"), Array);
   }
@@ -9391,7 +9395,7 @@ NAKAMAAPI_API void NakamaApi::WriteTournamentRecord (
   // 
   // Fill Path Params
   const FString Encoded_TournamentId = FGenericPlatformHttp::UrlEncode(TournamentId);
-  Endpoint = Endpoint.Replace("tournament_id", *Encoded_TournamentId);
+  Endpoint = Endpoint.Replace(TEXT("{tournament_id}"), *Encoded_TournamentId);
 
   // 
   // Fill Query Params
@@ -9404,9 +9408,9 @@ NAKAMAAPI_API void NakamaApi::WriteTournamentRecord (
   // 
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
-  if (Record.NumEmpty() == false)
+  
   {
-    Body->SetObjectField(TEXT(record), Record.ToJson());
+    Body->SetObjectField(TEXT("record"), Record.ToJson());
   }
 
   //
@@ -9448,7 +9452,7 @@ NAKAMAAPI_API void NakamaApi::WriteTournamentRecord (
   // 
   // Fill Path Params
   const FString Encoded_TournamentId = FGenericPlatformHttp::UrlEncode(TournamentId);
-  Endpoint = Endpoint.Replace("tournament_id", *Encoded_TournamentId);
+  Endpoint = Endpoint.Replace(TEXT("{tournament_id}"), *Encoded_TournamentId);
 
   // 
   // Fill Query Params
@@ -9461,9 +9465,9 @@ NAKAMAAPI_API void NakamaApi::WriteTournamentRecord (
   // 
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
-  if (Record.NumEmpty() == false)
+  
   {
-    Body->SetObjectField(TEXT(record), Record.ToJson());
+    Body->SetObjectField(TEXT("record"), Record.ToJson());
   }
 
   //

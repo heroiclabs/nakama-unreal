@@ -433,7 +433,7 @@ struct NAKAMAAPI_API FNakamaRtMatchData
 
   /**  Data payload, if any. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  TArray<uint8> Data;
+  FString Data;
 
   /**  True if this data was delivered reliably, false otherwise. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
@@ -461,7 +461,7 @@ struct NAKAMAAPI_API FNakamaRtMatchDataSend
 
   /**  Data payload, if any. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  TArray<uint8> Data;
+  FString Data;
 
   /**  List of presences in the match to deliver to, if filtering is required. Otherwise deliver to everyone in the match. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
@@ -569,7 +569,7 @@ struct NAKAMAAPI_API FNakamaRtMatchmakerAdd
 
   /**  Numeric properties. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  TMap<FString, double> NumericProperties = 0.0;
+  TMap<FString, double> NumericProperties;
 
   static FNakamaRtMatchmakerAdd FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
   TSharedPtr<FJsonObject> ToJson() const noexcept;
@@ -597,7 +597,7 @@ struct NAKAMAAPI_API FNakamaRtMatchmakerMatchedMatchmakerUser
 
   /**  Numeric properties. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  TMap<FString, double> NumericProperties = 0.0;
+  TMap<FString, double> NumericProperties;
 
   static FNakamaRtMatchmakerMatchedMatchmakerUser FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
   TSharedPtr<FJsonObject> ToJson() const noexcept;
@@ -981,7 +981,7 @@ struct NAKAMAAPI_API FNakamaRtPartyMatchmakerAdd
 
   /**  Numeric properties. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  TMap<FString, double> NumericProperties = 0.0;
+  TMap<FString, double> NumericProperties;
 
   static FNakamaRtPartyMatchmakerAdd FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
   TSharedPtr<FJsonObject> ToJson() const noexcept;
@@ -1049,7 +1049,7 @@ struct NAKAMAAPI_API FNakamaRtPartyData
 
   /**  Data payload, if any. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  TArray<uint8> Data;
+  FString Data;
 
   static FNakamaRtPartyData FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
   TSharedPtr<FJsonObject> ToJson() const noexcept;
@@ -1073,7 +1073,7 @@ struct NAKAMAAPI_API FNakamaRtPartyDataSend
 
   /**  Data payload, if any. */
   UPROPERTY(BlueprintReadWrite, Category = "Nakama|Realtime")
-  TArray<uint8> Data;
+  FString Data;
 
   static FNakamaRtPartyDataSend FromJson(const TSharedPtr<FJsonObject>& Json) noexcept;
   TSharedPtr<FJsonObject> ToJson() const noexcept;

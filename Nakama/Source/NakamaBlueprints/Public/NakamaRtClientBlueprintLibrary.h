@@ -294,7 +294,7 @@ public:
     , UNakamaWebSocketSubsystem* WebSocketSubsystem
     , const FString& MatchId
     , int64 OpCode
-    , const TArray<uint8>& Data
+    , const FString& Data
     , const TArray<FNakamaRtUserPresence>& Presences
     , bool Reliable
   );
@@ -305,7 +305,7 @@ private:
   TObjectPtr<UNakamaWebSocketSubsystem> StoredWebSocketSubsystem;
   FString StoredMatchId;
   int64 StoredOpCode;
-  TArray<uint8> StoredData;
+  FString StoredData;
   TArray<FNakamaRtUserPresence> StoredPresences;
   bool StoredReliable;
 };
@@ -1070,7 +1070,7 @@ public:
     , UNakamaWebSocketSubsystem* WebSocketSubsystem
     , const FString& PartyId
     , int64 OpCode
-    , const TArray<uint8>& Data
+    , const FString& Data
   );
 
   virtual void Activate() override;
@@ -1079,7 +1079,7 @@ private:
   TObjectPtr<UNakamaWebSocketSubsystem> StoredWebSocketSubsystem;
   FString StoredPartyId;
   int64 StoredOpCode;
-  TArray<uint8> StoredData;
+  FString StoredData;
 };
 
 /**

@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#include "NakamaClientConfig.generated.h"
+
 /** Low-level API client configuration. */
 USTRUCT(BlueprintType)
 struct NAKAMAAPI_API FNakamaClientConfig
