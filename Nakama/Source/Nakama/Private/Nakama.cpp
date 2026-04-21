@@ -2674,9 +2674,9 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteStorageObjects(
     , RetryConfig
     , CancellationToken
     , HttpKey
+    , ObjectIds
   ]()
   {
-    TArray<FNakamaDeleteStorageObjectId> ObjectIds;
 
     NakamaApi::DeleteStorageObjects(
       ClientConfig,
@@ -2738,6 +2738,7 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteStorageObjects(
     , RetryConfig
     , CancellationToken
     , Session
+    , ObjectIds
   ]()
   { 
     MaybeRefreshThenCall(
@@ -2755,9 +2756,9 @@ TNakamaFuture<FNakamaVoidResult> Nakama::DeleteStorageObjects(
         , RetryConfig
         , CancellationToken
         , Session
+        , ObjectIds
         ]()
         {
-          TArray<FNakamaDeleteStorageObjectId> ObjectIds;
 
           NakamaApi::DeleteStorageObjects(
             ClientConfig,
@@ -9068,9 +9069,9 @@ TNakamaFuture<FNakamaStorageObjectsResult> Nakama::ReadStorageObjects(
     , RetryConfig
     , CancellationToken
     , HttpKey
+    , ObjectIds
   ]()
   {
-    TArray<FNakamaReadStorageObjectId> ObjectIds;
 
     NakamaApi::ReadStorageObjects(
       ClientConfig,
@@ -9132,6 +9133,7 @@ TNakamaFuture<FNakamaStorageObjectsResult> Nakama::ReadStorageObjects(
     , RetryConfig
     , CancellationToken
     , Session
+    , ObjectIds
   ]()
   { 
     MaybeRefreshThenCall(
@@ -9149,9 +9151,9 @@ TNakamaFuture<FNakamaStorageObjectsResult> Nakama::ReadStorageObjects(
         , RetryConfig
         , CancellationToken
         , Session
+        , ObjectIds
         ]()
         {
-          TArray<FNakamaReadStorageObjectId> ObjectIds;
 
           NakamaApi::ReadStorageObjects(
             ClientConfig,
@@ -12162,9 +12164,9 @@ TNakamaFuture<FNakamaStorageObjectAcksResult> Nakama::WriteStorageObjects(
     , RetryConfig
     , CancellationToken
     , HttpKey
+    , Objects
   ]()
   {
-    TArray<FNakamaWriteStorageObject> Objects;
 
     NakamaApi::WriteStorageObjects(
       ClientConfig,
@@ -12226,6 +12228,7 @@ TNakamaFuture<FNakamaStorageObjectAcksResult> Nakama::WriteStorageObjects(
     , RetryConfig
     , CancellationToken
     , Session
+    , Objects
   ]()
   { 
     MaybeRefreshThenCall(
@@ -12243,9 +12246,9 @@ TNakamaFuture<FNakamaStorageObjectAcksResult> Nakama::WriteStorageObjects(
         , RetryConfig
         , CancellationToken
         , Session
+        , Objects
         ]()
         {
-          TArray<FNakamaWriteStorageObject> Objects;
 
           NakamaApi::WriteStorageObjects(
             ClientConfig,

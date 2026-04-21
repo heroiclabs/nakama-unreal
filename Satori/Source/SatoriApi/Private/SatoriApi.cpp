@@ -62,6 +62,24 @@ SATORIAPI_API void SatoriApi::Authenticate (
   {
     Body->SetBoolField(TEXT("no_session"), NoSession);
   }
+  if (Default.Num() > 0)
+  {
+    TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
+    for (const auto& Pair : Default)
+    {
+      MapObj->SetStringField(Pair.Key, Pair.Value);
+    }
+    Body->SetObjectField(TEXT("default"), MapObj);
+  }
+  if (Custom.Num() > 0)
+  {
+    TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
+    for (const auto& Pair : Custom)
+    {
+      MapObj->SetStringField(Pair.Key, Pair.Value);
+    }
+    Body->SetObjectField(TEXT("custom"), MapObj);
+  }
 
   //
   // Make the request
@@ -129,8 +147,8 @@ SATORIAPI_API void SatoriApi::AuthenticateLogout (
     Endpoint,
     TEXT("POST"),
     Body,
-    ESatoriRequestAuth::Basic,
-    TEXT(""),
+    ESatoriRequestAuth::Bearer,
+    Token,
     [OnSuccess](TSharedPtr<FJsonObject> Json)
     {
       if (OnSuccess)
@@ -551,11 +569,11 @@ SATORIAPI_API void SatoriApi::GetExperiments (
   TArray<FString> QueryParams;
   for (const FString& Item : Names)
 	{
-    QueryParams.Add(FString::Printf(TEXT("Names=%s"), *(Item)));
+    QueryParams.Add(FString::Printf(TEXT("names=%s"), *(Item)));
   }
   for (const FString& Item : Labels)
 	{
-    QueryParams.Add(FString::Printf(TEXT("Labels=%s"), *(Item)));
+    QueryParams.Add(FString::Printf(TEXT("labels=%s"), *(Item)));
   }
   if (QueryParams.Num() > 0)
   {
@@ -610,11 +628,11 @@ SATORIAPI_API void SatoriApi::GetExperiments (
   TArray<FString> QueryParams;
   for (const FString& Item : Names)
 	{
-    QueryParams.Add(FString::Printf(TEXT("Names=%s"), *(Item)));
+    QueryParams.Add(FString::Printf(TEXT("names=%s"), *(Item)));
   }
   for (const FString& Item : Labels)
 	{
-    QueryParams.Add(FString::Printf(TEXT("Labels=%s"), *(Item)));
+    QueryParams.Add(FString::Printf(TEXT("labels=%s"), *(Item)));
   }
   if (QueryParams.Num() > 0)
   {
@@ -669,11 +687,11 @@ SATORIAPI_API void SatoriApi::GetFlagOverrides (
   TArray<FString> QueryParams;
   for (const FString& Item : Names)
 	{
-    QueryParams.Add(FString::Printf(TEXT("Names=%s"), *(Item)));
+    QueryParams.Add(FString::Printf(TEXT("names=%s"), *(Item)));
   }
   for (const FString& Item : Labels)
 	{
-    QueryParams.Add(FString::Printf(TEXT("Labels=%s"), *(Item)));
+    QueryParams.Add(FString::Printf(TEXT("labels=%s"), *(Item)));
   }
   if (QueryParams.Num() > 0)
   {
@@ -728,11 +746,11 @@ SATORIAPI_API void SatoriApi::GetFlagOverrides (
   TArray<FString> QueryParams;
   for (const FString& Item : Names)
 	{
-    QueryParams.Add(FString::Printf(TEXT("Names=%s"), *(Item)));
+    QueryParams.Add(FString::Printf(TEXT("names=%s"), *(Item)));
   }
   for (const FString& Item : Labels)
 	{
-    QueryParams.Add(FString::Printf(TEXT("Labels=%s"), *(Item)));
+    QueryParams.Add(FString::Printf(TEXT("labels=%s"), *(Item)));
   }
   if (QueryParams.Num() > 0)
   {
@@ -787,11 +805,11 @@ SATORIAPI_API void SatoriApi::GetFlags (
   TArray<FString> QueryParams;
   for (const FString& Item : Names)
 	{
-    QueryParams.Add(FString::Printf(TEXT("Names=%s"), *(Item)));
+    QueryParams.Add(FString::Printf(TEXT("names=%s"), *(Item)));
   }
   for (const FString& Item : Labels)
 	{
-    QueryParams.Add(FString::Printf(TEXT("Labels=%s"), *(Item)));
+    QueryParams.Add(FString::Printf(TEXT("labels=%s"), *(Item)));
   }
   if (QueryParams.Num() > 0)
   {
@@ -846,11 +864,11 @@ SATORIAPI_API void SatoriApi::GetFlags (
   TArray<FString> QueryParams;
   for (const FString& Item : Names)
 	{
-    QueryParams.Add(FString::Printf(TEXT("Names=%s"), *(Item)));
+    QueryParams.Add(FString::Printf(TEXT("names=%s"), *(Item)));
   }
   for (const FString& Item : Labels)
 	{
-    QueryParams.Add(FString::Printf(TEXT("Labels=%s"), *(Item)));
+    QueryParams.Add(FString::Printf(TEXT("labels=%s"), *(Item)));
   }
   if (QueryParams.Num() > 0)
   {
@@ -909,31 +927,31 @@ SATORIAPI_API void SatoriApi::GetLiveEvents (
   TArray<FString> QueryParams;
   for (const FString& Item : Names)
 	{
-    QueryParams.Add(FString::Printf(TEXT("Names=%s"), *(Item)));
+    QueryParams.Add(FString::Printf(TEXT("names=%s"), *(Item)));
   }
   for (const FString& Item : Labels)
 	{
-    QueryParams.Add(FString::Printf(TEXT("Labels=%s"), *(Item)));
+    QueryParams.Add(FString::Printf(TEXT("labels=%s"), *(Item)));
   }
   if (PastRunCount != 0)
   
   {
-    QueryParams.Add(FString::Printf(TEXT("PastRunCount=%d"), (PastRunCount)));
+    QueryParams.Add(FString::Printf(TEXT("past_run_count=%d"), (PastRunCount)));
   }
   if (FutureRunCount != 0)
   
   {
-    QueryParams.Add(FString::Printf(TEXT("FutureRunCount=%d"), (FutureRunCount)));
+    QueryParams.Add(FString::Printf(TEXT("future_run_count=%d"), (FutureRunCount)));
   }
   if (StartTimeSec != 0)
   
   {
-    QueryParams.Add(FString::Printf(TEXT("StartTimeSec=%lld"), (StartTimeSec)));
+    QueryParams.Add(FString::Printf(TEXT("start_time_sec=%lld"), (StartTimeSec)));
   }
   if (EndTimeSec != 0)
   
   {
-    QueryParams.Add(FString::Printf(TEXT("EndTimeSec=%lld"), (EndTimeSec)));
+    QueryParams.Add(FString::Printf(TEXT("end_time_sec=%lld"), (EndTimeSec)));
   }
   if (QueryParams.Num() > 0)
   {
@@ -992,31 +1010,31 @@ SATORIAPI_API void SatoriApi::GetLiveEvents (
   TArray<FString> QueryParams;
   for (const FString& Item : Names)
 	{
-    QueryParams.Add(FString::Printf(TEXT("Names=%s"), *(Item)));
+    QueryParams.Add(FString::Printf(TEXT("names=%s"), *(Item)));
   }
   for (const FString& Item : Labels)
 	{
-    QueryParams.Add(FString::Printf(TEXT("Labels=%s"), *(Item)));
+    QueryParams.Add(FString::Printf(TEXT("labels=%s"), *(Item)));
   }
   if (PastRunCount != 0)
   
   {
-    QueryParams.Add(FString::Printf(TEXT("PastRunCount=%d"), (PastRunCount)));
+    QueryParams.Add(FString::Printf(TEXT("past_run_count=%d"), (PastRunCount)));
   }
   if (FutureRunCount != 0)
   
   {
-    QueryParams.Add(FString::Printf(TEXT("FutureRunCount=%d"), (FutureRunCount)));
+    QueryParams.Add(FString::Printf(TEXT("future_run_count=%d"), (FutureRunCount)));
   }
   if (StartTimeSec != 0)
   
   {
-    QueryParams.Add(FString::Printf(TEXT("StartTimeSec=%lld"), (StartTimeSec)));
+    QueryParams.Add(FString::Printf(TEXT("start_time_sec=%lld"), (StartTimeSec)));
   }
   if (EndTimeSec != 0)
   
   {
-    QueryParams.Add(FString::Printf(TEXT("EndTimeSec=%lld"), (EndTimeSec)));
+    QueryParams.Add(FString::Printf(TEXT("end_time_sec=%lld"), (EndTimeSec)));
   }
   if (QueryParams.Num() > 0)
   {
@@ -1281,6 +1299,24 @@ SATORIAPI_API void SatoriApi::Identify (
   {
     Body->SetStringField(TEXT("id"), Id);
   }
+  if (Default.Num() > 0)
+  {
+    TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
+    for (const auto& Pair : Default)
+    {
+      MapObj->SetStringField(Pair.Key, Pair.Value);
+    }
+    Body->SetObjectField(TEXT("default"), MapObj);
+  }
+  if (Custom.Num() > 0)
+  {
+    TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
+    for (const auto& Pair : Custom)
+    {
+      MapObj->SetStringField(Pair.Key, Pair.Value);
+    }
+    Body->SetObjectField(TEXT("custom"), MapObj);
+  }
 
   //
   // Make the request
@@ -1338,6 +1374,24 @@ SATORIAPI_API void SatoriApi::Identify (
   {
     Body->SetStringField(TEXT("id"), Id);
   }
+  if (Default.Num() > 0)
+  {
+    TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
+    for (const auto& Pair : Default)
+    {
+      MapObj->SetStringField(Pair.Key, Pair.Value);
+    }
+    Body->SetObjectField(TEXT("default"), MapObj);
+  }
+  if (Custom.Num() > 0)
+  {
+    TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
+    for (const auto& Pair : Custom)
+    {
+      MapObj->SetStringField(Pair.Key, Pair.Value);
+    }
+    Body->SetObjectField(TEXT("custom"), MapObj);
+  }
 
   //
   // Make the request
@@ -1589,6 +1643,24 @@ SATORIAPI_API void SatoriApi::UpdateProperties (
   {
     Body->SetBoolField(TEXT("recompute"), Recompute);
   }
+  if (Default.Num() > 0)
+  {
+    TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
+    for (const auto& Pair : Default)
+    {
+      MapObj->SetStringField(Pair.Key, Pair.Value);
+    }
+    Body->SetObjectField(TEXT("default"), MapObj);
+  }
+  if (Custom.Num() > 0)
+  {
+    TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
+    for (const auto& Pair : Custom)
+    {
+      MapObj->SetStringField(Pair.Key, Pair.Value);
+    }
+    Body->SetObjectField(TEXT("custom"), MapObj);
+  }
 
   //
   // Make the request
@@ -1645,6 +1717,24 @@ SATORIAPI_API void SatoriApi::UpdateProperties (
   {
     Body->SetBoolField(TEXT("recompute"), Recompute);
   }
+  if (Default.Num() > 0)
+  {
+    TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
+    for (const auto& Pair : Default)
+    {
+      MapObj->SetStringField(Pair.Key, Pair.Value);
+    }
+    Body->SetObjectField(TEXT("default"), MapObj);
+  }
+  if (Custom.Num() > 0)
+  {
+    TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
+    for (const auto& Pair : Custom)
+    {
+      MapObj->SetStringField(Pair.Key, Pair.Value);
+    }
+    Body->SetObjectField(TEXT("custom"), MapObj);
+  }
 
   //
   // Make the request
@@ -1692,19 +1782,19 @@ SATORIAPI_API void SatoriApi::GetMessageList (
   if (Limit != 0)
   
   {
-    QueryParams.Add(FString::Printf(TEXT("Limit=%d"), (Limit)));
+    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit)));
   }
   
   {
-    QueryParams.Add(FString::Printf(TEXT("Forward=%s"), *LexToString(Forward)));
+    QueryParams.Add(FString::Printf(TEXT("forward=%s"), *LexToString(Forward)));
   }
   if (Cursor.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("Cursor=%s"), *(Cursor)));
+    QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *(Cursor)));
   }
   for (const FString& Item : MessageIds)
 	{
-    QueryParams.Add(FString::Printf(TEXT("MessageIds=%s"), *(Item)));
+    QueryParams.Add(FString::Printf(TEXT("message_ids=%s"), *(Item)));
   }
   if (QueryParams.Num() > 0)
   {
@@ -1762,19 +1852,19 @@ SATORIAPI_API void SatoriApi::GetMessageList (
   if (Limit != 0)
   
   {
-    QueryParams.Add(FString::Printf(TEXT("Limit=%d"), (Limit)));
+    QueryParams.Add(FString::Printf(TEXT("limit=%d"), (Limit)));
   }
   
   {
-    QueryParams.Add(FString::Printf(TEXT("Forward=%s"), *LexToString(Forward)));
+    QueryParams.Add(FString::Printf(TEXT("forward=%s"), *LexToString(Forward)));
   }
   if (Cursor.IsEmpty() == false)
   {
-    QueryParams.Add(FString::Printf(TEXT("Cursor=%s"), *(Cursor)));
+    QueryParams.Add(FString::Printf(TEXT("cursor=%s"), *(Cursor)));
   }
   for (const FString& Item : MessageIds)
 	{
-    QueryParams.Add(FString::Printf(TEXT("MessageIds=%s"), *(Item)));
+    QueryParams.Add(FString::Printf(TEXT("message_ids=%s"), *(Item)));
   }
   if (QueryParams.Num() > 0)
   {

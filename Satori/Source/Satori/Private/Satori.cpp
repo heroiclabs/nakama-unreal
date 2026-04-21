@@ -456,9 +456,9 @@ TSatoriFuture<FSatoriVoidResult> Satori::Event(
     , RetryConfig
     , CancellationToken
     , HttpKey
+    , Events
   ]()
   {
-    TArray<FSatoriEvent> Events;
 
     SatoriApi::Event(
       ClientConfig,
@@ -520,6 +520,7 @@ TSatoriFuture<FSatoriVoidResult> Satori::Event(
     , RetryConfig
     , CancellationToken
     , Session
+    , Events
   ]()
   { 
     MaybeRefreshThenCall(
@@ -537,9 +538,9 @@ TSatoriFuture<FSatoriVoidResult> Satori::Event(
         , RetryConfig
         , CancellationToken
         , Session
+        , Events
         ]()
         {
-          TArray<FSatoriEvent> Events;
 
           SatoriApi::Event(
             ClientConfig,
@@ -601,9 +602,9 @@ TSatoriFuture<FSatoriVoidResult> Satori::ServerEvent(
     , RetryConfig
     , CancellationToken
     , HttpKey
+    , Events
   ]()
   {
-    TArray<FSatoriEvent> Events;
 
     SatoriApi::ServerEvent(
       ClientConfig,
@@ -665,6 +666,7 @@ TSatoriFuture<FSatoriVoidResult> Satori::ServerEvent(
     , RetryConfig
     , CancellationToken
     , Session
+    , Events
   ]()
   { 
     MaybeRefreshThenCall(
@@ -682,9 +684,9 @@ TSatoriFuture<FSatoriVoidResult> Satori::ServerEvent(
         , RetryConfig
         , CancellationToken
         , Session
+        , Events
         ]()
         {
-          TArray<FSatoriEvent> Events;
 
           SatoriApi::ServerEvent(
             ClientConfig,
