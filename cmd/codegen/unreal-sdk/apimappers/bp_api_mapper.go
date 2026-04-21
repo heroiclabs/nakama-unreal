@@ -71,7 +71,9 @@ func (m UnrealBlueprintHttpApiMapper) MapRpc(rpc *yacg.ProtoRpc, api yacg.Api, t
 	// Append session param if needed
 	isAuth := strings.Contains(rpc.Name, "Authenticate")
 	isSessionRefresh := rpc.Name == "SessionRefresh"
-	needsSession := !isAuth && !isSessionRefresh
+	isRpcFunc := strings.Contains(rpc.Name, "RpcFunc")
+	needsSession := !isAuth && !isSessionRefresh && !isRpcFunc
+
 	if needsSession {
 		sessionType := typeMapper.ResolveEntry("Session").FieldType
 		sessionParam := modules.DataDecl{

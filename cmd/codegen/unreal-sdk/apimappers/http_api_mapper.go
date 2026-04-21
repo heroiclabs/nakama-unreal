@@ -97,7 +97,7 @@ func (m UnrealHttpApiMapper) MapRpc(rpc *yacg.ProtoRpc, api yacg.Api, typeMapper
 
 	isAuth := strings.Contains(rpc.Name, "Authenticate")
 	isSessionRefresh := rpc.Name == "SessionRefresh"
-	isRpcFunc := rpc.Name == "RpcFunc"
+	isRpcFunc := strings.Contains(rpc.Name, "RpcFunc")
 	needsSession := !isAuth && !isSessionRefresh && !isRpcFunc
 
 	funcReturnTypeName := ""

@@ -25,7 +25,8 @@ enum class ESatoriRequestAuth : uint8
 {
 	None,
 	Basic,
-	Bearer
+	Bearer,
+  HttpKey
 };
 
 {{- range $enum := $.Enums }}

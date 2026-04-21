@@ -23,7 +23,7 @@
 
 UNakamaRealtimeClient{{ $func.Name }}* UNakamaRealtimeClient{{ $func.Name }}::{{ $func.Name }}(
   UObject* WorldContextObject
-  , UNakamaWebSocketSubsystem* WebSocketSubsystem;
+  , UNakamaWebSocketSubsystem* WebSocketSubsystem
   {{- range $idx, $param := $func.Params }}
   , {{ $param.Metadata.ParamType }} {{ $param.Name }}
   {{- end }}
@@ -40,12 +40,12 @@ UNakamaRealtimeClient{{ $func.Name }}* UNakamaRealtimeClient{{ $func.Name }}::{{
   return Action;
 }
 
-void UNakamaClient{{ $func.Name }}::Activate()
+void UNakamaRealtimeClient{{ $func.Name }}::Activate()
 {
   static const TCHAR* TraceScope_{{ $func.Name }} = TEXT("NakamaRTBP_{{ $func.Name }}");
   TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_{{ $func.Name }});
 
-  if (!StoredWebSocketSubsystem.IsValid())
+  if (!StoredWebSocketSubsystem)
   {
     FNakamaRtError Err;
     Err.Message = TEXT("WebSocket subsystem is null");
@@ -75,12 +75,13 @@ void UNakamaClient{{ $func.Name }}::Activate()
     TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
     for (const auto& Pair : Stored{{ $param.Name }})
     {
-      MapObj->SetStringField(Pair.Key, Pair.Value);
+      MapObj->{{ $param.TypeEntry.JsonSetter }}(Pair.Key, Pair.Value);
     }
     Json->SetObjectField(TEXT("{{ $param.Metadata.JsonFieldName }}"), MapObj);
   }
   {{- else }}
-  {{ if ne "" $param.TypeEntry.EmptyCheck }}if (Stored{{ $param.Name }}.{{ $param.TypeEntry.EmptyCheck }}() == false){{ end }}
+  {{ if eq "NonZero" $param.TypeEntry.EmptyCheck }}if (Stored{{ $param.Name }} != 0)
+  {{ else if ne "" $param.TypeEntry.EmptyCheck }}if (Stored{{ $param.Name }}.{{ $param.TypeEntry.EmptyCheck }}() == false){{ end }}
   {
     Json->{{ $param.TypeEntry.JsonSetter }}(TEXT("{{ $param.Metadata.JsonFieldName }}"), Stored{{ $param.Name }}{{ $param.TypeEntry.MaybeToJson }});
   }
