@@ -294,7 +294,7 @@ FSatoriEventRequest FSatoriEventRequest::FromJson(const TSharedPtr<FJsonObject>&
           const TSharedPtr<FJsonObject>* ItemObj = nullptr;
           if (Item->TryGetObject(ItemObj) && ItemObj)
           {
-            Result.Events.Add(TArray<FSatoriEvent>::FromJson(*ItemObj));
+            Result.Events.Add(FSatoriEvent::FromJson(*ItemObj));
           }
         }
       }
@@ -404,7 +404,7 @@ FSatoriExperimentList FSatoriExperimentList::FromJson(const TSharedPtr<FJsonObje
           const TSharedPtr<FJsonObject>* ItemObj = nullptr;
           if (Item->TryGetObject(ItemObj) && ItemObj)
           {
-            Result.Experiments.Add(TArray<FSatoriExperiment>::FromJson(*ItemObj));
+            Result.Experiments.Add(FSatoriExperiment::FromJson(*ItemObj));
           }
         }
       }
@@ -493,7 +493,7 @@ FSatoriFlag FSatoriFlag::FromJson(const TSharedPtr<FJsonObject>& Json) noexcept
       const TSharedPtr<FJsonObject>* NestedObj;
       if (Json->TryGetObjectField(TEXT("change_reason"), NestedObj))
       {
-        Result.ChangeReason.Add(FSatoriValueChangeReason::FromJson(*ItemObj));
+        Result.ChangeReason = (FSatoriValueChangeReason::FromJson(*NestedObj));
       }
   }
   if (Json->HasField(TEXT("labels")))
@@ -559,7 +559,7 @@ FSatoriFlagList FSatoriFlagList::FromJson(const TSharedPtr<FJsonObject>& Json) n
           const TSharedPtr<FJsonObject>* ItemObj = nullptr;
           if (Item->TryGetObject(ItemObj) && ItemObj)
           {
-            Result.Flags.Add(TArray<FSatoriFlag>::FromJson(*ItemObj));
+            Result.Flags.Add(FSatoriFlag::FromJson(*ItemObj));
           }
         }
       }
@@ -662,7 +662,7 @@ FSatoriFlagOverride FSatoriFlagOverride::FromJson(const TSharedPtr<FJsonObject>&
           const TSharedPtr<FJsonObject>* ItemObj = nullptr;
           if (Item->TryGetObject(ItemObj) && ItemObj)
           {
-            Result.Overrides.Add(TArray<FSatoriFlagOverrideValue>::FromJson(*ItemObj));
+            Result.Overrides.Add(FSatoriFlagOverrideValue::FromJson(*ItemObj));
           }
         }
       }
@@ -727,7 +727,7 @@ FSatoriFlagOverrideList FSatoriFlagOverrideList::FromJson(const TSharedPtr<FJson
           const TSharedPtr<FJsonObject>* ItemObj = nullptr;
           if (Item->TryGetObject(ItemObj) && ItemObj)
           {
-            Result.Flags.Add(TArray<FSatoriFlagOverride>::FromJson(*ItemObj));
+            Result.Flags.Add(FSatoriFlagOverride::FromJson(*ItemObj));
           }
         }
       }
@@ -1159,7 +1159,7 @@ FSatoriGetMessageListResponse FSatoriGetMessageListResponse::FromJson(const TSha
           const TSharedPtr<FJsonObject>* ItemObj = nullptr;
           if (Item->TryGetObject(ItemObj) && ItemObj)
           {
-            Result.Messages.Add(TArray<FSatoriMessage>::FromJson(*ItemObj));
+            Result.Messages.Add(FSatoriMessage::FromJson(*ItemObj));
           }
         }
       }
@@ -1444,7 +1444,7 @@ FSatoriLiveEventList FSatoriLiveEventList::FromJson(const TSharedPtr<FJsonObject
           const TSharedPtr<FJsonObject>* ItemObj = nullptr;
           if (Item->TryGetObject(ItemObj) && ItemObj)
           {
-            Result.LiveEvents.Add(TArray<FSatoriLiveEvent>::FromJson(*ItemObj));
+            Result.LiveEvents.Add(FSatoriLiveEvent::FromJson(*ItemObj));
           }
         }
       }
@@ -1459,7 +1459,7 @@ FSatoriLiveEventList FSatoriLiveEventList::FromJson(const TSharedPtr<FJsonObject
           const TSharedPtr<FJsonObject>* ItemObj = nullptr;
           if (Item->TryGetObject(ItemObj) && ItemObj)
           {
-            Result.ExplicitJoinLiveEvents.Add(TArray<FSatoriLiveEvent>::FromJson(*ItemObj));
+            Result.ExplicitJoinLiveEvents.Add(FSatoriLiveEvent::FromJson(*ItemObj));
           }
         }
       }

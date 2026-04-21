@@ -105,6 +105,13 @@ inline void DoHttpRequest(
 			Request->SetHeader(TEXT("Authorization"), FString::Printf(TEXT("Bearer %s"), *TokenString));
 		}
 		break;
+	case ESatoriRequestAuth::HttpKey:
+		if (!TokenString.IsEmpty())
+		{
+			const FString Auth = FString::Printf(TEXT("%s:"), *TokenString);
+			Request->SetHeader(TEXT("Authorization"), FString::Printf(TEXT("Basic %s"), *FBase64::Encode(Auth)));
+		}
+		break;
 	case ESatoriRequestAuth::None:
 	default:
 		break;

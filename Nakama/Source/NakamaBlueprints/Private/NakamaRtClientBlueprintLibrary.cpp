@@ -21,7 +21,7 @@
 
 UNakamaRealtimeClientChannelJoin* UNakamaRealtimeClientChannelJoin::ChannelJoin(
   UObject* WorldContextObject
-  , UNakamaWebSocketSubsystem* WebSocketSubsystem;
+  , UNakamaWebSocketSubsystem* WebSocketSubsystem
   , const FString& Target
   , int32 Type
   , bool Persistence
@@ -39,12 +39,12 @@ UNakamaRealtimeClientChannelJoin* UNakamaRealtimeClientChannelJoin::ChannelJoin(
   return Action;
 }
 
-void UNakamaClientChannelJoin::Activate()
+void UNakamaRealtimeClientChannelJoin::Activate()
 {
   static const TCHAR* TraceScope_ChannelJoin = TEXT("NakamaRTBP_ChannelJoin");
   TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ChannelJoin);
 
-  if (!StoredWebSocketSubsystem.IsValid())
+  if (!StoredWebSocketSubsystem)
   {
     FNakamaRtError Err;
     Err.Message = TEXT("WebSocket subsystem is null");
@@ -60,7 +60,8 @@ void UNakamaClientChannelJoin::Activate()
   {
     Json->SetStringField(TEXT("target"), StoredTarget);
   }
-  if (StoredType.NonZero() == false)
+  if (StoredType != 0)
+  
   {
     Json->SetNumberField(TEXT("type"), StoredType);
   }
@@ -105,7 +106,7 @@ void UNakamaClientChannelJoin::Activate()
 
 UNakamaRealtimeClientChannelLeave* UNakamaRealtimeClientChannelLeave::ChannelLeave(
   UObject* WorldContextObject
-  , UNakamaWebSocketSubsystem* WebSocketSubsystem;
+  , UNakamaWebSocketSubsystem* WebSocketSubsystem
   , const FString& ChannelId
 )
 {
@@ -117,12 +118,12 @@ UNakamaRealtimeClientChannelLeave* UNakamaRealtimeClientChannelLeave::ChannelLea
   return Action;
 }
 
-void UNakamaClientChannelLeave::Activate()
+void UNakamaRealtimeClientChannelLeave::Activate()
 {
   static const TCHAR* TraceScope_ChannelLeave = TEXT("NakamaRTBP_ChannelLeave");
   TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ChannelLeave);
 
-  if (!StoredWebSocketSubsystem.IsValid())
+  if (!StoredWebSocketSubsystem)
   {
     FNakamaRtError Err;
     Err.Message = TEXT("WebSocket subsystem is null");
@@ -171,7 +172,7 @@ void UNakamaClientChannelLeave::Activate()
 
 UNakamaRealtimeClientChannelMessageSend* UNakamaRealtimeClientChannelMessageSend::ChannelMessageSend(
   UObject* WorldContextObject
-  , UNakamaWebSocketSubsystem* WebSocketSubsystem;
+  , UNakamaWebSocketSubsystem* WebSocketSubsystem
   , const FString& ChannelId
   , const FString& Content
 )
@@ -185,12 +186,12 @@ UNakamaRealtimeClientChannelMessageSend* UNakamaRealtimeClientChannelMessageSend
   return Action;
 }
 
-void UNakamaClientChannelMessageSend::Activate()
+void UNakamaRealtimeClientChannelMessageSend::Activate()
 {
   static const TCHAR* TraceScope_ChannelMessageSend = TEXT("NakamaRTBP_ChannelMessageSend");
   TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ChannelMessageSend);
 
-  if (!StoredWebSocketSubsystem.IsValid())
+  if (!StoredWebSocketSubsystem)
   {
     FNakamaRtError Err;
     Err.Message = TEXT("WebSocket subsystem is null");
@@ -243,7 +244,7 @@ void UNakamaClientChannelMessageSend::Activate()
 
 UNakamaRealtimeClientChannelMessageUpdate* UNakamaRealtimeClientChannelMessageUpdate::ChannelMessageUpdate(
   UObject* WorldContextObject
-  , UNakamaWebSocketSubsystem* WebSocketSubsystem;
+  , UNakamaWebSocketSubsystem* WebSocketSubsystem
   , const FString& ChannelId
   , const FString& MessageId
   , const FString& Content
@@ -259,12 +260,12 @@ UNakamaRealtimeClientChannelMessageUpdate* UNakamaRealtimeClientChannelMessageUp
   return Action;
 }
 
-void UNakamaClientChannelMessageUpdate::Activate()
+void UNakamaRealtimeClientChannelMessageUpdate::Activate()
 {
   static const TCHAR* TraceScope_ChannelMessageUpdate = TEXT("NakamaRTBP_ChannelMessageUpdate");
   TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ChannelMessageUpdate);
 
-  if (!StoredWebSocketSubsystem.IsValid())
+  if (!StoredWebSocketSubsystem)
   {
     FNakamaRtError Err;
     Err.Message = TEXT("WebSocket subsystem is null");
@@ -321,7 +322,7 @@ void UNakamaClientChannelMessageUpdate::Activate()
 
 UNakamaRealtimeClientChannelMessageRemove* UNakamaRealtimeClientChannelMessageRemove::ChannelMessageRemove(
   UObject* WorldContextObject
-  , UNakamaWebSocketSubsystem* WebSocketSubsystem;
+  , UNakamaWebSocketSubsystem* WebSocketSubsystem
   , const FString& ChannelId
   , const FString& MessageId
 )
@@ -335,12 +336,12 @@ UNakamaRealtimeClientChannelMessageRemove* UNakamaRealtimeClientChannelMessageRe
   return Action;
 }
 
-void UNakamaClientChannelMessageRemove::Activate()
+void UNakamaRealtimeClientChannelMessageRemove::Activate()
 {
   static const TCHAR* TraceScope_ChannelMessageRemove = TEXT("NakamaRTBP_ChannelMessageRemove");
   TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_ChannelMessageRemove);
 
-  if (!StoredWebSocketSubsystem.IsValid())
+  if (!StoredWebSocketSubsystem)
   {
     FNakamaRtError Err;
     Err.Message = TEXT("WebSocket subsystem is null");
@@ -393,7 +394,7 @@ void UNakamaClientChannelMessageRemove::Activate()
 
 UNakamaRealtimeClientMatchCreate* UNakamaRealtimeClientMatchCreate::MatchCreate(
   UObject* WorldContextObject
-  , UNakamaWebSocketSubsystem* WebSocketSubsystem;
+  , UNakamaWebSocketSubsystem* WebSocketSubsystem
   , const FString& Name
 )
 {
@@ -405,12 +406,12 @@ UNakamaRealtimeClientMatchCreate* UNakamaRealtimeClientMatchCreate::MatchCreate(
   return Action;
 }
 
-void UNakamaClientMatchCreate::Activate()
+void UNakamaRealtimeClientMatchCreate::Activate()
 {
   static const TCHAR* TraceScope_MatchCreate = TEXT("NakamaRTBP_MatchCreate");
   TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_MatchCreate);
 
-  if (!StoredWebSocketSubsystem.IsValid())
+  if (!StoredWebSocketSubsystem)
   {
     FNakamaRtError Err;
     Err.Message = TEXT("WebSocket subsystem is null");
@@ -459,7 +460,7 @@ void UNakamaClientMatchCreate::Activate()
 
 UNakamaRealtimeClientMatchDataSend* UNakamaRealtimeClientMatchDataSend::MatchDataSend(
   UObject* WorldContextObject
-  , UNakamaWebSocketSubsystem* WebSocketSubsystem;
+  , UNakamaWebSocketSubsystem* WebSocketSubsystem
   , const FString& MatchId
   , int64 OpCode
   , const FString& Data
@@ -479,12 +480,12 @@ UNakamaRealtimeClientMatchDataSend* UNakamaRealtimeClientMatchDataSend::MatchDat
   return Action;
 }
 
-void UNakamaClientMatchDataSend::Activate()
+void UNakamaRealtimeClientMatchDataSend::Activate()
 {
   static const TCHAR* TraceScope_MatchDataSend = TEXT("NakamaRTBP_MatchDataSend");
   TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_MatchDataSend);
 
-  if (!StoredWebSocketSubsystem.IsValid())
+  if (!StoredWebSocketSubsystem)
   {
     FNakamaRtError Err;
     Err.Message = TEXT("WebSocket subsystem is null");
@@ -500,7 +501,8 @@ void UNakamaClientMatchDataSend::Activate()
   {
     Json->SetStringField(TEXT("match_id"), StoredMatchId);
   }
-  if (StoredOpCode.NonZero() == false)
+  if (StoredOpCode != 0)
+  
   {
     Json->SetNumberField(TEXT("op_code"), StoredOpCode);
   }
@@ -554,7 +556,7 @@ void UNakamaClientMatchDataSend::Activate()
 
 UNakamaRealtimeClientMatchJoin* UNakamaRealtimeClientMatchJoin::MatchJoin(
   UObject* WorldContextObject
-  , UNakamaWebSocketSubsystem* WebSocketSubsystem;
+  , UNakamaWebSocketSubsystem* WebSocketSubsystem
   , const TMap<FString, FString>& Metadata
   , const FString& MatchId
   , const FString& Token
@@ -570,12 +572,12 @@ UNakamaRealtimeClientMatchJoin* UNakamaRealtimeClientMatchJoin::MatchJoin(
   return Action;
 }
 
-void UNakamaClientMatchJoin::Activate()
+void UNakamaRealtimeClientMatchJoin::Activate()
 {
   static const TCHAR* TraceScope_MatchJoin = TEXT("NakamaRTBP_MatchJoin");
   TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_MatchJoin);
 
-  if (!StoredWebSocketSubsystem.IsValid())
+  if (!StoredWebSocketSubsystem)
   {
     FNakamaRtError Err;
     Err.Message = TEXT("WebSocket subsystem is null");
@@ -637,7 +639,7 @@ void UNakamaClientMatchJoin::Activate()
 
 UNakamaRealtimeClientMatchLeave* UNakamaRealtimeClientMatchLeave::MatchLeave(
   UObject* WorldContextObject
-  , UNakamaWebSocketSubsystem* WebSocketSubsystem;
+  , UNakamaWebSocketSubsystem* WebSocketSubsystem
   , const FString& MatchId
 )
 {
@@ -649,12 +651,12 @@ UNakamaRealtimeClientMatchLeave* UNakamaRealtimeClientMatchLeave::MatchLeave(
   return Action;
 }
 
-void UNakamaClientMatchLeave::Activate()
+void UNakamaRealtimeClientMatchLeave::Activate()
 {
   static const TCHAR* TraceScope_MatchLeave = TEXT("NakamaRTBP_MatchLeave");
   TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_MatchLeave);
 
-  if (!StoredWebSocketSubsystem.IsValid())
+  if (!StoredWebSocketSubsystem)
   {
     FNakamaRtError Err;
     Err.Message = TEXT("WebSocket subsystem is null");
@@ -703,7 +705,7 @@ void UNakamaClientMatchLeave::Activate()
 
 UNakamaRealtimeClientMatchmakerAdd* UNakamaRealtimeClientMatchmakerAdd::MatchmakerAdd(
   UObject* WorldContextObject
-  , UNakamaWebSocketSubsystem* WebSocketSubsystem;
+  , UNakamaWebSocketSubsystem* WebSocketSubsystem
   , int32 MinCount
   , int32 MaxCount
   , const FString& Query
@@ -725,12 +727,12 @@ UNakamaRealtimeClientMatchmakerAdd* UNakamaRealtimeClientMatchmakerAdd::Matchmak
   return Action;
 }
 
-void UNakamaClientMatchmakerAdd::Activate()
+void UNakamaRealtimeClientMatchmakerAdd::Activate()
 {
   static const TCHAR* TraceScope_MatchmakerAdd = TEXT("NakamaRTBP_MatchmakerAdd");
   TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_MatchmakerAdd);
 
-  if (!StoredWebSocketSubsystem.IsValid())
+  if (!StoredWebSocketSubsystem)
   {
     FNakamaRtError Err;
     Err.Message = TEXT("WebSocket subsystem is null");
@@ -742,11 +744,13 @@ void UNakamaClientMatchmakerAdd::Activate()
   TWeakObjectPtr<UNakamaRealtimeClientMatchmakerAdd> WeakThis(this);
 
   TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
-  if (StoredMinCount.NonZero() == false)
+  if (StoredMinCount != 0)
+  
   {
     Json->SetNumberField(TEXT("min_count"), StoredMinCount);
   }
-  if (StoredMaxCount.NonZero() == false)
+  if (StoredMaxCount != 0)
+  
   {
     Json->SetNumberField(TEXT("max_count"), StoredMaxCount);
   }
@@ -754,7 +758,8 @@ void UNakamaClientMatchmakerAdd::Activate()
   {
     Json->SetStringField(TEXT("query"), StoredQuery);
   }
-  if (StoredCountMultiple.NonZero() == false)
+  if (StoredCountMultiple != 0)
+  
   {
     Json->SetNumberField(TEXT("count_multiple"), StoredCountMultiple);
   }
@@ -772,7 +777,7 @@ void UNakamaClientMatchmakerAdd::Activate()
     TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
     for (const auto& Pair : StoredNumericProperties)
     {
-      MapObj->SetStringField(Pair.Key, Pair.Value);
+      MapObj->SetNumberField(Pair.Key, Pair.Value);
     }
     Json->SetObjectField(TEXT("numeric_properties"), MapObj);
   }
@@ -809,7 +814,7 @@ void UNakamaClientMatchmakerAdd::Activate()
 
 UNakamaRealtimeClientMatchmakerRemove* UNakamaRealtimeClientMatchmakerRemove::MatchmakerRemove(
   UObject* WorldContextObject
-  , UNakamaWebSocketSubsystem* WebSocketSubsystem;
+  , UNakamaWebSocketSubsystem* WebSocketSubsystem
   , const FString& Ticket
 )
 {
@@ -821,12 +826,12 @@ UNakamaRealtimeClientMatchmakerRemove* UNakamaRealtimeClientMatchmakerRemove::Ma
   return Action;
 }
 
-void UNakamaClientMatchmakerRemove::Activate()
+void UNakamaRealtimeClientMatchmakerRemove::Activate()
 {
   static const TCHAR* TraceScope_MatchmakerRemove = TEXT("NakamaRTBP_MatchmakerRemove");
   TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_MatchmakerRemove);
 
-  if (!StoredWebSocketSubsystem.IsValid())
+  if (!StoredWebSocketSubsystem)
   {
     FNakamaRtError Err;
     Err.Message = TEXT("WebSocket subsystem is null");
@@ -875,7 +880,7 @@ void UNakamaClientMatchmakerRemove::Activate()
 
 UNakamaRealtimeClientRpc* UNakamaRealtimeClientRpc::Rpc(
   UObject* WorldContextObject
-  , UNakamaWebSocketSubsystem* WebSocketSubsystem;
+  , UNakamaWebSocketSubsystem* WebSocketSubsystem
   , const FString& Id
   , const FString& Payload
   , const FString& HttpKey
@@ -891,12 +896,12 @@ UNakamaRealtimeClientRpc* UNakamaRealtimeClientRpc::Rpc(
   return Action;
 }
 
-void UNakamaClientRpc::Activate()
+void UNakamaRealtimeClientRpc::Activate()
 {
   static const TCHAR* TraceScope_Rpc = TEXT("NakamaRTBP_Rpc");
   TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_Rpc);
 
-  if (!StoredWebSocketSubsystem.IsValid())
+  if (!StoredWebSocketSubsystem)
   {
     FNakamaRtError Err;
     Err.Message = TEXT("WebSocket subsystem is null");
@@ -953,7 +958,7 @@ void UNakamaClientRpc::Activate()
 
 UNakamaRealtimeClientStatusFollow* UNakamaRealtimeClientStatusFollow::StatusFollow(
   UObject* WorldContextObject
-  , UNakamaWebSocketSubsystem* WebSocketSubsystem;
+  , UNakamaWebSocketSubsystem* WebSocketSubsystem
   , const TArray<FString>& UserIds
   , const TArray<FString>& Usernames
 )
@@ -967,12 +972,12 @@ UNakamaRealtimeClientStatusFollow* UNakamaRealtimeClientStatusFollow::StatusFoll
   return Action;
 }
 
-void UNakamaClientStatusFollow::Activate()
+void UNakamaRealtimeClientStatusFollow::Activate()
 {
   static const TCHAR* TraceScope_StatusFollow = TEXT("NakamaRTBP_StatusFollow");
   TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_StatusFollow);
 
-  if (!StoredWebSocketSubsystem.IsValid())
+  if (!StoredWebSocketSubsystem)
   {
     FNakamaRtError Err;
     Err.Message = TEXT("WebSocket subsystem is null");
@@ -1035,7 +1040,7 @@ void UNakamaClientStatusFollow::Activate()
 
 UNakamaRealtimeClientStatusUnfollow* UNakamaRealtimeClientStatusUnfollow::StatusUnfollow(
   UObject* WorldContextObject
-  , UNakamaWebSocketSubsystem* WebSocketSubsystem;
+  , UNakamaWebSocketSubsystem* WebSocketSubsystem
   , const TArray<FString>& UserIds
 )
 {
@@ -1047,12 +1052,12 @@ UNakamaRealtimeClientStatusUnfollow* UNakamaRealtimeClientStatusUnfollow::Status
   return Action;
 }
 
-void UNakamaClientStatusUnfollow::Activate()
+void UNakamaRealtimeClientStatusUnfollow::Activate()
 {
   static const TCHAR* TraceScope_StatusUnfollow = TEXT("NakamaRTBP_StatusUnfollow");
   TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_StatusUnfollow);
 
-  if (!StoredWebSocketSubsystem.IsValid())
+  if (!StoredWebSocketSubsystem)
   {
     FNakamaRtError Err;
     Err.Message = TEXT("WebSocket subsystem is null");
@@ -1106,7 +1111,7 @@ void UNakamaClientStatusUnfollow::Activate()
 
 UNakamaRealtimeClientStatusUpdate* UNakamaRealtimeClientStatusUpdate::StatusUpdate(
   UObject* WorldContextObject
-  , UNakamaWebSocketSubsystem* WebSocketSubsystem;
+  , UNakamaWebSocketSubsystem* WebSocketSubsystem
   , const FString& Status
 )
 {
@@ -1118,12 +1123,12 @@ UNakamaRealtimeClientStatusUpdate* UNakamaRealtimeClientStatusUpdate::StatusUpda
   return Action;
 }
 
-void UNakamaClientStatusUpdate::Activate()
+void UNakamaRealtimeClientStatusUpdate::Activate()
 {
   static const TCHAR* TraceScope_StatusUpdate = TEXT("NakamaRTBP_StatusUpdate");
   TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_StatusUpdate);
 
-  if (!StoredWebSocketSubsystem.IsValid())
+  if (!StoredWebSocketSubsystem)
   {
     FNakamaRtError Err;
     Err.Message = TEXT("WebSocket subsystem is null");
@@ -1172,7 +1177,7 @@ void UNakamaClientStatusUpdate::Activate()
 
 UNakamaRealtimeClientPartyCreate* UNakamaRealtimeClientPartyCreate::PartyCreate(
   UObject* WorldContextObject
-  , UNakamaWebSocketSubsystem* WebSocketSubsystem;
+  , UNakamaWebSocketSubsystem* WebSocketSubsystem
   , bool Open
   , int32 MaxSize
   , const FString& Label
@@ -1190,12 +1195,12 @@ UNakamaRealtimeClientPartyCreate* UNakamaRealtimeClientPartyCreate::PartyCreate(
   return Action;
 }
 
-void UNakamaClientPartyCreate::Activate()
+void UNakamaRealtimeClientPartyCreate::Activate()
 {
   static const TCHAR* TraceScope_PartyCreate = TEXT("NakamaRTBP_PartyCreate");
   TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_PartyCreate);
 
-  if (!StoredWebSocketSubsystem.IsValid())
+  if (!StoredWebSocketSubsystem)
   {
     FNakamaRtError Err;
     Err.Message = TEXT("WebSocket subsystem is null");
@@ -1211,7 +1216,8 @@ void UNakamaClientPartyCreate::Activate()
   {
     Json->SetBoolField(TEXT("open"), StoredOpen);
   }
-  if (StoredMaxSize.NonZero() == false)
+  if (StoredMaxSize != 0)
+  
   {
     Json->SetNumberField(TEXT("max_size"), StoredMaxSize);
   }
@@ -1256,7 +1262,7 @@ void UNakamaClientPartyCreate::Activate()
 
 UNakamaRealtimeClientPartyJoin* UNakamaRealtimeClientPartyJoin::PartyJoin(
   UObject* WorldContextObject
-  , UNakamaWebSocketSubsystem* WebSocketSubsystem;
+  , UNakamaWebSocketSubsystem* WebSocketSubsystem
   , const FString& PartyId
 )
 {
@@ -1268,12 +1274,12 @@ UNakamaRealtimeClientPartyJoin* UNakamaRealtimeClientPartyJoin::PartyJoin(
   return Action;
 }
 
-void UNakamaClientPartyJoin::Activate()
+void UNakamaRealtimeClientPartyJoin::Activate()
 {
   static const TCHAR* TraceScope_PartyJoin = TEXT("NakamaRTBP_PartyJoin");
   TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_PartyJoin);
 
-  if (!StoredWebSocketSubsystem.IsValid())
+  if (!StoredWebSocketSubsystem)
   {
     FNakamaRtError Err;
     Err.Message = TEXT("WebSocket subsystem is null");
@@ -1322,7 +1328,7 @@ void UNakamaClientPartyJoin::Activate()
 
 UNakamaRealtimeClientPartyLeave* UNakamaRealtimeClientPartyLeave::PartyLeave(
   UObject* WorldContextObject
-  , UNakamaWebSocketSubsystem* WebSocketSubsystem;
+  , UNakamaWebSocketSubsystem* WebSocketSubsystem
   , const FString& PartyId
 )
 {
@@ -1334,12 +1340,12 @@ UNakamaRealtimeClientPartyLeave* UNakamaRealtimeClientPartyLeave::PartyLeave(
   return Action;
 }
 
-void UNakamaClientPartyLeave::Activate()
+void UNakamaRealtimeClientPartyLeave::Activate()
 {
   static const TCHAR* TraceScope_PartyLeave = TEXT("NakamaRTBP_PartyLeave");
   TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_PartyLeave);
 
-  if (!StoredWebSocketSubsystem.IsValid())
+  if (!StoredWebSocketSubsystem)
   {
     FNakamaRtError Err;
     Err.Message = TEXT("WebSocket subsystem is null");
@@ -1388,7 +1394,7 @@ void UNakamaClientPartyLeave::Activate()
 
 UNakamaRealtimeClientPartyPromote* UNakamaRealtimeClientPartyPromote::PartyPromote(
   UObject* WorldContextObject
-  , UNakamaWebSocketSubsystem* WebSocketSubsystem;
+  , UNakamaWebSocketSubsystem* WebSocketSubsystem
   , const FString& PartyId
   , const FNakamaRtUserPresence& Presence
 )
@@ -1402,12 +1408,12 @@ UNakamaRealtimeClientPartyPromote* UNakamaRealtimeClientPartyPromote::PartyPromo
   return Action;
 }
 
-void UNakamaClientPartyPromote::Activate()
+void UNakamaRealtimeClientPartyPromote::Activate()
 {
   static const TCHAR* TraceScope_PartyPromote = TEXT("NakamaRTBP_PartyPromote");
   TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_PartyPromote);
 
-  if (!StoredWebSocketSubsystem.IsValid())
+  if (!StoredWebSocketSubsystem)
   {
     FNakamaRtError Err;
     Err.Message = TEXT("WebSocket subsystem is null");
@@ -1460,7 +1466,7 @@ void UNakamaClientPartyPromote::Activate()
 
 UNakamaRealtimeClientPartyAccept* UNakamaRealtimeClientPartyAccept::PartyAccept(
   UObject* WorldContextObject
-  , UNakamaWebSocketSubsystem* WebSocketSubsystem;
+  , UNakamaWebSocketSubsystem* WebSocketSubsystem
   , const FString& PartyId
   , const FNakamaRtUserPresence& Presence
 )
@@ -1474,12 +1480,12 @@ UNakamaRealtimeClientPartyAccept* UNakamaRealtimeClientPartyAccept::PartyAccept(
   return Action;
 }
 
-void UNakamaClientPartyAccept::Activate()
+void UNakamaRealtimeClientPartyAccept::Activate()
 {
   static const TCHAR* TraceScope_PartyAccept = TEXT("NakamaRTBP_PartyAccept");
   TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_PartyAccept);
 
-  if (!StoredWebSocketSubsystem.IsValid())
+  if (!StoredWebSocketSubsystem)
   {
     FNakamaRtError Err;
     Err.Message = TEXT("WebSocket subsystem is null");
@@ -1532,7 +1538,7 @@ void UNakamaClientPartyAccept::Activate()
 
 UNakamaRealtimeClientPartyRemove* UNakamaRealtimeClientPartyRemove::PartyRemove(
   UObject* WorldContextObject
-  , UNakamaWebSocketSubsystem* WebSocketSubsystem;
+  , UNakamaWebSocketSubsystem* WebSocketSubsystem
   , const FString& PartyId
   , const FNakamaRtUserPresence& Presence
 )
@@ -1546,12 +1552,12 @@ UNakamaRealtimeClientPartyRemove* UNakamaRealtimeClientPartyRemove::PartyRemove(
   return Action;
 }
 
-void UNakamaClientPartyRemove::Activate()
+void UNakamaRealtimeClientPartyRemove::Activate()
 {
   static const TCHAR* TraceScope_PartyRemove = TEXT("NakamaRTBP_PartyRemove");
   TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_PartyRemove);
 
-  if (!StoredWebSocketSubsystem.IsValid())
+  if (!StoredWebSocketSubsystem)
   {
     FNakamaRtError Err;
     Err.Message = TEXT("WebSocket subsystem is null");
@@ -1604,7 +1610,7 @@ void UNakamaClientPartyRemove::Activate()
 
 UNakamaRealtimeClientPartyClose* UNakamaRealtimeClientPartyClose::PartyClose(
   UObject* WorldContextObject
-  , UNakamaWebSocketSubsystem* WebSocketSubsystem;
+  , UNakamaWebSocketSubsystem* WebSocketSubsystem
   , const FString& PartyId
 )
 {
@@ -1616,12 +1622,12 @@ UNakamaRealtimeClientPartyClose* UNakamaRealtimeClientPartyClose::PartyClose(
   return Action;
 }
 
-void UNakamaClientPartyClose::Activate()
+void UNakamaRealtimeClientPartyClose::Activate()
 {
   static const TCHAR* TraceScope_PartyClose = TEXT("NakamaRTBP_PartyClose");
   TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_PartyClose);
 
-  if (!StoredWebSocketSubsystem.IsValid())
+  if (!StoredWebSocketSubsystem)
   {
     FNakamaRtError Err;
     Err.Message = TEXT("WebSocket subsystem is null");
@@ -1670,7 +1676,7 @@ void UNakamaClientPartyClose::Activate()
 
 UNakamaRealtimeClientPartyJoinRequestList* UNakamaRealtimeClientPartyJoinRequestList::PartyJoinRequestList(
   UObject* WorldContextObject
-  , UNakamaWebSocketSubsystem* WebSocketSubsystem;
+  , UNakamaWebSocketSubsystem* WebSocketSubsystem
   , const FString& PartyId
 )
 {
@@ -1682,12 +1688,12 @@ UNakamaRealtimeClientPartyJoinRequestList* UNakamaRealtimeClientPartyJoinRequest
   return Action;
 }
 
-void UNakamaClientPartyJoinRequestList::Activate()
+void UNakamaRealtimeClientPartyJoinRequestList::Activate()
 {
   static const TCHAR* TraceScope_PartyJoinRequestList = TEXT("NakamaRTBP_PartyJoinRequestList");
   TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_PartyJoinRequestList);
 
-  if (!StoredWebSocketSubsystem.IsValid())
+  if (!StoredWebSocketSubsystem)
   {
     FNakamaRtError Err;
     Err.Message = TEXT("WebSocket subsystem is null");
@@ -1736,7 +1742,7 @@ void UNakamaClientPartyJoinRequestList::Activate()
 
 UNakamaRealtimeClientPartyMatchmakerAdd* UNakamaRealtimeClientPartyMatchmakerAdd::PartyMatchmakerAdd(
   UObject* WorldContextObject
-  , UNakamaWebSocketSubsystem* WebSocketSubsystem;
+  , UNakamaWebSocketSubsystem* WebSocketSubsystem
   , const FString& PartyId
   , int32 MinCount
   , int32 MaxCount
@@ -1760,12 +1766,12 @@ UNakamaRealtimeClientPartyMatchmakerAdd* UNakamaRealtimeClientPartyMatchmakerAdd
   return Action;
 }
 
-void UNakamaClientPartyMatchmakerAdd::Activate()
+void UNakamaRealtimeClientPartyMatchmakerAdd::Activate()
 {
   static const TCHAR* TraceScope_PartyMatchmakerAdd = TEXT("NakamaRTBP_PartyMatchmakerAdd");
   TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_PartyMatchmakerAdd);
 
-  if (!StoredWebSocketSubsystem.IsValid())
+  if (!StoredWebSocketSubsystem)
   {
     FNakamaRtError Err;
     Err.Message = TEXT("WebSocket subsystem is null");
@@ -1781,11 +1787,13 @@ void UNakamaClientPartyMatchmakerAdd::Activate()
   {
     Json->SetStringField(TEXT("party_id"), StoredPartyId);
   }
-  if (StoredMinCount.NonZero() == false)
+  if (StoredMinCount != 0)
+  
   {
     Json->SetNumberField(TEXT("min_count"), StoredMinCount);
   }
-  if (StoredMaxCount.NonZero() == false)
+  if (StoredMaxCount != 0)
+  
   {
     Json->SetNumberField(TEXT("max_count"), StoredMaxCount);
   }
@@ -1793,7 +1801,8 @@ void UNakamaClientPartyMatchmakerAdd::Activate()
   {
     Json->SetStringField(TEXT("query"), StoredQuery);
   }
-  if (StoredCountMultiple.NonZero() == false)
+  if (StoredCountMultiple != 0)
+  
   {
     Json->SetNumberField(TEXT("count_multiple"), StoredCountMultiple);
   }
@@ -1811,7 +1820,7 @@ void UNakamaClientPartyMatchmakerAdd::Activate()
     TSharedPtr<FJsonObject> MapObj = MakeShared<FJsonObject>();
     for (const auto& Pair : StoredNumericProperties)
     {
-      MapObj->SetStringField(Pair.Key, Pair.Value);
+      MapObj->SetNumberField(Pair.Key, Pair.Value);
     }
     Json->SetObjectField(TEXT("numeric_properties"), MapObj);
   }
@@ -1848,7 +1857,7 @@ void UNakamaClientPartyMatchmakerAdd::Activate()
 
 UNakamaRealtimeClientPartyMatchmakerRemove* UNakamaRealtimeClientPartyMatchmakerRemove::PartyMatchmakerRemove(
   UObject* WorldContextObject
-  , UNakamaWebSocketSubsystem* WebSocketSubsystem;
+  , UNakamaWebSocketSubsystem* WebSocketSubsystem
   , const FString& PartyId
   , const FString& Ticket
 )
@@ -1862,12 +1871,12 @@ UNakamaRealtimeClientPartyMatchmakerRemove* UNakamaRealtimeClientPartyMatchmaker
   return Action;
 }
 
-void UNakamaClientPartyMatchmakerRemove::Activate()
+void UNakamaRealtimeClientPartyMatchmakerRemove::Activate()
 {
   static const TCHAR* TraceScope_PartyMatchmakerRemove = TEXT("NakamaRTBP_PartyMatchmakerRemove");
   TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_PartyMatchmakerRemove);
 
-  if (!StoredWebSocketSubsystem.IsValid())
+  if (!StoredWebSocketSubsystem)
   {
     FNakamaRtError Err;
     Err.Message = TEXT("WebSocket subsystem is null");
@@ -1920,7 +1929,7 @@ void UNakamaClientPartyMatchmakerRemove::Activate()
 
 UNakamaRealtimeClientPartyMatchmakerTicket* UNakamaRealtimeClientPartyMatchmakerTicket::PartyMatchmakerTicket(
   UObject* WorldContextObject
-  , UNakamaWebSocketSubsystem* WebSocketSubsystem;
+  , UNakamaWebSocketSubsystem* WebSocketSubsystem
   , const FString& PartyId
   , const FString& Ticket
 )
@@ -1934,12 +1943,12 @@ UNakamaRealtimeClientPartyMatchmakerTicket* UNakamaRealtimeClientPartyMatchmaker
   return Action;
 }
 
-void UNakamaClientPartyMatchmakerTicket::Activate()
+void UNakamaRealtimeClientPartyMatchmakerTicket::Activate()
 {
   static const TCHAR* TraceScope_PartyMatchmakerTicket = TEXT("NakamaRTBP_PartyMatchmakerTicket");
   TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_PartyMatchmakerTicket);
 
-  if (!StoredWebSocketSubsystem.IsValid())
+  if (!StoredWebSocketSubsystem)
   {
     FNakamaRtError Err;
     Err.Message = TEXT("WebSocket subsystem is null");
@@ -1992,7 +2001,7 @@ void UNakamaClientPartyMatchmakerTicket::Activate()
 
 UNakamaRealtimeClientPartyDataSend* UNakamaRealtimeClientPartyDataSend::PartyDataSend(
   UObject* WorldContextObject
-  , UNakamaWebSocketSubsystem* WebSocketSubsystem;
+  , UNakamaWebSocketSubsystem* WebSocketSubsystem
   , const FString& PartyId
   , int64 OpCode
   , const FString& Data
@@ -2008,12 +2017,12 @@ UNakamaRealtimeClientPartyDataSend* UNakamaRealtimeClientPartyDataSend::PartyDat
   return Action;
 }
 
-void UNakamaClientPartyDataSend::Activate()
+void UNakamaRealtimeClientPartyDataSend::Activate()
 {
   static const TCHAR* TraceScope_PartyDataSend = TEXT("NakamaRTBP_PartyDataSend");
   TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_PartyDataSend);
 
-  if (!StoredWebSocketSubsystem.IsValid())
+  if (!StoredWebSocketSubsystem)
   {
     FNakamaRtError Err;
     Err.Message = TEXT("WebSocket subsystem is null");
@@ -2029,7 +2038,8 @@ void UNakamaClientPartyDataSend::Activate()
   {
     Json->SetStringField(TEXT("party_id"), StoredPartyId);
   }
-  if (StoredOpCode.NonZero() == false)
+  if (StoredOpCode != 0)
+  
   {
     Json->SetNumberField(TEXT("op_code"), StoredOpCode);
   }
@@ -2070,7 +2080,7 @@ void UNakamaClientPartyDataSend::Activate()
 
 UNakamaRealtimeClientPartyUpdate* UNakamaRealtimeClientPartyUpdate::PartyUpdate(
   UObject* WorldContextObject
-  , UNakamaWebSocketSubsystem* WebSocketSubsystem;
+  , UNakamaWebSocketSubsystem* WebSocketSubsystem
   , const FString& PartyId
   , const FString& Label
   , bool Open
@@ -2088,12 +2098,12 @@ UNakamaRealtimeClientPartyUpdate* UNakamaRealtimeClientPartyUpdate::PartyUpdate(
   return Action;
 }
 
-void UNakamaClientPartyUpdate::Activate()
+void UNakamaRealtimeClientPartyUpdate::Activate()
 {
   static const TCHAR* TraceScope_PartyUpdate = TEXT("NakamaRTBP_PartyUpdate");
   TRACE_CPUPROFILER_EVENT_SCOPE_STR(TraceScope_PartyUpdate);
 
-  if (!StoredWebSocketSubsystem.IsValid())
+  if (!StoredWebSocketSubsystem)
   {
     FNakamaRtError Err;
     Err.Message = TEXT("WebSocket subsystem is null");

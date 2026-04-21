@@ -3204,7 +3204,6 @@ void UNakamaClientReadStorageObjects::Activate()
 UNakamaClientRpcFunc* UNakamaClientRpcFunc::RpcFunc(
   UObject* WorldContextObject
   , FNakamaClientConfig ClientConfig
-  , const FNakamaSession& Session
   , const FString& Id
   , const FString& Payload
   , const FString& HttpKey
@@ -3212,7 +3211,6 @@ UNakamaClientRpcFunc* UNakamaClientRpcFunc::RpcFunc(
 {
   UNakamaClientRpcFunc* Action = NewObject<UNakamaClientRpcFunc>(GetTransientPackage());
   Action->StoredClientConfig = ClientConfig;
-  Action->StoredSession = Session;
   Action->StoredId = Id;
   Action->StoredPayload = Payload;
   Action->StoredHttpKey = HttpKey;
@@ -3230,7 +3228,6 @@ void UNakamaClientRpcFunc::Activate()
 
   NakamaApi::RpcFunc(
     StoredClientConfig,
-    StoredSession,
     StoredId,
     StoredPayload,
     StoredHttpKey,
