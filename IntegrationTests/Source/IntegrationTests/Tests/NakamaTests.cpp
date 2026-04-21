@@ -730,16 +730,16 @@ void FNakamaAsyncStorageSpec::Define()
 				Objects.Add(Obj);
 			}
 			Nakama::WriteStorageObjects(ClientConfig, Session, Objects)
-			.Next([this](const FNakamaStorageObjectAcks&)
-			{
-				return Nakama::ListStorageObjects(ClientConfig, Session, UserId, TEXT("list_collection"), 100, TEXT(""));
-			})
-			.Next([this, Done](FNakamaStorageObjectListResult ListResult)
-			{
-				ASYNC_FAIL_ON_ERROR(ListResult, Done);
-				TestTrue("Has objects", ListResult.Value.Objects.Num() >= 3);
-				Done.Execute();
-			});
+				.Next([this](const FNakamaStorageObjectAcks&)
+				{
+					return Nakama::ListStorageObjects(ClientConfig, Session, UserId, TEXT("list_collection"), 100, TEXT(""));
+				})
+				.Next([this, Done](FNakamaStorageObjectListResult ListResult)
+				{
+					ASYNC_FAIL_ON_ERROR(ListResult, Done);
+					TestTrue("Has objects", ListResult.Value.Objects.Num() >= 3);
+					Done.Execute();
+				});
 		});
 	});
 }
@@ -5244,7 +5244,7 @@ void FNakamaAsyncRetrySpec::Define()
 			Payload->SetStringField(TEXT("test_id"), GenerateId());
 			Payload->SetNumberField(TEXT("fail_count"), 2);
 
-			Nakama::RpcFunc(ClientConfig, TEXT("retry_test"), JsonToString(Payload), TEXT(""), RetryConfig).Next([this, Done](FNakamaRpcResult Result)
+			Nakama::RpcFunc(ClientConfig, TEXT("retry_test"), JsonToString(Payload), DefaultHttpKey, RetryConfig).Next([this, Done](FNakamaRpcResult Result)
 			{
 				ASYNC_FAIL_ON_ERROR(Result, Done);
 
