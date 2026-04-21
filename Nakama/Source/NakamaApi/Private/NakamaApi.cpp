@@ -4456,7 +4456,7 @@ NAKAMAAPI_API void NakamaApi::ListChannelMessages (
   }
   
   {
-    QueryParams.Add(FString::Printf(TEXT("Forward=%s_bool"), (Forward)));
+    QueryParams.Add(FString::Printf(TEXT("Forward=%s"), *LexToString(Forward)));
   }
   if (Cursor.IsEmpty() == false)
   {
@@ -4524,7 +4524,7 @@ NAKAMAAPI_API void NakamaApi::ListChannelMessages (
   }
   
   {
-    QueryParams.Add(FString::Printf(TEXT("Forward=%s_bool"), (Forward)));
+    QueryParams.Add(FString::Printf(TEXT("Forward=%s"), *LexToString(Forward)));
   }
   if (Cursor.IsEmpty() == false)
   {
@@ -4861,7 +4861,7 @@ NAKAMAAPI_API void NakamaApi::ListGroups (
   }
   
   {
-    QueryParams.Add(FString::Printf(TEXT("Open=%s_bool"), (Open)));
+    QueryParams.Add(FString::Printf(TEXT("Open=%s"), *LexToString(Open)));
   }
   if (QueryParams.Num() > 0)
   {
@@ -4942,7 +4942,7 @@ NAKAMAAPI_API void NakamaApi::ListGroups (
   }
   
   {
-    QueryParams.Add(FString::Printf(TEXT("Open=%s_bool"), (Open)));
+    QueryParams.Add(FString::Printf(TEXT("Open=%s"), *LexToString(Open)));
   }
   if (QueryParams.Num() > 0)
   {
@@ -5436,7 +5436,7 @@ NAKAMAAPI_API void NakamaApi::ListMatches (
   }
   
   {
-    QueryParams.Add(FString::Printf(TEXT("Authoritative=%s_bool"), (Authoritative)));
+    QueryParams.Add(FString::Printf(TEXT("Authoritative=%s"), *LexToString(Authoritative)));
   }
   if (Label.IsEmpty() == false)
   {
@@ -5518,7 +5518,7 @@ NAKAMAAPI_API void NakamaApi::ListMatches (
   }
   
   {
-    QueryParams.Add(FString::Printf(TEXT("Authoritative=%s_bool"), (Authoritative)));
+    QueryParams.Add(FString::Printf(TEXT("Authoritative=%s"), *LexToString(Authoritative)));
   }
   if (Label.IsEmpty() == false)
   {
@@ -5598,7 +5598,7 @@ NAKAMAAPI_API void NakamaApi::ListParties (
   }
   
   {
-    QueryParams.Add(FString::Printf(TEXT("Open=%s_bool"), (Open)));
+    QueryParams.Add(FString::Printf(TEXT("Open=%s"), *LexToString(Open)));
   }
   if (Query.IsEmpty() == false)
   {
@@ -5668,7 +5668,7 @@ NAKAMAAPI_API void NakamaApi::ListParties (
   }
   
   {
-    QueryParams.Add(FString::Printf(TEXT("Open=%s_bool"), (Open)));
+    QueryParams.Add(FString::Printf(TEXT("Open=%s"), *LexToString(Open)));
   }
   if (Query.IsEmpty() == false)
   {

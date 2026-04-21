@@ -1729,7 +1729,7 @@ SATORIAPI_API void SatoriApi::GetMessageList (
   }
   
   {
-    QueryParams.Add(FString::Printf(TEXT("Forward=%s_bool"), (Forward)));
+    QueryParams.Add(FString::Printf(TEXT("Forward=%s"), *LexToString(Forward)));
   }
   if (Cursor.IsEmpty() == false)
   {
@@ -1799,7 +1799,7 @@ SATORIAPI_API void SatoriApi::GetMessageList (
   }
   
   {
-    QueryParams.Add(FString::Printf(TEXT("Forward=%s_bool"), (Forward)));
+    QueryParams.Add(FString::Printf(TEXT("Forward=%s"), *LexToString(Forward)));
   }
   if (Cursor.IsEmpty() == false)
   {
