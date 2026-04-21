@@ -43,9 +43,10 @@ func NewUnrealTypeMapper(targetSystem string) *UnrealTypeMapper {
 		MapParam:      "const TMap<FString, bool>&",
 		MapType:       "TMap<FString, bool>",
 
-		JsonArrayValue: "Boolean",
-		QueryFormat:    "%s_bool",
-		EmptyCheck:     "",
+		JsonArrayValue:   "Boolean",
+		QueryFormat:      "%s",
+		QueryValueSetter: "*LexToString",
+		EmptyCheck:       "",
 
 		FieldType:         "bool",
 		RepeatedFieldType: "TArray<bool>",
