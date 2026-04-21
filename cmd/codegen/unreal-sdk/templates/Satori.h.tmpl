@@ -107,7 +107,7 @@ namespace Satori
   *
   * @param Config	The client configuration.
   {{- range $idx, $param := $func.Params }}
-  {{- if $param.Metadata.IsMessageType }}
+  {{- if and (not $param.Metadata.Repeated) ($param.Metadata.IsMessageType) }}
   {{- range $member := $param.Metadata.Members }}
   * @param {{ $param.Name }}{{ $member.Name }}{{ "\t" }}{{ $member.Comment }}
   {{- end }}
@@ -125,7 +125,7 @@ namespace Satori
   {{- end }}
     const FSatoriClientConfig& ClientConfig,
     {{- range $idx, $param := $func.Params }}
-    {{- if $param.Metadata.IsMessageType }}
+    {{- if and (not $param.Metadata.Repeated) ($param.Metadata.IsMessageType) }}
     {{- range $member := $param.Metadata.Members }}
     {{ $member.Metadata.ParamType }} {{ $param.Name }}{{ $member.Name }},
     {{- end }}

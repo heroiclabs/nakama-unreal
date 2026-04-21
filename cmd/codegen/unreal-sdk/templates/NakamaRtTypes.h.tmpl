@@ -22,10 +22,16 @@
 #include "NakamaTypes.h"
 #include "NakamaRtTypes.generated.h"
 
+//
+// Shadow these two from the other Nakama Types.
 USTRUCT(BlueprintType)
 struct FNakamaRtNotification : public FNakamaNotification 
 {
     GENERATED_BODY()
+    static FNakamaRtNotification FromJson(const TSharedPtr<FJsonObject>& Shared)
+    {
+      return static_cast<FNakamaRtNotification>(FNakamaNotification::FromJson(Shared));
+    }
 };
 USTRUCT(BlueprintType)
 struct FNakamaRtRpc : public FNakamaRpc 

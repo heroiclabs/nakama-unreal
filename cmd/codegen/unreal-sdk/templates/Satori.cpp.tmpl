@@ -99,7 +99,7 @@ TSatoriFuture<FSatoriVoidResult> Satori::{{ $func.Name }}(
 {{- end }}
   const FSatoriClientConfig& ClientConfig,
   {{- range $idx, $param := $func.Params }}
-  {{- if $param.Metadata.IsMessageType}}
+  {{- if and (not $param.Metadata.Repeated) ($param.Metadata.IsMessageType) }}
   {{- range $member := $param.Metadata.Members }}
   {{ $member.Metadata.ParamType }} {{ $param.Name }}{{ $member.Name }},
   {{- end }}

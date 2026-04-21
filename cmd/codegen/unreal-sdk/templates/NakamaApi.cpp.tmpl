@@ -67,9 +67,12 @@ NAKAMAAPI_API void NakamaApi::{{ $func.Name }} (
     Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
   }
 
-  // 
+  //
   // Fill Body Params
   TSharedPtr<FJsonObject> Body;
+  {{- if $func.Metadata.BodyParams }}
+  Body = MakeShared<FJsonObject>();
+  {{- end }}
   {{- range $bodyParam := $func.Metadata.BodyParams }}
 
   {{- if $bodyParam.Repeated }}

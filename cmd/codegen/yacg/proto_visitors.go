@@ -159,11 +159,14 @@ func (v *rpcVisitor) VisitOption(o *proto.Option) {
 		v.Rpc.Endpoint = o.Constant.Source
 	}
 
+	httpMethodFound := false
+
 	//
 	// Sometimes we have an option like (google.api.http).post
 	method, found := tryGetHttpMethod(o.Name)
 	if found {
 		v.Rpc.Method = method
+		httpMethodFound = true
 	}
 
 	//
@@ -174,12 +177,20 @@ func (v *rpcVisitor) VisitOption(o *proto.Option) {
 			if found {
 				v.Rpc.Method = method
 				v.Rpc.Endpoint = l.Literal.Source
+				httpMethodFound = true
 			}
 			// Extract the body field specification
 			if l.Name == "body" {
 				v.Rpc.BodyField = l.Literal.Source
 			}
 		}
+	}
+
+	// Only deduce path/body/query params when processing an HTTP option.
+	// VisitOption is called for every RPC option (including openapiv2 annotations),
+	// so without this guard, params would be appended multiple times.
+	if !httpMethodFound {
+		return
 	}
 
 	//

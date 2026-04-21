@@ -142,18 +142,6 @@ func (m UnrealRtApiMapper) MapMessage(message *yacg.ProtoMessage, api yacg.Api, 
 		}
 		members = append(members, dataDecl)
 	}
-	for _, field := range message.MapFields {
-		entry := typeMapper.ResolveEntry(field.Type)
-		dataDecl := modules.DataDecl{
-			Name:      typeMapper.ResolveIdentifier(field.Name, modules.IdentifierTypeDefault),
-			Type:      entry.MapType,
-			TypeEntry: entry,
-			Comment:   field.Comment.Message(),
-			Metadata:  m.makeTypeMemberMetadata(field.Field, false, true, api),
-		}
-		dataDecl.Metadata["ParamType"] = entry.MapParam
-		members = append(members, dataDecl)
-	}
 	for _, field := range message.OneofFields {
 		entry := typeMapper.ResolveEntry(field.Type)
 		_, isEnumType := api.EnumsByName[field.Type]
@@ -168,6 +156,18 @@ func (m UnrealRtApiMapper) MapMessage(message *yacg.ProtoMessage, api yacg.Api, 
 			Metadata:  m.makeTypeMemberMetadata(field.Field, false, false, api),
 		}
 		dataDecl.Metadata["ParamType"] = entry.Param
+		members = append(members, dataDecl)
+	}
+	for _, field := range message.MapFields {
+		entry := typeMapper.ResolveEntry(field.Type)
+		dataDecl := modules.DataDecl{
+			Name:      typeMapper.ResolveIdentifier(field.Name, modules.IdentifierTypeDefault),
+			Type:      entry.MapType,
+			TypeEntry: entry,
+			Comment:   field.Comment.Message(),
+			Metadata:  m.makeTypeMemberMetadata(field.Field, false, true, api),
+		}
+		dataDecl.Metadata["ParamType"] = entry.MapParam
 		members = append(members, dataDecl)
 	}
 
