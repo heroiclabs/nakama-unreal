@@ -99,12 +99,15 @@ TSatoriFuture<FSatoriVoidResult> Satori::{{ $func.Name }}(
 {{- end }}
   const FSatoriClientConfig& ClientConfig,
   {{- range $idx, $param := $func.Params }}
-  {{- if and (not $param.Metadata.Repeated) ($param.Metadata.IsMessageType) }}
+  {{- if or (not $param.Metadata.IsMessageType) ($param.Metadata.Repeated) ($param.Metadata.IsMap) }}
+  {{ $param.Metadata.ParamType }} {{ $param.Name }},
+  {{- end }}
+  {{- end }}
+  {{- range $idx, $param := $func.Params }}
+  {{- if and ($param.Metadata.IsMessageType) (not $param.Metadata.Repeated) (not $param.Metadata.IsMap) }}
   {{- range $member := $param.Metadata.Members }}
   {{ $member.Metadata.ParamType }} {{ $param.Name }}{{ $member.Name }},
   {{- end }}
-  {{- else }}
-  {{ $param.Metadata.ParamType }} {{ $param.Name }},
   {{- end }}
   {{- end }}
   const FSatoriRetryConfig& RetryConfig,

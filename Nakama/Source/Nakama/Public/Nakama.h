@@ -398,19 +398,19 @@ namespace Nakama
   * Authenticate a user with an Apple ID against the server.
   *
   * @param Config	The client configuration.
-  * @param AccountToken	 The ID token received from Apple to validate.
-  * @param AccountVars	 Extra information that will be bundled in the session token.
   * @param Create	 Register the account if the user does not already exist.
   * @param Username	 Set the username on the account at register. Must be unique.
+  * @param AccountToken	 The ID token received from Apple to validate.
+  * @param AccountVars	 Extra information that will be bundled in the session token.
   * @param RetryConfig Retry configuration.
   * @param CancellationToken	Set to true to cancel the in-flight request.
   */
   NAKAMA_API TNakamaFuture<FNakamaSessionResult> AuthenticateApple(
     const FNakamaClientConfig& ClientConfig,
-    const FString& AccountToken,
-    const TMap<FString, FString>& AccountVars,
     bool Create,
     const FString& Username,
+    const FString& AccountToken,
+    const TMap<FString, FString>& AccountVars = {},
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
@@ -419,19 +419,19 @@ namespace Nakama
   * Authenticate a user with a custom id against the server.
   *
   * @param Config	The client configuration.
-  * @param AccountId	 A custom identifier.
-  * @param AccountVars	 Extra information that will be bundled in the session token.
   * @param Create	 Register the account if the user does not already exist.
   * @param Username	 Set the username on the account at register. Must be unique.
+  * @param AccountId	 A custom identifier.
+  * @param AccountVars	 Extra information that will be bundled in the session token.
   * @param RetryConfig Retry configuration.
   * @param CancellationToken	Set to true to cancel the in-flight request.
   */
   NAKAMA_API TNakamaFuture<FNakamaSessionResult> AuthenticateCustom(
     const FNakamaClientConfig& ClientConfig,
-    const FString& AccountId,
-    const TMap<FString, FString>& AccountVars,
     bool Create,
     const FString& Username,
+    const FString& AccountId,
+    const TMap<FString, FString>& AccountVars = {},
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
@@ -440,19 +440,19 @@ namespace Nakama
   * Authenticate a user with a device id against the server.
   *
   * @param Config	The client configuration.
-  * @param AccountId	 A device identifier. Should be obtained by a platform-specific device API.
-  * @param AccountVars	 Extra information that will be bundled in the session token.
   * @param Create	 Register the account if the user does not already exist.
   * @param Username	 Set the username on the account at register. Must be unique.
+  * @param AccountId	 A device identifier. Should be obtained by a platform-specific device API.
+  * @param AccountVars	 Extra information that will be bundled in the session token.
   * @param RetryConfig Retry configuration.
   * @param CancellationToken	Set to true to cancel the in-flight request.
   */
   NAKAMA_API TNakamaFuture<FNakamaSessionResult> AuthenticateDevice(
     const FNakamaClientConfig& ClientConfig,
-    const FString& AccountId,
-    const TMap<FString, FString>& AccountVars,
     bool Create,
     const FString& Username,
+    const FString& AccountId,
+    const TMap<FString, FString>& AccountVars = {},
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
@@ -461,21 +461,21 @@ namespace Nakama
   * Authenticate a user with an email+password against the server.
   *
   * @param Config	The client configuration.
+  * @param Create	 Register the account if the user does not already exist.
+  * @param Username	 Set the username on the account at register. Must be unique.
   * @param AccountEmail	 A valid RFC-5322 email address.
   * @param AccountPassword	 A password for the user account.
   * @param AccountVars	 Extra information that will be bundled in the session token.
-  * @param Create	 Register the account if the user does not already exist.
-  * @param Username	 Set the username on the account at register. Must be unique.
   * @param RetryConfig Retry configuration.
   * @param CancellationToken	Set to true to cancel the in-flight request.
   */
   NAKAMA_API TNakamaFuture<FNakamaSessionResult> AuthenticateEmail(
     const FNakamaClientConfig& ClientConfig,
-    const FString& AccountEmail,
-    const FString& AccountPassword,
-    const TMap<FString, FString>& AccountVars,
     bool Create,
     const FString& Username,
+    const FString& AccountEmail,
+    const FString& AccountPassword,
+    const TMap<FString, FString>& AccountVars = {},
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
@@ -484,21 +484,21 @@ namespace Nakama
   * Authenticate a user with a Facebook OAuth token against the server.
   *
   * @param Config	The client configuration.
-  * @param AccountToken	 The OAuth token received from Facebook to access their profile API.
-  * @param AccountVars	 Extra information that will be bundled in the session token.
   * @param Create	 Register the account if the user does not already exist.
   * @param Username	 Set the username on the account at register. Must be unique.
   * @param Sync	 Import Facebook friends for the user.
+  * @param AccountToken	 The OAuth token received from Facebook to access their profile API.
+  * @param AccountVars	 Extra information that will be bundled in the session token.
   * @param RetryConfig Retry configuration.
   * @param CancellationToken	Set to true to cancel the in-flight request.
   */
   NAKAMA_API TNakamaFuture<FNakamaSessionResult> AuthenticateFacebook(
     const FNakamaClientConfig& ClientConfig,
-    const FString& AccountToken,
-    const TMap<FString, FString>& AccountVars,
     bool Create,
     const FString& Username,
     bool Sync,
+    const FString& AccountToken,
+    const TMap<FString, FString>& AccountVars = {},
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
@@ -507,19 +507,19 @@ namespace Nakama
   * Authenticate a user with a Facebook Instant Game token against the server.
   *
   * @param Config	The client configuration.
-  * @param AccountSignedPlayerInfo	 The OAuth token received from a Facebook Instant Game that may be decoded with the Application Secret (must be available with the nakama configuration)
-  * @param AccountVars	 Extra information that will be bundled in the session token.
   * @param Create	 Register the account if the user does not already exist.
   * @param Username	 Set the username on the account at register. Must be unique.
+  * @param AccountSignedPlayerInfo	 The OAuth token received from a Facebook Instant Game that may be decoded with the Application Secret (must be available with the nakama configuration)
+  * @param AccountVars	 Extra information that will be bundled in the session token.
   * @param RetryConfig Retry configuration.
   * @param CancellationToken	Set to true to cancel the in-flight request.
   */
   NAKAMA_API TNakamaFuture<FNakamaSessionResult> AuthenticateFacebookInstantGame(
     const FNakamaClientConfig& ClientConfig,
-    const FString& AccountSignedPlayerInfo,
-    const TMap<FString, FString>& AccountVars,
     bool Create,
     const FString& Username,
+    const FString& AccountSignedPlayerInfo,
+    const TMap<FString, FString>& AccountVars = {},
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
@@ -528,6 +528,8 @@ namespace Nakama
   * Authenticate a user with Apple's GameCenter against the server.
   *
   * @param Config	The client configuration.
+  * @param Create	 Register the account if the user does not already exist.
+  * @param Username	 Set the username on the account at register. Must be unique.
   * @param AccountPlayerId	 Player ID (generated by GameCenter).
   * @param AccountBundleId	 Bundle ID (generated by GameCenter).
   * @param AccountTimestampSeconds	 Time since UNIX epoch when the signature was created.
@@ -535,22 +537,20 @@ namespace Nakama
   * @param AccountSignature	 The verification signature data generated.
   * @param AccountPublicKeyUrl	 The URL for the public encryption key.
   * @param AccountVars	 Extra information that will be bundled in the session token.
-  * @param Create	 Register the account if the user does not already exist.
-  * @param Username	 Set the username on the account at register. Must be unique.
   * @param RetryConfig Retry configuration.
   * @param CancellationToken	Set to true to cancel the in-flight request.
   */
   NAKAMA_API TNakamaFuture<FNakamaSessionResult> AuthenticateGameCenter(
     const FNakamaClientConfig& ClientConfig,
+    bool Create,
+    const FString& Username,
     const FString& AccountPlayerId,
     const FString& AccountBundleId,
     int64 AccountTimestampSeconds,
     const FString& AccountSalt,
     const FString& AccountSignature,
     const FString& AccountPublicKeyUrl,
-    const TMap<FString, FString>& AccountVars,
-    bool Create,
-    const FString& Username,
+    const TMap<FString, FString>& AccountVars = {},
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
@@ -559,19 +559,19 @@ namespace Nakama
   * Authenticate a user with Google against the server.
   *
   * @param Config	The client configuration.
-  * @param AccountToken	 The OAuth token received from Google to access their profile API.
-  * @param AccountVars	 Extra information that will be bundled in the session token.
   * @param Create	 Register the account if the user does not already exist.
   * @param Username	 Set the username on the account at register. Must be unique.
+  * @param AccountToken	 The OAuth token received from Google to access their profile API.
+  * @param AccountVars	 Extra information that will be bundled in the session token.
   * @param RetryConfig Retry configuration.
   * @param CancellationToken	Set to true to cancel the in-flight request.
   */
   NAKAMA_API TNakamaFuture<FNakamaSessionResult> AuthenticateGoogle(
     const FNakamaClientConfig& ClientConfig,
-    const FString& AccountToken,
-    const TMap<FString, FString>& AccountVars,
     bool Create,
     const FString& Username,
+    const FString& AccountToken,
+    const TMap<FString, FString>& AccountVars = {},
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
@@ -580,21 +580,21 @@ namespace Nakama
   * Authenticate a user with Steam against the server.
   *
   * @param Config	The client configuration.
-  * @param AccountToken	 The account token received from Steam to access their profile API.
-  * @param AccountVars	 Extra information that will be bundled in the session token.
   * @param Create	 Register the account if the user does not already exist.
   * @param Username	 Set the username on the account at register. Must be unique.
   * @param Sync	 Import Steam friends for the user.
+  * @param AccountToken	 The account token received from Steam to access their profile API.
+  * @param AccountVars	 Extra information that will be bundled in the session token.
   * @param RetryConfig Retry configuration.
   * @param CancellationToken	Set to true to cancel the in-flight request.
   */
   NAKAMA_API TNakamaFuture<FNakamaSessionResult> AuthenticateSteam(
     const FNakamaClientConfig& ClientConfig,
-    const FString& AccountToken,
-    const TMap<FString, FString>& AccountVars,
     bool Create,
     const FString& Username,
     bool Sync,
+    const FString& AccountToken,
+    const TMap<FString, FString>& AccountVars = {},
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
@@ -1184,18 +1184,18 @@ namespace Nakama
   *
   * @param Config	The client configuration.
   * @param HttpKey	HttpKey for server-to-server communication
+  * @param Reset	 Reset the current user's friends list.
   * @param AccountToken	 The OAuth token received from Facebook to access their profile API.
   * @param AccountVars	 Extra information that will be bundled in the session token.
-  * @param Reset	 Reset the current user's friends list.
   * @param RetryConfig Retry configuration.
   * @param CancellationToken	Set to true to cancel the in-flight request.
   */
   NAKAMA_API TNakamaFuture<FNakamaVoidResult> ImportFacebookFriends(
     const FNakamaClientConfig& ClientConfig,
     const FString& HttpKey,
-    const FString& AccountToken,
-    const TMap<FString, FString>& AccountVars,
     bool Reset,
+    const FString& AccountToken,
+    const TMap<FString, FString>& AccountVars = {},
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
@@ -1205,18 +1205,18 @@ namespace Nakama
   *
   * @param Config	The client configuration.
   * @param Session	The session of the user.
+  * @param Reset	 Reset the current user's friends list.
   * @param AccountToken	 The OAuth token received from Facebook to access their profile API.
   * @param AccountVars	 Extra information that will be bundled in the session token.
-  * @param Reset	 Reset the current user's friends list.
   * @param RetryConfig Retry configuration.
   * @param CancellationToken	Set to true to cancel the in-flight request.
   */
   NAKAMA_API TNakamaFuture<FNakamaVoidResult> ImportFacebookFriends(
     const FNakamaClientConfig& ClientConfig,
     const FNakamaSession& Session,
-    const FString& AccountToken,
-    const TMap<FString, FString>& AccountVars,
     bool Reset,
+    const FString& AccountToken,
+    const TMap<FString, FString>& AccountVars = {},
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
@@ -1226,18 +1226,18 @@ namespace Nakama
   *
   * @param Config	The client configuration.
   * @param HttpKey	HttpKey for server-to-server communication
+  * @param Reset	 Reset the current user's friends list.
   * @param AccountToken	 The account token received from Steam to access their profile API.
   * @param AccountVars	 Extra information that will be bundled in the session token.
-  * @param Reset	 Reset the current user's friends list.
   * @param RetryConfig Retry configuration.
   * @param CancellationToken	Set to true to cancel the in-flight request.
   */
   NAKAMA_API TNakamaFuture<FNakamaVoidResult> ImportSteamFriends(
     const FNakamaClientConfig& ClientConfig,
     const FString& HttpKey,
-    const FString& AccountToken,
-    const TMap<FString, FString>& AccountVars,
     bool Reset,
+    const FString& AccountToken,
+    const TMap<FString, FString>& AccountVars = {},
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
@@ -1247,18 +1247,18 @@ namespace Nakama
   *
   * @param Config	The client configuration.
   * @param Session	The session of the user.
+  * @param Reset	 Reset the current user's friends list.
   * @param AccountToken	 The account token received from Steam to access their profile API.
   * @param AccountVars	 Extra information that will be bundled in the session token.
-  * @param Reset	 Reset the current user's friends list.
   * @param RetryConfig Retry configuration.
   * @param CancellationToken	Set to true to cancel the in-flight request.
   */
   NAKAMA_API TNakamaFuture<FNakamaVoidResult> ImportSteamFriends(
     const FNakamaClientConfig& ClientConfig,
     const FNakamaSession& Session,
-    const FString& AccountToken,
-    const TMap<FString, FString>& AccountVars,
     bool Reset,
+    const FString& AccountToken,
+    const TMap<FString, FString>& AccountVars = {},
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
@@ -1564,18 +1564,18 @@ namespace Nakama
   *
   * @param Config	The client configuration.
   * @param HttpKey	HttpKey for server-to-server communication
+  * @param Sync	 Import Facebook friends for the user.
   * @param AccountToken	 The OAuth token received from Facebook to access their profile API.
   * @param AccountVars	 Extra information that will be bundled in the session token.
-  * @param Sync	 Import Facebook friends for the user.
   * @param RetryConfig Retry configuration.
   * @param CancellationToken	Set to true to cancel the in-flight request.
   */
   NAKAMA_API TNakamaFuture<FNakamaVoidResult> LinkFacebook(
     const FNakamaClientConfig& ClientConfig,
     const FString& HttpKey,
-    const FString& AccountToken,
-    const TMap<FString, FString>& AccountVars,
     bool Sync,
+    const FString& AccountToken,
+    const TMap<FString, FString>& AccountVars = {},
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
@@ -1585,18 +1585,18 @@ namespace Nakama
   *
   * @param Config	The client configuration.
   * @param Session	The session of the user.
+  * @param Sync	 Import Facebook friends for the user.
   * @param AccountToken	 The OAuth token received from Facebook to access their profile API.
   * @param AccountVars	 Extra information that will be bundled in the session token.
-  * @param Sync	 Import Facebook friends for the user.
   * @param RetryConfig Retry configuration.
   * @param CancellationToken	Set to true to cancel the in-flight request.
   */
   NAKAMA_API TNakamaFuture<FNakamaVoidResult> LinkFacebook(
     const FNakamaClientConfig& ClientConfig,
     const FNakamaSession& Session,
-    const FString& AccountToken,
-    const TMap<FString, FString>& AccountVars,
     bool Sync,
+    const FString& AccountToken,
+    const TMap<FString, FString>& AccountVars = {},
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
@@ -1740,18 +1740,18 @@ namespace Nakama
   *
   * @param Config	The client configuration.
   * @param HttpKey	HttpKey for server-to-server communication
+  * @param Sync	 Import Steam friends for the user.
   * @param AccountToken	 The account token received from Steam to access their profile API.
   * @param AccountVars	 Extra information that will be bundled in the session token.
-  * @param Sync	 Import Steam friends for the user.
   * @param RetryConfig Retry configuration.
   * @param CancellationToken	Set to true to cancel the in-flight request.
   */
   NAKAMA_API TNakamaFuture<FNakamaVoidResult> LinkSteam(
     const FNakamaClientConfig& ClientConfig,
     const FString& HttpKey,
-    const FString& AccountToken,
-    const TMap<FString, FString>& AccountVars,
     bool Sync,
+    const FString& AccountToken,
+    const TMap<FString, FString>& AccountVars = {},
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;
@@ -1761,18 +1761,18 @@ namespace Nakama
   *
   * @param Config	The client configuration.
   * @param Session	The session of the user.
+  * @param Sync	 Import Steam friends for the user.
   * @param AccountToken	 The account token received from Steam to access their profile API.
   * @param AccountVars	 Extra information that will be bundled in the session token.
-  * @param Sync	 Import Steam friends for the user.
   * @param RetryConfig Retry configuration.
   * @param CancellationToken	Set to true to cancel the in-flight request.
   */
   NAKAMA_API TNakamaFuture<FNakamaVoidResult> LinkSteam(
     const FNakamaClientConfig& ClientConfig,
     const FNakamaSession& Session,
-    const FString& AccountToken,
-    const TMap<FString, FString>& AccountVars,
     bool Sync,
+    const FString& AccountToken,
+    const TMap<FString, FString>& AccountVars = {},
     const FNakamaRetryConfig& RetryConfig = {},
     TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
   ) noexcept;

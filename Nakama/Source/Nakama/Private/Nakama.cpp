@@ -620,10 +620,10 @@ TNakamaFuture<FNakamaVoidResult> Nakama::SessionLogout(
 }
 TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateApple(
   const FNakamaClientConfig& ClientConfig,
-  const FString& AccountToken,
-  const TMap<FString, FString>& AccountVars,
   bool Create,
   const FString& Username,
+  const FString& AccountToken,
+  const TMap<FString, FString>& AccountVars,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
 ) noexcept
@@ -690,10 +690,10 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateApple(
 }
 TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateCustom(
   const FNakamaClientConfig& ClientConfig,
-  const FString& AccountId,
-  const TMap<FString, FString>& AccountVars,
   bool Create,
   const FString& Username,
+  const FString& AccountId,
+  const TMap<FString, FString>& AccountVars,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
 ) noexcept
@@ -760,10 +760,10 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateCustom(
 }
 TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateDevice(
   const FNakamaClientConfig& ClientConfig,
-  const FString& AccountId,
-  const TMap<FString, FString>& AccountVars,
   bool Create,
   const FString& Username,
+  const FString& AccountId,
+  const TMap<FString, FString>& AccountVars,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
 ) noexcept
@@ -830,11 +830,11 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateDevice(
 }
 TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateEmail(
   const FNakamaClientConfig& ClientConfig,
+  bool Create,
+  const FString& Username,
   const FString& AccountEmail,
   const FString& AccountPassword,
   const TMap<FString, FString>& AccountVars,
-  bool Create,
-  const FString& Username,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
 ) noexcept
@@ -903,11 +903,11 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateEmail(
 }
 TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateFacebook(
   const FNakamaClientConfig& ClientConfig,
-  const FString& AccountToken,
-  const TMap<FString, FString>& AccountVars,
   bool Create,
   const FString& Username,
   bool Sync,
+  const FString& AccountToken,
+  const TMap<FString, FString>& AccountVars,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
 ) noexcept
@@ -976,10 +976,10 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateFacebook(
 }
 TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateFacebookInstantGame(
   const FNakamaClientConfig& ClientConfig,
-  const FString& AccountSignedPlayerInfo,
-  const TMap<FString, FString>& AccountVars,
   bool Create,
   const FString& Username,
+  const FString& AccountSignedPlayerInfo,
+  const TMap<FString, FString>& AccountVars,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
 ) noexcept
@@ -1046,6 +1046,8 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateFacebookInstantGame(
 }
 TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateGameCenter(
   const FNakamaClientConfig& ClientConfig,
+  bool Create,
+  const FString& Username,
   const FString& AccountPlayerId,
   const FString& AccountBundleId,
   int64 AccountTimestampSeconds,
@@ -1053,8 +1055,6 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateGameCenter(
   const FString& AccountSignature,
   const FString& AccountPublicKeyUrl,
   const TMap<FString, FString>& AccountVars,
-  bool Create,
-  const FString& Username,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
 ) noexcept
@@ -1131,10 +1131,10 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateGameCenter(
 }
 TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateGoogle(
   const FNakamaClientConfig& ClientConfig,
-  const FString& AccountToken,
-  const TMap<FString, FString>& AccountVars,
   bool Create,
   const FString& Username,
+  const FString& AccountToken,
+  const TMap<FString, FString>& AccountVars,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
 ) noexcept
@@ -1201,11 +1201,11 @@ TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateGoogle(
 }
 TNakamaFuture<FNakamaSessionResult> Nakama::AuthenticateSteam(
   const FNakamaClientConfig& ClientConfig,
-  const FString& AccountToken,
-  const TMap<FString, FString>& AccountVars,
   bool Create,
   const FString& Username,
   bool Sync,
+  const FString& AccountToken,
+  const TMap<FString, FString>& AccountVars,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
 ) noexcept
@@ -3674,9 +3674,9 @@ TNakamaFuture<FNakamaVoidResult> Nakama::Healthcheck(
 TNakamaFuture<FNakamaVoidResult> Nakama::ImportFacebookFriends(
   const FNakamaClientConfig& ClientConfig,
   const FString& HttpKey,
+  bool Reset,
   const FString& AccountToken,
   const TMap<FString, FString>& AccountVars,
-  bool Reset,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
 ) noexcept
@@ -3744,9 +3744,9 @@ TNakamaFuture<FNakamaVoidResult> Nakama::ImportFacebookFriends(
 TNakamaFuture<FNakamaVoidResult> Nakama::ImportFacebookFriends(
   const FNakamaClientConfig& ClientConfig,
   const FNakamaSession& Session,
+  bool Reset,
   const FString& AccountToken,
   const TMap<FString, FString>& AccountVars,
-  bool Reset,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
 ) noexcept
@@ -3838,9 +3838,9 @@ TNakamaFuture<FNakamaVoidResult> Nakama::ImportFacebookFriends(
 TNakamaFuture<FNakamaVoidResult> Nakama::ImportSteamFriends(
   const FNakamaClientConfig& ClientConfig,
   const FString& HttpKey,
+  bool Reset,
   const FString& AccountToken,
   const TMap<FString, FString>& AccountVars,
-  bool Reset,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
 ) noexcept
@@ -3908,9 +3908,9 @@ TNakamaFuture<FNakamaVoidResult> Nakama::ImportSteamFriends(
 TNakamaFuture<FNakamaVoidResult> Nakama::ImportSteamFriends(
   const FNakamaClientConfig& ClientConfig,
   const FNakamaSession& Session,
+  bool Reset,
   const FString& AccountToken,
   const TMap<FString, FString>& AccountVars,
-  bool Reset,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
 ) noexcept
@@ -5212,9 +5212,9 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkEmail(
 TNakamaFuture<FNakamaVoidResult> Nakama::LinkFacebook(
   const FNakamaClientConfig& ClientConfig,
   const FString& HttpKey,
+  bool Sync,
   const FString& AccountToken,
   const TMap<FString, FString>& AccountVars,
-  bool Sync,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
 ) noexcept
@@ -5282,9 +5282,9 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkFacebook(
 TNakamaFuture<FNakamaVoidResult> Nakama::LinkFacebook(
   const FNakamaClientConfig& ClientConfig,
   const FNakamaSession& Session,
+  bool Sync,
   const FString& AccountToken,
   const TMap<FString, FString>& AccountVars,
-  bool Sync,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
 ) noexcept
@@ -5870,9 +5870,9 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkGoogle(
 TNakamaFuture<FNakamaVoidResult> Nakama::LinkSteam(
   const FNakamaClientConfig& ClientConfig,
   const FString& HttpKey,
+  bool Sync,
   const FString& AccountToken,
   const TMap<FString, FString>& AccountVars,
-  bool Sync,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
 ) noexcept
@@ -5940,9 +5940,9 @@ TNakamaFuture<FNakamaVoidResult> Nakama::LinkSteam(
 TNakamaFuture<FNakamaVoidResult> Nakama::LinkSteam(
   const FNakamaClientConfig& ClientConfig,
   const FNakamaSession& Session,
+  bool Sync,
   const FString& AccountToken,
   const TMap<FString, FString>& AccountVars,
-  bool Sync,
   const FNakamaRetryConfig& RetryConfig,
   TSharedRef<TAtomic<bool>> CancellationToken
 ) noexcept

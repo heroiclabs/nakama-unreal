@@ -107,12 +107,15 @@ namespace Satori
   *
   * @param Config	The client configuration.
   {{- range $idx, $param := $func.Params }}
-  {{- if and (not $param.Metadata.Repeated) ($param.Metadata.IsMessageType) }}
+  {{- if or (not $param.Metadata.IsMessageType) ($param.Metadata.Repeated) ($param.Metadata.IsMap) }}
+  * @param {{ $param.Name }}{{ "\t" }}{{ $param.Comment }}
+  {{- end }}
+  {{- end }}
+  {{- range $idx, $param := $func.Params }}
+  {{- if and ($param.Metadata.IsMessageType) (not $param.Metadata.Repeated) (not $param.Metadata.IsMap) }}
   {{- range $member := $param.Metadata.Members }}
   * @param {{ $param.Name }}{{ $member.Name }}{{ "\t" }}{{ $member.Comment }}
   {{- end }}
-  {{- else }}
-  * @param {{ $param.Name }}{{ "\t" }}{{ $param.Comment }}
   {{- end }}
   {{- end }}
   * @param RetryConfig Retry configuration.
@@ -125,12 +128,15 @@ namespace Satori
   {{- end }}
     const FSatoriClientConfig& ClientConfig,
     {{- range $idx, $param := $func.Params }}
-    {{- if and (not $param.Metadata.Repeated) ($param.Metadata.IsMessageType) }}
-    {{- range $member := $param.Metadata.Members }}
-    {{ $member.Metadata.ParamType }} {{ $param.Name }}{{ $member.Name }},
-    {{- end }}
-    {{- else }}
+    {{- if or (not $param.Metadata.IsMessageType) ($param.Metadata.Repeated) ($param.Metadata.IsMap) }}
     {{ $param.Metadata.ParamType }} {{ $param.Name }},
+    {{- end }}
+    {{- end }}
+    {{- range $idx, $param := $func.Params }}
+    {{- if and ($param.Metadata.IsMessageType) (not $param.Metadata.Repeated) (not $param.Metadata.IsMap) }}
+    {{- range $member := $param.Metadata.Members }}
+    {{ $member.Metadata.ParamType }} {{ $param.Name }}{{ $member.Name }}{{- if $member.Metadata.IsMap }} = {}{{- end }},
+    {{- end }}
     {{- end }}
     {{- end }}
     const FSatoriRetryConfig& RetryConfig = {},
