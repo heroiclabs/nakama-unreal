@@ -3,6 +3,7 @@ package apimappers
 import (
 	"fmt"
 	"log"
+	"slices"
 	"strings"
 
 	"github.com/emicklei/proto"
@@ -98,8 +99,7 @@ func (m UnrealHttpApiMapper) MapRpc(rpc *yacg.ProtoRpc, api yacg.Api, typeMapper
 
 	isAuth := strings.Contains(rpc.Name, "Authenticate")
 	isSessionRefresh := rpc.Name == "SessionRefresh"
-	isRpcFunc := strings.Contains(rpc.Name, "RpcFunc")
-	needsSession := !isAuth && !isSessionRefresh && !isRpcFunc
+	needsSession := !isAuth && !isSessionRefresh
 
 	funcReturnTypeName := ""
 	if rpc.ReturnType != nil {
@@ -119,18 +119,13 @@ func (m UnrealHttpApiMapper) MapRpc(rpc *yacg.ProtoRpc, api yacg.Api, typeMapper
 			return nil, err
 		}
 
-		// AuthenticateLogout sends the session token as Bearer auth (not Basic like other auth endpoints).
-		// RpcFunc uses the HttpKey parameter for auth (empty = unauthenticated, non-empty = http_key auth).
+		// AuthenticateLogout sends the session token as Bearer auth.
 		authType := "Basic"
 		authKey := "TEXT(\"\")"
 		if rpc.Name == "AuthenticateLogout" {
 			authType = "Bearer"
 			authKey = "Token"
-		} else if isRpcFunc {
-			authType = "HttpKey"
-			authKey = "HttpKey"
 		}
-
 		funcOverloads = append(funcOverloads, modules.Function{
 			DataDecl: modules.DataDecl{
 				Name:     typeMapper.ResolveIdentifier(rpc.Name, modules.IdentifierTypeDefault),
@@ -148,19 +143,25 @@ func (m UnrealHttpApiMapper) MapRpc(rpc *yacg.ProtoRpc, api yacg.Api, typeMapper
 	//
 	// If we need a session, there are two overloads: one with HttpKey, and other with session.
 
+	// RpcFunc is a bit special because it already has an HttpKey param in schema.
+	isRpcFunc := strings.Contains(rpc.Name, "RpcFunc")
+
 	// HttpKey overload
 	{
 		params, err := m.MapMessage(rpc.RequestType, api, typeMapper)
 		if err != nil {
 			return nil, err
 		}
-		httpKeyParam := modules.DataDecl{
-			Type:     "FString",
-			Name:     "HttpKey",
-			Comment:  "HttpKey for server-to-server communication",
-			Metadata: map[string]any{"ParamType": "const FString&"},
+		paramsMembers := params.Members
+		if !isRpcFunc {
+			httpKeyParam := modules.DataDecl{
+				Type:     "FString",
+				Name:     "HttpKey",
+				Comment:  "HttpKey for server-to-server communication",
+				Metadata: map[string]any{"ParamType": "const FString&"},
+			}
+			paramsMembers = append([]modules.DataDecl{httpKeyParam}, params.Members...)
 		}
-		paramsMembers := append([]modules.DataDecl{httpKeyParam}, params.Members...)
 
 		funcOverloads = append(funcOverloads, modules.Function{
 			DataDecl: modules.DataDecl{
@@ -187,6 +188,13 @@ func (m UnrealHttpApiMapper) MapRpc(rpc *yacg.ProtoRpc, api yacg.Api, typeMapper
 			Metadata: map[string]any{"ParamType": fmt.Sprintf("const %s&", sessionType)},
 		}
 		paramsMembers := append([]modules.DataDecl{sessionParam}, params.Members...)
+
+		// Remove built-in HttpKey parameter for RpcFunc call.
+		if isRpcFunc {
+			paramsMembers = slices.DeleteFunc(paramsMembers, func(p modules.DataDecl) bool {
+				return p.Name == "HttpKey"
+			})
+		}
 
 		funcOverloads = append(funcOverloads, modules.Function{
 			DataDecl: modules.DataDecl{
@@ -309,6 +317,11 @@ func (m UnrealHttpApiMapper) makeFuncMetadata(rpc *yacg.ProtoRpc, typeMapper mod
 
 	for _, qp := range rpc.QueryParams {
 		for _, f := range rpc.RequestType.Fields {
+			if hasSession && strings.Contains(rpc.Name, "RpcFunc") && f.Name == "http_key" {
+				// Special Case: RpcFunc always contains HttpKey as query parameter,
+				// even when calling with Session
+				continue 
+			}
 			if f.Name == qp {
 				queryParams = append(queryParams, QueryParam{
 					Repeated:       f.Repeated,
