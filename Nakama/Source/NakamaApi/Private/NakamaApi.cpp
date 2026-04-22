@@ -7290,6 +7290,64 @@ NAKAMAAPI_API void NakamaApi::RpcFunc (
 
 
 
+NAKAMAAPI_API void NakamaApi::RpcFunc (
+  const FNakamaClientConfig& Config,
+  const FNakamaSession& Session,
+  const FString& Id,
+  const FString& Payload,
+  TFunction<void(const FNakamaRpc&)> OnSuccess,
+  TFunction<void(const FNakamaError&)> OnError,
+  float Timeout,
+  TSharedRef<TAtomic<bool>> CancellationToken
+) noexcept
+{
+  FString Endpoint = TEXT("/v2/rpc/{id}");
+  // 
+  // Fill Path Params
+  const FString Encoded_Id = FGenericPlatformHttp::UrlEncode(Id);
+  Endpoint = Endpoint.Replace(TEXT("{id}"), *Encoded_Id);
+
+  // 
+  // Fill Query Params
+  TArray<FString> QueryParams;
+  if (QueryParams.Num() > 0)
+  {
+    Endpoint += TEXT("?") + FString::Join(QueryParams, TEXT("&"));
+  }
+
+  //
+  // Fill Body Params
+  FString RawBody;
+  if (Payload.IsEmpty() == false)
+  {
+    FString Escaped = Payload.Replace(TEXT("\\"), TEXT("\\\\")).Replace(TEXT("\""), TEXT("\\\"")).Replace(TEXT("\n"), TEXT("\\n")).Replace(TEXT("\r"), TEXT("\\r")).Replace(TEXT("\t"), TEXT("\\t"));
+    RawBody = TEXT("\"") + Escaped + TEXT("\"");
+  }
+
+  //
+  // Make the request
+  SendRequest(
+    Config,
+    Endpoint,
+    TEXT("POST"),
+    RawBody,
+    ENakamaRequestAuth::Bearer,
+    Session.Token,
+    [OnSuccess](TSharedPtr<FJsonObject> Json)
+    {
+      if (OnSuccess)
+      {
+      
+        FNakamaRpc Result = FNakamaRpc::FromJson(Json);
+        OnSuccess(Result);
+      
+      }
+    },
+    OnError, Timeout, CancellationToken);
+}
+
+
+
 NAKAMAAPI_API void NakamaApi::UnlinkApple (
   const FNakamaClientConfig& Config,
   const FString& HttpKey,

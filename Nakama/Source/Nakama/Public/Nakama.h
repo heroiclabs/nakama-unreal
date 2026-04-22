@@ -2655,6 +2655,25 @@ namespace Nakama
   ) noexcept;
 
   /**
+  * Execute a Lua function on the server.
+  *
+  * @param Config	The client configuration.
+  * @param Session	The session of the user.
+  * @param Id	 The identifier of the function.
+  * @param Payload	 The payload of the function which must be a JSON object.
+  * @param RetryConfig Retry configuration.
+  * @param CancellationToken	Set to true to cancel the in-flight request.
+  */
+  NAKAMA_API TNakamaFuture<FNakamaRpcResult> RpcFunc(
+    const FNakamaClientConfig& ClientConfig,
+    const FNakamaSession& Session,
+    const FString& Id,
+    const FString& Payload,
+    const FNakamaRetryConfig& RetryConfig = {},
+    TSharedRef<TAtomic<bool>> CancellationToken = MakeShared<TAtomic<bool>>(false)
+  ) noexcept;
+
+  /**
   * Remove the Apple ID from the social profiles on the current user's account.
   *
   * @param Config	The client configuration.

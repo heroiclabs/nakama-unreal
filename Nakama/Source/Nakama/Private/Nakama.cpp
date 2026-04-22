@@ -9241,6 +9241,94 @@ TNakamaFuture<FNakamaRpcResult> Nakama::RpcFunc(
   (*DoRequest)();
   return TNakamaFuture<FNakamaRpcResult>(FutureState);
 }
+TNakamaFuture<FNakamaRpcResult> Nakama::RpcFunc(
+  const FNakamaClientConfig& ClientConfig,
+  const FNakamaSession& Session,
+  const FString& Id,
+  const FString& Payload,
+  const FNakamaRetryConfig& RetryConfig,
+  TSharedRef<TAtomic<bool>> CancellationToken
+) noexcept
+{
+	auto FutureState = MakeShared<TNakamaFuture<FNakamaRpcResult>::FState>();
+	auto SessionState = MakeShared<FNakamaSession>(Session);
+	auto RetryCount = MakeShared<int32>(0);
+	auto DoRequest = MakeShared<TFunction<void()>>();
+
+	auto OnError = MakeShared<TFunction<void(const FNakamaError&)>>();
+  *OnError = [FutureState, RetryCount, DoRequest, OnError, RetryConfig](const FNakamaError& Error)
+  {
+    if (Nakama::IsTransientError(Error) && *RetryCount < RetryConfig.MaxRetries)
+    {
+      (*RetryCount)++;
+      float Delay = Nakama::CalculateBackoff(*RetryCount, RetryConfig);
+      FTSTicker::GetCoreTicker().AddTicker(
+        FTickerDelegate::CreateLambda([DoRequest](float) -> bool { (*DoRequest)(); return false; }),
+        Delay);
+    }
+    else
+    {
+      *DoRequest = nullptr;
+      *OnError = nullptr;
+      FutureState->Resolve(FNakamaRpcResult { {}, Error, true });
+    }
+  };
+
+  *DoRequest = [
+    FutureState
+    , SessionState
+    , DoRequest
+    , OnError
+    , ClientConfig
+    , RetryConfig
+    , CancellationToken
+    , Session
+    , Id
+    , Payload
+  ]()
+  { 
+    MaybeRefreshThenCall(
+      SessionState
+      , ClientConfig
+      , RetryConfig
+      , CancellationToken
+      , OnError
+      , [
+        FutureState
+        , SessionState
+        , DoRequest
+        , OnError
+        , ClientConfig
+        , RetryConfig
+        , CancellationToken
+        , Session
+        , Id
+        , Payload
+        ]()
+        {
+
+          NakamaApi::RpcFunc(
+            ClientConfig,
+            *SessionState,
+            Id,
+            Payload,
+            [FutureState, DoRequest, OnError](const FNakamaRpc& Result)
+            {
+              *DoRequest = nullptr;
+              *OnError = nullptr;
+              FutureState->Resolve(FNakamaRpcResult{ Result, {}, false });
+            },
+            *OnError,
+            RetryConfig.Timeout,
+            CancellationToken
+          );
+        }
+      );
+  };
+
+  (*DoRequest)();
+  return TNakamaFuture<FNakamaRpcResult>(FutureState);
+}
 TNakamaFuture<FNakamaVoidResult> Nakama::UnlinkApple(
   const FNakamaClientConfig& ClientConfig,
   const FString& HttpKey,
