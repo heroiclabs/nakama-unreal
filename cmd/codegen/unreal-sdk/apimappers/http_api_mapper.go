@@ -106,15 +106,15 @@ func (m UnrealHttpApiMapper) MapRpc(rpc *yacg.ProtoRpc, api yacg.Api, typeMapper
 		funcReturnTypeName = typeMapper.ResolveEntry(rpc.ReturnType.Name).FieldType
 	}
 
+	returns, err := m.MapMessage(rpc.ReturnType, api, typeMapper)
+	if err != nil {
+		return nil, err
+	}
+
 	//
 	// Without a session, we have just one overload
 	if !needsSession {
 		paramsType, err := m.MapMessage(rpc.RequestType, api, typeMapper)
-		if err != nil {
-			return nil, err
-		}
-
-		returns, err := m.MapMessage(rpc.ReturnType, api, typeMapper)
 		if err != nil {
 			return nil, err
 		}
@@ -147,10 +147,6 @@ func (m UnrealHttpApiMapper) MapRpc(rpc *yacg.ProtoRpc, api yacg.Api, typeMapper
 
 	//
 	// If we need a session, there are two overloads: one with HttpKey, and other with session.
-	returns, err := m.MapMessage(rpc.ReturnType, api, typeMapper)
-	if err != nil {
-		return nil, err
-	}
 
 	// HttpKey overload
 	{
