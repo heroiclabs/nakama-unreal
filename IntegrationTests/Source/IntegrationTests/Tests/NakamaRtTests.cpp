@@ -103,7 +103,7 @@ void FNakamaRtPingSpec::Define()
 
     LatentBeforeEach([this](const FDoneDelegate& Done)
     {
-        Nakama::AuthenticateCustom(ClientConfig, GenerateId(), {}, true, TEXT(""))
+        Nakama::AuthenticateCustom(ClientConfig, true, TEXT(""), GenerateId())
             .Next([this, Done](FNakamaSessionResult R)
             {
                 if (R.bIsError) { AddError(FString::Printf(TEXT("Auth: %s"), *R.Error.Message)); Done.Execute(); return; }
@@ -191,7 +191,7 @@ void FNakamaRtChannelSpec::Define()
 
     LatentBeforeEach([this](const FDoneDelegate& Done)
     {
-        Nakama::AuthenticateCustom(ClientConfig, GenerateId(), {}, true, TEXT(""))
+        Nakama::AuthenticateCustom(ClientConfig, true, TEXT(""), GenerateId())
             .Next([this, Done](FNakamaSessionResult R)
             {
                 if (R.bIsError) { AddError(FString::Printf(TEXT("Auth: %s"), *R.Error.Message)); Done.Execute(); return; }
@@ -420,7 +420,7 @@ void FNakamaRtMatchSpec::Define()
 
     LatentBeforeEach([this](const FDoneDelegate& Done)
     {
-        Nakama::AuthenticateCustom(ClientConfig, GenerateId(), {}, true, TEXT(""))
+        Nakama::AuthenticateCustom(ClientConfig, true, TEXT(""), GenerateId())
             .Next([this, Done](FNakamaSessionResult R)
             {
                 if (R.bIsError) { AddError(FString::Printf(TEXT("Auth: %s"), *R.Error.Message)); Done.Execute(); return; }
@@ -554,7 +554,7 @@ void FNakamaRtMatchmakerSpec::Define()
 
     LatentBeforeEach([this](const FDoneDelegate& Done)
     {
-        Nakama::AuthenticateCustom(ClientConfig, GenerateId(), {}, true, TEXT(""))
+        Nakama::AuthenticateCustom(ClientConfig, true, TEXT(""), GenerateId())
             .Next([this, Done](FNakamaSessionResult R)
             {
                 if (R.bIsError) { AddError(FString::Printf(TEXT("Auth: %s"), *R.Error.Message)); Done.Execute(); return; }
@@ -697,7 +697,7 @@ void FNakamaRtMatchJoinSpec::Define()
 
     LatentBeforeEach([this](const FDoneDelegate& Done)
     {
-        Nakama::AuthenticateCustom(ClientConfig, GenerateId(), {}, true, TEXT(""))
+        Nakama::AuthenticateCustom(ClientConfig, true, TEXT(""), GenerateId())
             .Next([this, Done](FNakamaSessionResult R)
             {
                 if (R.bIsError) { AddError(FString::Printf(TEXT("Auth A: %s"), *R.Error.Message)); Done.Execute(); return; }
@@ -751,7 +751,7 @@ void FNakamaRtMatchJoinSpec::Define()
 
                     FNakamaAccountCustom Account2;
                     Account2.Id = GenerateId();
-                    return Nakama::AuthenticateCustom(ClientConfig, Account2.Id, {}, true, TEXT(""));
+                    return Nakama::AuthenticateCustom(ClientConfig, true, TEXT(""), Account2.Id);
                 })
                 .Next([this, Done](FNakamaSessionResult R2) -> TNakamaFuture<FNakamaWebSocketConnectionResult>
                 {
@@ -790,7 +790,7 @@ void FNakamaRtMatchJoinSpec::Define()
             // ServerEventReceived handlers extract the token and call MatchJoin; Done fires when both joined.
             FNakamaAccountCustom Account2;
             Account2.Id = GenerateId();
-            Nakama::AuthenticateCustom(ClientConfig, Account2.Id, {}, true, TEXT(""))
+            Nakama::AuthenticateCustom(ClientConfig, true, TEXT(""), Account2.Id)
                 .Next([this, Done](FNakamaSessionResult R2) -> TNakamaFuture<FNakamaWebSocketConnectionResult>
                 {
                     if (R2.bIsError) { AddError(FString::Printf(TEXT("Auth B: %s"), *R2.Error.Message)); Done.Execute(); return MakeCompletedFuture<FNakamaWebSocketConnectionResult>(FNakamaWebSocketConnectionResult{}); }
@@ -896,7 +896,7 @@ void FNakamaRtStatusSpec::Define()
 
     LatentBeforeEach([this](const FDoneDelegate& Done)
     {
-        Nakama::AuthenticateCustom(ClientConfig, GenerateId(), {}, true, TEXT(""))
+        Nakama::AuthenticateCustom(ClientConfig, true, TEXT(""), GenerateId())
             .Next([this, Done](FNakamaSessionResult R)
             {
                 if (R.bIsError) { AddError(FString::Printf(TEXT("Auth: %s"), *R.Error.Message)); Done.Execute(); return; }
@@ -1037,7 +1037,7 @@ void FNakamaRtPartySpec::Define()
 
     LatentBeforeEach([this](const FDoneDelegate& Done)
     {
-        Nakama::AuthenticateCustom(ClientConfig, GenerateId(), {}, true, TEXT(""))
+        Nakama::AuthenticateCustom(ClientConfig, true, TEXT(""), GenerateId())
             .Next([this, Done](FNakamaSessionResult R)
             {
                 if (R.bIsError) { AddError(FString::Printf(TEXT("Auth: %s"), *R.Error.Message)); Done.Execute(); return; }

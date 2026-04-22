@@ -103,7 +103,7 @@ void FNakamaWebSocketSubsystemConnectionSpec::Define()
 
     LatentBeforeEach([this](const FDoneDelegate& Done)
     {
-        Nakama::AuthenticateCustom(ClientConfig, GenerateId(), {}, true, TEXT(""))
+        Nakama::AuthenticateCustom(ClientConfig, true, TEXT(""), GenerateId())
             .Next([this, Done](FNakamaSessionResult Result)
             {
                 if (Result.bIsError)
@@ -284,7 +284,7 @@ void FNakamaWebSocketSubsystemPingSpec::Define()
 
     LatentBeforeEach([this](const FDoneDelegate& Done)
     {
-        Nakama::AuthenticateCustom(ClientConfig, GenerateId(), {}, true, TEXT(""))
+        Nakama::AuthenticateCustom(ClientConfig, true, TEXT(""), GenerateId())
             .Next([this, Done](FNakamaSessionResult R)
             {
                 if (R.bIsError) { AddError(FString::Printf(TEXT("Auth: %s"), *R.Error.Message)); Done.Execute(); return; }
@@ -459,7 +459,7 @@ void FNakamaWebSocketSubsystemChannelSpec::Define()
 
     LatentBeforeEach([this](const FDoneDelegate& Done)
     {
-        Nakama::AuthenticateCustom(ClientConfig,  GenerateId(), {}, true, TEXT(""))
+        Nakama::AuthenticateCustom(ClientConfig, true, TEXT(""), GenerateId())
             .Next([this, Done](FNakamaSessionResult R)
             {
                 if (R.bIsError) { AddError(FString::Printf(TEXT("Auth: %s"), *R.Error.Message)); Done.Execute(); return; }
@@ -605,7 +605,7 @@ void FNakamaWebSocketSubsystemMatchSpec::Define()
 
     LatentBeforeEach([this](const FDoneDelegate& Done)
     {
-        Nakama::AuthenticateCustom(ClientConfig,  GenerateId(), {}, true, TEXT(""))
+        Nakama::AuthenticateCustom(ClientConfig, true, TEXT(""), GenerateId())
             .Next([this, Done](FNakamaSessionResult R)
             {
                 if (R.bIsError) { AddError(FString::Printf(TEXT("Auth: %s"), *R.Error.Message)); Done.Execute(); return; }
@@ -726,7 +726,7 @@ void FNakamaWebSocketSubsystemMatchmakerSpec::Define()
 
     LatentBeforeEach([this](const FDoneDelegate& Done)
     {
-        Nakama::AuthenticateCustom(ClientConfig,  GenerateId(), {}, true, TEXT(""))
+        Nakama::AuthenticateCustom(ClientConfig, true, TEXT(""), GenerateId())
             .Next([this, Done](FNakamaSessionResult R)
             {
                 if (R.bIsError) { AddError(FString::Printf(TEXT("Auth: %s"), *R.Error.Message)); Done.Execute(); return; }
@@ -827,7 +827,7 @@ void FNakamaWebSocketSubsystemStatusSpec::Define()
 
     LatentBeforeEach([this](const FDoneDelegate& Done)
     {
-        Nakama::AuthenticateCustom(ClientConfig,  GenerateId(), {}, true, TEXT(""))
+        Nakama::AuthenticateCustom(ClientConfig, true, TEXT(""), GenerateId())
             .Next([this, Done](FNakamaSessionResult R)
             {
                 if (R.bIsError) { AddError(FString::Printf(TEXT("Auth: %s"), *R.Error.Message)); Done.Execute(); return; }
@@ -973,7 +973,7 @@ void FNakamaWebSocketSubsystemDelegatesSpec::Define()
 
     LatentBeforeEach([this](const FDoneDelegate& Done)
     {
-        Nakama::AuthenticateCustom(ClientConfig,  GenerateId(), {}, true, TEXT(""))
+        Nakama::AuthenticateCustom(ClientConfig, true, TEXT(""), GenerateId())
             .Next([this, Done](FNakamaSessionResult R)
             {
                 if (R.bIsError) { AddError(FString::Printf(TEXT("Auth: %s"), *R.Error.Message)); Done.Execute(); return; }
@@ -1105,7 +1105,7 @@ void FNakamaWebSocketSubsystemDataRaceSpec::Define()
 
     LatentBeforeEach([this](const FDoneDelegate& Done)
     {
-        Nakama::AuthenticateCustom(ClientConfig,  GenerateId(), {}, true, TEXT(""))
+        Nakama::AuthenticateCustom(ClientConfig, true, TEXT(""), GenerateId())
             .Next([this, Done](FNakamaSessionResult R)
             {
                 if (R.bIsError) { AddError(FString::Printf(TEXT("Auth: %s"), *R.Error.Message)); Done.Execute(); return; }
