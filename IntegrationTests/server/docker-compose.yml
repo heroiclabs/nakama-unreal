@@ -1,0 +1,82 @@
+services:
+  postgres:
+    container_name: unreal_integration_test_postgres
+    image: timescale/timescaledb-ha:pg18.1-ts2.23.1-all
+    platform: "linux/amd64"
+    environment:
+      - POSTGRES_DB=satori
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=localdb
+    expose:
+      - "5432"
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres", "-d", "satori"]
+      interval: 3s
+      timeout: 3s
+      retries: 5
+    ports:
+      - "5432:5432"
+    volumes:
+      - data:/var/lib/postgresql/data
+
+  nakama:
+    container_name: unreal_integration_test_nakama
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+    entrypoint:
+      - "/bin/sh"
+      - "-ecx"
+      - >
+        /nakama/nakama migrate up --database.address postgres:localdb@postgres:5432/nakama &&
+        exec /nakama/nakama --database.address postgres:localdb@postgres:5432/nakama
+    expose:
+      - "7349"
+      - "7350"
+      - "7351"
+    healthcheck:
+      test: ["CMD", "/nakama/nakama", "healthcheck"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    links:
+      - "postgres:db"
+    ports:
+      - "7349:7349"
+      - "7350:7350"
+      - "7351:7351"
+    restart: unless-stopped
+
+  satori:
+    container_name: unreal_integration_test_satori
+    build:
+      context: ..
+      dockerfile: satori/Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+    entrypoint:
+      - "/bin/sh"
+      - "-ecx"
+      - >
+        /satori/satori migrate up --database.address postgres:localdb@db:5432/satori &&
+        exec /satori/satori --database.address postgres:localdb@db:5432/satori --cache_watcher.debounce_refresh_millisec=0
+    ports:
+      - "7448:7448"
+      - "7449:7449"
+      - "7450:7450"
+      - "7451:7451"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO /dev/null http://localhost:7450/healthcheck"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    links:
+      - "postgres:db"
+    restart: unless-stopped
+
+volumes:
+  data:

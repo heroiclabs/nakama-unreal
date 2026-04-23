@@ -560,6 +560,13 @@ Satori/Intermediate
 Satori/Saved
 Satori/Binaries
 
+IntegrationTests/Plugins
+IntegrationTests/Binaries
+IntegrationTests/Build
+IntegrationTests/Saved
+IntegrationTests/Intermediate
+IntegrationTests/DerivedDataCache
+
 vcpkg_installed/
 /NakamaBlueprintsTest/Content/Developers
 /NakamaBlueprintsTest/Content/Collections
