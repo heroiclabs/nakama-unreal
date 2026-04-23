@@ -44,7 +44,7 @@ FSatoriMessage::FSatoriMessage(const TSharedPtr<FJsonObject> JsonObject)
 	}
 }
 
-FSatoriMessage::FSatoriMessage()
+FSatoriMessage::FSatoriMessage() : SendTime(0), CreateTime(0), UpdateTime(0), ReadTime(0), ConsumeTime(0)
 {
 }
 

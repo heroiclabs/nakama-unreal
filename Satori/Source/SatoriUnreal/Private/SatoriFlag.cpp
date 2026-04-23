@@ -37,7 +37,7 @@ FSatoriFlagValueChangeReason::FSatoriFlagValueChangeReason(const TSharedPtr<FJso
 	}
 }
 
-FSatoriFlagValueChangeReason::FSatoriFlagValueChangeReason()
+FSatoriFlagValueChangeReason::FSatoriFlagValueChangeReason() : Type(FSatoriFlagValueChangeReasonType::UNKNOWN) 
 {
 }
 
@@ -59,7 +59,7 @@ FSatoriFlag::FSatoriFlag(const TSharedPtr<FJsonObject> JsonObject)
 	}
 }
 
-FSatoriFlag::FSatoriFlag()
+FSatoriFlag::FSatoriFlag() : bConditionChanged(false)
 {
 }
 
@@ -102,6 +102,7 @@ FSatoriFlagOverrideValue::FSatoriFlagOverrideValue(const TSharedPtr<FJsonObject>
 		JsonObject->TryGetStringField(TEXT("name"), Name);
 		JsonObject->TryGetStringField(TEXT("variant_name"), VariantName);
 		JsonObject->TryGetStringField(TEXT("value"), Value);
+		JsonObject->TryGetNumberField(TEXT("create_time_sec"), CreateTimeSec);
 		double typeNum;
 		if (JsonObject->TryGetNumberField(TEXT("type"), typeNum)) {
 			int typeInt = (int)typeNum;
@@ -112,7 +113,7 @@ FSatoriFlagOverrideValue::FSatoriFlagOverrideValue(const TSharedPtr<FJsonObject>
 	}
 }
 
-FSatoriFlagOverrideValue::FSatoriFlagOverrideValue()
+FSatoriFlagOverrideValue::FSatoriFlagOverrideValue() : CreateTimeSec(0), Type(FSatoriFlagOverrideType::FLAG) 
 {
 }
 

@@ -27,6 +27,10 @@ struct SATORIUNREAL_API FSatoriEvent
 {
 	GENERATED_BODY()
 
+	// Optional event metadata
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Satori|Events")
+	TMap<FString, FString> Metadata;
+
 	// Event name.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Satori|Events")
 	FString Name;
@@ -35,10 +39,6 @@ struct SATORIUNREAL_API FSatoriEvent
 	// If not supplied the server will assign a randomly generated unique event identifier.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Satori|Events")
 	FString ID;
-
-	// Optional event metadata
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Satori|Events")
-	TMap<FString, FString> Metadata;
 
 	// Optional value.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Satori|Events")
