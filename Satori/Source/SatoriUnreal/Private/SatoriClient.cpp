@@ -1029,7 +1029,7 @@ void USatoriClient::PostServerEvent(
 	TFunction<void(const FSatoriError& Error)> ErrorCallback)
 {
 	// Setup the endpoint
-	const FString Endpoint = TEXT("/v1/server_event");
+	const FString Endpoint = TEXT("/v1/server-event");
 
 	// Setup the request content
 	TSharedPtr<FJsonObject> ContentJson = MakeShareable(new FJsonObject);
