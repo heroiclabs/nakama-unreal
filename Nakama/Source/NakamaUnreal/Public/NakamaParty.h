@@ -128,11 +128,11 @@ struct NAKAMAUNREAL_API FNakamaPartyData
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Parties")
 	FString PartyId;
 	
-	// A reference to the user presence that sent this data, if any.
+	// Incoming Party data, if any, as base64-encoded bytes.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Parties")
 	FString Data; // NBytes
 
-	// A reference to the user presence that sent this data, if any.
+	// Op code value.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Parties")
 	int64 OpCode;
 

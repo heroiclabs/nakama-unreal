@@ -57,7 +57,7 @@ FNakamaStoreObjectData::FNakamaStoreObjectData(const TSharedPtr<FJsonObject> Jso
 }
 
 FNakamaStoreObjectData::FNakamaStoreObjectData()
-	: CreateTime(0), UpdateTime(0),
+	: CreateTime(FDateTime::MinValue()), UpdateTime(FDateTime::MinValue()),
 	PermissionRead(ENakamaStoragePermissionRead::NO_READ), PermissionWrite(ENakamaStoragePermissionWrite::NO_WRITE)
 {
 	

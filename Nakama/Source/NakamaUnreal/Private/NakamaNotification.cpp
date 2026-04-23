@@ -40,7 +40,7 @@ FNakamaNotification::FNakamaNotification(const TSharedPtr<FJsonObject> JsonObjec
 	}
 }
 
-FNakamaNotification::FNakamaNotification() : Code(0), Persistent(false)
+FNakamaNotification::FNakamaNotification() : CreateTime(FDateTime::MinValue()), Code(0), Persistent(false)
 {
 }
 

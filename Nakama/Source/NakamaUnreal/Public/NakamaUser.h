@@ -94,7 +94,7 @@ struct NAKAMAUNREAL_API FNakamaUser
 
 	FNakamaUser(const FString& JsonString);
     FNakamaUser(const TSharedPtr<class FJsonObject> JsonObject);
-	FNakamaUser() : CreatedAt(0), updatedAt(0), EdgeCount(0), Online(false) { }
+	FNakamaUser() : CreatedAt(FDateTime::MinValue()), updatedAt(FDateTime::MinValue()), EdgeCount(0), Online(false) { }
 
 };
 

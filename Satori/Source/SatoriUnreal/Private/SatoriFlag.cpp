@@ -113,7 +113,7 @@ FSatoriFlagOverrideValue::FSatoriFlagOverrideValue(const TSharedPtr<FJsonObject>
 	}
 }
 
-FSatoriFlagOverrideValue::FSatoriFlagOverrideValue() : CreateTimeSec(-1), Type(FSatoriFlagOverrideType::FLAG) 
+FSatoriFlagOverrideValue::FSatoriFlagOverrideValue() : CreateTimeSec(0), Type(FSatoriFlagOverrideType::FLAG) 
 {
 }
 

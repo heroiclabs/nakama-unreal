@@ -62,7 +62,8 @@ FNakamaTournament::FNakamaTournament(const TSharedPtr<FJsonObject> JsonObject)
 }
 
 FNakamaTournament::FNakamaTournament()
-	: Category(0), SortOrder(0), Size(0), MaxSize(0), MaxNumScore(0), EndActive(0), 
+	: CreateTime(FDateTime::MinValue()), StartTime(FDateTime::MinValue()), EndTime(FDateTime::MinValue()),
+	Category(0), SortOrder(0), Size(0), MaxSize(0), MaxNumScore(0), EndActive(0), 
 	NextReset(0), Duration(0), StartActive(0), CanEnter(false)
 {
 }

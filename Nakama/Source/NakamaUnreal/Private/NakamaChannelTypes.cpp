@@ -49,7 +49,8 @@ FNakamaChannelMessage::FNakamaChannelMessage(const TSharedPtr<FJsonObject> JsonO
 	}
 }
 
-FNakamaChannelMessage::FNakamaChannelMessage() : CreateTime(-1), UpdateTime(-1), code(0), Persistent(false)
+FNakamaChannelMessage::FNakamaChannelMessage()
+	: CreateTime(FDateTime::MinValue()), UpdateTime(FDateTime::MinValue()), code(0), Persistent(false)
 {
 	
 }
@@ -86,7 +87,8 @@ FNakamaChannelMessageAck::FNakamaChannelMessageAck(const FString& JsonString)
 	
 }
 
-FNakamaChannelMessageAck::FNakamaChannelMessageAck() : CreateTime(-1), UpdateTime(-1), code(0), Persistent(false) 
+FNakamaChannelMessageAck::FNakamaChannelMessageAck()
+	: CreateTime(FDateTime::MinValue()), UpdateTime(FDateTime::MinValue()), code(0), Persistent(false) 
 {
 }
 

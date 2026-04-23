@@ -30,7 +30,7 @@ struct NAKAMAUNREAL_API FNakamaMatch
 	FNakamaUserPresence Me;
 
 	// The users currently in the match.
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Realtime")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, DisplayName = "Presences", Category = "Nakama|Realtime")
 	TArray<FNakamaUserPresence> Pressences; // Typo
 
 	// The ID of the match, can be used to join.
@@ -72,7 +72,7 @@ struct NAKAMAUNREAL_API FNakamaMatchData
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Realtime")
 	FString Data;
 	
-	// User presences that have just left the match.
+	// Op code value.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Realtime")
 	int64 OpCode;
 

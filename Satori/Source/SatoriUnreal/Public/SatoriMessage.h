@@ -26,7 +26,7 @@ struct SATORIUNREAL_API FSatoriMessage
 {
 	GENERATED_BODY()
 
-	// A key-value pairs of metadata.
+	// Key-value pairs of metadata.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Satori|Messages")
 	TMap<FString, FString> Metadata;
 
