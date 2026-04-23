@@ -21,6 +21,7 @@ package nakama.realtime;
 
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/wrappers.proto";
+import "google/protobuf/descriptor.proto";
 import "api/api.proto";
 
 option go_package = "github.com/heroiclabs/nakama-common/rtapi";
@@ -31,110 +32,122 @@ option java_package = "com.heroiclabs.nakama.rtapi";
 
 option csharp_namespace = "Nakama.Protobuf";
 
+enum MessageCategory {
+  CATEGORY_UNKNOWN = 0;
+  REQUEST = 1;
+  RESPONSE = 2;
+  EVENT = 3;
+}
+
+extend google.protobuf.FieldOptions {
+  repeated MessageCategory category = 50000;
+  string response_field = 50001;
+}
+
 // An envelope for a realtime message.
 message Envelope {
   string cid = 1;
   oneof message {
-    // [server] A response from a channel join operation.
-    Channel channel = 2;
-    // [client] Join a realtime chat channel.
-    ChannelJoin channel_join = 3;
-    // [client] Leave a realtime chat channel.
-    ChannelLeave channel_leave = 4;
-    // [server] An incoming message on a realtime chat channel.
-    api.ChannelMessage channel_message = 5;
-    // [server] An acknowledgement received in response to sending a message on a chat channel.
-    ChannelMessageAck channel_message_ack = 6;
-    // [client] Send a message to a realtime chat channel.
-    ChannelMessageSend channel_message_send = 7;
-    // [client] Update a message previously sent to a realtime chat channel.
-    ChannelMessageUpdate channel_message_update = 8;
-    // [client] Remove a message previously sent to a realtime chat channel.
-    ChannelMessageRemove channel_message_remove = 9;
-    // [server] Presence update for a particular realtime chat channel.
-    ChannelPresenceEvent channel_presence_event = 10;
-    // [server] Describes an error which occurred on the server.
-    Error error = 11;
-    // [server] Incoming information about a realtime match.
-    Match match = 12;
-    // [client] A client to server request to create a realtime match.
-    MatchCreate match_create = 13;
-    // [server] Incoming realtime match data delivered from the server.
-    MatchData match_data = 14;
-    // [client] A client to server request to send data to a realtime match.
-    MatchDataSend match_data_send = 15;
-    // [client] A client to server request to join a realtime match.
-    MatchJoin match_join = 16;
-    // [client] A client to server request to leave a realtime match.
-    MatchLeave match_leave = 17;
-    // [server] Presence update for a particular realtime match.
-    MatchPresenceEvent match_presence_event = 18;
-    // [client] Submit a new matchmaking process request.
-    MatchmakerAdd matchmaker_add = 19;
-    // [server] A successful matchmaking result.
-    MatchmakerMatched matchmaker_matched = 20;
-    // [client] Cancel a matchmaking process using a ticket.
-    MatchmakerRemove matchmaker_remove = 21;
-    // [server] A response from starting a new matchmaking process.
-    MatchmakerTicket matchmaker_ticket = 22;
-    // [server] Notifications send by the server.
-    Notifications notifications = 23;
-    // [client][server] RPC call or response.
-    api.Rpc rpc = 24;
-    // [server] An incoming status snapshot for some set of users.
-    Status status = 25;
-    // [client] Start following some set of users to receive their status updates.
-    StatusFollow status_follow = 26;
-    // [server] An incoming status update.
-    StatusPresenceEvent status_presence_event = 27;
-    // [client] Stop following some set of users to no longer receive their status updates.
-    StatusUnfollow status_unfollow = 28;
-    // [client] Set the user's own status.
-    StatusUpdate status_update = 29;
-    // [server] A data message delivered over a stream.
-    StreamData stream_data = 30;
-    // [server] Presence update for a particular stream.
-    StreamPresenceEvent stream_presence_event = 31;
-    // [server] Application-level heartbeat and connection check.
-    Ping ping = 32;
-    // [server] Application-level heartbeat and connection check response.
-    Pong pong = 33;
-    // [server] Incoming information about a party.
-    Party party = 34;
-    // [client] Create a party.
-    PartyCreate party_create = 35;
-    // [client] Join a party, or request to join if the party is not open.
-    PartyJoin party_join = 36;
-    // [client] Leave a party.
-    PartyLeave party_leave = 37;
-    // [client] Promote a new party leader.
-    PartyPromote party_promote = 38;
-    // [server] Announcement of a new party leader.
-    PartyLeader party_leader = 39;
-    // [client] Accept a request to join.
-    PartyAccept party_accept = 40;
-    // [client] Kick a party member, or decline a request to join.
-    PartyRemove party_remove = 41;
-    // [client] End a party, kicking all party members and closing it.
-    PartyClose party_close = 42;
-    // [client] Request a list of pending join requests for a party.
-    PartyJoinRequestList party_join_request_list = 43;
-    // [server] Incoming notification for one or more new presences attempting to join the party.
-    PartyJoinRequest party_join_request = 44;
-    // [client] Begin matchmaking as a party.
-    PartyMatchmakerAdd party_matchmaker_add = 45;
-    // [client] Cancel a party matchmaking process using a ticket.
-    PartyMatchmakerRemove party_matchmaker_remove = 46;
-    // [client] A response from starting a new party matchmaking process.
-    PartyMatchmakerTicket party_matchmaker_ticket = 47;
-    // [server] Incoming party data delivered from the server.
-    PartyData party_data = 48;
-    // [client] A client to server request to send data to a party.
-    PartyDataSend party_data_send = 49;
-    // [server] Presence update for a particular party.
-    PartyPresenceEvent party_presence_event = 50;
-    // [client] Update Party label and whether it's open or closed.
-    PartyUpdate party_update = 51;
+    // A response from a channel join operation.
+    Channel channel = 2 [(category) = RESPONSE];
+    // Join a realtime chat channel.
+    ChannelJoin channel_join = 3 [(category) = REQUEST, (response_field) = "Channel"];
+    // Leave a realtime chat channel.
+    ChannelLeave channel_leave = 4 [(category) = REQUEST];
+    // An incoming message on a realtime chat channel.
+    api.ChannelMessage channel_message = 5 [(category) = EVENT];
+    // An acknowledgement received in response to sending a message on a chat channel.
+    ChannelMessageAck channel_message_ack = 6 [(category) = RESPONSE];
+    // Send a message to a realtime chat channel.
+    ChannelMessageSend channel_message_send = 7 [(category) = REQUEST, (response_field) = "ChannelMessageAck"];
+    // Update a message previously sent to a realtime chat channel.
+    ChannelMessageUpdate channel_message_update = 8 [(category) = REQUEST, (response_field) = "ChannelMessageAck"];
+    // Remove a message previously sent to a realtime chat channel.
+    ChannelMessageRemove channel_message_remove = 9 [(category) = REQUEST, (response_field) = "ChannelMessageAck"];
+    // Presence update for a particular realtime chat channel.
+    ChannelPresenceEvent channel_presence_event = 10 [(category) = EVENT];
+    // Describes an error which occurred on the server.
+    Error error = 11 [(category) = RESPONSE];
+    // Incoming information about a realtime match.
+    Match match = 12 [(category) = RESPONSE];
+    // A client to server request to create a realtime match.
+    MatchCreate match_create = 13 [(category) = REQUEST, (response_field) = "Match"];
+    // Incoming realtime match data delivered from the server.
+    MatchData match_data = 14 [(category) = EVENT];
+    // A client to server request to send data to a realtime match.
+    MatchDataSend match_data_send = 15 [(category) = REQUEST];
+    // A client to server request to join a realtime match.
+    MatchJoin match_join = 16 [(category) = REQUEST, (response_field) = "Match"];
+    // A client to server request to leave a realtime match.
+    MatchLeave match_leave = 17 [(category) = REQUEST];
+    // Presence update for a particular realtime match.
+    MatchPresenceEvent match_presence_event = 18 [(category) = EVENT];
+    // Submit a new matchmaking process request.
+    MatchmakerAdd matchmaker_add = 19 [(category) = REQUEST, (response_field) = "MatchmakerTicket"];
+    // A successful matchmaking result.
+    MatchmakerMatched matchmaker_matched = 20 [(category) = EVENT];
+    // Cancel a matchmaking process using a ticket.
+    MatchmakerRemove matchmaker_remove = 21 [(category) = REQUEST];
+    // A response from starting a new matchmaking process.
+    MatchmakerTicket matchmaker_ticket = 22 [(category) = RESPONSE];
+    // Notifications send by the server.
+    Notifications notifications = 23 [(category) = EVENT];
+    // RPC call or response.
+    api.Rpc rpc = 24 [(category) = REQUEST, (response_field) = "Rpc"];
+    // An incoming status snapshot for some set of users.
+    Status status = 25 [(category) = RESPONSE];
+    // Start following some set of users to receive their status updates.
+    StatusFollow status_follow = 26 [(category) = REQUEST, (response_field) = "Status"];
+    // An incoming status update.
+    StatusPresenceEvent status_presence_event = 27 [(category) = EVENT];
+    // Stop following some set of users to no longer receive their status updates.
+    StatusUnfollow status_unfollow = 28 [(category) = REQUEST];
+    // Set the user's own status.
+    StatusUpdate status_update = 29 [(category) = REQUEST];
+    // A data message delivered over a stream.
+    StreamData stream_data = 30 [(category) = EVENT];
+    // Presence update for a particular stream.
+    StreamPresenceEvent stream_presence_event = 31 [(category) = EVENT];
+    // Application-level heartbeat and connection check.
+    Ping ping = 32 [(category) = REQUEST, (response_field) = "Pong"];
+    // Application-level heartbeat and connection check response.
+    Pong pong = 33 [(category) = RESPONSE];
+    // Incoming information about a party.
+    Party party = 34 [(category) = RESPONSE];
+    // Create a party.
+    PartyCreate party_create = 35 [(category) = REQUEST, (response_field) = "Party"];
+    // Join a party, or request to join if the party is not open.
+    PartyJoin party_join = 36 [(category) = REQUEST];
+    // Leave a party.
+    PartyLeave party_leave = 37 [(category) = REQUEST];
+    // Promote a new party leader.
+    PartyPromote party_promote = 38 [(category) = REQUEST];
+    // Announcement of a new party leader.
+    PartyLeader party_leader = 39 [(category) = EVENT];
+    // Accept a request to join.
+    PartyAccept party_accept = 40 [(category) = REQUEST];
+    // Kick a party member, or decline a request to join.
+    PartyRemove party_remove = 41 [(category) = REQUEST];
+    // End a party, kicking all party members and closing it.
+    PartyClose party_close = 42 [(category) = REQUEST];
+    // Request a list of pending join requests for a party.
+    PartyJoinRequestList party_join_request_list = 43 [(category) = REQUEST, (response_field) = "PartyJoinRequest"];
+    // Incoming notification for one or more new presences attempting to join the party.
+    PartyJoinRequest party_join_request = 44 [(category) = EVENT, (category) = RESPONSE];
+    // Begin matchmaking as a party.
+    PartyMatchmakerAdd party_matchmaker_add = 45 [(category) = REQUEST, (response_field) = "PartyMatchmakerTicket"];
+    // Cancel a party matchmaking process using a ticket.
+    PartyMatchmakerRemove party_matchmaker_remove = 46 [(category) = REQUEST];
+    // A response from starting a new party matchmaking process.
+    PartyMatchmakerTicket party_matchmaker_ticket = 47 [(category) = RESPONSE];
+    // Incoming party data delivered from the server.
+    PartyData party_data = 48 [(category) = EVENT];
+    // A client to server request to send data to a party.
+    PartyDataSend party_data_send = 49 [(category) = REQUEST];
+    // Presence update for a particular party.
+    PartyPresenceEvent party_presence_event = 50 [(category) = EVENT];
+    // Update Party label and whether it's open or closed.
+    PartyUpdate party_update = 51 [(category) = REQUEST];
   }
 }
 

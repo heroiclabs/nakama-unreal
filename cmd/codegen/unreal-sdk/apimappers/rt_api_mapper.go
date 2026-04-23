@@ -2,7 +2,7 @@ package apimappers
 
 import (
 	"fmt"
-	"strings"
+	"slices"
 
 	"github.com/emicklei/proto"
 	"heroiclabs.com/yacg"
@@ -47,15 +47,25 @@ func (m UnrealRtApiMapper) MapApi(api yacg.Api, typeMapper modules.TypeMapper) (
 		// This is kinda hacky, but basically follows the implicit nature of the rt schema:
 		// treat some messages in the envelope as RPCs.
 		// We'll construct these RPC models on the fly here.
-		if strings.Contains(field.Comment.Message(), "[client]") {
+		if slices.Contains(field.Categories, "REQUEST") {
 			requestType, found := api.MessagesByName[field.Type]
 			if !found {
 				return modules.ApiMap{}, fmt.Errorf("type definition not found in proto schema: `%s`", field.Type)
 			}
+
+			var returnType *yacg.ProtoMessage = nil
+			if field.ResponseField != "" {
+				returnType, found = api.MessagesByName[field.ResponseField]
+				if !found {
+					return modules.ApiMap{}, fmt.Errorf("type definition not found in proto schema: `%s`", field.ResponseField)
+				}
+			}
+
 			rpc := &yacg.ProtoRpc{
 				Name:        field.Name,
 				Comment:     field.Comment.Message(),
 				RequestType: requestType,
+				ReturnType:  returnType,
 			}
 			f, err := m.MapRpc(rpc, api, typeMapper)
 			if err != nil {
@@ -81,6 +91,14 @@ func (m UnrealRtApiMapper) MapRpc(rpc *yacg.ProtoRpc, api yacg.Api, typeMapper m
 		return nil, err
 	}
 
+	var returnType modules.Type = modules.Type{}
+	if rpc.ReturnType != nil {
+		returnType, err = m.MapMessage(rpc.ReturnType, api, typeMapper)
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	funcOverloads = append(funcOverloads, modules.Function{
 		DataDecl: modules.DataDecl{
 			Name:     typeMapper.ResolveIdentifier(rpc.Name, modules.IdentifierTypeDefault),
@@ -89,7 +107,7 @@ func (m UnrealRtApiMapper) MapRpc(rpc *yacg.ProtoRpc, api yacg.Api, typeMapper m
 			Metadata: m.makeFuncMetadata(rpc),
 		},
 		Params:     paramsType.Members,
-		ReturnType: modules.Type{}, // Return type will always be the same for RT
+		ReturnType: returnType,
 	})
 
 	return funcOverloads, nil
@@ -173,7 +191,7 @@ func (m UnrealRtApiMapper) MapMessage(message *yacg.ProtoMessage, api yacg.Api, 
 
 	return modules.Type{
 		DataDecl: modules.DataDecl{
-			Name:    message.Name,
+			Name:    typeMapper.ResolveIdentifier(message.Name, modules.IdentifierTypeDefault),
 			Comment: message.Comment,
 		},
 		Members: members,

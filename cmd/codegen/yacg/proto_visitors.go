@@ -68,11 +68,18 @@ func (v *enumVisitor) VisitEnumField(ef *proto.EnumField) {
 
 // --------------------
 // Messages
+
+type ProtoOneofField struct {
+	*proto.OneOfField
+	Categories    []string // Values of (category) field options, e.g. "REQUEST", "RESPONSE", "EVENT"
+	ResponseField string   // Value of (response_field) field option, if present
+}
+
 type ProtoMessage struct {
 	Comment     string
 	Fields      []*proto.NormalField
 	MapFields   []*proto.MapField
-	OneofFields []*proto.OneOfField
+	OneofFields []*ProtoOneofField
 	Name        string
 }
 
@@ -113,7 +120,17 @@ func (v *messageVisitor) VisitOneofField(oneof *proto.OneOfField) {
 	oneof.Name = internal.TrimUntilLastDot(oneof.Name)
 	oneof.Type = internal.TrimUntilLastDot(oneof.Type)
 
-	v.Message.OneofFields = append(v.Message.OneofFields, oneof)
+	field := &ProtoOneofField{OneOfField: oneof}
+	for _, opt := range oneof.Options {
+		switch strings.TrimSpace(opt.Name) {
+		case "(category)":
+			field.Categories = append(field.Categories, opt.Constant.Source)
+		case "(response_field)":
+			field.ResponseField = opt.Constant.Source
+		}
+	}
+
+	v.Message.OneofFields = append(v.Message.OneofFields, field)
 }
 
 // --------------------
