@@ -42,9 +42,14 @@ FSatoriEvent::FSatoriEvent(const TSharedPtr<FJsonObject> JsonObject)
 				Metadata.Add(*Pair.Key, Pair.Value->AsString());
 			}
 		}
+		
+		JsonObject->TryGetStringField(TEXT("identity_id"), IdentityId);
+		JsonObject->TryGetStringField(TEXT("session_id"), SessionId);
+		JsonObject->TryGetNumberField(TEXT("session_issued_at"), SessionIssuedAt);
+		JsonObject->TryGetNumberField(TEXT("session_expires_at"), SessionExpiresAt);
 	}
 }
 
-FSatoriEvent::FSatoriEvent() : SessionIssuedAt(0), SessionExpiredAt(0)
+FSatoriEvent::FSatoriEvent() : SessionIssuedAt(0), SessionExpiresAt(0)
 {
 }

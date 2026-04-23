@@ -62,7 +62,7 @@ struct SATORIUNREAL_API FSatoriEvent
 	
 	// Optional session expiry timestamp for this event. (Ignored if published within a session)
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Satori|Events")
-	int64 SessionExpiredAt;
+	int64 SessionExpiresAt;
 
 	FSatoriEvent(const FString& JsonString);
 	FSatoriEvent(const TSharedPtr<class FJsonObject> JsonObject);

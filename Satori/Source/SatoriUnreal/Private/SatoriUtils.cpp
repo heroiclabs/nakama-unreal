@@ -74,7 +74,10 @@ void FSatoriUtils::HandleJsonSerializationFailure(TFunction<void(const FSatoriEr
 	FSatoriError Error;
 	Error.Code = ESatoriErrorCode::Unknown;
 	Error.Message = TEXT("Failed to generate request content.");
-	ErrorCallback(Error);
+	if (ErrorCallback)
+	{
+		ErrorCallback(Error);
+	}
 }
 
 bool FSatoriUtils::IsSessionValid(const USatoriSession* Session, TFunction<void(const FSatoriError& Error)> ErrorCallback)
@@ -85,7 +88,10 @@ bool FSatoriUtils::IsSessionValid(const USatoriSession* Session, TFunction<void(
 
 		FSatoriError Error;
 		Error.Message = "Invalid session or session data.";
-		ErrorCallback(Error);
+		if (ErrorCallback)
+		{
+			ErrorCallback(Error);
+		}
 		return false;
 	}
 
@@ -117,7 +123,7 @@ TSharedRef<IHttpRequest, ESPMode::ThreadSafe> FSatoriUtils::MakeRequest(
 
 	// Create the HttpRequest
 #if ENGINE_MAJOR_VERSION <= 4 && ENGINE_MINOR_VERSION <= 25
-	TSharedRef<IHttpRequest> Request = HttpModule->CreateRequest();
+	TSharedRef<IHttpRequest> HttpRequest = HttpModule->CreateRequest();
 #else
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = HttpModule->CreateRequest();
 #endif

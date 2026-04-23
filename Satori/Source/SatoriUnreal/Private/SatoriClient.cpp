@@ -1049,7 +1049,8 @@ void USatoriClient::PostServerEvent(
 		{
 			EventJson->SetStringField(TEXT("value"), Event.Value);
 		}
-		EventJson->SetStringField(TEXT("timestamp"), Event.Timestamp.ToIso8601());// google rpc requires RFC 3339, let's just hope Unreal's ISO 8601 keeps being copliant with it.
+		// google rpc requires RFC 3339, let's just hope Unreal's ISO 8601 keeps being compliant with it.
+		EventJson->SetStringField(TEXT("timestamp"), Event.Timestamp.ToIso8601());
 		
 		if (!Event.IdentityId.IsEmpty())
 		{
@@ -1059,13 +1060,13 @@ void USatoriClient::PostServerEvent(
 		{
 			EventJson->SetStringField(TEXT("session_id"), Event.SessionId);
 		}
-		if (Event.SessionIssuedAt >= 0)
+		if (Event.SessionIssuedAt > 0)
 		{
 			EventJson->SetNumberField(TEXT("session_issued_at"), Event.SessionIssuedAt);
 		}
-		if (Event.SessionExpiredAt >= 0)
+		if (Event.SessionExpiresAt > 0)
 		{
-			EventJson->SetNumberField(TEXT("session_expired_at"), Event.SessionExpiredAt);
+			EventJson->SetNumberField(TEXT("session_expires_at"), Event.SessionExpiresAt);
 		}
 		
 		EventsJson.Add(MakeShareable(new FJsonValueObject(EventJson)));
@@ -1211,7 +1212,8 @@ void USatoriClient::PostEvent(
 		{
 			EventJson->SetStringField(TEXT("value"), Event.Value);
 		}
-		EventJson->SetStringField(TEXT("timestamp"), Event.Timestamp.ToIso8601());// google rpc requires RFC 3339, let's just hope Unreal's ISO 8601 keeps being copliant with it.
+		// google rpc requires RFC 3339, let's just hope Unreal's ISO 8601 keeps being compliant with it.
+		EventJson->SetStringField(TEXT("timestamp"), Event.Timestamp.ToIso8601());
 		EventsJson.Add(MakeShareable(new FJsonValueObject(EventJson)));
 	}
 	
