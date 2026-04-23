@@ -105,10 +105,10 @@ bool FSatoriUtils::IsResponseSuccessful(int32 ResponseCode)
 
 FSatoriError FSatoriUtils::CreateRequestFailureError()
 {
-	SATORI_LOG_ERROR(TEXT("Failed to proccess request. Request failed."));
+	SATORI_LOG_ERROR(TEXT("Failed to process request. Request failed."));
 	FSatoriError Error;
 	Error.Code = ESatoriErrorCode::Unknown;
-	Error.Message = TEXT("Failed to proccess request. Request failed.");
+	Error.Message = TEXT("Failed to process request. Request failed.");
 	return Error;
 }
 
