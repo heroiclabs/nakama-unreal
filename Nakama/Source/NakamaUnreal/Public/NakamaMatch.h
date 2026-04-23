@@ -25,29 +25,29 @@ struct NAKAMAUNREAL_API FNakamaMatch
 {
 	GENERATED_BODY() // NMatchmakerMatched
 
+	// A reference to the current user's presence in the match.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, DisplayName = "Self", Category = "Nakama|Realtime")
+	FNakamaUserPresence Me;
+
+	// The users currently in the match.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, DisplayName = "Presences", Category = "Nakama|Realtime")
+	TArray<FNakamaUserPresence> Pressences; // Typo
+
 	// The ID of the match, can be used to join.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Realtime")
 	FString MatchId;
+	
+	// Match label, if any.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Realtime")
+	FString Label;
 
 	// True if it's an server-managed authoritative match, false otherwise.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Realtime")
 	bool Authoritative;
 
-	// Match label, if any.
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Realtime")
-	FString Label;
-
 	// Current number of users in the match.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Realtime")
-	int32 Size = 0;
-
-	// The users currently in the match.
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Realtime")
-	TArray<FNakamaUserPresence> Pressences; // Typo
-
-	// A reference to the current user's presence in the match.
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, DisplayName = "Self", Category = "Nakama|Realtime")
-	FNakamaUserPresence Me;
+	int32 Size;
 
 	FNakamaMatch(const FString& JsonString);
     FNakamaMatch(const TSharedPtr<class FJsonObject> JsonObject);
@@ -59,22 +59,22 @@ USTRUCT(BlueprintType)
 struct NAKAMAUNREAL_API FNakamaMatchData
 {
 	GENERATED_BODY()
+	
+	// A reference to the user presence that sent this data, if any.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Realtime")
+	FNakamaUserPresence Presence;
 
 	// The match unique ID.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Realtime")
 	FString MatchId;
 
-	// A reference to the user presence that sent this data, if any.
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Realtime")
-	FNakamaUserPresence Presence;
-
-	// User presences that have just left the match.
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Realtime")
-	int64 OpCode;
-
 	// Data payload, if any.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Realtime")
 	FString Data;
+	
+	// Op code value.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Realtime")
+	int64 OpCode;
 
 	FNakamaMatchData(const FString& JsonString);
 	FNakamaMatchData();

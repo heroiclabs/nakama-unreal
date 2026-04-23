@@ -56,7 +56,9 @@ FNakamaStoreObjectData::FNakamaStoreObjectData(const TSharedPtr<FJsonObject> Jso
 	}
 }
 
-FNakamaStoreObjectData::FNakamaStoreObjectData(): PermissionRead(ENakamaStoragePermissionRead::NO_READ), PermissionWrite(ENakamaStoragePermissionWrite::NO_WRITE)
+FNakamaStoreObjectData::FNakamaStoreObjectData()
+	: CreateTime(FDateTime::MinValue()), UpdateTime(FDateTime::MinValue()),
+	PermissionRead(ENakamaStoragePermissionRead::NO_READ), PermissionWrite(ENakamaStoragePermissionWrite::NO_WRITE)
 {
 	
 }
@@ -87,7 +89,8 @@ FNakamaStoreObjectWrite::FNakamaStoreObjectWrite(const FString& JsonString)
 	}
 }
 
-FNakamaStoreObjectWrite::FNakamaStoreObjectWrite(): PermissionRead(), PermissionWrite()
+FNakamaStoreObjectWrite::FNakamaStoreObjectWrite()
+	: PermissionRead(ENakamaStoragePermissionRead::NO_READ), PermissionWrite(ENakamaStoragePermissionWrite::NO_WRITE)
 {
 }
 

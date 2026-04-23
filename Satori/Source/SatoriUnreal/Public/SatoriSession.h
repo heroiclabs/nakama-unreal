@@ -64,8 +64,7 @@ public:
 	static USatoriSession* RestoreSession(FString Token, FString RefreshToken);
 
 private:
-
-	USatoriSession() {}
+	USatoriSession() { }
 
 	FString _AuthToken;
 	FString _RefreshToken;

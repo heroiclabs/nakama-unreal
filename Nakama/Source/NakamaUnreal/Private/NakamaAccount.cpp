@@ -17,7 +17,7 @@
 #include "NakamaAccount.h"
 #include "NakamaUtils.h"
 
-FNakamaAccount::FNakamaAccount(): VerifyTime(FDateTime::MinValue()), DisableTime(FDateTime::MinValue())
+FNakamaAccount::FNakamaAccount() : VerifyTime(FDateTime::MinValue()), DisableTime(FDateTime::MinValue())
 {
 }
 

@@ -46,7 +46,15 @@ USTRUCT(BlueprintType)
 struct NAKAMAUNREAL_API FNakamaMatchmakerMatched
 {
 	GENERATED_BODY()
+	
+	// A reference to the current user and their properties.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Matchmaker")
+	FNakamaMatchmakerUser Me;
 
+	// The users that have been matched together, and information about their matchmaking data.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Matchmaker")
+	TArray<FNakamaMatchmakerUser> Users;
+	
 	// The matchmaking ticket that has completed.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Matchmaker")
 	FString Ticket;
@@ -59,28 +67,15 @@ struct NAKAMAUNREAL_API FNakamaMatchmakerMatched
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Matchmaker")
 	FString Token;
 
-	// The users that have been matched together, and information about their matchmaking data.
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Matchmaker")
-	TArray<FNakamaMatchmakerUser> Users;
-
-	// A reference to the current user and their properties.
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Matchmaker")
-	FNakamaMatchmakerUser Me;
-
 	FNakamaMatchmakerMatched(const FString& JsonString);
 	FNakamaMatchmakerMatched();
-
 };
 
 USTRUCT(BlueprintType)
 struct NAKAMAUNREAL_API FNakamaMatchPresenceEvent
 {
 	GENERATED_BODY() //NMatchmakerMatched
-
-	//The match unique ID.
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Realtime")
-	FString MatchId;
-
+	
 	//User presences that have just joined the match.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Realtime")
 	TArray<FNakamaUserPresence> Joins;
@@ -88,6 +83,10 @@ struct NAKAMAUNREAL_API FNakamaMatchPresenceEvent
 	//User presences that have just left the match.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Realtime")
 	TArray<FNakamaUserPresence> Leaves;
+
+	//The match unique ID.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Realtime")
+	FString MatchId;
 
 	FNakamaMatchPresenceEvent(const FString& JsonString);
 	FNakamaMatchPresenceEvent();
@@ -105,5 +104,4 @@ struct NAKAMAUNREAL_API FNakamaMatchmakerTicket
 
 	FNakamaMatchmakerTicket(const FString& JsonString);
 	FNakamaMatchmakerTicket();
-
 };

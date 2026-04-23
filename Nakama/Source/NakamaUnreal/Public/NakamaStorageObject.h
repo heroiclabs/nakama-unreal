@@ -45,6 +45,14 @@ struct NAKAMAUNREAL_API FNakamaStoreObjectData
 	// The version hash of the object.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Nakama|Storage")
 	FString Version;
+	
+	// The UNIX time when the object was created.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Storage")
+	FDateTime CreateTime;
+
+	// The UNIX time when the object was last updated.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Storage")
+	FDateTime UpdateTime;
 
 	// The read access permissions for the object.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Nakama|Storage") //BlueprintReadOnly
@@ -53,14 +61,6 @@ struct NAKAMAUNREAL_API FNakamaStoreObjectData
 	// The write access permissions for the object.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Nakama|Storage") //BlueprintReadOnly
 	ENakamaStoragePermissionWrite PermissionWrite; //NO_WRITE
-
-	// The UNIX time when the object was created.
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Storage")
-	FDateTime CreateTime = 0;
-
-	// The UNIX time when the object was last updated.
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|Storage")
-	FDateTime UpdateTime = 0;
 
 	FNakamaStoreObjectData(const FString& JsonString);
 	FNakamaStoreObjectData(const TSharedPtr<class FJsonObject> JsonObject);

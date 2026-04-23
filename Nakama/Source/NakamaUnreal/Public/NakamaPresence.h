@@ -46,13 +46,13 @@ struct NAKAMAUNREAL_API FNakamaUserPresence
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|User|Presence", meta = (JsonProperty = "username"))
 	FString Username;
 
-	// Whether this presence generates persistent data/messages, if applicable for the stream type.
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|User|Presence", meta = (JsonProperty = "persistence"))
-	bool Persistence = false;
-
 	// A user-set status message for this stream, if applicable.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|User|Presence")
 	FString Status;
+	
+	// Whether this presence generates persistent data/messages, if applicable for the stream type.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nakama|User|Presence", meta = (JsonProperty = "persistence"))
+	bool Persistence;
 
 	FNakamaUserPresence(const FString& JsonString);
     FNakamaUserPresence(const TSharedPtr<class FJsonObject> JsonObject);
