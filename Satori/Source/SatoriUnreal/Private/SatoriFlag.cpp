@@ -102,6 +102,7 @@ FSatoriFlagOverrideValue::FSatoriFlagOverrideValue(const TSharedPtr<FJsonObject>
 		JsonObject->TryGetStringField(TEXT("name"), Name);
 		JsonObject->TryGetStringField(TEXT("variant_name"), VariantName);
 		JsonObject->TryGetStringField(TEXT("value"), Value);
+		JsonObject->TryGetNumberField(TEXT("create_time_sec"), CreateTimeSec);
 		double typeNum;
 		if (JsonObject->TryGetNumberField(TEXT("type"), typeNum)) {
 			int typeInt = (int)typeNum;
